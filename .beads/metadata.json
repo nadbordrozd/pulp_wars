@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "pulp_wars",
+  "project_id": "54e33463-16f2-42f1-b5e4-881d9bb696c2"
+}
