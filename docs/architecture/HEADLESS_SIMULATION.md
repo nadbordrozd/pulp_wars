@@ -10,6 +10,7 @@ npm run headless -- match --ai-count 3 --size 20 --seed 0 --max-commands 20000 -
 npm run headless -- match --ai-count 3 --size 25 --seed 0 --max-commands 20000 --max-rounds 500
 npm run headless -- match --ai-count 3 --size 20 --cooperative --seed 0 --max-commands 20000 --max-rounds 500
 npm run headless -- match --demo --max-commands 20000 --max-rounds 500
+npm run headless -- match --ai-count 3 --factions candy,original,candy,original --seed 0 --max-commands 20000 --max-rounds 500
 npm run headless -- batch --seeds 0,1,2,3,4,5,6,7 --ai-counts 1,2,3 --max-commands 20000 --max-rounds 500
 npm run headless -- batch --size 25 --seeds 0 --ai-counts 1,2,3 --max-commands 20000 --max-rounds 500
 ```
@@ -50,7 +51,7 @@ and records `UNIT_MOVE_INTERRUPTED`. Thus hidden state cannot alter the offered
 candidate or create a rejected-command retry loop. A multi-step intent that
 discovers enemy ZOC is similarly accepted and truncated on its last legal step.
 
-Ruleset-4 headless command enumeration includes `HARVEST_FRUIT` for explored
+Ruleset-5 headless command enumeration retains `HARVEST_FRUIT` for explored
 fruit in an owned, non-besieged city territory when Organization and 2 stars
 are public, at every city level. It includes `HUNT_ANIMAL` under the
 Hunting/2-star/Animal rule, `BUILD_LUMBER_MILL` under the
@@ -75,8 +76,35 @@ sizes assert the exact POC Rules table. Equal non-mode setup and seed must yield
 the same map hash in `RIVAL` and `COOPERATIVE`, because mode consumes no map
 draw. Cooperative runs additionally assert zero AI-on-AI Attack/Capture,
 zero new allied-territory exploration, and no allied-territory path steps.
-Ruleset-1/2/3 replay fixtures are compatibility diagnostics only; active
-headless replays use version 4 and reject all legacy versions as incompatible
+Ruleset-1/2/3/4 replay fixtures are compatibility diagnostics only; active
+headless replays use version 5 and reject all legacy versions as incompatible
 rather than reinterpret them. Headless imports no presentation plan: Archer
 arrow timing, sprite pulse, dock geometry, and reduced motion cannot affect its
 commands, metrics, or hashes.
+
+Ruleset-5 match and batch commands accept an exact comma-separated faction list
+in seat order. Its length must equal `aiCount + 1`; `original` and `candy` are
+the only values. Omission means all Original. Demo rejects a faction override
+and remains three Original seats. Faction selection never changes map hashes or
+PRNG state for otherwise equal setup.
+
+Headless command enumeration includes Candy actions under the same filtered
+`PlayerView` as the browser. A Roll summary contains only actor and cardinal
+direction; hidden victims never enter candidates. Results add
+`factionsBySeat`, `wallsBuilt`, `wallsDestroyed`, `rolls`,
+`rollDamageByRelationship`, `rollPathCellsRevealed`, `candifyStarted`,
+`candifyChoices`, `tilesCandified`, and `commands/actionsByEffectiveUnitLabel`.
+Unit tallies never count Chocolate Walls. Every corpus verifies ordered-event,
+command, and final-state hash equality on repeat.
+
+The v5 required matrix covers all-Original, all-Candy, and mixed alternating
+factions for 1/2/3 AI in Rival and Cooperative modes. Focused deterministic
+fixtures cover each board edge/direction, hidden units along Roll paths,
+friendly/allied casualties, promoted 15-HP survival, wall destruction, unique
+and tied Candify cities, hostile-territory connectivity rejection, pending
+choice save/resume/replay, and wall persistence after owner elimination. Soak
+evidence must contain all four Candy labels, Candy Catapult Candify, at least
+one Roll victim, wall build/attack/destruction, neutral and hostile Candify,
+and zero Normal-policy allied casualties or allied annexation in Cooperative
+mode. A legal human-authored friendly-fire replay remains required to prove the
+engine permits it.

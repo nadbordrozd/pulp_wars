@@ -77,6 +77,35 @@ already mark a unit handled; AI presentation has no attention pulse to dismiss.
 When no productive candidate remains, End Turn is correct and avoids replay
 bloat from semantic no-ops.
 
+Faction labels map back to the five mechanical roles before production counts:
+Candy Warrior -> Warrior, Gumball Guard -> Archer, Choco Engineer -> Defender,
+Donut -> Rider, and Candy Catapult -> Catapult. Candidate simulation uses the
+owner faction's effective rule, so Donut has move 1 and never produces Attack
+or Escape candidates. A Candy city trains Candy-labelled variants without a
+separate content ordinal or extra capacity slot.
+
+Candy candidates use the exact inserted priorities in POC Rules section 0.6.
+For Roll, policy walks the public cardinal line and totals only visible unit and
+wall HP; unexplored cells are zero-valued. It rejects a Roll with a visible
+owned/allied victim or wall and otherwise values hostile threat kills first.
+This safety filter is a policy choice, never an engine legality rule.
+
+Wall placement scores only exact public `BUILD_CHOCOLATE_WALL` candidates. It
+counts visible hostile shortest approach lines blocked toward the threatened
+city, avoids a visible friendly Fruit/Animal/Ore/empty-Forest action when an
+equally blocking alternative exists, then uses terrain order Grass, Forest,
+Mountain and the standard coordinate/entity tie-breaks. Walls are occupancy
+blockers for later public movement scoring but never units, threats, objectives,
+production roles, kills, or capacity.
+
+Candify scores hostile territory above neutral and is excluded for friendly or
+allied territory. Move candidates gain the POC Rules 610 priority only when the
+public resulting cell would have a legal next Candify and no higher-priority
+objective move exists. A tied mandatory `CHOOSE_CANDIFY_CITY` uses public
+candidate territory to maximize newly adjacent non-friendly cells, then lowest
+city ID. Normal does not sacrifice the last unit assigned to a threatened city
+while any productive defense action remains.
+
 ## Cooperative mode
 
 The relationship graph comes from setup plus immutable serialized
@@ -94,6 +123,14 @@ capacity, or coordinated plan. Cooperation means only non-hostility,
 allied-territory avoidance, and a common human target. Neutral villages remain
 valid expansion objectives for every AI.
 
+Candy does not loosen cooperation: public enumeration rejects building or
+Candifying allied territory, and policy rejects a Roll with any visible allied
+unit or wall on its line. The engine still accepts friendly/allied Roll damage
+and wall Attack for human-authored commands because those abilities explicitly
+permit friendly fire. Soak assertions distinguish engine capability from Normal
+policy: zero AI-on-AI Roll casualties, wall attacks, or Candify transfers are
+required.
+
 ## Determinism and runner limits
 
 Stable comparison is the signed-integer tuple from POC Rules. Target coordinates
@@ -102,7 +139,7 @@ zero PRNG draws. Equal PlayerViews, including diplomatic blockers, must produce
 byte-identical candidate tuples and the same selected command.
 
 Each turn admits at most 128 accepted commands. The runner reserves the final
-two slots for a mandatory pending reward and End Turn. A missing candidate,
+two slots for a mandatory pending city/Candify choice and End Turn. A missing candidate,
 rejected selected command, non-advancing accepted command, or inability to end
 terminates with a structured error/stall diagnostic rather than retrying with
 hidden knowledge. Browser pacing, Fast Forward, and headless execution must
@@ -116,3 +153,9 @@ where reachable. Hunt and Lumber command/event counts remain separate so their
 absence cannot hide inside aggregate growth. Cooperative evidence additionally requires zero
 AI-on-AI Attack/Capture, zero allied ZOC/siege, zero new exploration inside
 allied territory, and no allied-territory Move/Escape step.
+
+Ruleset-5 adds all-Original, all-Candy, and alternating mixed-faction matrices.
+Participation evidence separately records Roll, wall Build/Attack/destruction,
+Candify unique/tied resolution, neutral/hostile annexation, all four Candy unit
+labels, and Candy Catapult Candify. Every matrix repeats command/event/state
+hashes and verifies that faction assignment changes no map hash or PRNG stream.

@@ -93,7 +93,10 @@ is monotonic and IDs are never reused.
 type PlayerId = number & { readonly __brand: "PlayerId" };
 type CityId = number & { readonly __brand: "CityId" };
 type UnitId = number & { readonly __brand: "UnitId" };
-type EntityId = CityId | UnitId;
+type WallId = number & { readonly __brand: "WallId" };
+type EntityId = CityId | UnitId | WallId;
+type FactionId = "ORIGINAL" | "CANDY";
+type CardinalDirection = "NORTH" | "EAST" | "SOUTH" | "WEST";
 
 interface Coord {
   readonly x: number;
@@ -101,7 +104,7 @@ interface Coord {
 }
 
 interface MatchSetup {
-  readonly rulesetId: "pulp-wars-poc-4";
+  readonly rulesetId: "pulp-wars-poc-5";
   readonly seed: number; // uint32
   readonly width: 11 | 14 | 16 | 20 | 25;
   readonly height: 11 | 14 | 16 | 20 | 25;
@@ -109,12 +112,13 @@ interface MatchSetup {
   readonly aiDifficulty: "NORMAL";
   readonly aiMode: "RIVAL" | "COOPERATIVE";
   readonly humanColor: PlayerColor;
+  readonly factions: readonly FactionId[]; // exact seat order, aiCount + 1
   readonly scenario?: "DEMO"; // absent is canonical STANDARD
 }
 
 interface GameState {
-  readonly schemaVersion: 4;
-  readonly rulesetId: "pulp-wars-poc-4";
+  readonly schemaVersion: 5;
+  readonly rulesetId: "pulp-wars-poc-5";
   readonly setup: MatchSetup;
   readonly random: RandomState;
   readonly humanPlayerId: PlayerId; // immutable diplomatic role in headless too
@@ -127,6 +131,7 @@ interface GameState {
   readonly players: readonly PlayerState[];
   readonly cities: readonly CityState[];
   readonly units: readonly UnitState[];
+  readonly chocolateWalls: readonly ChocolateWallState[];
   readonly pendingChoice: PendingChoice | null;
   readonly outcome: MatchOutcome | null;
 }
@@ -138,6 +143,11 @@ interface CityState {
   // ownership, position, capital and level-2/3 reward fields omitted here
 }
 
+interface PlayerState {
+  readonly faction: FactionId; // equals setup.factions[seat]
+  // retained v4 player fields omitted here
+}
+
 interface UnitActivation {
   readonly moved: boolean;
   readonly attacked: boolean;
@@ -145,6 +155,7 @@ interface UnitActivation {
   readonly captured: boolean;
   readonly handled: boolean;
   readonly escapeAvailable: boolean;
+  readonly specialActed: boolean; // v5 wall-build terminal action; reset each turn
 }
 
 interface UnitState {
@@ -153,6 +164,45 @@ interface UnitState {
   readonly capacityExempt: boolean;
   readonly activation: UnitActivation;
   // owner, type, position, health, kills and veterancy omitted here
+}
+
+interface ChocolateWallState {
+  readonly id: WallId;
+  readonly ownerId: PlayerId;
+  readonly at: Coord;
+  readonly hp: number; // 1..10 while present
+}
+
+type PendingChoice =
+  | {
+      readonly kind: "CITY_REWARD";
+      readonly cityId: CityId;
+      readonly level: 2 | 3;
+    }
+  | {
+      readonly kind: "CANDIFY_CITY";
+      readonly unitId: UnitId;
+      readonly candidateCityIds: readonly CityId[]; // ascending, length >= 2
+    };
+
+type CombatTargetRef =
+  | { readonly kind: "UNIT"; readonly unitId: UnitId }
+  | { readonly kind: "CHOCOLATE_WALL"; readonly wallId: WallId };
+
+interface CombatPreview {
+  readonly attackerId: UnitId;
+  readonly target: CombatTargetRef;
+  readonly damageToDefender: number;
+  readonly damageToAttacker: number;
+  readonly defenderDies: boolean;
+  readonly attackerDies: boolean;
+  readonly advances: boolean;
+  readonly noRetaliationReason:
+    | "DEFENDER_DIED"
+    | "OUT_OF_RANGE"
+    | "ATTACKER_UNEXPLORED"
+    | "STRUCTURE"
+    | null;
 }
 
 type MatchOutcome =
@@ -179,7 +229,7 @@ type Command =
   | {
       readonly kind: "ATTACK";
       readonly unitId: UnitId;
-      readonly targetId: UnitId;
+      readonly target: CombatTargetRef;
     }
   | {
       readonly kind: "ESCAPE_MOVE";
@@ -190,6 +240,22 @@ type Command =
   | { readonly kind: "WAIT"; readonly unitId: UnitId }
   | { readonly kind: "PROMOTE"; readonly unitId: UnitId }
   | { readonly kind: "CAPTURE"; readonly unitId: UnitId }
+  | {
+      readonly kind: "KAMIKAZE_ROLL";
+      readonly unitId: UnitId;
+      readonly direction: CardinalDirection;
+    }
+  | {
+      readonly kind: "BUILD_CHOCOLATE_WALL";
+      readonly unitId: UnitId;
+      readonly at: Coord;
+    }
+  | { readonly kind: "CANDIFY"; readonly unitId: UnitId }
+  | {
+      readonly kind: "CHOOSE_CANDIFY_CITY";
+      readonly unitId: UnitId;
+      readonly cityId: CityId;
+    }
   | {
       readonly kind: "CHOOSE_CITY_REWARD";
       readonly cityId: CityId;
@@ -224,28 +290,37 @@ interface SimulationApi {
   previewCombat(
     state: GameState,
     attacker: UnitId,
-    defender: UnitId,
+    target: CombatTargetRef,
   ): CombatPreviewResult;
   viewFor(state: GameState, viewer: PlayerId): PlayerView;
 }
 ```
 
-Ruleset 4 defines `TileState.terrain` as
+Ruleset 5 retains `TileState.terrain` as
 `"GRASS" | "MOUNTAIN" | "FOREST"`, `resource` as
 `"FRUIT" | "ORE" | "ANIMAL" | null`, and `improvement` as
 `"MINE" | "LUMBER_MILL" | null`. The exhaustive invariant accepts only the
-terrain/resource/improvement combinations in POC Rules section 0.1. These are
+terrain/resource/improvement combinations in POC Rules section 0.9. These are
 authoritative values; renderers must not infer content from variants or pixels.
 
-`RulesetDefinition.version` is 4 and owns Fruit `(2,1)`, Animal `(2,1)`,
+`RulesetDefinition.version` is 5 and owns Fruit `(2,1)`, Animal `(2,1)`,
 Lumber Mill `(3,1)`, and Mine `(5,2)` cost/population pairs. It also owns the
-frozen technology, unit, command-kind, terrain, resource, and improvement
-ordinals. Map validation owns the exact failures from POC Rules section 0.3.
+frozen faction, technology, archetype, command-kind, direction, terrain,
+resource, and improvement ordinals plus faction-specific effective unit rules.
+Map validation owns the exact failures from POC Rules section 0.11.
 The kernel adds `HUNTING_REQUIRED`, `ANIMAL_INVALID_TILE`,
 `FORESTRY_REQUIRED`, and `LUMBER_MILL_INVALID_TILE` to the retained resource
-errors. `CITY_AT_MAX_LEVEL` is not a v4
+errors. `CITY_AT_MAX_LEVEL` is not a v5
 error because city growth is uncapped; `INTEGER_OVERFLOW` atomically guards the
 safe-integer serialization boundary without imposing a gameplay level cap.
+
+Chocolate Walls live in their own sorted collection and their occupancy is
+joined with units only in movement/target queries. Combat accepts the exhaustive
+`CombatTargetRef`; no numeric ID is cast between branded entity classes.
+Territory ownership remains normalized on `TileState.territoryCityId`, so
+Candify and city capture share one source of truth. The kernel invariant checks
+one owner city per controlled tile, a city at its own center, and eight-way
+connectivity from every assigned tile to that center.
 
 `legalCommands(GameState, actor)` and authoritative `previewCombat` are kernel
 and test surfaces. Observation-limited callers use `viewFor` followed by
@@ -261,14 +336,15 @@ hidden board or entity data. Harmless rerenders retain the same value. Canvas
 occupancy, selection, and disappearance checks still use only the visible
 entities and explored tiles in `PlayerView`.
 
-V4 `PlayerView` exposes owned-city `assignedCounted` and `assignedExempt`
+V5 `PlayerView` exposes owned-city `assignedCounted` and `assignedExempt`
 totals, plus each visible unit's public handled state and capacity-exemption
 status when owned by the viewer. It also exposes the public immutable
-`humanPlayerId`; external headless controller choice never changes that field.
+`humanPlayerId`, every public player's faction, and explored Chocolate Walls;
+external headless controller choice never changes those fields.
 Rival city views omit assignment totals. In
 cooperative mode, an AI view may mark an otherwise unexplored coordinate only
 as `diplomaticBlock: "ALLIED_TERRITORY"`; that union arm contains no terrain,
-site, resource, Mine, city, unit, or controlling-player identity. Human and
+site, resource, improvement, city, unit, wall, or controlling-player identity. Human and
 rival-mode views never receive it. Public queries use the marker solely to
 exclude Move/Escape/reveal paths and must remain pure for equal views.
 
@@ -300,6 +376,51 @@ type DomainEvent =
       readonly kind: "TILES_REVEALED";
       readonly playerId: PlayerId;
       readonly tiles: readonly Coord[];
+    }
+  | {
+      readonly kind: "DONUT_ROLL_STEP";
+      readonly unitId: UnitId;
+      readonly at: Coord;
+    }
+  | {
+      readonly kind: "ROLL_DAMAGE_RESOLVED";
+      readonly sourceUnitId: UnitId;
+      readonly target: CombatTargetRef;
+      readonly at: Coord;
+      readonly damage: number;
+      readonly hpBefore: number;
+      readonly hpAfter: number;
+    }
+  | {
+      readonly kind: "CHOCOLATE_WALL_BUILT";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly wallId: WallId;
+      readonly at: Coord;
+      readonly cost: 1;
+      readonly hp: 10;
+    }
+  | {
+      readonly kind: "CHOCOLATE_WALL_DESTROYED";
+      readonly wallId: WallId;
+      readonly ownerId: PlayerId;
+      readonly at: Coord;
+      readonly cause: "ATTACK" | "KAMIKAZE_ROLL";
+    }
+  | {
+      readonly kind: "CANDIFY_CITY_CHOICE_REQUIRED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly candidateCityIds: readonly CityId[];
+    }
+  | {
+      readonly kind: "TILE_CANDIFIED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly cityId: CityId;
+      readonly at: Coord;
+      readonly previousCityId: CityId | null;
+      readonly previousOwnerId: PlayerId | null;
     }
   | {
       readonly kind: "FRUIT_HARVESTED";
@@ -334,7 +455,13 @@ type DomainEvent =
   | {
       readonly kind: "UNIT_DIED";
       readonly unitId: UnitId;
-      readonly cause: "ATTACK" | "RETALIATION" | "ELIMINATION";
+      readonly cause:
+        | "ATTACK"
+        | "RETALIATION"
+        | "ELIMINATION"
+        | "KAMIKAZE_ROLL"
+        | "KAMIKAZE_ROLL_SELF"
+        | "CANDIFY";
     }
   | {
       readonly kind: "CITY_CAPTURED";
@@ -362,7 +489,7 @@ Every accepted command is one atomic transition:
 7. append command and checkpoint hash to the in-memory log and request autosave.
 
 The application controller serializes dispatch. A second command cannot enter
-while one is reducing, while a required reward choice is open, or while AI is
+while one is reducing, while a required city/Candify choice is open, or while AI is
 choosing. Visual animation does not lock the engine: it locks human input in the
 controller and consumes the already-produced event queue. A Fast Forward action
 drains presentation immediately without changing state transitions.
@@ -414,7 +541,7 @@ canonicalizer must be used in browser and headless paths.
 ```ts
 interface ReplayFile {
   readonly format: "pulp-wars-replay";
-  readonly version: 4;
+  readonly version: 5;
   readonly setup: MatchSetup;
   readonly commands: readonly Command[];
   readonly checkpoints: readonly { index: number; stateHash: string }[];
@@ -446,10 +573,12 @@ Golden fixtures record setup, commands, ordered events, and final hash.
 its pure deterministic transform after ordinary map/player/entity creation and
 before the ordinary opening Start Turn. It consumes no PRNG draw. Replay,
 autosave, load, restart, browser, and headless all call the same `createGame`
-path. Exact setup parsers accept either the eight STANDARD fields, including
+path. Exact setup parsers accept either the nine STANDARD fields, including
 required `aiMode`, or those fields plus the one valid DEMO discriminator; they
-reject unknown values, extra fields, unsupported sizes, and a non-rival Demo.
-STANDARD writers continue to omit `scenario` exactly.
+reject unknown values, extra fields, unsupported sizes, invalid/wrong-length/
+sparse faction arrays, and a non-rival or non-Original Demo.
+STANDARD writers continue to omit `scenario` exactly. Every setup writes its
+exact seat-ordered `factions`; Demo requires three Original entries.
 
 ## 8. Renderer and input boundary
 
@@ -498,6 +627,20 @@ exact revalidation boundary, while Move, Attack, and Escape remain
 one-activation spatial Canvas commands. Highlighted attack targets carry their
 exact public combat preview visually and semantically before activation.
 
+Candy unit docks additionally filter exact `KAMIKAZE_ROLL`,
+`BUILD_CHOCOLATE_WALL`, and `CANDIFY` summaries for that unit. Roll enters one
+ephemeral cardinal-direction target state; Build enters one ephemeral exact-cell
+target state. One highlighted cell activation dispatches without confirmation.
+Candify dispatches immediately; only an authoritative `CANDIFY_CITY` pending
+choice creates a blocking modal. Escape, command-index change, unit
+disappearance, route/match replacement, or another selection cancels targeting.
+
+An explored Chocolate Wall participates in the visible-occupant-first cycle as
+a structure after a unit and before the underlying tile. Its non-modal dock
+shows owner and HP. A selected attacker highlights an exact wall target only
+when the public query offers it; friendly/allied wall attacks receive the same
+preview and immediate dispatch as hostile attacks.
+
 Selected-city identity follows the same ephemeral `BoardSelection` path and
 never enters `MatchOverlay`. Its render plan derives perimeter segments only
 from explored `PlayerTileView` entries whose public `territoryCityId` matches
@@ -543,15 +686,23 @@ camera changes do not restart it. Resume/reload has no serialized phase and
 starts a fresh cycle at opacity 1; this cannot affect rules or hashes.
 
 `COMBAT_RESOLVED` presentation plans retain public pre/post render snapshots.
-When the public attacker type is Archer, Full/Normal motion draws a code-native
-arrow from its manifest weapon attachment to the defender torso for exactly
-280 ms with cubic-out progress, then a 100 ms impact ring/crossfade; post-combat
+When the public attacker archetype is Archer, Full/Normal motion draws a
+code-native projectile from its manifest weapon attachment to the target torso
+for exactly 280 ms with cubic-out progress, then a 100 ms impact
+ring/crossfade; Original uses an arrow and Candy uses a round gumball. Post-combat
 HP/death becomes visible at 280 ms. Reduced motion has no travel and one 100 ms
 impact crossfade. Fast Forward is immediate. Camera/viewport changes reproject
 the logical endpoints; Settings pauses the presentation clock. Match/route or
 queue-token replacement and missing public endpoints cancel to the post-event
 frame. Cancellation and Fast Forward never modify simulation state or event
-order. Catapult does not borrow the Archer arrow primitive.
+order. Catapult does not borrow either Archer projectile primitive.
+
+Roll, Build, and Candify presentations consume only their ordered v5 events.
+Roll advances at 90 ms per cell with a 900 ms total cap; Build rises for 180 ms;
+Candify washes/dissolves for 240 ms. Reduced motion gives each complete command
+one 100 ms crossfade, and Fast Forward installs the final frame immediately.
+Path reveal is installed at the corresponding Roll step, never from animation
+sampling.
 
 The exhaustive ephemeral state is renderer-owned and never serialized:
 
@@ -559,13 +710,14 @@ The exhaustive ephemeral state is renderer-owned and never serialized:
 type CombatAnimationState =
   | { readonly kind: "IDLE" }
   | {
-      readonly kind: "ARCHER_ARROW";
+      readonly kind: "ARCHER_PROJECTILE";
       readonly queueToken: number;
       readonly commandIndex: number;
       readonly phase: "FLIGHT" | "IMPACT";
       readonly elapsedMs: number; // clamped to 0..280 or 0..100 for phase
       readonly from: Coord;
       readonly to: Coord;
+      readonly projectile: "ARROW" | "GUMBALL";
     };
 ```
 
@@ -596,6 +748,11 @@ type MatchOverlay =
   | { readonly name: "STATS" }
   | { readonly name: "SETTINGS" }
   | { readonly name: "REWARD"; readonly cityId: CityId }
+  | {
+      readonly name: "CANDIFY_CITY";
+      readonly unitId: UnitId;
+      readonly candidateCityIds: readonly CityId[];
+    }
   | { readonly name: "CONFIRM"; readonly action: ConfirmAction };
 ```
 
@@ -629,24 +786,24 @@ Storage is an adapter: unit tests use memory repositories. Storage failure must
 not crash an active match. No IndexedDB, cloud sync, cookies, or server storage
 is required for the POC.
 
-The forest/siege/map expansion is an intentional compatibility boundary:
+The faction/dynamic-territory expansion is an intentional compatibility boundary:
 
-| Contract                  | Legacy values | Ruleset 4 active value | Compatibility behavior |
+| Contract                  | Legacy values | Ruleset 5 active value | Compatibility behavior |
 | ------------------------- | ------------: | ---------------------: | ---------------------- |
-| Game state schema         |         1/2/3 |                      4 | no state migration     |
-| Command/event envelope    |         1/2/3 |                      4 | exhaustive v4 parser   |
-| Replay format             |         1/2/3 |                      4 | legacy incompatible    |
-| Save envelope             |         1/2/3 |                      4 | legacy incompatible    |
+| Game state schema         |       1/2/3/4 |                      5 | no state migration     |
+| Command/event envelope    |       1/2/3/4 |                      5 | exhaustive v5 parser   |
+| Replay format             |       1/2/3/4 |                      5 | legacy incompatible    |
+| Save envelope             |       1/2/3/4 |                      5 | legacy incompatible    |
 | Settings envelope/storage |             1 |                      1 | reused unchanged       |
 
-The loader detects recognized v1/v2/v3 envelopes before attempting v4 state
+The loader detects recognized v1-v4 envelopes before attempting v5 state
 parsing, returns `INCOMPATIBLE` rather than `CORRUPT`, preserves stored bytes,
-and offers deletion/new-match recovery. It never synthesizes Forest/Animal,
-converts `mine` booleans into a new map, or replays legacy commands under the
-expanded Normal policy. V3-to-v4 is deliberately not a pure state migration:
-the initial seeded board and subsequent AI command log differ. Tests retain
-v1/v2/v3 save/replay fixtures for diagnostics; fresh v4 goldens cover both AI
-modes, all board sizes, Demo, Hunt/Lumber, Catapult combat, and resume.
+and offers deletion/new-match recovery. It never invents seat factions,
+synthesizes walls, rewrites Attack targets, or replays legacy commands under
+the expanded Normal policy. Tests retain v1-v4 save/replay fixtures for
+diagnostics; fresh v5 goldens cover both faction choices in every seat, both AI
+modes, all board sizes, Demo, all Candy actions, wall combat, and resume at a
+Candify pending choice.
 
 ## 11. Testing strategy and quality gates
 
@@ -667,6 +824,16 @@ Vitest suites must cover:
   and exactly 20 settlements/72 mountains without changing Auto;
 - every unit's movement, Dash/Escape/Fortify behavior, fog interruption, ZOC,
   recovery, Wait/handled monotonicity, promotion, training, and capture lifecycle;
+- per-seat faction exact parsing/persistence, roster labels/effective rules,
+  Donut four-direction paths and every edge position, path-only reveal, fixed
+  friendly/hostile/wall damage and event order, and self-removal;
+- Chocolate Wall placement on every allowed terrain/resource/improvement,
+  every forbidden occupancy/site/fog/relationship case, movement blocking,
+  friendly/allied/hostile attack, zero retaliation/defense, persistence through
+  capture/elimination, and no capacity/tally effects;
+- Candify unique/nearest/tied city selection, mandatory save/resume choice,
+  neutral/hostile annexation, connectivity rejection, chained expansion,
+  resource/improvement preservation, capture transfer, and fog-safe views;
 - combat rational arithmetic, every half boundary, no-retaliation reasons,
   advance, kill attribution, and preview/resolution identity;
 - hidden-state filtering, content-free allied boundary projection, reveal/path
@@ -676,8 +843,9 @@ Vitest suites must cover:
 - headless/browser engine parity, malformed replay/save rejection, and golden
   replay hashes;
 - DOM flow, focus return, dialogs, keyboard action parity, one-activation
-  Move/Escape/Attack, tile-only resource controls, readiness/reduced-motion
-  presentation, and accessible names;
+  Move/Escape/Attack, Candy direction/build targeting, mandatory Candify city
+  choice, tile-only resource controls, readiness/reduced-motion presentation,
+  faction setup at 320/600/1024 CSS px, and accessible names;
 - Canvas projection/picking at min/default/max zoom and high device pixel ratio.
 
 Property tests should assert non-negative stars/HP/population, positive safe

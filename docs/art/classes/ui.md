@@ -46,16 +46,21 @@ in grayscale. Do not reuse a symbol for two commands in the same context.
 
 - Stars, income, round, city, unit, capital, siege, population, and capacity;
 - Move, Attack, Recover, Capture, Promote, Wait, Escape, Harvest Fruit, Hunt
-  Animal, Build Lumber Mill, Build Mine,
+  Animal, Build Lumber Mill, Build Mine, Kamikaze Roll, Build Chocolate Wall,
+  Candify, and Choose Candify City,
   and End Turn; selected-city training buttons reuse accepted unit art rather
   than adding a generic Train icon;
-- Warrior, Archer, Defender, Rider, and Catapult portraits/silhouettes;
+- Original Warrior/Archer/Defender/Rider, Candy Warrior/Gumball Guard/Choco
+  Engineer/Donut, and shared Catapult portraits/silhouettes;
 - Climbing, Riding, Hunting, Organization, Mining, Forestry, Archery, Strategy,
   and Mathematics;
 - Workshop, Survey, Resources, City Wall, Fruit, Ore, Animal, Lumber Mill, and
   locked prerequisite;
 - Settings, Stats, Tech, zoom, close/back, info/help, copy, randomize, warning,
   save failure, Fast Forward, victory, and defeat.
+- Original and Candy faction marks plus one Candy faction-picker hero at
+  1024 x 1024. The hero may group the four Candy characters but contains no
+  text, UI, city, Catapult redesign, or gameplay-state promise.
 
 Prefer one coherent icon family. Text labels remain present for primary actions
 and all reward/confirmation choices. “Disabled” changes value/opacity and retains
@@ -112,6 +117,13 @@ unit manifest. The impact is a code-native maximum 22 CSS px radial ring. Both
 are presentation-only, use the architecture timing/cancellation contract, and
 require no PixelLab generation. Catapult has no approved projectile graphic in
 this ruleset.
+
+Gumball Guard uses the same projectile geometry/timing envelope but replaces
+shaft/head with a code-native filled circle, nominal 10 CSS px diameter with a
+2 CSS px outline, clamped for 0.625x–1.75x zoom. Roll direction arrows,
+Chocolate Wall placement outlines, Candify tile wash, damage rings, target
+paths, and mandatory-city connector highlights are also code-native. Do not
+generate them as sprites or bake them into Candy unit/wall art.
 
 ## Transparency, raster scaling, and safe area
 

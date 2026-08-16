@@ -1,7 +1,8 @@
 # Unit Asset Contract
 
 This contract specializes [Pulp Wars Art Direction](../ART_DIRECTION.md) for
-Warrior, Archer, Defender, Rider, and Catapult POC sprites. It does not redefine style.
+Original Warrior/Archer/Defender/Rider, Candy Warrior/Gumball Guard/Choco
+Engineer/Donut, and the shared Catapult POC sprite. It does not redefine style.
 
 ## Provenance and calibration
 
@@ -43,9 +44,10 @@ the complete visible silhouettes (including signature equipment) measure
 71.4 CSS px above and 10.2 CSS px below the tile-center contact. Keep the bottom
 area quiet: feet/equipment may use it, but no baked shadow or ground.
 
-The four standard units are the same size class and use the same canvas/anchor. Defender
-may read broader, Rider more forward-leaning, but neither may be globally scaled
-larger.
+All eight standard faction sprites are the same size class and use the same
+canvas/anchor. Defender/Choco Engineer may read broader and Rider more
+forward-leaning, but none may be globally scaled larger. Donut's circular body
+still uses its small feet midpoint—not the ring center—as the contact anchor.
 
 Catapult is a separate low-wide siege class:
 
@@ -81,6 +83,26 @@ avoid perspective tricks that move the anchor.
   saddle, or motion shape over anatomical detail.
 - Catapult: one unmistakable wheeled throwing arm and sling/bowl, a low broad
   base, no crew-sized clutter, no arrow/bow silhouette, and no baked projectile.
+
+Candy silhouette requirements are exact:
+
+- Candy Warrior: one cute chunky white marshmallow body, tiny readable feet,
+  determined expression, and one oversized red/white candy-cane sword. The cane
+  is a weapon, not a walking stick or background prop.
+- Gumball Guard: one anthropomorphic glass-topped gumball machine with a clear
+  mouth/chute aimed southeast, chunky limbs, and a few large colored gumballs
+  inside. It has no bow, arrow, gun, text, coin label, or vending-machine scene.
+- Choco Engineer: one anthropomorphic segmented chocolate bar in an oversized
+  hard hat, with a single large construction tool/blueprint cue. It must not
+  resemble the Chocolate Wall or a plain rectangular UI icon.
+- Donut: one chocolate-iced ring donut with a few large sprinkles, little arms
+  and feet, and a fierce readable expression. Preserve an open center and round
+  rolling silhouette; no motion trail, impact marks, crumbs, or baked shadow.
+
+Candy uses confection shapes and warm cocoa/red/pink accents while retaining a
+contiguous 8–15% maskable faction-color patch. Do not make multicolored candy
+the ownership cue. Candy Catapult deliberately reuses the accepted shared
+Catapult sprite in ruleset 5; no faction-specific siege sprite is approved.
 
 Temporary unit names do not prescribe a final faction costume. One approved
 POC faction language must be applied consistently when production direction
@@ -172,6 +194,14 @@ recipe is stable. Review the batch as a labeled contact sheet on transparent,
 grass, mountain, selected, and dimmed/enemy contexts, then inspect every suspect
 at native and enlarged scale.
 
+Candy production starts with Candy Warrior, Gumball Guard, and Donut as its
+required three-sprite individual sample, then Choco Engineer after those three
+pass. Review each on Grass/Forest/Mountain, selected, damaged, minimum zoom,
+beside its Original counterpart, and in all four owner colors. Reject a
+marshmallow that reads as a ghost, a gumball machine that reads as scenery, an
+engineer that reads as a wall, a Donut without a clear rolling ring, small noisy
+sprinkles/gumballs, or any silhouette outside the standard hard bounds.
+
 Catapult starts a new siege-class sample and is always reviewed individually at
 384 px, 115.2 CSS px, minimum zoom, on every terrain, on a city, beside all four
 standard classes, and in a dense unit line before any future siege batch. Its
@@ -180,9 +210,12 @@ prompt, seed/settings, output mapping, and anchor validation. Reject a floating
 base, unreadable throwing arm, accidental bow/arrow, baked ammunition in flight,
 excessive height, or UI/health occlusion.
 
-Archer metadata adds normalized `projectileOrigin: (0.70,0.37)` on the untrimmed
-256 x 296 canvas; Catapult has no approved projectile attachment in this
-ruleset. The Archer arrow and impact are code-native Canvas primitives, not
-PixelLab assets and not part of raster alpha bounds. Check the attachment at
+Original Archer metadata retains normalized `projectileOrigin: (0.70,0.37)`.
+Gumball Guard requires individually calibrated normalized `projectileOrigin`
+on the mouth/chute of its untrimmed 256 x 296 canvas; the manifest value must
+remain inside opaque mouth/chute alpha and may not be copied blindly from the
+Archer. Catapult has no approved projectile attachment. The arrow, gumball, and
+impacts are code-native Canvas primitives, not PixelLab assets and not part of
+raster alpha bounds. Check each attachment at
 0.625x/1x/1.75x, DPR 1/2, and every target direction. Calibration requires a
 versioned manifest change and refreshed visual evidence.

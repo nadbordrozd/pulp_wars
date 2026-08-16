@@ -1,7 +1,8 @@
 # Building and Settlement Asset Contract
 
 This contract specializes [Pulp Wars Art Direction](../ART_DIRECTION.md) for
-capitals, cities, villages, Mines, Lumber Mills, and city reward markers.
+capitals, cities, villages, Mines, Lumber Mills, Chocolate Walls, and city
+reward markers.
 
 ## Provenance and calibrated geometry
 
@@ -14,6 +15,7 @@ research's observed tile ratio and tall-object overhang, not Polytopia metadata.
 | ------------------------- | ------------: | -------------------: | ------------: | -----------------------: |
 | Mine                      |  256 x 296 px |     128 x 148 CSS px |   `(128,222)` | `x=20..236`, `y=12..252` |
 | Lumber Mill               |  256 x 296 px |     128 x 148 CSS px |   `(128,222)` | `x=20..236`, `y=12..252` |
+| Chocolate Wall            |  256 x 296 px |     128 x 148 CSS px |   `(128,222)` | `x=20..236`, `y=84..252` |
 | Village                   |  256 x 296 px |     128 x 148 CSS px |   `(128,176)` | `x=20..236`, `y=12..252` |
 | City level 1              |  384 x 384 px | 115.2 x 115.2 CSS px |   `(192,236)` |   `x=8..376`, `y=4..344` |
 | City levels 2–3 / capital |  384 x 384 px | 115.2 x 115.2 CSS px |   `(192,243)` |   `x=8..376`, `y=4..344` |
@@ -48,6 +50,12 @@ unchanged.
   readable between trunks without resembling a Mine or settlement;
 - Workshop and City Wall persistent reward cues. Survey and Resources are
   one-off events and need icons/UI, not permanent map structures.
+- one Chocolate Wall destructible-structure sprite: a low broad brick wall made
+  unmistakably from chunky chocolate-bar segments. It is faction-owned but not
+  a city, unit, improvement, or City Wall reward. It must remain readable over
+  Grass, Mountain, Forest, Fruit, Ore, Animal, Mine, and Lumber Mill because
+  rules allow each coexistence. It has no face, limbs, hard hat, text, damage,
+  baked health bar, owner color, selection, or rubble state.
 
 City levels 1–3 must read as the same settlement growing. Preserve base silhouette
 and add one or two large forms per level rather than replacing architecture or
@@ -56,7 +64,8 @@ tile. Capital, level, wall, ownership, and siege cannot rely on one color alone;
 renderer markers/text provide redundant cues.
 
 The neutral village is faction-neutral and visibly smaller than a level-one
-city. Mine and Lumber Mill must not resemble an occupied city or a unit. POC city sprites
+city. Mine, Lumber Mill, and Chocolate Wall must not resemble an occupied city
+or a unit. POC city sprites
 may use the chosen test-faction visual language, but should not silently canonize
 one of the example factions from general art direction.
 
@@ -68,7 +77,7 @@ render the city base/low structure before the unit and permitted tall back
 structure according to documented sublayers:
 
 1. ground and ownership;
-2. low building footprint/base and Mine;
+2. low building footprint/base, Mine/Lumber Mill, and Chocolate Wall;
 3. renderer contact shadow;
 4. back/tall settlement body;
 5. unit at the same anchor;
@@ -102,7 +111,8 @@ shadow, or fog. No alpha crosses hard bounds. Do not trim.
 
 ## Scaling and UI attachments
 
-Keep source canvases unchanged. Village, Mine, and Lumber Mill canvases display at 0.5 source
+Keep source canvases unchanged. Village, Mine, Lumber Mill, and Chocolate Wall
+canvases display at 0.5 source
 scale with their distinct registrations above; city canvases display at 0.3
 source scale with level-specific registration; camera zoom then applies
 uniformly across the board's supported 0.625x–1.75x range. Device-pixel ratio
@@ -132,3 +142,11 @@ wrong camera, faux-3D/painterly detail, palette competition, or accidental
 gameplay marks. Batch only after at least three representative building assets
 pass individually and the recipe is stable. Review batch contact sheets, then
 inspect suspected failures individually.
+
+Chocolate Wall is a separate individual structure sample. Generate and inspect
+it before integration at source/native/minimum zoom on every compatible
+terrain/resource/improvement, beside Choco Engineer and City Wall reward, with
+a unit in every adjacent direction, at 10/5/1 HP using code-native health UI,
+and under all owner overlays. Reject a wall that reads as an ordinary chocolate
+bar/character, merges into brown Mountains, hides a resource/improvement,
+floats above the diamond, crosses hard bounds, or bakes damage/ownership/UI.

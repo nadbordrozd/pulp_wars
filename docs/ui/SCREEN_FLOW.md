@@ -115,27 +115,36 @@ Fields appear in this order:
 6. **Your color:** accessible named swatches. Used colors remain distinguishable
    by player number and pattern/status text; color never carries meaning alone.
 
-Continue validates inline and enters the one-faction picker. Back preserves the
+Continue validates inline and enters the compact faction assignment. Back preserves the
 draft for the current visit. There are no map-type, water, timer, player-created
 team, ranked, human-seat, or network fields.
 
-## 6. One-faction picker
+## 6. Per-seat faction assignment
 
-This is a presentation-heavy confirmation step matching the researched rhythm,
-not a fake multi-faction roster. It shows one large illustrated card labeled
-**POC Test Faction**, the five temporary unit types, faction color, “no starting
-technology,” and a note that all seats use identical rules. The card is
-selected by default but still has a visible selected state.
+This is one compact screen, never a wizard or one-seat-at-a-time carousel. It
+shows all seats simultaneously in stable order: **You**, then **AI 1** through
+**AI 3** as selected. Each row contains one small representative portrait and a
+two-option segmented control for **Original** or **Candy**. All rows default to
+Original; repeats are allowed. Going Back and returning preserves choices for
+still-present seats. Increasing AI count adds Original rows; decreasing it
+removes only trailing rows. One short expandable roster summary explains Candy
+Warrior/Gumball Guard/Choco Engineer/Donut and keeps the default screen compact.
 
-**Start Conquest** opens a confirmation summary containing opponent count, AI
-relations, resolved board dimensions, Normal parity, and resolved seed. If the
+One shared preview area shows the focused row's Original or Candy faction hero
+and roster names. It sits beside the list on wide screens and collapses below
+the rows on mobile; it never creates another navigation step or pushes Start
+off-screen at 320 CSS px or 200% zoom.
+
+**Start Conquest** opens a confirmation summary containing every seat's faction,
+opponent count, AI relations, resolved board dimensions, Normal parity, and resolved seed. If the
 seed field was empty, resolve and show it before confirmation. Confirm creates
 the match and autosave, then enters Match. Cancel returns to the picker without
 changing the resolved seed. Starting while another active save exists
 explicitly asks to Replace Save. Back returns to Setup.
 
 Locked factions, purchases, horizontal roster browsing, faction progression,
-and asymmetric previews are explicitly omitted.
+and more than the two approved factions are explicitly omitted. Demo skips this
+screen and uses three fixed Original seats.
 
 ## 7. Match map and HUD
 
@@ -166,11 +175,13 @@ Map feedback must include:
 - unexplored-cloud treatment and newly revealed tiles;
 - rewards, level-up, capture, combat, elimination, save-warning, and turn
   announcements that do not rely on animation alone.
+- explored Chocolate Wall owner/HP, legal wall targets, Candify ownership
+  changes, and Donut Roll direction/path-step feedback.
 
 Pointer click/tap selects. With an owned unit selected, one click/tap or
 Enter/Space activation of a highlighted legal destination immediately dispatches
-the exact canonical Move/Escape path; one activation of a highlighted hostile
-target immediately dispatches Attack. There is no second click, confirmation
+the exact canonical Move/Escape path; one activation of a highlighted legal
+unit or Chocolate Wall target immediately dispatches Attack. There is no second click, confirmation
 button, or combat modal. Every attack highlight shows defender/retaliation
 damage and death/advance cues before activation, with the same text in its
 accessible name. Drag pans only after a movement threshold so a tap still
@@ -180,7 +191,9 @@ Inspection activation uses a deterministic visible-occupant-first cycle. On an
 explored coordinate with a visible friendly or enemy unit, the first activation
 selects and highlights that unit. The second consecutive activation of exactly
 that coordinate selects its visible underlying city when present, otherwise its
-tile/site; a third returns to the unit. Pointer, touch, Enter/Space, and the
+tile/site; the cycle then returns to the unit. A wall can never share a unit
+cell, so on a visible wall coordinate the first activation selects the wall and
+the second selects its underlying city/tile. Pointer, touch, Enter/Space, and the
 semantic coordinate activator share this order. An exact currently offered
 positional command is the narrow priority exception: a selected owned unit may
 still activate its offered Attack target directly, and an offered Move or Escape
@@ -206,6 +219,15 @@ matches the selected owned unit may appear. Enemy, exhausted, and otherwise
 actionless units show summary/state only. Labels never encode unit coordinates
 or hidden options; the visible map selection supplies context.
 
+Candy actions use three short buttons: **Roll**, **Chocolate Wall · 1★**, and
+**Candify**. Roll switches the map to cardinal direction targets, omitting
+off-board directions; one activation dispatches immediately and no victim list
+or hidden prediction is shown. Chocolate Wall highlights only exact offered
+eight-neighbor cells and dispatches on one activation. Candify dispatches
+immediately. A unique nearest city resolves without another UI step; tied
+nearest cities open the mandatory choice dialog in section 12. Direction/build
+targeting never dims the map and Escape cancels it.
+
 The old circle/check readiness mark and every detached yellow `W`/`R` tile
 badge are removed entirely. During the human turn, each owned surviving unit
 with `handled = false` pulses its actual sprite from opacity 1 to 0.62 and back
@@ -218,7 +240,7 @@ or **Handled**, so motion/color is never the only signal.
 Selecting any visible owned or rival city opens the parallel non-scrolling
 selected-city dock in the bottom HUD. The board stays undimmed, pannable, and
 zoomable; the city tile keeps the selection diamond and only explored tiles in
-its fixed territory receive a code-native perimeter. Fogged territory is never
+currently assigned to it receive a code-native perimeter. Fogged territory is never
 filled, outlined through fog, or otherwise disclosed. The dock gives city
 identity, owner, capital and siege state, level, exact population progress,
 income, non-exempt assigned count/level limit, separately identified exempt
@@ -227,7 +249,8 @@ training commands associated with that selected owned city; Harvest Fruit,
 Hunt Animal, Build Lumber Mill, and Build Mine never appear on city selection.
 Rival, besieged, locked,
 at/over-capacity, and actionless cities show summary only. Every training button
-visibly contains only accepted unit art, the bare unit name, and star cost;
+visibly contains only the selected city's faction-correct unit art, bare unit
+name, and star cost;
 semantic accessible names may describe the training action, but visible text
 never says “Train” or repeats requirements, coordinates, descriptions,
 population guidance, or other metadata.
@@ -271,6 +294,12 @@ or action data. Empty Grass has no invented build action; empty Forest identifie
 the Forestry path without inventing a legal button. Escape clears the dock and
 returns focus to Canvas.
 
+An explored Chocolate Wall adds its owner and `HP / 10` to this dock but does
+not replace terrain/resource/improvement facts. It is identified as a structure,
+not a unit or city, and never shows unit lifecycle actions. Attack remains a
+highlighted spatial action from a selected attacker, including against an owned
+or allied wall when the public query offers it.
+
 ## 9. Technology tree
 
 Tech opens as a full-screen layer on small viewports and a large modal on wide
@@ -306,7 +335,7 @@ Mathematics names **Train Catapult (8 stars; range 3)**.
 ## 10. Stats
 
 Stats is a full-screen layer/sheet listing all seats in stored turn order. Each
-row shows player number/color/pattern, human or Normal AI, active/eliminated,
+row shows player number/color/pattern, faction, human or Normal AI, active/eliminated,
 cities, capitals owned, units, stars, technologies, kills, losses, and current
 round. The current turn is marked. The heading shows **Rival AI** or
 **Cooperative AI against you** from setup; no mutable pairwise diplomacy is
@@ -346,6 +375,15 @@ radius 3 now). At level 3 it compares Resources (+5 stars now) and City Wall
 color. Selecting a reward asks no second confirmation because the first dialog
 already shows the irreversible effect. The dialog remains until a legal choice
 is accepted.
+
+### Candify city choice
+
+A tied-nearest Candify opens a blocking, non-dismissible dialog titled
+**Choose city for Candify**. It lists only the authoritative candidate cities in
+ascending ID, each with city name/ID and a small explored-territory preview.
+Choosing one dispatches `CHOOSE_CANDIFY_CITY` immediately; there is no Cancel,
+map target, recomputed candidate, or second confirmation. Save/reload reopens
+the same candidate set and returns focus to the first candidate.
 
 ### Other confirmations
 
@@ -475,7 +513,8 @@ Shortcuts do not fire while typing or when a modal owns focus. They are listed
 in Help and can be ignored in favor of full Tab navigation.
 
 Because Canvas content is not inherently semantic, maintain one DOM “map
-cursor” description reporting coordinate, terrain, owner, unit/city, HP, and
+cursor” description reporting coordinate, terrain, owner, unit/city/Chocolate
+Wall, HP, and
 resource/improvement (`Fruit`, `Ore`, `Animal`, `Mine`, `Lumber Mill`, or the
 terrain-appropriate empty state) plus available actions for the
 logically focused tile. A native semantic coordinate activator follows the same
@@ -498,6 +537,13 @@ use shape/text as well as color. Attack preview is attached to every highlighted
 target for pointer, touch, keyboard, and assistive technology—never
 hover/long-press only—and activation still commits immediately.
 
+For a Gumball Guard the same timing uses a round gumball rather than an arrow.
+Donut Roll travels 90 ms per cell up to 900 ms, Build rises for 180 ms, and
+Candify washes/dissolves for 240 ms. Reduced motion replaces each complete
+ability with one 100 ms crossfade; Fast Forward is immediate. Live regions
+announce the action, each damaged entity once, wall destruction, and final
+territory owner, never animation frames.
+
 ## 17. Reference-screen coverage
 
 | Researched surface         | POC treatment                                                 |
@@ -506,7 +552,7 @@ hover/long-press only—and activation still commits immediately.
 | Main hub                   | Included with Resume, New Conquest, Settings                  |
 | Single-player mode chooser | Included; Conquest playable, other modes explained as omitted |
 | Creative/match setup       | Reduced Conquest setup with exact supported fields            |
-| Tribe picker               | One-faction confirmation screen included                      |
+| Tribe picker               | Compact per-seat Original/Candy assignment included           |
 | Multiplayer browser/lobby  | Explicitly omitted on Hub; no dead-end screen                 |
 | Loading/generation         | Start confirmation plus progress/error state before Match     |
 | Map/HUD                    | Included; score replaced by objective-relevant counts         |
@@ -514,6 +560,6 @@ hover/long-press only—and activation still commits immediately.
 | Technology tree            | Included full-screen/modal with nine POC technologies         |
 | Game Stats                 | Included with fixed AI mode; no score/rank/profile            |
 | Settings/pause             | Included with restart/exit/delete confirmations               |
-| Choice/reward dialogs      | City rewards included; excluded-mechanic dialogs omitted      |
+| Choice/reward dialogs      | City rewards and tied Candify city choice included            |
 | AI/turn handoff            | Included with progress and deterministic fast-forward         |
 | End screen                 | Victory/defeat, final map, replay/restart routes included     |

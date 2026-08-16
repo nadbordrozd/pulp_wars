@@ -1,5 +1,86 @@
 # Pulp Wars POC validation
 
+## Ruleset 5 Candy faction acceptance plan
+
+This is a prospective gate, not a claim that ruleset 5 is implemented. The
+authoritative behavior is POC Rules section 0. A Candy implementation is not
+accepted until all items below pass on the same reviewed revision.
+
+### Schema, determinism, and compatibility
+
+- Exact setup parsing covers every 2–4-seat Original/Candy array, repeats,
+  invalid values, wrong/sparse lengths, extra fields, and fixed all-Original
+  Demo. Faction changes alone preserve initial map/PRNG hashes.
+- State schema, command/events, replay, and save are version 5. Recognized v1-v4
+  saves/replays return incompatible and preserve bytes; no migration or silent
+  overwrite occurs. Fresh v5 golden fixtures cover all-Original, all-Candy,
+  mixed Rival/Cooperative, and Demo.
+- Save/resume/replay at every new command boundary—including a pending tied
+  Candify choice—repeats canonical command, ordered-event, checkpoint, and final
+  hashes. Malformed target unions, wall IDs, directions, and candidate lists are
+  rejected atomically.
+
+### Rules and information safety
+
+- Candy Warrior and Gumball Guard match Original Warrior/Archer mechanics
+  exactly; Choco Engineer matches Defender plus Build; Donut has the exact
+  cost/HP/defense/unlock but move 1 and no Attack/Escape; Candy Catapult is
+  shared mechanically and can Candify.
+- Donut fixtures cover every starting edge/corner and cardinal direction,
+  terrain/ZOC/wall pass-through, path-only reveal, hidden targets, multiple
+  victims, friendly/allied/hostile damage, 10/15/promoted HP boundaries,
+  ordered deaths, wall destruction, final self-removal, tallies, and identical
+  rejection with no hidden reveal.
+- Wall fixtures cover all eight neighbors and every allowed
+  terrain/resource/improvement, every forbidden settlement/unit/wall/fog case,
+  1-star atomicity, shared entity-ID allocation, movement blocking, unit-free
+  economy actions underneath, friendly/allied/hostile combat, rational damage,
+  zero defense/retaliation/kill credit, melee advance gate, capture transfer
+  independence, owner elimination persistence, and no capacity/ZOC/vision.
+- Candify fixtures cover move-then-action, Wait retention, all other activation
+  exclusions, neutral and hostile annexation, settlement/friendly/allied
+  rejection, unique nearest city, unequal-distance filtering, tied nearest
+  mandatory choice, candidate ordering, no cancel/other command, resource/
+  improvement/wall preservation, chained connected expansion, disconnect
+  rejection, capture of extended territory, and no neighboring reveal.
+- `PlayerView`/public-query paired hidden-state tests prove equal views produce
+  equal candidates for Roll lines, walls, and Candify and that unexplored/allied
+  blockers contain no wall, faction-owned entity, terrain, or territory detail.
+
+### AI, browser, and accessibility
+
+- Repeated headless matrices cover all-Original, all-Candy, and alternating
+  mixed factions for 1/2/3 AI in both relationship modes on Auto plus targeted
+  Large/Huge cases. Metrics prove all Candy labels train and act, Roll damages a
+  hostile, walls build/are attacked/destroyed, both neutral and hostile Candify
+  occur, and tied choices resolve without stalls.
+- Cooperative corpora assert zero Normal-policy AI-on-AI Roll casualties, wall
+  attacks, allied Builds/Candify, ZOC/siege/capture, or new allied exploration;
+  focused human-authored tests separately prove legal friendly fire.
+- Chromium review at 320, 390 DPR2, 600, 1024, 1440, 200% zoom, keyboard, touch,
+  all owner colors, Full/Reduced/Fast motion verifies compact per-seat setup,
+  faction-correct training/docks/stats, one-activation Roll/Build targeting,
+  mandatory Candify dialog/focus restoration, wall/unit/tile inspection cycle,
+  gumball/roll/build/Candify timing, live announcements, and no map resize/dim.
+
+### PixelLab production acceptance
+
+- Checked-in recipes generate Candy Warrior, Gumball Guard, Donut, then Choco
+  Engineer on the standard 256 x 296 canvas at `(128,222)`, Chocolate Wall on
+  256 x 296 at `(128,222)`, required UI portraits/icons, and a 1024-square Candy
+  hero. Candy Catapult reuses accepted art; effects stay code-native.
+- The first three Candy units pass individual native/enlarged/on-map review
+  before batching. Chocolate Wall passes separately on every compatible
+  terrain/resource/improvement. Gumball projectile origin is calibrated inside
+  mouth/chute alpha. Contact sheets and individual evidence record dimensions,
+  alpha bounds, prompts/settings/seeds/output mapping, scale/anchor, all owner
+  colors, grayscale, minimum zoom, occlusion, and rejection/regeneration history.
+
+Minimum closure gates are formatting, lint, all typechecks/tests, production
+build, v5 golden replay, focused headless matrices, browser smoke, PixelLab
+manifest validation, visual review evidence, documentation links/consistency,
+and `git diff --check`.
+
 **Date:** 2026-08-16  
 **Result:** Ruleset-4 functional and production presentation audit passed;
 Fruit, Forest, Animal, Lumber Mill, Catapult, Forestry, and Mathematics
