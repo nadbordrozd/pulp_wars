@@ -29,6 +29,7 @@ const demoReview = process.argv.includes("--demo-review");
 const tileDockReview = process.argv.includes("--tile-dock-review");
 const activationReview = process.argv.includes("--activation-review");
 const readinessReview = process.argv.includes("--readiness-review");
+const factionSetupReview = process.argv.includes("--faction-setup-review");
 const cooperativeLargeReview = process.argv.includes(
   "--cooperative-large-review",
 );
@@ -70,7 +71,15 @@ try {
   await connection.send("Runtime.enable");
   await desktopViewport(connection);
   await waitForRoute(connection, "hub");
-  if (cooperativeLargeReview) {
+  if (factionSetupReview) {
+    const review = await reviewFactionSetup(connection);
+    const version = (await connection.send("Browser.getVersion")) as {
+      readonly product?: string;
+    };
+    console.log(
+      `Faction setup review passed in ${version.product ?? "Chrome"} at desktop and true 390x844 DPR2 mobile. Initial/restart ${review.initialHash}. Screenshots: ${reviewRoot}`,
+    );
+  } else if (cooperativeLargeReview) {
     const review = await reviewCooperativeLarge(connection);
     const version = (await connection.send("Browser.getVersion")) as {
       readonly product?: string;
@@ -233,6 +242,169 @@ try {
   browser.kill();
 }
 
+async function reviewFactionSetup(connection: Connection): Promise<{
+  readonly initialHash: string;
+  readonly restartHash: string;
+}> {
+  await desktopViewport(connection);
+  await clickButton(connection, "New Conquest");
+  await clickButton(connection, "Choose Conquest");
+  await evaluate(
+    connection,
+    `(() => {
+      const aiCount = document.querySelector('input[name="ai-count"][value="3"]');
+      if (!(aiCount instanceof HTMLInputElement)) throw new Error('Missing 3-AI setup control');
+      aiCount.click();
+      return true;
+    })()`,
+  );
+  await setSeed(connection, 0xcafe);
+  await clickButton(connection, "Continue");
+  await evaluate(
+    connection,
+    `(() => {
+      const choose = (seat, faction) => {
+        const input = document.querySelector('input[name="faction-seat-' + seat + '"][value="' + faction + '"]');
+        if (!(input instanceof HTMLInputElement)) throw new Error('Missing faction control for seat ' + seat);
+        input.click();
+      };
+      choose(0, 'CANDY');
+      choose(2, 'CANDY');
+      const rows = [...document.querySelectorAll('.faction-seat-row')];
+      if (rows.length !== 4 || rows.some((row) => row.querySelectorAll('input[type="radio"]').length !== 2)) throw new Error('Faction screen does not expose all four compact seat rows');
+      const expected = ['CANDY', 'ORIGINAL', 'CANDY', 'ORIGINAL'];
+      const checked = rows.map((row) => row.querySelector('input:checked')?.value);
+      if (JSON.stringify(checked) !== JSON.stringify(expected)) throw new Error('Wrong desktop faction selection: ' + JSON.stringify(checked));
+      const labels = [...document.querySelectorAll('.faction-seat-row input')].map((input) => input.getAttribute('aria-label'));
+      if (labels.some((label) => !label)) throw new Error('Faction controls lack accessible seat/faction names');
+      return true;
+    })()`,
+  );
+  await waitForNoHorizontalOverflow(connection);
+  await assertResponsiveTargets(connection);
+  await capture(connection, "faction-setup-desktop-1440x1000.png");
+
+  await mobileViewport(connection);
+  await evaluate(
+    connection,
+    `(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); scrollTo(0, 0); return scrollY; })()`,
+  );
+  await waitForNoHorizontalOverflow(connection);
+  await assertResponsiveTargets(connection);
+  await assertTrueMobileDpr2(connection);
+  const mobile = await evaluate<{
+    readonly rows: number;
+    readonly scrollWidth: number;
+    readonly clientWidth: number;
+    readonly startBottom: number;
+    readonly viewportHeight: number;
+  }>(
+    connection,
+    `(() => {
+      const start = [...document.querySelectorAll('button')].find((button) => button.textContent?.trim() === 'Start Conquest');
+      if (!(start instanceof HTMLButtonElement)) throw new Error('Missing mobile Start Conquest');
+      return {
+        rows: document.querySelectorAll('.faction-seat-row').length,
+        scrollWidth: document.documentElement.scrollWidth,
+        clientWidth: document.documentElement.clientWidth,
+        startBottom: Math.round(start.getBoundingClientRect().bottom),
+        viewportHeight: innerHeight
+      };
+    })()`,
+  );
+  if (
+    mobile.rows !== 4 ||
+    mobile.scrollWidth > mobile.clientWidth ||
+    mobile.startBottom > mobile.viewportHeight
+  )
+    throw new Error(
+      `Faction mobile layout overflowed or hid Start: ${JSON.stringify(mobile)}`,
+    );
+  await capture(connection, "faction-setup-mobile-390x844-dpr2.png");
+  await clickButton(connection, "Start Conquest");
+  await evaluate(
+    connection,
+    `(() => {
+      const dialog = document.querySelector('[role="dialog"]');
+      const text = dialog?.textContent ?? '';
+      for (const required of ['You: Candy', 'AI 1: Original', 'AI 2: Candy', 'AI 3: Original', '3 AI', '16 × 16', 'seed 0000cafe']) {
+        if (!text.includes(required)) throw new Error('Start summary missing ' + required);
+      }
+      return true;
+    })()`,
+  );
+  await capture(connection, "faction-confirm-mobile-390x844-dpr2.png");
+  await clickFirstButton(connection, ["Confirm Start", "Replace Save & Start"]);
+  await waitForRoute(connection, "match");
+  const result = await evaluate<{
+    readonly initialHash: string;
+    readonly restartHash: string;
+  }>(
+    connection,
+    `(async () => {
+      const engine = await import('/src/engine/index.ts');
+      const persistence = await import('/src/persistence/index.ts');
+      const app = globalThis.__PULP_WARS_APP__;
+      if (!app) throw new Error('Missing browser app handle');
+      const initial = app.controller.snapshot().match;
+      if (!initial) throw new Error('Missing mixed-faction match');
+      const expected = ['CANDY', 'ORIGINAL', 'CANDY', 'ORIGINAL'];
+      if (JSON.stringify(initial.setup.factions) !== JSON.stringify(expected) || JSON.stringify(initial.players.map((player) => player.faction)) !== JSON.stringify(expected)) throw new Error('Mixed factions did not reach state');
+      const initialHash = engine.canonicalHash(initial);
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      const loaded = persistence.parseSave(localStorage.getItem(persistence.SAVE_STORAGE_KEY) ?? '');
+      if (loaded.kind !== 'VALID' || JSON.stringify(loaded.save.setup.factions) !== JSON.stringify(expected) || engine.canonicalHash(loaded.save.state) !== initialHash) throw new Error('Mixed faction autosave mismatch');
+      app.controller.openConfirmation({ kind: 'RESTART' });
+      app.controller.confirm();
+      const restarted = app.controller.snapshot().match;
+      if (!restarted) throw new Error('Restart lost the match');
+      const restartHash = engine.canonicalHash(restarted);
+      if (restartHash !== initialHash || JSON.stringify(restarted.setup.factions) !== JSON.stringify(expected)) throw new Error('Restart did not preserve mixed faction setup');
+      return { initialHash, restartHash };
+    })()`,
+    true,
+  );
+  const screenshots = [
+    "faction-setup-desktop-1440x1000.png",
+    "faction-setup-mobile-390x844-dpr2.png",
+    "faction-confirm-mobile-390x844-dpr2.png",
+  ];
+  const files = [];
+  for (const name of screenshots) {
+    const data = await readFile(path.join(reviewRoot, name));
+    files.push({
+      path: path.join("art/integration/reviews", name),
+      bytes: data.byteLength,
+      sha256: createHash("sha256").update(data).digest("hex"),
+    });
+  }
+  await writeFile(
+    path.join(reviewRoot, "faction-setup-review.json"),
+    `${JSON.stringify(
+      {
+        schemaVersion: 5,
+        setup: {
+          aiCount: 3,
+          factions: ["CANDY", "ORIGINAL", "CANDY", "ORIGINAL"],
+          seed: 0xcafe,
+        },
+        viewports: [
+          { width: 1440, height: 1000, devicePixelRatio: 1 },
+          { width: 390, height: 844, devicePixelRatio: 2, mobile: true },
+        ],
+        mobile,
+        autosaveValidated: true,
+        restartValidated: true,
+        ...result,
+        files,
+      },
+      null,
+      2,
+    )}\n`,
+  );
+  return result;
+}
+
 async function reviewReadinessHalo(connection: Connection): Promise<void> {
   await desktopViewport(connection);
   await installReadinessFixture(connection, false);
@@ -303,7 +475,7 @@ async function installReadinessFixture(
       ]);
       globalThis.__PULP_WARS_APP__?.destroy?.();
       localStorage.clear();
-      const created = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 1, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', aiMode: 'RIVAL', humanColor: 'CORAL' });
+      const created = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 1, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', aiMode: 'RIVAL', humanColor: 'CORAL', factions: ['ORIGINAL', 'ORIGINAL'] });
       if (!created.ok) throw new Error(created.error.code);
       const human = created.state.players.find((player) => player.controller === 'HUMAN');
       const unit = created.state.units.find((candidate) => candidate.ownerId === human?.id);
@@ -397,7 +569,7 @@ async function reviewDemoMatch(
   connection: Connection,
 ): Promise<DemoReviewResult> {
   const initialHash =
-    "05ee08426e7acda629d8dc06e15ebf135b3b3f2754c385ac9b9ff1ddf1de187d";
+    "0529cf300d091dfb2801e62a724fbd0213024a0bb3f43ddaf9656bb7e534d954";
   await desktopViewport(connection);
   await evaluate(
     connection,
@@ -539,7 +711,7 @@ async function installSingleActivationFixture(
       ]);
       globalThis.__PULP_WARS_APP__?.destroy?.();
       localStorage.clear();
-      const created = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 1, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL' });
+      const created = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 1, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL', factions: ['ORIGINAL', 'ORIGINAL'] });
       if (!created.ok) throw new Error(created.error.code);
       const human = created.state.players.find((player) => player.controller === 'HUMAN');
       const attacker = created.state.units.find((unit) => unit.ownerId === human?.id);
@@ -839,7 +1011,7 @@ async function installTileDockReviewFixture(
         import('/src/engine/index.ts')
       ]);
       globalThis.__PULP_WARS_APP__?.destroy?.();
-      const created = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 1, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL' });
+      const created = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 1, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL', factions: ['ORIGINAL', 'ORIGINAL'] });
       if (!created.ok) throw new Error(created.error.code);
       const human = created.state.players.find((player) => player.controller === 'HUMAN');
       const city = created.state.cities.find((candidate) => candidate.ownerId === human?.id && candidate.isCapital);
@@ -1302,7 +1474,7 @@ async function installTechnologyReviewFixture(
         import('/src/engine/index.ts')
       ]);
       globalThis.__PULP_WARS_APP__?.destroy?.();
-      const created = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 6173, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL' });
+      const created = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 6173, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL', factions: ['ORIGINAL', 'ORIGINAL'] });
       if (!created.ok) throw new Error(created.error.code);
       const human = created.state.players.find((player) => player.controller === 'HUMAN');
       if (!human) throw new Error('Missing technology review human');
@@ -1431,7 +1603,7 @@ async function installCombatReviewFixture(
         import('/src/engine/index.ts')
       ]);
       globalThis.__PULP_WARS_APP__?.destroy?.();
-      const created = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 6173, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL' });
+      const created = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 6173, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL', factions: ['ORIGINAL', 'ORIGINAL'] });
       if (!created.ok) throw new Error(created.error.code);
       const human = created.state.players.find((player) => player.controller === 'HUMAN');
       const humanCity = created.state.cities.find((city) => city.ownerId === human?.id && city.isCapital);
@@ -1662,7 +1834,7 @@ async function installGrowthReviewFixture(
         import('/src/render/canvas/pixellab-asset-bindings.ts')
       ]);
       globalThis.__PULP_WARS_APP__?.destroy?.();
-      const created = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 6173, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL' });
+      const created = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 6173, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL', factions: ['ORIGINAL', 'ORIGINAL'] });
       if (!created.ok) throw new Error(created.error.code);
       const human = created.state.players.find((player) => player.controller === 'HUMAN');
       const city = created.state.cities.find((candidate) => candidate.ownerId === human?.id && candidate.isCapital);
@@ -1785,7 +1957,7 @@ async function reviewMixedResources(connection: Connection): Promise<void> {
           import('/src/engine/index.ts')
         ]);
         globalThis.__PULP_WARS_APP__?.destroy?.();
-      const created = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 1, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL' });
+      const created = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 1, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL', factions: ['ORIGINAL', 'ORIGINAL'] });
         if (!created.ok) throw new Error(created.error.code);
         const human = created.state.players.find((player) => player.controller === 'HUMAN');
         const city = created.state.cities.find((candidate) => candidate.ownerId === human?.id && candidate.isCapital);

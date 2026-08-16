@@ -146,7 +146,8 @@ async function installFixture(
         aiCount: 1,
         aiDifficulty: 'NORMAL',
         aiMode: 'RIVAL',
-        humanColor: 'CORAL'
+        humanColor: 'CORAL',
+        factions: ['ORIGINAL', 'ORIGINAL']
       });
       if (!created.ok) throw new Error(created.error.code);
       const base = created.state;

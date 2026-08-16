@@ -1,7 +1,7 @@
 import type { PlayerId } from "../model/ids";
 import type { AiMode } from "../model/types";
 
-/** The v4 relationship graph is immutable and derives only from setup. */
+/** The v5 relationship graph is immutable and derives only from setup. */
 export function arePlayersHostile(
   aiMode: AiMode,
   humanPlayerId: PlayerId,

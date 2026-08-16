@@ -313,7 +313,8 @@ async function installForestUiFixture(
         aiCount: 1,
         aiDifficulty: 'NORMAL',
         aiMode: 'RIVAL',
-        humanColor: 'CORAL'
+        humanColor: 'CORAL',
+        factions: ['ORIGINAL', 'ORIGINAL']
       });
       if (!result.ok) throw new Error(result.error.code);
       const human = result.state.players.find((player) => player.controller === 'HUMAN');

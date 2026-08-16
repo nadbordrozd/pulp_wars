@@ -1,12 +1,14 @@
 import type { CityId, PlayerId, UnitId } from "./ids";
 
-export const GAME_STATE_SCHEMA_VERSION = 4 as const;
-export const RULESET_ID = "pulp-wars-poc-4" as const;
+export const GAME_STATE_SCHEMA_VERSION = 5 as const;
+export const RULESET_ID = "pulp-wars-poc-5" as const;
+export const FACTION_IDS = Object.freeze(["ORIGINAL", "CANDY"] as const);
 
 export type RulesetId = typeof RULESET_ID;
 export type BoardSize = 11 | 14 | 16 | 20 | 25;
 export type AiCount = 1 | 2 | 3;
 export type AiMode = "RIVAL" | "COOPERATIVE";
+export type FactionId = (typeof FACTION_IDS)[number];
 export type MatchScenario = "DEMO";
 export type PlayerColor = "CORAL" | "TEAL" | "GOLD" | "VIOLET";
 export type TechId =
@@ -36,6 +38,8 @@ export interface MatchSetup {
   readonly aiDifficulty: "NORMAL";
   readonly aiMode: AiMode;
   readonly humanColor: PlayerColor;
+  /** Exact seat order: Human, then AI 1 through AI N. */
+  readonly factions: readonly FactionId[];
   /** Absent is the canonical standard match. */
   readonly scenario?: MatchScenario;
 }
@@ -67,6 +71,7 @@ export interface PlayerState {
   readonly seat: number;
   readonly controller: "HUMAN" | "AI";
   readonly color: PlayerColor;
+  readonly faction: FactionId;
   readonly status: "ACTIVE" | "ELIMINATED";
   readonly stars: number;
   readonly researchedTechs: readonly TechId[];
@@ -116,6 +121,7 @@ export interface PublicPlayerState {
   readonly seat: number;
   readonly controller: "HUMAN" | "AI";
   readonly color: PlayerColor;
+  readonly faction: FactionId;
   readonly status: "ACTIVE" | "ELIMINATED";
   readonly stars: number;
   readonly researchedTechs: readonly TechId[];

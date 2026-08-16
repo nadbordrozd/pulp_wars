@@ -127,7 +127,7 @@ for (const corpusCase of CASES) {
 }
 
 const report = {
-  schemaVersion: 4,
+  schemaVersion: 5,
   rulesetId: RULESET_ID,
   matrix: {
     modes: ["RIVAL", "COOPERATIVE"],
@@ -182,6 +182,7 @@ function makeSetup(
     width: size,
     height: size,
     aiCount,
+    factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const),
     aiDifficulty: "NORMAL",
     aiMode: "RIVAL",
     humanColor: "CORAL",

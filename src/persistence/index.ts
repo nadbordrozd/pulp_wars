@@ -29,9 +29,9 @@ export interface StorageAdapter {
   removeItem(key: string): void;
 }
 
-export interface SaveEnvelopeV4 {
+export interface SaveEnvelopeV5 {
   readonly format: "pulp-wars-save";
-  readonly version: 4;
+  readonly version: 5;
   readonly rulesetId: typeof RULESET_ID;
   readonly setup: MatchSetup;
   readonly state: GameState;
@@ -54,7 +54,7 @@ export interface SettingsEnvelopeV1 {
 
 export type SaveLoadResult =
   | { readonly kind: "NONE" }
-  | { readonly kind: "VALID"; readonly save: SaveEnvelopeV4 }
+  | { readonly kind: "VALID"; readonly save: SaveEnvelopeV5 }
   | {
       readonly kind: "CORRUPT" | "INCOMPATIBLE" | "STORAGE_ERROR";
       readonly diagnostic: string;
@@ -94,7 +94,7 @@ export class BrowserPersistence {
   readonly #now: () => string;
   readonly #schedule: PersistenceScheduler;
   readonly #onAsyncFailure: (diagnostic: string) => void;
-  #pendingSave: SaveEnvelopeV4 | null = null;
+  #pendingSave: SaveEnvelopeV5 | null = null;
   #cancelScheduled: (() => void) | null = null;
 
   constructor(
@@ -225,7 +225,7 @@ export class BrowserPersistence {
 export function createSaveEnvelope(
   input: SaveInput,
   savedAt: string,
-): SaveEnvelopeV4 {
+): SaveEnvelopeV5 {
   if (input.replay.commands.length !== input.state.commandIndex) {
     throw new Error(
       "Replay command log does not match the authoritative index",
@@ -233,7 +233,7 @@ export function createSaveEnvelope(
   }
   return {
     format: "pulp-wars-save",
-    version: 4,
+    version: 5,
     rulesetId: RULESET_ID,
     setup: input.state.setup,
     state: input.state,
@@ -267,14 +267,17 @@ export function parseSave(source: string): SaveLoadResult {
   }
   if (
     input.format === "pulp-wars-save" &&
-    (input.version === 1 || input.version === 2 || input.version === 3)
+    (input.version === 1 ||
+      input.version === 2 ||
+      input.version === 3 ||
+      input.version === 4)
   ) {
     return {
       kind: "INCOMPATIBLE",
-      diagnostic: `This ruleset-${input.version} saved match is incompatible with ruleset 4 and was preserved unchanged.`,
+      diagnostic: `This ruleset-${input.version} saved match is incompatible with ruleset 5 and was preserved unchanged.`,
     };
   }
-  if (input.format !== "pulp-wars-save" || input.version !== 4) {
+  if (input.format !== "pulp-wars-save" || input.version !== 5) {
     return {
       kind: "INCOMPATIBLE",
       diagnostic: "This saved match uses an unsupported format or version.",
@@ -326,7 +329,7 @@ export function parseSave(source: string): SaveLoadResult {
   }
   const replay: ReplayFile = {
     format: "pulp-wars-replay",
-    version: 4,
+    version: 5,
     setup,
     commands,
     checkpoints: [],
@@ -369,7 +372,7 @@ export function parseSave(source: string): SaveLoadResult {
       kind: "VALID",
       save: {
         format: "pulp-wars-save",
-        version: 4,
+        version: 5,
         rulesetId: RULESET_ID,
         setup,
         state: reconstructed.state,
@@ -430,7 +433,7 @@ function parseCommands(input: unknown): readonly Command[] | null {
 
 function parsePresentation(
   input: unknown,
-): SaveEnvelopeV4["presentation"] | null {
+): SaveEnvelopeV5["presentation"] | null {
   if (!hasExactKeys(input, ["tallies", "playerTallies"])) return null;
   const tallies = parseTallies(input.tallies);
   if (tallies === null || !Array.isArray(input.playerTallies)) return null;

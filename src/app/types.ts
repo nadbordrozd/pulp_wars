@@ -4,6 +4,7 @@ import type {
   GameState,
   MatchOutcome,
   AiMode,
+  FactionId,
   PlayerColor,
   PlayerUnitView,
   PlayerView,
@@ -28,6 +29,7 @@ export interface SetupDraft {
   readonly seedText: string;
   readonly resolvedSeed: number | null;
   readonly humanColor: PlayerColor;
+  readonly factions: readonly FactionId[];
 }
 
 export interface UiSettings {

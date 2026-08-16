@@ -134,8 +134,8 @@ for (const aiCount of [1, 2, 3] as const) {
 }
 
 const report = {
-  schemaVersion: 4,
-  rulesetId: "pulp-wars-poc-4",
+  schemaVersion: 5,
+  rulesetId: "pulp-wars-poc-5",
   generatedAt: new Date().toISOString(),
   host: {
     platform: process.platform,
@@ -171,11 +171,12 @@ if (output === null) {
 
 function hugeSetup(aiCount: 1 | 2 | 3, seed: number): MatchSetup {
   return {
-    rulesetId: "pulp-wars-poc-4",
+    rulesetId: "pulp-wars-poc-5",
     seed,
     width: HUGE_SIZE,
     height: HUGE_SIZE,
     aiCount,
+    factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const),
     aiDifficulty: "NORMAL",
     aiMode: "RIVAL",
     humanColor: "CORAL",

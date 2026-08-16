@@ -4,7 +4,7 @@ import process from "node:process";
 import { format } from "prettier";
 
 interface Shard {
-  readonly schemaVersion: 4;
+  readonly schemaVersion: 5;
   readonly matrix: {
     readonly seeds: readonly number[];
     readonly setups: readonly {
@@ -136,7 +136,7 @@ if (
 }
 
 const output = {
-  schemaVersion: 4,
+  schemaVersion: 5,
   generatedAt: new Date().toISOString(),
   matrix: {
     seeds: [0, 1, 2],

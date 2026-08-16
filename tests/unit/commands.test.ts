@@ -6,20 +6,20 @@ describe("command schemas", () => {
     expect(
       parseCommandEnvelope({
         format: "pulp-wars-command",
-        version: 4,
+        version: 5,
         command: { kind: "MOVE", unitId: 7, path: [{ x: 2, y: 3 }] },
       }),
     ).toEqual({
       ok: true,
       value: {
         format: "pulp-wars-command",
-        version: 4,
+        version: 5,
         command: { kind: "MOVE", unitId: 7, path: [{ x: 2, y: 3 }] },
       },
     });
   });
 
-  it("parses all v4 economy commands and rejects recognized v1/v2/v3 envelopes", () => {
+  it("parses all retained v5 economy commands and rejects legacy envelopes", () => {
     expect(parseCommand({ kind: "HARVEST_FRUIT", at: { x: 2, y: 3 } })).toEqual(
       {
         ok: true,
@@ -46,6 +46,13 @@ describe("command schemas", () => {
       parseCommandEnvelope({
         format: "pulp-wars-command",
         version: 1,
+        command: { kind: "END_TURN" },
+      }),
+    ).toMatchObject({ ok: false, error: { code: "INVALID_COMMAND" } });
+    expect(
+      parseCommandEnvelope({
+        format: "pulp-wars-command",
+        version: 4,
         command: { kind: "END_TURN" },
       }),
     ).toMatchObject({ ok: false, error: { code: "INVALID_COMMAND" } });

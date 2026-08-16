@@ -48,6 +48,7 @@ export function viewFor(state: GameState, viewerId: PlayerId): PlayerView {
     seat: player.seat,
     controller: player.controller,
     color: player.color,
+    faction: player.faction,
     status: player.status,
     stars: player.stars,
     researchedTechs: player.researchedTechs,

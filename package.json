@@ -21,6 +21,7 @@
     "art:rendering-review": "tsx scripts/art/rendering-review.ts",
     "art:validate": "tsx scripts/art/pixellab.ts validate",
     "smoke:browser": "tsx scripts/browser-smoke.ts",
+    "review:faction-setup": "tsx scripts/browser-smoke.ts --faction-setup-review",
     "validate:poc": "tsx scripts/validate-poc.ts",
     "validate:poc:merge": "tsx scripts/merge-poc-corpus.ts",
     "validate:huge": "tsx scripts/validate-huge-map.ts",

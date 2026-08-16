@@ -36,7 +36,7 @@ export type Command =
 
 export interface CommandEnvelope {
   readonly format: "pulp-wars-command";
-  readonly version: 4;
+  readonly version: 5;
   readonly command: Command;
 }
 

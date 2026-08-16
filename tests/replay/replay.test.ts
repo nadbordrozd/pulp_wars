@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import legacyReplay from "../fixtures/legacy-replay-v1.json";
 import legacyReplayV2 from "../fixtures/legacy-replay-v2.json";
+import legacyReplayV4 from "../fixtures/legacy-replay-v4.json";
 import {
   ReplayError,
   appendReplayCommand,
@@ -17,7 +18,7 @@ import {
 } from "../fixtures/builders";
 
 describe("replay checkpoints", () => {
-  it("reconstructs a Huge v4 replay at the initial boundary", () => {
+  it("reconstructs a Huge v5 replay at the initial boundary", () => {
     const setup = setupBuilder({
       seed: 25,
       width: 25,
@@ -93,6 +94,12 @@ describe("replay checkpoints", () => {
         format: "pulp-wars-replay",
         version: 3,
       } as unknown as ReturnType<typeof createReplay>),
+    ).toThrowError(/INCOMPATIBLE_REPLAY/);
+  });
+
+  it("reports a recognized v4 replay as incompatible", () => {
+    expect(() =>
+      runReplay(legacyReplayV4 as unknown as ReturnType<typeof createReplay>),
     ).toThrowError(/INCOMPATIBLE_REPLAY/);
   });
 

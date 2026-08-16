@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import {
   DEMO_MATCH_SETUP,
   canonicalJson,
+  type FactionId,
   type MatchSetup,
   type ReplayFile,
 } from "../engine/index";
@@ -23,10 +24,11 @@ if (mode === "replay") {
     throw new Error("--ai-count must be 1, 2, or 3");
   }
   const size = demo ? 25 : boardSizeArg(aiCount);
+  const factions = factionsArg(aiCount, demo);
   const setup: MatchSetup = demo
     ? DEMO_MATCH_SETUP
     : {
-        rulesetId: "pulp-wars-poc-4",
+        rulesetId: "pulp-wars-poc-5",
         seed: numberArg("--seed", 0xdecafbad),
         width: size,
         height: size,
@@ -34,6 +36,7 @@ if (mode === "replay") {
         aiDifficulty: "NORMAL",
         aiMode: args.includes("--cooperative") ? "COOPERATIVE" : "RIVAL",
         humanColor: "CORAL",
+        factions,
       };
   const result = await headless.runAiMatch(setup, {
     maxCommands: numberArg("--max-commands", 20_000),
@@ -71,6 +74,7 @@ if (mode === "replay") {
     ...(args.includes("--cooperative")
       ? { aiMode: "COOPERATIVE" as const }
       : {}),
+    ...(args.includes("--factions") ? { factions: factionsArgForBatch() } : {}),
   });
   process.stdout.write(`${canonicalJson(result)}\n`);
 } else {
@@ -101,4 +105,39 @@ function boardSizeArg(aiCount: 1 | 2 | 3): 11 | 14 | 16 | 20 | 25 {
     throw new Error("--size must be 11, 14, 16, 20, or 25");
   }
   return size;
+}
+
+function factionsArg(aiCount: 1 | 2 | 3, demo: boolean): readonly FactionId[] {
+  if (demo && args.includes("--factions"))
+    throw new Error("--demo does not accept --factions");
+  if (demo) return ["ORIGINAL", "ORIGINAL", "ORIGINAL"];
+  if (!args.includes("--factions"))
+    return Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const);
+  return parseFactionList(stringArg("--factions", ""), aiCount + 1);
+}
+
+function factionsArgForBatch(): readonly FactionId[] {
+  const counts = stringArg("--ai-counts", "1,2,3")
+    .split(",")
+    .map(Number)
+    .filter((count) => count === 1 || count === 2 || count === 3);
+  const uniqueCounts = [...new Set(counts)];
+  if (uniqueCounts.length !== 1 || uniqueCounts[0] === undefined)
+    throw new Error(
+      "--factions with batch requires exactly one --ai-counts value",
+    );
+  return parseFactionList(stringArg("--factions", ""), uniqueCounts[0] + 1);
+}
+
+function parseFactionList(source: string, expectedLength: number): FactionId[] {
+  const values = source.split(",");
+  if (values.length !== expectedLength)
+    throw new Error(
+      `--factions must contain exactly ${expectedLength} seat values`,
+    );
+  return values.map((value) => {
+    if (value === "original") return "ORIGINAL";
+    if (value === "candy") return "CANDY";
+    throw new Error("--factions values must be original or candy");
+  });
 }

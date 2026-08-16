@@ -19,11 +19,12 @@ for (const aiCount of aiCounts) {
   const aggregate = createHash("sha256");
   for (let seed = 0; seed < 1_000; seed += 1) {
     const setup: MatchSetup = {
-      rulesetId: "pulp-wars-poc-4",
+      rulesetId: "pulp-wars-poc-5",
       seed,
       width: 20,
       height: 20,
       aiCount,
+      factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const),
       aiDifficulty: "NORMAL",
       aiMode: "RIVAL",
       humanColor: "CORAL",

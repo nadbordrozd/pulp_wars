@@ -146,7 +146,7 @@ export type DomainEvent =
 
 export interface EventEnvelope {
   readonly format: "pulp-wars-events";
-  readonly version: 4;
+  readonly version: 5;
   readonly commandIndex: number;
   readonly events: readonly DomainEvent[];
 }

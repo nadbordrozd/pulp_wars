@@ -199,7 +199,7 @@ const previousDocumentedBaseline = {
 } as const;
 
 const report = {
-  schemaVersion: 4,
+  schemaVersion: 5,
   generatedAt: new Date().toISOString(),
   matrix: {
     seeds: SEEDS,
@@ -271,11 +271,12 @@ function makeSetup(
   seed: number,
 ): MatchSetup {
   return {
-    rulesetId: "pulp-wars-poc-4",
+    rulesetId: "pulp-wars-poc-5",
     seed,
     width: size,
     height: size,
     aiCount,
+    factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const),
     aiDifficulty: "NORMAL",
     aiMode: "RIVAL",
     humanColor: "CORAL",

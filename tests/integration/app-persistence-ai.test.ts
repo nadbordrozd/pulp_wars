@@ -565,16 +565,20 @@ describe("application save and AI integration", () => {
 });
 
 function setup(overrides: Partial<MatchSetup> = {}): MatchSetup {
+  const aiCount = overrides.aiCount ?? 1;
   return {
     rulesetId: RULESET_ID,
     seed: 1,
     width: 11,
     height: 11,
-    aiCount: 1,
+    aiCount,
     aiDifficulty: "NORMAL",
     aiMode: "RIVAL",
     humanColor: "CORAL",
     ...overrides,
+    factions:
+      overrides.factions ??
+      Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const),
   };
 }
 

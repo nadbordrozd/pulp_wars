@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 5,
+  "setup": {
+    "aiCount": 3,
+    "factions": [
+      "CANDY",
+      "ORIGINAL",
+      "CANDY",
+      "ORIGINAL"
+    ],
+    "seed": 51966
+  },
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 1000,
+      "devicePixelRatio": 1
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "devicePixelRatio": 2,
+      "mobile": true
+    }
+  ],
+  "mobile": {
+    "rows": 4,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "startBottom": 636,
+    "viewportHeight": 844
+  },
+  "autosaveValidated": true,
+  "restartValidated": true,
+  "initialHash": "8a84b4bd97de1f13262e4044e007c44b8e8ca6d46658742ed84047435c901d70",
+  "restartHash": "8a84b4bd97de1f13262e4044e007c44b8e8ca6d46658742ed84047435c901d70",
+  "files": [
+    {
+      "path": "art\\integration\\reviews\\faction-setup-desktop-1440x1000.png",
+      "bytes": 302903,
+      "sha256": "dfa885f9792d9ba924bc9618475806c098b4b48f660f76c1020af4de0711fcc4"
+    },
+    {
+      "path": "art\\integration\\reviews\\faction-setup-mobile-390x844-dpr2.png",
+      "bytes": 260594,
+      "sha256": "af9a3c25a082240317ac79842dba0a1a7c55acd791521f56c51f80738c20ff9b"
+    },
+    {
+      "path": "art\\integration\\reviews\\faction-confirm-mobile-390x844-dpr2.png",
+      "bytes": 219978,
+      "sha256": "88f70b2be9dd8e9c08ebb6d96603a156747465fffacb129b1a71e644a874426d"
+    }
+  ]
+}

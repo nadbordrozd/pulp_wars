@@ -34,7 +34,7 @@ import { buildRenderPlan } from "../../src/render/canvas/render-plan";
 import { setupBuilder } from "../fixtures/builders";
 
 const DEMO_INITIAL_HASH =
-  "05ee08426e7acda629d8dc06e15ebf135b3b3f2754c385ac9b9ff1ddf1de187d";
+  "0529cf300d091dfb2801e62a724fbd0213024a0bb3f43ddaf9656bb7e534d954";
 
 beforeEach(() => vi.useFakeTimers());
 afterEach(() => {
@@ -75,6 +75,7 @@ describe("canonical deterministic demo scenario", () => {
     expect(human).toMatchObject({
       id: 1,
       color: "CORAL",
+      faction: "ORIGINAL",
       stars: DEMO_OPENING_STARS,
       explored: expect.arrayContaining([
         { x: 0, y: 0 },
@@ -263,7 +264,7 @@ describe("canonical deterministic demo scenario", () => {
     if (!standard.ok) throw new Error(standard.error.code);
     expect(standard.state.setup).not.toHaveProperty("scenario");
     expect(canonicalHash(standard.state)).toBe(
-      "2a08a24801f0fd1f2568775590d0798d9d06ec53797e74ad0768ea575bbdf618",
+      "feecd81d2886d249dcf136dd634f936a5401fb31d2113804b84c202816025dd8",
     );
     expect(parseMatchSetup(DEMO_MATCH_SETUP)).toEqual(DEMO_MATCH_SETUP);
     for (const candidate of [
@@ -271,6 +272,10 @@ describe("canonical deterministic demo scenario", () => {
       { ...DEMO_MATCH_SETUP, scenario: undefined },
       { ...DEMO_MATCH_SETUP, seed: 0 },
       { ...DEMO_MATCH_SETUP, humanColor: "TEAL" },
+      {
+        ...DEMO_MATCH_SETUP,
+        factions: ["CANDY", "ORIGINAL", "ORIGINAL"],
+      },
       { ...DEMO_MATCH_SETUP, extra: true },
     ]) {
       expect(parseMatchSetup(candidate)).toBeNull();
@@ -313,7 +318,7 @@ describe("demo replay, save, headless, and controller boundaries", () => {
     ).toThrowError(ReplayError);
   });
 
-  it("round-trips the exact demo through v4 autosave and rejects scenario tampering", () => {
+  it("round-trips the exact demo through v5 autosave and rejects scenario tampering", () => {
     const created = createGame(DEMO_MATCH_SETUP);
     if (!created.ok) throw new Error(created.error.code);
     const envelope = createSaveEnvelope(
@@ -330,7 +335,7 @@ describe("demo replay, save, headless, and controller boundaries", () => {
       },
       "2026-08-15T14:00:00.000Z",
     );
-    expect(envelope.version).toBe(4);
+    expect(envelope.version).toBe(5);
     expect(envelope.stateHash).toBe(DEMO_INITIAL_HASH);
     const loaded = parseSave(JSON.stringify(envelope));
     expect(loaded.kind).toBe("VALID");

@@ -375,7 +375,7 @@ describe("assigned training capacity", () => {
     const loaded = parseSave(JSON.stringify(envelope));
     expect(loaded.kind).toBe("VALID");
     if (loaded.kind !== "VALID")
-      throw new Error("Expected the v4 save to load.");
+      throw new Error("Expected the v5 save to load.");
     expect(loaded.save.state.units.at(-1)).toEqual(trainedUnit);
     expect(loaded.save.stateHash).toBe(canonicalHash(state));
 

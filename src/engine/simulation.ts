@@ -37,6 +37,7 @@ import {
   type Coord,
   type GameState,
   type MatchSetup,
+  type FactionId,
   type PlayerColor,
   type PlayerState,
   type UnitState,
@@ -126,7 +127,7 @@ export function createGame(setup: MatchSetup): CreateResult {
   let initialState: GameState = {
     schemaVersion: GAME_STATE_SCHEMA_VERSION,
     rulesetId: setup.rulesetId,
-    setup: { ...setup },
+    setup: { ...setup, factions: [...setup.factions] },
     random,
     humanPlayerId: basePlayers[0]?.id ?? playerId(1),
     nextEntityId: createdEntities.nextEntityId,
@@ -412,6 +413,7 @@ export function validateSetup(setup: MatchSetup): RuleError | null {
     "aiCount",
     "aiDifficulty",
     "aiMode",
+    "factions",
     "height",
     "humanColor",
     "rulesetId",
@@ -458,6 +460,16 @@ export function validateSetup(setup: MatchSetup): RuleError | null {
   if (setup.aiMode !== "RIVAL" && setup.aiMode !== "COOPERATIVE") {
     return ruleError("INVALID_SETUP", { field: "aiMode" });
   }
+  if (
+    !Array.isArray(setup.factions) ||
+    setup.factions.length !== setup.aiCount + 1 ||
+    Reflect.ownKeys(setup.factions).length !== setup.factions.length + 1 ||
+    setup.factions.some(
+      (faction: FactionId) => faction !== "ORIGINAL" && faction !== "CANDY",
+    )
+  ) {
+    return ruleError("INVALID_SETUP", { field: "factions" });
+  }
   if (!PLAYER_COLORS.includes(setup.humanColor)) {
     return ruleError("INVALID_SETUP", { field: "humanColor" });
   }
@@ -469,6 +481,7 @@ export function validateSetup(setup: MatchSetup): RuleError | null {
       setup.height !== 25 ||
       setup.aiCount !== 2 ||
       setup.aiMode !== "RIVAL" ||
+      setup.factions.some((faction) => faction !== "ORIGINAL") ||
       setup.humanColor !== "CORAL")
   ) {
     return ruleError("INVALID_SETUP", { field: "scenario" });
@@ -484,11 +497,16 @@ function createPlayers(setup: MatchSetup): readonly PlayerState[] {
     if (color === undefined) {
       throw new RangeError("Not enough distinct player colors");
     }
+    const faction = setup.factions[seat];
+    if (faction === undefined) {
+      throw new RangeError("Faction assignment missing for player");
+    }
     return {
       id: playerId(seat + 1),
       seat,
       controller: seat === 0 ? "HUMAN" : "AI",
       color,
+      faction,
       status: "ACTIVE",
       stars: requireRuleset(setup.rulesetId).startingStars,
       researchedTechs: [],
@@ -583,6 +601,22 @@ function validateKernelState(state: GameState): RuleError | null {
     state.activeSeatIndex >= state.turnOrder.length
   ) {
     return ruleError("INVALID_STATE", { field: "turn" });
+  }
+  if (
+    state.players.length !== state.setup.factions.length ||
+    state.setup.factions.some(
+      (_faction, seat) =>
+        state.players.filter((player) => player.seat === seat).length !== 1,
+    ) ||
+    state.players.some(
+      (player) =>
+        !Number.isSafeInteger(player.seat) ||
+        player.seat < 0 ||
+        player.seat >= state.setup.factions.length ||
+        player.faction !== state.setup.factions[player.seat],
+    )
+  ) {
+    return ruleError("INVALID_STATE", { field: "players" });
   }
   if (
     state.players.some(

@@ -317,7 +317,7 @@ describe("fruit observation, replay, save, and AI participation", () => {
     ).toBe(false);
   });
 
-  it("round-trips a v4 fruit command through replay, headless, and save deterministically", async () => {
+  it("round-trips a v5 fruit command through replay, headless, and save deterministically", async () => {
     const setup = setupBuilder({ seed: 3 });
     let state = gameStateBuilder(setup);
     let replay = createReplay(setup);
@@ -353,7 +353,7 @@ describe("fruit observation, replay, save, and AI participation", () => {
       },
       "2026-08-15T12:00:00.000Z",
     );
-    expect(save.version).toBe(4);
+    expect(save.version).toBe(5);
     const loaded = parseSave(JSON.stringify(save));
     expect(loaded).toMatchObject({ kind: "VALID" });
     if (loaded.kind !== "VALID") throw new Error(`Save load: ${loaded.kind}`);

@@ -8,7 +8,7 @@ export interface ReplayCheckpoint {
 
 export interface ReplayFile {
   readonly format: "pulp-wars-replay";
-  readonly version: 4;
+  readonly version: 5;
   readonly setup: MatchSetup;
   readonly commands: readonly Command[];
   readonly checkpoints: readonly ReplayCheckpoint[];

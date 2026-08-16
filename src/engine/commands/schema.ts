@@ -38,7 +38,7 @@ export function parseCommandEnvelope(
   if (
     !hasExactKeys(input, ["format", "version", "command"]) ||
     input.format !== "pulp-wars-command" ||
-    input.version !== 4
+    input.version !== 5
   ) {
     return invalid("envelope");
   }
@@ -48,7 +48,7 @@ export function parseCommandEnvelope(
   }
   return {
     ok: true,
-    value: { format: "pulp-wars-command", version: 4, command: parsed.value },
+    value: { format: "pulp-wars-command", version: 5, command: parsed.value },
   };
 }
 

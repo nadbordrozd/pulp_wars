@@ -18,11 +18,12 @@ if (!Number.isSafeInteger(maxCommands) || maxCommands <= 0)
   throw new Error("maxCommands must be positive");
 
 const setup: MatchSetup = {
-  rulesetId: "pulp-wars-poc-4",
+  rulesetId: "pulp-wars-poc-5",
   seed,
   width: size,
   height: size,
   aiCount,
+  factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const),
   aiDifficulty: "NORMAL",
   aiMode: "COOPERATIVE",
   humanColor: "CORAL",

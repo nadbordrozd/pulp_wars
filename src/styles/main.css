@@ -570,6 +570,117 @@ fieldset {
   font-weight: 900;
 }
 
+.faction-layout {
+  display: grid;
+  grid-template-columns: minmax(18rem, 1.25fr) minmax(15rem, 0.75fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.faction-assignment,
+.faction-preview {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 1rem;
+  border: 3px solid var(--line);
+  border-radius: 1rem;
+  background: var(--panel);
+  box-shadow: 0 6px 0 var(--ink);
+}
+
+.faction-seat-row {
+  display: grid;
+  grid-template-columns: 4.5rem 2rem minmax(0, 1fr);
+  gap: 0.65rem;
+  align-items: center;
+  padding: 0.4rem 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+
+.faction-seat-row legend {
+  grid-column: 1;
+  grid-row: 1;
+  padding: 0;
+  font-weight: 900;
+}
+
+.faction-segments {
+  grid-column: 3;
+  grid-row: 1;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.faction-segment {
+  min-height: 42px;
+  padding: 0.35rem 0.55rem;
+}
+
+.faction-portrait {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  overflow: hidden;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: color-mix(in srgb, currentColor 18%, var(--panel-strong));
+}
+
+.faction-row-portrait {
+  width: 2rem;
+  height: 2rem;
+}
+
+.faction-seat-portrait {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.faction-preview-portrait {
+  width: min(9rem, 34vw);
+  aspect-ratio: 1;
+  justify-self: center;
+  font-size: 3.5rem;
+}
+
+.faction-portrait .faction-hero-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.faction-portrait[data-loaded="true"] .faction-portrait-fallback {
+  display: none;
+}
+
+.faction-candy {
+  background: radial-gradient(
+    circle at 35% 30%,
+    #fff 0 8%,
+    #ff8acb 10% 42%,
+    #8d3e86 75%
+  );
+}
+
+.faction-roster-summary {
+  padding-top: 0.35rem;
+  border-top: 1px solid var(--line);
+}
+
+.faction-roster-summary summary {
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.faction-start {
+  justify-self: stretch;
+}
+
 .match-shell {
   --top-hud-block-size: 4.75rem;
   position: relative;
@@ -1565,6 +1676,17 @@ fieldset {
 }
 
 @media (max-width: 599px) {
+  .faction-screen {
+    gap: 0.5rem;
+    padding: max(0.5rem, env(safe-area-inset-top))
+      max(0.5rem, env(safe-area-inset-right))
+      max(0.5rem, env(safe-area-inset-bottom))
+      max(0.5rem, env(safe-area-inset-left));
+  }
+  .faction-screen > h1 {
+    margin: 0;
+    font-size: 1.4rem;
+  }
   .match-shell {
     --top-hud-block-size: 9rem;
   }
@@ -1602,6 +1724,39 @@ fieldset {
   }
   .faction-card {
     grid-template-columns: minmax(0, 1fr);
+  }
+  .faction-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem;
+  }
+  .faction-assignment,
+  .faction-preview {
+    gap: 0.35rem;
+    padding: 0.5rem;
+    box-shadow: 0 3px 0 var(--ink);
+  }
+  .faction-assignment > .field-help,
+  .faction-roster-summary p {
+    margin: 0;
+    font-size: 0.8rem;
+  }
+  .faction-seat-row {
+    padding: 0.1rem 0;
+  }
+  .faction-preview {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+  }
+  .faction-preview-portrait {
+    grid-row: 1 / span 3;
+    width: 4.5rem;
+    font-size: 2rem;
+  }
+  .faction-preview > * {
+    margin: 0;
+  }
+  .faction-preview .unit-roster {
+    font-size: 0.75rem;
   }
   .faction-hero {
     max-height: 34dvh;

@@ -1,10 +1,10 @@
 {
-  "name": "demo-forest-economy-three-commands-v4",
+  "name": "demo-forest-economy-three-commands-v5",
   "replay": {
     "format": "pulp-wars-replay",
-    "version": 4,
+    "version": 5,
     "setup": {
-      "rulesetId": "pulp-wars-poc-4",
+      "rulesetId": "pulp-wars-poc-5",
       "seed": 3737844653,
       "width": 25,
       "height": 25,
@@ -12,6 +12,7 @@
       "aiDifficulty": "NORMAL",
       "aiMode": "RIVAL",
       "humanColor": "CORAL",
+      "factions": ["ORIGINAL", "ORIGINAL", "ORIGINAL"],
       "scenario": "DEMO"
     },
     "commands": [
@@ -36,21 +37,21 @@
     "checkpoints": [
       {
         "index": 1,
-        "stateHash": "4fdcd7717d226233d22353bef25c449b1812ddd6a43ca61ce347b176575d44c8"
+        "stateHash": "9629c619b42a454bd3307ce721831f0cb22b62f48035023e3d19716533904350"
       },
       {
         "index": 2,
-        "stateHash": "04cb549d8ce097db2a98a9a9af6ddef12819ae7281f75ccdc689180bc1ecc0d0"
+        "stateHash": "7dadb0c49941afcf44b430f08b6f2dcb2cea178790d0e6b375e3595a23911395"
       },
       {
         "index": 3,
-        "stateHash": "8bee6f1b1e94ebbecc48bea41973a4ec0a7391e9a1a2e104cef423b6970a078c"
+        "stateHash": "753b9d34188fe891d91ab1f9964a4e2bc05b802e87d34732ee799d1e99ce2318"
       }
     ]
   },
   "expected": {
     "acceptedCommands": 3,
-    "stateHash": "8bee6f1b1e94ebbecc48bea41973a4ec0a7391e9a1a2e104cef423b6970a078c",
+    "stateHash": "753b9d34188fe891d91ab1f9964a4e2bc05b802e87d34732ee799d1e99ce2318",
     "events": [
       {
         "kind": "TILES_REVEALED",

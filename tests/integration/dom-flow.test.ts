@@ -161,7 +161,7 @@ describe("semantic POC screen flow", () => {
     expect(snapshot.route).toBe("MATCH");
     expect(demoScenarioIssues(snapshot.match)).toEqual([]);
     expect(canonicalHash(snapshot.match)).toBe(
-      "05ee08426e7acda629d8dc06e15ebf135b3b3f2754c385ac9b9ff1ddf1de187d",
+      "0529cf300d091dfb2801e62a724fbd0213024a0bb3f43ddaf9656bb7e534d954",
     );
     expect(boardHost.latest()?.interactive).toBe(true);
     const human = snapshot.match.players.find(
@@ -237,7 +237,8 @@ describe("semantic POC screen flow", () => {
       prefersReducedMotion: true,
     });
     expect(
-      document.querySelector<HTMLElement>(".faction-hero")?.dataset.loaded,
+      document.querySelector<HTMLElement>(".faction-preview .faction-original")
+        ?.dataset.loaded,
     ).toBe("true");
 
     app.destroy();
@@ -247,12 +248,14 @@ describe("semantic POC screen flow", () => {
       initialRoute: "FACTION",
       prefersReducedMotion: true,
     });
-    const hero = document.querySelector<HTMLElement>(".faction-hero");
+    const hero = document.querySelector<HTMLElement>(
+      ".faction-preview .faction-original",
+    );
     const image = hero?.querySelector<HTMLImageElement>(".faction-hero-art");
     image?.dispatchEvent(new Event("error"));
     expect(image?.hidden).toBe(true);
     expect(hero?.dataset.loaded).toBeUndefined();
-    expect(hero?.querySelector(".faction-hero-fallback")).not.toBeNull();
+    expect(hero?.querySelector(".faction-portrait-fallback")).not.toBeNull();
   });
 
   it.each([
@@ -309,6 +312,37 @@ describe("semantic POC screen flow", () => {
       });
     },
   );
+
+  it("preserves visible faction choices and defaults newly added AI seats", () => {
+    app = bootstrapApp(document, {
+      initialRoute: "SETUP",
+      randomSeed: () => 5,
+      aiStepDelayMs: 100_000,
+      prefersReducedMotion: true,
+    });
+    radio("ai-count", "3").click();
+    click("Continue");
+    expect(document.querySelectorAll(".faction-seat-row")).toHaveLength(4);
+    radio("faction-seat-0", "CANDY").click();
+    radio("faction-seat-2", "CANDY").click();
+    radio("faction-seat-3", "CANDY").click();
+    click("Back");
+    radio("ai-count", "1").click();
+    click("Continue");
+    expect(document.querySelectorAll(".faction-seat-row")).toHaveLength(2);
+    expect(radio("faction-seat-0", "CANDY").checked).toBe(true);
+    expect(radio("faction-seat-1", "ORIGINAL").checked).toBe(true);
+    click("Back");
+    radio("ai-count", "3").click();
+    click("Continue");
+    expect(radio("faction-seat-0", "CANDY").checked).toBe(true);
+    expect(radio("faction-seat-1", "ORIGINAL").checked).toBe(true);
+    expect(radio("faction-seat-2", "ORIGINAL").checked).toBe(true);
+    expect(radio("faction-seat-3", "ORIGINAL").checked).toBe(true);
+    expect(radio("faction-seat-3", "CANDY").getAttribute("aria-label")).toBe(
+      "AI 3: Candy",
+    );
+  });
 
   it("starts and autosaves explicit cooperative Large, then preserves it on restart", () => {
     app = bootstrapApp(document, {
@@ -367,15 +401,22 @@ describe("semantic POC screen flow", () => {
     seed.dispatchEvent(new Event("input", { bubbles: true }));
     radio("human-color", "TEAL").click();
     click("Continue");
-    expect(heading()).toBe("Choose Your Faction");
-    expect(document.body.textContent).toContain("POC Test Faction");
-    expect(document.body.textContent).toContain("No starting technology");
+    expect(heading()).toBe("Choose Factions");
+    expect(document.body.textContent).toContain("You");
+    expect(document.body.textContent).toContain("AI 3");
+    expect(document.body.textContent).toContain("Original");
+    expect(document.body.textContent).toContain("Candy");
     expect(
       document.querySelector<HTMLImageElement>(".faction-hero-art")?.src,
     ).toContain("/assets/pixellab/ui/faction-hero.png");
 
+    radio("faction-seat-0", "CANDY").click();
+    radio("faction-seat-2", "CANDY").click();
+
     click("Start Conquest");
     expect(dialog()?.textContent).toContain("3 AI · 16 × 16 · Normal parity");
+    expect(dialog()?.textContent).toContain("You: Candy");
+    expect(dialog()?.textContent).toContain("AI 2: Candy");
     expect(dialog()?.textContent).toContain(
       seedHex(seedFromText("  Pulp 🚀  ")),
     );
@@ -387,6 +428,7 @@ describe("semantic POC screen flow", () => {
       width: 16,
       height: 16,
       humanColor: "TEAL",
+      factions: ["CANDY", "ORIGINAL", "CANDY", "ORIGINAL"],
       seed: seedFromText("  Pulp 🚀  "),
     });
     expect(document.querySelector("canvas[role=application]")).not.toBeNull();
@@ -2320,16 +2362,20 @@ function bootMatchWithBoard(
 }
 
 function setup(overrides: Partial<MatchSetup> = {}): MatchSetup {
+  const aiCount = overrides.aiCount ?? 1;
   return {
     rulesetId: RULESET_ID,
     seed: 3,
     width: 11,
     height: 11,
-    aiCount: 1,
+    aiCount,
     aiDifficulty: "NORMAL",
     aiMode: "RIVAL",
     humanColor: "CORAL",
     ...overrides,
+    factions:
+      overrides.factions ??
+      Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const),
   };
 }
 

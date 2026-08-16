@@ -38,8 +38,8 @@ export interface ReplayRunResult {
 export function createReplay(setup: MatchSetup): ReplayFile {
   return {
     format: "pulp-wars-replay",
-    version: 4,
-    setup: { ...setup },
+    version: 5,
+    setup: { ...setup, factions: [...setup.factions] },
     commands: [],
     checkpoints: [],
   };
@@ -117,13 +117,14 @@ function validateReplay(replay: ReplayFile): MatchSetup {
     replay.format === "pulp-wars-replay" &&
     ((replay as { readonly version?: unknown }).version === 1 ||
       (replay as { readonly version?: unknown }).version === 2 ||
-      (replay as { readonly version?: unknown }).version === 3)
+      (replay as { readonly version?: unknown }).version === 3 ||
+      (replay as { readonly version?: unknown }).version === 4)
   ) {
     throw new ReplayError("INCOMPATIBLE_REPLAY");
   }
   if (
     replay.format !== "pulp-wars-replay" ||
-    replay.version !== 4 ||
+    replay.version !== 5 ||
     !Array.isArray(replay.commands) ||
     !Array.isArray(replay.checkpoints)
   ) {

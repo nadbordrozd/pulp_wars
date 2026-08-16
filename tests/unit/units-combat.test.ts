@@ -94,7 +94,7 @@ function replacePlayer(
 
 describe("five-unit rules and training", () => {
   it("publishes exact immutable stats, abilities, costs, and unlocks", () => {
-    const rules = getRuleset("pulp-wars-poc-4");
+    const rules = getRuleset("pulp-wars-poc-5");
     expect(rules?.units).toEqual({
       WARRIOR: {
         type: "WARRIOR",

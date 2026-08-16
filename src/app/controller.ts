@@ -14,6 +14,7 @@ import {
   type CityId,
   type Command,
   type DomainEvent,
+  type FactionId,
   type GameState,
   type MatchSetup,
   type PlayerId,
@@ -24,7 +25,7 @@ import {
 import {
   BrowserPersistence,
   type PersistenceScheduler,
-  type SaveEnvelopeV4,
+  type SaveEnvelopeV5,
   type StorageAdapter,
 } from "../persistence/index";
 import type {
@@ -83,6 +84,7 @@ const DEFAULT_DRAFT: SetupDraft = {
   seedText: "",
   resolvedSeed: null,
   humanColor: "CORAL",
+  factions: Object.freeze(["ORIGINAL", "ORIGINAL"]),
 };
 
 export class AppController {
@@ -275,6 +277,16 @@ export class AppController {
         ? null
         : (patch.resolvedSeed ?? this.#draft.resolvedSeed),
     };
+    if (patch.aiCount !== undefined) {
+      const seatCount = patch.aiCount + 1;
+      this.#draft = {
+        ...this.#draft,
+        factions: Array.from(
+          { length: seatCount },
+          (_, seat) => this.#draft.factions[seat] ?? "ORIGINAL",
+        ),
+      };
+    }
     const minimum = autoBoardSize(this.#draft.aiCount);
     if (
       this.#draft.boardPreset !== "AUTO" &&
@@ -282,6 +294,24 @@ export class AppController {
     ) {
       this.#draft = { ...this.#draft, boardPreset: "AUTO" };
     }
+    this.#emit();
+  }
+
+  updateFaction(seat: number, faction: FactionId): void {
+    if (
+      !Number.isSafeInteger(seat) ||
+      seat < 0 ||
+      seat > this.#draft.aiCount ||
+      (faction !== "ORIGINAL" && faction !== "CANDY")
+    )
+      return;
+    this.#draft = {
+      ...this.#draft,
+      factions: this.#draft.factions.map((current, index) =>
+        index === seat ? faction : current,
+      ),
+    };
+    this.#announcement = `${seat === 0 ? "You" : `AI ${seat}`} selected ${faction === "ORIGINAL" ? "Original" : "Candy"}.`;
     this.#emit();
   }
 
@@ -625,6 +655,7 @@ export class AppController {
         seedText: "",
         resolvedSeed: null,
         humanColor: this.#match.setup.humanColor,
+        factions: [...this.#match.setup.factions],
       };
     }
     this.navigate("SETUP");
@@ -651,6 +682,7 @@ export class AppController {
       aiDifficulty: "NORMAL",
       aiMode: this.#draft.aiMode,
       humanColor: this.#draft.humanColor,
+      factions: [...this.#draft.factions],
     };
     this.#createMatch(setup);
   }
@@ -862,7 +894,7 @@ export class AppController {
     }
   }
 
-  #installSave(save: SaveEnvelopeV4): void {
+  #installSave(save: SaveEnvelopeV5): void {
     this.#cancelAiTimer();
     this.#cancelCombatPresentation();
     this.#match = save.state;
@@ -1142,10 +1174,10 @@ function browserRandomUint32(): number {
   return values[0] ?? 0;
 }
 
-function replayFromSave(save: SaveEnvelopeV4): ReplayFile {
+function replayFromSave(save: SaveEnvelopeV5): ReplayFile {
   return {
     format: "pulp-wars-replay",
-    version: 4,
+    version: 5,
     setup: save.setup,
     commands: save.acceptedCommands,
     checkpoints: [],

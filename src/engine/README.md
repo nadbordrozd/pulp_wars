@@ -15,9 +15,10 @@ least one Animal, connected capitals through Grass or Forest, and four
 non-Mountain capital neighbors. Map generation is bounded to 256 deterministic
 candidates and reports stable failure context without weakening constraints.
 Capital assignment and turn order use their own stable shuffles in the specified
-v4 draw order, and `aiMode` never changes the board.
+retained v4 draw order, and neither `aiMode` nor per-seat faction selection
+changes the board or PRNG stream.
 
-The ruleset-4 target supports square sizes 11, 14, 16, explicit Large 20, and
+The ruleset-5 target supports square sizes 11, 14, 16, explicit Large 20, and
 explicit Huge 25. Auto remains 11/14/16 for 1/2/3 AI. Large generates 20
 settlements and 72 mountains; Huge generates 30 settlements and 113 mountains.
 Their neutral-village counts derive only on their explicit size paths.
@@ -34,7 +35,9 @@ starting capital Warrior carries a durable capacity exemption; legal
 over-capacity acquired states are preserved. Rejected commands retain the
 identical state object and consume no randomness.
 
-The v4 schemas use ruleset `pulp-wars-poc-4`. Save/replay versions 1 through 3
+The v5 schemas use ruleset `pulp-wars-poc-5`, require exact seat-ordered
+`ORIGINAL`/`CANDY` faction identity in setup and player state, and publish that
+identity in every player view. Save/replay versions 1 through 4
 are deliberately incompatible; loaders report that incompatibility without
 rewriting stored bytes or attempting migration.
 

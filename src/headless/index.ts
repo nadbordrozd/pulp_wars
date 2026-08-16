@@ -17,6 +17,7 @@ import {
   type MatchOutcome,
   type MatchSetup,
   type BoardSize,
+  type FactionId,
   type PlayerId,
   type PlayerView,
   type ReplayFile,
@@ -60,6 +61,7 @@ export interface AiMatchResult {
 }
 
 export interface HeadlessMetrics {
+  readonly factionsBySeat: readonly FactionId[];
   readonly commandsByKind: Readonly<Record<string, number>>;
   readonly eventsByKind: Readonly<Record<string, number>>;
   readonly researchByTech: Readonly<Record<string, number>>;
@@ -92,6 +94,8 @@ export interface AiBatchOptions {
   /** Defaults to each AI count's Auto size; validation may request Huge. */
   readonly boardSize?: BoardSize;
   readonly aiMode?: MatchSetup["aiMode"];
+  /** Exact seat order. Omission means all Original for each generated match. */
+  readonly factions?: readonly FactionId[];
 }
 
 export interface AiBatchEntry {
@@ -350,7 +354,7 @@ export async function runAiBatch(
       await new Promise<void>((resolve) => setTimeout(resolve, 0));
       const result = runAiMatchInternal(
         {
-          rulesetId: "pulp-wars-poc-4",
+          rulesetId: "pulp-wars-poc-5",
           seed,
           width: size,
           height: size,
@@ -358,6 +362,10 @@ export async function runAiBatch(
           aiDifficulty: "NORMAL",
           aiMode: options.aiMode ?? "RIVAL",
           humanColor: "CORAL",
+          factions:
+            options.factions === undefined
+              ? Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const)
+              : [...options.factions],
         },
         {
           maxCommands: options.maxCommands,
@@ -405,6 +413,7 @@ export async function runAiBatch(
 }
 
 interface MutableMetrics {
+  factionsBySeat: readonly FactionId[];
   commandsByKind: Record<string, number>;
   eventsByKind: Record<string, number>;
   researchByTech: Record<string, number>;
@@ -450,6 +459,7 @@ function createMetrics(
   const eventsByKind: Record<string, number> = {};
   for (const event of initialEvents) increment(eventsByKind, event.kind);
   return {
+    factionsBySeat: [...state.setup.factions],
     commandsByKind: {},
     eventsByKind,
     researchByTech: {},

@@ -29,7 +29,7 @@ writeFileSync(
   "tests/fixtures/golden-replay.json",
   `${JSON.stringify(
     {
-      name: "demo-forest-economy-three-commands-v4",
+      name: "demo-forest-economy-three-commands-v5",
       replay,
       expected: {
         acceptedCommands: result.acceptedCommands,

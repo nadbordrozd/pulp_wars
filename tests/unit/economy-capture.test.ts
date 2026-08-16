@@ -76,7 +76,7 @@ function replaceCity(
 
 describe("economy and technology rules", () => {
   it("publishes the exact integer-only POC constants and nine-node graph", () => {
-    const rules = getRuleset("pulp-wars-poc-4");
+    const rules = getRuleset("pulp-wars-poc-5");
     expect(rules).toMatchObject({
       startingStars: 5,
       technologyBaseCost: 4,

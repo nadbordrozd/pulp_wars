@@ -11,16 +11,20 @@ import {
 } from "../../src/engine/index";
 
 export function setupBuilder(overrides: Partial<MatchSetup> = {}): MatchSetup {
+  const aiCount = overrides.aiCount ?? 1;
   return {
     rulesetId: RULESET_ID,
     seed: 0x1234_5678,
     width: 11,
     height: 11,
-    aiCount: 1,
+    aiCount,
     aiDifficulty: "NORMAL",
     aiMode: "RIVAL",
     humanColor: "CORAL",
     ...overrides,
+    factions:
+      overrides.factions ??
+      Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const),
   };
 }
 

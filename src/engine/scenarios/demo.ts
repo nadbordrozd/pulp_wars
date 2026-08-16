@@ -29,6 +29,7 @@ export const DEMO_MATCH_SETUP: MatchSetup = Object.freeze({
   aiDifficulty: "NORMAL",
   aiMode: "RIVAL",
   humanColor: "CORAL",
+  factions: Object.freeze(["ORIGINAL", "ORIGINAL", "ORIGINAL"] as const),
   scenario: "DEMO",
 });
 
@@ -373,6 +374,7 @@ function sameSetup(left: MatchSetup, right: MatchSetup): boolean {
     left.aiDifficulty === right.aiDifficulty &&
     left.aiMode === right.aiMode &&
     left.humanColor === right.humanColor &&
+    sameStringArray(left.factions, right.factions) &&
     left.scenario === right.scenario
   );
 }

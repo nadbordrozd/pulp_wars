@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   applyCommand,
+  FACTION_IDS,
   canonicalHash,
   canonicalJson,
   capturableTargetForUnit,
@@ -327,7 +328,7 @@ describe("deterministic simulation kernel", () => {
     ).toHaveLength(96);
   });
 
-  it("requires the v4 aiMode field while recognizing cooperative schema", () => {
+  it("requires the v5 aiMode and exact seat-ordered faction fields", () => {
     const rival = setupBuilder();
     const { aiMode: _aiMode, ...missing } = rival;
     void _aiMode;
@@ -341,6 +342,75 @@ describe("deterministic simulation kernel", () => {
       ok: true,
       state: { setup: { aiMode: "COOPERATIVE" } },
     });
+    const { factions: _factions, ...missingFactions } = rival;
+    void _factions;
+    expect(parseMatchSetup(missingFactions)).toBeNull();
+    expect(parseMatchSetup({ ...rival, factions: undefined })).toBeNull();
+    expect(parseMatchSetup({ ...rival, factions: ["ORIGINAL"] })).toBeNull();
+    expect(
+      parseMatchSetup({ ...rival, factions: ["ORIGINAL", "SOUR"] }),
+    ).toBeNull();
+    expect(
+      parseMatchSetup({
+        ...rival,
+        factions: Object.assign(["ORIGINAL", "CANDY"], { extra: true }),
+      }),
+    ).toBeNull();
+    const sparse = new Array(2) as unknown[];
+    sparse[0] = "ORIGINAL";
+    expect(parseMatchSetup({ ...rival, factions: sparse })).toBeNull();
+    expect(FACTION_IDS).toEqual(["ORIGINAL", "CANDY"]);
+    expect(Object.isFrozen(FACTION_IDS)).toBe(true);
+  });
+
+  it("threads immutable faction identity without changing map or PRNG", () => {
+    const original = createGame(
+      setupBuilder({
+        seed: 0xcafe,
+        aiCount: 2,
+        width: 14,
+        height: 14,
+        factions: ["ORIGINAL", "ORIGINAL", "ORIGINAL"],
+      }),
+    );
+    const mixed = createGame(
+      setupBuilder({
+        seed: 0xcafe,
+        aiCount: 2,
+        width: 14,
+        height: 14,
+        factions: ["CANDY", "ORIGINAL", "CANDY"],
+      }),
+    );
+    if (!original.ok || !mixed.ok) throw new Error("Faction setup rejected");
+    expect(mixed.state.players.map((player) => player.faction)).toEqual([
+      "CANDY",
+      "ORIGINAL",
+      "CANDY",
+    ]);
+    expect(mixed.state.board).toEqual(original.state.board);
+    expect(mixed.state.random).toEqual(original.state.random);
+    expect(mixed.state.turnOrder).toEqual(original.state.turnOrder);
+    expect(mixed.state.cities).toEqual(original.state.cities);
+    expect(mixed.state.units).toEqual(original.state.units);
+    expect(
+      viewFor(mixed.state, mixed.state.humanPlayerId).players.map(
+        (player) => player.faction,
+      ),
+    ).toEqual(["CANDY", "ORIGINAL", "CANDY"]);
+
+    const tampered = {
+      ...mixed.state,
+      players: mixed.state.players.map((player, index) =>
+        index === 0 ? { ...player, faction: "ORIGINAL" as const } : player,
+      ),
+    };
+    const rejected = applyCommand(tampered, { kind: "END_TURN" });
+    expect(rejected).toMatchObject({
+      ok: false,
+      error: { code: "INVALID_STATE", params: { field: "players" } },
+    });
+    expect(rejected.state).toBe(tampered);
   });
 
   it("rejects unsupported non-square dimensions 25 x 16", () => {

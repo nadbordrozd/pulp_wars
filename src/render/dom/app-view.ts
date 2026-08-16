@@ -8,6 +8,7 @@ import {
   type CityState,
   type Command,
   type Coord,
+  type FactionId,
   type PlayerUnitView,
   type PlayerView,
   type TechId,
@@ -74,6 +75,7 @@ export class DomAppView {
   #selectedTech: TechId | null = null;
   #lastOverlayName = "NONE";
   #lastMatchInstanceId = 0;
+  #focusedFactionSeat = 0;
 
   constructor(
     documentRoot: Document,
@@ -683,67 +685,118 @@ export class DomAppView {
     const main = screen(
       this.#document,
       "front-screen faction-screen",
-      "Choose Your Faction",
+      "Choose Factions",
     );
     main.prepend(
       backButton(this.#document, () => this.#controller.navigate("SETUP")),
     );
-    const card = element(
-      this.#document,
-      "article",
-      `faction-card selected-card color-${snapshot.draft.humanColor.toLowerCase()}`,
-    );
-    card.setAttribute("aria-label", "POC Test Faction, selected");
-    const hero = element(this.#document, "div", "faction-hero");
-    hero.setAttribute("aria-hidden", "true");
-    const fallback = element(this.#document, "div", "faction-hero-fallback");
-    fallback.append(
-      textElement(this.#document, "span", "⚔"),
-      textElement(this.#document, "span", "✦"),
-      textElement(this.#document, "span", "➳"),
-    );
-    if (FACTION_HERO_URL !== null) {
-      const image = artImage(
-        this.#document,
-        FACTION_HERO_URL,
-        "faction-hero-art",
-        () => {
-          hero.dataset.loaded = "true";
-        },
-      );
-      hero.append(image);
-    }
-    hero.append(fallback);
-    const details = element(this.#document, "div", "faction-details");
-    details.append(
+    if (this.#focusedFactionSeat > snapshot.draft.aiCount)
+      this.#focusedFactionSeat = 0;
+    const layout = element(this.#document, "div", "faction-layout");
+    const assignment = element(this.#document, "section", "faction-assignment");
+    assignment.append(
       textElement(
         this.#document,
         "p",
-        "SELECTED · PLAYER 1 STRIPE",
+        "Pick Original or Candy for every player. Repeats are allowed.",
+        "field-help",
+      ),
+    );
+    for (let seat = 0; seat <= snapshot.draft.aiCount; seat += 1) {
+      const fieldset = element(this.#document, "fieldset", "faction-seat-row");
+      const seatName = seat === 0 ? "You" : `AI ${seat}`;
+      fieldset.append(textElement(this.#document, "legend", seatName));
+      const controls = element(
+        this.#document,
+        "div",
+        "segmented-control faction-segments",
+      );
+      for (const faction of ["ORIGINAL", "CANDY"] as const) {
+        const label = element(
+          this.#document,
+          "label",
+          "segment faction-segment",
+        );
+        const input = this.#document.createElement("input");
+        input.type = "radio";
+        input.name = `faction-seat-${seat}`;
+        input.value = faction;
+        input.checked = snapshot.draft.factions[seat] === faction;
+        input.setAttribute(
+          "aria-label",
+          `${seatName}: ${factionLabel(faction)}`,
+        );
+        input.addEventListener("focus", () => {
+          this.#focusedFactionSeat = seat;
+        });
+        input.addEventListener("change", () => {
+          this.#focusedFactionSeat = seat;
+          this.#controller.updateFaction(seat, faction);
+        });
+        label.append(
+          input,
+          textElement(this.#document, "span", factionLabel(faction)),
+        );
+        controls.append(label);
+      }
+      fieldset.append(
+        factionPortrait(
+          this.#document,
+          snapshot.draft.factions[seat] ?? "ORIGINAL",
+          "faction-row-portrait faction-seat-portrait",
+        ),
+        controls,
+      );
+      assignment.append(fieldset);
+    }
+    const focusedFaction =
+      snapshot.draft.factions[this.#focusedFactionSeat] ?? "ORIGINAL";
+    const preview = element(this.#document, "aside", "faction-preview");
+    preview.setAttribute("aria-live", "polite");
+    preview.append(
+      factionPortrait(
+        this.#document,
+        focusedFaction,
+        "faction-preview-portrait",
+      ),
+      textElement(
+        this.#document,
+        "p",
+        this.#focusedFactionSeat === 0
+          ? "You"
+          : `AI ${this.#focusedFactionSeat}`,
         "card-kicker",
       ),
-      textElement(this.#document, "h2", "POC Test Faction"),
+      textElement(this.#document, "h2", factionLabel(focusedFaction)),
       textElement(
         this.#document,
         "p",
-        "Warrior · Archer · Defender · Rider · Catapult",
+        factionRoster(focusedFaction),
         "unit-roster",
       ),
+    );
+    const roster = this.#document.createElement("details");
+    roster.className = "faction-roster-summary";
+    roster.append(
+      textElement(this.#document, "summary", "Candy roster summary"),
       textElement(
         this.#document,
         "p",
-        "No starting technology. Every seat uses identical rules.",
+        "Candy Warrior · Gumball Guard · Choco Engineer · Donut · Catapult. Both factions use the same map, technology, and economy.",
       ),
+    );
+    assignment.append(roster);
+    layout.append(assignment, preview);
+    main.append(
+      layout,
       actionButton(
         this.#document,
         "Start Conquest",
         () => this.#controller.requestStartMatch(),
-        "primary-action",
+        "primary-action faction-start",
         "start-conquest",
       ),
     );
-    card.append(hero, details);
-    main.append(card);
     return main;
   }
 
@@ -1894,7 +1947,7 @@ export class DomAppView {
           textElement(
             this.#document,
             "h3",
-            `Player ${id} · ${title(player.color)} ${player.controller === "HUMAN" ? "Human" : "Normal AI"}${id === active ? " · Current turn" : ""}`,
+            `Player ${id} · ${factionLabel(player.faction)} · ${title(player.color)} ${player.controller === "HUMAN" ? "Human" : "Normal AI"}${id === active ? " · Current turn" : ""}`,
           ),
           textElement(
             this.#document,
@@ -2866,9 +2919,15 @@ function confirmationCopy(
         snapshot.draft.aiCount,
         snapshot.draft.boardPreset,
       );
+      const factions = snapshot.draft.factions
+        .map(
+          (faction, seat) =>
+            `${seat === 0 ? "You" : `AI ${seat}`}: ${factionLabel(faction)}`,
+        )
+        .join(" · ");
       return [
         snapshot.hasStoredSave ? "Replace current match?" : "Start Conquest?",
-        `${snapshot.draft.aiCount} AI · ${size} × ${size} · Normal parity · ${snapshot.draft.aiMode === "COOPERATIVE" ? "Cooperate against you" : "Rival AI"} · seed ${seedLabel(seed)}.${snapshot.hasStoredSave ? " This replaces the current saved match." : ""}`,
+        `${snapshot.draft.aiCount} AI · ${size} × ${size} · Normal parity · ${snapshot.draft.aiMode === "COOPERATIVE" ? "Cooperate against you" : "Rival AI"} · ${factions} · seed ${seedLabel(seed)}.${snapshot.hasStoredSave ? " This replaces the current saved match." : ""}`,
         snapshot.hasStoredSave ? "Replace Save & Start" : "Confirm Start",
         snapshot.match?.outcome === null && snapshot.match !== null,
       ];
@@ -2876,7 +2935,7 @@ function confirmationCopy(
     case "START_DEMO":
       return [
         snapshot.hasStoredSave ? "Replace current match?" : "Start Demo Match?",
-        `Huge 25 × 25 · 2 Normal AI · Coral human · all technologies · two level-3 cities · eight ready units · full exploration · seed decafbad.${snapshot.hasStoredSave ? " This replaces the current saved match." : ""}`,
+        `Huge 25 × 25 · 2 Normal AI · all Original · Coral human · all technologies · two level-3 cities · eight ready units · full exploration · seed decafbad.${snapshot.hasStoredSave ? " This replaces the current saved match." : ""}`,
         snapshot.hasStoredSave
           ? "Replace Save & Start Demo"
           : "Start Demo Match",
@@ -2929,6 +2988,49 @@ function confirmationCopy(
 
 function safeLabel(action: ConfirmationAction): string {
   return action.kind === "END_TURN" ? "Keep Playing" : "Cancel";
+}
+
+function factionLabel(faction: FactionId): string {
+  return faction === "CANDY" ? "Candy" : "Original";
+}
+
+function factionRoster(faction: FactionId): string {
+  return faction === "CANDY"
+    ? "Candy Warrior · Gumball Guard · Choco Engineer · Donut · Catapult"
+    : "Warrior · Archer · Defender · Rider · Catapult";
+}
+
+function factionPortrait(
+  documentRoot: Document,
+  faction: FactionId,
+  className: string,
+): HTMLElement {
+  const portrait = element(
+    documentRoot,
+    "span",
+    `${className} faction-portrait faction-${faction.toLowerCase()}`,
+  );
+  portrait.setAttribute("aria-hidden", "true");
+  if (
+    faction === "ORIGINAL" &&
+    className.includes("faction-preview") &&
+    FACTION_HERO_URL !== null
+  ) {
+    portrait.append(
+      artImage(documentRoot, FACTION_HERO_URL, "faction-hero-art", () => {
+        portrait.dataset.loaded = "true";
+      }),
+    );
+  }
+  portrait.append(
+    textElement(
+      documentRoot,
+      "span",
+      faction === "CANDY" ? "🍬" : "⚔",
+      "faction-portrait-fallback",
+    ),
+  );
+  return portrait;
 }
 
 function title(value: string): string {

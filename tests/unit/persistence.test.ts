@@ -35,15 +35,17 @@ const setup: MatchSetup = {
   aiDifficulty: "NORMAL",
   aiMode: "RIVAL",
   humanColor: "CORAL",
+  factions: ["ORIGINAL", "ORIGINAL"],
 };
 
 describe("versioned local persistence", () => {
-  it("round-trips a Huge setup in the v4 envelope", () => {
+  it("round-trips a Huge setup in the v5 envelope", () => {
     const hugeSetup: MatchSetup = {
       ...setup,
       width: 25,
       height: 25,
       aiCount: 3,
+      factions: ["CANDY", "ORIGINAL", "CANDY", "ORIGINAL"],
     };
     const created = createGame(hugeSetup);
     if (!created.ok) throw new Error(created.error.code);
@@ -61,11 +63,18 @@ describe("versioned local persistence", () => {
       },
       "2026-08-15T12:00:00.000Z",
     );
-    expect(envelope.version).toBe(4);
+    expect(envelope.version).toBe(5);
     const loaded = parseSave(JSON.stringify(envelope));
     expect(loaded).toMatchObject({
       kind: "VALID",
-      save: { setup: { width: 25, height: 25, aiCount: 3 } },
+      save: {
+        setup: {
+          width: 25,
+          height: 25,
+          aiCount: 3,
+          factions: ["CANDY", "ORIGINAL", "CANDY", "ORIGINAL"],
+        },
+      },
     });
   });
 
@@ -76,6 +85,7 @@ describe("versioned local persistence", () => {
       height: 20,
       aiCount: 2,
       aiMode: "COOPERATIVE",
+      factions: ["ORIGINAL", "CANDY", "ORIGINAL"],
     };
     const created = createGame(cooperative);
     if (!created.ok) throw new Error(created.error.code);
@@ -102,6 +112,7 @@ describe("versioned local persistence", () => {
           height: 20,
           aiCount: 2,
           aiMode: "COOPERATIVE",
+          factions: ["ORIGINAL", "CANDY", "ORIGINAL"],
         },
         state: { humanPlayerId: created.state.humanPlayerId },
       },
@@ -203,6 +214,11 @@ describe("versioned local persistence", () => {
     storage.setItem(SAVE_STORAGE_KEY, v3Bytes);
     expect(persistence.loadSave()).toMatchObject({ kind: "INCOMPATIBLE" });
     expect(storage.getItem(SAVE_STORAGE_KEY)).toBe(v3Bytes);
+
+    const v4Bytes = readFileSync("tests/fixtures/legacy-save-v4.json", "utf8");
+    storage.setItem(SAVE_STORAGE_KEY, v4Bytes);
+    expect(persistence.loadSave()).toMatchObject({ kind: "INCOMPATIBLE" });
+    expect(storage.getItem(SAVE_STORAGE_KEY)).toBe(v4Bytes);
 
     const boundary = oneCommandBoundary();
     const envelope = createSaveEnvelope(

@@ -34,7 +34,7 @@ export interface UnitRule {
 
 export interface RulesetDefinition {
   readonly id: RulesetId;
-  readonly version: 4;
+  readonly version: 5;
   readonly boardSizes: readonly [11, 14, 16, 20, 25];
   readonly playerCount: Readonly<{
     readonly minimum: 2;
@@ -83,7 +83,7 @@ export interface RulesetDefinition {
 
 const POC_RULESET: RulesetDefinition = Object.freeze({
   id: RULESET_ID,
-  version: 4,
+  version: 5,
   boardSizes: Object.freeze([11, 14, 16, 20, 25] as const),
   playerCount: Object.freeze({ minimum: 2, maximum: 4 }),
   startingStars: 5,

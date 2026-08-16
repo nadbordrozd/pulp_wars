@@ -1,0 +1,16 @@
+{
+  "format": "pulp-wars-replay",
+  "version": 4,
+  "setup": {
+    "rulesetId": "pulp-wars-poc-4",
+    "seed": 1,
+    "width": 11,
+    "height": 11,
+    "aiCount": 1,
+    "aiDifficulty": "NORMAL",
+    "aiMode": "RIVAL",
+    "humanColor": "CORAL"
+  },
+  "commands": [],
+  "checkpoints": []
+}
