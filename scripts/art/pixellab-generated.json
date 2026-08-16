@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "c3f713d5517a5594d4fa0d89694c489b3ccb8fefc521cf93d74fc3f31e0e0917",
+  "sourceManifestSha256": "855ef4379ca4a6cad642c3ccf8c87523aa6a707ad144f925692a4613fbeb9207",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -1656,6 +1656,140 @@
       "outputSha256": "2fee61a3c63e16b7081525b0ef6cd2e84b8b364e0dca0cc2a13febc8bcb9ce0e",
       "notes": "Accepted after source/native/enlarged/24-64px/light-dark/composition inspection: triangular rule plus catapult throwing-arm emblem remains distinct and readable, matches tech icon family, clean alpha and no numerals/text/panel/background.",
       "reviewedAt": "2026-08-16T22:05:19.676Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-fruit-attempt-1": {
+      "id": "terrain-fruit-attempt-1",
+      "status": "REJECTED",
+      "jobId": "ce5ec792-4056-41a7-85f1-47fe7bcef9ec",
+      "candidate": "art/pixellab/quarantine/terrain-fruit-attempt-1-89046a1e6e54.png",
+      "candidateSha256": "89046a1e6e542f5adcfd948d3e37a6b7b08829c191ead4c385b8917bbb3e5d76",
+      "providerOutputSha256": "239ac5397ec045dde2fc3acdfe11eb85affd1faa148781a29674729a5df9fd82",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 83,
+        "top": 120,
+        "right": 172,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated harvestable Fruit world marker only: exactly three large round coral-red orchard fruits forming one broad compact triangular cluster, with one single oversized dark-green leaf and one short shared stem. Clean chunky silhouette, strong charcoal outline, flat two-level cel shading matching the accepted terrain reference, three-quarter downward strategy-game view, clearly a resource rather than grass decoration. The cluster rests at source ground contact x128 y222, remains centered and low, blank transparent 256 by 296 canvas, alpha within x48..208 y120..222. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; grass diamond, terrain tile, ground, floor, base plate, basket, bowl, crate, tree, bush, flowers, many berries, grapes, tiny dots, ore, crystals, mine, animal, unit, character, face, arms, legs, status badge, selection circle, star, text, UI, cast shadow, glow, photoreal fruit, detailed texture.",
+        "prompt": "Isolated harvestable Fruit world marker only: exactly three large round coral-red orchard fruits forming one broad compact triangular cluster, with one single oversized dark-green leaf and one short shared stem. Clean chunky silhouette, strong charcoal outline, flat two-level cel shading matching the accepted terrain reference, three-quarter downward strategy-game view, clearly a resource rather than grass decoration. The cluster rests at source ground contact x128 y222, remains centered and low, blank transparent 256 by 296 canvas, alpha within x48..208 y120..222.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; grass diamond, terrain tile, ground, floor, base plate, basket, bowl, crate, tree, bush, flowers, many berries, grapes, tiny dots, ore, crystals, mine, animal, unit, character, face, arms, legs, status badge, selection circle, star, text, UI, cast shadow, glow, photoreal fruit, detailed texture",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 52601,
+        "noBackground": true,
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "terrain-grass-1",
+          "sha256": "2458b996dcaaa4168a4bf9504bc6a68352cfe780b8e4bf4d83ccaec259849a3b"
+        }
+      },
+      "notes": "Clean alpha and readable three-fruit silhouette, but rejected after source/native inspection: 89x102 source alpha becomes 44.5x51 CSS at nominal scale, rising 14px above the grass diamond top; oversized leaf makes a low resource too tall and visually dominant.",
+      "reviewedAt": "2026-08-16T22:27:16.043Z"
+    },
+    "terrain-fruit-attempt-2": {
+      "id": "terrain-fruit-attempt-2",
+      "status": "REJECTED",
+      "jobId": "c165ba5c-9a5f-46fd-b32f-1b2845d447e6",
+      "candidate": "art/pixellab/quarantine/terrain-fruit-attempt-2-a779fd8693f7.png",
+      "candidateSha256": "a779fd8693f7b9944303d3c7de9613510f004c08b87ad8e27adee1b75065a0e0",
+      "providerOutputSha256": "ffd042b840be40fdd48e1be95339d9b2da14f07a2d7afff9d60df12def4ed463",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 85,
+        "top": 154,
+        "right": 170,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated harvestable Fruit world marker only: exactly three large coral-red orchard fruits touching in one LOW WIDE cluster, two fruits side by side and a third nestled behind them. Add one very short shared stem and one small horizontal dark-green leaf no taller than one fruit radius. Strong charcoal outline, broad flat two-level cel shading matching the accepted terrain reference, three-quarter downward strategy-game view, resource silhouette rather than decoration. Cluster ground contact centered at x128 y222; total visible alpha must stay inside x52..204 y154..222 on a blank transparent 256 by 296 canvas. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; tall leaf, vertical leaf, oversized leaf, long stem, fruit stacked vertically, grass diamond, terrain tile, ground, floor, base plate, basket, bowl, crate, tree, bush, flowers, many berries, grapes, tiny dots, ore, crystals, mine, animal, unit, character, face, arms, legs, status badge, selection circle, star, text, UI, cast shadow, glow, photoreal fruit, detailed texture.",
+        "prompt": "Isolated harvestable Fruit world marker only: exactly three large coral-red orchard fruits touching in one LOW WIDE cluster, two fruits side by side and a third nestled behind them. Add one very short shared stem and one small horizontal dark-green leaf no taller than one fruit radius. Strong charcoal outline, broad flat two-level cel shading matching the accepted terrain reference, three-quarter downward strategy-game view, resource silhouette rather than decoration. Cluster ground contact centered at x128 y222; total visible alpha must stay inside x52..204 y154..222 on a blank transparent 256 by 296 canvas.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; tall leaf, vertical leaf, oversized leaf, long stem, fruit stacked vertically, grass diamond, terrain tile, ground, floor, base plate, basket, bowl, crate, tree, bush, flowers, many berries, grapes, tiny dots, ore, crystals, mine, animal, unit, character, face, arms, legs, status badge, selection circle, star, text, UI, cast shadow, glow, photoreal fruit, detailed texture",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 52602,
+        "noBackground": true,
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "terrain-grass-2",
+          "sha256": "7c81a60a3998365251728baa5d66f99ec6cdcf8696f3e9357bf79540ae100d49"
+        }
+      },
+      "notes": "Low 85x68 source alpha fits the footprint and has clean edges, but rejected after source/native/minimum-scale inspection: the rear fruit collapses into a stem-like bump and the leaf cue disappears, so the cluster reads as two fruits rather than three.",
+      "reviewedAt": "2026-08-16T22:29:49.410Z"
+    },
+    "terrain-fruit": {
+      "id": "terrain-fruit",
+      "status": "ACCEPTED",
+      "jobId": "382ecc06-4350-4fd3-824c-331079b5c6a9",
+      "candidate": "art/pixellab/candidates/terrain-fruit.png",
+      "candidateSha256": "71d28e528ab3a4676b5396ca608181dbe815bca6843b190a54586c27d6324342",
+      "providerOutputSha256": "db969bf5b1fd8d498856f100445fe6772d1df81d6f7d7ab4537a70e22d793517",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 83,
+        "top": 150,
+        "right": 172,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated harvestable Fruit world marker only: exactly three equally large coral-red orchard fruits in one LOW WIDE cluster, arranged left, center-front and right with slight overlaps but three fully distinct round silhouettes. One short shared stem ends in one small dark-green leaf pointing sideways, entirely below the top of the rear fruits. Strong charcoal outline, broad flat two-level cel shading matching the accepted terrain reference, three-quarter downward strategy-game view, unmistakable resource silhouette rather than grass decoration. Cluster ground contact centered at x128 y222; total visible alpha inside x52..204 y150..222 on a blank transparent 256 by 296 canvas. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; tiny rear fruit, hidden fruit, only two fruits, tall leaf, vertical leaf, oversized leaf, long stem, fruit stacked vertically, grass diamond, terrain tile, ground, floor, base plate, basket, bowl, crate, tree, bush, flowers, many berries, grapes, tiny dots, ore, crystals, mine, animal, unit, character, face, arms, legs, status badge, selection circle, star, text, UI, cast shadow, glow, photoreal fruit, detailed texture.",
+        "prompt": "Isolated harvestable Fruit world marker only: exactly three equally large coral-red orchard fruits in one LOW WIDE cluster, arranged left, center-front and right with slight overlaps but three fully distinct round silhouettes. One short shared stem ends in one small dark-green leaf pointing sideways, entirely below the top of the rear fruits. Strong charcoal outline, broad flat two-level cel shading matching the accepted terrain reference, three-quarter downward strategy-game view, unmistakable resource silhouette rather than grass decoration. Cluster ground contact centered at x128 y222; total visible alpha inside x52..204 y150..222 on a blank transparent 256 by 296 canvas.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; tiny rear fruit, hidden fruit, only two fruits, tall leaf, vertical leaf, oversized leaf, long stem, fruit stacked vertically, grass diamond, terrain tile, ground, floor, base plate, basket, bowl, crate, tree, bush, flowers, many berries, grapes, tiny dots, ore, crystals, mine, animal, unit, character, face, arms, legs, status badge, selection circle, star, text, UI, cast shadow, glow, photoreal fruit, detailed texture",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 52603,
+        "noBackground": true,
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "terrain-grass-2",
+          "sha256": "7c81a60a3998365251728baa5d66f99ec6cdcf8696f3e9357bf79540ae100d49"
+        }
+      },
+      "outputSha256": "71d28e528ab3a4676b5396ca608181dbe815bca6843b190a54586c27d6324342",
+      "notes": "Accepted after source, enlarged, native, 0.75x and repeated 8x8 map review: clean 89x72 source alpha becomes a grounded 44.5x36 CSS marker; three coral fruit and compact lateral leaf remain distinct without competing with units, ore, status UI or grass decoration.",
+      "reviewedAt": "2026-08-16T22:33:37.655Z",
       "reviewChecks": {
         "source": true,
         "native": true,

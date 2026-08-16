@@ -1,5 +1,6 @@
 import { spawn } from "node:child_process";
-import { mkdir, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 
@@ -129,6 +130,7 @@ try {
     );
   } else if (resourceReview) {
     await reviewMixedResources(connection);
+    await writeFruitProductionEvidence();
     console.log(
       `Mixed-resource review passed at desktop and true 390x844 DPR2 mobile. Screenshots: ${reviewRoot}`,
     );
@@ -1793,19 +1795,23 @@ async function reviewMixedResources(connection: Connection): Promise<void> {
         const oreAt = targets[1]?.at;
         const animalAt = targets[2]?.at;
         const forestAt = targets[3]?.at;
-        if (!fruitAt || !oreAt || !animalAt || !forestAt) throw new Error('Missing resource review targets');
+        const occupiedFruitAt = targets[4]?.at;
+        const humanUnit = created.state.units.find((unit) => unit.ownerId === human?.id);
+        if (!fruitAt || !oreAt || !animalAt || !forestAt || !occupiedFruitAt || !humanUnit) throw new Error('Missing resource review targets');
         const tiles = created.state.board.tiles.map((tile) => {
           if (tile.at.x === fruitAt.x && tile.at.y === fruitAt.y) return { ...tile, terrain: 'GRASS', resource: 'FRUIT', improvement: null };
           if (tile.at.x === oreAt.x && tile.at.y === oreAt.y) return { ...tile, terrain: 'MOUNTAIN', resource: 'ORE', improvement: null };
           if (tile.at.x === animalAt.x && tile.at.y === animalAt.y) return { ...tile, terrain: 'FOREST', resource: 'ANIMAL', improvement: null };
           if (tile.at.x === forestAt.x && tile.at.y === forestAt.y) return { ...tile, terrain: 'FOREST', resource: null, improvement: null };
+          if (tile.at.x === occupiedFruitAt.x && tile.at.y === occupiedFruitAt.y) return { ...tile, terrain: 'GRASS', resource: 'FRUIT', improvement: null };
           return tile;
         });
         const prepared = {
           ...created.state,
           board: { ...created.state.board, tiles },
           activeSeatIndex: created.state.turnOrder.indexOf(human.id),
-          players: created.state.players.map((player) => player.id === human.id ? { ...player, stars: 20, researchedTechs: ['CLIMBING', 'HUNTING', 'ORGANIZATION', 'MINING', 'FORESTRY'], explored: created.state.board.tiles.map((tile) => tile.at) } : player)
+          players: created.state.players.map((player) => player.id === human.id ? { ...player, stars: 20, researchedTechs: ['CLIMBING', 'HUNTING', 'ORGANIZATION', 'MINING', 'FORESTRY'], explored: created.state.board.tiles.filter((tile) => (tile.at.x < 9 && tile.at.y < 9) || tile.territoryCityId === city.id).map((tile) => tile.at) } : player),
+          units: created.state.units.filter((unit) => unit.id === humanUnit.id).map((unit) => ({ ...unit, at: occupiedFruitAt }))
         };
         const mined = engine.applyCommand(prepared, { kind: 'BUILD_MINE', at: oreAt });
         if (!mined.ok) throw new Error(mined.error.code);
@@ -1816,7 +1822,7 @@ async function reviewMixedResources(connection: Connection): Promise<void> {
         const root = document.querySelector('#app');
         if (!(root instanceof HTMLElement)) throw new Error('Missing app root');
         root.replaceChildren();
-        const app = bootstrapApp(document, { initialRoute: 'MATCH', initialMatch: { ...reviewed.state, units: [] }, storage: null, aiStepDelayMs: 100000, prefersReducedMotion: true });
+        const app = bootstrapApp(document, { initialRoute: 'MATCH', initialMatch: reviewed.state, storage: null, aiStepDelayMs: 100000, prefersReducedMotion: true });
         Reflect.set(globalThis, '__PULP_WARS_APP__', app);
         const view = app.controller.snapshot().view;
         const territory = view?.board.tiles.filter((tile) => tile.explored && tile.territoryCityId === city.id) ?? [];
@@ -1825,9 +1831,11 @@ async function reviewMixedResources(connection: Connection): Promise<void> {
           ore: territory.filter((tile) => tile.resource === 'ORE').length,
           animal: territory.filter((tile) => tile.resource === 'ANIMAL').length,
           emptyForest: territory.filter((tile) => tile.terrain === 'FOREST' && tile.resource === null && tile.improvement === null).length,
-          mines: territory.filter((tile) => tile.improvement === 'MINE').length
+          mines: territory.filter((tile) => tile.improvement === 'MINE').length,
+          fog: view?.board.tiles.filter((tile) => !tile.explored).length ?? 0,
+          occupiedFruit: view?.units.some((unit) => unit.at.x === occupiedFruitAt.x && unit.at.y === occupiedFruitAt.y) && territory.some((tile) => tile.at.x === occupiedFruitAt.x && tile.at.y === occupiedFruitAt.y && tile.resource === 'FRUIT')
         };
-        if (signature.fruit < 1 || signature.animal < 1 || signature.emptyForest < 1 || signature.mines < 1) throw new Error('Wrong resource review signature: ' + JSON.stringify(signature));
+        if (signature.fruit < 2 || signature.animal < 1 || signature.emptyForest < 1 || signature.mines < 1 || signature.fog < 1 || !signature.occupiedFruit) throw new Error('Wrong resource review signature: ' + JSON.stringify(signature));
         globalThis.__PULP_WARS_RESOURCE_REVIEW__ = signature;
         return true;
       })()`,
@@ -1835,15 +1843,95 @@ async function reviewMixedResources(connection: Connection): Promise<void> {
     );
     await waitForExpression(
       connection,
-      `document.querySelector('.board-canvas') !== null && globalThis.__PULP_WARS_RESOURCE_REVIEW__?.fruit >= 1 && globalThis.__PULP_WARS_RESOURCE_REVIEW__?.animal >= 1`,
+      `(() => { const signature = globalThis.__PULP_WARS_RESOURCE_REVIEW__; const resources = performance.getEntriesByType('resource').map((entry) => entry.name); return document.querySelector('.board-canvas') !== null && signature?.fruit >= 2 && signature?.occupiedFruit === true && signature?.fog > 0 && resources.some((name) => name.endsWith('/assets/pixellab/terrain/fruit.png')); })()`,
     );
     await waitForNoHorizontalOverflow(connection);
-    if (mobile) await assertResponsiveTargets(connection);
+    if (mobile) {
+      await assertResponsiveTargets(connection);
+      await assertTrueMobileDpr2(connection);
+    }
     await capture(
       connection,
       mobile ? "resources-v2-mobile-390-dpr2.png" : "resources-v2-desktop.png",
     );
   }
+}
+
+async function writeFruitProductionEvidence(): Promise<void> {
+  const generated = JSON.parse(
+    await readFile("scripts/art/pixellab-generated.json", "utf8"),
+  ) as {
+    readonly records: Readonly<
+      Record<
+        string,
+        {
+          readonly status: string;
+          readonly candidate?: string;
+          readonly candidateSha256?: string;
+          readonly outputSha256?: string;
+          readonly notes?: string;
+        }
+      >
+    >;
+  };
+  const paths = [
+    "public/assets/pixellab/terrain/fruit.png",
+    "art/pixellab/reviews/fruit-iteration-review.png",
+    "art/pixellab/reviews/fruit-repetition-review.png",
+    "art/pixellab/reviews/map-review.png",
+    "art/integration/reviews/resources-v2-desktop.png",
+    "art/integration/reviews/resources-v2-mobile-390-dpr2.png",
+  ] as const;
+  const evidence = [];
+  for (const assetPath of paths) {
+    const data = await readFile(assetPath);
+    evidence.push({
+      path: assetPath,
+      sha256: createHash("sha256").update(data).digest("hex"),
+      bytes: data.byteLength,
+    });
+  }
+  const attempts = [
+    "terrain-fruit-attempt-1",
+    "terrain-fruit-attempt-2",
+    "terrain-fruit",
+  ].map((id) => {
+    const record = generated.records[id];
+    return {
+      id,
+      status: record?.status,
+      candidate: record?.candidate,
+      candidateSha256: record?.candidateSha256,
+      outputSha256: record?.outputSha256,
+      notes: record?.notes,
+    };
+  });
+  await writeFile(
+    "art/feedback/reviews/fruit-production-evidence.json",
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        productionRasterStatus: "ACCEPTED_PIXELLAB",
+        accepted: 1,
+        rejected: 2,
+        attempts,
+        runtimeFixture: {
+          fruitMarkersMinimum: 2,
+          occupiedFruitDepthChecked: true,
+          exploredFruitAgainstFogChecked: true,
+          productionUrlLoaded: "/assets/pixellab/terrain/fruit.png",
+        },
+        viewports: [
+          { width: 1440, height: 1000, devicePixelRatio: 1 },
+          { width: 390, height: 844, devicePixelRatio: 2 },
+        ],
+        evidence,
+      },
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
 }
 
 async function drivePolicy(

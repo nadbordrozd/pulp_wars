@@ -101,6 +101,12 @@ inside the owning ground diamond's lower-half boundary. Prefer a broad chunky
 silhouette with at most three large fruit forms and a leaf/container cue; avoid
 many small dots. Empty grass decoration can never resemble fruit.
 
+The accepted `terrain-fruit` production source is an untrimmed 256 x 296 PNG
+registered at `(128,222)` and displayed at 0.5 scale. Its alpha bounds are
+`x=83..172`, `y=150..222`, producing a 44.5 x 36 CSS px nominal marker. The
+renderer uses this accepted raster in the low-resource layer; the prior
+code-native cluster remains only as its asynchronous loading/error fallback.
+
 Animal is a separate low resource on Forest using the 256 x 296 object canvas,
 `(128,222)` anchor, and 0.5 scale. It must read as wildlife rather than a unit,
 owner marker, or canopy decoration at 0.75x. Preferred alpha bounds are

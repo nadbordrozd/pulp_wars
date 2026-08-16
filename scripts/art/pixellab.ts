@@ -351,6 +351,12 @@ function validateSourceManifest(
     anchor: { x: 128, y: 222 },
     hardBounds: { left: 24, top: 84, right: 232, bottom: 252 },
   });
+  assertRecipeGeometry(source, "terrain-fruit", {
+    requestSize: { width: 256, height: 296 },
+    outputSize: { width: 256, height: 296 },
+    anchor: { x: 128, y: 222 },
+    hardBounds: { left: 52, top: 150, right: 204, bottom: 222 },
+  });
   assertRecipeGeometry(source, "building-lumber-mill", {
     requestSize: { width: 256, height: 296 },
     outputSize: { width: 256, height: 296 },
@@ -984,6 +990,15 @@ async function reviewCandidate(
       )
     )
       throw new Error(`${id} review requires three accepted Forest samples`);
+    if (
+      id === "terrain-fruit" &&
+      ["terrain-fruit-attempt-1", "terrain-fruit-attempt-2"].some(
+        (attemptId) => generated.records[attemptId]?.status !== "REJECTED",
+      )
+    )
+      throw new Error(
+        `${id} review requires two documented rejected iterations`,
+      );
     const output = path.join(ROOT, recipe.output);
     await mkdir(path.dirname(output), { recursive: true });
     await copyFile(candidate, output);
@@ -1122,6 +1137,8 @@ async function createReviewSheets(
       .png()
       .toFile(path.join(REVIEW_ROOT, `${artClass}-contact-sheet.png`));
   }
+  await createFruitIterationReview(generated);
+  await createFruitRepetitionReview(generated);
   await createMapReviewPng(source, generated);
   await createMapReviewHtml(source, generated);
   await createReviewEvidenceIndex();
@@ -1133,6 +1150,8 @@ async function createReviewEvidenceIndex(): Promise<void> {
     "terrain-contact-sheet.png",
     "buildings-contact-sheet.png",
     "ui-contact-sheet.png",
+    "fruit-iteration-review.png",
+    "fruit-repetition-review.png",
     "map-review.png",
     "map-review.html",
   ];
@@ -1159,6 +1178,150 @@ async function createReviewEvidenceIndex(): Promise<void> {
     `${JSON.stringify({ schemaVersion: 1, evidence }, null, 2)}\n`,
     "utf8",
   );
+}
+
+async function createFruitIterationReview(
+  generated: GeneratedManifest,
+): Promise<void> {
+  const ids = [
+    "terrain-fruit-attempt-1",
+    "terrain-fruit-attempt-2",
+    "terrain-fruit",
+  ] as const;
+  const records = ids
+    .map((id) => generated.records[id])
+    .filter(
+      (record): record is GenerationRecord => record?.candidate !== undefined,
+    );
+  if (records.length === 0) return;
+  const grass = await sharp(
+    path.join(ROOT, "public/assets/pixellab/terrain/grass-1.png"),
+  )
+    .resize({ width: 128, height: 74, fit: "fill" })
+    .png()
+    .toBuffer();
+  const overlays: OverlayOptions[] = [];
+  const columnWidth = 420;
+  for (const [index, record] of records.entries()) {
+    if (record.candidate === undefined) continue;
+    const source = await readFile(path.join(ROOT, record.candidate));
+    const sourcePreview = await sharp(source)
+      .resize({ width: 192, height: 222, fit: "fill" })
+      .png()
+      .toBuffer();
+    const enlarged = await sharp(source)
+      .trim({ background: "#00000000" })
+      .resize({
+        width: 260,
+        height: 220,
+        fit: "contain",
+        kernel: sharp.kernel.nearest,
+      })
+      .png()
+      .toBuffer();
+    const native = await sharp(source)
+      .resize({ width: 128, height: 148, fit: "fill" })
+      .png()
+      .toBuffer();
+    const minimum = await sharp(source)
+      .resize({ width: 96, height: 111, fit: "fill" })
+      .png()
+      .toBuffer();
+    const left = index * columnWidth;
+    overlays.push({
+      input: Buffer.from(
+        `<svg width="${columnWidth}" height="56" xmlns="http://www.w3.org/2000/svg"><text x="${columnWidth / 2}" y="24" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="700" fill="#f5efe2">${escapeXml(record.id)}</text><text x="${columnWidth / 2}" y="46" text-anchor="middle" font-family="sans-serif" font-size="15" fill="${record.status === "REJECTED" ? "#ff9b91" : "#8ee8cb"}">${record.status} · ${escapeXml((record.candidateSha256 ?? "").slice(0, 12))}</text></svg>`,
+      ),
+      left,
+      top: 8,
+    });
+    overlays.push({ input: sourcePreview, left: left + 18, top: 76 });
+    overlays.push({ input: enlarged, left: left + 150, top: 76 });
+    overlays.push({
+      input: Buffer.from(
+        `<svg width="${columnWidth}" height="28" xmlns="http://www.w3.org/2000/svg"><text x="114" y="20" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#d5e2dc">source canvas</text><text x="290" y="20" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#d5e2dc">enlarged alpha</text></svg>`,
+      ),
+      left,
+      top: 300,
+    });
+    overlays.push({ input: grass, left: left + 40, top: 412 });
+    overlays.push({ input: native, left: left + 40, top: 338 });
+    overlays.push({
+      input: await sharp(grass)
+        .resize({ width: 96, height: 56, fit: "fill" })
+        .png()
+        .toBuffer(),
+      left: left + 250,
+      top: 421,
+    });
+    overlays.push({ input: minimum, left: left + 250, top: 366 });
+    overlays.push({
+      input: Buffer.from(
+        `<svg width="${columnWidth}" height="42" xmlns="http://www.w3.org/2000/svg"><text x="104" y="18" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#d5e2dc">native 1×</text><text x="298" y="18" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#d5e2dc">minimum 0.75×</text></svg>`,
+      ),
+      left,
+      top: 494,
+    });
+  }
+  await sharp({
+    create: {
+      width: records.length * columnWidth,
+      height: 548,
+      channels: 4,
+      background: "#283c3b",
+    },
+  })
+    .composite(overlays)
+    .png()
+    .toFile(path.join(REVIEW_ROOT, "fruit-iteration-review.png"));
+}
+
+async function createFruitRepetitionReview(
+  generated: GeneratedManifest,
+): Promise<void> {
+  const fruit = generated.records["terrain-fruit"];
+  if (fruit?.candidate === undefined) return;
+  const grass = await sharp(
+    path.join(ROOT, "public/assets/pixellab/terrain/grass-2.png"),
+  )
+    .resize({ width: 128, height: 74, fit: "fill" })
+    .png()
+    .toBuffer();
+  const marker = await sharp(path.join(ROOT, fruit.candidate))
+    .resize({ width: 128, height: 148, fit: "fill" })
+    .png()
+    .toBuffer();
+  const grounds: OverlayOptions[] = [];
+  const markers: Array<{
+    readonly depth: number;
+    readonly overlay: OverlayOptions;
+  }> = [];
+  const origin = { x: 512, y: 104 };
+  for (let y = 0; y < 8; y += 1) {
+    for (let x = 0; x < 8; x += 1) {
+      const center = mapReviewCenter(origin, x, y);
+      grounds.push({ input: grass, left: center.x - 64, top: center.y - 37 });
+      if ((x * 3 + y * 5) % 4 !== 0) continue;
+      markers.push({
+        depth: x + y,
+        overlay: { input: marker, left: center.x - 64, top: center.y - 111 },
+      });
+    }
+  }
+  markers.sort((left, right) => left.depth - right.depth);
+  const title = Buffer.from(
+    '<svg width="1024" height="60" xmlns="http://www.w3.org/2000/svg"><text x="512" y="34" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="700" fill="#f5efe2">Fruit · repeated-map anchor and visual-noise review</text></svg>',
+  );
+  await sharp({
+    create: { width: 1024, height: 680, channels: 4, background: "#233b39" },
+  })
+    .composite([
+      { input: title, left: 0, top: 0 },
+      ...grounds,
+      ...markers.map(({ overlay }) => overlay),
+    ])
+    .png()
+    .toFile(path.join(REVIEW_ROOT, "fruit-repetition-review.png"));
 }
 
 async function createMapReviewPng(
@@ -1206,6 +1369,7 @@ async function createMapReviewPng(
     [6, 0, "terrain-forest-4"],
     [1, 2, "terrain-animal"],
     [1, 2, "terrain-forest-1"],
+    [4, 2, "terrain-fruit"],
     [3, 2, "building-lumber-mill"],
     [3, 2, "terrain-forest-2"],
     [5, 2, "unit-catapult"],
@@ -1218,6 +1382,7 @@ async function createMapReviewPng(
     [6, 4, "unit-archer"],
     [1, 6, "building-mine"],
     [3, 6, "unit-defender"],
+    [3, 6, "terrain-fruit"],
     [5, 6, "terrain-mountain-3"],
     [7, 6, "building-city-3"],
     [7, 6, "unit-rider"],

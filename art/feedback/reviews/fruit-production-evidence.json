@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "productionRasterStatus": "ACCEPTED_PIXELLAB",
+  "accepted": 1,
+  "rejected": 2,
+  "attempts": [
+    {
+      "id": "terrain-fruit-attempt-1",
+      "status": "REJECTED",
+      "candidate": "art/pixellab/quarantine/terrain-fruit-attempt-1-89046a1e6e54.png",
+      "candidateSha256": "89046a1e6e542f5adcfd948d3e37a6b7b08829c191ead4c385b8917bbb3e5d76",
+      "notes": "Clean alpha and readable three-fruit silhouette, but rejected after source/native inspection: 89x102 source alpha becomes 44.5x51 CSS at nominal scale, rising 14px above the grass diamond top; oversized leaf makes a low resource too tall and visually dominant."
+    },
+    {
+      "id": "terrain-fruit-attempt-2",
+      "status": "REJECTED",
+      "candidate": "art/pixellab/quarantine/terrain-fruit-attempt-2-a779fd8693f7.png",
+      "candidateSha256": "a779fd8693f7b9944303d3c7de9613510f004c08b87ad8e27adee1b75065a0e0",
+      "notes": "Low 85x68 source alpha fits the footprint and has clean edges, but rejected after source/native/minimum-scale inspection: the rear fruit collapses into a stem-like bump and the leaf cue disappears, so the cluster reads as two fruits rather than three."
+    },
+    {
+      "id": "terrain-fruit",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/terrain-fruit.png",
+      "candidateSha256": "71d28e528ab3a4676b5396ca608181dbe815bca6843b190a54586c27d6324342",
+      "outputSha256": "71d28e528ab3a4676b5396ca608181dbe815bca6843b190a54586c27d6324342",
+      "notes": "Accepted after source, enlarged, native, 0.75x and repeated 8x8 map review: clean 89x72 source alpha becomes a grounded 44.5x36 CSS marker; three coral fruit and compact lateral leaf remain distinct without competing with units, ore, status UI or grass decoration."
+    }
+  ],
+  "runtimeFixture": {
+    "fruitMarkersMinimum": 2,
+    "occupiedFruitDepthChecked": true,
+    "exploredFruitAgainstFogChecked": true,
+    "productionUrlLoaded": "/assets/pixellab/terrain/fruit.png"
+  },
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 1000,
+      "devicePixelRatio": 1
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "devicePixelRatio": 2
+    }
+  ],
+  "evidence": [
+    {
+      "path": "public/assets/pixellab/terrain/fruit.png",
+      "sha256": "71d28e528ab3a4676b5396ca608181dbe815bca6843b190a54586c27d6324342",
+      "bytes": 10082
+    },
+    {
+      "path": "art/pixellab/reviews/fruit-iteration-review.png",
+      "sha256": "a8a5275cb4a5b15897151b13dfea90525e3a38fb87dfcfe820db4c3eeb0ee84f",
+      "bytes": 110774
+    },
+    {
+      "path": "art/pixellab/reviews/fruit-repetition-review.png",
+      "sha256": "ce8e5e5caf41bb431ab2745eeb272160a57fce2340affb064275ea28e85f401d",
+      "bytes": 117810
+    },
+    {
+      "path": "art/pixellab/reviews/map-review.png",
+      "sha256": "59579da7eff0036c229a76af596e8d6f59b95c19f9cef4191911803a772fabb0",
+      "bytes": 363553
+    },
+    {
+      "path": "art/integration/reviews/resources-v2-desktop.png",
+      "sha256": "e4afdec7514e20257300e187f7f9f5a6865ab9b4b8bcbe3ab18ff50b6a4b7281",
+      "bytes": 558045
+    },
+    {
+      "path": "art/integration/reviews/resources-v2-mobile-390-dpr2.png",
+      "sha256": "94473430efa7f0d6431a81447eae222308810df4fba3aad4f874fb802454f691",
+      "bytes": 373867
+    }
+  ]
+}

@@ -289,6 +289,40 @@ describe("accepted PixelLab renderer binding", () => {
     expect(context.fill).toHaveBeenCalled();
   });
 
+  it("uses accepted Fruit art at the low-object anchor and keeps fallback loading/error only", () => {
+    const listeners = new Map<string, () => void>();
+    const image = {
+      addEventListener(type: string, listener: () => void): void {
+        listeners.set(type, listener);
+      },
+      alt: "",
+      decoding: "auto",
+      src: "",
+    } as unknown as HTMLImageElement;
+    const documentRoot = {
+      createElement: vi.fn(() => image),
+    } as unknown as Document;
+    const redraw = vi.fn();
+    const bindings = createPixelLabAssetBindings(documentRoot, redraw);
+    const context = drawingContext();
+    const options = {
+      center: { x: 400, y: 300 },
+      zoom: 1,
+      ownerColor: null,
+      variant: 0,
+    };
+
+    bindings.drawFruit(context, options);
+    expect(image.src).toMatch(/\/assets\/pixellab\/terrain\/fruit\.png$/);
+    expect(context.drawImage).not.toHaveBeenCalled();
+    expect(context.arc).toHaveBeenCalled();
+
+    listeners.get("load")?.();
+    bindings.drawFruit(context, options);
+    expect(redraw).toHaveBeenCalledOnce();
+    expect(context.drawImage).toHaveBeenCalledWith(image, 336, 189, 128, 148);
+  });
+
   it("loads accepted Catapult art at the explicit siege geometry", () => {
     const listeners = new Map<string, () => void>();
     const image = {

@@ -13,6 +13,7 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   "terrain-mountain-2": "/assets/pixellab/terrain/mountain-2.png",
   "terrain-mountain-3": "/assets/pixellab/terrain/mountain-3.png",
   "terrain-ore": "/assets/pixellab/terrain/ore.png",
+  "terrain-fruit": "/assets/pixellab/terrain/fruit.png",
   "terrain-forest-1": "/assets/pixellab/terrain/forest-1.png",
   "terrain-forest-2": "/assets/pixellab/terrain/forest-2.png",
   "terrain-forest-3": "/assets/pixellab/terrain/forest-3.png",

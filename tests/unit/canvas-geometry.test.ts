@@ -533,6 +533,47 @@ describe("stable draw ordering and deterministic render fixtures", () => {
     );
   });
 
+  it("keeps an occupied Fruit marker below its unit at the shared anchor", () => {
+    const state = gameStateBuilder();
+    const human = state.players.find((player) => player.controller === "HUMAN");
+    if (human === undefined) throw new Error("Missing human fixture");
+    const base = viewFor(state, human.id);
+    const tile = base.board.tiles.find(
+      (candidate) => candidate.explored && candidate.site === null,
+    );
+    const unit = base.units.find((candidate) => candidate.ownerId === human.id);
+    if (tile === undefined || unit === undefined)
+      throw new Error("Missing occupied Fruit fixture");
+    const view: PlayerView = {
+      ...base,
+      board: {
+        ...base.board,
+        tiles: base.board.tiles.map((candidate) =>
+          candidate.at.x === tile.at.x && candidate.at.y === tile.at.y
+            ? {
+                ...candidate,
+                terrain: "GRASS" as const,
+                resource: "FRUIT" as const,
+                improvement: null,
+              }
+            : candidate,
+        ),
+      },
+      units: base.units.map((candidate) =>
+        candidate.id === unit.id ? { ...candidate, at: tile.at } : candidate,
+      ),
+    };
+    const kinds = buildRenderPlan(view, null, null)
+      .entries.filter(
+        (entry) => entry.at.x === tile.at.x && entry.at.y === tile.at.y,
+      )
+      .map((entry) => entry.kind);
+
+    expect(kinds).toContain("FRUIT");
+    expect(kinds).toContain("UNIT");
+    expect(kinds.indexOf("FRUIT")).toBeLessThan(kinds.indexOf("UNIT"));
+  });
+
   it("does not leak terrain, features, cities, or units for unexplored tiles", () => {
     const state = gameStateBuilder();
     const human = state.players.find((player) => player.controller === "HUMAN");

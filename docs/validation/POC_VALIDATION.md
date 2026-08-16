@@ -2,8 +2,8 @@
 
 **Date:** 2026-08-16  
 **Result:** Ruleset-4 functional and production presentation audit passed;
-Forest, Animal, Lumber Mill, Catapult, Forestry, and Mathematics PixelLab art
-is accepted and integrated
+Fruit, Forest, Animal, Lumber Mill, Catapult, Forestry, and Mathematics
+PixelLab art is accepted and integrated
 **Reference machine:** Windows 11 Home 10.0.26100, Intel Core i7-10510U,
 15.8 GiB RAM, Chrome 151.0.7922.137
 
@@ -1669,6 +1669,42 @@ the true 390 x 844 DPR-2 capture hash is
 See [desktop production review](../../art/feedback/reviews/forest-catapult-production-desktop-1440x1000.png),
 [mobile production review](../../art/feedback/reviews/forest-catapult-production-mobile-390x844-dpr2.png),
 and [machine-readable evidence](../../art/feedback/reviews/forest-catapult-production-evidence.json).
+
+## Fruit production raster replacement
+
+The restored PixelLab session also replaced the intentional code-native Fruit
+world marker. The credential remained environment-only and reached the exact
+Windows Node process through `WSLENV=PIXELLAB_API_KEY/w`; the checked-in tool
+printed presence only and no credential or numeric balance. All three paid
+iterations used fixed seeds, accepted Grass references with recorded hashes,
+and the checked-in 256 x 296 transparent object-canvas recipe.
+
+Two attempts were rejected and quarantined rather than wired. Attempt 1 hash
+`89046a1e6e542f5adcfd948d3e37a6b7b08829c191ead4c385b8917bbb3e5d76`
+was too tall and leaf-dominant. Attempt 2 hash
+`a779fd8693f7b9944303d3c7de9613510f004c08b87ad8e27adee1b75065a0e0`
+lost the third-fruit and leaf cues at minimum scale. The accepted third source
+and production output have identical SHA-256
+`71d28e528ab3a4676b5396ca608181dbe815bca6843b190a54586c27d6324342`.
+Its alpha bounds are `x=83..172`, `y=150..222`, so the `(128,222)` anchor and
+0.5 runtime scale produce a grounded 44.5 x 36 CSS px marker.
+
+The renderer now requests `/assets/pixellab/terrain/fruit.png` in the existing
+low-resource layer; the code-native marker is retained only for asynchronous
+loading or load error. Focused tests verify this transition and exact anchor.
+Source/enlarged/native/0.75x inspection, rejected-versus-accepted comparison,
+8 x 8 repetition, occupied-tile depth, and explored-Fruit/fog-edge behavior
+passed. The actual production URL loaded in both Chrome captures. Desktop
+1440 x 1000 DPR1 hash is
+`e4afdec7514e20257300e187f7f9f5a6865ab9b4b8bcbe3ab18ff50b6a4b7281`;
+true 390 x 844 DPR2 hash is
+`94473430efa7f0d6431a81447eae222308810df4fba3aad4f874fb802454f691`.
+
+See the [iteration sheet](../../art/pixellab/reviews/fruit-iteration-review.png),
+[repetition sheet](../../art/pixellab/reviews/fruit-repetition-review.png),
+[desktop runtime review](../../art/integration/reviews/resources-v2-desktop.png),
+[mobile runtime review](../../art/integration/reviews/resources-v2-mobile-390-dpr2.png),
+and [machine-readable evidence](../../art/feedback/reviews/fruit-production-evidence.json).
 
 Windows localhost returned HTTP 200 from `http://localhost:6173`, and every
 Chrome run used that strict-port Vite entry point.

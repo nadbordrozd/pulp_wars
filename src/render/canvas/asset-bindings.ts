@@ -140,9 +140,7 @@ export const CODE_NATIVE_PLACEHOLDER_ASSETS: BoardAssetBindings = {
     context.restore();
   },
 
-  // Temporary code-native world marker for ruleset-2. Production fruit art
-  // remains a separate scripted PixelLab follow-up; this deterministic marker
-  // deliberately uses no accepted bitmap slot.
+  // Loading/error fallback for the accepted PixelLab Fruit world marker.
   drawFruit(context, options): void {
     const { center, zoom, variant } = options;
     context.save();

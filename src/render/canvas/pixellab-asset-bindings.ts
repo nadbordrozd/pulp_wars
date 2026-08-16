@@ -236,7 +236,13 @@ export function createPixelLabAssetBindings(
       );
     },
     drawFruit(context, options): void {
-      CODE_NATIVE_PLACEHOLDER_ASSETS.drawFruit(context, options);
+      draw(
+        context,
+        "terrain-fruit",
+        options,
+        BOARD_ART_GEOMETRY.lowObject,
+        () => CODE_NATIVE_PLACEHOLDER_ASSETS.drawFruit(context, options),
+      );
     },
     drawAnimal(context, options): void {
       draw(
@@ -376,6 +382,7 @@ export const PIXELLAB_BOARD_ART_IDS = Object.freeze([
   "terrain-mountain-2",
   "terrain-mountain-3",
   "terrain-ore",
+  "terrain-fruit",
   "terrain-forest-1",
   "terrain-forest-2",
   "terrain-forest-3",
