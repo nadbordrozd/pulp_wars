@@ -1,0 +1,102 @@
+{
+  "rulesetId": "pulp-wars-poc-4",
+  "seed": 0,
+  "cases": [
+    {
+      "aiCount": 1,
+      "size": 11,
+      "mountains": 22,
+      "forests": 29,
+      "animals": 6,
+      "boardHash": "32148507db43e473e94be4569b25ed5a7243622730af0617c648bdce9c64e0a0"
+    },
+    {
+      "aiCount": 1,
+      "size": 14,
+      "mountains": 35,
+      "forests": 47,
+      "animals": 5,
+      "boardHash": "6234eeff5124d67be64aa81a22286218596810ae4598d6984b237808abe374e4"
+    },
+    {
+      "aiCount": 1,
+      "size": 16,
+      "mountains": 46,
+      "forests": 61,
+      "animals": 4,
+      "boardHash": "6847527ad9c4cd01fe7c2cafac63819f1f37609e2fbf079463a87424cd11d8c0"
+    },
+    {
+      "aiCount": 1,
+      "size": 20,
+      "mountains": 72,
+      "forests": 96,
+      "animals": 21,
+      "boardHash": "ed8dd7f3b4fa0fc85cf0ed01da4e0633861faaf9586d679db7a474a9a84ca7be"
+    },
+    {
+      "aiCount": 1,
+      "size": 25,
+      "mountains": 113,
+      "forests": 150,
+      "animals": 30,
+      "boardHash": "486340ebd41ed1b490f7200a0f6fdf304d2f33d6c0d885f06e829ae8fffed5b9"
+    },
+    {
+      "aiCount": 2,
+      "size": 14,
+      "mountains": 35,
+      "forests": 47,
+      "animals": 10,
+      "boardHash": "d3804b2e9f10dc0f7cd6e65a766b88f4e89bdea905e6df873f9232c2e443fd5f"
+    },
+    {
+      "aiCount": 2,
+      "size": 16,
+      "mountains": 46,
+      "forests": 61,
+      "animals": 9,
+      "boardHash": "1ea2723175538fc12934c8cde614aa44524740f5e87041342de93562f94e15bc"
+    },
+    {
+      "aiCount": 2,
+      "size": 20,
+      "mountains": 72,
+      "forests": 96,
+      "animals": 23,
+      "boardHash": "9e92566aacfbb3da99413015c2203b79d9136d7d5d94cfb6dda48f1f0ace1a84"
+    },
+    {
+      "aiCount": 2,
+      "size": 25,
+      "mountains": 113,
+      "forests": 150,
+      "animals": 31,
+      "boardHash": "1edf35e30ecfef3a9a2abe28871353298ab9fd23ec3c0d4f83a09317bac02f41"
+    },
+    {
+      "aiCount": 3,
+      "size": 16,
+      "mountains": 46,
+      "forests": 61,
+      "animals": 11,
+      "boardHash": "837cec5a809a1932f0c66c3281ebaee7b96c741c50a3423afc72fd18f3074e23"
+    },
+    {
+      "aiCount": 3,
+      "size": 20,
+      "mountains": 72,
+      "forests": 96,
+      "animals": 20,
+      "boardHash": "c848673229b769e78b4f8a3ddd280902353c29c06279c3560bc344541e4e20ae"
+    },
+    {
+      "aiCount": 3,
+      "size": 25,
+      "mountains": 113,
+      "forests": 150,
+      "animals": 31,
+      "boardHash": "a65947040ec6f59b3881c4232b394d4e9204c78ab8857d5a519310bee7757693"
+    }
+  ]
+}

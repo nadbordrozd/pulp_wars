@@ -1,0 +1,15 @@
+{
+  "format": "pulp-wars-replay",
+  "version": 1,
+  "setup": {
+    "rulesetId": "pulp-wars-poc-1",
+    "seed": 1,
+    "width": 11,
+    "height": 11,
+    "aiCount": 1,
+    "aiDifficulty": "NORMAL",
+    "humanColor": "CORAL"
+  },
+  "commands": [],
+  "checkpoints": []
+}

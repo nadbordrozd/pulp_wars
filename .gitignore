@@ -4,3 +4,8 @@
 *.db
 .beads-credential-key
 .beads/proxieddb/
+
+# TypeScript / Vite build outputs
+node_modules/
+dist/
+*.tsbuildinfo

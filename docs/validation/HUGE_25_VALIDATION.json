@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 2,
+  "rulesetId": "pulp-wars-poc-2",
+  "generatedAt": "2026-08-15T10:44:44.568Z",
+  "host": {
+    "platform": "win32",
+    "architecture": "x64",
+    "node": "v24.12.0",
+    "cpu": "Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz"
+  },
+  "contract": {
+    "size": 25,
+    "totalSettlements": 30,
+    "neutralVillages": { "1": 28, "2": 27, "3": 26 },
+    "mountains": 113,
+    "generationAttemptCeiling": 256
+  },
+  "generation": [
+    {
+      "aiCount": 1,
+      "seeds": 1000,
+      "deterministicRuns": 2000,
+      "failures": 0,
+      "maximumAttempt": 1,
+      "averageAttempts": 1,
+      "runtimeMs": 41722,
+      "corpusHash": "2ecc9ad6a9dfdc897c633f0db7308cef25f3d67f556e1c4fc28fc2921b8f36bb"
+    },
+    {
+      "aiCount": 2,
+      "seeds": 1000,
+      "deterministicRuns": 2000,
+      "failures": 0,
+      "maximumAttempt": 1,
+      "averageAttempts": 1,
+      "runtimeMs": 42058,
+      "corpusHash": "90567d3caf059f5f3fcdaa740a4270239a13b881332122c451c27d079b210952"
+    },
+    {
+      "aiCount": 3,
+      "seeds": 1000,
+      "deterministicRuns": 2000,
+      "failures": 0,
+      "maximumAttempt": 1,
+      "averageAttempts": 1,
+      "runtimeMs": 40312,
+      "corpusHash": "a78bb3437b0c1a513f547d8a55894e1ba82435f0571be31f0931f1ba4de1b3b7"
+    }
+  ],
+  "completeMatches": [
+    {
+      "aiCount": 1,
+      "seed": 0,
+      "maxCommands": 20000,
+      "maxRounds": 500,
+      "winnerId": 2,
+      "rounds": 41,
+      "commands": 1885,
+      "errors": 0,
+      "stalls": 0,
+      "runtimeMs": 62083,
+      "commandHash": "c8b51e18322fb4daffbd262084bc3ecd0aa017dfcc576d3530c994b18caefbfc",
+      "eventHash": "51474f4111cb11e418aac1702dbdf7f4d6a1d5c9471238e0a5ad2469cc28f20f",
+      "finalHash": "5cc54f26889ec02cb2e56a424b0322fa00fe6b49b4a6ae188b263b63a38c83a0"
+    },
+    {
+      "aiCount": 2,
+      "seed": 0,
+      "maxCommands": 20000,
+      "maxRounds": 500,
+      "winnerId": 2,
+      "rounds": 57,
+      "commands": 3581,
+      "errors": 0,
+      "stalls": 0,
+      "runtimeMs": 126922,
+      "commandHash": "911f6f88f80dbbdd938cbd2e67511971516a1a10df4829a970ae1c213cf3f1e5",
+      "eventHash": "ff75d39f084bfe83ef125a74cc3e93edde3f4882a8c2842e76f08e4ec4a94501",
+      "finalHash": "45bc91c26d98f2266de8e7b22e8a3309ae17b3d39bd4b181da8285ec910b60bc"
+    },
+    {
+      "aiCount": 3,
+      "seed": 0,
+      "maxCommands": 20000,
+      "maxRounds": 500,
+      "winnerId": 3,
+      "rounds": 93,
+      "commands": 7525,
+      "errors": 0,
+      "stalls": 0,
+      "runtimeMs": 649439,
+      "commandHash": "47d7d1f23fda6d3eedb3f58e92529d23161fcc3bd517805e6709be812d234bd9",
+      "eventHash": "f15a2f07fe0f4d292059b42e101d1178cb9b3d1337199cd985e029cf2f49e2b3",
+      "finalHash": "9638f62b913497b7a9fcaf145f04bdb24ff6b8257037fe38f4490e01048d16a7"
+    }
+  ],
+  "totalRuntimeMs": 962999
+}

@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "productionRasterStatus": "UNGENERATED_CREDENTIAL_UNAVAILABLE",
+  "accepted": 0,
+  "rejected": 0,
+  "fallbackFixture": {
+    "forests": 29,
+    "animals": 4,
+    "lumberMills": 3,
+    "catapults": 1
+  },
+  "mobileCanvas": {
+    "cssWidth": 390,
+    "cssHeight": 844,
+    "backingWidth": 780,
+    "backingHeight": 1688,
+    "devicePixelRatio": 2
+  },
+  "evidence": [
+    {
+      "path": "art/feedback/reviews/forest-catapult-fallback-desktop-1440x1000.png",
+      "viewport": {
+        "width": 1440,
+        "height": 1000,
+        "devicePixelRatio": 1
+      },
+      "sha256": "416d1262ccbc072455b17dd79fa8f79c25356fee2b26048ae7c0f0546767f13e",
+      "bytes": 410752
+    },
+    {
+      "path": "art/feedback/reviews/forest-catapult-fallback-mobile-390x844-dpr2.png",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "devicePixelRatio": 2
+      },
+      "sha256": "8c94ba76557d0a0d3f79291a937837baeb8c0e3997e9b1baf1b39237232edfc5",
+      "bytes": 236456
+    }
+  ]
+}

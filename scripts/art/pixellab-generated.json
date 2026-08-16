@@ -1,0 +1,1219 @@
+{
+  "schemaVersion": 1,
+  "sourceManifestSha256": "66a04d91c9dc22e2d0a2060efc1dfb0254761b7befd68feae616c662b930470b",
+  "records": {
+    "unit-warrior": {
+      "id": "unit-warrior",
+      "status": "ACCEPTED",
+      "jobId": "15be4061-f25e-4b30-996d-7c0ef22c2b2c",
+      "candidate": "art/pixellab/candidates/unit-warrior.png",
+      "candidateSha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 20,
+        "top": 18,
+        "right": 236,
+        "bottom": 252,
+        "empty": false
+      },
+      "outputSha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1",
+      "notes": "Clear oversized sword silhouette, visible feet, correct transparent 256x296 canvas, coherent neutral faction language and readable nominal scale.",
+      "reviewedAt": "2026-08-14T20:12:00.012Z",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated full-body Warrior game sprite, southeast-facing three-quarter view looking slightly downward, large head and short chunky body, both feet visible straddling ground contact at x128 y222, broad balanced stance, enormous simple bronze sword clearly readable, neutral test-faction costume, blank transparent canvas, visible alpha within x16..240 y4..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; shield as primary silhouette, bow, mount, dramatic foreshortening, hidden feet.",
+        "prompt": "Isolated full-body Warrior game sprite, southeast-facing three-quarter view looking slightly downward, large head and short chunky body, both feet visible straddling ground contact at x128 y222, broad balanced stance, enormous simple bronze sword clearly readable, neutral test-faction costume, blank transparent canvas, visible alpha within x16..240 y4..252.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; shield as primary silhouette, bow, mount, dramatic foreshortening, hidden feet",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 41001,
+        "noBackground": true
+      }
+    },
+    "unit-defender": {
+      "id": "unit-defender",
+      "status": "ACCEPTED",
+      "jobId": "7ece9beb-8a4f-4a41-a8fa-be041495a135",
+      "candidate": "art/pixellab/candidates/unit-defender.png",
+      "candidateSha256": "930c31f9aa1bf5dacf0318484b31ac63504365482ae01a84a6a269d94de65e11",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 16,
+        "top": 19,
+        "right": 240,
+        "bottom": 237,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated full-body Defender game sprite, southeast-facing three-quarter view looking slightly downward, large head and short chunky body, both feet visible straddling ground contact at x128 y222, planted broad stance, enormous SOLID FILLED slate-blue oval shield is the unmistakable primary mass but does not hide head, short spear secondary, neutral test-faction costume, blank transparent canvas, visible alpha within x16..240 y4..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; hollow ring shield, transparent shield center, thin buckler, tall giant, sword as primary silhouette, bow, mount, hidden face, hidden feet.",
+        "prompt": "Isolated full-body Defender game sprite, southeast-facing three-quarter view looking slightly downward, large head and short chunky body, both feet visible straddling ground contact at x128 y222, planted broad stance, enormous SOLID FILLED slate-blue oval shield is the unmistakable primary mass but does not hide head, short spear secondary, neutral test-faction costume, blank transparent canvas, visible alpha within x16..240 y4..252.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; hollow ring shield, transparent shield center, thin buckler, tall giant, sword as primary silhouette, bow, mount, hidden face, hidden feet",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 51002,
+        "noBackground": true
+      },
+      "outputSha256": "930c31f9aa1bf5dacf0318484b31ac63504365482ae01a84a6a269d94de65e11",
+      "notes": "Second attempt has a solid broad shield, planted feet, clear role silhouette, coherent faction costume, clean alpha and readable nominal scale.",
+      "reviewedAt": "2026-08-14T20:25:20.476Z"
+    },
+    "terrain-grass-1": {
+      "id": "terrain-grass-1",
+      "status": "ACCEPTED",
+      "jobId": "9c6af1d3-1039-48cb-a5d9-3aa0f76fe607",
+      "candidate": "art/pixellab/candidates/terrain-grass-1.png",
+      "candidateSha256": "2458b996dcaaa4168a4bf9504bc6a68352cfe780b8e4bf4d83ccaec259849a3b",
+      "width": 256,
+      "height": 148,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 15,
+        "top": 0,
+        "right": 239,
+        "bottom": 148,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. EMPTY edge-to-edge isometric diamond grass ground tile with exact vertices top 128,0 right 256,74 bottom 128,148 left 0,74. Only a quiet broad uniform leaf-green ground field and one large low-contrast curved grass stroke. Simple flat illustrated color, seamless compatible edges, transparent outside diamond, absolutely no subject or object. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; person, people, character, creature, unit, building, equipment, object floating above tile, flowers, ore, roads, ownership mark, busy texture, edge lighting, border mismatch.",
+        "prompt": "EMPTY edge-to-edge isometric diamond grass ground tile with exact vertices top 128,0 right 256,74 bottom 128,148 left 0,74. Only a quiet broad uniform leaf-green ground field and one large low-contrast curved grass stroke. Simple flat illustrated color, seamless compatible edges, transparent outside diamond, absolutely no subject or object.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; person, people, character, creature, unit, building, equipment, object floating above tile, flowers, ore, roads, ownership mark, busy texture, edge lighting, border mismatch",
+        "requestSize": {
+          "width": 256,
+          "height": 148
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 148
+        },
+        "seed": 52001,
+        "noBackground": true,
+        "postprocess": "diamond-mask"
+      },
+      "outputSha256": "2458b996dcaaa4168a4bf9504bc6a68352cfe780b8e4bf4d83ccaec259849a3b",
+      "notes": "Empty quiet leaf-green diamond with one broad low-contrast decoration; clean mask, no false gameplay mark and readable repeated ground treatment.",
+      "reviewedAt": "2026-08-14T20:25:22.859Z"
+    },
+    "terrain-grass-2": {
+      "id": "terrain-grass-2",
+      "status": "ACCEPTED",
+      "jobId": "6773d9e3-f10e-48c4-b070-a8b9181d118d",
+      "candidate": "art/pixellab/candidates/terrain-grass-2.png",
+      "candidateSha256": "7c81a60a3998365251728baa5d66f99ec6cdcf8696f3e9357bf79540ae100d49",
+      "width": 256,
+      "height": 148,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 14,
+        "top": 0,
+        "right": 239,
+        "bottom": 148,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. One empty isometric grass diamond that is a close sibling of the style reference: exact same flat diamond footprint, same uniform leaf-green base palette, outline-free edge treatment and quiet broad fill. Change only the decoration to two small SOFT FILLED oval leaf patches entirely inside the central 30 percent, with value differing from the base by at most ten percent. Transparent outside the single diamond. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; black line, outlined decoration, curved stripe, path, different base color, white corners, decoration touching edge, high contrast, multiple diamonds, tiled pattern, grid, farm plots, raised side, thickness, person, character, creature, unit, building, flower, ore, road, ownership mark, busy texture.",
+        "prompt": "One empty isometric grass diamond that is a close sibling of the style reference: exact same flat diamond footprint, same uniform leaf-green base palette, outline-free edge treatment and quiet broad fill. Change only the decoration to two small SOFT FILLED oval leaf patches entirely inside the central 30 percent, with value differing from the base by at most ten percent. Transparent outside the single diamond.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; black line, outlined decoration, curved stripe, path, different base color, white corners, decoration touching edge, high contrast, multiple diamonds, tiled pattern, grid, farm plots, raised side, thickness, person, character, creature, unit, building, flower, ore, road, ownership mark, busy texture",
+        "requestSize": {
+          "width": 256,
+          "height": 148
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 148
+        },
+        "seed": 92002,
+        "noBackground": true,
+        "postprocess": "diamond-mask-reference-edges",
+        "styleReference": {
+          "id": "terrain-grass-1",
+          "sha256": "2458b996dcaaa4168a4bf9504bc6a68352cfe780b8e4bf4d83ccaec259849a3b"
+        }
+      },
+      "outputSha256": "7c81a60a3998365251728baa5d66f99ec6cdcf8696f3e9357bf79540ae100d49",
+      "notes": "Style-reference and edge-band pass now matches Grass 1 base and seam treatment; two central low-contrast patches stay clear of edges and imply no gameplay state.",
+      "reviewedAt": "2026-08-14T20:46:26.458Z"
+    },
+    "unit-archer": {
+      "id": "unit-archer",
+      "status": "ACCEPTED",
+      "jobId": "7a21d70f-a564-4673-8617-b4829b170a22",
+      "candidate": "art/pixellab/candidates/unit-archer.png",
+      "candidateSha256": "deb62a8a84dc28ceecd58047a3f65abdb67c0616851337c817452d75a5b73bb2",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 45,
+        "top": 25,
+        "right": 206,
+        "bottom": 252,
+        "empty": false
+      },
+      "outputSha256": "deb62a8a84dc28ceecd58047a3f65abdb67c0616851337c817452d75a5b73bb2",
+      "notes": "Bow and quiver read immediately at nominal scale; feet, camera, outline, palette and transparent anchor canvas pass.",
+      "reviewedAt": "2026-08-14T20:12:02.484Z",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated full-body Archer game sprite, southeast-facing three-quarter view looking slightly downward, large head and short chunky body, both feet visible straddling ground contact at x128 y222, compact ready pose, huge clean curved bow silhouette and simple quiver, neutral test-faction costume, blank transparent canvas, visible alpha within x16..240 y4..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; sword, shield as primary silhouette, mount, tiny bow, invisible feet.",
+        "prompt": "Isolated full-body Archer game sprite, southeast-facing three-quarter view looking slightly downward, large head and short chunky body, both feet visible straddling ground contact at x128 y222, compact ready pose, huge clean curved bow silhouette and simple quiver, neutral test-faction costume, blank transparent canvas, visible alpha within x16..240 y4..252.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; sword, shield as primary silhouette, mount, tiny bow, invisible feet",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 41003,
+        "noBackground": true
+      }
+    },
+    "terrain-grass-3": {
+      "id": "terrain-grass-3",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/terrain-grass-3.png",
+      "candidateSha256": "f43708801d897976d52a828d818c0fe670dddd6e0c4ac403040f646570d3c10d",
+      "width": 256,
+      "height": 148,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 17,
+        "top": 0,
+        "right": 241,
+        "bottom": 148,
+        "empty": false
+      },
+      "notes": "Deterministic 180-degree variant of accepted PixelLab Grass 1 preserves exact seam-safe palette and footprint while moving the broad decoration; native and enlarged repetition pass.",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 180-degree rotation variant of the accepted PixelLab Grass 1 source, preserving its exact flat diamond footprint, palette and seam treatment while relocating the broad crescent decoration. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No new generated content; deterministic reference transform only..",
+        "prompt": "Deterministic 180-degree rotation variant of the accepted PixelLab Grass 1 source, preserving its exact flat diamond footprint, palette and seam treatment while relocating the broad crescent decoration.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No new generated content; deterministic reference transform only.",
+        "requestSize": {
+          "width": 256,
+          "height": 148
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 148
+        },
+        "seed": 92003,
+        "noBackground": true,
+        "postprocess": "reference-rotate-180-diamond",
+        "styleReference": {
+          "id": "terrain-grass-1",
+          "sha256": "2458b996dcaaa4168a4bf9504bc6a68352cfe780b8e4bf4d83ccaec259849a3b"
+        }
+      },
+      "outputSha256": "f43708801d897976d52a828d818c0fe670dddd6e0c4ac403040f646570d3c10d",
+      "reviewedAt": "2026-08-14T20:51:01.778Z"
+    },
+    "terrain-mountain-2": {
+      "id": "terrain-mountain-2",
+      "status": "ACCEPTED",
+      "jobId": "485e356f-7539-4c85-b4b2-f82b773fb24d",
+      "candidate": "art/pixellab/candidates/terrain-mountain-2.png",
+      "candidateSha256": "2d5fce2c90c1d7823055bb92f8e2172b9388c231c224e78f80f4c1fd66074598",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 7,
+        "top": 40,
+        "right": 249,
+        "bottom": 251,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated EMPTY chunky mountain terrain object: exactly two unequal rounded slate peaks forming one broad silhouette, each made from only two broad flat illustrated planes, no cap and no markings. Isometric three-quarter downward view, ground footprint centered on x128 y222 within a diamond, strong charcoal outline, quiet low-contrast terrain palette, blank transparent canvas, alpha within x12..244 y6..244. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; person, creature, animal, dragon, bird, unit, building, star, sparkle, symbol, white mark, photoreal strata, pebbles, extra peaks, scenery, grass tile, snow, texture, text.",
+        "prompt": "Isolated EMPTY chunky mountain terrain object: exactly two unequal rounded slate peaks forming one broad silhouette, each made from only two broad flat illustrated planes, no cap and no markings. Isometric three-quarter downward view, ground footprint centered on x128 y222 within a diamond, strong charcoal outline, quiet low-contrast terrain palette, blank transparent canvas, alpha within x12..244 y6..244.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; person, creature, animal, dragon, bird, unit, building, star, sparkle, symbol, white mark, photoreal strata, pebbles, extra peaks, scenery, grass tile, snow, texture, text",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 52102,
+        "noBackground": true
+      },
+      "outputSha256": "2d5fce2c90c1d7823055bb92f8e2172b9388c231c224e78f80f4c1fd66074598",
+      "notes": "Two-peak silhouette reads immediately with only broad planes, no false entity or status mark, clean alpha and quiet terrain detail.",
+      "reviewedAt": "2026-08-14T20:25:25.225Z"
+    },
+    "terrain-mountain-1": {
+      "id": "terrain-mountain-1",
+      "status": "ACCEPTED",
+      "jobId": "a5f15f2f-a507-4124-81dc-880d346e3656",
+      "candidate": "art/pixellab/candidates/terrain-mountain-1.png",
+      "candidateSha256": "725afbf8ac29069ae7c9cc2c7a9474f14b261b7cd8c48bb43c732ba363d84c05",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 7,
+        "top": 40,
+        "right": 249,
+        "bottom": 251,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated EMPTY chunky mountain terrain object only, a sibling variant of the style reference: exactly one tall asymmetrical slate peak with one smaller shoulder, using the same tan/slate palette, outline, broad-plane shading and clean base treatment as the reference. Rock ends directly at x128 y222, no cap, no markings and no ground underneath, otherwise transparent canvas. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; different palette, coral, green accent, pure white snow, base plate, ground slab, square, diamond tile, grass, floor, flag, pole, person, creature, animal, unit, building, star, sparkle, symbol, photoreal strata, pebbles, extra peaks, texture, text.",
+        "prompt": "Isolated EMPTY chunky mountain terrain object only, a sibling variant of the style reference: exactly one tall asymmetrical slate peak with one smaller shoulder, using the same tan/slate palette, outline, broad-plane shading and clean base treatment as the reference. Rock ends directly at x128 y222, no cap, no markings and no ground underneath, otherwise transparent canvas.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; different palette, coral, green accent, pure white snow, base plate, ground slab, square, diamond tile, grass, floor, flag, pole, person, creature, animal, unit, building, star, sparkle, symbol, photoreal strata, pebbles, extra peaks, texture, text",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 72101,
+        "noBackground": true,
+        "styleReference": {
+          "id": "terrain-mountain-2",
+          "sha256": "2d5fce2c90c1d7823055bb92f8e2172b9388c231c224e78f80f4c1fd66074598"
+        }
+      },
+      "outputSha256": "725afbf8ac29069ae7c9cc2c7a9474f14b261b7cd8c48bb43c732ba363d84c05",
+      "notes": "Style-reference pass matches accepted Mountain 2 palette, outline, broad-plane shading and clean transparent base while providing a distinct asymmetrical silhouette.",
+      "reviewedAt": "2026-08-14T20:40:05.728Z"
+    },
+    "terrain-mountain-3": {
+      "id": "terrain-mountain-3",
+      "status": "ACCEPTED",
+      "jobId": "2a3bf061-1d12-4c0d-9e42-1a6faa235c20",
+      "candidate": "art/pixellab/candidates/terrain-mountain-3.png",
+      "candidateSha256": "de389225ed25cb9a34d1fcbabed740fdc3fb9d8f0ebe79a38b607c86cc0b749a",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 20,
+        "top": 30,
+        "right": 235,
+        "bottom": 262,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated EMPTY chunky mountain terrain object only, a sibling variant of the style reference: one tall wide split-top slate crag with exactly three broad faces, using the same tan/slate palette, outline, broad-plane shading and clean base treatment as the reference. Rock ends directly at x128 y222, no cap, no markings and no ground underneath, otherwise transparent canvas. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; different palette, coral, green accent, pure white snow, low boulders, rock pile, resource, base plate, ground slab, square, diamond tile, grass, floor, flag, person, creature, animal, unit, building, star, sparkle, symbol, photoreal strata, pebbles, extra peaks, texture, text.",
+        "prompt": "Isolated EMPTY chunky mountain terrain object only, a sibling variant of the style reference: one tall wide split-top slate crag with exactly three broad faces, using the same tan/slate palette, outline, broad-plane shading and clean base treatment as the reference. Rock ends directly at x128 y222, no cap, no markings and no ground underneath, otherwise transparent canvas.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; different palette, coral, green accent, pure white snow, low boulders, rock pile, resource, base plate, ground slab, square, diamond tile, grass, floor, flag, person, creature, animal, unit, building, star, sparkle, symbol, photoreal strata, pebbles, extra peaks, texture, text",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 72103,
+        "noBackground": true,
+        "styleReference": {
+          "id": "terrain-mountain-2",
+          "sha256": "2d5fce2c90c1d7823055bb92f8e2172b9388c231c224e78f80f4c1fd66074598"
+        }
+      },
+      "outputSha256": "de389225ed25cb9a34d1fcbabed740fdc3fb9d8f0ebe79a38b607c86cc0b749a",
+      "notes": "Style-reference pass matches accepted mountain family and gives a distinct tall split silhouette without false marks or excess detail.",
+      "reviewedAt": "2026-08-14T20:40:08.061Z"
+    },
+    "building-village": {
+      "id": "building-village",
+      "status": "ACCEPTED",
+      "jobId": "0953636a-9ec7-45b3-bdcc-9c9e4e3774cd",
+      "candidate": "art/pixellab/candidates/building-village.png",
+      "candidateSha256": "b699a29255672ef8d992e519c508992bac6926dc41aa9f19980842aa345bff14",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 52,
+        "top": 49,
+        "right": 229,
+        "bottom": 237,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated neutral village game building only, one tiny chunky round plaster hut with oversized simple bronze roof and one adjoining shed, highly simplified silhouette, isometric three-quarter downward view, feet of walls touch ground around x128 y222, strong charcoal outline, flat two-level cel shading, no faction color, transparent canvas with nothing under or around the building, alpha within x20..236 y12..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; ground slab, base plate, floor, grass, shadow, city, castle, unit, realistic architecture, many windows, environment, terrain tile, text, flag, cast shadow.",
+        "prompt": "Isolated neutral village game building only, one tiny chunky round plaster hut with oversized simple bronze roof and one adjoining shed, highly simplified silhouette, isometric three-quarter downward view, feet of walls touch ground around x128 y222, strong charcoal outline, flat two-level cel shading, no faction color, transparent canvas with nothing under or around the building, alpha within x20..236 y12..252.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; ground slab, base plate, floor, grass, shadow, city, castle, unit, realistic architecture, many windows, environment, terrain tile, text, flag, cast shadow",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 53001,
+        "noBackground": true
+      },
+      "outputSha256": "b699a29255672ef8d992e519c508992bac6926dc41aa9f19980842aa345bff14",
+      "notes": "Neutral small settlement reads below city scale; isolated structure, clean alpha, correct camera and restrained detail pass at nominal scale.",
+      "reviewedAt": "2026-08-14T20:25:27.867Z"
+    },
+    "building-city-1": {
+      "id": "building-city-1",
+      "status": "ACCEPTED",
+      "jobId": "5eef9693-2226-4d1a-a3db-e56ebb00ec6f",
+      "candidate": "art/pixellab/candidates/building-city-1.png",
+      "candidateSha256": "0de081f57501eb27ec8317841a5b51fe028e0f83f74b29f46979734eea140c6d",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 24,
+        "top": 51,
+        "right": 360,
+        "bottom": 337,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated level-one test-faction city BUILDING ONLY, coherent cluster of two chunky rounded parchment plaster halls with oversized bronze roofs, one large completely uncolored off-white blank cloth banner mounted high on the front hall. Walls end directly at their own foundations around x192 y300. Isometric three-quarter downward view, simplified silhouette, strong charcoal outline, flat two-level cel shading, otherwise blank transparent canvas, alpha within x8..376 y4..344. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; ground slab, base plate, floor, diamond tile, grass, shadow, colored banner, coral cloth, red cloth, blue cloth, village, giant castle, unit, realistic architecture, tiny clutter, scenery, terrain, text, symbol, baked owner color, cast shadow.",
+        "prompt": "Isolated level-one test-faction city BUILDING ONLY, coherent cluster of two chunky rounded parchment plaster halls with oversized bronze roofs, one large completely uncolored off-white blank cloth banner mounted high on the front hall. Walls end directly at their own foundations around x192 y300. Isometric three-quarter downward view, simplified silhouette, strong charcoal outline, flat two-level cel shading, otherwise blank transparent canvas, alpha within x8..376 y4..344.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; ground slab, base plate, floor, diamond tile, grass, shadow, colored banner, coral cloth, red cloth, blue cloth, village, giant castle, unit, realistic architecture, tiny clutter, scenery, terrain, text, symbol, baked owner color, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 63002,
+        "noBackground": true
+      },
+      "outputSha256": "0de081f57501eb27ec8317841a5b51fe028e0f83f74b29f46979734eea140c6d",
+      "notes": "Third attempt is an isolated transparent level-one building with blank neutral banner, broad coherent bronze roofs, clean alpha and a clearly smaller mass than accepted level three.",
+      "reviewedAt": "2026-08-14T20:35:18.149Z"
+    },
+    "ui-star": {
+      "id": "ui-star",
+      "status": "ACCEPTED",
+      "jobId": "6884480c-80c3-49da-9381-39de3b44c7e3",
+      "candidate": "art/pixellab/candidates/ui-star.png",
+      "candidateSha256": "86b0c714661f50e239bebb5b17b331b6e28e9f95aa6faf3935684b9328578211",
+      "width": 96,
+      "height": 96,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 16,
+        "top": 16,
+        "right": 77,
+        "bottom": 76,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm gold, parchment highlight, charcoal teal outline. Single compact HUD resource icon: one chunky asymmetric five-point warm-gold star token with a small notch, strong charcoal outline, isolated centered silhouette with 8 percent transparent safe area, readable at 24 pixels, flat two-level cel shading. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, number, coin, multiple stars, scene, panel, realistic metal, thin outline.",
+        "prompt": "Single compact HUD resource icon: one chunky asymmetric five-point warm-gold star token with a small notch, strong charcoal outline, isolated centered silhouette with 8 percent transparent safe area, readable at 24 pixels, flat two-level cel shading.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, number, coin, multiple stars, scene, panel, realistic metal, thin outline",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 96,
+          "height": 96
+        },
+        "seed": 54001,
+        "noBackground": true,
+        "palette": "warm gold, parchment highlight, charcoal teal outline",
+        "postprocess": "lanczos3-resize"
+      },
+      "outputSha256": "86b0c714661f50e239bebb5b17b331b6e28e9f95aa6faf3935684b9328578211",
+      "notes": "High-resolution generation/downsample yields a smooth simple star token with strong outline, safe area and clear 24px HUD silhouette.",
+      "reviewedAt": "2026-08-14T20:25:30.733Z"
+    },
+    "ui-attack": {
+      "id": "ui-attack",
+      "status": "ACCEPTED",
+      "jobId": "ea80615c-7014-43da-8927-f569255a70d0",
+      "candidate": "art/pixellab/candidates/ui-attack.png",
+      "candidateSha256": "cdac6885f5c27b9edabaa5ba7da303f32d9d6e84e2cf2c7bfb51b6efd24a8912",
+      "width": 192,
+      "height": 192,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 20,
+        "top": 18,
+        "right": 175,
+        "bottom": 175,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm bronze, parchment highlight, coral burst, charcoal teal outline. Single primary action icon for Attack: one enormous bronze toy sword and one large coral angular impact burst together FILL 80 PERCENT of the square canvas, diagonal down-right motion, thick strong charcoal outline, isolated centered silhouette with only 8 percent transparent safe area, readable at 48 pixels, flat two-level cel shading. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; small icon, excessive empty space, thin sword, text, letters, blood, gore, character, shield, panel, realistic weapon, glow field.",
+        "prompt": "Single primary action icon for Attack: one enormous bronze toy sword and one large coral angular impact burst together FILL 80 PERCENT of the square canvas, diagonal down-right motion, thick strong charcoal outline, isolated centered silhouette with only 8 percent transparent safe area, readable at 48 pixels, flat two-level cel shading.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; small icon, excessive empty space, thin sword, text, letters, blood, gore, character, shield, panel, realistic weapon, glow field",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 192,
+          "height": 192
+        },
+        "seed": 64002,
+        "noBackground": true,
+        "palette": "warm bronze, parchment highlight, coral burst, charcoal teal outline",
+        "postprocess": "lanczos3-resize"
+      },
+      "outputSha256": "cdac6885f5c27b9edabaa5ba7da303f32d9d6e84e2cf2c7bfb51b6efd24a8912",
+      "notes": "Third attempt fills the canvas with a strong sword-and-impact silhouette, has smooth downsampled edges and remains unambiguous at 48px.",
+      "reviewedAt": "2026-08-14T20:35:21.804Z"
+    },
+    "ui-tech-climbing": {
+      "id": "ui-tech-climbing",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/ui-tech-climbing.png",
+      "candidateSha256": "aeda6bc572f4e77728fe158b2992aa1e9ae566099ab64e5252bd6d0539d553a8",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 20,
+        "top": 32,
+        "right": 236,
+        "bottom": 224,
+        "empty": false
+      },
+      "notes": "Mountain and hook metaphor remains distinct at 64 CSS px; clean alpha, strong outline, flat shading and safe area pass.",
+      "outputSha256": "aeda6bc572f4e77728fe158b2992aa1e9ae566099ab64e5252bd6d0539d553a8",
+      "reviewedAt": "2026-08-14T20:12:08.092Z",
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: slate blue, warm bronze, parchment highlight, charcoal teal outline. Single technology portrait icon for Climbing: enormous simple slate mountain peak with one chunky bronze climbing hook crossing it, strong charcoal outline, isolated centered silhouette with transparent safe area, readable at 64 pixels, flat two-level cel shading, no frame. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, character, scene, panel, detailed landscape, realistic rock, snow noise.",
+        "prompt": "Single technology portrait icon for Climbing: enormous simple slate mountain peak with one chunky bronze climbing hook crossing it, strong charcoal outline, isolated centered silhouette with transparent safe area, readable at 64 pixels, flat two-level cel shading, no frame.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, character, scene, panel, detailed landscape, realistic rock, snow noise",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 44003,
+        "noBackground": true,
+        "palette": "slate blue, warm bronze, parchment highlight, charcoal teal outline"
+      }
+    },
+    "building-city-3": {
+      "id": "building-city-3",
+      "status": "ACCEPTED",
+      "jobId": "638a4e50-4123-4adb-bf69-e078ea8b2611",
+      "candidate": "art/pixellab/candidates/building-city-3.png",
+      "candidateSha256": "6301fb8412b72d3c0d95a3465e857dfa0f27cea5ce55783d5face76be6c878a1",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 14,
+        "top": 8,
+        "right": 372,
+        "bottom": 344,
+        "empty": false
+      },
+      "outputSha256": "6301fb8412b72d3c0d95a3465e857dfa0f27cea5ce55783d5face76be6c878a1",
+      "notes": "Strong level-three mass, neutral banner area, clean transparent 384x384 canvas, compatible camera and readable overhang.",
+      "reviewedAt": "2026-08-14T20:12:05.140Z",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated level-three test-faction city game building, grown version of rounded parchment plaster halls with oversized bronze roofs, broad central hall plus two side towers, one large blank cloth ownership banner area, same coherent visual language as level one, isometric three-quarter downward view, ground base centered at x192 y300 inside diamond, strong charcoal outline, flat two-level cel shading, transparent canvas, alpha within x8..376 y4..344. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; unrelated architecture, dark fortress, unit, realistic architecture, tiny clutter, scenery, terrain, text, symbol, baked owner color, cast shadow.",
+        "prompt": "Isolated level-three test-faction city game building, grown version of rounded parchment plaster halls with oversized bronze roofs, broad central hall plus two side towers, one large blank cloth ownership banner area, same coherent visual language as level one, isometric three-quarter downward view, ground base centered at x192 y300 inside diamond, strong charcoal outline, flat two-level cel shading, transparent canvas, alpha within x8..376 y4..344.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; unrelated architecture, dark fortress, unit, realistic architecture, tiny clutter, scenery, terrain, text, symbol, baked owner color, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 43003,
+        "noBackground": true
+      }
+    },
+    "terrain-grass-4": {
+      "id": "terrain-grass-4",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/terrain-grass-4.png",
+      "candidateSha256": "a667d5138982bf70e8cc128c0886e8117792c3c5df31675a5df7537a435d5f30",
+      "width": 256,
+      "height": 148,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 17,
+        "top": 0,
+        "right": 242,
+        "bottom": 148,
+        "empty": false
+      },
+      "notes": "Clean deterministic rotation derivative of accepted grass treatment; quiet two-oval composition and matching edges.",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 180-degree rotation variant of the accepted PixelLab Grass 2 source, preserving its exact flat diamond footprint, palette and seam treatment while relocating the two soft oval decorations. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No new generated content; deterministic reference transform only..",
+        "prompt": "Deterministic 180-degree rotation variant of the accepted PixelLab Grass 2 source, preserving its exact flat diamond footprint, palette and seam treatment while relocating the two soft oval decorations.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No new generated content; deterministic reference transform only.",
+        "requestSize": {
+          "width": 256,
+          "height": 148
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 148
+        },
+        "seed": 42004,
+        "noBackground": true,
+        "postprocess": "reference-rotate-180-diamond",
+        "styleReference": {
+          "id": "terrain-grass-2",
+          "sha256": "7c81a60a3998365251728baa5d66f99ec6cdcf8696f3e9357bf79540ae100d49"
+        }
+      },
+      "outputSha256": "a667d5138982bf70e8cc128c0886e8117792c3c5df31675a5df7537a435d5f30",
+      "reviewedAt": "2026-08-14T21:14:11.368Z"
+    },
+    "terrain-ore": {
+      "id": "terrain-ore",
+      "status": "ACCEPTED",
+      "jobId": "b57a3af4-bf74-4045-8c16-d895eb77aafc",
+      "candidate": "art/pixellab/candidates/terrain-ore.png",
+      "candidateSha256": "1ccc74e445d3568c9858e73c7a7aa14e9953239d2152defc2ed152c764c1f4f5",
+      "providerOutputSha256": "3e004e26dfe9eb429b39c0c2e39e34d8657880db832d1e90cb43e87d15408f75",
+      "width": 256,
+      "height": 148,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 63,
+        "top": 34,
+        "right": 192,
+        "bottom": 140,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated low ore vein game object, three enormous warm-gold angular crystal chunks in a compact cluster, strong charcoal outline, flat two-level cel shading, isometric three-quarter downward view, centered near x128 y88, fits low on a mountain contact region, transparent canvas. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; mountain, mine building, status badge, star icon, tiny gems, scenery, text, glow field.",
+        "prompt": "Isolated low ore vein game object, three enormous warm-gold angular crystal chunks in a compact cluster, strong charcoal outline, flat two-level cel shading, isometric three-quarter downward view, centered near x128 y88, fits low on a mountain contact region, transparent canvas.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; mountain, mine building, status badge, star icon, tiny gems, scenery, text, glow field",
+        "requestSize": {
+          "width": 256,
+          "height": 148
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 148
+        },
+        "seed": 42201,
+        "noBackground": true,
+        "styleReference": {
+          "id": "terrain-mountain-2",
+          "sha256": "2d5fce2c90c1d7823055bb92f8e2172b9388c231c224e78f80f4c1fd66074598"
+        }
+      },
+      "outputSha256": "1ccc74e445d3568c9858e73c7a7aa14e9953239d2152defc2ed152c764c1f4f5",
+      "notes": "Clear compact gold-crystal resource silhouette; low footprint preserves map readability.",
+      "reviewedAt": "2026-08-14T21:14:15.468Z"
+    },
+    "unit-rider": {
+      "id": "unit-rider",
+      "status": "ACCEPTED",
+      "jobId": "34a52480-66a4-4438-8bd3-640408cfa54d",
+      "candidate": "art/pixellab/candidates/unit-rider.png",
+      "candidateSha256": "20bb28c79c28e262908e518124e776f30adf946254906e62245f0e9702606bb4",
+      "providerOutputSha256": "e5495ad9a619fd5de83571bb237507bf1cdd0e772493ddc07a28fdd76e1bdd9a",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 40,
+        "top": 19,
+        "right": 217,
+        "bottom": 252,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated full-body Rider game sprite, southeast-facing three-quarter view looking slightly downward, large-headed short chunky scout riding a compact silly two-legged pack beast, exaggerated saddle and forward motion shape readable at small scale, combined ground contact centered at x128 y222, neutral test-faction costume, blank transparent canvas, visible alpha within x16..240 y4..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; realistic horse anatomy, giant scale, cinematic gallop, scenery, hidden ground contact.",
+        "prompt": "Isolated full-body Rider game sprite, southeast-facing three-quarter view looking slightly downward, large-headed short chunky scout riding a compact silly two-legged pack beast, exaggerated saddle and forward motion shape readable at small scale, combined ground contact centered at x128 y222, neutral test-faction costume, blank transparent canvas, visible alpha within x16..240 y4..252.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; realistic horse anatomy, giant scale, cinematic gallop, scenery, hidden ground contact",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 41004,
+        "noBackground": true,
+        "styleReference": {
+          "id": "unit-warrior",
+          "sha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1"
+        }
+      },
+      "outputSha256": "20bb28c79c28e262908e518124e776f30adf946254906e62245f0e9702606bb4",
+      "notes": "Strong rider-and-mount silhouette; readable at gameplay scale; coherent tan, teal, and coral faction palette.",
+      "reviewedAt": "2026-08-14T21:14:07.536Z"
+    },
+    "ui-tech-riding": {
+      "id": "ui-tech-riding",
+      "status": "FAILED",
+      "notes": "PixelLab POST returned HTTP 402: insufficient resources (numeric balance redacted).",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: parchment tan, warm bronze, dark teal, charcoal outline. Isolated standalone bronze saddle pictogram, one object only, three-quarter view, saddle fills seventy percent of a blank transparent square, strong charcoal outline, broad dark-teal stirrup, readable at 64 pixels, flat two-level cel shading, no backing shape. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, full horse, hoof, character, scene, landscape, panel, frame, card, badge, coin, medallion, plaque, circle, square, grid, menu, button, background, border, tiny details, multiple icons.",
+        "prompt": "Isolated standalone bronze saddle pictogram, one object only, three-quarter view, saddle fills seventy percent of a blank transparent square, strong charcoal outline, broad dark-teal stirrup, readable at 64 pixels, flat two-level cel shading, no backing shape.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, full horse, hoof, character, scene, landscape, panel, frame, card, badge, coin, medallion, plaque, circle, square, grid, menu, button, background, border, tiny details, multiple icons",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 44401,
+        "noBackground": true,
+        "palette": "parchment tan, warm bronze, dark teal, charcoal outline",
+        "postprocess": "lanczos3-resize"
+      }
+    },
+    "ui-tech-hunting": {
+      "id": "ui-tech-hunting",
+      "status": "ACCEPTED",
+      "jobId": "900505a5-6803-496c-b92d-86fbf055ad92",
+      "candidate": "art/pixellab/candidates/ui-tech-hunting.png",
+      "candidateSha256": "25c828d840202372da0c13959c39fdf2c51c3dd93d52f12d935314c58591dbc5",
+      "providerOutputSha256": "b68980962df6c3d0edd3b7eaa5ded33fbffc102982230b5d9e6b8d0d63f2138a",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 24,
+        "top": 22,
+        "right": 232,
+        "bottom": 230,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: dark teal bow, leaf green, parchment highlight, charcoal outline. One standalone Hunting technology emblem only: a huge clean dark-teal curved bow crossed by one broad green leaf, the single connected symbol fills eighty percent of the square, strong charcoal outline, centered transparent cutout, readable at 64 pixels, flat two-level cel shading. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, character, dead animal, gore, scene, landscape, panel, frame, card, plaque, square, grid, menu, button, background, border, tiny arrow, multiple icons.",
+        "prompt": "One standalone Hunting technology emblem only: a huge clean dark-teal curved bow crossed by one broad green leaf, the single connected symbol fills eighty percent of the square, strong charcoal outline, centered transparent cutout, readable at 64 pixels, flat two-level cel shading.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, character, dead animal, gore, scene, landscape, panel, frame, card, plaque, square, grid, menu, button, background, border, tiny arrow, multiple icons",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 44302,
+        "noBackground": true,
+        "palette": "dark teal bow, leaf green, parchment highlight, charcoal outline"
+      },
+      "outputSha256": "25c828d840202372da0c13959c39fdf2c51c3dd93d52f12d935314c58591dbc5",
+      "notes": "Second iteration accepted: one clear bow-and-leaf hunting emblem, transparent, readable at native and enlarged scale.",
+      "reviewedAt": "2026-08-14T21:20:31.328Z"
+    },
+    "ui-tech-organization": {
+      "id": "ui-tech-organization",
+      "status": "ACCEPTED",
+      "jobId": "5815fd4e-affc-4939-a765-bee375fb821d",
+      "candidate": "art/pixellab/candidates/ui-tech-organization.png",
+      "candidateSha256": "394410afe37051eb18cbd29aba47a47c5e6ba71651f00f404de61f8358b0507a",
+      "providerOutputSha256": "c822d36337ac679ea29685a1e8853bb2a66b1662ba6bfffa5c0a4802fc4914c6",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 25,
+        "top": 34,
+        "right": 230,
+        "bottom": 228,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm bronze wood, parchment, dark teal strap, charcoal outline. Single technology portrait icon for Organization: three large simple wooden supply crates stacked in an unmistakable tidy pyramid with one blank parchment tag, strong charcoal outline, isolated centered silhouette, readable at 64 pixels, flat two-level cel shading, no frame. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, office chart, character, scene, panel, tiny clutter.",
+        "prompt": "Single technology portrait icon for Organization: three large simple wooden supply crates stacked in an unmistakable tidy pyramid with one blank parchment tag, strong charcoal outline, isolated centered silhouette, readable at 64 pixels, flat two-level cel shading, no frame.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, office chart, character, scene, panel, tiny clutter",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 44103,
+        "noBackground": true,
+        "palette": "warm bronze wood, parchment, dark teal strap, charcoal outline",
+        "styleReference": {
+          "id": "ui-tech-climbing",
+          "sha256": "aeda6bc572f4e77728fe158b2992aa1e9ae566099ab64e5252bd6d0539d553a8"
+        }
+      },
+      "outputSha256": "394410afe37051eb18cbd29aba47a47c5e6ba71651f00f404de61f8358b0507a",
+      "notes": "Single readable organization/crates emblem; clean transparent silhouette without a surrounding panel.",
+      "reviewedAt": "2026-08-14T21:14:30.434Z"
+    },
+    "ui-tech-mining": {
+      "id": "ui-tech-mining",
+      "status": "ACCEPTED",
+      "jobId": "137c5109-41a1-4639-9533-b3c043b79ac1",
+      "candidate": "art/pixellab/candidates/ui-tech-mining.png",
+      "candidateSha256": "800bebc861ec465e00a89e35f2b473cef0939d32319ff4f18fd9cc8050aad8b6",
+      "providerOutputSha256": "9615cba66194d221631ed66540b5e6e6eb8b2816ecf542a5389e10e33adacaab",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 25,
+        "top": 25,
+        "right": 230,
+        "bottom": 230,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm gold, bronze, slate blue, charcoal outline. One standalone Mining technology emblem only: a huge simple bronze pick crosses one cluster of three chunky warm-gold ore crystals, the connected symbol fills eighty percent of the square, strong charcoal outline, centered transparent cutout, readable at 64 pixels, flat two-level cel shading. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, character, mine building, scene, landscape, panel, frame, card, plaque, square, grid, menu, button, background, border, tiny gems, multiple icons.",
+        "prompt": "One standalone Mining technology emblem only: a huge simple bronze pick crosses one cluster of three chunky warm-gold ore crystals, the connected symbol fills eighty percent of the square, strong charcoal outline, centered transparent cutout, readable at 64 pixels, flat two-level cel shading.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, character, mine building, scene, landscape, panel, frame, card, plaque, square, grid, menu, button, background, border, tiny gems, multiple icons",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 44304,
+        "noBackground": true,
+        "palette": "warm gold, bronze, slate blue, charcoal outline"
+      },
+      "outputSha256": "800bebc861ec465e00a89e35f2b473cef0939d32319ff4f18fd9cc8050aad8b6",
+      "notes": "Second iteration accepted: one coherent pick-and-gold-crystal mining emblem, strong silhouette at native and enlarged scale.",
+      "reviewedAt": "2026-08-14T21:20:34.216Z"
+    },
+    "ui-tech-archery": {
+      "id": "ui-tech-archery",
+      "status": "FAILED",
+      "notes": "PixelLab POST returned HTTP 402: insufficient resources (numeric balance redacted).",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: dark teal, warm bronze, parchment highlight, charcoal outline. Isolated standalone archery pictogram, exactly one huge clean dark-teal curved bow crossed by exactly one broad blunt bronze arrow, the connected pair fills seventy percent of a blank transparent square, strong charcoal outline, readable at 64 pixels, flat two-level cel shading, no backing shape. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, character, scene, landscape, panel, frame, card, badge, medallion, plaque, circle, square, grid, inventory, menu, button, background, border, second bow, extra arrows, quiver, target, extra weapons, tiny details, multiple icons.",
+        "prompt": "Isolated standalone archery pictogram, exactly one huge clean dark-teal curved bow crossed by exactly one broad blunt bronze arrow, the connected pair fills seventy percent of a blank transparent square, strong charcoal outline, readable at 64 pixels, flat two-level cel shading, no backing shape.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, character, scene, landscape, panel, frame, card, badge, medallion, plaque, circle, square, grid, inventory, menu, button, background, border, second bow, extra arrows, quiver, target, extra weapons, tiny details, multiple icons",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 44405,
+        "noBackground": true,
+        "palette": "dark teal, warm bronze, parchment highlight, charcoal outline",
+        "postprocess": "lanczos3-resize"
+      }
+    },
+    "ui-tech-strategy": {
+      "id": "ui-tech-strategy",
+      "status": "ACCEPTED",
+      "jobId": "13395161-4aca-40c2-bdc1-ff65713abd00",
+      "candidate": "art/pixellab/candidates/ui-tech-strategy.png",
+      "candidateSha256": "cbdd92e7caee6c84e9e9a9f19a4c1535b45b0fc955b2ebafcbe85d31b3bbaa14",
+      "providerOutputSha256": "2e2ad60cf761572714631d8b47a7aff1781cede416b036c720d440dca26d13ae",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 20,
+        "top": 23,
+        "right": 236,
+        "bottom": 233,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: slate blue, parchment, warm bronze, charcoal outline. Single technology portrait icon for Strategy: one enormous slate round shield with three large simple board-game arrows arranged around it, strong charcoal outline, isolated centered silhouette, readable at 64 pixels, flat two-level cel shading, no frame. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, character, realistic heraldry, scene, panel, tiny diagram.",
+        "prompt": "Single technology portrait icon for Strategy: one enormous slate round shield with three large simple board-game arrows arranged around it, strong charcoal outline, isolated centered silhouette, readable at 64 pixels, flat two-level cel shading, no frame.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, character, realistic heraldry, scene, panel, tiny diagram",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 44106,
+        "noBackground": true,
+        "palette": "slate blue, parchment, warm bronze, charcoal outline",
+        "styleReference": {
+          "id": "ui-tech-climbing",
+          "sha256": "aeda6bc572f4e77728fe158b2992aa1e9ae566099ab64e5252bd6d0539d553a8"
+        }
+      },
+      "outputSha256": "cbdd92e7caee6c84e9e9a9f19a4c1535b45b0fc955b2ebafcbe85d31b3bbaa14",
+      "notes": "Clear shield-and-arrows strategy emblem; strong transparent silhouette at native scale.",
+      "reviewedAt": "2026-08-14T21:14:35.651Z"
+    },
+    "ui-reward-workshop": {
+      "id": "ui-reward-workshop",
+      "status": "ACCEPTED",
+      "jobId": "25027858-72a0-48cd-bba4-3aea55eef4b0",
+      "candidate": "art/pixellab/candidates/ui-reward-workshop.png",
+      "candidateSha256": "3b3486ff36c42a8df85ce6d8373e3bbda191cf6b38e83e35c42c62463d1cb85e",
+      "providerOutputSha256": "6725916ea6217107f495476b79c5ea2e0401998704225a573ab7defda8ad5c81",
+      "width": 128,
+      "height": 128,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 11,
+        "top": 10,
+        "right": 117,
+        "bottom": 117,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: bronze, slate blue, parchment highlight, charcoal outline. Single reward icon for Workshop: enormous simple bronze hammer over a chunky three-tooth gear, strong charcoal outline, isolated centered silhouette, readable at 32 pixels, flat two-level cel shading. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, character, building scene, panel, tiny machinery.",
+        "prompt": "Single reward icon for Workshop: enormous simple bronze hammer over a chunky three-tooth gear, strong charcoal outline, isolated centered silhouette, readable at 32 pixels, flat two-level cel shading.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, character, building scene, panel, tiny machinery",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 128,
+          "height": 128
+        },
+        "seed": 44201,
+        "noBackground": true,
+        "palette": "bronze, slate blue, parchment highlight, charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-star",
+          "sha256": "86b0c714661f50e239bebb5b17b331b6e28e9f95aa6faf3935684b9328578211"
+        }
+      },
+      "outputSha256": "3b3486ff36c42a8df85ce6d8373e3bbda191cf6b38e83e35c42c62463d1cb85e",
+      "notes": "Clear hammer-and-gear workshop reward emblem with coherent outline and transparent background.",
+      "reviewedAt": "2026-08-14T21:14:40.770Z"
+    },
+    "ui-reward-survey": {
+      "id": "ui-reward-survey",
+      "status": "ACCEPTED",
+      "jobId": "9f9d5c74-625c-4787-91c6-6535a220c948",
+      "candidate": "art/pixellab/candidates/ui-reward-survey.png",
+      "candidateSha256": "b51ffe58712bffb77995721a06f36dae5afe524f309637075ad33247154106ab",
+      "providerOutputSha256": "af99ad4dac6406cba4209879e96d0fd4738aa9afbe1d9c78860ca60ae23cd4d2",
+      "width": 128,
+      "height": 128,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 11,
+        "top": 13,
+        "right": 118,
+        "bottom": 116,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm bronze, parchment, dark teal, charcoal outline. Single reward icon for Survey: enormous simple brass spyglass beside a broad folded map shape with no markings, strong charcoal outline, isolated centered silhouette, readable at 32 pixels, flat two-level cel shading. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, character, scenery, panel, compass details.",
+        "prompt": "Single reward icon for Survey: enormous simple brass spyglass beside a broad folded map shape with no markings, strong charcoal outline, isolated centered silhouette, readable at 32 pixels, flat two-level cel shading.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, character, scenery, panel, compass details",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 128,
+          "height": 128
+        },
+        "seed": 44202,
+        "noBackground": true,
+        "palette": "warm bronze, parchment, dark teal, charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-star",
+          "sha256": "86b0c714661f50e239bebb5b17b331b6e28e9f95aa6faf3935684b9328578211"
+        }
+      },
+      "outputSha256": "b51ffe58712bffb77995721a06f36dae5afe524f309637075ad33247154106ab",
+      "notes": "Readable map-and-spyglass survey emblem with no panel or text.",
+      "reviewedAt": "2026-08-14T21:15:02.746Z"
+    },
+    "ui-reward-resources": {
+      "id": "ui-reward-resources",
+      "status": "ACCEPTED",
+      "jobId": "96de31f3-5b65-468a-983b-85b5ad929a5f",
+      "candidate": "art/pixellab/candidates/ui-reward-resources.png",
+      "candidateSha256": "f6050558c48cfda6ad0123722014d4eb1e205232938b6e2101e44a3ea38bd711",
+      "providerOutputSha256": "3812c82ec13d894aea5ae15ea89d942557aca1985b2e4544836fa341ea293da0",
+      "width": 128,
+      "height": 128,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 17,
+        "top": 10,
+        "right": 110,
+        "bottom": 118,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: parchment tan, warm gold, dark teal cord, charcoal outline. One standalone Resources reward emblem only: a huge chunky parchment supply sack tied with dark-teal cord and stamped with one simple warm-gold star, the single connected symbol fills eighty percent of the square, strong charcoal outline, centered transparent cutout, readable at 32 pixels, flat two-level cel shading. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, number, character, scenery, panel, frame, card, plaque, square, grid, menu, button, background, border, separate token, many tiny items, multiple icons.",
+        "prompt": "One standalone Resources reward emblem only: a huge chunky parchment supply sack tied with dark-teal cord and stamped with one simple warm-gold star, the single connected symbol fills eighty percent of the square, strong charcoal outline, centered transparent cutout, readable at 32 pixels, flat two-level cel shading.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, number, character, scenery, panel, frame, card, plaque, square, grid, menu, button, background, border, separate token, many tiny items, multiple icons",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 128,
+          "height": 128
+        },
+        "seed": 44323,
+        "noBackground": true,
+        "palette": "parchment tan, warm gold, dark teal cord, charcoal outline",
+        "postprocess": "lanczos3-resize"
+      },
+      "outputSha256": "f6050558c48cfda6ad0123722014d4eb1e205232938b6e2101e44a3ea38bd711",
+      "notes": "Second iteration accepted: single supply sack with integrated star mark; clear at 32-pixel nominal display.",
+      "reviewedAt": "2026-08-14T21:20:37.497Z"
+    },
+    "ui-reward-city-wall": {
+      "id": "ui-reward-city-wall",
+      "status": "ACCEPTED",
+      "jobId": "0e5f84b8-f7cd-46ba-bba2-0e2a9e05b2a0",
+      "candidate": "art/pixellab/candidates/ui-reward-city-wall.png",
+      "candidateSha256": "1c30af78c1a60f9891bbc09c8bfe27ddc8543b41fedf4f86980880a54c802e26",
+      "providerOutputSha256": "82d91ea156fda4e79c5a5a61c800c7f650f36f0229ba07103a21059026d9a2ae",
+      "width": 128,
+      "height": 128,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 15,
+        "top": 10,
+        "right": 112,
+        "bottom": 118,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: slate blue, parchment highlight, warm bronze, charcoal outline. Single reward icon for City Wall: one broad chunky slate crenellated wall segment with a centered shield notch, strong charcoal outline, isolated centered silhouette, readable at 32 pixels, flat two-level cel shading. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, castle scene, character, panel, many towers, realistic masonry.",
+        "prompt": "Single reward icon for City Wall: one broad chunky slate crenellated wall segment with a centered shield notch, strong charcoal outline, isolated centered silhouette, readable at 32 pixels, flat two-level cel shading.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, castle scene, character, panel, many towers, realistic masonry",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 128,
+          "height": 128
+        },
+        "seed": 44204,
+        "noBackground": true,
+        "palette": "slate blue, parchment highlight, warm bronze, charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-star",
+          "sha256": "86b0c714661f50e239bebb5b17b331b6e28e9f95aa6faf3935684b9328578211"
+        }
+      },
+      "outputSha256": "1c30af78c1a60f9891bbc09c8bfe27ddc8543b41fedf4f86980880a54c802e26",
+      "notes": "Readable wall-and-shield reward silhouette; no separate card frame; coherent UI palette.",
+      "reviewedAt": "2026-08-14T21:15:12.108Z"
+    },
+    "building-mine": {
+      "id": "building-mine",
+      "status": "ACCEPTED",
+      "jobId": "f905050e-2c81-4cef-a141-b5c7c3d7ef8f",
+      "candidate": "art/pixellab/candidates/building-mine.png",
+      "candidateSha256": "ed7b990bedc1158c80129423fe31024230199ee54f8e9dbbc51ff52b64369f31",
+      "providerOutputSha256": "253e5e28d315198b1734f9f17ef54420c8a3aa7ac98b39099878a985c9f9bbc4",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 51,
+        "top": 58,
+        "right": 217,
+        "bottom": 243,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated completed Mine game improvement, low chunky timber arch around a dark opening with one enormous simple bronze pick and small cart, isometric three-quarter downward view, ground base centered at x128 y222 within diamond, strong charcoal outline, flat two-level cel shading, transparent canvas, alpha within x20..236 y90..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; city, village, mountain, unit, realistic mine machinery, scenery, terrain tile, text, cast shadow.",
+        "prompt": "Isolated completed Mine game improvement, low chunky timber arch around a dark opening with one enormous simple bronze pick and small cart, isometric three-quarter downward view, ground base centered at x128 y222 within diamond, strong charcoal outline, flat two-level cel shading, transparent canvas, alpha within x20..236 y90..252.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; city, village, mountain, unit, realistic mine machinery, scenery, terrain tile, text, cast shadow",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 43101,
+        "noBackground": true,
+        "styleReference": {
+          "id": "building-village",
+          "sha256": "b699a29255672ef8d992e519c508992bac6926dc41aa9f19980842aa345bff14"
+        }
+      },
+      "outputSha256": "ed7b990bedc1158c80129423fe31024230199ee54f8e9dbbc51ff52b64369f31",
+      "notes": "Readable low mine entrance, cart, and pick silhouette; coherent map camera and palette.",
+      "reviewedAt": "2026-08-14T21:14:25.235Z"
+    },
+    "building-city-2": {
+      "id": "building-city-2",
+      "status": "ACCEPTED",
+      "jobId": "eb524def-78e3-4114-afd5-6c863c5834c8",
+      "candidate": "art/pixellab/candidates/building-city-2.png",
+      "candidateSha256": "330af593e490f2c491f89ea131f8df966809f0ccddc02054801b5dfe0fd7951c",
+      "providerOutputSha256": "a5ca44fa18f55ffe65e04d57352306899744cba4a7f5b7d21b43638eef305f83",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 14,
+        "top": 8,
+        "right": 372,
+        "bottom": 344,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated level-two test-faction city game building, grown version of rounded parchment plaster halls with oversized bronze roofs, broad hall plus one obvious side tower, one large blank cloth ownership banner area, visually between level one and three, isometric three-quarter downward view, ground base centered at x192 y300 inside diamond, strong charcoal outline, flat two-level cel shading, transparent canvas, alpha within x8..376 y4..344. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; unrelated architecture, giant castle, unit, realistic architecture, tiny clutter, scenery, terrain, text, symbol, baked owner color, cast shadow.",
+        "prompt": "Isolated level-two test-faction city game building, grown version of rounded parchment plaster halls with oversized bronze roofs, broad hall plus one obvious side tower, one large blank cloth ownership banner area, visually between level one and three, isometric three-quarter downward view, ground base centered at x192 y300 inside diamond, strong charcoal outline, flat two-level cel shading, transparent canvas, alpha within x8..376 y4..344.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; unrelated architecture, giant castle, unit, realistic architecture, tiny clutter, scenery, terrain, text, symbol, baked owner color, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 43004,
+        "noBackground": true,
+        "styleReference": {
+          "id": "building-city-3",
+          "sha256": "6301fb8412b72d3c0d95a3465e857dfa0f27cea5ce55783d5face76be6c878a1"
+        }
+      },
+      "outputSha256": "330af593e490f2c491f89ea131f8df966809f0ccddc02054801b5dfe0fd7951c",
+      "notes": "Clear intermediate settlement silhouette between levels one and three; coherent palette and anchor.",
+      "reviewedAt": "2026-08-14T21:14:20.154Z"
+    },
+    "ui-faction-hero": {
+      "id": "ui-faction-hero",
+      "status": "ACCEPTED",
+      "jobId": "9e1db2b5-c4be-47d3-8139-f33cfb2c333e",
+      "candidate": "art/pixellab/candidates/ui-faction-hero.png",
+      "candidateSha256": "7e6cad7977a8ca12638b62e0968a16e997b0be1bc06fef5cb6f43fc3199b028d",
+      "providerOutputSha256": "e1c3c424b79e4d9045010751390ffabae4cf0e2b48a0315009bf0bbb3ae67058",
+      "width": 1024,
+      "height": 1024,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 32,
+        "top": 66,
+        "right": 992,
+        "bottom": 958,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Square faction-picker hero illustration on transparent background: cheerful chunky neutral POC test-faction Warrior, Archer, Defender and Rider clustered as playful board-game sticker characters, southeast-facing three-quarter view, large heads, short bodies, enormous readable sword bow shield and saddle shapes, coherent tan padded tunics, off-white scarves, bronze diamond badges and dark teal equipment, dynamic but compact, strong charcoal outline, flat two-level cel shading, no text. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; scene background, landscape, logo, title, words, photorealism, painterly, 3D, cinematic lighting, gore, mixed faction genres.",
+        "prompt": "Square faction-picker hero illustration on transparent background: cheerful chunky neutral POC test-faction Warrior, Archer, Defender and Rider clustered as playful board-game sticker characters, southeast-facing three-quarter view, large heads, short bodies, enormous readable sword bow shield and saddle shapes, coherent tan padded tunics, off-white scarves, bronze diamond badges and dark teal equipment, dynamic but compact, strong charcoal outline, flat two-level cel shading, no text.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; scene background, landscape, logo, title, words, photorealism, painterly, 3D, cinematic lighting, gore, mixed faction genres",
+        "requestSize": {
+          "width": 512,
+          "height": 512
+        },
+        "outputSize": {
+          "width": 1024,
+          "height": 1024
+        },
+        "seed": 44301,
+        "noBackground": true,
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "unit-warrior",
+          "sha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1"
+        }
+      },
+      "outputSha256": "7e6cad7977a8ca12638b62e0968a16e997b0be1bc06fef5cb6f43fc3199b028d",
+      "notes": "Strong four-character faction cluster including mount; coherent palette, transparent background, no text.",
+      "reviewedAt": "2026-08-14T21:15:21.835Z"
+    }
+  }
+}

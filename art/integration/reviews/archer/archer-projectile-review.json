@@ -1,0 +1,151 @@
+{
+  "generatedAt": "2026-08-16T12:44:38.160Z",
+  "chrome": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+  "contract": "One manifest-attached Archer arrow: 280ms cubic-out flight, post-event state at impact, 100ms impact/reduced crossfade, deterministic command/events/hash.",
+  "fixture": {
+    "command": {
+      "kind": "ATTACK",
+      "unitId": 2,
+      "targetId": 4
+    },
+    "beforeCommandIndex": 0,
+    "afterCommandIndex": 1,
+    "beforeHash": "b697b24dc2dffb0a87cdf93803140916f620357ada9715f6ebef0b4a4de7a452",
+    "afterHash": "23697a77b0af71c4cfc9c0282669b7cc3950b3922648b3c885d09a0d865a3dee",
+    "repeatHash": "23697a77b0af71c4cfc9c0282669b7cc3950b3922648b3c885d09a0d865a3dee",
+    "eventsJson": "[{\"kind\":\"COMBAT_RESOLVED\",\"preview\":{\"advances\":false,\"attackerDies\":false,\"attackerId\":2,\"damageToAttacker\":0,\"damageToDefender\":5,\"defenderDies\":false,\"defenderId\":4,\"noRetaliationReason\":\"OUT_OF_RANGE\"}}]",
+    "repeatEventsJson": "[{\"kind\":\"COMBAT_RESOLVED\",\"preview\":{\"advances\":false,\"attackerDies\":false,\"attackerId\":2,\"damageToAttacker\":0,\"damageToDefender\":5,\"defenderDies\":false,\"defenderId\":4,\"noRetaliationReason\":\"OUT_OF_RANGE\"}}]"
+  },
+  "desktop": {
+    "contact": {
+      "phase": "flight",
+      "motion": "full",
+      "css": [
+        1440,
+        1000
+      ],
+      "backing": [
+        1440,
+        1000
+      ],
+      "dpr": 1,
+      "touchPoints": 5,
+      "hash": "23697a77b0af71c4cfc9c0282669b7cc3950b3922648b3c885d09a0d865a3dee",
+      "commandIndex": 1
+    },
+    "flight-140ms": {
+      "phase": "flight",
+      "motion": "full",
+      "css": [
+        1440,
+        1000
+      ],
+      "backing": [
+        1440,
+        1000
+      ],
+      "dpr": 1,
+      "touchPoints": 5,
+      "hash": "23697a77b0af71c4cfc9c0282669b7cc3950b3922648b3c885d09a0d865a3dee",
+      "commandIndex": 1
+    },
+    "impact": {
+      "phase": "impact",
+      "motion": "full",
+      "css": [
+        1440,
+        1000
+      ],
+      "backing": [
+        1440,
+        1000
+      ],
+      "dpr": 1,
+      "touchPoints": 5,
+      "hash": "23697a77b0af71c4cfc9c0282669b7cc3950b3922648b3c885d09a0d865a3dee",
+      "commandIndex": 1
+    },
+    "reduced-impact": {
+      "phase": "impact",
+      "motion": "reduced",
+      "css": [
+        1440,
+        1000
+      ],
+      "backing": [
+        1440,
+        1000
+      ],
+      "dpr": 1,
+      "touchPoints": 5,
+      "hash": "23697a77b0af71c4cfc9c0282669b7cc3950b3922648b3c885d09a0d865a3dee",
+      "commandIndex": 1
+    }
+  },
+  "mobile390x844Dpr2": {
+    "contact": {
+      "phase": "flight",
+      "motion": "full",
+      "css": [
+        390,
+        844
+      ],
+      "backing": [
+        780,
+        1688
+      ],
+      "dpr": 2,
+      "touchPoints": 5,
+      "hash": "23697a77b0af71c4cfc9c0282669b7cc3950b3922648b3c885d09a0d865a3dee",
+      "commandIndex": 1
+    },
+    "flight-140ms": {
+      "phase": "flight",
+      "motion": "full",
+      "css": [
+        390,
+        844
+      ],
+      "backing": [
+        780,
+        1688
+      ],
+      "dpr": 2,
+      "touchPoints": 5,
+      "hash": "23697a77b0af71c4cfc9c0282669b7cc3950b3922648b3c885d09a0d865a3dee",
+      "commandIndex": 1
+    },
+    "impact": {
+      "phase": "impact",
+      "motion": "full",
+      "css": [
+        390,
+        844
+      ],
+      "backing": [
+        780,
+        1688
+      ],
+      "dpr": 2,
+      "touchPoints": 5,
+      "hash": "23697a77b0af71c4cfc9c0282669b7cc3950b3922648b3c885d09a0d865a3dee",
+      "commandIndex": 1
+    },
+    "reduced-impact": {
+      "phase": "impact",
+      "motion": "reduced",
+      "css": [
+        390,
+        844
+      ],
+      "backing": [
+        780,
+        1688
+      ],
+      "dpr": 2,
+      "touchPoints": 5,
+      "hash": "23697a77b0af71c4cfc9c0282669b7cc3950b3922648b3c885d09a0d865a3dee",
+      "commandIndex": 1
+    }
+  }
+}

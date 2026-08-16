@@ -1,0 +1,188 @@
+# Unit Asset Contract
+
+This contract specializes [Pulp Wars Art Direction](../ART_DIRECTION.md) for
+Warrior, Archer, Defender, Rider, and Catapult POC sprites. It does not redefine style.
+
+## Provenance and calibration
+
+Modern Polytopia renders a low-poly 3D world and publishes no stable public 2D
+sprite canvas dimensions, pivots, bounds, or runtime display sizes. The values
+below are calibrated **Pulp Wars contracts**, not recovered Polytopia metadata.
+They use the research's observed approximately 1.65–1.75 ground-diamond ratio,
+unit visible-box ranges, and near-center ground contact as composition evidence,
+then choose fixed high-resolution source dimensions for repeatable 2D
+production. Revisit them only as a versioned renderer/art decision after
+native-scale map tests.
+
+## Nominal geometry
+
+The renderer's 1x nominal ground diamond is 128 x 74 CSS px. Standard POC units
+use this exact shared contract:
+
+| Property                        |                    Value |
+| ------------------------------- | -----------------------: |
+| Transparent source canvas       |             256 x 296 px |
+| Nominal display canvas          |      89.6 x 103.6 CSS px |
+| Source-to-display scale         |   0.35 at 1x camera zoom |
+| Normalized feet/contact anchor  |       `(0.5000, 0.7500)` |
+| Source anchor                   |          `(128, 222)` px |
+| Display anchor                  |    `(44.8, 77.7)` CSS px |
+| Preferred visible source bounds | `x=32..224`, `y=10..240` |
+| Hard non-effect alpha bounds    |  `x=16..240`, `y=4..252` |
+
+Coordinates use the full, untrimmed top-left-origin canvas. Both feet visually
+straddle the contact anchor; the midpoint between their ground contacts must be
+within 8 source px horizontally and 6 source px vertically of `(128, 222)`.
+Never trim exported transparent edges or infer an anchor from opaque bounds.
+
+First-play review reduced standard-unit runtime scale from 0.5 to 0.35 without
+resampling or trimming the accepted PNGs. At nominal display, ordinary body
+mass should be about 31.5–53.2 CSS px wide. Across the four accepted POC units,
+the complete visible silhouettes (including signature equipment) measure
+56.4–78.4 CSS px wide and 76.3–81.9 CSS px tall. Visible alpha extends at most
+71.4 CSS px above and 10.2 CSS px below the tile-center contact. Keep the bottom
+area quiet: feet/equipment may use it, but no baked shadow or ground.
+
+The four standard units are the same size class and use the same canvas/anchor. Defender
+may read broader, Rider more forward-leaning, but neither may be globally scaled
+larger.
+
+Catapult is a separate low-wide siege class:
+
+| Property                        |                    Value |
+| ------------------------------- | -----------------------: |
+| Transparent source canvas       |             384 x 384 px |
+| Nominal display canvas          |     115.2 x 115.2 CSS px |
+| Source-to-display scale         |   0.30 at 1x camera zoom |
+| Normalized ground anchor        |       `(0.5000, 0.7500)` |
+| Source anchor                   |          `(192, 288)` px |
+| Preferred visible source bounds | `x=30..354`, `y=24..318` |
+| Hard non-effect alpha bounds    |  `x=16..368`, `y=8..336` |
+
+Its wheel/ground-contact midpoint must fall within 10 source px horizontally
+and 6 vertically of `(192,288)`. The silhouette may be broader than a standard
+unit but must not hide a colocated city's label/status. The untrimmed geometry
+is renderer metadata, never simulation size.
+
+## Pose and silhouettes
+
+Every gameplay unit faces down-right/southeast in a consistent three-quarter
+view, with a slight downward camera. Character units keep both feet readable;
+Catapult keeps both wheel contacts readable. Keep the pose/chassis compact and
+avoid perspective tricks that move the anchor.
+
+- Warrior: broad balanced stance and one unmistakable oversized melee weapon.
+- Archer: bow curve and drawn/ready gesture readable without a tiny arrow; do
+  not confuse the silhouette with Warrior.
+- Defender: broad shield is the primary shape and must not completely hide the
+  head/body; weight feels planted, not taller.
+- Rider: the mount/riding cue must read at 64 x 74 CSS px crop scale while the
+  combined figure still fits the standard hard bounds. Favor exaggerated legs,
+  saddle, or motion shape over anatomical detail.
+- Catapult: one unmistakable wheeled throwing arm and sling/bowl, a low broad
+  base, no crew-sized clutter, no arrow/bow silhouette, and no baked projectile.
+
+Temporary unit names do not prescribe a final faction costume. One approved
+POC faction language must be applied consistently when production direction
+exists; do not mix pirate, robot, undead, or other example motifs by accident.
+
+## Line, palette, and shading
+
+Use a strong near-black colored outline, not pure black unless the approved
+palette demands it. At 256 px source scale, primary exterior outlines target
+6–10 px and important internal separations 4–6 px; both must remain clean after
+the 0.35 runtime downscale. Use mostly flat fills and no more than base, one
+shadow, and one highlight per material.
+
+Reserve a contiguous, easily maskable faction-color patch covering roughly
+8–15% of visible area. It must not be the only owner cue: the renderer adds a
+separate marker/pattern. Maintain value contrast between silhouette, equipment,
+and face; verify grayscale and common color-vision simulations. Tiny material
+accents that vanish at nominal scale are failures, not bonus detail.
+
+## Transparency and separation
+
+Export straight-alpha PNG or the project-approved lossless equivalent in sRGB.
+Background pixels are fully transparent with cleaned RGB edge color; no matte,
+halo, scenery, text, UI, selection ring, health bar, faction marker, glow field,
+or complex cast shadow. A small contact shadow is renderer-owned.
+
+Static weapon magic or muzzle effects are not part of the base sprite. Put
+effects in a later effect class with their own anchor. Avoid isolated alpha
+specks and semi-transparent outline mush. No opaque pixel may cross the hard
+bounds.
+
+## Draw layers and sorting
+
+Units are placed by their feet anchor at the projected tile center. Required
+map order is:
+
+1. ground diamond and ownership;
+2. low terrain/resource marks;
+3. renderer-owned contact shadow;
+4. building/terrain/unit bodies sorted by ground anchor using the architecture's
+   stable key;
+5. sprite-readiness modulation plus code-native selection/target effects;
+6. health, faction, and status UI.
+
+The sprite never contains layers 3, 5, or 6. A unit behind a tall object may be
+partly occluded by anchor sorting, but selection and health UI remain readable.
+Test ties and approach directions along both grid axes.
+
+Readiness never uses a circle/check/tick, detached `W`/`R`, or halo. The actual
+unhandled active-human unit raster may pulse between opacity 1 and 0.62 on the
+specified 1.6-second loop; health/owner attachments do not. Reduced motion keeps
+the raster fully opaque and creates no pulse. This renderer state never changes
+or regenerates an accepted sprite.
+
+## Scaling and renderer use
+
+Store the high-resolution source canvas unchanged. Display its full untrimmed
+canvas uniformly at 0.35 scale and then apply camera zoom; do not independently
+scale by unit type. Recommended camera
+zoom is 0.625x–1.75x relative to nominal; below 0.75x the renderer may swap to a
+precomputed downsample but may not change anchors. Use high-quality downsampling
+for the illustrated style and avoid pixel-art nearest-neighbor scaling.
+
+Device-pixel-ratio changes Canvas backing resolution only. Hit testing uses the
+logical tile/unit entity, never opaque sprite pixels. Dimensions and zoom are
+renderer configuration and never enter game state, commands, AI, or hashes.
+
+## PixelLab recipe and acceptance
+
+Checked-in generation scripts must record the exact shared canvas, prompt,
+negative prompt, model/settings, seed when supported, output mapping, and any
+centering/downscale step. Prompts must explicitly require transparent isolated
+sprite, three-quarter downward view, southeast facing, visible feet, common
+scale, strong outline, flat/cel shading, and no scenery/UI/shadow/text.
+
+Generate Warrior, Defender, and one of Archer/Rider as the first three-sprite
+sample; this covers balanced, broad, and elongated silhouettes. Inspect every
+result at 128 x 148 display and at 4x source view. Reject and regenerate for:
+
+- wrong camera/facing, invisible feet, anchor drift, clipping, matte/halo, or
+  opaque pixels outside bounds;
+- silhouette confusion at nominal scale, excessive detail, weak outline,
+  realistic lighting/anatomy, faux-3D/painterly rendering, or inconsistent scale;
+- baked UI/shadow/scenery, unreadable weapon, poor faction patch, or palette
+  failure against both grass and mountain test tiles.
+
+Only batch after at least three representative units pass individually and the
+recipe is stable. Review the batch as a labeled contact sheet on transparent,
+grass, mountain, selected, and dimmed/enemy contexts, then inspect every suspect
+at native and enlarged scale.
+
+Catapult starts a new siege-class sample and is always reviewed individually at
+384 px, 115.2 CSS px, minimum zoom, on every terrain, on a city, beside all four
+standard classes, and in a dense unit line before any future siege batch. Its
+checked-in PixelLab recipe records the separate geometry, prompt, negative
+prompt, seed/settings, output mapping, and anchor validation. Reject a floating
+base, unreadable throwing arm, accidental bow/arrow, baked ammunition in flight,
+excessive height, or UI/health occlusion.
+
+Archer metadata adds normalized `projectileOrigin: (0.70,0.37)` on the untrimmed
+256 x 296 canvas; Catapult has no approved projectile attachment in this
+ruleset. The Archer arrow and impact are code-native Canvas primitives, not
+PixelLab assets and not part of raster alpha bounds. Check the attachment at
+0.625x/1x/1.75x, DPR 1/2, and every target direction. Calibration requires a
+versioned manifest change and refreshed visual evidence.

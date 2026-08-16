@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "evidence": [
+    {
+      "path": "art/pixellab/reviews/units-contact-sheet.png",
+      "sha256": "f513c4de85ff694be437e39435732b5f001d59a471e8d757f48375316b33d212",
+      "bytes": 190526
+    },
+    {
+      "path": "art/pixellab/reviews/terrain-contact-sheet.png",
+      "sha256": "d14ef8214a4f1d6af85086643c01c4d9fd0745817d8bf0732f8dfc63b0fcfddb",
+      "bytes": 137079
+    },
+    {
+      "path": "art/pixellab/reviews/buildings-contact-sheet.png",
+      "sha256": "66205eed6db2598b06d3ced867f2443bcdd7b61e6927b24b897051022ed16128",
+      "bytes": 236389
+    },
+    {
+      "path": "art/pixellab/reviews/ui-contact-sheet.png",
+      "sha256": "80cda62f38b8f11369fb206e0e8585c0205818a5c6989f0785b73a8d4222fcb8",
+      "bytes": 674106
+    },
+    {
+      "path": "art/pixellab/reviews/map-review.png",
+      "sha256": "2c2142cad41f0bf81515f747a87841652dcdff0b46b1f12e1d448a59db52e098",
+      "bytes": 453630
+    },
+    {
+      "path": "art/pixellab/reviews/map-review.html",
+      "sha256": "ab4dd6869e0e30db5b15bb6ec7a64da7c14e90fb3f02459afc146b198867d255",
+      "bytes": 551
+    }
+  ]
+}

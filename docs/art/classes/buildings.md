@@ -1,0 +1,134 @@
+# Building and Settlement Asset Contract
+
+This contract specializes [Pulp Wars Art Direction](../ART_DIRECTION.md) for
+capitals, cities, villages, Mines, Lumber Mills, and city reward markers.
+
+## Provenance and calibrated geometry
+
+Modern Polytopia publishes no stable public 2D building sprite canvases, pivots,
+or runtime dimensions. Its current buildings are presented in a 3D scene. These
+are provisional, configurable **Pulp Wars contracts** calibrated from the
+research's observed tile ratio and tall-object overhang, not Polytopia metadata.
+
+| Class                     | Source canvas | Display canvas at 1x | Ground anchor |        Hard alpha bounds |
+| ------------------------- | ------------: | -------------------: | ------------: | -----------------------: |
+| Mine                      |  256 x 296 px |     128 x 148 CSS px |   `(128,222)` | `x=20..236`, `y=12..252` |
+| Lumber Mill               |  256 x 296 px |     128 x 148 CSS px |   `(128,222)` | `x=20..236`, `y=12..252` |
+| Village                   |  256 x 296 px |     128 x 148 CSS px |   `(128,176)` | `x=20..236`, `y=12..252` |
+| City level 1              |  384 x 384 px | 115.2 x 115.2 CSS px |   `(192,236)` |   `x=8..376`, `y=4..344` |
+| City levels 2–3 / capital |  384 x 384 px | 115.2 x 115.2 CSS px |   `(192,243)` |   `x=8..376`, `y=4..344` |
+
+The nominal ground diamond is 128 x 74 CSS px. Settlement canvases intentionally
+allow modest lateral and upward overhang and are never clipped to the diamond.
+First-play review reduced city runtime scale from 0.5 to 0.3. Second-play review
+then found that the accepted settlement alpha ended only 7.5–13.2 CSS px below
+the tile center, so the buildings still read as high-floating objects. The
+per-asset anchors above now put every accepted settlement base at 30–30.5 CSS px
+below center, against the diamond's 37 CSS px bottom. Visible nominal bounds are
+`-38..50.5 x -63.5..30.5` for the village, `-50.4..50.4 x
+-55.5..30.3` for level 1, and `-53.4..54 x -70.5..30.3` for levels 2/3.
+This preserves 88.5–107.4 CSS px silhouette widths while making the buildings
+fill their tile without enlarging adjacent overlap. The Mine retains its low
+object anchor. Untrimmed source canvases and accepted PNGs remain mandatory and
+unchanged.
+
+## Required POC set
+
+- one neutral village;
+- city level 1, level 2, and level 3 for the approved POC faction language;
+- every city level 4+ reuses the level-three body unchanged and receives a
+  renderer-owned numeric level badge until a later approved art contract adds
+  higher-level bodies;
+- a capital distinction compatible with every level, preferably a separate
+  renderer-added crown/flag attachment rather than duplicated full sprites;
+- unmined ore is terrain class; one completed Mine is a low building and may
+  replace only an explicit `ORE` resource, never an ordinary mountain;
+- one Lumber Mill is a low building on authoritative Forest with no remaining
+  Animal/resource; it never replaces the Forest terrain/canopy and must remain
+  readable between trunks without resembling a Mine or settlement;
+- Workshop and City Wall persistent reward cues. Survey and Resources are
+  one-off events and need icons/UI, not permanent map structures.
+
+City levels 1–3 must read as the same settlement growing. Preserve base silhouette
+and add one or two large forms per level rather than replacing architecture or
+adding tiny clutter. A city remains identifiable beneath a unit occupying its
+tile. Capital, level, wall, ownership, and siege cannot rely on one color alone;
+renderer markers/text provide redundant cues.
+
+The neutral village is faction-neutral and visibly smaller than a level-one
+city. Mine and Lumber Mill must not resemble an occupied city or a unit. POC city sprites
+may use the chosen test-faction visual language, but should not silently canonize
+one of the example factions from general art direction.
+
+## Draw composition and anchor behavior
+
+Buildings sit at their ground anchor at the projected tile center and share the
+stable depth sort with mountains and units. The tile may also contain a unit;
+render the city base/low structure before the unit and permitted tall back
+structure according to documented sublayers:
+
+1. ground and ownership;
+2. low building footprint/base and Mine;
+3. renderer contact shadow;
+4. back/tall settlement body;
+5. unit at the same anchor;
+6. optional foreground settlement lip no higher than 18 CSS px above anchor;
+7. capital/reward/siege/selection/status overlays and city label.
+
+If one flat city raster cannot preserve unit readability, export named `back`
+and `front` layers on identical 384 x 384 canvases with the same anchor. The
+front layer may contain only the low lip; it must never hide the unit's head,
+weapon, HP, or owner cue. Layer splitting and output mapping must be reproducible
+in the checked-in manifest.
+
+## Palette, line, and transparency
+
+Use chunky silhouette, strong colored dark outline, flat fills, and two-to-three
+level cel shading. Terrain remains quieter, units remain the most characterful
+objects, and buildings occupy the middle detail/contrast budget. At 384 px
+source, main exterior outlines target 8–14 px; downscaled outlines must match
+standard units perceptually.
+
+Reserve a clear faction-color area but keep function legible without that hue.
+City level changes through level 3 should alter mass/silhouette; levels 4+ are
+distinguished by the code-native badge and must not enlarge or procedurally
+decorate the raster. Workshop and City Wall need
+shape cues. Check grayscale, four player-color overlays, grass, mountain
+neighbors, fog edges, selection, siege, and a unit on the city.
+
+Export straight-alpha sRGB with clean RGB edges and no matte, scenery outside
+the building, tile ground, text, city label, selection, health/status UI, cast
+shadow, or fog. No alpha crosses hard bounds. Do not trim.
+
+## Scaling and UI attachments
+
+Keep source canvases unchanged. Village, Mine, and Lumber Mill canvases display at 0.5 source
+scale with their distinct registrations above; city canvases display at 0.3
+source scale with level-specific registration; camera zoom then applies
+uniformly across the board's supported 0.625x–1.75x range. Device-pixel ratio
+changes backing resolution only. Capital crown, owner marker, siege icon,
+reward marker, numeric level badge, and city label are renderer/UI attachments anchored by
+normalized metadata and kept upright/readable; they are not simulation geometry
+and never enter hashes or hit tests. Hit test the logical city tile and DOM
+affordances, not sprite alpha.
+
+## PixelLab recipe and acceptance
+
+Checked-in PixelLab scripts/manifests record exact prompt, negative prompt,
+canvas, model/settings, seed when supported, layer/output mapping, and any
+deterministic alignment/downscale processing. Prompts enforce three-quarter
+downward view, isolated transparent building, shared faction/function language,
+chunky outline, flat/cel shading, no realistic architecture, no scene, no text,
+and no baked UI/shadow.
+
+The first individual sample is village, level-one city, and level-three city;
+then add Mine to test the existing low class. Lumber Mill is a new low-building
+sample and must be inspected individually on at least three accepted Forest
+variants, with/without unit, selected, minimum zoom, and beside Mine before any
+low-building batch. Inspect source/enlarged, 1x display, minimum
+zoom, and on-map with units in front/behind along both grid axes. Reject anchor
+drift, clipped overhang, matte/halo, unreadable growth, city/unit occlusion,
+wrong camera, faux-3D/painterly detail, palette competition, or accidental
+gameplay marks. Batch only after at least three representative building assets
+pass individually and the recipe is stable. Review batch contact sheets, then
+inspect suspected failures individually.

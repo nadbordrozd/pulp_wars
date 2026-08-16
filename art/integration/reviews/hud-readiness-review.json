@@ -1,0 +1,922 @@
+{
+  "generatedAt": "2026-08-16T12:46:32.919Z",
+  "chrome": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+  "contract": "Canvas CSS/backing/camera geometry is invariant across no/tile/unit/city docks; full motion pulses only the ready unit raster; reduced motion is pixel-static.",
+  "desktop": {
+    "none": {
+      "css": [
+        0,
+        0,
+        1440,
+        1000
+      ],
+      "backing": [
+        1440,
+        1000
+      ],
+      "cameraPoints": [
+        {
+          "x": 720,
+          "y": 550
+        },
+        {
+          "x": 760,
+          "y": 573.125
+        }
+      ],
+      "dock": null,
+      "focusId": null,
+      "minimumControl": [
+        64.9375,
+        44
+      ],
+      "controlVerticalBounds": [
+        8.796875,
+        988
+      ],
+      "bottomControlVerticalBounds": [
+        939.96875,
+        988
+      ],
+      "viewport": [
+        1440,
+        1000,
+        1
+      ],
+      "pageOverflow": [
+        0,
+        0
+      ],
+      "markerDomCount": 0
+    },
+    "unit": {
+      "css": [
+        0,
+        0,
+        1440,
+        1000
+      ],
+      "backing": [
+        1440,
+        1000
+      ],
+      "cameraPoints": [
+        {
+          "x": 720,
+          "y": 550
+        },
+        {
+          "x": 760,
+          "y": 573.125
+        }
+      ],
+      "dock": {
+        "kind": "unit-action-dock",
+        "top": 902.21875,
+        "bottom": 988,
+        "height": 85.78125,
+        "maxBlockSize": "450px",
+        "overflowY": "visible"
+      },
+      "focusId": "board",
+      "minimumControl": [
+        64.9375,
+        44
+      ],
+      "controlVerticalBounds": [
+        8.796875,
+        969.125
+      ],
+      "bottomControlVerticalBounds": [
+        921.09375,
+        969.125
+      ],
+      "viewport": [
+        1440,
+        1000,
+        1
+      ],
+      "pageOverflow": [
+        0,
+        0
+      ],
+      "markerDomCount": 0
+    },
+    "city": {
+      "css": [
+        0,
+        0,
+        1440,
+        1000
+      ],
+      "backing": [
+        1440,
+        1000
+      ],
+      "cameraPoints": [
+        {
+          "x": 720,
+          "y": 550
+        },
+        {
+          "x": 760,
+          "y": 573.125
+        }
+      ],
+      "dock": {
+        "kind": "city-action-dock",
+        "top": 928.21875,
+        "bottom": 988,
+        "height": 59.78125,
+        "maxBlockSize": "450px",
+        "overflowY": "visible"
+      },
+      "focusId": "board",
+      "minimumControl": [
+        64.9375,
+        44
+      ],
+      "controlVerticalBounds": [
+        8.796875,
+        982.125
+      ],
+      "bottomControlVerticalBounds": [
+        934.09375,
+        982.125
+      ],
+      "viewport": [
+        1440,
+        1000,
+        1
+      ],
+      "pageOverflow": [
+        0,
+        0
+      ],
+      "markerDomCount": 0
+    },
+    "tile": {
+      "css": [
+        0,
+        0,
+        1440,
+        1000
+      ],
+      "backing": [
+        1440,
+        1000
+      ],
+      "cameraPoints": [
+        {
+          "x": 720,
+          "y": 550
+        },
+        {
+          "x": 760,
+          "y": 573.125
+        }
+      ],
+      "dock": {
+        "kind": "tile-action-dock",
+        "top": 935.71875,
+        "bottom": 988,
+        "height": 52.28125,
+        "maxBlockSize": "450px",
+        "overflowY": "visible"
+      },
+      "focusId": "board",
+      "minimumControl": [
+        64.9375,
+        44
+      ],
+      "controlVerticalBounds": [
+        8.796875,
+        985.875
+      ],
+      "bottomControlVerticalBounds": [
+        937.84375,
+        985.875
+      ],
+      "viewport": [
+        1440,
+        1000,
+        1
+      ],
+      "pageOverflow": [
+        0,
+        0
+      ],
+      "markerDomCount": 0
+    }
+  },
+  "mobile": {
+    "none": {
+      "css": [
+        0,
+        0,
+        390,
+        844
+      ],
+      "backing": [
+        780,
+        1688
+      ],
+      "cameraPoints": [
+        {
+          "x": 195,
+          "y": 464.20000000000005
+        },
+        {
+          "x": 235,
+          "y": 487.32500000000005
+        }
+      ],
+      "dock": null,
+      "focusId": null,
+      "minimumControl": [
+        118.28125,
+        44
+      ],
+      "controlVerticalBounds": [
+        83.03125,
+        832
+      ],
+      "bottomControlVerticalBounds": [
+        783.96875,
+        832
+      ],
+      "viewport": [
+        390,
+        844,
+        2
+      ],
+      "pageOverflow": [
+        0,
+        0
+      ],
+      "markerDomCount": 0
+    },
+    "unit": {
+      "css": [
+        0,
+        0,
+        390,
+        844
+      ],
+      "backing": [
+        780,
+        1688
+      ],
+      "cameraPoints": [
+        {
+          "x": 195,
+          "y": 464.20000000000005
+        },
+        {
+          "x": 235,
+          "y": 487.32500000000005
+        }
+      ],
+      "dock": {
+        "kind": "unit-action-dock",
+        "top": 647.015625,
+        "bottom": 776.78125,
+        "height": 129.765625,
+        "maxBlockSize": "379.8px",
+        "overflowY": "visible"
+      },
+      "focusId": "board",
+      "minimumControl": [
+        118.28125,
+        44
+      ],
+      "controlVerticalBounds": [
+        83.03125,
+        832
+      ],
+      "bottomControlVerticalBounds": [
+        783.96875,
+        832
+      ],
+      "viewport": [
+        390,
+        844,
+        2
+      ],
+      "pageOverflow": [
+        0,
+        0
+      ],
+      "markerDomCount": 0
+    },
+    "city": {
+      "css": [
+        0,
+        0,
+        390,
+        844
+      ],
+      "backing": [
+        780,
+        1688
+      ],
+      "cameraPoints": [
+        {
+          "x": 195,
+          "y": 464.20000000000005
+        },
+        {
+          "x": 235,
+          "y": 487.32500000000005
+        }
+      ],
+      "dock": {
+        "kind": "city-action-dock",
+        "top": 677.21875,
+        "bottom": 776.78125,
+        "height": 99.5625,
+        "maxBlockSize": "379.8px",
+        "overflowY": "visible"
+      },
+      "focusId": "board",
+      "minimumControl": [
+        118.28125,
+        44
+      ],
+      "controlVerticalBounds": [
+        83.03125,
+        832
+      ],
+      "bottomControlVerticalBounds": [
+        783.96875,
+        832
+      ],
+      "viewport": [
+        390,
+        844,
+        2
+      ],
+      "pageOverflow": [
+        0,
+        0
+      ],
+      "markerDomCount": 0
+    },
+    "tile": {
+      "css": [
+        0,
+        0,
+        390,
+        844
+      ],
+      "backing": [
+        780,
+        1688
+      ],
+      "cameraPoints": [
+        {
+          "x": 195,
+          "y": 464.20000000000005
+        },
+        {
+          "x": 235,
+          "y": 487.32500000000005
+        }
+      ],
+      "dock": {
+        "kind": "tile-action-dock",
+        "top": 671.3125,
+        "bottom": 776.78125,
+        "height": 105.46875,
+        "maxBlockSize": "379.8px",
+        "overflowY": "visible"
+      },
+      "focusId": "board",
+      "minimumControl": [
+        118.28125,
+        44
+      ],
+      "controlVerticalBounds": [
+        83.03125,
+        832
+      ],
+      "bottomControlVerticalBounds": [
+        783.96875,
+        832
+      ],
+      "viewport": [
+        390,
+        844,
+        2
+      ],
+      "pageOverflow": [
+        0,
+        0
+      ],
+      "markerDomCount": 0
+    }
+  },
+  "accessibility320": {
+    "none": {
+      "css": [
+        0,
+        0,
+        320,
+        640
+      ],
+      "backing": [
+        320,
+        640
+      ],
+      "cameraPoints": [
+        {
+          "x": 160,
+          "y": 352
+        },
+        {
+          "x": 200,
+          "y": 375.125
+        }
+      ],
+      "dock": null,
+      "focusId": null,
+      "minimumControl": [
+        94.9375,
+        44
+      ],
+      "controlVerticalBounds": [
+        83.03125,
+        628
+      ],
+      "bottomControlVerticalBounds": [
+        558.96875,
+        628
+      ],
+      "viewport": [
+        320,
+        640,
+        1
+      ],
+      "pageOverflow": [
+        0,
+        0
+      ],
+      "markerDomCount": 0
+    },
+    "tile": {
+      "css": [
+        0,
+        0,
+        320,
+        640
+      ],
+      "backing": [
+        320,
+        640
+      ],
+      "cameraPoints": [
+        {
+          "x": 160,
+          "y": 352
+        },
+        {
+          "x": 200,
+          "y": 375.125
+        }
+      ],
+      "dock": {
+        "kind": "tile-action-dock",
+        "top": 446.3125,
+        "bottom": 551.78125,
+        "height": 105.46875,
+        "maxBlockSize": "432px",
+        "overflowY": "auto"
+      },
+      "focusId": "board",
+      "minimumControl": [
+        94.9375,
+        44
+      ],
+      "controlVerticalBounds": [
+        83.03125,
+        628
+      ],
+      "bottomControlVerticalBounds": [
+        558.96875,
+        628
+      ],
+      "viewport": [
+        320,
+        640,
+        1
+      ],
+      "pageOverflow": [
+        0,
+        0
+      ],
+      "markerDomCount": 0
+    }
+  },
+  "fullMotionPulse": {
+    "spriteChangedPixels": 3263,
+    "steadyCueChangedPixels": 4
+  },
+  "reducedMotion": {
+    "changedPixels": 0,
+    "geometry": {
+      "css": [
+        0,
+        0,
+        1440,
+        1000
+      ],
+      "backing": [
+        1440,
+        1000
+      ],
+      "cameraPoints": [
+        {
+          "x": 720,
+          "y": 550
+        },
+        {
+          "x": 760,
+          "y": 573.125
+        }
+      ],
+      "dock": {
+        "kind": "unit-action-dock",
+        "top": 902.21875,
+        "bottom": 988,
+        "height": 85.78125,
+        "maxBlockSize": "450px",
+        "overflowY": "visible"
+      },
+      "focusId": "board",
+      "minimumControl": [
+        64.9375,
+        44
+      ],
+      "controlVerticalBounds": [
+        8.796875,
+        969.125
+      ],
+      "bottomControlVerticalBounds": [
+        921.09375,
+        969.125
+      ],
+      "viewport": [
+        1440,
+        1000,
+        1
+      ],
+      "pageOverflow": [
+        0,
+        0
+      ],
+      "markerDomCount": 0
+    }
+  },
+  "forestCatapultUi": {
+    "desktop": {
+      "baseline": {
+        "css": [
+          0,
+          0,
+          1440,
+          1000
+        ],
+        "backing": [
+          1440,
+          1000
+        ],
+        "cameraPoints": [
+          {
+            "x": 364.95737704918037,
+            "y": 539.7573770491804
+          },
+          {
+            "x": 424.13114754098365,
+            "y": 573.967213114754
+          }
+        ],
+        "dock": null,
+        "focusId": null,
+        "minimumControl": [
+          64.9375,
+          44
+        ],
+        "controlVerticalBounds": [
+          8.796875,
+          988
+        ],
+        "bottomControlVerticalBounds": [
+          939.96875,
+          988
+        ],
+        "viewport": [
+          1440,
+          1000,
+          1
+        ],
+        "pageOverflow": [
+          0,
+          0
+        ],
+        "markerDomCount": 0
+      },
+      "animal": {
+        "css": [
+          0,
+          0,
+          1440,
+          1000
+        ],
+        "backing": [
+          1440,
+          1000
+        ],
+        "cameraPoints": [
+          {
+            "x": 364.95737704918037,
+            "y": 539.7573770491804
+          },
+          {
+            "x": 424.13114754098365,
+            "y": 573.967213114754
+          }
+        ],
+        "dock": {
+          "kind": "tile-action-dock",
+          "top": 921.625,
+          "bottom": 988,
+          "height": 66.375,
+          "maxBlockSize": "450px",
+          "overflowY": "visible"
+        },
+        "focusId": "board",
+        "minimumControl": [
+          64.9375,
+          44
+        ],
+        "controlVerticalBounds": [
+          8.796875,
+          978.828125
+        ],
+        "bottomControlVerticalBounds": [
+          930.796875,
+          978.828125
+        ],
+        "viewport": [
+          1440,
+          1000,
+          1
+        ],
+        "pageOverflow": [
+          0,
+          0
+        ],
+        "markerDomCount": 0
+      },
+      "city": {
+        "css": [
+          0,
+          0,
+          1440,
+          1000
+        ],
+        "backing": [
+          1440,
+          1000
+        ],
+        "cameraPoints": [
+          {
+            "x": 364.95737704918037,
+            "y": 539.7573770491804
+          },
+          {
+            "x": 424.13114754098365,
+            "y": 573.967213114754
+          }
+        ],
+        "dock": {
+          "kind": "city-action-dock",
+          "top": 921.625,
+          "bottom": 988,
+          "height": 66.375,
+          "maxBlockSize": "450px",
+          "overflowY": "visible"
+        },
+        "focusId": "board",
+        "minimumControl": [
+          64.9375,
+          44
+        ],
+        "controlVerticalBounds": [
+          8.796875,
+          978.828125
+        ],
+        "bottomControlVerticalBounds": [
+          930.796875,
+          978.828125
+        ],
+        "viewport": [
+          1440,
+          1000,
+          1
+        ],
+        "pageOverflow": [
+          0,
+          0
+        ],
+        "markerDomCount": 0
+      }
+    },
+    "mobile390x844Dpr2": {
+      "baseline": {
+        "css": [
+          0,
+          0,
+          390,
+          844
+        ],
+        "backing": [
+          780,
+          1688
+        ],
+        "cameraPoints": [
+          {
+            "x": 195,
+            "y": 464.20000000000005
+          },
+          {
+            "x": 235,
+            "y": 487.32500000000005
+          }
+        ],
+        "dock": null,
+        "focusId": null,
+        "minimumControl": [
+          118.28125,
+          44
+        ],
+        "controlVerticalBounds": [
+          83.03125,
+          832
+        ],
+        "bottomControlVerticalBounds": [
+          783.96875,
+          832
+        ],
+        "viewport": [
+          390,
+          844,
+          2
+        ],
+        "pageOverflow": [
+          0,
+          0
+        ],
+        "markerDomCount": 0
+      },
+      "lumber": {
+        "css": [
+          0,
+          0,
+          390,
+          844
+        ],
+        "backing": [
+          780,
+          1688
+        ],
+        "cameraPoints": [
+          {
+            "x": 195,
+            "y": 464.20000000000005
+          },
+          {
+            "x": 235,
+            "y": 487.32500000000005
+          }
+        ],
+        "dock": {
+          "kind": "tile-action-dock",
+          "top": 601.71875,
+          "bottom": 776.78125,
+          "height": 175.0625,
+          "maxBlockSize": "379.8px",
+          "overflowY": "visible"
+        },
+        "focusId": "board",
+        "minimumControl": [
+          118.28125,
+          44
+        ],
+        "controlVerticalBounds": [
+          83.03125,
+          832
+        ],
+        "bottomControlVerticalBounds": [
+          783.96875,
+          832
+        ],
+        "viewport": [
+          390,
+          844,
+          2
+        ],
+        "pageOverflow": [
+          0,
+          0
+        ],
+        "markerDomCount": 0
+      },
+      "city": {
+        "css": [
+          0,
+          0,
+          390,
+          844
+        ],
+        "backing": [
+          780,
+          1688
+        ],
+        "cameraPoints": [
+          {
+            "x": 195,
+            "y": 464.20000000000005
+          },
+          {
+            "x": 235,
+            "y": 487.32500000000005
+          }
+        ],
+        "dock": {
+          "kind": "city-action-dock",
+          "top": 591.625,
+          "bottom": 776.78125,
+          "height": 185.15625,
+          "maxBlockSize": "379.8px",
+          "overflowY": "visible"
+        },
+        "focusId": "board",
+        "minimumControl": [
+          113.75,
+          44
+        ],
+        "controlVerticalBounds": [
+          83.03125,
+          832
+        ],
+        "bottomControlVerticalBounds": [
+          783.96875,
+          832
+        ],
+        "viewport": [
+          390,
+          844,
+          2
+        ],
+        "pageOverflow": [
+          0,
+          0
+        ],
+        "markerDomCount": 0
+      }
+    },
+    "captures": [
+      {
+        "path": "art/integration/reviews/forest-animal-tile-dock-desktop.png",
+        "bytes": 371031,
+        "sha256": "a20c127c2da140be50c9505b787d38e5c4e92daad2355fcf047f61ed63a9f05c"
+      },
+      {
+        "path": "art/integration/reviews/catapult-training-city-dock-desktop.png",
+        "bytes": 381484,
+        "sha256": "18652a76463b4a811564350d4e72e128295bb4328aa57d5e2d01971e5357814b"
+      },
+      {
+        "path": "art/integration/reviews/forest-mathematics-tech-tree-desktop.png",
+        "bytes": 164911,
+        "sha256": "0613b6801ab8ba404a7ff83c4d372df57b5289bc3f3bb065ab63bcab9d8c30e8"
+      },
+      {
+        "path": "art/integration/reviews/forest-lumber-tile-dock-mobile-390x844-dpr2.png",
+        "bytes": 310060,
+        "sha256": "de67a290201da925f52fd88135df23707cbf3ed3b4e79bb3f0bc2de16d7ab025"
+      },
+      {
+        "path": "art/integration/reviews/catapult-training-city-dock-mobile-390x844-dpr2.png",
+        "bytes": 317740,
+        "sha256": "c837a6755cddee36167be4726a95be0076ffd87a41245af9f2092d44c8041ad2"
+      },
+      {
+        "path": "art/integration/reviews/forest-mathematics-tech-tree-mobile-390x844-dpr2.png",
+        "bytes": 172927,
+        "sha256": "e841c7388203e04c1bb49c897dae66452c5e9c2363148e687334b4dd65d17df5"
+      }
+    ]
+  }
+}

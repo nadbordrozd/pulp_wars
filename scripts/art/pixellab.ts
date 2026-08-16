@@ -1,0 +1,1295 @@
+import { createHash } from "node:crypto";
+import {
+  copyFile,
+  mkdir,
+  readFile,
+  rename,
+  stat,
+  writeFile,
+} from "node:fs/promises";
+import path from "node:path";
+import process from "node:process";
+import sharp, { type OverlayOptions } from "sharp";
+
+type ArtClass = "units" | "terrain" | "buildings" | "ui";
+type Stage = "sample" | "batch";
+type ReviewStatus = "CANDIDATE" | "ACCEPTED" | "REJECTED" | "FAILED";
+
+interface Size {
+  readonly width: number;
+  readonly height: number;
+}
+
+interface Bounds {
+  readonly left: number;
+  readonly top: number;
+  readonly right: number;
+  readonly bottom: number;
+}
+
+interface Recipe {
+  readonly id: string;
+  readonly class: ArtClass;
+  readonly stage: Stage;
+  readonly endpoint: "generate-image-v2" | "generate-ui-v2";
+  readonly seed: number;
+  readonly requestSize: Size;
+  readonly outputSize: Size;
+  readonly transparent: boolean;
+  readonly prompt: string;
+  readonly negativePrompt: string;
+  readonly output: string;
+  readonly hardBounds: Bounds;
+  readonly anchor?: { readonly x: number; readonly y: number };
+  readonly projectileOrigin?: { readonly x: number; readonly y: number };
+  readonly palette?: string;
+  readonly postprocess?:
+    | "diamond-mask"
+    | "diamond-mask-reference-edges"
+    | "reference-rotate-180-diamond"
+    | "lanczos3-resize";
+  readonly includeFactionLanguage?: boolean;
+  readonly requestNoBackground?: boolean;
+  readonly styleReference?: string;
+}
+
+interface RequestSnapshot {
+  readonly endpoint: Recipe["endpoint"];
+  readonly model: string;
+  readonly description: string;
+  readonly prompt: string;
+  readonly negativePrompt: string;
+  readonly requestSize: Size;
+  readonly outputSize: Size;
+  readonly seed: number;
+  readonly noBackground: boolean;
+  readonly palette?: string;
+  readonly postprocess?: Recipe["postprocess"];
+  readonly styleReference?: {
+    readonly id: string;
+    readonly sha256?: string;
+  };
+}
+
+interface SourceManifest {
+  readonly schemaVersion: number;
+  readonly provider: {
+    readonly apiBaseUrl: string;
+    readonly credentialEnvironmentVariable: string;
+    readonly model: string;
+  };
+  readonly shared: {
+    readonly style: string;
+    readonly negativePrompt: string;
+    readonly factionLanguage: string;
+    readonly palette: string;
+  };
+  readonly recipes: readonly Recipe[];
+}
+
+interface AlphaBounds extends Bounds {
+  readonly empty: boolean;
+}
+
+interface GenerationRecord {
+  readonly id: string;
+  readonly status: ReviewStatus;
+  readonly jobId?: string;
+  readonly candidate?: string;
+  readonly candidateSha256?: string;
+  readonly providerOutputSha256?: string;
+  readonly outputSha256?: string;
+  readonly width?: number;
+  readonly height?: number;
+  readonly hasAlpha?: boolean;
+  readonly alphaBounds?: AlphaBounds;
+  readonly notes?: string;
+  readonly reviewedAt?: string;
+  readonly request?: RequestSnapshot;
+  readonly reviewChecks?: {
+    readonly source: boolean;
+    readonly native: boolean;
+    readonly enlarged: boolean;
+    readonly minimumZoom: boolean;
+    readonly composition: boolean;
+  };
+}
+
+interface GeneratedManifest {
+  readonly schemaVersion: 1;
+  readonly sourceManifestSha256: string;
+  readonly records: Readonly<Record<string, GenerationRecord>>;
+}
+
+const ROOT = process.cwd();
+const SOURCE_PATH = path.join(ROOT, "scripts/art/pixellab-manifest.json");
+const GENERATED_PATH = path.join(ROOT, "scripts/art/pixellab-generated.json");
+const CANDIDATE_ROOT = path.join(ROOT, "art/pixellab/candidates");
+const QUARANTINE_ROOT = path.join(ROOT, "art/pixellab/quarantine");
+const REVIEW_ROOT = path.join(ROOT, "art/pixellab/reviews");
+const RUNTIME_PATH = path.join(ROOT, "src/assets/generated-art-manifest.ts");
+const POLL_INTERVAL_MS = 5_000;
+const MAX_POLL_MS = 12 * 60_000;
+
+async function main(): Promise<void> {
+  const command = process.argv[2] ?? "help";
+  const sourceText = await readFile(SOURCE_PATH, "utf8");
+  const source = JSON.parse(sourceText) as SourceManifest;
+  validateSourceManifest(source, sourceText);
+  const generated = await loadGenerated(sha256(Buffer.from(sourceText)));
+
+  if (command === "credentials") {
+    const name = source.provider.credentialEnvironmentVariable;
+    console.log(`${name}: ${process.env[name] ? "present" : "missing"}`);
+    return;
+  }
+  if (command === "snapshot") {
+    for (const recipe of source.recipes) {
+      const record = generated.records[recipe.id];
+      if (record === undefined || record.request !== undefined) continue;
+      (generated.records as Record<string, GenerationRecord>)[recipe.id] = {
+        ...record,
+        request: requestSnapshot(source, recipe),
+      };
+    }
+    await saveGenerated(generated);
+    console.log(
+      "Recorded exact request snapshots for existing generation records.",
+    );
+    return;
+  }
+  if (command === "generate") {
+    const stage = requiredOption("--stage") as Stage;
+    if (stage !== "sample" && stage !== "batch")
+      throw new Error("--stage must be sample or batch");
+    if (stage === "batch") assertSampleGate(source, generated);
+    const ids = optionalOption("--ids")?.split(",").filter(Boolean);
+    const recipes = source.recipes.filter(
+      (recipe) =>
+        recipe.stage === stage &&
+        (ids === undefined || ids.includes(recipe.id)),
+    );
+    if (recipes.length === 0) throw new Error("No recipes selected");
+    const concurrency = Number(optionalOption("--concurrency") ?? "3");
+    await generateRecipes(source, generated, recipes, concurrency);
+    await saveGenerated(generated);
+    await syncRuntime(source, generated);
+    return;
+  }
+  if (command === "review") {
+    await reviewCandidate(source, generated);
+    await saveGenerated(generated);
+    await syncRuntime(source, generated);
+    await createReviewSheets(source, generated);
+    return;
+  }
+  if (command === "repair") {
+    const ids = requiredOption("--ids").split(",").filter(Boolean);
+    for (const id of ids) {
+      const recipe = source.recipes.find((candidate) => candidate.id === id);
+      if (recipe === undefined) throw new Error(`Unknown recipe ${id}`);
+      const candidate = path.join(CANDIDATE_ROOT, `${id}.png`);
+      await normalizeToHardBounds(candidate, recipe);
+      const inspection = await inspectPng(candidate);
+      assertTechnical(recipe, inspection);
+      (generated.records as Record<string, GenerationRecord>)[id] = {
+        id,
+        status: "CANDIDATE",
+        candidate: path.relative(ROOT, candidate).replaceAll("\\", "/"),
+        candidateSha256: inspection.sha256,
+        width: inspection.width,
+        height: inspection.height,
+        hasAlpha: inspection.hasAlpha,
+        alphaBounds: inspection.alphaBounds,
+        notes:
+          "Deterministic hard-bounds normalization applied by checked-in pipeline.",
+      };
+      console.log(
+        `${id}: repaired candidate (${inspection.sha256.slice(0, 12)})`,
+      );
+    }
+    await saveGenerated(generated);
+    return;
+  }
+  if (command === "derive") {
+    const id = requiredOption("--id");
+    const recipe = source.recipes.find((candidate) => candidate.id === id);
+    if (recipe === undefined) throw new Error(`Unknown recipe ${id}`);
+    if (
+      recipe.postprocess !== "reference-rotate-180-diamond" ||
+      recipe.styleReference === undefined
+    )
+      throw new Error(`${id} is not a reference-derived recipe`);
+    const referenceRecipe = source.recipes.find(
+      (candidate) => candidate.id === recipe.styleReference,
+    );
+    if (referenceRecipe === undefined)
+      throw new Error(`Unknown style reference ${recipe.styleReference}`);
+    const reference = await readFile(path.join(ROOT, referenceRecipe.output));
+    const candidate = path.join(CANDIDATE_ROOT, `${recipe.id}.png`);
+    await mkdir(path.dirname(candidate), { recursive: true });
+    await deriveRotatedDiamond(reference, recipe, candidate);
+    const inspection = await inspectPng(candidate);
+    assertTechnical(recipe, inspection);
+    (generated.records as Record<string, GenerationRecord>)[id] = {
+      id,
+      status: "CANDIDATE",
+      candidate: path.relative(ROOT, candidate).replaceAll("\\", "/"),
+      candidateSha256: inspection.sha256,
+      width: inspection.width,
+      height: inspection.height,
+      hasAlpha: inspection.hasAlpha,
+      alphaBounds: inspection.alphaBounds,
+      notes:
+        "Deterministic 180-degree decoration variant derived from an accepted PixelLab source.",
+      request: {
+        ...requestSnapshot(source, recipe),
+        styleReference: {
+          id: recipe.styleReference,
+          sha256: sha256(reference),
+        },
+      },
+    };
+    await saveGenerated(generated);
+    console.log(`${id}: derived candidate (${inspection.sha256.slice(0, 12)})`);
+    return;
+  }
+  if (command === "review-sheets") {
+    await createReviewSheets(source, generated);
+    return;
+  }
+  if (command === "validate") {
+    await validateOutputs(source, generated);
+    await syncRuntime(source, generated);
+    console.log(
+      "PixelLab source, generated manifest, and accepted outputs are valid.",
+    );
+    return;
+  }
+  console.log(
+    "Usage: pixellab.ts credentials | snapshot | generate --stage sample|batch [--ids a,b] [--concurrency 3] | repair --ids a,b | derive --id ID | review --id ID --accept|--reject --notes TEXT [--source-pass --native-pass --enlarged-pass --minimum-pass --composition-pass] | review-sheets | validate",
+  );
+}
+
+function validateSourceManifest(
+  source: SourceManifest,
+  sourceText: string,
+): void {
+  if (source.schemaVersion !== 1)
+    throw new Error("Unsupported source manifest schema");
+  if (source.provider.credentialEnvironmentVariable !== "PIXELLAB_API_KEY")
+    throw new Error("Unexpected credential environment variable");
+  if (
+    /bearer\s+[A-Za-z0-9._-]{12,}|api[_-]?key\s*[:=]\s*["'][^"']+/i.test(
+      sourceText,
+    )
+  )
+    throw new Error("Possible credential embedded in source manifest");
+  const ids = new Set<string>();
+  const outputs = new Set<string>();
+  for (const recipe of source.recipes) {
+    if (ids.has(recipe.id)) throw new Error(`Duplicate recipe id ${recipe.id}`);
+    if (outputs.has(recipe.output))
+      throw new Error(`Duplicate output ${recipe.output}`);
+    ids.add(recipe.id);
+    outputs.add(recipe.output);
+    if (!recipe.output.startsWith("public/assets/pixellab/"))
+      throw new Error(
+        `Output must stay under public/assets/pixellab: ${recipe.id}`,
+      );
+    if (recipe.prompt.length === 0 || recipe.negativePrompt.length === 0)
+      throw new Error(`Prompt contract missing for ${recipe.id}`);
+    if (recipe.seed < 0 || !Number.isInteger(recipe.seed))
+      throw new Error(`Invalid seed for ${recipe.id}`);
+    if (
+      recipe.styleReference !== undefined &&
+      !source.recipes.some(
+        (candidate) => candidate.id === recipe.styleReference,
+      )
+    )
+      throw new Error(
+        `Unknown style reference ${recipe.styleReference} for ${recipe.id}`,
+      );
+  }
+  for (const artClass of ["units", "terrain", "buildings", "ui"] as const) {
+    const samples = source.recipes.filter(
+      (recipe) => recipe.class === artClass && recipe.stage === "sample",
+    );
+    if (samples.length < 3)
+      throw new Error(`${artClass} needs at least three sample recipes`);
+  }
+  const grassSamples = source.recipes.filter(
+    (recipe) =>
+      recipe.stage === "sample" && recipe.id.startsWith("terrain-grass-"),
+  );
+  const mountainSamples = source.recipes.filter(
+    (recipe) =>
+      recipe.stage === "sample" && recipe.id.startsWith("terrain-mountain-"),
+  );
+  if (grassSamples.length < 3 || mountainSamples.length < 3)
+    throw new Error(
+      "Terrain sample gate requires three grass and three mountain assets",
+    );
+  const forestSamples = source.recipes.filter(
+    (recipe) =>
+      recipe.stage === "sample" && recipe.id.startsWith("terrain-forest-"),
+  );
+  if (forestSamples.length < 3)
+    throw new Error("Forest sample gate requires three canopy recipes");
+  assertRecipeGeometry(source, "terrain-animal", {
+    requestSize: { width: 256, height: 296 },
+    outputSize: { width: 256, height: 296 },
+    anchor: { x: 128, y: 222 },
+    hardBounds: { left: 24, top: 84, right: 232, bottom: 252 },
+  });
+  assertRecipeGeometry(source, "building-lumber-mill", {
+    requestSize: { width: 256, height: 296 },
+    outputSize: { width: 256, height: 296 },
+    anchor: { x: 128, y: 222 },
+    hardBounds: { left: 20, top: 12, right: 236, bottom: 252 },
+  });
+  assertRecipeGeometry(source, "unit-catapult", {
+    requestSize: { width: 384, height: 384 },
+    outputSize: { width: 384, height: 384 },
+    anchor: { x: 192, y: 288 },
+    hardBounds: { left: 16, top: 8, right: 368, bottom: 336 },
+  });
+}
+
+function assertRecipeGeometry(
+  source: SourceManifest,
+  id: string,
+  expected: Pick<
+    Recipe,
+    "requestSize" | "outputSize" | "anchor" | "hardBounds"
+  >,
+): void {
+  const recipe = source.recipes.find((candidate) => candidate.id === id);
+  if (recipe === undefined) throw new Error(`Required recipe missing: ${id}`);
+  if (
+    JSON.stringify(recipe.requestSize) !== JSON.stringify(expected.requestSize)
+  )
+    throw new Error(`Wrong request geometry for ${id}`);
+  if (JSON.stringify(recipe.outputSize) !== JSON.stringify(expected.outputSize))
+    throw new Error(`Wrong output geometry for ${id}`);
+  if (JSON.stringify(recipe.anchor) !== JSON.stringify(expected.anchor))
+    throw new Error(`Wrong anchor for ${id}`);
+  if (JSON.stringify(recipe.hardBounds) !== JSON.stringify(expected.hardBounds))
+    throw new Error(`Wrong hard bounds for ${id}`);
+}
+
+async function loadGenerated(
+  sourceManifestSha256: string,
+): Promise<GeneratedManifest> {
+  try {
+    const parsed = JSON.parse(
+      await readFile(GENERATED_PATH, "utf8"),
+    ) as GeneratedManifest;
+    return { ...parsed, sourceManifestSha256 };
+  } catch {
+    return { schemaVersion: 1, sourceManifestSha256, records: {} };
+  }
+}
+
+async function saveGenerated(generated: GeneratedManifest): Promise<void> {
+  await mkdir(path.dirname(GENERATED_PATH), { recursive: true });
+  await writeFile(
+    GENERATED_PATH,
+    `${JSON.stringify(generated, null, 2)}\n`,
+    "utf8",
+  );
+}
+
+function assertSampleGate(
+  source: SourceManifest,
+  generated: GeneratedManifest,
+): void {
+  const pending = source.recipes
+    .filter((recipe) => recipe.stage === "sample")
+    .filter((recipe) => generated.records[recipe.id]?.status !== "ACCEPTED")
+    .map((recipe) => recipe.id);
+  if (pending.length > 0)
+    throw new Error(
+      `Batch gate closed; accept every sample first: ${pending.join(", ")}`,
+    );
+}
+
+async function generateRecipes(
+  source: SourceManifest,
+  generated: GeneratedManifest,
+  recipes: readonly Recipe[],
+  concurrency: number,
+): Promise<void> {
+  const credentialName = source.provider.credentialEnvironmentVariable;
+  const apiKey = process.env[credentialName];
+  if (!apiKey) throw new Error(`${credentialName} is missing`);
+  if (!Number.isInteger(concurrency) || concurrency < 1 || concurrency > 4)
+    throw new Error("--concurrency must be an integer from 1 to 4");
+  let cursor = 0;
+  const workers = Array.from(
+    { length: Math.min(concurrency, recipes.length) },
+    async () => {
+      while (cursor < recipes.length) {
+        const recipe = recipes[cursor];
+        cursor += 1;
+        if (recipe === undefined) return;
+        if (generated.records[recipe.id]?.status === "ACCEPTED") {
+          console.log(`${recipe.id}: already accepted, skipped`);
+          continue;
+        }
+        try {
+          const record = await generateOne(source, recipe, apiKey);
+          (generated.records as Record<string, GenerationRecord>)[recipe.id] =
+            record;
+          await saveGenerated(generated);
+        } catch (error) {
+          const notes = error instanceof Error ? error.message : String(error);
+          const request = requestSnapshot(source, recipe);
+          const referenceSha256 =
+            recipe.styleReference === undefined
+              ? undefined
+              : generated.records[recipe.styleReference]?.outputSha256;
+          (generated.records as Record<string, GenerationRecord>)[recipe.id] = {
+            id: recipe.id,
+            status: "FAILED",
+            notes,
+            request:
+              recipe.styleReference === undefined
+                ? request
+                : {
+                    ...request,
+                    styleReference: {
+                      id: recipe.styleReference,
+                      ...(referenceSha256 === undefined
+                        ? {}
+                        : { sha256: referenceSha256 }),
+                    },
+                  },
+          };
+          await saveGenerated(generated);
+          console.error(`${recipe.id}: failed: ${notes}`);
+        }
+      }
+    },
+  );
+  await Promise.all(workers);
+}
+
+async function generateOne(
+  source: SourceManifest,
+  recipe: Recipe,
+  apiKey: string,
+): Promise<GenerationRecord> {
+  const request = requestSnapshot(source, recipe);
+  let resolvedRequest = request;
+  const body: Record<string, unknown> = {
+    description: request.description,
+    image_size: recipe.requestSize,
+    no_background: request.noBackground,
+    seed: recipe.seed,
+  };
+  if (recipe.styleReference !== undefined) {
+    const referenceRecipe = source.recipes.find(
+      (candidate) => candidate.id === recipe.styleReference,
+    );
+    if (referenceRecipe === undefined)
+      throw new Error(`Unknown style reference ${recipe.styleReference}`);
+    const reference = await readFile(path.join(ROOT, referenceRecipe.output));
+    const referenceSha256 = sha256(reference);
+    const referenceImage = {
+      image: {
+        base64: `data:image/png;base64,${reference.toString("base64")}`,
+      },
+      size: referenceRecipe.outputSize,
+    };
+    if (recipe.endpoint === "generate-ui-v2") {
+      body.concept_image = referenceImage;
+    } else {
+      body.style_image = {
+        ...referenceImage,
+        usage_description:
+          "Copy only palette, outline thickness, shading simplicity and detail level; create the newly described silhouette.",
+      };
+      body.style_options = {
+        color_palette: true,
+        outline: true,
+        detail: true,
+        shading: true,
+      };
+    }
+    resolvedRequest = {
+      ...request,
+      styleReference: { id: recipe.styleReference, sha256: referenceSha256 },
+    };
+  }
+  if (recipe.endpoint === "generate-ui-v2")
+    body.color_palette = recipe.palette ?? source.shared.palette;
+  const response = await fetch(
+    `${source.provider.apiBaseUrl}/${recipe.endpoint}`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    },
+  );
+  if (!response.ok)
+    throw new Error(
+      `PixelLab POST returned HTTP ${response.status}: ${await safeError(response)}`,
+    );
+  const start = (await response.json()) as unknown;
+  const jobId = readStringProperty(start, "background_job_id");
+  if (jobId === null)
+    throw new Error("PixelLab response did not contain background_job_id");
+  console.log(`${recipe.id}: submitted job ${jobId}`);
+  const result = await pollJob(source.provider.apiBaseUrl, apiKey, jobId);
+  const encoded = findBase64Image(result);
+  if (encoded === null)
+    throw new Error("Completed PixelLab job contained no base64 image");
+  const input = decodeBase64Image(encoded);
+  const candidate = path.join(CANDIDATE_ROOT, `${recipe.id}.png`);
+  await mkdir(path.dirname(candidate), { recursive: true });
+  await processCandidate(input, recipe, candidate, source);
+  const inspection = await inspectPng(candidate);
+  assertTechnical(recipe, inspection);
+  console.log(
+    `${recipe.id}: candidate ready (${inspection.sha256.slice(0, 12)})`,
+  );
+  return {
+    id: recipe.id,
+    status: "CANDIDATE",
+    jobId,
+    candidate: path.relative(ROOT, candidate).replaceAll("\\", "/"),
+    candidateSha256: inspection.sha256,
+    providerOutputSha256: sha256(input),
+    width: inspection.width,
+    height: inspection.height,
+    hasAlpha: inspection.hasAlpha,
+    alphaBounds: inspection.alphaBounds,
+    request: resolvedRequest,
+  };
+}
+
+function requestSnapshot(
+  source: SourceManifest,
+  recipe: Recipe,
+): RequestSnapshot {
+  const description = [
+    source.shared.style,
+    (recipe.includeFactionLanguage ??
+    (recipe.class === "units" ||
+      recipe.class === "buildings" ||
+      recipe.id === "ui-faction-hero"))
+      ? source.shared.factionLanguage
+      : "",
+    `Palette: ${recipe.palette ?? source.shared.palette}.`,
+    recipe.prompt,
+    `Must not include: ${source.shared.negativePrompt}; ${recipe.negativePrompt}.`,
+  ]
+    .filter(Boolean)
+    .join(" ");
+  return {
+    endpoint: recipe.endpoint,
+    model: source.provider.model,
+    description,
+    prompt: recipe.prompt,
+    negativePrompt: `${source.shared.negativePrompt}; ${recipe.negativePrompt}`,
+    requestSize: recipe.requestSize,
+    outputSize: recipe.outputSize,
+    seed: recipe.seed,
+    noBackground: recipe.requestNoBackground ?? recipe.transparent,
+    ...(recipe.palette === undefined ? {} : { palette: recipe.palette }),
+    ...(recipe.postprocess === undefined
+      ? {}
+      : { postprocess: recipe.postprocess }),
+    ...(recipe.styleReference === undefined
+      ? {}
+      : { styleReference: { id: recipe.styleReference } }),
+  };
+}
+
+async function safeError(response: Response): Promise<string> {
+  const text = (await response.text())
+    .replaceAll(/[\r\n]+/g, " ")
+    .replaceAll(
+      /data:image\/[a-z0-9.+-]+;base64,[A-Za-z0-9+/=]+/gi,
+      "[image data redacted]",
+    )
+    .replaceAll(
+      /\b(remaining|balance|credits?|resources?)\b\s*[:=]?\s*-?\d+(?:\.\d+)?/gi,
+      "$1 [numeric value redacted]",
+    )
+    .slice(0, 300);
+  return text.replaceAll(/Bearer\s+\S+/gi, "Bearer [redacted]");
+}
+
+async function pollJob(
+  baseUrl: string,
+  apiKey: string,
+  jobId: string,
+): Promise<unknown> {
+  const deadline = Date.now() + MAX_POLL_MS;
+  while (Date.now() < deadline) {
+    await delay(POLL_INTERVAL_MS);
+    const response = await fetch(
+      `${baseUrl}/background-jobs/${encodeURIComponent(jobId)}`,
+      {
+        headers: { Authorization: `Bearer ${apiKey}` },
+      },
+    );
+    if (!response.ok)
+      throw new Error(`PixelLab poll returned HTTP ${response.status}`);
+    const result = (await response.json()) as unknown;
+    const status = readStringProperty(result, "status");
+    if (status === "completed")
+      return readProperty(result, "last_response") ?? result;
+    if (status === "failed") throw new Error("PixelLab background job failed");
+  }
+  throw new Error(`PixelLab job timed out after ${MAX_POLL_MS / 1000} seconds`);
+}
+
+function findBase64Image(value: unknown): string | null {
+  if (typeof value === "string" && value.includes("base64,")) return value;
+  if (typeof value !== "object" || value === null) return null;
+  const direct = Reflect.get(value, "base64");
+  if (typeof direct === "string" && direct.length > 100) return direct;
+  for (const nested of Object.values(value)) {
+    const found = findBase64Image(nested);
+    if (found !== null) return found;
+  }
+  return null;
+}
+
+function decodeBase64Image(encoded: string): Buffer {
+  const payload = encoded.includes("base64,")
+    ? encoded.slice(encoded.indexOf("base64,") + 7)
+    : encoded;
+  const buffer = Buffer.from(payload, "base64");
+  if (buffer.length < 16)
+    throw new Error("PixelLab returned an invalid image payload");
+  return buffer;
+}
+
+async function processCandidate(
+  input: Buffer,
+  recipe: Recipe,
+  destination: string,
+  source: SourceManifest,
+): Promise<void> {
+  let pipeline = sharp(input)
+    .ensureAlpha()
+    .resize(recipe.outputSize.width, recipe.outputSize.height, {
+      fit: "fill",
+      kernel: sharp.kernel.lanczos3,
+    });
+  if (
+    recipe.postprocess === "diamond-mask" ||
+    recipe.postprocess === "diamond-mask-reference-edges"
+  ) {
+    const { width, height } = recipe.outputSize;
+    const mask = Buffer.from(
+      `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg"><polygon points="${width / 2},0 ${width},${height / 2} ${width / 2},${height} 0,${height / 2}" fill="white"/></svg>`,
+    );
+    pipeline = pipeline.composite([{ input: mask, blend: "dest-in" }]);
+    if (recipe.postprocess === "diamond-mask-reference-edges") {
+      if (recipe.styleReference === undefined)
+        throw new Error(
+          `${recipe.id} reference-edge mask needs styleReference`,
+        );
+      const referenceRecipe = source.recipes.find(
+        (candidate) => candidate.id === recipe.styleReference,
+      );
+      if (referenceRecipe === undefined)
+        throw new Error(`Unknown edge reference ${recipe.styleReference}`);
+      const edgeMask = Buffer.from(
+        `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg"><polygon points="${width / 2},1 ${width - 1},${height / 2} ${width / 2},${height - 1} 1,${height / 2}" fill="none" stroke="white" stroke-width="8"/></svg>`,
+      );
+      const referenceEdges = await sharp(
+        path.join(ROOT, referenceRecipe.output),
+      )
+        .ensureAlpha()
+        .resize(width, height, { fit: "fill" })
+        .composite([{ input: edgeMask, blend: "dest-in" }])
+        .png()
+        .toBuffer();
+      pipeline = pipeline.composite([{ input: referenceEdges, blend: "over" }]);
+    }
+  }
+  await pipeline
+    .png({ compressionLevel: 9, adaptiveFiltering: false })
+    .toFile(destination);
+  if (!recipe.postprocess?.startsWith("diamond-mask"))
+    await normalizeToHardBounds(destination, recipe);
+}
+
+async function deriveRotatedDiamond(
+  reference: Buffer,
+  recipe: Recipe,
+  destination: string,
+): Promise<void> {
+  const { width, height } = recipe.outputSize;
+  const mask = Buffer.from(
+    `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg"><polygon points="${width / 2},0 ${width},${height / 2} ${width / 2},${height} 0,${height / 2}" fill="white"/></svg>`,
+  );
+  await sharp(reference)
+    .ensureAlpha()
+    .resize(width, height, { fit: "fill" })
+    .rotate(180)
+    .composite([{ input: mask, blend: "dest-in" }])
+    .png({ compressionLevel: 9, adaptiveFiltering: false })
+    .toFile(destination);
+}
+
+async function normalizeToHardBounds(
+  destination: string,
+  recipe: Recipe,
+): Promise<void> {
+  let inspection = await inspectPng(destination);
+  const alphaWidth = inspection.alphaBounds.right - inspection.alphaBounds.left;
+  const alphaHeight =
+    inspection.alphaBounds.bottom - inspection.alphaBounds.top;
+  const hardWidth = recipe.hardBounds.right - recipe.hardBounds.left;
+  const hardHeight = recipe.hardBounds.bottom - recipe.hardBounds.top;
+  if (alphaWidth > hardWidth || alphaHeight > hardHeight) {
+    const contained = await sharp(await readFile(destination))
+      .trim({ background: "#00000000" })
+      .resize({
+        width: hardWidth,
+        height: hardHeight,
+        fit: "inside",
+        kernel: sharp.kernel.lanczos3,
+      })
+      .png({ compressionLevel: 9, adaptiveFiltering: false })
+      .toBuffer();
+    const metadata = await sharp(contained).metadata();
+    const containedWidth = metadata.width ?? hardWidth;
+    const containedHeight = metadata.height ?? hardHeight;
+    const left =
+      recipe.hardBounds.left + Math.floor((hardWidth - containedWidth) / 2);
+    const top =
+      recipe.hardBounds.top + Math.floor((hardHeight - containedHeight) / 2);
+    const canvas = await sharp({
+      create: {
+        width: recipe.outputSize.width,
+        height: recipe.outputSize.height,
+        channels: 4,
+        background: "#00000000",
+      },
+    })
+      .composite([{ input: contained, left, top }])
+      .png({ compressionLevel: 9, adaptiveFiltering: false })
+      .toBuffer();
+    await writeFile(destination, canvas);
+    inspection = await inspectPng(destination);
+  }
+  const shift = shiftIntoBounds(inspection.alphaBounds, recipe.hardBounds);
+  if (shift.x !== 0 || shift.y !== 0)
+    await translatePng(
+      destination,
+      recipe.outputSize.width,
+      recipe.outputSize.height,
+      shift.x,
+      shift.y,
+    );
+}
+
+function shiftIntoBounds(
+  alpha: AlphaBounds,
+  hard: Bounds,
+): { readonly x: number; readonly y: number } {
+  if (alpha.right - alpha.left > hard.right - hard.left)
+    throw new Error("Generated alpha is wider than the permitted hard bounds");
+  if (alpha.bottom - alpha.top > hard.bottom - hard.top)
+    throw new Error("Generated alpha is taller than the permitted hard bounds");
+  let x = 0;
+  let y = 0;
+  if (alpha.left < hard.left) x = hard.left - alpha.left;
+  if (alpha.right + x > hard.right) x += hard.right - (alpha.right + x);
+  if (alpha.top < hard.top) y = hard.top - alpha.top;
+  if (alpha.bottom + y > hard.bottom) y += hard.bottom - (alpha.bottom + y);
+  return { x, y };
+}
+
+async function translatePng(
+  file: string,
+  width: number,
+  height: number,
+  x: number,
+  y: number,
+): Promise<void> {
+  const input = await readFile(file);
+  const sourceLeft = Math.max(0, -x);
+  const sourceTop = Math.max(0, -y);
+  const extracted = await sharp(input)
+    .extract({
+      left: sourceLeft,
+      top: sourceTop,
+      width: width - Math.abs(x),
+      height: height - Math.abs(y),
+    })
+    .png()
+    .toBuffer();
+  const translated = await sharp({
+    create: { width, height, channels: 4, background: "#00000000" },
+  })
+    .composite([
+      {
+        input: extracted,
+        left: Math.max(0, x),
+        top: Math.max(0, y),
+      },
+    ])
+    .png({ compressionLevel: 9, adaptiveFiltering: false })
+    .toBuffer();
+  await writeFile(file, translated);
+}
+
+interface PngInspection {
+  readonly width: number;
+  readonly height: number;
+  readonly hasAlpha: boolean;
+  readonly alphaBounds: AlphaBounds;
+  readonly sha256: string;
+}
+
+async function inspectPng(file: string): Promise<PngInspection> {
+  const data = await readFile(file);
+  const { data: pixels, info } = await sharp(data)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  let left = info.width;
+  let top = info.height;
+  let right = -1;
+  let bottom = -1;
+  for (let y = 0; y < info.height; y += 1) {
+    for (let x = 0; x < info.width; x += 1) {
+      const alpha = pixels[(y * info.width + x) * 4 + 3] ?? 0;
+      if (alpha === 0) continue;
+      left = Math.min(left, x);
+      top = Math.min(top, y);
+      right = Math.max(right, x + 1);
+      bottom = Math.max(bottom, y + 1);
+    }
+  }
+  const empty = right < 0;
+  return {
+    width: info.width,
+    height: info.height,
+    hasAlpha: info.channels === 4,
+    alphaBounds: empty
+      ? { left: 0, top: 0, right: 0, bottom: 0, empty: true }
+      : { left, top, right, bottom, empty: false },
+    sha256: sha256(data),
+  };
+}
+
+function assertTechnical(recipe: Recipe, inspection: PngInspection): void {
+  if (
+    inspection.width !== recipe.outputSize.width ||
+    inspection.height !== recipe.outputSize.height
+  )
+    throw new Error(
+      `Wrong dimensions for ${recipe.id}: ${inspection.width}x${inspection.height}`,
+    );
+  if (recipe.transparent && !inspection.hasAlpha)
+    throw new Error(`${recipe.id} lacks alpha`);
+  if (inspection.alphaBounds.empty)
+    throw new Error(`${recipe.id} is fully transparent`);
+  const alpha = inspection.alphaBounds;
+  const hard = recipe.hardBounds;
+  if (
+    alpha.left < hard.left ||
+    alpha.top < hard.top ||
+    alpha.right > hard.right ||
+    alpha.bottom > hard.bottom
+  )
+    throw new Error(
+      `${recipe.id} alpha bounds ${alpha.left},${alpha.top}..${alpha.right},${alpha.bottom} exceed ${hard.left},${hard.top}..${hard.right},${hard.bottom}`,
+    );
+}
+
+async function reviewCandidate(
+  source: SourceManifest,
+  generated: GeneratedManifest,
+): Promise<void> {
+  const id = requiredOption("--id");
+  const accept = process.argv.includes("--accept");
+  const reject = process.argv.includes("--reject");
+  if (accept === reject)
+    throw new Error("Choose exactly one of --accept or --reject");
+  const notes = requiredOption("--notes");
+  const recipe = source.recipes.find((candidate) => candidate.id === id);
+  if (recipe === undefined) throw new Error(`Unknown recipe ${id}`);
+  const previous = generated.records[id];
+  if (previous?.candidate === undefined)
+    throw new Error(`${id} has no candidate`);
+  const candidate = path.join(ROOT, previous.candidate);
+  const inspection = await inspectPng(candidate);
+  assertTechnical(recipe, inspection);
+  if (accept) {
+    const reviewChecks = {
+      source: process.argv.includes("--source-pass"),
+      native: process.argv.includes("--native-pass"),
+      enlarged: process.argv.includes("--enlarged-pass"),
+      minimumZoom: process.argv.includes("--minimum-pass"),
+      composition: process.argv.includes("--composition-pass"),
+    };
+    if (Object.values(reviewChecks).some((passed) => !passed))
+      throw new Error(
+        "Acceptance requires source, native, enlarged, minimum-zoom, and composition review passes",
+      );
+    if (
+      (id === "terrain-animal" || id === "building-lumber-mill") &&
+      [1, 2, 3].some(
+        (variant) =>
+          generated.records[`terrain-forest-${variant}`]?.status !== "ACCEPTED",
+      )
+    )
+      throw new Error(`${id} review requires three accepted Forest samples`);
+    const output = path.join(ROOT, recipe.output);
+    await mkdir(path.dirname(output), { recursive: true });
+    await copyFile(candidate, output);
+    (generated.records as Record<string, GenerationRecord>)[id] = {
+      ...previous,
+      status: "ACCEPTED",
+      outputSha256: inspection.sha256,
+      notes,
+      reviewedAt: new Date().toISOString(),
+      reviewChecks,
+    };
+    console.log(`${id}: accepted and wired to ${recipe.output}`);
+  } else {
+    await mkdir(QUARANTINE_ROOT, { recursive: true });
+    const quarantine = path.join(
+      QUARANTINE_ROOT,
+      `${id}-${inspection.sha256.slice(0, 12)}.png`,
+    );
+    await rename(candidate, quarantine);
+    (generated.records as Record<string, GenerationRecord>)[id] = {
+      ...previous,
+      status: "REJECTED",
+      candidate: path.relative(ROOT, quarantine).replaceAll("\\", "/"),
+      notes,
+      reviewedAt: new Date().toISOString(),
+    };
+    console.log(`${id}: rejected and quarantined`);
+  }
+}
+
+async function validateOutputs(
+  source: SourceManifest,
+  generated: GeneratedManifest,
+): Promise<void> {
+  for (const recipe of source.recipes) {
+    const record = generated.records[recipe.id];
+    if (record?.status !== "ACCEPTED") continue;
+    const inspection = await inspectPng(path.join(ROOT, recipe.output));
+    assertTechnical(recipe, inspection);
+    if (inspection.sha256 !== record.outputSha256)
+      throw new Error(`Hash mismatch for ${recipe.id}`);
+  }
+  for (const record of Object.values(generated.records)) {
+    if (record.status !== "REJECTED") continue;
+    const recipe = source.recipes.find(
+      (candidate) => candidate.id === record.id,
+    );
+    if (recipe === undefined) continue;
+    try {
+      await stat(path.join(ROOT, recipe.output));
+      throw new Error(`Rejected asset is wired: ${record.id}`);
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message.startsWith("Rejected asset is wired")
+      )
+        throw error;
+    }
+  }
+}
+
+async function syncRuntime(
+  source: SourceManifest,
+  generated: GeneratedManifest,
+): Promise<void> {
+  const accepted = source.recipes.filter(
+    (recipe) => generated.records[recipe.id]?.status === "ACCEPTED",
+  );
+  const entries = accepted
+    .map((recipe) => {
+      const publicUrl = `/${recipe.output.replace(/^public\//, "")}`;
+      return `  ${JSON.stringify(recipe.id)}: ${JSON.stringify(publicUrl)},`;
+    })
+    .join("\n");
+  const attachmentEntries = accepted
+    .filter((recipe) => recipe.projectileOrigin !== undefined)
+    .map((recipe) => {
+      const origin = recipe.projectileOrigin;
+      if (origin === undefined) throw new Error("Missing projectile origin");
+      return `  ${JSON.stringify(recipe.id)}: { projectileOrigin: { x: ${origin.x}, y: ${origin.y} } },`;
+    })
+    .join("\n");
+  const content = `// Generated by scripts/art/pixellab.ts. Do not edit by hand.\nexport const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {\n${entries}\n};\n\nexport interface AcceptedArtAttachment {\n  readonly projectileOrigin?: { readonly x: number; readonly y: number };\n}\n\nexport const ACCEPTED_ART_ATTACHMENTS: Readonly<\n  Record<string, AcceptedArtAttachment>\n> = {\n${attachmentEntries}\n};\n\nexport const FACTION_HERO_URL = ACCEPTED_ART_URLS["ui-faction-hero"] ?? null;\n`;
+  await mkdir(path.dirname(RUNTIME_PATH), { recursive: true });
+  await writeFile(RUNTIME_PATH, content, "utf8");
+}
+
+async function createReviewSheets(
+  source: SourceManifest,
+  generated: GeneratedManifest,
+): Promise<void> {
+  await mkdir(REVIEW_ROOT, { recursive: true });
+  for (const artClass of ["units", "terrain", "buildings", "ui"] as const) {
+    const recipes = source.recipes.filter(
+      (recipe) =>
+        recipe.class === artClass &&
+        (generated.records[recipe.id]?.status === "ACCEPTED" ||
+          generated.records[recipe.id]?.status === "CANDIDATE"),
+    );
+    if (recipes.length === 0) continue;
+    const cells: OverlayOptions[] = [];
+    const cellWidth = 300;
+    const cellHeight = 340;
+    const columns = Math.min(4, recipes.length);
+    for (const [index, recipe] of recipes.entries()) {
+      const record = generated.records[recipe.id];
+      const sourceFile =
+        record?.status === "ACCEPTED"
+          ? recipe.output
+          : (record?.candidate ?? recipe.output);
+      const image = await sharp(path.join(ROOT, sourceFile))
+        .resize({ width: 240, height: 240, fit: "contain" })
+        .png()
+        .toBuffer();
+      const left = (index % columns) * cellWidth + 30;
+      const top = Math.floor(index / columns) * cellHeight + 44;
+      cells.push({ input: image, left, top });
+      cells.push({
+        input: Buffer.from(
+          `<svg width="${cellWidth}" height="40" xmlns="http://www.w3.org/2000/svg"><text x="${cellWidth / 2}" y="25" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="700" fill="#f5efe2">${escapeXml(recipe.id)}</text></svg>`,
+        ),
+        left: (index % columns) * cellWidth,
+        top: Math.floor(index / columns) * cellHeight,
+      });
+    }
+    const rows = Math.ceil(recipes.length / columns);
+    await sharp({
+      create: {
+        width: columns * cellWidth,
+        height: rows * cellHeight,
+        channels: 4,
+        background: "#283c3b",
+      },
+    })
+      .composite(cells)
+      .png()
+      .toFile(path.join(REVIEW_ROOT, `${artClass}-contact-sheet.png`));
+  }
+  await createMapReviewPng(source, generated);
+  await createMapReviewHtml(source, generated);
+  await createReviewEvidenceIndex();
+}
+
+async function createReviewEvidenceIndex(): Promise<void> {
+  const names = [
+    "units-contact-sheet.png",
+    "terrain-contact-sheet.png",
+    "buildings-contact-sheet.png",
+    "ui-contact-sheet.png",
+    "map-review.png",
+    "map-review.html",
+  ];
+  const evidence: Array<{
+    readonly path: string;
+    readonly sha256: string;
+    readonly bytes: number;
+  }> = [];
+  for (const name of names) {
+    const file = path.join(REVIEW_ROOT, name);
+    try {
+      const data = await readFile(file);
+      evidence.push({
+        path: path.relative(ROOT, file).replaceAll("\\", "/"),
+        sha256: sha256(data),
+        bytes: data.byteLength,
+      });
+    } catch {
+      // A class with no accepted or candidate output has no evidence file yet.
+    }
+  }
+  await writeFile(
+    path.join(REVIEW_ROOT, "review-evidence.json"),
+    `${JSON.stringify({ schemaVersion: 1, evidence }, null, 2)}\n`,
+    "utf8",
+  );
+}
+
+async function createMapReviewPng(
+  source: SourceManifest,
+  generated: GeneratedManifest,
+): Promise<void> {
+  const accepted = new Map(
+    source.recipes
+      .filter((recipe) => generated.records[recipe.id]?.status === "ACCEPTED")
+      .map((recipe) => [recipe.id, recipe] as const),
+  );
+  const displayImages = new Map<string, Buffer>();
+  const displayImage = async (id: string): Promise<Buffer | null> => {
+    const existing = displayImages.get(id);
+    if (existing !== undefined) return existing;
+    const recipe = accepted.get(id);
+    if (recipe === undefined) return null;
+    const city = id.startsWith("building-city-");
+    const ground = id.startsWith("terrain-grass-");
+    const width = city ? 192 : 128;
+    const height = city ? 192 : ground ? 74 : 148;
+    const rendered = await sharp(path.join(ROOT, recipe.output))
+      .resize({ width, height, fit: "fill" })
+      .png()
+      .toBuffer();
+    displayImages.set(id, rendered);
+    return rendered;
+  };
+
+  const width = 1152;
+  const height = 820;
+  const origin = { x: 576, y: 160 };
+  const grounds: OverlayOptions[] = [];
+  for (let y = 0; y < 8; y += 1) {
+    for (let x = 0; x < 8; x += 1) {
+      const id = `terrain-grass-${((x + y * 3) % 4) + 1}`;
+      const image = await displayImage(id);
+      if (image === null) continue;
+      const center = mapReviewCenter(origin, x, y);
+      grounds.push({ input: image, left: center.x - 64, top: center.y - 37 });
+    }
+  }
+
+  const placements = [
+    [0, 0, "terrain-mountain-1"],
+    [2, 0, "building-village"],
+    [4, 0, "building-city-1"],
+    [4, 0, "unit-warrior"],
+    [6, 0, "unit-rider"],
+    [1, 2, "terrain-mountain-2"],
+    [3, 2, "terrain-ore"],
+    [5, 2, "building-city-2"],
+    [7, 2, "unit-archer"],
+    [0, 4, "building-mine"],
+    [2, 4, "unit-defender"],
+    [4, 4, "terrain-mountain-3"],
+    [6, 4, "building-city-3"],
+    [1, 6, "unit-rider"],
+    [3, 6, "building-village"],
+    [5, 6, "unit-warrior"],
+    [7, 6, "terrain-ore"],
+  ] as const;
+  const bodies: Array<{
+    readonly depth: number;
+    readonly tie: number;
+    readonly overlay: OverlayOptions;
+  }> = [];
+  for (const [x, y, id] of placements) {
+    const image = await displayImage(id);
+    if (image === null) continue;
+    const center = mapReviewCenter(origin, x, y);
+    const city = id.startsWith("building-city-");
+    const unit = id.startsWith("unit-");
+    bodies.push({
+      depth: x + y,
+      tie: city ? 30 : unit ? 40 : 20,
+      overlay: {
+        input: image,
+        left: center.x - (city ? 96 : 64),
+        top: center.y - (city ? 150 : 111),
+      },
+    });
+  }
+  bodies.sort(
+    (left, right) => left.depth - right.depth || left.tie - right.tie,
+  );
+  const title = Buffer.from(
+    '<svg width="1152" height="70" xmlns="http://www.w3.org/2000/svg"><text x="576" y="38" text-anchor="middle" font-family="sans-serif" font-size="24" font-weight="700" fill="#f5efe2">Accepted art — 8 × 8 adjacency, anchor, overhang and depth review</text></svg>',
+  );
+  await sharp({
+    create: {
+      width,
+      height,
+      channels: 4,
+      background: "#233b39",
+    },
+  })
+    .composite([
+      { input: title, left: 0, top: 0 },
+      ...grounds,
+      ...bodies.map(({ overlay }) => overlay),
+    ])
+    .png()
+    .toFile(path.join(REVIEW_ROOT, "map-review.png"));
+}
+
+function mapReviewCenter(
+  origin: { readonly x: number; readonly y: number },
+  x: number,
+  y: number,
+): { readonly x: number; readonly y: number } {
+  return {
+    x: origin.x + (x - y) * 64,
+    y: origin.y + (x + y) * 37,
+  };
+}
+
+async function createMapReviewHtml(
+  source: SourceManifest,
+  generated: GeneratedManifest,
+): Promise<void> {
+  const acceptedCount = source.recipes.filter(
+    (recipe) => generated.records[recipe.id]?.status === "ACCEPTED",
+  ).length;
+  const html = `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Pulp Wars accepted-art review</title><style>body{margin:0;background:#233b39;color:white;font:16px system-ui;text-align:center}main{padding:20px}img{display:block;width:min(1152px,100%);height:auto;margin:auto}p{color:#d7dfda}</style><main><h1>Accepted PixelLab art review</h1><p>${acceptedCount} accepted assets · generated map sheet at exact nominal renderer scale</p><img src="./map-review.png" alt="Eight by eight isometric Pulp Wars art integration review"></main>`;
+  await writeFile(path.join(REVIEW_ROOT, "map-review.html"), html, "utf8");
+}
+
+function readProperty(value: unknown, key: string): unknown {
+  return typeof value === "object" && value !== null
+    ? Reflect.get(value, key)
+    : undefined;
+}
+
+function readStringProperty(value: unknown, key: string): string | null {
+  const found = readProperty(value, key);
+  return typeof found === "string" ? found : null;
+}
+
+function requiredOption(name: string): string {
+  const found = optionalOption(name);
+  if (found === undefined) throw new Error(`Missing ${name}`);
+  return found;
+}
+
+function optionalOption(name: string): string | undefined {
+  const index = process.argv.indexOf(name);
+  return index < 0 ? undefined : process.argv[index + 1];
+}
+
+function sha256(data: Buffer): string {
+  return createHash("sha256").update(data).digest("hex");
+}
+
+function delay(milliseconds: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+function escapeXml(value: string): string {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
+void main().catch((error: unknown) => {
+  console.error(error instanceof Error ? error.message : String(error));
+  process.exitCode = 1;
+});

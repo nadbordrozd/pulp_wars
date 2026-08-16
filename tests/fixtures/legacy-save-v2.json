@@ -1,0 +1,6 @@
+{
+  "format": "pulp-wars-save",
+  "version": 2,
+  "rulesetId": "pulp-wars-poc-2",
+  "sentinel": "preserve byte-for-byte"
+}

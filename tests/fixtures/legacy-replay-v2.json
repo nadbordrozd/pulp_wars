@@ -1,0 +1,16 @@
+{
+  "format": "pulp-wars-replay",
+  "version": 2,
+  "setup": {
+    "rulesetId": "pulp-wars-poc-2",
+    "seed": 1,
+    "width": 11,
+    "height": 11,
+    "aiCount": 1,
+    "aiDifficulty": "NORMAL",
+    "humanColor": "CORAL"
+  },
+  "commands": [],
+  "checkpoints": [],
+  "sentinel": "preserve byte-for-byte"
+}
