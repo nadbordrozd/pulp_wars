@@ -1,8 +1,9 @@
 # Pulp Wars POC validation
 
 **Date:** 2026-08-16  
-**Result:** Ruleset-4 functional and fallback presentation audit passed; new
-PixelLab Forest/siege production rasters remain blocked and unaccepted  
+**Result:** Ruleset-4 functional and production presentation audit passed;
+Forest, Animal, Lumber Mill, Catapult, Forestry, and Mathematics PixelLab art
+is accepted and integrated
 **Reference machine:** Windows 11 Home 10.0.26100, Intel Core i7-10510U,
 15.8 GiB RAM, Chrome 151.0.7922.137
 
@@ -1639,16 +1640,35 @@ settlement counts to v4 Forest/Animal invariants, v3 Demo hash/coordinates to
 their v4 derivation, and random per-settlement resource dependencies to
 explicit UI-only fixtures.
 
-Production PixelLab status remains honestly separate. The nine new Forest,
-Animal, Lumber Mill, Catapult, Forestry, and Mathematics recipes are
-reproducible and manifest-valid, but the Node process cannot access a usable
-PixelLab credential. No request was sent and the production tally is 0 accepted
-/ 0 rejected / 9 ungenerated. Code-native fallbacks passed renderer loading,
-fog/depth, deterministic Forest variants, desktop/mobile layout, and visual
-inspection, but they are not accepted production art. The fallback evidence
-explicitly records `UNGENERATED_CREDENTIAL_UNAVAILABLE`; native/enlarged/sample
-gate/contact-sheet acceptance remains blocked in the separate production-art
-task.
+The previously blocked PixelLab production pass was resumed after the user
+restored credits. The credential stayed environment-only and was forwarded to
+the Windows Node process through WSL's environment bridge; the checked-in
+pipeline reported only `PIXELLAB_API_KEY: present`, never the value or numeric
+balance. All requests used the recorded model, prompts, negative prompts,
+dimensions, seeds, references, and output mapping.
+
+Nine new production IDs are accepted: four Forest variants, Animal, Lumber
+Mill, Catapult, Forestry, and Mathematics. Five visually unsuitable attempts
+were quarantined and never wired; two additional Forest-4 jobs failed the
+deterministic anchor gate and remained unwired. Forest samples passed
+individually before the fourth variant was batched. A recorded
+`groundContactY` post-process preserves scale and alpha while correcting
+provider vertical drift to y222 for Forest/Animal/Lumber Mill and y288 for the
+Catapult; over-tall candidates are proportionally fitted within the hard
+contact box rather than clipped.
+
+The repeated production fixture contains 29 Forests, 4 Animals, 3 Lumber Mills,
+1 Catapult, and 40 fog tiles. Browser review exposed Animals being erased by a
+single-raster canopy, so the tested/documented same-tile order now draws Animal
+frontage after Forest while Lumber Mill remains between trunks. Accepted
+resources and siege art remain visible at fog edges without fog painting over
+their revealed overhang. The 1440 x 1000 capture hash is
+`2a3b0b1dcdf5f0cd9f22350f710faea70d8379fd542b31cd9561c5f08e7c6d0b`;
+the true 390 x 844 DPR-2 capture hash is
+`de0332523f1b98bf25adf6b6bff9d05876455216fbbf7060585a7ec7af0e084e`.
+See [desktop production review](../../art/feedback/reviews/forest-catapult-production-desktop-1440x1000.png),
+[mobile production review](../../art/feedback/reviews/forest-catapult-production-mobile-390x844-dpr2.png),
+and [machine-readable evidence](../../art/feedback/reviews/forest-catapult-production-evidence.json).
 
 Windows localhost returned HTTP 200 from `http://localhost:6173`, and every
 Chrome run used that strict-port Vite entry point.

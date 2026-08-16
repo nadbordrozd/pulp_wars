@@ -41,6 +41,7 @@ interface Recipe {
   readonly output: string;
   readonly hardBounds: Bounds;
   readonly anchor?: { readonly x: number; readonly y: number };
+  readonly groundContactY?: number;
   readonly projectileOrigin?: { readonly x: number; readonly y: number };
   readonly palette?: string;
   readonly postprocess?:
@@ -65,6 +66,7 @@ interface RequestSnapshot {
   readonly noBackground: boolean;
   readonly palette?: string;
   readonly postprocess?: Recipe["postprocess"];
+  readonly groundContactY?: number;
   readonly styleReference?: {
     readonly id: string;
     readonly sha256?: string;
@@ -301,6 +303,13 @@ function validateSourceManifest(
       throw new Error(`Prompt contract missing for ${recipe.id}`);
     if (recipe.seed < 0 || !Number.isInteger(recipe.seed))
       throw new Error(`Invalid seed for ${recipe.id}`);
+    if (
+      recipe.groundContactY !== undefined &&
+      (!Number.isInteger(recipe.groundContactY) ||
+        recipe.groundContactY < recipe.hardBounds.top ||
+        recipe.groundContactY > recipe.hardBounds.bottom)
+    )
+      throw new Error(`Invalid ground contact for ${recipe.id}`);
     if (
       recipe.styleReference !== undefined &&
       !source.recipes.some(
@@ -604,6 +613,9 @@ function requestSnapshot(
     ...(recipe.postprocess === undefined
       ? {}
       : { postprocess: recipe.postprocess }),
+    ...(recipe.groundContactY === undefined
+      ? {}
+      : { groundContactY: recipe.groundContactY }),
     ...(recipe.styleReference === undefined
       ? {}
       : { styleReference: { id: recipe.styleReference } }),
@@ -747,11 +759,15 @@ async function normalizeToHardBounds(
   recipe: Recipe,
 ): Promise<void> {
   let inspection = await inspectPng(destination);
+  const fitBounds =
+    recipe.groundContactY === undefined
+      ? recipe.hardBounds
+      : { ...recipe.hardBounds, bottom: recipe.groundContactY };
   const alphaWidth = inspection.alphaBounds.right - inspection.alphaBounds.left;
   const alphaHeight =
     inspection.alphaBounds.bottom - inspection.alphaBounds.top;
-  const hardWidth = recipe.hardBounds.right - recipe.hardBounds.left;
-  const hardHeight = recipe.hardBounds.bottom - recipe.hardBounds.top;
+  const hardWidth = fitBounds.right - fitBounds.left;
+  const hardHeight = fitBounds.bottom - fitBounds.top;
   if (alphaWidth > hardWidth || alphaHeight > hardHeight) {
     const contained = await sharp(await readFile(destination))
       .trim({ background: "#00000000" })
@@ -766,10 +782,8 @@ async function normalizeToHardBounds(
     const metadata = await sharp(contained).metadata();
     const containedWidth = metadata.width ?? hardWidth;
     const containedHeight = metadata.height ?? hardHeight;
-    const left =
-      recipe.hardBounds.left + Math.floor((hardWidth - containedWidth) / 2);
-    const top =
-      recipe.hardBounds.top + Math.floor((hardHeight - containedHeight) / 2);
+    const left = fitBounds.left + Math.floor((hardWidth - containedWidth) / 2);
+    const top = fitBounds.top + Math.floor((hardHeight - containedHeight) / 2);
     const canvas = await sharp({
       create: {
         width: recipe.outputSize.width,
@@ -793,6 +807,27 @@ async function normalizeToHardBounds(
       shift.x,
       shift.y,
     );
+  if (recipe.groundContactY !== undefined) {
+    inspection = await inspectPng(destination);
+    const groundShift = recipe.groundContactY - inspection.alphaBounds.bottom;
+    const shiftedTop = inspection.alphaBounds.top + groundShift;
+    const shiftedBottom = inspection.alphaBounds.bottom + groundShift;
+    if (
+      shiftedTop < recipe.hardBounds.top ||
+      shiftedBottom > recipe.hardBounds.bottom
+    )
+      throw new Error(
+        `${recipe.id} cannot align ground contact to y${recipe.groundContactY} within hard bounds`,
+      );
+    if (groundShift !== 0)
+      await translatePng(
+        destination,
+        recipe.outputSize.width,
+        recipe.outputSize.height,
+        0,
+        groundShift,
+      );
+  }
 }
 
 function shiftIntoBounds(
@@ -1141,12 +1176,9 @@ async function createMapReviewPng(
     if (existing !== undefined) return existing;
     const recipe = accepted.get(id);
     if (recipe === undefined) return null;
-    const city = id.startsWith("building-city-");
-    const ground = id.startsWith("terrain-grass-");
-    const width = city ? 192 : 128;
-    const height = city ? 192 : ground ? 74 : 148;
+    const geometry = mapReviewGeometry(id);
     const rendered = await sharp(path.join(ROOT, recipe.output))
-      .resize({ width, height, fit: "fill" })
+      .resize({ width: geometry.width, height: geometry.height, fit: "fill" })
       .png()
       .toBuffer();
     displayImages.set(id, rendered);
@@ -1168,23 +1200,27 @@ async function createMapReviewPng(
   }
 
   const placements = [
-    [0, 0, "terrain-mountain-1"],
-    [2, 0, "building-village"],
-    [4, 0, "building-city-1"],
-    [4, 0, "unit-warrior"],
-    [6, 0, "unit-rider"],
-    [1, 2, "terrain-mountain-2"],
-    [3, 2, "terrain-ore"],
-    [5, 2, "building-city-2"],
-    [7, 2, "unit-archer"],
-    [0, 4, "building-mine"],
-    [2, 4, "unit-defender"],
-    [4, 4, "terrain-mountain-3"],
-    [6, 4, "building-city-3"],
-    [1, 6, "unit-rider"],
-    [3, 6, "building-village"],
-    [5, 6, "unit-warrior"],
-    [7, 6, "terrain-ore"],
+    [0, 0, "terrain-forest-1"],
+    [2, 0, "terrain-forest-2"],
+    [4, 0, "terrain-forest-3"],
+    [6, 0, "terrain-forest-4"],
+    [1, 2, "terrain-animal"],
+    [1, 2, "terrain-forest-1"],
+    [3, 2, "building-lumber-mill"],
+    [3, 2, "terrain-forest-2"],
+    [5, 2, "unit-catapult"],
+    [7, 2, "terrain-mountain-1"],
+    [0, 4, "building-village"],
+    [2, 4, "building-city-1"],
+    [2, 4, "unit-warrior"],
+    [4, 4, "terrain-mountain-2"],
+    [6, 4, "building-city-2"],
+    [6, 4, "unit-archer"],
+    [1, 6, "building-mine"],
+    [3, 6, "unit-defender"],
+    [5, 6, "terrain-mountain-3"],
+    [7, 6, "building-city-3"],
+    [7, 6, "unit-rider"],
   ] as const;
   const bodies: Array<{
     readonly depth: number;
@@ -1195,15 +1231,18 @@ async function createMapReviewPng(
     const image = await displayImage(id);
     if (image === null) continue;
     const center = mapReviewCenter(origin, x, y);
+    const geometry = mapReviewGeometry(id);
     const city = id.startsWith("building-city-");
     const unit = id.startsWith("unit-");
+    const forestAnimal = id === "terrain-animal";
+    const lowBuilding = id === "building-mine" || id === "building-lumber-mill";
     bodies.push({
       depth: x + y,
-      tie: city ? 30 : unit ? 40 : 20,
+      tie: lowBuilding ? 15 : forestAnimal ? 25 : city ? 30 : unit ? 40 : 20,
       overlay: {
         input: image,
-        left: center.x - (city ? 96 : 64),
-        top: center.y - (city ? 150 : 111),
+        left: center.x - geometry.anchorX,
+        top: center.y - geometry.anchorY,
       },
     });
   }
@@ -1228,6 +1267,31 @@ async function createMapReviewPng(
     ])
     .png()
     .toFile(path.join(REVIEW_ROOT, "map-review.png"));
+}
+
+function mapReviewGeometry(id: string): {
+  readonly width: number;
+  readonly height: number;
+  readonly anchorX: number;
+  readonly anchorY: number;
+} {
+  if (id === "unit-catapult")
+    return { width: 115, height: 115, anchorX: 58, anchorY: 86 };
+  if (id.startsWith("unit-"))
+    return { width: 90, height: 104, anchorX: 45, anchorY: 78 };
+  if (id.startsWith("building-city-")) {
+    const anchorY = id === "building-city-1" ? 71 : 73;
+    return { width: 115, height: 115, anchorX: 58, anchorY };
+  }
+  if (id === "building-village")
+    return { width: 128, height: 148, anchorX: 64, anchorY: 88 };
+  if (id === "terrain-mountain-3")
+    return { width: 102, height: 118, anchorX: 51, anchorY: 74 };
+  if (id.startsWith("terrain-mountain-"))
+    return { width: 108, height: 124, anchorX: 54, anchorY: 75 };
+  if (id.startsWith("terrain-grass-"))
+    return { width: 128, height: 74, anchorX: 64, anchorY: 37 };
+  return { width: 128, height: 148, anchorX: 64, anchorY: 111 };
 }
 
 function mapReviewCenter(

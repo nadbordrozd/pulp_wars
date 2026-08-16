@@ -1109,14 +1109,18 @@ describe("HUD, command wiring, and contextual panels", () => {
     expect(tree?.textContent).not.toContain("Train Riders");
     expect(
       document.querySelectorAll<HTMLImageElement>(".tech-node-art:not(span)"),
-    ).toHaveLength(5);
+    ).toHaveLength(7);
     expect(document.querySelectorAll(".tech-node-art-fallback")).toHaveLength(
-      4,
+      2,
     );
     expect(techNode("riding").textContent).toContain("R");
     expect(techNode("archery").textContent).toContain("A");
-    expect(techNode("forestry").textContent).toContain("F");
-    expect(techNode("mathematics").textContent).toContain("M");
+    expect(techNode("forestry").querySelector("img")?.getAttribute("src")).toBe(
+      "/assets/pixellab/ui/tech-forestry.png",
+    );
+    expect(
+      techNode("mathematics").querySelector("img")?.getAttribute("src"),
+    ).toBe("/assets/pixellab/ui/tech-mathematics.png");
     expect(techNode("mining").getAttribute("aria-label")).toContain(
       "locked; requires Climbing, costs 6 stars",
     );
@@ -1542,17 +1546,15 @@ describe("HUD, command wiring, and contextual panels", () => {
     expect(
       training.every((command) => !command.textContent?.includes("Train")),
     ).toBe(true);
-    for (const command of training.filter(
-      (candidate) => !candidate.textContent?.includes("Catapult"),
-    )) {
+    for (const command of training) {
       expect(command.childElementCount).toBe(3);
       expect(
         command.querySelector("img.city-command-art")?.getAttribute("src"),
       ).toMatch(
-        /^\/assets\/pixellab\/units\/(warrior|rider|archer|defender)\.png$/,
+        /^\/assets\/pixellab\/units\/(warrior|rider|archer|defender|catapult)\.png$/,
       );
       expect(command.querySelector("strong")?.textContent).toMatch(
-        /^(Warrior|Rider|Archer|Defender)$/,
+        /^(Warrior|Rider|Archer|Defender|Catapult)$/,
       );
       expect(command.querySelector(".city-command-meta")?.textContent).toMatch(
         /^★ \d+$/,
@@ -1563,10 +1565,10 @@ describe("HUD, command wiring, and contextual panels", () => {
       candidate.textContent?.includes("Catapult"),
     );
     expect(catapult?.textContent).toBe("Catapult★ 8");
-    expect(catapult?.querySelector("img")).toBeNull();
-    expect(
-      catapult?.querySelectorAll(".city-command-art-catapult > span"),
-    ).toHaveLength(5);
+    expect(catapult?.querySelector("img")?.getAttribute("src")).toBe(
+      "/assets/pixellab/units/catapult.png",
+    );
+    expect(catapult?.querySelector(".city-command-art-catapult")).toBeNull();
     expect(catapult?.getAttribute("aria-label")).toBe(
       `Train Catapult in City ${city.id} for 8 stars`,
     );

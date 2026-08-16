@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "productionRasterStatus": "ACCEPTED_PIXELLAB",
+  "accepted": 9,
+  "acceptedAssets": [
+    {
+      "id": "terrain-forest-1",
+      "path": "public/assets/pixellab/terrain/forest-1.png",
+      "sha256": "e03c9e39ad7e57e407bbb393b83721b7e10f0b9c9fc07f152abecb7325bdbca5",
+      "bytes": 5345
+    },
+    {
+      "id": "terrain-forest-2",
+      "path": "public/assets/pixellab/terrain/forest-2.png",
+      "sha256": "8f6732f82ea75f9aa66d71647b03fc4d0124091ddb4f9a84d980da9b516690b4",
+      "bytes": 24253
+    },
+    {
+      "id": "terrain-forest-3",
+      "path": "public/assets/pixellab/terrain/forest-3.png",
+      "sha256": "36844ed0990803b35d7f28f86b9719fb20c2f244877ffa67bdf6325e932e0a6b",
+      "bytes": 6008
+    },
+    {
+      "id": "terrain-forest-4",
+      "path": "public/assets/pixellab/terrain/forest-4.png",
+      "sha256": "a00bb57032499089fd236170bf2a60dfa44a7d9274d31a662ae1d06ac957bc80",
+      "bytes": 26732
+    },
+    {
+      "id": "terrain-animal",
+      "path": "public/assets/pixellab/terrain/animal.png",
+      "sha256": "db98acecba2d4a0b7a82e947da12dfa7a6761c645e951f789023efe819a0b536",
+      "bytes": 27309
+    },
+    {
+      "id": "building-lumber-mill",
+      "path": "public/assets/pixellab/buildings/lumber-mill.png",
+      "sha256": "ead21bcd2ffb376e883155a24c34a4fc4693d6df1d1d5c90ab964783998b3825",
+      "bytes": 8631
+    },
+    {
+      "id": "unit-catapult",
+      "path": "public/assets/pixellab/units/catapult.png",
+      "sha256": "cdf6ed34a67c1daf1bfd947b0b1af007b25d2a13ee88ee2df876bdb9f7ceec83",
+      "bytes": 17874
+    },
+    {
+      "id": "ui-tech-forestry",
+      "path": "public/assets/pixellab/ui/tech-forestry.png",
+      "sha256": "f6f3159ad65573c3b71ee9752fe376053cbd771951a832693a54128a7f6eb8ad",
+      "bytes": 19436
+    },
+    {
+      "id": "ui-tech-mathematics",
+      "path": "public/assets/pixellab/ui/tech-mathematics.png",
+      "sha256": "2fee61a3c63e16b7081525b0ef6cd2e84b8b364e0dca0cc2a13febc8bcb9ce0e",
+      "bytes": 36033
+    }
+  ],
+  "quarantinedRejected": 5,
+  "quarantinedAttempts": [
+    {
+      "path": "art/pixellab/quarantine/terrain-forest-1-27ad54bbbddb.png",
+      "reason": "ground contacts ended 16 source pixels above y222",
+      "sha256": "27ad54bbbddb454e5685bae27c49e9da04d153e2f6331893714ef227384afe59",
+      "bytes": 4576
+    },
+    {
+      "path": "art/pixellab/quarantine/terrain-forest-2-f2f9c52e2fab.png",
+      "reason": "duplicated Forest 1 and added a detached resource-like crown",
+      "sha256": "f2f9c52e2fab77a807a22f732ddc007dc049a2325339295a503fc9070113712f",
+      "bytes": 5068
+    },
+    {
+      "path": "art/pixellab/quarantine/terrain-forest-2-3f9d20e3a0e6.png",
+      "reason": "strong low-wide silhouette but ground contacts ended at y199",
+      "sha256": "3f9d20e3a0e6f0a9e0c6d429417978d64f13ce37cdc9561a9362d685c0b083e8",
+      "bytes": 32300
+    },
+    {
+      "path": "art/pixellab/quarantine/terrain-forest-2-56771fa745c8.png",
+      "reason": "duplicated Forest 1 and retained a resource-like minor crown",
+      "sha256": "56771fa745c8b435c6907925da904c39e3b0865ad990465975baf1f12e1c23b4",
+      "bytes": 4826
+    },
+    {
+      "path": "art/pixellab/quarantine/terrain-forest-4-9b9dfb1ca381.png",
+      "reason": "duplicated Forest 2 instead of breaking map repetition",
+      "sha256": "9b9dfb1ca381d3a8d1c1413c4d1c1114cf19232a485a1ee32d47c86f06cc87a4",
+      "bytes": 5345
+    }
+  ],
+  "unwiredFailed": 2,
+  "unwiredGenerationFailures": [
+    {
+      "jobId": "1d8fd112-f088-441a-b711-dc539484a5a2",
+      "reason": "could not align ground contact to y222 within hard bounds"
+    },
+    {
+      "jobId": "96e02e25-0a89-4ceb-9353-6b4cfd86fe59",
+      "reason": "could not align ground contact to y222 within hard bounds"
+    }
+  ],
+  "productionFixture": {
+    "forests": 29,
+    "animals": 4,
+    "lumberMills": 3,
+    "catapults": 1,
+    "fogTiles": 40
+  },
+  "mobileCanvas": {
+    "cssWidth": 390,
+    "cssHeight": 844,
+    "backingWidth": 780,
+    "backingHeight": 1688,
+    "devicePixelRatio": 2
+  },
+  "evidence": [
+    {
+      "path": "art/feedback/reviews/forest-catapult-production-desktop-1440x1000.png",
+      "viewport": {
+        "width": 1440,
+        "height": 1000,
+        "devicePixelRatio": 1
+      },
+      "sha256": "2a3b0b1dcdf5f0cd9f22350f710faea70d8379fd542b31cd9561c5f08e7c6d0b",
+      "bytes": 466442
+    },
+    {
+      "path": "art/feedback/reviews/forest-catapult-production-mobile-390x844-dpr2.png",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "devicePixelRatio": 2
+      },
+      "sha256": "de0332523f1b98bf25adf6b6bff9d05876455216fbbf7060585a7ec7af0e084e",
+      "bytes": 346135
+    }
+  ]
+}

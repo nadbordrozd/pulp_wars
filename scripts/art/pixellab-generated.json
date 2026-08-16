@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "66a04d91c9dc22e2d0a2060efc1dfb0254761b7befd68feae616c662b930470b",
+  "sourceManifestSha256": "c3f713d5517a5594d4fa0d89694c489b3ccb8fefc521cf93d74fc3f31e0e0917",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -1214,6 +1214,455 @@
       "outputSha256": "7e6cad7977a8ca12638b62e0968a16e997b0be1bc06fef5cb6f43fc3199b028d",
       "notes": "Strong four-character faction cluster including mount; coherent palette, transparent background, no text.",
       "reviewedAt": "2026-08-14T21:15:21.835Z"
+    },
+    "terrain-forest-1": {
+      "id": "terrain-forest-1",
+      "status": "ACCEPTED",
+      "jobId": "f82329ac-4cf6-4467-9743-83998fca5711",
+      "candidate": "art/pixellab/candidates/terrain-forest-1.png",
+      "candidateSha256": "e03c9e39ad7e57e407bbb393b83721b7e10f0b9c9fc07f152abecb7325bdbca5",
+      "providerOutputSha256": "2e95e07fb24c78ae33a3d00ee635c0ab08ef8828a9052a215631fe07af40add8",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 38,
+        "top": 51,
+        "right": 217,
+        "bottom": 217,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated EMPTY Forest canopy terrain object only, three chunky stylized broadleaf trees forming one quiet readable cluster in a three-quarter downward strategy-game view, asymmetrical rounded canopies with broad flat leaf-green and dark-teal planes. Exactly three visible short trunks extend downward so their lowest ground-contact pixels sit at source y222, centered around x128; leave transparent canvas below the contacts. Simple strong charcoal outline quieter than units, no ground diamond beneath it, blank transparent canvas, preferred alpha x24..232 y24..238 and hard alpha x12..244 y8..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; animal, wildlife, deer, boar, bird, fruit, lumber mill, building, unit, person, ownership mark, resource icon, flowers, tiny leaves, dense texture, photoreal foliage, painterly forest, ground, grass patch, diamond tile, base plate, cast shadow, text, UI.",
+        "prompt": "Isolated EMPTY Forest canopy terrain object only, three chunky stylized broadleaf trees forming one quiet readable cluster in a three-quarter downward strategy-game view, asymmetrical rounded canopies with broad flat leaf-green and dark-teal planes. Exactly three visible short trunks extend downward so their lowest ground-contact pixels sit at source y222, centered around x128; leave transparent canvas below the contacts. Simple strong charcoal outline quieter than units, no ground diamond beneath it, blank transparent canvas, preferred alpha x24..232 y24..238 and hard alpha x12..244 y8..252.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; animal, wildlife, deer, boar, bird, fruit, lumber mill, building, unit, person, ownership mark, resource icon, flowers, tiny leaves, dense texture, photoreal foliage, painterly forest, ground, grass patch, diamond tile, base plate, cast shadow, text, UI",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 52715,
+        "noBackground": true,
+        "styleReference": {
+          "id": "terrain-grass-1",
+          "sha256": "2458b996dcaaa4168a4bf9504bc6a68352cfe780b8e4bf4d83ccaec259849a3b"
+        }
+      },
+      "outputSha256": "e03c9e39ad7e57e407bbb393b83721b7e10f0b9c9fc07f152abecb7325bdbca5",
+      "notes": "Accepted after source/native/enlarged/minimum/composition inspection: clean transparent alpha, three-tree readable silhouette, quiet terrain palette, broad cel planes, no resource marks, central contact ends within 5 source px of y222 anchor, safe bounds and clear map-scale trunk contact.",
+      "reviewedAt": "2026-08-16T21:32:02.847Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-forest-2": {
+      "id": "terrain-forest-2",
+      "status": "ACCEPTED",
+      "jobId": "662ae84a-0c5d-4c3c-9323-b3b795cdb3ad",
+      "candidate": "art/pixellab/candidates/terrain-forest-2.png",
+      "candidateSha256": "8f6732f82ea75f9aa66d71647b03fc4d0124091ddb4f9a84d980da9b516690b4",
+      "providerOutputSha256": "c4caa011eba6ee01107518dc053deb141ed3d1cc273e030989d3eec1e5d0ab0f",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 12,
+        "top": 84,
+        "right": 244,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated EMPTY Forest canopy sibling of the style reference with a clearly different low-wide silhouette: exactly two large horizontally spread broadleaf trees dominate the left and right, while one smaller rear tree overlaps and visually connects between their crowns. No detached canopy dots. Preserve the accepted quiet leaf-green palette, charcoal outline thickness and two broad cel-shading planes. Exactly three visible short trunks extend to ground contacts centered around x128 inside the owning diamond lower half. No resource or ground beneath it, blank transparent canvas, preferred alpha x24..232 y24..238 and hard alpha x12..244 y8..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; animal, wildlife, deer, boar, bird, fruit, lumber mill, building, unit, person, ownership mark, resource icon, flowers, tiny leaves, dense texture, photoreal foliage, painterly forest, ground, grass patch, diamond tile, base plate, cast shadow, text, UI.",
+        "prompt": "Isolated EMPTY Forest canopy sibling of the style reference with a clearly different low-wide silhouette: exactly two large horizontally spread broadleaf trees dominate the left and right, while one smaller rear tree overlaps and visually connects between their crowns. No detached canopy dots. Preserve the accepted quiet leaf-green palette, charcoal outline thickness and two broad cel-shading planes. Exactly three visible short trunks extend to ground contacts centered around x128 inside the owning diamond lower half. No resource or ground beneath it, blank transparent canvas, preferred alpha x24..232 y24..238 and hard alpha x12..244 y8..252.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; animal, wildlife, deer, boar, bird, fruit, lumber mill, building, unit, person, ownership mark, resource icon, flowers, tiny leaves, dense texture, photoreal foliage, painterly forest, ground, grass patch, diamond tile, base plate, cast shadow, text, UI",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 52716,
+        "noBackground": true,
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "terrain-forest-1",
+          "sha256": "e03c9e39ad7e57e407bbb393b83721b7e10f0b9c9fc07f152abecb7325bdbca5"
+        }
+      },
+      "outputSha256": "8f6732f82ea75f9aa66d71647b03fc4d0124091ddb4f9a84d980da9b516690b4",
+      "notes": "Accepted after source/native/enlarged/minimum/composition inspection: distinct low-wide two-dominant-tree silhouette with connected smaller rear tree, exact deterministic y222 contact alignment, clean transparent alpha, quiet matching palette and no gameplay-like detached marks.",
+      "reviewedAt": "2026-08-16T21:42:48.622Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-forest-3": {
+      "id": "terrain-forest-3",
+      "status": "ACCEPTED",
+      "jobId": "1f72b31e-1837-4a24-a6c5-559709aadfa4",
+      "candidate": "art/pixellab/candidates/terrain-forest-3.png",
+      "candidateSha256": "36844ed0990803b35d7f28f86b9719fb20c2f244877ffa67bdf6325e932e0a6b",
+      "providerOutputSha256": "a7122c3bf8ffb33a838cfe38cea31711f2ac8af28b97cf19998e11b18763b56c",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 39,
+        "top": 28,
+        "right": 216,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated EMPTY Forest canopy sibling of the style reference, one broad central chunky broadleaf tree framed by two smaller staggered trees, a distinct tall-narrow but compact silhouette, same quiet leaf-green palette, charcoal outline thickness and two broad cel-shading planes, three short trunk contacts centered around x128 y222 inside the owning diamond lower half, no resource or ground beneath it, blank transparent canvas, preferred alpha x24..232 y24..238 and hard alpha x12..244 y8..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; animal, wildlife, deer, boar, bird, fruit, lumber mill, building, unit, person, ownership mark, resource icon, flowers, tiny leaves, dense texture, photoreal foliage, painterly forest, ground, grass patch, diamond tile, base plate, cast shadow, text, UI.",
+        "prompt": "Isolated EMPTY Forest canopy sibling of the style reference, one broad central chunky broadleaf tree framed by two smaller staggered trees, a distinct tall-narrow but compact silhouette, same quiet leaf-green palette, charcoal outline thickness and two broad cel-shading planes, three short trunk contacts centered around x128 y222 inside the owning diamond lower half, no resource or ground beneath it, blank transparent canvas, preferred alpha x24..232 y24..238 and hard alpha x12..244 y8..252.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; animal, wildlife, deer, boar, bird, fruit, lumber mill, building, unit, person, ownership mark, resource icon, flowers, tiny leaves, dense texture, photoreal foliage, painterly forest, ground, grass patch, diamond tile, base plate, cast shadow, text, UI",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 52713,
+        "noBackground": true,
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "terrain-forest-1",
+          "sha256": "e03c9e39ad7e57e407bbb393b83721b7e10f0b9c9fc07f152abecb7325bdbca5"
+        }
+      },
+      "outputSha256": "36844ed0990803b35d7f28f86b9719fb20c2f244877ffa67bdf6325e932e0a6b",
+      "notes": "Accepted after source/native/enlarged/minimum/composition inspection: distinct compact tall silhouette, three connected overlapping crowns and readable trunks, exact deterministic y222 ground contact, clean alpha and consistent quiet forest palette/outline.",
+      "reviewedAt": "2026-08-16T21:44:37.820Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "unit-catapult": {
+      "id": "unit-catapult",
+      "status": "ACCEPTED",
+      "jobId": "0c36b217-137a-4f26-81d1-141412a69e94",
+      "candidate": "art/pixellab/candidates/unit-catapult.png",
+      "candidateSha256": "cdf6ed34a67c1daf1bfd947b0b1af007b25d2a13ee88ee2df876bdb9f7ceec83",
+      "providerOutputSha256": "9c89e0a8d2b6f36c6761c10a08c29c7a410f42d3b2aa61e8af03ab2f4ecee341",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 46,
+        "top": 13,
+        "right": 342,
+        "bottom": 288,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated Catapult siege-unit game sprite only, southeast-facing three-quarter view looking slightly downward, low broad compact wooden chassis, exactly two large readable wheels with their contact midpoint at x192 y288, one unmistakable oversized throwing arm ending in an empty sling bowl, neutral test-faction bronze diamond badge and dark-teal bindings as a contiguous owner-color patch, strong charcoal outline, flat two-level cel shading, blank transparent 384 by 384 canvas, visible alpha within x30..354 y24..318 and hard alpha within x16..368 y8..336. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; crew, person, archer, bow, arrow, ballista, cannon, projectile in flight, ammunition trail, tall tower, floating wheels, hidden wheel contacts, ground, grass, terrain tile, base plate, scenery, text, UI, selection ring, health bar, cast shadow.",
+        "prompt": "Isolated Catapult siege-unit game sprite only, southeast-facing three-quarter view looking slightly downward, low broad compact wooden chassis, exactly two large readable wheels with their contact midpoint at x192 y288, one unmistakable oversized throwing arm ending in an empty sling bowl, neutral test-faction bronze diamond badge and dark-teal bindings as a contiguous owner-color patch, strong charcoal outline, flat two-level cel shading, blank transparent 384 by 384 canvas, visible alpha within x30..354 y24..318 and hard alpha within x16..368 y8..336.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; crew, person, archer, bow, arrow, ballista, cannon, projectile in flight, ammunition trail, tall tower, floating wheels, hidden wheel contacts, ground, grass, terrain tile, base plate, scenery, text, UI, selection ring, health bar, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 41701,
+        "noBackground": true,
+        "groundContactY": 288,
+        "styleReference": {
+          "id": "unit-warrior",
+          "sha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1"
+        }
+      },
+      "outputSha256": "cdf6ed34a67c1daf1bfd947b0b1af007b25d2a13ee88ee2df876bdb9f7ceec83",
+      "notes": "Accepted after source/native/enlarged/minimum/composition inspection beside all four standard units: unmistakable low-wide throwing arm and empty bowl, two primary readable wheels with only perspective-implied far chassis edge, exact y288 ground contact, clean alpha, no crew/projectile/UI, compatible outline and cel shading.",
+      "reviewedAt": "2026-08-16T21:49:24.571Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-forest-4": {
+      "id": "terrain-forest-4",
+      "status": "ACCEPTED",
+      "jobId": "9402c740-869b-46ba-9d5c-fb89e4dd6f2e",
+      "candidate": "art/pixellab/candidates/terrain-forest-4.png",
+      "candidateSha256": "a00bb57032499089fd236170bf2a60dfa44a7d9274d31a662ae1d06ac957bc80",
+      "providerOutputSha256": "d64255e8c749878a1d4eea18a7323cf52710625033eb4b37522d2702f9b5179a",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 32,
+        "top": 8,
+        "right": 223,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated EMPTY Forest canopy batch sibling of the accepted style reference with a clearly new compact diagonal silhouette. Show FOUR trees total, counted as one lower-left tree, one center-left tree, one center-right tree and one upper-right tree; exactly four rounded crowns and exactly four visible trunks, no fifth tree or extra crown. Stagger them from lower-left to upper-right with readable overlap. Keep the cluster compact with no tall central tree and do not form two dominant horizontal canopy masses. Same quiet leaf-green palette, charcoal outline and two broad cel-shading planes, no resource or ground beneath it, blank transparent canvas, preferred alpha x24..232 y24..222 and hard alpha x12..244 y8..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; tall central tree, animal, wildlife, deer, boar, bird, fruit, lumber mill, building, unit, person, ownership mark, resource icon, flowers, tiny leaves, dense texture, photoreal foliage, painterly forest, ground, grass patch, diamond tile, base plate, cast shadow, text, UI.",
+        "prompt": "Isolated EMPTY Forest canopy batch sibling of the accepted style reference with a clearly new compact diagonal silhouette. Show FOUR trees total, counted as one lower-left tree, one center-left tree, one center-right tree and one upper-right tree; exactly four rounded crowns and exactly four visible trunks, no fifth tree or extra crown. Stagger them from lower-left to upper-right with readable overlap. Keep the cluster compact with no tall central tree and do not form two dominant horizontal canopy masses. Same quiet leaf-green palette, charcoal outline and two broad cel-shading planes, no resource or ground beneath it, blank transparent canvas, preferred alpha x24..232 y24..222 and hard alpha x12..244 y8..252.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; tall central tree, animal, wildlife, deer, boar, bird, fruit, lumber mill, building, unit, person, ownership mark, resource icon, flowers, tiny leaves, dense texture, photoreal foliage, painterly forest, ground, grass patch, diamond tile, base plate, cast shadow, text, UI",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 52720,
+        "noBackground": true,
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "terrain-forest-2",
+          "sha256": "8f6732f82ea75f9aa66d71647b03fc4d0124091ddb4f9a84d980da9b516690b4"
+        }
+      },
+      "outputSha256": "a00bb57032499089fd236170bf2a60dfa44a7d9274d31a662ae1d06ac957bc80",
+      "notes": "Accepted after source/native/enlarged/minimum/composition inspection: distinctly diagonal compact canopy breaks repetition, four dominant readable tree forms with a connected minor overlap that does not read as a resource, exact y222 grounding, clean alpha and consistent palette/outline.",
+      "reviewedAt": "2026-08-16T22:00:06.861Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-animal": {
+      "id": "terrain-animal",
+      "status": "ACCEPTED",
+      "jobId": "99a3b073-aaad-4b91-bd3c-48a82b151589",
+      "candidate": "art/pixellab/candidates/terrain-animal.png",
+      "candidateSha256": "db98acecba2d4a0b7a82e947da12dfa7a6761c645e951f789023efe819a0b536",
+      "providerOutputSha256": "3f06e1ff7e6bd83b4882ae959a6a6b20f66373776d418d1bc377494b9a756451",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 53,
+        "top": 84,
+        "right": 202,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated terrain-bound Animal resource only: one cute chunky tan wild boar in a calm side-on three-quarter downward view, broad low body, oversized snout and two tiny simple tusks, all four short legs planted around x128 y222, compact wildlife silhouette clearly smaller and quieter than a unit, strong charcoal outline and flat two-level cel shading, blank transparent canvas, preferred alpha x48..208 y116..238 and hard alpha x24..232 y84..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; person, rider, saddle, armor, weapon, unit pose, pet collar, dead animal, hunting scene, gore, forest canopy, trees, ground, grass, diamond tile, base plate, resource badge, letter, text, UI, cast shadow.",
+        "prompt": "Isolated terrain-bound Animal resource only: one cute chunky tan wild boar in a calm side-on three-quarter downward view, broad low body, oversized snout and two tiny simple tusks, all four short legs planted around x128 y222, compact wildlife silhouette clearly smaller and quieter than a unit, strong charcoal outline and flat two-level cel shading, blank transparent canvas, preferred alpha x48..208 y116..238 and hard alpha x24..232 y84..252.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; person, rider, saddle, armor, weapon, unit pose, pet collar, dead animal, hunting scene, gore, forest canopy, trees, ground, grass, diamond tile, base plate, resource badge, letter, text, UI, cast shadow",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 52721,
+        "noBackground": true,
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "terrain-forest-1",
+          "sha256": "e03c9e39ad7e57e407bbb393b83721b7e10f0b9c9fc07f152abecb7325bdbca5"
+        }
+      },
+      "outputSha256": "db98acecba2d4a0b7a82e947da12dfa7a6761c645e951f789023efe819a0b536",
+      "notes": "Accepted after source/native/enlarged/minimum/composition inspection against all three Forest samples: unmistakable calm boar resource, broad readable snout/tusks, exact y222 grounding, clean alpha and no unit equipment/UI/scenery; remains quieter and slightly shorter than standard units at runtime scale.",
+      "reviewedAt": "2026-08-16T22:01:33.469Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-lumber-mill": {
+      "id": "building-lumber-mill",
+      "status": "ACCEPTED",
+      "jobId": "ad3f5ddb-97ad-4ec2-ae50-441e02701345",
+      "candidate": "art/pixellab/candidates/building-lumber-mill.png",
+      "candidateSha256": "ead21bcd2ffb376e883155a24c34a4fc4693d6df1d1d5c90ab964783998b3825",
+      "providerOutputSha256": "5f50f33c45f5b6da5d0b9dff854f6205fbfa068993ef26ead202f68633d07601",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 29,
+        "top": 24,
+        "right": 236,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated completed Lumber Mill game improvement only, low chunky open timber frame with one enormous unmistakable circular saw blade, two broad stacked logs and a tiny off-white cloth awning, isometric three-quarter downward view, compact base and all supports contact around x128 y222 between forest trunks, strong charcoal outline, flat two-level cel shading, quieter than units and clearly distinct from Mine and city, blank transparent canvas, alpha within x20..236 y90..252 and hard alpha within x20..236 y12..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; mine entrance, pickaxe, ore, settlement, house, castle, person, worker, animal, forest canopy, trees, ground, grass, diamond tile, base plate, realistic machinery, tiny clutter, smoke, text, UI, cast shadow.",
+        "prompt": "Isolated completed Lumber Mill game improvement only, low chunky open timber frame with one enormous unmistakable circular saw blade, two broad stacked logs and a tiny off-white cloth awning, isometric three-quarter downward view, compact base and all supports contact around x128 y222 between forest trunks, strong charcoal outline, flat two-level cel shading, quieter than units and clearly distinct from Mine and city, blank transparent canvas, alpha within x20..236 y90..252 and hard alpha within x20..236 y12..252.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; mine entrance, pickaxe, ore, settlement, house, castle, person, worker, animal, forest canopy, trees, ground, grass, diamond tile, base plate, realistic machinery, tiny clutter, smoke, text, UI, cast shadow",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 53711,
+        "noBackground": true,
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "building-village",
+          "sha256": "b699a29255672ef8d992e519c508992bac6926dc41aa9f19980842aa345bff14"
+        }
+      },
+      "outputSha256": "ead21bcd2ffb376e883155a24c34a4fc4693d6df1d1d5c90ab964783998b3825",
+      "notes": "Accepted after source/native/enlarged/minimum/composition inspection on all accepted Forest variants, beside Mine, selected and with unit overlap: unmistakable oversized saw/log silhouette, compact open frame, clean alpha, exact y222 contact, function remains readable without resembling settlement or Mine.",
+      "reviewedAt": "2026-08-16T22:03:07.458Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-tech-forestry": {
+      "id": "ui-tech-forestry",
+      "status": "ACCEPTED",
+      "jobId": "d105ab2a-dd3b-4a7e-b834-4233b312d53f",
+      "candidate": "art/pixellab/candidates/ui-tech-forestry.png",
+      "candidateSha256": "f6f3159ad65573c3b71ee9752fe376053cbd771951a832693a54128a7f6eb8ad",
+      "providerOutputSha256": "cce7a41e4cdbda4c342f7b6ece703061360bdb9eba0a3a5f7afde872e4eb7b58",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 28,
+        "top": 25,
+        "right": 230,
+        "bottom": 230,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: leaf green, warm bronze, parchment highlight, charcoal outline. One standalone Forestry technology emblem only: one enormous simple bronze hand saw crossed with one broad leaf-green tree silhouette, the connected symbol fills eighty percent of the square, strong charcoal outline, centered transparent cutout, readable at 64 pixels, flat two-level cel shading. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, character, lumber mill building, forest scene, landscape, panel, frame, card, plaque, square, grid, menu, button, background, border, tiny leaves, multiple icons.",
+        "prompt": "One standalone Forestry technology emblem only: one enormous simple bronze hand saw crossed with one broad leaf-green tree silhouette, the connected symbol fills eighty percent of the square, strong charcoal outline, centered transparent cutout, readable at 64 pixels, flat two-level cel shading.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, character, lumber mill building, forest scene, landscape, panel, frame, card, plaque, square, grid, menu, button, background, border, tiny leaves, multiple icons",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 44711,
+        "noBackground": true,
+        "palette": "leaf green, warm bronze, parchment highlight, charcoal outline",
+        "styleReference": {
+          "id": "ui-tech-mining",
+          "sha256": "800bebc861ec465e00a89e35f2b473cef0939d32319ff4f18fd9cc8050aad8b6"
+        }
+      },
+      "outputSha256": "f6f3159ad65573c3b71ee9752fe376053cbd771951a832693a54128a7f6eb8ad",
+      "notes": "Accepted after source/native/enlarged/24-64px/light-dark/composition inspection: tree-plus-hand-saw metaphor is immediate, distinct from Hunting/Mining, clean alpha, strong coherent outline and no text/panel/background.",
+      "reviewedAt": "2026-08-16T22:05:18.287Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-tech-mathematics": {
+      "id": "ui-tech-mathematics",
+      "status": "ACCEPTED",
+      "jobId": "b42faa7f-1cf4-45e7-98d5-e3c232224f1c",
+      "candidate": "art/pixellab/candidates/ui-tech-mathematics.png",
+      "candidateSha256": "2fee61a3c63e16b7081525b0ef6cd2e84b8b364e0dca0cc2a13febc8bcb9ce0e",
+      "providerOutputSha256": "9e4eb2b8ccc1b61f1a459ecdbfc55659b84be97c18ac633459e5d1f00c6a1f5a",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 20,
+        "top": 24,
+        "right": 236,
+        "bottom": 232,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm bronze, slate blue, parchment highlight, charcoal outline. One standalone Mathematics technology emblem only: one enormous simple bronze catapult throwing arm laid over a clean slate-blue triangular measuring rule with exactly three large notch marks and no numerals, the connected symbol fills eighty percent of the square, strong charcoal outline, centered transparent cutout, readable at 64 pixels, flat two-level cel shading. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, numbers, equation, character, battle scene, landscape, panel, frame, card, plaque, square, grid, menu, button, background, border, tiny markings, multiple icons.",
+        "prompt": "One standalone Mathematics technology emblem only: one enormous simple bronze catapult throwing arm laid over a clean slate-blue triangular measuring rule with exactly three large notch marks and no numerals, the connected symbol fills eighty percent of the square, strong charcoal outline, centered transparent cutout, readable at 64 pixels, flat two-level cel shading.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, numbers, equation, character, battle scene, landscape, panel, frame, card, plaque, square, grid, menu, button, background, border, tiny markings, multiple icons",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 44712,
+        "noBackground": true,
+        "palette": "warm bronze, slate blue, parchment highlight, charcoal outline",
+        "styleReference": {
+          "id": "ui-tech-strategy",
+          "sha256": "cbdd92e7caee6c84e9e9a9f19a4c1535b45b0fc955b2ebafcbe85d31b3bbaa14"
+        }
+      },
+      "outputSha256": "2fee61a3c63e16b7081525b0ef6cd2e84b8b364e0dca0cc2a13febc8bcb9ce0e",
+      "notes": "Accepted after source/native/enlarged/24-64px/light-dark/composition inspection: triangular rule plus catapult throwing-arm emblem remains distinct and readable, matches tech icon family, clean alpha and no numerals/text/panel/background.",
+      "reviewedAt": "2026-08-16T22:05:19.676Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
     }
   }
 }

@@ -90,6 +90,7 @@
       "negativePrompt": "crew, person, archer, bow, arrow, ballista, cannon, projectile in flight, ammunition trail, tall tower, floating wheels, hidden wheel contacts, ground, grass, terrain tile, base plate, scenery, text, UI, selection ring, health bar, cast shadow",
       "output": "public/assets/pixellab/units/catapult.png",
       "anchor": { "x": 192, "y": 288 },
+      "groundContactY": 288,
       "hardBounds": { "left": 16, "top": 8, "right": 368, "bottom": 336 }
     },
 
@@ -235,13 +236,13 @@
       "class": "terrain",
       "stage": "sample",
       "endpoint": "generate-image-v2",
-      "seed": 52711,
+      "seed": 52715,
       "requestSize": { "width": 256, "height": 296 },
       "outputSize": { "width": 256, "height": 296 },
       "transparent": true,
       "includeFactionLanguage": false,
       "styleReference": "terrain-grass-1",
-      "prompt": "Isolated EMPTY Forest canopy terrain object only, three chunky stylized broadleaf trees forming one quiet readable cluster in a three-quarter downward strategy-game view, asymmetrical rounded canopies with broad flat leaf-green and dark-teal planes, exactly three visible short trunks contacting the owning diamond lower half around x128 y222, simple strong charcoal outline quieter than units, no ground diamond beneath it, blank transparent canvas, preferred alpha x24..232 y24..238 and hard alpha x12..244 y8..252.",
+      "prompt": "Isolated EMPTY Forest canopy terrain object only, three chunky stylized broadleaf trees forming one quiet readable cluster in a three-quarter downward strategy-game view, asymmetrical rounded canopies with broad flat leaf-green and dark-teal planes. Exactly three visible short trunks extend downward so their lowest ground-contact pixels sit at source y222, centered around x128; leave transparent canvas below the contacts. Simple strong charcoal outline quieter than units, no ground diamond beneath it, blank transparent canvas, preferred alpha x24..232 y24..238 and hard alpha x12..244 y8..252.",
       "negativePrompt": "animal, wildlife, deer, boar, bird, fruit, lumber mill, building, unit, person, ownership mark, resource icon, flowers, tiny leaves, dense texture, photoreal foliage, painterly forest, ground, grass patch, diamond tile, base plate, cast shadow, text, UI",
       "output": "public/assets/pixellab/terrain/forest-1.png",
       "anchor": { "x": 128, "y": 222 },
@@ -252,16 +253,17 @@
       "class": "terrain",
       "stage": "sample",
       "endpoint": "generate-image-v2",
-      "seed": 52712,
+      "seed": 52716,
       "requestSize": { "width": 256, "height": 296 },
       "outputSize": { "width": 256, "height": 296 },
       "transparent": true,
       "includeFactionLanguage": false,
       "styleReference": "terrain-forest-1",
-      "prompt": "Isolated EMPTY Forest canopy sibling of the style reference, two large chunky rounded broadleaf trees and one smaller rear tree forming a distinct low-wide silhouette, same quiet leaf-green palette, charcoal outline thickness and two broad cel-shading planes, three short trunk contacts centered around x128 y222 inside the owning diamond lower half, no resource or ground beneath it, blank transparent canvas, preferred alpha x24..232 y24..238 and hard alpha x12..244 y8..252.",
+      "prompt": "Isolated EMPTY Forest canopy sibling of the style reference with a clearly different low-wide silhouette: exactly two large horizontally spread broadleaf trees dominate the left and right, while one smaller rear tree overlaps and visually connects between their crowns. No detached canopy dots. Preserve the accepted quiet leaf-green palette, charcoal outline thickness and two broad cel-shading planes. Exactly three visible short trunks extend to ground contacts centered around x128 inside the owning diamond lower half. No resource or ground beneath it, blank transparent canvas, preferred alpha x24..232 y24..238 and hard alpha x12..244 y8..252.",
       "negativePrompt": "animal, wildlife, deer, boar, bird, fruit, lumber mill, building, unit, person, ownership mark, resource icon, flowers, tiny leaves, dense texture, photoreal foliage, painterly forest, ground, grass patch, diamond tile, base plate, cast shadow, text, UI",
       "output": "public/assets/pixellab/terrain/forest-2.png",
       "anchor": { "x": 128, "y": 222 },
+      "groundContactY": 222,
       "hardBounds": { "left": 12, "top": 8, "right": 244, "bottom": 252 }
     },
     {
@@ -279,6 +281,7 @@
       "negativePrompt": "animal, wildlife, deer, boar, bird, fruit, lumber mill, building, unit, person, ownership mark, resource icon, flowers, tiny leaves, dense texture, photoreal foliage, painterly forest, ground, grass patch, diamond tile, base plate, cast shadow, text, UI",
       "output": "public/assets/pixellab/terrain/forest-3.png",
       "anchor": { "x": 128, "y": 222 },
+      "groundContactY": 222,
       "hardBounds": { "left": 12, "top": 8, "right": 244, "bottom": 252 }
     },
     {
@@ -286,16 +289,17 @@
       "class": "terrain",
       "stage": "batch",
       "endpoint": "generate-image-v2",
-      "seed": 52714,
+      "seed": 52720,
       "requestSize": { "width": 256, "height": 296 },
       "outputSize": { "width": 256, "height": 296 },
       "transparent": true,
       "includeFactionLanguage": false,
       "styleReference": "terrain-forest-2",
-      "prompt": "Isolated EMPTY Forest canopy batch sibling of the accepted style reference, four very simple staggered chunky broadleaf trunks under two joined canopy masses, a distinct diagonal silhouette that repeats cleanly beside the sample variants, same quiet leaf-green palette, charcoal outline and two broad cel-shading planes, trunk contacts centered around x128 y222 inside the owning diamond lower half, no resource or ground beneath it, blank transparent canvas, preferred alpha x24..232 y24..238 and hard alpha x12..244 y8..252.",
-      "negativePrompt": "animal, wildlife, deer, boar, bird, fruit, lumber mill, building, unit, person, ownership mark, resource icon, flowers, tiny leaves, dense texture, photoreal foliage, painterly forest, ground, grass patch, diamond tile, base plate, cast shadow, text, UI",
+      "prompt": "Isolated EMPTY Forest canopy batch sibling of the accepted style reference with a clearly new compact diagonal silhouette. Show FOUR trees total, counted as one lower-left tree, one center-left tree, one center-right tree and one upper-right tree; exactly four rounded crowns and exactly four visible trunks, no fifth tree or extra crown. Stagger them from lower-left to upper-right with readable overlap. Keep the cluster compact with no tall central tree and do not form two dominant horizontal canopy masses. Same quiet leaf-green palette, charcoal outline and two broad cel-shading planes, no resource or ground beneath it, blank transparent canvas, preferred alpha x24..232 y24..222 and hard alpha x12..244 y8..252.",
+      "negativePrompt": "tall central tree, animal, wildlife, deer, boar, bird, fruit, lumber mill, building, unit, person, ownership mark, resource icon, flowers, tiny leaves, dense texture, photoreal foliage, painterly forest, ground, grass patch, diamond tile, base plate, cast shadow, text, UI",
       "output": "public/assets/pixellab/terrain/forest-4.png",
       "anchor": { "x": 128, "y": 222 },
+      "groundContactY": 222,
       "hardBounds": { "left": 12, "top": 8, "right": 244, "bottom": 252 }
     },
     {
@@ -313,6 +317,7 @@
       "negativePrompt": "person, rider, saddle, armor, weapon, unit pose, pet collar, dead animal, hunting scene, gore, forest canopy, trees, ground, grass, diamond tile, base plate, resource badge, letter, text, UI, cast shadow",
       "output": "public/assets/pixellab/terrain/animal.png",
       "anchor": { "x": 128, "y": 222 },
+      "groundContactY": 222,
       "hardBounds": { "left": 24, "top": 84, "right": 232, "bottom": 252 }
     },
 
@@ -408,6 +413,7 @@
       "negativePrompt": "mine entrance, pickaxe, ore, settlement, house, castle, person, worker, animal, forest canopy, trees, ground, grass, diamond tile, base plate, realistic machinery, tiny clutter, smoke, text, UI, cast shadow",
       "output": "public/assets/pixellab/buildings/lumber-mill.png",
       "anchor": { "x": 128, "y": 222 },
+      "groundContactY": 222,
       "hardBounds": { "left": 20, "top": 12, "right": 236, "bottom": 252 }
     },
 

@@ -524,7 +524,7 @@ describe("stable draw ordering and deterministic render fixtures", () => {
 
     const animal = kindsAtTile(withFeature("ANIMAL", null));
     expect(animal).toContain("ANIMAL");
-    expect(animal.indexOf("ANIMAL")).toBeLessThan(animal.indexOf("FOREST"));
+    expect(animal.indexOf("ANIMAL")).toBeGreaterThan(animal.indexOf("FOREST"));
 
     const lumber = kindsAtTile(withFeature(null, "LUMBER_MILL"));
     expect(lumber).toContain("LUMBER_MILL");

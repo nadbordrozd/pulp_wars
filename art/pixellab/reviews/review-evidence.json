@@ -3,32 +3,32 @@
   "evidence": [
     {
       "path": "art/pixellab/reviews/units-contact-sheet.png",
-      "sha256": "f513c4de85ff694be437e39435732b5f001d59a471e8d757f48375316b33d212",
-      "bytes": 190526
+      "sha256": "378cb9168cc2a00536a8ef627ce6106806f49e1f3fc85914e22f0d3cb3091b0f",
+      "bytes": 255200
     },
     {
       "path": "art/pixellab/reviews/terrain-contact-sheet.png",
-      "sha256": "d14ef8214a4f1d6af85086643c01c4d9fd0745817d8bf0732f8dfc63b0fcfddb",
-      "bytes": 137079
+      "sha256": "d4eca8a399216bf6ebf3397bb1bd670e09f8629026e328d8808080a111506a14",
+      "bytes": 267973
     },
     {
       "path": "art/pixellab/reviews/buildings-contact-sheet.png",
-      "sha256": "66205eed6db2598b06d3ced867f2443bcdd7b61e6927b24b897051022ed16128",
-      "bytes": 236389
+      "sha256": "e81d007b984cff8bfba0f6b91f814c9179abce3dffb391c8693c2a41f6b4ec9a",
+      "bytes": 276846
     },
     {
       "path": "art/pixellab/reviews/ui-contact-sheet.png",
-      "sha256": "80cda62f38b8f11369fb206e0e8585c0205818a5c6989f0785b73a8d4222fcb8",
-      "bytes": 674106
+      "sha256": "15615a7291771ba5ff016e0636c6a6e5a77d4b96a532c4513e75c57e6c307372",
+      "bytes": 770553
     },
     {
       "path": "art/pixellab/reviews/map-review.png",
-      "sha256": "2c2142cad41f0bf81515f747a87841652dcdff0b46b1f12e1d448a59db52e098",
-      "bytes": 453630
+      "sha256": "c950dd1d89b8059919f47fce38d7faf1127509405a06c095b07c09acdd166719",
+      "bytes": 359645
     },
     {
       "path": "art/pixellab/reviews/map-review.html",
-      "sha256": "ab4dd6869e0e30db5b15bb6ec7a64da7c14e90fb3f02459afc146b198867d255",
+      "sha256": "6e44e006246bbfec9a9004d214994949a88f5f256159f3f528f74d8c4a73f0cc",
       "bytes": 551
     }
   ]

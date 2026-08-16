@@ -29,7 +29,6 @@ describe("accepted PixelLab renderer binding", () => {
       expect(ACCEPTED_ART_URLS[id], id).toMatch(/^\/assets\/pixellab\//);
     expect(ACCEPTED_ART_URLS["ui-tech-riding"]).toBeUndefined();
     expect(ACCEPTED_ART_URLS["ui-tech-archery"]).toBeUndefined();
-    expect(ACCEPTED_ART_URLS["unit-catapult"]).toBeUndefined();
     for (const id of PIXELLAB_PENDING_BOARD_ART_IDS)
       expect(ACCEPTED_ART_URLS[id], id).toBeUndefined();
   });
@@ -290,9 +289,18 @@ describe("accepted PixelLab renderer binding", () => {
     expect(context.fill).toHaveBeenCalled();
   });
 
-  it("keeps Catapult on its explicit code-native siege fallback", () => {
+  it("loads accepted Catapult art at the explicit siege geometry", () => {
+    const listeners = new Map<string, () => void>();
+    const image = {
+      addEventListener(type: string, listener: () => void): void {
+        listeners.set(type, listener);
+      },
+      alt: "",
+      decoding: "auto",
+      src: "",
+    } as unknown as HTMLImageElement;
     const documentRoot = {
-      createElement: vi.fn(),
+      createElement: vi.fn(() => image),
     } as unknown as Document;
     const bindings = createPixelLabAssetBindings(documentRoot);
     const context = drawingContext();
@@ -327,8 +335,52 @@ describe("accepted PixelLab renderer binding", () => {
         },
       },
     );
-    expect(documentRoot.createElement).not.toHaveBeenCalled();
+    expect(documentRoot.createElement).toHaveBeenCalledOnce();
     expect(context.drawImage).not.toHaveBeenCalled();
+    listeners.get("load")?.();
+    bindings.drawUnit(
+      context,
+      {
+        center: { x: 400, y: 300 },
+        zoom: 1,
+        ownerColor: null,
+        variant: 0,
+      },
+      {
+        id: unitId(1),
+        ownerId: playerId(1),
+        homeCityId: cityId(1),
+        capacityExempt: false,
+        type: "CATAPULT",
+        at: { x: 1, y: 1 },
+        hp: 10,
+        maxHp: 10,
+        kills: 0,
+        veteran: false,
+        ready: true,
+        captureEligible: false,
+        activation: {
+          moved: false,
+          attacked: false,
+          recovered: false,
+          captured: false,
+          handled: false,
+          escapeAvailable: false,
+        },
+      },
+    );
+    const destination = anchoredDestinationRect(
+      { x: 400, y: 300 },
+      1,
+      BOARD_ART_GEOMETRY.siegeUnit,
+    );
+    expect(context.drawImage).toHaveBeenCalledWith(
+      image,
+      destination.x,
+      destination.y,
+      destination.width,
+      destination.height,
+    );
     expect(context.fillRect).toHaveBeenCalled();
   });
 });

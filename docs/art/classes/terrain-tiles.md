@@ -136,9 +136,11 @@ Draw map content in this order:
 1. unexplored fog diamonds for hidden tiles;
 2. revealed ground diamonds back-to-front;
 3. ownership and low grid/path overlays for revealed tiles;
-4. low Fruit/Ore/Animal resources and Mine/Lumber Mill footprints;
+4. low Fruit/Ore resources and Mine/Lumber Mill footprints;
 5. contact shadows;
-6. revealed mountains, buildings, and units sorted by ground anchor;
+6. revealed mountains, Forest canopy, buildings, Forest Animal frontage, and
+   units sorted by ground anchor; Animal follows its owning canopy within the
+   same tile so a single-raster canopy can frame but never erase the resource;
 7. selections/effects and semantic status UI.
 
 Unexplored tiles contribute only an opaque fog entry: no underlying ground,

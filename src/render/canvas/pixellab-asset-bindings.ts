@@ -367,6 +367,7 @@ export const PIXELLAB_BOARD_ART_IDS = Object.freeze([
   "unit-archer",
   "unit-defender",
   "unit-rider",
+  "unit-catapult",
   "terrain-grass-1",
   "terrain-grass-2",
   "terrain-grass-3",
@@ -375,20 +376,18 @@ export const PIXELLAB_BOARD_ART_IDS = Object.freeze([
   "terrain-mountain-2",
   "terrain-mountain-3",
   "terrain-ore",
-  "building-village",
-  "building-city-1",
-  "building-city-2",
-  "building-city-3",
-  "building-mine",
-] as const);
-
-/** Recipe-backed slots that deliberately remain fallback-only until accepted. */
-export const PIXELLAB_PENDING_BOARD_ART_IDS = Object.freeze([
-  "unit-catapult",
   "terrain-forest-1",
   "terrain-forest-2",
   "terrain-forest-3",
   "terrain-forest-4",
   "terrain-animal",
+  "building-village",
+  "building-city-1",
+  "building-city-2",
+  "building-city-3",
+  "building-mine",
   "building-lumber-mill",
 ] as const);
+
+/** Recipe-backed board slots that are still awaiting accepted production art. */
+export const PIXELLAB_PENDING_BOARD_ART_IDS = Object.freeze([] as const);

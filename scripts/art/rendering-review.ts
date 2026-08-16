@@ -78,11 +78,11 @@ try {
     await delay(400);
     await capture(connection, "health-cycle-desktop.png");
   }
-  await renderForestCatapultFallbackFixture(connection);
+  await renderForestCatapultProductionFixture(connection);
   await waitForFixtureCanvas(connection, 1440, 1000, 1);
-  await waitForForestCatapultFallback(connection);
+  await waitForForestCatapultProduction(connection);
   await delay(400);
-  await capture(connection, "forest-catapult-fallback-desktop-1440x1000.png");
+  await capture(connection, "forest-catapult-production-desktop-1440x1000.png");
 
   await setViewport(connection, 390, 844, 2, true);
   if (!forestCatapultOnly) {
@@ -96,11 +96,14 @@ try {
     await delay(400);
     await capture(connection, "health-cycle-mobile-390x844-dpr2.png");
   }
-  await renderForestCatapultFallbackFixture(connection);
+  await renderForestCatapultProductionFixture(connection);
   await waitForFixtureCanvas(connection, 390, 844, 2);
-  await waitForForestCatapultFallback(connection);
+  await waitForForestCatapultProduction(connection);
   await delay(400);
-  await capture(connection, "forest-catapult-fallback-mobile-390x844-dpr2.png");
+  await capture(
+    connection,
+    "forest-catapult-production-mobile-390x844-dpr2.png",
+  );
 
   const measurements = await evaluate<{
     readonly cssWidth: number;
@@ -121,7 +124,7 @@ try {
   browser.kill();
 }
 
-async function renderForestCatapultFallbackFixture(
+async function renderForestCatapultProductionFixture(
   connection: Connection,
 ): Promise<void> {
   await evaluate(
@@ -139,7 +142,9 @@ async function renderForestCatapultFallbackFixture(
       if (!human || !baseCity || !baseUnit) throw new Error('Missing fallback fixture entities');
       const rules = engine.requireRuleset(result.state.rulesetId);
       const catapultRule = rules.units.CATAPULT;
-      const explored = result.state.board.tiles.map((tile) => tile.at);
+      const explored = result.state.board.tiles
+        .filter((tile) => tile.at.x < 9 && tile.at.y < 9)
+        .map((tile) => tile.at);
       const forest = new Set([
         '2,2', '3,2', '4,2', '5,2', '6,2', '7,2', '8,2',
         '2,3', '4,3', '6,3', '8,3',
@@ -214,11 +219,12 @@ async function renderForestCatapultFallbackFixture(
       });
       host.update({ matchInstanceId: 72719, view, interactive: false, selected: null });
       globalThis.__pulpRenderingReviewHost = host;
-      globalThis.__pulpForestCatapultFallback = {
+      globalThis.__pulpForestCatapultProduction = {
         forestCount: view.board.tiles.filter((tile) => tile.terrain === 'FOREST').length,
         animalCount: view.board.tiles.filter((tile) => tile.resource === 'ANIMAL').length,
         lumberCount: view.board.tiles.filter((tile) => tile.improvement === 'LUMBER_MILL').length,
-        catapultCount: view.units.filter((unit) => unit.type === 'CATAPULT').length
+        catapultCount: view.units.filter((unit) => unit.type === 'CATAPULT').length,
+        fogCount: view.board.tiles.filter((tile) => !tile.explored).length
       };
       return true;
     })()`,
@@ -351,14 +357,14 @@ async function waitForHealthFixtureArt(connection: Connection): Promise<void> {
   );
 }
 
-async function waitForForestCatapultFallback(
+async function waitForForestCatapultProduction(
   connection: Connection,
 ): Promise<void> {
   await waitForExpression(
     connection,
     `(() => {
-      const fixture = globalThis.__pulpForestCatapultFallback;
-      if (!fixture || fixture.forestCount !== 29 || fixture.animalCount !== 4 || fixture.lumberCount !== 3 || fixture.catapultCount !== 1) return false;
+      const fixture = globalThis.__pulpForestCatapultProduction;
+      if (!fixture || fixture.forestCount !== 29 || fixture.animalCount !== 4 || fixture.lumberCount !== 3 || fixture.catapultCount !== 1 || fixture.fogCount !== 40) return false;
       const pending = [
         '/assets/pixellab/units/catapult.png',
         '/assets/pixellab/terrain/forest-1.png',
@@ -369,7 +375,7 @@ async function waitForForestCatapultFallback(
         '/assets/pixellab/buildings/lumber-mill.png'
       ];
       const resources = performance.getEntriesByType('resource').map((entry) => entry.name);
-      if (pending.some((ending) => resources.some((name) => name.endsWith(ending)))) return false;
+      if (!pending.every((ending) => resources.some((name) => name.endsWith(ending)))) return false;
       const canvas = document.querySelector('.board-canvas');
       return canvas instanceof HTMLCanvasElement && canvas.width > 0 && canvas.height > 0;
     })()`,
@@ -445,13 +451,80 @@ async function writeForestCatapultEvidence(measurements: {
   readonly backingHeight: number;
   readonly devicePixelRatio: number;
 }): Promise<void> {
+  const productionAssets = [
+    ["terrain-forest-1", "public/assets/pixellab/terrain/forest-1.png"],
+    ["terrain-forest-2", "public/assets/pixellab/terrain/forest-2.png"],
+    ["terrain-forest-3", "public/assets/pixellab/terrain/forest-3.png"],
+    ["terrain-forest-4", "public/assets/pixellab/terrain/forest-4.png"],
+    ["terrain-animal", "public/assets/pixellab/terrain/animal.png"],
+    [
+      "building-lumber-mill",
+      "public/assets/pixellab/buildings/lumber-mill.png",
+    ],
+    ["unit-catapult", "public/assets/pixellab/units/catapult.png"],
+    ["ui-tech-forestry", "public/assets/pixellab/ui/tech-forestry.png"],
+    ["ui-tech-mathematics", "public/assets/pixellab/ui/tech-mathematics.png"],
+  ] as const;
+  const acceptedAssets = [];
+  for (const [id, assetPath] of productionAssets) {
+    const data = await readFile(path.join(process.cwd(), assetPath));
+    acceptedAssets.push({
+      id,
+      path: assetPath,
+      sha256: createHash("sha256").update(data).digest("hex"),
+      bytes: data.byteLength,
+    });
+  }
+  const quarantinedSources = [
+    {
+      file: "terrain-forest-1-27ad54bbbddb.png",
+      reason: "ground contacts ended 16 source pixels above y222",
+    },
+    {
+      file: "terrain-forest-2-f2f9c52e2fab.png",
+      reason: "duplicated Forest 1 and added a detached resource-like crown",
+    },
+    {
+      file: "terrain-forest-2-3f9d20e3a0e6.png",
+      reason: "strong low-wide silhouette but ground contacts ended at y199",
+    },
+    {
+      file: "terrain-forest-2-56771fa745c8.png",
+      reason: "duplicated Forest 1 and retained a resource-like minor crown",
+    },
+    {
+      file: "terrain-forest-4-9b9dfb1ca381.png",
+      reason: "duplicated Forest 2 instead of breaking map repetition",
+    },
+  ];
+  const quarantinedAttempts = [];
+  for (const attempt of quarantinedSources) {
+    const quarantinePath = `art/pixellab/quarantine/${attempt.file}`;
+    const data = await readFile(path.join(process.cwd(), quarantinePath));
+    quarantinedAttempts.push({
+      path: quarantinePath,
+      reason: attempt.reason,
+      sha256: createHash("sha256").update(data).digest("hex"),
+      bytes: data.byteLength,
+    });
+  }
+  const unwiredGenerationFailures = [
+    {
+      jobId: "1d8fd112-f088-441a-b711-dc539484a5a2",
+      reason: "could not align ground contact to y222 within hard bounds",
+    },
+    {
+      jobId: "96e02e25-0a89-4ceb-9353-6b4cfd86fe59",
+      reason: "could not align ground contact to y222 within hard bounds",
+    },
+  ];
   const captures = [
     {
-      path: "art/feedback/reviews/forest-catapult-fallback-desktop-1440x1000.png",
+      path: "art/feedback/reviews/forest-catapult-production-desktop-1440x1000.png",
       viewport: { width: 1440, height: 1000, devicePixelRatio: 1 },
     },
     {
-      path: "art/feedback/reviews/forest-catapult-fallback-mobile-390x844-dpr2.png",
+      path: "art/feedback/reviews/forest-catapult-production-mobile-390x844-dpr2.png",
       viewport: { width: 390, height: 844, devicePixelRatio: 2 },
     },
   ];
@@ -465,18 +538,23 @@ async function writeForestCatapultEvidence(measurements: {
     });
   }
   await writeFile(
-    path.join(reviewRoot, "forest-catapult-fallback-evidence.json"),
+    path.join(reviewRoot, "forest-catapult-production-evidence.json"),
     `${JSON.stringify(
       {
         schemaVersion: 1,
-        productionRasterStatus: "UNGENERATED_CREDENTIAL_UNAVAILABLE",
-        accepted: 0,
-        rejected: 0,
-        fallbackFixture: {
+        productionRasterStatus: "ACCEPTED_PIXELLAB",
+        accepted: 9,
+        acceptedAssets,
+        quarantinedRejected: quarantinedAttempts.length,
+        quarantinedAttempts,
+        unwiredFailed: unwiredGenerationFailures.length,
+        unwiredGenerationFailures,
+        productionFixture: {
           forests: 29,
           animals: 4,
           lumberMills: 3,
           catapults: 1,
+          fogTiles: 40,
         },
         mobileCanvas: measurements,
         evidence,
