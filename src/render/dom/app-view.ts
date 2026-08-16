@@ -2152,16 +2152,30 @@ export class DomAppView {
       node.click();
     });
     const iconUrl = ACCEPTED_ART_URLS[`ui-tech-${tech.id.toLowerCase()}`];
-    const icon =
-      iconUrl === undefined
-        ? textElement(
-            this.#document,
-            "span",
-            TECH_FALLBACK_SYMBOLS[tech.id] ?? title(tech.id).charAt(0),
-            "tech-node-art tech-node-art-fallback",
-          )
-        : artImage(this.#document, iconUrl, "tech-node-art");
+    const icon = element(this.#document, "span", "tech-node-art-slot");
     icon.setAttribute("aria-hidden", "true");
+    const iconFallback = textElement(
+      this.#document,
+      "span",
+      TECH_FALLBACK_SYMBOLS[tech.id] ?? title(tech.id).charAt(0),
+      "tech-node-art tech-node-art-fallback",
+    );
+    icon.append(iconFallback);
+    if (iconUrl !== undefined) {
+      icon.append(
+        artImage(
+          this.#document,
+          iconUrl,
+          "tech-node-art",
+          () => {
+            iconFallback.hidden = true;
+          },
+          () => {
+            iconFallback.hidden = false;
+          },
+        ),
+      );
+    }
     const stateMark = textElement(
       this.#document,
       "span",
@@ -2722,6 +2736,7 @@ function artImage(
   source: string,
   className: string,
   onLoad?: () => void,
+  onError?: () => void,
 ): HTMLImageElement {
   const image = element(documentRoot, "img", className);
   image.alt = "";
@@ -2736,6 +2751,7 @@ function artImage(
   image.addEventListener("error", () => {
     settled = true;
     image.hidden = true;
+    onError?.();
   });
   image.src = source;
   if (image.complete && image.naturalWidth > 0) markLoaded();

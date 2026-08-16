@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "855ef4379ca4a6cad642c3ccf8c87523aa6a707ad144f925692a4613fbeb9207",
+  "sourceManifestSha256": "a7fd12d6b80005e4f9182866f3765f419808722cff3a0f1410683dbc9c3b8ac5",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -706,8 +706,21 @@
     },
     "ui-tech-riding": {
       "id": "ui-tech-riding",
-      "status": "FAILED",
-      "notes": "PixelLab POST returned HTTP 402: insufficient resources (numeric balance redacted).",
+      "status": "ACCEPTED",
+      "jobId": "0fcab014-efb3-49b0-908f-174ca186454f",
+      "candidate": "art/pixellab/candidates/ui-tech-riding.png",
+      "candidateSha256": "a05bf1987e31df381f7b6df5e02e9a26a11ea95ebdd0067befa7e3e921691d74",
+      "providerOutputSha256": "ebde030a0f055b590660ec5fe742c86727a4539108ee03aadc04f3fe395df80c",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 40,
+        "top": 28,
+        "right": 214,
+        "bottom": 230,
+        "empty": false
+      },
       "request": {
         "endpoint": "generate-image-v2",
         "model": "generate-image-v2",
@@ -726,6 +739,16 @@
         "noBackground": true,
         "palette": "parchment tan, warm bronze, dark teal, charcoal outline",
         "postprocess": "lanczos3-resize"
+      },
+      "outputSha256": "a05bf1987e31df381f7b6df5e02e9a26a11ea95ebdd0067befa7e3e921691d74",
+      "notes": "Accepted restored-credit attempt 3: isolated saddle silhouette is immediately readable at 64px, coherent with the UI family, clean alpha, no frame, badge, text-like clutter, duplicate object, or background.",
+      "reviewedAt": "2026-08-16T23:00:35.948Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
       }
     },
     "ui-tech-hunting": {
@@ -851,14 +874,27 @@
     },
     "ui-tech-archery": {
       "id": "ui-tech-archery",
-      "status": "FAILED",
-      "notes": "PixelLab POST returned HTTP 402: insufficient resources (numeric balance redacted).",
+      "status": "ACCEPTED",
+      "jobId": "6c8fb2db-5396-4c7b-8b82-408aa81495f7",
+      "candidate": "art/pixellab/candidates/ui-tech-archery.png",
+      "candidateSha256": "98d109482c4bd9cc2f1604e3bba830836f669472a7765a7ce86eba9cbb902e00",
+      "providerOutputSha256": "513d603cc31cda0a1109839469b94e7123b625030bf1b6bd6d864974ace1e184",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 27,
+        "top": 22,
+        "right": 231,
+        "bottom": 229,
+        "empty": false
+      },
       "request": {
         "endpoint": "generate-image-v2",
         "model": "generate-image-v2",
-        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: dark teal, warm bronze, parchment highlight, charcoal outline. Isolated standalone archery pictogram, exactly one huge clean dark-teal curved bow crossed by exactly one broad blunt bronze arrow, the connected pair fills seventy percent of a blank transparent square, strong charcoal outline, readable at 64 pixels, flat two-level cel shading, no backing shape. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, character, scene, landscape, panel, frame, card, badge, medallion, plaque, circle, square, grid, inventory, menu, button, background, border, second bow, extra arrows, quiver, target, extra weapons, tiny details, multiple icons.",
-        "prompt": "Isolated standalone archery pictogram, exactly one huge clean dark-teal curved bow crossed by exactly one broad blunt bronze arrow, the connected pair fills seventy percent of a blank transparent square, strong charcoal outline, readable at 64 pixels, flat two-level cel shading, no backing shape.",
-        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, character, scene, landscape, panel, frame, card, badge, medallion, plaque, circle, square, grid, inventory, menu, button, background, border, second bow, extra arrows, quiver, target, extra weapons, tiny details, multiple icons",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: dark teal, warm bronze, parchment highlight, charcoal outline. Isolated standalone archery pictogram, exactly one huge clean dark-teal curved bow crossed by exactly one broad blunt bronze arrow, one plain unwrapped unmarked grip, the connected pair fills seventy percent of a blank transparent square, strong charcoal outline, readable at 64 pixels, flat two-level cel shading, no backing shape. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, glyphs, runes, markings, ornaments, decorated grip, grip wrap, white band, character, scene, landscape, panel, frame, card, badge, medallion, plaque, circle, square, grid, inventory, menu, button, background, border, second bow, extra arrows, quiver, target, extra weapons, tiny details, multiple icons.",
+        "prompt": "Isolated standalone archery pictogram, exactly one huge clean dark-teal curved bow crossed by exactly one broad blunt bronze arrow, one plain unwrapped unmarked grip, the connected pair fills seventy percent of a blank transparent square, strong charcoal outline, readable at 64 pixels, flat two-level cel shading, no backing shape.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, glyphs, runes, markings, ornaments, decorated grip, grip wrap, white band, character, scene, landscape, panel, frame, card, badge, medallion, plaque, circle, square, grid, inventory, menu, button, background, border, second bow, extra arrows, quiver, target, extra weapons, tiny details, multiple icons",
         "requestSize": {
           "width": 384,
           "height": 384
@@ -867,10 +903,20 @@
           "width": 256,
           "height": 256
         },
-        "seed": 44405,
+        "seed": 44505,
         "noBackground": true,
         "palette": "dark teal, warm bronze, parchment highlight, charcoal outline",
         "postprocess": "lanczos3-resize"
+      },
+      "outputSha256": "98d109482c4bd9cc2f1604e3bba830836f669472a7765a7ce86eba9cbb902e00",
+      "notes": "Accepted restored-credit attempt 4 after quarantining attempt 3: exactly one clean bow and one arrow with plain unmarked grip, strong 64px silhouette, clean alpha, no frame, badge, text-like clutter, duplicate symbol, or background.",
+      "reviewedAt": "2026-08-16T23:00:38.698Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
       }
     },
     "ui-tech-strategy": {

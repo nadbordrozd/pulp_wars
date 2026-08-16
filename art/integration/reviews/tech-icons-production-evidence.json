@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-08-17",
+  "assets": {
+    "ui-tech-riding": {
+      "attempt": 3,
+      "status": "ACCEPTED",
+      "path": "public/assets/pixellab/ui/tech-riding.png",
+      "sha256": "a05bf1987e31df381f7b6df5e02e9a26a11ea95ebdd0067befa7e3e921691d74",
+      "dimensions": { "width": 256, "height": 256 },
+      "alphaBounds": { "left": 40, "top": 28, "right": 214, "bottom": 230 }
+    },
+    "ui-tech-archery": {
+      "attempt": 4,
+      "status": "ACCEPTED",
+      "path": "public/assets/pixellab/ui/tech-archery.png",
+      "sha256": "98d109482c4bd9cc2f1604e3bba830836f669472a7765a7ce86eba9cbb902e00",
+      "dimensions": { "width": 256, "height": 256 },
+      "alphaBounds": { "left": 27, "top": 22, "right": 231, "bottom": 229 }
+    }
+  },
+  "rejectedThisPass": [
+    {
+      "id": "ui-tech-archery",
+      "attempt": 3,
+      "reason": "Ornate white-and-gold grip read as accidental glyph or text clutter at 64px.",
+      "path": "art/pixellab/quarantine/ui-tech-archery-e998b22a1d20.png",
+      "sha256": "e998b22a1d20c119c7ae07011f878f62921c760b063e30f8880fa1c01d6d225a"
+    }
+  ],
+  "reviewChecks": {
+    "source": true,
+    "native64CssPixels": true,
+    "enlarged": true,
+    "familyContactSheet": true,
+    "composition": true,
+    "noFrameOrBacking": true,
+    "noDuplicateSymbol": true,
+    "noTextLikeClutter": true,
+    "loadingAndErrorFallbackOnly": true
+  },
+  "captures": {
+    "uiContactSheet": {
+      "path": "art/pixellab/reviews/ui-contact-sheet.png",
+      "sha256": "ef8ab9e86ff4f3ab0cdd9ce51d08f62cb2f624248816bca61aeddb82c660961b"
+    },
+    "desktop": {
+      "path": "art/integration/reviews/forest-mathematics-tech-tree-desktop.png",
+      "viewport": { "width": 1440, "height": 1000, "devicePixelRatio": 1 },
+      "sha256": "c59ff9c61181a274c85471ca2a7258a6164476e54aa50dab3d2f1060d9e7e30f"
+    },
+    "mobile": {
+      "path": "art/integration/reviews/forest-mathematics-tech-tree-mobile-390x844-dpr2.png",
+      "viewport": { "width": 390, "height": 844, "devicePixelRatio": 2 },
+      "pixelDimensions": { "width": 780, "height": 1688 },
+      "sha256": "e4f5fed89d9f688946b74beb936861edebb429627be9e3499dbd5ded92946bf0"
+    }
+  },
+  "sourceManifestSha256": "a7fd12d6b80005e4f9182866f3765f419808722cff3a0f1410683dbc9c3b8ac5",
+  "generatedManifestSha256": "077dcbd02df9bc34ac32b1fe0147fff2ef98bbf79b0ff161939a52d9f82ba2bb"
+}

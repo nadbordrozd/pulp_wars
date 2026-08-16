@@ -1312,9 +1312,26 @@ fieldset {
   isolation: isolate;
 }
 
-.tech-node-art {
+.tech-node-art,
+.tech-node-art-slot {
   width: clamp(2.9rem, 6vw, 4.2rem);
   height: clamp(2.9rem, 6vw, 4.2rem);
+}
+
+.tech-node-art-slot {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.tech-node-art-slot > .tech-node-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.tech-node-art {
   object-fit: contain;
 }
 
@@ -1327,6 +1344,10 @@ fieldset {
   background: rgb(23 23 34 / 0.8);
   font-size: clamp(1.45rem, 4vw, 2.1rem);
   font-weight: 950;
+}
+
+.tech-node-art-fallback[hidden] {
+  display: none;
 }
 
 .tech-node-cost {
@@ -1779,7 +1800,8 @@ fieldset {
     border-width: 2px;
     border-radius: 0.75rem;
   }
-  .tech-node-art {
+  .tech-node-art,
+  .tech-node-art-slot {
     width: 2.85rem;
     height: 2.85rem;
   }

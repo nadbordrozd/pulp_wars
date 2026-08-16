@@ -1109,12 +1109,30 @@ describe("HUD, command wiring, and contextual panels", () => {
     expect(tree?.textContent).not.toContain("Train Riders");
     expect(
       document.querySelectorAll<HTMLImageElement>(".tech-node-art:not(span)"),
-    ).toHaveLength(7);
+    ).toHaveLength(9);
     expect(document.querySelectorAll(".tech-node-art-fallback")).toHaveLength(
-      2,
+      9,
     );
-    expect(techNode("riding").textContent).toContain("R");
-    expect(techNode("archery").textContent).toContain("A");
+    const ridingArt = techNode("riding").querySelector<HTMLImageElement>(
+      ".tech-node-art:not(span)",
+    );
+    const ridingFallback = techNode("riding").querySelector<HTMLElement>(
+      ".tech-node-art-fallback",
+    );
+    expect(ridingArt?.getAttribute("src")).toBe(
+      "/assets/pixellab/ui/tech-riding.png",
+    );
+    expect(ridingFallback?.hidden).toBe(false);
+    ridingArt?.dispatchEvent(new Event("load"));
+    expect(ridingFallback?.hidden).toBe(true);
+    ridingArt?.dispatchEvent(new Event("error"));
+    expect(ridingArt?.hidden).toBe(true);
+    expect(ridingFallback?.hidden).toBe(false);
+    expect(
+      techNode("archery")
+        .querySelector<HTMLImageElement>(".tech-node-art:not(span)")
+        ?.getAttribute("src"),
+    ).toBe("/assets/pixellab/ui/tech-archery.png");
     expect(techNode("forestry").querySelector("img")?.getAttribute("src")).toBe(
       "/assets/pixellab/ui/tech-forestry.png",
     );

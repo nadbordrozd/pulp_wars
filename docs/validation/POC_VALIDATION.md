@@ -147,7 +147,7 @@ Visual inspection found no clipped tall sprites, broken images, horizontal DOM
 overflow, or unreachable primary actions. Dense late-game final maps are busy
 by design, but depth ordering, health/status marks, city labels, and controls
 remain visible. Native/original-scale unit, terrain, building, and UI contact
-sheets were also inspected; all 29 wired PixelLab PNGs remain coherent with the
+sheets were also inspected; all 41 wired PixelLab PNGs remain coherent with the
 approved chunky illustrated direction.
 
 ## Correctness defect found and fixed
@@ -165,10 +165,10 @@ automated gates pass with the fix.
 
 ## Explicit limitations
 
-- PixelLab returned HTTP 402 after the accepted baseline set was produced.
-  Riding and Archery therefore use the intentional code-native text fallbacks;
-  rejected generated candidates are not wired. Bead `pulp_wars-4dk` tracks
-  replacement when PixelLab resources are restored.
+- The earlier PixelLab resource blocker is resolved. Riding and Archery now use
+  accepted production icons; their code-native letters appear only while an
+  image loads or if it fails. The first restored-credit Archery attempt remains
+  quarantined because ornate grip marks read as text-like clutter at 64 px.
 - Browser completion uses deterministic AI policy for repeatability. It proves
   the real interaction/state plumbing but is not a substitute for an external
   human playtest, screen-reader session, or formal WCAG conformance audit.

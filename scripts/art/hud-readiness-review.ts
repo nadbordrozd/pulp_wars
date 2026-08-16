@@ -215,6 +215,7 @@ try {
   await capture(connection, "catapult-training-city-dock-desktop.png");
   await openTech(connection);
   await selectTech(connection, "MATHEMATICS");
+  await assertTechnologyProductionIcons(connection);
   await capture(connection, "forest-mathematics-tech-tree-desktop.png");
   assertStableGeometry("forest-ui-desktop", {
     none: forestDesktopBaseline,
@@ -241,6 +242,7 @@ try {
   );
   await openTech(connection);
   await selectTech(connection, "MATHEMATICS");
+  await assertTechnologyProductionIcons(connection);
   await capture(
     connection,
     "forest-mathematics-tech-tree-mobile-390x844-dpr2.png",
@@ -397,6 +399,7 @@ async function assertCatapultTrainingDock(
   const result = await evaluate<{
     readonly visibleText: string;
     readonly buttons: number;
+    readonly catapultRasterLoaded: boolean;
     readonly catapultFallbackParts: number;
     readonly tileActions: number;
   }>(
@@ -405,9 +408,11 @@ async function assertCatapultTrainingDock(
       const dock = document.querySelector('.city-action-dock');
       const catapult = [...(dock?.querySelectorAll('.city-train-action') ?? [])].find((button) => button.textContent?.includes('Catapult'));
       if (!dock || !catapult) throw new Error('Missing Catapult training dock');
+      const raster = catapult.querySelector('img');
       return {
         visibleText: catapult.textContent ?? '',
         buttons: dock.querySelectorAll('.city-train-action').length,
+        catapultRasterLoaded: raster instanceof HTMLImageElement && !raster.hidden && raster.complete && raster.naturalWidth > 0 && raster.src.endsWith('/assets/pixellab/units/catapult.png'),
         catapultFallbackParts: catapult.querySelectorAll('.city-command-art-catapult > span').length,
         tileActions: dock.querySelectorAll('.fruit-action, .animal-action, .lumber-action, .mine-action').length
       };
@@ -416,7 +421,10 @@ async function assertCatapultTrainingDock(
   if (
     result.visibleText !== "Catapult★ 8" ||
     result.buttons !== 5 ||
-    result.catapultFallbackParts !== 5 ||
+    !(
+      (result.catapultRasterLoaded && result.catapultFallbackParts === 0) ||
+      (!result.catapultRasterLoaded && result.catapultFallbackParts === 5)
+    ) ||
     result.tileActions !== 0
   )
     throw new Error(
@@ -438,6 +446,24 @@ async function openTech(connection: Connection): Promise<void> {
     connection,
     `document.querySelectorAll('[role="treeitem"]').length === 9`,
   );
+}
+
+async function assertTechnologyProductionIcons(
+  connection: Connection,
+): Promise<void> {
+  const result = await evaluate<readonly boolean[]>(
+    connection,
+    `(() => ['riding', 'archery'].map((id) => {
+      const node = document.querySelector('[data-tech="' + id + '"]');
+      const raster = node?.querySelector('.tech-node-art-slot > img');
+      const fallback = node?.querySelector('.tech-node-art-fallback');
+      return raster instanceof HTMLImageElement && !raster.hidden && raster.complete && raster.naturalWidth > 0 && raster.src.endsWith('/assets/pixellab/ui/tech-' + id + '.png') && fallback instanceof HTMLElement && fallback.hidden && getComputedStyle(fallback).display === 'none';
+    }))()`,
+  );
+  if (result.length !== 2 || result.some((passed) => !passed))
+    throw new Error(
+      `Riding/Archery production icon contract failed: ${JSON.stringify(result)}`,
+    );
 }
 
 async function selectTech(

@@ -24,11 +24,15 @@ describe("accepted PixelLab renderer binding", () => {
     expect(cityArtLevel(4_096)).toBe(3);
   });
 
-  it("maps every board asset and excludes rejected UI attempts", () => {
+  it("maps every board asset and the accepted Riding and Archery UI icons", () => {
     for (const id of PIXELLAB_BOARD_ART_IDS)
       expect(ACCEPTED_ART_URLS[id], id).toMatch(/^\/assets\/pixellab\//);
-    expect(ACCEPTED_ART_URLS["ui-tech-riding"]).toBeUndefined();
-    expect(ACCEPTED_ART_URLS["ui-tech-archery"]).toBeUndefined();
+    expect(ACCEPTED_ART_URLS["ui-tech-riding"]).toBe(
+      "/assets/pixellab/ui/tech-riding.png",
+    );
+    expect(ACCEPTED_ART_URLS["ui-tech-archery"]).toBe(
+      "/assets/pixellab/ui/tech-archery.png",
+    );
     for (const id of PIXELLAB_PENDING_BOARD_ART_IDS)
       expect(ACCEPTED_ART_URLS[id], id).toBeUndefined();
   });
