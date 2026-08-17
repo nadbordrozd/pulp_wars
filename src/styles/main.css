@@ -860,8 +860,24 @@ fieldset {
 }
 
 .unit-dock-action {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
   min-height: 44px;
   padding: 0.6rem 0.85rem;
+}
+
+.unit-action-art {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  object-fit: contain;
+}
+
+.wall-action-dock {
+  grid-template-areas:
+    "summary summary"
+    "hint hint";
 }
 
 .unit-dock-hint {

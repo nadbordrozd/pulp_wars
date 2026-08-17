@@ -2,6 +2,7 @@ import {
   chebyshev,
   estimateCombat,
   estimateWallCombat,
+  effectiveUnitRule,
   publicTechnologyCost,
   publicUnitCost,
   queryPlayerCommands,
@@ -136,6 +137,13 @@ function isCompositionCandidate(
   if (command.kind === "WAIT") return false;
   if (command.kind === "KAMIKAZE_ROLL")
     return isSafeValuableRoll(view, command);
+  if (command.kind === "BUILD_CHOCOLATE_WALL")
+    return defensiveWallThreat(view, command) !== null;
+  if (
+    command.kind === "CANDIFY" &&
+    sacrificesLastThreatenedDefender(view, publicCommands, command)
+  )
+    return false;
   if (command.kind === "ATTACK" && command.target.kind === "CHOCOLATE_WALL") {
     const wallId = command.target.wallId;
     const wall = view.chocolateWalls.find(
@@ -170,7 +178,7 @@ function isSafeValuableRoll(
         : command.direction === "SOUTH"
           ? { x: 0, y: 1 }
           : { x: -1, y: 0 };
-  let hostile = false;
+  let hostileValue = 0;
   for (
     let at = { x: actor.at.x + delta.x, y: actor.at.y + delta.y };
     at.x >= 0 &&
@@ -186,9 +194,157 @@ function isSafeValuableRoll(
     const ownerId = unit?.ownerId ?? wall?.ownerId;
     if (ownerId === undefined) continue;
     if (!isHostile(view, ownerId)) return false;
-    hostile = true;
+    hostileValue +=
+      unit !== undefined
+        ? 10 * Math.min(10, unit.hp)
+        : 2 * Math.min(10, wall?.hp ?? 0);
   }
-  return hostile;
+  return hostileValue > 8 * actor.hp;
+}
+
+function rollEvaluation(
+  view: PlayerView,
+  command: Extract<Command, { readonly kind: "KAMIKAZE_ROLL" }>,
+): {
+  readonly hostileValue: number;
+  readonly friendlyValue: number;
+  readonly killsThreat: boolean;
+  readonly threatSeverity: number;
+} {
+  const actor = view.units.find((unit) => unit.id === command.unitId);
+  if (actor === undefined)
+    return {
+      hostileValue: 0,
+      friendlyValue: 0,
+      killsThreat: false,
+      threatSeverity: 0,
+    };
+  const delta =
+    command.direction === "NORTH"
+      ? { x: 0, y: -1 }
+      : command.direction === "EAST"
+        ? { x: 1, y: 0 }
+        : command.direction === "SOUTH"
+          ? { x: 0, y: 1 }
+          : { x: -1, y: 0 };
+  let hostileValue = 0;
+  let friendlyValue = 0;
+  let killsThreat = false;
+  let threatSeverity = 0;
+  for (
+    let at = { x: actor.at.x + delta.x, y: actor.at.y + delta.y };
+    at.x >= 0 &&
+    at.y >= 0 &&
+    at.x < view.board.width &&
+    at.y < view.board.height;
+    at = { x: at.x + delta.x, y: at.y + delta.y }
+  ) {
+    const unit = view.units.find((candidate) => sameCoord(candidate.at, at));
+    const wall = view.chocolateWalls.find((candidate) =>
+      sameCoord(candidate.at, at),
+    );
+    const ownerId = unit?.ownerId ?? wall?.ownerId;
+    if (ownerId === undefined) continue;
+    const value =
+      unit !== undefined
+        ? 10 * Math.min(10, unit.hp)
+        : 2 * Math.min(10, wall?.hp ?? 0);
+    if (isHostile(view, ownerId)) {
+      hostileValue += value;
+      if (unit !== undefined && unit.hp <= 10) {
+        const threat = threatFromUnit(view, unit);
+        if (threat !== null) {
+          killsThreat = true;
+          threatSeverity = Math.max(threatSeverity, threat.severity);
+        }
+      }
+    } else friendlyValue += 8 * Math.min(10, unit?.hp ?? wall?.hp ?? 0);
+  }
+  return { hostileValue, friendlyValue, killsThreat, threatSeverity };
+}
+
+function defensiveWallThreat(
+  view: PlayerView,
+  command: Extract<Command, { readonly kind: "BUILD_CHOCOLATE_WALL" }>,
+): KnownThreat | null {
+  return (
+    knownThreats(view).find(
+      (threat) =>
+        chebyshev(threat.city.at, command.at) === 1 &&
+        !view.chocolateWalls.some(
+          (wall) =>
+            wall.ownerId === view.viewer.id &&
+            chebyshev(wall.at, threat.city.at) === 1,
+        ),
+    ) ?? null
+  );
+}
+
+function sacrificesLastThreatenedDefender(
+  view: PlayerView,
+  publicCommands: readonly Command[],
+  command: Extract<Command, { readonly kind: "CANDIFY" }>,
+): boolean {
+  const unit = view.units.find((candidate) => candidate.id === command.unitId);
+  if (unit?.homeCityId === null || unit?.homeCityId === undefined) return false;
+  const city = view.cities.find(
+    (candidate) => candidate.id === unit.homeCityId,
+  );
+  if (city === undefined || knownThreatForCity(view, city) === null)
+    return false;
+  const assigned = view.units.filter(
+    (candidate) =>
+      candidate.ownerId === view.viewer.id &&
+      candidate.homeCityId === unit.homeCityId,
+  );
+  if (assigned.length !== 1) return false;
+  return publicCommands.some(
+    (candidate) =>
+      (candidate.kind === "TRAIN" && candidate.cityId === city.id) ||
+      candidate.kind === "BUILD_CHOCOLATE_WALL" ||
+      candidate.kind === "ATTACK" ||
+      candidate.kind === "KAMIKAZE_ROLL",
+  );
+}
+
+function canCandifyFrom(
+  view: PlayerView,
+  unit: PlayerUnitView,
+  at: Coord,
+): boolean {
+  const faction =
+    view.players.find((player) => player.id === unit.ownerId)?.faction ??
+    "ORIGINAL";
+  if (faction !== "CANDY") return false;
+  const tile = tileAt(view, at);
+  if (tile?.explored !== true || tile.site !== null) return false;
+  if ("diplomaticBlock" in tile && tile.diplomaticBlock === "ALLIED_TERRITORY")
+    return false;
+  const controller =
+    tile.territoryCityId === null
+      ? undefined
+      : view.cities.find((city) => city.id === tile.territoryCityId);
+  if (controller?.ownerId === view.viewer.id) return false;
+  return view.board.tiles.some(
+    (candidate) =>
+      candidate.explored &&
+      chebyshev(candidate.at, at) === 1 &&
+      candidate.territoryCityId !== null &&
+      view.cities.some(
+        (city) =>
+          city.id === candidate.territoryCityId &&
+          city.ownerId === view.viewer.id,
+      ),
+  );
+}
+
+function candifyTerritoryValue(view: PlayerView, at: Coord): number {
+  const tile = tileAt(view, at);
+  if (tile?.explored !== true || tile.territoryCityId === null) return 1;
+  const city = view.cities.find(
+    (candidate) => candidate.id === tile.territoryCityId,
+  );
+  return city !== undefined && isHostile(view, city.ownerId) ? 2 : 0;
 }
 
 export function preferredTrainingType(
@@ -283,13 +439,21 @@ export function scoreCommand(view: PlayerView, command: Command): AiScore {
       }
       break;
     }
-    case "KAMIKAZE_ROLL":
-      priority = 400;
+    case "KAMIKAZE_ROLL": {
+      const roll = rollEvaluation(view, command);
+      priority = roll.killsThreat ? 1070 : 1010;
+      strategicValue = roll.threatSeverity;
+      immediateValue =
+        roll.hostileValue - roll.friendlyValue - 8 * (actingUnit?.hp ?? 0);
       break;
-    case "BUILD_CHOCOLATE_WALL":
-      priority = 450;
+    }
+    case "BUILD_CHOCOLATE_WALL": {
+      const threat = defensiveWallThreat(view, command);
+      priority = threat === null ? -1 : 1055;
+      strategicValue = threat?.severity ?? 0;
       immediateValue = -1;
       break;
+    }
     case "CANDIFY": {
       const actor = view.units.find((unit) => unit.id === command.unitId);
       const tile = actor === undefined ? undefined : tileAt(view, actor.at);
@@ -324,6 +488,10 @@ export function scoreCommand(view: PlayerView, command: Command): AiScore {
         if (threatenedCity !== undefined) {
           priority = 1040;
           strategicValue = threatenedCity.severity;
+        } else if (canCandifyFrom(view, actingUnit, resultingTile)) {
+          priority = 610;
+          strategicValue = candifyTerritoryValue(view, resultingTile);
+          objectiveValue = frontierGain(view, resultingTile);
         } else if (
           objective !== null &&
           chebyshev(resultingTile, objective) <
@@ -464,7 +632,11 @@ function tieBreak(view: PlayerView, command: Command): readonly number[] {
         ? UNIT_ORDINAL[command.unit]
         : command.kind === "CHOOSE_CITY_REWARD"
           ? REWARD_ORDINAL[command.reward]
-          : 0;
+          : command.kind === "KAMIKAZE_ROLL"
+            ? (["NORTH", "EAST", "SOUTH", "WEST"] as const).indexOf(
+                command.direction,
+              )
+            : 0;
   // The comparator applies ascending order to these final stable fields,
   // equivalent to negating them before lexicographic maximization.
   return [
@@ -550,6 +722,8 @@ function commandEntity(command: Command): number {
     case "PROMOTE":
     case "WAIT":
     case "CANDIFY":
+    case "KAMIKAZE_ROLL":
+    case "BUILD_CHOCOLATE_WALL":
       return command.unitId;
     case "TRAIN":
     case "CHOOSE_CANDIFY_CITY":
@@ -573,6 +747,8 @@ function unitForCommand(
     case "PROMOTE":
     case "WAIT":
     case "CANDIFY":
+    case "KAMIKAZE_ROLL":
+    case "BUILD_CHOCOLATE_WALL":
       return view.units.find((unit) => unit.id === command.unitId) ?? null;
     default:
       return null;
@@ -622,7 +798,12 @@ function knownThreatForCity(
   let severity: 1 | 2 | 3 | null = null;
   for (const hostile of visibleHostiles(view)) {
     const distance = chebyshev(hostile.at, city.at);
-    const rules = requireRuleset(view.rulesetId).units[hostile.type];
+    const rules = effectiveUnitRule(
+      view.rulesetId,
+      view.players.find((player) => player.id === hostile.ownerId)?.faction ??
+        "ORIGINAL",
+      hostile.type,
+    );
     const candidate = sameCoord(hostile.at, city.at)
       ? 3
       : distance <= rules.range
@@ -657,7 +838,12 @@ function threatFromUnit(
       .filter((city) => city.ownerId === view.viewer.id)
       .map((city) => {
         const distance = chebyshev(hostile.at, city.at);
-        const rules = requireRuleset(view.rulesetId).units[hostile.type];
+        const rules = effectiveUnitRule(
+          view.rulesetId,
+          view.players.find((player) => player.id === hostile.ownerId)
+            ?.faction ?? "ORIGINAL",
+          hostile.type,
+        );
         const severity = sameCoord(hostile.at, city.at)
           ? 3
           : distance <= rules.range
@@ -914,7 +1100,12 @@ function expectedKnownIncomingDamage(
     .filter(
       (enemy) =>
         chebyshev(enemy.at, resultingTile) <=
-        requireRuleset(view.rulesetId).units[enemy.type].range,
+        effectiveUnitRule(
+          view.rulesetId,
+          view.players.find((player) => player.id === enemy.ownerId)?.faction ??
+            "ORIGINAL",
+          enemy.type,
+        ).range,
     )
     .reduce(
       (total, enemy) =>

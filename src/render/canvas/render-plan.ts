@@ -6,7 +6,7 @@ import {
   type Coord,
   type PlayerView,
 } from "../../engine/index";
-import type { BoardSelection } from "./board-host";
+import type { BoardSelection, BoardTargetMode } from "./board-host";
 import {
   compareGroundAnchors,
   diamondEdgeIndex,
@@ -35,6 +35,10 @@ export type RenderEntryKind =
   | "MOVE_TARGET"
   | "ATTACK_TARGET"
   | "MINE_TARGET"
+  | "ROLL_TARGET"
+  | "WALL_TARGET"
+  | "ROLL_PATH"
+  | "ROLL_VICTIM"
   | "PATH"
   | "UNIT_STATUS"
   | "CHOCOLATE_WALL_STATUS"
@@ -85,6 +89,10 @@ const LAYER: Readonly<Record<RenderEntryKind, number>> = {
   MOVE_TARGET: 6,
   ATTACK_TARGET: 6,
   MINE_TARGET: 6,
+  ROLL_TARGET: 6,
+  WALL_TARGET: 6,
+  ROLL_PATH: 6,
+  ROLL_VICTIM: 6,
   PATH: 6,
   UNIT_STATUS: 7,
   CHOCOLATE_WALL_STATUS: 7,
@@ -109,6 +117,7 @@ export function buildRenderPlan(
   view: PlayerView,
   selected: BoardSelection | null,
   activeTarget: Coord | null = null,
+  targetMode: BoardTargetMode | null = null,
 ): BoardRenderPlan {
   const entries: RenderPlanEntry[] = [];
   const attackPreviews: AttackTargetPreview[] = [];
@@ -212,6 +221,58 @@ export function buildRenderPlan(
   if (selectedUnitId !== null) {
     for (const command of legalCommands) {
       if (!("unitId" in command) || command.unitId !== selectedUnitId) continue;
+      if (targetMode !== null && targetMode.unitId === selectedUnitId) {
+        if (
+          targetMode.kind === "BUILD_WALL" &&
+          command.kind === "BUILD_CHOCOLATE_WALL"
+        ) {
+          entries.push(
+            entry("WALL_TARGET", command.at, coordinateId(command.at), null),
+          );
+        } else if (
+          targetMode.kind === "ROLL" &&
+          command.kind === "KAMIKAZE_ROLL"
+        ) {
+          const actor = view.units.find((unit) => unit.id === selectedUnitId);
+          if (actor !== undefined) {
+            const delta =
+              command.direction === "NORTH"
+                ? { x: 0, y: -1 }
+                : command.direction === "EAST"
+                  ? { x: 1, y: 0 }
+                  : command.direction === "SOUTH"
+                    ? { x: 0, y: 1 }
+                    : { x: -1, y: 0 };
+            const adjacent = {
+              x: actor.at.x + delta.x,
+              y: actor.at.y + delta.y,
+            };
+            entries.push(
+              entry("ROLL_TARGET", adjacent, coordinateId(adjacent), null),
+            );
+            if (activeTarget === null || !sameCoord(activeTarget, adjacent))
+              continue;
+            for (
+              let at = adjacent;
+              at.x >= 0 &&
+              at.y >= 0 &&
+              at.x < view.board.width &&
+              at.y < view.board.height;
+              at = { x: at.x + delta.x, y: at.y + delta.y }
+            ) {
+              entries.push(entry("ROLL_PATH", at, coordinateId(at), null));
+              const victim =
+                view.units.find((unit) => sameCoord(unit.at, at)) ??
+                view.chocolateWalls.find((wall) => sameCoord(wall.at, at));
+              if (victim !== undefined)
+                entries.push(
+                  entry("ROLL_VICTIM", at, victim.id, victim.ownerId),
+                );
+            }
+          }
+        }
+        continue;
+      }
       if (command.kind === "MOVE" || command.kind === "ESCAPE_MOVE") {
         const destination = command.path.at(-1);
         if (destination !== undefined) {
@@ -287,7 +348,11 @@ export function selectionCoord(
   if (selection.kind === "TILE") return selection.at;
   if (selection.kind === "UNIT")
     return view.units.find((unit) => unit.id === selection.unitId)?.at ?? null;
-  return view.cities.find((city) => city.id === selection.cityId)?.at ?? null;
+  if (selection.kind === "CITY")
+    return view.cities.find((city) => city.id === selection.cityId)?.at ?? null;
+  return (
+    view.chocolateWalls.find((wall) => wall.id === selection.wallId)?.at ?? null
+  );
 }
 
 function entry(
@@ -315,5 +380,7 @@ function selectionId(selection: BoardSelection): number {
     ? selection.unitId
     : selection.kind === "CITY"
       ? selection.cityId
-      : coordinateId(selection.at);
+      : selection.kind === "WALL"
+        ? selection.wallId
+        : coordinateId(selection.at);
 }

@@ -92,6 +92,8 @@ export interface PlayerMatchTallies {
 export interface CombatPresentation {
   readonly id: number;
   readonly kind: "STANDARD" | "ARCHER_ARROW";
+  /** Archer-family projectile is faction presentation, never a combat rule. */
+  readonly projectile?: "ARROW" | "GUMBALL" | null;
   readonly queueToken: number;
   readonly commandIndex: number;
   readonly phase: "CONTACT" | "FLIGHT" | "IMPACT";
@@ -108,6 +110,52 @@ export interface CombatPresentation {
   readonly advances: boolean;
 }
 
+export type CandyPresentation =
+  | {
+      readonly id: number;
+      readonly kind: "DONUT_ROLL";
+      readonly queueToken: number;
+      readonly commandIndex: number;
+      readonly durationMs: number;
+      readonly elapsedMs: number;
+      readonly paused: boolean;
+      readonly motion: "FULL" | "REDUCED";
+      readonly actor: PlayerUnitView;
+      readonly steps: readonly {
+        readonly at: { readonly x: number; readonly y: number };
+        readonly damage: number;
+        readonly targetKind: "UNIT" | "CHOCOLATE_WALL" | null;
+        readonly targetId: number | null;
+        readonly targetDies: boolean;
+      }[];
+    }
+  | {
+      readonly id: number;
+      readonly kind: "WALL_BUILD" | "CANDIFY";
+      readonly queueToken: number;
+      readonly commandIndex: number;
+      readonly durationMs: number;
+      readonly elapsedMs: number;
+      readonly paused: boolean;
+      readonly motion: "FULL" | "REDUCED";
+      readonly at: { readonly x: number; readonly y: number };
+      readonly actor: PlayerUnitView | null;
+    }
+  | {
+      readonly id: number;
+      readonly kind: "WALL_HIT";
+      readonly queueToken: number;
+      readonly commandIndex: number;
+      readonly durationMs: number;
+      readonly elapsedMs: number;
+      readonly paused: boolean;
+      readonly motion: "FULL" | "REDUCED";
+      readonly at: { readonly x: number; readonly y: number };
+      readonly actor: PlayerUnitView | null;
+      readonly damage: number;
+      readonly targetDies: boolean;
+    };
+
 export interface AppSnapshot {
   readonly route: AppRoute;
   /** Presentation identity; changes only when a distinct match is created. */
@@ -120,6 +168,7 @@ export interface AppSnapshot {
   readonly readOnlyFinalMap: boolean;
   readonly fastForwarding: boolean;
   readonly combatPresentation: CombatPresentation | null;
+  readonly candyPresentation: CandyPresentation | null;
   readonly hasStoredSave: boolean;
   readonly savedAt: string | null;
   readonly saveRecovery: SaveRecovery | null;

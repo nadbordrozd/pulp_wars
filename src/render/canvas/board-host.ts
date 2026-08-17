@@ -1,11 +1,12 @@
 import {
+  effectiveUnitLabel,
   queryPlayerCombatPreview,
   queryPlayerCommands,
   type Command,
   type Coord,
   type PlayerView,
 } from "../../engine/index";
-import type { CombatPresentation } from "../../app/types";
+import type { CandyPresentation, CombatPresentation } from "../../app/types";
 import { type BoardAssetBindings } from "./asset-bindings";
 import { drawBoard } from "./board-renderer";
 import {
@@ -32,13 +33,19 @@ import { unitNeedsReadinessPulse } from "./readiness-presentation";
 export type BoardSelection =
   | { readonly kind: "TILE"; readonly at: Coord }
   | { readonly kind: "UNIT"; readonly unitId: number }
-  | { readonly kind: "CITY"; readonly cityId: number };
+  | { readonly kind: "CITY"; readonly cityId: number }
+  | { readonly kind: "WALL"; readonly wallId: number };
+
+export type BoardTargetMode =
+  | { readonly kind: "ROLL"; readonly unitId: number }
+  | { readonly kind: "BUILD_WALL"; readonly unitId: number };
 
 export interface BoardHostCallbacks {
   readonly onSelection: (selection: BoardSelection | null) => void;
   readonly onInspect: (selection: BoardSelection) => void;
   readonly onCommand: (command: Command) => void;
   readonly onZoom: (direction: "IN" | "OUT") => void;
+  readonly onCancelTarget?: () => void;
 }
 
 export interface BoardHostModel {
@@ -48,6 +55,8 @@ export interface BoardHostModel {
   readonly motion?: "FULL" | "REDUCED";
   readonly selected: BoardSelection | null;
   readonly combatPresentation?: CombatPresentation | null;
+  readonly candyPresentation?: CandyPresentation | null;
+  readonly targetMode?: BoardTargetMode | null;
 }
 
 export interface BoardHost {
@@ -177,10 +186,13 @@ export class CanvasBoardHost implements BoardHost {
     if (commandResolved) this.#inspectionCycle = null;
     this.#model = model;
     const presentation = model.combatPresentation ?? null;
+    const candyPresentation = model.candyPresentation ?? null;
     const phaseKey =
-      presentation === null
+      presentation === null && candyPresentation === null
         ? null
-        : `${model.matchInstanceId}:${presentation.queueToken}:${presentation.commandIndex}:${presentation.phase}:${presentation.phaseElapsedMs}:${presentation.paused}`;
+        : presentation !== null
+          ? `${model.matchInstanceId}:${presentation.queueToken}:${presentation.commandIndex}:${presentation.phase}:${presentation.phaseElapsedMs}:${presentation.paused}`
+          : `${model.matchInstanceId}:${candyPresentation?.queueToken}:${candyPresentation?.commandIndex}:${candyPresentation?.kind}:${candyPresentation?.elapsedMs}:${candyPresentation?.paused}`;
     if (phaseKey !== this.#combatPhaseKey) {
       this.#combatPhaseKey = phaseKey;
       this.#combatPhaseStartedAt = this.#now();
@@ -211,13 +223,20 @@ export class CanvasBoardHost implements BoardHost {
       }
       this.#inspectionCycle = null;
     }
+    const inspectionCycle = this.#inspectionCycle;
     if (
-      this.#inspectionCycle !== null &&
-      !model.view.units.some(
-        (unit) =>
-          unit.id === this.#inspectionCycle?.unitId &&
-          sameCoord(unit.at, this.#inspectionCycle.at),
-      )
+      inspectionCycle !== null &&
+      !(inspectionCycle.unitId < 0
+        ? model.view.chocolateWalls.some(
+            (wall) =>
+              wall.id === -inspectionCycle.unitId &&
+              sameCoord(wall.at, inspectionCycle.at),
+          )
+        : model.view.units.some(
+            (unit) =>
+              unit.id === inspectionCycle.unitId &&
+              sameCoord(unit.at, inspectionCycle.at),
+          ))
     )
       this.#inspectionCycle = null;
     if (
@@ -411,8 +430,17 @@ export class CanvasBoardHost implements BoardHost {
     }
     if (
       key === "escape" &&
-      (this.#selection !== null || this.#inspectionCycle !== null)
+      (model.targetMode != null ||
+        this.#selection !== null ||
+        this.#inspectionCycle !== null)
     ) {
+      if (model.targetMode != null) {
+        this.#callbacks?.onCancelTarget?.();
+        this.#descriptionText("Special targeting cancelled.");
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
       this.#selection = null;
       this.#inspectionCycle = null;
       this.#callbacks?.onSelection(null);
@@ -459,7 +487,12 @@ export class CanvasBoardHost implements BoardHost {
     )
       this.#inspectionCycle = null;
     if (model.interactive && this.#selection?.kind === "UNIT") {
-      const spatial = spatialCommandAt(model.view, this.#selection.unitId, at);
+      const spatial = spatialCommandAt(
+        model.view,
+        this.#selection.unitId,
+        at,
+        model.targetMode ?? null,
+      );
       if (spatial !== null) {
         this.#callbacks?.onCommand(spatial);
         return;
@@ -547,6 +580,7 @@ export class CanvasBoardHost implements BoardHost {
       model.view,
       this.#selection,
       this.#hovered ?? this.#focused,
+      model.targetMode ?? null,
     );
     if (context !== null) {
       drawBoard({
@@ -570,6 +604,15 @@ export class CanvasBoardHost implements BoardHost {
                     ? 0
                     : this.#now() - this.#combatPhaseStartedAt),
               ),
+        candyPresentation: model.candyPresentation ?? null,
+        candyElapsedMs:
+          model.candyPresentation === undefined ||
+          model.candyPresentation === null
+            ? 0
+            : model.candyPresentation.elapsedMs +
+              (model.candyPresentation.paused
+                ? 0
+                : this.#now() - this.#combatPhaseStartedAt),
         readinessElapsedMs: this.#now() - this.#readinessPhaseStartedAt,
         reducedMotion: model.motion === "REDUCED",
       });
@@ -590,6 +633,9 @@ export class CanvasBoardHost implements BoardHost {
     const city = model.view.cities.find((candidate) =>
       sameCoord(candidate.at, focused),
     );
+    const wall = model.view.chocolateWalls.find((candidate) =>
+      sameCoord(candidate.at, focused),
+    );
     const offered = (
       commands ?? queryPlayerCommands(model.view).map(({ command }) => command)
     )
@@ -607,7 +653,10 @@ export class CanvasBoardHost implements BoardHost {
         : `City ${city.id}, level ${city.level}, Player ${city.ownerId}`,
       unit === undefined
         ? null
-        : `${title(unit.type)} unit ${unit.id}, Player ${unit.ownerId}, ${unit.hp} of ${unit.maxHp} HP, ${unit.activation.handled ? "handled" : "needs action"}`,
+        : `${effectiveUnitLabel(ownerFaction(model.view, unit.ownerId), unit.type)} unit ${unit.id}, Player ${unit.ownerId}, ${unit.hp} of ${unit.maxHp} HP, ${unit.activation.handled ? "handled" : "needs action"}`,
+      wall === undefined
+        ? null
+        : `Chocolate Wall ${wall.id}, Player ${wall.ownerId}, ${wall.hp} of ${wall.maxHp} HP`,
     ].filter((value): value is string => value !== null);
     this.#descriptionText(
       `Map cursor ${focused.x}, ${focused.y}: ${tileDescription}. ${occupants.join(". ")}${occupants.length > 0 ? ". " : ""}${offered.length > 0 ? `Available: ${offered.join(", ")}.` : "No available action on this tile."}`,
@@ -682,6 +731,12 @@ export function boardAnimationNeeded(model: BoardHostModel): boolean {
     !model.combatPresentation.paused
   )
     return true;
+  if (
+    model.candyPresentation !== undefined &&
+    model.candyPresentation !== null &&
+    !model.candyPresentation.paused
+  )
+    return true;
   if (!model.interactive || model.motion === "REDUCED") return false;
   return model.view.units.some((unit) =>
     unitNeedsReadinessPulse(model.view, unit),
@@ -703,6 +758,10 @@ function initialFocus(view: PlayerView): Coord {
 function selectionAt(view: PlayerView, at: Coord): BoardSelection {
   const unit = view.units.find((candidate) => sameCoord(candidate.at, at));
   if (unit !== undefined) return { kind: "UNIT", unitId: unit.id };
+  const wall = view.chocolateWalls.find((candidate) =>
+    sameCoord(candidate.at, at),
+  );
+  if (wall !== undefined) return { kind: "WALL", wallId: wall.id };
   const city = view.cities.find((candidate) => sameCoord(candidate.at, at));
   if (city !== undefined) return { kind: "CITY", cityId: city.id };
   return { kind: "TILE", at };
@@ -717,6 +776,31 @@ export function resolveInspectionActivation(
   readonly cycle: InspectionActivationCycle | null;
 } {
   const unit = view.units.find((candidate) => sameCoord(candidate.at, at));
+  const wall = view.chocolateWalls.find((candidate) =>
+    sameCoord(candidate.at, at),
+  );
+  if (unit === undefined && wall === undefined)
+    return { selection: selectionAt(view, at), cycle: null };
+  if (unit === undefined && wall !== undefined) {
+    const continuing =
+      previous !== null &&
+      previous.unitId === -wall.id &&
+      sameCoord(previous.at, at);
+    if (continuing && previous.next === "UNDERLYING") {
+      const city = view.cities.find((candidate) => sameCoord(candidate.at, at));
+      return {
+        selection:
+          city === undefined
+            ? { kind: "TILE", at }
+            : { kind: "CITY", cityId: city.id },
+        cycle: { at, unitId: -wall.id, next: "UNIT" },
+      };
+    }
+    return {
+      selection: { kind: "WALL", wallId: wall.id },
+      cycle: { at, unitId: -wall.id, next: "UNDERLYING" },
+    };
+  }
   if (unit === undefined)
     return { selection: selectionAt(view, at), cycle: null };
   const continuing =
@@ -743,8 +827,44 @@ export function spatialCommandAt(
   view: PlayerView,
   unitId: number,
   at: Coord,
+  targetMode: BoardTargetMode | null = null,
 ): Command | null {
   const commands = queryPlayerCommands(view).map(({ command }) => command);
+  if (targetMode?.unitId === unitId && targetMode.kind === "BUILD_WALL") {
+    return (
+      commands.find(
+        (command) =>
+          command.kind === "BUILD_CHOCOLATE_WALL" &&
+          command.unitId === unitId &&
+          sameCoord(command.at, at),
+      ) ?? null
+    );
+  }
+  if (targetMode?.unitId === unitId && targetMode.kind === "ROLL") {
+    const actor = view.units.find((unit) => unit.id === unitId);
+    if (actor === undefined) return null;
+    const dx = at.x - actor.at.x;
+    const dy = at.y - actor.at.y;
+    const direction =
+      dx === 0 && dy === -1
+        ? "NORTH"
+        : dx === 1 && dy === 0
+          ? "EAST"
+          : dx === 0 && dy === 1
+            ? "SOUTH"
+            : dx === -1 && dy === 0
+              ? "WEST"
+              : null;
+    return direction === null
+      ? null
+      : (commands.find(
+          (command) =>
+            command.kind === "KAMIKAZE_ROLL" &&
+            command.unitId === unitId &&
+            command.direction === direction,
+        ) ?? null);
+  }
+  if (targetMode !== null) return null;
   const attack = commands.find((command) => {
     if (command.kind !== "ATTACK" || command.unitId !== unitId) return false;
     const targetRef = command.target;
@@ -817,10 +937,18 @@ function sameSelection(
     return sameCoord(left.at, right.at);
   if (left.kind === "UNIT" && right.kind === "UNIT")
     return left.unitId === right.unitId;
+  if (left.kind === "WALL" && right.kind === "WALL")
+    return left.wallId === right.wallId;
   return (
     left.kind === "CITY" &&
     right.kind === "CITY" &&
     left.cityId === right.cityId
+  );
+}
+
+function ownerFaction(view: PlayerView, ownerId: number) {
+  return (
+    view.players.find((player) => player.id === ownerId)?.faction ?? "ORIGINAL"
   );
 }
 
@@ -830,10 +958,6 @@ function distance(left: Point, right: Point): number {
 
 function midpoint(left: Point, right: Point): Point {
   return { x: (left.x + right.x) / 2, y: (left.y + right.y) / 2 };
-}
-
-function title(value: string): string {
-  return value.charAt(0) + value.slice(1).toLowerCase();
 }
 
 function describeCommand(view: PlayerView, command: Command): string {

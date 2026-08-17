@@ -6,7 +6,7 @@ import type {
   PlayerUnitView,
   PlayerView,
 } from "../../engine/index";
-import type { CombatPresentation } from "../../app/types";
+import type { CandyPresentation, CombatPresentation } from "../../app/types";
 import type { BoardAssetBindings } from "./asset-bindings";
 import type { CombatAnimationFrame } from "./combat-presentation";
 import {
@@ -40,6 +40,8 @@ export interface DrawBoardOptions {
   readonly devicePixelRatio: number;
   readonly combatPresentation: CombatPresentation | null;
   readonly combatFrame: CombatAnimationFrame | null;
+  readonly candyPresentation?: CandyPresentation | null;
+  readonly candyElapsedMs?: number;
   readonly readinessElapsedMs: number;
   readonly reducedMotion: boolean;
 }
@@ -72,6 +74,15 @@ export function drawBoard(options: DrawBoardOptions): void {
       options.combatFrame,
     );
   }
+  if (
+    options.candyPresentation !== undefined &&
+    options.candyPresentation !== null
+  )
+    drawCandyPresentation(
+      options,
+      options.candyPresentation,
+      options.candyElapsedMs ?? 0,
+    );
   if (options.focused !== null)
     drawDiamond(
       context,
@@ -213,6 +224,18 @@ function drawEntry(options: DrawBoardOptions, entry: RenderPlanEntry): void {
       break;
     case "MINE_TARGET":
       drawTarget(context, center, camera.zoom, "#ffe36b", "MINE", false);
+      break;
+    case "ROLL_TARGET":
+      drawTarget(context, center, camera.zoom, "#ff9dcf", "ROLL", false);
+      break;
+    case "WALL_TARGET":
+      drawTarget(context, center, camera.zoom, "#c98555", "WALL · 1★", false);
+      break;
+    case "ROLL_PATH":
+      drawPathStep(context, center, camera.zoom);
+      break;
+    case "ROLL_VICTIM":
+      drawTarget(context, center, camera.zoom, "#ff5968", "−10", false);
       break;
     case "PATH":
       drawPathStep(context, center, camera.zoom);
@@ -415,15 +438,19 @@ function drawArcherCombatPresentation(
     attackerGround,
     defenderGround,
     camera.zoom,
+    presentation.projectile ?? "ARROW",
   );
 
   if (presentation.phase === "FLIGHT") {
     drawSnapshotUnit(options, attackerGround, attacker, 1);
     drawSnapshotUnit(options, defenderGround, presentation.defender, 1);
-    drawArrow(
-      context,
-      arrowGeometry(endpoints, frame.arrowTravel, camera.zoom),
-    );
+    if (presentation.projectile === "GUMBALL")
+      drawGumball(context, endpoints, frame.arrowTravel, camera.zoom);
+    else
+      drawArrow(
+        context,
+        arrowGeometry(endpoints, frame.arrowTravel, camera.zoom),
+      );
     return;
   }
 
@@ -493,6 +520,110 @@ function drawArcherCombatPresentation(
     nestedContext.restore();
     if (ownerCue) assets.drawUnitOwnerCue(nestedContext, assetOptions, unit);
   }
+}
+
+function drawGumball(
+  context: CanvasRenderingContext2D,
+  endpoints: { readonly from: Point; readonly to: Point },
+  progress: number,
+  zoom: number,
+): void {
+  const at = {
+    x: endpoints.from.x + (endpoints.to.x - endpoints.from.x) * progress,
+    y: endpoints.from.y + (endpoints.to.y - endpoints.from.y) * progress,
+  };
+  context.save();
+  context.fillStyle = "#ff5f9e";
+  context.strokeStyle = "#3d2032";
+  context.lineWidth = Math.max(1.5, Math.min(3.5, 2 * zoom));
+  context.beginPath();
+  context.arc(at.x, at.y, Math.max(4, Math.min(9, 5 * zoom)), 0, Math.PI * 2);
+  context.fill();
+  context.stroke();
+  context.restore();
+}
+
+function drawCandyPresentation(
+  options: DrawBoardOptions,
+  presentation: CandyPresentation,
+  elapsedMs: number,
+): void {
+  const progress = Math.max(
+    0,
+    Math.min(1, elapsedMs / presentation.durationMs),
+  );
+  const { context, camera, assets, view } = options;
+  if (presentation.kind === "DONUT_ROLL") {
+    if (presentation.steps.length === 0) return;
+    const scaled = progress * presentation.steps.length;
+    const index = Math.min(presentation.steps.length - 1, Math.floor(scaled));
+    const step = presentation.steps[index];
+    if (step === undefined) return;
+    const previous =
+      index === 0 ? presentation.actor.at : presentation.steps[index - 1]?.at;
+    if (previous === undefined) return;
+    const local =
+      presentation.motion === "REDUCED" ? 1 : scaled - Math.floor(scaled);
+    const from = centerFor(camera, previous);
+    const to = centerFor(camera, step.at);
+    const center = {
+      x: from.x + (to.x - from.x) * local,
+      y: from.y + (to.y - from.y) * local,
+    };
+    context.save();
+    context.translate(center.x, center.y);
+    context.rotate(progress * Math.PI * 8);
+    context.translate(-center.x, -center.y);
+    assets.drawUnit(
+      context,
+      {
+        center,
+        zoom: camera.zoom,
+        ownerColor: ownerColorFor(view, presentation.actor.ownerId),
+        variant: 0,
+      },
+      presentation.actor,
+      ownerFactionFor(view, presentation.actor.ownerId),
+    );
+    context.restore();
+    if (step.damage > 0) {
+      drawImpactBurst(context, to, camera.zoom, 1 - Math.abs(local - 0.82) * 3);
+      drawDamageLabel(
+        context,
+        to,
+        camera.zoom,
+        `-${step.damage} HP${step.targetDies ? " · KO" : ""}`,
+        1,
+        "#ff7279",
+      );
+    }
+    return;
+  }
+  const center = centerFor(camera, presentation.at);
+  if (presentation.kind === "WALL_HIT") {
+    drawImpactBurst(context, center, camera.zoom, 1 - progress * 0.7);
+    drawDamageLabel(
+      context,
+      center,
+      camera.zoom,
+      `-${presentation.damage} HP${presentation.targetDies ? " · Destroyed" : ""}`,
+      1 - progress * 0.35,
+      "#ff7279",
+    );
+    return;
+  }
+  context.save();
+  context.globalAlpha =
+    presentation.motion === "REDUCED" ? 1 - progress * 0.35 : 1 - progress;
+  context.fillStyle = presentation.kind === "CANDIFY" ? "#ff7fc8" : "#8b4f35";
+  const radius =
+    (presentation.kind === "CANDIFY" ? 58 : 38) *
+    camera.zoom *
+    (0.25 + progress * 0.75);
+  context.beginPath();
+  context.arc(center.x, center.y, radius, 0, Math.PI * 2);
+  context.fill();
+  context.restore();
 }
 
 function drawArrow(
@@ -653,7 +784,7 @@ function drawTarget(
   center: Point,
   zoom: number,
   color: string,
-  symbol: "MOVE" | "ATTACK" | "MINE",
+  symbol: "MOVE" | "ATTACK" | "MINE" | "ROLL" | "WALL · 1★" | "−10",
   stopped: boolean,
 ): void {
   drawDiamond(

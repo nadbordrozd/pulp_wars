@@ -37,6 +37,8 @@ export const ARCHER_PROJECTILE_TIMING = {
 
 const ARCHER_ATTACHMENT =
   ACCEPTED_ART_ATTACHMENTS["unit-archer"]?.projectileOrigin;
+const GUMBALL_ATTACHMENT =
+  ACCEPTED_ART_ATTACHMENTS["unit-candy-gumball-guard"]?.projectileOrigin;
 const DEFENDER_TORSO_NORMALIZED = { x: 0.5, y: 0.43 } as const;
 
 /** Pure timing projection so browser rendering and fake-time tests agree. */
@@ -107,11 +109,14 @@ export function archerProjectileEndpoints(
   attackerGround: Point,
   defenderGround: Point,
   zoom: number,
+  projectile: "ARROW" | "GUMBALL" = "ARROW",
 ): ArcherProjectileEndpoints {
-  if (ARCHER_ATTACHMENT === undefined)
-    throw new Error("Archer projectile attachment is missing");
+  const attachment =
+    projectile === "GUMBALL" ? GUMBALL_ATTACHMENT : ARCHER_ATTACHMENT;
+  if (attachment === undefined)
+    throw new Error(`${projectile} projectile attachment is missing`);
   return {
-    from: normalizedUnitAttachment(attackerGround, ARCHER_ATTACHMENT, zoom),
+    from: normalizedUnitAttachment(attackerGround, attachment, zoom),
     to: normalizedUnitAttachment(
       defenderGround,
       DEFENDER_TORSO_NORMALIZED,

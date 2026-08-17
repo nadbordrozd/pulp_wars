@@ -1,5 +1,7 @@
 import {
   cityCapacity,
+  effectiveUnitLabel,
+  effectiveUnitRule,
   publicTechnologyCost,
   publicUnitCost,
   queryPlayerCombatPreview,
@@ -31,11 +33,13 @@ import {
   CanvasBoardHost,
   type BoardHost,
   type BoardSelection,
+  type BoardTargetMode,
 } from "../canvas/board-host";
 import { accessibleCombatPreview } from "../canvas/combat-preview-label";
 import type { Point } from "../canvas/geometry";
 import {
   ACCEPTED_ART_URLS,
+  CANDY_ACTION_ART_URLS,
   FACTION_BADGE_URLS,
   FACTION_HERO_URLS,
 } from "../../assets/generated-art-manifest";
@@ -79,6 +83,8 @@ export class DomAppView {
   #lastOverlayName = "NONE";
   #lastMatchInstanceId = 0;
   #focusedFactionSeat = 0;
+  #targetMode: BoardTargetMode | null = null;
+  #lastCommandIndex = -1;
 
   constructor(
     documentRoot: Document,
@@ -170,7 +176,15 @@ export class DomAppView {
       this.#selected = null;
       this.#selectedTech = null;
       this.#lastMatchInstanceId = snapshot.matchInstanceId;
+      this.#targetMode = null;
     }
+    if (
+      this.#lastCommandIndex >= 0 &&
+      snapshot.view !== null &&
+      snapshot.view.commandIndex !== this.#lastCommandIndex
+    )
+      this.#targetMode = null;
+    this.#lastCommandIndex = snapshot.view?.commandIndex ?? -1;
     if (
       snapshot.route === "MATCH" &&
       snapshot.view !== null &&
@@ -258,6 +272,10 @@ export class DomAppView {
           onSelection: (selection) => this.#selectBoardEntity(selection),
           onInspect: (selection) => this.#inspectBoardEntity(selection),
           onCommand: (command) => this.#controller.requestCommand(command),
+          onCancelTarget: () => {
+            this.#targetMode = null;
+            this.#render(this.#controller.snapshot());
+          },
           onZoom: (direction) =>
             this.#announce(`Zoom ${direction.toLowerCase()} requested.`),
         });
@@ -268,6 +286,8 @@ export class DomAppView {
           motion: snapshot.settings.motion,
           selected: this.#selected,
           combatPresentation: snapshot.combatPresentation,
+          candyPresentation: snapshot.candyPresentation,
+          targetMode: this.#targetMode,
         });
       }
     }
@@ -817,7 +837,10 @@ export class DomAppView {
     const active = view.players.find((player) => player.id === activeId);
     const humanTurn =
       active?.controller === "HUMAN" && !snapshot.readOnlyFinalMap;
-    const humanCanAct = humanTurn && snapshot.combatPresentation === null;
+    const humanCanAct =
+      humanTurn &&
+      snapshot.combatPresentation === null &&
+      snapshot.candyPresentation === null;
     const ownedCities = view.cities.filter(
       (city) => city.ownerId === view.viewer.id,
     );
@@ -904,6 +927,7 @@ export class DomAppView {
     footer.append(cameraActions);
     const selectedActions =
       this.#selectedUnitDock(snapshot, view) ??
+      this.#selectedWallDock(view) ??
       this.#selectedCityDock(snapshot, view) ??
       this.#selectedTileDock(snapshot, view);
     if (selectedActions !== null) footer.append(selectedActions);
@@ -969,21 +993,43 @@ export class DomAppView {
     );
     if (unit === undefined) return null;
     const owned = unit.ownerId === view.viewer.id;
-    const rule = requireRuleset(view.rulesetId).units[unit.type];
+    const faction =
+      view.players.find((player) => player.id === unit.ownerId)?.faction ??
+      "ORIGINAL";
+    const rule = effectiveUnitRule(view.rulesetId, faction, unit.type);
+    const unitLabel = effectiveUnitLabel(faction, unit.type);
     const commands = this.#legalCommands(view).filter(
       (command) => owned && "unitId" in command && command.unitId === unit.id,
     );
-    const immediate = commands.filter(
+    const immediateAll = commands.filter(
       (
         command,
       ): command is Extract<
         Command,
-        { readonly kind: "CAPTURE" | "RECOVER" | "PROMOTE" | "WAIT" }
+        {
+          readonly kind:
+            | "CAPTURE"
+            | "RECOVER"
+            | "PROMOTE"
+            | "WAIT"
+            | "KAMIKAZE_ROLL"
+            | "BUILD_CHOCOLATE_WALL"
+            | "CANDIFY";
+        }
       > =>
         command.kind === "CAPTURE" ||
         command.kind === "RECOVER" ||
         command.kind === "PROMOTE" ||
-        command.kind === "WAIT",
+        command.kind === "WAIT" ||
+        command.kind === "KAMIKAZE_ROLL" ||
+        command.kind === "BUILD_CHOCOLATE_WALL" ||
+        command.kind === "CANDIFY",
+    );
+    const immediate = immediateAll.filter(
+      (command, index, all) =>
+        (command.kind !== "KAMIKAZE_ROLL" &&
+          command.kind !== "BUILD_CHOCOLATE_WALL") ||
+        all.findIndex((candidate) => candidate.kind === command.kind) === index,
     );
     const hasMove = commands.some((command) => command.kind === "MOVE");
     const hasEscape = commands.some(
@@ -991,10 +1037,10 @@ export class DomAppView {
     );
     const hasAttack = commands.some((command) => command.kind === "ATTACK");
     const panel = element(this.#document, "section", "unit-action-dock");
-    panel.setAttribute("aria-label", `Selected ${title(unit.type)}`);
+    panel.setAttribute("aria-label", `Selected ${unitLabel}`);
     const summary = element(this.#document, "div", "unit-dock-summary");
     summary.append(
-      textElement(this.#document, "strong", title(unit.type)),
+      textElement(this.#document, "strong", unitLabel),
       textElement(
         this.#document,
         "span",
@@ -1023,29 +1069,70 @@ export class DomAppView {
       const label =
         command.kind === "CAPTURE"
           ? captureActionLabel(view, command)
-          : title(command.kind);
-      buttons.append(
-        actionButton(
-          this.#document,
-          label,
-          () => {
-            this.#controller.requestCommand(command);
-            this.#boardHost.focus();
-          },
-          command.kind === "CAPTURE"
-            ? "primary-action unit-dock-action capture-action"
-            : "context-action unit-dock-action",
-          `unit-dock-${command.kind.toLowerCase()}`,
-          !this.#humanCanAct(snapshot),
-        ),
+          : command.kind === "KAMIKAZE_ROLL"
+            ? "Roll"
+            : command.kind === "BUILD_CHOCOLATE_WALL"
+              ? "Chocolate Wall · 1★"
+              : command.kind === "CANDIFY"
+                ? "Candify"
+                : title(command.kind);
+      const button = actionButton(
+        this.#document,
+        label,
+        () => {
+          if (command.kind === "KAMIKAZE_ROLL") {
+            this.#targetMode = { kind: "ROLL", unitId: unit.id };
+            this.#render(this.#controller.snapshot());
+          } else if (command.kind === "BUILD_CHOCOLATE_WALL") {
+            this.#targetMode = { kind: "BUILD_WALL", unitId: unit.id };
+            this.#render(this.#controller.snapshot());
+          } else this.#controller.requestCommand(command);
+          this.#boardHost.focus();
+        },
+        command.kind === "CAPTURE"
+          ? "primary-action unit-dock-action capture-action"
+          : "context-action unit-dock-action",
+        `unit-dock-${command.kind.toLowerCase()}`,
+        !this.#humanCanAct(snapshot),
       );
+      if (
+        command.kind === "KAMIKAZE_ROLL" ||
+        command.kind === "BUILD_CHOCOLATE_WALL" ||
+        command.kind === "CANDIFY"
+      ) {
+        const url = CANDY_ACTION_ART_URLS[command.kind];
+        if (url !== null) {
+          const image = artImage(this.#document, url, "unit-action-art");
+          image.setAttribute("aria-hidden", "true");
+          button.prepend(image);
+        }
+        button.setAttribute(
+          "aria-label",
+          command.kind === "KAMIKAZE_ROLL"
+            ? "Roll to a map edge; sacrifice Donut and deal 10 damage along the path"
+            : command.kind === "BUILD_CHOCOLATE_WALL"
+              ? "Build Chocolate Wall for 1 star"
+              : "Candify this tile; sacrifice unit and annex it to the nearest city",
+        );
+      }
+      buttons.append(button);
     }
     if (buttons.childElementCount > 0) panel.append(buttons);
-    const hints = [
-      hasEscape ? "Choose a highlighted tile to escape." : null,
-      hasMove ? "Choose a highlighted tile to move." : null,
-      hasAttack ? "Choose a marked enemy to attack." : null,
-    ].filter((hint): hint is string => hint !== null);
+    const hints = (
+      this.#targetMode?.kind === "ROLL"
+        ? [
+            "Choose one highlighted cardinal tile. The projected line reaches the map edge; marked occupants take 10 damage and the Donut is sacrificed. Escape cancels.",
+          ]
+        : this.#targetMode?.kind === "BUILD_WALL"
+          ? [
+              "Choose one highlighted adjacent tile to build a 10 HP Chocolate Wall for 1 star. Escape cancels.",
+            ]
+          : [
+              hasEscape ? "Choose a highlighted tile to escape." : null,
+              hasMove ? "Choose a highlighted tile to move." : null,
+              hasAttack ? "Choose a marked enemy to attack." : null,
+            ]
+    ).filter((hint): hint is string => hint !== null);
     if (hints.length > 0)
       panel.append(
         textElement(this.#document, "p", hints.join(" "), "unit-dock-hint"),
@@ -1059,6 +1146,48 @@ export class DomAppView {
           "unit-dock-hint",
         ),
       );
+    return panel;
+  }
+
+  #selectedWallDock(view: PlayerView): HTMLElement | null {
+    if (this.#selected?.kind !== "WALL") return null;
+    const selectedWall = view.chocolateWalls.find(
+      (candidate) =>
+        this.#selected?.kind === "WALL" &&
+        candidate.id === this.#selected.wallId,
+    );
+    if (selectedWall === undefined) return null;
+    const owner = view.players.find(
+      (player) => player.id === selectedWall.ownerId,
+    );
+    const panel = element(
+      this.#document,
+      "section",
+      "unit-action-dock wall-action-dock",
+    );
+    panel.setAttribute(
+      "aria-label",
+      `Selected Chocolate Wall ${selectedWall.id}`,
+    );
+    const summary = element(this.#document, "div", "unit-dock-summary");
+    summary.append(
+      textElement(this.#document, "strong", "Chocolate Wall"),
+      textElement(
+        this.#document,
+        "span",
+        `${selectedWall.hp}/${selectedWall.maxHp} HP · Player ${selectedWall.ownerId} · ${factionLabel(owner?.faction ?? "ORIGINAL")} structure`,
+        "unit-dock-state",
+      ),
+    );
+    panel.append(
+      summary,
+      textElement(
+        this.#document,
+        "p",
+        "Defense 0 · No retaliation · Blocks movement · Capacity exempt",
+        "unit-dock-hint",
+      ),
+    );
     return panel;
   }
 
@@ -1185,7 +1314,7 @@ export class DomAppView {
     const actions = element(this.#document, "div", "city-dock-actions");
     actions.setAttribute("aria-label", `City ${city.id} actions`);
     for (const command of trainCommands) {
-      const unitLabel = title(command.unit);
+      const unitLabel = effectiveUnitLabel(view.viewer.faction, command.unit);
       const cost = publicUnitCost(view, command.unit);
       const button = actionButton(
         this.#document,
@@ -1520,7 +1649,7 @@ export class DomAppView {
         option(
           this.#document,
           `unit:${unit.id}`,
-          `${title(unit.type)} · Player ${unit.ownerId} · ${unit.hp}/${unit.maxHp} HP · ${unit.activation.handled ? "Handled" : "Needs action"}`,
+          `${effectiveUnitLabel(view.players.find((player) => player.id === unit.ownerId)?.faction ?? "ORIGINAL", unit.type)} · Player ${unit.ownerId} · ${unit.hp}/${unit.maxHp} HP · ${unit.activation.handled ? "Handled" : "Needs action"}`,
         ),
       );
     for (const city of view.cities)
@@ -1772,7 +1901,7 @@ export class DomAppView {
       textElement(
         this.#document,
         "p",
-        "Pointer and touch: tap to select, drag to pan, and use explicit zoom controls. No action requires double-click or hover.",
+        "Pointer and touch: tap to select, drag to pan, and use explicit zoom controls. No action requires double-click or hover. Candy units can Candify; Donuts choose a cardinal Roll target and Choco Engineers choose an adjacent Chocolate Wall target.",
       ),
       textElement(
         this.#document,
@@ -2481,15 +2610,23 @@ export class DomAppView {
       const city = snapshot.view?.cities.find(
         (candidate) => candidate.id === cityId,
       );
-      article.append(
-        actionButton(
-          this.#document,
-          `City ${city?.id ?? cityId}`,
-          () => this.#controller.chooseCandifyCity(unitId, cityId),
-          "reward-choice",
-          `candify-city-${cityId}`,
-        ),
+      const territory = snapshot.view?.board.tiles.filter(
+        (tile) => tile.explored && tile.territoryCityId === cityId,
+      ).length;
+      const button = actionButton(
+        this.#document,
+        `City ${city?.id ?? cityId} · ${territory ?? 0} explored tiles`,
+        () => this.#controller.chooseCandifyCity(unitId, cityId),
+        "reward-choice",
+        `candify-city-${cityId}`,
       );
+      const iconUrl = CANDY_ACTION_ART_URLS.CHOOSE_CANDIFY_CITY;
+      if (iconUrl !== null) {
+        const icon = artImage(this.#document, iconUrl, "reward-choice-art");
+        icon.setAttribute("aria-hidden", "true");
+        button.prepend(icon);
+      }
+      article.append(button);
     }
     return article;
   }
@@ -2595,7 +2732,8 @@ export class DomAppView {
       view === null ||
       snapshot.readOnlyFinalMap ||
       snapshot.overlay.name !== "NONE" ||
-      snapshot.combatPresentation !== null
+      snapshot.combatPresentation !== null ||
+      snapshot.candyPresentation !== null
     )
       return false;
     const active = view.turnOrder[view.activeSeatIndex];
@@ -2608,7 +2746,8 @@ export class DomAppView {
       view === null ||
       snapshot.route !== "MATCH" ||
       snapshot.readOnlyFinalMap ||
-      snapshot.combatPresentation !== null
+      snapshot.combatPresentation !== null ||
+      snapshot.candyPresentation !== null
     )
       return false;
     const active = view.turnOrder[view.activeSeatIndex];
@@ -2616,6 +2755,12 @@ export class DomAppView {
   }
 
   #selectBoardEntity(selection: BoardSelection | null): void {
+    if (
+      this.#targetMode !== null &&
+      (selection?.kind !== "UNIT" ||
+        selection.unitId !== this.#targetMode.unitId)
+    )
+      this.#targetMode = null;
     this.#selected = selection;
     this.#render(this.#controller.snapshot());
     this.#boardHost.focus();
@@ -2629,6 +2774,7 @@ export class DomAppView {
 
   #clearBoardSelection(): void {
     this.#selected = null;
+    this.#targetMode = null;
     this.#boardHost.resetActivationCycle();
     this.#render(this.#controller.snapshot());
     this.#boardHost.focus();
@@ -3132,7 +3278,10 @@ function unitSelectionState(
   commandCount: number,
 ): string {
   const owned = unit.ownerId === view.viewer.id;
-  const rule = requireRuleset(view.rulesetId).units[unit.type];
+  const faction =
+    view.players.find((player) => player.id === unit.ownerId)?.faction ??
+    "ORIGINAL";
+  const rule = effectiveUnitRule(view.rulesetId, faction, unit.type);
   const owner = owned ? "You" : `Enemy · Player ${unit.ownerId}`;
   const activation = unit.activation.captured
     ? "Captured"
@@ -3169,6 +3318,8 @@ function selectionExists(
     return view.units.some((unit) => unit.id === selection.unitId);
   if (selection.kind === "CITY")
     return view.cities.some((city) => city.id === selection.cityId);
+  if (selection.kind === "WALL")
+    return view.chocolateWalls.some((wall) => wall.id === selection.wallId);
   return view.board.tiles.some((tile) => sameCoord(tile.at, selection.at));
 }
 
@@ -3183,10 +3334,16 @@ function coordinateActivationLabel(
   );
   const unit = view.units.find((candidate) => sameCoord(candidate.at, at));
   const city = view.cities.find((candidate) => sameCoord(candidate.at, at));
+  const wall = view.chocolateWalls.find((candidate) =>
+    sameCoord(candidate.at, at),
+  );
   const occupants = [
     unit === undefined
       ? null
-      : `${title(unit.type)} unit, Player ${unit.ownerId}, ${unit.hp}/${unit.maxHp} HP, ${unit.activation.handled ? "Handled" : "Needs action"}`,
+      : `${effectiveUnitLabel(view.players.find((player) => player.id === unit.ownerId)?.faction ?? "ORIGINAL", unit.type)} unit, Player ${unit.ownerId}, ${unit.hp}/${unit.maxHp} HP, ${unit.activation.handled ? "Handled" : "Needs action"}`,
+    wall === undefined
+      ? null
+      : `Chocolate Wall, Player ${wall.ownerId}, ${wall.hp}/${wall.maxHp} HP`,
     city === undefined
       ? null
       : `City ${city.id}, Player ${city.ownerId}, level ${city.level}`,

@@ -35,6 +35,7 @@ import type {
   AppSnapshot,
   BoardPreset,
   CombatPresentation,
+  CandyPresentation,
   ConfirmationAction,
   MatchOverlay,
   MatchTallies,
@@ -106,6 +107,7 @@ export class AppController {
   #readOnlyFinalMap = false;
   #fastForwarding = false;
   #combatPresentation: CombatPresentation | null = null;
+  #candyPresentation: CandyPresentation | null = null;
   #savedAt: string | null = null;
   #saveRecovery: SaveRecovery | null = null;
   #saveWarning: string | null = null;
@@ -223,6 +225,7 @@ export class AppController {
       readOnlyFinalMap: this.#readOnlyFinalMap,
       fastForwarding: this.#fastForwarding,
       combatPresentation: this.#combatPresentation,
+      candyPresentation: this.#candyPresentation,
       hasStoredSave: this.#match !== null || this.#saveRecovery !== null,
       savedAt: this.#savedAt,
       saveRecovery: this.#saveRecovery,
@@ -447,7 +450,8 @@ export class AppController {
   }
 
   requestCommand(command: Command): void {
-    if (this.#combatPresentation !== null) return;
+    if (this.#combatPresentation !== null || this.#candyPresentation !== null)
+      return;
     if (command.kind === "RESEARCH") {
       this.openConfirmation({ kind: "RESEARCH", command });
       return;
@@ -468,7 +472,8 @@ export class AppController {
       this.#route !== "MATCH" ||
       this.#readOnlyFinalMap ||
       this.#overlay.name !== "NONE" ||
-      this.#combatPresentation !== null
+      this.#combatPresentation !== null ||
+      this.#candyPresentation !== null
     ) {
       return false;
     }
@@ -801,6 +806,8 @@ export class AppController {
     this.#consumeEvents(result.events, previousState);
     if (command.kind === "ATTACK" && !this.#fastForwarding) {
       this.#beginCombatPresentation(result.events, previousState);
+    } else if (!this.#fastForwarding) {
+      this.#beginCandyPresentation(command, result.events, previousState);
     }
     this.#syncRequiredOverlay();
     this.#saveCurrent(
@@ -866,6 +873,7 @@ export class AppController {
       this.#fastForwarding ||
       this.#overlay.name !== "NONE" ||
       this.#combatPresentation !== null ||
+      this.#candyPresentation !== null ||
       !this.#isAiTurn() ||
       this.#match?.outcome !== null
     )
@@ -1048,7 +1056,36 @@ export class AppController {
     const humanId = this.#humanId();
     if (combat === undefined || humanId === null) return;
     const previousView = viewFor(previousState, humanId);
-    if (combat.preview.target.kind !== "UNIT") return;
+    if (combat.preview.target.kind !== "UNIT") {
+      const wallId = combat.preview.target.wallId;
+      const wall = previousView.chocolateWalls.find(
+        (candidate) => candidate.id === wallId,
+      );
+      if (wall === undefined) return;
+      const reduced = this.#settings.motion === "REDUCED";
+      this.#combatQueueToken += 1;
+      this.#candyPresentation = {
+        id: this.#match?.commandIndex ?? previousState.commandIndex + 1,
+        kind: "WALL_HIT",
+        queueToken: this.#combatQueueToken,
+        commandIndex:
+          this.#match?.commandIndex ?? previousState.commandIndex + 1,
+        durationMs: this.#combatPresentationDurationMs ?? (reduced ? 100 : 180),
+        elapsedMs: 0,
+        paused: false,
+        motion: reduced ? "REDUCED" : "FULL",
+        at: wall.at,
+        actor:
+          previousView.units.find(
+            (unit) => unit.id === combat.preview.attackerId,
+          ) ?? null,
+        damage: combat.preview.damageToDefender,
+        targetDies: combat.preview.defenderDies,
+      };
+      this.#combatPhaseStartedAt = Date.now();
+      this.#scheduleCandyPresentation();
+      return;
+    }
     const defenderId = combat.preview.target.unitId;
     const defender = previousView.units.find((unit) => unit.id === defenderId);
     if (defender === undefined) return;
@@ -1068,6 +1105,13 @@ export class AppController {
     this.#combatPresentation = {
       id: this.#match?.commandIndex ?? previousState.commandIndex + 1,
       kind: archerArrow ? "ARCHER_ARROW" : "STANDARD",
+      projectile: archerArrow
+        ? previousState.players.find(
+            (player) => player.id === attacker?.ownerId,
+          )?.faction === "CANDY"
+          ? "GUMBALL"
+          : "ARROW"
+        : null,
       queueToken: this.#combatQueueToken,
       commandIndex: this.#match?.commandIndex ?? previousState.commandIndex + 1,
       phase: reduced ? "IMPACT" : archerArrow ? "FLIGHT" : "CONTACT",
@@ -1149,7 +1193,10 @@ export class AppController {
 
   #pauseCombatPresentation(): void {
     const presentation = this.#combatPresentation;
-    if (presentation === null || presentation.paused) return;
+    if (presentation === null || presentation.paused) {
+      this.#pauseCandyPresentation();
+      return;
+    }
     const elapsedMs = Math.min(
       presentation.phaseDurationMs,
       presentation.phaseElapsedMs +
@@ -1163,14 +1210,17 @@ export class AppController {
       phaseElapsedMs: elapsedMs,
       paused: true,
     };
+    this.#pauseCandyPresentation();
   }
 
   #resumeCombatPresentation(): void {
     const presentation = this.#combatPresentation;
-    if (presentation === null || !presentation.paused) return;
-    this.#combatPresentation = { ...presentation, paused: false };
-    this.#combatPhaseStartedAt = Date.now();
-    this.#scheduleCombatPhase();
+    if (presentation !== null && presentation.paused) {
+      this.#combatPresentation = { ...presentation, paused: false };
+      this.#combatPhaseStartedAt = Date.now();
+      this.#scheduleCombatPhase();
+    }
+    this.#resumeCandyPresentation();
   }
 
   #cancelCombatPresentation(): void {
@@ -1180,6 +1230,146 @@ export class AppController {
     this.#combatTimer = null;
     this.#combatPresentation = null;
     this.#combatPhaseStartedAt = 0;
+    this.#candyPresentation = null;
+  }
+
+  #beginCandyPresentation(
+    command: Command,
+    events: readonly DomainEvent[],
+    previousState: GameState,
+  ): void {
+    if (
+      command.kind !== "KAMIKAZE_ROLL" &&
+      command.kind !== "BUILD_CHOCOLATE_WALL" &&
+      !events.some((event) => event.kind === "TILE_CANDIFIED")
+    )
+      return;
+    const humanId = this.#humanId();
+    if (humanId === null) return;
+    const previousView = viewFor(previousState, humanId);
+    const reduced = this.#settings.motion === "REDUCED";
+    const fast = this.#settings.animationSpeed === "FAST";
+    this.#combatQueueToken += 1;
+    const common = {
+      id: this.#match?.commandIndex ?? previousState.commandIndex + 1,
+      queueToken: this.#combatQueueToken,
+      commandIndex: this.#match?.commandIndex ?? previousState.commandIndex + 1,
+      elapsedMs: 0,
+      paused: false,
+      motion: reduced ? ("REDUCED" as const) : ("FULL" as const),
+    };
+    if (command.kind === "KAMIKAZE_ROLL") {
+      const actor = previousView.units.find(
+        (unit) => unit.id === command.unitId,
+      );
+      if (actor === undefined) return;
+      const steps = events
+        .filter((event) => event.kind === "DONUT_ROLL_STEP")
+        .map((step) => {
+          const hit = events.find(
+            (event) =>
+              event.kind === "ROLL_DAMAGE_RESOLVED" &&
+              event.at.x === step.at.x &&
+              event.at.y === step.at.y,
+          );
+          return {
+            at: step.at,
+            damage: hit?.kind === "ROLL_DAMAGE_RESOLVED" ? hit.damage : 0,
+            targetKind:
+              hit?.kind === "ROLL_DAMAGE_RESOLVED" ? hit.target.kind : null,
+            targetId:
+              hit?.kind !== "ROLL_DAMAGE_RESOLVED"
+                ? null
+                : hit.target.kind === "UNIT"
+                  ? hit.target.unitId
+                  : hit.target.wallId,
+            targetDies:
+              hit?.kind === "ROLL_DAMAGE_RESOLVED" && hit.hpAfter === 0,
+          };
+        });
+      this.#candyPresentation = {
+        ...common,
+        kind: "DONUT_ROLL",
+        durationMs:
+          this.#combatPresentationDurationMs ??
+          (reduced ? 100 : fast ? 100 : Math.min(900, steps.length * 90)),
+        actor,
+        steps,
+      };
+    } else if (command.kind === "BUILD_CHOCOLATE_WALL") {
+      this.#candyPresentation = {
+        ...common,
+        kind: "WALL_BUILD",
+        durationMs:
+          this.#combatPresentationDurationMs ?? (reduced || fast ? 100 : 180),
+        at: command.at,
+        actor:
+          previousView.units.find((unit) => unit.id === command.unitId) ?? null,
+      };
+    } else {
+      const event = events.find(
+        (candidate) => candidate.kind === "TILE_CANDIFIED",
+      );
+      if (event?.kind !== "TILE_CANDIFIED") return;
+      this.#candyPresentation = {
+        ...common,
+        kind: "CANDIFY",
+        durationMs:
+          this.#combatPresentationDurationMs ?? (reduced || fast ? 100 : 240),
+        at: event.at,
+        actor:
+          previousView.units.find((unit) => unit.id === event.unitId) ?? null,
+      };
+    }
+    this.#combatPhaseStartedAt = Date.now();
+    this.#scheduleCandyPresentation();
+  }
+
+  #scheduleCandyPresentation(): void {
+    const presentation = this.#candyPresentation;
+    if (presentation === null || presentation.paused) return;
+    const generation = this.#combatGeneration;
+    const remaining = Math.max(
+      0,
+      presentation.durationMs - presentation.elapsedMs,
+    );
+    this.#combatTimer = setTimeout(() => {
+      this.#combatTimer = null;
+      if (
+        this.#destroyed ||
+        generation !== this.#combatGeneration ||
+        this.#candyPresentation === null
+      )
+        return;
+      this.#candyPresentation = null;
+      this.#emit();
+      this.#scheduleAiIfNeeded();
+    }, remaining);
+  }
+
+  #pauseCandyPresentation(): void {
+    const presentation = this.#candyPresentation;
+    if (presentation === null || presentation.paused) return;
+    this.#combatGeneration += 1;
+    if (this.#combatTimer !== null) clearTimeout(this.#combatTimer);
+    this.#combatTimer = null;
+    this.#candyPresentation = {
+      ...presentation,
+      elapsedMs: Math.min(
+        presentation.durationMs,
+        presentation.elapsedMs +
+          Math.max(0, Date.now() - this.#combatPhaseStartedAt),
+      ),
+      paused: true,
+    };
+  }
+
+  #resumeCandyPresentation(): void {
+    const presentation = this.#candyPresentation;
+    if (presentation === null || !presentation.paused) return;
+    this.#candyPresentation = { ...presentation, paused: false };
+    this.#combatPhaseStartedAt = Date.now();
+    this.#scheduleCandyPresentation();
   }
 
   #emit(): void {

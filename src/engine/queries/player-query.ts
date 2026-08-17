@@ -250,9 +250,22 @@ export function estimateCombat(
   attacker: PlayerUnitView,
   defender: PlayerUnitView,
 ): CombatPreview {
-  const rules = requireRuleset(view.rulesetId);
-  const attackerRule = rules.units[attacker.type];
-  const defenderRule = rules.units[defender.type];
+  const attackerFaction =
+    view.players.find((player) => player.id === attacker.ownerId)?.faction ??
+    "ORIGINAL";
+  const defenderFaction =
+    view.players.find((player) => player.id === defender.ownerId)?.faction ??
+    "ORIGINAL";
+  const attackerRule = effectiveUnitRule(
+    view.rulesetId,
+    attackerFaction,
+    attacker.type,
+  );
+  const defenderRule = effectiveUnitRule(
+    view.rulesetId,
+    defenderFaction,
+    defender.type,
+  );
   const bonus = defenseBonus(view, defender);
   const attackForceNumerator = attackerRule.attack * attacker.hp;
   const attackForceDenominator = attacker.maxHp;

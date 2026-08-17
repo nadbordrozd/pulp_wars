@@ -30,6 +30,7 @@ const tileDockReview = process.argv.includes("--tile-dock-review");
 const activationReview = process.argv.includes("--activation-review");
 const readinessReview = process.argv.includes("--readiness-review");
 const factionSetupReview = process.argv.includes("--faction-setup-review");
+const candyReview = process.argv.includes("--candy-review");
 const cooperativeLargeReview = process.argv.includes(
   "--cooperative-large-review",
 );
@@ -71,7 +72,15 @@ try {
   await connection.send("Runtime.enable");
   await desktopViewport(connection);
   await waitForRoute(connection, "hub");
-  if (factionSetupReview) {
+  if (candyReview) {
+    const review = await reviewCandyActions(connection);
+    const version = (await connection.send("Browser.getVersion")) as {
+      readonly product?: string;
+    };
+    console.log(
+      `Candy action review passed in ${version.product ?? "Chrome"} at desktop and true 390x844 DPR2 mobile. Roll ${review.rollHash}; Wall ${review.wallHash}. Screenshots: ${reviewRoot}`,
+    );
+  } else if (factionSetupReview) {
     const review = await reviewFactionSetup(connection);
     const version = (await connection.send("Browser.getVersion")) as {
       readonly product?: string;
@@ -240,6 +249,218 @@ try {
   connection.close();
 } finally {
   browser.kill();
+}
+
+async function reviewCandyActions(connection: Connection): Promise<{
+  readonly rollHash: string;
+  readonly wallHash: string;
+}> {
+  await desktopViewport(connection);
+  const roll = await installCandyActionFixture(connection, "RIDER");
+  await selectInspectorEntity(connection, `unit:${roll.actorId}`);
+  await assertCandyDock(connection, "Donut", ["Roll", "Candify"]);
+  await capture(connection, "candy-donut-dock-desktop-1440x1000.png");
+  await clickButton(connection, "Roll");
+  await evaluate(
+    connection,
+    `(() => { const dock = document.querySelector('.unit-action-dock'); if (!dock?.textContent?.includes('projected line reaches the map edge') || document.querySelector('.modal-backdrop') !== null) throw new Error('Roll targeting is not map-first'); return true; })()`,
+  );
+  await capture(connection, "candy-roll-targets-desktop-1440x1000.png");
+  await activateInspectorCoordinate(connection, roll.target);
+  await evaluate(
+    connection,
+    `(async () => { const engine = await import('/src/engine/index.ts'); const snapshot = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const review = globalThis.__PULP_WARS_CANDY_REVIEW__; if (!snapshot?.match || !review || snapshot.candyPresentation?.kind !== 'DONUT_ROLL' || engine.canonicalHash(snapshot.match) !== review.expectedHash || snapshot.match.commandIndex !== review.beforeIndex + 1) throw new Error('Roll presentation changed the accepted boundary'); return true; })()`,
+    true,
+  );
+  await capture(connection, "candy-roll-animation-desktop-1440x1000.png");
+
+  await installCandyEffectFixture(connection, "GUMBALL");
+  await evaluate(
+    connection,
+    `(() => { const presentation = globalThis.__PULP_WARS_APP__?.controller.snapshot().combatPresentation; if (presentation?.projectile !== 'GUMBALL' || presentation.phase !== 'FLIGHT') throw new Error('Missing Gumball flight'); return true; })()`,
+  );
+  await capture(connection, "candy-gumball-flight-desktop-1440x1000.png");
+
+  await mobileViewport(connection);
+  const engineer = await installCandyActionFixture(connection, "DEFENDER");
+  await selectInspectorEntity(connection, `unit:${engineer.actorId}`);
+  await assertCandyDock(connection, "Choco Engineer", [
+    "Chocolate Wall · 1★",
+    "Candify",
+  ]);
+  await clickButton(connection, "Chocolate Wall · 1★");
+  await waitForNoHorizontalOverflow(connection);
+  await assertResponsiveTargets(connection);
+  await capture(connection, "candy-wall-targets-mobile-390x844-dpr2.png");
+  await activateInspectorCoordinate(connection, engineer.target);
+  await evaluate(
+    connection,
+    `(async () => { const engine = await import('/src/engine/index.ts'); const snapshot = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const review = globalThis.__PULP_WARS_CANDY_REVIEW__; const actualHash = snapshot?.match ? engine.canonicalHash(snapshot.match) : null; if (!snapshot?.match || !review || snapshot.candyPresentation?.kind !== 'WALL_BUILD' || actualHash !== review.expectedHash) throw new Error('Wall presentation changed the accepted boundary: ' + JSON.stringify({ presentation: snapshot?.candyPresentation?.kind, actualHash, expectedHash: review?.expectedHash, commandIndex: snapshot?.match?.commandIndex, expectedIndex: review?.beforeIndex + 1, target: review?.target })); return true; })()`,
+    true,
+  );
+  await capture(connection, "candy-wall-build-mobile-390x844-dpr2.png");
+
+  await installCandyEffectFixture(connection, "CANDIFY");
+  await evaluate(
+    connection,
+    `(() => { const presentation = globalThis.__PULP_WARS_APP__?.controller.snapshot().candyPresentation; if (presentation?.kind !== 'CANDIFY') throw new Error('Missing Candify presentation'); return true; })()`,
+  );
+  await waitForNoHorizontalOverflow(connection);
+  await capture(connection, "candy-candify-mobile-390x844-dpr2.png");
+
+  await installCandyChoiceFixture(connection);
+  await waitForNoHorizontalOverflow(connection);
+  await evaluate(
+    connection,
+    `(() => { const dialog = document.querySelector('[data-modal]'); const buttons = dialog?.querySelectorAll('.reward-choice'); if (!(dialog instanceof HTMLElement) || !dialog.textContent?.includes('Choose city for Candify') || buttons?.length !== 2 || !dialog.querySelector('.reward-choice-art') || dialog.querySelector('[aria-label="Close"]')) throw new Error('Mandatory Candify choice contract failed'); return true; })()`,
+  );
+  await capture(connection, "candy-city-choice-mobile-390x844-dpr2.png");
+  return { rollHash: roll.expectedHash, wallHash: engineer.expectedHash };
+}
+
+interface CandyActionReview {
+  readonly actorId: number;
+  readonly target: { readonly x: number; readonly y: number };
+  readonly expectedHash: string;
+  readonly beforeIndex: number;
+}
+
+async function installCandyActionFixture(
+  connection: Connection,
+  type: "RIDER" | "DEFENDER",
+): Promise<CandyActionReview> {
+  const result = await evaluate<CandyActionReview>(
+    connection,
+    `(async () => {
+      const [appModule, engine] = await Promise.all([import('/src/app/bootstrap.ts'), import('/src/engine/index.ts')]);
+      globalThis.__PULP_WARS_APP__?.destroy?.();
+      const created = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 6173, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL', factions: ['CANDY', 'ORIGINAL'] });
+      if (!created.ok) throw new Error(created.error.code);
+      const human = created.state.players.find((player) => player.controller === 'HUMAN');
+      const city = created.state.cities.find((candidate) => candidate.ownerId === human?.id);
+      const actorSource = created.state.units.find((unit) => unit.ownerId === human?.id);
+      const enemySource = created.state.units.find((unit) => unit.ownerId !== human?.id);
+      if (!human || !city || !actorSource || !enemySource) throw new Error('Missing Candy review entities');
+      const actorAt = { x: city.at.x - 2, y: city.at.y };
+      const actor = { ...actorSource, type: ${JSON.stringify(type)}, at: actorAt, ready: true, activation: { moved: false, attacked: false, recovered: false, captured: false, handled: false, escapeAvailable: false, specialActed: false } };
+      const enemy = { ...enemySource, at: { x: actorAt.x + 1, y: actorAt.y } };
+      const state = { ...created.state, activeSeatIndex: created.state.turnOrder.indexOf(human.id), players: created.state.players.map((player) => player.id === human.id ? { ...player, stars: 10, explored: created.state.board.tiles.map((tile) => tile.at) } : player), units: [actor, enemy], chocolateWalls: [] };
+      const root = document.querySelector('#app');
+      if (!(root instanceof HTMLElement)) throw new Error('Missing app root');
+      const app = appModule.bootstrapApp(document, { initialRoute: 'MATCH', initialMatch: state, storage: null, aiStepDelayMs: 100000, prefersReducedMotion: false, combatPresentationDurationMs: 1000 });
+      Reflect.set(globalThis, '__PULP_WARS_APP__', app);
+      const view = app.controller.snapshot().view;
+      if (!view) throw new Error('Missing Candy review view');
+      const command = engine.queryPlayerCommands(view).map(({ command }) => command).find((candidate) => ${JSON.stringify(type)} === 'RIDER' ? candidate.kind === 'KAMIKAZE_ROLL' && candidate.unitId === actor.id && candidate.direction === 'EAST' : candidate.kind === 'BUILD_CHOCOLATE_WALL' && candidate.unitId === actor.id);
+      if (!command) throw new Error('Missing Candy review command');
+      const expected = engine.applyCommand(state, command);
+      if (!expected.ok) throw new Error(expected.error.code);
+      const target = command.kind === 'BUILD_CHOCOLATE_WALL' ? command.at : { x: actorAt.x + 1, y: actorAt.y };
+      const review = { actorId: actor.id, target, expectedHash: engine.canonicalHash(expected.state), beforeIndex: state.commandIndex };
+      Reflect.set(globalThis, '__PULP_WARS_CANDY_REVIEW__', review);
+      return review;
+    })()`,
+    true,
+  );
+  return result;
+}
+
+async function installCandyChoiceFixture(
+  connection: Connection,
+): Promise<void> {
+  await evaluate(
+    connection,
+    `(async () => {
+      const [appModule, engine] = await Promise.all([import('/src/app/bootstrap.ts'), import('/src/engine/index.ts')]);
+      globalThis.__PULP_WARS_APP__?.destroy?.();
+      const created = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 6173, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL', factions: ['CANDY', 'ORIGINAL'] });
+      if (!created.ok) throw new Error(created.error.code);
+      const human = created.state.players.find((player) => player.controller === 'HUMAN');
+      const actor = created.state.units.find((unit) => unit.ownerId === human?.id);
+      if (!human || !actor) throw new Error('Missing Candify choice fixture');
+      const cities = created.state.cities.map((city) => ({ ...city, ownerId: human.id }));
+      const state = { ...created.state, activeSeatIndex: created.state.turnOrder.indexOf(human.id), players: created.state.players.map((player) => player.id === human.id ? { ...player, explored: created.state.board.tiles.map((tile) => tile.at) } : player), cities, pendingChoice: { kind: 'CANDIFY_CITY', unitId: actor.id, candidateCityIds: cities.map((city) => city.id) } };
+      const root = document.querySelector('#app');
+      if (!(root instanceof HTMLElement)) throw new Error('Missing app root');
+      const app = appModule.bootstrapApp(document, { initialRoute: 'MATCH', initialMatch: state, storage: null, aiStepDelayMs: 100000, prefersReducedMotion: true });
+      Reflect.set(globalThis, '__PULP_WARS_APP__', app);
+      return true;
+    })()`,
+    true,
+  );
+  await waitForExpression(
+    connection,
+    `document.querySelector('[data-modal]') !== null`,
+  );
+}
+
+async function installCandyEffectFixture(
+  connection: Connection,
+  effect: "GUMBALL" | "CANDIFY",
+): Promise<void> {
+  await evaluate(
+    connection,
+    `(async () => {
+      const [appModule, engine] = await Promise.all([import('/src/app/bootstrap.ts'), import('/src/engine/index.ts')]);
+      globalThis.__PULP_WARS_APP__?.destroy?.();
+      const created = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 6173, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL', factions: ['CANDY', 'ORIGINAL'] });
+      if (!created.ok) throw new Error(created.error.code);
+      const human = created.state.players.find((player) => player.controller === 'HUMAN');
+      const city = created.state.cities.find((candidate) => candidate.ownerId === human?.id);
+      const actorSource = created.state.units.find((unit) => unit.ownerId === human?.id);
+      const enemySource = created.state.units.find((unit) => unit.ownerId !== human?.id);
+      if (!human || !city || !actorSource || !enemySource) throw new Error('Missing Candy effect entities');
+      const effect = ${JSON.stringify(effect)};
+      const frontier = created.state.board.tiles.find((tile) => tile.site === null && tile.territoryCityId === null && created.state.board.tiles.some((owned) => owned.territoryCityId === city.id && Math.max(Math.abs(owned.at.x - tile.at.x), Math.abs(owned.at.y - tile.at.y)) === 1));
+      if (!frontier) throw new Error('Missing Candy effect frontier');
+      const actorAt = effect === 'GUMBALL' ? { x: city.at.x - 1, y: city.at.y } : frontier.at;
+      const actor = { ...actorSource, type: effect === 'GUMBALL' ? 'ARCHER' : 'WARRIOR', at: actorAt, ready: true, activation: { moved: false, attacked: false, recovered: false, captured: false, handled: false, escapeAvailable: false, specialActed: false } };
+      const enemy = { ...enemySource, at: { x: actorAt.x + 1, y: actorAt.y } };
+      const state = { ...created.state, activeSeatIndex: created.state.turnOrder.indexOf(human.id), players: created.state.players.map((player) => player.id === human.id ? { ...player, stars: 10, explored: created.state.board.tiles.map((tile) => tile.at) } : player), units: [actor, enemy], chocolateWalls: [] };
+      const root = document.querySelector('#app');
+      if (!(root instanceof HTMLElement)) throw new Error('Missing app root');
+      const app = appModule.bootstrapApp(document, { initialRoute: 'MATCH', initialMatch: state, storage: null, aiStepDelayMs: 100000, prefersReducedMotion: false, combatPresentationDurationMs: 1000 });
+      Reflect.set(globalThis, '__PULP_WARS_APP__', app);
+      const view = app.controller.snapshot().view;
+      if (!view) throw new Error('Missing Candy effect view');
+      const command = engine.queryPlayerCommands(view).map(({ command }) => command).find((candidate) => effect === 'GUMBALL' ? candidate.kind === 'ATTACK' && candidate.unitId === actor.id : candidate.kind === 'CANDIFY' && candidate.unitId === actor.id);
+      if (!command || !app.controller.dispatch(command)) throw new Error('Candy effect command rejected');
+      return true;
+    })()`,
+    true,
+  );
+}
+
+async function selectInspectorEntity(
+  connection: Connection,
+  value: string,
+): Promise<void> {
+  await evaluate(
+    connection,
+    `(() => { const select = document.querySelector('select[aria-label="Choose a map coordinate or object"]'); if (!(select instanceof HTMLSelectElement)) throw new Error('Missing inspector'); select.value = ${JSON.stringify(value)}; select.dispatchEvent(new Event('change', { bubbles: true })); return true; })()`,
+  );
+  await delay(50);
+}
+
+async function activateInspectorCoordinate(
+  connection: Connection,
+  at: { readonly x: number; readonly y: number },
+): Promise<void> {
+  await evaluate(
+    connection,
+    `(() => { const select = document.querySelector('select[aria-label="Choose a map coordinate or object"]'); if (!(select instanceof HTMLSelectElement)) throw new Error('Missing inspector'); select.value = ${JSON.stringify(`coordinate:${at.x}:${at.y}`)}; select.dispatchEvent(new Event('change', { bubbles: true })); return true; })()`,
+  );
+}
+
+async function assertCandyDock(
+  connection: Connection,
+  unit: string,
+  actions: readonly string[],
+): Promise<void> {
+  await evaluate(
+    connection,
+    `(() => { const dock = document.querySelector('.unit-action-dock'); const actions = ${JSON.stringify(actions)}; if (!(dock instanceof HTMLElement) || !dock.textContent?.includes(${JSON.stringify(unit)}) || actions.some((label) => ![...dock.querySelectorAll('button')].some((button) => button.textContent?.trim() === label)) || document.querySelector('.modal-backdrop') !== null) throw new Error('Wrong Candy dock'); const broken = [...dock.querySelectorAll('img')].filter((image) => !image.complete || image.naturalWidth === 0); if (broken.length) throw new Error('Broken Candy dock art'); return true; })()`,
+  );
 }
 
 async function reviewFactionSetup(connection: Connection): Promise<{
