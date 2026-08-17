@@ -119,7 +119,11 @@
     "candyUnits": 5,
     "originalUnits": 5,
     "chocolateWalls": 3,
-    "wallHpStates": [10, 5, 1],
+    "wallHpStates": [
+      10,
+      5,
+      1
+    ],
     "fogTiles": 11
   },
   "mobileCanvas": {
@@ -137,8 +141,8 @@
         "height": 1000,
         "devicePixelRatio": 1
       },
-      "sha256": "018266bc072a5e8ebb690f4f98ef5a5c0725bc5c0135f82fe95d591d4e29b869",
-      "bytes": 488349
+      "sha256": "e52c77c1ff8f666729a5aa63f515400210798d2e4fe0af4b4f4dc67fbbce389f",
+      "bytes": 493271
     },
     {
       "path": "art/feedback/reviews/candy-production-mobile-390x844-dpr2.png",
@@ -147,8 +151,8 @@
         "height": 844,
         "devicePixelRatio": 2
       },
-      "sha256": "cd169fcb3e8d32ecec21a5ccf6b25f5236f4f9d4d066256d4d37bafb12ecbb29",
-      "bytes": 411058
+      "sha256": "acc51857e095b9f3b620faa5f5f04e5bf85c083f7fe186f03952f1b2b32f5c6c",
+      "bytes": 417973
     }
   ]
 }

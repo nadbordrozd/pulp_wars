@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "productionRastersModified": false,
+  "unchangedProductionAssets": [
+    {
+      "id": "terrain-forest-1",
+      "path": "public/assets/pixellab/terrain/forest-1.png",
+      "sha256": "e03c9e39ad7e57e407bbb393b83721b7e10f0b9c9fc07f152abecb7325bdbca5",
+      "bytes": 5345
+    },
+    {
+      "id": "terrain-forest-2",
+      "path": "public/assets/pixellab/terrain/forest-2.png",
+      "sha256": "8f6732f82ea75f9aa66d71647b03fc4d0124091ddb4f9a84d980da9b516690b4",
+      "bytes": 24253
+    },
+    {
+      "id": "terrain-forest-3",
+      "path": "public/assets/pixellab/terrain/forest-3.png",
+      "sha256": "36844ed0990803b35d7f28f86b9719fb20c2f244877ffa67bdf6325e932e0a6b",
+      "bytes": 6008
+    },
+    {
+      "id": "terrain-forest-4",
+      "path": "public/assets/pixellab/terrain/forest-4.png",
+      "sha256": "a00bb57032499089fd236170bf2a60dfa44a7d9274d31a662ae1d06ac957bc80",
+      "bytes": 26732
+    },
+    {
+      "id": "terrain-animal",
+      "path": "public/assets/pixellab/terrain/animal.png",
+      "sha256": "db98acecba2d4a0b7a82e947da12dfa7a6761c645e951f789023efe819a0b536",
+      "bytes": 27309
+    },
+    {
+      "id": "terrain-fruit",
+      "path": "public/assets/pixellab/terrain/fruit.png",
+      "sha256": "71d28e528ab3a4676b5396ca608181dbe815bca6843b190a54586c27d6324342",
+      "bytes": 10082
+    },
+    {
+      "id": "unit-candy-warrior",
+      "path": "public/assets/pixellab/units/candy-warrior.png",
+      "sha256": "76456b060ba1701e75387285b4738d4c289c0617eb852f5552beadfe2eb1a2bc",
+      "bytes": 42127
+    }
+  ],
+  "nominalPlacement": {
+    "forest": {
+      "sourceAnchor": [128, 222],
+      "offsetY": 23
+    },
+    "animal": {
+      "sourceAnchor": [128, 222],
+      "offsetY": 23
+    },
+    "fruit": {
+      "sourceAnchor": [128, 222],
+      "offsetY": 23
+    },
+    "candyWarrior": {
+      "sourceAnchor": [128, 222],
+      "offsetY": 10.5
+    }
+  },
+  "productionFixture": {
+    "forests": 8,
+    "animals": 4,
+    "fruits": 4,
+    "candyWarriors": 1,
+    "originalWarriors": 1,
+    "fogTiles": 11
+  },
+  "visualInspection": {
+    "outcome": "PASS",
+    "checks": [
+      "All four Forest variants occupy the owning diamond's lower half with reduced rear-tile overlap.",
+      "Animal and Fruit read as grounded without crossing the foreground tile edge.",
+      "Candy Warrior matches Original Warrior's low extent while other unit placement remains unchanged.",
+      "Dense ordering, fog withholding, owner cues, and status attachments remain coherent."
+    ]
+  },
+  "mobileCanvas": {
+    "cssWidth": 390,
+    "cssHeight": 844,
+    "backingWidth": 780,
+    "backingHeight": 1688,
+    "devicePixelRatio": 2
+  },
+  "evidence": [
+    {
+      "path": "art/feedback/reviews/placement-calibration-desktop-native.png",
+      "viewport": {
+        "width": 1440,
+        "height": 1000,
+        "devicePixelRatio": 1
+      },
+      "scale": "NATIVE",
+      "sha256": "4209fb276131a184b852653a26648f58966d8acc01c53345a1df0b2987951be1",
+      "bytes": 431565
+    },
+    {
+      "path": "art/feedback/reviews/placement-calibration-desktop-enlarged.png",
+      "viewport": {
+        "width": 1440,
+        "height": 1000,
+        "devicePixelRatio": 1
+      },
+      "scale": "ENLARGED",
+      "sha256": "57b6322770c6467fc9305a1c3e7fc3158e336111ec6ca22f75833e3e828043c0",
+      "bytes": 608501
+    },
+    {
+      "path": "art/feedback/reviews/placement-calibration-mobile-dpr2-native.png",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "devicePixelRatio": 2
+      },
+      "scale": "NATIVE",
+      "sha256": "08b45f24f2d2aa41a9f61b2a69f2152351d5ea9369855d4e54c12574ffd78c35",
+      "bytes": 270250
+    },
+    {
+      "path": "art/feedback/reviews/placement-calibration-mobile-dpr2-enlarged.png",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "devicePixelRatio": 2
+      },
+      "scale": "ENLARGED",
+      "sha256": "7f209044a4e2c35cc629813c8c67dd22e72578f6049ddeeeeaf715a0d649e1ba",
+      "bytes": 398732
+    }
+  ]
+}

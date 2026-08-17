@@ -12,6 +12,8 @@ export interface SourceGeometry {
   readonly height: number;
   readonly anchor: Point;
   readonly displayScale: number;
+  /** Cosmetic screen-space placement only; the source contact anchor is unchanged. */
+  readonly offsetY?: number;
   readonly lowerDiamondClip?: boolean;
 }
 
@@ -46,6 +48,30 @@ export const BOARD_ART_GEOMETRY = {
     height: 384,
     anchor: { x: 192, y: 288 },
     displayScale: 0.3,
+  },
+} as const satisfies Readonly<Record<string, SourceGeometry>>;
+
+/**
+ * First-play placement corrections for silhouettes whose accepted source art
+ * stops at y=222. The common source anchors stay authoritative; these nominal
+ * CSS offsets only lower the drawn pixels over their owning diamond.
+ */
+export const PLACEMENT_ART_GEOMETRY = {
+  forest: {
+    ...BOARD_ART_GEOMETRY.lowObject,
+    offsetY: 23,
+  },
+  animal: {
+    ...BOARD_ART_GEOMETRY.lowObject,
+    offsetY: 23,
+  },
+  fruit: {
+    ...BOARD_ART_GEOMETRY.lowObject,
+    offsetY: 23,
+  },
+  candyWarrior: {
+    ...BOARD_ART_GEOMETRY.unit,
+    offsetY: 10.5,
   },
 } as const satisfies Readonly<Record<string, SourceGeometry>>;
 
@@ -128,7 +154,7 @@ export function anchoredDestinationRect(
   const scale = geometry.displayScale * zoom;
   return {
     x: center.x - geometry.anchor.x * scale,
-    y: center.y - geometry.anchor.y * scale,
+    y: center.y - geometry.anchor.y * scale + (geometry.offsetY ?? 0) * zoom,
     width: geometry.width * scale,
     height: geometry.height * scale,
   };
@@ -240,8 +266,12 @@ export function createPixelLabAssetBindings(
         context,
         "terrain-fruit",
         options,
-        BOARD_ART_GEOMETRY.lowObject,
-        () => CODE_NATIVE_PLACEHOLDER_ASSETS.drawFruit(context, options),
+        PLACEMENT_ART_GEOMETRY.fruit,
+        () =>
+          CODE_NATIVE_PLACEHOLDER_ASSETS.drawFruit(
+            context,
+            offsetFallbackOptions(options, PLACEMENT_ART_GEOMETRY.fruit),
+          ),
       );
     },
     drawAnimal(context, options): void {
@@ -249,8 +279,12 @@ export function createPixelLabAssetBindings(
         context,
         "terrain-animal",
         options,
-        BOARD_ART_GEOMETRY.lowObject,
-        () => CODE_NATIVE_PLACEHOLDER_ASSETS.drawAnimal(context, options),
+        PLACEMENT_ART_GEOMETRY.animal,
+        () =>
+          CODE_NATIVE_PLACEHOLDER_ASSETS.drawAnimal(
+            context,
+            offsetFallbackOptions(options, PLACEMENT_ART_GEOMETRY.animal),
+          ),
       );
     },
     drawMine(context, options): void {
@@ -287,8 +321,12 @@ export function createPixelLabAssetBindings(
         context,
         `terrain-forest-${(options.variant % 4) + 1}`,
         options,
-        BOARD_ART_GEOMETRY.lowObject,
-        () => CODE_NATIVE_PLACEHOLDER_ASSETS.drawForest(context, options),
+        PLACEMENT_ART_GEOMETRY.forest,
+        () =>
+          CODE_NATIVE_PLACEHOLDER_ASSETS.drawForest(
+            context,
+            offsetFallbackOptions(options, PLACEMENT_ART_GEOMETRY.forest),
+          ),
       );
     },
     drawVillage(context, options): void {
@@ -318,18 +356,36 @@ export function createPixelLabAssetBindings(
         CODE_NATIVE_PLACEHOLDER_ASSETS.drawCityFront(context, options, city);
     },
     drawUnit(context, options, unit, faction = "ORIGINAL"): void {
-      draw(
-        context,
-        unitArtId(unit.type, faction),
-        options,
-        unit.type === "CATAPULT"
-          ? BOARD_ART_GEOMETRY.siegeUnit
-          : BOARD_ART_GEOMETRY.unit,
-        () => CODE_NATIVE_PLACEHOLDER_ASSETS.drawUnit(context, options, unit),
+      const geometry =
+        faction === "CANDY" && unit.type === "WARRIOR"
+          ? PLACEMENT_ART_GEOMETRY.candyWarrior
+          : unit.type === "CATAPULT"
+            ? BOARD_ART_GEOMETRY.siegeUnit
+            : BOARD_ART_GEOMETRY.unit;
+      draw(context, unitArtId(unit.type, faction), options, geometry, () =>
+        CODE_NATIVE_PLACEHOLDER_ASSETS.drawUnit(
+          context,
+          offsetFallbackOptions(options, geometry),
+          unit,
+        ),
       );
     },
     drawUnitOwnerCue(context, options, unit): void {
       CODE_NATIVE_PLACEHOLDER_ASSETS.drawUnitOwnerCue(context, options, unit);
+    },
+  };
+}
+
+function offsetFallbackOptions(
+  options: DrawAssetOptions,
+  geometry: SourceGeometry,
+): DrawAssetOptions {
+  if (geometry.offsetY === undefined) return options;
+  return {
+    ...options,
+    center: {
+      ...options.center,
+      y: options.center.y + geometry.offsetY * options.zoom,
     },
   };
 }

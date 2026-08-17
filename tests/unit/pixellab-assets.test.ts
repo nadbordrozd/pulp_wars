@@ -9,6 +9,7 @@ import {
 import {
   BOARD_ART_GEOMETRY,
   MOUNTAIN_ART_GEOMETRY,
+  PLACEMENT_ART_GEOMETRY,
   PIXELLAB_BOARD_ART_IDS,
   PIXELLAB_PENDING_BOARD_ART_IDS,
   SETTLEMENT_ART_GEOMETRY,
@@ -86,6 +87,20 @@ describe("accepted PixelLab renderer binding", () => {
     expect(
       anchoredDestinationRect({ x: 400, y: 300 }, 1, BOARD_ART_GEOMETRY.unit),
     ).toEqual({ x: 355.2, y: 222.3, width: 89.6, height: 103.6 });
+    expect(
+      anchoredDestinationRect(
+        { x: 400, y: 300 },
+        1,
+        PLACEMENT_ART_GEOMETRY.forest,
+      ),
+    ).toEqual({ x: 336, y: 212, width: 128, height: 148 });
+    expect(
+      anchoredDestinationRect(
+        { x: 400, y: 300 },
+        1,
+        PLACEMENT_ART_GEOMETRY.candyWarrior,
+      ),
+    ).toEqual({ x: 355.2, y: 232.8, width: 89.6, height: 103.6 });
     expect(
       anchoredDestinationRect(
         { x: 400, y: 300 },
@@ -208,6 +223,46 @@ describe("accepted PixelLab renderer binding", () => {
       expect(bounds.bottom).toBeGreaterThanOrEqual(30);
       expect(bounds.bottom).toBeLessThanOrEqual(30.5);
     }
+  });
+
+  it("grounds the corrected alpha bounds without changing their scale", () => {
+    const forestBounds = [
+      { left: 38, top: 51, right: 217, bottom: 217 },
+      { left: 12, top: 84, right: 244, bottom: 222 },
+      { left: 39, top: 28, right: 216, bottom: 222 },
+      { left: 32, top: 8, right: 223, bottom: 222 },
+    ].map((bounds) => displayBounds(bounds, PLACEMENT_ART_GEOMETRY.forest));
+
+    expect(forestBounds).toEqual([
+      { left: -45, top: -62.5, right: 44.5, bottom: 20.5 },
+      { left: -58, top: -46, right: 58, bottom: 23 },
+      { left: -44.5, top: -74, right: 44, bottom: 23 },
+      { left: -48, top: -84, right: 47.5, bottom: 23 },
+    ]);
+    expect(
+      displayBounds(
+        { left: 53, top: 84, right: 202, bottom: 222 },
+        PLACEMENT_ART_GEOMETRY.animal,
+      ),
+    ).toEqual({ left: -37.5, top: -46, right: 37, bottom: 23 });
+    expect(
+      displayBounds(
+        { left: 83, top: 150, right: 172, bottom: 222 },
+        PLACEMENT_ART_GEOMETRY.fruit,
+      ),
+    ).toEqual({ left: -22.5, top: -13, right: 22, bottom: 23 });
+    expect(
+      displayBounds(
+        { left: 27, top: 4, right: 228, bottom: 222 },
+        PLACEMENT_ART_GEOMETRY.candyWarrior,
+      ),
+    ).toEqual({ left: -35.35, top: -65.8, right: 35, bottom: 10.5 });
+    expect(
+      displayBounds(
+        { left: 20, top: 18, right: 236, bottom: 252 },
+        BOARD_ART_GEOMETRY.unit,
+      ).bottom,
+    ).toBe(10.5);
   });
 
   it("clips mountain foreground alpha to the owning lower diamond", () => {
@@ -346,7 +401,7 @@ describe("accepted PixelLab renderer binding", () => {
     listeners.get("load")?.();
     bindings.drawFruit(context, options);
     expect(redraw).toHaveBeenCalledOnce();
-    expect(context.drawImage).toHaveBeenCalledWith(image, 336, 189, 128, 148);
+    expect(context.drawImage).toHaveBeenCalledWith(image, 336, 212, 128, 148);
   });
 
   it("loads accepted Catapult art at the explicit siege geometry", () => {
@@ -502,6 +557,148 @@ describe("accepted PixelLab renderer binding", () => {
     ]);
   });
 
+  it("lowers only the requested production classes and keeps their fallbacks aligned", () => {
+    const images: Array<
+      HTMLImageElement & { listeners: Map<string, () => void> }
+    > = [];
+    const documentRoot = {
+      createElement: vi.fn(() => {
+        const listeners = new Map<string, () => void>();
+        const image = {
+          addEventListener(type: string, listener: () => void): void {
+            listeners.set(type, listener);
+          },
+          listeners,
+          alt: "",
+          decoding: "auto",
+          src: "",
+        } as HTMLImageElement & { listeners: Map<string, () => void> };
+        images.push(image);
+        return image;
+      }),
+    } as unknown as Document;
+    const bindings = createPixelLabAssetBindings(documentRoot);
+    const context = drawingContext();
+    const options = {
+      center: { x: 400, y: 300 },
+      zoom: 1,
+      ownerColor: null,
+      variant: 0,
+    };
+    const warrior = {
+      id: unitId(1),
+      ownerId: playerId(1),
+      homeCityId: cityId(1),
+      capacityExempt: false,
+      type: "WARRIOR" as const,
+      at: { x: 1, y: 1 },
+      hp: 10,
+      maxHp: 10,
+      kills: 0,
+      veteran: false,
+      ready: true,
+      captureEligible: false,
+      activation: {
+        moved: false,
+        attacked: false,
+        recovered: false,
+        captured: false,
+        handled: false,
+        escapeAvailable: false,
+        specialActed: false,
+      },
+    };
+
+    bindings.drawFruit(context, options);
+    bindings.drawAnimal(context, options);
+    bindings.drawForest(context, options);
+    bindings.drawUnit(context, options, warrior, "CANDY");
+    bindings.drawUnit(context, options, warrior, "ORIGINAL");
+    bindings.drawUnit(
+      context,
+      options,
+      { ...warrior, type: "ARCHER" },
+      "CANDY",
+    );
+    bindings.drawOre(context, options);
+
+    expect(context.translate).toHaveBeenCalledWith(400, 323);
+    expect(context.translate).toHaveBeenCalledWith(400, 310.5);
+    expect(context.translate).toHaveBeenCalledWith(400, 300);
+    for (const image of images) image.listeners.get("load")?.();
+    vi.mocked(context.drawImage).mockClear();
+
+    bindings.drawFruit(context, options);
+    bindings.drawAnimal(context, options);
+    bindings.drawForest(context, options);
+    bindings.drawUnit(context, options, warrior, "CANDY");
+    bindings.drawUnit(context, options, warrior, "ORIGINAL");
+    bindings.drawUnit(
+      context,
+      options,
+      { ...warrior, type: "ARCHER" },
+      "CANDY",
+    );
+    bindings.drawOre(context, options);
+
+    expect(context.drawImage).toHaveBeenNthCalledWith(
+      1,
+      images[0],
+      336,
+      212,
+      128,
+      148,
+    );
+    expect(context.drawImage).toHaveBeenNthCalledWith(
+      2,
+      images[1],
+      336,
+      212,
+      128,
+      148,
+    );
+    expect(context.drawImage).toHaveBeenNthCalledWith(
+      3,
+      images[2],
+      336,
+      212,
+      128,
+      148,
+    );
+    expect(context.drawImage).toHaveBeenNthCalledWith(
+      4,
+      images[3],
+      355.2,
+      232.8,
+      89.6,
+      103.6,
+    );
+    expect(context.drawImage).toHaveBeenNthCalledWith(
+      5,
+      images[4],
+      355.2,
+      222.3,
+      89.6,
+      103.6,
+    );
+    expect(context.drawImage).toHaveBeenNthCalledWith(
+      6,
+      images[5],
+      355.2,
+      222.3,
+      89.6,
+      103.6,
+    );
+    expect(context.drawImage).toHaveBeenNthCalledWith(
+      7,
+      images[6],
+      336,
+      189,
+      128,
+      148,
+    );
+  });
+
   it("loads Chocolate Wall art at the low-object anchor with fallback", () => {
     const listeners = new Map<string, () => void>();
     const image = {
@@ -565,14 +762,16 @@ function displayBounds(
   geometry: {
     readonly anchor: { readonly x: number; readonly y: number };
     readonly displayScale: number;
+    readonly offsetY?: number;
   },
 ): { left: number; top: number; right: number; bottom: number } {
   const scale = geometry.displayScale;
+  const offsetY = geometry.offsetY ?? 0;
   return {
     left: round((bounds.left - geometry.anchor.x) * scale),
-    top: round((bounds.top - geometry.anchor.y) * scale),
+    top: round((bounds.top - geometry.anchor.y) * scale + offsetY),
     right: round((bounds.right - geometry.anchor.x) * scale),
-    bottom: round((bounds.bottom - geometry.anchor.y) * scale),
+    bottom: round((bounds.bottom - geometry.anchor.y) * scale + offsetY),
   };
 }
 

@@ -124,8 +124,8 @@
         "height": 1000,
         "devicePixelRatio": 1
       },
-      "sha256": "eec95cd5b273116a5bfccf74e614fe069fe265dee1471b150ae42d49c2e0f0b5",
-      "bytes": 466683
+      "sha256": "614cb43add94716e17beadd6ac7e22a045e79fe375c81f04bd1af5d6f6d73802",
+      "bytes": 475633
     },
     {
       "path": "art/feedback/reviews/forest-catapult-production-mobile-390x844-dpr2.png",
@@ -134,8 +134,8 @@
         "height": 844,
         "devicePixelRatio": 2
       },
-      "sha256": "07f1bf9c05b34f208995dbeadb56ac3078746dbe6423766804a4846d16134e1c",
-      "bytes": 346410
+      "sha256": "42d7d55ddd056f7c86ba3147c357664120213641acb8b0b722ae482681c4867b",
+      "bytes": 364153
     }
   ]
 }

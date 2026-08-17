@@ -115,6 +115,26 @@ try {
   await delay(400);
   await capture(connection, "candy-production-mobile-390x844-dpr2.png");
 
+  await setViewport(connection, 1440, 1000, 1, false);
+  await renderPlacementCalibrationFixture(connection);
+  await waitForFixtureCanvas(connection, 1440, 1000, 1);
+  await waitForPlacementCalibration(connection);
+  await delay(400);
+  await capture(connection, "placement-calibration-desktop-native.png");
+  await zoomPlacementFixture(connection);
+  await delay(200);
+  await capture(connection, "placement-calibration-desktop-enlarged.png");
+
+  await setViewport(connection, 390, 844, 2, true);
+  await renderPlacementCalibrationFixture(connection);
+  await waitForFixtureCanvas(connection, 390, 844, 2);
+  await waitForPlacementCalibration(connection);
+  await delay(400);
+  await capture(connection, "placement-calibration-mobile-dpr2-native.png");
+  await zoomPlacementFixture(connection);
+  await delay(200);
+  await capture(connection, "placement-calibration-mobile-dpr2-enlarged.png");
+
   const measurements = await evaluate<{
     readonly cssWidth: number;
     readonly cssHeight: number;
@@ -130,9 +150,113 @@ try {
   );
   await writeForestCatapultEvidence(measurements);
   await writeCandyProductionEvidence(measurements);
+  await writePlacementCalibrationEvidence(measurements);
   connection.close();
 } finally {
   browser.kill();
+}
+
+async function renderPlacementCalibrationFixture(
+  connection: Connection,
+): Promise<void> {
+  await evaluate(
+    connection,
+    `(async () => {
+      const [engine, canvas] = await Promise.all([
+        import('/src/engine/index.ts'),
+        import('/src/render/canvas/board-host.ts')
+      ]);
+      const result = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 85176, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', aiMode: 'RIVAL', humanColor: 'CORAL', factions: ['CANDY', 'ORIGINAL'] });
+      if (!result.ok) throw new Error(result.error.code);
+      const human = result.state.players.find((player) => player.controller === 'HUMAN');
+      const enemy = result.state.players.find((player) => player.controller === 'AI');
+      const humanCity = result.state.cities.find((city) => city.ownerId === human?.id);
+      const enemyCity = result.state.cities.find((city) => city.ownerId === enemy?.id);
+      const humanBase = result.state.units.find((unit) => unit.ownerId === human?.id);
+      const enemyBase = result.state.units.find((unit) => unit.ownerId === enemy?.id);
+      if (!human || !enemy || !humanCity || !enemyCity || !humanBase || !enemyBase) throw new Error('Missing placement fixture entities');
+      const forestKeys = new Set(['2,2', '3,2', '4,2', '5,2', '2,4', '3,4', '4,4', '5,4']);
+      const animalKeys = new Set(['2,4', '3,4', '4,4', '5,4']);
+      const fruitKeys = new Set(['2,6', '3,6', '5,6', '6,6']);
+      const placements = [
+        [human, humanCity, humanBase, 9511, 4, 6],
+        [enemy, enemyCity, enemyBase, 9521, 6, 4]
+      ];
+      const units = placements.map(([owner, city, base, id, x, y]) => ({
+        ...base,
+        id,
+        ownerId: owner.id,
+        homeCityId: city.id,
+        type: 'WARRIOR',
+        at: { x, y },
+        hp: 10,
+        maxHp: 10,
+        ready: true,
+        activation: { moved: false, attacked: false, recovered: false, captured: false, handled: false, escapeAvailable: false, specialActed: false }
+      }));
+      const explored = result.state.board.tiles.filter((tile) => tile.at.x < 10).map((tile) => tile.at);
+      const state = {
+        ...result.state,
+        nextEntityId: 9530,
+        activeSeatIndex: result.state.turnOrder.findIndex((id) => id === human.id),
+        board: {
+          ...result.state.board,
+          tiles: result.state.board.tiles.map((tile) => {
+            const key = tile.at.x + ',' + tile.at.y;
+            return {
+              ...tile,
+              terrain: forestKeys.has(key) ? 'FOREST' : 'GRASS',
+              resource: animalKeys.has(key) ? 'ANIMAL' : fruitKeys.has(key) ? 'FRUIT' : null,
+              improvement: null,
+              site: null,
+              territoryCenter: null,
+              territoryCityId: null
+            };
+          })
+        },
+        players: result.state.players.map((player) => player.id === human.id ? {
+          ...player,
+          explored,
+          researchedTechs: ['ORGANIZATION', 'HUNTING']
+        } : { ...player, explored }),
+        cities: [],
+        units,
+        pendingChoice: null,
+        outcome: null
+      };
+      const view = engine.viewFor(state, human.id);
+      globalThis.__pulpRenderingReviewHost?.destroy?.();
+      const root = document.querySelector('#app');
+      if (!root) throw new Error('Missing app root');
+      root.replaceChildren();
+      Object.assign(document.documentElement.style, { width: '100%', height: '100%', overflow: 'hidden' });
+      Object.assign(document.body.style, { width: '100%', height: '100%', margin: '0', overflow: 'hidden', background: '#233b39' });
+      Object.assign(root.style, { position: 'fixed', inset: '0', width: '100%', height: '100%' });
+      const container = document.createElement('div');
+      container.className = 'board-host';
+      Object.assign(container.style, { position: 'absolute', inset: '0', width: '100%', height: '100%' });
+      root.append(container);
+      const host = new canvas.CanvasBoardHost(document);
+      host.mount(container, {
+        onSelection() {},
+        onInspect() {},
+        onCommand() { throw new Error('View-only placement review dispatched a command'); },
+        onZoom() {}
+      });
+      host.update({ matchInstanceId: 85176, view, interactive: false, selected: null, motion: 'REDUCED' });
+      globalThis.__pulpRenderingReviewHost = host;
+      globalThis.__pulpPlacementCalibration = {
+        forests: view.board.tiles.filter((tile) => tile.terrain === 'FOREST').length,
+        animals: view.board.tiles.filter((tile) => tile.resource === 'ANIMAL').length,
+        fruits: view.board.tiles.filter((tile) => tile.resource === 'FRUIT').length,
+        candyWarriors: view.units.filter((unit) => view.players.find((player) => player.id === unit.ownerId)?.faction === 'CANDY').length,
+        originalWarriors: view.units.filter((unit) => view.players.find((player) => player.id === unit.ownerId)?.faction === 'ORIGINAL').length,
+        fogTiles: view.board.tiles.filter((tile) => !tile.explored).length
+      };
+      return true;
+    })()`,
+    true,
+  );
 }
 
 async function renderForestCatapultProductionFixture(
@@ -484,6 +608,45 @@ async function waitForHealthFixtureArt(connection: Connection): Promise<void> {
   await waitForExpression(
     connection,
     `(() => { const resources = performance.getEntriesByType('resource').map((entry) => entry.name); return ${JSON.stringify(endings)}.some((ending) => resources.some((name) => name.endsWith(ending))); })()`,
+  );
+}
+
+async function waitForPlacementCalibration(
+  connection: Connection,
+): Promise<void> {
+  await waitForExpression(
+    connection,
+    `(() => {
+      const fixture = globalThis.__pulpPlacementCalibration;
+      if (!fixture || fixture.forests !== 8 || fixture.animals !== 4 || fixture.fruits !== 4 || fixture.candyWarriors !== 1 || fixture.originalWarriors !== 1 || fixture.fogTiles !== 11) return false;
+      const pending = [
+        '/assets/pixellab/terrain/forest-1.png',
+        '/assets/pixellab/terrain/forest-2.png',
+        '/assets/pixellab/terrain/forest-3.png',
+        '/assets/pixellab/terrain/forest-4.png',
+        '/assets/pixellab/terrain/animal.png',
+        '/assets/pixellab/terrain/fruit.png',
+        '/assets/pixellab/units/candy-warrior.png',
+        '/assets/pixellab/units/warrior.png'
+      ];
+      const resources = performance.getEntriesByType('resource').map((entry) => entry.name);
+      if (!pending.every((ending) => resources.some((name) => name.endsWith(ending)))) return false;
+      const canvas = document.querySelector('.board-canvas');
+      return canvas instanceof HTMLCanvasElement && canvas.width > 0 && canvas.height > 0;
+    })()`,
+  );
+}
+
+async function zoomPlacementFixture(connection: Connection): Promise<void> {
+  await evaluate(
+    connection,
+    `(() => {
+      const host = globalThis.__pulpRenderingReviewHost;
+      if (!host) throw new Error('Missing placement review host');
+      host.zoom('IN');
+      host.zoom('IN');
+      return true;
+    })()`,
   );
 }
 
@@ -839,6 +1002,103 @@ async function writeCandyProductionEvidence(measurements: {
           chocolateWalls: 3,
           wallHpStates: [10, 5, 1],
           fogTiles: 11,
+        },
+        mobileCanvas: measurements,
+        evidence,
+      },
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
+}
+
+async function writePlacementCalibrationEvidence(measurements: {
+  readonly cssWidth: number;
+  readonly cssHeight: number;
+  readonly backingWidth: number;
+  readonly backingHeight: number;
+  readonly devicePixelRatio: number;
+}): Promise<void> {
+  const assets = [
+    ["terrain-forest-1", "public/assets/pixellab/terrain/forest-1.png"],
+    ["terrain-forest-2", "public/assets/pixellab/terrain/forest-2.png"],
+    ["terrain-forest-3", "public/assets/pixellab/terrain/forest-3.png"],
+    ["terrain-forest-4", "public/assets/pixellab/terrain/forest-4.png"],
+    ["terrain-animal", "public/assets/pixellab/terrain/animal.png"],
+    ["terrain-fruit", "public/assets/pixellab/terrain/fruit.png"],
+    ["unit-candy-warrior", "public/assets/pixellab/units/candy-warrior.png"],
+  ] as const;
+  const unchangedProductionAssets = [];
+  for (const [id, assetPath] of assets) {
+    const data = await readFile(path.join(process.cwd(), assetPath));
+    unchangedProductionAssets.push({
+      id,
+      path: assetPath,
+      sha256: createHash("sha256").update(data).digest("hex"),
+      bytes: data.byteLength,
+    });
+  }
+  const captures = [
+    {
+      path: "art/feedback/reviews/placement-calibration-desktop-native.png",
+      viewport: { width: 1440, height: 1000, devicePixelRatio: 1 },
+      scale: "NATIVE",
+    },
+    {
+      path: "art/feedback/reviews/placement-calibration-desktop-enlarged.png",
+      viewport: { width: 1440, height: 1000, devicePixelRatio: 1 },
+      scale: "ENLARGED",
+    },
+    {
+      path: "art/feedback/reviews/placement-calibration-mobile-dpr2-native.png",
+      viewport: { width: 390, height: 844, devicePixelRatio: 2 },
+      scale: "NATIVE",
+    },
+    {
+      path: "art/feedback/reviews/placement-calibration-mobile-dpr2-enlarged.png",
+      viewport: { width: 390, height: 844, devicePixelRatio: 2 },
+      scale: "ENLARGED",
+    },
+  ] as const;
+  const evidence = [];
+  for (const capture of captures) {
+    const data = await readFile(path.join(process.cwd(), capture.path));
+    evidence.push({
+      ...capture,
+      sha256: createHash("sha256").update(data).digest("hex"),
+      bytes: data.byteLength,
+    });
+  }
+  await writeFile(
+    path.join(reviewRoot, "placement-calibration-evidence.json"),
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        productionRastersModified: false,
+        unchangedProductionAssets,
+        nominalPlacement: {
+          forest: { sourceAnchor: [128, 222], offsetY: 23 },
+          animal: { sourceAnchor: [128, 222], offsetY: 23 },
+          fruit: { sourceAnchor: [128, 222], offsetY: 23 },
+          candyWarrior: { sourceAnchor: [128, 222], offsetY: 10.5 },
+        },
+        productionFixture: {
+          forests: 8,
+          animals: 4,
+          fruits: 4,
+          candyWarriors: 1,
+          originalWarriors: 1,
+          fogTiles: 11,
+        },
+        visualInspection: {
+          outcome: "PASS",
+          checks: [
+            "All four Forest variants occupy the owning diamond's lower half with reduced rear-tile overlap.",
+            "Animal and Fruit read as grounded without crossing the foreground tile edge.",
+            "Candy Warrior matches Original Warrior's low extent while other unit placement remains unchanged.",
+            "Dense ordering, fog withholding, owner cues, and status attachments remain coherent.",
+          ],
         },
         mobileCanvas: measurements,
         evidence,

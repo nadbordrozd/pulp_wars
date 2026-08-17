@@ -44,6 +44,15 @@ the complete visible silhouettes (including signature equipment) measure
 71.4 CSS px above and 10.2 CSS px below the tile-center contact. Keep the bottom
 area quiet: feet/equipment may use it, but no baked shadow or ground.
 
+Second-play review adds one narrow placement exception without changing that
+shared source geometry: Candy Warrior receives a 10.5 CSS px downward runtime
+offset at 1x zoom. Its accepted alpha ends at source `y=222`, while Original
+Warrior extends to `y=252`; the offset gives both a `+10.5` CSS px low extent
+from tile center and reduces Candy Warrior's rear-tile overlap by 10.5 px.
+Gumball Guard, Choco Engineer, Donut, every Original unit, and Catapult retain
+their existing runtime placement. Sorting, shadow/status anchors, picking, and
+simulation continue to use the unshifted authoritative ground coordinate.
+
 All eight standard faction sprites are the same size class and use the same
 canvas/anchor. Defender/Choco Engineer may read broader and Rider more
 forward-leaning, but none may be globally scaled larger. Donut's circular body

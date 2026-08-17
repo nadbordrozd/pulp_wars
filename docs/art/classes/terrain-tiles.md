@@ -11,14 +11,15 @@ not original assets. The following are configurable **Pulp Wars geometry
 contracts**, chosen around the observed 1.65–1.75 diamond ratio and not presented
 as Polytopia metadata.
 
-| Property                   |       Source |  Nominal display | Runtime registration |
-| -------------------------- | -----------: | ---------------: | -------------------: |
-| Ground diamond             | 256 x 148 px |  128 x 74 CSS px |    `(128,74)` source |
-| Mountain variants 1 / 2    | 256 x 296 px |  107.52 x 124.32 |   `(128,179)` source |
-| Mountain variant 3         | 256 x 296 px |    102.4 x 118.4 |   `(128,186)` source |
-| Forest canopy variants     | 256 x 296 px | 128 x 148 CSS px |   `(128,222)` source |
-| Resource/low object canvas | 256 x 296 px | 128 x 148 CSS px |   `(128,222)` source |
-| Low overlay canvas         | 256 x 148 px |  128 x 74 CSS px |    `(128,74)` source |
+| Property                   |       Source |  Nominal display |  Runtime registration |
+| -------------------------- | -----------: | ---------------: | --------------------: |
+| Ground diamond             | 256 x 148 px |  128 x 74 CSS px |     `(128,74)` source |
+| Mountain variants 1 / 2    | 256 x 296 px |  107.52 x 124.32 |    `(128,179)` source |
+| Mountain variant 3         | 256 x 296 px |    102.4 x 118.4 |    `(128,186)` source |
+| Forest canopy variants     | 256 x 296 px | 128 x 148 CSS px | `(128,222)` +23 CSS Y |
+| Fruit and Animal resources | 256 x 296 px | 128 x 148 CSS px | `(128,222)` +23 CSS Y |
+| Other low-object canvases  | 256 x 296 px | 128 x 148 CSS px |    `(128,222)` source |
+| Low overlay canvas         | 256 x 148 px |  128 x 74 CSS px |     `(128,74)` source |
 
 The accepted mountain files retain their original 256 x 296 canvases and
 generation composition around `(128,222)`. The first runtime calibration used
@@ -36,6 +37,15 @@ cannot paint into the tile below. The flat third source previously exceeded
 that sloped lower edge by up to 10.66 nominal CSS px; its clipped overflow is
 zero. This is runtime placement only: ground projection, ore, Mines, picking,
 simulation coordinates, accepted PNGs, and their hashes are unchanged.
+
+Second-play review found that the accepted Forest, Animal, and Fruit alpha all
+ended at or just above source `y=222`, leaving the owning diamond's entire lower
+half visually empty. Those three categories now retain the source `(128,222)`
+composition and 0.5 scale but receive a 23 CSS px downward runtime offset at 1x
+zoom (equivalent to the established `(128,176)` settlement registration). This
+places their visible bottoms at `20.5..23` CSS px below tile center, reduces
+rear-tile overlap by the same 23 px, and leaves Ore, Mines, Lumber Mills,
+Chocolate Walls, settlements, mountains, and every ground diamond unchanged.
 
 The logical projection is:
 
@@ -80,8 +90,9 @@ procedural marks. Produce at least three mountain silhouettes so repetition is
 controlled without changing mechanics.
 
 Forest is authoritative terrain, not Grass decoration. Its ground diamond uses
-the same 256 x 148 mask and projection; a separate 256 x 296 canopy uses
-`(128,222)` and 0.5 display scale. Preferred canopy bounds are `x=24..232`,
+the same 256 x 148 mask and projection; a separate 256 x 296 canopy uses the
+source `(128,222)` anchor, 0.5 display scale, and calibrated 23 CSS px downward
+runtime offset. Preferred canopy bounds are `x=24..232`,
 `y=24..238`; hard bounds are `x=12..244`, `y=8..252`. Trunks/contact stay
 inside the owning diamond's lower half while foliage may overhang upward.
 Provide at least four cosmetic canopy variants selected without simulation
@@ -102,13 +113,15 @@ silhouette with at most three large fruit forms and a leaf/container cue; avoid
 many small dots. Empty grass decoration can never resemble fruit.
 
 The accepted `terrain-fruit` production source is an untrimmed 256 x 296 PNG
-registered at `(128,222)` and displayed at 0.5 scale. Its alpha bounds are
-`x=83..172`, `y=150..222`, producing a 44.5 x 36 CSS px nominal marker. The
-renderer uses this accepted raster in the low-resource layer; the prior
+composed around `(128,222)`, displayed at 0.5 scale, and lowered 23 nominal CSS
+px at runtime. Its alpha bounds are `x=83..172`, `y=150..222`, producing a
+44.5 x 36 CSS px marker whose visible vertical bounds are now `-13..23` around
+tile center. The renderer uses this accepted raster in the low-resource layer; the prior
 code-native cluster remains only as its asynchronous loading/error fallback.
 
 Animal is a separate low resource on Forest using the 256 x 296 object canvas,
-`(128,222)` anchor, and 0.5 scale. It must read as wildlife rather than a unit,
+source `(128,222)` anchor, 0.5 scale, and the same 23 CSS px downward runtime
+offset as its canopy. It must read as wildlife rather than a unit,
 owner marker, or canopy decoration at 0.75x. Preferred alpha bounds are
 `x=48..208`, `y=116..238`; hard bounds are `x=24..232`, `y=84..252`. The
 canopy may frame but never hide it. Hunt removes only Animal; Forest remains.
