@@ -8,8 +8,8 @@
     },
     {
       "path": "art/pixellab/reviews/terrain-contact-sheet.png",
-      "sha256": "f0a2a979bd5a1c423cb2393f85e96b460d6ec1a7849ba7cf3fac21b7b9eee399",
-      "bytes": 281868
+      "sha256": "beba2a48d598c35d2fdd7d2062c4cdee47cb3c74dbc40349d6ad78939d0e3b64",
+      "bytes": 569066
     },
     {
       "path": "art/pixellab/reviews/buildings-contact-sheet.png",
@@ -38,7 +38,7 @@
     },
     {
       "path": "art/pixellab/reviews/map-review.html",
-      "sha256": "4d8255731a0f8482963bf8d4b2c2387b2414306a563cd574e98dde01394f2ece",
+      "sha256": "f346c4a0fa4144c9887a0450cd6e57e5719d631e2fec557d51212f5b7ea2e5ec",
       "bytes": 551
     }
   ]

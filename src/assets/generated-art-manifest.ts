@@ -33,6 +33,45 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   "terrain-forest-3": publicArtUrl("assets/pixellab/terrain/forest-3.png"),
   "terrain-forest-4": publicArtUrl("assets/pixellab/terrain/forest-4.png"),
   "terrain-animal": publicArtUrl("assets/pixellab/terrain/animal.png"),
+  "terrain-candy-grass-1": publicArtUrl(
+    "assets/pixellab/terrain/candy-grass-1.png",
+  ),
+  "terrain-candy-grass-2": publicArtUrl(
+    "assets/pixellab/terrain/candy-grass-2.png",
+  ),
+  "terrain-candy-grass-3": publicArtUrl(
+    "assets/pixellab/terrain/candy-grass-3.png",
+  ),
+  "terrain-candy-grass-4": publicArtUrl(
+    "assets/pixellab/terrain/candy-grass-4.png",
+  ),
+  "terrain-candy-mountain-1": publicArtUrl(
+    "assets/pixellab/terrain/candy-mountain-1.png",
+  ),
+  "terrain-candy-mountain-2": publicArtUrl(
+    "assets/pixellab/terrain/candy-mountain-2.png",
+  ),
+  "terrain-candy-mountain-3": publicArtUrl(
+    "assets/pixellab/terrain/candy-mountain-3.png",
+  ),
+  "terrain-candy-forest-1": publicArtUrl(
+    "assets/pixellab/terrain/candy-forest-1.png",
+  ),
+  "terrain-candy-forest-2": publicArtUrl(
+    "assets/pixellab/terrain/candy-forest-2.png",
+  ),
+  "terrain-candy-forest-3": publicArtUrl(
+    "assets/pixellab/terrain/candy-forest-3.png",
+  ),
+  "terrain-candy-forest-4": publicArtUrl(
+    "assets/pixellab/terrain/candy-forest-4.png",
+  ),
+  "terrain-candy-fruit": publicArtUrl(
+    "assets/pixellab/terrain/candy-fruit.png",
+  ),
+  "terrain-candy-animal": publicArtUrl(
+    "assets/pixellab/terrain/candy-animal.png",
+  ),
   "building-village": publicArtUrl("assets/pixellab/buildings/village.png"),
   "building-city-1": publicArtUrl("assets/pixellab/buildings/city-1.png"),
   "building-city-3": publicArtUrl("assets/pixellab/buildings/city-3.png"),

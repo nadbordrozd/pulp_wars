@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "d939bfd3c5a4ec204d5496c8c63d66bb7b7b44f96aeaf45969947d50fb39aedd",
+  "sourceManifestSha256": "ff43113bf109ef7d61dc7ee10b6b10535a87966283860bbbb0d5713aab497ce3",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -2541,6 +2541,735 @@
       "outputSha256": "1810f529c6f5f8a7e8f3d014139b381872602a3c99373b789fa1bf7e6d5e0053",
       "notes": "Accepted second attempt: exactly six scored cocoa bricks in two staggered rows form a low broad barrier; clean anchor/alpha and readable over every compatible terrain/resource/improvement without character cues.",
       "reviewedAt": "2026-08-17T01:56:58.055Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-candy-grass-1": {
+      "id": "terrain-candy-grass-1",
+      "status": "ACCEPTED",
+      "jobId": "2dbcb48c-ad01-4749-b0ae-139e673aa976",
+      "candidate": "art/pixellab/candidates/terrain-candy-grass-1.png",
+      "candidateSha256": "3efa473e2c67f746fac9371dfaafb4e36e4ac0f53143db9ce36950ea3a912ba2",
+      "providerOutputSha256": "212c959385957c8a552748efc56bb05399abdbb6ce44affcbecfa6e6d5a64eb5",
+      "width": 256,
+      "height": 148,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 15,
+        "top": 0,
+        "right": 239,
+        "bottom": 148,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet moss green and muted leaf green, one tiny warm-pink icing accent, restrained cocoa-brown line. Use case: stylized-concept. Asset type: Candy kingdom Grass ground tile at twice nominal gameplay scale. Primary request: one recognizably grassy, mostly green, deliberately quiet isometric diamond with the same broad crescent turf mark as the input reference, subtly reinterpreted as a thin cocoa candy swirl with one very small muted warm-pink icing dash tucked inside it. Style target: the accepted Candy faction's cocoa, warm-pink, cream and marshmallow motifs at much lower saturation and contrast than units, resources or cities. Composition: exact diamond vertices x128 y0, x256 y74, x128 y148 and x0 y74; at most two broad interior forms; no raised object. Constraints/invariants: preserve Grass gameplay meaning, seamless green edges, low visual noise, no false resource, owner/state cue or tile-height illusion; unmistakably Candy only on a second glance. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; loud candy carpet, cake, frosting-covered tile, chocolate ground, checkerboard, stripes across tile, sprinkles, gumdrops, lollipop, candy cane object, fruit, animal, resource, city, building, flag, ownership border, selection mark, path, star, sparkle, text, UI, high saturation, high contrast, photorealism, 3D render, edge decoration, seam.",
+        "prompt": "Use case: stylized-concept. Asset type: Candy kingdom Grass ground tile at twice nominal gameplay scale. Primary request: one recognizably grassy, mostly green, deliberately quiet isometric diamond with the same broad crescent turf mark as the input reference, subtly reinterpreted as a thin cocoa candy swirl with one very small muted warm-pink icing dash tucked inside it. Style target: the accepted Candy faction's cocoa, warm-pink, cream and marshmallow motifs at much lower saturation and contrast than units, resources or cities. Composition: exact diamond vertices x128 y0, x256 y74, x128 y148 and x0 y74; at most two broad interior forms; no raised object. Constraints/invariants: preserve Grass gameplay meaning, seamless green edges, low visual noise, no false resource, owner/state cue or tile-height illusion; unmistakably Candy only on a second glance.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; loud candy carpet, cake, frosting-covered tile, chocolate ground, checkerboard, stripes across tile, sprinkles, gumdrops, lollipop, candy cane object, fruit, animal, resource, city, building, flag, ownership border, selection mark, path, star, sparkle, text, UI, high saturation, high contrast, photorealism, 3D render, edge decoration, seam",
+        "requestSize": {
+          "width": 256,
+          "height": 148
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 148
+        },
+        "seed": 62801,
+        "noBackground": true,
+        "palette": "quiet moss green and muted leaf green, one tiny warm-pink icing accent, restrained cocoa-brown line",
+        "postprocess": "diamond-mask-reference-edges",
+        "styleReference": {
+          "id": "terrain-grass-1",
+          "usageDescription": "Input reference role: preserve the exact ground-diamond composition, quiet green value range, broad decoration scale, and seamless edge treatment. Change only the interior Candy accent described in the prompt; do not add objects or ownership marks."
+        }
+      },
+      "outputSha256": "3efa473e2c67f746fac9371dfaafb4e36e4ac0f53143db9ce36950ea3a912ba2",
+      "notes": "Sample pass retained after final clean-edge normalization: quiet green Grass, cocoa swirl and tiny icing dash remain readable at source/native/enlarged/0.625x; broad exact normal-reference edge restoration removes provider RGB matte and preserves all four seamless sides.",
+      "reviewedAt": "2026-08-17T10:51:55.349Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-candy-mountain-1": {
+      "id": "terrain-candy-mountain-1",
+      "status": "ACCEPTED",
+      "jobId": "5f9f9256-c897-4324-b38c-18f18407995a",
+      "candidate": "art/pixellab/candidates/terrain-candy-mountain-1.png",
+      "candidateSha256": "9c3c0592d92cee0cde21ec064734c175357cf9dfa9b29023bc21d24c668124af",
+      "providerOutputSha256": "a1f75c44aa5cc67417c6e6784c23035b2803b1b71ef94ab0f32bf141adf987ae",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 7,
+        "top": 40,
+        "right": 249,
+        "bottom": 252,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: cocoa brown rock-candy base, muted warm pink and cream candy strata, restrained marshmallow highlight, near-black cocoa outline. Use case: stylized-concept. Asset type: Candy kingdom Mountain terrain object. Primary request: one unmistakable mountain matching the input silhouette, built from large cocoa rock-candy planes with one broad muted warm-pink candy stratum and one cream ridge highlight; the smaller shoulder stays subordinate. Style target: accepted Candy units and Chocolate Wall palette, quieter than units and cities. Composition: isolated transparent 256 by 296 canvas, centered contact at x128 y222, southeast three-quarter downward view, one tall peak and one shoulder, two-level cel shading, no ground tile. Constraints/invariants: preserve mountain gameplay silhouette and original footprint; candy identity through material bands, never added props or symbols. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; cake slice, cupcake, ice cream cone, lollipop, candy cane pole, face, character, animal, unit, city, building, flag, ownership mark, resource, ore, gumdrop pile, rainbow, sprinkles, tiny candy pieces, snow noise, photoreal crystals, geological texture, pebbles, ground diamond, base plate, cast shadow, text, UI, 3D render.",
+        "prompt": "Use case: stylized-concept. Asset type: Candy kingdom Mountain terrain object. Primary request: one unmistakable mountain matching the input silhouette, built from large cocoa rock-candy planes with one broad muted warm-pink candy stratum and one cream ridge highlight; the smaller shoulder stays subordinate. Style target: accepted Candy units and Chocolate Wall palette, quieter than units and cities. Composition: isolated transparent 256 by 296 canvas, centered contact at x128 y222, southeast three-quarter downward view, one tall peak and one shoulder, two-level cel shading, no ground tile. Constraints/invariants: preserve mountain gameplay silhouette and original footprint; candy identity through material bands, never added props or symbols.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; cake slice, cupcake, ice cream cone, lollipop, candy cane pole, face, character, animal, unit, city, building, flag, ownership mark, resource, ore, gumdrop pile, rainbow, sprinkles, tiny candy pieces, snow noise, photoreal crystals, geological texture, pebbles, ground diamond, base plate, cast shadow, text, UI, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 62811,
+        "noBackground": true,
+        "palette": "cocoa brown rock-candy base, muted warm pink and cream candy strata, restrained marshmallow highlight, near-black cocoa outline",
+        "styleReference": {
+          "id": "terrain-mountain-1",
+          "sha256": "725afbf8ac29069ae7c9cc2c7a9474f14b261b7cd8c48bb43c732ba363d84c05",
+          "usageDescription": "Input reference role: preserve the single tall asymmetrical peak plus smaller shoulder silhouette, three-quarter camera, broad face layout, base contact, canvas occupancy and outline weight. Translate only material and palette into Candy rock."
+        }
+      },
+      "outputSha256": "9c3c0592d92cee0cde21ec064734c175357cf9dfa9b29023bc21d24c668124af",
+      "notes": "Sample gate pass: unmistakable mountain silhouette with one tall peak and subordinate shoulder; broad cocoa rock-candy planes, restrained pink stratum and cream ridge match Candy language without props or resource cues. Source/native/enlarged/0.625x and composition reviewed; base remains clean for normal mountain geometry and runtime lower-diamond clipping.",
+      "reviewedAt": "2026-08-17T10:31:27.112Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-candy-forest-1": {
+      "id": "terrain-candy-forest-1",
+      "status": "ACCEPTED",
+      "jobId": "a836d1c7-63ae-4d8b-a342-cc539d138d97",
+      "candidate": "art/pixellab/candidates/terrain-candy-forest-1.png",
+      "candidateSha256": "03ffe1474c446cdebd00b762614569e4122e60a082116b5cbd1aefbd4c0d4589",
+      "providerOutputSha256": "1799b653c15975ba877cc2cfc84217d7fecc582360b577c1851f2210d327e399",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 38,
+        "top": 56,
+        "right": 217,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted warm-pink and cream lollipop foliage, cocoa-brown trunks, small marshmallow highlights, near-black cocoa outline. Use case: stylized-concept. Asset type: Candy kingdom Forest canopy terrain object. Primary request: exactly three chunky candy trees matching the input cluster, each with one broad rounded lollipop-like canopy made from muted warm-pink and cream candy planes on a short cocoa wafer trunk; retain readable overlap and one connected forest mass rather than three icons. Style target: accepted Candy colors and cocoa outline with broad two-level shading quieter than units. Composition: isolated transparent 256 by 296 canvas, three trunks grounded around x128 y222, foliage overhang upward, no ground. Constraints/invariants: preserve Forest gameplay silhouette, count, anchor, compact footprint and empty-resource meaning; no fruit, animal, mill, owner cue or loose candy pieces. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; ordinary green broadleaf forest, Christmas tree, fruit, apples, animal, boar, wildlife, lumber mill, building, unit, face, eyes, mouth, gumdrop characters, loose candy resource, sprinkles, tiny sweets, many small leaves, dense texture, photoreal food, ground, grass patch, diamond tile, base plate, cast shadow, text, UI, 3D render.",
+        "prompt": "Use case: stylized-concept. Asset type: Candy kingdom Forest canopy terrain object. Primary request: exactly three chunky candy trees matching the input cluster, each with one broad rounded lollipop-like canopy made from muted warm-pink and cream candy planes on a short cocoa wafer trunk; retain readable overlap and one connected forest mass rather than three icons. Style target: accepted Candy colors and cocoa outline with broad two-level shading quieter than units. Composition: isolated transparent 256 by 296 canvas, three trunks grounded around x128 y222, foliage overhang upward, no ground. Constraints/invariants: preserve Forest gameplay silhouette, count, anchor, compact footprint and empty-resource meaning; no fruit, animal, mill, owner cue or loose candy pieces.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; ordinary green broadleaf forest, Christmas tree, fruit, apples, animal, boar, wildlife, lumber mill, building, unit, face, eyes, mouth, gumdrop characters, loose candy resource, sprinkles, tiny sweets, many small leaves, dense texture, photoreal food, ground, grass patch, diamond tile, base plate, cast shadow, text, UI, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 62821,
+        "noBackground": true,
+        "palette": "muted warm-pink and cream lollipop foliage, cocoa-brown trunks, small marshmallow highlights, near-black cocoa outline",
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "terrain-forest-1",
+          "sha256": "e03c9e39ad7e57e407bbb393b83721b7e10f0b9c9fc07f152abecb7325bdbca5",
+          "usageDescription": "Input reference role: preserve the exact three-tree cluster count, rounded canopy silhouette, short trunk contacts, southeast camera, source anchor and canvas occupancy. Translate only foliage and trunks into Candy-tree materials."
+        }
+      },
+      "outputSha256": "03ffe1474c446cdebd00b762614569e4122e60a082116b5cbd1aefbd4c0d4589",
+      "notes": "Sample gate pass: exactly three broad candy canopies and three cocoa trunks retain the accepted compact Forest silhouette and clear empty-forest meaning. Muted pink/cream planes and cocoa outlines are coherent with Candy references; readable at source, native, enlarged and 0.625x with no resource, owner cue, ground plate or halo.",
+      "reviewedAt": "2026-08-17T10:32:50.623Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-candy-fruit": {
+      "id": "terrain-candy-fruit",
+      "status": "ACCEPTED",
+      "jobId": "c5f3d0fa-fe74-4bd3-824c-e54bac591ecb",
+      "candidate": "art/pixellab/candidates/terrain-candy-fruit.png",
+      "candidateSha256": "a5635bf8a87629ee943f780dea95c9837a883de027106a78c12c7b74b2990aa5",
+      "providerOutputSha256": "ea639d9cb8700dfea496ed4ebe5d959fa1c9b6e3238437fcef4778fb81212f59",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 83,
+        "top": 150,
+        "right": 173,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: candy red and muted warm pink fruit, cream icing bands, cocoa-brown stem, one dark green leaf, near-black cocoa outline. Use case: stylized-concept. Asset type: Candy kingdom Fruit resource marker. Primary request: exactly three equally large candy-coated orchard fruits in the same low-wide cluster as the input, each still clearly round fruit but with one broad cream icing stripe and restrained glossy Candy highlight; retain one short shared cocoa stem and one tiny dark-green sideways leaf. Style target: accepted Candy palette, cocoa outline and broad two-level shading. Composition: isolated transparent 256 by 296 canvas, cluster contact at x128 y222, total alpha inside x52..204 y150..222. Constraints/invariants: preserve Fruit gameplay meaning, three distinct silhouettes, low marker height and readable resource scale; not loose wrapped candy or grass decoration. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; only two fruits, hidden fruit, tiny rear fruit, wrapped candy, candy wrapper, lollipop, gumdrops, many berries, grapes, tall leaf, oversized leaf, long stem, basket, bowl, crate, tree, bush, grass diamond, ground, floor, base plate, ore, crystals, mine, animal, unit, character, face, status badge, selection circle, star, text, UI, cast shadow, photoreal fruit, 3D render.",
+        "prompt": "Use case: stylized-concept. Asset type: Candy kingdom Fruit resource marker. Primary request: exactly three equally large candy-coated orchard fruits in the same low-wide cluster as the input, each still clearly round fruit but with one broad cream icing stripe and restrained glossy Candy highlight; retain one short shared cocoa stem and one tiny dark-green sideways leaf. Style target: accepted Candy palette, cocoa outline and broad two-level shading. Composition: isolated transparent 256 by 296 canvas, cluster contact at x128 y222, total alpha inside x52..204 y150..222. Constraints/invariants: preserve Fruit gameplay meaning, three distinct silhouettes, low marker height and readable resource scale; not loose wrapped candy or grass decoration.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; only two fruits, hidden fruit, tiny rear fruit, wrapped candy, candy wrapper, lollipop, gumdrops, many berries, grapes, tall leaf, oversized leaf, long stem, basket, bowl, crate, tree, bush, grass diamond, ground, floor, base plate, ore, crystals, mine, animal, unit, character, face, status badge, selection circle, star, text, UI, cast shadow, photoreal fruit, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 62831,
+        "noBackground": true,
+        "palette": "candy red and muted warm pink fruit, cream icing bands, cocoa-brown stem, one dark green leaf, near-black cocoa outline",
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "terrain-fruit",
+          "sha256": "71d28e528ab3a4676b5396ca608181dbe815bca6843b190a54586c27d6324342",
+          "usageDescription": "Input reference role: preserve exactly three equal fruit silhouettes, low-wide cluster, shared short stem and leaf cue, ground contact, source anchor, scale and canvas occupancy. Translate only fruit surfaces into Candy-coated fruit."
+        }
+      },
+      "outputSha256": "a5635bf8a87629ee943f780dea95c9837a883de027106a78c12c7b74b2990aa5",
+      "notes": "Sample gate pass: exactly three equally sized candy-coated orchard fruits remain separately readable in a low-wide cluster, with one shared stem and leaf; cream bands add Candy language without becoming wrapped candy. Source/native/enlarged/0.625x and resource composition reviewed; marker stays within the normal Fruit contact box and has no ground, status or UI cue.",
+      "reviewedAt": "2026-08-17T10:37:14.061Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-candy-grass-2": {
+      "id": "terrain-candy-grass-2",
+      "status": "ACCEPTED",
+      "jobId": "f2fd500c-db57-4e4a-b543-7780170a00a6",
+      "candidate": "art/pixellab/candidates/terrain-candy-grass-2.png",
+      "candidateSha256": "2d011f22093d6ba51b2e240b85e2128869b3ba2ba2c338a2b76e6d4326a2c6db",
+      "providerOutputSha256": "35832448dabb5a90594645a083339a9e320b1c5db2ec417b51b1a183c87671af",
+      "width": 256,
+      "height": 148,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 14,
+        "top": 0,
+        "right": 239,
+        "bottom": 148,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet moss green and muted leaf green, tiny desaturated cream and warm-pink accents. Use case: stylized-concept. Asset type: Candy Grass tile. Primary request: a COMPLETELY FILLED SOLID muted-green isometric diamond matching the reference; every pixel inside its four edges is opaque quiet grass green. Change its two turf ovals into two tiny flat low-contrast impressions, one muted cream and one desaturated warm pink. Candy palette is a restrained accent only. Exact vertices: x128 y0, x256 y74, x128 y148, x0 y74. Preserve seamless edges, low noise and ordinary Grass meaning; no raised object or gameplay cue. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; transparent or black diamond interior, outline-only tile, floating marks, candy carpet, cake, frosting, chocolate ground, checkerboard, stripes, sprinkles, gumdrops, lollipop, fruit, animal, resource, building, flag, owner border, selection, star, text, UI, high saturation, seam.",
+        "prompt": "Use case: stylized-concept. Asset type: Candy Grass tile. Primary request: a COMPLETELY FILLED SOLID muted-green isometric diamond matching the reference; every pixel inside its four edges is opaque quiet grass green. Change its two turf ovals into two tiny flat low-contrast impressions, one muted cream and one desaturated warm pink. Candy palette is a restrained accent only. Exact vertices: x128 y0, x256 y74, x128 y148, x0 y74. Preserve seamless edges, low noise and ordinary Grass meaning; no raised object or gameplay cue.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; transparent or black diamond interior, outline-only tile, floating marks, candy carpet, cake, frosting, chocolate ground, checkerboard, stripes, sprinkles, gumdrops, lollipop, fruit, animal, resource, building, flag, owner border, selection, star, text, UI, high saturation, seam",
+        "requestSize": {
+          "width": 256,
+          "height": 148
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 148
+        },
+        "seed": 62805,
+        "noBackground": false,
+        "palette": "quiet moss green and muted leaf green, tiny desaturated cream and warm-pink accents",
+        "postprocess": "diamond-mask-reference-edges",
+        "styleReference": {
+          "id": "terrain-grass-2",
+          "usageDescription": "Input reference role: preserve the exact ground-diamond composition, quiet green value range, two broad low-contrast oval decorations, and seamless edge treatment. Change only the interior decorations into subtle Candy accents."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-candy-grass-2-2b1189313563.png",
+          "candidateSha256": "2b1189313563a215bb9bf0891cc85209e9b729b8809bc9bf1d1797668de7a492",
+          "notes": "Rejected after source/native/enlarged/minimum review: provider returned an almost entirely transparent diamond with only two candy marks and a thin edge. It fails the required fully filled, recognizably green Grass field and would expose the map background.",
+          "reviewedAt": "2026-08-17T10:44:30.000Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet moss green and muted leaf green, tiny desaturated cream and warm-pink accents. Use case: stylized-concept. Asset type: Candy kingdom Grass ground tile at twice nominal gameplay scale. Primary request: one recognizably grassy, mostly green, deliberately quiet isometric diamond matching the input reference, with its two soft turf ovals subtly reinterpreted as two small flattened candy-drop impressions: one muted cream and one desaturated warm pink, both nearly the same value as the grass. Style target: accepted Candy palette used as a restrained accent only. Composition: exact diamond vertices x128 y0, x256 y74, x128 y148 and x0 y74; exactly two low flat interior marks, no raised objects. Constraints/invariants: preserve Grass gameplay meaning, seamless green edges and low visual noise; no false resource, owner or state cue; Candy identity clear without becoming a dessert floor. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; loud candy carpet, cake, frosting-covered tile, chocolate ground, checkerboard, full-tile stripes, sprinkles, gumdrops, lollipop, candy cane object, fruit, animal, resource, city, building, flag, ownership border, selection mark, path, star, sparkle, text, UI, high saturation, high contrast, photorealism, 3D render, edge decoration, seam.",
+            "prompt": "Use case: stylized-concept. Asset type: Candy kingdom Grass ground tile at twice nominal gameplay scale. Primary request: one recognizably grassy, mostly green, deliberately quiet isometric diamond matching the input reference, with its two soft turf ovals subtly reinterpreted as two small flattened candy-drop impressions: one muted cream and one desaturated warm pink, both nearly the same value as the grass. Style target: accepted Candy palette used as a restrained accent only. Composition: exact diamond vertices x128 y0, x256 y74, x128 y148 and x0 y74; exactly two low flat interior marks, no raised objects. Constraints/invariants: preserve Grass gameplay meaning, seamless green edges and low visual noise; no false resource, owner or state cue; Candy identity clear without becoming a dessert floor.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; loud candy carpet, cake, frosting-covered tile, chocolate ground, checkerboard, full-tile stripes, sprinkles, gumdrops, lollipop, candy cane object, fruit, animal, resource, city, building, flag, ownership border, selection mark, path, star, sparkle, text, UI, high saturation, high contrast, photorealism, 3D render, edge decoration, seam",
+            "requestSize": {
+              "width": 256,
+              "height": 148
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 148
+            },
+            "seed": 62802,
+            "noBackground": true,
+            "palette": "quiet moss green and muted leaf green, tiny desaturated cream and warm-pink accents",
+            "postprocess": "diamond-mask-reference-edges",
+            "styleReference": {
+              "id": "terrain-grass-2",
+              "sha256": "7c81a60a3998365251728baa5d66f99ec6cdcf8696f3e9357bf79540ae100d49",
+              "usageDescription": "Input reference role: preserve the exact ground-diamond composition, quiet green value range, two broad low-contrast oval decorations, and seamless edge treatment. Change only the interior decorations into subtle Candy accents."
+            }
+          }
+        }
+      ],
+      "notes": "Second generation pass accepted after rejecting the transparent first attempt. The filled quiet-green field and two small Candy impressions pass source/native/enlarged/0.625x review; deterministic diamond alpha, zeroed transparent RGB and broad exact Grass-2 reference-edge restoration remove matte and preserve seams without gameplay cues.",
+      "outputSha256": "2d011f22093d6ba51b2e240b85e2128869b3ba2ba2c338a2b76e6d4326a2c6db",
+      "reviewedAt": "2026-08-17T10:52:04.175Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-candy-mountain-2": {
+      "id": "terrain-candy-mountain-2",
+      "status": "ACCEPTED",
+      "jobId": "769eedf3-d918-4ed1-9bb9-277ca0047837",
+      "candidate": "art/pixellab/candidates/terrain-candy-mountain-2.png",
+      "candidateSha256": "67b9bbea25b4f474de34695e3c98cf37412e2166bfd211b10d68d9101c654af2",
+      "providerOutputSha256": "c5dcc5c0719da4b8da452f3989755725b1ab1f71c93ed4a681ebef600e9860c7",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 7,
+        "top": 40,
+        "right": 249,
+        "bottom": 252,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: cocoa brown rock-candy base, muted warm pink and cream candy strata, restrained marshmallow highlight, near-black cocoa outline. Use case: stylized-concept. Asset type: Candy kingdom Mountain terrain object. Primary request: exactly two unequal rounded mountain peaks matching the input silhouette, built from broad cocoa rock-candy planes with one restrained cream stripe crossing both and a muted warm-pink shaded face. Style target: accepted Candy palette and Chocolate Wall shading, quieter than units. Composition: isolated transparent 256 by 296 object, centered contact at x128 y222, southeast three-quarter downward view, exactly two peaks and no ground tile. Constraints/invariants: preserve mountain gameplay meaning, original broad footprint and two-level planes; candy bands only, no props or resource cues. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; cake slice, cupcake, ice cream cone, lollipop, candy cane pole, face, character, animal, unit, city, building, flag, ownership mark, resource, ore, gumdrop pile, rainbow, sprinkles, tiny candy pieces, snow noise, photoreal crystals, geological texture, pebbles, extra peaks, ground diamond, base plate, cast shadow, text, UI, 3D render.",
+        "prompt": "Use case: stylized-concept. Asset type: Candy kingdom Mountain terrain object. Primary request: exactly two unequal rounded mountain peaks matching the input silhouette, built from broad cocoa rock-candy planes with one restrained cream stripe crossing both and a muted warm-pink shaded face. Style target: accepted Candy palette and Chocolate Wall shading, quieter than units. Composition: isolated transparent 256 by 296 object, centered contact at x128 y222, southeast three-quarter downward view, exactly two peaks and no ground tile. Constraints/invariants: preserve mountain gameplay meaning, original broad footprint and two-level planes; candy bands only, no props or resource cues.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; cake slice, cupcake, ice cream cone, lollipop, candy cane pole, face, character, animal, unit, city, building, flag, ownership mark, resource, ore, gumdrop pile, rainbow, sprinkles, tiny candy pieces, snow noise, photoreal crystals, geological texture, pebbles, extra peaks, ground diamond, base plate, cast shadow, text, UI, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 62812,
+        "noBackground": true,
+        "palette": "cocoa brown rock-candy base, muted warm pink and cream candy strata, restrained marshmallow highlight, near-black cocoa outline",
+        "styleReference": {
+          "id": "terrain-mountain-2",
+          "sha256": "2d5fce2c90c1d7823055bb92f8e2172b9388c231c224e78f80f4c1fd66074598",
+          "usageDescription": "Input reference role: preserve the exact two unequal rounded-peak silhouette, three-quarter camera, broad face layout, base contact, canvas occupancy and outline weight. Translate only material and palette into Candy rock."
+        }
+      },
+      "outputSha256": "67b9bbea25b4f474de34695e3c98cf37412e2166bfd211b10d68d9101c654af2",
+      "notes": "Batch pass: exactly two unequal peaks retain the normal variant footprint; cocoa, muted pink and broad cream strata read as candy rock while remaining quieter than units. Source/native/enlarged/0.625x and composition reviewed; clean transparent edge and no prop, resource or owner cue.",
+      "reviewedAt": "2026-08-17T10:41:55.944Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-candy-mountain-3": {
+      "id": "terrain-candy-mountain-3",
+      "status": "ACCEPTED",
+      "jobId": "33c55cfa-263b-4b8e-b779-009d8c675b78",
+      "candidate": "art/pixellab/candidates/terrain-candy-mountain-3.png",
+      "candidateSha256": "4c6921bb9edfd152a1f5243962779e38ed851e177fa84a9e4216c9c9c4567ee1",
+      "providerOutputSha256": "1cf9d32bc60348a624c19342b6b03acaf7e36b5aec0f00341ae3110d510c4c89",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 20,
+        "top": 30,
+        "right": 235,
+        "bottom": 262,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: cocoa brown rock-candy base, muted warm pink and cream candy strata, restrained marshmallow highlight, near-black cocoa outline. Use case: stylized-concept. Asset type: Candy kingdom Mountain terrain object. Primary request: one tall wide split-top crag matching the input silhouette, made of exactly three broad cocoa and muted-pink rock-candy faces with a single cream candy seam dividing the split peaks. Style target: accepted Candy palette and Chocolate Wall broad planes, quieter than units. Composition: isolated transparent 256 by 296 object, centered contact at x128 y222, southeast three-quarter downward view, no low boulder pile or ground tile. Constraints/invariants: preserve the original tall flat-base mountain footprint and gameplay read; candy identity only through large material planes. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; cake slice, cupcake, ice cream cone, lollipop, candy cane pole, face, character, animal, unit, city, building, flag, ownership mark, resource, ore, gumdrop pile, rainbow, sprinkles, tiny candy pieces, snow noise, photoreal crystals, geological texture, pebbles, low boulders, ground diamond, base plate, cast shadow, text, UI, 3D render.",
+        "prompt": "Use case: stylized-concept. Asset type: Candy kingdom Mountain terrain object. Primary request: one tall wide split-top crag matching the input silhouette, made of exactly three broad cocoa and muted-pink rock-candy faces with a single cream candy seam dividing the split peaks. Style target: accepted Candy palette and Chocolate Wall broad planes, quieter than units. Composition: isolated transparent 256 by 296 object, centered contact at x128 y222, southeast three-quarter downward view, no low boulder pile or ground tile. Constraints/invariants: preserve the original tall flat-base mountain footprint and gameplay read; candy identity only through large material planes.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; cake slice, cupcake, ice cream cone, lollipop, candy cane pole, face, character, animal, unit, city, building, flag, ownership mark, resource, ore, gumdrop pile, rainbow, sprinkles, tiny candy pieces, snow noise, photoreal crystals, geological texture, pebbles, low boulders, ground diamond, base plate, cast shadow, text, UI, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 62813,
+        "noBackground": true,
+        "palette": "cocoa brown rock-candy base, muted warm pink and cream candy strata, restrained marshmallow highlight, near-black cocoa outline",
+        "styleReference": {
+          "id": "terrain-mountain-3",
+          "sha256": "de389225ed25cb9a34d1fcbabed740fdc3fb9d8f0ebe79a38b607c86cc0b749a",
+          "usageDescription": "Input reference role: preserve the tall wide split-top crag silhouette, three broad faces, three-quarter camera, flat base contact, canvas occupancy and outline weight. Translate only material and palette into Candy rock."
+        }
+      },
+      "outputSha256": "4c6921bb9edfd152a1f5243962779e38ed851e177fa84a9e4216c9c9c4567ee1",
+      "notes": "Batch pass: tall split-top crag and flat contact retain the calibrated third-mountain silhouette; three broad cocoa/pink faces and one cream seam provide coherent Candy material without small detail. Source/native/enlarged/0.625x and composition reviewed; transparent edge, no resource or state mark.",
+      "reviewedAt": "2026-08-17T10:42:09.129Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-candy-forest-2": {
+      "id": "terrain-candy-forest-2",
+      "status": "ACCEPTED",
+      "jobId": "8d8fbedd-c622-4d09-b6f7-4263b74b51ce",
+      "candidate": "art/pixellab/candidates/terrain-candy-forest-2.png",
+      "candidateSha256": "2a3338d0e7339cc9449d902bf89340f212a183e1c813b0104623ea32795b31f1",
+      "providerOutputSha256": "3579ce3855d6e7c1eb80090a3651e607ad748bbcd68162d10071de3ba208dd13",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 12,
+        "top": 84,
+        "right": 244,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted warm-pink and cream lollipop foliage, cocoa-brown trunks, small marshmallow highlights, near-black cocoa outline. Use case: stylized-concept. Asset type: Candy kingdom Forest canopy terrain object. Primary request: exactly three chunky candy trees matching the input low-wide silhouette: two large horizontally spread rounded lollipop canopies left and right, one smaller rear candy canopy joining them, and exactly three short cocoa wafer trunks. Use muted warm-pink and cream broad planes, no detached sweets. Composition: isolated transparent 256 by 296 canvas, contacts around x128 y222, no ground. Constraints/invariants: preserve Forest gameplay read, count, anchor, compact footprint and empty-resource meaning; no fruit, animal, mill or owner cue. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; ordinary green broadleaf forest, Christmas tree, fruit, apples, animal, boar, wildlife, lumber mill, building, unit, face, gumdrop characters, loose candy resource, sprinkles, tiny sweets, many small leaves, dense texture, photoreal food, ground, grass patch, diamond tile, base plate, cast shadow, text, UI, 3D render.",
+        "prompt": "Use case: stylized-concept. Asset type: Candy kingdom Forest canopy terrain object. Primary request: exactly three chunky candy trees matching the input low-wide silhouette: two large horizontally spread rounded lollipop canopies left and right, one smaller rear candy canopy joining them, and exactly three short cocoa wafer trunks. Use muted warm-pink and cream broad planes, no detached sweets. Composition: isolated transparent 256 by 296 canvas, contacts around x128 y222, no ground. Constraints/invariants: preserve Forest gameplay read, count, anchor, compact footprint and empty-resource meaning; no fruit, animal, mill or owner cue.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; ordinary green broadleaf forest, Christmas tree, fruit, apples, animal, boar, wildlife, lumber mill, building, unit, face, gumdrop characters, loose candy resource, sprinkles, tiny sweets, many small leaves, dense texture, photoreal food, ground, grass patch, diamond tile, base plate, cast shadow, text, UI, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 62822,
+        "noBackground": true,
+        "palette": "muted warm-pink and cream lollipop foliage, cocoa-brown trunks, small marshmallow highlights, near-black cocoa outline",
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "terrain-forest-2",
+          "sha256": "8f6732f82ea75f9aa66d71647b03fc4d0124091ddb4f9a84d980da9b516690b4",
+          "usageDescription": "Input reference role: preserve the low-wide three-tree arrangement with two dominant side canopies and one smaller rear canopy, short contacts, source anchor and canvas occupancy. Translate only materials and palette into Candy trees."
+        }
+      },
+      "outputSha256": "2a3338d0e7339cc9449d902bf89340f212a183e1c813b0104623ea32795b31f1",
+      "notes": "Batch pass: exact low-wide three-tree arrangement, three trunks and distinct rear canopy remain readable at minimum zoom. Broad muted pink/cream candy planes and cocoa trunks match the class without fruit/resource cues; source/native/enlarged/0.625x and composition reviewed.",
+      "reviewedAt": "2026-08-17T10:42:19.508Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-candy-forest-3": {
+      "id": "terrain-candy-forest-3",
+      "status": "ACCEPTED",
+      "jobId": "68b2fee3-1051-433b-ade8-503a627bbd1c",
+      "candidate": "art/pixellab/candidates/terrain-candy-forest-3.png",
+      "candidateSha256": "29474ad6e3839c379bd940242bd541dda5179811e1cd143042de9fad1134ffcc",
+      "providerOutputSha256": "7409969fe447e566becba966f270d6524e4f202d811d7a18dab92b9f7ef725fe",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 39,
+        "top": 32,
+        "right": 216,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted warm-pink and cream lollipop foliage, cocoa-brown trunks, small marshmallow highlights, near-black cocoa outline. Use case: stylized-concept. Asset type: Candy kingdom Forest canopy terrain object. Primary request: exactly THREE chunky candy trees matching the input tall-narrow compact silhouette: ONE broad central tree with ONE single smooth uninterrupted muted-pink oval lollipop canopy, framed by exactly TWO smaller cream oval canopies, with exactly THREE visible short cocoa wafer trunks. Each canopy has only one broad shade plane and one simple highlight; no internal lobes, bumps or texture. Composition: isolated transparent 256 by 296 canvas, contacts around x128 y222, no ground. Constraints/invariants: preserve Forest gameplay read, exact three-tree count, source anchor and empty-resource meaning; no fruit, animal, mill, owner cue or loose candies. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; multi-lobed central canopy, bumpy canopy, overlapping pink blobs, texture, grain, scratches, ordinary green forest, Christmas tree, fourth tree, extra crown, fruit, apples, animal, boar, wildlife, lumber mill, building, unit, face, gumdrop characters, loose candy resource, sprinkles, tiny sweets, many small leaves, photoreal food, ground, grass patch, diamond tile, base plate, cast shadow, text, UI, 3D render.",
+        "prompt": "Use case: stylized-concept. Asset type: Candy kingdom Forest canopy terrain object. Primary request: exactly THREE chunky candy trees matching the input tall-narrow compact silhouette: ONE broad central tree with ONE single smooth uninterrupted muted-pink oval lollipop canopy, framed by exactly TWO smaller cream oval canopies, with exactly THREE visible short cocoa wafer trunks. Each canopy has only one broad shade plane and one simple highlight; no internal lobes, bumps or texture. Composition: isolated transparent 256 by 296 canvas, contacts around x128 y222, no ground. Constraints/invariants: preserve Forest gameplay read, exact three-tree count, source anchor and empty-resource meaning; no fruit, animal, mill, owner cue or loose candies.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; multi-lobed central canopy, bumpy canopy, overlapping pink blobs, texture, grain, scratches, ordinary green forest, Christmas tree, fourth tree, extra crown, fruit, apples, animal, boar, wildlife, lumber mill, building, unit, face, gumdrop characters, loose candy resource, sprinkles, tiny sweets, many small leaves, photoreal food, ground, grass patch, diamond tile, base plate, cast shadow, text, UI, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 62825,
+        "noBackground": true,
+        "palette": "muted warm-pink and cream lollipop foliage, cocoa-brown trunks, small marshmallow highlights, near-black cocoa outline",
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "terrain-forest-3",
+          "sha256": "36844ed0990803b35d7f28f86b9719fb20c2f244877ffa67bdf6325e932e0a6b",
+          "usageDescription": "Input reference role: preserve the tall-narrow three-tree arrangement with one broad central canopy and two smaller staggered trees, short contacts, source anchor and canvas occupancy. Translate only materials and palette into Candy trees."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-candy-forest-3-ccb7035218b0.png",
+          "candidateSha256": "ccb7035218b083aa280dd8ae35b49906fb1fe530008903425e7b4ab4607af676",
+          "notes": "Rejected after source/native/enlarged/minimum review: the central canopy drifted into a noisy multi-lobed textured form, obscuring the exact three-tree silhouette and violating the broad clean two-plane terrain detail budget.",
+          "reviewedAt": "2026-08-17T10:40:39.670Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted warm-pink and cream lollipop foliage, cocoa-brown trunks, small marshmallow highlights, near-black cocoa outline. Use case: stylized-concept. Asset type: Candy kingdom Forest canopy terrain object. Primary request: exactly three chunky candy trees matching the input tall-narrow compact silhouette: one broad central rounded lollipop canopy framed by two smaller staggered candy canopies, with exactly three short cocoa wafer trunks. Use muted warm-pink and cream broad planes with strong cocoa outline. Composition: isolated transparent 256 by 296 canvas, contacts around x128 y222, no ground. Constraints/invariants: preserve Forest gameplay read, count, anchor and empty-resource meaning; no fruit, animal, mill, owner cue or loose candies. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; ordinary green broadleaf forest, Christmas tree, fruit, apples, animal, boar, wildlife, lumber mill, building, unit, face, gumdrop characters, loose candy resource, sprinkles, tiny sweets, many small leaves, dense texture, photoreal food, ground, grass patch, diamond tile, base plate, cast shadow, text, UI, 3D render.",
+            "prompt": "Use case: stylized-concept. Asset type: Candy kingdom Forest canopy terrain object. Primary request: exactly three chunky candy trees matching the input tall-narrow compact silhouette: one broad central rounded lollipop canopy framed by two smaller staggered candy canopies, with exactly three short cocoa wafer trunks. Use muted warm-pink and cream broad planes with strong cocoa outline. Composition: isolated transparent 256 by 296 canvas, contacts around x128 y222, no ground. Constraints/invariants: preserve Forest gameplay read, count, anchor and empty-resource meaning; no fruit, animal, mill, owner cue or loose candies.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; ordinary green broadleaf forest, Christmas tree, fruit, apples, animal, boar, wildlife, lumber mill, building, unit, face, gumdrop characters, loose candy resource, sprinkles, tiny sweets, many small leaves, dense texture, photoreal food, ground, grass patch, diamond tile, base plate, cast shadow, text, UI, 3D render",
+            "requestSize": {
+              "width": 256,
+              "height": 296
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 296
+            },
+            "seed": 62823,
+            "noBackground": true,
+            "palette": "muted warm-pink and cream lollipop foliage, cocoa-brown trunks, small marshmallow highlights, near-black cocoa outline",
+            "groundContactY": 222,
+            "styleReference": {
+              "id": "terrain-forest-3",
+              "sha256": "36844ed0990803b35d7f28f86b9719fb20c2f244877ffa67bdf6325e932e0a6b",
+              "usageDescription": "Input reference role: preserve the tall-narrow three-tree arrangement with one broad central canopy and two smaller staggered trees, short contacts, source anchor and canvas occupancy. Translate only materials and palette into Candy trees."
+            }
+          }
+        }
+      ],
+      "outputSha256": "29474ad6e3839c379bd940242bd541dda5179811e1cd143042de9fad1134ffcc",
+      "notes": "Second batch pass after rejecting the noisy first attempt: this version closely preserves the accepted normal variant's tall compact three-tree canopy mass and exactly three trunks, with clean broad pink/cream planes and no texture grain. Source/native/enlarged/0.625x and composition reviewed; Forest remains readable with no resource, ground or state cue.",
+      "reviewedAt": "2026-08-17T10:45:07.162Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-candy-forest-4": {
+      "id": "terrain-candy-forest-4",
+      "status": "ACCEPTED",
+      "jobId": "a197820f-2ef4-4eda-9c10-193bb67904a5",
+      "candidate": "art/pixellab/candidates/terrain-candy-forest-4.png",
+      "candidateSha256": "0615474a05c5cb6e9ab9ef030fa408e1fa9e383f0add9478ed424af80d3d3e79",
+      "providerOutputSha256": "9a092102160743934a2edc9a4c0f40a1efccf2f0a709ffb68b48c069f34d19f8",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 32,
+        "top": 12,
+        "right": 223,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted warm-pink and cream lollipop foliage, cocoa-brown trunks, small marshmallow highlights, near-black cocoa outline. Use case: stylized-concept. Asset type: Candy kingdom Forest canopy terrain object. Primary request: exactly four chunky candy trees matching the input diagonal silhouette, staggered lower-left to upper-right, each with one rounded muted pink-or-cream lollipop canopy and one short cocoa wafer trunk; preserve readable overlaps and no fifth crown. Composition: isolated transparent 256 by 296 canvas, contacts around x128 y222, no ground. Constraints/invariants: preserve Forest gameplay read, four-tree count, anchor, compact footprint and empty-resource meaning; no fruit, animal, mill, owner cue or loose candies. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; ordinary green broadleaf forest, Christmas tree, fifth tree, extra crown, fruit, apples, animal, boar, wildlife, lumber mill, building, unit, face, gumdrop characters, loose candy resource, sprinkles, tiny sweets, many small leaves, dense texture, photoreal food, ground, grass patch, diamond tile, base plate, cast shadow, text, UI, 3D render.",
+        "prompt": "Use case: stylized-concept. Asset type: Candy kingdom Forest canopy terrain object. Primary request: exactly four chunky candy trees matching the input diagonal silhouette, staggered lower-left to upper-right, each with one rounded muted pink-or-cream lollipop canopy and one short cocoa wafer trunk; preserve readable overlaps and no fifth crown. Composition: isolated transparent 256 by 296 canvas, contacts around x128 y222, no ground. Constraints/invariants: preserve Forest gameplay read, four-tree count, anchor, compact footprint and empty-resource meaning; no fruit, animal, mill, owner cue or loose candies.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; ordinary green broadleaf forest, Christmas tree, fifth tree, extra crown, fruit, apples, animal, boar, wildlife, lumber mill, building, unit, face, gumdrop characters, loose candy resource, sprinkles, tiny sweets, many small leaves, dense texture, photoreal food, ground, grass patch, diamond tile, base plate, cast shadow, text, UI, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 62824,
+        "noBackground": true,
+        "palette": "muted warm-pink and cream lollipop foliage, cocoa-brown trunks, small marshmallow highlights, near-black cocoa outline",
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "terrain-forest-4",
+          "sha256": "a00bb57032499089fd236170bf2a60dfa44a7d9274d31a662ae1d06ac957bc80",
+          "usageDescription": "Input reference role: preserve the compact diagonal four-tree arrangement, exactly four crowns and trunks, short contacts, source anchor and canvas occupancy. Translate only materials and palette into Candy trees."
+        }
+      },
+      "outputSha256": "0615474a05c5cb6e9ab9ef030fa408e1fa9e383f0add9478ed424af80d3d3e79",
+      "notes": "Batch pass: exactly four rounded canopies and four cocoa trunks form a distinct compact diagonal variant with clean broad shading. Forest silhouette, anchor and empty-resource meaning survive source/native/enlarged/0.625x review; no extra crown, loose candy, ground plate or state cue.",
+      "reviewedAt": "2026-08-17T10:42:30.829Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-candy-animal": {
+      "id": "terrain-candy-animal",
+      "status": "ACCEPTED",
+      "jobId": "a3f9c836-34dc-4965-9764-cb0563f0e303",
+      "candidate": "art/pixellab/candidates/terrain-candy-animal.png",
+      "candidateSha256": "74bc017e812becb6d435e6401ddf28800132c61660d6683b7c0d7941cbe8edd6",
+      "providerOutputSha256": "4efeacfd758851b8072c477c16f8e1cee6d99f87e439da070cf28085d4de917d",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 53,
+        "top": 84,
+        "right": 202,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted raspberry-pink gummy body, cream snout and tusks, cocoa-brown hooves, restrained marshmallow highlight, near-black cocoa outline. Use case: stylized-concept. Asset type: Candy kingdom Animal resource marker. Primary request: one cute chunky gummy boar matching the input wildlife silhouette, with a broad low muted raspberry-pink candy body, oversized cream snout, two tiny cream tusks, cocoa hooves and one simple marshmallow highlight; keep all four short legs planted. Style target: accepted Candy palette and cocoa outline with flat two-level shading, not realistic translucent candy. Composition: isolated transparent 256 by 296 canvas, contact at x128 y222, alpha inside x24..232 y84..252. Constraints/invariants: preserve Animal gameplay meaning, calm resource pose and size smaller/quieter than a unit; no rider, armor, weapon, character expression or scenery. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; person, rider, saddle, armor, weapon, unit pose, aggressive combat pose, pet collar, dead animal, hunting scene, gore, transparent glass gummy, realistic gelatin, many candy pieces, sprinkles, forest canopy, trees, fruit, ground, grass, diamond tile, base plate, resource badge, letter, text, UI, cast shadow, photorealism, 3D render.",
+        "prompt": "Use case: stylized-concept. Asset type: Candy kingdom Animal resource marker. Primary request: one cute chunky gummy boar matching the input wildlife silhouette, with a broad low muted raspberry-pink candy body, oversized cream snout, two tiny cream tusks, cocoa hooves and one simple marshmallow highlight; keep all four short legs planted. Style target: accepted Candy palette and cocoa outline with flat two-level shading, not realistic translucent candy. Composition: isolated transparent 256 by 296 canvas, contact at x128 y222, alpha inside x24..232 y84..252. Constraints/invariants: preserve Animal gameplay meaning, calm resource pose and size smaller/quieter than a unit; no rider, armor, weapon, character expression or scenery.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; person, rider, saddle, armor, weapon, unit pose, aggressive combat pose, pet collar, dead animal, hunting scene, gore, transparent glass gummy, realistic gelatin, many candy pieces, sprinkles, forest canopy, trees, fruit, ground, grass, diamond tile, base plate, resource badge, letter, text, UI, cast shadow, photorealism, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 62832,
+        "noBackground": true,
+        "palette": "muted raspberry-pink gummy body, cream snout and tusks, cocoa-brown hooves, restrained marshmallow highlight, near-black cocoa outline",
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "terrain-animal",
+          "sha256": "db98acecba2d4a0b7a82e947da12dfa7a6761c645e951f789023efe819a0b536",
+          "usageDescription": "Input reference role: preserve the single low chunky boar silhouette, calm wildlife pose, southeast three-quarter camera, four planted legs, resource scale, source anchor and canvas occupancy. Translate only body material and palette into a Candy animal."
+        }
+      },
+      "outputSha256": "74bc017e812becb6d435e6401ddf28800132c61660d6683b7c0d7941cbe8edd6",
+      "notes": "Batch pass: single low chunky boar, calm wildlife stance, four planted legs, oversized snout and tusks remain unmistakable at minimum zoom. Muted raspberry gummy palette, cocoa hooves and cream/marshmallow highlights establish Candy identity without unit gear or scenery; source/native/enlarged/0.625x and composition reviewed.",
+      "reviewedAt": "2026-08-17T10:42:42.569Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-candy-grass-3": {
+      "id": "terrain-candy-grass-3",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/terrain-candy-grass-3.png",
+      "candidateSha256": "55d3607fa679de5bb240cc319cd2974f784798331ccc398e5be2d27641dbbd17",
+      "width": 256,
+      "height": 148,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 17,
+        "top": 0,
+        "right": 241,
+        "bottom": 148,
+        "empty": false
+      },
+      "notes": "Deterministic 180-degree Candy Grass-1 derivation passes source/native/enlarged/0.625x review. Rotation preserves exact palette, clean alpha, seam treatment and quiet Candy accent while relocating the swirl for repetition control; all four edge directions pass the 8x8 adjacency sheet.",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: inherited exactly from terrain-candy-grass-1. Deterministic 180-degree rotation variant of accepted PixelLab Candy Grass 1, preserving its exact footprint, quiet green palette, cocoa swirl and tiny muted icing accent while relocating decoration for repetition control. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No new generated content; deterministic reference transform only..",
+        "prompt": "Deterministic 180-degree rotation variant of accepted PixelLab Candy Grass 1, preserving its exact footprint, quiet green palette, cocoa swirl and tiny muted icing accent while relocating decoration for repetition control.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No new generated content; deterministic reference transform only.",
+        "requestSize": {
+          "width": 256,
+          "height": 148
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 148
+        },
+        "seed": 62803,
+        "noBackground": true,
+        "palette": "inherited exactly from terrain-candy-grass-1",
+        "postprocess": "reference-rotate-180-diamond",
+        "styleReference": {
+          "id": "terrain-candy-grass-1",
+          "sha256": "3efa473e2c67f746fac9371dfaafb4e36e4ac0f53143db9ce36950ea3a912ba2"
+        }
+      },
+      "outputSha256": "55d3607fa679de5bb240cc319cd2974f784798331ccc398e5be2d27641dbbd17",
+      "reviewedAt": "2026-08-17T10:52:35.827Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-candy-grass-4": {
+      "id": "terrain-candy-grass-4",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/terrain-candy-grass-4.png",
+      "candidateSha256": "f41a7529506eb0a8e274fe6f085daddd0dd63fd7d31e95bff01aaccf9eb78bed",
+      "width": 256,
+      "height": 148,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 17,
+        "top": 0,
+        "right": 242,
+        "bottom": 148,
+        "empty": false
+      },
+      "notes": "Deterministic 180-degree Candy Grass-2 derivation passes source/native/enlarged/0.625x review. Rotation preserves the filled quiet-green field, exact clean edge and two subtle Candy impressions while changing their placement; all edge directions pass the 8x8 adjacency sheet.",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: inherited exactly from terrain-candy-grass-2. Deterministic 180-degree rotation variant of accepted PixelLab Candy Grass 2, preserving its exact footprint, quiet green palette and subtle Candy-drop impressions while relocating decoration for repetition control. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No new generated content; deterministic reference transform only..",
+        "prompt": "Deterministic 180-degree rotation variant of accepted PixelLab Candy Grass 2, preserving its exact footprint, quiet green palette and subtle Candy-drop impressions while relocating decoration for repetition control.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No new generated content; deterministic reference transform only.",
+        "requestSize": {
+          "width": 256,
+          "height": 148
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 148
+        },
+        "seed": 62804,
+        "noBackground": true,
+        "palette": "inherited exactly from terrain-candy-grass-2",
+        "postprocess": "reference-rotate-180-diamond",
+        "styleReference": {
+          "id": "terrain-candy-grass-2",
+          "sha256": "2d011f22093d6ba51b2e240b85e2128869b3ba2ba2c338a2b76e6d4326a2c6db"
+        }
+      },
+      "outputSha256": "f41a7529506eb0a8e274fe6f085daddd0dd63fd7d31e95bff01aaccf9eb78bed",
+      "reviewedAt": "2026-08-17T10:52:44.671Z",
       "reviewChecks": {
         "source": true,
         "native": true,

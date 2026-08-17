@@ -211,3 +211,21 @@ wrong camera, excessive detail, or palette competition with units. Test all
 four diamond edges against every compatible variant. Batch only after three
 assets pass individual review and the recipe is stable; inspect batch contact
 sheets and every suspected failure individually.
+
+### Candy territory variants
+
+The accepted Candy asset family mirrors the normal class geometry exactly:
+four 256 x 148 Grass diamonds; three 256 x 296 Mountains; four 256 x 296
+Forest canopies; and 256 x 296 Fruit and Animal resources. Their source anchors,
+runtime display geometry, hard bounds, masks, sorting and gameplay meaning do
+not change. Ownership-based selection is a renderer concern and is not encoded
+in these rasters.
+
+Candy Grass remains a quiet green field. Its cocoa swirl or small muted
+pink/cream impressions are low-contrast decoration only and cannot imply a
+resource, owner, selection, path or state. The object classes may use clearer
+cocoa, warm-pink, cream and marshmallow material bands, but remain quieter and
+simpler than units and cities.
+
+The checked-in production and rejection record is
+[`art/pixellab/reviews/candy-terrain/README.md`](../../../art/pixellab/reviews/candy-terrain/README.md).

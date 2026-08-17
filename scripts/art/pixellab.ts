@@ -53,6 +53,7 @@ interface Recipe {
   readonly includeFactionLanguage?: boolean;
   readonly requestNoBackground?: boolean;
   readonly styleReference?: string;
+  readonly styleReferenceUsage?: string;
 }
 
 interface RequestSnapshot {
@@ -71,6 +72,7 @@ interface RequestSnapshot {
   readonly styleReference?: {
     readonly id: string;
     readonly sha256?: string;
+    readonly usageDescription?: string;
   };
 }
 
@@ -199,10 +201,30 @@ async function main(): Promise<void> {
       const recipe = source.recipes.find((candidate) => candidate.id === id);
       if (recipe === undefined) throw new Error(`Unknown recipe ${id}`);
       const candidate = path.join(CANDIDATE_ROOT, `${id}.png`);
-      await normalizeToHardBounds(candidate, recipe);
+      if (recipe.postprocess?.startsWith("diamond-mask"))
+        await applyDiamondAlpha(candidate, recipe.outputSize);
+      else await normalizeToHardBounds(candidate, recipe);
+      if (
+        recipe.postprocess === "diamond-mask-reference-edges" &&
+        recipe.styleReference !== undefined
+      ) {
+        const referenceRecipe = source.recipes.find(
+          (entry) => entry.id === recipe.styleReference,
+        );
+        if (referenceRecipe === undefined)
+          throw new Error(`Unknown edge reference ${recipe.styleReference}`);
+        await restoreDiamondReferenceEdges(
+          candidate,
+          path.join(ROOT, referenceRecipe.output),
+          recipe.outputSize,
+        );
+      }
       const inspection = await inspectPng(candidate);
       assertTechnical(recipe, inspection);
+      if (recipe.postprocess?.startsWith("diamond-mask"))
+        await assertDiamondAlpha(candidate, recipe.outputSize);
       (generated.records as Record<string, GenerationRecord>)[id] = {
+        ...generated.records[id],
         id,
         status: "CANDIDATE",
         candidate: path.relative(ROOT, candidate).replaceAll("\\", "/"),
@@ -211,8 +233,11 @@ async function main(): Promise<void> {
         height: inspection.height,
         hasAlpha: inspection.hasAlpha,
         alphaBounds: inspection.alphaBounds,
-        notes:
-          "Deterministic hard-bounds normalization applied by checked-in pipeline.",
+        notes: recipe.postprocess?.startsWith("diamond-mask")
+          ? "Deterministic supersampled diamond alpha mask applied by checked-in pipeline."
+          : "Deterministic hard-bounds normalization applied by checked-in pipeline.",
+        request:
+          generated.records[id]?.request ?? requestSnapshot(source, recipe),
       };
       console.log(
         `${id}: repaired candidate (${inspection.sha256.slice(0, 12)})`,
@@ -309,6 +334,10 @@ function validateSourceManifest(
       );
     if (recipe.prompt.length === 0 || recipe.negativePrompt.length === 0)
       throw new Error(`Prompt contract missing for ${recipe.id}`);
+    if (requestSnapshot(source, recipe).description.length > 2_000)
+      throw new Error(
+        `PixelLab description exceeds 2000 characters for ${recipe.id}`,
+      );
     if (recipe.seed < 0 || !Number.isInteger(recipe.seed))
       throw new Error(`Invalid seed for ${recipe.id}`);
     if (
@@ -326,6 +355,13 @@ function validateSourceManifest(
     )
       throw new Error(
         `Unknown style reference ${recipe.styleReference} for ${recipe.id}`,
+      );
+    if (
+      recipe.styleReferenceUsage !== undefined &&
+      recipe.styleReference === undefined
+    )
+      throw new Error(
+        `Style reference usage requires a style reference for ${recipe.id}`,
       );
   }
   for (const artClass of ["units", "terrain", "buildings", "ui"] as const) {
@@ -353,6 +389,48 @@ function validateSourceManifest(
   );
   if (forestSamples.length < 3)
     throw new Error("Forest sample gate requires three canopy recipes");
+  const candyTerrainIds = [
+    "terrain-candy-grass-1",
+    "terrain-candy-grass-2",
+    "terrain-candy-grass-3",
+    "terrain-candy-grass-4",
+    "terrain-candy-mountain-1",
+    "terrain-candy-mountain-2",
+    "terrain-candy-mountain-3",
+    "terrain-candy-forest-1",
+    "terrain-candy-forest-2",
+    "terrain-candy-forest-3",
+    "terrain-candy-forest-4",
+    "terrain-candy-fruit",
+    "terrain-candy-animal",
+  ] as const;
+  const candySamples = source.recipes.filter(
+    (recipe) =>
+      candyTerrainIds.includes(recipe.id as (typeof candyTerrainIds)[number]) &&
+      recipe.stage === "sample",
+  );
+  if (candySamples.length < 3)
+    throw new Error(
+      "Candy terrain needs at least three representative samples",
+    );
+  for (const id of candyTerrainIds) {
+    const recipe = source.recipes.find((candidate) => candidate.id === id);
+    if (recipe === undefined)
+      throw new Error(`Candy terrain recipe missing: ${id}`);
+    if (
+      recipe.styleReference === undefined ||
+      recipe.styleReferenceUsage === undefined
+    )
+      throw new Error(`Candy terrain reference role missing: ${id}`);
+    const ground = id.startsWith("terrain-candy-grass-");
+    if (
+      recipe.outputSize.width !== 256 ||
+      recipe.outputSize.height !== (ground ? 148 : 296) ||
+      recipe.anchor?.x !== 128 ||
+      recipe.anchor.y !== (ground ? 74 : 222)
+    )
+      throw new Error(`Candy terrain geometry mismatch: ${id}`);
+  }
   assertRecipeGeometry(source, "terrain-animal", {
     requestSize: { width: 256, height: 296 },
     outputSize: { width: 256, height: 296 },
@@ -493,6 +571,11 @@ async function generateRecipes(
                       ...(referenceSha256 === undefined
                         ? {}
                         : { sha256: referenceSha256 }),
+                      ...(recipe.styleReferenceUsage === undefined
+                        ? {}
+                        : {
+                            usageDescription: recipe.styleReferenceUsage,
+                          }),
                     },
                   },
             ...(rejectedAttempts.length === 0 ? {} : { rejectedAttempts }),
@@ -559,6 +642,7 @@ async function generateOne(
       body.style_image = {
         ...referenceImage,
         usage_description:
+          recipe.styleReferenceUsage ??
           "Copy only palette, outline thickness, shading simplicity and detail level; create the newly described silhouette.",
       };
       body.style_options = {
@@ -570,7 +654,13 @@ async function generateOne(
     }
     resolvedRequest = {
       ...request,
-      styleReference: { id: recipe.styleReference, sha256: referenceSha256 },
+      styleReference: {
+        id: recipe.styleReference,
+        sha256: referenceSha256,
+        ...(recipe.styleReferenceUsage === undefined
+          ? {}
+          : { usageDescription: recipe.styleReferenceUsage }),
+      },
     };
   }
   if (recipe.endpoint === "generate-ui-v2")
@@ -660,7 +750,14 @@ function requestSnapshot(
       : { groundContactY: recipe.groundContactY }),
     ...(recipe.styleReference === undefined
       ? {}
-      : { styleReference: { id: recipe.styleReference } }),
+      : {
+          styleReference: {
+            id: recipe.styleReference,
+            ...(recipe.styleReferenceUsage === undefined
+              ? {}
+              : { usageDescription: recipe.styleReferenceUsage }),
+          },
+        }),
   };
 }
 
@@ -774,8 +871,25 @@ async function processCandidate(
   await pipeline
     .png({ compressionLevel: 9, adaptiveFiltering: false })
     .toFile(destination);
-  if (!recipe.postprocess?.startsWith("diamond-mask"))
-    await normalizeToHardBounds(destination, recipe);
+  if (recipe.postprocess?.startsWith("diamond-mask")) {
+    await applyDiamondAlpha(destination, recipe.outputSize);
+    if (
+      recipe.postprocess === "diamond-mask-reference-edges" &&
+      recipe.styleReference !== undefined
+    ) {
+      const referenceRecipe = source.recipes.find(
+        (candidate) => candidate.id === recipe.styleReference,
+      );
+      if (referenceRecipe === undefined)
+        throw new Error(`Unknown edge reference ${recipe.styleReference}`);
+      await restoreDiamondReferenceEdges(
+        destination,
+        path.join(ROOT, referenceRecipe.output),
+        recipe.outputSize,
+      );
+    }
+    await assertDiamondAlpha(destination, recipe.outputSize);
+  } else await normalizeToHardBounds(destination, recipe);
 }
 
 async function deriveRotatedDiamond(
@@ -792,6 +906,100 @@ async function deriveRotatedDiamond(
     .resize(width, height, { fit: "fill" })
     .rotate(180)
     .composite([{ input: mask, blend: "dest-in" }])
+    .png({ compressionLevel: 9, adaptiveFiltering: false })
+    .toFile(destination);
+  await applyDiamondAlpha(destination, recipe.outputSize);
+  await assertDiamondAlpha(destination, recipe.outputSize);
+}
+
+async function applyDiamondAlpha(
+  destination: string,
+  size: Size,
+): Promise<void> {
+  const { data, info } = await sharp(destination)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const samples = 4;
+  for (let y = 0; y < info.height; y += 1) {
+    for (let x = 0; x < info.width; x += 1) {
+      let covered = 0;
+      for (let sy = 0; sy < samples; sy += 1) {
+        for (let sx = 0; sx < samples; sx += 1) {
+          const px = x + (sx + 0.5) / samples;
+          const py = y + (sy + 0.5) / samples;
+          if (
+            Math.abs(px - size.width / 2) / (size.width / 2) +
+              Math.abs(py - size.height / 2) / (size.height / 2) <=
+            1
+          )
+            covered += 1;
+        }
+      }
+      const alphaIndex = (y * info.width + x) * 4 + 3;
+      const original = data[alphaIndex] ?? 0;
+      data[alphaIndex] = Math.round((original * covered) / (samples * samples));
+      if (covered === 0) {
+        data[alphaIndex - 3] = 0;
+        data[alphaIndex - 2] = 0;
+        data[alphaIndex - 1] = 0;
+      }
+    }
+  }
+  await sharp(data, {
+    raw: { width: info.width, height: info.height, channels: 4 },
+  })
+    .png({ compressionLevel: 9, adaptiveFiltering: false })
+    .toFile(destination);
+}
+
+async function assertDiamondAlpha(file: string, size: Size): Promise<void> {
+  const { data, info } = await sharp(file)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  for (const [x, y] of [
+    [0, 0],
+    [size.width - 1, 0],
+    [0, size.height - 1],
+    [size.width - 1, size.height - 1],
+  ] as const) {
+    if ((data[(y * info.width + x) * 4 + 3] ?? 0) !== 0)
+      throw new Error(`Diamond mask leaves opaque corner ${x},${y}`);
+  }
+}
+
+async function restoreDiamondReferenceEdges(
+  destination: string,
+  reference: string,
+  size: Size,
+): Promise<void> {
+  const target = await sharp(destination)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const referencePixels = await sharp(reference)
+    .ensureAlpha()
+    .resize(size.width, size.height, { fit: "fill" })
+    .raw()
+    .toBuffer();
+  // A broad source-scale band replaces provider matte and antialias RGB with
+  // the accepted seam pixels. Candy accents are constrained to the quiet
+  // interior, so this never removes authored gameplay-readable decoration.
+  const normalizedBand = 20 / (size.height / 2);
+  for (let y = 0; y < size.height; y += 1) {
+    for (let x = 0; x < size.width; x += 1) {
+      const distance =
+        Math.abs(x + 0.5 - size.width / 2) / (size.width / 2) +
+        Math.abs(y + 0.5 - size.height / 2) / (size.height / 2);
+      if (distance < 1 - normalizedBand) continue;
+      const offset = (y * size.width + x) * 4;
+      referencePixels.copy(target.data, offset, offset, offset + 4);
+    }
+  }
+  await sharp(target.data, {
+    raw: { width: size.width, height: size.height, channels: 4 },
+  })
     .png({ compressionLevel: 9, adaptiveFiltering: false })
     .toFile(destination);
 }
@@ -1074,6 +1282,14 @@ async function validateOutputs(
     if (record?.status !== "ACCEPTED") continue;
     const inspection = await inspectPng(path.join(ROOT, recipe.output));
     assertTechnical(recipe, inspection);
+    if (
+      recipe.postprocess?.startsWith("diamond-mask") ||
+      recipe.postprocess === "reference-rotate-180-diamond"
+    )
+      await assertDiamondAlpha(
+        path.join(ROOT, recipe.output),
+        recipe.outputSize,
+      );
     if (inspection.sha256 !== record.outputSha256)
       throw new Error(`Hash mismatch for ${recipe.id}`);
   }

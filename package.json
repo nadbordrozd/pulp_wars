@@ -18,6 +18,7 @@
     "art:hud-readiness-review": "tsx scripts/art/hud-readiness-review.ts",
     "art:archer-review": "tsx scripts/art/archer-projectile-review.ts",
     "art:selection-jump-review": "tsx scripts/art/selection-jump-review.ts",
+    "art:candy-terrain-review": "tsx scripts/art/candy-terrain-review.ts",
     "art:footprint-review": "tsx scripts/art/footprint-review.ts",
     "art:rendering-review": "tsx scripts/art/rendering-review.ts",
     "art:validate": "tsx scripts/art/pixellab.ts validate",
