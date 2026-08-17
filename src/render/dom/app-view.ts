@@ -36,7 +36,8 @@ import { accessibleCombatPreview } from "../canvas/combat-preview-label";
 import type { Point } from "../canvas/geometry";
 import {
   ACCEPTED_ART_URLS,
-  FACTION_HERO_URL,
+  FACTION_BADGE_URLS,
+  FACTION_HERO_URLS,
 } from "../../assets/generated-art-manifest";
 
 const TECH_DETAILS: Readonly<Record<TechId, string>> = {
@@ -1199,7 +1200,7 @@ export class DomAppView {
         `Train ${unitLabel} in City ${city.id} for ${cost} stars`,
       );
       const unitArtUrl =
-        ACCEPTED_ART_URLS[`unit-${command.unit.toLowerCase()}`];
+        ACCEPTED_ART_URLS[unitArtId(command.unit, view.viewer.faction)];
       const unitArt =
         unitArtUrl === undefined
           ? codeNativeUnitArt(this.#document, command.unit)
@@ -3050,6 +3051,18 @@ function factionRoster(faction: FactionId): string {
     : "Warrior · Archer · Defender · Rider · Catapult";
 }
 
+function unitArtId(unit: UnitType, faction: FactionId): string {
+  if (unit === "CATAPULT" || faction === "ORIGINAL")
+    return `unit-${unit.toLowerCase()}`;
+  return unit === "WARRIOR"
+    ? "unit-candy-warrior"
+    : unit === "ARCHER"
+      ? "unit-candy-gumball-guard"
+      : unit === "DEFENDER"
+        ? "unit-candy-choco-engineer"
+        : "unit-candy-donut";
+}
+
 function factionPortrait(
   documentRoot: Document,
   faction: FactionId,
@@ -3061,13 +3074,12 @@ function factionPortrait(
     `${className} faction-portrait faction-${faction.toLowerCase()}`,
   );
   portrait.setAttribute("aria-hidden", "true");
-  if (
-    faction === "ORIGINAL" &&
-    className.includes("faction-preview") &&
-    FACTION_HERO_URL !== null
-  ) {
+  const imageUrl = className.includes("faction-preview")
+    ? FACTION_HERO_URLS[faction]
+    : FACTION_BADGE_URLS[faction];
+  if (imageUrl !== null) {
     portrait.append(
-      artImage(documentRoot, FACTION_HERO_URL, "faction-hero-art", () => {
+      artImage(documentRoot, imageUrl, "faction-hero-art", () => {
         portrait.dataset.loaded = "true";
       }),
     );

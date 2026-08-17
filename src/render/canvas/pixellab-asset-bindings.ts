@@ -1,4 +1,4 @@
-import type { UnitState } from "../../engine/index";
+import type { FactionId, UnitState } from "../../engine/index";
 import { ACCEPTED_ART_URLS } from "../../assets/generated-art-manifest";
 import {
   CODE_NATIVE_PLACEHOLDER_ASSETS,
@@ -271,6 +271,17 @@ export function createPixelLabAssetBindings(
         () => CODE_NATIVE_PLACEHOLDER_ASSETS.drawLumberMill(context, options),
       );
     },
+    drawChocolateWall(context, options): void {
+      draw(
+        context,
+        "building-chocolate-wall",
+        options,
+        BOARD_ART_GEOMETRY.lowObject,
+        () =>
+          CODE_NATIVE_PLACEHOLDER_ASSETS.drawChocolateWall(context, options),
+        true,
+      );
+    },
     drawForest(context, options): void {
       draw(
         context,
@@ -306,10 +317,10 @@ export function createPixelLabAssetBindings(
       if (imageFor(`building-city-${artLevel}`) === null)
         CODE_NATIVE_PLACEHOLDER_ASSETS.drawCityFront(context, options, city);
     },
-    drawUnit(context, options, unit): void {
+    drawUnit(context, options, unit, faction = "ORIGINAL"): void {
       draw(
         context,
-        unitArtId(unit.type),
+        unitArtId(unit.type, faction),
         options,
         unit.type === "CATAPULT"
           ? BOARD_ART_GEOMETRY.siegeUnit
@@ -343,8 +354,16 @@ function clipToTileUpperPlaneAndLowerDiamond(
   context.clip();
 }
 
-function unitArtId(type: UnitState["type"]): string {
-  return `unit-${type.toLowerCase()}`;
+function unitArtId(type: UnitState["type"], faction: FactionId): string {
+  if (type === "CATAPULT" || faction === "ORIGINAL")
+    return `unit-${type.toLowerCase()}`;
+  return type === "WARRIOR"
+    ? "unit-candy-warrior"
+    : type === "ARCHER"
+      ? "unit-candy-gumball-guard"
+      : type === "DEFENDER"
+        ? "unit-candy-choco-engineer"
+        : "unit-candy-donut";
 }
 
 function drawOwnerStripe(
@@ -374,6 +393,10 @@ export const PIXELLAB_BOARD_ART_IDS = Object.freeze([
   "unit-defender",
   "unit-rider",
   "unit-catapult",
+  "unit-candy-warrior",
+  "unit-candy-gumball-guard",
+  "unit-candy-choco-engineer",
+  "unit-candy-donut",
   "terrain-grass-1",
   "terrain-grass-2",
   "terrain-grass-3",
@@ -394,6 +417,7 @@ export const PIXELLAB_BOARD_ART_IDS = Object.freeze([
   "building-city-3",
   "building-mine",
   "building-lumber-mill",
+  "building-chocolate-wall",
 ] as const);
 
 /** Recipe-backed board slots that are still awaiting accepted production art. */

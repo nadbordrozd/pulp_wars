@@ -1,4 +1,4 @@
-import type { CityState, PlayerUnitView } from "../../engine/index";
+import type { CityState, FactionId, PlayerUnitView } from "../../engine/index";
 import type { Point } from "./geometry";
 
 export interface DrawAssetOptions {
@@ -30,6 +30,10 @@ export interface BoardAssetBindings {
     context: CanvasRenderingContext2D,
     options: DrawAssetOptions,
   ): void;
+  drawChocolateWall(
+    context: CanvasRenderingContext2D,
+    options: DrawAssetOptions,
+  ): void;
   drawForest(
     context: CanvasRenderingContext2D,
     options: DrawAssetOptions,
@@ -52,6 +56,7 @@ export interface BoardAssetBindings {
     context: CanvasRenderingContext2D,
     options: DrawAssetOptions,
     unit: PlayerUnitView,
+    faction?: FactionId,
   ): void;
   drawUnitOwnerCue(
     context: CanvasRenderingContext2D,
@@ -280,6 +285,26 @@ export const CODE_NATIVE_PLACEHOLDER_ASSETS: BoardAssetBindings = {
         (-33 + Math.sin(angle) * 17) * zoom,
       );
       context.stroke();
+    }
+    context.restore();
+  },
+
+  drawChocolateWall(context, options): void {
+    const { center, zoom } = options;
+    context.save();
+    context.fillStyle = "#82452f";
+    context.strokeStyle = INK;
+    context.lineWidth = Math.max(2, 3 * zoom);
+    context.lineJoin = "round";
+    const brickWidth = 25 * zoom;
+    const brickHeight = 16 * zoom;
+    for (let row = 0; row < 2; row += 1) {
+      for (let column = 0; column < 3; column += 1) {
+        const left = center.x + (column - 1.5) * brickWidth + row * 7 * zoom;
+        const top = center.y - (2 - row) * brickHeight;
+        context.fillRect(left, top, brickWidth, brickHeight);
+        context.strokeRect(left, top, brickWidth, brickHeight);
+      }
     }
     context.restore();
   },

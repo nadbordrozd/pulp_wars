@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "productionRasterStatus": "ACCEPTED_PIXELLAB",
+  "accepted": 11,
+  "acceptedAssets": [
+    {
+      "id": "unit-candy-warrior",
+      "path": "public/assets/pixellab/units/candy-warrior.png",
+      "sha256": "76456b060ba1701e75387285b4738d4c289c0617eb852f5552beadfe2eb1a2bc",
+      "bytes": 42127
+    },
+    {
+      "id": "unit-candy-gumball-guard",
+      "path": "public/assets/pixellab/units/candy-gumball-guard.png",
+      "sha256": "5a43d5f737bbf41f007c9bf8ee5f7fe5e0084bb13f9d243917d27c6f701f81b2",
+      "bytes": 40015
+    },
+    {
+      "id": "unit-candy-choco-engineer",
+      "path": "public/assets/pixellab/units/candy-choco-engineer.png",
+      "sha256": "020d0448b1db6be74b00aa3d468ca4f4aa7d9c2c700d63ae7c03a683ec314fcf",
+      "bytes": 46248
+    },
+    {
+      "id": "unit-candy-donut",
+      "path": "public/assets/pixellab/units/candy-donut.png",
+      "sha256": "041fd6defb9b46059e9036418c501cc287e8ac74180384594770e9d1d764a991",
+      "bytes": 5520
+    },
+    {
+      "id": "building-chocolate-wall",
+      "path": "public/assets/pixellab/buildings/chocolate-wall.png",
+      "sha256": "1810f529c6f5f8a7e8f3d014139b381872602a3c99373b789fa1bf7e6d5e0053",
+      "bytes": 29139
+    },
+    {
+      "id": "ui-faction-candy-badge",
+      "path": "public/assets/pixellab/ui/faction-candy-badge.png",
+      "sha256": "c86211f694a00265c332c0975b67d183f6b65a859112b367056d413dd03bc5d5",
+      "bytes": 13444
+    },
+    {
+      "id": "ui-faction-candy-hero",
+      "path": "public/assets/pixellab/ui/faction-candy-hero.png",
+      "sha256": "e11f14c873655b5a6f8750fda05e434a43afdc14e72dc8f470efc73cbccfda69",
+      "bytes": 300467
+    },
+    {
+      "id": "ui-action-kamikaze-roll",
+      "path": "public/assets/pixellab/ui/action-kamikaze-roll.png",
+      "sha256": "896d2b1e529b8c98ef6dab4f2c73214533aa871327dd411043351369aafb23b3",
+      "bytes": 29151
+    },
+    {
+      "id": "ui-action-build-chocolate-wall",
+      "path": "public/assets/pixellab/ui/action-build-chocolate-wall.png",
+      "sha256": "72cb6914d28e372b59aef97f1ccd0cd4173ec1bf3f950b3c460440a1aad62590",
+      "bytes": 25736
+    },
+    {
+      "id": "ui-action-candify",
+      "path": "public/assets/pixellab/ui/action-candify.png",
+      "sha256": "378f5074f102b95d4e5d49fe98ccfc24a3aa04c4f2510550e22ad9837a553cf4",
+      "bytes": 41953
+    },
+    {
+      "id": "ui-action-choose-candify-city",
+      "path": "public/assets/pixellab/ui/action-choose-candify-city.png",
+      "sha256": "0fda30e502cff71e97f1f7f9f2975e6257d549d3e69835ea5d88b62ec824c2e4",
+      "bytes": 34656
+    }
+  ],
+  "quarantinedRejected": 5,
+  "quarantinedAttempts": [
+    {
+      "id": "unit-candy-gumball-guard",
+      "path": "art/pixellab/quarantine/unit-candy-gumball-guard-93b97001d484.png",
+      "reason": "Rejected: stray vertical palette legend and tiny text baked beside the character; violates isolated transparent sprite and no-text contract.",
+      "sha256": "93b97001d48490704d7732e53c3c4a61e43b04eb1191ce8b1a9f3e4649c0a79d",
+      "bytes": 40985
+    },
+    {
+      "id": "unit-candy-donut",
+      "path": "art/pixellab/quarantine/unit-candy-donut-fc8b55ae5374.png",
+      "reason": "Rejected: stray generated annotation text baked below the character; violates isolated transparent sprite and no-text contract.",
+      "sha256": "fc8b55ae5374df42bd4da2fe4f9a40c70ddbd58a8456cc2161f1f05ab6aae243",
+      "bytes": 35114
+    },
+    {
+      "id": "building-chocolate-wall",
+      "path": "art/pixellab/quarantine/building-chocolate-wall-3e7d84b6e387.png",
+      "reason": "Rejected: tall narrow three-row slab with large white-brick band; violates low broad two-row footprint and risks hiding coexisting resources/improvements.",
+      "sha256": "3e7d84b6e387d086c5fceb25edf7d1a5817e90e5a0b5059e66e711f5136beee4",
+      "bytes": 20656
+    },
+    {
+      "id": "ui-action-build-chocolate-wall",
+      "path": "art/pixellab/quarantine/ui-action-build-chocolate-wall-fd1618219473.png",
+      "reason": "Rejected: baked dark square UI frame surrounds the symbol; action icons must be transparent cutouts with interface chrome owned by DOM/CSS.",
+      "sha256": "fd16182194730a78d216492b894d3654f0a2f1adc5e89adf61c056de616bbb16",
+      "bytes": 23859
+    },
+    {
+      "id": "ui-action-candify",
+      "path": "art/pixellab/quarantine/ui-action-candify-8050e8841734.png",
+      "reason": "Rejected: large opaque blank white square artifact occupies the left half of the canvas; violates transparent isolated icon contract.",
+      "sha256": "8050e88417349d496228e072c9bbd2bf3cf77aab4dc310e624cb2ba58801a4d3",
+      "bytes": 20772
+    }
+  ],
+  "apiFailures": [],
+  "localPipelineFailures": [
+    {
+      "id": "ui-action-candify",
+      "reason": "First submission was skipped because its not-yet-accepted style reference was unavailable; no PixelLab request was made."
+    }
+  ],
+  "productionFixture": {
+    "candyUnits": 5,
+    "originalUnits": 5,
+    "chocolateWalls": 3,
+    "wallHpStates": [10, 5, 1],
+    "fogTiles": 11
+  },
+  "mobileCanvas": {
+    "cssWidth": 390,
+    "cssHeight": 844,
+    "backingWidth": 780,
+    "backingHeight": 1688,
+    "devicePixelRatio": 2
+  },
+  "evidence": [
+    {
+      "path": "art/feedback/reviews/candy-production-desktop-1440x1000.png",
+      "viewport": {
+        "width": 1440,
+        "height": 1000,
+        "devicePixelRatio": 1
+      },
+      "sha256": "018266bc072a5e8ebb690f4f98ef5a5c0725bc5c0135f82fe95d591d4e29b869",
+      "bytes": 488349
+    },
+    {
+      "path": "art/feedback/reviews/candy-production-mobile-390x844-dpr2.png",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "devicePixelRatio": 2
+      },
+      "sha256": "cd169fcb3e8d32ecec21a5ccf6b25f5236f4f9d4d066256d4d37bafb12ecbb29",
+      "bytes": 411058
+    }
+  ]
+}

@@ -83,6 +83,11 @@ try {
   await waitForForestCatapultProduction(connection);
   await delay(400);
   await capture(connection, "forest-catapult-production-desktop-1440x1000.png");
+  await renderCandyProductionFixture(connection);
+  await waitForFixtureCanvas(connection, 1440, 1000, 1);
+  await waitForCandyProduction(connection);
+  await delay(400);
+  await capture(connection, "candy-production-desktop-1440x1000.png");
 
   await setViewport(connection, 390, 844, 2, true);
   if (!forestCatapultOnly) {
@@ -104,6 +109,11 @@ try {
     connection,
     "forest-catapult-production-mobile-390x844-dpr2.png",
   );
+  await renderCandyProductionFixture(connection);
+  await waitForFixtureCanvas(connection, 390, 844, 2);
+  await waitForCandyProduction(connection);
+  await delay(400);
+  await capture(connection, "candy-production-mobile-390x844-dpr2.png");
 
   const measurements = await evaluate<{
     readonly cssWidth: number;
@@ -119,6 +129,7 @@ try {
     `Rendering review screenshots written to ${reviewRoot}; mobile canvas ${JSON.stringify(measurements)}`,
   );
   await writeForestCatapultEvidence(measurements);
+  await writeCandyProductionEvidence(measurements);
   connection.close();
 } finally {
   browser.kill();
@@ -224,6 +235,125 @@ async function renderForestCatapultProductionFixture(
         animalCount: view.board.tiles.filter((tile) => tile.resource === 'ANIMAL').length,
         lumberCount: view.board.tiles.filter((tile) => tile.improvement === 'LUMBER_MILL').length,
         catapultCount: view.units.filter((unit) => unit.type === 'CATAPULT').length,
+        fogCount: view.board.tiles.filter((tile) => !tile.explored).length
+      };
+      return true;
+    })()`,
+    true,
+  );
+}
+
+async function renderCandyProductionFixture(
+  connection: Connection,
+): Promise<void> {
+  await evaluate(
+    connection,
+    `(async () => {
+      const [engine, canvas] = await Promise.all([
+        import('/src/engine/index.ts'),
+        import('/src/render/canvas/board-host.ts')
+      ]);
+      const result = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 61826, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', aiMode: 'RIVAL', humanColor: 'CORAL', factions: ['CANDY', 'ORIGINAL'] });
+      if (!result.ok) throw new Error(result.error.code);
+      const human = result.state.players.find((player) => player.controller === 'HUMAN');
+      const enemy = result.state.players.find((player) => player.controller === 'AI');
+      const humanCityBase = result.state.cities.find((city) => city.ownerId === human?.id);
+      const enemyCityBase = result.state.cities.find((city) => city.ownerId === enemy?.id);
+      const humanUnitBase = result.state.units.find((unit) => unit.ownerId === human?.id);
+      const enemyUnitBase = result.state.units.find((unit) => unit.ownerId === enemy?.id);
+      if (!human || !enemy || !humanCityBase || !enemyCityBase || !humanUnitBase || !enemyUnitBase) throw new Error('Missing Candy fixture entities');
+      const humanCity = { ...humanCityBase, at: { x: 1, y: 1 }, level: 4, population: 3, isCapital: true };
+      const enemyCity = { ...enemyCityBase, at: { x: 9, y: 8 }, level: 3, population: 2, isCapital: true };
+      const placements = [
+        [human, humanCity, humanUnitBase, 9001, 'WARRIOR', 2, 2, 10],
+        [human, humanCity, humanUnitBase, 9002, 'ARCHER', 4, 2, 7],
+        [human, humanCity, humanUnitBase, 9003, 'DEFENDER', 6, 2, 15],
+        [human, humanCity, humanUnitBase, 9004, 'RIDER', 8, 2, 10],
+        [human, humanCity, humanUnitBase, 9005, 'CATAPULT', 5, 4, 10],
+        [enemy, enemyCity, enemyUnitBase, 9011, 'WARRIOR', 2, 6, 10],
+        [enemy, enemyCity, enemyUnitBase, 9012, 'ARCHER', 4, 6, 10],
+        [enemy, enemyCity, enemyUnitBase, 9013, 'DEFENDER', 6, 6, 15],
+        [enemy, enemyCity, enemyUnitBase, 9014, 'RIDER', 8, 6, 10],
+        [enemy, enemyCity, enemyUnitBase, 9015, 'CATAPULT', 7, 4, 10]
+      ];
+      const units = placements.map(([owner, city, base, id, type, x, y, hp]) => ({
+        ...base,
+        id,
+        ownerId: owner.id,
+        homeCityId: city.id,
+        capacityExempt: false,
+        type,
+        at: { x, y },
+        hp,
+        maxHp: hp,
+        ready: owner.id === human.id,
+        activation: { moved: false, attacked: false, recovered: false, captured: false, handled: false, escapeAvailable: false, specialActed: false }
+      }));
+      const walls = [
+        { id: 9021, ownerId: human.id, at: { x: 3, y: 4 }, hp: 10 },
+        { id: 9022, ownerId: human.id, at: { x: 4, y: 4 }, hp: 5 },
+        { id: 9023, ownerId: human.id, at: { x: 6, y: 4 }, hp: 1 }
+      ];
+      const explored = result.state.board.tiles.filter((tile) => tile.at.x < 10).map((tile) => tile.at);
+      const mountains = new Set(['3,3', '3,4', '3,5', '7,3', '7,5']);
+      const forests = new Set(['4,3', '4,4', '4,5', '8,3', '8,4', '8,5']);
+      const state = {
+        ...result.state,
+        nextEntityId: 9030,
+        activeSeatIndex: result.state.turnOrder.findIndex((id) => id === human.id),
+        board: {
+          ...result.state.board,
+          tiles: result.state.board.tiles.map((tile) => {
+            const key = tile.at.x + ',' + tile.at.y;
+            const city = tile.at.x === humanCity.at.x && tile.at.y === humanCity.at.y ? humanCity : tile.at.x === enemyCity.at.x && tile.at.y === enemyCity.at.y ? enemyCity : null;
+            return {
+              ...tile,
+              terrain: mountains.has(key) ? 'MOUNTAIN' : forests.has(key) ? 'FOREST' : 'GRASS',
+              resource: key === '6,4' ? 'FRUIT' : key === '3,4' ? 'ORE' : null,
+              improvement: key === '4,4' ? 'LUMBER_MILL' : null,
+              site: city ? 'CAPITAL' : null,
+              territoryCenter: city?.at ?? null,
+              territoryCityId: city?.id ?? null
+            };
+          })
+        },
+        players: result.state.players.map((player) => player.id === human.id ? {
+          ...player,
+          explored,
+          stars: 30,
+          researchedTechs: ['CLIMBING', 'RIDING', 'HUNTING', 'ORGANIZATION', 'MINING', 'FORESTRY', 'ARCHERY', 'STRATEGY', 'MATHEMATICS']
+        } : { ...player, explored }),
+        cities: [humanCity, enemyCity],
+        units,
+        chocolateWalls: walls,
+        pendingChoice: null,
+        outcome: null
+      };
+      const view = engine.viewFor(state, human.id);
+      globalThis.__pulpRenderingReviewHost?.destroy?.();
+      const root = document.querySelector('#app');
+      if (!root) throw new Error('Missing app root');
+      root.replaceChildren();
+      Object.assign(document.documentElement.style, { width: '100%', height: '100%', overflow: 'hidden' });
+      Object.assign(document.body.style, { width: '100%', height: '100%', margin: '0', overflow: 'hidden', background: '#233b39' });
+      Object.assign(root.style, { position: 'fixed', inset: '0', width: '100%', height: '100%' });
+      const container = document.createElement('div');
+      container.className = 'board-host';
+      Object.assign(container.style, { position: 'absolute', inset: '0', width: '100%', height: '100%' });
+      root.append(container);
+      const host = new canvas.CanvasBoardHost(document);
+      host.mount(container, {
+        onSelection() {},
+        onInspect() {},
+        onCommand() { throw new Error('View-only Candy review dispatched a command'); },
+        onZoom() {}
+      });
+      host.update({ matchInstanceId: 61826, view, interactive: false, selected: null });
+      globalThis.__pulpRenderingReviewHost = host;
+      globalThis.__pulpCandyProduction = {
+        candyUnits: view.units.filter((unit) => view.players.find((player) => player.id === unit.ownerId)?.faction === 'CANDY').length,
+        originalUnits: view.units.filter((unit) => view.players.find((player) => player.id === unit.ownerId)?.faction === 'ORIGINAL').length,
+        walls: view.chocolateWalls.length,
         fogCount: view.board.tiles.filter((tile) => !tile.explored).length
       };
       return true;
@@ -373,6 +503,28 @@ async function waitForForestCatapultProduction(
         '/assets/pixellab/terrain/forest-4.png',
         '/assets/pixellab/terrain/animal.png',
         '/assets/pixellab/buildings/lumber-mill.png'
+      ];
+      const resources = performance.getEntriesByType('resource').map((entry) => entry.name);
+      if (!pending.every((ending) => resources.some((name) => name.endsWith(ending)))) return false;
+      const canvas = document.querySelector('.board-canvas');
+      return canvas instanceof HTMLCanvasElement && canvas.width > 0 && canvas.height > 0;
+    })()`,
+  );
+}
+
+async function waitForCandyProduction(connection: Connection): Promise<void> {
+  await waitForExpression(
+    connection,
+    `(() => {
+      const fixture = globalThis.__pulpCandyProduction;
+      if (!fixture || fixture.candyUnits !== 5 || fixture.originalUnits !== 5 || fixture.walls !== 3 || fixture.fogCount !== 11) return false;
+      const pending = [
+        '/assets/pixellab/units/candy-warrior.png',
+        '/assets/pixellab/units/candy-gumball-guard.png',
+        '/assets/pixellab/units/candy-choco-engineer.png',
+        '/assets/pixellab/units/candy-donut.png',
+        '/assets/pixellab/units/catapult.png',
+        '/assets/pixellab/buildings/chocolate-wall.png'
       ];
       const resources = performance.getEntriesByType('resource').map((entry) => entry.name);
       if (!pending.every((ending) => resources.some((name) => name.endsWith(ending)))) return false;
@@ -555,6 +707,138 @@ async function writeForestCatapultEvidence(measurements: {
           lumberMills: 3,
           catapults: 1,
           fogTiles: 40,
+        },
+        mobileCanvas: measurements,
+        evidence,
+      },
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
+}
+
+async function writeCandyProductionEvidence(measurements: {
+  readonly cssWidth: number;
+  readonly cssHeight: number;
+  readonly backingWidth: number;
+  readonly backingHeight: number;
+  readonly devicePixelRatio: number;
+}): Promise<void> {
+  const ids = [
+    "unit-candy-warrior",
+    "unit-candy-gumball-guard",
+    "unit-candy-choco-engineer",
+    "unit-candy-donut",
+    "building-chocolate-wall",
+    "ui-faction-candy-badge",
+    "ui-faction-candy-hero",
+    "ui-action-kamikaze-roll",
+    "ui-action-build-chocolate-wall",
+    "ui-action-candify",
+    "ui-action-choose-candify-city",
+  ] as const;
+  const generated = JSON.parse(
+    await readFile(
+      path.join(process.cwd(), "scripts/art/pixellab-generated.json"),
+      "utf8",
+    ),
+  ) as {
+    readonly records: Readonly<
+      Record<
+        string,
+        {
+          readonly status: string;
+          readonly outputSha256?: string;
+          readonly candidateSha256?: string;
+          readonly rejectedAttempts?: readonly {
+            readonly candidate: string;
+            readonly candidateSha256?: string;
+            readonly notes?: string;
+          }[];
+        }
+      >
+    >;
+  };
+  const manifest = JSON.parse(
+    await readFile(
+      path.join(process.cwd(), "scripts/art/pixellab-manifest.json"),
+      "utf8",
+    ),
+  ) as {
+    readonly recipes: readonly {
+      readonly id: string;
+      readonly output: string;
+    }[];
+  };
+  const acceptedAssets = [];
+  const quarantinedAttempts = [];
+  for (const id of ids) {
+    const recipe = manifest.recipes.find((candidate) => candidate.id === id);
+    const record = generated.records[id];
+    if (recipe === undefined || record?.status !== "ACCEPTED")
+      throw new Error(`Candy evidence missing accepted asset ${id}`);
+    const data = await readFile(path.join(process.cwd(), recipe.output));
+    acceptedAssets.push({
+      id,
+      path: recipe.output,
+      sha256: createHash("sha256").update(data).digest("hex"),
+      bytes: data.byteLength,
+    });
+    for (const attempt of record.rejectedAttempts ?? []) {
+      const data = await readFile(path.join(process.cwd(), attempt.candidate));
+      quarantinedAttempts.push({
+        id,
+        path: attempt.candidate,
+        reason: attempt.notes ?? "Rejected during visual review",
+        sha256: createHash("sha256").update(data).digest("hex"),
+        bytes: data.byteLength,
+      });
+    }
+  }
+  const captures = [
+    {
+      path: "art/feedback/reviews/candy-production-desktop-1440x1000.png",
+      viewport: { width: 1440, height: 1000, devicePixelRatio: 1 },
+    },
+    {
+      path: "art/feedback/reviews/candy-production-mobile-390x844-dpr2.png",
+      viewport: { width: 390, height: 844, devicePixelRatio: 2 },
+    },
+  ];
+  const evidence = [];
+  for (const capture of captures) {
+    const data = await readFile(path.join(process.cwd(), capture.path));
+    evidence.push({
+      ...capture,
+      sha256: createHash("sha256").update(data).digest("hex"),
+      bytes: data.byteLength,
+    });
+  }
+  await writeFile(
+    path.join(reviewRoot, "candy-production-evidence.json"),
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        productionRasterStatus: "ACCEPTED_PIXELLAB",
+        accepted: acceptedAssets.length,
+        acceptedAssets,
+        quarantinedRejected: quarantinedAttempts.length,
+        quarantinedAttempts,
+        apiFailures: [],
+        localPipelineFailures: [
+          {
+            id: "ui-action-candify",
+            reason:
+              "First submission was skipped because its not-yet-accepted style reference was unavailable; no PixelLab request was made.",
+          },
+        ],
+        productionFixture: {
+          candyUnits: 5,
+          originalUnits: 5,
+          chocolateWalls: 3,
+          wallHpStates: [10, 5, 1],
+          fogTiles: 11,
         },
         mobileCanvas: measurements,
         evidence,

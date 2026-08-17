@@ -5,6 +5,11 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   "unit-archer": "/assets/pixellab/units/archer.png",
   "unit-rider": "/assets/pixellab/units/rider.png",
   "unit-catapult": "/assets/pixellab/units/catapult.png",
+  "unit-candy-warrior": "/assets/pixellab/units/candy-warrior.png",
+  "unit-candy-gumball-guard": "/assets/pixellab/units/candy-gumball-guard.png",
+  "unit-candy-donut": "/assets/pixellab/units/candy-donut.png",
+  "unit-candy-choco-engineer":
+    "/assets/pixellab/units/candy-choco-engineer.png",
   "terrain-grass-1": "/assets/pixellab/terrain/grass-1.png",
   "terrain-grass-2": "/assets/pixellab/terrain/grass-2.png",
   "terrain-grass-3": "/assets/pixellab/terrain/grass-3.png",
@@ -25,6 +30,7 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   "building-city-2": "/assets/pixellab/buildings/city-2.png",
   "building-mine": "/assets/pixellab/buildings/mine.png",
   "building-lumber-mill": "/assets/pixellab/buildings/lumber-mill.png",
+  "building-chocolate-wall": "/assets/pixellab/buildings/chocolate-wall.png",
   "ui-star": "/assets/pixellab/ui/star.png",
   "ui-attack": "/assets/pixellab/ui/attack.png",
   "ui-tech-climbing": "/assets/pixellab/ui/tech-climbing.png",
@@ -40,6 +46,14 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   "ui-reward-survey": "/assets/pixellab/ui/reward-survey.png",
   "ui-reward-resources": "/assets/pixellab/ui/reward-resources.png",
   "ui-reward-city-wall": "/assets/pixellab/ui/reward-city-wall.png",
+  "ui-faction-candy-badge": "/assets/pixellab/ui/faction-candy-badge.png",
+  "ui-action-kamikaze-roll": "/assets/pixellab/ui/action-kamikaze-roll.png",
+  "ui-action-candify": "/assets/pixellab/ui/action-candify.png",
+  "ui-action-build-chocolate-wall":
+    "/assets/pixellab/ui/action-build-chocolate-wall.png",
+  "ui-action-choose-candify-city":
+    "/assets/pixellab/ui/action-choose-candify-city.png",
+  "ui-faction-candy-hero": "/assets/pixellab/ui/faction-candy-hero.png",
   "ui-faction-hero": "/assets/pixellab/ui/faction-hero.png",
 };
 
@@ -51,6 +65,23 @@ export const ACCEPTED_ART_ATTACHMENTS: Readonly<
   Record<string, AcceptedArtAttachment>
 > = {
   "unit-archer": { projectileOrigin: { x: 0.7, y: 0.37 } },
+  "unit-candy-gumball-guard": { projectileOrigin: { x: 0.6523, y: 0.5156 } },
 };
 
 export const FACTION_HERO_URL = ACCEPTED_ART_URLS["ui-faction-hero"] ?? null;
+export const FACTION_HERO_URLS = Object.freeze({
+  ORIGINAL: ACCEPTED_ART_URLS["ui-faction-hero"] ?? null,
+  CANDY: ACCEPTED_ART_URLS["ui-faction-candy-hero"] ?? null,
+});
+export const FACTION_BADGE_URLS = Object.freeze({
+  ORIGINAL: null,
+  CANDY: ACCEPTED_ART_URLS["ui-faction-candy-badge"] ?? null,
+});
+export const CANDY_ACTION_ART_URLS = Object.freeze({
+  KAMIKAZE_ROLL: ACCEPTED_ART_URLS["ui-action-kamikaze-roll"] ?? null,
+  BUILD_CHOCOLATE_WALL:
+    ACCEPTED_ART_URLS["ui-action-build-chocolate-wall"] ?? null,
+  CANDIFY: ACCEPTED_ART_URLS["ui-action-candify"] ?? null,
+  CHOOSE_CANDIFY_CITY:
+    ACCEPTED_ART_URLS["ui-action-choose-candify-city"] ?? null,
+});

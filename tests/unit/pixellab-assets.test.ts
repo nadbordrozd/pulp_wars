@@ -2,6 +2,9 @@ import { describe, expect, it, vi } from "vitest";
 import {
   ACCEPTED_ART_ATTACHMENTS,
   ACCEPTED_ART_URLS,
+  CANDY_ACTION_ART_URLS,
+  FACTION_BADGE_URLS,
+  FACTION_HERO_URLS,
 } from "../../src/assets/generated-art-manifest";
 import {
   BOARD_ART_GEOMETRY,
@@ -41,6 +44,25 @@ describe("accepted PixelLab renderer binding", () => {
     expect(ACCEPTED_ART_ATTACHMENTS["unit-archer"]?.projectileOrigin).toEqual({
       x: 0.7,
       y: 0.37,
+    });
+    expect(
+      ACCEPTED_ART_ATTACHMENTS["unit-candy-gumball-guard"]?.projectileOrigin,
+    ).toEqual({ x: 0.6523, y: 0.5156 });
+  });
+
+  it("publishes the complete Candy UI and faction art family", () => {
+    expect(FACTION_HERO_URLS.CANDY).toBe(
+      "/assets/pixellab/ui/faction-candy-hero.png",
+    );
+    expect(FACTION_BADGE_URLS.CANDY).toBe(
+      "/assets/pixellab/ui/faction-candy-badge.png",
+    );
+    expect(CANDY_ACTION_ART_URLS).toEqual({
+      KAMIKAZE_ROLL: "/assets/pixellab/ui/action-kamikaze-roll.png",
+      BUILD_CHOCOLATE_WALL:
+        "/assets/pixellab/ui/action-build-chocolate-wall.png",
+      CANDIFY: "/assets/pixellab/ui/action-candify.png",
+      CHOOSE_CANDIFY_CITY: "/assets/pixellab/ui/action-choose-candify-city.png",
     });
   });
 
@@ -422,6 +444,93 @@ describe("accepted PixelLab renderer binding", () => {
       destination.height,
     );
     expect(context.fillRect).toHaveBeenCalled();
+  });
+
+  it("selects Candy unit art by owner faction while sharing Catapult art", () => {
+    const images: HTMLImageElement[] = [];
+    const documentRoot = {
+      createElement: vi.fn(() => {
+        const image = {
+          addEventListener(): void {},
+          alt: "",
+          decoding: "auto",
+          src: "",
+        } as unknown as HTMLImageElement;
+        images.push(image);
+        return image;
+      }),
+    } as unknown as Document;
+    const bindings = createPixelLabAssetBindings(documentRoot);
+    const context = drawingContext();
+    const options = {
+      center: { x: 400, y: 300 },
+      zoom: 1,
+      ownerColor: "#ff737c",
+      variant: 0,
+    };
+    const unit = {
+      id: unitId(1),
+      ownerId: playerId(1),
+      homeCityId: cityId(1),
+      type: "WARRIOR" as const,
+      at: { x: 1, y: 1 },
+      hp: 10,
+      maxHp: 10,
+      kills: 0,
+      veteran: false,
+      ready: true,
+      captureEligible: false,
+      activation: {
+        moved: false,
+        attacked: false,
+        recovered: false,
+        captured: false,
+        handled: false,
+        escapeAvailable: false,
+        specialActed: false,
+      },
+    };
+
+    bindings.drawUnit(context, options, unit, "CANDY");
+    bindings.drawUnit(context, options, unit, "ORIGINAL");
+    bindings.drawUnit(context, options, { ...unit, type: "CATAPULT" }, "CANDY");
+
+    expect(images.map((image) => image.src)).toEqual([
+      "/assets/pixellab/units/candy-warrior.png",
+      "/assets/pixellab/units/warrior.png",
+      "/assets/pixellab/units/catapult.png",
+    ]);
+  });
+
+  it("loads Chocolate Wall art at the low-object anchor with fallback", () => {
+    const listeners = new Map<string, () => void>();
+    const image = {
+      addEventListener(type: string, listener: () => void): void {
+        listeners.set(type, listener);
+      },
+      alt: "",
+      decoding: "auto",
+      src: "",
+    } as unknown as HTMLImageElement;
+    const documentRoot = {
+      createElement: vi.fn(() => image),
+    } as unknown as Document;
+    const bindings = createPixelLabAssetBindings(documentRoot);
+    const context = drawingContext();
+    const options = {
+      center: { x: 400, y: 300 },
+      zoom: 1,
+      ownerColor: "#ff737c",
+      variant: 0,
+    };
+
+    bindings.drawChocolateWall(context, options);
+    expect(image.src).toBe("/assets/pixellab/buildings/chocolate-wall.png");
+    expect(context.drawImage).not.toHaveBeenCalled();
+    expect(context.fillRect).toHaveBeenCalled();
+    listeners.get("load")?.();
+    bindings.drawChocolateWall(context, options);
+    expect(context.drawImage).toHaveBeenCalledWith(image, 336, 189, 128, 148);
   });
 });
 

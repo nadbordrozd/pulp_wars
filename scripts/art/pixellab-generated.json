@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "a7fd12d6b80005e4f9182866f3765f419808722cff3a0f1410683dbc9c3b8ac5",
+  "sourceManifestSha256": "d939bfd3c5a4ec204d5496c8c63d66bb7b7b44f96aeaf45969947d50fb39aedd",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -1836,6 +1836,711 @@
       "outputSha256": "71d28e528ab3a4676b5396ca608181dbe815bca6843b190a54586c27d6324342",
       "notes": "Accepted after source, enlarged, native, 0.75x and repeated 8x8 map review: clean 89x72 source alpha becomes a grounded 44.5x36 CSS marker; three coral fruit and compact lateral leaf remain distinct without competing with units, ore, status UI or grass decoration.",
       "reviewedAt": "2026-08-16T22:33:37.655Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "unit-candy-donut": {
+      "id": "unit-candy-donut",
+      "status": "ACCEPTED",
+      "jobId": "db396b79-5a69-4f76-bc53-94ec88ca9158",
+      "candidate": "art/pixellab/candidates/unit-candy-donut.png",
+      "candidateSha256": "041fd6defb9b46059e9036418c501cc287e8ac74180384594770e9d1d764a991",
+      "providerOutputSha256": "d76894ae20ceb6ae8e407252016258247798145036ead18fcaee7717ff0073ea",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 41,
+        "top": 24,
+        "right": 212,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated full-body Donut game sprite only, southeast-facing three-quarter view looking slightly downward. Exactly one fierce cute round ring donut character centered alone with a clearly open center, golden baked dough, broad chocolate icing, only six large readable pink and cream sprinkles, tiny arms, and both tiny feet visible with their midpoint at ground contact x128 y222. Fierce eyebrows and compact forward-ready stance, circular rolling silhouette unobstructed. One contiguous warm-pink icing patch occupies about ten percent of visible area for renderer ownership tinting. Strong near-black cocoa outline, flat two-level cel shading, simple highlight, absolutely nothing below or beside the character, blank transparent 256 by 296 canvas, preferred alpha x32..224 y10..240 and hard alpha x16..240 y4..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; annotation, caption, footer, label, handwriting, symbols below character, closed donut hole, bagel, cookie, wheel, tire, motion trail, speed lines, impact marks, crumbs, rolling scene, extra donuts, tiny noisy sprinkles, weapon, scenery, ground, cast shadow, UI, text, letters, numbers, clipped feet, hidden feet, photoreal food, 3D render.",
+        "prompt": "Isolated full-body Donut game sprite only, southeast-facing three-quarter view looking slightly downward. Exactly one fierce cute round ring donut character centered alone with a clearly open center, golden baked dough, broad chocolate icing, only six large readable pink and cream sprinkles, tiny arms, and both tiny feet visible with their midpoint at ground contact x128 y222. Fierce eyebrows and compact forward-ready stance, circular rolling silhouette unobstructed. One contiguous warm-pink icing patch occupies about ten percent of visible area for renderer ownership tinting. Strong near-black cocoa outline, flat two-level cel shading, simple highlight, absolutely nothing below or beside the character, blank transparent 256 by 296 canvas, preferred alpha x32..224 y10..240 and hard alpha x16..240 y4..252.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; annotation, caption, footer, label, handwriting, symbols below character, closed donut hole, bagel, cookie, wheel, tire, motion trail, speed lines, impact marks, crumbs, rolling scene, extra donuts, tiny noisy sprinkles, weapon, scenery, ground, cast shadow, UI, text, letters, numbers, clipped feet, hidden feet, photoreal food, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 61903,
+        "noBackground": true,
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "unit-warrior",
+          "sha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1"
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/unit-candy-donut-fc8b55ae5374.png",
+          "candidateSha256": "fc8b55ae5374df42bd4da2fe4f9a40c70ddbd58a8456cc2161f1f05ab6aae243",
+          "notes": "Rejected: stray generated annotation text baked below the character; violates isolated transparent sprite and no-text contract.",
+          "reviewedAt": "2026-08-17T01:39:24.813Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated full-body Donut game sprite only, southeast-facing three-quarter view looking slightly downward. One fierce cute round ring donut character with a clearly open center, golden baked dough, broad chocolate icing, only six large readable pink and cream sprinkles, tiny arms, and both tiny feet visible with their midpoint at ground contact x128 y222. Fierce eyebrows and compact forward-ready stance, circular rolling silhouette unobstructed. One contiguous warm-pink icing patch occupies about ten percent of visible area for renderer ownership tinting. Strong near-black cocoa outline, flat two-level cel shading, simple highlight, blank transparent 256 by 296 canvas, preferred alpha x32..224 y10..240 and hard alpha x16..240 y4..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; closed donut hole, bagel, cookie, wheel, tire, motion trail, speed lines, impact marks, crumbs, rolling scene, extra donuts, tiny noisy sprinkles, weapon, scenery, ground, cast shadow, UI, text, clipped feet, hidden feet, photoreal food, 3D render.",
+            "prompt": "Isolated full-body Donut game sprite only, southeast-facing three-quarter view looking slightly downward. One fierce cute round ring donut character with a clearly open center, golden baked dough, broad chocolate icing, only six large readable pink and cream sprinkles, tiny arms, and both tiny feet visible with their midpoint at ground contact x128 y222. Fierce eyebrows and compact forward-ready stance, circular rolling silhouette unobstructed. One contiguous warm-pink icing patch occupies about ten percent of visible area for renderer ownership tinting. Strong near-black cocoa outline, flat two-level cel shading, simple highlight, blank transparent 256 by 296 canvas, preferred alpha x32..224 y10..240 and hard alpha x16..240 y4..252.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; closed donut hole, bagel, cookie, wheel, tire, motion trail, speed lines, impact marks, crumbs, rolling scene, extra donuts, tiny noisy sprinkles, weapon, scenery, ground, cast shadow, UI, text, clipped feet, hidden feet, photoreal food, 3D render",
+            "requestSize": {
+              "width": 256,
+              "height": 296
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 296
+            },
+            "seed": 61803,
+            "noBackground": true,
+            "groundContactY": 222,
+            "styleReference": {
+              "id": "unit-warrior",
+              "sha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1"
+            }
+          }
+        }
+      ],
+      "outputSha256": "041fd6defb9b46059e9036418c501cc287e8ac74180384594770e9d1d764a991",
+      "notes": "Accepted second attempt: open ring, fierce face, broad chocolate icing, sparse readable sprinkles and tiny feet create a distinct circular rolling silhouette with clean alpha and correct anchor.",
+      "reviewedAt": "2026-08-17T01:43:50.037Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "unit-candy-warrior": {
+      "id": "unit-candy-warrior",
+      "status": "ACCEPTED",
+      "jobId": "a1b05047-0be8-4ee0-a223-6dda59a1bec8",
+      "candidate": "art/pixellab/candidates/unit-candy-warrior.png",
+      "candidateSha256": "76456b060ba1701e75387285b4738d4c289c0617eb852f5552beadfe2eb1a2bc",
+      "providerOutputSha256": "14225bd2051ca0cbd7dc0e29925e9422141a21f65ec4b8b7bb63cf83feb79cbb",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 27,
+        "top": 4,
+        "right": 228,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated full-body Candy Warrior game sprite only, southeast-facing three-quarter view looking slightly downward. One cute chunky white marshmallow body with a large head-like upper body, tiny readable feet straddling ground contact x128 y222, determined friendly face, and one oversized red-and-white striped candy-cane SWORD held as a weapon in a broad balanced stance. Add one contiguous warm-pink waist sash occupying about ten percent of visible area for renderer ownership tinting. Strong near-black cocoa outline, flat two-level cel shading, simple highlight, blank transparent 256 by 296 canvas, preferred alpha x32..224 y10..240 and hard alpha x16..240 y4..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; ghost, sheet ghost, walking stick, cane used for walking, extra weapon, two candy canes, shield, bow, gumball machine, donut, chocolate bar, scenery, ground, cast shadow, selection mark, UI, text, clipped feet, hidden feet, photoreal food, melted marshmallow.",
+        "prompt": "Isolated full-body Candy Warrior game sprite only, southeast-facing three-quarter view looking slightly downward. One cute chunky white marshmallow body with a large head-like upper body, tiny readable feet straddling ground contact x128 y222, determined friendly face, and one oversized red-and-white striped candy-cane SWORD held as a weapon in a broad balanced stance. Add one contiguous warm-pink waist sash occupying about ten percent of visible area for renderer ownership tinting. Strong near-black cocoa outline, flat two-level cel shading, simple highlight, blank transparent 256 by 296 canvas, preferred alpha x32..224 y10..240 and hard alpha x16..240 y4..252.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; ghost, sheet ghost, walking stick, cane used for walking, extra weapon, two candy canes, shield, bow, gumball machine, donut, chocolate bar, scenery, ground, cast shadow, selection mark, UI, text, clipped feet, hidden feet, photoreal food, melted marshmallow",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 61801,
+        "noBackground": true,
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "unit-warrior",
+          "sha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1"
+        }
+      },
+      "outputSha256": "76456b060ba1701e75387285b4738d4c289c0617eb852f5552beadfe2eb1a2bc",
+      "notes": "Accepted: cute determined marshmallow reads distinctly from a ghost; oversized striped cane reads as a sword; feet/anchor, silhouette, alpha, faction patch, native/enlarged/minimum and terrain composition pass.",
+      "reviewedAt": "2026-08-17T01:39:29.038Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "unit-candy-gumball-guard": {
+      "id": "unit-candy-gumball-guard",
+      "status": "ACCEPTED",
+      "jobId": "12c72de8-a0ab-42ec-bd3c-9c8da1a5c8a6",
+      "candidate": "art/pixellab/candidates/unit-candy-gumball-guard.png",
+      "candidateSha256": "5a43d5f737bbf41f007c9bf8ee5f7fe5e0084bb13f9d243917d27c6f701f81b2",
+      "providerOutputSha256": "387f4a8fe2771f4fefa8685df0a0aff06e8b8c99d3cdc60768f5aa544c74cd9b",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 55,
+        "top": 4,
+        "right": 201,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated full-body Gumball Guard game sprite only, southeast-facing three-quarter view looking slightly downward. Exactly one cute anthropomorphic gumball machine centered alone: chunky red base-body with short sturdy arms and both small feet visible straddling ground contact x128 y222, one large transparent glass globe holding only five large readable pastel gumballs, determined face, and one unmistakable round mouth dispensing chute aimed southeast. A contiguous warm-pink shoulder plate occupies about ten percent of visible area for renderer ownership tinting. Strong near-black cocoa outline, flat two-level cel shading, simple highlight, absolutely nothing beside or behind the character, blank transparent 256 by 296 canvas, preferred alpha x32..224 y10..240 and hard alpha x16..240 y4..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; color palette, palette strip, swatch chart, legend, reference chart, annotation, caption, vending machine scenery, ordinary appliance, coin slot label, coin, text, letters, numbers, gun, cannon, bow, arrow, projectile in flight, many tiny gumballs, realistic glass reflections, candy shop, ground, cast shadow, UI, clipped feet, hidden feet, photorealism, 3D render.",
+        "prompt": "Isolated full-body Gumball Guard game sprite only, southeast-facing three-quarter view looking slightly downward. Exactly one cute anthropomorphic gumball machine centered alone: chunky red base-body with short sturdy arms and both small feet visible straddling ground contact x128 y222, one large transparent glass globe holding only five large readable pastel gumballs, determined face, and one unmistakable round mouth dispensing chute aimed southeast. A contiguous warm-pink shoulder plate occupies about ten percent of visible area for renderer ownership tinting. Strong near-black cocoa outline, flat two-level cel shading, simple highlight, absolutely nothing beside or behind the character, blank transparent 256 by 296 canvas, preferred alpha x32..224 y10..240 and hard alpha x16..240 y4..252.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; color palette, palette strip, swatch chart, legend, reference chart, annotation, caption, vending machine scenery, ordinary appliance, coin slot label, coin, text, letters, numbers, gun, cannon, bow, arrow, projectile in flight, many tiny gumballs, realistic glass reflections, candy shop, ground, cast shadow, UI, clipped feet, hidden feet, photorealism, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 61902,
+        "noBackground": true,
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "unit-warrior",
+          "sha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1"
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/unit-candy-gumball-guard-93b97001d484.png",
+          "candidateSha256": "93b97001d48490704d7732e53c3c4a61e43b04eb1191ce8b1a9f3e4649c0a79d",
+          "notes": "Rejected: stray vertical palette legend and tiny text baked beside the character; violates isolated transparent sprite and no-text contract.",
+          "reviewedAt": "2026-08-17T01:39:21.313Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated full-body Gumball Guard game sprite only, southeast-facing three-quarter view looking slightly downward. One cute anthropomorphic gumball machine: chunky red base-body with short sturdy arms and both small feet visible straddling ground contact x128 y222, one large transparent glass globe holding only five large readable pastel gumballs, determined face, and one unmistakable round mouth dispensing chute aimed southeast. A contiguous warm-pink shoulder plate occupies about ten percent of visible area for renderer ownership tinting. Strong near-black cocoa outline, flat two-level cel shading, simple highlight, blank transparent 256 by 296 canvas, preferred alpha x32..224 y10..240 and hard alpha x16..240 y4..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; vending machine scenery, ordinary appliance, coin slot label, coin, text, letters, numbers, gun, cannon, bow, arrow, projectile in flight, many tiny gumballs, realistic glass reflections, candy shop, ground, cast shadow, UI, clipped feet, hidden feet, photorealism, 3D render.",
+            "prompt": "Isolated full-body Gumball Guard game sprite only, southeast-facing three-quarter view looking slightly downward. One cute anthropomorphic gumball machine: chunky red base-body with short sturdy arms and both small feet visible straddling ground contact x128 y222, one large transparent glass globe holding only five large readable pastel gumballs, determined face, and one unmistakable round mouth dispensing chute aimed southeast. A contiguous warm-pink shoulder plate occupies about ten percent of visible area for renderer ownership tinting. Strong near-black cocoa outline, flat two-level cel shading, simple highlight, blank transparent 256 by 296 canvas, preferred alpha x32..224 y10..240 and hard alpha x16..240 y4..252.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; vending machine scenery, ordinary appliance, coin slot label, coin, text, letters, numbers, gun, cannon, bow, arrow, projectile in flight, many tiny gumballs, realistic glass reflections, candy shop, ground, cast shadow, UI, clipped feet, hidden feet, photorealism, 3D render",
+            "requestSize": {
+              "width": 256,
+              "height": 296
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 296
+            },
+            "seed": 61802,
+            "noBackground": true,
+            "groundContactY": 222,
+            "styleReference": {
+              "id": "unit-warrior",
+              "sha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1"
+            }
+          }
+        }
+      ],
+      "outputSha256": "5a43d5f737bbf41f007c9bf8ee5f7fe5e0084bb13f9d243917d27c6f701f81b2",
+      "notes": "Accepted second attempt: isolated anthropomorphic gumball machine reads as a unit, not scenery; five large gumballs and southeast mouth chute remain readable; no text/palette artifact; anchor and runtime composition pass.",
+      "reviewedAt": "2026-08-17T01:43:46.147Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-action-candify": {
+      "id": "ui-action-candify",
+      "status": "ACCEPTED",
+      "jobId": "d89033ba-d16d-4f18-be94-79563f79bcb6",
+      "candidate": "art/pixellab/candidates/ui-action-candify.png",
+      "candidateSha256": "378f5074f102b95d4e5d49fe98ccfc24a3aa04c4f2510550e22ad9837a553cf4",
+      "providerOutputSha256": "9e7bfd49702015213d7126d4e948adb2c7a19692c99ec257c169b0fc478e6671",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 34,
+        "top": 20,
+        "right": 222,
+        "bottom": 236,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm pink icing, marshmallow white, cocoa brown, cream highlight, charcoal outline. One unit ability portrait icon for Candify only, centered alone: one large isometric ground diamond being covered by a thick flowing layer of glossy warm-pink candy icing from its upper-left corner, with one oversized white four-point marshmallow sparkle attached above it. Strong cocoa outline, one connected centered silhouette filling eighty-four percent of the square, flat two-level cel shading, readable at 64 pixels, transparent canvas with absolutely nothing else anywhere. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; white square, blank square, color swatch, reference panel, split composition, text, letters, map scene, multiple tiles, city, unit, character, hand, paint bucket, gore, slime, realistic liquid, panel, button, square background, tiny particles, photorealism, 3D render.",
+        "prompt": "One unit ability portrait icon for Candify only, centered alone: one large isometric ground diamond being covered by a thick flowing layer of glossy warm-pink candy icing from its upper-left corner, with one oversized white four-point marshmallow sparkle attached above it. Strong cocoa outline, one connected centered silhouette filling eighty-four percent of the square, flat two-level cel shading, readable at 64 pixels, transparent canvas with absolutely nothing else anywhere.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; white square, blank square, color swatch, reference panel, split composition, text, letters, map scene, multiple tiles, city, unit, character, hand, paint bucket, gore, slime, realistic liquid, panel, button, square background, tiny particles, photorealism, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 61923,
+        "noBackground": true,
+        "palette": "warm pink icing, marshmallow white, cocoa brown, cream highlight, charcoal outline",
+        "styleReference": {
+          "id": "ui-tech-climbing",
+          "sha256": "aeda6bc572f4e77728fe158b2992aa1e9ae566099ab64e5252bd6d0539d553a8"
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/ui-action-candify-8050e8841734.png",
+          "candidateSha256": "8050e88417349d496228e072c9bbd2bf3cf77aab4dc310e624cb2ba58801a4d3",
+          "notes": "Rejected: large opaque blank white square artifact occupies the left half of the canvas; violates transparent isolated icon contract.",
+          "reviewedAt": "2026-08-17T01:43:42.688Z",
+          "request": {
+            "endpoint": "generate-ui-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm pink icing, marshmallow white, cocoa brown, cream highlight, charcoal outline. One unit ability portrait icon for Candify only: one large isometric ground diamond being covered by a thick flowing layer of glossy warm-pink candy icing from one corner, with one oversized white marshmallow sparkle shape above it. Strong cocoa outline, one connected centered silhouette filling eighty-four percent of the square, flat two-level cel shading, readable at 64 pixels, transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, map scene, multiple tiles, city, unit, character, hand, paint bucket, gore, slime, realistic liquid, panel, button, square background, tiny particles, photorealism, 3D render.",
+            "prompt": "One unit ability portrait icon for Candify only: one large isometric ground diamond being covered by a thick flowing layer of glossy warm-pink candy icing from one corner, with one oversized white marshmallow sparkle shape above it. Strong cocoa outline, one connected centered silhouette filling eighty-four percent of the square, flat two-level cel shading, readable at 64 pixels, transparent safe area.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, map scene, multiple tiles, city, unit, character, hand, paint bucket, gore, slime, realistic liquid, panel, button, square background, tiny particles, photorealism, 3D render",
+            "requestSize": {
+              "width": 256,
+              "height": 256
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 256
+            },
+            "seed": 61823,
+            "noBackground": true,
+            "palette": "warm pink icing, marshmallow white, cocoa brown, cream highlight, charcoal outline",
+            "styleReference": {
+              "id": "ui-faction-candy-badge",
+              "sha256": "c86211f694a00265c332c0975b67d183f6b65a859112b367056d413dd03bc5d5"
+            }
+          }
+        }
+      ],
+      "outputSha256": "378f5074f102b95d4e5d49fe98ccfc24a3aa04c4f2510550e22ad9837a553cf4",
+      "notes": "Accepted second attempt: one clear candy-coated territory diamond and marshmallow sparkle remain distinct at 64 CSS px; alpha, outline, grayscale silhouette and light/dark composition pass.",
+      "reviewedAt": "2026-08-17T01:46:09.161Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-faction-candy-badge": {
+      "id": "ui-faction-candy-badge",
+      "status": "ACCEPTED",
+      "jobId": "ca0dd03a-1c71-4f6b-99b1-b9992583827a",
+      "candidate": "art/pixellab/candidates/ui-faction-candy-badge.png",
+      "candidateSha256": "c86211f694a00265c332c0975b67d183f6b65a859112b367056d413dd03bc5d5",
+      "providerOutputSha256": "a6877b7a6efaf00c625ccb0e069c226f3d4755f560cf680b380d4989d0853017",
+      "width": 96,
+      "height": 96,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 7,
+        "top": 7,
+        "right": 89,
+        "bottom": 88,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: cocoa brown, marshmallow white, candy red, warm pink, cream highlight. One compact Candy faction badge only: a single bold heraldic emblem combining one white marshmallow cube behind one diagonal red-and-white candy cane, enclosed by a thick cocoa-brown circular outline, warm-pink accent tab, one connected centered silhouette filling eighty-four percent of the square, readable at 24 pixels, flat two-level cel shading, transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, words, logo typography, many candies, character body, scene, panel, button, square background, realistic food, thin lines, tiny sprinkles, photorealism, 3D render.",
+        "prompt": "One compact Candy faction badge only: a single bold heraldic emblem combining one white marshmallow cube behind one diagonal red-and-white candy cane, enclosed by a thick cocoa-brown circular outline, warm-pink accent tab, one connected centered silhouette filling eighty-four percent of the square, readable at 24 pixels, flat two-level cel shading, transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, words, logo typography, many candies, character body, scene, panel, button, square background, realistic food, thin lines, tiny sprinkles, photorealism, 3D render",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 96,
+          "height": 96
+        },
+        "seed": 61821,
+        "noBackground": true,
+        "palette": "cocoa brown, marshmallow white, candy red, warm pink, cream highlight",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-star",
+          "sha256": "86b0c714661f50e239bebb5b17b331b6e28e9f95aa6faf3935684b9328578211"
+        }
+      },
+      "outputSha256": "c86211f694a00265c332c0975b67d183f6b65a859112b367056d413dd03bc5d5",
+      "notes": "Accepted: single connected marshmallow-and-candy-cane mark remains recognizable at 24 CSS px on light/dark contexts with safe alpha and no text.",
+      "reviewedAt": "2026-08-17T01:39:33.709Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-action-kamikaze-roll": {
+      "id": "ui-action-kamikaze-roll",
+      "status": "ACCEPTED",
+      "jobId": "167e2308-0d16-4a72-8fff-16a11b19207f",
+      "candidate": "art/pixellab/candidates/ui-action-kamikaze-roll.png",
+      "candidateSha256": "896d2b1e529b8c98ef6dab4f2c73214533aa871327dd411043351369aafb23b3",
+      "providerOutputSha256": "8994a1ba3d1f0a615b39c92f10674ee6a9101b067c10740f0b96d726ca939dd6",
+      "width": 192,
+      "height": 192,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 20,
+        "top": 16,
+        "right": 177,
+        "bottom": 175,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: cocoa brown, golden dough, warm pink sprinkles, cream chevron, charcoal outline. One primary action icon for Kamikaze Roll only: one fierce chocolate-iced ring donut tilted diagonally down-right with a clearly open center, paired with one enormous simple cream directional chevron behind it. One connected centered silhouette filling eighty-four percent of the square, strong cocoa outline, flat two-level cel shading, readable at 48 pixels, transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, character limbs, multiple donuts, closed hole, wheel, tire, gore, explosion, many speed lines, scene, panel, button, ground, realistic food, photorealism, 3D render.",
+        "prompt": "One primary action icon for Kamikaze Roll only: one fierce chocolate-iced ring donut tilted diagonally down-right with a clearly open center, paired with one enormous simple cream directional chevron behind it. One connected centered silhouette filling eighty-four percent of the square, strong cocoa outline, flat two-level cel shading, readable at 48 pixels, transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, character limbs, multiple donuts, closed hole, wheel, tire, gore, explosion, many speed lines, scene, panel, button, ground, realistic food, photorealism, 3D render",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 192,
+          "height": 192
+        },
+        "seed": 61822,
+        "noBackground": true,
+        "palette": "cocoa brown, golden dough, warm pink sprinkles, cream chevron, charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-attack",
+          "sha256": "cdac6885f5c27b9edabaa5ba7da303f32d9d6e84e2cf2c7bfb51b6efd24a8912"
+        }
+      },
+      "outputSha256": "896d2b1e529b8c98ef6dab4f2c73214533aa871327dd411043351369aafb23b3",
+      "notes": "Accepted: open-center chocolate donut and bold directional chevron communicate rolling at 48 CSS px without text, damage, or baked motion effects.",
+      "reviewedAt": "2026-08-17T01:39:38.745Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "unit-candy-choco-engineer": {
+      "id": "unit-candy-choco-engineer",
+      "status": "ACCEPTED",
+      "jobId": "40c8f38a-6c99-4ad3-bedb-4f0eea4f4718",
+      "candidate": "art/pixellab/candidates/unit-candy-choco-engineer.png",
+      "candidateSha256": "020d0448b1db6be74b00aa3d468ca4f4aa7d9c2c700d63ae7c03a683ec314fcf",
+      "providerOutputSha256": "98eaa06227e2219a5d828e36c45a249b8ed8c393cff9f826b4f5fb51b2c2a1dc",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 45,
+        "top": 4,
+        "right": 211,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated full-body Choco Engineer game sprite only, southeast-facing three-quarter view looking slightly downward. One cute anthropomorphic segmented milk-chocolate bar with a readable face, chunky arms, both short booted feet straddling ground contact x128 y222, one oversized warm-gold construction hard hat, and one large simple wooden mallet held as a tool. Add one contiguous warm-pink tool belt occupying about ten percent of visible area for renderer ownership tinting. Strong near-black cocoa outline, flat two-level cel shading, simple highlight, compact character silhouette distinct from a wall, blank transparent 256 by 296 canvas, preferred alpha x32..224 y10..240 and hard alpha x16..240 y4..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; brick wall, chocolate wall, plain rectangle, faceless chocolate bar, building, crane, multiple tools, blueprint text, weapon pose, scenery, ground, cast shadow, selection mark, UI, letters, clipped feet, hidden feet, photoreal food, melted chocolate, 3D render.",
+        "prompt": "Isolated full-body Choco Engineer game sprite only, southeast-facing three-quarter view looking slightly downward. One cute anthropomorphic segmented milk-chocolate bar with a readable face, chunky arms, both short booted feet straddling ground contact x128 y222, one oversized warm-gold construction hard hat, and one large simple wooden mallet held as a tool. Add one contiguous warm-pink tool belt occupying about ten percent of visible area for renderer ownership tinting. Strong near-black cocoa outline, flat two-level cel shading, simple highlight, compact character silhouette distinct from a wall, blank transparent 256 by 296 canvas, preferred alpha x32..224 y10..240 and hard alpha x16..240 y4..252.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; brick wall, chocolate wall, plain rectangle, faceless chocolate bar, building, crane, multiple tools, blueprint text, weapon pose, scenery, ground, cast shadow, selection mark, UI, letters, clipped feet, hidden feet, photoreal food, melted chocolate, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 61804,
+        "noBackground": true,
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "unit-candy-warrior",
+          "sha256": "76456b060ba1701e75387285b4738d4c289c0617eb852f5552beadfe2eb1a2bc"
+        }
+      },
+      "outputSha256": "020d0448b1db6be74b00aa3d468ca4f4aa7d9c2c700d63ae7c03a683ec314fcf",
+      "notes": "Accepted: anthropomorphic segmented chocolate bar, oversized hard hat, mallet and pink tool belt read clearly; compact anchored unit silhouette is distinct from the wall structure.",
+      "reviewedAt": "2026-08-17T01:51:16.861Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-action-choose-candify-city": {
+      "id": "ui-action-choose-candify-city",
+      "status": "ACCEPTED",
+      "jobId": "aba7abb0-621e-4a06-be24-122b349faa37",
+      "candidate": "art/pixellab/candidates/ui-action-choose-candify-city.png",
+      "candidateSha256": "0fda30e502cff71e97f1f7f9f2975e6257d549d3e69835ea5d88b62ec824c2e4",
+      "providerOutputSha256": "efa54eed241bcea24320602098d4c3d578bf2d6415e7b19c925e41b99a42a813",
+      "width": 192,
+      "height": 192,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 23,
+        "top": 15,
+        "right": 168,
+        "bottom": 177,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm pink, cocoa brown, marshmallow white, cream arrows, charcoal outline. One primary choice icon for Choose Candify City only: two simplified candy-castle towers side by side, one pink and one cocoa, joined to one central marshmallow diamond by two thick cream connector arrows. One connected centered silhouette filling eighty-four percent of the square, strong cocoa outline, flat two-level cel shading, readable at 48 pixels, transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, numbers, map scene, realistic castles, many buildings, unit, character, ambiguous single city, thin lines, panel, button, ground, photorealism, 3D render.",
+        "prompt": "One primary choice icon for Choose Candify City only: two simplified candy-castle towers side by side, one pink and one cocoa, joined to one central marshmallow diamond by two thick cream connector arrows. One connected centered silhouette filling eighty-four percent of the square, strong cocoa outline, flat two-level cel shading, readable at 48 pixels, transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, numbers, map scene, realistic castles, many buildings, unit, character, ambiguous single city, thin lines, panel, button, ground, photorealism, 3D render",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 192,
+          "height": 192
+        },
+        "seed": 61825,
+        "noBackground": true,
+        "palette": "warm pink, cocoa brown, marshmallow white, cream arrows, charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-action-candify",
+          "sha256": "378f5074f102b95d4e5d49fe98ccfc24a3aa04c4f2510550e22ad9837a553cf4"
+        }
+      },
+      "outputSha256": "0fda30e502cff71e97f1f7f9f2975e6257d549d3e69835ea5d88b62ec824c2e4",
+      "notes": "Accepted: paired candy city towers, central territory diamond and two connector arrows clearly communicate mandatory city choice at 48 CSS px without text or framing.",
+      "reviewedAt": "2026-08-17T01:51:21.010Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-action-build-chocolate-wall": {
+      "id": "ui-action-build-chocolate-wall",
+      "status": "ACCEPTED",
+      "jobId": "1c269915-762e-4afd-baeb-53f2239cccfd",
+      "candidate": "art/pixellab/candidates/ui-action-build-chocolate-wall.png",
+      "candidateSha256": "72cb6914d28e372b59aef97f1ccd0cd4173ec1bf3f950b3c460440a1aad62590",
+      "providerOutputSha256": "4ce274617e9cde86af1ce3dcad769bea947e7b53c7b776fcf549ee4af47bbfd0",
+      "width": 192,
+      "height": 192,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 21,
+        "top": 20,
+        "right": 171,
+        "bottom": 170,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: milk chocolate, dark cocoa, warm gold mallet, cream highlight, charcoal outline. One primary action icon for Build Chocolate Wall only, floating alone on a fully transparent canvas: one low broad wall of three enormous chocolate bricks with one oversized warm-gold construction mallet crossing above it. One connected centered cutout silhouette filling eighty-four percent of the square, strong cocoa outline, flat two-level cel shading, readable at 48 pixels, transparent safe area and absolutely no surrounding shape. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; square frame, rounded frame, border, badge, tile, dark background, backing plate, text, letters, character, face, arms, legs, castle, city, realistic masonry, many tiny bricks, damage cracks, scene, panel, button, ground, photorealism, 3D render.",
+        "prompt": "One primary action icon for Build Chocolate Wall only, floating alone on a fully transparent canvas: one low broad wall of three enormous chocolate bricks with one oversized warm-gold construction mallet crossing above it. One connected centered cutout silhouette filling eighty-four percent of the square, strong cocoa outline, flat two-level cel shading, readable at 48 pixels, transparent safe area and absolutely no surrounding shape.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; square frame, rounded frame, border, badge, tile, dark background, backing plate, text, letters, character, face, arms, legs, castle, city, realistic masonry, many tiny bricks, damage cracks, scene, panel, button, ground, photorealism, 3D render",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 192,
+          "height": 192
+        },
+        "seed": 61924,
+        "noBackground": true,
+        "palette": "milk chocolate, dark cocoa, warm gold mallet, cream highlight, charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-action-kamikaze-roll",
+          "sha256": "896d2b1e529b8c98ef6dab4f2c73214533aa871327dd411043351369aafb23b3"
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/ui-action-build-chocolate-wall-fd1618219473.png",
+          "candidateSha256": "fd16182194730a78d216492b894d3654f0a2f1adc5e89adf61c056de616bbb16",
+          "notes": "Rejected: baked dark square UI frame surrounds the symbol; action icons must be transparent cutouts with interface chrome owned by DOM/CSS.",
+          "reviewedAt": "2026-08-17T01:51:13.213Z",
+          "request": {
+            "endpoint": "generate-ui-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: milk chocolate, dark cocoa, warm gold mallet, cream highlight, charcoal outline. One primary action icon for Build Chocolate Wall only: one low broad wall of three enormous chocolate bricks with one oversized warm-gold construction mallet crossing above it. One connected centered silhouette filling eighty-four percent of the square, strong cocoa outline, flat two-level cel shading, readable at 48 pixels, transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, character, face, arms, legs, castle, city, realistic masonry, many tiny bricks, damage cracks, scene, panel, button, ground, photorealism, 3D render.",
+            "prompt": "One primary action icon for Build Chocolate Wall only: one low broad wall of three enormous chocolate bricks with one oversized warm-gold construction mallet crossing above it. One connected centered silhouette filling eighty-four percent of the square, strong cocoa outline, flat two-level cel shading, readable at 48 pixels, transparent safe area.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; text, letters, character, face, arms, legs, castle, city, realistic masonry, many tiny bricks, damage cracks, scene, panel, button, ground, photorealism, 3D render",
+            "requestSize": {
+              "width": 384,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 192,
+              "height": 192
+            },
+            "seed": 61824,
+            "noBackground": true,
+            "palette": "milk chocolate, dark cocoa, warm gold mallet, cream highlight, charcoal outline",
+            "postprocess": "lanczos3-resize",
+            "styleReference": {
+              "id": "ui-action-kamikaze-roll",
+              "sha256": "896d2b1e529b8c98ef6dab4f2c73214533aa871327dd411043351369aafb23b3"
+            }
+          }
+        }
+      ],
+      "outputSha256": "72cb6914d28e372b59aef97f1ccd0cd4173ec1bf3f950b3c460440a1aad62590",
+      "notes": "Accepted second attempt: transparent cutout with three large chocolate bricks and oversized mallet, no baked frame, readable at 48 CSS px on light/dark buttons.",
+      "reviewedAt": "2026-08-17T01:54:48.239Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-faction-candy-hero": {
+      "id": "ui-faction-candy-hero",
+      "status": "ACCEPTED",
+      "jobId": "bfae83eb-a8e8-425e-b4db-0907753dc1da",
+      "candidate": "art/pixellab/candidates/ui-faction-candy-hero.png",
+      "candidateSha256": "e11f14c873655b5a6f8750fda05e434a43afdc14e72dc8f470efc73cbccfda69",
+      "providerOutputSha256": "3795b367a1374f63e65f91c99fc61f05b4f894052d7e6f2c183c0b72d770079c",
+      "width": 1024,
+      "height": 1024,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 90,
+        "top": 74,
+        "right": 979,
+        "bottom": 925,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Square Candy faction-picker hero illustration on a transparent background: four cheerful chunky board-game sticker characters grouped in a compact heroic cluster—white marshmallow Candy Warrior visibly holding one oversized red-white candy-cane sword, glass-globe Gumball Guard with large colored gumballs and visible mouth chute, fierce open-center chocolate-sprinkle Donut, and segmented chocolate-bar Choco Engineer wearing one oversized yellow hard hat and holding a mallet. Warm cocoa, red, pink, cream and marshmallow palette, large heads and short bodies, strong near-black cocoa outline, mostly flat color and two-level cel shading, playful silly adventurous tone, no text. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; scene background, landscape, city, Catapult redesign, extra characters, missing donut hole, ordinary vending machine, ghost, realistic food, logo, title, words, letters, UI, photorealism, painterly, faux 3D, low-poly 3D, cinematic lighting, gore, mixed faction genres.",
+        "prompt": "Square Candy faction-picker hero illustration on a transparent background: four cheerful chunky board-game sticker characters grouped in a compact heroic cluster—white marshmallow Candy Warrior visibly holding one oversized red-white candy-cane sword, glass-globe Gumball Guard with large colored gumballs and visible mouth chute, fierce open-center chocolate-sprinkle Donut, and segmented chocolate-bar Choco Engineer wearing one oversized yellow hard hat and holding a mallet. Warm cocoa, red, pink, cream and marshmallow palette, large heads and short bodies, strong near-black cocoa outline, mostly flat color and two-level cel shading, playful silly adventurous tone, no text.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; scene background, landscape, city, Catapult redesign, extra characters, missing donut hole, ordinary vending machine, ghost, realistic food, logo, title, words, letters, UI, photorealism, painterly, faux 3D, low-poly 3D, cinematic lighting, gore, mixed faction genres",
+        "requestSize": {
+          "width": 512,
+          "height": 512
+        },
+        "outputSize": {
+          "width": 1024,
+          "height": 1024
+        },
+        "seed": 61826,
+        "noBackground": true,
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "unit-candy-warrior",
+          "sha256": "76456b060ba1701e75387285b4738d4c289c0617eb852f5552beadfe2eb1a2bc"
+        }
+      },
+      "outputSha256": "e11f14c873655b5a6f8750fda05e434a43afdc14e72dc8f470efc73cbccfda69",
+      "notes": "Accepted: all four Candy identities read distinctly in one compact transparent cluster; candy-cane sword, gumball chute, open Donut ring and Engineer hard hat remain recognizable at picker scale.",
+      "reviewedAt": "2026-08-17T01:51:25.670Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-chocolate-wall": {
+      "id": "building-chocolate-wall",
+      "status": "ACCEPTED",
+      "jobId": "d2790215-6831-4ede-9363-00b03493bc67",
+      "candidate": "art/pixellab/candidates/building-chocolate-wall.png",
+      "candidateSha256": "1810f529c6f5f8a7e8f3d014139b381872602a3c99373b789fa1bf7e6d5e0053",
+      "providerOutputSha256": "697ab896113198d9da0488bc0930aecca24b41970be362991bb9e2162f8db061",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 53,
+        "top": 84,
+        "right": 203,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated Chocolate Wall destructible structure sprite only, southeast-facing isometric three-quarter downward view. One VERY LOW, VERY WIDE freestanding barrier made from exactly six enormous milk-chocolate bricks arranged as exactly two staggered horizontal rows of three bricks. Every brick is cocoa brown with one large scored chocolate-bar inset; use only two small cream highlight strokes, never white bricks. Total wall width is at least twice its visible height. Base rests across ground contact x128 y222 and stays below y244, readable over grass, rock, forest and resources. Strong near-black cocoa outline, flat two-level cel shading, no character, blank transparent 256 by 296 canvas, visible alpha x28..228 y140..244 and hard alpha x20..236 y84..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; three rows, tall wall, narrow wall, vertical slab, white brick, cream brick, face, eyes, mouth, arms, legs, hard hat, engineer, ordinary chocolate bar character, castle, tower, city wall reward shield, realistic masonry, rubble, cracks, damage state, owner color, health bar, unit, terrain tile, ground plane, cast shadow, scenery, text, UI, 3D render.",
+        "prompt": "Isolated Chocolate Wall destructible structure sprite only, southeast-facing isometric three-quarter downward view. One VERY LOW, VERY WIDE freestanding barrier made from exactly six enormous milk-chocolate bricks arranged as exactly two staggered horizontal rows of three bricks. Every brick is cocoa brown with one large scored chocolate-bar inset; use only two small cream highlight strokes, never white bricks. Total wall width is at least twice its visible height. Base rests across ground contact x128 y222 and stays below y244, readable over grass, rock, forest and resources. Strong near-black cocoa outline, flat two-level cel shading, no character, blank transparent 256 by 296 canvas, visible alpha x28..228 y140..244 and hard alpha x20..236 y84..252.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; three rows, tall wall, narrow wall, vertical slab, white brick, cream brick, face, eyes, mouth, arms, legs, hard hat, engineer, ordinary chocolate bar character, castle, tower, city wall reward shield, realistic masonry, rubble, cracks, damage state, owner color, health bar, unit, terrain tile, ground plane, cast shadow, scenery, text, UI, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 61911,
+        "noBackground": true,
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "unit-candy-choco-engineer",
+          "sha256": "020d0448b1db6be74b00aa3d468ca4f4aa7d9c2c700d63ae7c03a683ec314fcf"
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/building-chocolate-wall-3e7d84b6e387.png",
+          "candidateSha256": "3e7d84b6e387d086c5fceb25edf7d1a5817e90e5a0b5059e66e711f5136beee4",
+          "notes": "Rejected: tall narrow three-row slab with large white-brick band; violates low broad two-row footprint and risks hiding coexisting resources/improvements.",
+          "reviewedAt": "2026-08-17T01:54:44.278Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated Chocolate Wall destructible structure sprite only, southeast-facing isometric three-quarter downward view. One low broad freestanding wall built from six enormous interlocking milk-and-dark-chocolate brick segments in two staggered rows, unmistakably chocolate through large scored bar squares and two simple cream highlights. Base rests across ground contact x128 y222 and stays below y252, readable over grass, rock, forest and resources. Strong near-black cocoa outline, flat two-level cel shading, no character, blank transparent 256 by 296 canvas, visible alpha x28..228 y112..244 and hard alpha x20..236 y84..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; face, eyes, mouth, arms, legs, hard hat, engineer, ordinary chocolate bar character, castle, tower, city wall reward shield, realistic masonry, rubble, cracks, damage state, owner color, health bar, unit, terrain tile, ground plane, cast shadow, scenery, text, UI, 3D render.",
+            "prompt": "Isolated Chocolate Wall destructible structure sprite only, southeast-facing isometric three-quarter downward view. One low broad freestanding wall built from six enormous interlocking milk-and-dark-chocolate brick segments in two staggered rows, unmistakably chocolate through large scored bar squares and two simple cream highlights. Base rests across ground contact x128 y222 and stays below y252, readable over grass, rock, forest and resources. Strong near-black cocoa outline, flat two-level cel shading, no character, blank transparent 256 by 296 canvas, visible alpha x28..228 y112..244 and hard alpha x20..236 y84..252.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; face, eyes, mouth, arms, legs, hard hat, engineer, ordinary chocolate bar character, castle, tower, city wall reward shield, realistic masonry, rubble, cracks, damage state, owner color, health bar, unit, terrain tile, ground plane, cast shadow, scenery, text, UI, 3D render",
+            "requestSize": {
+              "width": 256,
+              "height": 296
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 296
+            },
+            "seed": 61811,
+            "noBackground": true,
+            "groundContactY": 222,
+            "styleReference": {
+              "id": "unit-candy-choco-engineer",
+              "sha256": "020d0448b1db6be74b00aa3d468ca4f4aa7d9c2c700d63ae7c03a683ec314fcf"
+            }
+          }
+        }
+      ],
+      "outputSha256": "1810f529c6f5f8a7e8f3d014139b381872602a3c99373b789fa1bf7e6d5e0053",
+      "notes": "Accepted second attempt: exactly six scored cocoa bricks in two staggered rows form a low broad barrier; clean anchor/alpha and readable over every compatible terrain/resource/improvement without character cues.",
+      "reviewedAt": "2026-08-17T01:56:58.055Z",
       "reviewChecks": {
         "source": true,
         "native": true,

@@ -130,6 +130,7 @@ describe("Canvas board interaction boundary", () => {
       drawAnimal(): void {},
       drawMine(): void {},
       drawLumberMill(): void {},
+      drawChocolateWall(): void {},
       drawForest(): void {},
       drawVillage(): void {},
       drawCityBack(): void {},

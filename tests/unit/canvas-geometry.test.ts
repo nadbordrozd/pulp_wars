@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   queryPlayerCommands,
   viewFor,
+  wallId,
   type Command,
   type PlayerView,
 } from "../../src/engine/index";
@@ -605,6 +606,55 @@ describe("stable draw ordering and deterministic render fixtures", () => {
     expect(new Set(hiddenEntries.map((entry) => entry.kind))).toEqual(
       new Set(["FOG"]),
     );
+  });
+
+  it("renders explored Chocolate Walls below units with feet-level health and hides them in fog", () => {
+    const state = gameStateBuilder();
+    const human = state.players.find((player) => player.controller === "HUMAN");
+    if (human === undefined) throw new Error("Missing human fixture");
+    const base = viewFor(state, human.id);
+    const tile = base.board.tiles.find(
+      (candidate) => candidate.explored && candidate.site === null,
+    );
+    if (tile === undefined) throw new Error("Missing explored wall fixture");
+    const wall = {
+      id: wallId(8_001),
+      ownerId: human.id,
+      at: tile.at,
+      hp: 5,
+      kind: "CHOCOLATE_WALL" as const,
+      maxHp: 10 as const,
+    };
+    const visible: PlayerView = { ...base, chocolateWalls: [wall] };
+    const kinds = buildRenderPlan(visible, null, null)
+      .entries.filter(
+        (entry) => entry.at.x === tile.at.x && entry.at.y === tile.at.y,
+      )
+      .map((entry) => entry.kind);
+    expect(kinds).toContain("CHOCOLATE_WALL");
+    expect(kinds).toContain("CHOCOLATE_WALL_STATUS");
+    expect(kinds.indexOf("CHOCOLATE_WALL")).toBeLessThan(
+      kinds.indexOf("CHOCOLATE_WALL_STATUS"),
+    );
+
+    const hidden: PlayerView = {
+      ...visible,
+      board: {
+        ...visible.board,
+        tiles: visible.board.tiles.map((candidate) =>
+          candidate.at.x === tile.at.x && candidate.at.y === tile.at.y
+            ? { at: candidate.at, explored: false as const }
+            : candidate,
+        ),
+      },
+    };
+    expect(
+      buildRenderPlan(hidden, null, null)
+        .entries.filter(
+          (entry) => entry.at.x === tile.at.x && entry.at.y === tile.at.y,
+        )
+        .map((entry) => entry.kind),
+    ).toEqual(["FOG"]);
   });
 
   it("bounds only explored selected-city territory and emits nothing over fog", () => {

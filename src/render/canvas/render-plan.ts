@@ -22,6 +22,7 @@ export type RenderEntryKind =
   | "ANIMAL"
   | "MINE"
   | "LUMBER_MILL"
+  | "CHOCOLATE_WALL"
   | "CONTACT_SHADOW"
   | "MOUNTAIN"
   | "FOREST"
@@ -36,6 +37,7 @@ export type RenderEntryKind =
   | "MINE_TARGET"
   | "PATH"
   | "UNIT_STATUS"
+  | "CHOCOLATE_WALL_STATUS"
   | "CITY_STATUS"
   | "FOG";
 
@@ -70,6 +72,7 @@ const LAYER: Readonly<Record<RenderEntryKind, number>> = {
   ANIMAL: 5,
   MINE: 5,
   LUMBER_MILL: 5,
+  CHOCOLATE_WALL: 5,
   CONTACT_SHADOW: 4,
   MOUNTAIN: 5,
   FOREST: 5,
@@ -84,12 +87,14 @@ const LAYER: Readonly<Record<RenderEntryKind, number>> = {
   MINE_TARGET: 6,
   PATH: 6,
   UNIT_STATUS: 7,
+  CHOCOLATE_WALL_STATUS: 7,
   CITY_STATUS: 7,
 };
 
 const BODY_TIE: Readonly<Partial<Record<RenderEntryKind, number>>> = {
   CONTACT_SHADOW: 0,
   LUMBER_MILL: 5,
+  CHOCOLATE_WALL: 18,
   FOREST: 10,
   MOUNTAIN: 10,
   ANIMAL: 15,
@@ -120,6 +125,9 @@ export function buildRenderPlan(
     const unit = view.units.find((candidate) =>
       sameCoord(candidate.at, tile.at),
     );
+    const chocolateWall = view.chocolateWalls.find((candidate) =>
+      sameCoord(candidate.at, tile.at),
+    );
     const ownerId =
       city?.ownerId ??
       view.cities.find((candidate) => candidate.id === tile.territoryCityId)
@@ -139,6 +147,24 @@ export function buildRenderPlan(
       entries.push(
         entry("LUMBER_MILL", tile.at, coordinateId(tile.at), ownerId),
       );
+    if (chocolateWall !== undefined) {
+      entries.push(
+        entry(
+          "CHOCOLATE_WALL",
+          tile.at,
+          chocolateWall.id,
+          chocolateWall.ownerId,
+        ),
+      );
+      entries.push(
+        entry(
+          "CHOCOLATE_WALL_STATUS",
+          tile.at,
+          chocolateWall.id,
+          chocolateWall.ownerId,
+        ),
+      );
+    }
     if (tile.terrain === "MOUNTAIN")
       entries.push(entry("MOUNTAIN", tile.at, coordinateId(tile.at), ownerId));
     if (tile.terrain === "FOREST")

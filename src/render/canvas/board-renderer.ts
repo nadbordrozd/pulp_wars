@@ -1,6 +1,7 @@
 import type {
   CityState,
   Coord,
+  FactionId,
   PlayerColor,
   PlayerUnitView,
   PlayerView,
@@ -131,6 +132,9 @@ function drawEntry(options: DrawBoardOptions, entry: RenderPlanEntry): void {
     case "LUMBER_MILL":
       assets.drawLumberMill(context, assetOptions);
       break;
+    case "CHOCOLATE_WALL":
+      assets.drawChocolateWall(context, assetOptions);
+      break;
     case "CONTACT_SHADOW":
       drawContactShadow(context, center, camera.zoom);
       break;
@@ -163,7 +167,12 @@ function drawEntry(options: DrawBoardOptions, entry: RenderPlanEntry): void {
             options.reducedMotion,
           );
         }
-        assets.drawUnit(context, assetOptions, unit);
+        assets.drawUnit(
+          context,
+          assetOptions,
+          unit,
+          ownerFactionFor(view, unit.ownerId),
+        );
         context.restore();
         assets.drawUnitOwnerCue(context, assetOptions, unit);
       }
@@ -212,6 +221,14 @@ function drawEntry(options: DrawBoardOptions, entry: RenderPlanEntry): void {
       const unit = unitById(view, entry.id);
       if (unit !== undefined)
         drawUnitStatus(context, center, camera.zoom, unit);
+      break;
+    }
+    case "CHOCOLATE_WALL_STATUS": {
+      const wall = view.chocolateWalls.find(
+        (candidate) => candidate.id === entry.id,
+      );
+      if (wall !== undefined)
+        drawUnitHealthBar(context, center, camera.zoom, wall);
       break;
     }
     case "CITY_STATUS": {
@@ -317,6 +334,7 @@ function drawCombatPresentation(
         variant: 0,
       },
       presentation.attacker,
+      ownerFactionFor(view, presentation.attacker.ownerId),
     );
     context.restore();
     assets.drawUnitOwnerCue(
@@ -346,6 +364,7 @@ function drawCombatPresentation(
       variant: 0,
     },
     presentation.defender,
+    ownerFactionFor(view, presentation.defender.ownerId),
   );
   context.restore();
   assets.drawUnitOwnerCue(
@@ -465,7 +484,12 @@ function drawArcherCombatPresentation(
     nestedContext.save();
     nestedContext.globalAlpha = opacity;
     drawContactShadow(nestedContext, center, nestedOptions.camera.zoom);
-    assets.drawUnit(nestedContext, assetOptions, unit);
+    assets.drawUnit(
+      nestedContext,
+      assetOptions,
+      unit,
+      ownerFactionFor(nestedOptions.view, unit.ownerId),
+    );
     nestedContext.restore();
     if (ownerCue) assets.drawUnitOwnerCue(nestedContext, assetOptions, unit);
   }
@@ -889,6 +913,13 @@ function ownerColorFor(
   if (ownerId === null) return null;
   const player = view.players.find((candidate) => candidate.id === ownerId);
   return player === undefined ? null : PLAYER_COLORS[player.color];
+}
+
+function ownerFactionFor(view: PlayerView, ownerId: number): FactionId {
+  return (
+    view.players.find((candidate) => candidate.id === ownerId)?.faction ??
+    "ORIGINAL"
+  );
 }
 
 function cityById(view: PlayerView, id: number): CityState | undefined {

@@ -412,6 +412,16 @@ describe("semantic POC screen flow", () => {
 
     radio("faction-seat-0", "CANDY").click();
     radio("faction-seat-2", "CANDY").click();
+    expect(
+      document.querySelector<HTMLImageElement>(
+        ".faction-preview .faction-candy .faction-hero-art",
+      )?.src,
+    ).toContain("/assets/pixellab/ui/faction-candy-hero.png");
+    expect(
+      document.querySelector<HTMLImageElement>(
+        ".faction-seat-portrait.faction-candy .faction-hero-art",
+      )?.src,
+    ).toContain("/assets/pixellab/ui/faction-candy-badge.png");
 
     click("Start Conquest");
     expect(dialog()?.textContent).toContain("3 AI · 16 × 16 · Normal parity");
