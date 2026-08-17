@@ -368,6 +368,14 @@ not change the relationship graph.
 
 ### 0.7 Presentation and reduced motion
 
+Selecting a different visible unit is presentation-only: Full/Normal moves
+only its raster in one 240 ms half-sine to a 12 nominal-CSS-pixel upward apex
+and exactly back to the fixed ground anchor; Fast uses 120 ms. All unit-
+selection channels share this behavior, while reselecting the same unit does
+not restart it. Reduced motion applies no translation and requests no jump
+frame. Picking, sorting, selection/camera geometry, cues, commands, state, and
+hashes are invariant.
+
 Full/Normal Roll animates the Donut along the authoritative path at 90 ms per
 cell, capped to 900 ms total by uniform timing compression, with one code-native
 impact squash/ring per damaged entity. The sprite disappears after the final

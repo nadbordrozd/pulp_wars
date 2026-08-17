@@ -28,6 +28,10 @@ import {
   unitNeedsReadinessPulse,
 } from "./readiness-presentation";
 import { visibleCombatPreview } from "./combat-preview-label";
+import {
+  selectionJumpOffsetCssPx,
+  type SelectionJumpSpeed,
+} from "./selection-jump-presentation";
 
 export interface DrawBoardOptions {
   readonly context: CanvasRenderingContext2D;
@@ -44,6 +48,11 @@ export interface DrawBoardOptions {
   readonly candyElapsedMs?: number;
   readonly readinessElapsedMs: number;
   readonly reducedMotion: boolean;
+  readonly selectionJump?: {
+    readonly unitId: number;
+    readonly elapsedMs: number;
+    readonly speed: SelectionJumpSpeed;
+  } | null;
 }
 
 const PLAYER_COLORS: Readonly<Record<PlayerColor, string>> = {
@@ -171,6 +180,21 @@ function drawEntry(options: DrawBoardOptions, entry: RenderPlanEntry): void {
     case "UNIT": {
       const unit = unitById(view, entry.id);
       if (unit !== undefined) {
+        const jumpOffset =
+          options.selectionJump?.unitId === unit.id
+            ? selectionJumpOffsetCssPx(
+                options.selectionJump.elapsedMs,
+                options.selectionJump.speed,
+                options.reducedMotion,
+              ) * camera.zoom
+            : 0;
+        const unitAssetOptions =
+          jumpOffset === 0
+            ? assetOptions
+            : {
+                ...assetOptions,
+                center: { x: center.x, y: center.y + jumpOffset },
+              };
         context.save();
         if (unitNeedsReadinessPulse(view, unit)) {
           context.globalAlpha = readinessSpriteOpacity(
@@ -180,7 +204,7 @@ function drawEntry(options: DrawBoardOptions, entry: RenderPlanEntry): void {
         }
         assets.drawUnit(
           context,
-          assetOptions,
+          unitAssetOptions,
           unit,
           ownerFactionFor(view, unit.ownerId),
         );

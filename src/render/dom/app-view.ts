@@ -284,6 +284,7 @@ export class DomAppView {
           view: snapshot.view,
           interactive: this.#humanCanAct(snapshot),
           motion: snapshot.settings.motion,
+          animationSpeed: snapshot.settings.animationSpeed,
           selected: this.#selected,
           combatPresentation: snapshot.combatPresentation,
           candyPresentation: snapshot.candyPresentation,
@@ -1684,7 +1685,7 @@ export class DomAppView {
     select.addEventListener("change", () => {
       const [kind, first, second] = select.value.split(":");
       if (kind === "unit" && first !== undefined)
-        this.#selectBoardEntity({ kind: "UNIT", unitId: Number(first) });
+        this.#boardHost.select({ kind: "UNIT", unitId: Number(first) });
       else if (kind === "city" && first !== undefined)
         this.#inspectBoardEntity({ kind: "CITY", cityId: Number(first) });
       else if (kind === "tile" && first !== undefined && second !== undefined)

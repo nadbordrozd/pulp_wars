@@ -32,7 +32,10 @@ import {
   drawBoard,
   drawUnitHealthBar,
 } from "../../src/render/canvas/board-renderer";
-import type { BoardAssetBindings } from "../../src/render/canvas/asset-bindings";
+import type {
+  BoardAssetBindings,
+  DrawAssetOptions,
+} from "../../src/render/canvas/asset-bindings";
 import {
   READINESS_PULSE_DURATION_MS,
   READINESS_PULSE_MIN_OPACITY,
@@ -380,6 +383,111 @@ describe("stable draw ordering and deterministic render fixtures", () => {
     expect(observed).toEqual([0.62, 1]);
     expect(ownerCueObserved).toEqual([1, 1]);
     expect(context.globalAlpha).toBe(1);
+  });
+
+  it("jumps only the selected unit raster while its cue and health stay ground-anchored", () => {
+    const state = gameStateBuilder();
+    const human = state.players.find((player) => player.controller === "HUMAN");
+    if (human === undefined) throw new Error("Missing human fixture");
+    const view = viewFor(state, human.id);
+    const unit = view.units.find((candidate) => candidate.ownerId === human.id);
+    if (unit === undefined) throw new Error("Missing selected unit");
+    const unitCenters: Array<{ readonly x: number; readonly y: number }> = [];
+    const cueCenters: Array<{ readonly x: number; readonly y: number }> = [];
+    const healthRects: Array<readonly [number, number, number, number]> = [];
+    const target: Record<PropertyKey, unknown> = { globalAlpha: 1 };
+    const context = new Proxy(target, {
+      get(current, property): unknown {
+        if (property === "fillRect")
+          return (
+            x: number,
+            y: number,
+            width: number,
+            height: number,
+          ): void => {
+            healthRects.push([x, y, width, height]);
+          };
+        if (property === "measureText") return () => ({ width: 20 });
+        if (property in current) return current[property];
+        return (): void => {};
+      },
+      set(current, property, value): boolean {
+        current[property] = value;
+        return true;
+      },
+    }) as unknown as CanvasRenderingContext2D;
+    const assets = {
+      drawUnit(
+        _context: CanvasRenderingContext2D,
+        options: DrawAssetOptions,
+      ): void {
+        unitCenters.push(options.center);
+      },
+      drawUnitOwnerCue(
+        _context: CanvasRenderingContext2D,
+        options: DrawAssetOptions,
+      ): void {
+        cueCenters.push(options.center);
+      },
+    } as unknown as BoardAssetBindings;
+    const zoom = 1.5;
+    const ground = worldToScreen(projectGrid(unit.at), {
+      offsetX: 0,
+      offsetY: 0,
+      zoom,
+    });
+    const common = {
+      context,
+      viewport: { width: 1024, height: 592 },
+      camera: { offsetX: 0, offsetY: 0, zoom },
+      view,
+      plan: {
+        entries: [
+          {
+            kind: "UNIT" as const,
+            at: unit.at,
+            id: unit.id,
+            ownerId: unit.ownerId,
+            variant: 0,
+          },
+          {
+            kind: "UNIT_STATUS" as const,
+            at: unit.at,
+            id: unit.id,
+            ownerId: unit.ownerId,
+            variant: 0,
+          },
+        ],
+        legalCommands: [],
+        attackPreviews: [],
+      },
+      assets,
+      focused: null,
+      devicePixelRatio: 1,
+      combatPresentation: null,
+      combatFrame: null,
+      readinessElapsedMs: 0,
+    };
+    drawBoard({
+      ...common,
+      reducedMotion: false,
+      selectionJump: { unitId: unit.id, elapsedMs: 120, speed: "NORMAL" },
+    });
+    drawBoard({
+      ...common,
+      reducedMotion: true,
+      selectionJump: { unitId: unit.id, elapsedMs: 120, speed: "NORMAL" },
+    });
+
+    expect(unitCenters).toEqual([{ x: ground.x, y: ground.y - 18 }, ground]);
+    expect(cueCenters).toEqual([ground, ground]);
+    const expectedHealth = unitHealthBarGeometry(
+      ground,
+      zoom,
+      unit.hp / unit.maxHp,
+    );
+    expect(healthRects[1]?.[1]).toBe(expectedHealth.background.top);
+    expect(healthRects[4]?.[1]).toBe(expectedHealth.background.top);
   });
 
   it("draws no detached yellow reward circle or W/R letter pixels", () => {

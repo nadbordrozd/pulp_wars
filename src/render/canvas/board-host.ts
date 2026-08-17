@@ -29,6 +29,10 @@ import { createPixelLabAssetBindings } from "./pixellab-asset-bindings";
 import { combatAnimationFrame } from "./combat-presentation";
 import { accessibleCombatPreview } from "./combat-preview-label";
 import { unitNeedsReadinessPulse } from "./readiness-presentation";
+import {
+  selectionJumpDurationMs,
+  type SelectionJumpSpeed,
+} from "./selection-jump-presentation";
 
 export type BoardSelection =
   | { readonly kind: "TILE"; readonly at: Coord }
@@ -53,6 +57,7 @@ export interface BoardHostModel {
   readonly view: PlayerView;
   readonly interactive: boolean;
   readonly motion?: "FULL" | "REDUCED";
+  readonly animationSpeed?: SelectionJumpSpeed;
   readonly selected: BoardSelection | null;
   readonly combatPresentation?: CombatPresentation | null;
   readonly candyPresentation?: CandyPresentation | null;
@@ -63,6 +68,7 @@ export interface BoardHost {
   mount(container: HTMLElement, callbacks: BoardHostCallbacks): void;
   update(model: BoardHostModel): void;
   activate(at: Coord): void;
+  select(selection: BoardSelection): void;
   resetActivationCycle(): void;
   zoom(direction: "IN" | "OUT"): void;
   focus(): void;
@@ -121,6 +127,8 @@ export class CanvasBoardHost implements BoardHost {
   #combatPhaseStartedAt = 0;
   #readinessPhaseKey: string | null = null;
   #readinessPhaseStartedAt = 0;
+  #selectionJumpUnitId: number | null = null;
+  #selectionJumpStartedAt = 0;
   #animationFrame: number | null = null;
 
   constructor(documentRoot: Document, assets?: BoardAssetBindings) {
@@ -131,6 +139,7 @@ export class CanvasBoardHost implements BoardHost {
 
   mount(container: HTMLElement, callbacks: BoardHostCallbacks): void {
     this.#unmount();
+    this.#cancelSelectionJump();
     this.#container = container;
     this.#callbacks = callbacks;
     const canvas = this.#document.createElement("canvas");
@@ -173,6 +182,8 @@ export class CanvasBoardHost implements BoardHost {
   }
 
   update(model: BoardHostModel): void {
+    const previousModel = this.#model;
+    const previousSelection = this.#selection;
     const activePlayerId = model.view.turnOrder[model.view.activeSeatIndex];
     const readinessPhaseKey = `${model.matchInstanceId}:${model.view.round}:${activePlayerId ?? "none"}`;
     if (readinessPhaseKey !== this.#readinessPhaseKey) {
@@ -197,9 +208,9 @@ export class CanvasBoardHost implements BoardHost {
       this.#combatPhaseKey = phaseKey;
       this.#combatPhaseStartedAt = this.#now();
     }
-    this.#selection = model.selected;
     const key = `${model.matchInstanceId}:${model.view.board.width}x${model.view.board.height}`;
     if (this.#boardKey !== key) {
+      this.#cancelSelectionJump();
       this.#boardKey = key;
       this.#camera = fitCamera(model.view.board, this.#viewport);
       this.#focused = initialFocus(model.view);
@@ -223,6 +234,23 @@ export class CanvasBoardHost implements BoardHost {
       }
       this.#inspectionCycle = null;
     }
+    this.#selection = model.selected;
+    if (
+      previousModel !== null &&
+      previousModel.matchInstanceId === model.matchInstanceId &&
+      model.selected?.kind === "UNIT" &&
+      !sameSelection(model.selected, previousSelection)
+    ) {
+      this.#startSelectionJump(model.selected.unitId);
+    } else if (
+      model.selected?.kind !== "UNIT" ||
+      model.selected.unitId !== this.#selectionJumpUnitId ||
+      model.motion === "REDUCED" ||
+      model.combatPresentation != null ||
+      model.candyPresentation != null
+    ) {
+      this.#cancelSelectionJump();
+    }
     const inspectionCycle = this.#inspectionCycle;
     if (
       inspectionCycle !== null &&
@@ -244,6 +272,7 @@ export class CanvasBoardHost implements BoardHost {
       selectionCoord(model.view, this.#selection) === null
     ) {
       this.#selection = null;
+      this.#cancelSelectionJump();
     }
     this.#canvas?.setAttribute("aria-disabled", String(!model.interactive));
     if (this.#canvas !== null)
@@ -263,6 +292,18 @@ export class CanvasBoardHost implements BoardHost {
 
   activate(at: Coord): void {
     this.#activateScreenTile(at);
+  }
+
+  select(selection: BoardSelection): void {
+    const selectionChanged = !sameSelection(selection, this.#selection);
+    this.#callbacks?.onSelection(selection);
+    this.#selection = selection;
+    if (selectionChanged && selection.kind === "UNIT")
+      this.#startSelectionJump(selection.unitId);
+    else if (selection.kind !== "UNIT") this.#cancelSelectionJump();
+    this.#describe();
+    this.#draw();
+    this.#syncAnimationFrame();
   }
 
   resetActivationCycle(): void {
@@ -298,6 +339,7 @@ export class CanvasBoardHost implements BoardHost {
     this.#unmount();
     this.#model = null;
     this.#hovered = null;
+    this.#cancelSelectionJump();
   }
 
   readonly #onResize = (): void => this.#resize();
@@ -442,10 +484,12 @@ export class CanvasBoardHost implements BoardHost {
         return;
       }
       this.#selection = null;
+      this.#cancelSelectionJump();
       this.#inspectionCycle = null;
       this.#callbacks?.onSelection(null);
       this.#descriptionText("Map selection cleared.");
       this.#draw();
+      this.#syncAnimationFrame();
       event.preventDefault();
       event.stopPropagation();
       return;
@@ -504,6 +548,7 @@ export class CanvasBoardHost implements BoardHost {
       this.#inspectionCycle,
     );
     const selection = activation.selection;
+    const selectionChanged = !sameSelection(selection, this.#selection);
     this.#inspectionCycle = activation.cycle;
     if (
       activation.cycle === null &&
@@ -512,10 +557,14 @@ export class CanvasBoardHost implements BoardHost {
       this.#callbacks?.onInspect(selection);
       return;
     }
-    this.#selection = selection;
     this.#callbacks?.onSelection(selection);
+    this.#selection = selection;
+    if (selectionChanged && selection.kind === "UNIT")
+      this.#startSelectionJump(selection.unitId);
+    else if (selection.kind !== "UNIT") this.#cancelSelectionJump();
     this.#describe();
     this.#draw();
+    this.#syncAnimationFrame();
   }
 
   #pick(point: Point): Coord | null {
@@ -615,6 +664,7 @@ export class CanvasBoardHost implements BoardHost {
                 : this.#now() - this.#combatPhaseStartedAt),
         readinessElapsedMs: this.#now() - this.#readinessPhaseStartedAt,
         reducedMotion: model.motion === "REDUCED",
+        selectionJump: this.#selectionJumpFrame(),
       });
     }
     this.#describe(plan.legalCommands);
@@ -697,19 +747,19 @@ export class CanvasBoardHost implements BoardHost {
   #scheduleAnimationFrame(): void {
     if (this.#animationFrame !== null || this.#context === null) return;
     const model = this.#model;
-    if (model === null || !boardAnimationNeeded(model)) return;
+    if (model === null || !this.#animationNeeded(model)) return;
     const browser = this.#document.defaultView;
     if (browser === null) return;
     this.#animationFrame = browser.requestAnimationFrame(() => {
       this.#animationFrame = null;
-      if (this.#model === null || !boardAnimationNeeded(this.#model)) return;
+      if (this.#model === null) return;
       this.#draw();
-      this.#scheduleAnimationFrame();
+      if (this.#animationNeeded(this.#model)) this.#scheduleAnimationFrame();
     });
   }
 
   #syncAnimationFrame(): void {
-    if (this.#model !== null && boardAnimationNeeded(this.#model)) {
+    if (this.#model !== null && this.#animationNeeded(this.#model)) {
       this.#scheduleAnimationFrame();
       return;
     }
@@ -722,9 +772,53 @@ export class CanvasBoardHost implements BoardHost {
   #now(): number {
     return this.#document.defaultView?.performance.now() ?? 0;
   }
+
+  #startSelectionJump(unitId: number): void {
+    const model = this.#model;
+    if (
+      model === null ||
+      model.motion === "REDUCED" ||
+      model.combatPresentation != null ||
+      model.candyPresentation != null
+    ) {
+      this.#cancelSelectionJump();
+      return;
+    }
+    this.#selectionJumpUnitId = unitId;
+    this.#selectionJumpStartedAt = this.#now();
+  }
+
+  #cancelSelectionJump(): void {
+    this.#selectionJumpUnitId = null;
+    this.#selectionJumpStartedAt = 0;
+  }
+
+  #selectionJumpFrame(): {
+    readonly unitId: number;
+    readonly elapsedMs: number;
+    readonly speed: SelectionJumpSpeed;
+  } | null {
+    const model = this.#model;
+    const unitId = this.#selectionJumpUnitId;
+    if (model === null || unitId === null) return null;
+    const speed = model.animationSpeed ?? "NORMAL";
+    const elapsedMs = Math.max(0, this.#now() - this.#selectionJumpStartedAt);
+    if (elapsedMs >= selectionJumpDurationMs(speed)) {
+      this.#cancelSelectionJump();
+      return null;
+    }
+    return { unitId, elapsedMs, speed };
+  }
+
+  #animationNeeded(model: BoardHostModel): boolean {
+    return boardAnimationNeeded(model, this.#selectionJumpFrame() !== null);
+  }
 }
 
-export function boardAnimationNeeded(model: BoardHostModel): boolean {
+export function boardAnimationNeeded(
+  model: BoardHostModel,
+  selectionJumpActive = false,
+): boolean {
   if (
     model.combatPresentation !== undefined &&
     model.combatPresentation !== null &&
@@ -737,6 +831,7 @@ export function boardAnimationNeeded(model: BoardHostModel): boolean {
     !model.candyPresentation.paused
   )
     return true;
+  if (selectionJumpActive && model.motion !== "REDUCED") return true;
   if (!model.interactive || model.motion === "REDUCED") return false;
   return model.view.units.some((unit) =>
     unitNeedsReadinessPulse(model.view, unit),

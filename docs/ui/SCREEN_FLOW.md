@@ -219,6 +219,14 @@ matches the selected owned unit may appear. Enemy, exhausted, and otherwise
 actionless units show summary/state only. Labels never encode unit coordinates
 or hidden options; the visible map selection supplies context.
 
+On a newly selected unit, Full motion gives the unit raster one subtle in-place
+jump: 12 nominal CSS px upward and back over 240 ms at Normal animation speed,
+or 120 ms at Fast. Pointer, touch, Enter/Space, the semantic unit option, and
+the semantic coordinate activator all enter the same transition. The sprite
+alone moves; its map anchor, selection diamond, owner/health cues, camera, and
+hit target stay fixed. Re-inspecting the same selected unit does not restart
+the jump. Reduced motion is pixel-stationary and schedules no jump animation.
+
 Candy actions use three short buttons: **Roll**, **Chocolate Wall · 1★**, and
 **Candify**. Roll switches the map to cardinal direction targets, omitting
 off-board directions; one activation dispatches immediately and no victim list

@@ -631,6 +631,20 @@ exact revalidation boundary, while Move, Attack, and Escape remain
 one-activation spatial Canvas commands. Highlighted attack targets carry their
 exact public combat preview visually and semantically before activation.
 
+A transition from any other selection to a visible unit starts one renderer-
+owned selection jump through that same shared selection boundary, including
+pointer, touch, Enter/Space, direct semantic-unit, and semantic-coordinate
+activation. Full/Normal motion moves only that unit raster through a 240 ms
+half-sine, from its ground anchor to a 12 nominal-CSS-pixel apex and exactly
+back; Fast uses the same geometry in 120 ms. Camera zoom scales the visual
+offset. The ground/contact anchor, owner cue, health/status layer, selection
+diamond, picking, draw order, camera, commands, state, and hash never move.
+Selecting the already-selected same unit does not restart it; selecting a
+different unit does. Selection clear/change, disappearance, combat/ability
+presentation, match/route replacement, remount, and destroy cancel it. Reduced
+motion draws the ordinary selected frame, applies no offset, and schedules no
+selection-jump RAF.
+
 Candy unit docks additionally filter exact `KAMIKAZE_ROLL`,
 `BUILD_CHOCOLATE_WALL`, and `CANDIFY` summaries for that unit. Roll enters one
 ephemeral cardinal-direction target state; Build enters one ephemeral exact-cell

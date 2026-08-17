@@ -2,7 +2,9 @@
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  canonicalHash,
   queryPlayerCommands,
+  unitId,
   viewFor,
   type Command,
 } from "../../src/engine/index";
@@ -241,6 +243,396 @@ describe("Canvas board interaction boundary", () => {
     });
     expect(sample()).toBe(1);
     reloadedHost.destroy();
+  });
+
+  it("runs one bounded unit-selection jump without moving camera, picking, cues, or state", () => {
+    let now = 0;
+    vi.spyOn(window.performance, "now").mockImplementation(() => now);
+    let nextFrame = 1;
+    const frames = new Map<number, FrameRequestCallback>();
+    Object.defineProperty(window, "requestAnimationFrame", {
+      configurable: true,
+      value: vi.fn((callback: FrameRequestCallback) => {
+        const id = nextFrame;
+        nextFrame += 1;
+        frames.set(id, callback);
+        return id;
+      }),
+    });
+    Object.defineProperty(window, "cancelAnimationFrame", {
+      configurable: true,
+      value: vi.fn((id: number) => frames.delete(id)),
+    });
+    const target: Record<PropertyKey, unknown> = { globalAlpha: 1 };
+    const context = new Proxy(target, {
+      get(current, property): unknown {
+        if (property === "measureText") return () => ({ width: 20 });
+        if (property in current) return current[property];
+        return (): void => {};
+      },
+      set(current, property, value): boolean {
+        current[property] = value;
+        return true;
+      },
+    }) as unknown as CanvasRenderingContext2D;
+    vi.mocked(HTMLCanvasElement.prototype.getContext).mockReturnValue(context);
+
+    const state = gameStateBuilder();
+    const human = state.players.find((player) => player.controller === "HUMAN");
+    if (human === undefined) throw new Error("Missing human");
+    const base = viewFor(state, human.id);
+    const unit = base.units.find((candidate) => candidate.ownerId === human.id);
+    if (unit === undefined) throw new Error("Missing unit");
+    const view = {
+      ...base,
+      units: base.units.map((candidate) => ({
+        ...candidate,
+        activation: { ...candidate.activation, handled: true },
+      })),
+    };
+    const centers: Array<{ readonly x: number; readonly y: number }> = [];
+    const cues: Array<{ readonly x: number; readonly y: number }> = [];
+    const assets = {
+      drawGrass(): void {},
+      drawMountain(): void {},
+      drawOre(): void {},
+      drawFruit(): void {},
+      drawAnimal(): void {},
+      drawMine(): void {},
+      drawLumberMill(): void {},
+      drawChocolateWall(): void {},
+      drawForest(): void {},
+      drawVillage(): void {},
+      drawCityBack(): void {},
+      drawCityFront(): void {},
+      drawUnit(_context, options, drawn): void {
+        if (drawn.id === unit.id) centers.push(options.center);
+      },
+      drawUnitOwnerCue(_context, options, drawn): void {
+        if (drawn.id === unit.id) cues.push(options.center);
+      },
+    } satisfies BoardAssetBindings;
+    const host = new CanvasBoardHost(document, assets);
+    const container = document.querySelector<HTMLElement>("#host");
+    if (container === null) throw new Error("Missing host");
+    let selected: BoardSelection | null = null;
+    host.mount(container, {
+      onSelection(value): void {
+        selected = value;
+      },
+      onInspect(): void {},
+      onCommand(): void {},
+      onZoom(): void {},
+    });
+    host.update({
+      matchInstanceId: 1,
+      view,
+      interactive: false,
+      motion: "FULL",
+      animationSpeed: "NORMAL",
+      selected,
+    });
+    const anchor = host.screenPoint(unit.at);
+    const stateHash = canonicalHash(state);
+    if (anchor === null) throw new Error("Missing unit anchor");
+
+    host.select({ kind: "UNIT", unitId: unit.id });
+    expect(selected).toEqual({ kind: "UNIT", unitId: unit.id });
+    expect(frames.size).toBe(1);
+    expect(host.screenPoint(unit.at)).toEqual(anchor);
+    expect(canonicalHash(state)).toBe(stateHash);
+
+    const apexFrame = [...frames.entries()][0];
+    if (apexFrame === undefined) throw new Error("Missing apex RAF");
+    frames.delete(apexFrame[0]);
+    now = 120;
+    apexFrame[1](now);
+    const zoom = fitCamera(view.board, { width: 1024, height: 592 }).zoom;
+    expect(centers.at(-1)).toEqual({
+      x: anchor.x,
+      y: anchor.y - 12 * zoom,
+    });
+    expect(cues.at(-1)).toEqual(anchor);
+    expect(host.screenPoint(unit.at)).toEqual(anchor);
+    expect(frames.size).toBe(1);
+
+    const settledFrame = [...frames.entries()][0];
+    if (settledFrame === undefined) throw new Error("Missing settle RAF");
+    frames.delete(settledFrame[0]);
+    now = 240;
+    settledFrame[1](now);
+    expect(centers.at(-1)).toEqual(anchor);
+    expect(cues.at(-1)).toEqual(anchor);
+    expect(frames.size).toBe(0);
+    expect(canonicalHash(state)).toBe(stateHash);
+
+    const requestCount = vi.mocked(window.requestAnimationFrame).mock.calls
+      .length;
+    host.select({ kind: "UNIT", unitId: unit.id });
+    expect(vi.mocked(window.requestAnimationFrame)).toHaveBeenCalledTimes(
+      requestCount,
+    );
+    const secondUnit = {
+      ...unit,
+      id: unitId(unit.id + 10_000),
+      at: { x: unit.at.x + 1, y: unit.at.y },
+    };
+    host.update({
+      matchInstanceId: 1,
+      view: { ...view, units: [...view.units, secondUnit] },
+      interactive: false,
+      motion: "FULL",
+      animationSpeed: "NORMAL",
+      selected,
+    });
+    host.select({ kind: "UNIT", unitId: secondUnit.id });
+    expect(vi.mocked(window.requestAnimationFrame)).toHaveBeenCalledTimes(
+      requestCount + 1,
+    );
+    expect(frames.size).toBe(1);
+    host.destroy();
+    expect(frames.size).toBe(0);
+  });
+
+  it("suppresses selection motion and RAF in Reduced motion", () => {
+    Object.defineProperty(window, "requestAnimationFrame", {
+      configurable: true,
+      value: vi.fn(() => 1),
+    });
+    const state = gameStateBuilder();
+    const human = state.players.find((player) => player.controller === "HUMAN");
+    if (human === undefined) throw new Error("Missing human");
+    const view = viewFor(state, human.id);
+    const unit = view.units.find((candidate) => candidate.ownerId === human.id);
+    if (unit === undefined) throw new Error("Missing unit");
+    const host = new CanvasBoardHost(document);
+    const container = document.querySelector<HTMLElement>("#host");
+    if (container === null) throw new Error("Missing host");
+    host.mount(container, {
+      onSelection(): void {},
+      onInspect(): void {},
+      onCommand(): void {},
+      onZoom(): void {},
+    });
+    host.update({
+      matchInstanceId: 1,
+      view,
+      interactive: false,
+      motion: "REDUCED",
+      selected: null,
+    });
+    host.select({ kind: "UNIT", unitId: unit.id });
+    expect(window.requestAnimationFrame).not.toHaveBeenCalled();
+    expect(
+      boardAnimationNeeded(
+        {
+          matchInstanceId: 1,
+          view,
+          interactive: false,
+          motion: "REDUCED",
+          selected: { kind: "UNIT", unitId: unit.id },
+        },
+        true,
+      ),
+    ).toBe(false);
+    host.destroy();
+  });
+
+  it.each([
+    "mouse",
+    "touch",
+    "keyboard",
+    "semantic-coordinate",
+    "semantic-unit",
+  ] as const)(
+    "starts selection motion through the shared %s selection path",
+    (channel) => {
+      const request = vi.fn(() => 1);
+      Object.defineProperty(window, "requestAnimationFrame", {
+        configurable: true,
+        value: request,
+      });
+      Object.defineProperty(window, "cancelAnimationFrame", {
+        configurable: true,
+        value: vi.fn(),
+      });
+      const context = new Proxy(
+        { globalAlpha: 1 } as Record<PropertyKey, unknown>,
+        {
+          get(target, property): unknown {
+            if (property === "measureText") return () => ({ width: 20 });
+            if (property in target) return target[property];
+            return (): void => {};
+          },
+          set(target, property, value): boolean {
+            target[property] = value;
+            return true;
+          },
+        },
+      ) as unknown as CanvasRenderingContext2D;
+      vi.mocked(HTMLCanvasElement.prototype.getContext).mockReturnValue(
+        context,
+      );
+      const state = gameStateBuilder();
+      const human = state.players.find(
+        (player) => player.controller === "HUMAN",
+      );
+      if (human === undefined) throw new Error("Missing human");
+      const base = viewFor(state, human.id);
+      const unit = base.units.find(
+        (candidate) => candidate.ownerId === human.id,
+      );
+      if (unit === undefined) throw new Error("Missing unit");
+      const view = {
+        ...base,
+        units: base.units.map((candidate) => ({
+          ...candidate,
+          activation: { ...candidate.activation, handled: true },
+        })),
+      };
+      let selected: BoardSelection | null = null;
+      const host = new CanvasBoardHost(document);
+      const container = document.querySelector<HTMLElement>("#host");
+      if (container === null) throw new Error("Missing host");
+      host.mount(container, {
+        onSelection(value): void {
+          selected = value;
+        },
+        onInspect(): void {},
+        onCommand(): void {},
+        onZoom(): void {},
+      });
+      host.update({
+        matchInstanceId: 1,
+        view,
+        interactive: false,
+        motion: "FULL",
+        selected,
+      });
+      const canvas = container.querySelector("canvas");
+      const point = host.screenPoint(unit.at);
+      if (canvas === null || point === null) throw new Error("Missing Canvas");
+
+      if (channel === "mouse" || channel === "touch") {
+        pointer(canvas, "pointerdown", 1, point.x, point.y, channel);
+        pointer(canvas, "pointerup", 1, point.x, point.y, channel);
+      } else if (channel === "keyboard") {
+        key(canvas, "Enter");
+      } else if (channel === "semantic-coordinate") {
+        host.activate(unit.at);
+      } else {
+        host.select({ kind: "UNIT", unitId: unit.id });
+      }
+
+      expect(selected).toEqual({ kind: "UNIT", unitId: unit.id });
+      expect(request).toHaveBeenCalledTimes(1);
+      host.destroy();
+    },
+  );
+
+  it("cancels a pending selection jump across locks and lifecycle boundaries", () => {
+    let nextFrame = 1;
+    const frames = new Set<number>();
+    Object.defineProperty(window, "requestAnimationFrame", {
+      configurable: true,
+      value: vi.fn(() => {
+        const id = nextFrame;
+        nextFrame += 1;
+        frames.add(id);
+        return id;
+      }),
+    });
+    Object.defineProperty(window, "cancelAnimationFrame", {
+      configurable: true,
+      value: vi.fn((id: number) => frames.delete(id)),
+    });
+    const context = new Proxy(
+      { globalAlpha: 1 } as Record<PropertyKey, unknown>,
+      {
+        get(target, property): unknown {
+          if (property === "measureText") return () => ({ width: 20 });
+          if (property in target) return target[property];
+          return (): void => {};
+        },
+        set(target, property, value): boolean {
+          target[property] = value;
+          return true;
+        },
+      },
+    ) as unknown as CanvasRenderingContext2D;
+    vi.mocked(HTMLCanvasElement.prototype.getContext).mockReturnValue(context);
+    const state = gameStateBuilder();
+    const human = state.players.find((player) => player.controller === "HUMAN");
+    if (human === undefined) throw new Error("Missing human");
+    const base = viewFor(state, human.id);
+    const unit = base.units.find((candidate) => candidate.ownerId === human.id);
+    if (unit === undefined) throw new Error("Missing unit");
+    const view = {
+      ...base,
+      units: base.units.map((candidate) => ({
+        ...candidate,
+        activation: { ...candidate.activation, handled: true },
+      })),
+    };
+    let selected: BoardSelection | null = null;
+    const callbacks = {
+      onSelection(value: BoardSelection | null): void {
+        selected = value;
+      },
+      onInspect(): void {},
+      onCommand(): void {},
+      onZoom(): void {},
+    };
+    const host = new CanvasBoardHost(document);
+    const container = document.querySelector<HTMLElement>("#host");
+    if (container === null) throw new Error("Missing host");
+    host.mount(container, callbacks);
+    const update = (
+      overrides: Partial<Parameters<CanvasBoardHost["update"]>[0]> = {},
+    ): void =>
+      host.update({
+        matchInstanceId: 1,
+        view,
+        interactive: false,
+        motion: "FULL",
+        selected,
+        ...overrides,
+      });
+    update();
+
+    host.select({ kind: "UNIT", unitId: unit.id });
+    expect(frames.size).toBe(1);
+    update({ motion: "REDUCED" });
+    expect(frames.size).toBe(0);
+
+    update({ motion: "FULL", selected: null });
+    selected = null;
+    host.select({ kind: "UNIT", unitId: unit.id });
+    expect(frames.size).toBe(1);
+    host.mount(container, callbacks);
+    update();
+    expect(frames.size).toBe(0);
+
+    update({ selected: null });
+    selected = null;
+    host.select({ kind: "UNIT", unitId: unit.id });
+    expect(frames.size).toBe(1);
+    update({
+      view: {
+        ...view,
+        units: view.units.filter((candidate) => candidate.id !== unit.id),
+      },
+    });
+    expect(frames.size).toBe(0);
+
+    update({ selected: null });
+    selected = null;
+    host.select({ kind: "UNIT", unitId: unit.id });
+    expect(frames.size).toBe(1);
+    update({ matchInstanceId: 2 });
+    expect(frames.size).toBe(0);
+    host.destroy();
+    expect(frames.size).toBe(0);
   });
 
   it("preserves camera for ordinary remounts and resets it for a new same-size match instance", () => {

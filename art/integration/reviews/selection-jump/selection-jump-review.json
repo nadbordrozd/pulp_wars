@@ -1,0 +1,132 @@
+{
+  "generatedAt": "2026-08-17T10:09:37.501Z",
+  "chrome": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+  "contract": "One selected-unit raster half-sine: 12 nominal CSS px at 120 ms and exact ground return at 240 ms; fixed anchor/cues/picking/camera/state/hash; Reduced schedules no motion and is pixel-static.",
+  "desktop": {
+    "native": {
+      "stateHash": "e58ecd5ea6f50900b80754626ad319373d6d566aca42939965928984e73be213",
+      "commandIndex": 0,
+      "unitId": 2,
+      "anchor": {
+        "x": 720,
+        "y": 550
+      },
+      "css": [
+        1440,
+        1000
+      ],
+      "backing": [
+        1440,
+        1000
+      ],
+      "dpr": 1,
+      "motion": "FULL"
+    },
+    "enlarged": {
+      "stateHash": "e58ecd5ea6f50900b80754626ad319373d6d566aca42939965928984e73be213",
+      "commandIndex": 0,
+      "unitId": 2,
+      "anchor": {
+        "x": 720,
+        "y": 572
+      },
+      "css": [
+        1440,
+        1000
+      ],
+      "backing": [
+        1440,
+        1000
+      ],
+      "dpr": 1,
+      "motion": "FULL"
+    }
+  },
+  "mobile390x844Dpr2": {
+    "native": {
+      "stateHash": "e58ecd5ea6f50900b80754626ad319373d6d566aca42939965928984e73be213",
+      "commandIndex": 0,
+      "unitId": 2,
+      "anchor": {
+        "x": 195,
+        "y": 464.20000000000005
+      },
+      "css": [
+        390,
+        844
+      ],
+      "backing": [
+        780,
+        1688
+      ],
+      "dpr": 2,
+      "motion": "FULL"
+    },
+    "enlarged": {
+      "stateHash": "e58ecd5ea6f50900b80754626ad319373d6d566aca42939965928984e73be213",
+      "commandIndex": 0,
+      "unitId": 2,
+      "anchor": {
+        "x": 195,
+        "y": 482.76800000000003
+      },
+      "css": [
+        390,
+        844
+      ],
+      "backing": [
+        780,
+        1688
+      ],
+      "dpr": 2,
+      "motion": "FULL"
+    }
+  },
+  "reducedMotion": {
+    "stateHash": "e58ecd5ea6f50900b80754626ad319373d6d566aca42939965928984e73be213",
+    "commandIndex": 0,
+    "unitId": 2,
+    "anchor": {
+      "x": 720,
+      "y": 550
+    },
+    "css": [
+      1440,
+      1000
+    ],
+    "backing": [
+      1440,
+      1000
+    ],
+    "dpr": 1,
+    "motion": "REDUCED",
+    "changedPixels": 0
+  },
+  "captures": [
+    {
+      "path": "art/integration/reviews/selection-jump/selection-jump-desktop-native.png",
+      "bytes": 186173,
+      "sha256": "f2835d566c85061c97845d09e63e9cb4d7a7ce7f76f867403d8917617826f143"
+    },
+    {
+      "path": "art/integration/reviews/selection-jump/selection-jump-desktop-enlarged.png",
+      "bytes": 500302,
+      "sha256": "baccbd3e952b7e087a69511c557033b690df433b12dfb72bd5e9964078f014b0"
+    },
+    {
+      "path": "art/integration/reviews/selection-jump/selection-jump-mobile-dpr2-native.png",
+      "bytes": 225885,
+      "sha256": "d603604c18d6373c4b1743bbf3b93000b93fcf22490ec94abd45faf9fb23c07d"
+    },
+    {
+      "path": "art/integration/reviews/selection-jump/selection-jump-mobile-dpr2-enlarged.png",
+      "bytes": 416386,
+      "sha256": "3f31913342bca8c9f83994141118dfbd2b3d6471f6f6bff56eebd5e40ff1e485"
+    },
+    {
+      "path": "art/integration/reviews/selection-jump/selection-jump-reduced-motion-desktop.png",
+      "bytes": 185787,
+      "sha256": "4df8c14c3704c31636ccf736d028ea4c3c0246ef90af5479666bf05ae7145cac"
+    }
+  ]
+}
