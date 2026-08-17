@@ -1,6 +1,5 @@
 import type {
   CityId,
-  Command,
   GameState,
   MatchOutcome,
   AiMode,
@@ -43,7 +42,6 @@ export interface UiSettings {
 export type ConfirmationAction =
   | { readonly kind: "START_MATCH" }
   | { readonly kind: "START_DEMO" }
-  | { readonly kind: "RESEARCH"; readonly command: Command }
   | { readonly kind: "RESTART" }
   | { readonly kind: "PLAY_AGAIN" }
   | { readonly kind: "DELETE_SAVE" }

@@ -1036,8 +1036,9 @@ the winner. A state with no active player is invalid and never a draw.
 ## 7. Technology
 
 Technologies are permanent per player. A purchase spends stars, emits one event,
-and takes no unit or city action. Cost is evaluated before purchase from the
-current number of owned cities:
+and takes no unit or city action. The offered Research action dispatches on one
+activation with no confirmation. Cost is evaluated immediately before purchase
+from the current number of owned cities:
 
 ```text
 technologyCost = technologyTier * ownedCityCount + 4

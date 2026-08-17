@@ -331,6 +331,54 @@ describe("application save and AI integration", () => {
     controller.destroy();
   });
 
+  it("researches immediately from Technology and rejects a stale repeat in place", () => {
+    const controller = new AppController({
+      initialRoute: "MATCH",
+      initialMatch: created(setup({ seed: 2 })),
+      storage: null,
+      aiStepDelayMs: 100_000,
+    });
+    const before = controller.snapshot();
+    const command = offeredCommands(before.view).find(
+      (
+        candidate,
+      ): candidate is Extract<Command, { readonly kind: "RESEARCH" }> =>
+        candidate.kind === "RESEARCH",
+    );
+    if (command === undefined) throw new Error("Missing research command");
+    const humanBefore = before.match?.players.find(
+      (player) => player.controller === "HUMAN",
+    );
+    controller.openOverlay({ name: "TECH" });
+
+    controller.requestCommand(command);
+
+    const researched = controller.snapshot();
+    const humanAfter = researched.match?.players.find(
+      (player) => player.controller === "HUMAN",
+    );
+    expect(researched.overlay).toEqual({ name: "TECH" });
+    expect(researched.match?.commandIndex).toBe(
+      (before.match?.commandIndex ?? 0) + 1,
+    );
+    expect(humanAfter?.stars).toBe((humanBefore?.stars ?? 0) - 5);
+    expect(humanAfter?.researchedTechs).toContain(command.tech);
+    expect(researched.announcement).toBe(
+      `${command.tech.charAt(0)}${command.tech.slice(1).toLowerCase()} researched.`,
+    );
+
+    controller.requestCommand(command);
+
+    const rejected = controller.snapshot();
+    expect(rejected.overlay).toEqual({ name: "TECH" });
+    expect(rejected.match?.commandIndex).toBe(researched.match?.commandIndex);
+    expect(rejected.assertiveAnnouncement).toBe(
+      "That action is no longer available.",
+    );
+    expect(rejected.match).toBe(researched.match);
+    controller.destroy();
+  });
+
   it("restores settings, authoritative state, command log, and presentation metadata", () => {
     const storage = new MemoryStorage();
     const first = new AppController({
@@ -355,7 +403,6 @@ describe("application save and AI integration", () => {
       .find((candidate) => candidate.kind === "RESEARCH");
     if (command === undefined) throw new Error("Missing research command");
     first.requestCommand(command);
-    first.confirm();
     first.flushPersistence();
     const expected = first.snapshot();
     expect(storage.getItem(SAVE_STORAGE_KEY)).not.toBeNull();

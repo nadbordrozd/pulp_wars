@@ -382,14 +382,6 @@ export class AppController {
   }
 
   cancelConfirmation(): void {
-    if (
-      this.#overlay.name === "CONFIRM" &&
-      this.#overlay.action.kind === "RESEARCH"
-    ) {
-      this.#overlay = { name: "TECH" };
-      this.#emit();
-      return;
-    }
     this.closeOverlay();
   }
 
@@ -402,13 +394,6 @@ export class AppController {
         break;
       case "START_DEMO":
         this.#createMatch(DEMO_MATCH_SETUP);
-        break;
-      case "RESEARCH":
-        this.#overlay = { name: "NONE" };
-        if (this.dispatch(action.command) && this.#match?.outcome === null) {
-          this.#overlay = { name: "TECH" };
-          this.#emit();
-        }
         break;
       case "RESTART":
       case "PLAY_AGAIN":
@@ -447,22 +432,20 @@ export class AppController {
   requestCommand(command: Command): void {
     if (this.#combatPresentation !== null || this.#candyPresentation !== null)
       return;
-    if (command.kind === "RESEARCH") {
-      this.openConfirmation({ kind: "RESEARCH", command });
-      return;
-    }
     this.dispatch(command);
   }
 
   dispatch(command: Command): boolean {
     const match = this.#match;
     const humanView = this.#humanView();
+    const researchFromTech =
+      command.kind === "RESEARCH" && this.#overlay.name === "TECH";
     if (
       match === null ||
       humanView === null ||
       this.#route !== "MATCH" ||
       this.#readOnlyFinalMap ||
-      this.#overlay.name !== "NONE" ||
+      (this.#overlay.name !== "NONE" && !researchFromTech) ||
       this.#combatPresentation !== null ||
       this.#candyPresentation !== null
     ) {

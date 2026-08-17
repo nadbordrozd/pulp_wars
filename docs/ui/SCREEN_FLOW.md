@@ -319,10 +319,12 @@ Selecting any node by pointer, touch, Enter, or Space opens or updates one
 separate wide, compact detail sheet. The sheet names the technology and shows
 its unlock/effect, prerequisite, current cost and state. It contains the exact
 research action only when that action is currently offered by the filtered
-player command query. Research still requires confirmation; after purchase the
-tree remains open, preserves the selection, and updates every dynamic price and
-state. Insufficient or locked nodes explain why in the detail sheet. Close
-returns to the same map focus. During AI presentation the tree is view-only.
+player command query. Activating Research dispatches that exact command
+immediately with no confirmation; after purchase the tree remains open,
+preserves the selection and focus, announces the researched technology, and
+updates every dynamic price and state. Insufficient or locked nodes explain why
+in the detail sheet. Close returns to the same map focus. During AI presentation
+the tree is view-only.
 
 There are no full-game branches displayed as teasing locked nodes.
 
@@ -392,6 +394,8 @@ the same candidate set and returns focus to the first candidate.
   retaliation/reason, death, and advance preview before one-activation dispatch.
 - End Turn has no confirmation; activating the offered command dispatches it
   immediately.
+- Research has no confirmation; activating an available detail-sheet action
+  spends its displayed dynamic star cost and updates the open tree immediately.
 - Start/replace match, Restart, Delete Save, and navigation that discards setup:
   exact consequence, safe action first in focus order, destructive action
   visually and semantically identified.

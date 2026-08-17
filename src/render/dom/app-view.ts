@@ -2250,7 +2250,10 @@ export class DomAppView {
             actionButton(
               this.#document,
               `Research ${title(selectedRule.id)} · ${cost} stars`,
-              () => this.#controller.requestCommand(command),
+              () => {
+                this.#pendingFocusId = `tech-${selectedRule.id.toLowerCase()}`;
+                this.#controller.requestCommand(command);
+              },
               "primary-action tech-research-action",
               `research-${selectedRule.id.toLowerCase()}`,
             ),
@@ -2812,13 +2815,6 @@ export class DomAppView {
       this.#lastOverlayName !== overlay.name
     ) {
       this.#root.querySelector<HTMLElement>("[data-modal]")?.focus();
-    } else if (
-      overlay.name === "NONE" &&
-      this.#lastOverlayName === "CONFIRM" &&
-      this.#selectedTech !== null
-    ) {
-      // Confirmed research briefly clears its overlay while the exact command
-      // dispatches. The controller immediately restores Technology.
     } else if (overlay.name === "NONE" && this.#lastOverlayName !== "NONE") {
       const target =
         this.#focusReturnId === null
@@ -3133,13 +3129,6 @@ function confirmationCopy(
           ? "Replace Save & Start Demo"
           : "Start Demo Match",
         snapshot.match?.outcome === null && snapshot.match !== null,
-      ];
-    case "RESEARCH":
-      return [
-        "Research technology?",
-        "Stars are spent immediately. Technology prices increase with owned cities.",
-        "Confirm Research",
-        false,
       ];
     case "RESTART":
       return [

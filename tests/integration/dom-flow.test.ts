@@ -1242,18 +1242,22 @@ describe("HUD, command wiring, and contextual panels", () => {
       kind: "RESEARCH",
       tech: "CLIMBING",
     });
-    expect(dialog()?.textContent).toContain("Research technology?");
-    click("Cancel");
-    expect(dialog()?.textContent).toContain("Technology");
-    expect(document.activeElement).toBe(techNode("climbing"));
-    click("Research Climbing · 5 stars");
-    click("Confirm Research");
     const after = app.controller.snapshot().match;
     expect(after?.commandIndex).toBe((before?.commandIndex ?? 0) + 1);
+    expect(
+      after?.players.find((player) => player.controller === "HUMAN")?.stars,
+    ).toBe(15);
     expect(
       after?.players.find((player) => player.controller === "HUMAN")
         ?.researchedTechs,
     ).toContain("CLIMBING");
+    expect(app.controller.snapshot().overlay).toEqual({ name: "TECH" });
+    expect(app.controller.snapshot().announcement).toBe("Climbing researched.");
+    expect(document.querySelector("#polite-live")?.textContent).toBe(
+      "Climbing researched.",
+    );
+    expect(document.body.textContent).not.toContain("Research technology?");
+    expect(button("Confirm Research", false)).toBeNull();
     expect(document.querySelector(".tech-detail")?.textContent).toContain(
       "StatusResearched",
     );
@@ -1264,6 +1268,15 @@ describe("HUD, command wiring, and contextual panels", () => {
     expect(techNode("mining").getAttribute("aria-label")).toContain(
       "available to research, costs 6 stars",
     );
+
+    click("Close");
+    click("Settings");
+    click("Restart Same Match");
+    expect(dialog()?.textContent).toContain("Restart same match?");
+    expect(app.controller.snapshot().match?.commandIndex).toBe(
+      after?.commandIndex,
+    );
+    click("Cancel");
   });
 
   it("shows owned-city dynamic prices and separates insufficient stars from prerequisites", () => {
