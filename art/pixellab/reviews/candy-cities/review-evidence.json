@@ -1,0 +1,226 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Candy city three-level individual sample gate and mixed-map review",
+  "displayContracts": {
+    "sourceCanvas": {
+      "width": 384,
+      "height": 384
+    },
+    "runtimeScale": 0.3,
+    "anchors": {
+      "level1": [
+        192,
+        236
+      ],
+      "levels2And3": [
+        192,
+        243
+      ]
+    },
+    "zoomRange": [
+      0.625,
+      1.75
+    ],
+    "dprReviewed": [
+      1,
+      2
+    ]
+  },
+  "checks": [
+    "source/native/enlarged/minimum silhouettes and transparency",
+    "same-settlement progression and normal/Candy mixed-map recognition",
+    "unit overlap, label, capital, reward and status attachment space",
+    "both grid axes plus desktop/mobile and DPR1/DPR2 presentation",
+    "camera, grounding, bounds, palette, outline and detail budget"
+  ],
+  "records": {
+    "building-candy-city-1": {
+      "id": "building-candy-city-1",
+      "status": "ACCEPTED",
+      "jobId": "4fec91f6-4255-4ac6-93e4-11bdd5f0247c",
+      "candidate": "art/pixellab/candidates/building-candy-city-1.png",
+      "candidateSha256": "429741c597e8d9d4ec8a5ef17ea186336177fd42a0b7a9952167fd6238bc9ec1",
+      "providerOutputSha256": "667d3d1116e9dae03715a9d94bd49c9f83d788e6e6f72c8d0d2d40211283208b",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 24,
+        "top": 51,
+        "right": 362,
+        "bottom": 337,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: cocoa-brown gingerbread walls and outline, muted warm-pink frosting roofs, broad cream marshmallow and icing trim, sparse red-and-cream peppermint accents, one blank off-white ownership cloth. Candy kingdom level-one city BUILDING ONLY: one compact settlement matching the reference's two chunky rounded halls, rebuilt as cocoa gingerbread halls with oversized muted-pink frosting roofs, broad cream icing trim, one large blank off-white ownership cloth high on the front hall, and at most two peppermint corner posts. Match accepted Candy palette, cocoa outline and flat two-level cel shading. Isolated untrimmed transparent 384x384 canvas, southeast three-quarter downward view, anchor x192 y236, lowest foundation y337, preferred alpha x24..360 y30..337, hard alpha x8..376 y4..344. Must read as a city, leave central unit readability plus clear crown/status and label attachment space, and contain no scenery or baked state. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; cake, cupcake, shop scene, plate, gingerbread person, face, limbs, unit, castle, unrelated architecture, tower, clutter, sprinkles, rainbow, translucent candy, realistic food or architecture, wrong camera, front elevation, top-down, ground, terrain, shadow, colored cloth, flag, crown, reward, badge, siege, selection, health bar, label, text, UI, clipped base, matte, halo.",
+        "prompt": "Candy kingdom level-one city BUILDING ONLY: one compact settlement matching the reference's two chunky rounded halls, rebuilt as cocoa gingerbread halls with oversized muted-pink frosting roofs, broad cream icing trim, one large blank off-white ownership cloth high on the front hall, and at most two peppermint corner posts. Match accepted Candy palette, cocoa outline and flat two-level cel shading. Isolated untrimmed transparent 384x384 canvas, southeast three-quarter downward view, anchor x192 y236, lowest foundation y337, preferred alpha x24..360 y30..337, hard alpha x8..376 y4..344. Must read as a city, leave central unit readability plus clear crown/status and label attachment space, and contain no scenery or baked state.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; cake, cupcake, shop scene, plate, gingerbread person, face, limbs, unit, castle, unrelated architecture, tower, clutter, sprinkles, rainbow, translucent candy, realistic food or architecture, wrong camera, front elevation, top-down, ground, terrain, shadow, colored cloth, flag, crown, reward, badge, siege, selection, health bar, label, text, UI, clipped base, matte, halo",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 63821,
+        "noBackground": true,
+        "palette": "cocoa-brown gingerbread walls and outline, muted warm-pink frosting roofs, broad cream marshmallow and icing trim, sparse red-and-cream peppermint accents, one blank off-white ownership cloth",
+        "groundContactY": 337,
+        "styleReference": {
+          "id": "building-city-1",
+          "sha256": "0de081f57501eb27ec8317841a5b51fe028e0f83f74b29f46979734eea140c6d",
+          "usageDescription": "Input reference role: preserve the level-one two-hall settlement footprint, southeast three-quarter downward camera, broad roof-to-wall proportions, front ownership-cloth area, canvas occupancy and outline weight. Translate the architecture into the established Candy material language without copying the normal faction palette."
+        }
+      },
+      "outputSha256": "429741c597e8d9d4ec8a5ef17ea186336177fd42a0b7a9952167fd6238bc9ec1",
+      "notes": "Accepted first sample after checkerboard source, nearest-enlarged, 0.3x native and 0.625x inspection: compact two-hall gingerbread city matches the normal level-one camera/footprint, clean cocoa outline and transparent edges, exact y337 visible-base alignment, blank ownership cloth, broad pink/cream Candy palette, no baked state, and readable city silhouette/attachments at gameplay scale.",
+      "reviewedAt": "2026-08-17T11:28:02.727Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-candy-city-2": {
+      "id": "building-candy-city-2",
+      "status": "ACCEPTED",
+      "jobId": "a15e8f4f-ef6a-46fc-8033-d271ad5d11b9",
+      "candidate": "art/pixellab/candidates/building-candy-city-2.png",
+      "candidateSha256": "226f9f39769fe3f4647e00b87488bb6d0c709c54198e6dba22fc33ca99644710",
+      "providerOutputSha256": "43d22b28eabfd376ca4dc01857630e9e862888d89d086d8daf73c2d0abef3420",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 24,
+        "top": 58,
+        "right": 362,
+        "bottom": 344,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: inherit the accepted level-one cocoa-brown, muted warm-pink, cream, peppermint and off-white palette without adding hues. Candy kingdom level-two city BUILDING ONLY: grow the accepted level-one settlement while retaining its two gingerbread halls and frosting roofs. Add exactly one round side tower with a muted-pink gumdrop dome and raise the central roof slightly. Retain one large blank off-white ownership cloth, broad cream icing and sparse peppermint supports. Match the reference's palette, cocoa outline, flat shading and detail. Isolated untrimmed transparent 384x384 canvas, southeast three-quarter downward view, anchor x192 y243, lowest foundation y344, preferred alpha x14..372 y8..344, hard alpha x8..376 y4..344. Create an obvious intermediate silhouette; leave central unit readability plus clear crown/status and label space; no props, ground or baked state. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; unchanged level one, two new towers, castle, replacement architecture, cake, cupcake, shop scene, gingerbread person, face, limbs, unit, clutter, sprinkles, rainbow, translucent candy, realistic food or architecture, wrong camera, front elevation, top-down, ground, terrain, shadow, colored cloth, flag, crown, reward, badge, siege, selection, health bar, label, text, UI, clipped base, matte, halo.",
+        "prompt": "Candy kingdom level-two city BUILDING ONLY: grow the accepted level-one settlement while retaining its two gingerbread halls and frosting roofs. Add exactly one round side tower with a muted-pink gumdrop dome and raise the central roof slightly. Retain one large blank off-white ownership cloth, broad cream icing and sparse peppermint supports. Match the reference's palette, cocoa outline, flat shading and detail. Isolated untrimmed transparent 384x384 canvas, southeast three-quarter downward view, anchor x192 y243, lowest foundation y344, preferred alpha x14..372 y8..344, hard alpha x8..376 y4..344. Create an obvious intermediate silhouette; leave central unit readability plus clear crown/status and label space; no props, ground or baked state.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; unchanged level one, two new towers, castle, replacement architecture, cake, cupcake, shop scene, gingerbread person, face, limbs, unit, clutter, sprinkles, rainbow, translucent candy, realistic food or architecture, wrong camera, front elevation, top-down, ground, terrain, shadow, colored cloth, flag, crown, reward, badge, siege, selection, health bar, label, text, UI, clipped base, matte, halo",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 63822,
+        "noBackground": true,
+        "palette": "inherit the accepted level-one cocoa-brown, muted warm-pink, cream, peppermint and off-white palette without adding hues",
+        "groundContactY": 344,
+        "styleReference": {
+          "id": "building-candy-city-1",
+          "sha256": "429741c597e8d9d4ec8a5ef17ea186336177fd42a0b7a9952167fd6238bc9ec1",
+          "usageDescription": "Input reference role: preserve the accepted level-one Candy materials, cocoa outline, flat shading, camera, ownership-cloth treatment and two-hall architectural identity. Grow the same settlement by adding one obvious side tower and a taller central roof mass while keeping the original base readable."
+        }
+      },
+      "outputSha256": "226f9f39769fe3f4647e00b87488bb6d0c709c54198e6dba22fc33ca99644710",
+      "notes": "Accepted second sample after source/checkerboard, enlarged, 0.3x native and 0.625x inspection: clearly grows the accepted level-one halls with one gumdrop-domed side tower and raised central roof, preserves the cloth/palette/camera/outline, exact y344 visible-base alignment and clean alpha, remains an intermediate city silhouette, and keeps unit plus renderer attachment space readable.",
+      "reviewedAt": "2026-08-17T11:30:31.448Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-candy-city-3": {
+      "id": "building-candy-city-3",
+      "status": "ACCEPTED",
+      "jobId": "d9eeeea1-0472-4593-b806-fc11d1972956",
+      "candidate": "art/pixellab/candidates/building-candy-city-3.png",
+      "candidateSha256": "bf1890d173a01a3bffcef6021fc6a1d4acbad36ccf53ce2a806fdfca3304d09b",
+      "providerOutputSha256": "f9e2b1b171f73e067111e1c4a01b928d0c1b2a38aaef42553d9b96fa5c12c13f",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 12,
+        "top": 21,
+        "right": 362,
+        "bottom": 344,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: inherit the accepted level-two cocoa-brown, muted warm-pink, cream, peppermint and off-white palette without adding hues. Candy kingdom level-three city/capital BODY BUILDING ONLY: grow the accepted level-two settlement while retaining both gingerbread halls and its first gumdrop-domed tower. Add exactly one balanced second round tower with the same dome and one broad higher cream-frosted central crest. Retain one large blank off-white ownership cloth, broad icing and sparse peppermint supports. Match the reference's palette, cocoa outline, flat shading and detail. Isolated untrimmed transparent 384x384 canvas, southeast three-quarter downward view, anchor x192 y243, lowest foundation y344, preferred alpha x14..372 y8..344, hard alpha x8..376 y4..344. Strongest silhouette but clearly the same city; leave central unit readability plus clear crown/status/reward and label space; no baked capital or gameplay state. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; unchanged level two, over two towers, castle, replacement architecture, cake, cupcake, shop scene, gingerbread person, face, limbs, unit, clutter, sprinkles, rainbow, translucent candy, realistic food or architecture, wrong camera, front elevation, top-down, ground, terrain, shadow, colored cloth, flag, crown, reward, badge, siege, selection, health bar, label, text, UI, clipped base, matte, halo.",
+        "prompt": "Candy kingdom level-three city/capital BODY BUILDING ONLY: grow the accepted level-two settlement while retaining both gingerbread halls and its first gumdrop-domed tower. Add exactly one balanced second round tower with the same dome and one broad higher cream-frosted central crest. Retain one large blank off-white ownership cloth, broad icing and sparse peppermint supports. Match the reference's palette, cocoa outline, flat shading and detail. Isolated untrimmed transparent 384x384 canvas, southeast three-quarter downward view, anchor x192 y243, lowest foundation y344, preferred alpha x14..372 y8..344, hard alpha x8..376 y4..344. Strongest silhouette but clearly the same city; leave central unit readability plus clear crown/status/reward and label space; no baked capital or gameplay state.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; unchanged level two, over two towers, castle, replacement architecture, cake, cupcake, shop scene, gingerbread person, face, limbs, unit, clutter, sprinkles, rainbow, translucent candy, realistic food or architecture, wrong camera, front elevation, top-down, ground, terrain, shadow, colored cloth, flag, crown, reward, badge, siege, selection, health bar, label, text, UI, clipped base, matte, halo",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 63823,
+        "noBackground": true,
+        "palette": "inherit the accepted level-two cocoa-brown, muted warm-pink, cream, peppermint and off-white palette without adding hues",
+        "groundContactY": 344,
+        "styleReference": {
+          "id": "building-candy-city-2",
+          "sha256": "226f9f39769fe3f4647e00b87488bb6d0c709c54198e6dba22fc33ca99644710",
+          "usageDescription": "Input reference role: preserve the accepted level-two Candy settlement's original halls, first side tower, cocoa/pink/cream material system, outline, camera, ownership-cloth treatment and detail budget. Grow that same settlement by adding only a second balanced side tower and a higher central frosting crest."
+        }
+      },
+      "outputSha256": "bf1890d173a01a3bffcef6021fc6a1d4acbad36ccf53ce2a806fdfca3304d09b",
+      "notes": "Accepted third sample after source/checkerboard, enlarged, 0.3x native, 0.625x and mixed-map inspection: retains the accepted level-two core, adds one balanced second gumdrop tower and one tall cream-frosted crest for the strongest silhouette, preserves camera/palette/cloth/outline, exact y344 visible-base alignment and clean alpha, remains readable around occupying units, and leaves capital/reward/status/label cues renderer-owned.",
+      "reviewedAt": "2026-08-17T11:34:56.952Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    }
+  },
+  "artifacts": [
+    {
+      "path": "art/pixellab/reviews/candy-cities/README.md",
+      "sha256": "0476b0415a31202867b0738676bc1a1cb4a9d579d4b8a676cfb9a6850704ad1c",
+      "bytes": 3716
+    },
+    {
+      "path": "art/pixellab/reviews/candy-cities/individual-source-native-enlarged-minimum.png",
+      "sha256": "4a08b639264e9a7342bb7c67faa1a86f6993a06a2562369f0c5d31d5880a65fd",
+      "bytes": 169668
+    },
+    {
+      "path": "art/pixellab/reviews/candy-cities/progression-contact-sheet.png",
+      "sha256": "5ece23b8a4241401f71342a60d90fc2d8397bec9687e69221797371dad2d966d",
+      "bytes": 362045
+    },
+    {
+      "path": "art/pixellab/reviews/candy-cities/zoom-dpr-review.png",
+      "sha256": "35ab248d2de0aa9951be6f2b4a35540c6a67cb7784d1abf2894f98efbaff5084",
+      "bytes": 719339
+    },
+    {
+      "path": "art/pixellab/reviews/candy-cities/desktop-mixed-map.png",
+      "sha256": "168771a7fe003985f3de96a2c49c161c1f30d077f735c50335be688ee9d64a7f",
+      "bytes": 274773
+    },
+    {
+      "path": "art/pixellab/reviews/candy-cities/mobile-mixed-map-dpr2.png",
+      "sha256": "0602e9e5285fe4c8fe5be823417c70c4f19235b5f08e41de3417c1557cb81ccb",
+      "bytes": 496397
+    }
+  ]
+}

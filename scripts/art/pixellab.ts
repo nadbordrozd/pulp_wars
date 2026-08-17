@@ -431,6 +431,53 @@ function validateSourceManifest(
     )
       throw new Error(`Candy terrain geometry mismatch: ${id}`);
   }
+  const candyCityContracts = [
+    {
+      id: "building-candy-city-1",
+      anchor: { x: 192, y: 236 },
+      groundContactY: 337,
+      styleReference: "building-city-1",
+    },
+    {
+      id: "building-candy-city-2",
+      anchor: { x: 192, y: 243 },
+      groundContactY: 344,
+      styleReference: "building-candy-city-1",
+    },
+    {
+      id: "building-candy-city-3",
+      anchor: { x: 192, y: 243 },
+      groundContactY: 344,
+      styleReference: "building-candy-city-2",
+    },
+  ] as const;
+  for (const contract of candyCityContracts) {
+    const recipe = source.recipes.find(
+      (candidate) => candidate.id === contract.id,
+    );
+    if (recipe === undefined)
+      throw new Error(`Candy city recipe missing: ${contract.id}`);
+    if (
+      recipe.stage !== "sample" ||
+      recipe.requestSize.width !== 384 ||
+      recipe.requestSize.height !== 384 ||
+      recipe.outputSize.width !== 384 ||
+      recipe.outputSize.height !== 384 ||
+      recipe.anchor?.x !== contract.anchor.x ||
+      recipe.anchor.y !== contract.anchor.y ||
+      recipe.groundContactY !== contract.groundContactY ||
+      recipe.hardBounds.left !== 8 ||
+      recipe.hardBounds.top !== 4 ||
+      recipe.hardBounds.right !== 376 ||
+      recipe.hardBounds.bottom !== 344
+    )
+      throw new Error(`Candy city geometry mismatch: ${contract.id}`);
+    if (
+      recipe.styleReference !== contract.styleReference ||
+      recipe.styleReferenceUsage === undefined
+    )
+      throw new Error(`Candy city reference role mismatch: ${contract.id}`);
+  }
   assertRecipeGeometry(source, "terrain-animal", {
     requestSize: { width: 256, height: 296 },
     outputSize: { width: 256, height: 296 },

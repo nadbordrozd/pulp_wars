@@ -76,6 +76,15 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   "building-city-1": publicArtUrl("assets/pixellab/buildings/city-1.png"),
   "building-city-3": publicArtUrl("assets/pixellab/buildings/city-3.png"),
   "building-city-2": publicArtUrl("assets/pixellab/buildings/city-2.png"),
+  "building-candy-city-1": publicArtUrl(
+    "assets/pixellab/buildings/candy-city-1.png",
+  ),
+  "building-candy-city-2": publicArtUrl(
+    "assets/pixellab/buildings/candy-city-2.png",
+  ),
+  "building-candy-city-3": publicArtUrl(
+    "assets/pixellab/buildings/candy-city-3.png",
+  ),
   "building-mine": publicArtUrl("assets/pixellab/buildings/mine.png"),
   "building-lumber-mill": publicArtUrl(
     "assets/pixellab/buildings/lumber-mill.png",
