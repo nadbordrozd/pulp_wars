@@ -3201,14 +3201,18 @@ function positionalCommandLabel(
   const attack = commands.find((command) => {
     if (command.kind !== "ATTACK" || command.unitId !== selected.unitId)
       return false;
-    const target = view.units.find((unit) => unit.id === command.targetId);
+    const targetRef = command.target;
+    const target =
+      targetRef.kind === "UNIT"
+        ? view.units.find((unit) => unit.id === targetRef.unitId)
+        : view.chocolateWalls.find((wall) => wall.id === targetRef.wallId);
     return target !== undefined && sameCoord(target.at, at);
   });
   if (attack?.kind === "ATTACK") {
     const preview = queryPlayerCombatPreview(
       view,
       attack.unitId,
-      attack.targetId,
+      attack.target,
     );
     return preview === null
       ? null

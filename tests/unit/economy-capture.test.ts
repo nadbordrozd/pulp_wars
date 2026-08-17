@@ -19,6 +19,7 @@ import {
   unitId,
   unitTypeIsUnlocked,
   viewFor,
+  wallId,
   type CityState,
   type GameState,
   type PlayerId,
@@ -206,7 +207,11 @@ describe("economy and technology rules", () => {
       isCapital: false,
     };
     let state = replacePlayer(
-      { ...original, cities: [...original.cities, extraCity] },
+      {
+        ...original,
+        nextEntityId: 101,
+        cities: [...original.cities, extraCity],
+      },
       playerId,
       { stars: 20 },
     );
@@ -636,6 +641,18 @@ describe("capture and elimination", () => {
         (tile.at.x !== mineTile.at.x || tile.at.y !== mineTile.at.y),
     );
     if (lumberTile === undefined) throw new Error("Missing city forest");
+    const wallTile = original.board.tiles.find(
+      (tile) =>
+        tile.territoryCityId === enemyCity.id &&
+        tile.site === null &&
+        !original.units.some(
+          (candidate) =>
+            candidate.at.x === tile.at.x && candidate.at.y === tile.at.y,
+        ) &&
+        (tile.at.x !== mineTile.at.x || tile.at.y !== mineTile.at.y) &&
+        (tile.at.x !== lumberTile.at.x || tile.at.y !== lumberTile.at.y),
+    );
+    if (wallTile === undefined) throw new Error("Missing captured wall tile");
     let state: GameState = {
       ...replaceCity(original, enemyCity.id, {
         level: 3,
@@ -682,7 +699,15 @@ describe("capture and elimination", () => {
         ),
         orphanCandidate,
       ],
-      nextEntityId: 102,
+      chocolateWalls: [
+        {
+          id: wallId(102),
+          ownerId: formerOwner,
+          at: wallTile.at,
+          hp: 10,
+        },
+      ],
+      nextEntityId: 103,
     };
     const cityBeforeCapture = state.cities.find(
       (city) => city.id === enemyCity.id,
@@ -737,6 +762,14 @@ describe("capture and elimination", () => {
     expect(
       state.players.find((player) => player.id === formerOwner)?.status,
     ).toBe("ACTIVE");
+    expect(state.chocolateWalls).toEqual([
+      {
+        id: wallId(102),
+        ownerId: formerOwner,
+        at: wallTile.at,
+        hp: 10,
+      },
+    ]);
     const cityAfterCapture = state.cities.find(
       (city) => city.id === enemyCity.id,
     );
@@ -767,9 +800,22 @@ describe("capture and elimination", () => {
       id: unitId(100),
       at: { x: 0, y: 0 },
     };
+    const wallTile = original.board.tiles.find(
+      (tile) =>
+        tile.territoryCityId === humanCity.id &&
+        tile.site === null &&
+        !original.units.some(
+          (candidate) =>
+            candidate.at.x === tile.at.x && candidate.at.y === tile.at.y,
+        ) &&
+        !(tile.at.x === 0 && tile.at.y === 0) &&
+        !(tile.at.x === 0 && tile.at.y === 1),
+    );
+    if (wallTile === undefined) throw new Error("Missing eliminated wall tile");
     const aiSeat = original.turnOrder.indexOf(ai.id);
     const state: GameState = {
       ...original,
+      nextEntityId: 102,
       activeSeatIndex: aiSeat,
       units: [
         extraHumanUnit,
@@ -781,6 +827,14 @@ describe("capture and elimination", () => {
               : unit,
         ),
       ],
+      chocolateWalls: [
+        {
+          id: wallId(101),
+          ownerId: human.id,
+          at: wallTile.at,
+          hp: 10,
+        },
+      ],
     };
     const result = applyCommand(state, { kind: "CAPTURE", unitId: aiUnit.id });
     if (!result.ok) throw new Error(result.error.code);
@@ -790,6 +844,14 @@ describe("capture and elimination", () => {
     expect(result.state.units.some((unit) => unit.ownerId === human.id)).toBe(
       false,
     );
+    expect(result.state.chocolateWalls).toEqual([
+      {
+        id: wallId(101),
+        ownerId: human.id,
+        at: wallTile.at,
+        hp: 10,
+      },
+    ]);
     const deathIds = result.events
       .filter((event) => event.kind === "UNIT_DIED")
       .map((event) => event.unitId);

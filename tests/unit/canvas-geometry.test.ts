@@ -713,7 +713,7 @@ describe("stable draw ordering and deterministic render fixtures", () => {
       at: defender.at,
       preview: expect.objectContaining({
         attackerId: attacker.id,
-        defenderId: defender.id,
+        target: { kind: "UNIT", unitId: defender.id },
       }),
     });
     expect(

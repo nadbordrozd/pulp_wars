@@ -1,6 +1,7 @@
-import type { CityId, PlayerId, UnitId } from "../model/ids";
+import type { CityId, PlayerId, UnitId, WallId } from "../model/ids";
 import type {
   Coord,
+  CombatTargetRef,
   MatchOutcome,
   RewardId,
   TechId,
@@ -9,14 +10,18 @@ import type {
 
 export interface CombatPreview {
   readonly attackerId: UnitId;
-  readonly defenderId: UnitId;
+  readonly target: CombatTargetRef;
   readonly damageToDefender: number;
   readonly damageToAttacker: number;
   readonly defenderDies: boolean;
   readonly attackerDies: boolean;
   readonly advances: boolean;
   readonly noRetaliationReason:
-    "DEFENDER_DIED" | "OUT_OF_RANGE" | "ATTACKER_UNEXPLORED" | null;
+    | "DEFENDER_DIED"
+    | "OUT_OF_RANGE"
+    | "ATTACKER_UNEXPLORED"
+    | "STRUCTURE"
+    | null;
 }
 
 export interface CityIncomeEntry {
@@ -115,6 +120,36 @@ export type DomainEvent =
     }
   | { readonly kind: "COMBAT_RESOLVED"; readonly preview: CombatPreview }
   | {
+      readonly kind: "DONUT_ROLL_STEP";
+      readonly unitId: UnitId;
+      readonly at: Coord;
+    }
+  | {
+      readonly kind: "ROLL_DAMAGE_RESOLVED";
+      readonly sourceUnitId: UnitId;
+      readonly target: CombatTargetRef;
+      readonly at: Coord;
+      readonly damage: number;
+      readonly hpBefore: number;
+      readonly hpAfter: number;
+    }
+  | {
+      readonly kind: "CHOCOLATE_WALL_BUILT";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly wallId: WallId;
+      readonly at: Coord;
+      readonly cost: 1;
+      readonly hp: 10;
+    }
+  | {
+      readonly kind: "CHOCOLATE_WALL_DESTROYED";
+      readonly wallId: WallId;
+      readonly ownerId: PlayerId;
+      readonly at: Coord;
+      readonly cause: "ATTACK" | "KAMIKAZE_ROLL";
+    }
+  | {
       readonly kind: "UNIT_RECOVERED";
       readonly unitId: UnitId;
       readonly amount: number;
@@ -133,7 +168,12 @@ export type DomainEvent =
   | {
       readonly kind: "UNIT_DIED";
       readonly unitId: UnitId;
-      readonly cause: "ATTACK" | "RETALIATION" | "ELIMINATION";
+      readonly cause:
+        | "ATTACK"
+        | "RETALIATION"
+        | "ELIMINATION"
+        | "KAMIKAZE_ROLL"
+        | "KAMIKAZE_ROLL_SELF";
     }
   | {
       readonly kind: "CITY_CAPTURED";

@@ -68,9 +68,9 @@ describe("complete deterministic AI matches", () => {
       outcomes: { COMMAND_CAP: 3 },
     });
     expect(summary.entries.map((entry) => entry.finalHash)).toEqual([
-      "cdccc1907ba9c5949ff6c821167ace40659c955bd3dee1e41b99c91c7cd56f22",
-      "e9e38005fa4b16e164bf2b24f9adb966bf7246f9b2fb813198886eacb2b03a99",
-      "592657c7dee7b4a54c9d01520e8cdf6119947b3220c1f6da188939464f040ea3",
+      "69bd951282664a5a764d29bd9a9cde6bacf248ea5e62707b3240317ba13b1dc7",
+      "f037874ac4f8d07a6a2cb251b858716b5e31b8b4db8229dfab434b3c11b5b36b",
+      "33418fc94e361ac7a08e2108394c618cef1d384b437b2bbd9f270a77a3a03bcf",
     ]);
     expect(
       summary.entries.map((entry) => entry.metrics.factionsBySeat),

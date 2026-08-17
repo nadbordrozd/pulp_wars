@@ -560,7 +560,7 @@ describe("Normal POC AI", () => {
       scoreCommand(view, {
         kind: "ATTACK",
         unitId: unit.id,
-        targetId: enemy.id,
+        target: { kind: "UNIT", unitId: enemy.id },
       }),
     ).toMatchObject({ priority: 1030, strategicValue: 2 });
 
@@ -578,7 +578,7 @@ describe("Normal POC AI", () => {
       scoreCommand(attackView, {
         kind: "ATTACK",
         unitId: unit.id,
-        targetId: enemy.id,
+        target: { kind: "UNIT", unitId: enemy.id },
       }),
     ).toMatchObject({ priority: 1060, strategicValue: 2 });
     const noOwnedCityView = {
@@ -591,7 +591,7 @@ describe("Normal POC AI", () => {
       scoreCommand(noOwnedCityView, {
         kind: "ATTACK",
         unitId: unit.id,
-        targetId: enemy.id,
+        target: { kind: "UNIT", unitId: enemy.id },
       }).priority,
     ).toBe(1000);
     expect(
@@ -604,7 +604,11 @@ describe("Normal POC AI", () => {
               : candidate,
           ),
         },
-        { kind: "ATTACK", unitId: unit.id, targetId: enemy.id },
+        {
+          kind: "ATTACK",
+          unitId: unit.id,
+          target: { kind: "UNIT", unitId: enemy.id },
+        },
       ).priority,
     ).toBe(700);
     expect(

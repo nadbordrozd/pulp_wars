@@ -1,5 +1,12 @@
 import type { CityId, UnitId } from "../model/ids";
-import type { Coord, RewardId, TechId, UnitType } from "../model/types";
+import type {
+  CardinalDirection,
+  CombatTargetRef,
+  Coord,
+  RewardId,
+  TechId,
+  UnitType,
+} from "../model/types";
 
 export type Command =
   | { readonly kind: "RESEARCH"; readonly tech: TechId }
@@ -16,7 +23,7 @@ export type Command =
   | {
       readonly kind: "ATTACK";
       readonly unitId: UnitId;
-      readonly targetId: UnitId;
+      readonly target: CombatTargetRef;
     }
   | {
       readonly kind: "ESCAPE_MOVE";
@@ -27,6 +34,16 @@ export type Command =
   | { readonly kind: "WAIT"; readonly unitId: UnitId }
   | { readonly kind: "PROMOTE"; readonly unitId: UnitId }
   | { readonly kind: "CAPTURE"; readonly unitId: UnitId }
+  | {
+      readonly kind: "KAMIKAZE_ROLL";
+      readonly unitId: UnitId;
+      readonly direction: CardinalDirection;
+    }
+  | {
+      readonly kind: "BUILD_CHOCOLATE_WALL";
+      readonly unitId: UnitId;
+      readonly at: Coord;
+    }
   | {
       readonly kind: "CHOOSE_CITY_REWARD";
       readonly cityId: CityId;

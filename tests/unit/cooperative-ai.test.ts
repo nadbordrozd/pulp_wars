@@ -119,7 +119,7 @@ describe("cooperative AI diplomacy", () => {
     const command = {
       kind: "ATTACK" as const,
       unitId: firstUnit.id,
-      targetId: secondUnit.id,
+      target: { kind: "UNIT" as const, unitId: secondUnit.id },
     };
     const result = applyCommand(state, command);
     expect(result).toEqual({
@@ -371,13 +371,15 @@ describe("cooperative AI diplomacy", () => {
     const result = applyCommand(state, {
       kind: "ATTACK",
       unitId: humanUnit.id,
-      targetId: firstUnit.id,
+      target: { kind: "UNIT", unitId: firstUnit.id },
     });
     expect(result.ok).toBe(true);
     expect(
       queryPlayerCommands(viewFor(state, human.id)).some(
         ({ command }) =>
-          command.kind === "ATTACK" && command.targetId === firstUnit.id,
+          command.kind === "ATTACK" &&
+          command.target.kind === "UNIT" &&
+          command.target.unitId === firstUnit.id,
       ),
     ).toBe(true);
     expect(firstAi.id).not.toBe(human.id);

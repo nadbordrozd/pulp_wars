@@ -9,8 +9,10 @@ import type {
   PlayerView,
   TechId,
   UnitType,
+  CombatTargetRef,
+  PlayerChocolateWallView,
 } from "../model/types";
-import { requireRuleset } from "../rules/ruleset";
+import { effectiveUnitRule, requireRuleset } from "../rules/ruleset";
 import type { Command, CommandSummary } from "../commands/types";
 
 /**
@@ -65,18 +67,20 @@ const COMMAND_ORDINAL: Readonly<Record<Command["kind"], number>> = {
   MOVE: 0,
   ATTACK: 1,
   ESCAPE_MOVE: 2,
-  RECOVER: 3,
-  CAPTURE: 4,
-  PROMOTE: 5,
-  WAIT: 6,
-  RESEARCH: 7,
-  HARVEST_FRUIT: 8,
-  HUNT_ANIMAL: 9,
-  BUILD_LUMBER_MILL: 10,
-  BUILD_MINE: 11,
-  TRAIN: 12,
-  CHOOSE_CITY_REWARD: 13,
-  END_TURN: 14,
+  KAMIKAZE_ROLL: 3,
+  RECOVER: 4,
+  CAPTURE: 5,
+  PROMOTE: 6,
+  WAIT: 7,
+  BUILD_CHOCOLATE_WALL: 8,
+  RESEARCH: 9,
+  HARVEST_FRUIT: 10,
+  HUNT_ANIMAL: 11,
+  BUILD_LUMBER_MILL: 12,
+  BUILD_MINE: 13,
+  TRAIN: 14,
+  CHOOSE_CITY_REWARD: 15,
+  END_TURN: 16,
 };
 
 function comparePublicCommands(
@@ -100,16 +104,40 @@ function publicCommandTarget(view: PlayerView, command: Command): Coord {
     case "ESCAPE_MOVE":
       return command.path.at(-1) ?? { x: -1, y: -1 };
     case "ATTACK":
-      return (
-        view.units.find((unit) => unit.id === command.targetId)?.at ?? {
-          x: -1,
-          y: -1,
-        }
+      return command.target.kind === "UNIT"
+        ? (view.units.find(
+            (unit) =>
+              unit.id ===
+              (command.target.kind === "UNIT" ? command.target.unitId : -1),
+          )?.at ?? {
+            x: -1,
+            y: -1,
+          })
+        : (view.chocolateWalls.find(
+            (wall) =>
+              wall.id ===
+              (command.target.kind === "CHOCOLATE_WALL"
+                ? command.target.wallId
+                : -1),
+          )?.at ?? { x: -1, y: -1 });
+    case "KAMIKAZE_ROLL": {
+      const unit = view.units.find(
+        (candidate) => candidate.id === command.unitId,
       );
+      if (unit === undefined) return { x: -1, y: -1 };
+      return command.direction === "NORTH"
+        ? { x: unit.at.x, y: 0 }
+        : command.direction === "EAST"
+          ? { x: view.board.width - 1, y: unit.at.y }
+          : command.direction === "SOUTH"
+            ? { x: unit.at.x, y: view.board.height - 1 }
+            : { x: 0, y: unit.at.y };
+    }
     case "HARVEST_FRUIT":
     case "HUNT_ANIMAL":
     case "BUILD_LUMBER_MILL":
     case "BUILD_MINE":
+    case "BUILD_CHOCOLATE_WALL":
       return command.at;
     case "TRAIN":
     case "CHOOSE_CITY_REWARD":
@@ -175,20 +203,27 @@ function publicCommandContent(view: PlayerView, command: Command): number {
 export function queryPlayerCombatPreview(
   view: PlayerView,
   attackerId: UnitId,
-  defenderId: UnitId,
+  target: CombatTargetRef,
 ): CombatPreview | null {
   const attacker = view.units.find((unit) => unit.id === attackerId);
-  const defender = view.units.find((unit) => unit.id === defenderId);
-  if (
-    attacker === undefined ||
-    defender === undefined ||
-    attacker.ownerId !== view.viewer.id ||
-    !isHostile(view, defender.ownerId) ||
-    !canAttack(view, attacker, defender)
-  ) {
+  if (attacker === undefined || attacker.ownerId !== view.viewer.id)
     return null;
+  if (target.kind === "UNIT") {
+    const defender = view.units.find((unit) => unit.id === target.unitId);
+    if (
+      defender === undefined ||
+      !isHostile(view, defender.ownerId) ||
+      !canAttack(view, attacker, defender)
+    )
+      return null;
+    return estimateCombat(view, attacker, defender);
   }
-  return estimateCombat(view, attacker, defender);
+  const wall = view.chocolateWalls.find(
+    (candidate) => candidate.id === target.wallId,
+  );
+  return wall === undefined || !canAttackAt(view, attacker, wall.at)
+    ? null
+    : estimateWallCombat(view, attacker, wall);
 }
 
 export function estimateCombat(
@@ -232,13 +267,51 @@ export function estimateCombat(
   const attackerDies = damageToAttacker >= attacker.hp;
   return {
     attackerId: attacker.id,
-    defenderId: defender.id,
+    target: { kind: "UNIT", unitId: defender.id },
     damageToDefender,
     damageToAttacker,
     defenderDies,
     attackerDies,
     advances: defenderDies && !attackerDies && distance === 1,
     noRetaliationReason,
+  };
+}
+
+export function estimateWallCombat(
+  view: PlayerView,
+  attacker: PlayerUnitView,
+  wall: PlayerChocolateWallView,
+): CombatPreview {
+  const rule = effectiveUnitRule(
+    view.rulesetId,
+    view.viewer.faction,
+    attacker.type,
+  );
+  const damageToDefender = Math.min(wall.hp, roundHalfUp(rule.attack * 9, 2));
+  const defenderDies = damageToDefender >= wall.hp;
+  const distance = chebyshev(attacker.at, wall.at);
+  const tile = tileAt(view, wall.at);
+  const canAdvance =
+    defenderDies &&
+    distance === 1 &&
+    tile?.explored === true &&
+    !isPublicAlliedTerritory(view, tile) &&
+    !(
+      tile.terrain === "MOUNTAIN" &&
+      !view.viewer.researchedTechs.includes("CLIMBING")
+    ) &&
+    !view.units.some(
+      (unit) => unit.id !== attacker.id && sameCoord(unit.at, wall.at),
+    );
+  return {
+    attackerId: attacker.id,
+    target: { kind: "CHOCOLATE_WALL", wallId: wall.id },
+    damageToDefender,
+    damageToAttacker: 0,
+    defenderDies,
+    attackerDies: false,
+    advances: canAdvance,
+    noRetaliationReason: "STRUCTURE",
   };
 }
 
@@ -392,6 +465,11 @@ function addUnitCommands(
   commands: Command[],
 ): void {
   const rules = requireRuleset(view.rulesetId);
+  const effectiveRule = effectiveUnitRule(
+    view.rulesetId,
+    view.viewer.faction,
+    unit.type,
+  );
   if (!unit.activation.handled) {
     commands.push({ kind: "WAIT", unitId: unit.id });
   }
@@ -402,11 +480,7 @@ function addUnitCommands(
       !unit.activation.recovered &&
       !unit.activation.captured
     ) {
-      for (const path of publicMovementPaths(
-        view,
-        unit,
-        rules.units[unit.type].move,
-      )) {
+      for (const path of publicMovementPaths(view, unit, effectiveRule.move)) {
         commands.push({ kind: "MOVE", unitId: unit.id, path });
       }
     }
@@ -414,8 +488,8 @@ function addUnitCommands(
       !unit.activation.attacked &&
       !unit.activation.recovered &&
       !unit.activation.captured &&
-      (!unit.activation.moved ||
-        rules.units[unit.type].abilities.includes("DASH"))
+      (!unit.activation.moved || effectiveRule.abilities.includes("DASH")) &&
+      effectiveRule.attack > 0
     ) {
       for (const target of [...view.units]
         .filter(
@@ -427,16 +501,69 @@ function addUnitCommands(
         commands.push({
           kind: "ATTACK",
           unitId: unit.id,
-          targetId: target.id,
+          target: { kind: "UNIT", unitId: target.id },
+        });
+      }
+      for (const wall of [...view.chocolateWalls]
+        .filter((candidate) => canAttackAt(view, unit, candidate.at))
+        .sort((left, right) => left.id - right.id)) {
+        commands.push({
+          kind: "ATTACK",
+          unitId: unit.id,
+          target: { kind: "CHOCOLATE_WALL", wallId: wall.id },
         });
       }
     }
     if (
       unit.activation.escapeAvailable &&
-      rules.units[unit.type].abilities.includes("ESCAPE")
+      effectiveRule.abilities.includes("ESCAPE")
     ) {
       for (const path of publicMovementPaths(view, unit, 2)) {
         commands.push({ kind: "ESCAPE_MOVE", unitId: unit.id, path });
+      }
+    }
+    if (
+      view.viewer.faction === "CANDY" &&
+      unit.type === "RIDER" &&
+      !unit.activation.moved &&
+      !unit.activation.attacked &&
+      !unit.activation.recovered &&
+      !unit.activation.captured &&
+      !unit.activation.specialActed
+    ) {
+      for (const direction of ["NORTH", "EAST", "SOUTH", "WEST"] as const) {
+        if (
+          (direction !== "NORTH" || unit.at.y > 0) &&
+          (direction !== "EAST" || unit.at.x < view.board.width - 1) &&
+          (direction !== "SOUTH" || unit.at.y < view.board.height - 1) &&
+          (direction !== "WEST" || unit.at.x > 0)
+        )
+          commands.push({ kind: "KAMIKAZE_ROLL", unitId: unit.id, direction });
+      }
+    }
+    if (
+      view.viewer.faction === "CANDY" &&
+      unit.type === "DEFENDER" &&
+      view.viewer.stars >= 1 &&
+      !unit.activation.moved &&
+      !unit.activation.attacked &&
+      !unit.activation.recovered &&
+      !unit.activation.captured &&
+      !unit.activation.specialActed
+    ) {
+      for (const tile of adjacent(view, unit.at)) {
+        if (
+          tile.explored &&
+          tile.site === null &&
+          !isPublicAlliedTerritory(view, tile) &&
+          !view.units.some((candidate) => sameCoord(candidate.at, tile.at)) &&
+          !view.chocolateWalls.some((wall) => sameCoord(wall.at, tile.at))
+        )
+          commands.push({
+            kind: "BUILD_CHOCOLATE_WALL",
+            unitId: unit.id,
+            at: tile.at,
+          });
       }
     }
     if (
@@ -493,6 +620,9 @@ export function publicMovementPaths(
           (other) =>
             other.id !== unit.id && sameCoord(other.at, destination.at),
         ) ||
+        view.chocolateWalls.some((wall) =>
+          sameCoord(wall.at, destination.at),
+        ) ||
         (destination.terrain === "MOUNTAIN" &&
           !view.viewer.researchedTechs.includes("CLIMBING"))
       ) {
@@ -545,7 +675,26 @@ function canAttack(
     attacker.hp > 0 &&
     defender.hp > 0 &&
     chebyshev(attacker.at, defender.at) <=
-      requireRuleset(view.rulesetId).units[attacker.type].range
+      effectiveUnitRule(view.rulesetId, view.viewer.faction, attacker.type)
+        .range
+  );
+}
+
+function canAttackAt(
+  view: PlayerView,
+  attacker: PlayerUnitView,
+  at: Coord,
+): boolean {
+  const rule = effectiveUnitRule(
+    view.rulesetId,
+    view.viewer.faction,
+    attacker.type,
+  );
+  return (
+    attacker.ready &&
+    attacker.hp > 0 &&
+    rule.attack > 0 &&
+    chebyshev(attacker.at, at) <= rule.range
   );
 }
 

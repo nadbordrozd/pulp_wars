@@ -307,6 +307,7 @@ function archerAttackFixture(
             captured: false,
             handled: false,
             escapeAvailable: false,
+            specialActed: false,
           },
         };
       if (unit.id === defender.id) return { ...unit, at: target.at };
@@ -320,7 +321,8 @@ function archerAttackFixture(
       (command) =>
         command.kind === "ATTACK" &&
         command.unitId === attacker.id &&
-        command.targetId === defender.id,
+        command.target.kind === "UNIT" &&
+        command.target.unitId === defender.id,
     );
   if (attack === undefined) throw new Error("Missing offered Attack");
   return { state, attack };

@@ -1,6 +1,7 @@
 import {
   chebyshev,
   estimateCombat,
+  estimateWallCombat,
   publicTechnologyCost,
   publicUnitCost,
   queryPlayerCommands,
@@ -49,18 +50,20 @@ const KIND_ORDINAL: Readonly<Record<Command["kind"], number>> = {
   MOVE: 0,
   ATTACK: 1,
   ESCAPE_MOVE: 2,
-  RECOVER: 3,
-  CAPTURE: 4,
-  PROMOTE: 5,
-  WAIT: 6,
-  RESEARCH: 7,
-  HARVEST_FRUIT: 8,
-  HUNT_ANIMAL: 9,
-  BUILD_LUMBER_MILL: 10,
-  BUILD_MINE: 11,
-  TRAIN: 12,
-  CHOOSE_CITY_REWARD: 13,
-  END_TURN: 14,
+  KAMIKAZE_ROLL: 3,
+  RECOVER: 4,
+  CAPTURE: 5,
+  PROMOTE: 6,
+  WAIT: 7,
+  BUILD_CHOCOLATE_WALL: 8,
+  RESEARCH: 9,
+  HARVEST_FRUIT: 10,
+  HUNT_ANIMAL: 11,
+  BUILD_LUMBER_MILL: 12,
+  BUILD_MINE: 13,
+  TRAIN: 14,
+  CHOOSE_CITY_REWARD: 15,
+  END_TURN: 16,
 };
 
 const TECH_ORDINAL: Readonly<Record<TechId, number>> = {
@@ -129,6 +132,15 @@ function isCompositionCandidate(
   command: Command,
 ): boolean {
   if (command.kind === "WAIT") return false;
+  if (command.kind === "KAMIKAZE_ROLL")
+    return isSafeValuableRoll(view, command);
+  if (command.kind === "ATTACK" && command.target.kind === "CHOCOLATE_WALL") {
+    const wallId = command.target.wallId;
+    const wall = view.chocolateWalls.find(
+      (candidate) => candidate.id === wallId,
+    );
+    if (wall === undefined || !isHostile(view, wall.ownerId)) return false;
+  }
   if (command.kind !== "TRAIN") return true;
   const available = publicCommands.filter(
     (candidate): candidate is Extract<Command, { readonly kind: "TRAIN" }> =>
@@ -140,6 +152,41 @@ function isCompositionCandidate(
       ? preferredThreatenedTrainingType(available)
       : preferredTrainingType(view, available);
   return preferred === command.unit;
+}
+
+function isSafeValuableRoll(
+  view: PlayerView,
+  command: Extract<Command, { readonly kind: "KAMIKAZE_ROLL" }>,
+): boolean {
+  const actor = view.units.find((unit) => unit.id === command.unitId);
+  if (actor === undefined) return false;
+  const delta =
+    command.direction === "NORTH"
+      ? { x: 0, y: -1 }
+      : command.direction === "EAST"
+        ? { x: 1, y: 0 }
+        : command.direction === "SOUTH"
+          ? { x: 0, y: 1 }
+          : { x: -1, y: 0 };
+  let hostile = false;
+  for (
+    let at = { x: actor.at.x + delta.x, y: actor.at.y + delta.y };
+    at.x >= 0 &&
+    at.y >= 0 &&
+    at.x < view.board.width &&
+    at.y < view.board.height;
+    at = { x: at.x + delta.x, y: at.y + delta.y }
+  ) {
+    const unit = view.units.find((candidate) => sameCoord(candidate.at, at));
+    const wall = view.chocolateWalls.find((candidate) =>
+      sameCoord(candidate.at, at),
+    );
+    const ownerId = unit?.ownerId ?? wall?.ownerId;
+    if (ownerId === undefined) continue;
+    if (!isHostile(view, ownerId)) return false;
+    hostile = true;
+  }
+  return hostile;
 }
 
 export function preferredTrainingType(
@@ -199,10 +246,27 @@ export function scoreCommand(view: PlayerView, command: Command): AiScore {
       break;
     case "ATTACK": {
       const attacker = view.units.find((unit) => unit.id === command.unitId);
-      const defender = view.units.find((unit) => unit.id === command.targetId);
-      if (attacker !== undefined && defender !== undefined) {
-        const preview = estimateCombat(view, attacker, defender);
-        const threat = threatFromUnit(view, defender);
+      const target = command.target;
+      const defender =
+        target.kind === "UNIT"
+          ? view.units.find((unit) => unit.id === target.unitId)
+          : undefined;
+      const wall =
+        target.kind === "CHOCOLATE_WALL"
+          ? view.chocolateWalls.find(
+              (candidate) => candidate.id === target.wallId,
+            )
+          : undefined;
+      if (attacker !== undefined) {
+        const preview =
+          defender !== undefined
+            ? estimateCombat(view, attacker, defender)
+            : wall !== undefined
+              ? estimateWallCombat(view, attacker, wall)
+              : null;
+        if (preview === null) break;
+        const threat =
+          defender === undefined ? null : threatFromUnit(view, defender);
         priority =
           threat !== null
             ? preview.defenderDies
@@ -217,6 +281,13 @@ export function scoreCommand(view: PlayerView, command: Command): AiScore {
       }
       break;
     }
+    case "KAMIKAZE_ROLL":
+      priority = 400;
+      break;
+    case "BUILD_CHOCOLATE_WALL":
+      priority = 450;
+      immediateValue = -1;
+      break;
     case "TRAIN": {
       const city = view.cities.find(
         (candidate) => candidate.id === command.cityId,
@@ -392,16 +463,37 @@ function commandTarget(view: PlayerView, command: Command): Coord {
     case "ESCAPE_MOVE":
       return command.path.at(-1) ?? { x: -1, y: -1 };
     case "ATTACK":
-      return (
-        view.units.find((unit) => unit.id === command.targetId)?.at ?? {
-          x: -1,
-          y: -1,
-        }
+      if (command.target.kind === "UNIT") {
+        const id = command.target.unitId;
+        return (
+          view.units.find((unit) => unit.id === id)?.at ?? { x: -1, y: -1 }
+        );
+      } else {
+        const id = command.target.wallId;
+        return (
+          view.chocolateWalls.find((wall) => wall.id === id)?.at ?? {
+            x: -1,
+            y: -1,
+          }
+        );
+      }
+    case "KAMIKAZE_ROLL": {
+      const unit = view.units.find(
+        (candidate) => candidate.id === command.unitId,
       );
+      if (unit === undefined) return { x: -1, y: -1 };
+      if (command.direction === "NORTH") return { x: unit.at.x, y: 0 };
+      if (command.direction === "EAST")
+        return { x: view.board.width - 1, y: unit.at.y };
+      if (command.direction === "SOUTH")
+        return { x: unit.at.x, y: view.board.height - 1 };
+      return { x: 0, y: unit.at.y };
+    }
     case "HARVEST_FRUIT":
     case "HUNT_ANIMAL":
     case "BUILD_LUMBER_MILL":
     case "BUILD_MINE":
+    case "BUILD_CHOCOLATE_WALL":
       return command.at;
     case "TRAIN":
     case "CHOOSE_CITY_REWARD":
@@ -473,12 +565,19 @@ function commandResultTile(
     return command.path.at(-1) ?? unit.at;
   }
   if (command.kind === "ATTACK") {
-    const defender = view.units.find((item) => item.id === command.targetId);
-    if (
-      defender !== undefined &&
-      estimateCombat(view, unit, defender).advances
-    ) {
-      return defender.at;
+    if (command.target.kind === "UNIT") {
+      const id = command.target.unitId;
+      const defender = view.units.find((item) => item.id === id);
+      if (
+        defender !== undefined &&
+        estimateCombat(view, unit, defender).advances
+      )
+        return defender.at;
+    } else {
+      const id = command.target.wallId;
+      const wall = view.chocolateWalls.find((item) => item.id === id);
+      if (wall !== undefined && estimateWallCombat(view, unit, wall).advances)
+        return wall.at;
     }
   }
   return unit.at;

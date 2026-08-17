@@ -569,7 +569,7 @@ async function reviewDemoMatch(
   connection: Connection,
 ): Promise<DemoReviewResult> {
   const initialHash =
-    "0529cf300d091dfb2801e62a724fbd0213024a0bb3f43ddaf9656bb7e534d954";
+    "33e7131617587013ffbe21384391f77c615970821c86178dcc905e4cdd8d734d";
   await desktopViewport(connection);
   await evaluate(
     connection,

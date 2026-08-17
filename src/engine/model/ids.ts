@@ -1,7 +1,8 @@
 export type PlayerId = number & { readonly __brand: "PlayerId" };
 export type CityId = number & { readonly __brand: "CityId" };
 export type UnitId = number & { readonly __brand: "UnitId" };
-export type EntityId = CityId | UnitId;
+export type WallId = number & { readonly __brand: "WallId" };
+export type EntityId = CityId | UnitId | WallId;
 
 function assertId(value: number, label: string): void {
   if (!Number.isSafeInteger(value) || value < 1) {
@@ -24,6 +25,11 @@ export function unitId(value: number): UnitId {
   return value as UnitId;
 }
 
+export function wallId(value: number): WallId {
+  assertId(value, "WallId");
+  return value as WallId;
+}
+
 export interface AllocatedEntityId<T extends EntityId> {
   readonly id: T;
   readonly nextEntityId: number;
@@ -39,6 +45,12 @@ export function allocateUnitId(
   nextEntityId: number,
 ): AllocatedEntityId<UnitId> {
   return allocate(nextEntityId, unitId);
+}
+
+export function allocateWallId(
+  nextEntityId: number,
+): AllocatedEntityId<WallId> {
+  return allocate(nextEntityId, wallId);
 }
 
 function allocate<T extends EntityId>(

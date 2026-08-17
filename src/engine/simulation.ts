@@ -3,6 +3,7 @@ import { commandEligibility } from "./commands/predicates";
 import {
   evaluateMatchOutcome,
   reduceAttack,
+  reduceBuildChocolateWall,
   reduceBuildLumberMill,
   reduceBuildMine,
   reduceHarvestFruit,
@@ -15,6 +16,7 @@ import {
   reduceResearch,
   reduceTrain,
   reduceWait,
+  reduceKamikazeRoll,
   type ReductionResult,
 } from "./commands/reducers";
 import type { Command, CommandSummary } from "./commands/types";
@@ -41,10 +43,11 @@ import {
   type PlayerColor,
   type PlayerState,
   type UnitState,
+  type CombatTargetRef,
 } from "./model/types";
 import { randomState, validateRandomState } from "./random/random";
 import { reachableMovementPaths } from "./movement/movement";
-import { getRuleset, requireRuleset } from "./rules/ruleset";
+import { effectiveUnitRule, getRuleset, requireRuleset } from "./rules/ruleset";
 import { applyDemoScenario, demoScenarioIssues } from "./scenarios/demo";
 import { endTurnLifecycle, startTurnLifecycle } from "./turns/lifecycle";
 
@@ -139,6 +142,7 @@ export function createGame(setup: MatchSetup): CreateResult {
     players,
     cities: createdEntities.cities,
     units: createdEntities.units,
+    chocolateWalls: [],
     pendingChoice: null,
     outcome: null,
   };
@@ -243,6 +247,16 @@ export function applyCommand(state: GameState, command: Command): ApplyResult {
       return acceptReduction(state, reduceMove(state, activePlayerId, command));
     case "ATTACK":
       return acceptReduction(state, reduceAttack(state, command));
+    case "KAMIKAZE_ROLL":
+      return acceptReduction(
+        state,
+        reduceKamikazeRoll(state, activePlayerId, command),
+      );
+    case "BUILD_CHOCOLATE_WALL":
+      return acceptReduction(
+        state,
+        reduceBuildChocolateWall(state, activePlayerId, command),
+      );
     case "RECOVER":
       return acceptReduction(state, reduceRecover(state, command));
     case "WAIT":
@@ -257,7 +271,7 @@ export function applyCommand(state: GameState, command: Command): ApplyResult {
 export function previewCombat(
   state: GameState,
   attackerId: UnitState["id"],
-  defenderId: UnitState["id"],
+  target: CombatTargetRef,
 ): CombatPreviewResult {
   const stateError = validateKernelState(state);
   if (stateError !== null) return { ok: false, error: stateError };
@@ -271,12 +285,12 @@ export function previewCombat(
   const eligibility = commandEligibility(state, activePlayerId, {
     kind: "ATTACK",
     unitId: attackerId,
-    targetId: defenderId,
+    target,
   });
   if (!eligibility.legal) return { ok: false, error: eligibility.error };
   return {
     ok: true,
-    preview: calculateCombatPreview(state, attackerId, defenderId),
+    preview: calculateCombatPreview(state, attackerId, target),
   };
 }
 
@@ -366,7 +380,12 @@ export function legalCommands(
         for (const reachable of reachableMovementPaths(
           state,
           unit,
-          rules.units[unit.type].move,
+          effectiveUnitRule(
+            state.rulesetId,
+            state.players.find((player) => player.id === unit.ownerId)
+              ?.faction ?? "ORIGINAL",
+            unit.type,
+          ).move,
         )) {
           candidates.push({
             kind: "MOVE",
@@ -377,13 +396,20 @@ export function legalCommands(
         for (const target of [...state.units].sort(
           (left, right) => left.id - right.id,
         )) {
-          if (target.ownerId !== actor) {
-            candidates.push({
-              kind: "ATTACK",
-              unitId: unit.id,
-              targetId: target.id,
-            });
-          }
+          candidates.push({
+            kind: "ATTACK",
+            unitId: unit.id,
+            target: { kind: "UNIT", unitId: target.id },
+          });
+        }
+        for (const wall of [...state.chocolateWalls].sort(
+          (left, right) => left.id - right.id,
+        )) {
+          candidates.push({
+            kind: "ATTACK",
+            unitId: unit.id,
+            target: { kind: "CHOCOLATE_WALL", wallId: wall.id },
+          });
         }
         for (const reachable of reachableMovementPaths(state, unit, 2)) {
           candidates.push({
@@ -396,6 +422,20 @@ export function legalCommands(
         candidates.push({ kind: "WAIT", unitId: unit.id });
         candidates.push({ kind: "PROMOTE", unitId: unit.id });
         candidates.push({ kind: "CAPTURE", unitId: unit.id });
+        for (const direction of ["NORTH", "EAST", "SOUTH", "WEST"] as const) {
+          candidates.push({
+            kind: "KAMIKAZE_ROLL",
+            unitId: unit.id,
+            direction,
+          });
+        }
+        for (const tile of state.board.tiles) {
+          candidates.push({
+            kind: "BUILD_CHOCOLATE_WALL",
+            unitId: unit.id,
+            at: tile.at,
+          });
+        }
       }
     }
     candidates.push({ kind: "END_TURN" });
@@ -568,6 +608,7 @@ function createStartingEntities(
         captured: false,
         handled: false,
         escapeAvailable: false,
+        specialActed: false,
       },
     });
   }
@@ -643,11 +684,44 @@ function validateKernelState(state: GameState): RuleError | null {
       (unit) =>
         typeof unit.capacityExempt !== "boolean" ||
         typeof unit.activation.handled !== "boolean" ||
+        typeof unit.activation.specialActed !== "boolean" ||
         (unit.homeCityId !== null && !cityIds.has(unit.homeCityId)),
     )
   ) {
     return ruleError("INVALID_STATE", { field: "units" });
   }
+  if (!Array.isArray(state.chocolateWalls)) {
+    return ruleError("INVALID_STATE", { field: "chocolateWalls" });
+  }
+  const entityIds = [
+    ...state.cities.map((entity) => entity.id as number),
+    ...state.units.map((entity) => entity.id as number),
+    ...state.chocolateWalls.map((entity) => entity.id as number),
+  ];
+  if (
+    new Set(entityIds).size !== entityIds.length ||
+    entityIds.some((id) => id >= state.nextEntityId) ||
+    state.chocolateWalls.some(
+      (wall, index, walls) =>
+        wall.hp < 1 ||
+        wall.hp > 10 ||
+        !Number.isSafeInteger(wall.hp) ||
+        (index > 0 && (state.chocolateWalls[index - 1]?.id ?? 0) >= wall.id) ||
+        !state.players.some((player) => player.id === wall.ownerId) ||
+        wall.at.x < 0 ||
+        wall.at.y < 0 ||
+        wall.at.x >= state.board.width ||
+        wall.at.y >= state.board.height ||
+        state.board.tiles[wall.at.y * state.board.width + wall.at.x]?.site !==
+          null ||
+        walls.some(
+          (candidate, candidateIndex) =>
+            candidateIndex !== index && sameCoord(candidate.at, wall.at),
+        ) ||
+        state.units.some((unit) => unit.hp > 0 && sameCoord(unit.at, wall.at)),
+    )
+  )
+    return ruleError("INVALID_STATE", { field: "chocolateWalls" });
   if (!state.players.some((player) => player.id === state.humanPlayerId)) {
     return ruleError("INVALID_STATE", { field: "humanPlayerId" });
   }

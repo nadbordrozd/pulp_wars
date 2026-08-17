@@ -23,6 +23,9 @@ import {
   type ReplayFile,
   type ReplayRunResult,
   type UnitType,
+  effectiveUnitLabel,
+  arePlayersAllied,
+  type EffectiveUnitLabel,
 } from "../engine/index";
 
 export type HeadlessResult = ReplayRunResult;
@@ -67,6 +70,13 @@ export interface HeadlessMetrics {
   readonly researchByTech: Readonly<Record<string, number>>;
   readonly trainedByUnit: Readonly<Record<UnitType, number>>;
   readonly actionsByUnit: Readonly<Record<UnitType, number>>;
+  readonly commandsByEffectiveUnitLabel: Readonly<Record<string, number>>;
+  readonly actionsByEffectiveUnitLabel: Readonly<Record<string, number>>;
+  readonly wallsBuilt: number;
+  readonly wallsDestroyed: number;
+  readonly rolls: number;
+  readonly rollDamageByRelationship: Readonly<Record<string, number>>;
+  readonly rollPathCellsRevealed: number;
   readonly catapultAttacks: number;
   readonly catapultKills: number;
   readonly terrainCounts: Readonly<Record<string, number>>;
@@ -259,6 +269,7 @@ function runAiMatchInternal(
       "unitId" in command
         ? state.units.find((unit) => unit.id === command.unitId)
         : undefined;
+    const beforeState = state;
     const applied = applyCommand(state, command);
     if (!applied.ok) {
       errors.push(
@@ -279,6 +290,17 @@ function runAiMatchInternal(
     if (command.kind === "TRAIN") metrics.trainedByUnit[command.unit] += 1;
     if (actingUnit !== undefined) {
       metrics.actionsByUnit[actingUnit.type] += 1;
+      const ownerFaction = beforeState.players.find(
+        (player) => player.id === actingUnit.ownerId,
+      )?.faction;
+      if (ownerFaction !== undefined) {
+        const label = effectiveUnitLabel(ownerFaction, actingUnit.type);
+        increment(metrics.actionsByEffectiveUnitLabel, label);
+        increment(
+          metrics.commandsByEffectiveUnitLabel,
+          `${label}:${command.kind}`,
+        );
+      }
       if (command.kind === "ATTACK" && actingUnit.type === "CATAPULT") {
         metrics.catapultAttacks += 1;
         if (
@@ -289,6 +311,38 @@ function runAiMatchInternal(
         ) {
           metrics.catapultKills += 1;
         }
+      }
+    }
+    if (command.kind === "KAMIKAZE_ROLL") metrics.rolls += 1;
+    for (const event of applied.events) {
+      if (event.kind === "CHOCOLATE_WALL_BUILT") metrics.wallsBuilt += 1;
+      if (event.kind === "CHOCOLATE_WALL_DESTROYED")
+        metrics.wallsDestroyed += 1;
+      if (command.kind === "KAMIKAZE_ROLL" && event.kind === "TILES_REVEALED") {
+        metrics.rollPathCellsRevealed += event.tiles.length;
+      }
+      if (event.kind === "ROLL_DAMAGE_RESOLVED") {
+        const target = event.target;
+        const targetOwner =
+          target.kind === "UNIT"
+            ? beforeState.units.find((unit) => unit.id === target.unitId)
+                ?.ownerId
+            : beforeState.chocolateWalls.find(
+                (wall) => wall.id === target.wallId,
+              )?.ownerId;
+        const relationship =
+          targetOwner === playerId
+            ? "OWN"
+            : targetOwner !== undefined &&
+                arePlayersAllied(
+                  beforeState.setup.aiMode,
+                  beforeState.humanPlayerId,
+                  playerId,
+                  targetOwner,
+                )
+              ? "ALLIED"
+              : "HOSTILE";
+        increment(metrics.rollDamageByRelationship, relationship);
       }
     }
     for (const event of applied.events)
@@ -419,6 +473,13 @@ interface MutableMetrics {
   researchByTech: Record<string, number>;
   trainedByUnit: Record<UnitType, number>;
   actionsByUnit: Record<UnitType, number>;
+  commandsByEffectiveUnitLabel: Record<string, number>;
+  actionsByEffectiveUnitLabel: Record<string, number>;
+  wallsBuilt: number;
+  wallsDestroyed: number;
+  rolls: number;
+  rollDamageByRelationship: Record<string, number>;
+  rollPathCellsRevealed: number;
   catapultAttacks: number;
   catapultKills: number;
   terrainCounts: Record<string, number>;
@@ -465,6 +526,13 @@ function createMetrics(
     researchByTech: {},
     trainedByUnit: emptyUnitMetrics(),
     actionsByUnit: emptyUnitMetrics(),
+    commandsByEffectiveUnitLabel: {},
+    actionsByEffectiveUnitLabel: emptyEffectiveLabelMetrics(),
+    wallsBuilt: 0,
+    wallsDestroyed: 0,
+    rolls: 0,
+    rollDamageByRelationship: {},
+    rollPathCellsRevealed: 0,
     catapultAttacks: 0,
     catapultKills: 0,
     terrainCounts,
@@ -474,6 +542,20 @@ function createMetrics(
       opportunityMinimum === Number.MAX_SAFE_INTEGER ? 0 : opportunityMinimum,
     opportunityMaximum,
     opportunityHistogram,
+  };
+}
+
+function emptyEffectiveLabelMetrics(): Record<EffectiveUnitLabel, number> {
+  return {
+    Warrior: 0,
+    Archer: 0,
+    Defender: 0,
+    Rider: 0,
+    Catapult: 0,
+    "Candy Warrior": 0,
+    "Gumball Guard": 0,
+    "Choco Engineer": 0,
+    Donut: 0,
   };
 }
 

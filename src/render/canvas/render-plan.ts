@@ -197,11 +197,15 @@ export function buildRenderPlan(
               entries.push(entry("PATH", at, coordinateId(at), null));
         }
       } else if (command.kind === "ATTACK") {
-        const target = view.units.find((unit) => unit.id === command.targetId);
+        const targetRef = command.target;
+        const target =
+          targetRef.kind === "UNIT"
+            ? view.units.find((unit) => unit.id === targetRef.unitId)
+            : view.chocolateWalls.find((wall) => wall.id === targetRef.wallId);
         const preview = queryPlayerCombatPreview(
           view,
           command.unitId,
-          command.targetId,
+          command.target,
         );
         if (target !== undefined && preview !== null) {
           entries.push(

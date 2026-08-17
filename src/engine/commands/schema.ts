@@ -1,4 +1,5 @@
-import { cityId, unitId } from "../model/ids";
+import { cityId, unitId, wallId } from "../model/ids";
+import type { CombatTargetRef } from "../model/types";
 import type { Coord, RewardId, TechId, UnitType } from "../model/types";
 import { ruleError, type RuleError } from "./errors";
 import type { Command, CommandEnvelope } from "./types";
@@ -120,14 +121,44 @@ export function parseCommand(input: unknown): ParseResult<Command> {
       };
     }
     case "ATTACK": {
-      if (!hasExactKeys(input, ["kind", "unitId", "targetId"])) {
+      if (!hasExactKeys(input, ["kind", "unitId", "target"])) {
         return invalid("ATTACK");
       }
       const id = parseUnitId(input.unitId);
-      const target = parseUnitId(input.targetId);
+      const target = parseCombatTarget(input.target);
       return id === null || target === null
         ? invalid("ATTACK")
-        : { ok: true, value: { kind: "ATTACK", unitId: id, targetId: target } };
+        : { ok: true, value: { kind: "ATTACK", unitId: id, target } };
+    }
+    case "KAMIKAZE_ROLL": {
+      if (
+        !hasExactKeys(input, ["kind", "unitId", "direction"]) ||
+        (input.direction !== "NORTH" &&
+          input.direction !== "EAST" &&
+          input.direction !== "SOUTH" &&
+          input.direction !== "WEST")
+      )
+        return invalid("KAMIKAZE_ROLL");
+      const id = parseUnitId(input.unitId);
+      return id === null
+        ? invalid("KAMIKAZE_ROLL.unitId")
+        : {
+            ok: true,
+            value: {
+              kind: "KAMIKAZE_ROLL",
+              unitId: id,
+              direction: input.direction,
+            },
+          };
+    }
+    case "BUILD_CHOCOLATE_WALL": {
+      if (!hasExactKeys(input, ["kind", "unitId", "at"]))
+        return invalid("BUILD_CHOCOLATE_WALL");
+      const id = parseUnitId(input.unitId);
+      const at = parseCoord(input.at);
+      return id === null || at === null
+        ? invalid("BUILD_CHOCOLATE_WALL")
+        : { ok: true, value: { kind: "BUILD_CHOCOLATE_WALL", unitId: id, at } };
     }
     case "RECOVER":
     case "WAIT":
@@ -212,6 +243,26 @@ function parseUnitId(input: unknown): ReturnType<typeof unitId> | null {
   } catch {
     return null;
   }
+}
+
+function parseCombatTarget(input: unknown): CombatTargetRef | null {
+  if (!isRecord(input) || typeof input.kind !== "string") return null;
+  if (input.kind === "UNIT" && hasExactKeys(input, ["kind", "unitId"])) {
+    const id = parseUnitId(input.unitId);
+    return id === null ? null : { kind: "UNIT", unitId: id };
+  }
+  if (
+    input.kind === "CHOCOLATE_WALL" &&
+    hasExactKeys(input, ["kind", "wallId"]) &&
+    typeof input.wallId === "number"
+  ) {
+    try {
+      return { kind: "CHOCOLATE_WALL", wallId: wallId(input.wallId) };
+    } catch {
+      return null;
+    }
+  }
+  return null;
 }
 
 function invalid(field: string): ParseResult<never> {

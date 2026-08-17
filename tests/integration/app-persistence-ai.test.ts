@@ -114,7 +114,9 @@ describe("application save and AI integration", () => {
     const controller = controllerFor(initial);
     const attack = offeredCommands(controller.snapshot().view).find(
       (command): command is Extract<Command, { readonly kind: "ATTACK" }> =>
-        command.kind === "ATTACK" && command.targetId === defender.id,
+        command.kind === "ATTACK" &&
+        command.target.kind === "UNIT" &&
+        command.target.unitId === defender.id,
     );
     if (attack === undefined) throw new Error("Missing lethal attack");
     expect(controller.dispatch(attack)).toBe(true);
@@ -742,6 +744,7 @@ function meaningfulActionState(kind: Command["kind"]): GameState {
           ...candidate.activation,
           attacked: true,
           escapeAvailable: true,
+          specialActed: false,
         },
       })),
       board: {
@@ -786,6 +789,7 @@ function freshActivation(): UnitState["activation"] {
     captured: false,
     handled: false,
     escapeAvailable: false,
+    specialActed: false,
   };
 }
 

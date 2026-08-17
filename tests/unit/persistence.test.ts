@@ -186,6 +186,53 @@ describe("versioned local persistence", () => {
     ).toBe(true);
   });
 
+  it("round-trips a Chocolate Wall and Donut Roll through save, replay, and headless", async () => {
+    const boundary = candySpecialReplayBoundary();
+    expect(boundary.replay.commands).toContainEqual(
+      expect.objectContaining({ kind: "KAMIKAZE_ROLL" }),
+    );
+    expect(boundary.replay.commands).toContainEqual(
+      expect.objectContaining({ kind: "BUILD_CHOCOLATE_WALL" }),
+    );
+    expect(boundary.state.chocolateWalls).toHaveLength(1);
+
+    const replayed = runReplay(boundary.replay);
+    const headlessReplay = await headless.run(boundary.replay);
+    expect(replayed.stateHash).toBe(canonicalHash(boundary.state));
+    expect(headlessReplay.stateHash).toBe(replayed.stateHash);
+    expect(headlessReplay.events).toEqual(replayed.events);
+    expect(
+      headlessReplay.events.some(
+        (event) => event.kind === "CHOCOLATE_WALL_BUILT",
+      ),
+    ).toBe(true);
+    expect(
+      headlessReplay.events.some((event) => event.kind === "DONUT_ROLL_STEP"),
+    ).toBe(true);
+
+    const envelope = createSaveEnvelope(
+      {
+        state: boundary.state,
+        replay: boundary.replay,
+        tallies: { citiesCaptured: 0, unitsDefeated: 0, unitsLost: 1 },
+        playerTallies: boundary.state.players.map((player) => ({
+          playerId: player.id,
+          kills: 0,
+          losses: player.controller === "HUMAN" ? 1 : 0,
+          citiesCaptured: 0,
+        })),
+      },
+      "2026-08-17T12:00:00.000Z",
+    );
+    const loaded = parseSave(JSON.stringify(envelope));
+    expect(loaded.kind).toBe("VALID");
+    if (loaded.kind !== "VALID") throw new Error("Candy save failed");
+    expect(loaded.save.stateHash).toBe(replayed.stateHash);
+    expect(loaded.save.state.chocolateWalls).toEqual(
+      boundary.state.chocolateWalls,
+    );
+  });
+
   it("rejects corrupt, tampered, incompatible, and oversized saves without deleting them", () => {
     const storage = new MemoryStorage();
     storage.setItem(SAVE_STORAGE_KEY, "{broken");
@@ -377,6 +424,105 @@ function catapultReplayBoundary(): {
     }
   }
   throw new Error("Catapult training replay exceeded its bounded command cap");
+}
+
+function candySpecialReplayBoundary(): {
+  readonly state: GameState;
+  readonly replay: ReplayFile;
+} {
+  const candySetup: MatchSetup = {
+    ...setup,
+    factions: ["CANDY", "CANDY"],
+  };
+  const created = createGame(candySetup);
+  if (!created.ok) throw new Error(created.error.code);
+  const riderOwner = created.state.players.find(
+    (player) => player.controller === "HUMAN",
+  )?.id;
+  const wallOwner = created.state.players.find(
+    (player) => player.controller === "AI",
+  )?.id;
+  if (riderOwner === undefined || wallOwner === undefined)
+    throw new Error("Missing Candy replay players");
+  const founders = new Map(
+    created.state.units.map((unit) => [unit.ownerId, unit.id] as const),
+  );
+  let state = created.state;
+  let replay = createReplay(candySetup);
+  let rolled = false;
+  let built = false;
+  for (let guard = 0; guard < 100 && !(rolled && built); guard += 1) {
+    const activeId = state.turnOrder[state.activeSeatIndex];
+    if (activeId === undefined) throw new Error("Missing Candy active player");
+    const player = state.players.find((candidate) => candidate.id === activeId);
+    const city = state.cities.find(
+      (candidate) => candidate.ownerId === activeId,
+    );
+    const founder = state.units.find(
+      (candidate) => candidate.id === founders.get(activeId),
+    );
+    if (player === undefined || city === undefined)
+      throw new Error("Missing Candy replay state");
+    const commands = queryPlayerCommands(viewFor(state, activeId)).map(
+      ({ command }) => command,
+    );
+    let command: Command | undefined;
+    if (
+      founder !== undefined &&
+      founder.at.x === city.at.x &&
+      founder.at.y === city.at.y
+    ) {
+      command = commands.find(
+        (candidate) =>
+          candidate.kind === "MOVE" && candidate.unitId === founder.id,
+      );
+    } else if (activeId === riderOwner) {
+      command = !player.researchedTechs.includes("RIDING")
+        ? commands.find(
+            (candidate) =>
+              candidate.kind === "RESEARCH" && candidate.tech === "RIDING",
+          )
+        : !rolled
+          ? (commands.find((candidate) => candidate.kind === "KAMIKAZE_ROLL") ??
+            commands.find(
+              (candidate) =>
+                candidate.kind === "TRAIN" && candidate.unit === "RIDER",
+            ))
+          : undefined;
+    } else if (activeId === wallOwner) {
+      command = !player.researchedTechs.includes("ORGANIZATION")
+        ? commands.find(
+            (candidate) =>
+              candidate.kind === "RESEARCH" &&
+              candidate.tech === "ORGANIZATION",
+          )
+        : !player.researchedTechs.includes("STRATEGY")
+          ? commands.find(
+              (candidate) =>
+                candidate.kind === "RESEARCH" && candidate.tech === "STRATEGY",
+            )
+          : !built
+            ? (commands.find(
+                (candidate) => candidate.kind === "BUILD_CHOCOLATE_WALL",
+              ) ??
+              commands.find(
+                (candidate) =>
+                  candidate.kind === "TRAIN" && candidate.unit === "DEFENDER",
+              ))
+            : undefined;
+    }
+    command ??= commands.find((candidate) => candidate.kind === "END_TURN");
+    if (command === undefined) throw new Error("Missing Candy replay command");
+    const applied = applyCommand(state, command);
+    if (!applied.ok) throw new Error(applied.error.code);
+    state = applied.state;
+    replay = appendReplayCommand(replay, command, state);
+    if (command.kind === "KAMIKAZE_ROLL") rolled = true;
+    if (command.kind === "BUILD_CHOCOLATE_WALL") built = true;
+  }
+  if (!rolled || !built)
+    throw new Error("Candy replay exceeded its bounded command cap");
+  return { state, replay };
 }
 
 class MemoryStorage implements StorageAdapter {

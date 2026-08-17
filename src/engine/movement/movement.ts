@@ -87,12 +87,15 @@ export function validateMovementPath(
         candidate.hp > 0 &&
         sameCoord(candidate.at, step),
     );
+    const wallOccupied = state.chocolateWalls.some((wall) =>
+      sameCoord(wall.at, step),
+    );
     const climbingRequired = tile.terrain === "MOUNTAIN" && !hasClimbing;
-    if (occupied || climbingRequired) {
+    if (occupied || wallOccupied || climbingRequired) {
       if (wasExplored) {
         return {
           legal: false,
-          reason: occupied ? "OCCUPIED" : "CLIMBING_REQUIRED",
+          reason: occupied || wallOccupied ? "OCCUPIED" : "CLIMBING_REQUIRED",
         };
       }
       // Blind movement is an observation-safe intent. Discovering an
@@ -118,7 +121,7 @@ export function validateMovementPath(
         traversedPath,
         interruption: {
           at: step,
-          reason: occupied ? "OCCUPIED" : "CLIMBING_REQUIRED",
+          reason: occupied || wallOccupied ? "OCCUPIED" : "CLIMBING_REQUIRED",
         },
       };
     }

@@ -1,4 +1,4 @@
-import type { CityId, PlayerId, UnitId } from "./ids";
+import type { CityId, PlayerId, UnitId, WallId } from "./ids";
 
 export const GAME_STATE_SCHEMA_VERSION = 5 as const;
 export const RULESET_ID = "pulp-wars-poc-5" as const;
@@ -22,6 +22,10 @@ export type TechId =
   | "STRATEGY"
   | "MATHEMATICS";
 export type UnitType = "WARRIOR" | "ARCHER" | "DEFENDER" | "RIDER" | "CATAPULT";
+export type CardinalDirection = "NORTH" | "EAST" | "SOUTH" | "WEST";
+export type CombatTargetRef =
+  | { readonly kind: "UNIT"; readonly unitId: UnitId }
+  | { readonly kind: "CHOCOLATE_WALL"; readonly wallId: WallId };
 export type RewardId = "WORKSHOP" | "SURVEY" | "RESOURCES" | "CITY_WALL";
 
 export interface Coord {
@@ -97,6 +101,14 @@ export interface UnitActivation {
   /** Durable per-turn attention state, distinct from action legality. */
   readonly handled: boolean;
   readonly escapeAvailable: boolean;
+  readonly specialActed: boolean;
+}
+
+export interface ChocolateWallState {
+  readonly id: WallId;
+  readonly ownerId: PlayerId;
+  readonly at: Coord;
+  readonly hp: number;
 }
 
 export interface UnitState {
@@ -160,9 +172,15 @@ export interface PlayerView {
   readonly board: PlayerBoardView;
   readonly cities: readonly PlayerCityView[];
   readonly units: readonly PlayerUnitView[];
+  readonly chocolateWalls: readonly PlayerChocolateWallView[];
   readonly pendingChoice: PendingChoice | null;
   readonly outcome: MatchOutcome | null;
 }
+
+export type PlayerChocolateWallView = ChocolateWallState & {
+  readonly kind: "CHOCOLATE_WALL";
+  readonly maxHp: 10;
+};
 
 export type PlayerUnitView = Omit<UnitState, "capacityExempt"> & {
   /** Present only when this unit is owned by the viewer. */
@@ -207,6 +225,7 @@ export interface GameState {
   readonly players: readonly PlayerState[];
   readonly cities: readonly CityState[];
   readonly units: readonly UnitState[];
+  readonly chocolateWalls: readonly ChocolateWallState[];
   readonly pendingChoice: PendingChoice | null;
   readonly outcome: MatchOutcome | null;
 }

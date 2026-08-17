@@ -6,6 +6,7 @@ const NO_RETALIATION_REASON: Readonly<
   DEFENDER_DIED: "defender defeated",
   OUT_OF_RANGE: "defender out of range",
   ATTACKER_UNEXPLORED: "attacker tile unseen by defender",
+  STRUCTURE: "structure cannot retaliate",
 };
 
 /** Shared visible/semantic wording for the exact public combat calculation. */
@@ -30,5 +31,6 @@ function shortReason(
 ): string {
   if (reason === "DEFENDER_DIED") return "defeated";
   if (reason === "OUT_OF_RANGE") return "range";
+  if (reason === "STRUCTURE") return "structure";
   return "unseen";
 }

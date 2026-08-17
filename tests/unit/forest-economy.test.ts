@@ -362,7 +362,10 @@ describe("ruleset-4 forest economy", () => {
             : unit,
       ),
     };
-    const ordinary = calculateCombatPreview(combatState, mover.id, hostile.id);
+    const ordinary = calculateCombatPreview(combatState, mover.id, {
+      kind: "UNIT",
+      unitId: hostile.id,
+    });
     const archeryState: GameState = {
       ...combatState,
       players: combatState.players.map((player) =>
@@ -371,11 +374,10 @@ describe("ruleset-4 forest economy", () => {
           : player,
       ),
     };
-    const fortified = calculateCombatPreview(
-      archeryState,
-      mover.id,
-      hostile.id,
-    );
+    const fortified = calculateCombatPreview(archeryState, mover.id, {
+      kind: "UNIT",
+      unitId: hostile.id,
+    });
     expect(fortified.damageToDefender).toBeLessThan(ordinary.damageToDefender);
   });
 });

@@ -10,6 +10,8 @@ import type {
   TechId,
   UnitState,
   UnitType,
+  CombatTargetRef,
+  CardinalDirection,
 } from "../model/types";
 import { movementDistance, validateMovementPath } from "../movement/movement";
 import {
@@ -22,7 +24,7 @@ import {
   technologyPrerequisitesMet,
   unitTypeIsUnlocked,
 } from "../rules/economy";
-import { requireRuleset } from "../rules/ruleset";
+import { effectiveUnitRule, requireRuleset } from "../rules/ruleset";
 import { arePlayersAllied } from "../rules/relationships";
 import { ruleError, type RuleError } from "./errors";
 import type { Command } from "./types";
@@ -119,7 +121,11 @@ export function commandEligibility(
     case "ESCAPE_MOVE":
       return moveEligibility(state, player, command.unitId, command.path, true);
     case "ATTACK":
-      return attackEligibility(state, player, command.unitId, command.targetId);
+      return attackEligibility(state, player, command.unitId, command.target);
+    case "KAMIKAZE_ROLL":
+      return rollEligibility(state, player, command.unitId, command.direction);
+    case "BUILD_CHOCOLATE_WALL":
+      return wallBuildEligibility(state, player, command.unitId, command.at);
     case "RECOVER":
       return recoverEligibility(state, player, command.unitId);
     case "WAIT":
@@ -186,6 +192,9 @@ export function trainEligibility(
   if (state.units.some((unit) => unit.hp > 0 && sameCoord(unit.at, city.at))) {
     return illegal(ruleError("CITY_SPAWN_OCCUPIED", { cityId: city.id }));
   }
+  if (state.chocolateWalls.some((wall) => sameCoord(wall.at, city.at))) {
+    return illegal(ruleError("CITY_SPAWN_OCCUPIED", { cityId: city.id }));
+  }
   const cost = requireRuleset(state.rulesetId).units[unitType].cost;
   return player.stars < cost
     ? illegal(ruleError("INSUFFICIENT_STARS", { cost }))
@@ -204,7 +213,7 @@ export function moveEligibility(
   const unit = owned.unit;
   if (!unit.ready) return illegal(ruleError("UNIT_NOT_READY", { unitId }));
   if (escape) {
-    const rule = requireRuleset(state.rulesetId).units[unit.type];
+    const rule = effectiveUnitRule(state.rulesetId, player.faction, unit.type);
     if (
       !rule.abilities.includes("ESCAPE") ||
       !unit.activation.escapeAvailable
@@ -217,13 +226,14 @@ export function moveEligibility(
     unit.activation.moved ||
     unit.activation.attacked ||
     unit.activation.recovered ||
-    unit.activation.captured
+    unit.activation.captured ||
+    unit.activation.specialActed
   ) {
     return illegal(ruleError("UNIT_ALREADY_ACTED", { unitId }));
   }
   const budget = escape
     ? 2
-    : requireRuleset(state.rulesetId).units[unit.type].move;
+    : effectiveUnitRule(state.rulesetId, player.faction, unit.type).move;
   const pathResult = validateMovementPath(state, unit, path, budget);
   if (!pathResult.legal && pathResult.reason === "ALLY_TERRITORY_FORBIDDEN") {
     const at = firstAlliedPathStep(state, player.id, path);
@@ -243,7 +253,7 @@ export function attackEligibility(
   state: GameState,
   player: PlayerState,
   unitId: UnitId,
-  targetId: UnitId,
+  target: CombatTargetRef,
 ): CommandEligibility {
   const owned = ownedUnit(state, player, unitId);
   if (!owned.legal) return owned;
@@ -252,33 +262,50 @@ export function attackEligibility(
   if (
     attacker.activation.attacked ||
     attacker.activation.recovered ||
-    attacker.activation.captured
+    attacker.activation.captured ||
+    attacker.activation.specialActed
   ) {
     return illegal(ruleError("UNIT_ALREADY_ACTED", { unitId }));
   }
-  const rule = requireRuleset(state.rulesetId).units[attacker.type];
+  const rule = effectiveUnitRule(
+    state.rulesetId,
+    player.faction,
+    attacker.type,
+  );
+  if (rule.attack === 0 || rule.range === 0) {
+    return illegal(ruleError("ATTACK_NOT_LEGAL", { reason: "NO_ATTACK" }));
+  }
   if (attacker.activation.moved && !rule.abilities.includes("DASH")) {
     return illegal(ruleError("ATTACK_NOT_LEGAL", { reason: "NO_DASH" }));
   }
-  const defender = state.units.find(
-    (unit) => unit.id === targetId && unit.hp > 0,
-  );
-  if (defender === undefined) {
+  const defender =
+    target.kind === "UNIT"
+      ? state.units.find((unit) => unit.id === target.unitId && unit.hp > 0)
+      : undefined;
+  const wall =
+    target.kind === "CHOCOLATE_WALL"
+      ? state.chocolateWalls.find(
+          (candidate) => candidate.id === target.wallId && candidate.hp > 0,
+        )
+      : undefined;
+  const targetAt = defender?.at ?? wall?.at;
+  if (targetAt === undefined) {
     return illegal(
       ruleError("ATTACK_NOT_LEGAL", { reason: "TARGET_NOT_FOUND" }),
     );
   }
-  if (defender.ownerId === player.id) {
+  if (defender?.ownerId === player.id) {
     return illegal(
       ruleError("ATTACK_NOT_LEGAL", { reason: "TARGET_FRIENDLY" }),
     );
   }
-  if (!isExplored(player.explored, defender.at)) {
+  if (!isExplored(player.explored, targetAt)) {
     return illegal(
       ruleError("ATTACK_NOT_LEGAL", { reason: "TARGET_UNEXPLORED" }),
     );
   }
   if (
+    defender !== undefined &&
     arePlayersAllied(
       state.setup.aiMode,
       state.humanPlayerId,
@@ -288,7 +315,7 @@ export function attackEligibility(
   ) {
     return illegal(ruleError("TARGET_ALLIED"));
   }
-  if (movementDistance(attacker.at, defender.at) > rule.range) {
+  if (movementDistance(attacker.at, targetAt) > rule.range) {
     return illegal(ruleError("ATTACK_NOT_LEGAL", { reason: "OUT_OF_RANGE" }));
   }
   return LEGAL;
@@ -307,13 +334,126 @@ export function recoverEligibility(
     unit.activation.moved ||
     unit.activation.attacked ||
     unit.activation.recovered ||
-    unit.activation.captured
+    unit.activation.captured ||
+    unit.activation.specialActed
   ) {
     return illegal(ruleError("UNIT_ALREADY_ACTED", { unitId }));
   }
   return unit.hp >= unit.maxHp
     ? illegal(ruleError("RECOVER_NOT_LEGAL", { reason: "FULL_HP" }))
     : LEGAL;
+}
+
+export function rollEligibility(
+  state: GameState,
+  player: PlayerState,
+  unitId: UnitId,
+  direction: CardinalDirection,
+): CommandEligibility {
+  const owned = ownedUnit(state, player, unitId);
+  if (!owned.legal) return owned;
+  const unit = owned.unit;
+  if (!unit.ready) return illegal(ruleError("UNIT_NOT_READY", { unitId }));
+  if (player.faction !== "CANDY" || unit.type !== "RIDER") {
+    return illegal(ruleError("UNIT_TYPE_INVALID", { expected: "CANDY_DONUT" }));
+  }
+  if (
+    unit.activation.moved ||
+    unit.activation.attacked ||
+    unit.activation.recovered ||
+    unit.activation.captured ||
+    unit.activation.specialActed
+  )
+    return illegal(ruleError("UNIT_ALREADY_ACTED", { unitId }));
+  const delta = directionDelta(direction);
+  const adjacent = { x: unit.at.x + delta.x, y: unit.at.y + delta.y };
+  return tileAt(state, adjacent) === undefined
+    ? illegal(ruleError("ROLL_DIRECTION_INVALID", { direction }))
+    : LEGAL;
+}
+
+export function wallBuildEligibility(
+  state: GameState,
+  player: PlayerState,
+  unitId: UnitId,
+  at: Coord,
+): CommandEligibility {
+  const owned = ownedUnit(state, player, unitId);
+  if (!owned.legal) return owned;
+  const unit = owned.unit;
+  if (!unit.ready) return illegal(ruleError("UNIT_NOT_READY", { unitId }));
+  if (player.faction !== "CANDY" || unit.type !== "DEFENDER") {
+    return illegal(
+      ruleError("UNIT_TYPE_INVALID", { expected: "CANDY_CHOCO_ENGINEER" }),
+    );
+  }
+  if (
+    unit.activation.moved ||
+    unit.activation.attacked ||
+    unit.activation.recovered ||
+    unit.activation.captured ||
+    unit.activation.specialActed
+  )
+    return illegal(ruleError("UNIT_ALREADY_ACTED", { unitId }));
+  const tile = tileAt(state, at);
+  if (tile === undefined) return illegal(ruleError("TILE_NOT_FOUND"));
+  if (!isExplored(player.explored, at))
+    return illegal(ruleError("TILE_UNEXPLORED"));
+  if (movementDistance(unit.at, at) !== 1) {
+    return illegal(
+      ruleError("WALL_TARGET_NOT_ADJACENT", { at: { x: at.x, y: at.y } }),
+    );
+  }
+  if (
+    tile.site !== null ||
+    state.units.some(
+      (candidate) => candidate.hp > 0 && sameCoord(candidate.at, at),
+    ) ||
+    state.chocolateWalls.some((wall) => sameCoord(wall.at, at))
+  )
+    return illegal(
+      ruleError("WALL_INVALID_TILE", { at: { x: at.x, y: at.y } }),
+    );
+  const city = cityForTerritory(state, tile.territoryCityId);
+  if (
+    city !== null &&
+    arePlayersAllied(
+      state.setup.aiMode,
+      state.humanPlayerId,
+      player.id,
+      city.ownerId,
+    )
+  )
+    return illegal(
+      ruleError("ALLY_TERRITORY_FORBIDDEN", { at: { x: at.x, y: at.y } }),
+    );
+  return player.stars < 1
+    ? illegal(ruleError("INSUFFICIENT_STARS", { cost: 1 }))
+    : LEGAL;
+}
+
+function directionDelta(direction: CardinalDirection): Coord {
+  switch (direction) {
+    case "NORTH":
+      return { x: 0, y: -1 };
+    case "EAST":
+      return { x: 1, y: 0 };
+    case "SOUTH":
+      return { x: 0, y: 1 };
+    case "WEST":
+      return { x: -1, y: 0 };
+  }
+}
+
+function tileAt(state: GameState, at: Coord) {
+  if (
+    at.x < 0 ||
+    at.y < 0 ||
+    at.x >= state.board.width ||
+    at.y >= state.board.height
+  )
+    return undefined;
+  return state.board.tiles[at.y * state.board.width + at.x];
 }
 
 export function waitEligibility(

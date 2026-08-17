@@ -281,6 +281,7 @@ describe("five-unit rules and training", () => {
         researchedTechs: ["ARCHERY"],
         stars: 20,
       }),
+      nextEntityId: 101,
       units: [
         ...empty.units,
         {
@@ -310,7 +311,10 @@ describe("Catapult siege boundary", () => {
     const plain = arenaState({ type: "CATAPULT" }, { at: { x: 7, y: 4 } });
     expect(roundHalfUp(4 * 4 * 9, 6 * 2)).toBe(12);
     expect(
-      previewCombat(plain.state, plain.attacker.id, plain.defender.id),
+      previewCombat(plain.state, plain.attacker.id, {
+        kind: "UNIT",
+        unitId: plain.defender.id,
+      }),
     ).toMatchObject({
       ok: true,
       preview: {
@@ -334,7 +338,10 @@ describe("Catapult siege boundary", () => {
       },
     };
     expect(
-      previewCombat(ordinaryBonus, plain.attacker.id, plain.defender.id),
+      previewCombat(ordinaryBonus, plain.attacker.id, {
+        kind: "UNIT",
+        unitId: plain.defender.id,
+      }),
     ).toMatchObject({
       ok: true,
       preview: { damageToDefender: 10, defenderDies: true },
@@ -358,7 +365,10 @@ describe("Catapult siege boundary", () => {
       ),
     };
     expect(
-      previewCombat(cityWall, plain.attacker.id, plain.defender.id),
+      previewCombat(cityWall, plain.attacker.id, {
+        kind: "UNIT",
+        unitId: plain.defender.id,
+      }),
     ).toMatchObject({
       ok: true,
       preview: {
@@ -378,7 +388,10 @@ describe("Catapult siege boundary", () => {
       ),
     };
     expect(
-      previewCombat(promotedWarrior, plain.attacker.id, plain.defender.id),
+      previewCombat(promotedWarrior, plain.attacker.id, {
+        kind: "UNIT",
+        unitId: plain.defender.id,
+      }),
     ).toMatchObject({
       ok: true,
       preview: { damageToDefender: 12, defenderDies: false },
@@ -394,7 +407,9 @@ describe("Catapult siege boundary", () => {
       expect(
         legalCommands(arena.state, arena.attacker.ownerId).some(
           ({ command }) =>
-            command.kind === "ATTACK" && command.targetId === arena.defender.id,
+            command.kind === "ATTACK" &&
+            command.target.kind === "UNIT" &&
+            command.target.unitId === arena.defender.id,
         ),
       ).toBe(true);
     }
@@ -403,7 +418,8 @@ describe("Catapult siege boundary", () => {
       legalCommands(outOfRange.state, outOfRange.attacker.ownerId).some(
         ({ command }) =>
           command.kind === "ATTACK" &&
-          command.targetId === outOfRange.defender.id,
+          command.target.kind === "UNIT" &&
+          command.target.unitId === outOfRange.defender.id,
       ),
     ).toBe(false);
 
@@ -422,7 +438,8 @@ describe("Catapult siege boundary", () => {
       queryPlayerCommands(view).some(
         ({ command }) =>
           command.kind === "ATTACK" &&
-          command.targetId === outOfRange.defender.id,
+          command.target.kind === "UNIT" &&
+          command.target.unitId === outOfRange.defender.id,
       ),
     ).toBe(false);
   });
@@ -433,7 +450,7 @@ describe("Catapult siege boundary", () => {
       applyCommand(arena.state, {
         kind: "ATTACK",
         unitId: arena.attacker.id,
-        targetId: arena.defender.id,
+        target: { kind: "UNIT", unitId: arena.defender.id },
       }).ok,
     ).toBe(true);
     const moved = applyCommand(arena.state, {
@@ -446,7 +463,7 @@ describe("Catapult siege boundary", () => {
       applyCommand(moved.state, {
         kind: "ATTACK",
         unitId: arena.attacker.id,
-        targetId: arena.defender.id,
+        target: { kind: "UNIT", unitId: arena.defender.id },
       }),
     ).toMatchObject({ ok: false, error: { code: "UNIT_NOT_READY" } });
     expect(
@@ -687,7 +704,7 @@ describe("movement, fog, ZOC, Dash, and Escape", () => {
       applyCommand(movedWarrior.state, {
         kind: "ATTACK",
         unitId: warriorArena.attacker.id,
-        targetId: warriorArena.defender.id,
+        target: { kind: "UNIT", unitId: warriorArena.defender.id },
       }).ok,
     ).toBe(true);
 
@@ -705,7 +722,7 @@ describe("movement, fog, ZOC, Dash, and Escape", () => {
       applyCommand(movedDefender.state, {
         kind: "ATTACK",
         unitId: defenderArena.attacker.id,
-        targetId: defenderArena.defender.id,
+        target: { kind: "UNIT", unitId: defenderArena.defender.id },
       }),
     ).toMatchObject({ ok: false, error: { code: "UNIT_NOT_READY" } });
 
@@ -713,7 +730,7 @@ describe("movement, fog, ZOC, Dash, and Escape", () => {
     const attacked = applyCommand(riderArena.state, {
       kind: "ATTACK",
       unitId: riderArena.attacker.id,
-      targetId: riderArena.defender.id,
+      target: { kind: "UNIT", unitId: riderArena.defender.id },
     });
     if (!attacked.ok) throw new Error(attacked.error.code);
     expect(
@@ -749,7 +766,7 @@ describe("movement, fog, ZOC, Dash, and Escape", () => {
       applyCommand(escaped.state, {
         kind: "ATTACK",
         unitId: riderArena.attacker.id,
-        targetId: riderArena.defender.id,
+        target: { kind: "UNIT", unitId: riderArena.defender.id },
       }),
     ).toMatchObject({ ok: false });
   });
@@ -760,12 +777,15 @@ describe("combat, recovery, promotion, and determinism", () => {
     expect(roundHalfUp(9, 2)).toBe(5);
     expect(roundHalfUp(7, 2)).toBe(4);
     const { state, attacker, defender } = arenaState();
-    const preview = previewCombat(state, attacker.id, defender.id);
+    const preview = previewCombat(state, attacker.id, {
+      kind: "UNIT",
+      unitId: defender.id,
+    });
     expect(preview).toEqual({
       ok: true,
       preview: {
         attackerId: attacker.id,
-        defenderId: defender.id,
+        target: { kind: "UNIT", unitId: defender.id },
         damageToDefender: 5,
         damageToAttacker: 5,
         defenderDies: false,
@@ -777,7 +797,7 @@ describe("combat, recovery, promotion, and determinism", () => {
     const result = applyCommand(state, {
       kind: "ATTACK",
       unitId: attacker.id,
-      targetId: defender.id,
+      target: { kind: "UNIT", unitId: defender.id },
     });
     if (!result.ok || !preview.ok) throw new Error("Combat failed");
     expect(result.events[0]).toEqual({
@@ -849,16 +869,18 @@ describe("combat, recovery, promotion, and determinism", () => {
       numerator: 3,
       denominator: 2,
     });
-    const walled = previewCombat(cityState, base.attacker.id, base.defender.id);
+    const walled = previewCombat(cityState, base.attacker.id, {
+      kind: "UNIT",
+      unitId: base.defender.id,
+    });
     if (!walled.ok) throw new Error(walled.error.code);
     expect(walled.preview.damageToDefender).toBeLessThan(5);
 
     const killedArena = arenaState({}, { hp: 1 });
-    const killed = previewCombat(
-      killedArena.state,
-      killedArena.attacker.id,
-      killedArena.defender.id,
-    );
+    const killed = previewCombat(killedArena.state, killedArena.attacker.id, {
+      kind: "UNIT",
+      unitId: killedArena.defender.id,
+    });
     expect(killed).toMatchObject({
       ok: true,
       preview: {
@@ -868,11 +890,10 @@ describe("combat, recovery, promotion, and determinism", () => {
       },
     });
     const rangedArena = arenaState({ type: "ARCHER" }, { at: { x: 6, y: 4 } });
-    const ranged = previewCombat(
-      rangedArena.state,
-      rangedArena.attacker.id,
-      rangedArena.defender.id,
-    );
+    const ranged = previewCombat(rangedArena.state, rangedArena.attacker.id, {
+      kind: "UNIT",
+      unitId: rangedArena.defender.id,
+    });
     expect(ranged).toMatchObject({
       ok: true,
       preview: { damageToAttacker: 0, noRetaliationReason: "OUT_OF_RANGE" },
@@ -887,7 +908,10 @@ describe("combat, recovery, promotion, and determinism", () => {
       ),
     });
     expect(
-      previewCombat(hidden, base.attacker.id, base.defender.id),
+      previewCombat(hidden, base.attacker.id, {
+        kind: "UNIT",
+        unitId: base.defender.id,
+      }),
     ).toMatchObject({
       ok: true,
       preview: {
@@ -907,7 +931,7 @@ describe("combat, recovery, promotion, and determinism", () => {
     const killed = applyCommand(killArena.state, {
       kind: "ATTACK",
       unitId: killArena.attacker.id,
-      targetId: killArena.defender.id,
+      target: { kind: "UNIT", unitId: killArena.defender.id },
     });
     if (!killed.ok) throw new Error(killed.error.code);
     expect(killed.events.slice(0, 3).map((event) => event.kind)).toEqual([
@@ -929,7 +953,7 @@ describe("combat, recovery, promotion, and determinism", () => {
     const retaliation = applyCommand(retaliationArena.state, {
       kind: "ATTACK",
       unitId: retaliationArena.attacker.id,
-      targetId: retaliationArena.defender.id,
+      target: { kind: "UNIT", unitId: retaliationArena.defender.id },
     });
     if (!retaliation.ok) throw new Error(retaliation.error.code);
     expect(retaliation.events.map((event) => event.kind)).toEqual([
@@ -952,7 +976,7 @@ describe("combat, recovery, promotion, and determinism", () => {
     const result = applyCommand(arena.state, {
       kind: "ATTACK",
       unitId: arena.attacker.id,
-      targetId: arena.defender.id,
+      target: { kind: "UNIT", unitId: arena.defender.id },
     });
     if (!result.ok) throw new Error(result.error.code);
     expect(
@@ -984,7 +1008,7 @@ describe("combat, recovery, promotion, and determinism", () => {
     const attacked = applyCommand(villageState, {
       kind: "ATTACK",
       unitId: arena.attacker.id,
-      targetId: arena.defender.id,
+      target: { kind: "UNIT", unitId: arena.defender.id },
     });
     if (!attacked.ok) throw new Error(attacked.error.code);
     expect(
@@ -1127,7 +1151,7 @@ describe("combat, recovery, promotion, and determinism", () => {
     const command = {
       kind: "ATTACK",
       unitId: arena.attacker.id,
-      targetId: arena.defender.id,
+      target: { kind: "UNIT", unitId: arena.defender.id },
     } as const;
     const first = applyCommand(arena.state, command);
     const second = applyCommand(arena.state, command);
@@ -1161,7 +1185,7 @@ describe("combat, recovery, promotion, and determinism", () => {
           command = {
             kind: "ATTACK",
             unitId: current.id,
-            targetId: defender.id,
+            target: { kind: "UNIT", unitId: defender.id },
           };
           attacked = true;
         } else if (current.activation.moved) {

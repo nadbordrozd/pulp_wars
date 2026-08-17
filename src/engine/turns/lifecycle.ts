@@ -12,6 +12,7 @@ const FRESH_ACTIVATION: UnitActivation = {
   captured: false,
   handled: false,
   escapeAvailable: false,
+  specialActed: false,
 };
 
 export interface TurnLifecycleResult {
@@ -69,7 +70,8 @@ export function endTurnLifecycle(
         !unit.activation.moved &&
         !unit.activation.attacked &&
         !unit.activation.recovered &&
-        !unit.activation.captured,
+        !unit.activation.captured &&
+        !unit.activation.specialActed,
     )
     .sort((left, right) => left.id - right.id)
     .map((unit) => ({

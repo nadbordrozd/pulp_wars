@@ -161,7 +161,7 @@ describe("semantic POC screen flow", () => {
     expect(snapshot.route).toBe("MATCH");
     expect(demoScenarioIssues(snapshot.match)).toEqual([]);
     expect(canonicalHash(snapshot.match)).toBe(
-      "0529cf300d091dfb2801e62a724fbd0213024a0bb3f43ddaf9656bb7e534d954",
+      "33e7131617587013ffbe21384391f77c615970821c86178dcc905e4cdd8d734d",
     );
     expect(boardHost.latest()?.interactive).toBe(true);
     const human = snapshot.match.players.find(
@@ -937,6 +937,7 @@ describe("HUD, command wiring, and contextual panels", () => {
           captured: false,
           handled: true,
           escapeAvailable: false,
+          specialActed: false,
         },
       },
       /Moved · cannot attack \(no Dash\)/,
@@ -951,6 +952,7 @@ describe("HUD, command wiring, and contextual panels", () => {
           captured: false,
           handled: true,
           escapeAvailable: false,
+          specialActed: false,
         },
       },
       /Attacked/,
@@ -966,6 +968,7 @@ describe("HUD, command wiring, and contextual panels", () => {
           captured: false,
           handled: true,
           escapeAvailable: false,
+          specialActed: false,
         },
       },
       /Recovered/,
@@ -981,6 +984,7 @@ describe("HUD, command wiring, and contextual panels", () => {
           captured: true,
           handled: true,
           escapeAvailable: false,
+          specialActed: false,
         },
       },
       /Captured/,
@@ -1001,6 +1005,7 @@ describe("HUD, command wiring, and contextual panels", () => {
           captured: false,
           handled: true,
           escapeAvailable: false,
+          specialActed: false,
         },
       },
       /Handled · Acted · No actions available/,

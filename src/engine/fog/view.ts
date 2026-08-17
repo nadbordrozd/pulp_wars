@@ -72,6 +72,13 @@ export function viewFor(state: GameState, viewerId: PlayerId): PlayerView {
       void _privateCapacityExempt;
       return publicUnit;
     });
+  const chocolateWalls = state.chocolateWalls
+    .filter((wall) => isExplored(viewer.explored, wall.at))
+    .map((wall) => ({
+      ...wall,
+      kind: "CHOCOLATE_WALL" as const,
+      maxHp: 10 as const,
+    }));
   return deepFreeze({
     schemaVersion: state.schemaVersion,
     rulesetId: state.rulesetId,
@@ -86,6 +93,7 @@ export function viewFor(state: GameState, viewerId: PlayerId): PlayerView {
     board: { width: state.board.width, height: state.board.height, tiles },
     cities,
     units,
+    chocolateWalls,
     pendingChoice:
       state.pendingChoice !== null &&
       state.cities.some(

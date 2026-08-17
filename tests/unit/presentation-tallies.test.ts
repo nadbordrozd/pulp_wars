@@ -121,6 +121,65 @@ describe("presentation combat and result tallies", () => {
       resultTalliesForHuman(afterHumanCapture, human.id).citiesCaptured,
     ).toBe(1);
   });
+
+  it("counts Roll casualties by owner and credits only hostile victims", () => {
+    const state = gameStateBuilder(
+      setupBuilder({
+        aiCount: 2,
+        width: 14,
+        height: 14,
+        seed: 13,
+        aiMode: "COOPERATIVE",
+      }),
+    );
+    const human = state.players.find((player) => player.controller === "HUMAN");
+    const [rollerOwner, alliedOwner] = state.players.filter(
+      (player) => player.controller === "AI",
+    );
+    const roller = state.units.find((unit) => unit.ownerId === rollerOwner?.id);
+    const ally = state.units.find((unit) => unit.ownerId === alliedOwner?.id);
+    const hostile = state.units.find((unit) => unit.ownerId === human?.id);
+    if (
+      human === undefined ||
+      rollerOwner === undefined ||
+      alliedOwner === undefined ||
+      roller === undefined ||
+      ally === undefined ||
+      hostile === undefined
+    ) {
+      throw new Error("Missing cooperative Roll fixture data");
+    }
+    const initial = state.players.map((player) => ({
+      playerId: player.id,
+      kills: 0,
+      losses: 0,
+      citiesCaptured: 0,
+    }));
+    const rolled = accumulatePlayerTallies(
+      state,
+      [
+        rollDamageEvent(roller.id, ally.id),
+        { kind: "UNIT_DIED", unitId: ally.id, cause: "KAMIKAZE_ROLL" },
+        rollDamageEvent(roller.id, hostile.id),
+        { kind: "UNIT_DIED", unitId: hostile.id, cause: "KAMIKAZE_ROLL" },
+        {
+          kind: "UNIT_DIED",
+          unitId: roller.id,
+          cause: "KAMIKAZE_ROLL_SELF",
+        },
+      ],
+      initial,
+    );
+    expect(tally(rolled, rollerOwner.id)).toMatchObject({
+      kills: 1,
+      losses: 1,
+    });
+    expect(tally(rolled, alliedOwner.id)).toMatchObject({
+      kills: 0,
+      losses: 1,
+    });
+    expect(tally(rolled, human.id)).toMatchObject({ kills: 0, losses: 1 });
+  });
 });
 
 function combatEvent(attackerId: UnitId, defenderId: UnitId): DomainEvent {
@@ -128,7 +187,7 @@ function combatEvent(attackerId: UnitId, defenderId: UnitId): DomainEvent {
     kind: "COMBAT_RESOLVED",
     preview: {
       attackerId,
-      defenderId,
+      target: { kind: "UNIT", unitId: defenderId },
       damageToDefender: 10,
       damageToAttacker: 0,
       defenderDies: true,
@@ -136,6 +195,18 @@ function combatEvent(attackerId: UnitId, defenderId: UnitId): DomainEvent {
       advances: true,
       noRetaliationReason: "DEFENDER_DIED",
     },
+  };
+}
+
+function rollDamageEvent(sourceUnitId: UnitId, unitId: UnitId): DomainEvent {
+  return {
+    kind: "ROLL_DAMAGE_RESOLVED",
+    sourceUnitId,
+    target: { kind: "UNIT", unitId },
+    at: { x: 0, y: 0 },
+    damage: 10,
+    hpBefore: 10,
+    hpAfter: 0,
   };
 }
 

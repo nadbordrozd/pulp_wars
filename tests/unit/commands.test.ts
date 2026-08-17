@@ -72,6 +72,39 @@ describe("command schemas", () => {
     ).toMatchObject({ ok: false, error: { code: "INVALID_COMMAND" } });
   });
 
+  it("parses exact typed combat and Candy ability payloads without legacy aliases", () => {
+    expect(
+      parseCommand({
+        kind: "ATTACK",
+        unitId: 7,
+        target: { kind: "UNIT", unitId: 8 },
+      }),
+    ).toMatchObject({ ok: true });
+    expect(
+      parseCommand({
+        kind: "ATTACK",
+        unitId: 7,
+        target: { kind: "CHOCOLATE_WALL", wallId: 9 },
+      }),
+    ).toMatchObject({ ok: true });
+    expect(
+      parseCommand({ kind: "ATTACK", unitId: 7, targetId: 8 }),
+    ).toMatchObject({ ok: false, error: { code: "INVALID_COMMAND" } });
+    expect(
+      parseCommand({ kind: "KAMIKAZE_ROLL", unitId: 7, direction: "WEST" }),
+    ).toMatchObject({ ok: true });
+    expect(
+      parseCommand({
+        kind: "BUILD_CHOCOLATE_WALL",
+        unitId: 7,
+        at: { x: 2, y: 3 },
+      }),
+    ).toMatchObject({ ok: true });
+    expect(
+      parseCommand({ kind: "KAMIKAZE_ROLL", unitId: 7, direction: "UP" }),
+    ).toMatchObject({ ok: false, error: { code: "INVALID_COMMAND" } });
+  });
+
   it.each([
     null,
     {},

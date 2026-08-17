@@ -49,6 +49,7 @@ const FRESH_ACTIVATION: UnitState["activation"] = Object.freeze({
   captured: false,
   handled: false,
   escapeAvailable: false,
+  specialActed: false,
 });
 
 /**

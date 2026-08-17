@@ -619,7 +619,8 @@ describe("Canvas board interaction boundary", () => {
         (command) =>
           command.kind === "ATTACK" &&
           command.unitId === attacker.id &&
-          command.targetId === enemy.id,
+          command.target.kind === "UNIT" &&
+          command.target.unitId === enemy.id,
       );
     if (attack === undefined) throw new Error("Missing offered attack");
     let selected: BoardSelection | null = {
@@ -762,6 +763,7 @@ describe("Canvas board interaction boundary", () => {
                 ...candidate.activation,
                 attacked: true,
                 escapeAvailable: true,
+                specialActed: false,
               },
             }
           : candidate,

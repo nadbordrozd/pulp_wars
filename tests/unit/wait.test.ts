@@ -89,6 +89,7 @@ describe("Wait and handled attention state", () => {
                 captured: true,
                 handled: false,
                 escapeAvailable: false,
+                specialActed: false,
               },
             }
           : candidate,

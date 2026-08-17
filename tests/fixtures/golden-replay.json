@@ -37,21 +37,21 @@
     "checkpoints": [
       {
         "index": 1,
-        "stateHash": "9629c619b42a454bd3307ce721831f0cb22b62f48035023e3d19716533904350"
+        "stateHash": "b08a4101ffc0dd451fd89f2f88230dd9396c2f329244af437283bb3a1f657611"
       },
       {
         "index": 2,
-        "stateHash": "7dadb0c49941afcf44b430f08b6f2dcb2cea178790d0e6b375e3595a23911395"
+        "stateHash": "cfb12c3a9f16f38de940db229f664da50d146796758ae453b1c86d127325e861"
       },
       {
         "index": 3,
-        "stateHash": "753b9d34188fe891d91ab1f9964a4e2bc05b802e87d34732ee799d1e99ce2318"
+        "stateHash": "d4e5bdad87226b32c436ae4452048d6f295aac53d4001773c900ce9f1f47af44"
       }
     ]
   },
   "expected": {
     "acceptedCommands": 3,
-    "stateHash": "753b9d34188fe891d91ab1f9964a4e2bc05b802e87d34732ee799d1e99ce2318",
+    "stateHash": "d4e5bdad87226b32c436ae4452048d6f295aac53d4001773c900ce9f1f47af44",
     "events": [
       {
         "kind": "TILES_REVEALED",

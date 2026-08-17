@@ -6,8 +6,14 @@ import {
   revealRadiusForPlayer,
 } from "../fog/exploration";
 import { calculateCombatPreview } from "../combat/combat";
-import { allocateCityId, allocateUnitId, type PlayerId } from "../model/ids";
+import {
+  allocateCityId,
+  allocateUnitId,
+  allocateWallId,
+  type PlayerId,
+} from "../model/ids";
 import type {
+  CardinalDirection,
   CityState,
   GameState,
   MatchOutcome,
@@ -16,7 +22,7 @@ import type {
 } from "../model/types";
 import { validateMovementPath } from "../movement/movement";
 import { growCity, technologyCost } from "../rules/economy";
-import { requireRuleset } from "../rules/ruleset";
+import { effectiveUnitRule, requireRuleset } from "../rules/ruleset";
 
 export interface ReductionResult {
   readonly state: GameState;
@@ -76,6 +82,7 @@ export function reduceTrain(
       captured: false,
       handled: true,
       escapeAvailable: false,
+      specialActed: false,
     },
   };
   return {
@@ -112,7 +119,10 @@ export function reduceMove(
   if (unit === undefined)
     throw new RangeError("Validated moving unit disappeared");
   const escape = command.kind === "ESCAPE_MOVE";
-  const rule = requireRuleset(state.rulesetId).units[unit.type];
+  const owner = state.players.find((player) => player.id === unit.ownerId);
+  if (owner === undefined)
+    throw new RangeError("Moving unit owner disappeared");
+  const rule = effectiveUnitRule(state.rulesetId, owner.faction, unit.type);
   const movement = validateMovementPath(
     state,
     unit,
@@ -168,17 +178,37 @@ export function reduceAttack(
   command: Extract<Command, { readonly kind: "ATTACK" }>,
 ): ReductionResult {
   const attacker = state.units.find((unit) => unit.id === command.unitId);
-  const defender = state.units.find((unit) => unit.id === command.targetId);
-  if (attacker === undefined || defender === undefined) {
+  const target = command.target;
+  const defender =
+    target.kind === "UNIT"
+      ? state.units.find((unit) => unit.id === target.unitId)
+      : undefined;
+  const wall =
+    target.kind === "CHOCOLATE_WALL"
+      ? state.chocolateWalls.find((candidate) => candidate.id === target.wallId)
+      : undefined;
+  if (
+    attacker === undefined ||
+    (defender === undefined && wall === undefined)
+  ) {
     throw new RangeError("Validated combatant disappeared");
   }
-  const preview = calculateCombatPreview(state, attacker.id, defender.id);
-  const attackerRule = requireRuleset(state.rulesetId).units[attacker.type];
+  const preview = calculateCombatPreview(state, attacker.id, command.target);
+  const owner = state.players.find((player) => player.id === attacker.ownerId);
+  if (owner === undefined) throw new RangeError("Attacker owner disappeared");
+  const attackerRule = effectiveUnitRule(
+    state.rulesetId,
+    owner.faction,
+    attacker.type,
+  );
+  const targetAt = defender?.at ?? wall?.at;
+  if (targetAt === undefined) throw new RangeError("Combat target disappeared");
   const attackerAfter: UnitState = {
     ...attacker,
-    at: preview.advances ? defender.at : attacker.at,
+    at: preview.advances ? targetAt : attacker.at,
     hp: attacker.hp - preview.damageToAttacker,
-    kills: attacker.kills + (preview.defenderDies ? 1 : 0),
+    kills:
+      attacker.kills + (defender !== undefined && preview.defenderDies ? 1 : 0),
     ready: attackerRule.abilities.includes("ESCAPE") && !preview.attackerDies,
     captureEligible: false,
     activation: {
@@ -189,23 +219,45 @@ export function reduceAttack(
         attackerRule.abilities.includes("ESCAPE") && !preview.attackerDies,
     },
   };
-  const defenderAfter: UnitState = {
-    ...defender,
-    hp: defender.hp - preview.damageToDefender,
-    kills: defender.kills + (preview.attackerDies ? 1 : 0),
-  };
+  const defenderAfter =
+    defender === undefined
+      ? undefined
+      : {
+          ...defender,
+          hp: defender.hp - preview.damageToDefender,
+          kills: defender.kills + (preview.attackerDies ? 1 : 0),
+        };
   const units = state.units
     .map((unit) =>
       unit.id === attacker.id
         ? attackerAfter
-        : unit.id === defender.id
+        : defenderAfter !== undefined && unit.id === defenderAfter.id
           ? defenderAfter
           : unit,
     )
     .filter((unit) => unit.hp > 0);
   const events: DomainEvent[] = [{ kind: "COMBAT_RESOLVED", preview }];
-  if (preview.defenderDies) {
+  if (preview.defenderDies && defender !== undefined) {
     events.push({ kind: "UNIT_DIED", unitId: defender.id, cause: "ATTACK" });
+  }
+  let chocolateWalls = state.chocolateWalls;
+  if (wall !== undefined) {
+    chocolateWalls = preview.defenderDies
+      ? state.chocolateWalls.filter((candidate) => candidate.id !== wall.id)
+      : state.chocolateWalls.map((candidate) =>
+          candidate.id === wall.id
+            ? { ...candidate, hp: candidate.hp - preview.damageToDefender }
+            : candidate,
+        );
+    if (preview.defenderDies) {
+      events.push({
+        kind: "CHOCOLATE_WALL_DESTROYED",
+        wallId: wall.id,
+        ownerId: wall.ownerId,
+        at: wall.at,
+        cause: "ATTACK",
+      });
+    }
   }
   if (preview.attackerDies) {
     events.push({
@@ -218,7 +270,7 @@ export function reduceAttack(
     events.push({
       kind: "UNIT_MOVED",
       unitId: attacker.id,
-      path: [defender.at],
+      path: [targetAt],
     });
   }
   let players = state.players;
@@ -232,7 +284,7 @@ export function reduceAttack(
       state,
       player.id,
       player.explored,
-      defender.at,
+      targetAt,
       {
         hasClimbing: player.researchedTechs.includes("CLIMBING"),
       },
@@ -250,7 +302,12 @@ export function reduceAttack(
       });
     }
   }
-  const stateAfterCombat: GameState = { ...state, players, units };
+  const stateAfterCombat: GameState = {
+    ...state,
+    players,
+    units,
+    chocolateWalls,
+  };
   const outcome = evaluateMatchOutcome(stateAfterCombat);
   if (outcome !== null) events.push({ kind: "MATCH_ENDED", outcome });
   return {
@@ -258,6 +315,191 @@ export function reduceAttack(
       outcome === null ? stateAfterCombat : { ...stateAfterCombat, outcome },
     events,
   };
+}
+
+export function reduceKamikazeRoll(
+  state: GameState,
+  playerId: PlayerId,
+  command: Extract<Command, { readonly kind: "KAMIKAZE_ROLL" }>,
+): ReductionResult {
+  const roller = state.units.find((unit) => unit.id === command.unitId);
+  const player = state.players.find((candidate) => candidate.id === playerId);
+  if (roller === undefined || player === undefined) {
+    throw new RangeError("Validated Donut disappeared");
+  }
+  const delta = directionDelta(command.direction);
+  const path: { x: number; y: number }[] = [];
+  for (
+    let at = { x: roller.at.x + delta.x, y: roller.at.y + delta.y };
+    at.x >= 0 &&
+    at.y >= 0 &&
+    at.x < state.board.width &&
+    at.y < state.board.height;
+    at = { x: at.x + delta.x, y: at.y + delta.y }
+  )
+    path.push(at);
+
+  let units = [...state.units];
+  let walls = [...state.chocolateWalls];
+  const explored = [...player.explored];
+  const events: DomainEvent[] = [];
+  for (const at of path) {
+    events.push({ kind: "DONUT_ROLL_STEP", unitId: roller.id, at });
+    if (!explored.some((known) => sameCoord(known, at))) {
+      explored.push(at);
+      explored.sort((left, right) => left.y - right.y || left.x - right.x);
+      events.push({ kind: "TILES_REVEALED", playerId, tiles: [at] });
+    }
+    const victim = units.find(
+      (unit) => unit.id !== roller.id && unit.hp > 0 && sameCoord(unit.at, at),
+    );
+    if (victim !== undefined) {
+      const damage = Math.min(10, victim.hp);
+      const hpAfter = victim.hp - damage;
+      events.push({
+        kind: "ROLL_DAMAGE_RESOLVED",
+        sourceUnitId: roller.id,
+        target: { kind: "UNIT", unitId: victim.id },
+        at,
+        damage,
+        hpBefore: victim.hp,
+        hpAfter,
+      });
+      units =
+        hpAfter === 0
+          ? units.filter((unit) => unit.id !== victim.id)
+          : units.map((unit) =>
+              unit.id === victim.id ? { ...unit, hp: hpAfter } : unit,
+            );
+      if (hpAfter === 0) {
+        events.push({
+          kind: "UNIT_DIED",
+          unitId: victim.id,
+          cause: "KAMIKAZE_ROLL",
+        });
+      }
+      continue;
+    }
+    const wall = walls.find((candidate) => sameCoord(candidate.at, at));
+    if (wall !== undefined) {
+      const damage = Math.min(10, wall.hp);
+      const hpAfter = wall.hp - damage;
+      events.push({
+        kind: "ROLL_DAMAGE_RESOLVED",
+        sourceUnitId: roller.id,
+        target: { kind: "CHOCOLATE_WALL", wallId: wall.id },
+        at,
+        damage,
+        hpBefore: wall.hp,
+        hpAfter,
+      });
+      walls =
+        hpAfter === 0
+          ? walls.filter((candidate) => candidate.id !== wall.id)
+          : walls.map((candidate) =>
+              candidate.id === wall.id
+                ? { ...candidate, hp: hpAfter }
+                : candidate,
+            );
+      if (hpAfter === 0) {
+        events.push({
+          kind: "CHOCOLATE_WALL_DESTROYED",
+          wallId: wall.id,
+          ownerId: wall.ownerId,
+          at,
+          cause: "KAMIKAZE_ROLL",
+        });
+      }
+    }
+  }
+  units = units.filter((unit) => unit.id !== roller.id);
+  events.push({
+    kind: "UNIT_DIED",
+    unitId: roller.id,
+    cause: "KAMIKAZE_ROLL_SELF",
+  });
+  const nextState: GameState = {
+    ...state,
+    units,
+    chocolateWalls: walls,
+    players: state.players.map((candidate) =>
+      candidate.id === playerId ? { ...candidate, explored } : candidate,
+    ),
+  };
+  const outcome = evaluateMatchOutcome(nextState);
+  if (outcome !== null) events.push({ kind: "MATCH_ENDED", outcome });
+  return {
+    state: outcome === null ? nextState : { ...nextState, outcome },
+    events,
+  };
+}
+
+export function reduceBuildChocolateWall(
+  state: GameState,
+  playerId: PlayerId,
+  command: Extract<Command, { readonly kind: "BUILD_CHOCOLATE_WALL" }>,
+): ReductionResult {
+  const unit = state.units.find((candidate) => candidate.id === command.unitId);
+  if (unit === undefined)
+    throw new RangeError("Validated Choco Engineer disappeared");
+  const allocation = allocateWallId(state.nextEntityId);
+  return {
+    state: {
+      ...state,
+      nextEntityId: allocation.nextEntityId,
+      players: state.players.map((player) =>
+        player.id === playerId
+          ? { ...player, stars: player.stars - 1 }
+          : player,
+      ),
+      units: state.units.map((candidate) =>
+        candidate.id === unit.id
+          ? {
+              ...candidate,
+              ready: false,
+              captureEligible: false,
+              activation: {
+                ...candidate.activation,
+                handled: true,
+                specialActed: true,
+                escapeAvailable: false,
+              },
+            }
+          : candidate,
+      ),
+      chocolateWalls: [
+        ...state.chocolateWalls,
+        { id: allocation.id, ownerId: playerId, at: command.at, hp: 10 },
+      ],
+    },
+    events: [
+      {
+        kind: "CHOCOLATE_WALL_BUILT",
+        playerId,
+        unitId: unit.id,
+        wallId: allocation.id,
+        at: command.at,
+        cost: 1,
+        hp: 10,
+      },
+    ],
+  };
+}
+
+function directionDelta(direction: CardinalDirection): {
+  x: number;
+  y: number;
+} {
+  switch (direction) {
+    case "NORTH":
+      return { x: 0, y: -1 };
+    case "EAST":
+      return { x: 1, y: 0 };
+    case "SOUTH":
+      return { x: 0, y: 1 };
+    case "WEST":
+      return { x: -1, y: 0 };
+  }
 }
 
 export function recoveryAmount(state: GameState, unit: UnitState): number {

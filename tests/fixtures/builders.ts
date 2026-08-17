@@ -91,6 +91,7 @@ export function captureReadyStateBuilder(
               captured: false,
               handled: false,
               escapeAvailable: false,
+              specialActed: false,
             },
           }
         : unit,

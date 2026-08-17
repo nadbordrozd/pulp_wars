@@ -747,7 +747,11 @@ export function spatialCommandAt(
   const commands = queryPlayerCommands(view).map(({ command }) => command);
   const attack = commands.find((command) => {
     if (command.kind !== "ATTACK" || command.unitId !== unitId) return false;
-    const target = view.units.find((unit) => unit.id === command.targetId);
+    const targetRef = command.target;
+    const target =
+      targetRef.kind === "UNIT"
+        ? view.units.find((unit) => unit.id === targetRef.unitId)
+        : view.chocolateWalls.find((wall) => wall.id === targetRef.wallId);
     return target !== undefined && sameCoord(target.at, at);
   });
   if (attack !== undefined) return attack;
@@ -774,7 +778,12 @@ function commandTouches(
   )
     return true;
   if ("unitId" in command && command.unitId === unitId) return true;
-  if (command.kind === "ATTACK" && command.targetId === unitId) return true;
+  if (
+    command.kind === "ATTACK" &&
+    command.target.kind === "UNIT" &&
+    command.target.unitId === unitId
+  )
+    return true;
   if (command.kind === "TRAIN" && command.cityId === cityId) return true;
   if (command.kind === "CHOOSE_CITY_REWARD" && command.cityId === cityId)
     return true;
@@ -836,7 +845,7 @@ function describeCommand(view: PlayerView, command: Command): string {
     const preview = queryPlayerCombatPreview(
       view,
       command.unitId,
-      command.targetId,
+      command.target,
     );
     return preview === null
       ? "attack"

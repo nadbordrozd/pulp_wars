@@ -1,11 +1,11 @@
 import type { CombatPreview } from "../events/types";
-import { isExplored } from "../fog/exploration";
+import { isAlliedTerritory, isExplored } from "../fog/exploration";
 import type { UnitId } from "../model/ids";
-import type { GameState, UnitState } from "../model/types";
+import type { CombatTargetRef, GameState, UnitState } from "../model/types";
 import { movementDistance } from "../movement/movement";
 import type { RationalBonus } from "../rules/economy";
 import { friendlyCityDefenseBonus } from "../rules/economy";
-import { requireRuleset } from "../rules/ruleset";
+import { effectiveUnitRule, requireRuleset } from "../rules/ruleset";
 
 const NO_BONUS: RationalBonus = { numerator: 1, denominator: 1 };
 
@@ -57,30 +57,60 @@ export function defenseBonusForUnit(
 export function calculateCombatPreview(
   state: GameState,
   attackerId: UnitId,
-  defenderId: UnitId,
+  target: CombatTargetRef,
 ): CombatPreview {
   const attacker = state.units.find((unit) => unit.id === attackerId);
-  const defender = state.units.find((unit) => unit.id === defenderId);
+  const defender =
+    target.kind === "UNIT"
+      ? state.units.find((unit) => unit.id === target.unitId)
+      : undefined;
+  const wall =
+    target.kind === "CHOCOLATE_WALL"
+      ? state.chocolateWalls.find((candidate) => candidate.id === target.wallId)
+      : undefined;
   if (
     attacker === undefined ||
-    defender === undefined ||
     attacker.hp <= 0 ||
-    defender.hp <= 0
+    (defender === undefined && wall === undefined)
   ) {
     throw new RangeError("Combatant disappeared before preview");
   }
-  const rules = requireRuleset(state.rulesetId);
-  const attackerRule = rules.units[attacker.type];
-  const defenderRule = rules.units[defender.type];
-  const bonus = defenseBonusForUnit(state, defender);
+  const attackerOwner = state.players.find(
+    (player) => player.id === attacker.ownerId,
+  );
+  if (attackerOwner === undefined)
+    throw new RangeError("Attacker owner disappeared");
+  const attackerRule = effectiveUnitRule(
+    state.rulesetId,
+    attackerOwner.faction,
+    attacker.type,
+  );
+  const targetHp = defender?.hp ?? wall?.hp ?? 0;
+  const targetAt = defender?.at ?? wall?.at;
+  if (targetAt === undefined || targetHp <= 0)
+    throw new RangeError("Combatant disappeared before preview");
+  const defenderOwnerForRule =
+    defender === undefined
+      ? undefined
+      : state.players.find((player) => player.id === defender.ownerId);
+  const defenderRule =
+    defender === undefined
+      ? null
+      : effectiveUnitRule(
+          state.rulesetId,
+          defenderOwnerForRule?.faction ?? "ORIGINAL",
+          defender.type,
+        );
+  const bonus =
+    defender === undefined ? NO_BONUS : defenseBonusForUnit(state, defender);
 
   // Each force remains a rational. Cross multiplication forms their common
   // denominator, so no floating point enters either damage result.
   const attackForceNumerator = attackerRule.attack * attacker.hp;
   const attackForceDenominator = attacker.maxHp;
   const defenseForceNumerator =
-    defenderRule.defense * defender.hp * bonus.numerator;
-  const defenseForceDenominator = defender.maxHp * bonus.denominator;
+    (defenderRule?.defense ?? 0) * targetHp * bonus.numerator;
+  const defenseForceDenominator = (defender?.maxHp ?? 10) * bonus.denominator;
   const attackOnCommon = attackForceNumerator * defenseForceDenominator;
   const defenseOnCommon = defenseForceNumerator * attackForceDenominator;
   const totalOnCommon = attackOnCommon + defenseOnCommon;
@@ -88,25 +118,32 @@ export function calculateCombatPreview(
     attackOnCommon * attackerRule.attack * 9,
     totalOnCommon * 2,
   );
-  const rawDamageToAttacker = roundHalfUp(
-    defenseOnCommon * defenderRule.defense * 9,
-    totalOnCommon * 2,
-  );
-  const damageToDefender = Math.min(defender.hp, rawDamageToDefender);
-  const defenderDies = damageToDefender >= defender.hp;
-  const defenderOwner = state.players.find(
-    (player) => player.id === defender.ownerId,
-  );
-  if (defenderOwner === undefined)
+  const rawDamageToAttacker =
+    defenderRule === null
+      ? 0
+      : roundHalfUp(
+          defenseOnCommon * defenderRule.defense * 9,
+          totalOnCommon * 2,
+        );
+  const damageToDefender = Math.min(targetHp, rawDamageToDefender);
+  const defenderDies = damageToDefender >= targetHp;
+  const distance = movementDistance(attacker.at, targetAt);
+  const defenderOwner =
+    defender === undefined
+      ? undefined
+      : state.players.find((player) => player.id === defender.ownerId);
+  if (defender !== undefined && defenderOwner === undefined)
     throw new RangeError("Defender owner disappeared");
-  const distance = movementDistance(attacker.at, defender.at);
-  const noRetaliationReason = defenderDies
-    ? "DEFENDER_DIED"
-    : distance > defenderRule.range
-      ? "OUT_OF_RANGE"
-      : !isExplored(defenderOwner.explored, attacker.at)
-        ? "ATTACKER_UNEXPLORED"
-        : null;
+  const noRetaliationReason =
+    wall !== undefined
+      ? "STRUCTURE"
+      : defenderDies
+        ? "DEFENDER_DIED"
+        : distance > (defenderRule?.range ?? 0)
+          ? "OUT_OF_RANGE"
+          : !isExplored(defenderOwner?.explored ?? [], attacker.at)
+            ? "ATTACKER_UNEXPLORED"
+            : null;
   const damageToAttacker =
     noRetaliationReason === null
       ? Math.min(attacker.hp, rawDamageToAttacker)
@@ -114,14 +151,44 @@ export function calculateCombatPreview(
   const attackerDies = damageToAttacker >= attacker.hp;
   return {
     attackerId,
-    defenderId,
+    target,
     damageToDefender,
     damageToAttacker,
     defenderDies,
     attackerDies,
-    advances: defenderDies && !attackerDies && distance === 1,
+    advances:
+      defenderDies &&
+      !attackerDies &&
+      distance === 1 &&
+      (wall === undefined ||
+        canEnterDestroyedWallCell(state, attacker, targetAt)),
     noRetaliationReason,
   };
+}
+
+function canEnterDestroyedWallCell(
+  state: GameState,
+  attacker: UnitState,
+  at: { readonly x: number; readonly y: number },
+): boolean {
+  const player = state.players.find(
+    (candidate) => candidate.id === attacker.ownerId,
+  );
+  const tile = state.board.tiles[at.y * state.board.width + at.x];
+  if (player === undefined || tile === undefined) return false;
+  if (
+    tile.terrain === "MOUNTAIN" &&
+    !player.researchedTechs.includes("CLIMBING")
+  )
+    return false;
+  if (isAlliedTerritory(state, attacker.ownerId, at)) return false;
+  return !state.units.some(
+    (unit) =>
+      unit.id !== attacker.id &&
+      unit.hp > 0 &&
+      unit.at.x === at.x &&
+      unit.at.y === at.y,
+  );
 }
 
 function greaterBonus(

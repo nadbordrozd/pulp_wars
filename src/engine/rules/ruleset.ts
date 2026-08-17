@@ -2,6 +2,7 @@ import {
   RULESET_ID,
   type RewardId,
   type RulesetId,
+  type FactionId,
   type TechId,
   type UnitType,
 } from "../model/types";
@@ -245,4 +246,56 @@ export function requireRuleset(id: string): RulesetDefinition {
     throw new RangeError(`Unknown ruleset: ${id}`);
   }
   return ruleset;
+}
+
+export function effectiveUnitRule(
+  rulesetId: string,
+  faction: FactionId,
+  type: UnitType,
+): UnitRule {
+  const rule = requireRuleset(rulesetId).units[type];
+  if (faction !== "CANDY" || type !== "RIDER") return rule;
+  return {
+    ...rule,
+    attack: 0,
+    move: 1,
+    range: 0,
+    abilities: Object.freeze(["FORTIFY"] as const),
+  };
+}
+
+export type EffectiveUnitLabel =
+  | "Warrior"
+  | "Archer"
+  | "Defender"
+  | "Rider"
+  | "Catapult"
+  | "Candy Warrior"
+  | "Gumball Guard"
+  | "Choco Engineer"
+  | "Donut";
+
+export function effectiveUnitLabel(
+  faction: FactionId,
+  type: UnitType,
+): EffectiveUnitLabel {
+  if (type === "CATAPULT") return "Catapult";
+  if (faction === "ORIGINAL") {
+    return (
+      {
+        WARRIOR: "Warrior",
+        ARCHER: "Archer",
+        DEFENDER: "Defender",
+        RIDER: "Rider",
+      } as const
+    )[type];
+  }
+  return (
+    {
+      WARRIOR: "Candy Warrior",
+      ARCHER: "Gumball Guard",
+      DEFENDER: "Choco Engineer",
+      RIDER: "Donut",
+    } as const
+  )[type];
 }

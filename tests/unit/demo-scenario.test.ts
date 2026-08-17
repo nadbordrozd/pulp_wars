@@ -34,7 +34,7 @@ import { buildRenderPlan } from "../../src/render/canvas/render-plan";
 import { setupBuilder } from "../fixtures/builders";
 
 const DEMO_INITIAL_HASH =
-  "0529cf300d091dfb2801e62a724fbd0213024a0bb3f43ddaf9656bb7e534d954";
+  "33e7131617587013ffbe21384391f77c615970821c86178dcc905e4cdd8d734d";
 
 beforeEach(() => vi.useFakeTimers());
 afterEach(() => {
@@ -264,7 +264,7 @@ describe("canonical deterministic demo scenario", () => {
     if (!standard.ok) throw new Error(standard.error.code);
     expect(standard.state.setup).not.toHaveProperty("scenario");
     expect(canonicalHash(standard.state)).toBe(
-      "feecd81d2886d249dcf136dd634f936a5401fb31d2113804b84c202816025dd8",
+      "c3569de5a49954b3ae586a137407e3513ceda5c07bc0bc5449486f780013452e",
     );
     expect(parseMatchSetup(DEMO_MATCH_SETUP)).toEqual(DEMO_MATCH_SETUP);
     for (const candidate of [

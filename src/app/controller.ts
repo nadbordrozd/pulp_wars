@@ -11,6 +11,7 @@ import {
   seedFromText,
   totalIncome,
   viewFor,
+  arePlayersHostile,
   type CityId,
   type Command,
   type DomainEvent,
@@ -941,7 +942,7 @@ export class AppController {
               : `Player ${event.playerId} is thinking.`;
           break;
         case "COMBAT_RESOLVED":
-          this.#announcement = `Unit ${event.preview.attackerId} dealt ${event.preview.damageToDefender} damage to Unit ${event.preview.defenderId}${event.preview.damageToAttacker > 0 ? ` and took ${event.preview.damageToAttacker} retaliation damage` : ""}.`;
+          this.#announcement = `Unit ${event.preview.attackerId} dealt ${event.preview.damageToDefender} damage to ${event.preview.target.kind === "UNIT" ? `Unit ${event.preview.target.unitId}` : `Chocolate Wall ${event.preview.target.wallId}`}${event.preview.damageToAttacker > 0 ? ` and took ${event.preview.damageToAttacker} retaliation damage` : ""}.`;
           break;
         case "MINE_BUILT":
           this.#announcement = `Mine built at ${event.at.x}, ${event.at.y}.`;
@@ -1012,9 +1013,9 @@ export class AppController {
     const humanId = this.#humanId();
     if (combat === undefined || humanId === null) return;
     const previousView = viewFor(previousState, humanId);
-    const defender = previousView.units.find(
-      (unit) => unit.id === combat.preview.defenderId,
-    );
+    if (combat.preview.target.kind !== "UNIT") return;
+    const defenderId = combat.preview.target.unitId;
+    const defender = previousView.units.find((unit) => unit.id === defenderId);
     if (defender === undefined) return;
     const attacker =
       previousView.units.find(
@@ -1227,18 +1228,49 @@ export function accumulatePlayerTallies(
       tallies = incrementPlayerTally(tallies, lostUnit.ownerId, "losses");
     }
     if (event.cause === "ELIMINATION") continue;
+    if (event.cause === "KAMIKAZE_ROLL") {
+      const roll = events.find(
+        (candidate) =>
+          candidate.kind === "ROLL_DAMAGE_RESOLVED" &&
+          candidate.target.kind === "UNIT" &&
+          candidate.target.unitId === event.unitId,
+      );
+      if (roll?.kind !== "ROLL_DAMAGE_RESOLVED") continue;
+      const source = previousState?.units.find(
+        (unit) => unit.id === roll.sourceUnitId,
+      );
+      if (
+        source !== undefined &&
+        lostUnit !== undefined &&
+        previousState !== null &&
+        arePlayersHostile(
+          previousState.setup.aiMode,
+          previousState.humanPlayerId,
+          source.ownerId,
+          lostUnit.ownerId,
+        )
+      ) {
+        tallies = incrementPlayerTally(tallies, source.ownerId, "kills");
+      }
+      continue;
+    }
+    if (event.cause === "KAMIKAZE_ROLL_SELF") continue;
     const combat = events.find(
       (candidate) =>
         candidate.kind === "COMBAT_RESOLVED" &&
+        candidate.preview.target.kind === "UNIT" &&
         (event.cause === "ATTACK"
-          ? candidate.preview.defenderId === event.unitId
+          ? candidate.preview.target.unitId === event.unitId
           : candidate.preview.attackerId === event.unitId),
     );
     if (combat?.kind !== "COMBAT_RESOLVED") continue;
     const killerId =
       event.cause === "ATTACK"
         ? combat.preview.attackerId
-        : combat.preview.defenderId;
+        : combat.preview.target.kind === "UNIT"
+          ? combat.preview.target.unitId
+          : null;
+    if (killerId === null) continue;
     const killer = previousState?.units.find((unit) => unit.id === killerId);
     if (killer !== undefined) {
       tallies = incrementPlayerTally(tallies, killer.ownerId, "kills");

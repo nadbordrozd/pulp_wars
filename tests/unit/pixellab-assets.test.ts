@@ -370,6 +370,7 @@ describe("accepted PixelLab renderer binding", () => {
           captured: false,
           handled: false,
           escapeAvailable: false,
+          specialActed: false,
         },
       },
     );
@@ -404,6 +405,7 @@ describe("accepted PixelLab renderer binding", () => {
           captured: false,
           handled: false,
           escapeAvailable: false,
+          specialActed: false,
         },
       },
     );
