@@ -3,6 +3,7 @@ import path from "node:path";
 import process from "node:process";
 import { format } from "prettier";
 import {
+  MAP_GENERATION_REVISION,
   RULESET_ID,
   canonicalHash,
   createGame,
@@ -178,6 +179,7 @@ function makeSetup(
 ): MatchSetup {
   return {
     rulesetId: RULESET_ID,
+    mapGenerationRevision: MAP_GENERATION_REVISION,
     seed,
     width: size,
     height: size,

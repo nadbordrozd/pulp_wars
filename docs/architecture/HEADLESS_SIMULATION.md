@@ -26,7 +26,11 @@ space reserved to resolve a pending reward before End Turn.
 `headless.createDemo()` launches the exact canonical Demo Match setup, while
 `match --demo` runs all three seats under the Normal policy from that same
 scenario. It fixes Huge/two-AI/rival/Coral/seed `0xdecafbad`; ordinary match and
-batch defaults remain unchanged.
+batch defaults emit `mapGenerationRevision: "REDUCED_VILLAGES"`. Demo remains
+unmarked and therefore preserves its established v5 golden map. The lower-level
+`headless.create(setup)` and replay runner preserve an explicitly supplied
+unmarked setup for historical v5 reconstruction instead of silently upgrading
+it.
 
 `runAiBatch` returns compact outcomes, rounds, command counts, hashes, errors,
 and stalls. CI fixes seed `0` for all three supported opponent counts; the
@@ -71,7 +75,7 @@ counts, at least two opportunities per settlement, at least two distinct
 settlement resource mixes across the corpus, at least one Animal per board, and
 no out-of-territory resource.
 Repeated setup/seed runs compare command, event, and final-state hashes. Large
-asserts 20 settlements/72 Mountains/96 Forests; Huge asserts 30/113/150. Auto
+asserts 15 settlements/72 Mountains/96 Forests; Huge asserts 22/113/150. Auto
 sizes assert the exact POC Rules table. Equal non-mode setup and seed must yield
 the same map hash in `RIVAL` and `COOPERATIVE`, because mode consumes no map
 draw. Cooperative runs additionally assert zero AI-on-AI Attack/Capture,
@@ -81,6 +85,11 @@ headless replays use version 5 and reject all legacy versions as incompatible
 rather than reinterpret them. Headless imports no presentation plan: Archer
 arrow timing, sprite pulse, dock geometry, and reduced motion cannot affect its
 commands, metrics, or hashes.
+
+Within version 5, setup marker absence is also meaningful compatibility data.
+Unmarked historical replays regenerate Auto 4/6/8, Large 18/17/16, and Huge
+28/27/26 neutral villages; marked current replays regenerate 3/4/6, 13/12/11,
+and 20/19/18. Both paths remain deterministic and checkpoint-verified.
 
 Ruleset-5 match and batch commands accept an exact comma-separated faction list
 in seat order. Its length must equal `aiCount + 1`; `original` and `candy` are

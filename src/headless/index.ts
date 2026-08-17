@@ -3,6 +3,7 @@ import {
   chooseNormalCommand,
 } from "../ai/index";
 import {
+  MAP_GENERATION_REVISION,
   applyCommand,
   canonicalHash,
   createGame,
@@ -415,6 +416,7 @@ export async function runAiBatch(
       const result = runAiMatchInternal(
         {
           rulesetId: "pulp-wars-poc-5",
+          mapGenerationRevision: MAP_GENERATION_REVISION,
           seed,
           width: size,
           height: size,

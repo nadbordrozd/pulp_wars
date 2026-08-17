@@ -7,6 +7,7 @@ import type {
   RandomState,
   TileState,
 } from "../model/types";
+import { MAP_GENERATION_REVISION } from "../model/types";
 import { compareCoords } from "../model/order";
 import { nextBounded, nextUint32 } from "../random/random";
 
@@ -55,7 +56,7 @@ interface Candidate {
   readonly random: RandomState;
 }
 
-const STANDARD_NEUTRAL_VILLAGES: Readonly<
+const LEGACY_STANDARD_NEUTRAL_VILLAGES: Readonly<
   Record<MatchSetup["aiCount"], number>
 > = {
   1: 4,
@@ -63,8 +64,45 @@ const STANDARD_NEUTRAL_VILLAGES: Readonly<
   3: 8,
 };
 
-const HUGE_TOTAL_SETTLEMENTS = 30;
-const LARGE_TOTAL_SETTLEMENTS = 20;
+const LEGACY_LARGE_NEUTRAL_VILLAGES: Readonly<
+  Record<MatchSetup["aiCount"], number>
+> = {
+  1: 18,
+  2: 17,
+  3: 16,
+};
+
+const LEGACY_HUGE_NEUTRAL_VILLAGES: Readonly<
+  Record<MatchSetup["aiCount"], number>
+> = {
+  1: 28,
+  2: 27,
+  3: 26,
+};
+
+const REDUCED_STANDARD_NEUTRAL_VILLAGES: Readonly<
+  Record<MatchSetup["aiCount"], number>
+> = {
+  1: 3,
+  2: 4,
+  3: 6,
+};
+
+const REDUCED_LARGE_NEUTRAL_VILLAGES: Readonly<
+  Record<MatchSetup["aiCount"], number>
+> = {
+  1: 13,
+  2: 12,
+  3: 11,
+};
+
+const REDUCED_HUGE_NEUTRAL_VILLAGES: Readonly<
+  Record<MatchSetup["aiCount"], number>
+> = {
+  1: 20,
+  2: 19,
+  3: 18,
+};
 
 export function generateInitialMap(
   setup: MatchSetup,
@@ -409,11 +447,18 @@ function generateCandidate(
 }
 
 export function neutralVillageCount(setup: MatchSetup): number {
+  const revised = setup.mapGenerationRevision === MAP_GENERATION_REVISION;
   return setup.width === 25
-    ? HUGE_TOTAL_SETTLEMENTS - (setup.aiCount + 1)
+    ? (revised ? REDUCED_HUGE_NEUTRAL_VILLAGES : LEGACY_HUGE_NEUTRAL_VILLAGES)[
+        setup.aiCount
+      ]
     : setup.width === 20
-      ? LARGE_TOTAL_SETTLEMENTS - (setup.aiCount + 1)
-      : STANDARD_NEUTRAL_VILLAGES[setup.aiCount];
+      ? (revised
+          ? REDUCED_LARGE_NEUTRAL_VILLAGES
+          : LEGACY_LARGE_NEUTRAL_VILLAGES)[setup.aiCount]
+      : (revised
+          ? REDUCED_STANDARD_NEUTRAL_VILLAGES
+          : LEGACY_STANDARD_NEUTRAL_VILLAGES)[setup.aiCount];
 }
 
 function shuffle<T>(

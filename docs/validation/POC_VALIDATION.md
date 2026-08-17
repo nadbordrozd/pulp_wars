@@ -1918,3 +1918,75 @@ and [machine-readable evidence](../../art/feedback/reviews/fruit-production-evid
 
 Windows localhost returned HTTP 200 from `http://localhost:6173`, and every
 Chrome run used that strict-port Vite entry point.
+
+## Neutral-village density reduction validation
+
+The 2026-08-17 ruleset-5 density pass reduced neutral villages without
+changing capitals, board dimensions, terrain percentages, settlement spacing,
+connectivity, resource rules, or the 256-attempt generation ceiling. The exact
+current marked counts are:
+
+| Preset | 1 AI | 2 AI | 3 AI | Total settlements |
+| ------ | ---: | ---: | ---: | ----------------: |
+| Auto   |    3 |    4 |    6 |            5/7/10 |
+| Large  |   13 |   12 |   11 |                15 |
+| Huge   |   20 |   19 |   18 |                22 |
+
+New standard setup writers serialize
+`mapGenerationRevision: "REDUCED_VILLAGES"`. The exact setup parser preserves
+marker absence for historical v5 data, accepts only that literal when present,
+and rejects it on the fixed Demo. Explicit compatibility tests cover all old
+unmarked tables: Auto 4/6/8, Large 18/17/16, and Huge 28/27/26. The captured
+unmarked v5 save reconstructs canonically at its pre-change state hash
+`c3569de5a49954b3ae586a137407e3513ceda5c07bc0bc5449486f780013452e`;
+its fixture SHA-256 is
+`744c5cfe7018497c407c69a1881f922fbe8230ecc5e1e38e289318abf6ff3a8e`.
+
+The regenerated ruleset-5 map corpus covered 9,300 unique inputs and 18,600
+Rival/Cooperative paired boards with zero failures. Every exact Mountain and
+Forest count, Animal-presence rule, settlement opportunity minimum, spacing,
+connectivity, terrain/resource invariant, bounded retry, and mode-map parity
+assertion passed. Its canonical corpus hash is
+`5345987e4d8922249e63af75829403a98b42b1a31ea86b2979655221f4b61545`;
+the formatted [map corpus](POC_V4_MAP_CORPUS.json) SHA-256 is
+`3b7b0673e101d24449415acf11887fd8ace1d726d5ade8642dc2cbf34ba1ebcf`.
+The dedicated 1,000-seed-per-AI Large validator produced aggregate hashes
+`88bd497f80c21207f1cb7fc7d849eca744d3d9b5a00def0582d60ce8a6633649`,
+`73cbaf13d3a7536881ce4418a8b7a61d431466643da8c8577a831e073d7bda8a`,
+and `a3709a1f4b9a28a4dbe5495e316d37abc7d7445e3bf56b9009dba1b21d540462`.
+
+The dedicated Huge corpus repeated 1,000 seeds for each AI count with zero
+failures and maximum attempts 6/9/7. Its generation hashes are
+`5ec00b59cb698265c0fe6679688ce463c237a9b1c4ed63e3d84f7adf545e8709`,
+`f5c6c818cd7da8db55845e45bfe9f192871e74f256abc28d9438b67469df8497`,
+and `17e8046ebd0a2f027ab941ea7a42ba818cff5cd2be157553a4e05a3d401fe1b3`.
+The 1/2/3-AI complete matches ended at rounds 40/73/155 after
+1,276/3,355/8,011 commands, with final hashes
+`6d9b006bbeaeb9fc7a46ca1be46b2c70f6a5016f96458e1e334cc05a261e4df2`,
+`1d05b6fe8a46a77e05232d4d73d0318c20c4de19114172327afa3cbf5197ed7a`,
+and `5d71f9bb32325900ab97c633f28c8d2b3e606579447d3804044a8ca6d933e3d5`.
+The formatted [Huge report](HUGE_25_VALIDATION.json) SHA-256 is
+`61b62126d234e45651c51164b7ca2b06532eab849b6129b79bb7d99a4537299c`.
+
+The regenerated 18-case Rival corpus completed 36 deterministic runs with
+zero errors or stalls: 696 rounds and 13,156 commands. Its formatted
+[AI corpus](POC_V4_AI_CORPUS.json) SHA-256 is
+`83f16f664d5364fef86d55fb4e866b9b57445840f7b695c0ebc153d5adf59c09`.
+The 11-case mixed-faction corpus completed 22 deterministic runs with zero
+errors, stalls, caps, or Cooperative-hostility violations: 457 rounds and
+9,506 commands. Its formatted [Candy corpus](CANDY_V5_CORPUS.json) SHA-256 is
+`0501c21cab600062325d62dabe68ebd948a6e851b910450959b40ad6114181ad`.
+A focused 2-AI Cooperative replay audit also completed in 238 commands with
+zero violations and final hash
+`a635c54f6dab285b9083169a66ec38398c0c76cad4a3b0e557a700dc638981e3`.
+
+The frozen unmarked Demo Forest-economy golden was deliberately not revised.
+It verifies three captured checkpoints and ends at state hash
+`d4e5bdad87226b32c436ae4452048d6f295aac53d4001773c900ce9f1f47af44`;
+its unchanged fixture SHA-256 is
+`4b2b7611a1b3850d1222d710c85b7fc0406e552bdf69ff6f8bd3cb71fe6b14c1`.
+Despite their retained historical filenames, `POC_V4_MAP_CORPUS.json`,
+`POC_V4_AI_CORPUS.json`, and `v4-map-corpus.json` are active schema-5/current
+reduced-density evidence. Legacy v1-v4 fixtures and the unmarked v5
+compatibility fixtures remain frozen. The seed-zero map fixture SHA-256 is
+`c1f3decc3742a62a23862611d320f419aaa535d51bc7cd8b05d928614616c099`.

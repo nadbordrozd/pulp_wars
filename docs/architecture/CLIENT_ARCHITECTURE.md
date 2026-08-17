@@ -113,6 +113,7 @@ interface MatchSetup {
   readonly aiMode: "RIVAL" | "COOPERATIVE";
   readonly humanColor: PlayerColor;
   readonly factions: readonly FactionId[]; // exact seat order, aiCount + 1
+  readonly mapGenerationRevision?: "REDUCED_VILLAGES";
   readonly scenario?: "DEMO"; // absent is canonical STANDARD
 }
 
@@ -573,12 +574,15 @@ Golden fixtures record setup, commands, ordered events, and final hash.
 its pure deterministic transform after ordinary map/player/entity creation and
 before the ordinary opening Start Turn. It consumes no PRNG draw. Replay,
 autosave, load, restart, browser, and headless all call the same `createGame`
-path. Exact setup parsers accept either the nine STANDARD fields, including
-required `aiMode`, or those fields plus the one valid DEMO discriminator; they
-reject unknown values, extra fields, unsupported sizes, invalid/wrong-length/
-sparse faction arrays, and a non-rival or non-Original Demo.
-STANDARD writers continue to omit `scenario` exactly. Every setup writes its
-exact seat-ordered `factions`; Demo requires three Original entries.
+path. Exact setup parsers accept the nine base fields, an optional standard-only
+`mapGenerationRevision: "REDUCED_VILLAGES"`, or the base fields plus the one
+valid DEMO discriminator. An absent map revision remains absent and selects the
+historical v5 village tables; no default is injected while parsing or loading.
+They reject unknown marker values, marker `undefined`, extra fields, unsupported
+sizes, invalid/wrong-length/sparse faction arrays, a marked Demo, and a
+non-rival or non-Original Demo. New STANDARD writers omit `scenario` and emit
+the revision marker. Every setup writes its exact seat-ordered `factions`; Demo
+requires three Original entries and remains unmarked for golden compatibility.
 
 ## 8. Renderer and input boundary
 
@@ -818,10 +822,10 @@ Vitest suites must cover:
   per-terrain resource thresholds, at least two opportunities per settlement,
   observed non-constant settlement mixes, and no out-of-territory resource;
 - a targeted Huge corpus of at least 1,000 seeds for each AI count, with a
-  deterministic repeat, exact 30-settlement/113-mountain assertions, attempt
+  deterministic repeat, exact 22-settlement/113-mountain assertions, attempt
   ceiling and recorded wall-clock runtime; the existing 6,000-seed 11/14/16
   corpus remains part of the normal suite; Large covers 1,000 seeds per AI count
-  and exactly 20 settlements/72 mountains without changing Auto;
+  and exactly 15 settlements/72 mountains without changing Auto;
 - every unit's movement, Dash/Escape/Fortify behavior, fog interruption, ZOC,
   recovery, Wait/handled monotonicity, promotion, training, and capture lifecycle;
 - per-seat faction exact parsing/persistence, roster labels/effective rules,

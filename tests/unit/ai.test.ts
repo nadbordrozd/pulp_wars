@@ -212,7 +212,7 @@ describe("Normal POC AI", () => {
   });
 
   it("follows the documented economy, production, recovery, exploration, reward, and end priorities", () => {
-    const original = gameStateBuilder();
+    const original = gameStateBuilder(setupBuilder({ seed: 2 }));
     const { playerId, unit } = active(original);
     const cityId = unit.homeCityId;
     if (cityId === null) throw new Error("Starting unit has no home city");
@@ -640,7 +640,7 @@ describe("Normal POC AI", () => {
   });
 
   it("chooses level-producing growth, then affordable general training, without speculative saving", () => {
-    const original = gameStateBuilder();
+    const original = gameStateBuilder(setupBuilder({ seed: 2 }));
     const { playerId, unit } = active(original);
     const city = original.cities.find(
       (candidate) => candidate.ownerId === playerId,

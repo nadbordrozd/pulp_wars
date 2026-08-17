@@ -3,6 +3,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { bootstrapApp, type BootstrappedApp } from "../../src/app/bootstrap";
 import {
+  MAP_GENERATION_REVISION,
   DEMO_MATCH_SETUP,
   RULESET_ID,
   canonicalHash,
@@ -276,6 +277,7 @@ describe("semantic POC screen flow", () => {
       click("Start Conquest");
       click("Confirm Start");
       expect(app.controller.snapshot().match?.setup).toMatchObject({
+        mapGenerationRevision: MAP_GENERATION_REVISION,
         aiCount,
         width: expectedSize,
         height: expectedSize,
@@ -306,6 +308,7 @@ describe("semantic POC screen flow", () => {
       expect(dialog()?.textContent).toContain(`${aiCount} AI · 25 × 25`);
       click("Confirm Start");
       expect(app.controller.snapshot().match?.setup).toMatchObject({
+        mapGenerationRevision: MAP_GENERATION_REVISION,
         aiCount,
         width: 25,
         height: 25,
@@ -466,7 +469,7 @@ describe("semantic POC screen flow", () => {
   });
 
   it("opens view-only overlays during an AI turn and fast-forwards back to the human", () => {
-    app = bootMatch(setup({ seed: 0 }));
+    app = bootMatch(setup({ seed: 1 }));
     const snapshot = app.controller.snapshot();
     expect(snapshot.view?.turnOrder[snapshot.view.activeSeatIndex]).not.toBe(
       snapshot.view?.viewer.id,
@@ -1965,7 +1968,7 @@ describe("HUD, command wiring, and contextual panels", () => {
   });
 
   it("describes rival, siege, and pending-reward resource locks without fake buttons", () => {
-    const initial = created(setup({ seed: 3 }));
+    const initial = created(setup({ seed: 2 }));
     const human = initial.players.find(
       (player) => player.controller === "HUMAN",
     );
@@ -2382,6 +2385,7 @@ function setup(overrides: Partial<MatchSetup> = {}): MatchSetup {
   const aiCount = overrides.aiCount ?? 1;
   return {
     rulesetId: RULESET_ID,
+    mapGenerationRevision: MAP_GENERATION_REVISION,
     seed: 3,
     width: 11,
     height: 11,

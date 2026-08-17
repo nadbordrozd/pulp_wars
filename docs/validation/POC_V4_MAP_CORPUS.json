@@ -1,6 +1,6 @@
 {
-  "schemaVersion": 4,
-  "rulesetId": "pulp-wars-poc-4",
+  "schemaVersion": 5,
+  "rulesetId": "pulp-wars-poc-5",
   "matrix": {
     "modes": ["RIVAL", "COOPERATIVE"],
     "cases": [
@@ -40,24 +40,24 @@
       "mountainCountPerBoard": 22,
       "forestCountPerBoard": 29,
       "resourceCountsAcrossUniqueMaps": {
-        "FRUIT": 10348,
-        "ORE": 4625,
-        "ANIMAL": 6080
+        "FRUIT": 8546,
+        "ORE": 3879,
+        "ANIMAL": 5073
       },
-      "distinctSettlementMixes": 307,
-      "exactlyTwoOpportunitySettlements": 382,
-      "moreThanTwoOpportunitySettlements": 5618,
+      "distinctSettlementMixes": 294,
+      "exactlyTwoOpportunitySettlements": 343,
+      "moreThanTwoOpportunitySettlements": 4657,
       "opportunityHistogram": {
-        "2": 382,
-        "3": 992,
-        "4": 1575,
-        "5": 1611,
-        "6": 1003,
-        "7": 373,
-        "8": 64
+        "2": 343,
+        "3": 886,
+        "4": 1304,
+        "5": 1298,
+        "6": 816,
+        "7": 306,
+        "8": 47
       },
-      "boardCorpusHash": "7723a8d40027e336952d1377517f7f891066fe5b6044334f0ccce41e6e6503d3",
-      "runtimeMs": 8703
+      "boardCorpusHash": "7c0d7e2b73674e870277901811b377d4c39f4b1d9734cd051a5e536dff49e930",
+      "runtimeMs": 10895
     },
     {
       "category": "AUTO",
@@ -69,24 +69,24 @@
       "mountainCountPerBoard": 35,
       "forestCountPerBoard": 47,
       "resourceCountsAcrossUniqueMaps": {
-        "FRUIT": 10530,
-        "ORE": 4472,
-        "ANIMAL": 5896
+        "FRUIT": 8616,
+        "ORE": 3651,
+        "ANIMAL": 5038
       },
-      "distinctSettlementMixes": 288,
-      "exactlyTwoOpportunitySettlements": 402,
-      "moreThanTwoOpportunitySettlements": 5598,
+      "distinctSettlementMixes": 278,
+      "exactlyTwoOpportunitySettlements": 328,
+      "moreThanTwoOpportunitySettlements": 4672,
       "opportunityHistogram": {
-        "2": 402,
-        "3": 1015,
-        "4": 1654,
-        "5": 1565,
-        "6": 989,
-        "7": 326,
-        "8": 49
+        "2": 328,
+        "3": 893,
+        "4": 1352,
+        "5": 1309,
+        "6": 821,
+        "7": 262,
+        "8": 35
       },
-      "boardCorpusHash": "15d7ea66441ee51075fb3f67924b949e65d73922406c9b31c3df3f09cc9de53f",
-      "runtimeMs": 13449
+      "boardCorpusHash": "d0dc357c5f29518136a7f5602abd435a5f6f1133c359fd99290b2a40d4c97cba",
+      "runtimeMs": 17961
     },
     {
       "category": "AUTO",
@@ -98,24 +98,24 @@
       "mountainCountPerBoard": 46,
       "forestCountPerBoard": 61,
       "resourceCountsAcrossUniqueMaps": {
-        "FRUIT": 10552,
-        "ORE": 4435,
-        "ANIMAL": 5907
+        "FRUIT": 8744,
+        "ORE": 3741,
+        "ANIMAL": 5037
       },
-      "distinctSettlementMixes": 291,
-      "exactlyTwoOpportunitySettlements": 416,
-      "moreThanTwoOpportunitySettlements": 5584,
+      "distinctSettlementMixes": 292,
+      "exactlyTwoOpportunitySettlements": 349,
+      "moreThanTwoOpportunitySettlements": 4651,
       "opportunityHistogram": {
-        "2": 416,
-        "3": 1060,
-        "4": 1637,
-        "5": 1528,
-        "6": 980,
-        "7": 335,
-        "8": 44
+        "2": 349,
+        "3": 902,
+        "4": 1297,
+        "5": 1321,
+        "6": 815,
+        "7": 275,
+        "8": 41
       },
-      "boardCorpusHash": "a3894eeabc0e31a1030cfedc41d6f0b26fc688a57e51620b18baaeefe14abda9",
-      "runtimeMs": 17910
+      "boardCorpusHash": "07d42e3aea1b142fbefa9975448dfc2431a6ddde8c347db0067ea8fa464e463c",
+      "runtimeMs": 26357
     },
     {
       "category": "AUTO",
@@ -127,24 +127,24 @@
       "mountainCountPerBoard": 35,
       "forestCountPerBoard": 47,
       "resourceCountsAcrossUniqueMaps": {
-        "FRUIT": 15392,
-        "ORE": 6783,
-        "ANIMAL": 9146
+        "FRUIT": 12201,
+        "ORE": 5204,
+        "ANIMAL": 6917
       },
-      "distinctSettlementMixes": 333,
-      "exactlyTwoOpportunitySettlements": 576,
-      "moreThanTwoOpportunitySettlements": 8424,
+      "distinctSettlementMixes": 303,
+      "exactlyTwoOpportunitySettlements": 478,
+      "moreThanTwoOpportunitySettlements": 6522,
       "opportunityHistogram": {
-        "2": 576,
-        "3": 1548,
-        "4": 2387,
-        "5": 2378,
-        "6": 1548,
-        "7": 470,
-        "8": 93
+        "2": 478,
+        "3": 1239,
+        "4": 1875,
+        "5": 1828,
+        "6": 1103,
+        "7": 412,
+        "8": 65
       },
-      "boardCorpusHash": "bd978223b70a26ceccb34f8f5d2ad578b21235cda21a727c774b7dd258706b2d",
-      "runtimeMs": 14174
+      "boardCorpusHash": "baf66fe67890fe88c45c19b4a6a81cf2f54075ed4102ec56bf9137ca47a64f05",
+      "runtimeMs": 18216
     },
     {
       "category": "AUTO",
@@ -156,24 +156,24 @@
       "mountainCountPerBoard": 46,
       "forestCountPerBoard": 61,
       "resourceCountsAcrossUniqueMaps": {
-        "FRUIT": 15596,
-        "ORE": 6799,
-        "ANIMAL": 8867
+        "FRUIT": 12261,
+        "ORE": 5308,
+        "ANIMAL": 6856
       },
-      "distinctSettlementMixes": 326,
-      "exactlyTwoOpportunitySettlements": 650,
-      "moreThanTwoOpportunitySettlements": 8350,
+      "distinctSettlementMixes": 297,
+      "exactlyTwoOpportunitySettlements": 469,
+      "moreThanTwoOpportunitySettlements": 6531,
       "opportunityHistogram": {
-        "2": 650,
-        "3": 1588,
-        "4": 2361,
-        "5": 2336,
-        "6": 1408,
-        "7": 580,
-        "8": 77
+        "2": 469,
+        "3": 1235,
+        "4": 1915,
+        "5": 1809,
+        "6": 1139,
+        "7": 386,
+        "8": 47
       },
-      "boardCorpusHash": "4849c2f40d4366f0ccf8a086b62113fe2744cbe0f38b11de069243d913939929",
-      "runtimeMs": 18515
+      "boardCorpusHash": "426916067319a9e988b5b2c12ef23c3c455111323f1baadf9a8d52957a4f138d",
+      "runtimeMs": 23351
     },
     {
       "category": "AUTO",
@@ -185,24 +185,24 @@
       "mountainCountPerBoard": 46,
       "forestCountPerBoard": 61,
       "resourceCountsAcrossUniqueMaps": {
-        "FRUIT": 20555,
-        "ORE": 9081,
-        "ANIMAL": 12168
+        "FRUIT": 17225,
+        "ORE": 7578,
+        "ANIMAL": 10105
       },
-      "distinctSettlementMixes": 341,
-      "exactlyTwoOpportunitySettlements": 845,
-      "moreThanTwoOpportunitySettlements": 11155,
+      "distinctSettlementMixes": 331,
+      "exactlyTwoOpportunitySettlements": 671,
+      "moreThanTwoOpportunitySettlements": 9329,
       "opportunityHistogram": {
-        "2": 845,
-        "3": 2036,
-        "4": 3121,
-        "5": 3180,
-        "6": 2014,
-        "7": 687,
-        "8": 117
+        "2": 671,
+        "3": 1732,
+        "4": 2679,
+        "5": 2615,
+        "6": 1593,
+        "7": 603,
+        "8": 107
       },
-      "boardCorpusHash": "178fc9a741097ed0ffa11c40ac2541176b7a36e5b2891403108dee9525611a39",
-      "runtimeMs": 19106
+      "boardCorpusHash": "bfb0e8a1424c1fb68ba7aea4535457357a19aadc21c7dcba80f50d7b3602153e",
+      "runtimeMs": 24225
     },
     {
       "category": "LARGE",
@@ -214,24 +214,24 @@
       "mountainCountPerBoard": 72,
       "forestCountPerBoard": 96,
       "resourceCountsAcrossUniqueMaps": {
-        "FRUIT": 34055,
-        "ORE": 15325,
-        "ANIMAL": 20320
+        "FRUIT": 25882,
+        "ORE": 11078,
+        "ANIMAL": 14995
       },
-      "distinctSettlementMixes": 369,
-      "exactlyTwoOpportunitySettlements": 1353,
-      "moreThanTwoOpportunitySettlements": 18647,
+      "distinctSettlementMixes": 347,
+      "exactlyTwoOpportunitySettlements": 1053,
+      "moreThanTwoOpportunitySettlements": 13947,
       "opportunityHistogram": {
-        "2": 1353,
-        "3": 3418,
-        "4": 5277,
-        "5": 5287,
-        "6": 3303,
-        "7": 1186,
-        "8": 176
+        "2": 1053,
+        "3": 2599,
+        "4": 3966,
+        "5": 3918,
+        "6": 2450,
+        "7": 880,
+        "8": 134
       },
-      "boardCorpusHash": "57cdc4e27a8fceaaf384c5d0b19356ecfdefa2472cd9aa570e73fa535d4efa08",
-      "runtimeMs": 32324
+      "boardCorpusHash": "fdf8b728be86aa1efa63a9f2e612514bc46eaa0664eae1085d96caaa0097b417",
+      "runtimeMs": 36702
     },
     {
       "category": "LARGE",
@@ -243,24 +243,24 @@
       "mountainCountPerBoard": 72,
       "forestCountPerBoard": 96,
       "resourceCountsAcrossUniqueMaps": {
-        "FRUIT": 33844,
-        "ORE": 15356,
-        "ANIMAL": 20378
+        "FRUIT": 25848,
+        "ORE": 11241,
+        "ANIMAL": 15144
       },
-      "distinctSettlementMixes": 368,
-      "exactlyTwoOpportunitySettlements": 1325,
-      "moreThanTwoOpportunitySettlements": 18675,
+      "distinctSettlementMixes": 356,
+      "exactlyTwoOpportunitySettlements": 1059,
+      "moreThanTwoOpportunitySettlements": 13941,
       "opportunityHistogram": {
-        "2": 1325,
-        "3": 3512,
-        "4": 5262,
-        "5": 5327,
-        "6": 3192,
-        "7": 1218,
-        "8": 164
+        "2": 1059,
+        "3": 2592,
+        "4": 3940,
+        "5": 3963,
+        "6": 2456,
+        "7": 847,
+        "8": 143
       },
-      "boardCorpusHash": "1648790f458dfdaef8024f473b32c8edeaff9b5ee02c01e8f6c9854e25824792",
-      "runtimeMs": 33598
+      "boardCorpusHash": "fb4488d4d15e6d4ea59c5a56b0d2753ae5e934ea198ab9084ce280c2eb28a8d5",
+      "runtimeMs": 37838
     },
     {
       "category": "LARGE",
@@ -272,24 +272,24 @@
       "mountainCountPerBoard": 72,
       "forestCountPerBoard": 96,
       "resourceCountsAcrossUniqueMaps": {
-        "FRUIT": 33968,
-        "ORE": 15076,
-        "ANIMAL": 20443
+        "FRUIT": 25839,
+        "ORE": 11249,
+        "ANIMAL": 15046
       },
-      "distinctSettlementMixes": 362,
-      "exactlyTwoOpportunitySettlements": 1401,
-      "moreThanTwoOpportunitySettlements": 18599,
+      "distinctSettlementMixes": 346,
+      "exactlyTwoOpportunitySettlements": 1055,
+      "moreThanTwoOpportunitySettlements": 13945,
       "opportunityHistogram": {
-        "2": 1401,
-        "3": 3350,
-        "4": 5313,
-        "5": 5344,
-        "6": 3260,
-        "7": 1162,
-        "8": 170
+        "2": 1055,
+        "3": 2609,
+        "4": 3987,
+        "5": 3867,
+        "6": 2499,
+        "7": 860,
+        "8": 123
       },
-      "boardCorpusHash": "4b7c7a5972c4da2523bcdbf9e22b6093021e2180dfcbeb34c646acc31dcdf87b",
-      "runtimeMs": 32943
+      "boardCorpusHash": "cb0c71e4042a5938fafc2e86ff085d0b3f13366d1fd5da0f0a112b0f562bdc8a",
+      "runtimeMs": 37501
     },
     {
       "category": "HUGE",
@@ -301,24 +301,24 @@
       "mountainCountPerBoard": 113,
       "forestCountPerBoard": 150,
       "resourceCountsAcrossUniqueMaps": {
-        "FRUIT": 5148,
-        "ORE": 2232,
-        "ANIMAL": 3090
+        "FRUIT": 3809,
+        "ORE": 1700,
+        "ANIMAL": 2189
       },
-      "distinctSettlementMixes": 268,
-      "exactlyTwoOpportunitySettlements": 205,
-      "moreThanTwoOpportunitySettlements": 2795,
+      "distinctSettlementMixes": 243,
+      "exactlyTwoOpportunitySettlements": 167,
+      "moreThanTwoOpportunitySettlements": 2033,
       "opportunityHistogram": {
-        "2": 205,
-        "3": 507,
-        "4": 807,
-        "5": 774,
-        "6": 502,
-        "7": 175,
-        "8": 30
+        "2": 167,
+        "3": 361,
+        "4": 566,
+        "5": 589,
+        "6": 355,
+        "7": 147,
+        "8": 15
       },
-      "boardCorpusHash": "37d85dfdc8d5affedfc2b3a1d79e097ae35d9e52596eb7d4f414f68b09fed995",
-      "runtimeMs": 5284
+      "boardCorpusHash": "702bec91952f57da1de2a7c3b0e7eb60170593f2a5643c4ca65217ae657cdcbb",
+      "runtimeMs": 6487
     },
     {
       "category": "HUGE",
@@ -330,24 +330,24 @@
       "mountainCountPerBoard": 113,
       "forestCountPerBoard": 150,
       "resourceCountsAcrossUniqueMaps": {
-        "FRUIT": 5216,
-        "ORE": 2246,
-        "ANIMAL": 3059
+        "FRUIT": 3780,
+        "ORE": 1717,
+        "ANIMAL": 2234
       },
-      "distinctSettlementMixes": 275,
-      "exactlyTwoOpportunitySettlements": 188,
-      "moreThanTwoOpportunitySettlements": 2812,
+      "distinctSettlementMixes": 243,
+      "exactlyTwoOpportunitySettlements": 140,
+      "moreThanTwoOpportunitySettlements": 2060,
       "opportunityHistogram": {
-        "2": 188,
-        "3": 515,
-        "4": 783,
-        "5": 781,
-        "6": 509,
-        "7": 193,
-        "8": 31
+        "2": 140,
+        "3": 378,
+        "4": 594,
+        "5": 592,
+        "6": 363,
+        "7": 112,
+        "8": 21
       },
-      "boardCorpusHash": "d9f1faadf7438b00dd3ffce102c6cfce16ad822889aa500b2e628db333d76921",
-      "runtimeMs": 5332
+      "boardCorpusHash": "54e65c948eccc22707f7e1d2b2a2a4592cf3c230be025c8f45c044971d82452b",
+      "runtimeMs": 6281
     },
     {
       "category": "HUGE",
@@ -359,26 +359,26 @@
       "mountainCountPerBoard": 113,
       "forestCountPerBoard": 150,
       "resourceCountsAcrossUniqueMaps": {
-        "FRUIT": 5136,
-        "ORE": 2293,
-        "ANIMAL": 3011
+        "FRUIT": 3840,
+        "ORE": 1689,
+        "ANIMAL": 2248
       },
-      "distinctSettlementMixes": 268,
-      "exactlyTwoOpportunitySettlements": 192,
-      "moreThanTwoOpportunitySettlements": 2808,
+      "distinctSettlementMixes": 245,
+      "exactlyTwoOpportunitySettlements": 150,
+      "moreThanTwoOpportunitySettlements": 2050,
       "opportunityHistogram": {
-        "2": 192,
-        "3": 511,
-        "4": 836,
-        "5": 799,
-        "6": 483,
-        "7": 142,
-        "8": 37
+        "2": 150,
+        "3": 350,
+        "4": 586,
+        "5": 611,
+        "6": 363,
+        "7": 119,
+        "8": 21
       },
-      "boardCorpusHash": "9f629f9eb5e2e2d69afc85099f37d7590445f396f6a801e9e19896e65c6d256c",
-      "runtimeMs": 5572
+      "boardCorpusHash": "f7c98aecb3a985241eb33750be04fc89081e81117705bd65d1e585978609f5f7",
+      "runtimeMs": 6142
     }
   ],
-  "corpusHash": "753ff217de75568ca2b4ea0f9adb15e324b855beefc667652170599607859a64",
-  "runtimeMs": 206916
+  "corpusHash": "5345987e4d8922249e63af75829403a98b42b1a31ea86b2979655221f4b61545",
+  "runtimeMs": 251961
 }

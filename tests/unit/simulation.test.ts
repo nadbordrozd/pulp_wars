@@ -9,6 +9,7 @@ import {
   createGame,
   generateInitialMap,
   legalCommands,
+  neutralVillageCount,
   parseMatchSetup,
   randomState,
   revealAfterUnitStep,
@@ -307,27 +308,121 @@ describe("deterministic simulation kernel", () => {
     });
   });
 
-  it("creates the exact explicit Large map", () => {
-    expect(
-      parseMatchSetup({ ...setupBuilder(), width: 20, height: 20 }),
-    ).toMatchObject({ width: 20, height: 20, aiMode: "RIVAL" });
-    const result = createGame({
-      ...setupBuilder(),
-      width: 20,
-      height: 20,
-    });
-    if (!result.ok) throw new Error(result.error.code);
-    expect(result.state.board.tiles).toHaveLength(400);
-    expect(
-      result.state.board.tiles.filter((tile) => tile.site !== null),
-    ).toHaveLength(20);
-    expect(
-      result.state.board.tiles.filter((tile) => tile.terrain === "MOUNTAIN"),
-    ).toHaveLength(72);
-    expect(
-      result.state.board.tiles.filter((tile) => tile.terrain === "FOREST"),
-    ).toHaveLength(96);
-  });
+  it.each([
+    [1, 11, 3],
+    [2, 14, 4],
+    [3, 16, 6],
+  ] as const)(
+    "creates the exact Auto map for %i AI on %i with the specified village count",
+    (aiCount, size, expectedVillages) => {
+      const setup = setupBuilder({
+        aiCount,
+        width: size,
+        height: size,
+        seed: 0,
+      });
+      const result = createGame(setup);
+      if (!result.ok) throw new Error(result.error.code);
+      expect(neutralVillageCount(setup)).toBe(expectedVillages);
+      expect(
+        result.state.board.tiles.filter((tile) => tile.site === "CAPITAL"),
+      ).toHaveLength(aiCount + 1);
+      expect(
+        result.state.board.tiles.filter((tile) => tile.site === "VILLAGE"),
+      ).toHaveLength(expectedVillages);
+      expect(
+        validateMapInvariants(
+          result.state.board,
+          aiCount + 1,
+          expectedVillages,
+        ),
+      ).toEqual([]);
+    },
+  );
+
+  it.each([
+    [11, 1, 4],
+    [14, 2, 6],
+    [16, 3, 8],
+    [20, 1, 18],
+    [20, 2, 17],
+    [20, 3, 16],
+    [25, 1, 28],
+    [25, 2, 27],
+    [25, 3, 26],
+  ] as const)(
+    "keeps the historical unmarked %i / %i-AI path at %i villages",
+    (size, aiCount, expectedVillages) => {
+      const marked = setupBuilder({
+        aiCount,
+        width: size,
+        height: size,
+      });
+      const { mapGenerationRevision: _revision, ...historical } = marked;
+      void _revision;
+      expect(parseMatchSetup(historical)).toEqual(historical);
+      expect(neutralVillageCount(historical)).toBe(expectedVillages);
+      const created = createGame(historical);
+      if (!created.ok) throw new Error(created.error.code);
+      expect(
+        created.state.board.tiles.filter((tile) => tile.site === "VILLAGE"),
+      ).toHaveLength(expectedVillages);
+      expect(
+        validateMapInvariants(
+          created.state.board,
+          aiCount + 1,
+          expectedVillages,
+        ),
+      ).toEqual([]);
+    },
+  );
+
+  it.each([
+    [1, 13],
+    [2, 12],
+    [3, 11],
+  ] as const)(
+    "creates the exact explicit Large map for %i AI with %i neutral villages",
+    (aiCount, expectedVillages) => {
+      const setup = setupBuilder({
+        aiCount,
+        width: 20,
+        height: 20,
+        seed: 0,
+      });
+      expect(parseMatchSetup(setup)).toMatchObject({
+        width: 20,
+        height: 20,
+        aiMode: "RIVAL",
+      });
+      const result = createGame(setup);
+      if (!result.ok) throw new Error(result.error.code);
+      expect(neutralVillageCount(setup)).toBe(expectedVillages);
+      expect(result.state.board.tiles).toHaveLength(400);
+      expect(
+        result.state.board.tiles.filter((tile) => tile.site === "CAPITAL"),
+      ).toHaveLength(aiCount + 1);
+      expect(
+        result.state.board.tiles.filter((tile) => tile.site === "VILLAGE"),
+      ).toHaveLength(expectedVillages);
+      expect(
+        result.state.board.tiles.filter((tile) => tile.site !== null),
+      ).toHaveLength(15);
+      expect(
+        result.state.board.tiles.filter((tile) => tile.terrain === "MOUNTAIN"),
+      ).toHaveLength(72);
+      expect(
+        result.state.board.tiles.filter((tile) => tile.terrain === "FOREST"),
+      ).toHaveLength(96);
+      expect(
+        validateMapInvariants(
+          result.state.board,
+          aiCount + 1,
+          expectedVillages,
+        ),
+      ).toEqual([]);
+    },
+  );
 
   it("requires the v5 aiMode and exact seat-ordered faction fields", () => {
     const rival = setupBuilder();
@@ -335,6 +430,12 @@ describe("deterministic simulation kernel", () => {
     void _aiMode;
     expect(parseMatchSetup(missing)).toBeNull();
     expect(parseMatchSetup({ ...rival, aiMode: undefined })).toBeNull();
+    expect(
+      parseMatchSetup({ ...rival, mapGenerationRevision: undefined }),
+    ).toBeNull();
+    expect(
+      parseMatchSetup({ ...rival, mapGenerationRevision: "FUTURE" }),
+    ).toBeNull();
     expect(parseMatchSetup({ ...rival, aiMode: "COOPERATIVE" })).toEqual({
       ...rival,
       aiMode: "COOPERATIVE",
@@ -427,9 +528,9 @@ describe("deterministic simulation kernel", () => {
   });
 
   it.each([
-    [1, 28],
-    [2, 27],
-    [3, 26],
+    [1, 20],
+    [2, 19],
+    [3, 18],
   ] as const)(
     "creates an exact Huge map for %i AI with %i neutral villages",
     (aiCount, expectedVillages) => {
@@ -443,6 +544,7 @@ describe("deterministic simulation kernel", () => {
       const second = createGame(setup);
       if (!first.ok || !second.ok) throw new Error("Huge map creation failed");
       expect(canonicalJson(first.state)).toBe(canonicalJson(second.state));
+      expect(neutralVillageCount(setup)).toBe(expectedVillages);
       expect(first.state.board.tiles).toHaveLength(625);
       expect(
         first.state.board.tiles.filter((tile) => tile.site === "CAPITAL"),
@@ -483,7 +585,7 @@ describe("deterministic simulation kernel", () => {
 
 describe("v4 varied-resource map smoke coverage", () => {
   it("matches canonical seed-zero hashes and counts in both AI modes", () => {
-    expect(v4MapCorpus.rulesetId).toBe("pulp-wars-poc-4");
+    expect(v4MapCorpus.rulesetId).toBe("pulp-wars-poc-5");
     for (const fixture of v4MapCorpus.cases) {
       const setup = setupBuilder({
         seed: v4MapCorpus.seed,
@@ -535,11 +637,7 @@ describe("v4 varied-resource map smoke coverage", () => {
         const invariantFailures = validateMapInvariants(
           rival.state.board,
           aiCount + 1,
-          width === 20
-            ? 20 - aiCount - 1
-            : width === 25
-              ? 30 - aiCount - 1
-              : aiCount * 2 + 2,
+          neutralVillageCount(setup),
         );
         if (invariantFailures.length)
           failures.push(

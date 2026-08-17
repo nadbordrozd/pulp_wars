@@ -376,6 +376,7 @@ function sameSetup(left: MatchSetup, right: MatchSetup): boolean {
     left.aiMode === right.aiMode &&
     left.humanColor === right.humanColor &&
     sameStringArray(left.factions, right.factions) &&
+    left.mapGenerationRevision === right.mapGenerationRevision &&
     left.scenario === right.scenario
   );
 }

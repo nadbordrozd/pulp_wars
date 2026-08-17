@@ -1,5 +1,6 @@
 import {
   FACTION_IDS,
+  MAP_GENERATION_REVISION,
   RULESET_ID,
   type FactionId,
   type MatchSetup,
@@ -23,10 +24,15 @@ export function parseMatchSetup(input: unknown): MatchSetup | null {
   const scenario = Object.prototype.hasOwnProperty.call(input, "scenario")
     ? input.scenario
     : undefined;
-  const expected =
-    scenario === undefined
-      ? BASE_SETUP_KEYS
-      : ([...BASE_SETUP_KEYS, "scenario"] as const);
+  const hasMapGenerationRevision = Object.prototype.hasOwnProperty.call(
+    input,
+    "mapGenerationRevision",
+  );
+  const expected = [
+    ...BASE_SETUP_KEYS,
+    ...(hasMapGenerationRevision ? ["mapGenerationRevision"] : []),
+    ...(scenario === undefined ? [] : ["scenario"]),
+  ];
   if (!hasExactKeys(input, expected)) return null;
   if (
     input.rulesetId !== RULESET_ID ||
@@ -41,10 +47,16 @@ export function parseMatchSetup(input: unknown): MatchSetup | null {
     !isPlayerColor(input.humanColor)
   )
     return null;
+  if (
+    hasMapGenerationRevision &&
+    input.mapGenerationRevision !== MAP_GENERATION_REVISION
+  )
+    return null;
   if (scenario !== undefined && scenario !== "DEMO") return null;
   if (
     scenario === "DEMO" &&
-    (input.seed !== 0xdecafbad ||
+    (hasMapGenerationRevision ||
+      input.seed !== 0xdecafbad ||
       input.width !== 25 ||
       input.aiCount !== 2 ||
       input.aiMode !== "RIVAL" ||
@@ -63,7 +75,11 @@ export function parseMatchSetup(input: unknown): MatchSetup | null {
     humanColor: input.humanColor,
     factions: [...input.factions],
   };
-  return scenario === "DEMO" ? { ...base, scenario } : base;
+  return scenario === "DEMO"
+    ? { ...base, scenario }
+    : hasMapGenerationRevision
+      ? { ...base, mapGenerationRevision: MAP_GENERATION_REVISION }
+      : base;
 }
 
 function isFactionArray(

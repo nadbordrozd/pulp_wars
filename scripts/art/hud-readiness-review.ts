@@ -307,6 +307,7 @@ async function installForestUiFixture(
       localStorage.clear();
       const result = engine.createGame({
         rulesetId: engine.RULESET_ID,
+        mapGenerationRevision: engine.MAP_GENERATION_REVISION,
         seed: 2,
         width: 11,
         height: 11,

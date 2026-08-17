@@ -36,6 +36,7 @@ import {
 } from "./model/ids";
 import {
   GAME_STATE_SCHEMA_VERSION,
+  MAP_GENERATION_REVISION,
   RULESET_ID,
   type CityState,
   type Coord,
@@ -483,6 +484,9 @@ export function validateSetup(setup: MatchSetup): RuleError | null {
     "factions",
     "height",
     "humanColor",
+    ...(setup.mapGenerationRevision === undefined
+      ? []
+      : ["mapGenerationRevision"]),
     "rulesetId",
     ...(setup.scenario === "DEMO" ? ["scenario"] : []),
     "seed",
@@ -541,8 +545,15 @@ export function validateSetup(setup: MatchSetup): RuleError | null {
     return ruleError("INVALID_SETUP", { field: "humanColor" });
   }
   if (
+    setup.mapGenerationRevision !== undefined &&
+    setup.mapGenerationRevision !== MAP_GENERATION_REVISION
+  ) {
+    return ruleError("INVALID_SETUP", { field: "mapGenerationRevision" });
+  }
+  if (
     setup.scenario !== undefined &&
     (setup.scenario !== "DEMO" ||
+      setup.mapGenerationRevision !== undefined ||
       setup.seed !== 0xdecafbad ||
       setup.width !== 25 ||
       setup.height !== 25 ||

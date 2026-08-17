@@ -166,7 +166,7 @@ async function renderPlacementCalibrationFixture(
         import('/src/engine/index.ts'),
         import('/src/render/canvas/board-host.ts')
       ]);
-      const result = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 85176, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', aiMode: 'RIVAL', humanColor: 'CORAL', factions: ['CANDY', 'ORIGINAL'] });
+      const result = engine.createGame({ rulesetId: engine.RULESET_ID, mapGenerationRevision: engine.MAP_GENERATION_REVISION, seed: 85176, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', aiMode: 'RIVAL', humanColor: 'CORAL', factions: ['CANDY', 'ORIGINAL'] });
       if (!result.ok) throw new Error(result.error.code);
       const human = result.state.players.find((player) => player.controller === 'HUMAN');
       const enemy = result.state.players.find((player) => player.controller === 'AI');
@@ -269,7 +269,7 @@ async function renderForestCatapultProductionFixture(
         import('/src/engine/index.ts'),
         import('/src/render/canvas/board-host.ts')
       ]);
-      const result = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 72719, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', aiMode: 'RIVAL', humanColor: 'CORAL', factions: ['ORIGINAL', 'ORIGINAL'] });
+      const result = engine.createGame({ rulesetId: engine.RULESET_ID, mapGenerationRevision: engine.MAP_GENERATION_REVISION, seed: 72719, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', aiMode: 'RIVAL', humanColor: 'CORAL', factions: ['ORIGINAL', 'ORIGINAL'] });
       if (!result.ok) throw new Error(result.error.code);
       const human = result.state.players.find((player) => player.controller === 'HUMAN');
       const baseCity = result.state.cities.find((city) => city.ownerId === human?.id);
@@ -377,7 +377,7 @@ async function renderCandyProductionFixture(
         import('/src/engine/index.ts'),
         import('/src/render/canvas/board-host.ts')
       ]);
-      const result = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 61826, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', aiMode: 'RIVAL', humanColor: 'CORAL', factions: ['CANDY', 'ORIGINAL'] });
+      const result = engine.createGame({ rulesetId: engine.RULESET_ID, mapGenerationRevision: engine.MAP_GENERATION_REVISION, seed: 61826, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', aiMode: 'RIVAL', humanColor: 'CORAL', factions: ['CANDY', 'ORIGINAL'] });
       if (!result.ok) throw new Error(result.error.code);
       const human = result.state.players.find((player) => player.controller === 'HUMAN');
       const enemy = result.state.players.find((player) => player.controller === 'AI');
@@ -497,7 +497,7 @@ async function renderFixture(
         import('/src/engine/index.ts'),
         import('/src/render/canvas/board-host.ts')
       ]);
-      const result = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 6173, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', aiMode: 'RIVAL', humanColor: 'CORAL', factions: ['ORIGINAL', 'ORIGINAL'] });
+      const result = engine.createGame({ rulesetId: engine.RULESET_ID, mapGenerationRevision: engine.MAP_GENERATION_REVISION, seed: 6173, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', aiMode: 'RIVAL', humanColor: 'CORAL', factions: ['ORIGINAL', 'ORIGINAL'] });
       if (!result.ok) throw new Error(result.error.code);
       const human = result.state.players.find((player) => player.controller === 'HUMAN');
       const baseCity = result.state.cities.find((city) => city.ownerId === human?.id);

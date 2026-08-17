@@ -19,9 +19,14 @@ retained v4 draw order, and neither `aiMode` nor per-seat faction selection
 changes the board or PRNG stream.
 
 The ruleset-5 target supports square sizes 11, 14, 16, explicit Large 20, and
-explicit Huge 25. Auto remains 11/14/16 for 1/2/3 AI. Large generates 20
-settlements and 72 mountains; Huge generates 30 settlements and 113 mountains.
-Their neutral-village counts derive only on their explicit size paths.
+explicit Huge 25. Auto remains 11/14/16 for 1/2/3 AI and generates 3/4/6
+neutral villages. Large generates 15 settlements (13/12/11 neutral villages)
+and 72 mountains; Huge generates 22 settlements (20/19/18 neutral villages)
+and 113 mountains. Capitals remain one per player. New standard setup writers
+select these counts with `mapGenerationRevision: "REDUCED_VILLAGES"`.
+Historical v5 setup data without that optional marker is preserved exactly and
+uses the former Auto 4/6/8, Large 18/17/16, and Huge 28/27/26 tables. Demo stays
+unmarked to preserve its established v5 golden map.
 
 Commands use shared pure eligibility predicates for both legal enumeration and
 transactional application. Fruit harvesting, Animal hunting, explicit-ore

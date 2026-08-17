@@ -438,7 +438,7 @@ describe("economy and technology rules", () => {
   });
 
   it("rejects mining in besieged territory before it can create a deadlocked reward", () => {
-    const original = gameStateBuilder();
+    const original = gameStateBuilder(setupBuilder({ seed: 2 }));
     const { playerId, city, unit } = activeContext(original);
     const enemy = original.units.find(
       (candidate) => candidate.ownerId !== playerId,
@@ -502,7 +502,7 @@ describe("economy and technology rules", () => {
   });
 
   it("keeps ore visible without Mining while legal enumeration reveals no hidden actions", () => {
-    const state = gameStateBuilder();
+    const state = gameStateBuilder(setupBuilder({ seed: 2 }));
     const { playerId, player, city } = activeContext(state);
     const ore = state.board.tiles.find(
       (tile) => tile.territoryCityId === city.id && tile.resource === "ORE",
@@ -608,7 +608,7 @@ describe("capture and elimination", () => {
   });
 
   it("preserves captured city state and improvements, rehomes the capturer, and orphans former support", () => {
-    const original = gameStateBuilder(setupBuilder({ seed: 3 }));
+    const original = gameStateBuilder(setupBuilder({ seed: 2 }));
     const { playerId, unit } = activeContext(original);
     const enemyCity = original.cities.find((city) => city.ownerId !== playerId);
     if (enemyCity === undefined) throw new Error("Missing enemy city");

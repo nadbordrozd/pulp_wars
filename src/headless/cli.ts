@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import {
   DEMO_MATCH_SETUP,
+  MAP_GENERATION_REVISION,
   canonicalJson,
   type FactionId,
   type MatchSetup,
@@ -29,6 +30,7 @@ if (mode === "replay") {
     ? DEMO_MATCH_SETUP
     : {
         rulesetId: "pulp-wars-poc-5",
+        mapGenerationRevision: MAP_GENERATION_REVISION,
         seed: numberArg("--seed", 0xdecafbad),
         width: size,
         height: size,

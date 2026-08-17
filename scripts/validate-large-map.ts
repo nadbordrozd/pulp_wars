@@ -1,6 +1,8 @@
 import { createHash } from "node:crypto";
 import {
+  MAP_GENERATION_REVISION,
   createGame,
+  neutralVillageCount,
   validateMapInvariants,
   type MatchSetup,
 } from "../src/engine/index";
@@ -20,6 +22,7 @@ for (const aiCount of aiCounts) {
   for (let seed = 0; seed < 1_000; seed += 1) {
     const setup: MatchSetup = {
       rulesetId: "pulp-wars-poc-5",
+      mapGenerationRevision: MAP_GENERATION_REVISION,
       seed,
       width: 20,
       height: 20,
@@ -42,7 +45,7 @@ for (const aiCount of aiCounts) {
       JSON.stringify(cooperative.state.board)
     )
       throw new Error(`Large mode-map mismatch for ${aiCount} AI seed ${seed}`);
-    const expectedVillages = 20 - (aiCount + 1);
+    const expectedVillages = neutralVillageCount(setup);
     const issues = validateMapInvariants(
       first.state.board,
       aiCount + 1,
@@ -65,7 +68,7 @@ for (const aiCount of aiCounts) {
       (tile) => tile.resource === "ANIMAL",
     );
     if (
-      settlements.length !== 20 ||
+      settlements.length !== 15 ||
       mountains.length !== 72 ||
       forests.length !== 96 ||
       animals.length === 0

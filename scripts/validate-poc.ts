@@ -3,6 +3,7 @@ import path from "node:path";
 import process from "node:process";
 import { format } from "prettier";
 import {
+  MAP_GENERATION_REVISION,
   canonicalHash,
   createGame,
   type Command,
@@ -272,6 +273,7 @@ function makeSetup(
 ): MatchSetup {
   return {
     rulesetId: "pulp-wars-poc-5",
+    mapGenerationRevision: MAP_GENERATION_REVISION,
     seed,
     width: size,
     height: size,

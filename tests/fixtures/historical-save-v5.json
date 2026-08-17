@@ -1,0 +1,1298 @@
+{
+  "format": "pulp-wars-save",
+  "version": 5,
+  "rulesetId": "pulp-wars-poc-5",
+  "setup": {
+    "rulesetId": "pulp-wars-poc-5",
+    "seed": 305419896,
+    "width": 11,
+    "height": 11,
+    "aiCount": 1,
+    "aiDifficulty": "NORMAL",
+    "aiMode": "RIVAL",
+    "humanColor": "CORAL",
+    "factions": ["ORIGINAL", "ORIGINAL"]
+  },
+  "state": {
+    "schemaVersion": 5,
+    "rulesetId": "pulp-wars-poc-5",
+    "setup": {
+      "rulesetId": "pulp-wars-poc-5",
+      "seed": 305419896,
+      "width": 11,
+      "height": 11,
+      "aiCount": 1,
+      "aiDifficulty": "NORMAL",
+      "aiMode": "RIVAL",
+      "humanColor": "CORAL",
+      "factions": ["ORIGINAL", "ORIGINAL"]
+    },
+    "random": { "algorithm": "MULBERRY32", "version": 1, "state": 3633692937 },
+    "humanPlayerId": 1,
+    "nextEntityId": 5,
+    "commandIndex": 0,
+    "round": 1,
+    "activeSeatIndex": 0,
+    "turnOrder": [1, 2],
+    "board": {
+      "width": 11,
+      "height": 11,
+      "tiles": [
+        {
+          "at": { "x": 0, "y": 0 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 1, "y": 0 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 2, "y": 0 },
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 3, "y": 0 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 4, "y": 0 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 5, "y": 0 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 6, "y": 0 },
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 7, "y": 0 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 8, "y": 0 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 9, "y": 0 },
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 10, "y": 0 },
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 0, "y": 1 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 1, "y": 1 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 2, "y": 2 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 2, "y": 1 },
+          "terrain": "FOREST",
+          "resource": "ANIMAL",
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 2, "y": 2 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 3, "y": 1 },
+          "terrain": "GRASS",
+          "resource": "FRUIT",
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 2, "y": 2 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 4, "y": 1 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 5, "y": 1 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 6, "y": 1 },
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 7, "y": 1 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 8, "y": 2 },
+          "territoryCityId": 3
+        },
+        {
+          "at": { "x": 8, "y": 1 },
+          "terrain": "GRASS",
+          "resource": "FRUIT",
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 8, "y": 2 },
+          "territoryCityId": 3
+        },
+        {
+          "at": { "x": 9, "y": 1 },
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 8, "y": 2 },
+          "territoryCityId": 3
+        },
+        {
+          "at": { "x": 10, "y": 1 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 0, "y": 2 },
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 1, "y": 2 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 2, "y": 2 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 2, "y": 2 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": "VILLAGE",
+          "territoryCenter": { "x": 2, "y": 2 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 3, "y": 2 },
+          "terrain": "GRASS",
+          "resource": "FRUIT",
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 2, "y": 2 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 4, "y": 2 },
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 5, "y": 2 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 6, "y": 2 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 7, "y": 2 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 8, "y": 2 },
+          "territoryCityId": 3
+        },
+        {
+          "at": { "x": 8, "y": 2 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": "CAPITAL",
+          "territoryCenter": { "x": 8, "y": 2 },
+          "territoryCityId": 3
+        },
+        {
+          "at": { "x": 9, "y": 2 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 8, "y": 2 },
+          "territoryCityId": 3
+        },
+        {
+          "at": { "x": 10, "y": 2 },
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 0, "y": 3 },
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 1, "y": 3 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 2, "y": 2 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 2, "y": 3 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 2, "y": 2 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 3, "y": 3 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 2, "y": 2 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 4, "y": 3 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 5, "y": 3 },
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 6, "y": 3 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 7, "y": 3 },
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 8, "y": 2 },
+          "territoryCityId": 3
+        },
+        {
+          "at": { "x": 8, "y": 3 },
+          "terrain": "GRASS",
+          "resource": "FRUIT",
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 8, "y": 2 },
+          "territoryCityId": 3
+        },
+        {
+          "at": { "x": 9, "y": 3 },
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 8, "y": 2 },
+          "territoryCityId": 3
+        },
+        {
+          "at": { "x": 10, "y": 3 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 0, "y": 4 },
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 1, "y": 4 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 2, "y": 4 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 3, "y": 4 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 4, "y": 4 },
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 5, "y": 4 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 6, "y": 4 },
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 7, "y": 4 },
+          "terrain": "GRASS",
+          "resource": "FRUIT",
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 8, "y": 5 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 8, "y": 4 },
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 8, "y": 5 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 9, "y": 4 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 8, "y": 5 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 10, "y": 4 },
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 0, "y": 5 },
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 1, "y": 5 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 2, "y": 5 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 3, "y": 5 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 4, "y": 5 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 5, "y": 5 },
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 6, "y": 5 },
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 7, "y": 5 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 8, "y": 5 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 8, "y": 5 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": "VILLAGE",
+          "territoryCenter": { "x": 8, "y": 5 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 9, "y": 5 },
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 8, "y": 5 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 10, "y": 5 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 0, "y": 6 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 1, "y": 6 },
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 2, "y": 6 },
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 3, "y": 6 },
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 4, "y": 6 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 5, "y": 6 },
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 6, "y": 6 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 7, "y": 6 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 8, "y": 5 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 8, "y": 6 },
+          "terrain": "GRASS",
+          "resource": "FRUIT",
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 8, "y": 5 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 9, "y": 6 },
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 8, "y": 5 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 10, "y": 6 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 0, "y": 7 },
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 1, "y": 7 },
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 2, "y": 8 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 2, "y": 7 },
+          "terrain": "GRASS",
+          "resource": "FRUIT",
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 2, "y": 8 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 3, "y": 7 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 2, "y": 8 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 4, "y": 7 },
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 5, "y": 8 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 5, "y": 7 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 5, "y": 8 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 6, "y": 7 },
+          "terrain": "FOREST",
+          "resource": "ANIMAL",
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 5, "y": 8 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 7, "y": 7 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 8, "y": 8 },
+          "territoryCityId": 1
+        },
+        {
+          "at": { "x": 8, "y": 7 },
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 8, "y": 8 },
+          "territoryCityId": 1
+        },
+        {
+          "at": { "x": 9, "y": 7 },
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 8, "y": 8 },
+          "territoryCityId": 1
+        },
+        {
+          "at": { "x": 10, "y": 7 },
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 0, "y": 8 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 1, "y": 8 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 2, "y": 8 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 2, "y": 8 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": "VILLAGE",
+          "territoryCenter": { "x": 2, "y": 8 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 3, "y": 8 },
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 2, "y": 8 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 4, "y": 8 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 5, "y": 8 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 5, "y": 8 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": "VILLAGE",
+          "territoryCenter": { "x": 5, "y": 8 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 6, "y": 8 },
+          "terrain": "GRASS",
+          "resource": "FRUIT",
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 5, "y": 8 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 7, "y": 8 },
+          "terrain": "GRASS",
+          "resource": "FRUIT",
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 8, "y": 8 },
+          "territoryCityId": 1
+        },
+        {
+          "at": { "x": 8, "y": 8 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": "CAPITAL",
+          "territoryCenter": { "x": 8, "y": 8 },
+          "territoryCityId": 1
+        },
+        {
+          "at": { "x": 9, "y": 8 },
+          "terrain": "GRASS",
+          "resource": "FRUIT",
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 8, "y": 8 },
+          "territoryCityId": 1
+        },
+        {
+          "at": { "x": 10, "y": 8 },
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 0, "y": 9 },
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 1, "y": 9 },
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 2, "y": 8 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 2, "y": 9 },
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 2, "y": 8 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 3, "y": 9 },
+          "terrain": "FOREST",
+          "resource": "ANIMAL",
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 2, "y": 8 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 4, "y": 9 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 5, "y": 8 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 5, "y": 9 },
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 5, "y": 8 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 6, "y": 9 },
+          "terrain": "GRASS",
+          "resource": "FRUIT",
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 5, "y": 8 },
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 7, "y": 9 },
+          "terrain": "FOREST",
+          "resource": "ANIMAL",
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 8, "y": 8 },
+          "territoryCityId": 1
+        },
+        {
+          "at": { "x": 8, "y": 9 },
+          "terrain": "GRASS",
+          "resource": "FRUIT",
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 8, "y": 8 },
+          "territoryCityId": 1
+        },
+        {
+          "at": { "x": 9, "y": 9 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": { "x": 8, "y": 8 },
+          "territoryCityId": 1
+        },
+        {
+          "at": { "x": 10, "y": 9 },
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 0, "y": 10 },
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 1, "y": 10 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 2, "y": 10 },
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 3, "y": 10 },
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 4, "y": 10 },
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 5, "y": 10 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 6, "y": 10 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 7, "y": 10 },
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 8, "y": 10 },
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 9, "y": 10 },
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 10, "y": 10 },
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "site": null,
+          "territoryCenter": null,
+          "territoryCityId": null
+        }
+      ]
+    },
+    "players": [
+      {
+        "id": 1,
+        "seat": 0,
+        "controller": "HUMAN",
+        "color": "CORAL",
+        "faction": "ORIGINAL",
+        "status": "ACTIVE",
+        "stars": 7,
+        "researchedTechs": [],
+        "explored": [
+          { "x": 6, "y": 6 },
+          { "x": 7, "y": 6 },
+          { "x": 8, "y": 6 },
+          { "x": 9, "y": 6 },
+          { "x": 10, "y": 6 },
+          { "x": 6, "y": 7 },
+          { "x": 7, "y": 7 },
+          { "x": 8, "y": 7 },
+          { "x": 9, "y": 7 },
+          { "x": 10, "y": 7 },
+          { "x": 6, "y": 8 },
+          { "x": 7, "y": 8 },
+          { "x": 8, "y": 8 },
+          { "x": 9, "y": 8 },
+          { "x": 10, "y": 8 },
+          { "x": 6, "y": 9 },
+          { "x": 7, "y": 9 },
+          { "x": 8, "y": 9 },
+          { "x": 9, "y": 9 },
+          { "x": 10, "y": 9 },
+          { "x": 6, "y": 10 },
+          { "x": 7, "y": 10 },
+          { "x": 8, "y": 10 },
+          { "x": 9, "y": 10 },
+          { "x": 10, "y": 10 }
+        ]
+      },
+      {
+        "id": 2,
+        "seat": 1,
+        "controller": "AI",
+        "color": "TEAL",
+        "faction": "ORIGINAL",
+        "status": "ACTIVE",
+        "stars": 5,
+        "researchedTechs": [],
+        "explored": [
+          { "x": 6, "y": 0 },
+          { "x": 7, "y": 0 },
+          { "x": 8, "y": 0 },
+          { "x": 9, "y": 0 },
+          { "x": 10, "y": 0 },
+          { "x": 6, "y": 1 },
+          { "x": 7, "y": 1 },
+          { "x": 8, "y": 1 },
+          { "x": 9, "y": 1 },
+          { "x": 10, "y": 1 },
+          { "x": 6, "y": 2 },
+          { "x": 7, "y": 2 },
+          { "x": 8, "y": 2 },
+          { "x": 9, "y": 2 },
+          { "x": 10, "y": 2 },
+          { "x": 6, "y": 3 },
+          { "x": 7, "y": 3 },
+          { "x": 8, "y": 3 },
+          { "x": 9, "y": 3 },
+          { "x": 10, "y": 3 },
+          { "x": 6, "y": 4 },
+          { "x": 7, "y": 4 },
+          { "x": 8, "y": 4 },
+          { "x": 9, "y": 4 },
+          { "x": 10, "y": 4 }
+        ]
+      }
+    ],
+    "cities": [
+      {
+        "id": 1,
+        "ownerId": 1,
+        "at": { "x": 8, "y": 8 },
+        "level": 1,
+        "population": 0,
+        "isCapital": true,
+        "rewardLevel2": null,
+        "rewardLevel3": null
+      },
+      {
+        "id": 3,
+        "ownerId": 2,
+        "at": { "x": 8, "y": 2 },
+        "level": 1,
+        "population": 0,
+        "isCapital": true,
+        "rewardLevel2": null,
+        "rewardLevel3": null
+      }
+    ],
+    "units": [
+      {
+        "id": 2,
+        "ownerId": 1,
+        "homeCityId": 1,
+        "capacityExempt": true,
+        "type": "WARRIOR",
+        "at": { "x": 8, "y": 8 },
+        "hp": 10,
+        "maxHp": 10,
+        "kills": 0,
+        "veteran": false,
+        "ready": true,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "attacked": false,
+          "recovered": false,
+          "captured": false,
+          "handled": false,
+          "escapeAvailable": false,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 4,
+        "ownerId": 2,
+        "homeCityId": 3,
+        "capacityExempt": true,
+        "type": "WARRIOR",
+        "at": { "x": 8, "y": 2 },
+        "hp": 10,
+        "maxHp": 10,
+        "kills": 0,
+        "veteran": false,
+        "ready": true,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "attacked": false,
+          "recovered": false,
+          "captured": false,
+          "handled": false,
+          "escapeAvailable": false,
+          "specialActed": false
+        }
+      }
+    ],
+    "chocolateWalls": [],
+    "pendingChoice": null,
+    "outcome": null
+  },
+  "randomState": {
+    "algorithm": "MULBERRY32",
+    "version": 1,
+    "state": 3633692937
+  },
+  "acceptedCommands": [],
+  "commandIndex": 0,
+  "stateHash": "c3569de5a49954b3ae586a137407e3513ceda5c07bc0bc5449486f780013452e",
+  "savedAt": "2026-08-16T00:00:00.000Z",
+  "presentation": {
+    "tallies": { "citiesCaptured": 0, "unitsDefeated": 0, "unitsLost": 0 },
+    "playerTallies": [
+      { "playerId": 1, "kills": 0, "losses": 0, "citiesCaptured": 0 },
+      { "playerId": 2, "kills": 0, "losses": 0, "citiesCaptured": 0 }
+    ]
+  }
+}

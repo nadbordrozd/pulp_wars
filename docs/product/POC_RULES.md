@@ -59,6 +59,7 @@ type CardinalDirection = "NORTH" | "EAST" | "SOUTH" | "WEST";
 interface MatchSetup {
   // retained v4 fields, with rulesetId: "pulp-wars-poc-5"
   readonly factions: readonly FactionId[]; // exact seat order and length
+  readonly mapGenerationRevision?: "REDUCED_VILLAGES";
 }
 
 interface PlayerState {
@@ -497,8 +498,9 @@ as `INTEGER_OVERFLOW` before stars, resource, or improvement changes.
 
 ### 0.11 Retained varied deterministic maps
 
-Settlement counts, spacing, board presets, and the exact mountain target remain
-unchanged. Let `C = width * height`, `M = roundHalfUp(C * 18 / 100)`, and
+Settlement counts are defined by section 2. Spacing, board presets, and the
+exact mountain target remain unchanged. Let `C = width * height`,
+`M = roundHalfUp(C * 18 / 100)`, and
 `F = roundHalfUp(C * 24 / 100)`. Every accepted standard or Demo board has:
 
 | Size | Mountains `M` | Forests `F` |
@@ -633,25 +635,37 @@ its diplomacy has no additional effect.
 
 | AI opponents | Total players | Auto preset |   Board | Neutral villages |
 | -----------: | ------------: | ----------- | ------: | ---------------: |
-|            1 |             2 | Tiny        | 11 x 11 |                4 |
-|            2 |             3 | Small       | 14 x 14 |                6 |
-|            3 |             4 | Normal      | 16 x 16 |                8 |
+|            1 |             2 | Tiny        | 11 x 11 |                3 |
+|            2 |             3 | Small       | 14 x 14 |                4 |
+|            3 |             4 | Normal      | 16 x 16 |                6 |
 
 `Auto` is the default and resolves to the table. The user may explicitly choose
 any preset at least as large as the Auto preset; smaller choices are disabled.
 The resolved dimensions, rather than `Auto`, are stored in setup and replay.
+Every newly created standard match stores
+`mapGenerationRevision: "REDUCED_VILLAGES"`; the table above and the Large and
+Huge counts below are that revision's authoritative counts.
 
 **Huge** is an explicit 25 x 25 preset for every AI count. It never changes
-`Auto`. Huge always has exactly 30 settlements: 28 neutral villages with one
-AI, 27 with two AI, and 26 with three AI. The existing 11/14/16 village counts
-above remain unchanged.
+`Auto`. Huge always has exactly 22 settlements: 20 neutral villages with one
+AI, 19 with two AI, and 18 with three AI.
 
 **Large** is a second explicit preset, 20 x 20 for every AI count. It never
-changes `Auto`. Large always has exactly 20 settlements: 18 neutral villages
-with one AI, 17 with two AI, and 16 with three AI. Its targets are 72 Mountains
+changes `Auto`. Large always has exactly 15 settlements: 13 neutral villages
+with one AI, 12 with two AI, and 11 with three AI. Its targets are 72 Mountains
 and 96 Forests, allocated by section 0.11 without a territory quota. Large uses
 the same lattice, spacing, connectivity, retry ceiling, and PRNG ordering as
 every other v5 map.
+
+The optional revision is a narrow ruleset-5 compatibility discriminator, not a
+new save, replay, state-schema, or ruleset version. Historical v5 setup JSON
+without `mapGenerationRevision` stays absent when parsed and regenerates the
+original neutral-village tables: Auto 4/6/8, Large 18/17/16, and Huge 28/27/26
+for 1/2/3 AI. This preserves historical state bytes and replay/checkpoint hashes.
+The only accepted present value is exactly `"REDUCED_VILLAGES"`. App, headless
+match/batch, CLI, and current standard fixture writers always emit it. The fixed
+Demo setup remains unmarked so its established v5 map and golden replay stay
+byte-for-byte deterministic.
 
 The simulation accepts a `uint32` seed. The UI accepts zero to 64 Unicode
 characters. It normalizes non-empty input with NFC, UTF-8 encodes it, and hashes
@@ -1414,12 +1428,16 @@ arm, the exact commands/events/errors in section 0.4, and generalized combat
 targets. Cooperative relationships still derive solely from setup plus
 `humanPlayerId`; faction adds no mutable diplomacy.
 
-The exact v5 setup parser requires the nine standard fields, including
-`aiMode: "RIVAL" | "COOPERATIVE"` and exact `factions`, or those nine plus
-`scenario: "DEMO"`; it rejects missing, undefined, unknown, extra, non-square,
-unsupported-size, invalid-faction, wrong-length, or sparse-array input. Demo
-requires its fixed rival/all-Original setup. Standard writers omit only
-`scenario`, never `aiMode` or `factions`.
+The exact v5 setup parser requires the nine base fields, including
+`aiMode: "RIVAL" | "COOPERATIVE"` and exact `factions`. A standard setup may
+add the exact compatibility marker
+`mapGenerationRevision: "REDUCED_VILLAGES"`; absence is retained as the
+historical v5 generator, while missing-as-`undefined` and every other marker
+value are rejected. Demo adds only `scenario: "DEMO"` to the base fields and
+rejects the map marker. All forms reject missing, undefined, unknown, extra,
+non-square, unsupported-size, invalid-faction, wrong-length, or sparse-array
+input. Demo requires its fixed rival/all-Original setup. New standard writers
+omit `scenario` but write the marker, `aiMode`, and `factions`.
 
 Settings remain `pulpWars.settings.v1`; Full/Reduced already represents the
 required motion choice. Recognized ruleset/save/replay versions 1 through 4 are
@@ -1444,8 +1462,9 @@ Ruleset-5 Demo Match uses the same state/save/replay schema versions. Its
 scenario discriminator, fixed rival `aiMode`, and all-Original faction array are
 preserved by restart, autosave, load, replay, and headless creation. Existing
 v2/v3/v4 Demo and standard hashes remain historical compatibility fixtures, not
-v5 expected hashes. V5 fixtures must record new initial, post-command,
-save/resume, replay, and headless hashes after implementation.
+v5 expected hashes. The unmarked v5 Demo and captured unmarked standard v5
+fixtures remain frozen compatibility evidence; current marked standard fixtures
+record the reduced-density path.
 
 ## 14. Deliberate baseline decisions
 

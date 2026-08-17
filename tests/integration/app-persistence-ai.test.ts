@@ -4,6 +4,7 @@ import {
   COMBAT_PRESENTATION_TIMING,
 } from "../../src/app/controller";
 import {
+  MAP_GENERATION_REVISION,
   RULESET_ID,
   applyCommand,
   canonicalHash,
@@ -396,6 +397,9 @@ describe("application save and AI integration", () => {
     });
     first.requestStartMatch();
     first.confirm();
+    expect(first.snapshot().match?.setup.mapGenerationRevision).toBe(
+      MAP_GENERATION_REVISION,
+    );
     const view = first.snapshot().view;
     if (view === null) throw new Error("Missing human view");
     const command = queryPlayerCommands(view)
@@ -425,7 +429,7 @@ describe("application save and AI integration", () => {
   });
 
   it("produces the identical authoritative state with paced and fast-forward AI presentation", () => {
-    const initial = created(setup({ seed: 0 }));
+    const initial = created(setup({ seed: 1 }));
     const pacedStorage = new MemoryStorage();
     const paced = new AppController({
       initialRoute: "MATCH",
@@ -592,7 +596,7 @@ describe("application save and AI integration", () => {
     const controller = new AppController({
       initialRoute: "SETUP",
       storage,
-      randomSeed: () => 0,
+      randomSeed: () => 1,
       aiStepDelayMs: 1,
       chooseAiCommand: () => {
         throw new Error("policy exploded");
@@ -615,6 +619,7 @@ function setup(overrides: Partial<MatchSetup> = {}): MatchSetup {
   const aiCount = overrides.aiCount ?? 1;
   return {
     rulesetId: RULESET_ID,
+    mapGenerationRevision: MAP_GENERATION_REVISION,
     seed: 1,
     width: 11,
     height: 11,

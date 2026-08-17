@@ -140,6 +140,7 @@ async function installFixture(
       globalThis.__archerReview?.host?.destroy?.();
       const created = engine.createGame({
         rulesetId: engine.RULESET_ID,
+        mapGenerationRevision: engine.MAP_GENERATION_REVISION,
         seed: 0x6173,
         width: 11,
         height: 11,

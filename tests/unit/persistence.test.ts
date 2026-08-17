@@ -10,10 +10,12 @@ import {
   type StorageAdapter,
 } from "../../src/persistence/index";
 import {
+  MAP_GENERATION_REVISION,
   RULESET_ID,
   appendReplayCommand,
   applyCommand,
   canonicalHash,
+  canonicalJson,
   createGame,
   createReplay,
   queryPlayerCommands,
@@ -28,6 +30,7 @@ import { headless } from "../../src/headless/index";
 
 const setup: MatchSetup = {
   rulesetId: RULESET_ID,
+  mapGenerationRevision: MAP_GENERATION_REVISION,
   seed: 1,
   width: 11,
   height: 11,
@@ -39,6 +42,25 @@ const setup: MatchSetup = {
 };
 
 describe("versioned local persistence", () => {
+  it("loads a captured unmarked pre-density v5 save canonically", () => {
+    const source = readFileSync(
+      "tests/fixtures/historical-save-v5.json",
+      "utf8",
+    );
+    const captured = JSON.parse(source) as { readonly state: unknown };
+    const loaded = parseSave(source);
+    expect(loaded.kind).toBe("VALID");
+    if (loaded.kind !== "VALID")
+      throw new Error("Historical save did not load");
+    expect(loaded.save.setup).not.toHaveProperty("mapGenerationRevision");
+    expect(loaded.save.stateHash).toBe(
+      "c3569de5a49954b3ae586a137407e3513ceda5c07bc0bc5449486f780013452e",
+    );
+    expect(canonicalJson(loaded.save.state)).toBe(
+      canonicalJson(captured.state),
+    );
+  });
+
   it("round-trips a Huge setup in the v5 envelope", () => {
     const hugeSetup: MatchSetup = {
       ...setup,

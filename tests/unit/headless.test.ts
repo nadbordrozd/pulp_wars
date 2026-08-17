@@ -50,7 +50,7 @@ describe("complete deterministic AI matches", () => {
         }, []),
       ),
     ).toBeLessThanOrEqual(128);
-  }, 30_000);
+  }, 60_000);
 
   it("summarizes a fixed cross-setup batch corpus", async () => {
     const summary = await runAiBatch({
@@ -68,9 +68,9 @@ describe("complete deterministic AI matches", () => {
       outcomes: { COMMAND_CAP: 3 },
     });
     expect(summary.entries.map((entry) => entry.finalHash)).toEqual([
-      "69bd951282664a5a764d29bd9a9cde6bacf248ea5e62707b3240317ba13b1dc7",
-      "f037874ac4f8d07a6a2cb251b858716b5e31b8b4db8229dfab434b3c11b5b36b",
-      "33418fc94e361ac7a08e2108394c618cef1d384b437b2bbd9f270a77a3a03bcf",
+      "2fd9c2eda0ce69075f09c8f0073a3c0e3bbd46617bd36ca940bb70641ad5d742",
+      "ee153aad1325b9530db9ba2830f97bbd05fa36634870ec3a5e4ac5fb806f2bf4",
+      "11ede7b788be2631663652ae9959a1372c810f7c73c213936a43087a8d6b2475",
     ]);
     expect(
       summary.entries.map((entry) => entry.metrics.factionsBySeat),

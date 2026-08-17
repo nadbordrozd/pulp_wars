@@ -1,4 +1,5 @@
 import {
+  MAP_GENERATION_REVISION,
   RULESET_ID,
   appendReplayCommand,
   applyCommand,
@@ -14,6 +15,7 @@ export function setupBuilder(overrides: Partial<MatchSetup> = {}): MatchSetup {
   const aiCount = overrides.aiCount ?? 1;
   return {
     rulesetId: RULESET_ID,
+    mapGenerationRevision: MAP_GENERATION_REVISION,
     seed: 0x1234_5678,
     width: 11,
     height: 11,

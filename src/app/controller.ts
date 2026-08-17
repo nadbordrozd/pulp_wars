@@ -1,5 +1,6 @@
 import { chooseNormalCommand } from "../ai/index";
 import {
+  MAP_GENERATION_REVISION,
   RULESET_ID,
   DEMO_MATCH_SETUP,
   appendReplayCommand,
@@ -660,6 +661,7 @@ export class AppController {
     const size = resolveBoardSize(this.#draft.aiCount, this.#draft.boardPreset);
     const setup: MatchSetup = {
       rulesetId: RULESET_ID,
+      mapGenerationRevision: MAP_GENERATION_REVISION,
       seed,
       width: size,
       height: size,

@@ -255,7 +255,7 @@ async function renderRewardFixture(
       import('/src/app/bootstrap.ts'),
       import('/src/engine/index.ts')
     ]);
-    const result = engine.createGame({ rulesetId: engine.RULESET_ID, seed: ${level}, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', aiMode: 'RIVAL', humanColor: 'CORAL', factions: ['ORIGINAL', 'ORIGINAL'] });
+    const result = engine.createGame({ rulesetId: engine.RULESET_ID, mapGenerationRevision: engine.MAP_GENERATION_REVISION, seed: ${level}, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', aiMode: 'RIVAL', humanColor: 'CORAL', factions: ['ORIGINAL', 'ORIGINAL'] });
     if (!result.ok) throw new Error(result.error.code);
     const human = result.state.players.find((player) => player.controller === 'HUMAN');
     const city = result.state.cities.find((candidate) => candidate.ownerId === human?.id);
@@ -293,7 +293,7 @@ async function renderFreshMatchFixture(connection: {
       import('/src/app/bootstrap.ts'),
       import('/src/engine/index.ts')
     ]);
-    const result = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 6173, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', aiMode: 'RIVAL', humanColor: 'CORAL', factions: ['ORIGINAL', 'ORIGINAL'] });
+    const result = engine.createGame({ rulesetId: engine.RULESET_ID, mapGenerationRevision: engine.MAP_GENERATION_REVISION, seed: 6173, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', aiMode: 'RIVAL', humanColor: 'CORAL', factions: ['ORIGINAL', 'ORIGINAL'] });
     if (!result.ok) throw new Error(result.error.code);
     document.querySelector('#app')?.replaceChildren();
     bootstrapApp(document, { initialRoute: 'MATCH', initialMatch: result.state, aiStepDelayMs: 100000, prefersReducedMotion: true });

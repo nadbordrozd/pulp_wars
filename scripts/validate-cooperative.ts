@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import {
+  MAP_GENERATION_REVISION,
   applyCommand,
   arePlayersAllied,
   createGame,
@@ -19,6 +20,7 @@ if (!Number.isSafeInteger(maxCommands) || maxCommands <= 0)
 
 const setup: MatchSetup = {
   rulesetId: "pulp-wars-poc-5",
+  mapGenerationRevision: MAP_GENERATION_REVISION,
   seed,
   width: size,
   height: size,
@@ -75,9 +77,12 @@ for (const record of result.commandLog) {
     aiParticipation[record.command.kind] =
       (aiParticipation[record.command.kind] ?? 0) + 1;
   if (record.command.kind === "ATTACK") {
-    const target = state.units.find(
-      (unit) => unit.id === record.command.targetId,
-    );
+    const target =
+      record.command.target.kind === "UNIT"
+        ? state.units.find((unit) => unit.id === record.command.target.unitId)
+        : state.chocolateWalls.find(
+            (wall) => wall.id === record.command.target.wallId,
+          );
     if (target === undefined) throw new Error("attack target disappeared");
     if (
       actor.id !== state.humanPlayerId &&

@@ -2,6 +2,7 @@ import type { CityId, PlayerId, UnitId, WallId } from "./ids";
 
 export const GAME_STATE_SCHEMA_VERSION = 5 as const;
 export const RULESET_ID = "pulp-wars-poc-5" as const;
+export const MAP_GENERATION_REVISION = "REDUCED_VILLAGES" as const;
 export const FACTION_IDS = Object.freeze(["ORIGINAL", "CANDY"] as const);
 
 export type RulesetId = typeof RULESET_ID;
@@ -10,6 +11,7 @@ export type AiCount = 1 | 2 | 3;
 export type AiMode = "RIVAL" | "COOPERATIVE";
 export type FactionId = (typeof FACTION_IDS)[number];
 export type MatchScenario = "DEMO";
+export type MapGenerationRevision = typeof MAP_GENERATION_REVISION;
 export type PlayerColor = "CORAL" | "TEAL" | "GOLD" | "VIOLET";
 export type TechId =
   | "CLIMBING"
@@ -44,6 +46,11 @@ export interface MatchSetup {
   readonly humanColor: PlayerColor;
   /** Exact seat order: Human, then AI 1 through AI N. */
   readonly factions: readonly FactionId[];
+  /**
+   * Absent preserves the original ruleset-5 map generator for stored games.
+   * New standard matches opt into the current reduced-village generator.
+   */
+  readonly mapGenerationRevision?: MapGenerationRevision;
   /** Absent is the canonical standard match. */
   readonly scenario?: MatchScenario;
 }

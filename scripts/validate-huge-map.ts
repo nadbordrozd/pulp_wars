@@ -5,9 +5,11 @@ import process from "node:process";
 import { format } from "prettier";
 import {
   MAX_MAP_GENERATION_ATTEMPTS,
+  MAP_GENERATION_REVISION,
   canonicalHash,
   canonicalJson,
   generateInitialMap,
+  neutralVillageCount,
   randomState,
   validateMapInvariants,
   type MatchSetup,
@@ -42,7 +44,7 @@ for (const aiCount of [1, 2, 3] as const) {
         `Huge generation repeat mismatch for ${aiCount} AI seed ${seed}`,
       );
     }
-    const expectedVillages = 30 - (aiCount + 1);
+    const expectedVillages = neutralVillageCount(setup);
     const failures = validateMapInvariants(
       first.map.board,
       aiCount + 1,
@@ -65,7 +67,7 @@ for (const aiCount of [1, 2, 3] as const) {
       mountains !== 113 ||
       forests !== 150 ||
       animals === 0 ||
-      settlements !== 30 ||
+      settlements !== 22 ||
       first.map.villages.length !== expectedVillages ||
       first.map.attempt > MAX_MAP_GENERATION_ATTEMPTS
     ) {
@@ -145,8 +147,8 @@ const report = {
   },
   contract: {
     size: HUGE_SIZE,
-    totalSettlements: 30,
-    neutralVillages: { 1: 28, 2: 27, 3: 26 },
+    totalSettlements: 22,
+    neutralVillages: { 1: 20, 2: 19, 3: 18 },
     mountains: 113,
     forests: 150,
     generationAttemptCeiling: MAX_MAP_GENERATION_ATTEMPTS,
@@ -172,6 +174,7 @@ if (output === null) {
 function hugeSetup(aiCount: 1 | 2 | 3, seed: number): MatchSetup {
   return {
     rulesetId: "pulp-wars-poc-5",
+    mapGenerationRevision: MAP_GENERATION_REVISION,
     seed,
     width: HUGE_SIZE,
     height: HUGE_SIZE,

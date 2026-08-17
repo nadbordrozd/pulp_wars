@@ -334,7 +334,7 @@ async function installCandyActionFixture(
     `(async () => {
       const [appModule, engine] = await Promise.all([import('/src/app/bootstrap.ts'), import('/src/engine/index.ts')]);
       globalThis.__PULP_WARS_APP__?.destroy?.();
-      const created = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 6173, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL', factions: ['CANDY', 'ORIGINAL'] });
+      const created = engine.createGame({ rulesetId: engine.RULESET_ID, mapGenerationRevision: engine.MAP_GENERATION_REVISION, seed: 6173, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL', factions: ['CANDY', 'ORIGINAL'] });
       if (!created.ok) throw new Error(created.error.code);
       const human = created.state.players.find((player) => player.controller === 'HUMAN');
       const city = created.state.cities.find((candidate) => candidate.ownerId === human?.id);
@@ -373,7 +373,7 @@ async function installCandyChoiceFixture(
     `(async () => {
       const [appModule, engine] = await Promise.all([import('/src/app/bootstrap.ts'), import('/src/engine/index.ts')]);
       globalThis.__PULP_WARS_APP__?.destroy?.();
-      const created = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 6173, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL', factions: ['CANDY', 'ORIGINAL'] });
+      const created = engine.createGame({ rulesetId: engine.RULESET_ID, mapGenerationRevision: engine.MAP_GENERATION_REVISION, seed: 6173, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL', factions: ['CANDY', 'ORIGINAL'] });
       if (!created.ok) throw new Error(created.error.code);
       const human = created.state.players.find((player) => player.controller === 'HUMAN');
       const actor = created.state.units.find((unit) => unit.ownerId === human?.id);
@@ -403,7 +403,7 @@ async function installCandyEffectFixture(
     `(async () => {
       const [appModule, engine] = await Promise.all([import('/src/app/bootstrap.ts'), import('/src/engine/index.ts')]);
       globalThis.__PULP_WARS_APP__?.destroy?.();
-      const created = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 6173, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL', factions: ['CANDY', 'ORIGINAL'] });
+      const created = engine.createGame({ rulesetId: engine.RULESET_ID, mapGenerationRevision: engine.MAP_GENERATION_REVISION, seed: 6173, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL', factions: ['CANDY', 'ORIGINAL'] });
       if (!created.ok) throw new Error(created.error.code);
       const human = created.state.players.find((player) => player.controller === 'HUMAN');
       const city = created.state.cities.find((candidate) => candidate.ownerId === human?.id);
@@ -765,7 +765,7 @@ async function installReadinessFixture(
       ]);
       globalThis.__PULP_WARS_APP__?.destroy?.();
       localStorage.clear();
-      const created = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 1, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', aiMode: 'RIVAL', humanColor: 'CORAL', factions: ['ORIGINAL', 'ORIGINAL'] });
+      const created = engine.createGame({ rulesetId: engine.RULESET_ID, mapGenerationRevision: engine.MAP_GENERATION_REVISION, seed: 1, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', aiMode: 'RIVAL', humanColor: 'CORAL', factions: ['ORIGINAL', 'ORIGINAL'] });
       if (!created.ok) throw new Error(created.error.code);
       const human = created.state.players.find((player) => player.controller === 'HUMAN');
       const unit = created.state.units.find((candidate) => candidate.ownerId === human?.id);
@@ -1001,7 +1001,7 @@ async function installSingleActivationFixture(
       ]);
       globalThis.__PULP_WARS_APP__?.destroy?.();
       localStorage.clear();
-      const created = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 1, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL', factions: ['ORIGINAL', 'ORIGINAL'] });
+      const created = engine.createGame({ rulesetId: engine.RULESET_ID, mapGenerationRevision: engine.MAP_GENERATION_REVISION, seed: 1, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL', factions: ['ORIGINAL', 'ORIGINAL'] });
       if (!created.ok) throw new Error(created.error.code);
       const human = created.state.players.find((player) => player.controller === 'HUMAN');
       const attacker = created.state.units.find((unit) => unit.ownerId === human?.id);
@@ -1301,7 +1301,7 @@ async function installTileDockReviewFixture(
         import('/src/engine/index.ts')
       ]);
       globalThis.__PULP_WARS_APP__?.destroy?.();
-      const created = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 1, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL', factions: ['ORIGINAL', 'ORIGINAL'] });
+      const created = engine.createGame({ rulesetId: engine.RULESET_ID, mapGenerationRevision: engine.MAP_GENERATION_REVISION, seed: 1, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL', factions: ['ORIGINAL', 'ORIGINAL'] });
       if (!created.ok) throw new Error(created.error.code);
       const human = created.state.players.find((player) => player.controller === 'HUMAN');
       const city = created.state.cities.find((candidate) => candidate.ownerId === human?.id && candidate.isCapital);
@@ -1560,7 +1560,7 @@ async function reviewCooperativeLarge(
     initial.width !== 20 ||
     initial.height !== 20 ||
     initial.aiCount !== 3 ||
-    initial.settlements !== 20 ||
+    initial.settlements !== 15 ||
     initial.mountains !== 72 ||
     initial.forests !== 96 ||
     initial.animals < 1
@@ -1764,7 +1764,7 @@ async function installTechnologyReviewFixture(
         import('/src/engine/index.ts')
       ]);
       globalThis.__PULP_WARS_APP__?.destroy?.();
-      const created = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 6173, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL', factions: ['ORIGINAL', 'ORIGINAL'] });
+      const created = engine.createGame({ rulesetId: engine.RULESET_ID, mapGenerationRevision: engine.MAP_GENERATION_REVISION, seed: 6173, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL', factions: ['ORIGINAL', 'ORIGINAL'] });
       if (!created.ok) throw new Error(created.error.code);
       const human = created.state.players.find((player) => player.controller === 'HUMAN');
       if (!human) throw new Error('Missing technology review human');
@@ -1893,7 +1893,7 @@ async function installCombatReviewFixture(
         import('/src/engine/index.ts')
       ]);
       globalThis.__PULP_WARS_APP__?.destroy?.();
-      const created = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 6173, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL', factions: ['ORIGINAL', 'ORIGINAL'] });
+      const created = engine.createGame({ rulesetId: engine.RULESET_ID, mapGenerationRevision: engine.MAP_GENERATION_REVISION, seed: 6173, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL', factions: ['ORIGINAL', 'ORIGINAL'] });
       if (!created.ok) throw new Error(created.error.code);
       const human = created.state.players.find((player) => player.controller === 'HUMAN');
       const humanCity = created.state.cities.find((city) => city.ownerId === human?.id && city.isCapital);
@@ -2124,7 +2124,7 @@ async function installGrowthReviewFixture(
         import('/src/render/canvas/pixellab-asset-bindings.ts')
       ]);
       globalThis.__PULP_WARS_APP__?.destroy?.();
-      const created = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 6173, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL', factions: ['ORIGINAL', 'ORIGINAL'] });
+      const created = engine.createGame({ rulesetId: engine.RULESET_ID, mapGenerationRevision: engine.MAP_GENERATION_REVISION, seed: 6173, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL', factions: ['ORIGINAL', 'ORIGINAL'] });
       if (!created.ok) throw new Error(created.error.code);
       const human = created.state.players.find((player) => player.controller === 'HUMAN');
       const city = created.state.cities.find((candidate) => candidate.ownerId === human?.id && candidate.isCapital);
@@ -2247,7 +2247,7 @@ async function reviewMixedResources(connection: Connection): Promise<void> {
           import('/src/engine/index.ts')
         ]);
         globalThis.__PULP_WARS_APP__?.destroy?.();
-      const created = engine.createGame({ rulesetId: engine.RULESET_ID, seed: 1, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL', factions: ['ORIGINAL', 'ORIGINAL'] });
+      const created = engine.createGame({ rulesetId: engine.RULESET_ID, mapGenerationRevision: engine.MAP_GENERATION_REVISION, seed: 1, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', humanColor: 'CORAL', aiMode: 'RIVAL', factions: ['ORIGINAL', 'ORIGINAL'] });
         if (!created.ok) throw new Error(created.error.code);
         const human = created.state.players.find((player) => player.controller === 'HUMAN');
         const city = created.state.cities.find((candidate) => candidate.ownerId === human?.id && candidate.isCapital);

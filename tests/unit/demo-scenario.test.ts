@@ -259,12 +259,16 @@ describe("canonical deterministic demo scenario", () => {
     }
   });
 
-  it("keeps absent-scenario STANDARD bytes stable and rejects every noncanonical setup shape", () => {
+  it("keeps marked STANDARD bytes stable and rejects every noncanonical setup shape", () => {
     const standard = createGame(setupBuilder());
     if (!standard.ok) throw new Error(standard.error.code);
     expect(standard.state.setup).not.toHaveProperty("scenario");
+    expect(standard.state.setup).toHaveProperty(
+      "mapGenerationRevision",
+      "REDUCED_VILLAGES",
+    );
     expect(canonicalHash(standard.state)).toBe(
-      "c3569de5a49954b3ae586a137407e3513ceda5c07bc0bc5449486f780013452e",
+      "77ceb8482f7bc24695681ebd17f7ba0d664f379a32dfebac3d389a6f3616603a",
     );
     expect(parseMatchSetup(DEMO_MATCH_SETUP)).toEqual(DEMO_MATCH_SETUP);
     for (const candidate of [
@@ -272,6 +276,10 @@ describe("canonical deterministic demo scenario", () => {
       { ...DEMO_MATCH_SETUP, scenario: undefined },
       { ...DEMO_MATCH_SETUP, seed: 0 },
       { ...DEMO_MATCH_SETUP, humanColor: "TEAL" },
+      {
+        ...DEMO_MATCH_SETUP,
+        mapGenerationRevision: "REDUCED_VILLAGES",
+      },
       {
         ...DEMO_MATCH_SETUP,
         factions: ["CANDY", "ORIGINAL", "ORIGINAL"],
