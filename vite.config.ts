@@ -1,6 +1,11 @@
 import { defineConfig } from "vitest/config";
 
-export default defineConfig({
+const GITHUB_PAGES_BASE = "/pulp_wars/";
+
+export default defineConfig(({ command }) => ({
+  // Keep localhost at `/`, while production output targets the GitHub Pages
+  // project site at https://nadbordrozd.github.io/pulp_wars/.
+  base: command === "build" ? GITHUB_PAGES_BASE : "/",
   server: {
     host: "localhost",
     port: 6173,
@@ -15,4 +20,4 @@ export default defineConfig({
     environment: "node",
     include: ["tests/**/*.test.ts"],
   },
-});
+}));
