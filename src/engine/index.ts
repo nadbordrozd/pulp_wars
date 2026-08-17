@@ -25,3 +25,4 @@ export * from "./rules/relationships";
 export * from "./scenarios/demo";
 export * from "./simulation";
 export * from "./turns/lifecycle";
+export * from "./territory/connectivity";

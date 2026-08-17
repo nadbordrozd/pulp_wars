@@ -6,12 +6,14 @@ import {
   queryPlayerCommands,
   requireRuleset,
   type CityState,
+  type CityId,
   type Command,
   type Coord,
   type FactionId,
   type PlayerUnitView,
   type PlayerView,
   type TechId,
+  type UnitId,
   type UnitType,
 } from "../../engine/index";
 import {
@@ -114,7 +116,11 @@ export class DomAppView {
     )
       return;
     if (snapshot.overlay.name !== "NONE") {
-      if (event.key === "Escape" && snapshot.overlay.name !== "REWARD") {
+      if (
+        event.key === "Escape" &&
+        snapshot.overlay.name !== "REWARD" &&
+        snapshot.overlay.name !== "CANDIFY_CITY"
+      ) {
         event.preventDefault();
         this.#boardHost.resetActivationCycle();
         this.#controller.closeOverlay();
@@ -1720,6 +1726,12 @@ export class DomAppView {
         return this.#tech(snapshot);
       case "REWARD":
         return this.#reward(snapshot, overlay.cityId);
+      case "CANDIFY_CITY":
+        return this.#candifyCityChoice(
+          snapshot,
+          overlay.unitId,
+          overlay.candidateCityIds,
+        );
       case "CONFIRM":
         return this.#confirmation(snapshot, overlay.action);
       case "SAVE_RECOVERY":
@@ -2387,7 +2399,10 @@ export class DomAppView {
         "A resource action increased this city's population, level, base income, and unit capacity. Choose one city reward to continue. This choice is required.",
       ),
     );
-    const level = view?.pendingChoice?.level;
+    const level =
+      view?.pendingChoice?.kind === "CITY_REWARD"
+        ? view.pendingChoice.level
+        : undefined;
     if (city !== undefined && level !== undefined) {
       const nextThreshold = city.level + 1;
       article.append(
@@ -2439,6 +2454,41 @@ export class DomAppView {
         button.prepend(icon);
       }
       article.append(button);
+    }
+    return article;
+  }
+
+  #candifyCityChoice(
+    snapshot: AppSnapshot,
+    unitId: UnitId,
+    candidateCityIds: readonly CityId[],
+  ): HTMLElement {
+    const article = element(
+      this.#document,
+      "article",
+      "modal-content candify-city-content",
+    );
+    article.append(
+      textElement(this.#document, "h2", "Choose city for Candify"),
+      textElement(
+        this.#document,
+        "p",
+        "Choose which equally near city receives this tile. This choice is required.",
+      ),
+    );
+    for (const cityId of candidateCityIds) {
+      const city = snapshot.view?.cities.find(
+        (candidate) => candidate.id === cityId,
+      );
+      article.append(
+        actionButton(
+          this.#document,
+          `City ${city?.id ?? cityId}`,
+          () => this.#controller.chooseCandifyCity(unitId, cityId),
+          "reward-choice",
+          `candify-city-${cityId}`,
+        ),
+      );
     }
     return article;
   }

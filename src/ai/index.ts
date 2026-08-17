@@ -56,14 +56,16 @@ const KIND_ORDINAL: Readonly<Record<Command["kind"], number>> = {
   PROMOTE: 6,
   WAIT: 7,
   BUILD_CHOCOLATE_WALL: 8,
-  RESEARCH: 9,
-  HARVEST_FRUIT: 10,
-  HUNT_ANIMAL: 11,
-  BUILD_LUMBER_MILL: 12,
-  BUILD_MINE: 13,
-  TRAIN: 14,
-  CHOOSE_CITY_REWARD: 15,
-  END_TURN: 16,
+  CANDIFY: 9,
+  RESEARCH: 10,
+  HARVEST_FRUIT: 11,
+  HUNT_ANIMAL: 12,
+  BUILD_LUMBER_MILL: 13,
+  BUILD_MINE: 14,
+  TRAIN: 15,
+  CHOOSE_CANDIFY_CITY: 16,
+  CHOOSE_CITY_REWARD: 17,
+  END_TURN: 18,
 };
 
 const TECH_ORDINAL: Readonly<Record<TechId, number>> = {
@@ -288,6 +290,19 @@ export function scoreCommand(view: PlayerView, command: Command): AiScore {
       priority = 450;
       immediateValue = -1;
       break;
+    case "CANDIFY": {
+      const actor = view.units.find((unit) => unit.id === command.unitId);
+      const tile = actor === undefined ? undefined : tileAt(view, actor.at);
+      const controller =
+        tile?.explored === true && tile.territoryCityId !== null
+          ? view.cities.find((city) => city.id === tile.territoryCityId)
+          : undefined;
+      priority =
+        controller !== undefined && isHostile(view, controller.ownerId)
+          ? 890
+          : 870;
+      break;
+    }
     case "TRAIN": {
       const city = view.cities.find(
         (candidate) => candidate.id === command.cityId,
@@ -341,6 +356,10 @@ export function scoreCommand(view: PlayerView, command: Command): AiScore {
     case "CHOOSE_CITY_REWARD":
       priority = 950;
       immediateValue = command.reward === "RESOURCES" ? 5 : 0;
+      break;
+    case "CHOOSE_CANDIFY_CITY":
+      priority = 950;
+      strategicValue = candifyFrontierValue(view, command.cityId);
       break;
     case "RESEARCH": {
       const resourceTargets = resourceTargetsForFirstStep(view, command.tech);
@@ -496,6 +515,7 @@ function commandTarget(view: PlayerView, command: Command): Coord {
     case "BUILD_CHOCOLATE_WALL":
       return command.at;
     case "TRAIN":
+    case "CHOOSE_CANDIFY_CITY":
     case "CHOOSE_CITY_REWARD":
       return (
         view.cities.find((city) => city.id === command.cityId)?.at ?? {
@@ -507,6 +527,7 @@ function commandTarget(view: PlayerView, command: Command): Coord {
     case "CAPTURE":
     case "PROMOTE":
     case "WAIT":
+    case "CANDIFY":
       return (
         view.units.find((unit) => unit.id === command.unitId)?.at ?? {
           x: -1,
@@ -528,8 +549,10 @@ function commandEntity(command: Command): number {
     case "CAPTURE":
     case "PROMOTE":
     case "WAIT":
+    case "CANDIFY":
       return command.unitId;
     case "TRAIN":
+    case "CHOOSE_CANDIFY_CITY":
     case "CHOOSE_CITY_REWARD":
       return command.cityId;
     default:
@@ -549,6 +572,7 @@ function unitForCommand(
     case "CAPTURE":
     case "PROMOTE":
     case "WAIT":
+    case "CANDIFY":
       return view.units.find((unit) => unit.id === command.unitId) ?? null;
     default:
       return null;
@@ -781,7 +805,32 @@ function hasOwnedPendingReward(
   view: PlayerView,
   city: PlayerCityView,
 ): boolean {
-  return view.pendingChoice?.cityId === city.id;
+  return (
+    view.pendingChoice?.kind === "CITY_REWARD" &&
+    view.pendingChoice.cityId === city.id
+  );
+}
+
+function candifyFrontierValue(view: PlayerView, cityId: number): number {
+  const territory = view.board.tiles.filter(
+    (tile) => tile.explored && tile.territoryCityId === cityId,
+  );
+  const adjacent = new Set<string>();
+  for (const tile of territory) {
+    for (let y = tile.at.y - 1; y <= tile.at.y + 1; y += 1) {
+      for (let x = tile.at.x - 1; x <= tile.at.x + 1; x += 1) {
+        if (x < 0 || y < 0 || x >= view.board.width || y >= view.board.height)
+          continue;
+        const candidate = tileAt(view, { x, y });
+        if (
+          candidate?.explored === true &&
+          candidate.territoryCityId !== cityId
+        )
+          adjacent.add(`${x},${y}`);
+      }
+    }
+  }
+  return adjacent.size;
 }
 
 function ownedCityForTile(view: PlayerView, at: Coord): PlayerCityView | null {

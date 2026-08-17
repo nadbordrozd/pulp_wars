@@ -8,6 +8,7 @@ import type {
   PlayerColor,
   PlayerUnitView,
   PlayerView,
+  UnitId,
 } from "../engine/index";
 
 export type AppRoute =
@@ -57,6 +58,11 @@ export type MatchOverlay =
   | { readonly name: "STATS" }
   | { readonly name: "TECH" }
   | { readonly name: "REWARD"; readonly cityId: CityId }
+  | {
+      readonly name: "CANDIFY_CITY";
+      readonly unitId: UnitId;
+      readonly candidateCityIds: readonly CityId[];
+    }
   | { readonly name: "CONFIRM"; readonly action: ConfirmationAction }
   | { readonly name: "SAVE_RECOVERY"; readonly diagnostic: string }
   | { readonly name: "AI_ERROR"; readonly diagnostic: string };

@@ -160,6 +160,25 @@ export function parseCommand(input: unknown): ParseResult<Command> {
         ? invalid("BUILD_CHOCOLATE_WALL")
         : { ok: true, value: { kind: "BUILD_CHOCOLATE_WALL", unitId: id, at } };
     }
+    case "CANDIFY": {
+      if (!hasExactKeys(input, ["kind", "unitId"])) return invalid("CANDIFY");
+      const id = parseUnitId(input.unitId);
+      return id === null
+        ? invalid("CANDIFY.unitId")
+        : { ok: true, value: { kind: "CANDIFY", unitId: id } };
+    }
+    case "CHOOSE_CANDIFY_CITY": {
+      if (!hasExactKeys(input, ["kind", "unitId", "cityId"]))
+        return invalid("CHOOSE_CANDIFY_CITY");
+      const unit = parseUnitId(input.unitId);
+      const city = parseCityId(input.cityId);
+      return unit === null || city === null
+        ? invalid("CHOOSE_CANDIFY_CITY")
+        : {
+            ok: true,
+            value: { kind: "CHOOSE_CANDIFY_CITY", unitId: unit, cityId: city },
+          };
+    }
     case "RECOVER":
     case "WAIT":
     case "PROMOTE":

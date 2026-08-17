@@ -4,6 +4,8 @@ import {
   evaluateMatchOutcome,
   reduceAttack,
   reduceBuildChocolateWall,
+  reduceCandify,
+  reduceChooseCandifyCity,
   reduceBuildLumberMill,
   reduceBuildMine,
   reduceHarvestFruit,
@@ -49,6 +51,7 @@ import { randomState, validateRandomState } from "./random/random";
 import { reachableMovementPaths } from "./movement/movement";
 import { effectiveUnitRule, getRuleset, requireRuleset } from "./rules/ruleset";
 import { applyDemoScenario, demoScenarioIssues } from "./scenarios/demo";
+import { dynamicTerritoryIsValid } from "./territory/connectivity";
 import { endTurnLifecycle, startTurnLifecycle } from "./turns/lifecycle";
 
 const UINT32_RANGE = 0x1_0000_0000;
@@ -257,6 +260,18 @@ export function applyCommand(state: GameState, command: Command): ApplyResult {
         state,
         reduceBuildChocolateWall(state, activePlayerId, command),
       );
+    case "CANDIFY":
+      return acceptReduction(
+        state,
+        reduceCandify(state, activePlayerId, command),
+        true,
+      );
+    case "CHOOSE_CANDIFY_CITY":
+      return acceptReduction(
+        state,
+        reduceChooseCandifyCity(state, activePlayerId, command),
+        true,
+      );
     case "RECOVER":
       return acceptReduction(state, reduceRecover(state, command));
     case "WAIT":
@@ -338,15 +353,26 @@ export function legalCommands(
   if (state.outcome !== null || activePlayer !== actor) return [];
   const candidates: Command[] = [];
   if (state.pendingChoice !== null) {
-    const rewards = requireRuleset(state.rulesetId).cityLevels.find(
-      (level) => level.level === state.pendingChoice?.level,
-    )?.rewards;
-    for (const reward of rewards ?? []) {
-      candidates.push({
-        kind: "CHOOSE_CITY_REWARD",
-        cityId: state.pendingChoice.cityId,
-        reward,
-      });
+    if (state.pendingChoice.kind === "CITY_REWARD") {
+      const pending = state.pendingChoice;
+      const rewards = requireRuleset(state.rulesetId).cityLevels.find(
+        (level) => level.level === pending.level,
+      )?.rewards;
+      for (const reward of rewards ?? []) {
+        candidates.push({
+          kind: "CHOOSE_CITY_REWARD",
+          cityId: pending.cityId,
+          reward,
+        });
+      }
+    } else {
+      for (const cityId of state.pendingChoice.candidateCityIds) {
+        candidates.push({
+          kind: "CHOOSE_CANDIFY_CITY",
+          unitId: state.pendingChoice.unitId,
+          cityId,
+        });
+      }
     }
   } else {
     const rules = requireRuleset(state.rulesetId);
@@ -436,6 +462,7 @@ export function legalCommands(
             at: tile.at,
           });
         }
+        candidates.push({ kind: "CANDIFY", unitId: unit.id });
       }
     }
     candidates.push({ kind: "END_TURN" });
@@ -690,6 +717,31 @@ function validateKernelState(state: GameState): RuleError | null {
   ) {
     return ruleError("INVALID_STATE", { field: "units" });
   }
+  if (state.pendingChoice !== null) {
+    if (state.pendingChoice.kind === "CITY_REWARD") {
+      const pending = state.pendingChoice;
+      if (!state.cities.some((city) => city.id === pending.cityId))
+        return ruleError("INVALID_STATE", { field: "pendingChoice" });
+    } else {
+      const pending = state.pendingChoice;
+      const unit = state.units.find(
+        (candidate) => candidate.id === pending.unitId,
+      );
+      const ownerId = unit?.ownerId;
+      if (
+        unit === undefined ||
+        pending.candidateCityIds.length < 2 ||
+        pending.candidateCityIds.some(
+          (id, index) =>
+            (index > 0 && (pending.candidateCityIds[index - 1] ?? 0) >= id) ||
+            !state.cities.some(
+              (city) => city.id === id && city.ownerId === ownerId,
+            ),
+        )
+      )
+        return ruleError("INVALID_STATE", { field: "pendingChoice" });
+    }
+  }
   if (!Array.isArray(state.chocolateWalls)) {
     return ruleError("INVALID_STATE", { field: "chocolateWalls" });
   }
@@ -783,11 +835,20 @@ function reject(state: GameState, error: RuleError): ApplyResult {
 function acceptReduction(
   previousState: GameState,
   reduction: ReductionResult,
+  validateTerritory = false,
 ): ApplyResult {
-  const state = deepFreeze<GameState>({
+  const candidate: GameState = {
     ...reduction.state,
     commandIndex: previousState.commandIndex + 1,
-  });
+  };
+  const error = validateKernelState(candidate);
+  if (error !== null) return reject(previousState, error);
+  if (validateTerritory && !dynamicTerritoryIsValid(candidate))
+    return reject(
+      previousState,
+      ruleError("INVALID_STATE", { field: "territory" }),
+    );
+  const state = deepFreeze<GameState>(candidate);
   return {
     ok: true,
     state,

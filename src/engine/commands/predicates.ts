@@ -26,6 +26,11 @@ import {
 } from "../rules/economy";
 import { effectiveUnitRule, requireRuleset } from "../rules/ruleset";
 import { arePlayersAllied } from "../rules/relationships";
+import {
+  nearestViableCandifyCities,
+  removalWouldDisconnectCity,
+  territoryOwnerId,
+} from "../territory/connectivity";
 import { ruleError, type RuleError } from "./errors";
 import type { Command } from "./types";
 
@@ -47,7 +52,15 @@ export function commandEligibility(
   if (player?.status !== "ACTIVE") {
     return illegal(ruleError("NOT_ACTIVE_PLAYER"));
   }
-  if (state.pendingChoice !== null && command.kind !== "CHOOSE_CITY_REWARD") {
+  if (
+    state.pendingChoice !== null &&
+    !(
+      (state.pendingChoice.kind === "CITY_REWARD" &&
+        command.kind === "CHOOSE_CITY_REWARD") ||
+      (state.pendingChoice.kind === "CANDIFY_CITY" &&
+        command.kind === "CHOOSE_CANDIFY_CITY")
+    )
+  ) {
     return illegal(
       ruleError("PENDING_CHOICE", { kind: state.pendingChoice.kind }),
     );
@@ -126,6 +139,15 @@ export function commandEligibility(
       return rollEligibility(state, player, command.unitId, command.direction);
     case "BUILD_CHOCOLATE_WALL":
       return wallBuildEligibility(state, player, command.unitId, command.at);
+    case "CANDIFY":
+      return candifyEligibility(state, player, command.unitId);
+    case "CHOOSE_CANDIFY_CITY":
+      return candifyChoiceEligibility(
+        state,
+        player,
+        command.unitId,
+        command.cityId,
+      );
     case "RECOVER":
       return recoverEligibility(state, player, command.unitId);
     case "WAIT":
@@ -178,7 +200,10 @@ export function trainEligibility(
   if (isCityBesieged(state, city)) {
     return illegal(ruleError("CITY_BESIEGED", { cityId: city.id }));
   }
-  if (state.pendingChoice?.cityId === city.id) {
+  if (
+    state.pendingChoice?.kind === "CITY_REWARD" &&
+    state.pendingChoice.cityId === city.id
+  ) {
     return illegal(
       ruleError("PENDING_CHOICE", { kind: state.pendingChoice.kind }),
     );
@@ -432,6 +457,80 @@ export function wallBuildEligibility(
     : LEGAL;
 }
 
+export function candifyEligibility(
+  state: GameState,
+  player: PlayerState,
+  unitId: UnitId,
+): CommandEligibility {
+  const owned = ownedUnit(state, player, unitId);
+  if (!owned.legal) return owned;
+  const unit = owned.unit;
+  // A non-Dash Candy unit becomes non-ready after Move, but Candify's explicit
+  // move-then-sacrifice exception remains available for that activation.
+  if (!unit.ready && !unit.activation.moved)
+    return illegal(ruleError("UNIT_NOT_READY", { unitId }));
+  if (player.faction !== "CANDY")
+    return illegal(ruleError("CANDY_FACTION_REQUIRED"));
+  if (
+    unit.activation.attacked ||
+    unit.activation.recovered ||
+    unit.activation.captured ||
+    unit.activation.specialActed
+  )
+    return illegal(ruleError("UNIT_ALREADY_ACTED", { unitId }));
+  const tile = tileAt(state, unit.at);
+  const previousOwnerId =
+    tile === undefined ? null : territoryOwnerId(state, tile.territoryCityId);
+  if (
+    tile === undefined ||
+    !isExplored(player.explored, unit.at) ||
+    tile.site !== null ||
+    previousOwnerId === player.id
+  )
+    return illegal(ruleError("CANDIFY_INVALID_TILE"));
+  if (
+    previousOwnerId !== null &&
+    arePlayersAllied(
+      state.setup.aiMode,
+      state.humanPlayerId,
+      player.id,
+      previousOwnerId,
+    )
+  )
+    return illegal(ruleError("TARGET_ALLIED"));
+  if (
+    tile.territoryCityId !== null &&
+    previousOwnerId !== null &&
+    previousOwnerId !== player.id &&
+    removalWouldDisconnectCity(state, tile.territoryCityId, unit.at)
+  )
+    return illegal(ruleError("CANDIFY_WOULD_DISCONNECT"));
+  return nearestViableCandifyCities(state, player.id, unit).length === 0
+    ? illegal(ruleError("CANDIFY_NO_ADJACENT_CITY"))
+    : LEGAL;
+}
+
+export function candifyChoiceEligibility(
+  state: GameState,
+  player: PlayerState,
+  unitId: UnitId,
+  cityId: CityState["id"],
+): CommandEligibility {
+  const pending = state.pendingChoice;
+  if (
+    pending === null ||
+    pending.kind !== "CANDIFY_CITY" ||
+    pending.unitId !== unitId
+  )
+    return illegal(ruleError("CANDIFY_CHOICE_INVALID"));
+  const city = state.cities.find((candidate) => candidate.id === cityId);
+  if (city === undefined) return illegal(ruleError("CITY_NOT_FOUND"));
+  if (city.ownerId !== player.id) return illegal(ruleError("CITY_NOT_OWNED"));
+  return pending.candidateCityIds.includes(city.id)
+    ? LEGAL
+    : illegal(ruleError("CANDIFY_CITY_NOT_CANDIDATE"));
+}
+
 function directionDelta(direction: CardinalDirection): Coord {
   switch (direction) {
     case "NORTH":
@@ -658,18 +757,23 @@ export function rewardEligibility(
   const city = state.cities.find((candidate) => candidate.id === cityId);
   if (city === undefined) return illegal(ruleError("CITY_NOT_FOUND"));
   if (city.ownerId !== player.id) return illegal(ruleError("CITY_NOT_OWNED"));
-  if (state.pendingChoice === null || state.pendingChoice.cityId !== city.id) {
+  if (
+    state.pendingChoice === null ||
+    state.pendingChoice.kind !== "CITY_REWARD" ||
+    state.pendingChoice.cityId !== city.id
+  ) {
     return illegal(ruleError("CITY_REWARD_INVALID", { reward }));
   }
+  const pending = state.pendingChoice;
   const allowed = requireRuleset(state.rulesetId).cityLevels.find(
-    (rule) => rule.level === state.pendingChoice?.level,
+    (rule) => rule.level === pending.level,
   )?.rewards;
   if (allowed === undefined || !allowed.includes(reward)) {
     return illegal(ruleError("CITY_REWARD_INVALID", { reward }));
   }
   if (
-    (state.pendingChoice.level === 2 && city.rewardLevel2 !== null) ||
-    (state.pendingChoice.level === 3 && city.rewardLevel3 !== null)
+    (pending.level === 2 && city.rewardLevel2 !== null) ||
+    (pending.level === 3 && city.rewardLevel3 !== null)
   ) {
     return illegal(ruleError("CITY_REWARD_INVALID", { reward }));
   }

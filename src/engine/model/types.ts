@@ -194,11 +194,17 @@ export type PlayerCityView = CityState & {
   readonly assignedExempt?: number;
 };
 
-export type PendingChoice = {
-  readonly kind: "CITY_REWARD";
-  readonly cityId: CityId;
-  readonly level: 2 | 3;
-};
+export type PendingChoice =
+  | {
+      readonly kind: "CITY_REWARD";
+      readonly cityId: CityId;
+      readonly level: 2 | 3;
+    }
+  | {
+      readonly kind: "CANDIFY_CITY";
+      readonly unitId: UnitId;
+      readonly candidateCityIds: readonly CityId[];
+    };
 
 export type MatchOutcome =
   | { readonly kind: "VICTORY"; readonly winnerId: PlayerId }

@@ -22,6 +22,7 @@ import {
   type ReplayFile,
   type RewardId,
   type TechId,
+  type UnitId,
 } from "../engine/index";
 import {
   BrowserPersistence,
@@ -253,7 +254,11 @@ export class AppController {
 
   requestBack(): void {
     if (this.#overlay.name !== "NONE") {
-      if (this.#overlay.name !== "REWARD") this.closeOverlay();
+      if (
+        this.#overlay.name !== "REWARD" &&
+        this.#overlay.name !== "CANDIFY_CITY"
+      )
+        this.closeOverlay();
       return;
     }
     if (this.#route === "MATCH") {
@@ -357,7 +362,11 @@ export class AppController {
   }
 
   closeOverlay(): void {
-    if (this.#overlay.name === "REWARD") return;
+    if (
+      this.#overlay.name === "REWARD" ||
+      this.#overlay.name === "CANDIFY_CITY"
+    )
+      return;
     const resumeCombat = this.#overlay.name === "SETTINGS";
     this.#overlay = { name: "NONE" };
     if (resumeCombat) this.#resumeCombatPresentation();
@@ -497,6 +506,19 @@ export class AppController {
         candidate.kind === "CHOOSE_CITY_REWARD" &&
         candidate.cityId === cityId &&
         candidate.reward === reward,
+    );
+    if (command !== null) {
+      this.#overlay = { name: "NONE" };
+      this.dispatch(command);
+    }
+  }
+
+  chooseCandifyCity(unitId: UnitId, cityId: CityId): void {
+    const command = this.#findHumanCommand(
+      (candidate) =>
+        candidate.kind === "CHOOSE_CANDIFY_CITY" &&
+        candidate.unitId === unitId &&
+        candidate.cityId === cityId,
     );
     if (command !== null) {
       this.#overlay = { name: "NONE" };
@@ -866,9 +888,19 @@ export class AppController {
 
   #syncRequiredOverlay(): void {
     const view = this.#humanView();
-    if (view?.pendingChoice !== null && view?.pendingChoice !== undefined) {
-      this.#overlay = { name: "REWARD", cityId: view.pendingChoice.cityId };
-    } else if (this.#overlay.name === "REWARD") {
+    const pending = view?.pendingChoice;
+    if (pending?.kind === "CITY_REWARD") {
+      this.#overlay = { name: "REWARD", cityId: pending.cityId };
+    } else if (pending?.kind === "CANDIFY_CITY") {
+      this.#overlay = {
+        name: "CANDIFY_CITY",
+        unitId: pending.unitId,
+        candidateCityIds: pending.candidateCityIds,
+      };
+    } else if (
+      this.#overlay.name === "REWARD" ||
+      this.#overlay.name === "CANDIFY_CITY"
+    ) {
       this.#overlay = { name: "NONE" };
     }
   }
@@ -958,6 +990,9 @@ export class AppController {
           break;
         case "CITY_REWARD_CHOSEN":
           this.#announcement = `${titleCase(event.reward)} chosen for City ${event.cityId}.`;
+          break;
+        case "TILE_CANDIFIED":
+          this.#announcement = `Tile ${event.at.x}, ${event.at.y} joined City ${event.cityId}.`;
           break;
         default:
           break;
@@ -1254,7 +1289,8 @@ export function accumulatePlayerTallies(
       }
       continue;
     }
-    if (event.cause === "KAMIKAZE_ROLL_SELF") continue;
+    if (event.cause === "KAMIKAZE_ROLL_SELF" || event.cause === "CANDIFY")
+      continue;
     const combat = events.find(
       (candidate) =>
         candidate.kind === "COMBAT_RESOLVED" &&

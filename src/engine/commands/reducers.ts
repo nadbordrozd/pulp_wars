@@ -23,6 +23,10 @@ import type {
 import { validateMovementPath } from "../movement/movement";
 import { growCity, technologyCost } from "../rules/economy";
 import { effectiveUnitRule, requireRuleset } from "../rules/ruleset";
+import {
+  nearestViableCandifyCities,
+  territoryOwnerId,
+} from "../territory/connectivity";
 
 export interface ReductionResult {
   readonly state: GameState;
@@ -486,6 +490,112 @@ export function reduceBuildChocolateWall(
   };
 }
 
+export function reduceCandify(
+  state: GameState,
+  playerId: PlayerId,
+  command: Extract<Command, { readonly kind: "CANDIFY" }>,
+): ReductionResult {
+  const unit = state.units.find((candidate) => candidate.id === command.unitId);
+  if (unit === undefined)
+    throw new RangeError("Validated Candy unit disappeared");
+  const candidates = nearestViableCandifyCities(state, playerId, unit);
+  if (candidates.length === 0)
+    throw new RangeError("Validated Candify city disappeared");
+  if (candidates.length > 1) {
+    const candidateCityIds = candidates.map((city) => city.id);
+    return {
+      state: {
+        ...state,
+        pendingChoice: {
+          kind: "CANDIFY_CITY",
+          unitId: unit.id,
+          candidateCityIds,
+        },
+      },
+      events: [
+        {
+          kind: "CANDIFY_CITY_CHOICE_REQUIRED",
+          playerId,
+          unitId: unit.id,
+          candidateCityIds,
+        },
+      ],
+    };
+  }
+  const city = candidates[0];
+  if (city === undefined)
+    throw new RangeError("Validated Candify city missing");
+  return resolveCandify(state, playerId, unit, city);
+}
+
+export function reduceChooseCandifyCity(
+  state: GameState,
+  playerId: PlayerId,
+  command: Extract<Command, { readonly kind: "CHOOSE_CANDIFY_CITY" }>,
+): ReductionResult {
+  const unit = state.units.find((candidate) => candidate.id === command.unitId);
+  const city = state.cities.find(
+    (candidate) => candidate.id === command.cityId,
+  );
+  if (unit === undefined || city === undefined)
+    throw new RangeError("Validated Candify choice disappeared");
+  return resolveCandify(
+    { ...state, pendingChoice: null },
+    playerId,
+    unit,
+    city,
+  );
+}
+
+function resolveCandify(
+  state: GameState,
+  playerId: PlayerId,
+  unit: UnitState,
+  city: CityState,
+): ReductionResult {
+  const tile = state.board.tiles.find((candidate) =>
+    sameCoord(candidate.at, unit.at),
+  );
+  if (tile === undefined)
+    throw new RangeError("Validated Candify tile disappeared");
+  const previousCityId = tile.territoryCityId;
+  const previousOwnerId = territoryOwnerId(state, previousCityId);
+  const events: DomainEvent[] = [
+    { kind: "UNIT_DIED", unitId: unit.id, cause: "CANDIFY" },
+    {
+      kind: "TILE_CANDIFIED",
+      playerId,
+      unitId: unit.id,
+      cityId: city.id,
+      at: unit.at,
+      previousCityId,
+      previousOwnerId,
+    },
+  ];
+  const nextState: GameState = {
+    ...state,
+    units: state.units.filter((candidate) => candidate.id !== unit.id),
+    board: {
+      ...state.board,
+      tiles: state.board.tiles.map((candidate) =>
+        sameCoord(candidate.at, unit.at)
+          ? {
+              ...candidate,
+              territoryCityId: city.id,
+              territoryCenter: city.at,
+            }
+          : candidate,
+      ),
+    },
+  };
+  const outcome = evaluateMatchOutcome(nextState);
+  if (outcome !== null) events.push({ kind: "MATCH_ENDED", outcome });
+  return {
+    state: outcome === null ? nextState : { ...nextState, outcome },
+    events,
+  };
+}
+
 function directionDelta(direction: CardinalDirection): {
   x: number;
   y: number;
@@ -802,7 +912,11 @@ export function reduceChooseCityReward(
   const city = state.cities.find(
     (candidate) => candidate.id === command.cityId,
   );
-  if (pending === null || city === undefined) {
+  if (
+    pending === null ||
+    pending.kind !== "CITY_REWARD" ||
+    city === undefined
+  ) {
     throw new RangeError("Validated reward target disappeared");
   }
   const rewardedCity: CityState =
@@ -991,14 +1105,19 @@ export function reduceCapture(
     players = players.map((player) =>
       player.id === formerOwner ? { ...player, status: "ELIMINATED" } : player,
     );
-    if (
-      pendingChoice !== null &&
-      cities.some(
-        (city) =>
-          city.id === pendingChoice?.cityId && city.ownerId === formerOwner,
+    if (pendingChoice?.kind === "CITY_REWARD") {
+      const rewardPending = pendingChoice;
+      if (
+        cities.some(
+          (city) =>
+            city.id === rewardPending.cityId && city.ownerId === formerOwner,
+        )
       )
-    ) {
-      pendingChoice = null;
+        pendingChoice = null;
+    } else if (pendingChoice?.kind === "CANDIFY_CITY") {
+      const candifyPending = pendingChoice;
+      if (units.every((candidate) => candidate.id !== candifyPending.unitId))
+        pendingChoice = null;
     }
     for (const removed of removedUnits) {
       events.push({

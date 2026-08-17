@@ -1,5 +1,5 @@
 import type { CombatPreview } from "../events/types";
-import type { CityId, UnitId } from "../model/ids";
+import type { UnitId } from "../model/ids";
 import { compareCoords } from "../model/order";
 import type {
   CityState,
@@ -11,6 +11,7 @@ import type {
   UnitType,
   CombatTargetRef,
   PlayerChocolateWallView,
+  PlayerCityView,
 } from "../model/types";
 import { effectiveUnitRule, requireRuleset } from "../rules/ruleset";
 import type { Command, CommandSummary } from "../commands/types";
@@ -32,15 +33,27 @@ export function queryPlayerCommands(
     return [];
   }
   if (view.pendingChoice !== null) {
-    const rewards = requireRuleset(view.rulesetId).cityLevels.find(
-      (level) => level.level === view.pendingChoice?.level,
-    )?.rewards;
-    return (rewards ?? []).map((reward) => ({
-      kind: "CHOOSE_CITY_REWARD",
-      command: {
+    if (view.pendingChoice.kind === "CITY_REWARD") {
+      const pending = view.pendingChoice;
+      const rewards = requireRuleset(view.rulesetId).cityLevels.find(
+        (level) => level.level === pending.level,
+      )?.rewards;
+      return (rewards ?? []).map((reward) => ({
         kind: "CHOOSE_CITY_REWARD",
-        cityId: view.pendingChoice?.cityId as CityId,
-        reward,
+        command: {
+          kind: "CHOOSE_CITY_REWARD",
+          cityId: pending.cityId,
+          reward,
+        },
+      }));
+    }
+    const pending = view.pendingChoice;
+    return pending.candidateCityIds.map((cityId) => ({
+      kind: "CHOOSE_CANDIFY_CITY",
+      command: {
+        kind: "CHOOSE_CANDIFY_CITY",
+        unitId: pending.unitId,
+        cityId,
       },
     }));
   }
@@ -73,14 +86,16 @@ const COMMAND_ORDINAL: Readonly<Record<Command["kind"], number>> = {
   PROMOTE: 6,
   WAIT: 7,
   BUILD_CHOCOLATE_WALL: 8,
-  RESEARCH: 9,
-  HARVEST_FRUIT: 10,
-  HUNT_ANIMAL: 11,
-  BUILD_LUMBER_MILL: 12,
-  BUILD_MINE: 13,
-  TRAIN: 14,
-  CHOOSE_CITY_REWARD: 15,
-  END_TURN: 16,
+  CANDIFY: 9,
+  RESEARCH: 10,
+  HARVEST_FRUIT: 11,
+  HUNT_ANIMAL: 12,
+  BUILD_LUMBER_MILL: 13,
+  BUILD_MINE: 14,
+  TRAIN: 15,
+  CHOOSE_CANDIFY_CITY: 16,
+  CHOOSE_CITY_REWARD: 17,
+  END_TURN: 18,
 };
 
 function comparePublicCommands(
@@ -140,6 +155,7 @@ function publicCommandTarget(view: PlayerView, command: Command): Coord {
     case "BUILD_CHOCOLATE_WALL":
       return command.at;
     case "TRAIN":
+    case "CHOOSE_CANDIFY_CITY":
     case "CHOOSE_CITY_REWARD":
       return (
         view.cities.find((city) => city.id === command.cityId)?.at ?? {
@@ -151,6 +167,7 @@ function publicCommandTarget(view: PlayerView, command: Command): Coord {
     case "CAPTURE":
     case "PROMOTE":
     case "WAIT":
+    case "CANDIFY":
       return (
         view.units.find((unit) => unit.id === command.unitId)?.at ?? {
           x: -1,
@@ -172,8 +189,10 @@ function publicCommandEntity(command: Command): number {
     case "CAPTURE":
     case "PROMOTE":
     case "WAIT":
+    case "CANDIFY":
       return command.unitId;
     case "TRAIN":
+    case "CHOOSE_CANDIFY_CITY":
     case "CHOOSE_CITY_REWARD":
       return command.cityId;
     default:
@@ -333,6 +352,86 @@ function addResearch(view: PlayerView, commands: Command[]): void {
       commands.push({ kind: "RESEARCH", tech: tech.id });
     }
   }
+}
+
+function publicCandifyCandidates(
+  view: PlayerView,
+  unit: PlayerUnitView,
+): readonly PlayerCityView[] {
+  const tile = tileAt(view, unit.at);
+  if (
+    tile?.explored !== true ||
+    tile.site !== null ||
+    isPublicAlliedTerritory(view, tile)
+  )
+    return [];
+  if (tile.territoryCityId !== null) {
+    const controller = view.cities.find(
+      (city) => city.id === tile.territoryCityId,
+    );
+    if (
+      controller === undefined ||
+      controller.ownerId === view.viewer.id ||
+      !publicTerritoryRemovalIsConnected(view, controller, unit.at)
+    )
+      return [];
+  }
+  const viable = view.cities
+    .filter(
+      (city) =>
+        city.ownerId === view.viewer.id &&
+        view.board.tiles.some(
+          (candidate) =>
+            candidate.explored &&
+            candidate.territoryCityId === city.id &&
+            chebyshev(candidate.at, unit.at) === 1,
+        ),
+    )
+    .map((city) => ({ city, distance: chebyshev(city.at, unit.at) }));
+  const minimum = viable.reduce(
+    (best, candidate) => Math.min(best, candidate.distance),
+    Number.POSITIVE_INFINITY,
+  );
+  return viable
+    .filter((candidate) => candidate.distance === minimum)
+    .map((candidate) => candidate.city)
+    .sort((left, right) => left.id - right.id);
+}
+
+function publicTerritoryRemovalIsConnected(
+  view: PlayerView,
+  city: PlayerCityView,
+  removedAt: Coord,
+): boolean {
+  const remainingKeys = new Set(
+    view.board.tiles
+      .filter(
+        (tile) =>
+          tile.explored &&
+          tile.territoryCityId === city.id &&
+          !sameCoord(tile.at, removedAt),
+      )
+      .map((tile) => coordKey(tile.at)),
+  );
+  const centerKey = coordKey(city.at);
+  if (!remainingKeys.has(centerKey)) return false;
+  const reached = new Set<string>([centerKey]);
+  const queue: Coord[] = [city.at];
+  while (queue.length > 0) {
+    const current = queue.shift();
+    if (current === undefined) break;
+    for (let y = current.y - 1; y <= current.y + 1; y += 1) {
+      for (let x = current.x - 1; x <= current.x + 1; x += 1) {
+        if (x === current.x && y === current.y) continue;
+        const key = `${x},${y}`;
+        if (remainingKeys.has(key) && !reached.has(key)) {
+          reached.add(key);
+          queue.push({ x, y });
+        }
+      }
+    }
+  }
+  return reached.size === remainingKeys.size;
 }
 
 function addMines(view: PlayerView, commands: Command[]): void {
@@ -585,6 +684,17 @@ function addUnitCommands(
     ) {
       commands.push({ kind: "CAPTURE", unitId: unit.id });
     }
+  }
+  if (
+    view.viewer.faction === "CANDY" &&
+    (unit.ready || unit.activation.moved) &&
+    !unit.activation.attacked &&
+    !unit.activation.recovered &&
+    !unit.activation.captured &&
+    !unit.activation.specialActed &&
+    publicCandifyCandidates(view, unit).length > 0
+  ) {
+    commands.push({ kind: "CANDIFY", unitId: unit.id });
   }
   if (!unit.veteran && unit.kills >= rules.promotionKills) {
     commands.push({ kind: "PROMOTE", unitId: unit.id });

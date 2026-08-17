@@ -44,6 +44,12 @@ export type Command =
       readonly unitId: UnitId;
       readonly at: Coord;
     }
+  | { readonly kind: "CANDIFY"; readonly unitId: UnitId }
+  | {
+      readonly kind: "CHOOSE_CANDIFY_CITY";
+      readonly unitId: UnitId;
+      readonly cityId: CityId;
+    }
   | {
       readonly kind: "CHOOSE_CITY_REWARD";
       readonly cityId: CityId;

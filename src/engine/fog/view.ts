@@ -79,6 +79,21 @@ export function viewFor(state: GameState, viewerId: PlayerId): PlayerView {
       kind: "CHOCOLATE_WALL" as const,
       maxHp: 10 as const,
     }));
+  const pending = state.pendingChoice;
+  const visiblePending =
+    pending?.kind === "CITY_REWARD"
+      ? state.cities.some(
+          (city) => city.id === pending.cityId && city.ownerId === viewerId,
+        )
+        ? pending
+        : null
+      : pending?.kind === "CANDIFY_CITY"
+        ? state.units.some(
+            (unit) => unit.id === pending.unitId && unit.ownerId === viewerId,
+          )
+          ? pending
+          : null
+        : null;
   return deepFreeze({
     schemaVersion: state.schemaVersion,
     rulesetId: state.rulesetId,
@@ -94,14 +109,7 @@ export function viewFor(state: GameState, viewerId: PlayerId): PlayerView {
     cities,
     units,
     chocolateWalls,
-    pendingChoice:
-      state.pendingChoice !== null &&
-      state.cities.some(
-        (city) =>
-          city.id === state.pendingChoice?.cityId && city.ownerId === viewerId,
-      )
-        ? state.pendingChoice
-        : null,
+    pendingChoice: visiblePending,
     outcome: state.outcome,
   });
 }

@@ -77,6 +77,9 @@ export interface HeadlessMetrics {
   readonly rolls: number;
   readonly rollDamageByRelationship: Readonly<Record<string, number>>;
   readonly rollPathCellsRevealed: number;
+  readonly candifyStarted: number;
+  readonly candifyChoices: number;
+  readonly tilesCandified: number;
   readonly catapultAttacks: number;
   readonly catapultKills: number;
   readonly terrainCounts: Readonly<Record<string, number>>;
@@ -314,10 +317,13 @@ function runAiMatchInternal(
       }
     }
     if (command.kind === "KAMIKAZE_ROLL") metrics.rolls += 1;
+    if (command.kind === "CANDIFY") metrics.candifyStarted += 1;
+    if (command.kind === "CHOOSE_CANDIFY_CITY") metrics.candifyChoices += 1;
     for (const event of applied.events) {
       if (event.kind === "CHOCOLATE_WALL_BUILT") metrics.wallsBuilt += 1;
       if (event.kind === "CHOCOLATE_WALL_DESTROYED")
         metrics.wallsDestroyed += 1;
+      if (event.kind === "TILE_CANDIFIED") metrics.tilesCandified += 1;
       if (command.kind === "KAMIKAZE_ROLL" && event.kind === "TILES_REVEALED") {
         metrics.rollPathCellsRevealed += event.tiles.length;
       }
@@ -480,6 +486,9 @@ interface MutableMetrics {
   rolls: number;
   rollDamageByRelationship: Record<string, number>;
   rollPathCellsRevealed: number;
+  candifyStarted: number;
+  candifyChoices: number;
+  tilesCandified: number;
   catapultAttacks: number;
   catapultKills: number;
   terrainCounts: Record<string, number>;
@@ -533,6 +542,9 @@ function createMetrics(
     rolls: 0,
     rollDamageByRelationship: {},
     rollPathCellsRevealed: 0,
+    candifyStarted: 0,
+    candifyChoices: 0,
+    tilesCandified: 0,
     catapultAttacks: 0,
     catapultKills: 0,
     terrainCounts,

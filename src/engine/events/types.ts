@@ -150,6 +150,21 @@ export type DomainEvent =
       readonly cause: "ATTACK" | "KAMIKAZE_ROLL";
     }
   | {
+      readonly kind: "CANDIFY_CITY_CHOICE_REQUIRED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly candidateCityIds: readonly CityId[];
+    }
+  | {
+      readonly kind: "TILE_CANDIFIED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly cityId: CityId;
+      readonly at: Coord;
+      readonly previousCityId: CityId | null;
+      readonly previousOwnerId: PlayerId | null;
+    }
+  | {
       readonly kind: "UNIT_RECOVERED";
       readonly unitId: UnitId;
       readonly amount: number;
@@ -173,7 +188,8 @@ export type DomainEvent =
         | "RETALIATION"
         | "ELIMINATION"
         | "KAMIKAZE_ROLL"
-        | "KAMIKAZE_ROLL_SELF";
+        | "KAMIKAZE_ROLL_SELF"
+        | "CANDIFY";
     }
   | {
       readonly kind: "CITY_CAPTURED";
