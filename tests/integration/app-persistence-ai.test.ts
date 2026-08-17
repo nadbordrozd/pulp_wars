@@ -247,68 +247,66 @@ describe("application save and AI integration", () => {
     paced.destroy();
     fast.destroy();
   });
-  it("derives unit attention warnings only from unhandled state", () => {
-    const actionless = blockedHumanState(created(setup({ seed: 1 })));
-    const scenarios = [
-      replaceHumanUnit(actionless, (unit) => ({
-        ...unit,
-        activation: { ...unit.activation, handled: true },
-      })),
-      replaceHumanUnit(actionless, (unit) => ({
-        ...unit,
-        activation: { ...unit.activation, moved: true, handled: true },
-      })),
-      replaceHumanUnit(actionless, (unit) => ({
-        ...unit,
-        activation: { ...unit.activation, attacked: true, handled: true },
-      })),
-      replaceHumanUnit(actionless, (unit) => ({
-        ...unit,
-        activation: { ...unit.activation, recovered: true, handled: true },
-      })),
-      replaceHumanUnit(actionless, (unit) => ({
-        ...unit,
-        activation: { ...unit.activation, captured: true, handled: true },
-      })),
-      replaceHumanUnit(actionless, (unit) => ({
-        ...unit,
-        ready: false,
-        activation: { ...unit.activation, handled: true },
-      })),
-    ];
-
-    for (const state of scenarios) {
+  it.each([
+    ["WAIT", () => meaningfulActionState("MOVE")],
+    ["TRAIN", () => affordableTrainingState()],
+    ["CAPTURE", () => meaningfulActionState("CAPTURE")],
+  ] as const)(
+    "dispatches End Turn immediately while an offered %s opportunity remains",
+    (kind, buildState) => {
+      const state = buildState();
       const controller = controllerFor(state);
       const offered = offeredCommands(controller.snapshot().view);
-      expect(offered.some((command) => command.kind === "WAIT")).toBe(false);
-      expect(controller.endTurnWarnings()).not.toContain(
-        "Units need attention",
-      );
-      controller.destroy();
-    }
-  });
+      expect(offered).toContainEqual(expect.objectContaining({ kind }));
+      expect(offered).toContainEqual({ kind: "END_TURN" });
 
-  it.each([
-    ["MOVE", meaningfulActionState("MOVE")],
-    ["ATTACK", meaningfulActionState("ATTACK")],
-    ["ESCAPE_MOVE", meaningfulActionState("ESCAPE_MOVE")],
-    ["RECOVER", meaningfulActionState("RECOVER")],
-    ["PROMOTE", meaningfulActionState("PROMOTE")],
-    ["CAPTURE", meaningfulActionState("CAPTURE")],
-  ] as const)(
-    "keeps the attention warning for an unhandled unit with a %s opportunity",
-    (kind, state) => {
-      const controller = controllerFor(state);
-      expect(offeredCommands(controller.snapshot().view)).toContainEqual(
-        expect.objectContaining({ kind }),
+      controller.requestCommand({ kind: "END_TURN" });
+
+      expect(controller.snapshot().overlay).toEqual({ name: "NONE" });
+      expect(controller.snapshot().match?.commandIndex).toBe(
+        state.commandIndex + 1,
       );
-      expect(controller.endTurnWarnings()).toContain("Units need attention");
-      if (kind === "CAPTURE") {
-        expect(controller.endTurnWarnings()).toContain("A capture remains");
-      }
+      expect(controller.snapshot().match?.activeSeatIndex).not.toBe(
+        state.activeSeatIndex,
+      );
       controller.destroy();
     },
   );
+
+  it("keeps End Turn unavailable while a mandatory city reward is pending", () => {
+    const initial = humanTurnState(created(setup({ seed: 1 })));
+    const human = initial.players.find(
+      (player) => player.controller === "HUMAN",
+    );
+    const city = initial.cities.find(
+      (candidate) => candidate.ownerId === human?.id,
+    );
+    if (city === undefined) throw new Error("Missing human city");
+    const pending: GameState = {
+      ...initial,
+      cities: initial.cities.map((candidate) =>
+        candidate.id === city.id ? { ...candidate, level: 2 } : candidate,
+      ),
+      pendingChoice: { kind: "CITY_REWARD", cityId: city.id, level: 2 },
+    };
+    const controller = controllerFor(pending);
+
+    expect(offeredCommands(controller.snapshot().view)).not.toContainEqual({
+      kind: "END_TURN",
+    });
+    expect(controller.snapshot().overlay).toEqual({
+      name: "REWARD",
+      cityId: city.id,
+    });
+    controller.requestCommand({ kind: "END_TURN" });
+    expect(controller.snapshot().match?.commandIndex).toBe(
+      pending.commandIndex,
+    );
+    expect(controller.snapshot().match?.activeSeatIndex).toBe(
+      pending.activeSeatIndex,
+    );
+    controller.destroy();
+  });
 
   it("changes presentation identity only when recreating the match", () => {
     const controller = new AppController({
@@ -772,6 +770,21 @@ function meaningfulActionState(kind: Command["kind"]): GameState {
   }
   if (kind === "CAPTURE") return captureReadyStateBuilder(1, original);
   throw new Error(`Unsupported meaningful command fixture: ${kind}`);
+}
+
+function affordableTrainingState(): GameState {
+  const original = humanTurnState(created(setup({ seed: 1 })));
+  const human = original.players.find(
+    (player) => player.controller === "HUMAN",
+  );
+  if (human === undefined) throw new Error("Missing human player");
+  return {
+    ...original,
+    players: original.players.map((player) =>
+      player.id === human.id ? { ...player, stars: 20 } : player,
+    ),
+    units: original.units.filter((unit) => unit.ownerId !== human.id),
+  };
 }
 
 function sameCoord(

@@ -43,7 +43,6 @@ export interface UiSettings {
 export type ConfirmationAction =
   | { readonly kind: "START_MATCH" }
   | { readonly kind: "START_DEMO" }
-  | { readonly kind: "END_TURN"; readonly command: Command }
   | { readonly kind: "RESEARCH"; readonly command: Command }
   | { readonly kind: "RESTART" }
   | { readonly kind: "PLAY_AGAIN" }

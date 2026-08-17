@@ -915,9 +915,6 @@ describe("HUD, command wiring, and contextual panels", () => {
     expect(document.querySelector(".unit-dock-hint")?.textContent).toContain(
       "highlighted tile to move",
     );
-    expect(app.controller.endTurnWarnings()).not.toContain(
-      "Units need attention",
-    );
     expect(
       app.controller
         .snapshot()
@@ -2125,37 +2122,27 @@ describe("HUD, command wiring, and contextual panels", () => {
     expect(tileDock?.textContent).toContain("Defense");
   });
 
-  it("warns before ending with units needing attention, then presents and advances AI", () => {
+  it("ends immediately with remaining actions, then presents and advances AI", () => {
     app = bootMatch(setup({ seed: 3 }));
+    const before = app.controller.snapshot();
+    if (before.view === null) throw new Error("Missing human view");
+    expect(
+      queryPlayerCommands(before.view)
+        .map(({ command }) => command.kind)
+        .some((kind) => kind === "WAIT" || kind === "TRAIN"),
+    ).toBe(true);
+
     click("End Turn");
-    expect(dialog()?.textContent).toContain("Units need attention");
-    click("Keep Playing");
-    expect(document.body.textContent).toContain("Your Turn");
-    click("End Turn");
-    click("End Anyway");
+
+    expect(dialog()).toBeNull();
+    expect(document.body.textContent).not.toContain(
+      "End turn with opportunities remaining?",
+    );
+    expect(app.controller.snapshot().match?.commandIndex).toBe(
+      (before.match?.commandIndex ?? 0) + 1,
+    );
     expect(document.body.textContent).toContain("is thinking");
     expect(button("Fast Forward").disabled).toBe(false);
-  });
-
-  it("does not claim a handled moved unit needs attention when only economy remains", () => {
-    app = bootMatch(setup({ seed: 3 }));
-    const view = app.controller.snapshot().view;
-    const humanUnit = view?.units.find(
-      (unit) => unit.ownerId === view.viewer.id,
-    );
-    if (view === null || humanUnit === undefined)
-      throw new Error("Missing human unit");
-    const move = queryPlayerCommands(view)
-      .map(({ command }) => command)
-      .find(
-        (command) => command.kind === "MOVE" && command.unitId === humanUnit.id,
-      );
-    if (move === undefined) throw new Error("Missing move command");
-    app.controller.requestCommand(move);
-
-    click("End Turn");
-    expect(dialog()?.textContent).toContain("Affordable training remains");
-    expect(dialog()?.textContent).not.toContain("Units need attention");
   });
 });
 

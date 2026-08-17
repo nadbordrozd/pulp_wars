@@ -255,10 +255,11 @@ semantic accessible names may describe the training action, but visible text
 never says “Train” or repeats requirements, coordinates, descriptions,
 population guidance, or other metadata.
 
-End Turn goes directly when nothing meaningful remains. It opens the enumerated
-warning confirmation from POC Rules when unhandled units, affordable training,
-or a capture remains. During an AI turn map inspection, Stats, Tech, and
-Settings are allowed, but gameplay commands and End Turn are disabled.
+End Turn dispatches immediately whenever offered, including when units remain
+unhandled, affordable training remains, or a capture is available. Mandatory
+pending choices prevent it from being offered. During an AI turn map
+inspection, Stats, Tech, and Settings are allowed, but gameplay commands and
+End Turn are disabled.
 
 ## 8. Context panels
 
@@ -389,8 +390,8 @@ the same candidate set and returns focus to the first candidate.
 
 - Attack has no dialog or confirmation; highlighted targets carry exact damage,
   retaliation/reason, death, and advance preview before one-activation dispatch.
-- End Turn warning: lists categories of remaining opportunity, not hidden
-  recommendations; End Anyway and Keep Playing.
+- End Turn has no confirmation; activating the offered command dispatches it
+  immediately.
 - Start/replace match, Restart, Delete Save, and navigation that discards setup:
   exact consequence, safe action first in focus order, destructive action
   visually and semantically identified.

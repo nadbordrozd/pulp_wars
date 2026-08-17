@@ -403,14 +403,9 @@ export class AppController {
       case "START_DEMO":
         this.#createMatch(DEMO_MATCH_SETUP);
         break;
-      case "END_TURN":
       case "RESEARCH":
         this.#overlay = { name: "NONE" };
-        if (
-          this.dispatch(action.command) &&
-          action.kind === "RESEARCH" &&
-          this.#match?.outcome === null
-        ) {
+        if (this.dispatch(action.command) && this.#match?.outcome === null) {
           this.#overlay = { name: "TECH" };
           this.#emit();
         }
@@ -456,10 +451,6 @@ export class AppController {
       this.openConfirmation({ kind: "RESEARCH", command });
       return;
     }
-    if (command.kind === "END_TURN" && this.endTurnWarnings().length > 0) {
-      this.openConfirmation({ kind: "END_TURN", command });
-      return;
-    }
     this.dispatch(command);
   }
 
@@ -486,23 +477,6 @@ export class AppController {
       return false;
     }
     return this.#apply(command);
-  }
-
-  endTurnWarnings(): readonly string[] {
-    const view = this.#humanView();
-    if (view === null) return [];
-    const commands = queryPlayerCommands(view).map(({ command }) => command);
-    const warnings: string[] = [];
-    if (commands.some((command) => command.kind === "WAIT")) {
-      warnings.push("Units need attention");
-    }
-    if (commands.some((command) => command.kind === "TRAIN")) {
-      warnings.push("Affordable training remains");
-    }
-    if (commands.some((command) => command.kind === "CAPTURE")) {
-      warnings.push("A capture remains");
-    }
-    return warnings;
   }
 
   chooseReward(cityId: CityId, reward: RewardId): void {

@@ -2650,17 +2650,11 @@ export class DomAppView {
       textElement(this.#document, "h2", heading),
       textElement(this.#document, "p", description),
     );
-    if (action.kind === "END_TURN") {
-      const list = element(this.#document, "ul", "warning-list");
-      for (const warning of this.#controller.endTurnWarnings())
-        list.append(textElement(this.#document, "li", warning));
-      article.append(list);
-    }
     const actions = element(this.#document, "div", "dialog-actions");
     actions.append(
       actionButton(
         this.#document,
-        safeLabel(action),
+        "Cancel",
         () => this.#controller.cancelConfirmation(),
         "secondary-action",
         "cancel-confirm",
@@ -3140,13 +3134,6 @@ function confirmationCopy(
           : "Start Demo Match",
         snapshot.match?.outcome === null && snapshot.match !== null,
       ];
-    case "END_TURN":
-      return [
-        "End turn with opportunities remaining?",
-        "The engine allows ending now, but these visible action categories remain.",
-        "End Anyway",
-        false,
-      ];
     case "RESEARCH":
       return [
         "Research technology?",
@@ -3183,10 +3170,6 @@ function confirmationCopy(
         true,
       ];
   }
-}
-
-function safeLabel(action: ConfirmationAction): string {
-  return action.kind === "END_TURN" ? "Keep Playing" : "Cancel";
 }
 
 function factionLabel(faction: FactionId): string {

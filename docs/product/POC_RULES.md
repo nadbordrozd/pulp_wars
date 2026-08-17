@@ -807,11 +807,11 @@ Each turn is:
    last seat in stored order. Victory is checked after every capture and unit
    death command, then again at End Turn as an invariant check.
 
-There is no turn limit. The human must confirm End Turn if any owned surviving
-unit still has `handled = false`, any affordable city can train a unit, or a
-capture is available. Wait is the explicit way to dismiss a unit's attention
-state without consuming its legal actions. The confirmation is UI-only and does
-not change command legality.
+There is no turn limit. When End Turn is offered, the human dispatches it
+immediately even if owned units remain unhandled, an affordable city can train,
+or a capture is available. Wait dismisses a unit's attention state without
+consuming its legal actions. Mandatory pending choices continue to block End
+Turn through command legality.
 
 ## 5. Stars, cities, population, and resources
 
