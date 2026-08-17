@@ -118,6 +118,7 @@ function drawEntry(options: DrawBoardOptions, entry: RenderPlanEntry): void {
   }
   const center = centerFor(camera, entry.at);
   const ownerColor = ownerColorFor(view, entry.ownerId);
+  const territoryFaction = ownerFactionFor(view, entry.ownerId);
   const assetOptions = {
     center,
     zoom: camera.zoom,
@@ -126,7 +127,7 @@ function drawEntry(options: DrawBoardOptions, entry: RenderPlanEntry): void {
   };
   switch (entry.kind) {
     case "GROUND":
-      assets.drawGrass(context, assetOptions);
+      assets.drawGrass(context, assetOptions, territoryFaction);
       break;
     case "OWNERSHIP":
       drawOwnership(
@@ -141,10 +142,10 @@ function drawEntry(options: DrawBoardOptions, entry: RenderPlanEntry): void {
       assets.drawOre(context, assetOptions);
       break;
     case "FRUIT":
-      assets.drawFruit(context, assetOptions);
+      assets.drawFruit(context, assetOptions, territoryFaction);
       break;
     case "ANIMAL":
-      assets.drawAnimal(context, assetOptions);
+      assets.drawAnimal(context, assetOptions, territoryFaction);
       break;
     case "MINE":
       assets.drawMine(context, assetOptions);
@@ -159,22 +160,34 @@ function drawEntry(options: DrawBoardOptions, entry: RenderPlanEntry): void {
       drawContactShadow(context, center, camera.zoom);
       break;
     case "MOUNTAIN":
-      assets.drawMountain(context, assetOptions);
+      assets.drawMountain(context, assetOptions, territoryFaction);
       break;
     case "FOREST":
-      assets.drawForest(context, assetOptions);
+      assets.drawForest(context, assetOptions, territoryFaction);
       break;
     case "VILLAGE":
       assets.drawVillage(context, assetOptions);
       break;
     case "CITY_BACK": {
       const city = cityById(view, entry.id);
-      if (city !== undefined) assets.drawCityBack(context, assetOptions, city);
+      if (city !== undefined)
+        assets.drawCityBack(
+          context,
+          assetOptions,
+          city,
+          ownerFactionFor(view, city.ownerId),
+        );
       break;
     }
     case "CITY_FRONT": {
       const city = cityById(view, entry.id);
-      if (city !== undefined) assets.drawCityFront(context, assetOptions, city);
+      if (city !== undefined)
+        assets.drawCityFront(
+          context,
+          assetOptions,
+          city,
+          ownerFactionFor(view, city.ownerId),
+        );
       break;
     }
     case "UNIT": {
@@ -1070,7 +1083,8 @@ function ownerColorFor(
   return player === undefined ? null : PLAYER_COLORS[player.color];
 }
 
-function ownerFactionFor(view: PlayerView, ownerId: number): FactionId {
+function ownerFactionFor(view: PlayerView, ownerId: number | null): FactionId {
+  if (ownerId === null) return "ORIGINAL";
   return (
     view.players.find((candidate) => candidate.id === ownerId)?.faction ??
     "ORIGINAL"

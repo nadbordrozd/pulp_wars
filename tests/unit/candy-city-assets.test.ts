@@ -57,13 +57,13 @@ interface GeneratedRecord {
 }
 
 describe("accepted Candy city PixelLab family", () => {
-  it("publishes the three production URLs without wiring ownership selection", () => {
+  it("publishes the three production URLs for renderer ownership selection", () => {
     for (const id of CANDY_CITY_IDS)
       expect(ACCEPTED_ART_URLS[id], id).toBe(
         `/assets/pixellab/buildings/${id.replace("building-", "")}.png`,
       );
     for (const id of CANDY_CITY_IDS)
-      expect(PIXELLAB_BOARD_ART_IDS).not.toContain(id);
+      expect(PIXELLAB_BOARD_ART_IDS).toContain(id);
   });
 
   it("records the sequential sample gate and exact settlement geometry", async () => {

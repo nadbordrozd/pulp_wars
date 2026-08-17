@@ -14,16 +14,26 @@ export interface DrawAssetOptions {
  * installed without changing projection, picking, simulation, or commands.
  */
 export interface BoardAssetBindings {
-  drawGrass(context: CanvasRenderingContext2D, options: DrawAssetOptions): void;
+  drawGrass(
+    context: CanvasRenderingContext2D,
+    options: DrawAssetOptions,
+    faction?: FactionId,
+  ): void;
   drawMountain(
     context: CanvasRenderingContext2D,
     options: DrawAssetOptions,
+    faction?: FactionId,
   ): void;
   drawOre(context: CanvasRenderingContext2D, options: DrawAssetOptions): void;
-  drawFruit(context: CanvasRenderingContext2D, options: DrawAssetOptions): void;
+  drawFruit(
+    context: CanvasRenderingContext2D,
+    options: DrawAssetOptions,
+    faction?: FactionId,
+  ): void;
   drawAnimal(
     context: CanvasRenderingContext2D,
     options: DrawAssetOptions,
+    faction?: FactionId,
   ): void;
   drawMine(context: CanvasRenderingContext2D, options: DrawAssetOptions): void;
   drawLumberMill(
@@ -37,6 +47,7 @@ export interface BoardAssetBindings {
   drawForest(
     context: CanvasRenderingContext2D,
     options: DrawAssetOptions,
+    faction?: FactionId,
   ): void;
   drawVillage(
     context: CanvasRenderingContext2D,
@@ -46,11 +57,13 @@ export interface BoardAssetBindings {
     context: CanvasRenderingContext2D,
     options: DrawAssetOptions,
     city: CityState,
+    faction?: FactionId,
   ): void;
   drawCityFront(
     context: CanvasRenderingContext2D,
     options: DrawAssetOptions,
     city: CityState,
+    faction?: FactionId,
   ): void;
   drawUnit(
     context: CanvasRenderingContext2D,

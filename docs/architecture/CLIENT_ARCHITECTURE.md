@@ -337,6 +337,18 @@ hidden board or entity data. Harmless rerenders retain the same value. Canvas
 occupancy, selection, and disappearance checks still use only the visible
 entities and explored tiles in `PlayerView`.
 
+Territory-themed map art is a cosmetic projection of that same public view.
+For every explored tile, Canvas resolves `PlayerTileView.territoryOwnerId`
+through `PlayerView.players` and selects the owning faction's accepted terrain
+and resource family. It must not infer ownership by locating a visible city:
+the owner remains public when the controlling city center is unexplored and
+`territoryCityId`/`territoryCenter` are withheld. Hidden and diplomatic-only
+tile arms contain no owner, so their render plans contain only fog and cannot
+disclose faction art. Visible city art independently uses the visible city's
+public `ownerId`. These choices are renderer-only: capture and Candify swap art
+on the next `PlayerView` without changing terrain/resources, cosmetic variant
+selection, canonical state, saves, replays, PRNG, geometry, sorting, or picking.
+
 V5 `PlayerView` exposes owned-city `assignedCounted` and `assignedExempt`
 totals, plus each visible unit's public handled state and capacity-exemption
 status when owned by the viewer. It also exposes the public immutable

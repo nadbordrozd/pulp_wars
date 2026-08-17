@@ -205,13 +205,19 @@ export function createPixelLabAssetBindings(
 
   const draw = (
     context: CanvasRenderingContext2D,
-    id: string,
+    ids: string | readonly string[],
     options: DrawAssetOptions,
     geometry: SourceGeometry,
     fallback: () => void,
     ownerVariant = false,
   ): void => {
-    const image = imageFor(id);
+    const candidates = typeof ids === "string" ? [ids] : ids;
+    const image =
+      candidates
+        .map((id) => imageFor(id))
+        .find(
+          (candidate): candidate is HTMLImageElement => candidate !== null,
+        ) ?? null;
     if (image === null) {
       fallback();
       return;
@@ -237,20 +243,26 @@ export function createPixelLabAssetBindings(
   };
 
   return {
-    drawGrass(context, options): void {
+    drawGrass(context, options, faction = "ORIGINAL"): void {
+      const variant = (options.variant % 4) + 1;
       draw(
         context,
-        `terrain-grass-${(options.variant % 4) + 1}`,
+        faction === "CANDY"
+          ? [`terrain-candy-grass-${variant}`, `terrain-grass-${variant}`]
+          : `terrain-grass-${variant}`,
         options,
         BOARD_ART_GEOMETRY.ground,
         () => CODE_NATIVE_PLACEHOLDER_ASSETS.drawGrass(context, options),
       );
     },
-    drawMountain(context, options): void {
+    drawMountain(context, options, faction = "ORIGINAL"): void {
       const geometry = mountainGeometryForVariant(options.variant);
+      const variant = (options.variant % 3) + 1;
       draw(
         context,
-        `terrain-mountain-${(options.variant % 3) + 1}`,
+        faction === "CANDY"
+          ? [`terrain-candy-mountain-${variant}`, `terrain-mountain-${variant}`]
+          : `terrain-mountain-${variant}`,
         options,
         geometry,
         () => CODE_NATIVE_PLACEHOLDER_ASSETS.drawMountain(context, options),
@@ -261,10 +273,12 @@ export function createPixelLabAssetBindings(
         CODE_NATIVE_PLACEHOLDER_ASSETS.drawOre(context, options),
       );
     },
-    drawFruit(context, options): void {
+    drawFruit(context, options, faction = "ORIGINAL"): void {
       draw(
         context,
-        "terrain-fruit",
+        faction === "CANDY"
+          ? ["terrain-candy-fruit", "terrain-fruit"]
+          : "terrain-fruit",
         options,
         PLACEMENT_ART_GEOMETRY.fruit,
         () =>
@@ -274,10 +288,12 @@ export function createPixelLabAssetBindings(
           ),
       );
     },
-    drawAnimal(context, options): void {
+    drawAnimal(context, options, faction = "ORIGINAL"): void {
       draw(
         context,
-        "terrain-animal",
+        faction === "CANDY"
+          ? ["terrain-candy-animal", "terrain-animal"]
+          : "terrain-animal",
         options,
         PLACEMENT_ART_GEOMETRY.animal,
         () =>
@@ -316,10 +332,13 @@ export function createPixelLabAssetBindings(
         true,
       );
     },
-    drawForest(context, options): void {
+    drawForest(context, options, faction = "ORIGINAL"): void {
+      const variant = (options.variant % 4) + 1;
       draw(
         context,
-        `terrain-forest-${(options.variant % 4) + 1}`,
+        faction === "CANDY"
+          ? [`terrain-candy-forest-${variant}`, `terrain-forest-${variant}`]
+          : `terrain-forest-${variant}`,
         options,
         PLACEMENT_ART_GEOMETRY.forest,
         () =>
@@ -338,11 +357,13 @@ export function createPixelLabAssetBindings(
         () => CODE_NATIVE_PLACEHOLDER_ASSETS.drawVillage(context, options),
       );
     },
-    drawCityBack(context, options, city): void {
+    drawCityBack(context, options, city, faction = "ORIGINAL"): void {
       const artLevel = cityArtLevel(city.level);
       draw(
         context,
-        `building-city-${artLevel}`,
+        faction === "CANDY"
+          ? [`building-candy-city-${artLevel}`, `building-city-${artLevel}`]
+          : `building-city-${artLevel}`,
         options,
         SETTLEMENT_ART_GEOMETRY.cities[artLevel],
         () =>
@@ -350,9 +371,13 @@ export function createPixelLabAssetBindings(
         true,
       );
     },
-    drawCityFront(context, options, city): void {
+    drawCityFront(context, options, city, faction = "ORIGINAL"): void {
       const artLevel = cityArtLevel(city.level);
-      if (imageFor(`building-city-${artLevel}`) === null)
+      const candidates =
+        faction === "CANDY"
+          ? [`building-candy-city-${artLevel}`, `building-city-${artLevel}`]
+          : [`building-city-${artLevel}`];
+      if (candidates.every((id) => imageFor(id) === null))
         CODE_NATIVE_PLACEHOLDER_ASSETS.drawCityFront(context, options, city);
     },
     drawUnit(context, options, unit, faction = "ORIGINAL"): void {
@@ -457,20 +482,36 @@ export const PIXELLAB_BOARD_ART_IDS = Object.freeze([
   "terrain-grass-2",
   "terrain-grass-3",
   "terrain-grass-4",
+  "terrain-candy-grass-1",
+  "terrain-candy-grass-2",
+  "terrain-candy-grass-3",
+  "terrain-candy-grass-4",
   "terrain-mountain-1",
   "terrain-mountain-2",
   "terrain-mountain-3",
+  "terrain-candy-mountain-1",
+  "terrain-candy-mountain-2",
+  "terrain-candy-mountain-3",
   "terrain-ore",
   "terrain-fruit",
+  "terrain-candy-fruit",
   "terrain-forest-1",
   "terrain-forest-2",
   "terrain-forest-3",
   "terrain-forest-4",
+  "terrain-candy-forest-1",
+  "terrain-candy-forest-2",
+  "terrain-candy-forest-3",
+  "terrain-candy-forest-4",
   "terrain-animal",
+  "terrain-candy-animal",
   "building-village",
   "building-city-1",
   "building-city-2",
   "building-city-3",
+  "building-candy-city-1",
+  "building-candy-city-2",
+  "building-candy-city-3",
   "building-mine",
   "building-lumber-mill",
   "building-chocolate-wall",

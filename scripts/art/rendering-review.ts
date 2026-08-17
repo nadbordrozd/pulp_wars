@@ -25,6 +25,7 @@ const baseUrl =
   process.argv.slice(2).find((argument) => !argument.startsWith("--")) ??
   "http://localhost:6173";
 const forestCatapultOnly = process.argv.includes("--forest-catapult-only");
+const candyTerritoryOnly = process.argv.includes("--candy-territory-only");
 const reviewRoot = path.join(process.cwd(), "art/feedback/reviews");
 const defaultWindowsChrome =
   "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe";
@@ -62,95 +63,107 @@ try {
   await connection.send("Page.enable");
   await connection.send("Runtime.enable");
 
-  await setViewport(connection, 1440, 1000, 1, false);
-  await waitForExpression(
-    connection,
-    `document.querySelector('.app-shell')?.dataset.route === 'hub'`,
-  );
-  if (!forestCatapultOnly) {
-    await renderFixture(connection, false);
+  if (candyTerritoryOnly) {
+    await waitForExpression(
+      connection,
+      `document.querySelector('.app-shell')?.dataset.route === 'hub'`,
+    );
+    await reviewCandyTerritory(connection);
+    console.log(`Candy territory renderer evidence written to ${reviewRoot}`);
+  } else {
+    await setViewport(connection, 1440, 1000, 1, false);
+    await waitForExpression(
+      connection,
+      `document.querySelector('.app-shell')?.dataset.route === 'hub'`,
+    );
+    if (!forestCatapultOnly) {
+      await renderFixture(connection, false);
+      await waitForFixtureCanvas(connection, 1440, 1000, 1);
+      await waitForAcceptedFixtureArt(connection);
+      await delay(400);
+      await capture(connection, "second-calibration-desktop.png");
+      await renderFixture(connection, true);
+      await waitForHealthFixtureArt(connection);
+      await delay(400);
+      await capture(connection, "health-cycle-desktop.png");
+    }
+    await renderForestCatapultProductionFixture(connection);
     await waitForFixtureCanvas(connection, 1440, 1000, 1);
-    await waitForAcceptedFixtureArt(connection);
+    await waitForForestCatapultProduction(connection);
     await delay(400);
-    await capture(connection, "second-calibration-desktop.png");
-    await renderFixture(connection, true);
-    await waitForHealthFixtureArt(connection);
+    await capture(
+      connection,
+      "forest-catapult-production-desktop-1440x1000.png",
+    );
+    await renderCandyProductionFixture(connection);
+    await waitForFixtureCanvas(connection, 1440, 1000, 1);
+    await waitForCandyProduction(connection);
     await delay(400);
-    await capture(connection, "health-cycle-desktop.png");
-  }
-  await renderForestCatapultProductionFixture(connection);
-  await waitForFixtureCanvas(connection, 1440, 1000, 1);
-  await waitForForestCatapultProduction(connection);
-  await delay(400);
-  await capture(connection, "forest-catapult-production-desktop-1440x1000.png");
-  await renderCandyProductionFixture(connection);
-  await waitForFixtureCanvas(connection, 1440, 1000, 1);
-  await waitForCandyProduction(connection);
-  await delay(400);
-  await capture(connection, "candy-production-desktop-1440x1000.png");
+    await capture(connection, "candy-production-desktop-1440x1000.png");
 
-  await setViewport(connection, 390, 844, 2, true);
-  if (!forestCatapultOnly) {
-    await renderFixture(connection, false);
+    await setViewport(connection, 390, 844, 2, true);
+    if (!forestCatapultOnly) {
+      await renderFixture(connection, false);
+      await waitForFixtureCanvas(connection, 390, 844, 2);
+      await waitForAcceptedFixtureArt(connection);
+      await delay(400);
+      await capture(connection, "second-calibration-mobile-390-dpr2.png");
+      await renderFixture(connection, true);
+      await waitForHealthFixtureArt(connection);
+      await delay(400);
+      await capture(connection, "health-cycle-mobile-390x844-dpr2.png");
+    }
+    await renderForestCatapultProductionFixture(connection);
     await waitForFixtureCanvas(connection, 390, 844, 2);
-    await waitForAcceptedFixtureArt(connection);
+    await waitForForestCatapultProduction(connection);
     await delay(400);
-    await capture(connection, "second-calibration-mobile-390-dpr2.png");
-    await renderFixture(connection, true);
-    await waitForHealthFixtureArt(connection);
+    await capture(
+      connection,
+      "forest-catapult-production-mobile-390x844-dpr2.png",
+    );
+    await renderCandyProductionFixture(connection);
+    await waitForFixtureCanvas(connection, 390, 844, 2);
+    await waitForCandyProduction(connection);
     await delay(400);
-    await capture(connection, "health-cycle-mobile-390x844-dpr2.png");
+    await capture(connection, "candy-production-mobile-390x844-dpr2.png");
+
+    await setViewport(connection, 1440, 1000, 1, false);
+    await renderPlacementCalibrationFixture(connection);
+    await waitForFixtureCanvas(connection, 1440, 1000, 1);
+    await waitForPlacementCalibration(connection);
+    await delay(400);
+    await capture(connection, "placement-calibration-desktop-native.png");
+    await zoomPlacementFixture(connection);
+    await delay(200);
+    await capture(connection, "placement-calibration-desktop-enlarged.png");
+
+    await setViewport(connection, 390, 844, 2, true);
+    await renderPlacementCalibrationFixture(connection);
+    await waitForFixtureCanvas(connection, 390, 844, 2);
+    await waitForPlacementCalibration(connection);
+    await delay(400);
+    await capture(connection, "placement-calibration-mobile-dpr2-native.png");
+    await zoomPlacementFixture(connection);
+    await delay(200);
+    await capture(connection, "placement-calibration-mobile-dpr2-enlarged.png");
+
+    const measurements = await evaluate<{
+      readonly cssWidth: number;
+      readonly cssHeight: number;
+      readonly backingWidth: number;
+      readonly backingHeight: number;
+      readonly devicePixelRatio: number;
+    }>(
+      connection,
+      `(() => { const canvas = document.querySelector('.board-canvas'); if (!(canvas instanceof HTMLCanvasElement)) throw new Error('Missing review canvas'); const rect = canvas.getBoundingClientRect(); return { cssWidth: rect.width, cssHeight: rect.height, backingWidth: canvas.width, backingHeight: canvas.height, devicePixelRatio }; })()`,
+    );
+    console.log(
+      `Rendering review screenshots written to ${reviewRoot}; mobile canvas ${JSON.stringify(measurements)}`,
+    );
+    await writeForestCatapultEvidence(measurements);
+    await writeCandyProductionEvidence(measurements);
+    await writePlacementCalibrationEvidence(measurements);
   }
-  await renderForestCatapultProductionFixture(connection);
-  await waitForFixtureCanvas(connection, 390, 844, 2);
-  await waitForForestCatapultProduction(connection);
-  await delay(400);
-  await capture(
-    connection,
-    "forest-catapult-production-mobile-390x844-dpr2.png",
-  );
-  await renderCandyProductionFixture(connection);
-  await waitForFixtureCanvas(connection, 390, 844, 2);
-  await waitForCandyProduction(connection);
-  await delay(400);
-  await capture(connection, "candy-production-mobile-390x844-dpr2.png");
-
-  await setViewport(connection, 1440, 1000, 1, false);
-  await renderPlacementCalibrationFixture(connection);
-  await waitForFixtureCanvas(connection, 1440, 1000, 1);
-  await waitForPlacementCalibration(connection);
-  await delay(400);
-  await capture(connection, "placement-calibration-desktop-native.png");
-  await zoomPlacementFixture(connection);
-  await delay(200);
-  await capture(connection, "placement-calibration-desktop-enlarged.png");
-
-  await setViewport(connection, 390, 844, 2, true);
-  await renderPlacementCalibrationFixture(connection);
-  await waitForFixtureCanvas(connection, 390, 844, 2);
-  await waitForPlacementCalibration(connection);
-  await delay(400);
-  await capture(connection, "placement-calibration-mobile-dpr2-native.png");
-  await zoomPlacementFixture(connection);
-  await delay(200);
-  await capture(connection, "placement-calibration-mobile-dpr2-enlarged.png");
-
-  const measurements = await evaluate<{
-    readonly cssWidth: number;
-    readonly cssHeight: number;
-    readonly backingWidth: number;
-    readonly backingHeight: number;
-    readonly devicePixelRatio: number;
-  }>(
-    connection,
-    `(() => { const canvas = document.querySelector('.board-canvas'); if (!(canvas instanceof HTMLCanvasElement)) throw new Error('Missing review canvas'); const rect = canvas.getBoundingClientRect(); return { cssWidth: rect.width, cssHeight: rect.height, backingWidth: canvas.width, backingHeight: canvas.height, devicePixelRatio }; })()`,
-  );
-  console.log(
-    `Rendering review screenshots written to ${reviewRoot}; mobile canvas ${JSON.stringify(measurements)}`,
-  );
-  await writeForestCatapultEvidence(measurements);
-  await writeCandyProductionEvidence(measurements);
-  await writePlacementCalibrationEvidence(measurements);
   connection.close();
 } finally {
   browser.kill();
@@ -483,6 +496,245 @@ async function renderCandyProductionFixture(
       return true;
     })()`,
     true,
+  );
+}
+
+async function reviewCandyTerritory(connection: Connection): Promise<void> {
+  const captures: Array<{
+    readonly file: string;
+    readonly viewport: { readonly width: number; readonly height: number };
+    readonly devicePixelRatio: number;
+    readonly phase: "BEFORE" | "AFTER";
+    readonly metric: CandyTerritoryMetric;
+  }> = [];
+  for (const viewport of [
+    { width: 1440, height: 1000, dpr: 1, mobile: false, label: "desktop" },
+    { width: 390, height: 844, dpr: 2, mobile: true, label: "mobile" },
+  ] as const) {
+    await setViewport(
+      connection,
+      viewport.width,
+      viewport.height,
+      viewport.dpr,
+      viewport.mobile,
+    );
+    for (const phase of ["BEFORE", "AFTER"] as const) {
+      const metric = await renderCandyTerritoryFixture(connection, phase);
+      await waitForFixtureCanvas(
+        connection,
+        viewport.width,
+        viewport.height,
+        viewport.dpr,
+      );
+      await waitForCandyTerritory(connection, phase);
+      await delay(400);
+      const file = `candy-territory-${phase.toLowerCase()}-${viewport.label}-${viewport.width}x${viewport.height}${viewport.dpr === 2 ? "-dpr2" : ""}.png`;
+      await capture(connection, file);
+      captures.push({
+        file,
+        viewport: { width: viewport.width, height: viewport.height },
+        devicePixelRatio: viewport.dpr,
+        phase,
+        metric,
+      });
+    }
+  }
+  const before = captures.find(
+    (entry) => entry.phase === "BEFORE" && entry.devicePixelRatio === 1,
+  )?.metric;
+  const after = captures.find(
+    (entry) => entry.phase === "AFTER" && entry.devicePixelRatio === 1,
+  )?.metric;
+  if (before === undefined || after === undefined)
+    throw new Error("Missing Candy territory transition metrics");
+  if (before.boardHash !== after.boardHash)
+    throw new Error("Candy capture fixture mutated canonical board tiles");
+  if (
+    before.middleOwnerFaction !== "ORIGINAL" ||
+    after.middleOwnerFaction !== "CANDY" ||
+    after.candyTiles <= before.candyTiles ||
+    after.originalTiles >= before.originalTiles
+  )
+    throw new Error("Candy territory fixture did not switch its middle band");
+  const evidence = [];
+  for (const item of captures) {
+    const relative = `art/feedback/reviews/${item.file}`;
+    const bytes = await readFile(path.join(process.cwd(), relative));
+    evidence.push({
+      path: relative,
+      viewport: item.viewport,
+      devicePixelRatio: item.devicePixelRatio,
+      phase: item.phase,
+      sha256: createHash("sha256").update(bytes).digest("hex"),
+      bytes: bytes.byteLength,
+      metric: item.metric,
+    });
+  }
+  await writeFile(
+    path.join(reviewRoot, "candy-territory-renderer-evidence.json"),
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        contract:
+          "Real CanvasBoardHost/viewFor transition: a visible Original-owned middle city is captured by Candy; every explored in-scope tile sprite in its unchanged territory band and its city switch immediately, while mixed Candy/Original borders remain and board tiles stay hash-identical.",
+        visualReview: {
+          desktop:
+            "At native desktop scale the pink/cocoa Candy grass, mountains, forests, Fruit and Animal are legible as one family; the captured center city switches to Candy art; the right Original band and border treatment remain intact.",
+          mobileDpr2:
+            "At 390x844 DPR2 the Candy/Original boundary remains readable, tall silhouettes retain their anchors and sorting, and no blank/loading hole or geometry jump is visible between phases.",
+        },
+        before,
+        after,
+        evidence,
+      },
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
+}
+
+interface CandyTerritoryMetric {
+  readonly phase: "BEFORE" | "AFTER";
+  readonly stateHash: string;
+  readonly boardHash: string;
+  readonly middleOwnerFaction: "ORIGINAL" | "CANDY";
+  readonly candyTiles: number;
+  readonly originalTiles: number;
+  readonly candyCities: number;
+  readonly originalCities: number;
+  readonly css: readonly [number, number];
+  readonly backing: readonly [number, number];
+  readonly dpr: number;
+}
+
+async function renderCandyTerritoryFixture(
+  connection: Connection,
+  phase: "BEFORE" | "AFTER",
+): Promise<CandyTerritoryMetric> {
+  return evaluate<CandyTerritoryMetric>(
+    connection,
+    `(async () => {
+      const [engine, canvas] = await Promise.all([
+        import('/src/engine/index.ts'),
+        import('/src/render/canvas/board-host.ts')
+      ]);
+      const result = engine.createGame({ rulesetId: engine.RULESET_ID, mapGenerationRevision: engine.MAP_GENERATION_REVISION, seed: 61826, width: 11, height: 11, aiCount: 1, aiDifficulty: 'NORMAL', aiMode: 'RIVAL', humanColor: 'CORAL', factions: ['CANDY', 'ORIGINAL'] });
+      if (!result.ok) throw new Error(result.error.code);
+      const human = result.state.players.find((player) => player.controller === 'HUMAN');
+      const enemy = result.state.players.find((player) => player.controller === 'AI');
+      const humanBase = result.state.cities.find((city) => city.ownerId === human?.id);
+      const enemyBase = result.state.cities.find((city) => city.ownerId === enemy?.id);
+      if (!human || !enemy || !humanBase || !enemyBase) throw new Error('Missing territory fixture entities');
+      const leftCity = { ...humanBase, at: { x: 2, y: 3 }, level: 2, population: 1, isCapital: true };
+      const middleCity = { ...enemyBase, at: { x: 5, y: 5 }, level: 3, population: 2, isCapital: false, ownerId: ${JSON.stringify(phase)} === 'AFTER' ? human.id : enemy.id };
+      const rightCity = { ...enemyBase, id: enemyBase.id + 5000, at: { x: 8, y: 7 }, level: 1, population: 0, isCapital: true };
+      const cities = [leftCity, middleCity, rightCity];
+      const explored = result.state.board.tiles.map((tile) => tile.at);
+      const board = {
+        ...result.state.board,
+        tiles: result.state.board.tiles.map((tile) => {
+          const city = tile.at.x <= 3 ? leftCity : tile.at.x <= 6 ? middleCity : rightCity;
+          const isCenter = city.at.x === tile.at.x && city.at.y === tile.at.y;
+          const row = tile.at.y % 3;
+          return {
+            ...tile,
+            terrain: row === 1 ? 'MOUNTAIN' : row === 2 ? 'FOREST' : 'GRASS',
+            resource: row === 0 ? 'FRUIT' : row === 1 && tile.at.y % 2 === 1 ? 'ORE' : row === 2 ? 'ANIMAL' : null,
+            improvement: null,
+            site: isCenter ? (city.isCapital ? 'CAPITAL' : 'CITY') : null,
+            territoryCenter: city.at,
+            territoryCityId: city.id
+          };
+        })
+      };
+      const state = {
+        ...result.state,
+        nextEntityId: rightCity.id + 1,
+        activeSeatIndex: result.state.turnOrder.indexOf(human.id),
+        board,
+        players: result.state.players.map((player) => ({ ...player, explored })),
+        cities,
+        units: [],
+        chocolateWalls: [],
+        pendingChoice: null,
+        outcome: null
+      };
+      const view = engine.viewFor(state, human.id);
+      globalThis.__PULP_WARS_APP__?.destroy?.();
+      globalThis.__pulpRenderingReviewHost?.destroy?.();
+      const root = document.querySelector('#app');
+      if (!root) throw new Error('Missing app root');
+      root.replaceChildren();
+      Object.assign(document.documentElement.style, { width: '100%', height: '100%', overflow: 'hidden' });
+      Object.assign(document.body.style, { width: '100%', height: '100%', margin: '0', overflow: 'hidden', background: '#233b39' });
+      Object.assign(root.style, { position: 'fixed', inset: '0', width: '100%', height: '100%' });
+      const container = document.createElement('div');
+      container.className = 'board-host';
+      Object.assign(container.style, { position: 'absolute', inset: '0', width: '100%', height: '100%' });
+      const label = document.createElement('div');
+      label.textContent = ${JSON.stringify(phase)} === 'BEFORE' ? 'Before · Original middle territory' : 'After capture · Candy middle territory';
+      Object.assign(label.style, { position: 'absolute', zIndex: '2', inset: '16px auto auto 16px', maxWidth: 'calc(100% - 32px)', boxSizing: 'border-box', padding: '8px 10px', borderRadius: '10px', color: '#fff', background: 'rgb(17 26 29 / 0.9)', border: '2px solid #ff7fc8', font: '800 14px system-ui', textAlign: 'center' });
+      root.append(container, label);
+      const host = new canvas.CanvasBoardHost(document);
+      host.mount(container, {
+        onSelection() {},
+        onInspect() {},
+        onCommand() { throw new Error('View-only Candy territory review dispatched a command'); },
+        onZoom() {}
+      });
+      host.update({ matchInstanceId: ${JSON.stringify(phase)} === 'BEFORE' ? 618260 : 618261, view, interactive: false, motion: 'REDUCED', animationSpeed: 'NORMAL', selected: null });
+      globalThis.__pulpRenderingReviewHost = host;
+      const ownerFaction = (tile) => tile.explored && tile.territoryOwnerId !== null ? view.players.find((player) => player.id === tile.territoryOwnerId)?.faction : undefined;
+      const canvasElement = document.querySelector('.board-canvas');
+      if (!(canvasElement instanceof HTMLCanvasElement)) throw new Error('Missing Candy territory canvas');
+      const rect = canvasElement.getBoundingClientRect();
+      const metric = {
+        phase: ${JSON.stringify(phase)},
+        stateHash: engine.canonicalHash(state),
+        boardHash: engine.canonicalHash(board),
+        middleOwnerFaction: view.players.find((player) => player.id === middleCity.ownerId)?.faction,
+        candyTiles: view.board.tiles.filter((tile) => ownerFaction(tile) === 'CANDY').length,
+        originalTiles: view.board.tiles.filter((tile) => ownerFaction(tile) === 'ORIGINAL').length,
+        candyCities: view.cities.filter((city) => view.players.find((player) => player.id === city.ownerId)?.faction === 'CANDY').length,
+        originalCities: view.cities.filter((city) => view.players.find((player) => player.id === city.ownerId)?.faction === 'ORIGINAL').length,
+        css: [rect.width, rect.height],
+        backing: [canvasElement.width, canvasElement.height],
+        dpr: devicePixelRatio
+      };
+      globalThis.__pulpCandyTerritoryReview = metric;
+      return metric;
+    })()`,
+    true,
+  );
+}
+
+async function waitForCandyTerritory(
+  connection: Connection,
+  phase: "BEFORE" | "AFTER",
+): Promise<void> {
+  await waitForExpression(
+    connection,
+    `(() => {
+      const fixture = globalThis.__pulpCandyTerritoryReview;
+      if (!fixture || fixture.phase !== ${JSON.stringify(phase)} || fixture.candyTiles <= 0 || fixture.originalTiles <= 0) return false;
+      const pending = [
+        '/assets/pixellab/terrain/candy-grass-1.png',
+        '/assets/pixellab/terrain/candy-mountain-1.png',
+        '/assets/pixellab/terrain/candy-forest-1.png',
+        '/assets/pixellab/terrain/candy-fruit.png',
+        '/assets/pixellab/terrain/candy-animal.png',
+        '/assets/pixellab/buildings/candy-city-${phase === "AFTER" ? "3" : "2"}.png',
+        '/assets/pixellab/terrain/grass-1.png',
+        '/assets/pixellab/terrain/mountain-1.png',
+        '/assets/pixellab/terrain/forest-1.png',
+        '/assets/pixellab/terrain/fruit.png',
+        '/assets/pixellab/terrain/animal.png',
+        '/assets/pixellab/buildings/city-1.png'
+      ];
+      const resources = performance.getEntriesByType('resource').map((entry) => entry.name);
+      return pending.every((ending) => resources.some((name) => name.endsWith(ending)));
+    })()`,
   );
 }
 

@@ -127,7 +127,8 @@ export function buildRenderPlan(
       entries.push(entry("FOG", tile.at, coordinateId(tile.at), null));
       continue;
     }
-    entries.push(entry("GROUND", tile.at, coordinateId(tile.at), null));
+    const ownerId = tile.territoryOwnerId;
+    entries.push(entry("GROUND", tile.at, coordinateId(tile.at), ownerId));
     const city = view.cities.find((candidate) =>
       sameCoord(candidate.at, tile.at),
     );
@@ -137,11 +138,6 @@ export function buildRenderPlan(
     const chocolateWall = view.chocolateWalls.find((candidate) =>
       sameCoord(candidate.at, tile.at),
     );
-    const ownerId =
-      city?.ownerId ??
-      view.cities.find((candidate) => candidate.id === tile.territoryCityId)
-        ?.ownerId ??
-      null;
     if (ownerId !== null)
       entries.push(entry("OWNERSHIP", tile.at, coordinateId(tile.at), ownerId));
     if (tile.resource === "ORE" && tile.improvement === null)

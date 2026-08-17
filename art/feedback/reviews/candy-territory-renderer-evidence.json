@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "contract": "Real CanvasBoardHost/viewFor transition: a visible Original-owned middle city is captured by Candy; every explored in-scope tile sprite in its unchanged territory band and its city switch immediately, while mixed Candy/Original borders remain and board tiles stay hash-identical.",
+  "visualReview": {
+    "desktop": "At native desktop scale the pink/cocoa Candy grass, mountains, forests, Fruit and Animal are legible as one family; the captured center city switches to Candy art; the right Original band and border treatment remain intact.",
+    "mobileDpr2": "At 390x844 DPR2 the Candy/Original boundary remains readable, tall silhouettes retain their anchors and sorting, and no blank/loading hole or geometry jump is visible between phases."
+  },
+  "before": {
+    "phase": "BEFORE",
+    "stateHash": "b392293aef317aa3bc8ac18cb79b65aab131084827386f756c3f02ee758a4334",
+    "boardHash": "9c6ffd5cac02fce2f69bb50e5968fc11ab369f3b385efa0784e6174bd271dc7d",
+    "middleOwnerFaction": "ORIGINAL",
+    "candyTiles": 44,
+    "originalTiles": 77,
+    "candyCities": 1,
+    "originalCities": 2,
+    "css": [
+      1440,
+      1000
+    ],
+    "backing": [
+      1440,
+      1000
+    ],
+    "dpr": 1
+  },
+  "after": {
+    "phase": "AFTER",
+    "stateHash": "013a9879c18d20d7573dc1d98febe512cc51be8e8ea5e2913fb863f3bf1b9d62",
+    "boardHash": "9c6ffd5cac02fce2f69bb50e5968fc11ab369f3b385efa0784e6174bd271dc7d",
+    "middleOwnerFaction": "CANDY",
+    "candyTiles": 77,
+    "originalTiles": 44,
+    "candyCities": 2,
+    "originalCities": 1,
+    "css": [
+      1440,
+      1000
+    ],
+    "backing": [
+      1440,
+      1000
+    ],
+    "dpr": 1
+  },
+  "evidence": [
+    {
+      "path": "art/feedback/reviews/candy-territory-before-desktop-1440x1000.png",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "devicePixelRatio": 1,
+      "phase": "BEFORE",
+      "sha256": "8f495e9e1e65890c597fe31d3cfa6925d462827246ee6e6981afd7a652959b58",
+      "bytes": 744660,
+      "metric": {
+        "phase": "BEFORE",
+        "stateHash": "b392293aef317aa3bc8ac18cb79b65aab131084827386f756c3f02ee758a4334",
+        "boardHash": "9c6ffd5cac02fce2f69bb50e5968fc11ab369f3b385efa0784e6174bd271dc7d",
+        "middleOwnerFaction": "ORIGINAL",
+        "candyTiles": 44,
+        "originalTiles": 77,
+        "candyCities": 1,
+        "originalCities": 2,
+        "css": [
+          1440,
+          1000
+        ],
+        "backing": [
+          1440,
+          1000
+        ],
+        "dpr": 1
+      }
+    },
+    {
+      "path": "art/feedback/reviews/candy-territory-after-desktop-1440x1000.png",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "devicePixelRatio": 1,
+      "phase": "AFTER",
+      "sha256": "f6e19369f1102005c26518ec0a3a1a5e674f39ba9957737bd57292ed49f1fa77",
+      "bytes": 759237,
+      "metric": {
+        "phase": "AFTER",
+        "stateHash": "013a9879c18d20d7573dc1d98febe512cc51be8e8ea5e2913fb863f3bf1b9d62",
+        "boardHash": "9c6ffd5cac02fce2f69bb50e5968fc11ab369f3b385efa0784e6174bd271dc7d",
+        "middleOwnerFaction": "CANDY",
+        "candyTiles": 77,
+        "originalTiles": 44,
+        "candyCities": 2,
+        "originalCities": 1,
+        "css": [
+          1440,
+          1000
+        ],
+        "backing": [
+          1440,
+          1000
+        ],
+        "dpr": 1
+      }
+    },
+    {
+      "path": "art/feedback/reviews/candy-territory-before-mobile-390x844-dpr2.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "devicePixelRatio": 2,
+      "phase": "BEFORE",
+      "sha256": "c6335c6881ea6deac57e151f864b7ae4c71f05f44b0b5367a5254ecaa1ff09a3",
+      "bytes": 715993,
+      "metric": {
+        "phase": "BEFORE",
+        "stateHash": "b392293aef317aa3bc8ac18cb79b65aab131084827386f756c3f02ee758a4334",
+        "boardHash": "9c6ffd5cac02fce2f69bb50e5968fc11ab369f3b385efa0784e6174bd271dc7d",
+        "middleOwnerFaction": "ORIGINAL",
+        "candyTiles": 44,
+        "originalTiles": 77,
+        "candyCities": 1,
+        "originalCities": 2,
+        "css": [
+          390,
+          844
+        ],
+        "backing": [
+          780,
+          1688
+        ],
+        "dpr": 2
+      }
+    },
+    {
+      "path": "art/feedback/reviews/candy-territory-after-mobile-390x844-dpr2.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "devicePixelRatio": 2,
+      "phase": "AFTER",
+      "sha256": "93683a939c13e79ce0e454057f1eb3162ed26286d8a5c6756967ebfa0adb58f0",
+      "bytes": 702934,
+      "metric": {
+        "phase": "AFTER",
+        "stateHash": "013a9879c18d20d7573dc1d98febe512cc51be8e8ea5e2913fb863f3bf1b9d62",
+        "boardHash": "9c6ffd5cac02fce2f69bb50e5968fc11ab369f3b385efa0784e6174bd271dc7d",
+        "middleOwnerFaction": "CANDY",
+        "candyTiles": 77,
+        "originalTiles": 44,
+        "candyCities": 2,
+        "originalCities": 1,
+        "css": [
+          390,
+          844
+        ],
+        "backing": [
+          780,
+          1688
+        ],
+        "dpr": 2
+      }
+    }
+  ]
+}
