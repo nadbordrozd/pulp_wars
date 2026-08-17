@@ -85,6 +85,23 @@ describe("DOM UI architecture and responsive contract", () => {
     expect(css).toContain('[data-motion="reduced"]');
   });
 
+  it("contains the full faction hero only in the large preview while seat badges may crop", () => {
+    const source = readFileSync("src/render/dom/app-view.ts", "utf8");
+    const css = readFileSync("src/styles/main.css", "utf8");
+    expect(source).toMatch(
+      /className\.includes\("faction-preview"\)[\s\S]*FACTION_HERO_URLS\[faction\]/,
+    );
+    expect(css).toMatch(
+      /\.faction-portrait \.faction-hero-art\s*\{[^}]*object-fit:\s*cover/s,
+    );
+    expect(css).toMatch(
+      /\.faction-preview-portrait \.faction-hero-art\s*\{[^}]*object-fit:\s*contain[^}]*object-position:\s*center center/s,
+    );
+    expect(css).toMatch(
+      /\.faction-portrait\[data-loaded="true"\] \.faction-hero-art\s*\{[^}]*opacity:\s*1/s,
+    );
+  });
+
   it("fixes the Canvas to the match viewport and overlays bounded selection docks", () => {
     const css = readFileSync("src/styles/main.css", "utf8");
     expect(css).toMatch(

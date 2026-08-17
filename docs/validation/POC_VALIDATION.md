@@ -1,10 +1,11 @@
 # Pulp Wars POC validation
 
-## Ruleset 5 Candy faction acceptance plan
+## Ruleset 5 Candy faction final acceptance
 
-This is a prospective gate, not a claim that ruleset 5 is implemented. The
-authoritative behavior is POC Rules section 0. A Candy implementation is not
-accepted until all items below pass on the same reviewed revision.
+Ruleset 5 passed its independent final audit on 2026-08-17. The authoritative
+behavior remains POC Rules section 0; the following criteria and evidence were
+validated together against the reviewed workspace based on `ce6000b` plus the
+three audit fixes recorded below.
 
 ### Schema, determinism, and compatibility
 
@@ -81,10 +82,138 @@ build, v5 golden replay, focused headless matrices, browser smoke, PixelLab
 manifest validation, visual review evidence, documentation links/consistency,
 and `git diff --check`.
 
-**Date:** 2026-08-16  
-**Result:** Ruleset-4 functional and production presentation audit passed;
-Fruit, Forest, Animal, Lumber Mill, Catapult, Forestry, and Mathematics
-PixelLab art is accepted and integrated
+### Final Candy corpus
+
+`npm run validate:candy` ran 11 fixed cases twice with 20,000-command and
+500-round caps. The cases include all-Original, all-Candy, a Candy opponent,
+alternating factions, 1/2/3 AI, Rival/Cooperative, Auto 11/14/16, Large 20, and
+Huge 25. All 11 matches terminated across 22 deterministic runs: 0 errors, 0
+stalls, 0 caps, 452 rounds, and 11,497 accepted commands. Every repeat matched
+the complete command, ordered-event, and final-state hashes exactly.
+
+The corpus recorded Candy training for Warrior/Gumball/Engineer/Donut/Catapult
+at 152/62/151/161/34 and Candy actions at 598/358/496/370/263. It exercised 119
+Gumball attacks; 92 Rolls with 176 hostile damage hits and 140 newly revealed
+path cells; 60 Wall builds, 92 Wall attacks, and 53 Wall destructions; 272
+direct and 35 tied-choice Candify resolutions covering 307 tiles; and 263 Candy
+Catapult actions. Shared systems recorded 261 research commands, 1,268 training
+commands, 771 growth actions, 3,226 reveals, and 150 captures. Deterministic
+fixture tests separately cover legal friendly/allied Roll damage and the
+policy-rare rejection and persistence boundaries listed above.
+
+Every Cooperative AI command was replay-audited at its authoritative boundary.
+There were zero AI-on-AI attacks, Roll victims, Wall attacks, allied-territory
+entries, Builds, Candify commands, or captures. Faction-only setup changes also
+preserved terrain, settlement, initial-unit, turn-order, and post-generation
+PRNG identity in both modes for 1/2/3 AI. The shared seed-6173 hashes were:
+
+| AI seats | Board | Shared map/PRNG hash                                               |
+| -------: | ----: | ------------------------------------------------------------------ |
+|        1 |    11 | `840f064763ec22a7abb6a1d6c637a61eddc335b96cd3472f08e8bf863e50532f` |
+|        2 |    14 | `5f305fa7b16eb818fb3beea6c9ac6a77ecc7341f29967a37d7b7832b01694856` |
+|        3 |    16 | `cf39995714d80bfd0ff4f8bf2a25aa1fba67451078acba7cf05c9fa630f0224d` |
+
+The all-Original reference case remained terminal and repeat-exact at command
+129 with command/event/final hashes
+`eba1a72feb5dee31a52e712bf108c091bded7b4667253dd77f30dc65557e06ec`,
+`5033d2742554bff127772013ebc40d4b347ae85f199f9c9cc29a7377ade205d3`,
+and `260d88433f7ba39607e914fe49555b4a34dfcbd45484afc6964434423909084e`.
+All case identities, participation counts, Cooperative audit counts, and exact
+hashes are in [CANDY_V5_CORPUS.json](CANDY_V5_CORPUS.json). The runtime-heavy
+corpus intentionally remains outside the default release check.
+
+### Audit defects fixed
+
+Two deterministic corpus failures exposed correctness defects; both now have
+focused regressions:
+
+1. An explored hostile territory tile whose controlling city center was still
+   hidden could appear neutral in `PlayerView`, causing Normal AI to enumerate a
+   Candify command that the reducer correctly rejected. Public explored tiles
+   now expose only `territoryOwnerId`; hidden city identity/location remains
+   redacted, and public Candify candidates conservatively omit controlled tiles
+   whose city assignment is not public. The all-Candy Rival seed-10 regression
+   now terminates twice at round 52 / command 655 with final hash
+   `cc59f05a5a80ebcb729d820d752c5b3dbbfc72814ee70eb0fb64a01bc7484576`.
+2. Cooperative Candy AI could choose a Roll line through a public
+   `ALLIED_TERRITORY` boundary and damage a hidden allied unit. Normal Roll
+   scoring now rejects any line crossing that diplomatic boundary. The natural
+   Cooperative Large seed-17 case now terminates twice at round 57 / command
+   2,153 with zero audited hostility and final hash
+   `ecfc37865ef2dc8924c78d3dee9ccb98dea2ffe9db8f105c2fb7f66f83cdc600`.
+
+Neither gameplay fix changes authoritative hidden-state legality, map
+generation, PRNG, command/event schemas, or the all-Original golden replay.
+Rejected commands remain atomic and v1-v4 incompatibility remains
+byte-preserving.
+
+A final original-detail setup inspection also found that faction portraits set
+their loaded marker on `.faction-portrait`, while the shared opacity rule only
+revealed images beneath `.faction-hero`. The accepted Candy group and seat badge
+were therefore transparent, leaving only the pink CSS fallback visible. Loaded
+portrait art now receives opacity 1; the preview alone uses contained,
+centered geometry while compact seat badges retain cover geometry. Static DOM/
+CSS tests and the Chrome setup review assert the exact asset URL, loaded state,
+opacity, fit, position, and intrinsic dimensions.
+
+### Real-browser and presentation result
+
+Chrome 151.0.7922.137 passed the mixed-faction per-seat setup review at 1440 x
+1000 and true 390 x 844 DPR2. The selected array was
+Candy/Original/Candy/Original, and autosave/restart preserved initial hash
+`1ac9dee27d6f4eff065deed7c315060c58e3f89c0df3a28bdf24196f762db464`.
+The setup preview loaded
+`/assets/pixellab/ui/faction-candy-hero.png` at its 1024 x 1024 intrinsic size
+with opacity 1, `object-fit: contain`, and centered positioning in 144 x 144
+desktop and 72 x 72 mobile portraits. The corrected desktop/mobile/confirmation
+screenshot hashes are respectively
+`74dda8a0a3b2b194afb057030a93f901966e96af02aec0575e2805e1fd5c0ebd`,
+`d7c91426b854ba9acac1a2fc530aa86ea991ce44b93ea18893b35d1014f62d6d`,
+and `4e8d0b42c85141b253b1237e83366dfec4a40cd1f567a82040f14fc78e39777c`.
+The Candy review passed Donut dock/targets/Roll, Gumball projectile, Wall
+targets/build and HP inspection, Candify, and the mandatory tied-city chooser.
+Accepted Roll and Wall boundaries were respectively
+`33bcce872cd4afc2db8bc3e00db56da0b881609a20c9c29dec35af7519b1b3b0`
+and `3fdb83f267b0c74b0062a54cf7770f55cc51e30d0396b4d7efae2f0c3163c99d`.
+
+The ordinary Original browser smoke also completed real setup-to-result flows
+for 1/2/3 AI with 288/776/403 accepted commands. Each covered exact-boundary
+save/reload/Resume, Fast Forward, result, final map, Play Again, and restart.
+Keyboard/focus ownership, touch activation, 44 CSS px targets, reduced motion,
+animation cancellation and hash parity, no horizontal overflow, stable map
+geometry, and undimmed ordinary unit/city/tile docks passed. Only the mandatory
+tied-Candify choice dims and locks the map.
+
+All 23 regenerated browser screenshots plus the Candy unit/building/UI contact
+sheets were inspected at original resolution. Representative Candy evidence:
+
+- [desktop faction setup](../../art/integration/reviews/faction-setup-desktop-1440x1000.png)
+- [mobile faction confirmation](../../art/integration/reviews/faction-confirm-mobile-390x844-dpr2.png)
+- [Donut Roll targets](../../art/integration/reviews/candy-roll-targets-desktop-1440x1000.png)
+- [Gumball projectile](../../art/integration/reviews/candy-gumball-flight-desktop-1440x1000.png)
+- [mobile Wall target review](../../art/integration/reviews/candy-wall-targets-mobile-390x844-dpr2.png)
+- [mandatory mobile Candify choice](../../art/integration/reviews/candy-city-choice-mobile-390x844-dpr2.png)
+
+### Final release gates
+
+A fresh isolated copy and install, followed by the live workspace, both passed
+the complete release gate: Prettier, ESLint, all three strict TypeScript
+configurations, 32 Vitest files / 366 tests, production build, golden replay,
+and PixelLab manifest/hash/dimension/accepted/quarantine validation. The final
+bundle is 237.88 kB JS / 67.02 kB gzip and 29.02 kB CSS / 6.95 kB gzip.
+`npm ci` and `npm audit --audit-level=low` both reported zero vulnerabilities.
+All 13 Markdown files pass Prettier and their local links resolve; the
+credential/private-key signature scan and `git diff --check` are clean. The
+existing `localhost:6173` server returns HTTP 200, while a second strict-port
+launch rejects port reuse as required. No PixelLab generation call was made in
+this audit.
+
+**Date:** 2026-08-17
+
+**Result:** Ruleset-5 Candy faction acceptance passed; production Candy art is
+accepted and integrated, deterministic and browser gates are green, and no
+known blocker remains. Ruleset-4 evidence below remains historical and valid.
+
 **Reference machine:** Windows 11 Home 10.0.26100, Intel Core i7-10510U,
 15.8 GiB RAM, Chrome 151.0.7922.137
 

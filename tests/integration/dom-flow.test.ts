@@ -412,11 +412,13 @@ describe("semantic POC screen flow", () => {
 
     radio("faction-seat-0", "CANDY").click();
     radio("faction-seat-2", "CANDY").click();
-    expect(
-      document.querySelector<HTMLImageElement>(
-        ".faction-preview .faction-candy .faction-hero-art",
-      )?.src,
-    ).toContain("/assets/pixellab/ui/faction-candy-hero.png");
+    const candyPreview = document.querySelector<HTMLImageElement>(
+      ".faction-preview .faction-candy.faction-preview-portrait .faction-hero-art",
+    );
+    expect(candyPreview?.src).toContain(
+      "/assets/pixellab/ui/faction-candy-hero.png",
+    );
+    expect(candyPreview?.closest(".faction-seat-portrait")).toBeNull();
     expect(
       document.querySelector<HTMLImageElement>(
         ".faction-seat-portrait.faction-candy .faction-hero-art",

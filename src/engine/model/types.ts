@@ -147,6 +147,8 @@ export type PlayerTileView =
       readonly diplomaticBlock: "ALLIED_TERRITORY";
     }
   | ({ readonly explored: true } & TileState & {
+        /** Current controller without disclosing an unexplored city center. */
+        readonly territoryOwnerId: PlayerId | null;
         /** Relationship-only path boundary; prior tile knowledge remains. */
         readonly diplomaticBlock?: "ALLIED_TERRITORY";
       });

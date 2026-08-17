@@ -654,6 +654,16 @@ fieldset {
   object-position: center top;
 }
 
+/* Preview portraits use the full faction group; compact seat badges may crop. */
+.faction-preview-portrait .faction-hero-art {
+  object-fit: contain;
+  object-position: center center;
+}
+
+.faction-portrait[data-loaded="true"] .faction-hero-art {
+  opacity: 1;
+}
+
 .faction-portrait[data-loaded="true"] .faction-portrait-fallback {
   display: none;
 }

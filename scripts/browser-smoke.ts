@@ -466,6 +466,15 @@ async function assertCandyDock(
 async function reviewFactionSetup(connection: Connection): Promise<{
   readonly initialHash: string;
   readonly restartHash: string;
+  readonly previewArt: {
+    readonly originalUrl: string;
+    readonly url: string;
+    readonly naturalSize: readonly [number, number];
+    readonly opacity: string;
+    readonly objectFit: string;
+    readonly objectPosition: string;
+    readonly portraitSize: readonly [number, number];
+  };
 }> {
   await desktopViewport(connection);
   await clickButton(connection, "New Conquest");
@@ -481,6 +490,21 @@ async function reviewFactionSetup(connection: Connection): Promise<{
   );
   await setSeed(connection, 0xcafe);
   await clickButton(connection, "Continue");
+  await waitForExpression(
+    connection,
+    `document.querySelector('.faction-preview .faction-original.faction-preview-portrait')?.dataset.loaded === 'true'`,
+  );
+  const originalUrl = await evaluate<string>(
+    connection,
+    `(() => {
+      const preview = document.querySelector('.faction-preview .faction-original.faction-preview-portrait');
+      const image = preview?.querySelector('.faction-hero-art');
+      if (!(preview instanceof HTMLElement) || !(image instanceof HTMLImageElement)) throw new Error('Missing Original preview art');
+      const style = getComputedStyle(image);
+      if (!image.complete || image.naturalWidth <= 0 || !image.src.endsWith('/assets/pixellab/ui/faction-hero.png') || style.opacity !== '1' || style.objectFit !== 'contain') throw new Error('Preview correction harmed the Original hero');
+      return new URL(image.src).pathname;
+    })()`,
+  );
   await evaluate(
     connection,
     `(() => {
@@ -501,6 +525,34 @@ async function reviewFactionSetup(connection: Connection): Promise<{
       return true;
     })()`,
   );
+  await waitForExpression(
+    connection,
+    `document.querySelector('.faction-preview .faction-candy.faction-preview-portrait')?.dataset.loaded === 'true' && document.querySelector('.faction-preview .faction-candy.faction-preview-portrait .faction-hero-art')?.complete === true && document.querySelector('.faction-preview .faction-candy.faction-preview-portrait .faction-hero-art')?.naturalWidth === 1024`,
+  );
+  const candyPreviewArt = await evaluate<{
+    readonly url: string;
+    readonly naturalSize: readonly [number, number];
+    readonly opacity: string;
+    readonly objectFit: string;
+    readonly objectPosition: string;
+    readonly portraitSize: readonly [number, number];
+  }>(
+    connection,
+    `(() => {
+      const preview = document.querySelector('.faction-preview .faction-candy.faction-preview-portrait');
+      const image = preview?.querySelector('.faction-hero-art');
+      const badge = document.querySelector('.faction-seat-portrait.faction-candy .faction-hero-art');
+      if (!(preview instanceof HTMLElement) || !(image instanceof HTMLImageElement) || !(badge instanceof HTMLImageElement)) throw new Error('Missing Candy preview or seat badge art');
+      const style = getComputedStyle(image);
+      const badgeStyle = getComputedStyle(badge);
+      const rect = preview.getBoundingClientRect();
+      if (preview.dataset.loaded !== 'true' || !image.complete || image.naturalWidth !== 1024 || image.naturalHeight !== 1024 || !image.src.endsWith('/assets/pixellab/ui/faction-candy-hero.png')) throw new Error('Candy preview did not load the accepted hero');
+      if (style.opacity !== '1' || style.objectFit !== 'contain' || style.objectPosition !== '50% 50%') throw new Error('Candy preview hides or crops its faction hero: ' + style.opacity + ' / ' + style.objectFit + ' / ' + style.objectPosition);
+      if (badge.closest('.faction-portrait')?.dataset.loaded !== 'true' || badgeStyle.opacity !== '1' || !badge.src.endsWith('/assets/pixellab/ui/faction-candy-badge.png') || badgeStyle.objectFit !== 'cover') throw new Error('Preview geometry or visibility leaked into the compact seat badge');
+      return { url: new URL(image.src).pathname, naturalSize: [image.naturalWidth, image.naturalHeight], opacity: style.opacity, objectFit: style.objectFit, objectPosition: style.objectPosition, portraitSize: [Math.round(rect.width), Math.round(rect.height)] };
+    })()`,
+  );
+  const previewArt = { originalUrl, ...candyPreviewArt };
   await waitForNoHorizontalOverflow(connection);
   await assertResponsiveTargets(connection);
   await capture(connection, "faction-setup-desktop-1440x1000.png");
@@ -519,24 +571,40 @@ async function reviewFactionSetup(connection: Connection): Promise<{
     readonly clientWidth: number;
     readonly startBottom: number;
     readonly viewportHeight: number;
+    readonly previewOpacity: string;
+    readonly previewObjectFit: string;
+    readonly previewObjectPosition: string;
+    readonly previewSize: readonly [number, number];
   }>(
     connection,
     `(() => {
       const start = [...document.querySelectorAll('button')].find((button) => button.textContent?.trim() === 'Start Conquest');
       if (!(start instanceof HTMLButtonElement)) throw new Error('Missing mobile Start Conquest');
+      const preview = document.querySelector('.faction-preview-portrait');
+      const image = preview?.querySelector('.faction-hero-art');
+      if (!(preview instanceof HTMLElement) || !(image instanceof HTMLImageElement)) throw new Error('Missing mobile faction preview');
+      const previewStyle = getComputedStyle(image);
+      const previewRect = preview.getBoundingClientRect();
       return {
         rows: document.querySelectorAll('.faction-seat-row').length,
         scrollWidth: document.documentElement.scrollWidth,
         clientWidth: document.documentElement.clientWidth,
         startBottom: Math.round(start.getBoundingClientRect().bottom),
-        viewportHeight: innerHeight
+        viewportHeight: innerHeight,
+        previewOpacity: previewStyle.opacity,
+        previewObjectFit: previewStyle.objectFit,
+        previewObjectPosition: previewStyle.objectPosition,
+        previewSize: [Math.round(previewRect.width), Math.round(previewRect.height)]
       };
     })()`,
   );
   if (
     mobile.rows !== 4 ||
     mobile.scrollWidth > mobile.clientWidth ||
-    mobile.startBottom > mobile.viewportHeight
+    mobile.startBottom > mobile.viewportHeight ||
+    mobile.previewOpacity !== "1" ||
+    mobile.previewObjectFit !== "contain" ||
+    mobile.previewObjectPosition !== "50% 50%"
   )
     throw new Error(
       `Faction mobile layout overflowed or hid Start: ${JSON.stringify(mobile)}`,
@@ -616,6 +684,7 @@ async function reviewFactionSetup(connection: Connection): Promise<{
         mobile,
         autosaveValidated: true,
         restartValidated: true,
+        previewArt,
         ...result,
         files,
       },
@@ -623,7 +692,7 @@ async function reviewFactionSetup(connection: Connection): Promise<{
       2,
     )}\n`,
   );
-  return result;
+  return { ...result, previewArt };
 }
 
 async function reviewReadinessHalo(connection: Connection): Promise<void> {

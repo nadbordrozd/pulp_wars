@@ -422,6 +422,42 @@ describe("Candify", () => {
     });
   });
 
+  it("does not enumerate hostile Candify before its controlling city is public", () => {
+    const arena = hostileFrontier(false);
+    const centerRedacted = {
+      ...arena.state,
+      players: arena.state.players.map((player) =>
+        player.id === arena.humanId
+          ? {
+              ...player,
+              explored: player.explored.filter(
+                (at) => !sameCoord(at, arena.enemyCity.at),
+              ),
+            }
+          : player,
+      ),
+    };
+    const view = viewFor(centerRedacted, arena.humanId);
+    expect(tileViewAt(view, arena.target)).toMatchObject({
+      explored: true,
+      territoryOwnerId: arena.enemyCity.ownerId,
+      territoryCenter: null,
+      territoryCityId: null,
+    });
+    expect(
+      queryPlayerCommands(view).some(
+        ({ command }) =>
+          command.kind === "CANDIFY" && command.unitId === arena.unitId,
+      ),
+    ).toBe(false);
+    expect(
+      applyCommand(centerRedacted, {
+        kind: "CANDIFY",
+        unitId: arena.unitId,
+      }).ok,
+    ).toBe(true);
+  });
+
   it("rejects hostile articulation theft atomically before city selection", () => {
     const arena = hostileFrontier(true);
     expect(

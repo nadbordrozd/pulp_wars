@@ -28,27 +28,49 @@
     "scrollWidth": 390,
     "clientWidth": 390,
     "startBottom": 636,
-    "viewportHeight": 844
+    "viewportHeight": 844,
+    "previewOpacity": "1",
+    "previewObjectFit": "contain",
+    "previewObjectPosition": "50% 50%",
+    "previewSize": [
+      72,
+      72
+    ]
   },
   "autosaveValidated": true,
   "restartValidated": true,
-  "initialHash": "8a84b4bd97de1f13262e4044e007c44b8e8ca6d46658742ed84047435c901d70",
-  "restartHash": "8a84b4bd97de1f13262e4044e007c44b8e8ca6d46658742ed84047435c901d70",
+  "previewArt": {
+    "originalUrl": "/assets/pixellab/ui/faction-hero.png",
+    "url": "/assets/pixellab/ui/faction-candy-hero.png",
+    "naturalSize": [
+      1024,
+      1024
+    ],
+    "opacity": "1",
+    "objectFit": "contain",
+    "objectPosition": "50% 50%",
+    "portraitSize": [
+      144,
+      144
+    ]
+  },
+  "initialHash": "1ac9dee27d6f4eff065deed7c315060c58e3f89c0df3a28bdf24196f762db464",
+  "restartHash": "1ac9dee27d6f4eff065deed7c315060c58e3f89c0df3a28bdf24196f762db464",
   "files": [
     {
       "path": "art\\integration\\reviews\\faction-setup-desktop-1440x1000.png",
-      "bytes": 302903,
-      "sha256": "dfa885f9792d9ba924bc9618475806c098b4b48f660f76c1020af4de0711fcc4"
+      "bytes": 318856,
+      "sha256": "74dda8a0a3b2b194afb057030a93f901966e96af02aec0575e2805e1fd5c0ebd"
     },
     {
       "path": "art\\integration\\reviews\\faction-setup-mobile-390x844-dpr2.png",
-      "bytes": 260594,
-      "sha256": "af9a3c25a082240317ac79842dba0a1a7c55acd791521f56c51f80738c20ff9b"
+      "bytes": 277223,
+      "sha256": "d7c91426b854ba9acac1a2fc530aa86ea991ce44b93ea18893b35d1014f62d6d"
     },
     {
       "path": "art\\integration\\reviews\\faction-confirm-mobile-390x844-dpr2.png",
-      "bytes": 219978,
-      "sha256": "88f70b2be9dd8e9c08ebb6d96603a156747465fffacb129b1a71e644a874426d"
+      "bytes": 219240,
+      "sha256": "4e8d0b42c85141b253b1237e83366dfec4a40cd1f567a82040f14fc78e39777c"
     }
   ]
 }

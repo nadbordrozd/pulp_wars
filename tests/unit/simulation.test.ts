@@ -265,6 +265,7 @@ describe("deterministic simulation kernel", () => {
       ),
     ).toMatchObject({
       explored: true,
+      territoryOwnerId: enemyCity.ownerId,
       territoryCenter: null,
       territoryCityId: null,
     });

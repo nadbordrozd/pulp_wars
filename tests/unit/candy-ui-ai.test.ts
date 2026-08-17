@@ -207,6 +207,82 @@ describe("deterministic Normal Candy heuristics", () => {
     expect(decision.candidates[0]?.score).toMatchObject({ priority: 1070 });
   });
 
+  it("excludes Roll lines that cross a public cooperative ally boundary", () => {
+    const base = gameStateBuilder(
+      setupBuilder({
+        aiCount: 2,
+        width: 14,
+        height: 14,
+        aiMode: "COOPERATIVE",
+        factions: ["ORIGINAL", "CANDY", "CANDY"],
+      }),
+    );
+    const candyPlayers = base.players.filter(
+      (player) => player.controller === "AI" && player.faction === "CANDY",
+    );
+    const actorPlayer = candyPlayers[0];
+    const allyPlayer = candyPlayers[1];
+    if (actorPlayer === undefined || allyPlayer === undefined)
+      throw new Error("Missing cooperative Candy seats");
+    const actorSource = base.units.find(
+      (unit) => unit.ownerId === actorPlayer.id,
+    );
+    const allySource = base.units.find(
+      (unit) => unit.ownerId === allyPlayer.id,
+    );
+    const allyCity = base.cities.find((city) => city.ownerId === allyPlayer.id);
+    if (
+      actorSource === undefined ||
+      allySource === undefined ||
+      allyCity === undefined
+    )
+      throw new Error("Missing cooperative Candy fixture entities");
+    const actor = {
+      ...actorSource,
+      type: "RIDER" as const,
+      at: { x: 5, y: 5 },
+      ready: true,
+      activation: FRESH,
+    };
+    const ally = { ...allySource, at: { x: 6, y: 5 } };
+    const state: GameState = {
+      ...base,
+      activeSeatIndex: base.turnOrder.indexOf(actorPlayer.id),
+      players: base.players.map((player) =>
+        player.id === actorPlayer.id
+          ? { ...player, explored: base.board.tiles.map((tile) => tile.at) }
+          : player,
+      ),
+      board: {
+        ...base.board,
+        tiles: base.board.tiles.map((tile) =>
+          tile.at.x === ally.at.x && tile.at.y === ally.at.y
+            ? {
+                ...tile,
+                territoryCityId: allyCity.id,
+                territoryCenter: allyCity.at,
+              }
+            : tile,
+        ),
+      },
+      units: [actor, ally],
+    };
+    const view = viewFor(state, actorPlayer.id);
+    expect(
+      queryPlayerCommands(view).some(
+        ({ command }) =>
+          command.kind === "KAMIKAZE_ROLL" &&
+          command.unitId === actor.id &&
+          command.direction === "EAST",
+      ),
+    ).toBe(true);
+    expect(
+      chooseNormalCommand(view).candidates.some(
+        ({ command }) => command.kind === "KAMIKAZE_ROLL",
+      ),
+    ).toBe(false);
+  });
+
   it("builds one defensive wall at a visibly threatened city without stacking", () => {
     const { state } = engineerArena();
     const first = chooseNormalCommand(viewFor(state, state.humanPlayerId));

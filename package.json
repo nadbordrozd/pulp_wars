@@ -27,6 +27,7 @@
     "validate:huge": "tsx scripts/validate-huge-map.ts",
     "validate:large": "tsx scripts/validate-large-map.ts",
     "validate:cooperative": "tsx scripts/validate-cooperative.ts",
+    "validate:candy": "tsx scripts/validate-candy.ts",
     "validate:v4-map": "tsx scripts/validate-v4-map.ts",
     "test": "vitest run",
     "test:watch": "vitest",

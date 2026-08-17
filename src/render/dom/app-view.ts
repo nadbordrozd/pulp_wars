@@ -1415,9 +1415,11 @@ export class DomAppView {
                   : title(tile.site);
     const territory =
       city === undefined
-        ? tile.territoryCenter === null
-          ? "Unclaimed"
-          : "Neutral territory"
+        ? tile.territoryOwnerId !== null
+          ? `${tile.territoryOwnerId === view.viewer.id ? "Yours" : `Player ${tile.territoryOwnerId}`} · city undiscovered`
+          : tile.territoryCenter === null
+            ? "Unclaimed"
+            : "Neutral territory"
         : `${city.ownerId === view.viewer.id ? "Yours" : `Player ${city.ownerId}`} · City ${city.id}`;
     const occupants = [
       cityOnTile === undefined
@@ -3372,9 +3374,13 @@ function coordinateActivationLabel(
       : view.cities.find((candidate) => candidate.id === tile.territoryCityId);
   const territory =
     territoryCity === undefined || territoryCity === null
-      ? tile.territoryCenter === null
-        ? "Unclaimed"
-        : "Neutral territory"
+      ? tile.territoryOwnerId !== null
+        ? tile.territoryOwnerId === view.viewer.id
+          ? "Your undiscovered city territory"
+          : `Player ${tile.territoryOwnerId} undiscovered city territory`
+        : tile.territoryCenter === null
+          ? "Unclaimed"
+          : "Neutral territory"
       : territoryCity.ownerId === view.viewer.id
         ? `Your City ${territoryCity.id} territory`
         : `Player ${territoryCity.ownerId} City ${territoryCity.id} territory`;

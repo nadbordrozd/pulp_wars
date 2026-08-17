@@ -187,6 +187,13 @@ function isSafeValuableRoll(
     at.y < view.board.height;
     at = { x: at.x + delta.x, y: at.y + delta.y }
   ) {
+    const tile = tileAt(view, at);
+    if (
+      tile !== undefined &&
+      "diplomaticBlock" in tile &&
+      tile.diplomaticBlock === "ALLIED_TERRITORY"
+    )
+      return false;
     const unit = view.units.find((candidate) => sameCoord(candidate.at, at));
     const wall = view.chocolateWalls.find((candidate) =>
       sameCoord(candidate.at, at),

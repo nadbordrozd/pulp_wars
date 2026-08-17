@@ -375,8 +375,15 @@ function publicCandifyCandidates(
   if (
     tile?.explored !== true ||
     tile.site !== null ||
-    isPublicAlliedTerritory(view, tile)
+    isPublicAlliedTerritory(view, tile) ||
+    tile.territoryOwnerId === view.viewer.id
   )
+    return [];
+  // An explored frontier exposes its current owner, but keeps an unexplored
+  // city center and its assignment ID redacted. Without that complete public
+  // territory graph, offering Candify could expose an action that the
+  // authoritative connectivity invariant must reject.
+  if (tile.territoryOwnerId !== null && tile.territoryCityId === null)
     return [];
   if (tile.territoryCityId !== null) {
     const controller = view.cities.find(

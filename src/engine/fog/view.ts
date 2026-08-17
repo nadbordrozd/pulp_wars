@@ -36,6 +36,11 @@ export function viewFor(state: GameState, viewerId: PlayerId): PlayerView {
     const visible: PlayerTileView = {
       explored: true,
       ...tile,
+      territoryOwnerId:
+        tile.territoryCityId === null
+          ? null
+          : (state.cities.find((city) => city.id === tile.territoryCityId)
+              ?.ownerId ?? null),
       territoryCenter: territoryKnown ? tile.territoryCenter : null,
       territoryCityId: territoryKnown ? tile.territoryCityId : null,
     };
