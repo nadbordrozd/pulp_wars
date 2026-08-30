@@ -18,6 +18,8 @@ import type {
   UiSettings,
 } from "../app/types";
 
+export * from "./v6";
+
 export const SAVE_STORAGE_KEY = "pulpWars.save.current";
 export const SETTINGS_STORAGE_KEY = "pulpWars.settings.v1";
 export const MAX_SAVE_BYTES = 1_572_864;
