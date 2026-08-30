@@ -1,161 +1,234 @@
-# Greedy Normal POC AI
+# Greedy Normal Ruleset-6 AI
 
-Normal is a deterministic, renderer-independent greedy heuristic policy. It
-receives only `PlayerView` and `queryPlayerCommands(view)`. Policy code does not
-import `GameState`, authoritative command eligibility/combat preview, or hidden
-entity collections. Every selection is submitted as an ordinary `Command`
-through `applyCommand` by the browser controller or headless runner.
+Normal is deterministic, renderer-independent, observation-safe, and
+PRNG-free. It receives only `PlayerViewV6`, `queryPlayerCommands(view)`, and
+public economic/combat previews. Policy code may not import `GameState`, map
+generation, reducer legality, hidden resources/entities, or authoritative
+preview functions.
 
-The complete priority table, threat definition, economic formula, stable tuple,
-and cooperative relationship rules are authoritative in
-[POC Rules section 12](../product/POC_RULES.md#12-ai-contract). This document
-specifies how policy code builds those values without hidden access.
+## 1. Candidate construction and tie-breaks
 
-## Candidate construction
+Rebuild the complete candidate list after every accepted command. Remove Wait;
+classify every other public command exactly once. A pending reward or Candify
+choice is normally the only public resolver. End Turn is always present when no
+choice blocks it and always has priority zero.
 
-The policy rebuilds candidates after every accepted command. It starts from the
-public query, removes `WAIT`, and classifies every remaining command exactly
-once. Mandatory rewards are normally the only query result while pending. End
-Turn remains the lowest candidate and cannot beat any legal productive action.
+Compare this signed-integer tuple lexicographically, larger first:
 
-Threats use only visible hostile units and their public unit-table move/range:
-`distance <= move + range`. The approximation deliberately ignores hidden
-terrain, hidden blockers, ZOC, and opponent technology, so it may defend early
-but can never gain information. Besiege/direct/range-plus-move severities are
-3/2/1. Training in a threatened city is scored before other production whenever
-the public query offers it; a besieged or occupied city naturally has no Train
-candidate.
+```text
+priority, strategicValue, immediateValue, futureValue, safetyValue,
+objectiveValue, -commandKindOrdinal, -targetY, -targetX,
+-primaryEntityId, -contentOrdinal
+```
 
-Research-chain classification is a pure walk over the frozen nine-tech graph.
-For each visible owned unconsumed resource, empty unimproved Forest, or absent
-desired unit role, find all
-available first steps on a shortest unresearched prerequisite chain. Retain the
-lowest technology-table ordinal when chains tie. Resource-chain research beats
-growth, and role-chain research follows general training. Other research stays
-eligible: Normal never treats a technology as permanently uninteresting.
+The last five fields use the frozen Ruleset-6 orders. A missing coordinate is
+`(-1,-1)` before negation. `primaryEntityId` is acting unit, then target unit or
+wall, then city, then zero. `contentOrdinal` is technology, role, reward,
+improvement, direction, or zero. No query iteration order survives this tuple.
 
-Growth candidates compare `population + gain` with `level + 1`; there is no
-maximum-level filter. Fruit and Animal use +1/-2 population/star terms and
-immediate value 3; Lumber Mill uses +1/-3 and immediate value 2; Mine uses
-+2/-5 and immediate value 5. Equal Fruit/Animal values reach the stable
-command-kind/coordinate tuple, so ordering never depends on query iteration.
-After a level-up, the fresh query immediately exposes the new training slot and
-the policy can spend it in the same turn.
+## 2. Exact priorities
 
-## Production and activation
+| Priority | Candidate                                                             |
+| -------: | --------------------------------------------------------------------- |
+|     1400 | Capture that visibly ends the match                                   |
+|     1360 | Other hostile-city Capture                                            |
+|     1340 | Neutral-village Capture                                               |
+|     1320 | Promote                                                               |
+|     1300 | Mandatory city/Candify choice                                         |
+|     1280 | Guaranteed kill of a unit threatening an owned city                   |
+|     1270 | Medic heal of a damaged defender in a threatened city                 |
+|     1260 | Train in a threatened city                                            |
+|     1250 | Move a friendly unit onto an empty threatened city                    |
+|     1240 | Other Attack against a threatening unit                               |
+|     1230 | Safe Roll that destroys a visible hostile threatening a city          |
+|     1210 | Economic action whose public delta reaches one or more city levels    |
+|     1200 | Build/connection that adds at least one recurring Coin per turn       |
+|     1180 | Other guaranteed kill                                                 |
+|     1160 | Research first step on shortest chain to a visible economic action    |
+|     1140 | Economic action with positive population or permanent Coin value      |
+|     1120 | Build Road that connects an existing Market to the capital            |
+|     1100 | Build/retain a positive future spatial setup action                   |
+|     1080 | General training                                                      |
+|     1060 | Research first step to a missing trainable role with a potential slot |
+|     1040 | Other legal research                                                  |
+|     1020 | Candify hostile territory inside a city footprint                     |
+|     1000 | Candify neutral territory inside a city footprint                     |
+|      900 | Other non-lethal Attack                                               |
+|      880 | Safe positive-damage Roll                                             |
+|      860 | Useful Chocolate Wall near a threatened city                          |
+|      700 | Move reducing distance to a known objective                           |
+|      650 | Move creating a next-command Candify frontier                         |
+|      600 | Move maximizing public frontier reveal                                |
+|      500 | Medic heal of any damaged friendly unit                               |
+|      400 | Recover below half maximum HP                                         |
+|      300 | Other Recover                                                         |
+|        0 | End Turn                                                              |
 
-Threatened-city type order is Defender, Warrior, Archer, Rider, Catapult.
-General type order is Rider, Archer, Catapult, Defender, Warrior. General production selects the first
-missing role that is currently unlocked and affordable. If none qualifies, it
-selects the least-represented available role, breaking counts by that order.
-This deliberately removes the old save-for-an-unavailable-role behavior: an AI
-with a legal slot and an affordable Warrior trains it rather than ending the
-turn merely because Rider is still locked.
+Redevelop is eligible only when its public two-ply replacement plan has positive
+`futureValue`; Normal never destroys a building merely to spend Coins later.
+Clear Forest is an economic action with permanent Coin value 1 but loses the
+public future Lumber/Sawmill potential described below. Replant and an
+unconnected Road require positive future value. A zero-delta build is not
+productive and cannot beat End Turn unless it enables an exact next action.
+Clear Forest is excluded when `futureValue < 0` unless its one Coin makes a
+currently public candidate of priority 1160 or greater affordable immediately;
+this is the exact cash-now versus timber-later policy boundary.
 
-Catapult is a distinct desired role only when an owned city has a potential
-slot; its research chain is Hunting -> Forestry -> Mathematics. The policy does
-not special-case its cost or movement-plus-attack: the public query reflects
-its lack of Dash. Production counts all owned living units by type, including durable exempt and
-orphan units; training legality itself uses only the query's level-based
-non-exempt city count. Valid over-capacity cities produce no Train candidate and
-require no policy special case.
+## 3. Shared score components
 
-Known movement objectives are visible neutral villages and visible hostile
-cities. Equal objectives use `(y, x)`. If no objective is known, score the
-number of unexplored, non-allied-blocked coordinates in the candidate result's
-public reveal area. The policy favors actual frontier gain and then displacement
-from the start, so units spread outward instead of oscillating. The two public
-subvalues are packed into the one signed `objectiveValue` field with frontier
-gain as the dominant component. A zero-gain move remains useful only when it
-reduces distance to the nearest public unexplored coordinate; this handles the
-ordinary opening radius, where the first one-step move may not reveal a tile,
-without permitting a passive End Turn loop. Capture, defense, attacks, recovery,
-and Escape use the exact tuple in POC Rules.
+Threat uses only visible hostile roles and public Move/Range:
+`distance <= move + range`. Severity is 3 for siege, 2 when already in attack
+range, and 1 otherwise. Equal cities prefer greater severity, capital, lower
+visible defender HP (empty is one more than the greatest role max HP), then
+city `(y,x)` and ID.
 
-Normal never selects Wait. Accepted Move, Attack, Escape, Capture, and Recover
-already mark a unit handled; AI presentation has no attention pulse to dismiss.
-When no productive candidate remains, End Turn is correct and avoids replay
-bloat from semantic no-ops.
+For every candidate:
 
-Faction labels map back to the five mechanical roles before production counts:
-Candy Warrior -> Warrior, Gumball Guard -> Archer, Choco Engineer -> Defender,
-Donut -> Rider, and Candy Catapult -> Catapult. Candidate simulation uses the
-owner faction's effective rule, so Donut has move 1 and never produces Attack
-or Escape candidates. A Candy city trains Candy-labelled variants without a
-separate content ordinal or extra capacity slot.
+```text
+immediateValue =
+  20 * hostileUnitsKilled
+  - 16 * ownOrAlliedUnitsKilled
+  + 10 * hostileHpLost
+  - 8 * ownOrAlliedHpLost
+  + 30 * citiesAcquired
+  + 20 * cityLevelsReached
+  + 5 * populationDelta
+  + 12 * recurringCoinDelta
+  + immediateCoinsDelta
+```
 
-Candy candidates use the exact inserted priorities in POC Rules section 0.6.
-For Roll, policy walks the public cardinal line and totals only visible unit and
-wall HP; unexplored cells are zero-valued. It rejects a Roll with a visible
-owned/allied victim or wall and otherwise values hostile threat kills first.
-This safety filter is a policy choice, never an engine legality rule.
+All terms use public previews. Unknown/hidden values are zero. Wall HP uses two
+points per hostile HP and minus eight per own/allied HP; walls never count as
+units or kills. `populationDelta` is the sum of public city deltas after live
+recomputation and may be negative. `immediateCoinsDelta` includes costs as
+negative, Stockpile/Treasury/Clear Forest as positive, and excludes future
+income.
 
-Wall placement scores only exact public `BUILD_CHOCOLATE_WALL` candidates. It
-counts visible hostile shortest approach lines blocked toward the threatened
-city, avoids a visible friendly Fruit/Animal/Ore/empty-Forest action when an
-equally blocking alternative exists, then uses terrain order Grass, Forest,
-Mountain and the standard coordinate/entity tie-breaks. Walls are occupancy
-blockers for later public movement scoring but never units, threats, objectives,
-production roles, kills, or capacity.
+`safetyValue` is negative projected public damage from every visible hostile
+that could attack the acting unit's result tile without moving. Breach, Charge,
+and known Push use the public combat estimator. Hidden terrain/units and
+`UNKNOWN_RESOURCE` contribute zero.
 
-Candify scores hostile territory above neutral and is excluded for friendly or
-allied territory. Move candidates gain the POC Rules 610 priority only when the
-public resulting cell would have a legal next Candify and no higher-priority
-objective move exists. A tied mandatory `CHOOSE_CANDIFY_CITY` uses public
-candidate territory to maximize newly adjacent non-friendly cells, then lowest
-city ID. Normal does not sacrifice the last unit assigned to a threatened city
-while any productive defense action remains.
+Known objectives are visible neutral villages and hostile cities. Objective
+value is negative Chebyshev distance from the resulting tile; equal objectives
+use `(y,x)`. With none, frontier value is the number of new non-allied-blocked
+coordinates in the public reveal result, then displacement from start. A
+zero-gain move may reduce distance to the nearest public unexplored coordinate.
 
-## Cooperative mode
+## 4. Spatial planning score
 
-The relationship graph comes from setup plus immutable serialized
-`humanPlayerId`, not policy-local controller state. In `COOPERATIVE`,
-human-to-AI pairs are hostile and AI-to-AI pairs are allied.
-Public enumeration already removes allied Attack/Capture and allied-territory
-paths. Policy classification additionally excludes allied units/cities from
-threat, safety, objectives, and combat value. An unexplored allied territory
-coordinate may appear only as the content-free `diplomaticBlock` union arm; it
-does not count as frontier and exposes no terrain, resource, Mine, entity, or
-controlling AI.
+`futureValue` is calculated by the pure `scorePublicSpatialPlan(view,
+candidate)` helper. It applies only the candidate's public, deterministic tile
+changes, then enumerates every exact next economic command that would be public
+if Coins and technology gates were ignored but terrain/resource ownership and
+placement facts stayed unchanged. It never invents an unrevealed resource.
 
-There is no shared vision, economy, technology, unit control, healing, reward,
-capacity, or coordinated plan. Cooperation means only non-hostility,
-allied-territory avoidance, and a common human target. Neutral villages remain
-valid expansion objectives for every AI.
+Score each possible next placement:
 
-Candy does not loosen cooperation: public enumeration rejects building or
-Candifying allied territory, and policy rejects a Roll with any visible allied
-unit or wall on its line. The engine still accepts friendly/allied Roll damage
-and wall Attack for human-authored commands because those abilities explicitly
-permit friendly fire. Soak assertions distinguish engine capability from Normal
-policy: zero AI-on-AI Roll casualties, wall attacks, or Candify transfers are
-required.
+```text
+8 * previewPopulationDelta
++ 18 * previewRecurringCoinDelta
++ 2 * contributingTileCount
++ 3 * distinctTypeOrFamilyCount
++ 4 * oppositePairCount
++ 6 if it creates a legal three-processor Grand Works site
++ 4 if it completes a capital-connected Market road
+```
 
-## Determinism and runner limits
+`futureValue` is `bestAfter - bestBefore`, where each best value is the sum of
+the greatest non-overlapping next placement for each owned city, cities in ID
+order and ties by command order. “Non-overlapping” means no two selected
+previews use the same target; contributors may overlap where the rules permit.
+This one-step reservation makes Normal preserve a strong Forge/Stoneworks/
+Grand Works target instead of filling it with a weak basic building. It does
+not search arbitrary build sequences.
 
-Stable comparison is the signed-integer tuple from POC Rules. Target coordinates
-are `(y, x)`; IDs and frozen content-table ordinals finish ties. Normal consumes
-zero PRNG draws. Equal PlayerViews, including diplomatic blockers, must produce
-byte-identical candidate tuples and the same selected command.
+For a cluster basic, `contributingTileCount` includes the resulting connected
+Farm/Lumber component. For Clear Forest, after-state removes that camp/Sawmill
+potential. For Replant, after-state adds one public empty Forest opportunity.
+For Redevelop, compare the best exact next replacement at the removed target;
+the command is excluded unless `futureValue > 0`.
 
-Each turn admits at most 128 accepted commands. The runner reserves the final
-two slots for a mandatory pending city/Candify choice and End Turn. A missing candidate,
-rejected selected command, non-advancing accepted command, or inability to end
-terminates with a structured error/stall diagnostic rather than retrying with
-hidden knowledge. Browser pacing, Fast Forward, and headless execution must
-produce identical commands, ordered events, and final hashes.
+## 5. Research, growth, and Roads
 
-Validation uses fixed rival and cooperative corpora on Auto, Large 20 x 20, and
-Huge 25 x 25 boards. Participation evidence must show training, exploration,
-neutral and hostile capture, all nine technologies and five units, Fruit,
-Animal, Lumber Mills, Mines, Catapult attacks/kills, and levels beyond three
-where reachable. Hunt and Lumber command/event counts remain separate so their
-absence cannot hide inside aggregate growth. Cooperative evidence additionally requires zero
-AI-on-AI Attack/Capture, zero allied ZOC/siege, zero new exploration inside
-allied territory, and no allied-territory Move/Escape step.
+For each visible owned resource/action, economic placement, or missing role,
+walk the owning faction's registered 25-node graph. A shortest chain counts
+unresearched nodes including the candidate. Ties use that registration's frozen
+node order. A missing Candy registration or role mapping is a structured policy
+error, never an Original fallback.
 
-Ruleset-5 adds all-Original, all-Candy, and alternating mixed-faction matrices.
-Participation evidence separately records Roll, wall Build/Attack/destruction,
-Candify unique/tied resolution, neutral/hostile annexation, all four Candy unit
-labels, and Candy Catapult Candify. Every matrix repeats command/event/state
-hashes and verifies that faction assignment changes no map hash or PRNG stream.
+Economic research strategic value is the number of currently public targets
+unlocked by the chain plus the greatest public spatial score enabled at its
+end. Role research requires an owned non-besieged city with `count < level + 1`;
+it need not currently have Coins or an empty center. Other research remains
+eligible so Normal can complete all branches.
+
+An economic action “reaches a level” when the preview reports at least one
+`CITY_LEVELED_UP`; this includes cross-city live changes. Normal resolves the
+resulting ordered reward queue before any other action. For level-2, prefer
+Stockpile when Coins < 4, otherwise Survey. For level-3, choose Militia when
+known threatened and placement exists, otherwise Walls. For level-4, choose
+Expand when at least four neutral cells are claimable or the unexpanded city's
+best public spatial score is positive outside 3 x 3; otherwise Boom. At level
+5+, choose Juggernaut when placement exists and the player has fewer
+Juggernauts than cities, otherwise Treasury. Exact ties take reward ordinal.
+
+Road planning uses only owned explored tiles. A Road gets priority 1120 only
+when its accepted placement makes an existing Market capital-connected in the
+public preview. Otherwise it needs positive future value. Equal Road plans
+prefer fewer remaining orthogonal missing links to the nearest capital, then
+the stable tuple. Normal never builds an unbounded decorative road network.
+
+## 6. Production and role behavior
+
+Threatened-city role order is Guard, Fighter, Medic, Heavy, Marksman, Scout,
+Raider, Breacher. General order is Scout, Raider, Marksman, Guard, Medic,
+Heavy, Breacher, Fighter. Choose the first missing unlocked affordable role;
+otherwise the least represented available role, ties by that list. Juggernaut
+is never trainable. Count mechanical roles, so Candy labels create no extra
+slots. Donut counts as Raider despite its effective rule substitution.
+
+Combat candidates use the effective faction rule. Raider Charge is included
+only when its public activation path has at least two cells. Heavy/Juggernaut
+Push gets strategic value 1 when `WILL_PUSH` moves a target off an owned city,
+onto a lower defense tile, or out of a blocking approach; unknown never scores.
+Breacher prioritizes a fortified threatening defender. Medic prioritizes the
+lowest HP fraction, then greater missing HP, then target ID.
+
+Normal excludes a Donut Roll crossing `ALLIED_TERRITORY` or containing any
+visible owned/allied unit or wall. It scores only visible occupants and never
+predicts a hidden victim. Choco Engineer Wall placement maximizes visible
+hostile shortest approaches blocked, then avoids a public economic target,
+then Grass, Forest, Mountain, `(y,x)`, and unit ID. Candify keeps the v6
+footprint/connectivity rules and values hostile above neutral, frontier
+adjacency, chosen city ID, then target coordinate. It does not sacrifice the
+last defender of a threatened city while a productive defense exists.
+
+## 7. Cooperative mode and information safety
+
+The stored `humanPlayerId` defines relationships exactly as in ruleset 5. AI
+seats are allied only to one another in Cooperative mode. Public enumeration
+removes allied Attack/Capture/territory paths and allied buildings never count
+as friendly economic contributors. There is no shared economy, Road network,
+Market connection, processor contribution, vision, healing, capacity, or
+technology.
+
+An unexplored allied coordinate is only `ALLIED_TERRITORY`; an explored
+technology-hidden resource is only `UNKNOWN_RESOURCE`. Both are content-free.
+Neither counts as frontier, spatial potential, Roll value, route content, or a
+research target. Equal views containing either arm must produce byte-identical
+candidates, scores, and commands.
+
+## 8. Runner limits and validation
+
+Normal takes productive actions greedily and keeps no speculative Coin reserve.
+The per-turn limit is 128 accepted commands. The runner reserves the number of
+slots required to drain the current authoritative pending queue plus End Turn.
+A missing candidate, rejection, non-advancing accepted command, or inability to
+end is a structured error; it never retries with hidden knowledge.
+
+The required browser/headless matrices and participation metrics are in
+[Headless Simulation](HEADLESS_SIMULATION.md) and
+[POC Validation](../validation/POC_VALIDATION.md). Animation, reduced motion,
+Fast Forward, and controller pacing cannot alter candidates, commands, events,
+or hashes.

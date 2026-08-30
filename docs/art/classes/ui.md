@@ -1,5 +1,37 @@
 # UI Asset and Visual Contract
 
+## Ruleset-6 active inventory
+
+Ruleset 6 replaces the Star family with Coin stock/income/spend icons and
+requires 25 technology icons for each explicit faction tree registration. An
+identical approved icon may be aliased by both trees in the manifest, but every
+tree/node key must resolve explicitly. Nine Original and nine Candy role
+portraits, the full building/resource inventory, signed/negative population,
+Market income, Road connection, 3 x 3/5 x 5 territory, and ordered reward-queue
+status are required.
+
+Action/icon inventory adds Harvest Fruit, Hunt Game, eleven Build improvement
+actions, Clear/Replant Forest, Build Road, Redevelop, Heal, Charge state, Push,
+Breach, Survey, Stockpile, Walls, Militia, Expand, Boom, Juggernaut, and
+Treasury. Retained Candy Roll/Wall/Candify icons remain. Catapult, old Star,
+Animal/Lumber Mill labels, and the nine v5 technology IDs are not v6 UI assets.
+
+Cluster outlines, contributor spokes, Stoneworks opposite axes, mixed-type and
+family chips, capital-Road tracing, territory potential, placement highlights,
+signed calculations, projectile/Charge/Heal/Push/Breach effects, and reward
+queue counters are code-native SVG/Canvas/HTML. Raster art may supply symbols
+and portraits but never baked numbers, formulas, connection states, text,
+focus, selection, or inaccessible color-only membership.
+
+The first v6 UI sample is one 24 px Coin/income icon, one 48 px economic build
+icon, and one 64 px technology/role portrait. Then validate a representative
+five-branch set before batching 25 nodes. Reviews cover 24/32/48/64 CSS px,
+light/dark/high-contrast, grayscale/color-vision simulations, 320/600/1024 px,
+200% zoom, keyboard focus, every contributor-pattern state, and negative
+population. Ruleset-5 inventory prose below is historical where it conflicts;
+shared geometry, AA contrast, semantic labels, scaling, safe area, and PixelLab
+gates remain active.
+
 This contract specializes [Pulp Wars Art Direction](../ART_DIRECTION.md) for
 HUD icons, panels, technology, dialogs, status marks, and front-of-game art. The
 functional and accessibility authority is [Screen Flow](../../ui/SCREEN_FLOW.md).

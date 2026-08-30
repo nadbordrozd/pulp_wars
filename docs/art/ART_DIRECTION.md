@@ -6,6 +6,13 @@ file remains unchanged for provenance. Technical class contracts live under
 [`docs/art/classes/`](classes/) and may specialize, but never contradict, this
 direction.
 
+Ruleset-6 production inventory and class gates are frozen in the linked class
+contracts. The source economy brief does not override this art direction. New
+spatial-economy, Road, technology, Original-role, and Candy-role assets remain
+production work until they pass the same reproducible PixelLab
+generate-inspect-iterate workflow; a rules diagram or temporary code-native
+fallback is not accepted production raster art.
+
 The game should use a **chunky 2D illustrated strategy-game style**, not faux-3D or detailed pixel art.
 
 The visual target is somewhere between **board-game pieces, stickers, and simple cartoon sprites**. It should feel playful, readable, slightly ridiculous, and capable of supporting wildly different pulp factions such as pirates, robots, undead, cowboys, ninjas, dinosaurs, aliens, etc.

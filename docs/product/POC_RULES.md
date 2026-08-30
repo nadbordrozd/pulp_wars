@@ -1,10 +1,16 @@
-# Pulp Wars POC Rules
+# Pulp Wars POC Rules — Historical Ruleset 5
 
-**Status:** authoritative implementation target for the fifth-play POC
+**Status:** frozen historical ruleset-5 contract; not the new-match target
+
+**Current rules:** [Pulp Wars Ruleset 6](RULESET_6.md)
 
 **Ruleset ID:** `pulp-wars-poc-5`
 
-This fifth-play ruleset supersedes `pulp-wars-poc-4` for new matches. It keeps
+This document is retained for ruleset-5 save/replay diagnostics and historical
+evidence only. Every statement below is scoped to `pulp-wars-poc-5`; words such
+as “current,” “active,” “authoritative,” or “new match” do not apply to ruleset 6. Do not fill a ruleset-6 omission from this file.
+
+This fifth-play ruleset superseded `pulp-wars-poc-4` for its new matches. It keeps
 the ruleset-4 map, economy, technology, Catapult, city, activation, Large/Huge,
 and cooperative-AI rules except where section 0 replaces them. Per-seat faction
 identity, faction rosters, Chocolate Wall entities, dynamic territory, and new

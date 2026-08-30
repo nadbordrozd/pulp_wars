@@ -1,5 +1,44 @@
 # Building and Settlement Asset Contract
 
+## Ruleset-6 active inventory
+
+Ruleset 6 adds one shared functional production raster for Farm, Lumber Camp,
+Mine, Quarry, Windmill, Sawmill, Forge, Stoneworks, Workshop, Grand Works, and
+Market. Mine may be explicitly reused; Lumber Mill may be explicitly
+revalidated and aliased as Lumber Camp. Chocolate Wall and faction city sets
+remain separate retained assets. No economic building receives faction-specific
+mechanics or a hidden Candy fallback.
+
+Farm, Lumber Camp, Mine, Quarry, and Road-side footprints use the existing 256
+x 296 low-building class at `(128,222)`. Windmill, Sawmill, Forge, Stoneworks,
+Workshop, Grand Works, and Market use 384 x 384 at `(192,288)`, display scale
+0.30, preferred bounds `x=24..360,y=24..326`, hard bounds
+`x=8..376,y=8..344`. They must leave contributors selectable and cannot hide a
+unit or city label. Grand Works must remain distinct from Workshop at minimum
+zoom; Market cannot look like a generic city.
+
+Roads are modular infrastructure, not one building sprite. PixelLab supplies a
+quiet road material patch/edge family on the 256 x 148 ground overlay canvas;
+checked-in deterministic masks compose the 16 orthogonal N/E/S/W connection
+variants. Diagonal visual joins are forbidden because the mechanical network is
+orthogonal. Road overlays must coexist legibly with every resource,
+improvement, Wall, unit, ownership pattern, and selection.
+
+The building sample gate is Farm, Quarry, and Windmill individually, then
+Sawmill/Forge/Stoneworks, then Workshop/Grand Works/Market. Review every
+processor beside zero through its maximum practical contributors, merged Farm
+and Camp clusters, all four Stoneworks pair axes, cross-city contributors,
+expanded territory borders, fog edges, unit occupancy, all owner overlays,
+0.625x/1x/1.75x, DPR1/2, and dense mature-city contact sheets. Function must be
+readable before UI lines are added. A successful generation without these
+spatial contexts is not acceptance.
+
+Processor links, cluster outlines, pair axes, family chips, live-value numbers,
+Road connection glow, construction/destruction, and population/coin feedback
+are code-native. Existing ruleset-5 inventory prose below is historical where
+it limits the set; its style, alpha, anchor, sorting, and PixelLab gates remain
+active.
+
 This contract specializes [Pulp Wars Art Direction](../ART_DIRECTION.md) for
 capitals, cities, villages, Mines, Lumber Mills, Chocolate Walls, and city
 reward markers.

@@ -1,5 +1,40 @@
 # Terrain Tile Asset Contract
 
+## Ruleset-6 active inventory
+
+Ruleset 6 retains Grass, Forest, Mountain, Fruit, Game (the renamed Animal
+resource), and Ore, and adds Fertile Ground, Stone, Farm-field merging, Lumber
+Camp development, and Road overlays. `GAME` may explicitly alias the accepted
+Animal raster after label/context review. Technology-hidden resources have no
+world raster entry at all; an explored tile draws ordinary terrain until its
+reveal technology is owned.
+
+Fertile Ground is a low persistent Grass marker and Stone a low Mountain
+marker, both on untrimmed 256 x 296 object canvases at `(128,222)`, 0.5 display
+scale, preferred bounds `x=56..200,y=142..230`, hard bounds
+`x=32..224,y=112..246`. Fertile Ground must not resemble Fruit, a Farm, a
+selection, or ownership. Stone must differ from Ore, Mountain decoration,
+Quarry, and status UI at 0.625x.
+
+Farm-field merging uses deterministic code-native edge masks driven by four-way
+same-city authoritative adjacency. PixelLab provides the quiet material/edge
+texture inputs; it does not bake a fixed neighbor layout. Gaps, diagonal-only
+contact, city borders, and ownership changes must render the exact simulation
+component. Lumber Camps remain distinct and receive only code-native Sawmill
+cluster outlines during preview. Roads use the building contract's orthogonal
+overlay and may coexist with every terrain/resource/improvement.
+
+Generate and inspect Fertile Ground, Stone, and the Road material as the first
+three v6 terrain samples. Review native/enlarged, all compatible terrain
+variants and faction territory looks, resource hidden/revealed, 8 x 8
+repetition, all four edges, dense improvements, fog, ownership, DPR1/2, and
+minimum zoom before batching. All resource draw probabilities and cosmetic
+variant choices remain simulation-independent.
+
+Ruleset-5 inventory wording below is historical where it omits v6 assets; the
+geometry, masking, layering, transparency, PixelLab, and visual-review rules
+remain active.
+
 This contract specializes [Pulp Wars Art Direction](../ART_DIRECTION.md) for
 Grass, Forest, Mountains, Fruit, Ore, Animal, fog, and renderer-owned map marks.
 

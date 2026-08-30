@@ -1,5 +1,162 @@
 # Pulp Wars POC validation
 
+## Ruleset 6 acceptance plan
+
+**Status:** authoritative staged gate; no ruleset-6 implementation has passed
+yet. Every section below headed ruleset 5 or earlier is frozen historical
+evidence and cannot satisfy a v6 gate.
+
+**Rules:** [Pulp Wars Ruleset 6](../product/RULESET_6.md)
+
+The source brief's MVP is sequencing only. Ruleset 6 is complete only after all
+eight stages below pass together and fresh v6 evidence is appended here.
+
+### Stage 1 — versioned schema and faction registries
+
+- Exact parsers accept only ruleset/schema/command/event/save/replay version 6,
+  the v6 setup, all frozen IDs/orders, signed safe-integer population, Road
+  layer, reward queue, nine roles, 25 technologies, and two explicit faction
+  tree IDs. Unknown/missing/extra/undefined/sparse values reject.
+- Every v6 setup requires the exact `SPATIAL_ECONOMY` map revision and rejects
+  absent, undefined, old `REDUCED_VILLAGES`, scenario, and unknown values.
+- `ORIGINAL_BASELINE` and `CANDY_BASELINE_V1` each contain exactly 25 nodes in
+  frozen order, start with Gathering, share graph/costs, and resolve every role
+  unlock through their own mapping. Removing one Candy node/mapping must fail
+  validation rather than fall back to Original.
+- Recognized v1–v5 save/replay fixtures return incompatible, preserve bytes,
+  and never migrate Stars, technologies, Catapult, units, population, or pending
+  choices. Settings v1 remains accepted.
+- Same setup/seed repeats initial canonical JSON, events, map/PRNG hash, and
+  final hash. Faction-only changes preserve terrain, resources, settlements,
+  seats, turn order, entity allocation, and post-generation PRNG.
+
+### Stage 2 — map, reveal, basics, and population ledger
+
+- For 1,000 fixed seeds per legal AI-count/Auto and Large setup and 100 per Huge
+  setup, repeat both modes and assert exact terrain targets, current settlement
+  counts, one resource draw per non-settlement `(y,x)`, exact v6 thresholds,
+  every-resource presence, three opportunities and two families around every
+  settlement, continued-stream retries, and the 256-attempt failure.
+- Paired PlayerViews differing only in hidden resource identity/absence expose
+  identical `UNKNOWN_RESOURCE`, commands, previews, AI tuples, and choices
+  before Gathering/Hunting/Surveying. After research, only explored matching
+  resources become public; no surrounding or allied-territory leak occurs.
+- Every basic action covers exact cost/population, terrain/resource mutation,
+  Road coexistence, occupied-tile legality, siege/reward locks, capture, all
+  error-precedence pairs, identical-state rejection, no PRNG draw, and ordered
+  events.
+- Property tests recompute
+  `permanent + economic - growthSpent(level)`, exercise multi-level gains,
+  negative progress, income clamped at zero, destruction/rebuild without
+  duplicate levels, cross-city transfer, safe-integer overflow, and levels 10+.
+
+### Stage 3 — spatial economy and previews
+
+- Windmill and Sawmill fixtures cover every orthogonal shape, diagonal gaps,
+  multiple touching components, cap exactly 8, same-city filtering, territory
+  transfer, destruction, and deterministic contributor order.
+- Forge covers 0–8 adjacent Mines and +0–16. Stoneworks covers all four axes,
+  diagonal pairs, partial/duplicate shapes, +1 adjacency plus +2 per pair.
+- Workshop covers every subset/multiplicity of four basic types and friendly
+  cross-city versus allied/hostile exclusion. Grand Works covers two-type
+  rejection, every three-type +6 combination, four-type +8, duplicates, and
+  cross-city contributors.
+- Build limits, placement prerequisites, Redevelop/no refund/no resource return,
+  capture/Candify effects, event order, and every city affected by a single
+  cross-border change are tested.
+- Public `EconomicPreview` contributors/calculations exactly equal resolution
+  for every accepted target; invalid/locked/fogged targets never expose a
+  contributor or delta. Equal views yield byte-identical sorted previews.
+
+### Stage 4 — Market, Roads, territory, rewards, and capacity
+
+- Market covers 0–4 distinct families, duplicates, cross-city same-owner only,
+  cost/limit, live changes, and +1 only for an adjacent Road in an orthogonally
+  capital-connected owned component. Capture/Candify break/reconnect income
+  immediately.
+- Road fixtures cover 16 connection masks, separate-layer coexistence, cost 2,
+  orthogonal discounted movement, diagonal full cost, city-center endpoints,
+  Forest/Mountain termination/unlock, transfer, and deterministic canonical
+  paths.
+- Expand claims only neutral on-board cells in centered 5 x 5 and retains every
+  preassigned conflict. Candify is limited to current footprint, preserves
+  hostile connectivity, handles unique/tied cities, and save/replays its queue.
+- Capacity is exactly level + 1 with the founder counted. Training equality,
+  over-capacity reward units, death/capture/orphan behavior, redacted rival
+  counts, and no v5 exemption are covered.
+- Every reward tier and placement tie-break is tested. Multi-level build and
+  Boom create the exact ordered queue; save/reload/replay at every queue index
+  repeats; an unplaceable unit option returns its exact error while the Coin
+  option resolves.
+
+### Stage 5 — Original roles and abilities
+
+- Table tests assert every cost/HP/half-stat/Move/Range/unlock/capture/Dash
+  property and no trainable Juggernaut. Rational combat covers half stats and
+  preview/resolution identity.
+- Scout vision, Surveying high-ground +1, Fieldcraft Forest freedom, Maneuver
+  ZOC ignore, Marksman move/shoot, Raider two-cell Charge +1, Medic 4/6 Heal,
+  Recovery auto-heal 6, Heavy/Juggernaut explored legal Push, and Breacher
+  bonus suppression each cover positive and every blocked boundary.
+- Reward Juggernaut placement, assignment, over-capacity, promotion, recovery,
+  capture, siege, elimination, and stable events are covered.
+
+### Stage 6 — Candy substitution and retained identity
+
+- Every role resolves the exact Candy name/art/rule. Parity roles compare every
+  mechanical field to Original; Donut asserts its explicit cost/stats/no
+  Attack/Charge and retained v5 Roll. Candy Crusher replaces Catapult in Tech,
+  Train, state, AI, UI, save, and replay.
+- All Candy roles including Sugar Titan Candify; Choco Engineer Wall remains
+  Guard-only at 1 Coin. Roll, Wall, Candify, gumball projectile, relationship,
+  path reveal, friendly fire, persistence, and event ordering retain focused v5
+  coverage plus the v6 footprint/currency/schema changes.
+- All-Original, all-Candy, and alternating seats across 1/2/3 AI and both modes
+  repeat exact hashes. Cooperative AI records zero allied Roll victims, Wall
+  attacks/builds, Candify, territory entry, or hidden boundary crossings.
+
+### Stage 7 — UI, accessibility, and production art
+
+- Real Chromium covers 320, 390 DPR2, 600, 1024, and 1440 CSS px; DPR1/2;
+  100%/200% zoom; pointer, touch, keyboard, and semantic activation; Full,
+  Reduced, and Fast motion. Fixed Canvas/camera/selection geometry and 44 px
+  controls remain exact for minimum/maximum docks and reward queues.
+- The five-branch/25-node tree is faction-registered and complete. Every Coin,
+  signed-population, capacity, territory, resource-hidden, spatial preview,
+  Road, role, ability, and reward fact has accessible text and no color/motion-
+  only meaning. Contributor highlights never cross fog.
+- PixelLab manifests cover the exact inventory in Ruleset 6 section 16 and all
+  four art-class docs. Reuse has explicit v6 mappings/reviews. Each new class
+  has three passed individual samples before batching, contact sheets, native/
+  enlarged/minimum-zoom inspection, alpha/dimension/anchor/hash checks,
+  rejection history, all contexts, and orchestrator review. No credential
+  value, secret, or generated secret material may appear in source, logs,
+  Beads, manifests, or evidence.
+
+### Stage 8 — full-system release gate
+
+- Fresh install, Prettier, Markdown formatting/local links, ESLint, all strict
+  TypeScript targets, all unit/integration/replay/headless tests, production
+  build, v6 golden replay, `art:validate`, credential scan, dependency audit,
+  browser smoke, `git diff --check`, and performance/size budgets pass.
+- Deterministic corpora cover both modes, all faction matrices, all Auto sizes,
+  targeted Large/Huge, 30,000-command and 750-round caps, repeated complete
+  command/event/checkpoint/final hashes, and zero errors/stalls/caps.
+- Aggregate participation is positive for all 25 technologies, nine roles,
+  eleven economic improvements, five resources, Roads, every reward, Heal,
+  Charge, Push, Breach, Roll, Wall, Candify, negative population, level 5+,
+  cross-city Workshop/Grand Works/Market, every cluster/pair/family size, and a
+  capital-connected Market. Cooperative relationship violations are zero.
+- Performance adds a 25 x 25 mature-economy fixture with 100 cities/buildings
+  recomputed per mutation: reducer p95 <= 8 ms, public economic preview p95 <=
+  4 ms, Normal choice p95 <= 75 ms, Canvas pan p95 <= 16.7 ms. Existing bundle
+  and save-size budgets remain. Measurements name machine/browser and are
+  diagnostic except the stated caps/budgets.
+
+No v6 stage is marked passed by planning prose. Append dated commands, counts,
+hashes, visual evidence, failures/fixes, and remaining limitations only after
+the implementation and independent review actually run.
+
 ## Ruleset 5 Candy faction final acceptance
 
 Ruleset 5 passed its independent final audit on 2026-08-17. The authoritative

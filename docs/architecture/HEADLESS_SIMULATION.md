@@ -3,6 +3,72 @@
 The headless entry point runs replay verification and complete equal-rules
 Normal-policy matches without DOM or Canvas imports.
 
+## Ruleset-6 active contract
+
+Headless creates `pulp-wars-poc-6`, schema/replay version 6, unless it is
+explicitly reading a historical fixture for incompatibility diagnostics. The
+ruleset-5 examples and metrics below are historical; they cannot supply a
+missing v6 default.
+
+Match and batch writers always emit required
+`mapGenerationRevision: "SPATIAL_ECONOMY"`; no CLI option produces an unmarked
+or ruleset-5 revision.
+
+```bash
+npm run headless -- replay path/to/v6-replay.json
+npm run headless -- match --ruleset pulp-wars-poc-6 --ai-count 3 --factions original,candy,original,candy --seed 0 --max-commands 30000 --max-rounds 750
+npm run headless -- batch --ruleset pulp-wars-poc-6 --seeds 0,1,2,3,4,5,6,7 --ai-counts 1,2,3 --modes rival,cooperative --max-commands 30000 --max-rounds 750
+```
+
+`runAiMatch` policy-drives every seat from `PlayerViewV6` and the public v6
+query/preview APIs. Browser and headless use the same faction-tree registry,
+economy recomputation, reducer, canonicalizer, and Normal selector. Neither
+path may translate v5 technologies, Catapult, Stars, Animal/Lumber Mill, or a
+singular pending choice into v6 values.
+
+Every full result records the retained deterministic hashes and at least:
+
+- `coinsEarned`, `coinsSpent`, income by city source, and negative-population
+  income reductions;
+- `resourcesGenerated/revealed/consumed` for all five IDs;
+- build/remove counts and live contribution histograms for all eleven economic
+  improvements plus Roads;
+- Windmill/Sawmill cluster sizes, Forge Mine adjacency, Stoneworks adjacency
+  and opposite pairs, Workshop basic diversity, Grand Works processor
+  diversity, Market family count and capital-Road bonus;
+- city levels beyond five, negative population occurrences, reward choices,
+  3 x 3/5 x 5 footprints, and unit capacity/over-capacity states;
+- research by all 25 technology IDs and by faction tree registration;
+- training/actions/kills/losses by all nine mechanical roles and effective
+  faction label, including Heal, Charge, Push, Breach, Roll, Wall, and Candify;
+- public preview/query equality checks, relationship violations, errors,
+  stalls, command/round caps, command/event/final hashes, and map/PRNG hashes.
+
+The standard v6 turn cap remains 128 accepted commands; the runner reserves
+enough final slots to resolve the entire already-pending reward/Candify queue
+and End Turn, rather than a fixed two slots. The match safety caps are 30,000
+accepted commands and 750 rounds because the full 25-node economy can produce
+longer games. Hitting a cap is a recorded failure for an acceptance corpus, not
+a terminal outcome.
+
+Required deterministic matrices include both factions alone and alternating,
+both relationship modes, all legal Auto setups, targeted Large/Huge, and a
+fixed spatial fixture for every formula. Repeat runs compare byte-identical
+commands, ordered events, checkpoints, and final state. Faction-only changes
+must preserve terrain/resource/settlement/turn-order/post-generation PRNG when
+the resolved setup is otherwise equal. V6 map corpora assert the exact resource
+draw thresholds, every-resource presence, three opportunities/two families per
+settlement, and no hidden-resource query leak.
+
+Normal participation must include every technology, role, basic action,
+processor, mixed building, Market/Road bonus, reward tier, and faction
+substitution across the complete corpus; individual matches need not contain
+all content. Cooperative audits retain zero AI-on-AI hostile actions,
+territory entry, or hidden allied harm. Human-authored fixtures separately prove
+the engine-permitted Candy friendly-fire cases.
+
+## Historical ruleset-5 usage and evidence
+
 ```bash
 npm run headless -- replay path/to/replay.json
 npm run headless -- match --ai-count 3 --seed 0 --max-commands 10000 --max-rounds 300

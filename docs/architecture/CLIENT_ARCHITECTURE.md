@@ -1,10 +1,158 @@
 # Pulp Wars Client Architecture
 
-**Status:** authoritative POC architecture
+**Status:** authoritative ruleset-6 client architecture
 
-**Rules:** [POC Rules](../product/POC_RULES.md)
+**Rules:** [Ruleset 6](../product/RULESET_6.md)
 
 **UI contract:** [Screen Flow](../ui/SCREEN_FLOW.md)
+
+## 0. Ruleset-6 replacement boundary
+
+Ruleset 6 uses `pulp-wars-poc-6` and schema/command/event/save/replay version 6. The ruleset-5 interfaces and examples later in this file are retained only
+as historical implementation context. Where an identifier, union, table,
+currency, faction rule, or version differs, this section and Ruleset 6 are the
+only active authority; code must not merge the two versions.
+
+The dependency direction, renderer separation, strict TypeScript posture,
+canonical JSON/SHA-256, Mulberry32, serialized dispatch, local-storage adapter,
+Canvas geometry, responsive docks, and performance budgets remain unchanged.
+Rules data now owns two explicit faction-tree registrations and may not infer a
+tree from a faction label.
+
+```ts
+type FactionId = "ORIGINAL" | "CANDY";
+type FactionTreeId = "ORIGINAL_BASELINE" | "CANDY_BASELINE_V1";
+type UnitRoleId =
+  | "FIGHTER"
+  | "SCOUT"
+  | "MARKSMAN"
+  | "GUARD"
+  | "RAIDER"
+  | "MEDIC"
+  | "HEAVY"
+  | "BREACHER"
+  | "JUGGERNAUT";
+
+interface MatchSetupV6 {
+  readonly rulesetId: "pulp-wars-poc-6";
+  readonly seed: number;
+  readonly width: 11 | 14 | 16 | 20 | 25;
+  readonly height: 11 | 14 | 16 | 20 | 25;
+  readonly aiCount: 1 | 2 | 3;
+  readonly aiDifficulty: "NORMAL";
+  readonly aiMode: "RIVAL" | "COOPERATIVE";
+  readonly humanColor: PlayerColor;
+  readonly factions: readonly FactionId[];
+  readonly mapGenerationRevision: "SPATIAL_ECONOMY";
+}
+
+interface GameStateV6 {
+  readonly schemaVersion: 6;
+  readonly rulesetId: "pulp-wars-poc-6";
+  readonly setup: MatchSetupV6;
+  readonly pendingChoices: readonly PendingChoiceV6[];
+  // retained deterministic turn, board, player, entity, PRNG, and outcome data
+}
+
+interface FactionTechnologyTree {
+  readonly id: FactionTreeId;
+  readonly faction: FactionId;
+  readonly startingTechIds: readonly ["GATHERING"];
+  readonly nodes: readonly TechnologyNode[]; // all 25, frozen order
+  readonly roleRules: Readonly<Record<UnitRoleId, EffectiveRoleRule>>;
+}
+
+interface CityStateV6 {
+  readonly level: number;
+  readonly permanentPopulation: number;
+  readonly economicPopulation: number;
+  readonly population: number; // may be negative; exact derived invariant
+  readonly expanded: boolean;
+  readonly rewards: readonly CityRewardRecord[];
+}
+
+interface TileStateV6 {
+  readonly terrain: "GRASS" | "FOREST" | "MOUNTAIN";
+  readonly resource:
+    "FRUIT" | "GAME" | "FERTILE_GROUND" | "ORE" | "STONE" | null;
+  readonly improvement: EconomicImprovementId | null;
+  readonly road: boolean;
+  readonly territoryCityId: CityId | null;
+}
+```
+
+`RulesetDefinition.version` is 6 and owns the complete orders/formulas in
+Ruleset 6 sections 1–12. Effective half-point stats are integers in half-units.
+The kernel invariant recomputes every city's economic population, progress,
+Market income, capacity, footprint, processor limits, and building legality
+from canonical tile/entity data. Cached values are validated, never trusted.
+
+The v6 `Command` union has the exact kinds and payloads in Ruleset 6 section 12.
+The v6 `DomainEvent` union contains the corresponding economic, reward, Heal,
+Push, and retained faction/combat facts. Parsers are exhaustive by version:
+v6 rejects v5 `stars`, `ANIMAL`, `LUMBER_MILL`, Catapult, old technology IDs,
+`ESCAPE_MOVE`, and a singular `pendingChoice`; v5 readers remain diagnostic
+only. Stable `RuleError` codes use `INSUFFICIENT_COINS` and the ordered v6
+validation tables.
+
+The public boundary adds:
+
+```ts
+interface EconomicPreview {
+  readonly at: Coord;
+  readonly cost: number;
+  readonly populationDeltaByCity: readonly CityValueDelta[];
+  readonly coinIncomeDeltaByCity: readonly CityValueDelta[];
+  readonly contributingTiles: readonly Coord[];
+  readonly distinctTypes: readonly string[];
+  readonly oppositePairAxes: readonly string[];
+  readonly capitalRoadConnected: boolean;
+  readonly complete: true;
+}
+
+interface PublicRulesApiV6 {
+  queryPlayerCommands(view: PlayerViewV6): readonly CommandSummaryV6[];
+  previewEconomic(
+    view: PlayerViewV6,
+    command: EconomicCommandV6,
+  ): EconomicPreviewResult;
+  previewCombat(
+    view: PlayerViewV6,
+    attacker: UnitId,
+    target: CombatTargetRef,
+  ): CombatPreviewV6;
+}
+```
+
+Unrevealed v6 resources project as a content-free `UNKNOWN_RESOURCE` arm even
+on explored terrain. It carries no candidate kind or existence bit. Economic
+preview is available only for an exact public offered command and is complete;
+contributors are sorted `(y,x)`. Combat preview represents hidden-behind Push
+as `UNKNOWN_BEHIND_FOG`, which resolves as no Push. Equal `PlayerViewV6` values
+must produce byte-identical commands, previews, AI tuples, and selections.
+
+Replay and save envelopes use version 6. A v6 save stores the complete ordered
+reward queue, exact faction tree IDs, live/cached economic values, Roads,
+faction role IDs, and accepted command log. Loading runs parse -> version
+selection -> invariant validation (including a full economy recomputation) ->
+canonical hash -> atomic install. Recognized v1–v5 data is incompatible and
+preserved; no implicit migration exists.
+
+The exact v6 setup parser rejects `scenario`; the ruleset-5 Demo scenario and
+Hub action remain historical and have no v6 reconstruction path. It requires
+the exact `SPATIAL_ECONOMY` map revision and rejects missing, undefined, old,
+or unknown markers.
+
+The active test strategy extends section 11 with all 25 nodes in both faction
+registrations, five resource visibility gates, every spatial formula and
+recompute trigger, negative population, Market/Road connectivity, every reward
+queue boundary, all nine roles/effective Candy mappings, and public preview
+equality. New v6 goldens and corpora never overwrite v5 fixtures.
+
+## Historical ruleset-5 architecture detail
+
+The numbered sections below document the implemented v5 client and retained
+cross-version infrastructure. Versioned examples are not v6 schemas.
 
 ## 1. Architectural constraints
 

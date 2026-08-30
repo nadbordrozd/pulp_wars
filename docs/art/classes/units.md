@@ -1,6 +1,56 @@
 # Unit Asset Contract
 
-This contract specializes [Pulp Wars Art Direction](../ART_DIRECTION.md) for
+## Ruleset-6 active inventory
+
+Ruleset 6 requires nine role sprites and portraits per faction. Original:
+Fighter, Scout, Marksman, Guard, Raider, Medic, Heavy, Breacher, Juggernaut.
+Candy: Candy Warrior, Jelly Scout, Gumball Guard, Choco Engineer, Donut,
+Marshmallow Medic, Jawbreaker, Candy Crusher, Sugar Titan. The rules and exact
+mapping are [Ruleset 6 section 10](../../product/RULESET_6.md#10-faction-role-mapping-and-candy-reconciliation).
+
+The standard 256 x 296 geometry below applies to Fighter, Scout, Marksman,
+Guard, Raider, Medic, Heavy and their Candy substitutions. Existing Warrior,
+Archer, Defender, Rider, Candy Warrior, Gumball Guard, Choco Engineer, and
+Donut rasters may be explicitly aliased to the corresponding v6 manifest ID
+only after native/minimum-zoom review confirms the new role silhouette. A
+renamed file or implicit fallback is not acceptance.
+
+Breacher/Candy Crusher use the low-wide 384 x 384 siege geometry previously
+calibrated for Catapult but require new melee-siege silhouettes, anchors, and
+individual reviews; Catapult art cannot represent them. Juggernaut/Sugar Titan
+form a large-unit class on untrimmed 384 x 448 transparent canvases, source
+anchor `(192,336)`, 0.30 nominal scale, preferred bounds `x=24..360,
+y=12..374`, and hard bounds `x=8..376,y=4..400`. Their contact midpoint must
+be within 10 x/8 y source pixels of the anchor. They may overhang standard
+units but cannot hide city labels or adjacent targets at minimum zoom.
+
+New silhouette requirements:
+
+- Scout/Jelly Scout: forward exploration pose and one unmistakable viewing or
+  trail cue, not a mounted Raider/Donut;
+- Medic/Marshmallow Medic: large medical/tool cue without text or a real-world
+  protected emblem; must not read as Marksman;
+- Heavy/Jawbreaker: broad pushing mass and forward braced equipment;
+- Breacher/Candy Crusher: fragile close siege tool/explosive cue, no ranged
+  throwing arm, projectile, cannon, gore, or blast baked into the base sprite;
+- Juggernaut/Sugar Titan: one giant readable figure with push-ready stance,
+  systematic large scale, no scenery or boss UI.
+
+The initial v6 sample is Original Scout/Medic/Breacher, followed by Candy Jelly
+Scout/Marshmallow Medic/Candy Crusher. Each trio passes individual source,
+native, 0.625x, 1x, and 1.75x review before its faction batch. Each is reviewed
+on all terrains, cities, Roads, dense economic buildings, all owner colors,
+selected/damaged/reduced-motion contexts, and beside every reused counterpart.
+Juggernaut and Sugar Titan are separate individual large-class gates with
+occlusion/picking review in every adjacent direction.
+
+Charge, Heal, Push, Breach, Candify, Roll, projectiles, damage, selection, and
+status are code-native effects/attachments and never baked into a unit raster.
+All v5 text below is historical calibration where it names the old roster or
+Catapult; the shared style, transparency, anchor, scale, sorting, PixelLab, and
+review requirements remain active.
+
+This contract historically specialized [Pulp Wars Art Direction](../ART_DIRECTION.md) for
 Original Warrior/Archer/Defender/Rider, Candy Warrior/Gumball Guard/Choco
 Engineer/Donut, and the shared Catapult POC sprite. It does not redefine style.
 

@@ -1,8 +1,8 @@
-# Pulp Wars POC Screen Flow
+# Pulp Wars Ruleset-6 Screen Flow
 
 **Status:** authoritative interaction and responsive-flow specification
 
-**Rules:** [POC Rules](../product/POC_RULES.md)
+**Rules:** [Ruleset 6](../product/RULESET_6.md)
 
 **Architecture:** [Client Architecture](../architecture/CLIENT_ARCHITECTURE.md)
 
@@ -12,6 +12,150 @@ The POC follows the researched game's hierarchy and rhythm—presentation-led
 faction choice, a board-first match, compact economic HUD, contextual actions,
 full technology view, turn handoff, and decisive end screen—without copying
 proprietary art, text, layout coordinates, or code.
+
+## 0. Ruleset-6 replacement contract
+
+The responsive navigation, fixed Canvas host, map-first selection, non-modal
+docks, one-activation positional commands, semantic parity, focus, 44 CSS px
+targets, 320 px/200% zoom fallback, reduced motion, AI presentation, and result
+routes later in this file remain active. Every ruleset-5 content example below
+is historical where it conflicts with this section. The new-match UI must never
+show Stars, the nine-node tree, Catapult, Animal/Lumber Mill terminology,
+ruleset-5 city rewards, or v5 capacity as if they applied to ruleset 6.
+
+### Economy and HUD
+
+The HUD labels the sole currency **Coins** and displays `stock (+next income)`.
+Its accessible name decomposes next income into city level, capital, Market,
+negative-population penalty, and siege. Coin icons are not recolored Star art.
+
+The selected-city dock shows:
+
+- level and signed progress as `population / next threshold`, including
+  `-N / threshold` plus “infrastructure lost; replace N population before
+  growth”;
+- permanent population, live economic-building population, live Market income,
+  and total next-turn city income as separate labeled values;
+- assigned units as `count / (level + 1)`, explicit over-capacity status, siege,
+  3 x 3 or expanded 5 x 5 footprint, and earned rewards;
+- exact faction-correct Train commands for Fighter, Scout, Marksman, Guard,
+  Raider, Medic, Heavy, or Breacher. Juggernaut is never a Train control.
+
+The selected-tile dock identifies Grass/Forest/Mountain; visible Fruit, Game,
+Fertile Ground, Ore, or Stone; all eleven economic improvements; Road;
+Chocolate Wall; and territory. An explored resource hidden by technology is
+shown only as **Unknown resource — research may reveal it**. It must not use an
+outline, icon, text, count, or disabled action that identifies the resource.
+
+Exact offered controls use these labels: Harvest Fruit, Hunt Game, Build Farm,
+Build Lumber Camp, Build Mine, Build Quarry, Build Windmill, Build Sawmill,
+Build Forge, Build Stoneworks, Build Workshop, Build Grand Works, Build Market,
+Clear Forest, Replant Forest, Build Road, and Redevelop. Only the selected
+coordinate's public command appears. A Road control and road fact may coexist
+with a resource/improvement fact.
+
+### Spatial preview and placement
+
+Selecting an offered economic action enters non-modal placement preview. The
+Canvas stays undimmed, pannable, zoomable, and keyboard-operable. One activation
+of an exact highlighted tile dispatches; Escape cancels. Before dispatch the
+dock and every target accessible name state cost, resulting building value,
+population deltas per city, recurring Coin delta, and exact formula.
+
+Contributors use redundant code-native patterns and text:
+
+- cluster: connected outline plus numbered Farm/Lumber Camp contributors;
+- Forge: spokes to each adjacent Mine;
+- Stoneworks: spokes plus distinct straight/diagonal opposite-pair axes;
+- Workshop/Grand Works/Market: one shape and named chip per distinct type or
+  family, never per duplicate;
+- Market Road bonus: continuous capital-connected Road highlight and “+1 Coin
+  connected” text.
+
+Cross-city friendly contributors carry their source city label. Hostile and
+cooperative-allied buildings never highlight. Fog is never crossed. Recompute
+previews immediately after every build, Redevelop, territory transfer, capture,
+or Road connection change. Cluster visual merging is cosmetic and cannot hide
+individual selectable Farms/Camps.
+
+### Technology tree
+
+Tech first selects the viewing player's explicit faction tree registration,
+then renders the complete five-branch, 25-node graph in the frozen Ruleset-6
+order. Original uses `ORIGINAL_BASELINE`; Candy uses `CANDY_BASELINE_V1`.
+Identical graph geometry does not permit a missing-registration fallback.
+Gathering is visibly researched at match start. Fighter is a baseline role
+beside the graph.
+
+On wide screens branches form five columns; compact/mobile uses one vertical
+branch list with a sticky branch selector and no two-dimensional page scroll.
+Every node retains the overview symbol, dynamic Coin price, state, connectors,
+and separate detail sheet pattern. Detail lists prerequisite, exact unlocks,
+spatial formula when relevant, and the faction-correct unit label. Candy
+Raiding explicitly says Donut and Kamikaze Roll rather than promising baseline
+Raider Charge. Explosives says Breacher/Candy Crusher, never Catapult.
+
+### Units and abilities
+
+Unit docks use the role and faction labels in Ruleset 6. Marksman/Gumball Guard
+keeps one-activation ranged preview. Raider preview states whether Charge is
+active and shows the +1 attack. Medic exposes **Heal** only for exact adjacent
+owned damaged targets and previews 4 or 6 HP. Heavy/Juggernaut attack preview
+states Push: will push, blocked, or unknown behind fog; unknown never hints at
+hidden content. Breacher preview says defensive bonuses ignored.
+
+Candy Warrior, Jelly Scout, Gumball Guard, Choco Engineer, Donut, Marshmallow
+Medic, Jawbreaker, Candy Crusher, and Sugar Titan are the only v6 Candy names.
+Every Candy dock may expose Candify; Choco Engineer may expose Chocolate Wall;
+Donut substitutes Kamikaze Roll and has no Attack/Charge. V5 Candy Catapult is
+absent from new-match Tech, Train, Stats, and help.
+
+### Territory and rewards
+
+City selection outlines only explored assigned territory. Before level 4 it
+also previews the centered 5 x 5 potential boundary without implying ownership.
+Expand preview marks neutral cells that will be claimed and retained conflicting
+city cells. Candy Candify targeting is clipped to the chosen city's current
+3 x 3/5 x 5 footprint and retains the mandatory tied-nearest city dialog.
+
+The blocking reward overlay drains the authoritative queue in order and shows
+“Choice 1 of N” without permitting reordering or dismissal:
+
+- level 2: Survey versus Stockpile (+4 Coins);
+- level 3: Walls versus Militia (free faction Fighter);
+- level 4: Expand versus Boom (+3 permanent population);
+- every level 5+: faction Juggernaut versus Treasury (+5 Coins).
+
+If no reward-unit placement exists, its unit choice is unavailable with the
+exact reason while the Coin choice remains operable. Boom may append more
+choices; the counter updates from authoritative state. Save/reload reopens the
+same first item and focus.
+
+### Setup, Stats, help, and accessibility
+
+Per-seat Original/Candy assignment is retained. Its roster summary expands to
+the nine v6 names and states that the graph is shared but registered per
+faction. The Hub omits Demo Match for v6; the historical scenario is not
+reconstructed or offered as a new match.
+
+Stats shows Coins, 25-tech progress, live/negative population totals, Market
+income, Roads, all nine roles, territory expansion, and faction tree ID in its
+diagnostic details. Rules/Help teaches cluster, adjacency, opposite pairs,
+diversity, Grand Works, and Road-connected Markets with small code-native
+diagrams and exact formulas.
+
+All contributor patterns, signed population, Road connectivity, Charge, Heal,
+Push, Breach, resource-hidden state, and reward position have semantic text and
+live announcements. Motion may animate building placement, field merging,
+connection tracing, Charge, Push, or Heal, but Reduced replaces travel with a
+100 ms crossfade and never removes the textual result. No animation changes
+commands, reveals, contributor membership, event order, or hashes.
+
+## Historical ruleset-5 interaction detail and retained layout behavior
+
+The numbered sections below contain retained layout/accessibility behavior and
+historical v5 content examples. Section 0 replaces every content-specific
+example for new ruleset-6 matches.
 
 ## 1. Navigation model
 
