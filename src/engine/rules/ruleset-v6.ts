@@ -1,11 +1,14 @@
 import { deepFreeze } from "../model/freeze";
 import {
+  COMMAND_KIND_ORDER_V6,
   FACTION_TREE_IDS,
+  RESOURCE_IDS,
   RULESET_6_ID,
   TECHNOLOGY_IDS,
   UNIT_ROLE_IDS,
   type FactionIdV6,
   type FactionTreeId,
+  type CommandKindV6,
   type EconomicImprovementId,
   type ResourceId,
   type TerrainIdV6,
@@ -13,10 +16,94 @@ import {
   type UnitRoleId,
 } from "../v6/types";
 
+export const TECHNOLOGY_BRANCH_IDS_V6 = deepFreeze([
+  "SETTLEMENT",
+  "WILDS",
+  "INDUSTRY",
+  "MOBILITY",
+  "WARFARE",
+] as const);
+
+export type TechnologyBranchIdV6 = (typeof TECHNOLOGY_BRANCH_IDS_V6)[number];
+
+export type TechnologyUnlockedCommandV6 = Extract<
+  CommandKindV6,
+  | "HARVEST_FRUIT"
+  | "HUNT_GAME"
+  | "BUILD_FARM"
+  | "BUILD_LUMBER_CAMP"
+  | "BUILD_MINE"
+  | "BUILD_QUARRY"
+  | "BUILD_WINDMILL"
+  | "BUILD_SAWMILL"
+  | "BUILD_FORGE"
+  | "BUILD_STONEWORKS"
+  | "BUILD_WORKSHOP"
+  | "BUILD_GRAND_WORKS"
+  | "BUILD_MARKET"
+  | "CLEAR_FOREST"
+  | "REPLANT_FOREST"
+  | "BUILD_ROAD"
+  | "REDEVELOP"
+>;
+
+export type TechnologyUnlockV6 =
+  | {
+      readonly kind: "COMMAND";
+      readonly command: TechnologyUnlockedCommandV6;
+    }
+  | {
+      readonly kind: "RESOURCE_REVEAL";
+      readonly resources: readonly ResourceId[];
+    }
+  | {
+      readonly kind: "UNIT_ROLE";
+      readonly role: UnitRoleId;
+    }
+  | {
+      readonly kind: "ECONOMIC_FORMULA";
+      readonly improvement: EconomicImprovementId;
+      readonly formula:
+        | "CONNECTED_ORTHOGONAL_CLUSTER"
+        | "ADJACENT_MINES"
+        | "ADJACENT_QUARRIES_AND_OPPOSITE_PAIRS"
+        | "DISTINCT_BASIC_TYPES"
+        | "DISTINCT_PROCESSOR_TYPES"
+        | "DISTINCT_ECONOMIC_FAMILIES";
+    }
+  | { readonly kind: "CONNECTED_FARM_VISUALS" }
+  | {
+      readonly kind: "FOREST_MOVEMENT_FREEDOM";
+      readonly roles: readonly ["SCOUT", "MARKSMAN"];
+    }
+  | { readonly kind: "MOUNTAIN_MOVEMENT" }
+  | { readonly kind: "HIGH_GROUND_VISION"; readonly radiusBonus: 1 }
+  | { readonly kind: "ROLE_SIGHT"; readonly role: "SCOUT"; readonly radius: 2 }
+  | {
+      readonly kind: "ROAD_MOVEMENT";
+      readonly ordinaryStepCost2: 2;
+      readonly connectedOrthogonalStepCost2: 1;
+    }
+  | { readonly kind: "MARKET_CAPITAL_ROAD_BONUS"; readonly coins: 1 }
+  | {
+      readonly kind: "IGNORE_HOSTILE_ZOC";
+      readonly roles: readonly ["SCOUT", "RAIDER"];
+    }
+  | {
+      readonly kind: "FRIENDLY_CITY_FORTIFICATION";
+      readonly roles: readonly ["FIGHTER", "GUARD"];
+      readonly defenseNumerator: 2;
+      readonly defenseDenominator: 1;
+    }
+  | { readonly kind: "MEDIC_HEAL"; readonly amount: 4 | 6 }
+  | { readonly kind: "FRIENDLY_IDLE_RECOVERY"; readonly amount: 6 };
+
 export interface TechnologyNodeV6 {
   readonly id: TechnologyId;
+  readonly branch: TechnologyBranchIdV6;
   readonly tier: 1 | 2 | 3;
   readonly prerequisites: readonly TechnologyId[];
+  readonly unlocks: readonly TechnologyUnlockV6[];
   readonly unlockedRoles: readonly UnitRoleId[];
 }
 
@@ -227,45 +314,289 @@ export const SPATIAL_ECONOMIC_ACTIONS_V6 = deepFreeze({
 
 function node(
   id: TechnologyId,
+  branch: TechnologyBranchIdV6,
   tier: 1 | 2 | 3,
   prerequisites: readonly TechnologyId[] = [],
-  unlockedRoles: readonly UnitRoleId[] = [],
+  unlocks: readonly TechnologyUnlockV6[] = [],
 ): TechnologyNodeV6 {
+  const unlockedRoles = unlocks.flatMap((unlock) =>
+    unlock.kind === "UNIT_ROLE" ? [unlock.role] : [],
+  );
   return deepFreeze({
     id,
+    branch,
     tier,
     prerequisites: [...prerequisites],
+    unlocks: [...unlocks],
     unlockedRoles: [...unlockedRoles],
   });
 }
 
 /** The single frozen baseline graph shared explicitly by both registrations. */
 export const BASELINE_TECHNOLOGY_NODES_V6 = deepFreeze([
-  node("GATHERING", 1),
-  node("FARMING", 2, ["GATHERING"]),
-  node("MILLING", 3, ["FARMING"]),
-  node("CRAFT", 2, ["GATHERING"]),
-  node("GRAND_WORKS", 3, ["CRAFT"]),
-  node("HUNTING", 1),
-  node("FORESTRY", 2, ["HUNTING"]),
-  node("SAWMILLING", 3, ["FORESTRY"]),
-  node("MARKSMANSHIP", 2, ["HUNTING"], ["MARKSMAN"]),
-  node("FIELDCRAFT", 3, ["MARKSMANSHIP"]),
-  node("SURVEYING", 1),
-  node("MINING", 2, ["SURVEYING"]),
-  node("METALLURGY", 3, ["MINING"], ["HEAVY"]),
-  node("QUARRYING", 2, ["SURVEYING"]),
-  node("MASONRY", 3, ["QUARRYING"]),
-  node("SCOUTING", 1, [], ["SCOUT"]),
-  node("ROADS", 2, ["SCOUTING"]),
-  node("COMMERCE", 3, ["ROADS"]),
-  node("RAIDING", 2, ["SCOUTING"], ["RAIDER"]),
-  node("MANEUVER", 3, ["RAIDING"]),
-  node("DRILL", 1, [], ["GUARD"]),
-  node("FORTIFICATION", 2, ["DRILL"]),
-  node("EXPLOSIVES", 3, ["FORTIFICATION"], ["BREACHER"]),
-  node("MEDICINE", 2, ["DRILL"], ["MEDIC"]),
-  node("RECOVERY", 3, ["MEDICINE"]),
+  node(
+    "GATHERING",
+    "SETTLEMENT",
+    1,
+    [],
+    [
+      { kind: "RESOURCE_REVEAL", resources: ["FRUIT", "FERTILE_GROUND"] },
+      { kind: "COMMAND", command: "HARVEST_FRUIT" },
+    ],
+  ),
+  node(
+    "FARMING",
+    "SETTLEMENT",
+    2,
+    ["GATHERING"],
+    [
+      { kind: "COMMAND", command: "BUILD_FARM" },
+      { kind: "CONNECTED_FARM_VISUALS" },
+    ],
+  ),
+  node(
+    "MILLING",
+    "SETTLEMENT",
+    3,
+    ["FARMING"],
+    [
+      { kind: "COMMAND", command: "BUILD_WINDMILL" },
+      {
+        kind: "ECONOMIC_FORMULA",
+        improvement: "WINDMILL",
+        formula: "CONNECTED_ORTHOGONAL_CLUSTER",
+      },
+    ],
+  ),
+  node(
+    "CRAFT",
+    "SETTLEMENT",
+    2,
+    ["GATHERING"],
+    [
+      { kind: "COMMAND", command: "BUILD_WORKSHOP" },
+      {
+        kind: "ECONOMIC_FORMULA",
+        improvement: "WORKSHOP",
+        formula: "DISTINCT_BASIC_TYPES",
+      },
+    ],
+  ),
+  node(
+    "GRAND_WORKS",
+    "SETTLEMENT",
+    3,
+    ["CRAFT"],
+    [
+      { kind: "COMMAND", command: "BUILD_GRAND_WORKS" },
+      {
+        kind: "ECONOMIC_FORMULA",
+        improvement: "GRAND_WORKS",
+        formula: "DISTINCT_PROCESSOR_TYPES",
+      },
+      { kind: "COMMAND", command: "REDEVELOP" },
+    ],
+  ),
+  node(
+    "HUNTING",
+    "WILDS",
+    1,
+    [],
+    [
+      { kind: "RESOURCE_REVEAL", resources: ["GAME"] },
+      { kind: "COMMAND", command: "HUNT_GAME" },
+    ],
+  ),
+  node(
+    "FORESTRY",
+    "WILDS",
+    2,
+    ["HUNTING"],
+    [
+      { kind: "COMMAND", command: "BUILD_LUMBER_CAMP" },
+      { kind: "COMMAND", command: "CLEAR_FOREST" },
+    ],
+  ),
+  node(
+    "SAWMILLING",
+    "WILDS",
+    3,
+    ["FORESTRY"],
+    [
+      { kind: "COMMAND", command: "BUILD_SAWMILL" },
+      {
+        kind: "ECONOMIC_FORMULA",
+        improvement: "SAWMILL",
+        formula: "CONNECTED_ORTHOGONAL_CLUSTER",
+      },
+    ],
+  ),
+  node(
+    "MARKSMANSHIP",
+    "WILDS",
+    2,
+    ["HUNTING"],
+    [{ kind: "UNIT_ROLE", role: "MARKSMAN" }],
+  ),
+  node(
+    "FIELDCRAFT",
+    "WILDS",
+    3,
+    ["MARKSMANSHIP"],
+    [
+      { kind: "FOREST_MOVEMENT_FREEDOM", roles: ["SCOUT", "MARKSMAN"] },
+      { kind: "COMMAND", command: "REPLANT_FOREST" },
+    ],
+  ),
+  node(
+    "SURVEYING",
+    "INDUSTRY",
+    1,
+    [],
+    [
+      { kind: "MOUNTAIN_MOVEMENT" },
+      { kind: "RESOURCE_REVEAL", resources: ["ORE", "STONE"] },
+      { kind: "HIGH_GROUND_VISION", radiusBonus: 1 },
+    ],
+  ),
+  node(
+    "MINING",
+    "INDUSTRY",
+    2,
+    ["SURVEYING"],
+    [{ kind: "COMMAND", command: "BUILD_MINE" }],
+  ),
+  node(
+    "METALLURGY",
+    "INDUSTRY",
+    3,
+    ["MINING"],
+    [
+      { kind: "COMMAND", command: "BUILD_FORGE" },
+      {
+        kind: "ECONOMIC_FORMULA",
+        improvement: "FORGE",
+        formula: "ADJACENT_MINES",
+      },
+      { kind: "UNIT_ROLE", role: "HEAVY" },
+    ],
+  ),
+  node(
+    "QUARRYING",
+    "INDUSTRY",
+    2,
+    ["SURVEYING"],
+    [{ kind: "COMMAND", command: "BUILD_QUARRY" }],
+  ),
+  node(
+    "MASONRY",
+    "INDUSTRY",
+    3,
+    ["QUARRYING"],
+    [
+      { kind: "COMMAND", command: "BUILD_STONEWORKS" },
+      {
+        kind: "ECONOMIC_FORMULA",
+        improvement: "STONEWORKS",
+        formula: "ADJACENT_QUARRIES_AND_OPPOSITE_PAIRS",
+      },
+    ],
+  ),
+  node(
+    "SCOUTING",
+    "MOBILITY",
+    1,
+    [],
+    [
+      { kind: "UNIT_ROLE", role: "SCOUT" },
+      { kind: "ROLE_SIGHT", role: "SCOUT", radius: 2 },
+    ],
+  ),
+  node(
+    "ROADS",
+    "MOBILITY",
+    2,
+    ["SCOUTING"],
+    [
+      { kind: "COMMAND", command: "BUILD_ROAD" },
+      {
+        kind: "ROAD_MOVEMENT",
+        ordinaryStepCost2: 2,
+        connectedOrthogonalStepCost2: 1,
+      },
+    ],
+  ),
+  node(
+    "COMMERCE",
+    "MOBILITY",
+    3,
+    ["ROADS"],
+    [
+      { kind: "COMMAND", command: "BUILD_MARKET" },
+      {
+        kind: "ECONOMIC_FORMULA",
+        improvement: "MARKET",
+        formula: "DISTINCT_ECONOMIC_FAMILIES",
+      },
+      { kind: "MARKET_CAPITAL_ROAD_BONUS", coins: 1 },
+    ],
+  ),
+  node(
+    "RAIDING",
+    "MOBILITY",
+    2,
+    ["SCOUTING"],
+    [{ kind: "UNIT_ROLE", role: "RAIDER" }],
+  ),
+  node(
+    "MANEUVER",
+    "MOBILITY",
+    3,
+    ["RAIDING"],
+    [{ kind: "IGNORE_HOSTILE_ZOC", roles: ["SCOUT", "RAIDER"] }],
+  ),
+  node("DRILL", "WARFARE", 1, [], [{ kind: "UNIT_ROLE", role: "GUARD" }]),
+  node(
+    "FORTIFICATION",
+    "WARFARE",
+    2,
+    ["DRILL"],
+    [
+      {
+        kind: "FRIENDLY_CITY_FORTIFICATION",
+        roles: ["FIGHTER", "GUARD"],
+        defenseNumerator: 2,
+        defenseDenominator: 1,
+      },
+    ],
+  ),
+  node(
+    "EXPLOSIVES",
+    "WARFARE",
+    3,
+    ["FORTIFICATION"],
+    [{ kind: "UNIT_ROLE", role: "BREACHER" }],
+  ),
+  node(
+    "MEDICINE",
+    "WARFARE",
+    2,
+    ["DRILL"],
+    [
+      { kind: "UNIT_ROLE", role: "MEDIC" },
+      { kind: "MEDIC_HEAL", amount: 4 },
+    ],
+  ),
+  node(
+    "RECOVERY",
+    "WARFARE",
+    3,
+    ["MEDICINE"],
+    [
+      { kind: "MEDIC_HEAL", amount: 6 },
+      { kind: "FRIENDLY_IDLE_RECOVERY", amount: 6 },
+    ],
+  ),
 ] as const);
 
 const ORIGINAL_LABELS: Readonly<Record<UnitRoleId, string>> = deepFreeze({
@@ -544,6 +875,156 @@ export function technologyResearchCostV6(
   return cost;
 }
 
+export interface TechnologyCapabilitiesV6 {
+  readonly treeId: FactionTreeId;
+  readonly resourceReveals: readonly ResourceId[];
+  readonly commands: readonly TechnologyUnlockedCommandV6[];
+  readonly trainableRoles: readonly UnitRoleId[];
+  readonly roleBindings: Readonly<Record<UnitRoleId, EffectiveRoleRuleV6>>;
+  readonly economicFormulas: readonly Extract<
+    TechnologyUnlockV6,
+    { readonly kind: "ECONOMIC_FORMULA" }
+  >[];
+  readonly connectedFarmVisuals: boolean;
+  readonly forestMovementFreedomRoles: readonly UnitRoleId[];
+  readonly mountainMovement: boolean;
+  readonly highGroundVisionRadiusBonus: 0 | 1;
+  readonly roleSightRadius: Readonly<Partial<Record<UnitRoleId, number>>>;
+  readonly roadMovement: {
+    readonly ordinaryStepCost2: 2;
+    readonly connectedOrthogonalStepCost2: 1;
+  } | null;
+  readonly marketCapitalRoadBonusCoins: 0 | 1;
+  readonly ignoreHostileZocRoles: readonly UnitRoleId[];
+  readonly friendlyCityFortification: {
+    readonly roles: readonly UnitRoleId[];
+    readonly defenseNumerator: 2;
+    readonly defenseDenominator: 1;
+  } | null;
+  readonly medicHealAmount: 0 | 4 | 6;
+  readonly friendlyIdleRecoveryAmount: 0 | 6;
+}
+
+/**
+ * Resolves every currently owned technology effect through the explicit tree
+ * registration. Downstream reducers consume this object rather than inferring
+ * capabilities from faction labels or duplicating technology checks.
+ */
+export function technologyCapabilitiesV6(
+  treeId: FactionTreeId,
+  researchedTechs: readonly TechnologyId[],
+): TechnologyCapabilitiesV6 {
+  const tree = requireFactionTechnologyTreeV6(treeId);
+  const researched = new Set(researchedTechs);
+  const unlocks = tree.nodes
+    .filter((technology) => researched.has(technology.id))
+    .flatMap((technology) => technology.unlocks);
+  const resourceReveals = new Set<ResourceId>();
+  const commands = new Set<TechnologyUnlockedCommandV6>();
+  const trainableRoles = new Set<UnitRoleId>();
+  const economicFormulas: Extract<
+    TechnologyUnlockV6,
+    { readonly kind: "ECONOMIC_FORMULA" }
+  >[] = [];
+  const forestMovementFreedomRoles = new Set<UnitRoleId>();
+  const roleSightRadius: Partial<Record<UnitRoleId, number>> = {};
+  const ignoreHostileZocRoles = new Set<UnitRoleId>();
+  let connectedFarmVisuals = false;
+  let mountainMovement = false;
+  let highGroundVisionRadiusBonus: 0 | 1 = 0;
+  let roadMovement: TechnologyCapabilitiesV6["roadMovement"] = null;
+  let marketCapitalRoadBonusCoins: 0 | 1 = 0;
+  let friendlyCityFortification: TechnologyCapabilitiesV6["friendlyCityFortification"] =
+    null;
+  let medicHealAmount: 0 | 4 | 6 = 0;
+  let friendlyIdleRecoveryAmount: 0 | 6 = 0;
+
+  for (const unlock of unlocks) {
+    switch (unlock.kind) {
+      case "COMMAND":
+        commands.add(unlock.command);
+        break;
+      case "RESOURCE_REVEAL":
+        unlock.resources.forEach((resource) => resourceReveals.add(resource));
+        break;
+      case "UNIT_ROLE":
+        trainableRoles.add(unlock.role);
+        break;
+      case "ECONOMIC_FORMULA":
+        economicFormulas.push(unlock);
+        break;
+      case "CONNECTED_FARM_VISUALS":
+        connectedFarmVisuals = true;
+        break;
+      case "FOREST_MOVEMENT_FREEDOM":
+        unlock.roles.forEach((role) => forestMovementFreedomRoles.add(role));
+        break;
+      case "MOUNTAIN_MOVEMENT":
+        mountainMovement = true;
+        break;
+      case "HIGH_GROUND_VISION":
+        highGroundVisionRadiusBonus = unlock.radiusBonus;
+        break;
+      case "ROLE_SIGHT":
+        roleSightRadius[unlock.role] = unlock.radius;
+        break;
+      case "ROAD_MOVEMENT":
+        roadMovement = {
+          ordinaryStepCost2: unlock.ordinaryStepCost2,
+          connectedOrthogonalStepCost2: unlock.connectedOrthogonalStepCost2,
+        };
+        break;
+      case "MARKET_CAPITAL_ROAD_BONUS":
+        marketCapitalRoadBonusCoins = unlock.coins;
+        break;
+      case "IGNORE_HOSTILE_ZOC":
+        unlock.roles.forEach((role) => ignoreHostileZocRoles.add(role));
+        break;
+      case "FRIENDLY_CITY_FORTIFICATION":
+        friendlyCityFortification = {
+          roles: [...unlock.roles],
+          defenseNumerator: unlock.defenseNumerator,
+          defenseDenominator: unlock.defenseDenominator,
+        };
+        break;
+      case "MEDIC_HEAL":
+        medicHealAmount = unlock.amount;
+        break;
+      case "FRIENDLY_IDLE_RECOVERY":
+        friendlyIdleRecoveryAmount = unlock.amount;
+        break;
+    }
+  }
+
+  return deepFreeze({
+    treeId,
+    resourceReveals: RESOURCE_IDS.filter((resource) =>
+      resourceReveals.has(resource),
+    ),
+    commands: COMMAND_KIND_ORDER_V6.filter((command) =>
+      commands.has(command as TechnologyUnlockedCommandV6),
+    ) as readonly TechnologyUnlockedCommandV6[],
+    trainableRoles: UNIT_ROLE_IDS.filter((role) => trainableRoles.has(role)),
+    roleBindings: tree.roleRules,
+    economicFormulas,
+    connectedFarmVisuals,
+    forestMovementFreedomRoles: UNIT_ROLE_IDS.filter((role) =>
+      forestMovementFreedomRoles.has(role),
+    ),
+    mountainMovement,
+    highGroundVisionRadiusBonus,
+    roleSightRadius,
+    roadMovement,
+    marketCapitalRoadBonusCoins,
+    ignoreHostileZocRoles: UNIT_ROLE_IDS.filter((role) =>
+      ignoreHostileZocRoles.has(role),
+    ),
+    friendlyCityFortification,
+    medicHealAmount,
+    friendlyIdleRecoveryAmount,
+  });
+}
+
 /** Defensive assertion used by schema tests and future ruleset registration. */
 export function assertRuleset6Registry(): void {
   if (
@@ -589,8 +1070,10 @@ export function validateFactionTechnologyTreeV6(
       actual === undefined ||
       expected === undefined ||
       actual.id !== expected.id ||
+      actual.branch !== expected.branch ||
       actual.tier !== expected.tier ||
       !sameOrderedValues(actual.prerequisites, expected.prerequisites) ||
+      canonicalUnlocks(actual.unlocks) !== canonicalUnlocks(expected.unlocks) ||
       !sameOrderedValues(actual.unlockedRoles, expected.unlockedRoles)
     ) {
       return false;
@@ -600,6 +1083,10 @@ export function validateFactionTechnologyTreeV6(
     const rule = tree.roleRules[role];
     return rule !== undefined && rule.role === role;
   });
+}
+
+function canonicalUnlocks(unlocks: readonly TechnologyUnlockV6[]): string {
+  return JSON.stringify(unlocks);
 }
 
 function sameOrderedValues<T>(

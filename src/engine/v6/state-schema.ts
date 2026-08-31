@@ -1,8 +1,8 @@
 import { playerId, wallId } from "../model/ids";
 import { canonicalHash, canonicalJson } from "../replay/canonical";
 import {
-  BASELINE_TECHNOLOGY_NODES_V6,
   factionTechnologyTreeV6,
+  getFactionTechnologyTreeV6,
 } from "../rules/ruleset-v6";
 import {
   hasExactKeysV6,
@@ -324,18 +324,18 @@ function parsePlayer(input: unknown): PlayerStateV6 | null {
     TECHNOLOGY_IDS,
   );
   const explored = parseSortedCoords(input.explored);
+  const tree = getFactionTechnologyTreeV6(input.factionTreeId as string);
   if (
     id === null ||
     researchedTechs === null ||
     explored === null ||
+    tree === undefined ||
     researchedTechs[0] !== "GATHERING"
   ) {
     return null;
   }
   const prerequisiteMissing = researchedTechs.some((technology) => {
-    const node = BASELINE_TECHNOLOGY_NODES_V6.find(
-      (candidate) => candidate.id === technology,
-    );
+    const node = tree.nodes.find((candidate) => candidate.id === technology);
     return (
       node === undefined ||
       node.prerequisites.some(

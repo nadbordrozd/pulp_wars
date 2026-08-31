@@ -3,8 +3,15 @@ import {
   BASIC_ECONOMIC_ACTIONS_V6,
   SPATIAL_ECONOMIC_ACTIONS_V6,
   effectiveRoleRuleV6,
+  requireFactionTechnologyTreeV6,
+  technologyCapabilitiesV6,
+  technologyResearchCostV6,
   type BasicEconomicCommandKindV6,
+  type EffectiveRoleRuleV6,
   type SpatialEconomicCommandKindV6,
+  type TechnologyBranchIdV6,
+  type TechnologyCapabilitiesV6,
+  type TechnologyUnlockV6,
 } from "../rules/ruleset-v6";
 import { compareCommandsV6, type CommandV6 } from "./commands";
 import { arePlayersAlliedV6, resolveCityGrowthV6 } from "./economy";
@@ -18,7 +25,11 @@ import type {
   CityStateV6,
   CoordV6,
   EconomicImprovementId,
+  FactionIdV6,
+  FactionTreeId,
+  TechnologyId,
   TileStateV6,
+  UnitRoleId,
 } from "./types";
 import type { PlayerTileViewV6, PlayerViewV6 } from "./view";
 
@@ -48,6 +59,87 @@ export type EconomicPreviewResultV6 =
   | { readonly ok: true; readonly preview: EconomicPreviewV6 }
   | { readonly ok: false; readonly error: "NOT_OFFERED" };
 
+export type PublicTechnologyStateV6 = "OWNED" | "AVAILABLE" | "BLOCKED";
+
+export interface PublicTechnologyNodeV6 {
+  readonly id: TechnologyId;
+  readonly branch: TechnologyBranchIdV6;
+  readonly tier: 1 | 2 | 3;
+  readonly prerequisites: readonly TechnologyId[];
+  readonly missingPrerequisites: readonly TechnologyId[];
+  readonly state: PublicTechnologyStateV6;
+  readonly cost: number;
+  readonly affordable: boolean;
+  readonly effects: readonly TechnologyUnlockV6[];
+  readonly unlockedRoleRules: readonly EffectiveRoleRuleV6[];
+}
+
+export interface PublicTechnologyTreeV6 {
+  readonly id: FactionTreeId;
+  readonly faction: FactionIdV6;
+  readonly ownedCityCount: number;
+  readonly nodes: readonly PublicTechnologyNodeV6[];
+  readonly roleBindings: Readonly<Record<UnitRoleId, EffectiveRoleRuleV6>>;
+}
+
+/** Complete public tree state for the viewer's explicit registration. */
+export function queryTechnologyTreeV6(
+  view: PlayerViewV6,
+): PublicTechnologyTreeV6 {
+  const tree = requireFactionTechnologyTreeV6(view.viewer.factionTreeId);
+  if (tree.faction !== view.viewer.faction) {
+    throw new RangeError("Faction tree does not belong to viewer faction");
+  }
+  const ownedCityCount = view.cities.filter(
+    (city) => city.ownerId === view.viewer.id,
+  ).length;
+  if (ownedCityCount < 1) {
+    throw new RangeError("Technology cost requires an owned city");
+  }
+  const owned = new Set(view.viewer.researchedTechs);
+  const nodes = tree.nodes.map((node): PublicTechnologyNodeV6 => {
+    const missingPrerequisites = node.prerequisites.filter(
+      (prerequisite) => !owned.has(prerequisite),
+    );
+    const state: PublicTechnologyStateV6 = owned.has(node.id)
+      ? "OWNED"
+      : missingPrerequisites.length === 0
+        ? "AVAILABLE"
+        : "BLOCKED";
+    const cost = technologyResearchCostV6(node.tier, ownedCityCount);
+    return {
+      id: node.id,
+      branch: node.branch,
+      tier: node.tier,
+      prerequisites: node.prerequisites,
+      missingPrerequisites,
+      state,
+      cost,
+      affordable: state === "AVAILABLE" && view.viewer.coins >= cost,
+      effects: node.unlocks,
+      unlockedRoleRules: node.unlockedRoles.map((role) => tree.roleRules[role]),
+    };
+  });
+  return {
+    id: tree.id,
+    faction: tree.faction,
+    ownedCityCount,
+    nodes,
+    roleBindings: tree.roleRules,
+  };
+}
+
+/** Aggregated typed effects for downstream reducers and public policy code. */
+export function queryTechnologyCapabilitiesV6(
+  view: PlayerViewV6,
+): TechnologyCapabilitiesV6 {
+  const tree = requireFactionTechnologyTreeV6(view.viewer.factionTreeId);
+  if (tree.faction !== view.viewer.faction) {
+    throw new RangeError("Faction tree does not belong to viewer faction");
+  }
+  return technologyCapabilitiesV6(tree.id, view.viewer.researchedTechs);
+}
+
 const BASIC_KINDS = Object.keys(
   BASIC_ECONOMIC_ACTIONS_V6,
 ) as BasicEconomicCommandKindV6[];
@@ -69,6 +161,11 @@ export function queryPlayerCommandsV6(
     return [];
   }
   const commands: CommandV6[] = [];
+  for (const technology of queryTechnologyTreeV6(view).nodes) {
+    if (technology.state === "AVAILABLE" && technology.affordable) {
+      commands.push({ kind: "RESEARCH", tech: technology.id });
+    }
+  }
   for (const tile of view.board.tiles) {
     if (!tile.explored) continue;
     for (const kind of BASIC_KINDS) {

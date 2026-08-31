@@ -4,11 +4,13 @@ import {
   BASIC_ECONOMIC_ACTIONS_V6,
   SPATIAL_ECONOMIC_ACTIONS_V6,
   effectiveRoleRuleV6,
+  getFactionTechnologyTreeV6,
+  technologyResearchCostV6,
   type BasicEconomicCommandKindV6,
   type SpatialEconomicCommandKindV6,
 } from "../rules/ruleset-v6";
 import { deepFreeze } from "../model/freeze";
-import { parseCommandV6, type CommandV6 } from "./commands";
+import { hasExactKeysV6, parseCommandV6, type CommandV6 } from "./commands";
 import {
   arePlayersAlliedV6,
   arePlayersHostileV6,
@@ -22,6 +24,7 @@ import type { DomainEventV6 } from "./events";
 import { createInitialMapStateV6 } from "./map";
 import { parseGameStateV6 } from "./state-schema";
 import { spatialContributionAtV6 } from "./spatial-economy";
+import { TECHNOLOGY_IDS } from "./types";
 import type {
   CityStateV6,
   CoordV6,
@@ -30,6 +33,7 @@ import type {
   PlayerStateV6,
   PopulationContributionV6,
   TileStateV6,
+  TechnologyId,
   UnitStateV6,
 } from "./types";
 
@@ -51,6 +55,9 @@ export type RuleErrorCodeV6 =
   | "CITY_REWARD_PENDING"
   | "CITY_BUILDING_LIMIT"
   | "PLACEMENT_REQUIREMENT_UNMET"
+  | "TECH_NOT_FOUND"
+  | "TECH_ALREADY_RESEARCHED"
+  | "TECH_PREREQUISITE_MISSING"
   | "INSUFFICIENT_COINS"
   | "INTEGER_OVERFLOW"
   | "CAPTURE_NOT_ELIGIBLE"
@@ -129,11 +136,24 @@ export function applyCommandV6(
 ): ApplyCommandResultV6 {
   const canonicalState = parseGameStateV6(state);
   if (canonicalState === null) return rejected(state, "INVALID_STATE");
+  const unknownResearchTech = exactUnknownResearchTech(commandInput);
+  if (unknownResearchTech !== null) {
+    const common = commonError(canonicalState, actor, {
+      kind: "RESEARCH",
+      tech: "GATHERING",
+    });
+    return common === null
+      ? rejected(state, "TECH_NOT_FOUND", { tech: unknownResearchTech })
+      : rejected(state, common.code, common.params);
+  }
   const parsedCommand = parseCommandV6(commandInput);
   if (!parsedCommand.ok) return rejected(state, "INVALID_COMMAND");
   const command = parsedCommand.value;
   const common = commonError(canonicalState, actor, command);
   if (common !== null) return rejected(state, common.code, common.params);
+  if (command.kind === "RESEARCH") {
+    return applyResearchCommand(state, canonicalState, actor, command.tech);
+  }
   if (BASIC_COMMANDS.has(command.kind)) {
     return applyBasicEconomicCommand(
       state,
@@ -157,6 +177,71 @@ export function applyCommandV6(
     return applyCapture(state, canonicalState, actor, command.unitId);
   }
   return rejected(state, "COMMAND_NOT_IMPLEMENTED", { kind: command.kind });
+}
+
+function applyResearchCommand(
+  original: GameStateV6,
+  state: GameStateV6,
+  actor: PlayerId,
+  tech: TechnologyId,
+): ApplyCommandResultV6 {
+  const player = requirePlayer(state, actor);
+  const tree = getFactionTechnologyTreeV6(player.factionTreeId);
+  if (tree === undefined || tree.faction !== player.faction) {
+    return rejected(original, "INVALID_STATE");
+  }
+  const node = tree.nodes.find((candidate) => candidate.id === tech);
+  if (node === undefined) {
+    return rejected(original, "TECH_NOT_FOUND", { tech });
+  }
+  if (player.researchedTechs.includes(tech)) {
+    return rejected(original, "TECH_ALREADY_RESEARCHED", { tech });
+  }
+  const missing = node.prerequisites.find(
+    (prerequisite) => !player.researchedTechs.includes(prerequisite),
+  );
+  if (missing !== undefined) {
+    return rejected(original, "TECH_PREREQUISITE_MISSING", {
+      tech,
+      prerequisite: missing,
+    });
+  }
+  const ownedCityCount = state.cities.filter(
+    (city) => city.ownerId === actor,
+  ).length;
+  let cost: number;
+  try {
+    cost = technologyResearchCostV6(node.tier, ownedCityCount);
+  } catch {
+    return rejected(original, "INTEGER_OVERFLOW");
+  }
+  if (player.coins < cost) {
+    return rejected(original, "INSUFFICIENT_COINS", { cost });
+  }
+  const commandIndex = state.commandIndex + 1;
+  if (!Number.isSafeInteger(commandIndex)) {
+    return rejected(original, "INTEGER_OVERFLOW");
+  }
+  const researchedTechs = [...player.researchedTechs, tech].sort(
+    (left, right) =>
+      TECHNOLOGY_IDS.indexOf(left) - TECHNOLOGY_IDS.indexOf(right),
+  );
+  const players = state.players.map((candidate) =>
+    candidate.id === actor
+      ? { ...candidate, coins: candidate.coins - cost, researchedTechs }
+      : candidate,
+  );
+  try {
+    const nextState = checkedState({ ...state, commandIndex, players });
+    return {
+      accepted: true,
+      state: deepFreeze(nextState),
+      events: [{ kind: "TECH_RESEARCHED", playerId: actor, tech, cost }],
+    };
+  } catch (cause) {
+    if (cause instanceof RangeError) return rejected(original, "INVALID_STATE");
+    throw cause;
+  }
 }
 
 function applyBasicEconomicCommand(
@@ -737,6 +822,15 @@ function commonError(
     });
   }
   return null;
+}
+
+function exactUnknownResearchTech(command: unknown): string | null {
+  return hasExactKeysV6(command, ["kind", "tech"]) &&
+    command.kind === "RESEARCH" &&
+    typeof command.tech === "string" &&
+    !TECHNOLOGY_IDS.includes(command.tech as TechnologyId)
+    ? command.tech
+    : null;
 }
 
 function tileMatchesRule(
