@@ -29,6 +29,8 @@ import {
   type EffectiveUnitLabel,
 } from "../engine/index";
 
+export * from "./v6";
+
 export type HeadlessResult = ReplayRunResult;
 
 export interface AiCommandRecord {

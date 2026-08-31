@@ -9,6 +9,7 @@ import {
   UNIT_ROLE_IDS,
   appendReplayCommandV6,
   applyCommandV6,
+  candifyWouldDuplicateSpecializedImprovementV6,
   canonicalHash,
   cityId,
   createInitialMapStateV6,
@@ -1039,6 +1040,85 @@ describe("ruleset-6 Candy roster", () => {
     });
   });
 
+  it("atomically rejects Candify when every destination already has the transferred specialized building", () => {
+    const fixture = specializedCandifyConflictArena(true);
+    expect(
+      candifyWouldDuplicateSpecializedImprovementV6(
+        fixture.state.board.tiles,
+        fixture.conflictedCityIds[0],
+        "WORKSHOP",
+      ),
+    ).toBe(true);
+    expect(
+      candifyWouldDuplicateSpecializedImprovementV6(
+        fixture.state.board.tiles,
+        fixture.conflictedCityIds[0],
+        "FARM",
+      ),
+    ).toBe(false);
+    expect(
+      queryPlayerCommandsV6(
+        viewForV6(fixture.state, fixture.state.humanPlayerId),
+      ),
+    ).not.toContainEqual({ kind: "CANDIFY", unitId: fixture.unit.id });
+    expectRejected(
+      applyCommandV6(fixture.state, fixture.state.humanPlayerId, {
+        kind: "CANDIFY",
+        unitId: fixture.unit.id,
+      }),
+      fixture.state,
+      "CANDIFY_NO_ADJACENT_CITY",
+    );
+
+    const stored = checked({
+      ...fixture.state,
+      pendingChoices: [
+        {
+          kind: "CANDIFY_CITY",
+          unitId: fixture.unit.id,
+          candidateCityIds: fixture.conflictedCityIds,
+        },
+      ],
+    });
+    expect(
+      queryPlayerCommandsV6(viewForV6(stored, stored.humanPlayerId)),
+    ).toEqual([]);
+    expectRejected(
+      applyCommandV6(stored, stored.humanPlayerId, {
+        kind: "CHOOSE_CANDIFY_CITY",
+        unitId: fixture.unit.id,
+        cityId: must(fixture.conflictedCityIds[0]),
+      }),
+      stored,
+      "CANDIFY_CITY_NOT_CANDIDATE",
+    );
+  });
+
+  it("excludes only the conflicting city from a tied specialized Candify and resolves the valid city immediately", () => {
+    const fixture = specializedCandifyConflictArena(false);
+    const view = viewForV6(fixture.state, fixture.state.humanPlayerId);
+    expect(queryPlayerCommandsV6(view)).toContainEqual({
+      kind: "CANDIFY",
+      unitId: fixture.unit.id,
+    });
+    const result = applyCommandV6(fixture.state, fixture.state.humanPlayerId, {
+      kind: "CANDIFY",
+      unitId: fixture.unit.id,
+    });
+    expect(result.accepted).toBe(true);
+    if (!result.accepted) return;
+    expect(result.state.pendingChoices).toEqual([]);
+    expect(result.events).toContainEqual(
+      expect.objectContaining({
+        kind: "TILE_CANDIFIED",
+        cityId: fixture.validCityId,
+      }),
+    );
+    expect(result.events).not.toContainEqual(
+      expect.objectContaining({ kind: "CANDIFY_CITY_CHOICE_REQUIRED" }),
+    );
+  });
+
   it("stores and resolves tied Candify choices with exact ordering and command indices", () => {
     const state = tiedCandifyArena();
     const unit = ownUnit(state, "FIGHTER");
@@ -1405,6 +1485,190 @@ function candifyEconomyArena(): GameStateV6 {
     ],
     units: [makeUnit(base, unitEntityId, "OWN", "HEAVY", target, 15)],
   });
+}
+
+function specializedCandifyConflictArena(allConflict: boolean): {
+  readonly state: GameStateV6;
+  readonly unit: UnitStateV6;
+  readonly conflictedCityIds: readonly [
+    GameStateV6["cities"][number]["id"],
+    GameStateV6["cities"][number]["id"],
+  ];
+  readonly validCityId: GameStateV6["cities"][number]["id"];
+} {
+  const base = candifyEconomyArena();
+  const target = must(base.units[0]).at;
+  const first = ownCity(base);
+  const source = enemyCity(base);
+  const pair = must(
+    base.board.tiles
+      .filter(
+        (tile) =>
+          tile.site === null &&
+          !same(tile.at, target) &&
+          chebyshev(tile.at, target) === 2,
+      )
+      .flatMap((cityTile) =>
+        base.board.tiles
+          .filter(
+            (tile) =>
+              tile.site === null &&
+              !same(tile.at, target) &&
+              !same(tile.at, cityTile.at) &&
+              chebyshev(tile.at, target) === 1 &&
+              chebyshev(tile.at, cityTile.at) === 1,
+          )
+          .map((territoryTile) => ({ cityTile, territoryTile })),
+      )[0],
+  );
+  const firstDuplicate = must(
+    base.board.tiles.find(
+      (tile) =>
+        tile.site === null &&
+        tile.improvement === null &&
+        tile.territoryCityId === first.id &&
+        !same(tile.at, target) &&
+        !same(tile.at, pair.cityTile.at) &&
+        !same(tile.at, pair.territoryTile.at),
+    ),
+  ).at;
+  const secondDuplicate = must(
+    base.board.tiles.find(
+      (tile) =>
+        tile.site === null &&
+        tile.improvement === null &&
+        !same(tile.at, target) &&
+        !same(tile.at, firstDuplicate) &&
+        !same(tile.at, pair.cityTile.at) &&
+        !same(tile.at, pair.territoryTile.at),
+    ),
+  ).at;
+  const secondId = cityId(base.nextEntityId);
+  let nextEntityId = base.nextEntityId + 1;
+  const sourceContribution = must(base.populationContributions[0]);
+  const contributions = [
+    {
+      ...sourceContribution,
+      amount: 0,
+      source: {
+        kind: "IMPROVEMENT" as const,
+        improvement: "WORKSHOP" as const,
+        at: target,
+      },
+    },
+    {
+      id: nextEntityId++,
+      cityId: first.id,
+      category: "LIVE" as const,
+      amount: 0,
+      source: {
+        kind: "IMPROVEMENT" as const,
+        improvement: "WORKSHOP" as const,
+        at: firstDuplicate,
+      },
+    },
+    ...(allConflict
+      ? [
+          {
+            id: nextEntityId++,
+            cityId: secondId,
+            category: "LIVE" as const,
+            amount: 0,
+            source: {
+              kind: "IMPROVEMENT" as const,
+              improvement: "WORKSHOP" as const,
+              at: secondDuplicate,
+            },
+          },
+        ]
+      : []),
+  ];
+  const state = checked({
+    ...base,
+    nextEntityId,
+    cities: [
+      ...base.cities.map((city) =>
+        city.id === source.id
+          ? {
+              ...city,
+              level: 1,
+              economicPopulation: 0,
+              population: 0,
+            }
+          : city,
+      ),
+      {
+        id: secondId,
+        ownerId: base.humanPlayerId,
+        at: pair.cityTile.at,
+        level: 1,
+        permanentPopulation: 0,
+        economicPopulation: 0,
+        population: 0,
+        isCapital: false,
+        expanded: true,
+        rewards: [],
+      },
+    ].sort((left, right) => left.id - right.id),
+    board: {
+      ...base.board,
+      tiles: base.board.tiles.map((tile) => {
+        if (same(tile.at, target)) {
+          return {
+            ...tile,
+            terrain: "GRASS" as const,
+            resource: null,
+            improvement: "WORKSHOP" as const,
+            road: false,
+            territoryCityId: source.id,
+          };
+        }
+        if (same(tile.at, firstDuplicate)) {
+          return {
+            ...tile,
+            terrain: "GRASS" as const,
+            resource: null,
+            improvement: "WORKSHOP" as const,
+            road: false,
+            territoryCityId: first.id,
+          };
+        }
+        if (same(tile.at, pair.cityTile.at)) {
+          return {
+            ...tile,
+            terrain: "GRASS" as const,
+            resource: null,
+            improvement: null,
+            road: false,
+            site: "CITY" as const,
+            territoryCityId: secondId,
+          };
+        }
+        if (same(tile.at, pair.territoryTile.at)) {
+          return { ...tile, site: null, territoryCityId: secondId };
+        }
+        if (allConflict && same(tile.at, secondDuplicate)) {
+          return {
+            ...tile,
+            terrain: "GRASS" as const,
+            resource: null,
+            improvement: "WORKSHOP" as const,
+            road: false,
+            site: null,
+            territoryCityId: secondId,
+          };
+        }
+        return tile;
+      }),
+    },
+    populationContributions: contributions,
+  });
+  return {
+    state,
+    unit: must(state.units.find((unit) => same(unit.at, target))),
+    conflictedCityIds: [first.id, secondId],
+    validCityId: secondId,
+  };
 }
 
 function neutralCandifyArena(

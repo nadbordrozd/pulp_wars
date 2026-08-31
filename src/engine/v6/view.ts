@@ -1,5 +1,6 @@
 import { deepFreeze } from "../model/freeze";
 import type { PlayerId } from "../model/ids";
+import { arePlayersAlliedV6 } from "./economy";
 import type {
   BoardSizeV6,
   ChocolateWallStateV6,
@@ -22,7 +23,11 @@ export const UNKNOWN_RESOURCE_V6 = "UNKNOWN_RESOURCE" as const;
 export type PublicResourceV6 = ResourceId | null | typeof UNKNOWN_RESOURCE_V6;
 
 export type PlayerTileViewV6 =
-  | { readonly at: CoordV6; readonly explored: false }
+  | {
+      readonly at: CoordV6;
+      readonly explored: false;
+      readonly diplomaticBlock?: "ALLIED_TERRITORY";
+    }
   | (Omit<TileStateV6, "resource" | "territoryCityId"> & {
       readonly explored: true;
       readonly resource: PublicResourceV6;
@@ -80,7 +85,18 @@ export function viewForV6(
   );
   const tiles: PlayerTileViewV6[] = state.board.tiles.map((tile) => {
     if (!exploredKeys.has(coordKey(tile.at))) {
-      return { at: tile.at, explored: false };
+      const territoryOwner =
+        tile.territoryCityId === null
+          ? null
+          : (cityOwners.get(tile.territoryCityId) ?? null);
+      return territoryOwner !== null &&
+        arePlayersAlliedV6(state, viewerId, territoryOwner)
+        ? {
+            at: tile.at,
+            explored: false,
+            diplomaticBlock: "ALLIED_TERRITORY" as const,
+          }
+        : { at: tile.at, explored: false };
     }
     const territoryKnown =
       tile.territoryCityId === null || visibleCityIds.has(tile.territoryCityId);

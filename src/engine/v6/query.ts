@@ -1,4 +1,4 @@
-import type { CityId, UnitId } from "../model/ids";
+import type { CityId, PlayerId, UnitId } from "../model/ids";
 import {
   BASIC_ECONOMIC_ACTIONS_V6,
   SPATIAL_ECONOMIC_ACTIONS_V6,
@@ -15,7 +15,11 @@ import {
 } from "../rules/ruleset-v6";
 import { compareCommandsV6, type CommandV6 } from "./commands";
 import type { CombatTargetRefV6 } from "./commands";
-import { cityFootprintContainsV6, territoryTilesAreConnectedV6 } from "./candy";
+import {
+  candifyWouldDuplicateSpecializedImprovementV6,
+  cityFootprintContainsV6,
+  territoryTilesAreConnectedV6,
+} from "./candy";
 import { calculateCombatPreviewV6 } from "./combat";
 import {
   arePlayersAlliedV6,
@@ -154,24 +158,37 @@ export function queryTechnologyCapabilitiesV6(
   return technologyCapabilitiesV6(tree.id, view.viewer.researchedTechs);
 }
 
+/** Public faction-resolved role data for a visible player/unit. */
+export function queryPublicRoleRuleV6(
+  view: PlayerViewV6,
+  ownerId: PlayerId,
+  role: UnitRoleId,
+): EffectiveRoleRuleV6 | null {
+  const owner = view.players.find((player) => player.id === ownerId);
+  return owner === undefined ? null : effectiveRoleRuleV6(owner.faction, role);
+}
+
 const BASIC_KINDS = Object.keys(
   BASIC_ECONOMIC_ACTIONS_V6,
 ) as BasicEconomicCommandKindV6[];
 const SPATIAL_KINDS = Object.keys(
   SPATIAL_ECONOMIC_ACTIONS_V6,
 ) as SpatialEconomicCommandKindV6[];
+const PUBLIC_COMMANDS = new WeakMap<PlayerViewV6, readonly CommandV6[]>();
 
 /** Pure observation-safe enumeration for the implemented v6 economy slice. */
 export function queryPlayerCommandsV6(
   view: PlayerViewV6,
 ): readonly CommandV6[] {
+  const cached = PUBLIC_COMMANDS.get(view);
+  if (cached !== undefined) return cached;
   const activeId = view.turnOrder[view.activeSeatIndex];
   if (
     view.outcome !== null ||
     view.viewer.status !== "ACTIVE" ||
     activeId !== view.viewer.id
   ) {
-    return [];
+    return cachePublicCommands(view, []);
   }
   const pending = view.pendingChoices[0];
   if (pending !== undefined) {
@@ -182,38 +199,55 @@ export function queryPlayerCommandsV6(
           candidate.ownerId === view.viewer.id &&
           candidate.hp > 0,
       );
-      return unit === undefined
-        ? []
-        : pending.candidateCityIds
-            .filter((cityId) =>
-              view.cities.some(
-                (city) => city.id === cityId && city.ownerId === view.viewer.id,
-              ),
-            )
-            .map((cityId): CommandV6 => ({
-              kind: "CHOOSE_CANDIFY_CITY",
-              unitId: unit.id,
-              cityId,
-            }))
-            .sort(compareCommandsV6);
+      const tile =
+        unit === undefined
+          ? undefined
+          : view.board.tiles[unit.at.y * view.board.width + unit.at.x];
+      return cachePublicCommands(
+        view,
+        unit === undefined || tile?.explored !== true
+          ? []
+          : pending.candidateCityIds
+              .filter((cityId) =>
+                view.cities.some(
+                  (city) =>
+                    city.id === cityId &&
+                    city.ownerId === view.viewer.id &&
+                    !candifyWouldDuplicateSpecializedImprovementV6(
+                      view.board.tiles,
+                      city.id,
+                      tile.improvement,
+                    ),
+                ),
+              )
+              .map((cityId): CommandV6 => ({
+                kind: "CHOOSE_CANDIFY_CITY",
+                unitId: unit.id,
+                cityId,
+              }))
+              .sort(compareCommandsV6),
+      );
     }
     const city = view.cities.find(
       (candidate) =>
         candidate.id === pending.cityId && candidate.ownerId === view.viewer.id,
     );
-    return city === undefined
-      ? []
-      : pending.candidates
-          .filter((reward) =>
-            publicRewardCandidateMayBeLegal(view, city, reward),
-          )
-          .map((reward): CommandV6 => ({
-            kind: "CHOOSE_CITY_REWARD",
-            cityId: pending.cityId,
-            reachedLevel: pending.reachedLevel,
-            reward,
-          }))
-          .sort(compareCommandsV6);
+    return cachePublicCommands(
+      view,
+      city === undefined
+        ? []
+        : pending.candidates
+            .filter((reward) =>
+              publicRewardCandidateMayBeLegal(view, city, reward),
+            )
+            .map((reward): CommandV6 => ({
+              kind: "CHOOSE_CITY_REWARD",
+              cityId: pending.cityId,
+              reachedLevel: pending.reachedLevel,
+              reward,
+            }))
+            .sort(compareCommandsV6),
+    );
   }
   const commands: CommandV6[] = [];
   for (const technology of queryTechnologyTreeV6(view).nodes) {
@@ -424,7 +458,16 @@ export function queryPlayerCommandsV6(
     }
   }
   commands.push({ kind: "END_TURN" });
-  return commands.sort(compareCommandsV6);
+  return cachePublicCommands(view, commands.sort(compareCommandsV6));
+}
+
+function cachePublicCommands(
+  view: PlayerViewV6,
+  commands: readonly CommandV6[],
+): readonly CommandV6[] {
+  const frozen = Object.freeze(commands);
+  PUBLIC_COMMANDS.set(view, frozen);
+  return frozen;
 }
 
 /** Fog-safe combat preview for an exact currently offered attack. */
@@ -440,6 +483,42 @@ export function queryCombatPreviewV6(
       sameCombatTarget(command.target, target),
   );
   if (!offered) return null;
+  return calculateCombatPreviewV6(
+    publicStateForMovement(view),
+    attackerId,
+    target,
+  );
+}
+
+/**
+ * Observation-safe estimator for a fully visible hypothetical combat pair.
+ * Unlike `queryCombatPreviewV6`, this is not restricted to the active viewer's
+ * currently offered Attack and is used for public threat/safety scoring.
+ */
+export function estimatePublicCombatV6(
+  view: PlayerViewV6,
+  attackerId: UnitId,
+  target: CombatTargetRefV6,
+): CombatPreviewV6 | null {
+  const attacker = view.units.find(
+    (unit) => unit.id === attackerId && unit.hp > 0,
+  );
+  const targetAt =
+    target.kind === "UNIT"
+      ? view.units.find((unit) => unit.id === target.unitId && unit.hp > 0)?.at
+      : view.chocolateWalls.find(
+          (wall) => wall.id === target.wallId && wall.hp > 0,
+        )?.at;
+  if (attacker === undefined || targetAt === undefined) return null;
+  const rule = queryPublicRoleRuleV6(view, attacker.ownerId, attacker.role);
+  if (
+    rule === null ||
+    !rule.abilities.includes("ATTACK") ||
+    rule.attack2 <= 0 ||
+    chebyshev(attacker.at, targetAt) > rule.range
+  ) {
+    return null;
+  }
   return calculateCombatPreviewV6(
     publicStateForMovement(view),
     attackerId,
@@ -505,6 +584,23 @@ function publicRewardCandidateMayBeLegal(
 }
 
 export function previewEconomicV6(
+  view: PlayerViewV6,
+  command: CommandV6,
+): EconomicPreviewResultV6 {
+  let cachedForView = PUBLIC_ECONOMIC_PREVIEWS.get(view);
+  if (cachedForView === undefined) {
+    cachedForView = new Map();
+    PUBLIC_ECONOMIC_PREVIEWS.set(view, cachedForView);
+  }
+  const key = JSON.stringify(command);
+  const cached = cachedForView.get(key);
+  if (cached !== undefined) return cached;
+  const result = calculateEconomicPreviewV6(view, command);
+  cachedForView.set(key, result);
+  return result;
+}
+
+function calculateEconomicPreviewV6(
   view: PlayerViewV6,
   command: CommandV6,
 ): EconomicPreviewResultV6 {
@@ -635,6 +731,489 @@ export function previewEconomicV6(
       complete: true,
     },
   };
+}
+
+/**
+ * Pure one-step public spatial reservation score used by Normal. It applies
+ * only a candidate's deterministic, already-public tile mutation, then scores
+ * the strongest exact next placement for each owned city while ignoring only
+ * Coin and technology gates. Unknown resources are never invented.
+ */
+export function scorePublicSpatialPlanV6(
+  view: PlayerViewV6,
+  candidate: CommandV6,
+): number {
+  let cachedForView = PUBLIC_SPATIAL_SCORES.get(view);
+  if (cachedForView === undefined) {
+    cachedForView = new Map();
+    PUBLIC_SPATIAL_SCORES.set(view, cachedForView);
+  }
+  const key = JSON.stringify(candidate);
+  const cached = cachedForView.get(key);
+  if (cached !== undefined) return cached;
+  const before = publicGraph(view);
+  const after = graphAfterPublicCandidate(view, before, candidate);
+  const result =
+    after === null
+      ? 0
+      : bestPublicNextPlacementTotal(view, after) -
+        publicSpatialBaseline(view, before);
+  cachedForView.set(key, result);
+  return result;
+}
+
+type PublicGraphV6 = ReturnType<typeof publicGraph>;
+
+interface PublicPlacementV6 {
+  readonly cityId: CityId;
+  readonly at: CoordV6;
+  readonly kind:
+    | BasicEconomicCommandKindV6
+    | SpatialEconomicCommandKindV6
+    | "CLEAR_FOREST"
+    | "REPLANT_FOREST"
+    | "BUILD_ROAD";
+}
+
+export interface PublicEconomicPotentialV6 {
+  readonly command: PublicPlacementV6["kind"];
+  readonly targets: number;
+  readonly bestSpatialScore: number;
+}
+
+/** Visible placement potential with only Coin/technology gates removed. */
+export function queryPublicEconomicPotentialsV6(
+  view: PlayerViewV6,
+): readonly PublicEconomicPotentialV6[] {
+  const cached = PUBLIC_ECONOMIC_POTENTIALS.get(view);
+  if (cached !== undefined) return cached;
+  const graph = publicGraph(view);
+  const placements = enumeratePublicPlacementsIgnoringGates(view, graph);
+  const kinds = [
+    ...BASIC_KINDS,
+    ...SPATIAL_KINDS,
+    "CLEAR_FOREST",
+    "REPLANT_FOREST",
+    "BUILD_ROAD",
+  ] as const;
+  const result = kinds.map((command) => {
+    const matching = placements.filter(
+      (placement) => placement.kind === command,
+    );
+    return {
+      command,
+      targets: matching.length,
+      bestSpatialScore: matching.reduce(
+        (best, placement) =>
+          Math.max(best, scorePublicPlacement(view, graph, placement)),
+        0,
+      ),
+    };
+  });
+  PUBLIC_ECONOMIC_POTENTIALS.set(view, result);
+  return result;
+}
+
+const PUBLIC_ECONOMIC_PREVIEWS = new WeakMap<
+  PlayerViewV6,
+  Map<string, EconomicPreviewResultV6>
+>();
+const PUBLIC_SPATIAL_SCORES = new WeakMap<PlayerViewV6, Map<string, number>>();
+const PUBLIC_SPATIAL_BASELINES = new WeakMap<PlayerViewV6, number>();
+const PUBLIC_ECONOMIC_POTENTIALS = new WeakMap<
+  PlayerViewV6,
+  readonly PublicEconomicPotentialV6[]
+>();
+const PUBLIC_GRAPH_TOTALS = new WeakMap<
+  object,
+  Map<
+    PlayerId,
+    { readonly population: number; readonly recurringCoins: number }
+  >
+>();
+const PUBLIC_GRAPH_HAS_GRAND_WORKS_SITE = new WeakMap<
+  object,
+  Map<PlayerId, boolean>
+>();
+
+function publicSpatialBaseline(
+  view: PlayerViewV6,
+  graph: PublicGraphV6,
+): number {
+  const cached = PUBLIC_SPATIAL_BASELINES.get(view);
+  if (cached !== undefined) return cached;
+  const score = bestPublicNextPlacementTotal(view, graph);
+  PUBLIC_SPATIAL_BASELINES.set(view, score);
+  return score;
+}
+
+function graphAfterPublicCandidate(
+  view: PlayerViewV6,
+  graph: PublicGraphV6,
+  candidate: CommandV6,
+): PublicGraphV6 | null {
+  if (
+    candidate.kind === "CHOOSE_CITY_REWARD" &&
+    candidate.reward === "EXPAND"
+  ) {
+    const city = view.cities.find(
+      (value) =>
+        value.id === candidate.cityId && value.ownerId === view.viewer.id,
+    );
+    if (city === undefined) return null;
+    return {
+      cities: graph.cities.map((value) =>
+        value.id === city.id ? { ...value, expanded: true } : value,
+      ),
+      board: {
+        ...graph.board,
+        tiles: graph.board.tiles.map((tile) =>
+          tile.territoryCityId === null && chebyshev(tile.at, city.at) <= 2
+            ? { ...tile, territoryCityId: city.id }
+            : tile,
+        ),
+      },
+    };
+  }
+  if (!("at" in candidate)) return null;
+  const tile = graph.board.tiles.find((value) =>
+    sameCoord(value.at, candidate.at),
+  );
+  if (tile === undefined) return null;
+  const basic =
+    BASIC_ECONOMIC_ACTIONS_V6[candidate.kind as BasicEconomicCommandKindV6];
+  const spatial =
+    SPATIAL_ECONOMIC_ACTIONS_V6[candidate.kind as SpatialEconomicCommandKindV6];
+  if (basic !== undefined) {
+    return replaceGraphTile(graph, candidate.at, {
+      resource: null,
+      improvement: basic.improvement,
+    });
+  }
+  if (spatial !== undefined) {
+    return replaceGraphTile(graph, candidate.at, {
+      improvement: spatial.improvement,
+    });
+  }
+  if (candidate.kind === "CLEAR_FOREST") {
+    return replaceGraphTile(graph, candidate.at, {
+      terrain: "GRASS",
+      resource: null,
+    });
+  }
+  if (candidate.kind === "REPLANT_FOREST") {
+    return replaceGraphTile(graph, candidate.at, {
+      terrain: "FOREST",
+      resource: null,
+    });
+  }
+  if (candidate.kind === "BUILD_ROAD") {
+    return replaceGraphTile(graph, candidate.at, { road: true });
+  }
+  if (candidate.kind === "REDEVELOP") {
+    return replaceGraphTile(graph, candidate.at, { improvement: null });
+  }
+  return null;
+}
+
+function bestPublicNextPlacementTotal(
+  view: PlayerViewV6,
+  graph: PublicGraphV6,
+): number {
+  const placements = enumeratePublicPlacementsIgnoringGates(view, graph);
+  let total = 0;
+  const reservedTargets = new Set<string>();
+  for (const city of graph.cities
+    .filter((value) => value.ownerId === view.viewer.id)
+    .sort((left, right) => left.id - right.id)) {
+    const best = placements
+      .filter(
+        (placement) =>
+          placement.cityId === city.id &&
+          !reservedTargets.has(coordKey(placement.at)),
+      )
+      .map((placement) => ({
+        placement,
+        score: scorePublicPlacement(view, graph, placement),
+      }))
+      .sort(
+        (left, right) =>
+          right.score - left.score ||
+          placementKindOrdinal(left.placement.kind) -
+            placementKindOrdinal(right.placement.kind) ||
+          compareCoordsForQuery(left.placement.at, right.placement.at),
+      )[0];
+    if (best !== undefined && best.score > 0) {
+      total += best.score;
+      reservedTargets.add(coordKey(best.placement.at));
+    }
+  }
+  return total;
+}
+
+function enumeratePublicPlacementsIgnoringGates(
+  view: PlayerViewV6,
+  graph: PublicGraphV6,
+): readonly PublicPlacementV6[] {
+  const placements: PublicPlacementV6[] = [];
+  for (const publicTile of view.board.tiles) {
+    if (
+      !publicTile.explored ||
+      publicTile.territoryOwnerId !== view.viewer.id
+    ) {
+      continue;
+    }
+    const tile = graph.board.tiles.find((value) =>
+      sameCoord(value.at, publicTile.at),
+    );
+    if (tile === undefined || tile.territoryCityId === null) continue;
+    for (const kind of BASIC_KINDS) {
+      const rule = BASIC_ECONOMIC_ACTIONS_V6[kind];
+      if (
+        tile.site === null &&
+        tile.terrain === rule.terrain &&
+        tile.resource === rule.resource &&
+        tile.improvement === null
+      ) {
+        placements.push({ cityId: tile.territoryCityId, at: tile.at, kind });
+      }
+    }
+    for (const kind of SPATIAL_KINDS) {
+      const rule = SPATIAL_ECONOMIC_ACTIONS_V6[kind];
+      if (
+        tile.site !== null ||
+        tile.resource !== null ||
+        tile.improvement !== null ||
+        graph.board.tiles.some(
+          (value) =>
+            value.territoryCityId === tile.territoryCityId &&
+            value.improvement === rule.improvement,
+        )
+      ) {
+        continue;
+      }
+      const placed = replaceGraphTile(graph, tile.at, {
+        improvement: rule.improvement,
+      });
+      if (
+        spatialContributionAtV6(placed, tile.at, rule.improvement)
+          .placementCount >= rule.placementMinimum
+      ) {
+        placements.push({ cityId: tile.territoryCityId, at: tile.at, kind });
+      }
+    }
+    if (
+      tile.site === null &&
+      tile.resource === null &&
+      tile.improvement === null &&
+      tile.terrain === "FOREST"
+    ) {
+      placements.push({
+        cityId: tile.territoryCityId,
+        at: tile.at,
+        kind: "CLEAR_FOREST",
+      });
+    }
+    if (
+      tile.site === null &&
+      tile.resource === null &&
+      tile.improvement === null &&
+      tile.terrain === "GRASS"
+    ) {
+      placements.push({
+        cityId: tile.territoryCityId,
+        at: tile.at,
+        kind: "REPLANT_FOREST",
+      });
+    }
+    if (tile.site === null && !tile.road) {
+      placements.push({
+        cityId: tile.territoryCityId,
+        at: tile.at,
+        kind: "BUILD_ROAD",
+      });
+    }
+  }
+  return placements;
+}
+
+function scorePublicPlacement(
+  view: PlayerViewV6,
+  graph: PublicGraphV6,
+  placement: PublicPlacementV6,
+): number {
+  const tile = graph.board.tiles.find((value) =>
+    sameCoord(value.at, placement.at),
+  );
+  if (tile === undefined) return 0;
+  const basic =
+    BASIC_ECONOMIC_ACTIONS_V6[placement.kind as BasicEconomicCommandKindV6];
+  const spatial =
+    SPATIAL_ECONOMIC_ACTIONS_V6[placement.kind as SpatialEconomicCommandKindV6];
+  let after = graph;
+  if (basic !== undefined) {
+    after = replaceGraphTile(graph, placement.at, {
+      resource: null,
+      improvement: basic.improvement,
+    });
+  } else if (spatial !== undefined) {
+    after = replaceGraphTile(graph, placement.at, {
+      improvement: spatial.improvement,
+    });
+  } else if (placement.kind === "CLEAR_FOREST") {
+    after = replaceGraphTile(graph, placement.at, { terrain: "GRASS" });
+  } else if (placement.kind === "REPLANT_FOREST") {
+    after = replaceGraphTile(graph, placement.at, { terrain: "FOREST" });
+  } else if (placement.kind === "BUILD_ROAD") {
+    after = replaceGraphTile(graph, placement.at, { road: true });
+  }
+  const permanentPopulation =
+    basic?.populationCategory === "PERMANENT" ? basic.population : 0;
+  const beforeTotals = publicGraphTotals(graph, view.viewer.id);
+  const afterTotals = publicGraphTotals(after, view.viewer.id);
+  const populationDelta =
+    permanentPopulation + afterTotals.population - beforeTotals.population;
+  const recurringCoinDelta =
+    afterTotals.recurringCoins - beforeTotals.recurringCoins;
+  const improvement = basic?.improvement ?? spatial?.improvement ?? null;
+  const evaluation =
+    improvement === null
+      ? null
+      : spatialContributionAtV6(after, placement.at, improvement);
+  const createsGrandWorks =
+    isProcessorImprovement(improvement) &&
+    !hasLegalGrandWorksSite(graph, view.viewer.id) &&
+    createsGrandWorksSiteNear(after, view.viewer.id, placement.at);
+  const completesMarketRoad =
+    placement.kind === "BUILD_ROAD" && recurringCoinDelta > 0;
+  return (
+    8 * populationDelta +
+    18 * recurringCoinDelta +
+    2 * (evaluation?.contributingTiles.length ?? 0) +
+    3 *
+      Math.max(
+        evaluation?.distinctTypes.length ?? 0,
+        evaluation?.distinctFamilies.length ?? 0,
+      ) +
+    4 * (evaluation?.oppositePairAxes.length ?? 0) +
+    (createsGrandWorks ? 6 : 0) +
+    (completesMarketRoad ? 4 : 0)
+  );
+}
+
+function publicGraphTotals(
+  graph: PublicGraphV6,
+  ownerId: PlayerId,
+): { readonly population: number; readonly recurringCoins: number } {
+  let byOwner = PUBLIC_GRAPH_TOTALS.get(graph);
+  if (byOwner === undefined) {
+    byOwner = new Map();
+    PUBLIC_GRAPH_TOTALS.set(graph, byOwner);
+  }
+  const cached = byOwner.get(ownerId);
+  if (cached !== undefined) return cached;
+  const ownedCityIds = new Set(
+    graph.cities
+      .filter((city) => city.ownerId === ownerId)
+      .map((city) => city.id),
+  );
+  let population = 0;
+  for (const tile of graph.board.tiles) {
+    if (
+      tile.improvement !== null &&
+      tile.territoryCityId !== null &&
+      ownedCityIds.has(tile.territoryCityId)
+    ) {
+      population += spatialContributionAtV6(
+        graph,
+        tile.at,
+        tile.improvement,
+      ).population;
+    }
+  }
+  const recurringCoins = graph.cities
+    .filter((city) => city.ownerId === ownerId)
+    .reduce((total, city) => total + marketForCity(graph, city.id), 0);
+  const totals = { population, recurringCoins };
+  byOwner.set(ownerId, totals);
+  return totals;
+}
+
+function isProcessorImprovement(
+  improvement: EconomicImprovementId | null,
+): improvement is "WINDMILL" | "SAWMILL" | "FORGE" | "STONEWORKS" {
+  return (
+    improvement === "WINDMILL" ||
+    improvement === "SAWMILL" ||
+    improvement === "FORGE" ||
+    improvement === "STONEWORKS"
+  );
+}
+
+function createsGrandWorksSiteNear(
+  graph: PublicGraphV6,
+  ownerId: PlayerId,
+  placedAt: CoordV6,
+): boolean {
+  return graph.board.tiles.some((tile) => {
+    if (chebyshev(tile.at, placedAt) !== 1) return false;
+    return isLegalGrandWorksSite(graph, ownerId, tile);
+  });
+}
+
+function hasLegalGrandWorksSite(
+  graph: PublicGraphV6,
+  ownerId: PlayerId,
+): boolean {
+  let byOwner = PUBLIC_GRAPH_HAS_GRAND_WORKS_SITE.get(graph);
+  if (byOwner === undefined) {
+    byOwner = new Map();
+    PUBLIC_GRAPH_HAS_GRAND_WORKS_SITE.set(graph, byOwner);
+  }
+  const cached = byOwner.get(ownerId);
+  if (cached !== undefined) return cached;
+  const present = graph.board.tiles.some((tile) =>
+    isLegalGrandWorksSite(graph, ownerId, tile),
+  );
+  byOwner.set(ownerId, present);
+  return present;
+}
+
+function isLegalGrandWorksSite(
+  graph: PublicGraphV6,
+  ownerId: PlayerId,
+  tile: TileStateV6,
+): boolean {
+  if (
+    tile.site !== null ||
+    tile.resource !== null ||
+    tile.improvement !== null ||
+    tile.territoryCityId === null ||
+    graph.cities.find((city) => city.id === tile.territoryCityId)?.ownerId !==
+      ownerId
+  ) {
+    return false;
+  }
+  const placed = replaceGraphTile(graph, tile.at, {
+    improvement: "GRAND_WORKS",
+  });
+  return (
+    spatialContributionAtV6(placed, tile.at, "GRAND_WORKS").placementCount >= 3
+  );
+}
+
+function placementKindOrdinal(kind: PublicPlacementV6["kind"]): number {
+  return [
+    ...BASIC_KINDS,
+    ...SPATIAL_KINDS,
+    "CLEAR_FOREST",
+    "REPLANT_FOREST",
+    "BUILD_ROAD",
+  ].indexOf(kind);
+}
+
+function compareCoordsForQuery(left: CoordV6, right: CoordV6): number {
+  return left.y - right.y || left.x - right.x;
 }
 
 function publicInfrastructureActionIsLegal(
@@ -810,6 +1389,11 @@ function publicCandifyCandidatesV6(
       (city) =>
         city.ownerId === view.viewer.id &&
         cityFootprintContainsV6(city, unit.at) &&
+        !candifyWouldDuplicateSpecializedImprovementV6(
+          view.board.tiles,
+          city.id,
+          tile.improvement,
+        ) &&
         view.board.tiles.some(
           (candidate) =>
             candidate.explored &&
@@ -886,10 +1470,17 @@ function cityIsPubliclyBesieged(
   );
 }
 
+const PUBLIC_GRAPHS = new WeakMap<
+  PlayerViewV6,
+  { readonly board: BoardStateV6; readonly cities: readonly CityStateV6[] }
+>();
+
 function publicGraph(view: PlayerViewV6): {
   readonly board: BoardStateV6;
   readonly cities: readonly CityStateV6[];
 } {
+  const cached = PUBLIC_GRAPHS.get(view);
+  if (cached !== undefined) return cached;
   const tiles: TileStateV6[] = view.board.tiles.map((tile) =>
     tile.explored
       ? {
@@ -911,10 +1502,12 @@ function publicGraph(view: PlayerViewV6): {
           territoryCityId: null,
         },
   );
-  return {
+  const graph = {
     board: { width: view.board.width, height: view.board.height, tiles },
     cities: view.cities,
   };
+  PUBLIC_GRAPHS.set(view, graph);
+  return graph;
 }
 
 function publicStateForMovement(view: PlayerViewV6): GameStateV6 {
@@ -1018,6 +1611,10 @@ function publicIncome(city: CityStateV6, market: number): number {
 
 function sameCoord(left: CoordV6, right: CoordV6): boolean {
   return left.x === right.x && left.y === right.y;
+}
+
+function coordKey(at: CoordV6): string {
+  return `${at.y},${at.x}`;
 }
 
 function chebyshev(left: CoordV6, right: CoordV6): number {

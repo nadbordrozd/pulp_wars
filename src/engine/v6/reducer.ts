@@ -1768,6 +1768,13 @@ function applyChooseCandifyCityCommand(
   if (unit === undefined || unit.ownerId !== actor) {
     return rejected(original, "CANDIFY_CHOICE_INVALID");
   }
+  if (
+    !nearestViableCandifyCitiesV6(state, actor, unit).some(
+      (candidate) => candidate.id === city.id,
+    )
+  ) {
+    return rejected(original, "CANDIFY_CITY_NOT_CANDIDATE");
+  }
   return resolveCandifyV6(
     original,
     state,

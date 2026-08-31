@@ -1,11 +1,40 @@
 import type { CityId, PlayerId } from "../model/ids";
+import { SPATIAL_ECONOMIC_ACTIONS_V6 } from "../rules/ruleset-v6";
 import type {
   CityStateV6,
   CoordV6,
+  EconomicImprovementId,
   GameStateV6,
   TileStateV6,
   UnitStateV6,
 } from "./types";
+
+interface CandifyImprovementTileV6 {
+  readonly at: CoordV6;
+  readonly territoryCityId?: CityId | null;
+  readonly improvement?: EconomicImprovementId | null;
+}
+
+const ONE_PER_CITY_IMPROVEMENTS_V6 = new Set<EconomicImprovementId>(
+  Object.values(SPATIAL_ECONOMIC_ACTIONS_V6).map((rule) => rule.improvement),
+);
+
+/** Shared public/authoritative one-per-city viability for Candify transfers. */
+export function candifyWouldDuplicateSpecializedImprovementV6(
+  tiles: readonly CandifyImprovementTileV6[],
+  destinationCityId: CityId,
+  transferredImprovement: EconomicImprovementId | null,
+): boolean {
+  return (
+    transferredImprovement !== null &&
+    ONE_PER_CITY_IMPROVEMENTS_V6.has(transferredImprovement) &&
+    tiles.some(
+      (tile) =>
+        tile.territoryCityId === destinationCityId &&
+        tile.improvement === transferredImprovement,
+    )
+  );
+}
 
 /** Candidate cities for a bounded v6 Candify, in deterministic nearest/ID order. */
 export function nearestViableCandifyCitiesV6(
@@ -13,11 +42,18 @@ export function nearestViableCandifyCitiesV6(
   playerId: PlayerId,
   unit: Pick<UnitStateV6, "at">,
 ): readonly CityStateV6[] {
+  const target = state.board.tiles.find((tile) => sameCoord(tile.at, unit.at));
+  const transferredImprovement = target?.improvement ?? null;
   const viable = state.cities
     .filter(
       (city) =>
         city.ownerId === playerId &&
         cityFootprintContainsV6(city, unit.at) &&
+        !candifyWouldDuplicateSpecializedImprovementV6(
+          state.board.tiles,
+          city.id,
+          transferredImprovement,
+        ) &&
         state.board.tiles.some(
           (tile) =>
             tile.territoryCityId === city.id &&

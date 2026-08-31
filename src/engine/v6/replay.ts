@@ -8,7 +8,9 @@ import {
 } from "./commands";
 import { parseMatchSetupV6 } from "./setup";
 import { parseGameStateV6 } from "./state-schema";
-import type { GameStateV6, MatchSetupV6 } from "./types";
+import { applyCommandV6, createPlayableGameV6 } from "./reducer";
+import type { GameStateV6, MatchOutcomeV6, MatchSetupV6 } from "./types";
+import type { DomainEventV6 } from "./events";
 
 export interface ReplayCheckpointV6 {
   readonly index: number;
@@ -27,6 +29,34 @@ export type ReplayParseResultV6 =
   | { readonly kind: "VALID"; readonly replay: ReplayFileV6 }
   | { readonly kind: "INCOMPATIBLE_REPLAY" }
   | { readonly kind: "INVALID_REPLAY" };
+
+export type ReplayErrorCodeV6 =
+  | "INCOMPATIBLE_REPLAY"
+  | "INVALID_REPLAY"
+  | "CREATE_REJECTED"
+  | "COMMAND_REJECTED"
+  | "CHECKPOINT_MISMATCH"
+  | "COMMAND_AFTER_MATCH_END";
+
+export class ReplayErrorV6 extends Error {
+  readonly code: ReplayErrorCodeV6;
+  readonly index: number | null;
+
+  constructor(code: ReplayErrorCodeV6, index: number | null = null) {
+    super(index === null ? code : `${code} at command index ${index}`);
+    this.name = "ReplayErrorV6";
+    this.code = code;
+    this.index = index;
+  }
+}
+
+export interface ReplayRunResultV6 {
+  readonly outcome: MatchOutcomeV6 | null;
+  readonly acceptedCommands: number;
+  readonly state: GameStateV6;
+  readonly stateHash: string;
+  readonly events: readonly DomainEventV6[];
+}
 
 export function createReplayV6(setup: MatchSetupV6): ReplayFileV6 {
   const parsed = parseMatchSetupV6(setup);
@@ -137,6 +167,70 @@ export function parseReplayJsonV6(source: string): ReplayParseResultV6 {
     return parseReplayFileV6(JSON.parse(source) as unknown);
   } catch {
     return { kind: "INVALID_REPLAY" };
+  }
+}
+
+/** Replays only an exact schema/replay-6 file through the shared v6 kernel. */
+export function runReplayV6(
+  input: unknown,
+  options: { readonly stopAfter?: number } = {},
+): ReplayRunResultV6 {
+  const parsed = parseReplayFileV6(input);
+  if (parsed.kind === "INCOMPATIBLE_REPLAY") {
+    throw new ReplayErrorV6("INCOMPATIBLE_REPLAY");
+  }
+  if (parsed.kind !== "VALID") throw new ReplayErrorV6("INVALID_REPLAY");
+  const replay = parsed.replay;
+  const stopAfter = options.stopAfter ?? replay.commands.length;
+  if (!Number.isSafeInteger(stopAfter) || stopAfter < 0) {
+    throw new ReplayErrorV6("INVALID_REPLAY");
+  }
+  const created = createPlayableGameV6(replay.setup);
+  if (!created.ok) throw new ReplayErrorV6("CREATE_REJECTED");
+  let state = created.state;
+  const events: DomainEventV6[] = [...created.events];
+  verifyCheckpointV6(replay.checkpoints, 0, state);
+  const limit = Math.min(stopAfter, replay.commands.length);
+  for (let offset = 0; offset < limit; offset += 1) {
+    if (state.outcome !== null) {
+      throw new ReplayErrorV6(
+        "COMMAND_AFTER_MATCH_END",
+        state.commandIndex + 1,
+      );
+    }
+    const command = replay.commands[offset];
+    const actor = state.turnOrder[state.activeSeatIndex];
+    if (command === undefined || actor === undefined) {
+      throw new ReplayErrorV6("INVALID_REPLAY", state.commandIndex + 1);
+    }
+    const applied = applyCommandV6(state, actor, command);
+    if (!applied.accepted) {
+      throw new ReplayErrorV6("COMMAND_REJECTED", state.commandIndex + 1);
+    }
+    state = applied.state;
+    events.push(...applied.events);
+    verifyCheckpointV6(replay.checkpoints, state.commandIndex, state);
+  }
+  return {
+    outcome: state.outcome,
+    acceptedCommands: state.commandIndex,
+    state,
+    stateHash: canonicalHash(state),
+    events,
+  };
+}
+
+function verifyCheckpointV6(
+  checkpoints: readonly ReplayCheckpointV6[],
+  index: number,
+  state: GameStateV6,
+): void {
+  const checkpoint = checkpoints.find((candidate) => candidate.index === index);
+  if (
+    checkpoint !== undefined &&
+    checkpoint.stateHash !== canonicalHash(state)
+  ) {
+    throw new ReplayErrorV6("CHECKPOINT_MISMATCH", index);
   }
 }
 
