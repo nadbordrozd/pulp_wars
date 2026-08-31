@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Ruleset 6 Fertile Ground, Stone, Road material sample gate and GAME alias review",
+  "status": "BLOCKED_MISSING_GENERATION",
+  "blocker": "PIXELLAB_API_KEY is missing; no v6 terrain candidates were generated or accepted.",
+  "displayContracts": {
+    "sourceScale": 2,
+    "zooms": [
+      0.625,
+      1,
+      1.75
+    ],
+    "dpr": [
+      1,
+      2
+    ]
+  },
+  "requiredCoverage": [
+    "source, native, enlarged and minimum 0.625x zoom",
+    "DPR 1 and DPR 2 at identical CSS size",
+    "compatible Grass, Forest and Mountain variants",
+    "all owner treatments, selection and fog boundaries",
+    "Road material against all four diamond edges without composing Road masks",
+    "8x8 deterministic repetition",
+    "dense mixed terrain/resource/improvement contexts",
+    "GAME alias label in empty, occupied, locked, selected and repeated Forest contexts"
+  ],
+  "sampleGate": {
+    "terrain-fertile-ground": {
+      "status": "MISSING",
+      "candidateSha256": null,
+      "outputSha256": null,
+      "alphaBounds": null,
+      "reviewChecks": null
+    },
+    "terrain-stone": {
+      "status": "MISSING",
+      "candidateSha256": null,
+      "outputSha256": null,
+      "alphaBounds": null,
+      "reviewChecks": null
+    },
+    "terrain-road-material": {
+      "status": "MISSING",
+      "candidateSha256": null,
+      "outputSha256": null,
+      "alphaBounds": null,
+      "reviewChecks": null
+    }
+  },
+  "pendingArtifacts": [
+    "sample-gate-source-native-enlarged-minimum.png",
+    "compatible-contexts-and-four-edges.png",
+    "repetition-8x8.png",
+    "dense-mixed-map-dpr1.png",
+    "dense-mixed-map-dpr2.png",
+    "dpr1-dpr2-comparison.png"
+  ],
+  "gameAlias": {
+    "id": "terrain-game",
+    "semanticRole": "GAME",
+    "source": "terrain-animal",
+    "status": "ACCEPTED",
+    "sourceOutputSha256": "db98acecba2d4a0b7a82e947da12dfa7a6761c645e951f789023efe819a0b536",
+    "contexts": [
+      "empty Forest",
+      "GAME on Forest",
+      "occupied GAME on Forest",
+      "locked GAME on Forest",
+      "selected GAME on Forest",
+      "repeated GAME/empty Forest"
+    ],
+    "visualFindings": [
+      "The broad tan boar silhouette, snout and tusks read as wildlife rather than a unit on all four accepted Forest variants.",
+      "GAME remains identifiable beside all four owner treatments, under selection, and with locked-action UI kept separate from the world raster.",
+      "The exact nominal occupied composition leaves the boar frontage readable around the accepted Archer without changing the source anchor.",
+      "The 8x8 minimum-zoom repetition remains distinguishable from empty Forest while preserving the existing quiet terrain hierarchy."
+    ],
+    "notes": "Ruleset 6 GAME deliberately reuses the accepted Animal world raster after dedicated label and Forest-context revalidation; this is one art asset, not duplicated gameplay art."
+  },
+  "artifacts": [
+    {
+      "path": "art/pixellab/reviews/ruleset6-terrain/README.md",
+      "sha256": "43b3ff321e7277b257fbc1334b6520ad5b1ce0a9f072711be61af77ae7967f8e",
+      "bytes": 1822
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-terrain/game-alias-forest-contexts.png",
+      "sha256": "34fa3fa2f5238ba25661abcc01907c4421672d8abab73e6f540e77688553b0fe",
+      "bytes": 498489
+    }
+  ]
+}

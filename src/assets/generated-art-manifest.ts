@@ -132,6 +132,11 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
     "assets/pixellab/ui/faction-candy-hero.png",
   ),
   "ui-faction-hero": publicArtUrl("assets/pixellab/ui/faction-hero.png"),
+  "terrain-game": publicArtUrl("assets/pixellab/terrain/animal.png"),
+};
+
+export const ACCEPTED_ART_ALIASES: Readonly<Record<string, string>> = {
+  "terrain-game": "terrain-animal",
 };
 
 export interface AcceptedArtAttachment {
