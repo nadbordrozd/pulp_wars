@@ -1,4 +1,4 @@
-import type { CityId } from "../model/ids";
+import type { CityId, UnitId } from "../model/ids";
 import {
   BASIC_ECONOMIC_ACTIONS_V6,
   SPATIAL_ECONOMIC_ACTIONS_V6,
@@ -14,7 +14,15 @@ import {
   type TechnologyUnlockV6,
 } from "../rules/ruleset-v6";
 import { compareCommandsV6, type CommandV6 } from "./commands";
-import { arePlayersAlliedV6, resolveCityGrowthV6 } from "./economy";
+import type { CombatTargetRefV6 } from "./commands";
+import { calculateCombatPreviewV6 } from "./combat";
+import {
+  arePlayersAlliedV6,
+  assignedUnitCountV6,
+  cityUnitCapacityV6,
+  resolveCityGrowthV6,
+} from "./economy";
+import type { CombatPreviewV6 } from "./events";
 import { reachableMovementPathsV6 } from "./movement";
 import {
   isCapitalConnectedRoadV6,
@@ -35,6 +43,7 @@ import type {
   TileStateV6,
   UnitRoleId,
 } from "./types";
+import { UNIT_ROLE_IDS } from "./types";
 import type { PlayerTileViewV6, PlayerViewV6 } from "./view";
 
 export interface CityValueDeltaV6 {
@@ -213,11 +222,35 @@ export function queryPlayerCommandsV6(
       }
     }
   }
+  for (const city of view.cities) {
+    if (
+      city.ownerId !== view.viewer.id ||
+      cityIsPubliclyBesieged(view, city) ||
+      view.units.some((unit) => unit.hp > 0 && sameCoord(unit.at, city.at)) ||
+      view.chocolateWalls.some((wall) => sameCoord(wall.at, city.at)) ||
+      assignedUnitCountV6({ units: view.units }, city.id) >=
+        cityUnitCapacityV6(city)
+    ) {
+      continue;
+    }
+    const tree = requireFactionTechnologyTreeV6(view.viewer.factionTreeId);
+    for (const roleId of UNIT_ROLE_IDS) {
+      const role = tree.roleRules[roleId];
+      if (
+        role.cost !== null &&
+        role.cost <= view.viewer.coins &&
+        (role.technology === null ||
+          view.viewer.researchedTechs.includes(role.technology))
+      ) {
+        commands.push({ kind: "TRAIN", cityId: city.id, role: role.role });
+      }
+    }
+  }
   const movementState = publicStateForMovement(view);
   for (const unit of view.units) {
+    if (unit.ownerId !== view.viewer.id || unit.hp <= 0) continue;
+    const role = effectiveRoleRuleV6(view.viewer.faction, unit.role);
     if (
-      unit.ownerId === view.viewer.id &&
-      unit.hp > 0 &&
       !unit.activation.moved &&
       !unit.activation.attacked &&
       !unit.activation.healed &&
@@ -229,12 +262,134 @@ export function queryPlayerCommandsV6(
         commands.push({ kind: "MOVE", unitId: unit.id, path: reachable.path });
       }
     }
+    if (
+      role.abilities.includes("ATTACK") &&
+      role.attack2 > 0 &&
+      !unit.activation.attacked &&
+      !unit.activation.healed &&
+      !unit.activation.recovered &&
+      !unit.activation.captured &&
+      !unit.activation.specialActed &&
+      (!unit.activation.moved || role.mayUsePrimaryActionAfterMove)
+    ) {
+      for (const target of view.units) {
+        if (
+          target.hp > 0 &&
+          target.ownerId !== view.viewer.id &&
+          !arePlayersAlliedV6(view, view.viewer.id, target.ownerId) &&
+          chebyshev(unit.at, target.at) <= role.range
+        ) {
+          commands.push({
+            kind: "ATTACK",
+            unitId: unit.id,
+            target: { kind: "UNIT", unitId: target.id },
+          });
+        }
+      }
+      for (const wall of view.chocolateWalls) {
+        if (chebyshev(unit.at, wall.at) <= role.range) {
+          commands.push({
+            kind: "ATTACK",
+            unitId: unit.id,
+            target: { kind: "CHOCOLATE_WALL", wallId: wall.id },
+          });
+        }
+      }
+    }
+    if (
+      role.abilities.includes("HEAL_ADJACENT") &&
+      !unit.activation.attacked &&
+      !unit.activation.healed &&
+      !unit.activation.recovered &&
+      !unit.activation.captured &&
+      !unit.activation.specialActed &&
+      (!unit.activation.moved || role.mayUsePrimaryActionAfterMove)
+    ) {
+      for (const target of view.units) {
+        if (
+          target.id !== unit.id &&
+          target.ownerId === view.viewer.id &&
+          target.hp > 0 &&
+          target.hp < target.maxHp &&
+          chebyshev(unit.at, target.at) === 1
+        ) {
+          commands.push({
+            kind: "HEAL_ADJACENT",
+            unitId: unit.id,
+            targetUnitId: target.id,
+          });
+        }
+      }
+    }
+    if (
+      unit.hp < unit.maxHp &&
+      !unit.activation.moved &&
+      !unit.activation.attacked &&
+      !unit.activation.healed &&
+      !unit.activation.recovered &&
+      !unit.activation.captured &&
+      !unit.activation.specialActed
+    ) {
+      commands.push({ kind: "RECOVER", unitId: unit.id });
+    }
     if (publicCaptureIsLegal(view, unit.id)) {
       commands.push({ kind: "CAPTURE", unitId: unit.id });
+    }
+    if (!unit.veteran && unit.kills >= 3) {
+      commands.push({ kind: "PROMOTE", unitId: unit.id });
+    }
+    if (!unit.activation.handled) {
+      commands.push({ kind: "WAIT", unitId: unit.id });
     }
   }
   commands.push({ kind: "END_TURN" });
   return commands.sort(compareCommandsV6);
+}
+
+/** Fog-safe combat preview for an exact currently offered attack. */
+export function queryCombatPreviewV6(
+  view: PlayerViewV6,
+  attackerId: UnitId,
+  target: CombatTargetRefV6,
+): CombatPreviewV6 | null {
+  const offered = queryPlayerCommandsV6(view).some(
+    (command) =>
+      command.kind === "ATTACK" &&
+      command.unitId === attackerId &&
+      sameCombatTarget(command.target, target),
+  );
+  if (!offered) return null;
+  return calculateCombatPreviewV6(
+    publicStateForMovement(view),
+    attackerId,
+    target,
+  );
+}
+
+export interface HealPreviewV6 {
+  readonly medicId: UnitId;
+  readonly targetUnitId: UnitId;
+  readonly amount: number;
+  readonly hpAfter: number;
+}
+
+export function queryHealPreviewV6(
+  view: PlayerViewV6,
+  medicId: UnitId,
+  targetUnitId: UnitId,
+): HealPreviewV6 | null {
+  const offered = queryPlayerCommandsV6(view).some(
+    (command) =>
+      command.kind === "HEAL_ADJACENT" &&
+      command.unitId === medicId &&
+      command.targetUnitId === targetUnitId,
+  );
+  if (!offered) return null;
+  const target = view.units.find((unit) => unit.id === targetUnitId);
+  if (target === undefined) return null;
+  const intended = view.viewer.researchedTechs.includes("RECOVERY") ? 6 : 4;
+  const amount = Math.min(intended, target.maxHp - target.hp);
+  return { medicId, targetUnitId, amount, hpAfter: target.hp + amount };
 }
 
 function publicRewardCandidateMayBeLegal(
@@ -508,6 +663,7 @@ function publicCaptureIsLegal(view: PlayerViewV6, unitId: number): boolean {
   const rule = effectiveRoleRuleV6(view.viewer.faction, unit.role);
   if (
     !rule.abilities.includes("CAPTURE") ||
+    !unit.captureEligible ||
     unit.activation.moved ||
     unit.activation.attacked ||
     unit.activation.healed ||
@@ -679,4 +835,19 @@ function publicIncome(city: CityStateV6, market: number): number {
 
 function sameCoord(left: CoordV6, right: CoordV6): boolean {
   return left.x === right.x && left.y === right.y;
+}
+
+function chebyshev(left: CoordV6, right: CoordV6): number {
+  return Math.max(Math.abs(left.x - right.x), Math.abs(left.y - right.y));
+}
+
+function sameCombatTarget(
+  left: CombatTargetRefV6,
+  right: CombatTargetRefV6,
+): boolean {
+  return left.kind === "UNIT" && right.kind === "UNIT"
+    ? left.unitId === right.unitId
+    : left.kind === "CHOCOLATE_WALL" && right.kind === "CHOCOLATE_WALL"
+      ? left.wallId === right.wallId
+      : false;
 }

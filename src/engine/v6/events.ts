@@ -17,17 +17,19 @@ export interface CityIncomeEntryV6 {
 export interface CombatPreviewV6 {
   readonly attackerId: UnitId;
   readonly target: CombatTargetRefV6;
+  readonly attack2: number;
+  readonly chargeApplied: boolean;
+  readonly defenseBonusNumerator: number;
+  readonly defenseBonusDenominator: number;
+  readonly breachApplied: boolean;
+  readonly push: "WILL_PUSH" | "BLOCKED" | "UNKNOWN_BEHIND_FOG";
   readonly damageToDefender: number;
   readonly damageToAttacker: number;
   readonly defenderDies: boolean;
   readonly attackerDies: boolean;
   readonly advances: boolean;
   readonly noRetaliationReason:
-    | "DEFENDER_DIED"
-    | "OUT_OF_RANGE"
-    | "ATTACKER_UNEXPLORED"
-    | "STRUCTURE"
-    | null;
+    "DEFENDER_DIED" | "OUT_OF_RANGE" | "STRUCTURE" | null;
 }
 
 export type DomainEventV6 =

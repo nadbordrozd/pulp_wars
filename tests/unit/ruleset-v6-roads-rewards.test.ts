@@ -482,7 +482,7 @@ describe("ruleset-6 Roads, redevelopment, forest, and rewards", () => {
       },
       units: state.units.map((unit) =>
         unit.id === captor.id
-          ? { ...unit, at: enemy.at }
+          ? { ...unit, at: enemy.at, captureEligible: true }
           : unit.id === defender.id
             ? { ...unit, at: transferredRoad.at }
             : unit,
@@ -878,7 +878,23 @@ describe("ruleset-6 Roads, redevelopment, forest, and rewards", () => {
         at: tile.at,
         hp: 10,
       }));
-    state = checked({ ...state, nextEntityId: next, chocolateWalls: walls });
+    const outside = state.board.tiles.find(
+      (tile) =>
+        tile.territoryCityId !== city.id &&
+        tile.site === null &&
+        !state.units.some((unit) => same(unit.at, tile.at)),
+    );
+    if (outside === undefined) {
+      throw new Error("missing outside reward-block tile");
+    }
+    state = checked({
+      ...state,
+      nextEntityId: next,
+      chocolateWalls: walls,
+      units: state.units.map((unit) =>
+        unit.ownerId === city.ownerId ? { ...unit, at: outside.at } : unit,
+      ),
+    });
     expect(
       queryPlayerCommandsV6(viewForV6(state, state.humanPlayerId)),
     ).toEqual([

@@ -507,6 +507,13 @@ Forest, city, City Walls, and Fortification, but retains the defender's base
 defense and normal retaliation. Breach grants no special damage against a
 Chocolate Wall and never damages an economic building or territory.
 
+Exploration gates whether the attacker may target an Attack. Once that Attack
+is committed, every surviving in-range unit defender retaliates; whether the
+defender has explored the attacker's tile is irrelevant in ruleset 6. This is
+an explicit ruleset-6 override of the imported ruleset-5 retaliation-visibility
+clause, so authoritative resolution and the fog-safe public preview use the
+same exact calculation without exposing opponent exploration.
+
 The greatest single ordinary defense bonus is 4/1 for any unit on its friendly
 city with the Walls reward; 2/1 for Fighter or Guard on a friendly city after
 Fortification; 3/2 for any unit on a friendly city, on Mountain, or on Forest;
@@ -794,3 +801,7 @@ conflicted:
   v6 Catapult. Donut explicitly replaces Charge with its existing Roll rule.
 - The v5 Demo is removed instead of pretending its nine-tech curated state is a
   valid v6 showcase. Historical saves/replays remain incompatible and intact.
+- Attack target legality still requires attacker exploration, but a surviving
+  in-range unit defender always retaliates. Ruleset 6 deliberately removes the
+  v5 defender-exploration retaliation gate so public preview and resolution are
+  exact and equal-view deterministic.

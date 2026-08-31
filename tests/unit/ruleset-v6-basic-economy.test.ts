@@ -656,7 +656,7 @@ describe("ruleset-6 basic economy", () => {
       },
       units: state.units.map((unit) =>
         unit.id === captor.id
-          ? { ...unit, at: target.at }
+          ? { ...unit, at: target.at, captureEligible: true }
           : unit.id === defender.id
             ? { ...unit, at: sourceAt }
             : unit,
@@ -720,7 +720,9 @@ describe("ruleset-6 basic economy", () => {
     state = checked({
       ...state,
       units: state.units.map((unit) =>
-        unit.id === captor.id ? { ...unit, at: village.at } : unit,
+        unit.id === captor.id
+          ? { ...unit, at: village.at, captureEligible: true }
+          : unit,
       ),
       players: state.players.map((player) =>
         player.id === actor

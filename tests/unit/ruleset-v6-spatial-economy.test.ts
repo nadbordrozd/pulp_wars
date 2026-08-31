@@ -692,7 +692,7 @@ describe("ruleset-6 live spatial economy", () => {
       ...state,
       units: state.units.map((unit) =>
         unit.id === captor.id
-          ? { ...unit, at: target.at }
+          ? { ...unit, at: target.at, captureEligible: true }
           : unit.id === defender.id
             ? { ...unit, at: { x: 0, y: 0 } }
             : unit,
@@ -764,7 +764,7 @@ describe("ruleset-6 live spatial economy", () => {
     );
     expect(parseSaveV6(JSON.stringify(save))).toEqual({ kind: "VALID", save });
     expect(canonicalHash(result.state)).toBe(
-      "4df0305e9d969d07874e13231e54dd174e43b23ad5a8859a09b1c3cd2bd8dc30",
+      "e786f4d4908641bb3f1b03ef9d70f2bc8e515c25d261e30342effbb1f0f97b8f",
     );
     const forge = must(
       result.state.populationContributions.find(

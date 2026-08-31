@@ -423,12 +423,18 @@ function isCombatPreview(input: unknown): boolean {
   if (
     !hasExactKeysV6(input, [
       "advances",
+      "attack2",
       "attackerDies",
       "attackerId",
+      "breachApplied",
+      "chargeApplied",
       "damageToAttacker",
       "damageToDefender",
+      "defenseBonusDenominator",
+      "defenseBonusNumerator",
       "defenderDies",
       "noRetaliationReason",
+      "push",
       "target",
     ])
   )
@@ -436,18 +442,23 @@ function isCombatPreview(input: unknown): boolean {
   return (
     isId(input.attackerId) &&
     isCombatTarget(input.target) &&
+    isPositiveSafeIntegerV6(input.attack2) &&
+    typeof input.chargeApplied === "boolean" &&
+    isPositiveSafeIntegerV6(input.defenseBonusNumerator) &&
+    isPositiveSafeIntegerV6(input.defenseBonusDenominator) &&
+    typeof input.breachApplied === "boolean" &&
+    ["WILL_PUSH", "BLOCKED", "UNKNOWN_BEHIND_FOG"].includes(
+      input.push as string,
+    ) &&
     isNonNegativeSafeIntegerV6(input.damageToAttacker) &&
     isNonNegativeSafeIntegerV6(input.damageToDefender) &&
     typeof input.defenderDies === "boolean" &&
     typeof input.attackerDies === "boolean" &&
     typeof input.advances === "boolean" &&
     (input.noRetaliationReason === null ||
-      [
-        "DEFENDER_DIED",
-        "OUT_OF_RANGE",
-        "ATTACKER_UNEXPLORED",
-        "STRUCTURE",
-      ].includes(input.noRetaliationReason as string))
+      ["DEFENDER_DIED", "OUT_OF_RANGE", "STRUCTURE"].includes(
+        input.noRetaliationReason as string,
+      ))
   );
 }
 

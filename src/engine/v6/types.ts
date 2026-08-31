@@ -268,6 +268,8 @@ export interface UnitStateV6 {
   readonly maxHp: number;
   readonly kills: number;
   readonly veteran: boolean;
+  /** Set only at Start Turn when the unit already occupies a capturable site. */
+  readonly captureEligible: boolean;
   readonly activation: UnitActivationV6;
 }
 

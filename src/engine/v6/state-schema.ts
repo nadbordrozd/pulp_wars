@@ -557,6 +557,7 @@ function parseUnit(input: unknown): UnitStateV6 | null {
     !hasExactKeysV6(input, [
       "activation",
       "at",
+      "captureEligible",
       "homeCityId",
       "hp",
       "id",
@@ -571,7 +572,8 @@ function parseUnit(input: unknown): UnitStateV6 | null {
     !isPositiveSafeIntegerV6(input.maxHp) ||
     input.hp > input.maxHp ||
     !isNonNegativeSafeIntegerV6(input.kills) ||
-    typeof input.veteran !== "boolean"
+    typeof input.veteran !== "boolean" ||
+    typeof input.captureEligible !== "boolean"
   ) {
     return null;
   }
@@ -600,6 +602,7 @@ function parseUnit(input: unknown): UnitStateV6 | null {
     maxHp: input.maxHp,
     kills: input.kills,
     veteran: input.veteran,
+    captureEligible: input.captureEligible,
     activation,
   };
 }
@@ -847,6 +850,7 @@ function crossReferencesAreValid(
       units,
       walls,
     ) ||
+    !occupancyIsValid(units, walls) ||
     !populationLedgerIsValid(board, cities, contributions) ||
     pendingChoices.some((choice) =>
       choice.kind === "CITY_REWARD"
@@ -861,6 +865,19 @@ function crossReferencesAreValid(
     ? playerIds.has(outcome.humanId) &&
         playerIds.has(outcome.defeatedByPlayerId)
     : playerIds.has(outcome.winnerId);
+}
+
+function occupancyIsValid(
+  units: readonly UnitStateV6[],
+  walls: readonly ChocolateWallStateV6[],
+): boolean {
+  const occupied = new Set<string>();
+  for (const entity of [...units, ...walls]) {
+    const key = `${entity.at.y},${entity.at.x}`;
+    if (occupied.has(key)) return false;
+    occupied.add(key);
+  }
+  return true;
 }
 
 function allCoordinatesOnBoard(

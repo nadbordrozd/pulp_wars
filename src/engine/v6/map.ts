@@ -804,6 +804,7 @@ function createStartingEntitiesV6(
       maxHp: 10,
       kills: 0,
       veteran: false,
+      captureEligible: false,
       activation: {
         moved: false,
         movedPathLength: 0,

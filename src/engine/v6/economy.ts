@@ -43,6 +43,11 @@ export interface LiveEconomyRecalculationV6 {
   >[];
 }
 
+export interface EndTurnRecoveryV6 {
+  readonly state: GameStateV6;
+  readonly events: readonly DomainEventV6[];
+}
+
 export function growthSpentV6(level: number): number {
   if (!Number.isSafeInteger(level) || level < 1) {
     throw new RangeError("INTEGER_OVERFLOW");
@@ -181,6 +186,85 @@ export function isCityBesiegedV6(
   );
 }
 
+export function unitOccupiesCapturableSiteV6(
+  state: Pick<GameStateV6, "board" | "cities" | "humanPlayerId" | "setup">,
+  unit: Pick<GameStateV6["units"][number], "at" | "hp" | "ownerId">,
+): boolean {
+  if (unit.hp <= 0) return false;
+  const city = state.cities.find(
+    (candidate) => candidate.at.x === unit.at.x && candidate.at.y === unit.at.y,
+  );
+  if (city !== undefined) {
+    return arePlayersHostileV6(state, unit.ownerId, city.ownerId);
+  }
+  const tile = state.board.tiles[unit.at.y * state.board.width + unit.at.x];
+  return (
+    tile?.at.x === unit.at.x &&
+    tile.at.y === unit.at.y &&
+    tile.site === "VILLAGE"
+  );
+}
+
+export function recoveryAmountV6(
+  state: Pick<GameStateV6, "board" | "cities">,
+  unit: Pick<GameStateV6["units"][number], "at" | "ownerId">,
+): 2 | 4 {
+  const tile = state.board.tiles[unit.at.y * state.board.width + unit.at.x];
+  const city = state.cities.find(
+    (candidate) => candidate.id === tile?.territoryCityId,
+  );
+  return city?.ownerId === unit.ownerId ? 4 : 2;
+}
+
+/** Applies deterministic End Turn healing before the next player's Start Turn. */
+export function endTurnRecoveryV6(
+  state: GameStateV6,
+  player: PlayerStateV6,
+): EndTurnRecoveryV6 {
+  const hasRecovery = player.researchedTechs.includes("RECOVERY");
+  const recoveries = state.units
+    .filter(
+      (unit) =>
+        unit.ownerId === player.id &&
+        unit.hp > 0 &&
+        unit.hp < unit.maxHp &&
+        !unit.activation.moved &&
+        !unit.activation.attacked &&
+        !unit.activation.healed &&
+        !unit.activation.recovered &&
+        !unit.activation.captured &&
+        !unit.activation.specialActed,
+    )
+    .sort((left, right) => left.id - right.id)
+    .map((unit) => {
+      const ordinary = recoveryAmountV6(state, unit);
+      const intended = hasRecovery && ordinary === 4 ? 6 : ordinary;
+      return {
+        unitId: unit.id,
+        amount: Math.min(intended, unit.maxHp - unit.hp),
+      };
+    });
+  return {
+    state: {
+      ...state,
+      units: state.units.map((unit) => {
+        const recovery = recoveries.find(
+          (candidate) => candidate.unitId === unit.id,
+        );
+        return recovery === undefined
+          ? unit
+          : { ...unit, hp: unit.hp + recovery.amount };
+      }),
+    },
+    events: recoveries.map((recovery): DomainEventV6 => ({
+      kind: "UNIT_RECOVERED",
+      unitId: recovery.unitId,
+      amount: recovery.amount,
+      automatic: true,
+    })),
+  };
+}
+
 export function marketIncomeForCityV6(
   state: Pick<GameStateV6, "board" | "cities">,
   city: CityStateV6,
@@ -314,6 +398,7 @@ export function startTurnV6(
     unit.ownerId === player.id && unit.hp > 0
       ? {
           ...unit,
+          captureEligible: unitOccupiesCapturableSiteV6(state, unit),
           activation: {
             moved: false,
             movedPathLength: 0,
