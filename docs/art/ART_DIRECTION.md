@@ -204,6 +204,32 @@ In particular, always preserve:
 
 A technically attractive sprite that violates these rules is worse than a simpler sprite that matches the rest of the game.
 
+## Map-scale hierarchy
+
+The nominal ground diamond is 128 x 74 CSS pixels at 1x camera zoom. Ordinary
+units are pieces **on** that diamond, not terrain-sized masses: their untrimmed
+256 x 296 canvases display at `0.25` source scale, and their visible alpha should
+occupy 28–44% of tile width, 66–80% of tile height, and no more than 45% of one
+diamond's alpha-weighted area. A standard silhouette is rejected above 48%
+tile width, 84% tile height, or 8% alpha-weighted coverage of either immediately
+rear/above adjacent tile. Accepted Mountains and Forests remain materially wider
+or taller than ordinary units.
+
+Breacher/siege and Juggernaut/giant are bounded exceptions, never permission to
+fill the tile. Siege uses `0.24` on 384 x 384 and may occupy 50–61% of tile width,
+with hard caps of 66% width, 104% tile height, 58% diamond area, and 12%
+rear-tile coverage. Giant uses `0.25` on 384 x 448 and targets 58–66% tile width,
+with hard caps of 72% width, 135% tile height, and 18% rear-tile coverage. Giants
+are always generated and accepted individually.
+
+Rear-tile coverage is measured deterministically from source alpha: place the
+source contact anchor at the owning tile center, apply display scale and any
+documented cosmetic offset, sum `alpha / 255 * scale²` for source-pixel centers
+inside each immediately adjacent projected diamond, then divide by diamond area
+`128 * 74 / 2`. Logical NORTH and WEST project 37 CSS pixels above the owning
+center and are the two rear/above neighbors. Zoom and DPR scale both reference
+diamond and sprite uniformly, so the ratio is invariant.
+
 ## Production workflow
 
 Production raster art is generated with PixelLab only through checked-in,
@@ -225,6 +251,12 @@ outside this direction. Batch only after at least three representative assets
 in that class pass individual review and the recipe is stable. Review batches
 as contact sheets, then inspect suspected failures individually. The
 orchestrator separately reviews accepted outputs before their task closes.
+
+For both Original and Candy units, “sample” means exactly three representative
+assets reviewed one at a time before any later batch. Later batches are small,
+coherent role families of at most three assets; never request or accept a whole
+roster in one generation batch. Giant units remain one-asset gates even after a
+faction's standard and siege recipes have stabilized.
 
 ## Class contracts
 

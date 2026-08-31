@@ -5,160 +5,31 @@ import {
   type BoardAssetBindings,
   type DrawAssetOptions,
 } from "./asset-bindings";
-import { TILE_HEIGHT, TILE_WIDTH, type Point } from "./geometry";
+import {
+  BOARD_ART_GEOMETRY,
+  PLACEMENT_ART_GEOMETRY,
+  SETTLEMENT_ART_GEOMETRY,
+  anchoredDestinationRect,
+  cityArtLevel,
+  mountainGeometryForVariant,
+  type DestinationRect,
+  type SourceGeometry,
+} from "./board-art-geometry";
+import { TILE_HEIGHT, TILE_WIDTH } from "./geometry";
 
-export interface SourceGeometry {
-  readonly width: number;
-  readonly height: number;
-  readonly anchor: Point;
-  readonly displayScale: number;
-  /** Cosmetic screen-space placement only; the source contact anchor is unchanged. */
-  readonly offsetY?: number;
-  readonly lowerDiamondClip?: boolean;
-}
-
-export interface DestinationRect {
-  readonly x: number;
-  readonly y: number;
-  readonly width: number;
-  readonly height: number;
-}
-
-export const BOARD_ART_GEOMETRY = {
-  ground: {
-    width: 256,
-    height: 148,
-    anchor: { x: 128, y: 74 },
-    displayScale: 0.5,
-  },
-  lowObject: {
-    width: 256,
-    height: 296,
-    anchor: { x: 128, y: 222 },
-    displayScale: 0.5,
-  },
-  unit: {
-    width: 256,
-    height: 296,
-    anchor: { x: 128, y: 222 },
-    displayScale: 0.35,
-  },
-  siegeUnit: {
-    width: 384,
-    height: 384,
-    anchor: { x: 192, y: 288 },
-    displayScale: 0.3,
-  },
-} as const satisfies Readonly<Record<string, SourceGeometry>>;
-
-/**
- * First-play placement corrections for silhouettes whose accepted source art
- * stops at y=222. The common source anchors stay authoritative; these nominal
- * CSS offsets only lower the drawn pixels over their owning diamond.
- */
-export const PLACEMENT_ART_GEOMETRY = {
-  forest: {
-    ...BOARD_ART_GEOMETRY.lowObject,
-    offsetY: 23,
-  },
-  animal: {
-    ...BOARD_ART_GEOMETRY.lowObject,
-    offsetY: 23,
-  },
-  fruit: {
-    ...BOARD_ART_GEOMETRY.lowObject,
-    offsetY: 23,
-  },
-  candyWarrior: {
-    ...BOARD_ART_GEOMETRY.unit,
-    offsetY: 10.5,
-  },
-} as const satisfies Readonly<Record<string, SourceGeometry>>;
-
-/**
- * The accepted mountain silhouettes do not share one useful footprint.
- * Variants 1/2 are broad while variant 3 has a taller, flat base, so each is
- * calibrated independently. The lower-diamond clip is a deterministic runtime
- * safety boundary: peaks may overhang above the tile, but no foreground alpha
- * may paint into the tile below it.
- */
-export const MOUNTAIN_ART_GEOMETRY = Object.freeze([
-  {
-    width: 256,
-    height: 296,
-    anchor: { x: 128, y: 179 },
-    displayScale: 0.42,
-    lowerDiamondClip: true,
-  },
-  {
-    width: 256,
-    height: 296,
-    anchor: { x: 128, y: 179 },
-    displayScale: 0.42,
-    lowerDiamondClip: true,
-  },
-  {
-    width: 256,
-    height: 296,
-    anchor: { x: 128, y: 186 },
-    displayScale: 0.4,
-    lowerDiamondClip: true,
-  },
-] as const satisfies readonly SourceGeometry[]);
-
-export const SETTLEMENT_ART_GEOMETRY = {
-  village: {
-    width: 256,
-    height: 296,
-    anchor: { x: 128, y: 176 },
-    displayScale: 0.5,
-  },
-  cities: {
-    1: {
-      width: 384,
-      height: 384,
-      anchor: { x: 192, y: 236 },
-      displayScale: 0.3,
-    },
-    2: {
-      width: 384,
-      height: 384,
-      anchor: { x: 192, y: 243 },
-      displayScale: 0.3,
-    },
-    3: {
-      width: 384,
-      height: 384,
-      anchor: { x: 192, y: 243 },
-      displayScale: 0.3,
-    },
-  },
-} as const;
-
-export function mountainGeometryForVariant(variant: number): SourceGeometry {
-  const index =
-    ((variant % MOUNTAIN_ART_GEOMETRY.length) + MOUNTAIN_ART_GEOMETRY.length) %
-    MOUNTAIN_ART_GEOMETRY.length;
-  return MOUNTAIN_ART_GEOMETRY[index] ?? MOUNTAIN_ART_GEOMETRY[0];
-}
-
-export function cityArtLevel(level: number): 1 | 2 | 3 {
-  return Math.max(1, Math.min(3, level)) as 1 | 2 | 3;
-}
-
-export function anchoredDestinationRect(
-  center: Point,
-  zoom: number,
-  geometry: SourceGeometry,
-): DestinationRect {
-  const scale = geometry.displayScale * zoom;
-  return {
-    x: center.x - geometry.anchor.x * scale,
-    y: center.y - geometry.anchor.y * scale + (geometry.offsetY ?? 0) * zoom,
-    width: geometry.width * scale,
-    height: geometry.height * scale,
-  };
-}
+export {
+  BOARD_ART_GEOMETRY,
+  MOUNTAIN_ART_GEOMETRY,
+  PLACEMENT_ART_GEOMETRY,
+  SETTLEMENT_ART_GEOMETRY,
+  UNIT_SCALE_CONTRACT,
+  anchoredDestinationRect,
+  cityArtLevel,
+  mountainGeometryForVariant,
+  type DestinationRect,
+  type SourceGeometry,
+  type UnitScaleClassContract,
+} from "./board-art-geometry";
 
 interface LoadedImage {
   readonly image: HTMLImageElement;

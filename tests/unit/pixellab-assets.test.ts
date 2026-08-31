@@ -13,6 +13,7 @@ import {
   PIXELLAB_BOARD_ART_IDS,
   PIXELLAB_PENDING_BOARD_ART_IDS,
   SETTLEMENT_ART_GEOMETRY,
+  UNIT_SCALE_CONTRACT,
   anchoredDestinationRect,
   cityArtLevel,
   createPixelLabAssetBindings,
@@ -86,7 +87,7 @@ describe("accepted PixelLab renderer binding", () => {
     ).toEqual({ x: 348.8, y: 225.6, width: 102.4, height: 118.4 });
     expect(
       anchoredDestinationRect({ x: 400, y: 300 }, 1, BOARD_ART_GEOMETRY.unit),
-    ).toEqual({ x: 355.2, y: 222.3, width: 89.6, height: 103.6 });
+    ).toEqual({ x: 368, y: 244.5, width: 64, height: 74 });
     expect(
       anchoredDestinationRect(
         { x: 400, y: 300 },
@@ -100,7 +101,7 @@ describe("accepted PixelLab renderer binding", () => {
         1,
         PLACEMENT_ART_GEOMETRY.candyWarrior,
       ),
-    ).toEqual({ x: 355.2, y: 232.8, width: 89.6, height: 103.6 });
+    ).toEqual({ x: 368, y: 252, width: 64, height: 74 });
     expect(
       anchoredDestinationRect(
         { x: 400, y: 300 },
@@ -108,11 +109,18 @@ describe("accepted PixelLab renderer binding", () => {
         BOARD_ART_GEOMETRY.siegeUnit,
       ),
     ).toEqual({
-      x: 342.4,
-      y: 300 - 288 * 0.3,
-      width: 384 * 0.3,
-      height: 384 * 0.3,
+      x: 353.92,
+      y: 230.88,
+      width: 92.16,
+      height: 92.16,
     });
+    expect(
+      anchoredDestinationRect(
+        { x: 400, y: 300 },
+        1,
+        BOARD_ART_GEOMETRY.giantUnit,
+      ),
+    ).toEqual({ x: 352, y: 216, width: 96, height: 112 });
     expect(
       anchoredDestinationRect(
         { x: 400, y: 300 },
@@ -177,20 +185,20 @@ describe("accepted PixelLab renderer binding", () => {
       },
     ];
 
-    expect(
-      Math.max(
-        ...acceptedUnitBounds.map(
-          ({ width }) => width * BOARD_ART_GEOMETRY.unit.displayScale,
-        ),
-      ),
-    ).toBeLessThanOrEqual(78.4);
-    expect(
-      Math.max(
-        ...acceptedUnitBounds.map(
-          ({ height }) => height * BOARD_ART_GEOMETRY.unit.displayScale,
-        ),
-      ),
-    ).toBeLessThanOrEqual(81.9);
+    const standardWidths = acceptedUnitBounds.map(
+      ({ width }) => width * BOARD_ART_GEOMETRY.unit.displayScale,
+    );
+    const standardHeights = acceptedUnitBounds.map(
+      ({ height }) => height * BOARD_ART_GEOMETRY.unit.displayScale,
+    );
+    expect(Math.max(...standardWidths)).toBeLessThanOrEqual(56);
+    expect(Math.max(...standardWidths) / 128).toBeLessThanOrEqual(
+      UNIT_SCALE_CONTRACT.standard.maximumVisibleWidthRatio,
+    );
+    expect(Math.max(...standardHeights)).toBeLessThanOrEqual(58.5);
+    expect(Math.max(...standardHeights) / 74).toBeLessThanOrEqual(
+      UNIT_SCALE_CONTRACT.standard.maximumVisibleHeightRatio,
+    );
     const mountains = mountainBounds.map((bounds, index) => {
       const geometry = MOUNTAIN_ART_GEOMETRY[index];
       if (geometry === undefined) throw new Error(`Missing mountain ${index}`);
@@ -256,13 +264,13 @@ describe("accepted PixelLab renderer binding", () => {
         { left: 27, top: 4, right: 228, bottom: 222 },
         PLACEMENT_ART_GEOMETRY.candyWarrior,
       ),
-    ).toEqual({ left: -35.35, top: -65.8, right: 35, bottom: 10.5 });
+    ).toEqual({ left: -25.25, top: -47, right: 25, bottom: 7.5 });
     expect(
       displayBounds(
         { left: 20, top: 18, right: 236, bottom: 252 },
         BOARD_ART_GEOMETRY.unit,
       ).bottom,
-    ).toBe(10.5);
+    ).toBe(7.5);
   });
 
   it("clips mountain foreground alpha to the owning lower diamond", () => {
@@ -623,7 +631,7 @@ describe("accepted PixelLab renderer binding", () => {
     bindings.drawOre(context, options);
 
     expect(context.translate).toHaveBeenCalledWith(400, 323);
-    expect(context.translate).toHaveBeenCalledWith(400, 310.5);
+    expect(context.translate).toHaveBeenCalledWith(400, 307.5);
     expect(context.translate).toHaveBeenCalledWith(400, 300);
     for (const image of images) image.listeners.get("load")?.();
     vi.mocked(context.drawImage).mockClear();
@@ -668,26 +676,26 @@ describe("accepted PixelLab renderer binding", () => {
     expect(context.drawImage).toHaveBeenNthCalledWith(
       4,
       images[3],
-      355.2,
-      232.8,
-      89.6,
-      103.6,
+      368,
+      252,
+      64,
+      74,
     );
     expect(context.drawImage).toHaveBeenNthCalledWith(
       5,
       images[4],
-      355.2,
-      222.3,
-      89.6,
-      103.6,
+      368,
+      244.5,
+      64,
+      74,
     );
     expect(context.drawImage).toHaveBeenNthCalledWith(
       6,
       images[5],
-      355.2,
-      222.3,
-      89.6,
-      103.6,
+      368,
+      244.5,
+      64,
+      74,
     );
     expect(context.drawImage).toHaveBeenNthCalledWith(
       7,

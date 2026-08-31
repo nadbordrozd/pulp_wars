@@ -6,7 +6,7 @@ import {
   MOUNTAIN_ART_GEOMETRY,
   SETTLEMENT_ART_GEOMETRY,
   type SourceGeometry,
-} from "../../src/render/canvas/pixellab-asset-bindings";
+} from "../../src/render/canvas/board-art-geometry";
 
 interface AlphaBounds {
   readonly left: number;

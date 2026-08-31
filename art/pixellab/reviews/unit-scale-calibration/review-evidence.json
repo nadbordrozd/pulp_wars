@@ -1,0 +1,506 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Objective unit display-scale and adjacent-tile occlusion calibration using accepted production rasters only",
+  "tile": {
+    "width": 128,
+    "height": 74
+  },
+  "measurement": {
+    "alphaThreshold": "source alpha > 0 contributes alpha/255 weight",
+    "visibleOccupancy": "non-zero alpha bounding width/height after display scale, divided by the 128x74 nominal tile dimensions",
+    "opaqueDiamondArea": "sum(alpha/255 * displayScale^2) divided by nominal diamond area 128*74/2",
+    "adjacentOcclusion": "alpha-weighted sprite area whose source-pixel center falls inside each immediately adjacent projected 128x74 diamond, divided by that diamond area",
+    "projectedDirections": {
+      "NORTH": {
+        "x": 64,
+        "y": -37,
+        "rear": true
+      },
+      "EAST": {
+        "x": 64,
+        "y": 37,
+        "rear": false
+      },
+      "SOUTH": {
+        "x": -64,
+        "y": 37,
+        "rear": false
+      },
+      "WEST": {
+        "x": -64,
+        "y": -37,
+        "rear": true
+      }
+    },
+    "invariant": "camera zoom and DPR scale the sprite and diamonds uniformly, so ratios are unchanged"
+  },
+  "candidateScales": {
+    "standard": [
+      0.2,
+      0.25,
+      0.3
+    ],
+    "siege": [
+      0.2,
+      0.24,
+      0.28
+    ]
+  },
+  "chosenContracts": {
+    "tile": {
+      "width": 128,
+      "height": 74
+    },
+    "standard": {
+      "displayScale": 0.25,
+      "preferredVisibleWidthRatio": [
+        0.28,
+        0.44
+      ],
+      "maximumVisibleWidthRatio": 0.48,
+      "preferredVisibleHeightRatio": [
+        0.66,
+        0.8
+      ],
+      "maximumVisibleHeightRatio": 0.84,
+      "maximumOpaqueDiamondAreaRatio": 0.45,
+      "maximumRearTileOcclusionRatio": 0.08
+    },
+    "siege": {
+      "displayScale": 0.24,
+      "preferredVisibleWidthRatio": [
+        0.5,
+        0.61
+      ],
+      "maximumVisibleWidthRatio": 0.66,
+      "preferredVisibleHeightRatio": [
+        0.75,
+        0.95
+      ],
+      "maximumVisibleHeightRatio": 1.04,
+      "maximumOpaqueDiamondAreaRatio": 0.58,
+      "maximumRearTileOcclusionRatio": 0.12
+    },
+    "giant": {
+      "displayScale": 0.25,
+      "preferredVisibleWidthRatio": [
+        0.58,
+        0.66
+      ],
+      "maximumVisibleWidthRatio": 0.72,
+      "preferredVisibleHeightRatio": [
+        1,
+        1.23
+      ],
+      "maximumVisibleHeightRatio": 1.35,
+      "maximumOpaqueDiamondAreaRatio": null,
+      "maximumRearTileOcclusionRatio": 0.18
+    }
+  },
+  "candidateMeasurements": {
+    "representativeStandard": [
+      {
+        "id": "unit-archer",
+        "scale": 0.2,
+        "offsetY": 0,
+        "visibleWidthCss": 32.2,
+        "visibleHeightCss": 45.4,
+        "visibleWidthRatio": 0.25156,
+        "visibleHeightRatio": 0.61351,
+        "opaqueDiamondAreaRatio": 0.18459,
+        "adjacentOcclusionRatio": {
+          "NORTH": 0.00524,
+          "EAST": 0,
+          "SOUTH": 0,
+          "WEST": 0.00658
+        },
+        "maximumRearTileOcclusionRatio": 0.00658
+      },
+      {
+        "id": "unit-archer",
+        "scale": 0.25,
+        "offsetY": 0,
+        "visibleWidthCss": 40.25,
+        "visibleHeightCss": 56.75,
+        "visibleWidthRatio": 0.31445,
+        "visibleHeightRatio": 0.76689,
+        "opaqueDiamondAreaRatio": 0.28843,
+        "adjacentOcclusionRatio": {
+          "NORTH": 0.02518,
+          "EAST": 0,
+          "SOUTH": 0,
+          "WEST": 0.01941
+        },
+        "maximumRearTileOcclusionRatio": 0.02518
+      },
+      {
+        "id": "unit-archer",
+        "scale": 0.3,
+        "offsetY": 0,
+        "visibleWidthCss": 48.3,
+        "visibleHeightCss": 68.1,
+        "visibleWidthRatio": 0.37734,
+        "visibleHeightRatio": 0.92027,
+        "opaqueDiamondAreaRatio": 0.41534,
+        "adjacentOcclusionRatio": {
+          "NORTH": 0.04852,
+          "EAST": 0,
+          "SOUTH": 0,
+          "WEST": 0.04027
+        },
+        "maximumRearTileOcclusionRatio": 0.04852
+      }
+    ],
+    "broadStandard": [
+      {
+        "id": "unit-defender",
+        "scale": 0.2,
+        "offsetY": 0,
+        "visibleWidthCss": 44.8,
+        "visibleHeightCss": 43.6,
+        "visibleWidthRatio": 0.35,
+        "visibleHeightRatio": 0.58919,
+        "opaqueDiamondAreaRatio": 0.24443,
+        "adjacentOcclusionRatio": {
+          "NORTH": 0.02442,
+          "EAST": 0,
+          "SOUTH": 0,
+          "WEST": 0.00339
+        },
+        "maximumRearTileOcclusionRatio": 0.02442
+      },
+      {
+        "id": "unit-defender",
+        "scale": 0.25,
+        "offsetY": 0,
+        "visibleWidthCss": 56,
+        "visibleHeightCss": 54.5,
+        "visibleWidthRatio": 0.4375,
+        "visibleHeightRatio": 0.73649,
+        "opaqueDiamondAreaRatio": 0.38192,
+        "adjacentOcclusionRatio": {
+          "NORTH": 0.07274,
+          "EAST": 0,
+          "SOUTH": 0,
+          "WEST": 0.01337
+        },
+        "maximumRearTileOcclusionRatio": 0.07274
+      },
+      {
+        "id": "unit-defender",
+        "scale": 0.3,
+        "offsetY": 0,
+        "visibleWidthCss": 67.2,
+        "visibleHeightCss": 65.4,
+        "visibleWidthRatio": 0.525,
+        "visibleHeightRatio": 0.88378,
+        "opaqueDiamondAreaRatio": 0.54996,
+        "adjacentOcclusionRatio": {
+          "NORTH": 0.1198,
+          "EAST": 0,
+          "SOUTH": 0,
+          "WEST": 0.0332
+        },
+        "maximumRearTileOcclusionRatio": 0.1198
+      }
+    ],
+    "acceptedSiege": [
+      {
+        "id": "unit-catapult",
+        "scale": 0.2,
+        "offsetY": 0,
+        "visibleWidthCss": 59.2,
+        "visibleHeightCss": 55,
+        "visibleWidthRatio": 0.4625,
+        "visibleHeightRatio": 0.74324,
+        "opaqueDiamondAreaRatio": 0.36552,
+        "adjacentOcclusionRatio": {
+          "NORTH": 0.04746,
+          "EAST": 0,
+          "SOUTH": 0,
+          "WEST": 0.05127
+        },
+        "maximumRearTileOcclusionRatio": 0.05127
+      },
+      {
+        "id": "unit-catapult",
+        "scale": 0.24,
+        "offsetY": 0,
+        "visibleWidthCss": 71.04,
+        "visibleHeightCss": 66,
+        "visibleWidthRatio": 0.555,
+        "visibleHeightRatio": 0.89189,
+        "opaqueDiamondAreaRatio": 0.52635,
+        "adjacentOcclusionRatio": {
+          "NORTH": 0.09219,
+          "EAST": 0,
+          "SOUTH": 0,
+          "WEST": 0.0798
+        },
+        "maximumRearTileOcclusionRatio": 0.09219
+      },
+      {
+        "id": "unit-catapult",
+        "scale": 0.28,
+        "offsetY": 0,
+        "visibleWidthCss": 82.88,
+        "visibleHeightCss": 77,
+        "visibleWidthRatio": 0.6475,
+        "visibleHeightRatio": 1.04054,
+        "opaqueDiamondAreaRatio": 0.71643,
+        "adjacentOcclusionRatio": {
+          "NORTH": 0.14571,
+          "EAST": 0,
+          "SOUTH": 0,
+          "WEST": 0.12512
+        },
+        "maximumRearTileOcclusionRatio": 0.14571
+      }
+    ]
+  },
+  "chosenMeasurements": {
+    "standards": [
+      {
+        "id": "unit-warrior",
+        "scale": 0.25,
+        "offsetY": 0,
+        "visibleWidthCss": 54,
+        "visibleHeightCss": 58.5,
+        "visibleWidthRatio": 0.42188,
+        "visibleHeightRatio": 0.79054,
+        "opaqueDiamondAreaRatio": 0.41088,
+        "adjacentOcclusionRatio": {
+          "NORTH": 0.04475,
+          "EAST": 0,
+          "SOUTH": 0,
+          "WEST": 0.03196
+        },
+        "maximumRearTileOcclusionRatio": 0.04475
+      },
+      {
+        "id": "unit-archer",
+        "scale": 0.25,
+        "offsetY": 0,
+        "visibleWidthCss": 40.25,
+        "visibleHeightCss": 56.75,
+        "visibleWidthRatio": 0.31445,
+        "visibleHeightRatio": 0.76689,
+        "opaqueDiamondAreaRatio": 0.28843,
+        "adjacentOcclusionRatio": {
+          "NORTH": 0.02518,
+          "EAST": 0,
+          "SOUTH": 0,
+          "WEST": 0.01941
+        },
+        "maximumRearTileOcclusionRatio": 0.02518
+      },
+      {
+        "id": "unit-defender",
+        "scale": 0.25,
+        "offsetY": 0,
+        "visibleWidthCss": 56,
+        "visibleHeightCss": 54.5,
+        "visibleWidthRatio": 0.4375,
+        "visibleHeightRatio": 0.73649,
+        "opaqueDiamondAreaRatio": 0.38192,
+        "adjacentOcclusionRatio": {
+          "NORTH": 0.07274,
+          "EAST": 0,
+          "SOUTH": 0,
+          "WEST": 0.01337
+        },
+        "maximumRearTileOcclusionRatio": 0.07274
+      },
+      {
+        "id": "unit-rider",
+        "scale": 0.25,
+        "offsetY": 0,
+        "visibleWidthCss": 44.25,
+        "visibleHeightCss": 58.25,
+        "visibleWidthRatio": 0.3457,
+        "visibleHeightRatio": 0.78716,
+        "opaqueDiamondAreaRatio": 0.34693,
+        "adjacentOcclusionRatio": {
+          "NORTH": 0.01626,
+          "EAST": 0,
+          "SOUTH": 0,
+          "WEST": 0.00971
+        },
+        "maximumRearTileOcclusionRatio": 0.01626
+      },
+      {
+        "id": "unit-candy-warrior",
+        "scale": 0.25,
+        "offsetY": 7.5,
+        "visibleWidthCss": 50.25,
+        "visibleHeightCss": 54.5,
+        "visibleWidthRatio": 0.39258,
+        "visibleHeightRatio": 0.73649,
+        "opaqueDiamondAreaRatio": 0.36378,
+        "adjacentOcclusionRatio": {
+          "NORTH": 0.0377,
+          "EAST": 0,
+          "SOUTH": 0,
+          "WEST": 0.01761
+        },
+        "maximumRearTileOcclusionRatio": 0.0377
+      },
+      {
+        "id": "unit-candy-gumball-guard",
+        "scale": 0.25,
+        "offsetY": 0,
+        "visibleWidthCss": 36.5,
+        "visibleHeightCss": 54.5,
+        "visibleWidthRatio": 0.28516,
+        "visibleHeightRatio": 0.73649,
+        "opaqueDiamondAreaRatio": 0.32105,
+        "adjacentOcclusionRatio": {
+          "NORTH": 0.03008,
+          "EAST": 0,
+          "SOUTH": 0,
+          "WEST": 0.02998
+        },
+        "maximumRearTileOcclusionRatio": 0.03008
+      },
+      {
+        "id": "unit-candy-choco-engineer",
+        "scale": 0.25,
+        "offsetY": 0,
+        "visibleWidthCss": 41.5,
+        "visibleHeightCss": 54.5,
+        "visibleWidthRatio": 0.32422,
+        "visibleHeightRatio": 0.73649,
+        "opaqueDiamondAreaRatio": 0.28637,
+        "adjacentOcclusionRatio": {
+          "NORTH": 0.03569,
+          "EAST": 0,
+          "SOUTH": 0,
+          "WEST": 0.03317
+        },
+        "maximumRearTileOcclusionRatio": 0.03569
+      },
+      {
+        "id": "unit-candy-donut",
+        "scale": 0.25,
+        "offsetY": 0,
+        "visibleWidthCss": 42.75,
+        "visibleHeightCss": 49.5,
+        "visibleWidthRatio": 0.33398,
+        "visibleHeightRatio": 0.66892,
+        "opaqueDiamondAreaRatio": 0.33427,
+        "adjacentOcclusionRatio": {
+          "NORTH": 0.04071,
+          "EAST": 0,
+          "SOUTH": 0,
+          "WEST": 0.04183
+        },
+        "maximumRearTileOcclusionRatio": 0.04183
+      }
+    ],
+    "siege": {
+      "id": "unit-catapult",
+      "scale": 0.24,
+      "offsetY": 0,
+      "visibleWidthCss": 71.04,
+      "visibleHeightCss": 66,
+      "visibleWidthRatio": 0.555,
+      "visibleHeightRatio": 0.89189,
+      "opaqueDiamondAreaRatio": 0.52635,
+      "adjacentOcclusionRatio": {
+        "NORTH": 0.09219,
+        "EAST": 0,
+        "SOUTH": 0,
+        "WEST": 0.0798
+      },
+      "maximumRearTileOcclusionRatio": 0.09219
+    },
+    "summary": {
+      "standardVisibleWidthRatio": [
+        0.28516,
+        0.4375
+      ],
+      "standardVisibleHeightRatio": [
+        0.66892,
+        0.79054
+      ],
+      "standardOpaqueDiamondAreaRatio": [
+        0.28637,
+        0.41088
+      ],
+      "maximumStandardRearTileOcclusionRatio": 0.07274
+    }
+  },
+  "runtimeIntegration": {
+    "standardDisplayScale": 0.25,
+    "siegeDisplayScale": 0.24,
+    "giantReservedDisplayScale": 0.25,
+    "candyWarriorCosmeticOffsetY": 7.5,
+    "unchanged": "source PNGs and hashes, source anchors, logical coordinates, picking, sorting, state, commands, AI and deterministic hashes"
+  },
+  "reviewCoverage": [
+    "accepted representative Archer, broad Defender, Candy standards and Catapult siege reference",
+    "accepted Grass, Mountain, Forest and level-two City context",
+    "logical NORTH/EAST/SOUTH/WEST adjacent diamonds with rear/above NORTH and WEST measured",
+    "standard, broad and siege unit-on-city composition",
+    "0.625x, 1x and 1.75x camera zoom",
+    "DPR1 and DPR2 backing resolution",
+    "native outputs and deterministic nearest-neighbor 2x enlarged companions"
+  ],
+  "visualReview": {
+    "status": "ACCEPTED",
+    "reviewedAt": "2026-08-31",
+    "findings": [
+      "At 0.25, ordinary units read as pieces placed on a tile and remain materially smaller than accepted Mountains and Forests.",
+      "The 0.20 candidate loses too much equipment/body presence at 0.625x; the 0.30 candidate makes broad standards occupy most of the diamond and crosses the rear-occlusion limit.",
+      "The 0.24 Catapult remains deliberately broader than standards while preserving city, terrain and adjacent-target readability.",
+      "The proportional 7.5 CSS Candy Warrior exception preserves its source-space grounding without changing its authoritative anchor."
+    ]
+  },
+  "artifacts": [
+    {
+      "path": "art/pixellab/reviews/unit-scale-calibration/README.md",
+      "sha256": "8e1e5da6152a7c5a776b268a165181fb22c1f242098ae69117e60a87f78d169c",
+      "bytes": 3083
+    },
+    {
+      "path": "art/pixellab/reviews/unit-scale-calibration/candidate-scale-comparison-native.png",
+      "sha256": "0398db2741f4ccf7dc2308aa33a49c56d1ba30b991b78ee810ab06094c209e27",
+      "bytes": 176742
+    },
+    {
+      "path": "art/pixellab/reviews/unit-scale-calibration/candidate-scale-comparison-enlarged.png",
+      "sha256": "dfa15b07292370177b00779588a8f8ae288c624a5392922bb89b50593f66977f",
+      "bytes": 237558
+    },
+    {
+      "path": "art/pixellab/reviews/unit-scale-calibration/map-context-zoom-dpr1-native.png",
+      "sha256": "6195888e6fd27ef362275d5f8b65b3ada2af8d06dd8e804df5c20aed4c6f0f21",
+      "bytes": 342629
+    },
+    {
+      "path": "art/pixellab/reviews/unit-scale-calibration/map-context-zoom-dpr1-enlarged.png",
+      "sha256": "d3f987852e62208971c592428697b3a8aeaf6aa6eb5160e6248349d353c66277",
+      "bytes": 435081
+    },
+    {
+      "path": "art/pixellab/reviews/unit-scale-calibration/map-context-zoom-dpr2-native.png",
+      "sha256": "6a2879090dce90c5e94bc30cd67e6b5d5b70c9642d92eb383a1a79167257d14f",
+      "bytes": 930540
+    },
+    {
+      "path": "art/pixellab/reviews/unit-scale-calibration/map-context-zoom-dpr2-enlarged.png",
+      "sha256": "fb18802846fcbf12dfe4aa9eddd3556eb16fd401b88bc7773b2d8b1db4e3e4b6",
+      "bytes": 1203402
+    },
+    {
+      "path": "art/pixellab/reviews/unit-scale-calibration/adjacency-and-city-native.png",
+      "sha256": "532022843dab8e6f5a0b41cb4d3cb6e7bb8b6218793732f8918ab6e114bd9bc1",
+      "bytes": 147551
+    },
+    {
+      "path": "art/pixellab/reviews/unit-scale-calibration/adjacency-and-city-enlarged.png",
+      "sha256": "687d9e99023db85f3afd925d3eea3f3ea2cab675966d993e09e6bcdad64c964f",
+      "bytes": 201344
+    }
+  ]
+}

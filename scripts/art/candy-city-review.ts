@@ -2,6 +2,10 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import sharp, { type OverlayOptions } from "sharp";
+import {
+  BOARD_ART_GEOMETRY,
+  PLACEMENT_ART_GEOMETRY,
+} from "../../src/render/canvas/board-art-geometry";
 
 interface Recipe {
   readonly id: string;
@@ -410,8 +414,11 @@ async function unitOverlay(
   dpr: number,
 ): Promise<OverlayOptions> {
   const source = await acceptedSource(id);
-  const scale = 0.35 * zoom;
-  const candyOffset = id === "unit-candy-warrior" ? 10.5 * zoom : 0;
+  const scale = BOARD_ART_GEOMETRY.unit.displayScale * zoom;
+  const candyOffset =
+    id === "unit-candy-warrior"
+      ? PLACEMENT_ART_GEOMETRY.candyWarrior.offsetY * zoom
+      : 0;
   return {
     input: await display(source, 256 * scale * dpr, 296 * scale * dpr),
     left: Math.round((center.x - 128 * scale) * dpr),

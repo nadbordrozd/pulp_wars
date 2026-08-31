@@ -1333,7 +1333,7 @@ async function writePlacementCalibrationEvidence(measurements: {
           forest: { sourceAnchor: [128, 222], offsetY: 23 },
           animal: { sourceAnchor: [128, 222], offsetY: 23 },
           fruit: { sourceAnchor: [128, 222], offsetY: 23 },
-          candyWarrior: { sourceAnchor: [128, 222], offsetY: 10.5 },
+          candyWarrior: { sourceAnchor: [128, 222], offsetY: 7.5 },
         },
         productionFixture: {
           forests: 8,
