@@ -1,0 +1,237 @@
+{
+  "generatedBy": "npm run art:ruleset6-host-review",
+  "host": "CanvasBoardHostV6",
+  "viewports": [
+    {
+      "viewport": "desktop",
+      "cssSize": {
+        "width": 1280,
+        "height": 720
+      },
+      "dpr": 1,
+      "backingSize": {
+        "width": 1280,
+        "height": 720
+      },
+      "zoom": 0.6972631578947368,
+      "unitBounds": [
+        {
+          "role": "FIGHTER",
+          "bounds": {
+            "x": 528.437894736842,
+            "y": 305.70442105263163,
+            "width": 44.624842105263156,
+            "height": 51.59747368421051
+          },
+          "clipped": false,
+          "footprint": {
+            "width": 42,
+            "height": 56,
+            "rearTileOcclusionRatio": 0.06,
+            "scaleClass": "standard"
+          }
+        },
+        {
+          "role": "BREACHER",
+          "bounds": {
+            "x": 709.3358484210527,
+            "y": 291.094105263158,
+            "width": 48.50162526315785,
+            "height": 55.40021052631579
+          },
+          "clipped": false,
+          "footprint": {
+            "width": 68,
+            "height": 66,
+            "rearTileOcclusionRatio": 0.1,
+            "scaleClass": "siege"
+          }
+        },
+        {
+          "role": "JUGGERNAUT",
+          "bounds": {
+            "x": 658.1288421052632,
+            "y": 404.74800000000005,
+            "width": 54.424042105263084,
+            "height": 70.74000000000001
+          },
+          "clipped": false,
+          "footprint": {
+            "width": 80,
+            "height": 88,
+            "rearTileOcclusionRatio": 0.16,
+            "scaleClass": "giant"
+          }
+        }
+      ]
+    },
+    {
+      "viewport": "tablet",
+      "cssSize": {
+        "width": 768,
+        "height": 1024
+      },
+      "dpr": 2,
+      "backingSize": {
+        "width": 1536,
+        "height": 2048
+      },
+      "zoom": 0.625,
+      "unitBounds": [
+        {
+          "role": "FIGHTER",
+          "bounds": {
+            "x": 284,
+            "y": 482.26250000000005,
+            "width": 40,
+            "height": 46.25
+          },
+          "clipped": false,
+          "footprint": {
+            "width": 42,
+            "height": 56,
+            "rearTileOcclusionRatio": 0.06,
+            "scaleClass": "standard"
+          }
+        },
+        {
+          "role": "BREACHER",
+          "bounds": {
+            "x": 446.15,
+            "y": 468.70000000000005,
+            "width": 43.47500000000002,
+            "height": 50.125
+          },
+          "clipped": false,
+          "footprint": {
+            "width": 68,
+            "height": 66,
+            "rearTileOcclusionRatio": 0.1,
+            "scaleClass": "siege"
+          }
+        },
+        {
+          "role": "JUGGERNAUT",
+          "bounds": {
+            "x": 400.25,
+            "y": 570.575,
+            "width": 49.25,
+            "height": 63.875
+          },
+          "clipped": false,
+          "footprint": {
+            "width": 80,
+            "height": 88,
+            "rearTileOcclusionRatio": 0.16,
+            "scaleClass": "giant"
+          }
+        }
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "cssSize": {
+        "width": 390,
+        "height": 844
+      },
+      "dpr": 2,
+      "backingSize": {
+        "width": 780,
+        "height": 1688
+      },
+      "zoom": 0.625,
+      "unitBounds": [
+        {
+          "role": "FIGHTER",
+          "bounds": {
+            "x": 95,
+            "y": 383.26250000000005,
+            "width": 40,
+            "height": 46.25
+          },
+          "clipped": false,
+          "footprint": {
+            "width": 42,
+            "height": 56,
+            "rearTileOcclusionRatio": 0.06,
+            "scaleClass": "standard"
+          }
+        },
+        {
+          "role": "BREACHER",
+          "bounds": {
+            "x": 257.15,
+            "y": 369.70000000000005,
+            "width": 43.47500000000002,
+            "height": 50.125
+          },
+          "clipped": false,
+          "footprint": {
+            "width": 68,
+            "height": 66,
+            "rearTileOcclusionRatio": 0.1,
+            "scaleClass": "siege"
+          }
+        },
+        {
+          "role": "JUGGERNAUT",
+          "bounds": {
+            "x": 211.25,
+            "y": 471.57500000000005,
+            "width": 49.25,
+            "height": 63.875
+          },
+          "clipped": false,
+          "footprint": {
+            "width": 80,
+            "height": 88,
+            "rearTileOcclusionRatio": 0.16,
+            "scaleClass": "giant"
+          }
+        }
+      ]
+    }
+  ],
+  "scaleContracts": {
+    "standard": 0.25,
+    "breacher": 0.24,
+    "juggernaut": 0.25,
+    "standardRearOcclusionMaximum": 0.08
+  },
+  "visualReview": {
+    "status": "ACCEPTED",
+    "notes": "Desktop, tablet and mobile native/backing sheets keep all three representative unit classes inside the visible slice. Standard Fighter mass remains compact beside Forest/Mountain; Breacher and Juggernaut remain bounded exceptions. Selection, status, city and terrain layers remain readable without edge clipping."
+  },
+  "artifacts": [
+    {
+      "path": "art/pixellab/reviews/ruleset6-canvas-host/desktop-native.png",
+      "bytes": 193606,
+      "sha256": "aa6db06605e6df6e6ef3f9bc0272c1abcc2d200e3d44689d34e8de3513f26a69"
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-canvas-host/desktop-enlarged.png",
+      "bytes": 316601,
+      "sha256": "070a353a83079bbaf9e53ecce2ab3ceed3cc7cb98547c4dd37a1c89eba1446dd"
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-canvas-host/tablet-native.png",
+      "bytes": 265296,
+      "sha256": "270319622654a9dc071dae3556d1b8dcee0bada87184d67a75470f32462ad9e9"
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-canvas-host/tablet-enlarged.png",
+      "bytes": 562223,
+      "sha256": "8622d4ecaf8c6e85920820b8dcc389434f43a56a5dd7abccc5d6d6b0ab41b910"
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-canvas-host/mobile-native.png",
+      "bytes": 211353,
+      "sha256": "1219c7359707d7636e0b062f94329c68ffa1a254216f33583915f31afe003988"
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-canvas-host/mobile-enlarged.png",
+      "bytes": 373906,
+      "sha256": "2a376740424c75c67edf992a242f41b04bbeb8162311a2ce6c665a54cd880f17"
+    }
+  ]
+}
