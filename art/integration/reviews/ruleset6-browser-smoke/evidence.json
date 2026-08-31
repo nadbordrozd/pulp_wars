@@ -1,0 +1,446 @@
+{
+  "generatedBy": "npm run smoke:browser",
+  "rulesetId": "pulp-wars-poc-6",
+  "productionEntry": "src/main.ts",
+  "browser": "Chrome/151.0.7922.137",
+  "technologyNodeCount": 25,
+  "pageAndConsoleErrors": [],
+  "visualReview": {
+    "status": "ACCEPTED",
+    "notes": "Desktop and true 390x844 DPR2 captures were inspected at native output size. Original and Candy are distinct, ordinary units remain compact relative to terrain, Canvas content is readable, and HUD/map/dock regions have no clipping, overlap, or horizontal overflow."
+  },
+  "flows": [
+    {
+      "faction": "ORIGINAL",
+      "factionTreeId": "ORIGINAL_BASELINE",
+      "seed": 42,
+      "launch": {
+        "phase": "ACTIVE",
+        "transitioning": false,
+        "commandIndex": 0,
+        "stateHash": "e0c1bfdbe60398e88914f92a9077bbe5088fbf3f43f7489fc64bd1eef393f860",
+        "faction": "ORIGINAL",
+        "factionTreeId": "ORIGINAL_BASELINE",
+        "seed": 42,
+        "activeIsHuman": true,
+        "offered": [
+          {
+            "kind": "MOVE",
+            "encoded": "{\"kind\":\"MOVE\",\"unitId\":2,\"path\":[{\"x\":1,\"y\":7}]}"
+          },
+          {
+            "kind": "MOVE",
+            "encoded": "{\"kind\":\"MOVE\",\"unitId\":2,\"path\":[{\"x\":2,\"y\":7}]}"
+          },
+          {
+            "kind": "MOVE",
+            "encoded": "{\"kind\":\"MOVE\",\"unitId\":2,\"path\":[{\"x\":3,\"y\":7}]}"
+          },
+          {
+            "kind": "MOVE",
+            "encoded": "{\"kind\":\"MOVE\",\"unitId\":2,\"path\":[{\"x\":1,\"y\":8}]}"
+          },
+          {
+            "kind": "MOVE",
+            "encoded": "{\"kind\":\"MOVE\",\"unitId\":2,\"path\":[{\"x\":3,\"y\":8}]}"
+          },
+          {
+            "kind": "MOVE",
+            "encoded": "{\"kind\":\"MOVE\",\"unitId\":2,\"path\":[{\"x\":1,\"y\":9}]}"
+          },
+          {
+            "kind": "MOVE",
+            "encoded": "{\"kind\":\"MOVE\",\"unitId\":2,\"path\":[{\"x\":2,\"y\":9}]}"
+          },
+          {
+            "kind": "MOVE",
+            "encoded": "{\"kind\":\"MOVE\",\"unitId\":2,\"path\":[{\"x\":3,\"y\":9}]}"
+          },
+          {
+            "kind": "WAIT",
+            "encoded": "{\"kind\":\"WAIT\",\"unitId\":2}"
+          },
+          {
+            "kind": "RESEARCH",
+            "encoded": "{\"kind\":\"RESEARCH\",\"tech\":\"FARMING\"}"
+          },
+          {
+            "kind": "RESEARCH",
+            "encoded": "{\"kind\":\"RESEARCH\",\"tech\":\"CRAFT\"}"
+          },
+          {
+            "kind": "RESEARCH",
+            "encoded": "{\"kind\":\"RESEARCH\",\"tech\":\"HUNTING\"}"
+          },
+          {
+            "kind": "RESEARCH",
+            "encoded": "{\"kind\":\"RESEARCH\",\"tech\":\"SURVEYING\"}"
+          },
+          {
+            "kind": "RESEARCH",
+            "encoded": "{\"kind\":\"RESEARCH\",\"tech\":\"SCOUTING\"}"
+          },
+          {
+            "kind": "RESEARCH",
+            "encoded": "{\"kind\":\"RESEARCH\",\"tech\":\"DRILL\"}"
+          },
+          {
+            "kind": "END_TURN",
+            "encoded": "{\"kind\":\"END_TURN\"}"
+          }
+        ]
+      },
+      "deterministicRestartHash": "e0c1bfdbe60398e88914f92a9077bbe5088fbf3f43f7489fc64bd1eef393f860",
+      "technologyIds": [
+        "GATHERING",
+        "FARMING",
+        "MILLING",
+        "CRAFT",
+        "GRAND_WORKS",
+        "HUNTING",
+        "FORESTRY",
+        "SAWMILLING",
+        "MARKSMANSHIP",
+        "FIELDCRAFT",
+        "SURVEYING",
+        "MINING",
+        "METALLURGY",
+        "QUARRYING",
+        "MASONRY",
+        "SCOUTING",
+        "ROADS",
+        "COMMERCE",
+        "RAIDING",
+        "MANEUVER",
+        "DRILL",
+        "FORTIFICATION",
+        "EXPLOSIVES",
+        "MEDICINE",
+        "RECOVERY"
+      ],
+      "exactCommand": {
+        "encoded": "{\"kind\":\"WAIT\",\"unitId\":2}",
+        "beforeIndex": 0,
+        "afterIndex": 1,
+        "afterHash": "e5facd7a638707d93d6679a1d2a16ada25082c5c49f69aa413f533c878f0554e"
+      },
+      "turnReturn": {
+        "commandIndex": 5,
+        "stateHash": "ad30a6944bf0fd2a6455d8da9d84f74dfe3d26d53d4f95b9bc3a1aa1115e8ebc",
+        "aiAcceptedCommands": 3
+      },
+      "resume": {
+        "commandIndex": 5,
+        "stateHash": "ad30a6944bf0fd2a6455d8da9d84f74dfe3d26d53d4f95b9bc3a1aa1115e8ebc"
+      },
+      "desktop": {
+        "viewport": {
+          "width": 1440,
+          "height": 1000,
+          "dpr": 1
+        },
+        "documentClientWidth": 1440,
+        "documentScrollWidth": 1440,
+        "shell": {
+          "x": 0,
+          "y": 0,
+          "width": 1440,
+          "height": 1000
+        },
+        "hud": {
+          "x": 0,
+          "y": 0,
+          "width": 1440,
+          "height": 59.59375
+        },
+        "map": {
+          "x": 0,
+          "y": 59.59375,
+          "width": 1080,
+          "height": 940.40625
+        },
+        "dock": {
+          "x": 1080,
+          "y": 59.59375,
+          "width": 360,
+          "height": 940.40625
+        },
+        "canvas": {
+          "cssWidth": 1080,
+          "cssHeight": 940.40625,
+          "backingWidth": 1080,
+          "backingHeight": 940,
+          "role": "application",
+          "interactive": "true"
+        }
+      },
+      "mobile": {
+        "viewport": {
+          "width": 390,
+          "height": 844,
+          "dpr": 2
+        },
+        "documentClientWidth": 390,
+        "documentScrollWidth": 390,
+        "shell": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 844
+        },
+        "hud": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 120.78125
+        },
+        "map": {
+          "x": 0,
+          "y": 120.78125,
+          "width": 390,
+          "height": 394.0625
+        },
+        "dock": {
+          "x": 0,
+          "y": 514.84375,
+          "width": 390,
+          "height": 329.15625
+        },
+        "canvas": {
+          "cssWidth": 390,
+          "cssHeight": 394.0625,
+          "backingWidth": 780,
+          "backingHeight": 788,
+          "role": "application",
+          "interactive": "true"
+        }
+      },
+      "screenshots": [
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/original-desktop.png",
+          "bytes": 269156,
+          "sha256": "984333de36c04e075a6b7f178ce20b2f99586f45dce3470f1bf992564d51f886"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/original-mobile-390x844-dpr2.png",
+          "bytes": 264464,
+          "sha256": "8f03b0fc8abf5220f08807c7988ffc734890de966ffaf8a820a1b15c9b655507"
+        }
+      ]
+    },
+    {
+      "faction": "CANDY",
+      "factionTreeId": "CANDY_BASELINE_V1",
+      "seed": 2,
+      "launch": {
+        "phase": "ACTIVE",
+        "transitioning": false,
+        "commandIndex": 0,
+        "stateHash": "dd90febaa22afb921d71fa4783405e6c6b9c88bc31882ffdc723ad1542733208",
+        "faction": "CANDY",
+        "factionTreeId": "CANDY_BASELINE_V1",
+        "seed": 2,
+        "activeIsHuman": true,
+        "offered": [
+          {
+            "kind": "MOVE",
+            "encoded": "{\"kind\":\"MOVE\",\"unitId\":2,\"path\":[{\"x\":1,\"y\":7}]}"
+          },
+          {
+            "kind": "MOVE",
+            "encoded": "{\"kind\":\"MOVE\",\"unitId\":2,\"path\":[{\"x\":2,\"y\":7}]}"
+          },
+          {
+            "kind": "MOVE",
+            "encoded": "{\"kind\":\"MOVE\",\"unitId\":2,\"path\":[{\"x\":3,\"y\":7}]}"
+          },
+          {
+            "kind": "MOVE",
+            "encoded": "{\"kind\":\"MOVE\",\"unitId\":2,\"path\":[{\"x\":1,\"y\":8}]}"
+          },
+          {
+            "kind": "MOVE",
+            "encoded": "{\"kind\":\"MOVE\",\"unitId\":2,\"path\":[{\"x\":3,\"y\":8}]}"
+          },
+          {
+            "kind": "MOVE",
+            "encoded": "{\"kind\":\"MOVE\",\"unitId\":2,\"path\":[{\"x\":2,\"y\":9}]}"
+          },
+          {
+            "kind": "MOVE",
+            "encoded": "{\"kind\":\"MOVE\",\"unitId\":2,\"path\":[{\"x\":3,\"y\":9}]}"
+          },
+          {
+            "kind": "WAIT",
+            "encoded": "{\"kind\":\"WAIT\",\"unitId\":2}"
+          },
+          {
+            "kind": "RESEARCH",
+            "encoded": "{\"kind\":\"RESEARCH\",\"tech\":\"FARMING\"}"
+          },
+          {
+            "kind": "RESEARCH",
+            "encoded": "{\"kind\":\"RESEARCH\",\"tech\":\"CRAFT\"}"
+          },
+          {
+            "kind": "RESEARCH",
+            "encoded": "{\"kind\":\"RESEARCH\",\"tech\":\"HUNTING\"}"
+          },
+          {
+            "kind": "RESEARCH",
+            "encoded": "{\"kind\":\"RESEARCH\",\"tech\":\"SURVEYING\"}"
+          },
+          {
+            "kind": "RESEARCH",
+            "encoded": "{\"kind\":\"RESEARCH\",\"tech\":\"SCOUTING\"}"
+          },
+          {
+            "kind": "RESEARCH",
+            "encoded": "{\"kind\":\"RESEARCH\",\"tech\":\"DRILL\"}"
+          },
+          {
+            "kind": "END_TURN",
+            "encoded": "{\"kind\":\"END_TURN\"}"
+          }
+        ]
+      },
+      "deterministicRestartHash": "dd90febaa22afb921d71fa4783405e6c6b9c88bc31882ffdc723ad1542733208",
+      "technologyIds": [
+        "GATHERING",
+        "FARMING",
+        "MILLING",
+        "CRAFT",
+        "GRAND_WORKS",
+        "HUNTING",
+        "FORESTRY",
+        "SAWMILLING",
+        "MARKSMANSHIP",
+        "FIELDCRAFT",
+        "SURVEYING",
+        "MINING",
+        "METALLURGY",
+        "QUARRYING",
+        "MASONRY",
+        "SCOUTING",
+        "ROADS",
+        "COMMERCE",
+        "RAIDING",
+        "MANEUVER",
+        "DRILL",
+        "FORTIFICATION",
+        "EXPLOSIVES",
+        "MEDICINE",
+        "RECOVERY"
+      ],
+      "exactCommand": {
+        "encoded": "{\"kind\":\"WAIT\",\"unitId\":2}",
+        "beforeIndex": 0,
+        "afterIndex": 1,
+        "afterHash": "3df0a0ab0f14365046d9cb441cf09d602d8db4f185f7e3e2540a0de06fe9230e"
+      },
+      "turnReturn": {
+        "commandIndex": 5,
+        "stateHash": "253e8a19e3f1185616a7d851f219fe90471beb1d297142a8a42af90c6c6cb63c",
+        "aiAcceptedCommands": 3
+      },
+      "resume": {
+        "commandIndex": 5,
+        "stateHash": "253e8a19e3f1185616a7d851f219fe90471beb1d297142a8a42af90c6c6cb63c"
+      },
+      "desktop": {
+        "viewport": {
+          "width": 1440,
+          "height": 1000,
+          "dpr": 1
+        },
+        "documentClientWidth": 1440,
+        "documentScrollWidth": 1440,
+        "shell": {
+          "x": 0,
+          "y": 0,
+          "width": 1440,
+          "height": 1000
+        },
+        "hud": {
+          "x": 0,
+          "y": 0,
+          "width": 1440,
+          "height": 59.59375
+        },
+        "map": {
+          "x": 0,
+          "y": 59.59375,
+          "width": 1080,
+          "height": 940.40625
+        },
+        "dock": {
+          "x": 1080,
+          "y": 59.59375,
+          "width": 360,
+          "height": 940.40625
+        },
+        "canvas": {
+          "cssWidth": 1080,
+          "cssHeight": 940.40625,
+          "backingWidth": 1080,
+          "backingHeight": 940,
+          "role": "application",
+          "interactive": "true"
+        }
+      },
+      "mobile": {
+        "viewport": {
+          "width": 390,
+          "height": 844,
+          "dpr": 2
+        },
+        "documentClientWidth": 390,
+        "documentScrollWidth": 390,
+        "shell": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 844
+        },
+        "hud": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 120.78125
+        },
+        "map": {
+          "x": 0,
+          "y": 120.78125,
+          "width": 390,
+          "height": 394.0625
+        },
+        "dock": {
+          "x": 0,
+          "y": 514.84375,
+          "width": 390,
+          "height": 329.15625
+        },
+        "canvas": {
+          "cssWidth": 390,
+          "cssHeight": 394.0625,
+          "backingWidth": 780,
+          "backingHeight": 788,
+          "role": "application",
+          "interactive": "true"
+        }
+      },
+      "screenshots": [
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-desktop.png",
+          "bytes": 266260,
+          "sha256": "c5180ee9510a5f1a8ff59d8e66817b546c40dcac748aaec37dc71dc9d9bc87a7"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-mobile-390x844-dpr2.png",
+          "bytes": 250925,
+          "sha256": "59bcad776fa6bee129ccd30228d1d70d43237749cfa3334e9a96705f025e5b64"
+        }
+      ]
+    }
+  ]
+}
