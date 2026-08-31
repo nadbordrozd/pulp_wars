@@ -442,5 +442,17 @@
         }
       ]
     }
-  ]
+  ],
+  "aiFirstLaunch": {
+    "seed": 314159,
+    "turnOrder": [
+      2,
+      1
+    ],
+    "commandIndex": 3,
+    "stateHash": "56fc6cb52c2babc1947d77843220dbb03d871c715aee01098f1066fe197b5928",
+    "replayStateHash": "56fc6cb52c2babc1947d77843220dbb03d871c715aee01098f1066fe197b5928",
+    "persistedStateHash": "56fc6cb52c2babc1947d77843220dbb03d871c715aee01098f1066fe197b5928",
+    "notice": "AI completed 3 actions. Your turn."
+  }
 }

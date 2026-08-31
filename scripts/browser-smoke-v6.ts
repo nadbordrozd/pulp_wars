@@ -32,6 +32,16 @@ interface BrowserErrorV6 {
   readonly detail: string;
 }
 
+interface BrowserSmokeAiFirstLaunchV6 {
+  readonly seed: 314159;
+  readonly turnOrder: readonly [2, 1];
+  readonly commandIndex: number;
+  readonly stateHash: string;
+  readonly replayStateHash: string;
+  readonly persistedStateHash: string;
+  readonly notice: string;
+}
+
 const baseUrl =
   process.argv.slice(2).find((argument) => !argument.startsWith("--")) ??
   "http://localhost:6173";
@@ -103,6 +113,7 @@ try {
       seed: 2,
     }),
   );
+  const aiFirstLaunch = await runAiFirstLaunchRegression(connection);
 
   await delay(250);
   if (browserErrors.length > 0) {
@@ -134,6 +145,7 @@ try {
         "Desktop and true 390x844 DPR2 captures were inspected at native output size. Original and Candy are distinct, ordinary units remain compact relative to terrain, Canvas content is readable, and HUD/map/dock regions have no clipping, overlap, or horizontal overflow.",
     },
     flows,
+    aiFirstLaunch,
   };
   await writeFile(
     path.join(reviewRoot, "evidence.json"),
@@ -141,10 +153,74 @@ try {
   );
   connection.close();
   console.log(
-    `Ruleset-6 browser smoke passed in ${evidence.browser}: Original ${flows[0]?.turnReturn.stateHash}, Candy ${flows[1]?.turnReturn.stateHash}. Evidence: ${reviewRoot}`,
+    `Ruleset-6 browser smoke passed in ${evidence.browser}: Original ${flows[0]?.turnReturn.stateHash}, Candy ${flows[1]?.turnReturn.stateHash}, AI-first ${aiFirstLaunch.stateHash}. Evidence: ${reviewRoot}`,
   );
 } finally {
   browser.kill();
+}
+
+async function runAiFirstLaunchRegression(
+  connection: Connection,
+): Promise<BrowserSmokeAiFirstLaunchV6> {
+  await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.desktop);
+  await waitForExpression(
+    connection,
+    `document.querySelector('[data-v6-setup]') !== null`,
+  );
+  await setField(connection, "v6-ai-count", "1");
+  await setField(connection, "v6-ai-mode", "RIVAL");
+  await setField(connection, "v6-board-size", "11");
+  await setField(connection, "v6-seed", "314159");
+  await setField(connection, "v6-faction-0", "CANDY");
+  await setField(connection, "v6-faction-1", "CANDY");
+  await clickSelector(connection, '[data-action="launch"]');
+  await waitForHumanBoundary(connection, 1, 900);
+
+  const evidence = await evaluate<BrowserSmokeAiFirstLaunchV6>(
+    connection,
+    `(async () => {
+      const engine = await import('/src/engine/index.ts');
+      const persistence = await import('/src/persistence/index.ts');
+      const app = globalThis.__PULP_WARS_APP__;
+      if (!app) throw new Error('Production ruleset-6 app handle is unavailable');
+      const snapshot = app.controller.snapshot();
+      const view = snapshot.view;
+      const replay = app.controller.exportReplay();
+      const loaded = persistence.parseSaveV6(localStorage.getItem(persistence.SAVE_STORAGE_KEY) ?? '');
+      if (snapshot.phase !== 'ACTIVE' || snapshot.transitioning || snapshot.commandIndex <= 0 || snapshot.stateHash === null || view === null || view.setup.seed !== 314159 || view.viewer.faction !== 'CANDY' || JSON.stringify(view.turnOrder) !== JSON.stringify([2, 1]) || view.turnOrder[view.activeSeatIndex] !== view.viewer.id) throw new Error('AI-first launch did not return control to the Candy human: ' + JSON.stringify(snapshot));
+      if (replay === null) throw new Error('AI-first launch has no replay');
+      const replayed = engine.runReplayV6(replay);
+      if (replayed.acceptedCommands !== snapshot.commandIndex || replayed.stateHash !== snapshot.stateHash) throw new Error('AI-first replay boundary is inexact');
+      if (loaded.kind !== 'VALID' || loaded.save.commandIndex !== snapshot.commandIndex || loaded.save.stateHash !== snapshot.stateHash || engine.canonicalHash(loaded.save.state) !== snapshot.stateHash) throw new Error('AI-first persisted boundary is inexact');
+      const notice = document.querySelector('#v6-live')?.textContent ?? '';
+      if (!/^AI completed [1-9][0-9]* actions?\\. Your turn\\.$/.test(notice) || document.querySelector('.v6-action-dock')?.textContent?.includes('AI turn')) throw new Error('AI-first launch left the shell on its idle AI presentation');
+      return {
+        seed: 314159,
+        turnOrder: view.turnOrder,
+        commandIndex: snapshot.commandIndex,
+        stateHash: snapshot.stateHash,
+        replayStateHash: replayed.stateHash,
+        persistedStateHash: loaded.save.stateHash,
+        notice
+      };
+    })()`,
+    true,
+  );
+  if (
+    evidence.commandIndex !== 3 ||
+    evidence.stateHash !==
+      "56fc6cb52c2babc1947d77843220dbb03d871c715aee01098f1066fe197b5928"
+  ) {
+    throw new Error(
+      `AI-first deterministic boundary changed: ${JSON.stringify(evidence)}`,
+    );
+  }
+  await clickSelector(connection, '[data-action="delete-save"]');
+  await waitForExpression(
+    connection,
+    `document.querySelector('[data-v6-setup]') !== null`,
+  );
+  return evidence;
 }
 
 async function runFactionFlow(

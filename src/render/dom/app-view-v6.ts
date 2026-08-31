@@ -735,6 +735,7 @@ export class Ruleset6DomAppView {
     this.#error = null;
     this.#commandChoices = [];
     const result = await this.#controller.dispatch(command);
+    if (this.#destroyed) return;
     if (!result.accepted) {
       this.#error = `Action rejected: ${result.reason}${result.error === undefined ? "" : ` (${result.error.code})`}.`;
       this.#render();
@@ -749,6 +750,7 @@ export class Ruleset6DomAppView {
   }
 
   async #progressAiIfNeeded(): Promise<void> {
+    if (this.#destroyed) return;
     const snapshot = this.#controller.snapshot();
     if (snapshot.phase !== "ACTIVE" || snapshot.view === null) return;
     const active = snapshot.view.turnOrder[snapshot.view.activeSeatIndex];
@@ -756,6 +758,7 @@ export class Ruleset6DomAppView {
     this.#notice = "AI turns are progressing…";
     this.#render();
     const result = await this.#controller.progressAiTurns();
+    if (this.#destroyed) return;
     if (!result.ok)
       this.#error = `AI progression stopped: ${result.diagnostic}`;
     else
@@ -768,6 +771,7 @@ export class Ruleset6DomAppView {
     const result = await this.#controller.launch(setup, {
       replaceStoredMatch: replace,
     });
+    if (this.#destroyed) return;
     if (!result.ok) {
       this.#error = result.diagnostic;
       this.#render();
@@ -777,11 +781,14 @@ export class Ruleset6DomAppView {
     this.#resetPresentation();
     this.#notice = `${title(setup.factions[0] ?? "ORIGINAL")} match launched.`;
     this.#render();
+    await this.#progressAiIfNeeded();
   }
 
   async #resume(): Promise<void> {
     this.#error = null;
-    if (!(await this.#controller.resume())) {
+    const resumed = await this.#controller.resume();
+    if (this.#destroyed) return;
+    if (!resumed) {
       this.#error = "The saved match could not be resumed.";
       this.#render();
       return;
@@ -795,6 +802,7 @@ export class Ruleset6DomAppView {
 
   async #restart(): Promise<void> {
     const result = await this.#controller.restart();
+    if (this.#destroyed) return;
     if (!result.ok) {
       this.#error = result.diagnostic;
       this.#render();
@@ -804,10 +812,13 @@ export class Ruleset6DomAppView {
     this.#resetPresentation();
     this.#notice = "The match restarted from its original setup.";
     this.#render();
+    await this.#progressAiIfNeeded();
   }
 
   async #deleteSave(): Promise<void> {
-    if (!(await this.#controller.deleteStoredSave())) {
+    const deleted = await this.#controller.deleteStoredSave();
+    if (this.#destroyed) return;
+    if (!deleted) {
       this.#error = "The saved match could not be deleted.";
       this.#render();
       return;

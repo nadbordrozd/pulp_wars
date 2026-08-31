@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { chooseNormalCommandV6 } from "../../src/ai/index";
 import {
   bootstrapRuleset6App,
   type Ruleset6BrowserController,
@@ -11,6 +12,7 @@ import {
   canonicalJson,
   createPlayableGameV6,
   queryPlayerCommandsV6,
+  runReplayV6,
   viewForV6,
   type CommandV6,
   type MatchSetupV6,
@@ -26,7 +28,11 @@ import {
   Ruleset6DomAppView,
   type Ruleset6BrowserControllerPort,
 } from "../../src/render/dom/app-view-v6";
-import type { StorageAdapter } from "../../src/persistence/index";
+import {
+  SAVE_STORAGE_KEY,
+  parseSaveV6,
+  type StorageAdapter,
+} from "../../src/persistence/index";
 
 beforeEach(() => {
   document.body.innerHTML = '<div id="app"></div>';
@@ -71,6 +77,202 @@ describe("playable ruleset-6 DOM shell", () => {
     app.destroy();
     expect(host.destroyCalls).toBeGreaterThan(0);
     expect(document.querySelector("#app")?.children).toHaveLength(0);
+  });
+
+  it("advances the exact AI-first Candy launch, replacement, and restart boundary once", async () => {
+    const storage = new MemoryStorage();
+    const first = bootstrapRuleset6App(document, {
+      storage,
+      boardHost: new FakeBoardHostV6(),
+      persistenceNow: () => "2026-08-31T20:00:00.000Z",
+    });
+    const firstProgress = vi.spyOn(first.controller, "progressAiTurns");
+    configureAiFirstCandyLaunch();
+    submit("[data-v6-setup]");
+    await waitForHumanTurn(first.controller, 3);
+
+    const launchBoundary = first.controller.snapshot();
+    expect(firstProgress).toHaveBeenCalledTimes(1);
+    expect(launchBoundary).toMatchObject({
+      phase: "ACTIVE",
+      transitioning: false,
+      commandIndex: 3,
+      stateHash:
+        "56fc6cb52c2babc1947d77843220dbb03d871c715aee01098f1066fe197b5928",
+      view: {
+        turnOrder: [2, 1],
+        activeSeatIndex: 1,
+        viewer: { id: 1, faction: "CANDY" },
+      },
+    });
+    expect(document.querySelector("#v6-live")?.textContent).toBe(
+      "AI completed 3 actions. Your turn.",
+    );
+    expect(document.body.textContent).not.toContain("AI turn");
+    const replay = first.controller.exportReplay();
+    if (replay === null) throw new Error("Missing AI-first replay");
+    expect(replay.commands).toHaveLength(launchBoundary.commandIndex);
+    expect(runReplayV6(replay)).toMatchObject({
+      acceptedCommands: launchBoundary.commandIndex,
+      stateHash: launchBoundary.stateHash,
+    });
+    expectPersistedBoundary(storage, launchBoundary);
+
+    click("[data-action=restart]");
+    await waitUntil(
+      () =>
+        firstProgress.mock.calls.length === 2 &&
+        first.controller.snapshot().stateHash === launchBoundary.stateHash &&
+        first.controller.snapshot().transitioning === false,
+    );
+    expect(firstProgress).toHaveBeenCalledTimes(2);
+    expect(first.controller.snapshot().commandIndex).toBe(3);
+    expect(first.controller.exportReplay()?.commands).toHaveLength(3);
+    expectPersistedBoundary(storage, first.controller.snapshot());
+    first.destroy();
+
+    document.body.innerHTML = '<div id="app"></div>';
+    const replacement = bootstrapRuleset6App(document, {
+      storage,
+      boardHost: new FakeBoardHostV6(),
+      persistenceNow: () => "2026-08-31T20:01:00.000Z",
+    });
+    expect(replacement.controller.snapshot().phase).toBe("RESUMABLE");
+    const replacementProgress = vi.spyOn(
+      replacement.controller,
+      "progressAiTurns",
+    );
+    click("[data-action=show-replace]");
+    configureAiFirstCandyLaunch();
+    submit("[data-v6-setup]");
+    await waitForHumanTurn(replacement.controller, 3);
+    expect(replacementProgress).toHaveBeenCalledTimes(1);
+    expect(replacement.controller.snapshot().stateHash).toBe(
+      launchBoundary.stateHash,
+    );
+    expectPersistedBoundary(storage, replacement.controller.snapshot());
+    replacement.destroy();
+  });
+
+  it("leaves human-first launch unchanged and never progresses rejected launch or restart", async () => {
+    const app = bootstrapRuleset6App(document, {
+      storage: null,
+      boardHost: new FakeBoardHostV6(),
+    });
+    const progress = vi.spyOn(app.controller, "progressAiTurns");
+    submit("[data-v6-setup]");
+    await waitUntil(
+      () =>
+        app.controller.snapshot().phase === "ACTIVE" &&
+        app.controller.snapshot().transitioning === false,
+    );
+    expect(app.controller.snapshot()).toMatchObject({
+      commandIndex: 0,
+      view: { turnOrder: [1, 2], activeSeatIndex: 0, viewer: { id: 1 } },
+    });
+    expect(progress).not.toHaveBeenCalled();
+
+    vi.spyOn(app.controller, "restart").mockResolvedValue({
+      ok: false,
+      code: "INVALID_SETUP",
+      diagnostic: "Synthetic restart rejection.",
+    });
+    click("[data-action=restart]");
+    await waitUntil(() =>
+      Boolean(
+        document.body.textContent?.includes("Synthetic restart rejection."),
+      ),
+    );
+    expect(progress).not.toHaveBeenCalled();
+    app.destroy();
+
+    document.body.innerHTML = '<div id="app"></div>';
+    const rejected = bootstrapRuleset6App(document, {
+      storage: null,
+      boardHost: new FakeBoardHostV6(),
+    });
+    const rejectedProgress = vi.spyOn(rejected.controller, "progressAiTurns");
+    vi.spyOn(rejected.controller, "launch").mockResolvedValue({
+      ok: false,
+      code: "INVALID_SETUP",
+      diagnostic: "Synthetic launch rejection.",
+    });
+    submit("[data-v6-setup]");
+    await waitUntil(() =>
+      Boolean(
+        document.body.textContent?.includes("Synthetic launch rejection."),
+      ),
+    );
+    expect(rejectedProgress).not.toHaveBeenCalled();
+    rejected.destroy();
+  });
+
+  it("publishes AI transition state and is safe to destroy during initial progression", async () => {
+    let releaseFirstDecision: (() => void) | undefined;
+    let firstDecision = true;
+    const app = bootstrapRuleset6App(document, {
+      storage: null,
+      boardHost: new FakeBoardHostV6(),
+      chooseAiCommand: async (view) => {
+        if (firstDecision) {
+          firstDecision = false;
+          await new Promise<void>((resolve) => {
+            releaseFirstDecision = resolve;
+          });
+        }
+        return chooseNormalCommandV6(view);
+      },
+    });
+    const progress = vi.spyOn(app.controller, "progressAiTurns");
+    configureAiFirstCandyLaunch();
+    submit("[data-v6-setup]");
+    await waitUntil(() => releaseFirstDecision !== undefined);
+    expect(progress).toHaveBeenCalledTimes(1);
+    expect(app.controller.snapshot().transitioning).toBe(true);
+    expect(document.body.textContent).toContain("Thinking…");
+    expect(document.querySelector("#v6-live")?.textContent).toBe(
+      "AI turns are progressing…",
+    );
+
+    app.destroy();
+    releaseFirstDecision?.();
+    await waitUntil(() => app.controller.snapshot().transitioning === false);
+    expect(document.querySelector("#app")?.children).toHaveLength(0);
+    expect(progress).toHaveBeenCalledTimes(1);
+  });
+
+  it("surfaces an AI-first progression failure without queuing a second operation", async () => {
+    const app = bootstrapRuleset6App(document, {
+      storage: null,
+      boardHost: new FakeBoardHostV6(),
+      chooseAiCommand: () => ({
+        difficulty: "NORMAL",
+        candidates: [],
+        command: null,
+        prngDraws: 0,
+      }),
+    });
+    const progress = vi.spyOn(app.controller, "progressAiTurns");
+    configureAiFirstCandyLaunch();
+    submit("[data-v6-setup]");
+    await waitUntil(
+      () =>
+        app.controller.snapshot().phase === "ERROR" &&
+        app.controller.snapshot().transitioning === false &&
+        document
+          .querySelector("#v6-alert")
+          ?.textContent?.includes("AI progression stopped") === true,
+    );
+    expect(progress).toHaveBeenCalledTimes(1);
+    expect(app.controller.snapshot()).toMatchObject({
+      phase: "ERROR",
+      commandIndex: 0,
+      diagnostic: "Normal AI produced no exact public command.",
+    });
+    expect(document.querySelector("#v6-alert")?.textContent).toBe(
+      "AI progression stopped: Normal AI produced no exact public command.",
+    );
+    app.destroy();
   });
 
   it("dispatches only exact current single/ambiguous map candidates and exposes research plus every offered action", async () => {
@@ -188,14 +390,14 @@ describe("playable ruleset-6 DOM shell", () => {
     });
     expect(replacement.controller.snapshot().phase).toBe("RESUMABLE");
     click("[data-action=show-replace]");
-    setInput("v6-seed", "9");
+    setInput("v6-seed", "8");
     submit("[data-v6-setup]");
     await waitUntil(
       () =>
         document.body.textContent?.includes("Original match launched.") ===
         true,
     );
-    expect(replacement.controller.snapshot().view?.setup.seed).toBe(9);
+    expect(replacement.controller.snapshot().view?.setup.seed).toBe(8);
     expect(replacementHost.updateIds).toContain(0);
     expect(replacementHost.updateIds.at(-1)).toBe(1);
     replacement.destroy();
@@ -530,6 +732,15 @@ function setInput(id: string, value: string): void {
   input.value = value;
 }
 
+function configureAiFirstCandyLaunch(): void {
+  changeSelect("v6-ai-count", "1");
+  changeSelect("v6-ai-mode", "RIVAL");
+  changeSelect("v6-board-size", "11");
+  changeSelect("v6-faction-0", "CANDY");
+  changeSelect("v6-faction-1", "CANDY");
+  setInput("v6-seed", "314159");
+}
+
 function selectValues(id: string): readonly string[] {
   const select = document.querySelector<HTMLSelectElement>(`#${id}`);
   if (select === null) throw new Error(`Missing ${id}`);
@@ -554,4 +765,38 @@ async function waitUntil(predicate: () => boolean): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, 0));
   }
   throw new Error("Timed out waiting for DOM shell transition");
+}
+
+async function waitForHumanTurn(
+  controller: Ruleset6BrowserController,
+  minimumCommandIndex: number,
+): Promise<void> {
+  await waitUntil(() => {
+    const snapshot = controller.snapshot();
+    const view = snapshot.view;
+    return (
+      snapshot.phase === "ACTIVE" &&
+      !snapshot.transitioning &&
+      snapshot.commandIndex >= minimumCommandIndex &&
+      view !== null &&
+      view.turnOrder[view.activeSeatIndex] === view.viewer.id
+    );
+  });
+}
+
+function expectPersistedBoundary(
+  storage: MemoryStorage,
+  snapshot: Ruleset6BrowserSnapshot,
+): void {
+  const source = storage.getItem(SAVE_STORAGE_KEY);
+  if (source === null) throw new Error("Missing persisted AI-first boundary");
+  const loaded = parseSaveV6(source);
+  expect(loaded.kind).toBe("VALID");
+  if (loaded.kind !== "VALID") throw new Error(loaded.diagnostic);
+  expect(loaded.save).toMatchObject({
+    commandIndex: snapshot.commandIndex,
+    stateHash: snapshot.stateHash,
+  });
+  expect(canonicalHash(loaded.save.state)).toBe(snapshot.stateHash);
+  expect(loaded.save.acceptedCommands).toHaveLength(snapshot.commandIndex);
 }
