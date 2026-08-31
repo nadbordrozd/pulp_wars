@@ -1,0 +1,171 @@
+{
+  "generatedBy": "npm run art:ruleset6-shell-review",
+  "rulesetId": "pulp-wars-poc-6",
+  "setup": {
+    "rulesetId": "pulp-wars-poc-6",
+    "mapGenerationRevision": "SPATIAL_ECONOMY",
+    "seed": 42,
+    "width": 11,
+    "height": 11,
+    "aiCount": 1,
+    "aiDifficulty": "NORMAL",
+    "aiMode": "RIVAL",
+    "humanColor": "CORAL",
+    "factions": [
+      "ORIGINAL",
+      "CANDY"
+    ]
+  },
+  "commandCount": 8,
+  "layoutContract": {
+    "mapFirst": true,
+    "minimumControlHeight": 44,
+    "desktopDock": "right",
+    "tabletMobileDock": "bottom",
+    "ordinaryUnitDisplayScale": 0.25,
+    "ordinaryUnitRearOcclusionMaximum": 0.08,
+    "siegeDisplayScale": 0.24,
+    "giantDisplayScale": 0.25
+  },
+  "visualReview": {
+    "status": "ACCEPTED",
+    "notes": "Native desktop, tablet, and mobile composites preserve a dominant map, separate non-overlapping HUD/action regions, scrollable action access, 44px controls, and the renderer's calibrated compact ordinary-unit geometry. Enlarged nearest-neighbor copies support edge and label inspection."
+  },
+  "viewports": [
+    {
+      "id": "desktop",
+      "css": {
+        "width": 1280,
+        "height": 720
+      },
+      "dpr": 1,
+      "backing": {
+        "width": 1280,
+        "height": 720
+      },
+      "regions": {
+        "hud": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 70
+        },
+        "map": {
+          "x": 0,
+          "y": 70,
+          "width": 947.2,
+          "height": 650
+        },
+        "dock": {
+          "x": 947.2,
+          "y": 70,
+          "width": 332.8,
+          "height": 650
+        }
+      },
+      "overlaps": [],
+      "artifacts": [
+        {
+          "path": "art/pixellab/reviews/ruleset6-playable-shell/desktop-native.png",
+          "bytes": 137322,
+          "sha256": "309eb9144ffd965de231b0f368d34e0d59b4657ac1b8ef7907b0197c307a2c60"
+        },
+        {
+          "path": "art/pixellab/reviews/ruleset6-playable-shell/desktop-enlarged.png",
+          "bytes": 240224,
+          "sha256": "f733612ce9e59cc89bca30e708e0a8aa2c3b125b0c67a33295d52a78ab389e9a"
+        }
+      ]
+    },
+    {
+      "id": "tablet",
+      "css": {
+        "width": 768,
+        "height": 1024
+      },
+      "dpr": 2,
+      "backing": {
+        "width": 1536,
+        "height": 2048
+      },
+      "regions": {
+        "hud": {
+          "x": 0,
+          "y": 0,
+          "width": 768,
+          "height": 94
+        },
+        "map": {
+          "x": 0,
+          "y": 94,
+          "width": 768,
+          "height": 580
+        },
+        "dock": {
+          "x": 0,
+          "y": 674,
+          "width": 768,
+          "height": 350
+        }
+      },
+      "overlaps": [],
+      "artifacts": [
+        {
+          "path": "art/pixellab/reviews/ruleset6-playable-shell/tablet-native.png",
+          "bytes": 332656,
+          "sha256": "8470c0ad75a67bf4d38cc5a0fed0af03a24060ad550799c4d4ef08a167c0bbb6"
+        },
+        {
+          "path": "art/pixellab/reviews/ruleset6-playable-shell/tablet-enlarged.png",
+          "bytes": 641344,
+          "sha256": "35aa91e178571ca5435d95c4f22a3e0571a925a8b8a6c996d066e5def61709d4"
+        }
+      ]
+    },
+    {
+      "id": "mobile",
+      "css": {
+        "width": 390,
+        "height": 844
+      },
+      "dpr": 2,
+      "backing": {
+        "width": 780,
+        "height": 1688
+      },
+      "regions": {
+        "hud": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 130
+        },
+        "map": {
+          "x": 0,
+          "y": 130,
+          "width": 390,
+          "height": 404
+        },
+        "dock": {
+          "x": 0,
+          "y": 534,
+          "width": 390,
+          "height": 310
+        }
+      },
+      "overlaps": [],
+      "artifacts": [
+        {
+          "path": "art/pixellab/reviews/ruleset6-playable-shell/mobile-native.png",
+          "bytes": 255750,
+          "sha256": "ca0bf99b094c6bdd425183defe2c41f3c0db742602e6beb9f970c0ec889022b0"
+        },
+        {
+          "path": "art/pixellab/reviews/ruleset6-playable-shell/mobile-enlarged.png",
+          "bytes": 418132,
+          "sha256": "cd2c391dd0965d57678c2048c1bb1f0a994675a75b693a1fa552eec8c8b13aad"
+        }
+      ]
+    }
+  ]
+}
