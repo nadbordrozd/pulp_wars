@@ -525,6 +525,7 @@ describe("ruleset-6 basic economy", () => {
         resultingContribution: 2,
         levelsReached: [2],
         distinctTypes: ["MINE"],
+        distinctFamilies: [],
         contributingTiles: [fixture.at],
         oppositePairAxes: [],
         capitalRoadConnected: false,

@@ -15,6 +15,7 @@ import {
 } from "./commands";
 import { parseMatchSetupV6 } from "./setup";
 import { growthSpentV6 } from "./economy";
+import { livePopulationAtV6 } from "./spatial-economy";
 import {
   ECONOMIC_IMPROVEMENT_IDS,
   GAME_STATE_SCHEMA_VERSION_6,
@@ -914,23 +915,38 @@ function populationLedgerIsValid(
       !sameCoord(tile.at, source.at) ||
       tile.improvement !== source.improvement ||
       tile.territoryCityId !== contribution.cityId ||
-      contribution.amount !== basicImprovementContribution(source.improvement)
+      contribution.amount !==
+        livePopulationAtV6({ board, cities }, source.at, source.improvement)
     ) {
       return false;
     }
   }
-  return board.tiles.every((tile) => {
-    if (tile.improvement === null) return true;
-    return liveCoordinates.has(`${tile.at.y},${tile.at.x}`);
-  });
+  return (
+    board.tiles.every((tile) => {
+      if (tile.improvement === null) return true;
+      return liveCoordinates.has(`${tile.at.y},${tile.at.x}`);
+    }) && advancedBuildingLimitsAreValid(board)
+  );
 }
 
-function basicImprovementContribution(
-  improvement: Exclude<TileStateV6["improvement"], null>,
-): number {
-  if (improvement === "FARM" || improvement === "MINE") return 2;
-  if (improvement === "LUMBER_CAMP" || improvement === "QUARRY") return 1;
-  return 0;
+function advancedBuildingLimitsAreValid(board: BoardStateV6): boolean {
+  const counts = new Set<string>();
+  for (const tile of board.tiles) {
+    if (
+      tile.territoryCityId === null ||
+      tile.improvement === null ||
+      tile.improvement === "FARM" ||
+      tile.improvement === "LUMBER_CAMP" ||
+      tile.improvement === "MINE" ||
+      tile.improvement === "QUARRY"
+    ) {
+      continue;
+    }
+    const key = `${tile.territoryCityId}:${tile.improvement}`;
+    if (counts.has(key)) return false;
+    counts.add(key);
+  }
+  return true;
 }
 
 function greatestEntityId(

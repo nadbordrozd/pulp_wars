@@ -1,5 +1,6 @@
 import type { CityId, PlayerId } from "../model/ids";
 import type { CityIncomeEntryV6, DomainEventV6 } from "./events";
+import { spatialContributionAtV6 } from "./spatial-economy";
 import type {
   CityStateV6,
   GameStateV6,
@@ -21,6 +22,25 @@ export interface CityGrowthResultV6 {
 export interface PlayerIncomeV6 {
   readonly totalCoins: number;
   readonly cities: readonly CityIncomeEntryV6[];
+}
+
+export interface CityEconomyRecalculationV6 {
+  readonly cityId: CityId;
+  readonly before: CityStateV6;
+  readonly after: CityStateV6;
+  readonly marketBefore: number;
+  readonly marketAfter: number;
+  readonly reachedLevels: readonly number[];
+}
+
+export interface LiveEconomyRecalculationV6 {
+  readonly cities: readonly CityStateV6[];
+  readonly populationContributions: readonly PopulationContributionV6[];
+  readonly changes: readonly CityEconomyRecalculationV6[];
+  readonly pendingChoices: readonly Extract<
+    PendingChoiceV6,
+    { readonly kind: "CITY_REWARD" }
+  >[];
 }
 
 export function growthSpentV6(level: number): number {
@@ -165,11 +185,95 @@ export function marketIncomeForCityV6(
   state: Pick<GameStateV6, "board" | "cities">,
   city: CityStateV6,
 ): number {
-  // Market live output is introduced by phg.5/phg.7. Keeping the authoritative
-  // income hook here prevents basic improvements from becoming Coin producers.
-  void state;
-  void city;
-  return 0;
+  let income = 0;
+  for (const tile of state.board.tiles) {
+    if (tile.territoryCityId !== city.id || tile.improvement !== "MARKET") {
+      continue;
+    }
+    income += spatialContributionAtV6(state, tile.at, "MARKET").marketIncome;
+    if (!Number.isSafeInteger(income)) throw new RangeError("INTEGER_OVERFLOW");
+  }
+  return income;
+}
+
+/**
+ * Recomputes every LIVE identity from the final graph. The caller supplies the
+ * pre-transaction state separately so Coin and population deltas stay exact.
+ */
+export function recomputeLiveEconomyV6(
+  beforeState: GameStateV6,
+  finalGraph: Pick<GameStateV6, "board" | "cities">,
+  contributions: readonly PopulationContributionV6[],
+): LiveEconomyRecalculationV6 {
+  const populationContributions = contributions.map((contribution) => {
+    if (contribution.category === "PERMANENT") return contribution;
+    if (contribution.source.kind !== "IMPROVEMENT") {
+      throw new RangeError("INVALID_STATE");
+    }
+    const tile =
+      finalGraph.board.tiles[
+        contribution.source.at.y * finalGraph.board.width +
+          contribution.source.at.x
+      ];
+    if (
+      tile === undefined ||
+      tile.at.x !== contribution.source.at.x ||
+      tile.at.y !== contribution.source.at.y ||
+      tile.improvement !== contribution.source.improvement ||
+      tile.territoryCityId === null
+    ) {
+      throw new RangeError("INVALID_STATE");
+    }
+    return {
+      ...contribution,
+      cityId: tile.territoryCityId,
+      amount: spatialContributionAtV6(
+        finalGraph,
+        contribution.source.at,
+        contribution.source.improvement,
+      ).population,
+    };
+  });
+
+  const pendingChoices: Extract<
+    PendingChoiceV6,
+    { readonly kind: "CITY_REWARD" }
+  >[] = [];
+  const changes: CityEconomyRecalculationV6[] = [];
+  const cities: CityStateV6[] = [];
+  for (const city of [...finalGraph.cities].sort(
+    (left, right) => left.id - right.id,
+  )) {
+    const before = beforeState.cities.find(
+      (candidate) => candidate.id === city.id,
+    );
+    const totals = contributionTotalsForCityV6(
+      populationContributions,
+      city.id,
+    );
+    const growth = resolveCityGrowthV6(city, totals.permanent, totals.live);
+    cities.push(growth.city);
+    pendingChoices.push(...growth.pendingChoices);
+    const marketBefore =
+      before === undefined ? 0 : marketIncomeForCityV6(beforeState, before);
+    const marketAfter = marketIncomeForCityV6(finalGraph, growth.city);
+    if (
+      before !== undefined &&
+      (before.economicPopulation !== growth.city.economicPopulation ||
+        before.population !== growth.city.population ||
+        marketBefore !== marketAfter)
+    ) {
+      changes.push({
+        cityId: city.id,
+        before,
+        after: growth.city,
+        marketBefore,
+        marketAfter,
+        reachedLevels: growth.reachedLevels,
+      });
+    }
+  }
+  return { cities, populationContributions, changes, pendingChoices };
 }
 
 export function cityIncomeV6(state: GameStateV6, city: CityStateV6): number {

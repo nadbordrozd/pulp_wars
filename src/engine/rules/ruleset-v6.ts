@@ -85,6 +85,27 @@ export interface BasicEconomicActionRuleV6 {
   readonly improvement: EconomicImprovementId | null;
 }
 
+export type SpatialEconomicCommandKindV6 =
+  | "BUILD_WINDMILL"
+  | "BUILD_SAWMILL"
+  | "BUILD_FORGE"
+  | "BUILD_STONEWORKS"
+  | "BUILD_WORKSHOP"
+  | "BUILD_GRAND_WORKS"
+  | "BUILD_MARKET";
+
+export interface SpatialEconomicActionRuleV6 {
+  readonly command: SpatialEconomicCommandKindV6;
+  readonly technology: TechnologyId;
+  readonly cost: number;
+  readonly improvement: Exclude<
+    EconomicImprovementId,
+    "FARM" | "LUMBER_CAMP" | "MINE" | "QUARRY"
+  >;
+  /** Minimum distinct/connected contributor count needed for placement. */
+  readonly placementMinimum: number;
+}
+
 export const BASIC_ECONOMIC_ACTIONS_V6 = deepFreeze({
   HARVEST_FRUIT: {
     command: "HARVEST_FRUIT",
@@ -148,6 +169,60 @@ export const BASIC_ECONOMIC_ACTIONS_V6 = deepFreeze({
   },
 } satisfies Readonly<
   Record<BasicEconomicCommandKindV6, BasicEconomicActionRuleV6>
+>);
+
+export const SPATIAL_ECONOMIC_ACTIONS_V6 = deepFreeze({
+  BUILD_WINDMILL: {
+    command: "BUILD_WINDMILL",
+    technology: "MILLING",
+    cost: 5,
+    improvement: "WINDMILL",
+    placementMinimum: 1,
+  },
+  BUILD_SAWMILL: {
+    command: "BUILD_SAWMILL",
+    technology: "SAWMILLING",
+    cost: 5,
+    improvement: "SAWMILL",
+    placementMinimum: 1,
+  },
+  BUILD_FORGE: {
+    command: "BUILD_FORGE",
+    technology: "METALLURGY",
+    cost: 5,
+    improvement: "FORGE",
+    placementMinimum: 0,
+  },
+  BUILD_STONEWORKS: {
+    command: "BUILD_STONEWORKS",
+    technology: "MASONRY",
+    cost: 5,
+    improvement: "STONEWORKS",
+    placementMinimum: 0,
+  },
+  BUILD_WORKSHOP: {
+    command: "BUILD_WORKSHOP",
+    technology: "CRAFT",
+    cost: 4,
+    improvement: "WORKSHOP",
+    placementMinimum: 2,
+  },
+  BUILD_GRAND_WORKS: {
+    command: "BUILD_GRAND_WORKS",
+    technology: "GRAND_WORKS",
+    cost: 7,
+    improvement: "GRAND_WORKS",
+    placementMinimum: 3,
+  },
+  BUILD_MARKET: {
+    command: "BUILD_MARKET",
+    technology: "COMMERCE",
+    cost: 7,
+    improvement: "MARKET",
+    placementMinimum: 2,
+  },
+} satisfies Readonly<
+  Record<SpatialEconomicCommandKindV6, SpatialEconomicActionRuleV6>
 >);
 
 function node(

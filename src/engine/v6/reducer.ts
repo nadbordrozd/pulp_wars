@@ -2,24 +2,26 @@ import { allocateCityId, type PlayerId } from "../model/ids";
 import type { JsonValue } from "../replay/canonical";
 import {
   BASIC_ECONOMIC_ACTIONS_V6,
+  SPATIAL_ECONOMIC_ACTIONS_V6,
   effectiveRoleRuleV6,
   type BasicEconomicCommandKindV6,
+  type SpatialEconomicCommandKindV6,
 } from "../rules/ruleset-v6";
 import { deepFreeze } from "../model/freeze";
 import { parseCommandV6, type CommandV6 } from "./commands";
 import {
   arePlayersAlliedV6,
   arePlayersHostileV6,
-  contributionTotalsForCityV6,
   isCityBesiegedV6,
-  marketIncomeForCityV6,
   playerIncomeV6,
-  resolveCityGrowthV6,
+  recomputeLiveEconomyV6,
   startTurnV6,
+  type CityEconomyRecalculationV6,
 } from "./economy";
 import type { DomainEventV6 } from "./events";
 import { createInitialMapStateV6 } from "./map";
 import { parseGameStateV6 } from "./state-schema";
+import { spatialContributionAtV6 } from "./spatial-economy";
 import type {
   CityStateV6,
   CoordV6,
@@ -47,6 +49,8 @@ export type RuleErrorCodeV6 =
   | "TERRITORY_NOT_OWNED"
   | "CITY_BESIEGED"
   | "CITY_REWARD_PENDING"
+  | "CITY_BUILDING_LIMIT"
+  | "PLACEMENT_REQUIREMENT_UNMET"
   | "INSUFFICIENT_COINS"
   | "INTEGER_OVERFLOW"
   | "CAPTURE_NOT_ELIGIBLE"
@@ -81,6 +85,9 @@ export type CreatePlayableGameResultV6 =
 
 const BASIC_COMMANDS = new Set<CommandV6["kind"]>(
   Object.keys(BASIC_ECONOMIC_ACTIONS_V6) as BasicEconomicCommandKindV6[],
+);
+const SPATIAL_COMMANDS = new Set<CommandV6["kind"]>(
+  Object.keys(SPATIAL_ECONOMIC_ACTIONS_V6) as SpatialEconomicCommandKindV6[],
 );
 
 /** Creates the mapped state and awards the ordinary first Start Turn income. */
@@ -129,6 +136,14 @@ export function applyCommandV6(
   if (common !== null) return rejected(state, common.code, common.params);
   if (BASIC_COMMANDS.has(command.kind)) {
     return applyBasicEconomicCommand(
+      state,
+      canonicalState,
+      actor,
+      command as Extract<CommandV6, { readonly at: CoordV6 }>,
+    );
+  }
+  if (SPATIAL_COMMANDS.has(command.kind)) {
+    return applySpatialEconomicCommand(
       state,
       canonicalState,
       actor,
@@ -208,15 +223,6 @@ function applyBasicEconomicCommand(
     ) {
       throw new RangeError("INTEGER_OVERFLOW");
     }
-    const populationContributions = [
-      ...state.populationContributions,
-      contribution,
-    ];
-    const totals = contributionTotalsForCityV6(
-      populationContributions,
-      city.id,
-    );
-    const growth = resolveCityGrowthV6(city, totals.permanent, totals.live);
     const updatedTile: TileStateV6 = {
       ...tile,
       resource: null,
@@ -233,8 +239,10 @@ function applyBasicEconomicCommand(
         ? { ...candidate, coins: candidate.coins - rule.cost }
         : candidate,
     );
-    const cities = state.cities.map((candidate) =>
-      candidate.id === city.id ? growth.city : candidate,
+    const recalculation = recomputeLiveEconomyV6(
+      state,
+      { board, cities: state.cities },
+      [...state.populationContributions, contribution],
     );
     const nextState = checkedState({
       ...state,
@@ -242,9 +250,12 @@ function applyBasicEconomicCommand(
       commandIndex,
       board,
       players,
-      cities,
-      populationContributions,
-      pendingChoices: [...state.pendingChoices, ...growth.pendingChoices],
+      cities: recalculation.cities,
+      populationContributions: recalculation.populationContributions,
+      pendingChoices: [
+        ...state.pendingChoices,
+        ...recalculation.pendingChoices,
+      ],
     });
     const fact: DomainEventV6 =
       rule.populationCategory === "PERMANENT"
@@ -266,24 +277,171 @@ function applyBasicEconomicCommand(
             populationContribution: rule.population,
             marketIncome: 0,
           };
-    const economyEvent: DomainEventV6 = {
-      kind: "CITY_ECONOMY_CHANGED",
-      cityId: city.id,
-      economicBefore: city.economicPopulation,
-      economicAfter: growth.city.economicPopulation,
-      populationBefore: city.population,
-      populationAfter: growth.city.population,
-      marketBefore: marketIncomeForCityV6(state, city),
-      marketAfter: marketIncomeForCityV6(nextState, growth.city),
-    };
     return {
       accepted: true,
       state: deepFreeze(nextState),
-      events: [fact, economyEvent, ...growthEvents(city, growth.reachedLevels)],
+      events: [
+        fact,
+        ...economyEvents(recalculation.changes),
+        ...growthEventsForChanges(recalculation.changes),
+      ],
     };
   } catch (error) {
     if (error instanceof RangeError && error.message === "INTEGER_OVERFLOW") {
       return rejected(original, "INTEGER_OVERFLOW");
+    }
+    throw error;
+  }
+}
+
+function applySpatialEconomicCommand(
+  original: GameStateV6,
+  state: GameStateV6,
+  actor: PlayerId,
+  command: Extract<CommandV6, { readonly at: CoordV6 }>,
+): ApplyCommandResultV6 {
+  const kind = command.kind as SpatialEconomicCommandKindV6;
+  const rule = SPATIAL_ECONOMIC_ACTIONS_V6[kind];
+  const player = requirePlayer(state, actor);
+  const tile = tileAt(state, command.at);
+  if (tile === undefined) return rejected(original, "TILE_NOT_FOUND");
+  if (!isExplored(player, command.at)) {
+    return rejected(original, "TILE_UNEXPLORED");
+  }
+  if (!player.researchedTechs.includes(rule.technology)) {
+    return rejected(original, "TECH_REQUIRED", { tech: rule.technology });
+  }
+  if (
+    tile.site !== null ||
+    tile.resource !== null ||
+    tile.improvement !== null
+  ) {
+    return rejected(original, "INVALID_TILE", { action: kind });
+  }
+  const city = state.cities.find(
+    (candidate) => candidate.id === tile.territoryCityId,
+  );
+  if (city === undefined || city.ownerId !== actor) {
+    return rejected(original, "TERRITORY_NOT_OWNED");
+  }
+  if (isCityBesiegedV6(state, city)) return rejected(original, "CITY_BESIEGED");
+  if (
+    state.pendingChoices.some(
+      (choice) => choice.kind === "CITY_REWARD" && choice.cityId === city.id,
+    )
+  ) {
+    return rejected(original, "CITY_REWARD_PENDING");
+  }
+  if (
+    state.board.tiles.some(
+      (candidate) =>
+        candidate.territoryCityId === city.id &&
+        candidate.improvement === rule.improvement,
+    )
+  ) {
+    return rejected(original, "CITY_BUILDING_LIMIT", {
+      improvement: rule.improvement,
+    });
+  }
+
+  const updatedTile: TileStateV6 = {
+    ...tile,
+    improvement: rule.improvement,
+  };
+  const board = {
+    ...state.board,
+    tiles: state.board.tiles.map((candidate) =>
+      sameCoord(candidate.at, command.at) ? updatedTile : candidate,
+    ),
+  };
+  const finalGraph = { board, cities: state.cities };
+  const evaluation = spatialContributionAtV6(
+    finalGraph,
+    command.at,
+    rule.improvement,
+  );
+  if (evaluation.placementCount < rule.placementMinimum) {
+    return rejected(original, "PLACEMENT_REQUIREMENT_UNMET", {
+      improvement: rule.improvement,
+      required: rule.placementMinimum,
+      count: evaluation.placementCount,
+    });
+  }
+  if (player.coins < rule.cost) {
+    return rejected(original, "INSUFFICIENT_COINS", { cost: rule.cost });
+  }
+
+  try {
+    const nextEntityId = state.nextEntityId + 1;
+    const commandIndex = state.commandIndex + 1;
+    if (
+      !Number.isSafeInteger(nextEntityId) ||
+      !Number.isSafeInteger(commandIndex)
+    ) {
+      throw new RangeError("INTEGER_OVERFLOW");
+    }
+    const contribution: PopulationContributionV6 = {
+      id: state.nextEntityId,
+      cityId: city.id,
+      category: "LIVE",
+      amount: evaluation.population,
+      source: {
+        kind: "IMPROVEMENT",
+        improvement: rule.improvement,
+        at: command.at,
+      },
+    };
+    const recalculation = recomputeLiveEconomyV6(state, finalGraph, [
+      ...state.populationContributions,
+      contribution,
+    ]);
+    const players = state.players.map((candidate) =>
+      candidate.id === actor
+        ? { ...candidate, coins: candidate.coins - rule.cost }
+        : candidate,
+    );
+    const nextState = checkedState({
+      ...state,
+      nextEntityId,
+      commandIndex,
+      board,
+      players,
+      cities: recalculation.cities,
+      populationContributions: recalculation.populationContributions,
+      pendingChoices: [
+        ...state.pendingChoices,
+        ...recalculation.pendingChoices,
+      ],
+    });
+    const ownContribution = recalculation.populationContributions.find(
+      (candidate) => candidate.id === contribution.id,
+    );
+    if (ownContribution === undefined) throw new RangeError("INVALID_STATE");
+    const fact: DomainEventV6 = {
+      kind: "ECONOMIC_BUILDING_BUILT",
+      playerId: actor,
+      cityId: city.id,
+      at: command.at,
+      improvement: rule.improvement,
+      cost: rule.cost,
+      populationContribution: ownContribution.amount,
+      marketIncome: evaluation.marketIncome,
+    };
+    return {
+      accepted: true,
+      state: deepFreeze(nextState),
+      events: [
+        fact,
+        ...economyEvents(recalculation.changes),
+        ...growthEventsForChanges(recalculation.changes),
+      ],
+    };
+  } catch (error) {
+    if (error instanceof RangeError && error.message === "INTEGER_OVERFLOW") {
+      return rejected(original, "INTEGER_OVERFLOW");
+    }
+    if (error instanceof RangeError && error.message === "INVALID_STATE") {
+      return rejected(original, "INVALID_STATE");
     }
     throw error;
   }
@@ -453,6 +611,7 @@ function applyCapture(
     });
     let players = state.players;
     let pendingChoices = state.pendingChoices;
+    let populationContributions = state.populationContributions;
     const events: DomainEventV6[] = [
       {
         kind: "CITY_CAPTURED",
@@ -472,6 +631,18 @@ function applyCapture(
         tiles: reveal.revealed,
       });
     }
+    const recalculation = recomputeLiveEconomyV6(
+      state,
+      { board, cities },
+      populationContributions,
+    );
+    cities = recalculation.cities;
+    populationContributions = recalculation.populationContributions;
+    pendingChoices = [...pendingChoices, ...recalculation.pendingChoices];
+    events.push(
+      ...economyEvents(recalculation.changes),
+      ...growthEventsForChanges(recalculation.changes),
+    );
     if (
       formerOwner !== null &&
       !cities.some((city) => city.ownerId === formerOwner)
@@ -530,6 +701,7 @@ function applyCapture(
       players,
       cities,
       units,
+      populationContributions,
       pendingChoices,
       outcome,
     });
@@ -579,29 +751,45 @@ function tileMatchesRule(
   );
 }
 
-function growthEvents(
-  city: CityStateV6,
-  reachedLevels: readonly number[],
+function economyEvents(
+  changes: readonly CityEconomyRecalculationV6[],
 ): readonly DomainEventV6[] {
-  return reachedLevels.flatMap((level): readonly DomainEventV6[] => {
-    const candidates =
-      level === 2
-        ? (["SURVEY", "STOCKPILE"] as const)
-        : level === 3
-          ? (["WALLS", "MILITIA"] as const)
-          : level === 4
-            ? (["EXPAND", "BOOM"] as const)
-            : (["JUGGERNAUT", "TREASURY"] as const);
-    return [
-      { kind: "CITY_LEVELED_UP", cityId: city.id, level },
-      {
-        kind: "CITY_REWARD_QUEUED",
-        cityId: city.id,
-        reachedLevel: level,
-        candidates,
-      },
-    ];
-  });
+  return changes.map((change) => ({
+    kind: "CITY_ECONOMY_CHANGED",
+    cityId: change.cityId,
+    economicBefore: change.before.economicPopulation,
+    economicAfter: change.after.economicPopulation,
+    populationBefore: change.before.population,
+    populationAfter: change.after.population,
+    marketBefore: change.marketBefore,
+    marketAfter: change.marketAfter,
+  }));
+}
+
+function growthEventsForChanges(
+  changes: readonly CityEconomyRecalculationV6[],
+): readonly DomainEventV6[] {
+  return changes.flatMap((change) =>
+    change.reachedLevels.flatMap((level): readonly DomainEventV6[] => {
+      const candidates =
+        level === 2
+          ? (["SURVEY", "STOCKPILE"] as const)
+          : level === 3
+            ? (["WALLS", "MILITIA"] as const)
+            : level === 4
+              ? (["EXPAND", "BOOM"] as const)
+              : (["JUGGERNAUT", "TREASURY"] as const);
+      return [
+        { kind: "CITY_LEVELED_UP", cityId: change.cityId, level },
+        {
+          kind: "CITY_REWARD_QUEUED",
+          cityId: change.cityId,
+          reachedLevel: level,
+          candidates,
+        },
+      ];
+    }),
+  );
 }
 
 function nextActiveSeatIndex(state: GameStateV6): number | null {

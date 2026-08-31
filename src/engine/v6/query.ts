@@ -1,12 +1,25 @@
 import type { CityId } from "../model/ids";
 import {
   BASIC_ECONOMIC_ACTIONS_V6,
+  SPATIAL_ECONOMIC_ACTIONS_V6,
   effectiveRoleRuleV6,
   type BasicEconomicCommandKindV6,
+  type SpatialEconomicCommandKindV6,
 } from "../rules/ruleset-v6";
 import { compareCommandsV6, type CommandV6 } from "./commands";
 import { arePlayersAlliedV6, resolveCityGrowthV6 } from "./economy";
-import type { CityStateV6, CoordV6, EconomicImprovementId } from "./types";
+import {
+  spatialContributionAtV6,
+  type EconomicFamilyV6,
+  type OppositePairAxisV6,
+} from "./spatial-economy";
+import type {
+  BoardStateV6,
+  CityStateV6,
+  CoordV6,
+  EconomicImprovementId,
+  TileStateV6,
+} from "./types";
 import type { PlayerTileViewV6, PlayerViewV6 } from "./view";
 
 export interface CityValueDeltaV6 {
@@ -23,8 +36,9 @@ export interface EconomicPreviewV6 {
   readonly resultingContribution: number;
   readonly levelsReached: readonly number[];
   readonly distinctTypes: readonly EconomicImprovementId[];
+  readonly distinctFamilies: readonly EconomicFamilyV6[];
   readonly contributingTiles: readonly CoordV6[];
-  readonly oppositePairAxes: readonly string[];
+  readonly oppositePairAxes: readonly OppositePairAxisV6[];
   readonly capitalRoadConnected: false;
   readonly buildingLimitReached: false;
   readonly complete: true;
@@ -37,6 +51,9 @@ export type EconomicPreviewResultV6 =
 const BASIC_KINDS = Object.keys(
   BASIC_ECONOMIC_ACTIONS_V6,
 ) as BasicEconomicCommandKindV6[];
+const SPATIAL_KINDS = Object.keys(
+  SPATIAL_ECONOMIC_ACTIONS_V6,
+) as SpatialEconomicCommandKindV6[];
 
 /** Pure observation-safe enumeration for the implemented v6 economy slice. */
 export function queryPlayerCommandsV6(
@@ -59,6 +76,11 @@ export function queryPlayerCommandsV6(
         commands.push({ kind, at: tile.at });
       }
     }
+    for (const kind of SPATIAL_KINDS) {
+      if (publicSpatialActionIsLegal(view, tile, kind)) {
+        commands.push({ kind, at: tile.at });
+      }
+    }
   }
   for (const unit of view.units) {
     if (publicCaptureIsLegal(view, unit.id)) {
@@ -75,7 +97,8 @@ export function previewEconomicV6(
 ): EconomicPreviewResultV6 {
   if (
     !("at" in command) ||
-    !BASIC_KINDS.includes(command.kind as BasicEconomicCommandKindV6)
+    (!BASIC_KINDS.includes(command.kind as BasicEconomicCommandKindV6) &&
+      !SPATIAL_KINDS.includes(command.kind as SpatialEconomicCommandKindV6))
   ) {
     return { ok: false, error: "NOT_OFFERED" };
   }
@@ -94,38 +117,76 @@ export function previewEconomicV6(
     (candidate) => candidate.id === tile.territoryCityId,
   );
   if (city === undefined) return { ok: false, error: "NOT_OFFERED" };
-  const kind = command.kind as BasicEconomicCommandKindV6;
-  const rule = BASIC_ECONOMIC_ACTIONS_V6[kind];
-  const permanent =
-    city.permanentPopulation +
-    (rule.populationCategory === "PERMANENT" ? rule.population : 0);
-  const economic =
-    city.economicPopulation +
-    (rule.populationCategory === "LIVE" ? rule.population : 0);
-  let growth;
-  try {
-    growth = resolveCityGrowthV6(city, permanent, economic);
-  } catch {
-    return { ok: false, error: "NOT_OFFERED" };
+
+  const beforeGraph = publicGraph(view);
+  const basic =
+    BASIC_ECONOMIC_ACTIONS_V6[command.kind as BasicEconomicCommandKindV6];
+  const spatial =
+    SPATIAL_ECONOMIC_ACTIONS_V6[command.kind as SpatialEconomicCommandKindV6];
+  const improvement = basic?.improvement ?? spatial?.improvement ?? null;
+  const cost = basic?.cost ?? spatial?.cost;
+  if (cost === undefined) return { ok: false, error: "NOT_OFFERED" };
+  const afterGraph = replaceGraphTile(beforeGraph, command.at, {
+    resource: null,
+    improvement,
+  });
+  const evaluation =
+    improvement === null
+      ? null
+      : spatialContributionAtV6(afterGraph, command.at, improvement);
+
+  const populationDeltaByCity: CityValueDeltaV6[] = [];
+  const coinIncomeDeltaByCity: CityValueDeltaV6[] = [];
+  const levelsReached: number[] = [];
+  for (const candidate of view.cities
+    .filter((value) => value.ownerId === view.viewer.id)
+    .sort((left, right) => left.id - right.id)) {
+    const permanentDelta =
+      candidate.id === city.id && basic?.populationCategory === "PERMANENT"
+        ? basic.population
+        : 0;
+    const liveDelta =
+      liveTotalForCity(afterGraph, candidate.id) -
+      liveTotalForCity(beforeGraph, candidate.id);
+    const delta = permanentDelta + liveDelta;
+    const growth = resolveCityGrowthV6(
+      candidate,
+      candidate.permanentPopulation + permanentDelta,
+      candidate.economicPopulation + liveDelta,
+    );
+    const marketBefore = marketForCity(beforeGraph, candidate.id);
+    const marketAfter = marketForCity(afterGraph, candidate.id);
+    const incomeBefore = publicIncome(candidate, marketBefore);
+    const incomeAfter = publicIncome(growth.city, marketAfter);
+    if (delta !== 0)
+      populationDeltaByCity.push({ cityId: candidate.id, delta });
+    if (incomeBefore !== incomeAfter) {
+      coinIncomeDeltaByCity.push({
+        cityId: candidate.id,
+        delta: incomeAfter - incomeBefore,
+      });
+    }
+    levelsReached.push(...growth.reachedLevels);
   }
+
   return {
     ok: true,
     preview: {
       at: command.at,
-      cost: rule.cost,
+      cost,
       ownerCityId: city.id,
-      populationDeltaByCity: [{ cityId: city.id, delta: rule.population }],
-      coinIncomeDeltaByCity: [
-        {
-          cityId: city.id,
-          delta: publicBaseIncome(growth.city) - publicBaseIncome(city),
-        },
-      ],
-      resultingContribution: rule.population,
-      levelsReached: growth.reachedLevels,
-      distinctTypes: rule.improvement === null ? [] : [rule.improvement],
-      contributingTiles: [command.at],
-      oppositePairAxes: [],
+      populationDeltaByCity,
+      coinIncomeDeltaByCity,
+      resultingContribution: evaluation?.population ?? basic?.population ?? 0,
+      levelsReached,
+      distinctTypes:
+        evaluation?.distinctTypes ??
+        (improvement === null ? [] : [improvement]),
+      distinctFamilies: evaluation?.distinctFamilies ?? [],
+      contributingTiles:
+        evaluation?.contributingTiles ??
+        (basic === undefined ? [] : [command.at]),
+      oppositePairAxes: evaluation?.oppositePairAxes ?? [],
       capitalRoadConnected: false,
       buildingLimitReached: false,
       complete: true,
@@ -151,9 +212,44 @@ function publicBasicActionIsLegal(
   ) {
     return false;
   }
-  const city = view.cities.find(
-    (candidate) => candidate.id === tile.territoryCityId,
+  return publicCityAllowsBuild(view, tile.territoryCityId);
+}
+
+function publicSpatialActionIsLegal(
+  view: PlayerViewV6,
+  tile: Extract<PlayerTileViewV6, { readonly explored: true }>,
+  kind: SpatialEconomicCommandKindV6,
+): boolean {
+  const rule = SPATIAL_ECONOMIC_ACTIONS_V6[kind];
+  if (
+    !view.viewer.researchedTechs.includes(rule.technology) ||
+    view.viewer.coins < rule.cost ||
+    tile.territoryOwnerId !== view.viewer.id ||
+    tile.territoryCityId === null ||
+    tile.site !== null ||
+    tile.resource !== null ||
+    tile.improvement !== null ||
+    !publicCityAllowsBuild(view, tile.territoryCityId) ||
+    view.board.tiles.some(
+      (candidate) =>
+        candidate.explored &&
+        candidate.territoryCityId === tile.territoryCityId &&
+        candidate.improvement === rule.improvement,
+    )
+  ) {
+    return false;
+  }
+  const graph = replaceGraphTile(publicGraph(view), tile.at, {
+    improvement: rule.improvement,
+  });
+  return (
+    spatialContributionAtV6(graph, tile.at, rule.improvement).placementCount >=
+    rule.placementMinimum
   );
+}
+
+function publicCityAllowsBuild(view: PlayerViewV6, cityId: CityId): boolean {
+  const city = view.cities.find((candidate) => candidate.id === cityId);
   return (
     city !== undefined &&
     !cityIsPubliclyBesieged(view, city) &&
@@ -211,13 +307,110 @@ function cityIsPubliclyBesieged(
   );
 }
 
-function sameCoord(left: CoordV6, right: CoordV6): boolean {
-  return left.x === right.x && left.y === right.y;
+function publicGraph(view: PlayerViewV6): {
+  readonly board: BoardStateV6;
+  readonly cities: readonly CityStateV6[];
+} {
+  const tiles: TileStateV6[] = view.board.tiles.map((tile) =>
+    tile.explored
+      ? {
+          at: tile.at,
+          terrain: tile.terrain,
+          resource: tile.resource === "UNKNOWN_RESOURCE" ? null : tile.resource,
+          improvement: tile.improvement,
+          road: tile.road,
+          site: tile.site,
+          territoryCityId: tile.territoryCityId,
+        }
+      : {
+          at: tile.at,
+          terrain: "GRASS",
+          resource: null,
+          improvement: null,
+          road: false,
+          site: null,
+          territoryCityId: null,
+        },
+  );
+  return {
+    board: { width: view.board.width, height: view.board.height, tiles },
+    cities: view.cities,
+  };
 }
 
-function publicBaseIncome(city: CityStateV6): number {
+function replaceGraphTile(
+  graph: {
+    readonly board: BoardStateV6;
+    readonly cities: readonly CityStateV6[];
+  },
+  at: CoordV6,
+  replacement: Partial<TileStateV6>,
+): { readonly board: BoardStateV6; readonly cities: readonly CityStateV6[] } {
+  return {
+    ...graph,
+    board: {
+      ...graph.board,
+      tiles: graph.board.tiles.map((tile) =>
+        sameCoord(tile.at, at)
+          ? { ...tile, ...replacement, at: tile.at }
+          : tile,
+      ),
+    },
+  };
+}
+
+function liveTotalForCity(
+  graph: {
+    readonly board: BoardStateV6;
+    readonly cities: readonly CityStateV6[];
+  },
+  cityId: CityId,
+): number {
+  return graph.board.tiles
+    .filter(
+      (tile) => tile.territoryCityId === cityId && tile.improvement !== null,
+    )
+    .reduce(
+      (total, tile) =>
+        total +
+        spatialContributionAtV6(
+          graph,
+          tile.at,
+          tile.improvement as EconomicImprovementId,
+        ).population,
+      0,
+    );
+}
+
+function marketForCity(
+  graph: {
+    readonly board: BoardStateV6;
+    readonly cities: readonly CityStateV6[];
+  },
+  cityId: CityId,
+): number {
+  return graph.board.tiles
+    .filter(
+      (tile) =>
+        tile.territoryCityId === cityId && tile.improvement === "MARKET",
+    )
+    .reduce(
+      (total, tile) =>
+        total + spatialContributionAtV6(graph, tile.at, "MARKET").marketIncome,
+      0,
+    );
+}
+
+function publicIncome(city: CityStateV6, market: number): number {
   return Math.max(
     0,
-    city.level + (city.isCapital ? 1 : 0) + Math.min(0, city.population),
+    city.level +
+      (city.isCapital ? 1 : 0) +
+      market +
+      Math.min(0, city.population),
   );
+}
+
+function sameCoord(left: CoordV6, right: CoordV6): boolean {
+  return left.x === right.x && left.y === right.y;
 }

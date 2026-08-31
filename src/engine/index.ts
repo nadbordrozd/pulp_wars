@@ -37,6 +37,7 @@ export * from "./v6/query";
 export * from "./v6/replay";
 export * from "./v6/reducer";
 export * from "./v6/setup";
+export * from "./v6/spatial-economy";
 export * from "./v6/state-schema";
 export * from "./v6/types";
 export * from "./v6/view";
