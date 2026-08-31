@@ -32,6 +32,7 @@ export * from "./v6/events";
 export * from "./v6/event-schema";
 export * from "./v6/economy";
 export * from "./v6/map";
+export * from "./v6/movement";
 export * from "./v6/order";
 export * from "./v6/query";
 export * from "./v6/replay";

@@ -15,7 +15,9 @@ import {
 } from "../rules/ruleset-v6";
 import { compareCommandsV6, type CommandV6 } from "./commands";
 import { arePlayersAlliedV6, resolveCityGrowthV6 } from "./economy";
+import { reachableMovementPathsV6 } from "./movement";
 import {
+  isCapitalConnectedRoadV6,
   spatialContributionAtV6,
   type EconomicFamilyV6,
   type OppositePairAxisV6,
@@ -27,6 +29,8 @@ import type {
   EconomicImprovementId,
   FactionIdV6,
   FactionTreeId,
+  GameStateV6,
+  RewardIdV6,
   TechnologyId,
   TileStateV6,
   UnitRoleId,
@@ -50,7 +54,7 @@ export interface EconomicPreviewV6 {
   readonly distinctFamilies: readonly EconomicFamilyV6[];
   readonly contributingTiles: readonly CoordV6[];
   readonly oppositePairAxes: readonly OppositePairAxisV6[];
-  readonly capitalRoadConnected: false;
+  readonly capitalRoadConnected: boolean;
   readonly buildingLimitReached: false;
   readonly complete: true;
 }
@@ -155,10 +159,30 @@ export function queryPlayerCommandsV6(
   if (
     view.outcome !== null ||
     view.viewer.status !== "ACTIVE" ||
-    activeId !== view.viewer.id ||
-    view.pendingChoices.length > 0
+    activeId !== view.viewer.id
   ) {
     return [];
+  }
+  const pending = view.pendingChoices[0];
+  if (pending !== undefined) {
+    if (pending.kind !== "CITY_REWARD") return [];
+    const city = view.cities.find(
+      (candidate) =>
+        candidate.id === pending.cityId && candidate.ownerId === view.viewer.id,
+    );
+    return city === undefined
+      ? []
+      : pending.candidates
+          .filter((reward) =>
+            publicRewardCandidateMayBeLegal(view, city, reward),
+          )
+          .map((reward): CommandV6 => ({
+            kind: "CHOOSE_CITY_REWARD",
+            cityId: pending.cityId,
+            reachedLevel: pending.reachedLevel,
+            reward,
+          }))
+          .sort(compareCommandsV6);
   }
   const commands: CommandV6[] = [];
   for (const technology of queryTechnologyTreeV6(view).nodes) {
@@ -178,14 +202,70 @@ export function queryPlayerCommandsV6(
         commands.push({ kind, at: tile.at });
       }
     }
+    for (const kind of [
+      "CLEAR_FOREST",
+      "REPLANT_FOREST",
+      "BUILD_ROAD",
+      "REDEVELOP",
+    ] as const) {
+      if (publicInfrastructureActionIsLegal(view, tile, kind)) {
+        commands.push({ kind, at: tile.at });
+      }
+    }
   }
+  const movementState = publicStateForMovement(view);
   for (const unit of view.units) {
+    if (
+      unit.ownerId === view.viewer.id &&
+      unit.hp > 0 &&
+      !unit.activation.moved &&
+      !unit.activation.attacked &&
+      !unit.activation.healed &&
+      !unit.activation.recovered &&
+      !unit.activation.captured &&
+      !unit.activation.specialActed
+    ) {
+      for (const reachable of reachableMovementPathsV6(movementState, unit)) {
+        commands.push({ kind: "MOVE", unitId: unit.id, path: reachable.path });
+      }
+    }
     if (publicCaptureIsLegal(view, unit.id)) {
       commands.push({ kind: "CAPTURE", unitId: unit.id });
     }
   }
   commands.push({ kind: "END_TURN" });
   return commands.sort(compareCommandsV6);
+}
+
+function publicRewardCandidateMayBeLegal(
+  view: PlayerViewV6,
+  city: CityStateV6,
+  reward: RewardIdV6,
+): boolean {
+  if (reward !== "MILITIA" && reward !== "JUGGERNAUT") return true;
+  const occupied = (at: CoordV6): boolean =>
+    view.units.some((unit) => unit.hp > 0 && sameCoord(unit.at, at)) ||
+    view.chocolateWalls.some((wall) => sameCoord(wall.at, at));
+  for (const tile of view.board.tiles) {
+    const inFootprint =
+      Math.max(
+        Math.abs(tile.at.x - city.at.x),
+        Math.abs(tile.at.y - city.at.y),
+      ) <= (city.expanded ? 2 : 1);
+    if (!tile.explored) {
+      if (inFootprint) return true;
+      continue;
+    }
+    if (
+      tile.territoryCityId === city.id &&
+      (tile.terrain !== "MOUNTAIN" ||
+        view.viewer.researchedTechs.includes("SURVEYING")) &&
+      !occupied(tile.at)
+    ) {
+      return true;
+    }
+  }
+  return false;
 }
 
 export function previewEconomicV6(
@@ -195,7 +275,11 @@ export function previewEconomicV6(
   if (
     !("at" in command) ||
     (!BASIC_KINDS.includes(command.kind as BasicEconomicCommandKindV6) &&
-      !SPATIAL_KINDS.includes(command.kind as SpatialEconomicCommandKindV6))
+      !SPATIAL_KINDS.includes(command.kind as SpatialEconomicCommandKindV6) &&
+      command.kind !== "CLEAR_FOREST" &&
+      command.kind !== "REPLANT_FOREST" &&
+      command.kind !== "BUILD_ROAD" &&
+      command.kind !== "REDEVELOP")
   ) {
     return { ok: false, error: "NOT_OFFERED" };
   }
@@ -221,11 +305,33 @@ export function previewEconomicV6(
   const spatial =
     SPATIAL_ECONOMIC_ACTIONS_V6[command.kind as SpatialEconomicCommandKindV6];
   const improvement = basic?.improvement ?? spatial?.improvement ?? null;
-  const cost = basic?.cost ?? spatial?.cost;
+  const cost =
+    basic?.cost ??
+    spatial?.cost ??
+    (command.kind === "BUILD_ROAD"
+      ? 2
+      : command.kind === "REPLANT_FOREST"
+        ? 4
+        : 0);
   if (cost === undefined) return { ok: false, error: "NOT_OFFERED" };
   const afterGraph = replaceGraphTile(beforeGraph, command.at, {
-    resource: null,
-    improvement,
+    resource:
+      basic !== undefined ||
+      command.kind === "CLEAR_FOREST" ||
+      command.kind === "REPLANT_FOREST"
+        ? null
+        : tile.resource === "UNKNOWN_RESOURCE"
+          ? null
+          : tile.resource,
+    improvement:
+      command.kind === "REDEVELOP" ? null : (improvement ?? tile.improvement),
+    terrain:
+      command.kind === "CLEAR_FOREST"
+        ? "GRASS"
+        : command.kind === "REPLANT_FOREST"
+          ? "FOREST"
+          : tile.terrain,
+    road: command.kind === "BUILD_ROAD" ? true : tile.road,
   });
   const evaluation =
     improvement === null
@@ -284,11 +390,48 @@ export function previewEconomicV6(
         evaluation?.contributingTiles ??
         (basic === undefined ? [] : [command.at]),
       oppositePairAxes: evaluation?.oppositePairAxes ?? [],
-      capitalRoadConnected: false,
+      capitalRoadConnected:
+        evaluation?.capitalRoadConnected ??
+        (command.kind === "BUILD_ROAD"
+          ? isCapitalConnectedRoadV6(afterGraph, command.at, view.viewer.id)
+          : false),
       buildingLimitReached: false,
       complete: true,
     },
   };
+}
+
+function publicInfrastructureActionIsLegal(
+  view: PlayerViewV6,
+  tile: Extract<PlayerTileViewV6, { readonly explored: true }>,
+  kind: "CLEAR_FOREST" | "REPLANT_FOREST" | "BUILD_ROAD" | "REDEVELOP",
+): boolean {
+  const technology =
+    kind === "CLEAR_FOREST"
+      ? "FORESTRY"
+      : kind === "REPLANT_FOREST"
+        ? "FIELDCRAFT"
+        : kind === "BUILD_ROAD"
+          ? "ROADS"
+          : "GRAND_WORKS";
+  const cost = kind === "BUILD_ROAD" ? 2 : kind === "REPLANT_FOREST" ? 4 : 0;
+  if (
+    !view.viewer.researchedTechs.includes(technology) ||
+    view.viewer.coins < cost ||
+    tile.territoryOwnerId !== view.viewer.id ||
+    tile.territoryCityId === null ||
+    !publicCityAllowsBuild(view, tile.territoryCityId)
+  ) {
+    return false;
+  }
+  if (kind === "BUILD_ROAD") return tile.site === null && !tile.road;
+  if (kind === "REDEVELOP") return tile.improvement !== null;
+  return (
+    tile.site === null &&
+    tile.resource === null &&
+    tile.improvement === null &&
+    tile.terrain === (kind === "CLEAR_FOREST" ? "FOREST" : "GRASS")
+  );
 }
 
 function publicBasicActionIsLegal(
@@ -432,6 +575,32 @@ function publicGraph(view: PlayerViewV6): {
   return {
     board: { width: view.board.width, height: view.board.height, tiles },
     cities: view.cities,
+  };
+}
+
+function publicStateForMovement(view: PlayerViewV6): GameStateV6 {
+  const graph = publicGraph(view);
+  return {
+    schemaVersion: 6,
+    rulesetId: view.rulesetId,
+    setup: view.setup,
+    random: { algorithm: "MULBERRY32", version: 1, state: 0 },
+    humanPlayerId: view.humanPlayerId,
+    nextEntityId: 1,
+    commandIndex: view.commandIndex,
+    round: view.round,
+    activeSeatIndex: view.activeSeatIndex,
+    turnOrder: view.turnOrder,
+    board: graph.board,
+    players: view.players.map((player) =>
+      player.id === view.viewer.id ? view.viewer : { ...player, explored: [] },
+    ),
+    cities: view.cities,
+    populationContributions: view.populationContributions,
+    units: view.units,
+    chocolateWalls: view.chocolateWalls,
+    pendingChoices: view.pendingChoices,
+    outcome: view.outcome,
   };
 }
 

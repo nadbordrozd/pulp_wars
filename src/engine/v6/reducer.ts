@@ -1,4 +1,4 @@
-import { allocateCityId, type PlayerId } from "../model/ids";
+import { allocateCityId, allocateUnitId, type PlayerId } from "../model/ids";
 import type { JsonValue } from "../replay/canonical";
 import {
   BASIC_ECONOMIC_ACTIONS_V6,
@@ -22,6 +22,7 @@ import {
 } from "./economy";
 import type { DomainEventV6 } from "./events";
 import { createInitialMapStateV6 } from "./map";
+import { validateMovementPathV6 } from "./movement";
 import { parseGameStateV6 } from "./state-schema";
 import { spatialContributionAtV6 } from "./spatial-economy";
 import { TECHNOLOGY_IDS } from "./types";
@@ -50,6 +51,8 @@ export type RuleErrorCodeV6 =
   | "TILE_UNEXPLORED"
   | "TECH_REQUIRED"
   | "INVALID_TILE"
+  | "FOREST_ACTION_INVALID_TILE"
+  | "REDEVELOP_INVALID_TARGET"
   | "TERRITORY_NOT_OWNED"
   | "CITY_BESIEGED"
   | "CITY_REWARD_PENDING"
@@ -60,6 +63,14 @@ export type RuleErrorCodeV6 =
   | "TECH_PREREQUISITE_MISSING"
   | "INSUFFICIENT_COINS"
   | "INTEGER_OVERFLOW"
+  | "CITY_NOT_FOUND"
+  | "CITY_NOT_OWNED"
+  | "CITY_REWARD_MISMATCH"
+  | "NO_REWARD_UNIT_PLACEMENT"
+  | "UNIT_NOT_FOUND"
+  | "UNIT_NOT_OWNED"
+  | "UNIT_ALREADY_ACTED"
+  | "MOVEMENT_ILLEGAL"
   | "CAPTURE_NOT_ELIGIBLE"
   | "TARGET_ALLIED";
 
@@ -96,6 +107,9 @@ const BASIC_COMMANDS = new Set<CommandV6["kind"]>(
 const SPATIAL_COMMANDS = new Set<CommandV6["kind"]>(
   Object.keys(SPATIAL_ECONOMIC_ACTIONS_V6) as SpatialEconomicCommandKindV6[],
 );
+type InfrastructureCommandV6 = Extract<CommandV6, { readonly at: CoordV6 }> & {
+  readonly kind: "CLEAR_FOREST" | "REPLANT_FOREST" | "BUILD_ROAD" | "REDEVELOP";
+};
 
 /** Creates the mapped state and awards the ordinary first Start Turn income. */
 export function createPlayableGameV6(
@@ -169,6 +183,25 @@ export function applyCommandV6(
       actor,
       command as Extract<CommandV6, { readonly at: CoordV6 }>,
     );
+  }
+  if (
+    command.kind === "CLEAR_FOREST" ||
+    command.kind === "REPLANT_FOREST" ||
+    command.kind === "BUILD_ROAD" ||
+    command.kind === "REDEVELOP"
+  ) {
+    return applyInfrastructureCommand(
+      state,
+      canonicalState,
+      actor,
+      command as InfrastructureCommandV6,
+    );
+  }
+  if (command.kind === "CHOOSE_CITY_REWARD") {
+    return applyCityRewardCommand(state, canonicalState, actor, command);
+  }
+  if (command.kind === "MOVE") {
+    return applyMoveCommand(state, canonicalState, actor, command);
   }
   if (command.kind === "END_TURN") {
     return applyEndTurn(state, canonicalState, actor);
@@ -532,6 +565,499 @@ function applySpatialEconomicCommand(
   }
 }
 
+function applyInfrastructureCommand(
+  original: GameStateV6,
+  state: GameStateV6,
+  actor: PlayerId,
+  command: InfrastructureCommandV6,
+): ApplyCommandResultV6 {
+  const player = requirePlayer(state, actor);
+  const tile = tileAt(state, command.at);
+  if (tile === undefined) return rejected(original, "TILE_NOT_FOUND");
+  if (!isExplored(player, command.at)) {
+    return rejected(original, "TILE_UNEXPLORED");
+  }
+  const technology =
+    command.kind === "CLEAR_FOREST"
+      ? "FORESTRY"
+      : command.kind === "REPLANT_FOREST"
+        ? "FIELDCRAFT"
+        : command.kind === "BUILD_ROAD"
+          ? "ROADS"
+          : "GRAND_WORKS";
+  if (!player.researchedTechs.includes(technology)) {
+    return rejected(original, "TECH_REQUIRED", { tech: technology });
+  }
+  const forestValid =
+    tile.site === null &&
+    tile.resource === null &&
+    tile.improvement === null &&
+    ((command.kind === "CLEAR_FOREST" && tile.terrain === "FOREST") ||
+      (command.kind === "REPLANT_FOREST" && tile.terrain === "GRASS"));
+  if (
+    (command.kind === "CLEAR_FOREST" || command.kind === "REPLANT_FOREST") &&
+    !forestValid
+  ) {
+    return rejected(original, "FOREST_ACTION_INVALID_TILE", {
+      action: command.kind,
+    });
+  }
+  if (command.kind === "BUILD_ROAD" && (tile.site !== null || tile.road)) {
+    return rejected(original, "INVALID_TILE", { action: command.kind });
+  }
+  if (command.kind === "REDEVELOP" && tile.improvement === null) {
+    return rejected(original, "REDEVELOP_INVALID_TARGET");
+  }
+  const city = state.cities.find(
+    (candidate) => candidate.id === tile.territoryCityId,
+  );
+  if (city === undefined || city.ownerId !== actor) {
+    return rejected(original, "TERRITORY_NOT_OWNED");
+  }
+  if (isCityBesiegedV6(state, city)) return rejected(original, "CITY_BESIEGED");
+  if (
+    state.pendingChoices.some(
+      (choice) => choice.kind === "CITY_REWARD" && choice.cityId === city.id,
+    )
+  ) {
+    return rejected(original, "CITY_REWARD_PENDING");
+  }
+  const cost =
+    command.kind === "BUILD_ROAD"
+      ? 2
+      : command.kind === "REPLANT_FOREST"
+        ? 4
+        : 0;
+  if (player.coins < cost) {
+    return rejected(original, "INSUFFICIENT_COINS", { cost });
+  }
+
+  try {
+    const commandIndex = state.commandIndex + 1;
+    const coinDelta = command.kind === "CLEAR_FOREST" ? 1 : -cost;
+    const nextCoins = player.coins + coinDelta;
+    if (
+      !Number.isSafeInteger(commandIndex) ||
+      !Number.isSafeInteger(nextCoins)
+    ) {
+      throw new RangeError("INTEGER_OVERFLOW");
+    }
+    const removed = command.kind === "REDEVELOP" ? tile.improvement : null;
+    const removedContribution =
+      removed === null
+        ? undefined
+        : state.populationContributions.find(
+            (contribution) =>
+              contribution.source.kind === "IMPROVEMENT" &&
+              sameCoord(contribution.source.at, command.at),
+          );
+    if (removed !== null && removedContribution === undefined) {
+      return rejected(original, "INVALID_STATE");
+    }
+    const removedMarket =
+      removed === "MARKET"
+        ? spatialContributionAtV6(state, command.at, "MARKET").marketIncome
+        : 0;
+    const updatedTile: TileStateV6 = {
+      ...tile,
+      terrain:
+        command.kind === "CLEAR_FOREST"
+          ? "GRASS"
+          : command.kind === "REPLANT_FOREST"
+            ? "FOREST"
+            : tile.terrain,
+      road: command.kind === "BUILD_ROAD" ? true : tile.road,
+      improvement: command.kind === "REDEVELOP" ? null : tile.improvement,
+    };
+    const board = {
+      ...state.board,
+      tiles: state.board.tiles.map((candidate) =>
+        sameCoord(candidate.at, command.at) ? updatedTile : candidate,
+      ),
+    };
+    const contributions =
+      removedContribution === undefined
+        ? state.populationContributions
+        : state.populationContributions.filter(
+            (contribution) => contribution.id !== removedContribution.id,
+          );
+    const recalculation = recomputeLiveEconomyV6(
+      state,
+      { board, cities: state.cities },
+      contributions,
+    );
+    const players = state.players.map((candidate) =>
+      candidate.id === actor ? { ...candidate, coins: nextCoins } : candidate,
+    );
+    const nextState = checkedState({
+      ...state,
+      commandIndex,
+      board,
+      players,
+      cities: recalculation.cities,
+      populationContributions: recalculation.populationContributions,
+      pendingChoices: [
+        ...state.pendingChoices,
+        ...recalculation.pendingChoices,
+      ],
+    });
+    const fact: DomainEventV6 =
+      command.kind === "BUILD_ROAD"
+        ? {
+            kind: "ROAD_BUILT",
+            playerId: actor,
+            cityId: city.id,
+            at: command.at,
+            cost: 2,
+          }
+        : command.kind === "CLEAR_FOREST"
+          ? {
+              kind: "FOREST_CLEARED",
+              playerId: actor,
+              cityId: city.id,
+              at: command.at,
+              coinDelta: 1,
+            }
+          : command.kind === "REPLANT_FOREST"
+            ? {
+                kind: "FOREST_REPLANTED",
+                playerId: actor,
+                cityId: city.id,
+                at: command.at,
+                coinDelta: 0,
+              }
+            : {
+                kind: "ECONOMIC_BUILDING_REMOVED",
+                playerId: actor,
+                cityId: city.id,
+                at: command.at,
+                improvement: requireImprovement(removed),
+                populationContributionRemoved: removedContribution?.amount ?? 0,
+                marketIncomeRemoved: removedMarket,
+              };
+    return {
+      accepted: true,
+      state: deepFreeze(nextState),
+      events: [
+        fact,
+        ...economyEvents(recalculation.changes),
+        ...growthEventsForChanges(recalculation.changes),
+      ],
+    };
+  } catch (cause) {
+    if (cause instanceof RangeError && cause.message === "INTEGER_OVERFLOW") {
+      return rejected(original, "INTEGER_OVERFLOW");
+    }
+    if (cause instanceof RangeError) return rejected(original, "INVALID_STATE");
+    throw cause;
+  }
+}
+
+function applyCityRewardCommand(
+  original: GameStateV6,
+  state: GameStateV6,
+  actor: PlayerId,
+  command: Extract<CommandV6, { readonly kind: "CHOOSE_CITY_REWARD" }>,
+): ApplyCommandResultV6 {
+  const head = state.pendingChoices[0];
+  if (head?.kind !== "CITY_REWARD" || head.cityId !== command.cityId) {
+    return rejected(original, "PENDING_CHOICE", {
+      kind: head?.kind ?? "NONE",
+    });
+  }
+  const city = state.cities.find(
+    (candidate) => candidate.id === command.cityId,
+  );
+  if (city === undefined) return rejected(original, "CITY_NOT_FOUND");
+  if (city.ownerId !== actor) return rejected(original, "CITY_NOT_OWNED");
+  if (
+    city.level < command.reachedLevel ||
+    head.reachedLevel !== command.reachedLevel ||
+    city.rewards.some(
+      (record) => record.reachedLevel === command.reachedLevel,
+    ) ||
+    !head.candidates.includes(command.reward)
+  ) {
+    return rejected(original, "CITY_REWARD_MISMATCH", {
+      reachedLevel: command.reachedLevel,
+      reward: command.reward,
+    });
+  }
+  const unitRole =
+    command.reward === "MILITIA"
+      ? "FIGHTER"
+      : command.reward === "JUGGERNAUT"
+        ? "JUGGERNAUT"
+        : null;
+  const placement =
+    unitRole === null ? null : rewardUnitPlacementV6(state, city);
+  if (unitRole !== null && placement === null) {
+    return rejected(original, "NO_REWARD_UNIT_PLACEMENT");
+  }
+
+  try {
+    let nextEntityId = state.nextEntityId;
+    let players = state.players;
+    let board = state.board;
+    let cities = state.cities;
+    let units = state.units;
+    let contributions = state.populationContributions;
+    let pendingChoices = state.pendingChoices.slice(1);
+    const events: DomainEventV6[] = [
+      {
+        kind: "CITY_REWARD_CHOSEN",
+        playerId: actor,
+        cityId: city.id,
+        reachedLevel: command.reachedLevel,
+        reward: command.reward,
+      },
+    ];
+    const rewardedCity: CityStateV6 = {
+      ...city,
+      expanded: city.expanded || command.reward === "EXPAND",
+      rewards: [
+        ...city.rewards,
+        { reachedLevel: command.reachedLevel, reward: command.reward },
+      ],
+    };
+    cities = cities.map((candidate) =>
+      candidate.id === city.id ? rewardedCity : candidate,
+    );
+
+    if (command.reward === "SURVEY") {
+      const reveal = revealRadius(state, actor, city.at, 3);
+      players = players.map((candidate) =>
+        candidate.id === actor
+          ? { ...candidate, explored: reveal.explored }
+          : candidate,
+      );
+      if (reveal.revealed.length > 0) {
+        events.push({
+          kind: "TILES_REVEALED",
+          playerId: actor,
+          tiles: reveal.revealed,
+        });
+      }
+    } else if (
+      command.reward === "STOCKPILE" ||
+      command.reward === "TREASURY"
+    ) {
+      const amount = command.reward === "STOCKPILE" ? 4 : 5;
+      const balance = requirePlayer(state, actor).coins + amount;
+      if (!Number.isSafeInteger(balance))
+        throw new RangeError("INTEGER_OVERFLOW");
+      players = players.map((candidate) =>
+        candidate.id === actor ? { ...candidate, coins: balance } : candidate,
+      );
+    } else if (command.reward === "EXPAND") {
+      const claimed: CoordV6[] = [];
+      board = {
+        ...board,
+        tiles: board.tiles.map((tile) => {
+          if (
+            tile.territoryCityId === null &&
+            Math.max(
+              Math.abs(tile.at.x - city.at.x),
+              Math.abs(tile.at.y - city.at.y),
+            ) <= 2
+          ) {
+            claimed.push(tile.at);
+            return { ...tile, territoryCityId: city.id };
+          }
+          return tile;
+        }),
+      };
+      claimed.sort(compareCoords);
+      events.push({
+        kind: "CITY_TERRITORY_EXPANDED",
+        playerId: actor,
+        cityId: city.id,
+        tiles: claimed,
+      });
+    } else if (command.reward === "BOOM") {
+      const allocationId = nextEntityId;
+      nextEntityId += 1;
+      if (!Number.isSafeInteger(nextEntityId)) {
+        throw new RangeError("INTEGER_OVERFLOW");
+      }
+      contributions = [
+        ...contributions,
+        {
+          id: allocationId,
+          cityId: city.id,
+          category: "PERMANENT",
+          amount: 3,
+          source: {
+            kind: "CITY_REWARD",
+            reward: "BOOM",
+            reachedLevel: 4,
+            at: city.at,
+          },
+        },
+      ];
+      const recalculation = recomputeLiveEconomyV6(
+        state,
+        { board, cities },
+        contributions,
+      );
+      cities = recalculation.cities;
+      contributions = recalculation.populationContributions;
+      pendingChoices = [...recalculation.pendingChoices, ...pendingChoices];
+      events.push(
+        ...economyEvents(recalculation.changes),
+        ...growthEventsForChanges(recalculation.changes),
+      );
+    } else if (unitRole !== null && placement !== null) {
+      const allocation = allocateUnitId(nextEntityId);
+      nextEntityId = allocation.nextEntityId;
+      const rule = effectiveRoleRuleV6(
+        requirePlayer(state, actor).faction,
+        unitRole,
+      );
+      units = [
+        ...units,
+        {
+          id: allocation.id,
+          ownerId: actor,
+          homeCityId: city.id,
+          role: unitRole,
+          at: placement,
+          hp: rule.maxHp,
+          maxHp: rule.maxHp,
+          kills: 0,
+          veteran: false,
+          activation: {
+            moved: true,
+            movedPathLength: 0,
+            attacked: true,
+            healed: true,
+            recovered: true,
+            captured: true,
+            handled: true,
+            specialActed: true,
+          },
+        },
+      ];
+      events.push({
+        kind: "UNIT_REWARD_GRANTED",
+        playerId: actor,
+        cityId: city.id,
+        reachedLevel: command.reachedLevel,
+        unitId: allocation.id,
+        role: unitRole,
+      });
+    }
+
+    const commandIndex = state.commandIndex + 1;
+    if (!Number.isSafeInteger(commandIndex)) {
+      throw new RangeError("INTEGER_OVERFLOW");
+    }
+    const nextState = checkedState({
+      ...state,
+      nextEntityId,
+      commandIndex,
+      players,
+      board,
+      cities,
+      units,
+      populationContributions: contributions,
+      pendingChoices,
+    });
+    return { accepted: true, state: deepFreeze(nextState), events };
+  } catch (cause) {
+    if (cause instanceof RangeError && cause.message === "INTEGER_OVERFLOW") {
+      return rejected(original, "INTEGER_OVERFLOW");
+    }
+    if (cause instanceof RangeError) return rejected(original, "INVALID_STATE");
+    throw cause;
+  }
+}
+
+function applyMoveCommand(
+  original: GameStateV6,
+  state: GameStateV6,
+  actor: PlayerId,
+  command: Extract<CommandV6, { readonly kind: "MOVE" }>,
+): ApplyCommandResultV6 {
+  const unit = state.units.find((candidate) => candidate.id === command.unitId);
+  if (unit === undefined || unit.hp <= 0) {
+    return rejected(original, "UNIT_NOT_FOUND", { unitId: command.unitId });
+  }
+  if (unit.ownerId !== actor) {
+    return rejected(original, "UNIT_NOT_OWNED", { unitId: command.unitId });
+  }
+  if (
+    unit.activation.moved ||
+    unit.activation.attacked ||
+    unit.activation.healed ||
+    unit.activation.recovered ||
+    unit.activation.captured ||
+    unit.activation.specialActed
+  ) {
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: command.unitId });
+  }
+  const validation = validateMovementPathV6(state, unit, command.path);
+  if (!validation.legal) {
+    return rejected(original, "MOVEMENT_ILLEGAL", {
+      reason: validation.reason,
+    });
+  }
+  try {
+    const players = state.players.map((candidate) =>
+      candidate.id === actor
+        ? { ...candidate, explored: validation.explored }
+        : candidate,
+    );
+    const units = state.units.map((candidate) =>
+      candidate.id === unit.id
+        ? {
+            ...candidate,
+            at: validation.destination,
+            activation: {
+              ...candidate.activation,
+              moved: true,
+              movedPathLength: validation.traversedPath.length,
+              handled: true,
+            },
+          }
+        : candidate,
+    );
+    const commandIndex = state.commandIndex + 1;
+    if (!Number.isSafeInteger(commandIndex))
+      throw new RangeError("INTEGER_OVERFLOW");
+    const nextState = checkedState({ ...state, commandIndex, players, units });
+    const events: DomainEventV6[] = [];
+    if (validation.traversedPath.length > 0) {
+      events.push({
+        kind: "UNIT_MOVED",
+        unitId: unit.id,
+        path: validation.traversedPath,
+      });
+    }
+    if (validation.interruption !== null) {
+      events.push({
+        kind: "UNIT_MOVE_INTERRUPTED",
+        unitId: unit.id,
+        at: validation.interruption.at,
+        reason: validation.interruption.reason,
+      });
+    }
+    if (validation.revealed.length > 0) {
+      events.push({
+        kind: "TILES_REVEALED",
+        playerId: actor,
+        tiles: validation.revealed,
+      });
+    }
+    return { accepted: true, state: deepFreeze(nextState), events };
+  } catch (cause) {
+    if (cause instanceof RangeError && cause.message === "INTEGER_OVERFLOW") {
+      return rejected(original, "INTEGER_OVERFLOW");
+    }
+    return rejected(original, "INVALID_STATE");
+  }
+}
+
 function applyEndTurn(
   original: GameStateV6,
   state: GameStateV6,
@@ -812,13 +1338,13 @@ function commonError(
   ) {
     return error("NOT_ACTIVE_PLAYER");
   }
-  if (
-    state.pendingChoices.length > 0 &&
-    command.kind !== "CHOOSE_CITY_REWARD" &&
-    command.kind !== "CHOOSE_CANDIFY_CITY"
-  ) {
+  const head = state.pendingChoices[0];
+  const resolvesHead =
+    (head?.kind === "CITY_REWARD" && command.kind === "CHOOSE_CITY_REWARD") ||
+    (head?.kind === "CANDIFY_CITY" && command.kind === "CHOOSE_CANDIFY_CITY");
+  if (head !== undefined && !resolvesHead) {
     return error("PENDING_CHOICE", {
-      kind: state.pendingChoices[0]?.kind ?? "UNKNOWN",
+      kind: head.kind,
     });
   }
   return null;
@@ -909,18 +1435,30 @@ function revealRadiusOne(
   readonly explored: readonly CoordV6[];
   readonly revealed: readonly CoordV6[];
 } {
+  return revealRadius(state, playerId, center, 1);
+}
+
+function revealRadius(
+  state: GameStateV6,
+  playerId: PlayerId,
+  center: CoordV6,
+  radius: number,
+): {
+  readonly explored: readonly CoordV6[];
+  readonly revealed: readonly CoordV6[];
+} {
   const player = requirePlayer(state, playerId);
   const prior = new Set(player.explored.map(coordKey));
   const explored = [...player.explored];
   const revealed: CoordV6[] = [];
   for (
-    let y = Math.max(0, center.y - 1);
-    y <= Math.min(state.board.height - 1, center.y + 1);
+    let y = Math.max(0, center.y - radius);
+    y <= Math.min(state.board.height - 1, center.y + radius);
     y += 1
   ) {
     for (
-      let x = Math.max(0, center.x - 1);
-      x <= Math.min(state.board.width - 1, center.x + 1);
+      let x = Math.max(0, center.x - radius);
+      x <= Math.min(state.board.width - 1, center.x + radius);
       x += 1
     ) {
       const at = { x, y };
@@ -933,6 +1471,47 @@ function revealRadiusOne(
   explored.sort(compareCoords);
   revealed.sort(compareCoords);
   return { explored, revealed };
+}
+
+function rewardUnitPlacementV6(
+  state: GameStateV6,
+  city: CityStateV6,
+): CoordV6 | null {
+  const player = requirePlayer(state, city.ownerId);
+  const candidates = state.board.tiles
+    .filter(
+      (tile) =>
+        tile.territoryCityId === city.id &&
+        (tile.terrain !== "MOUNTAIN" ||
+          player.researchedTechs.includes("SURVEYING")) &&
+        !state.units.some(
+          (unit) => unit.hp > 0 && sameCoord(unit.at, tile.at),
+        ) &&
+        !state.chocolateWalls.some((wall) => sameCoord(wall.at, tile.at)),
+    )
+    .sort((left, right) => {
+      const leftDistance = Math.max(
+        Math.abs(left.at.x - city.at.x),
+        Math.abs(left.at.y - city.at.y),
+      );
+      const rightDistance = Math.max(
+        Math.abs(right.at.x - city.at.x),
+        Math.abs(right.at.y - city.at.y),
+      );
+      return leftDistance - rightDistance || compareCoords(left.at, right.at);
+    });
+  return candidates[0]?.at ?? null;
+}
+
+/** Public footprint predicate shared with the later Candify reducer. */
+export function cityFootprintContainsV6(
+  city: Pick<CityStateV6, "at" | "expanded">,
+  at: CoordV6,
+): boolean {
+  return (
+    Math.max(Math.abs(at.x - city.at.x), Math.abs(at.y - city.at.y)) <=
+    (city.expanded ? 2 : 1)
+  );
 }
 
 function tileAt(state: GameStateV6, at: CoordV6): TileStateV6 | undefined {

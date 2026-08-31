@@ -30,7 +30,7 @@ export interface SpatialContributionV6 {
   readonly distinctTypes: readonly EconomicImprovementId[];
   readonly distinctFamilies: readonly EconomicFamilyV6[];
   readonly oppositePairAxes: readonly OppositePairAxisV6[];
-  readonly capitalRoadConnected: false;
+  readonly capitalRoadConnected: boolean;
   /** Connected contributors for clusters, otherwise the distinct placement set. */
   readonly placementCount: number;
 }
@@ -181,16 +181,76 @@ export function spatialContributionAtV6(
   const families = ECONOMIC_FAMILY_ORDER_V6.filter((family) =>
     contributors.some((tile) => familyFor(tile.improvement) === family),
   );
+  const connectedRoads = capitalConnectedRoadKeysV6(graph, city.ownerId);
+  const capitalRoadConnected = adjacentTiles(graph.board, at).some(
+    (tile) =>
+      tile.road &&
+      tileOwnerId(graph, tile) === city.ownerId &&
+      connectedRoads.has(coordKey(tile.at)),
+  );
   return result({
-    marketIncome: families.length,
+    marketIncome: Math.min(5, families.length + (capitalRoadConnected ? 1 : 0)),
     contributingTiles: contributors.map((tile) => tile.at),
     distinctTypes: orderedDistinctTypes(contributors, [
       ...BASIC_TYPES,
       ...PROCESSOR_TYPES,
     ]),
     distinctFamilies: families,
+    capitalRoadConnected,
     placementCount: families.length,
   });
+}
+
+/** Canonical same-player Road components that touch an owned capital. */
+export function capitalConnectedRoadKeysV6(
+  graph: EconomyGraphV6,
+  playerId: PlayerId,
+): ReadonlySet<string> {
+  const friendlyRoads = graph.board.tiles.filter(
+    (tile) => tile.road && tileOwnerId(graph, tile) === playerId,
+  );
+  const roadKeys = new Set(friendlyRoads.map((tile) => coordKey(tile.at)));
+  const connected = new Set<string>();
+  const queue: CoordV6[] = [];
+  for (const capital of graph.cities.filter(
+    (city) => city.ownerId === playerId && city.isCapital,
+  )) {
+    for (const [dx, dy] of CARDINAL_OFFSETS) {
+      const at = { x: capital.at.x + dx, y: capital.at.y + dy };
+      if (roadKeys.has(coordKey(at))) queue.push(at);
+    }
+  }
+  while (queue.length > 0) {
+    const at = queue.shift();
+    if (at === undefined || connected.has(coordKey(at))) continue;
+    connected.add(coordKey(at));
+    for (const [dx, dy] of CARDINAL_OFFSETS) {
+      const next = { x: at.x + dx, y: at.y + dy };
+      if (roadKeys.has(coordKey(next)) && !connected.has(coordKey(next))) {
+        queue.push(next);
+      }
+    }
+  }
+  return connected;
+}
+
+export function isCapitalConnectedRoadV6(
+  graph: EconomyGraphV6,
+  at: CoordV6,
+  playerId: PlayerId,
+): boolean {
+  return capitalConnectedRoadKeysV6(graph, playerId).has(coordKey(at));
+}
+
+function tileOwnerId(
+  graph: EconomyGraphV6,
+  tile: TileStateV6,
+): PlayerId | null {
+  if (tile.territoryCityId === null) return null;
+  return (
+    graph.cities.find((city) => city.id === tile.territoryCityId)?.ownerId ??
+    null
+  );
 }
 
 export function livePopulationAtV6(
@@ -343,7 +403,7 @@ function result(input: Partial<SpatialContributionV6>): SpatialContributionV6 {
     distinctTypes: input.distinctTypes ?? [],
     distinctFamilies: input.distinctFamilies ?? [],
     oppositePairAxes: input.oppositePairAxes ?? [],
-    capitalRoadConnected: false,
+    capitalRoadConnected: input.capitalRoadConnected ?? false,
     placementCount: input.placementCount ?? 0,
   };
 }

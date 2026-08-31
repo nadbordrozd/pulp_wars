@@ -481,8 +481,9 @@ function parsePopulationContributions(
       city === null ||
       source === null ||
       (candidate.category === "PERMANENT") !==
-        (source.kind === "RESOURCE_ACTION") ||
-      (candidate.category === "PERMANENT" && candidate.amount !== 1)
+        (source.kind !== "IMPROVEMENT") ||
+      (candidate.category === "PERMANENT" &&
+        candidate.amount !== (source.kind === "CITY_REWARD" ? 3 : 1))
     ) {
       return null;
     }
@@ -525,6 +526,17 @@ function parsePopulationContributionSource(
           improvement: input.improvement as EconomicImprovementId,
           at,
         };
+  }
+  if (
+    hasExactKeysV6(input, ["at", "kind", "reachedLevel", "reward"]) &&
+    input.kind === "CITY_REWARD" &&
+    input.reward === "BOOM" &&
+    input.reachedLevel === 4
+  ) {
+    const at = parseCoordV6(input.at);
+    return at === null
+      ? null
+      : { kind: "CITY_REWARD", reward: "BOOM", reachedLevel: 4, at };
   }
   return null;
 }

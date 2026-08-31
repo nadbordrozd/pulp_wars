@@ -226,6 +226,12 @@ export type PopulationContributionSourceV6 =
       readonly kind: "IMPROVEMENT";
       readonly improvement: EconomicImprovementId;
       readonly at: CoordV6;
+    }
+  | {
+      readonly kind: "CITY_REWARD";
+      readonly reward: "BOOM";
+      readonly reachedLevel: 4;
+      readonly at: CoordV6;
     };
 
 /**
