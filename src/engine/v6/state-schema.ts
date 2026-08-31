@@ -650,7 +650,8 @@ function parseWalls(input: unknown): readonly ChocolateWallStateV6[] | null {
   for (const candidate of input) {
     if (
       !hasExactKeysV6(candidate, ["at", "hp", "id", "ownerId"]) ||
-      !isPositiveSafeIntegerV6(candidate.hp)
+      !isPositiveSafeIntegerV6(candidate.hp) ||
+      candidate.hp > 10
     ) {
       return null;
     }
@@ -821,7 +822,6 @@ function crossReferencesAreValid(
 ): boolean {
   const playerIds = new Set(players.map((player) => player.id));
   const cityIds = new Set(cities.map((city) => city.id));
-  const unitIds = new Set(units.map((unit) => unit.id));
   const entityIds = [
     ...cities.map((city) => city.id),
     ...contributions.map((contribution) => contribution.id),
@@ -838,6 +838,11 @@ function crossReferencesAreValid(
         (unit.homeCityId !== null && !cityIds.has(unit.homeCityId)),
     ) ||
     walls.some((wall) => !playerIds.has(wall.ownerId)) ||
+    walls.some((wall) =>
+      board.tiles.some(
+        (tile) => sameCoord(tile.at, wall.at) && tile.site !== null,
+      ),
+    ) ||
     board.tiles.some(
       (tile) =>
         tile.territoryCityId !== null && !cityIds.has(tile.territoryCityId),
@@ -852,11 +857,23 @@ function crossReferencesAreValid(
     ) ||
     !occupancyIsValid(units, walls) ||
     !populationLedgerIsValid(board, cities, contributions) ||
-    pendingChoices.some((choice) =>
-      choice.kind === "CITY_REWARD"
-        ? !cityIds.has(choice.cityId)
-        : !unitIds.has(choice.unitId),
-    )
+    pendingChoices.some((choice) => {
+      if (choice.kind === "CITY_REWARD") return !cityIds.has(choice.cityId);
+      const unit = units.find((candidate) => candidate.id === choice.unitId);
+      const player = players.find(
+        (candidate) => candidate.id === unit?.ownerId,
+      );
+      return (
+        unit === undefined ||
+        player?.faction !== "CANDY" ||
+        choice.candidateCityIds.some(
+          (cityId) =>
+            !cities.some(
+              (city) => city.id === cityId && city.ownerId === unit.ownerId,
+            ),
+        )
+      );
+    })
   ) {
     return false;
   }

@@ -871,28 +871,24 @@ describe("ruleset-6 Roads, redevelopment, forest, and rewards", () => {
     const city = ownCity(state);
     let next = state.nextEntityId;
     const walls = state.board.tiles
-      .filter((tile) => tile.territoryCityId === city.id)
+      .filter(
+        (tile) =>
+          tile.territoryCityId === city.id &&
+          tile.site === null &&
+          !same(tile.at, city.at),
+      )
       .map((tile) => ({
         id: next++ as GameStateV6["chocolateWalls"][number]["id"],
         ownerId: city.ownerId,
         at: tile.at,
         hp: 10,
       }));
-    const outside = state.board.tiles.find(
-      (tile) =>
-        tile.territoryCityId !== city.id &&
-        tile.site === null &&
-        !state.units.some((unit) => same(unit.at, tile.at)),
-    );
-    if (outside === undefined) {
-      throw new Error("missing outside reward-block tile");
-    }
     state = checked({
       ...state,
       nextEntityId: next,
       chocolateWalls: walls,
       units: state.units.map((unit) =>
-        unit.ownerId === city.ownerId ? { ...unit, at: outside.at } : unit,
+        unit.ownerId === city.ownerId ? { ...unit, at: city.at } : unit,
       ),
     });
     expect(

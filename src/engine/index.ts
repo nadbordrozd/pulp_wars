@@ -28,6 +28,7 @@ export * from "./turns/lifecycle";
 export * from "./territory/connectivity";
 export * from "./rules/ruleset-v6";
 export * from "./v6/commands";
+export * from "./v6/candy";
 export * from "./v6/combat";
 export * from "./v6/events";
 export * from "./v6/event-schema";

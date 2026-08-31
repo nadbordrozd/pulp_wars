@@ -15,6 +15,7 @@ import {
 } from "../rules/ruleset-v6";
 import { compareCommandsV6, type CommandV6 } from "./commands";
 import type { CombatTargetRefV6 } from "./commands";
+import { cityFootprintContainsV6, territoryTilesAreConnectedV6 } from "./candy";
 import { calculateCombatPreviewV6 } from "./combat";
 import {
   arePlayersAlliedV6,
@@ -43,7 +44,7 @@ import type {
   TileStateV6,
   UnitRoleId,
 } from "./types";
-import { UNIT_ROLE_IDS } from "./types";
+import { CARDINAL_DIRECTION_ORDER_V6, UNIT_ROLE_IDS } from "./types";
 import type { PlayerTileViewV6, PlayerViewV6 } from "./view";
 
 export interface CityValueDeltaV6 {
@@ -174,7 +175,28 @@ export function queryPlayerCommandsV6(
   }
   const pending = view.pendingChoices[0];
   if (pending !== undefined) {
-    if (pending.kind !== "CITY_REWARD") return [];
+    if (pending.kind === "CANDIFY_CITY") {
+      const unit = view.units.find(
+        (candidate) =>
+          candidate.id === pending.unitId &&
+          candidate.ownerId === view.viewer.id &&
+          candidate.hp > 0,
+      );
+      return unit === undefined
+        ? []
+        : pending.candidateCityIds
+            .filter((cityId) =>
+              view.cities.some(
+                (city) => city.id === cityId && city.ownerId === view.viewer.id,
+              ),
+            )
+            .map((cityId): CommandV6 => ({
+              kind: "CHOOSE_CANDIFY_CITY",
+              unitId: unit.id,
+              cityId,
+            }))
+            .sort(compareCommandsV6);
+    }
     const city = view.cities.find(
       (candidate) =>
         candidate.id === pending.cityId && candidate.ownerId === view.viewer.id,
@@ -320,6 +342,65 @@ export function queryPlayerCommandsV6(
           });
         }
       }
+    }
+    if (
+      role.abilities.includes("KAMIKAZE_ROLL") &&
+      !unit.activation.moved &&
+      !unit.activation.attacked &&
+      !unit.activation.healed &&
+      !unit.activation.recovered &&
+      !unit.activation.captured &&
+      !unit.activation.specialActed
+    ) {
+      for (const direction of CARDINAL_DIRECTION_ORDER_V6) {
+        if (rollDirectionIsOnBoard(view, unit.at, direction)) {
+          commands.push({
+            kind: "KAMIKAZE_ROLL",
+            unitId: unit.id,
+            direction,
+          });
+        }
+      }
+    }
+    if (
+      role.abilities.includes("BUILD_CHOCOLATE_WALL") &&
+      view.viewer.coins >= 1 &&
+      !unit.activation.moved &&
+      !unit.activation.attacked &&
+      !unit.activation.healed &&
+      !unit.activation.recovered &&
+      !unit.activation.captured &&
+      !unit.activation.specialActed
+    ) {
+      for (const tile of view.board.tiles) {
+        if (
+          tile.explored &&
+          chebyshev(unit.at, tile.at) === 1 &&
+          tile.site === null &&
+          !publicTileIsAlliedTerritory(view, tile) &&
+          !view.units.some(
+            (candidate) => candidate.hp > 0 && sameCoord(candidate.at, tile.at),
+          ) &&
+          !view.chocolateWalls.some((wall) => sameCoord(wall.at, tile.at))
+        ) {
+          commands.push({
+            kind: "BUILD_CHOCOLATE_WALL",
+            unitId: unit.id,
+            at: tile.at,
+          });
+        }
+      }
+    }
+    if (
+      role.abilities.includes("CANDIFY") &&
+      !unit.activation.attacked &&
+      !unit.activation.healed &&
+      !unit.activation.recovered &&
+      !unit.activation.captured &&
+      !unit.activation.specialActed &&
+      publicCandifyCandidatesV6(view, unit).length > 0
+    ) {
+      commands.push({ kind: "CANDIFY", unitId: unit.id });
     }
     if (
       unit.hp < unit.maxHp &&
@@ -688,6 +769,108 @@ function publicCaptureIsLegal(view: PlayerViewV6, unitId: number): boolean {
   }
   const tile = view.board.tiles[unit.at.y * view.board.width + unit.at.x];
   return tile?.explored === true && tile.site === "VILLAGE";
+}
+
+function publicCandifyCandidatesV6(
+  view: PlayerViewV6,
+  unit: PlayerViewV6["units"][number],
+): readonly CityStateV6[] {
+  const tile = view.board.tiles[unit.at.y * view.board.width + unit.at.x];
+  if (
+    tile?.explored !== true ||
+    tile.site !== null ||
+    tile.territoryOwnerId === view.viewer.id ||
+    publicTileIsAlliedTerritory(view, tile)
+  ) {
+    return [];
+  }
+  if (tile.territoryOwnerId !== null) {
+    if (tile.territoryCityId === null) return [];
+    const controller = view.cities.find(
+      (city) => city.id === tile.territoryCityId,
+    );
+    if (
+      controller === undefined ||
+      !controllerFootprintIsFullyExplored(view, controller) ||
+      !territoryTilesAreConnectedV6(
+        controller,
+        view.board.tiles.filter(
+          (candidate) =>
+            candidate.explored &&
+            candidate.territoryCityId === controller.id &&
+            !sameCoord(candidate.at, unit.at),
+        ),
+      )
+    ) {
+      return [];
+    }
+  }
+  const viable = view.cities
+    .filter(
+      (city) =>
+        city.ownerId === view.viewer.id &&
+        cityFootprintContainsV6(city, unit.at) &&
+        view.board.tiles.some(
+          (candidate) =>
+            candidate.explored &&
+            candidate.territoryCityId === city.id &&
+            chebyshev(candidate.at, unit.at) === 1,
+        ),
+    )
+    .map((city) => ({ city, distance: chebyshev(city.at, unit.at) }));
+  const minimum = viable.reduce(
+    (best, candidate) => Math.min(best, candidate.distance),
+    Number.POSITIVE_INFINITY,
+  );
+  return viable
+    .filter((candidate) => candidate.distance === minimum)
+    .map((candidate) => candidate.city)
+    .sort((left, right) => left.id - right.id);
+}
+
+function controllerFootprintIsFullyExplored(
+  view: PlayerViewV6,
+  city: CityStateV6,
+): boolean {
+  for (
+    let y = Math.max(0, city.at.y - (city.expanded ? 2 : 1));
+    y <= Math.min(view.board.height - 1, city.at.y + (city.expanded ? 2 : 1));
+    y += 1
+  ) {
+    for (
+      let x = Math.max(0, city.at.x - (city.expanded ? 2 : 1));
+      x <= Math.min(view.board.width - 1, city.at.x + (city.expanded ? 2 : 1));
+      x += 1
+    ) {
+      if (view.board.tiles[y * view.board.width + x]?.explored !== true) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+function publicTileIsAlliedTerritory(
+  view: PlayerViewV6,
+  tile: Extract<PlayerTileViewV6, { readonly explored: true }>,
+): boolean {
+  return (
+    tile.territoryOwnerId !== null &&
+    arePlayersAlliedV6(view, view.viewer.id, tile.territoryOwnerId)
+  );
+}
+
+function rollDirectionIsOnBoard(
+  view: PlayerViewV6,
+  at: CoordV6,
+  direction: (typeof CARDINAL_DIRECTION_ORDER_V6)[number],
+): boolean {
+  return (
+    (direction !== "NORTH" || at.y > 0) &&
+    (direction !== "EAST" || at.x < view.board.width - 1) &&
+    (direction !== "SOUTH" || at.y < view.board.height - 1) &&
+    (direction !== "WEST" || at.x > 0)
+  );
 }
 
 function cityIsPubliclyBesieged(

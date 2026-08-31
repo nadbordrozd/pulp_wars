@@ -1,4 +1,9 @@
-import { allocateCityId, allocateUnitId, type PlayerId } from "../model/ids";
+import {
+  allocateCityId,
+  allocateUnitId,
+  allocateWallId,
+  type PlayerId,
+} from "../model/ids";
 import type { JsonValue } from "../replay/canonical";
 import {
   BASIC_ECONOMIC_ACTIONS_V6,
@@ -11,6 +16,12 @@ import {
 } from "../rules/ruleset-v6";
 import { deepFreeze } from "../model/freeze";
 import { hasExactKeysV6, parseCommandV6, type CommandV6 } from "./commands";
+import {
+  cityFootprintContainsV6,
+  nearestViableCandifyCitiesV6,
+  removalWouldDisconnectCityV6,
+  territoryOwnerIdV6,
+} from "./candy";
 import { calculateCombatPreviewV6, pushedDestinationV6 } from "./combat";
 import {
   assignedUnitCountV6,
@@ -40,6 +51,7 @@ import type {
   PopulationContributionV6,
   TileStateV6,
   TechnologyId,
+  CardinalDirectionV6,
   UnitStateV6,
 } from "./types";
 
@@ -88,7 +100,19 @@ export type RuleErrorCodeV6 =
   | "CITY_CAPACITY_FULL"
   | "MOVEMENT_ILLEGAL"
   | "CAPTURE_NOT_ELIGIBLE"
-  | "TARGET_ALLIED";
+  | "TARGET_ALLIED"
+  | "UNIT_TYPE_INVALID"
+  | "ROLL_DIRECTION_INVALID"
+  | "WALL_TARGET_NOT_ADJACENT"
+  | "WALL_INVALID_TILE"
+  | "ALLY_TERRITORY_FORBIDDEN"
+  | "CANDY_FACTION_REQUIRED"
+  | "CANDIFY_INVALID_TILE"
+  | "CANDIFY_OUTSIDE_FOOTPRINT"
+  | "CANDIFY_NO_ADJACENT_CITY"
+  | "CANDIFY_WOULD_DISCONNECT"
+  | "CANDIFY_CHOICE_INVALID"
+  | "CANDIFY_CITY_NOT_CANDIDATE";
 
 export interface RuleErrorV6 {
   readonly code: RuleErrorCodeV6;
@@ -225,6 +249,9 @@ export function applyCommandV6(
   if (command.kind === "ATTACK") {
     return applyAttackCommand(state, canonicalState, actor, command);
   }
+  if (command.kind === "KAMIKAZE_ROLL") {
+    return applyKamikazeRollCommand(state, canonicalState, actor, command);
+  }
   if (command.kind === "HEAL_ADJACENT") {
     return applyHealCommand(state, canonicalState, actor, command);
   }
@@ -236,6 +263,20 @@ export function applyCommandV6(
   }
   if (command.kind === "WAIT") {
     return applyWaitCommand(state, canonicalState, actor, command.unitId);
+  }
+  if (command.kind === "BUILD_CHOCOLATE_WALL") {
+    return applyBuildChocolateWallCommand(
+      state,
+      canonicalState,
+      actor,
+      command,
+    );
+  }
+  if (command.kind === "CANDIFY") {
+    return applyCandifyCommand(state, canonicalState, actor, command.unitId);
+  }
+  if (command.kind === "CHOOSE_CANDIFY_CITY") {
+    return applyChooseCandifyCityCommand(state, canonicalState, actor, command);
   }
   if (command.kind === "END_TURN") {
     return applyEndTurn(state, canonicalState, actor);
@@ -1318,6 +1359,490 @@ function applyAttackCommand(
   }
 }
 
+function applyKamikazeRollCommand(
+  original: GameStateV6,
+  state: GameStateV6,
+  actor: PlayerId,
+  command: Extract<CommandV6, { readonly kind: "KAMIKAZE_ROLL" }>,
+): ApplyCommandResultV6 {
+  const roller = state.units.find(
+    (candidate) => candidate.id === command.unitId && candidate.hp > 0,
+  );
+  if (roller === undefined) {
+    return rejected(original, "UNIT_NOT_FOUND", { unitId: command.unitId });
+  }
+  if (roller.ownerId !== actor) {
+    return rejected(original, "UNIT_NOT_OWNED", { unitId: command.unitId });
+  }
+  const player = requirePlayer(state, actor);
+  const rule = effectiveRoleRuleV6(player.faction, roller.role);
+  if (
+    player.faction !== "CANDY" ||
+    roller.role !== "RAIDER" ||
+    !rule.abilities.includes("KAMIKAZE_ROLL")
+  ) {
+    return rejected(original, "UNIT_TYPE_INVALID", {
+      expected: "CANDY_DONUT",
+    });
+  }
+  if (
+    roller.activation.moved ||
+    roller.activation.attacked ||
+    roller.activation.healed ||
+    roller.activation.recovered ||
+    roller.activation.captured ||
+    roller.activation.specialActed
+  ) {
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: roller.id });
+  }
+  const delta = directionDelta(command.direction);
+  const first = { x: roller.at.x + delta.x, y: roller.at.y + delta.y };
+  if (tileAt(state, first) === undefined) {
+    return rejected(original, "ROLL_DIRECTION_INVALID", {
+      direction: command.direction,
+    });
+  }
+
+  try {
+    const path: CoordV6[] = [];
+    for (
+      let at = first;
+      at.x >= 0 &&
+      at.y >= 0 &&
+      at.x < state.board.width &&
+      at.y < state.board.height;
+      at = { x: at.x + delta.x, y: at.y + delta.y }
+    ) {
+      path.push(at);
+    }
+    let units = [...state.units];
+    let chocolateWalls = [...state.chocolateWalls];
+    const explored = [...player.explored];
+    const events: DomainEventV6[] = [];
+    for (const at of path) {
+      events.push({ kind: "DONUT_ROLL_STEP", unitId: roller.id, at });
+      if (!explored.some((known) => sameCoord(known, at))) {
+        explored.push(at);
+        explored.sort(compareCoords);
+        events.push({ kind: "TILES_REVEALED", playerId: actor, tiles: [at] });
+      }
+      const victim = units.find(
+        (candidate) =>
+          candidate.id !== roller.id &&
+          candidate.hp > 0 &&
+          sameCoord(candidate.at, at),
+      );
+      if (victim !== undefined) {
+        const damage = Math.min(10, victim.hp);
+        const hpAfter = victim.hp - damage;
+        events.push({
+          kind: "ROLL_DAMAGE_RESOLVED",
+          sourceUnitId: roller.id,
+          target: { kind: "UNIT", unitId: victim.id },
+          at,
+          damage,
+          hpBefore: victim.hp,
+          hpAfter,
+        });
+        units =
+          hpAfter === 0
+            ? units.filter((candidate) => candidate.id !== victim.id)
+            : units.map((candidate) =>
+                candidate.id === victim.id
+                  ? { ...candidate, hp: hpAfter }
+                  : candidate,
+              );
+        if (hpAfter === 0) {
+          events.push({
+            kind: "UNIT_DIED",
+            unitId: victim.id,
+            cause: "KAMIKAZE_ROLL",
+          });
+        }
+        continue;
+      }
+      const wall = chocolateWalls.find((candidate) =>
+        sameCoord(candidate.at, at),
+      );
+      if (wall !== undefined) {
+        const damage = Math.min(10, wall.hp);
+        const hpAfter = wall.hp - damage;
+        events.push({
+          kind: "ROLL_DAMAGE_RESOLVED",
+          sourceUnitId: roller.id,
+          target: { kind: "CHOCOLATE_WALL", wallId: wall.id },
+          at,
+          damage,
+          hpBefore: wall.hp,
+          hpAfter,
+        });
+        chocolateWalls =
+          hpAfter === 0
+            ? chocolateWalls.filter((candidate) => candidate.id !== wall.id)
+            : chocolateWalls.map((candidate) =>
+                candidate.id === wall.id
+                  ? { ...candidate, hp: hpAfter }
+                  : candidate,
+              );
+        if (hpAfter === 0) {
+          events.push({
+            kind: "CHOCOLATE_WALL_DESTROYED",
+            wallId: wall.id,
+            ownerId: wall.ownerId,
+            at,
+            cause: "KAMIKAZE_ROLL",
+          });
+        }
+      }
+    }
+    units = units.filter((candidate) => candidate.id !== roller.id);
+    events.push({
+      kind: "UNIT_DIED",
+      unitId: roller.id,
+      cause: "KAMIKAZE_ROLL_SELF",
+    });
+    const commandIndex = state.commandIndex + 1;
+    if (!Number.isSafeInteger(commandIndex)) {
+      throw new RangeError("INTEGER_OVERFLOW");
+    }
+    const nextState = checkedState({
+      ...state,
+      commandIndex,
+      units,
+      chocolateWalls,
+      players: state.players.map((candidate) =>
+        candidate.id === actor ? { ...candidate, explored } : candidate,
+      ),
+    });
+    return { accepted: true, state: deepFreeze(nextState), events };
+  } catch (cause) {
+    if (cause instanceof RangeError && cause.message === "INTEGER_OVERFLOW") {
+      return rejected(original, "INTEGER_OVERFLOW");
+    }
+    return rejected(original, "INVALID_STATE");
+  }
+}
+
+function applyBuildChocolateWallCommand(
+  original: GameStateV6,
+  state: GameStateV6,
+  actor: PlayerId,
+  command: Extract<CommandV6, { readonly kind: "BUILD_CHOCOLATE_WALL" }>,
+): ApplyCommandResultV6 {
+  const unit = state.units.find(
+    (candidate) => candidate.id === command.unitId && candidate.hp > 0,
+  );
+  if (unit === undefined) {
+    return rejected(original, "UNIT_NOT_FOUND", { unitId: command.unitId });
+  }
+  if (unit.ownerId !== actor) {
+    return rejected(original, "UNIT_NOT_OWNED", { unitId: command.unitId });
+  }
+  const player = requirePlayer(state, actor);
+  const rule = effectiveRoleRuleV6(player.faction, unit.role);
+  if (
+    player.faction !== "CANDY" ||
+    unit.role !== "GUARD" ||
+    !rule.abilities.includes("BUILD_CHOCOLATE_WALL")
+  ) {
+    return rejected(original, "UNIT_TYPE_INVALID", {
+      expected: "CANDY_CHOCO_ENGINEER",
+    });
+  }
+  if (unit.activation.moved || activationHasTerminalAction(unit)) {
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: unit.id });
+  }
+  const tile = tileAt(state, command.at);
+  if (tile === undefined) return rejected(original, "TILE_NOT_FOUND");
+  if (!isExplored(player, command.at)) {
+    return rejected(original, "TILE_UNEXPLORED");
+  }
+  if (chebyshev(unit.at, command.at) !== 1) {
+    return rejected(original, "WALL_TARGET_NOT_ADJACENT", {
+      at: { x: command.at.x, y: command.at.y },
+    });
+  }
+  if (
+    tile.site !== null ||
+    state.units.some(
+      (candidate) => candidate.hp > 0 && sameCoord(candidate.at, command.at),
+    ) ||
+    state.chocolateWalls.some((wall) => sameCoord(wall.at, command.at))
+  ) {
+    return rejected(original, "WALL_INVALID_TILE", {
+      at: { x: command.at.x, y: command.at.y },
+    });
+  }
+  const territoryOwner = territoryOwnerIdV6(state, tile.territoryCityId);
+  if (
+    territoryOwner !== null &&
+    arePlayersAlliedV6(state, actor, territoryOwner)
+  ) {
+    return rejected(original, "ALLY_TERRITORY_FORBIDDEN", {
+      at: { x: command.at.x, y: command.at.y },
+    });
+  }
+  if (player.coins < 1) {
+    return rejected(original, "INSUFFICIENT_COINS", { cost: 1 });
+  }
+  try {
+    const allocation = allocateWallId(state.nextEntityId);
+    const commandIndex = state.commandIndex + 1;
+    if (!Number.isSafeInteger(commandIndex)) {
+      throw new RangeError("INTEGER_OVERFLOW");
+    }
+    const nextState = checkedState({
+      ...state,
+      nextEntityId: allocation.nextEntityId,
+      commandIndex,
+      players: state.players.map((candidate) =>
+        candidate.id === actor
+          ? { ...candidate, coins: candidate.coins - 1 }
+          : candidate,
+      ),
+      units: state.units.map((candidate) =>
+        candidate.id === unit.id
+          ? {
+              ...candidate,
+              captureEligible: false,
+              activation: {
+                ...candidate.activation,
+                handled: true,
+                specialActed: true,
+              },
+            }
+          : candidate,
+      ),
+      chocolateWalls: [
+        ...state.chocolateWalls,
+        { id: allocation.id, ownerId: actor, at: command.at, hp: 10 },
+      ],
+    });
+    return {
+      accepted: true,
+      state: deepFreeze(nextState),
+      events: [
+        {
+          kind: "CHOCOLATE_WALL_BUILT",
+          playerId: actor,
+          unitId: unit.id,
+          wallId: allocation.id,
+          at: command.at,
+          cost: 1,
+          hp: 10,
+        },
+      ],
+    };
+  } catch (cause) {
+    if (cause instanceof RangeError && cause.message === "INTEGER_OVERFLOW") {
+      return rejected(original, "INTEGER_OVERFLOW");
+    }
+    return rejected(original, "INVALID_STATE");
+  }
+}
+
+function applyCandifyCommand(
+  original: GameStateV6,
+  state: GameStateV6,
+  actor: PlayerId,
+  unitId: UnitStateV6["id"],
+): ApplyCommandResultV6 {
+  const unit = state.units.find(
+    (candidate) => candidate.id === unitId && candidate.hp > 0,
+  );
+  if (unit === undefined) {
+    return rejected(original, "UNIT_NOT_FOUND", { unitId });
+  }
+  if (unit.ownerId !== actor) {
+    return rejected(original, "UNIT_NOT_OWNED", { unitId });
+  }
+  const player = requirePlayer(state, actor);
+  const rule = effectiveRoleRuleV6(player.faction, unit.role);
+  if (player.faction !== "CANDY" || !rule.abilities.includes("CANDIFY")) {
+    return rejected(original, "CANDY_FACTION_REQUIRED");
+  }
+  if (activationHasTerminalAction(unit)) {
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: unit.id });
+  }
+  const tile = tileAt(state, unit.at);
+  const previousOwnerId =
+    tile === undefined ? null : territoryOwnerIdV6(state, tile.territoryCityId);
+  if (
+    tile === undefined ||
+    !isExplored(player, unit.at) ||
+    tile.site !== null ||
+    previousOwnerId === actor
+  ) {
+    return rejected(original, "CANDIFY_INVALID_TILE");
+  }
+  if (
+    !state.cities.some(
+      (city) =>
+        city.ownerId === actor && cityFootprintContainsV6(city, unit.at),
+    )
+  ) {
+    return rejected(original, "CANDIFY_OUTSIDE_FOOTPRINT");
+  }
+  if (
+    previousOwnerId !== null &&
+    arePlayersAlliedV6(state, actor, previousOwnerId)
+  ) {
+    return rejected(original, "TARGET_ALLIED");
+  }
+  if (
+    tile.territoryCityId !== null &&
+    previousOwnerId !== null &&
+    removalWouldDisconnectCityV6(state, tile.territoryCityId, unit.at)
+  ) {
+    return rejected(original, "CANDIFY_WOULD_DISCONNECT");
+  }
+  const candidates = nearestViableCandifyCitiesV6(state, actor, unit);
+  if (candidates.length === 0) {
+    return rejected(original, "CANDIFY_NO_ADJACENT_CITY");
+  }
+  if (candidates.length > 1) {
+    const commandIndex = state.commandIndex + 1;
+    if (!Number.isSafeInteger(commandIndex)) {
+      return rejected(original, "INTEGER_OVERFLOW");
+    }
+    const candidateCityIds = candidates.map((city) => city.id);
+    try {
+      const nextState = checkedState({
+        ...state,
+        commandIndex,
+        pendingChoices: [
+          ...state.pendingChoices,
+          { kind: "CANDIFY_CITY" as const, unitId: unit.id, candidateCityIds },
+        ],
+      });
+      return {
+        accepted: true,
+        state: deepFreeze(nextState),
+        events: [
+          {
+            kind: "CANDIFY_CITY_CHOICE_REQUIRED",
+            playerId: actor,
+            unitId: unit.id,
+            candidateCityIds,
+          },
+        ],
+      };
+    } catch {
+      return rejected(original, "INVALID_STATE");
+    }
+  }
+  const city = candidates[0];
+  return city === undefined
+    ? rejected(original, "INVALID_STATE")
+    : resolveCandifyV6(
+        original,
+        state,
+        actor,
+        unit,
+        city,
+        state.pendingChoices,
+      );
+}
+
+function applyChooseCandifyCityCommand(
+  original: GameStateV6,
+  state: GameStateV6,
+  actor: PlayerId,
+  command: Extract<CommandV6, { readonly kind: "CHOOSE_CANDIFY_CITY" }>,
+): ApplyCommandResultV6 {
+  const head = state.pendingChoices[0];
+  if (head?.kind !== "CANDIFY_CITY" || head.unitId !== command.unitId) {
+    return rejected(original, "CANDIFY_CHOICE_INVALID");
+  }
+  const city = state.cities.find(
+    (candidate) => candidate.id === command.cityId,
+  );
+  if (city === undefined) return rejected(original, "CITY_NOT_FOUND");
+  if (city.ownerId !== actor) return rejected(original, "CITY_NOT_OWNED");
+  if (!head.candidateCityIds.includes(city.id)) {
+    return rejected(original, "CANDIFY_CITY_NOT_CANDIDATE");
+  }
+  const unit = state.units.find(
+    (candidate) => candidate.id === command.unitId && candidate.hp > 0,
+  );
+  if (unit === undefined || unit.ownerId !== actor) {
+    return rejected(original, "CANDIFY_CHOICE_INVALID");
+  }
+  return resolveCandifyV6(
+    original,
+    state,
+    actor,
+    unit,
+    city,
+    state.pendingChoices.slice(1),
+  );
+}
+
+function resolveCandifyV6(
+  original: GameStateV6,
+  state: GameStateV6,
+  actor: PlayerId,
+  unit: UnitStateV6,
+  city: CityStateV6,
+  remainingChoices: readonly GameStateV6["pendingChoices"][number][],
+): ApplyCommandResultV6 {
+  const tile = tileAt(state, unit.at);
+  if (tile === undefined) return rejected(original, "INVALID_STATE");
+  const previousCityId = tile.territoryCityId;
+  const previousOwnerId = territoryOwnerIdV6(state, previousCityId);
+  try {
+    const board = {
+      ...state.board,
+      tiles: state.board.tiles.map((candidate) =>
+        sameCoord(candidate.at, unit.at)
+          ? { ...candidate, territoryCityId: city.id }
+          : candidate,
+      ),
+    };
+    const recalculation = recomputeLiveEconomyV6(
+      state,
+      { board, cities: state.cities },
+      state.populationContributions,
+    );
+    const commandIndex = state.commandIndex + 1;
+    if (!Number.isSafeInteger(commandIndex)) {
+      throw new RangeError("INTEGER_OVERFLOW");
+    }
+    const nextState = checkedState({
+      ...state,
+      commandIndex,
+      board,
+      cities: recalculation.cities,
+      populationContributions: recalculation.populationContributions,
+      units: state.units.filter((candidate) => candidate.id !== unit.id),
+      pendingChoices: [...remainingChoices, ...recalculation.pendingChoices],
+    });
+    return {
+      accepted: true,
+      state: deepFreeze(nextState),
+      events: [
+        { kind: "UNIT_DIED", unitId: unit.id, cause: "CANDIFY" },
+        {
+          kind: "TILE_CANDIFIED",
+          playerId: actor,
+          unitId: unit.id,
+          cityId: city.id,
+          at: unit.at,
+          previousCityId,
+          previousOwnerId,
+        },
+        ...economyEvents(recalculation.changes),
+        ...growthEventsForChanges(recalculation.changes),
+      ],
+    };
+  } catch (cause) {
+    if (cause instanceof RangeError && cause.message === "INTEGER_OVERFLOW") {
+      return rejected(original, "INTEGER_OVERFLOW");
+    }
+    return rejected(original, "INVALID_STATE");
+  }
+}
+
 function applyHealCommand(
   original: GameStateV6,
   state: GameStateV6,
@@ -2076,17 +2601,6 @@ function rewardUnitPlacementV6(
   return candidates[0]?.at ?? null;
 }
 
-/** Public footprint predicate shared with the later Candify reducer. */
-export function cityFootprintContainsV6(
-  city: Pick<CityStateV6, "at" | "expanded">,
-  at: CoordV6,
-): boolean {
-  return (
-    Math.max(Math.abs(at.x - city.at.x), Math.abs(at.y - city.at.y)) <=
-    (city.expanded ? 2 : 1)
-  );
-}
-
 function tileAt(state: GameStateV6, at: CoordV6): TileStateV6 | undefined {
   if (
     at.x < 0 ||
@@ -2150,6 +2664,19 @@ function sameCoord(left: CoordV6, right: CoordV6): boolean {
 
 function chebyshev(left: CoordV6, right: CoordV6): number {
   return Math.max(Math.abs(left.x - right.x), Math.abs(left.y - right.y));
+}
+
+function directionDelta(direction: CardinalDirectionV6): CoordV6 {
+  switch (direction) {
+    case "NORTH":
+      return { x: 0, y: -1 };
+    case "EAST":
+      return { x: 1, y: 0 };
+    case "SOUTH":
+      return { x: 0, y: 1 };
+    case "WEST":
+      return { x: -1, y: 0 };
+  }
 }
 
 function activationHasTerminalAction(unit: UnitStateV6): boolean {
