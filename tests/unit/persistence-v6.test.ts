@@ -213,6 +213,7 @@ function stateFixture(): GameStateV6 {
       },
     ],
     cities: [],
+    populationContributions: [],
     units: [],
     chocolateWalls: [],
     pendingChoices: [],

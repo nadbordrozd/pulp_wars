@@ -6,6 +6,9 @@ import {
   UNIT_ROLE_IDS,
   type FactionIdV6,
   type FactionTreeId,
+  type EconomicImprovementId,
+  type ResourceId,
+  type TerrainIdV6,
   type TechnologyId,
   type UnitRoleId,
 } from "../v6/types";
@@ -62,6 +65,90 @@ export interface RulesetDefinitionV6 {
   readonly factionTreeIds: typeof FACTION_TREE_IDS;
   readonly technologies: readonly TechnologyNodeV6[];
 }
+
+export type BasicEconomicCommandKindV6 =
+  | "HARVEST_FRUIT"
+  | "HUNT_GAME"
+  | "BUILD_FARM"
+  | "BUILD_LUMBER_CAMP"
+  | "BUILD_MINE"
+  | "BUILD_QUARRY";
+
+export interface BasicEconomicActionRuleV6 {
+  readonly command: BasicEconomicCommandKindV6;
+  readonly technology: TechnologyId;
+  readonly terrain: TerrainIdV6;
+  readonly resource: ResourceId | null;
+  readonly cost: number;
+  readonly population: number;
+  readonly populationCategory: "PERMANENT" | "LIVE";
+  readonly improvement: EconomicImprovementId | null;
+}
+
+export const BASIC_ECONOMIC_ACTIONS_V6 = deepFreeze({
+  HARVEST_FRUIT: {
+    command: "HARVEST_FRUIT",
+    technology: "GATHERING",
+    terrain: "GRASS",
+    resource: "FRUIT",
+    cost: 2,
+    population: 1,
+    populationCategory: "PERMANENT",
+    improvement: null,
+  },
+  HUNT_GAME: {
+    command: "HUNT_GAME",
+    technology: "HUNTING",
+    terrain: "FOREST",
+    resource: "GAME",
+    cost: 2,
+    population: 1,
+    populationCategory: "PERMANENT",
+    improvement: null,
+  },
+  BUILD_FARM: {
+    command: "BUILD_FARM",
+    technology: "FARMING",
+    terrain: "GRASS",
+    resource: "FERTILE_GROUND",
+    cost: 5,
+    population: 2,
+    populationCategory: "LIVE",
+    improvement: "FARM",
+  },
+  BUILD_LUMBER_CAMP: {
+    command: "BUILD_LUMBER_CAMP",
+    technology: "FORESTRY",
+    terrain: "FOREST",
+    resource: null,
+    cost: 3,
+    population: 1,
+    populationCategory: "LIVE",
+    improvement: "LUMBER_CAMP",
+  },
+  BUILD_MINE: {
+    command: "BUILD_MINE",
+    technology: "MINING",
+    terrain: "MOUNTAIN",
+    resource: "ORE",
+    cost: 5,
+    population: 2,
+    populationCategory: "LIVE",
+    improvement: "MINE",
+  },
+  BUILD_QUARRY: {
+    command: "BUILD_QUARRY",
+    technology: "QUARRYING",
+    terrain: "MOUNTAIN",
+    resource: "STONE",
+    cost: 4,
+    population: 1,
+    populationCategory: "LIVE",
+    improvement: "QUARRY",
+  },
+} satisfies Readonly<
+  Record<BasicEconomicCommandKindV6, BasicEconomicActionRuleV6>
+>);
 
 function node(
   id: TechnologyId,

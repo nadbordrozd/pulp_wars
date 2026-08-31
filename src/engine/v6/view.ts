@@ -9,6 +9,7 @@ import type {
   MatchOutcomeV6,
   MatchSetupV6,
   PendingChoiceV6,
+  PopulationContributionV6,
   PlayerStateV6,
   ResourceId,
   RulesetIdV6,
@@ -51,6 +52,7 @@ export interface PlayerViewV6 {
   readonly players: readonly PublicPlayerStateV6[];
   readonly board: PlayerBoardViewV6;
   readonly cities: readonly CityStateV6[];
+  readonly populationContributions: readonly PopulationContributionV6[];
   readonly units: readonly UnitStateV6[];
   readonly chocolateWalls: readonly ChocolateWallStateV6[];
   readonly pendingChoices: readonly PendingChoiceV6[];
@@ -118,6 +120,14 @@ export function viewForV6(
     }),
     board: { width: state.board.width, height: state.board.height, tiles },
     cities: state.cities.filter((city) => visibleCityIds.has(city.id)),
+    populationContributions: state.populationContributions.filter(
+      (contribution) =>
+        exploredKeys.has(coordKey(contribution.source.at)) &&
+        state.cities.some(
+          (city) =>
+            city.id === contribution.cityId && city.ownerId === viewerId,
+        ),
+    ),
     units: state.units.filter((unit) => exploredKeys.has(coordKey(unit.at))),
     chocolateWalls: state.chocolateWalls.filter((wall) =>
       exploredKeys.has(coordKey(wall.at)),

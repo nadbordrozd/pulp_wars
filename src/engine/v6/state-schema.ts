@@ -14,6 +14,7 @@ import {
   parseUnitIdV6,
 } from "./commands";
 import { parseMatchSetupV6 } from "./setup";
+import { growthSpentV6 } from "./economy";
 import {
   ECONOMIC_IMPROVEMENT_IDS,
   GAME_STATE_SCHEMA_VERSION_6,
@@ -28,10 +29,12 @@ import {
   type CityRewardRecordV6,
   type CityStateV6,
   type CoordV6,
+  type EconomicImprovementId,
   type FactionIdV6,
   type GameStateV6,
   type MatchOutcomeV6,
   type PendingChoiceV6,
+  type PopulationContributionV6,
   type PlayerStateV6,
   type RandomStateV6,
   type RewardIdV6,
@@ -53,6 +56,7 @@ const STATE_KEYS_V6 = [
   "outcome",
   "pendingChoices",
   "players",
+  "populationContributions",
   "random",
   "round",
   "rulesetId",
@@ -78,6 +82,9 @@ export function parseGameStateV6(input: unknown): GameStateV6 | null {
   const players =
     setup === null ? null : parsePlayers(input.players, setup.factions);
   const cities = parseCities(input.cities);
+  const populationContributions = parsePopulationContributions(
+    input.populationContributions,
+  );
   const units = parseUnits(input.units);
   const walls = parseWalls(input.chocolateWalls);
   const pendingChoices = parsePendingChoices(input.pendingChoices);
@@ -90,6 +97,7 @@ export function parseGameStateV6(input: unknown): GameStateV6 | null {
     board === null ||
     players === null ||
     cities === null ||
+    populationContributions === null ||
     units === null ||
     walls === null ||
     pendingChoices === null ||
@@ -122,12 +130,14 @@ export function parseGameStateV6(input: unknown): GameStateV6 | null {
       board,
       players,
       cities,
+      populationContributions,
       units,
       walls,
       pendingChoices,
       outcome,
     ) ||
-    input.nextEntityId <= greatestEntityId(cities, units, walls)
+    input.nextEntityId <=
+      greatestEntityId(cities, populationContributions, units, walls)
   ) {
     return null;
   }
@@ -145,6 +155,7 @@ export function parseGameStateV6(input: unknown): GameStateV6 | null {
     board,
     players,
     cities,
+    populationContributions,
     units,
     chocolateWalls: walls,
     pendingChoices,
@@ -384,15 +395,20 @@ function parseCity(input: unknown): CityStateV6 | null {
   const ownerId = parsePlayerId(input.ownerId);
   const at = parseCoordV6(input.at);
   const rewards = parseCityRewards(input.rewards);
-  const growthSpent = (input.level * (input.level + 1)) / 2 - 1;
+  let growthSpent: number;
+  try {
+    growthSpent = growthSpentV6(input.level);
+  } catch {
+    return null;
+  }
   if (
     id === null ||
     ownerId === null ||
     at === null ||
     rewards === null ||
-    !Number.isSafeInteger(growthSpent) ||
     input.population !==
-      input.permanentPopulation + input.economicPopulation - growthSpent
+      input.permanentPopulation + input.economicPopulation - growthSpent ||
+    input.population >= input.level + 1
   ) {
     return null;
   }
@@ -436,6 +452,80 @@ function parseCityRewards(
     previousLevel = candidate.reachedLevel;
   }
   return rewards;
+}
+
+function parsePopulationContributions(
+  input: unknown,
+): readonly PopulationContributionV6[] | null {
+  if (!isDenseArrayV6(input)) return null;
+  const contributions: PopulationContributionV6[] = [];
+  for (const candidate of input) {
+    if (
+      !hasExactKeysV6(candidate, [
+        "amount",
+        "category",
+        "cityId",
+        "id",
+        "source",
+      ]) ||
+      !isPositiveSafeIntegerV6(candidate.id) ||
+      !isNonNegativeSafeIntegerV6(candidate.amount) ||
+      (candidate.category !== "PERMANENT" && candidate.category !== "LIVE")
+    ) {
+      return null;
+    }
+    const city = parseCityIdV6(candidate.cityId);
+    const source = parsePopulationContributionSource(candidate.source);
+    if (
+      city === null ||
+      source === null ||
+      (candidate.category === "PERMANENT") !==
+        (source.kind === "RESOURCE_ACTION") ||
+      (candidate.category === "PERMANENT" && candidate.amount !== 1)
+    ) {
+      return null;
+    }
+    contributions.push({
+      id: candidate.id,
+      cityId: city,
+      category: candidate.category,
+      amount: candidate.amount,
+      source,
+    });
+  }
+  return idsStrictlyAscending(contributions) ? contributions : null;
+}
+
+function parsePopulationContributionSource(
+  input: unknown,
+): PopulationContributionV6["source"] | null {
+  if (
+    hasExactKeysV6(input, ["action", "at", "kind"]) &&
+    input.kind === "RESOURCE_ACTION" &&
+    (input.action === "HARVEST_FRUIT" || input.action === "HUNT_GAME")
+  ) {
+    const at = parseCoordV6(input.at);
+    return at === null
+      ? null
+      : { kind: "RESOURCE_ACTION", action: input.action, at };
+  }
+  if (
+    hasExactKeysV6(input, ["at", "improvement", "kind"]) &&
+    input.kind === "IMPROVEMENT" &&
+    ECONOMIC_IMPROVEMENT_IDS.includes(
+      input.improvement as EconomicImprovementId,
+    )
+  ) {
+    const at = parseCoordV6(input.at);
+    return at === null
+      ? null
+      : {
+          kind: "IMPROVEMENT",
+          improvement: input.improvement as EconomicImprovementId,
+          at,
+        };
+  }
+  return null;
 }
 
 function parseUnits(input: unknown): readonly UnitStateV6[] | null {
@@ -707,6 +797,7 @@ function crossReferencesAreValid(
   board: BoardStateV6,
   players: readonly PlayerStateV6[],
   cities: readonly CityStateV6[],
+  contributions: readonly PopulationContributionV6[],
   units: readonly UnitStateV6[],
   walls: readonly ChocolateWallStateV6[],
   pendingChoices: readonly PendingChoiceV6[],
@@ -717,12 +808,14 @@ function crossReferencesAreValid(
   const unitIds = new Set(units.map((unit) => unit.id));
   const entityIds = [
     ...cities.map((city) => city.id),
+    ...contributions.map((contribution) => contribution.id),
     ...units.map((unit) => unit.id),
     ...walls.map((wall) => wall.id),
   ];
   if (
     new Set(entityIds).size !== entityIds.length ||
     cities.some((city) => !playerIds.has(city.ownerId)) ||
+    contributions.some((contribution) => !cityIds.has(contribution.cityId)) ||
     units.some(
       (unit) =>
         !playerIds.has(unit.ownerId) ||
@@ -733,7 +826,15 @@ function crossReferencesAreValid(
       (tile) =>
         tile.territoryCityId !== null && !cityIds.has(tile.territoryCityId),
     ) ||
-    !allCoordinatesOnBoard(board, players, cities, units, walls) ||
+    !allCoordinatesOnBoard(
+      board,
+      players,
+      cities,
+      contributions,
+      units,
+      walls,
+    ) ||
+    !populationLedgerIsValid(board, cities, contributions) ||
     pendingChoices.some((choice) =>
       choice.kind === "CITY_REWARD"
         ? !cityIds.has(choice.cityId)
@@ -753,12 +854,14 @@ function allCoordinatesOnBoard(
   board: BoardStateV6,
   players: readonly PlayerStateV6[],
   cities: readonly CityStateV6[],
+  contributions: readonly PopulationContributionV6[],
   units: readonly UnitStateV6[],
   walls: readonly ChocolateWallStateV6[],
 ): boolean {
   const coordinates = [
     ...players.flatMap((player) => player.explored),
     ...cities.map((city) => city.at),
+    ...contributions.map((contribution) => contribution.source.at),
     ...units.map((unit) => unit.at),
     ...walls.map((wall) => wall.at),
   ];
@@ -767,14 +870,79 @@ function allCoordinatesOnBoard(
   );
 }
 
+function populationLedgerIsValid(
+  board: BoardStateV6,
+  cities: readonly CityStateV6[],
+  contributions: readonly PopulationContributionV6[],
+): boolean {
+  for (const city of cities) {
+    const attributed = contributions.filter(
+      (contribution) => contribution.cityId === city.id,
+    );
+    const permanent = attributed
+      .filter((contribution) => contribution.category === "PERMANENT")
+      .reduce((total, contribution) => total + contribution.amount, 0);
+    const live = attributed
+      .filter((contribution) => contribution.category === "LIVE")
+      .reduce((total, contribution) => total + contribution.amount, 0);
+    if (
+      !Number.isSafeInteger(permanent) ||
+      !Number.isSafeInteger(live) ||
+      permanent !== city.permanentPopulation ||
+      live !== city.economicPopulation
+    ) {
+      return false;
+    }
+  }
+  const liveCoordinates = new Set<string>();
+  const permanentCoordinates = new Set<string>();
+  for (const contribution of contributions) {
+    if (contribution.category === "PERMANENT") {
+      const key = `${contribution.source.at.y},${contribution.source.at.x}`;
+      if (permanentCoordinates.has(key)) return false;
+      permanentCoordinates.add(key);
+      continue;
+    }
+    const source = contribution.source;
+    if (source.kind !== "IMPROVEMENT") return false;
+    const key = `${source.at.y},${source.at.x}`;
+    if (liveCoordinates.has(key)) return false;
+    liveCoordinates.add(key);
+    const tile = board.tiles[source.at.y * board.width + source.at.x];
+    if (
+      tile === undefined ||
+      !sameCoord(tile.at, source.at) ||
+      tile.improvement !== source.improvement ||
+      tile.territoryCityId !== contribution.cityId ||
+      contribution.amount !== basicImprovementContribution(source.improvement)
+    ) {
+      return false;
+    }
+  }
+  return board.tiles.every((tile) => {
+    if (tile.improvement === null) return true;
+    return liveCoordinates.has(`${tile.at.y},${tile.at.x}`);
+  });
+}
+
+function basicImprovementContribution(
+  improvement: Exclude<TileStateV6["improvement"], null>,
+): number {
+  if (improvement === "FARM" || improvement === "MINE") return 2;
+  if (improvement === "LUMBER_CAMP" || improvement === "QUARRY") return 1;
+  return 0;
+}
+
 function greatestEntityId(
   cities: readonly CityStateV6[],
+  contributions: readonly PopulationContributionV6[],
   units: readonly UnitStateV6[],
   walls: readonly ChocolateWallStateV6[],
 ): number {
   return Math.max(
     0,
     ...cities.map((value) => value.id),
+    ...contributions.map((value) => value.id),
     ...units.map((value) => value.id),
     ...walls.map((value) => value.id),
   );

@@ -216,6 +216,31 @@ export interface CityStateV6 {
   readonly rewards: readonly CityRewardRecordV6[];
 }
 
+export type PopulationContributionSourceV6 =
+  | {
+      readonly kind: "RESOURCE_ACTION";
+      readonly action: "HARVEST_FRUIT" | "HUNT_GAME";
+      readonly at: CoordV6;
+    }
+  | {
+      readonly kind: "IMPROVEMENT";
+      readonly improvement: EconomicImprovementId;
+      readonly at: CoordV6;
+    };
+
+/**
+ * Canonical city-population attribution. IDs share the monotonically allocated
+ * entity namespace so a contribution keeps its identity through save, replay,
+ * capture, and later live-value recomputation.
+ */
+export interface PopulationContributionV6 {
+  readonly id: number;
+  readonly cityId: CityId;
+  readonly category: "PERMANENT" | "LIVE";
+  readonly amount: number;
+  readonly source: PopulationContributionSourceV6;
+}
+
 export interface UnitActivationV6 {
   readonly moved: boolean;
   readonly movedPathLength: number;
@@ -283,6 +308,7 @@ export interface GameStateV6 {
   readonly board: BoardStateV6;
   readonly players: readonly PlayerStateV6[];
   readonly cities: readonly CityStateV6[];
+  readonly populationContributions: readonly PopulationContributionV6[];
   readonly units: readonly UnitStateV6[];
   readonly chocolateWalls: readonly ChocolateWallStateV6[];
   readonly pendingChoices: readonly PendingChoiceV6[];

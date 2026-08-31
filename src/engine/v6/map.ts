@@ -564,6 +564,7 @@ export function createInitialMapStateV6(
     board,
     players: exploredPlayers,
     cities: entities.cities,
+    populationContributions: [],
     units: entities.units,
     chocolateWalls: [],
     pendingChoices: [],
