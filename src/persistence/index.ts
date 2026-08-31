@@ -19,6 +19,7 @@ import type {
 } from "../app/types";
 
 export * from "./v6";
+export * from "./browser-v6";
 
 export const SAVE_STORAGE_KEY = "pulpWars.save.current";
 export const SETTINGS_STORAGE_KEY = "pulpWars.settings.v1";
