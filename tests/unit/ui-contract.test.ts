@@ -147,6 +147,20 @@ describe("DOM UI architecture and responsive contract", () => {
     );
   });
 
+  it("keeps mandatory ruleset-6 choices blocking, reachable, and single-axis on mobile", () => {
+    const css = readFileSync("src/styles/main.css", "utf8");
+    expect(css).toMatch(
+      /\.v6-mandatory-backdrop\s*\{[^}]*position:\s*fixed[^}]*inset:\s*0[^}]*safe-area-inset-top[^}]*safe-area-inset-bottom/s,
+    );
+    expect(css).toMatch(
+      /\.v6-mandatory-dialog\s*\{[^}]*max-height:\s*calc\(100dvh - 1\.5rem\)[^}]*overflow-y:\s*auto/s,
+    );
+    expect(css).toMatch(/\.v6-mandatory-option\s*\{[^}]*min-height:\s*64px/s);
+    expect(css).toMatch(
+      /@media \(max-width:\s*560px\)[\s\S]*\.v6-mandatory-backdrop\s*\{[^}]*place-items:\s*end stretch[\s\S]*\.v6-mandatory-options\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/,
+    );
+  });
+
   it("makes front-route grid tracks and intrinsic controls shrink within narrow viewports", () => {
     const css = readFileSync("src/styles/main.css", "utf8");
     expect(css).toMatch(

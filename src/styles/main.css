@@ -1849,7 +1849,6 @@ fieldset {
 }
 
 .v6-action-panel,
-.v6-choice-panel,
 .v6-result-panel {
   display: grid;
   gap: 0.75rem;
@@ -1941,6 +1940,145 @@ fieldset {
   border-radius: 0.9rem;
   background: var(--ink);
   box-shadow: 0 -0.5rem 2rem rgb(0 0 0 / 0.5);
+}
+
+.v6-mandatory-backdrop {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: max(0.75rem, env(safe-area-inset-top))
+    max(0.75rem, env(safe-area-inset-right))
+    max(0.75rem, env(safe-area-inset-bottom))
+    max(0.75rem, env(safe-area-inset-left));
+  overflow: hidden;
+  background: rgb(4 10 13 / 0.78);
+}
+
+.v6-mandatory-dialog {
+  display: grid;
+  gap: 0.65rem;
+  width: min(100%, 42rem);
+  max-height: calc(100dvh - 1.5rem);
+  padding: clamp(0.8rem, 2.5vw, 1.25rem);
+  overflow-x: hidden;
+  overflow-y: auto;
+  border: 3px solid var(--focus);
+  border-radius: 1.1rem;
+  background: rgb(23 23 34 / 0.99);
+  box-shadow: 0 1rem 3.5rem rgb(0 0 0 / 0.6);
+}
+
+.v6-mandatory-dialog > * {
+  margin-block: 0;
+}
+
+.v6-choice-position {
+  justify-self: start;
+  padding: 0.3rem 0.55rem;
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  color: var(--gold);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.v6-mandatory-context {
+  color: var(--muted);
+}
+
+.v6-mandatory-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.v6-mandatory-option {
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr);
+  gap: 0.65rem;
+  align-items: center;
+  min-width: 0;
+  min-height: 64px;
+  padding: 0.65rem;
+  border: 2px solid var(--gold);
+  border-radius: 0.8rem;
+  color: var(--paper);
+  text-align: left;
+  background: rgb(240 185 63 / 0.12);
+}
+
+.v6-mandatory-option.is-unavailable {
+  border-color: var(--line);
+  background: rgb(255 255 255 / 0.04);
+}
+
+.v6-mandatory-option > .v6-command-symbol {
+  width: 2.75rem;
+  height: 2.75rem;
+}
+
+.v6-mandatory-option-copy {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.v6-mandatory-option-label {
+  font-size: 1rem;
+}
+
+.v6-mandatory-option-effect,
+.v6-mandatory-unavailable,
+.v6-candify-territory-label {
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.v6-mandatory-unavailable {
+  color: #ffb5b0;
+  font-weight: 800;
+}
+
+.v6-candify-territory {
+  display: flex;
+  grid-column: 1 / -1;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+.v6-candify-territory-preview {
+  display: grid;
+  grid-template-columns: repeat(var(--territory-size), 0.55rem);
+  flex: 0 0 auto;
+  gap: 2px;
+  padding: 0.2rem;
+  border: 1px solid rgb(255 255 255 / 0.28);
+  border-radius: 0.3rem;
+  background: rgb(0 0 0 / 0.2);
+}
+
+.v6-candify-territory-cell {
+  width: 0.55rem;
+  height: 0.55rem;
+  border: 1px solid rgb(255 255 255 / 0.24);
+  background: transparent;
+}
+
+.v6-candify-territory-cell.is-unexplored {
+  border-style: dotted;
+  opacity: 0.4;
+}
+
+.v6-candify-territory-cell.is-assigned {
+  background: var(--gold);
+}
+
+.v6-candify-territory-cell.is-center {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
 }
 
 .v6-tech-screen {
@@ -2295,6 +2433,27 @@ fieldset {
   .v6-command-button {
     padding: 0.45rem;
     font-size: 0.72rem;
+  }
+
+  .v6-mandatory-backdrop {
+    place-items: end stretch;
+    padding: max(0.45rem, env(safe-area-inset-top)) 0 0;
+  }
+
+  .v6-mandatory-dialog {
+    width: 100%;
+    max-height: calc(100dvh - max(0.45rem, env(safe-area-inset-top)));
+    padding: 0.8rem max(0.7rem, env(safe-area-inset-right))
+      max(0.8rem, env(safe-area-inset-bottom))
+      max(0.7rem, env(safe-area-inset-left));
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-radius: 1rem 1rem 0 0;
+  }
+
+  .v6-mandatory-options {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .v6-tech-screen-content {

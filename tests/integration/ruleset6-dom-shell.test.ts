@@ -782,21 +782,45 @@ describe("playable ruleset-6 DOM shell", () => {
     app.destroy();
   });
 
-  it("locks mandatory city and Candy choices semantically", () => {
+  it("drains mandatory reward and Candify queues serially while blocking every outside input", async () => {
     const view = publicView("CANDY");
-    const commands = commandCatalogue(view);
-    const fake = new FakeController(view, commands);
-    const app = new Ruleset6DomAppView(document, requireElement("#app"), fake, {
-      boardHost: new FakeBoardHostV6(),
-    });
-
-    const reward = commands.find(
-      (
-        command,
-      ): command is Extract<CommandV6, { kind: "CHOOSE_CITY_REWARD" }> =>
-        command.kind === "CHOOSE_CITY_REWARD",
+    const city = view.cities.find(
+      (candidate) => candidate.ownerId === view.viewer.id,
     );
-    if (reward === undefined) throw new Error("Missing reward command");
+    const unit = view.units.find(
+      (candidate) => candidate.ownerId === view.viewer.id,
+    );
+    if (city === undefined || unit === undefined)
+      throw new Error("Missing public entities");
+    const survey = {
+      kind: "CHOOSE_CITY_REWARD",
+      cityId: city.id,
+      reachedLevel: 2,
+      reward: "SURVEY",
+    } as const satisfies CommandV6;
+    const stockpile = {
+      ...survey,
+      reward: "STOCKPILE",
+    } as const satisfies CommandV6;
+    const candify = {
+      kind: "CHOOSE_CANDIFY_CITY",
+      unitId: unit.id,
+      cityId: city.id,
+    } as const satisfies CommandV6;
+    const end = { kind: "END_TURN" } as const satisfies CommandV6;
+    const fake = new FakeController(view, [end]);
+    const host = new FakeBoardHostV6();
+    const app = new Ruleset6DomAppView(document, requireElement("#app"), fake, {
+      boardHost: host,
+    });
+    const staleTech = requireElement('[data-action="open-tech"]');
+    staleTech.focus();
+
+    const queuedCandify = {
+      kind: "CANDIFY_CITY",
+      unitId: unit.id,
+      candidateCityIds: [city.id],
+    } as const;
     fake.setSnapshot({
       ...fake.snapshot(),
       view: {
@@ -804,40 +828,224 @@ describe("playable ruleset-6 DOM shell", () => {
         pendingChoices: [
           {
             kind: "CITY_REWARD",
-            cityId: reward.cityId,
-            reachedLevel: reward.reachedLevel,
-            candidates: [reward.reward],
+            cityId: city.id,
+            reachedLevel: 2,
+            candidates: ["SURVEY", "STOCKPILE"],
           },
+          queuedCandify,
         ],
       },
-      offeredCommands: [reward],
+      offeredCommands: [stockpile, end, candify, survey],
     });
+    const dialog = requireElement("[data-mandatory-choice]");
+    expect(dialog.getAttribute("role")).toBe("dialog");
+    expect(dialog.getAttribute("aria-modal")).toBe("true");
     expect(document.body.textContent).toContain("Choose a city reward");
-    expect(document.querySelectorAll("[data-command-kind]")).toHaveLength(1);
+    expect(document.body.textContent).toContain("Choice 1 of 2");
+    expect(renderedCommandKinds()).toEqual(new Set(["CHOOSE_CITY_REWARD"]));
+    const rewardButtons = [
+      ...document.querySelectorAll<HTMLButtonElement>(
+        "[data-mandatory-choice-action]",
+      ),
+    ];
+    expect(rewardButtons.map((button) => button.textContent)).toEqual([
+      expect.stringContaining("Survey"),
+      expect.stringContaining("Stockpile"),
+    ]);
+    expect(
+      rewardButtons[0]?.querySelector("[data-symbol-kind=accepted-raster]"),
+    ).not.toBeNull();
+    expect(
+      rewardButtons[1]?.querySelector(
+        "[data-symbol-kind=code-native-fallback]",
+      ),
+    ).not.toBeNull();
+    expect(document.activeElement).toBe(rewardButtons[0]);
+    expect(host.model?.interactive).toBe(false);
+    expect(document.querySelector(".v6-action-dock")).toBeNull();
 
-    const candify = commands.find(
-      (
-        command,
-      ): command is Extract<CommandV6, { kind: "CHOOSE_CANDIFY_CITY" }> =>
-        command.kind === "CHOOSE_CANDIFY_CITY",
-    );
-    if (candify === undefined) throw new Error("Missing Candify command");
-    fake.setSnapshot({
-      ...fake.snapshot(),
-      view: {
-        ...view,
-        pendingChoices: [
-          {
-            kind: "CANDIFY_CITY",
-            unitId: candify.unitId,
-            candidateCityIds: [candify.cityId],
-          },
-        ],
-      },
-      offeredCommands: [candify],
+    const escape = new KeyboardEvent("keydown", {
+      key: "Escape",
+      bubbles: true,
+      cancelable: true,
     });
+    document.dispatchEvent(escape);
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "T", bubbles: true }),
+    );
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "E", bubbles: true }),
+    );
+    requireElement("[data-mandatory-choice-overlay]").dispatchEvent(
+      new MouseEvent("pointerdown", { bubbles: true, cancelable: true }),
+    );
+    staleTech.click();
+    host.callbacks?.onSelection({ kind: "TILE", at: city.at });
+    host.callbacks?.onCommandCandidates([target(end, city.at)], city.at);
+    expect(escape.defaultPrevented).toBe(true);
+    expect(document.querySelector("[data-tech-screen]")).toBeNull();
+    expect(fake.dispatch).not.toHaveBeenCalled();
+    expect(document.querySelector("[data-mandatory-choice]")).not.toBeNull();
+
+    rewardButtons[1]?.focus();
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "Tab",
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    expect(document.activeElement).toBe(rewardButtons[0]);
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "Tab",
+        shiftKey: true,
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    expect(document.activeElement).toBe(rewardButtons[1]);
+
+    fake.dispatch.mockImplementationOnce(async (command) => {
+      fake.setSnapshot({
+        ...fake.snapshot(),
+        view: { ...view, pendingChoices: [queuedCandify] },
+        offeredCommands: [candify],
+      });
+      return {
+        accepted: true,
+        command,
+        events: [],
+        stateHash: "after-reward",
+      };
+    });
+    rewardButtons[0]?.click();
+    await waitUntil(
+      () =>
+        document.querySelector("[data-mandatory-choice=CANDIFY_CITY]") !== null,
+    );
+    expect(document.body.textContent).toContain("Choose city for Candify");
     expect(document.body.textContent).toContain("Choose a Candify city");
+    expect(document.body.textContent).toContain("Choice 1 of 1");
+    expect(document.body.textContent).toContain("explored assigned territory");
+    const candifyButton = requireElement(
+      '[data-command-kind="CHOOSE_CANDIFY_CITY"]',
+    );
+    expect(document.activeElement).toBe(candifyButton);
+    expect(
+      candifyButton.querySelector("[data-symbol-kind=accepted-raster]"),
+    ).not.toBeNull();
+
+    fake.dispatch.mockImplementationOnce(async (command) => {
+      fake.setSnapshot({
+        ...fake.snapshot(),
+        view: { ...view, pendingChoices: [] },
+        offeredCommands: [end],
+      });
+      return {
+        accepted: true,
+        command,
+        events: [],
+        stateHash: "after-candify",
+      };
+    });
+    candifyButton.click();
+    await waitUntil(
+      () => document.querySelector("[data-mandatory-choice]") === null,
+    );
+    expect(fake.dispatch.mock.calls.map(([command]) => command)).toEqual([
+      survey,
+      candify,
+    ]);
+    expect(host.model?.interactive).toBe(true);
+    expect(document.activeElement?.getAttribute("data-action")).toBe(
+      "open-tech",
+    );
     app.destroy();
+  });
+
+  it("shows public unavailable reward reasons without inventing command controls", () => {
+    const view = publicView("CANDY");
+    const city = view.cities.find(
+      (candidate) => candidate.ownerId === view.viewer.id,
+    );
+    if (city === undefined) throw new Error("Missing owned city");
+    const treasury = {
+      kind: "CHOOSE_CITY_REWARD",
+      cityId: city.id,
+      reachedLevel: 5,
+      reward: "TREASURY",
+    } as const satisfies CommandV6;
+    const fake = new FakeController(view, [treasury]);
+    const pending = {
+      ...view,
+      pendingChoices: [
+        {
+          kind: "CITY_REWARD" as const,
+          cityId: city.id,
+          reachedLevel: 5,
+          candidates: ["JUGGERNAUT" as const, "TREASURY" as const],
+        },
+      ],
+    };
+    fake.setSnapshot({ ...fake.snapshot(), view: pending });
+    const app = new Ruleset6DomAppView(document, requireElement("#app"), fake, {
+      boardHost: new FakeBoardHostV6(),
+    });
+
+    const unavailable = requireElement(
+      '[data-choice-option="reward-juggernaut"]',
+    );
+    expect(unavailable.getAttribute("aria-disabled")).toBe("true");
+    expect(unavailable.textContent).toContain(
+      "Unavailable — no traversable city tile is open for the reward unit.",
+    );
+    expect(unavailable.hasAttribute("data-command")).toBe(false);
+    expect(document.querySelectorAll("[data-command-kind]")).toHaveLength(1);
+    expect(document.activeElement).toBe(
+      document.querySelector('[data-choice-option="reward-treasury"]'),
+    );
+    app.destroy();
+  });
+
+  it("reconstructs the first mandatory popup and its focus from a persisted command boundary", async () => {
+    const storage = new MemoryStorage();
+    const first = bootstrapRuleset6App(document, {
+      storage,
+      boardHost: new FakeBoardHostV6(),
+    });
+    setInput("v6-seed", "20");
+    submit("[data-v6-setup]");
+    await waitUntil(() => first.controller.snapshot().phase === "ACTIVE");
+    for (let harvest = 0; harvest < 2; harvest += 1) {
+      const result = await first.controller.dispatch(
+        requireCommand(first.controller.snapshot(), "HARVEST_FRUIT"),
+      );
+      expect(result.accepted).toBe(true);
+    }
+    expect(first.controller.snapshot().view?.pendingChoices).toHaveLength(1);
+    expect(first.controller.flushPersistence()).toBe(true);
+    const storedQueue = first.controller.snapshot().view?.pendingChoices;
+    first.destroy();
+
+    document.body.innerHTML = '<div id="app"></div>';
+    const restored = bootstrapRuleset6App(document, {
+      storage,
+      boardHost: new FakeBoardHostV6(),
+    });
+    expect(restored.controller.snapshot().phase).toBe("RESUMABLE");
+    expect(restored.controller.snapshot().view?.pendingChoices).toEqual(
+      storedQueue,
+    );
+    click('[data-action="resume"]');
+    await waitUntil(
+      () => document.querySelector("[data-mandatory-choice]") !== null,
+    );
+    expect(document.body.textContent).toContain("Choice 1 of 1");
+    expect(document.activeElement).toBe(
+      document.querySelector("[data-mandatory-choice-action]"),
+    );
+    restored.destroy();
   });
 
   it("keeps map interaction observation-safe and makes completion read-only", async () => {

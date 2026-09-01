@@ -1,4 +1,5 @@
 import {
+  candifyWouldDuplicateSpecializedImprovementV6,
   canonicalJson,
   effectiveRoleRuleV6,
   queryTechnologyTreeV6,
@@ -7,9 +8,11 @@ import {
   type EconomicPreviewResultV6,
   type FactionIdV6,
   type MatchSetupV6,
+  type PendingChoiceV6,
   type PlayerColorV6,
   type PlayerViewV6,
   type PublicTechnologyNodeV6,
+  type RewardIdV6,
   type TechnologyId,
   type TechnologyUnlockV6,
   type UnitRoleId,
@@ -109,6 +112,9 @@ export class Ruleset6DomAppView {
   #screen: Ruleset6Screen = "MATCH";
   #selectedTechnology: TechnologyId | null = null;
   #pendingFocusSelector: string | null = null;
+  #mandatoryChoiceKey: string | null = null;
+  #mandatoryReturnFocusId: string | null = null;
+  #restoreBoardFocus = false;
   #destroyed = false;
 
   constructor(
@@ -147,6 +153,23 @@ export class Ruleset6DomAppView {
 
   readonly #onKeyDown = (event: KeyboardEvent): void => {
     const target = event.target;
+    if (this.#hasMandatoryChoice()) {
+      if (event.key === "Tab") {
+        this.#trapMandatoryChoiceFocus(event);
+      } else if (
+        event.key === "Escape" ||
+        !(
+          target instanceof Node &&
+          this.#root
+            .querySelector<HTMLElement>("[data-mandatory-choice]")
+            ?.contains(target)
+        )
+      ) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      return;
+    }
     if (
       target instanceof HTMLInputElement ||
       target instanceof HTMLSelectElement ||
@@ -210,6 +233,7 @@ export class Ruleset6DomAppView {
       this.#root.contains(this.#document.activeElement)
         ? this.#document.activeElement.dataset.focusId
         : undefined;
+    this.#updateMandatoryFocus(previousFocusId);
     const shell = el(this.#document, "div", "v6-app-shell");
     shell.dataset.phase = this.#snapshot.phase.toLowerCase();
     shell.append(
@@ -262,12 +286,23 @@ export class Ruleset6DomAppView {
     if (requestedFocus !== null) {
       requestedFocus.focus({ preventScroll: true });
       this.#pendingFocusSelector = null;
+    } else if (
+      this.#pendingFocusSelector !== null &&
+      this.#hasMandatoryChoice()
+    ) {
+      this.#root
+        .querySelector<HTMLElement>("[data-mandatory-choice]")
+        ?.focus({ preventScroll: true });
     } else if (previousFocusId !== undefined) {
       this.#root
         .querySelector<HTMLElement>(
           `[data-focus-id="${cssEscape(previousFocusId)}"]`,
         )
         ?.focus({ preventScroll: true });
+    }
+    if (this.#restoreBoardFocus) {
+      this.#restoreBoardFocus = false;
+      this.#boardHost.focus();
     }
   }
 
@@ -424,6 +459,7 @@ export class Ruleset6DomAppView {
   #matchScreen(view: PlayerViewV6): HTMLElement {
     const main = el(this.#document, "main", "v6-match-shell");
     const humanCanAct = canHumanAct(this.#snapshot);
+    const mandatoryChoicePending = view.pendingChoices.length > 0;
     const ownCities = view.cities.filter(
       (city) => city.ownerId === view.viewer.id,
     );
@@ -449,7 +485,7 @@ export class Ruleset6DomAppView {
       ),
     );
     const menu = el(this.#document, "div", "v6-hud-actions");
-    if (this.#snapshot.phase === "ACTIVE") {
+    if (this.#snapshot.phase === "ACTIVE" && !mandatoryChoicePending) {
       const technology = button(
         this.#document,
         "Tech",
@@ -463,10 +499,14 @@ export class Ruleset6DomAppView {
     }
     const zoomOut = button(this.#document, "−", "v6-icon-button");
     zoomOut.ariaLabel = "Zoom out";
-    zoomOut.onclick = () => this.#boardHost.zoom("OUT");
+    zoomOut.onclick = () => {
+      if (!this.#hasMandatoryChoice()) this.#boardHost.zoom("OUT");
+    };
     const zoomIn = button(this.#document, "+", "v6-icon-button");
     zoomIn.ariaLabel = "Zoom in";
-    zoomIn.onclick = () => this.#boardHost.zoom("IN");
+    zoomIn.onclick = () => {
+      if (!this.#hasMandatoryChoice()) this.#boardHost.zoom("IN");
+    };
     const restart = button(this.#document, "Restart", "secondary-action");
     restart.dataset.action = "restart";
     restart.onclick = () => void this.#restart();
@@ -476,7 +516,7 @@ export class Ruleset6DomAppView {
     const end = this.#snapshot.offeredCommands.find(
       (command) => command.kind === "END_TURN",
     );
-    if (end !== undefined && humanCanAct) {
+    if (end !== undefined && humanCanAct && !mandatoryChoicePending) {
       const endTurn = this.#actionButton(end, "End Turn", {
         symbol: { kind: "FALLBACK", value: "↻" },
         className: "v6-global-action",
@@ -515,19 +555,28 @@ export class Ruleset6DomAppView {
             : "Advancing the other seats…",
         ),
       );
-    } else if (view.pendingChoices.length > 0) {
-      dock.append(this.#mandatoryChoicePanel(view));
     } else {
       dock.append(this.#normalActionPanel(view));
     }
     if (this.#commandChoices.length > 0)
       dock.append(this.#commandChoiceDialog());
-    main.append(hud, map, dock);
+    main.append(hud, map);
+    if (!mandatoryChoicePending) main.append(dock);
+    if (mandatoryChoicePending) {
+      hud.inert = true;
+      map.inert = true;
+      main.dataset.inputBlocked = "mandatory-choice";
+      main.append(this.#mandatoryChoiceDialog(view));
+    }
     return main;
   }
 
   #openTechnologyScreen(): void {
-    if (this.#snapshot.phase !== "ACTIVE" || this.#snapshot.view === null)
+    if (
+      this.#snapshot.phase !== "ACTIVE" ||
+      this.#snapshot.view === null ||
+      this.#hasMandatoryChoice()
+    )
       return;
     this.#screen = "TECH";
     this.#selectedTechnology = null;
@@ -861,6 +910,7 @@ export class Ruleset6DomAppView {
     if (container === null) return;
     this.#boardHost.mount(container, {
       onSelection: (selection) => {
+        if (this.#hasMandatoryChoice()) return;
         this.#selection = selection;
         this.#targetMode = null;
         this.#economicPreview = null;
@@ -869,11 +919,13 @@ export class Ruleset6DomAppView {
         this.#render();
       },
       onInspect: (selection) => {
+        if (this.#hasMandatoryChoice()) return;
         this.#selection = selection;
         this.#notice = describeSelection(view, selection);
         this.#render();
       },
       onCommandCandidates: (candidates) => {
+        if (this.#hasMandatoryChoice()) return;
         const mapCandidates = candidates.filter(
           (candidate) =>
             candidate.command.kind !== "RESEARCH" &&
@@ -894,9 +946,11 @@ export class Ruleset6DomAppView {
         }
       },
       onZoom: (direction) => {
+        if (this.#hasMandatoryChoice()) return;
         this.#notice = `Zoomed ${direction.toLowerCase()}.`;
       },
       onCancel: () => {
+        if (this.#hasMandatoryChoice()) return;
         this.#targetMode = null;
         this.#economicPreview = null;
         this.#preparedCommand = null;
@@ -907,7 +961,8 @@ export class Ruleset6DomAppView {
     this.#boardHost.update({
       matchInstanceId: this.#matchInstanceId,
       view,
-      interactive: canHumanAct(this.#snapshot),
+      interactive:
+        canHumanAct(this.#snapshot) && view.pendingChoices.length === 0,
       interaction: {
         ...EMPTY_BOARD_RENDER_INTERACTION_V6,
         selection: this.#selection,
@@ -962,19 +1017,6 @@ export class Ruleset6DomAppView {
       panel.append(this.#contextCommandList(view, selected));
     }
     return panel;
-  }
-
-  #commandList(commands: readonly CommandV6[], label: string): HTMLElement {
-    const list = el(this.#document, "div", "v6-command-list");
-    list.setAttribute("aria-label", label);
-    for (const command of commands) {
-      list.append(
-        this.#actionButton(command, commandLabel(command), {
-          symbol: commandSymbol(command),
-        }),
-      );
-    }
-    return list;
   }
 
   #contextCommandList(
@@ -1047,26 +1089,200 @@ export class Ruleset6DomAppView {
     this.#render();
   }
 
-  #mandatoryChoicePanel(view: PlayerViewV6): HTMLElement {
-    const panel = el(this.#document, "div", "v6-choice-panel");
+  #mandatoryChoiceDialog(view: PlayerViewV6): HTMLElement {
     const choice = view.pendingChoices[0];
-    panel.append(
-      text(this.#document, "p", "Required before play continues", "v6-eyebrow"),
+    const backdrop = el(this.#document, "div", "v6-mandatory-backdrop");
+    backdrop.dataset.mandatoryChoiceOverlay = "true";
+    backdrop.onpointerdown = (event) => {
+      if (event.target === backdrop) event.preventDefault();
+    };
+
+    const dialog = el(this.#document, "section", "v6-mandatory-dialog");
+    dialog.dataset.mandatoryChoice = choice?.kind ?? "UNKNOWN";
+    dialog.dataset.focusId = "mandatory-dialog";
+    dialog.tabIndex = -1;
+    dialog.setAttribute("role", "dialog");
+    dialog.setAttribute("aria-modal", "true");
+    dialog.setAttribute("aria-labelledby", "v6-mandatory-heading");
+    dialog.setAttribute("aria-describedby", "v6-mandatory-context");
+    dialog.append(
       text(
         this.#document,
-        "h2",
-        choice?.kind === "CITY_REWARD"
-          ? "Choose a city reward"
-          : "Choose a Candify city",
+        "p",
+        `Choice 1 of ${view.pendingChoices.length}`,
+        "v6-choice-position",
       ),
+      text(this.#document, "p", "Required before play continues", "v6-eyebrow"),
     );
-    const commands = this.#snapshot.offeredCommands.filter(
-      (command) =>
-        command.kind === "CHOOSE_CITY_REWARD" ||
-        command.kind === "CHOOSE_CANDIFY_CITY",
+    const heading = text(this.#document, "h2", mandatoryChoiceHeading(choice));
+    heading.id = "v6-mandatory-heading";
+    const context = text(
+      this.#document,
+      "p",
+      mandatoryChoiceContext(choice),
+      "v6-mandatory-context",
     );
-    panel.append(this.#commandList(commands, "Mandatory choices"));
-    return panel;
+    context.id = "v6-mandatory-context";
+    dialog.append(heading, context);
+
+    const options = el(this.#document, "div", "v6-mandatory-options");
+    options.setAttribute("role", "group");
+    options.setAttribute("aria-label", "Required choices");
+    if (choice?.kind === "CITY_REWARD") {
+      for (const reward of choice.candidates) {
+        options.append(this.#cityRewardOption(view, choice, reward));
+      }
+    } else if (choice?.kind === "CANDIFY_CITY") {
+      for (const cityId of [...choice.candidateCityIds].sort(
+        (left, right) => left - right,
+      )) {
+        options.append(this.#candifyCityOption(view, choice, cityId));
+      }
+    }
+    dialog.append(options);
+    backdrop.append(dialog);
+    return backdrop;
+  }
+
+  #cityRewardOption(
+    view: PlayerViewV6,
+    choice: Extract<PendingChoiceV6, { readonly kind: "CITY_REWARD" }>,
+    reward: RewardIdV6,
+  ): HTMLElement {
+    const command = this.#snapshot.offeredCommands.find(
+      (
+        candidate,
+      ): candidate is Extract<
+        CommandV6,
+        { readonly kind: "CHOOSE_CITY_REWARD" }
+      > =>
+        candidate.kind === "CHOOSE_CITY_REWARD" &&
+        candidate.cityId === choice.cityId &&
+        candidate.reachedLevel === choice.reachedLevel &&
+        candidate.reward === reward,
+    );
+    const presentation = rewardPresentation(view, reward);
+    return this.#mandatoryOption(
+      command,
+      presentation.label,
+      presentation.effect,
+      presentation.symbol,
+      command === undefined ? rewardUnavailableReason(reward) : undefined,
+      `reward-${reward.toLowerCase()}`,
+    );
+  }
+
+  #candifyCityOption(
+    view: PlayerViewV6,
+    choice: Extract<PendingChoiceV6, { readonly kind: "CANDIFY_CITY" }>,
+    cityId: number,
+  ): HTMLElement {
+    const command = this.#snapshot.offeredCommands.find(
+      (
+        candidate,
+      ): candidate is Extract<
+        CommandV6,
+        { readonly kind: "CHOOSE_CANDIFY_CITY" }
+      > =>
+        candidate.kind === "CHOOSE_CANDIFY_CITY" &&
+        candidate.unitId === choice.unitId &&
+        candidate.cityId === cityId,
+    );
+    const city = view.cities.find((candidate) => candidate.id === cityId);
+    const label = city === undefined ? `City ${cityId}` : `City ${city.id}`;
+    const effect =
+      city === undefined
+        ? "Assign this Candify action to the authoritative candidate city."
+        : `Assign Candify to city ${city.id} at ${coordLabel(city.at)} · ${city.expanded ? "5 × 5 expanded" : "3 × 3"} footprint.`;
+    const option = this.#mandatoryOption(
+      command,
+      label,
+      effect,
+      acceptedSymbol("ui-action-choose-candify-city", "⌂"),
+      command === undefined
+        ? candifyUnavailableReason(view, choice.unitId, cityId)
+        : undefined,
+      `candify-city-${cityId}`,
+    );
+    if (city !== undefined)
+      option.append(candifyTerritoryPreview(this.#document, view, city));
+    return option;
+  }
+
+  #mandatoryOption(
+    command: CommandV6 | undefined,
+    label: string,
+    effect: string,
+    symbol: ActionSymbol,
+    unavailableReason: string | undefined,
+    focusId: string,
+  ): HTMLElement {
+    const option =
+      command === undefined
+        ? el(this.#document, "div", "v6-mandatory-option is-unavailable")
+        : button(this.#document, "", "v6-mandatory-option");
+    option.dataset.choiceOption = focusId;
+    option.append(actionSymbolNode(this.#document, symbol));
+    const copy = el(this.#document, "span", "v6-mandatory-option-copy");
+    copy.append(
+      text(this.#document, "strong", label, "v6-mandatory-option-label"),
+      text(this.#document, "span", effect, "v6-mandatory-option-effect"),
+    );
+    if (unavailableReason !== undefined) {
+      option.setAttribute("role", "group");
+      option.setAttribute("aria-disabled", "true");
+      copy.append(
+        text(
+          this.#document,
+          "span",
+          unavailableReason,
+          "v6-mandatory-unavailable",
+        ),
+      );
+    }
+    option.append(copy);
+    if (command !== undefined && option instanceof HTMLButtonElement) {
+      option.dataset.command = canonicalJson(command);
+      option.dataset.commandKind = command.kind;
+      option.dataset.mandatoryChoiceAction = "true";
+      option.dataset.focusId = `mandatory-${focusId}`;
+      option.disabled = this.#snapshot.transitioning;
+      option.ariaLabel = `${label}. ${effect}`;
+      option.onclick = () => void this.#dispatch(command);
+    }
+    return option;
+  }
+
+  #trapMandatoryChoiceFocus(event: KeyboardEvent): void {
+    const dialog = this.#root.querySelector<HTMLElement>(
+      "[data-mandatory-choice]",
+    );
+    if (dialog === null) return;
+    const focusable = [
+      ...dialog.querySelectorAll<HTMLElement>(
+        "[data-mandatory-choice-action]:not([disabled])",
+      ),
+    ];
+    if (focusable.length === 0) {
+      dialog.focus({ preventScroll: true });
+      event.preventDefault();
+      return;
+    }
+    const first = focusable[0];
+    const last = focusable.at(-1);
+    if (first === undefined || last === undefined) return;
+    if (event.shiftKey && this.#document.activeElement === first) {
+      last.focus();
+      event.preventDefault();
+    } else if (
+      !event.shiftKey &&
+      (this.#document.activeElement === last ||
+        this.#document.activeElement === dialog ||
+        !dialog.contains(this.#document.activeElement))
+    ) {
+      first.focus();
+      event.preventDefault();
+    }
   }
 
   #commandChoiceDialog(): HTMLElement {
@@ -1118,6 +1334,13 @@ export class Ruleset6DomAppView {
   }
 
   #prepareOrDispatch(command: CommandV6): void {
+    if (
+      this.#hasMandatoryChoice() &&
+      command.kind !== "CHOOSE_CITY_REWARD" &&
+      command.kind !== "CHOOSE_CANDIFY_CITY"
+    ) {
+      return;
+    }
     if (isEconomicCommand(command)) {
       const preview = this.#controller.economicPreview(command);
       this.#selection = { kind: "TILE", at: command.at };
@@ -1132,6 +1355,13 @@ export class Ruleset6DomAppView {
   }
 
   async #dispatch(command: CommandV6): Promise<void> {
+    if (
+      this.#hasMandatoryChoice() &&
+      command.kind !== "CHOOSE_CITY_REWARD" &&
+      command.kind !== "CHOOSE_CANDIFY_CITY"
+    ) {
+      return;
+    }
     if (!isStillOffered(this.#controller.snapshot(), command)) {
       this.#error =
         "That action is no longer offered. The action list was refreshed.";
@@ -1207,6 +1437,7 @@ export class Ruleset6DomAppView {
   }
 
   async #restart(): Promise<void> {
+    if (this.#hasMandatoryChoice()) return;
     const result = await this.#controller.restart();
     if (this.#destroyed) return;
     if (!result.ok) {
@@ -1222,6 +1453,7 @@ export class Ruleset6DomAppView {
   }
 
   async #deleteSave(): Promise<void> {
+    if (this.#hasMandatoryChoice()) return;
     const deleted = await this.#controller.deleteStoredSave();
     if (this.#destroyed) return;
     if (!deleted) {
@@ -1265,6 +1497,16 @@ export class Ruleset6DomAppView {
       this.#resetPresentation();
       return;
     }
+    if (view.pendingChoices.length > 0) {
+      this.#screen = "MATCH";
+      this.#selectedTechnology = null;
+      this.#selection = null;
+      this.#targetMode = null;
+      this.#economicPreview = null;
+      this.#preparedCommand = null;
+      this.#commandChoices = [];
+      return;
+    }
     if (
       this.#selection !== null &&
       selectionCoordV6(view, this.#selection) === null
@@ -1286,6 +1528,42 @@ export class Ruleset6DomAppView {
       )
     )
       this.#commandChoices = [];
+  }
+
+  #hasMandatoryChoice(): boolean {
+    return (
+      this.#snapshot.phase === "ACTIVE" &&
+      this.#snapshot.view !== null &&
+      this.#snapshot.view.pendingChoices.length > 0
+    );
+  }
+
+  #updateMandatoryFocus(previousFocusId: string | undefined): void {
+    const nextChoice = this.#hasMandatoryChoice()
+      ? (this.#snapshot.view?.pendingChoices[0] ?? null)
+      : null;
+    const nextKey = nextChoice === null ? null : canonicalJson(nextChoice);
+    if (nextKey !== null && this.#mandatoryChoiceKey === null) {
+      this.#mandatoryReturnFocusId = previousFocusId ?? null;
+      this.#pendingFocusSelector =
+        "[data-mandatory-choice-action]:not([disabled])";
+    } else if (
+      nextKey !== null &&
+      this.#mandatoryChoiceKey !== null &&
+      nextKey !== this.#mandatoryChoiceKey
+    ) {
+      this.#pendingFocusSelector =
+        "[data-mandatory-choice-action]:not([disabled])";
+    } else if (nextKey === null && this.#mandatoryChoiceKey !== null) {
+      if (this.#mandatoryReturnFocusId !== null) {
+        this.#pendingFocusSelector = `[data-focus-id="${cssEscape(this.#mandatoryReturnFocusId)}"]`;
+      } else {
+        this.#pendingFocusSelector = null;
+        this.#restoreBoardFocus = true;
+      }
+      this.#mandatoryReturnFocusId = null;
+    }
+    this.#mandatoryChoiceKey = nextKey;
   }
 
   #resetPresentation(): void {
@@ -1769,6 +2047,164 @@ function commandSymbol(
     case "CHOOSE_CITY_REWARD":
       return acceptedSymbol(rewardArtId(command.reward), "✦");
   }
+}
+
+function mandatoryChoiceHeading(choice: PendingChoiceV6 | undefined): string {
+  if (choice?.kind === "CITY_REWARD") {
+    return `Choose a city reward — City ${choice.cityId} · Level ${choice.reachedLevel}`;
+  }
+  return "Choose city for Candify";
+}
+
+function mandatoryChoiceContext(choice: PendingChoiceV6 | undefined): string {
+  if (choice?.kind === "CITY_REWARD") {
+    return "Choose one irreversible reward. Required choices resolve in authoritative queue order.";
+  }
+  if (choice?.kind === "CANDIFY_CITY") {
+    return `Choose a Candify city from the authoritative candidates for unit ${choice.unitId}.`;
+  }
+  return "Resolve this required choice before play continues.";
+}
+
+function rewardPresentation(
+  view: PlayerViewV6,
+  reward: RewardIdV6,
+): {
+  readonly label: string;
+  readonly effect: string;
+  readonly symbol: ActionSymbol;
+} {
+  const fighter = effectiveRoleRuleV6(view.viewer.faction, "FIGHTER").label;
+  const juggernaut = effectiveRoleRuleV6(
+    view.viewer.faction,
+    "JUGGERNAUT",
+  ).label;
+  switch (reward) {
+    case "SURVEY":
+      return {
+        label: "Survey",
+        effect: "Reveal every tile within Chebyshev radius 3 now.",
+        symbol: acceptedSymbol("ui-reward-survey", "◎"),
+      };
+    case "STOCKPILE":
+      return {
+        label: "Stockpile",
+        effect: "+4 Coins now.",
+        symbol: fallbackSymbol("◉"),
+      };
+    case "WALLS":
+      return {
+        label: "Walls",
+        effect: "Permanently grants 4× eligible city defense.",
+        symbol: acceptedSymbol("ui-reward-city-wall", "▦"),
+      };
+    case "MILITIA":
+      return {
+        label: "Militia",
+        effect: `Grant one free ${fighter}, handled this turn.`,
+        symbol: unitActionSymbol(view.viewer.faction, "FIGHTER"),
+      };
+    case "EXPAND":
+      return {
+        label: "Expand",
+        effect: "Claim neutral tiles in the city's centered 5 × 5 footprint.",
+        symbol: fallbackSymbol("⬚"),
+      };
+    case "BOOM":
+      return {
+        label: "Boom",
+        effect: "+3 permanent population; further rewards may join the queue.",
+        symbol: fallbackSymbol("+3"),
+      };
+    case "JUGGERNAUT":
+      return {
+        label: juggernaut,
+        effect: `Grant one free ${juggernaut}, handled this turn.`,
+        symbol: unitActionSymbol(view.viewer.faction, "JUGGERNAUT"),
+      };
+    case "TREASURY":
+      return {
+        label: "Treasury",
+        effect: "+5 Coins now.",
+        symbol: fallbackSymbol("◉"),
+      };
+  }
+}
+
+function rewardUnavailableReason(reward: RewardIdV6): string {
+  return reward === "MILITIA" || reward === "JUGGERNAUT"
+    ? "Unavailable — no traversable city tile is open for the reward unit."
+    : "Unavailable — this reward is not currently offered by the authoritative rules.";
+}
+
+function candifyUnavailableReason(
+  view: PlayerViewV6,
+  unitId: number,
+  cityId: number,
+): string {
+  const unit = view.units.find((candidate) => candidate.id === unitId);
+  if (unit === undefined || unit.hp <= 0) {
+    return "Unavailable — the Candify unit is no longer available.";
+  }
+  const city = view.cities.find((candidate) => candidate.id === cityId);
+  if (city === undefined || city.ownerId !== view.viewer.id) {
+    return "Unavailable — the candidate city is no longer available.";
+  }
+  const tile = view.board.tiles.find(
+    (candidate) => candidate.at.x === unit.at.x && candidate.at.y === unit.at.y,
+  );
+  if (tile?.explored !== true) {
+    return "Unavailable — the Candify target is not explored.";
+  }
+  if (
+    candifyWouldDuplicateSpecializedImprovementV6(
+      view.board.tiles,
+      city.id,
+      tile.improvement,
+    )
+  ) {
+    return "Unavailable — this city already has the transferred one-per-city improvement.";
+  }
+  return "Unavailable — this city is not currently offered by the authoritative rules.";
+}
+
+function candifyTerritoryPreview(
+  documentRoot: Document,
+  view: PlayerViewV6,
+  city: PlayerViewV6["cities"][number],
+): HTMLElement {
+  const size = city.expanded ? 5 : 3;
+  const radius = city.expanded ? 2 : 1;
+  const preview = el(documentRoot, "span", "v6-candify-territory-preview");
+  preview.style.setProperty("--territory-size", String(size));
+  let exploredAssigned = 0;
+  for (let y = city.at.y - radius; y <= city.at.y + radius; y += 1) {
+    for (let x = city.at.x - radius; x <= city.at.x + radius; x += 1) {
+      const tile = view.board.tiles.find(
+        (candidate) => candidate.at.x === x && candidate.at.y === y,
+      );
+      const cell = el(documentRoot, "span", "v6-candify-territory-cell");
+      if (tile?.explored !== true) cell.classList.add("is-unexplored");
+      else if (tile.territoryCityId === city.id) {
+        cell.classList.add("is-assigned");
+        exploredAssigned += 1;
+      }
+      if (x === city.at.x && y === city.at.y) cell.classList.add("is-center");
+      preview.append(cell);
+    }
+  }
+  preview.setAttribute("aria-hidden", "true");
+  const wrapper = el(documentRoot, "span", "v6-candify-territory");
+  wrapper.append(
+    preview,
+    text(
+      documentRoot,
+      "span",
+      `${exploredAssigned} explored assigned territor${exploredAssigned === 1 ? "y tile" : "y tiles"}`,
+      "v6-candify-territory-label",
+    ),
+  );
+  return wrapper;
 }
 
 function unitActionSymbol(
