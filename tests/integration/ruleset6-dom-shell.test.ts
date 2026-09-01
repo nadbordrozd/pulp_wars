@@ -14,6 +14,7 @@ import {
   queryPlayerCommandsV6,
   runReplayV6,
   TECHNOLOGY_IDS,
+  UNIT_ROLE_IDS,
   unitId,
   viewForV6,
   type CommandV6,
@@ -598,6 +599,40 @@ describe("playable ruleset-6 DOM shell", () => {
       host.callbacks?.onSelection({ kind: "UNIT", unitId: rivalUnit.id });
       expect(renderedCommandKinds()).toEqual(new Set(["END_TURN"]));
     }
+
+    app.destroy();
+  });
+
+  it("uses accepted Original role portraits for contextual training controls", () => {
+    const view = publicView("ORIGINAL");
+    const city = view.cities.find(
+      (candidate) => candidate.ownerId === view.viewer.id,
+    );
+    if (city === undefined) throw new Error("Missing public city");
+    const commands = UNIT_ROLE_IDS.map((role): CommandV6 => ({
+      kind: "TRAIN",
+      cityId: city.id,
+      role,
+    }));
+    const fake = new FakeController(view, [...commands, { kind: "END_TURN" }]);
+    const host = new FakeBoardHostV6();
+    const app = new Ruleset6DomAppView(document, requireElement("#app"), fake, {
+      boardHost: host,
+    });
+
+    host.callbacks?.onSelection({ kind: "CITY", cityId: city.id });
+    const trainButtons = [
+      ...document.querySelectorAll<HTMLButtonElement>(
+        '[data-command-kind="TRAIN"]',
+      ),
+    ];
+    expect(trainButtons).toHaveLength(UNIT_ROLE_IDS.length);
+    for (const [index, role] of UNIT_ROLE_IDS.entries())
+      expect(
+        trainButtons[index]?.querySelector<HTMLImageElement>("img")?.src,
+      ).toContain(
+        `assets/pixellab/ui/portrait-original-${role.toLowerCase()}.png`,
+      );
 
     app.destroy();
   });

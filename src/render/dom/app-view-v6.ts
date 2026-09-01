@@ -2271,6 +2271,11 @@ function unitActionSymbol(
   faction: FactionIdV6,
   role: UnitRoleId,
 ): ActionSymbol {
+  if (faction === "ORIGINAL") {
+    const portraitUrl =
+      ACCEPTED_ART_URLS[`portrait-original-${role.toLowerCase()}`];
+    if (portraitUrl !== undefined) return { kind: "RASTER", url: portraitUrl };
+  }
   const coverage = unitCoverageV6(faction, role);
   if (coverage.status === "ACCEPTED") {
     const url = ACCEPTED_ART_URLS[coverage.assetId];

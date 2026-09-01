@@ -1,0 +1,347 @@
+{
+  "schemaVersion": 1,
+  "status": "READY_FOR_ORCHESTRATOR_REVIEW",
+  "assetClass": "ruleset6-original-units-and-portraits",
+  "gateOrder": [
+    [
+      "unit-original-scout"
+    ],
+    [
+      "unit-original-medic"
+    ],
+    [
+      "unit-original-breacher"
+    ],
+    [
+      "unit-original-fighter",
+      "unit-original-guard",
+      "unit-original-heavy"
+    ],
+    [
+      "unit-original-marksman",
+      "unit-original-raider"
+    ],
+    [
+      "unit-original-juggernaut"
+    ],
+    [
+      "portrait original family, three bounded deterministic batches"
+    ]
+  ],
+  "aliases": {
+    "unit-original-fighter": "unit-warrior",
+    "unit-original-marksman": "unit-archer",
+    "unit-original-guard": "unit-defender",
+    "unit-original-raider": "unit-rider"
+  },
+  "rejectedPortraitAttemptCount": 11,
+  "measurements": [
+    {
+      "id": "unit-original-fighter",
+      "role": "Fighter",
+      "sourceId": "unit-warrior",
+      "scaleClass": "standard",
+      "sourceSha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1",
+      "portraitSha256": "a8756d8ce97b1173273acd88e6b215f124a3a266c3afd154399bf22dc5ef1d02",
+      "sourceDimensions": {
+        "width": 256,
+        "height": 296
+      },
+      "alphaBounds": {
+        "left": 20,
+        "top": 18,
+        "right": 236,
+        "bottom": 252
+      },
+      "displayScale": 0.25,
+      "visibleWidthRatio": 0.42188,
+      "visibleHeightRatio": 0.79054,
+      "opaqueDiamondAreaRatio": 0.41088,
+      "adjacentOcclusionRatio": {
+        "NORTH": 0.04475,
+        "EAST": 0,
+        "SOUTH": 0,
+        "WEST": 0.03196
+      },
+      "maximumRearTileOcclusionRatio": 0.04475
+    },
+    {
+      "id": "unit-original-scout",
+      "role": "Scout",
+      "sourceId": "unit-original-scout",
+      "scaleClass": "standard",
+      "sourceSha256": "8663c5c6f95ed69481123245a7f7c5e6acf2b55ebb9c52ebbc46979252e60343",
+      "portraitSha256": "729f81cdc463cf84240e5f8e303a6cd75b5c0fe9e45ca5c245ed32dd91cd517e",
+      "sourceDimensions": {
+        "width": 256,
+        "height": 296
+      },
+      "alphaBounds": {
+        "left": 51,
+        "top": 18,
+        "right": 204,
+        "bottom": 222
+      },
+      "displayScale": 0.25,
+      "visibleWidthRatio": 0.29883,
+      "visibleHeightRatio": 0.68919,
+      "opaqueDiamondAreaRatio": 0.26437,
+      "adjacentOcclusionRatio": {
+        "NORTH": 0.03401,
+        "EAST": 0,
+        "SOUTH": 0,
+        "WEST": 0.02747
+      },
+      "maximumRearTileOcclusionRatio": 0.03401
+    },
+    {
+      "id": "unit-original-marksman",
+      "role": "Marksman",
+      "sourceId": "unit-archer",
+      "scaleClass": "standard",
+      "sourceSha256": "deb62a8a84dc28ceecd58047a3f65abdb67c0616851337c817452d75a5b73bb2",
+      "portraitSha256": "3356a1ca0dcb16230a35f4dab24927ff6c8c327aa253ed616f8710246ed9b153",
+      "sourceDimensions": {
+        "width": 256,
+        "height": 296
+      },
+      "alphaBounds": {
+        "left": 45,
+        "top": 25,
+        "right": 206,
+        "bottom": 252
+      },
+      "displayScale": 0.25,
+      "visibleWidthRatio": 0.31445,
+      "visibleHeightRatio": 0.76689,
+      "opaqueDiamondAreaRatio": 0.28843,
+      "adjacentOcclusionRatio": {
+        "NORTH": 0.02518,
+        "EAST": 0,
+        "SOUTH": 0,
+        "WEST": 0.01941
+      },
+      "maximumRearTileOcclusionRatio": 0.02518
+    },
+    {
+      "id": "unit-original-guard",
+      "role": "Guard",
+      "sourceId": "unit-defender",
+      "scaleClass": "standard",
+      "sourceSha256": "930c31f9aa1bf5dacf0318484b31ac63504365482ae01a84a6a269d94de65e11",
+      "portraitSha256": "40eb7fb294a90a4bc4b5c3071eef5810ac520eac0a6018fd66bba853417e66b9",
+      "sourceDimensions": {
+        "width": 256,
+        "height": 296
+      },
+      "alphaBounds": {
+        "left": 16,
+        "top": 19,
+        "right": 240,
+        "bottom": 237
+      },
+      "displayScale": 0.25,
+      "visibleWidthRatio": 0.4375,
+      "visibleHeightRatio": 0.73649,
+      "opaqueDiamondAreaRatio": 0.38192,
+      "adjacentOcclusionRatio": {
+        "NORTH": 0.07274,
+        "EAST": 0,
+        "SOUTH": 0,
+        "WEST": 0.01337
+      },
+      "maximumRearTileOcclusionRatio": 0.07274
+    },
+    {
+      "id": "unit-original-raider",
+      "role": "Raider",
+      "sourceId": "unit-rider",
+      "scaleClass": "standard",
+      "sourceSha256": "20bb28c79c28e262908e518124e776f30adf946254906e62245f0e9702606bb4",
+      "portraitSha256": "c57de68c42e6331cfc4645c852e71bbc7a48da980677f6f6aa99fff0f7d38b74",
+      "sourceDimensions": {
+        "width": 256,
+        "height": 296
+      },
+      "alphaBounds": {
+        "left": 40,
+        "top": 19,
+        "right": 217,
+        "bottom": 252
+      },
+      "displayScale": 0.25,
+      "visibleWidthRatio": 0.3457,
+      "visibleHeightRatio": 0.78716,
+      "opaqueDiamondAreaRatio": 0.34693,
+      "adjacentOcclusionRatio": {
+        "NORTH": 0.01626,
+        "EAST": 0,
+        "SOUTH": 0,
+        "WEST": 0.00971
+      },
+      "maximumRearTileOcclusionRatio": 0.01626
+    },
+    {
+      "id": "unit-original-medic",
+      "role": "Medic",
+      "sourceId": "unit-original-medic",
+      "scaleClass": "standard",
+      "sourceSha256": "c30475f23be6a8ca9ee1957a327b3b764489e570d50cd69d5775006650af62c2",
+      "portraitSha256": "8866c1aa9cc15b7311d1e5079682f885c6dcabc7c5ecaf19c21db588480dd869",
+      "sourceDimensions": {
+        "width": 256,
+        "height": 296
+      },
+      "alphaBounds": {
+        "left": 40,
+        "top": 24,
+        "right": 216,
+        "bottom": 222
+      },
+      "displayScale": 0.25,
+      "visibleWidthRatio": 0.34375,
+      "visibleHeightRatio": 0.66892,
+      "opaqueDiamondAreaRatio": 0.26548,
+      "adjacentOcclusionRatio": {
+        "NORTH": 0.01467,
+        "EAST": 0,
+        "SOUTH": 0,
+        "WEST": 0.01166
+      },
+      "maximumRearTileOcclusionRatio": 0.01467
+    },
+    {
+      "id": "unit-original-heavy",
+      "role": "Heavy",
+      "sourceId": "unit-original-heavy",
+      "scaleClass": "standard",
+      "sourceSha256": "8fe592d094ede939cf8a92119022c9606b6c12621ed4d6777b4056b8cadb3759",
+      "portraitSha256": "2afe58d7c8c5c7c0ded38a0aa2168c005792bb7956148a20fce68def5bbc72f0",
+      "sourceDimensions": {
+        "width": 256,
+        "height": 296
+      },
+      "alphaBounds": {
+        "left": 32,
+        "top": 26,
+        "right": 224,
+        "bottom": 222
+      },
+      "displayScale": 0.25,
+      "visibleWidthRatio": 0.375,
+      "visibleHeightRatio": 0.66216,
+      "opaqueDiamondAreaRatio": 0.2888,
+      "adjacentOcclusionRatio": {
+        "NORTH": 0.04797,
+        "EAST": 0,
+        "SOUTH": 0,
+        "WEST": 0.02196
+      },
+      "maximumRearTileOcclusionRatio": 0.04797
+    },
+    {
+      "id": "unit-original-breacher",
+      "role": "Breacher",
+      "sourceId": "unit-original-breacher",
+      "scaleClass": "siege",
+      "sourceSha256": "1e752161cd63bcb7bc0e5a0989557f61d2d7f2d3e3d9597ccc9360ed11fca2ad",
+      "portraitSha256": "9ee6dd90b918f770428447f67c194d9e885c075a9f6e2f44448a4fd3c930c0b6",
+      "sourceDimensions": {
+        "width": 384,
+        "height": 384
+      },
+      "alphaBounds": {
+        "left": 61,
+        "top": 50,
+        "right": 335,
+        "bottom": 288
+      },
+      "displayScale": 0.24,
+      "visibleWidthRatio": 0.51375,
+      "visibleHeightRatio": 0.77189,
+      "opaqueDiamondAreaRatio": 0.43646,
+      "adjacentOcclusionRatio": {
+        "NORTH": 0.07683,
+        "EAST": 0,
+        "SOUTH": 0,
+        "WEST": 0.06281
+      },
+      "maximumRearTileOcclusionRatio": 0.07683
+    },
+    {
+      "id": "unit-original-juggernaut",
+      "role": "Juggernaut",
+      "sourceId": "unit-original-juggernaut",
+      "scaleClass": "giant",
+      "sourceSha256": "c905126dc7c38683b1ecba0aa930a4add45426a26fa3560a78e2df21ddaccc9a",
+      "portraitSha256": "773d3fb41174fc9939dbae9b98c5fa2e21094b8e4f924193c8e12e0e6a16a0c9",
+      "sourceDimensions": {
+        "width": 384,
+        "height": 448
+      },
+      "alphaBounds": {
+        "left": 29,
+        "top": 24,
+        "right": 355,
+        "bottom": 336
+      },
+      "displayScale": 0.25,
+      "visibleWidthRatio": 0.63672,
+      "visibleHeightRatio": 1.05405,
+      "opaqueDiamondAreaRatio": 0.93586,
+      "adjacentOcclusionRatio": {
+        "NORTH": 0.16293,
+        "EAST": 0,
+        "SOUTH": 0,
+        "WEST": 0.17181
+      },
+      "maximumRearTileOcclusionRatio": 0.17181
+    }
+  ],
+  "reviewCoverage": [
+    "source/native/enlarged/0.625x",
+    "0.625x/1x/1.75x and DPR1/2",
+    "Grass/Forest/Mountain/city/Road/dense economy",
+    "all four owner colors",
+    "selected/damaged/fog/reduced-motion static readability",
+    "mixed formations, labels, health, status, picking and adjacency sorting",
+    "portrait 64 CSS px on light/dark/high-contrast panels",
+    "grayscale and color-vision independence supplied by silhouette plus renderer-owned labels/patterns"
+  ],
+  "artifacts": [
+    {
+      "filename": "individual-source-native-enlarged-minimum.png",
+      "sha256": "ac96aac3c0a2bfac7c02667492c9a9310a83c40e5703542a789fdee816dd95ed",
+      "bytes": 612679
+    },
+    {
+      "filename": "bounded-family-gates.png",
+      "sha256": "768f78082b4977ed089dff1635fd90a8ed5b0ac2853e3b493588f3db9053a219",
+      "bytes": 198769
+    },
+    {
+      "filename": "owners-selection-damage-fog-map-contexts.png",
+      "sha256": "4d5eeb1b48e26055ac7932aead5f4aeb4e1e79620c0608d63b3a37e2ef6ee1df",
+      "bytes": 336132
+    },
+    {
+      "filename": "zoom-dpr-representatives.png",
+      "sha256": "f9ac09c256040bd5229159519dfb8c9f0510c3486f35820d05691e3a5668f9c4",
+      "bytes": 436218
+    },
+    {
+      "filename": "mixed-formation-adjacency-sorting.png",
+      "sha256": "5bfb1862b89fcd9ea5908d623a55274b05db188c28ece8329eb5b8994ee74def",
+      "bytes": 136886
+    },
+    {
+      "filename": "portrait-64px-contexts.png",
+      "sha256": "b33f5f1ee9436dcf830a92777896c54913c18c60629ed1ffa5ef6b1b69ca4d1f",
+      "bytes": 144667
+    }
+  ],
+  "visualReview": {
+    "status": "ACCEPTED",
+    "notes": "All nine roles remain silhouette-distinct at minimum zoom. Standard pieces remain materially smaller than terrain; Breacher is low-wide; Juggernaut is a bounded giant. No raster obscures city labels or an adjacent target. Selection, damage, readiness, health, owner and status remain code-native."
+  }
+}

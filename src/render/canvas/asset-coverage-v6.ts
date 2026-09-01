@@ -257,19 +257,46 @@ export function chocolateWallCoverageV6(): AssetCoverageV6 {
 }
 
 const ACCEPTED_UNIT_ART: Readonly<
-  Partial<Record<FactionIdV6, Partial<Record<UnitRoleId, string>>>>
+  Partial<
+    Record<
+      FactionIdV6,
+      Partial<
+        Record<
+          UnitRoleId,
+          { readonly assetId: string; readonly fileStem: string }
+        >
+      >
+    >
+  >
 > = {
   ORIGINAL: {
-    FIGHTER: "warrior",
-    MARKSMAN: "archer",
-    GUARD: "defender",
-    RAIDER: "rider",
+    FIGHTER: { assetId: "unit-original-fighter", fileStem: "warrior" },
+    SCOUT: { assetId: "unit-original-scout", fileStem: "original-scout" },
+    MARKSMAN: { assetId: "unit-original-marksman", fileStem: "archer" },
+    GUARD: { assetId: "unit-original-guard", fileStem: "defender" },
+    RAIDER: { assetId: "unit-original-raider", fileStem: "rider" },
+    MEDIC: { assetId: "unit-original-medic", fileStem: "original-medic" },
+    HEAVY: { assetId: "unit-original-heavy", fileStem: "original-heavy" },
+    BREACHER: {
+      assetId: "unit-original-breacher",
+      fileStem: "original-breacher",
+    },
+    JUGGERNAUT: {
+      assetId: "unit-original-juggernaut",
+      fileStem: "original-juggernaut",
+    },
   },
   CANDY: {
-    FIGHTER: "candy-warrior",
-    MARKSMAN: "candy-gumball-guard",
-    GUARD: "candy-choco-engineer",
-    RAIDER: "candy-donut",
+    FIGHTER: { assetId: "unit-candy-warrior", fileStem: "candy-warrior" },
+    MARKSMAN: {
+      assetId: "unit-candy-gumball-guard",
+      fileStem: "candy-gumball-guard",
+    },
+    GUARD: {
+      assetId: "unit-candy-choco-engineer",
+      fileStem: "candy-choco-engineer",
+    },
+    RAIDER: { assetId: "unit-candy-donut", fileStem: "candy-donut" },
   },
 };
 
@@ -285,14 +312,14 @@ export function unitCoverageV6(
         : faction === "CANDY" && role === "FIGHTER"
           ? PLACEMENT_ART_GEOMETRY.candyWarrior
           : STANDARD_PLACEHOLDER_GEOMETRY;
-  const fileStem = ACCEPTED_UNIT_ART[faction]?.[role];
-  if (fileStem === undefined) {
+  const art = ACCEPTED_UNIT_ART[faction]?.[role];
+  if (art === undefined) {
     return placeholder(`unit:${faction}:${role}`, unitLabel(role), geometry);
   }
   return accepted(
     `unit:${faction}:${role}`,
-    `unit-${fileStem}`,
-    `assets/pixellab/units/${fileStem}.png`,
+    art.assetId,
+    `assets/pixellab/units/${art.fileStem}.png`,
     geometry,
   );
 }

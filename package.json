@@ -25,6 +25,7 @@
     "art:candy-city-review": "tsx scripts/art/candy-city-review.ts",
     "art:footprint-review": "tsx scripts/art/footprint-review.ts",
     "art:unit-scale-review": "tsx scripts/art/unit-scale-review.ts",
+    "art:ruleset6-original-unit-review": "tsx scripts/art/ruleset6-original-unit-review.ts",
     "art:ruleset6-renderer-review": "tsx scripts/art/ruleset6-renderer-review.ts",
     "art:ruleset6-host-review": "tsx scripts/art/ruleset6-host-review.ts",
     "art:ruleset6-combat-review": "tsx scripts/art/ruleset6-combat-review.ts",

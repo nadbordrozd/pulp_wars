@@ -53,6 +53,8 @@ interface Recipe {
     | "reference-rotate-180-diamond"
     | "preferred-low-marker-fit"
     | "compact-building-fit"
+    | "unit-fit"
+    | "sprite-derived-portrait"
     | "lanczos3-resize";
   readonly includeFactionLanguage?: boolean;
   readonly requestNoBackground?: boolean;
@@ -196,6 +198,7 @@ async function main(): Promise<void> {
         (ids === undefined || ids.includes(recipe.id)),
     );
     if (recipes.length === 0) throw new Error("No recipes selected");
+    assertOriginalUnitOrder(recipes, generated);
     if (stage === "batch") assertBuildingBatchOrder(recipes, generated);
     const concurrency = Number(optionalOption("--concurrency") ?? "3");
     await generateRecipes(source, generated, recipes, concurrency);
@@ -625,6 +628,69 @@ function validateSourceManifest(
     anchor: { x: 192, y: 288 },
     hardBounds: { left: 16, top: 8, right: 368, bottom: 336 },
   });
+  const originalAliases = new Map(
+    (source.aliases ?? []).map((alias) => [alias.id, alias]),
+  );
+  for (const [id, aliasSource, semanticRole] of [
+    ["unit-original-fighter", "unit-warrior", "ORIGINAL_FIGHTER"],
+    ["unit-original-marksman", "unit-archer", "ORIGINAL_MARKSMAN"],
+    ["unit-original-guard", "unit-defender", "ORIGINAL_GUARD"],
+    ["unit-original-raider", "unit-rider", "ORIGINAL_RAIDER"],
+  ] as const) {
+    const alias = originalAliases.get(id);
+    if (alias?.source !== aliasSource || alias.semanticRole !== semanticRole)
+      throw new Error(`Ruleset 6 Original role alias mismatch: ${id}`);
+  }
+  const originalUnits = [
+    ["unit-original-scout", "sample", 256, 296, 128, 222],
+    ["unit-original-medic", "sample", 256, 296, 128, 222],
+    ["unit-original-breacher", "sample", 384, 384, 192, 288],
+    ["unit-original-heavy", "batch", 256, 296, 128, 222],
+    ["unit-original-juggernaut", "batch", 384, 448, 192, 336],
+  ] as const;
+  for (const [id, stage, width, height, anchorX, anchorY] of originalUnits) {
+    const recipe = source.recipes.find((candidate) => candidate.id === id);
+    if (
+      recipe?.class !== "units" ||
+      recipe.stage !== stage ||
+      recipe.requestSize.width !== width ||
+      recipe.requestSize.height !== height ||
+      recipe.outputSize.width !== width ||
+      recipe.outputSize.height !== height ||
+      recipe.anchor?.x !== anchorX ||
+      recipe.anchor.y !== anchorY ||
+      recipe.groundContactY !== anchorY ||
+      recipe.postprocess !== "unit-fit" ||
+      recipe.preferredBounds === undefined
+    )
+      throw new Error(`Original unit geometry mismatch: ${id}`);
+  }
+  const portraitSources = new Map([
+    ["fighter", "unit-warrior"],
+    ["scout", "unit-original-scout"],
+    ["marksman", "unit-archer"],
+    ["guard", "unit-defender"],
+    ["raider", "unit-rider"],
+    ["medic", "unit-original-medic"],
+    ["heavy", "unit-original-heavy"],
+    ["breacher", "unit-original-breacher"],
+    ["juggernaut", "unit-original-juggernaut"],
+  ]);
+  for (const [role, portraitSource] of portraitSources) {
+    const id = `portrait-original-${role}`;
+    const recipe = source.recipes.find((candidate) => candidate.id === id);
+    if (
+      recipe?.class !== "ui" ||
+      recipe.stage !== "batch" ||
+      recipe.outputSize.width !== 256 ||
+      recipe.outputSize.height !== 256 ||
+      recipe.postprocess !== "sprite-derived-portrait" ||
+      recipe.styleReference !== portraitSource ||
+      JSON.stringify(recipe.hardBounds) !==
+        JSON.stringify({ left: 20, top: 20, right: 236, bottom: 236 })
+    )
+      throw new Error(`Original portrait contract mismatch: ${id}`);
+  }
 }
 
 function assertRecipeGeometry(
@@ -716,6 +782,61 @@ function assertBuildingBatchOrder(
     first.some((id) => generated.records[id]?.status !== "ACCEPTED")
   )
     throw new Error("Accept Sawmill, Forge, and Stoneworks before batch two");
+}
+
+function assertOriginalUnitOrder(
+  recipes: readonly Recipe[],
+  generated: GeneratedManifest,
+): void {
+  const samples = [
+    "unit-original-scout",
+    "unit-original-medic",
+    "unit-original-breacher",
+  ] as const;
+  const selectedSamples = recipes.filter((recipe) =>
+    samples.includes(recipe.id as (typeof samples)[number]),
+  );
+  if (selectedSamples.length > 0) {
+    if (selectedSamples.length !== 1)
+      throw new Error(
+        "Original Scout, Medic, and Breacher must be generated as separate individual requests",
+      );
+    const selectedIndex = samples.indexOf(
+      selectedSamples[0]?.id as (typeof samples)[number],
+    );
+    const missingEarlier = samples
+      .slice(0, selectedIndex)
+      .filter((id) => generated.records[id]?.status !== "ACCEPTED");
+    if (missingEarlier.length > 0)
+      throw new Error(
+        `Original sample gate order requires acceptance first: ${missingEarlier.join(", ")}`,
+      );
+    return;
+  }
+
+  const generatedUnits = recipes
+    .map((recipe) => recipe.id)
+    .filter((id) => id.startsWith("unit-original-"));
+  if (generatedUnits.length === 0) return;
+  if (samples.some((id) => generated.records[id]?.status !== "ACCEPTED"))
+    throw new Error(
+      "Accept Scout, Medic, and Breacher before later Original units",
+    );
+  if (generatedUnits.includes("unit-original-heavy")) {
+    if (generatedUnits.length !== 1)
+      throw new Error(
+        "Generate Original Heavy alone within the frontline family gate",
+      );
+    return;
+  }
+  if (generatedUnits.includes("unit-original-juggernaut")) {
+    if (generatedUnits.length !== 1)
+      throw new Error(
+        "Generate Original Juggernaut as an individual giant gate",
+      );
+    if (generated.records["unit-original-heavy"]?.status !== "ACCEPTED")
+      throw new Error("Accept the Original frontline family before Juggernaut");
+  }
 }
 
 async function generateRecipes(
@@ -818,6 +939,51 @@ async function generateOne(
   apiKey: string,
 ): Promise<GenerationRecord> {
   const request = requestSnapshot(source, recipe);
+  if (recipe.postprocess === "sprite-derived-portrait") {
+    if (recipe.styleReference === undefined)
+      throw new Error(`${recipe.id}: derived portrait needs styleReference`);
+    const referenceRecipe = source.recipes.find(
+      (candidate) => candidate.id === recipe.styleReference,
+    );
+    if (referenceRecipe === undefined)
+      throw new Error(`Unknown portrait source ${recipe.styleReference}`);
+    const sourceRecord = (
+      JSON.parse(await readFile(GENERATED_PATH, "utf8")) as GeneratedManifest
+    ).records[recipe.styleReference];
+    if (sourceRecord?.status !== "ACCEPTED")
+      throw new Error(`${recipe.id}: portrait source is not accepted`);
+    const reference = await readFile(path.join(ROOT, referenceRecipe.output));
+    const candidate = path.join(CANDIDATE_ROOT, `${recipe.id}.png`);
+    await mkdir(path.dirname(candidate), { recursive: true });
+    await deriveSpritePortrait(reference, recipe, candidate);
+    const inspection = await inspectPng(candidate);
+    assertTechnical(recipe, inspection);
+    const referenceSha256 = sha256(reference);
+    console.log(
+      `${recipe.id}: deterministic portrait ready (${inspection.sha256.slice(0, 12)})`,
+    );
+    return {
+      id: recipe.id,
+      status: "CANDIDATE",
+      candidate: path.relative(ROOT, candidate).replaceAll("\\", "/"),
+      candidateSha256: inspection.sha256,
+      providerOutputSha256: referenceSha256,
+      width: inspection.width,
+      height: inspection.height,
+      hasAlpha: inspection.hasAlpha,
+      alphaBounds: inspection.alphaBounds,
+      notes: `Deterministically derived from ${recipe.styleReference} (${referenceSha256}).`,
+      request: {
+        ...request,
+        styleReference: {
+          id: recipe.styleReference,
+          sha256: referenceSha256,
+          usageDescription:
+            "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request.",
+        },
+      },
+    };
+  }
   let resolvedRequest = request;
   const body: Record<string, unknown> = {
     description: request.description,
@@ -1115,6 +1281,47 @@ async function deriveRotatedDiamond(
   await assertDiamondAlpha(destination, recipe.outputSize);
 }
 
+async function deriveSpritePortrait(
+  reference: Buffer,
+  recipe: Recipe,
+  destination: string,
+): Promise<void> {
+  const safe = recipe.hardBounds;
+  const width = safe.right - safe.left;
+  const height = safe.bottom - safe.top;
+  const fitted = await sharp(reference)
+    .trim({ background: "#00000000" })
+    .resize({
+      width,
+      height,
+      fit: "contain",
+      background: "#00000000",
+      kernel: sharp.kernel.lanczos3,
+    })
+    .png({ compressionLevel: 9, adaptiveFiltering: false })
+    .toBuffer();
+  const metadata = await sharp(fitted).metadata();
+  const fittedWidth = metadata.width ?? width;
+  const fittedHeight = metadata.height ?? height;
+  await sharp({
+    create: {
+      width: recipe.outputSize.width,
+      height: recipe.outputSize.height,
+      channels: 4,
+      background: "#00000000",
+    },
+  })
+    .composite([
+      {
+        input: fitted,
+        left: safe.left + Math.floor((width - fittedWidth) / 2),
+        top: safe.top + Math.floor((height - fittedHeight) / 2),
+      },
+    ])
+    .png({ compressionLevel: 9, adaptiveFiltering: false })
+    .toFile(destination);
+}
+
 async function applyDiamondAlpha(
   destination: string,
   size: Size,
@@ -1217,7 +1424,9 @@ async function normalizeToHardBounds(
       ? (recipe.preferredBounds ?? recipe.hardBounds)
       : recipe.postprocess === "compact-building-fit"
         ? (recipe.fitBounds ?? recipe.preferredBounds ?? recipe.hardBounds)
-        : recipe.hardBounds;
+        : recipe.postprocess === "unit-fit"
+          ? (recipe.preferredBounds ?? recipe.hardBounds)
+          : recipe.hardBounds;
   const fitBounds =
     recipe.groundContactY === undefined
       ? targetBounds
@@ -1230,6 +1439,7 @@ async function normalizeToHardBounds(
   if (
     recipe.postprocess === "preferred-low-marker-fit" ||
     recipe.postprocess === "compact-building-fit" ||
+    recipe.postprocess === "unit-fit" ||
     alphaWidth > hardWidth ||
     alphaHeight > hardHeight
   ) {
@@ -1506,6 +1716,17 @@ async function validateOutputs(
       );
     if (inspection.sha256 !== record.outputSha256)
       throw new Error(`Hash mismatch for ${recipe.id}`);
+    if (recipe.postprocess === "sprite-derived-portrait") {
+      const sourceId = recipe.styleReference;
+      if (
+        sourceId === undefined ||
+        generated.records[sourceId]?.status !== "ACCEPTED" ||
+        record.request?.styleReference?.id !== sourceId ||
+        record.request.styleReference.sha256 !==
+          generated.records[sourceId]?.outputSha256
+      )
+        throw new Error(`Derived portrait provenance mismatch: ${recipe.id}`);
+    }
   }
   for (const record of Object.values(generated.records)) {
     if (record.status !== "REJECTED") continue;
@@ -1664,7 +1885,12 @@ async function createReviewSheets(
           ? recipe.output
           : (record?.candidate ?? recipe.output);
       const image = await sharp(path.join(ROOT, sourceFile))
-        .resize({ width: 240, height: 240, fit: "contain" })
+        .resize({
+          width: 240,
+          height: 240,
+          fit: "contain",
+          background: "#00000000",
+        })
         .png()
         .toBuffer();
       const left = (index % columns) * cellWidth + 30;

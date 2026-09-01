@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "f433b7553340493774fd019040bbff9e7e282b59bf3f2b86d5a14966075cb15d",
+  "sourceManifestSha256": "867a8f2be1b0860321342aca58e33b8e4f2cec64767f77fc2fc9d2438e101015",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -4217,6 +4217,1115 @@
       "outputSha256": "f1336fb53f069ad7956c6f6b565113ad3ab300c98a7cd1313ab3f3b08ce903d2",
       "notes": "Accepted after final-batch contact-sheet plus source/native/enlarged/0.625x individual inspection. One open craft shed, oversized gear, workbench and mallet read as mixed Workshop and remain unmistakably simpler than Grand Works. Alpha x98..286 y72..288 displays at 56.4 by 64.8 CSS pixels, preserving adjacent basics, unit, owner, selection and labels. No contributors, family chips, links, state, text or UI are baked in.",
       "reviewedAt": "2026-09-01T16:10:03.940Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "unit-original-scout": {
+      "id": "unit-original-scout",
+      "status": "ACCEPTED",
+      "jobId": "6a04be04-7698-4bfc-8a0d-ea900d6e7381",
+      "candidate": "art/pixellab/candidates/unit-original-scout.png",
+      "candidateSha256": "8663c5c6f95ed69481123245a7f7c5e6acf2b55ebb9c52ebbc46979252e60343",
+      "providerOutputSha256": "32e8695e3cb22f5bfb8d5757df9c85e1b817a3f4fcb70679f49a639410edd4e7",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 51,
+        "top": 18,
+        "right": 204,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated full-body Original Scout game sprite only, southeast-facing three-quarter strategy view looking slightly downward. One cute chunky explorer with large head and short body, both feet visible straddling ground contact x128 y222, compact forward exploration pose, one oversized simple brass spyglass held to one eye and one broad dark-teal trail satchel, rounded tan padded tunic, off-white scarf and bronze diamond badge. The spyglass is the unmistakable silhouette cue at 0.625 map zoom. Blank transparent 256 by 296 canvas, preferred alpha x44..212 y18..222 and hard alpha x16..240 y4..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; horse, mount, rider, bow, gun, medical emblem, stretcher, siege tool, projectile, scenery, trail marks, compass text, map text, UI, selection ring, health bar, ground, cast shadow, hidden feet, cropped silhouette.",
+        "prompt": "Isolated full-body Original Scout game sprite only, southeast-facing three-quarter strategy view looking slightly downward. One cute chunky explorer with large head and short body, both feet visible straddling ground contact x128 y222, compact forward exploration pose, one oversized simple brass spyglass held to one eye and one broad dark-teal trail satchel, rounded tan padded tunic, off-white scarf and bronze diamond badge. The spyglass is the unmistakable silhouette cue at 0.625 map zoom. Blank transparent 256 by 296 canvas, preferred alpha x44..212 y18..222 and hard alpha x16..240 y4..252.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; horse, mount, rider, bow, gun, medical emblem, stretcher, siege tool, projectile, scenery, trail marks, compass text, map text, UI, selection ring, health bar, ground, cast shadow, hidden feet, cropped silhouette",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 91301,
+        "noBackground": true,
+        "postprocess": "unit-fit",
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "unit-warrior",
+          "sha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1",
+          "usageDescription": "Match the accepted Original faction palette, rounded proportions, outline thickness, flat shading, camera, and detail budget only; create a distinct Scout silhouette."
+        }
+      },
+      "outputSha256": "8663c5c6f95ed69481123245a7f7c5e6acf2b55ebb9c52ebbc46979252e60343",
+      "notes": "Individual gate passed: distinct spyglass exploration silhouette, readable feet and Original palette; clear at source/native/minimum scale with clean alpha and no baked UI or scenery.",
+      "reviewedAt": "2026-09-01T16:54:30.189Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "unit-original-medic": {
+      "id": "unit-original-medic",
+      "status": "ACCEPTED",
+      "jobId": "383413a9-63ce-439d-83f9-db641febe5d0",
+      "candidate": "art/pixellab/candidates/unit-original-medic.png",
+      "candidateSha256": "c30475f23be6a8ca9ee1957a327b3b764489e570d50cd69d5775006650af62c2",
+      "providerOutputSha256": "eeea9c32f8610d36d56ae2f33fe6039d1741f3d205c93fdc4269fb0aebca3f90",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 40,
+        "top": 24,
+        "right": 216,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated full-body Original Medic game sprite only, southeast-facing three-quarter strategy view looking slightly downward. One cute chunky field medic with large head and short body, both feet visible straddling ground contact x128 y222, one oversized pale canvas medical satchel and one large rolled bandage held as a tool, rounded tan padded tunic, off-white scarf, bronze diamond badge and dark-teal equipment. Use a simple heart-shaped bronze clasp as a care cue; no real-world protected medical emblem. Blank transparent 256 by 296 canvas, preferred alpha x40..216 y16..222 and hard alpha x16..240 y4..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; red cross, crescent emblem, real medical logo, rifle, bow, arrow, marksman pose, weapon as primary silhouette, syringe, gore, patient, scenery, spell effect, UI, text, ground, cast shadow, hidden feet, cropped silhouette.",
+        "prompt": "Isolated full-body Original Medic game sprite only, southeast-facing three-quarter strategy view looking slightly downward. One cute chunky field medic with large head and short body, both feet visible straddling ground contact x128 y222, one oversized pale canvas medical satchel and one large rolled bandage held as a tool, rounded tan padded tunic, off-white scarf, bronze diamond badge and dark-teal equipment. Use a simple heart-shaped bronze clasp as a care cue; no real-world protected medical emblem. Blank transparent 256 by 296 canvas, preferred alpha x40..216 y16..222 and hard alpha x16..240 y4..252.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; red cross, crescent emblem, real medical logo, rifle, bow, arrow, marksman pose, weapon as primary silhouette, syringe, gore, patient, scenery, spell effect, UI, text, ground, cast shadow, hidden feet, cropped silhouette",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 91302,
+        "noBackground": true,
+        "postprocess": "unit-fit",
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "unit-warrior",
+          "sha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1",
+          "usageDescription": "Match the accepted Original faction palette, rounded proportions, outline thickness, flat shading, camera, and detail budget only; create a distinct Medic silhouette."
+        }
+      },
+      "outputSha256": "c30475f23be6a8ca9ee1957a327b3b764489e570d50cd69d5775006650af62c2",
+      "notes": "Individual gate passed: oversized care satchel and rolled-bandage tool read clearly without a protected emblem; distinct from Marksman, grounded, clean, and legible at minimum zoom.",
+      "reviewedAt": "2026-09-01T16:56:28.518Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "unit-original-breacher": {
+      "id": "unit-original-breacher",
+      "status": "ACCEPTED",
+      "jobId": "e57311da-d7a4-4d2d-9fca-636560ff8fb2",
+      "candidate": "art/pixellab/candidates/unit-original-breacher.png",
+      "candidateSha256": "1e752161cd63bcb7bc0e5a0989557f61d2d7f2d3e3d9597ccc9360ed11fca2ad",
+      "providerOutputSha256": "8409fb87fd3c5d7523e01b93fb09a0ea98b913d3928ea5d541027a6d44bac480",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 61,
+        "top": 50,
+        "right": 335,
+        "bottom": 288,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated Original Breacher melee-siege game sprite only, southeast-facing three-quarter strategy view looking slightly downward. One fragile low-wide wheeled timber battering ram with exactly two readable wheel contacts centered at x192 y288, an enormous blunt bronze ram head aimed southeast, dark-teal bindings and a small tan padded housing. Compact toy-like siege construction, no crew and no projectile. Blank transparent 384 by 384 canvas, preferred alpha x58..338 y50..288 and hard alpha x16..368 y8..336. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; catapult, throwing arm, sling, ballista, cannon, arrow, projectile, explosive blast, bomb in flight, ranged throwing arm, crew, tall tower, gore, scenery, ground, cast shadow, UI, text, floating wheels, hidden wheel contacts.",
+        "prompt": "Isolated Original Breacher melee-siege game sprite only, southeast-facing three-quarter strategy view looking slightly downward. One fragile low-wide wheeled timber battering ram with exactly two readable wheel contacts centered at x192 y288, an enormous blunt bronze ram head aimed southeast, dark-teal bindings and a small tan padded housing. Compact toy-like siege construction, no crew and no projectile. Blank transparent 384 by 384 canvas, preferred alpha x58..338 y50..288 and hard alpha x16..368 y8..336.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; catapult, throwing arm, sling, ballista, cannon, arrow, projectile, explosive blast, bomb in flight, ranged throwing arm, crew, tall tower, gore, scenery, ground, cast shadow, UI, text, floating wheels, hidden wheel contacts",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 91303,
+        "noBackground": true,
+        "postprocess": "unit-fit",
+        "groundContactY": 288,
+        "styleReference": {
+          "id": "unit-warrior",
+          "sha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1",
+          "usageDescription": "Match the accepted Original faction palette, outline thickness, flat shading, camera, and playful detail budget only; create a low-wide melee siege silhouette."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/unit-original-breacher-6d7f811b462e.png",
+          "candidateSha256": "6d7f811b462e4c335c8bf9604d6548036af5c907476af3a3471a9d0f37b106c5",
+          "notes": "Rejected after deterministic geometry review: NORTH rear-tile alpha coverage 0.12402 exceeded the siege 0.12 hard cap despite passing silhouette review.",
+          "reviewedAt": "2026-09-01T17:17:14.642Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated Original Breacher melee-siege game sprite only, southeast-facing three-quarter strategy view looking slightly downward. One fragile low-wide wheeled timber battering ram with exactly two readable wheel contacts centered at x192 y288, an enormous blunt bronze ram head aimed southeast, dark-teal bindings and a small tan padded housing. Compact toy-like siege construction, no crew and no projectile. Blank transparent 384 by 384 canvas, preferred alpha x40..344 y32..288 and hard alpha x16..368 y8..336. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; catapult, throwing arm, sling, ballista, cannon, arrow, projectile, explosive blast, bomb in flight, ranged throwing arm, crew, tall tower, gore, scenery, ground, cast shadow, UI, text, floating wheels, hidden wheel contacts.",
+            "prompt": "Isolated Original Breacher melee-siege game sprite only, southeast-facing three-quarter strategy view looking slightly downward. One fragile low-wide wheeled timber battering ram with exactly two readable wheel contacts centered at x192 y288, an enormous blunt bronze ram head aimed southeast, dark-teal bindings and a small tan padded housing. Compact toy-like siege construction, no crew and no projectile. Blank transparent 384 by 384 canvas, preferred alpha x40..344 y32..288 and hard alpha x16..368 y8..336.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; catapult, throwing arm, sling, ballista, cannon, arrow, projectile, explosive blast, bomb in flight, ranged throwing arm, crew, tall tower, gore, scenery, ground, cast shadow, UI, text, floating wheels, hidden wheel contacts",
+            "requestSize": {
+              "width": 384,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 384,
+              "height": 384
+            },
+            "seed": 91303,
+            "noBackground": true,
+            "postprocess": "unit-fit",
+            "groundContactY": 288,
+            "styleReference": {
+              "id": "unit-warrior",
+              "sha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1",
+              "usageDescription": "Match the accepted Original faction palette, outline thickness, flat shading, camera, and playful detail budget only; create a low-wide melee siege silhouette."
+            }
+          }
+        },
+        {
+          "candidate": "art/pixellab/quarantine/unit-original-breacher-02213bdf55e4.png",
+          "candidateSha256": "02213bdf55e4965c2fa8ddc655b8271fc238ceb1c02796f11d0934c0d602c3de",
+          "notes": "Rejected after second numeric pass: WEST rear-tile alpha coverage 0.12253 still exceeded the siege 0.12 hard cap; fit must become narrower and shift right.",
+          "reviewedAt": "2026-09-01T17:23:56.438Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated Original Breacher melee-siege game sprite only, southeast-facing three-quarter strategy view looking slightly downward. One fragile low-wide wheeled timber battering ram with exactly two readable wheel contacts centered at x192 y288, an enormous blunt bronze ram head aimed southeast, dark-teal bindings and a small tan padded housing. Compact toy-like siege construction, no crew and no projectile. Blank transparent 384 by 384 canvas, preferred alpha x45..339 y44..288 and hard alpha x16..368 y8..336. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; catapult, throwing arm, sling, ballista, cannon, arrow, projectile, explosive blast, bomb in flight, ranged throwing arm, crew, tall tower, gore, scenery, ground, cast shadow, UI, text, floating wheels, hidden wheel contacts.",
+            "prompt": "Isolated Original Breacher melee-siege game sprite only, southeast-facing three-quarter strategy view looking slightly downward. One fragile low-wide wheeled timber battering ram with exactly two readable wheel contacts centered at x192 y288, an enormous blunt bronze ram head aimed southeast, dark-teal bindings and a small tan padded housing. Compact toy-like siege construction, no crew and no projectile. Blank transparent 384 by 384 canvas, preferred alpha x45..339 y44..288 and hard alpha x16..368 y8..336.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; catapult, throwing arm, sling, ballista, cannon, arrow, projectile, explosive blast, bomb in flight, ranged throwing arm, crew, tall tower, gore, scenery, ground, cast shadow, UI, text, floating wheels, hidden wheel contacts",
+            "requestSize": {
+              "width": 384,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 384,
+              "height": 384
+            },
+            "seed": 91303,
+            "noBackground": true,
+            "postprocess": "unit-fit",
+            "groundContactY": 288,
+            "styleReference": {
+              "id": "unit-warrior",
+              "sha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1",
+              "usageDescription": "Match the accepted Original faction palette, outline thickness, flat shading, camera, and playful detail budget only; create a low-wide melee siege silhouette."
+            }
+          }
+        }
+      ],
+      "outputSha256": "1e752161cd63bcb7bc0e5a0989557f61d2d7f2d3e3d9597ccc9360ed11fca2ad",
+      "notes": "Third siege candidate passed silhouette review after right-shifted 280x238 fit: clear two-wheel melee ram, no ranged/projectile cue, legible at minimum zoom.",
+      "reviewedAt": "2026-09-01T17:29:39.271Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "unit-original-heavy": {
+      "id": "unit-original-heavy",
+      "status": "ACCEPTED",
+      "jobId": "ac22ce88-91f7-436d-a601-547b42044fed",
+      "candidate": "art/pixellab/candidates/unit-original-heavy.png",
+      "candidateSha256": "8fe592d094ede939cf8a92119022c9606b6c12621ed4d6777b4056b8cadb3759",
+      "providerOutputSha256": "71b34549b2d39f4c51dbd78d33d60d18f6d0f35e25f45cac0f932c2d95f71e9e",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 32,
+        "top": 26,
+        "right": 224,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated full-body Original Heavy game sprite only, southeast-facing three-quarter strategy view looking slightly downward. One cute chunky broad pushing fighter with large head and short body, both feet visible straddling ground contact x128 y222, wide braced stance, one enormous square-headed bronze maul held forward in both hands, thick dark-teal shoulder padding, tan tunic, off-white scarf and bronze diamond badge. The broad mass and forward braced maul must read instantly at 0.625 map zoom. Blank transparent 256 by 296 canvas, preferred alpha x32..224 y12..222 and hard alpha x16..240 y4..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; shield as primary silhouette, spear, bow, mount, tall thin body, giant scale, projectile, scenery, ground, cast shadow, UI, text, hidden feet, cropped silhouette.",
+        "prompt": "Isolated full-body Original Heavy game sprite only, southeast-facing three-quarter strategy view looking slightly downward. One cute chunky broad pushing fighter with large head and short body, both feet visible straddling ground contact x128 y222, wide braced stance, one enormous square-headed bronze maul held forward in both hands, thick dark-teal shoulder padding, tan tunic, off-white scarf and bronze diamond badge. The broad mass and forward braced maul must read instantly at 0.625 map zoom. Blank transparent 256 by 296 canvas, preferred alpha x32..224 y12..222 and hard alpha x16..240 y4..252.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; shield as primary silhouette, spear, bow, mount, tall thin body, giant scale, projectile, scenery, ground, cast shadow, UI, text, hidden feet, cropped silhouette",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 91304,
+        "noBackground": true,
+        "postprocess": "unit-fit",
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "unit-defender",
+          "sha256": "930c31f9aa1bf5dacf0318484b31ac63504365482ae01a84a6a269d94de65e11",
+          "usageDescription": "Match the accepted Original faction palette, rounded proportions, outline thickness, flat shading, camera, and detail budget only; create a distinct broad Heavy silhouette."
+        }
+      },
+      "outputSha256": "8fe592d094ede939cf8a92119022c9606b6c12621ed4d6777b4056b8cadb3759",
+      "notes": "Frontline family gate passed: broad braced mass and oversized square maul distinguish Heavy from Fighter and shield-led Guard; clean Original palette, feet, alpha, and minimum-scale silhouette.",
+      "reviewedAt": "2026-09-01T17:06:32.874Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "unit-original-juggernaut": {
+      "id": "unit-original-juggernaut",
+      "status": "ACCEPTED",
+      "jobId": "62e57bef-3e56-4f67-8e37-a20c4abfd601",
+      "candidate": "art/pixellab/candidates/unit-original-juggernaut.png",
+      "candidateSha256": "c905126dc7c38683b1ecba0aa930a4add45426a26fa3560a78e2df21ddaccc9a",
+      "providerOutputSha256": "94407c6f7c2d23d0868d39743af2138563d209e93f14d65c26b433b4c3236647",
+      "width": 384,
+      "height": 448,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 29,
+        "top": 24,
+        "right": 355,
+        "bottom": 336,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated full-body Original Juggernaut giant game sprite only, southeast-facing three-quarter strategy view looking slightly downward. Exactly one giant cute chunky armored figure with a large readable head, both boots visibly braced around ground contact x192 y336, enormous broad shoulders, one oversized forward-held bronze tower shield and one huge dark-teal padded gauntlet in a push-ready stance. Rounded tan armor, off-white scarf and bronze diamond badge preserve the Original faction language. One figure only, toy-soldier violence, no scenery or boss UI. Blank transparent 384 by 448 canvas, preferred alpha x28..356 y24..336 and hard alpha x8..376 y4..400. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; multiple characters, mount, building, monster scenery, boss frame, health bar, label, text, selection ring, glow, projectile, attack effect, gore, ground, cast shadow, hidden feet, cropped silhouette, realistic anatomy, tiny ordinary unit.",
+        "prompt": "Isolated full-body Original Juggernaut giant game sprite only, southeast-facing three-quarter strategy view looking slightly downward. Exactly one giant cute chunky armored figure with a large readable head, both boots visibly braced around ground contact x192 y336, enormous broad shoulders, one oversized forward-held bronze tower shield and one huge dark-teal padded gauntlet in a push-ready stance. Rounded tan armor, off-white scarf and bronze diamond badge preserve the Original faction language. One figure only, toy-soldier violence, no scenery or boss UI. Blank transparent 384 by 448 canvas, preferred alpha x28..356 y24..336 and hard alpha x8..376 y4..400.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; multiple characters, mount, building, monster scenery, boss frame, health bar, label, text, selection ring, glow, projectile, attack effect, gore, ground, cast shadow, hidden feet, cropped silhouette, realistic anatomy, tiny ordinary unit",
+        "requestSize": {
+          "width": 384,
+          "height": 448
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 448
+        },
+        "seed": 91305,
+        "noBackground": true,
+        "postprocess": "unit-fit",
+        "groundContactY": 336,
+        "styleReference": {
+          "id": "unit-original-heavy",
+          "sha256": "8fe592d094ede939cf8a92119022c9606b6c12621ed4d6777b4056b8cadb3759",
+          "usageDescription": "Match the accepted Original faction palette, outline thickness, flat shading, camera, and playful detail budget only; create one systematic giant-class figure."
+        }
+      },
+      "outputSha256": "c905126dc7c38683b1ecba0aa930a4add45426a26fa3560a78e2df21ddaccc9a",
+      "notes": "Individual giant gate passed: one systematic large figure with readable feet, broad push-ready stance, tower shield and gauntlet; no scenery/effects/UI and strong distinction from standard Heavy.",
+      "reviewedAt": "2026-09-01T17:10:15.558Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "portrait-original-fighter": {
+      "id": "portrait-original-fighter",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/portrait-original-fighter.png",
+      "candidateSha256": "a8756d8ce97b1173273acd88e6b215f124a3a266c3afd154399bf22dc5ef1d02",
+      "providerOutputSha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 28,
+        "top": 20,
+        "right": 227,
+        "bottom": 236,
+        "empty": false
+      },
+      "notes": "Portrait gate passed: deterministic accepted-sprite derivation has clean transparent safe area and retains a distinct readable role silhouette at 64 CSS px and enlarged scale.",
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Original Fighter sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+        "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Original Fighter sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 92301,
+        "noBackground": true,
+        "postprocess": "sprite-derived-portrait",
+        "styleReference": {
+          "id": "unit-warrior",
+          "sha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1",
+          "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/portrait-original-fighter-691db87d2027.png",
+          "candidateSha256": "691db87d2027763e2d412e4f1922b664f37d20744c1fcebb858fb216bee3d422",
+          "notes": "Rejected: deterministic contain resize introduced opaque black padding bars, violating transparency and safe-area requirements.",
+          "reviewedAt": "2026-09-01T17:11:07.584Z",
+          "request": {
+            "endpoint": "generate-ui-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Original Fighter sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+            "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Original Fighter sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+            "requestSize": {
+              "width": 256,
+              "height": 256
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 256
+            },
+            "seed": 92301,
+            "noBackground": true,
+            "postprocess": "sprite-derived-portrait",
+            "styleReference": {
+              "id": "unit-warrior",
+              "sha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1",
+              "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+            }
+          }
+        }
+      ],
+      "outputSha256": "a8756d8ce97b1173273acd88e6b215f124a3a266c3afd154399bf22dc5ef1d02",
+      "reviewedAt": "2026-09-01T17:12:07.578Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "portrait-original-guard": {
+      "id": "portrait-original-guard",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/portrait-original-guard.png",
+      "candidateSha256": "40eb7fb294a90a4bc4b5c3071eef5810ac520eac0a6018fd66bba853417e66b9",
+      "providerOutputSha256": "930c31f9aa1bf5dacf0318484b31ac63504365482ae01a84a6a269d94de65e11",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 20,
+        "top": 23,
+        "right": 236,
+        "bottom": 233,
+        "empty": false
+      },
+      "notes": "Portrait gate passed: deterministic accepted-sprite derivation has clean transparent safe area and retains a distinct readable role silhouette at 64 CSS px and enlarged scale.",
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Original Guard sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+        "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Original Guard sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 92304,
+        "noBackground": true,
+        "postprocess": "sprite-derived-portrait",
+        "styleReference": {
+          "id": "unit-defender",
+          "sha256": "930c31f9aa1bf5dacf0318484b31ac63504365482ae01a84a6a269d94de65e11",
+          "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/portrait-original-guard-8d291e47d417.png",
+          "candidateSha256": "8d291e47d417ca8787971d747f5e6e246cc561550c9263ca1dbe75547c07e23e",
+          "notes": "Rejected: deterministic contain resize introduced opaque black padding bars, violating transparency and safe-area requirements.",
+          "reviewedAt": "2026-09-01T17:11:18.214Z",
+          "request": {
+            "endpoint": "generate-ui-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Original Guard sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+            "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Original Guard sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+            "requestSize": {
+              "width": 256,
+              "height": 256
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 256
+            },
+            "seed": 92304,
+            "noBackground": true,
+            "postprocess": "sprite-derived-portrait",
+            "styleReference": {
+              "id": "unit-defender",
+              "sha256": "930c31f9aa1bf5dacf0318484b31ac63504365482ae01a84a6a269d94de65e11",
+              "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+            }
+          }
+        }
+      ],
+      "outputSha256": "40eb7fb294a90a4bc4b5c3071eef5810ac520eac0a6018fd66bba853417e66b9",
+      "reviewedAt": "2026-09-01T17:12:18.967Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "portrait-original-heavy": {
+      "id": "portrait-original-heavy",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/portrait-original-heavy.png",
+      "candidateSha256": "2afe58d7c8c5c7c0ded38a0aa2168c005792bb7956148a20fce68def5bbc72f0",
+      "providerOutputSha256": "8fe592d094ede939cf8a92119022c9606b6c12621ed4d6777b4056b8cadb3759",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 22,
+        "top": 20,
+        "right": 234,
+        "bottom": 236,
+        "empty": false
+      },
+      "notes": "Portrait gate passed: deterministic accepted-sprite derivation has clean transparent safe area and retains a distinct readable role silhouette at 64 CSS px and enlarged scale.",
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Original Heavy sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+        "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Original Heavy sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 92307,
+        "noBackground": true,
+        "postprocess": "sprite-derived-portrait",
+        "styleReference": {
+          "id": "unit-original-heavy",
+          "sha256": "8fe592d094ede939cf8a92119022c9606b6c12621ed4d6777b4056b8cadb3759",
+          "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/portrait-original-heavy-a446fdc06e6a.png",
+          "candidateSha256": "a446fdc06e6a4e693c3d436d65844d9d75d9ac1e8e285033368e8774eed2d8b3",
+          "notes": "Rejected: deterministic contain resize introduced opaque black padding bars, violating transparency and safe-area requirements.",
+          "reviewedAt": "2026-09-01T17:11:28.715Z",
+          "request": {
+            "endpoint": "generate-ui-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Original Heavy sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+            "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Original Heavy sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+            "requestSize": {
+              "width": 256,
+              "height": 256
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 256
+            },
+            "seed": 92307,
+            "noBackground": true,
+            "postprocess": "sprite-derived-portrait",
+            "styleReference": {
+              "id": "unit-original-heavy",
+              "sha256": "8fe592d094ede939cf8a92119022c9606b6c12621ed4d6777b4056b8cadb3759",
+              "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+            }
+          }
+        }
+      ],
+      "outputSha256": "2afe58d7c8c5c7c0ded38a0aa2168c005792bb7956148a20fce68def5bbc72f0",
+      "reviewedAt": "2026-09-01T17:12:30.343Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "portrait-original-marksman": {
+      "id": "portrait-original-marksman",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/portrait-original-marksman.png",
+      "candidateSha256": "3356a1ca0dcb16230a35f4dab24927ff6c8c327aa253ed616f8710246ed9b153",
+      "providerOutputSha256": "deb62a8a84dc28ceecd58047a3f65abdb67c0616851337c817452d75a5b73bb2",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 51,
+        "top": 20,
+        "right": 204,
+        "bottom": 236,
+        "empty": false
+      },
+      "notes": "Portrait gate passed: deterministic accepted-sprite derivation has clean transparent safe area and retains a distinct readable role silhouette at 64 CSS px and enlarged scale.",
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Original Marksman sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+        "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Original Marksman sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 92303,
+        "noBackground": true,
+        "postprocess": "sprite-derived-portrait",
+        "styleReference": {
+          "id": "unit-archer",
+          "sha256": "deb62a8a84dc28ceecd58047a3f65abdb67c0616851337c817452d75a5b73bb2",
+          "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/portrait-original-marksman-385bf0812070.png",
+          "candidateSha256": "385bf0812070c45cef1247ca54571ccede9bbd9423e82f2ec6b394d4d5add829",
+          "notes": "Rejected: deterministic contain resize introduced opaque black padding bars, violating transparency and safe-area requirements.",
+          "reviewedAt": "2026-09-01T17:11:14.672Z",
+          "request": {
+            "endpoint": "generate-ui-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Original Marksman sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+            "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Original Marksman sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+            "requestSize": {
+              "width": 256,
+              "height": 256
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 256
+            },
+            "seed": 92303,
+            "noBackground": true,
+            "postprocess": "sprite-derived-portrait",
+            "styleReference": {
+              "id": "unit-archer",
+              "sha256": "deb62a8a84dc28ceecd58047a3f65abdb67c0616851337c817452d75a5b73bb2",
+              "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+            }
+          }
+        }
+      ],
+      "outputSha256": "3356a1ca0dcb16230a35f4dab24927ff6c8c327aa253ed616f8710246ed9b153",
+      "reviewedAt": "2026-09-01T17:12:15.172Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "portrait-original-raider": {
+      "id": "portrait-original-raider",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/portrait-original-raider.png",
+      "candidateSha256": "c57de68c42e6331cfc4645c852e71bbc7a48da980677f6f6aa99fff0f7d38b74",
+      "providerOutputSha256": "20bb28c79c28e262908e518124e776f30adf946254906e62245f0e9702606bb4",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 46,
+        "top": 20,
+        "right": 210,
+        "bottom": 236,
+        "empty": false
+      },
+      "notes": "Portrait gate passed: deterministic accepted-sprite derivation has clean transparent safe area and retains a distinct readable role silhouette at 64 CSS px and enlarged scale.",
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Original Raider sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+        "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Original Raider sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 92305,
+        "noBackground": true,
+        "postprocess": "sprite-derived-portrait",
+        "styleReference": {
+          "id": "unit-rider",
+          "sha256": "20bb28c79c28e262908e518124e776f30adf946254906e62245f0e9702606bb4",
+          "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/portrait-original-raider-1355a88a0686.png",
+          "candidateSha256": "1355a88a0686e4b75d91cb52721d6133475cb8ea94d6b680ffaa8737c3f85564",
+          "notes": "Rejected: deterministic contain resize introduced opaque black padding bars, violating transparency and safe-area requirements.",
+          "reviewedAt": "2026-09-01T17:11:21.690Z",
+          "request": {
+            "endpoint": "generate-ui-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Original Raider sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+            "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Original Raider sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+            "requestSize": {
+              "width": 256,
+              "height": 256
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 256
+            },
+            "seed": 92305,
+            "noBackground": true,
+            "postprocess": "sprite-derived-portrait",
+            "styleReference": {
+              "id": "unit-rider",
+              "sha256": "20bb28c79c28e262908e518124e776f30adf946254906e62245f0e9702606bb4",
+              "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+            }
+          }
+        }
+      ],
+      "outputSha256": "c57de68c42e6331cfc4645c852e71bbc7a48da980677f6f6aa99fff0f7d38b74",
+      "reviewedAt": "2026-09-01T17:12:22.861Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "portrait-original-scout": {
+      "id": "portrait-original-scout",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/portrait-original-scout.png",
+      "candidateSha256": "729f81cdc463cf84240e5f8e303a6cd75b5c0fe9e45ca5c245ed32dd91cd517e",
+      "providerOutputSha256": "8663c5c6f95ed69481123245a7f7c5e6acf2b55ebb9c52ebbc46979252e60343",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 47,
+        "top": 20,
+        "right": 209,
+        "bottom": 236,
+        "empty": false
+      },
+      "notes": "Portrait gate passed: deterministic accepted-sprite derivation has clean transparent safe area and retains a distinct readable role silhouette at 64 CSS px and enlarged scale.",
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Original Scout sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+        "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Original Scout sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 92302,
+        "noBackground": true,
+        "postprocess": "sprite-derived-portrait",
+        "styleReference": {
+          "id": "unit-original-scout",
+          "sha256": "8663c5c6f95ed69481123245a7f7c5e6acf2b55ebb9c52ebbc46979252e60343",
+          "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/portrait-original-scout-5715b72e83b5.png",
+          "candidateSha256": "5715b72e83b58435ef4bf817961f35b09525f6e17b16782c5b26c04e55c1d299",
+          "notes": "Rejected: deterministic contain resize introduced opaque black padding bars, violating transparency and safe-area requirements.",
+          "reviewedAt": "2026-09-01T17:11:11.167Z",
+          "request": {
+            "endpoint": "generate-ui-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Original Scout sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+            "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Original Scout sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+            "requestSize": {
+              "width": 256,
+              "height": 256
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 256
+            },
+            "seed": 92302,
+            "noBackground": true,
+            "postprocess": "sprite-derived-portrait",
+            "styleReference": {
+              "id": "unit-original-scout",
+              "sha256": "8663c5c6f95ed69481123245a7f7c5e6acf2b55ebb9c52ebbc46979252e60343",
+              "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+            }
+          }
+        }
+      ],
+      "outputSha256": "729f81cdc463cf84240e5f8e303a6cd75b5c0fe9e45ca5c245ed32dd91cd517e",
+      "reviewedAt": "2026-09-01T17:12:11.294Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "portrait-original-breacher": {
+      "id": "portrait-original-breacher",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/portrait-original-breacher.png",
+      "candidateSha256": "9ee6dd90b918f770428447f67c194d9e885c075a9f6e2f44448a4fd3c930c0b6",
+      "providerOutputSha256": "1e752161cd63bcb7bc0e5a0989557f61d2d7f2d3e3d9597ccc9360ed11fca2ad",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 20,
+        "top": 34,
+        "right": 236,
+        "bottom": 222,
+        "empty": false
+      },
+      "notes": "Final portrait passed: deterministic 256x256 derivation from source 1e752161cd63, clean transparent safe area and readable at 64 CSS px.",
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Original Breacher sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+        "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Original Breacher sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 92308,
+        "noBackground": true,
+        "postprocess": "sprite-derived-portrait",
+        "styleReference": {
+          "id": "unit-original-breacher",
+          "sha256": "1e752161cd63bcb7bc0e5a0989557f61d2d7f2d3e3d9597ccc9360ed11fca2ad",
+          "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/portrait-original-breacher-ea90dfe9014d.png",
+          "candidateSha256": "ea90dfe9014d091ffe5702b345ab5427076a55af519943add37299478fc7327b",
+          "notes": "Rejected: deterministic contain resize introduced opaque black padding bars, violating transparency and safe-area requirements.",
+          "reviewedAt": "2026-09-01T17:11:32.149Z",
+          "request": {
+            "endpoint": "generate-ui-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Original Breacher sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+            "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Original Breacher sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+            "requestSize": {
+              "width": 256,
+              "height": 256
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 256
+            },
+            "seed": 92308,
+            "noBackground": true,
+            "postprocess": "sprite-derived-portrait",
+            "styleReference": {
+              "id": "unit-original-breacher",
+              "sha256": "6d7f811b462e4c335c8bf9604d6548036af5c907476af3a3471a9d0f37b106c5",
+              "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+            }
+          }
+        },
+        {
+          "candidate": "art/pixellab/quarantine/portrait-original-breacher-975155e46c95.png",
+          "candidateSha256": "975155e46c95aafeeefd2849fb00712296010118c8b484852648c9b13eb51721",
+          "notes": "Rejected because its accepted source Breacher was superseded after numeric rear-overlap correction; portrait provenance must follow the final source hash.",
+          "reviewedAt": "2026-09-01T17:23:10.747Z",
+          "request": {
+            "endpoint": "generate-ui-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Original Breacher sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+            "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Original Breacher sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+            "requestSize": {
+              "width": 256,
+              "height": 256
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 256
+            },
+            "seed": 92308,
+            "noBackground": true,
+            "postprocess": "sprite-derived-portrait",
+            "styleReference": {
+              "id": "unit-original-breacher",
+              "sha256": "6d7f811b462e4c335c8bf9604d6548036af5c907476af3a3471a9d0f37b106c5",
+              "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+            }
+          }
+        },
+        {
+          "candidate": "art/pixellab/quarantine/portrait-original-breacher-35f1898a03c3.png",
+          "candidateSha256": "35f1898a03c3200760a6b5c1dd840732cd1ee44a9eb0b9a3742756536ba87510",
+          "notes": "Rejected because source provenance changed again after the final numeric Breacher fit; portrait must derive from source 1e752161cd63.",
+          "reviewedAt": "2026-09-01T17:30:09.746Z",
+          "request": {
+            "endpoint": "generate-ui-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Original Breacher sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+            "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Original Breacher sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+            "requestSize": {
+              "width": 256,
+              "height": 256
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 256
+            },
+            "seed": 92308,
+            "noBackground": true,
+            "postprocess": "sprite-derived-portrait",
+            "styleReference": {
+              "id": "unit-original-breacher",
+              "sha256": "02213bdf55e4965c2fa8ddc655b8271fc238ceb1c02796f11d0934c0d602c3de",
+              "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+            }
+          }
+        }
+      ],
+      "outputSha256": "9ee6dd90b918f770428447f67c194d9e885c075a9f6e2f44448a4fd3c930c0b6",
+      "reviewedAt": "2026-09-01T17:30:15.287Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "portrait-original-medic": {
+      "id": "portrait-original-medic",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/portrait-original-medic.png",
+      "candidateSha256": "8866c1aa9cc15b7311d1e5079682f885c6dcabc7c5ecaf19c21db588480dd869",
+      "providerOutputSha256": "c30475f23be6a8ca9ee1957a327b3b764489e570d50cd69d5775006650af62c2",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 32,
+        "top": 20,
+        "right": 224,
+        "bottom": 236,
+        "empty": false
+      },
+      "notes": "Portrait gate passed: deterministic accepted-sprite derivation has clean transparent safe area and retains a distinct readable role silhouette at 64 CSS px and enlarged scale.",
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Original Medic sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+        "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Original Medic sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 92306,
+        "noBackground": true,
+        "postprocess": "sprite-derived-portrait",
+        "styleReference": {
+          "id": "unit-original-medic",
+          "sha256": "c30475f23be6a8ca9ee1957a327b3b764489e570d50cd69d5775006650af62c2",
+          "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/portrait-original-medic-53cd68e60890.png",
+          "candidateSha256": "53cd68e60890f7c4f4f65fa9ea74a8006b7fe958db13511775032653675f664d",
+          "notes": "Rejected: deterministic contain resize introduced opaque black padding bars, violating transparency and safe-area requirements.",
+          "reviewedAt": "2026-09-01T17:11:25.192Z",
+          "request": {
+            "endpoint": "generate-ui-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Original Medic sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+            "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Original Medic sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+            "requestSize": {
+              "width": 256,
+              "height": 256
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 256
+            },
+            "seed": 92306,
+            "noBackground": true,
+            "postprocess": "sprite-derived-portrait",
+            "styleReference": {
+              "id": "unit-original-medic",
+              "sha256": "c30475f23be6a8ca9ee1957a327b3b764489e570d50cd69d5775006650af62c2",
+              "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+            }
+          }
+        }
+      ],
+      "outputSha256": "8866c1aa9cc15b7311d1e5079682f885c6dcabc7c5ecaf19c21db588480dd869",
+      "reviewedAt": "2026-09-01T17:12:26.517Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "portrait-original-juggernaut": {
+      "id": "portrait-original-juggernaut",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/portrait-original-juggernaut.png",
+      "candidateSha256": "773d3fb41174fc9939dbae9b98c5fa2e21094b8e4f924193c8e12e0e6a16a0c9",
+      "providerOutputSha256": "c905126dc7c38683b1ecba0aa930a4add45426a26fa3560a78e2df21ddaccc9a",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 20,
+        "top": 24,
+        "right": 236,
+        "bottom": 231,
+        "empty": false
+      },
+      "notes": "Portrait gate passed: deterministic accepted-sprite derivation has clean transparent safe area and retains a distinct readable role silhouette at 64 CSS px and enlarged scale.",
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Original Juggernaut sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+        "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Original Juggernaut sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 92309,
+        "noBackground": true,
+        "postprocess": "sprite-derived-portrait",
+        "styleReference": {
+          "id": "unit-original-juggernaut",
+          "sha256": "c905126dc7c38683b1ecba0aa930a4add45426a26fa3560a78e2df21ddaccc9a",
+          "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/portrait-original-juggernaut-84878cca0bec.png",
+          "candidateSha256": "84878cca0bec1b0b5442875ab3cf08afe37e063ca160171cfc5d6c09d0a8145e",
+          "notes": "Rejected: deterministic contain resize introduced opaque black padding bars, violating transparency and safe-area requirements.",
+          "reviewedAt": "2026-09-01T17:11:35.583Z",
+          "request": {
+            "endpoint": "generate-ui-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Original Juggernaut sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+            "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Original Juggernaut sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+            "requestSize": {
+              "width": 256,
+              "height": 256
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 256
+            },
+            "seed": 92309,
+            "noBackground": true,
+            "postprocess": "sprite-derived-portrait",
+            "styleReference": {
+              "id": "unit-original-juggernaut",
+              "sha256": "c905126dc7c38683b1ecba0aa930a4add45426a26fa3560a78e2df21ddaccc9a",
+              "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+            }
+          }
+        }
+      ],
+      "outputSha256": "773d3fb41174fc9939dbae9b98c5fa2e21094b8e4f924193c8e12e0e6a16a0c9",
+      "reviewedAt": "2026-09-01T17:12:37.817Z",
       "reviewChecks": {
         "source": true,
         "native": true,

@@ -19,6 +19,48 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   "unit-candy-choco-engineer": publicArtUrl(
     "assets/pixellab/units/candy-choco-engineer.png",
   ),
+  "unit-original-scout": publicArtUrl(
+    "assets/pixellab/units/original-scout.png",
+  ),
+  "unit-original-medic": publicArtUrl(
+    "assets/pixellab/units/original-medic.png",
+  ),
+  "unit-original-breacher": publicArtUrl(
+    "assets/pixellab/units/original-breacher.png",
+  ),
+  "unit-original-heavy": publicArtUrl(
+    "assets/pixellab/units/original-heavy.png",
+  ),
+  "unit-original-juggernaut": publicArtUrl(
+    "assets/pixellab/units/original-juggernaut.png",
+  ),
+  "portrait-original-fighter": publicArtUrl(
+    "assets/pixellab/ui/portrait-original-fighter.png",
+  ),
+  "portrait-original-scout": publicArtUrl(
+    "assets/pixellab/ui/portrait-original-scout.png",
+  ),
+  "portrait-original-marksman": publicArtUrl(
+    "assets/pixellab/ui/portrait-original-marksman.png",
+  ),
+  "portrait-original-guard": publicArtUrl(
+    "assets/pixellab/ui/portrait-original-guard.png",
+  ),
+  "portrait-original-raider": publicArtUrl(
+    "assets/pixellab/ui/portrait-original-raider.png",
+  ),
+  "portrait-original-medic": publicArtUrl(
+    "assets/pixellab/ui/portrait-original-medic.png",
+  ),
+  "portrait-original-heavy": publicArtUrl(
+    "assets/pixellab/ui/portrait-original-heavy.png",
+  ),
+  "portrait-original-breacher": publicArtUrl(
+    "assets/pixellab/ui/portrait-original-breacher.png",
+  ),
+  "portrait-original-juggernaut": publicArtUrl(
+    "assets/pixellab/ui/portrait-original-juggernaut.png",
+  ),
   "terrain-grass-1": publicArtUrl("assets/pixellab/terrain/grass-1.png"),
   "terrain-grass-2": publicArtUrl("assets/pixellab/terrain/grass-2.png"),
   "terrain-grass-3": publicArtUrl("assets/pixellab/terrain/grass-3.png"),
@@ -157,6 +199,10 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   "building-lumber-camp": publicArtUrl(
     "assets/pixellab/buildings/lumber-mill.png",
   ),
+  "unit-original-fighter": publicArtUrl("assets/pixellab/units/warrior.png"),
+  "unit-original-marksman": publicArtUrl("assets/pixellab/units/archer.png"),
+  "unit-original-guard": publicArtUrl("assets/pixellab/units/defender.png"),
+  "unit-original-raider": publicArtUrl("assets/pixellab/units/rider.png"),
   "terrain-road-mask-0000": publicArtUrl(
     "assets/pixellab/terrain/road-masks/road-mask-0000.png",
   ),
@@ -211,6 +257,10 @@ export const ACCEPTED_ART_ALIASES: Readonly<Record<string, string>> = {
   "terrain-game": "terrain-animal",
   "building-ruleset6-mine": "building-mine",
   "building-lumber-camp": "building-lumber-mill",
+  "unit-original-fighter": "unit-warrior",
+  "unit-original-marksman": "unit-archer",
+  "unit-original-guard": "unit-defender",
+  "unit-original-raider": "unit-rider",
 };
 
 export interface AcceptedArtAttachment {

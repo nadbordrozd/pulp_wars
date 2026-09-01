@@ -3,23 +3,23 @@
   "evidence": [
     {
       "path": "art/pixellab/reviews/units-contact-sheet.png",
-      "sha256": "a67b2f53b96fb7c5cc280b93a0c47d15818f779da02e5fe12606e28a1575c86f",
-      "bytes": 415548
+      "sha256": "7a6c3d135fadae517f1312b07b2ca993ed0f7d1b7ebeb9cd24576adf4da8e864",
+      "bytes": 637183
     },
     {
       "path": "art/pixellab/reviews/terrain-contact-sheet.png",
-      "sha256": "c35a1c410a01657df90cecfd2b02ece5ebae84523cdd290a2d33b526219065a1",
-      "bytes": 610924
+      "sha256": "f9273e633414cff0dcb101b5fb1ccd67ae1b735d4811486ddbf32186b7e3ae0b",
+      "bytes": 594423
     },
     {
       "path": "art/pixellab/reviews/buildings-contact-sheet.png",
-      "sha256": "16df2450eac4072a43a5eaba6bee6b46106fc1e889cf8e4883355887edf16e06",
-      "bytes": 713797
+      "sha256": "ff7650edc3fe1802f4c06ec7b4c101ec59c796decb1b0348b23aa6d19446eff3",
+      "bytes": 708859
     },
     {
       "path": "art/pixellab/reviews/ui-contact-sheet.png",
-      "sha256": "2cfa3d80a5f21c98265442a962851a1cebeb425a1e2622870b7c1057086c61c3",
-      "bytes": 1198762
+      "sha256": "282cd1fe5caed25b2c6019e7658d15f7b1efe4bc72f320f19f630a057551cfe6",
+      "bytes": 1754098
     },
     {
       "path": "art/pixellab/reviews/fruit-iteration-review.png",
@@ -38,7 +38,7 @@
     },
     {
       "path": "art/pixellab/reviews/map-review.html",
-      "sha256": "653088d51e5b4c0fe324547558c7b62b5e9f347b2ae6ced5464e96214c89b3a3",
+      "sha256": "0fae186cabe4ee59e4b718b5d64132d63ef27d12c89487ab3b9ec0716fbe5732",
       "bytes": 551
     }
   ]
