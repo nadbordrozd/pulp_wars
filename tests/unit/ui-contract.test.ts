@@ -117,6 +117,20 @@ describe("DOM UI architecture and responsive contract", () => {
     expect(css).toMatch(/@media \(max-width: 320px\)[\s\S]*overflow-y:\s*auto/);
   });
 
+  it("keeps the ruleset-6 context dock over the map across desktop and mobile", () => {
+    const css = readFileSync("src/styles/main.css", "utf8");
+    expect(css).toMatch(
+      /\.v6-match-shell\s*\{[^}]*position:\s*relative[^}]*grid-template-areas:\s*"hud"\s*"map"[^}]*height:\s*100dvh/s,
+    );
+    expect(css).toMatch(
+      /\.v6-action-dock\s*\{[^}]*position:\s*absolute[^}]*bottom:\s*env\(safe-area-inset-bottom\)[^}]*left:\s*0[^}]*max-height:\s*45dvh[^}]*overflow:\s*visible/s,
+    );
+    expect(css).toMatch(/\.v6-command-button\s*\{[^}]*min-height:\s*44px/s);
+    expect(css).toMatch(
+      /@media \(max-width: 360px\)[\s\S]*\.v6-action-dock\s*\{[^}]*overflow-y:\s*auto/s,
+    );
+  });
+
   it("makes front-route grid tracks and intrinsic controls shrink within narrow viewports", () => {
     const css = readFileSync("src/styles/main.css", "utf8");
     expect(css).toMatch(

@@ -72,7 +72,8 @@ describe("playable ruleset-6 DOM shell", () => {
     expect(host.model?.view.schemaVersion).toBe(6);
     expect(document.body.textContent).toContain("Coins");
     expect(document.body.textContent).toContain("Round");
-    expect(document.querySelector("[data-tech-tree]")).not.toBeNull();
+    expect(document.querySelector("[data-tech-tree]")).toBeNull();
+    expect(document.querySelector("[data-action=end-turn]")).not.toBeNull();
     expect(document.body.textContent).toContain("Candy match launched.");
     app.destroy();
     expect(host.destroyCalls).toBeGreaterThan(0);
@@ -275,7 +276,7 @@ describe("playable ruleset-6 DOM shell", () => {
     app.destroy();
   });
 
-  it("dispatches only exact current single/ambiguous map candidates and exposes research plus every offered action", async () => {
+  it("keeps Move and Attack on exact map dispatch while omitting positional and Research buttons", async () => {
     const host = new FakeBoardHostV6();
     const app = bootstrapRuleset6App(document, {
       storage: null,
@@ -284,33 +285,33 @@ describe("playable ruleset-6 DOM shell", () => {
     submit("[data-v6-setup]");
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
     const initial = app.controller.snapshot();
-    const wait = requireCommand(initial, "WAIT");
-    host.callbacks?.onCommandCandidates([target(wait, { x: 0, y: 0 })], {
-      x: 0,
-      y: 0,
-    });
-    await waitUntil(() => app.controller.snapshot().commandIndex === 1);
+    const unit = initial.view?.units.find(
+      (candidate) => candidate.ownerId === initial.view?.viewer.id,
+    );
+    if (unit === undefined) throw new Error("Missing owned unit");
+    host.callbacks?.onSelection({ kind: "UNIT", unitId: unit.id });
+    expect(document.querySelector('[data-command-kind="MOVE"]')).toBeNull();
+    expect(document.querySelector('[data-command-kind="ATTACK"]')).toBeNull();
+    expect(document.querySelector('[data-command-kind="RESEARCH"]')).toBeNull();
+    expect(document.querySelector("[data-tech-tree]")).toBeNull();
+    expect(document.querySelector(".v6-all-actions")).toBeNull();
 
-    const next = app.controller.snapshot();
-    const research = requireCommand(next, "RESEARCH");
-    const end = requireCommand(next, "END_TURN");
+    const research = requireCommand(initial, "RESEARCH");
+    const end = requireCommand(initial, "END_TURN");
     host.callbacks?.onCommandCandidates(
-      [target(research, { x: 1, y: 1 }), target(end, { x: 1, y: 1 })],
-      { x: 1, y: 1 },
+      [target(research, unit.at), target(end, unit.at)],
+      unit.at,
     );
-    expect(document.querySelector('[role="dialog"]')).not.toBeNull();
-    const researchChoice = commandButton(research);
-    researchChoice.click();
-    await waitUntil(() => app.controller.snapshot().commandIndex === 2);
-    expect(app.controller.snapshot().view?.viewer.researchedTechs).toContain(
-      research.tech,
-    );
+    expect(document.querySelector('[role="dialog"]')).toBeNull();
+    expect(app.controller.snapshot().commandIndex).toBe(0);
 
-    const offered = app.controller.snapshot().offeredCommands;
-    for (const command of offered) {
-      expect(commandButton(command)).toBeInstanceOf(HTMLButtonElement);
-    }
-    expect(document.querySelectorAll("[data-tech]").length).toBe(25);
+    const move = requireCommand(initial, "MOVE");
+    host.callbacks?.onCommandCandidates(
+      [target(move, move.path.at(-1) ?? unit.at)],
+      move.path.at(-1) ?? unit.at,
+    );
+    await waitUntil(() => app.controller.snapshot().commandIndex === 1);
+    expect(app.controller.exportReplay()?.commands.at(-1)).toEqual(move);
     app.destroy();
   });
 
@@ -403,7 +404,7 @@ describe("playable ruleset-6 DOM shell", () => {
     replacement.destroy();
   });
 
-  it("renders all command families and locks mandatory city/Candy choices semantically", () => {
+  it("isolates unit, city, and tile actions with exact art and accessible fallbacks", async () => {
     const view = publicView("CANDY");
     const commands = commandCatalogue(view);
     const fake = new FakeController(view, commands);
@@ -412,24 +413,173 @@ describe("playable ruleset-6 DOM shell", () => {
     const app = new Ruleset6DomAppView(document, root, fake, {
       boardHost: host,
     });
-    const renderedKinds = new Set(
-      [...document.querySelectorAll<HTMLElement>("[data-command-kind]")].map(
-        (node) => node.dataset.commandKind,
-      ),
+    expect(renderedCommandKinds()).toEqual(new Set(["END_TURN"]));
+    expect(document.body.textContent).not.toContain("Research Farming");
+    expect(document.body.textContent).not.toContain("All offered actions");
+
+    const unit = view.units.find(
+      (candidate) => candidate.ownerId === view.viewer.id,
     );
-    expect(renderedKinds).toEqual(
-      new Set(commands.map((command) => command.kind)),
+    const city = view.cities.find(
+      (candidate) => candidate.ownerId === view.viewer.id,
+    );
+    if (unit === undefined || city === undefined)
+      throw new Error("Missing public entities");
+    host.callbacks?.onSelection({ kind: "UNIT", unitId: unit.id });
+    expect(renderedCommandKinds()).toEqual(
+      new Set([
+        "KAMIKAZE_ROLL",
+        "HEAL_ADJACENT",
+        "RECOVER",
+        "CAPTURE",
+        "PROMOTE",
+        "WAIT",
+        "BUILD_CHOCOLATE_WALL",
+        "CANDIFY",
+        "END_TURN",
+      ]),
+    );
+    expect(document.querySelector('[data-command-kind="MOVE"]')).toBeNull();
+    expect(document.querySelector('[data-command-kind="ATTACK"]')).toBeNull();
+    expect(document.querySelector('[data-command-kind="RESEARCH"]')).toBeNull();
+    expect(document.querySelector('[data-command-kind="TRAIN"]')).toBeNull();
+    const contextButtons = [
+      ...document.querySelectorAll<HTMLButtonElement>(
+        '[aria-label="Selection actions"] button',
+      ),
+    ];
+    expect(contextButtons.length).toBeGreaterThan(0);
+    for (const action of contextButtons) {
+      expect(action.ariaLabel).toBeTruthy();
+      expect(action.querySelector(".v6-command-symbol")).not.toBeNull();
+      expect(
+        action.querySelector(".v6-command-label")?.textContent,
+      ).toBeTruthy();
+    }
+    expect(
+      document.querySelector<HTMLImageElement>(
+        '[data-command-kind="CAPTURE"] [data-symbol-kind="accepted-raster"] img',
+      )?.src,
+    ).toContain("assets/pixellab/buildings/village.png");
+    expect(
+      document.querySelector(
+        '[data-command-kind="WAIT"] [data-symbol-kind="code-native-fallback"]',
+      ),
+    ).not.toBeNull();
+    const rollFamily = document.querySelector<HTMLButtonElement>(
+      '[data-command-family="KAMIKAZE_ROLL"]',
+    );
+    rollFamily?.click();
+    expect(host.model?.interaction.targetMode).toEqual({
+      kind: "KAMIKAZE_ROLL",
+      unitId: unit.id,
+    });
+
+    host.callbacks?.onSelection({ kind: "CITY", cityId: city.id });
+    expect(renderedCommandKinds()).toEqual(new Set(["TRAIN", "END_TURN"]));
+    const train = document.querySelector<HTMLButtonElement>(
+      '[data-command-kind="TRAIN"]',
+    );
+    expect(train?.textContent).toContain("Candy Warrior · 2 Coins");
+    expect(train?.ariaLabel).toBe("Train Candy Warrior for 2 Coins");
+    expect(train?.querySelector<HTMLImageElement>("img")?.src).toContain(
+      "assets/pixellab/units/candy-warrior.png",
+    );
+    const scoutTrain: CommandV6 = {
+      kind: "TRAIN",
+      cityId: city.id,
+      role: "SCOUT",
+    };
+    fake.setSnapshot({
+      ...fake.snapshot(),
+      offeredCommands: [scoutTrain, { kind: "END_TURN" }],
+    });
+    host.callbacks?.onSelection({ kind: "CITY", cityId: city.id });
+    const scout = document.querySelector<HTMLButtonElement>(
+      '[data-command-kind="TRAIN"]',
+    );
+    expect(scout?.textContent).toContain("Jelly Scout · 3 Coins");
+    expect(
+      scout?.querySelector('[data-symbol-kind="code-native-fallback"]'),
+    ).not.toBeNull();
+    fake.setSnapshot({ ...fake.snapshot(), offeredCommands: commands });
+
+    host.callbacks?.onSelection({ kind: "TILE", at: city.at });
+    expect(renderedCommandKinds()).toEqual(
+      new Set([
+        "HARVEST_FRUIT",
+        "HUNT_GAME",
+        "BUILD_FARM",
+        "BUILD_LUMBER_CAMP",
+        "BUILD_MINE",
+        "BUILD_QUARRY",
+        "BUILD_WINDMILL",
+        "BUILD_SAWMILL",
+        "BUILD_FORGE",
+        "BUILD_STONEWORKS",
+        "BUILD_WORKSHOP",
+        "BUILD_GRAND_WORKS",
+        "BUILD_MARKET",
+        "CLEAR_FOREST",
+        "REPLANT_FOREST",
+        "BUILD_ROAD",
+        "REDEVELOP",
+        "END_TURN",
+      ]),
     );
     const farm = commands.find((command) => command.kind === "BUILD_FARM");
     if (farm === undefined) throw new Error("Missing farm command");
     commandButton(farm).click();
-    expect(document.querySelector("[data-confirm-prepared]")).not.toBeNull();
-    const roll = commands.find((command) => command.kind === "KAMIKAZE_ROLL");
-    if (roll === undefined) throw new Error("Missing roll command");
-    commandButton(roll).click();
-    expect(
-      document.querySelector("[data-confirm-prepared]")?.textContent,
-    ).toContain("Roll North");
+    expect(document.body.textContent).toContain("Map preview");
+    expect(document.querySelector("[data-confirm-prepared]")).toBeNull();
+
+    host.callbacks?.onSelection({ kind: "TILE", at: { x: 10, y: 10 } });
+    expect(renderedCommandKinds()).toEqual(new Set(["END_TURN"]));
+
+    const move = commands.find((command) => command.kind === "MOVE");
+    const attack = commands.find((command) => command.kind === "ATTACK");
+    const wait = commands.find((command) => command.kind === "WAIT");
+    if (move === undefined || attack === undefined || wait === undefined)
+      throw new Error("Missing positional catalogue commands");
+    host.callbacks?.onCommandCandidates(
+      [target(wait, unit.at), target(move, unit.at)],
+      unit.at,
+    );
+    await waitUntil(() => fake.dispatch.mock.calls.length === 1);
+    expect(fake.dispatch).toHaveBeenLastCalledWith(move);
+    host.callbacks?.onCommandCandidates([target(attack, unit.at)], unit.at);
+    await waitUntil(() => fake.dispatch.mock.calls.length === 2);
+    expect(fake.dispatch).toHaveBeenLastCalledWith(attack);
+
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "E" }));
+    await waitUntil(() => fake.dispatch.mock.calls.length === 3);
+    expect(fake.dispatch).toHaveBeenLastCalledWith({ kind: "END_TURN" });
+
+    host.callbacks?.onSelection({ kind: "UNIT", unitId: unit.id });
+    const waitButton = commandButton(wait);
+    waitButton.focus();
+    waitButton.click();
+    await waitUntil(() => fake.dispatch.mock.calls.length === 4);
+    expect(fake.dispatch).toHaveBeenLastCalledWith(wait);
+
+    const rivalUnit = view.units.find(
+      (candidate) => candidate.ownerId !== view.viewer.id,
+    );
+    if (rivalUnit !== undefined) {
+      host.callbacks?.onSelection({ kind: "UNIT", unitId: rivalUnit.id });
+      expect(renderedCommandKinds()).toEqual(new Set(["END_TURN"]));
+    }
+
+    app.destroy();
+  });
+
+  it("locks mandatory city and Candy choices semantically", () => {
+    const view = publicView("CANDY");
+    const commands = commandCatalogue(view);
+    const fake = new FakeController(view, commands);
+    const app = new Ruleset6DomAppView(document, requireElement("#app"), fake, {
+      boardHost: new FakeBoardHostV6(),
+    });
 
     const reward = commands.find(
       (
@@ -576,7 +726,12 @@ class FakeController implements Ruleset6BrowserControllerPort {
   }
   launch = vi.fn<Ruleset6BrowserController["launch"]>();
   resume = vi.fn<Ruleset6BrowserController["resume"]>();
-  dispatch = vi.fn<Ruleset6BrowserController["dispatch"]>();
+  dispatch = vi.fn<Ruleset6BrowserController["dispatch"]>(async (command) => ({
+    accepted: true,
+    command,
+    events: [],
+    stateHash: "public-test-state",
+  }));
   progressAiTurns = vi.fn<Ruleset6BrowserController["progressAiTurns"]>();
   restart = vi.fn<Ruleset6BrowserController["restart"]>();
   deleteStoredSave = vi.fn<Ruleset6BrowserController["deleteStoredSave"]>();
@@ -711,6 +866,14 @@ function commandButton(command: CommandV6): HTMLButtonElement {
   if (button === undefined)
     throw new Error(`Missing command button ${encoded}`);
   return button;
+}
+
+function renderedCommandKinds(): Set<string | undefined> {
+  return new Set(
+    [...document.querySelectorAll<HTMLElement>("[data-command-kind]")].map(
+      (node) => node.dataset.commandKind,
+    ),
+  );
 }
 
 function requireElement(selector: string): HTMLElement {

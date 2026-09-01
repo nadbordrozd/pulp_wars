@@ -1,13 +1,15 @@
 import {
   canonicalJson,
-  queryTechnologyTreeV6,
+  effectiveRoleRuleV6,
   type CommandV6,
   type EconomicPreviewResultV6,
   type FactionIdV6,
   type MatchSetupV6,
   type PlayerColorV6,
   type PlayerViewV6,
+  type UnitRoleId,
 } from "../../engine/index";
+import { ACCEPTED_ART_URLS } from "../../assets/generated-art-manifest";
 import type {
   Ruleset6BrowserController,
   Ruleset6BrowserSnapshot,
@@ -22,6 +24,7 @@ import {
   type EconomicPreviewSelectionV6,
   type MapCommandTargetV6,
 } from "../canvas/render-plan-v6";
+import { unitCoverageV6 } from "../canvas/asset-coverage-v6";
 
 const BOARD_SIZES = [11, 14, 16, 20, 25] as const;
 const COLORS: readonly PlayerColorV6[] = ["CORAL", "TEAL", "GOLD", "VIOLET"];
@@ -71,6 +74,10 @@ export type Ruleset6BrowserControllerPort = Pick<
   | "deleteStoredSave"
   | "economicPreview"
 >;
+
+type ActionSymbol =
+  | { readonly kind: "RASTER"; readonly url: string }
+  | { readonly kind: "FALLBACK"; readonly value: string };
 
 /**
  * Ruleset-6-only DOM composition. Gameplay data is limited to controller
@@ -165,13 +172,8 @@ export class Ruleset6DomAppView {
       event.key.toLowerCase() === "t" &&
       this.#snapshot.phase === "ACTIVE"
     ) {
-      const tree =
-        this.#root.querySelector<HTMLDetailsElement>("[data-tech-tree]");
-      if (tree !== null) {
-        tree.open = true;
-        tree.querySelector<HTMLElement>("summary")?.focus();
-        event.preventDefault();
-      }
+      // The dedicated technology screen is introduced by a later bead.
+      return;
     }
   };
 
@@ -411,6 +413,17 @@ export class Ruleset6DomAppView {
     const remove = button(this.#document, "Delete", "destructive");
     remove.dataset.action = "delete-save";
     remove.onclick = () => void this.#deleteSave();
+    const end = this.#snapshot.offeredCommands.find(
+      (command) => command.kind === "END_TURN",
+    );
+    if (end !== undefined && humanCanAct) {
+      const endTurn = this.#actionButton(end, "End Turn", {
+        symbol: { kind: "FALLBACK", value: "↻" },
+        className: "v6-global-action",
+      });
+      endTurn.dataset.action = "end-turn";
+      menu.append(endTurn);
+    }
     menu.append(zoomOut, zoomIn, restart, remove);
     hud.append(menu);
 
@@ -471,10 +484,22 @@ export class Ruleset6DomAppView {
         this.#render();
       },
       onCommandCandidates: (candidates) => {
-        if (candidates.length === 1 && candidates[0] !== undefined) {
-          void this.#dispatch(candidates[0].command);
-        } else if (candidates.length > 1) {
-          this.#commandChoices = [...candidates];
+        const mapCandidates = candidates.filter(
+          (candidate) =>
+            candidate.command.kind !== "RESEARCH" &&
+            candidate.command.kind !== "END_TURN",
+        );
+        const positional = mapCandidates.filter(
+          (candidate) =>
+            candidate.command.kind === "MOVE" ||
+            candidate.command.kind === "ATTACK",
+        );
+        const exact =
+          positional[0] === undefined ? mapCandidates : [positional[0]];
+        if (exact.length === 1 && exact[0] !== undefined) {
+          void this.#dispatch(exact[0].command);
+        } else if (exact.length > 1) {
+          this.#commandChoices = [...exact];
           this.#render();
         }
       },
@@ -510,7 +535,7 @@ export class Ruleset6DomAppView {
     if (this.#preparedCommand !== null) {
       const prepared = el(this.#document, "section", "v6-prepared-action");
       prepared.append(
-        text(this.#document, "h3", "Prepared action"),
+        text(this.#document, "h3", "Map preview"),
         text(
           this.#document,
           "p",
@@ -518,16 +543,13 @@ export class Ruleset6DomAppView {
             ? commandLabel(this.#preparedCommand)
             : previewLabel(this.#economicPreview.result),
         ),
+        text(
+          this.#document,
+          "p",
+          "Activate the highlighted tile to complete the action. Escape cancels.",
+          "v6-action-hint",
+        ),
       );
-      const confirm = button(
-        this.#document,
-        `Confirm ${commandLabel(this.#preparedCommand)}`,
-        "primary-action",
-      );
-      confirm.dataset.confirmPrepared = "true";
-      const command = this.#preparedCommand;
-      confirm.onclick = () => void this.#dispatch(command);
-      prepared.append(confirm);
       panel.append(prepared);
     }
     const selected = selectedCommands(
@@ -540,86 +562,99 @@ export class Ruleset6DomAppView {
         text(
           this.#document,
           "p",
-          "Select a unit, city, or highlighted tile. Every legal action is also available below.",
+          this.#selection === null
+            ? "Select a unit, city, or tile to see its actions."
+            : "No actions are available for this selection.",
+          "v6-action-empty",
         ),
       );
     } else {
-      panel.append(this.#commandList(selected, "Selection actions"));
+      panel.append(this.#contextCommandList(view, selected));
     }
-    panel.append(this.#technologyPanel(view));
-    const all = el(this.#document, "details", "v6-all-actions");
-    const summary = text(
-      this.#document,
-      "summary",
-      `All offered actions (${this.#snapshot.offeredCommands.length})`,
-    );
-    all.append(
-      summary,
-      this.#commandList(
-        this.#snapshot.offeredCommands,
-        "All exact offered commands",
-      ),
-    );
-    panel.append(all);
     return panel;
-  }
-
-  #technologyPanel(view: PlayerViewV6): HTMLElement {
-    const details = el(this.#document, "details", "v6-tech-panel");
-    details.dataset.techTree = "true";
-    details.append(text(this.#document, "summary", "Technology tree (T)"));
-    const tree = queryTechnologyTreeV6(view);
-    const branches = new Map<string, typeof tree.nodes>();
-    for (const node of tree.nodes) {
-      const values = branches.get(node.branch) ?? [];
-      branches.set(node.branch, [...values, node]);
-    }
-    for (const [branch, nodes] of branches) {
-      const section = el(this.#document, "section", "v6-tech-branch");
-      section.append(text(this.#document, "h3", title(branch)));
-      const list = el(this.#document, "div", "v6-tech-list");
-      for (const node of nodes) {
-        const command = this.#snapshot.offeredCommands.find(
-          (
-            candidate,
-          ): candidate is Extract<CommandV6, { readonly kind: "RESEARCH" }> =>
-            candidate.kind === "RESEARCH" && candidate.tech === node.id,
-        );
-        const item = button(
-          this.#document,
-          `${title(node.id)} · ${node.cost} Coins · ${title(node.state)}`,
-          `v6-tech-node v6-tech-${node.state.toLowerCase()}`,
-        );
-        item.dataset.tech = node.id;
-        item.disabled = command === undefined;
-        item.title =
-          node.effects.map(describeUnlock).join("; ") || "Starting technology";
-        if (command !== undefined)
-          item.onclick = () => void this.#dispatch(command);
-        list.append(item);
-      }
-      section.append(list);
-      details.append(section);
-    }
-    return details;
   }
 
   #commandList(commands: readonly CommandV6[], label: string): HTMLElement {
     const list = el(this.#document, "div", "v6-command-list");
     list.setAttribute("aria-label", label);
     for (const command of commands) {
-      const item = button(
-        this.#document,
-        commandLabel(command),
-        command.kind === "END_TURN" ? "primary-action" : "v6-command-button",
+      list.append(
+        this.#actionButton(command, commandLabel(command), {
+          symbol: commandSymbol(command),
+        }),
       );
-      item.dataset.command = canonicalJson(command);
-      item.dataset.commandKind = command.kind;
-      item.disabled = this.#snapshot.transitioning;
-      item.onclick = () => this.#prepareOrDispatch(command);
+    }
+    return list;
+  }
+
+  #contextCommandList(
+    view: PlayerViewV6,
+    commands: readonly CommandV6[],
+  ): HTMLElement {
+    const list = el(this.#document, "div", "v6-command-list");
+    list.setAttribute("aria-label", "Selection actions");
+    for (const group of groupContextCommands(commands)) {
+      const command = group[0];
+      if (command === undefined) continue;
+      const presentation = contextActionPresentation(view, command);
+      const item = this.#actionButton(command, presentation.label, {
+        symbol: presentation.symbol,
+        ...(command.kind === "TRAIN" ? { className: "v6-train-action" } : {}),
+        ...(presentation.accessibleLabel === undefined
+          ? {}
+          : { accessibleLabel: presentation.accessibleLabel }),
+      });
+      if (isMapTargetFamily(command)) {
+        delete item.dataset.command;
+        item.dataset.commandFamily = command.kind;
+        item.onclick = () => this.#prepareCommandFamily(command);
+      }
       list.append(item);
     }
     return list;
+  }
+
+  #actionButton(
+    command: CommandV6,
+    label: string,
+    options: {
+      readonly symbol: ActionSymbol;
+      readonly className?: string;
+      readonly accessibleLabel?: string;
+    },
+  ): HTMLButtonElement {
+    const item = button(
+      this.#document,
+      "",
+      `v6-command-button${options.className === undefined ? "" : ` ${options.className}`}`,
+    );
+    item.dataset.command = canonicalJson(command);
+    item.dataset.commandKind = command.kind;
+    item.disabled = this.#snapshot.transitioning;
+    item.ariaLabel = options.accessibleLabel ?? label;
+    item.append(
+      actionSymbolNode(this.#document, options.symbol),
+      text(this.#document, "span", label, "v6-command-label"),
+    );
+    item.onclick = () => this.#prepareOrDispatch(command);
+    return item;
+  }
+
+  #prepareCommandFamily(command: CommandV6): void {
+    this.#targetMode = null;
+    if (
+      command.kind === "KAMIKAZE_ROLL" ||
+      command.kind === "BUILD_CHOCOLATE_WALL"
+    ) {
+      this.#selection = { kind: "UNIT", unitId: command.unitId };
+      this.#targetMode = { kind: command.kind, unitId: command.unitId };
+    }
+    this.#preparedCommand = null;
+    this.#economicPreview = null;
+    const view = this.#snapshot.view;
+    if (view === null) return;
+    this.#notice = `${contextActionPresentation(view, command).label}: choose a highlighted target on the map.`;
+    this.#render();
   }
 
   #mandatoryChoicePanel(view: PlayerViewV6): HTMLElement {
@@ -651,12 +686,11 @@ export class Ruleset6DomAppView {
     dialog.setAttribute("aria-label", "Choose exact map action");
     dialog.append(text(this.#document, "h2", "Choose an action"));
     for (const target of this.#commandChoices) {
-      const item = button(
-        this.#document,
+      const item = this.#actionButton(
+        target.command,
         commandLabel(target.command),
-        "v6-command-button",
+        { symbol: commandSymbol(target.command) },
       );
-      item.dataset.command = canonicalJson(target.command);
       item.onclick = () => void this.#dispatch(target.command);
       dialog.append(item);
     }
@@ -694,24 +728,6 @@ export class Ruleset6DomAppView {
   }
 
   #prepareOrDispatch(command: CommandV6): void {
-    if (command.kind === "KAMIKAZE_ROLL") {
-      this.#selection = { kind: "UNIT", unitId: command.unitId };
-      this.#targetMode = { kind: command.kind, unitId: command.unitId };
-      this.#economicPreview = null;
-      this.#preparedCommand = command;
-      this.#notice = "Choose an exact roll direction on the map.";
-      this.#render();
-      return;
-    }
-    if (command.kind === "BUILD_CHOCOLATE_WALL") {
-      this.#selection = { kind: "UNIT", unitId: command.unitId };
-      this.#targetMode = { kind: command.kind, unitId: command.unitId };
-      this.#economicPreview = null;
-      this.#preparedCommand = command;
-      this.#notice = "Choose an exact wall tile on the map.";
-      this.#render();
-      return;
-    }
     if (isEconomicCommand(command)) {
       const preview = this.#controller.economicPreview(command);
       this.#selection = { kind: "TILE", at: command.at };
@@ -945,33 +961,41 @@ function selectedCommands(
   commands: readonly CommandV6[],
   selection: BoardSelectionV6 | null,
 ): readonly CommandV6[] {
-  if (selection === null)
-    return commands.filter((command) => command.kind === "END_TURN");
+  if (selection === null) return [];
   return commands.filter((command) => {
-    if (command.kind === "END_TURN" || command.kind === "RESEARCH") return true;
-    if (selection.kind === "UNIT")
-      return "unitId" in command && command.unitId === selection.unitId;
-    if (selection.kind === "CITY")
-      return "cityId" in command && command.cityId === selection.cityId;
-    if (selection.kind === "WALL") {
+    if (
+      command.kind === "END_TURN" ||
+      command.kind === "RESEARCH" ||
+      command.kind === "MOVE" ||
+      command.kind === "ATTACK"
+    )
+      return false;
+    if (selection.kind === "UNIT") {
+      const unit = view.units.find(
+        (candidate) => candidate.id === selection.unitId,
+      );
       return (
-        command.kind === "ATTACK" &&
-        command.target.kind === "CHOCOLATE_WALL" &&
-        command.target.wallId === selection.wallId
+        unit?.ownerId === view.viewer.id &&
+        "unitId" in command &&
+        command.unitId === selection.unitId &&
+        command.kind !== "CHOOSE_CANDIFY_CITY"
       );
     }
-    if ("at" in command) return sameCoord(command.at, selection.at);
-    if (command.kind === "MOVE")
-      return sameCoord(command.path.at(-1), selection.at);
-    if (command.kind === "ATTACK") {
-      const target = command.target;
-      const entity =
-        target.kind === "UNIT"
-          ? view.units.find((unit) => unit.id === target.unitId)
-          : view.chocolateWalls.find((wall) => wall.id === target.wallId);
-      return entity !== undefined && sameCoord(entity.at, selection.at);
+    if (selection.kind === "CITY") {
+      const city = view.cities.find(
+        (candidate) => candidate.id === selection.cityId,
+      );
+      return (
+        city?.ownerId === view.viewer.id &&
+        command.kind === "TRAIN" &&
+        command.cityId === selection.cityId
+      );
     }
-    return false;
+    return (
+      selection.kind === "TILE" &&
+      isEconomicCommand(command) &&
+      sameCoord(command.at, selection.at)
+    );
   });
 }
 
@@ -987,6 +1011,212 @@ function isStillOffered(
 
 function isEconomicCommand(command: CommandV6): command is EconomicCommandV6 {
   return ECONOMIC_KINDS.has(command.kind);
+}
+
+function isMapTargetFamily(command: CommandV6): boolean {
+  return (
+    command.kind === "KAMIKAZE_ROLL" ||
+    command.kind === "BUILD_CHOCOLATE_WALL" ||
+    command.kind === "HEAL_ADJACENT"
+  );
+}
+
+function groupContextCommands(
+  commands: readonly CommandV6[],
+): readonly (readonly CommandV6[])[] {
+  const groups = new Map<string, CommandV6[]>();
+  for (const command of commands) {
+    const key = isMapTargetFamily(command)
+      ? `family:${command.kind}`
+      : canonicalJson(command);
+    const group = groups.get(key) ?? [];
+    group.push(command);
+    groups.set(key, group);
+  }
+  return [...groups.values()];
+}
+
+function contextActionPresentation(
+  view: PlayerViewV6,
+  command: CommandV6,
+): {
+  readonly label: string;
+  readonly accessibleLabel?: string;
+  readonly symbol: ActionSymbol;
+} {
+  if (command.kind === "TRAIN") {
+    const city = view.cities.find(
+      (candidate) => candidate.id === command.cityId,
+    );
+    const faction =
+      view.players.find((player) => player.id === city?.ownerId)?.faction ??
+      view.viewer.faction;
+    const role = effectiveRoleRuleV6(faction, command.role);
+    return {
+      label: `${role.label} · ${role.cost ?? 0} Coins`,
+      accessibleLabel: `Train ${role.label} for ${role.cost ?? 0} Coins`,
+      symbol: unitActionSymbol(faction, command.role),
+    };
+  }
+  if (command.kind === "CAPTURE") {
+    const unit = view.units.find(
+      (candidate) => candidate.id === command.unitId,
+    );
+    const tile =
+      unit === undefined
+        ? undefined
+        : view.board.tiles.find(
+            (candidate) =>
+              candidate.at.x === unit.at.x && candidate.at.y === unit.at.y,
+          );
+    const site = tile?.explored === true ? tile.site : null;
+    return {
+      label: site === "VILLAGE" ? "Capture Village" : "Capture City",
+      symbol: acceptedSymbol("building-village", "⚑"),
+    };
+  }
+  const labels: Partial<Readonly<Record<CommandV6["kind"], string>>> = {
+    KAMIKAZE_ROLL: "Roll",
+    HEAL_ADJACENT: "Heal",
+    RECOVER: "Recover",
+    PROMOTE: "Promote",
+    WAIT: "Wait",
+    BUILD_CHOCOLATE_WALL: "Chocolate Wall",
+    CANDIFY: "Candify",
+  };
+  return {
+    label: labels[command.kind] ?? title(command.kind),
+    symbol: commandSymbol(command, view.viewer.faction),
+  };
+}
+
+function commandSymbol(
+  command: CommandV6,
+  faction: FactionIdV6 = "ORIGINAL",
+): ActionSymbol {
+  switch (command.kind) {
+    case "ATTACK":
+      return acceptedSymbol("ui-attack", "⚔");
+    case "KAMIKAZE_ROLL":
+      return acceptedSymbol("ui-action-kamikaze-roll", "⇢");
+    case "BUILD_CHOCOLATE_WALL":
+      return acceptedSymbol("ui-action-build-chocolate-wall", "▦");
+    case "CANDIFY":
+      return acceptedSymbol("ui-action-candify", "✦");
+    case "CHOOSE_CANDIFY_CITY":
+      return acceptedSymbol("ui-action-choose-candify-city", "⌂");
+    case "CAPTURE":
+      return acceptedSymbol("building-village", "⚑");
+    case "HARVEST_FRUIT":
+      return acceptedSymbol(
+        faction === "CANDY" ? "terrain-candy-fruit" : "terrain-fruit",
+        "●",
+      );
+    case "HUNT_GAME":
+      return acceptedSymbol(
+        faction === "CANDY" ? "terrain-candy-animal" : "terrain-game",
+        "◇",
+      );
+    case "BUILD_MINE":
+      return acceptedSymbol("building-mine", "▲");
+    case "MOVE":
+      return fallbackSymbol("→");
+    case "HEAL_ADJACENT":
+      return fallbackSymbol("✚");
+    case "RECOVER":
+      return fallbackSymbol("♥");
+    case "PROMOTE":
+      return fallbackSymbol("★");
+    case "WAIT":
+      return fallbackSymbol("⏸");
+    case "END_TURN":
+      return fallbackSymbol("↻");
+    case "RESEARCH":
+      return fallbackSymbol("◈");
+    case "TRAIN":
+      return unitActionSymbol(faction, command.role);
+    case "BUILD_FARM":
+      return fallbackSymbol("≡");
+    case "BUILD_LUMBER_CAMP":
+      return fallbackSymbol("╱");
+    case "BUILD_QUARRY":
+      return fallbackSymbol("▧");
+    case "BUILD_WINDMILL":
+      return fallbackSymbol("✳");
+    case "BUILD_SAWMILL":
+      return fallbackSymbol("⌘");
+    case "BUILD_FORGE":
+      return fallbackSymbol("⚒");
+    case "BUILD_STONEWORKS":
+      return fallbackSymbol("▤");
+    case "BUILD_WORKSHOP":
+      return fallbackSymbol("⚙");
+    case "BUILD_GRAND_WORKS":
+      return fallbackSymbol("♜");
+    case "BUILD_MARKET":
+      return fallbackSymbol("◉");
+    case "CLEAR_FOREST":
+      return fallbackSymbol("✕");
+    case "REPLANT_FOREST":
+      return fallbackSymbol("♣");
+    case "BUILD_ROAD":
+      return fallbackSymbol("━");
+    case "REDEVELOP":
+      return fallbackSymbol("↺");
+    case "CHOOSE_CITY_REWARD":
+      return acceptedSymbol(rewardArtId(command.reward), "✦");
+  }
+}
+
+function unitActionSymbol(
+  faction: FactionIdV6,
+  role: UnitRoleId,
+): ActionSymbol {
+  const coverage = unitCoverageV6(faction, role);
+  if (coverage.status === "ACCEPTED") {
+    const url = ACCEPTED_ART_URLS[coverage.assetId];
+    if (url !== undefined) return { kind: "RASTER", url };
+  }
+  return fallbackSymbol(role.slice(0, 2));
+}
+
+function acceptedSymbol(assetId: string, fallback: string): ActionSymbol {
+  const url = ACCEPTED_ART_URLS[assetId];
+  return url === undefined ? fallbackSymbol(fallback) : { kind: "RASTER", url };
+}
+
+function fallbackSymbol(value: string): ActionSymbol {
+  return { kind: "FALLBACK", value };
+}
+
+function rewardArtId(
+  reward: Extract<CommandV6, { readonly kind: "CHOOSE_CITY_REWARD" }>["reward"],
+): string {
+  const ids: Partial<Record<typeof reward, string>> = {
+    SURVEY: "ui-reward-survey",
+    WALLS: "ui-reward-city-wall",
+  };
+  return ids[reward] ?? "";
+}
+
+function actionSymbolNode(
+  documentRoot: Document,
+  symbol: ActionSymbol,
+): HTMLElement {
+  const wrapper = el(documentRoot, "span", "v6-command-symbol");
+  wrapper.setAttribute("aria-hidden", "true");
+  if (symbol.kind === "RASTER") {
+    const image = documentRoot.createElement("img");
+    image.src = symbol.url;
+    image.alt = "";
+    image.decoding = "async";
+    wrapper.dataset.symbolKind = "accepted-raster";
+    wrapper.append(image);
+  } else {
+    wrapper.dataset.symbolKind = "code-native-fallback";
+    wrapper.textContent = symbol.value;
+  }
+  return wrapper;
 }
 
 function previewLabel(result: EconomicPreviewResultV6): string {
@@ -1034,9 +1264,12 @@ function selectionHeading(
     const unit = view.units.find(
       (candidate) => candidate.id === selection.unitId,
     );
+    const faction = view.players.find(
+      (player) => player.id === unit?.ownerId,
+    )?.faction;
     return unit === undefined
       ? "Unit"
-      : `${title(unit.role)} · ${unit.hp}/${unit.maxHp} HP`;
+      : `${effectiveRoleRuleV6(faction ?? view.viewer.faction, unit.role).label} · ${unit.hp}/${unit.maxHp} HP`;
   }
   if (selection.kind === "CITY") {
     const city = view.cities.find(
@@ -1059,18 +1292,6 @@ function describeSelection(
   selection: BoardSelectionV6,
 ): string {
   return `${selectionHeading(view, selection)} selected.`;
-}
-
-function describeUnlock(
-  unlock: ReturnType<
-    typeof queryTechnologyTreeV6
-  >["nodes"][number]["effects"][number],
-): string {
-  if (unlock.kind === "COMMAND") return `Unlocks ${title(unlock.command)}`;
-  if (unlock.kind === "UNIT_ROLE") return `Unlocks ${title(unlock.role)}`;
-  if (unlock.kind === "RESOURCE_REVEAL")
-    return `Reveals ${unlock.resources.map(title).join(", ")}`;
-  return title(unlock.kind);
 }
 
 function sameCoord(
