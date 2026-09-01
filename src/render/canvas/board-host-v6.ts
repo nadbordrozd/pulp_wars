@@ -28,6 +28,7 @@ import {
   type MapCommandTargetV6,
   type RenderPlanEntryV6,
 } from "./render-plan-v6";
+import { cityPopulationPresentationV6 } from "../city-population-presentation-v6";
 import {
   combatAnimationFrameV6,
   type CombatPresentationV6,
@@ -660,7 +661,7 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
         );
       if (city !== undefined)
         facts.push(
-          `City ${city.id}, level ${city.level}, Player ${city.ownerId}, population ${city.population}`,
+          `City ${city.id}, level ${city.level}, Player ${city.ownerId}; ${cityPopulationPresentationV6(city).accessibleText}`,
         );
       if (wall !== undefined)
         facts.push(

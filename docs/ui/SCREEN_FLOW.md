@@ -42,6 +42,15 @@ The selected-city dock shows:
 - exact faction-correct Train commands for Fighter, Scout, Marksman, Guard,
   Raider, Medic, Heavy, or Breacher. Juggernaut is never a Train control.
 
+The map city label and selected-city dock render population as the current
+incremental layer only: a level-N city always has exactly N+1 tiny squares.
+Progress fills left to right. Negative progress fills the same fixed layer from
+the leading edge with red deficit squares, capped visually at the layer width;
+the semantic text always states the complete deficit even when it is larger
+than N+1. This keeps the spatial rhythm stable without disguising severe
+infrastructure loss. Ruleset 6 has no maximum city level, so there is no capped
+or completed meter: every valid city presents its next N+1 population layer.
+
 The selected-tile dock identifies Grass/Forest/Mountain; visible Fruit, Game,
 Fertile Ground, Ore, or Stone; all eleven economic improvements; Road;
 Chocolate Wall; and territory. An explored resource hidden by technology is

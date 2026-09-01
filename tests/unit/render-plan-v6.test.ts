@@ -195,6 +195,15 @@ describe("ruleset-6 observation-safe render plan", () => {
     );
     expect(entriesOf(plan.entries, "UNIT_STATUS")).toHaveLength(18);
     expect(entriesOf(plan.entries, "CITY_STATUS")).toHaveLength(2);
+    expect(
+      entriesOf(plan.entries, "CITY_STATUS")[0]?.details.populationLayer,
+    ).toMatchObject({
+      maxLevel: false,
+      required: 2,
+      accumulated: 1,
+      deficit: 0,
+      squares: ["FILLED", "EMPTY"],
+    });
     expect(entriesOf(plan.entries, "CHOCOLATE_WALL_STATUS")).toHaveLength(1);
   });
 

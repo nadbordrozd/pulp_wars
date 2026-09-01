@@ -23,6 +23,7 @@ import {
   territoryBoundarySegments,
   type DiamondEdge,
 } from "./geometry";
+import { cityPopulationPresentationV6 } from "../city-population-presentation-v6";
 
 export const BOARD_RENDER_PLAN_VERSION_V6 = 6 as const;
 
@@ -187,7 +188,7 @@ interface RenderEntryDetailsV6 {
   readonly CITY_STATUS: {
     readonly faction: FactionIdV6;
     readonly level: number;
-    readonly population: number;
+    readonly populationLayer: ReturnType<typeof cityPopulationPresentationV6>;
     readonly isCapital: boolean;
   };
 }
@@ -402,7 +403,7 @@ export function buildRenderPlanV6(
           entryV6("CITY_STATUS", tile.at, city.id, city.ownerId, {
             faction: cityFaction,
             level: city.level,
-            population: city.population,
+            populationLayer: cityPopulationPresentationV6(city),
             isCapital: city.isCapital,
           }),
         );

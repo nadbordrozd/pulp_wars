@@ -37,6 +37,7 @@ import {
   combatPresentationsFromEventsV6,
   type CombatPresentationV6,
 } from "../canvas/combat-presentation-v6";
+import { cityPopulationPresentationV6 } from "../city-population-presentation-v6";
 
 const BOARD_SIZES = [11, 14, 16, 20, 25] as const;
 const COLORS: readonly PlayerColorV6[] = ["CORAL", "TEAL", "GOLD", "VIOLET"];
@@ -1019,6 +1020,13 @@ export class Ruleset6DomAppView {
     panel.append(
       text(this.#document, "h2", selectionHeading(view, this.#selection)),
     );
+    const selection = this.#selection;
+    if (selection?.kind === "CITY") {
+      const city = view.cities.find(
+        (candidate) => candidate.id === selection.cityId,
+      );
+      if (city !== undefined) panel.append(this.#cityPopulationLayer(city));
+    }
     const selected = selectedCommands(
       view,
       this.#snapshot.offeredCommands,
@@ -1039,6 +1047,33 @@ export class Ruleset6DomAppView {
       panel.append(this.#contextCommandList(view, selected));
     }
     return panel;
+  }
+
+  #cityPopulationLayer(city: PlayerViewV6["cities"][number]): HTMLElement {
+    const presentation = cityPopulationPresentationV6(city);
+    const wrapper = el(this.#document, "div", "v6-city-population-progress");
+    wrapper.dataset.cityPopulation = String(city.id);
+    wrapper.dataset.populationProgress = String(presentation.progress);
+    wrapper.setAttribute("role", "img");
+    wrapper.setAttribute("aria-label", presentation.accessibleText);
+
+    const squares = el(this.#document, "span", "v6-city-population-squares");
+    squares.setAttribute("aria-hidden", "true");
+    for (const [index, state] of presentation.squares.entries()) {
+      const square = el(this.#document, "span", "v6-city-population-square");
+      square.dataset.populationSquare = String(index + 1);
+      square.dataset.state = state.toLowerCase();
+      squares.append(square);
+    }
+    const copy =
+      presentation.deficit > 0
+        ? `${presentation.deficit} population deficit · replace before growth`
+        : `${presentation.accumulated}/${presentation.required} to level ${presentation.nextLevel}`;
+    wrapper.append(
+      squares,
+      text(this.#document, "span", copy, "v6-city-population-copy"),
+    );
+    return wrapper;
   }
 
   #contextCommandList(

@@ -1521,27 +1521,68 @@ function cityStatus(
   zoom: number,
   ownerColor: string,
 ): readonly BoardDrawCommandV6[] {
-  return [
+  const layer = entry.details.populationLayer;
+  const squareSize = Math.max(3, Math.min(6, 5 * zoom));
+  const gap = Math.max(1, Math.min(2, zoom));
+  const columns = Math.min(12, layer.required);
+  const rows = Math.ceil(layer.required / columns);
+  const squaresWidth = columns * squareSize + (columns - 1) * gap;
+  const badgeWidth = Math.max(42 * zoom, squaresWidth + 10);
+  const rowHeight = squareSize + gap;
+  const badgeHeight = 18 * zoom + rows * rowHeight + 5;
+  const badgeX = center.x - badgeWidth / 2;
+  const badgeY = center.y + 27 * zoom;
+  const commands: BoardDrawCommandV6[] = [
     rect(
       entry.key,
-      center.x - 34 * zoom,
-      center.y + 29 * zoom,
-      68 * zoom,
-      17 * zoom,
+      badgeX,
+      badgeY,
+      badgeWidth,
+      badgeHeight,
       "#142625e8",
       ownerColor,
-      2 * zoom,
+      Math.max(1, 2 * zoom),
     ),
     text(
       entry.key,
       center.x,
-      center.y + 37.5 * zoom,
-      `${entry.details.isCapital ? "♛ " : ""}L${entry.details.level}  ${signed(entry.details.population)}P`,
+      badgeY + 9 * zoom,
+      `${entry.details.isCapital ? "♛ " : ""}L${entry.details.level}`,
       "#ffffff",
       clampText(9 * zoom),
       700,
     ),
   ];
+  const firstRowCount = Math.min(columns, layer.required);
+  const firstRowWidth =
+    firstRowCount * squareSize + Math.max(0, firstRowCount - 1) * gap;
+  const startX = center.x - firstRowWidth / 2;
+  const startY = badgeY + 15 * zoom;
+  layer.squares.forEach((state, index) => {
+    const row = Math.floor(index / columns);
+    const rowCount = Math.min(columns, layer.required - row * columns);
+    const rowWidth = rowCount * squareSize + Math.max(0, rowCount - 1) * gap;
+    const rowX = row === 0 ? startX : center.x - rowWidth / 2;
+    const x = rowX + (index % columns) * (squareSize + gap);
+    const y = startY + row * rowHeight;
+    commands.push(
+      rect(
+        `${entry.key}:population-square:${index}`,
+        x,
+        y,
+        squareSize,
+        squareSize,
+        state === "FILLED"
+          ? "#ffd85e"
+          : state === "DEFICIT"
+            ? "#ff6b6b"
+            : "#203331",
+        state === "DEFICIT" ? "#ffd0cc" : "#d3e6e5",
+        Math.max(0.75, zoom),
+      ),
+    );
+  });
+  return commands;
 }
 
 function healthBar(
@@ -1841,10 +1882,6 @@ function resourceColor(
     STONE: "#9da7ad",
   } as const;
   return colors[resource];
-}
-
-function signed(value: number): string {
-  return value > 0 ? `+${value}` : String(value);
 }
 
 function clampText(value: number): number {

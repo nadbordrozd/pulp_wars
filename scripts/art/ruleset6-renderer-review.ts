@@ -18,6 +18,7 @@ import {
   type RenderEntryKindV6,
   type RenderPlanEntryV6,
 } from "../../src/render/canvas/render-plan-v6";
+import { cityPopulationPresentationV6 } from "../../src/render/city-population-presentation-v6";
 
 const root = process.cwd();
 const reviewRoot = path.join(
@@ -227,7 +228,16 @@ function representativePlan(faction: FactionIdV6): BoardRenderPlanV6 {
   add(
     "CITY_STATUS",
     { x: 0, y: 4 },
-    { faction, level: 4, population: -2, isCapital: true },
+    {
+      faction,
+      level: 4,
+      populationLayer: cityPopulationPresentationV6({
+        id: 300,
+        level: 4,
+        population: -2,
+      }),
+      isCapital: true,
+    },
     8,
   );
   add("CHOCOLATE_WALL", { x: 4, y: 4 }, { faction: "CANDY", hp: 7 }, 5);
@@ -422,11 +432,12 @@ async function writeEvidence(): Promise<void> {
           "temporary Road mask with missing-material marker, economic contributor numbers, opposite-pair axis and value chip",
           "selection, move/attack targets, unit/city/wall status and fog",
           "Forest Game/Animal frontage without a unit and beneath an occupied selected unit",
+          "level-4 negative population as exactly two leading red deficit squares within the fixed five-square layer",
         ],
         visualReview: {
           status: "ACCEPTED",
           notes:
-            "Native and enlarged sheets were inspected individually. Game/Animal remains visible in front of each Forest canopy, including beneath a selected occupied tile, at 0.625x, 1x, and 1.75x for DPR1/2. Fruit, Ore, Stone, units, selection, status, fog, and other economy layers retain their established order.",
+            "Native and enlarged sheets were inspected individually. The level-4 city retains its fixed five-square layer with exactly two leading red deficit squares at 0.625x, 1x, and 1.75x for DPR1/2 beside terrain, units, selection, fog and status layers. Game/Animal remains visible in front of each Forest canopy, including beneath a selected occupied tile.",
         },
         artifacts: records,
       },
@@ -439,6 +450,6 @@ async function writeEvidence(): Promise<void> {
 async function writeReadme(): Promise<void> {
   await writeFile(
     path.join(reviewRoot, "README.md"),
-    `# Ruleset-6 Canvas renderer review\n\nGenerated deterministically with \`npm run art:ruleset6-renderer-review\`. The eight sheets cover Original and Candy at 0.625x, 1x, and 1.75x for DPR1 and DPR2, each at native backing resolution and nearest-neighbor 2x inspection scale.\n\nThe resource row includes an unoccupied Forest Game/Animal tile, and the right-side Forest includes Game beneath a selected unit. These prove canopy → Animal → unit → interaction/status ordering without changing shared anchors. A yellow \`P\` is the renderer's explicit non-production marker. It appears only where the coverage contract says production art is missing. Road lines are a deterministic temporary connectivity mask and carry \`P\` until the required PixelLab material input is accepted. Technology-hidden resources intentionally add no world marker: explored ordinary terrain is the complete visual. Accepted, semantically identical existing rasters are embedded from checked-in files; fog, ownership, targets, economic contributors and statuses remain intentionally code-native.\n`,
+    `# Ruleset-6 Canvas renderer review\n\nGenerated deterministically with \`npm run art:ruleset6-renderer-review\`. The eight sheets cover Original and Candy at 0.625x, 1x, and 1.75x for DPR1 and DPR2, each at native backing resolution and nearest-neighbor 2x inspection scale. The level-4 city fixture shows its exact five-square current population layer with two leading red deficit states for population -2.\n\nThe resource row includes an unoccupied Forest Game/Animal tile, and the right-side Forest includes Game beneath a selected unit. These prove canopy → Animal → unit → interaction/status ordering without changing shared anchors. A yellow \`P\` is the renderer's explicit non-production marker. It appears only where the coverage contract says production art is missing. Road lines are a deterministic temporary connectivity mask and carry \`P\` until the required PixelLab material input is accepted. Technology-hidden resources intentionally add no world marker: explored ordinary terrain is the complete visual. Accepted, semantically identical existing rasters are embedded from checked-in files; fog, ownership, targets, economic contributors and statuses remain intentionally code-native.\n`,
   );
 }

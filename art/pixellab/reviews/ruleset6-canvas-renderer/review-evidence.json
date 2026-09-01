@@ -23,52 +23,53 @@
     "all nine role silhouettes with ordinary units smaller than Forest and Mountain",
     "temporary Road mask with missing-material marker, economic contributor numbers, opposite-pair axis and value chip",
     "selection, move/attack targets, unit/city/wall status and fog",
-    "Forest Game/Animal frontage without a unit and beneath an occupied selected unit"
+    "Forest Game/Animal frontage without a unit and beneath an occupied selected unit",
+    "level-4 negative population as exactly two leading red deficit squares within the fixed five-square layer"
   ],
   "visualReview": {
     "status": "ACCEPTED",
-    "notes": "Native and enlarged sheets were inspected individually. Game/Animal remains visible in front of each Forest canopy, including beneath a selected occupied tile, at 0.625x, 1x, and 1.75x for DPR1/2. Fruit, Ore, Stone, units, selection, status, fog, and other economy layers retain their established order."
+    "notes": "Native and enlarged sheets were inspected individually. The level-4 city retains its fixed five-square layer with exactly two leading red deficit squares at 0.625x, 1x, and 1.75x for DPR1/2 beside terrain, units, selection, fog and status layers. Game/Animal remains visible in front of each Forest canopy, including beneath a selected occupied tile."
   },
   "artifacts": [
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/original-dpr1-native.png",
-      "bytes": 581848,
-      "sha256": "049f96759f70cd8cb4f2a4d69a5afb93117c247052ac51b9486de5e463ff3246"
+      "bytes": 581421,
+      "sha256": "0c0293998f5cef001b01efb7d52bc7c2b6a2fec93eb56d8846f33e6a93aef657"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/original-dpr1-enlarged.png",
-      "bytes": 834481,
-      "sha256": "2bb25c40dcc71ba8d805e9d303e81e54e6b8af20790c5e4a977bd5e21a740312"
+      "bytes": 834019,
+      "sha256": "ec0e5661a204384ad32b1d24dfc2f865f7e488d3a8c0ad111fba106ca6ade9cb"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/original-dpr2-native.png",
-      "bytes": 1594669,
-      "sha256": "d49398bd5ab0be0e00a01bfd4e3c902e69c293f29d6b7b62f1e2d4f24af1eb2a"
+      "bytes": 1590999,
+      "sha256": "2a93aa41a329806ce94baabce5592161dcc63bcd147ecd063a321a2687fa748e"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/original-dpr2-enlarged.png",
-      "bytes": 4024264,
-      "sha256": "4d5b87d3ea41abe85b930faf38bb2e9541455831de987b3358e5b115d02c3c25"
+      "bytes": 4019307,
+      "sha256": "0c870dd340a25e6136aaced221e9d84b5181ad64cc34cfc6baa3e23a692a0b57"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/candy-dpr1-native.png",
-      "bytes": 598497,
-      "sha256": "17fde96b2047ddb84096b2be5dca1471c5dbcec64cae7f97148ea1b3ed818f84"
+      "bytes": 597783,
+      "sha256": "ada94d774d80f71aa909b84e99125d1e787d63bf4192008d886d9c7e661ef11f"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/candy-dpr1-enlarged.png",
-      "bytes": 855812,
-      "sha256": "b7eda4b98364d67620f602309c347f29f1380fe399f1fa158d6f9f16e266b08d"
+      "bytes": 855472,
+      "sha256": "89eed3f5588d8e30dde36a0a1bf57f4578bdfebe7d62f73441cd900d3f8f5e60"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/candy-dpr2-native.png",
-      "bytes": 1593686,
-      "sha256": "ad15a135f69fefddad4fe9d5563f5d13e46b754f9b737a1b3d5126013103baa3"
+      "bytes": 1590833,
+      "sha256": "e04019b0178025606029d14fcf06c28e1d4ac496668eedd8a5eca48f743a175c"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/candy-dpr2-enlarged.png",
-      "bytes": 4016171,
-      "sha256": "ce838964fc2f81e5e864dd437ad4acb1e80774d224d1a0a5dfb4b8622a54861d"
+      "bytes": 4011729,
+      "sha256": "010073717781933163d909723110c0cc6178317c0a696b48ca349c5bb75f1ad5"
     }
   ]
 }

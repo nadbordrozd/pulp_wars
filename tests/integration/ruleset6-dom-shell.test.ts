@@ -602,6 +602,65 @@ describe("playable ruleset-6 DOM shell", () => {
     app.destroy();
   });
 
+  it("renders an accessible fixed city population layer and live-updates gain, loss, and level-up", () => {
+    const initial = publicView("ORIGINAL");
+    const city = initial.cities.find(
+      (candidate) => candidate.ownerId === initial.viewer.id,
+    );
+    if (city === undefined) throw new Error("Missing public city");
+    const fake = new FakeController(initial, commandCatalogue(initial));
+    const host = new FakeBoardHostV6();
+    const app = new Ruleset6DomAppView(document, requireElement("#app"), fake, {
+      boardHost: host,
+    });
+
+    host.callbacks?.onSelection({ kind: "CITY", cityId: city.id });
+    expect(populationSquares()).toEqual(["empty", "empty"]);
+    expect(populationIndicator()?.getAttribute("aria-label")).toContain(
+      "0 of 2 population accumulated since reaching level 1",
+    );
+
+    const gained = replacePublicCity(initial, city.id, {
+      level: 2,
+      population: 1,
+    });
+    fake.setSnapshot({
+      ...fake.snapshot(),
+      view: gained,
+      commandIndex: gained.commandIndex,
+    });
+    expect(populationSquares()).toEqual(["filled", "empty", "empty"]);
+
+    const lost = replacePublicCity(gained, city.id, { population: -5 });
+    fake.setSnapshot({
+      ...fake.snapshot(),
+      view: lost,
+      commandIndex: lost.commandIndex,
+    });
+    expect(populationSquares()).toEqual(["deficit", "deficit", "deficit"]);
+    expect(populationIndicator()?.getAttribute("aria-label")).toContain(
+      "5 population below the level 2 baseline; replace 5 population",
+    );
+    expect(populationIndicator()?.textContent).toContain(
+      "5 population deficit · replace before growth",
+    );
+
+    const leveled = replacePublicCity(lost, city.id, {
+      level: 3,
+      population: 0,
+    });
+    fake.setSnapshot({
+      ...fake.snapshot(),
+      view: leveled,
+      commandIndex: leveled.commandIndex,
+    });
+    expect(populationSquares()).toEqual(["empty", "empty", "empty", "empty"]);
+    expect(populationIndicator()?.getAttribute("aria-label")).toContain(
+      "0 of 4 population accumulated since reaching level 3",
+    );
+    app.destroy();
+  });
+
   it("dispatches every selected-tile economy command directly for pointer, keyboard, and touch activation", async () => {
     const view = publicView("ORIGINAL");
     const commands = commandCatalogue(view);
@@ -1721,6 +1780,30 @@ function publicView(faction: "ORIGINAL" | "CANDY"): PlayerViewV6 {
   const created = createPlayableGameV6(setup(faction, 42));
   if (!created.ok) throw new Error(created.error.code);
   return viewForV6(created.state, created.state.humanPlayerId);
+}
+
+function replacePublicCity(
+  view: PlayerViewV6,
+  id: number,
+  values: Partial<PlayerViewV6["cities"][number]>,
+): PlayerViewV6 {
+  return {
+    ...view,
+    commandIndex: view.commandIndex + 1,
+    cities: view.cities.map((city) =>
+      city.id === id ? { ...city, ...values } : city,
+    ),
+  };
+}
+
+function populationIndicator(): HTMLElement | null {
+  return document.querySelector<HTMLElement>("[data-city-population]");
+}
+
+function populationSquares(): readonly string[] {
+  return [
+    ...document.querySelectorAll<HTMLElement>("[data-population-square]"),
+  ].map((square) => square.dataset.state ?? "");
 }
 
 function setup(faction: "ORIGINAL" | "CANDY", seed: number): MatchSetupV6 {

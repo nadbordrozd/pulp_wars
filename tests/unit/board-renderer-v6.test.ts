@@ -5,6 +5,7 @@ import {
   ECONOMIC_IMPROVEMENT_IDS,
   RESOURCE_IDS,
   UNIT_ROLE_IDS,
+  cityId,
   unitId,
   wallId,
 } from "../../src/engine/index";
@@ -35,6 +36,7 @@ import {
   combatAnimationFrameV6,
   type CombatPresentationV6,
 } from "../../src/render/canvas/combat-presentation-v6";
+import { cityPopulationPresentationV6 } from "../../src/render/city-population-presentation-v6";
 
 const AT = { x: 2, y: 2 } as const;
 const WAIT = { kind: "WAIT", unitId: 20 } as const;
@@ -682,7 +684,11 @@ describe("ruleset-6 Canvas drawing layer", () => {
           {
             faction: "ORIGINAL",
             level: 2,
-            population: 1,
+            populationLayer: cityPopulationPresentationV6({
+              id: cityId(10),
+              level: 2,
+              population: 1,
+            }),
             isCapital: true,
           },
           8,
@@ -720,6 +726,70 @@ describe("ruleset-6 Canvas drawing layer", () => {
       list.coverage.some((item) => item.semanticId === "site:VILLAGE"),
     ).toBe(true);
   });
+
+  it.each([0.625, 1, 1.75] as const)(
+    "draws exactly one deterministic Canvas square per current-layer point at %sx zoom",
+    (zoom) => {
+      const progress = cityPopulationPresentationV6({
+        id: cityId(10),
+        level: 3,
+        population: 2,
+      });
+      const deficit = cityPopulationPresentationV6({
+        id: cityId(10),
+        level: 3,
+        population: -6,
+      });
+      const makePlan = (
+        populationLayer: typeof progress,
+      ): BoardRenderPlanV6 => ({
+        planVersion: 6,
+        entries: [
+          fixtureEntry(
+            "CITY_STATUS",
+            AT,
+            {
+              faction: "ORIGINAL",
+              level: 3,
+              populationLayer,
+              isCapital: false,
+            },
+            8,
+          ),
+        ],
+        legalCommands: [],
+        commandTargets: [],
+        economicPreview: null,
+      });
+      const progressCommands = buildBoardDrawListV6({
+        viewport: { width: 800, height: 600 },
+        camera: { offsetX: 400, offsetY: 180, zoom },
+        plan: makePlan(progress),
+      }).commands.filter((command) =>
+        command.entryKey.includes(":population-square:"),
+      );
+      const deficitCommands = buildBoardDrawListV6({
+        viewport: { width: 800, height: 600 },
+        camera: { offsetX: 400, offsetY: 180, zoom },
+        plan: makePlan(deficit),
+      }).commands.filter((command) =>
+        command.entryKey.includes(":population-square:"),
+      );
+
+      expect(progressCommands).toHaveLength(4);
+      expect(
+        progressCommands.map((command) =>
+          command.kind === "RECT" ? command.fill : null,
+        ),
+      ).toEqual(["#ffd85e", "#ffd85e", "#203331", "#203331"]);
+      expect(deficitCommands).toHaveLength(4);
+      expect(
+        deficitCommands.every(
+          (command) => command.kind === "RECT" && command.fill === "#ff6b6b",
+        ),
+      ).toBe(true);
+    },
+  );
 
   it.each([
     ["FIGHTER", "standard"],
@@ -873,7 +943,11 @@ function exhaustivePlan(): BoardRenderPlanV6 {
     CITY_STATUS: {
       faction: "ORIGINAL",
       level: 4,
-      population: -2,
+      populationLayer: cityPopulationPresentationV6({
+        id: cityId(10),
+        level: 4,
+        population: -2,
+      }),
       isCapital: true,
     },
   };

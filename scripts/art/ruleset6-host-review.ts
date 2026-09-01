@@ -23,6 +23,7 @@ import {
   type BoardRenderPlanV6,
   type RenderPlanEntryV6,
 } from "../../src/render/canvas/render-plan-v6";
+import { cityPopulationPresentationV6 } from "../../src/render/city-population-presentation-v6";
 
 const root = process.cwd();
 const reviewRoot = path.join(root, "art/pixellab/reviews/ruleset6-canvas-host");
@@ -191,7 +192,11 @@ function representativeHostPlan(): BoardRenderPlanV6 {
     entry("CITY_STATUS", "CITY_STATUS", { x: 4, y: 7 }, 500, 8, {
       faction: "ORIGINAL",
       level: 3,
-      population: 2,
+      populationLayer: cityPopulationPresentationV6({
+        id: 500,
+        level: 3,
+        population: 2,
+      }),
       isCapital: true,
     }),
   );
@@ -329,7 +334,7 @@ async function writeEvidence(): Promise<void> {
         visualReview: {
           status: "ACCEPTED",
           notes:
-            "Desktop, tablet and mobile native/backing sheets keep all three representative unit classes inside the visible slice. Standard Fighter mass remains compact beside Forest/Mountain; Breacher and Juggernaut remain bounded exceptions. Selection, status, city and terrain layers remain readable without edge clipping.",
+            "Desktop, tablet and mobile native/backing sheets keep all three representative unit classes inside the visible slice. The level-3 city shows exactly four current-layer population squares with two filled, readable at DPR1/DPR2 alongside Forest, Mountain, selection and unit status. Standard Fighter mass remains compact; Breacher and Juggernaut remain bounded exceptions.",
         },
         artifacts: records,
       },
@@ -342,7 +347,7 @@ async function writeEvidence(): Promise<void> {
 async function writeReadme(): Promise<void> {
   await writeFile(
     path.join(reviewRoot, "README.md"),
-    `# Ruleset-6 Canvas host review\n\nGenerated deterministically with \`npm run art:ruleset6-host-review\`. The desktop (1280 × 720 CSS px, DPR1), tablet (768 × 1024, DPR2), and mobile (390 × 844, DPR2) sheets use the ruleset-6 renderer's real draw list, shared camera geometry, accepted-image paths, and calibrated unit footprints. Each native backing image has a nearest-neighbor 2× inspection copy.\n\nThe evidence JSON records CSS/backing dimensions, zoom, visible unit bounds, clipping checks, footprint classes, hashes, and the 0.25/0.24/0.25 scale contract. These are review artifacts only; no production asset was generated or changed.\n`,
+    `# Ruleset-6 Canvas host review\n\nGenerated deterministically with \`npm run art:ruleset6-host-review\`. The desktop (1280 × 720 CSS px, DPR1), tablet (768 × 1024, DPR2), and mobile (390 × 844, DPR2) sheets use the ruleset-6 renderer's real draw list, shared camera geometry, accepted-image paths, and calibrated unit footprints. Each native backing image has a nearest-neighbor 2× inspection copy. The level-3 city fixture includes its exact four-square current population layer with two filled squares.\n\nThe evidence JSON records CSS/backing dimensions, zoom, visible unit bounds, clipping checks, footprint classes, hashes, and the 0.25/0.24/0.25 scale contract. These are review artifacts only; no production asset was generated or changed.\n`,
   );
 }
 

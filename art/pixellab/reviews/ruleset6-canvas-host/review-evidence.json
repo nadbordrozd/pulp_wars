@@ -200,38 +200,38 @@
   },
   "visualReview": {
     "status": "ACCEPTED",
-    "notes": "Desktop, tablet and mobile native/backing sheets keep all three representative unit classes inside the visible slice. Standard Fighter mass remains compact beside Forest/Mountain; Breacher and Juggernaut remain bounded exceptions. Selection, status, city and terrain layers remain readable without edge clipping."
+    "notes": "Desktop, tablet and mobile native/backing sheets keep all three representative unit classes inside the visible slice. The level-3 city shows exactly four current-layer population squares with two filled, readable at DPR1/DPR2 alongside Forest, Mountain, selection and unit status. Standard Fighter mass remains compact; Breacher and Juggernaut remain bounded exceptions."
   },
   "artifacts": [
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-host/desktop-native.png",
-      "bytes": 193606,
-      "sha256": "aa6db06605e6df6e6ef3f9bc0272c1abcc2d200e3d44689d34e8de3513f26a69"
+      "bytes": 193702,
+      "sha256": "7f60d95cb9774fb152f94c613052c2575d8f7f64f383c933bb62ccee3d3d9d16"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-host/desktop-enlarged.png",
-      "bytes": 316601,
-      "sha256": "070a353a83079bbaf9e53ecce2ab3ceed3cc7cb98547c4dd37a1c89eba1446dd"
+      "bytes": 316714,
+      "sha256": "39b04327c54ff554415485117d071f9d2083a65770664bb8716a314b3a731138"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-host/tablet-native.png",
-      "bytes": 265296,
-      "sha256": "270319622654a9dc071dae3556d1b8dcee0bada87184d67a75470f32462ad9e9"
+      "bytes": 265389,
+      "sha256": "da5ee348c3d47172e1d5c38fd0ec6b7a374b0abdb55b27288a41b022182f99e6"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-host/tablet-enlarged.png",
-      "bytes": 562223,
-      "sha256": "8622d4ecaf8c6e85920820b8dcc389434f43a56a5dd7abccc5d6d6b0ab41b910"
+      "bytes": 562506,
+      "sha256": "c10b030eadefab169b33963d8fb505c13a4c3068efe3842e949d2ff0dd8d47f0"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-host/mobile-native.png",
-      "bytes": 211353,
-      "sha256": "1219c7359707d7636e0b062f94329c68ffa1a254216f33583915f31afe003988"
+      "bytes": 211476,
+      "sha256": "1414db55c581dcbe0dfd45d41714449590caeed094e50ab9505f8b96d33c6427"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-host/mobile-enlarged.png",
-      "bytes": 373906,
-      "sha256": "2a376740424c75c67edf992a242f41b04bbeb8162311a2ce6c665a54cd880f17"
+      "bytes": 374149,
+      "sha256": "58d2cf4d40a376b8b7d3c21793d4160796b9b31ca0de66fd7ad0a4c895abd1c7"
     }
   ]
 }
