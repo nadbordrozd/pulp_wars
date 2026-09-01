@@ -131,6 +131,22 @@ describe("DOM UI architecture and responsive contract", () => {
     );
   });
 
+  it("lays out the ruleset-6 technology screen as five wide columns and one compact axis", () => {
+    const css = readFileSync("src/styles/main.css", "utf8");
+    expect(css).toMatch(
+      /\.v6-tech-screen\s*\{[^}]*height:\s*100dvh[^}]*overflow-x:\s*hidden[^}]*overflow-y:\s*auto/s,
+    );
+    expect(css).toMatch(
+      /\.v6-tech-tree\s*\{[^}]*grid-template-columns:\s*repeat\(5,\s*minmax\(0,\s*1fr\)\)/s,
+    );
+    expect(css).toMatch(
+      /@media \(max-width: 700px\)[\s\S]*\.v6-tech-branch-navigation\s*\{[^}]*position:\s*sticky[\s\S]*\.v6-tech-tree\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/,
+    );
+    expect(css).toMatch(
+      /@media \(max-width: 700px\)[\s\S]*\.v6-tech-detail-backdrop\s*\{[^}]*place-items:\s*end stretch/s,
+    );
+  });
+
   it("makes front-route grid tracks and intrinsic controls shrink within narrow viewports", () => {
     const css = readFileSync("src/styles/main.css", "utf8");
     expect(css).toMatch(

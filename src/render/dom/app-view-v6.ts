@@ -1,12 +1,17 @@
 import {
   canonicalJson,
   effectiveRoleRuleV6,
+  queryTechnologyTreeV6,
+  TECHNOLOGY_BRANCH_IDS_V6,
   type CommandV6,
   type EconomicPreviewResultV6,
   type FactionIdV6,
   type MatchSetupV6,
   type PlayerColorV6,
   type PlayerViewV6,
+  type PublicTechnologyNodeV6,
+  type TechnologyId,
+  type TechnologyUnlockV6,
   type UnitRoleId,
 } from "../../engine/index";
 import { ACCEPTED_ART_URLS } from "../../assets/generated-art-manifest";
@@ -79,6 +84,8 @@ type ActionSymbol =
   | { readonly kind: "RASTER"; readonly url: string }
   | { readonly kind: "FALLBACK"; readonly value: string };
 
+type Ruleset6Screen = "MATCH" | "TECH";
+
 /**
  * Ruleset-6-only DOM composition. Gameplay data is limited to controller
  * snapshots and exact public commands; this layer never reconstructs legality.
@@ -99,6 +106,9 @@ export class Ruleset6DomAppView {
   #commandChoices: readonly MapCommandTargetV6[] = [];
   #notice: string | null = null;
   #error: string | null = null;
+  #screen: Ruleset6Screen = "MATCH";
+  #selectedTechnology: TechnologyId | null = null;
+  #pendingFocusSelector: string | null = null;
   #destroyed = false;
 
   constructor(
@@ -144,6 +154,22 @@ export class Ruleset6DomAppView {
     ) {
       return;
     }
+    if (this.#screen === "TECH") {
+      if (this.#selectedTechnology !== null) {
+        if (event.key === "Escape") {
+          this.#closeTechnologyDetail();
+          event.preventDefault();
+        } else if (event.key === "Tab") {
+          this.#trapTechnologyDetailFocus(event);
+        }
+        return;
+      }
+      if (event.key === "Escape") {
+        this.#closeTechnologyScreen();
+        event.preventDefault();
+      }
+      return;
+    }
     if (event.key === "Escape") {
       if (this.#commandChoices.length > 0) {
         this.#commandChoices = [];
@@ -170,14 +196,20 @@ export class Ruleset6DomAppView {
       }
     } else if (
       event.key.toLowerCase() === "t" &&
+      this.#snapshot.view !== null &&
       this.#snapshot.phase === "ACTIVE"
     ) {
-      // The dedicated technology screen is introduced by a later bead.
-      return;
+      event.preventDefault();
+      this.#openTechnologyScreen();
     }
   };
 
   #render(): void {
+    const previousFocusId =
+      this.#document.activeElement instanceof HTMLElement &&
+      this.#root.contains(this.#document.activeElement)
+        ? this.#document.activeElement.dataset.focusId
+        : undefined;
     const shell = el(this.#document, "div", "v6-app-shell");
     shell.dataset.phase = this.#snapshot.phase.toLowerCase();
     shell.append(
@@ -211,6 +243,8 @@ export class Ruleset6DomAppView {
       case "ERROR":
         if (this.#snapshot.view === null)
           shell.append(this.#setupScreen(false));
+        else if (this.#screen === "TECH")
+          shell.append(this.#technologyScreen(this.#snapshot.view));
         else shell.append(this.#matchScreen(this.#snapshot.view));
         break;
     }
@@ -220,6 +254,20 @@ export class Ruleset6DomAppView {
       this.#root.querySelector("[data-v6-board]") !== null
     ) {
       this.#mountBoard(this.#snapshot.view);
+    }
+    const requestedFocus =
+      this.#pendingFocusSelector === null
+        ? null
+        : this.#root.querySelector<HTMLElement>(this.#pendingFocusSelector);
+    if (requestedFocus !== null) {
+      requestedFocus.focus({ preventScroll: true });
+      this.#pendingFocusSelector = null;
+    } else if (previousFocusId !== undefined) {
+      this.#root
+        .querySelector<HTMLElement>(
+          `[data-focus-id="${cssEscape(previousFocusId)}"]`,
+        )
+        ?.focus({ preventScroll: true });
     }
   }
 
@@ -401,6 +449,18 @@ export class Ruleset6DomAppView {
       ),
     );
     const menu = el(this.#document, "div", "v6-hud-actions");
+    if (this.#snapshot.phase === "ACTIVE") {
+      const technology = button(
+        this.#document,
+        "Tech",
+        "secondary-action v6-tech-navigation",
+      );
+      technology.dataset.action = "open-tech";
+      technology.dataset.focusId = "open-tech";
+      technology.ariaLabel = "Open Technology (T)";
+      technology.onclick = () => this.#openTechnologyScreen();
+      menu.append(technology);
+    }
     const zoomOut = button(this.#document, "−", "v6-icon-button");
     zoomOut.ariaLabel = "Zoom out";
     zoomOut.onclick = () => this.#boardHost.zoom("OUT");
@@ -464,6 +524,336 @@ export class Ruleset6DomAppView {
       dock.append(this.#commandChoiceDialog());
     main.append(hud, map, dock);
     return main;
+  }
+
+  #openTechnologyScreen(): void {
+    if (this.#snapshot.phase !== "ACTIVE" || this.#snapshot.view === null)
+      return;
+    this.#screen = "TECH";
+    this.#selectedTechnology = null;
+    this.#pendingFocusSelector = '[data-focus-id="tech-back"]';
+    this.#render();
+  }
+
+  #closeTechnologyScreen(): void {
+    this.#screen = "MATCH";
+    this.#selectedTechnology = null;
+    this.#pendingFocusSelector = '[data-focus-id="open-tech"]';
+    this.#render();
+  }
+
+  #technologyScreen(view: PlayerViewV6): HTMLElement {
+    const tree = queryTechnologyTreeV6(view);
+    const main = el(this.#document, "main", "v6-tech-screen");
+    main.dataset.techScreen = "true";
+    const content = el(this.#document, "div", "v6-tech-screen-content");
+    if (this.#selectedTechnology !== null) content.inert = true;
+
+    const header = el(this.#document, "header", "v6-tech-header");
+    const back = button(
+      this.#document,
+      "← Back to match",
+      "secondary-action v6-tech-back",
+    );
+    back.dataset.action = "close-tech";
+    back.dataset.focusId = "tech-back";
+    back.onclick = () => this.#closeTechnologyScreen();
+    const heading = el(this.#document, "div", "v6-tech-heading");
+    heading.append(
+      text(
+        this.#document,
+        "p",
+        `${title(tree.faction)} technology`,
+        "v6-eyebrow",
+      ),
+      text(this.#document, "h1", "Technology"),
+      text(
+        this.#document,
+        "p",
+        `${view.viewer.coins} Coins · ${tree.id} · costs reflect ${tree.ownedCityCount} owned ${tree.ownedCityCount === 1 ? "city" : "cities"}`,
+        "v6-tech-summary",
+      ),
+    );
+    header.append(back, heading);
+
+    const branchNavigation = el(
+      this.#document,
+      "label",
+      "v6-tech-branch-navigation",
+    );
+    branchNavigation.append(
+      text(this.#document, "span", "Jump to branch", "v6-tech-branch-label"),
+    );
+    const branchSelect = this.#document.createElement("select");
+    branchSelect.ariaLabel = "Technology branch";
+    for (const branch of TECHNOLOGY_BRANCH_IDS_V6) {
+      const option = this.#document.createElement("option");
+      option.value = branch;
+      option.textContent = title(branch);
+      branchSelect.append(option);
+    }
+    branchSelect.onchange = () => {
+      const branch = this.#root.querySelector<HTMLElement>(
+        `[data-tech-branch="${branchSelect.value}"]`,
+      );
+      branch?.scrollIntoView?.({ block: "start" });
+    };
+    branchNavigation.append(branchSelect);
+
+    const overview = el(this.#document, "section", "v6-tech-overview");
+    overview.setAttribute("aria-labelledby", "v6-tech-overview-heading");
+    const overviewHeading = text(
+      this.#document,
+      "h2",
+      "Five branches",
+      "sr-only",
+    );
+    overviewHeading.id = "v6-tech-overview-heading";
+    const relationshipSummary = text(
+      this.#document,
+      "p",
+      tree.nodes
+        .map((node) =>
+          node.prerequisites.length === 0
+            ? `${title(node.id)} is a root technology.`
+            : `${title(node.id)} requires ${node.prerequisites.map(title).join(" and ")}.`,
+        )
+        .join(" "),
+      "sr-only",
+    );
+    relationshipSummary.id = "v6-tech-relationships";
+    const baselineRole = tree.roleBindings.FIGHTER.label;
+    const baseline = text(
+      this.#document,
+      "p",
+      `${baselineRole} is the baseline role; no technology is required. Gathering begins researched.`,
+      "v6-tech-baseline",
+    );
+
+    const columns = el(this.#document, "div", "v6-tech-tree");
+    columns.dataset.techTree = tree.id;
+    columns.setAttribute("role", "tree");
+    columns.setAttribute(
+      "aria-label",
+      `${title(tree.faction)} technology tree`,
+    );
+    columns.setAttribute("aria-describedby", relationshipSummary.id);
+    for (const branchId of TECHNOLOGY_BRANCH_IDS_V6) {
+      const branch = el(this.#document, "section", "v6-tech-branch");
+      branch.dataset.techBranch = branchId;
+      branch.setAttribute("role", "group");
+      branch.setAttribute(
+        "aria-labelledby",
+        `v6-tech-branch-${branchId.toLowerCase()}`,
+      );
+      const branchHeading = text(
+        this.#document,
+        "h2",
+        title(branchId),
+        "v6-tech-branch-heading",
+      );
+      branchHeading.id = `v6-tech-branch-${branchId.toLowerCase()}`;
+      const list = el(this.#document, "ol", "v6-tech-card-list");
+      for (const node of tree.nodes.filter(
+        (candidate) => candidate.branch === branchId,
+      )) {
+        const item = el(this.#document, "li", "v6-tech-card-item");
+        item.dataset.tier = String(node.tier);
+        item.append(this.#technologyCard(node));
+        list.append(item);
+      }
+      branch.append(branchHeading, list);
+      columns.append(branch);
+    }
+    overview.append(overviewHeading, relationshipSummary, baseline, columns);
+    content.append(header, branchNavigation, overview);
+    main.append(content);
+
+    if (this.#selectedTechnology !== null) {
+      const selected = tree.nodes.find(
+        (node) => node.id === this.#selectedTechnology,
+      );
+      if (selected !== undefined) main.append(this.#technologyDetail(selected));
+    }
+    return main;
+  }
+
+  #technologyCard(node: PublicTechnologyNodeV6): HTMLButtonElement {
+    const offered = exactResearchCommand(
+      this.#snapshot.offeredCommands,
+      node.id,
+    );
+    const state = technologyState(
+      node,
+      offered !== undefined,
+      this.#snapshot.view?.viewer.coins ?? 0,
+    );
+    const card = button(this.#document, "", `v6-tech-card ${state.kind}`);
+    card.dataset.tech = node.id;
+    card.dataset.state = state.kind;
+    card.dataset.focusId = `tech-${node.id.toLowerCase()}`;
+    card.setAttribute("role", "treeitem");
+    card.setAttribute("aria-level", String(node.tier));
+    card.setAttribute("aria-haspopup", "dialog");
+    card.setAttribute(
+      "aria-expanded",
+      String(this.#selectedTechnology === node.id),
+    );
+    card.ariaLabel = `${title(node.id)}, ${title(node.branch)} branch, tier ${node.tier}, costs ${node.cost} Coins, ${state.label}. Open details.`;
+    const symbol = actionSymbolNode(this.#document, technologySymbol(node.id));
+    symbol.classList.add("v6-tech-card-symbol");
+    const copy = el(this.#document, "span", "v6-tech-card-copy");
+    copy.append(
+      text(this.#document, "strong", title(node.id), "v6-tech-card-name"),
+      text(this.#document, "span", `◉ ${node.cost} Coins`, "v6-tech-card-cost"),
+      text(this.#document, "span", state.label, "v6-tech-card-state"),
+    );
+    card.append(symbol, copy);
+    card.onclick = () => {
+      this.#selectedTechnology = node.id;
+      this.#pendingFocusSelector = '[data-focus-id="tech-detail"]';
+      this.#render();
+    };
+    return card;
+  }
+
+  #technologyDetail(node: PublicTechnologyNodeV6): HTMLElement {
+    const backdrop = el(this.#document, "div", "v6-tech-detail-backdrop");
+    backdrop.onclick = (event) => {
+      if (event.target === backdrop) this.#closeTechnologyDetail();
+    };
+    const detail = el(this.#document, "section", "v6-tech-detail");
+    detail.dataset.techDetail = node.id;
+    detail.dataset.focusId = "tech-detail";
+    detail.tabIndex = -1;
+    detail.setAttribute("role", "dialog");
+    detail.setAttribute("aria-modal", "true");
+    detail.setAttribute("aria-labelledby", "v6-tech-detail-heading");
+    detail.setAttribute("aria-describedby", "v6-tech-detail-status");
+
+    const close = button(
+      this.#document,
+      "Close",
+      "secondary-action v6-tech-detail-close",
+    );
+    close.dataset.action = "close-tech-detail";
+    close.onclick = () => this.#closeTechnologyDetail();
+    const heading = text(
+      this.#document,
+      "h2",
+      title(node.id),
+      "v6-tech-detail-heading",
+    );
+    heading.id = "v6-tech-detail-heading";
+    const offered = exactResearchCommand(
+      this.#snapshot.offeredCommands,
+      node.id,
+    );
+    const viewerCoins = this.#snapshot.view?.viewer.coins ?? 0;
+    const state = technologyState(node, offered !== undefined, viewerCoins);
+    const status = text(
+      this.#document,
+      "p",
+      `${node.cost} Coins · ${state.label}`,
+      `v6-tech-detail-status ${state.kind}`,
+    );
+    status.id = "v6-tech-detail-status";
+    const facts = el(this.#document, "dl", "v6-tech-detail-facts");
+    facts.append(
+      text(this.#document, "dt", "Branch"),
+      text(this.#document, "dd", `${title(node.branch)} · tier ${node.tier}`),
+      text(this.#document, "dt", "Prerequisite"),
+      text(
+        this.#document,
+        "dd",
+        node.prerequisites.length === 0
+          ? "None — root technology"
+          : node.prerequisites.map(title).join(", "),
+      ),
+    );
+    const unlockHeading = text(this.#document, "h3", "Exact unlocks");
+    const unlocks = el(this.#document, "ul", "v6-tech-unlock-list");
+    for (const effect of node.effects) {
+      unlocks.append(
+        text(
+          this.#document,
+          "li",
+          technologyUnlockLabel(
+            node,
+            effect,
+            this.#snapshot.view?.viewer.faction ?? "ORIGINAL",
+          ),
+        ),
+      );
+    }
+    detail.append(close, heading, status, facts, unlockHeading, unlocks);
+    if (offered !== undefined) {
+      const research = this.#actionButton(
+        offered,
+        `Research ${title(node.id)} · ${node.cost} Coins`,
+        {
+          symbol: technologySymbol(node.id),
+          className: "v6-tech-research-action",
+          accessibleLabel: `Research ${title(node.id)} for ${node.cost} Coins`,
+        },
+      );
+      research.dataset.action = "research-tech";
+      research.dataset.focusId = `research-${node.id.toLowerCase()}`;
+      research.onclick = () => {
+        this.#pendingFocusSelector = '[data-focus-id="tech-detail"]';
+        void this.#dispatch(offered);
+      };
+      detail.append(research);
+    }
+    detail.append(
+      text(
+        this.#document,
+        "p",
+        `${viewerCoins} Coins available. Technology costs update with owned-city count.`,
+        "v6-tech-cost-note",
+      ),
+    );
+    backdrop.append(detail);
+    return backdrop;
+  }
+
+  #closeTechnologyDetail(): void {
+    const selected = this.#selectedTechnology;
+    this.#selectedTechnology = null;
+    if (selected !== null) {
+      this.#pendingFocusSelector = `[data-focus-id="tech-${selected.toLowerCase()}"]`;
+    }
+    this.#render();
+  }
+
+  #trapTechnologyDetailFocus(event: KeyboardEvent): void {
+    const detail = this.#root.querySelector<HTMLElement>("[data-tech-detail]");
+    if (detail === null) return;
+    const focusable = [
+      ...detail.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), select:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
+      ),
+    ];
+    if (focusable.length === 0) {
+      detail.focus({ preventScroll: true });
+      event.preventDefault();
+      return;
+    }
+    const first = focusable[0];
+    const last = focusable.at(-1);
+    if (first === undefined || last === undefined) return;
+    if (event.shiftKey && this.#document.activeElement === first) {
+      last.focus();
+      event.preventDefault();
+    } else if (
+      !event.shiftKey &&
+      (this.#document.activeElement === last ||
+        this.#document.activeElement === detail ||
+        !detail.contains(this.#document.activeElement))
+    ) {
+      first.focus();
+      event.preventDefault();
+    }
   }
 
   #mountBoard(view: PlayerViewV6): void {
@@ -905,7 +1295,220 @@ export class Ruleset6DomAppView {
     this.#preparedCommand = null;
     this.#commandChoices = [];
     this.#error = null;
+    this.#screen = "MATCH";
+    this.#selectedTechnology = null;
+    this.#pendingFocusSelector = null;
   }
+}
+
+function exactResearchCommand(
+  commands: readonly CommandV6[],
+  technology: TechnologyId,
+): Extract<CommandV6, { readonly kind: "RESEARCH" }> | undefined {
+  return commands.find(
+    (command): command is Extract<CommandV6, { readonly kind: "RESEARCH" }> =>
+      command.kind === "RESEARCH" && command.tech === technology,
+  );
+}
+
+function technologyState(
+  node: PublicTechnologyNodeV6,
+  researchOffered: boolean,
+  viewerCoins: number,
+): { readonly kind: string; readonly label: string } {
+  if (node.state === "OWNED")
+    return { kind: "researched", label: "Researched" };
+  if (node.state === "BLOCKED") {
+    return {
+      kind: "locked",
+      label: `Locked — research ${node.missingPrerequisites.map(title).join(", ")} first`,
+    };
+  }
+  if (!node.affordable) {
+    return {
+      kind: "unaffordable",
+      label: `Need ${Math.max(0, node.cost - viewerCoins)} more Coins`,
+    };
+  }
+  return researchOffered
+    ? { kind: "available", label: "Available to research" }
+    : {
+        kind: "view-only",
+        label: "View only — research is not currently offered",
+      };
+}
+
+const TECHNOLOGY_FALLBACK_SYMBOLS: Readonly<Record<TechnologyId, string>> = {
+  GATHERING: "●",
+  FARMING: "≋",
+  MILLING: "✳",
+  CRAFT: "⚙",
+  GRAND_WORKS: "♜",
+  HUNTING: "◇",
+  FORESTRY: "♣",
+  SAWMILLING: "⌘",
+  MARKSMANSHIP: "◎",
+  FIELDCRAFT: "❧",
+  SURVEYING: "△",
+  MINING: "◆",
+  METALLURGY: "⚒",
+  QUARRYING: "▧",
+  MASONRY: "▤",
+  SCOUTING: "⌖",
+  ROADS: "━",
+  COMMERCE: "◉",
+  RAIDING: "⚑",
+  MANEUVER: "↝",
+  DRILL: "▥",
+  FORTIFICATION: "▣",
+  EXPLOSIVES: "✹",
+  MEDICINE: "✚",
+  RECOVERY: "♥",
+};
+
+const ACCEPTED_TECHNOLOGY_ART: Readonly<Partial<Record<TechnologyId, string>>> =
+  {
+    HUNTING: "ui-tech-hunting",
+    FORESTRY: "ui-tech-forestry",
+    MINING: "ui-tech-mining",
+  };
+
+function technologySymbol(technology: TechnologyId): ActionSymbol {
+  const assetId = ACCEPTED_TECHNOLOGY_ART[technology];
+  return assetId === undefined
+    ? fallbackSymbol(TECHNOLOGY_FALLBACK_SYMBOLS[technology])
+    : acceptedSymbol(assetId, TECHNOLOGY_FALLBACK_SYMBOLS[technology]);
+}
+
+const TECHNOLOGY_COMMAND_UNLOCK_LABELS: Readonly<
+  Record<
+    Extract<TechnologyUnlockV6, { readonly kind: "COMMAND" }>["command"],
+    string
+  >
+> = {
+  HARVEST_FRUIT:
+    "Harvest Fruit: pay 2 Coins on Grass with Fruit for +1 permanent population.",
+  HUNT_GAME:
+    "Hunt Game: pay 2 Coins on Forest with Game for +1 permanent population.",
+  BUILD_FARM:
+    "Build Farm: pay 5 Coins on Grass with Fertile Ground for +2 live population.",
+  BUILD_LUMBER_CAMP:
+    "Build Lumber Camp: pay 3 Coins on an empty Forest for +1 live population.",
+  BUILD_MINE:
+    "Build Mine: pay 5 Coins only on a Mountain with Ore for +2 live population.",
+  BUILD_QUARRY:
+    "Build Quarry: pay 4 Coins only on a Mountain with Stone for +1 live population.",
+  BUILD_WINDMILL: "Build Windmill for 5 Coins beside a Farm.",
+  BUILD_SAWMILL: "Build Sawmill for 5 Coins beside a Lumber Camp.",
+  BUILD_FORGE: "Build Forge for 5 Coins.",
+  BUILD_STONEWORKS: "Build Stoneworks for 5 Coins.",
+  BUILD_WORKSHOP:
+    "Build Workshop for 4 Coins beside at least two distinct basic improvement types.",
+  BUILD_GRAND_WORKS:
+    "Build Grand Works for 7 Coins beside at least three distinct processor types.",
+  BUILD_MARKET:
+    "Build Market for 7 Coins beside at least two distinct economic families.",
+  CLEAR_FOREST:
+    "Clear Forest: remove an empty Forest for no cost and gain exactly 1 Coin.",
+  REPLANT_FOREST:
+    "Replant Forest: pay 4 Coins to change an empty Grass tile to Forest.",
+  BUILD_ROAD:
+    "Build Road: pay 2 Coins on an owned non-settlement tile; it grants no population.",
+  REDEVELOP:
+    "Redevelop: remove one owned economic improvement for no cost or refund; terrain and Road remain.",
+};
+
+function technologyUnlockLabel(
+  node: PublicTechnologyNodeV6,
+  unlock: TechnologyUnlockV6,
+  faction: FactionIdV6,
+): string {
+  switch (unlock.kind) {
+    case "COMMAND":
+      return TECHNOLOGY_COMMAND_UNLOCK_LABELS[unlock.command];
+    case "RESOURCE_REVEAL":
+      return `Reveals ${joinLabels(unlock.resources.map(title))} on explored tiles.`;
+    case "UNIT_ROLE": {
+      const role =
+        node.unlockedRoleRules.find(
+          (candidate) => candidate.role === unlock.role,
+        ) ?? null;
+      const label = role?.label ?? title(unlock.role);
+      if (unlock.role === "RAIDER" && label === "Donut") {
+        return "Unlocks Donut: costs 3 Coins and uses Kamikaze Roll, Candify, and Capture; it does not Attack or Charge.";
+      }
+      if (unlock.role === "RAIDER") {
+        return "Unlocks Raider: costs 4 Coins and uses Attack, Capture, and Charge (+1 attack after moving).";
+      }
+      return `Unlocks the ${label} role${role?.cost === null || role?.cost === undefined ? "." : ` for ${role.cost} Coins.`}`;
+    }
+    case "ECONOMIC_FORMULA":
+      return economicFormulaLabel(unlock);
+    case "CONNECTED_FARM_VISUALS":
+      return "Orthogonally connected same-city Farms merge visually; this never changes their value.";
+    case "FOREST_MOVEMENT_FREEDOM":
+      return `${joinLabels(unlock.roles.map((role) => nodeRoleLabel(node, role, faction)))} can cross Forest without ending movement.`;
+    case "MOUNTAIN_MOVEMENT":
+      return "Allows units to enter Mountain terrain.";
+    case "HIGH_GROUND_VISION":
+      return `Units on Mountain gain +${unlock.radiusBonus} sight radius.`;
+    case "ROLE_SIGHT":
+      return `${nodeRoleLabel(node, unlock.role, faction)} has sight radius ${unlock.radius}.`;
+    case "ROAD_MOVEMENT":
+      return "Road movement: an ordinary adjacent step costs 2 half-step points; a connected orthogonal Road/city-center step costs 1.";
+    case "MARKET_CAPITAL_ROAD_BONUS":
+      return `A Market beside a capital-connected friendly Road gains +${unlock.coins} Coin per turn, up to 5 total Market income.`;
+    case "IGNORE_HOSTILE_ZOC":
+      return `${joinLabels(unlock.roles.map((role) => nodeRoleLabel(node, role, faction)))} ignore hostile zones of control after Maneuver is researched.`;
+    case "FRIENDLY_CITY_FORTIFICATION":
+      return `${joinLabels(unlock.roles.map((role) => nodeRoleLabel(node, role, faction)))} receive ×${unlock.defenseNumerator / unlock.defenseDenominator} defense in friendly cities.`;
+    case "MEDIC_HEAL":
+      return `${nodeRoleLabel(node, "MEDIC", faction)} Heal restores ${unlock.amount} HP to an adjacent owned unit.`;
+    case "FRIENDLY_IDLE_RECOVERY":
+      return `Idle friendly recovery restores ${unlock.amount} HP.`;
+  }
+}
+
+function economicFormulaLabel(
+  unlock: Extract<TechnologyUnlockV6, { readonly kind: "ECONOMIC_FORMULA" }>,
+): string {
+  switch (unlock.formula) {
+    case "CONNECTED_ORTHOGONAL_CLUSTER":
+      return unlock.improvement === "WINDMILL"
+        ? "Windmill formula: +1 live population per Farm in the touching orthogonally connected same-city cluster, capped at +8."
+        : "Sawmill formula: +1 live population per Lumber Camp in the touching orthogonally connected same-city cluster, capped at +8.";
+    case "ADJACENT_MINES":
+      return "Forge formula: +2 live population per immediately adjacent same-city Mine.";
+    case "ADJACENT_QUARRIES_AND_OPPOSITE_PAIRS":
+      return "Stoneworks formula: +1 live population per adjacent same-city Quarry, plus +2 for each complete N/S, E/W, NE/SW, or NW/SE opposite pair.";
+    case "DISTINCT_BASIC_TYPES":
+      return "Workshop formula: +1 live population per distinct adjacent friendly Farm, Lumber Camp, Mine, or Quarry type, maximum +4.";
+    case "DISTINCT_PROCESSOR_TYPES":
+      return "Grand Works formula: +2 live population per distinct adjacent friendly Windmill, Sawmill, Forge, or Stoneworks type: +6 for three or +8 for four.";
+    case "DISTINCT_ECONOMIC_FAMILIES":
+      return "Market formula: +1 Coin per turn per distinct adjacent friendly Agriculture, Timber, Metal, or Stone family, maximum +4 before the Road bonus.";
+  }
+}
+
+function nodeRoleLabel(
+  node: PublicTechnologyNodeV6,
+  role: UnitRoleId,
+  faction: FactionIdV6,
+): string {
+  return (
+    node.unlockedRoleRules.find((candidate) => candidate.role === role)
+      ?.label ?? effectiveRoleRuleV6(faction, role).label
+  );
+}
+
+function joinLabels(labels: readonly string[]): string {
+  if (labels.length < 2) return labels[0] ?? "";
+  if (labels.length === 2) return `${labels[0]} and ${labels[1]}`;
+  return `${labels.slice(0, -1).join(", ")}, and ${labels.at(-1)}`;
+}
+
+function cssEscape(value: string): string {
+  return value.replaceAll("\\", "\\\\").replaceAll('"', '\\"');
 }
 
 function defaultDraft(): Ruleset6SetupDraft {

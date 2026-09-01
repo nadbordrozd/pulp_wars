@@ -13,6 +13,7 @@ import {
   createPlayableGameV6,
   queryPlayerCommandsV6,
   runReplayV6,
+  TECHNOLOGY_IDS,
   viewForV6,
   type CommandV6,
   type MatchSetupV6,
@@ -573,6 +574,214 @@ describe("playable ruleset-6 DOM shell", () => {
     app.destroy();
   });
 
+  it("opens the dedicated 25-node tree, researches only its exact detail command, and preserves the match session", async () => {
+    const storage = new MemoryStorage();
+    const host = new FakeBoardHostV6();
+    const app = bootstrapRuleset6App(document, {
+      storage,
+      boardHost: host,
+      persistenceNow: () => "2026-09-01T12:00:00.000Z",
+    });
+    submit("[data-v6-setup]");
+    await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
+    const before = app.controller.snapshot();
+    const matchInstanceId = host.updateIds.at(-1);
+    const dispatch = vi.spyOn(app.controller, "dispatch");
+    expect(document.querySelector('[data-action="open-tech"]')).not.toBeNull();
+    expect(document.querySelector('[data-command-kind="RESEARCH"]')).toBeNull();
+
+    const mapTech = requireElement('[data-action="open-tech"]');
+    mapTech.focus();
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "t",
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    expect(document.querySelector("[data-tech-screen]")).not.toBeNull();
+    expect(document.activeElement).toBe(
+      document.querySelector('[data-action="close-tech"]'),
+    );
+    expect(host.destroyCalls).toBe(0);
+    expect(app.controller.snapshot()).toMatchObject({
+      commandIndex: before.commandIndex,
+      stateHash: before.stateHash,
+    });
+
+    const cards = [
+      ...document.querySelectorAll<HTMLButtonElement>("button[data-tech]"),
+    ];
+    expect(cards.map((card) => card.dataset.tech)).toEqual(TECHNOLOGY_IDS);
+    expect(cards).toHaveLength(25);
+    expect(document.querySelectorAll("[data-tech-branch]")).toHaveLength(5);
+    expect(
+      [...document.querySelectorAll("[data-tech-branch]")].map(
+        (branch) => branch.querySelectorAll("button[data-tech]").length,
+      ),
+    ).toEqual([5, 5, 5, 5, 5]);
+    for (const card of cards) {
+      expect(card.ariaLabel).toMatch(/costs \d+ Coins/);
+      expect(
+        card.querySelector(".v6-tech-card-name")?.textContent,
+      ).toBeTruthy();
+      expect(card.querySelector(".v6-tech-card-cost")?.textContent).toContain(
+        "Coins",
+      );
+      expect(
+        card.querySelector(".v6-tech-card-state")?.textContent,
+      ).toBeTruthy();
+      expect(card.querySelector(".v6-tech-card-symbol")).not.toBeNull();
+    }
+    expect(
+      document.querySelector(
+        '[data-tech="HUNTING"] [data-symbol-kind="accepted-raster"]',
+      ),
+    ).not.toBeNull();
+    expect(
+      document.querySelector(
+        '[data-tech="FARMING"] [data-symbol-kind="code-native-fallback"]',
+      ),
+    ).not.toBeNull();
+
+    click('[data-tech="HUNTING"]');
+    const detail = requireElement("[data-tech-detail]");
+    expect(document.activeElement).toBe(detail);
+    expect(detail.getAttribute("role")).toBe("dialog");
+    expect(detail.getAttribute("aria-modal")).toBe("true");
+    expect(document.querySelectorAll("[data-tech-detail]")).toHaveLength(1);
+    expect(detail.textContent).toContain("PrerequisiteNone — root technology");
+    expect(detail.textContent).toContain("Reveals Game on explored tiles.");
+    const offered = before.offeredCommands.find(
+      (command): command is Extract<CommandV6, { readonly kind: "RESEARCH" }> =>
+        command.kind === "RESEARCH" && command.tech === "HUNTING",
+    );
+    expect(offered).toEqual({ kind: "RESEARCH", tech: "HUNTING" });
+    if (offered === undefined) throw new Error("Missing Hunting research");
+    const research = document.querySelector<HTMLButtonElement>(
+      '[data-action="research-tech"]',
+    );
+    expect(research?.dataset.command).toBe(canonicalJson(offered));
+    expect(
+      document.querySelectorAll('[data-command-kind="RESEARCH"]'),
+    ).toHaveLength(1);
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "Tab",
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    expect(document.activeElement).toBe(
+      document.querySelector('[data-action="close-tech-detail"]'),
+    );
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "Tab",
+        shiftKey: true,
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    expect(document.activeElement).toBe(research);
+    research?.click();
+    await waitUntil(
+      () =>
+        app.controller.snapshot().commandIndex === 1 &&
+        !app.controller.snapshot().transitioning,
+    );
+    expect(dispatch).toHaveBeenCalledWith(offered);
+    const expectedCoins = (before.view?.viewer.coins ?? 0) - 5;
+    expect(app.controller.snapshot().view?.viewer).toMatchObject({
+      coins: expectedCoins,
+    });
+    expect(app.controller.snapshot().view?.viewer.researchedTechs).toContain(
+      "HUNTING",
+    );
+    expect(document.querySelector("[data-tech-detail]")?.textContent).toContain(
+      "Researched",
+    );
+    expect(document.querySelector('[data-action="research-tech"]')).toBeNull();
+    expect(document.activeElement).toBe(
+      document.querySelector("[data-tech-detail]"),
+    );
+
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "Escape",
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    expect(document.querySelector("[data-tech-detail]")).toBeNull();
+    expect(document.activeElement).toBe(
+      document.querySelector('[data-tech="HUNTING"]'),
+    );
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "Escape",
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    expect(document.querySelector("[data-tech-screen]")).toBeNull();
+    expect(document.activeElement).toBe(
+      document.querySelector('[data-action="open-tech"]'),
+    );
+    expect(document.body.textContent).toContain(`Coins${expectedCoins}`);
+    expect(host.updateIds.at(-1)).toBe(matchInstanceId);
+    window.dispatchEvent(new Event("pagehide"));
+    expectPersistedBoundary(storage, app.controller.snapshot());
+    app.destroy();
+  });
+
+  it("uses faction-aware Candy unlocks and view-only detail sheets", () => {
+    const original = publicView("CANDY");
+    const view: PlayerViewV6 = {
+      ...original,
+      viewer: {
+        ...original.viewer,
+        coins: 100,
+        researchedTechs: ["GATHERING", "SCOUTING", "FORTIFICATION"],
+      },
+    };
+    const commands: readonly CommandV6[] = [
+      { kind: "RESEARCH", tech: "RAIDING" },
+      { kind: "RESEARCH", tech: "EXPLOSIVES" },
+    ];
+    const fake = new FakeController(view, commands);
+    const app = new Ruleset6DomAppView(document, requireElement("#app"), fake, {
+      boardHost: new FakeBoardHostV6(),
+    });
+    click('[data-action="open-tech"]');
+    expect(document.querySelectorAll("button[data-tech]")).toHaveLength(25);
+    expect(document.body.textContent).toContain(
+      "Candy Warrior is the baseline role",
+    );
+
+    click('[data-tech="RAIDING"]');
+    expect(document.querySelector("[data-tech-detail]")?.textContent).toContain(
+      "Unlocks Donut: costs 3 Coins and uses Kamikaze Roll, Candify, and Capture; it does not Attack or Charge.",
+    );
+    expect(
+      document.querySelectorAll('[data-action="research-tech"]'),
+    ).toHaveLength(1);
+    click('[data-action="close-tech-detail"]');
+    click('[data-tech="EXPLOSIVES"]');
+    const explosives =
+      document.querySelector("[data-tech-detail]")?.textContent;
+    expect(explosives).toContain("Unlocks the Candy Crusher role for 5 Coins.");
+    expect(explosives).not.toContain("Catapult");
+    click('[data-action="close-tech-detail"]');
+    click('[data-tech="MILLING"]');
+    const milling = document.querySelector("[data-tech-detail]")?.textContent;
+    expect(milling).toContain(
+      "Windmill formula: +1 live population per Farm in the touching orthogonally connected same-city cluster, capped at +8.",
+    );
+    expect(document.querySelector('[data-action="research-tech"]')).toBeNull();
+    app.destroy();
+  });
+
   it("locks mandatory city and Candy choices semantically", () => {
     const view = publicView("CANDY");
     const commands = commandCatalogue(view);
@@ -657,6 +866,50 @@ describe("playable ruleset-6 DOM shell", () => {
     expect(host.model?.interactive).toBe(false);
     expect(document.body.textContent).toContain("Final map · read only");
     expect(document.body.textContent).toContain("Victory");
+    app.destroy();
+  });
+
+  it("does not expose Technology for a completed defeated viewer with no owned city", () => {
+    const view = publicView("ORIGINAL");
+    const rival = view.players.find((player) => player.id !== view.viewer.id);
+    if (rival === undefined) throw new Error("Missing rival player");
+    const fake = new FakeController(view, queryPlayerCommandsV6(view));
+    const app = new Ruleset6DomAppView(document, requireElement("#app"), fake, {
+      boardHost: new FakeBoardHostV6(),
+    });
+    const staleActiveTech = document.querySelector<HTMLButtonElement>(
+      '[data-action="open-tech"]',
+    );
+    expect(staleActiveTech).not.toBeNull();
+    fake.setSnapshot({
+      ...fake.snapshot(),
+      phase: "COMPLETE",
+      offeredCommands: [],
+      view: {
+        ...view,
+        cities: view.cities.filter((city) => city.ownerId !== view.viewer.id),
+        outcome: {
+          kind: "DEFEAT",
+          humanId: view.viewer.id,
+          defeatedByPlayerId: rival.id,
+        },
+      },
+    });
+    const completedBoundary = fake.snapshot();
+    expect(document.body.textContent).toContain("Defeat");
+    expect(document.querySelector('[data-action="open-tech"]')).toBeNull();
+
+    staleActiveTech?.click();
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "t",
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    expect(document.querySelector("[data-tech-screen]")).toBeNull();
+    expect(fake.snapshot()).toBe(completedBoundary);
+    expect(fake.dispatch).not.toHaveBeenCalled();
     app.destroy();
   });
 });
