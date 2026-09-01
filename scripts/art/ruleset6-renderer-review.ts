@@ -91,7 +91,7 @@ async function reviewSvg(faction: FactionIdV6): Promise<string> {
     .join("")}</defs>
   <rect width="100%" height="100%" fill="#172b2b"/>
   <text x="40" y="30" font-family="system-ui,sans-serif" font-size="20" font-weight="800" fill="#f5efe0">Ruleset 6 Canvas · ${faction} · zoom and coverage review</text>
-  <text x="40" y="53" font-family="system-ui,sans-serif" font-size="13" font-weight="600" fill="#c5d7d4">P = explicit non-production placeholder · Road lines await material art · hidden resources draw ordinary terrain only</text>
+  <text x="40" y="53" font-family="system-ui,sans-serif" font-size="13" font-weight="600" fill="#c5d7d4">Forest Game/Animal draws after canopy and before pieces · P = explicit non-production placeholder</text>
   ${panels
     .map(
       ({ index, zoom, commands, accepted, placeholders }) => `<g>
@@ -193,14 +193,22 @@ function representativePlan(faction: FactionIdV6): BoardRenderPlanV6 {
   const bodies = [
     [{ x: 0, y: 0 }, "MOUNTAIN"],
     [{ x: 1, y: 0 }, "FOREST"],
+    [{ x: 1, y: 1 }, "FOREST"],
+    [{ x: 3, y: 1 }, "MOUNTAIN"],
     [{ x: 4, y: 1 }, "MOUNTAIN"],
     [{ x: 5, y: 2 }, "FOREST"],
   ] as const;
   for (const [at, terrain] of bodies) add("TERRAIN_BODY", at, { terrain }, 5);
 
   RESOURCE_IDS.forEach((resource, index) =>
-    add("RESOURCE", { x: index, y: 1 }, { resource }, 4),
+    add(
+      "RESOURCE",
+      { x: index, y: 1 },
+      { resource },
+      resource === "GAME" ? 5 : 4,
+    ),
   );
+  add("RESOURCE", { x: 5, y: 2 }, { resource: "GAME" }, 5);
   add("UNKNOWN_RESOURCE", { x: 5, y: 1 }, null, 4);
 
   ECONOMIC_IMPROVEMENT_IDS.forEach((improvement, index) =>
@@ -226,7 +234,7 @@ function representativePlan(faction: FactionIdV6): BoardRenderPlanV6 {
   add("CHOCOLATE_WALL_STATUS", { x: 4, y: 4 }, { hp: 7 }, 8);
 
   const unitCoords = [
-    { x: 1, y: 4 },
+    { x: 5, y: 2 },
     { x: 2, y: 4 },
     { x: 3, y: 4 },
     { x: 1, y: 5 },
@@ -240,7 +248,7 @@ function representativePlan(faction: FactionIdV6): BoardRenderPlanV6 {
     const at = unitCoords[index];
     if (at === undefined) return;
     add("CONTACT_SHADOW", at, null, 5);
-    add("UNIT", at, { faction, role }, 5);
+    add("UNIT", at, { faction, role, readiness: "OPAQUE" }, 5);
     add(
       "UNIT_STATUS",
       at,
@@ -256,7 +264,7 @@ function representativePlan(faction: FactionIdV6): BoardRenderPlanV6 {
     );
   });
 
-  add("SELECTION", { x: 2, y: 5 }, { selectionKind: "UNIT" }, 6, null);
+  add("SELECTION", { x: 5, y: 2 }, { selectionKind: "UNIT" }, 6, null);
   for (const edge of [
     "NORTH_WEST",
     "NORTH_EAST",
@@ -413,11 +421,12 @@ async function writeEvidence(): Promise<void> {
           "all nine role silhouettes with ordinary units smaller than Forest and Mountain",
           "temporary Road mask with missing-material marker, economic contributor numbers, opposite-pair axis and value chip",
           "selection, move/attack targets, unit/city/wall status and fog",
+          "Forest Game/Animal frontage without a unit and beneath an occupied selected unit",
         ],
         visualReview: {
           status: "ACCEPTED",
           notes:
-            "Native and enlarged sheets were inspected individually. Standard units remain compact; Breacher and Juggernaut exceptions stay bounded. P markers identify missing Road material and other asset gaps without competing with map state; technology-hidden resources add no marker; economy/Road/status/fog layers remain distinct at every zoom and DPR.",
+            "Native and enlarged sheets were inspected individually. Game/Animal remains visible in front of each Forest canopy, including beneath a selected occupied tile, at 0.625x, 1x, and 1.75x for DPR1/2. Fruit, Ore, Stone, units, selection, status, fog, and other economy layers retain their established order.",
         },
         artifacts: records,
       },
@@ -430,6 +439,6 @@ async function writeEvidence(): Promise<void> {
 async function writeReadme(): Promise<void> {
   await writeFile(
     path.join(reviewRoot, "README.md"),
-    `# Ruleset-6 Canvas renderer review\n\nGenerated deterministically with \`npm run art:ruleset6-renderer-review\`. The eight sheets cover Original and Candy at 0.625x, 1x, and 1.75x for DPR1 and DPR2, each at native backing resolution and nearest-neighbor 2x inspection scale.\n\nA yellow \`P\` is the renderer's explicit non-production marker. It appears only where the coverage contract says production art is missing. Road lines are a deterministic temporary connectivity mask and carry \`P\` until the required PixelLab material input is accepted. Technology-hidden resources intentionally add no world marker: explored ordinary terrain is the complete visual. Accepted, semantically identical existing rasters are embedded from checked-in files; fog, ownership, targets, economic contributors and statuses remain intentionally code-native.\n`,
+    `# Ruleset-6 Canvas renderer review\n\nGenerated deterministically with \`npm run art:ruleset6-renderer-review\`. The eight sheets cover Original and Candy at 0.625x, 1x, and 1.75x for DPR1 and DPR2, each at native backing resolution and nearest-neighbor 2x inspection scale.\n\nThe resource row includes an unoccupied Forest Game/Animal tile, and the right-side Forest includes Game beneath a selected unit. These prove canopy → Animal → unit → interaction/status ordering without changing shared anchors. A yellow \`P\` is the renderer's explicit non-production marker. It appears only where the coverage contract says production art is missing. Road lines are a deterministic temporary connectivity mask and carry \`P\` until the required PixelLab material input is accepted. Technology-hidden resources intentionally add no world marker: explored ordinary terrain is the complete visual. Accepted, semantically identical existing rasters are embedded from checked-in files; fog, ownership, targets, economic contributors and statuses remain intentionally code-native.\n`,
   );
 }

@@ -621,6 +621,70 @@ describe("ruleset-6 observation-safe render plan", () => {
     ).toMatchObject({ id: unitId(777), ownerId: OWN, at });
   });
 
+  it("sorts Forest Game frontage after its canopy and before units without moving other resources", () => {
+    const gameAt = { x: 4, y: 4 } as const;
+    let view = replaceTile(baseView(), gameAt, {
+      terrain: "FOREST",
+      resource: "GAME",
+    });
+    for (const [index, resource] of RESOURCE_IDS.filter(
+      (candidate) => candidate !== "GAME",
+    ).entries()) {
+      view = replaceTile(
+        view,
+        { x: index + 5, y: 3 },
+        {
+          terrain: terrainForResource(resource),
+          resource,
+        },
+      );
+    }
+    view = {
+      ...view,
+      units: [unit(778, OWN, "SCOUT", gameAt)],
+    };
+
+    const plan = buildRenderPlanV6(inactive(view), {
+      ...EMPTY_BOARD_RENDER_INTERACTION_V6,
+      selection: { kind: "UNIT", unitId: unitId(778) },
+    });
+    const gameStack = plan.entries.filter(
+      (entry) => entry.layer === 5 && same(entry.at, gameAt),
+    );
+    expect(gameStack.map((entry) => entry.kind)).toEqual([
+      "CONTACT_SHADOW",
+      "TERRAIN_BODY",
+      "RESOURCE",
+      "UNIT",
+    ]);
+    expect(gameStack.find((entry) => entry.kind === "RESOURCE")).toMatchObject({
+      at: gameAt,
+      layer: 5,
+      details: { resource: "GAME" },
+    });
+    expect(
+      plan.entries.find(
+        (entry) => entry.kind === "SELECTION" && same(entry.at, gameAt),
+      )?.layer,
+    ).toBe(6);
+    expect(
+      plan.entries.find(
+        (entry) => entry.kind === "UNIT_STATUS" && same(entry.at, gameAt),
+      )?.layer,
+    ).toBe(8);
+    expect(
+      entriesOf(plan.entries, "RESOURCE")
+        .filter((entry) => entry.details.resource !== "GAME")
+        .map((entry) => [entry.details.resource, entry.layer]),
+    ).toEqual(
+      expect.arrayContaining(
+        RESOURCE_IDS.filter((resource) => resource !== "GAME").map(
+          (resource) => [resource, 4],
+        ),
+      ),
+    );
+  });
+
   it("keeps the public planner typed to PlayerViewV6 and leaves the historical v5 planner separate", () => {
     expectTypeOf(buildRenderPlanV6).parameter(0).toEqualTypeOf<PlayerViewV6>();
     expectTypeOf<GameStateV6>().not.toMatchTypeOf<PlayerViewV6>();

@@ -262,6 +262,7 @@ const LAYER_V6: Readonly<Record<RenderEntryKindV6, number>> = {
 const BODY_TIE_V6: Readonly<Partial<Record<RenderEntryKindV6, number>>> = {
   CONTACT_SHADOW: 0,
   TERRAIN_BODY: 10,
+  RESOURCE: 15,
   IMPROVEMENT: 20,
   SITE: 25,
   CHOCOLATE_WALL: 30,
@@ -892,9 +893,27 @@ function entryV6<Kind extends RenderEntryKindV6>(
     id,
     ownerId,
     variant,
-    layer: LAYER_V6[kind],
+    layer: semanticLayerV6(kind, details),
     details,
   } as Extract<RenderPlanEntryV6, { readonly kind: Kind }>;
+}
+
+/**
+ * Game is the one resource whose visual contract is frontage on a tall terrain
+ * body. It therefore shares ground-anchor depth sorting with Forest, while all
+ * other resources remain in the low-object layer.
+ */
+function semanticLayerV6<Kind extends RenderEntryKindV6>(
+  kind: Kind,
+  details: RenderEntryDetailsV6[Kind],
+): number {
+  if (
+    kind === "RESOURCE" &&
+    (details as RenderEntryDetailsV6["RESOURCE"]).resource === "GAME"
+  ) {
+    return LAYER_V6.TERRAIN_BODY;
+  }
+  return LAYER_V6[kind];
 }
 
 function stableDetailsKeyV6(value: unknown): string {

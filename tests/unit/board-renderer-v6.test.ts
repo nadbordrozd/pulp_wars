@@ -182,6 +182,104 @@ describe("ruleset-6 Canvas drawing layer", () => {
     ).toEqual([]);
   });
 
+  it.each([0.625, 1, 1.75] as const)(
+    "keeps Forest Game frontage anchored and ordered through units and overlays at %sx zoom and DPR1/2",
+    (zoom) => {
+      const at = { x: 3, y: 3 } as const;
+      const plan: BoardRenderPlanV6 = {
+        planVersion: 6,
+        entries: [
+          fixtureEntry("TERRAIN", at, { terrain: "FOREST" }, 1),
+          fixtureEntry("CONTACT_SHADOW", at, null, 5),
+          fixtureEntry("TERRAIN_BODY", at, { terrain: "FOREST" }, 5),
+          fixtureEntry("RESOURCE", at, { resource: "GAME" }, 5),
+          fixtureEntry(
+            "UNIT",
+            at,
+            {
+              faction: "ORIGINAL",
+              role: "FIGHTER",
+              readiness: "OPAQUE",
+            },
+            5,
+          ),
+          fixtureEntry("SELECTION", at, { selectionKind: "UNIT" }, 6),
+          fixtureEntry(
+            "ATTACK_TARGET",
+            at,
+            { command: { kind: "WAIT", unitId: 20 } },
+            7,
+          ),
+          fixtureEntry(
+            "UNIT_STATUS",
+            at,
+            {
+              role: "FIGHTER",
+              faction: "ORIGINAL",
+              hp: 10,
+              maxHp: 10,
+              state: "NEEDS_ACTION",
+              veteran: false,
+            },
+            8,
+          ),
+        ],
+        legalCommands: [],
+        commandTargets: [],
+        economicPreview: null,
+      };
+
+      for (const devicePixelRatio of [1, 2] as const) {
+        const context = drawingContext();
+        const list = drawBoardV6({
+          context,
+          viewport: { width: 800, height: 600 },
+          camera: { offsetX: 400, offsetY: 180, zoom },
+          plan,
+          devicePixelRatio,
+        });
+        expect(context.setTransform).toHaveBeenCalledWith(
+          devicePixelRatio,
+          0,
+          0,
+          devicePixelRatio,
+          0,
+          0,
+        );
+        const imageCommands = list.commands.filter(
+          (command) => command.kind === "IMAGE",
+        );
+        expect(imageCommands.map((command) => command.entryKey)).toEqual([
+          "TERRAIN:3,3",
+          "TERRAIN_BODY:3,3",
+          "RESOURCE:3,3",
+          "UNIT:3,3",
+        ]);
+        const forest = imageCommands[1];
+        const game = imageCommands[2];
+        expect(forest?.kind).toBe("IMAGE");
+        expect(game?.kind).toBe("IMAGE");
+        if (forest?.kind !== "IMAGE" || game?.kind !== "IMAGE") {
+          throw new Error("Missing Forest/Game image commands");
+        }
+        expect(game.destination).toEqual(forest.destination);
+        const commandKeys = list.commands.map((command) => command.entryKey);
+        expect(commandKeys.indexOf("RESOURCE:3,3")).toBeLessThan(
+          commandKeys.indexOf("UNIT:3,3"),
+        );
+        expect(commandKeys.indexOf("UNIT:3,3")).toBeLessThan(
+          commandKeys.indexOf("SELECTION:3,3"),
+        );
+        expect(commandKeys.indexOf("SELECTION:3,3")).toBeLessThan(
+          commandKeys.indexOf("ATTACK_TARGET:3,3"),
+        );
+        expect(commandKeys.indexOf("ATTACK_TARGET:3,3")).toBeLessThan(
+          commandKeys.indexOf("UNIT_STATUS:3,3"),
+        );
+      }
+    },
+  );
+
   it("applies the exact pulse opacity only to ready unit sprites and their fallbacks", () => {
     const plan = exhaustivePlan();
     const unit = plan.entries.find((entry) => entry.kind === "UNIT");
@@ -362,6 +460,7 @@ describe("ruleset-6 Canvas drawing layer", () => {
       readonly zooms: readonly number[];
       readonly devicePixelRatios: readonly number[];
       readonly scaleContracts: Readonly<Record<string, number>>;
+      readonly reviewCoverage: readonly string[];
       readonly visualReview: { readonly status: string };
       readonly artifacts: readonly {
         readonly path: string;
@@ -377,6 +476,9 @@ describe("ruleset-6 Canvas drawing layer", () => {
       breacher: 0.24,
       juggernaut: 0.25,
     });
+    expect(evidence.reviewCoverage).toContain(
+      "Forest Game/Animal frontage without a unit and beneath an occupied selected unit",
+    );
     expect(evidence.visualReview.status).toBe("ACCEPTED");
     expect(evidence.artifacts).toHaveLength(8);
     expect(evidence.artifacts.map(({ path }) => path).sort()).toEqual(

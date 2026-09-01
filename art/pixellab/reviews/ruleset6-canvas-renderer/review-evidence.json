@@ -22,52 +22,53 @@
     "accepted raster and explicit non-production placeholder labels",
     "all nine role silhouettes with ordinary units smaller than Forest and Mountain",
     "temporary Road mask with missing-material marker, economic contributor numbers, opposite-pair axis and value chip",
-    "selection, move/attack targets, unit/city/wall status and fog"
+    "selection, move/attack targets, unit/city/wall status and fog",
+    "Forest Game/Animal frontage without a unit and beneath an occupied selected unit"
   ],
   "visualReview": {
     "status": "ACCEPTED",
-    "notes": "Native and enlarged sheets were inspected individually. Standard units remain compact; Breacher and Juggernaut exceptions stay bounded. P markers identify missing Road material and other asset gaps without competing with map state; technology-hidden resources add no marker; economy/Road/status/fog layers remain distinct at every zoom and DPR."
+    "notes": "Native and enlarged sheets were inspected individually. Game/Animal remains visible in front of each Forest canopy, including beneath a selected occupied tile, at 0.625x, 1x, and 1.75x for DPR1/2. Fruit, Ore, Stone, units, selection, status, fog, and other economy layers retain their established order."
   },
   "artifacts": [
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/original-dpr1-native.png",
-      "bytes": 587319,
-      "sha256": "d5a02aee5295af7f16f620cae1a75be5ee15a9426654604d56107b94958e1115"
+      "bytes": 581848,
+      "sha256": "049f96759f70cd8cb4f2a4d69a5afb93117c247052ac51b9486de5e463ff3246"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/original-dpr1-enlarged.png",
-      "bytes": 839907,
-      "sha256": "d027183dd54e390b482f0fca42b0e6d73135ba1a0ff2fe11536e654e7fe780d6"
+      "bytes": 834481,
+      "sha256": "2bb25c40dcc71ba8d805e9d303e81e54e6b8af20790c5e4a977bd5e21a740312"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/original-dpr2-native.png",
-      "bytes": 1629199,
-      "sha256": "209a9ddf5c2097549de22c8f9766005a1064d251da1614a7787f5dc9bcfde653"
+      "bytes": 1594669,
+      "sha256": "d49398bd5ab0be0e00a01bfd4e3c902e69c293f29d6b7b62f1e2d4f24af1eb2a"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/original-dpr2-enlarged.png",
-      "bytes": 4086263,
-      "sha256": "8b6de70b416eb35a6bc26e7946402c442d042dbcb14c832b578b8c1219353f1b"
+      "bytes": 4024264,
+      "sha256": "4d5b87d3ea41abe85b930faf38bb2e9541455831de987b3358e5b115d02c3c25"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/candy-dpr1-native.png",
-      "bytes": 605633,
-      "sha256": "1cda9c8fd901fc1044c940038371f8f499c423af07d8c577bb43596a428faf37"
+      "bytes": 598497,
+      "sha256": "17fde96b2047ddb84096b2be5dca1471c5dbcec64cae7f97148ea1b3ed818f84"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/candy-dpr1-enlarged.png",
-      "bytes": 861567,
-      "sha256": "09bc558b33a4249974e08fc09f64bb26bec5b74dae906da7c4fa02700d14e00e"
+      "bytes": 855812,
+      "sha256": "b7eda4b98364d67620f602309c347f29f1380fe399f1fa158d6f9f16e266b08d"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/candy-dpr2-native.png",
-      "bytes": 1650081,
-      "sha256": "0570475f49c0a0a13db19a314bff4b03a3798707d1b2a5cb91a48565628df576"
+      "bytes": 1593686,
+      "sha256": "ad15a135f69fefddad4fe9d5563f5d13e46b754f9b737a1b3d5126013103baa3"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/candy-dpr2-enlarged.png",
-      "bytes": 4101612,
-      "sha256": "4349f675d2cb86f9660c33946fd15c3ac1133edf8c386699746a338b46a32ad8"
+      "bytes": 4016171,
+      "sha256": "ce838964fc2f81e5e864dd437ad4acb1e80774d224d1a0a5dfb4b8622a54861d"
     }
   ]
 }
