@@ -79,6 +79,19 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   "terrain-candy-animal": publicArtUrl(
     "assets/pixellab/terrain/candy-animal.png",
   ),
+  "building-farm": publicArtUrl("assets/pixellab/buildings/farm.png"),
+  "building-quarry": publicArtUrl("assets/pixellab/buildings/quarry.png"),
+  "building-windmill": publicArtUrl("assets/pixellab/buildings/windmill.png"),
+  "building-sawmill": publicArtUrl("assets/pixellab/buildings/sawmill.png"),
+  "building-forge": publicArtUrl("assets/pixellab/buildings/forge.png"),
+  "building-stoneworks": publicArtUrl(
+    "assets/pixellab/buildings/stoneworks.png",
+  ),
+  "building-workshop": publicArtUrl("assets/pixellab/buildings/workshop.png"),
+  "building-grand-works": publicArtUrl(
+    "assets/pixellab/buildings/grand-works.png",
+  ),
+  "building-market": publicArtUrl("assets/pixellab/buildings/market.png"),
   "building-village": publicArtUrl("assets/pixellab/buildings/village.png"),
   "building-city-1": publicArtUrl("assets/pixellab/buildings/city-1.png"),
   "building-city-3": publicArtUrl("assets/pixellab/buildings/city-3.png"),
@@ -140,10 +153,64 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   ),
   "ui-faction-hero": publicArtUrl("assets/pixellab/ui/faction-hero.png"),
   "terrain-game": publicArtUrl("assets/pixellab/terrain/animal.png"),
+  "building-ruleset6-mine": publicArtUrl("assets/pixellab/buildings/mine.png"),
+  "building-lumber-camp": publicArtUrl(
+    "assets/pixellab/buildings/lumber-mill.png",
+  ),
+  "terrain-road-mask-0000": publicArtUrl(
+    "assets/pixellab/terrain/road-masks/road-mask-0000.png",
+  ),
+  "terrain-road-mask-0001": publicArtUrl(
+    "assets/pixellab/terrain/road-masks/road-mask-0001.png",
+  ),
+  "terrain-road-mask-0010": publicArtUrl(
+    "assets/pixellab/terrain/road-masks/road-mask-0010.png",
+  ),
+  "terrain-road-mask-0011": publicArtUrl(
+    "assets/pixellab/terrain/road-masks/road-mask-0011.png",
+  ),
+  "terrain-road-mask-0100": publicArtUrl(
+    "assets/pixellab/terrain/road-masks/road-mask-0100.png",
+  ),
+  "terrain-road-mask-0101": publicArtUrl(
+    "assets/pixellab/terrain/road-masks/road-mask-0101.png",
+  ),
+  "terrain-road-mask-0110": publicArtUrl(
+    "assets/pixellab/terrain/road-masks/road-mask-0110.png",
+  ),
+  "terrain-road-mask-0111": publicArtUrl(
+    "assets/pixellab/terrain/road-masks/road-mask-0111.png",
+  ),
+  "terrain-road-mask-1000": publicArtUrl(
+    "assets/pixellab/terrain/road-masks/road-mask-1000.png",
+  ),
+  "terrain-road-mask-1001": publicArtUrl(
+    "assets/pixellab/terrain/road-masks/road-mask-1001.png",
+  ),
+  "terrain-road-mask-1010": publicArtUrl(
+    "assets/pixellab/terrain/road-masks/road-mask-1010.png",
+  ),
+  "terrain-road-mask-1011": publicArtUrl(
+    "assets/pixellab/terrain/road-masks/road-mask-1011.png",
+  ),
+  "terrain-road-mask-1100": publicArtUrl(
+    "assets/pixellab/terrain/road-masks/road-mask-1100.png",
+  ),
+  "terrain-road-mask-1101": publicArtUrl(
+    "assets/pixellab/terrain/road-masks/road-mask-1101.png",
+  ),
+  "terrain-road-mask-1110": publicArtUrl(
+    "assets/pixellab/terrain/road-masks/road-mask-1110.png",
+  ),
+  "terrain-road-mask-1111": publicArtUrl(
+    "assets/pixellab/terrain/road-masks/road-mask-1111.png",
+  ),
 };
 
 export const ACCEPTED_ART_ALIASES: Readonly<Record<string, string>> = {
   "terrain-game": "terrain-animal",
+  "building-ruleset6-mine": "building-mine",
+  "building-lumber-camp": "building-lumber-mill",
 };
 
 export interface AcceptedArtAttachment {

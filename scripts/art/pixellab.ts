@@ -46,11 +46,13 @@ interface Recipe {
   readonly projectileOrigin?: { readonly x: number; readonly y: number };
   readonly palette?: string;
   readonly preferredBounds?: Bounds;
+  readonly fitBounds?: Bounds;
   readonly postprocess?:
     | "diamond-mask"
     | "diamond-mask-reference-edges"
     | "reference-rotate-180-diamond"
     | "preferred-low-marker-fit"
+    | "compact-building-fit"
     | "lanczos3-resize";
   readonly includeFactionLanguage?: boolean;
   readonly requestNoBackground?: boolean;
@@ -144,6 +146,10 @@ interface GeneratedManifest {
 const ROOT = process.cwd();
 const SOURCE_PATH = path.join(ROOT, "scripts/art/pixellab-manifest.json");
 const GENERATED_PATH = path.join(ROOT, "scripts/art/pixellab-generated.json");
+const ROAD_MASK_MANIFEST_PATH = path.join(
+  ROOT,
+  "scripts/art/road-masks.generated.json",
+);
 const CANDIDATE_ROOT = path.join(ROOT, "art/pixellab/candidates");
 const QUARANTINE_ROOT = path.join(ROOT, "art/pixellab/quarantine");
 const REVIEW_ROOT = path.join(ROOT, "art/pixellab/reviews");
@@ -190,6 +196,7 @@ async function main(): Promise<void> {
         (ids === undefined || ids.includes(recipe.id)),
     );
     if (recipes.length === 0) throw new Error("No recipes selected");
+    if (stage === "batch") assertBuildingBatchOrder(recipes, generated);
     const concurrency = Number(optionalOption("--concurrency") ?? "3");
     await generateRecipes(source, generated, recipes, concurrency);
     await saveGenerated(generated);
@@ -540,6 +547,66 @@ function validateSourceManifest(
     gameAlias.semanticRole !== "GAME"
   )
     throw new Error("Ruleset 6 GAME must explicitly alias terrain-animal");
+  const economyAliases = new Map(
+    (source.aliases ?? []).map((alias) => [alias.id, alias]),
+  );
+  if (
+    economyAliases.get("building-ruleset6-mine")?.source !== "building-mine" ||
+    economyAliases.get("building-ruleset6-mine")?.semanticRole !== "MINE"
+  )
+    throw new Error("Ruleset 6 Mine alias must reuse building-mine");
+  if (
+    economyAliases.get("building-lumber-camp")?.source !==
+      "building-lumber-mill" ||
+    economyAliases.get("building-lumber-camp")?.semanticRole !== "LUMBER_CAMP"
+  )
+    throw new Error(
+      "Ruleset 6 Lumber Camp alias must reuse building-lumber-mill",
+    );
+  const economyBuildings = [
+    "building-farm",
+    "building-quarry",
+    "building-windmill",
+    "building-sawmill",
+    "building-forge",
+    "building-stoneworks",
+    "building-workshop",
+    "building-grand-works",
+    "building-market",
+  ] as const;
+  for (const [index, id] of economyBuildings.entries()) {
+    const recipe = source.recipes.find((candidate) => candidate.id === id);
+    if (recipe === undefined)
+      throw new Error(`Economy building missing: ${id}`);
+    const low = index < 2;
+    if (
+      recipe.class !== "buildings" ||
+      recipe.stage !== (index < 3 ? "sample" : "batch") ||
+      recipe.requestSize.width !== (low ? 256 : 384) ||
+      recipe.requestSize.height !== (low ? 296 : 384) ||
+      recipe.outputSize.width !== recipe.requestSize.width ||
+      recipe.outputSize.height !== recipe.requestSize.height ||
+      recipe.anchor?.x !== (low ? 128 : 192) ||
+      recipe.anchor.y !== (low ? 222 : 288) ||
+      recipe.groundContactY !== (low ? 222 : 288) ||
+      recipe.postprocess !== "compact-building-fit" ||
+      recipe.fitBounds === undefined ||
+      recipe.preferredBounds === undefined
+    )
+      throw new Error(`Economy building geometry mismatch: ${id}`);
+    if (
+      !low &&
+      JSON.stringify(recipe.preferredBounds) !==
+        JSON.stringify({ left: 24, top: 24, right: 360, bottom: 326 })
+    )
+      throw new Error(`Processor preferred bounds mismatch: ${id}`);
+    if (
+      !low &&
+      JSON.stringify(recipe.hardBounds) !==
+        JSON.stringify({ left: 8, top: 8, right: 376, bottom: 344 })
+    )
+      throw new Error(`Processor hard bounds mismatch: ${id}`);
+  }
   assertRecipeGeometry(source, "terrain-fruit", {
     requestSize: { width: 256, height: 296 },
     outputSize: { width: 256, height: 296 },
@@ -616,6 +683,39 @@ function assertSampleGate(
     throw new Error(
       `Batch gate closed; accept every sample first: ${pending.join(", ")}`,
     );
+}
+
+function assertBuildingBatchOrder(
+  recipes: readonly Recipe[],
+  generated: GeneratedManifest,
+): void {
+  const first = [
+    "building-sawmill",
+    "building-forge",
+    "building-stoneworks",
+  ] as const;
+  const second = [
+    "building-workshop",
+    "building-grand-works",
+    "building-market",
+  ] as const;
+  const selected = recipes
+    .map((recipe) => recipe.id)
+    .filter((id) => [...first, ...second].includes(id as never));
+  if (selected.length === 0) return;
+  if (selected.length > 3)
+    throw new Error(
+      "Economy building batches may contain at most three assets",
+    );
+  const inFirst = selected.every((id) => first.includes(id as never));
+  const inSecond = selected.every((id) => second.includes(id as never));
+  if (!inFirst && !inSecond)
+    throw new Error("Do not mix the two coherent economy building batches");
+  if (
+    inSecond &&
+    first.some((id) => generated.records[id]?.status !== "ACCEPTED")
+  )
+    throw new Error("Accept Sawmill, Forge, and Stoneworks before batch two");
 }
 
 async function generateRecipes(
@@ -1115,7 +1215,9 @@ async function normalizeToHardBounds(
   const targetBounds =
     recipe.postprocess === "preferred-low-marker-fit"
       ? (recipe.preferredBounds ?? recipe.hardBounds)
-      : recipe.hardBounds;
+      : recipe.postprocess === "compact-building-fit"
+        ? (recipe.fitBounds ?? recipe.preferredBounds ?? recipe.hardBounds)
+        : recipe.hardBounds;
   const fitBounds =
     recipe.groundContactY === undefined
       ? targetBounds
@@ -1127,6 +1229,7 @@ async function normalizeToHardBounds(
   const hardHeight = fitBounds.bottom - fitBounds.top;
   if (
     recipe.postprocess === "preferred-low-marker-fit" ||
+    recipe.postprocess === "compact-building-fit" ||
     alphaWidth > hardWidth ||
     alphaHeight > hardHeight
   ) {
@@ -1421,6 +1524,62 @@ async function validateOutputs(
         throw error;
     }
   }
+  if (generated.records["terrain-road-material"]?.status === "ACCEPTED")
+    await validateRoadMasks(generated.records["terrain-road-material"]);
+}
+
+async function validateRoadMasks(
+  sourceRecord: GenerationRecord,
+): Promise<void> {
+  const parsed = JSON.parse(
+    await readFile(ROAD_MASK_MANIFEST_PATH, "utf8"),
+  ) as {
+    readonly schemaVersion: number;
+    readonly algorithm: string;
+    readonly deterministicProcessing: {
+      readonly sourceSha256: string;
+      readonly directionBitOrder: readonly string[];
+      readonly emptySemantics: string;
+      readonly diagonalSemantics: string;
+    };
+    readonly records: readonly {
+      readonly id: string;
+      readonly mask: number;
+      readonly bits: string;
+      readonly output: string;
+      readonly sha256: string;
+      readonly width: number;
+      readonly height: number;
+      readonly accepted: boolean;
+    }[];
+  };
+  if (
+    parsed.schemaVersion !== 1 ||
+    parsed.algorithm !== "orthogonal-road-mask-v1" ||
+    parsed.records.length !== 16 ||
+    parsed.deterministicProcessing.sourceSha256 !== sourceRecord.outputSha256 ||
+    JSON.stringify(parsed.deterministicProcessing.directionBitOrder) !==
+      JSON.stringify(["NORTH", "EAST", "SOUTH", "WEST"]) ||
+    !parsed.deterministicProcessing.emptySemantics.includes("isolated") ||
+    !parsed.deterministicProcessing.diagonalSemantics.includes("No diagonal")
+  )
+    throw new Error("Road-mask deterministic manifest contract mismatch");
+  for (let mask = 0; mask < 16; mask += 1) {
+    const record = parsed.records[mask];
+    const bits = mask.toString(2).padStart(4, "0");
+    if (
+      record?.id !== `terrain-road-mask-${bits}` ||
+      record.mask !== mask ||
+      record.bits !== bits ||
+      record.width !== 256 ||
+      record.height !== 148 ||
+      !record.accepted
+    )
+      throw new Error(`Road-mask record mismatch: ${bits}`);
+    const output = await readFile(path.join(ROOT, record.output));
+    if (sha256(output) !== record.sha256)
+      throw new Error(`Road-mask hash mismatch: ${bits}`);
+  }
 }
 
 async function syncRuntime(
@@ -1433,6 +1592,16 @@ async function syncRuntime(
   const acceptedAliases = (source.aliases ?? []).filter(
     (alias) => generated.records[alias.source]?.status === "ACCEPTED",
   );
+  const acceptedRoadMasks =
+    generated.records["terrain-road-material"]?.status === "ACCEPTED"
+      ? Array.from({ length: 16 }, (_, mask) => {
+          const bits = mask.toString(2).padStart(4, "0");
+          return {
+            id: `terrain-road-mask-${bits}`,
+            output: `public/assets/pixellab/terrain/road-masks/road-mask-${bits}.png`,
+          };
+        })
+      : [];
   const entries = [
     ...accepted.map((recipe) => ({ id: recipe.id, output: recipe.output })),
     ...acceptedAliases.map((alias) => {
@@ -1441,6 +1610,7 @@ async function syncRuntime(
         throw new Error(`Unknown alias source ${alias.source}`);
       return { id: alias.id, output: recipe.output };
     }),
+    ...acceptedRoadMasks,
   ]
     .map((recipe) => {
       const publicPath = recipe.output.replace(/^public\//, "");

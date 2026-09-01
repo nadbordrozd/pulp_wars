@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "4493d615204d4e35e9f2f512071969cf9470fa98c7e262596e04bdf802e1b45e",
+  "sourceManifestSha256": "f433b7553340493774fd019040bbff9e7e282b59bf3f2b86d5a14966075cb15d",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -3707,6 +3707,516 @@
       "outputSha256": "d0f60535de68afa17fcc39f9fcc6cefd886d45292ad0e3216727c5dca850e84f",
       "notes": "Accepted as the quiet raw material input only after source, native, enlarged, minimum 0.625x, DPR1/2, four-edge, four-owner, selection, fog, Original/Candy Grass/Forest/Mountain, 8x8 repetition, and dense coexistence review. The 256x148 straight-alpha candidate is a deterministic diamond-masked uniform matte warm gray-brown field with alpha x14..239 y1..147 at anchor 128,74. It contains no line, track, pebble, route, centerline, edge, intersection, direction, baked neighbor layout, halo, or noise; Fruit, GAME/Forest, Ore/Mountain, Mine, Camp, Wall, and units remain legible. Orthogonal mask composition remains deferred to phg.12.",
       "reviewedAt": "2026-09-01T15:02:42.896Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-farm": {
+      "id": "building-farm",
+      "status": "ACCEPTED",
+      "jobId": "f27d000e-5ff6-4486-b3af-adb07c88700c",
+      "candidate": "art/pixellab/candidates/building-farm.png",
+      "candidateSha256": "c8256173c6cbb846031ac05b327907c3ef425c5c466486d736d8bd082a726e9b",
+      "providerOutputSha256": "af1d6af3e334a63db2da4c53f8b90d6e44136924aba1373673871947a819f60c",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 75,
+        "top": 130,
+        "right": 180,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted golden grain, quiet leaf green, warm parchment canvas, dark teal-charcoal outline, restrained bronze wood. Isolated shared Farm improvement only, one compact low broad cultivated field made from exactly three large curved golden crop rows plus one tiny simple parchment-and-bronze field shelter at the rear, southeast three-quarter downward strategy-game view. The crop rows are the unmistakable primary silhouette and read as completed agriculture rather than uncultivated Fertile Ground. Strong dark-teal outline, flat two-level cel shading, quiet terrain-adjacent contrast, transparent 256 by 296 canvas, source anchor x128 y222, target compact alpha x48..208 y130..222, preferred envelope x40..216 y112..230 and hard envelope x20..236 y12..252. Leave the center/front visually open enough for a unit and contributor highlight; adjacent Farms will merge only through renderer-owned code-native edges. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; windmill, mill blades, barn, farmhouse, city, village, castle, character, farmer, animal, tractor, fence, irrigation, orchard, fruit, fertile soil marker, three loose soil mounds, tiny crop noise, many stalks, sprawling terrain tile, diamond ground, base plate, road, cluster outline, connection line, ownership color, selection, status, number, text, UI, cast shadow.",
+        "prompt": "Isolated shared Farm improvement only, one compact low broad cultivated field made from exactly three large curved golden crop rows plus one tiny simple parchment-and-bronze field shelter at the rear, southeast three-quarter downward strategy-game view. The crop rows are the unmistakable primary silhouette and read as completed agriculture rather than uncultivated Fertile Ground. Strong dark-teal outline, flat two-level cel shading, quiet terrain-adjacent contrast, transparent 256 by 296 canvas, source anchor x128 y222, target compact alpha x48..208 y130..222, preferred envelope x40..216 y112..230 and hard envelope x20..236 y12..252. Leave the center/front visually open enough for a unit and contributor highlight; adjacent Farms will merge only through renderer-owned code-native edges.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; windmill, mill blades, barn, farmhouse, city, village, castle, character, farmer, animal, tractor, fence, irrigation, orchard, fruit, fertile soil marker, three loose soil mounds, tiny crop noise, many stalks, sprawling terrain tile, diamond ground, base plate, road, cluster outline, connection line, ownership color, selection, status, number, text, UI, cast shadow",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 94101,
+        "noBackground": true,
+        "palette": "muted golden grain, quiet leaf green, warm parchment canvas, dark teal-charcoal outline, restrained bronze wood",
+        "postprocess": "compact-building-fit",
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "building-lumber-mill",
+          "sha256": "ead21bcd2ffb376e883155a24c34a4fc4693d6df1d1d5c90ab964783998b3825",
+          "usageDescription": "Input reference role: copy only the accepted low economic-building camera, chunky outline, broad flat shading, quiet detail budget, compact source occupancy, and ground contact; create a Farm silhouette rather than timber machinery."
+        }
+      },
+      "outputSha256": "c8256173c6cbb846031ac05b327907c3ef425c5c466486d736d8bd082a726e9b",
+      "notes": "Accepted after direct source/native/enlarged/0.625x inspection and provisional occupied-tile composition review. Exact three-row golden field silhouette and tiny rear shelter distinguish completed Farm from Fertile Ground, Fruit, Windmill, settlement, and terrain decoration. Compact alpha x75..180 y130..222 leaves unit, contributor, selection, owner, and label space; straight transparent edges are clean with no matte, clipping, baked ground, state, cluster edge, text, or UI.",
+      "reviewedAt": "2026-09-01T15:41:45.998Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-quarry": {
+      "id": "building-quarry",
+      "status": "ACCEPTED",
+      "jobId": "01c84347-f3fa-4212-bc4d-154233e06cd3",
+      "candidate": "art/pixellab/candidates/building-quarry.png",
+      "candidateSha256": "edff5ef36e7b01edd640b4dfb006c1988a69582298f7400abba8fb5e8eef181c",
+      "providerOutputSha256": "e8b8ec84bd0cc3c4e35be41a25986db488ee5606659b600a9a0861cfa72a2955",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 83,
+        "top": 126,
+        "right": 172,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted cool blue-slate cut stone, warm bronze timber, parchment rope, dark teal-charcoal outline. Isolated shared Quarry improvement only on empty transparency: exactly two separated broad square-cut blue-slate blocks, one short bronze A-frame hoist with both feet at ground contact, and one oversized simple chisel wedge. Absolutely no floor, underlying slab, connected perimeter, platform, foundation, or ground patch. Southeast three-quarter downward view, distinct from Mine, Mountain, raw Stone, and Stoneworks. Strong dark-teal outline, flat two-level cel shading, quiet contrast, anchor x128 y222, target compact alpha x48..208 y126..222, preferred x40..216 y108..230, hard x20..236 y12..252. Leave unit and status space clear. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; third block, extra block, stone floor, connected slab, platform, four-sided base, perimeter, foundation, mine entrance, tunnel, cart, mountain, boulder pile, crystals, ore, forge, stoneworks, city, character, many blocks, masonry wall, terrain tile, diamond ground, road, pair axis, connection line, ownership, selection, status, text, UI, shadow.",
+        "prompt": "Isolated shared Quarry improvement only on empty transparency: exactly two separated broad square-cut blue-slate blocks, one short bronze A-frame hoist with both feet at ground contact, and one oversized simple chisel wedge. Absolutely no floor, underlying slab, connected perimeter, platform, foundation, or ground patch. Southeast three-quarter downward view, distinct from Mine, Mountain, raw Stone, and Stoneworks. Strong dark-teal outline, flat two-level cel shading, quiet contrast, anchor x128 y222, target compact alpha x48..208 y126..222, preferred x40..216 y108..230, hard x20..236 y12..252. Leave unit and status space clear.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; third block, extra block, stone floor, connected slab, platform, four-sided base, perimeter, foundation, mine entrance, tunnel, cart, mountain, boulder pile, crystals, ore, forge, stoneworks, city, character, many blocks, masonry wall, terrain tile, diamond ground, road, pair axis, connection line, ownership, selection, status, text, UI, shadow",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 94112,
+        "noBackground": true,
+        "palette": "muted cool blue-slate cut stone, warm bronze timber, parchment rope, dark teal-charcoal outline",
+        "postprocess": "compact-building-fit",
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "building-mine",
+          "sha256": "ed7b990bedc1158c80129423fe31024230199ee54f8e9dbbc51ff52b64369f31",
+          "usageDescription": "Input reference role: copy only the accepted low industrial-building camera, compact occupancy, dark outline, broad flat shading, and ground contact; create an open stone-cutting Quarry rather than a mine entrance."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/building-quarry-a6144a878592.png",
+          "candidateSha256": "a6144a8785923021d50f558d8c9105e7a9a28a3960c1451458e81fb628617add",
+          "notes": "Rejected after direct source/native/enlarged/0.625x inspection. Scale, camera, outline and A-frame are usable, but the candidate adds a solid four-sided slate floor/base plate and appears to contain at least three cut slabs instead of exactly two. The platform reads as a generic paved tile at minimum scale, competes with the ground diamond, and weakens Quarry versus raw Stone and Stoneworks distinction. Retry without any connected floor/perimeter and with exactly two separated cut blocks on transparency.",
+          "reviewedAt": "2026-09-01T15:43:30.592Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted cool blue-slate cut stone, warm bronze timber, parchment rope, dark teal-charcoal outline. Isolated shared Quarry improvement only, one compact low open stone-cutting site with exactly two broad squared blue-slate blocks, one short bronze A-frame lifting beam, and one oversized simple chisel wedge. Southeast three-quarter downward strategy-game view, unmistakably a completed Quarry but not a Mine, Mountain, raw Stone pile, or Stoneworks processor. Strong dark-teal outline, flat two-level cel shading, quiet terrain-adjacent contrast, transparent 256 by 296 canvas, source anchor x128 y222, target compact alpha x48..208 y126..222, preferred envelope x40..216 y108..230 and hard envelope x20..236 y12..252. Keep the silhouette low and leave unit/contributor/status visibility unobstructed. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; mine entrance, dark tunnel, mine cart, pickaxe as primary silhouette, mountain, tall peak, natural boulder pile, crystals, ore, forge, stoneworks factory, city, village, character, worker, many blocks, masonry wall, sprawling terrain tile, diamond ground, base plate, road, pair axis, connection line, ownership color, selection, status, number, text, UI, cast shadow.",
+            "prompt": "Isolated shared Quarry improvement only, one compact low open stone-cutting site with exactly two broad squared blue-slate blocks, one short bronze A-frame lifting beam, and one oversized simple chisel wedge. Southeast three-quarter downward strategy-game view, unmistakably a completed Quarry but not a Mine, Mountain, raw Stone pile, or Stoneworks processor. Strong dark-teal outline, flat two-level cel shading, quiet terrain-adjacent contrast, transparent 256 by 296 canvas, source anchor x128 y222, target compact alpha x48..208 y126..222, preferred envelope x40..216 y108..230 and hard envelope x20..236 y12..252. Keep the silhouette low and leave unit/contributor/status visibility unobstructed.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; mine entrance, dark tunnel, mine cart, pickaxe as primary silhouette, mountain, tall peak, natural boulder pile, crystals, ore, forge, stoneworks factory, city, village, character, worker, many blocks, masonry wall, sprawling terrain tile, diamond ground, base plate, road, pair axis, connection line, ownership color, selection, status, number, text, UI, cast shadow",
+            "requestSize": {
+              "width": 256,
+              "height": 296
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 296
+            },
+            "seed": 94102,
+            "noBackground": true,
+            "palette": "muted cool blue-slate cut stone, warm bronze timber, parchment rope, dark teal-charcoal outline",
+            "postprocess": "compact-building-fit",
+            "groundContactY": 222,
+            "styleReference": {
+              "id": "building-mine",
+              "sha256": "ed7b990bedc1158c80129423fe31024230199ee54f8e9dbbc51ff52b64369f31",
+              "usageDescription": "Input reference role: copy only the accepted low industrial-building camera, compact occupancy, dark outline, broad flat shading, and ground contact; create an open stone-cutting Quarry rather than a mine entrance."
+            }
+          }
+        }
+      ],
+      "outputSha256": "edff5ef36e7b01edd640b4dfb006c1988a69582298f7400abba8fb5e8eef181c",
+      "notes": "Accepted targeted retry after source/native/enlarged/0.625x inspection and occupied-tile composition review. Exact two separated blue-slate cut blocks, compact A-frame hoist, and oversized chisel wedge read as Quarry without Mine tunnel, raw Stone pile, Mountain, or Stoneworks cues. Alpha x83..172 y126..222 is compact and floorless; unit, contributor, owner, selection and status space remains clear. Straight-alpha edges are clean with no matte, clipping, baked ground, pair axis, text, or UI.",
+      "reviewedAt": "2026-09-01T15:47:33.888Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-windmill": {
+      "id": "building-windmill",
+      "status": "ACCEPTED",
+      "jobId": "5f0ea66f-fb93-4150-bb61-ad6596054711",
+      "candidate": "art/pixellab/candidates/building-windmill.png",
+      "candidateSha256": "6ce840dc94e39cddd63225eb804123e5774055dc025c25d7a38f40c8ad04068e",
+      "providerOutputSha256": "7f4be9459fe972c26c614d7e14717453fba9155c26b4206888dc4ef35de89560",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 108,
+        "top": 52,
+        "right": 276,
+        "bottom": 288,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm parchment plaster, muted golden sails, restrained bronze timber, slate-blue fittings, dark teal-charcoal outline. Isolated shared Windmill processor only, one compact tapered parchment mill tower with exactly four oversized broad golden cloth blades in a clean X silhouette and one small bronze grain chute. Southeast three-quarter downward strategy-game view; four blades make function unmistakable at 0.625 camera zoom while the body remains materially smaller than a city or Mountain. Strong dark-teal outline, flat two-level cel shading, transparent 384 by 384 canvas, source anchor and ground contact x192 y288, target compact alpha x52..332 y52..288, required preferred envelope x24..360 y24..326 and hard envelope x8..376 y8..344. No crop field, contributors, connection lines, value chip, ownership, selection, status, or UI baked into the raster. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; Dutch landscape, giant scenic windmill, photoreal architecture, many blades, three blades, hidden blades, watermill, sawmill, forge, city, village, castle, person, farmer, crops, Farm rows, ground, grass, terrain diamond, base plate, cast shadow, cluster outline, connection line, ownership flag, selection, number, text, UI.",
+        "prompt": "Isolated shared Windmill processor only, one compact tapered parchment mill tower with exactly four oversized broad golden cloth blades in a clean X silhouette and one small bronze grain chute. Southeast three-quarter downward strategy-game view; four blades make function unmistakable at 0.625 camera zoom while the body remains materially smaller than a city or Mountain. Strong dark-teal outline, flat two-level cel shading, transparent 384 by 384 canvas, source anchor and ground contact x192 y288, target compact alpha x52..332 y52..288, required preferred envelope x24..360 y24..326 and hard envelope x8..376 y8..344. No crop field, contributors, connection lines, value chip, ownership, selection, status, or UI baked into the raster.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; Dutch landscape, giant scenic windmill, photoreal architecture, many blades, three blades, hidden blades, watermill, sawmill, forge, city, village, castle, person, farmer, crops, Farm rows, ground, grass, terrain diamond, base plate, cast shadow, cluster outline, connection line, ownership flag, selection, number, text, UI",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 94103,
+        "noBackground": true,
+        "palette": "warm parchment plaster, muted golden sails, restrained bronze timber, slate-blue fittings, dark teal-charcoal outline",
+        "postprocess": "compact-building-fit",
+        "groundContactY": 288,
+        "styleReference": {
+          "id": "building-city-1",
+          "sha256": "0de081f57501eb27ec8317841a5b51fe028e0f83f74b29f46979734eea140c6d",
+          "usageDescription": "Input reference role: copy only the accepted chunky building camera, dark outline, broad flat cel shading, warm neutral materials, and source detail scale; create a much smaller functional Windmill, not a settlement."
+        }
+      },
+      "outputSha256": "6ce840dc94e39cddd63225eb804123e5774055dc025c25d7a38f40c8ad04068e",
+      "notes": "Accepted after direct source/native/enlarged/0.625x inspection and occupied/contributor composition review. Exactly four broad golden blades form an unmistakable X around one compact tapered mill tower; silhouette remains distinct from Farm, Sawmill, city and Mountain. Alpha x108..276 y52..288 displays at only 50.4 by 70.8 CSS pixels at 1x, leaving units, contributors, owner overlays and labels readable. Clean transparent edges have no matte, clipping, baked field, cluster outline, connection, value chip, ownership, text or UI.",
+      "reviewedAt": "2026-09-01T15:54:01.849Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-sawmill": {
+      "id": "building-sawmill",
+      "status": "ACCEPTED",
+      "jobId": "e5255329-8fbf-495f-ad82-13f674f2831d",
+      "candidate": "art/pixellab/candidates/building-sawmill.png",
+      "candidateSha256": "661acee29048d9e0e6d7ba8ea6bdfc546454d31e0ba576dde4a679bb1cf27f6c",
+      "providerOutputSha256": "c430eaf07cfe1a3635a5eab3a9e75bbeefe39a111071ca56f011bc8bfcbfb3de",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 76,
+        "top": 62,
+        "right": 308,
+        "bottom": 288,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm bronze timber, muted parchment canvas roof, slate-blue saw metal, dark teal-charcoal outline. Isolated shared Sawmill processor only, one compact open-sided bronze timber shed with one enormous vertical slate-blue circular saw blade as the unmistakable central silhouette, exactly three large logs stacked low beside it, and a simple parchment canopy. Southeast three-quarter downward strategy-game view, readable at 0.625 zoom and distinct from the accepted low Lumber Camp. Strong dark-teal outline, flat two-level cel shading, transparent 384 by 384 canvas, source anchor x192 y288, target compact alpha x52..332 y62..288, preferred x24..360 y24..326 and hard x8..376 y8..344. No forest cluster, contributor lines, value chip, unit, ground, ownership or UI. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; windmill blades, forge fire, anvil, quarry blocks, stoneworks, city, village, factory complex, character, lumberjack, many logs, tiny saw teeth, forest, trees, ground, terrain diamond, base plate, cast shadow, cluster outline, connection line, ownership flag, selection, number, text, UI.",
+        "prompt": "Isolated shared Sawmill processor only, one compact open-sided bronze timber shed with one enormous vertical slate-blue circular saw blade as the unmistakable central silhouette, exactly three large logs stacked low beside it, and a simple parchment canopy. Southeast three-quarter downward strategy-game view, readable at 0.625 zoom and distinct from the accepted low Lumber Camp. Strong dark-teal outline, flat two-level cel shading, transparent 384 by 384 canvas, source anchor x192 y288, target compact alpha x52..332 y62..288, preferred x24..360 y24..326 and hard x8..376 y8..344. No forest cluster, contributor lines, value chip, unit, ground, ownership or UI.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; windmill blades, forge fire, anvil, quarry blocks, stoneworks, city, village, factory complex, character, lumberjack, many logs, tiny saw teeth, forest, trees, ground, terrain diamond, base plate, cast shadow, cluster outline, connection line, ownership flag, selection, number, text, UI",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 94201,
+        "noBackground": true,
+        "palette": "warm bronze timber, muted parchment canvas roof, slate-blue saw metal, dark teal-charcoal outline",
+        "postprocess": "compact-building-fit",
+        "groundContactY": 288,
+        "styleReference": {
+          "id": "building-windmill",
+          "sha256": "6ce840dc94e39cddd63225eb804123e5774055dc025c25d7a38f40c8ad04068e",
+          "usageDescription": "Input reference role: preserve the accepted processor camera, compact scale, outline weight, flat shading, transparent isolation, and quiet neutral palette; replace the complete silhouette with timber-processing machinery."
+        }
+      },
+      "outputSha256": "661acee29048d9e0e6d7ba8ea6bdfc546454d31e0ba576dde4a679bb1cf27f6c",
+      "notes": "Accepted after full first-batch contact-sheet plus source/native/enlarged/0.625x individual inspection. One oversized readable circular saw, open canopy, and three logs distinguish Sawmill from low Lumber Camp, Windmill, Forge, and city. Alpha x76..308 y62..288 displays at 69.6 by 67.8 CSS pixels, preserving occupied-tile, cluster-contributor, owner and label readability. No forest, cluster outline, links, value chip, ground, state, text or UI is baked in.",
+      "reviewedAt": "2026-09-01T16:03:03.128Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-forge": {
+      "id": "building-forge",
+      "status": "ACCEPTED",
+      "jobId": "75fe3499-21c7-4a16-9250-89162362d034",
+      "candidate": "art/pixellab/candidates/building-forge.png",
+      "candidateSha256": "5abaf5b302712afca4897dd4d1e6cbbd4ec0437e40d8e7ebbf4e37d275d5b9d6",
+      "providerOutputSha256": "1d3458e303c577e1b0bef19b28b122d86966e26e05bdbd99b01e244c1ba781da",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 92,
+        "top": 64,
+        "right": 292,
+        "bottom": 288,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: dark slate-blue masonry, warm bronze chimney and anvil, restrained coral-orange furnace glow, parchment trim, dark teal-charcoal outline. Isolated shared Forge processor only, one compact squat slate-blue furnace house with one broad bronze chimney, one large exterior anvil, and one single coral-orange furnace mouth. Southeast three-quarter downward strategy-game view; anvil plus chimney make metal processing unmistakable at 0.625 zoom without resembling a Mine, city, or generic house. Strong dark-teal outline, flat two-level cel shading, transparent 384 by 384 canvas, source anchor x192 y288, target compact alpha x62..322 y64..288, preferred x24..360 y24..326 and hard x8..376 y8..344. Fire is restrained inside the furnace; no smoke plume, contributor lines, value chips, ground, ownership or UI. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; mine entrance, mine cart, mountain, windmill, saw blade, quarry, many chimneys, huge smoke cloud, industrial city, castle, character, blacksmith, weapon, ground, terrain diamond, base plate, cast shadow, connection line, glowing adjacency, ownership flag, selection, number, text, UI.",
+        "prompt": "Isolated shared Forge processor only, one compact squat slate-blue furnace house with one broad bronze chimney, one large exterior anvil, and one single coral-orange furnace mouth. Southeast three-quarter downward strategy-game view; anvil plus chimney make metal processing unmistakable at 0.625 zoom without resembling a Mine, city, or generic house. Strong dark-teal outline, flat two-level cel shading, transparent 384 by 384 canvas, source anchor x192 y288, target compact alpha x62..322 y64..288, preferred x24..360 y24..326 and hard x8..376 y8..344. Fire is restrained inside the furnace; no smoke plume, contributor lines, value chips, ground, ownership or UI.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; mine entrance, mine cart, mountain, windmill, saw blade, quarry, many chimneys, huge smoke cloud, industrial city, castle, character, blacksmith, weapon, ground, terrain diamond, base plate, cast shadow, connection line, glowing adjacency, ownership flag, selection, number, text, UI",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 94202,
+        "noBackground": true,
+        "palette": "dark slate-blue masonry, warm bronze chimney and anvil, restrained coral-orange furnace glow, parchment trim, dark teal-charcoal outline",
+        "postprocess": "compact-building-fit",
+        "groundContactY": 288,
+        "styleReference": {
+          "id": "building-windmill",
+          "sha256": "6ce840dc94e39cddd63225eb804123e5774055dc025c25d7a38f40c8ad04068e",
+          "usageDescription": "Input reference role: preserve the accepted processor camera, compact scale, outline weight, broad flat shading, and transparent isolation; replace the silhouette with unmistakable metalworking forms."
+        }
+      },
+      "outputSha256": "5abaf5b302712afca4897dd4d1e6cbbd4ec0437e40d8e7ebbf4e37d275d5b9d6",
+      "notes": "Accepted after full first-batch contact-sheet plus source/native/enlarged/0.625x individual inspection. Squat slate furnace, broad chimney, single restrained furnace mouth, and oversized exterior anvil make Forge unmistakable from Mine, Sawmill, Stoneworks, and settlement. Alpha x92..292 y64..288 displays at 60 by 67.2 CSS pixels, preserving units, adjacent Mines, owner overlays and labels. No smoke plume, links, glow field, ground, state, text or UI is baked in.",
+      "reviewedAt": "2026-09-01T16:03:10.702Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-stoneworks": {
+      "id": "building-stoneworks",
+      "status": "ACCEPTED",
+      "jobId": "38b4b5e2-0684-4915-8be7-193aedb2f08e",
+      "candidate": "art/pixellab/candidates/building-stoneworks.png",
+      "candidateSha256": "bb0202ec44307e938d827568d541c64048a24ec06363b46720018489e9187ac4",
+      "providerOutputSha256": "40756d9b67f5649d9fb46ddd62924ee9e1bdf2e6bf22c0ba339242ceb93a7606",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 79,
+        "top": 58,
+        "right": 305,
+        "bottom": 288,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted cool blue-slate cut stone, warm bronze hoist and braces, parchment rope, dark teal-charcoal outline. Isolated shared Stoneworks processor only, one compact open masonry pavilion with one oversized square-cut blue-slate arch, one short bronze overhead hoist, and exactly two large fitted stone blocks. Southeast three-quarter downward strategy-game view; the finished arch makes advanced stone fabrication unmistakable at 0.625 zoom and distinct from raw Stone, low Quarry, Forge, and city. Strong dark-teal outline, flat two-level cel shading, transparent 384 by 384 canvas, source anchor x192 y288, target compact alpha x58..326 y58..288, preferred x24..360 y24..326 and hard x8..376 y8..344. All opposite-pair axes and contributor highlights remain renderer-owned; bake no directional line or sockets. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; quarry pit, raw boulder pile, mine, forge fire, saw blade, windmill, castle gate, city wall, many blocks, sprawling factory, character, mason, ground, terrain diamond, base plate, cast shadow, compass, pair axis, diagonal line, connection line, ownership flag, selection, number, text, UI.",
+        "prompt": "Isolated shared Stoneworks processor only, one compact open masonry pavilion with one oversized square-cut blue-slate arch, one short bronze overhead hoist, and exactly two large fitted stone blocks. Southeast three-quarter downward strategy-game view; the finished arch makes advanced stone fabrication unmistakable at 0.625 zoom and distinct from raw Stone, low Quarry, Forge, and city. Strong dark-teal outline, flat two-level cel shading, transparent 384 by 384 canvas, source anchor x192 y288, target compact alpha x58..326 y58..288, preferred x24..360 y24..326 and hard x8..376 y8..344. All opposite-pair axes and contributor highlights remain renderer-owned; bake no directional line or sockets.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; quarry pit, raw boulder pile, mine, forge fire, saw blade, windmill, castle gate, city wall, many blocks, sprawling factory, character, mason, ground, terrain diamond, base plate, cast shadow, compass, pair axis, diagonal line, connection line, ownership flag, selection, number, text, UI",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 94203,
+        "noBackground": true,
+        "palette": "muted cool blue-slate cut stone, warm bronze hoist and braces, parchment rope, dark teal-charcoal outline",
+        "postprocess": "compact-building-fit",
+        "groundContactY": 288,
+        "styleReference": {
+          "id": "building-windmill",
+          "sha256": "6ce840dc94e39cddd63225eb804123e5774055dc025c25d7a38f40c8ad04068e",
+          "usageDescription": "Input reference role: preserve the accepted processor camera, compact scale, outline weight, broad flat shading, and transparent isolation; create stone fabrication forms with no baked relationship axes."
+        }
+      },
+      "outputSha256": "bb0202ec44307e938d827568d541c64048a24ec06363b46720018489e9187ac4",
+      "notes": "Accepted after full first-batch contact-sheet plus source/native/enlarged/0.625x individual inspection. The square-cut arch, open work bay, bronze hoist and fitted block communicate advanced masonry while remaining distinct from low Quarry, raw Stone, Forge, Wall and city. Alpha x79..305 y58..288 displays at 67.8 by 69 CSS pixels, preserving occupied tiles and all pair-axis overlays. No directional axes, contributor links, ground, ownership, value chip, text or UI is baked in.",
+      "reviewedAt": "2026-09-01T16:03:18.300Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-market": {
+      "id": "building-market",
+      "status": "ACCEPTED",
+      "jobId": "9ffd0c6b-69f1-4086-b9dc-7e61ffed0e4d",
+      "candidate": "art/pixellab/candidates/building-market.png",
+      "candidateSha256": "d3dfa959e971d5dff54a0a8c4c459ae4d38c8716b15fbc307a037aead3b148e3",
+      "providerOutputSha256": "967c4ed2485be97ba1a9d3d212a976aeaef0408f8e2e8cef4de1e5e0fc231b25",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 91,
+        "top": 66,
+        "right": 292,
+        "bottom": 288,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm bronze stall timber, broad off-white and muted golden canopy bands, parchment crates, slate-blue balance scale, dark teal-charcoal outline. Isolated shared Market improvement only, one compact open four-post trading pavilion with one oversized broad off-white-and-gold striped canopy, one unmistakable large balance scale, and exactly two simple low crates. Southeast three-quarter downward strategy-game view; the open canopy silhouette reads as commerce at 0.625 zoom and cannot resemble a city, house, or ownership banner. Strong dark-teal outline, flat two-level cel shading, transparent 384 by 384 canvas, source anchor x192 y288, target alpha x58..326 y66..288, preferred x24..360 y24..326 and hard x8..376 y8..344. No people, streets, neighboring stalls, family chips, Road glow, value numbers, ownership or UI. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; city, village, house, castle, row of shops, many stalls, skyline, street scene, crowd, merchant, text sign, flag, banner, workshop, forge, windmill, giant scale, ground, terrain diamond, base plate, cast shadow, family icon, road connection, glow, ownership color, selection, number, text, UI.",
+        "prompt": "Isolated shared Market improvement only, one compact open four-post trading pavilion with one oversized broad off-white-and-gold striped canopy, one unmistakable large balance scale, and exactly two simple low crates. Southeast three-quarter downward strategy-game view; the open canopy silhouette reads as commerce at 0.625 zoom and cannot resemble a city, house, or ownership banner. Strong dark-teal outline, flat two-level cel shading, transparent 384 by 384 canvas, source anchor x192 y288, target alpha x58..326 y66..288, preferred x24..360 y24..326 and hard x8..376 y8..344. No people, streets, neighboring stalls, family chips, Road glow, value numbers, ownership or UI.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; city, village, house, castle, row of shops, many stalls, skyline, street scene, crowd, merchant, text sign, flag, banner, workshop, forge, windmill, giant scale, ground, terrain diamond, base plate, cast shadow, family icon, road connection, glow, ownership color, selection, number, text, UI",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 94303,
+        "noBackground": true,
+        "palette": "warm bronze stall timber, broad off-white and muted golden canopy bands, parchment crates, slate-blue balance scale, dark teal-charcoal outline",
+        "postprocess": "compact-building-fit",
+        "groundContactY": 288,
+        "styleReference": {
+          "id": "building-windmill",
+          "sha256": "6ce840dc94e39cddd63225eb804123e5774055dc025c25d7a38f40c8ad04068e",
+          "usageDescription": "Input reference role: preserve the accepted processor camera, compact scale, outline weight, broad flat shading, transparent isolation, and neutral palette; create an open commercial stall silhouette, never a settlement."
+        }
+      },
+      "outputSha256": "d3dfa959e971d5dff54a0a8c4c459ae4d38c8716b15fbc307a037aead3b148e3",
+      "notes": "Accepted after final-batch contact-sheet plus source/native/enlarged/0.625x individual inspection. Open four-post striped canopy, oversized balance scale and exactly two low crates read as Market rather than city, house, Workshop, or ownership banner. Alpha x91..292 y66..288 displays at 60.3 by 66.6 CSS pixels, preserving units, adjacent families, Road, owner and city labels. No crowd, street, Road glow, family chips, value numbers, state, text or UI are baked in.",
+      "reviewedAt": "2026-09-01T16:10:19.137Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-grand-works": {
+      "id": "building-grand-works",
+      "status": "ACCEPTED",
+      "jobId": "9aef83e3-2e17-4a5a-bec9-1fdfeaa76463",
+      "candidate": "art/pixellab/candidates/building-grand-works.png",
+      "candidateSha256": "64313dbd7b577ea2433c738feb47049bb374db5d4c7f208823b79d935e4c16e6",
+      "providerOutputSha256": "2d94f08d2e1fedf6d02cb8036a4cd762415673cb93d9a77e455672d6b50039cb",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 71,
+        "top": 48,
+        "right": 312,
+        "bottom": 288,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: parchment central hall, warm bronze structural arms, muted slate-blue gear and fitted stone, restrained golden roof cap, dark teal-charcoal outline. Isolated shared Grand Works processor only, one compact advanced engineering landmark with a tall parchment central hall, exactly three broad bronze workshop wings radiating visibly behind it, one oversized slate-blue gear, and one simple golden roof cap. Southeast three-quarter downward strategy-game view; three-wing mass and taller central cap clearly distinguish it from the single-shed Workshop at 0.625 zoom, while it remains one functional building rather than a city. Strong dark-teal outline, flat two-level cel shading, transparent 384 by 384 canvas, source anchor x192 y288, target alpha x52..332 y48..288, preferred x24..360 y24..326 and hard x8..376 y8..344. No houses, streets, people, contributors, processor links, value chips, ownership or UI. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; city, village, castle, skyline, many houses, market stalls, single workshop shed, giant mountain scale, factory smoke, character, engineer, ground, terrain diamond, base plate, cast shadow, connection line, processor icons, family chip, ownership flag, selection, number, text, UI.",
+        "prompt": "Isolated shared Grand Works processor only, one compact advanced engineering landmark with a tall parchment central hall, exactly three broad bronze workshop wings radiating visibly behind it, one oversized slate-blue gear, and one simple golden roof cap. Southeast three-quarter downward strategy-game view; three-wing mass and taller central cap clearly distinguish it from the single-shed Workshop at 0.625 zoom, while it remains one functional building rather than a city. Strong dark-teal outline, flat two-level cel shading, transparent 384 by 384 canvas, source anchor x192 y288, target alpha x52..332 y48..288, preferred x24..360 y24..326 and hard x8..376 y8..344. No houses, streets, people, contributors, processor links, value chips, ownership or UI.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; city, village, castle, skyline, many houses, market stalls, single workshop shed, giant mountain scale, factory smoke, character, engineer, ground, terrain diamond, base plate, cast shadow, connection line, processor icons, family chip, ownership flag, selection, number, text, UI",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 94302,
+        "noBackground": true,
+        "palette": "parchment central hall, warm bronze structural arms, muted slate-blue gear and fitted stone, restrained golden roof cap, dark teal-charcoal outline",
+        "postprocess": "compact-building-fit",
+        "groundContactY": 288,
+        "styleReference": {
+          "id": "building-stoneworks",
+          "sha256": "bb0202ec44307e938d827568d541c64048a24ec06363b46720018489e9187ac4",
+          "usageDescription": "Input reference role: preserve the accepted processor camera, compact tile scale, outline weight, broad flat shading, and neutral material family; create a more ambitious multi-craft landmark that remains smaller than a city."
+        }
+      },
+      "outputSha256": "64313dbd7b577ea2433c738feb47049bb374db5d4c7f208823b79d935e4c16e6",
+      "notes": "Accepted after final-batch contact-sheet plus source/native/enlarged/0.625x individual inspection. Three broad workshop wings, taller capped central hall and oversized gear clearly distinguish Grand Works from the single-shed Workshop while remaining materially smaller than city silhouettes. Alpha x71..312 y48..288 displays at 72.3 by 72 CSS pixels and leaves unit, cross-city processor, boundary and label readability. No houses, streets, processor links, family chips, state, text or UI are baked in.",
+      "reviewedAt": "2026-09-01T16:10:11.459Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-workshop": {
+      "id": "building-workshop",
+      "status": "ACCEPTED",
+      "jobId": "4bb77904-356d-4da0-b5e7-6dd56a636dba",
+      "candidate": "art/pixellab/candidates/building-workshop.png",
+      "candidateSha256": "f1336fb53f069ad7956c6f6b565113ad3ab300c98a7cd1313ab3f3b08ce903d2",
+      "providerOutputSha256": "6f9f09bab487ef355e634d8c85011831cbca32292be4767ab12d94b05f9e9918",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 98,
+        "top": 72,
+        "right": 286,
+        "bottom": 288,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm parchment walls and canopy, bronze timber bench, slate-blue gear, dark teal-charcoal outline. Isolated shared Workshop improvement only, one modest compact open-front craft shed with one oversized bronze workbench, one large slate-blue gear mounted above it, and one broad wooden mallet. Southeast three-quarter downward strategy-game view; a single-shed silhouette reads as mixed basic craft at 0.625 zoom and is unmistakably smaller and simpler than Grand Works. Strong dark-teal outline, flat two-level cel shading, transparent 384 by 384 canvas, source anchor x192 y288, target alpha x66..318 y72..288, preferred x24..360 y24..326 and hard x8..376 y8..344. No contributors, family chips, connection lines, city props, ground, ownership or UI. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; grand complex, multiple wings, tower, city, village, market stall, windmill, sawmill, furnace, quarry, character, craftsperson, many tools, tiny clutter, ground, terrain diamond, base plate, cast shadow, connection line, family icon, ownership flag, selection, number, text, UI.",
+        "prompt": "Isolated shared Workshop improvement only, one modest compact open-front craft shed with one oversized bronze workbench, one large slate-blue gear mounted above it, and one broad wooden mallet. Southeast three-quarter downward strategy-game view; a single-shed silhouette reads as mixed basic craft at 0.625 zoom and is unmistakably smaller and simpler than Grand Works. Strong dark-teal outline, flat two-level cel shading, transparent 384 by 384 canvas, source anchor x192 y288, target alpha x66..318 y72..288, preferred x24..360 y24..326 and hard x8..376 y8..344. No contributors, family chips, connection lines, city props, ground, ownership or UI.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; grand complex, multiple wings, tower, city, village, market stall, windmill, sawmill, furnace, quarry, character, craftsperson, many tools, tiny clutter, ground, terrain diamond, base plate, cast shadow, connection line, family icon, ownership flag, selection, number, text, UI",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 94301,
+        "noBackground": true,
+        "palette": "warm parchment walls and canopy, bronze timber bench, slate-blue gear, dark teal-charcoal outline",
+        "postprocess": "compact-building-fit",
+        "groundContactY": 288,
+        "styleReference": {
+          "id": "building-forge",
+          "sha256": "5abaf5b302712afca4897dd4d1e6cbbd4ec0437e40d8e7ebbf4e37d275d5b9d6",
+          "usageDescription": "Input reference role: preserve only the accepted processor camera, scale, outline weight, flat shading, and transparent isolation; create a modest mixed-craft Workshop without furnace or settlement cues."
+        }
+      },
+      "outputSha256": "f1336fb53f069ad7956c6f6b565113ad3ab300c98a7cd1313ab3f3b08ce903d2",
+      "notes": "Accepted after final-batch contact-sheet plus source/native/enlarged/0.625x individual inspection. One open craft shed, oversized gear, workbench and mallet read as mixed Workshop and remain unmistakably simpler than Grand Works. Alpha x98..286 y72..288 displays at 56.4 by 64.8 CSS pixels, preserving adjacent basics, unit, owner, selection and labels. No contributors, family chips, links, state, text or UI are baked in.",
+      "reviewedAt": "2026-09-01T16:10:03.940Z",
       "reviewChecks": {
         "source": true,
         "native": true,

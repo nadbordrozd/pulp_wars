@@ -1,0 +1,769 @@
+{
+  "schemaVersion": 1,
+  "status": "READY_FOR_ORCHESTRATOR_REVIEW",
+  "blocker": null,
+  "requiredCoverage": [
+    "source/native/enlarged and 0.625x individual inspection",
+    "bounded batch-one and batch-two contact sheets",
+    "0.625x/1x/1.75x at DPR1/2",
+    "desktop and mobile native/enlarged",
+    "all four owners, selection, fog-edge and occupied tiles",
+    "zero through maximum contributors, merged Farm/Camp clusters and all four Stoneworks axes",
+    "cross-city/territory, resource, Chocolate Wall and Road coexistence",
+    "dense mature 3x3 and 5x5 layouts"
+  ],
+  "sampleGate": {
+    "building-farm": {
+      "status": "ACCEPTED",
+      "outputSha256": "c8256173c6cbb846031ac05b327907c3ef425c5c466486d736d8bd082a726e9b",
+      "alphaBounds": {
+        "left": 75,
+        "top": 130,
+        "right": 180,
+        "bottom": 222,
+        "empty": false
+      },
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      },
+      "notes": "Accepted after direct source/native/enlarged/0.625x inspection and provisional occupied-tile composition review. Exact three-row golden field silhouette and tiny rear shelter distinguish completed Farm from Fertile Ground, Fruit, Windmill, settlement, and terrain decoration. Compact alpha x75..180 y130..222 leaves unit, contributor, selection, owner, and label space; straight transparent edges are clean with no matte, clipping, baked ground, state, cluster edge, text, or UI.",
+      "rejectedAttempts": []
+    },
+    "building-quarry": {
+      "status": "ACCEPTED",
+      "outputSha256": "edff5ef36e7b01edd640b4dfb006c1988a69582298f7400abba8fb5e8eef181c",
+      "alphaBounds": {
+        "left": 83,
+        "top": 126,
+        "right": 172,
+        "bottom": 222,
+        "empty": false
+      },
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      },
+      "notes": "Accepted targeted retry after source/native/enlarged/0.625x inspection and occupied-tile composition review. Exact two separated blue-slate cut blocks, compact A-frame hoist, and oversized chisel wedge read as Quarry without Mine tunnel, raw Stone pile, Mountain, or Stoneworks cues. Alpha x83..172 y126..222 is compact and floorless; unit, contributor, owner, selection and status space remains clear. Straight-alpha edges are clean with no matte, clipping, baked ground, pair axis, text, or UI.",
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/building-quarry-a6144a878592.png",
+          "candidateSha256": "a6144a8785923021d50f558d8c9105e7a9a28a3960c1451458e81fb628617add",
+          "notes": "Rejected after direct source/native/enlarged/0.625x inspection. Scale, camera, outline and A-frame are usable, but the candidate adds a solid four-sided slate floor/base plate and appears to contain at least three cut slabs instead of exactly two. The platform reads as a generic paved tile at minimum scale, competes with the ground diamond, and weakens Quarry versus raw Stone and Stoneworks distinction. Retry without any connected floor/perimeter and with exactly two separated cut blocks on transparency.",
+          "reviewedAt": "2026-09-01T15:43:30.592Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted cool blue-slate cut stone, warm bronze timber, parchment rope, dark teal-charcoal outline. Isolated shared Quarry improvement only, one compact low open stone-cutting site with exactly two broad squared blue-slate blocks, one short bronze A-frame lifting beam, and one oversized simple chisel wedge. Southeast three-quarter downward strategy-game view, unmistakably a completed Quarry but not a Mine, Mountain, raw Stone pile, or Stoneworks processor. Strong dark-teal outline, flat two-level cel shading, quiet terrain-adjacent contrast, transparent 256 by 296 canvas, source anchor x128 y222, target compact alpha x48..208 y126..222, preferred envelope x40..216 y108..230 and hard envelope x20..236 y12..252. Keep the silhouette low and leave unit/contributor/status visibility unobstructed. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; mine entrance, dark tunnel, mine cart, pickaxe as primary silhouette, mountain, tall peak, natural boulder pile, crystals, ore, forge, stoneworks factory, city, village, character, worker, many blocks, masonry wall, sprawling terrain tile, diamond ground, base plate, road, pair axis, connection line, ownership color, selection, status, number, text, UI, cast shadow.",
+            "prompt": "Isolated shared Quarry improvement only, one compact low open stone-cutting site with exactly two broad squared blue-slate blocks, one short bronze A-frame lifting beam, and one oversized simple chisel wedge. Southeast three-quarter downward strategy-game view, unmistakably a completed Quarry but not a Mine, Mountain, raw Stone pile, or Stoneworks processor. Strong dark-teal outline, flat two-level cel shading, quiet terrain-adjacent contrast, transparent 256 by 296 canvas, source anchor x128 y222, target compact alpha x48..208 y126..222, preferred envelope x40..216 y108..230 and hard envelope x20..236 y12..252. Keep the silhouette low and leave unit/contributor/status visibility unobstructed.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; mine entrance, dark tunnel, mine cart, pickaxe as primary silhouette, mountain, tall peak, natural boulder pile, crystals, ore, forge, stoneworks factory, city, village, character, worker, many blocks, masonry wall, sprawling terrain tile, diamond ground, base plate, road, pair axis, connection line, ownership color, selection, status, number, text, UI, cast shadow",
+            "requestSize": {
+              "width": 256,
+              "height": 296
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 296
+            },
+            "seed": 94102,
+            "noBackground": true,
+            "palette": "muted cool blue-slate cut stone, warm bronze timber, parchment rope, dark teal-charcoal outline",
+            "postprocess": "compact-building-fit",
+            "groundContactY": 222,
+            "styleReference": {
+              "id": "building-mine",
+              "sha256": "ed7b990bedc1158c80129423fe31024230199ee54f8e9dbbc51ff52b64369f31",
+              "usageDescription": "Input reference role: copy only the accepted low industrial-building camera, compact occupancy, dark outline, broad flat shading, and ground contact; create an open stone-cutting Quarry rather than a mine entrance."
+            }
+          }
+        }
+      ]
+    },
+    "building-windmill": {
+      "status": "ACCEPTED",
+      "outputSha256": "6ce840dc94e39cddd63225eb804123e5774055dc025c25d7a38f40c8ad04068e",
+      "alphaBounds": {
+        "left": 108,
+        "top": 52,
+        "right": 276,
+        "bottom": 288,
+        "empty": false
+      },
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      },
+      "notes": "Accepted after direct source/native/enlarged/0.625x inspection and occupied/contributor composition review. Exactly four broad golden blades form an unmistakable X around one compact tapered mill tower; silhouette remains distinct from Farm, Sawmill, city and Mountain. Alpha x108..276 y52..288 displays at only 50.4 by 70.8 CSS pixels at 1x, leaving units, contributors, owner overlays and labels readable. Clean transparent edges have no matte, clipping, baked field, cluster outline, connection, value chip, ownership, text or UI.",
+      "rejectedAttempts": []
+    },
+    "building-sawmill": {
+      "status": "ACCEPTED",
+      "outputSha256": "661acee29048d9e0e6d7ba8ea6bdfc546454d31e0ba576dde4a679bb1cf27f6c",
+      "alphaBounds": {
+        "left": 76,
+        "top": 62,
+        "right": 308,
+        "bottom": 288,
+        "empty": false
+      },
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      },
+      "notes": "Accepted after full first-batch contact-sheet plus source/native/enlarged/0.625x individual inspection. One oversized readable circular saw, open canopy, and three logs distinguish Sawmill from low Lumber Camp, Windmill, Forge, and city. Alpha x76..308 y62..288 displays at 69.6 by 67.8 CSS pixels, preserving occupied-tile, cluster-contributor, owner and label readability. No forest, cluster outline, links, value chip, ground, state, text or UI is baked in.",
+      "rejectedAttempts": []
+    },
+    "building-forge": {
+      "status": "ACCEPTED",
+      "outputSha256": "5abaf5b302712afca4897dd4d1e6cbbd4ec0437e40d8e7ebbf4e37d275d5b9d6",
+      "alphaBounds": {
+        "left": 92,
+        "top": 64,
+        "right": 292,
+        "bottom": 288,
+        "empty": false
+      },
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      },
+      "notes": "Accepted after full first-batch contact-sheet plus source/native/enlarged/0.625x individual inspection. Squat slate furnace, broad chimney, single restrained furnace mouth, and oversized exterior anvil make Forge unmistakable from Mine, Sawmill, Stoneworks, and settlement. Alpha x92..292 y64..288 displays at 60 by 67.2 CSS pixels, preserving units, adjacent Mines, owner overlays and labels. No smoke plume, links, glow field, ground, state, text or UI is baked in.",
+      "rejectedAttempts": []
+    },
+    "building-stoneworks": {
+      "status": "ACCEPTED",
+      "outputSha256": "bb0202ec44307e938d827568d541c64048a24ec06363b46720018489e9187ac4",
+      "alphaBounds": {
+        "left": 79,
+        "top": 58,
+        "right": 305,
+        "bottom": 288,
+        "empty": false
+      },
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      },
+      "notes": "Accepted after full first-batch contact-sheet plus source/native/enlarged/0.625x individual inspection. The square-cut arch, open work bay, bronze hoist and fitted block communicate advanced masonry while remaining distinct from low Quarry, raw Stone, Forge, Wall and city. Alpha x79..305 y58..288 displays at 67.8 by 69 CSS pixels, preserving occupied tiles and all pair-axis overlays. No directional axes, contributor links, ground, ownership, value chip, text or UI is baked in.",
+      "rejectedAttempts": []
+    },
+    "building-workshop": {
+      "status": "ACCEPTED",
+      "outputSha256": "f1336fb53f069ad7956c6f6b565113ad3ab300c98a7cd1313ab3f3b08ce903d2",
+      "alphaBounds": {
+        "left": 98,
+        "top": 72,
+        "right": 286,
+        "bottom": 288,
+        "empty": false
+      },
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      },
+      "notes": "Accepted after final-batch contact-sheet plus source/native/enlarged/0.625x individual inspection. One open craft shed, oversized gear, workbench and mallet read as mixed Workshop and remain unmistakably simpler than Grand Works. Alpha x98..286 y72..288 displays at 56.4 by 64.8 CSS pixels, preserving adjacent basics, unit, owner, selection and labels. No contributors, family chips, links, state, text or UI are baked in.",
+      "rejectedAttempts": []
+    },
+    "building-grand-works": {
+      "status": "ACCEPTED",
+      "outputSha256": "64313dbd7b577ea2433c738feb47049bb374db5d4c7f208823b79d935e4c16e6",
+      "alphaBounds": {
+        "left": 71,
+        "top": 48,
+        "right": 312,
+        "bottom": 288,
+        "empty": false
+      },
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      },
+      "notes": "Accepted after final-batch contact-sheet plus source/native/enlarged/0.625x individual inspection. Three broad workshop wings, taller capped central hall and oversized gear clearly distinguish Grand Works from the single-shed Workshop while remaining materially smaller than city silhouettes. Alpha x71..312 y48..288 displays at 72.3 by 72 CSS pixels and leaves unit, cross-city processor, boundary and label readability. No houses, streets, processor links, family chips, state, text or UI are baked in.",
+      "rejectedAttempts": []
+    },
+    "building-market": {
+      "status": "ACCEPTED",
+      "outputSha256": "d3dfa959e971d5dff54a0a8c4c459ae4d38c8716b15fbc307a037aead3b148e3",
+      "alphaBounds": {
+        "left": 91,
+        "top": 66,
+        "right": 292,
+        "bottom": 288,
+        "empty": false
+      },
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      },
+      "notes": "Accepted after final-batch contact-sheet plus source/native/enlarged/0.625x individual inspection. Open four-post striped canopy, oversized balance scale and exactly two low crates read as Market rather than city, house, Workshop, or ownership banner. Alpha x91..292 y66..288 displays at 60.3 by 66.6 CSS pixels, preserving units, adjacent families, Road, owner and city labels. No crowd, street, Road glow, family chips, value numbers, state, text or UI are baked in.",
+      "rejectedAttempts": []
+    }
+  },
+  "aliases": [
+    {
+      "id": "building-ruleset6-mine",
+      "source": "building-mine",
+      "semanticRole": "MINE",
+      "notes": "Ruleset 6 Mine deliberately reuses the accepted Mine raster after dedicated spatial-economy context revalidation; no duplicate raster is generated.",
+      "sourceOutputSha256": "ed7b990bedc1158c80129423fe31024230199ee54f8e9dbbc51ff52b64369f31"
+    },
+    {
+      "id": "building-lumber-camp",
+      "source": "building-lumber-mill",
+      "semanticRole": "LUMBER_CAMP",
+      "notes": "Ruleset 6 Lumber Camp deliberately reuses the accepted Lumber Mill raster after dedicated Forest-cluster and contributor revalidation; no duplicate raster is generated.",
+      "sourceOutputSha256": "ead21bcd2ffb376e883155a24c34a4fc4693d6df1d1d5c90ab964783998b3825"
+    }
+  ],
+  "roadMasks": {
+    "status": "ACCEPTED",
+    "algorithm": "orthogonal-road-mask-v1",
+    "sourceSha256": "d0f60535de68afa17fcc39f9fcc6cefd886d45292ad0e3216727c5dca850e84f",
+    "directionBitOrder": [
+      "NORTH",
+      "EAST",
+      "SOUTH",
+      "WEST"
+    ],
+    "emptySemantics": "No ROAD render entry emits no overlay. Mask 0000 is an isolated Road tile and renders only the central material pad.",
+    "diagonalSemantics": "No diagonal bits or joins exist; every arm terminates only at an orthogonal shared-edge midpoint.",
+    "records": [
+      {
+        "id": "terrain-road-mask-0000",
+        "mask": 0,
+        "bits": "0000",
+        "semantics": [],
+        "output": "public/assets/pixellab/terrain/road-masks/road-mask-0000.png",
+        "sha256": "d389311cb0050b6c7f112e8e8762b0904be12fccbb8fd2b0f13f2f407ab060bb",
+        "width": 256,
+        "height": 148,
+        "anchor": {
+          "x": 128,
+          "y": 74
+        },
+        "alphaBounds": {
+          "left": 104,
+          "top": 60,
+          "right": 152,
+          "bottom": 88,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-road-mask-0001",
+        "mask": 1,
+        "bits": "0001",
+        "semantics": [
+          "WEST"
+        ],
+        "output": "public/assets/pixellab/terrain/road-masks/road-mask-0001.png",
+        "sha256": "b640f9321bc08615f5639b7da14f7e1a3670d36af97244b811ffa85cdd12716b",
+        "width": 256,
+        "height": 148,
+        "anchor": {
+          "x": 128,
+          "y": 74
+        },
+        "alphaBounds": {
+          "left": 50,
+          "top": 27,
+          "right": 152,
+          "bottom": 92,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-road-mask-0010",
+        "mask": 2,
+        "bits": "0010",
+        "semantics": [
+          "SOUTH"
+        ],
+        "output": "public/assets/pixellab/terrain/road-masks/road-mask-0010.png",
+        "sha256": "2cdf01c299254327a7a41b8e5d61d153df4816b70e74bacc330dbd21bf7db5b0",
+        "width": 256,
+        "height": 148,
+        "anchor": {
+          "x": 128,
+          "y": 74
+        },
+        "alphaBounds": {
+          "left": 50,
+          "top": 56,
+          "right": 152,
+          "bottom": 121,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-road-mask-0011",
+        "mask": 3,
+        "bits": "0011",
+        "semantics": [
+          "SOUTH",
+          "WEST"
+        ],
+        "output": "public/assets/pixellab/terrain/road-masks/road-mask-0011.png",
+        "sha256": "3389d7ee9e5d64c07cb9d262688f7ef079ac61403fda0073efed87d138a2e970",
+        "width": 256,
+        "height": 148,
+        "anchor": {
+          "x": 128,
+          "y": 74
+        },
+        "alphaBounds": {
+          "left": 50,
+          "top": 27,
+          "right": 152,
+          "bottom": 121,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-road-mask-0100",
+        "mask": 4,
+        "bits": "0100",
+        "semantics": [
+          "EAST"
+        ],
+        "output": "public/assets/pixellab/terrain/road-masks/road-mask-0100.png",
+        "sha256": "88f84e92515185efb239bdd14dcc455791a4203d3be580e2b3642beae9667ef8",
+        "width": 256,
+        "height": 148,
+        "anchor": {
+          "x": 128,
+          "y": 74
+        },
+        "alphaBounds": {
+          "left": 104,
+          "top": 56,
+          "right": 204,
+          "bottom": 120,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-road-mask-0101",
+        "mask": 5,
+        "bits": "0101",
+        "semantics": [
+          "EAST",
+          "WEST"
+        ],
+        "output": "public/assets/pixellab/terrain/road-masks/road-mask-0101.png",
+        "sha256": "270ba582c22da5461c7a891ee77e4d687abc2b8fa8e6401ae2993a0047e8b8b2",
+        "width": 256,
+        "height": 148,
+        "anchor": {
+          "x": 128,
+          "y": 74
+        },
+        "alphaBounds": {
+          "left": 50,
+          "top": 27,
+          "right": 204,
+          "bottom": 120,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-road-mask-0110",
+        "mask": 6,
+        "bits": "0110",
+        "semantics": [
+          "EAST",
+          "SOUTH"
+        ],
+        "output": "public/assets/pixellab/terrain/road-masks/road-mask-0110.png",
+        "sha256": "47cc5ebbfd3615a48a3721f23fcdce8ef0a3fa574098a06d5023d5ab77e6a917",
+        "width": 256,
+        "height": 148,
+        "anchor": {
+          "x": 128,
+          "y": 74
+        },
+        "alphaBounds": {
+          "left": 50,
+          "top": 56,
+          "right": 204,
+          "bottom": 121,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-road-mask-0111",
+        "mask": 7,
+        "bits": "0111",
+        "semantics": [
+          "EAST",
+          "SOUTH",
+          "WEST"
+        ],
+        "output": "public/assets/pixellab/terrain/road-masks/road-mask-0111.png",
+        "sha256": "c29c9be2935e249489cdaf18b16182398f355b081b5dd195c852eba24a7aa4cd",
+        "width": 256,
+        "height": 148,
+        "anchor": {
+          "x": 128,
+          "y": 74
+        },
+        "alphaBounds": {
+          "left": 50,
+          "top": 27,
+          "right": 204,
+          "bottom": 121,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-road-mask-1000",
+        "mask": 8,
+        "bits": "1000",
+        "semantics": [
+          "NORTH"
+        ],
+        "output": "public/assets/pixellab/terrain/road-masks/road-mask-1000.png",
+        "sha256": "cfd4d8ce6be6595e89afb6d37c0b84ab072899a92c2471d21b0352ae5abe7ffa",
+        "width": 256,
+        "height": 148,
+        "anchor": {
+          "x": 128,
+          "y": 74
+        },
+        "alphaBounds": {
+          "left": 104,
+          "top": 27,
+          "right": 205,
+          "bottom": 92,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-road-mask-1001",
+        "mask": 9,
+        "bits": "1001",
+        "semantics": [
+          "NORTH",
+          "WEST"
+        ],
+        "output": "public/assets/pixellab/terrain/road-masks/road-mask-1001.png",
+        "sha256": "7243300011a3c9500d24a8f9c715aa3d231cd96256d4a396c182faf703a16bf9",
+        "width": 256,
+        "height": 148,
+        "anchor": {
+          "x": 128,
+          "y": 74
+        },
+        "alphaBounds": {
+          "left": 50,
+          "top": 27,
+          "right": 205,
+          "bottom": 92,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-road-mask-1010",
+        "mask": 10,
+        "bits": "1010",
+        "semantics": [
+          "NORTH",
+          "SOUTH"
+        ],
+        "output": "public/assets/pixellab/terrain/road-masks/road-mask-1010.png",
+        "sha256": "75ce866f189732310fb3ea93bf85df87c95cc6a3ba35cd208fdd755a985c8a0a",
+        "width": 256,
+        "height": 148,
+        "anchor": {
+          "x": 128,
+          "y": 74
+        },
+        "alphaBounds": {
+          "left": 50,
+          "top": 27,
+          "right": 205,
+          "bottom": 121,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-road-mask-1011",
+        "mask": 11,
+        "bits": "1011",
+        "semantics": [
+          "NORTH",
+          "SOUTH",
+          "WEST"
+        ],
+        "output": "public/assets/pixellab/terrain/road-masks/road-mask-1011.png",
+        "sha256": "36960d103ff81695a36e1e58efb607ea4500bf8ff49f0b50969a2c97eef1140b",
+        "width": 256,
+        "height": 148,
+        "anchor": {
+          "x": 128,
+          "y": 74
+        },
+        "alphaBounds": {
+          "left": 50,
+          "top": 27,
+          "right": 205,
+          "bottom": 121,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-road-mask-1100",
+        "mask": 12,
+        "bits": "1100",
+        "semantics": [
+          "NORTH",
+          "EAST"
+        ],
+        "output": "public/assets/pixellab/terrain/road-masks/road-mask-1100.png",
+        "sha256": "090364309d82b73b70c5fda786513538063e3c73fa0b649a2516637d0f7dd189",
+        "width": 256,
+        "height": 148,
+        "anchor": {
+          "x": 128,
+          "y": 74
+        },
+        "alphaBounds": {
+          "left": 104,
+          "top": 27,
+          "right": 205,
+          "bottom": 120,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-road-mask-1101",
+        "mask": 13,
+        "bits": "1101",
+        "semantics": [
+          "NORTH",
+          "EAST",
+          "WEST"
+        ],
+        "output": "public/assets/pixellab/terrain/road-masks/road-mask-1101.png",
+        "sha256": "8b2ec2c85539b71365d0a9c776121bfa306dc0c239f22c419a9245122121fd99",
+        "width": 256,
+        "height": 148,
+        "anchor": {
+          "x": 128,
+          "y": 74
+        },
+        "alphaBounds": {
+          "left": 50,
+          "top": 27,
+          "right": 205,
+          "bottom": 120,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-road-mask-1110",
+        "mask": 14,
+        "bits": "1110",
+        "semantics": [
+          "NORTH",
+          "EAST",
+          "SOUTH"
+        ],
+        "output": "public/assets/pixellab/terrain/road-masks/road-mask-1110.png",
+        "sha256": "facfc7577205e6fc9606e23b58518c5e97bbc9910992ca4c970edb124c1e5c66",
+        "width": 256,
+        "height": 148,
+        "anchor": {
+          "x": 128,
+          "y": 74
+        },
+        "alphaBounds": {
+          "left": 50,
+          "top": 27,
+          "right": 205,
+          "bottom": 121,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-road-mask-1111",
+        "mask": 15,
+        "bits": "1111",
+        "semantics": [
+          "NORTH",
+          "EAST",
+          "SOUTH",
+          "WEST"
+        ],
+        "output": "public/assets/pixellab/terrain/road-masks/road-mask-1111.png",
+        "sha256": "e1a4a7704ad9283920867a0c9e813c89a3b28f240735e5e7aa4466e229f8c82c",
+        "width": 256,
+        "height": 148,
+        "anchor": {
+          "x": 128,
+          "y": 74
+        },
+        "alphaBounds": {
+          "left": 50,
+          "top": 27,
+          "right": 205,
+          "bottom": 121,
+          "empty": false
+        },
+        "accepted": true
+      }
+    ]
+  },
+  "quarantines": [
+    {
+      "candidate": "art/pixellab/quarantine/building-quarry-a6144a878592.png",
+      "candidateSha256": "a6144a8785923021d50f558d8c9105e7a9a28a3960c1451458e81fb628617add",
+      "notes": "Rejected after direct source/native/enlarged/0.625x inspection. Scale, camera, outline and A-frame are usable, but the candidate adds a solid four-sided slate floor/base plate and appears to contain at least three cut slabs instead of exactly two. The platform reads as a generic paved tile at minimum scale, competes with the ground diamond, and weakens Quarry versus raw Stone and Stoneworks distinction. Retry without any connected floor/perimeter and with exactly two separated cut blocks on transparency.",
+      "reviewedAt": "2026-09-01T15:43:30.592Z",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted cool blue-slate cut stone, warm bronze timber, parchment rope, dark teal-charcoal outline. Isolated shared Quarry improvement only, one compact low open stone-cutting site with exactly two broad squared blue-slate blocks, one short bronze A-frame lifting beam, and one oversized simple chisel wedge. Southeast three-quarter downward strategy-game view, unmistakably a completed Quarry but not a Mine, Mountain, raw Stone pile, or Stoneworks processor. Strong dark-teal outline, flat two-level cel shading, quiet terrain-adjacent contrast, transparent 256 by 296 canvas, source anchor x128 y222, target compact alpha x48..208 y126..222, preferred envelope x40..216 y108..230 and hard envelope x20..236 y12..252. Keep the silhouette low and leave unit/contributor/status visibility unobstructed. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; mine entrance, dark tunnel, mine cart, pickaxe as primary silhouette, mountain, tall peak, natural boulder pile, crystals, ore, forge, stoneworks factory, city, village, character, worker, many blocks, masonry wall, sprawling terrain tile, diamond ground, base plate, road, pair axis, connection line, ownership color, selection, status, number, text, UI, cast shadow.",
+        "prompt": "Isolated shared Quarry improvement only, one compact low open stone-cutting site with exactly two broad squared blue-slate blocks, one short bronze A-frame lifting beam, and one oversized simple chisel wedge. Southeast three-quarter downward strategy-game view, unmistakably a completed Quarry but not a Mine, Mountain, raw Stone pile, or Stoneworks processor. Strong dark-teal outline, flat two-level cel shading, quiet terrain-adjacent contrast, transparent 256 by 296 canvas, source anchor x128 y222, target compact alpha x48..208 y126..222, preferred envelope x40..216 y108..230 and hard envelope x20..236 y12..252. Keep the silhouette low and leave unit/contributor/status visibility unobstructed.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; mine entrance, dark tunnel, mine cart, pickaxe as primary silhouette, mountain, tall peak, natural boulder pile, crystals, ore, forge, stoneworks factory, city, village, character, worker, many blocks, masonry wall, sprawling terrain tile, diamond ground, base plate, road, pair axis, connection line, ownership color, selection, status, number, text, UI, cast shadow",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 94102,
+        "noBackground": true,
+        "palette": "muted cool blue-slate cut stone, warm bronze timber, parchment rope, dark teal-charcoal outline",
+        "postprocess": "compact-building-fit",
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "building-mine",
+          "sha256": "ed7b990bedc1158c80129423fe31024230199ee54f8e9dbbc51ff52b64369f31",
+          "usageDescription": "Input reference role: copy only the accepted low industrial-building camera, compact occupancy, dark outline, broad flat shading, and ground contact; create an open stone-cutting Quarry rather than a mine entrance."
+        }
+      }
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "art/pixellab/reviews/ruleset6-buildings-roads/README.md",
+      "sha256": "18d60b3bbc410799c19edfbe6f48ea50ad23b1f30a1fc1e7db040e4f22a0369b",
+      "bytes": 1013
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-buildings-roads/individual-gate-source-native-enlarged-minimum.png",
+      "sha256": "6a4b9d363fe529e49c7ce013e3d199cf14d69bac57c4147e39ef51bf98a45ce8",
+      "bytes": 192069
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-buildings-roads/bounded-batches-contact-sheet.png",
+      "sha256": "b54ff51d3697a89eca3c74b3f8762d7af626bb3b5f28ae1739712c40d37cd149",
+      "bytes": 308652
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-buildings-roads/road-mask-sheet.png",
+      "sha256": "48225d9bf1d7fa71446633088716c96140e0e913d9a96ce6b49bf5c899d306ed",
+      "bytes": 138606
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-buildings-roads/road-coexistence-contexts.png",
+      "sha256": "e8b91a1b79935779cf131b5796276b3e634c2b743291ee078acc06ebba67c408",
+      "bytes": 144276
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-buildings-roads/aliases-and-merged-clusters.png",
+      "sha256": "adadf1218138e0cb58bc3706dad82005fc6e2f537c052b15df680febfd3b5197",
+      "bytes": 145634
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-buildings-roads/contributors-clusters-pair-axes.png",
+      "sha256": "ce14db95b1bd34e526b426414cb2863888728cc27ddac02944d04ddcd3929b5d",
+      "bytes": 292442
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-buildings-roads/owners-selection-fog-occupied.png",
+      "sha256": "6ce890e9b936d46ddeace802caa1ea4883f8812df10ea062d8642d59f652c196",
+      "bytes": 331163
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-buildings-roads/zoom-dpr-review.png",
+      "sha256": "6a9ca1e0605880b4dd0835743638907afd8ce33fbd4c9a1ff4f4ae08dc36e171",
+      "bytes": 666158
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-buildings-roads/desktop-native.png",
+      "sha256": "43811e0d229dba272624494b4399c697f49e16183fe2e6043660c490eb882294",
+      "bytes": 269144
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-buildings-roads/desktop-enlarged.png",
+      "sha256": "e29745d79f8889d1556daa6cea26a37f3053cfa59934f4865706281d6f274713",
+      "bytes": 658725
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-buildings-roads/mobile-native-dpr2.png",
+      "sha256": "73b95f970d0bbdb3aaa17c0e239da4c544589ae8053018ae89d0f6b7333401d6",
+      "bytes": 455196
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-buildings-roads/mobile-enlarged-dpr2.png",
+      "sha256": "f01527abf71d837d14512bd3ac03adaf03fb5a9a9dbcad4a7b2d2a6d5b4b36c4",
+      "bytes": 1093201
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-buildings-roads/dense-mature-3x3.png",
+      "sha256": "438b1b4f5dbf24ded26816818a05608380c889202bb9771e7869314f43802a0a",
+      "bytes": 60230
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-buildings-roads/dense-mature-5x5.png",
+      "sha256": "9362d2aadc1af34d1780d8f3b42f663cbc99d454bf42011ed0a1adb2c9764e1b",
+      "bytes": 126047
+    }
+  ]
+}

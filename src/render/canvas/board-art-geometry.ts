@@ -103,6 +103,16 @@ export const BOARD_ART_GEOMETRY = {
   },
 } as const satisfies Readonly<Record<string, SourceGeometry>>;
 
+export const ECONOMIC_ART_GEOMETRY = {
+  low: BOARD_ART_GEOMETRY.lowObject,
+  processor: {
+    width: 384,
+    height: 384,
+    anchor: { x: 192, y: 288 },
+    displayScale: 0.3,
+  },
+} as const satisfies Readonly<Record<string, SourceGeometry>>;
+
 /**
  * Placement corrections for accepted silhouettes that otherwise sit visibly
  * high over their owning tile. Source anchors remain authoritative.

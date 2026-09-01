@@ -1,0 +1,331 @@
+{
+  "schemaVersion": 1,
+  "algorithm": "orthogonal-road-mask-v1",
+  "deterministicProcessing": {
+    "source": "public/assets/pixellab/terrain/road-material.png",
+    "sourceSha256": "d0f60535de68afa17fcc39f9fcc6cefd886d45292ad0e3216727c5dca850e84f",
+    "canvas": { "width": 256, "height": 148 },
+    "anchor": { "x": 128, "y": 74 },
+    "directionBitOrder": ["NORTH", "EAST", "SOUTH", "WEST"],
+    "directionBits": { "NORTH": 8, "EAST": 4, "SOUTH": 2, "WEST": 1 },
+    "centerPad": { "cx": 128, "cy": 74, "rx": 24, "ry": 14 },
+    "arm": {
+      "strokeWidth": 36,
+      "lineCap": "round",
+      "endpoints": {
+        "NORTH": { "x": 192, "y": 37 },
+        "EAST": { "x": 192, "y": 111 },
+        "SOUTH": { "x": 64, "y": 111 },
+        "WEST": { "x": 64, "y": 37 }
+      }
+    },
+    "emptySemantics": "No ROAD render entry emits no overlay. Mask 0000 is an isolated Road tile and renders only the central material pad.",
+    "diagonalSemantics": "No diagonal bits or joins exist; every arm terminates only at an orthogonal shared-edge midpoint."
+  },
+  "records": [
+    {
+      "id": "terrain-road-mask-0000",
+      "mask": 0,
+      "bits": "0000",
+      "semantics": [],
+      "output": "public/assets/pixellab/terrain/road-masks/road-mask-0000.png",
+      "sha256": "d389311cb0050b6c7f112e8e8762b0904be12fccbb8fd2b0f13f2f407ab060bb",
+      "width": 256,
+      "height": 148,
+      "anchor": { "x": 128, "y": 74 },
+      "alphaBounds": {
+        "left": 104,
+        "top": 60,
+        "right": 152,
+        "bottom": 88,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-road-mask-0001",
+      "mask": 1,
+      "bits": "0001",
+      "semantics": ["WEST"],
+      "output": "public/assets/pixellab/terrain/road-masks/road-mask-0001.png",
+      "sha256": "b640f9321bc08615f5639b7da14f7e1a3670d36af97244b811ffa85cdd12716b",
+      "width": 256,
+      "height": 148,
+      "anchor": { "x": 128, "y": 74 },
+      "alphaBounds": {
+        "left": 50,
+        "top": 27,
+        "right": 152,
+        "bottom": 92,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-road-mask-0010",
+      "mask": 2,
+      "bits": "0010",
+      "semantics": ["SOUTH"],
+      "output": "public/assets/pixellab/terrain/road-masks/road-mask-0010.png",
+      "sha256": "2cdf01c299254327a7a41b8e5d61d153df4816b70e74bacc330dbd21bf7db5b0",
+      "width": 256,
+      "height": 148,
+      "anchor": { "x": 128, "y": 74 },
+      "alphaBounds": {
+        "left": 50,
+        "top": 56,
+        "right": 152,
+        "bottom": 121,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-road-mask-0011",
+      "mask": 3,
+      "bits": "0011",
+      "semantics": ["SOUTH", "WEST"],
+      "output": "public/assets/pixellab/terrain/road-masks/road-mask-0011.png",
+      "sha256": "3389d7ee9e5d64c07cb9d262688f7ef079ac61403fda0073efed87d138a2e970",
+      "width": 256,
+      "height": 148,
+      "anchor": { "x": 128, "y": 74 },
+      "alphaBounds": {
+        "left": 50,
+        "top": 27,
+        "right": 152,
+        "bottom": 121,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-road-mask-0100",
+      "mask": 4,
+      "bits": "0100",
+      "semantics": ["EAST"],
+      "output": "public/assets/pixellab/terrain/road-masks/road-mask-0100.png",
+      "sha256": "88f84e92515185efb239bdd14dcc455791a4203d3be580e2b3642beae9667ef8",
+      "width": 256,
+      "height": 148,
+      "anchor": { "x": 128, "y": 74 },
+      "alphaBounds": {
+        "left": 104,
+        "top": 56,
+        "right": 204,
+        "bottom": 120,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-road-mask-0101",
+      "mask": 5,
+      "bits": "0101",
+      "semantics": ["EAST", "WEST"],
+      "output": "public/assets/pixellab/terrain/road-masks/road-mask-0101.png",
+      "sha256": "270ba582c22da5461c7a891ee77e4d687abc2b8fa8e6401ae2993a0047e8b8b2",
+      "width": 256,
+      "height": 148,
+      "anchor": { "x": 128, "y": 74 },
+      "alphaBounds": {
+        "left": 50,
+        "top": 27,
+        "right": 204,
+        "bottom": 120,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-road-mask-0110",
+      "mask": 6,
+      "bits": "0110",
+      "semantics": ["EAST", "SOUTH"],
+      "output": "public/assets/pixellab/terrain/road-masks/road-mask-0110.png",
+      "sha256": "47cc5ebbfd3615a48a3721f23fcdce8ef0a3fa574098a06d5023d5ab77e6a917",
+      "width": 256,
+      "height": 148,
+      "anchor": { "x": 128, "y": 74 },
+      "alphaBounds": {
+        "left": 50,
+        "top": 56,
+        "right": 204,
+        "bottom": 121,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-road-mask-0111",
+      "mask": 7,
+      "bits": "0111",
+      "semantics": ["EAST", "SOUTH", "WEST"],
+      "output": "public/assets/pixellab/terrain/road-masks/road-mask-0111.png",
+      "sha256": "c29c9be2935e249489cdaf18b16182398f355b081b5dd195c852eba24a7aa4cd",
+      "width": 256,
+      "height": 148,
+      "anchor": { "x": 128, "y": 74 },
+      "alphaBounds": {
+        "left": 50,
+        "top": 27,
+        "right": 204,
+        "bottom": 121,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-road-mask-1000",
+      "mask": 8,
+      "bits": "1000",
+      "semantics": ["NORTH"],
+      "output": "public/assets/pixellab/terrain/road-masks/road-mask-1000.png",
+      "sha256": "cfd4d8ce6be6595e89afb6d37c0b84ab072899a92c2471d21b0352ae5abe7ffa",
+      "width": 256,
+      "height": 148,
+      "anchor": { "x": 128, "y": 74 },
+      "alphaBounds": {
+        "left": 104,
+        "top": 27,
+        "right": 205,
+        "bottom": 92,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-road-mask-1001",
+      "mask": 9,
+      "bits": "1001",
+      "semantics": ["NORTH", "WEST"],
+      "output": "public/assets/pixellab/terrain/road-masks/road-mask-1001.png",
+      "sha256": "7243300011a3c9500d24a8f9c715aa3d231cd96256d4a396c182faf703a16bf9",
+      "width": 256,
+      "height": 148,
+      "anchor": { "x": 128, "y": 74 },
+      "alphaBounds": {
+        "left": 50,
+        "top": 27,
+        "right": 205,
+        "bottom": 92,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-road-mask-1010",
+      "mask": 10,
+      "bits": "1010",
+      "semantics": ["NORTH", "SOUTH"],
+      "output": "public/assets/pixellab/terrain/road-masks/road-mask-1010.png",
+      "sha256": "75ce866f189732310fb3ea93bf85df87c95cc6a3ba35cd208fdd755a985c8a0a",
+      "width": 256,
+      "height": 148,
+      "anchor": { "x": 128, "y": 74 },
+      "alphaBounds": {
+        "left": 50,
+        "top": 27,
+        "right": 205,
+        "bottom": 121,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-road-mask-1011",
+      "mask": 11,
+      "bits": "1011",
+      "semantics": ["NORTH", "SOUTH", "WEST"],
+      "output": "public/assets/pixellab/terrain/road-masks/road-mask-1011.png",
+      "sha256": "36960d103ff81695a36e1e58efb607ea4500bf8ff49f0b50969a2c97eef1140b",
+      "width": 256,
+      "height": 148,
+      "anchor": { "x": 128, "y": 74 },
+      "alphaBounds": {
+        "left": 50,
+        "top": 27,
+        "right": 205,
+        "bottom": 121,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-road-mask-1100",
+      "mask": 12,
+      "bits": "1100",
+      "semantics": ["NORTH", "EAST"],
+      "output": "public/assets/pixellab/terrain/road-masks/road-mask-1100.png",
+      "sha256": "090364309d82b73b70c5fda786513538063e3c73fa0b649a2516637d0f7dd189",
+      "width": 256,
+      "height": 148,
+      "anchor": { "x": 128, "y": 74 },
+      "alphaBounds": {
+        "left": 104,
+        "top": 27,
+        "right": 205,
+        "bottom": 120,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-road-mask-1101",
+      "mask": 13,
+      "bits": "1101",
+      "semantics": ["NORTH", "EAST", "WEST"],
+      "output": "public/assets/pixellab/terrain/road-masks/road-mask-1101.png",
+      "sha256": "8b2ec2c85539b71365d0a9c776121bfa306dc0c239f22c419a9245122121fd99",
+      "width": 256,
+      "height": 148,
+      "anchor": { "x": 128, "y": 74 },
+      "alphaBounds": {
+        "left": 50,
+        "top": 27,
+        "right": 205,
+        "bottom": 120,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-road-mask-1110",
+      "mask": 14,
+      "bits": "1110",
+      "semantics": ["NORTH", "EAST", "SOUTH"],
+      "output": "public/assets/pixellab/terrain/road-masks/road-mask-1110.png",
+      "sha256": "facfc7577205e6fc9606e23b58518c5e97bbc9910992ca4c970edb124c1e5c66",
+      "width": 256,
+      "height": 148,
+      "anchor": { "x": 128, "y": 74 },
+      "alphaBounds": {
+        "left": 50,
+        "top": 27,
+        "right": 205,
+        "bottom": 121,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-road-mask-1111",
+      "mask": 15,
+      "bits": "1111",
+      "semantics": ["NORTH", "EAST", "SOUTH", "WEST"],
+      "output": "public/assets/pixellab/terrain/road-masks/road-mask-1111.png",
+      "sha256": "e1a4a7704ad9283920867a0c9e813c89a3b28f240735e5e7aa4466e229f8c82c",
+      "width": 256,
+      "height": 148,
+      "anchor": { "x": 128, "y": 74 },
+      "alphaBounds": {
+        "left": 50,
+        "top": 27,
+        "right": 205,
+        "bottom": 121,
+        "empty": false
+      },
+      "accepted": true
+    }
+  ]
+}

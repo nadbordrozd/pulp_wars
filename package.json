@@ -20,6 +20,8 @@
     "art:selection-jump-review": "tsx scripts/art/selection-jump-review.ts",
     "art:candy-terrain-review": "tsx scripts/art/candy-terrain-review.ts",
     "art:ruleset6-terrain-review": "tsx scripts/art/ruleset6-terrain-review.ts",
+    "art:road-masks": "tsx scripts/art/road-masks.ts",
+    "art:ruleset6-building-road-review": "tsx scripts/art/ruleset6-building-road-review.ts",
     "art:candy-city-review": "tsx scripts/art/candy-city-review.ts",
     "art:footprint-review": "tsx scripts/art/footprint-review.ts",
     "art:unit-scale-review": "tsx scripts/art/unit-scale-review.ts",

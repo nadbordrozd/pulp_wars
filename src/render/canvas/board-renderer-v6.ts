@@ -153,6 +153,13 @@ const INK = "#19282a";
 const CANDY_INK = "#4b2639";
 const WORLD_BODY_LAYER_V6 = 5;
 
+export const ROAD_DIRECTION_BITS_V6 = Object.freeze({
+  NORTH: 0b1000,
+  EAST: 0b0100,
+  SOUTH: 0b0010,
+  WEST: 0b0001,
+});
+
 /**
  * Deterministic visible placeholder envelopes. They sit inside the calibrated
  * raster contracts and are intentionally smaller than accepted Forest and
@@ -204,6 +211,11 @@ export function buildBoardDrawListV6(
       .map((entry) => [entry.id, entry.details.level] as const),
   );
   const entries = combatEntries(options.plan, options.combatPresentation);
+  const roadCoordinates = new Set(
+    entries
+      .filter((entry) => entry.kind === "ROAD")
+      .map((entry) => coordinateKey(entry.at)),
+  );
   const projectileCommands = combatProjectileCommands(
     options.camera,
     options.combatPresentation,
@@ -239,6 +251,9 @@ export function buildBoardDrawListV6(
         options.combatPresentation,
         options.combatFrame,
       ),
+      entry.kind === "ROAD"
+        ? roadMaskFromCoordinates(entry.at, roadCoordinates)
+        : 0,
     );
   };
   let projectileEmitted = false;
@@ -365,6 +380,7 @@ function drawEntry(
   readinessElapsedMs: number,
   reducedMotion: boolean,
   combatStyle: { readonly offset: Point; readonly alpha: number } | null,
+  roadMask: number,
 ): void {
   const ownerColor = ownerColorFor(entry.ownerId);
   switch (entry.kind) {
@@ -521,18 +537,10 @@ function drawEntry(
         commands,
         coverage,
         entry.key,
-        roadCoverageV6(),
+        roadCoverageV6(roadMask),
         center,
         zoom,
-        () => [
-          ...roadCommands(entry.key, center, zoom),
-          ...placeholderMark(
-            entry.key,
-            center.x + 42 * zoom,
-            center.y - 14 * zoom,
-            zoom,
-          ),
-        ],
+        () => [...roadCommands(entry.key, center, zoom, roadMask)],
       );
       return;
     case "UNKNOWN_RESOURCE":
@@ -1289,29 +1297,57 @@ function roadCommands(
   key: string,
   center: Point,
   zoom: number,
+  mask: number,
 ): readonly BoardDrawCommandV6[] {
-  return [
-    line(
-      key,
-      [
-        p(center, -45, 0, zoom),
-        p(center, 0, -25, zoom),
-        p(center, 45, 0, zoom),
-      ],
-      "#3d3129",
-      9 * zoom,
-    ),
-    line(
-      key,
-      [
-        p(center, -45, 0, zoom),
-        p(center, 0, -25, zoom),
-        p(center, 45, 0, zoom),
-      ],
-      "#c9a36a",
-      5 * zoom,
-    ),
-  ];
+  const endpoints = [
+    [ROAD_DIRECTION_BITS_V6.NORTH, 32, -18.5],
+    [ROAD_DIRECTION_BITS_V6.EAST, 32, 18.5],
+    [ROAD_DIRECTION_BITS_V6.SOUTH, -32, 18.5],
+    [ROAD_DIRECTION_BITS_V6.WEST, -32, -18.5],
+  ] as const;
+  const result: BoardDrawCommandV6[] = [];
+  for (const [bit, x, y] of endpoints) {
+    if ((mask & bit) === 0) continue;
+    result.push(
+      line(key, [center, p(center, x, y, zoom)], "#3d3129", 9 * zoom),
+      line(key, [center, p(center, x, y, zoom)], "#a68761", 5 * zoom),
+    );
+  }
+  result.push(
+    ellipse(key, center.x, center.y, 13 * zoom, 7 * zoom, "#3d3129", null, 0),
+    ellipse(key, center.x, center.y, 9 * zoom, 4 * zoom, "#a68761", null, 0),
+  );
+  return result;
+}
+
+export function roadMaskAtV6(
+  plan: BoardRenderPlanV6,
+  at: { readonly x: number; readonly y: number },
+): number | null {
+  const roads = new Set(
+    plan.entries
+      .filter((entry) => entry.kind === "ROAD")
+      .map((entry) => coordinateKey(entry.at)),
+  );
+  return roads.has(coordinateKey(at))
+    ? roadMaskFromCoordinates(at, roads)
+    : null;
+}
+
+function roadMaskFromCoordinates(
+  at: { readonly x: number; readonly y: number },
+  roads: ReadonlySet<string>,
+): number {
+  let mask = 0;
+  if (roads.has(coordinateKey({ x: at.x, y: at.y - 1 })))
+    mask |= ROAD_DIRECTION_BITS_V6.NORTH;
+  if (roads.has(coordinateKey({ x: at.x + 1, y: at.y })))
+    mask |= ROAD_DIRECTION_BITS_V6.EAST;
+  if (roads.has(coordinateKey({ x: at.x, y: at.y + 1 })))
+    mask |= ROAD_DIRECTION_BITS_V6.SOUTH;
+  if (roads.has(coordinateKey({ x: at.x - 1, y: at.y })))
+    mask |= ROAD_DIRECTION_BITS_V6.WEST;
+  return mask;
 }
 
 function targetCommands(

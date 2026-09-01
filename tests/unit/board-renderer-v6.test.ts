@@ -23,6 +23,7 @@ import {
 import {
   buildBoardDrawListV6,
   drawBoardV6,
+  roadMaskAtV6,
   unitScaleContractForRoleV6,
   unitVisibleFootprintV6,
 } from "../../src/render/canvas/board-renderer-v6";
@@ -142,16 +143,15 @@ describe("ruleset-6 Canvas drawing layer", () => {
       expect(cityCoverageV6(faction, 8).status).toBe("ACCEPTED");
     }
     for (const improvement of ECONOMIC_IMPROVEMENT_IDS) {
-      expect(improvementCoverageV6(improvement).status).toBe(
-        improvement === "MINE" ? "ACCEPTED" : "PLACEHOLDER",
-      );
+      expect(improvementCoverageV6(improvement).status).toBe("ACCEPTED");
     }
     expect(siteCoverageV6("VILLAGE").status).toBe("ACCEPTED");
     expect(chocolateWallCoverageV6().status).toBe("ACCEPTED");
     expect(roadCoverageV6()).toMatchObject({
-      status: "PLACEHOLDER",
-      semanticId: "infrastructure:ROAD",
-      production: false,
+      status: "ACCEPTED",
+      semanticId: "infrastructure:ROAD:0000",
+      assetId: "terrain-road-mask-0000",
+      production: true,
     });
 
     const list = buildBoardDrawListV6({
@@ -663,7 +663,7 @@ describe("ruleset-6 Canvas drawing layer", () => {
     ).toBe(false);
   });
 
-  it("labels temporary Road masks non-production and never draws a redundant CAPITAL/CITY site over its city", () => {
+  it("labels an isolated Road with accepted mask 0000 and never draws a redundant CAPITAL/CITY site over its city", () => {
     const at = { x: 1, y: 1 } as const;
     const villageAt = { x: 2, y: 1 } as const;
     const plan: BoardRenderPlanV6 = {
@@ -706,13 +706,14 @@ describe("ruleset-6 Canvas drawing layer", () => {
       plan,
     });
     const road = list.coverage.find(
-      (item) => item.semanticId === "infrastructure:ROAD",
+      (item) => item.semanticId === "infrastructure:ROAD:0000",
     );
     expect(road).toMatchObject({
-      status: "PLACEHOLDER",
-      assetId: null,
-      production: false,
+      status: "ACCEPTED",
+      assetId: "terrain-road-mask-0000",
+      production: true,
     });
+    expect(roadMaskAtV6(plan, at)).toBe(0);
     expect(
       list.commands.some(
         (command) =>

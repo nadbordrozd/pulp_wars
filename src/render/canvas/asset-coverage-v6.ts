@@ -7,6 +7,7 @@ import type {
 } from "../../engine/index";
 import {
   BOARD_ART_GEOMETRY,
+  ECONOMIC_ART_GEOMETRY,
   PLACEMENT_ART_GEOMETRY,
   SETTLEMENT_ART_GEOMETRY,
   cityArtLevel,
@@ -158,24 +159,64 @@ export function resourceCoverageV6(
 export function improvementCoverageV6(
   improvement: EconomicImprovementId,
 ): AssetCoverageV6 {
-  if (improvement === "MINE") {
-    return accepted(
-      "improvement:MINE",
-      "building-mine",
-      "assets/pixellab/buildings/mine.png",
-      BOARD_ART_GEOMETRY.lowObject,
-    );
-  }
-  return placeholder(
+  const contracts: Readonly<
+    Record<
+      EconomicImprovementId,
+      {
+        readonly assetId: string;
+        readonly filename: string;
+        readonly geometry: SourceGeometry;
+      }
+    >
+  > = {
+    FARM: {
+      assetId: "building-farm",
+      filename: "farm.png",
+      geometry: ECONOMIC_ART_GEOMETRY.low,
+    },
+    LUMBER_CAMP: {
+      assetId: "building-lumber-camp",
+      filename: "lumber-mill.png",
+      geometry: ECONOMIC_ART_GEOMETRY.low,
+    },
+    MINE: {
+      assetId: "building-ruleset6-mine",
+      filename: "mine.png",
+      geometry: ECONOMIC_ART_GEOMETRY.low,
+    },
+    QUARRY: {
+      assetId: "building-quarry",
+      filename: "quarry.png",
+      geometry: ECONOMIC_ART_GEOMETRY.low,
+    },
+    WINDMILL: processor("windmill"),
+    SAWMILL: processor("sawmill"),
+    FORGE: processor("forge"),
+    STONEWORKS: processor("stoneworks"),
+    WORKSHOP: processor("workshop"),
+    GRAND_WORKS: processor("grand-works"),
+    MARKET: processor("market"),
+  };
+  const contract = contracts[improvement];
+  return accepted(
     `improvement:${improvement}`,
-    improvementLabel(improvement),
-    BOARD_ART_GEOMETRY.lowObject,
+    contract.assetId,
+    `assets/pixellab/buildings/${contract.filename}`,
+    contract.geometry,
   );
 }
 
-/** Road masks are code-native, but their production material art is missing. */
-export function roadCoverageV6(): AssetCoverageV6 {
-  return placeholder("infrastructure:ROAD", "ROAD", BOARD_ART_GEOMETRY.ground);
+/** Deterministic N/E/S/W mask over the accepted PixelLab Road material. */
+export function roadCoverageV6(mask = 0): AssetCoverageV6 {
+  if (!Number.isInteger(mask) || mask < 0 || mask > 15)
+    throw new Error(`Invalid orthogonal Road mask ${mask}`);
+  const bits = mask.toString(2).padStart(4, "0");
+  return accepted(
+    `infrastructure:ROAD:${bits}`,
+    `terrain-road-mask-${bits}`,
+    `assets/pixellab/terrain/road-masks/road-mask-${bits}.png`,
+    BOARD_ART_GEOMETRY.ground,
+  );
 }
 
 export function siteCoverageV6(
@@ -286,21 +327,16 @@ function placeholder(
   };
 }
 
-function improvementLabel(improvement: EconomicImprovementId): string {
-  const labels: Readonly<Record<EconomicImprovementId, string>> = {
-    FARM: "FARM",
-    LUMBER_CAMP: "CAMP",
-    MINE: "MINE",
-    QUARRY: "QUARRY",
-    WINDMILL: "WIND",
-    SAWMILL: "SAW",
-    FORGE: "FORGE",
-    STONEWORKS: "STONEWORKS",
-    WORKSHOP: "WORKSHOP",
-    GRAND_WORKS: "GRAND",
-    MARKET: "MARKET",
+function processor(filename: string): {
+  readonly assetId: string;
+  readonly filename: string;
+  readonly geometry: SourceGeometry;
+} {
+  return {
+    assetId: `building-${filename}`,
+    filename: `${filename}.png`,
+    geometry: ECONOMIC_ART_GEOMETRY.processor,
   };
-  return labels[improvement];
 }
 
 function unitLabel(role: UnitRoleId): string {
