@@ -8,6 +8,7 @@ import {
   createPlayableGameV6,
   previewEconomicV6,
   queryPlayerCommandsV6,
+  unitId,
   viewForV6,
   wallId,
   type CommandV6,
@@ -17,6 +18,7 @@ import {
 } from "../../src/engine/index";
 import {
   CanvasBoardHostV6,
+  boardReadinessAnimationNeededV6,
   commandCandidatesAtV6,
   resolveInspectionActivationV6,
   type CanvasBoardHostCallbacksV6,
@@ -38,6 +40,154 @@ beforeEach(() => {
 });
 
 describe("ruleset-6 Canvas host", () => {
+  it("bounds readiness redraws and cancels immediately at every lifecycle gate", () => {
+    let now = 0;
+    vi.spyOn(window.performance, "now").mockImplementation(() => now);
+    let nextFrame = 1;
+    const frames = new Map<number, FrameRequestCallback>();
+    const request = vi.fn((callback: FrameRequestCallback) => {
+      const id = nextFrame;
+      nextFrame += 1;
+      frames.set(id, callback);
+      return id;
+    });
+    const cancel = vi.fn((id: number) => {
+      frames.delete(id);
+    });
+    Object.defineProperty(window, "requestAnimationFrame", {
+      configurable: true,
+      value: request,
+    });
+    Object.defineProperty(window, "cancelAnimationFrame", {
+      configurable: true,
+      value: cancel,
+    });
+    vi.mocked(HTMLCanvasElement.prototype.getContext).mockReturnValue(
+      recordingContext([]),
+    );
+
+    const fixture = publicFixture();
+    const ready = ownUnit(fixture.view);
+    const active = model(fixture.view, {
+      motion: "FULL",
+      interaction: {
+        ...model(fixture.view).interaction,
+        readyUnitIds: [ready.id],
+      },
+    });
+    expect(boardReadinessAnimationNeededV6(active)).toBe(true);
+    const hash = canonicalHash(fixture.state);
+    const host = new CanvasBoardHostV6(document);
+    const container = sizedContainer(900, 600);
+    host.mount(container, callbacks());
+    host.update(active);
+    expect(frames.size).toBe(1);
+
+    const first = [...frames.entries()][0];
+    if (first === undefined) throw new Error("Missing readiness frame");
+    frames.delete(first[0]);
+    now = 800;
+    first[1](now);
+    expect(frames.size).toBe(1);
+    expect(canonicalHash(fixture.state)).toBe(hash);
+
+    host.update({
+      ...active,
+      interaction: { ...active.interaction, readyUnitIds: [] },
+    });
+    expect(frames.size).toBe(0);
+    host.update(active);
+    expect(frames.size).toBe(1);
+
+    host.update({
+      ...active,
+      view: { ...fixture.view, activeSeatIndex: 1 },
+    });
+    expect(frames.size).toBe(0);
+    host.update(active);
+    expect(frames.size).toBe(1);
+    host.update({ ...active, interactive: false });
+    expect(frames.size).toBe(0);
+    host.update({ ...active, motion: "REDUCED" });
+    expect(frames.size).toBe(0);
+    expect(request).toHaveBeenCalledTimes(4);
+    expect(cancel).toHaveBeenCalledTimes(3);
+
+    host.update(active);
+    expect(frames.size).toBe(1);
+    host.mount(container, callbacks());
+    expect(frames.size).toBe(0);
+    host.update(active);
+    expect(frames.size).toBe(1);
+    host.unmount();
+    expect(frames.size).toBe(0);
+    host.mount(container, callbacks());
+    host.update(active);
+    expect(frames.size).toBe(1);
+    host.destroy();
+    expect(frames.size).toBe(0);
+  });
+
+  it("never schedules readiness for hidden, rival, inactive, blocked, or reduced-motion models", () => {
+    const fixture = publicFixture();
+    const own = ownUnit(fixture.view);
+    const rivalPlayer = fixture.view.players.find(
+      (player) => player.id !== fixture.view.viewer.id,
+    );
+    const hiddenTile = fixture.view.board.tiles.find((tile) => !tile.explored);
+    if (rivalPlayer === undefined || hiddenTile === undefined)
+      throw new Error("Missing rival player or hidden tile");
+    const rival = {
+      ...own,
+      id: unitId(own.id + 10_000),
+      ownerId: rivalPlayer.id,
+      at: { x: own.at.x + 1, y: own.at.y },
+    };
+    const hidden = {
+      ...own,
+      id: unitId(own.id + 20_000),
+      at: hiddenTile.at,
+    };
+    const testView = {
+      ...fixture.view,
+      units: [...fixture.view.units, rival, hidden],
+    };
+    const base = model(testView, { motion: "FULL" });
+    expect(
+      boardReadinessAnimationNeededV6({
+        ...base,
+        interaction: { ...base.interaction, readyUnitIds: [rival.id] },
+      }),
+    ).toBe(false);
+    expect(
+      boardReadinessAnimationNeededV6({
+        ...base,
+        interaction: { ...base.interaction, readyUnitIds: [hidden.id] },
+      }),
+    ).toBe(false);
+    expect(
+      boardReadinessAnimationNeededV6({
+        ...base,
+        view: { ...testView, activeSeatIndex: 1 },
+        interaction: { ...base.interaction, readyUnitIds: [own.id] },
+      }),
+    ).toBe(false);
+    expect(
+      boardReadinessAnimationNeededV6({
+        ...base,
+        interactive: false,
+        interaction: { ...base.interaction, readyUnitIds: [own.id] },
+      }),
+    ).toBe(false);
+    expect(
+      boardReadinessAnimationNeededV6({
+        ...base,
+        motion: "REDUCED",
+        interaction: { ...base.interaction, readyUnitIds: [own.id] },
+      }),
+    ).toBe(false);
+  });
+
   it("is a separate PlayerViewV6-only accessible mount/update/destroy boundary with DPR backing", () => {
     expectTypeOf<
       CanvasBoardHostModelV6["view"]
@@ -225,6 +375,7 @@ describe("ruleset-6 Canvas host", () => {
             unitId: ownUnit(fixture.view).id,
           },
           economicPreview: null,
+          readyUnitIds: [],
         },
       }),
     );
@@ -298,6 +449,7 @@ describe("ruleset-6 Canvas host", () => {
       activeTarget: null,
       targetMode: null,
       economicPreview: null,
+      readyUnitIds: [],
     } as const;
     const freshPlan = buildRenderPlanV6(fixture.view, interaction);
     const single = commandCandidatesAtV6(freshPlan, unit.at);
@@ -396,6 +548,7 @@ describe("ruleset-6 Canvas host", () => {
           activeTarget: economic.at,
           targetMode: null,
           economicPreview: { command: economic, result: preview },
+          readyUnitIds: [],
         },
       }),
     );
@@ -441,6 +594,7 @@ describe("ruleset-6 Canvas host", () => {
             activeTarget: null,
             targetMode: null,
             economicPreview: null,
+            readyUnitIds: [],
           },
         }),
       );
@@ -594,6 +748,7 @@ function model(
       activeTarget: null,
       targetMode: null,
       economicPreview: null,
+      readyUnitIds: [],
     },
     ...overrides,
   };

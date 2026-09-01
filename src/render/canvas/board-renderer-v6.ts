@@ -26,6 +26,7 @@ import {
   type Size,
 } from "./geometry";
 import type { BoardRenderPlanV6, RenderPlanEntryV6 } from "./render-plan-v6";
+import { readinessSpriteOpacity } from "./readiness-presentation";
 
 export interface Ruleset6AcceptedImageResolver {
   readonly resolve: (assetId: string) => CanvasImageSource | null;
@@ -38,12 +39,16 @@ export interface DrawBoardV6Options {
   readonly plan: BoardRenderPlanV6;
   readonly devicePixelRatio: number;
   readonly images?: Ruleset6AcceptedImageResolver;
+  readonly readinessElapsedMs?: number;
+  readonly reducedMotion?: boolean;
 }
 
 export interface BuildBoardDrawListV6Options {
   readonly viewport: Size;
   readonly camera: CameraState;
   readonly plan: BoardRenderPlanV6;
+  readonly readinessElapsedMs?: number;
+  readonly reducedMotion?: boolean;
 }
 
 export interface DrawCoverageLabelV6 {
@@ -64,6 +69,7 @@ export type BoardDrawCommandV6 =
       readonly assetId: string;
       readonly publicPath: string;
       readonly destination: DestinationRect;
+      readonly alpha: number;
       readonly fallback: readonly BoardDrawCommandV6[];
     })
   | (DrawCommandBaseV6 & {
@@ -196,6 +202,8 @@ export function buildBoardDrawListV6(
       options.camera.zoom,
       faction,
       cityLevels.get(entry.id) ?? 1,
+      options.readinessElapsedMs ?? 0,
+      options.reducedMotion ?? false,
     );
   }
   return { commands, coverage };
@@ -225,6 +233,8 @@ export function executeDrawCommandV6(
         executeDrawCommandV6(context, fallback, images);
       return;
     }
+    context.save();
+    context.globalAlpha = command.alpha;
     context.drawImage(
       image,
       command.destination.x,
@@ -232,6 +242,7 @@ export function executeDrawCommandV6(
       command.destination.width,
       command.destination.height,
     );
+    context.restore();
     return;
   }
   context.save();
@@ -303,6 +314,8 @@ function drawEntry(
   zoom: number,
   faction: FactionIdV6,
   cityLevel: number,
+  readinessElapsedMs: number,
+  reducedMotion: boolean,
 ): void {
   const ownerColor = ownerColorFor(entry.ownerId);
   switch (entry.kind) {
@@ -416,7 +429,11 @@ function drawEntry(
         () => wallFallback(entry.key, center, zoom),
       );
       return;
-    case "UNIT":
+    case "UNIT": {
+      const spriteOpacity =
+        entry.details.readiness === "PULSE"
+          ? readinessSpriteOpacity(readinessElapsedMs, reducedMotion)
+          : 1;
       addCoveredAsset(
         commands,
         coverage,
@@ -434,8 +451,10 @@ function drawEntry(
             item.status === "PLACEHOLDER",
             ownerColor,
           ),
+        spriteOpacity,
       );
       return;
+    }
     case "FOG":
       commands.push(...fogCommands(entry.key, center, zoom));
       return;
@@ -563,6 +582,7 @@ function addCoveredAsset(
   center: Point,
   zoom: number,
   fallback: (item: AssetCoverageV6) => readonly BoardDrawCommandV6[],
+  alpha = 1,
 ): void {
   labels.push({
     entryKey,
@@ -571,7 +591,9 @@ function addCoveredAsset(
     assetId: item.status === "ACCEPTED" ? item.assetId : null,
     production: item.production,
   });
-  const fallbackCommands = fallback(item);
+  const fallbackCommands = fallback(item).map((command) =>
+    withCommandAlpha(command, alpha),
+  );
   if (item.status === "PLACEHOLDER") {
     commands.push(...fallbackCommands);
     return;
@@ -582,8 +604,25 @@ function addCoveredAsset(
     assetId: item.assetId,
     publicPath: item.publicPath,
     destination: anchoredDestinationRect(center, zoom, item.geometry),
+    alpha,
     fallback: fallbackCommands,
   });
+}
+
+function withCommandAlpha(
+  command: BoardDrawCommandV6,
+  alpha: number,
+): BoardDrawCommandV6 {
+  if (command.kind === "IMAGE") {
+    return {
+      ...command,
+      alpha: command.alpha * alpha,
+      fallback: command.fallback.map((fallback) =>
+        withCommandAlpha(fallback, alpha),
+      ),
+    };
+  }
+  return { ...command, alpha: command.alpha * alpha };
 }
 
 function groundFallback(

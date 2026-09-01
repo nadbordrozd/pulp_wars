@@ -574,6 +574,86 @@ describe("playable ruleset-6 DOM shell", () => {
     app.destroy();
   });
 
+  it("projects exact offered MOVE readiness and disables animation gates for modal, result, error, and reduced motion", () => {
+    const initial = publicView("ORIGINAL");
+    const unit = initial.units.find(
+      (candidate) => candidate.ownerId === initial.viewer.id,
+    );
+    const city = initial.cities.find(
+      (candidate) => candidate.ownerId === initial.viewer.id,
+    );
+    if (unit === undefined || city === undefined)
+      throw new Error("Missing owned unit or city");
+    const view: PlayerViewV6 = {
+      ...initial,
+      units: initial.units.map((candidate) =>
+        candidate.id === unit.id
+          ? {
+              ...candidate,
+              activation: { ...candidate.activation, handled: true },
+            }
+          : candidate,
+      ),
+    };
+    const move = {
+      kind: "MOVE",
+      unitId: unit.id,
+      path: [{ x: unit.at.x + 1, y: unit.at.y }],
+    } as const satisfies CommandV6;
+    const fake = new FakeController(view, [
+      move,
+      { kind: "WAIT", unitId: unit.id },
+    ]);
+    const host = new FakeBoardHostV6();
+    const app = new Ruleset6DomAppView(document, requireElement("#app"), fake, {
+      boardHost: host,
+      prefersReducedMotion: true,
+    });
+
+    expect(host.model).toMatchObject({
+      interactive: true,
+      motion: "REDUCED",
+      interaction: { readyUnitIds: [unit.id] },
+    });
+    fake.setSnapshot({
+      ...fake.snapshot(),
+      offeredCommands: [{ kind: "WAIT", unitId: unit.id }],
+    });
+    expect(host.model?.interaction.readyUnitIds).toEqual([]);
+
+    fake.setSnapshot({
+      ...fake.snapshot(),
+      view: {
+        ...view,
+        pendingChoices: [
+          {
+            kind: "CITY_REWARD",
+            cityId: city.id,
+            reachedLevel: 2,
+            candidates: ["SURVEY", "STOCKPILE"],
+          },
+        ],
+      },
+      offeredCommands: [move],
+    });
+    expect(host.model).toMatchObject({
+      interactive: false,
+      interaction: { readyUnitIds: [unit.id] },
+    });
+
+    fake.setSnapshot({
+      ...fake.snapshot(),
+      phase: "COMPLETE",
+      view,
+      offeredCommands: [move],
+    });
+    expect(host.model?.interactive).toBe(false);
+    fake.setSnapshot({ ...fake.snapshot(), phase: "ERROR" });
+    expect(host.model?.interactive).toBe(false);
+    app.destroy();
+    expect(host.destroyCalls).toBe(1);
+  });
+
   it("opens the dedicated 25-node tree, researches only its exact detail command, and preserves the match session", async () => {
     const storage = new MemoryStorage();
     const host = new FakeBoardHostV6();
@@ -591,6 +671,7 @@ describe("playable ruleset-6 DOM shell", () => {
     expect(document.querySelector('[data-command-kind="RESEARCH"]')).toBeNull();
 
     const mapTech = requireElement('[data-action="open-tech"]');
+    const unmountsBeforeTech = host.unmountCalls;
     mapTech.focus();
     document.dispatchEvent(
       new KeyboardEvent("keydown", {
@@ -604,6 +685,7 @@ describe("playable ruleset-6 DOM shell", () => {
       document.querySelector('[data-action="close-tech"]'),
     );
     expect(host.destroyCalls).toBe(0);
+    expect(host.unmountCalls).toBeGreaterThan(unmountsBeforeTech);
     expect(app.controller.snapshot()).toMatchObject({
       commandIndex: before.commandIndex,
       stateHash: before.stateHash,
@@ -1127,9 +1209,14 @@ class FakeBoardHostV6 implements BoardHostV6 {
   model: CanvasBoardHostModelV6 | null = null;
   destroyCalls = 0;
   readonly updateIds: Array<number | string> = [];
+  unmountCalls = 0;
 
   mount(_container: HTMLElement, callbacks: CanvasBoardHostCallbacksV6): void {
     this.callbacks = callbacks;
+  }
+  unmount(): void {
+    this.unmountCalls += 1;
+    this.callbacks = null;
   }
   update(model: CanvasBoardHostModelV6): void {
     this.model = model;

@@ -206,6 +206,7 @@ function representativeHostPlan(): BoardRenderPlanV6 {
       entry("UNIT", `UNIT:${unit.role}`, unit.at, unit.id, 5, {
         faction: "ORIGINAL",
         role: unit.role,
+        readiness: "OPAQUE",
       }),
       entry("UNIT_STATUS", `STATUS:${unit.role}`, unit.at, unit.id, 8, {
         faction: "ORIGINAL",

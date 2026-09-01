@@ -33,6 +33,7 @@ export interface CanvasBoardHostModelV6 {
   readonly matchInstanceId: number | string;
   readonly view: PlayerViewV6;
   readonly interactive: boolean;
+  readonly motion?: "FULL" | "REDUCED";
   readonly interaction: BoardRenderInteractionV6;
 }
 
@@ -49,6 +50,7 @@ export interface CanvasBoardHostCallbacksV6 {
 
 export interface BoardHostV6 {
   mount(container: HTMLElement, callbacks: CanvasBoardHostCallbacksV6): void;
+  unmount(): void;
   update(model: CanvasBoardHostModelV6): void;
   activate(at: CoordV6): void;
   select(selection: BoardSelectionV6): void;
@@ -120,6 +122,9 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
   readonly #pointers = new Map<number, ActivePointerV6>();
   #pinch: PinchGestureV6 | null = null;
   #didDrag = false;
+  #readinessPhaseKey: string | null = null;
+  #readinessPhaseStartedAt = 0;
+  #animationFrame: number | null = null;
 
   constructor(documentRoot: Document, images?: Ruleset6AcceptedImageResolver) {
     this.#document = documentRoot;
@@ -186,6 +191,10 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
     this.#draw();
   }
 
+  unmount(): void {
+    this.#unmount();
+  }
+
   update(model: CanvasBoardHostModelV6): void {
     const previousModel = this.#model;
     const matchChanged =
@@ -195,6 +204,12 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
       !matchChanged &&
       this.#observedCommandIndex !== null &&
       this.#observedCommandIndex !== model.view.commandIndex;
+    const activePlayerId = model.view.turnOrder[model.view.activeSeatIndex];
+    const readinessPhaseKey = `${String(model.matchInstanceId)}:${model.view.round}:${activePlayerId ?? "none"}`;
+    if (readinessPhaseKey !== this.#readinessPhaseKey) {
+      this.#readinessPhaseKey = readinessPhaseKey;
+      this.#readinessPhaseStartedAt = this.#now();
+    }
     this.#model = model;
     this.#observedCommandIndex = model.view.commandIndex;
 
@@ -232,6 +247,7 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
     if (this.#canvas !== null)
       this.#canvas.dataset.interactive = String(model.interactive);
     this.#draw();
+    this.#syncAnimationFrame();
   }
 
   activate(at: CoordV6): void {
@@ -287,6 +303,8 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
     this.#inspectionCycle = null;
     this.#observedCommandIndex = null;
     this.#boardKey = null;
+    this.#readinessPhaseKey = null;
+    this.#readinessPhaseStartedAt = 0;
     this.#camera = { offsetX: 0, offsetY: 0, zoom: 1 };
   }
 
@@ -575,6 +593,8 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
         plan,
         devicePixelRatio: this.#devicePixelRatio,
         images: this.#images,
+        readinessElapsedMs: this.#now() - this.#readinessPhaseStartedAt,
+        reducedMotion: !boardReadinessAnimationNeededV6(model),
       });
     }
     this.#describe(plan);
@@ -642,7 +662,8 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
   }
 
   #descriptionText(text: string): void {
-    if (this.#description !== null) this.#description.textContent = text;
+    if (this.#description !== null && this.#description.textContent !== text)
+      this.#description.textContent = text;
   }
 
   #validatePublicPresentation(): void {
@@ -677,6 +698,7 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
   }
 
   #unmount(): void {
+    this.#cancelAnimationFrame();
     this.#resizeObserver?.disconnect();
     this.#resizeObserver = null;
     this.#document.defaultView?.removeEventListener("resize", this.#onResize);
@@ -699,6 +721,66 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
     this.#description = null;
     this.#callbacks = null;
   }
+
+  #scheduleAnimationFrame(): void {
+    if (this.#animationFrame !== null || this.#context === null) return;
+    const model = this.#model;
+    const browser = this.#document.defaultView;
+    if (
+      model === null ||
+      browser === null ||
+      !boardReadinessAnimationNeededV6(model)
+    )
+      return;
+    this.#animationFrame = browser.requestAnimationFrame(() => {
+      this.#animationFrame = null;
+      const current = this.#model;
+      if (current === null || !boardReadinessAnimationNeededV6(current)) return;
+      this.#draw();
+      this.#scheduleAnimationFrame();
+    });
+  }
+
+  #syncAnimationFrame(): void {
+    const model = this.#model;
+    if (model !== null && boardReadinessAnimationNeededV6(model)) {
+      this.#scheduleAnimationFrame();
+    } else {
+      this.#cancelAnimationFrame();
+    }
+  }
+
+  #cancelAnimationFrame(): void {
+    if (this.#animationFrame === null) return;
+    this.#document.defaultView?.cancelAnimationFrame(this.#animationFrame);
+    this.#animationFrame = null;
+  }
+
+  #now(): number {
+    return this.#document.defaultView?.performance.now() ?? 0;
+  }
+}
+
+export function boardReadinessAnimationNeededV6(
+  model: CanvasBoardHostModelV6,
+): boolean {
+  if (!model.interactive || model.motion === "REDUCED") return false;
+  const activePlayerId = model.view.turnOrder[model.view.activeSeatIndex];
+  if (activePlayerId !== model.view.viewer.id) return false;
+  const viewer = model.view.players.find(
+    (player) => player.id === model.view.viewer.id,
+  );
+  if (viewer?.controller !== "HUMAN") return false;
+  const readyUnitIds = new Set(model.interaction.readyUnitIds);
+  return model.view.units.some(
+    (unit) =>
+      unit.ownerId === model.view.viewer.id &&
+      unit.hp > 0 &&
+      readyUnitIds.has(unit.id) &&
+      model.view.board.tiles.some(
+        (tile) => tile.explored && sameCoord(tile.at, unit.at),
+      ),
+  );
 }
 
 /**

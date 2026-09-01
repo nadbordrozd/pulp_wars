@@ -182,6 +182,73 @@ describe("ruleset-6 Canvas drawing layer", () => {
     ).toEqual([]);
   });
 
+  it("applies the exact pulse opacity only to ready unit sprites and their fallbacks", () => {
+    const plan = exhaustivePlan();
+    const unit = plan.entries.find((entry) => entry.kind === "UNIT");
+    const status = plan.entries.find((entry) => entry.kind === "UNIT_STATUS");
+    const terrain = plan.entries.find((entry) => entry.kind === "TERRAIN");
+    if (unit?.kind !== "UNIT" || status === undefined || terrain === undefined)
+      throw new Error("Missing renderer fixtures");
+    const pulsingPlan: BoardRenderPlanV6 = {
+      ...plan,
+      entries: plan.entries.map((entry) =>
+        entry === unit
+          ? {
+              ...entry,
+              details: {
+                ...entry.details,
+                role: "FIGHTER",
+                readiness: "PULSE",
+              },
+            }
+          : entry,
+      ),
+    };
+
+    const full = buildBoardDrawListV6({
+      viewport: { width: 800, height: 600 },
+      camera: { offsetX: 400, offsetY: 180, zoom: 1 },
+      plan: pulsingPlan,
+      readinessElapsedMs: 800,
+      reducedMotion: false,
+    });
+    const unitCommands = full.commands.filter(
+      (command) => command.entryKey === unit.key,
+    );
+    expect(unitCommands.length).toBeGreaterThan(0);
+    expect(unitCommands.every((command) => command.alpha === 0.62)).toBe(true);
+    expect(unitCommands[0]).toMatchObject({
+      kind: "IMAGE",
+      alpha: 0.62,
+      fallback: expect.arrayContaining([
+        expect.objectContaining({ alpha: 0.62 }),
+      ]),
+    });
+    expect(
+      full.commands
+        .filter((command) => command.entryKey === status.key)
+        .every((command) => command.alpha === 1),
+    ).toBe(true);
+    expect(
+      full.commands
+        .filter((command) => command.entryKey === terrain.key)
+        .every((command) => command.alpha === 1),
+    ).toBe(true);
+
+    const reduced = buildBoardDrawListV6({
+      viewport: { width: 800, height: 600 },
+      camera: { offsetX: 400, offsetY: 180, zoom: 1 },
+      plan: pulsingPlan,
+      readinessElapsedMs: 800,
+      reducedMotion: true,
+    });
+    expect(
+      reduced.commands
+        .filter((command) => command.entryKey === unit.key)
+        .every((command) => command.alpha === 1),
+    ).toBe(true);
+  });
+
   it("labels temporary Road masks non-production and never draws a redundant CAPITAL/CITY site over its city", () => {
     const at = { x: 1, y: 1 } as const;
     const villageAt = { x: 2, y: 1 } as const;
@@ -348,7 +415,7 @@ function exhaustivePlan(): BoardRenderPlanV6 {
     SITE: { site: "VILLAGE" },
     CHOCOLATE_WALL: { faction: "CANDY", hp: 7 },
     CITY_BACK: { faction: "ORIGINAL", isCapital: true },
-    UNIT: { faction: "ORIGINAL", role: "SCOUT" },
+    UNIT: { faction: "ORIGINAL", role: "SCOUT", readiness: "OPAQUE" },
     CITY_FRONT: { faction: "ORIGINAL", isCapital: true },
     SELECTION: { selectionKind: "UNIT" },
     CITY_TERRITORY_BOUNDARY: { edge: "NORTH_WEST" },

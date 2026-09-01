@@ -67,6 +67,44 @@ const ECONOMIC_KINDS = [
 ] as const satisfies readonly EconomicCommandKindV6[];
 
 describe("ruleset-6 observation-safe render plan", () => {
+  it("marks only visible owned units named by exact offered MOVE readiness", () => {
+    const hiddenAt = { x: 8, y: 8 } as const;
+    const ownReady = {
+      ...unit(200, OWN, "FIGHTER", { x: 2, y: 2 }),
+      activation: { ...FRESH, handled: true },
+    };
+    const ownIdle = unit(201, OWN, "SCOUT", { x: 3, y: 2 });
+    const rival = unit(202, RIVAL, "GUARD", { x: 4, y: 2 });
+    const hidden = unit(203, OWN, "RAIDER", hiddenAt);
+    const view = replaceWithHidden(
+      {
+        ...baseView(),
+        units: [ownReady, ownIdle, rival, hidden],
+      },
+      hiddenAt,
+    );
+
+    const plan = buildRenderPlanV6(view, {
+      ...EMPTY_BOARD_RENDER_INTERACTION_V6,
+      readyUnitIds: [ownReady.id, rival.id, hidden.id],
+    });
+    expect(
+      entriesOf(plan.entries, "UNIT").map((entry) => ({
+        id: entry.id,
+        readiness: entry.details.readiness,
+      })),
+    ).toEqual(
+      expect.arrayContaining([
+        { id: ownReady.id, readiness: "PULSE" },
+        { id: ownIdle.id, readiness: "OPAQUE" },
+        { id: rival.id, readiness: "OPAQUE" },
+      ]),
+    );
+    expect(
+      entriesOf(plan.entries, "UNIT").some((entry) => entry.id === hidden.id),
+    ).toBe(false);
+  });
+
   it("projects every public terrain, resource, improvement, Road, site, entity, faction, and role", () => {
     let view = baseView();
     const tileSpecs: readonly {

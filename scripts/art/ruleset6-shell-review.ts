@@ -63,6 +63,7 @@ const plan = buildRenderPlanV6(view, {
   activeTarget: null,
   targetMode: null,
   economicPreview: null,
+  readyUnitIds: [],
 });
 const commandCount = queryPlayerCommandsV6(view).length;
 const records: Array<{

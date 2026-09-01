@@ -33,6 +33,7 @@ import {
   type MapCommandTargetV6,
 } from "../canvas/render-plan-v6";
 import { unitCoverageV6 } from "../canvas/asset-coverage-v6";
+import { readyUnitIdsFromOfferedMovesV6 } from "./readiness-v6";
 
 const BOARD_SIZES = [11, 14, 16, 20, 25] as const;
 const COLORS: readonly PlayerColorV6[] = ["CORAL", "TEAL", "GOLD", "VIOLET"];
@@ -68,6 +69,7 @@ export interface Ruleset6SetupDraft {
 
 export interface MountRuleset6AppOptions {
   readonly boardHost?: BoardHostV6;
+  readonly prefersReducedMotion?: boolean;
 }
 
 export type Ruleset6BrowserControllerPort = Pick<
@@ -98,6 +100,7 @@ export class Ruleset6DomAppView {
   readonly #root: HTMLElement;
   readonly #controller: Ruleset6BrowserControllerPort;
   readonly #boardHost: BoardHostV6;
+  readonly #prefersReducedMotion: boolean;
   #unsubscribe: (() => void) | null = null;
   #snapshot: Ruleset6BrowserSnapshot;
   #draft: Ruleset6SetupDraft = defaultDraft();
@@ -127,6 +130,11 @@ export class Ruleset6DomAppView {
     this.#root = root;
     this.#controller = controller;
     this.#boardHost = options.boardHost ?? new CanvasBoardHostV6(documentRoot);
+    this.#prefersReducedMotion =
+      options.prefersReducedMotion ??
+      documentRoot.defaultView?.matchMedia?.("(prefers-reduced-motion: reduce)")
+        .matches ??
+      false;
     this.#snapshot = controller.snapshot();
     this.#document.addEventListener("keydown", this.#onKeyDown);
     this.#unsubscribe = controller.subscribe((snapshot) => {
@@ -278,6 +286,8 @@ export class Ruleset6DomAppView {
       this.#root.querySelector("[data-v6-board]") !== null
     ) {
       this.#mountBoard(this.#snapshot.view);
+    } else {
+      this.#boardHost.unmount();
     }
     const requestedFocus =
       this.#pendingFocusSelector === null
@@ -963,11 +973,15 @@ export class Ruleset6DomAppView {
       view,
       interactive:
         canHumanAct(this.#snapshot) && view.pendingChoices.length === 0,
+      motion: this.#prefersReducedMotion ? "REDUCED" : "FULL",
       interaction: {
         ...EMPTY_BOARD_RENDER_INTERACTION_V6,
         selection: this.#selection,
         targetMode: this.#targetMode,
         economicPreview: this.#economicPreview,
+        readyUnitIds: readyUnitIdsFromOfferedMovesV6(
+          this.#snapshot.offeredCommands,
+        ),
       },
     });
   }

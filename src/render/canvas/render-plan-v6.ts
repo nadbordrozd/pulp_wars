@@ -13,6 +13,7 @@ import {
   type PlayerViewV6,
   type ResourceId,
   type TerrainIdV6,
+  type UnitId,
   type UnitRoleId,
 } from "../../engine/index";
 import {
@@ -71,6 +72,7 @@ export interface BoardRenderInteractionV6 {
   readonly activeTarget: CoordV6 | null;
   readonly targetMode: BoardTargetModeV6 | null;
   readonly economicPreview: EconomicPreviewSelectionV6 | null;
+  readonly readyUnitIds: readonly UnitId[];
 }
 
 export const EMPTY_BOARD_RENDER_INTERACTION_V6: BoardRenderInteractionV6 =
@@ -79,6 +81,7 @@ export const EMPTY_BOARD_RENDER_INTERACTION_V6: BoardRenderInteractionV6 =
     activeTarget: null,
     targetMode: null,
     economicPreview: null,
+    readyUnitIds: Object.freeze([]),
   });
 
 export type MapCommandTargetFamilyV6 =
@@ -126,6 +129,7 @@ interface RenderEntryDetailsV6 {
   readonly UNIT: {
     readonly faction: FactionIdV6;
     readonly role: UnitRoleId;
+    readonly readiness: "PULSE" | "OPAQUE";
   };
   readonly CITY_FRONT: {
     readonly faction: FactionIdV6;
@@ -305,6 +309,7 @@ export function buildRenderPlanV6(
 ): BoardRenderPlanV6 {
   const entries: RenderPlanEntryV6[] = [];
   const legalCommands = queryPlayerCommandsV6(view);
+  const readyUnitIds = new Set(interaction.readyUnitIds);
   const commandTargets = legalCommands
     .map((command) => commandTargetV6(view, command))
     .filter((target): target is MapCommandTargetV6 => target !== null)
@@ -414,6 +419,10 @@ export function buildRenderPlanV6(
           entryV6("UNIT", tile.at, unit.id, unit.ownerId, {
             faction: unitFaction,
             role: unit.role,
+            readiness:
+              unit.ownerId === view.viewer.id && readyUnitIds.has(unit.id)
+                ? "PULSE"
+                : "OPAQUE",
           }),
           entryV6("UNIT_STATUS", tile.at, unit.id, unit.ownerId, {
             role: unit.role,
