@@ -27,6 +27,7 @@
     "art:unit-scale-review": "tsx scripts/art/unit-scale-review.ts",
     "art:ruleset6-original-unit-review": "tsx scripts/art/ruleset6-original-unit-review.ts",
     "art:ruleset6-candy-unit-review": "tsx scripts/art/ruleset6-candy-unit-review.ts",
+    "art:ruleset6-tech-economy-ui-review": "tsx scripts/art/ruleset6-tech-economy-ui-review.ts",
     "art:ruleset6-renderer-review": "tsx scripts/art/ruleset6-renderer-review.ts",
     "art:ruleset6-host-review": "tsx scripts/art/ruleset6-host-review.ts",
     "art:ruleset6-combat-review": "tsx scripts/art/ruleset6-combat-review.ts",

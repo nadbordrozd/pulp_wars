@@ -1783,7 +1783,7 @@ fieldset {
 
 .v6-hud-chip {
   display: grid;
-  grid-template-columns: auto auto;
+  grid-template-columns: auto auto auto;
   gap: 0.35rem;
   align-items: baseline;
   min-width: 4.6rem;
@@ -1792,6 +1792,15 @@ fieldset {
   border-radius: 0.65rem;
   background: var(--panel);
   font-size: 0.78rem;
+}
+
+.v6-hud-chip-icon,
+.v6-city-population-progress > .v6-command-symbol {
+  flex-basis: 1.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 0;
+  background: transparent;
 }
 
 .v6-hud-chip span {

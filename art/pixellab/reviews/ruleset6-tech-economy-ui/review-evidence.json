@@ -1,0 +1,436 @@
+{
+  "schemaVersion": 1,
+  "gateOrder": {
+    "samples": [
+      "ui-hud-coin",
+      "ui-action-redevelop",
+      "ui-tech-fieldcraft"
+    ],
+    "representativeBranches": [
+      "ui-tech-original-farming",
+      "ui-tech-original-fieldcraft",
+      "ui-tech-original-metallurgy",
+      "ui-tech-candy-scouting",
+      "ui-tech-candy-drill"
+    ],
+    "batches": [
+      [
+        "ui-hud-population",
+        "ui-hud-negative-population",
+        "ui-hud-capacity"
+      ],
+      [
+        "ui-action-clear-forest",
+        "ui-action-replant-forest",
+        "ui-reward-expand"
+      ],
+      [
+        "ui-action-heal",
+        "ui-action-recover",
+        "ui-action-wait"
+      ],
+      [
+        "ui-action-promote",
+        "ui-action-end-turn"
+      ],
+      [
+        "ui-tech-maneuver",
+        "ui-tech-fortification",
+        "ui-tech-recovery"
+      ]
+    ]
+  },
+  "inventory": {
+    "explicitTechnologyKeys": 50,
+    "reusedTechnologyKeys": 42,
+    "generatedAbstractTechnologyKeys": 8,
+    "generatedAbstractTechnologySources": 4,
+    "newRasterSources": 17,
+    "hudMappings": [
+      "ui-hud-coin",
+      "ui-hud-income",
+      "ui-hud-population",
+      "ui-hud-negative-population",
+      "ui-hud-capacity",
+      "ui-hud-road"
+    ]
+  },
+  "generated": {
+    "ui-hud-coin": {
+      "sha256": "9704f4d96a78ab77124ff13d58a77e5982f6e36ed4faf90f4a87615741ced20e",
+      "width": 96,
+      "height": 96,
+      "alphaBounds": {
+        "left": 7,
+        "top": 7,
+        "right": 89,
+        "bottom": 89,
+        "empty": false
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/ui-hud-coin-7c9fba469ec8.png",
+          "candidateSha256": "7c9fba469ec8f74564bb808c4dd2c4c760988910bd38e33e7847a07028742dae",
+          "notes": "Rejected at source/native/24px review: provider produced two vertically stacked coin-like tokens instead of the required single connected Coin silhouette, creating ambiguous duplicate currency and excessive height.",
+          "reviewedAt": "2026-09-01T20:31:13.168Z",
+          "request": {
+            "endpoint": "generate-ui-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm bronze, parchment highlight, dark teal-charcoal outline. One compact HUD currency icon for Coin only: one chunky slightly irregular round warm-bronze coin token facing nearly front-on, with one large centered raised diamond mint mark and one small edge notch. Strong charcoal-teal outline, flat two-level cel shading, one broad parchment highlight, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 24 pixels and in grayscale. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; star, dollar sign, currency letter, number, text, letters, multiple coins, coin stack, treasure chest, scene, panel, button, photoreal metal, realistic engraving, thin outline, gradient, glow, cast shadow.",
+            "prompt": "One compact HUD currency icon for Coin only: one chunky slightly irregular round warm-bronze coin token facing nearly front-on, with one large centered raised diamond mint mark and one small edge notch. Strong charcoal-teal outline, flat two-level cel shading, one broad parchment highlight, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 24 pixels and in grayscale.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; star, dollar sign, currency letter, number, text, letters, multiple coins, coin stack, treasure chest, scene, panel, button, photoreal metal, realistic engraving, thin outline, gradient, glow, cast shadow",
+            "requestSize": {
+              "width": 384,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 96,
+              "height": 96
+            },
+            "seed": 96101,
+            "noBackground": true,
+            "palette": "warm bronze, parchment highlight, dark teal-charcoal outline",
+            "postprocess": "lanczos3-resize",
+            "styleReference": {
+              "id": "ui-star",
+              "sha256": "86b0c714661f50e239bebb5b17b331b6e28e9f95aa6faf3935684b9328578211",
+              "usageDescription": "Match only the accepted compact HUD icon outline weight, flat shading, safe area, and 24px readability; replace the retired Star metaphor with a unique Coin."
+            }
+          }
+        }
+      ]
+    },
+    "ui-action-redevelop": {
+      "sha256": "ef289cf3b0712229a92aeec1769a15dddf6765983ced244043f5def001ed3d46",
+      "width": 192,
+      "height": 192,
+      "alphaBounds": {
+        "left": 15,
+        "top": 15,
+        "right": 177,
+        "bottom": 177,
+        "empty": false
+      },
+      "rejectedAttempts": []
+    },
+    "ui-tech-fieldcraft": {
+      "sha256": "2b75a5b82db5778ac888df239eb2a6141e345849811e9d2b562c99de7cd27bbf",
+      "width": 256,
+      "height": 256,
+      "alphaBounds": {
+        "left": 33,
+        "top": 28,
+        "right": 228,
+        "bottom": 220,
+        "empty": false
+      },
+      "rejectedAttempts": []
+    },
+    "ui-hud-population": {
+      "sha256": "3307920b71ee0db3604dd80eef4f642a9913f23e938f2198a3c426704a9bd75f",
+      "width": 96,
+      "height": 96,
+      "alphaBounds": {
+        "left": 7,
+        "top": 7,
+        "right": 88,
+        "bottom": 89,
+        "empty": false
+      },
+      "rejectedAttempts": []
+    },
+    "ui-hud-negative-population": {
+      "sha256": "cdcf4e4bf16e3296be80ee1ac4bf743d5a9bbcaa5c0189f3ff92cd8daf0cbc45",
+      "width": 96,
+      "height": 96,
+      "alphaBounds": {
+        "left": 7,
+        "top": 7,
+        "right": 88,
+        "bottom": 89,
+        "empty": false
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/ui-hud-negative-population-5d242dea0a13.png",
+          "candidateSha256": "5d242dea0a13fbb4e7014ff04228d04c8bcc447d42c8b6365e2ed5ac33f886ae",
+          "notes": "Rejected at 24px light/dark/grayscale family review: the provider returned mostly dark outline around transparent busts, so the deficit symbol nearly disappears on the dark HUD and the broken population mass is not readable.",
+          "reviewedAt": "2026-09-01T20:57:05.848Z",
+          "request": {
+            "endpoint": "generate-ui-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted coral, parchment, dark teal-charcoal outline. One compact HUD icon for Negative Population only: the same broad three-person-bust group concept visibly split by one enormous jagged empty crack through the middle, with the outer two busts drooping downward. The missing crack and broken silhouette communicate population deficit without color, text, signs, or numbers. Strong charcoal-teal outline, flat muted coral and parchment fill, centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 24 pixels and in grayscale. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; minus sign, hyphen, letters, numbers, color-only state, happy intact crowd, skull, gore, faces, city, scene, panel, button, photorealism, thin crack, tiny detail, gradient, cast shadow.",
+            "prompt": "One compact HUD icon for Negative Population only: the same broad three-person-bust group concept visibly split by one enormous jagged empty crack through the middle, with the outer two busts drooping downward. The missing crack and broken silhouette communicate population deficit without color, text, signs, or numbers. Strong charcoal-teal outline, flat muted coral and parchment fill, centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 24 pixels and in grayscale.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; minus sign, hyphen, letters, numbers, color-only state, happy intact crowd, skull, gore, faces, city, scene, panel, button, photorealism, thin crack, tiny detail, gradient, cast shadow",
+            "requestSize": {
+              "width": 384,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 96,
+              "height": 96
+            },
+            "seed": 96202,
+            "noBackground": true,
+            "palette": "muted coral, parchment, dark teal-charcoal outline",
+            "postprocess": "lanczos3-resize",
+            "styleReference": {
+              "id": "ui-hud-population",
+              "sha256": "3307920b71ee0db3604dd80eef4f642a9913f23e938f2198a3c426704a9bd75f",
+              "usageDescription": "Match the compact Population HUD family while making deficit unmistakable through shape, not hue or a baked minus sign."
+            }
+          }
+        }
+      ]
+    },
+    "ui-hud-capacity": {
+      "sha256": "65f660aaa99b9046d93e966d4e5771e881c016e72e95ea7c4a13a3e85598dba2",
+      "width": 96,
+      "height": 96,
+      "alphaBounds": {
+        "left": 8,
+        "top": 17,
+        "right": 88,
+        "bottom": 77,
+        "empty": false
+      },
+      "rejectedAttempts": []
+    },
+    "ui-action-clear-forest": {
+      "sha256": "3aa9243aa5ca7d0c6e2b98421a105e80e04c303da89088a9cbcfe8494c44f846",
+      "width": 192,
+      "height": 192,
+      "alphaBounds": {
+        "left": 15,
+        "top": 15,
+        "right": 177,
+        "bottom": 176,
+        "empty": false
+      },
+      "rejectedAttempts": []
+    },
+    "ui-action-replant-forest": {
+      "sha256": "caef4fa32f2196353b271fbd55f2991ccfccca7864c2e1d5f99ca6cf48c11977",
+      "width": 192,
+      "height": 192,
+      "alphaBounds": {
+        "left": 15,
+        "top": 15,
+        "right": 177,
+        "bottom": 176,
+        "empty": false
+      },
+      "rejectedAttempts": []
+    },
+    "ui-reward-expand": {
+      "sha256": "cbb749af78bb59e914c7ac3df3deb65de30eba605d74e131b089a89a8f2bcc5d",
+      "width": 128,
+      "height": 128,
+      "alphaBounds": {
+        "left": 10,
+        "top": 10,
+        "right": 118,
+        "bottom": 117,
+        "empty": false
+      },
+      "rejectedAttempts": []
+    },
+    "ui-action-heal": {
+      "sha256": "ed663a60f5a0a3b0d4275331c7f5a7001c7d00bf19a5d5d3a930b730afe734ee",
+      "width": 192,
+      "height": 192,
+      "alphaBounds": {
+        "left": 15,
+        "top": 17,
+        "right": 177,
+        "bottom": 175,
+        "empty": false
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/ui-action-heal-926fc8489f33.png",
+          "candidateSha256": "926fc8489f33da12a7a003777e633db8381a87d04d34d508c9952c47d28e1423",
+          "notes": "Rejected at source review: provider returned a UI frame/palette sheet with multiple empty rectangles and no bandage/heart healing silhouette; violates isolated-icon, no-panel, no-state and single-command requirements.",
+          "reviewedAt": "2026-09-01T21:23:49.332Z",
+          "request": {
+            "endpoint": "generate-ui-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: cream bandage, warm bronze heart clasp, muted teal pulse, dark teal-charcoal outline. One primary action icon for Heal only: one enormous rolled cream bandage wrapping around one large warm-bronze heart-shaped clasp, with one broad upward pulse curve behind them. Strong charcoal-teal outline, flat two-level cel shading, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 48 pixels and in grayscale. Use no real-world medical emblem. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; red cross, crescent, protected medical symbol, plus sign, syringe, potion, doctor, patient, gore, text, letters, numbers, panel, button, realistic anatomy, thin line, gradient, glow, cast shadow.",
+            "prompt": "One primary action icon for Heal only: one enormous rolled cream bandage wrapping around one large warm-bronze heart-shaped clasp, with one broad upward pulse curve behind them. Strong charcoal-teal outline, flat two-level cel shading, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 48 pixels and in grayscale. Use no real-world medical emblem.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; red cross, crescent, protected medical symbol, plus sign, syringe, potion, doctor, patient, gore, text, letters, numbers, panel, button, realistic anatomy, thin line, gradient, glow, cast shadow",
+            "requestSize": {
+              "width": 384,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 192,
+              "height": 192
+            },
+            "seed": 96401,
+            "noBackground": true,
+            "palette": "cream bandage, warm bronze heart clasp, muted teal pulse, dark teal-charcoal outline",
+            "postprocess": "lanczos3-resize",
+            "styleReference": {
+              "id": "ui-action-redevelop",
+              "sha256": "ef289cf3b0712229a92aeec1769a15dddf6765983ced244043f5def001ed3d46",
+              "usageDescription": "Match the accepted primary-action icon family while avoiding protected real-world medical emblems."
+            }
+          }
+        }
+      ]
+    },
+    "ui-action-recover": {
+      "sha256": "1a21ba9afae93767bb6ccfb7b9c433a683cd8ba1530b6c68741d4dcff4ac9133",
+      "width": 192,
+      "height": 192,
+      "alphaBounds": {
+        "left": 15,
+        "top": 17,
+        "right": 177,
+        "bottom": 175,
+        "empty": false
+      },
+      "rejectedAttempts": []
+    },
+    "ui-action-wait": {
+      "sha256": "453bb7b53e3244749e3e312451a28c0601040584ff83d1aba57c2d22751ca2fa",
+      "width": 192,
+      "height": 192,
+      "alphaBounds": {
+        "left": 16,
+        "top": 16,
+        "right": 175,
+        "bottom": 175,
+        "empty": false
+      },
+      "rejectedAttempts": []
+    },
+    "ui-action-promote": {
+      "sha256": "0b490be3f32f5eed8ac60691c889fdc6e060a86e3d8ae284fcc1da5016f26dce",
+      "width": 192,
+      "height": 192,
+      "alphaBounds": {
+        "left": 18,
+        "top": 15,
+        "right": 174,
+        "bottom": 177,
+        "empty": false
+      },
+      "rejectedAttempts": []
+    },
+    "ui-action-end-turn": {
+      "sha256": "9406c5edd9126a25b1be3a032a14e23666228f37fef7535afc2dbc7ff1efde53",
+      "width": 192,
+      "height": 192,
+      "alphaBounds": {
+        "left": 15,
+        "top": 34,
+        "right": 177,
+        "bottom": 158,
+        "empty": false
+      },
+      "rejectedAttempts": []
+    },
+    "ui-tech-maneuver": {
+      "sha256": "ca82506165379e5b0df4424958b6d686be24796017c1209e6381575edf76be3e",
+      "width": 256,
+      "height": 256,
+      "alphaBounds": {
+        "left": 20,
+        "top": 20,
+        "right": 236,
+        "bottom": 236,
+        "empty": false
+      },
+      "rejectedAttempts": []
+    },
+    "ui-tech-fortification": {
+      "sha256": "461a712885df9a0126aaa3628ee50fb8cb48d98138f63c95cb61c47cba8ee519",
+      "width": 256,
+      "height": 256,
+      "alphaBounds": {
+        "left": 22,
+        "top": 20,
+        "right": 233,
+        "bottom": 236,
+        "empty": false
+      },
+      "rejectedAttempts": []
+    },
+    "ui-tech-recovery": {
+      "sha256": "931ba91e902cec673c5d7affc005279b3dd436794f56bff9f6169619c435d89c",
+      "width": 256,
+      "height": 256,
+      "alphaBounds": {
+        "left": 20,
+        "top": 29,
+        "right": 236,
+        "bottom": 227,
+        "empty": false
+      },
+      "rejectedAttempts": []
+    }
+  },
+  "review": {
+    "sizes": [
+      16,
+      24,
+      32,
+      48,
+      64
+    ],
+    "surfaces": [
+      "light",
+      "dark",
+      "high-contrast"
+    ],
+    "simulations": [
+      "grayscale",
+      "protan",
+      "deutan"
+    ],
+    "states": [
+      "normal",
+      "disabled",
+      "focus",
+      "selected",
+      "locked"
+    ],
+    "viewports": [
+      320,
+      600,
+      1024
+    ],
+    "zoom": [
+      1,
+      2
+    ],
+    "dpr": [
+      1,
+      2
+    ],
+    "factions": [
+      "ORIGINAL_BASELINE",
+      "CANDY_BASELINE_V1"
+    ],
+    "clearReplantShapeRedundancy": "axe-and-stump versus sapling-and-trowel",
+    "codeNative": [
+      "Move and Attack map targeting",
+      "cluster and contributor geometry",
+      "Road connectivity",
+      "signed calculations and population squares",
+      "focus, selected, disabled and locked states",
+      "Charge, projectile, Heal, Push and Breach effects"
+    ]
+  },
+  "artifacts": {
+    "sample-gate-native-enlarged-minimum.png": "09292ab4bbf5beca22f005db23e392c0440c988e329436772e7bed8074dfec8b",
+    "hud-size-contrast-grayscale.png": "b7accf6359ff0e61f21b975ed345545effc87d1c81c52140f0a7a60c91fe79e0",
+    "action-reward-states-grayscale.png": "92491af7762e6db511660ab512dd58fbd34b486d6b1649b02c9f286634488c69",
+    "technology-tree-original.png": "4ef396bcadd8546513ca7ec4d120d1b6f502fd8aa2c40b9d0a9f19f297fca6fd",
+    "technology-tree-candy.png": "24a590db38cbb7dc916da0a6e78a8f31d888d05e0e91c42f989222f0b8bc972c",
+    "five-branch-color-vision.png": "f9542efaf9f3644bed1915b7ed1801fb2dc0f150aefaaa1eab0003315fbe7568",
+    "responsive-320-600-1024-dpr-zoom.png": "17f8264fffb6bd3ee66c163ad4c9b0f29a88aa6b2307a954e01c5b15ded6d187",
+    "responsive-600-dpr2-native.png": "516a3daf60b5ab4109d3d199ed224e91cabacf3d5e9af5a8ede890b42bca1e5f"
+  }
+}

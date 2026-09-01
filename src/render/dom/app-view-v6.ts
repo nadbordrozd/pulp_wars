@@ -18,6 +18,12 @@ import {
   type UnitRoleId,
 } from "../../engine/index";
 import { ACCEPTED_ART_URLS } from "../../assets/generated-art-manifest";
+import {
+  commandArtIdV6,
+  rewardArtIdV6,
+  RULESET6_HUD_ART_IDS,
+  technologyArtIdV6,
+} from "../../assets/ruleset6-ui-art";
 import type {
   Ruleset6BrowserController,
   Ruleset6BrowserSnapshot,
@@ -31,7 +37,6 @@ import {
   type EconomicCommandV6,
   type MapCommandTargetV6,
 } from "../canvas/render-plan-v6";
-import { unitCoverageV6 } from "../canvas/asset-coverage-v6";
 import { readyUnitIdsFromOfferedMovesV6 } from "./readiness-v6";
 import {
   combatPresentationsFromEventsV6,
@@ -483,7 +488,12 @@ export class Ruleset6DomAppView {
     const hud = el(this.#document, "header", "v6-hud");
     hud.append(
       chip(this.#document, "Faction", title(view.viewer.faction)),
-      chip(this.#document, "Coins", String(view.viewer.coins)),
+      chip(
+        this.#document,
+        "Coins",
+        String(view.viewer.coins),
+        RULESET6_HUD_ART_IDS.COIN,
+      ),
       chip(this.#document, "Round", String(view.round)),
       chip(this.#document, "Cities", String(ownCities.length)),
       chip(this.#document, "Units", String(ownUnits.length)),
@@ -784,12 +794,18 @@ export class Ruleset6DomAppView {
       String(this.#selectedTechnology === node.id),
     );
     card.ariaLabel = `${title(node.id)}, ${title(node.branch)} branch, tier ${node.tier}, costs ${node.cost} Coins, ${state.label}. Open details.`;
-    const symbol = actionSymbolNode(this.#document, technologySymbol(node.id));
+    const symbol = actionSymbolNode(
+      this.#document,
+      technologySymbol(
+        node.id,
+        this.#snapshot.view?.viewer.faction ?? "ORIGINAL",
+      ),
+    );
     symbol.classList.add("v6-tech-card-symbol");
     const copy = el(this.#document, "span", "v6-tech-card-copy");
     copy.append(
       text(this.#document, "strong", title(node.id), "v6-tech-card-name"),
-      text(this.#document, "span", `◉ ${node.cost} Coins`, "v6-tech-card-cost"),
+      text(this.#document, "span", `${node.cost} Coins`, "v6-tech-card-cost"),
       text(this.#document, "span", state.label, "v6-tech-card-state"),
     );
     card.append(symbol, copy);
@@ -876,7 +892,10 @@ export class Ruleset6DomAppView {
         offered,
         `Research ${title(node.id)} · ${node.cost} Coins`,
         {
-          symbol: technologySymbol(node.id),
+          symbol: technologySymbol(
+            node.id,
+            this.#snapshot.view?.viewer.faction ?? "ORIGINAL",
+          ),
           className: "v6-tech-research-action",
           accessibleLabel: `Research ${title(node.id)} for ${node.cost} Coins`,
         },
@@ -1070,6 +1089,15 @@ export class Ruleset6DomAppView {
         ? `${presentation.deficit} population deficit · replace before growth`
         : `${presentation.accumulated}/${presentation.required} to level ${presentation.nextLevel}`;
     wrapper.append(
+      actionSymbolNode(
+        this.#document,
+        acceptedSymbol(
+          presentation.deficit > 0
+            ? RULESET6_HUD_ART_IDS.NEGATIVE_POPULATION
+            : RULESET6_HUD_ART_IDS.POPULATION,
+          presentation.deficit > 0 ? "!" : "●",
+        ),
+      ),
       squares,
       text(this.#document, "span", copy, "v6-city-population-copy"),
     );
@@ -1676,46 +1704,11 @@ function technologyState(
       };
 }
 
-const TECHNOLOGY_FALLBACK_SYMBOLS: Readonly<Record<TechnologyId, string>> = {
-  GATHERING: "●",
-  FARMING: "≋",
-  MILLING: "✳",
-  CRAFT: "⚙",
-  GRAND_WORKS: "♜",
-  HUNTING: "◇",
-  FORESTRY: "♣",
-  SAWMILLING: "⌘",
-  MARKSMANSHIP: "◎",
-  FIELDCRAFT: "❧",
-  SURVEYING: "△",
-  MINING: "◆",
-  METALLURGY: "⚒",
-  QUARRYING: "▧",
-  MASONRY: "▤",
-  SCOUTING: "⌖",
-  ROADS: "━",
-  COMMERCE: "◉",
-  RAIDING: "⚑",
-  MANEUVER: "↝",
-  DRILL: "▥",
-  FORTIFICATION: "▣",
-  EXPLOSIVES: "✹",
-  MEDICINE: "✚",
-  RECOVERY: "♥",
-};
-
-const ACCEPTED_TECHNOLOGY_ART: Readonly<Partial<Record<TechnologyId, string>>> =
-  {
-    HUNTING: "ui-tech-hunting",
-    FORESTRY: "ui-tech-forestry",
-    MINING: "ui-tech-mining",
-  };
-
-function technologySymbol(technology: TechnologyId): ActionSymbol {
-  const assetId = ACCEPTED_TECHNOLOGY_ART[technology];
-  return assetId === undefined
-    ? fallbackSymbol(TECHNOLOGY_FALLBACK_SYMBOLS[technology])
-    : acceptedSymbol(assetId, TECHNOLOGY_FALLBACK_SYMBOLS[technology]);
+function technologySymbol(
+  technology: TechnologyId,
+  faction: FactionIdV6,
+): ActionSymbol {
+  return acceptedSymbol(technologyArtIdV6(faction, technology), "?");
 }
 
 const TECHNOLOGY_COMMAND_UNLOCK_LABELS: Readonly<
@@ -1996,7 +1989,7 @@ function contextActionPresentation(
     return {
       label: `${role.label} · ${role.cost ?? 0} Coins`,
       accessibleLabel: `Train ${role.label} for ${role.cost ?? 0} Coins`,
-      symbol: unitActionSymbol(faction, command.role),
+      symbol: commandSymbol(command, faction),
     };
   }
   if (command.kind === "CAPTURE") {
@@ -2035,78 +2028,10 @@ function commandSymbol(
   command: CommandV6,
   faction: FactionIdV6 = "ORIGINAL",
 ): ActionSymbol {
-  switch (command.kind) {
-    case "ATTACK":
-      return acceptedSymbol("ui-attack", "⚔");
-    case "KAMIKAZE_ROLL":
-      return acceptedSymbol("ui-action-kamikaze-roll", "⇢");
-    case "BUILD_CHOCOLATE_WALL":
-      return acceptedSymbol("ui-action-build-chocolate-wall", "▦");
-    case "CANDIFY":
-      return acceptedSymbol("ui-action-candify", "✦");
-    case "CHOOSE_CANDIFY_CITY":
-      return acceptedSymbol("ui-action-choose-candify-city", "⌂");
-    case "CAPTURE":
-      return acceptedSymbol("building-village", "⚑");
-    case "HARVEST_FRUIT":
-      return acceptedSymbol(
-        faction === "CANDY" ? "terrain-candy-fruit" : "terrain-fruit",
-        "●",
-      );
-    case "HUNT_GAME":
-      return acceptedSymbol(
-        faction === "CANDY" ? "terrain-candy-animal" : "terrain-game",
-        "◇",
-      );
-    case "BUILD_MINE":
-      return acceptedSymbol("building-mine", "▲");
-    case "MOVE":
-      return fallbackSymbol("→");
-    case "HEAL_ADJACENT":
-      return fallbackSymbol("✚");
-    case "RECOVER":
-      return fallbackSymbol("♥");
-    case "PROMOTE":
-      return fallbackSymbol("★");
-    case "WAIT":
-      return fallbackSymbol("⏸");
-    case "END_TURN":
-      return fallbackSymbol("↻");
-    case "RESEARCH":
-      return fallbackSymbol("◈");
-    case "TRAIN":
-      return unitActionSymbol(faction, command.role);
-    case "BUILD_FARM":
-      return fallbackSymbol("≡");
-    case "BUILD_LUMBER_CAMP":
-      return fallbackSymbol("╱");
-    case "BUILD_QUARRY":
-      return fallbackSymbol("▧");
-    case "BUILD_WINDMILL":
-      return fallbackSymbol("✳");
-    case "BUILD_SAWMILL":
-      return fallbackSymbol("⌘");
-    case "BUILD_FORGE":
-      return fallbackSymbol("⚒");
-    case "BUILD_STONEWORKS":
-      return fallbackSymbol("▤");
-    case "BUILD_WORKSHOP":
-      return fallbackSymbol("⚙");
-    case "BUILD_GRAND_WORKS":
-      return fallbackSymbol("♜");
-    case "BUILD_MARKET":
-      return fallbackSymbol("◉");
-    case "CLEAR_FOREST":
-      return fallbackSymbol("✕");
-    case "REPLANT_FOREST":
-      return fallbackSymbol("♣");
-    case "BUILD_ROAD":
-      return fallbackSymbol("━");
-    case "REDEVELOP":
-      return fallbackSymbol("↺");
-    case "CHOOSE_CITY_REWARD":
-      return acceptedSymbol(rewardArtId(command.reward), "✦");
-  }
+  if (command.kind === "ATTACK") return acceptedSymbol("ui-attack", "⚔");
+  if (command.kind === "MOVE") return fallbackSymbol("→");
+  const assetId = commandArtIdV6(command, faction);
+  return assetId === null ? fallbackSymbol("?") : acceptedSymbol(assetId, "?");
 }
 
 function mandatoryChoiceHeading(choice: PendingChoiceV6 | undefined): string {
@@ -2144,49 +2069,49 @@ function rewardPresentation(
       return {
         label: "Survey",
         effect: "Reveal every tile within Chebyshev radius 3 now.",
-        symbol: acceptedSymbol("ui-reward-survey", "◎"),
+        symbol: acceptedSymbol(rewardArtIdV6(view.viewer.faction, reward), "?"),
       };
     case "STOCKPILE":
       return {
         label: "Stockpile",
         effect: "+4 Coins now.",
-        symbol: fallbackSymbol("◉"),
+        symbol: acceptedSymbol(rewardArtIdV6(view.viewer.faction, reward), "?"),
       };
     case "WALLS":
       return {
         label: "Walls",
         effect: "Permanently grants 4× eligible city defense.",
-        symbol: acceptedSymbol("ui-reward-city-wall", "▦"),
+        symbol: acceptedSymbol(rewardArtIdV6(view.viewer.faction, reward), "?"),
       };
     case "MILITIA":
       return {
         label: "Militia",
         effect: `Grant one free ${fighter}, handled this turn.`,
-        symbol: unitActionSymbol(view.viewer.faction, "FIGHTER"),
+        symbol: acceptedSymbol(rewardArtIdV6(view.viewer.faction, reward), "?"),
       };
     case "EXPAND":
       return {
         label: "Expand",
         effect: "Claim neutral tiles in the city's centered 5 × 5 footprint.",
-        symbol: fallbackSymbol("⬚"),
+        symbol: acceptedSymbol(rewardArtIdV6(view.viewer.faction, reward), "?"),
       };
     case "BOOM":
       return {
         label: "Boom",
         effect: "+3 permanent population; further rewards may join the queue.",
-        symbol: fallbackSymbol("+3"),
+        symbol: acceptedSymbol(rewardArtIdV6(view.viewer.faction, reward), "?"),
       };
     case "JUGGERNAUT":
       return {
         label: juggernaut,
         effect: `Grant one free ${juggernaut}, handled this turn.`,
-        symbol: unitActionSymbol(view.viewer.faction, "JUGGERNAUT"),
+        symbol: acceptedSymbol(rewardArtIdV6(view.viewer.faction, reward), "?"),
       };
     case "TREASURY":
       return {
         label: "Treasury",
         effect: "+5 Coins now.",
-        symbol: fallbackSymbol("◉"),
+        symbol: acceptedSymbol(rewardArtIdV6(view.viewer.faction, reward), "?"),
       };
   }
 }
@@ -2267,23 +2192,6 @@ function candifyTerritoryPreview(
   return wrapper;
 }
 
-function unitActionSymbol(
-  faction: FactionIdV6,
-  role: UnitRoleId,
-): ActionSymbol {
-  const portraitUrl =
-    ACCEPTED_ART_URLS[
-      `portrait-${faction.toLowerCase()}-${role.toLowerCase()}`
-    ];
-  if (portraitUrl !== undefined) return { kind: "RASTER", url: portraitUrl };
-  const coverage = unitCoverageV6(faction, role);
-  if (coverage.status === "ACCEPTED") {
-    const url = ACCEPTED_ART_URLS[coverage.assetId];
-    if (url !== undefined) return { kind: "RASTER", url };
-  }
-  return fallbackSymbol(role.slice(0, 2));
-}
-
 function acceptedSymbol(assetId: string, fallback: string): ActionSymbol {
   const url = ACCEPTED_ART_URLS[assetId];
   return url === undefined ? fallbackSymbol(fallback) : { kind: "RASTER", url };
@@ -2291,16 +2199,6 @@ function acceptedSymbol(assetId: string, fallback: string): ActionSymbol {
 
 function fallbackSymbol(value: string): ActionSymbol {
   return { kind: "FALLBACK", value };
-}
-
-function rewardArtId(
-  reward: Extract<CommandV6, { readonly kind: "CHOOSE_CITY_REWARD" }>["reward"],
-): string {
-  const ids: Partial<Record<typeof reward, string>> = {
-    SURVEY: "ui-reward-survey",
-    WALLS: "ui-reward-city-wall",
-  };
-  return ids[reward] ?? "";
 }
 
 function actionSymbolNode(
@@ -2449,8 +2347,14 @@ function chip(
   documentRoot: Document,
   label: string,
   value: string,
+  assetId?: string,
 ): HTMLElement {
   const node = el(documentRoot, "div", "v6-hud-chip");
+  if (assetId !== undefined) {
+    const symbol = actionSymbolNode(documentRoot, acceptedSymbol(assetId, "?"));
+    symbol.classList.add("v6-hud-chip-icon");
+    node.append(symbol);
+  }
   node.append(
     text(documentRoot, "span", label),
     text(documentRoot, "strong", value),

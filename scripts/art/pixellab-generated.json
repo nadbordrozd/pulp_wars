@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "015bbd0716272d049d942ec12663c49b8edd71dc14c0bd79513bd0e1810a1a73",
+  "sourceManifestSha256": "84028d971a57f60cd024a8c7ecc0741c201c5722562761d25498b93928574f57",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -6161,6 +6161,986 @@
       },
       "outputSha256": "b912be1968363a2a6f4b313513825cbe125b1dc75dcd2c443c828ae413d464e7",
       "reviewedAt": "2026-09-01T18:39:08.938Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-hud-coin": {
+      "id": "ui-hud-coin",
+      "status": "ACCEPTED",
+      "jobId": "24841e93-e0b5-4ca2-8c04-8f2500f0f49e",
+      "candidate": "art/pixellab/candidates/ui-hud-coin.png",
+      "candidateSha256": "9704f4d96a78ab77124ff13d58a77e5982f6e36ed4faf90f4a87615741ced20e",
+      "providerOutputSha256": "9a2c1c9561233206c3d95b5ea0bab69cc8f30895f2b69db709edad9666a518a0",
+      "width": 96,
+      "height": 96,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 7,
+        "top": 7,
+        "right": 89,
+        "bottom": 89,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm bronze, parchment highlight, dark teal-charcoal outline. Exactly one single compact HUD currency icon for Coin only, and absolutely nothing else anywhere: one chunky slightly irregular round warm-bronze coin token facing nearly front-on, with one large centered raised diamond mint mark cut into that same coin and one small edge notch. The entire image is one circular connected object with no separate token, reflection, shadow, decoration, or object below it. Strong charcoal-teal outline, flat two-level cel shading, one broad parchment highlight, centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 24 pixels and in grayscale. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; second object, separate object below coin, loose diamond token, multiple coins, coin stack, star, dollar sign, currency letter, number, text, letters, treasure chest, scene, panel, button, reflection object, shadow object, photoreal metal, realistic engraving, thin outline, gradient, glow, cast shadow.",
+        "prompt": "Exactly one single compact HUD currency icon for Coin only, and absolutely nothing else anywhere: one chunky slightly irregular round warm-bronze coin token facing nearly front-on, with one large centered raised diamond mint mark cut into that same coin and one small edge notch. The entire image is one circular connected object with no separate token, reflection, shadow, decoration, or object below it. Strong charcoal-teal outline, flat two-level cel shading, one broad parchment highlight, centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 24 pixels and in grayscale.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; second object, separate object below coin, loose diamond token, multiple coins, coin stack, star, dollar sign, currency letter, number, text, letters, treasure chest, scene, panel, button, reflection object, shadow object, photoreal metal, realistic engraving, thin outline, gradient, glow, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 96,
+          "height": 96
+        },
+        "seed": 96111,
+        "noBackground": true,
+        "palette": "warm bronze, parchment highlight, dark teal-charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-star",
+          "sha256": "86b0c714661f50e239bebb5b17b331b6e28e9f95aa6faf3935684b9328578211",
+          "usageDescription": "Match only the accepted compact HUD icon outline weight, flat shading, safe area, and 24px readability; replace the retired Star metaphor with a unique Coin."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/ui-hud-coin-7c9fba469ec8.png",
+          "candidateSha256": "7c9fba469ec8f74564bb808c4dd2c4c760988910bd38e33e7847a07028742dae",
+          "notes": "Rejected at source/native/24px review: provider produced two vertically stacked coin-like tokens instead of the required single connected Coin silhouette, creating ambiguous duplicate currency and excessive height.",
+          "reviewedAt": "2026-09-01T20:31:13.168Z",
+          "request": {
+            "endpoint": "generate-ui-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm bronze, parchment highlight, dark teal-charcoal outline. One compact HUD currency icon for Coin only: one chunky slightly irregular round warm-bronze coin token facing nearly front-on, with one large centered raised diamond mint mark and one small edge notch. Strong charcoal-teal outline, flat two-level cel shading, one broad parchment highlight, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 24 pixels and in grayscale. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; star, dollar sign, currency letter, number, text, letters, multiple coins, coin stack, treasure chest, scene, panel, button, photoreal metal, realistic engraving, thin outline, gradient, glow, cast shadow.",
+            "prompt": "One compact HUD currency icon for Coin only: one chunky slightly irregular round warm-bronze coin token facing nearly front-on, with one large centered raised diamond mint mark and one small edge notch. Strong charcoal-teal outline, flat two-level cel shading, one broad parchment highlight, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 24 pixels and in grayscale.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; star, dollar sign, currency letter, number, text, letters, multiple coins, coin stack, treasure chest, scene, panel, button, photoreal metal, realistic engraving, thin outline, gradient, glow, cast shadow",
+            "requestSize": {
+              "width": 384,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 96,
+              "height": 96
+            },
+            "seed": 96101,
+            "noBackground": true,
+            "palette": "warm bronze, parchment highlight, dark teal-charcoal outline",
+            "postprocess": "lanczos3-resize",
+            "styleReference": {
+              "id": "ui-star",
+              "sha256": "86b0c714661f50e239bebb5b17b331b6e28e9f95aa6faf3935684b9328578211",
+              "usageDescription": "Match only the accepted compact HUD icon outline weight, flat shading, safe area, and 24px readability; replace the retired Star metaphor with a unique Coin."
+            }
+          }
+        }
+      ],
+      "outputSha256": "9704f4d96a78ab77124ff13d58a77e5982f6e36ed4faf90f4a87615741ced20e",
+      "notes": "Accepted after one rejected two-token iteration: final single notched bronze coin with inset diamond mint mark remains unmistakable at 24px on light and dark panels, retains silhouette in enlarged inspection, has transparent safe area, no text/state, and remains distinct from retired Star art.",
+      "reviewedAt": "2026-09-01T20:36:28.009Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-action-redevelop": {
+      "id": "ui-action-redevelop",
+      "status": "ACCEPTED",
+      "jobId": "37f50b56-c1e9-4be8-8e0d-96e00232c49e",
+      "candidate": "art/pixellab/candidates/ui-action-redevelop.png",
+      "candidateSha256": "ef289cf3b0712229a92aeec1769a15dddf6765983ced244043f5def001ed3d46",
+      "providerOutputSha256": "a512fe73e974fda6d8adf2aae367eda26c04402d12d737556d99939c5285f900",
+      "width": 192,
+      "height": 192,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 15,
+        "top": 15,
+        "right": 177,
+        "bottom": 177,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm bronze, parchment cream, slate blue, dark teal-charcoal outline. One primary action icon for Redevelop only: one chunky bronze construction mallet crossing one simplified low workshop silhouette, paired with one enormous cream circular replacement arrow wrapping around both. The circular arrow and mallet make removal-and-rebuild unmistakable without text. Strong charcoal-teal outline, flat two-level cel shading, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 48 pixels and in grayscale. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; letters, numbers, text, recycling logo, trash can, bulldozer, explosion, fire, damage, character, city scene, terrain tile, panel, button, realistic tools, thin line, many tiny gears, gradient, glow, cast shadow.",
+        "prompt": "One primary action icon for Redevelop only: one chunky bronze construction mallet crossing one simplified low workshop silhouette, paired with one enormous cream circular replacement arrow wrapping around both. The circular arrow and mallet make removal-and-rebuild unmistakable without text. Strong charcoal-teal outline, flat two-level cel shading, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 48 pixels and in grayscale.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; letters, numbers, text, recycling logo, trash can, bulldozer, explosion, fire, damage, character, city scene, terrain tile, panel, button, realistic tools, thin line, many tiny gears, gradient, glow, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 192,
+          "height": 192
+        },
+        "seed": 96102,
+        "noBackground": true,
+        "palette": "warm bronze, parchment cream, slate blue, dark teal-charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-attack",
+          "sha256": "cdac6885f5c27b9edabaa5ba7da303f32d9d6e84e2cf2c7bfb51b6efd24a8912",
+          "usageDescription": "Match only the accepted primary-action icon scale, outline weight, flat shading, transparent isolation, and 48px readability; create an economy redevelopment command rather than combat."
+        }
+      },
+      "outputSha256": "ef289cf3b0712229a92aeec1769a15dddf6765983ced244043f5def001ed3d46",
+      "notes": "Accepted individually: 48px light/dark review preserves a large mallet-over-workshop silhouette and a separate clockwise replacement arrowhead; reads as redevelopment with its required visible label, stays distinct from build and forest actions in grayscale, and contains no baked text/state.",
+      "reviewedAt": "2026-09-01T20:41:14.066Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-tech-fieldcraft": {
+      "id": "ui-tech-fieldcraft",
+      "status": "ACCEPTED",
+      "jobId": "e9b8304c-86dd-419b-a0a8-1338685c6519",
+      "candidate": "art/pixellab/candidates/ui-tech-fieldcraft.png",
+      "candidateSha256": "2b75a5b82db5778ac888df239eb2a6141e345849811e9d2b562c99de7cd27bbf",
+      "providerOutputSha256": "4c5aa2ec6725fe0988bb06553db4c0e72db281141303fb2190cf7a019afc0d29",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 33,
+        "top": 28,
+        "right": 228,
+        "bottom": 220,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, warm bronze boot, parchment highlight, dark teal-charcoal outline. One technology icon for Fieldcraft only: one large sturdy trail boot stepping cleanly across one broad leaf-shaped forest floor mark, with one small planted sapling rising behind the heel. The boot-plus-sapling silhouette communicates forest freedom and replanting, distinct from a tree-cutting Forestry icon. Strong charcoal-teal outline, flat two-level cel shading, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 64 pixels and in grayscale. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; axe, saw, felled stump, lumber camp, plain tree, forest scene, character, foot anatomy, military insignia, text, letters, numbers, panel, button, realistic leather, tiny foliage, gradient, glow, cast shadow.",
+        "prompt": "One technology icon for Fieldcraft only: one large sturdy trail boot stepping cleanly across one broad leaf-shaped forest floor mark, with one small planted sapling rising behind the heel. The boot-plus-sapling silhouette communicates forest freedom and replanting, distinct from a tree-cutting Forestry icon. Strong charcoal-teal outline, flat two-level cel shading, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 64 pixels and in grayscale.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; axe, saw, felled stump, lumber camp, plain tree, forest scene, character, foot anatomy, military insignia, text, letters, numbers, panel, button, realistic leather, tiny foliage, gradient, glow, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 96103,
+        "noBackground": true,
+        "palette": "quiet leaf green, warm bronze boot, parchment highlight, dark teal-charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-tech-forestry",
+          "sha256": "f6f3159ad65573c3b71ee9752fe376053cbd771951a832693a54128a7f6eb8ad",
+          "usageDescription": "Match only the accepted technology icon's 64px readability, chunky outline, flat shading, and transparent isolation; communicate movement skill and deliberate forest replanting rather than generic Forestry."
+        }
+      },
+      "outputSha256": "2b75a5b82db5778ac888df239eb2a6141e345849811e9d2b562c99de7cd27bbf",
+      "notes": "Accepted individually: boot, broad leaf ground mark, and planted sapling remain distinct at 64px on light/dark panels and enlarged inspection; the silhouette communicates forest traversal plus replanting without colliding with Forestry axe/tree art, color-only meaning, text, or state.",
+      "reviewedAt": "2026-09-01T20:45:19.655Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-hud-population": {
+      "id": "ui-hud-population",
+      "status": "ACCEPTED",
+      "jobId": "e91b1a13-eda2-4a7c-b6fd-9a2403689fe1",
+      "candidate": "art/pixellab/candidates/ui-hud-population.png",
+      "candidateSha256": "3307920b71ee0db3604dd80eef4f642a9913f23e938f2198a3c426704a9bd75f",
+      "providerOutputSha256": "31e41a0c6000571b25918132a8cec77fa3e6d0fde715269415482f22e3e737d3",
+      "width": 96,
+      "height": 96,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 7,
+        "top": 7,
+        "right": 88,
+        "bottom": 89,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: parchment, muted teal, warm bronze, dark teal-charcoal outline. One compact HUD icon for Population only: exactly three chunky simplified person bust silhouettes arranged as one large central bust and two smaller side busts, joined into one broad group. Strong charcoal-teal outline, flat parchment and muted teal fill, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 24 pixels and in grayscale. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; single person, crowd of many people, faces, letters, numbers, plus sign, minus sign, red warning, city, house, scene, panel, button, photorealism, thin line, gradient, cast shadow.",
+        "prompt": "One compact HUD icon for Population only: exactly three chunky simplified person bust silhouettes arranged as one large central bust and two smaller side busts, joined into one broad group. Strong charcoal-teal outline, flat parchment and muted teal fill, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 24 pixels and in grayscale.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; single person, crowd of many people, faces, letters, numbers, plus sign, minus sign, red warning, city, house, scene, panel, button, photorealism, thin line, gradient, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 96,
+          "height": 96
+        },
+        "seed": 96201,
+        "noBackground": true,
+        "palette": "parchment, muted teal, warm bronze, dark teal-charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-hud-coin",
+          "sha256": "9704f4d96a78ab77124ff13d58a77e5982f6e36ed4faf90f4a87615741ced20e",
+          "usageDescription": "Match the accepted compact Coin HUD icon's source occupancy, outline, shading and 24px readability; create a population concept without numbers or state."
+        }
+      },
+      "outputSha256": "3307920b71ee0db3604dd80eef4f642a9913f23e938f2198a3c426704a9bd75f",
+      "notes": "Accepted in bounded HUD family review: exactly three joined busts remain legible at 24px, enlarged outline/alpha are clean, and the human-group interior distinguishes Population from the diamond-minted Coin in grayscale and light/dark contexts.",
+      "reviewedAt": "2026-09-01T20:50:32.077Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-hud-negative-population": {
+      "id": "ui-hud-negative-population",
+      "status": "ACCEPTED",
+      "jobId": "af23f4f3-57ff-4413-81c7-b967ad642d40",
+      "candidate": "art/pixellab/candidates/ui-hud-negative-population.png",
+      "candidateSha256": "cdcf4e4bf16e3296be80ee1ac4bf743d5a9bbcaa5c0189f3ff92cd8daf0cbc45",
+      "providerOutputSha256": "e4b7baacd2d45e74899683b1023657858902106c1bb184a2ad21b99034ababa4",
+      "width": 96,
+      "height": 96,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 7,
+        "top": 7,
+        "right": 88,
+        "bottom": 89,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted coral, parchment, dark teal-charcoal outline. One compact HUD icon for Negative Population only: exactly three broad SOLID-FILLED person bust silhouettes joined as one group, each bust filled opaque pale parchment and muted coral, visibly split by one enormous thick jagged transparent crack through the central bust. The two outer busts droop downward. All three bodies must be large opaque masses, never hollow outlines; the missing crack and broken silhouette communicate deficit without color, text, signs, or numbers. Strong charcoal-teal outer outline plus pale interior fill, centered silhouette filling eighty-four percent of the square, transparent safe area, high contrast on a nearly black panel, readable at 24 pixels and in grayscale. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; hollow people, outline-only busts, transparent body interiors, dark fill, thin black line icon, minus sign, hyphen, letters, numbers, color-only state, happy intact crowd, skull, gore, faces, city, scene, panel, button, photorealism, thin crack, tiny detail, gradient, cast shadow.",
+        "prompt": "One compact HUD icon for Negative Population only: exactly three broad SOLID-FILLED person bust silhouettes joined as one group, each bust filled opaque pale parchment and muted coral, visibly split by one enormous thick jagged transparent crack through the central bust. The two outer busts droop downward. All three bodies must be large opaque masses, never hollow outlines; the missing crack and broken silhouette communicate deficit without color, text, signs, or numbers. Strong charcoal-teal outer outline plus pale interior fill, centered silhouette filling eighty-four percent of the square, transparent safe area, high contrast on a nearly black panel, readable at 24 pixels and in grayscale.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; hollow people, outline-only busts, transparent body interiors, dark fill, thin black line icon, minus sign, hyphen, letters, numbers, color-only state, happy intact crowd, skull, gore, faces, city, scene, panel, button, photorealism, thin crack, tiny detail, gradient, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 96,
+          "height": 96
+        },
+        "seed": 96212,
+        "noBackground": true,
+        "palette": "muted coral, parchment, dark teal-charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-hud-population",
+          "sha256": "3307920b71ee0db3604dd80eef4f642a9913f23e938f2198a3c426704a9bd75f",
+          "usageDescription": "Match the compact Population HUD family while making deficit unmistakable through shape, not hue or a baked minus sign."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/ui-hud-negative-population-5d242dea0a13.png",
+          "candidateSha256": "5d242dea0a13fbb4e7014ff04228d04c8bcc447d42c8b6365e2ed5ac33f886ae",
+          "notes": "Rejected at 24px light/dark/grayscale family review: the provider returned mostly dark outline around transparent busts, so the deficit symbol nearly disappears on the dark HUD and the broken population mass is not readable.",
+          "reviewedAt": "2026-09-01T20:57:05.848Z",
+          "request": {
+            "endpoint": "generate-ui-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted coral, parchment, dark teal-charcoal outline. One compact HUD icon for Negative Population only: the same broad three-person-bust group concept visibly split by one enormous jagged empty crack through the middle, with the outer two busts drooping downward. The missing crack and broken silhouette communicate population deficit without color, text, signs, or numbers. Strong charcoal-teal outline, flat muted coral and parchment fill, centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 24 pixels and in grayscale. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; minus sign, hyphen, letters, numbers, color-only state, happy intact crowd, skull, gore, faces, city, scene, panel, button, photorealism, thin crack, tiny detail, gradient, cast shadow.",
+            "prompt": "One compact HUD icon for Negative Population only: the same broad three-person-bust group concept visibly split by one enormous jagged empty crack through the middle, with the outer two busts drooping downward. The missing crack and broken silhouette communicate population deficit without color, text, signs, or numbers. Strong charcoal-teal outline, flat muted coral and parchment fill, centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 24 pixels and in grayscale.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; minus sign, hyphen, letters, numbers, color-only state, happy intact crowd, skull, gore, faces, city, scene, panel, button, photorealism, thin crack, tiny detail, gradient, cast shadow",
+            "requestSize": {
+              "width": 384,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 96,
+              "height": 96
+            },
+            "seed": 96202,
+            "noBackground": true,
+            "palette": "muted coral, parchment, dark teal-charcoal outline",
+            "postprocess": "lanczos3-resize",
+            "styleReference": {
+              "id": "ui-hud-population",
+              "sha256": "3307920b71ee0db3604dd80eef4f642a9913f23e938f2198a3c426704a9bd75f",
+              "usageDescription": "Match the compact Population HUD family while making deficit unmistakable through shape, not hue or a baked minus sign."
+            }
+          }
+        }
+      ],
+      "outputSha256": "cdcf4e4bf16e3296be80ee1ac4bf743d5a9bbcaa5c0189f3ff92cd8daf0cbc45",
+      "notes": "Accepted after one rejected hollow-outline iteration: final opaque three-bust group has an enormous central jagged split and drooping sides, stays visible at 24px on dark/light panels, and remains distinguishable from ordinary Population in grayscale by broken silhouette rather than color.",
+      "reviewedAt": "2026-09-01T21:01:31.751Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-hud-capacity": {
+      "id": "ui-hud-capacity",
+      "status": "ACCEPTED",
+      "jobId": "479eaa5c-2cba-415a-b9cc-6ae9582aa791",
+      "candidate": "art/pixellab/candidates/ui-hud-capacity.png",
+      "candidateSha256": "65f660aaa99b9046d93e966d4e5771e881c016e72e95ea7c4a13a3e85598dba2",
+      "providerOutputSha256": "ce898b7e92f932707c0b6b816d1826b3a8d325d3dbae519aba40867b7a9de853",
+      "width": 96,
+      "height": 96,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 8,
+        "top": 17,
+        "right": 88,
+        "bottom": 77,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: slate blue, warm bronze, parchment highlight, dark teal-charcoal outline. One compact HUD icon for Unit Capacity only: exactly three broad toy-soldier helmets nestled inside one thick open-top city bracket shaped like two short crenellated side walls. The enclosing bracket makes a limited number of unit places clear without text. Strong charcoal-teal outline, flat slate and bronze fill, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 24 pixels and in grayscale. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; person faces, crowd, cage, prison, number, text, letters, plus sign, bar chart, progress meter, full castle, scene, panel, button, photorealism, thin line, tiny detail, gradient, cast shadow.",
+        "prompt": "One compact HUD icon for Unit Capacity only: exactly three broad toy-soldier helmets nestled inside one thick open-top city bracket shaped like two short crenellated side walls. The enclosing bracket makes a limited number of unit places clear without text. Strong charcoal-teal outline, flat slate and bronze fill, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 24 pixels and in grayscale.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; person faces, crowd, cage, prison, number, text, letters, plus sign, bar chart, progress meter, full castle, scene, panel, button, photorealism, thin line, tiny detail, gradient, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 96,
+          "height": 96
+        },
+        "seed": 96203,
+        "noBackground": true,
+        "palette": "slate blue, warm bronze, parchment highlight, dark teal-charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-hud-coin",
+          "sha256": "9704f4d96a78ab77124ff13d58a77e5982f6e36ed4faf90f4a87615741ced20e",
+          "usageDescription": "Match the accepted compact HUD family and 24px readability; communicate bounded unit capacity without numbers or a progress state."
+        }
+      },
+      "outputSha256": "65f660aaa99b9046d93e966d4e5771e881c016e72e95ea7c4a13a3e85598dba2",
+      "notes": "Accepted in bounded HUD family review: three helmet domes remain visibly enclosed by the thick open-top capacity bracket at 24px on light/dark and in grayscale; distinct from the unenclosed Population group and contains no baked count/state.",
+      "reviewedAt": "2026-09-01T20:57:10.154Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-action-clear-forest": {
+      "id": "ui-action-clear-forest",
+      "status": "ACCEPTED",
+      "jobId": "3a00978b-d5eb-450a-8866-abd5334f10e3",
+      "candidate": "art/pixellab/candidates/ui-action-clear-forest.png",
+      "candidateSha256": "3aa9243aa5ca7d0c6e2b98421a105e80e04c303da89088a9cbcfe8494c44f846",
+      "providerOutputSha256": "d905477c8d5fc4d82360e9253e6bc0d3a88e0b61ca50458851c13e058a9aed44",
+      "width": 192,
+      "height": 192,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 15,
+        "top": 15,
+        "right": 177,
+        "bottom": 176,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm bronze, muted timber brown, parchment chips, dark teal-charcoal outline. One primary action icon for Clear Forest only: one enormous bronze axe biting diagonally into one broad freshly cut tree stump, with exactly two large separated wood chips flying outward. The horizontal stump cut and descending axe are the dominant silhouette. Strong charcoal-teal outline, flat two-level cel shading, one connected centered composition filling eighty-four percent of the square, transparent safe area, readable at 48 pixels and in grayscale. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; living tree, sapling, planting, shovel, circular arrow, forest scene, lumber building, character, text, letters, numbers, panel, button, realistic wood texture, many chips, gradient, gore, cast shadow.",
+        "prompt": "One primary action icon for Clear Forest only: one enormous bronze axe biting diagonally into one broad freshly cut tree stump, with exactly two large separated wood chips flying outward. The horizontal stump cut and descending axe are the dominant silhouette. Strong charcoal-teal outline, flat two-level cel shading, one connected centered composition filling eighty-four percent of the square, transparent safe area, readable at 48 pixels and in grayscale.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; living tree, sapling, planting, shovel, circular arrow, forest scene, lumber building, character, text, letters, numbers, panel, button, realistic wood texture, many chips, gradient, gore, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 192,
+          "height": 192
+        },
+        "seed": 96301,
+        "noBackground": true,
+        "palette": "warm bronze, muted timber brown, parchment chips, dark teal-charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-action-redevelop",
+          "sha256": "ef289cf3b0712229a92aeec1769a15dddf6765983ced244043f5def001ed3d46",
+          "usageDescription": "Match the accepted economy-action family scale, outline and 48px readability; make clearing visually distinct from replanting without relying on hue."
+        }
+      },
+      "outputSha256": "3aa9243aa5ca7d0c6e2b98421a105e80e04c303da89088a9cbcfe8494c44f846",
+      "notes": "Accepted in forest/territory family: broad descending axe, cut stump, and large chips remain immediately readable at 48px on light/dark and in grayscale; silhouette cannot be confused with Replant Forest.",
+      "reviewedAt": "2026-09-01T21:12:11.488Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-action-replant-forest": {
+      "id": "ui-action-replant-forest",
+      "status": "ACCEPTED",
+      "jobId": "6ea2cc78-0e0e-41d6-9118-8b4a32aeee20",
+      "candidate": "art/pixellab/candidates/ui-action-replant-forest.png",
+      "candidateSha256": "caef4fa32f2196353b271fbd55f2991ccfccca7864c2e1d5f99ca6cf48c11977",
+      "providerOutputSha256": "629772799bd832e279b53325311718f60363ab2a6114dd50687e4b3438468963",
+      "width": 192,
+      "height": 192,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 15,
+        "top": 15,
+        "right": 177,
+        "bottom": 176,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, warm bronze trowel, muted soil brown, parchment highlight, dark teal-charcoal outline. One primary action icon for Replant Forest only: one large healthy three-leaf sapling being lowered into one broad open soil hollow by one oversized simple garden trowel angled upward. The intact sapling and upward planting tool are the dominant silhouette, clearly distinct from an axe and stump. Strong charcoal-teal outline, flat two-level cel shading, one connected centered composition filling eighty-four percent of the square, transparent safe area, readable at 48 pixels and in grayscale. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; axe, saw, cut stump, felled tree, wood chips, full forest scene, character, hand, text, letters, numbers, panel, button, realistic plant, tiny leaves, gradient, cast shadow.",
+        "prompt": "One primary action icon for Replant Forest only: one large healthy three-leaf sapling being lowered into one broad open soil hollow by one oversized simple garden trowel angled upward. The intact sapling and upward planting tool are the dominant silhouette, clearly distinct from an axe and stump. Strong charcoal-teal outline, flat two-level cel shading, one connected centered composition filling eighty-four percent of the square, transparent safe area, readable at 48 pixels and in grayscale.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; axe, saw, cut stump, felled tree, wood chips, full forest scene, character, hand, text, letters, numbers, panel, button, realistic plant, tiny leaves, gradient, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 192,
+          "height": 192
+        },
+        "seed": 96302,
+        "noBackground": true,
+        "palette": "quiet leaf green, warm bronze trowel, muted soil brown, parchment highlight, dark teal-charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-action-redevelop",
+          "sha256": "ef289cf3b0712229a92aeec1769a15dddf6765983ced244043f5def001ed3d46",
+          "usageDescription": "Match the accepted economy-action family scale, outline and 48px readability; make planting visually distinct from clearing without relying on hue."
+        }
+      },
+      "outputSha256": "caef4fa32f2196353b271fbd55f2991ccfccca7864c2e1d5f99ca6cf48c11977",
+      "notes": "Accepted in forest/territory family: intact three-leaf sapling, open soil, and upward trowel remain readable at 48px on light/dark and in grayscale; no axe/stump and clearly distinct from Clear Forest.",
+      "reviewedAt": "2026-09-01T21:12:17.122Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-reward-expand": {
+      "id": "ui-reward-expand",
+      "status": "ACCEPTED",
+      "jobId": "b8287f31-2f89-4f04-9e93-0f45eb7793e3",
+      "candidate": "art/pixellab/candidates/ui-reward-expand.png",
+      "candidateSha256": "cbb749af78bb59e914c7ac3df3deb65de30eba605d74e131b089a89a8f2bcc5d",
+      "providerOutputSha256": "13a8fdac960070413946b91f7f4e52e523a83809b5443085a8faf3fd895e4e6d",
+      "width": 128,
+      "height": 128,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 10,
+        "top": 10,
+        "right": 118,
+        "bottom": 117,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm bronze city, parchment arrows, quiet teal boundary, dark teal-charcoal outline. One reward icon for Expand only: one small central city tower inside one thick compact diamond boundary, with exactly four enormous solid outward arrowheads attached at top, right, bottom, and left. The expanding boundary silhouette communicates territory growth without text or a numbered grid. Strong charcoal-teal outline, flat two-level cel shading, centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 32 pixels and in grayscale. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; numbers, 3x3, 5x5, text, letters, full map, many tiles, compass, survey spyglass, circle, inward arrows, character, scene, panel, button, thin lines, tiny city, gradient, cast shadow.",
+        "prompt": "One reward icon for Expand only: one small central city tower inside one thick compact diamond boundary, with exactly four enormous solid outward arrowheads attached at top, right, bottom, and left. The expanding boundary silhouette communicates territory growth without text or a numbered grid. Strong charcoal-teal outline, flat two-level cel shading, centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 32 pixels and in grayscale.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; numbers, 3x3, 5x5, text, letters, full map, many tiles, compass, survey spyglass, circle, inward arrows, character, scene, panel, button, thin lines, tiny city, gradient, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 128,
+          "height": 128
+        },
+        "seed": 96303,
+        "noBackground": true,
+        "palette": "warm bronze city, parchment arrows, quiet teal boundary, dark teal-charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-reward-survey",
+          "sha256": "b51ffe58712bffb77995721a06f36dae5afe524f309637075ad33247154106ab",
+          "usageDescription": "Match the accepted reward icon outline, flat shading and 32px readability; communicate territory expansion without baked grid counts or labels."
+        }
+      },
+      "outputSha256": "cbb749af78bb59e914c7ac3df3deb65de30eba605d74e131b089a89a8f2bcc5d",
+      "notes": "Accepted in forest/territory family: central city tower and four attached outward arrowheads remain readable at 32px, carry territory-expansion meaning without baked grid counts, and retain silhouette in grayscale.",
+      "reviewedAt": "2026-09-01T21:12:22.912Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-action-heal": {
+      "id": "ui-action-heal",
+      "status": "ACCEPTED",
+      "jobId": "f50e5baf-de88-490d-847c-3486b16a6934",
+      "candidate": "art/pixellab/candidates/ui-action-heal.png",
+      "candidateSha256": "ed663a60f5a0a3b0d4275331c7f5a7001c7d00bf19a5d5d3a930b730afe734ee",
+      "providerOutputSha256": "0477ad5f846c03650d99d926a2ea1d284772cc45b22bb79be85cf20deb01fe35",
+      "width": 192,
+      "height": 192,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 15,
+        "top": 17,
+        "right": 177,
+        "bottom": 175,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: cream bandage, warm bronze heart clasp, muted teal pulse, dark teal-charcoal outline. Exactly one single primary action icon for Heal only, isolated alone with absolutely nothing else anywhere: one enormous cream rolled bandage forming a thick diagonal cylinder, fastened around its middle by one large solid warm-bronze heart-shaped clasp. This is one compact connected bandage-and-heart cutout silhouette, never a UI panel or icon sheet. Strong charcoal-teal outline, flat two-level cel shading, centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 48 pixels and in grayscale. Use no real-world medical emblem. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; UI frame, frame set, nine-slice, sprite sheet, palette sheet, multiple icons, empty rectangle, colored swatch, panel, button, red cross, crescent, protected medical symbol, plus sign, syringe, potion, doctor, patient, gore, text, letters, numbers, realistic anatomy, thin line, gradient, glow, cast shadow.",
+        "prompt": "Exactly one single primary action icon for Heal only, isolated alone with absolutely nothing else anywhere: one enormous cream rolled bandage forming a thick diagonal cylinder, fastened around its middle by one large solid warm-bronze heart-shaped clasp. This is one compact connected bandage-and-heart cutout silhouette, never a UI panel or icon sheet. Strong charcoal-teal outline, flat two-level cel shading, centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 48 pixels and in grayscale. Use no real-world medical emblem.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; UI frame, frame set, nine-slice, sprite sheet, palette sheet, multiple icons, empty rectangle, colored swatch, panel, button, red cross, crescent, protected medical symbol, plus sign, syringe, potion, doctor, patient, gore, text, letters, numbers, realistic anatomy, thin line, gradient, glow, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 192,
+          "height": 192
+        },
+        "seed": 96411,
+        "noBackground": true,
+        "palette": "cream bandage, warm bronze heart clasp, muted teal pulse, dark teal-charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-action-wait",
+          "sha256": "453bb7b53e3244749e3e312451a28c0601040584ff83d1aba57c2d22751ca2fa",
+          "usageDescription": "Match the accepted primary-action icon family while avoiding protected real-world medical emblems."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/ui-action-heal-926fc8489f33.png",
+          "candidateSha256": "926fc8489f33da12a7a003777e633db8381a87d04d34d508c9952c47d28e1423",
+          "notes": "Rejected at source review: provider returned a UI frame/palette sheet with multiple empty rectangles and no bandage/heart healing silhouette; violates isolated-icon, no-panel, no-state and single-command requirements.",
+          "reviewedAt": "2026-09-01T21:23:49.332Z",
+          "request": {
+            "endpoint": "generate-ui-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: cream bandage, warm bronze heart clasp, muted teal pulse, dark teal-charcoal outline. One primary action icon for Heal only: one enormous rolled cream bandage wrapping around one large warm-bronze heart-shaped clasp, with one broad upward pulse curve behind them. Strong charcoal-teal outline, flat two-level cel shading, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 48 pixels and in grayscale. Use no real-world medical emblem. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; red cross, crescent, protected medical symbol, plus sign, syringe, potion, doctor, patient, gore, text, letters, numbers, panel, button, realistic anatomy, thin line, gradient, glow, cast shadow.",
+            "prompt": "One primary action icon for Heal only: one enormous rolled cream bandage wrapping around one large warm-bronze heart-shaped clasp, with one broad upward pulse curve behind them. Strong charcoal-teal outline, flat two-level cel shading, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 48 pixels and in grayscale. Use no real-world medical emblem.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; red cross, crescent, protected medical symbol, plus sign, syringe, potion, doctor, patient, gore, text, letters, numbers, panel, button, realistic anatomy, thin line, gradient, glow, cast shadow",
+            "requestSize": {
+              "width": 384,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 192,
+              "height": 192
+            },
+            "seed": 96401,
+            "noBackground": true,
+            "palette": "cream bandage, warm bronze heart clasp, muted teal pulse, dark teal-charcoal outline",
+            "postprocess": "lanczos3-resize",
+            "styleReference": {
+              "id": "ui-action-redevelop",
+              "sha256": "ef289cf3b0712229a92aeec1769a15dddf6765983ced244043f5def001ed3d46",
+              "usageDescription": "Match the accepted primary-action icon family while avoiding protected real-world medical emblems."
+            }
+          }
+        }
+      ],
+      "outputSha256": "ed663a60f5a0a3b0d4275331c7f5a7001c7d00bf19a5d5d3a930b730afe734ee",
+      "notes": "Accepted after one rejected frame-sheet iteration: final single rolled bandage with large heart clasp is clean and distinct at 48px light/dark and in grayscale, has no protected medical emblem, UI frame, baked text, or state.",
+      "reviewedAt": "2026-09-01T21:26:19.954Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-action-recover": {
+      "id": "ui-action-recover",
+      "status": "ACCEPTED",
+      "jobId": "0b5b00fb-c91a-44c6-8bb3-59d3606c94a1",
+      "candidate": "art/pixellab/candidates/ui-action-recover.png",
+      "candidateSha256": "1a21ba9afae93767bb6ccfb7b9c433a683cd8ba1530b6c68741d4dcff4ac9133",
+      "providerOutputSha256": "3c4cd82cef812955394bbe9aad6592b9664be4587438f31a7554cadb2949883b",
+      "width": 192,
+      "height": 192,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 15,
+        "top": 17,
+        "right": 177,
+        "bottom": 175,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: slate helmet, parchment bedroll, cream arrow, warm bronze, dark teal-charcoal outline. One primary action icon for Recover only: one broad toy-soldier helmet resting on one simple folded bedroll, embraced by one thick cream circular arrow rising upward behind it. The resting helmet and return arrow communicate self recovery, distinct from Heal's bandage. Strong charcoal-teal outline, flat two-level cel shading, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 48 pixels and in grayscale. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; bandage, heart, medical cross, plus sign, target unit, sleeping face, letters, numbers, text, panel, button, realistic bedding, thin line, gradient, glow, cast shadow.",
+        "prompt": "One primary action icon for Recover only: one broad toy-soldier helmet resting on one simple folded bedroll, embraced by one thick cream circular arrow rising upward behind it. The resting helmet and return arrow communicate self recovery, distinct from Heal's bandage. Strong charcoal-teal outline, flat two-level cel shading, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 48 pixels and in grayscale.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; bandage, heart, medical cross, plus sign, target unit, sleeping face, letters, numbers, text, panel, button, realistic bedding, thin line, gradient, glow, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 192,
+          "height": 192
+        },
+        "seed": 96402,
+        "noBackground": true,
+        "palette": "slate helmet, parchment bedroll, cream arrow, warm bronze, dark teal-charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-action-redevelop",
+          "sha256": "ef289cf3b0712229a92aeec1769a15dddf6765983ced244043f5def001ed3d46",
+          "usageDescription": "Match the accepted unit-care action family while distinguishing self recovery from targeted Heal through posture and a circular rest arrow."
+        }
+      },
+      "outputSha256": "1a21ba9afae93767bb6ccfb7b9c433a683cd8ba1530b6c68741d4dcff4ac9133",
+      "notes": "Accepted in unit-care/status family: resting helmet on a rolled bedroll plus thick rising circular arrow remains clear at 48px light/dark and in grayscale, distinct from targeted Heal and voluntary Wait.",
+      "reviewedAt": "2026-09-01T21:23:53.322Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-action-wait": {
+      "id": "ui-action-wait",
+      "status": "ACCEPTED",
+      "jobId": "164ed871-76be-402f-a05d-430c160e78df",
+      "candidate": "art/pixellab/candidates/ui-action-wait.png",
+      "candidateSha256": "453bb7b53e3244749e3e312451a28c0601040584ff83d1aba57c2d22751ca2fa",
+      "providerOutputSha256": "f08dc7f2614fa74ebd88b2cb52fb838e417b9e3a5e339526252a5ef668ce0a94",
+      "width": 192,
+      "height": 192,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 16,
+        "top": 16,
+        "right": 175,
+        "bottom": 175,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: slate helmet, warm bronze hourglass, parchment sand, dark teal-charcoal outline. One primary action icon for Wait only: one sturdy toy-soldier helmet planted motionless behind one broad small hourglass with clearly separated top and bottom bulbs. The helmet-plus-hourglass silhouette communicates waiting without pause bars, text, or numbers. Strong charcoal-teal outline, flat two-level cel shading, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 48 pixels and in grayscale. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pause bars, letters, numbers, text, clock face, sleep symbol, moving character, weapon attack, panel, button, realistic glass, tiny sand grains, thin line, gradient, glow, cast shadow.",
+        "prompt": "One primary action icon for Wait only: one sturdy toy-soldier helmet planted motionless behind one broad small hourglass with clearly separated top and bottom bulbs. The helmet-plus-hourglass silhouette communicates waiting without pause bars, text, or numbers. Strong charcoal-teal outline, flat two-level cel shading, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 48 pixels and in grayscale.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pause bars, letters, numbers, text, clock face, sleep symbol, moving character, weapon attack, panel, button, realistic glass, tiny sand grains, thin line, gradient, glow, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 192,
+          "height": 192
+        },
+        "seed": 96403,
+        "noBackground": true,
+        "palette": "slate helmet, warm bronze hourglass, parchment sand, dark teal-charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-action-redevelop",
+          "sha256": "ef289cf3b0712229a92aeec1769a15dddf6765983ced244043f5def001ed3d46",
+          "usageDescription": "Match the accepted unit-status action family while communicating voluntary inactivity without baked pause bars or text."
+        }
+      },
+      "outputSha256": "453bb7b53e3244749e3e312451a28c0601040584ff83d1aba57c2d22751ca2fa",
+      "notes": "Accepted in unit-care/status family: planted helmet and broad hourglass remain clear at 48px light/dark and in grayscale, with no pause bars/baked state and a silhouette distinct from Recover.",
+      "reviewedAt": "2026-09-01T21:23:58.070Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-action-promote": {
+      "id": "ui-action-promote",
+      "status": "ACCEPTED",
+      "jobId": "a5164b49-441a-47f9-bf80-8e4108a83fa7",
+      "candidate": "art/pixellab/candidates/ui-action-promote.png",
+      "candidateSha256": "0b490be3f32f5eed8ac60691c889fdc6e060a86e3d8ae284fcc1da5016f26dce",
+      "providerOutputSha256": "2be283cfdddcd2bea86dff22afc68e481ad8bca2ef7bfc0a1835259737d2d59e",
+      "width": 192,
+      "height": 192,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 18,
+        "top": 15,
+        "right": 174,
+        "bottom": 177,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: slate helmet, warm bronze chevron and studs, parchment highlight, dark teal-charcoal outline. One primary action icon for Promote only: one broad toy-soldier helmet gaining one enormous upward bronze chevron above its crown and exactly three large round service studs across its brow. The upward chevron is not a star or currency shape. Strong charcoal-teal outline, flat two-level cel shading, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 48 pixels and in grayscale. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; star, coin, currency, medal text, rank letters, numbers, plus sign, realistic military insignia, character face, scene, panel, button, thin line, tiny decorations, gradient, glow, cast shadow.",
+        "prompt": "One primary action icon for Promote only: one broad toy-soldier helmet gaining one enormous upward bronze chevron above its crown and exactly three large round service studs across its brow. The upward chevron is not a star or currency shape. Strong charcoal-teal outline, flat two-level cel shading, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 48 pixels and in grayscale.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; star, coin, currency, medal text, rank letters, numbers, plus sign, realistic military insignia, character face, scene, panel, button, thin line, tiny decorations, gradient, glow, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 192,
+          "height": 192
+        },
+        "seed": 96501,
+        "noBackground": true,
+        "palette": "slate helmet, warm bronze chevron and studs, parchment highlight, dark teal-charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-action-redevelop",
+          "sha256": "ef289cf3b0712229a92aeec1769a15dddf6765983ced244043f5def001ed3d46",
+          "usageDescription": "Match the accepted unit-status action family while communicating a one-time rank increase without reusing the retired currency Star."
+        }
+      },
+      "outputSha256": "0b490be3f32f5eed8ac60691c889fdc6e060a86e3d8ae284fcc1da5016f26dce",
+      "notes": "Accepted in rank/handoff family: helmet, three broad service studs, and oversized upward chevron remain clear at 48px and grayscale, communicate rank increase without Star/currency confusion, text, or baked state.",
+      "reviewedAt": "2026-09-01T21:34:53.407Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-action-end-turn": {
+      "id": "ui-action-end-turn",
+      "status": "ACCEPTED",
+      "jobId": "2e1e8790-57f7-42d3-a7b5-a2a9d69e5adc",
+      "candidate": "art/pixellab/candidates/ui-action-end-turn.png",
+      "candidateSha256": "9406c5edd9126a25b1be3a032a14e23666228f37fef7535afc2dbc7ff1efde53",
+      "providerOutputSha256": "60bd64d5ba5d6f62ab73564a04fbbe5a974115f32da16b140588105172b9781d",
+      "width": 192,
+      "height": 192,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 15,
+        "top": 34,
+        "right": 177,
+        "bottom": 158,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: slate and parchment helmets, warm bronze arrow, dark teal-charcoal outline. One primary action icon for End Turn only: two broad toy-soldier helmets facing opposite directions, joined by one enormous thick clockwise handoff arrow above and between them. The two distinct helmets and single arrow communicate passing play onward. Strong charcoal-teal outline, flat two-level cel shading, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 48 pixels and in grayscale. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; letters, numbers, text, pause bars, hourglass, attack, weapons, calendar, scene, panel, button, realistic soldiers, tiny arrow, multiple arrows, gradient, glow, cast shadow.",
+        "prompt": "One primary action icon for End Turn only: two broad toy-soldier helmets facing opposite directions, joined by one enormous thick clockwise handoff arrow above and between them. The two distinct helmets and single arrow communicate passing play onward. Strong charcoal-teal outline, flat two-level cel shading, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 48 pixels and in grayscale.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; letters, numbers, text, pause bars, hourglass, attack, weapons, calendar, scene, panel, button, realistic soldiers, tiny arrow, multiple arrows, gradient, glow, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 192,
+          "height": 192
+        },
+        "seed": 96502,
+        "noBackground": true,
+        "palette": "slate and parchment helmets, warm bronze arrow, dark teal-charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-action-redevelop",
+          "sha256": "ef289cf3b0712229a92aeec1769a15dddf6765983ced244043f5def001ed3d46",
+          "usageDescription": "Match the accepted action family while communicating handoff to the next player without text or a confirmation state."
+        }
+      },
+      "outputSha256": "9406c5edd9126a25b1be3a032a14e23666228f37fef7535afc2dbc7ff1efde53",
+      "notes": "Accepted in rank/handoff family: two differently facing helmets joined by one thick clockwise handoff arrow remain readable at 48px light/dark and grayscale, with no confirmation or pause-state implication.",
+      "reviewedAt": "2026-09-01T21:35:07.779Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-tech-maneuver": {
+      "id": "ui-tech-maneuver",
+      "status": "ACCEPTED",
+      "jobId": "2043c1d8-416c-46cb-8403-783e7fc6aecc",
+      "candidate": "art/pixellab/candidates/ui-tech-maneuver.png",
+      "candidateSha256": "ca82506165379e5b0df4424958b6d686be24796017c1209e6381575edf76be3e",
+      "providerOutputSha256": "982aa054770f3fbfda0f2f61883d6dff15e7491ef3e1aafdc9da1b4db8f5e78c",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 20,
+        "top": 20,
+        "right": 236,
+        "bottom": 236,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm bronze boot, slate shields, parchment route arrow, dark teal-charcoal outline. One technology icon for Maneuver only: one large forward-pointing bronze boot weaving through a visible gap between two broad opposing shield silhouettes, with one thick curved route arrow passing around the shields. The gap and curved route communicate bypassing hostile control. Strong charcoal-teal outline, flat two-level cel shading, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 64 pixels and in grayscale. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; forest leaf, sapling, straight road, map grid, horse, full character, combat strike, sword, text, letters, numbers, panel, button, thin route, tiny shields, gradient, glow, cast shadow.",
+        "prompt": "One technology icon for Maneuver only: one large forward-pointing bronze boot weaving through a visible gap between two broad opposing shield silhouettes, with one thick curved route arrow passing around the shields. The gap and curved route communicate bypassing hostile control. Strong charcoal-teal outline, flat two-level cel shading, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 64 pixels and in grayscale.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; forest leaf, sapling, straight road, map grid, horse, full character, combat strike, sword, text, letters, numbers, panel, button, thin route, tiny shields, gradient, glow, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 96601,
+        "noBackground": true,
+        "palette": "warm bronze boot, slate shields, parchment route arrow, dark teal-charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-tech-fieldcraft",
+          "sha256": "2b75a5b82db5778ac888df239eb2a6141e345849811e9d2b562c99de7cd27bbf",
+          "usageDescription": "Match the accepted abstract technology family at 64px while distinguishing hostile-zone penetration from forest travel."
+        }
+      },
+      "outputSha256": "ca82506165379e5b0df4424958b6d686be24796017c1209e6381575edf76be3e",
+      "notes": "Accepted in final abstract-tech family: boot passing the gap between two shields under one curved route arrow stays legible at 64px and grayscale, clearly distinct from Fieldcraft forest travel.",
+      "reviewedAt": "2026-09-01T21:45:43.243Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-tech-fortification": {
+      "id": "ui-tech-fortification",
+      "status": "ACCEPTED",
+      "jobId": "4982b080-1720-4d5f-b69e-b5353058db9c",
+      "candidate": "art/pixellab/candidates/ui-tech-fortification.png",
+      "candidateSha256": "461a712885df9a0126aaa3628ee50fb8cb48d98138f63c95cb61c47cba8ee519",
+      "providerOutputSha256": "6a03c2871358d9e484adf611d5d139bbfd6ccb70078d60241df190b9228a3f0f",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 22,
+        "top": 20,
+        "right": 233,
+        "bottom": 236,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: slate shield, warm bronze gate and braces, parchment highlight, dark teal-charcoal outline. One technology icon for Fortification only: one enormous upright slate shield nested directly inside one broad simple city gate arch, with exactly two thick outward bracing beams at its base. The shield-in-gate silhouette communicates units defending cities, distinct from the standalone crenellated Walls reward. Strong charcoal-teal outline, flat two-level cel shading, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 64 pixels and in grayscale. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; standalone wall segment, many crenellations, full castle, city scene, weapon, character, text, letters, numbers, panel, button, realistic masonry, thin beams, tiny shield, gradient, glow, cast shadow.",
+        "prompt": "One technology icon for Fortification only: one enormous upright slate shield nested directly inside one broad simple city gate arch, with exactly two thick outward bracing beams at its base. The shield-in-gate silhouette communicates units defending cities, distinct from the standalone crenellated Walls reward. Strong charcoal-teal outline, flat two-level cel shading, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 64 pixels and in grayscale.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; standalone wall segment, many crenellations, full castle, city scene, weapon, character, text, letters, numbers, panel, button, realistic masonry, thin beams, tiny shield, gradient, glow, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 96602,
+        "noBackground": true,
+        "palette": "slate shield, warm bronze gate and braces, parchment highlight, dark teal-charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-tech-fieldcraft",
+          "sha256": "2b75a5b82db5778ac888df239eb2a6141e345849811e9d2b562c99de7cd27bbf",
+          "usageDescription": "Match the accepted abstract technology family at 64px while distinguishing a city-defense doctrine from the Walls reward icon."
+        }
+      },
+      "outputSha256": "461a712885df9a0126aaa3628ee50fb8cb48d98138f63c95cb61c47cba8ee519",
+      "notes": "Accepted in final abstract-tech family: large shield nested in a braced city-gate arch remains legible at 64px and grayscale and is structurally distinct from the standalone crenellated Walls reward.",
+      "reviewedAt": "2026-09-01T21:45:47.636Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-tech-recovery": {
+      "id": "ui-tech-recovery",
+      "status": "ACCEPTED",
+      "jobId": "9397b73c-a6c9-46f1-8a25-9d1e831c18d9",
+      "candidate": "art/pixellab/candidates/ui-tech-recovery.png",
+      "candidateSha256": "931ba91e902cec673c5d7affc005279b3dd436794f56bff9f6169619c435d89c",
+      "providerOutputSha256": "d4ab235ab5bc57ade35e023f1b0409969f1f281090a1bd08a250754f97774b35",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 20,
+        "top": 29,
+        "right": 236,
+        "bottom": 227,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: cream bandage, slate helmet, warm bronze spiral, parchment highlight, dark teal-charcoal outline. One technology icon for Recovery only: one large rolled cream bandage beside one broad resting toy-soldier helmet, both encircled by one thick upward spiral arrow. The bandage-plus-rest silhouette communicates stronger Medic healing and idle recovery. Strong charcoal-teal outline, flat two-level cel shading, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 64 pixels and in grayscale. Use no real-world medical emblem. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; red cross, crescent, protected medical symbol, plus sign, syringe, potion, heart alone, character, patient, letters, numbers, text, panel, button, thin spiral, gradient, glow, cast shadow.",
+        "prompt": "One technology icon for Recovery only: one large rolled cream bandage beside one broad resting toy-soldier helmet, both encircled by one thick upward spiral arrow. The bandage-plus-rest silhouette communicates stronger Medic healing and idle recovery. Strong charcoal-teal outline, flat two-level cel shading, one connected centered silhouette filling eighty-four percent of the square, transparent safe area, readable at 64 pixels and in grayscale. Use no real-world medical emblem.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; red cross, crescent, protected medical symbol, plus sign, syringe, potion, heart alone, character, patient, letters, numbers, text, panel, button, thin spiral, gradient, glow, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 96603,
+        "noBackground": true,
+        "palette": "cream bandage, slate helmet, warm bronze spiral, parchment highlight, dark teal-charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-tech-fieldcraft",
+          "sha256": "2b75a5b82db5778ac888df239eb2a6141e345849811e9d2b562c99de7cd27bbf",
+          "usageDescription": "Match the accepted abstract technology family at 64px while communicating stronger healing and idle friendly recovery without a protected emblem."
+        }
+      },
+      "outputSha256": "931ba91e902cec673c5d7affc005279b3dd436794f56bff9f6169619c435d89c",
+      "notes": "Accepted in final abstract-tech family: rolled bandage, resting helmet, and thick rising arrow remain legible at 64px and grayscale, communicate stronger healing/idle recovery, and use no protected medical emblem.",
+      "reviewedAt": "2026-09-01T21:45:52.229Z",
       "reviewChecks": {
         "source": true,
         "native": true,

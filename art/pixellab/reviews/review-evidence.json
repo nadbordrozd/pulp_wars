@@ -18,8 +18,8 @@
     },
     {
       "path": "art/pixellab/reviews/ui-contact-sheet.png",
-      "sha256": "091267cdb8b2070b0f624e47bbec69cf3415fc22b714e2c00614f86acbfd25b3",
-      "bytes": 2276060
+      "sha256": "37b1461e1d7e944012b026f1a75b1df628057f2088a83b6bb8a53adaff701fd1",
+      "bytes": 3328733
     },
     {
       "path": "art/pixellab/reviews/fruit-iteration-review.png",
@@ -38,7 +38,7 @@
     },
     {
       "path": "art/pixellab/reviews/map-review.html",
-      "sha256": "b4a088f63633875af5c0f7fbe6e77f054e4790ac3d837b2094c7c2b987a3959a",
+      "sha256": "23a7b3bcd222ddb6a1cc4aa33344280ec2b088aa5618250039b80bb85fc6a7c0",
       "bytes": 552
     }
   ]

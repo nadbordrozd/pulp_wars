@@ -203,6 +203,7 @@ async function main(): Promise<void> {
     if (recipes.length === 0) throw new Error("No recipes selected");
     assertOriginalUnitOrder(recipes, generated);
     assertCandyUnitOrder(recipes, generated);
+    assertRuleset6UiOrder(recipes, generated);
     if (stage === "batch") assertBuildingBatchOrder(recipes, generated);
     const concurrency = Number(optionalOption("--concurrency") ?? "3");
     await generateRecipes(source, generated, recipes, concurrency);
@@ -314,6 +315,46 @@ async function main(): Promise<void> {
     await createReviewSheets(source, generated);
     return;
   }
+  if (command === "resume-job") {
+    const id = requiredOption("--id");
+    const jobId = requiredOption("--job-id");
+    const recipe = source.recipes.find((candidate) => candidate.id === id);
+    if (recipe === undefined) throw new Error(`Unknown recipe ${id}`);
+    const apiKey = process.env[source.provider.credentialEnvironmentVariable];
+    if (apiKey === undefined || apiKey.length === 0)
+      throw new Error(
+        `${source.provider.credentialEnvironmentVariable} is missing`,
+      );
+    const result = await pollJob(source.provider.apiBaseUrl, apiKey, jobId);
+    const encoded = findBase64Image(result);
+    if (encoded === null)
+      throw new Error("Completed PixelLab job contained no base64 image");
+    const input = decodeBase64Image(encoded);
+    const candidate = path.join(CANDIDATE_ROOT, `${recipe.id}.png`);
+    await mkdir(path.dirname(candidate), { recursive: true });
+    await processCandidate(input, recipe, candidate, source);
+    const inspection = await inspectPng(candidate);
+    assertTechnical(recipe, inspection);
+    const previous = generated.records[id];
+    (generated.records as Record<string, GenerationRecord>)[id] = {
+      id,
+      status: "CANDIDATE",
+      jobId,
+      candidate: path.relative(ROOT, candidate).replaceAll("\\", "/"),
+      candidateSha256: inspection.sha256,
+      providerOutputSha256: sha256(input),
+      width: inspection.width,
+      height: inspection.height,
+      hasAlpha: inspection.hasAlpha,
+      alphaBounds: inspection.alphaBounds,
+      request: previous?.request ?? requestSnapshot(source, recipe),
+    };
+    await saveGenerated(generated);
+    console.log(
+      `${recipe.id}: resumed candidate ready (${inspection.sha256.slice(0, 12)})`,
+    );
+    return;
+  }
   if (command === "validate") {
     await validateOutputs(source, generated);
     await syncRuntime(source, generated);
@@ -323,7 +364,7 @@ async function main(): Promise<void> {
     return;
   }
   console.log(
-    "Usage: pixellab.ts credentials | snapshot | generate --stage sample|batch [--ids a,b] [--concurrency 3] | repair --ids a,b | derive --id ID | review --id ID --accept|--reject --notes TEXT [--source-pass --native-pass --enlarged-pass --minimum-pass --composition-pass] | review-sheets | validate",
+    "Usage: pixellab.ts credentials | snapshot | generate --stage sample|batch [--ids a,b] [--concurrency 3] | resume-job --id ID --job-id JOB | repair --ids a,b | derive --id ID | review --id ID --accept|--reject --notes TEXT [--source-pass --native-pass --enlarged-pass --minimum-pass --composition-pass] | review-sheets | validate",
   );
 }
 
@@ -390,7 +431,10 @@ function validateSourceManifest(
   for (const alias of source.aliases ?? []) {
     if (ids.has(alias.id))
       throw new Error(`Alias collides with recipe ${alias.id}`);
-    if (!source.recipes.some((recipe) => recipe.id === alias.source))
+    if (
+      !source.recipes.some((recipe) => recipe.id === alias.source) &&
+      !isDerivedRoadMaskId(alias.source)
+    )
       throw new Error(`Unknown alias source ${alias.source} for ${alias.id}`);
     if (
       alias.id.length === 0 ||
@@ -973,6 +1017,54 @@ function assertCandyUnitOrder(
       if (generated.records[id]?.status !== "ACCEPTED")
         throw new Error(`Candy alias family source is not accepted: ${id}`);
   }
+}
+
+function assertRuleset6UiOrder(
+  recipes: readonly Recipe[],
+  generated: GeneratedManifest,
+): void {
+  const samples = [
+    "ui-hud-coin",
+    "ui-action-redevelop",
+    "ui-tech-fieldcraft",
+  ] as const;
+  const selectedSamples = recipes.filter((recipe) =>
+    samples.includes(recipe.id as (typeof samples)[number]),
+  );
+  if (selectedSamples.length > 0) {
+    if (selectedSamples.length !== 1)
+      throw new Error(
+        "Ruleset 6 Coin, Redevelop, and Fieldcraft samples must be generated as separate individual requests",
+      );
+    const selectedIndex = samples.indexOf(
+      selectedSamples[0]?.id as (typeof samples)[number],
+    );
+    const missingEarlier = samples
+      .slice(0, selectedIndex)
+      .filter((id) => generated.records[id]?.status !== "ACCEPTED");
+    if (missingEarlier.length > 0)
+      throw new Error(
+        `Ruleset 6 UI sample order requires acceptance first: ${missingEarlier.join(", ")}`,
+      );
+    return;
+  }
+
+  const selected = recipes.filter(
+    (recipe) =>
+      recipe.class === "ui" &&
+      (recipe.id.startsWith("ui-hud-") ||
+        recipe.id.startsWith("ui-action-") ||
+        recipe.id.startsWith("ui-tech-") ||
+        recipe.id.startsWith("ui-reward-")) &&
+      recipe.seed >= 96100,
+  );
+  if (selected.length === 0) return;
+  if (samples.some((id) => generated.records[id]?.status !== "ACCEPTED"))
+    throw new Error(
+      "Accept the Coin, Redevelop, and Fieldcraft samples before later ruleset-6 UI assets",
+    );
+  if (selected.length > 3)
+    throw new Error("Ruleset 6 UI batches may contain at most three assets");
 }
 
 async function generateRecipes(
@@ -1971,26 +2063,35 @@ async function syncRuntime(
   const accepted = source.recipes.filter(
     (recipe) => generated.records[recipe.id]?.status === "ACCEPTED",
   );
+  const roadMaskSourceAccepted =
+    generated.records["terrain-road-material"]?.status === "ACCEPTED";
   const acceptedAliases = (source.aliases ?? []).filter(
-    (alias) => generated.records[alias.source]?.status === "ACCEPTED",
+    (alias) =>
+      generated.records[alias.source]?.status === "ACCEPTED" ||
+      (roadMaskSourceAccepted && isDerivedRoadMaskId(alias.source)),
   );
-  const acceptedRoadMasks =
-    generated.records["terrain-road-material"]?.status === "ACCEPTED"
-      ? Array.from({ length: 16 }, (_, mask) => {
-          const bits = mask.toString(2).padStart(4, "0");
-          return {
-            id: `terrain-road-mask-${bits}`,
-            output: `public/assets/pixellab/terrain/road-masks/road-mask-${bits}.png`,
-          };
-        })
-      : [];
+  const acceptedRoadMasks = roadMaskSourceAccepted
+    ? Array.from({ length: 16 }, (_, mask) => {
+        const bits = mask.toString(2).padStart(4, "0");
+        return {
+          id: `terrain-road-mask-${bits}`,
+          output: `public/assets/pixellab/terrain/road-masks/road-mask-${bits}.png`,
+        };
+      })
+    : [];
   const entries = [
     ...accepted.map((recipe) => ({ id: recipe.id, output: recipe.output })),
     ...acceptedAliases.map((alias) => {
       const recipe = source.recipes.find((entry) => entry.id === alias.source);
-      if (recipe === undefined)
-        throw new Error(`Unknown alias source ${alias.source}`);
-      return { id: alias.id, output: recipe.output };
+      if (recipe !== undefined) return { id: alias.id, output: recipe.output };
+      if (isDerivedRoadMaskId(alias.source)) {
+        const bits = alias.source.slice(-4);
+        return {
+          id: alias.id,
+          output: `public/assets/pixellab/terrain/road-masks/road-mask-${bits}.png`,
+        };
+      }
+      throw new Error(`Unknown alias source ${alias.source}`);
     }),
     ...acceptedRoadMasks,
   ]
@@ -2020,6 +2121,10 @@ async function syncRuntime(
     await format(content, { parser: "typescript" }),
     "utf8",
   );
+}
+
+function isDerivedRoadMaskId(id: string): boolean {
+  return /^terrain-road-mask-[01]{4}$/.test(id);
 }
 
 async function createReviewSheets(

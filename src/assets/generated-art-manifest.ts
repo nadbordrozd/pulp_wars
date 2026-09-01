@@ -236,6 +236,33 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
     "assets/pixellab/ui/faction-candy-hero.png",
   ),
   "ui-faction-hero": publicArtUrl("assets/pixellab/ui/faction-hero.png"),
+  "ui-hud-coin": publicArtUrl("assets/pixellab/ui/hud-coin.png"),
+  "ui-action-redevelop": publicArtUrl(
+    "assets/pixellab/ui/action-redevelop.png",
+  ),
+  "ui-tech-fieldcraft": publicArtUrl("assets/pixellab/ui/tech-fieldcraft.png"),
+  "ui-hud-population": publicArtUrl("assets/pixellab/ui/hud-population.png"),
+  "ui-hud-negative-population": publicArtUrl(
+    "assets/pixellab/ui/hud-negative-population.png",
+  ),
+  "ui-hud-capacity": publicArtUrl("assets/pixellab/ui/hud-capacity.png"),
+  "ui-action-clear-forest": publicArtUrl(
+    "assets/pixellab/ui/action-clear-forest.png",
+  ),
+  "ui-action-replant-forest": publicArtUrl(
+    "assets/pixellab/ui/action-replant-forest.png",
+  ),
+  "ui-reward-expand": publicArtUrl("assets/pixellab/ui/reward-expand.png"),
+  "ui-action-heal": publicArtUrl("assets/pixellab/ui/action-heal.png"),
+  "ui-action-recover": publicArtUrl("assets/pixellab/ui/action-recover.png"),
+  "ui-action-wait": publicArtUrl("assets/pixellab/ui/action-wait.png"),
+  "ui-action-promote": publicArtUrl("assets/pixellab/ui/action-promote.png"),
+  "ui-action-end-turn": publicArtUrl("assets/pixellab/ui/action-end-turn.png"),
+  "ui-tech-maneuver": publicArtUrl("assets/pixellab/ui/tech-maneuver.png"),
+  "ui-tech-fortification": publicArtUrl(
+    "assets/pixellab/ui/tech-fortification.png",
+  ),
+  "ui-tech-recovery": publicArtUrl("assets/pixellab/ui/tech-recovery.png"),
   "terrain-game": publicArtUrl("assets/pixellab/terrain/animal.png"),
   "building-ruleset6-mine": publicArtUrl("assets/pixellab/buildings/mine.png"),
   "building-lumber-camp": publicArtUrl(
@@ -253,6 +280,152 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
     "assets/pixellab/units/candy-choco-engineer.png",
   ),
   "unit-candy-raider": publicArtUrl("assets/pixellab/units/candy-donut.png"),
+  "ui-hud-income": publicArtUrl("assets/pixellab/ui/hud-coin.png"),
+  "ui-hud-road": publicArtUrl(
+    "assets/pixellab/terrain/road-masks/road-mask-0101.png",
+  ),
+  "ui-tech-original-gathering": publicArtUrl(
+    "assets/pixellab/terrain/fruit.png",
+  ),
+  "ui-tech-original-farming": publicArtUrl(
+    "assets/pixellab/buildings/farm.png",
+  ),
+  "ui-tech-original-milling": publicArtUrl(
+    "assets/pixellab/buildings/windmill.png",
+  ),
+  "ui-tech-original-craft": publicArtUrl(
+    "assets/pixellab/buildings/workshop.png",
+  ),
+  "ui-tech-original-grand-works": publicArtUrl(
+    "assets/pixellab/buildings/grand-works.png",
+  ),
+  "ui-tech-original-hunting": publicArtUrl(
+    "assets/pixellab/terrain/animal.png",
+  ),
+  "ui-tech-original-forestry": publicArtUrl(
+    "assets/pixellab/buildings/lumber-mill.png",
+  ),
+  "ui-tech-original-sawmilling": publicArtUrl(
+    "assets/pixellab/buildings/sawmill.png",
+  ),
+  "ui-tech-original-marksmanship": publicArtUrl(
+    "assets/pixellab/ui/portrait-original-marksman.png",
+  ),
+  "ui-tech-original-fieldcraft": publicArtUrl(
+    "assets/pixellab/ui/tech-fieldcraft.png",
+  ),
+  "ui-tech-original-surveying": publicArtUrl(
+    "assets/pixellab/ui/reward-survey.png",
+  ),
+  "ui-tech-original-mining": publicArtUrl("assets/pixellab/buildings/mine.png"),
+  "ui-tech-original-metallurgy": publicArtUrl(
+    "assets/pixellab/buildings/forge.png",
+  ),
+  "ui-tech-original-quarrying": publicArtUrl(
+    "assets/pixellab/buildings/quarry.png",
+  ),
+  "ui-tech-original-masonry": publicArtUrl(
+    "assets/pixellab/buildings/stoneworks.png",
+  ),
+  "ui-tech-original-scouting": publicArtUrl(
+    "assets/pixellab/ui/portrait-original-scout.png",
+  ),
+  "ui-tech-original-roads": publicArtUrl(
+    "assets/pixellab/terrain/road-masks/road-mask-0101.png",
+  ),
+  "ui-tech-original-commerce": publicArtUrl(
+    "assets/pixellab/buildings/market.png",
+  ),
+  "ui-tech-original-raiding": publicArtUrl(
+    "assets/pixellab/ui/portrait-original-raider.png",
+  ),
+  "ui-tech-original-maneuver": publicArtUrl(
+    "assets/pixellab/ui/tech-maneuver.png",
+  ),
+  "ui-tech-original-drill": publicArtUrl(
+    "assets/pixellab/ui/portrait-original-guard.png",
+  ),
+  "ui-tech-original-fortification": publicArtUrl(
+    "assets/pixellab/ui/tech-fortification.png",
+  ),
+  "ui-tech-original-explosives": publicArtUrl(
+    "assets/pixellab/ui/portrait-original-breacher.png",
+  ),
+  "ui-tech-original-medicine": publicArtUrl(
+    "assets/pixellab/ui/portrait-original-medic.png",
+  ),
+  "ui-tech-original-recovery": publicArtUrl(
+    "assets/pixellab/ui/tech-recovery.png",
+  ),
+  "ui-tech-candy-gathering": publicArtUrl(
+    "assets/pixellab/terrain/candy-fruit.png",
+  ),
+  "ui-tech-candy-farming": publicArtUrl("assets/pixellab/buildings/farm.png"),
+  "ui-tech-candy-milling": publicArtUrl(
+    "assets/pixellab/buildings/windmill.png",
+  ),
+  "ui-tech-candy-craft": publicArtUrl("assets/pixellab/buildings/workshop.png"),
+  "ui-tech-candy-grand-works": publicArtUrl(
+    "assets/pixellab/buildings/grand-works.png",
+  ),
+  "ui-tech-candy-hunting": publicArtUrl(
+    "assets/pixellab/terrain/candy-animal.png",
+  ),
+  "ui-tech-candy-forestry": publicArtUrl(
+    "assets/pixellab/buildings/lumber-mill.png",
+  ),
+  "ui-tech-candy-sawmilling": publicArtUrl(
+    "assets/pixellab/buildings/sawmill.png",
+  ),
+  "ui-tech-candy-marksmanship": publicArtUrl(
+    "assets/pixellab/ui/portrait-candy-marksman.png",
+  ),
+  "ui-tech-candy-fieldcraft": publicArtUrl(
+    "assets/pixellab/ui/tech-fieldcraft.png",
+  ),
+  "ui-tech-candy-surveying": publicArtUrl(
+    "assets/pixellab/ui/reward-survey.png",
+  ),
+  "ui-tech-candy-mining": publicArtUrl("assets/pixellab/buildings/mine.png"),
+  "ui-tech-candy-metallurgy": publicArtUrl(
+    "assets/pixellab/buildings/forge.png",
+  ),
+  "ui-tech-candy-quarrying": publicArtUrl(
+    "assets/pixellab/buildings/quarry.png",
+  ),
+  "ui-tech-candy-masonry": publicArtUrl(
+    "assets/pixellab/buildings/stoneworks.png",
+  ),
+  "ui-tech-candy-scouting": publicArtUrl(
+    "assets/pixellab/ui/portrait-candy-scout.png",
+  ),
+  "ui-tech-candy-roads": publicArtUrl(
+    "assets/pixellab/terrain/road-masks/road-mask-0101.png",
+  ),
+  "ui-tech-candy-commerce": publicArtUrl(
+    "assets/pixellab/buildings/market.png",
+  ),
+  "ui-tech-candy-raiding": publicArtUrl(
+    "assets/pixellab/ui/portrait-candy-raider.png",
+  ),
+  "ui-tech-candy-maneuver": publicArtUrl(
+    "assets/pixellab/ui/tech-maneuver.png",
+  ),
+  "ui-tech-candy-drill": publicArtUrl(
+    "assets/pixellab/ui/portrait-candy-guard.png",
+  ),
+  "ui-tech-candy-fortification": publicArtUrl(
+    "assets/pixellab/ui/tech-fortification.png",
+  ),
+  "ui-tech-candy-explosives": publicArtUrl(
+    "assets/pixellab/ui/portrait-candy-breacher.png",
+  ),
+  "ui-tech-candy-medicine": publicArtUrl(
+    "assets/pixellab/ui/portrait-candy-medic.png",
+  ),
+  "ui-tech-candy-recovery": publicArtUrl(
+    "assets/pixellab/ui/tech-recovery.png",
+  ),
   "terrain-road-mask-0000": publicArtUrl(
     "assets/pixellab/terrain/road-masks/road-mask-0000.png",
   ),
@@ -315,6 +488,58 @@ export const ACCEPTED_ART_ALIASES: Readonly<Record<string, string>> = {
   "unit-candy-marksman": "unit-candy-gumball-guard",
   "unit-candy-guard": "unit-candy-choco-engineer",
   "unit-candy-raider": "unit-candy-donut",
+  "ui-hud-income": "ui-hud-coin",
+  "ui-hud-road": "terrain-road-mask-0101",
+  "ui-tech-original-gathering": "terrain-fruit",
+  "ui-tech-original-farming": "building-farm",
+  "ui-tech-original-milling": "building-windmill",
+  "ui-tech-original-craft": "building-workshop",
+  "ui-tech-original-grand-works": "building-grand-works",
+  "ui-tech-original-hunting": "terrain-animal",
+  "ui-tech-original-forestry": "building-lumber-mill",
+  "ui-tech-original-sawmilling": "building-sawmill",
+  "ui-tech-original-marksmanship": "portrait-original-marksman",
+  "ui-tech-original-fieldcraft": "ui-tech-fieldcraft",
+  "ui-tech-original-surveying": "ui-reward-survey",
+  "ui-tech-original-mining": "building-mine",
+  "ui-tech-original-metallurgy": "building-forge",
+  "ui-tech-original-quarrying": "building-quarry",
+  "ui-tech-original-masonry": "building-stoneworks",
+  "ui-tech-original-scouting": "portrait-original-scout",
+  "ui-tech-original-roads": "terrain-road-mask-0101",
+  "ui-tech-original-commerce": "building-market",
+  "ui-tech-original-raiding": "portrait-original-raider",
+  "ui-tech-original-maneuver": "ui-tech-maneuver",
+  "ui-tech-original-drill": "portrait-original-guard",
+  "ui-tech-original-fortification": "ui-tech-fortification",
+  "ui-tech-original-explosives": "portrait-original-breacher",
+  "ui-tech-original-medicine": "portrait-original-medic",
+  "ui-tech-original-recovery": "ui-tech-recovery",
+  "ui-tech-candy-gathering": "terrain-candy-fruit",
+  "ui-tech-candy-farming": "building-farm",
+  "ui-tech-candy-milling": "building-windmill",
+  "ui-tech-candy-craft": "building-workshop",
+  "ui-tech-candy-grand-works": "building-grand-works",
+  "ui-tech-candy-hunting": "terrain-candy-animal",
+  "ui-tech-candy-forestry": "building-lumber-mill",
+  "ui-tech-candy-sawmilling": "building-sawmill",
+  "ui-tech-candy-marksmanship": "portrait-candy-marksman",
+  "ui-tech-candy-fieldcraft": "ui-tech-fieldcraft",
+  "ui-tech-candy-surveying": "ui-reward-survey",
+  "ui-tech-candy-mining": "building-mine",
+  "ui-tech-candy-metallurgy": "building-forge",
+  "ui-tech-candy-quarrying": "building-quarry",
+  "ui-tech-candy-masonry": "building-stoneworks",
+  "ui-tech-candy-scouting": "portrait-candy-scout",
+  "ui-tech-candy-roads": "terrain-road-mask-0101",
+  "ui-tech-candy-commerce": "building-market",
+  "ui-tech-candy-raiding": "portrait-candy-raider",
+  "ui-tech-candy-maneuver": "ui-tech-maneuver",
+  "ui-tech-candy-drill": "portrait-candy-guard",
+  "ui-tech-candy-fortification": "ui-tech-fortification",
+  "ui-tech-candy-explosives": "portrait-candy-breacher",
+  "ui-tech-candy-medicine": "portrait-candy-medic",
+  "ui-tech-candy-recovery": "ui-tech-recovery",
 };
 
 export interface AcceptedArtAttachment {

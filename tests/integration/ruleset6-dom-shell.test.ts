@@ -486,10 +486,10 @@ describe("playable ruleset-6 DOM shell", () => {
       )?.src,
     ).toContain("assets/pixellab/buildings/village.png");
     expect(
-      document.querySelector(
-        '[data-command-kind="WAIT"] [data-symbol-kind="code-native-fallback"]',
-      ),
-    ).not.toBeNull();
+      document.querySelector<HTMLImageElement>(
+        '[data-command-kind="WAIT"] [data-symbol-kind="accepted-raster"] img',
+      )?.src,
+    ).toContain("assets/pixellab/ui/action-wait.png");
     const rollFamily = document.querySelector<HTMLButtonElement>(
       '[data-command-family="KAMIKAZE_ROLL"]',
     );
@@ -1230,7 +1230,7 @@ describe("playable ruleset-6 DOM shell", () => {
     ).not.toBeNull();
     expect(
       document.querySelector(
-        '[data-tech="FARMING"] [data-symbol-kind="code-native-fallback"]',
+        '[data-tech="FARMING"] [data-symbol-kind="accepted-raster"]',
       ),
     ).not.toBeNull();
 
@@ -1446,10 +1446,10 @@ describe("playable ruleset-6 DOM shell", () => {
       rewardButtons[0]?.querySelector("[data-symbol-kind=accepted-raster]"),
     ).not.toBeNull();
     expect(
-      rewardButtons[1]?.querySelector(
-        "[data-symbol-kind=code-native-fallback]",
-      ),
-    ).not.toBeNull();
+      rewardButtons[1]?.querySelector<HTMLImageElement>(
+        "[data-symbol-kind=accepted-raster] img",
+      )?.src,
+    ).toContain("assets/pixellab/ui/hud-coin.png");
     expect(document.activeElement).toBe(rewardButtons[0]);
     expect(host.model?.interactive).toBe(false);
     expect(document.querySelector(".v6-action-dock")).toBeNull();
