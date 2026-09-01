@@ -1,27 +1,66 @@
 {
+  "generatedAt": "2026-09-01T10:38:48.833Z",
   "generatedBy": "npm run smoke:browser",
   "rulesetId": "pulp-wars-poc-6",
   "productionEntry": "src/main.ts",
   "browser": "Chrome/151.0.7922.137",
   "technologyNodeCount": 25,
   "pageAndConsoleErrors": [],
+  "viewportContract": {
+    "desktop": {
+      "width": 1440,
+      "height": 1000,
+      "dpr": 1,
+      "mobile": false
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "dpr": 2,
+      "mobile": true
+    }
+  },
+  "passMetadata": {
+    "status": "PASS",
+    "factions": [
+      "ORIGINAL",
+      "CANDY"
+    ],
+    "surfaces": [
+      "desktop",
+      "390x844 DPR2 mobile"
+    ],
+    "motionModes": [
+      "FULL",
+      "emulated prefers-reduced-motion: reduce"
+    ],
+    "exercisedThrough": "exact production DOM controls and Canvas coordinate targets"
+  },
+  "unresolvedProductionRasterInventory": {
+    "status": "NOT_ACCEPTED_BY_THIS_PASS",
+    "owners": [
+      "pulp_wars-phg.15",
+      "pulp_wars-phg.20"
+    ],
+    "treatment": "Existing accepted semantic art is used where registered; truthful code-native fallbacks remain visible elsewhere. No production raster was generated or accepted."
+  },
   "visualReview": {
     "status": "ACCEPTED",
-    "notes": "Desktop and true 390x844 DPR2 captures were inspected at native output size. Original and Candy are distinct, ordinary units remain compact relative to terrain, Canvas content is readable, and HUD/map/dock regions have no clipping, overlap, or horizontal overflow."
+    "notes": "Every bounded contextual, reward, city-training, and Technology capture was inspected individually at native output size and in its nearest-neighbor 2x companion. Original and Candy labels/symbols remain distinct; the map stays primary; unit, city, and tile docks do not leak actions; full Technology cards/details and blocking rewards fit desktop and true 390x844 DPR2 mobile without clipping or horizontal overflow. No suspected visual failure remained after enlargement review."
   },
   "flows": [
     {
       "faction": "ORIGINAL",
       "factionTreeId": "ORIGINAL_BASELINE",
-      "seed": 42,
+      "seed": 20,
       "launch": {
         "phase": "ACTIVE",
         "transitioning": false,
         "commandIndex": 0,
-        "stateHash": "e0c1bfdbe60398e88914f92a9077bbe5088fbf3f43f7489fc64bd1eef393f860",
+        "stateHash": "435e6d3ac14c78524f54113877bb9cd465525ad278e03e720dd6b10085c69c4f",
         "faction": "ORIGINAL",
         "factionTreeId": "ORIGINAL_BASELINE",
-        "seed": 42,
+        "seed": 20,
         "activeIsHuman": true,
         "offered": [
           {
@@ -85,12 +124,20 @@
             "encoded": "{\"kind\":\"RESEARCH\",\"tech\":\"DRILL\"}"
           },
           {
+            "kind": "HARVEST_FRUIT",
+            "encoded": "{\"kind\":\"HARVEST_FRUIT\",\"at\":{\"x\":3,\"y\":7}}"
+          },
+          {
+            "kind": "HARVEST_FRUIT",
+            "encoded": "{\"kind\":\"HARVEST_FRUIT\",\"at\":{\"x\":2,\"y\":9}}"
+          },
+          {
             "kind": "END_TURN",
             "encoded": "{\"kind\":\"END_TURN\"}"
           }
         ]
       },
-      "deterministicRestartHash": "e0c1bfdbe60398e88914f92a9077bbe5088fbf3f43f7489fc64bd1eef393f860",
+      "deterministicRestartHash": "435e6d3ac14c78524f54113877bb9cd465525ad278e03e720dd6b10085c69c4f",
       "technologyIds": [
         "GATHERING",
         "FARMING",
@@ -122,16 +169,58 @@
         "encoded": "{\"kind\":\"WAIT\",\"unitId\":2}",
         "beforeIndex": 0,
         "afterIndex": 1,
-        "afterHash": "e5facd7a638707d93d6679a1d2a16ada25082c5c49f69aa413f533c878f0554e"
+        "afterHash": "9eee328d52deed7c8b7cd3cd90a379a41e4c90bb90565b24a8736f3f9dbeda16"
       },
       "turnReturn": {
-        "commandIndex": 5,
-        "stateHash": "ad30a6944bf0fd2a6455d8da9d84f74dfe3d26d53d4f95b9bc3a1aa1115e8ebc",
-        "aiAcceptedCommands": 3
+        "commandIndex": 60,
+        "stateHash": "761ba0cbf76b638c0fbb5ac3b9addbaae74eb8dc846b90f2cc1b74cacf10082d",
+        "aiAcceptedCommands": 8
       },
       "resume": {
-        "commandIndex": 5,
-        "stateHash": "ad30a6944bf0fd2a6455d8da9d84f74dfe3d26d53d4f95b9bc3a1aa1115e8ebc"
+        "commandIndex": 60,
+        "stateHash": "761ba0cbf76b638c0fbb5ac3b9addbaae74eb8dc846b90f2cc1b74cacf10082d"
+      },
+      "acceptance": {
+        "contextual": {
+          "selectedExactUnit": true,
+          "selectedExactCity": true,
+          "selectedExactTile": true,
+          "isolatedUnitActions": true,
+          "isolatedCityActions": true,
+          "isolatedTileActions": true,
+          "captureVillageSymbol": true,
+          "factionCorrectTrainSymbol": true,
+          "moveButtonCount": 0,
+          "attackButtonCount": 0,
+          "exactMoveAccepted": true,
+          "exactAttackAccepted": true
+        },
+        "technology": {
+          "mainResearchButtonCount": 0,
+          "mainContextCommandCount": 0,
+          "branchCount": 5,
+          "cardCount": 25,
+          "detailIsModal": true,
+          "exactResearchAccepted": true,
+          "researchedDetailRetained": true,
+          "backRestoredMatchFocus": true
+        },
+        "mandatoryChoice": {
+          "kind": "CITY_REWARD",
+          "position": "Choice 1 of 1",
+          "authoritativeFirst": true,
+          "blocksOutsideInput": true,
+          "desktopFits": true,
+          "mobileFits": true,
+          "exactChoiceAccepted": true
+        },
+        "readiness": {
+          "fullDesktopChangedPixels": 1787,
+          "fullMobileChangedPixels": 3309,
+          "reducedDesktopChangedPixels": 0,
+          "reducedMobileChangedPixels": 0,
+          "handledChangedPixels": 0
+        }
       },
       "desktop": {
         "viewport": {
@@ -151,25 +240,25 @@
           "x": 0,
           "y": 0,
           "width": 1440,
-          "height": 59.59375
+          "height": 63.59375
         },
         "map": {
           "x": 0,
-          "y": 59.59375,
-          "width": 1080,
-          "height": 940.40625
+          "y": 63.59375,
+          "width": 1440,
+          "height": 936.40625
         },
         "dock": {
-          "x": 1080,
-          "y": 59.59375,
-          "width": 360,
-          "height": 940.40625
+          "x": 0,
+          "y": 902.546875,
+          "width": 1440,
+          "height": 97.453125
         },
         "canvas": {
-          "cssWidth": 1080,
-          "cssHeight": 940.40625,
-          "backingWidth": 1080,
-          "backingHeight": 940,
+          "cssWidth": 1440,
+          "cssHeight": 936.40625,
+          "backingWidth": 1440,
+          "backingHeight": 936,
           "role": "application",
           "interactive": "true"
         }
@@ -192,54 +281,156 @@
           "x": 0,
           "y": 0,
           "width": 390,
-          "height": 120.78125
+          "height": 174.375
         },
         "map": {
           "x": 0,
-          "y": 120.78125,
+          "y": 174.375,
           "width": 390,
-          "height": 394.0625
+          "height": 669.625
         },
         "dock": {
           "x": 0,
-          "y": 514.84375,
+          "y": 769.140625,
           "width": 390,
-          "height": 329.15625
+          "height": 74.859375
         },
         "canvas": {
           "cssWidth": 390,
-          "cssHeight": 394.0625,
+          "cssHeight": 669.625,
           "backingWidth": 780,
-          "backingHeight": 788,
+          "backingHeight": 1339,
           "role": "application",
           "interactive": "true"
         }
       },
       "screenshots": [
         {
-          "path": "art/integration/reviews/ruleset6-browser-smoke/original-desktop.png",
-          "bytes": 269156,
-          "sha256": "984333de36c04e075a6b7f178ce20b2f99586f45dce3470f1bf992564d51f886"
+          "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-desktop-native.png",
+          "bytes": 322972,
+          "sha256": "0dadd22339b8c8abefe94fde28de9bfe77588056f8d4978fe99af2b386cde8c3",
+          "width": 1440,
+          "height": 1000,
+          "viewport": {
+            "width": 1440,
+            "height": 1000,
+            "dpr": 1
+          },
+          "inspectionScale": 1,
+          "subject": "ORIGINAL exact-unit contextual dock and map-only movement targets"
         },
         {
-          "path": "art/integration/reviews/ruleset6-browser-smoke/original-mobile-390x844-dpr2.png",
-          "bytes": 264464,
-          "sha256": "8f03b0fc8abf5220f08807c7988ffc734890de966ffaf8a820a1b15c9b655507"
+          "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-desktop-enlarged.png",
+          "bytes": 540022,
+          "sha256": "ac10e3f08d866d33eb4b64db305d7b235946c3a98c5dd8968fc164c00d833f6a",
+          "width": 2880,
+          "height": 2000,
+          "viewport": {
+            "width": 1440,
+            "height": 1000,
+            "dpr": 1
+          },
+          "inspectionScale": 2,
+          "subject": "ORIGINAL exact-unit contextual dock and map-only movement targets"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/original-reward-desktop-native.png",
+          "bytes": 165960,
+          "sha256": "10a374646623ad654229005f09194103248a5601e47962fdc727eea0dbbdceba",
+          "width": 1440,
+          "height": 1000,
+          "viewport": {
+            "width": 1440,
+            "height": 1000,
+            "dpr": 1
+          },
+          "inspectionScale": 1,
+          "subject": "ORIGINAL blocking ordered city-reward choice"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/original-reward-desktop-enlarged.png",
+          "bytes": 304398,
+          "sha256": "729cf7125cce633c884982b6730767ca5216aeecfb018cd06c781efb4cd7f044",
+          "width": 2880,
+          "height": 2000,
+          "viewport": {
+            "width": 1440,
+            "height": 1000,
+            "dpr": 1
+          },
+          "inspectionScale": 2,
+          "subject": "ORIGINAL blocking ordered city-reward choice"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/original-city-train-mobile-native.png",
+          "bytes": 297661,
+          "sha256": "b97da9f334e05fcd977f62b519ce6bee7588d015ef2d7564deb0087b5b69aaa5",
+          "width": 780,
+          "height": 1688,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "inspectionScale": 1,
+          "subject": "ORIGINAL faction-correct selected-city training symbol"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/original-city-train-mobile-enlarged.png",
+          "bytes": 530757,
+          "sha256": "e183aea73c26d948e749f7e1e2e7f8b92878f40c0a331d487d2b01a7c6429527",
+          "width": 1560,
+          "height": 3376,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "inspectionScale": 2,
+          "subject": "ORIGINAL faction-correct selected-city training symbol"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-detail-mobile-native.png",
+          "bytes": 160490,
+          "sha256": "ce48cabfeea1b7ba2f1a89b17248068ea91cca787c447a1c2bdc7c97877086d6",
+          "width": 780,
+          "height": 1688,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "inspectionScale": 1,
+          "subject": "ORIGINAL 25-card five-branch Technology detail and exact research action"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-detail-mobile-enlarged.png",
+          "bytes": 253251,
+          "sha256": "16f34dd318cf5feea895b07746e2527a9b79934ee546cc4a099e5229a9dc3a51",
+          "width": 1560,
+          "height": 3376,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "inspectionScale": 2,
+          "subject": "ORIGINAL 25-card five-branch Technology detail and exact research action"
         }
       ]
     },
     {
       "faction": "CANDY",
       "factionTreeId": "CANDY_BASELINE_V1",
-      "seed": 2,
+      "seed": 20,
       "launch": {
         "phase": "ACTIVE",
         "transitioning": false,
         "commandIndex": 0,
-        "stateHash": "dd90febaa22afb921d71fa4783405e6c6b9c88bc31882ffdc723ad1542733208",
+        "stateHash": "f1233281f96bf648b2262c7412de4eebbfffa1f0de268823f3f59435ad2ea9f8",
         "faction": "CANDY",
         "factionTreeId": "CANDY_BASELINE_V1",
-        "seed": 2,
+        "seed": 20,
         "activeIsHuman": true,
         "offered": [
           {
@@ -261,6 +452,10 @@
           {
             "kind": "MOVE",
             "encoded": "{\"kind\":\"MOVE\",\"unitId\":2,\"path\":[{\"x\":3,\"y\":8}]}"
+          },
+          {
+            "kind": "MOVE",
+            "encoded": "{\"kind\":\"MOVE\",\"unitId\":2,\"path\":[{\"x\":1,\"y\":9}]}"
           },
           {
             "kind": "MOVE",
@@ -299,12 +494,20 @@
             "encoded": "{\"kind\":\"RESEARCH\",\"tech\":\"DRILL\"}"
           },
           {
+            "kind": "HARVEST_FRUIT",
+            "encoded": "{\"kind\":\"HARVEST_FRUIT\",\"at\":{\"x\":3,\"y\":7}}"
+          },
+          {
+            "kind": "HARVEST_FRUIT",
+            "encoded": "{\"kind\":\"HARVEST_FRUIT\",\"at\":{\"x\":2,\"y\":9}}"
+          },
+          {
             "kind": "END_TURN",
             "encoded": "{\"kind\":\"END_TURN\"}"
           }
         ]
       },
-      "deterministicRestartHash": "dd90febaa22afb921d71fa4783405e6c6b9c88bc31882ffdc723ad1542733208",
+      "deterministicRestartHash": "f1233281f96bf648b2262c7412de4eebbfffa1f0de268823f3f59435ad2ea9f8",
       "technologyIds": [
         "GATHERING",
         "FARMING",
@@ -336,16 +539,58 @@
         "encoded": "{\"kind\":\"WAIT\",\"unitId\":2}",
         "beforeIndex": 0,
         "afterIndex": 1,
-        "afterHash": "3df0a0ab0f14365046d9cb441cf09d602d8db4f185f7e3e2540a0de06fe9230e"
+        "afterHash": "7bd9c9d74b22d1433e8eab7034adef1943e7e36ffc2386528f2d53f2766a21be"
       },
       "turnReturn": {
-        "commandIndex": 5,
-        "stateHash": "253e8a19e3f1185616a7d851f219fe90471beb1d297142a8a42af90c6c6cb63c",
-        "aiAcceptedCommands": 3
+        "commandIndex": 60,
+        "stateHash": "b75f90d0f4c7c7d977dbe83c8adb7bad499a8d15e1169d888dbd66155c6c6211",
+        "aiAcceptedCommands": 8
       },
       "resume": {
-        "commandIndex": 5,
-        "stateHash": "253e8a19e3f1185616a7d851f219fe90471beb1d297142a8a42af90c6c6cb63c"
+        "commandIndex": 60,
+        "stateHash": "b75f90d0f4c7c7d977dbe83c8adb7bad499a8d15e1169d888dbd66155c6c6211"
+      },
+      "acceptance": {
+        "contextual": {
+          "selectedExactUnit": true,
+          "selectedExactCity": true,
+          "selectedExactTile": true,
+          "isolatedUnitActions": true,
+          "isolatedCityActions": true,
+          "isolatedTileActions": true,
+          "captureVillageSymbol": true,
+          "factionCorrectTrainSymbol": true,
+          "moveButtonCount": 0,
+          "attackButtonCount": 0,
+          "exactMoveAccepted": true,
+          "exactAttackAccepted": true
+        },
+        "technology": {
+          "mainResearchButtonCount": 0,
+          "mainContextCommandCount": 0,
+          "branchCount": 5,
+          "cardCount": 25,
+          "detailIsModal": true,
+          "exactResearchAccepted": true,
+          "researchedDetailRetained": true,
+          "backRestoredMatchFocus": true
+        },
+        "mandatoryChoice": {
+          "kind": "CITY_REWARD",
+          "position": "Choice 1 of 1",
+          "authoritativeFirst": true,
+          "blocksOutsideInput": true,
+          "desktopFits": true,
+          "mobileFits": true,
+          "exactChoiceAccepted": true
+        },
+        "readiness": {
+          "fullDesktopChangedPixels": 1595,
+          "fullMobileChangedPixels": 2936,
+          "reducedDesktopChangedPixels": 0,
+          "reducedMobileChangedPixels": 0,
+          "handledChangedPixels": 0
+        }
       },
       "desktop": {
         "viewport": {
@@ -365,25 +610,25 @@
           "x": 0,
           "y": 0,
           "width": 1440,
-          "height": 59.59375
+          "height": 63.59375
         },
         "map": {
           "x": 0,
-          "y": 59.59375,
-          "width": 1080,
-          "height": 940.40625
+          "y": 63.59375,
+          "width": 1440,
+          "height": 936.40625
         },
         "dock": {
-          "x": 1080,
-          "y": 59.59375,
-          "width": 360,
-          "height": 940.40625
+          "x": 0,
+          "y": 902.546875,
+          "width": 1440,
+          "height": 97.453125
         },
         "canvas": {
-          "cssWidth": 1080,
-          "cssHeight": 940.40625,
-          "backingWidth": 1080,
-          "backingHeight": 940,
+          "cssWidth": 1440,
+          "cssHeight": 936.40625,
+          "backingWidth": 1440,
+          "backingHeight": 936,
           "role": "application",
           "interactive": "true"
         }
@@ -406,39 +651,141 @@
           "x": 0,
           "y": 0,
           "width": 390,
-          "height": 120.78125
+          "height": 174.375
         },
         "map": {
           "x": 0,
-          "y": 120.78125,
+          "y": 174.375,
           "width": 390,
-          "height": 394.0625
+          "height": 669.625
         },
         "dock": {
           "x": 0,
-          "y": 514.84375,
+          "y": 769.140625,
           "width": 390,
-          "height": 329.15625
+          "height": 74.859375
         },
         "canvas": {
           "cssWidth": 390,
-          "cssHeight": 394.0625,
+          "cssHeight": 669.625,
           "backingWidth": 780,
-          "backingHeight": 788,
+          "backingHeight": 1339,
           "role": "application",
           "interactive": "true"
         }
       },
       "screenshots": [
         {
-          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-desktop.png",
-          "bytes": 266260,
-          "sha256": "c5180ee9510a5f1a8ff59d8e66817b546c40dcac748aaec37dc71dc9d9bc87a7"
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-desktop-native.png",
+          "bytes": 330893,
+          "sha256": "8c78b4e2f6c91cf9490ac67c037e6d7e11daaf31df10fac5bf911ee704b45aae",
+          "width": 1440,
+          "height": 1000,
+          "viewport": {
+            "width": 1440,
+            "height": 1000,
+            "dpr": 1
+          },
+          "inspectionScale": 1,
+          "subject": "CANDY exact-unit contextual dock and map-only movement targets"
         },
         {
-          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-mobile-390x844-dpr2.png",
-          "bytes": 250925,
-          "sha256": "59bcad776fa6bee129ccd30228d1d70d43237749cfa3334e9a96705f025e5b64"
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-desktop-enlarged.png",
+          "bytes": 554939,
+          "sha256": "97c07574ed21f85510132265a5b4e3a94f5d6f5221ca4e28ce96203346d3ea37",
+          "width": 2880,
+          "height": 2000,
+          "viewport": {
+            "width": 1440,
+            "height": 1000,
+            "dpr": 1
+          },
+          "inspectionScale": 2,
+          "subject": "CANDY exact-unit contextual dock and map-only movement targets"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-reward-desktop-native.png",
+          "bytes": 167349,
+          "sha256": "7ad53f6b9f03eb3a330c42df9f404f4e7d026b03eee091b58c58063fd261d97a",
+          "width": 1440,
+          "height": 1000,
+          "viewport": {
+            "width": 1440,
+            "height": 1000,
+            "dpr": 1
+          },
+          "inspectionScale": 1,
+          "subject": "CANDY blocking ordered city-reward choice"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-reward-desktop-enlarged.png",
+          "bytes": 307903,
+          "sha256": "a89f99aa8ff55c287bb6dd43a81053b8183afaf0f53b3cbf91edf9ce0fe78ca8",
+          "width": 2880,
+          "height": 2000,
+          "viewport": {
+            "width": 1440,
+            "height": 1000,
+            "dpr": 1
+          },
+          "inspectionScale": 2,
+          "subject": "CANDY blocking ordered city-reward choice"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-city-train-mobile-native.png",
+          "bytes": 303154,
+          "sha256": "d72b2289a5d424a3a56aa7b707909c288456c46f7f78c030b37d72b2d6d9e769",
+          "width": 780,
+          "height": 1688,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "inspectionScale": 1,
+          "subject": "CANDY faction-correct selected-city training symbol"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-city-train-mobile-enlarged.png",
+          "bytes": 539646,
+          "sha256": "e20af2ce93f264cef0fd692e840369b38114a90ab4f4d85436fab245eb8245f4",
+          "width": 1560,
+          "height": 3376,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "inspectionScale": 2,
+          "subject": "CANDY faction-correct selected-city training symbol"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-detail-mobile-native.png",
+          "bytes": 157239,
+          "sha256": "c6fa30179c77b7b83005931a174d126b3b4905f5f10597c8f0c043c5c77716f3",
+          "width": 780,
+          "height": 1688,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "inspectionScale": 1,
+          "subject": "CANDY 25-card five-branch Technology detail and exact research action"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-detail-mobile-enlarged.png",
+          "bytes": 247965,
+          "sha256": "9db765e4b4f3476045bd6a2984096984bb671e6d5ec635b1b4d84add7740e518",
+          "width": 1560,
+          "height": 3376,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "inspectionScale": 2,
+          "subject": "CANDY 25-card five-branch Technology detail and exact research action"
         }
       ]
     }

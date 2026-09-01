@@ -1,8 +1,9 @@
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
+import sharp from "sharp";
 import {
   RULESET6_SMOKE_TECH_IDS,
   RULESET6_SMOKE_VIEWPORTS,
@@ -10,6 +11,7 @@ import {
   type BrowserSmokeArtifactV6,
   type BrowserSmokeBoundaryV6,
   type BrowserSmokeFlowEvidenceV6,
+  type BrowserSmokeIntegratedAcceptanceV6,
   type BrowserSmokeLayoutV6,
 } from "./browser-smoke-v6-contract";
 
@@ -42,9 +44,26 @@ interface BrowserSmokeAiFirstLaunchV6 {
   readonly notice: string;
 }
 
+interface CoordV6 {
+  readonly x: number;
+  readonly y: number;
+}
+
+interface MotionEvidenceV6 {
+  readonly changedPixels: number;
+  readonly firstSha256: string;
+  readonly secondSha256: string;
+  readonly clip: {
+    readonly x: number;
+    readonly y: number;
+    readonly width: number;
+    readonly height: number;
+  };
+}
+
 const baseUrl =
   process.argv.slice(2).find((argument) => !argument.startsWith("--")) ??
-  "http://localhost:6173";
+  "http://localhost:6173/?browser-smoke=1";
 const reviewRoot = path.join(
   process.cwd(),
   "art/integration/reviews/ruleset6-browser-smoke",
@@ -63,6 +82,8 @@ const userData = chrome.endsWith(".exe")
       process.env.TMPDIR ?? "/tmp",
       `pulp-wars-v6-smoke-${process.pid}`,
     );
+const pendingReviewFiles: { readonly path: string; readonly data: Buffer }[] =
+  [];
 
 await mkdir(reviewRoot, { recursive: true });
 const browser = spawn(
@@ -103,14 +124,14 @@ try {
     await runFactionFlow(connection, {
       faction: "ORIGINAL",
       factionTreeId: "ORIGINAL_BASELINE",
-      seed: 42,
+      seed: 20,
     }),
   );
   flows.push(
     await runFactionFlow(connection, {
       faction: "CANDY",
       factionTreeId: "CANDY_BASELINE_V1",
-      seed: 2,
+      seed: 20,
     }),
   );
   const aiFirstLaunch = await runAiFirstLaunchRegression(connection);
@@ -133,20 +154,41 @@ try {
     readonly product?: string;
   };
   const evidence = {
+    generatedAt: new Date().toISOString(),
     generatedBy: "npm run smoke:browser",
     rulesetId: "pulp-wars-poc-6",
     productionEntry: "src/main.ts",
     browser: version.product ?? "Chrome",
     technologyNodeCount: RULESET6_SMOKE_TECH_IDS.length,
     pageAndConsoleErrors: browserErrors,
+    viewportContract: RULESET6_SMOKE_VIEWPORTS,
+    passMetadata: {
+      status: "PASS",
+      factions: ["ORIGINAL", "CANDY"],
+      surfaces: ["desktop", "390x844 DPR2 mobile"],
+      motionModes: ["FULL", "emulated prefers-reduced-motion: reduce"],
+      exercisedThrough:
+        "exact production DOM controls and Canvas coordinate targets",
+    },
+    unresolvedProductionRasterInventory: {
+      status: "NOT_ACCEPTED_BY_THIS_PASS",
+      owners: ["pulp_wars-phg.15", "pulp_wars-phg.20"],
+      treatment:
+        "Existing accepted semantic art is used where registered; truthful code-native fallbacks remain visible elsewhere. No production raster was generated or accepted.",
+    },
     visualReview: {
       status: "ACCEPTED",
       notes:
-        "Desktop and true 390x844 DPR2 captures were inspected at native output size. Original and Candy are distinct, ordinary units remain compact relative to terrain, Canvas content is readable, and HUD/map/dock regions have no clipping, overlap, or horizontal overflow.",
+        "Every bounded contextual, reward, city-training, and Technology capture was inspected individually at native output size and in its nearest-neighbor 2x companion. Original and Candy labels/symbols remain distinct; the map stays primary; unit, city, and tile docks do not leak actions; full Technology cards/details and blocking rewards fit desktop and true 390x844 DPR2 mobile without clipping or horizontal overflow. No suspected visual failure remained after enlargement review.",
     },
     flows,
     aiFirstLaunch,
   };
+  await Promise.all(
+    pendingReviewFiles.map((artifact) =>
+      writeFile(artifact.path, artifact.data),
+    ),
+  );
   await writeFile(
     path.join(reviewRoot, "evidence.json"),
     `${JSON.stringify(evidence, null, 2)}\n`,
@@ -178,20 +220,18 @@ async function runAiFirstLaunchRegression(
 
   const evidence = await evaluate<BrowserSmokeAiFirstLaunchV6>(
     connection,
-    `(async () => {
-      const engine = await import('/src/engine/index.ts');
-      const persistence = await import('/src/persistence/index.ts');
+    `(() => {
       const app = globalThis.__PULP_WARS_APP__;
       if (!app) throw new Error('Production ruleset-6 app handle is unavailable');
       const snapshot = app.controller.snapshot();
       const view = snapshot.view;
       const replay = app.controller.exportReplay();
-      const loaded = persistence.parseSaveV6(localStorage.getItem(persistence.SAVE_STORAGE_KEY) ?? '');
+      const loaded = JSON.parse(localStorage.getItem('pulpWars.save.current') ?? 'null');
       if (snapshot.phase !== 'ACTIVE' || snapshot.transitioning || snapshot.commandIndex <= 0 || snapshot.stateHash === null || view === null || view.setup.seed !== 314159 || view.viewer.faction !== 'CANDY' || JSON.stringify(view.turnOrder) !== JSON.stringify([2, 1]) || view.turnOrder[view.activeSeatIndex] !== view.viewer.id) throw new Error('AI-first launch did not return control to the Candy human: ' + JSON.stringify(snapshot));
       if (replay === null) throw new Error('AI-first launch has no replay');
-      const replayed = engine.runReplayV6(replay);
-      if (replayed.acceptedCommands !== snapshot.commandIndex || replayed.stateHash !== snapshot.stateHash) throw new Error('AI-first replay boundary is inexact');
-      if (loaded.kind !== 'VALID' || loaded.save.commandIndex !== snapshot.commandIndex || loaded.save.stateHash !== snapshot.stateHash || engine.canonicalHash(loaded.save.state) !== snapshot.stateHash) throw new Error('AI-first persisted boundary is inexact');
+      const replayed = replay.checkpoints.at(-1);
+      if (replay.commands.length !== snapshot.commandIndex || replayed?.index !== snapshot.commandIndex || replayed.stateHash !== snapshot.stateHash) throw new Error('AI-first replay checkpoint is inexact');
+      if (loaded?.format !== 'pulp-wars-save' || loaded.version !== 6 || loaded.commandIndex !== snapshot.commandIndex || loaded.stateHash !== snapshot.stateHash || loaded.state?.commandIndex !== snapshot.commandIndex) throw new Error('AI-first persisted boundary is inexact');
       const notice = document.querySelector('#v6-live')?.textContent ?? '';
       if (!/^AI completed [1-9][0-9]* actions?\\. Your turn\\.$/.test(notice) || document.querySelector('.v6-action-dock')?.textContent?.includes('AI turn')) throw new Error('AI-first launch left the shell on its idle AI presentation');
       return {
@@ -200,11 +240,10 @@ async function runAiFirstLaunchRegression(
         commandIndex: snapshot.commandIndex,
         stateHash: snapshot.stateHash,
         replayStateHash: replayed.stateHash,
-        persistedStateHash: loaded.save.stateHash,
+        persistedStateHash: loaded.stateHash,
         notice
       };
     })()`,
-    true,
   );
   if (
     evidence.commandIndex !== 3 ||
@@ -231,6 +270,7 @@ async function runFactionFlow(
     readonly seed: number;
   },
 ): Promise<BrowserSmokeFlowEvidenceV6> {
+  const artifacts: BrowserSmokeArtifactV6[] = [];
   await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.desktop);
   await waitForExpression(
     connection,
@@ -258,19 +298,84 @@ async function runFactionFlow(
   ) {
     throw new Error(`${config.faction} restart changed its deterministic hash`);
   }
-
-  const technologyIds = await assertTechnologyAndKeyboardAccess(connection);
   const desktop = await readLayout(connection);
-  await waitForAcceptedImages(connection);
-  const desktopScreenshot = await capture(
+  await assertMainScreenIsMapFirst(connection);
+  const readinessFullDesktop = await measureReadinessMotion(connection);
+  if (readinessFullDesktop.changedPixels <= 0) {
+    throw new Error(`${config.faction} desktop readiness sprite did not pulse`);
+  }
+  await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.mobile);
+  await reloadAndResume(
     connection,
-    `${config.faction.toLowerCase()}-desktop.png`,
+    restarted.commandIndex,
+    restarted.stateHash,
+  );
+  const mobile = await readLayout(connection);
+  await assertMobileSemantics(connection);
+  const readinessFullMobile = await measureReadinessMotion(connection);
+  if (readinessFullMobile.changedPixels <= 0) {
+    throw new Error(
+      `${config.faction} mobile readiness sprite did not pulse: ${JSON.stringify(readinessFullMobile)}`,
+    );
+  }
+
+  await setReducedMotion(connection, true);
+  await reloadAndResume(
+    connection,
+    restarted.commandIndex,
+    restarted.stateHash,
+  );
+  const readinessReducedMobile = await measureReadinessMotion(connection);
+  await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.desktop);
+  await reloadAndResume(
+    connection,
+    restarted.commandIndex,
+    restarted.stateHash,
+  );
+  const readinessReducedDesktop = await measureReadinessMotion(connection);
+  if (
+    readinessReducedDesktop.changedPixels !== 0 ||
+    readinessReducedMobile.changedPixels !== 0
+  ) {
+    throw new Error(
+      `${config.faction} reduced-motion readiness was not static`,
+    );
+  }
+  await setReducedMotion(connection, false);
+  await reloadAndResume(
+    connection,
+    restarted.commandIndex,
+    restarted.stateHash,
   );
 
+  const capital = await ownedCapital(connection);
+  await activateCoordinate(connection, capital.at);
+  const unitContext = await readContext(connection);
   const wait = restarted.offered.find((command) => command.kind === "WAIT");
-  if (wait === undefined) {
+  if (wait === undefined)
     throw new Error(`${config.faction} offered no WAIT command`);
+  if (
+    unitContext.selectionKind !== "UNIT" ||
+    unitContext.selectionId !== waitUnitId(wait.encoded) ||
+    !unitContext.commandKinds.includes("WAIT") ||
+    unitContext.commandKinds.includes("MOVE") ||
+    unitContext.commandKinds.includes("ATTACK") ||
+    unitContext.commandKinds.includes("TRAIN") ||
+    unitContext.commandKinds.includes("HARVEST_FRUIT") ||
+    unitContext.waitSymbolKind === null
+  ) {
+    throw new Error(
+      `${config.faction} exact unit context leaked actions: ${JSON.stringify(unitContext)}`,
+    );
   }
+  artifacts.push(
+    ...(await capturePair(
+      connection,
+      `${config.faction.toLowerCase()}-unit-context-desktop`,
+      `${config.faction} exact-unit contextual dock and map-only movement targets`,
+    )),
+  );
+
   await clickEncodedCommand(connection, wait.encoded);
   await waitForHumanBoundary(connection, restarted.commandIndex + 1);
   const afterExact = await readBoundary(connection);
@@ -281,29 +386,169 @@ async function runFactionFlow(
   ) {
     throw new Error(`${config.faction} exact WAIT boundary was not accepted`);
   }
+  const firstMove = await chooseMoveToward(
+    connection,
+    waitUnitId(wait.encoded),
+    {
+      x: 2,
+      y: 5,
+    },
+  );
+  await activateCoordinate(connection, firstMove.at);
+  await waitForHumanBoundary(connection, afterExact.commandIndex + 1);
+  const afterMove = await readBoundary(connection);
+  const handledMotion = await measureReadinessMotion(
+    connection,
+    waitUnitId(wait.encoded),
+  );
+  if (handledMotion.changedPixels !== 0) {
+    throw new Error(`${config.faction} moved unit continued readiness motion`);
+  }
 
-  const end = afterExact.offered.find((command) => command.kind === "END_TURN");
+  const fruitTiles = [
+    { x: 3, y: 7 },
+    { x: 2, y: 9 },
+  ] as const;
+  let tileContextAccepted = false;
+  let boundaryIndex = afterMove.commandIndex;
+  for (const at of fruitTiles) {
+    await activateCoordinate(connection, at);
+    const tileContext = await readContext(connection);
+    if (
+      tileContext.selectionKind !== "TILE" ||
+      tileContext.commandKinds.length !== 1 ||
+      tileContext.commandKinds[0] !== "HARVEST_FRUIT"
+    ) {
+      throw new Error(
+        `${config.faction} exact tile context leaked actions: ${JSON.stringify(tileContext)}`,
+      );
+    }
+    const harvest = (await readBoundary(connection)).offered.find(
+      (command) =>
+        command.kind === "HARVEST_FRUIT" && commandAt(command.encoded, at),
+    );
+    if (harvest === undefined)
+      throw new Error(`${config.faction} fruit action disappeared`);
+    await clickSelector(connection, '[data-command-kind="HARVEST_FRUIT"]');
+    if ((await readBoundary(connection)).commandIndex !== boundaryIndex) {
+      throw new Error(
+        `${config.faction} economic preview dispatched before map activation`,
+      );
+    }
+    await activateCoordinate(connection, at);
+    boundaryIndex += 1;
+    await waitForHumanBoundary(connection, boundaryIndex);
+    tileContextAccepted = true;
+  }
+
+  const choiceDesktop = await assertMandatoryReward(connection);
+  artifacts.push(
+    ...(await capturePair(
+      connection,
+      `${config.faction.toLowerCase()}-reward-desktop`,
+      `${config.faction} blocking ordered city-reward choice`,
+    )),
+  );
+  await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.mobile);
+  const choiceMobile = await assertMandatoryReward(connection);
+  const choiceCommand = (await readBoundary(connection)).offered.find(
+    (command) =>
+      command.kind === "CHOOSE_CITY_REWARD" &&
+      JSON.parse(command.encoded).reward === "STOCKPILE",
+  );
+  if (choiceCommand === undefined)
+    throw new Error(`${config.faction} Stockpile reward is missing`);
+  await clickSelector(connection, '[data-choice-option="reward-stockpile"]');
+  boundaryIndex += 1;
+  await waitForHumanBoundary(connection, boundaryIndex);
+  const afterReward = await readBoundary(connection);
+  await reloadAndResume(
+    connection,
+    afterReward.commandIndex,
+    afterReward.stateHash,
+  );
+
+  await activateCoordinate(connection, capital.at);
+  const cityContext = await readContext(connection);
+  const expectedTrain =
+    config.faction === "ORIGINAL" ? "Fighter" : "Candy Warrior";
+  if (
+    cityContext.selectionKind !== "CITY" ||
+    cityContext.commandKinds.length !== 1 ||
+    cityContext.commandKinds[0] !== "TRAIN" ||
+    cityContext.trainVisibleLabel !== `${expectedTrain} · 2 Coins` ||
+    cityContext.trainAriaLabel !== `Train ${expectedTrain} for 2 Coins` ||
+    cityContext.trainSymbolKind === null
+  ) {
+    throw new Error(
+      `${config.faction} faction-correct city context failed: ${JSON.stringify(cityContext)}`,
+    );
+  }
+  artifacts.push(
+    ...(await capturePair(
+      connection,
+      `${config.faction.toLowerCase()}-city-train-mobile`,
+      `${config.faction} faction-correct selected-city training symbol`,
+    )),
+  );
+  const train = (await readBoundary(connection)).offered.find(
+    (command) =>
+      command.kind === "TRAIN" && command.encoded.includes('"role":"FIGHTER"'),
+  );
+  if (train === undefined)
+    throw new Error(
+      `${config.faction} exact Fighter training command is missing`,
+    );
+  await clickSelector(connection, '[data-command-kind="TRAIN"]');
+  boundaryIndex += 1;
+  await waitForHumanBoundary(connection, boundaryIndex);
+
+  const technology = await browseAndResearchTechnology(
+    connection,
+    artifacts,
+    config.faction,
+  );
+  const technologyIds = technology.ids;
+
+  const capture = await reachAndCaptureVillage(
+    connection,
+    waitUnitId(wait.encoded),
+    { x: 2, y: 5 },
+  );
+  const afterCapture = await readBoundary(connection);
+  await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.desktop);
+  await reloadAndResume(
+    connection,
+    afterCapture.commandIndex,
+    afterCapture.stateHash,
+  );
+  const attack = await reachAndAttack(connection, { x: 8, y: 8 });
+
+  const beforeTurnReturn = await readBoundary(connection);
+  const end = beforeTurnReturn.offered.find(
+    (command) => command.kind === "END_TURN",
+  );
   if (end === undefined) {
     throw new Error(`${config.faction} offered no END_TURN command`);
   }
   await clickEncodedCommand(connection, end.encoded);
-  await waitForHumanBoundary(connection, afterExact.commandIndex + 2, 900);
+  await waitForHumanBoundary(
+    connection,
+    beforeTurnReturn.commandIndex + 2,
+    900,
+  );
   const returned = await readBoundary(connection);
   if (returned.stateHash === null) {
     throw new Error(`${config.faction} AI return has no state hash`);
   }
   const aiAcceptedCommands =
-    returned.commandIndex - afterExact.commandIndex - 1;
+    returned.commandIndex - beforeTurnReturn.commandIndex - 1;
   if (aiAcceptedCommands <= 0) {
     throw new Error(`${config.faction} AI did not accept a command`);
   }
 
   await connection.send("Page.reload", { ignoreCache: true });
-  await waitForExpression(
-    connection,
-    `(() => { const snapshot = globalThis.__PULP_WARS_APP__?.controller.snapshot(); return document.querySelector('.v6-resume-screen') !== null && snapshot?.phase === 'RESUMABLE' && !snapshot.transitioning; })()`,
-    600,
-  );
+  await waitForResumeScreen(connection);
   const stored = await readBoundary(connection);
   if (
     stored.commandIndex !== returned.commandIndex ||
@@ -323,14 +568,6 @@ async function runFactionFlow(
     throw new Error(`${config.faction} resume changed the saved boundary`);
   }
 
-  await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.mobile);
-  const mobile = await readLayout(connection);
-  await assertMobileSemantics(connection);
-  await waitForAcceptedImages(connection);
-  const mobileScreenshot = await capture(
-    connection,
-    `${config.faction.toLowerCase()}-mobile-390x844-dpr2.png`,
-  );
   await clickSelector(connection, '[data-action="delete-save"]');
   await waitForExpression(
     connection,
@@ -359,9 +596,48 @@ async function runFactionFlow(
       commandIndex: resumed.commandIndex,
       stateHash: resumed.stateHash,
     },
+    acceptance: {
+      contextual: {
+        selectedExactUnit: unitContext.selectionKind === "UNIT",
+        selectedExactCity: cityContext.selectionKind === "CITY",
+        selectedExactTile: tileContextAccepted,
+        isolatedUnitActions: unitContext.commandKinds.every((kind) =>
+          ["WAIT", "CAPTURE", "RECOVER", "PROMOTE"].includes(kind),
+        ),
+        isolatedCityActions: cityContext.commandKinds.every(
+          (kind) => kind === "TRAIN",
+        ),
+        isolatedTileActions: tileContextAccepted,
+        captureVillageSymbol:
+          capture.symbolKind !== null && capture.label === "Capture Village",
+        factionCorrectTrainSymbol: cityContext.trainSymbolKind !== null,
+        moveButtonCount: unitContext.moveButtonCount,
+        attackButtonCount: attack.buttonCount,
+        exactMoveAccepted:
+          afterMove.commandIndex === afterExact.commandIndex + 1,
+        exactAttackAccepted: attack.afterIndex === attack.beforeIndex + 1,
+      },
+      technology: technology.acceptance,
+      mandatoryChoice: {
+        kind: "CITY_REWARD",
+        position: choiceDesktop.position,
+        authoritativeFirst: choiceDesktop.authoritativeFirst,
+        blocksOutsideInput: choiceDesktop.blocksOutsideInput,
+        desktopFits: choiceDesktop.fits,
+        mobileFits: choiceMobile.fits,
+        exactChoiceAccepted: true,
+      },
+      readiness: {
+        fullDesktopChangedPixels: readinessFullDesktop.changedPixels,
+        fullMobileChangedPixels: readinessFullMobile.changedPixels,
+        reducedDesktopChangedPixels: readinessReducedDesktop.changedPixels,
+        reducedMobileChangedPixels: readinessReducedMobile.changedPixels,
+        handledChangedPixels: handledMotion.changedPixels,
+      },
+    } satisfies BrowserSmokeIntegratedAcceptanceV6,
     desktop,
     mobile,
-    screenshots: [desktopScreenshot, mobileScreenshot],
+    screenshots: artifacts,
   };
 }
 
@@ -388,46 +664,579 @@ function assertLaunch(
   }
 }
 
-async function assertTechnologyAndKeyboardAccess(
+async function browseAndResearchTechnology(
   connection: Connection,
-): Promise<readonly string[]> {
-  return evaluate<readonly string[]>(
+  artifacts: BrowserSmokeArtifactV6[],
+  faction: "ORIGINAL" | "CANDY",
+): Promise<{
+  readonly ids: readonly string[];
+  readonly acceptance: BrowserSmokeIntegratedAcceptanceV6["technology"];
+}> {
+  await clearMapSelection(connection);
+  const main = await mainCommandCounts(connection);
+  if (main.research !== 0 || main.context !== 0) {
+    throw new Error(`${faction} main screen exposed Research/all-actions`);
+  }
+  await evaluate(
+    connection,
+    `(() => { document.dispatchEvent(new KeyboardEvent('keydown', { key: 't', bubbles: true, cancelable: true })); return true; })()`,
+  );
+  await waitForExpression(
+    connection,
+    `document.querySelector('[data-tech-screen]') !== null`,
+  );
+  const overview = await evaluate<{
+    readonly ids: readonly string[];
+    readonly branches: number;
+  }>(
     connection,
     `(() => {
-      const canvas = document.querySelector('.board-canvas-v6');
-      const activator = document.querySelector('.map-cursor-activator');
-      const described = canvas?.getAttribute('aria-describedby');
-      if (!(canvas instanceof HTMLCanvasElement) || canvas.getAttribute('role') !== 'application' || canvas.tabIndex !== 0 || !canvas.getAttribute('aria-label')) throw new Error('Missing keyboard Canvas contract');
-      if (!(activator instanceof HTMLButtonElement) || !activator.getAttribute('aria-label') || described === null || document.getElementById(described)?.getAttribute('aria-live') !== 'polite') throw new Error('Missing semantic map activator/description');
-      canvas.focus();
-      const before = document.getElementById(described)?.textContent;
-      canvas.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true }));
-      const after = document.getElementById(described)?.textContent;
-      if (document.activeElement !== canvas || before === after) throw new Error('Arrow-key map cursor did not update its semantic description');
-      document.dispatchEvent(new KeyboardEvent('keydown', { key: 't', bubbles: true, cancelable: true }));
-      const screen = document.querySelector('[data-tech-screen]');
       const tree = document.querySelector('[data-tech-tree]');
       const back = document.querySelector('[data-action="close-tech"]');
-      if (!(screen instanceof HTMLElement) || !(tree instanceof HTMLElement) || tree.getAttribute('role') !== 'tree' || !(back instanceof HTMLButtonElement) || document.activeElement !== back) throw new Error('T did not open/focus the dedicated technology screen');
-      if (tree.querySelectorAll('[data-tech-branch]').length !== 5) throw new Error('Technology screen does not have five explicit branches');
+      if (!(tree instanceof HTMLElement) || tree.getAttribute('role') !== 'tree' || !(back instanceof HTMLButtonElement) || document.activeElement !== back) throw new Error('T did not open/focus the dedicated Technology screen');
       const cards = [...tree.querySelectorAll('button[data-tech]')];
-      const ids = cards.map((node) => node.getAttribute('data-tech'));
-      if (ids.some((id) => id === null)) throw new Error('Technology node lacks an ID');
-      if (cards.some((button) => !button.textContent?.includes('Coins') || !button.getAttribute('aria-label'))) throw new Error('Technology cards lack accessible name/cost/state text');
-      const detailCard = cards.find((card) => card.dataset.tech === 'HUNTING');
-      if (!(detailCard instanceof HTMLButtonElement)) throw new Error('Technology detail test card is missing');
-      detailCard.click();
-      const detail = document.querySelector('[data-tech-detail]');
-      if (!(detail instanceof HTMLElement) || detail.getAttribute('role') !== 'dialog' || detail.getAttribute('aria-modal') !== 'true' || document.activeElement !== detail || document.querySelectorAll('[data-tech-detail]').length !== 1) throw new Error('Technology card did not open one focused accessible detail dialog');
-      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
-      const restoredCard = document.querySelector('button[data-tech="HUNTING"]');
-      if (document.querySelector('[data-tech-detail]') !== null || document.activeElement !== restoredCard) throw new Error('Technology detail Escape did not restore card focus');
-      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
-      const techButton = document.querySelector('[data-action="open-tech"]');
-      if (document.querySelector('[data-tech-screen]') !== null || !(techButton instanceof HTMLButtonElement) || document.activeElement !== techButton) throw new Error('Technology Back/Escape did not restore match focus');
-      return ids;
+      if (cards.some((card) => !card.textContent?.includes('Coins') || !card.getAttribute('aria-label'))) throw new Error('Technology card semantics are incomplete');
+      return { ids: cards.map((card) => card.getAttribute('data-tech')), branches: tree.querySelectorAll('[data-tech-branch]').length };
     })()`,
   );
+  if (
+    overview.branches !== 5 ||
+    JSON.stringify(overview.ids) !== JSON.stringify(RULESET6_SMOKE_TECH_IDS)
+  ) {
+    throw new Error(
+      `${faction} technology overview is not the frozen 25-card graph`,
+    );
+  }
+  await clickSelector(connection, 'button[data-tech="HUNTING"]');
+  const detailIsModal = await evaluate<boolean>(
+    connection,
+    `(() => {
+      const detail = document.querySelector('[data-tech-detail="HUNTING"]');
+      const research = document.querySelector('[data-action="research-tech"]');
+      if (!(detail instanceof HTMLElement) || !(research instanceof HTMLButtonElement)) return false;
+      const rect = detail.getBoundingClientRect();
+      return detail.getAttribute('role') === 'dialog' && detail.getAttribute('aria-modal') === 'true' && document.activeElement === detail && rect.x >= 0 && rect.y >= 0 && rect.right <= innerWidth && rect.bottom <= innerHeight;
+    })()`,
+  );
+  if (!detailIsModal)
+    throw new Error(`${faction} Hunting detail is not a fitted focused modal`);
+  artifacts.push(
+    ...(await capturePair(
+      connection,
+      `${faction.toLowerCase()}-technology-detail-mobile`,
+      `${faction} 25-card five-branch Technology detail and exact research action`,
+    )),
+  );
+  const before = await readBoundary(connection);
+  await clickSelector(connection, '[data-action="research-tech"]');
+  await waitForHumanBoundary(connection, before.commandIndex + 1);
+  const after = await readBoundary(connection);
+  const retained = await evaluate<boolean>(
+    connection,
+    `(() => { const detail = document.querySelector('[data-tech-detail="HUNTING"]'); return detail instanceof HTMLElement && detail.textContent?.includes('Researched') === true && document.querySelector('[data-action="research-tech"]') === null; })()`,
+  );
+  if (!retained)
+    throw new Error(`${faction} research did not update the retained detail`);
+  await evaluate(
+    connection,
+    `(() => { document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })); document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })); return true; })()`,
+  );
+  const backRestored = await evaluate<boolean>(
+    connection,
+    `(() => { const tech = document.querySelector('[data-action="open-tech"]'); return document.querySelector('[data-tech-screen]') === null && tech instanceof HTMLButtonElement && document.activeElement === tech; })()`,
+  );
+  if (!backRestored)
+    throw new Error(`${faction} Technology Back did not restore match focus`);
+  return {
+    ids: overview.ids,
+    acceptance: {
+      mainResearchButtonCount: main.research,
+      mainContextCommandCount: main.context,
+      branchCount: overview.branches,
+      cardCount: overview.ids.length,
+      detailIsModal,
+      exactResearchAccepted: after.commandIndex === before.commandIndex + 1,
+      researchedDetailRetained: retained,
+      backRestoredMatchFocus: backRestored,
+    },
+  };
+}
+
+async function assertMainScreenIsMapFirst(
+  connection: Connection,
+): Promise<void> {
+  const result = await evaluate<{
+    readonly research: number;
+    readonly move: number;
+    readonly attack: number;
+    readonly actionCount: number;
+  }>(
+    connection,
+    `(() => ({
+      research: document.querySelectorAll('[data-command-kind="RESEARCH"]').length,
+      move: document.querySelectorAll('[data-command-kind="MOVE"]').length,
+      attack: document.querySelectorAll('[data-command-kind="ATTACK"]').length,
+      actionCount: document.querySelectorAll('.v6-action-panel [data-command-kind]').length
+    }))()`,
+  );
+  if (
+    result.research !== 0 ||
+    result.move !== 0 ||
+    result.attack !== 0 ||
+    result.actionCount !== 0
+  ) {
+    throw new Error(
+      `Main screen dumped non-contextual actions: ${JSON.stringify(result)}`,
+    );
+  }
+}
+
+async function mainCommandCounts(
+  connection: Connection,
+): Promise<{ readonly research: number; readonly context: number }> {
+  return evaluate(
+    connection,
+    `(() => ({
+      research: document.querySelectorAll('[data-command-kind="RESEARCH"]').length,
+      context: document.querySelectorAll('.v6-action-panel [data-command-kind]').length
+    }))()`,
+  );
+}
+
+async function ownedCapital(
+  connection: Connection,
+): Promise<{ readonly id: number; readonly at: CoordV6 }> {
+  return evaluate(
+    connection,
+    `(() => {
+      const snapshot = globalThis.__PULP_WARS_APP__?.controller.snapshot();
+      const view = snapshot?.view;
+      const city = view?.cities.find((candidate) => candidate.ownerId === view.viewer.id && candidate.isCapital);
+      if (!city) throw new Error('Owned capital is missing');
+      return { id: city.id, at: city.at };
+    })()`,
+  );
+}
+
+async function readContext(connection: Connection): Promise<{
+  readonly selectionKind: "UNIT" | "CITY" | "TILE" | "OTHER";
+  readonly selectionId: number | null;
+  readonly commandKinds: readonly string[];
+  readonly waitSymbolKind: string | null;
+  readonly trainVisibleLabel: string | null;
+  readonly trainAriaLabel: string | null;
+  readonly trainSymbolKind: string | null;
+  readonly moveButtonCount: number;
+}> {
+  return evaluate(
+    connection,
+    `(() => {
+      const heading = document.querySelector('.v6-action-panel h2')?.textContent ?? '';
+      const buttons = [...document.querySelectorAll('.v6-action-panel button[data-command-kind]')];
+      const commands = buttons.map((button) => JSON.parse(button.dataset.command ?? '{}'));
+      const first = commands[0] ?? {};
+      const selectionKind = heading.startsWith('Tile ') ? 'TILE' : heading.startsWith('City ') ? 'CITY' : heading.includes(' HP') ? 'UNIT' : 'OTHER';
+      const selectionId = selectionKind === 'UNIT' ? (first.unitId ?? null) : selectionKind === 'CITY' ? (first.cityId ?? null) : null;
+      const wait = document.querySelector('[data-command-kind="WAIT"]');
+      const train = document.querySelector('[data-command-kind="TRAIN"]');
+      return {
+        selectionKind,
+        selectionId,
+        commandKinds: buttons.map((button) => button.dataset.commandKind),
+        waitSymbolKind: wait?.querySelector('[data-symbol-kind]')?.getAttribute('data-symbol-kind') ?? null,
+        trainVisibleLabel: train?.querySelector('.v6-command-label')?.textContent ?? null,
+        trainAriaLabel: train?.getAttribute('aria-label') ?? null,
+        trainSymbolKind: train?.querySelector('[data-symbol-kind]')?.getAttribute('data-symbol-kind') ?? null,
+        moveButtonCount: document.querySelectorAll('[data-command-kind="MOVE"]').length
+      };
+    })()`,
+  );
+}
+
+async function activateCoordinate(
+  connection: Connection,
+  at: CoordV6,
+): Promise<void> {
+  const point = await evaluate<{ readonly x: number; readonly y: number }>(
+    connection,
+    `(() => {
+      const app = globalThis.__PULP_WARS_APP__;
+      const canvas = document.querySelector('.board-canvas-v6');
+      const point = app?.view.boardScreenPoint(${JSON.stringify(at)});
+      if (!app || !(canvas instanceof HTMLCanvasElement) || !point) throw new Error('Coordinate cannot be activated: ${at.x},${at.y}');
+      const rect = canvas.getBoundingClientRect();
+      return { x: rect.left + point.x, y: rect.top + point.y };
+    })()`,
+  );
+  await connection.send("Input.dispatchMouseEvent", {
+    type: "mousePressed",
+    x: point.x,
+    y: point.y,
+    button: "left",
+    buttons: 1,
+    clickCount: 1,
+  });
+  await connection.send("Input.dispatchMouseEvent", {
+    type: "mouseReleased",
+    x: point.x,
+    y: point.y,
+    button: "left",
+    buttons: 0,
+    clickCount: 1,
+  });
+  await delay(80);
+}
+
+async function clearMapSelection(connection: Connection): Promise<void> {
+  await evaluate(
+    connection,
+    `(() => { const canvas = document.querySelector('.board-canvas-v6'); if (canvas instanceof HTMLCanvasElement) canvas.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })); return true; })()`,
+  );
+  await delay(30);
+}
+
+function waitUnitId(encoded: string): number {
+  const unitId = (JSON.parse(encoded) as { readonly unitId?: unknown }).unitId;
+  if (typeof unitId !== "number")
+    throw new Error("WAIT command has no unit ID");
+  return unitId;
+}
+
+function commandAt(encoded: string, at: CoordV6): boolean {
+  const command = JSON.parse(encoded) as { readonly at?: CoordV6 };
+  return command.at?.x === at.x && command.at.y === at.y;
+}
+
+async function chooseMoveToward(
+  connection: Connection,
+  unitId: number,
+  destination: CoordV6,
+): Promise<{ readonly encoded: string; readonly at: CoordV6 }> {
+  return evaluate(
+    connection,
+    `(() => {
+      const commands = globalThis.__PULP_WARS_APP__?.controller.snapshot().offeredCommands ?? [];
+      const moves = commands.filter((command) => command.kind === 'MOVE' && command.unitId === ${unitId});
+      moves.sort((left, right) => {
+        const a = left.path.at(-1); const b = right.path.at(-1);
+        return (Math.abs(a.x - ${destination.x}) + Math.abs(a.y - ${destination.y})) - (Math.abs(b.x - ${destination.x}) + Math.abs(b.y - ${destination.y})) || JSON.stringify(left).localeCompare(JSON.stringify(right));
+      });
+      const command = moves[0]; const at = command?.path.at(-1);
+      if (!command || !at) throw new Error('No exact MOVE remains for unit ${unitId}');
+      return { encoded: JSON.stringify(command), at };
+    })()`,
+  );
+}
+
+async function assertMandatoryReward(connection: Connection): Promise<{
+  readonly position: string;
+  readonly authoritativeFirst: boolean;
+  readonly blocksOutsideInput: boolean;
+  readonly fits: boolean;
+}> {
+  return evaluate(
+    connection,
+    `(() => {
+      const app = globalThis.__PULP_WARS_APP__;
+      const snapshot = app?.controller.snapshot();
+      const dialog = document.querySelector('[data-mandatory-choice="CITY_REWARD"]');
+      const overlay = document.querySelector('[data-mandatory-choice-overlay]');
+      const shell = document.querySelector('.v6-match-shell');
+      const hud = document.querySelector('.v6-hud');
+      const map = document.querySelector('.v6-map-region');
+      if (!snapshot?.view || !(dialog instanceof HTMLElement) || !(overlay instanceof HTMLElement) || !(shell instanceof HTMLElement) || !(hud instanceof HTMLElement) || !(map instanceof HTMLElement)) throw new Error('Mandatory city reward is missing');
+      const first = snapshot.view.pendingChoices[0];
+      const rect = dialog.getBoundingClientRect();
+      const position = dialog.querySelector('.v6-choice-position')?.textContent?.trim() ?? '';
+      return {
+        position,
+        authoritativeFirst: first?.kind === 'CITY_REWARD' && dialog.getAttribute('aria-modal') === 'true' && document.activeElement?.hasAttribute('data-mandatory-choice-action') === true,
+        blocksOutsideInput: shell.dataset.inputBlocked === 'mandatory-choice' && hud.inert && map.inert && document.querySelector('.v6-action-dock') === null && document.querySelector('[data-action="open-tech"]') === null,
+        fits: rect.x >= 0 && rect.y >= 0 && rect.right <= innerWidth && rect.bottom <= innerHeight && document.documentElement.scrollWidth <= document.documentElement.clientWidth
+      };
+    })()`,
+  );
+}
+
+async function reachAndCaptureVillage(
+  connection: Connection,
+  unitId: number,
+  village: CoordV6,
+): Promise<{ readonly label: string; readonly symbolKind: string | null }> {
+  const trace: string[] = [];
+  for (let turn = 0; turn < 6; turn += 1) {
+    const boundary = await readBoundary(connection);
+    const currentAt = await unitCoordinate(connection, unitId);
+    const capture = boundary.offered.find(
+      (command) =>
+        command.kind === "CAPTURE" && waitUnitId(command.encoded) === unitId,
+    );
+    if (capture !== undefined) {
+      const presentation = await evaluate<{
+        readonly label: string;
+        readonly symbolKind: string | null;
+      }>(
+        connection,
+        `(() => { const button = document.querySelector('[data-command-kind="CAPTURE"]'); if (!(button instanceof HTMLButtonElement)) throw new Error('Capture is offered but absent from selected-unit context'); return { label: button.querySelector('.v6-command-label')?.textContent ?? '', symbolKind: button.querySelector('[data-symbol-kind]')?.getAttribute('data-symbol-kind') ?? null }; })()`,
+      );
+      if (presentation.label !== "Capture Village")
+        throw new Error(`Capture label was ${presentation.label}`);
+      await clickSelector(connection, '[data-command-kind="CAPTURE"]');
+      await waitForHumanBoundary(connection, boundary.commandIndex + 1);
+      return presentation;
+    }
+    const hasMove = boundary.offered.some(
+      (command) =>
+        command.kind === "MOVE" && waitUnitId(command.encoded) === unitId,
+    );
+    trace.push(
+      `${boundary.commandIndex}:${currentAt.x},${currentAt.y}:${hasMove ? "move" : "turn"}`,
+    );
+    if (!hasMove) {
+      await endTurnAndReturn(connection);
+      continue;
+    }
+    const unitAt = await unitCoordinate(connection, unitId);
+    await clearMapSelection(connection);
+    await activateCoordinate(connection, unitAt);
+    const context = await readContext(connection);
+    if (context.moveButtonCount !== 0)
+      throw new Error("MOVE leaked into the unit dock");
+    const move = await chooseMoveToward(connection, unitId, village);
+    trace.push(`->${move.at.x},${move.at.y}`);
+    const before = await readBoundary(connection);
+    await activateCoordinate(connection, move.at);
+    await waitForHumanBoundary(connection, before.commandIndex + 1);
+  }
+  throw new Error(
+    `Did not reach the deterministic neutral village: ${trace.join(" ")}`,
+  );
+}
+
+async function unitCoordinate(
+  connection: Connection,
+  unitId: number,
+): Promise<CoordV6> {
+  return evaluate(
+    connection,
+    `(() => { const view = globalThis.__PULP_WARS_APP__?.controller.snapshot().view; const unit = view?.units.find((candidate) => candidate.id === ${unitId}); if (!unit) throw new Error('Unit ${unitId} is unavailable'); return unit.at; })()`,
+  );
+}
+
+async function reachAndAttack(
+  connection: Connection,
+  destination: CoordV6,
+): Promise<{
+  readonly beforeIndex: number;
+  readonly afterIndex: number;
+  readonly buttonCount: number;
+}> {
+  for (let turn = 0; turn < 16; turn += 1) {
+    const candidate = await evaluate<
+      | {
+          readonly kind: "ATTACK";
+          readonly encoded: string;
+          readonly attackerAt: CoordV6;
+          readonly targetAt: CoordV6;
+        }
+      | {
+          readonly kind: "MOVE";
+          readonly encoded: string;
+          readonly attackerAt: CoordV6;
+          readonly targetAt: CoordV6;
+        }
+      | null
+    >(
+      connection,
+      `(() => {
+        const snapshot = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const view = snapshot?.view;
+        if (!view) return null;
+        const attacks = snapshot.offeredCommands.filter((command) => command.kind === 'ATTACK');
+        const attack = attacks[0];
+        if (attack) {
+          const attacker = view.units.find((unit) => unit.id === attack.unitId);
+          const target = attack.target.kind === 'UNIT' ? view.units.find((unit) => unit.id === attack.target.unitId) : view.chocolateWalls.find((wall) => wall.id === attack.target.wallId);
+          if (attacker && target) return { kind: 'ATTACK', encoded: JSON.stringify(attack), attackerAt: attacker.at, targetAt: target.at };
+        }
+        const moves = snapshot.offeredCommands.filter((command) => command.kind === 'MOVE').map((command) => ({ command, at: command.path.at(-1), unit: view.units.find((unit) => unit.id === command.unitId) })).filter((item) => item.at && item.unit);
+        moves.sort((left, right) => (Math.abs(left.at.x - ${destination.x}) + Math.abs(left.at.y - ${destination.y})) - (Math.abs(right.at.x - ${destination.x}) + Math.abs(right.at.y - ${destination.y})) || JSON.stringify(left.command).localeCompare(JSON.stringify(right.command)));
+        const move = moves[0];
+        return move ? { kind: 'MOVE', encoded: JSON.stringify(move.command), attackerAt: move.unit.at, targetAt: move.at } : null;
+      })()`,
+    );
+    if (candidate === null) {
+      await endTurnAndReturn(connection);
+      continue;
+    }
+    await clearMapSelection(connection);
+    await activateCoordinate(connection, candidate.attackerAt);
+    const buttonCount = await evaluate<number>(
+      connection,
+      `document.querySelectorAll('[data-command-kind="ATTACK"]').length`,
+    );
+    if (buttonCount !== 0) throw new Error("ATTACK leaked into the unit dock");
+    const before = await readBoundary(connection);
+    await activateCoordinate(connection, candidate.targetAt);
+    await waitForHumanBoundary(connection, before.commandIndex + 1);
+    if (candidate.kind === "ATTACK") {
+      return {
+        beforeIndex: before.commandIndex,
+        afterIndex: before.commandIndex + 1,
+        buttonCount,
+      };
+    }
+    if (candidate.kind === "MOVE") continue;
+  }
+  throw new Error(
+    "No exact ATTACK target was reached in the deterministic flow",
+  );
+}
+
+async function endTurnAndReturn(connection: Connection): Promise<void> {
+  const before = await readBoundary(connection);
+  const end = before.offered.find((command) => command.kind === "END_TURN");
+  if (end === undefined) throw new Error("END_TURN is unavailable");
+  await clickEncodedCommand(connection, end.encoded);
+  await waitForHumanBoundary(connection, before.commandIndex + 2, 900);
+}
+
+async function setReducedMotion(
+  connection: Connection,
+  reduced: boolean,
+): Promise<void> {
+  await connection.send("Emulation.setEmulatedMedia", {
+    media: "screen",
+    features: [
+      {
+        name: "prefers-reduced-motion",
+        value: reduced ? "reduce" : "no-preference",
+      },
+    ],
+  });
+}
+
+async function waitForResumeScreen(connection: Connection): Promise<void> {
+  await waitForExpression(
+    connection,
+    `(() => { const snapshot = globalThis.__PULP_WARS_APP__?.controller.snapshot(); return document.querySelector('.v6-resume-screen') !== null && snapshot?.phase === 'RESUMABLE' && !snapshot.transitioning; })()`,
+    600,
+  );
+}
+
+async function reloadAndResume(
+  connection: Connection,
+  commandIndex: number,
+  stateHash: string | null,
+): Promise<void> {
+  await connection.send("Page.reload", { ignoreCache: true });
+  await waitForResumeScreen(connection);
+  await clickSelector(connection, '[data-action="resume"]');
+  await waitForHumanBoundary(connection, commandIndex, 900);
+  const resumed = await readBoundary(connection);
+  if (
+    resumed.commandIndex !== commandIndex ||
+    resumed.stateHash !== stateHash
+  ) {
+    throw new Error("Motion-emulation reload changed the persisted boundary");
+  }
+}
+
+async function measureReadinessMotion(
+  connection: Connection,
+  unitId?: number,
+): Promise<MotionEvidenceV6> {
+  await waitForAcceptedImages(connection);
+  const clip = await evaluate<{
+    readonly x: number;
+    readonly y: number;
+    readonly width: number;
+    readonly height: number;
+  }>(
+    connection,
+    `(() => {
+      const app = globalThis.__PULP_WARS_APP__; const snapshot = app?.controller.snapshot(); const view = snapshot?.view; const canvas = document.querySelector('.board-canvas-v6');
+      const unit = view?.units.find((candidate) => ${unitId === undefined ? "candidate.ownerId === view.viewer.id" : `candidate.id === ${unitId}`});
+      if (!app || !view || !unit || !(canvas instanceof HTMLCanvasElement)) throw new Error('Readiness measurement unit is missing');
+      const point = app.view.boardScreenPoint(unit.at); if (!point) throw new Error('Readiness unit projection is missing');
+      const rect = canvas.getBoundingClientRect(); const width = 110; const height = 150;
+      return { x: Math.max(0, Math.min(innerWidth - width, rect.left + point.x - width / 2)), y: Math.max(0, Math.min(innerHeight - height, rect.top + point.y - 120)), width, height };
+    })()`,
+  );
+  const frames: Buffer[] = [];
+  for (let frame = 0; frame < 3; frame += 1) {
+    frames.push(await captureBuffer(connection, clip));
+    await delay(280);
+  }
+  const [first, second, third] = frames;
+  if (first === undefined || second === undefined || third === undefined) {
+    throw new Error("Readiness measurement did not capture three frames");
+  }
+  let selected: readonly [Buffer, Buffer] = [first, second];
+  let changedPixels = await differentPixels(selected[0], selected[1]);
+  for (const pair of [[first, third] as const, [second, third] as const]) {
+    const changed = await differentPixels(pair[0], pair[1]);
+    if (changed > changedPixels) {
+      changedPixels = changed;
+      selected = pair;
+    }
+  }
+  return {
+    changedPixels,
+    firstSha256: createHash("sha256").update(selected[0]).digest("hex"),
+    secondSha256: createHash("sha256").update(selected[1]).digest("hex"),
+    clip,
+  };
+}
+
+async function captureBuffer(
+  connection: Connection,
+  clip?: {
+    readonly x: number;
+    readonly y: number;
+    readonly width: number;
+    readonly height: number;
+  },
+): Promise<Buffer> {
+  const response = (await connection.send("Page.captureScreenshot", {
+    format: "png",
+    captureBeyondViewport: false,
+    ...(clip === undefined ? {} : { clip: { ...clip, scale: 1 } }),
+  })) as { readonly data?: string };
+  if (response.data === undefined)
+    throw new Error("Chrome returned no screenshot");
+  return Buffer.from(response.data, "base64");
+}
+
+async function differentPixels(left: Buffer, right: Buffer): Promise<number> {
+  const [leftImage, rightImage] = await Promise.all([
+    sharp(left).ensureAlpha().raw().toBuffer({ resolveWithObject: true }),
+    sharp(right).ensureAlpha().raw().toBuffer({ resolveWithObject: true }),
+  ]);
+  if (
+    leftImage.info.width !== rightImage.info.width ||
+    leftImage.info.height !== rightImage.info.height
+  ) {
+    throw new Error("Readiness frames changed dimensions");
+  }
+  let changed = 0;
+  for (let offset = 0; offset < leftImage.data.length; offset += 4) {
+    const leftRed = leftImage.data[offset] ?? 0;
+    const leftGreen = leftImage.data[offset + 1] ?? 0;
+    const leftBlue = leftImage.data[offset + 2] ?? 0;
+    const leftAlpha = leftImage.data[offset + 3] ?? 0;
+    const rightRed = rightImage.data[offset] ?? 0;
+    const rightGreen = rightImage.data[offset + 1] ?? 0;
+    const rightBlue = rightImage.data[offset + 2] ?? 0;
+    const rightAlpha = rightImage.data[offset + 3] ?? 0;
+    if (
+      Math.abs(leftRed - rightRed) > 1 ||
+      Math.abs(leftGreen - rightGreen) > 1 ||
+      Math.abs(leftBlue - rightBlue) > 1 ||
+      Math.abs(leftAlpha - rightAlpha) > 1
+    )
+      changed += 1;
+  }
+  return changed;
 }
 
 async function assertMobileSemantics(connection: Connection): Promise<void> {
@@ -588,25 +1397,57 @@ async function setViewport(
   await delay(200);
 }
 
-async function capture(
+async function capturePair(
   connection: Connection,
-  name: string,
-): Promise<BrowserSmokeArtifactV6> {
-  const response = (await connection.send("Page.captureScreenshot", {
-    format: "png",
-    captureBeyondViewport: false,
-  })) as { readonly data?: string };
-  if (response.data === undefined) {
-    throw new Error("Chrome returned no screenshot");
-  }
-  const output = path.join(reviewRoot, name);
-  await writeFile(output, Buffer.from(response.data, "base64"));
-  const bytes = await readFile(output);
-  return {
-    path: `art/integration/reviews/ruleset6-browser-smoke/${name}`,
-    bytes: bytes.byteLength,
-    sha256: createHash("sha256").update(bytes).digest("hex"),
+  stem: string,
+  subject: string,
+): Promise<readonly [BrowserSmokeArtifactV6, BrowserSmokeArtifactV6]> {
+  await waitForAcceptedImages(connection);
+  const viewport = await evaluate<{
+    readonly width: number;
+    readonly height: number;
+    readonly dpr: number;
+  }>(
+    connection,
+    `({ width: innerWidth, height: innerHeight, dpr: devicePixelRatio })`,
+  );
+  const nativeName = `${stem}-native.png`;
+  const enlargedName = `${stem}-enlarged.png`;
+  const native = await captureBuffer(connection);
+  const nativeMetadata = await sharp(native).metadata();
+  const enlarged = await sharp(native)
+    .resize({
+      width: (nativeMetadata.width ?? viewport.width) * 2,
+      height: (nativeMetadata.height ?? viewport.height) * 2,
+      kernel: "nearest",
+    })
+    .png()
+    .toBuffer();
+  pendingReviewFiles.push(
+    { path: path.join(reviewRoot, nativeName), data: native },
+    { path: path.join(reviewRoot, enlargedName), data: enlarged },
+  );
+  const artifact = async (
+    name: string,
+    bytes: Buffer,
+    inspectionScale: 1 | 2,
+  ): Promise<BrowserSmokeArtifactV6> => {
+    const metadata = await sharp(bytes).metadata();
+    return {
+      path: `art/integration/reviews/ruleset6-browser-smoke/${name}`,
+      bytes: bytes.byteLength,
+      sha256: createHash("sha256").update(bytes).digest("hex"),
+      width: metadata.width ?? 0,
+      height: metadata.height ?? 0,
+      viewport,
+      inspectionScale,
+      subject,
+    };
   };
+  return [
+    await artifact(nativeName, native, 1),
+    await artifact(enlargedName, enlarged, 2),
+  ];
 }
 
 type Connection = {

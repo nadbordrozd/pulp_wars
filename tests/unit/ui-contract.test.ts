@@ -129,6 +129,9 @@ describe("DOM UI architecture and responsive contract", () => {
     expect(css).toMatch(
       /@media \(max-width: 360px\)[\s\S]*\.v6-action-dock\s*\{[^}]*overflow-y:\s*auto/s,
     );
+    expect(css).toMatch(
+      /@media \(max-width: 560px\)[\s\S]*\.v6-hud-actions\s*\{[^}]*grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\)/s,
+    );
   });
 
   it("lays out the ruleset-6 technology screen as five wide columns and one compact axis", () => {

@@ -31,6 +31,13 @@ export const RULESET6_SMOKE_VIEWPORTS = {
   mobile: { width: 390, height: 844, dpr: 2, mobile: true },
 } as const;
 
+export const RULESET6_SMOKE_EVIDENCE_SUBJECTS = [
+  "unit-context-desktop",
+  "reward-desktop",
+  "city-train-mobile",
+  "technology-detail-mobile",
+] as const;
+
 export interface BrowserSmokeRectV6 {
   readonly x: number;
   readonly y: number;
@@ -79,6 +86,58 @@ export interface BrowserSmokeArtifactV6 {
   readonly path: string;
   readonly bytes: number;
   readonly sha256: string;
+  readonly width: number;
+  readonly height: number;
+  readonly viewport: {
+    readonly width: number;
+    readonly height: number;
+    readonly dpr: number;
+  };
+  readonly inspectionScale: 1 | 2;
+  readonly subject: string;
+}
+
+export interface BrowserSmokeIntegratedAcceptanceV6 {
+  readonly contextual: {
+    readonly selectedExactUnit: boolean;
+    readonly selectedExactCity: boolean;
+    readonly selectedExactTile: boolean;
+    readonly isolatedUnitActions: boolean;
+    readonly isolatedCityActions: boolean;
+    readonly isolatedTileActions: boolean;
+    readonly captureVillageSymbol: boolean;
+    readonly factionCorrectTrainSymbol: boolean;
+    readonly moveButtonCount: number;
+    readonly attackButtonCount: number;
+    readonly exactMoveAccepted: boolean;
+    readonly exactAttackAccepted: boolean;
+  };
+  readonly technology: {
+    readonly mainResearchButtonCount: number;
+    readonly mainContextCommandCount: number;
+    readonly branchCount: number;
+    readonly cardCount: number;
+    readonly detailIsModal: boolean;
+    readonly exactResearchAccepted: boolean;
+    readonly researchedDetailRetained: boolean;
+    readonly backRestoredMatchFocus: boolean;
+  };
+  readonly mandatoryChoice: {
+    readonly kind: "CITY_REWARD";
+    readonly position: string;
+    readonly authoritativeFirst: boolean;
+    readonly blocksOutsideInput: boolean;
+    readonly desktopFits: boolean;
+    readonly mobileFits: boolean;
+    readonly exactChoiceAccepted: boolean;
+  };
+  readonly readiness: {
+    readonly fullDesktopChangedPixels: number;
+    readonly fullMobileChangedPixels: number;
+    readonly reducedDesktopChangedPixels: number;
+    readonly reducedMobileChangedPixels: number;
+    readonly handledChangedPixels: number;
+  };
 }
 
 export interface BrowserSmokeFlowEvidenceV6 {
@@ -103,6 +162,7 @@ export interface BrowserSmokeFlowEvidenceV6 {
     readonly commandIndex: number;
     readonly stateHash: string;
   };
+  readonly acceptance: BrowserSmokeIntegratedAcceptanceV6;
   readonly desktop: BrowserSmokeLayoutV6;
   readonly mobile: BrowserSmokeLayoutV6;
   readonly screenshots: readonly BrowserSmokeArtifactV6[];
@@ -158,28 +218,30 @@ export function layoutContractIssuesV6(
       issues.push(`${name} escapes the viewport`);
     }
   }
-  const pairs = [
-    ["hud", layout.hud, "map", layout.map],
-    ["hud", layout.hud, "dock", layout.dock],
-    ["map", layout.map, "dock", layout.dock],
-  ] as const;
-  for (const [leftName, left, rightName, right] of pairs) {
-    if (intersectionArea(left, right) > tolerance) {
-      issues.push(`${leftName} overlaps ${rightName}`);
-    }
-  }
-  if (expected.mobile) {
-    if (
-      layout.map.y + tolerance < layout.hud.y + layout.hud.height ||
-      layout.dock.y + tolerance < layout.map.y + layout.map.height
-    ) {
-      issues.push("mobile regions are not stacked HUD, map, then dock");
-    }
-  } else if (
-    layout.dock.x + tolerance < layout.map.x + layout.map.width ||
-    Math.abs(layout.dock.y - layout.map.y) > tolerance
+  if (
+    Math.abs(layout.map.x) > tolerance ||
+    Math.abs(layout.map.y - (layout.hud.y + layout.hud.height)) > tolerance ||
+    Math.abs(layout.map.width - expected.width) > tolerance ||
+    Math.abs(layout.map.y + layout.map.height - expected.height) > tolerance
   ) {
-    issues.push("desktop dock is not beside the map");
+    issues.push("Canvas map does not fill the fixed region below the HUD");
+  }
+  if (Math.abs(layout.hud.y) > tolerance) {
+    issues.push("HUD is not pinned to the viewport top");
+  }
+  if (
+    Math.abs(layout.dock.y + layout.dock.height - expected.height) > tolerance
+  ) {
+    issues.push("dock is not bottom anchored");
+  }
+  if (intersectionArea(layout.hud, layout.dock) > tolerance) {
+    issues.push("HUD and dock overlap each other");
+  }
+  if (
+    Math.abs(layout.dock.x) > tolerance ||
+    Math.abs(layout.dock.width - expected.width) > tolerance
+  ) {
+    issues.push("dock does not span the viewport");
   }
   return issues;
 }
@@ -228,8 +290,98 @@ export function flowContractIssuesV6(
       (issue) => `mobile: ${issue}`,
     ),
   );
-  if (flow.screenshots.length !== 2) {
-    issues.push("flow does not include desktop and mobile screenshots");
+  if (flow.screenshots.length !== 8) {
+    issues.push("flow does not include the bounded native/enlarged review set");
+  }
+  const screenshotPaths = new Set(flow.screenshots.map(({ path }) => path));
+  if (screenshotPaths.size !== flow.screenshots.length) {
+    issues.push("evidence paths are not unique");
+  }
+  for (const subject of RULESET6_SMOKE_EVIDENCE_SUBJECTS) {
+    const pair = flow.screenshots.filter((artifact) =>
+      artifact.path.includes(`-${subject}-`),
+    );
+    const expectedViewport = subject.endsWith("-desktop")
+      ? RULESET6_SMOKE_VIEWPORTS.desktop
+      : RULESET6_SMOKE_VIEWPORTS.mobile;
+    if (
+      pair.length !== 2 ||
+      !pair.some(({ inspectionScale }) => inspectionScale === 1) ||
+      !pair.some(({ inspectionScale }) => inspectionScale === 2)
+    ) {
+      issues.push(`${subject} is missing its native/enlarged evidence pair`);
+      continue;
+    }
+    for (const artifact of pair) {
+      const { inspectionScale, viewport } = artifact;
+      if (
+        artifact.bytes <= 0 ||
+        !artifact.subject.includes(flow.faction) ||
+        !/^[a-f0-9]{64}$/.test(artifact.sha256) ||
+        viewport.width !== expectedViewport.width ||
+        viewport.height !== expectedViewport.height ||
+        viewport.dpr !== expectedViewport.dpr ||
+        artifact.width !==
+          expectedViewport.width * expectedViewport.dpr * inspectionScale ||
+        artifact.height !==
+          expectedViewport.height * expectedViewport.dpr * inspectionScale
+      ) {
+        issues.push(`${subject} has invalid evidence metadata`);
+        break;
+      }
+    }
+  }
+  const contextual = flow.acceptance.contextual;
+  if (
+    !contextual.selectedExactUnit ||
+    !contextual.selectedExactCity ||
+    !contextual.selectedExactTile ||
+    !contextual.isolatedUnitActions ||
+    !contextual.isolatedCityActions ||
+    !contextual.isolatedTileActions ||
+    !contextual.captureVillageSymbol ||
+    !contextual.factionCorrectTrainSymbol ||
+    contextual.moveButtonCount !== 0 ||
+    contextual.attackButtonCount !== 0 ||
+    !contextual.exactMoveAccepted ||
+    !contextual.exactAttackAccepted
+  ) {
+    issues.push("contextual unit/city/tile acceptance is incomplete");
+  }
+  const technology = flow.acceptance.technology;
+  if (
+    technology.mainResearchButtonCount !== 0 ||
+    technology.mainContextCommandCount !== 0 ||
+    technology.branchCount !== 5 ||
+    technology.cardCount !== RULESET6_SMOKE_TECH_IDS.length ||
+    !technology.detailIsModal ||
+    !technology.exactResearchAccepted ||
+    !technology.researchedDetailRetained ||
+    !technology.backRestoredMatchFocus
+  ) {
+    issues.push("dedicated technology-screen acceptance is incomplete");
+  }
+  const choice = flow.acceptance.mandatoryChoice;
+  if (
+    choice.kind !== "CITY_REWARD" ||
+    !/^Choice 1 of [1-9][0-9]*$/.test(choice.position) ||
+    !choice.authoritativeFirst ||
+    !choice.blocksOutsideInput ||
+    !choice.desktopFits ||
+    !choice.mobileFits ||
+    !choice.exactChoiceAccepted
+  ) {
+    issues.push("mandatory city-reward acceptance is incomplete");
+  }
+  const readiness = flow.acceptance.readiness;
+  if (
+    readiness.fullDesktopChangedPixels <= 0 ||
+    readiness.fullMobileChangedPixels <= 0 ||
+    readiness.reducedDesktopChangedPixels !== 0 ||
+    readiness.reducedMobileChangedPixels !== 0 ||
+    readiness.handledChangedPixels !== 0
+  ) {
+    issues.push("readiness motion acceptance is incomplete");
   }
   return issues;
 }
