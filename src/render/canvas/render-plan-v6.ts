@@ -553,6 +553,10 @@ function addTargetEntriesV6(
 ): void {
   for (const target of commandTargets) {
     if (!targetMatchesSelectionV6(target, interaction.selection)) continue;
+    // Economy commands already name the selected tile. They remain exact
+    // public command metadata, but never become Canvas targets: the semantic
+    // context button dispatches them directly without a map confirmation.
+    if (target.family === "ECONOMIC") continue;
     if (
       target.family === "ROLL" &&
       (interaction.targetMode?.kind !== "KAMIKAZE_ROLL" ||

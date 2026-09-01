@@ -772,6 +772,13 @@ Semantic DOM responsibilities:
   the only source of game information;
 - focus management, keyboard controls, labels, errors, and live announcements.
 
+An exact contextual command whose target is already fixed by the current
+selection dispatches from its semantic button in one activation. The client
+must not convert deterministic tile economy commands into Canvas target modes,
+confirmation clicks, or choice dialogs. Additional confirmation or choice
+steps exist only when explicitly required by product direction; Move, Attack,
+and genuinely unresolved spatial targets remain map-driven.
+
 The Canvas host owns one ephemeral inspection-activation cycle keyed by visible
 coordinate and unit ID. Pointer, touch, keyboard, and semantic coordinate
 activation enter the same resolver. Exact offered Move, EscapeMove, or Attack

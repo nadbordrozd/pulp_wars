@@ -388,7 +388,7 @@ describe("ruleset-6 observation-safe render plan", () => {
   });
 
   it.each(ECONOMIC_KINDS)(
-    "maps exact %s targets only when the public query offers the command",
+    "keeps exact %s command metadata without exposing a redundant map target",
     (kind) => {
       const view = economicView(kind);
       const command = { kind, at: TARGET } as EconomicCommandV6;
@@ -409,7 +409,7 @@ describe("ruleset-6 observation-safe render plan", () => {
         entriesOf(plan.entries, "ECONOMIC_TARGET").some((entry) =>
           sameCommand(entry.details.command, command),
         ),
-      ).toBe(true);
+      ).toBe(false);
     },
   );
 

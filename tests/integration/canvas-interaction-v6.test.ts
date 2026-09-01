@@ -478,6 +478,17 @@ describe("ruleset-6 Canvas host", () => {
       ),
     );
 
+    const economic = queryPlayerCommandsV6(fixture.view).find(
+      (command): command is EconomicCommandV6 =>
+        command.kind === "HARVEST_FRUIT",
+    );
+    if (economic === undefined) throw new Error("Missing Fruit action");
+    const directEconomyPlan = buildRenderPlanV6(fixture.view, {
+      ...interaction,
+      selection: { kind: "TILE", at: economic.at },
+    });
+    expect(commandCandidatesAtV6(directEconomyPlan, economic.at)).toEqual([]);
+
     const emitted: CommandV6[][] = [];
     const inspected: unknown[] = [];
     const host = new CanvasBoardHostV6(document);

@@ -5,7 +5,6 @@ import {
   queryTechnologyTreeV6,
   TECHNOLOGY_BRANCH_IDS_V6,
   type CommandV6,
-  type EconomicPreviewResultV6,
   type FactionIdV6,
   type MatchSetupV6,
   type PendingChoiceV6,
@@ -29,7 +28,6 @@ import {
   type BoardSelectionV6,
   type BoardTargetModeV6,
   type EconomicCommandV6,
-  type EconomicPreviewSelectionV6,
   type MapCommandTargetV6,
 } from "../canvas/render-plan-v6";
 import { unitCoverageV6 } from "../canvas/asset-coverage-v6";
@@ -82,7 +80,6 @@ export type Ruleset6BrowserControllerPort = Pick<
   | "progressAiTurns"
   | "restart"
   | "deleteStoredSave"
-  | "economicPreview"
 >;
 
 type ActionSymbol =
@@ -107,8 +104,6 @@ export class Ruleset6DomAppView {
   #matchInstanceId = 0;
   #selection: BoardSelectionV6 | null = null;
   #targetMode: BoardTargetModeV6 | null = null;
-  #economicPreview: EconomicPreviewSelectionV6 | null = null;
-  #preparedCommand: CommandV6 | null = null;
   #commandChoices: readonly MapCommandTargetV6[] = [];
   #notice: string | null = null;
   #error: string | null = null;
@@ -206,11 +201,7 @@ export class Ruleset6DomAppView {
         this.#commandChoices = [];
         this.#render();
         event.preventDefault();
-      } else if (
-        this.#selection !== null ||
-        this.#targetMode !== null ||
-        this.#economicPreview !== null
-      ) {
+      } else if (this.#selection !== null || this.#targetMode !== null) {
         this.#resetPresentation();
         this.#render();
         event.preventDefault();
@@ -923,8 +914,6 @@ export class Ruleset6DomAppView {
         if (this.#hasMandatoryChoice()) return;
         this.#selection = selection;
         this.#targetMode = null;
-        this.#economicPreview = null;
-        this.#preparedCommand = null;
         this.#commandChoices = [];
         this.#render();
       },
@@ -962,8 +951,6 @@ export class Ruleset6DomAppView {
       onCancel: () => {
         if (this.#hasMandatoryChoice()) return;
         this.#targetMode = null;
-        this.#economicPreview = null;
-        this.#preparedCommand = null;
         this.#commandChoices = [];
         this.#render();
       },
@@ -978,7 +965,6 @@ export class Ruleset6DomAppView {
         ...EMPTY_BOARD_RENDER_INTERACTION_V6,
         selection: this.#selection,
         targetMode: this.#targetMode,
-        economicPreview: this.#economicPreview,
         readyUnitIds: readyUnitIdsFromOfferedMovesV6(
           this.#snapshot.offeredCommands,
         ),
@@ -991,26 +977,6 @@ export class Ruleset6DomAppView {
     panel.append(
       text(this.#document, "h2", selectionHeading(view, this.#selection)),
     );
-    if (this.#preparedCommand !== null) {
-      const prepared = el(this.#document, "section", "v6-prepared-action");
-      prepared.append(
-        text(this.#document, "h3", "Map preview"),
-        text(
-          this.#document,
-          "p",
-          this.#economicPreview === null
-            ? commandLabel(this.#preparedCommand)
-            : previewLabel(this.#economicPreview.result),
-        ),
-        text(
-          this.#document,
-          "p",
-          "Activate the highlighted tile to complete the action. Escape cancels.",
-          "v6-action-hint",
-        ),
-      );
-      panel.append(prepared);
-    }
     const selected = selectedCommands(
       view,
       this.#snapshot.offeredCommands,
@@ -1095,8 +1061,6 @@ export class Ruleset6DomAppView {
       this.#selection = { kind: "UNIT", unitId: command.unitId };
       this.#targetMode = { kind: command.kind, unitId: command.unitId };
     }
-    this.#preparedCommand = null;
-    this.#economicPreview = null;
     const view = this.#snapshot.view;
     if (view === null) return;
     this.#notice = `${contextActionPresentation(view, command).label}: choose a highlighted target on the map.`;
@@ -1355,16 +1319,6 @@ export class Ruleset6DomAppView {
     ) {
       return;
     }
-    if (isEconomicCommand(command)) {
-      const preview = this.#controller.economicPreview(command);
-      this.#selection = { kind: "TILE", at: command.at };
-      this.#economicPreview = { command, result: preview };
-      this.#targetMode = null;
-      this.#preparedCommand = command;
-      this.#notice = previewLabel(preview);
-      this.#render();
-      return;
-    }
     void this.#dispatch(command);
   }
 
@@ -1393,8 +1347,6 @@ export class Ruleset6DomAppView {
     }
     this.#notice = `${commandLabel(command)} completed.`;
     this.#targetMode = null;
-    this.#economicPreview = null;
-    this.#preparedCommand = null;
     this.#validatePresentation(this.#controller.snapshot().view);
     await this.#progressAiIfNeeded();
   }
@@ -1516,8 +1468,6 @@ export class Ruleset6DomAppView {
       this.#selectedTechnology = null;
       this.#selection = null;
       this.#targetMode = null;
-      this.#economicPreview = null;
-      this.#preparedCommand = null;
       this.#commandChoices = [];
       return;
     }
@@ -1526,16 +1476,6 @@ export class Ruleset6DomAppView {
       selectionCoordV6(view, this.#selection) === null
     )
       this.#selection = null;
-    if (
-      this.#economicPreview !== null &&
-      !isStillOffered(this.#snapshot, this.#economicPreview.command)
-    )
-      this.#economicPreview = null;
-    if (
-      this.#preparedCommand !== null &&
-      !isStillOffered(this.#snapshot, this.#preparedCommand)
-    )
-      this.#preparedCommand = null;
     if (
       this.#commandChoices.some(
         (choice) => !isStillOffered(this.#snapshot, choice.command),
@@ -1583,8 +1523,6 @@ export class Ruleset6DomAppView {
   #resetPresentation(): void {
     this.#selection = null;
     this.#targetMode = null;
-    this.#economicPreview = null;
-    this.#preparedCommand = null;
     this.#commandChoices = [];
     this.#error = null;
     this.#screen = "MATCH";
@@ -2270,19 +2208,6 @@ function actionSymbolNode(
     wrapper.textContent = symbol.value;
   }
   return wrapper;
-}
-
-function previewLabel(result: EconomicPreviewResultV6): string {
-  if (!result.ok) return "This economic action is no longer offered.";
-  const population = result.preview.populationDeltaByCity
-    .map((entry) => `${entry.delta >= 0 ? "+" : ""}${entry.delta} population`)
-    .join(", ");
-  const income = result.preview.coinIncomeDeltaByCity
-    .map((entry) => `${entry.delta >= 0 ? "+" : ""}${entry.delta} income`)
-    .join(", ");
-  return [`Cost ${result.preview.cost} Coins`, population, income]
-    .filter(Boolean)
-    .join(" · ");
 }
 
 function commandLabel(command: CommandV6): string {

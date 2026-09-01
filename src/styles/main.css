@@ -1854,15 +1854,6 @@ fieldset {
   gap: 0.75rem;
 }
 
-.v6-prepared-action {
-  display: grid;
-  gap: 0.5rem;
-  padding: 0.7rem;
-  border: 2px solid var(--gold);
-  border-radius: 0.75rem;
-  background: rgb(240 185 63 / 0.1);
-}
-
 .v6-command-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
@@ -1923,8 +1914,7 @@ fieldset {
   height: 1.5rem;
 }
 
-.v6-action-empty,
-.v6-action-hint {
+.v6-action-empty {
   color: var(--muted);
 }
 

@@ -724,10 +724,17 @@ population/income explanation; 3 x 3 versus expanded 5 x 5 territory; Road
 connection; all nine faction-correct roles; Heal, Redevelop, forest, Road, and
 building actions; and the ordered reward queue.
 
-Selecting a build target previews every contributing explored tile on Canvas
-with distinct shape/pattern cues for cluster, adjacency, opposite pair,
-diversity, processor, and Road connection. Text lists the exact calculation,
-so color and animation are never required. The city dock shows
+Selecting an eligible tile exposes only its exact offered economic commands.
+Activating an unambiguous Harvest, Hunt, Build, Clear, Replant, Road, or
+Redevelop button dispatches immediately against that already-selected tile;
+there is no economic map-target mode, second tile activation, popup, or
+confirmation. Pointer, keyboard, and touch share this direct flow. Movement,
+attacks, and genuinely multi-target spatial abilities retain highlighted-map
+targeting. Confirmation or another choice step is added only when explicitly
+required. Passive previews may depict contributing explored tiles with
+distinct shape/pattern cues for cluster, adjacency, opposite pair, diversity,
+processor, and Road connection, and text lists the exact calculation so color
+and animation are never required. The city dock shows
 `population / next threshold` even when negative, live building population,
 Market Coins, total next-turn income, and `assigned / (level + 1)` capacity.
 Responsive docks retain the fixed-Canvas, non-modal, 44 CSS px, 320 px/200%

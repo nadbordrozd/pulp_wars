@@ -40,6 +40,26 @@ beforeEach(() => {
   window.localStorage.clear();
 });
 
+const ECONOMIC_COMMAND_KINDS = [
+  "HARVEST_FRUIT",
+  "HUNT_GAME",
+  "BUILD_FARM",
+  "BUILD_LUMBER_CAMP",
+  "BUILD_MINE",
+  "BUILD_QUARRY",
+  "BUILD_WINDMILL",
+  "BUILD_SAWMILL",
+  "BUILD_FORGE",
+  "BUILD_STONEWORKS",
+  "BUILD_WORKSHOP",
+  "BUILD_GRAND_WORKS",
+  "BUILD_MARKET",
+  "CLEAR_FOREST",
+  "REPLANT_FOREST",
+  "BUILD_ROAD",
+  "REDEVELOP",
+] as const;
+
 describe("playable ruleset-6 DOM shell", () => {
   it("boots the production v6 setup, constrains sizes, and launches explicit Candy seats", async () => {
     const host = new FakeBoardHostV6();
@@ -531,8 +551,14 @@ describe("playable ruleset-6 DOM shell", () => {
     const farm = commands.find((command) => command.kind === "BUILD_FARM");
     if (farm === undefined) throw new Error("Missing farm command");
     commandButton(farm).click();
-    expect(document.body.textContent).toContain("Map preview");
-    expect(document.querySelector("[data-confirm-prepared]")).toBeNull();
+    await waitUntil(() => fake.dispatch.mock.calls.length === 1);
+    expect(fake.dispatch).toHaveBeenLastCalledWith(farm);
+    expect(document.body.textContent).not.toContain("Map preview");
+    expect(host.model?.interaction).toMatchObject({
+      targetMode: null,
+      economicPreview: null,
+    });
+    fake.dispatch.mockClear();
 
     host.callbacks?.onSelection({ kind: "TILE", at: { x: 10, y: 10 } });
     expect(renderedCommandKinds()).toEqual(new Set(["END_TURN"]));
@@ -571,6 +597,117 @@ describe("playable ruleset-6 DOM shell", () => {
       expect(renderedCommandKinds()).toEqual(new Set(["END_TURN"]));
     }
 
+    app.destroy();
+  });
+
+  it("dispatches every selected-tile economy command directly for pointer, keyboard, and touch activation", async () => {
+    const view = publicView("ORIGINAL");
+    const commands = commandCatalogue(view);
+    const economicCommands = commands.filter((command) =>
+      ECONOMIC_COMMAND_KINDS.some((kind) => command.kind === kind),
+    );
+    const fake = new FakeController(view, commands);
+    const host = new FakeBoardHostV6();
+    const app = new Ruleset6DomAppView(document, requireElement("#app"), fake, {
+      boardHost: host,
+    });
+    const city = view.cities.find(
+      (candidate) => candidate.ownerId === view.viewer.id,
+    );
+    if (city === undefined) throw new Error("Missing owned city");
+    host.callbacks?.onSelection({ kind: "TILE", at: city.at });
+
+    for (const [index, command] of economicCommands.entries()) {
+      const action = commandButton(command);
+      if (index % 3 === 0) {
+        action.dispatchEvent(
+          new MouseEvent("click", {
+            bubbles: true,
+            cancelable: true,
+            detail: 1,
+          }),
+        );
+      } else if (index % 3 === 1) {
+        action.focus();
+        action.click();
+      } else {
+        const touchClick = new MouseEvent("click", {
+          bubbles: true,
+          cancelable: true,
+          detail: 1,
+        });
+        Object.defineProperty(touchClick, "pointerType", { value: "touch" });
+        action.dispatchEvent(touchClick);
+      }
+      await waitUntil(() => fake.dispatch.mock.calls.length === index + 1);
+      expect(fake.dispatch).toHaveBeenLastCalledWith(command);
+      expect(host.model?.interaction).toMatchObject({
+        targetMode: null,
+        economicPreview: null,
+      });
+      expect(document.body.textContent).not.toContain("Map preview");
+      expect(document.querySelector(".v6-command-dialog")).toBeNull();
+    }
+
+    expect(economicCommands).toHaveLength(ECONOMIC_COMMAND_KINDS.length);
+    expect(fake.economicPreview).not.toHaveBeenCalled();
+
+    fake.dispatch.mockResolvedValueOnce({
+      accepted: false,
+      reason: "NOT_OFFERED",
+    });
+    const rejectedCommand = economicCommands[0];
+    if (rejectedCommand === undefined)
+      throw new Error("Missing rejected economy command");
+    commandButton(rejectedCommand).click();
+    await waitUntil(() =>
+      Boolean(
+        document.body.textContent?.includes("Action rejected: NOT_OFFERED"),
+      ),
+    );
+    expect(document.body.textContent).not.toContain("Map preview");
+    expect(host.model?.interaction.economicPreview).toBeNull();
+    app.destroy();
+  });
+
+  it("records one replay boundary when a real selected-tile action button is activated", async () => {
+    const host = new FakeBoardHostV6();
+    const app = bootstrapRuleset6App(document, {
+      storage: null,
+      boardHost: host,
+    });
+    setInput("v6-seed", "8");
+    submit("[data-v6-setup]");
+    await waitUntil(
+      () =>
+        app.controller.snapshot().phase === "ACTIVE" &&
+        !app.controller.snapshot().transitioning,
+    );
+    const before = app.controller.snapshot();
+    const harvest = requireCommand(before, "HARVEST_FRUIT");
+    const dispatch = vi.spyOn(app.controller, "dispatch");
+    host.callbacks?.onSelection({ kind: "TILE", at: harvest.at });
+
+    commandButton(harvest).click();
+    await waitUntil(
+      () =>
+        app.controller.snapshot().commandIndex === before.commandIndex + 1 &&
+        !app.controller.snapshot().transitioning,
+    );
+
+    const after = app.controller.snapshot();
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledWith(harvest);
+    expect(after.stateHash).not.toBe(before.stateHash);
+    expect(app.controller.exportReplay()?.commands).toHaveLength(
+      after.commandIndex,
+    );
+    expect(app.controller.exportReplay()?.commands.at(-1)).toEqual(harvest);
+    expect(host.model?.interaction).toMatchObject({
+      targetMode: null,
+      economicPreview: null,
+    });
+    expect(document.querySelector(".v6-command-dialog")).toBeNull();
     app.destroy();
   });
 
@@ -1353,27 +1490,7 @@ function commandCatalogue(view: PlayerViewV6): readonly CommandV6[] {
     { kind: "BUILD_CHOCOLATE_WALL", unitId: unit.id, at },
     { kind: "CANDIFY", unitId: unit.id },
     { kind: "RESEARCH", tech: "FARMING" },
-    ...(
-      [
-        "HARVEST_FRUIT",
-        "HUNT_GAME",
-        "BUILD_FARM",
-        "BUILD_LUMBER_CAMP",
-        "BUILD_MINE",
-        "BUILD_QUARRY",
-        "BUILD_WINDMILL",
-        "BUILD_SAWMILL",
-        "BUILD_FORGE",
-        "BUILD_STONEWORKS",
-        "BUILD_WORKSHOP",
-        "BUILD_GRAND_WORKS",
-        "BUILD_MARKET",
-        "CLEAR_FOREST",
-        "REPLANT_FOREST",
-        "BUILD_ROAD",
-        "REDEVELOP",
-      ] as const
-    ).map((kind) => ({ kind, at })),
+    ...ECONOMIC_COMMAND_KINDS.map((kind) => ({ kind, at })),
     { kind: "TRAIN", cityId: city.id, role: "FIGHTER" },
     { kind: "CHOOSE_CANDIFY_CITY", unitId: unit.id, cityId: city.id },
     {
@@ -1396,9 +1513,9 @@ function target(
 function requireCommand<K extends CommandV6["kind"]>(
   snapshot: Ruleset6BrowserSnapshot,
   kind: K,
-): Extract<CommandV6, { kind: K }> {
+): CommandV6 & { readonly kind: K } {
   const command = snapshot.offeredCommands.find(
-    (candidate): candidate is Extract<CommandV6, { kind: K }> =>
+    (candidate): candidate is CommandV6 & { readonly kind: K } =>
       candidate.kind === kind,
   );
   if (command === undefined) throw new Error(`Missing ${kind}`);

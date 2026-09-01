@@ -16,12 +16,13 @@ proprietary art, text, layout coordinates, or code.
 ## 0. Ruleset-6 replacement contract
 
 The responsive navigation, fixed Canvas host, map-first selection, non-modal
-docks, one-activation positional commands, semantic parity, focus, 44 CSS px
-targets, 320 px/200% zoom fallback, reduced motion, AI presentation, and result
-routes later in this file remain active. Every ruleset-5 content example below
-is historical where it conflicts with this section. The new-match UI must never
-show Stars, the nine-node tree, Catapult, Animal/Lumber Mill terminology,
-ruleset-5 city rewards, or v5 capacity as if they applied to ruleset 6.
+docks, direct contextual commands, one-activation positional commands,
+semantic parity, focus, 44 CSS px targets, 320 px/200% zoom fallback, reduced
+motion, AI presentation, and result routes later in this file remain active.
+Every ruleset-5 content example below is historical where it conflicts with
+this section. The new-match UI must never show Stars, the nine-node tree,
+Catapult, Animal/Lumber Mill terminology, ruleset-5 city rewards, or v5 capacity
+as if they applied to ruleset 6.
 
 ### Economy and HUD
 
@@ -54,15 +55,25 @@ Clear Forest, Replant Forest, Build Road, and Redevelop. Only the selected
 coordinate's public command appears. A Road control and road fact may coexist
 with a resource/improvement fact.
 
-### Spatial preview and placement
+### Direct contextual economy actions
 
-Selecting an offered economic action enters non-modal placement preview. The
-Canvas stays undimmed, pannable, zoomable, and keyboard-operable. One activation
-of an exact highlighted tile dispatches; Escape cancels. Before dispatch the
-dock and every target accessible name state cost, resulting building value,
-population deltas per city, recurring Coin delta, and exact formula.
+An unambiguous contextual action never asks the player to identify information
+the current selection and action button already determine. After selecting an
+eligible tile, activating its exact Harvest, Hunt, Build, Clear, Replant, Road,
+or Redevelop button immediately dispatches that offered public command against
+the selected coordinate. It does not enter map-targeting mode, draw an economic
+target overlay, open a popup, or request confirmation. This behavior is shared
+by pointer, keyboard, and touch activation. Movement, attacks, and genuinely
+multi-target spatial abilities retain highlighted-map targeting.
 
-Contributors use redundant code-native patterns and text:
+This is the general interaction principle: add confirmation or another choice
+step only when the user explicitly requires it. Observation-safe economic
+preview data may inform passive labels, accessible descriptions, AI, or
+headless clients, but must not turn an exact contextual command into a staged
+flow.
+
+When a passive spatial preview is presented, contributors use redundant
+code-native patterns and text:
 
 - cluster: connected outline plus numbered Farm/Lumber Camp contributors;
 - Forge: spokes to each adjacent Mine;
