@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
-import { readFile, stat } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
+import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 import {
   ACCEPTED_ART_ALIASES,
@@ -32,6 +33,7 @@ interface Recipe {
   readonly anchor?: { readonly x: number; readonly y: number };
   readonly groundContactY?: number;
   readonly hardBounds: Bounds;
+  readonly preferredBounds?: Bounds;
   readonly postprocess?: string;
   readonly styleReference?: string;
   readonly styleReferenceUsage?: string;
@@ -41,8 +43,26 @@ interface Recipe {
 
 interface GeneratedRecord {
   readonly status: string;
+  readonly candidateSha256?: string;
   readonly outputSha256?: string;
+  readonly width?: number;
+  readonly height?: number;
+  readonly hasAlpha?: boolean;
+  readonly alphaBounds?: Bounds & { readonly empty: boolean };
+  readonly request?: {
+    readonly endpoint: string;
+    readonly model: string;
+    readonly requestSize: { readonly width: number; readonly height: number };
+    readonly outputSize: { readonly width: number; readonly height: number };
+    readonly seed: number;
+    readonly postprocess?: string;
+  };
   readonly reviewChecks?: Readonly<Record<string, boolean>>;
+  readonly rejectedAttempts?: readonly {
+    readonly candidate: string;
+    readonly candidateSha256?: string;
+    readonly notes?: string;
+  }[];
 }
 
 describe("Ruleset 6 terrain PixelLab preparation", () => {
@@ -55,7 +75,7 @@ describe("Ruleset 6 terrain PixelLab preparation", () => {
     );
 
     expect(recipes.map(({ id }) => id)).toEqual([...SAMPLE_IDS]);
-    expect(recipes.map(({ seed }) => seed)).toEqual([63101, 63102, 63103]);
+    expect(recipes.map(({ seed }) => seed)).toEqual([83101, 73102, 73103]);
     for (const recipe of recipes) {
       const road = recipe.id === "terrain-road-material";
       expect(recipe.class, recipe.id).toBe("terrain");
@@ -76,9 +96,12 @@ describe("Ruleset 6 terrain PixelLab preparation", () => {
           ? { left: 0, top: 0, right: 256, bottom: 148 }
           : { left: 32, top: 112, right: 224, bottom: 246 },
       );
+      expect(recipe.preferredBounds, recipe.id).toEqual(
+        road ? undefined : { left: 56, top: 142, right: 200, bottom: 230 },
+      );
       expect(recipe.groundContactY, recipe.id).toBe(road ? undefined : 222);
       expect(recipe.postprocess, recipe.id).toBe(
-        road ? "diamond-mask" : undefined,
+        road ? "diamond-mask" : "preferred-low-marker-fit",
       );
       expect(recipe.styleReference, recipe.id).toMatch(/^terrain-/);
       expect(recipe.styleReferenceUsage, recipe.id).toMatch(
@@ -89,7 +112,7 @@ describe("Ruleset 6 terrain PixelLab preparation", () => {
     }
   });
 
-  it("keeps missing generation explicit and leaves production outputs absent", async () => {
+  it("accepts all three generated samples with exact output and rejection history", async () => {
     const source = JSON.parse(
       await readFile("scripts/art/pixellab-manifest.json", "utf8"),
     ) as { readonly recipes: readonly Recipe[] };
@@ -99,15 +122,80 @@ describe("Ruleset 6 terrain PixelLab preparation", () => {
       readonly records: Readonly<Record<string, GeneratedRecord>>;
     };
 
+    const expected = {
+      "terrain-fertile-ground": {
+        sha256:
+          "97545314656cee7b83d0744309086051f1d520957d0b982ff5e5515cba4adc6b",
+        bounds: { left: 56, top: 144, right: 200, bottom: 222 },
+        rejected: 2,
+        url: "/assets/pixellab/terrain/fertile-ground.png",
+      },
+      "terrain-stone": {
+        sha256:
+          "8d8719bec9de96392e1a205c38b0f74ebff32aaabbae046800ef23744bef2f14",
+        bounds: { left: 84, top: 142, right: 171, bottom: 222 },
+        rejected: 1,
+        url: "/assets/pixellab/terrain/stone.png",
+      },
+      "terrain-road-material": {
+        sha256:
+          "d0f60535de68afa17fcc39f9fcc6cefd886d45292ad0e3216727c5dca850e84f",
+        bounds: { left: 14, top: 1, right: 239, bottom: 147 },
+        rejected: 1,
+        url: "/assets/pixellab/terrain/road-material.png",
+      },
+    } as const;
+
     for (const id of SAMPLE_IDS) {
-      expect(generated.records[id], id).toBeUndefined();
+      const record = generated.records[id];
       const recipe = source.recipes.find((entry) => entry.id === id);
+      const contract = expected[id];
+      expect(record?.status, id).toBe("ACCEPTED");
       expect(recipe, id).toBeDefined();
       if (recipe === undefined) continue;
-      await expect(stat(recipe.output), id).rejects.toMatchObject({
-        code: "ENOENT",
+      const file = await readFile(recipe.output);
+      const metadata = await sharp(file).metadata();
+      expect(metadata.width, id).toBe(recipe.outputSize.width);
+      expect(metadata.height, id).toBe(recipe.outputSize.height);
+      expect(metadata.channels, id).toBe(4);
+      expect(record?.width, id).toBe(recipe.outputSize.width);
+      expect(record?.height, id).toBe(recipe.outputSize.height);
+      expect(record?.hasAlpha, id).toBe(true);
+      expect(record?.alphaBounds, id).toEqual({
+        ...contract.bounds,
+        empty: false,
       });
-      expect(ACCEPTED_ART_URLS[id], id).toBeUndefined();
+      expect(record?.candidateSha256, id).toBe(contract.sha256);
+      expect(record?.outputSha256, id).toBe(contract.sha256);
+      expect(createHash("sha256").update(file).digest("hex"), id).toBe(
+        contract.sha256,
+      );
+      expect(Object.values(record?.reviewChecks ?? {}), id).toEqual([
+        true,
+        true,
+        true,
+        true,
+        true,
+      ]);
+      expect(record?.request, id).toMatchObject({
+        endpoint: recipe.endpoint,
+        model: "generate-image-v2",
+        requestSize: recipe.requestSize,
+        outputSize: recipe.outputSize,
+        seed: recipe.seed,
+        postprocess: recipe.postprocess,
+      });
+      expect(record?.rejectedAttempts, id).toHaveLength(contract.rejected);
+      for (const rejection of record?.rejectedAttempts ?? []) {
+        expect(rejection.candidate, id).toMatch(/^art\/pixellab\/quarantine\//);
+        expect(rejection.candidateSha256, id).toMatch(/^[a-f0-9]{64}$/);
+        expect(rejection.notes?.length, id).toBeGreaterThan(100);
+        const quarantined = await readFile(rejection.candidate);
+        expect(createHash("sha256").update(quarantined).digest("hex"), id).toBe(
+          rejection.candidateSha256,
+        );
+      }
+      expect(ACCEPTED_ART_URLS[id], id).toBe(contract.url);
     }
   });
 
@@ -157,7 +245,7 @@ describe("Ruleset 6 terrain PixelLab preparation", () => {
     );
   });
 
-  it("checks in honest blocked evidence and the complete review matrix", async () => {
+  it("checks in complete accepted review evidence and the full matrix", async () => {
     const evidence = JSON.parse(
       await readFile(
         "art/pixellab/reviews/ruleset6-terrain/review-evidence.json",
@@ -165,10 +253,19 @@ describe("Ruleset 6 terrain PixelLab preparation", () => {
       ),
     ) as {
       readonly status: string;
-      readonly blocker: string;
+      readonly blocker: string | null;
       readonly requiredCoverage: readonly string[];
       readonly sampleGate: Readonly<
-        Record<string, { readonly status: string }>
+        Record<
+          string,
+          {
+            readonly status: string;
+            readonly outputSha256: string;
+            readonly reviewChecks: Readonly<Record<string, boolean>>;
+            readonly visualFindings: string;
+            readonly rejectedAttempts: readonly unknown[];
+          }
+        >
       >;
       readonly pendingArtifacts: readonly string[];
       readonly gameAlias: {
@@ -183,19 +280,24 @@ describe("Ruleset 6 terrain PixelLab preparation", () => {
       }[];
     };
 
-    expect(evidence.status).toBe("BLOCKED_MISSING_GENERATION");
-    expect(evidence.blocker).toContain("PIXELLAB_API_KEY is missing");
+    expect(evidence.status).toBe("READY_FOR_ORCHESTRATOR_REVIEW");
+    expect(evidence.blocker).toBeNull();
     expect(evidence.requiredCoverage).toHaveLength(8);
-    for (const id of SAMPLE_IDS)
-      expect(evidence.sampleGate[id]?.status, id).toBe("MISSING");
-    expect(evidence.pendingArtifacts).toEqual([
-      "sample-gate-source-native-enlarged-minimum.png",
-      "compatible-contexts-and-four-edges.png",
-      "repetition-8x8.png",
-      "dense-mixed-map-dpr1.png",
-      "dense-mixed-map-dpr2.png",
-      "dpr1-dpr2-comparison.png",
-    ]);
+    for (const id of SAMPLE_IDS) {
+      const sample = evidence.sampleGate[id];
+      expect(sample?.status, id).toBe("ACCEPTED");
+      expect(sample?.outputSha256, id).toMatch(/^[a-f0-9]{64}$/);
+      expect(Object.values(sample?.reviewChecks ?? {}), id).toEqual([
+        true,
+        true,
+        true,
+        true,
+        true,
+      ]);
+      expect(sample?.visualFindings.length, id).toBeGreaterThan(300);
+      expect(sample?.rejectedAttempts.length, id).toBeGreaterThanOrEqual(1);
+    }
+    expect(evidence.pendingArtifacts).toEqual([]);
     expect(evidence.gameAlias.status).toBe("ACCEPTED");
     expect(evidence.gameAlias.contexts).toEqual([
       "empty Forest",
@@ -203,12 +305,21 @@ describe("Ruleset 6 terrain PixelLab preparation", () => {
       "occupied GAME on Forest",
       "locked GAME on Forest",
       "selected GAME on Forest",
+      "hunted GAME removed while Forest remains",
       "repeated GAME/empty Forest",
     ]);
     expect(evidence.gameAlias.sourceOutputSha256).toMatch(/^[a-f0-9]{64}$/);
     expect(evidence.artifacts.map(({ path }) => path)).toEqual([
       "art/pixellab/reviews/ruleset6-terrain/README.md",
       "art/pixellab/reviews/ruleset6-terrain/game-alias-forest-contexts.png",
+      "art/pixellab/reviews/ruleset6-terrain/sample-gate-source-native-enlarged-minimum.png",
+      "art/pixellab/reviews/ruleset6-terrain/compatible-contexts-and-four-edges.png",
+      "art/pixellab/reviews/ruleset6-terrain/faction-terrain-and-visibility-contexts.png",
+      "art/pixellab/reviews/ruleset6-terrain/semantic-collision-minimum-zoom.png",
+      "art/pixellab/reviews/ruleset6-terrain/repetition-8x8.png",
+      "art/pixellab/reviews/ruleset6-terrain/dense-mixed-map-dpr1.png",
+      "art/pixellab/reviews/ruleset6-terrain/dense-mixed-map-dpr2.png",
+      "art/pixellab/reviews/ruleset6-terrain/dpr1-dpr2-comparison.png",
     ]);
     for (const artifact of evidence.artifacts) {
       const data = await readFile(artifact.path);

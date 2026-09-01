@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "1cb0907cc4927977b6c68e3f000612bacac536c5cbcbb84f22993ba92923d46d",
+  "sourceManifestSha256": "4493d615204d4e35e9f2f512071969cf9470fa98c7e262596e04bdf802e1b45e",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -3426,6 +3426,287 @@
       "outputSha256": "bf1890d173a01a3bffcef6021fc6a1d4acbad36ccf53ce2a806fdfca3304d09b",
       "notes": "Accepted third sample after source/checkerboard, enlarged, 0.3x native, 0.625x and mixed-map inspection: retains the accepted level-two core, adds one balanced second gumdrop tower and one tall cream-frosted crest for the strongest silhouette, preserves camera/palette/cloth/outline, exact y344 visible-base alignment and clean alpha, remains readable around occupying units, and leaves capital/reward/status/label cues renderer-owned.",
       "reviewedAt": "2026-08-17T11:34:56.952Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-fertile-ground": {
+      "id": "terrain-fertile-ground",
+      "status": "ACCEPTED",
+      "jobId": "6b7aa23a-9ec5-44e4-ac79-470853a62880",
+      "candidate": "art/pixellab/candidates/terrain-fertile-ground.png",
+      "candidateSha256": "97545314656cee7b83d0744309086051f1d520957d0b982ff5e5515cba4adc6b",
+      "providerOutputSha256": "46ba0d4b7a825fd06f8cfbc19d814a0a9cccf82c6f91b37380efada099f3b0a5",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 56,
+        "top": 144,
+        "right": 200,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: deep muted umber-brown loam, dark moss-green seed leaves, charcoal-teal outline, one restrained tan soil plane; no pale cream or gold. Isolated persistent Fertile Ground world marker only: one very low connected irregular MATTE DARK-BROWN loam patch made from three fused soft lobes, with exactly two tiny paired moss-green seed-leaf sprouts kept close to the soil. The whole silhouette is broad, flat and asymmetrical with no separate beds, lines or repeating spacing, centered at source x128 with ground contact y222 in an isometric three-quarter downward view. Read as naturally fertile uncultivated earth, never planted crops or a completed Farm. Quiet low-contrast terrain palette, simple broad shapes, no glossy highlights, transparent 256 by 296 canvas, preferred alpha x56..200 y142..230 and hard alpha x32..224 y112..246. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pale tan main shape, cream, gold, white highlight, glossy icing, three separate mounds, raised garden beds, tall stems, large leaves, fruit, orchard, berries, flowers, wheat, mature crops, fence, irrigation, tilled farm rows, Farm building, basket, shovel, person, unit, animal, ore, rock pile, road, path, footprints, selection diamond, selection ring, ownership color, flag, status badge, sparkle, glow, text, UI, grass diamond, ground tile, base plate, cast shadow, tiny seeds, noisy texture.",
+        "prompt": "Isolated persistent Fertile Ground world marker only: one very low connected irregular MATTE DARK-BROWN loam patch made from three fused soft lobes, with exactly two tiny paired moss-green seed-leaf sprouts kept close to the soil. The whole silhouette is broad, flat and asymmetrical with no separate beds, lines or repeating spacing, centered at source x128 with ground contact y222 in an isometric three-quarter downward view. Read as naturally fertile uncultivated earth, never planted crops or a completed Farm. Quiet low-contrast terrain palette, simple broad shapes, no glossy highlights, transparent 256 by 296 canvas, preferred alpha x56..200 y142..230 and hard alpha x32..224 y112..246.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pale tan main shape, cream, gold, white highlight, glossy icing, three separate mounds, raised garden beds, tall stems, large leaves, fruit, orchard, berries, flowers, wheat, mature crops, fence, irrigation, tilled farm rows, Farm building, basket, shovel, person, unit, animal, ore, rock pile, road, path, footprints, selection diamond, selection ring, ownership color, flag, status badge, sparkle, glow, text, UI, grass diamond, ground tile, base plate, cast shadow, tiny seeds, noisy texture",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 83101,
+        "noBackground": true,
+        "palette": "deep muted umber-brown loam, dark moss-green seed leaves, charcoal-teal outline, one restrained tan soil plane; no pale cream or gold",
+        "postprocess": "preferred-low-marker-fit",
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "terrain-grass-2",
+          "sha256": "7c81a60a3998365251728baa5d66f99ec6cdcf8696f3e9357bf79540ae100d49",
+          "usageDescription": "Input reference role: copy only the accepted quiet Grass palette, outline weight, flat two-level shading and terrain detail budget; create the newly described persistent Fertile Ground marker without copying its decoration."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-fertile-ground-a5b18cfc362f.png",
+          "candidateSha256": "a5b18cfc362f726bfadda6230a39c66be9254dfa5bedae27f71ead83135d1dba",
+          "notes": "Rejected after source, native, enlarged, and 0.625x inspection: alpha x52..203 y112..222 is 151x110 and reaches the hard-limit top; the three large outlined mounds plus tall sprouts read as a planted garden mass rather than the required low persistent uncultivated marker. Silhouette must be shorter, quieter, and kept near preferred x56..200 y142..230 without Farm/selection/ownership cues.",
+          "reviewedAt": "2026-09-01T14:22:49.507Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated persistent Fertile Ground world marker only: exactly three overlapping soft-edged dark loam shapes with two simple paired seed-leaf sprouts, arranged asymmetrically as one low broad natural patch with no lines or repeating spacing, centered at source x128 with ground contact y222 in an isometric three-quarter downward view. Read as naturally fertile uncultivated earth, not planted crops or a completed Farm. Quiet low-contrast terrain palette, simple broad shapes, at most five visible forms, transparent 256 by 296 canvas, preferred alpha x56..200 y142..230 and hard alpha x32..224 y112..246. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; fruit, orchard, berries, flowers, wheat, mature crops, fence, irrigation, tilled farm rows, Farm building, basket, shovel, person, unit, animal, ore, rock pile, road, path, footprints, selection diamond, selection ring, ownership color, flag, status badge, sparkle, glow, text, UI, grass diamond, ground tile, base plate, cast shadow, tiny seeds, noisy texture.",
+            "prompt": "Isolated persistent Fertile Ground world marker only: exactly three overlapping soft-edged dark loam shapes with two simple paired seed-leaf sprouts, arranged asymmetrically as one low broad natural patch with no lines or repeating spacing, centered at source x128 with ground contact y222 in an isometric three-quarter downward view. Read as naturally fertile uncultivated earth, not planted crops or a completed Farm. Quiet low-contrast terrain palette, simple broad shapes, at most five visible forms, transparent 256 by 296 canvas, preferred alpha x56..200 y142..230 and hard alpha x32..224 y112..246.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; fruit, orchard, berries, flowers, wheat, mature crops, fence, irrigation, tilled farm rows, Farm building, basket, shovel, person, unit, animal, ore, rock pile, road, path, footprints, selection diamond, selection ring, ownership color, flag, status badge, sparkle, glow, text, UI, grass diamond, ground tile, base plate, cast shadow, tiny seeds, noisy texture",
+            "requestSize": {
+              "width": 256,
+              "height": 296
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 296
+            },
+            "seed": 63101,
+            "noBackground": true,
+            "groundContactY": 222,
+            "styleReference": {
+              "id": "terrain-grass-2",
+              "sha256": "7c81a60a3998365251728baa5d66f99ec6cdcf8696f3e9357bf79540ae100d49",
+              "usageDescription": "Input reference role: copy only the accepted quiet Grass palette, outline weight, flat two-level shading and terrain detail budget; create the newly described persistent Fertile Ground marker without copying its decoration."
+            }
+          }
+        },
+        {
+          "candidate": "art/pixellab/quarantine/terrain-fertile-ground-adfc932e8703.png",
+          "candidateSha256": "adfc932e8703e11d063378893b16e427094b5f13f87cd9fd21c7c556810c11de",
+          "notes": "Rejected after source, native, enlarged, and 0.625x inspection: alpha x39..217 y112..222 is 178x110, wider than the preferred marker footprint and again reaches the hard-limit top. Pale glossy fused lobes read as icing or arranged plots rather than dark uncultivated loam. Regenerate with dark matte earth, subtler sprouts, and deterministic preferred-bounds fitting.",
+          "reviewedAt": "2026-09-01T14:34:26.467Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated persistent Fertile Ground world marker only: one very low connected irregular dark-loam patch made from three fused soft lobes, with exactly two tiny paired seed-leaf sprouts kept close to the soil. The whole silhouette is broad, flat and asymmetrical with no separate beds, lines or repeating spacing, centered at source x128 with ground contact y222 in an isometric three-quarter downward view. Read as naturally fertile uncultivated earth, never planted crops or a completed Farm. Quiet low-contrast terrain palette, simple broad shapes, transparent 256 by 296 canvas, keep all visible alpha inside preferred x56..200 y142..230 and hard x32..224 y112..246. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; three separate mounds, raised garden beds, tall stems, large leaves, fruit, orchard, berries, flowers, wheat, mature crops, fence, irrigation, tilled farm rows, Farm building, basket, shovel, person, unit, animal, ore, rock pile, road, path, footprints, selection diamond, selection ring, ownership color, flag, status badge, sparkle, glow, text, UI, grass diamond, ground tile, base plate, cast shadow, tiny seeds, noisy texture.",
+            "prompt": "Isolated persistent Fertile Ground world marker only: one very low connected irregular dark-loam patch made from three fused soft lobes, with exactly two tiny paired seed-leaf sprouts kept close to the soil. The whole silhouette is broad, flat and asymmetrical with no separate beds, lines or repeating spacing, centered at source x128 with ground contact y222 in an isometric three-quarter downward view. Read as naturally fertile uncultivated earth, never planted crops or a completed Farm. Quiet low-contrast terrain palette, simple broad shapes, transparent 256 by 296 canvas, keep all visible alpha inside preferred x56..200 y142..230 and hard x32..224 y112..246.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; three separate mounds, raised garden beds, tall stems, large leaves, fruit, orchard, berries, flowers, wheat, mature crops, fence, irrigation, tilled farm rows, Farm building, basket, shovel, person, unit, animal, ore, rock pile, road, path, footprints, selection diamond, selection ring, ownership color, flag, status badge, sparkle, glow, text, UI, grass diamond, ground tile, base plate, cast shadow, tiny seeds, noisy texture",
+            "requestSize": {
+              "width": 256,
+              "height": 296
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 296
+            },
+            "seed": 73101,
+            "noBackground": true,
+            "groundContactY": 222,
+            "styleReference": {
+              "id": "terrain-grass-2",
+              "sha256": "7c81a60a3998365251728baa5d66f99ec6cdcf8696f3e9357bf79540ae100d49",
+              "usageDescription": "Input reference role: copy only the accepted quiet Grass palette, outline weight, flat two-level shading and terrain detail budget; create the newly described persistent Fertile Ground marker without copying its decoration."
+            }
+          }
+        }
+      ],
+      "outputSha256": "97545314656cee7b83d0744309086051f1d520957d0b982ff5e5515cba4adc6b",
+      "notes": "Accepted after source, native, enlarged, minimum 0.625x, DPR1/2, hidden/revealed, four-owner, selection, fog, Original/Candy Grass, 8x8 repetition, and dense-map review. The 256x296 straight-alpha candidate has compact alpha x56..200 y144..222 at anchor 128,222: one low matte irregular dark-loam patch with two small sprouts. It remains distinct from bright Fruit, Farm-like rows or structures, ownership borders, and the diamond selection overlay; it has no halo, clipping, noise, text, status mark, or terrain-sized mass.",
+      "reviewedAt": "2026-09-01T15:01:45.891Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-stone": {
+      "id": "terrain-stone",
+      "status": "ACCEPTED",
+      "jobId": "7cf08da5-e818-4409-9a2f-ebad3ff9875c",
+      "candidate": "art/pixellab/candidates/terrain-stone.png",
+      "candidateSha256": "8d8719bec9de96392e1a205c38b0f74ebff32aaabbae046800ef23744bef2f14",
+      "providerOutputSha256": "c7d7d28ed2c50eac3e6af15850bbd178c9ee030872f871b70e549b7120d658bf",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 84,
+        "top": 142,
+        "right": 171,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted cool blue-slate and warm gray natural rock, charcoal-teal outline, restrained parchment-gray highlight; no gold or cream cap. Isolated persistent Stone resource marker only: exactly three NATURAL WEATHERED low boulders in one compact staggered cluster, one broad irregular oval front boulder and two smaller unequal rear boulders. Every silhouette and surface is softly uneven and rounded by weather, with no straight edge, right angle, flat cut top or block shape. Isometric three-quarter downward view centered at source x128 with ground contact y222. Use quiet muted cool blue-slate and warm-gray broad planes, strong charcoal outline, no crystals and no peak silhouette. Transparent 256 by 296 canvas, preferred alpha x56..200 y142..230 and hard alpha x32..224 y112..246. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; square, rectangle, cube, brick, paving stone, cut slab, flat cream top, straight edge, right angle, masonry block, gold, ore, crystals, gems, sparkle, white status mark, tall mountain, sharp peak, cliff, quarry, brick wall, building, mine entrance, pickaxe, tool, cart, person, unit, animal, road, selection ring, ownership color, flag, status badge, text, UI, ground tile, base plate, cast shadow, pebble scatter, many tiny rocks, photoreal strata.",
+        "prompt": "Isolated persistent Stone resource marker only: exactly three NATURAL WEATHERED low boulders in one compact staggered cluster, one broad irregular oval front boulder and two smaller unequal rear boulders. Every silhouette and surface is softly uneven and rounded by weather, with no straight edge, right angle, flat cut top or block shape. Isometric three-quarter downward view centered at source x128 with ground contact y222. Use quiet muted cool blue-slate and warm-gray broad planes, strong charcoal outline, no crystals and no peak silhouette. Transparent 256 by 296 canvas, preferred alpha x56..200 y142..230 and hard alpha x32..224 y112..246.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; square, rectangle, cube, brick, paving stone, cut slab, flat cream top, straight edge, right angle, masonry block, gold, ore, crystals, gems, sparkle, white status mark, tall mountain, sharp peak, cliff, quarry, brick wall, building, mine entrance, pickaxe, tool, cart, person, unit, animal, road, selection ring, ownership color, flag, status badge, text, UI, ground tile, base plate, cast shadow, pebble scatter, many tiny rocks, photoreal strata",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 73102,
+        "noBackground": true,
+        "palette": "muted cool blue-slate and warm gray natural rock, charcoal-teal outline, restrained parchment-gray highlight; no gold or cream cap",
+        "postprocess": "preferred-low-marker-fit",
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "terrain-mountain-2",
+          "sha256": "2d5fce2c90c1d7823055bb92f8e2172b9388c231c224e78f80f4c1fd66074598",
+          "usageDescription": "Input reference role: copy only the accepted Mountain slate/tan palette, charcoal outline, broad planar shading and quiet terrain detail budget; create a distinct low Stone deposit rather than another mountain or Ore vein."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-stone-fa1714776acf.png",
+          "candidateSha256": "fa1714776acf9977596d5a7c965f6ca7bcc33469b70d2826b12338ef95a95a40",
+          "notes": "Rejected after source, native, enlarged, and 0.625x inspection: compact alpha x75..181 y142..222 passes preferred geometry and is distinct from Ore crystals, but three squared pieces with pale flat tops and planar vertical sides read as quarried/cut masonry or a completed Quarry. Stone must be naturally weathered low boulders with irregular rounded silhouettes and no manufactured faces.",
+          "reviewedAt": "2026-09-01T14:41:44.493Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated persistent Stone resource marker only: exactly three low broad rounded masonry-grade stone slabs in one compact staggered cluster, one large front slab and two smaller rear slabs, isometric three-quarter downward view centered at source x128 with ground contact y222. Use muted parchment-tan and blue-slate broad planes, strong but quiet charcoal outline, no crystals and no peak silhouette. Transparent 256 by 296 canvas, preferred alpha x56..200 y142..230 and hard alpha x32..224 y112..246. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; gold, ore, crystals, gems, sparkle, white status mark, tall mountain, sharp peak, cliff, quarry, cut blocks, brick wall, building, mine entrance, pickaxe, tool, cart, person, unit, animal, road, selection ring, ownership color, flag, status badge, text, UI, ground tile, base plate, cast shadow, pebble scatter, many tiny rocks, photoreal strata.",
+            "prompt": "Isolated persistent Stone resource marker only: exactly three low broad rounded masonry-grade stone slabs in one compact staggered cluster, one large front slab and two smaller rear slabs, isometric three-quarter downward view centered at source x128 with ground contact y222. Use muted parchment-tan and blue-slate broad planes, strong but quiet charcoal outline, no crystals and no peak silhouette. Transparent 256 by 296 canvas, preferred alpha x56..200 y142..230 and hard alpha x32..224 y112..246.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; gold, ore, crystals, gems, sparkle, white status mark, tall mountain, sharp peak, cliff, quarry, cut blocks, brick wall, building, mine entrance, pickaxe, tool, cart, person, unit, animal, road, selection ring, ownership color, flag, status badge, text, UI, ground tile, base plate, cast shadow, pebble scatter, many tiny rocks, photoreal strata",
+            "requestSize": {
+              "width": 256,
+              "height": 296
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 296
+            },
+            "seed": 63102,
+            "noBackground": true,
+            "postprocess": "preferred-low-marker-fit",
+            "groundContactY": 222,
+            "styleReference": {
+              "id": "terrain-mountain-2",
+              "sha256": "2d5fce2c90c1d7823055bb92f8e2172b9388c231c224e78f80f4c1fd66074598",
+              "usageDescription": "Input reference role: copy only the accepted Mountain slate/tan palette, charcoal outline, broad planar shading and quiet terrain detail budget; create a distinct low Stone deposit rather than another mountain or Ore vein."
+            }
+          }
+        }
+      ],
+      "outputSha256": "8d8719bec9de96392e1a205c38b0f74ebff32aaabbae046800ef23744bef2f14",
+      "notes": "Accepted after source, native, enlarged, minimum 0.625x, DPR1/2, hidden/revealed, four-owner, selection, fog, Original/Candy Mountain, 8x8 repetition, and dense-map review. The 256x296 straight-alpha candidate has low alpha x84..171 y142..222 at anchor 128,222: exactly three softly irregular weathered blue-slate/gray boulders. Rounded natural silhouettes remain distinct from angular gold Ore crystals, sharp Mountain peaks, cut Quarry blocks, and selection/status marks; there is no halo, clipping, tool, building cue, noise, or terrain-sized mass.",
+      "reviewedAt": "2026-09-01T15:02:03.527Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-road-material": {
+      "id": "terrain-road-material",
+      "status": "ACCEPTED",
+      "jobId": "4c16caf9-e1d0-42d3-ac86-79c226ec16aa",
+      "candidate": "art/pixellab/candidates/terrain-road-material.png",
+      "candidateSha256": "d0f60535de68afa17fcc39f9fcc6cefd886d45292ad0e3216727c5dca850e84f",
+      "providerOutputSha256": "0aec9e4afc9b2f0f0796fcb0e8f7b930e725aef59b8e9a73c745826332756116",
+      "width": 256,
+      "height": 148,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 14,
+        "top": 1,
+        "right": 239,
+        "bottom": 147,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: uniform muted warm gray-brown compacted earth, very low saturation and medium-low contrast; no cream, gold, blue stripe, green decoration or bright highlight. One edge-to-edge isometric diamond Road MATERIAL INPUT with exact vertices top 128,0 right 256,74 bottom 128,148 left 0,74. Fill the entire diamond with one UNIFORM MATTE muted warm gray-brown compacted-earth color field. No internal marks or separate forms whatsoever: no stroke, line, pebble, track, route, highlight, border or directional feature. This is neutral raw source material that later checked-in code masks into sixteen orthogonal N/E/S/W Road connections; all Road shape and connectivity must come from those masks, never this raster. Transparent outside the diamond, flat illustrated color, seamless compatible edges, no raised thickness. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; internal mark, separate form, blue stroke, gray stroke, pebble, finished road, path, lane, stripe, centerline, directional line, intersection, crossroads, T junction, corner, diagonal route, bridge, cobblestone grid, stones, tire tracks, footprints, grass decoration, flowers, resource, building, unit, ownership mark, selection, status, text, UI, raised slab, side wall, bevel, highlight, edge lighting, border mismatch, white corners, multiple diamonds, tiled pattern, busy texture.",
+        "prompt": "One edge-to-edge isometric diamond Road MATERIAL INPUT with exact vertices top 128,0 right 256,74 bottom 128,148 left 0,74. Fill the entire diamond with one UNIFORM MATTE muted warm gray-brown compacted-earth color field. No internal marks or separate forms whatsoever: no stroke, line, pebble, track, route, highlight, border or directional feature. This is neutral raw source material that later checked-in code masks into sixteen orthogonal N/E/S/W Road connections; all Road shape and connectivity must come from those masks, never this raster. Transparent outside the diamond, flat illustrated color, seamless compatible edges, no raised thickness.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; internal mark, separate form, blue stroke, gray stroke, pebble, finished road, path, lane, stripe, centerline, directional line, intersection, crossroads, T junction, corner, diagonal route, bridge, cobblestone grid, stones, tire tracks, footprints, grass decoration, flowers, resource, building, unit, ownership mark, selection, status, text, UI, raised slab, side wall, bevel, highlight, edge lighting, border mismatch, white corners, multiple diamonds, tiled pattern, busy texture",
+        "requestSize": {
+          "width": 256,
+          "height": 148
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 148
+        },
+        "seed": 73103,
+        "noBackground": true,
+        "palette": "uniform muted warm gray-brown compacted earth, very low saturation and medium-low contrast; no cream, gold, blue stripe, green decoration or bright highlight",
+        "postprocess": "diamond-mask",
+        "styleReference": {
+          "id": "terrain-grass-1",
+          "sha256": "2458b996dcaaa4168a4bf9504bc6a68352cfe780b8e4bf4d83ccaec259849a3b",
+          "usageDescription": "Input reference role: copy only the accepted ground diamond camera, seamless edge behavior, quiet flat terrain shading and broad detail scale; create a neutral Road material field for later deterministic orthogonal masking, not a connected Road layout."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-road-material-7a9196c736a5.png",
+          "candidateSha256": "7a9196c736a5b120af72c06e74da807df984ab8b75f10c707aaee97c3052f16a",
+          "notes": "Rejected after source, native, enlarged, 0.625x, four-edge, owner, dense-map, and 8x8 inspection: the two long parallel blue strokes read as lane/track markings and bake a strong direction into the source. The pale tan full diamond dominates repetition and mixed contexts rather than acting as quiet neutral mask-ready material. Regenerate as a uniform low-saturation warm gray-brown field with no internal route, line, stroke, pebble, or directional cue.",
+          "reviewedAt": "2026-09-01T14:54:29.102Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. One edge-to-edge isometric diamond Road MATERIAL INPUT with exact vertices top 128,0 right 256,74 bottom 128,148 left 0,74. Fill the diamond with one quiet uniform muted parchment-tan compacted-earth material and at most two extremely broad low-contrast slate pebble strokes. This is neutral source material that later checked-in code masks into sixteen orthogonal N/E/S/W Road connections, so it must have no route, direction, centerline, edge, intersection or baked neighbor layout. Transparent outside the diamond, simple flat illustrated color, seamless compatible edges, no raised thickness. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; finished road, path, lane, stripe, centerline, directional line, intersection, crossroads, T junction, corner, diagonal route, bridge, cobblestone grid, many pebbles, tire tracks, footprints, grass decoration, flowers, resource, building, unit, ownership mark, selection, status, text, UI, raised slab, side wall, bevel, edge lighting, border mismatch, white corners, multiple diamonds, tiled pattern, busy texture.",
+            "prompt": "One edge-to-edge isometric diamond Road MATERIAL INPUT with exact vertices top 128,0 right 256,74 bottom 128,148 left 0,74. Fill the diamond with one quiet uniform muted parchment-tan compacted-earth material and at most two extremely broad low-contrast slate pebble strokes. This is neutral source material that later checked-in code masks into sixteen orthogonal N/E/S/W Road connections, so it must have no route, direction, centerline, edge, intersection or baked neighbor layout. Transparent outside the diamond, simple flat illustrated color, seamless compatible edges, no raised thickness.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; finished road, path, lane, stripe, centerline, directional line, intersection, crossroads, T junction, corner, diagonal route, bridge, cobblestone grid, many pebbles, tire tracks, footprints, grass decoration, flowers, resource, building, unit, ownership mark, selection, status, text, UI, raised slab, side wall, bevel, edge lighting, border mismatch, white corners, multiple diamonds, tiled pattern, busy texture",
+            "requestSize": {
+              "width": 256,
+              "height": 148
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 148
+            },
+            "seed": 63103,
+            "noBackground": true,
+            "postprocess": "diamond-mask",
+            "styleReference": {
+              "id": "terrain-grass-1",
+              "sha256": "2458b996dcaaa4168a4bf9504bc6a68352cfe780b8e4bf4d83ccaec259849a3b",
+              "usageDescription": "Input reference role: copy only the accepted ground diamond camera, seamless edge behavior, quiet flat terrain shading and broad detail scale; create a neutral Road material field for later deterministic orthogonal masking, not a connected Road layout."
+            }
+          }
+        }
+      ],
+      "outputSha256": "d0f60535de68afa17fcc39f9fcc6cefd886d45292ad0e3216727c5dca850e84f",
+      "notes": "Accepted as the quiet raw material input only after source, native, enlarged, minimum 0.625x, DPR1/2, four-edge, four-owner, selection, fog, Original/Candy Grass/Forest/Mountain, 8x8 repetition, and dense coexistence review. The 256x148 straight-alpha candidate is a deterministic diamond-masked uniform matte warm gray-brown field with alpha x14..239 y1..147 at anchor 128,74. It contains no line, track, pebble, route, centerline, edge, intersection, direction, baked neighbor layout, halo, or noise; Fruit, GAME/Forest, Ore/Mountain, Mine, Camp, Wall, and units remain legible. Orthogonal mask composition remains deferred to phg.12.",
+      "reviewedAt": "2026-09-01T15:02:42.896Z",
       "reviewChecks": {
         "source": true,
         "native": true,

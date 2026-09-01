@@ -45,10 +45,12 @@ interface Recipe {
   readonly groundContactY?: number;
   readonly projectileOrigin?: { readonly x: number; readonly y: number };
   readonly palette?: string;
+  readonly preferredBounds?: Bounds;
   readonly postprocess?:
     | "diamond-mask"
     | "diamond-mask-reference-edges"
     | "reference-rotate-180-diamond"
+    | "preferred-low-marker-fit"
     | "lanczos3-resize";
   readonly includeFactionLanguage?: boolean;
   readonly requestNoBackground?: boolean;
@@ -521,6 +523,15 @@ function validateSourceManifest(
     anchor: { x: 128, y: 74 },
     hardBounds: { left: 0, top: 0, right: 256, bottom: 148 },
   });
+  for (const id of ["terrain-fertile-ground", "terrain-stone"] as const) {
+    const recipe = source.recipes.find((candidate) => candidate.id === id);
+    if (
+      recipe?.postprocess !== "preferred-low-marker-fit" ||
+      JSON.stringify(recipe.preferredBounds) !==
+        JSON.stringify({ left: 56, top: 142, right: 200, bottom: 230 })
+    )
+      throw new Error(`Preferred low-marker bounds mismatch for ${id}`);
+  }
   const gameAlias = source.aliases?.find(
     (alias) => alias.id === "terrain-game",
   );
@@ -1101,16 +1112,24 @@ async function normalizeToHardBounds(
   recipe: Recipe,
 ): Promise<void> {
   let inspection = await inspectPng(destination);
+  const targetBounds =
+    recipe.postprocess === "preferred-low-marker-fit"
+      ? (recipe.preferredBounds ?? recipe.hardBounds)
+      : recipe.hardBounds;
   const fitBounds =
     recipe.groundContactY === undefined
-      ? recipe.hardBounds
-      : { ...recipe.hardBounds, bottom: recipe.groundContactY };
+      ? targetBounds
+      : { ...targetBounds, bottom: recipe.groundContactY };
   const alphaWidth = inspection.alphaBounds.right - inspection.alphaBounds.left;
   const alphaHeight =
     inspection.alphaBounds.bottom - inspection.alphaBounds.top;
   const hardWidth = fitBounds.right - fitBounds.left;
   const hardHeight = fitBounds.bottom - fitBounds.top;
-  if (alphaWidth > hardWidth || alphaHeight > hardHeight) {
+  if (
+    recipe.postprocess === "preferred-low-marker-fit" ||
+    alphaWidth > hardWidth ||
+    alphaHeight > hardHeight
+  ) {
     const contained = await sharp(await readFile(destination))
       .trim({ background: "#00000000" })
       .resize({
@@ -1140,7 +1159,7 @@ async function normalizeToHardBounds(
     await writeFile(destination, canvas);
     inspection = await inspectPng(destination);
   }
-  const shift = shiftIntoBounds(inspection.alphaBounds, recipe.hardBounds);
+  const shift = shiftIntoBounds(inspection.alphaBounds, targetBounds);
   if (shift.x !== 0 || shift.y !== 0)
     await translatePng(
       destination,

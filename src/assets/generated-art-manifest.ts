@@ -33,6 +33,13 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   "terrain-forest-3": publicArtUrl("assets/pixellab/terrain/forest-3.png"),
   "terrain-forest-4": publicArtUrl("assets/pixellab/terrain/forest-4.png"),
   "terrain-animal": publicArtUrl("assets/pixellab/terrain/animal.png"),
+  "terrain-fertile-ground": publicArtUrl(
+    "assets/pixellab/terrain/fertile-ground.png",
+  ),
+  "terrain-stone": publicArtUrl("assets/pixellab/terrain/stone.png"),
+  "terrain-road-material": publicArtUrl(
+    "assets/pixellab/terrain/road-material.png",
+  ),
   "terrain-candy-grass-1": publicArtUrl(
     "assets/pixellab/terrain/candy-grass-1.png",
   ),

@@ -28,6 +28,12 @@ interface RecordEntry {
   readonly candidateSha256?: string;
   readonly alphaBounds?: Bounds & { readonly empty?: boolean };
   readonly reviewChecks?: Readonly<Record<string, boolean>>;
+  readonly notes?: string;
+  readonly rejectedAttempts?: readonly {
+    readonly candidate: string;
+    readonly candidateSha256?: string;
+    readonly notes?: string;
+  }[];
 }
 
 interface Alias {
@@ -53,6 +59,8 @@ const sampleIds = [
 const requiredArtifacts = [
   "sample-gate-source-native-enlarged-minimum.png",
   "compatible-contexts-and-four-edges.png",
+  "faction-terrain-and-visibility-contexts.png",
+  "semantic-collision-minimum-zoom.png",
   "repetition-8x8.png",
   "dense-mixed-map-dpr1.png",
   "dense-mixed-map-dpr2.png",
@@ -64,17 +72,18 @@ const gameContexts = [
   "occupied GAME on Forest",
   "locked GAME on Forest",
   "selected GAME on Forest",
+  "hunted GAME removed while Forest remains",
   "repeated GAME/empty Forest",
 ] as const;
 const requiredCoverage = [
   "source, native, enlarged and minimum 0.625x zoom",
   "DPR 1 and DPR 2 at identical CSS size",
-  "compatible Grass, Forest and Mountain variants",
+  "compatible Original and Candy Grass, Forest and Mountain variants",
   "all owner treatments, selection and fog boundaries",
   "Road material against all four diamond edges without composing Road masks",
   "8x8 deterministic repetition",
   "dense mixed terrain/resource/improvement contexts",
-  "GAME alias label in empty, occupied, locked, selected and repeated Forest contexts",
+  "GAME alias label in empty, occupied, locked, selected, hunted and repeated Forest contexts",
 ] as const;
 
 const source = JSON.parse(
@@ -103,6 +112,8 @@ if (availableSamples.length > 0)
   );
 if (availableSamples.length === sampleIds.length) {
   await compatibleContexts();
+  await factionTerrainAndVisibilityContexts();
+  await semanticCollisionMinimumZoom();
   await repetition();
   const dpr1 = await denseMixedMap(1);
   const dpr2 = await denseMixedMap(2);
@@ -242,7 +253,14 @@ async function gameAliasContexts(): Promise<void> {
       top: 8,
     },
   ];
-  const contexts = ["EMPTY", "GAME", "OCCUPIED", "LOCKED", "SELECTED"] as const;
+  const contexts = [
+    "EMPTY",
+    "GAME",
+    "OCCUPIED",
+    "LOCKED",
+    "SELECTED",
+    "HUNTED",
+  ] as const;
   for (const [row, context] of contexts.entries()) {
     overlays.push({
       input: rowLabel(context, 112, cellHeight),
@@ -265,7 +283,7 @@ async function gameAliasContexts(): Promise<void> {
         left: center.x - 64,
         top: center.y - 88,
       });
-      if (context !== "EMPTY")
+      if (context !== "EMPTY" && context !== "HUNTED")
         overlays.push({ input: game, left: center.x - 64, top: center.y - 88 });
       if (context === "OCCUPIED")
         overlays.push({ input: unit, left: center.x - 45, top: center.y - 78 });
@@ -294,7 +312,7 @@ async function gameAliasContexts(): Promise<void> {
   overlays.push({
     input: rowLabel("REPEATED", 180, 90),
     left: 0,
-    top: 974,
+    top: 1146,
   });
   const smallGrass = await sharp(grass)
     .resize({ width: 80, height: 46, fit: "fill" })
@@ -317,7 +335,7 @@ async function gameAliasContexts(): Promise<void> {
     readonly depth: number;
     readonly overlay: OverlayOptions;
   }> = [];
-  const repeatedOrigin = { x: 710, y: 950 };
+  const repeatedOrigin = { x: 710, y: 1122 };
   for (let y = 0; y < 8; y += 1)
     for (let x = 0; x < 8; x += 1) {
       const center = mapCenter(repeatedOrigin, x, y, 0.625);
@@ -354,7 +372,7 @@ async function gameAliasContexts(): Promise<void> {
     ...repeatedFronts.map(({ overlay }) => overlay),
   );
   await sharp({
-    create: { width, height: 1300, channels: 4, background: "#203332" },
+    create: { width, height: 1472, channels: 4, background: "#203332" },
   })
     .composite(overlays)
     .png()
@@ -456,10 +474,10 @@ async function compatibleContexts(): Promise<void> {
   }
   const edgeOrigin = { x: 260, y: 660 };
   const pairs = [
-    [0, -1],
-    [1, 0],
-    [0, 1],
-    [-1, 0],
+    [1, -1],
+    [1, 1],
+    [-1, 1],
+    [-1, -1],
   ] as const;
   for (const [index, [dx, dy]] of pairs.entries()) {
     const center = { x: edgeOrigin.x + index * 240, y: edgeOrigin.y };
@@ -539,6 +557,359 @@ async function repetition(): Promise<void> {
     ])
     .png()
     .toFile(path.join(reviewRoot, "repetition-8x8.png"));
+}
+
+async function factionTerrainAndVisibilityContexts(): Promise<void> {
+  const width = 1560;
+  const cellWidth = 240;
+  const rowHeight = 210;
+  const grass = await Promise.all(
+    [1, 2, 3, 4].map((variant) =>
+      display(`terrain-grass-${variant}`, 128, 74, true),
+    ),
+  );
+  const candyGrass = await Promise.all(
+    [1, 2, 3, 4].map((variant) =>
+      display(`terrain-candy-grass-${variant}`, 128, 74, true),
+    ),
+  );
+  const forests = await Promise.all(
+    [1, 2, 3, 4].map((variant) =>
+      display(`terrain-forest-${variant}`, 128, 148, true),
+    ),
+  );
+  const candyForests = await Promise.all(
+    [1, 2, 3, 4].map((variant) =>
+      display(`terrain-candy-forest-${variant}`, 128, 148, true),
+    ),
+  );
+  const mountains = await Promise.all(
+    [1, 2, 3].map((variant) =>
+      display(`terrain-mountain-${variant}`, 108, 124, true),
+    ),
+  );
+  const candyMountains = await Promise.all(
+    [1, 2, 3].map((variant) =>
+      display(`terrain-candy-mountain-${variant}`, 108, 124, true),
+    ),
+  );
+  const fertile = await display("terrain-fertile-ground", 128, 148);
+  const stone = await display("terrain-stone", 128, 148);
+  const road = await display("terrain-road-material", 128, 74);
+  const overlays: OverlayOptions[] = [
+    {
+      input: title(
+        "V6 terrain · Original/Candy compatibility and technology visibility",
+        width,
+      ),
+      left: 0,
+      top: 8,
+    },
+  ];
+
+  const visibilityCells = [
+    { label: "Original Fertile hidden", base: grass[0], marker: null },
+    { label: "Original Fertile revealed", base: grass[1], marker: fertile },
+    { label: "Candy Fertile hidden", base: candyGrass[0], marker: null },
+    { label: "Candy Fertile revealed", base: candyGrass[1], marker: fertile },
+    {
+      label: "Original Stone hidden",
+      base: grass[2],
+      marker: null,
+      mountain: mountains[0],
+    },
+    {
+      label: "Original Stone revealed",
+      base: grass[3],
+      marker: stone,
+      mountain: mountains[1],
+    },
+    {
+      label: "Candy Stone hidden",
+      base: candyGrass[2],
+      marker: null,
+      mountain: candyMountains[0],
+    },
+    {
+      label: "Candy Stone revealed",
+      base: candyGrass[3],
+      marker: stone,
+      mountain: candyMountains[1],
+    },
+  ] as const;
+  for (const [index, context] of visibilityCells.entries()) {
+    const column = index % 4;
+    const row = Math.floor(index / 4);
+    const center = { x: 180 + column * 390, y: 145 + row * rowHeight };
+    if (context.base !== undefined)
+      overlays.push({
+        input: context.base,
+        left: center.x - 64,
+        top: center.y - 37,
+      });
+    if ("mountain" in context && context.mountain !== undefined)
+      overlays.push({
+        input: context.mountain,
+        left: center.x - 54,
+        top: center.y - 75,
+      });
+    if (context.marker !== null)
+      overlays.push({
+        input: context.marker,
+        left: center.x - 64,
+        top: center.y - 111,
+      });
+    overlays.push({
+      input: ownershipOverlay(index % 4, 128, 74),
+      left: center.x - 64,
+      top: center.y - 37,
+    });
+    overlays.push({
+      input: columnLabel(context.label, 300),
+      left: center.x - 150,
+      top: center.y + 82,
+    });
+  }
+
+  const roadColumns = [
+    "Original Grass",
+    "Candy Grass",
+    "Original Forest",
+    "Candy Forest",
+    "Original Mountain",
+    "Candy Mountain",
+  ] as const;
+  for (const [column, heading] of roadColumns.entries())
+    overlays.push({
+      input: columnLabel(heading, cellWidth),
+      left: 60 + column * cellWidth,
+      top: 500,
+    });
+  for (let variant = 0; variant < 4; variant += 1) {
+    const rowTop = 560 + variant * rowHeight;
+    const contextImages = [
+      null,
+      null,
+      requiredAt(forests, variant, "Original Forest"),
+      requiredAt(candyForests, variant, "Candy Forest"),
+      requiredAt(mountains, variant % 3, "Original Mountain"),
+      requiredAt(candyMountains, variant % 3, "Candy Mountain"),
+    ] as const;
+    for (let column = 0; column < roadColumns.length; column += 1) {
+      const center = { x: 180 + column * cellWidth, y: rowTop + 72 };
+      overlays.push({ input: road, left: center.x - 64, top: center.y - 37 });
+      const object = requiredAt(contextImages, column, "Road context");
+      if (object !== null)
+        overlays.push({
+          input: object,
+          left: center.x - (column >= 4 ? 54 : 64),
+          top: center.y - (column >= 4 ? 75 : 88),
+        });
+      overlays.push({
+        input: ownershipOverlay((variant + column) % 4, 128, 74),
+        left: center.x - 64,
+        top: center.y - 37,
+      });
+      if ((variant + column) % 5 === 0)
+        overlays.push({
+          input: selectionDiamond(128, 74),
+          left: center.x - 64,
+          top: center.y - 37,
+        });
+      overlays.push({
+        input: columnLabel(`variant ${variant + 1}`, cellWidth),
+        left: 60 + column * cellWidth,
+        top: center.y + 87,
+      });
+    }
+  }
+  const fogCenter = { x: 1380, y: 1410 };
+  overlays.push({
+    input: requiredAt(candyGrass, 3, "Candy Grass fog context"),
+    left: fogCenter.x - 64,
+    top: fogCenter.y - 37,
+  });
+  overlays.push({ input: road, left: fogCenter.x - 64, top: fogCenter.y - 37 });
+  overlays.push({
+    input: requiredAt(candyForests, 3, "Candy Forest fog context"),
+    left: fogCenter.x - 64,
+    top: fogCenter.y - 88,
+  });
+  overlays.push({
+    input: fogDiamond(128, 74),
+    left: fogCenter.x - 64,
+    top: fogCenter.y - 37,
+  });
+  overlays.push({
+    input: columnLabel("fog withholds Road + Candy Forest", 300),
+    left: fogCenter.x - 150,
+    top: fogCenter.y + 75,
+  });
+
+  await sharp({
+    create: { width, height: 1570, channels: 4, background: "#263b3a" },
+  })
+    .composite(overlays)
+    .png()
+    .toFile(
+      path.join(reviewRoot, "faction-terrain-and-visibility-contexts.png"),
+    );
+}
+
+async function semanticCollisionMinimumZoom(): Promise<void> {
+  const width = 1540;
+  const grass = await display("terrain-grass-2", 80, 46, true);
+  const candyGrass = await display("terrain-candy-grass-2", 80, 46, true);
+  const mountain = await display("terrain-mountain-2", 68, 78, true);
+  const candyMountain = await display("terrain-candy-mountain-2", 68, 78, true);
+  const forest = await display("terrain-forest-2", 80, 93, true);
+  const fertile = await display("terrain-fertile-ground", 80, 93);
+  const stone = await display("terrain-stone", 80, 93);
+  const road = await display("terrain-road-material", 80, 46);
+  const fruit = await display("terrain-fruit", 80, 93, true);
+  const animal = await display("terrain-animal", 80, 93, true);
+  const ore = await display("terrain-ore", 80, 46, true);
+  const mine = await display("building-mine", 80, 93, true);
+  const lumber = await display("building-lumber-mill", 80, 93, true);
+  const wall = await display("building-chocolate-wall", 80, 93, true);
+  const unit = await display("unit-warrior", 56, 65, true);
+  const overlays: OverlayOptions[] = [
+    {
+      input: title(
+        "Minimum 0.625x semantic collision and Road coexistence review",
+        width,
+      ),
+      left: 0,
+      top: 8,
+    },
+  ];
+  const cellWidth = 190;
+  const rowHeight = 190;
+
+  const fertileCells = [
+    { label: "Fertile", base: grass, fronts: [fertile] },
+    { label: "Fruit", base: grass, fronts: [fruit] },
+    {
+      label: "selection only",
+      base: grass,
+      fronts: [selectionDiamond(80, 46)],
+    },
+    { label: "Candy + Fertile", base: candyGrass, fronts: [fertile] },
+    {
+      label: "Fertile selected",
+      base: grass,
+      fronts: [fertile, selectionDiamond(80, 46)],
+    },
+  ] as const;
+  for (const [index, cell] of fertileCells.entries()) {
+    const center = { x: 180 + index * 285, y: 155 };
+    overlays.push({
+      input: cell.base,
+      left: center.x - 40,
+      top: center.y - 23,
+    });
+    for (const front of cell.fronts)
+      overlays.push({
+        input: front,
+        left: center.x - 40,
+        top: center.y - (front === fertile || front === fruit ? 70 : 23),
+      });
+    overlays.push({
+      input: columnLabel(cell.label, 220),
+      left: center.x - 110,
+      top: center.y + 72,
+    });
+  }
+
+  const stoneCells = [
+    {
+      label: "Stone on Mountain",
+      base: grass,
+      terrain: mountain,
+      marker: stone,
+    },
+    { label: "Ore on Mountain", base: grass, terrain: mountain, marker: ore },
+    { label: "empty Mountain", base: grass, terrain: mountain, marker: null },
+    {
+      label: "Candy + Stone",
+      base: candyGrass,
+      terrain: candyMountain,
+      marker: stone,
+    },
+    {
+      label: "Stone selected",
+      base: grass,
+      terrain: mountain,
+      marker: stone,
+      selected: true,
+    },
+  ] as const;
+  for (const [index, cell] of stoneCells.entries()) {
+    const center = { x: 180 + index * 285, y: 155 + rowHeight };
+    overlays.push({
+      input: cell.base,
+      left: center.x - 40,
+      top: center.y - 23,
+    });
+    overlays.push({
+      input: cell.terrain,
+      left: center.x - 34,
+      top: center.y - 47,
+    });
+    if (cell.marker !== null)
+      overlays.push({
+        input: cell.marker,
+        left: center.x - 40,
+        top: center.y - (cell.label.includes("Ore") ? 23 : 70),
+      });
+    if ("selected" in cell)
+      overlays.push({
+        input: selectionDiamond(80, 46),
+        left: center.x - 40,
+        top: center.y - 23,
+      });
+    overlays.push({
+      input: columnLabel(cell.label, 220),
+      left: center.x - 110,
+      top: center.y + 72,
+    });
+  }
+
+  const roadCells = [
+    { label: "Road + Fruit", fronts: [fruit] },
+    { label: "Road + GAME/Forest", fronts: [forest, animal] },
+    { label: "Road + Ore/Mountain", fronts: [mountain, ore] },
+    { label: "Road + Mine", fronts: [mine] },
+    { label: "Road + Camp/Forest", fronts: [forest, lumber] },
+    { label: "Road + Wall", fronts: [wall] },
+    { label: "Road + unit", fronts: [unit] },
+  ] as const;
+  for (const [index, cell] of roadCells.entries()) {
+    const center = { x: 110 + index * 215, y: 155 + rowHeight * 2 };
+    overlays.push({ input: road, left: center.x - 40, top: center.y - 23 });
+    for (const front of cell.fronts) {
+      const smallUnit = front === unit;
+      const low = front === ore;
+      const smallMountain = front === mountain;
+      overlays.push({
+        input: front,
+        left: center.x - (smallUnit ? 28 : smallMountain ? 34 : 40),
+        top: center.y - (smallUnit ? 49 : low ? 23 : smallMountain ? 47 : 70),
+      });
+    }
+    overlays.push({
+      input: columnLabel(cell.label, cellWidth),
+      left: center.x - cellWidth / 2,
+      top: center.y + 75,
+    });
+  }
+
+  await sharp({
+    create: { width, height: 710, channels: 4, background: "#263b3a" },
+  })
+    .composite(overlays)
+    .png()
+    .toFile(path.join(reviewRoot, "semantic-collision-minimum-zoom.png"));
 }
 
 async function denseMixedMap(scale: number): Promise<Buffer> {
@@ -759,6 +1130,13 @@ async function evidence(): Promise<void> {
           outputSha256: record?.outputSha256 ?? null,
           alphaBounds: record?.alphaBounds ?? null,
           reviewChecks: record?.reviewChecks ?? null,
+          visualFindings: record?.notes ?? null,
+          rejectedAttempts:
+            record?.rejectedAttempts?.map((attempt) => ({
+              candidate: attempt.candidate,
+              candidateSha256: attempt.candidateSha256 ?? null,
+              reason: attempt.notes ?? null,
+            })) ?? [],
         },
       ];
     }),
@@ -778,7 +1156,7 @@ async function evidence(): Promise<void> {
           : "BLOCKED_MISSING_GENERATION",
         blocker: allAccepted
           ? null
-          : "PIXELLAB_API_KEY is missing; no v6 terrain candidates were generated or accepted.",
+          : "The v6 terrain sample gate is pending individual candidate review and acceptance.",
         displayContracts: {
           sourceScale: 2,
           zooms: [0.625, 1, 1.75],
@@ -806,6 +1184,7 @@ async function evidence(): Promise<void> {
             "The broad tan boar silhouette, snout and tusks read as wildlife rather than a unit on all four accepted Forest variants.",
             "GAME remains identifiable beside all four owner treatments, under selection, and with locked-action UI kept separate from the world raster.",
             "The exact nominal occupied composition leaves the boar frontage readable around the accepted Archer without changing the source anchor.",
+            "The hunted state removes only GAME while preserving the exact accepted Forest canopy and owner treatment.",
             "The 8x8 minimum-zoom repetition remains distinguishable from empty Forest while preserving the existing quiet terrain hierarchy.",
           ],
           notes: alias?.notes ?? null,

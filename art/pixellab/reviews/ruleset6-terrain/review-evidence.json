@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "purpose": "Ruleset 6 Fertile Ground, Stone, Road material sample gate and GAME alias review",
-  "status": "BLOCKED_MISSING_GENERATION",
-  "blocker": "PIXELLAB_API_KEY is missing; no v6 terrain candidates were generated or accepted.",
+  "status": "READY_FOR_ORCHESTRATOR_REVIEW",
+  "blocker": null,
   "displayContracts": {
     "sourceScale": 2,
     "zooms": [
@@ -18,44 +18,102 @@
   "requiredCoverage": [
     "source, native, enlarged and minimum 0.625x zoom",
     "DPR 1 and DPR 2 at identical CSS size",
-    "compatible Grass, Forest and Mountain variants",
+    "compatible Original and Candy Grass, Forest and Mountain variants",
     "all owner treatments, selection and fog boundaries",
     "Road material against all four diamond edges without composing Road masks",
     "8x8 deterministic repetition",
     "dense mixed terrain/resource/improvement contexts",
-    "GAME alias label in empty, occupied, locked, selected and repeated Forest contexts"
+    "GAME alias label in empty, occupied, locked, selected, hunted and repeated Forest contexts"
   ],
   "sampleGate": {
     "terrain-fertile-ground": {
-      "status": "MISSING",
-      "candidateSha256": null,
-      "outputSha256": null,
-      "alphaBounds": null,
-      "reviewChecks": null
+      "status": "ACCEPTED",
+      "candidateSha256": "97545314656cee7b83d0744309086051f1d520957d0b982ff5e5515cba4adc6b",
+      "outputSha256": "97545314656cee7b83d0744309086051f1d520957d0b982ff5e5515cba4adc6b",
+      "alphaBounds": {
+        "left": 56,
+        "top": 144,
+        "right": 200,
+        "bottom": 222,
+        "empty": false
+      },
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      },
+      "visualFindings": "Accepted after source, native, enlarged, minimum 0.625x, DPR1/2, hidden/revealed, four-owner, selection, fog, Original/Candy Grass, 8x8 repetition, and dense-map review. The 256x296 straight-alpha candidate has compact alpha x56..200 y144..222 at anchor 128,222: one low matte irregular dark-loam patch with two small sprouts. It remains distinct from bright Fruit, Farm-like rows or structures, ownership borders, and the diamond selection overlay; it has no halo, clipping, noise, text, status mark, or terrain-sized mass.",
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-fertile-ground-a5b18cfc362f.png",
+          "candidateSha256": "a5b18cfc362f726bfadda6230a39c66be9254dfa5bedae27f71ead83135d1dba",
+          "reason": "Rejected after source, native, enlarged, and 0.625x inspection: alpha x52..203 y112..222 is 151x110 and reaches the hard-limit top; the three large outlined mounds plus tall sprouts read as a planted garden mass rather than the required low persistent uncultivated marker. Silhouette must be shorter, quieter, and kept near preferred x56..200 y142..230 without Farm/selection/ownership cues."
+        },
+        {
+          "candidate": "art/pixellab/quarantine/terrain-fertile-ground-adfc932e8703.png",
+          "candidateSha256": "adfc932e8703e11d063378893b16e427094b5f13f87cd9fd21c7c556810c11de",
+          "reason": "Rejected after source, native, enlarged, and 0.625x inspection: alpha x39..217 y112..222 is 178x110, wider than the preferred marker footprint and again reaches the hard-limit top. Pale glossy fused lobes read as icing or arranged plots rather than dark uncultivated loam. Regenerate with dark matte earth, subtler sprouts, and deterministic preferred-bounds fitting."
+        }
+      ]
     },
     "terrain-stone": {
-      "status": "MISSING",
-      "candidateSha256": null,
-      "outputSha256": null,
-      "alphaBounds": null,
-      "reviewChecks": null
+      "status": "ACCEPTED",
+      "candidateSha256": "8d8719bec9de96392e1a205c38b0f74ebff32aaabbae046800ef23744bef2f14",
+      "outputSha256": "8d8719bec9de96392e1a205c38b0f74ebff32aaabbae046800ef23744bef2f14",
+      "alphaBounds": {
+        "left": 84,
+        "top": 142,
+        "right": 171,
+        "bottom": 222,
+        "empty": false
+      },
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      },
+      "visualFindings": "Accepted after source, native, enlarged, minimum 0.625x, DPR1/2, hidden/revealed, four-owner, selection, fog, Original/Candy Mountain, 8x8 repetition, and dense-map review. The 256x296 straight-alpha candidate has low alpha x84..171 y142..222 at anchor 128,222: exactly three softly irregular weathered blue-slate/gray boulders. Rounded natural silhouettes remain distinct from angular gold Ore crystals, sharp Mountain peaks, cut Quarry blocks, and selection/status marks; there is no halo, clipping, tool, building cue, noise, or terrain-sized mass.",
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-stone-fa1714776acf.png",
+          "candidateSha256": "fa1714776acf9977596d5a7c965f6ca7bcc33469b70d2826b12338ef95a95a40",
+          "reason": "Rejected after source, native, enlarged, and 0.625x inspection: compact alpha x75..181 y142..222 passes preferred geometry and is distinct from Ore crystals, but three squared pieces with pale flat tops and planar vertical sides read as quarried/cut masonry or a completed Quarry. Stone must be naturally weathered low boulders with irregular rounded silhouettes and no manufactured faces."
+        }
+      ]
     },
     "terrain-road-material": {
-      "status": "MISSING",
-      "candidateSha256": null,
-      "outputSha256": null,
-      "alphaBounds": null,
-      "reviewChecks": null
+      "status": "ACCEPTED",
+      "candidateSha256": "d0f60535de68afa17fcc39f9fcc6cefd886d45292ad0e3216727c5dca850e84f",
+      "outputSha256": "d0f60535de68afa17fcc39f9fcc6cefd886d45292ad0e3216727c5dca850e84f",
+      "alphaBounds": {
+        "left": 14,
+        "top": 1,
+        "right": 239,
+        "bottom": 147,
+        "empty": false
+      },
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      },
+      "visualFindings": "Accepted as the quiet raw material input only after source, native, enlarged, minimum 0.625x, DPR1/2, four-edge, four-owner, selection, fog, Original/Candy Grass/Forest/Mountain, 8x8 repetition, and dense coexistence review. The 256x148 straight-alpha candidate is a deterministic diamond-masked uniform matte warm gray-brown field with alpha x14..239 y1..147 at anchor 128,74. It contains no line, track, pebble, route, centerline, edge, intersection, direction, baked neighbor layout, halo, or noise; Fruit, GAME/Forest, Ore/Mountain, Mine, Camp, Wall, and units remain legible. Orthogonal mask composition remains deferred to phg.12.",
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-road-material-7a9196c736a5.png",
+          "candidateSha256": "7a9196c736a5b120af72c06e74da807df984ab8b75f10c707aaee97c3052f16a",
+          "reason": "Rejected after source, native, enlarged, 0.625x, four-edge, owner, dense-map, and 8x8 inspection: the two long parallel blue strokes read as lane/track markings and bake a strong direction into the source. The pale tan full diamond dominates repetition and mixed contexts rather than acting as quiet neutral mask-ready material. Regenerate as a uniform low-saturation warm gray-brown field with no internal route, line, stroke, pebble, or directional cue."
+        }
+      ]
     }
   },
-  "pendingArtifacts": [
-    "sample-gate-source-native-enlarged-minimum.png",
-    "compatible-contexts-and-four-edges.png",
-    "repetition-8x8.png",
-    "dense-mixed-map-dpr1.png",
-    "dense-mixed-map-dpr2.png",
-    "dpr1-dpr2-comparison.png"
-  ],
+  "pendingArtifacts": [],
   "gameAlias": {
     "id": "terrain-game",
     "semanticRole": "GAME",
@@ -68,12 +126,14 @@
       "occupied GAME on Forest",
       "locked GAME on Forest",
       "selected GAME on Forest",
+      "hunted GAME removed while Forest remains",
       "repeated GAME/empty Forest"
     ],
     "visualFindings": [
       "The broad tan boar silhouette, snout and tusks read as wildlife rather than a unit on all four accepted Forest variants.",
       "GAME remains identifiable beside all four owner treatments, under selection, and with locked-action UI kept separate from the world raster.",
       "The exact nominal occupied composition leaves the boar frontage readable around the accepted Archer without changing the source anchor.",
+      "The hunted state removes only GAME while preserving the exact accepted Forest canopy and owner treatment.",
       "The 8x8 minimum-zoom repetition remains distinguishable from empty Forest while preserving the existing quiet terrain hierarchy."
     ],
     "notes": "Ruleset 6 GAME deliberately reuses the accepted Animal world raster after dedicated label and Forest-context revalidation; this is one art asset, not duplicated gameplay art."
@@ -81,13 +141,53 @@
   "artifacts": [
     {
       "path": "art/pixellab/reviews/ruleset6-terrain/README.md",
-      "sha256": "43b3ff321e7277b257fbc1334b6520ad5b1ce0a9f072711be61af77ae7967f8e",
-      "bytes": 1822
+      "sha256": "86b9125088369cc8a7a8bcf46ce7df468f094d54ffc9be50465fd91c6c5f1c3b",
+      "bytes": 3211
     },
     {
       "path": "art/pixellab/reviews/ruleset6-terrain/game-alias-forest-contexts.png",
-      "sha256": "34fa3fa2f5238ba25661abcc01907c4421672d8abab73e6f540e77688553b0fe",
-      "bytes": 498489
+      "sha256": "73e235112b0f8cd0b427b3ae5a403b7836435cd58e6cb6151fa6924ffa36a4c9",
+      "bytes": 559705
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-terrain/sample-gate-source-native-enlarged-minimum.png",
+      "sha256": "bb5a528644a96f4e5eea828af7ab1fd9bbdfdf4476a3ec93efabbc6a90cdf0ad",
+      "bytes": 97856
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-terrain/compatible-contexts-and-four-edges.png",
+      "sha256": "08d73c9b2ea189a9e2a94910623c509a9b63c25af7c8b3ffc3e381a4773233c1",
+      "bytes": 179343
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-terrain/faction-terrain-and-visibility-contexts.png",
+      "sha256": "766c7b4f5a961ecf5af2bb3ab3758ce4efc345d6ea43ef356c189b509878b5a6",
+      "bytes": 393141
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-terrain/semantic-collision-minimum-zoom.png",
+      "sha256": "6dbd3ad44c9d311bf9fb7072e3742fd2e37266bb2d84654cf5dcc750b20a9a9a",
+      "bytes": 118784
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-terrain/repetition-8x8.png",
+      "sha256": "9905c3e28eb02fa1123631b61ba4c10d6a64c2e70b51431d8d11fd6b0e70ab29",
+      "bytes": 134990
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-terrain/dense-mixed-map-dpr1.png",
+      "sha256": "7c3959776e585279a3e0c7ae354cac25dfe06939eb440a4f86bed33261ddea9c",
+      "bytes": 537156
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-terrain/dense-mixed-map-dpr2.png",
+      "sha256": "7b8b11e853a7d9c428112686bcaf433aefbab0ef1eff4dbf66ee0603e0cf1c0b",
+      "bytes": 807350
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-terrain/dpr1-dpr2-comparison.png",
+      "sha256": "254f34dc9e4b11b43a5d83c278d486c380b16f312421e1e8582be9f41489760b",
+      "bytes": 372611
     }
   ]
 }
