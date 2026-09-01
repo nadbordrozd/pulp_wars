@@ -158,7 +158,7 @@ async function main(): Promise<void> {
 
   if (command === "credentials") {
     const name = source.provider.credentialEnvironmentVariable;
-    console.log(`${name}: ${process.env[name] ? "present" : "missing"}`);
+    console.log(`${name}: ${process.env[name] ? "configured" : "missing"}`);
     return;
   }
   if (command === "snapshot") {
