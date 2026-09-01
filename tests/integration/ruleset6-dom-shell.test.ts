@@ -921,6 +921,20 @@ describe("playable ruleset-6 DOM shell", () => {
     expect(host.destroyCalls).toBe(1);
   });
 
+  it("applies the system high-contrast preference without touching the public match boundary", () => {
+    const view = publicView("ORIGINAL");
+    const fake = new FakeController(view, []);
+    const before = fake.snapshot();
+    const app = new Ruleset6DomAppView(document, requireElement("#app"), fake, {
+      boardHost: new FakeBoardHostV6(),
+      prefersHighContrast: true,
+    });
+    expect(requireElement("#app").dataset.contrast).toBe("high");
+    expect(fake.snapshot()).toEqual(before);
+    expect(fake.dispatch).not.toHaveBeenCalled();
+    app.destroy();
+  });
+
   it("queues only accepted public ranged events, locks input, and drains by key", async () => {
     const initial = publicView("ORIGINAL");
     const baseAttacker = initial.units.find(
@@ -944,6 +958,7 @@ describe("playable ruleset-6 DOM shell", () => {
       unitId: attacker.id,
       target: { kind: "UNIT", unitId: defender.id },
     } as const satisfies CommandV6;
+    const end = { kind: "END_TURN" } as const satisfies CommandV6;
     const event = {
       kind: "COMBAT_RESOLVED",
       preview: {
@@ -968,6 +983,7 @@ describe("playable ruleset-6 DOM shell", () => {
       fake.setSnapshot({
         ...fake.snapshot(),
         commandIndex: view.commandIndex + 1,
+        offeredCommands: [end],
         view: {
           ...view,
           commandIndex: view.commandIndex + 1,
@@ -1012,6 +1028,12 @@ describe("playable ruleset-6 DOM shell", () => {
     });
     const key = host.model?.combatPresentation?.key;
     if (key === undefined) throw new Error("Missing combat key");
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "e" }));
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "t" }));
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    expect(fake.dispatch).toHaveBeenCalledTimes(1);
+    expect(document.querySelector(".v6-tech-screen")).toBeNull();
+    expect(host.model?.combatPresentation?.key).toBe(key);
     host.callbacks?.onCombatPresentationComplete?.("stale-key");
     expect(host.model?.combatPresentation?.key).toBe(key);
     host.callbacks?.onCombatPresentationComplete?.(key);

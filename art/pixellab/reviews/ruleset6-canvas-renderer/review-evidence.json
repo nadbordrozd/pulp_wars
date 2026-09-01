@@ -19,9 +19,9 @@
     "juggernaut": 0.25
   },
   "reviewCoverage": [
-    "accepted raster and explicit non-production placeholder labels",
+    "complete accepted production raster inventory with zero placeholders",
     "all nine role silhouettes with ordinary units smaller than Forest and Mountain",
-    "temporary Road mask with missing-material marker, economic contributor numbers, opposite-pair axis and value chip",
+    "accepted Road masks, economic contributor numbers, opposite-pair axis and value chip",
     "selection, move/attack targets, unit/city/wall status and fog",
     "Forest Game/Animal frontage without a unit and beneath an occupied selected unit",
     "level-4 negative population as exactly two leading red deficit squares within the fixed five-square layer"
@@ -33,43 +33,43 @@
   "artifacts": [
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/original-dpr1-native.png",
-      "bytes": 581421,
-      "sha256": "0c0293998f5cef001b01efb7d52bc7c2b6a2fec93eb56d8846f33e6a93aef657"
+      "bytes": 820002,
+      "sha256": "c611d95478c05ee0f90184cfd4d30e81d67e42833f8e954ecf246e998bb5743e"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/original-dpr1-enlarged.png",
-      "bytes": 834019,
-      "sha256": "ec0e5661a204384ad32b1d24dfc2f865f7e488d3a8c0ad111fba106ca6ade9cb"
+      "bytes": 1108135,
+      "sha256": "1b21a1961e5f4562197b98f220bb10b88824bb1fe5f733e28c148bad3a2c9bdd"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/original-dpr2-native.png",
-      "bytes": 1590999,
-      "sha256": "2a93aa41a329806ce94baabce5592161dcc63bcd147ecd063a321a2687fa748e"
+      "bytes": 2552415,
+      "sha256": "b794c6e20119eb7f215d521a1f1fabdd489838e7d6a3f2313f4a5c48e35b9b27"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/original-dpr2-enlarged.png",
-      "bytes": 4019307,
-      "sha256": "0c870dd340a25e6136aaced221e9d84b5181ad64cc34cfc6baa3e23a692a0b57"
+      "bytes": 6327027,
+      "sha256": "c81467e7c6127a3be280fc138273292c7bd304f9e8b9d8da031b7036517c4494"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/candy-dpr1-native.png",
-      "bytes": 597783,
-      "sha256": "ada94d774d80f71aa909b84e99125d1e787d63bf4192008d886d9c7e661ef11f"
+      "bytes": 829567,
+      "sha256": "7cd513cb56c60bb1f7deb530d4d67c3fe60fa8a502e90193a2c3b4ee50b83bcc"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/candy-dpr1-enlarged.png",
-      "bytes": 855472,
-      "sha256": "89eed3f5588d8e30dde36a0a1bf57f4578bdfebe7d62f73441cd900d3f8f5e60"
+      "bytes": 1124122,
+      "sha256": "9be2ae2a14f3e695531ddd0d548236a7d6a0f8402de281af96418af59381340e"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/candy-dpr2-native.png",
-      "bytes": 1590833,
-      "sha256": "e04019b0178025606029d14fcf06c28e1d4ac496668eedd8a5eca48f743a175c"
+      "bytes": 2530114,
+      "sha256": "ec23a83695b20bab6d8ad036727ac9f3e79b9eeca31e485b1e8cdcfa8bd24c56"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/candy-dpr2-enlarged.png",
-      "bytes": 4011729,
-      "sha256": "010073717781933163d909723110c0cc6178317c0a696b48ca349c5bb75f1ad5"
+      "bytes": 6310666,
+      "sha256": "715afbdbc658080a01e38528e937042ef720b56f91c70a4ffe77f0f0a3662b56"
     }
   ]
 }

@@ -34,10 +34,10 @@
         {
           "role": "BREACHER",
           "bounds": {
-            "x": 709.3358484210527,
-            "y": 291.094105263158,
-            "width": 48.50162526315785,
-            "height": 55.40021052631579
+            "x": 697.1197978947368,
+            "y": 296.20769684210535,
+            "width": 64.25977263157893,
+            "height": 64.25977263157893
           },
           "clipped": false,
           "footprint": {
@@ -50,10 +50,10 @@
         {
           "role": "JUGGERNAUT",
           "bounds": {
-            "x": 658.1288421052632,
-            "y": 404.74800000000005,
-            "width": 54.424042105263084,
-            "height": 70.74000000000001
+            "x": 651.1562105263158,
+            "y": 414.82610526315796,
+            "width": 66.93726315789468,
+            "height": 78.0934736842105
           },
           "clipped": false,
           "footprint": {
@@ -97,10 +97,10 @@
         {
           "role": "BREACHER",
           "bounds": {
-            "x": 446.15,
-            "y": 468.70000000000005,
-            "width": 43.47500000000002,
-            "height": 50.125
+            "x": 435.2,
+            "y": 473.75000000000006,
+            "width": 57.599999999999966,
+            "height": 57.599999999999966
           },
           "clipped": false,
           "footprint": {
@@ -113,10 +113,10 @@
         {
           "role": "JUGGERNAUT",
           "bounds": {
-            "x": 400.25,
-            "y": 570.575,
-            "width": 49.25,
-            "height": 63.875
+            "x": 394,
+            "y": 580.075,
+            "width": 60,
+            "height": 70
           },
           "clipped": false,
           "footprint": {
@@ -160,10 +160,10 @@
         {
           "role": "BREACHER",
           "bounds": {
-            "x": 257.15,
-            "y": 369.70000000000005,
-            "width": 43.47500000000002,
-            "height": 50.125
+            "x": 246.2,
+            "y": 374.75000000000006,
+            "width": 57.599999999999966,
+            "height": 57.599999999999966
           },
           "clipped": false,
           "footprint": {
@@ -176,10 +176,10 @@
         {
           "role": "JUGGERNAUT",
           "bounds": {
-            "x": 211.25,
-            "y": 471.57500000000005,
-            "width": 49.25,
-            "height": 63.875
+            "x": 205,
+            "y": 481.07500000000005,
+            "width": 60,
+            "height": 70
           },
           "clipped": false,
           "footprint": {
@@ -205,33 +205,33 @@
   "artifacts": [
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-host/desktop-native.png",
-      "bytes": 193702,
-      "sha256": "7f60d95cb9774fb152f94c613052c2575d8f7f64f383c933bb62ccee3d3d9d16"
+      "bytes": 199484,
+      "sha256": "35c82f3151b1c94c9991fde3dbaa42ce20103541a374bd781ca5d778be9a6729"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-host/desktop-enlarged.png",
-      "bytes": 316714,
-      "sha256": "39b04327c54ff554415485117d071f9d2083a65770664bb8716a314b3a731138"
+      "bytes": 322824,
+      "sha256": "1096a290d61d640bad71c0468ef609e377c6824fff12f277581ead3e91a1f18d"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-host/tablet-native.png",
-      "bytes": 265389,
-      "sha256": "da5ee348c3d47172e1d5c38fd0ec6b7a374b0abdb55b27288a41b022182f99e6"
+      "bytes": 285218,
+      "sha256": "f30a340af7254d4e356804a40a92238afd02ba71cd16b37841573a042cce1d6d"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-host/tablet-enlarged.png",
-      "bytes": 562506,
-      "sha256": "c10b030eadefab169b33963d8fb505c13a4c3068efe3842e949d2ff0dd8d47f0"
+      "bytes": 584090,
+      "sha256": "bbe15a6e5553063d468fd629c2c21141451268732b9bf993538e70fc3af433e3"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-host/mobile-native.png",
-      "bytes": 211476,
-      "sha256": "1414db55c581dcbe0dfd45d41714449590caeed094e50ab9505f8b96d33c6427"
+      "bytes": 230452,
+      "sha256": "29927ac6a746f2f1123c4eb92cd018f247e493fbd9020d9b049b91acbb4aebc2"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-host/mobile-enlarged.png",
-      "bytes": 374149,
-      "sha256": "58d2cf4d40a376b8b7d3c21793d4160796b9b31ca0de66fd7ad0a4c895abd1c7"
+      "bytes": 395510,
+      "sha256": "6a10a1ef46f85315523be60349b22fe21f74098e9c755f91b6751ffaf1b389d0"
     }
   ]
 }

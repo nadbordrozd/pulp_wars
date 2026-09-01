@@ -79,6 +79,7 @@ export interface Ruleset6SetupDraft {
 export interface MountRuleset6AppOptions {
   readonly boardHost?: BoardHostV6;
   readonly prefersReducedMotion?: boolean;
+  readonly prefersHighContrast?: boolean;
 }
 
 export type Ruleset6BrowserControllerPort = Pick<
@@ -109,6 +110,7 @@ export class Ruleset6DomAppView {
   readonly #controller: Ruleset6BrowserControllerPort;
   readonly #boardHost: BoardHostV6;
   readonly #prefersReducedMotion: boolean;
+  readonly #prefersHighContrast: boolean;
   #unsubscribe: (() => void) | null = null;
   #snapshot: Ruleset6BrowserSnapshot;
   #draft: Ruleset6SetupDraft = defaultDraft();
@@ -142,6 +144,14 @@ export class Ruleset6DomAppView {
       documentRoot.defaultView?.matchMedia?.("(prefers-reduced-motion: reduce)")
         .matches ??
       false;
+    this.#prefersHighContrast =
+      options.prefersHighContrast ??
+      documentRoot.defaultView?.matchMedia?.("(prefers-contrast: more)")
+        .matches ??
+      false;
+    this.#root.dataset.contrast = this.#prefersHighContrast
+      ? "high"
+      : "standard";
     this.#snapshot = controller.snapshot();
     this.#document.addEventListener("keydown", this.#onKeyDown);
     this.#unsubscribe = controller.subscribe((snapshot) => {
@@ -191,6 +201,11 @@ export class Ruleset6DomAppView {
       target instanceof HTMLSelectElement ||
       target instanceof HTMLTextAreaElement
     ) {
+      return;
+    }
+    if (this.#combatQueue.length > 0) {
+      event.preventDefault();
+      event.stopPropagation();
       return;
     }
     if (this.#screen === "TECH") {

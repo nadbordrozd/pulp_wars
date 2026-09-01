@@ -92,7 +92,7 @@ async function reviewSvg(faction: FactionIdV6): Promise<string> {
     .join("")}</defs>
   <rect width="100%" height="100%" fill="#172b2b"/>
   <text x="40" y="30" font-family="system-ui,sans-serif" font-size="20" font-weight="800" fill="#f5efe0">Ruleset 6 Canvas · ${faction} · zoom and coverage review</text>
-  <text x="40" y="53" font-family="system-ui,sans-serif" font-size="13" font-weight="600" fill="#c5d7d4">Forest Game/Animal draws after canopy and before pieces · P = explicit non-production placeholder</text>
+  <text x="40" y="53" font-family="system-ui,sans-serif" font-size="13" font-weight="600" fill="#c5d7d4">Forest Game/Animal draws after canopy and before pieces · complete accepted production inventory</text>
   ${panels
     .map(
       ({ index, zoom, commands, accepted, placeholders }) => `<g>
@@ -427,9 +427,9 @@ async function writeEvidence(): Promise<void> {
         devicePixelRatios: [1, 2],
         scaleContracts: { standard: 0.25, breacher: 0.24, juggernaut: 0.25 },
         reviewCoverage: [
-          "accepted raster and explicit non-production placeholder labels",
+          "complete accepted production raster inventory with zero placeholders",
           "all nine role silhouettes with ordinary units smaller than Forest and Mountain",
-          "temporary Road mask with missing-material marker, economic contributor numbers, opposite-pair axis and value chip",
+          "accepted Road masks, economic contributor numbers, opposite-pair axis and value chip",
           "selection, move/attack targets, unit/city/wall status and fog",
           "Forest Game/Animal frontage without a unit and beneath an occupied selected unit",
           "level-4 negative population as exactly two leading red deficit squares within the fixed five-square layer",

@@ -16,12 +16,14 @@
       "CANDY"
     ]
   },
-  "commandCount": 8,
+  "offeredCommandCount": 8,
+  "selectedContextActionCount": 1,
   "layoutContract": {
     "mapFirst": true,
+    "dockOverlaysMapWithoutResizingCanvas": true,
     "minimumControlHeight": 44,
-    "desktopDock": "right",
-    "tabletMobileDock": "bottom",
+    "desktopDock": "bottom-overlay",
+    "tabletMobileDock": "bottom-overlay",
     "ordinaryUnitDisplayScale": 0.25,
     "ordinaryUnitRearOcclusionMaximum": 0.08,
     "siegeDisplayScale": 0.24,
@@ -29,7 +31,7 @@
   },
   "visualReview": {
     "status": "ACCEPTED",
-    "notes": "Native desktop, tablet, and mobile composites preserve a dominant map, separate non-overlapping HUD/action regions, scrollable action access, 44px controls, and the renderer's calibrated compact ordinary-unit geometry. Enlarged nearest-neighbor copies support edge and label inspection."
+    "notes": "Native desktop, tablet, and mobile composites preserve a fixed full-width map behind the contextual bottom dock, current Tech/End Turn HUD actions, one selected-unit Wait action with no global command dump, 44px controls, and the renderer's calibrated compact ordinary-unit geometry. Enlarged nearest-neighbor copies support edge and label inspection."
   },
   "viewports": [
     {
@@ -53,27 +55,29 @@
         "map": {
           "x": 0,
           "y": 70,
-          "width": 947.2,
+          "width": 1280,
           "height": 650
         },
         "dock": {
-          "x": 947.2,
-          "y": 70,
-          "width": 332.8,
-          "height": 650
+          "x": 0,
+          "y": 592,
+          "width": 1280,
+          "height": 128
         }
       },
-      "overlaps": [],
+      "overlaps": [
+        "map:dock"
+      ],
       "artifacts": [
         {
           "path": "art/pixellab/reviews/ruleset6-playable-shell/desktop-native.png",
-          "bytes": 137322,
-          "sha256": "309eb9144ffd965de231b0f368d34e0d59b4657ac1b8ef7907b0197c307a2c60"
+          "bytes": 175808,
+          "sha256": "f81a65e7daa40341919105ab1dc8a5b916c1e4e4db015a4d6cdf663ff207fc54"
         },
         {
           "path": "art/pixellab/reviews/ruleset6-playable-shell/desktop-enlarged.png",
-          "bytes": 240224,
-          "sha256": "f733612ce9e59cc89bca30e708e0a8aa2c3b125b0c67a33295d52a78ab389e9a"
+          "bytes": 292260,
+          "sha256": "2a7381f6dcaff350772f5788048963eaaef0facde2b7ce7071f58d933354cb45"
         }
       ]
     },
@@ -93,32 +97,34 @@
           "x": 0,
           "y": 0,
           "width": 768,
-          "height": 94
+          "height": 192
         },
         "map": {
           "x": 0,
-          "y": 94,
+          "y": 192,
           "width": 768,
-          "height": 580
+          "height": 832
         },
         "dock": {
           "x": 0,
-          "y": 674,
+          "y": 854,
           "width": 768,
-          "height": 350
+          "height": 170
         }
       },
-      "overlaps": [],
+      "overlaps": [
+        "map:dock"
+      ],
       "artifacts": [
         {
           "path": "art/pixellab/reviews/ruleset6-playable-shell/tablet-native.png",
-          "bytes": 332656,
-          "sha256": "8470c0ad75a67bf4d38cc5a0fed0af03a24060ad550799c4d4ef08a167c0bbb6"
+          "bytes": 328701,
+          "sha256": "93e46cd53aee8b4f22484242fb16925628219cfccf8003595d1095ba147a470f"
         },
         {
           "path": "art/pixellab/reviews/ruleset6-playable-shell/tablet-enlarged.png",
-          "bytes": 641344,
-          "sha256": "35aa91e178571ca5435d95c4f22a3e0571a925a8b8a6c996d066e5def61709d4"
+          "bytes": 625104,
+          "sha256": "aeb58d8f6a472b2a8f65c469f5b0c6545af8181ee470d2d9feaef2ea56ce809a"
         }
       ]
     },
@@ -138,32 +144,34 @@
           "x": 0,
           "y": 0,
           "width": 390,
-          "height": 130
+          "height": 192
         },
         "map": {
           "x": 0,
-          "y": 130,
+          "y": 192,
           "width": 390,
-          "height": 404
+          "height": 652
         },
         "dock": {
           "x": 0,
-          "y": 534,
+          "y": 654,
           "width": 390,
-          "height": 310
+          "height": 190
         }
       },
-      "overlaps": [],
+      "overlaps": [
+        "map:dock"
+      ],
       "artifacts": [
         {
           "path": "art/pixellab/reviews/ruleset6-playable-shell/mobile-native.png",
-          "bytes": 255750,
-          "sha256": "ca0bf99b094c6bdd425183defe2c41f3c0db742602e6beb9f970c0ec889022b0"
+          "bytes": 232490,
+          "sha256": "05136e35907d323848fca055dfd12c23b3c6bd65ca54f34a73af0d29ad8b2b7f"
         },
         {
           "path": "art/pixellab/reviews/ruleset6-playable-shell/mobile-enlarged.png",
-          "bytes": 418132,
-          "sha256": "cd2c391dd0965d57678c2048c1bb1f0a994675a75b693a1fa552eec8c8b13aad"
+          "bytes": 380278,
+          "sha256": "99bbf56bfb140e7766a81c341469b8a6972ab18b5a5d06f27e5d360578752ab3"
         }
       ]
     }

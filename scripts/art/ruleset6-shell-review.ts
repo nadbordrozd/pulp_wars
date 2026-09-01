@@ -65,7 +65,7 @@ const plan = buildRenderPlanV6(view, {
   economicPreview: null,
   readyUnitIds: [],
 });
-const commandCount = queryPlayerCommandsV6(view).length;
+const offeredCommandCount = queryPlayerCommandsV6(view).length;
 const records: Array<{
   id: string;
   css: Size;
@@ -148,12 +148,14 @@ await writeFile(
       generatedBy: "npm run art:ruleset6-shell-review",
       rulesetId: view.rulesetId,
       setup,
-      commandCount,
+      offeredCommandCount,
+      selectedContextActionCount: 1,
       layoutContract: {
         mapFirst: true,
+        dockOverlaysMapWithoutResizingCanvas: true,
         minimumControlHeight: 44,
-        desktopDock: "right",
-        tabletMobileDock: "bottom",
+        desktopDock: "bottom-overlay",
+        tabletMobileDock: "bottom-overlay",
         ordinaryUnitDisplayScale: UNIT_SCALE_CONTRACT.standard.displayScale,
         ordinaryUnitRearOcclusionMaximum:
           UNIT_SCALE_CONTRACT.standard.maximumRearTileOcclusionRatio,
@@ -163,7 +165,7 @@ await writeFile(
       visualReview: {
         status: "ACCEPTED",
         notes:
-          "Native desktop, tablet, and mobile composites preserve a dominant map, separate non-overlapping HUD/action regions, scrollable action access, 44px controls, and the renderer's calibrated compact ordinary-unit geometry. Enlarged nearest-neighbor copies support edge and label inspection.",
+          "Native desktop, tablet, and mobile composites preserve a fixed full-width map behind the contextual bottom dock, current Tech/End Turn HUD actions, one selected-unit Wait action with no global command dump, 44px controls, and the renderer's calibrated compact ordinary-unit geometry. Enlarged nearest-neighbor copies support edge and label inspection.",
       },
       viewports: records,
     },
@@ -184,31 +186,11 @@ function layout(
   readonly map: Rect;
   readonly dock: Rect;
 } {
-  if (width > 900) {
-    const hud = { x: 0, y: 0, width, height: 70 };
-    const dockWidth = Math.min(340, Math.max(272, width * 0.26));
-    return {
-      hud,
-      map: {
-        x: 0,
-        y: hud.height,
-        width: width - dockWidth,
-        height: height - hud.height,
-      },
-      dock: {
-        x: width - dockWidth,
-        y: hud.height,
-        width: dockWidth,
-        height: height - hud.height,
-      },
-    };
-  }
-  const hudHeight = width <= 560 ? 130 : 94;
-  const dockHeight =
-    width <= 560 ? Math.min(310, height * 0.39) : Math.min(350, height * 0.36);
+  const hudHeight = width <= 900 ? 192 : 70;
+  const dockHeight = width <= 560 ? 190 : width <= 900 ? 170 : 128;
   return {
     hud: { x: 0, y: 0, width, height: hudHeight },
-    map: { x: 0, y: hudHeight, width, height: height - hudHeight - dockHeight },
+    map: { x: 0, y: hudHeight, width, height: height - hudHeight },
     dock: { x: 0, y: height - dockHeight, width, height: dockHeight },
   };
 }
@@ -270,10 +252,10 @@ async function shellSvg(
   <rect x="${regions.map.x}" y="${regions.map.y}" width="${regions.map.width}" height="${regions.map.height}" fill="#18302c"/>
   <g transform="translate(${regions.map.x} ${regions.map.y})">${await commandsSvg(commands)}</g>
   <rect x="${regions.hud.x}" y="${regions.hud.y}" width="${regions.hud.width}" height="${regions.hud.height}" fill="#171722" stroke="#62697b" stroke-width="2"/>
-  ${hudLabels.map((value, index) => hudChip(value[0], value[1], index, regions.hud, width <= 560)).join("\n")}
-  ${hudButtons(regions.hud, width <= 560)}
+  ${hudLabels.map((value, index) => hudChip(value[0], value[1], index, regions.hud, width <= 900)).join("\n")}
+  ${hudButtons(regions.hud, width <= 900)}
   <rect x="${regions.dock.x}" y="${regions.dock.y}" width="${regions.dock.width}" height="${regions.dock.height}" fill="#242630" stroke="#62697b" stroke-width="2"/>
-  ${dockSvg(regions.dock, commandCount)}
+  ${dockSvg(regions.dock)}
   <text x="${regions.map.x + 12}" y="${regions.map.y + 22}" font-family="system-ui,sans-serif" font-size="12" font-weight="800" fill="#fff8df">Ruleset 6 · ${id} · ${width <= 560 ? "touch map" : "map cursor + touch pan/zoom"}</text>
 </svg>`;
 }
@@ -300,35 +282,37 @@ function hudChip(
 }
 
 function hudButtons(hud: Rect, compact: boolean): string {
-  const labels = ["−", "+", "Restart", "Delete"];
-  const total = labels.length * 57 + (labels.length - 1) * 5;
-  const top = compact ? hud.height - 43 : 13;
-  const start = compact ? 5 : Math.max(5, hud.width - total - 8);
+  const labels = ["Tech", "End Turn", "−", "+", "Restart", "Delete"];
   return labels
     .map((label, index) => {
-      const x = start + index * 62;
-      return `<rect x="${x}" y="${top}" width="57" height="38" rx="7" fill="#343748" stroke="#62697b"/><text x="${x + 28.5}" y="${top + 24}" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" font-weight="800" fill="#fff8df">${label}</text>`;
+      const columns = compact ? 3 : labels.length;
+      const row = Math.floor(index / columns);
+      const column = index % columns;
+      const gap = compact ? 5 : 4;
+      const buttonWidth = compact
+        ? (hud.width - gap * (columns + 1)) / columns
+        : 62;
+      const total = labels.length * (buttonWidth + gap);
+      const x = compact
+        ? gap + column * (buttonWidth + gap)
+        : hud.width - total + column * (buttonWidth + gap);
+      const top = compact ? 91 + row * 47 : 13;
+      return `<rect x="${n(x)}" y="${n(top)}" width="${n(buttonWidth)}" height="42" rx="7" fill="#343748" stroke="${label === "End Turn" ? "#e4b843" : "#62697b"}"/><text x="${n(x + buttonWidth / 2)}" y="${n(top + 26)}" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" font-weight="800" fill="#fff8df">${label}</text>`;
     })
     .join("\n");
 }
 
-function dockSvg(dock: Rect, count: number): string {
+function dockSvg(dock: Rect): string {
   const x = dock.x + 14;
   const y = dock.y + 26;
   const buttonWidth = dock.width - 28;
-  const labels = [
-    "Wait · unit 2",
-    "Research Farming",
-    `All offered actions (${count})`,
-    "End Turn (E)",
-  ];
+  const labels = ["Wait"];
   return `<text x="${x}" y="${y}" font-family="Impact,system-ui,sans-serif" font-size="20" fill="#fff8df">FIGHTER · 10/10 HP</text>
   <text x="${x}" y="${y + 22}" font-family="system-ui,sans-serif" font-size="11" fill="#c7ccb9">Select a highlighted tile or use an exact action.</text>
   ${labels
     .map((label, index) => {
       const top = y + 38 + index * 52;
-      const primary = index === labels.length - 1;
-      return `<rect x="${x}" y="${top}" width="${buttonWidth}" height="44" rx="8" fill="${primary ? "#f2604b" : "#343748"}" stroke="${primary ? "#ff9d67" : "#62697b"}" stroke-width="2"/><text x="${x + 10}" y="${top + 27}" font-family="system-ui,sans-serif" font-size="12" font-weight="800" fill="${primary ? "#231317" : "#fff8df"}">${escapeXml(label)}</text>`;
+      return `<rect x="${x}" y="${top}" width="${buttonWidth}" height="44" rx="8" fill="#343748" stroke="#62697b" stroke-width="2"/><text x="${x + 10}" y="${top + 27}" font-family="system-ui,sans-serif" font-size="12" font-weight="800" fill="#fff8df">${escapeXml(label)}</text>`;
     })
     .join("\n")}`;
 }

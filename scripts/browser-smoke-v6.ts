@@ -36,6 +36,7 @@ interface BrowserErrorV6 {
 
 interface BrowserSmokeAiFirstLaunchV6 {
   readonly seed: 314159;
+  readonly aiMode: "COOPERATIVE";
   readonly turnOrder: readonly [2, 1];
   readonly commandIndex: number;
   readonly stateHash: string;
@@ -165,21 +166,26 @@ try {
     passMetadata: {
       status: "PASS",
       factions: ["ORIGINAL", "CANDY"],
+      factionComposition: "mixed-faction human/AI seats in both live flows",
+      aiModes: ["RIVAL", "COOPERATIVE"],
       surfaces: ["desktop", "390x844 DPR2 mobile"],
-      motionModes: ["FULL", "emulated prefers-reduced-motion: reduce"],
+      motionModes: [
+        "FULL",
+        "emulated prefers-reduced-motion: reduce",
+        "emulated prefers-contrast: more",
+      ],
       exercisedThrough:
         "exact production DOM controls and Canvas coordinate targets",
     },
-    unresolvedProductionRasterInventory: {
-      status: "NOT_ACCEPTED_BY_THIS_PASS",
-      owners: ["pulp_wars-phg.15", "pulp_wars-phg.20"],
+    productionRasterInventory: {
+      status: "ACCEPTED_AND_LOADED",
       treatment:
-        "Existing accepted semantic art is used where registered; truthful code-native fallbacks remain visible elsewhere. No production raster was generated or accepted.",
+        "The production browser loaded the checked-in ruleset-6 terrain, resource, building, Road, 18-role, portrait, Coin, action, reward, and explicitly registered 25-node technology raster inventory. Code-native geometry remains limited to the categories required by the art contracts.",
     },
     visualReview: {
       status: "ACCEPTED",
       notes:
-        "Every bounded contextual, reward, city-training, and Technology capture was inspected individually at native output size and in its nearest-neighbor 2x companion. Original and Candy labels/symbols remain distinct; the map stays primary; unit, city, and tile docks do not leak actions; full Technology cards/details and blocking rewards fit desktop and true 390x844 DPR2 mobile without clipping or horizontal overflow. No suspected visual failure remained after enlargement review.",
+        "Every bounded contextual, reward, city-training, and Technology capture was inspected individually at native output size and in its nearest-neighbor 2x companion. Original and Candy labels/symbols remain distinct; the map stays primary; unit, city, and tile docks do not leak actions; full Technology cards/details and blocking rewards fit desktop and true 390x844 DPR2 mobile without clipping or horizontal overflow. Direct selected-tile actions accept one boundary without a second map activation. No suspected visual failure remained after enlargement review.",
     },
     flows,
     aiFirstLaunch,
@@ -210,7 +216,7 @@ async function runAiFirstLaunchRegression(
     `document.querySelector('[data-v6-setup]') !== null`,
   );
   await setField(connection, "v6-ai-count", "1");
-  await setField(connection, "v6-ai-mode", "RIVAL");
+  await setField(connection, "v6-ai-mode", "COOPERATIVE");
   await setField(connection, "v6-board-size", "11");
   await setField(connection, "v6-seed", "314159");
   await setField(connection, "v6-faction-0", "CANDY");
@@ -227,7 +233,7 @@ async function runAiFirstLaunchRegression(
       const view = snapshot.view;
       const replay = app.controller.exportReplay();
       const loaded = JSON.parse(localStorage.getItem('pulpWars.save.current') ?? 'null');
-      if (snapshot.phase !== 'ACTIVE' || snapshot.transitioning || snapshot.commandIndex <= 0 || snapshot.stateHash === null || view === null || view.setup.seed !== 314159 || view.viewer.faction !== 'CANDY' || JSON.stringify(view.turnOrder) !== JSON.stringify([2, 1]) || view.turnOrder[view.activeSeatIndex] !== view.viewer.id) throw new Error('AI-first launch did not return control to the Candy human: ' + JSON.stringify(snapshot));
+      if (snapshot.phase !== 'ACTIVE' || snapshot.transitioning || snapshot.commandIndex <= 0 || snapshot.stateHash === null || view === null || view.setup.seed !== 314159 || view.setup.aiMode !== 'COOPERATIVE' || view.viewer.faction !== 'CANDY' || JSON.stringify(view.turnOrder) !== JSON.stringify([2, 1]) || view.turnOrder[view.activeSeatIndex] !== view.viewer.id) throw new Error('AI-first launch did not return control to the Candy human: ' + JSON.stringify(snapshot));
       if (replay === null) throw new Error('AI-first launch has no replay');
       const replayed = replay.checkpoints.at(-1);
       if (replay.commands.length !== snapshot.commandIndex || replayed?.index !== snapshot.commandIndex || replayed.stateHash !== snapshot.stateHash) throw new Error('AI-first replay checkpoint is inexact');
@@ -236,6 +242,7 @@ async function runAiFirstLaunchRegression(
       if (!/^AI completed [1-9][0-9]* actions?\\. Your turn\\.$/.test(notice) || document.querySelector('.v6-action-dock')?.textContent?.includes('AI turn')) throw new Error('AI-first launch left the shell on its idle AI presentation');
       return {
         seed: 314159,
+        aiMode: view.setup.aiMode,
         turnOrder: view.turnOrder,
         commandIndex: snapshot.commandIndex,
         stateHash: snapshot.stateHash,
@@ -248,7 +255,7 @@ async function runAiFirstLaunchRegression(
   if (
     evidence.commandIndex !== 3 ||
     evidence.stateHash !==
-      "56fc6cb52c2babc1947d77843220dbb03d871c715aee01098f1066fe197b5928"
+      "5bb0964730b810c1a5c6111761fb3c16c40257df34bda9f507b5c2b0bf46ce7b"
   ) {
     throw new Error(
       `AI-first deterministic boundary changed: ${JSON.stringify(evidence)}`,
@@ -280,7 +287,11 @@ async function runFactionFlow(
   await setField(connection, "v6-board-size", "11");
   await setField(connection, "v6-seed", String(config.seed));
   await setField(connection, "v6-faction-0", config.faction);
-  await setField(connection, "v6-faction-1", config.faction);
+  await setField(
+    connection,
+    "v6-faction-1",
+    config.faction === "ORIGINAL" ? "CANDY" : "ORIGINAL",
+  );
   await clickSelector(connection, '[data-action="launch"]');
   await waitForHumanBoundary(connection, 0);
   const launch = await readBoundary(connection);
@@ -341,7 +352,36 @@ async function runFactionFlow(
       `${config.faction} reduced-motion readiness was not static`,
     );
   }
-  await setReducedMotion(connection, false);
+  artifacts.push(
+    ...(await capturePair(
+      connection,
+      `${config.faction.toLowerCase()}-reduced-motion-desktop`,
+      `${config.faction} production map with system Reduced motion`,
+    )),
+  );
+  await setMediaPreferences(connection, false, true);
+  await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.mobile);
+  await reloadAndResume(
+    connection,
+    restarted.commandIndex,
+    restarted.stateHash,
+  );
+  const highContrastApplied = await evaluate<boolean>(
+    connection,
+    `document.querySelector('#app')?.getAttribute('data-contrast') === 'high'`,
+  );
+  if (!highContrastApplied) {
+    throw new Error(`${config.faction} high-contrast preference was ignored`);
+  }
+  artifacts.push(
+    ...(await capturePair(
+      connection,
+      `${config.faction.toLowerCase()}-high-contrast-mobile`,
+      `${config.faction} production map with system high contrast`,
+    )),
+  );
+  await setMediaPreferences(connection, false, false);
+  await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.desktop);
   await reloadAndResume(
     connection,
     restarted.commandIndex,
@@ -430,14 +470,14 @@ async function runFactionFlow(
     if (harvest === undefined)
       throw new Error(`${config.faction} fruit action disappeared`);
     await clickSelector(connection, '[data-command-kind="HARVEST_FRUIT"]');
-    if ((await readBoundary(connection)).commandIndex !== boundaryIndex) {
-      throw new Error(
-        `${config.faction} economic preview dispatched before map activation`,
-      );
-    }
-    await activateCoordinate(connection, at);
     boundaryIndex += 1;
     await waitForHumanBoundary(connection, boundaryIndex);
+    const afterHarvest = await readBoundary(connection);
+    if (afterHarvest.commandIndex !== boundaryIndex) {
+      throw new Error(
+        `${config.faction} direct economic action did not accept exactly one boundary`,
+      );
+    }
     tileContextAccepted = true;
   }
 
@@ -523,6 +563,10 @@ async function runFactionFlow(
     afterCapture.stateHash,
   );
   const attack = await reachAndAttack(connection, { x: 8, y: 8 });
+  await waitForExpression(
+    connection,
+    `document.querySelector('[data-action="end-turn"]:not([disabled])') !== null`,
+  );
 
   const beforeTurnReturn = await readBoundary(connection);
   const end = beforeTurnReturn.offered.find(
@@ -531,7 +575,7 @@ async function runFactionFlow(
   if (end === undefined) {
     throw new Error(`${config.faction} offered no END_TURN command`);
   }
-  await clickEncodedCommand(connection, end.encoded);
+  await clickSelector(connection, '[data-action="end-turn"]');
   await waitForHumanBoundary(
     connection,
     beforeTurnReturn.commandIndex + 2,
@@ -1096,7 +1140,7 @@ async function endTurnAndReturn(connection: Connection): Promise<void> {
   const before = await readBoundary(connection);
   const end = before.offered.find((command) => command.kind === "END_TURN");
   if (end === undefined) throw new Error("END_TURN is unavailable");
-  await clickEncodedCommand(connection, end.encoded);
+  await clickSelector(connection, '[data-action="end-turn"]');
   await waitForHumanBoundary(connection, before.commandIndex + 2, 900);
 }
 
@@ -1104,12 +1148,24 @@ async function setReducedMotion(
   connection: Connection,
   reduced: boolean,
 ): Promise<void> {
+  await setMediaPreferences(connection, reduced, false);
+}
+
+async function setMediaPreferences(
+  connection: Connection,
+  reduced: boolean,
+  highContrast: boolean,
+): Promise<void> {
   await connection.send("Emulation.setEmulatedMedia", {
     media: "screen",
     features: [
       {
         name: "prefers-reduced-motion",
         value: reduced ? "reduce" : "no-preference",
+      },
+      {
+        name: "prefers-contrast",
+        value: highContrast ? "more" : "no-preference",
       },
     ],
   });
@@ -1493,7 +1549,16 @@ async function waitForExpression(
     const result = await evaluate<boolean>(
       connection,
       `Boolean(${expression})`,
-    );
+    ).catch((error: unknown) => {
+      const message = error instanceof Error ? error.message : String(error);
+      if (
+        message.includes("Inspected target navigated or closed") ||
+        message.includes("Execution context was destroyed")
+      ) {
+        return false;
+      }
+      throw error;
+    });
     if (result) return;
     await delay(100);
   }
@@ -1548,6 +1613,7 @@ async function connect(webSocketUrl: string): Promise<Connection> {
   const pending = new Map<
     number,
     {
+      readonly method: string;
       readonly resolve: (value: unknown) => void;
       readonly reject: (error: Error) => void;
     }
@@ -1561,7 +1627,9 @@ async function connect(webSocketUrl: string): Promise<Connection> {
       pending.delete(message.id);
       if (message.error !== undefined) {
         request.reject(
-          new Error(message.error.message ?? "CDP command failed"),
+          new Error(
+            `${request.method}: ${message.error.message ?? "CDP command failed"}`,
+          ),
         );
       } else {
         request.resolve(message.result);
@@ -1579,7 +1647,7 @@ async function connect(webSocketUrl: string): Promise<Connection> {
       const id = nextId;
       nextId += 1;
       return new Promise((resolve, reject) => {
-        pending.set(id, { resolve, reject });
+        pending.set(id, { method, resolve, reject });
         socket.send(JSON.stringify({ id, method, params }));
       });
     },

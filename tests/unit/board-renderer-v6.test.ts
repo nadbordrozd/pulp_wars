@@ -117,17 +117,13 @@ describe("ruleset-6 Canvas drawing layer", () => {
     expect(documentRoot.createElement).toHaveBeenCalledOnce();
   });
 
-  it("labels every reused raster and every non-production placeholder explicitly", () => {
+  it("resolves the complete production world inventory without placeholders", () => {
     for (const faction of ["ORIGINAL", "CANDY"] as const) {
       expect(terrainCoverageV6("GRASS", faction, 0).status).toBe("ACCEPTED");
       expect(terrainCoverageV6("FOREST", faction, 3).status).toBe("ACCEPTED");
       expect(terrainCoverageV6("MOUNTAIN", faction, 7).status).toBe("ACCEPTED");
       for (const resource of RESOURCE_IDS) {
-        expect(resourceCoverageV6(resource, faction).status).toBe(
-          resource === "FERTILE_GROUND" || resource === "STONE"
-            ? "PLACEHOLDER"
-            : "ACCEPTED",
-        );
+        expect(resourceCoverageV6(resource, faction).status).toBe("ACCEPTED");
       }
       for (const role of UNIT_ROLE_IDS) {
         const item = unitCoverageV6(faction, role);
@@ -156,13 +152,8 @@ describe("ruleset-6 Canvas drawing layer", () => {
     });
     expect(list.coverage.some((item) => item.status === "ACCEPTED")).toBe(true);
     expect(list.coverage.some((item) => item.status === "PLACEHOLDER")).toBe(
-      true,
+      false,
     );
-    expect(
-      list.coverage
-        .filter((item) => item.status === "PLACEHOLDER")
-        .every((item) => !item.production && item.assetId === null),
-    ).toBe(true);
   });
 
   it("draws UNKNOWN_RESOURCE as ordinary terrain with no world marker", () => {

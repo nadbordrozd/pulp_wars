@@ -36,6 +36,8 @@ export const RULESET6_SMOKE_EVIDENCE_SUBJECTS = [
   "reward-desktop",
   "city-train-mobile",
   "technology-detail-mobile",
+  "reduced-motion-desktop",
+  "high-contrast-mobile",
 ] as const;
 
 export interface BrowserSmokeRectV6 {
@@ -290,7 +292,7 @@ export function flowContractIssuesV6(
       (issue) => `mobile: ${issue}`,
     ),
   );
-  if (flow.screenshots.length !== 8) {
+  if (flow.screenshots.length !== 12) {
     issues.push("flow does not include the bounded native/enlarged review set");
   }
   const screenshotPaths = new Set(flow.screenshots.map(({ path }) => path));

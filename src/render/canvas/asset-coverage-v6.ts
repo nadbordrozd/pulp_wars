@@ -142,15 +142,17 @@ export function resourceCoverageV6(
         BOARD_ART_GEOMETRY.lowObject,
       );
     case "FERTILE_GROUND":
-      return placeholder(
+      return accepted(
         `resource:${faction}:FERTILE_GROUND`,
-        "FERTILE",
+        "terrain-fertile-ground",
+        "assets/pixellab/terrain/fertile-ground.png",
         BOARD_ART_GEOMETRY.lowObject,
       );
     case "STONE":
-      return placeholder(
+      return accepted(
         `resource:${faction}:STONE`,
-        "STONE",
+        "terrain-stone",
+        "assets/pixellab/terrain/stone.png",
         BOARD_ART_GEOMETRY.lowObject,
       );
   }
