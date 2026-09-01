@@ -130,14 +130,9 @@ describe("ruleset-6 Canvas drawing layer", () => {
         );
       }
       for (const role of UNIT_ROLE_IDS) {
-        const expected =
-          faction === "ORIGINAL" ||
-          ["FIGHTER", "MARKSMAN", "GUARD", "RAIDER"].includes(role)
-            ? "ACCEPTED"
-            : "PLACEHOLDER";
         const item = unitCoverageV6(faction, role);
-        expect(item.status, `${faction}:${role}`).toBe(expected);
-        expect(item.production).toBe(expected === "ACCEPTED");
+        expect(item.status, `${faction}:${role}`).toBe("ACCEPTED");
+        expect(item.production).toBe(true);
       }
       expect(cityCoverageV6(faction, 1).status).toBe("ACCEPTED");
       expect(cityCoverageV6(faction, 8).status).toBe("ACCEPTED");

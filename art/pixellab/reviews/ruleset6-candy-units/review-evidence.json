@@ -1,0 +1,483 @@
+{
+  "schemaVersion": 1,
+  "status": "READY_FOR_ORCHESTRATOR_REVIEW",
+  "assetClass": "ruleset6-candy-units-and-portraits",
+  "gateOrder": [
+    [
+      "unit-candy-scout"
+    ],
+    [
+      "unit-candy-medic"
+    ],
+    [
+      "unit-candy-breacher"
+    ],
+    [
+      "unit-candy-fighter",
+      "unit-candy-marksman",
+      "unit-candy-heavy"
+    ],
+    [
+      "unit-candy-guard",
+      "unit-candy-raider"
+    ],
+    [
+      "unit-candy-juggernaut"
+    ],
+    [
+      "portraits in bounded deterministic families"
+    ]
+  ],
+  "aliases": {
+    "unit-candy-fighter": "unit-candy-warrior",
+    "unit-candy-marksman": "unit-candy-gumball-guard",
+    "unit-candy-guard": "unit-candy-choco-engineer",
+    "unit-candy-raider": "unit-candy-donut"
+  },
+  "measurements": [
+    {
+      "id": "unit-candy-fighter",
+      "role": "FIGHTER",
+      "label": "Candy Warrior",
+      "sourceId": "unit-candy-warrior",
+      "scaleClass": "standard",
+      "sourceSha256": "76456b060ba1701e75387285b4738d4c289c0617eb852f5552beadfe2eb1a2bc",
+      "portraitSha256": "5074d242652c169b5c2d89e74ddfa876ac086a39c9a9385975bbc60de2f4494e",
+      "sourceDimensions": {
+        "width": 256,
+        "height": 296
+      },
+      "alphaBounds": {
+        "left": 27,
+        "top": 4,
+        "right": 228,
+        "bottom": 222
+      },
+      "displayScale": 0.25,
+      "offsetY": 7.5,
+      "visibleWidthRatio": 0.39258,
+      "visibleHeightRatio": 0.73649,
+      "opaqueDiamondAreaRatio": 0.36378,
+      "adjacentOcclusionRatio": {
+        "NORTH": 0.0377,
+        "EAST": 0,
+        "SOUTH": 0,
+        "WEST": 0.01761
+      },
+      "maximumRearTileOcclusionRatio": 0.0377
+    },
+    {
+      "id": "unit-candy-scout",
+      "role": "SCOUT",
+      "label": "Jelly Scout",
+      "sourceId": "unit-candy-scout",
+      "scaleClass": "standard",
+      "sourceSha256": "c835c0a08cc24d5751c0dbc85365f638016029984162a6272387aa3efc2965a9",
+      "portraitSha256": "f794913aa23a48912d4952194d09b56286c65787d525b86d7eff4b10392d7200",
+      "sourceDimensions": {
+        "width": 256,
+        "height": 296
+      },
+      "alphaBounds": {
+        "left": 21,
+        "top": 18,
+        "right": 235,
+        "bottom": 222
+      },
+      "displayScale": 0.25,
+      "offsetY": 0,
+      "visibleWidthRatio": 0.41797,
+      "visibleHeightRatio": 0.68919,
+      "opaqueDiamondAreaRatio": 0.33409,
+      "adjacentOcclusionRatio": {
+        "NORTH": 0.04448,
+        "EAST": 0,
+        "SOUTH": 0,
+        "WEST": 0.04855
+      },
+      "maximumRearTileOcclusionRatio": 0.04855
+    },
+    {
+      "id": "unit-candy-marksman",
+      "role": "MARKSMAN",
+      "label": "Gumball Guard",
+      "sourceId": "unit-candy-gumball-guard",
+      "scaleClass": "standard",
+      "sourceSha256": "5a43d5f737bbf41f007c9bf8ee5f7fe5e0084bb13f9d243917d27c6f701f81b2",
+      "portraitSha256": "1ebcb9284680ca59fe67f6d1fb9ca857c120915f199507df6be5033bb370af31",
+      "sourceDimensions": {
+        "width": 256,
+        "height": 296
+      },
+      "alphaBounds": {
+        "left": 55,
+        "top": 4,
+        "right": 201,
+        "bottom": 222
+      },
+      "displayScale": 0.25,
+      "offsetY": 0,
+      "visibleWidthRatio": 0.28516,
+      "visibleHeightRatio": 0.73649,
+      "opaqueDiamondAreaRatio": 0.32105,
+      "adjacentOcclusionRatio": {
+        "NORTH": 0.03008,
+        "EAST": 0,
+        "SOUTH": 0,
+        "WEST": 0.02998
+      },
+      "maximumRearTileOcclusionRatio": 0.03008
+    },
+    {
+      "id": "unit-candy-guard",
+      "role": "GUARD",
+      "label": "Choco Engineer",
+      "sourceId": "unit-candy-choco-engineer",
+      "scaleClass": "standard",
+      "sourceSha256": "020d0448b1db6be74b00aa3d468ca4f4aa7d9c2c700d63ae7c03a683ec314fcf",
+      "portraitSha256": "b0b73f259c5217086a78b29a6bf53ecc465404b7a050b7326180b3815d8f9810",
+      "sourceDimensions": {
+        "width": 256,
+        "height": 296
+      },
+      "alphaBounds": {
+        "left": 45,
+        "top": 4,
+        "right": 211,
+        "bottom": 222
+      },
+      "displayScale": 0.25,
+      "offsetY": 0,
+      "visibleWidthRatio": 0.32422,
+      "visibleHeightRatio": 0.73649,
+      "opaqueDiamondAreaRatio": 0.28637,
+      "adjacentOcclusionRatio": {
+        "NORTH": 0.03569,
+        "EAST": 0,
+        "SOUTH": 0,
+        "WEST": 0.03317
+      },
+      "maximumRearTileOcclusionRatio": 0.03569
+    },
+    {
+      "id": "unit-candy-raider",
+      "role": "RAIDER",
+      "label": "Donut",
+      "sourceId": "unit-candy-donut",
+      "scaleClass": "standard",
+      "sourceSha256": "041fd6defb9b46059e9036418c501cc287e8ac74180384594770e9d1d764a991",
+      "portraitSha256": "a3e48698ad7469c753741c8029aa10a09740f14a31af3ce895c71b0624f459b2",
+      "sourceDimensions": {
+        "width": 256,
+        "height": 296
+      },
+      "alphaBounds": {
+        "left": 41,
+        "top": 24,
+        "right": 212,
+        "bottom": 222
+      },
+      "displayScale": 0.25,
+      "offsetY": 0,
+      "visibleWidthRatio": 0.33398,
+      "visibleHeightRatio": 0.66892,
+      "opaqueDiamondAreaRatio": 0.33427,
+      "adjacentOcclusionRatio": {
+        "NORTH": 0.04071,
+        "EAST": 0,
+        "SOUTH": 0,
+        "WEST": 0.04183
+      },
+      "maximumRearTileOcclusionRatio": 0.04183
+    },
+    {
+      "id": "unit-candy-medic",
+      "role": "MEDIC",
+      "label": "Marshmallow Medic",
+      "sourceId": "unit-candy-medic",
+      "scaleClass": "standard",
+      "sourceSha256": "868b00e650c05e22bd085d72f093fd8c80554ba17a3357a2982833c617e98327",
+      "portraitSha256": "d26d63b1415afd8a701b536a9fddaddfd540d99169eac4c85adf2762145870ab",
+      "sourceDimensions": {
+        "width": 256,
+        "height": 296
+      },
+      "alphaBounds": {
+        "left": 19,
+        "top": 27,
+        "right": 237,
+        "bottom": 222
+      },
+      "displayScale": 0.25,
+      "offsetY": 0,
+      "visibleWidthRatio": 0.42578,
+      "visibleHeightRatio": 0.65878,
+      "opaqueDiamondAreaRatio": 0.36621,
+      "adjacentOcclusionRatio": {
+        "NORTH": 0.04595,
+        "EAST": 0,
+        "SOUTH": 0,
+        "WEST": 0.02841
+      },
+      "maximumRearTileOcclusionRatio": 0.04595
+    },
+    {
+      "id": "unit-candy-heavy",
+      "role": "HEAVY",
+      "label": "Jawbreaker",
+      "sourceId": "unit-candy-heavy",
+      "scaleClass": "standard",
+      "sourceSha256": "5897e7b0d7d8dd4746ff7ecadba4ba0b0d72266df4b33b25743fef33c5ee1455",
+      "portraitSha256": "986b798d43c19d41948213dab8d78e300148ad11350dacf65af282ee464228fa",
+      "sourceDimensions": {
+        "width": 256,
+        "height": 296
+      },
+      "alphaBounds": {
+        "left": 33,
+        "top": 12,
+        "right": 222,
+        "bottom": 222
+      },
+      "displayScale": 0.25,
+      "offsetY": 0,
+      "visibleWidthRatio": 0.36914,
+      "visibleHeightRatio": 0.70946,
+      "opaqueDiamondAreaRatio": 0.35407,
+      "adjacentOcclusionRatio": {
+        "NORTH": 0.0448,
+        "EAST": 0,
+        "SOUTH": 0,
+        "WEST": 0.04622
+      },
+      "maximumRearTileOcclusionRatio": 0.04622
+    },
+    {
+      "id": "unit-candy-breacher",
+      "role": "BREACHER",
+      "label": "Candy Crusher",
+      "sourceId": "unit-candy-breacher",
+      "scaleClass": "siege",
+      "sourceSha256": "d2fb335814ae4929cb47891bcb8561c8092a1bfc9fc53f98b9b4a32382898fca",
+      "portraitSha256": "b88d9067dbc590b32e7a3cfde533f5c2d6932df728dcff4eed9a42e0dccf4aa7",
+      "sourceDimensions": {
+        "width": 384,
+        "height": 384
+      },
+      "alphaBounds": {
+        "left": 90,
+        "top": 75,
+        "right": 368,
+        "bottom": 288
+      },
+      "displayScale": 0.24,
+      "offsetY": 0,
+      "visibleWidthRatio": 0.52125,
+      "visibleHeightRatio": 0.69081,
+      "opaqueDiamondAreaRatio": 0.44611,
+      "adjacentOcclusionRatio": {
+        "NORTH": 0.10448,
+        "EAST": 0,
+        "SOUTH": 0,
+        "WEST": 0.0453
+      },
+      "maximumRearTileOcclusionRatio": 0.10448
+    },
+    {
+      "id": "unit-candy-juggernaut",
+      "role": "JUGGERNAUT",
+      "label": "Sugar Titan",
+      "sourceId": "unit-candy-juggernaut",
+      "scaleClass": "giant",
+      "sourceSha256": "7d360ee7191644121f4397be91ac7ab42769883b44d6481d6c056ad7c5df76c9",
+      "portraitSha256": "b912be1968363a2a6f4b313513825cbe125b1dc75dcd2c443c828ae413d464e7",
+      "sourceDimensions": {
+        "width": 384,
+        "height": 448
+      },
+      "alphaBounds": {
+        "left": 59,
+        "top": 24,
+        "right": 324,
+        "bottom": 336
+      },
+      "displayScale": 0.25,
+      "offsetY": 0,
+      "visibleWidthRatio": 0.51758,
+      "visibleHeightRatio": 1.05405,
+      "opaqueDiamondAreaRatio": 0.7724,
+      "adjacentOcclusionRatio": {
+        "NORTH": 0.12977,
+        "EAST": 0,
+        "SOUTH": 0,
+        "WEST": 0.11299
+      },
+      "maximumRearTileOcclusionRatio": 0.12977
+    }
+  ],
+  "projectileOrigin": {
+    "id": "unit-candy-gumball-guard",
+    "normalized": {
+      "x": 0.6523,
+      "y": 0.5156
+    },
+    "sourcePixel": {
+      "x": 167,
+      "y": 153
+    },
+    "alpha": 255
+  },
+  "candyWarriorPlacementCorrection": {
+    "offsetY": 7.5,
+    "simulationAnchorUnchanged": true
+  },
+  "rejectionHistory": {
+    "unit-candy-breacher": [
+      {
+        "candidate": "art/pixellab/quarantine/unit-candy-breacher-d221ce78ffb6.png",
+        "candidateSha256": "d221ce78ffb678ad773aad4e98314f80fcd3dfb55eb4726ffca6f366493c13ad",
+        "notes": "Rejected individual Candy Crusher attempt: technically bounded, but the upright striped mallet reads like a launcher/barrel and the cube reads as a gift; the close-range horizontal battering function is not unambiguous at minimum zoom.",
+        "reviewedAt": "2026-09-01T18:17:13.387Z",
+        "request": {
+          "endpoint": "generate-image-v2",
+          "model": "generate-image-v2",
+          "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated Candy Crusher melee-siege game sprite only, southeast-facing three-quarter strategy view looking slightly downward. Exactly one fragile low-wide wafer cart with exactly two readable peppermint wheels whose contact midpoint is x192 y288, an enormous blunt red-and-white peppermint battering mallet aimed southeast, a small brittle sugar-glass charge box with one short unlit licorice fuse, and warm-pink bindings as the ownership patch. Compact toy-like confection siege tool, no crew, no blast, and no projectile. Strong near-black cocoa outline, flat two-level cel shading, blank transparent 384 by 384 canvas, preferred alpha x50..334 y58..288 and hard alpha x16..368 y8..336. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; catapult, throwing arm, sling, ballista, cannon, arrow, projectile in flight, bomb in flight, lit fuse, explosion, smoke, blast, impact effect, gore, crew, tall tower, scenery, ground, cast shadow, UI, text, floating wheels, hidden wheel contacts, photoreal food, 3D render.",
+          "prompt": "Isolated Candy Crusher melee-siege game sprite only, southeast-facing three-quarter strategy view looking slightly downward. Exactly one fragile low-wide wafer cart with exactly two readable peppermint wheels whose contact midpoint is x192 y288, an enormous blunt red-and-white peppermint battering mallet aimed southeast, a small brittle sugar-glass charge box with one short unlit licorice fuse, and warm-pink bindings as the ownership patch. Compact toy-like confection siege tool, no crew, no blast, and no projectile. Strong near-black cocoa outline, flat two-level cel shading, blank transparent 384 by 384 canvas, preferred alpha x50..334 y58..288 and hard alpha x16..368 y8..336.",
+          "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; catapult, throwing arm, sling, ballista, cannon, arrow, projectile in flight, bomb in flight, lit fuse, explosion, smoke, blast, impact effect, gore, crew, tall tower, scenery, ground, cast shadow, UI, text, floating wheels, hidden wheel contacts, photoreal food, 3D render",
+          "requestSize": {
+            "width": 384,
+            "height": 384
+          },
+          "outputSize": {
+            "width": 384,
+            "height": 384
+          },
+          "seed": 93303,
+          "noBackground": true,
+          "postprocess": "unit-fit",
+          "groundContactY": 288,
+          "styleReference": {
+            "id": "unit-candy-warrior",
+            "sha256": "76456b060ba1701e75387285b4738d4c289c0617eb852f5552beadfe2eb1a2bc",
+            "usageDescription": "Match the accepted Candy faction cocoa outline, red-pink-cream palette, flat shading, camera, and playful detail budget only; create a low-wide melee siege silhouette."
+          }
+        }
+      },
+      {
+        "candidate": "art/pixellab/quarantine/unit-candy-breacher-00cd8accd853.png",
+        "candidateSha256": "00cd8accd85349f722d5a0e4a12c908c36f1944531a52116c5972160e9ff2e4a",
+        "notes": "Rejected after deterministic four-direction audit: WEST rear-tile alpha overlap 0.13395 exceeds the siege cap 0.12, and the two visible ground-wheel contacts sit too far left of the x192 anchor. Regenerate a centered compact ram with wheel contacts around x150/x234 and a narrower fit.",
+        "reviewedAt": "2026-09-01T18:44:00.926Z",
+        "request": {
+          "endpoint": "generate-image-v2",
+          "model": "generate-image-v2",
+          "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated Candy Crusher melee-siege sprite, southeast-facing three-quarter downward view. One fragile low-wide wafer battering cart with exactly two peppermint wheels contacting around x192 y288. One huge SOLID horizontal striped peppermint ram is fixed low through the cart and projects southeast, ending in a blunt wrapped-candy cap; no opening, hinge, throwing arm or upright barrel. Add a small cracked sugar-glass capsule strapped flat under the chassis with a short unlit licorice fuse, plus warm-pink ownership bindings. Cute toy-like confection demolition tool, no crew, blast or projectile. Strong cocoa outline, flat two-level cel shading, transparent 384 by 384 canvas, preferred alpha x50..334 y52..288, hard x16..368 y8..336. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; upright mallet, upright barrel, gift box, catapult, throwing arm, sling, ballista, cannon, hollow tube, muzzle, arrow, projectile, lit fuse, explosion, smoke, blast, gore, crew, tall tower, scenery, ground, shadow, UI, text, floating wheels, hidden wheel contacts, photoreal food, 3D render.",
+          "prompt": "Isolated Candy Crusher melee-siege sprite, southeast-facing three-quarter downward view. One fragile low-wide wafer battering cart with exactly two peppermint wheels contacting around x192 y288. One huge SOLID horizontal striped peppermint ram is fixed low through the cart and projects southeast, ending in a blunt wrapped-candy cap; no opening, hinge, throwing arm or upright barrel. Add a small cracked sugar-glass capsule strapped flat under the chassis with a short unlit licorice fuse, plus warm-pink ownership bindings. Cute toy-like confection demolition tool, no crew, blast or projectile. Strong cocoa outline, flat two-level cel shading, transparent 384 by 384 canvas, preferred alpha x50..334 y52..288, hard x16..368 y8..336.",
+          "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; upright mallet, upright barrel, gift box, catapult, throwing arm, sling, ballista, cannon, hollow tube, muzzle, arrow, projectile, lit fuse, explosion, smoke, blast, gore, crew, tall tower, scenery, ground, shadow, UI, text, floating wheels, hidden wheel contacts, photoreal food, 3D render",
+          "requestSize": {
+            "width": 384,
+            "height": 384
+          },
+          "outputSize": {
+            "width": 384,
+            "height": 384
+          },
+          "seed": 93313,
+          "noBackground": true,
+          "postprocess": "unit-fit",
+          "groundContactY": 288,
+          "styleReference": {
+            "id": "unit-candy-warrior",
+            "sha256": "76456b060ba1701e75387285b4738d4c289c0617eb852f5552beadfe2eb1a2bc",
+            "usageDescription": "Match the accepted Candy faction cocoa outline, red-pink-cream palette, flat shading, camera, and playful detail budget only; create a low-wide melee siege silhouette."
+          }
+        }
+      }
+    ],
+    "unit-candy-juggernaut": [
+      {
+        "candidate": "art/pixellab/quarantine/unit-candy-juggernaut-eacd0bdbc615.png",
+        "candidateSha256": "eacd0bdbc615c8429f20dcf96af5a85c156e7803e2f776a307674b6e7cc2fec5",
+        "notes": "Rejected first Sugar Titan gate: attractive and technically under hard caps, but its crouched wide composition is only 0.861 tile-height at runtime, below the 1.00 giant target, so it reads as an enlarged Heavy rather than a systematic giant.",
+        "reviewedAt": "2026-09-01T18:29:52.609Z",
+        "request": {
+          "endpoint": "generate-image-v2",
+          "model": "generate-image-v2",
+          "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated full-body Sugar Titan giant game sprite only, southeast-facing three-quarter strategy view looking slightly downward. Exactly one giant cute chunky rock-candy figure with a large readable face, both peppermint boots visibly braced around ground contact x192 y336, enormous broad shoulders, one oversized forward-held slab of layered candy as a pushing guard and one huge striped sugar gauntlet. Cream, cocoa, coral-red and warm-pink candy layers preserve the Candy faction language, with one contiguous cream belt patch around ten percent of visible area for ownership tinting. One figure only, push-ready toy-soldier pose, strong near-black cocoa outline, flat two-level cel shading, blank transparent 384 by 448 canvas, preferred alpha x42..342 y24..336 and hard alpha x8..376 y4..400. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; multiple characters, mount, building, candy shop, monster scenery, boss frame, health bar, label, text, selection ring, glow, projectile, attack effect, gore, ground, cast shadow, hidden feet, cropped silhouette, realistic anatomy, tiny ordinary unit, photoreal food, 3D render.",
+          "prompt": "Isolated full-body Sugar Titan giant game sprite only, southeast-facing three-quarter strategy view looking slightly downward. Exactly one giant cute chunky rock-candy figure with a large readable face, both peppermint boots visibly braced around ground contact x192 y336, enormous broad shoulders, one oversized forward-held slab of layered candy as a pushing guard and one huge striped sugar gauntlet. Cream, cocoa, coral-red and warm-pink candy layers preserve the Candy faction language, with one contiguous cream belt patch around ten percent of visible area for ownership tinting. One figure only, push-ready toy-soldier pose, strong near-black cocoa outline, flat two-level cel shading, blank transparent 384 by 448 canvas, preferred alpha x42..342 y24..336 and hard alpha x8..376 y4..400.",
+          "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; multiple characters, mount, building, candy shop, monster scenery, boss frame, health bar, label, text, selection ring, glow, projectile, attack effect, gore, ground, cast shadow, hidden feet, cropped silhouette, realistic anatomy, tiny ordinary unit, photoreal food, 3D render",
+          "requestSize": {
+            "width": 384,
+            "height": 448
+          },
+          "outputSize": {
+            "width": 384,
+            "height": 448
+          },
+          "seed": 93305,
+          "noBackground": true,
+          "postprocess": "unit-fit",
+          "groundContactY": 336,
+          "styleReference": {
+            "id": "unit-candy-heavy",
+            "sha256": "5897e7b0d7d8dd4746ff7ecadba4ba0b0d72266df4b33b25743fef33c5ee1455",
+            "usageDescription": "Match the accepted Candy faction cocoa outline, warm confection palette, flat shading, camera, and playful detail budget only; create one systematic giant-class Sugar Titan figure."
+          }
+        }
+      }
+    ]
+  },
+  "reviewCoverage": [
+    "individual source/native/enlarged/0.625x acceptance",
+    "0.625x/1x/1.75x and DPR1/2",
+    "Grass/Forest/Mountain/city/Road/dense economy",
+    "all four owner colors",
+    "selected/damaged/fog/reduced-motion static readability",
+    "mixed Original-Candy formation, health, labels, status, picking and adjacency sorting",
+    "Candy Warrior placement correction and Gumball Guard opaque chute attachment",
+    "Candify/Roll/Chocolate Wall/gumball projectile/Heal/Push/Breach code-native separation",
+    "portrait 64 CSS px on light/dark/high-contrast panels",
+    "silhouette plus labels/patterns remains independent of hue"
+  ],
+  "artifacts": [
+    {
+      "filename": "individual-source-native-enlarged-minimum.png",
+      "sha256": "75211e0b509d0c740d3dbf362dcea2917d3a34c5febe913c339edbe5ee79b3e4",
+      "bytes": 464677
+    },
+    {
+      "filename": "bounded-family-alias-counterpart-gates.png",
+      "sha256": "9584f5e4e1fd8b5e0df2c66e2398615d256c76914a4611ec8e7b2ae6a97e29bd",
+      "bytes": 304368
+    },
+    {
+      "filename": "owners-selection-damage-fog-map-contexts.png",
+      "sha256": "019385139a778cb27bb210758f235378a70fda7eb6168c26089cb50260c99f42",
+      "bytes": 358780
+    },
+    {
+      "filename": "zoom-dpr-representatives.png",
+      "sha256": "8ea7a1aadc237c50fda27b3575a62c26ce0fa2713a17afc04a4c2f338845af64",
+      "bytes": 479511
+    },
+    {
+      "filename": "mixed-formation-adjacency-sorting.png",
+      "sha256": "0686b1f77b2afe2ee64a6de2e7217db4c4611df415dea8f2544eb594e3993ddc",
+      "bytes": 129620
+    },
+    {
+      "filename": "portrait-64px-contexts.png",
+      "sha256": "17a45a07ac836b8cba78eb0d9014737f1ac7a94ef90f8504cd7aaf354c1cd449",
+      "bytes": 150994
+    },
+    {
+      "filename": "ability-attachment-contexts.png",
+      "sha256": "89398751a87308f1b29f5ef4967a767c0560875668baebe01b1e6363dcb57420",
+      "bytes": 189004
+    }
+  ],
+  "visualReview": {
+    "status": "ACCEPTED",
+    "notes": "All nine Candy roles are distinct from one another and their Original counterparts at minimum zoom. Ordinary units remain materially smaller than terrain, Candy Crusher is low-wide, and Sugar Titan is a bounded tall giant. City labels, adjacent targets, selection, health and owner attachments remain readable."
+  }
+}

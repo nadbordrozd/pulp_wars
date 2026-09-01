@@ -61,6 +61,48 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   "portrait-original-juggernaut": publicArtUrl(
     "assets/pixellab/ui/portrait-original-juggernaut.png",
   ),
+  "unit-candy-scout": publicArtUrl(
+    "assets/pixellab/units/candy-jelly-scout.png",
+  ),
+  "unit-candy-medic": publicArtUrl(
+    "assets/pixellab/units/candy-marshmallow-medic.png",
+  ),
+  "unit-candy-breacher": publicArtUrl(
+    "assets/pixellab/units/candy-crusher.png",
+  ),
+  "unit-candy-heavy": publicArtUrl(
+    "assets/pixellab/units/candy-jawbreaker.png",
+  ),
+  "unit-candy-juggernaut": publicArtUrl(
+    "assets/pixellab/units/candy-sugar-titan.png",
+  ),
+  "portrait-candy-fighter": publicArtUrl(
+    "assets/pixellab/ui/portrait-candy-fighter.png",
+  ),
+  "portrait-candy-scout": publicArtUrl(
+    "assets/pixellab/ui/portrait-candy-scout.png",
+  ),
+  "portrait-candy-marksman": publicArtUrl(
+    "assets/pixellab/ui/portrait-candy-marksman.png",
+  ),
+  "portrait-candy-guard": publicArtUrl(
+    "assets/pixellab/ui/portrait-candy-guard.png",
+  ),
+  "portrait-candy-raider": publicArtUrl(
+    "assets/pixellab/ui/portrait-candy-raider.png",
+  ),
+  "portrait-candy-medic": publicArtUrl(
+    "assets/pixellab/ui/portrait-candy-medic.png",
+  ),
+  "portrait-candy-heavy": publicArtUrl(
+    "assets/pixellab/ui/portrait-candy-heavy.png",
+  ),
+  "portrait-candy-breacher": publicArtUrl(
+    "assets/pixellab/ui/portrait-candy-breacher.png",
+  ),
+  "portrait-candy-juggernaut": publicArtUrl(
+    "assets/pixellab/ui/portrait-candy-juggernaut.png",
+  ),
   "terrain-grass-1": publicArtUrl("assets/pixellab/terrain/grass-1.png"),
   "terrain-grass-2": publicArtUrl("assets/pixellab/terrain/grass-2.png"),
   "terrain-grass-3": publicArtUrl("assets/pixellab/terrain/grass-3.png"),
@@ -203,6 +245,14 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   "unit-original-marksman": publicArtUrl("assets/pixellab/units/archer.png"),
   "unit-original-guard": publicArtUrl("assets/pixellab/units/defender.png"),
   "unit-original-raider": publicArtUrl("assets/pixellab/units/rider.png"),
+  "unit-candy-fighter": publicArtUrl("assets/pixellab/units/candy-warrior.png"),
+  "unit-candy-marksman": publicArtUrl(
+    "assets/pixellab/units/candy-gumball-guard.png",
+  ),
+  "unit-candy-guard": publicArtUrl(
+    "assets/pixellab/units/candy-choco-engineer.png",
+  ),
+  "unit-candy-raider": publicArtUrl("assets/pixellab/units/candy-donut.png"),
   "terrain-road-mask-0000": publicArtUrl(
     "assets/pixellab/terrain/road-masks/road-mask-0000.png",
   ),
@@ -261,6 +311,10 @@ export const ACCEPTED_ART_ALIASES: Readonly<Record<string, string>> = {
   "unit-original-marksman": "unit-archer",
   "unit-original-guard": "unit-defender",
   "unit-original-raider": "unit-rider",
+  "unit-candy-fighter": "unit-candy-warrior",
+  "unit-candy-marksman": "unit-candy-gumball-guard",
+  "unit-candy-guard": "unit-candy-choco-engineer",
+  "unit-candy-raider": "unit-candy-donut",
 };
 
 export interface AcceptedArtAttachment {

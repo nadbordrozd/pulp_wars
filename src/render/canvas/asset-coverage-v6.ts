@@ -287,16 +287,30 @@ const ACCEPTED_UNIT_ART: Readonly<
     },
   },
   CANDY: {
-    FIGHTER: { assetId: "unit-candy-warrior", fileStem: "candy-warrior" },
+    FIGHTER: { assetId: "unit-candy-fighter", fileStem: "candy-warrior" },
+    SCOUT: { assetId: "unit-candy-scout", fileStem: "candy-jelly-scout" },
     MARKSMAN: {
-      assetId: "unit-candy-gumball-guard",
+      assetId: "unit-candy-marksman",
       fileStem: "candy-gumball-guard",
     },
     GUARD: {
-      assetId: "unit-candy-choco-engineer",
+      assetId: "unit-candy-guard",
       fileStem: "candy-choco-engineer",
     },
-    RAIDER: { assetId: "unit-candy-donut", fileStem: "candy-donut" },
+    RAIDER: { assetId: "unit-candy-raider", fileStem: "candy-donut" },
+    MEDIC: {
+      assetId: "unit-candy-medic",
+      fileStem: "candy-marshmallow-medic",
+    },
+    HEAVY: { assetId: "unit-candy-heavy", fileStem: "candy-jawbreaker" },
+    BREACHER: {
+      assetId: "unit-candy-breacher",
+      fileStem: "candy-crusher",
+    },
+    JUGGERNAUT: {
+      assetId: "unit-candy-juggernaut",
+      fileStem: "candy-sugar-titan",
+    },
   },
 };
 

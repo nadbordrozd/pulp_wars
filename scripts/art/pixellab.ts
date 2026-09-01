@@ -47,6 +47,8 @@ interface Recipe {
   readonly palette?: string;
   readonly preferredBounds?: Bounds;
   readonly fitBounds?: Bounds;
+  /** Deterministic source-canvas translation after fitting and ground alignment. */
+  readonly fitOffsetX?: number;
   readonly postprocess?:
     | "diamond-mask"
     | "diamond-mask-reference-edges"
@@ -75,6 +77,7 @@ interface RequestSnapshot {
   readonly palette?: string;
   readonly postprocess?: Recipe["postprocess"];
   readonly groundContactY?: number;
+  readonly fitOffsetX?: number;
   readonly styleReference?: {
     readonly id: string;
     readonly sha256?: string;
@@ -199,6 +202,7 @@ async function main(): Promise<void> {
     );
     if (recipes.length === 0) throw new Error("No recipes selected");
     assertOriginalUnitOrder(recipes, generated);
+    assertCandyUnitOrder(recipes, generated);
     if (stage === "batch") assertBuildingBatchOrder(recipes, generated);
     const concurrency = Number(optionalOption("--concurrency") ?? "3");
     await generateRecipes(source, generated, recipes, concurrency);
@@ -254,8 +258,7 @@ async function main(): Promise<void> {
         notes: recipe.postprocess?.startsWith("diamond-mask")
           ? "Deterministic supersampled diamond alpha mask applied by checked-in pipeline."
           : "Deterministic hard-bounds normalization applied by checked-in pipeline.",
-        request:
-          generated.records[id]?.request ?? requestSnapshot(source, recipe),
+        request: requestSnapshot(source, recipe),
       };
       console.log(
         `${id}: repaired candidate (${inspection.sha256.slice(0, 12)})`,
@@ -365,6 +368,8 @@ function validateSourceManifest(
         recipe.groundContactY > recipe.hardBounds.bottom)
     )
       throw new Error(`Invalid ground contact for ${recipe.id}`);
+    if (recipe.fitOffsetX !== undefined && !Number.isInteger(recipe.fitOffsetX))
+      throw new Error(`Invalid deterministic fit offset for ${recipe.id}`);
     if (
       recipe.styleReference !== undefined &&
       !source.recipes.some(
@@ -691,6 +696,78 @@ function validateSourceManifest(
     )
       throw new Error(`Original portrait contract mismatch: ${id}`);
   }
+  const candyAliases = new Map(
+    (source.aliases ?? []).map((alias) => [alias.id, alias]),
+  );
+  for (const [id, aliasSource, semanticRole] of [
+    ["unit-candy-fighter", "unit-candy-warrior", "CANDY_FIGHTER_CANDY_WARRIOR"],
+    [
+      "unit-candy-marksman",
+      "unit-candy-gumball-guard",
+      "CANDY_MARKSMAN_GUMBALL_GUARD",
+    ],
+    [
+      "unit-candy-guard",
+      "unit-candy-choco-engineer",
+      "CANDY_GUARD_CHOCO_ENGINEER",
+    ],
+    ["unit-candy-raider", "unit-candy-donut", "CANDY_RAIDER_DONUT"],
+  ] as const) {
+    const alias = candyAliases.get(id);
+    if (alias?.source !== aliasSource || alias.semanticRole !== semanticRole)
+      throw new Error(`Ruleset 6 Candy role alias mismatch: ${id}`);
+  }
+  const candyUnits = [
+    ["unit-candy-scout", "sample", 256, 296, 128, 222],
+    ["unit-candy-medic", "sample", 256, 296, 128, 222],
+    ["unit-candy-breacher", "sample", 384, 384, 192, 288],
+    ["unit-candy-heavy", "batch", 256, 296, 128, 222],
+    ["unit-candy-juggernaut", "batch", 384, 448, 192, 336],
+  ] as const;
+  for (const [id, stage, width, height, anchorX, anchorY] of candyUnits) {
+    const recipe = source.recipes.find((candidate) => candidate.id === id);
+    if (
+      recipe?.class !== "units" ||
+      recipe.stage !== stage ||
+      recipe.requestSize.width !== width ||
+      recipe.requestSize.height !== height ||
+      recipe.outputSize.width !== width ||
+      recipe.outputSize.height !== height ||
+      recipe.anchor?.x !== anchorX ||
+      recipe.anchor.y !== anchorY ||
+      recipe.groundContactY !== anchorY ||
+      recipe.postprocess !== "unit-fit" ||
+      recipe.preferredBounds === undefined ||
+      recipe.includeFactionLanguage !== false
+    )
+      throw new Error(`Candy unit geometry mismatch: ${id}`);
+  }
+  const candyPortraitSources = new Map([
+    ["fighter", "unit-candy-warrior"],
+    ["scout", "unit-candy-scout"],
+    ["marksman", "unit-candy-gumball-guard"],
+    ["guard", "unit-candy-choco-engineer"],
+    ["raider", "unit-candy-donut"],
+    ["medic", "unit-candy-medic"],
+    ["heavy", "unit-candy-heavy"],
+    ["breacher", "unit-candy-breacher"],
+    ["juggernaut", "unit-candy-juggernaut"],
+  ]);
+  for (const [role, portraitSource] of candyPortraitSources) {
+    const id = `portrait-candy-${role}`;
+    const recipe = source.recipes.find((candidate) => candidate.id === id);
+    if (
+      recipe?.class !== "ui" ||
+      recipe.stage !== "batch" ||
+      recipe.outputSize.width !== 256 ||
+      recipe.outputSize.height !== 256 ||
+      recipe.postprocess !== "sprite-derived-portrait" ||
+      recipe.styleReference !== portraitSource ||
+      JSON.stringify(recipe.hardBounds) !==
+        JSON.stringify({ left: 20, top: 20, right: 236, bottom: 236 })
+    )
+      throw new Error(`Candy portrait contract mismatch: ${id}`);
+  }
 }
 
 function assertRecipeGeometry(
@@ -836,6 +913,65 @@ function assertOriginalUnitOrder(
       );
     if (generated.records["unit-original-heavy"]?.status !== "ACCEPTED")
       throw new Error("Accept the Original frontline family before Juggernaut");
+  }
+}
+
+function assertCandyUnitOrder(
+  recipes: readonly Recipe[],
+  generated: GeneratedManifest,
+): void {
+  const samples = [
+    "unit-candy-scout",
+    "unit-candy-medic",
+    "unit-candy-breacher",
+  ] as const;
+  const selectedSamples = recipes.filter((recipe) =>
+    samples.includes(recipe.id as (typeof samples)[number]),
+  );
+  if (selectedSamples.length > 0) {
+    if (selectedSamples.length !== 1)
+      throw new Error(
+        "Jelly Scout, Marshmallow Medic, and Candy Crusher must be generated as separate individual requests",
+      );
+    const selectedIndex = samples.indexOf(
+      selectedSamples[0]?.id as (typeof samples)[number],
+    );
+    const missingEarlier = samples
+      .slice(0, selectedIndex)
+      .filter((id) => generated.records[id]?.status !== "ACCEPTED");
+    if (missingEarlier.length > 0)
+      throw new Error(
+        `Candy sample gate order requires acceptance first: ${missingEarlier.join(", ")}`,
+      );
+    return;
+  }
+
+  const selectedUnits = recipes
+    .map((recipe) => recipe.id)
+    .filter((id) => ["unit-candy-heavy", "unit-candy-juggernaut"].includes(id));
+  if (selectedUnits.length === 0) return;
+  if (samples.some((id) => generated.records[id]?.status !== "ACCEPTED"))
+    throw new Error(
+      "Accept Jelly Scout, Marshmallow Medic, and Candy Crusher before later Candy units",
+    );
+  if (selectedUnits.includes("unit-candy-heavy")) {
+    if (selectedUnits.length !== 1)
+      throw new Error(
+        "Generate Jawbreaker alone within the Candy frontline family gate",
+      );
+    for (const id of ["unit-candy-warrior", "unit-candy-gumball-guard"])
+      if (generated.records[id]?.status !== "ACCEPTED")
+        throw new Error(`Candy frontline alias source is not accepted: ${id}`);
+    return;
+  }
+  if (selectedUnits.includes("unit-candy-juggernaut")) {
+    if (selectedUnits.length !== 1)
+      throw new Error("Generate Sugar Titan as an individual giant gate");
+    if (generated.records["unit-candy-heavy"]?.status !== "ACCEPTED")
+      throw new Error("Accept the Candy frontline family before Sugar Titan");
+    for (const id of ["unit-candy-choco-engineer", "unit-candy-donut"])
+      if (generated.records[id]?.status !== "ACCEPTED")
+        throw new Error(`Candy alias family source is not accepted: ${id}`);
   }
 }
 
@@ -1117,6 +1253,9 @@ function requestSnapshot(
     ...(recipe.groundContactY === undefined
       ? {}
       : { groundContactY: recipe.groundContactY }),
+    ...(recipe.fitOffsetX === undefined
+      ? {}
+      : { fitOffsetX: recipe.fitOffsetX }),
     ...(recipe.styleReference === undefined
       ? {}
       : {
@@ -1501,6 +1640,28 @@ async function normalizeToHardBounds(
         0,
         groundShift,
       );
+  }
+  if (recipe.fitOffsetX !== undefined && recipe.fitOffsetX !== 0) {
+    inspection = await inspectPng(destination);
+    const shifted = {
+      ...inspection.alphaBounds,
+      left: inspection.alphaBounds.left + recipe.fitOffsetX,
+      right: inspection.alphaBounds.right + recipe.fitOffsetX,
+    };
+    if (
+      shifted.left < recipe.hardBounds.left ||
+      shifted.right > recipe.hardBounds.right
+    )
+      throw new Error(
+        `${recipe.id} deterministic x offset exceeds hard bounds`,
+      );
+    await translatePng(
+      destination,
+      recipe.outputSize.width,
+      recipe.outputSize.height,
+      recipe.fitOffsetX,
+      0,
+    );
   }
 }
 

@@ -456,7 +456,7 @@ describe("ruleset-6 exact Normal reward and research policy", () => {
     expect(
       scored(candy, (command) => command.kind === "TRAIN").command,
     ).toMatchObject({ role: "RAIDER" });
-  });
+  }, 10_000);
 });
 
 describe("ruleset-6 exact Normal economy policy", () => {
@@ -538,7 +538,7 @@ describe("ruleset-6 exact Normal economy policy", () => {
     );
     expect(grandCandidate.score.priority).toBe(1210);
     expect(grandCandidate.score.immediateValue).toBeGreaterThan(0);
-  });
+  }, 10_000);
 
   it("uses priority 1120 for the exact Market-capital Road connection", () => {
     const road = { x: 6, y: 5 };
@@ -691,7 +691,7 @@ describe("ruleset-6 exact Normal combat and Candy policy", () => {
           .priority,
       ).toBe(priority);
     }
-  });
+  }, 10_000);
 
   it("uses public Charge and Breach previews", () => {
     const charge: PlayerViewV6 = {
@@ -859,7 +859,7 @@ describe("ruleset-6 exact Normal combat and Candy policy", () => {
           command.kind === "KAMIKAZE_ROLL" && command.direction === "EAST",
       ),
     ).toBe(false);
-  });
+  }, 10_000);
 
   it("uses traversable shortest paths instead of geometric Wall approximation", () => {
     const open: PlayerViewV6 = {

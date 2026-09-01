@@ -507,7 +507,7 @@ describe("playable ruleset-6 DOM shell", () => {
     expect(train?.textContent).toContain("Candy Warrior · 2 Coins");
     expect(train?.ariaLabel).toBe("Train Candy Warrior for 2 Coins");
     expect(train?.querySelector<HTMLImageElement>("img")?.src).toContain(
-      "assets/pixellab/units/candy-warrior.png",
+      "assets/pixellab/ui/portrait-candy-fighter.png",
     );
     const scoutTrain: CommandV6 = {
       kind: "TRAIN",
@@ -523,9 +523,9 @@ describe("playable ruleset-6 DOM shell", () => {
       '[data-command-kind="TRAIN"]',
     );
     expect(scout?.textContent).toContain("Jelly Scout · 3 Coins");
-    expect(
-      scout?.querySelector('[data-symbol-kind="code-native-fallback"]'),
-    ).not.toBeNull();
+    expect(scout?.querySelector<HTMLImageElement>("img")?.src).toContain(
+      "assets/pixellab/ui/portrait-candy-scout.png",
+    );
     fake.setSnapshot({ ...fake.snapshot(), offeredCommands: commands });
 
     host.callbacks?.onSelection({ kind: "TILE", at: city.at });
@@ -632,6 +632,40 @@ describe("playable ruleset-6 DOM shell", () => {
         trainButtons[index]?.querySelector<HTMLImageElement>("img")?.src,
       ).toContain(
         `assets/pixellab/ui/portrait-original-${role.toLowerCase()}.png`,
+      );
+
+    app.destroy();
+  });
+
+  it("uses accepted Candy role portraits for contextual training controls", () => {
+    const view = publicView("CANDY");
+    const city = view.cities.find(
+      (candidate) => candidate.ownerId === view.viewer.id,
+    );
+    if (city === undefined) throw new Error("Missing public city");
+    const commands = UNIT_ROLE_IDS.map((role): CommandV6 => ({
+      kind: "TRAIN",
+      cityId: city.id,
+      role,
+    }));
+    const fake = new FakeController(view, [...commands, { kind: "END_TURN" }]);
+    const host = new FakeBoardHostV6();
+    const app = new Ruleset6DomAppView(document, requireElement("#app"), fake, {
+      boardHost: host,
+    });
+
+    host.callbacks?.onSelection({ kind: "CITY", cityId: city.id });
+    const trainButtons = [
+      ...document.querySelectorAll<HTMLButtonElement>(
+        '[data-command-kind="TRAIN"]',
+      ),
+    ];
+    expect(trainButtons).toHaveLength(UNIT_ROLE_IDS.length);
+    for (const [index, role] of UNIT_ROLE_IDS.entries())
+      expect(
+        trainButtons[index]?.querySelector<HTMLImageElement>("img")?.src,
+      ).toContain(
+        `assets/pixellab/ui/portrait-candy-${role.toLowerCase()}.png`,
       );
 
     app.destroy();

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "867a8f2be1b0860321342aca58e33b8e4f2cec64767f77fc2fc9d2438e101015",
+  "sourceManifestSha256": "015bbd0716272d049d942ec12663c49b8edd71dc14c0bd79513bd0e1810a1a73",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -5326,6 +5326,841 @@
       ],
       "outputSha256": "773d3fb41174fc9939dbae9b98c5fa2e21094b8e4f924193c8e12e0e6a16a0c9",
       "reviewedAt": "2026-09-01T17:12:37.817Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "unit-candy-scout": {
+      "id": "unit-candy-scout",
+      "status": "ACCEPTED",
+      "jobId": "33785ecc-46c6-4292-8712-d30b70bc5c7c",
+      "candidate": "art/pixellab/candidates/unit-candy-scout.png",
+      "candidateSha256": "c835c0a08cc24d5751c0dbc85365f638016029984162a6272387aa3efc2965a9",
+      "providerOutputSha256": "a2bcd8843d8ecb01ec54fa6fe416f613067657c25311404d5ff3ec56b24d9333",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 21,
+        "top": 18,
+        "right": 235,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated full-body Jelly Scout game sprite only, southeast-facing three-quarter strategy view looking slightly downward. Exactly one cute chunky coral-red jelly-bean candy explorer with a large readable face, short solid body, both little boots visible straddling ground contact x128 y222, compact forward exploration pose, one oversized simple brass spyglass held to one eye and one broad pink trail satchel. The opaque glossy jelly body is candy, not a ghost, and the spyglass is unmistakable at 0.625 map zoom. One contiguous cream scarf patch occupies about ten percent of visible area for ownership tinting. Strong near-black cocoa outline, flat two-level cel shading, one simple highlight, blank transparent 256 by 296 canvas, preferred alpha x40..216 y18..222 and hard alpha x16..240 y4..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; ghost, spirit, transparent body, floating body, mount, rider, donut ring, gumball machine, bow, gun, weapon pose, text, compass letters, trail marks, scenery, ground, cast shadow, selection mark, UI, clipped feet, hidden feet, photoreal food, 3D render.",
+        "prompt": "Isolated full-body Jelly Scout game sprite only, southeast-facing three-quarter strategy view looking slightly downward. Exactly one cute chunky coral-red jelly-bean candy explorer with a large readable face, short solid body, both little boots visible straddling ground contact x128 y222, compact forward exploration pose, one oversized simple brass spyglass held to one eye and one broad pink trail satchel. The opaque glossy jelly body is candy, not a ghost, and the spyglass is unmistakable at 0.625 map zoom. One contiguous cream scarf patch occupies about ten percent of visible area for ownership tinting. Strong near-black cocoa outline, flat two-level cel shading, one simple highlight, blank transparent 256 by 296 canvas, preferred alpha x40..216 y18..222 and hard alpha x16..240 y4..252.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; ghost, spirit, transparent body, floating body, mount, rider, donut ring, gumball machine, bow, gun, weapon pose, text, compass letters, trail marks, scenery, ground, cast shadow, selection mark, UI, clipped feet, hidden feet, photoreal food, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 93301,
+        "noBackground": true,
+        "postprocess": "unit-fit",
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "unit-candy-warrior",
+          "sha256": "76456b060ba1701e75387285b4738d4c289c0617eb852f5552beadfe2eb1a2bc",
+          "usageDescription": "Match the accepted Candy faction cocoa outline, warm confection palette, flat shading, camera, chunky proportions, and simple detail budget only; create a distinct Jelly Scout silhouette."
+        }
+      },
+      "notes": "Accepted individual Jelly Scout gate: solid candy identity, oversized spyglass exploration cue, southeast pose and visible feet remain distinct at native and 0.625x; resized within standard preferred geometry (W 0.418, H 0.689, area 0.334).",
+      "outputSha256": "c835c0a08cc24d5751c0dbc85365f638016029984162a6272387aa3efc2965a9",
+      "reviewedAt": "2026-09-01T18:07:13.686Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "unit-candy-medic": {
+      "id": "unit-candy-medic",
+      "status": "ACCEPTED",
+      "jobId": "64f1d5cf-7168-4f0e-88cb-d3c79a2f1ef9",
+      "candidate": "art/pixellab/candidates/unit-candy-medic.png",
+      "candidateSha256": "868b00e650c05e22bd085d72f093fd8c80554ba17a3357a2982833c617e98327",
+      "providerOutputSha256": "cec4261c6f822883face0fed286600dfec18ba9fc2bc707c2d2949b96bfdd49f",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 19,
+        "top": 27,
+        "right": 237,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated full-body Marshmallow Medic game sprite only, southeast-facing three-quarter strategy view looking slightly downward. Exactly one cute chunky square white marshmallow medic with toasted cream corners, a large friendly face, both little boots visible straddling ground contact x128 y222, one oversized pink candy satchel and one huge rolled wafer bandage held clearly as a care tool. Use one simple heart-shaped gold clasp, never a protected medical emblem. The solid squared marshmallow shape must read as candy rather than a ghost and must not resemble a ranged fighter. A contiguous warm-pink apron patch occupies about ten percent of visible area for ownership tinting. Strong near-black cocoa outline, flat two-level cel shading, one simple highlight, blank transparent 256 by 296 canvas, preferred alpha x24..232 y12..222 and hard alpha x16..240 y4..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; ghost, sheet ghost, floating body, transparent body, red cross, crescent emblem, medical logo, rifle, bow, arrow, syringe, weapon as primary silhouette, patient, magic effect, gore, scenery, ground, cast shadow, UI, text, clipped feet, hidden feet, photoreal food, melted marshmallow, 3D render.",
+        "prompt": "Isolated full-body Marshmallow Medic game sprite only, southeast-facing three-quarter strategy view looking slightly downward. Exactly one cute chunky square white marshmallow medic with toasted cream corners, a large friendly face, both little boots visible straddling ground contact x128 y222, one oversized pink candy satchel and one huge rolled wafer bandage held clearly as a care tool. Use one simple heart-shaped gold clasp, never a protected medical emblem. The solid squared marshmallow shape must read as candy rather than a ghost and must not resemble a ranged fighter. A contiguous warm-pink apron patch occupies about ten percent of visible area for ownership tinting. Strong near-black cocoa outline, flat two-level cel shading, one simple highlight, blank transparent 256 by 296 canvas, preferred alpha x24..232 y12..222 and hard alpha x16..240 y4..252.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; ghost, sheet ghost, floating body, transparent body, red cross, crescent emblem, medical logo, rifle, bow, arrow, syringe, weapon as primary silhouette, patient, magic effect, gore, scenery, ground, cast shadow, UI, text, clipped feet, hidden feet, photoreal food, melted marshmallow, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 93302,
+        "noBackground": true,
+        "postprocess": "unit-fit",
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "unit-candy-warrior",
+          "sha256": "76456b060ba1701e75387285b4738d4c289c0617eb852f5552beadfe2eb1a2bc",
+          "usageDescription": "Match the accepted Candy faction cocoa outline, warm confection palette, flat shading, camera, chunky proportions, and simple detail budget only; create a distinct Marshmallow Medic silhouette."
+        }
+      },
+      "notes": "Accepted individual Marshmallow Medic gate: solid squared confection identity, large satchel/wafer care tools with non-protected heart cue, no ranged read, southeast pose and visible feet at 0.625x; standard W 0.426, H 0.659.",
+      "outputSha256": "868b00e650c05e22bd085d72f093fd8c80554ba17a3357a2982833c617e98327",
+      "reviewedAt": "2026-09-01T18:10:45.384Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "unit-candy-breacher": {
+      "id": "unit-candy-breacher",
+      "status": "ACCEPTED",
+      "jobId": "ba5ec715-7c7a-4b2f-b0e9-6f4c0511b246",
+      "candidate": "art/pixellab/candidates/unit-candy-breacher.png",
+      "candidateSha256": "d2fb335814ae4929cb47891bcb8561c8092a1bfc9fc53f98b9b4a32382898fca",
+      "providerOutputSha256": "775bae2708177eb908a77a20de3321fb63656dcc00e03fed9b6cea768b0bfcba",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 90,
+        "top": 75,
+        "right": 368,
+        "bottom": 288,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated Candy Crusher melee-siege sprite, southeast-facing three-quarter downward view. One compact low-wide wafer battering cart centered over x192. Exactly two ground wheels: rear wheel centered near x150 y270 and front wheel near x234 y270, with both bottom contacts at y288 and midpoint x192. One solid horizontal striped peppermint ram stays low through the cart and projects southeast/right, ending in a blunt wrapped-candy cap; no opening, hinge, throwing arm or upright barrel. Warm-pink ownership bindings. Cute confection demolition tool, no crew, blast or projectile. Strong cocoa outline, flat cel shading, transparent 384 by 384 canvas, fitted to x53..331 y52..288 then shifted 37 pixels right to align wheel contacts, hard x16..368 y8..336. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; upright mallet, upright barrel, gift box, catapult, throwing arm, sling, ballista, cannon, hollow tube, muzzle, arrow, projectile, lit fuse, explosion, smoke, blast, gore, crew, tall tower, scenery, ground, shadow, UI, text, floating wheels, hidden wheel contacts, photoreal food, 3D render.",
+        "prompt": "Isolated Candy Crusher melee-siege sprite, southeast-facing three-quarter downward view. One compact low-wide wafer battering cart centered over x192. Exactly two ground wheels: rear wheel centered near x150 y270 and front wheel near x234 y270, with both bottom contacts at y288 and midpoint x192. One solid horizontal striped peppermint ram stays low through the cart and projects southeast/right, ending in a blunt wrapped-candy cap; no opening, hinge, throwing arm or upright barrel. Warm-pink ownership bindings. Cute confection demolition tool, no crew, blast or projectile. Strong cocoa outline, flat cel shading, transparent 384 by 384 canvas, fitted to x53..331 y52..288 then shifted 37 pixels right to align wheel contacts, hard x16..368 y8..336.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; upright mallet, upright barrel, gift box, catapult, throwing arm, sling, ballista, cannon, hollow tube, muzzle, arrow, projectile, lit fuse, explosion, smoke, blast, gore, crew, tall tower, scenery, ground, shadow, UI, text, floating wheels, hidden wheel contacts, photoreal food, 3D render",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 93323,
+        "noBackground": true,
+        "postprocess": "unit-fit",
+        "groundContactY": 288,
+        "fitOffsetX": 37,
+        "styleReference": {
+          "id": "unit-candy-warrior",
+          "usageDescription": "Match the accepted Candy faction cocoa outline, red-pink-cream palette, flat shading, camera, and playful detail budget only; create a low-wide melee siege silhouette."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/unit-candy-breacher-d221ce78ffb6.png",
+          "candidateSha256": "d221ce78ffb678ad773aad4e98314f80fcd3dfb55eb4726ffca6f366493c13ad",
+          "notes": "Rejected individual Candy Crusher attempt: technically bounded, but the upright striped mallet reads like a launcher/barrel and the cube reads as a gift; the close-range horizontal battering function is not unambiguous at minimum zoom.",
+          "reviewedAt": "2026-09-01T18:17:13.387Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated Candy Crusher melee-siege game sprite only, southeast-facing three-quarter strategy view looking slightly downward. Exactly one fragile low-wide wafer cart with exactly two readable peppermint wheels whose contact midpoint is x192 y288, an enormous blunt red-and-white peppermint battering mallet aimed southeast, a small brittle sugar-glass charge box with one short unlit licorice fuse, and warm-pink bindings as the ownership patch. Compact toy-like confection siege tool, no crew, no blast, and no projectile. Strong near-black cocoa outline, flat two-level cel shading, blank transparent 384 by 384 canvas, preferred alpha x50..334 y58..288 and hard alpha x16..368 y8..336. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; catapult, throwing arm, sling, ballista, cannon, arrow, projectile in flight, bomb in flight, lit fuse, explosion, smoke, blast, impact effect, gore, crew, tall tower, scenery, ground, cast shadow, UI, text, floating wheels, hidden wheel contacts, photoreal food, 3D render.",
+            "prompt": "Isolated Candy Crusher melee-siege game sprite only, southeast-facing three-quarter strategy view looking slightly downward. Exactly one fragile low-wide wafer cart with exactly two readable peppermint wheels whose contact midpoint is x192 y288, an enormous blunt red-and-white peppermint battering mallet aimed southeast, a small brittle sugar-glass charge box with one short unlit licorice fuse, and warm-pink bindings as the ownership patch. Compact toy-like confection siege tool, no crew, no blast, and no projectile. Strong near-black cocoa outline, flat two-level cel shading, blank transparent 384 by 384 canvas, preferred alpha x50..334 y58..288 and hard alpha x16..368 y8..336.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; catapult, throwing arm, sling, ballista, cannon, arrow, projectile in flight, bomb in flight, lit fuse, explosion, smoke, blast, impact effect, gore, crew, tall tower, scenery, ground, cast shadow, UI, text, floating wheels, hidden wheel contacts, photoreal food, 3D render",
+            "requestSize": {
+              "width": 384,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 384,
+              "height": 384
+            },
+            "seed": 93303,
+            "noBackground": true,
+            "postprocess": "unit-fit",
+            "groundContactY": 288,
+            "styleReference": {
+              "id": "unit-candy-warrior",
+              "sha256": "76456b060ba1701e75387285b4738d4c289c0617eb852f5552beadfe2eb1a2bc",
+              "usageDescription": "Match the accepted Candy faction cocoa outline, red-pink-cream palette, flat shading, camera, and playful detail budget only; create a low-wide melee siege silhouette."
+            }
+          }
+        },
+        {
+          "candidate": "art/pixellab/quarantine/unit-candy-breacher-00cd8accd853.png",
+          "candidateSha256": "00cd8accd85349f722d5a0e4a12c908c36f1944531a52116c5972160e9ff2e4a",
+          "notes": "Rejected after deterministic four-direction audit: WEST rear-tile alpha overlap 0.13395 exceeds the siege cap 0.12, and the two visible ground-wheel contacts sit too far left of the x192 anchor. Regenerate a centered compact ram with wheel contacts around x150/x234 and a narrower fit.",
+          "reviewedAt": "2026-09-01T18:44:00.926Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated Candy Crusher melee-siege sprite, southeast-facing three-quarter downward view. One fragile low-wide wafer battering cart with exactly two peppermint wheels contacting around x192 y288. One huge SOLID horizontal striped peppermint ram is fixed low through the cart and projects southeast, ending in a blunt wrapped-candy cap; no opening, hinge, throwing arm or upright barrel. Add a small cracked sugar-glass capsule strapped flat under the chassis with a short unlit licorice fuse, plus warm-pink ownership bindings. Cute toy-like confection demolition tool, no crew, blast or projectile. Strong cocoa outline, flat two-level cel shading, transparent 384 by 384 canvas, preferred alpha x50..334 y52..288, hard x16..368 y8..336. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; upright mallet, upright barrel, gift box, catapult, throwing arm, sling, ballista, cannon, hollow tube, muzzle, arrow, projectile, lit fuse, explosion, smoke, blast, gore, crew, tall tower, scenery, ground, shadow, UI, text, floating wheels, hidden wheel contacts, photoreal food, 3D render.",
+            "prompt": "Isolated Candy Crusher melee-siege sprite, southeast-facing three-quarter downward view. One fragile low-wide wafer battering cart with exactly two peppermint wheels contacting around x192 y288. One huge SOLID horizontal striped peppermint ram is fixed low through the cart and projects southeast, ending in a blunt wrapped-candy cap; no opening, hinge, throwing arm or upright barrel. Add a small cracked sugar-glass capsule strapped flat under the chassis with a short unlit licorice fuse, plus warm-pink ownership bindings. Cute toy-like confection demolition tool, no crew, blast or projectile. Strong cocoa outline, flat two-level cel shading, transparent 384 by 384 canvas, preferred alpha x50..334 y52..288, hard x16..368 y8..336.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; upright mallet, upright barrel, gift box, catapult, throwing arm, sling, ballista, cannon, hollow tube, muzzle, arrow, projectile, lit fuse, explosion, smoke, blast, gore, crew, tall tower, scenery, ground, shadow, UI, text, floating wheels, hidden wheel contacts, photoreal food, 3D render",
+            "requestSize": {
+              "width": 384,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 384,
+              "height": 384
+            },
+            "seed": 93313,
+            "noBackground": true,
+            "postprocess": "unit-fit",
+            "groundContactY": 288,
+            "styleReference": {
+              "id": "unit-candy-warrior",
+              "sha256": "76456b060ba1701e75387285b4738d4c289c0617eb852f5552beadfe2eb1a2bc",
+              "usageDescription": "Match the accepted Candy faction cocoa outline, red-pink-cream palette, flat shading, camera, and playful detail budget only; create a low-wide melee siege silhouette."
+            }
+          }
+        }
+      ],
+      "notes": "Accepted final Candy Crusher retry: exactly two readable wheels with contact midpoint visually within 10 px of x192 after manifest-recorded +37 px fit translation; horizontal solid peppermint ram reads as close demolition equipment. Siege W 0.521, H 0.691, area 0.446; rear N 0.1045/W 0.0453, both below 0.12 cap.",
+      "outputSha256": "d2fb335814ae4929cb47891bcb8561c8092a1bfc9fc53f98b9b4a32382898fca",
+      "reviewedAt": "2026-09-01T18:51:21.745Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "unit-candy-heavy": {
+      "id": "unit-candy-heavy",
+      "status": "ACCEPTED",
+      "jobId": "7cdbf866-fa86-41d3-9127-dbe3ef90907d",
+      "candidate": "art/pixellab/candidates/unit-candy-heavy.png",
+      "candidateSha256": "5897e7b0d7d8dd4746ff7ecadba4ba0b0d72266df4b33b25743fef33c5ee1455",
+      "providerOutputSha256": "cf3bb355e35e01730053b4fee08a2458d7598a11b402568c77e9292560f9b633",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 33,
+        "top": 12,
+        "right": 222,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated full-body Jawbreaker Heavy game sprite only, southeast-facing three-quarter strategy view looking slightly downward. Exactly one cute broad round jawbreaker-candy fighter with a large readable face, short body, both boots visible straddling ground contact x128 y222, wide braced stance, one enormous square rock-candy pushing gauntlet held forward in both hands, and thick cream shoulder padding. The broad mass and forward braced equipment must read instantly at 0.625 map zoom. Use a simple red-pink-white jawbreaker swirl with one contiguous warm-pink belt patch around ten percent of visible area for ownership tinting. Strong near-black cocoa outline, flat two-level cel shading, blank transparent 256 by 296 canvas, preferred alpha x32..224 y12..222 and hard alpha x16..240 y4..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; gumball machine, glass globe, vending machine, shield as primary silhouette, bow, mount, tall thin body, giant scale, projectile, attack effect, scenery, ground, cast shadow, UI, text, hidden feet, cropped silhouette, photoreal food, 3D render.",
+        "prompt": "Isolated full-body Jawbreaker Heavy game sprite only, southeast-facing three-quarter strategy view looking slightly downward. Exactly one cute broad round jawbreaker-candy fighter with a large readable face, short body, both boots visible straddling ground contact x128 y222, wide braced stance, one enormous square rock-candy pushing gauntlet held forward in both hands, and thick cream shoulder padding. The broad mass and forward braced equipment must read instantly at 0.625 map zoom. Use a simple red-pink-white jawbreaker swirl with one contiguous warm-pink belt patch around ten percent of visible area for ownership tinting. Strong near-black cocoa outline, flat two-level cel shading, blank transparent 256 by 296 canvas, preferred alpha x32..224 y12..222 and hard alpha x16..240 y4..252.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; gumball machine, glass globe, vending machine, shield as primary silhouette, bow, mount, tall thin body, giant scale, projectile, attack effect, scenery, ground, cast shadow, UI, text, hidden feet, cropped silhouette, photoreal food, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 93304,
+        "noBackground": true,
+        "postprocess": "unit-fit",
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "unit-candy-gumball-guard",
+          "sha256": "5a43d5f737bbf41f007c9bf8ee5f7fe5e0084bb13f9d243917d27c6f701f81b2",
+          "usageDescription": "Match the accepted Candy faction cocoa outline, warm confection palette, flat shading, camera, chunky proportions, and simple detail budget only; create a distinct broad Jawbreaker Heavy silhouette."
+        }
+      },
+      "outputSha256": "5897e7b0d7d8dd4746ff7ecadba4ba0b0d72266df4b33b25743fef33c5ee1455",
+      "notes": "Accepted bounded Candy frontline Jawbreaker gate after Candy Warrior and Gumball Guard alias revalidation: broad jawbreaker mass, braced rock-candy gauntlets, visible feet, distinct from glass machine at 0.625x; standard W 0.369, H 0.709, area 0.354.",
+      "reviewedAt": "2026-09-01T18:25:40.567Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "unit-candy-juggernaut": {
+      "id": "unit-candy-juggernaut",
+      "status": "ACCEPTED",
+      "jobId": "b9ae7c07-e88c-4761-a8f6-c84ceab2eb58",
+      "candidate": "art/pixellab/candidates/unit-candy-juggernaut.png",
+      "candidateSha256": "7d360ee7191644121f4397be91ac7ab42769883b44d6481d6c056ad7c5df76c9",
+      "providerOutputSha256": "df0ac4115653e0d450076143bfa69c35f5ed5d41dbc846da8066f665adf6be50",
+      "width": 384,
+      "height": 448,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 59,
+        "top": 24,
+        "right": 324,
+        "bottom": 336,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated full-body Sugar Titan giant sprite, southeast-facing three-quarter downward view. Exactly one towering upright cute rock-candy figure with a large face, long chunky torso and both peppermint boots braced around x192 y336. It must be visibly taller and more upright than a Heavy, not crouching. Broad shoulders, one tall narrow layered-candy pushing slab and one huge striped sugar gauntlet. Cream, cocoa, coral-red and pink Candy palette with one contiguous cream ownership belt patch. One figure only, push-ready toy-soldier pose, strong cocoa outline, flat two-level cel shading, transparent 384 by 448 canvas, preferred alpha x32..352 y24..336, hard x8..376 y4..400. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; crouching, squat body, short wide pose, horizontal shield, multiple characters, mount, building, candy shop, scenery, boss frame, health bar, text, selection ring, glow, projectile, attack effect, gore, ground, shadow, hidden feet, cropped silhouette, realistic anatomy, tiny ordinary unit, photoreal food, 3D render.",
+        "prompt": "Isolated full-body Sugar Titan giant sprite, southeast-facing three-quarter downward view. Exactly one towering upright cute rock-candy figure with a large face, long chunky torso and both peppermint boots braced around x192 y336. It must be visibly taller and more upright than a Heavy, not crouching. Broad shoulders, one tall narrow layered-candy pushing slab and one huge striped sugar gauntlet. Cream, cocoa, coral-red and pink Candy palette with one contiguous cream ownership belt patch. One figure only, push-ready toy-soldier pose, strong cocoa outline, flat two-level cel shading, transparent 384 by 448 canvas, preferred alpha x32..352 y24..336, hard x8..376 y4..400.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; crouching, squat body, short wide pose, horizontal shield, multiple characters, mount, building, candy shop, scenery, boss frame, health bar, text, selection ring, glow, projectile, attack effect, gore, ground, shadow, hidden feet, cropped silhouette, realistic anatomy, tiny ordinary unit, photoreal food, 3D render",
+        "requestSize": {
+          "width": 384,
+          "height": 448
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 448
+        },
+        "seed": 93315,
+        "noBackground": true,
+        "postprocess": "unit-fit",
+        "groundContactY": 336,
+        "styleReference": {
+          "id": "unit-candy-heavy",
+          "sha256": "5897e7b0d7d8dd4746ff7ecadba4ba0b0d72266df4b33b25743fef33c5ee1455",
+          "usageDescription": "Match the accepted Candy faction cocoa outline, warm confection palette, flat shading, camera, and playful detail budget only; create one systematic giant-class Sugar Titan figure."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/unit-candy-juggernaut-eacd0bdbc615.png",
+          "candidateSha256": "eacd0bdbc615c8429f20dcf96af5a85c156e7803e2f776a307674b6e7cc2fec5",
+          "notes": "Rejected first Sugar Titan gate: attractive and technically under hard caps, but its crouched wide composition is only 0.861 tile-height at runtime, below the 1.00 giant target, so it reads as an enlarged Heavy rather than a systematic giant.",
+          "reviewedAt": "2026-09-01T18:29:52.609Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated full-body Sugar Titan giant game sprite only, southeast-facing three-quarter strategy view looking slightly downward. Exactly one giant cute chunky rock-candy figure with a large readable face, both peppermint boots visibly braced around ground contact x192 y336, enormous broad shoulders, one oversized forward-held slab of layered candy as a pushing guard and one huge striped sugar gauntlet. Cream, cocoa, coral-red and warm-pink candy layers preserve the Candy faction language, with one contiguous cream belt patch around ten percent of visible area for ownership tinting. One figure only, push-ready toy-soldier pose, strong near-black cocoa outline, flat two-level cel shading, blank transparent 384 by 448 canvas, preferred alpha x42..342 y24..336 and hard alpha x8..376 y4..400. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; multiple characters, mount, building, candy shop, monster scenery, boss frame, health bar, label, text, selection ring, glow, projectile, attack effect, gore, ground, cast shadow, hidden feet, cropped silhouette, realistic anatomy, tiny ordinary unit, photoreal food, 3D render.",
+            "prompt": "Isolated full-body Sugar Titan giant game sprite only, southeast-facing three-quarter strategy view looking slightly downward. Exactly one giant cute chunky rock-candy figure with a large readable face, both peppermint boots visibly braced around ground contact x192 y336, enormous broad shoulders, one oversized forward-held slab of layered candy as a pushing guard and one huge striped sugar gauntlet. Cream, cocoa, coral-red and warm-pink candy layers preserve the Candy faction language, with one contiguous cream belt patch around ten percent of visible area for ownership tinting. One figure only, push-ready toy-soldier pose, strong near-black cocoa outline, flat two-level cel shading, blank transparent 384 by 448 canvas, preferred alpha x42..342 y24..336 and hard alpha x8..376 y4..400.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; multiple characters, mount, building, candy shop, monster scenery, boss frame, health bar, label, text, selection ring, glow, projectile, attack effect, gore, ground, cast shadow, hidden feet, cropped silhouette, realistic anatomy, tiny ordinary unit, photoreal food, 3D render",
+            "requestSize": {
+              "width": 384,
+              "height": 448
+            },
+            "outputSize": {
+              "width": 384,
+              "height": 448
+            },
+            "seed": 93305,
+            "noBackground": true,
+            "postprocess": "unit-fit",
+            "groundContactY": 336,
+            "styleReference": {
+              "id": "unit-candy-heavy",
+              "sha256": "5897e7b0d7d8dd4746ff7ecadba4ba0b0d72266df4b33b25743fef33c5ee1455",
+              "usageDescription": "Match the accepted Candy faction cocoa outline, warm confection palette, flat shading, camera, and playful detail budget only; create one systematic giant-class Sugar Titan figure."
+            }
+          }
+        }
+      ],
+      "outputSha256": "7d360ee7191644121f4397be91ac7ab42769883b44d6481d6c056ad7c5df76c9",
+      "notes": "Accepted individual Sugar Titan retry: upright giant silhouette, tall candy slab and huge gauntlet distinguish it from Jawbreaker while preserving readable feet and adjacent targets. Giant W 0.518, H 1.054, area 0.772; rear overlap NORTH 0.130/WEST 0.113, below 0.18 cap. First crouched 0.861-height attempt remains quarantined.",
+      "reviewedAt": "2026-09-01T18:36:40.911Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "portrait-candy-scout": {
+      "id": "portrait-candy-scout",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/portrait-candy-scout.png",
+      "candidateSha256": "f794913aa23a48912d4952194d09b56286c65787d525b86d7eff4b10392d7200",
+      "providerOutputSha256": "c835c0a08cc24d5751c0dbc85365f638016029984162a6272387aa3efc2965a9",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 20,
+        "top": 25,
+        "right": 236,
+        "bottom": 231,
+        "empty": false
+      },
+      "notes": "Accepted deterministic Candy scout role portrait after individual silhouette, transparent safe-area, native/enlarged and 64 CSS px legibility review; provenance remains the accepted final map sprite.",
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Jelly Scout sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+        "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Jelly Scout sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 94302,
+        "noBackground": true,
+        "postprocess": "sprite-derived-portrait",
+        "styleReference": {
+          "id": "unit-candy-scout",
+          "sha256": "c835c0a08cc24d5751c0dbc85365f638016029984162a6272387aa3efc2965a9",
+          "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+        }
+      },
+      "outputSha256": "f794913aa23a48912d4952194d09b56286c65787d525b86d7eff4b10392d7200",
+      "reviewedAt": "2026-09-01T18:37:59.285Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "portrait-candy-medic": {
+      "id": "portrait-candy-medic",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/portrait-candy-medic.png",
+      "candidateSha256": "d26d63b1415afd8a701b536a9fddaddfd540d99169eac4c85adf2762145870ab",
+      "providerOutputSha256": "868b00e650c05e22bd085d72f093fd8c80554ba17a3357a2982833c617e98327",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 20,
+        "top": 31,
+        "right": 236,
+        "bottom": 224,
+        "empty": false
+      },
+      "notes": "Accepted deterministic Candy medic role portrait after individual silhouette, transparent safe-area, native/enlarged and 64 CSS px legibility review; provenance remains the accepted final map sprite.",
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Marshmallow Medic sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+        "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Marshmallow Medic sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 94306,
+        "noBackground": true,
+        "postprocess": "sprite-derived-portrait",
+        "styleReference": {
+          "id": "unit-candy-medic",
+          "sha256": "868b00e650c05e22bd085d72f093fd8c80554ba17a3357a2982833c617e98327",
+          "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+        }
+      },
+      "outputSha256": "d26d63b1415afd8a701b536a9fddaddfd540d99169eac4c85adf2762145870ab",
+      "reviewedAt": "2026-09-01T18:38:26.826Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "portrait-candy-breacher": {
+      "id": "portrait-candy-breacher",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/portrait-candy-breacher.png",
+      "candidateSha256": "b88d9067dbc590b32e7a3cfde533f5c2d6932df728dcff4eed9a42e0dccf4aa7",
+      "providerOutputSha256": "d2fb335814ae4929cb47891bcb8561c8092a1bfc9fc53f98b9b4a32382898fca",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 20,
+        "top": 45,
+        "right": 236,
+        "bottom": 210,
+        "empty": false
+      },
+      "notes": "Accepted regenerated deterministic Candy Crusher portrait after independent 64 CSS px review; provenance now matches the final centered, rear-cap-passing sprite.",
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Candy Crusher Breacher sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+        "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Candy Crusher Breacher sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 94308,
+        "noBackground": true,
+        "postprocess": "sprite-derived-portrait",
+        "styleReference": {
+          "id": "unit-candy-breacher",
+          "sha256": "d2fb335814ae4929cb47891bcb8561c8092a1bfc9fc53f98b9b4a32382898fca",
+          "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/portrait-candy-breacher-6efda1eeaad3.png",
+          "candidateSha256": "6efda1eeaad39f3f224245bf74f1f8a68032fb4ae2a076e20ab7fee6aafad7df",
+          "notes": "Rejected deterministic portrait because its accepted source was superseded by the final centered Candy Crusher after rear-occlusion audit; regenerate from the final source hash.",
+          "reviewedAt": "2026-09-01T18:51:26.752Z",
+          "request": {
+            "endpoint": "generate-ui-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Candy Crusher Breacher sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+            "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Candy Crusher Breacher sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+            "requestSize": {
+              "width": 256,
+              "height": 256
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 256
+            },
+            "seed": 94308,
+            "noBackground": true,
+            "postprocess": "sprite-derived-portrait",
+            "styleReference": {
+              "id": "unit-candy-breacher",
+              "sha256": "00cd8accd85349f722d5a0e4a12c908c36f1944531a52116c5972160e9ff2e4a",
+              "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+            }
+          }
+        }
+      ],
+      "outputSha256": "b88d9067dbc590b32e7a3cfde533f5c2d6932df728dcff4eed9a42e0dccf4aa7",
+      "reviewedAt": "2026-09-01T18:51:48.322Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "portrait-candy-fighter": {
+      "id": "portrait-candy-fighter",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/portrait-candy-fighter.png",
+      "candidateSha256": "5074d242652c169b5c2d89e74ddfa876ac086a39c9a9385975bbc60de2f4494e",
+      "providerOutputSha256": "76456b060ba1701e75387285b4738d4c289c0617eb852f5552beadfe2eb1a2bc",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 28,
+        "top": 20,
+        "right": 227,
+        "bottom": 236,
+        "empty": false
+      },
+      "notes": "Accepted deterministic Candy fighter role portrait after individual silhouette, transparent safe-area, native/enlarged and 64 CSS px legibility review; provenance remains the accepted final map sprite.",
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Candy Warrior Fighter sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+        "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Candy Warrior Fighter sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 94301,
+        "noBackground": true,
+        "postprocess": "sprite-derived-portrait",
+        "styleReference": {
+          "id": "unit-candy-warrior",
+          "sha256": "76456b060ba1701e75387285b4738d4c289c0617eb852f5552beadfe2eb1a2bc",
+          "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+        }
+      },
+      "outputSha256": "5074d242652c169b5c2d89e74ddfa876ac086a39c9a9385975bbc60de2f4494e",
+      "reviewedAt": "2026-09-01T18:37:54.059Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "portrait-candy-marksman": {
+      "id": "portrait-candy-marksman",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/portrait-candy-marksman.png",
+      "candidateSha256": "1ebcb9284680ca59fe67f6d1fb9ca857c120915f199507df6be5033bb370af31",
+      "providerOutputSha256": "5a43d5f737bbf41f007c9bf8ee5f7fe5e0084bb13f9d243917d27c6f701f81b2",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 55,
+        "top": 20,
+        "right": 200,
+        "bottom": 236,
+        "empty": false
+      },
+      "notes": "Accepted deterministic Candy marksman role portrait after individual silhouette, transparent safe-area, native/enlarged and 64 CSS px legibility review; provenance remains the accepted final map sprite.",
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Gumball Guard Marksman sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+        "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Gumball Guard Marksman sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 94303,
+        "noBackground": true,
+        "postprocess": "sprite-derived-portrait",
+        "styleReference": {
+          "id": "unit-candy-gumball-guard",
+          "sha256": "5a43d5f737bbf41f007c9bf8ee5f7fe5e0084bb13f9d243917d27c6f701f81b2",
+          "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+        }
+      },
+      "outputSha256": "1ebcb9284680ca59fe67f6d1fb9ca857c120915f199507df6be5033bb370af31",
+      "reviewedAt": "2026-09-01T18:38:05.296Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "portrait-candy-heavy": {
+      "id": "portrait-candy-heavy",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/portrait-candy-heavy.png",
+      "candidateSha256": "986b798d43c19d41948213dab8d78e300148ad11350dacf65af282ee464228fa",
+      "providerOutputSha256": "5897e7b0d7d8dd4746ff7ecadba4ba0b0d72266df4b33b25743fef33c5ee1455",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 31,
+        "top": 20,
+        "right": 225,
+        "bottom": 236,
+        "empty": false
+      },
+      "notes": "Accepted deterministic Candy heavy role portrait after individual silhouette, transparent safe-area, native/enlarged and 64 CSS px legibility review; provenance remains the accepted final map sprite.",
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Jawbreaker Heavy sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+        "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Jawbreaker Heavy sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 94307,
+        "noBackground": true,
+        "postprocess": "sprite-derived-portrait",
+        "styleReference": {
+          "id": "unit-candy-heavy",
+          "sha256": "5897e7b0d7d8dd4746ff7ecadba4ba0b0d72266df4b33b25743fef33c5ee1455",
+          "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+        }
+      },
+      "outputSha256": "986b798d43c19d41948213dab8d78e300148ad11350dacf65af282ee464228fa",
+      "reviewedAt": "2026-09-01T18:38:44.944Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "portrait-candy-guard": {
+      "id": "portrait-candy-guard",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/portrait-candy-guard.png",
+      "candidateSha256": "b0b73f259c5217086a78b29a6bf53ecc465404b7a050b7326180b3815d8f9810",
+      "providerOutputSha256": "020d0448b1db6be74b00aa3d468ca4f4aa7d9c2c700d63ae7c03a683ec314fcf",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 46,
+        "top": 20,
+        "right": 210,
+        "bottom": 236,
+        "empty": false
+      },
+      "notes": "Accepted deterministic Candy guard role portrait after individual silhouette, transparent safe-area, native/enlarged and 64 CSS px legibility review; provenance remains the accepted final map sprite.",
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Choco Engineer Guard sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+        "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Choco Engineer Guard sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 94304,
+        "noBackground": true,
+        "postprocess": "sprite-derived-portrait",
+        "styleReference": {
+          "id": "unit-candy-choco-engineer",
+          "sha256": "020d0448b1db6be74b00aa3d468ca4f4aa7d9c2c700d63ae7c03a683ec314fcf",
+          "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+        }
+      },
+      "outputSha256": "b0b73f259c5217086a78b29a6bf53ecc465404b7a050b7326180b3815d8f9810",
+      "reviewedAt": "2026-09-01T18:38:12.096Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "portrait-candy-raider": {
+      "id": "portrait-candy-raider",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/portrait-candy-raider.png",
+      "candidateSha256": "a3e48698ad7469c753741c8029aa10a09740f14a31af3ce895c71b0624f459b2",
+      "providerOutputSha256": "041fd6defb9b46059e9036418c501cc287e8ac74180384594770e9d1d764a991",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 34,
+        "top": 20,
+        "right": 221,
+        "bottom": 236,
+        "empty": false
+      },
+      "notes": "Accepted deterministic Candy raider role portrait after individual silhouette, transparent safe-area, native/enlarged and 64 CSS px legibility review; provenance remains the accepted final map sprite.",
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Donut Raider sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+        "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Donut Raider sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 94305,
+        "noBackground": true,
+        "postprocess": "sprite-derived-portrait",
+        "styleReference": {
+          "id": "unit-candy-donut",
+          "sha256": "041fd6defb9b46059e9036418c501cc287e8ac74180384594770e9d1d764a991",
+          "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+        }
+      },
+      "outputSha256": "a3e48698ad7469c753741c8029aa10a09740f14a31af3ce895c71b0624f459b2",
+      "reviewedAt": "2026-09-01T18:38:19.464Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "portrait-candy-juggernaut": {
+      "id": "portrait-candy-juggernaut",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/portrait-candy-juggernaut.png",
+      "candidateSha256": "b912be1968363a2a6f4b313513825cbe125b1dc75dcd2c443c828ae413d464e7",
+      "providerOutputSha256": "7d360ee7191644121f4397be91ac7ab42769883b44d6481d6c056ad7c5df76c9",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 36,
+        "top": 20,
+        "right": 219,
+        "bottom": 236,
+        "empty": false
+      },
+      "notes": "Accepted deterministic Candy juggernaut role portrait after individual silhouette, transparent safe-area, native/enlarged and 64 CSS px legibility review; provenance remains the accepted final map sprite.",
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Sugar Titan Juggernaut sprite, preserving its silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+        "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Sugar Titan Juggernaut sprite, preserving its silhouette and palette with a 20 pixel transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 94309,
+        "noBackground": true,
+        "postprocess": "sprite-derived-portrait",
+        "styleReference": {
+          "id": "unit-candy-juggernaut",
+          "sha256": "7d360ee7191644121f4397be91ac7ab42769883b44d6481d6c056ad7c5df76c9",
+          "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+        }
+      },
+      "outputSha256": "b912be1968363a2a6f4b313513825cbe125b1dc75dcd2c443c828ae413d464e7",
+      "reviewedAt": "2026-09-01T18:39:08.938Z",
       "reviewChecks": {
         "source": true,
         "native": true,
