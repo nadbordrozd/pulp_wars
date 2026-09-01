@@ -81,6 +81,8 @@ export type Ruleset6DispatchResult =
       readonly command: CommandV6;
       readonly events: readonly DomainEventV6[];
       readonly stateHash: string;
+      /** Public, transient render snapshots; never persisted or hashed. */
+      readonly presentationBoundary: Ruleset6AcceptedBoundaryV6;
     }
   | {
       readonly accepted: false;
@@ -99,12 +101,22 @@ export type Ruleset6AiProgressResult =
       readonly acceptedCommands: number;
       readonly events: readonly DomainEventV6[];
       readonly stateHash: string;
+      /** Accepted boundaries remain ordered even when AI transitions rapidly. */
+      readonly presentationBoundaries: readonly Ruleset6AcceptedBoundaryV6[];
     }
   | {
       readonly ok: false;
       readonly acceptedCommands: number;
       readonly diagnostic: string;
     };
+
+export interface Ruleset6AcceptedBoundaryV6 {
+  readonly actorId: GameStateV6["humanPlayerId"];
+  readonly command: CommandV6;
+  readonly events: readonly DomainEventV6[];
+  readonly beforeView: PlayerViewV6;
+  readonly afterView: PlayerViewV6;
+}
 
 export interface Ruleset6BrowserControllerOptions {
   readonly storage?: StorageAdapter | null;
@@ -251,6 +263,7 @@ export class Ruleset6BrowserController {
     return this.#serialize(async () => {
       let acceptedCommands = 0;
       const events: DomainEventV6[] = [];
+      const presentationBoundaries: Ruleset6AcceptedBoundaryV6[] = [];
       if (this.#destroyed) {
         return {
           ok: false,
@@ -301,6 +314,7 @@ export class Ruleset6BrowserController {
           acceptedCommands += 1;
           acceptedThisTurn += 1;
           events.push(...result.events);
+          presentationBoundaries.push(result.presentationBoundary);
           this.#emit();
         }
       } catch (error) {
@@ -319,6 +333,7 @@ export class Ruleset6BrowserController {
         acceptedCommands,
         events,
         stateHash: canonicalHash(this.#match),
+        presentationBoundaries: Object.freeze(presentationBoundaries),
       };
     });
   }
@@ -487,6 +502,7 @@ export class Ruleset6BrowserController {
         error: { code: "INVALID_STATE", params: {} },
       };
     }
+    const beforeView = viewForV6(match, match.humanPlayerId);
     this.#match = applied.state;
     this.#replay = nextReplay;
     if (applied.state.outcome !== null) this.#phase = "COMPLETE";
@@ -498,6 +514,13 @@ export class Ruleset6BrowserController {
       command,
       events: applied.events,
       stateHash: canonicalHash(applied.state),
+      presentationBoundary: freezeBrowserValue({
+        actorId,
+        command,
+        events: applied.events,
+        beforeView,
+        afterView: viewForV6(applied.state, applied.state.humanPlayerId),
+      }),
     };
   }
 

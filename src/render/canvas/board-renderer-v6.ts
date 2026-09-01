@@ -25,8 +25,17 @@ import {
   type Point,
   type Size,
 } from "./geometry";
-import type { BoardRenderPlanV6, RenderPlanEntryV6 } from "./render-plan-v6";
+import {
+  compareEntriesV6,
+  type BoardRenderPlanV6,
+  type RenderPlanEntryV6,
+} from "./render-plan-v6";
 import { readinessSpriteOpacity } from "./readiness-presentation";
+import type {
+  CombatAnimationFrameV6,
+  CombatPresentationV6,
+  CombatSpriteSnapshotV6,
+} from "./combat-presentation-v6";
 
 export interface Ruleset6AcceptedImageResolver {
   readonly resolve: (assetId: string) => CanvasImageSource | null;
@@ -41,6 +50,8 @@ export interface DrawBoardV6Options {
   readonly images?: Ruleset6AcceptedImageResolver;
   readonly readinessElapsedMs?: number;
   readonly reducedMotion?: boolean;
+  readonly combatPresentation?: CombatPresentationV6 | null;
+  readonly combatFrame?: CombatAnimationFrameV6 | null;
 }
 
 export interface BuildBoardDrawListV6Options {
@@ -49,6 +60,8 @@ export interface BuildBoardDrawListV6Options {
   readonly plan: BoardRenderPlanV6;
   readonly readinessElapsedMs?: number;
   readonly reducedMotion?: boolean;
+  readonly combatPresentation?: CombatPresentationV6 | null;
+  readonly combatFrame?: CombatAnimationFrameV6 | null;
 }
 
 export interface DrawCoverageLabelV6 {
@@ -188,7 +201,7 @@ export function buildBoardDrawListV6(
       )
       .map((entry) => [entry.id, entry.details.level] as const),
   );
-  for (const entry of options.plan.entries) {
+  for (const entry of combatEntries(options.plan, options.combatPresentation)) {
     const center = worldToScreen(projectGrid(entry.at), options.camera);
     const faction =
       factions.get(coordinateKey(entry.at)) ??
@@ -204,6 +217,12 @@ export function buildBoardDrawListV6(
       cityLevels.get(entry.id) ?? 1,
       options.readinessElapsedMs ?? 0,
       options.reducedMotion ?? false,
+      combatSpriteStyle(
+        entry,
+        options.camera,
+        options.combatPresentation,
+        options.combatFrame,
+      ),
     );
   }
   return { commands, coverage };
@@ -316,6 +335,7 @@ function drawEntry(
   cityLevel: number,
   readinessElapsedMs: number,
   reducedMotion: boolean,
+  combatStyle: { readonly offset: Point; readonly alpha: number } | null,
 ): void {
   const ownerColor = ownerColorFor(entry.ownerId);
   switch (entry.kind) {
@@ -439,7 +459,12 @@ function drawEntry(
         coverage,
         entry.key,
         unitCoverageV6(entry.details.faction, entry.details.role),
-        center,
+        combatStyle === null
+          ? center
+          : {
+              x: center.x + combatStyle.offset.x,
+              y: center.y + combatStyle.offset.y,
+            },
         zoom,
         (item) =>
           unitFallback(
@@ -451,7 +476,7 @@ function drawEntry(
             item.status === "PLACEHOLDER",
             ownerColor,
           ),
-        spriteOpacity,
+        spriteOpacity * (combatStyle?.alpha ?? 1),
       );
       return;
     }
@@ -572,6 +597,92 @@ function drawEntry(
     case "CITY_STATUS":
       commands.push(...cityStatus(entry, center, zoom, ownerColor));
   }
+}
+
+function combatEntries(
+  plan: BoardRenderPlanV6,
+  presentation: CombatPresentationV6 | null | undefined,
+): readonly RenderPlanEntryV6[] {
+  if (presentation === undefined || presentation === null) return plan.entries;
+  const snapshots = [presentation.attacker, presentation.target].filter(
+    (sprite): sprite is CombatSpriteSnapshotV6 => sprite !== null,
+  );
+  const byId = new Map(snapshots.map((sprite) => [sprite.id, sprite] as const));
+  const seen = new Set<number>();
+  const entries = plan.entries.map((entry) => {
+    if (entry.kind !== "UNIT") return entry;
+    const snapshot = byId.get(entry.id as CombatSpriteSnapshotV6["id"]);
+    if (snapshot === undefined) return entry;
+    seen.add(entry.id);
+    return combatUnitEntry(snapshot, entry.key, entry.variant);
+  });
+  for (const snapshot of snapshots) {
+    if (!seen.has(snapshot.id)) {
+      entries.push(
+        combatUnitEntry(
+          snapshot,
+          `COMBAT_UNIT:${presentation.key}:${snapshot.id}`,
+          0,
+        ),
+      );
+    }
+  }
+  return entries.sort(compareEntriesV6);
+}
+
+function combatUnitEntry(
+  sprite: CombatSpriteSnapshotV6,
+  key: string,
+  variant: number,
+): Extract<RenderPlanEntryV6, { readonly kind: "UNIT" }> {
+  return {
+    key,
+    kind: "UNIT",
+    at: sprite.at,
+    id: sprite.id,
+    ownerId: sprite.ownerId,
+    variant,
+    layer: 5,
+    details: {
+      faction: sprite.faction,
+      role: sprite.role,
+      readiness: "OPAQUE",
+    },
+  };
+}
+
+function combatSpriteStyle(
+  entry: RenderPlanEntryV6,
+  camera: CameraState,
+  presentation: CombatPresentationV6 | null | undefined,
+  frame: CombatAnimationFrameV6 | null | undefined,
+): { readonly offset: Point; readonly alpha: number } | null {
+  if (
+    entry.kind !== "UNIT" ||
+    presentation === undefined ||
+    presentation === null ||
+    frame === undefined ||
+    frame === null
+  ) {
+    return null;
+  }
+  const damaged = presentation.damaged.some((sprite) => sprite.id === entry.id);
+  const shake = damaged ? frame.shake * camera.zoom : 0;
+  if (entry.id !== presentation.attacker.id) {
+    return {
+      offset: { x: shake, y: 0 },
+      alpha: damaged ? frame.damagedOpacity : 1,
+    };
+  }
+  const source = worldToScreen(projectGrid(presentation.attacker.at), camera);
+  const target = worldToScreen(projectGrid(presentation.targetAt), camera);
+  return {
+    offset: {
+      x: (target.x - source.x) * frame.attackerTravel + shake,
+      y: (target.y - source.y) * frame.attackerTravel,
+    },
+    alpha: damaged ? frame.damagedOpacity : 1,
+  };
 }
 
 function addCoveredAsset(

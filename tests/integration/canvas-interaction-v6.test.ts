@@ -18,12 +18,14 @@ import {
 } from "../../src/engine/index";
 import {
   CanvasBoardHostV6,
+  boardAnimationNeededV6,
   boardReadinessAnimationNeededV6,
   commandCandidatesAtV6,
   resolveInspectionActivationV6,
   type CanvasBoardHostCallbacksV6,
   type CanvasBoardHostModelV6,
 } from "../../src/render/canvas/board-host-v6";
+import type { CombatPresentationV6 } from "../../src/render/canvas/combat-presentation-v6";
 import { UNIT_SCALE_CONTRACT } from "../../src/render/canvas/board-art-geometry";
 import {
   buildRenderPlanV6,
@@ -40,6 +42,140 @@ beforeEach(() => {
 });
 
 describe("ruleset-6 Canvas host", () => {
+  it("runs one monotonic melee RAF lifecycle and cancels it on replacement or unmount", () => {
+    let now = 0;
+    vi.spyOn(window.performance, "now").mockImplementation(() => now);
+    let nextFrame = 1;
+    const frames = new Map<number, FrameRequestCallback>();
+    Object.defineProperty(window, "requestAnimationFrame", {
+      configurable: true,
+      writable: true,
+      value: vi.fn((callback: FrameRequestCallback) => {
+        const id = nextFrame++;
+        frames.set(id, callback);
+        return id;
+      }),
+    });
+    Object.defineProperty(window, "cancelAnimationFrame", {
+      configurable: true,
+      writable: true,
+      value: vi.fn((id: number) => frames.delete(id)),
+    });
+    vi.mocked(HTMLCanvasElement.prototype.getContext).mockReturnValue(
+      recordingContext([]),
+    );
+    const fixture = publicFixture();
+    const presentation = combatPresentation(fixture.view, "combat-a");
+    const completed: string[] = [];
+    const host = new CanvasBoardHostV6(document);
+    const container = sizedContainer(900, 600);
+    host.mount(
+      container,
+      callbacks({
+        onCombatPresentationComplete: (key) => completed.push(key),
+      }),
+    );
+    const active = model(fixture.view, {
+      interactive: false,
+      combatPresentation: presentation,
+    });
+    expect(boardAnimationNeededV6(active)).toBe(true);
+    host.update(active);
+    expect(frames.size).toBe(1);
+
+    const first = [...frames.entries()][0];
+    if (first === undefined) throw new Error("Missing combat frame");
+    frames.delete(first[0]);
+    now = 200;
+    first[1](now);
+    expect(frames.size).toBe(1);
+
+    host.mount(
+      container,
+      callbacks({
+        onCombatPresentationComplete: (key) => completed.push(key),
+      }),
+    );
+    expect(frames.size).toBe(0);
+    host.update(active);
+    expect(frames.size).toBe(1);
+    const final = [...frames.entries()][0];
+    if (final === undefined) throw new Error("Missing final combat frame");
+    frames.delete(final[0]);
+    now = presentation.durationMs;
+    final[1](now);
+    expect(completed).toEqual(["combat-a"]);
+    expect(frames.size).toBe(0);
+
+    host.update({
+      ...active,
+      matchInstanceId: "replacement",
+      combatPresentation: {
+        ...presentation,
+        key: "combat-b",
+      },
+    });
+    expect(frames.size).toBe(1);
+    host.unmount();
+    expect(frames.size).toBe(0);
+    now += 1_000;
+    expect(completed).toEqual(["combat-a"]);
+  });
+
+  it("uses one cancellable timeout and no continuous RAF for reduced motion", () => {
+    vi.useFakeTimers();
+    try {
+      const request = vi.fn();
+      Object.defineProperty(window, "requestAnimationFrame", {
+        configurable: true,
+        value: request,
+      });
+      vi.mocked(HTMLCanvasElement.prototype.getContext).mockReturnValue(
+        recordingContext([]),
+      );
+      const fixture = publicFixture();
+      const completed: string[] = [];
+      const host = new CanvasBoardHostV6(document);
+      const container = sizedContainer(900, 600);
+      host.mount(
+        container,
+        callbacks({
+          onCombatPresentationComplete: (key) => completed.push(key),
+        }),
+      );
+      const reduced = {
+        ...combatPresentation(fixture.view, "reduced-a"),
+        motion: "REDUCED" as const,
+        durationMs: 100,
+      };
+      host.update(
+        model(fixture.view, {
+          interactive: false,
+          motion: "REDUCED",
+          combatPresentation: reduced,
+        }),
+      );
+      expect(request).not.toHaveBeenCalled();
+      vi.advanceTimersByTime(99);
+      expect(completed).toEqual([]);
+      vi.advanceTimersByTime(1);
+      expect(completed).toEqual(["reduced-a"]);
+
+      host.update(
+        model(fixture.view, {
+          interactive: false,
+          motion: "REDUCED",
+          combatPresentation: { ...reduced, key: "reduced-b" },
+        }),
+      );
+      host.unmount();
+      vi.advanceTimersByTime(500);
+      expect(completed).toEqual(["reduced-a"]);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("bounds readiness redraws and cancels immediately at every lifecycle gate", () => {
     let now = 0;
     vi.spyOn(window.performance, "now").mockImplementation(() => now);
@@ -774,6 +910,44 @@ function callbacks(
     onCommandCandidates(): void {},
     onZoom(): void {},
     ...overrides,
+  };
+}
+
+function combatPresentation(
+  view: PlayerViewV6,
+  key: string,
+): CombatPresentationV6 {
+  const attacker = ownUnit(view);
+  const faction =
+    view.players.find((player) => player.id === attacker.ownerId)?.faction ??
+    "ORIGINAL";
+  const target = {
+    id: unitId(attacker.id + 50_000),
+    ownerId:
+      view.players.find((player) => player.id !== attacker.ownerId)?.id ??
+      attacker.ownerId,
+    faction:
+      faction === "ORIGINAL" ? ("CANDY" as const) : ("ORIGINAL" as const),
+    role: "FIGHTER" as const,
+    at: { x: attacker.at.x + 1, y: attacker.at.y },
+  };
+  return {
+    key,
+    commandIndex: view.commandIndex + 1,
+    motion: "FULL",
+    durationMs: 420,
+    actorController: "HUMAN",
+    attacker: {
+      id: attacker.id,
+      ownerId: attacker.ownerId,
+      faction,
+      role: attacker.role,
+      at: attacker.at,
+    },
+    target,
+    targetAt: target.at,
+    damaged: [target],
+    advances: false,
   };
 }
 

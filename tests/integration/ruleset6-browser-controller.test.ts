@@ -69,6 +69,14 @@ describe("ruleset-6 browser session controller", () => {
 
     const accepted = await controller.dispatch(wait);
     expect(accepted).toMatchObject({ accepted: true, command: wait });
+    if (!accepted.accepted) throw new Error(accepted.reason);
+    expect(accepted.presentationBoundary).toMatchObject({
+      actorId: initial.view?.viewer.id,
+      command: wait,
+      events: accepted.events,
+      beforeView: { commandIndex: 0 },
+      afterView: { commandIndex: 1 },
+    });
     expect(controller.snapshot().commandIndex).toBe(1);
     expect(controller.exportReplay()).toMatchObject({
       version: 6,
@@ -109,6 +117,18 @@ describe("ruleset-6 browser session controller", () => {
     const progressed = await controller.progressAiTurns();
     expect(progressed.ok).toBe(true);
     expect(progressed.acceptedCommands).toBeGreaterThan(0);
+    if (!progressed.ok) throw new Error(progressed.diagnostic);
+    expect(progressed.presentationBoundaries).toHaveLength(
+      progressed.acceptedCommands,
+    );
+    expect(
+      progressed.presentationBoundaries?.every(
+        (boundary, index, all) =>
+          index === 0 ||
+          boundary.beforeView.commandIndex ===
+            all[index - 1]?.afterView.commandIndex,
+      ),
+    ).toBe(true);
     expect(observed.length).toBe(progressed.acceptedCommands);
     expect(controller.snapshot().view?.viewer.controller).toBe("HUMAN");
     expect(controller.snapshot().view?.viewer.faction).toBe("CANDY");

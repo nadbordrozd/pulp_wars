@@ -14,8 +14,10 @@ import {
   queryPlayerCommandsV6,
   runReplayV6,
   TECHNOLOGY_IDS,
+  unitId,
   viewForV6,
   type CommandV6,
+  type DomainEventV6,
   type MatchSetupV6,
   type PlayerViewV6,
 } from "../../src/engine/index";
@@ -791,6 +793,239 @@ describe("playable ruleset-6 DOM shell", () => {
     expect(host.destroyCalls).toBe(1);
   });
 
+  it("queues only accepted public melee events, locks input, and drains by key", async () => {
+    const initial = publicView("ORIGINAL");
+    const attacker = initial.units.find(
+      (unit) => unit.ownerId === initial.viewer.id,
+    );
+    const enemyPlayer = initial.players.find(
+      (player) => player.id !== initial.viewer.id,
+    );
+    if (attacker === undefined || enemyPlayer === undefined)
+      throw new Error("Missing combat fixture");
+    const defender = {
+      ...attacker,
+      id: unitId(attacker.id + 90_000),
+      ownerId: enemyPlayer.id,
+      at: { x: attacker.at.x + 1, y: attacker.at.y },
+    };
+    const view: PlayerViewV6 = { ...initial, units: [attacker, defender] };
+    const attack = {
+      kind: "ATTACK",
+      unitId: attacker.id,
+      target: { kind: "UNIT", unitId: defender.id },
+    } as const satisfies CommandV6;
+    const event = {
+      kind: "COMBAT_RESOLVED",
+      preview: {
+        attackerId: attacker.id,
+        target: attack.target,
+        attack2: 4,
+        chargeApplied: false,
+        defenseBonusNumerator: 1,
+        defenseBonusDenominator: 1,
+        breachApplied: false,
+        push: "BLOCKED",
+        damageToDefender: 5,
+        damageToAttacker: 2,
+        defenderDies: false,
+        attackerDies: false,
+        advances: false,
+        noRetaliationReason: null,
+      },
+    } as const;
+    const fake = new FakeController(view, [attack]);
+    fake.dispatch.mockImplementationOnce(async (command) => {
+      fake.setSnapshot({
+        ...fake.snapshot(),
+        commandIndex: view.commandIndex + 1,
+        view: {
+          ...view,
+          commandIndex: view.commandIndex + 1,
+          units: [
+            { ...attacker, hp: attacker.hp - 2 },
+            { ...defender, hp: defender.hp - 5 },
+          ],
+        },
+      });
+      return {
+        accepted: true,
+        command,
+        events: [event],
+        stateHash: "accepted-combat",
+        presentationBoundary: fakeBoundary(
+          view,
+          fake.snapshot().view ?? view,
+          command,
+          [event],
+        ),
+      };
+    });
+    const host = new FakeBoardHostV6();
+    const app = new Ruleset6DomAppView(document, requireElement("#app"), fake, {
+      boardHost: host,
+    });
+    host.callbacks?.onCommandCandidates(
+      [target(attack, defender.at)],
+      defender.at,
+    );
+    await waitUntil(() => host.model?.combatPresentation !== null);
+    expect(host.model).toMatchObject({
+      interactive: false,
+      combatPresentation: {
+        key: `${view.commandIndex + 1}:0:${attacker.id}`,
+        attacker: { id: attacker.id, at: attacker.at },
+        target: { id: defender.id, at: defender.at },
+        damaged: [{ id: defender.id }, { id: attacker.id }],
+      },
+    });
+    const key = host.model?.combatPresentation?.key;
+    if (key === undefined) throw new Error("Missing combat key");
+    host.callbacks?.onCombatPresentationComplete?.("stale-key");
+    expect(host.model?.combatPresentation?.key).toBe(key);
+    host.callbacks?.onCombatPresentationComplete?.(key);
+    expect(host.model?.combatPresentation ?? null).toBeNull();
+    expect(host.model?.interactive).toBe(true);
+    app.destroy();
+
+    const rejectedFake = new FakeController(view, [attack]);
+    rejectedFake.dispatch.mockResolvedValueOnce({
+      accepted: false,
+      reason: "NOT_OFFERED",
+    });
+    const rejectedHost = new FakeBoardHostV6();
+    const rejectedApp = new Ruleset6DomAppView(
+      document,
+      requireElement("#app"),
+      rejectedFake,
+      { boardHost: rejectedHost },
+    );
+    rejectedHost.callbacks?.onCommandCandidates(
+      [target(attack, defender.at)],
+      defender.at,
+    );
+    await waitUntil(() => rejectedFake.dispatch.mock.calls.length === 1);
+    expect(rejectedHost.model?.combatPresentation ?? null).toBeNull();
+    rejectedApp.destroy();
+  });
+
+  it("queues rapid AI combat boundaries and Fast Forward drains presentation only", async () => {
+    const initial = publicView("ORIGINAL");
+    const human = initial.units.find(
+      (unit) => unit.ownerId === initial.viewer.id,
+    );
+    const aiPlayer = initial.players.find(
+      (player) => player.id !== initial.viewer.id,
+    );
+    if (human === undefined || aiPlayer === undefined)
+      throw new Error("Missing AI combat fixture");
+    const ai = {
+      ...human,
+      id: unitId(human.id + 80_000),
+      ownerId: aiPlayer.id,
+      at: { x: human.at.x + 1, y: human.at.y },
+    };
+    const view: PlayerViewV6 = { ...initial, units: [human, ai] };
+    const end = { kind: "END_TURN" } as const satisfies CommandV6;
+    const attack = {
+      kind: "ATTACK",
+      unitId: ai.id,
+      target: { kind: "UNIT", unitId: human.id },
+    } as const satisfies CommandV6;
+    const combat = {
+      kind: "COMBAT_RESOLVED",
+      preview: {
+        attackerId: ai.id,
+        target: attack.target,
+        attack2: 4,
+        chargeApplied: false,
+        defenseBonusNumerator: 1,
+        defenseBonusDenominator: 1,
+        breachApplied: false,
+        push: "BLOCKED",
+        damageToDefender: 4,
+        damageToAttacker: 1,
+        defenderDies: false,
+        attackerDies: false,
+        advances: false,
+        noRetaliationReason: null,
+      },
+    } as const;
+    const fake = new FakeController(view, [end]);
+    const aiTurn: PlayerViewV6 = {
+      ...view,
+      activeSeatIndex: 1,
+      commandIndex: 1,
+    };
+    fake.dispatch.mockImplementationOnce(async (command) => {
+      fake.setSnapshot({
+        ...fake.snapshot(),
+        view: aiTurn,
+        commandIndex: 1,
+        offeredCommands: [],
+      });
+      return {
+        accepted: true,
+        command,
+        events: [],
+        stateHash: "after-end",
+        presentationBoundary: fakeBoundary(
+          view,
+          fake.snapshot().view ?? view,
+          command,
+        ),
+      };
+    });
+    fake.progressAiTurns.mockImplementationOnce(async () => {
+      const afterFirst = { ...aiTurn, commandIndex: 2 };
+      const afterSecond = { ...view, commandIndex: 3 };
+      fake.setSnapshot({
+        ...fake.snapshot(),
+        view: afterSecond,
+        commandIndex: 3,
+        offeredCommands: [end],
+      });
+      return {
+        ok: true,
+        acceptedCommands: 2,
+        events: [combat, combat],
+        stateHash: "after-ai",
+        presentationBoundaries: [
+          {
+            actorId: aiPlayer.id,
+            command: attack,
+            events: [combat],
+            beforeView: aiTurn,
+            afterView: afterFirst,
+          },
+          {
+            actorId: aiPlayer.id,
+            command: attack,
+            events: [combat],
+            beforeView: afterFirst,
+            afterView: afterSecond,
+          },
+        ],
+      };
+    });
+    const host = new FakeBoardHostV6();
+    const app = new Ruleset6DomAppView(document, requireElement("#app"), fake, {
+      boardHost: host,
+    });
+    requireElement('[data-action="end-turn"]').click();
+    await waitUntil(
+      () => host.model?.combatPresentation?.actorController === "AI",
+    );
+    const stateBeforeSkip = fake.snapshot().stateHash;
+    expect(host.model?.combatPresentation?.key).toBe(`2:0:${ai.id}`);
+    const fastForward = requireElement('[data-action="fast-forward-combat"]');
+    fastForward.click();
+    expect(host.model?.combatPresentation ?? null).toBeNull();
+    expect(fake.snapshot().stateHash).toBe(stateBeforeSkip);
+    expect(fake.snapshot().commandIndex).toBe(3);
+    app.destroy();
+  });
+
   it("opens the dedicated 25-node tree, researches only its exact detail command, and preserves the match session", async () => {
     const storage = new MemoryStorage();
     const host = new FakeBoardHostV6();
@@ -1136,6 +1371,11 @@ describe("playable ruleset-6 DOM shell", () => {
         command,
         events: [],
         stateHash: "after-reward",
+        presentationBoundary: fakeBoundary(
+          view,
+          fake.snapshot().view ?? view,
+          command,
+        ),
       };
     });
     rewardButtons[0]?.click();
@@ -1166,6 +1406,11 @@ describe("playable ruleset-6 DOM shell", () => {
         command,
         events: [],
         stateHash: "after-candify",
+        presentationBoundary: fakeBoundary(
+          view,
+          fake.snapshot().view ?? view,
+          command,
+        ),
       };
     });
     candifyButton.click();
@@ -1411,12 +1656,17 @@ class FakeController implements Ruleset6BrowserControllerPort {
   }
   launch = vi.fn<Ruleset6BrowserController["launch"]>();
   resume = vi.fn<Ruleset6BrowserController["resume"]>();
-  dispatch = vi.fn<Ruleset6BrowserController["dispatch"]>(async (command) => ({
-    accepted: true,
-    command,
-    events: [],
-    stateHash: "public-test-state",
-  }));
+  dispatch = vi.fn<Ruleset6BrowserController["dispatch"]>(async (command) => {
+    const view = this.#snapshot.view;
+    if (view === null) return { accepted: false, reason: "NO_ACTIVE_MATCH" };
+    return {
+      accepted: true,
+      command,
+      events: [],
+      stateHash: "public-test-state",
+      presentationBoundary: fakeBoundary(view, view, command),
+    };
+  });
   progressAiTurns = vi.fn<Ruleset6BrowserController["progressAiTurns"]>();
   restart = vi.fn<Ruleset6BrowserController["restart"]>();
   deleteStoredSave = vi.fn<Ruleset6BrowserController["deleteStoredSave"]>();
@@ -1424,6 +1674,22 @@ class FakeController implements Ruleset6BrowserControllerPort {
     ok: false,
     error: "NOT_OFFERED",
   }));
+}
+
+function fakeBoundary(
+  beforeView: PlayerViewV6,
+  afterView: PlayerViewV6,
+  command: CommandV6,
+  events: readonly DomainEventV6[] = [],
+) {
+  return {
+    actorId:
+      beforeView.turnOrder[beforeView.activeSeatIndex] ?? beforeView.viewer.id,
+    command,
+    events,
+    beforeView,
+    afterView,
+  };
 }
 
 class MemoryStorage implements StorageAdapter {

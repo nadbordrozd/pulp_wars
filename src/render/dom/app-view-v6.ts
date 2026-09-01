@@ -5,6 +5,7 @@ import {
   queryTechnologyTreeV6,
   TECHNOLOGY_BRANCH_IDS_V6,
   type CommandV6,
+  type DomainEventV6,
   type FactionIdV6,
   type MatchSetupV6,
   type PendingChoiceV6,
@@ -32,6 +33,10 @@ import {
 } from "../canvas/render-plan-v6";
 import { unitCoverageV6 } from "../canvas/asset-coverage-v6";
 import { readyUnitIdsFromOfferedMovesV6 } from "./readiness-v6";
+import {
+  combatPresentationsFromEventsV6,
+  type CombatPresentationV6,
+} from "../canvas/combat-presentation-v6";
 
 const BOARD_SIZES = [11, 14, 16, 20, 25] as const;
 const COLORS: readonly PlayerColorV6[] = ["CORAL", "TEAL", "GOLD", "VIOLET"];
@@ -113,6 +118,7 @@ export class Ruleset6DomAppView {
   #mandatoryChoiceKey: string | null = null;
   #mandatoryReturnFocusId: string | null = null;
   #restoreBoardFocus = false;
+  #combatQueue: readonly CombatPresentationV6[] = [];
   #destroyed = false;
 
   constructor(
@@ -146,6 +152,7 @@ export class Ruleset6DomAppView {
     this.#document.removeEventListener("keydown", this.#onKeyDown);
     this.#unsubscribe?.();
     this.#unsubscribe = null;
+    this.#combatQueue = [];
     this.#boardHost.destroy();
     this.#root.replaceChildren();
   }
@@ -459,7 +466,9 @@ export class Ruleset6DomAppView {
 
   #matchScreen(view: PlayerViewV6): HTMLElement {
     const main = el(this.#document, "main", "v6-match-shell");
-    const humanCanAct = canHumanAct(this.#snapshot);
+    const combatPresentation = this.#combatQueue[0] ?? null;
+    const humanCanAct =
+      canHumanAct(this.#snapshot) && combatPresentation === null;
     const mandatoryChoicePending = view.pendingChoices.length > 0;
     const ownCities = view.cities.filter(
       (city) => city.ownerId === view.viewer.id,
@@ -495,6 +504,7 @@ export class Ruleset6DomAppView {
       technology.dataset.action = "open-tech";
       technology.dataset.focusId = "open-tech";
       technology.ariaLabel = "Open Technology (T)";
+      technology.disabled = combatPresentation !== null;
       technology.onclick = () => this.#openTechnologyScreen();
       menu.append(technology);
     }
@@ -525,6 +535,23 @@ export class Ruleset6DomAppView {
       endTurn.dataset.action = "end-turn";
       menu.append(endTurn);
     }
+    if (
+      combatPresentation !== null &&
+      combatPresentation.actorController === "AI"
+    ) {
+      const fastForward = button(
+        this.#document,
+        "Fast Forward",
+        "secondary-action",
+      );
+      fastForward.dataset.action = "fast-forward-combat";
+      fastForward.onclick = () => {
+        this.#combatQueue = [];
+        this.#notice = "Combat presentation skipped.";
+        this.#render();
+      };
+      menu.append(fastForward);
+    }
     menu.append(zoomOut, zoomIn, restart, remove);
     hud.append(menu);
 
@@ -544,6 +571,11 @@ export class Ruleset6DomAppView {
           "p",
           this.#snapshot.diagnostic ?? "The match encountered an error.",
         ),
+      );
+    } else if (combatPresentation !== null) {
+      dock.append(
+        text(this.#document, "h2", "Combat"),
+        text(this.#document, "p", "Resolving the accepted attack…"),
       );
     } else if (!humanCanAct) {
       dock.append(
@@ -579,6 +611,7 @@ export class Ruleset6DomAppView {
       this.#hasMandatoryChoice()
     )
       return;
+    this.#combatQueue = [];
     this.#screen = "TECH";
     this.#selectedTechnology = null;
     this.#pendingFocusSelector = '[data-focus-id="tech-back"]';
@@ -954,13 +987,22 @@ export class Ruleset6DomAppView {
         this.#commandChoices = [];
         this.#render();
       },
+      onCombatPresentationComplete: (key) => {
+        if (this.#combatQueue[0]?.key !== key) return;
+        this.#combatQueue = this.#combatQueue.slice(1);
+        this.#render();
+      },
     });
+    const combatPresentation = this.#combatQueue[0] ?? null;
     this.#boardHost.update({
       matchInstanceId: this.#matchInstanceId,
       view,
       interactive:
-        canHumanAct(this.#snapshot) && view.pendingChoices.length === 0,
+        canHumanAct(this.#snapshot) &&
+        combatPresentation === null &&
+        view.pendingChoices.length === 0,
       motion: this.#prefersReducedMotion ? "REDUCED" : "FULL",
+      combatPresentation,
       interaction: {
         ...EMPTY_BOARD_RENDER_INTERACTION_V6,
         selection: this.#selection,
@@ -1345,9 +1387,11 @@ export class Ruleset6DomAppView {
       this.#render();
       return;
     }
+    this.#enqueueCombatBoundaries([result.presentationBoundary]);
     this.#notice = `${commandLabel(command)} completed.`;
     this.#targetMode = null;
     this.#validatePresentation(this.#controller.snapshot().view);
+    this.#render();
     await this.#progressAiIfNeeded();
   }
 
@@ -1363,8 +1407,10 @@ export class Ruleset6DomAppView {
     if (this.#destroyed) return;
     if (!result.ok)
       this.#error = `AI progression stopped: ${result.diagnostic}`;
-    else
+    else {
+      this.#enqueueCombatBoundaries(result.presentationBoundaries);
       this.#notice = `AI completed ${result.acceptedCommands} action${result.acceptedCommands === 1 ? "" : "s"}. Your turn.`;
+    }
     this.#render();
   }
 
@@ -1404,6 +1450,7 @@ export class Ruleset6DomAppView {
 
   async #restart(): Promise<void> {
     if (this.#hasMandatoryChoice()) return;
+    this.#combatQueue = [];
     const result = await this.#controller.restart();
     if (this.#destroyed) return;
     if (!result.ok) {
@@ -1420,6 +1467,7 @@ export class Ruleset6DomAppView {
 
   async #deleteSave(): Promise<void> {
     if (this.#hasMandatoryChoice()) return;
+    this.#combatQueue = [];
     const deleted = await this.#controller.deleteStoredSave();
     if (this.#destroyed) return;
     if (!deleted) {
@@ -1528,6 +1576,31 @@ export class Ruleset6DomAppView {
     this.#screen = "MATCH";
     this.#selectedTechnology = null;
     this.#pendingFocusSelector = null;
+    this.#combatQueue = [];
+  }
+
+  #enqueueCombatBoundaries(
+    boundaries: readonly {
+      readonly events: readonly DomainEventV6[];
+      readonly beforeView: PlayerViewV6 | null;
+      readonly afterView: PlayerViewV6 | null;
+    }[],
+  ): void {
+    const motion = this.#prefersReducedMotion ? "REDUCED" : "FULL";
+    const additions = boundaries.flatMap((boundary) =>
+      boundary.beforeView === null
+        ? []
+        : combatPresentationsFromEventsV6(
+            boundary.beforeView,
+            boundary.events,
+            boundary.afterView?.commandIndex ??
+              boundary.beforeView.commandIndex + 1,
+            motion,
+          ),
+    );
+    if (additions.length === 0) return;
+    this.#combatQueue = Object.freeze([...this.#combatQueue, ...additions]);
+    this.#render();
   }
 }
 

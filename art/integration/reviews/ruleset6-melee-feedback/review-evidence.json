@@ -1,0 +1,78 @@
+{
+  "generatedBy": "npm run art:ruleset6-combat-review",
+  "renderer": "buildBoardDrawListV6",
+  "viewports": [
+    {
+      "id": "desktop",
+      "width": 1200,
+      "height": 700,
+      "dpr": 1
+    },
+    {
+      "id": "mobile",
+      "width": 390,
+      "height": 844,
+      "dpr": 2
+    }
+  ],
+  "phases": [
+    {
+      "id": "contact",
+      "elapsedMs": 140,
+      "motion": "FULL"
+    },
+    {
+      "id": "impact",
+      "elapsedMs": 240,
+      "motion": "FULL"
+    },
+    {
+      "id": "reduced",
+      "elapsedMs": 0,
+      "motion": "REDUCED"
+    }
+  ],
+  "assertions": [
+    "attacker sprite lunges toward the adjacent target during contact",
+    "defender and retaliated attacker sprites shake during impact",
+    "health bars, shadows, selection, terrain and map anchors remain fixed",
+    "reduced motion is stationary and uses one brief opacity reaction",
+    "review title, phase label and subtitle fit inside every viewport panel"
+  ],
+  "visualReview": {
+    "status": "ACCEPTED",
+    "notes": "Desktop and true DPR2 mobile frames were inspected at native resolution. Three-line review headers fit inside every panel without clipping; contact direction reads clearly, both hit recipients remain legible against fixed overlays, and the stationary reduced-motion cue does not imply travel."
+  },
+  "artifacts": [
+    {
+      "path": "art/integration/reviews/ruleset6-melee-feedback/desktop-contact.png",
+      "bytes": 156492,
+      "sha256": "dec4de9cbb98d51534a47fe11c2647c213bc3e174e0bf4d617ca4c4a7511b95c"
+    },
+    {
+      "path": "art/integration/reviews/ruleset6-melee-feedback/desktop-impact.png",
+      "bytes": 156083,
+      "sha256": "a575227d72237787241031d27c5378151375e3698be01721b55a94ec62419824"
+    },
+    {
+      "path": "art/integration/reviews/ruleset6-melee-feedback/desktop-reduced.png",
+      "bytes": 156729,
+      "sha256": "1bcb4119d47a1e9c8afd7a03a99446336e6c71612ae2fbae1b9a8fe6e0314e58"
+    },
+    {
+      "path": "art/integration/reviews/ruleset6-melee-feedback/mobile-contact-dpr2.png",
+      "bytes": 248924,
+      "sha256": "0300f76d8726b5b6ca29a4559a6c13e836bda5e6b6df2278e1d86463e958278b"
+    },
+    {
+      "path": "art/integration/reviews/ruleset6-melee-feedback/mobile-impact-dpr2.png",
+      "bytes": 247632,
+      "sha256": "ee618a3a50c5b4387632c5e19209c3f5dcd187d81d8921b244296eef041954d7"
+    },
+    {
+      "path": "art/integration/reviews/ruleset6-melee-feedback/mobile-reduced-dpr2.png",
+      "bytes": 249796,
+      "sha256": "24d809885cc6e63bb91e026b41bd1e1cc2799adfa12a0e50983573a099441ea6"
+    }
+  ]
+}

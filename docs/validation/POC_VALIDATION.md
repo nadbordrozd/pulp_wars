@@ -2147,3 +2147,28 @@ Despite their retained historical filenames, `POC_V4_MAP_CORPUS.json`,
 reduced-density evidence. Legacy v1-v4 fixtures and the unmarked v5
 compatibility fixtures remain frozen. The seed-zero map fixture SHA-256 is
 `c1f3decc3742a62a23862611d320f419aaa535d51bc7cd8b05d928614616c099`.
+
+## Ruleset-6 melee and damage-feedback validation
+
+Ruleset-6 accepted adjacent `ATTACK` boundaries now retain observation-safe
+before/after `PlayerViewV6` snapshots beside their ordered public events. This
+transient boundary is not part of state, saves, replays, or canonical hashes.
+The DOM projects only accepted `COMBAT_RESOLVED` facts into a serial queue;
+rejected commands and ranged attacks produce no melee presentation.
+
+Full motion uses a 180 ms directional contact lunge followed by a bounded
+240 ms return/advance and damage shake. Retaliation shakes the attacker as a
+second recipient. A public pre-event sprite snapshot preserves lethal defender
+or attacker feedback while the post-event board and fixed status/health
+overlays remain authoritative. Reduced motion schedules no continuous RAF and
+uses one stationary 100 ms opacity reaction. Remount retains monotonic elapsed
+time; unmount, replacement match, restart, deletion, destroy, and Fast Forward
+cancel without leaking RAFs/timeouts or changing AI command order.
+
+The deterministic renderer review command is
+`npm run art:ruleset6-combat-review`. Its six checked-in frames cover contact,
+impact, and reduced motion on 1200 x 700 DPR1 desktop and true 390 x 844 DPR2
+mobile. Every frame was inspected at original detail; the lunge direction and
+two-recipient impact remain readable while selection, terrain, shadows, and
+health bars stay fixed. See the
+[machine-readable evidence](../../art/integration/reviews/ruleset6-melee-feedback/review-evidence.json).

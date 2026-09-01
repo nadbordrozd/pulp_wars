@@ -5,6 +5,7 @@ import {
   ECONOMIC_IMPROVEMENT_IDS,
   RESOURCE_IDS,
   UNIT_ROLE_IDS,
+  unitId,
 } from "../../src/engine/index";
 import {
   RENDER_ENTRY_COVERAGE_V6,
@@ -29,6 +30,10 @@ import type {
   RenderEntryKindV6,
   RenderPlanEntryV6,
 } from "../../src/render/canvas/render-plan-v6";
+import {
+  combatAnimationFrameV6,
+  type CombatPresentationV6,
+} from "../../src/render/canvas/combat-presentation-v6";
 
 const AT = { x: 2, y: 2 } as const;
 const WAIT = { kind: "WAIT", unitId: 20 } as const;
@@ -344,6 +349,108 @@ describe("ruleset-6 Canvas drawing layer", () => {
       reduced.commands
         .filter((command) => command.entryKey === unit.key)
         .every((command) => command.alpha === 1),
+    ).toBe(true);
+  });
+
+  it("transforms only combatant sprites and restores a lethal public snapshot", () => {
+    const attackerAt = { x: 2, y: 2 } as const;
+    const defenderAt = { x: 3, y: 2 } as const;
+    const attacker = fixtureEntry(
+      "UNIT",
+      attackerAt,
+      { faction: "ORIGINAL", role: "FIGHTER", readiness: "OPAQUE" },
+      5,
+    );
+    const status = fixtureEntry(
+      "UNIT_STATUS",
+      attackerAt,
+      {
+        faction: "ORIGINAL",
+        role: "FIGHTER",
+        hp: 7,
+        maxHp: 10,
+        state: "HANDLED",
+        veteran: false,
+      },
+      8,
+    );
+    const plan: BoardRenderPlanV6 = {
+      planVersion: 6,
+      entries: [attacker, status],
+      legalCommands: [],
+      commandTargets: [],
+      economicPreview: null,
+    };
+    const presentation: CombatPresentationV6 = {
+      key: "11:0:22",
+      commandIndex: 11,
+      motion: "FULL",
+      durationMs: 420,
+      actorController: "HUMAN",
+      attacker: {
+        id: unitId(attacker.id),
+        ownerId: 1,
+        faction: "ORIGINAL",
+        role: "FIGHTER",
+        at: attackerAt,
+      },
+      target: {
+        id: unitId(99),
+        ownerId: 2,
+        faction: "CANDY",
+        role: "FIGHTER",
+        at: defenderAt,
+      },
+      targetAt: defenderAt,
+      damaged: [
+        {
+          id: unitId(99),
+          ownerId: 2,
+          faction: "CANDY",
+          role: "FIGHTER",
+          at: defenderAt,
+        },
+      ],
+      advances: false,
+    };
+    const options = {
+      viewport: { width: 800, height: 600 },
+      camera: { offsetX: 400, offsetY: 180, zoom: 1 },
+      plan,
+    } as const;
+    const baseline = buildBoardDrawListV6(options);
+    const animated = buildBoardDrawListV6({
+      ...options,
+      combatPresentation: presentation,
+      combatFrame: combatAnimationFrameV6(presentation, 120),
+    });
+    const baselineAttacker = baseline.commands.find(
+      (command) =>
+        command.entryKey === attacker.key && command.kind === "IMAGE",
+    );
+    const animatedAttacker = animated.commands.find(
+      (command) =>
+        command.entryKey === attacker.key && command.kind === "IMAGE",
+    );
+    if (
+      baselineAttacker?.kind !== "IMAGE" ||
+      animatedAttacker?.kind !== "IMAGE"
+    )
+      throw new Error("Missing accepted attacker sprite");
+    expect(animatedAttacker.destination).not.toEqual(
+      baselineAttacker.destination,
+    );
+    expect(
+      animated.commands.filter((command) => command.entryKey === status.key),
+    ).toEqual(
+      baseline.commands.filter((command) => command.entryKey === status.key),
+    );
+    expect(
+      animated.commands.some(
+        (command) =>
+          command.entryKey === "COMBAT_UNIT:11:0:22:99" &&
+          command.kind === "IMAGE",
+      ),
     ).toBe(true);
   });
 

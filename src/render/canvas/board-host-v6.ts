@@ -28,12 +28,17 @@ import {
   type MapCommandTargetV6,
   type RenderPlanEntryV6,
 } from "./render-plan-v6";
+import {
+  combatAnimationFrameV6,
+  type CombatPresentationV6,
+} from "./combat-presentation-v6";
 
 export interface CanvasBoardHostModelV6 {
   readonly matchInstanceId: number | string;
   readonly view: PlayerViewV6;
   readonly interactive: boolean;
   readonly motion?: "FULL" | "REDUCED";
+  readonly combatPresentation?: CombatPresentationV6 | null;
   readonly interaction: BoardRenderInteractionV6;
 }
 
@@ -46,6 +51,7 @@ export interface CanvasBoardHostCallbacksV6 {
   ) => void;
   readonly onZoom: (direction: "IN" | "OUT") => void;
   readonly onCancel?: () => void;
+  readonly onCombatPresentationComplete?: (key: string) => void;
 }
 
 export interface BoardHostV6 {
@@ -125,6 +131,10 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
   #readinessPhaseKey: string | null = null;
   #readinessPhaseStartedAt = 0;
   #animationFrame: number | null = null;
+  #combatPresentationKey: string | null = null;
+  #combatPresentationStartedAt = 0;
+  #completedCombatPresentationKey: string | null = null;
+  #combatCompletionTimer: number | null = null;
 
   constructor(documentRoot: Document, images?: Ruleset6AcceptedImageResolver) {
     this.#document = documentRoot;
@@ -134,7 +144,7 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
   }
 
   mount(container: HTMLElement, callbacks: CanvasBoardHostCallbacksV6): void {
-    this.#unmount();
+    this.#detach(true);
     this.#container = container;
     this.#callbacks = callbacks;
     const canvas = this.#document.createElement("canvas");
@@ -192,7 +202,7 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
   }
 
   unmount(): void {
-    this.#unmount();
+    this.#detach(false);
   }
 
   update(model: CanvasBoardHostModelV6): void {
@@ -200,6 +210,7 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
     const matchChanged =
       previousModel === null ||
       previousModel.matchInstanceId !== model.matchInstanceId;
+    if (matchChanged) this.#resetCombatPresentation();
     const commandChanged =
       !matchChanged &&
       this.#observedCommandIndex !== null &&
@@ -211,6 +222,7 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
       this.#readinessPhaseStartedAt = this.#now();
     }
     this.#model = model;
+    this.#syncCombatPresentationClock(model);
     this.#observedCommandIndex = model.view.commandIndex;
 
     const key = `${String(model.matchInstanceId)}:${model.view.board.width}x${model.view.board.height}`;
@@ -295,7 +307,7 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
   }
 
   destroy(): void {
-    this.#unmount();
+    this.#detach(false);
     this.#model = null;
     this.#selection = null;
     this.#focused = null;
@@ -305,6 +317,7 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
     this.#boardKey = null;
     this.#readinessPhaseKey = null;
     this.#readinessPhaseStartedAt = 0;
+    this.#resetCombatPresentation();
     this.#camera = { offsetX: 0, offsetY: 0, zoom: 1 };
   }
 
@@ -595,6 +608,15 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
         images: this.#images,
         readinessElapsedMs: this.#now() - this.#readinessPhaseStartedAt,
         reducedMotion: !boardReadinessAnimationNeededV6(model),
+        combatPresentation: model.combatPresentation ?? null,
+        combatFrame:
+          model.combatPresentation === undefined ||
+          model.combatPresentation === null
+            ? null
+            : combatAnimationFrameV6(
+                model.combatPresentation,
+                this.#combatElapsedMs(),
+              ),
       });
     }
     this.#describe(plan);
@@ -697,8 +719,9 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
     this.#didDrag = false;
   }
 
-  #unmount(): void {
+  #detach(preserveCombatClock: boolean): void {
     this.#cancelAnimationFrame();
+    this.#cancelCombatCompletionTimer();
     this.#resizeObserver?.disconnect();
     this.#resizeObserver = null;
     this.#document.defaultView?.removeEventListener("resize", this.#onResize);
@@ -720,22 +743,23 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
     this.#activator = null;
     this.#description = null;
     this.#callbacks = null;
+    if (!preserveCombatClock) this.#resetCombatPresentation();
   }
 
   #scheduleAnimationFrame(): void {
-    if (this.#animationFrame !== null || this.#context === null) return;
+    if (this.#animationFrame !== null) return;
     const model = this.#model;
     const browser = this.#document.defaultView;
-    if (
-      model === null ||
-      browser === null ||
-      !boardReadinessAnimationNeededV6(model)
-    )
+    if (model === null || browser === null || !boardAnimationNeededV6(model))
       return;
     this.#animationFrame = browser.requestAnimationFrame(() => {
       this.#animationFrame = null;
       const current = this.#model;
-      if (current === null || !boardReadinessAnimationNeededV6(current)) return;
+      if (current === null || !boardAnimationNeededV6(current)) return;
+      if (this.#combatPresentationFinished(current)) {
+        this.#completeCombatPresentation(current);
+        return;
+      }
       this.#draw();
       this.#scheduleAnimationFrame();
     });
@@ -743,11 +767,12 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
 
   #syncAnimationFrame(): void {
     const model = this.#model;
-    if (model !== null && boardReadinessAnimationNeededV6(model)) {
+    if (model !== null && boardAnimationNeededV6(model)) {
       this.#scheduleAnimationFrame();
     } else {
       this.#cancelAnimationFrame();
     }
+    this.#syncReducedMotionCompletion(model);
   }
 
   #cancelAnimationFrame(): void {
@@ -759,6 +784,92 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
   #now(): number {
     return this.#document.defaultView?.performance.now() ?? 0;
   }
+
+  #syncCombatPresentationClock(model: CanvasBoardHostModelV6): void {
+    const presentation = model.combatPresentation ?? null;
+    const key =
+      presentation === null
+        ? null
+        : `${String(model.matchInstanceId)}:${presentation.key}`;
+    if (key === this.#combatPresentationKey) return;
+    this.#cancelCombatCompletionTimer();
+    this.#combatPresentationKey = key;
+    this.#completedCombatPresentationKey = null;
+    this.#combatPresentationStartedAt = key === null ? 0 : this.#now();
+  }
+
+  #combatElapsedMs(): number {
+    return this.#combatPresentationKey === null
+      ? 0
+      : Math.max(0, this.#now() - this.#combatPresentationStartedAt);
+  }
+
+  #combatPresentationFinished(model: CanvasBoardHostModelV6): boolean {
+    const presentation = model.combatPresentation ?? null;
+    return (
+      presentation !== null &&
+      this.#combatElapsedMs() >= presentation.durationMs
+    );
+  }
+
+  #completeCombatPresentation(model: CanvasBoardHostModelV6): void {
+    const presentation = model.combatPresentation ?? null;
+    if (presentation === null) return;
+    const key = `${String(model.matchInstanceId)}:${presentation.key}`;
+    if (
+      key !== this.#combatPresentationKey ||
+      key === this.#completedCombatPresentationKey
+    )
+      return;
+    this.#completedCombatPresentationKey = key;
+    this.#cancelAnimationFrame();
+    this.#cancelCombatCompletionTimer();
+    this.#callbacks?.onCombatPresentationComplete?.(presentation.key);
+  }
+
+  #syncReducedMotionCompletion(model: CanvasBoardHostModelV6 | null): void {
+    this.#cancelCombatCompletionTimer();
+    const presentation = model?.combatPresentation ?? null;
+    if (
+      presentation === null ||
+      presentation.motion !== "REDUCED" ||
+      this.#combatPresentationKey === this.#completedCombatPresentationKey
+    ) {
+      return;
+    }
+    const remaining = Math.max(
+      0,
+      presentation.durationMs - this.#combatElapsedMs(),
+    );
+    const browser = this.#document.defaultView;
+    if (browser === null) return;
+    this.#combatCompletionTimer = browser.setTimeout(() => {
+      this.#combatCompletionTimer = null;
+      const current = this.#model;
+      if (current !== null) this.#completeCombatPresentation(current);
+    }, remaining);
+  }
+
+  #cancelCombatCompletionTimer(): void {
+    if (this.#combatCompletionTimer === null) return;
+    this.#document.defaultView?.clearTimeout(this.#combatCompletionTimer);
+    this.#combatCompletionTimer = null;
+  }
+
+  #resetCombatPresentation(): void {
+    this.#cancelCombatCompletionTimer();
+    this.#combatPresentationKey = null;
+    this.#completedCombatPresentationKey = null;
+    this.#combatPresentationStartedAt = 0;
+  }
+}
+
+export function boardAnimationNeededV6(model: CanvasBoardHostModelV6): boolean {
+  const combat = model.combatPresentation ?? null;
+  return (
+    (combat !== null && combat.motion === "FULL") ||
+    boardReadinessAnimationNeededV6(model)
+  );
 }
 
 export function boardReadinessAnimationNeededV6(
