@@ -2172,3 +2172,31 @@ mobile. Every frame was inspected at original detail; the lunge direction and
 two-recipient impact remain readable while selection, terrain, shadows, and
 health bars stay fixed. See the
 [machine-readable evidence](../../art/integration/reviews/ruleset6-melee-feedback/review-evidence.json).
+
+## Ruleset-6 ranged-projectile validation
+
+The same accepted-boundary combat queue now classifies presentation from the
+attacker's effective faction-role rule. Original Marksman and Candy Gumball
+Guard attacks therefore remain ranged at both adjacent and distance-2 targets,
+while every range-one role keeps the melee lunge. Original launches a small
+outlined code-native arrow and Candy launches a small pink code-native gumball;
+neither projectile uses a bitmap asset or enters simulation state.
+
+Full motion uses a deterministic 220 ms cubic-out source-to-target flight, then
+the existing bounded damage shake. Unit and Chocolate Wall targets are derived
+only from the public pre-event view. A pre-event Wall snapshot keeps lethal Wall
+hits coherent until impact, just as lethal unit snapshots do. Reduced motion
+uses no traveling primitive or continuous RAF: one stationary endpoint cue and
+the shared 100 ms opacity reaction are shown instead. Rejected commands enqueue
+nothing; rapid AI boundaries remain ordered, and Fast Forward, remount,
+unmount, replacement, restart, deletion, result, and destroy retain the combat
+queue's existing cancellation behavior without changing state, saves, replays,
+hashes, picking, camera, or AI pacing.
+
+`npm run art:ruleset6-combat-review` also produces ten ranged frames covering
+Original adjacent/distance-2 arrows, Candy Wall flight/impact, and reduced
+motion on 1200 x 700 DPR1 desktop and true 390 x 844 DPR2 mobile. Every artifact
+was inspected at native and enlarged resolution; projectile direction and
+faction identity remain legible, impact follows flight, the Wall remains
+coherent, and no primitive or label clips. See the
+[machine-readable ranged evidence](../../art/integration/reviews/ruleset6-ranged-feedback/review-evidence.json).

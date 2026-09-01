@@ -35,6 +35,7 @@ import type {
   CombatAnimationFrameV6,
   CombatPresentationV6,
   CombatSpriteSnapshotV6,
+  CombatWallSnapshotV6,
 } from "./combat-presentation-v6";
 
 export interface Ruleset6AcceptedImageResolver {
@@ -150,6 +151,7 @@ export interface UnitVisibleFootprintV6 {
 const PLAYER_COLORS = ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"] as const;
 const INK = "#19282a";
 const CANDY_INK = "#4b2639";
+const WORLD_BODY_LAYER_V6 = 5;
 
 /**
  * Deterministic visible placeholder envelopes. They sit inside the calibrated
@@ -201,7 +203,21 @@ export function buildBoardDrawListV6(
       )
       .map((entry) => [entry.id, entry.details.level] as const),
   );
-  for (const entry of combatEntries(options.plan, options.combatPresentation)) {
+  const entries = combatEntries(options.plan, options.combatPresentation);
+  const projectileCommands = combatProjectileCommands(
+    options.camera,
+    options.combatPresentation,
+    options.combatFrame,
+  );
+  const deferredFog =
+    projectileCommands.length === 0
+      ? []
+      : entries.filter((entry) => entry.kind === "FOG");
+  const renderEntries =
+    deferredFog.length === 0
+      ? entries
+      : entries.filter((entry) => entry.kind !== "FOG");
+  const drawPlanEntry = (entry: RenderPlanEntryV6): void => {
     const center = worldToScreen(projectGrid(entry.at), options.camera);
     const faction =
       factions.get(coordinateKey(entry.at)) ??
@@ -217,14 +233,27 @@ export function buildBoardDrawListV6(
       cityLevels.get(entry.id) ?? 1,
       options.readinessElapsedMs ?? 0,
       options.reducedMotion ?? false,
-      combatSpriteStyle(
+      combatEntryStyle(
         entry,
         options.camera,
         options.combatPresentation,
         options.combatFrame,
       ),
     );
+  };
+  let projectileEmitted = false;
+  const emitProjectileLayer = (): void => {
+    commands.push(...projectileCommands);
+    for (const fog of deferredFog) drawPlanEntry(fog);
+    projectileEmitted = true;
+  };
+  for (const entry of renderEntries) {
+    if (!projectileEmitted && entry.layer > WORLD_BODY_LAYER_V6) {
+      emitProjectileLayer();
+    }
+    drawPlanEntry(entry);
   }
+  if (!projectileEmitted) emitProjectileLayer();
   return { commands, coverage };
 }
 
@@ -438,38 +467,37 @@ function drawEntry(
       return;
     case "CITY_FRONT":
       return;
-    case "CHOCOLATE_WALL":
+    case "CHOCOLATE_WALL": {
+      const spriteCenter = transformedCenter(center, combatStyle);
       addCoveredAsset(
         commands,
         coverage,
         entry.key,
         chocolateWallCoverageV6(),
-        center,
+        spriteCenter,
         zoom,
-        () => wallFallback(entry.key, center, zoom),
+        () => wallFallback(entry.key, spriteCenter, zoom),
+        combatStyle?.alpha ?? 1,
       );
       return;
+    }
     case "UNIT": {
       const spriteOpacity =
         entry.details.readiness === "PULSE"
           ? readinessSpriteOpacity(readinessElapsedMs, reducedMotion)
           : 1;
+      const spriteCenter = transformedCenter(center, combatStyle);
       addCoveredAsset(
         commands,
         coverage,
         entry.key,
         unitCoverageV6(entry.details.faction, entry.details.role),
-        combatStyle === null
-          ? center
-          : {
-              x: center.x + combatStyle.offset.x,
-              y: center.y + combatStyle.offset.y,
-            },
+        spriteCenter,
         zoom,
         (item) =>
           unitFallback(
             entry.key,
-            center,
+            spriteCenter,
             zoom,
             entry.details.faction,
             entry.details.role,
@@ -627,6 +655,15 @@ function combatEntries(
       );
     }
   }
+  const wall = presentation.targetWall;
+  if (
+    wall !== null &&
+    !entries.some(
+      (entry) => entry.kind === "CHOCOLATE_WALL" && entry.id === wall.id,
+    )
+  ) {
+    entries.push(combatWallEntry(wall, presentation.key));
+  }
   return entries.sort(compareEntriesV6);
 }
 
@@ -651,20 +688,50 @@ function combatUnitEntry(
   };
 }
 
-function combatSpriteStyle(
+function combatWallEntry(
+  wall: CombatWallSnapshotV6,
+  presentationKey: string,
+): Extract<RenderPlanEntryV6, { readonly kind: "CHOCOLATE_WALL" }> {
+  return {
+    key: `COMBAT_WALL:${presentationKey}:${wall.id}`,
+    kind: "CHOCOLATE_WALL",
+    at: wall.at,
+    id: wall.id,
+    ownerId: wall.ownerId,
+    variant: 0,
+    layer: 5,
+    details: {
+      faction: wall.faction,
+      hp: wall.hp,
+    },
+  };
+}
+
+function combatEntryStyle(
   entry: RenderPlanEntryV6,
   camera: CameraState,
   presentation: CombatPresentationV6 | null | undefined,
   frame: CombatAnimationFrameV6 | null | undefined,
 ): { readonly offset: Point; readonly alpha: number } | null {
   if (
-    entry.kind !== "UNIT" ||
+    (entry.kind !== "UNIT" && entry.kind !== "CHOCOLATE_WALL") ||
     presentation === undefined ||
     presentation === null ||
     frame === undefined ||
     frame === null
   ) {
     return null;
+  }
+  if (entry.kind === "CHOCOLATE_WALL") {
+    const damaged =
+      presentation.targetWall?.id === entry.id && presentation.wallDamaged;
+    return {
+      offset: {
+        x: damaged ? frame.shake * camera.zoom : 0,
+        y: 0,
+      },
+      alpha: damaged ? frame.damagedOpacity : 1,
+    };
   }
   const damaged = presentation.damaged.some((sprite) => sprite.id === entry.id);
   const shake = damaged ? frame.shake * camera.zoom : 0;
@@ -683,6 +750,143 @@ function combatSpriteStyle(
     },
     alpha: damaged ? frame.damagedOpacity : 1,
   };
+}
+
+function transformedCenter(
+  center: Point,
+  style: { readonly offset: Point; readonly alpha: number } | null,
+): Point {
+  return style === null
+    ? center
+    : { x: center.x + style.offset.x, y: center.y + style.offset.y };
+}
+
+function combatProjectileCommands(
+  camera: CameraState,
+  presentation: CombatPresentationV6 | null | undefined,
+  frame: CombatAnimationFrameV6 | null | undefined,
+): readonly BoardDrawCommandV6[] {
+  if (
+    presentation?.kind !== "RANGED" ||
+    presentation.projectile === null ||
+    frame === undefined ||
+    frame === null ||
+    frame.projectileOpacity <= 0
+  ) {
+    return [];
+  }
+  const sourceGround = worldToScreen(
+    projectGrid(presentation.attacker.at),
+    camera,
+  );
+  const targetGround = worldToScreen(
+    projectGrid(presentation.targetAt),
+    camera,
+  );
+  const from = {
+    x: sourceGround.x,
+    y: sourceGround.y - 36 * camera.zoom,
+  };
+  const to = {
+    x: targetGround.x,
+    y:
+      targetGround.y -
+      (presentation.targetWall === null ? 34 : 22) * camera.zoom,
+  };
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  const distance = Math.hypot(dx, dy);
+  const ux = distance === 0 ? 1 : dx / distance;
+  const uy = distance === 0 ? 0 : dy / distance;
+  const px = -uy;
+  const py = ux;
+  const tip = {
+    x: from.x + dx * frame.projectileTravel,
+    y: from.y + dy * frame.projectileTravel,
+  };
+  const key = `COMBAT_PROJECTILE:${presentation.key}`;
+  if (presentation.projectile === "GUMBALL") {
+    const radius = clampNumber(5.5 * camera.zoom, 4, 8);
+    const trail = clampNumber(16 * camera.zoom, 10, 24);
+    return [
+      line(
+        key,
+        [
+          { x: tip.x - ux * trail, y: tip.y - uy * trail },
+          { x: tip.x - ux * radius, y: tip.y - uy * radius },
+        ],
+        "#ff91bf",
+        clampNumber(3 * camera.zoom, 2, 5),
+        frame.projectileOpacity * 0.72,
+      ),
+      ellipse(
+        key,
+        tip.x,
+        tip.y,
+        radius,
+        radius,
+        "#e83f8f",
+        CANDY_INK,
+        clampNumber(2 * camera.zoom, 1.5, 3),
+        frame.projectileOpacity,
+      ),
+      ellipse(
+        key,
+        tip.x - radius * 0.28,
+        tip.y - radius * 0.28,
+        radius * 0.24,
+        radius * 0.24,
+        "#fff0f6",
+        null,
+        0,
+        frame.projectileOpacity,
+      ),
+    ];
+  }
+  const shaftLength = clampNumber(18 * camera.zoom, 11, 28);
+  const headLength = clampNumber(7 * camera.zoom, 5, 10);
+  const headHalfWidth = clampNumber(4 * camera.zoom, 3, 6);
+  const shaftEnd = {
+    x: tip.x - ux * headLength,
+    y: tip.y - uy * headLength,
+  };
+  return [
+    line(
+      key,
+      [
+        {
+          x: shaftEnd.x - ux * shaftLength,
+          y: shaftEnd.y - uy * shaftLength,
+        },
+        shaftEnd,
+      ],
+      "#f4d291",
+      clampNumber(3 * camera.zoom, 2, 4.5),
+      frame.projectileOpacity,
+    ),
+    polygon(
+      key,
+      [
+        tip,
+        {
+          x: shaftEnd.x + px * headHalfWidth,
+          y: shaftEnd.y + py * headHalfWidth,
+        },
+        {
+          x: shaftEnd.x - px * headHalfWidth,
+          y: shaftEnd.y - py * headHalfWidth,
+        },
+      ],
+      "#e9edf0",
+      INK,
+      clampNumber(1.5 * camera.zoom, 1, 2.5),
+      frame.projectileOpacity,
+    ),
+  ];
+}
+
+function clampNumber(value: number, minimum: number, maximum: number): number {
+  return Math.max(minimum, Math.min(maximum, value));
 }
 
 function addCoveredAsset(

@@ -6,6 +6,7 @@ import {
   RESOURCE_IDS,
   UNIT_ROLE_IDS,
   unitId,
+  wallId,
 } from "../../src/engine/index";
 import {
   RENDER_ENTRY_COVERAGE_V6,
@@ -387,6 +388,8 @@ describe("ruleset-6 Canvas drawing layer", () => {
       motion: "FULL",
       durationMs: 420,
       actorController: "HUMAN",
+      kind: "MELEE",
+      projectile: null,
       attacker: {
         id: unitId(attacker.id),
         ownerId: 1,
@@ -401,6 +404,7 @@ describe("ruleset-6 Canvas drawing layer", () => {
         role: "FIGHTER",
         at: defenderAt,
       },
+      targetWall: null,
       targetAt: defenderAt,
       damaged: [
         {
@@ -411,6 +415,7 @@ describe("ruleset-6 Canvas drawing layer", () => {
           at: defenderAt,
         },
       ],
+      wallDamaged: false,
       advances: false,
     };
     const options = {
@@ -452,6 +457,208 @@ describe("ruleset-6 Canvas drawing layer", () => {
           command.kind === "IMAGE",
       ),
     ).toBe(true);
+  });
+
+  it("layers deterministic ranged projectiles after world bodies and before fog/interaction/status overlays", () => {
+    const attackerAt = { x: 2, y: 2 } as const;
+    const targetAt = { x: 4, y: 2 } as const;
+    const attacker = fixtureEntry(
+      "UNIT",
+      attackerAt,
+      { faction: "ORIGINAL", role: "MARKSMAN", readiness: "OPAQUE" },
+      5,
+    );
+    const fog = fixtureEntry(
+      "FOG",
+      { x: 3, y: 3 },
+      { diplomaticBlock: null },
+      0,
+    );
+    const selection = fixtureEntry(
+      "SELECTION",
+      attackerAt,
+      { selectionKind: "UNIT" },
+      6,
+    );
+    const attackTarget = fixtureEntry(
+      "ATTACK_TARGET",
+      targetAt,
+      { command: WAIT },
+      7,
+    );
+    const status = fixtureEntry(
+      "UNIT_STATUS",
+      attackerAt,
+      {
+        faction: "ORIGINAL",
+        role: "MARKSMAN",
+        hp: 8,
+        maxHp: 10,
+        state: "HANDLED",
+        veteran: false,
+      },
+      8,
+    );
+    const plan: BoardRenderPlanV6 = {
+      planVersion: 6,
+      entries: [fog, attacker, selection, attackTarget, status],
+      legalCommands: [],
+      commandTargets: [],
+      economicPreview: null,
+    };
+    const presentation: CombatPresentationV6 = {
+      key: "12:0:22",
+      commandIndex: 12,
+      motion: "FULL",
+      durationMs: 420,
+      actorController: "HUMAN",
+      kind: "RANGED",
+      projectile: "ARROW",
+      attacker: {
+        id: unitId(attacker.id),
+        ownerId: 1,
+        faction: "ORIGINAL",
+        role: "MARKSMAN",
+        at: attackerAt,
+      },
+      target: null,
+      targetWall: {
+        id: wallId(700),
+        ownerId: 2,
+        faction: "CANDY",
+        hp: 3,
+        at: targetAt,
+      },
+      targetAt,
+      damaged: [],
+      wallDamaged: true,
+      advances: false,
+    };
+    const options = {
+      viewport: { width: 800, height: 600 },
+      camera: { offsetX: 400, offsetY: 180, zoom: 1 },
+      plan,
+    } as const;
+    const baseline = buildBoardDrawListV6(options);
+    const flight = buildBoardDrawListV6({
+      ...options,
+      combatPresentation: presentation,
+      combatFrame: combatAnimationFrameV6(presentation, 110),
+    });
+    const projectile = flight.commands.filter(
+      (command) => command.entryKey === "COMBAT_PROJECTILE:12:0:22",
+    );
+    expect(projectile.map((command) => command.kind)).toEqual([
+      "LINE",
+      "POLYGON",
+    ]);
+    const projectileIndexes = flight.commands.flatMap((command, index) =>
+      command.entryKey.startsWith("COMBAT_PROJECTILE:") ? [index] : [],
+    );
+    const worldIndexes = flight.commands.flatMap((command, index) =>
+      command.entryKey === attacker.key ||
+      command.entryKey === "COMBAT_WALL:12:0:22:700"
+        ? [index]
+        : [],
+    );
+    const overlayIndexes = flight.commands.flatMap((command, index) =>
+      command.entryKey === fog.key ||
+      command.entryKey === selection.key ||
+      command.entryKey === attackTarget.key ||
+      command.entryKey === status.key
+        ? [index]
+        : [],
+    );
+    expect(worldIndexes.length).toBeGreaterThan(0);
+    expect(projectileIndexes).toHaveLength(2);
+    expect(overlayIndexes.length).toBeGreaterThan(0);
+    expect(Math.max(...worldIndexes)).toBeLessThan(
+      Math.min(...projectileIndexes),
+    );
+    expect(Math.max(...projectileIndexes)).toBeLessThan(
+      Math.min(...overlayIndexes),
+    );
+    expect(
+      flight.commands.find(
+        (command) =>
+          command.entryKey === attacker.key && command.kind === "IMAGE",
+      ),
+    ).toEqual(
+      baseline.commands.find(
+        (command) =>
+          command.entryKey === attacker.key && command.kind === "IMAGE",
+      ),
+    );
+    expect(
+      flight.commands.some(
+        (command) =>
+          command.entryKey === "COMBAT_WALL:12:0:22:700" &&
+          command.kind === "IMAGE",
+      ),
+    ).toBe(true);
+    for (const zoom of [0.625, 1, 1.75] as const) {
+      const camera = { offsetX: 400, offsetY: 180, zoom };
+      const renderAtDpr = (devicePixelRatio: 1 | 2) =>
+        drawBoardV6({
+          context: drawingContext(),
+          viewport: options.viewport,
+          camera,
+          plan,
+          devicePixelRatio,
+          combatPresentation: presentation,
+          combatFrame: combatAnimationFrameV6(presentation, 110),
+        }).commands.filter((command) =>
+          command.entryKey.startsWith("COMBAT_PROJECTILE:"),
+        );
+      const dpr1 = renderAtDpr(1);
+      const dpr2 = renderAtDpr(2);
+      expect(dpr2).toEqual(dpr1);
+      expect(dpr1).toHaveLength(2);
+      const points = dpr1.flatMap((command) =>
+        command.kind === "LINE" || command.kind === "POLYGON"
+          ? command.points
+          : [],
+      );
+      expect(
+        points.every(
+          (point) =>
+            point.x >= 0 &&
+            point.x <= options.viewport.width &&
+            point.y >= 0 &&
+            point.y <= options.viewport.height,
+        ),
+      ).toBe(true);
+    }
+
+    const candyPresentation: CombatPresentationV6 = {
+      ...presentation,
+      key: "13:0:22",
+      projectile: "GUMBALL",
+      attacker: {
+        ...presentation.attacker,
+        faction: "CANDY",
+      },
+    };
+    const candy = buildBoardDrawListV6({
+      ...options,
+      combatPresentation: candyPresentation,
+      combatFrame: combatAnimationFrameV6(candyPresentation, 110),
+    });
+    expect(
+      candy.commands
+        .filter((command) => command.entryKey === "COMBAT_PROJECTILE:13:0:22")
+        .map((command) => command.kind),
+    ).toEqual(["LINE", "ELLIPSE", "ELLIPSE"]);
+    const impact = buildBoardDrawListV6({
+      ...options,
+      combatPresentation: presentation,
+      combatFrame: combatAnimationFrameV6(presentation, 240),
+    });
+    expect(
+      impact.commands.some((command) =>
+        command.entryKey.startsWith("COMBAT_PROJECTILE:"),
+      ),
+    ).toBe(false);
   });
 
   it("labels temporary Road masks non-production and never draws a redundant CAPITAL/CITY site over its city", () => {

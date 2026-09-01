@@ -793,21 +793,22 @@ describe("playable ruleset-6 DOM shell", () => {
     expect(host.destroyCalls).toBe(1);
   });
 
-  it("queues only accepted public melee events, locks input, and drains by key", async () => {
+  it("queues only accepted public ranged events, locks input, and drains by key", async () => {
     const initial = publicView("ORIGINAL");
-    const attacker = initial.units.find(
+    const baseAttacker = initial.units.find(
       (unit) => unit.ownerId === initial.viewer.id,
     );
     const enemyPlayer = initial.players.find(
       (player) => player.id !== initial.viewer.id,
     );
-    if (attacker === undefined || enemyPlayer === undefined)
+    if (baseAttacker === undefined || enemyPlayer === undefined)
       throw new Error("Missing combat fixture");
+    const attacker = { ...baseAttacker, role: "MARKSMAN" as const };
     const defender = {
       ...attacker,
       id: unitId(attacker.id + 90_000),
       ownerId: enemyPlayer.id,
-      at: { x: attacker.at.x + 1, y: attacker.at.y },
+      at: { x: attacker.at.x + 2, y: attacker.at.y },
     };
     const view: PlayerViewV6 = { ...initial, units: [attacker, defender] };
     const attack = {
@@ -874,6 +875,8 @@ describe("playable ruleset-6 DOM shell", () => {
       interactive: false,
       combatPresentation: {
         key: `${view.commandIndex + 1}:0:${attacker.id}`,
+        kind: "RANGED",
+        projectile: "ARROW",
         attacker: { id: attacker.id, at: attacker.at },
         target: { id: defender.id, at: defender.at },
         damaged: [{ id: defender.id }, { id: attacker.id }],
@@ -923,7 +926,8 @@ describe("playable ruleset-6 DOM shell", () => {
       ...human,
       id: unitId(human.id + 80_000),
       ownerId: aiPlayer.id,
-      at: { x: human.at.x + 1, y: human.at.y },
+      role: "MARKSMAN" as const,
+      at: { x: human.at.x + 2, y: human.at.y },
     };
     const view: PlayerViewV6 = { ...initial, units: [human, ai] };
     const end = { kind: "END_TURN" } as const satisfies CommandV6;
@@ -1018,6 +1022,10 @@ describe("playable ruleset-6 DOM shell", () => {
     );
     const stateBeforeSkip = fake.snapshot().stateHash;
     expect(host.model?.combatPresentation?.key).toBe(`2:0:${ai.id}`);
+    expect(host.model?.combatPresentation).toMatchObject({
+      kind: "RANGED",
+      projectile: aiPlayer.faction === "CANDY" ? "GUMBALL" : "ARROW",
+    });
     const fastForward = requireElement('[data-action="fast-forward-combat"]');
     fastForward.click();
     expect(host.model?.combatPresentation ?? null).toBeNull();

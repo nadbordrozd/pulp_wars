@@ -1,0 +1,114 @@
+{
+  "generatedBy": "npm run art:ruleset6-combat-review",
+  "renderer": "buildBoardDrawListV6",
+  "viewports": [
+    {
+      "id": "desktop",
+      "width": 1200,
+      "height": 700,
+      "dpr": 1
+    },
+    {
+      "id": "mobile",
+      "width": 390,
+      "height": 844,
+      "dpr": 2
+    }
+  ],
+  "phases": [
+    {
+      "id": "original-adjacent-flight",
+      "elapsedMs": 110,
+      "motion": "FULL",
+      "fixture": "ORIGINAL_ADJACENT"
+    },
+    {
+      "id": "original-distance2-flight",
+      "elapsedMs": 110,
+      "motion": "FULL",
+      "fixture": "ORIGINAL_DISTANCE2"
+    },
+    {
+      "id": "candy-wall-flight",
+      "elapsedMs": 110,
+      "motion": "FULL",
+      "fixture": "CANDY_WALL"
+    },
+    {
+      "id": "candy-wall-impact",
+      "elapsedMs": 250,
+      "motion": "FULL",
+      "fixture": "CANDY_WALL"
+    },
+    {
+      "id": "reduced-endpoint",
+      "elapsedMs": 0,
+      "motion": "REDUCED",
+      "fixture": "ORIGINAL_DISTANCE2"
+    }
+  ],
+  "assertions": [
+    "Original Marksman uses one restrained code-native outlined arrow at adjacent and distance-2 targets",
+    "Candy Gumball Guard uses one restrained code-native pink gumball and trail against a Chocolate Wall",
+    "projectile flight precedes the shared target damage shake",
+    "lethal Wall presentation retains the public pre-event Wall snapshot",
+    "reduced motion is stationary and shows only the projectile endpoint cue plus opacity reaction",
+    "all projectile geometry remains inside desktop DPR1 and mobile DPR2 frames"
+  ],
+  "visualReview": {
+    "status": "ACCEPTED",
+    "notes": "Every desktop DPR1 and true mobile DPR2 artifact was inspected at native and enlarged resolution. Arrow direction remains readable at both legal distances, the Candy gumball is faction-distinct without obscuring its Wall target, impact follows flight, the stationary reduced cue implies no travel, and no primitive or review label clips."
+  },
+  "artifacts": [
+    {
+      "path": "art/integration/reviews/ruleset6-ranged-feedback/desktop-original-adjacent-flight.png",
+      "bytes": 152764,
+      "sha256": "09e99cf37a3f739287940c0d96fd8de09889ab20cef2426c5e2bd06e7db1d67b"
+    },
+    {
+      "path": "art/integration/reviews/ruleset6-ranged-feedback/desktop-original-distance2-flight.png",
+      "bytes": 153094,
+      "sha256": "d67e524babd51d3ce4807e15e33af2d4cb76a7257198b9761b1f203dea2e7a94"
+    },
+    {
+      "path": "art/integration/reviews/ruleset6-ranged-feedback/desktop-candy-wall-flight.png",
+      "bytes": 155551,
+      "sha256": "ef1ae1cd4cb092ba4fde13fc90914a28a076848c9ab92e26991de5fb03a3fc92"
+    },
+    {
+      "path": "art/integration/reviews/ruleset6-ranged-feedback/desktop-candy-wall-impact.png",
+      "bytes": 155725,
+      "sha256": "f93885b1dda3e60ad69437dcd207ad5f91998b8434187f53fadf458553b24a61"
+    },
+    {
+      "path": "art/integration/reviews/ruleset6-ranged-feedback/desktop-reduced-endpoint.png",
+      "bytes": 152594,
+      "sha256": "8c8f40f26ff714691fbfecb1dc9b38dffb64407da997d77250acad24169da693"
+    },
+    {
+      "path": "art/integration/reviews/ruleset6-ranged-feedback/mobile-original-adjacent-flight-dpr2.png",
+      "bytes": 245959,
+      "sha256": "7fa8cafe2d5647ee72d4abbdfd1675703bf9c7040eeba21132a355136e73f299"
+    },
+    {
+      "path": "art/integration/reviews/ruleset6-ranged-feedback/mobile-original-distance2-flight-dpr2.png",
+      "bytes": 246165,
+      "sha256": "8ea42ba38aec0341ed946cf3129178bf747696d855d60476f29703489ce1c623"
+    },
+    {
+      "path": "art/integration/reviews/ruleset6-ranged-feedback/mobile-candy-wall-flight-dpr2.png",
+      "bytes": 254991,
+      "sha256": "c77a732d0d07465044b7c303c8296e4ef1fc7a23e83b6285796f9be380592b8e"
+    },
+    {
+      "path": "art/integration/reviews/ruleset6-ranged-feedback/mobile-candy-wall-impact-dpr2.png",
+      "bytes": 255675,
+      "sha256": "79f8b43687aee47045371b68501243df67662b2087d88eb598f59173f4a86f45"
+    },
+    {
+      "path": "art/integration/reviews/ruleset6-ranged-feedback/mobile-reduced-endpoint-dpr2.png",
+      "bytes": 244812,
+      "sha256": "a48f2e9ca46eaa33de9d64add3d64d35c6558ad183eb47bd2d614a7480977cc7"
+    }
+  ]
+}

@@ -5,6 +5,7 @@ import {
   createPlayableGameV6,
   unitId,
   viewForV6,
+  wallId,
   type DomainEventV6,
   type FactionIdV6,
   type PlayerViewV6,
@@ -16,7 +17,7 @@ import {
   combatPresentationsFromEventsV6,
 } from "../../src/render/canvas/combat-presentation-v6";
 
-describe("ruleset-6 melee combat presentation", () => {
+describe("ruleset-6 combat presentation", () => {
   it("projects an accepted adjacent attack into lunge and both damage reactions", () => {
     const view = combatView();
     const event = combatEvent(view, { damageToAttacker: 3 });
@@ -36,6 +37,8 @@ describe("ruleset-6 melee combat presentation", () => {
     if (presentation === undefined) throw new Error("Missing presentation");
     expect(combatAnimationFrameV6(presentation, 0)).toEqual({
       attackerTravel: 0,
+      projectileTravel: 0,
+      projectileOpacity: 0,
       shake: 0,
       damagedOpacity: 1,
     });
@@ -70,6 +73,8 @@ describe("ruleset-6 melee combat presentation", () => {
     );
     expect(combatAnimationFrameV6(presentation, 0)).toEqual({
       attackerTravel: 0,
+      projectileTravel: 0,
+      projectileOpacity: 0,
       shake: 0,
       damagedOpacity: 0.58,
     });
@@ -116,15 +121,109 @@ describe("ruleset-6 melee combat presentation", () => {
       distance: "nonadjacent",
     },
   ] as const)(
-    "excludes $faction MARKSMAN from melee feedback when $distance",
+    "uses the faction projectile for $faction MARKSMAN when $distance",
     ({ faction, targetAt }) => {
       const view = combatView({ attackerFaction: faction, targetAt });
       expect(view.units[0]?.role).toBe("MARKSMAN");
-      expect(
-        combatPresentationsFromEventsV6(view, [combatEvent(view)], 10, "FULL"),
-      ).toEqual([]);
+      const [presentation] = combatPresentationsFromEventsV6(
+        view,
+        [combatEvent(view)],
+        10,
+        "FULL",
+      );
+      expect(presentation).toMatchObject({
+        kind: "RANGED",
+        projectile: faction === "CANDY" ? "GUMBALL" : "ARROW",
+        attacker: { role: "MARKSMAN", faction },
+        targetAt,
+      });
+      if (presentation === undefined) throw new Error("Missing projectile");
+      const flight = combatAnimationFrameV6(
+        presentation,
+        COMBAT_PRESENTATION_TIMING_V6.projectileMs / 2,
+      );
+      expect(flight.attackerTravel).toBe(0);
+      expect(flight.projectileTravel).toBeGreaterThan(0);
+      expect(flight.projectileTravel).toBeLessThan(1);
+      expect(flight.projectileOpacity).toBe(1);
+      const impact = combatAnimationFrameV6(
+        presentation,
+        COMBAT_PRESENTATION_TIMING_V6.projectileMs + 20,
+      );
+      expect(impact.projectileOpacity).toBe(0);
+      expect(Math.abs(impact.shake)).toBeGreaterThan(0);
     },
   );
+
+  it("keeps a lethal ranged Wall snapshot through projectile and damage phases", () => {
+    const base = combatView({
+      attackerFaction: "CANDY",
+      targetAt: { x: 6, y: 4 },
+    });
+    const defender = base.units[1];
+    const enemy = base.players.find(
+      (player) => player.id !== base.units[0]?.ownerId,
+    );
+    if (defender === undefined || enemy === undefined)
+      throw new Error("Missing Wall fixture");
+    const wall = {
+      id: wallId(60_001),
+      ownerId: enemy.id,
+      at: defender.at,
+      hp: 4,
+    };
+    const view: PlayerViewV6 = {
+      ...base,
+      units: base.units.slice(0, 1),
+      chocolateWalls: [wall],
+    };
+    const event: DomainEventV6 = {
+      kind: "COMBAT_RESOLVED",
+      preview: {
+        ...combatEvent(base).preview,
+        target: { kind: "CHOCOLATE_WALL", wallId: wall.id },
+        damageToDefender: 4,
+        defenderDies: true,
+        noRetaliationReason: "STRUCTURE",
+      },
+    };
+    const first = combatPresentationsFromEventsV6(view, [event], 12, "FULL");
+    const second = combatPresentationsFromEventsV6(view, [event], 12, "FULL");
+    expect(first).toEqual(second);
+    expect(first[0]).toMatchObject({
+      kind: "RANGED",
+      projectile: "GUMBALL",
+      target: null,
+      targetWall: { id: wall.id, at: wall.at, hp: 4 },
+      targetAt: wall.at,
+      wallDamaged: true,
+      advances: false,
+    });
+  });
+
+  it("uses one stationary endpoint cue for reduced-motion ranged combat", () => {
+    const view = combatView({
+      attackerFaction: "ORIGINAL",
+      targetAt: { x: 6, y: 4 },
+    });
+    const [presentation] = combatPresentationsFromEventsV6(
+      view,
+      [combatEvent(view)],
+      13,
+      "REDUCED",
+    );
+    if (presentation === undefined) throw new Error("Missing projectile");
+    expect(combatAnimationFrameV6(presentation, 0)).toEqual(
+      combatAnimationFrameV6(presentation, 99),
+    );
+    expect(combatAnimationFrameV6(presentation, 0)).toMatchObject({
+      attackerTravel: 0,
+      projectileTravel: 1,
+      projectileOpacity: 1,
+      shake: 0,
+      damagedOpacity: 0.58,
+    });
+  });
 
   it.each([
     ["ORIGINAL", "FIGHTER"],
@@ -135,7 +234,7 @@ describe("ruleset-6 melee combat presentation", () => {
       const view = combatView({ attackerFaction: faction, attackerRole: role });
       expect(
         combatPresentationsFromEventsV6(view, [combatEvent(view)], 11, "FULL"),
-      ).toHaveLength(1);
+      ).toMatchObject([{ kind: "MELEE", projectile: null }]);
     },
   );
 
@@ -174,6 +273,54 @@ describe("ruleset-6 melee combat presentation", () => {
     ]);
     expect(evidence.visualReview.status).toBe("ACCEPTED");
     expect(evidence.artifacts).toHaveLength(6);
+    for (const artifact of evidence.artifacts) {
+      const data = await readFile(artifact.path);
+      expect(data.byteLength, artifact.path).toBe(artifact.bytes);
+      expect(
+        createHash("sha256").update(data).digest("hex"),
+        artifact.path,
+      ).toBe(artifact.sha256);
+    }
+  });
+
+  it("checks in inspected ranged desktop and mobile DPR evidence", async () => {
+    const evidence = JSON.parse(
+      await readFile(
+        "art/integration/reviews/ruleset6-ranged-feedback/review-evidence.json",
+        "utf8",
+      ),
+    ) as {
+      readonly renderer: string;
+      readonly viewports: readonly {
+        readonly id: string;
+        readonly dpr: number;
+      }[];
+      readonly phases: readonly {
+        readonly id: string;
+        readonly fixture: string;
+        readonly motion: string;
+      }[];
+      readonly visualReview: { readonly status: string };
+      readonly artifacts: readonly {
+        readonly path: string;
+        readonly bytes: number;
+        readonly sha256: string;
+      }[];
+    };
+    expect(evidence.renderer).toBe("buildBoardDrawListV6");
+    expect(evidence.viewports).toEqual([
+      expect.objectContaining({ id: "desktop", dpr: 1 }),
+      expect.objectContaining({ id: "mobile", dpr: 2 }),
+    ]);
+    expect(evidence.phases).toMatchObject([
+      { id: "original-adjacent-flight", fixture: "ORIGINAL_ADJACENT" },
+      { id: "original-distance2-flight", fixture: "ORIGINAL_DISTANCE2" },
+      { id: "candy-wall-flight", fixture: "CANDY_WALL" },
+      { id: "candy-wall-impact", fixture: "CANDY_WALL" },
+      { id: "reduced-endpoint", motion: "REDUCED" },
+    ]);
+    expect(evidence.visualReview.status).toBe("ACCEPTED");
+    expect(evidence.artifacts).toHaveLength(10);
     for (const artifact of evidence.artifacts) {
       const data = await readFile(artifact.path);
       expect(data.byteLength, artifact.path).toBe(artifact.bytes);
@@ -245,7 +392,7 @@ function combatView(
 function combatEvent(
   view: PlayerViewV6,
   overrides: { readonly damageToAttacker?: number } = {},
-): DomainEventV6 {
+): Extract<DomainEventV6, { readonly kind: "COMBAT_RESOLVED" }> {
   const attacker = view.units[0];
   const defender = view.units[1];
   if (attacker === undefined || defender === undefined)

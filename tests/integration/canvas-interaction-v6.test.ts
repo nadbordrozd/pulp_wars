@@ -42,7 +42,7 @@ beforeEach(() => {
 });
 
 describe("ruleset-6 Canvas host", () => {
-  it("runs one monotonic melee RAF lifecycle and cancels it on replacement or unmount", () => {
+  it("runs one monotonic ranged RAF lifecycle and cancels it on replacement or unmount", () => {
     let now = 0;
     vi.spyOn(window.performance, "now").mockImplementation(() => now);
     let nextFrame = 1;
@@ -65,6 +65,7 @@ describe("ruleset-6 Canvas host", () => {
       recordingContext([]),
     );
     const fixture = publicFixture();
+    const stateHash = canonicalHash(fixture.state);
     const presentation = combatPresentation(fixture.view, "combat-a");
     const completed: string[] = [];
     const host = new CanvasBoardHostV6(document);
@@ -120,6 +121,7 @@ describe("ruleset-6 Canvas host", () => {
     expect(frames.size).toBe(0);
     now += 1_000;
     expect(completed).toEqual(["combat-a"]);
+    expect(canonicalHash(fixture.state)).toBe(stateHash);
   });
 
   it("uses one cancellable timeout and no continuous RAF for reduced motion", () => {
@@ -929,7 +931,7 @@ function combatPresentation(
     faction:
       faction === "ORIGINAL" ? ("CANDY" as const) : ("ORIGINAL" as const),
     role: "FIGHTER" as const,
-    at: { x: attacker.at.x + 1, y: attacker.at.y },
+    at: { x: attacker.at.x + 2, y: attacker.at.y },
   };
   return {
     key,
@@ -937,16 +939,20 @@ function combatPresentation(
     motion: "FULL",
     durationMs: 420,
     actorController: "HUMAN",
+    kind: "RANGED",
+    projectile: faction === "CANDY" ? "GUMBALL" : "ARROW",
     attacker: {
       id: attacker.id,
       ownerId: attacker.ownerId,
       faction,
-      role: attacker.role,
+      role: "MARKSMAN",
       at: attacker.at,
     },
     target,
+    targetWall: null,
     targetAt: target.at,
     damaged: [target],
+    wallDamaged: false,
     advances: false,
   };
 }

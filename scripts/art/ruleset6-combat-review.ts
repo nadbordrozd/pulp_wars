@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
-import { unitId } from "../../src/engine/index";
+import { unitId, wallId } from "../../src/engine/index";
 import {
   buildBoardDrawListV6,
   type BoardDrawCommandV6,
@@ -59,6 +59,7 @@ for (const viewport of views) {
       reducedMotion: phase.motion === "REDUCED",
     });
     const svg = await reviewSvg(
+      "Ruleset 6 melee",
       `${phase.id} · ${phase.motion.toLowerCase()} motion`,
       size,
       camera,
@@ -104,6 +105,116 @@ await writeFile(
           "Desktop and true DPR2 mobile frames were inspected at native resolution. Three-line review headers fit inside every panel without clipping; contact direction reads clearly, both hit recipients remain legible against fixed overlays, and the stationary reduced-motion cue does not imply travel.",
       },
       artifacts,
+    },
+    null,
+    2,
+  )}\n`,
+);
+
+const rangedReviewRoot = path.join(
+  root,
+  "art/integration/reviews/ruleset6-ranged-feedback",
+);
+const rangedPhases = [
+  {
+    id: "original-adjacent-flight",
+    elapsedMs: 110,
+    motion: "FULL",
+    fixture: "ORIGINAL_ADJACENT",
+  },
+  {
+    id: "original-distance2-flight",
+    elapsedMs: 110,
+    motion: "FULL",
+    fixture: "ORIGINAL_DISTANCE2",
+  },
+  {
+    id: "candy-wall-flight",
+    elapsedMs: 110,
+    motion: "FULL",
+    fixture: "CANDY_WALL",
+  },
+  {
+    id: "candy-wall-impact",
+    elapsedMs: 250,
+    motion: "FULL",
+    fixture: "CANDY_WALL",
+  },
+  {
+    id: "reduced-endpoint",
+    elapsedMs: 0,
+    motion: "REDUCED",
+    fixture: "ORIGINAL_DISTANCE2",
+  },
+] as const;
+
+await mkdir(rangedReviewRoot, { recursive: true });
+const rangedArtifactNames: string[] = [];
+for (const viewport of views) {
+  const size = { width: viewport.width, height: viewport.height };
+  const camera = centerCameraOn(
+    { offsetX: 0, offsetY: 0, zoom: viewport.id === "mobile" ? 1.05 : 1.35 },
+    projectGrid({ x: 3, y: 3 }),
+    size,
+  );
+  for (const phase of rangedPhases) {
+    const presentation = rangedReviewPresentation(phase.fixture, phase.motion);
+    const list = buildBoardDrawListV6({
+      viewport: size,
+      camera,
+      plan: rangedReviewPlan(),
+      combatPresentation: presentation,
+      combatFrame: combatAnimationFrameV6(presentation, phase.elapsedMs),
+      reducedMotion: phase.motion === "REDUCED",
+    });
+    const svg = await reviewSvg(
+      "Ruleset 6 ranged",
+      `${phase.id.replaceAll("-", " ")} · ${phase.motion.toLowerCase()}`,
+      size,
+      camera,
+      list.commands,
+    );
+    const name = `${viewport.id}-${phase.id}${viewport.dpr === 2 ? "-dpr2" : ""}.png`;
+    await sharp(Buffer.from(svg))
+      .resize(viewport.width * viewport.dpr, viewport.height * viewport.dpr)
+      .png()
+      .toFile(path.join(rangedReviewRoot, name));
+    rangedArtifactNames.push(name);
+  }
+}
+
+const rangedArtifacts = await Promise.all(
+  rangedArtifactNames.map(async (name) => {
+    const data = await readFile(path.join(rangedReviewRoot, name));
+    return {
+      path: `art/integration/reviews/ruleset6-ranged-feedback/${name}`,
+      bytes: data.byteLength,
+      sha256: createHash("sha256").update(data).digest("hex"),
+    };
+  }),
+);
+await writeFile(
+  path.join(rangedReviewRoot, "review-evidence.json"),
+  `${JSON.stringify(
+    {
+      generatedBy: "npm run art:ruleset6-combat-review",
+      renderer: "buildBoardDrawListV6",
+      viewports: views,
+      phases: rangedPhases,
+      assertions: [
+        "Original Marksman uses one restrained code-native outlined arrow at adjacent and distance-2 targets",
+        "Candy Gumball Guard uses one restrained code-native pink gumball and trail against a Chocolate Wall",
+        "projectile flight precedes the shared target damage shake",
+        "lethal Wall presentation retains the public pre-event Wall snapshot",
+        "reduced motion is stationary and shows only the projectile endpoint cue plus opacity reaction",
+        "all projectile geometry remains inside desktop DPR1 and mobile DPR2 frames",
+      ],
+      visualReview: {
+        status: "ACCEPTED",
+        notes:
+          "Every desktop DPR1 and true mobile DPR2 artifact was inspected at native and enlarged resolution. Arrow direction remains readable at both legal distances, the Candy gumball is faction-distinct without obscuring its Wall target, impact follows flight, the stationary reduced cue implies no travel, and no primitive or review label clips.",
+      },
+      artifacts: rangedArtifacts,
     },
     null,
     2,
@@ -191,10 +302,90 @@ function reviewPresentation(motion: "FULL" | "REDUCED"): CombatPresentationV6 {
     motion,
     durationMs: motion === "REDUCED" ? 100 : 420,
     actorController: "HUMAN",
+    kind: "MELEE",
+    projectile: null,
     attacker,
     target,
+    targetWall: null,
     targetAt: target.at,
     damaged: [target, attacker],
+    wallDamaged: false,
+    advances: false,
+  };
+}
+
+function rangedReviewPlan(): BoardRenderPlanV6 {
+  const entries: RenderPlanEntryV6[] = [];
+  for (let y = 1; y <= 5; y += 1) {
+    for (let x = 1; x <= 5; x += 1) {
+      entries.push(
+        entry("TERRAIN", `RANGED_TERRAIN:${y},${x}`, { x, y }, y * 10 + x, 1, {
+          terrain: "GRASS",
+        }),
+      );
+    }
+  }
+  entries.sort(compareEntriesV6);
+  return {
+    planVersion: 6,
+    entries,
+    legalCommands: [],
+    commandTargets: [],
+    economicPreview: null,
+  };
+}
+
+function rangedReviewPresentation(
+  fixture: "ORIGINAL_ADJACENT" | "ORIGINAL_DISTANCE2" | "CANDY_WALL",
+  motion: "FULL" | "REDUCED",
+): CombatPresentationV6 {
+  const candy = fixture === "CANDY_WALL";
+  const attackerAt = candy ? { x: 2, y: 4 } : { x: 2, y: 2 };
+  const targetAt =
+    fixture === "ORIGINAL_ADJACENT"
+      ? { x: 3, y: 2 }
+      : candy
+        ? { x: 4, y: 4 }
+        : { x: 4, y: 2 };
+  const attacker = {
+    id: unitId(candy ? 303 : 101),
+    ownerId: candy ? 2 : 1,
+    faction: candy ? ("CANDY" as const) : ("ORIGINAL" as const),
+    role: "MARKSMAN" as const,
+    at: attackerAt,
+  };
+  const target = candy
+    ? null
+    : {
+        id: unitId(202),
+        ownerId: 2,
+        faction: "CANDY" as const,
+        role: "FIGHTER" as const,
+        at: targetAt,
+      };
+  const targetWall = candy
+    ? {
+        id: wallId(404),
+        ownerId: 1,
+        faction: "ORIGINAL" as const,
+        hp: 3,
+        at: targetAt,
+      }
+    : null;
+  return {
+    key: `ranged-review-${fixture}-${motion}`,
+    commandIndex: 2,
+    motion,
+    durationMs: motion === "REDUCED" ? 100 : 420,
+    actorController: "HUMAN",
+    kind: "RANGED",
+    projectile: candy ? "GUMBALL" : "ARROW",
+    attacker,
+    target,
+    targetWall,
+    targetAt,
+    damaged: target === null ? [] : [target],
+    wallDamaged: candy,
     advances: false,
   };
 }
@@ -220,6 +411,7 @@ function entry<Kind extends RenderPlanEntryV6["kind"]>(
 }
 
 async function reviewSvg(
+  title: string,
   label: string,
   viewport: Size,
   camera: CameraState,
@@ -230,7 +422,7 @@ async function reviewSvg(
   <rect width="100%" height="100%" fill="#203936"/>
   ${await commandsSvg(commands)}
   <rect x="12" y="12" width="${headerWidth}" height="68" rx="10" fill="#172b2be8" stroke="#78908b"/>
-  <text x="24" y="31" font-family="system-ui,sans-serif" font-size="14" font-weight="800" fill="#ffffff">Ruleset 6 melee</text>
+  <text x="24" y="31" font-family="system-ui,sans-serif" font-size="14" font-weight="800" fill="#ffffff">${escapeXml(title)}</text>
   <text x="24" y="49" font-family="system-ui,sans-serif" font-size="12" font-weight="700" fill="#ffffff">${escapeXml(label)}</text>
   <text x="24" y="67" font-family="system-ui,sans-serif" font-size="11" font-weight="600" fill="#c5d7d4">sprite-only transform · camera ${camera.zoom.toFixed(2)}×</text>
 </svg>`;
