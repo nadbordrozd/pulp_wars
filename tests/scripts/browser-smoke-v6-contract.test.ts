@@ -187,6 +187,14 @@ function validFlow(): BrowserSmokeFlowEvidenceV6 {
         attackButtonCount: 0,
         exactMoveAccepted: true,
         exactAttackAccepted: true,
+        identity: {
+          unitDesktop: selectionIdentity("UNIT", "Fighter"),
+          unitMobile: selectionIdentity("UNIT", "Fighter"),
+          cityDesktop: selectionIdentity("CITY", "Original Capital"),
+          cityMobile: selectionIdentity("CITY", "Original Capital"),
+          tileDesktop: selectionIdentity("TILE", "Fruit"),
+          tileMobile: selectionIdentity("TILE", "Fruit"),
+        },
         buttonLayout: {
           unitDesktop: contextActionLayout(1440, 1000, 1),
           unitMobile: contextActionLayout(390, 844, 2),
@@ -252,6 +260,19 @@ function validFlow(): BrowserSmokeFlowEvidenceV6 {
       }));
     }),
   };
+}
+
+function selectionIdentity(kind: "UNIT" | "CITY" | "TILE", title: string) {
+  return {
+    kind,
+    title,
+    detail: kind === "UNIT" ? "10/10 HP" : "",
+    ariaLabel: `${title} selected.`,
+    assetId: `fixture-${kind.toLowerCase()}`,
+    symbolKind: "accepted-raster",
+    rect: { x: 8, y: 700, width: 180, height: 60 },
+    artRect: { x: 8, y: 700, width: 56, height: 60 },
+  } as const;
 }
 
 function contextActionLayout(width: number, height: number, dpr: number) {

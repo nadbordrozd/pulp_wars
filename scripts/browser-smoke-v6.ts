@@ -14,6 +14,7 @@ import {
   type BrowserSmokeFlowEvidenceV6,
   type BrowserSmokeIntegratedAcceptanceV6,
   type BrowserSmokeLayoutV6,
+  type BrowserSmokeSelectionIdentityV6,
 } from "./browser-smoke-v6-contract";
 
 interface DebugTarget {
@@ -186,7 +187,7 @@ try {
     visualReview: {
       status: "ACCEPTED",
       notes:
-        "Every bounded contextual, reward, city-training, and Technology capture was inspected individually at native output size and in its nearest-neighbor 2x companion. Original and Candy Animals are visible on explored Forest from launch while Hunting remains unresearched and Hunt Game unavailable; hidden Animals remain redacted. Original and Candy labels/symbols remain distinct; the map stays primary; unit, city, and tile docks do not leak actions; full Technology cards/details and blocking rewards fit desktop and true 390x844 DPR2 mobile without clipping or horizontal overflow. Direct selected-tile actions accept one boundary without a second map activation. No suspected visual failure remained after enlargement review.",
+        "Every bounded contextual, reward, city-training, and Technology capture was inspected individually at native output size and in its nearest-neighbor 2x companion. Original and Candy Animals are visible on explored Forest from launch while Hunting remains unresearched and Hunt Game unavailable; hidden Animals remain redacted. Exact world-unit, faction/level city, and public Fruit selection identities remain compact and readable above their isolated actions at desktop and true 390x844 DPR2 mobile, with no coordinate text. Original and Candy labels/symbols remain distinct; the map stays primary; full Technology cards/details and blocking rewards fit without clipping or horizontal overflow. Direct selected-tile actions accept one boundary without a second map activation. No suspected visual failure remained after enlargement review.",
     },
     flows,
     aiFirstLaunch,
@@ -440,8 +441,37 @@ async function runFactionFlow(
       `${config.faction} exact unit context leaked actions: ${JSON.stringify(unitContext)}`,
     );
   }
+  const expectedUnitIdentity = {
+    title: config.faction === "ORIGINAL" ? "Fighter" : "Candy Warrior",
+    assetId:
+      config.faction === "ORIGINAL"
+        ? "unit-original-fighter"
+        : "unit-candy-fighter",
+  };
+  assertSelectionIdentity(
+    unitContext.identity,
+    "UNIT",
+    expectedUnitIdentity.title,
+    expectedUnitIdentity.assetId,
+    config.faction,
+  );
   await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.mobile);
-  const unitMobileButtonLayout = (await readContext(connection)).buttonLayout;
+  const unitMobileContext = await readContext(connection);
+  const unitMobileButtonLayout = unitMobileContext.buttonLayout;
+  assertSelectionIdentity(
+    unitMobileContext.identity,
+    "UNIT",
+    expectedUnitIdentity.title,
+    expectedUnitIdentity.assetId,
+    config.faction,
+  );
+  artifacts.push(
+    ...(await capturePair(
+      connection,
+      `${config.faction.toLowerCase()}-unit-context-mobile`,
+      `${config.faction} exact-unit identity and contextual actions on mobile`,
+    )),
+  );
   await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.desktop);
   artifacts.push(
     ...(await capturePair(
@@ -487,6 +517,8 @@ async function runFactionFlow(
   let tileContextAccepted = false;
   let tileDesktopButtonLayout: BrowserSmokeContextActionLayoutV6 | null = null;
   let tileMobileButtonLayout: BrowserSmokeContextActionLayoutV6 | null = null;
+  let tileDesktopIdentity: BrowserSmokeSelectionIdentityV6 | null = null;
+  let tileMobileIdentity: BrowserSmokeSelectionIdentityV6 | null = null;
   let boundaryIndex = afterMove.commandIndex;
   for (const at of fruitTiles) {
     await activateCoordinate(connection, at);
@@ -502,8 +534,39 @@ async function runFactionFlow(
     }
     if (tileDesktopButtonLayout === null) {
       tileDesktopButtonLayout = tileContext.buttonLayout;
+      tileDesktopIdentity = tileContext.identity;
+      assertSelectionIdentity(
+        tileContext.identity,
+        "TILE",
+        "Fruit",
+        config.faction === "ORIGINAL" ? "terrain-fruit" : "terrain-candy-fruit",
+        config.faction,
+      );
+      artifacts.push(
+        ...(await capturePair(
+          connection,
+          `${config.faction.toLowerCase()}-tile-context-desktop`,
+          `${config.faction} public Fruit identity and direct tile action on desktop`,
+        )),
+      );
       await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.mobile);
-      tileMobileButtonLayout = (await readContext(connection)).buttonLayout;
+      const tileMobileContext = await readContext(connection);
+      tileMobileButtonLayout = tileMobileContext.buttonLayout;
+      tileMobileIdentity = tileMobileContext.identity;
+      assertSelectionIdentity(
+        tileMobileContext.identity,
+        "TILE",
+        "Fruit",
+        config.faction === "ORIGINAL" ? "terrain-fruit" : "terrain-candy-fruit",
+        config.faction,
+      );
+      artifacts.push(
+        ...(await capturePair(
+          connection,
+          `${config.faction.toLowerCase()}-tile-context-mobile`,
+          `${config.faction} public Fruit identity and direct tile action on mobile`,
+        )),
+      );
       await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.desktop);
     }
     const harvest = (await readBoundary(connection)).offered.find(
@@ -553,6 +616,7 @@ async function runFactionFlow(
 
   await activateCoordinate(connection, capital.at);
   const cityContext = await readContext(connection);
+  const developedCapital = await ownedCapital(connection);
   const cityMobileButtonLayout = cityContext.buttonLayout;
   const expectedTrain =
     config.faction === "ORIGINAL" ? "Fighter" : "Candy Warrior";
@@ -568,8 +632,31 @@ async function runFactionFlow(
       `${config.faction} faction-correct city context failed: ${JSON.stringify(cityContext)}`,
     );
   }
+  const expectedCityAssetId = `building-${config.faction === "CANDY" ? "candy-" : ""}city-${Math.max(1, Math.min(3, developedCapital.level))}`;
+  assertSelectionIdentity(
+    cityContext.identity,
+    "CITY",
+    `${config.faction === "ORIGINAL" ? "Original" : "Candy"} Capital`,
+    expectedCityAssetId,
+    config.faction,
+  );
   await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.desktop);
-  const cityDesktopButtonLayout = (await readContext(connection)).buttonLayout;
+  const cityDesktopContext = await readContext(connection);
+  const cityDesktopButtonLayout = cityDesktopContext.buttonLayout;
+  assertSelectionIdentity(
+    cityDesktopContext.identity,
+    "CITY",
+    `${config.faction === "ORIGINAL" ? "Original" : "Candy"} Capital`,
+    expectedCityAssetId,
+    config.faction,
+  );
+  artifacts.push(
+    ...(await capturePair(
+      connection,
+      `${config.faction.toLowerCase()}-city-train-desktop`,
+      `${config.faction} exact city-level identity and training action on desktop`,
+    )),
+  );
   await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.mobile);
   artifacts.push(
     ...(await capturePair(
@@ -667,6 +754,11 @@ async function runFactionFlow(
   if (tileDesktopButtonLayout === null || tileMobileButtonLayout === null) {
     throw new Error(`${config.faction} contextual tile layout was not sampled`);
   }
+  if (tileDesktopIdentity === null || tileMobileIdentity === null) {
+    throw new Error(
+      `${config.faction} contextual tile identity was not sampled`,
+    );
+  }
 
   return {
     faction: config.faction,
@@ -711,6 +803,14 @@ async function runFactionFlow(
         exactMoveAccepted:
           afterMove.commandIndex === afterExact.commandIndex + 1,
         exactAttackAccepted: attack.afterIndex === attack.beforeIndex + 1,
+        identity: {
+          unitDesktop: unitContext.identity,
+          unitMobile: unitMobileContext.identity,
+          cityDesktop: cityDesktopContext.identity,
+          cityMobile: cityContext.identity,
+          tileDesktop: tileDesktopIdentity,
+          tileMobile: tileMobileIdentity,
+        },
         buttonLayout: {
           unitDesktop: unitDesktopButtonLayout,
           unitMobile: unitMobileButtonLayout,
@@ -987,9 +1087,11 @@ async function mainCommandCounts(
   );
 }
 
-async function ownedCapital(
-  connection: Connection,
-): Promise<{ readonly id: number; readonly at: CoordV6 }> {
+async function ownedCapital(connection: Connection): Promise<{
+  readonly id: number;
+  readonly at: CoordV6;
+  readonly level: number;
+}> {
   return evaluate(
     connection,
     `(() => {
@@ -997,7 +1099,7 @@ async function ownedCapital(
       const view = snapshot?.view;
       const city = view?.cities.find((candidate) => candidate.ownerId === view.viewer.id && candidate.isCapital);
       if (!city) throw new Error('Owned capital is missing');
-      return { id: city.id, at: city.at };
+      return { id: city.id, at: city.at, level: city.level };
     })()`,
   );
 }
@@ -1012,15 +1114,19 @@ async function readContext(connection: Connection): Promise<{
   readonly trainSymbolKind: string | null;
   readonly moveButtonCount: number;
   readonly buttonLayout: BrowserSmokeContextActionLayoutV6;
+  readonly identity: BrowserSmokeSelectionIdentityV6;
 }> {
   return evaluate(
     connection,
     `(() => {
-      const heading = document.querySelector('.v6-action-panel h2')?.textContent ?? '';
+      const identity = document.querySelector('.v6-selection-identity');
+      const identityArt = identity?.querySelector('.v6-selection-identity-art');
+      if (!(identity instanceof HTMLElement) || !(identityArt instanceof HTMLElement)) throw new Error('Selection identity is missing');
       const buttons = [...document.querySelectorAll('.v6-action-panel button[data-command-kind]')];
       const commands = buttons.map((button) => JSON.parse(button.dataset.command ?? '{}'));
       const first = commands[0] ?? {};
-      const selectionKind = heading.startsWith('Tile ') ? 'TILE' : heading.startsWith('City ') ? 'CITY' : heading.includes(' HP') ? 'UNIT' : 'OTHER';
+      const identityKind = identity.dataset.selectionKind ?? null;
+      const selectionKind = identityKind === 'UNIT' || identityKind === 'CITY' || identityKind === 'TILE' ? identityKind : 'OTHER';
       const selectionId = selectionKind === 'UNIT' ? (first.unitId ?? null) : selectionKind === 'CITY' ? (first.cityId ?? null) : null;
       const wait = document.querySelector('[data-command-kind="WAIT"]');
       const train = document.querySelector('[data-command-kind="TRAIN"]');
@@ -1032,6 +1138,16 @@ async function readContext(connection: Connection): Promise<{
       return {
         selectionKind,
         selectionId,
+        identity: {
+          kind: identityKind,
+          title: identity.querySelector('.v6-selection-identity-title')?.textContent ?? '',
+          detail: identity.querySelector('.v6-selection-identity-detail')?.textContent ?? '',
+          ariaLabel: identity.getAttribute('aria-label'),
+          assetId: identityArt.dataset.assetId ?? null,
+          symbolKind: identityArt.dataset.symbolKind ?? null,
+          rect: rect(identity),
+          artRect: rect(identityArt)
+        },
         commandKinds: buttons.map((button) => button.dataset.commandKind),
         waitSymbolKind: wait?.querySelector('[data-symbol-kind]')?.getAttribute('data-symbol-kind') ?? null,
         trainVisibleLabel: train?.querySelector('.v6-command-label')?.textContent ?? null,
@@ -1050,6 +1166,29 @@ async function readContext(connection: Connection): Promise<{
       };
     })()`,
   );
+}
+
+function assertSelectionIdentity(
+  identity: BrowserSmokeSelectionIdentityV6,
+  kind: "UNIT" | "CITY" | "TILE",
+  title: string,
+  assetId: string,
+  faction: string,
+): void {
+  if (
+    identity.kind !== kind ||
+    identity.title !== title ||
+    identity.assetId !== assetId ||
+    identity.symbolKind !== "accepted-raster" ||
+    identity.ariaLabel === null ||
+    /\b\d+,\d+\b/.test(
+      `${identity.title} ${identity.detail} ${identity.ariaLabel}`,
+    )
+  ) {
+    throw new Error(
+      `${faction} ${kind.toLowerCase()} identity failed: ${JSON.stringify(identity)}`,
+    );
+  }
 }
 
 async function activateCoordinate(

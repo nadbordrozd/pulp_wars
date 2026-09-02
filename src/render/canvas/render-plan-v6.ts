@@ -932,7 +932,10 @@ function stableDetailsKeyV6(value: unknown): string {
   return JSON.stringify(value) ?? "null";
 }
 
-function cosmeticVariantV6(at: CoordV6, kind: RenderEntryKindV6): number {
+export function cosmeticVariantV6(
+  at: CoordV6,
+  kind: RenderEntryKindV6,
+): number {
   let value = Math.imul(at.x + 1, 0x45d9f3b) ^ Math.imul(at.y + 1, 0x119de1f3);
   for (let index = 0; index < kind.length; index += 1) {
     value = Math.imul(value ^ kind.charCodeAt(index), 0x01000193);

@@ -33,8 +33,12 @@ export const RULESET6_SMOKE_VIEWPORTS = {
 
 export const RULESET6_SMOKE_EVIDENCE_SUBJECTS = [
   "unit-context-desktop",
+  "unit-context-mobile",
   "reward-desktop",
   "city-train-mobile",
+  "city-train-desktop",
+  "tile-context-desktop",
+  "tile-context-mobile",
   "technology-overview-desktop",
   "technology-overview-mobile",
   "technology-contrast-mobile",
@@ -89,6 +93,17 @@ export interface BrowserSmokeContextActionLayoutV6 {
   }[];
 }
 
+export interface BrowserSmokeSelectionIdentityV6 {
+  readonly kind: string | null;
+  readonly title: string;
+  readonly detail: string;
+  readonly ariaLabel: string | null;
+  readonly assetId: string | null;
+  readonly symbolKind: string | null;
+  readonly rect: BrowserSmokeRectV6;
+  readonly artRect: BrowserSmokeRectV6;
+}
+
 export interface BrowserSmokeBoundaryV6 {
   readonly phase: string;
   readonly transitioning: boolean;
@@ -139,6 +154,14 @@ export interface BrowserSmokeIntegratedAcceptanceV6 {
     readonly attackButtonCount: number;
     readonly exactMoveAccepted: boolean;
     readonly exactAttackAccepted: boolean;
+    readonly identity: {
+      readonly unitDesktop: BrowserSmokeSelectionIdentityV6;
+      readonly unitMobile: BrowserSmokeSelectionIdentityV6;
+      readonly cityDesktop: BrowserSmokeSelectionIdentityV6;
+      readonly cityMobile: BrowserSmokeSelectionIdentityV6;
+      readonly tileDesktop: BrowserSmokeSelectionIdentityV6;
+      readonly tileMobile: BrowserSmokeSelectionIdentityV6;
+    };
     readonly buttonLayout: {
       readonly unitDesktop: BrowserSmokeContextActionLayoutV6;
       readonly unitMobile: BrowserSmokeContextActionLayoutV6;
@@ -399,6 +422,33 @@ export function flowContractIssuesV6(
     !contextual.exactAttackAccepted
   ) {
     issues.push("contextual unit/city/tile acceptance is incomplete");
+  }
+  for (const [name, identity, expectedKind] of [
+    ["unit desktop", contextual.identity.unitDesktop, "UNIT"],
+    ["unit mobile", contextual.identity.unitMobile, "UNIT"],
+    ["city desktop", contextual.identity.cityDesktop, "CITY"],
+    ["city mobile", contextual.identity.cityMobile, "CITY"],
+    ["tile desktop", contextual.identity.tileDesktop, "TILE"],
+    ["tile mobile", contextual.identity.tileMobile, "TILE"],
+  ] as const) {
+    if (
+      identity.kind !== expectedKind ||
+      identity.title.length === 0 ||
+      identity.ariaLabel === null ||
+      identity.assetId === null ||
+      identity.symbolKind !== "accepted-raster" ||
+      /\b\d+,\d+\b/.test(
+        `${identity.title} ${identity.detail} ${identity.ariaLabel}`,
+      ) ||
+      identity.rect.width <= 0 ||
+      identity.rect.height <= 0 ||
+      identity.artRect.width < 44 ||
+      identity.artRect.width > 80 ||
+      identity.artRect.height < 44 ||
+      identity.artRect.height > 80
+    ) {
+      issues.push(`${name} selection identity is incomplete`);
+    }
   }
   for (const [name, layout, expected] of [
     [

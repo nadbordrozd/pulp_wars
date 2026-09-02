@@ -797,7 +797,10 @@ disable map camera/target input. Every dock rerender filters
 `queryPlayerCommands(PlayerView)` by the exact selected owned `unitId`; direct
 Capture, Recover, Promote, and Wait commands are dispatched through the normal
 exact revalidation boundary, while Move, Attack, and Escape remain
-one-activation spatial Canvas commands. Highlighted attack targets carry their
+one-activation spatial Canvas commands. The dock identity resolves the exact
+owner-faction role through the accepted world-sprite coverage registry and
+places compact role/HP text beside it; it does not substitute a training
+portrait. Highlighted attack targets carry their
 exact public combat preview visually and semantically before activation.
 
 A transition from any other selection to a visible unit starts one renderer-
@@ -831,7 +834,10 @@ preview and immediate dispatch as hostile attacks.
 Selected-city identity follows the same ephemeral `BoardSelection` path and
 never enters `MatchOverlay`. Its render plan derives perimeter segments only
 from explored `PlayerTileView` entries whose public `territoryCityId` matches
-the visible city; it never consults authoritative fogged tiles. The semantic
+the visible city; it never consults authoritative fogged tiles. Its compact
+dock identity resolves only the visible owner faction and level through the
+accepted city coverage registry, with city/capital, level, and population text
+beside the art. The semantic
 dock filters `queryPlayerCommands(PlayerView)` only to Train commands with that
 exact owned `cityId`; it never lists Harvest, Hunt, Lumber, or Mine. Training
 controls visibly contain only accepted unit art, bare unit name, and star cost.
@@ -844,6 +850,10 @@ entity, then filters exact Harvest Fruit, Hunt Animal, Build Lumber Mill, or
 Build Mine commands only for that selected coordinate. It has no backdrop,
 focus trap, or hidden-tile look-through. Locked prerequisites may be explained
 as text, but only commands returned by the public query render as buttons.
+The identity header chooses accepted art in public specificity order—economic
+improvement, revealed resource, then terrain—and shows only the corresponding
+plain semantic name. It never displays logical coordinates; an unknown resource
+falls back to terrain art and language without an existence or type hint.
 
 The match root is a fixed `100dvh` containing a Canvas host whose CSS rectangle
 is established by viewport/safe-area changes only. Tile/unit/city docks are

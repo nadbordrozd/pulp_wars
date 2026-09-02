@@ -47,6 +47,10 @@ import {
   technologyTreeLayoutV6,
   type TechnologyTreeLayoutNodeV6,
 } from "./technology-tree-layout-v6";
+import {
+  selectionIdentityPresentationV6,
+  type SelectionIdentityPresentationV6,
+} from "./selection-identity-v6";
 
 const BOARD_SIZES = [11, 14, 16, 20, 25] as const;
 const COLORS: readonly PlayerColorV6[] = ["CORAL", "TEAL", "GOLD", "VIOLET"];
@@ -1104,9 +1108,7 @@ export class Ruleset6DomAppView {
 
   #normalActionPanel(view: PlayerViewV6): HTMLElement {
     const panel = el(this.#document, "div", "v6-action-panel");
-    panel.append(
-      text(this.#document, "h2", selectionHeading(view, this.#selection)),
-    );
+    panel.append(this.#selectionIdentity(view));
     const selection = this.#selection;
     if (selection?.kind === "CITY") {
       const city = view.cities.find(
@@ -1134,6 +1136,36 @@ export class Ruleset6DomAppView {
       panel.append(this.#contextCommandList(view, selected));
     }
     return panel;
+  }
+
+  #selectionIdentity(view: PlayerViewV6): HTMLElement {
+    const presentation = selectionIdentityPresentationV6(view, this.#selection);
+    const identity = el(this.#document, "section", "v6-selection-identity");
+    identity.dataset.selectionKind = presentation.kind;
+    identity.setAttribute("aria-label", presentation.accessibleLabel);
+
+    const artwork = selectionIdentityArtworkNode(this.#document, presentation);
+    const copy = el(this.#document, "span", "v6-selection-identity-copy");
+    copy.append(
+      text(
+        this.#document,
+        "h2",
+        presentation.title,
+        "v6-selection-identity-title",
+      ),
+    );
+    if (presentation.detail !== null) {
+      copy.append(
+        text(
+          this.#document,
+          "span",
+          presentation.detail,
+          "v6-selection-identity-detail",
+        ),
+      );
+    }
+    identity.append(artwork, copy);
+    return identity;
   }
 
   #cityPopulationLayer(city: PlayerViewV6["cities"][number]): HTMLElement {
@@ -2289,6 +2321,31 @@ function actionSymbolNode(
   return wrapper;
 }
 
+function selectionIdentityArtworkNode(
+  documentRoot: Document,
+  presentation: SelectionIdentityPresentationV6,
+): HTMLElement {
+  const wrapper = el(documentRoot, "span", "v6-selection-identity-art");
+  wrapper.setAttribute("aria-hidden", "true");
+  const artwork = presentation.artwork;
+  if (artwork?.status === "ACCEPTED") {
+    const symbol = acceptedSymbol(artwork.assetId, "?");
+    if (symbol.kind === "RASTER") {
+      const image = documentRoot.createElement("img");
+      image.src = symbol.url;
+      image.alt = "";
+      image.decoding = "async";
+      wrapper.dataset.symbolKind = "accepted-raster";
+      wrapper.dataset.assetId = artwork.assetId;
+      wrapper.append(image);
+      return wrapper;
+    }
+  }
+  wrapper.dataset.symbolKind = "code-native-fallback";
+  wrapper.textContent = artwork?.status === "PLACEHOLDER" ? artwork.label : "?";
+  return wrapper;
+}
+
 function commandLabel(command: CommandV6): string {
   const name = title(command.kind);
   if (command.kind === "RESEARCH") return `Research ${title(command.tech)}`;
@@ -2311,44 +2368,11 @@ function commandLabel(command: CommandV6): string {
   return name;
 }
 
-function selectionHeading(
-  view: PlayerViewV6,
-  selection: BoardSelectionV6 | null,
-): string {
-  if (selection === null) return "Choose an action";
-  if (selection.kind === "TILE") return `Tile ${coordLabel(selection.at)}`;
-  if (selection.kind === "UNIT") {
-    const unit = view.units.find(
-      (candidate) => candidate.id === selection.unitId,
-    );
-    const faction = view.players.find(
-      (player) => player.id === unit?.ownerId,
-    )?.faction;
-    return unit === undefined
-      ? "Unit"
-      : `${effectiveRoleRuleV6(faction ?? view.viewer.faction, unit.role).label} · ${unit.hp}/${unit.maxHp} HP`;
-  }
-  if (selection.kind === "CITY") {
-    const city = view.cities.find(
-      (candidate) => candidate.id === selection.cityId,
-    );
-    return city === undefined
-      ? "City"
-      : `City level ${city.level} · ${city.population}/${city.level + 1} population`;
-  }
-  const wall = view.chocolateWalls.find(
-    (candidate) => candidate.id === selection.wallId,
-  );
-  return wall === undefined
-    ? "Chocolate wall"
-    : `Chocolate wall · ${wall.hp} HP`;
-}
-
 function describeSelection(
   view: PlayerViewV6,
   selection: BoardSelectionV6,
 ): string {
-  return `${selectionHeading(view, selection)} selected.`;
+  return selectionIdentityPresentationV6(view, selection).accessibleLabel;
 }
 
 function sameCoord(

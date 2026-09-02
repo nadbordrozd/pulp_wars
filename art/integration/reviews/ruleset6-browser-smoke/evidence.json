@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-02T20:53:40.315Z",
+  "generatedAt": "2026-09-02T21:22:40.761Z",
   "generatedBy": "npm run smoke:browser",
   "rulesetId": "pulp-wars-poc-6",
   "productionEntry": "src/main.ts",
@@ -48,7 +48,7 @@
   },
   "visualReview": {
     "status": "ACCEPTED",
-    "notes": "Every bounded contextual, reward, city-training, and Technology capture was inspected individually at native output size and in its nearest-neighbor 2x companion. Original and Candy Animals are visible on explored Forest from launch while Hunting remains unresearched and Hunt Game unavailable; hidden Animals remain redacted. Original and Candy labels/symbols remain distinct; the map stays primary; unit, city, and tile docks do not leak actions; full Technology cards/details and blocking rewards fit desktop and true 390x844 DPR2 mobile without clipping or horizontal overflow. Direct selected-tile actions accept one boundary without a second map activation. No suspected visual failure remained after enlargement review."
+    "notes": "Every bounded contextual, reward, city-training, and Technology capture was inspected individually at native output size and in its nearest-neighbor 2x companion. Original and Candy Animals are visible on explored Forest from launch while Hunting remains unresearched and Hunt Game unavailable; hidden Animals remain redacted. Exact world-unit, faction/level city, and public Fruit selection identities remain compact and readable above their isolated actions at desktop and true 390x844 DPR2 mobile, with no coordinate text. Original and Candy labels/symbols remain distinct; the map stays primary; full Technology cards/details and blocking rewards fit without clipping or horizontal overflow. Direct selected-tile actions accept one boundary without a second map activation. No suspected visual failure remained after enlargement review."
   },
   "flows": [
     {
@@ -202,6 +202,128 @@
           "attackButtonCount": 0,
           "exactMoveAccepted": true,
           "exactAttackAccepted": true,
+          "identity": {
+            "unitDesktop": {
+              "kind": "UNIT",
+              "title": "Fighter",
+              "detail": "10/10 HP",
+              "ariaLabel": "Fighter, 10/10 HP, selected.",
+              "assetId": "unit-original-fighter",
+              "symbolKind": "accepted-raster",
+              "rect": {
+                "x": 12.796875,
+                "y": 863.609375,
+                "width": 129.921875,
+                "height": 60
+              },
+              "artRect": {
+                "x": 12.796875,
+                "y": 863.609375,
+                "width": 56,
+                "height": 60
+              }
+            },
+            "unitMobile": {
+              "kind": "UNIT",
+              "title": "Fighter",
+              "detail": "10/10 HP",
+              "ariaLabel": "Fighter, 10/10 HP, selected.",
+              "assetId": "unit-original-fighter",
+              "symbolKind": "accepted-raster",
+              "rect": {
+                "x": 8.796875,
+                "y": 714.828125,
+                "width": 118.296875,
+                "height": 60
+              },
+              "artRect": {
+                "x": 8.796875,
+                "y": 714.828125,
+                "width": 56,
+                "height": 60
+              }
+            },
+            "cityDesktop": {
+              "kind": "CITY",
+              "title": "Original Capital",
+              "detail": "Level 2 · 0/3 population",
+              "ariaLabel": "Original Capital, Level 2 · 0/3 population, selected.",
+              "assetId": "building-city-2",
+              "symbolKind": "accepted-raster",
+              "rect": {
+                "x": 12.796875,
+                "y": 804.828125,
+                "width": 205.109375,
+                "height": 60
+              },
+              "artRect": {
+                "x": 12.796875,
+                "y": 804.828125,
+                "width": 56,
+                "height": 60
+              }
+            },
+            "cityMobile": {
+              "kind": "CITY",
+              "title": "Original Capital",
+              "detail": "Level 2 · 0/3 population",
+              "ariaLabel": "Original Capital, Level 2 · 0/3 population, selected.",
+              "assetId": "building-city-2",
+              "symbolKind": "accepted-raster",
+              "rect": {
+                "x": 8.796875,
+                "y": 656.046875,
+                "width": 204.515625,
+                "height": 60
+              },
+              "artRect": {
+                "x": 8.796875,
+                "y": 656.046875,
+                "width": 56,
+                "height": 60
+              }
+            },
+            "tileDesktop": {
+              "kind": "TILE",
+              "title": "Fruit",
+              "detail": "",
+              "ariaLabel": "Fruit selected.",
+              "assetId": "terrain-fruit",
+              "symbolKind": "accepted-raster",
+              "rect": {
+                "x": 12.796875,
+                "y": 863.609375,
+                "width": 110.6875,
+                "height": 60
+              },
+              "artRect": {
+                "x": 12.796875,
+                "y": 863.609375,
+                "width": 56,
+                "height": 60
+              }
+            },
+            "tileMobile": {
+              "kind": "TILE",
+              "title": "Fruit",
+              "detail": "",
+              "ariaLabel": "Fruit selected.",
+              "assetId": "terrain-fruit",
+              "symbolKind": "accepted-raster",
+              "rect": {
+                "x": 8.796875,
+                "y": 714.828125,
+                "width": 101.828125,
+                "height": 60
+              },
+              "artRect": {
+                "x": 8.796875,
+                "y": 714.828125,
+                "width": 56,
+                "height": 60
+              }
+            }
+          },
           "buttonLayout": {
             "unitDesktop": {
               "viewport": {
@@ -400,7 +522,7 @@
           "exactChoiceAccepted": true
         },
         "readiness": {
-          "fullDesktopChangedPixels": 1813,
+          "fullDesktopChangedPixels": 1805,
           "fullMobileChangedPixels": 3320,
           "reducedDesktopChangedPixels": 0,
           "reducedMobileChangedPixels": 0,
@@ -435,9 +557,9 @@
         },
         "dock": {
           "x": 0,
-          "y": 902.546875,
+          "y": 879.40625,
           "width": 1440,
-          "height": 97.453125
+          "height": 120.59375
         },
         "canvas": {
           "cssWidth": 1440,
@@ -476,9 +598,9 @@
         },
         "dock": {
           "x": 0,
-          "y": 769.140625,
+          "y": 731.40625,
           "width": 390,
-          "height": 74.859375
+          "height": 112.59375
         },
         "canvas": {
           "cssWidth": 390,
@@ -492,8 +614,8 @@
       "screenshots": [
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-reduced-motion-desktop-native.png",
-          "bytes": 332029,
-          "sha256": "8ba372b302f0c16bd6ab826149bffa4cbbd1f2dac64067b4f548da41942aa000",
+          "bytes": 327662,
+          "sha256": "db80e79b0c15920853e91db4bc48674cdc3dea088890239de8de94949a3f445d",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -506,8 +628,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-reduced-motion-desktop-enlarged.png",
-          "bytes": 552552,
-          "sha256": "5997914b4e27f32f90e385b3165bf6612c956bc834088dd70a724952948d58a0",
+          "bytes": 546425,
+          "sha256": "ee3713613fa3e569051250427bfd1687aca5ffc04c97ad7571c762fcacaaa51a",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -520,8 +642,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-high-contrast-mobile-native.png",
-          "bytes": 309423,
-          "sha256": "e0e5a6b78ef8dca85acb800147af153e5b66911597bf4783048e12ab08fd0bcd",
+          "bytes": 306781,
+          "sha256": "c37a8396abf2c4d877c005297e3ba00cef6f7c5e79228d0bece1fc207fa76d59",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -534,8 +656,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-high-contrast-mobile-enlarged.png",
-          "bytes": 539961,
-          "sha256": "466387dea9d96a0e4d43a833228989dda1514ad610ea812e17576a2237c55fa9",
+          "bytes": 535952,
+          "sha256": "343e49783a59bbdfa441d3553d159dd235400bcfefd15487eeabca811764685c",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -547,9 +669,37 @@
           "subject": "ORIGINAL production map with system high contrast"
         },
         {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-mobile-native.png",
+          "bytes": 283007,
+          "sha256": "73bebb51a6593e7d75843aa7dcf8159e46815340bc532e0cbfe587e09ebcafe2",
+          "width": 780,
+          "height": 1688,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "inspectionScale": 1,
+          "subject": "ORIGINAL exact-unit identity and contextual actions on mobile"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-mobile-enlarged.png",
+          "bytes": 486325,
+          "sha256": "a5fabf115b03ade0f3e529afcc30cabb5c3a30fad5d8303238429b219e66f339",
+          "width": 1560,
+          "height": 3376,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "inspectionScale": 2,
+          "subject": "ORIGINAL exact-unit identity and contextual actions on mobile"
+        },
+        {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-desktop-native.png",
-          "bytes": 331114,
-          "sha256": "fd79bb35db66beaf6fd9a9f1d945ef2b1d431e4611cfb6a535cca89f65a3c8ef",
+          "bytes": 330847,
+          "sha256": "8d85b596e72599a58634d9850ece938f99897836669472f3f8494678ab22d6a7",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -562,8 +712,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-desktop-enlarged.png",
-          "bytes": 555080,
-          "sha256": "cbae62613b0f0192639927540928bfe4b4c59a47baffe3891d93c618f430087c",
+          "bytes": 556452,
+          "sha256": "8e278b0a549afc589e75743105495981775bf4ae66c2824e7b6c99e049019a7a",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -573,6 +723,62 @@
           },
           "inspectionScale": 2,
           "subject": "ORIGINAL exact-unit contextual dock and map-only movement targets"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/original-tile-context-desktop-native.png",
+          "bytes": 321241,
+          "sha256": "e49f2abcea9687421bdf6a6d650a4bd98e4ad538ce8e26877f9bcf13ab5fd0e8",
+          "width": 1440,
+          "height": 1000,
+          "viewport": {
+            "width": 1440,
+            "height": 1000,
+            "dpr": 1
+          },
+          "inspectionScale": 1,
+          "subject": "ORIGINAL public Fruit identity and direct tile action on desktop"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/original-tile-context-desktop-enlarged.png",
+          "bytes": 537617,
+          "sha256": "e1e394d69c82d48098bfbf8eabc1c8e2855e68923d40c9aed3cf348f0ab52233",
+          "width": 2880,
+          "height": 2000,
+          "viewport": {
+            "width": 1440,
+            "height": 1000,
+            "dpr": 1
+          },
+          "inspectionScale": 2,
+          "subject": "ORIGINAL public Fruit identity and direct tile action on desktop"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/original-tile-context-mobile-native.png",
+          "bytes": 269262,
+          "sha256": "b3f161349f831247872975303c153340c475e721283d5f4042c77c3d7823d6aa",
+          "width": 780,
+          "height": 1688,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "inspectionScale": 1,
+          "subject": "ORIGINAL public Fruit identity and direct tile action on mobile"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/original-tile-context-mobile-enlarged.png",
+          "bytes": 461873,
+          "sha256": "d885a08d37fea42164c47fa8a4b28949b9e2a7d0be62d89aa5eb88319fdcf6f4",
+          "width": 1560,
+          "height": 3376,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "inspectionScale": 2,
+          "subject": "ORIGINAL public Fruit identity and direct tile action on mobile"
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-reward-desktop-native.png",
@@ -603,9 +809,37 @@
           "subject": "ORIGINAL blocking ordered city-reward choice"
         },
         {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/original-city-train-desktop-native.png",
+          "bytes": 148946,
+          "sha256": "bd1434f612f22ed922e8d3542e2722944d06f217040d57caad897979d1648a05",
+          "width": 1440,
+          "height": 1000,
+          "viewport": {
+            "width": 1440,
+            "height": 1000,
+            "dpr": 1
+          },
+          "inspectionScale": 1,
+          "subject": "ORIGINAL exact city-level identity and training action on desktop"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/original-city-train-desktop-enlarged.png",
+          "bytes": 301783,
+          "sha256": "c9e7a09697282f48f41f56487cfe779e950c753eb1a40bfcab4a3053f9c8995c",
+          "width": 2880,
+          "height": 2000,
+          "viewport": {
+            "width": 1440,
+            "height": 1000,
+            "dpr": 1
+          },
+          "inspectionScale": 2,
+          "subject": "ORIGINAL exact city-level identity and training action on desktop"
+        },
+        {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-city-train-mobile-native.png",
-          "bytes": 315547,
-          "sha256": "de340eac44afb2634fd5149be13ff73516ce0a755b7efafb333684bc414b54a4",
+          "bytes": 319867,
+          "sha256": "e408220bf611869f76a5573ab7bd886ef71f579a2c3af6ab31ed87c40c60c2b0",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -618,8 +852,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-city-train-mobile-enlarged.png",
-          "bytes": 572985,
-          "sha256": "59d591c67d64c950d6ab17d585fdf5037df83836c15ca73b02258e5427bd64d0",
+          "bytes": 580066,
+          "sha256": "7eb60b0236672ac2641cd1c1b8b792d51f6a9beb0321219b7436e04feb4be096",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -632,8 +866,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-overview-desktop-native.png",
-          "bytes": 271825,
-          "sha256": "4e2156df388ffab9b1f0b40a8e1dc09b85ca3b7217bdc446da3bc0447e0920dc",
+          "bytes": 271662,
+          "sha256": "56460e5c5f24504fb5634391f8b91401745d10b2dcdcf05cb422181a04e954c2",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -646,8 +880,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-overview-desktop-enlarged.png",
-          "bytes": 479928,
-          "sha256": "caae6b867edf0fd828bb85810876204b9972fc0fc390956039856a8c98939e6a",
+          "bytes": 479716,
+          "sha256": "440dcdb17cad01e7d73f69e2785d82e959b87a1d273e4a1408f6837540cbe240",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -895,6 +1129,128 @@
           "attackButtonCount": 0,
           "exactMoveAccepted": true,
           "exactAttackAccepted": true,
+          "identity": {
+            "unitDesktop": {
+              "kind": "UNIT",
+              "title": "Candy Warrior",
+              "detail": "10/10 HP",
+              "ariaLabel": "Candy Warrior, 10/10 HP, selected.",
+              "assetId": "unit-candy-fighter",
+              "symbolKind": "accepted-raster",
+              "rect": {
+                "x": 12.796875,
+                "y": 863.609375,
+                "width": 195.625,
+                "height": 60
+              },
+              "artRect": {
+                "x": 12.796875,
+                "y": 863.609375,
+                "width": 56,
+                "height": 60
+              }
+            },
+            "unitMobile": {
+              "kind": "UNIT",
+              "title": "Candy Warrior",
+              "detail": "10/10 HP",
+              "ariaLabel": "Candy Warrior, 10/10 HP, selected.",
+              "assetId": "unit-candy-fighter",
+              "symbolKind": "accepted-raster",
+              "rect": {
+                "x": 8.796875,
+                "y": 714.828125,
+                "width": 169.78125,
+                "height": 60
+              },
+              "artRect": {
+                "x": 8.796875,
+                "y": 714.828125,
+                "width": 56,
+                "height": 60
+              }
+            },
+            "cityDesktop": {
+              "kind": "CITY",
+              "title": "Candy Capital",
+              "detail": "Level 2 · 0/3 population",
+              "ariaLabel": "Candy Capital, Level 2 · 0/3 population, selected.",
+              "assetId": "building-candy-city-2",
+              "symbolKind": "accepted-raster",
+              "rect": {
+                "x": 12.796875,
+                "y": 804.828125,
+                "width": 204.515625,
+                "height": 60
+              },
+              "artRect": {
+                "x": 12.796875,
+                "y": 804.828125,
+                "width": 56,
+                "height": 60
+              }
+            },
+            "cityMobile": {
+              "kind": "CITY",
+              "title": "Candy Capital",
+              "detail": "Level 2 · 0/3 population",
+              "ariaLabel": "Candy Capital, Level 2 · 0/3 population, selected.",
+              "assetId": "building-candy-city-2",
+              "symbolKind": "accepted-raster",
+              "rect": {
+                "x": 8.796875,
+                "y": 656.046875,
+                "width": 204.515625,
+                "height": 60
+              },
+              "artRect": {
+                "x": 8.796875,
+                "y": 656.046875,
+                "width": 56,
+                "height": 60
+              }
+            },
+            "tileDesktop": {
+              "kind": "TILE",
+              "title": "Fruit",
+              "detail": "",
+              "ariaLabel": "Fruit selected.",
+              "assetId": "terrain-candy-fruit",
+              "symbolKind": "accepted-raster",
+              "rect": {
+                "x": 12.796875,
+                "y": 863.609375,
+                "width": 110.6875,
+                "height": 60
+              },
+              "artRect": {
+                "x": 12.796875,
+                "y": 863.609375,
+                "width": 56,
+                "height": 60
+              }
+            },
+            "tileMobile": {
+              "kind": "TILE",
+              "title": "Fruit",
+              "detail": "",
+              "ariaLabel": "Fruit selected.",
+              "assetId": "terrain-candy-fruit",
+              "symbolKind": "accepted-raster",
+              "rect": {
+                "x": 8.796875,
+                "y": 714.828125,
+                "width": 101.828125,
+                "height": 60
+              },
+              "artRect": {
+                "x": 8.796875,
+                "y": 714.828125,
+                "width": 56,
+                "height": 60
+              }
+            }
+          },
           "buttonLayout": {
             "unitDesktop": {
               "viewport": {
@@ -1093,8 +1449,8 @@
           "exactChoiceAccepted": true
         },
         "readiness": {
-          "fullDesktopChangedPixels": 1605,
-          "fullMobileChangedPixels": 2960,
+          "fullDesktopChangedPixels": 1601,
+          "fullMobileChangedPixels": 2959,
           "reducedDesktopChangedPixels": 0,
           "reducedMobileChangedPixels": 0,
           "handledChangedPixels": 0
@@ -1128,9 +1484,9 @@
         },
         "dock": {
           "x": 0,
-          "y": 902.546875,
+          "y": 879.40625,
           "width": 1440,
-          "height": 97.453125
+          "height": 120.59375
         },
         "canvas": {
           "cssWidth": 1440,
@@ -1169,9 +1525,9 @@
         },
         "dock": {
           "x": 0,
-          "y": 769.140625,
+          "y": 731.40625,
           "width": 390,
-          "height": 74.859375
+          "height": 112.59375
         },
         "canvas": {
           "cssWidth": 390,
@@ -1185,8 +1541,8 @@
       "screenshots": [
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-reduced-motion-desktop-native.png",
-          "bytes": 337211,
-          "sha256": "5d0d5c4c0892f157026d41dc659d7d0de09b31385b3261488c94edbfee1d51d1",
+          "bytes": 332809,
+          "sha256": "2f5e76aceadd356d264692f466020dd5e229a3f00f3be9d9f000afaa8ca48fee",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1199,8 +1555,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-reduced-motion-desktop-enlarged.png",
-          "bytes": 562165,
-          "sha256": "202e93a853edc8879a8aa0650c965ee9c4768d1b4b786582e2a88afeb37694cd",
+          "bytes": 555587,
+          "sha256": "58cfbb3495c608548de8a977be2365ebdd7d6140739d282a3a5b8ce81b375c05",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -1213,8 +1569,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-high-contrast-mobile-native.png",
-          "bytes": 316961,
-          "sha256": "838dadcf4deff00758e324321c426dbca64cd02b0f7e12d37c4a6a7a81e4efa6",
+          "bytes": 314441,
+          "sha256": "a32553f298b26de5ba1afe8f9d2bcaed23c121e0620ad1a8b26a805d53c9ab03",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1227,8 +1583,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-high-contrast-mobile-enlarged.png",
-          "bytes": 551380,
-          "sha256": "347658445c83de9a2605bfe9b5a635fa0f7bceb99ee5451c321eccef8ab0d6ce",
+          "bytes": 548884,
+          "sha256": "8d8119e36affd038c68bd459721601e3539eb51b10e7fbf05f745a3aea822dcb",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -1240,9 +1596,37 @@
           "subject": "CANDY production map with system high contrast"
         },
         {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-mobile-native.png",
+          "bytes": 283323,
+          "sha256": "84466cbfa5f6eb4711b2ea7ec173d0f98b4f6eebbbc02dd031e3d6878d3f9896",
+          "width": 780,
+          "height": 1688,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "inspectionScale": 1,
+          "subject": "CANDY exact-unit identity and contextual actions on mobile"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-mobile-enlarged.png",
+          "bytes": 485967,
+          "sha256": "5a7f18ed15a66bc1cfcd322c37540ed501a51a47c1749ab7bce1c33d41d53aa1",
+          "width": 1560,
+          "height": 3376,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "inspectionScale": 2,
+          "subject": "CANDY exact-unit identity and contextual actions on mobile"
+        },
+        {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-desktop-native.png",
-          "bytes": 338477,
-          "sha256": "bc6602ea3e491333447e8306274d4fae2fe52982b7293e57f15846f8935f0360",
+          "bytes": 335391,
+          "sha256": "9c7ed7b2d572b58666542dfecf9b48c3566d7af739d05888e6bd4e867d334747",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1255,8 +1639,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-desktop-enlarged.png",
-          "bytes": 566618,
-          "sha256": "be62ed69e17144516522ebab1f564b7304055195f98d7404451707029ec7b7ec",
+          "bytes": 564296,
+          "sha256": "6bf7d20b8709950c38949ecd738cd707827aa52b28e06c77bdf3c8dc74548d76",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -1266,6 +1650,62 @@
           },
           "inspectionScale": 2,
           "subject": "CANDY exact-unit contextual dock and map-only movement targets"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-tile-context-desktop-native.png",
+          "bytes": 327362,
+          "sha256": "078ca60c2446c3ab6b6d591de3f7e404e80ad31b90a29025ec92152da32b2566",
+          "width": 1440,
+          "height": 1000,
+          "viewport": {
+            "width": 1440,
+            "height": 1000,
+            "dpr": 1
+          },
+          "inspectionScale": 1,
+          "subject": "CANDY public Fruit identity and direct tile action on desktop"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-tile-context-desktop-enlarged.png",
+          "bytes": 549554,
+          "sha256": "6894ac7f5f6dcba52cc7a4107e27bbdbaaf35f60307715a6e2366b29ab955a6a",
+          "width": 2880,
+          "height": 2000,
+          "viewport": {
+            "width": 1440,
+            "height": 1000,
+            "dpr": 1
+          },
+          "inspectionScale": 2,
+          "subject": "CANDY public Fruit identity and direct tile action on desktop"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-tile-context-mobile-native.png",
+          "bytes": 269806,
+          "sha256": "d90e967f67ff6ccbb01d618ee3d49b99331b630e263f22200d39961c19b3cfd9",
+          "width": 780,
+          "height": 1688,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "inspectionScale": 1,
+          "subject": "CANDY public Fruit identity and direct tile action on mobile"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-tile-context-mobile-enlarged.png",
+          "bytes": 463229,
+          "sha256": "d313a0d8792da1164211da0f071772e632ffafc962f65b75d368969bfd6e9bac",
+          "width": 1560,
+          "height": 3376,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "inspectionScale": 2,
+          "subject": "CANDY public Fruit identity and direct tile action on mobile"
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-reward-desktop-native.png",
@@ -1296,9 +1736,37 @@
           "subject": "CANDY blocking ordered city-reward choice"
         },
         {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-city-train-desktop-native.png",
+          "bytes": 150554,
+          "sha256": "34a0f76ed7e2157d8a059ec1b12d8e3fbdda1d886c6fb4855b3d81fa6f829fa2",
+          "width": 1440,
+          "height": 1000,
+          "viewport": {
+            "width": 1440,
+            "height": 1000,
+            "dpr": 1
+          },
+          "inspectionScale": 1,
+          "subject": "CANDY exact city-level identity and training action on desktop"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-city-train-desktop-enlarged.png",
+          "bytes": 302056,
+          "sha256": "00928d8e2368e0071501695a1b8598a888689001c5ca4e388dc4d4b2744ca37a",
+          "width": 2880,
+          "height": 2000,
+          "viewport": {
+            "width": 1440,
+            "height": 1000,
+            "dpr": 1
+          },
+          "inspectionScale": 2,
+          "subject": "CANDY exact city-level identity and training action on desktop"
+        },
+        {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-city-train-mobile-native.png",
-          "bytes": 319642,
-          "sha256": "7775f93139712bec5c01994b0cb50088b87e02c6d22089684ad093f70e9e656b",
+          "bytes": 321360,
+          "sha256": "eb43a2f60da67ef4a828b136977d43629eb7f6124cd5ed9f4e8e3b01a45e7482",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1311,8 +1779,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-city-train-mobile-enlarged.png",
-          "bytes": 572916,
-          "sha256": "6c1f4d3b1a53f2bf82988c378055b008335197618451231fb473c791a1992796",
+          "bytes": 575198,
+          "sha256": "844dd7efd52e9098849f7a1ccd9dde87d5ed249ca5f47309e6ee4835651f9be0",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -1325,8 +1793,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-overview-desktop-native.png",
-          "bytes": 272752,
-          "sha256": "2b470f990a7639f75dd48ec648ebc64d14a5e1f9fb93af6f9926b75de5ece7cb",
+          "bytes": 272733,
+          "sha256": "96bfc8788859b6d55300f39ce188c10ad539f70726a62c3765b71915ad7769bb",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1339,8 +1807,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-overview-desktop-enlarged.png",
-          "bytes": 479991,
-          "sha256": "9ea496dd3a7e519e5e694b7efd42568c05e1faa057fa5b5ac6bbe846130a7cdf",
+          "bytes": 479939,
+          "sha256": "ca0cef542a2cea46b974ddfd0ed7163641aec119c6b8aa46d72234725fc93325",
           "width": 2880,
           "height": 2000,
           "viewport": {

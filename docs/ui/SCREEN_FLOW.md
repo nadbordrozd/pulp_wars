@@ -32,6 +32,8 @@ negative-population penalty, and siege. Coin icons are not recolored Star art.
 
 The selected-city dock shows:
 
+- a compact identity header using the exact faction and current city-art level,
+  with city/capital, level, and population context in smaller text;
 - level and signed progress as `population / next threshold`, including
   `-N / threshold` plus “infrastructure lost; replace N population before
   growth”;
@@ -60,11 +62,14 @@ status envelope and remain visually distinct from the larger yellow/red/empty
 city population squares inside the labeled city badge. The render plan consumes
 only the public live-value projection and never reconstructs spatial rules.
 
-The selected-tile dock identifies Grass/Forest/Mountain; visible Fruit, Game,
-Fertile Ground, Ore, or Stone; all eleven economic improvements; Road;
-Chocolate Wall; and territory. An explored resource hidden by technology is
-shown only as **Unknown resource — research may reveal it**. It must not use an
-outline, icon, text, count, or disabled action that identifies the resource.
+The selected-tile dock begins with a compact art-led identity using the most
+specific public improvement, revealed resource, or terrain artwork and its
+plain semantic name. It never displays logical coordinates. It identifies
+Grass/Forest/Mountain; visible Fruit, Game, Fertile Ground, Ore, or Stone; all
+eleven economic improvements; Road; Chocolate Wall; and territory. An explored
+resource hidden by technology is represented only by its public terrain in the
+identity header. It must not use an outline, icon, text, count, or disabled
+action that identifies the resource.
 
 Exact offered controls use these labels: Harvest Fruit, Hunt Game, Build Farm,
 Build Lumber Camp, Build Mine, Build Quarry, Build Windmill, Build Sawmill,
@@ -126,7 +131,9 @@ Raider Charge. Explosives says Breacher/Candy Crusher, never Catapult.
 
 ### Units and abilities
 
-Unit docks use the role and faction labels in Ruleset 6. Marksman/Gumball Guard
+Unit docks begin with the exact faction/role world sprite and compact role/HP
+identity; actions remain below it. Unit docks use the role and faction labels
+in Ruleset 6. Marksman/Gumball Guard
 keeps one-activation ranged preview. Raider preview states whether Charge is
 active and shows the +1 attack. Medic exposes **Heal** only for exact adjacent
 owned damaged targets and previews 4 or 6 HP. Heavy/Juggernaut attack preview

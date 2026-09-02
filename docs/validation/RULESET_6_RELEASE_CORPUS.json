@@ -521,8 +521,8 @@
   "evidence": [
     {
       "path": "art/integration/reviews/ruleset6-browser-smoke/evidence.json",
-      "sha256": "d45427829759e5d456d5a8b93aa8969ac09a0d5837691bb4f0d8d15db5be90a1",
-      "artifactCount": 36
+      "sha256": "c6ebba0411adbb4c333f8ba8824d4d2159bb69ad895bed77ddfd3323241310e0",
+      "artifactCount": 52
     },
     {
       "path": "art/integration/reviews/ruleset6-melee-feedback/review-evidence.json",

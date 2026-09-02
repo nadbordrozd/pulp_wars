@@ -693,6 +693,116 @@ describe("playable ruleset-6 DOM shell", () => {
     app.destroy();
   });
 
+  it("renders compact art-led unit, city, and tile identities above their actions without coordinates", () => {
+    for (const faction of ["ORIGINAL", "CANDY"] as const) {
+      const initial = publicView(faction);
+      const unit = initial.units.find(
+        (candidate) => candidate.ownerId === initial.viewer.id,
+      );
+      const city = initial.cities.find(
+        (candidate) => candidate.ownerId === initial.viewer.id,
+      );
+      if (unit === undefined || city === undefined)
+        throw new Error("Missing public entities");
+      const mountainView: PlayerViewV6 = {
+        ...initial,
+        board: {
+          ...initial.board,
+          tiles: initial.board.tiles.map((tile) =>
+            tile.at.x === city.at.x && tile.at.y === city.at.y && tile.explored
+              ? {
+                  ...tile,
+                  terrain: "MOUNTAIN",
+                  resource: null,
+                  improvement: null,
+                }
+              : tile,
+          ),
+        },
+      };
+      const fake = new FakeController(
+        mountainView,
+        commandCatalogue(mountainView),
+      );
+      const host = new FakeBoardHostV6();
+      const app = new Ruleset6DomAppView(
+        document,
+        requireElement("#app"),
+        fake,
+        { boardHost: host },
+      );
+
+      const emptyIdentity = document.querySelector<HTMLElement>(
+        ".v6-selection-identity",
+      );
+      expect(emptyIdentity?.dataset.selectionKind).toBe("NONE");
+      expect(emptyIdentity?.getAttribute("aria-label")).toContain(
+        "No map selection",
+      );
+
+      host.callbacks?.onSelection({ kind: "UNIT", unitId: unit.id });
+      const unitIdentity = requireElement(".v6-selection-identity");
+      expect(unitIdentity.dataset.selectionKind).toBe("UNIT");
+      expect(unitIdentity.querySelector("h2")?.textContent).toBe(
+        faction === "ORIGINAL" ? "Fighter" : "Candy Warrior",
+      );
+      expect(
+        unitIdentity.querySelector(".v6-selection-identity-detail")
+          ?.textContent,
+      ).toBe(`${unit.hp}/${unit.maxHp} HP`);
+      expect(
+        unitIdentity.querySelector<HTMLImageElement>("img")?.src,
+      ).toContain(
+        `assets/pixellab/units/${faction === "ORIGINAL" ? "warrior" : "candy-warrior"}.png`,
+      );
+      expect(
+        document.querySelector(".v6-action-panel")?.firstElementChild,
+      ).toBe(unitIdentity);
+      expect(unitIdentity.nextElementSibling?.classList).toContain(
+        "v6-command-list",
+      );
+
+      host.callbacks?.onSelection({ kind: "CITY", cityId: city.id });
+      const cityIdentity = requireElement(".v6-selection-identity");
+      expect(cityIdentity.dataset.selectionKind).toBe("CITY");
+      expect(cityIdentity.querySelector("h2")?.textContent).toBe(
+        `${faction === "ORIGINAL" ? "Original" : "Candy"} Capital`,
+      );
+      expect(
+        cityIdentity.querySelector<HTMLImageElement>("img")?.src,
+      ).toContain(
+        `assets/pixellab/buildings/${faction === "CANDY" ? "candy-" : ""}city-${city.level}.png`,
+      );
+      expect(cityIdentity.nextElementSibling?.classList).toContain(
+        "v6-city-population-progress",
+      );
+      expect(
+        cityIdentity.nextElementSibling?.nextElementSibling?.classList,
+      ).toContain("v6-command-list");
+
+      host.callbacks?.onInspect({ kind: "TILE", at: city.at });
+      const tileIdentity = requireElement(".v6-selection-identity");
+      expect(tileIdentity.dataset.selectionKind).toBe("TILE");
+      expect(tileIdentity.querySelector("h2")?.textContent).toBe("Mountain");
+      expect(tileIdentity.getAttribute("aria-label")).toBe(
+        "Mountain selected.",
+      );
+      expect(
+        tileIdentity.querySelector<HTMLImageElement>("img")?.src,
+      ).toContain(
+        `assets/pixellab/terrain/${faction === "CANDY" ? "candy-" : ""}mountain-`,
+      );
+      expect(document.querySelector("#v6-live")?.textContent).toBe(
+        "Mountain selected.",
+      );
+      expect(tileIdentity.textContent).not.toMatch(/\d+,\d+/);
+      expect(tileIdentity.getAttribute("aria-label")).not.toMatch(/\d+,\d+/);
+
+      app.destroy();
+      document.body.innerHTML = '<div id="app"></div>';
+    }
+  });
+
   it("renders an accessible fixed city population layer and live-updates gain, loss, and level-up", () => {
     const initial = publicView("ORIGINAL");
     const city = initial.cities.find(
