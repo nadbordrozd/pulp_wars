@@ -12,6 +12,7 @@ import {
   canonicalJson,
   createPlayableGameV6,
   queryPlayerCommandsV6,
+  queryTechnologyTreeV6,
   runReplayV6,
   TECHNOLOGY_IDS,
   UNIT_ROLE_IDS,
@@ -1253,19 +1254,48 @@ describe("playable ruleset-6 DOM shell", () => {
         (branch) => branch.querySelectorAll("button[data-tech]").length,
       ),
     ).toEqual([5, 5, 5, 5, 5]);
+    if (before.view === null) throw new Error("Missing active player view");
+    const publicTree = queryTechnologyTreeV6(before.view);
     for (const card of cards) {
-      expect(card.ariaLabel).toMatch(/costs \d+ Coins/);
+      const node = publicTree.nodes.find(
+        (candidate) => candidate.id === card.dataset.tech,
+      );
+      if (node === undefined) throw new Error("Missing public technology node");
+      expect(card.ariaLabel).toMatch(
+        node.state === "OWNED"
+          ? /Researched/
+          : node.state === "BLOCKED"
+            ? /Locked/
+            : /Available|Need \d+ more Coins|View only/,
+      );
+      expect(card.ariaLabel).toContain(card.dataset.semanticStatus);
       expect(
         card.querySelector(".v6-tech-card-name")?.textContent,
       ).toBeTruthy();
-      expect(card.querySelector(".v6-tech-card-cost")?.textContent).toContain(
-        "Coins",
-      );
-      expect(
-        card.querySelector(".v6-tech-card-state")?.textContent,
-      ).toBeTruthy();
+      if (node.state === "OWNED") {
+        expect(card.ariaLabel).not.toContain("costs");
+        expect(card.querySelector(".v6-tech-card-cost")).toBeNull();
+      } else {
+        expect(card.ariaLabel).toContain(`costs ${node.cost} Coins`);
+        expect(card.querySelector(".v6-tech-card-cost")?.textContent).toBe(
+          `${node.cost} Coins`,
+        );
+      }
+      expect(card.querySelector(".v6-tech-card-state")).toBeNull();
       expect(card.querySelector(".v6-tech-card-symbol")).not.toBeNull();
+      expect(card.parentElement?.dataset.parentTech ?? null).toBe(
+        node.prerequisites[0] ?? null,
+      );
+      expect(card.getAttribute("aria-level")).toBe(String(node.tier));
     }
+    expect(new Set(cards.map((card) => card.dataset.state))).toEqual(
+      new Set(["researched", "available", "unavailable"]),
+    );
+    expect(
+      cards.some((card) =>
+        /Need \d+ more Coins|Locked — research/.test(card.textContent ?? ""),
+      ),
+    ).toBe(false);
     expect(
       document.querySelector(
         '[data-tech="HUNTING"] [data-symbol-kind="accepted-raster"]',

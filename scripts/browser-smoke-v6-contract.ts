@@ -35,6 +35,9 @@ export const RULESET6_SMOKE_EVIDENCE_SUBJECTS = [
   "unit-context-desktop",
   "reward-desktop",
   "city-train-mobile",
+  "technology-overview-desktop",
+  "technology-overview-mobile",
+  "technology-contrast-mobile",
   "technology-detail-mobile",
   "reduced-motion-desktop",
   "high-contrast-mobile",
@@ -150,6 +153,13 @@ export interface BrowserSmokeIntegratedAcceptanceV6 {
     readonly mainContextCommandCount: number;
     readonly branchCount: number;
     readonly cardCount: number;
+    readonly topologyFaithful: boolean;
+    readonly compactCardContent: boolean;
+    readonly iconDominant: boolean;
+    readonly threeStatesAccessible: boolean;
+    readonly highContrastDistinct: boolean;
+    readonly desktopUnclipped: boolean;
+    readonly mobileScrollableWithoutHorizontalOverflow: boolean;
     readonly detailIsModal: boolean;
     readonly exactResearchAccepted: boolean;
     readonly researchedDetailRetained: boolean;
@@ -323,7 +333,7 @@ export function flowContractIssuesV6(
       (issue) => `mobile: ${issue}`,
     ),
   );
-  if (flow.screenshots.length !== 12) {
+  if (flow.screenshots.length !== RULESET6_SMOKE_EVIDENCE_SUBJECTS.length * 2) {
     issues.push("flow does not include the bounded native/enlarged review set");
   }
   const screenshotPaths = new Set(flow.screenshots.map(({ path }) => path));
@@ -434,6 +444,13 @@ export function flowContractIssuesV6(
     technology.mainContextCommandCount !== 0 ||
     technology.branchCount !== 5 ||
     technology.cardCount !== RULESET6_SMOKE_TECH_IDS.length ||
+    !technology.topologyFaithful ||
+    !technology.compactCardContent ||
+    !technology.iconDominant ||
+    !technology.threeStatesAccessible ||
+    !technology.highContrastDistinct ||
+    !technology.desktopUnclipped ||
+    !technology.mobileScrollableWithoutHorizontalOverflow ||
     !technology.detailIsModal ||
     !technology.exactResearchAccepted ||
     !technology.researchedDetailRetained ||

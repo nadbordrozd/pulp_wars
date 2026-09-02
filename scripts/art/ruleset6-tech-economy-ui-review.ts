@@ -270,24 +270,46 @@ async function technologyTree(faction: "original" | "candy"): Promise<void> {
       top: 8,
     },
   ];
-  for (const [index, tech] of techIds.entries()) {
-    const column = Math.floor(index / 5);
-    const row = index % 5;
-    const id = `ui-tech-${faction}-${tech}`;
+  const branches = ["settlement", "wilds", "industry", "mobility", "warfare"];
+  for (const [column, branch] of branches.entries()) {
+    const branchTechs = techIds.slice(column * 5, column * 5 + 5);
+    const branchLeft = 8 + column * 216;
+    overlays.push({ input: caption(branch, 208), left: branchLeft, top: 50 });
     overlays.push({
-      input: await techCard(
-        id,
-        tech,
-        ["researched", "available", "locked", "selected", "insufficient"][
-          row
-        ] ?? "locked",
-        row === 0 ? 5 : row === 1 ? 7 : 9,
-      ),
-      left: 12 + column * 216,
-      top: 58 + row * 124,
+      input: technologyBranchConnectors(),
+      left: branchLeft,
+      top: 72,
     });
+    for (const [index, tech] of branchTechs.entries()) {
+      const id = `ui-tech-${faction}-${tech}`;
+      const position = [
+        { left: 54, top: 0 },
+        { left: 1, top: 158 },
+        { left: 1, top: 316 },
+        { left: 107, top: 158 },
+        { left: 107, top: 316 },
+      ][index];
+      if (position === undefined) throw new Error("Unexpected branch size");
+      const state =
+        index === 0
+          ? column === 0
+            ? "researched"
+            : "available"
+          : "unavailable";
+      const tier = index === 0 ? 1 : index === 1 || index === 3 ? 2 : 3;
+      overlays.push({
+        input: await techCard(
+          id,
+          tech,
+          state,
+          state === "researched" ? null : 3 + tier * 2,
+        ),
+        left: branchLeft + position.left,
+        top: 72 + position.top,
+      });
+    }
   }
-  await canvas(1100, 692, overlays, `technology-tree-${faction}.png`);
+  await canvas(1100, 510, overlays, `technology-tree-${faction}.png`);
 }
 
 async function technologyAccessibility(): Promise<void> {
@@ -486,36 +508,53 @@ async function techCard(
   id: string,
   name: string,
   state: string,
-  cost: number,
+  cost: number | null,
 ): Promise<Buffer> {
   const colors: Record<string, string> = {
-    researched: "#2e704b",
-    available: "#806522",
-    locked: "#343641",
-    selected: "#315b76",
-    insufficient: "#713f2d",
+    researched: "#266846",
+    available: "#705615",
+    unavailable: "#252832",
   };
   const icon = await resized(id, 64);
+  const stroke =
+    state === "researched"
+      ? "#b5ffd0"
+      : state === "available"
+        ? "#ffe891"
+        : "#d4dcdb";
+  const border = Buffer.from(
+    `<svg width="100" height="110" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="94" height="104" rx="10" fill="none" stroke="${stroke}" stroke-width="${state === "researched" ? 5 : 3}" ${state === "unavailable" ? 'stroke-dasharray="7 5"' : ""}/>${state === "researched" ? '<rect x="8" y="8" width="84" height="94" rx="7" fill="none" stroke="#b5ffd0" stroke-width="2"/>' : ""}</svg>`,
+  );
   return sharp({
     create: {
-      width: 204,
-      height: 112,
+      width: 100,
+      height: 110,
       channels: 4,
       background: colors[state] ?? "#343641",
     },
   })
     .composite([
-      { input: icon, left: 8, top: 10 },
-      { input: svgText(name, 124, 42, 12, "#f8f2df"), left: 76, top: 8 },
-      { input: svgText(state, 124, 28, 11, "#cfe0d8"), left: 76, top: 46 },
-      {
-        input: svgText(`${cost} Coins`, 124, 26, 11, "#ffd85e"),
-        left: 76,
-        top: 74,
-      },
+      { input: icon, left: 18, top: 5 },
+      { input: svgText(name, 92, 20, 9, "#f8f2df"), left: 4, top: 70 },
+      ...(cost === null
+        ? []
+        : [
+            {
+              input: svgText(`${cost} Coins`, 92, 18, 9, "#ffe891"),
+              left: 4,
+              top: 88,
+            },
+          ]),
+      { input: border, left: 0, top: 0 },
     ])
     .png()
     .toBuffer();
+}
+
+function technologyBranchConnectors(): Buffer {
+  return Buffer.from(
+    '<svg width="208" height="426" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#d4dcdb" stroke-width="2"><path d="M104 110 V134 H51 M104 134 H157 M51 134 V158 M157 134 V158 M51 268 V316 M157 268 V316"/></g></svg>',
+  );
 }
 
 async function stateCell(
@@ -697,6 +736,11 @@ async function writeEvidence(): Promise<void> {
       surfaces: ["light", "dark", "high-contrast"],
       simulations: ["grayscale", "protan", "deutan"],
       states: ["normal", "disabled", "focus", "selected", "locked"],
+      technologyCardStates: ["researched", "available", "unavailable"],
+      technologyCardVisibleContent:
+        "64px icon, name, and Coin cost only while unresearched",
+      technologyLayout:
+        "prerequisite-derived root fork with two tier-2 and aligned tier-3 continuations",
       viewports: [320, 600, 1024],
       zoom: [1, 2],
       dpr: [1, 2],

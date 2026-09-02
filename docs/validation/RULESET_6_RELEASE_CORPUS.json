@@ -521,8 +521,8 @@
   "evidence": [
     {
       "path": "art/integration/reviews/ruleset6-browser-smoke/evidence.json",
-      "sha256": "cff0b2217387446731571e778acbf1c2606b0befd616c4fdd33c8e257f0c124c",
-      "artifactCount": 24
+      "sha256": "da28e11de6dd8f25ae7bf7513b1b9b62c26901788a64f4edff2b27d3aa00639a",
+      "artifactCount": 36
     },
     {
       "path": "art/integration/reviews/ruleset6-melee-feedback/review-evidence.json",
@@ -566,7 +566,7 @@
     },
     {
       "path": "art/pixellab/reviews/ruleset6-tech-economy-ui/review-evidence.json",
-      "sha256": "44711c1972caf525ec9d4c0fd4d28ab88230a89be790fb926c578c02179a2742",
+      "sha256": "2315160b832c9a15fc4ea9a2abf64b0f97d69f138ccb7c040a81f32164992af4",
       "artifactCount": 8
     },
     {

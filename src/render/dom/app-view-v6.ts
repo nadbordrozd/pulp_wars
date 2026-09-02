@@ -43,6 +43,10 @@ import {
   type CombatPresentationV6,
 } from "../canvas/combat-presentation-v6";
 import { cityPopulationPresentationV6 } from "../city-population-presentation-v6";
+import {
+  technologyTreeLayoutV6,
+  type TechnologyTreeLayoutNodeV6,
+} from "./technology-tree-layout-v6";
 
 const BOARD_SIZES = [11, 14, 16, 20, 25] as const;
 const COLORS: readonly PlayerColorV6[] = ["CORAL", "TEAL", "GOLD", "VIOLET"];
@@ -763,13 +767,14 @@ export class Ruleset6DomAppView {
       );
       branchHeading.id = `v6-tech-branch-${branchId.toLowerCase()}`;
       const list = el(this.#document, "ol", "v6-tech-card-list");
-      for (const node of tree.nodes.filter(
-        (candidate) => candidate.branch === branchId,
-      )) {
-        const item = el(this.#document, "li", "v6-tech-card-item");
-        item.dataset.tier = String(node.tier);
-        item.append(this.#technologyCard(node));
-        list.append(item);
+      list.setAttribute("role", "group");
+      const branchLayout = technologyTreeLayoutV6(
+        tree.nodes.filter((candidate) => candidate.branch === branchId),
+      );
+      for (const [index, layoutNode] of branchLayout.entries()) {
+        list.append(
+          this.#technologyTreeItem(layoutNode, index + 1, branchLayout.length),
+        );
       }
       branch.append(branchHeading, list);
       columns.append(branch);
@@ -787,7 +792,47 @@ export class Ruleset6DomAppView {
     return main;
   }
 
-  #technologyCard(node: PublicTechnologyNodeV6): HTMLButtonElement {
+  #technologyTreeItem(
+    layoutNode: TechnologyTreeLayoutNodeV6,
+    position: number,
+    setSize: number,
+  ): HTMLElement {
+    const item = el(this.#document, "li", "v6-tech-card-item");
+    item.dataset.tier = String(layoutNode.node.tier);
+    if (layoutNode.parentId !== null)
+      item.dataset.parentTech = layoutNode.parentId;
+    item.append(this.#technologyCard(layoutNode.node, position, setSize));
+    if (layoutNode.children.length > 0) {
+      const children = el(this.#document, "ol", "v6-tech-children");
+      children.setAttribute("role", "group");
+      children.setAttribute(
+        "aria-label",
+        `Technologies unlocked by ${title(layoutNode.node.id)}`,
+      );
+      children.style.setProperty(
+        "--v6-tech-child-count",
+        String(layoutNode.children.length),
+      );
+      if (layoutNode.children.length > 1) children.classList.add("is-branched");
+      for (const [index, child] of layoutNode.children.entries()) {
+        children.append(
+          this.#technologyTreeItem(
+            child,
+            index + 1,
+            layoutNode.children.length,
+          ),
+        );
+      }
+      item.append(children);
+    }
+    return item;
+  }
+
+  #technologyCard(
+    node: PublicTechnologyNodeV6,
+    position: number,
+    setSize: number,
+  ): HTMLButtonElement {
     const offered = exactResearchCommand(
       this.#snapshot.offeredCommands,
       node.id,
@@ -800,15 +845,20 @@ export class Ruleset6DomAppView {
     const card = button(this.#document, "", `v6-tech-card ${state.kind}`);
     card.dataset.tech = node.id;
     card.dataset.state = state.kind;
+    card.dataset.semanticStatus = state.label;
     card.dataset.focusId = `tech-${node.id.toLowerCase()}`;
     card.setAttribute("role", "treeitem");
     card.setAttribute("aria-level", String(node.tier));
+    card.setAttribute("aria-posinset", String(position));
+    card.setAttribute("aria-setsize", String(setSize));
     card.setAttribute("aria-haspopup", "dialog");
     card.setAttribute(
       "aria-expanded",
       String(this.#selectedTechnology === node.id),
     );
-    card.ariaLabel = `${title(node.id)}, ${title(node.branch)} branch, tier ${node.tier}, costs ${node.cost} Coins, ${state.label}. Open details.`;
+    const accessibleCost =
+      node.state === "OWNED" ? "" : `, costs ${node.cost} Coins`;
+    card.ariaLabel = `${title(node.id)}, ${title(node.branch)} branch, tier ${node.tier}${accessibleCost}, ${state.label}. Open details.`;
     const symbol = actionSymbolNode(
       this.#document,
       technologySymbol(
@@ -820,9 +870,12 @@ export class Ruleset6DomAppView {
     const copy = el(this.#document, "span", "v6-tech-card-copy");
     copy.append(
       text(this.#document, "strong", title(node.id), "v6-tech-card-name"),
-      text(this.#document, "span", `${node.cost} Coins`, "v6-tech-card-cost"),
-      text(this.#document, "span", state.label, "v6-tech-card-state"),
     );
+    if (node.state !== "OWNED") {
+      copy.append(
+        text(this.#document, "span", `${node.cost} Coins`, "v6-tech-card-cost"),
+      );
+    }
     card.append(symbol, copy);
     card.onclick = () => {
       this.#selectedTechnology = node.id;
@@ -1701,20 +1754,20 @@ function technologyState(
     return { kind: "researched", label: "Researched" };
   if (node.state === "BLOCKED") {
     return {
-      kind: "locked",
+      kind: "unavailable",
       label: `Locked — research ${node.missingPrerequisites.map(title).join(", ")} first`,
     };
   }
   if (!node.affordable) {
     return {
-      kind: "unaffordable",
+      kind: "unavailable",
       label: `Need ${Math.max(0, node.cost - viewerCoins)} more Coins`,
     };
   }
   return researchOffered
     ? { kind: "available", label: "Available to research" }
     : {
-        kind: "view-only",
+        kind: "unavailable",
         label: "View only — research is not currently offered",
       };
 }

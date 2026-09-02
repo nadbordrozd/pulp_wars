@@ -143,7 +143,7 @@ describe("DOM UI architecture and responsive contract", () => {
     );
   });
 
-  it("lays out the ruleset-6 technology screen as five wide columns and one compact axis", () => {
+  it("lays out the icon-dominant ruleset-6 tree as five wide branching columns and one compact axis", () => {
     const css = readFileSync("src/styles/main.css", "utf8");
     expect(css).toMatch(
       /\.v6-tech-screen\s*\{[^}]*height:\s*100dvh[^}]*overflow-x:\s*hidden[^}]*overflow-y:\s*auto/s,
@@ -156,6 +156,21 @@ describe("DOM UI architecture and responsive contract", () => {
     );
     expect(css).toMatch(
       /@media \(max-width: 700px\)[\s\S]*\.v6-tech-detail-backdrop\s*\{[^}]*place-items:\s*end stretch/s,
+    );
+    expect(css).toMatch(
+      /\.v6-tech-children\s*\{[^}]*grid-template-columns:\s*repeat\([^}]*--v6-tech-child-count/s,
+    );
+    expect(css).toMatch(
+      /\.v6-tech-card\s*\{[^}]*grid-template-rows:\s*4rem auto[^}]*width:\s*min\(7\.75rem, 100%\)[^}]*min-height:\s*7\.15rem/s,
+    );
+    expect(css).toMatch(
+      /\.v6-tech-card \.v6-tech-card-symbol\s*\{[^}]*width:\s*4rem[^}]*height:\s*4rem[^}]*border:\s*0[^}]*background:\s*transparent/s,
+    );
+    expect(css).toMatch(/\.v6-tech-card\.researched\s*\{[^}]*double/s);
+    expect(css).toMatch(/\.v6-tech-card\.available\s*\{[^}]*solid/s);
+    expect(css).toMatch(/\.v6-tech-card\.unavailable\s*\{[^}]*dashed/s);
+    expect(css).toMatch(
+      /@media \(prefers-contrast: more\)[\s\S]*\.v6-tech-card\.researched[\s\S]*\.v6-tech-card\.available[\s\S]*\.v6-tech-card\.unavailable/,
     );
   });
 

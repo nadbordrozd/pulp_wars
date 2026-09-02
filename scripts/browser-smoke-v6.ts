@@ -148,7 +148,7 @@ try {
     const issues = flowContractIssuesV6(flow);
     if (issues.length > 0) {
       throw new Error(
-        `${flow.faction} smoke evidence failed: ${issues.join("; ")}`,
+        `${flow.faction} smoke evidence failed: ${issues.join("; ")}; acceptance=${JSON.stringify(flow.acceptance)}`,
       );
     }
   }
@@ -776,6 +776,7 @@ async function browseAndResearchTechnology(
   readonly acceptance: BrowserSmokeIntegratedAcceptanceV6["technology"];
 }> {
   await clearMapSelection(connection);
+  await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.desktop);
   const main = await mainCommandCounts(connection);
   if (main.research !== 0 || main.context !== 0) {
     throw new Error(`${faction} main screen exposed Research/all-actions`);
@@ -791,6 +792,11 @@ async function browseAndResearchTechnology(
   const overview = await evaluate<{
     readonly ids: readonly string[];
     readonly branches: number;
+    readonly topologyFaithful: boolean;
+    readonly compactCardContent: boolean;
+    readonly iconDominant: boolean;
+    readonly threeStatesAccessible: boolean;
+    readonly desktopUnclipped: boolean;
   }>(
     connection,
     `(() => {
@@ -798,8 +804,34 @@ async function browseAndResearchTechnology(
       const back = document.querySelector('[data-action="close-tech"]');
       if (!(tree instanceof HTMLElement) || tree.getAttribute('role') !== 'tree' || !(back instanceof HTMLButtonElement) || document.activeElement !== back) throw new Error('T did not open/focus the dedicated Technology screen');
       const cards = [...tree.querySelectorAll('button[data-tech]')];
-      if (cards.some((card) => !card.textContent?.includes('Coins') || !card.getAttribute('aria-label'))) throw new Error('Technology card semantics are incomplete');
-      return { ids: cards.map((card) => card.getAttribute('data-tech')), branches: tree.querySelectorAll('[data-tech-branch]').length };
+      const branches = [...tree.querySelectorAll('[data-tech-branch]')];
+      const topologyFaithful = branches.every((branch) => {
+        const roots = [...branch.querySelectorAll(':scope > .v6-tech-card-list > .v6-tech-card-item')];
+        const fork = roots[0]?.querySelector(':scope > .v6-tech-children');
+        const children = fork === null || fork === undefined ? [] : [...fork.querySelectorAll(':scope > .v6-tech-card-item')];
+        return roots.length === 1 && children.length === 2 && children.every((child) => child.querySelectorAll(':scope > .v6-tech-children > .v6-tech-card-item').length === 1);
+      });
+      const compactCardContent = cards.every((card) => {
+        const researched = card.getAttribute('data-state') === 'researched';
+        const costCount = card.querySelectorAll('.v6-tech-card-cost').length;
+        return card.children.length === 2 && card.querySelectorAll('.v6-tech-card-symbol').length === 1 && card.querySelectorAll('.v6-tech-card-name').length === 1 && card.querySelector('.v6-tech-card-state') === null && (researched ? costCount === 0 : costCount === 1) && !/Need [0-9]+ more Coins|Locked — research|Available to research/.test(card.textContent ?? '');
+      });
+      const iconDominant = cards.every((card) => {
+        const icon = card.querySelector('.v6-tech-card-symbol');
+        if (!(icon instanceof HTMLElement)) return false;
+        const cardRect = card.getBoundingClientRect();
+        const iconRect = icon.getBoundingClientRect();
+        return iconRect.width >= cardRect.width * 0.48 && iconRect.height >= cardRect.height * 0.48;
+      });
+      const states = new Set(cards.map((card) => card.getAttribute('data-state')));
+      const threeStatesAccessible = states.size === 3 && ['researched', 'available', 'unavailable'].every((state) => states.has(state)) && cards.every((card) => {
+        const label = card.getAttribute('aria-label') ?? '';
+        const semanticStatus = card.getAttribute('data-semantic-status') ?? '';
+        return semanticStatus.length > 0 && label.includes(semanticStatus) && card.getAttribute('aria-haspopup') === 'dialog' && card.getAttribute('aria-level') !== null && card.getAttribute('aria-posinset') !== null && card.getAttribute('aria-setsize') !== null;
+      });
+      const screen = document.querySelector('[data-tech-screen]');
+      const desktopUnclipped = screen instanceof HTMLElement && screen.scrollHeight <= screen.clientHeight + 1 && cards.every((card) => { const rect = card.getBoundingClientRect(); return rect.left >= 0 && rect.top >= 0 && rect.right <= innerWidth && rect.bottom <= innerHeight; });
+      return { ids: cards.map((card) => card.getAttribute('data-tech')), branches: branches.length, topologyFaithful, compactCardContent, iconDominant, threeStatesAccessible, desktopUnclipped };
     })()`,
   );
   if (
@@ -810,6 +842,48 @@ async function browseAndResearchTechnology(
       `${faction} technology overview is not the frozen 25-card graph`,
     );
   }
+  artifacts.push(
+    ...(await capturePair(
+      connection,
+      `${faction.toLowerCase()}-technology-overview-desktop`,
+      `${faction} topology-faithful icon-dominant Technology tree`,
+    )),
+  );
+  await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.mobile);
+  const mobileScrollableWithoutHorizontalOverflow = await evaluate<boolean>(
+    connection,
+    `(() => {
+      const screen = document.querySelector('[data-tech-screen]');
+      if (!(screen instanceof HTMLElement)) return false;
+      const cards = [...screen.querySelectorAll('button[data-tech]')];
+      return screen.scrollHeight > screen.clientHeight && screen.scrollWidth <= screen.clientWidth && document.documentElement.scrollWidth <= innerWidth && cards.every((card) => { const rect = card.getBoundingClientRect(); return rect.left >= 0 && rect.right <= innerWidth; });
+    })()`,
+  );
+  artifacts.push(
+    ...(await capturePair(
+      connection,
+      `${faction.toLowerCase()}-technology-overview-mobile`,
+      `${faction} scrollable single-axis Technology tree`,
+    )),
+  );
+  await setMediaPreferences(connection, false, true);
+  const highContrastDistinct = await evaluate<boolean>(
+    connection,
+    `(() => {
+      const samples = ['researched', 'available', 'unavailable'].map((state) => document.querySelector('.v6-tech-card.' + state));
+      if (samples.some((sample) => !(sample instanceof HTMLElement))) return false;
+      const treatments = samples.map((sample) => { const style = getComputedStyle(sample); return [style.borderStyle, style.borderWidth, style.borderColor].join('|'); });
+      return new Set(treatments).size === 3 && getComputedStyle(samples[2]).opacity === '1';
+    })()`,
+  );
+  artifacts.push(
+    ...(await capturePair(
+      connection,
+      `${faction.toLowerCase()}-technology-contrast-mobile`,
+      `${faction} Technology states with system high contrast`,
+    )),
+  );
+  await setMediaPreferences(connection, false, false);
   await clickSelector(connection, 'button[data-tech="HUNTING"]');
   const detailIsModal = await evaluate<boolean>(
     connection,
@@ -857,6 +931,13 @@ async function browseAndResearchTechnology(
       mainContextCommandCount: main.context,
       branchCount: overview.branches,
       cardCount: overview.ids.length,
+      topologyFaithful: overview.topologyFaithful,
+      compactCardContent: overview.compactCardContent,
+      iconDominant: overview.iconDominant,
+      threeStatesAccessible: overview.threeStatesAccessible,
+      highContrastDistinct,
+      desktopUnclipped: overview.desktopUnclipped,
+      mobileScrollableWithoutHorizontalOverflow,
       detailIsModal,
       exactResearchAccepted: after.commandIndex === before.commandIndex + 1,
       researchedDetailRetained: retained,

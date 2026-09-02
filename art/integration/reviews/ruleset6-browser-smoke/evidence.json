@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-02T18:27:02.415Z",
+  "generatedAt": "2026-09-02T19:29:10.631Z",
   "generatedBy": "npm run smoke:browser",
   "rulesetId": "pulp-wars-poc-6",
   "productionEntry": "src/main.ts",
@@ -378,6 +378,13 @@
           "mainContextCommandCount": 0,
           "branchCount": 5,
           "cardCount": 25,
+          "topologyFaithful": true,
+          "compactCardContent": true,
+          "iconDominant": true,
+          "threeStatesAccessible": true,
+          "highContrastDistinct": true,
+          "desktopUnclipped": true,
+          "mobileScrollableWithoutHorizontalOverflow": true,
           "detailIsModal": true,
           "exactResearchAccepted": true,
           "researchedDetailRetained": true,
@@ -393,8 +400,8 @@
           "exactChoiceAccepted": true
         },
         "readiness": {
-          "fullDesktopChangedPixels": 1791,
-          "fullMobileChangedPixels": 3306,
+          "fullDesktopChangedPixels": 1815,
+          "fullMobileChangedPixels": 3299,
           "reducedDesktopChangedPixels": 0,
           "reducedMobileChangedPixels": 0,
           "handledChangedPixels": 0
@@ -513,8 +520,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-high-contrast-mobile-native.png",
-          "bytes": 306551,
-          "sha256": "6a99202b3b93d21a2a027316856f7a065d2676fc90e59d62314b24b7a2ccca53",
+          "bytes": 306543,
+          "sha256": "3cdc7b6cb749af256e2e2fabb248f437abb8fe206dadb5016d97b293f0e23e58",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -527,8 +534,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-high-contrast-mobile-enlarged.png",
-          "bytes": 536047,
-          "sha256": "a13ec01aef0e875a8c9f3768c615a8ca57f88415e2c11610994db9c402c7c8ed",
+          "bytes": 536118,
+          "sha256": "e4bd17c086d882f3daeafc7f30a046c9f36c5081637679d4ef1d9a19f906305c",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -541,8 +548,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-desktop-native.png",
-          "bytes": 328983,
-          "sha256": "34c3e39d862a96ac9704ff172525f41e8012f1d74c15589a276b890291b84ebd",
+          "bytes": 328987,
+          "sha256": "be90fe9d63211ca07bcdfce2c83c9c9279d2691708a3506254ec343c7c1649d9",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -555,8 +562,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-desktop-enlarged.png",
-          "bytes": 550815,
-          "sha256": "c02e1f0f64a17560dcb4959ec399e09fd3e861b36a01cee96832e3642f390b4d",
+          "bytes": 550868,
+          "sha256": "206316cdee162988aa1703523a282aee4a1f08f284cf455a73be47e4e6e85662",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -624,9 +631,93 @@
           "subject": "ORIGINAL faction-correct selected-city training symbol"
         },
         {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-overview-desktop-native.png",
+          "bytes": 271650,
+          "sha256": "4b4c3851f3267eb58fbf758fe564b85eaf220e666dab6b4f9ff18008532fc653",
+          "width": 1440,
+          "height": 1000,
+          "viewport": {
+            "width": 1440,
+            "height": 1000,
+            "dpr": 1
+          },
+          "inspectionScale": 1,
+          "subject": "ORIGINAL topology-faithful icon-dominant Technology tree"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-overview-desktop-enlarged.png",
+          "bytes": 479764,
+          "sha256": "346223d8a5e1e26bd90d0b551de6181dccf3b743dc3b51a046035c32e632e092",
+          "width": 2880,
+          "height": 2000,
+          "viewport": {
+            "width": 1440,
+            "height": 1000,
+            "dpr": 1
+          },
+          "inspectionScale": 2,
+          "subject": "ORIGINAL topology-faithful icon-dominant Technology tree"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-overview-mobile-native.png",
+          "bytes": 222317,
+          "sha256": "48fb215cca55de77cc87f96b23b5035dfd6997c801fafb489d7fe249182259af",
+          "width": 780,
+          "height": 1688,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "inspectionScale": 1,
+          "subject": "ORIGINAL scrollable single-axis Technology tree"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-overview-mobile-enlarged.png",
+          "bytes": 354719,
+          "sha256": "c27653f8090147d929f2223008fdb42a51aef853ec24116a2a837100434ca735",
+          "width": 1560,
+          "height": 3376,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "inspectionScale": 2,
+          "subject": "ORIGINAL scrollable single-axis Technology tree"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-contrast-mobile-native.png",
+          "bytes": 218902,
+          "sha256": "e7ad39a2b3a6f31947d5c7b1935ec461e4fcf3ec29f0c0233d9332895af71cc4",
+          "width": 780,
+          "height": 1688,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "inspectionScale": 1,
+          "subject": "ORIGINAL Technology states with system high contrast"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-contrast-mobile-enlarged.png",
+          "bytes": 357475,
+          "sha256": "bf0df2a070d6afb253edf86058901ec8273e55269ecdbc8d8fd007228dfe6b83",
+          "width": 1560,
+          "height": 3376,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "inspectionScale": 2,
+          "subject": "ORIGINAL Technology states with system high contrast"
+        },
+        {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-detail-mobile-native.png",
-          "bytes": 154722,
-          "sha256": "a52c3980af2538911deae285c3c8b290021b7b6703c2d1227bcac607ce16a9bd",
+          "bytes": 145606,
+          "sha256": "aa3a0402709be92ad086712185f02d4dffddf91ebd0045201c7d870c89c69bc7",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -639,8 +730,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-detail-mobile-enlarged.png",
-          "bytes": 248105,
-          "sha256": "aa09a134323a93d6a3c7a55202330f4e2065bccbafe52769e4c4bed3a0ace096",
+          "bytes": 238816,
+          "sha256": "153609d07d9ecf6ef7410aad32221c477f8d7165e184e6dbca5f3979386a7c5e",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -980,6 +1071,13 @@
           "mainContextCommandCount": 0,
           "branchCount": 5,
           "cardCount": 25,
+          "topologyFaithful": true,
+          "compactCardContent": true,
+          "iconDominant": true,
+          "threeStatesAccessible": true,
+          "highContrastDistinct": true,
+          "desktopUnclipped": true,
+          "mobileScrollableWithoutHorizontalOverflow": true,
           "detailIsModal": true,
           "exactResearchAccepted": true,
           "researchedDetailRetained": true,
@@ -995,8 +1093,8 @@
           "exactChoiceAccepted": true
         },
         "readiness": {
-          "fullDesktopChangedPixels": 1603,
-          "fullMobileChangedPixels": 2949,
+          "fullDesktopChangedPixels": 1624,
+          "fullMobileChangedPixels": 2944,
           "reducedDesktopChangedPixels": 0,
           "reducedMobileChangedPixels": 0,
           "handledChangedPixels": 0
@@ -1115,8 +1213,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-high-contrast-mobile-native.png",
-          "bytes": 314246,
-          "sha256": "a56ed29cd2aecb9bb800936f91ae9f657b675622aac58b768d572b92aa9ef301",
+          "bytes": 314260,
+          "sha256": "1122a7940abf110cfb2c1666dfb631a6549b2b09bc01750094efdb15a9211ded",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1129,8 +1227,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-high-contrast-mobile-enlarged.png",
-          "bytes": 548203,
-          "sha256": "07f58d0a00e5c2e5b03b2c5b719d7e37b154dc5345bf82a73a1d3d6f47c0e689",
+          "bytes": 548208,
+          "sha256": "d2e1abc5f778ba01d07fee693046fa0a4d06183d83d70be65ca1e86d6e7a4e90",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -1143,8 +1241,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-desktop-native.png",
-          "bytes": 336767,
-          "sha256": "695d1ef6e2b0ba4662e8075edd1f5c9ad9ea33ee41528062092db6c4a7400c65",
+          "bytes": 336720,
+          "sha256": "837f42850b4f9ff4a4f4b2464b19873532f4aae367853eea75751f63a5c1ed93",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1157,8 +1255,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-desktop-enlarged.png",
-          "bytes": 562943,
-          "sha256": "bd2401f76d8f14b37dd93ed9691ce48498bdbf98e6202624944643d8451efcc3",
+          "bytes": 562913,
+          "sha256": "b6593eb15c8935589b26ccf5790944061c4d950eefe6e9b192e1d094ab80c586",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -1226,9 +1324,93 @@
           "subject": "CANDY faction-correct selected-city training symbol"
         },
         {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-overview-desktop-native.png",
+          "bytes": 272817,
+          "sha256": "76efe0f7561c51ab0bf73349842b121caf4c2d43edd343f2e72ddf55f9e1e015",
+          "width": 1440,
+          "height": 1000,
+          "viewport": {
+            "width": 1440,
+            "height": 1000,
+            "dpr": 1
+          },
+          "inspectionScale": 1,
+          "subject": "CANDY topology-faithful icon-dominant Technology tree"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-overview-desktop-enlarged.png",
+          "bytes": 480048,
+          "sha256": "366baf3a3b5a56d496c9e63b043cf938d8bd0f9ada312be86cd29247020608a7",
+          "width": 2880,
+          "height": 2000,
+          "viewport": {
+            "width": 1440,
+            "height": 1000,
+            "dpr": 1
+          },
+          "inspectionScale": 2,
+          "subject": "CANDY topology-faithful icon-dominant Technology tree"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-overview-mobile-native.png",
+          "bytes": 219897,
+          "sha256": "8b50da4b603daf63bb2adc9a2703fd58a435a43334dd790b02137edcbbfc6fce",
+          "width": 780,
+          "height": 1688,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "inspectionScale": 1,
+          "subject": "CANDY scrollable single-axis Technology tree"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-overview-mobile-enlarged.png",
+          "bytes": 347484,
+          "sha256": "ffae2d813d7d17821199e239ca448e3c40357fffd46a9614a1db5cdf5151120b",
+          "width": 1560,
+          "height": 3376,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "inspectionScale": 2,
+          "subject": "CANDY scrollable single-axis Technology tree"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-contrast-mobile-native.png",
+          "bytes": 217867,
+          "sha256": "373e2ea3bf042784c35236248c28eb1ac1943ce35dfa803f500421a5801d6eb8",
+          "width": 780,
+          "height": 1688,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "inspectionScale": 1,
+          "subject": "CANDY Technology states with system high contrast"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-contrast-mobile-enlarged.png",
+          "bytes": 351340,
+          "sha256": "5a4f4f22eecd5638035661c33caed4c10be618775830be97c43975c5f025486d",
+          "width": 1560,
+          "height": 3376,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "inspectionScale": 2,
+          "subject": "CANDY Technology states with system high contrast"
+        },
+        {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-detail-mobile-native.png",
-          "bytes": 152638,
-          "sha256": "43c5eaad3c74dce8d39c0afa5344a419abcb8414f383269494d1116e8ae776d6",
+          "bytes": 146762,
+          "sha256": "6b3cbf2382777fc212e0c15a2f1787a84997542147557b2c4d05628c0db72cd0",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1241,8 +1423,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-detail-mobile-enlarged.png",
-          "bytes": 244740,
-          "sha256": "128709f50a8d162a4ff6c2998f357a1cd961081a75cd3dc65934cceb85206c5e",
+          "bytes": 238723,
+          "sha256": "cf45ad8f03ffc08875945c0952b0357fe9abea6358058930687a4e7a0875400b",
           "width": 1560,
           "height": 3376,
           "viewport": {
