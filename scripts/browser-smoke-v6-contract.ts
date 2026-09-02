@@ -100,6 +100,12 @@ export interface BrowserSmokeArtifactV6 {
 }
 
 export interface BrowserSmokeIntegratedAcceptanceV6 {
+  readonly animalVisibility: {
+    readonly visibleGameCount: number;
+    readonly hiddenGameRedacted: boolean;
+    readonly huntingOwned: boolean;
+    readonly huntGameOffered: boolean;
+  };
   readonly contextual: {
     readonly selectedExactUnit: boolean;
     readonly selectedExactCity: boolean;
@@ -332,6 +338,15 @@ export function flowContractIssuesV6(
         break;
       }
     }
+  }
+  const animalVisibility = flow.acceptance.animalVisibility;
+  if (
+    animalVisibility.visibleGameCount < 1 ||
+    !animalVisibility.hiddenGameRedacted ||
+    animalVisibility.huntingOwned ||
+    animalVisibility.huntGameOffered
+  ) {
+    issues.push("Animal visibility/Hunting gate acceptance is incomplete");
   }
   const contextual = flow.acceptance.contextual;
   if (

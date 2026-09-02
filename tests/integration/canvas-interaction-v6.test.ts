@@ -364,6 +364,49 @@ describe("ruleset-6 Canvas host", () => {
     expect(host.screenPoint({ x: 0, y: 0 })).toBeNull();
   });
 
+  it.each(["ORIGINAL", "CANDY"] as const)(
+    "announces explored Game before Hunting for %s while fog stays content-free",
+    (faction) => {
+      const fixture = publicFixture(faction, 42);
+      const explored = new Set(
+        fixture.state.players
+          .find((player) => player.id === fixture.state.humanPlayerId)
+          ?.explored.map(coordKey),
+      );
+      const visibleGame = fixture.state.board.tiles.find(
+        (tile) => tile.resource === "GAME" && explored.has(coordKey(tile.at)),
+      );
+      const hiddenGame = fixture.state.board.tiles.find(
+        (tile) => tile.resource === "GAME" && !explored.has(coordKey(tile.at)),
+      );
+      if (visibleGame === undefined || hiddenGame === undefined) {
+        throw new Error("Seed 42 must include visible and hidden Game");
+      }
+      expect(fixture.view.viewer.researchedTechs).toEqual(["GATHERING"]);
+      expect(queryPlayerCommandsV6(fixture.view)).not.toContainEqual({
+        kind: "HUNT_GAME",
+        at: visibleGame.at,
+      });
+
+      const host = new CanvasBoardHostV6(document);
+      const container = sizedContainer(800, 520);
+      host.mount(container, callbacks());
+      host.update(model(fixture.view));
+      host.activate(visibleGame.at);
+      expect(container.textContent).toContain(
+        `Map cursor ${visibleGame.at.x}, ${visibleGame.at.y}: forest, game`,
+      );
+      expect(container.textContent).not.toContain("Available: Hunt Game");
+
+      host.activate(hiddenGame.at);
+      expect(container.textContent).toContain(
+        `Map cursor ${hiddenGame.at.x}, ${hiddenGame.at.y}: fog; unexplored`,
+      );
+      expect(container.textContent).not.toContain("forest, game");
+      host.destroy();
+    },
+  );
+
   it("fits responsively, preserves camera on remount/resize, and resets it for a replacement match", () => {
     const fixture = publicFixture();
     const host = new CanvasBoardHostV6(document);
@@ -861,27 +904,34 @@ describe("ruleset-6 Canvas host", () => {
   });
 });
 
-function publicFixture(): {
+function publicFixture(
+  faction: "ORIGINAL" | "CANDY" = "ORIGINAL",
+  seed = 8,
+): {
   readonly state: GameStateV6;
   readonly view: PlayerViewV6;
 } {
   const created = createPlayableGameV6({
     rulesetId: "pulp-wars-poc-6",
     mapGenerationRevision: "SPATIAL_ECONOMY",
-    seed: 8,
+    seed,
     width: 11,
     height: 11,
     aiCount: 1,
     aiDifficulty: "NORMAL",
     aiMode: "RIVAL",
     humanColor: "CORAL",
-    factions: ["ORIGINAL", "CANDY"],
+    factions: [faction, faction === "ORIGINAL" ? "CANDY" : "ORIGINAL"],
   });
   if (!created.ok) throw new Error(created.error.code);
   return {
     state: created.state,
     view: viewForV6(created.state, created.state.humanPlayerId),
   };
+}
+
+function coordKey(at: CoordV6): string {
+  return `${at.x},${at.y}`;
 }
 
 function model(

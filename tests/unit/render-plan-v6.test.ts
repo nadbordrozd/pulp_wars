@@ -7,9 +7,12 @@ import {
   TECHNOLOGY_IDS,
   UNIT_ROLE_IDS,
   cityId,
+  createPlayableGameV6,
   playerId,
   previewEconomicV6,
+  queryPlayerCommandsV6,
   unitId,
+  viewForV6,
   wallId,
   type CommandV6,
   type CoordV6,
@@ -270,6 +273,60 @@ describe("ruleset-6 observation-safe render plan", () => {
       /FRUIT|GAME|FERTILE_GROUND|ORE|STONE/,
     );
   });
+
+  it.each(["ORIGINAL", "CANDY"] as const)(
+    "renders explored Game before Hunting for %s while keeping hidden Game fogged and Hunt unavailable",
+    (faction) => {
+      const created = createPlayableGameV6({
+        rulesetId: RULESET_6_ID,
+        mapGenerationRevision: SPATIAL_ECONOMY_REVISION,
+        seed: 42,
+        width: 11,
+        height: 11,
+        aiCount: 1,
+        aiDifficulty: "NORMAL",
+        aiMode: "RIVAL",
+        humanColor: "CORAL",
+        factions: [faction, faction === "ORIGINAL" ? "CANDY" : "ORIGINAL"],
+      });
+      if (!created.ok) throw new Error(created.error.code);
+      const viewer = created.state.players.find(
+        (player) => player.id === created.state.humanPlayerId,
+      );
+      if (viewer === undefined) throw new Error("Missing human player");
+      const explored = new Set(viewer.explored.map(coordKey));
+      const visibleGame = created.state.board.tiles.find(
+        (tile) => tile.resource === "GAME" && explored.has(coordKey(tile.at)),
+      );
+      const hiddenGame = created.state.board.tiles.find(
+        (tile) => tile.resource === "GAME" && !explored.has(coordKey(tile.at)),
+      );
+      if (visibleGame === undefined || hiddenGame === undefined) {
+        throw new Error("Seed 42 must include visible and hidden Game");
+      }
+
+      const view = viewForV6(created.state, created.state.humanPlayerId);
+      expect(view.viewer.researchedTechs).toEqual(["GATHERING"]);
+      expect(queryPlayerCommandsV6(view)).not.toContainEqual({
+        kind: "HUNT_GAME",
+        at: visibleGame.at,
+      });
+      const plan = buildRenderPlanV6(view);
+      expect(
+        plan.entries.filter((entry) => same(entry.at, visibleGame.at)),
+      ).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            kind: "RESOURCE",
+            details: { resource: "GAME" },
+          }),
+        ]),
+      );
+      expect(
+        plan.entries.filter((entry) => same(entry.at, hiddenGame.at)),
+      ).toEqual([expect.objectContaining({ kind: "FOG" })]);
+    },
+  );
 
   it("derives exact Move, Attack, self-action, and selected path targets from public commands", () => {
     let view = baseView();
@@ -890,6 +947,10 @@ function replaceWithHidden(view: PlayerViewV6, at: CoordV6): PlayerViewV6 {
       ),
     },
   };
+}
+
+function coordKey(at: CoordV6): string {
+  return `${at.x},${at.y}`;
 }
 
 function inactive(view: PlayerViewV6): PlayerViewV6 {

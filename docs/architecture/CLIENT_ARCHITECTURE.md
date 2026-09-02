@@ -124,9 +124,11 @@ interface PublicRulesApiV6 {
 }
 ```
 
-Unrevealed v6 resources project as a content-free `UNKNOWN_RESOURCE` arm even
-on explored terrain. It carries no candidate kind or existence bit. Economic
-preview is available only for an exact public offered command and is complete;
+Technology-hidden v6 resources project as a content-free `UNKNOWN_RESOURCE`
+arm even on explored terrain. Game is the exception: it is public on every
+explored Forest from match start, while Hunting gates only Hunt Game. The
+unknown arm carries no candidate kind or existence bit. Economic preview is
+available only for an exact public offered command and is complete;
 contributors are sorted `(y,x)`. Combat preview represents hidden-behind Push
 as `UNKNOWN_BEHIND_FOG`, which resolves as no Push. Equal `PlayerViewV6` values
 must produce byte-identical commands, previews, AI tuples, and selections.

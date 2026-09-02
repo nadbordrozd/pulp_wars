@@ -346,33 +346,35 @@ describe("ruleset-6 spatial-economy map generation", () => {
 });
 
 describe("ruleset-6 fog-safe resource projection", () => {
-  it("uses UNKNOWN_RESOURCE for both identity and absence until each reveal tech", () => {
-    const base = createState(setup(1, 11, 9));
-    const forest = requireResourcePair(base, "FOREST", "GAME");
-    const mountain = requireResourcePair(base, "MOUNTAIN", "ORE");
+  it.each(["ORIGINAL", "CANDY"] as const)(
+    "shows explored Game from match start for %s without exposing it through fog",
+    (faction) => {
+      const other = faction === "ORIGINAL" ? "CANDY" : "ORIGINAL";
+      const base = createState(setup(1, 11, 9, "RIVAL", [faction, other]));
+      const forest = requireResourcePair(base, "FOREST", "GAME");
+      const visible = withViewer(
+        base,
+        ["GATHERING"],
+        [forest.present.at, forest.absent.at],
+      );
+      const withoutGame = replaceResource(visible, forest.present, null);
 
-    const forestGame = withViewer(
-      base,
-      [],
-      [forest.present.at, forest.absent.at],
-    );
-    const forestEmpty = replaceResource(forestGame, forest.present, null);
-    expect(viewForV6(forestGame, forestGame.humanPlayerId)).toEqual(
-      viewForV6(forestEmpty, forestEmpty.humanPlayerId),
-    );
-    expect(viewTile(forestGame, forest.present.at).resource).toBe(
-      UNKNOWN_RESOURCE_V6,
-    );
-    expect(viewTile(forestGame, forest.absent.at).resource).toBe(
-      UNKNOWN_RESOURCE_V6,
-    );
-    const huntedGame = withViewer(
-      forestGame,
-      ["GATHERING", "HUNTING"],
-      [forest.present.at, forest.absent.at],
-    );
-    expect(viewTile(huntedGame, forest.present.at).resource).toBe("GAME");
-    expect(viewTile(huntedGame, forest.absent.at).resource).toBeNull();
+      expect(viewTile(visible, forest.present.at).resource).toBe("GAME");
+      expect(viewTile(visible, forest.absent.at).resource).toBeNull();
+      expect(viewForV6(visible, visible.humanPlayerId)).not.toEqual(
+        viewForV6(withoutGame, withoutGame.humanPlayerId),
+      );
+      expect(
+        viewForV6(base, base.humanPlayerId).board.tiles.find((tile) =>
+          sameCoord(tile.at, forest.present.at),
+        ),
+      ).toEqual({ at: forest.present.at, explored: false });
+    },
+  );
+
+  it("uses UNKNOWN_RESOURCE for identity and absence until each remaining reveal tech", () => {
+    const base = createState(setup(1, 11, 9));
+    const mountain = requireResourcePair(base, "MOUNTAIN", "ORE");
 
     const ore = withViewer(
       base,
@@ -420,7 +422,7 @@ describe("ruleset-6 fog-safe resource projection", () => {
     ).toEqual({ at: hidden.at, explored: false });
   });
 
-  it("keeps improvements, Roads, and territory ownership public on explored locked tiles", () => {
+  it("keeps improvements, Roads, and territory ownership public on explored tiles", () => {
     const base = createState(setup(1, 11, 4));
     const forest = base.board.tiles.find(
       (tile) => tile.terrain === "FOREST" && tile.resource === null,
@@ -455,7 +457,7 @@ describe("ruleset-6 fog-safe resource projection", () => {
     );
     expect(viewTile(state, forest.at)).toMatchObject({
       explored: true,
-      resource: "UNKNOWN_RESOURCE",
+      resource: null,
       improvement: "LUMBER_CAMP",
       road: true,
     });

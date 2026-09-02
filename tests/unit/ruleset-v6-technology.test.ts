@@ -292,7 +292,7 @@ describe("ruleset-6 technology", () => {
     expect(candy.roleBindings.JUGGERNAUT.label).toBe("Sugar Titan");
   });
 
-  it("reveals Gathering, Hunting, and Surveying resources immediately without fog leaks", () => {
+  it("shows Game before Hunting while Hunting alone gates Hunt Game", () => {
     let state = withCoins(initialState("ORIGINAL"), 30);
     const city = must(
       state.cities.find(
@@ -312,12 +312,20 @@ describe("ruleset-6 technology", () => {
     ]);
     const before = viewForV6(state, state.humanPlayerId);
     expect(publicTile(before, fruitAt).resource).toBe("FRUIT");
-    expect(publicTile(before, gameAt).resource).toBe("UNKNOWN_RESOURCE");
+    expect(publicTile(before, gameAt).resource).toBe("GAME");
     expect(publicTile(before, oreAt).resource).toBe("UNKNOWN_RESOURCE");
     expect(queryPlayerCommandsV6(before)).not.toContainEqual({
       kind: "HUNT_GAME",
       at: gameAt,
     });
+    expectRejected(
+      applyCommandV6(state, state.humanPlayerId, {
+        kind: "HUNT_GAME",
+        at: gameAt,
+      }),
+      state,
+      "TECH_REQUIRED",
+    );
 
     const hunted = applyCommandV6(state, state.humanPlayerId, {
       kind: "RESEARCH",
@@ -374,7 +382,7 @@ describe("ruleset-6 technology", () => {
     );
     expect(capabilities).toMatchObject({
       treeId: "ORIGINAL_BASELINE",
-      resourceReveals: ["FRUIT", "GAME", "FERTILE_GROUND", "ORE", "STONE"],
+      resourceReveals: ["FRUIT", "FERTILE_GROUND", "ORE", "STONE"],
       connectedFarmVisuals: true,
       forestMovementFreedomRoles: ["SCOUT", "MARKSMAN"],
       mountainMovement: true,
@@ -521,16 +529,7 @@ const EXACT_TECHNOLOGY_TABLE = [
       { kind: "COMMAND", command: "REDEVELOP" },
     ],
   ),
-  node(
-    "HUNTING",
-    "WILDS",
-    1,
-    [],
-    [
-      { kind: "RESOURCE_REVEAL", resources: ["GAME"] },
-      { kind: "COMMAND", command: "HUNT_GAME" },
-    ],
-  ),
+  node("HUNTING", "WILDS", 1, [], [{ kind: "COMMAND", command: "HUNT_GAME" }]),
   node(
     "FORESTRY",
     "WILDS",

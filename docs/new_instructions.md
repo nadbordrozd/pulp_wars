@@ -101,7 +101,7 @@ This is cheap immediate development.
 
 ### Game
 
-Visible from the start or after Hunting.
+Visible from the start. Hunting unlocks use of the resource, not visibility.
 
 **Hunt Game**
 

@@ -127,6 +127,12 @@ function validFlow(): BrowserSmokeFlowEvidenceV6 {
     },
     resume: { commandIndex: 7, stateHash: "return" },
     acceptance: {
+      animalVisibility: {
+        visibleGameCount: 1,
+        hiddenGameRedacted: true,
+        huntingOwned: false,
+        huntGameOffered: false,
+      },
       contextual: {
         selectedExactUnit: true,
         selectedExactCity: true,

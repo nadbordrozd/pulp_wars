@@ -1263,7 +1263,10 @@ describe("playable ruleset-6 DOM shell", () => {
     expect(detail.getAttribute("aria-modal")).toBe("true");
     expect(document.querySelectorAll("[data-tech-detail]")).toHaveLength(1);
     expect(detail.textContent).toContain("PrerequisiteNone — root technology");
-    expect(detail.textContent).toContain("Reveals Game on explored tiles.");
+    expect(detail.textContent).not.toContain("Reveals Game");
+    expect(detail.textContent).toContain(
+      "Hunt Game: pay 2 Coins on Forest with Game for +1 permanent population.",
+    );
     const offered = before.offeredCommands.find(
       (command): command is Extract<CommandV6, { readonly kind: "RESEARCH" }> =>
         command.kind === "RESEARCH" && command.tech === "HUNTING",

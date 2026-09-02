@@ -215,9 +215,11 @@ technology.
 
 An unexplored allied coordinate is only `ALLIED_TERRITORY`; an explored
 technology-hidden resource is only `UNKNOWN_RESOURCE`. Both are content-free.
-Neither counts as frontier, spatial potential, Roll value, route content, or a
-research target. Equal views containing either arm must produce byte-identical
-candidates, scores, and commands.
+Game is public on an explored Forest from match start, but cannot produce a Hunt
+Game candidate before Hunting. Neither hidden arm counts as frontier, spatial
+potential, Roll value, route content, or a research target. Equal views
+containing either arm must produce byte-identical candidates, scores, and
+commands.
 
 ## 8. Runner limits and validation
 

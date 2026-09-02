@@ -39,10 +39,13 @@ eight stages below pass together and fresh v6 evidence is appended here.
   counts, one resource draw per non-settlement `(y,x)`, exact v6 thresholds,
   every-resource presence, three opportunities and two families around every
   settlement, continued-stream retries, and the 256-attempt failure.
-- Paired PlayerViews differing only in hidden resource identity/absence expose
-  identical `UNKNOWN_RESOURCE`, commands, previews, AI tuples, and choices
-  before Gathering/Hunting/Surveying. After research, only explored matching
-  resources become public; no surrounding or allied-territory leak occurs.
+- Game is public from match start on every explored Forest for both factions,
+  while unexplored Game remains redacted and Hunt Game remains unavailable
+  until Hunting. Paired PlayerViews differing only in other hidden resource
+  identity/absence expose identical `UNKNOWN_RESOURCE`, commands, previews, AI
+  tuples, and choices before Gathering/Surveying. After research, only explored
+  matching resources become public; no surrounding or allied-territory leak
+  occurs.
 - Every basic action covers exact cost/population, terrain/resource mutation,
   Road coexistence, occupied-tile legality, siege/reward locks, capture, all
   error-precedence pairs, identical-state rejection, no PRNG draw, and ordered

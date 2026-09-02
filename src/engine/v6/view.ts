@@ -65,8 +65,9 @@ export interface PlayerViewV6 {
 }
 
 /**
- * Observation-safe ruleset-6 projection. On an explored but technology-locked
- * terrain, resource identity and absence share the same content-free arm.
+ * Observation-safe ruleset-6 projection. Game is public on every explored
+ * Forest from match start; on other technology-locked terrain, resource
+ * identity and absence share the same content-free arm.
  */
 export function viewForV6(
   state: GameStateV6,
@@ -157,12 +158,8 @@ export function publicResourceV6(
   tile: Pick<TileStateV6, "terrain" | "resource">,
   researchedTechs: readonly TechnologyId[],
 ): PublicResourceV6 {
-  const reveal =
-    tile.terrain === "GRASS"
-      ? "GATHERING"
-      : tile.terrain === "FOREST"
-        ? "HUNTING"
-        : "SURVEYING";
+  if (tile.terrain === "FOREST") return tile.resource;
+  const reveal = tile.terrain === "GRASS" ? "GATHERING" : "SURVEYING";
   return researchedTechs.includes(reveal) ? tile.resource : UNKNOWN_RESOURCE_V6;
 }
 

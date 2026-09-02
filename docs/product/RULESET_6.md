@@ -288,12 +288,13 @@ Game, Ore, Stone, and an empty Forest each count as one opportunity; a Game
 Forest counts once. Reject unless every resource type occurs globally. These
 checks happen after all draws and use the continued PRNG stream on retry.
 
-Resource visibility is technology-gated even on explored tiles: Fruit and
-Fertile Ground require Gathering; Game requires Hunting; Ore and Stone require
-Surveying. Before its reveal technology, the public resource arm is
+Resource visibility is technology-gated even on explored tiles except for
+Game, which is visible from match start whenever its Forest tile is explored.
+Fruit and Fertile Ground require Gathering; Ore and Stone require Surveying.
+Before a gated resource's reveal technology, the public resource arm is
 `UNKNOWN_RESOURCE`, not `null`; legal queries, AI, map art, tooltips, and
 previews cannot distinguish its kind or absence. Improvements and Roads on an
-explored tile are always public.
+explored tile are always public. Hunting gates Hunt Game, not observation.
 
 Basic actions require an explored tile assigned to an owned, non-besieged city
 with no pending reward for that city. A unit is neither required nor a blocker.
@@ -419,7 +420,7 @@ in free order.
 |   2 | Milling       |    3 | Farming       | Windmill                                                |
 |   3 | Craft         |    2 | Gathering     | Workshop                                                |
 |   4 | Grand Works   |    3 | Craft         | Grand Works; Redevelop                                  |
-|   5 | Hunting       |    1 | —             | Game reveal; Hunt Game                                  |
+|   5 | Hunting       |    1 | —             | Hunt Game                                               |
 |   6 | Forestry      |    2 | Hunting       | Lumber Camp; Clear Forest                               |
 |   7 | Sawmilling    |    3 | Forestry      | Sawmill                                                 |
 |   8 | Marksmanship  |    2 | Hunting       | Marksman role                                           |
@@ -790,8 +791,8 @@ These are frozen choices where the source brief was provisional or ruleset 5
 conflicted:
 
 - MVP is sequencing, not final scope; all 25 nodes and nine roles ship in v6.
-- Game reveals at Hunting; Fruit/Fertile at starting Gathering; Ore/Stone at
-  Surveying.
+- Game is visible from match start on explored Forest; Hunting gates Hunt Game.
+  Fruit/Fertile reveal at starting Gathering; Ore/Stone at Surveying.
 - Juggernaut uses exact 40 HP. Half stats use rational half-units.
 - Roads are a coexisting layer, orthogonal for discount/connectivity, cost 2,
   and never grant population.

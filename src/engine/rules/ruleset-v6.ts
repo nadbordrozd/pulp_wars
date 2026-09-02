@@ -397,16 +397,7 @@ export const BASELINE_TECHNOLOGY_NODES_V6 = deepFreeze([
       { kind: "COMMAND", command: "REDEVELOP" },
     ],
   ),
-  node(
-    "HUNTING",
-    "WILDS",
-    1,
-    [],
-    [
-      { kind: "RESOURCE_REVEAL", resources: ["GAME"] },
-      { kind: "COMMAND", command: "HUNT_GAME" },
-    ],
-  ),
+  node("HUNTING", "WILDS", 1, [], [{ kind: "COMMAND", command: "HUNT_GAME" }]),
   node(
     "FORESTRY",
     "WILDS",

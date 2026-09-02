@@ -185,7 +185,7 @@ try {
     visualReview: {
       status: "ACCEPTED",
       notes:
-        "Every bounded contextual, reward, city-training, and Technology capture was inspected individually at native output size and in its nearest-neighbor 2x companion. Original and Candy labels/symbols remain distinct; the map stays primary; unit, city, and tile docks do not leak actions; full Technology cards/details and blocking rewards fit desktop and true 390x844 DPR2 mobile without clipping or horizontal overflow. Direct selected-tile actions accept one boundary without a second map activation. No suspected visual failure remained after enlargement review.",
+        "Every bounded contextual, reward, city-training, and Technology capture was inspected individually at native output size and in its nearest-neighbor 2x companion. Original and Candy Animals are visible on explored Forest from launch while Hunting remains unresearched and Hunt Game unavailable; hidden Animals remain redacted. Original and Candy labels/symbols remain distinct; the map stays primary; unit, city, and tile docks do not leak actions; full Technology cards/details and blocking rewards fit desktop and true 390x844 DPR2 mobile without clipping or horizontal overflow. Direct selected-tile actions accept one boundary without a second map activation. No suspected visual failure remained after enlargement review.",
     },
     flows,
     aiFirstLaunch,
@@ -308,6 +308,36 @@ async function runFactionFlow(
     restarted.stateHash === null
   ) {
     throw new Error(`${config.faction} restart changed its deterministic hash`);
+  }
+  const animalVisibility = await evaluate<
+    BrowserSmokeIntegratedAcceptanceV6["animalVisibility"]
+  >(
+    connection,
+    `(() => {
+      const snapshot = globalThis.__PULP_WARS_APP__?.controller.snapshot();
+      const view = snapshot?.view;
+      const stored = JSON.parse(localStorage.getItem('pulpWars.save.current') ?? 'null');
+      if (!view || stored?.state?.board?.tiles === undefined) throw new Error('Animal visibility boundary is unavailable');
+      const visibleGameCount = view.board.tiles.filter((tile) => tile.explored && tile.resource === 'GAME').length;
+      const hiddenGame = stored.state.board.tiles.find((tile) => tile.resource === 'GAME' && view.board.tiles[tile.at.y * view.board.width + tile.at.x]?.explored === false);
+      const hiddenPublic = hiddenGame === undefined ? undefined : view.board.tiles[hiddenGame.at.y * view.board.width + hiddenGame.at.x];
+      return {
+        visibleGameCount,
+        hiddenGameRedacted: hiddenPublic !== undefined && hiddenPublic.explored === false && Object.keys(hiddenPublic).every((key) => key === 'at' || key === 'explored' || key === 'diplomaticBlock'),
+        huntingOwned: view.viewer.researchedTechs.includes('HUNTING'),
+        huntGameOffered: snapshot.offeredCommands.some((command) => command.kind === 'HUNT_GAME')
+      };
+    })()`,
+  );
+  if (
+    animalVisibility.visibleGameCount < 1 ||
+    !animalVisibility.hiddenGameRedacted ||
+    animalVisibility.huntingOwned ||
+    animalVisibility.huntGameOffered
+  ) {
+    throw new Error(
+      `${config.faction} Animal visibility/Hunting gate failed: ${JSON.stringify(animalVisibility)}`,
+    );
   }
   const desktop = await readLayout(connection);
   await assertMainScreenIsMapFirst(connection);
@@ -641,6 +671,7 @@ async function runFactionFlow(
       stateHash: resumed.stateHash,
     },
     acceptance: {
+      animalVisibility,
       contextual: {
         selectedExactUnit: unitContext.selectionKind === "UNIT",
         selectedExactCity: cityContext.selectionKind === "CITY",
