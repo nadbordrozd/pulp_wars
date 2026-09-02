@@ -18,9 +18,16 @@
     "breacher": 0.24,
     "juggernaut": 0.25
   },
+  "placementContracts": {
+    "unitOffsetY": 18,
+    "fertileGroundOffsetY": 18,
+    "coordinateSpace": "nominal CSS pixels at 1x zoom"
+  },
   "reviewCoverage": [
     "complete accepted production raster inventory with zero placeholders",
     "all nine role silhouettes with ordinary units smaller than Forest and Mountain",
+    "all nine Original and all nine Candy unit silhouettes visibly centered at 0.625x, 1x and 1.75x",
+    "Fertile Ground painted bounds centered across the owning diamond instead of ending at tile center",
     "accepted Road masks, economic contributor numbers, opposite-pair axis and value chip",
     "all seven leveled improvements with exact zero, one, and multi-value compact square pips",
     "selection, move/attack targets, unit/city/wall status and fog",
@@ -29,48 +36,48 @@
   ],
   "visualReview": {
     "status": "ACCEPTED",
-    "notes": "Native and enlarged sheets were inspected individually. Mint square improvement pips remain compact and dark-outlined at 0.625x, 1x, and 1.75x for DPR1/2, including zero, one, 3–7, and Market values; they remain distinct from the city's larger yellow/red meter inside its labeled badge. The level-4 city retains its fixed five-square layer with exactly two leading red deficit squares. Game/Animal remains visible in front of each Forest canopy, including beneath a selected occupied tile."
+    "notes": "Native and enlarged sheets were inspected individually. Every Original and Candy role keeps its accepted compact scale while the painted feet or ground mass occupies the owning diamond's lower-center; heads overlap rear tiles only modestly. Fertile Ground spans both halves around tile center instead of floating above it. Shadows and status markers remain attached, selection and target overlays remain tile-aligned, and melee/ranged/damage presentation remains renderer-owned. Game/Animal remains visible in front of each Forest canopy, including beneath a selected occupied tile."
   },
   "artifacts": [
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/original-dpr1-native.png",
-      "bytes": 820033,
-      "sha256": "e40bfbd2cbe6114fd6740d4205e6d1320383e8ff47fa509cb3ff3219ea4363c5"
+      "bytes": 1117169,
+      "sha256": "2265beddc002ed4c7e0e49d6afe13508b9e8fa646e1d81481c5f777836b11dce"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/original-dpr1-enlarged.png",
-      "bytes": 1109113,
-      "sha256": "b2e8c4838f4960be1241a282bf6bca1dce0991965b3763e5ade4be51ffb8c83b"
+      "bytes": 1593944,
+      "sha256": "66353063c5480d58872fa19b78ba8263871e0e85316e5aa8743bb37000c2027b"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/original-dpr2-native.png",
-      "bytes": 2548729,
-      "sha256": "660c0addcafce64d32d5edc22f5619aa181e8c252cd85234cd9b6c56932a9331"
+      "bytes": 3473305,
+      "sha256": "be2ab5a3784ea266929cd5b5ba2fb62c43fad76f4c10c9c93501926a9ab3831d"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/original-dpr2-enlarged.png",
-      "bytes": 6323686,
-      "sha256": "1c3db6e8fdfc674653b80a9ca5e7ce43884d46f5136e75c12d8e4d2c296ab8c6"
+      "bytes": 5479958,
+      "sha256": "5e4f2bb27d08d2fcd30a03f3a41b682d9571bad36b7e6f7f5a3e914ab8ef08bb"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/candy-dpr1-native.png",
-      "bytes": 829306,
-      "sha256": "d0d1f777a4c1d0a60927ec7c71c85fbd06f4833f22be498b1b5f55b0373fcdc5"
+      "bytes": 1127667,
+      "sha256": "d15daaa113d95b2d3a67070aefed3d70b5a35495f6185df1007d3738b7e112c7"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/candy-dpr1-enlarged.png",
-      "bytes": 1124520,
-      "sha256": "e14c8b5a8b51ce8d23ca548c51a0d3fd08f5e92b68da815e65327b6b084e3f61"
+      "bytes": 1606295,
+      "sha256": "9fa8c2b818a5cf62fc4ce0d72ac5f2e29db754b2216080bab1b8753157d61ec3"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/candy-dpr2-native.png",
-      "bytes": 2525079,
-      "sha256": "b558b6a9637824a0b2148ffb04a1ce699b520671bf4cdd3666d80f2caac0aa85"
+      "bytes": 3455970,
+      "sha256": "70f9d4406eb4f6d5637472a7171160ed461ceff11e7d1aa2cd45e8bad109b4aa"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/candy-dpr2-enlarged.png",
-      "bytes": 6305785,
-      "sha256": "a42f28789de07cb7363a89f8264d1b93865f0b46ef0f0e44696665a5054db7ec"
+      "bytes": 5497841,
+      "sha256": "d20c03a6d7dfe0ea6c02003f2e83e692379975461cd0b509ce1bbf5528831c59"
     }
   ]
 }

@@ -104,14 +104,18 @@ height and no more than 45% diamond area; reject above 48% width, 84% height,
 45% area, or 8% rear/above adjacent-tile coverage. Keep the bottom area quiet:
 feet/equipment may use it, but no baked shadow or ground.
 
-Candy Warrior retains one narrow placement exception without changing that
-shared source geometry: it receives a 7.5 CSS px downward runtime
-offset at 1x zoom. Its accepted alpha ends at source `y=222`, while Original
-Warrior extends to `y=252`; the proportional offset gives both a `+7.5` CSS px
-low extent and reduces Candy Warrior's rear-tile overlap by 7.5 px.
-Gumball Guard, Choco Engineer, Donut, every Original unit, and Catapult retain
-their existing runtime placement. Sorting, shadow/status anchors, picking, and
-simulation continue to use the unshifted authoritative ground coordinate.
+Ruleset 6 applies an 18 CSS px downward cosmetic offset at 1x zoom to every
+unit class in both factions. The offset scales with camera zoom and is applied
+after the untrimmed source anchor, so accepted source composition and scale do
+not change. Across the complete current rosters, painted low extents then land
+18–25.5 CSS px below tile center: the feet/ground mass occupies the diamond's
+lower-center, the bottom half is no longer mostly empty, and rear-tile overlap
+is reduced. Contact shadows and status markers follow the same cosmetic
+baseline, while sorting, selection, picking, simulation, and combat origins
+continue to use the unshifted authoritative ground coordinate.
+
+The historical ruleset-5 Candy Warrior keeps its narrow 7.5 CSS px placement
+exception. That legacy correction does not define ruleset-6 placement.
 
 All eight standard faction sprites are the same size class and use the same
 canvas/anchor. Defender/Choco Engineer may read broader and Rider more

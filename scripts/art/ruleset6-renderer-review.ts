@@ -10,6 +10,10 @@ import {
   type FactionIdV6,
 } from "../../src/engine/index";
 import {
+  PLACEMENT_ART_GEOMETRY,
+  RULESET6_UNIT_COSMETIC_OFFSET_Y,
+} from "../../src/render/canvas/board-art-geometry";
+import {
   buildBoardDrawListV6,
   type BoardDrawCommandV6,
 } from "../../src/render/canvas/board-renderer-v6";
@@ -26,10 +30,10 @@ const reviewRoot = path.join(
   root,
   "art/pixellab/reviews/ruleset6-canvas-renderer",
 );
-const panel = { width: 690, height: 500 } as const;
+const panel = { width: 1390, height: 880 } as const;
 const sheet = {
-  width: panel.width * 3 + 80,
-  height: panel.height + 96,
+  width: panel.width + 80,
+  height: panel.height * 3 + 120,
 } as const;
 const zooms = [0.625, 1, 1.75] as const;
 const artifacts: string[] = [];
@@ -62,8 +66,8 @@ async function reviewSvg(faction: FactionIdV6): Promise<string> {
   const panels = await Promise.all(
     zooms.map(async (zoom, index) => {
       const camera = centeredCamera(6, 6, zoom, {
-        x: 40 + index * panel.width,
-        y: 72,
+        x: 40,
+        y: 72 + index * panel.height,
         width: panel.width,
         height: panel.height,
       });
@@ -88,23 +92,23 @@ async function reviewSvg(faction: FactionIdV6): Promise<string> {
   <defs>${panels
     .map(
       ({ index }) =>
-        `<clipPath id="panel-${index}"><rect x="${40 + index * panel.width}" y="72" width="${panel.width - 20}" height="${panel.height}" rx="12"/></clipPath>`,
+        `<clipPath id="panel-${index}"><rect x="40" y="${72 + index * panel.height}" width="${panel.width - 20}" height="${panel.height - 16}" rx="12"/></clipPath>`,
     )
     .join("")}</defs>
   <rect width="100%" height="100%" fill="#172b2b"/>
   <text x="40" y="30" font-family="system-ui,sans-serif" font-size="20" font-weight="800" fill="#f5efe0">Ruleset 6 Canvas · ${faction} · zoom and coverage review</text>
-  <text x="40" y="53" font-family="system-ui,sans-serif" font-size="13" font-weight="600" fill="#c5d7d4">All seven live improvement levels · square mint pips · city meter remains distinct</text>
+  <text x="40" y="53" font-family="system-ui,sans-serif" font-size="13" font-weight="600" fill="#c5d7d4">All nine roles + Fertile Ground · visible-bound centering · complete map overlays</text>
   ${panels
     .map(
       ({ index, zoom, commands, accepted, placeholders }) => `<g>
-    <rect x="${40 + index * panel.width}" y="72" width="${panel.width - 20}" height="${panel.height}" rx="12" fill="#203936" stroke="#55716c" stroke-width="2"/>
+    <rect x="40" y="${72 + index * panel.height}" width="${panel.width - 20}" height="${panel.height - 16}" rx="12" fill="#203936" stroke="#55716c" stroke-width="2"/>
     <g clip-path="url(#panel-${index})">${commands}</g>
-    <rect x="${48 + index * panel.width}" y="80" width="250" height="25" rx="7" fill="#172b2be8"/>
-    <text x="${55 + index * panel.width}" y="94" font-family="system-ui,sans-serif" font-size="15" font-weight="800" fill="#ffffff">${zoom}× · accepted ${accepted} · placeholders ${placeholders}</text>
+    <rect x="48" y="${80 + index * panel.height}" width="370" height="25" rx="7" fill="#172b2be8"/>
+    <text x="55" y="${94 + index * panel.height}" font-family="system-ui,sans-serif" font-size="15" font-weight="800" fill="#ffffff">${zoom}× · +${RULESET6_UNIT_COSMETIC_OFFSET_Y}px unit baseline · accepted ${accepted} · placeholders ${placeholders}</text>
   </g>`,
     )
     .join("\n")}
-  <text x="40" y="${sheet.height - 14}" font-family="system-ui,sans-serif" font-size="13" font-weight="600" fill="#b9ccca">Standard roles use 0.25 source scale; Breacher 0.24; individualized Juggernaut 0.25. Ordinary unit envelopes stay below Forest/Mountain mass.</text>
+  <text x="40" y="${sheet.height - 14}" font-family="system-ui,sans-serif" font-size="13" font-weight="600" fill="#b9ccca">Units and attached shadow/status baselines move together; source scale, tile sorting, selection, effects and authoritative coordinates remain unchanged.</text>
 </svg>`;
 }
 
@@ -440,9 +444,16 @@ async function writeEvidence(): Promise<void> {
         zooms,
         devicePixelRatios: [1, 2],
         scaleContracts: { standard: 0.25, breacher: 0.24, juggernaut: 0.25 },
+        placementContracts: {
+          unitOffsetY: RULESET6_UNIT_COSMETIC_OFFSET_Y,
+          fertileGroundOffsetY: PLACEMENT_ART_GEOMETRY.fertileGround.offsetY,
+          coordinateSpace: "nominal CSS pixels at 1x zoom",
+        },
         reviewCoverage: [
           "complete accepted production raster inventory with zero placeholders",
           "all nine role silhouettes with ordinary units smaller than Forest and Mountain",
+          "all nine Original and all nine Candy unit silhouettes visibly centered at 0.625x, 1x and 1.75x",
+          "Fertile Ground painted bounds centered across the owning diamond instead of ending at tile center",
           "accepted Road masks, economic contributor numbers, opposite-pair axis and value chip",
           "all seven leveled improvements with exact zero, one, and multi-value compact square pips",
           "selection, move/attack targets, unit/city/wall status and fog",
@@ -452,7 +463,7 @@ async function writeEvidence(): Promise<void> {
         visualReview: {
           status: "ACCEPTED",
           notes:
-            "Native and enlarged sheets were inspected individually. Mint square improvement pips remain compact and dark-outlined at 0.625x, 1x, and 1.75x for DPR1/2, including zero, one, 3–7, and Market values; they remain distinct from the city's larger yellow/red meter inside its labeled badge. The level-4 city retains its fixed five-square layer with exactly two leading red deficit squares. Game/Animal remains visible in front of each Forest canopy, including beneath a selected occupied tile.",
+            "Native and enlarged sheets were inspected individually. Every Original and Candy role keeps its accepted compact scale while the painted feet or ground mass occupies the owning diamond's lower-center; heads overlap rear tiles only modestly. Fertile Ground spans both halves around tile center instead of floating above it. Shadows and status markers remain attached, selection and target overlays remain tile-aligned, and melee/ranged/damage presentation remains renderer-owned. Game/Animal remains visible in front of each Forest canopy, including beneath a selected occupied tile.",
         },
         artifacts: records,
       },
@@ -465,6 +476,6 @@ async function writeEvidence(): Promise<void> {
 async function writeReadme(): Promise<void> {
   await writeFile(
     path.join(reviewRoot, "README.md"),
-    `# Ruleset-6 Canvas renderer review\n\nGenerated deterministically with \`npm run art:ruleset6-renderer-review\`. The eight sheets cover Original and Candy at 0.625x, 1x, and 1.75x for DPR1 and DPR2, each at native backing resolution and nearest-neighbor 2x inspection scale. The advanced-building rows cover all seven leveled improvements with exact zero, one, and multi-value mint square pips. The pips use a dark outline and no status envelope, keeping them distinct from the level-4 city's larger five-square population meter inside its labeled badge.\n\nThe resource row includes an unoccupied Forest Game/Animal tile, and the right-side Forest includes Game beneath a selected unit. These prove canopy → Animal → unit → interaction/status ordering without changing shared anchors. Technology-hidden resources intentionally add no world marker: explored ordinary terrain is the complete visual. Accepted, semantically identical existing rasters are embedded from checked-in files; fog, ownership, targets, economic contributors and statuses remain intentionally code-native.\n`,
+    `# Ruleset-6 Canvas renderer review\n\nGenerated deterministically with \`npm run art:ruleset6-renderer-review\`. The eight sheets cover Original and Candy at 0.625x, 1x, and 1.75x for DPR1 and DPR2, each at native backing resolution and nearest-neighbor 2x inspection scale. Each vertically stacked zoom panel keeps all nine faction roles and Fertile Ground visible for direct painted-bound placement review. Units retain their accepted standard, siege, and giant scales while receiving the shared +${RULESET6_UNIT_COSMETIC_OFFSET_Y} CSS px baseline correction at 1x; Fertile Ground receives +${PLACEMENT_ART_GEOMETRY.fertileGround.offsetY} CSS px. Shadows and status markers follow unit placement, while selection, sorting, picking, combat origins, and authoritative tile coordinates remain unchanged.\n\nThe resource row includes an unoccupied Forest Game/Animal tile, and the right-side Forest includes Game beneath a selected unit. These prove canopy → Animal → unit → interaction/status ordering without changing shared anchors. Technology-hidden resources intentionally add no world marker: explored ordinary terrain is the complete visual. Accepted, semantically identical existing rasters are embedded from checked-in files; fog, ownership, targets, economic contributors and statuses remain intentionally code-native.\n`,
   );
 }

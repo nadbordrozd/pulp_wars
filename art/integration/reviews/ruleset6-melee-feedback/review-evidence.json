@@ -46,33 +46,33 @@
   "artifacts": [
     {
       "path": "art/integration/reviews/ruleset6-melee-feedback/desktop-contact.png",
-      "bytes": 156492,
-      "sha256": "dec4de9cbb98d51534a47fe11c2647c213bc3e174e0bf4d617ca4c4a7511b95c"
+      "bytes": 155795,
+      "sha256": "b2cacf407b8538d432549c7e0853536289ba39b15ca7579aee13468d7504430f"
     },
     {
       "path": "art/integration/reviews/ruleset6-melee-feedback/desktop-impact.png",
-      "bytes": 156083,
-      "sha256": "a575227d72237787241031d27c5378151375e3698be01721b55a94ec62419824"
+      "bytes": 156520,
+      "sha256": "f9f02c2bc59aa07832d87fa60738425fa08ed5df761f144ec765456114afd355"
     },
     {
       "path": "art/integration/reviews/ruleset6-melee-feedback/desktop-reduced.png",
-      "bytes": 156729,
-      "sha256": "1bcb4119d47a1e9c8afd7a03a99446336e6c71612ae2fbae1b9a8fe6e0314e58"
+      "bytes": 157515,
+      "sha256": "53510177d53cb0b1980cb4c6c65f44f23d9a4ea29866c04d32003155cc3d1eb7"
     },
     {
       "path": "art/integration/reviews/ruleset6-melee-feedback/mobile-contact-dpr2.png",
-      "bytes": 248924,
-      "sha256": "0300f76d8726b5b6ca29a4559a6c13e836bda5e6b6df2278e1d86463e958278b"
+      "bytes": 246332,
+      "sha256": "bf8fb4b019e6bdbeb8a18eb01bd205012fb53ff29568a54317eb2a05eb5a14d4"
     },
     {
       "path": "art/integration/reviews/ruleset6-melee-feedback/mobile-impact-dpr2.png",
-      "bytes": 247632,
-      "sha256": "ee618a3a50c5b4387632c5e19209c3f5dcd187d81d8921b244296eef041954d7"
+      "bytes": 247163,
+      "sha256": "6d55c7a33c75d5f06a9aca9720fb11ecbe1ac905b0d9b604233dba9434bd5f87"
     },
     {
       "path": "art/integration/reviews/ruleset6-melee-feedback/mobile-reduced-dpr2.png",
-      "bytes": 249796,
-      "sha256": "24d809885cc6e63bb91e026b41bd1e1cc2799adfa12a0e50983573a099441ea6"
+      "bytes": 249892,
+      "sha256": "65fe2d851061651bc24b853c86081ba9ad99b8de8d9c03b61001263acd287765"
     }
   ]
 }

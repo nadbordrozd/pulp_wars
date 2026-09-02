@@ -21,6 +21,12 @@ import {
   unitCoverageV6,
 } from "../../src/render/canvas/asset-coverage-v6";
 import {
+  BOARD_ART_GEOMETRY,
+  PLACEMENT_ART_GEOMETRY,
+  RULESET6_UNIT_COSMETIC_OFFSET_Y,
+  anchoredDestinationRect,
+} from "../../src/render/canvas/board-art-geometry";
+import {
   buildBoardDrawListV6,
   drawBoardV6,
   roadMaskAtV6,
@@ -903,6 +909,127 @@ describe("ruleset-6 Canvas drawing layer", () => {
     }
   });
 
+  it.each([0.625, 1, 1.75] as const)(
+    "lowers every faction role and Fertile Ground by painted-bound geometry at %sx with DPR-invariant output",
+    (zoom) => {
+      const camera = { offsetX: 400, offsetY: 180, zoom } as const;
+      const center = { x: 400, y: 180 + 148 * zoom } as const;
+      for (const faction of ["ORIGINAL", "CANDY"] as const) {
+        for (const role of UNIT_ROLE_IDS) {
+          const coverage = unitCoverageV6(faction, role);
+          const baselineGeometry =
+            role === "BREACHER"
+              ? BOARD_ART_GEOMETRY.siegeUnit
+              : role === "JUGGERNAUT"
+                ? BOARD_ART_GEOMETRY.giantUnit
+                : BOARD_ART_GEOMETRY.unit;
+          expect(coverage.geometry.offsetY, `${faction}:${role}`).toBe(
+            RULESET6_UNIT_COSMETIC_OFFSET_Y,
+          );
+          const destination = anchoredDestinationRect(
+            center,
+            zoom,
+            coverage.geometry,
+          );
+          const baseline = anchoredDestinationRect(
+            center,
+            zoom,
+            baselineGeometry,
+          );
+          expect(destination.x, `${faction}:${role}`).toBe(baseline.x);
+          expect(destination.width, `${faction}:${role}`).toBe(baseline.width);
+          expect(destination.height, `${faction}:${role}`).toBe(
+            baseline.height,
+          );
+          expect(destination.y - baseline.y, `${faction}:${role}`).toBeCloseTo(
+            RULESET6_UNIT_COSMETIC_OFFSET_Y * zoom,
+            8,
+          );
+
+          const unit = fixtureEntry(
+            "UNIT",
+            AT,
+            { faction, role, readiness: "PULSE" },
+            5,
+          );
+          const shadow = fixtureEntry("CONTACT_SHADOW", AT, null, 5);
+          const status = fixtureEntry(
+            "UNIT_STATUS",
+            AT,
+            {
+              faction,
+              role,
+              hp: 7,
+              maxHp: 10,
+              state: "NEEDS_ACTION",
+              veteran: false,
+            },
+            8,
+          );
+          const plan: BoardRenderPlanV6 = {
+            planVersion: 6,
+            entries: [shadow, unit, status],
+            legalCommands: [],
+            commandTargets: [],
+            economicPreview: null,
+          };
+          const renderAtDpr = (devicePixelRatio: 1 | 2) =>
+            drawBoardV6({
+              context: drawingContext(),
+              viewport: { width: 800, height: 600 },
+              camera,
+              plan,
+              devicePixelRatio,
+              readinessElapsedMs: 125,
+            });
+          const dpr1 = renderAtDpr(1);
+          const dpr2 = renderAtDpr(2);
+          expect(dpr2, `${faction}:${role}`).toEqual(dpr1);
+          expect(
+            dpr1.commands.find(
+              (command) =>
+                command.kind === "IMAGE" && command.entryKey === unit.key,
+            ),
+          ).toMatchObject({ kind: "IMAGE", destination });
+          expect(
+            dpr1.commands.find(
+              (command) =>
+                command.kind === "ELLIPSE" && command.entryKey === shadow.key,
+            ),
+          ).toMatchObject({
+            kind: "ELLIPSE",
+            center: {
+              x: center.x,
+              y: center.y + (RULESET6_UNIT_COSMETIC_OFFSET_Y - 2) * zoom,
+            },
+          });
+          const footprint = unitVisibleFootprintV6(role);
+          expect(
+            dpr1.commands.find(
+              (command) =>
+                command.kind === "RECT" && command.entryKey === status.key,
+            ),
+          ).toMatchObject({
+            kind: "RECT",
+            y:
+              center.y +
+              RULESET6_UNIT_COSMETIC_OFFSET_Y * zoom -
+              footprint.height * zoom -
+              13 * zoom -
+              2,
+          });
+        }
+      }
+
+      const fertile = resourceCoverageV6("FERTILE_GROUND", "ORIGINAL");
+      expect(fertile.geometry).toEqual(PLACEMENT_ART_GEOMETRY.fertileGround);
+      expect(
+        anchoredDestinationRect(center, zoom, fertile.geometry).y -
+          anchoredDestinationRect(center, zoom, BOARD_ART_GEOMETRY.lowObject).y,
+      ).toBeCloseTo(18 * zoom, 8);
+    },
+  );
+
   it("checks in deterministic Original/Candy native and enlarged evidence for every zoom and DPR", async () => {
     const evidence = JSON.parse(
       await readFile(
@@ -914,6 +1041,11 @@ describe("ruleset-6 Canvas drawing layer", () => {
       readonly zooms: readonly number[];
       readonly devicePixelRatios: readonly number[];
       readonly scaleContracts: Readonly<Record<string, number>>;
+      readonly placementContracts: {
+        readonly unitOffsetY: number;
+        readonly fertileGroundOffsetY: number;
+        readonly coordinateSpace: string;
+      };
       readonly reviewCoverage: readonly string[];
       readonly visualReview: { readonly status: string };
       readonly artifacts: readonly {
@@ -930,6 +1062,17 @@ describe("ruleset-6 Canvas drawing layer", () => {
       breacher: 0.24,
       juggernaut: 0.25,
     });
+    expect(evidence.placementContracts).toEqual({
+      unitOffsetY: 18,
+      fertileGroundOffsetY: 18,
+      coordinateSpace: "nominal CSS pixels at 1x zoom",
+    });
+    expect(evidence.reviewCoverage).toContain(
+      "all nine Original and all nine Candy unit silhouettes visibly centered at 0.625x, 1x and 1.75x",
+    );
+    expect(evidence.reviewCoverage).toContain(
+      "Fertile Ground painted bounds centered across the owning diamond instead of ending at tile center",
+    );
     expect(evidence.reviewCoverage).toContain(
       "Forest Game/Animal frontage without a unit and beneath an occupied selected unit",
     );

@@ -1,5 +1,6 @@
 import type { FactionIdV6, UnitRoleId } from "../../engine/index";
 import {
+  RULESET6_UNIT_COSMETIC_OFFSET_Y,
   UNIT_SCALE_CONTRACT,
   anchoredDestinationRect,
   type DestinationRect,
@@ -415,10 +416,15 @@ function drawEntry(
         resourceCoverageV6(entry.details.resource, faction),
         center,
         zoom,
-        (item) =>
-          badgeFallback(
-            entry.key,
+        (item) => {
+          const fallbackCenter = geometryOffsetCenter(
             center,
+            zoom,
+            item.geometry.offsetY,
+          );
+          return badgeFallback(
+            entry.key,
+            fallbackCenter,
             zoom,
             item.status === "PLACEHOLDER"
               ? item.label
@@ -426,7 +432,8 @@ function drawEntry(
             resourceColor(entry.details.resource),
             item.status === "PLACEHOLDER",
             -18,
-          ),
+          );
+        },
       );
       return;
     case "IMPROVEMENT":
@@ -510,16 +517,22 @@ function drawEntry(
         unitCoverageV6(entry.details.faction, entry.details.role),
         spriteCenter,
         zoom,
-        (item) =>
-          unitFallback(
-            entry.key,
+        (item) => {
+          const fallbackCenter = geometryOffsetCenter(
             spriteCenter,
+            zoom,
+            item.geometry.offsetY,
+          );
+          return unitFallback(
+            entry.key,
+            fallbackCenter,
             zoom,
             entry.details.faction,
             entry.details.role,
             item.status === "PLACEHOLDER",
             ownerColor,
-          ),
+          );
+        },
         spriteOpacity * (combatStyle?.alpha ?? 1),
       );
       return;
@@ -552,7 +565,7 @@ function drawEntry(
         ellipse(
           entry.key,
           center.x,
-          center.y - 2 * zoom,
+          center.y + (RULESET6_UNIT_COSMETIC_OFFSET_Y - 2) * zoom,
           25 * zoom,
           7 * zoom,
           "#102322",
@@ -799,6 +812,16 @@ function transformedCenter(
     : { x: center.x + style.offset.x, y: center.y + style.offset.y };
 }
 
+function geometryOffsetCenter(
+  center: Point,
+  zoom: number,
+  offsetY: number | undefined,
+): Point {
+  return offsetY === undefined
+    ? center
+    : { x: center.x, y: center.y + offsetY * zoom };
+}
+
 function combatProjectileCommands(
   camera: CameraState,
   presentation: CombatPresentationV6 | null | undefined,
@@ -823,13 +846,16 @@ function combatProjectileCommands(
   );
   const from = {
     x: sourceGround.x,
-    y: sourceGround.y - 36 * camera.zoom,
+    y: sourceGround.y + (RULESET6_UNIT_COSMETIC_OFFSET_Y - 36) * camera.zoom,
   };
   const to = {
     x: targetGround.x,
     y:
       targetGround.y -
-      (presentation.targetWall === null ? 34 : 22) * camera.zoom,
+      (presentation.targetWall === null
+        ? 34 - RULESET6_UNIT_COSMETIC_OFFSET_Y
+        : 22) *
+        camera.zoom,
   };
   const dx = to.x - from.x;
   const dy = to.y - from.y;
@@ -1542,7 +1568,11 @@ function unitStatus(
   ownerColor: string,
 ): readonly BoardDrawCommandV6[] {
   const footprint = unitVisibleFootprintV6(entry.details.role);
-  const top = center.y - footprint.height * zoom - 13 * zoom;
+  const top =
+    center.y +
+    RULESET6_UNIT_COSMETIC_OFFSET_Y * zoom -
+    footprint.height * zoom -
+    13 * zoom;
   const result = [
     ...healthBar(
       entry.key,

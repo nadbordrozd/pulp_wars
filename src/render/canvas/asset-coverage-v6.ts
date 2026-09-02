@@ -9,6 +9,7 @@ import {
   BOARD_ART_GEOMETRY,
   ECONOMIC_ART_GEOMETRY,
   PLACEMENT_ART_GEOMETRY,
+  RULESET6_UNIT_ART_GEOMETRY,
   SETTLEMENT_ART_GEOMETRY,
   cityArtLevel,
   mountainGeometryForVariant,
@@ -79,8 +80,6 @@ export const RENDER_ENTRY_COVERAGE_V6 = {
   CITY_STATUS: "CODE_NATIVE",
 } as const satisfies Readonly<Record<RenderEntryKindV6, RenderCoverageModeV6>>;
 
-const STANDARD_PLACEHOLDER_GEOMETRY = BOARD_ART_GEOMETRY.unit;
-
 export function terrainCoverageV6(
   terrain: TerrainIdV6,
   faction: FactionIdV6,
@@ -147,7 +146,7 @@ export function resourceCoverageV6(
         `resource:${faction}:FERTILE_GROUND`,
         "terrain-fertile-ground",
         "assets/pixellab/terrain/fertile-ground.png",
-        BOARD_ART_GEOMETRY.lowObject,
+        PLACEMENT_ART_GEOMETRY.fertileGround,
       );
     case "STONE":
       return accepted(
@@ -323,12 +322,10 @@ export function unitCoverageV6(
 ): AssetCoverageV6 {
   const geometry =
     role === "BREACHER"
-      ? BOARD_ART_GEOMETRY.siegeUnit
+      ? RULESET6_UNIT_ART_GEOMETRY.siege
       : role === "JUGGERNAUT"
-        ? BOARD_ART_GEOMETRY.giantUnit
-        : faction === "CANDY" && role === "FIGHTER"
-          ? PLACEMENT_ART_GEOMETRY.candyWarrior
-          : STANDARD_PLACEHOLDER_GEOMETRY;
+        ? RULESET6_UNIT_ART_GEOMETRY.giant
+        : RULESET6_UNIT_ART_GEOMETRY.standard;
   const art = ACCEPTED_UNIT_ART[faction]?.[role];
   if (art === undefined) {
     return placeholder(`unit:${faction}:${role}`, unitLabel(role), geometry);

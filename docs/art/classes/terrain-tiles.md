@@ -154,6 +154,13 @@ px at runtime. Its alpha bounds are `x=83..172`, `y=150..222`, producing a
 tile center. The renderer uses this accepted raster in the low-resource layer; the prior
 code-native cluster remains only as its asynchronous loading/error fallback.
 
+Fertile Ground uses the same untrimmed 256 x 296 low-object canvas and 0.5
+display scale, with an 18 CSS px downward cosmetic offset at 1x zoom. Its
+accepted `x=56..200`, `y=144..222` painted bounds therefore occupy
+`-21..18` CSS px around tile center instead of leaving the whole lower half of
+the diamond empty. The offset scales with zoom and changes neither the tile's
+authoritative coordinate nor selection and picking geometry.
+
 Animal is a separate low resource on Forest using the 256 x 296 object canvas,
 source `(128,222)` anchor, 0.5 scale, and the same 23 CSS px downward runtime
 offset as its canopy. It must read as wildlife rather than a unit,

@@ -103,6 +103,30 @@ export const BOARD_ART_GEOMETRY = {
   },
 } as const satisfies Readonly<Record<string, SourceGeometry>>;
 
+/**
+ * Ruleset-6 unit art is lowered from the authoritative ground coordinate so
+ * its painted silhouette, rather than its transparent source canvas, is
+ * visually centered on the owning diamond. The offset is cosmetic, scales
+ * with camera zoom, and never changes sorting or picking coordinates.
+ */
+export const RULESET6_UNIT_ART_GEOMETRY = {
+  standard: {
+    ...BOARD_ART_GEOMETRY.unit,
+    offsetY: 18,
+  },
+  siege: {
+    ...BOARD_ART_GEOMETRY.siegeUnit,
+    offsetY: 18,
+  },
+  giant: {
+    ...BOARD_ART_GEOMETRY.giantUnit,
+    offsetY: 18,
+  },
+} as const satisfies Readonly<Record<string, SourceGeometry>>;
+
+export const RULESET6_UNIT_COSMETIC_OFFSET_Y =
+  RULESET6_UNIT_ART_GEOMETRY.standard.offsetY;
+
 export const ECONOMIC_ART_GEOMETRY = {
   low: BOARD_ART_GEOMETRY.lowObject,
   processor: {
@@ -133,6 +157,10 @@ export const PLACEMENT_ART_GEOMETRY = {
   candyWarrior: {
     ...BOARD_ART_GEOMETRY.unit,
     offsetY: 7.5,
+  },
+  fertileGround: {
+    ...BOARD_ART_GEOMETRY.lowObject,
+    offsetY: 18,
   },
 } as const satisfies Readonly<Record<string, SourceGeometry>>;
 

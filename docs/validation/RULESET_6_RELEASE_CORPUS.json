@@ -526,12 +526,12 @@
     },
     {
       "path": "art/integration/reviews/ruleset6-melee-feedback/review-evidence.json",
-      "sha256": "d2f3a85b5ed79b7f76c18b9b024f82486d87b62882c3faceb05d60cb4dcad807",
+      "sha256": "888d246787cac4e8a51369fea2353f33c073026c81c78bdf33ca041312ccfe5a",
       "artifactCount": 6
     },
     {
       "path": "art/integration/reviews/ruleset6-ranged-feedback/review-evidence.json",
-      "sha256": "d8a1eb7d57bf3059ed414ed3776a4960b49983c2e917b37519345dfb99fb7ab0",
+      "sha256": "3a29fe8bee2683e7485605fe0c8e4cb6460dec9108877876dfe413e95ecd607e",
       "artifactCount": 10
     },
     {
@@ -551,7 +551,7 @@
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/review-evidence.json",
-      "sha256": "bd72d23a84a319e1b374050b47af183170bb589fa16cd5b604acfa59ddc5dc52",
+      "sha256": "772c20d773b8e78de686c0fb280bf1da6d7b398fd8dfa44750d43a28ee600aed",
       "artifactCount": 8
     },
     {

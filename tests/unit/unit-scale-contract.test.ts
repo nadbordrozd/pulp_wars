@@ -5,8 +5,13 @@ import { describe, expect, it } from "vitest";
 import {
   BOARD_ART_GEOMETRY,
   PLACEMENT_ART_GEOMETRY,
+  RULESET6_UNIT_COSMETIC_OFFSET_Y,
   UNIT_SCALE_CONTRACT,
 } from "../../src/render/canvas/board-art-geometry";
+import {
+  resourceCoverageV6,
+  unitCoverageV6,
+} from "../../src/render/canvas/asset-coverage-v6";
 
 interface Bounds {
   readonly left: number;
@@ -50,6 +55,30 @@ const ARTIFACTS = [
   "adjacency-and-city-native.png",
   "adjacency-and-city-enlarged.png",
 ] as const;
+const RULESET6_UNIT_SOURCES = {
+  ORIGINAL: {
+    FIGHTER: "unit-warrior",
+    SCOUT: "unit-original-scout",
+    MARKSMAN: "unit-archer",
+    GUARD: "unit-defender",
+    RAIDER: "unit-rider",
+    MEDIC: "unit-original-medic",
+    HEAVY: "unit-original-heavy",
+    BREACHER: "unit-original-breacher",
+    JUGGERNAUT: "unit-original-juggernaut",
+  },
+  CANDY: {
+    FIGHTER: "unit-candy-warrior",
+    SCOUT: "unit-candy-scout",
+    MARKSMAN: "unit-candy-gumball-guard",
+    GUARD: "unit-candy-choco-engineer",
+    RAIDER: "unit-candy-donut",
+    MEDIC: "unit-candy-medic",
+    HEAVY: "unit-candy-heavy",
+    BREACHER: "unit-candy-breacher",
+    JUGGERNAUT: "unit-candy-juggernaut",
+  },
+} as const;
 
 describe("unit map-scale contract", () => {
   it("publishes one bounded runtime class geometry without changing anchors", () => {
@@ -189,6 +218,62 @@ describe("unit map-scale contract", () => {
     expect(measurement.rearRatio).toBeLessThanOrEqual(
       UNIT_SCALE_CONTRACT.siege.maximumRearTileOcclusionRatio,
     );
+  });
+
+  it("centers every ruleset-6 unit and Fertile Ground by visible alpha bounds without scaling the art", async () => {
+    const generated = await generatedManifest();
+    for (const [faction, roles] of Object.entries(
+      RULESET6_UNIT_SOURCES,
+    ) as readonly [
+      keyof typeof RULESET6_UNIT_SOURCES,
+      (typeof RULESET6_UNIT_SOURCES)[keyof typeof RULESET6_UNIT_SOURCES],
+    ][]) {
+      for (const [role, sourceId] of Object.entries(roles) as readonly [
+        keyof typeof roles,
+        (typeof roles)[keyof typeof roles],
+      ][]) {
+        const record = requiredRecord(generated, sourceId);
+        if (record.alphaBounds === undefined)
+          throw new Error(`${sourceId}: accepted bounds missing`);
+        const geometry = unitCoverageV6(faction, role).geometry;
+        const offset = geometry.offsetY ?? 0;
+        const paintedBottom =
+          (record.alphaBounds.bottom - geometry.anchor.y) *
+            geometry.displayScale +
+          offset;
+        const paintedCenter =
+          ((record.alphaBounds.top + record.alphaBounds.bottom) / 2 -
+            geometry.anchor.y) *
+            geometry.displayScale +
+          offset;
+        expect(offset, `${faction}:${role}`).toBe(
+          RULESET6_UNIT_COSMETIC_OFFSET_Y,
+        );
+        expect(paintedBottom, `${faction}:${role}`).toBeGreaterThanOrEqual(18);
+        expect(paintedBottom, `${faction}:${role}`).toBeLessThanOrEqual(25.5);
+        expect(paintedCenter, `${faction}:${role}`).toBeGreaterThanOrEqual(-21);
+        expect(paintedCenter, `${faction}:${role}`).toBeLessThanOrEqual(0);
+      }
+    }
+
+    const fertileRecord = requiredRecord(generated, "terrain-fertile-ground");
+    if (fertileRecord.alphaBounds === undefined)
+      throw new Error("terrain-fertile-ground: accepted bounds missing");
+    const fertile = resourceCoverageV6("FERTILE_GROUND", "ORIGINAL");
+    expect(fertile.geometry.displayScale).toBe(
+      BOARD_ART_GEOMETRY.lowObject.displayScale,
+    );
+    expect(fertile.geometry.offsetY).toBe(18);
+    expect(
+      (fertileRecord.alphaBounds.top - fertile.geometry.anchor.y) *
+        fertile.geometry.displayScale +
+        (fertile.geometry.offsetY ?? 0),
+    ).toBe(-21);
+    expect(
+      (fertileRecord.alphaBounds.bottom - fertile.geometry.anchor.y) *
+        fertile.geometry.displayScale +
+        (fertile.geometry.offsetY ?? 0),
+    ).toBe(18);
   });
 
   it("checks in reproducible native/enlarged evidence for the complete matrix", async () => {

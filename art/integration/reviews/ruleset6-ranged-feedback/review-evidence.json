@@ -62,53 +62,53 @@
   "artifacts": [
     {
       "path": "art/integration/reviews/ruleset6-ranged-feedback/desktop-original-adjacent-flight.png",
-      "bytes": 152764,
-      "sha256": "09e99cf37a3f739287940c0d96fd8de09889ab20cef2426c5e2bd06e7db1d67b"
+      "bytes": 154143,
+      "sha256": "5e8138805edec3e4f48fff6eaf0f3325c6612f29b7b684efd02522125445dbb2"
     },
     {
       "path": "art/integration/reviews/ruleset6-ranged-feedback/desktop-original-distance2-flight.png",
-      "bytes": 153094,
-      "sha256": "d67e524babd51d3ce4807e15e33af2d4cb76a7257198b9761b1f203dea2e7a94"
+      "bytes": 154426,
+      "sha256": "9f09303adb79334232f18a0cb8252705e79c8fb568de93af8413a2347bd1ae75"
     },
     {
       "path": "art/integration/reviews/ruleset6-ranged-feedback/desktop-candy-wall-flight.png",
-      "bytes": 155551,
-      "sha256": "ef1ae1cd4cb092ba4fde13fc90914a28a076848c9ab92e26991de5fb03a3fc92"
+      "bytes": 156128,
+      "sha256": "23806e0c854397355d0bc767c3e56bf24cf031258e02fb96ac670326d61c2d85"
     },
     {
       "path": "art/integration/reviews/ruleset6-ranged-feedback/desktop-candy-wall-impact.png",
-      "bytes": 155725,
-      "sha256": "f93885b1dda3e60ad69437dcd207ad5f91998b8434187f53fadf458553b24a61"
+      "bytes": 156337,
+      "sha256": "1e347467d6007db625738cb659bc6304eb70c04763edc4dd55199ada7dc823a0"
     },
     {
       "path": "art/integration/reviews/ruleset6-ranged-feedback/desktop-reduced-endpoint.png",
-      "bytes": 152594,
-      "sha256": "8c8f40f26ff714691fbfecb1dc9b38dffb64407da997d77250acad24169da693"
+      "bytes": 153369,
+      "sha256": "bd1524f22b5ce20d049bd77afbb178d540b65a5aed53d72340fd68728f5479a7"
     },
     {
       "path": "art/integration/reviews/ruleset6-ranged-feedback/mobile-original-adjacent-flight-dpr2.png",
-      "bytes": 245959,
-      "sha256": "7fa8cafe2d5647ee72d4abbdfd1675703bf9c7040eeba21132a355136e73f299"
+      "bytes": 248291,
+      "sha256": "e52148b3868e67363072171ff39db0836ab9edd5f8b1e8f1ef0c3ac5cb29ac3e"
     },
     {
       "path": "art/integration/reviews/ruleset6-ranged-feedback/mobile-original-distance2-flight-dpr2.png",
-      "bytes": 246165,
-      "sha256": "8ea42ba38aec0341ed946cf3129178bf747696d855d60476f29703489ce1c623"
+      "bytes": 248470,
+      "sha256": "88fa5d66fff8d826fe512441e2bda4fcc560883c4ff3ee6c7b36ed4ebba17a79"
     },
     {
       "path": "art/integration/reviews/ruleset6-ranged-feedback/mobile-candy-wall-flight-dpr2.png",
-      "bytes": 254991,
-      "sha256": "c77a732d0d07465044b7c303c8296e4ef1fc7a23e83b6285796f9be380592b8e"
+      "bytes": 256499,
+      "sha256": "e617d7ad3b6caa6d404aabe656b78eee963aee96b55c1d1e6a650fc465ed6f1b"
     },
     {
       "path": "art/integration/reviews/ruleset6-ranged-feedback/mobile-candy-wall-impact-dpr2.png",
-      "bytes": 255675,
-      "sha256": "79f8b43687aee47045371b68501243df67662b2087d88eb598f59173f4a86f45"
+      "bytes": 257316,
+      "sha256": "57340053aaa692fde65e58d66953441d5fae35c2166f3dc72d4fa125a12df0f8"
     },
     {
       "path": "art/integration/reviews/ruleset6-ranged-feedback/mobile-reduced-endpoint-dpr2.png",
-      "bytes": 244812,
-      "sha256": "a48f2e9ca46eaa33de9d64add3d64d35c6558ad183eb47bd2d614a7480977cc7"
+      "bytes": 246167,
+      "sha256": "e57a78f7b2d88ce5f2c66a0a8f7da9f2fd9e956d75762b8966693e8e0a198269"
     }
   ]
 }

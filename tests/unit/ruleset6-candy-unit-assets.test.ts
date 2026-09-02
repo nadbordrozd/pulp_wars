@@ -9,7 +9,10 @@ import {
 } from "../../src/assets/generated-art-manifest";
 import { UNIT_ROLE_IDS } from "../../src/engine/index";
 import { unitCoverageV6 } from "../../src/render/canvas/asset-coverage-v6";
-import { UNIT_SCALE_CONTRACT } from "../../src/render/canvas/board-art-geometry";
+import {
+  RULESET6_UNIT_COSMETIC_OFFSET_Y,
+  UNIT_SCALE_CONTRACT,
+} from "../../src/render/canvas/board-art-geometry";
 
 interface Bounds {
   readonly left: number;
@@ -198,13 +201,11 @@ describe("ruleset-6 Candy production unit art", () => {
     }
   });
 
-  it("preserves Candy Warrior placement and the opaque Gumball Guard muzzle", async () => {
-    expect(unitCoverageV6("CANDY", "FIGHTER").geometry.offsetY).toBe(7.5);
-    for (const role of UNIT_ROLE_IDS.filter((role) => role !== "FIGHTER"))
-      expect(
-        unitCoverageV6("CANDY", role).geometry.offsetY,
-        role,
-      ).toBeUndefined();
+  it("uses the shared visible-bound placement and preserves the opaque Gumball Guard muzzle", async () => {
+    for (const role of UNIT_ROLE_IDS)
+      expect(unitCoverageV6("CANDY", role).geometry.offsetY, role).toBe(
+        RULESET6_UNIT_COSMETIC_OFFSET_Y,
+      );
 
     const source = JSON.parse(
       await readFile("scripts/art/pixellab-manifest.json", "utf8"),
