@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-02T19:29:10.631Z",
+  "generatedAt": "2026-09-02T20:53:40.315Z",
   "generatedBy": "npm run smoke:browser",
   "rulesetId": "pulp-wars-poc-6",
   "productionEntry": "src/main.ts",
@@ -400,8 +400,8 @@
           "exactChoiceAccepted": true
         },
         "readiness": {
-          "fullDesktopChangedPixels": 1815,
-          "fullMobileChangedPixels": 3299,
+          "fullDesktopChangedPixels": 1813,
+          "fullMobileChangedPixels": 3320,
           "reducedDesktopChangedPixels": 0,
           "reducedMobileChangedPixels": 0,
           "handledChangedPixels": 0
@@ -492,8 +492,8 @@
       "screenshots": [
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-reduced-motion-desktop-native.png",
-          "bytes": 328316,
-          "sha256": "39fb23dfa849fdfe07b6c5b840d3e5c116a8a3f66729352d3ec5cb14206230a2",
+          "bytes": 332029,
+          "sha256": "8ba372b302f0c16bd6ab826149bffa4cbbd1f2dac64067b4f548da41942aa000",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -506,8 +506,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-reduced-motion-desktop-enlarged.png",
-          "bytes": 548835,
-          "sha256": "4f39d6757570dc0632e0629bb0a72d260b17845078df3aed2b4875b8f1784485",
+          "bytes": 552552,
+          "sha256": "5997914b4e27f32f90e385b3165bf6612c956bc834088dd70a724952948d58a0",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -520,8 +520,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-high-contrast-mobile-native.png",
-          "bytes": 306543,
-          "sha256": "3cdc7b6cb749af256e2e2fabb248f437abb8fe206dadb5016d97b293f0e23e58",
+          "bytes": 309423,
+          "sha256": "e0e5a6b78ef8dca85acb800147af153e5b66911597bf4783048e12ab08fd0bcd",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -534,8 +534,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-high-contrast-mobile-enlarged.png",
-          "bytes": 536118,
-          "sha256": "e4bd17c086d882f3daeafc7f30a046c9f36c5081637679d4ef1d9a19f906305c",
+          "bytes": 539961,
+          "sha256": "466387dea9d96a0e4d43a833228989dda1514ad610ea812e17576a2237c55fa9",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -548,8 +548,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-desktop-native.png",
-          "bytes": 328987,
-          "sha256": "be90fe9d63211ca07bcdfce2c83c9c9279d2691708a3506254ec343c7c1649d9",
+          "bytes": 331114,
+          "sha256": "fd79bb35db66beaf6fd9a9f1d945ef2b1d431e4611cfb6a535cca89f65a3c8ef",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -562,8 +562,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-desktop-enlarged.png",
-          "bytes": 550868,
-          "sha256": "206316cdee162988aa1703523a282aee4a1f08f284cf455a73be47e4e6e85662",
+          "bytes": 555080,
+          "sha256": "cbae62613b0f0192639927540928bfe4b4c59a47baffe3891d93c618f430087c",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -576,8 +576,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-reward-desktop-native.png",
-          "bytes": 170183,
-          "sha256": "11a0a2786eb6358f6f0ed27561b0dfefad6ef77eb244a3bd206f3257eed601b1",
+          "bytes": 171631,
+          "sha256": "d352a8edba290a24d4006c0b353f869e58bc692d94de2bc31c519f07b026cb13",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -590,8 +590,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-reward-desktop-enlarged.png",
-          "bytes": 315472,
-          "sha256": "9e6b8d7bb7df008766ce5a62bbd62c8e03a8d98d171aa1cf7ee8c0394a40795b",
+          "bytes": 317736,
+          "sha256": "a3587201ae4ef4b0ea0ebcd63b504a1ac41e0235bd17a99b5a5a92e73631c501",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -604,8 +604,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-city-train-mobile-native.png",
-          "bytes": 313449,
-          "sha256": "99c7da898fbd164c1f552377a41ed01b41ac0664f24efa2b6bdfed135fc6cc7e",
+          "bytes": 315547,
+          "sha256": "de340eac44afb2634fd5149be13ff73516ce0a755b7efafb333684bc414b54a4",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -618,8 +618,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-city-train-mobile-enlarged.png",
-          "bytes": 569758,
-          "sha256": "83e63cab643ca6de3b8a9d10f34a966cac29665a87ad694cf409d6ca8445d5fd",
+          "bytes": 572985,
+          "sha256": "59d591c67d64c950d6ab17d585fdf5037df83836c15ca73b02258e5427bd64d0",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -632,8 +632,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-overview-desktop-native.png",
-          "bytes": 271650,
-          "sha256": "4b4c3851f3267eb58fbf758fe564b85eaf220e666dab6b4f9ff18008532fc653",
+          "bytes": 271825,
+          "sha256": "4e2156df388ffab9b1f0b40a8e1dc09b85ca3b7217bdc446da3bc0447e0920dc",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -646,8 +646,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-overview-desktop-enlarged.png",
-          "bytes": 479764,
-          "sha256": "346223d8a5e1e26bd90d0b551de6181dccf3b743dc3b51a046035c32e632e092",
+          "bytes": 479928,
+          "sha256": "caae6b867edf0fd828bb85810876204b9972fc0fc390956039856a8c98939e6a",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -1093,8 +1093,8 @@
           "exactChoiceAccepted": true
         },
         "readiness": {
-          "fullDesktopChangedPixels": 1624,
-          "fullMobileChangedPixels": 2944,
+          "fullDesktopChangedPixels": 1605,
+          "fullMobileChangedPixels": 2960,
           "reducedDesktopChangedPixels": 0,
           "reducedMobileChangedPixels": 0,
           "handledChangedPixels": 0
@@ -1185,8 +1185,8 @@
       "screenshots": [
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-reduced-motion-desktop-native.png",
-          "bytes": 334522,
-          "sha256": "b908502869f7aa67835fa36a7c2a72173d9bf679aae3ded910e6bec2e9bba995",
+          "bytes": 337211,
+          "sha256": "5d0d5c4c0892f157026d41dc659d7d0de09b31385b3261488c94edbfee1d51d1",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1199,8 +1199,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-reduced-motion-desktop-enlarged.png",
-          "bytes": 557617,
-          "sha256": "cae3d18713428a5f7fb95feaf4c199c74dc4089efec80937b9fa723f86cbfa06",
+          "bytes": 562165,
+          "sha256": "202e93a853edc8879a8aa0650c965ee9c4768d1b4b786582e2a88afeb37694cd",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -1213,8 +1213,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-high-contrast-mobile-native.png",
-          "bytes": 314260,
-          "sha256": "1122a7940abf110cfb2c1666dfb631a6549b2b09bc01750094efdb15a9211ded",
+          "bytes": 316961,
+          "sha256": "838dadcf4deff00758e324321c426dbca64cd02b0f7e12d37c4a6a7a81e4efa6",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1227,8 +1227,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-high-contrast-mobile-enlarged.png",
-          "bytes": 548208,
-          "sha256": "d2e1abc5f778ba01d07fee693046fa0a4d06183d83d70be65ca1e86d6e7a4e90",
+          "bytes": 551380,
+          "sha256": "347658445c83de9a2605bfe9b5a635fa0f7bceb99ee5451c321eccef8ab0d6ce",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -1241,8 +1241,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-desktop-native.png",
-          "bytes": 336720,
-          "sha256": "837f42850b4f9ff4a4f4b2464b19873532f4aae367853eea75751f63a5c1ed93",
+          "bytes": 338477,
+          "sha256": "bc6602ea3e491333447e8306274d4fae2fe52982b7293e57f15846f8935f0360",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1255,8 +1255,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-desktop-enlarged.png",
-          "bytes": 562913,
-          "sha256": "b6593eb15c8935589b26ccf5790944061c4d950eefe6e9b192e1d094ab80c586",
+          "bytes": 566618,
+          "sha256": "be62ed69e17144516522ebab1f564b7304055195f98d7404451707029ec7b7ec",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -1269,8 +1269,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-reward-desktop-native.png",
-          "bytes": 171639,
-          "sha256": "86c022ca2374128c4d2247bdbfb4d2a4828003e712cd098823fbd55fdd0fcfb3",
+          "bytes": 172936,
+          "sha256": "62013aeef20065d156a2e089d8660c7df2175a38571ccac09e8a4b7cee20b859",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1283,8 +1283,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-reward-desktop-enlarged.png",
-          "bytes": 317492,
-          "sha256": "5a3923c18e24a964e5c1a72d38a68b698ce1b27adc6cbcaf4a38e93a7fe609a1",
+          "bytes": 319421,
+          "sha256": "1da0faff536986a8ee4000d5896a97c8c8c8365edd032811bd89089818dcb606",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -1297,8 +1297,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-city-train-mobile-native.png",
-          "bytes": 318005,
-          "sha256": "41c600e40136dfeb44b54e3f7b38b2ad22d48654136a5301d5e63989879ab13d",
+          "bytes": 319642,
+          "sha256": "7775f93139712bec5c01994b0cb50088b87e02c6d22089684ad093f70e9e656b",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1311,8 +1311,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-city-train-mobile-enlarged.png",
-          "bytes": 570706,
-          "sha256": "366df9bae8b67ba3de58eaf8f05efdb7a1dc5b4b43bc71754e8d11761703bdc1",
+          "bytes": 572916,
+          "sha256": "6c1f4d3b1a53f2bf82988c378055b008335197618451231fb473c791a1992796",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -1325,8 +1325,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-overview-desktop-native.png",
-          "bytes": 272817,
-          "sha256": "76efe0f7561c51ab0bf73349842b121caf4c2d43edd343f2e72ddf55f9e1e015",
+          "bytes": 272752,
+          "sha256": "2b470f990a7639f75dd48ec648ebc64d14a5e1f9fb93af6f9926b75de5ece7cb",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1339,8 +1339,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-overview-desktop-enlarged.png",
-          "bytes": 480048,
-          "sha256": "366baf3a3b5a56d496c9e63b043cf938d8bd0f9ada312be86cd29247020608a7",
+          "bytes": 479991,
+          "sha256": "9ea496dd3a7e519e5e694b7efd42568c05e1faa057fa5b5ac6bbe846130a7cdf",
           "width": 2880,
           "height": 2000,
           "viewport": {

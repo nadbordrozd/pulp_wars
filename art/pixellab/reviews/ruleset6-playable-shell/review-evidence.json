@@ -22,6 +22,7 @@
     "mapFirst": true,
     "dockOverlaysMapWithoutResizingCanvas": true,
     "minimumControlHeight": 44,
+    "contextualActionWidth": 176,
     "desktopDock": "bottom-overlay",
     "tabletMobileDock": "bottom-overlay",
     "ordinaryUnitDisplayScale": 0.25,
@@ -31,7 +32,7 @@
   },
   "visualReview": {
     "status": "ACCEPTED",
-    "notes": "Native desktop, tablet, and mobile composites preserve a fixed full-width map behind the contextual bottom dock, current Tech/End Turn HUD actions, one selected-unit Wait action with no global command dump, 44px controls, and the renderer's calibrated compact ordinary-unit geometry. Enlarged nearest-neighbor copies support edge and label inspection."
+    "notes": "Native desktop, tablet, and mobile composites preserve a fixed full-width map behind the contextual bottom dock, current Tech/End Turn HUD actions, one compact fixed-width selected-unit Wait action with no global command dump, 44px controls, and the renderer's calibrated compact ordinary-unit geometry. Enlarged nearest-neighbor copies support edge and label inspection."
   },
   "viewports": [
     {
@@ -71,13 +72,13 @@
       "artifacts": [
         {
           "path": "art/pixellab/reviews/ruleset6-playable-shell/desktop-native.png",
-          "bytes": 175808,
-          "sha256": "f81a65e7daa40341919105ab1dc8a5b916c1e4e4db015a4d6cdf663ff207fc54"
+          "bytes": 181376,
+          "sha256": "87fdda78648e0b144e7e2b1454a10c0b65cc21a79c7b36a89ca98f62824c5686"
         },
         {
           "path": "art/pixellab/reviews/ruleset6-playable-shell/desktop-enlarged.png",
-          "bytes": 292260,
-          "sha256": "2a7381f6dcaff350772f5788048963eaaef0facde2b7ce7071f58d933354cb45"
+          "bytes": 299094,
+          "sha256": "47c24e2176b6784bf1834968cdf96fe760f3eac9231ae002b1169e85b5dc2a1b"
         }
       ]
     },
@@ -118,13 +119,13 @@
       "artifacts": [
         {
           "path": "art/pixellab/reviews/ruleset6-playable-shell/tablet-native.png",
-          "bytes": 328701,
-          "sha256": "93e46cd53aee8b4f22484242fb16925628219cfccf8003595d1095ba147a470f"
+          "bytes": 345766,
+          "sha256": "8d70a1ffc73d21fd2cb2d17f50ba2ce8557240fe9d56637f22b3f92c35415cc8"
         },
         {
           "path": "art/pixellab/reviews/ruleset6-playable-shell/tablet-enlarged.png",
-          "bytes": 625104,
-          "sha256": "aeb58d8f6a472b2a8f65c469f5b0c6545af8181ee470d2d9feaef2ea56ce809a"
+          "bytes": 644897,
+          "sha256": "14568a5cf4d96846b5a51edf4a81de88490be7e0014de4a3b626365fb894d6c0"
         }
       ]
     },
@@ -165,13 +166,13 @@
       "artifacts": [
         {
           "path": "art/pixellab/reviews/ruleset6-playable-shell/mobile-native.png",
-          "bytes": 232490,
-          "sha256": "05136e35907d323848fca055dfd12c23b3c6bd65ca54f34a73af0d29ad8b2b7f"
+          "bytes": 245729,
+          "sha256": "51fc4715626a44da71490182c1d4a5e4919c655c680462610c2f3aa4a5333385"
         },
         {
           "path": "art/pixellab/reviews/ruleset6-playable-shell/mobile-enlarged.png",
-          "bytes": 380278,
-          "sha256": "99bbf56bfb140e7766a81c341469b8a6972ab18b5a5d06f27e5d360578752ab3"
+          "bytes": 395074,
+          "sha256": "44d65cebdbdd9875b9c60250c95fb27a4f83306c2d2f0e6209aab9a6ac23b1aa"
         }
       ]
     }

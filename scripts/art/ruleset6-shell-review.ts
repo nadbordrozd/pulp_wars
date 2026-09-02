@@ -154,6 +154,7 @@ await writeFile(
         mapFirst: true,
         dockOverlaysMapWithoutResizingCanvas: true,
         minimumControlHeight: 44,
+        contextualActionWidth: 176,
         desktopDock: "bottom-overlay",
         tabletMobileDock: "bottom-overlay",
         ordinaryUnitDisplayScale: UNIT_SCALE_CONTRACT.standard.displayScale,
@@ -165,7 +166,7 @@ await writeFile(
       visualReview: {
         status: "ACCEPTED",
         notes:
-          "Native desktop, tablet, and mobile composites preserve a fixed full-width map behind the contextual bottom dock, current Tech/End Turn HUD actions, one selected-unit Wait action with no global command dump, 44px controls, and the renderer's calibrated compact ordinary-unit geometry. Enlarged nearest-neighbor copies support edge and label inspection.",
+          "Native desktop, tablet, and mobile composites preserve a fixed full-width map behind the contextual bottom dock, current Tech/End Turn HUD actions, one compact fixed-width selected-unit Wait action with no global command dump, 44px controls, and the renderer's calibrated compact ordinary-unit geometry. Enlarged nearest-neighbor copies support edge and label inspection.",
       },
       viewports: records,
     },
@@ -305,7 +306,7 @@ function hudButtons(hud: Rect, compact: boolean): string {
 function dockSvg(dock: Rect): string {
   const x = dock.x + 14;
   const y = dock.y + 26;
-  const buttonWidth = dock.width - 28;
+  const buttonWidth = Math.min(176, dock.width - 28);
   const labels = ["Wait"];
   return `<text x="${x}" y="${y}" font-family="Impact,system-ui,sans-serif" font-size="20" fill="#fff8df">FIGHTER · 10/10 HP</text>
   <text x="${x}" y="${y + 22}" font-family="system-ui,sans-serif" font-size="11" fill="#c7ccb9">Select a highlighted tile or use an exact action.</text>

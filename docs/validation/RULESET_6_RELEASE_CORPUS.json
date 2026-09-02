@@ -521,7 +521,7 @@
   "evidence": [
     {
       "path": "art/integration/reviews/ruleset6-browser-smoke/evidence.json",
-      "sha256": "da28e11de6dd8f25ae7bf7513b1b9b62c26901788a64f4edff2b27d3aa00639a",
+      "sha256": "d45427829759e5d456d5a8b93aa8969ac09a0d5837691bb4f0d8d15db5be90a1",
       "artifactCount": 36
     },
     {
@@ -546,7 +546,7 @@
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-host/review-evidence.json",
-      "sha256": "b9905991390b5882cc91a89f24e4fe2933d15963f2492b191eef412097db523e",
+      "sha256": "4e726dbc7c7a5af70ada04c95894bf8db2ca98c64f48d31d7aa406dd6822bbb6",
       "artifactCount": 6
     },
     {
@@ -561,7 +561,7 @@
     },
     {
       "path": "art/pixellab/reviews/ruleset6-playable-shell/review-evidence.json",
-      "sha256": "f7345574fb1c270cabdb8b4ff6aa4a146b0428aaecc4c911d26c0380f45d901d",
+      "sha256": "7a0a98faf647bf955828c1cc121d4b13d9817ec47aa72345b8afc45ada20a9dd",
       "artifactCount": 6
     },
     {
