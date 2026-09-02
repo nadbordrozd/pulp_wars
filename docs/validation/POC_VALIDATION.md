@@ -2,9 +2,11 @@
 
 ## Ruleset 6 acceptance plan
 
-**Status:** authoritative staged gate; no ruleset-6 implementation has passed
-yet. Every section below headed ruleset 5 or earlier is frozen historical
-evidence and cannot satisfy a v6 gate.
+**Status:** Ruleset 6 passed the independent release audit on 2026-09-02. See
+[Ruleset 6 release validation](RULESET_6_RELEASE.md) and its checked
+[machine-readable corpus](RULESET_6_RELEASE_CORPUS.json). Every section below
+headed Ruleset 5 or earlier is frozen historical evidence and cannot satisfy a
+v6 gate.
 
 **Rules:** [Pulp Wars Ruleset 6](../product/RULESET_6.md)
 

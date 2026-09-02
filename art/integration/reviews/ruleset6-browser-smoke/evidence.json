@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-01T23:06:01.805Z",
+  "generatedAt": "2026-09-01T23:51:52.298Z",
   "generatedBy": "npm run smoke:browser",
   "rulesetId": "pulp-wars-poc-6",
   "productionEntry": "src/main.ts",
@@ -218,7 +218,7 @@
         },
         "readiness": {
           "fullDesktopChangedPixels": 1803,
-          "fullMobileChangedPixels": 3307,
+          "fullMobileChangedPixels": 3305,
           "reducedDesktopChangedPixels": 0,
           "reducedMobileChangedPixels": 0,
           "handledChangedPixels": 0
@@ -338,7 +338,7 @@
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-high-contrast-mobile-native.png",
           "bytes": 296250,
-          "sha256": "bfc2ff6ae07aff9f582db23528ce8d2a2b77e1b018c0a05aec92c85a482a8f2d",
+          "sha256": "312ea868f13e3d5e873b1125c18e3ab3b65de2d11c00a07671ddfd9a96f309a3",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -351,8 +351,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-high-contrast-mobile-enlarged.png",
-          "bytes": 511294,
-          "sha256": "96a767bacfc4841a1d0fa8bc1bb0edb9fc002bda90e5c7b38e40d521678fcb86",
+          "bytes": 511230,
+          "sha256": "535eb77d6e608f6941ee1118720bb82fd93b16e68eb53323946f8ab40b766ec3",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -365,8 +365,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-desktop-native.png",
-          "bytes": 325260,
-          "sha256": "b1d6a7b92b8a418c3617f7a8892c6a8147a9213e2c71dd8687a5279aafed1431",
+          "bytes": 325289,
+          "sha256": "87c8847f1617c034c20ab4a407ca1b036b2379c797577861d3f95bf6f8e7b7ab",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -379,8 +379,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-desktop-enlarged.png",
-          "bytes": 541255,
-          "sha256": "5c251dffd50bd96a8208e5bdc075e916ced4d1343203ab7f43dc695d6f08a7c5",
+          "bytes": 541423,
+          "sha256": "2b8fb2d3f578b3651871c9c48d08cbde74738599dd203ef54258008f9cea32ae",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -643,8 +643,8 @@
           "exactChoiceAccepted": true
         },
         "readiness": {
-          "fullDesktopChangedPixels": 1620,
-          "fullMobileChangedPixels": 2949,
+          "fullDesktopChangedPixels": 1618,
+          "fullMobileChangedPixels": 2958,
           "reducedDesktopChangedPixels": 0,
           "reducedMobileChangedPixels": 0,
           "handledChangedPixels": 0
@@ -763,8 +763,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-high-contrast-mobile-native.png",
-          "bytes": 309072,
-          "sha256": "39d79a33443b599f2e66adfa505a77f2afb3ce5f2e8386774ebacca67fa0a864",
+          "bytes": 309064,
+          "sha256": "e463a39de23a710496ac549b382d88bad581ca352d7f411e246fc306b1212f9a",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -777,8 +777,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-high-contrast-mobile-enlarged.png",
-          "bytes": 538229,
-          "sha256": "35988acd28d5a5b975f250676ba1b259aca3a21eaa6c5f95afba49a004e12d1d",
+          "bytes": 538133,
+          "sha256": "b7439ba769351e17d03684ea2ff33e7d80b14c3987c15e35f2e650c81f926105",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -791,8 +791,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-desktop-native.png",
-          "bytes": 334094,
-          "sha256": "ffef255c46b58563184bb810a017c8b9706a1fdfe1248fbf168115d7c00d8149",
+          "bytes": 334073,
+          "sha256": "c5662a180efc0e66b0e384819b0cce4d2a28cf3cc481d57955622051cedfa8bf",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -805,8 +805,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-desktop-enlarged.png",
-          "bytes": 556990,
-          "sha256": "811a7cc0d93edf6759e4d7d479ef215ba317dd8625187c9615e5b56bc14d9b05",
+          "bytes": 557022,
+          "sha256": "d689600f20f71d5398f61f19d33b7d24fba5eff19bada0c7a29e729cdba80e09",
           "width": 2880,
           "height": 2000,
           "viewport": {

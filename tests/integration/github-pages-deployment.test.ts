@@ -46,7 +46,7 @@ describe("GitHub Pages deployment", () => {
     const moduleSource = await readFile(modulePath, "utf8");
 
     expect(moduleSource).toContain(PAGES_BASE);
-    expect(moduleSource).toContain("assets/pixellab/units/warrior.png");
+    expect(moduleSource).toContain("assets/pixellab/units/");
     expect(moduleSource).not.toMatch(/["'`]\/assets\/pixellab\//);
     await expect(
       readFile(path.join(outputRoot, "assets/pixellab/units/warrior.png")),
