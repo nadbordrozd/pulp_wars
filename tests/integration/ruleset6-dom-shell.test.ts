@@ -472,8 +472,14 @@ describe("playable ruleset-6 DOM shell", () => {
         '[aria-label="Selection actions"] button',
       ),
     ];
+    const contextList = document.querySelector(
+      '.v6-command-list[aria-label="Selection actions"]',
+    );
+    expect(contextList).not.toBeNull();
     expect(contextButtons.length).toBeGreaterThan(0);
     for (const action of contextButtons) {
+      expect(action.parentElement).toBe(contextList);
+      expect(action.classList.contains("v6-command-button")).toBe(true);
       expect(action.ariaLabel).toBeTruthy();
       expect(action.querySelector(".v6-command-symbol")).not.toBeNull();
       expect(
@@ -501,6 +507,16 @@ describe("playable ruleset-6 DOM shell", () => {
 
     host.callbacks?.onSelection({ kind: "CITY", cityId: city.id });
     expect(renderedCommandKinds()).toEqual(new Set(["TRAIN", "END_TURN"]));
+    expect(
+      document.querySelector(
+        '.v6-command-list[aria-label="Selection actions"] > [data-command-kind="TRAIN"]',
+      ),
+    ).not.toBeNull();
+    expect(
+      document.querySelector(
+        '.v6-command-list[aria-label="Selection actions"] > [data-command-kind="END_TURN"]',
+      ),
+    ).toBeNull();
     const train = document.querySelector<HTMLButtonElement>(
       '[data-command-kind="TRAIN"]',
     );
@@ -551,6 +567,11 @@ describe("playable ruleset-6 DOM shell", () => {
         "END_TURN",
       ]),
     );
+    expect(
+      document.querySelectorAll(
+        '.v6-command-list[aria-label="Selection actions"] > .v6-command-button',
+      ),
+    ).toHaveLength(ECONOMIC_COMMAND_KINDS.length);
     const farm = commands.find((command) => command.kind === "BUILD_FARM");
     if (farm === undefined) throw new Error("Missing farm command");
     commandButton(farm).click();

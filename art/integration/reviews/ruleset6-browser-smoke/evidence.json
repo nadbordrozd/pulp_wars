@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-02T18:12:07.234Z",
+  "generatedAt": "2026-09-02T18:27:02.415Z",
   "generatedBy": "npm run smoke:browser",
   "rulesetId": "pulp-wars-poc-6",
   "productionEntry": "src/main.ts",
@@ -201,7 +201,177 @@
           "moveButtonCount": 0,
           "attackButtonCount": 0,
           "exactMoveAccepted": true,
-          "exactAttackAccepted": true
+          "exactAttackAccepted": true,
+          "buttonLayout": {
+            "unitDesktop": {
+              "viewport": {
+                "width": 1440,
+                "height": 1000,
+                "dpr": 1
+              },
+              "list": {
+                "x": 12.796875,
+                "y": 935.609375,
+                "width": 1414.40625,
+                "height": 51.59375
+              },
+              "clientWidth": 1414,
+              "scrollWidth": 1414,
+              "flexWrap": "wrap",
+              "contractWidth": 176,
+              "buttons": [
+                {
+                  "kind": "WAIT",
+                  "rect": {
+                    "x": 12.796875,
+                    "y": 935.609375,
+                    "width": 176,
+                    "height": 51.59375
+                  }
+                }
+              ]
+            },
+            "unitMobile": {
+              "viewport": {
+                "width": 390,
+                "height": 844,
+                "dpr": 2
+              },
+              "list": {
+                "x": 8.796875,
+                "y": 786.828125,
+                "width": 372.40625,
+                "height": 48.375
+              },
+              "clientWidth": 372,
+              "scrollWidth": 372,
+              "flexWrap": "wrap",
+              "contractWidth": 176,
+              "buttons": [
+                {
+                  "kind": "WAIT",
+                  "rect": {
+                    "x": 8.796875,
+                    "y": 786.828125,
+                    "width": 176,
+                    "height": 48.375
+                  }
+                }
+              ]
+            },
+            "cityDesktop": {
+              "viewport": {
+                "width": 1440,
+                "height": 1000,
+                "dpr": 1
+              },
+              "list": {
+                "x": 12.796875,
+                "y": 927.609375,
+                "width": 1414.40625,
+                "height": 59.59375
+              },
+              "clientWidth": 1414,
+              "scrollWidth": 1414,
+              "flexWrap": "wrap",
+              "contractWidth": 176,
+              "buttons": [
+                {
+                  "kind": "TRAIN",
+                  "rect": {
+                    "x": 12.796875,
+                    "y": 927.609375,
+                    "width": 176,
+                    "height": 59.59375
+                  }
+                }
+              ]
+            },
+            "cityMobile": {
+              "viewport": {
+                "width": 390,
+                "height": 844,
+                "dpr": 2
+              },
+              "list": {
+                "x": 8.796875,
+                "y": 778.828125,
+                "width": 372.40625,
+                "height": 56.375
+              },
+              "clientWidth": 372,
+              "scrollWidth": 372,
+              "flexWrap": "wrap",
+              "contractWidth": 176,
+              "buttons": [
+                {
+                  "kind": "TRAIN",
+                  "rect": {
+                    "x": 8.796875,
+                    "y": 778.828125,
+                    "width": 176,
+                    "height": 56.375
+                  }
+                }
+              ]
+            },
+            "tileDesktop": {
+              "viewport": {
+                "width": 1440,
+                "height": 1000,
+                "dpr": 1
+              },
+              "list": {
+                "x": 12.796875,
+                "y": 935.609375,
+                "width": 1414.40625,
+                "height": 51.59375
+              },
+              "clientWidth": 1414,
+              "scrollWidth": 1414,
+              "flexWrap": "wrap",
+              "contractWidth": 176,
+              "buttons": [
+                {
+                  "kind": "HARVEST_FRUIT",
+                  "rect": {
+                    "x": 12.796875,
+                    "y": 935.609375,
+                    "width": 176,
+                    "height": 51.59375
+                  }
+                }
+              ]
+            },
+            "tileMobile": {
+              "viewport": {
+                "width": 390,
+                "height": 844,
+                "dpr": 2
+              },
+              "list": {
+                "x": 8.796875,
+                "y": 786.828125,
+                "width": 372.40625,
+                "height": 48.375
+              },
+              "clientWidth": 372,
+              "scrollWidth": 372,
+              "flexWrap": "wrap",
+              "contractWidth": 176,
+              "buttons": [
+                {
+                  "kind": "HARVEST_FRUIT",
+                  "rect": {
+                    "x": 8.796875,
+                    "y": 786.828125,
+                    "width": 176,
+                    "height": 48.375
+                  }
+                }
+              ]
+            }
+          }
         },
         "technology": {
           "mainResearchButtonCount": 0,
@@ -371,8 +541,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-desktop-native.png",
-          "bytes": 328691,
-          "sha256": "9e395835a6f06efa1ea5160456076dfd4f30a9b469def67e7db9f4be08b53ce1",
+          "bytes": 328983,
+          "sha256": "34c3e39d862a96ac9704ff172525f41e8012f1d74c15589a276b890291b84ebd",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -385,8 +555,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-desktop-enlarged.png",
-          "bytes": 550299,
-          "sha256": "140f12de01344ce8cbeb114b48805e6cdd12cbb0885d99f6a820d4ddf86ef262",
+          "bytes": 550815,
+          "sha256": "c02e1f0f64a17560dcb4959ec399e09fd3e861b36a01cee96832e3642f390b4d",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -427,8 +597,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-city-train-mobile-native.png",
-          "bytes": 313454,
-          "sha256": "776fbb9b30d371baf4ffea05bdbe484f5f1c55bd762d490516aca01baf96f1cb",
+          "bytes": 313449,
+          "sha256": "99c7da898fbd164c1f552377a41ed01b41ac0664f24efa2b6bdfed135fc6cc7e",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -441,8 +611,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-city-train-mobile-enlarged.png",
-          "bytes": 569684,
-          "sha256": "ae3b7376304c2bea368b484873bfad7bd5fc8d48234c44c8ef9b385e88629cf1",
+          "bytes": 569758,
+          "sha256": "83e63cab643ca6de3b8a9d10f34a966cac29665a87ad694cf409d6ca8445d5fd",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -633,7 +803,177 @@
           "moveButtonCount": 0,
           "attackButtonCount": 0,
           "exactMoveAccepted": true,
-          "exactAttackAccepted": true
+          "exactAttackAccepted": true,
+          "buttonLayout": {
+            "unitDesktop": {
+              "viewport": {
+                "width": 1440,
+                "height": 1000,
+                "dpr": 1
+              },
+              "list": {
+                "x": 12.796875,
+                "y": 935.609375,
+                "width": 1414.40625,
+                "height": 51.59375
+              },
+              "clientWidth": 1414,
+              "scrollWidth": 1414,
+              "flexWrap": "wrap",
+              "contractWidth": 176,
+              "buttons": [
+                {
+                  "kind": "WAIT",
+                  "rect": {
+                    "x": 12.796875,
+                    "y": 935.609375,
+                    "width": 176,
+                    "height": 51.59375
+                  }
+                }
+              ]
+            },
+            "unitMobile": {
+              "viewport": {
+                "width": 390,
+                "height": 844,
+                "dpr": 2
+              },
+              "list": {
+                "x": 8.796875,
+                "y": 786.828125,
+                "width": 372.40625,
+                "height": 48.375
+              },
+              "clientWidth": 372,
+              "scrollWidth": 372,
+              "flexWrap": "wrap",
+              "contractWidth": 176,
+              "buttons": [
+                {
+                  "kind": "WAIT",
+                  "rect": {
+                    "x": 8.796875,
+                    "y": 786.828125,
+                    "width": 176,
+                    "height": 48.375
+                  }
+                }
+              ]
+            },
+            "cityDesktop": {
+              "viewport": {
+                "width": 1440,
+                "height": 1000,
+                "dpr": 1
+              },
+              "list": {
+                "x": 12.796875,
+                "y": 927.609375,
+                "width": 1414.40625,
+                "height": 59.59375
+              },
+              "clientWidth": 1414,
+              "scrollWidth": 1414,
+              "flexWrap": "wrap",
+              "contractWidth": 176,
+              "buttons": [
+                {
+                  "kind": "TRAIN",
+                  "rect": {
+                    "x": 12.796875,
+                    "y": 927.609375,
+                    "width": 176,
+                    "height": 59.59375
+                  }
+                }
+              ]
+            },
+            "cityMobile": {
+              "viewport": {
+                "width": 390,
+                "height": 844,
+                "dpr": 2
+              },
+              "list": {
+                "x": 8.796875,
+                "y": 778.828125,
+                "width": 372.40625,
+                "height": 56.375
+              },
+              "clientWidth": 372,
+              "scrollWidth": 372,
+              "flexWrap": "wrap",
+              "contractWidth": 176,
+              "buttons": [
+                {
+                  "kind": "TRAIN",
+                  "rect": {
+                    "x": 8.796875,
+                    "y": 778.828125,
+                    "width": 176,
+                    "height": 56.375
+                  }
+                }
+              ]
+            },
+            "tileDesktop": {
+              "viewport": {
+                "width": 1440,
+                "height": 1000,
+                "dpr": 1
+              },
+              "list": {
+                "x": 12.796875,
+                "y": 935.609375,
+                "width": 1414.40625,
+                "height": 51.59375
+              },
+              "clientWidth": 1414,
+              "scrollWidth": 1414,
+              "flexWrap": "wrap",
+              "contractWidth": 176,
+              "buttons": [
+                {
+                  "kind": "HARVEST_FRUIT",
+                  "rect": {
+                    "x": 12.796875,
+                    "y": 935.609375,
+                    "width": 176,
+                    "height": 51.59375
+                  }
+                }
+              ]
+            },
+            "tileMobile": {
+              "viewport": {
+                "width": 390,
+                "height": 844,
+                "dpr": 2
+              },
+              "list": {
+                "x": 8.796875,
+                "y": 786.828125,
+                "width": 372.40625,
+                "height": 48.375
+              },
+              "clientWidth": 372,
+              "scrollWidth": 372,
+              "flexWrap": "wrap",
+              "contractWidth": 176,
+              "buttons": [
+                {
+                  "kind": "HARVEST_FRUIT",
+                  "rect": {
+                    "x": 8.796875,
+                    "y": 786.828125,
+                    "width": 176,
+                    "height": 48.375
+                  }
+                }
+              ]
+            }
+          }
         },
         "technology": {
           "mainResearchButtonCount": 0,
@@ -803,8 +1143,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-desktop-native.png",
-          "bytes": 336733,
-          "sha256": "a9504165ca82494f97dcc8d706cdd7eae59fef1bc90e5f7c3357b4a548dccef4",
+          "bytes": 336767,
+          "sha256": "695d1ef6e2b0ba4662e8075edd1f5c9ad9ea33ee41528062092db6c4a7400c65",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -817,8 +1157,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-desktop-enlarged.png",
-          "bytes": 562455,
-          "sha256": "6bd39def43aeb8ecf3223cd2e58e2147c69a14f88a7ed7e3ca5908e20671d5ba",
+          "bytes": 562943,
+          "sha256": "bd2401f76d8f14b37dd93ed9691ce48498bdbf98e6202624944643d8451efcc3",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -859,8 +1199,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-city-train-mobile-native.png",
-          "bytes": 318008,
-          "sha256": "71eef29954fdc9bf7b115943168e30381d2a0b27b24eb9f4339e4d48aa8972c3",
+          "bytes": 318005,
+          "sha256": "41c600e40136dfeb44b54e3f7b38b2ad22d48654136a5301d5e63989879ab13d",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -873,8 +1213,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-city-train-mobile-enlarged.png",
-          "bytes": 570735,
-          "sha256": "5a8fbff94561eae402e0fa3304556cde61279c0fffd174bf182a05c2418630b2",
+          "bytes": 570706,
+          "sha256": "366df9bae8b67ba3de58eaf8f05efdb7a1dc5b4b43bc71754e8d11761703bdc1",
           "width": 1560,
           "height": 3376,
           "viewport": {

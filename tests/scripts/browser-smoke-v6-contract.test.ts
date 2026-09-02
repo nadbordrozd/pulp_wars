@@ -3,6 +3,7 @@ import {
   RULESET6_SMOKE_EVIDENCE_SUBJECTS,
   RULESET6_SMOKE_TECH_IDS,
   RULESET6_SMOKE_VIEWPORTS,
+  contextActionLayoutIssuesV6,
   flowContractIssuesV6,
   layoutContractIssuesV6,
   type BrowserSmokeFlowEvidenceV6,
@@ -55,6 +56,46 @@ describe("ruleset-6 browser smoke contract", () => {
         RULESET6_SMOKE_VIEWPORTS.mobile,
       ),
     ).toEqual([]);
+  });
+
+  it("accepts bounded contextual controls and rejects stretching or lost touch targets", () => {
+    expect(
+      contextActionLayoutIssuesV6(
+        contextActionLayout(1440, 1000, 1),
+        RULESET6_SMOKE_VIEWPORTS.desktop,
+      ),
+    ).toEqual([]);
+    expect(
+      contextActionLayoutIssuesV6(
+        contextActionLayout(390, 844, 2),
+        RULESET6_SMOKE_VIEWPORTS.mobile,
+      ),
+    ).toEqual([]);
+
+    const broken = contextActionLayout(390, 844, 2);
+    const brokenButton = broken.buttons[0];
+    if (brokenButton === undefined) throw new Error("Missing button fixture");
+    expect(
+      contextActionLayoutIssuesV6(
+        {
+          ...broken,
+          scrollWidth: broken.clientWidth + 20,
+          buttons: [
+            {
+              kind: "TRAIN",
+              rect: { ...brokenButton.rect, width: 374, height: 40 },
+            },
+          ],
+        },
+        RULESET6_SMOKE_VIEWPORTS.mobile,
+      ),
+    ).toEqual(
+      expect.arrayContaining([
+        "context action list has horizontal overflow",
+        "TRAIN does not use the shared bounded width",
+        "TRAIN is shorter than the 44px activation target",
+      ]),
+    );
   });
 
   it("rejects overflow, false DPR, bad anchoring, incomplete AI, and inexact resume", () => {
@@ -146,6 +187,14 @@ function validFlow(): BrowserSmokeFlowEvidenceV6 {
         attackButtonCount: 0,
         exactMoveAccepted: true,
         exactAttackAccepted: true,
+        buttonLayout: {
+          unitDesktop: contextActionLayout(1440, 1000, 1),
+          unitMobile: contextActionLayout(390, 844, 2),
+          cityDesktop: contextActionLayout(1440, 1000, 1),
+          cityMobile: contextActionLayout(390, 844, 2),
+          tileDesktop: contextActionLayout(1440, 1000, 1),
+          tileMobile: contextActionLayout(390, 844, 2),
+        },
       },
       technology: {
         mainResearchButtonCount: 0,
@@ -196,6 +245,24 @@ function validFlow(): BrowserSmokeFlowEvidenceV6 {
       }));
     }),
   };
+}
+
+function contextActionLayout(width: number, height: number, dpr: number) {
+  const listWidth = width - 16;
+  return {
+    viewport: { width, height, dpr },
+    list: { x: 8, y: height - 70, width: listWidth, height: 54 },
+    clientWidth: listWidth,
+    scrollWidth: listWidth,
+    flexWrap: "wrap",
+    contractWidth: 176,
+    buttons: [
+      {
+        kind: "WAIT",
+        rect: { x: 8, y: height - 70, width: 176, height: 54 },
+      },
+    ],
+  } as const;
 }
 
 function layout(

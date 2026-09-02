@@ -69,6 +69,23 @@ export interface BrowserSmokeLayoutV6 {
   };
 }
 
+export interface BrowserSmokeContextActionLayoutV6 {
+  readonly viewport: {
+    readonly width: number;
+    readonly height: number;
+    readonly dpr: number;
+  };
+  readonly list: BrowserSmokeRectV6;
+  readonly clientWidth: number;
+  readonly scrollWidth: number;
+  readonly flexWrap: string;
+  readonly contractWidth: number;
+  readonly buttons: readonly {
+    readonly kind: string;
+    readonly rect: BrowserSmokeRectV6;
+  }[];
+}
+
 export interface BrowserSmokeBoundaryV6 {
   readonly phase: string;
   readonly transitioning: boolean;
@@ -119,6 +136,14 @@ export interface BrowserSmokeIntegratedAcceptanceV6 {
     readonly attackButtonCount: number;
     readonly exactMoveAccepted: boolean;
     readonly exactAttackAccepted: boolean;
+    readonly buttonLayout: {
+      readonly unitDesktop: BrowserSmokeContextActionLayoutV6;
+      readonly unitMobile: BrowserSmokeContextActionLayoutV6;
+      readonly cityDesktop: BrowserSmokeContextActionLayoutV6;
+      readonly cityMobile: BrowserSmokeContextActionLayoutV6;
+      readonly tileDesktop: BrowserSmokeContextActionLayoutV6;
+      readonly tileMobile: BrowserSmokeContextActionLayoutV6;
+    };
   };
   readonly technology: {
     readonly mainResearchButtonCount: number;
@@ -365,6 +390,44 @@ export function flowContractIssuesV6(
   ) {
     issues.push("contextual unit/city/tile acceptance is incomplete");
   }
+  for (const [name, layout, expected] of [
+    [
+      "unit desktop",
+      contextual.buttonLayout.unitDesktop,
+      RULESET6_SMOKE_VIEWPORTS.desktop,
+    ],
+    [
+      "unit mobile",
+      contextual.buttonLayout.unitMobile,
+      RULESET6_SMOKE_VIEWPORTS.mobile,
+    ],
+    [
+      "city desktop",
+      contextual.buttonLayout.cityDesktop,
+      RULESET6_SMOKE_VIEWPORTS.desktop,
+    ],
+    [
+      "city mobile",
+      contextual.buttonLayout.cityMobile,
+      RULESET6_SMOKE_VIEWPORTS.mobile,
+    ],
+    [
+      "tile desktop",
+      contextual.buttonLayout.tileDesktop,
+      RULESET6_SMOKE_VIEWPORTS.desktop,
+    ],
+    [
+      "tile mobile",
+      contextual.buttonLayout.tileMobile,
+      RULESET6_SMOKE_VIEWPORTS.mobile,
+    ],
+  ] as const) {
+    issues.push(
+      ...contextActionLayoutIssuesV6(layout, expected).map(
+        (issue) => `${name}: ${issue}`,
+      ),
+    );
+  }
   const technology = flow.acceptance.technology;
   if (
     technology.mainResearchButtonCount !== 0 ||
@@ -399,6 +462,61 @@ export function flowContractIssuesV6(
     readiness.handledChangedPixels !== 0
   ) {
     issues.push("readiness motion acceptance is incomplete");
+  }
+  return issues;
+}
+
+export function contextActionLayoutIssuesV6(
+  layout: BrowserSmokeContextActionLayoutV6,
+  expected: (typeof RULESET6_SMOKE_VIEWPORTS)[keyof typeof RULESET6_SMOKE_VIEWPORTS],
+): readonly string[] {
+  const issues: string[] = [];
+  const tolerance = 1;
+  if (
+    layout.viewport.width !== expected.width ||
+    layout.viewport.height !== expected.height ||
+    layout.viewport.dpr !== expected.dpr
+  ) {
+    issues.push("viewport metrics do not match the requested contract");
+  }
+  if (layout.flexWrap !== "wrap") {
+    issues.push("context actions do not wrap");
+  }
+  if (layout.contractWidth <= 44 || layout.contractWidth >= layout.list.width) {
+    issues.push("context action width is not bounded below the action list");
+  }
+  if (layout.scrollWidth > layout.clientWidth + tolerance) {
+    issues.push("context action list has horizontal overflow");
+  }
+  if (layout.buttons.length === 0) {
+    issues.push("context action list has no buttons");
+    return issues;
+  }
+  const expectedWidth = Math.min(layout.contractWidth, layout.list.width);
+  for (const button of layout.buttons) {
+    if (Math.abs(button.rect.width - expectedWidth) > tolerance) {
+      issues.push(`${button.kind} does not use the shared bounded width`);
+    }
+    if (button.rect.height < 44 - tolerance) {
+      issues.push(`${button.kind} is shorter than the 44px activation target`);
+    }
+    if (
+      button.rect.x < layout.list.x - tolerance ||
+      button.rect.x + button.rect.width >
+        layout.list.x + layout.list.width + tolerance ||
+      button.rect.y < layout.list.y - tolerance ||
+      button.rect.y + button.rect.height >
+        layout.list.y + layout.list.height + tolerance
+    ) {
+      issues.push(`${button.kind} escapes the context action list`);
+    }
+  }
+  for (const [index, button] of layout.buttons.entries()) {
+    for (const other of layout.buttons.slice(index + 1)) {
+      if (intersectionArea(button.rect, other.rect) > tolerance) {
+        issues.push(`${button.kind} overlaps ${other.kind}`);
+      }
+    }
   }
   return issues;
 }

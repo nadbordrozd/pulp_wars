@@ -1910,9 +1910,20 @@ fieldset {
 }
 
 .v6-command-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  --v6-context-command-width: 11rem;
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  min-width: 0;
+  max-width: 100%;
   gap: 0.45rem;
+}
+
+.v6-command-list > .v6-command-button {
+  flex: 0 1 var(--v6-context-command-width);
+  width: var(--v6-context-command-width);
+  max-width: 100%;
 }
 
 .v6-command-button {
@@ -2424,12 +2435,6 @@ fieldset {
   background: var(--danger);
 }
 
-@media (max-width: 900px) {
-  .v6-command-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
 @media (max-width: 560px) {
   .v6-setup-form {
     grid-template-columns: minmax(0, 1fr);
@@ -2592,10 +2597,6 @@ fieldset {
   .v6-action-dock {
     max-height: calc(100dvh - 10rem);
     overflow-y: auto;
-  }
-
-  .v6-command-list {
-    grid-template-columns: minmax(0, 1fr);
   }
 }
 

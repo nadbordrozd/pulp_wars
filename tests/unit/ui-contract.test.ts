@@ -127,6 +127,15 @@ describe("DOM UI architecture and responsive contract", () => {
     );
     expect(css).toMatch(/\.v6-command-button\s*\{[^}]*min-height:\s*44px/s);
     expect(css).toMatch(
+      /\.v6-command-list\s*\{[^}]*--v6-context-command-width:\s*11rem[^}]*display:\s*flex[^}]*flex-wrap:\s*wrap[^}]*max-width:\s*100%/s,
+    );
+    expect(css).toMatch(
+      /\.v6-command-list\s*>\s*\.v6-command-button\s*\{[^}]*flex:\s*0\s+1\s+var\(--v6-context-command-width\)[^}]*width:\s*var\(--v6-context-command-width\)[^}]*max-width:\s*100%/s,
+    );
+    expect(css).not.toMatch(
+      /\.v6-command-list\s*\{[^}]*grid-template-columns:[^}]*1fr/s,
+    );
+    expect(css).toMatch(
       /@media \(max-width: 360px\)[\s\S]*\.v6-action-dock\s*\{[^}]*overflow-y:\s*auto/s,
     );
     expect(css).toMatch(

@@ -10,6 +10,7 @@ import {
   flowContractIssuesV6,
   type BrowserSmokeArtifactV6,
   type BrowserSmokeBoundaryV6,
+  type BrowserSmokeContextActionLayoutV6,
   type BrowserSmokeFlowEvidenceV6,
   type BrowserSmokeIntegratedAcceptanceV6,
   type BrowserSmokeLayoutV6,
@@ -421,6 +422,7 @@ async function runFactionFlow(
   const capital = await ownedCapital(connection);
   await activateCoordinate(connection, capital.at);
   const unitContext = await readContext(connection);
+  const unitDesktopButtonLayout = unitContext.buttonLayout;
   const wait = restarted.offered.find((command) => command.kind === "WAIT");
   if (wait === undefined)
     throw new Error(`${config.faction} offered no WAIT command`);
@@ -438,6 +440,9 @@ async function runFactionFlow(
       `${config.faction} exact unit context leaked actions: ${JSON.stringify(unitContext)}`,
     );
   }
+  await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.mobile);
+  const unitMobileButtonLayout = (await readContext(connection)).buttonLayout;
+  await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.desktop);
   artifacts.push(
     ...(await capturePair(
       connection,
@@ -480,6 +485,8 @@ async function runFactionFlow(
     { x: 2, y: 9 },
   ] as const;
   let tileContextAccepted = false;
+  let tileDesktopButtonLayout: BrowserSmokeContextActionLayoutV6 | null = null;
+  let tileMobileButtonLayout: BrowserSmokeContextActionLayoutV6 | null = null;
   let boundaryIndex = afterMove.commandIndex;
   for (const at of fruitTiles) {
     await activateCoordinate(connection, at);
@@ -492,6 +499,12 @@ async function runFactionFlow(
       throw new Error(
         `${config.faction} exact tile context leaked actions: ${JSON.stringify(tileContext)}`,
       );
+    }
+    if (tileDesktopButtonLayout === null) {
+      tileDesktopButtonLayout = tileContext.buttonLayout;
+      await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.mobile);
+      tileMobileButtonLayout = (await readContext(connection)).buttonLayout;
+      await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.desktop);
     }
     const harvest = (await readBoundary(connection)).offered.find(
       (command) =>
@@ -540,6 +553,7 @@ async function runFactionFlow(
 
   await activateCoordinate(connection, capital.at);
   const cityContext = await readContext(connection);
+  const cityMobileButtonLayout = cityContext.buttonLayout;
   const expectedTrain =
     config.faction === "ORIGINAL" ? "Fighter" : "Candy Warrior";
   if (
@@ -554,6 +568,9 @@ async function runFactionFlow(
       `${config.faction} faction-correct city context failed: ${JSON.stringify(cityContext)}`,
     );
   }
+  await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.desktop);
+  const cityDesktopButtonLayout = (await readContext(connection)).buttonLayout;
+  await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.mobile);
   artifacts.push(
     ...(await capturePair(
       connection,
@@ -647,6 +664,9 @@ async function runFactionFlow(
     connection,
     `document.querySelector('[data-v6-setup]') !== null`,
   );
+  if (tileDesktopButtonLayout === null || tileMobileButtonLayout === null) {
+    throw new Error(`${config.faction} contextual tile layout was not sampled`);
+  }
 
   return {
     faction: config.faction,
@@ -691,6 +711,14 @@ async function runFactionFlow(
         exactMoveAccepted:
           afterMove.commandIndex === afterExact.commandIndex + 1,
         exactAttackAccepted: attack.afterIndex === attack.beforeIndex + 1,
+        buttonLayout: {
+          unitDesktop: unitDesktopButtonLayout,
+          unitMobile: unitMobileButtonLayout,
+          cityDesktop: cityDesktopButtonLayout,
+          cityMobile: cityMobileButtonLayout,
+          tileDesktop: tileDesktopButtonLayout,
+          tileMobile: tileMobileButtonLayout,
+        },
       },
       technology: technology.acceptance,
       mandatoryChoice: {
@@ -902,6 +930,7 @@ async function readContext(connection: Connection): Promise<{
   readonly trainAriaLabel: string | null;
   readonly trainSymbolKind: string | null;
   readonly moveButtonCount: number;
+  readonly buttonLayout: BrowserSmokeContextActionLayoutV6;
 }> {
   return evaluate(
     connection,
@@ -914,6 +943,11 @@ async function readContext(connection: Connection): Promise<{
       const selectionId = selectionKind === 'UNIT' ? (first.unitId ?? null) : selectionKind === 'CITY' ? (first.cityId ?? null) : null;
       const wait = document.querySelector('[data-command-kind="WAIT"]');
       const train = document.querySelector('[data-command-kind="TRAIN"]');
+      const list = document.querySelector('.v6-command-list[aria-label="Selection actions"]');
+      if (!(list instanceof HTMLElement)) throw new Error('Context action list is missing');
+      const rect = (node) => { const value = node.getBoundingClientRect(); return { x: value.x, y: value.y, width: value.width, height: value.height }; };
+      const style = getComputedStyle(list);
+      const rootFontSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
       return {
         selectionKind,
         selectionId,
@@ -922,7 +956,16 @@ async function readContext(connection: Connection): Promise<{
         trainVisibleLabel: train?.querySelector('.v6-command-label')?.textContent ?? null,
         trainAriaLabel: train?.getAttribute('aria-label') ?? null,
         trainSymbolKind: train?.querySelector('[data-symbol-kind]')?.getAttribute('data-symbol-kind') ?? null,
-        moveButtonCount: document.querySelectorAll('[data-command-kind="MOVE"]').length
+        moveButtonCount: document.querySelectorAll('[data-command-kind="MOVE"]').length,
+        buttonLayout: {
+          viewport: { width: innerWidth, height: innerHeight, dpr: devicePixelRatio },
+          list: rect(list),
+          clientWidth: list.clientWidth,
+          scrollWidth: list.scrollWidth,
+          flexWrap: style.flexWrap,
+          contractWidth: Number.parseFloat(style.getPropertyValue('--v6-context-command-width')) * rootFontSize,
+          buttons: buttons.map((button) => ({ kind: button.dataset.commandKind ?? 'UNKNOWN', rect: rect(button) }))
+        }
       };
     })()`,
   );
