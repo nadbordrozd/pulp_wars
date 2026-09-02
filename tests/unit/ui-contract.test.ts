@@ -132,6 +132,21 @@ describe("DOM UI architecture and responsive contract", () => {
     expect(css).toMatch(
       /\.v6-command-list\s*>\s*\.v6-command-button\s*\{[^}]*flex:\s*0\s+1\s+var\(--v6-context-command-width\)[^}]*width:\s*var\(--v6-context-command-width\)[^}]*max-width:\s*100%/s,
     );
+    expect(css).toMatch(
+      /\.v6-app-shell\s*\{[^}]*--v6-map-max-unit-art-width:\s*112px[^}]*--v6-map-max-unit-art-height:\s*130px/s,
+    );
+    expect(css).toMatch(
+      /\.v6-command-list\s*>\s*\.v6-command-button\s+\.v6-command-symbol\s*\{[^}]*width:\s*var\(--v6-map-max-unit-art-width\)[^}]*height:\s*var\(--v6-map-max-unit-art-height\)[^}]*background:\s*transparent/s,
+    );
+    expect(css).toMatch(
+      /\.v6-command-symbol\s+img\s*\{[^}]*width:\s*100%[^}]*height:\s*100%[^}]*object-fit:\s*contain/s,
+    );
+    expect(css).toMatch(
+      /\.v6-command-symbol\[data-symbol-kind="code-native-fallback"\]\s*\{[^}]*border:\s*2px\s+solid\s+currentcolor[^}]*background:/s,
+    );
+    expect(css).toMatch(
+      /\[data-contrast="high"\][\s\S]*\.v6-command-symbol\[data-symbol-kind="code-native-fallback"\]\s*\{[^}]*border-color:\s*#fff[^}]*background:\s*#000[^}]*color:\s*#fff/s,
+    );
     expect(css).not.toMatch(
       /\.v6-command-list\s*\{[^}]*grid-template-columns:[^}]*1fr/s,
     );

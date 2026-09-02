@@ -123,7 +123,7 @@ export function commandArtIdV6(
   if (command.kind === "RESEARCH")
     return technologyArtIdV6(faction, command.tech);
   if (command.kind === "TRAIN")
-    return `portrait-${faction.toLowerCase()}-${command.role.toLowerCase()}`;
+    return `unit-${faction.toLowerCase()}-${command.role.toLowerCase()}`;
   if (command.kind === "CHOOSE_CITY_REWARD")
     return rewardArtIdV6(faction, command.reward);
   return STATIC_COMMAND_ART_IDS[command.kind] ?? null;

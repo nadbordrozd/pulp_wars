@@ -840,7 +840,12 @@ accepted city coverage registry, with city/capital, level, and population text
 beside the art. The semantic
 dock filters `queryPlayerCommands(PlayerView)` only to Train commands with that
 exact owned `cityId`; it never lists Harvest, Hunt, Lumber, or Mine. Training
-controls visibly contain only accepted unit art, bare unit name, and star cost.
+controls visibly contain only the exact accepted world-unit art, bare unit name,
+and cost. Every contextual raster shares one 112 x 130 CSS-pixel transparent
+viewport derived from the standard 256 x 296 unit canvas at 0.25 scale and
+1.75 maximum zoom; 176 CSS-pixel controls grow vertically and wrap. Raster
+padding and aspect ratio are preserved with `object-fit: contain`, while a
+code-native fallback occupies the same accessible framed viewport.
 The mandatory city reward remains a dedicated blocking `REWARD` overlay.
 
 Selected-tile identity also stays in `BoardSelection` and never enters

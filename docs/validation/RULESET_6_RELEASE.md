@@ -94,6 +94,9 @@ The following evidence was inspected at native resolution and in its checked
 nearest-neighbor enlargement:
 
 - Original and Candy unit context, reward, city training, and Technology detail;
+- the exact 112 x 130 contextual-art viewport, contained raster padding,
+  faction-correct Train world sprites, readable labels, and 176 px wrapping
+  controls at desktop DPR1 and true mobile DPR2;
 - mobile high contrast and desktop reduced motion for both factions;
 - melee contact/impact and reduced-motion response;
 - Original arrow and Candy gumball ranged flight/impact;

@@ -1686,6 +1686,10 @@ fieldset {
 
 /* Ruleset 6 has an intentionally separate map-first shell. */
 .v6-app-shell {
+  /* 256 x 296 standard unit canvas x 0.25 map scale x 1.75 maximum zoom. */
+  --v6-map-max-unit-art-width: 112px;
+  --v6-map-max-unit-art-height: 130px;
+
   min-height: 100dvh;
   color: var(--paper);
 }
@@ -1974,6 +1978,9 @@ fieldset {
   flex: 0 1 var(--v6-context-command-width);
   width: var(--v6-context-command-width);
   max-width: 100%;
+  flex-direction: column;
+  justify-content: flex-start;
+  text-align: center;
 }
 
 .v6-command-button {
@@ -2012,12 +2019,40 @@ fieldset {
 
 .v6-command-label {
   min-width: 0;
+  overflow-wrap: anywhere;
 }
 
-.v6-train-action .v6-command-symbol {
-  flex-basis: 2.5rem;
-  width: 2.5rem;
-  height: 2.5rem;
+.v6-command-list > .v6-command-button .v6-command-symbol {
+  flex: 0 0 var(--v6-map-max-unit-art-height);
+  width: var(--v6-map-max-unit-art-width);
+  height: var(--v6-map-max-unit-art-height);
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.v6-command-list
+  > .v6-command-button
+  .v6-command-symbol[data-symbol-kind="code-native-fallback"] {
+  border: 2px solid currentcolor;
+  border-radius: 0.65rem;
+  background: rgb(8 18 19 / 0.62);
+  font-size: 2rem;
+}
+
+[data-contrast="high"]
+  .v6-command-list
+  > .v6-command-button
+  .v6-command-symbol[data-symbol-kind="code-native-fallback"] {
+  border-color: #fff;
+  background: #000;
+  color: #fff;
+}
+
+.v6-command-list > .v6-command-button .v6-command-label {
+  width: 100%;
+  line-height: 1.2;
 }
 
 .v6-global-action {

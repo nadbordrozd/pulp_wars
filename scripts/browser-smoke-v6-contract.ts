@@ -87,9 +87,20 @@ export interface BrowserSmokeContextActionLayoutV6 {
   readonly scrollWidth: number;
   readonly flexWrap: string;
   readonly contractWidth: number;
+  readonly artContract: {
+    readonly width: number;
+    readonly height: number;
+  };
   readonly buttons: readonly {
     readonly kind: string;
     readonly rect: BrowserSmokeRectV6;
+    readonly symbolKind: string | null;
+    readonly assetId: string | null;
+    readonly symbolRect: BrowserSmokeRectV6;
+    readonly imageObjectFit: string | null;
+    readonly rasterLoaded: boolean | null;
+    readonly labelRect: BrowserSmokeRectV6;
+    readonly labelFontSize: number;
   }[];
 }
 
@@ -552,6 +563,12 @@ export function contextActionLayoutIssuesV6(
   if (layout.contractWidth <= 44 || layout.contractWidth >= layout.list.width) {
     issues.push("context action width is not bounded below the action list");
   }
+  if (
+    Math.abs(layout.artContract.width - 112) > tolerance ||
+    Math.abs(layout.artContract.height - 130) > tolerance
+  ) {
+    issues.push("context action art does not use the 112 x 130 viewport");
+  }
   if (layout.scrollWidth > layout.clientWidth + tolerance) {
     issues.push("context action list has horizontal overflow");
   }
@@ -566,6 +583,47 @@ export function contextActionLayoutIssuesV6(
     }
     if (button.rect.height < 44 - tolerance) {
       issues.push(`${button.kind} is shorter than the 44px activation target`);
+    }
+    if (
+      Math.abs(button.symbolRect.width - layout.artContract.width) >
+        tolerance ||
+      Math.abs(button.symbolRect.height - layout.artContract.height) > tolerance
+    ) {
+      issues.push(`${button.kind} artwork does not use the shared viewport`);
+    }
+    if (
+      button.symbolKind !== "accepted-raster" &&
+      button.symbolKind !== "code-native-fallback"
+    ) {
+      issues.push(`${button.kind} artwork has no accepted presentation mode`);
+    }
+    if (
+      button.symbolKind === "accepted-raster" &&
+      (button.assetId === null ||
+        button.imageObjectFit !== "contain" ||
+        button.rasterLoaded !== true)
+    ) {
+      issues.push(`${button.kind} raster is not loaded and contained`);
+    }
+    if (
+      button.labelRect.width <= 0 ||
+      button.labelRect.height <= 0 ||
+      button.labelFontSize < 11
+    ) {
+      issues.push(`${button.kind} label is not legible`);
+    }
+    for (const [part, rect] of [
+      ["artwork", button.symbolRect],
+      ["label", button.labelRect],
+    ] as const) {
+      if (
+        rect.x < button.rect.x - tolerance ||
+        rect.x + rect.width > button.rect.x + button.rect.width + tolerance ||
+        rect.y < button.rect.y - tolerance ||
+        rect.y + rect.height > button.rect.y + button.rect.height + tolerance
+      ) {
+        issues.push(`${button.kind} ${part} escapes its button`);
+      }
     }
     if (
       button.rect.x < layout.list.x - tolerance ||

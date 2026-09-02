@@ -134,6 +134,18 @@ describe("Ruleset 6 technology, economy, and action art contract", () => {
     expect(
       commandArtIdV6({ kind: "BUILD_ROAD", at: { x: 1, y: 2 } }, "ORIGINAL"),
     ).toBe("ui-hud-road");
+    expect(
+      commandArtIdV6(
+        { kind: "TRAIN", cityId: cityId(3), role: "FIGHTER" },
+        "ORIGINAL",
+      ),
+    ).toBe("unit-original-fighter");
+    expect(
+      commandArtIdV6(
+        { kind: "TRAIN", cityId: cityId(3), role: "FIGHTER" },
+        "CANDY",
+      ),
+    ).toBe("unit-candy-fighter");
   });
 
   it("pins accepted dimensions, output hashes, and quarantined rejection history", () => {

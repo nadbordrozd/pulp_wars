@@ -482,7 +482,10 @@ describe("playable ruleset-6 DOM shell", () => {
       expect(action.parentElement).toBe(contextList);
       expect(action.classList.contains("v6-command-button")).toBe(true);
       expect(action.ariaLabel).toBeTruthy();
-      expect(action.querySelector(".v6-command-symbol")).not.toBeNull();
+      const symbol = action.querySelector<HTMLElement>(".v6-command-symbol");
+      expect(symbol).not.toBeNull();
+      expect(symbol?.dataset.symbolKind).toBe("accepted-raster");
+      expect(symbol?.dataset.assetId).toBeTruthy();
       expect(
         action.querySelector(".v6-command-label")?.textContent,
       ).toBeTruthy();
@@ -524,7 +527,7 @@ describe("playable ruleset-6 DOM shell", () => {
     expect(train?.textContent).toContain("Candy Warrior · 2 Coins");
     expect(train?.ariaLabel).toBe("Train Candy Warrior for 2 Coins");
     expect(train?.querySelector<HTMLImageElement>("img")?.src).toContain(
-      "assets/pixellab/ui/portrait-candy-fighter.png",
+      "assets/pixellab/units/candy-warrior.png",
     );
     const scoutTrain: CommandV6 = {
       kind: "TRAIN",
@@ -541,7 +544,7 @@ describe("playable ruleset-6 DOM shell", () => {
     );
     expect(scout?.textContent).toContain("Jelly Scout · 3 Coins");
     expect(scout?.querySelector<HTMLImageElement>("img")?.src).toContain(
-      "assets/pixellab/ui/portrait-candy-scout.png",
+      "assets/pixellab/units/candy-jelly-scout.png",
     );
     fake.setSnapshot({ ...fake.snapshot(), offeredCommands: commands });
 
@@ -625,7 +628,7 @@ describe("playable ruleset-6 DOM shell", () => {
     app.destroy();
   });
 
-  it("uses accepted Original role portraits for contextual training controls", () => {
+  it("uses accepted Original world sprites for contextual training controls", () => {
     const view = publicView("ORIGINAL");
     const city = view.cities.find(
       (candidate) => candidate.ownerId === view.viewer.id,
@@ -651,15 +654,15 @@ describe("playable ruleset-6 DOM shell", () => {
     expect(trainButtons).toHaveLength(UNIT_ROLE_IDS.length);
     for (const [index, role] of UNIT_ROLE_IDS.entries())
       expect(
-        trainButtons[index]?.querySelector<HTMLImageElement>("img")?.src,
-      ).toContain(
-        `assets/pixellab/ui/portrait-original-${role.toLowerCase()}.png`,
-      );
+        trainButtons[index]
+          ?.querySelector<HTMLElement>(".v6-command-symbol")
+          ?.getAttribute("data-asset-id"),
+      ).toBe(`unit-original-${role.toLowerCase()}`);
 
     app.destroy();
   });
 
-  it("uses accepted Candy role portraits for contextual training controls", () => {
+  it("uses accepted Candy world sprites for contextual training controls", () => {
     const view = publicView("CANDY");
     const city = view.cities.find(
       (candidate) => candidate.ownerId === view.viewer.id,
@@ -685,10 +688,10 @@ describe("playable ruleset-6 DOM shell", () => {
     expect(trainButtons).toHaveLength(UNIT_ROLE_IDS.length);
     for (const [index, role] of UNIT_ROLE_IDS.entries())
       expect(
-        trainButtons[index]?.querySelector<HTMLImageElement>("img")?.src,
-      ).toContain(
-        `assets/pixellab/ui/portrait-candy-${role.toLowerCase()}.png`,
-      );
+        trainButtons[index]
+          ?.querySelector<HTMLElement>(".v6-command-symbol")
+          ?.getAttribute("data-asset-id"),
+      ).toBe(`unit-candy-${role.toLowerCase()}`);
 
     app.destroy();
   });

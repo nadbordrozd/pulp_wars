@@ -187,7 +187,7 @@ try {
     visualReview: {
       status: "ACCEPTED",
       notes:
-        "Every bounded contextual, reward, city-training, and Technology capture was inspected individually at native output size and in its nearest-neighbor 2x companion. Original and Candy Animals are visible on explored Forest from launch while Hunting remains unresearched and Hunt Game unavailable; hidden Animals remain redacted. Exact world-unit, faction/level city, and public Fruit selection identities remain compact and readable above their isolated actions at desktop and true 390x844 DPR2 mobile, with no coordinate text. Original and Candy labels/symbols remain distinct; the map stays primary; full Technology cards/details and blocking rewards fit without clipping or horizontal overflow. Direct selected-tile actions accept one boundary without a second map activation. No suspected visual failure remained after enlargement review.",
+        "Every bounded contextual, reward, city-training, and Technology capture was inspected individually at native output size and in its nearest-neighbor 2x companion. Contextual rasters, including faction-correct TRAIN world sprites, use the exact shared 112 x 130 CSS-pixel transparent viewport with contained aspect ratio at desktop and true 390x844 DPR2 mobile; code-native fallbacks retain the same framed footprint. Original and Candy Animals are visible on explored Forest from launch while Hunting remains unresearched and Hunt Game unavailable; hidden Animals remain redacted. Exact world-unit, faction/level city, and public Fruit selection identities remain compact and readable above their isolated actions with no coordinate text. Original and Candy labels/symbols remain distinct; the map stays primary; full Technology cards/details and blocking rewards fit without clipping or horizontal overflow. Direct selected-tile actions accept one boundary without a second map activation. No suspected visual failure remained after enlargement review.",
     },
     flows,
     aiFirstLaunch,
@@ -1116,6 +1116,10 @@ async function readContext(connection: Connection): Promise<{
   readonly buttonLayout: BrowserSmokeContextActionLayoutV6;
   readonly identity: BrowserSmokeSelectionIdentityV6;
 }> {
+  await waitForExpression(
+    connection,
+    `[...document.querySelectorAll('.v6-command-list[aria-label="Selection actions"] img')].every((image) => image.complete && image.naturalWidth > 0)`,
+  );
   return evaluate(
     connection,
     `(() => {
@@ -1135,6 +1139,8 @@ async function readContext(connection: Connection): Promise<{
       const rect = (node) => { const value = node.getBoundingClientRect(); return { x: value.x, y: value.y, width: value.width, height: value.height }; };
       const style = getComputedStyle(list);
       const rootFontSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+      const artWidth = Number.parseFloat(style.getPropertyValue('--v6-map-max-unit-art-width'));
+      const artHeight = Number.parseFloat(style.getPropertyValue('--v6-map-max-unit-art-height'));
       return {
         selectionKind,
         selectionId,
@@ -1161,7 +1167,24 @@ async function readContext(connection: Connection): Promise<{
           scrollWidth: list.scrollWidth,
           flexWrap: style.flexWrap,
           contractWidth: Number.parseFloat(style.getPropertyValue('--v6-context-command-width')) * rootFontSize,
-          buttons: buttons.map((button) => ({ kind: button.dataset.commandKind ?? 'UNKNOWN', rect: rect(button) }))
+          artContract: { width: artWidth, height: artHeight },
+          buttons: buttons.map((button) => {
+            const symbol = button.querySelector('.v6-command-symbol');
+            const image = symbol?.querySelector('img');
+            const label = button.querySelector('.v6-command-label');
+            if (!(symbol instanceof HTMLElement) || !(label instanceof HTMLElement)) throw new Error('Context action artwork or label is missing');
+            return {
+              kind: button.dataset.commandKind ?? 'UNKNOWN',
+              rect: rect(button),
+              symbolKind: symbol.dataset.symbolKind ?? null,
+              assetId: symbol.dataset.assetId ?? null,
+              symbolRect: rect(symbol),
+              imageObjectFit: image instanceof HTMLImageElement ? getComputedStyle(image).objectFit : null,
+              rasterLoaded: image instanceof HTMLImageElement ? image.complete && image.naturalWidth > 0 : null,
+              labelRect: rect(label),
+              labelFontSize: Number.parseFloat(getComputedStyle(label).fontSize)
+            };
+          })
         }
       };
     })()`,
@@ -1222,6 +1245,47 @@ async function activateCoordinate(
     buttons: 0,
     clickCount: 1,
   });
+  await delay(80);
+}
+
+async function activateAdjacentCoordinateWithKeyboard(
+  connection: Connection,
+  from: CoordV6,
+  to: CoordV6,
+): Promise<void> {
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  if (Math.abs(dx) > 1 || Math.abs(dy) > 1 || (dx === 0 && dy === 0)) {
+    throw new Error(
+      `Keyboard target must be adjacent: ${from.x},${from.y} -> ${to.x},${to.y}`,
+    );
+  }
+  const key =
+    dx !== 0 && dy !== 0
+      ? dx === dy
+        ? dx > 0
+          ? "ArrowDown"
+          : "ArrowUp"
+        : dx > 0
+          ? "ArrowRight"
+          : "ArrowLeft"
+      : dx < 0
+        ? "ArrowLeft"
+        : dx > 0
+          ? "ArrowRight"
+          : dy < 0
+            ? "ArrowUp"
+            : "ArrowDown";
+  await evaluate(
+    connection,
+    `(() => {
+      const canvas = document.querySelector('.board-canvas-v6');
+      if (!(canvas instanceof HTMLCanvasElement)) throw new Error('Canvas keyboard target is unavailable');
+      canvas.dispatchEvent(new KeyboardEvent('keydown', { key: ${JSON.stringify(key)}, shiftKey: ${dx !== 0 && dy !== 0}, bubbles: true, cancelable: true }));
+      canvas.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+      return true;
+    })()`,
+  );
   await delay(80);
 }
 
@@ -1414,7 +1478,11 @@ async function reachAndAttack(
     );
     if (buttonCount !== 0) throw new Error("ATTACK leaked into the unit dock");
     const before = await readBoundary(connection);
-    await activateCoordinate(connection, candidate.targetAt);
+    await activateAdjacentCoordinateWithKeyboard(
+      connection,
+      candidate.attackerAt,
+      candidate.targetAt,
+    );
     await waitForHumanBoundary(connection, before.commandIndex + 1);
     if (candidate.kind === "ATTACK") {
       return {

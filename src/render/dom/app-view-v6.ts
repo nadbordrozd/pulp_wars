@@ -103,7 +103,11 @@ export type Ruleset6BrowserControllerPort = Pick<
 >;
 
 type ActionSymbol =
-  | { readonly kind: "RASTER"; readonly url: string }
+  | {
+      readonly kind: "RASTER";
+      readonly assetId: string;
+      readonly url: string;
+    }
   | { readonly kind: "FALLBACK"; readonly value: string };
 
 type Ruleset6Screen = "MATCH" | "TECH";
@@ -2294,7 +2298,9 @@ function candifyTerritoryPreview(
 
 function acceptedSymbol(assetId: string, fallback: string): ActionSymbol {
   const url = ACCEPTED_ART_URLS[assetId];
-  return url === undefined ? fallbackSymbol(fallback) : { kind: "RASTER", url };
+  return url === undefined
+    ? fallbackSymbol(fallback)
+    : { kind: "RASTER", assetId, url };
 }
 
 function fallbackSymbol(value: string): ActionSymbol {
@@ -2313,6 +2319,7 @@ function actionSymbolNode(
     image.alt = "";
     image.decoding = "async";
     wrapper.dataset.symbolKind = "accepted-raster";
+    wrapper.dataset.assetId = symbol.assetId;
     wrapper.append(image);
   } else {
     wrapper.dataset.symbolKind = "code-native-fallback";

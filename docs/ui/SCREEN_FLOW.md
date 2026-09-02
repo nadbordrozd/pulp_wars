@@ -78,6 +78,15 @@ Clear Forest, Replant Forest, Build Road, and Redevelop. Only the selected
 coordinate's public command appears. A Road control and road fact may coexist
 with a resource/improvement fact.
 
+Every contextual action raster—including Capture Village, unit abilities,
+economic development, and faction-correct Train art—occupies the same exact
+112 x 130 CSS-pixel transparent viewport. This matches the untrimmed 256 x 296
+standard world-unit canvas at 0.25 map scale and 1.75 maximum camera zoom.
+Artwork preserves its aspect ratio and transparent padding with
+`object-fit: contain`; code-native fallbacks keep the same visibly framed footprint. Action
+buttons remain 176 CSS pixels wide, grow vertically, keep their text readable,
+and wrap without horizontal overflow.
+
 ### Direct contextual economy actions
 
 An unambiguous contextual action never asks the player to identify information
@@ -437,8 +446,8 @@ training commands associated with that selected owned city; Harvest Fruit,
 Hunt Animal, Build Lumber Mill, and Build Mine never appear on city selection.
 Rival, besieged, locked,
 at/over-capacity, and actionless cities show summary only. Every training button
-visibly contains only the selected city's faction-correct unit art, bare unit
-name, and star cost;
+visibly contains only the selected city's exact faction-correct world-unit art,
+bare unit name, and Coin cost;
 semantic accessible names may describe the training action, but visible text
 never says “Train” or repeats requirements, coordinates, descriptions,
 population guidance, or other metadata.

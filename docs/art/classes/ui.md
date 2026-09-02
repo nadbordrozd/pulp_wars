@@ -31,12 +31,15 @@ confused with the larger stateful city population squares inside a city badge.
 
 The first v6 UI sample is one 24 px Coin/income icon, one 48 px economic build
 icon, and one 64 px technology/role portrait. Then validate a representative
-five-branch set before batching 25 nodes. Reviews cover 24/32/48/64 CSS px,
-light/dark/high-contrast, grayscale/color-vision simulations, 320/600/1024 px,
-200% zoom, keyboard focus, every contributor-pattern state, and negative
-population. Ruleset-5 inventory prose below is historical where it conflicts;
-shared geometry, AA contrast, semantic labels, scaling, safe area, and PixelLab
-gates remain active.
+five-branch set before batching 25 nodes. Selection-context action artwork has
+a later presentation contract: every raster occupies the same exact 112 x 130
+CSS-pixel transparent viewport, matching a 256 x 296 standard world-unit canvas
+at 0.25 display scale and 1.75 maximum map zoom. Reviews cover the applicable
+native size, light/dark/high-contrast, grayscale/color-vision simulations,
+320/390/600/1024 px, 200% zoom, keyboard focus, every contributor-pattern
+state, and negative population. Ruleset-5 inventory prose below is historical
+where it conflicts; shared geometry, AA contrast, semantic labels, scaling,
+safe area, and PixelLab gates remain active.
 
 This contract specializes [Pulp Wars Art Direction](../ART_DIRECTION.md) for
 HUD icons, panels, technology, dialogs, status marks, and front-of-game art. The
@@ -55,6 +58,7 @@ responsive DOM/CSS renderer. They are not copied Polytopia dimensions.
 | Primary action icon         |   192 x 192 px |                   48 x 48 CSS px | 4x source                                  |
 | Compact HUD icon            |     96 x 96 px |                   24 x 24 CSS px | 4x source                                  |
 | Unit/tech portrait tile     |   256 x 256 px |                   64 x 64 CSS px | square, transparent or approved panel fill |
+| Contextual action artwork   | accepted raster |                 112 x 130 CSS px | transparent, `object-fit: contain`          |
 | Faction picker hero         | 1024 x 1024 px | responsive, max 420 x 420 CSS px | presentation only                          |
 
 CSS layout, text, buttons, focus rings, progress bars, panels, cards, selection
@@ -86,8 +90,8 @@ in grayscale. Do not reuse a symbol for two commands in the same context.
 - Move, Attack, Recover, Capture, Promote, Wait, Escape, Harvest Fruit, Hunt
   Animal, Build Lumber Mill, Build Mine, Kamikaze Roll, Build Chocolate Wall,
   Candify, and Choose Candify City,
-  and End Turn; selected-city training buttons reuse accepted unit art rather
-  than adding a generic Train icon;
+  and End Turn; selected-city training buttons reuse the exact accepted world
+  unit sprite rather than a derived portrait or generic Train icon;
 - Original Warrior/Archer/Defender/Rider, Candy Warrior/Gumball Guard/Choco
   Engineer/Donut, and shared Catapult portraits/silhouettes;
 - Climbing, Riding, Hunting, Organization, Mining, Forestry, Archery, Strategy,
@@ -140,6 +144,12 @@ The selected dock is code-native responsive DOM, not raster panel art. It is an
 absolute viewport overlay above the bottom safe area and may obscure the map;
 its content must never resize the Canvas host. Review empty and maximum-line
 tile/unit/city docks while asserting identical Canvas and camera geometry.
+Every raster in its contextual action list uses the shared 112 x 130 CSS-pixel
+transparent viewport without cropping or distortion. The fixed 176 CSS-pixel
+button grows vertically around that art and readable label. A code-native
+fallback uses the same viewport with a visible high-contrast frame and the
+button's semantic accessible name; contextual lists wrap without horizontal
+overflow.
 
 Required layer order is map ground/objects, sprite readiness plus
 selection/target effects,

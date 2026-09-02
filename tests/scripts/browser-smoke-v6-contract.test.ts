@@ -79,11 +79,15 @@ describe("ruleset-6 browser smoke contract", () => {
       contextActionLayoutIssuesV6(
         {
           ...broken,
+          artContract: { width: 64, height: 64 },
           scrollWidth: broken.clientWidth + 20,
           buttons: [
             {
+              ...brokenButton,
               kind: "TRAIN",
               rect: { ...brokenButton.rect, width: 374, height: 40 },
+              symbolRect: { ...brokenButton.symbolRect, width: 60, height: 64 },
+              labelFontSize: 8,
             },
           ],
         },
@@ -92,8 +96,11 @@ describe("ruleset-6 browser smoke contract", () => {
     ).toEqual(
       expect.arrayContaining([
         "context action list has horizontal overflow",
+        "context action art does not use the 112 x 130 viewport",
         "TRAIN does not use the shared bounded width",
         "TRAIN is shorter than the 44px activation target",
+        "TRAIN artwork does not use the shared viewport",
+        "TRAIN label is not legible",
       ]),
     );
   });
@@ -279,15 +286,23 @@ function contextActionLayout(width: number, height: number, dpr: number) {
   const listWidth = width - 16;
   return {
     viewport: { width, height, dpr },
-    list: { x: 8, y: height - 70, width: listWidth, height: 54 },
+    list: { x: 8, y: height - 190, width: listWidth, height: 174 },
     clientWidth: listWidth,
     scrollWidth: listWidth,
     flexWrap: "wrap",
     contractWidth: 176,
+    artContract: { width: 112, height: 130 },
     buttons: [
       {
         kind: "WAIT",
-        rect: { x: 8, y: height - 70, width: 176, height: 54 },
+        rect: { x: 8, y: height - 190, width: 176, height: 174 },
+        symbolKind: "accepted-raster",
+        assetId: "ui-action-wait",
+        symbolRect: { x: 40, y: height - 180, width: 112, height: 130 },
+        imageObjectFit: "contain",
+        rasterLoaded: true,
+        labelRect: { x: 16, y: height - 44, width: 160, height: 20 },
+        labelFontSize: 12.64,
       },
     ],
   } as const;
