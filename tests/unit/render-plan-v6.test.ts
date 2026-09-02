@@ -240,6 +240,48 @@ describe("ruleset-6 observation-safe render plan", () => {
     },
   );
 
+  it("projects exact zero, one, and multi-level public improvement values without reconstructing economy rules", () => {
+    const values = [
+      ["WINDMILL", 0, "POPULATION"],
+      ["SAWMILL", 1, "POPULATION"],
+      ["FORGE", 4, "POPULATION"],
+      ["STONEWORKS", 7, "POPULATION"],
+      ["WORKSHOP", 3, "POPULATION"],
+      ["GRAND_WORKS", 6, "POPULATION"],
+      ["MARKET", 5, "COIN_INCOME"],
+    ] as const;
+    let view = baseView();
+    const improvementValues = values.map(
+      ([improvement, level, measure], index) => ({
+        at: { x: index + 2, y: 4 },
+        improvement,
+        level,
+        measure,
+      }),
+    );
+    for (const value of improvementValues) {
+      view = replaceTile(view, value.at, {
+        improvement: value.improvement,
+        territoryCityId: OWN_CITY,
+        territoryOwnerId: OWN,
+      });
+    }
+    view = { ...view, improvementValues };
+
+    const plan = buildRenderPlanV6(inactive(view));
+    expect(
+      entriesOf(plan.entries, "IMPROVEMENT_LEVEL").map(
+        (entry) => entry.details,
+      ),
+    ).toEqual(improvementValues);
+    expect(JSON.stringify(plan)).not.toContain("contributingTiles");
+    expect(
+      buildRenderPlanV6(
+        JSON.parse(JSON.stringify(inactive(view))) as PlayerViewV6,
+      ).entries,
+    ).toEqual(plan.entries);
+  });
+
   it("emits only fog for unexplored tiles and only a generic marker for UNKNOWN_RESOURCE", () => {
     const hiddenAt = { x: 8, y: 8 } as const;
     const unknownAt = { x: 7, y: 8 } as const;
@@ -834,6 +876,7 @@ function baseView(faction: "ORIGINAL" | "CANDY" = "ORIGINAL"): PlayerViewV6 {
     board: { width: 11, height: 11, tiles },
     cities: [city(OWN_CITY, OWN, { x: 1, y: 1 }, true)],
     populationContributions: [],
+    improvementValues: [],
     units: [],
     chocolateWalls: [],
     pendingChoices: [],

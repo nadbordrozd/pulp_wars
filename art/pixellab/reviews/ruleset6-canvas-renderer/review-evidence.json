@@ -22,54 +22,55 @@
     "complete accepted production raster inventory with zero placeholders",
     "all nine role silhouettes with ordinary units smaller than Forest and Mountain",
     "accepted Road masks, economic contributor numbers, opposite-pair axis and value chip",
+    "all seven leveled improvements with exact zero, one, and multi-value compact square pips",
     "selection, move/attack targets, unit/city/wall status and fog",
     "Forest Game/Animal frontage without a unit and beneath an occupied selected unit",
     "level-4 negative population as exactly two leading red deficit squares within the fixed five-square layer"
   ],
   "visualReview": {
     "status": "ACCEPTED",
-    "notes": "Native and enlarged sheets were inspected individually. The level-4 city retains its fixed five-square layer with exactly two leading red deficit squares at 0.625x, 1x, and 1.75x for DPR1/2 beside terrain, units, selection, fog and status layers. Game/Animal remains visible in front of each Forest canopy, including beneath a selected occupied tile."
+    "notes": "Native and enlarged sheets were inspected individually. Mint square improvement pips remain compact and dark-outlined at 0.625x, 1x, and 1.75x for DPR1/2, including zero, one, 3–7, and Market values; they remain distinct from the city's larger yellow/red meter inside its labeled badge. The level-4 city retains its fixed five-square layer with exactly two leading red deficit squares. Game/Animal remains visible in front of each Forest canopy, including beneath a selected occupied tile."
   },
   "artifacts": [
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/original-dpr1-native.png",
-      "bytes": 820002,
-      "sha256": "c611d95478c05ee0f90184cfd4d30e81d67e42833f8e954ecf246e998bb5743e"
+      "bytes": 820033,
+      "sha256": "e40bfbd2cbe6114fd6740d4205e6d1320383e8ff47fa509cb3ff3219ea4363c5"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/original-dpr1-enlarged.png",
-      "bytes": 1108135,
-      "sha256": "1b21a1961e5f4562197b98f220bb10b88824bb1fe5f733e28c148bad3a2c9bdd"
+      "bytes": 1109113,
+      "sha256": "b2e8c4838f4960be1241a282bf6bca1dce0991965b3763e5ade4be51ffb8c83b"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/original-dpr2-native.png",
-      "bytes": 2552415,
-      "sha256": "b794c6e20119eb7f215d521a1f1fabdd489838e7d6a3f2313f4a5c48e35b9b27"
+      "bytes": 2548729,
+      "sha256": "660c0addcafce64d32d5edc22f5619aa181e8c252cd85234cd9b6c56932a9331"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/original-dpr2-enlarged.png",
-      "bytes": 6327027,
-      "sha256": "c81467e7c6127a3be280fc138273292c7bd304f9e8b9d8da031b7036517c4494"
+      "bytes": 6323686,
+      "sha256": "1c3db6e8fdfc674653b80a9ca5e7ce43884d46f5136e75c12d8e4d2c296ab8c6"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/candy-dpr1-native.png",
-      "bytes": 829567,
-      "sha256": "7cd513cb56c60bb1f7deb530d4d67c3fe60fa8a502e90193a2c3b4ee50b83bcc"
+      "bytes": 829306,
+      "sha256": "d0d1f777a4c1d0a60927ec7c71c85fbd06f4833f22be498b1b5f55b0373fcdc5"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/candy-dpr1-enlarged.png",
-      "bytes": 1124122,
-      "sha256": "9be2ae2a14f3e695531ddd0d548236a7d6a0f8402de281af96418af59381340e"
+      "bytes": 1124520,
+      "sha256": "e14c8b5a8b51ce8d23ca548c51a0d3fd08f5e92b68da815e65327b6b084e3f61"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/candy-dpr2-native.png",
-      "bytes": 2530114,
-      "sha256": "ec23a83695b20bab6d8ad036727ac9f3e79b9eeca31e485b1e8cdcfa8bd24c56"
+      "bytes": 2525079,
+      "sha256": "b558b6a9637824a0b2148ffb04a1ce699b520671bf4cdd3666d80f2caac0aa85"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/candy-dpr2-enlarged.png",
-      "bytes": 6310666,
-      "sha256": "715afbdbc658080a01e38528e937042ef720b56f91c70a4ffe77f0f0a3662b56"
+      "bytes": 6305785,
+      "sha256": "a42f28789de07cb7363a89f8264d1b93865f0b46ef0f0e44696665a5054db7ec"
     }
   ]
 }

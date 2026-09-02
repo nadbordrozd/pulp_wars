@@ -176,6 +176,89 @@ describe("ruleset-6 Canvas drawing layer", () => {
     ).toEqual([]);
   });
 
+  it("draws exactly one compact outlined pip per live improvement level and none at level zero", () => {
+    const at = { x: 3, y: 3 } as const;
+    const levelEntry = fixtureEntry(
+      "IMPROVEMENT_LEVEL",
+      at,
+      {
+        at,
+        improvement: "FORGE",
+        level: 12,
+        measure: "POPULATION",
+      },
+      8,
+    );
+    const zeroEntry = fixtureEntry(
+      "IMPROVEMENT_LEVEL",
+      { x: 4, y: 3 },
+      {
+        at: { x: 4, y: 3 },
+        improvement: "WINDMILL",
+        level: 0,
+        measure: "POPULATION",
+      },
+      8,
+    );
+    const cityEntry = fixtureEntry(
+      "CITY_STATUS",
+      { x: 5, y: 3 },
+      {
+        faction: "ORIGINAL",
+        level: 2,
+        populationLayer: cityPopulationPresentationV6({
+          id: cityId(10),
+          level: 2,
+          population: 2,
+        }),
+        isCapital: false,
+      },
+      8,
+    );
+    const plan: BoardRenderPlanV6 = {
+      planVersion: 6,
+      entries: [levelEntry, zeroEntry, cityEntry],
+      legalCommands: [],
+      commandTargets: [],
+      economicPreview: null,
+    };
+
+    for (const zoom of [0.625, 1, 1.75] as const) {
+      const list = buildBoardDrawListV6({
+        viewport: { width: 800, height: 600 },
+        camera: { offsetX: 400, offsetY: 180, zoom },
+        plan,
+      });
+      const pips = list.commands.filter((command) =>
+        command.entryKey.includes(":improvement-level-pip:"),
+      );
+      expect(pips).toHaveLength(12);
+      expect(
+        pips.every(
+          (command) =>
+            command.kind === "RECT" &&
+            command.fill === "#89f2d0" &&
+            command.stroke === "#102322" &&
+            command.width === command.height &&
+            command.width >= 3 &&
+            command.width <= 5,
+        ),
+      ).toBe(true);
+      expect(
+        list.commands.some((command) => command.entryKey === zeroEntry.key),
+      ).toBe(false);
+      const citySquares = list.commands.filter((command) =>
+        command.entryKey.includes(":population-square:"),
+      );
+      expect(citySquares).toHaveLength(3);
+      expect(
+        citySquares.every(
+          (command) => command.kind === "RECT" && command.fill !== "#89f2d0",
+        ),
+      ).toBe(true);
+    }
+  });
+
   it.each([0.625, 1, 1.75] as const)(
     "keeps Forest Game frontage anchored and ordered through units and overlays at %sx zoom and DPR1/2",
     (zoom) => {
@@ -850,6 +933,9 @@ describe("ruleset-6 Canvas drawing layer", () => {
     expect(evidence.reviewCoverage).toContain(
       "Forest Game/Animal frontage without a unit and beneath an occupied selected unit",
     );
+    expect(evidence.reviewCoverage).toContain(
+      "all seven leveled improvements with exact zero, one, and multi-value compact square pips",
+    );
     expect(evidence.visualReview.status).toBe("ACCEPTED");
     expect(evidence.artifacts).toHaveLength(8);
     expect(evidence.artifacts.map(({ path }) => path).sort()).toEqual(
@@ -883,6 +969,12 @@ function exhaustivePlan(): BoardRenderPlanV6 {
     RESOURCE: { resource: "STONE" },
     UNKNOWN_RESOURCE: null,
     IMPROVEMENT: { improvement: "WINDMILL" },
+    IMPROVEMENT_LEVEL: {
+      at: AT,
+      improvement: "WINDMILL",
+      level: 3,
+      measure: "POPULATION",
+    },
     CONTACT_SHADOW: null,
     TERRAIN_BODY: { terrain: "FOREST" },
     SITE: { site: "VILLAGE" },

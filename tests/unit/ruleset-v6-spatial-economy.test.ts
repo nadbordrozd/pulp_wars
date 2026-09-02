@@ -13,6 +13,7 @@ import {
   parseGameStateV6,
   playerIncomeV6,
   previewEconomicV6,
+  publicImprovementValueAtV6,
   queryPlayerCommandsV6,
   resolveCityGrowthV6,
   spatialContributionAtV6,
@@ -55,6 +56,7 @@ describe("ruleset-6 live spatial economy", () => {
       "MILLING",
       5,
       [{ x: 5, y: 4, improvement: "FARM" }],
+      1,
     ],
     [
       "BUILD_SAWMILL",
@@ -62,9 +64,10 @@ describe("ruleset-6 live spatial economy", () => {
       "SAWMILLING",
       5,
       [{ x: 5, y: 4, improvement: "LUMBER_CAMP" }],
+      1,
     ],
-    ["BUILD_FORGE", "FORGE", "METALLURGY", 5, []],
-    ["BUILD_STONEWORKS", "STONEWORKS", "MASONRY", 5, []],
+    ["BUILD_FORGE", "FORGE", "METALLURGY", 5, [], 0],
+    ["BUILD_STONEWORKS", "STONEWORKS", "MASONRY", 5, [], 0],
     [
       "BUILD_WORKSHOP",
       "WORKSHOP",
@@ -74,6 +77,7 @@ describe("ruleset-6 live spatial economy", () => {
         { x: 5, y: 4, improvement: "FARM" },
         { x: 4, y: 5, improvement: "MINE" },
       ],
+      2,
     ],
     [
       "BUILD_GRAND_WORKS",
@@ -85,6 +89,7 @@ describe("ruleset-6 live spatial economy", () => {
         { x: 4, y: 5, improvement: "SAWMILL" },
         { x: 6, y: 5, improvement: "FORGE" },
       ],
+      6,
     ],
     [
       "BUILD_MARKET",
@@ -95,10 +100,11 @@ describe("ruleset-6 live spatial economy", () => {
         { x: 5, y: 4, improvement: "FARM" },
         { x: 4, y: 5, improvement: "LUMBER_CAMP" },
       ],
+      2,
     ],
   ] as const)(
     "%s uses its exact cost and creates one canonical %s LIVE identity",
-    (kind, improvement, technology, cost, contributors) => {
+    (kind, improvement, technology, cost, contributors, expectedLevel) => {
       const target = { x: 5, y: 5 };
       let state = stateWithBuildings(
         contributors.map((value) => ({
@@ -141,6 +147,17 @@ describe("ruleset-6 live spatial economy", () => {
         kind: "ECONOMIC_BUILDING_BUILT",
         improvement,
         cost,
+      });
+      expect(
+        publicImprovementValueAtV6(
+          viewForV6(result.state, state.humanPlayerId),
+          target,
+        ),
+      ).toEqual({
+        at: target,
+        improvement,
+        level: expectedLevel,
+        measure: improvement === "MARKET" ? "COIN_INCOME" : "POPULATION",
       });
     },
   );
@@ -541,6 +558,12 @@ describe("ruleset-6 live spatial economy", () => {
       ),
     );
     expect(windmill.amount).toBe(1);
+    expect(
+      publicImprovementValueAtV6(
+        viewForV6(built.state, state.humanPlayerId),
+        target,
+      )?.level,
+    ).toBe(1);
     const farmed = applyCommandV6(built.state, state.humanPlayerId, {
       kind: "BUILD_FARM",
       at: nextFarm,
@@ -552,10 +575,70 @@ describe("ruleset-6 live spatial economy", () => {
         (value) => value.id === windmill.id,
       ),
     ).toMatchObject({ id: windmill.id, amount: 2 });
+    expect(
+      publicImprovementValueAtV6(
+        viewForV6(farmed.state, state.humanPlayerId),
+        target,
+      )?.level,
+    ).toBe(2);
     expect(farmed.events.map((event) => event.kind).slice(0, 2)).toEqual([
       "ECONOMIC_BUILDING_BUILT",
       "CITY_ECONOMY_CHANGED",
     ]);
+    const pending = farmed.state.pendingChoices[0];
+    const redevelopmentState =
+      pending?.kind === "CITY_REWARD"
+        ? applyCommandV6(farmed.state, state.humanPlayerId, {
+            kind: "CHOOSE_CITY_REWARD",
+            cityId: pending.cityId,
+            reachedLevel: pending.reachedLevel,
+            reward: pending.candidates[0] ?? "WALLS",
+          })
+        : null;
+    if (redevelopmentState !== null)
+      expect(redevelopmentState.accepted).toBe(true);
+    const afterChoice =
+      redevelopmentState?.accepted === true
+        ? redevelopmentState.state
+        : farmed.state;
+    const firstRemoved = applyCommandV6(afterChoice, state.humanPlayerId, {
+      kind: "REDEVELOP",
+      at: nextFarm,
+    });
+    expect(firstRemoved.accepted).toBe(true);
+    if (!firstRemoved.accepted) return;
+    expect(
+      publicImprovementValueAtV6(
+        viewForV6(firstRemoved.state, state.humanPlayerId),
+        target,
+      )?.level,
+    ).toBe(1);
+    const allContributorsRemoved = applyCommandV6(
+      firstRemoved.state,
+      state.humanPlayerId,
+      { kind: "REDEVELOP", at: firstFarm },
+    );
+    expect(allContributorsRemoved.accepted).toBe(true);
+    if (!allContributorsRemoved.accepted) return;
+    expect(
+      publicImprovementValueAtV6(
+        viewForV6(allContributorsRemoved.state, state.humanPlayerId),
+        target,
+      )?.level,
+    ).toBe(0);
+    const processorRemoved = applyCommandV6(
+      allContributorsRemoved.state,
+      state.humanPlayerId,
+      { kind: "REDEVELOP", at: target },
+    );
+    expect(processorRemoved.accepted).toBe(true);
+    if (!processorRemoved.accepted) return;
+    expect(
+      publicImprovementValueAtV6(
+        viewForV6(processorRemoved.state, state.humanPlayerId),
+        target,
+      ),
+    ).toBeNull();
   });
 
   it("a cross-border basic build updates both friendly cities atomically in ascending city/event order", () => {
@@ -763,6 +846,18 @@ describe("ruleset-6 live spatial economy", () => {
       "2026-08-31T18:00:00.000Z",
     );
     expect(parseSaveV6(JSON.stringify(save))).toEqual({ kind: "VALID", save });
+    const parsed = parseSaveV6(JSON.stringify(save));
+    if (parsed.kind !== "VALID") throw new Error("Expected valid save");
+    expect(
+      publicImprovementValueAtV6(
+        viewForV6(parsed.save.state, parsed.save.state.humanPlayerId),
+        target,
+      ),
+    ).toMatchObject({
+      improvement: "FORGE",
+      level: 4,
+      measure: "POPULATION",
+    });
     expect(canonicalHash(result.state)).toBe(
       "e786f4d4908641bb3f1b03ef9d70f2bc8e515c25d261e30342effbb1f0f97b8f",
     );

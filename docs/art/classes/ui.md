@@ -23,6 +23,12 @@ queue counters are code-native SVG/Canvas/HTML. Raster art may supply symbols
 and portraits but never baked numbers, formulas, connection states, text,
 focus, selection, or inaccessible color-only membership.
 
+Live Windmill, Sawmill, Forge, Stoneworks, Workshop, Grand Works, and Market
+levels are also code-native: one compact mint square with a dark outline per
+public live population/Market-income value. They use no faction color and no
+envelope, remain legible at 0.625x, wrap after eight pips, and must not be
+confused with the larger stateful city population squares inside a city badge.
+
 The first v6 UI sample is one 24 px Coin/income icon, one 48 px economic build
 icon, and one 64 px technology/role portrait. Then validate a representative
 five-branch set before batching 25 nodes. Reviews cover 24/32/48/64 CSS px,

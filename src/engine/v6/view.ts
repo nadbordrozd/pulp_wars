@@ -1,11 +1,13 @@
 import { deepFreeze } from "../model/freeze";
 import type { PlayerId } from "../model/ids";
 import { arePlayersAlliedV6 } from "./economy";
+import { spatialContributionAtV6 } from "./spatial-economy";
 import type {
   BoardSizeV6,
   ChocolateWallStateV6,
   CityStateV6,
   CoordV6,
+  EconomicImprovementId,
   GameStateV6,
   MatchOutcomeV6,
   MatchSetupV6,
@@ -18,6 +20,27 @@ import type {
   TileStateV6,
   UnitStateV6,
 } from "./types";
+
+export const LEVELED_ECONOMIC_IMPROVEMENT_IDS_V6 = Object.freeze([
+  "WINDMILL",
+  "SAWMILL",
+  "FORGE",
+  "STONEWORKS",
+  "WORKSHOP",
+  "GRAND_WORKS",
+  "MARKET",
+] as const);
+
+export type LeveledEconomicImprovementIdV6 =
+  (typeof LEVELED_ECONOMIC_IMPROVEMENT_IDS_V6)[number];
+
+export interface PublicImprovementValueV6 {
+  readonly at: CoordV6;
+  readonly improvement: LeveledEconomicImprovementIdV6;
+  /** One presentation level per live population or recurring Market Coin. */
+  readonly level: number;
+  readonly measure: "POPULATION" | "COIN_INCOME";
+}
 
 export const UNKNOWN_RESOURCE_V6 = "UNKNOWN_RESOURCE" as const;
 export type PublicResourceV6 = ResourceId | null | typeof UNKNOWN_RESOURCE_V6;
@@ -58,6 +81,8 @@ export interface PlayerViewV6 {
   readonly board: PlayerBoardViewV6;
   readonly cities: readonly CityStateV6[];
   readonly populationContributions: readonly PopulationContributionV6[];
+  /** Stable live values for the viewer's explored, owned leveled improvements. */
+  readonly improvementValues: readonly PublicImprovementValueV6[];
   readonly units: readonly UnitStateV6[];
   readonly chocolateWalls: readonly ChocolateWallStateV6[];
   readonly pendingChoices: readonly PendingChoiceV6[];
@@ -121,6 +146,56 @@ export function viewForV6(
           (unit) => unit.id === choice.unitId && unit.ownerId === viewerId,
         ),
   );
+  const visiblePopulationContributions = state.populationContributions.filter(
+    (contribution) =>
+      exploredKeys.has(coordKey(contribution.source.at)) &&
+      state.cities.some(
+        (city) => city.id === contribution.cityId && city.ownerId === viewerId,
+      ),
+  );
+  const improvementValues = state.board.tiles.flatMap(
+    (tile): readonly PublicImprovementValueV6[] => {
+      if (
+        !exploredKeys.has(coordKey(tile.at)) ||
+        tile.improvement === null ||
+        !isLeveledEconomicImprovementV6(tile.improvement)
+      ) {
+        return [];
+      }
+      const city = state.cities.find(
+        (candidate) => candidate.id === tile.territoryCityId,
+      );
+      if (city?.ownerId !== viewerId) return [];
+      if (tile.improvement === "MARKET") {
+        return [
+          {
+            at: tile.at,
+            improvement: tile.improvement,
+            level: spatialContributionAtV6(state, tile.at, tile.improvement)
+              .marketIncome,
+            measure: "COIN_INCOME",
+          },
+        ];
+      }
+      const contribution = visiblePopulationContributions.find(
+        (candidate) =>
+          candidate.category === "LIVE" &&
+          candidate.source.kind === "IMPROVEMENT" &&
+          candidate.source.improvement === tile.improvement &&
+          sameCoord(candidate.source.at, tile.at),
+      );
+      return contribution === undefined
+        ? []
+        : [
+            {
+              at: tile.at,
+              improvement: tile.improvement,
+              level: contribution.amount,
+              measure: "POPULATION",
+            },
+          ];
+    },
+  );
   return deepFreeze({
     schemaVersion: state.schemaVersion,
     rulesetId: state.rulesetId,
@@ -137,14 +212,8 @@ export function viewForV6(
     }),
     board: { width: state.board.width, height: state.board.height, tiles },
     cities: state.cities.filter((city) => visibleCityIds.has(city.id)),
-    populationContributions: state.populationContributions.filter(
-      (contribution) =>
-        exploredKeys.has(coordKey(contribution.source.at)) &&
-        state.cities.some(
-          (city) =>
-            city.id === contribution.cityId && city.ownerId === viewerId,
-        ),
-    ),
+    populationContributions: visiblePopulationContributions,
+    improvementValues,
     units: state.units.filter((unit) => exploredKeys.has(coordKey(unit.at))),
     chocolateWalls: state.chocolateWalls.filter((wall) =>
       exploredKeys.has(coordKey(wall.at)),
@@ -152,6 +221,15 @@ export function viewForV6(
     pendingChoices,
     outcome: state.outcome,
   });
+}
+
+export function publicImprovementValueAtV6(
+  view: PlayerViewV6,
+  at: CoordV6,
+): PublicImprovementValueV6 | null {
+  return (
+    view.improvementValues.find((value) => sameCoord(value.at, at)) ?? null
+  );
 }
 
 export function publicResourceV6(
@@ -165,4 +243,16 @@ export function publicResourceV6(
 
 function coordKey(at: CoordV6): string {
   return `${at.x},${at.y}`;
+}
+
+function sameCoord(left: CoordV6, right: CoordV6): boolean {
+  return left.x === right.x && left.y === right.y;
+}
+
+function isLeveledEconomicImprovementV6(
+  improvement: EconomicImprovementId,
+): improvement is LeveledEconomicImprovementIdV6 {
+  return LEVELED_ECONOMIC_IMPROVEMENT_IDS_V6.some(
+    (candidate) => candidate === improvement,
+  );
 }

@@ -614,6 +614,9 @@ function drawEntry(
     case "ECONOMIC_PAIR_AXIS":
       commands.push(...economicAxis(entry, center, zoom));
       return;
+    case "IMPROVEMENT_LEVEL":
+      commands.push(...improvementLevelPips(entry, center, zoom));
+      return;
     case "UNIT_STATUS":
       commands.push(...unitStatus(entry, center, zoom, ownerColor));
       return;
@@ -633,6 +636,33 @@ function drawEntry(
     case "CITY_STATUS":
       commands.push(...cityStatus(entry, center, zoom, ownerColor));
   }
+}
+
+function improvementLevelPips(
+  entry: Extract<RenderPlanEntryV6, { readonly kind: "IMPROVEMENT_LEVEL" }>,
+  center: Point,
+  zoom: number,
+): readonly BoardDrawCommandV6[] {
+  const size = Math.max(3, Math.min(5, 4 * zoom));
+  const gap = Math.max(1, Math.min(1.75, 1.25 * zoom));
+  const columns = 8;
+  const rowHeight = size + gap;
+  const startY = center.y + 14 * zoom;
+  return Array.from({ length: entry.details.level }, (_, index) => {
+    const row = Math.floor(index / columns);
+    const rowCount = Math.min(columns, entry.details.level - row * columns);
+    const rowWidth = rowCount * size + Math.max(0, rowCount - 1) * gap;
+    return rect(
+      `${entry.key}:improvement-level-pip:${index}`,
+      center.x - rowWidth / 2 + (index % columns) * (size + gap),
+      startY + row * rowHeight,
+      size,
+      size,
+      "#89f2d0",
+      "#102322",
+      Math.max(1, Math.min(1.5, 1.1 * zoom)),
+    );
+  });
 }
 
 function combatEntries(

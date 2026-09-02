@@ -11,6 +11,7 @@ import {
   type FactionIdV6,
   type OppositePairAxisV6,
   type PlayerViewV6,
+  type PublicImprovementValueV6,
   type ResourceId,
   type TerrainIdV6,
   type UnitId,
@@ -114,6 +115,7 @@ interface RenderEntryDetailsV6 {
   readonly IMPROVEMENT: {
     readonly improvement: EconomicImprovementId;
   };
+  readonly IMPROVEMENT_LEVEL: PublicImprovementValueV6;
   readonly CONTACT_SHADOW: null;
   readonly TERRAIN_BODY: {
     readonly terrain: Exclude<TerrainIdV6, "GRASS">;
@@ -234,6 +236,7 @@ const LAYER_V6: Readonly<Record<RenderEntryKindV6, number>> = {
   CONTACT_SHADOW: 5,
   TERRAIN_BODY: 5,
   IMPROVEMENT: 5,
+  IMPROVEMENT_LEVEL: 8,
   SITE: 5,
   CHOCOLATE_WALL: 5,
   CITY_BACK: 5,
@@ -362,6 +365,14 @@ export function buildRenderPlanV6(
           improvement: tile.improvement,
         }),
       );
+      const value = view.improvementValues.find((candidate) =>
+        sameCoord(candidate.at, tile.at),
+      );
+      if (value !== undefined) {
+        entries.push(
+          entryV6("IMPROVEMENT_LEVEL", tile.at, tileId, ownerId, value),
+        );
+      }
     }
     if (tile.site !== null) {
       entries.push(

@@ -184,6 +184,7 @@ function baseView(
     board: { width: 11, height: 11, tiles },
     cities: [ownCity, rivalCity],
     populationContributions: [],
+    improvementValues: [],
     units: [
       unit(OWN_UNIT, OWN, "FIGHTER", ownCity.at),
       unit(ENEMY_UNIT, ENEMY, "FIGHTER", rivalCity.at),

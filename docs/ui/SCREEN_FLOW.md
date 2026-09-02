@@ -51,6 +51,15 @@ than N+1. This keeps the spatial rhythm stable without disguising severe
 infrastructure loss. Ruleset 6 has no maximum city level, so there is no capped
 or completed meter: every valid city presents its next N+1 population layer.
 
+Every explored owned Windmill, Sawmill, Forge, Stoneworks, Workshop, Grand
+Works, and Market renders one compact square pip per current public live value.
+The first six use their live population contribution; Market uses its live
+recurring Coin income. A zero-value improvement has zero pips. These
+faction-neutral, dark-outlined mint pips sit directly on the map without a
+status envelope and remain visually distinct from the larger yellow/red/empty
+city population squares inside the labeled city badge. The render plan consumes
+only the public live-value projection and never reconstructs spatial rules.
+
 The selected-tile dock identifies Grass/Forest/Mountain; visible Fruit, Game,
 Fertile Ground, Ore, or Stone; all eleven economic improvements; Road;
 Chocolate Wall; and territory. An explored resource hidden by technology is

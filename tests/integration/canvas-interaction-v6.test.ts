@@ -364,6 +364,57 @@ describe("ruleset-6 Canvas host", () => {
     expect(host.screenPoint({ x: 0, y: 0 })).toBeNull();
   });
 
+  it("draws public live improvement pips through the browser Canvas host without mutating state", () => {
+    const fixture = publicFixture();
+    const stateHash = canonicalHash(fixture.state);
+    const tile = fixture.view.board.tiles.find(
+      (candidate) =>
+        candidate.explored &&
+        candidate.territoryOwnerId === fixture.view.viewer.id &&
+        candidate.site === null &&
+        candidate.resource === null &&
+        !fixture.view.units.some((unit) => same(unit.at, candidate.at)),
+    );
+    if (tile?.explored !== true)
+      throw new Error("Missing owned pip fixture tile");
+    const withLevel = (level: number): PlayerViewV6 => ({
+      ...fixture.view,
+      board: {
+        ...fixture.view.board,
+        tiles: fixture.view.board.tiles.map((candidate) =>
+          same(candidate.at, tile.at)
+            ? { ...tile, improvement: "FORGE" as const }
+            : candidate,
+        ),
+      },
+      improvementValues: [
+        {
+          at: tile.at,
+          improvement: "FORGE",
+          level,
+          measure: "POPULATION",
+        },
+      ],
+    });
+    const calls: string[] = [];
+    vi.mocked(HTMLCanvasElement.prototype.getContext).mockReturnValue(
+      recordingContext(calls),
+    );
+    const host = new CanvasBoardHostV6(document);
+    host.mount(sizedContainer(900, 600), callbacks());
+    host.update(model(withLevel(0)));
+    const beforeZero = calls.filter((call) => call === "fillRect").length;
+    host.update(model(withLevel(3)));
+    const afterThree = calls.filter((call) => call === "fillRect").length;
+    host.update(model(withLevel(0)));
+    const afterReturnToZero = calls.filter(
+      (call) => call === "fillRect",
+    ).length;
+    expect(afterThree - beforeZero - (afterReturnToZero - afterThree)).toBe(3);
+    expect(canonicalHash(fixture.state)).toBe(stateHash);
+    host.destroy();
+  });
+
   it.each(["ORIGINAL", "CANDY"] as const)(
     "announces explored Game before Hunting for %s while fog stays content-free",
     (faction) => {
