@@ -41,6 +41,12 @@ state, and negative population. Ruleset-5 inventory prose below is historical
 where it conflicts; shared geometry, AA contrast, semantic labels, scaling,
 safe area, and PixelLab gates remain active.
 
+Ruleset-6 technology-card artwork uses that same exact 112 x 130 CSS-pixel
+transparent viewport. Technology cards expand around the viewport rather than
+downscaling the art; accepted raster aspect ratio and transparent padding are
+preserved with `object-fit: contain`, and code-native fallbacks occupy the same
+framed footprint.
+
 This contract specializes [Pulp Wars Art Direction](../ART_DIRECTION.md) for
 HUD icons, panels, technology, dialogs, status marks, and front-of-game art. The
 functional and accessibility authority is [Screen Flow](../../ui/SCREEN_FLOW.md).
@@ -52,14 +58,15 @@ runtime metadata, and its screenshots vary by platform, viewport, and scale.
 The measurements below are **Pulp Wars UI contracts**, selected for the POC's
 responsive DOM/CSS renderer. They are not copied Polytopia dimensions.
 
-| Asset/use                   |         Source |                  Nominal display | Notes                                      |
-| --------------------------- | -------------: | -------------------------------: | ------------------------------------------ |
-| Standard action/status icon |   128 x 128 px |                   32 x 32 CSS px | 4x source                                  |
-| Primary action icon         |   192 x 192 px |                   48 x 48 CSS px | 4x source                                  |
-| Compact HUD icon            |     96 x 96 px |                   24 x 24 CSS px | 4x source                                  |
-| Unit/tech portrait tile     |   256 x 256 px |                   64 x 64 CSS px | square, transparent or approved panel fill |
-| Contextual action artwork   | accepted raster |                 112 x 130 CSS px | transparent, `object-fit: contain`          |
-| Faction picker hero         | 1024 x 1024 px | responsive, max 420 x 420 CSS px | presentation only                          |
+| Asset/use                   |          Source |                  Nominal display | Notes                                      |
+| --------------------------- | --------------: | -------------------------------: | ------------------------------------------ |
+| Standard action/status icon |    128 x 128 px |                   32 x 32 CSS px | 4x source                                  |
+| Primary action icon         |    192 x 192 px |                   48 x 48 CSS px | 4x source                                  |
+| Compact HUD icon            |      96 x 96 px |                   24 x 24 CSS px | 4x source                                  |
+| Unit/role portrait tile     |    256 x 256 px |                   64 x 64 CSS px | square, transparent or approved panel fill |
+| Contextual action artwork   | accepted raster |                 112 x 130 CSS px | transparent, `object-fit: contain`         |
+| Technology-card artwork     | accepted raster |                 112 x 130 CSS px | transparent, `object-fit: contain`         |
+| Faction picker hero         |  1024 x 1024 px | responsive, max 420 x 420 CSS px | presentation only                          |
 
 CSS layout, text, buttons, focus rings, progress bars, panels, cards, selection
 diamonds, health bars, and ownership patterns are code-native and must not be

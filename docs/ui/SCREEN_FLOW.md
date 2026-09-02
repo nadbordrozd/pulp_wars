@@ -137,6 +137,11 @@ and separate detail sheet pattern. Detail lists prerequisite, exact unlocks,
 spatial formula when relevant, and the faction-correct unit label. Candy
 Raiding explicitly says Donut and Kamikaze Roll rather than promising baseline
 Raider Charge. Explosives says Breacher/Candy Crusher, never Catapult.
+Every technology symbol uses the same exact 112 x 130 CSS-pixel transparent
+viewport as contextual action artwork, preserving the accepted raster's aspect
+ratio and transparent padding with `object-fit: contain`. The card expands
+around that shared viewport, name, and unresearched-only Coin cost; it never
+shrinks the symbol to make the five-column graph fit.
 
 ### Units and abilities
 

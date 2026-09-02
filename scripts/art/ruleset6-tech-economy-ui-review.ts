@@ -97,6 +97,7 @@ const techIds = [
   "medicine",
   "recovery",
 ] as const;
+const technologyViewport = { width: 112, height: 130 } as const;
 
 await mkdir(reviewRoot, { recursive: true });
 assertAccepted();
@@ -264,7 +265,7 @@ async function technologyTree(faction: "original" | "candy"): Promise<void> {
     {
       input: title(
         `${faction.toUpperCase()} explicit 25-node tree · one-city 5/7/9 cost fixture`,
-        1100,
+        1400,
       ),
       left: 0,
       top: 8,
@@ -273,8 +274,8 @@ async function technologyTree(faction: "original" | "candy"): Promise<void> {
   const branches = ["settlement", "wilds", "industry", "mobility", "warfare"];
   for (const [column, branch] of branches.entries()) {
     const branchTechs = techIds.slice(column * 5, column * 5 + 5);
-    const branchLeft = 8 + column * 216;
-    overlays.push({ input: caption(branch, 208), left: branchLeft, top: 50 });
+    const branchLeft = 5 + column * 278;
+    overlays.push({ input: caption(branch, 272), left: branchLeft, top: 50 });
     overlays.push({
       input: technologyBranchConnectors(),
       left: branchLeft,
@@ -283,11 +284,11 @@ async function technologyTree(faction: "original" | "candy"): Promise<void> {
     for (const [index, tech] of branchTechs.entries()) {
       const id = `ui-tech-${faction}-${tech}`;
       const position = [
-        { left: 54, top: 0 },
-        { left: 1, top: 158 },
-        { left: 1, top: 316 },
-        { left: 107, top: 158 },
-        { left: 107, top: 316 },
+        { left: 71, top: 0 },
+        { left: 3, top: 196 },
+        { left: 3, top: 392 },
+        { left: 139, top: 196 },
+        { left: 139, top: 392 },
       ][index];
       if (position === undefined) throw new Error("Unexpected branch size");
       const state =
@@ -309,7 +310,7 @@ async function technologyTree(faction: "original" | "candy"): Promise<void> {
       });
     }
   }
-  await canvas(1100, 510, overlays, `technology-tree-${faction}.png`);
+  await canvas(1400, 660, overlays, `technology-tree-${faction}.png`);
 }
 
 async function technologyAccessibility(): Promise<void> {
@@ -515,7 +516,11 @@ async function techCard(
     available: "#705615",
     unavailable: "#252832",
   };
-  const icon = await resized(id, 64);
+  const icon = await resizedViewport(
+    id,
+    technologyViewport.width,
+    technologyViewport.height,
+  );
   const stroke =
     state === "researched"
       ? "#b5ffd0"
@@ -523,26 +528,26 @@ async function techCard(
         ? "#ffe891"
         : "#d4dcdb";
   const border = Buffer.from(
-    `<svg width="100" height="110" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="94" height="104" rx="10" fill="none" stroke="${stroke}" stroke-width="${state === "researched" ? 5 : 3}" ${state === "unavailable" ? 'stroke-dasharray="7 5"' : ""}/>${state === "researched" ? '<rect x="8" y="8" width="84" height="94" rx="7" fill="none" stroke="#b5ffd0" stroke-width="2"/>' : ""}</svg>`,
+    `<svg width="130" height="178" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="124" height="172" rx="10" fill="none" stroke="${stroke}" stroke-width="${state === "researched" ? 5 : 3}" ${state === "unavailable" ? 'stroke-dasharray="7 5"' : ""}/>${state === "researched" ? '<rect x="8" y="8" width="114" height="162" rx="7" fill="none" stroke="#b5ffd0" stroke-width="2"/>' : ""}</svg>`,
   );
   return sharp({
     create: {
-      width: 100,
-      height: 110,
+      width: 130,
+      height: 178,
       channels: 4,
       background: colors[state] ?? "#343641",
     },
   })
     .composite([
-      { input: icon, left: 18, top: 5 },
-      { input: svgText(name, 92, 20, 9, "#f8f2df"), left: 4, top: 70 },
+      { input: icon, left: 9, top: 5 },
+      { input: svgText(name, 122, 18, 9, "#f8f2df"), left: 4, top: 139 },
       ...(cost === null
         ? []
         : [
             {
-              input: svgText(`${cost} Coins`, 92, 18, 9, "#ffe891"),
+              input: svgText(`${cost} Coins`, 122, 16, 9, "#ffe891"),
               left: 4,
-              top: 88,
+              top: 156,
             },
           ]),
       { input: border, left: 0, top: 0 },
@@ -553,7 +558,7 @@ async function techCard(
 
 function technologyBranchConnectors(): Buffer {
   return Buffer.from(
-    '<svg width="208" height="426" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#d4dcdb" stroke-width="2"><path d="M104 110 V134 H51 M104 134 H157 M51 134 V158 M157 134 V158 M51 268 V316 M157 268 V316"/></g></svg>',
+    '<svg width="272" height="570" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#d4dcdb" stroke-width="2"><path d="M136 178 V187 H68 M136 187 H204 M68 187 V196 M204 187 V196 M68 374 V392 M204 374 V392"/></g></svg>',
   );
 }
 
@@ -637,6 +642,21 @@ async function resized(
     .resize(size, size, {
       fit: "contain",
       kernel: nearest ? sharp.kernel.nearest : sharp.kernel.lanczos3,
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    })
+    .png()
+    .toBuffer();
+}
+
+async function resizedViewport(
+  id: string,
+  width: number,
+  height: number,
+): Promise<Buffer> {
+  return sharp(outputFor(id))
+    .resize(width, height, {
+      fit: "contain",
+      kernel: sharp.kernel.lanczos3,
       background: { r: 0, g: 0, b: 0, alpha: 0 },
     })
     .png()
@@ -732,13 +752,13 @@ async function writeEvidence(): Promise<void> {
       }),
     ),
     review: {
-      sizes: [16, 24, 32, 48, 64],
+      sizes: [16, 24, 32, 48, 64, "112x130 technology viewport"],
       surfaces: ["light", "dark", "high-contrast"],
       simulations: ["grayscale", "protan", "deutan"],
       states: ["normal", "disabled", "focus", "selected", "locked"],
       technologyCardStates: ["researched", "available", "unavailable"],
       technologyCardVisibleContent:
-        "64px icon, name, and Coin cost only while unresearched",
+        "112x130px icon viewport, name, and Coin cost only while unresearched",
       technologyLayout:
         "prerequisite-derived root fork with two tier-2 and aligned tier-3 continuations",
       viewports: [320, 600, 1024],
@@ -764,7 +784,7 @@ async function writeEvidence(): Promise<void> {
   );
   await writeFile(
     path.join(reviewRoot, "README.md"),
-    `# Ruleset 6 technology, economy, and action UI review\n\nGenerated deterministically by \`npm run art:ruleset6-tech-economy-ui-review\`. The sheets cover the serial three-sample gate, 16/24/32/48/64px use, light/dark/high-contrast, grayscale and color-vision simulations, semantic states, 320/600/1024px layouts, 200% zoom, DPR 1/2, and both explicit 25-node faction trees.\n\nClear Forest and Replant Forest remain shape-distinct (axe/stump versus sapling/trowel). Move/Attack targeting and dynamic states remain code-native; every visible contextual action and reward resolves through the explicit runtime inventory.\n`,
+    `# Ruleset 6 technology, economy, and action UI review\n\nGenerated deterministically by \`npm run art:ruleset6-tech-economy-ui-review\`. The sheets cover the serial three-sample gate, 16/24/32/48/64px use plus the exact 112 x 130 technology viewport, light/dark/high-contrast, grayscale and color-vision simulations, semantic states, 320/600/1024px layouts, 200% zoom, DPR 1/2, and both explicit 25-node faction trees.\n\nClear Forest and Replant Forest remain shape-distinct (axe/stump versus sapling/trowel). Move/Attack targeting and dynamic states remain code-native; every visible contextual action and reward resolves through the explicit runtime inventory.\n`,
     "utf8",
   );
 }

@@ -104,6 +104,22 @@ export interface BrowserSmokeContextActionLayoutV6 {
   }[];
 }
 
+export interface BrowserSmokeTechnologyIconLayoutV6 {
+  readonly artContract: {
+    readonly width: number;
+    readonly height: number;
+  };
+  readonly icons: readonly {
+    readonly tech: string | null;
+    readonly symbolKind: string | null;
+    readonly assetId: string | null;
+    readonly symbolRect: BrowserSmokeRectV6;
+    readonly imageRect: BrowserSmokeRectV6 | null;
+    readonly imageObjectFit: string | null;
+    readonly rasterLoaded: boolean | null;
+  }[];
+}
+
 export interface BrowserSmokeSelectionIdentityV6 {
   readonly kind: string | null;
   readonly title: string;
@@ -190,6 +206,7 @@ export interface BrowserSmokeIntegratedAcceptanceV6 {
     readonly topologyFaithful: boolean;
     readonly compactCardContent: boolean;
     readonly iconDominant: boolean;
+    readonly iconLayout: BrowserSmokeTechnologyIconLayoutV6;
     readonly threeStatesAccessible: boolean;
     readonly highContrastDistinct: boolean;
     readonly desktopUnclipped: boolean;
@@ -500,6 +517,9 @@ export function flowContractIssuesV6(
     );
   }
   const technology = flow.acceptance.technology;
+  const technologyIconIssues = technologyIconLayoutIssuesV6(
+    technology.iconLayout,
+  );
   if (
     technology.mainResearchButtonCount !== 0 ||
     technology.mainContextCommandCount !== 0 ||
@@ -508,6 +528,7 @@ export function flowContractIssuesV6(
     !technology.topologyFaithful ||
     !technology.compactCardContent ||
     !technology.iconDominant ||
+    technologyIconIssues.length > 0 ||
     !technology.threeStatesAccessible ||
     !technology.highContrastDistinct ||
     !technology.desktopUnclipped ||
@@ -540,6 +561,56 @@ export function flowContractIssuesV6(
     readiness.handledChangedPixels !== 0
   ) {
     issues.push("readiness motion acceptance is incomplete");
+  }
+  return issues;
+}
+
+export function technologyIconLayoutIssuesV6(
+  layout: BrowserSmokeTechnologyIconLayoutV6,
+): readonly string[] {
+  const issues: string[] = [];
+  const tolerance = 1;
+  if (
+    Math.abs(layout.artContract.width - 112) > tolerance ||
+    Math.abs(layout.artContract.height - 130) > tolerance
+  ) {
+    issues.push("technology art does not use the 112 x 130 viewport");
+  }
+  const ids = layout.icons.map(({ tech }) => tech);
+  if (
+    ids.length !== RULESET6_SMOKE_TECH_IDS.length ||
+    JSON.stringify(ids) !== JSON.stringify(RULESET6_SMOKE_TECH_IDS)
+  ) {
+    issues.push(
+      "technology icon layout does not cover the frozen 25-node order",
+    );
+  }
+  for (const icon of layout.icons) {
+    const label = icon.tech ?? "unknown technology";
+    if (
+      Math.abs(icon.symbolRect.width - layout.artContract.width) > tolerance ||
+      Math.abs(icon.symbolRect.height - layout.artContract.height) > tolerance
+    ) {
+      issues.push(
+        `${label} technology artwork does not use the shared viewport`,
+      );
+    }
+    if (
+      icon.symbolKind !== "accepted-raster" ||
+      icon.assetId === null ||
+      icon.imageRect === null ||
+      icon.imageObjectFit !== "contain" ||
+      icon.rasterLoaded !== true
+    ) {
+      issues.push(`${label} technology raster is not loaded and contained`);
+      continue;
+    }
+    if (
+      Math.abs(icon.imageRect.width - icon.symbolRect.width) > tolerance ||
+      Math.abs(icon.imageRect.height - icon.symbolRect.height) > tolerance
+    ) {
+      issues.push(`${label} technology raster does not fill its viewport box`);
+    }
   }
   return issues;
 }

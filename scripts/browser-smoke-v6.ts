@@ -889,12 +889,17 @@ async function browseAndResearchTechnology(
     connection,
     `document.querySelector('[data-tech-screen]') !== null`,
   );
+  await waitForExpression(
+    connection,
+    `[...document.querySelectorAll('[data-tech-tree] .v6-tech-card-symbol img')].length === 25 && [...document.querySelectorAll('[data-tech-tree] .v6-tech-card-symbol img')].every((image) => image.complete && image.naturalWidth > 0)`,
+  );
   const overview = await evaluate<{
     readonly ids: readonly string[];
     readonly branches: number;
     readonly topologyFaithful: boolean;
     readonly compactCardContent: boolean;
     readonly iconDominant: boolean;
+    readonly iconLayout: BrowserSmokeIntegratedAcceptanceV6["technology"]["iconLayout"];
     readonly threeStatesAccessible: boolean;
     readonly desktopUnclipped: boolean;
   }>(
@@ -923,6 +928,28 @@ async function browseAndResearchTechnology(
         const iconRect = icon.getBoundingClientRect();
         return iconRect.width >= cardRect.width * 0.48 && iconRect.height >= cardRect.height * 0.48;
       });
+      const treeStyle = getComputedStyle(tree);
+      const iconLayout = {
+        artContract: {
+          width: Number.parseFloat(treeStyle.getPropertyValue('--v6-map-max-unit-art-width')),
+          height: Number.parseFloat(treeStyle.getPropertyValue('--v6-map-max-unit-art-height'))
+        },
+        icons: cards.map((card) => {
+          const symbol = card.querySelector('.v6-tech-card-symbol');
+          if (!(symbol instanceof HTMLElement)) throw new Error('Technology symbol is missing');
+          const image = symbol.querySelector('img');
+          const toRect = (node) => { const rect = node.getBoundingClientRect(); return { x: rect.x, y: rect.y, width: rect.width, height: rect.height }; };
+          return {
+            tech: card.getAttribute('data-tech'),
+            symbolKind: symbol.dataset.symbolKind ?? null,
+            assetId: symbol.dataset.assetId ?? null,
+            symbolRect: toRect(symbol),
+            imageRect: image instanceof HTMLImageElement ? toRect(image) : null,
+            imageObjectFit: image instanceof HTMLImageElement ? getComputedStyle(image).objectFit : null,
+            rasterLoaded: image instanceof HTMLImageElement ? image.complete && image.naturalWidth > 0 : null
+          };
+        })
+      };
       const states = new Set(cards.map((card) => card.getAttribute('data-state')));
       const threeStatesAccessible = states.size === 3 && ['researched', 'available', 'unavailable'].every((state) => states.has(state)) && cards.every((card) => {
         const label = card.getAttribute('aria-label') ?? '';
@@ -931,7 +958,7 @@ async function browseAndResearchTechnology(
       });
       const screen = document.querySelector('[data-tech-screen]');
       const desktopUnclipped = screen instanceof HTMLElement && screen.scrollHeight <= screen.clientHeight + 1 && cards.every((card) => { const rect = card.getBoundingClientRect(); return rect.left >= 0 && rect.top >= 0 && rect.right <= innerWidth && rect.bottom <= innerHeight; });
-      return { ids: cards.map((card) => card.getAttribute('data-tech')), branches: branches.length, topologyFaithful, compactCardContent, iconDominant, threeStatesAccessible, desktopUnclipped };
+      return { ids: cards.map((card) => card.getAttribute('data-tech')), branches: branches.length, topologyFaithful, compactCardContent, iconDominant, iconLayout, threeStatesAccessible, desktopUnclipped };
     })()`,
   );
   if (
@@ -1034,6 +1061,7 @@ async function browseAndResearchTechnology(
       topologyFaithful: overview.topologyFaithful,
       compactCardContent: overview.compactCardContent,
       iconDominant: overview.iconDominant,
+      iconLayout: overview.iconLayout,
       threeStatesAccessible: overview.threeStatesAccessible,
       highContrastDistinct,
       desktopUnclipped: overview.desktopUnclipped,

@@ -377,7 +377,8 @@
       24,
       32,
       48,
-      64
+      64,
+      "112x130 technology viewport"
     ],
     "surfaces": [
       "light",
@@ -401,7 +402,7 @@
       "available",
       "unavailable"
     ],
-    "technologyCardVisibleContent": "64px icon, name, and Coin cost only while unresearched",
+    "technologyCardVisibleContent": "112x130px icon viewport, name, and Coin cost only while unresearched",
     "technologyLayout": "prerequisite-derived root fork with two tier-2 and aligned tier-3 continuations",
     "viewports": [
       320,
@@ -434,8 +435,8 @@
     "sample-gate-native-enlarged-minimum.png": "09292ab4bbf5beca22f005db23e392c0440c988e329436772e7bed8074dfec8b",
     "hud-size-contrast-grayscale.png": "b7accf6359ff0e61f21b975ed345545effc87d1c81c52140f0a7a60c91fe79e0",
     "action-reward-states-grayscale.png": "92491af7762e6db511660ab512dd58fbd34b486d6b1649b02c9f286634488c69",
-    "technology-tree-original.png": "9cf93bfeb2b1158e292eb14cc845b98fb7836ffc61b5e1ae95afa064c1aa3172",
-    "technology-tree-candy.png": "490810e3286d7b8340bc04be36b94b8e1a27ecd7a3567efb0b6197a79e8d0baf",
+    "technology-tree-original.png": "d00aa67ab9bf841f4e5657c7c8232ae71799750fe9133153248b45a4075819d8",
+    "technology-tree-candy.png": "690730b375944efedc0598c55e7d5ef8d2d5f4d7e7051b49594fd9d330e5e793",
     "five-branch-color-vision.png": "f9542efaf9f3644bed1915b7ed1801fb2dc0f150aefaaa1eab0003315fbe7568",
     "responsive-320-600-1024-dpr-zoom.png": "17f8264fffb6bd3ee66c163ad4c9b0f29a88aa6b2307a954e01c5b15ded6d187",
     "responsive-600-dpr2-native.png": "516a3daf60b5ab4109d3d199ed224e91cabacf3d5e9af5a8ede890b42bca1e5f"

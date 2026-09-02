@@ -176,10 +176,13 @@ describe("DOM UI architecture and responsive contract", () => {
       /\.v6-tech-children\s*\{[^}]*grid-template-columns:\s*repeat\([^}]*--v6-tech-child-count/s,
     );
     expect(css).toMatch(
-      /\.v6-tech-card\s*\{[^}]*grid-template-rows:\s*4rem auto[^}]*width:\s*min\(7\.75rem, 100%\)[^}]*min-height:\s*7\.15rem/s,
+      /\.v6-tech-card\s*\{[^}]*grid-template-rows:\s*var\(--v6-map-max-unit-art-height\) auto[^}]*width:\s*min\(calc\(var\(--v6-map-max-unit-art-width\) \+ 18px\), 100%\)[^}]*min-height:\s*calc\(var\(--v6-map-max-unit-art-height\) \+ 3rem\)/s,
     );
     expect(css).toMatch(
-      /\.v6-tech-card \.v6-tech-card-symbol\s*\{[^}]*width:\s*4rem[^}]*height:\s*4rem[^}]*border:\s*0[^}]*background:\s*transparent/s,
+      /\.v6-tech-card \.v6-tech-card-symbol\s*\{[^}]*width:\s*var\(--v6-map-max-unit-art-width\)[^}]*height:\s*var\(--v6-map-max-unit-art-height\)[^}]*border:\s*0[^}]*background:\s*transparent/s,
+    );
+    expect(css).toMatch(
+      /\.v6-tech-card[\s\S]*\.v6-tech-card-symbol\[data-symbol-kind="code-native-fallback"\]\s*\{[^}]*border:\s*2px solid currentcolor[^}]*background:/s,
     );
     expect(css).toMatch(/\.v6-tech-card\.researched\s*\{[^}]*double/s);
     expect(css).toMatch(/\.v6-tech-card\.available\s*\{[^}]*solid/s);

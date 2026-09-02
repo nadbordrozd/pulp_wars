@@ -2,6 +2,7 @@
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { chooseNormalCommandV6 } from "../../src/ai/index";
+import { technologyArtIdV6 } from "../../src/assets/ruleset6-ui-art";
 import {
   bootstrapRuleset6App,
   type Ruleset6BrowserController,
@@ -694,6 +695,48 @@ describe("playable ruleset-6 DOM shell", () => {
       ).toBe(`unit-candy-${role.toLowerCase()}`);
 
     app.destroy();
+  });
+
+  it("renders all 25 faction technology symbols as accepted raster artwork in the shared viewport", () => {
+    for (const faction of ["ORIGINAL", "CANDY"] as const) {
+      const view = publicView(faction);
+      const fake = new FakeController(view, commandCatalogue(view));
+      const host = new FakeBoardHostV6();
+      const app = new Ruleset6DomAppView(
+        document,
+        requireElement("#app"),
+        fake,
+        { boardHost: host },
+      );
+
+      document.dispatchEvent(
+        new KeyboardEvent("keydown", {
+          key: "t",
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+      const cards = [
+        ...document.querySelectorAll<HTMLButtonElement>("button[data-tech]"),
+      ];
+      expect(cards.map(({ dataset }) => dataset.tech)).toEqual(TECHNOLOGY_IDS);
+      for (const [index, technology] of TECHNOLOGY_IDS.entries()) {
+        const symbol = cards[index]?.querySelector<HTMLElement>(
+          ".v6-tech-card-symbol",
+        );
+        expect(symbol?.dataset.symbolKind).toBe("accepted-raster");
+        expect(symbol?.dataset.assetId).toBe(
+          technologyArtIdV6(faction, technology),
+        );
+        const image = symbol?.querySelector<HTMLImageElement>("img");
+        expect(image).not.toBeNull();
+        expect(image?.alt).toBe("");
+        expect(image?.src).toContain("/assets/");
+      }
+
+      app.destroy();
+      document.body.innerHTML = '<div id="app"></div>';
+    }
   });
 
   it("renders compact art-led unit, city, and tile identities above their actions without coordinates", () => {

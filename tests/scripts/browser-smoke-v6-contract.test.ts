@@ -6,6 +6,7 @@ import {
   contextActionLayoutIssuesV6,
   flowContractIssuesV6,
   layoutContractIssuesV6,
+  technologyIconLayoutIssuesV6,
   type BrowserSmokeFlowEvidenceV6,
   type BrowserSmokeLayoutV6,
 } from "../../scripts/browser-smoke-v6-contract";
@@ -102,6 +103,42 @@ describe("ruleset-6 browser smoke contract", () => {
         "TRAIN artwork does not use the shared viewport",
         "TRAIN label is not legible",
       ]),
+    );
+  });
+
+  it("requires the shared loaded and contained map-size viewport for all 25 technology icons", () => {
+    const valid = technologyIconLayout();
+    expect(technologyIconLayoutIssuesV6(valid)).toEqual([]);
+    const first = valid.icons[0];
+    if (first === undefined) throw new Error("Missing technology icon fixture");
+    expect(
+      technologyIconLayoutIssuesV6({
+        artContract: { width: 64, height: 64 },
+        icons: valid.icons.map((icon, index) =>
+          index === 0
+            ? {
+                ...first,
+                symbolRect: { ...first.symbolRect, width: 64, height: 64 },
+                imageRect: { ...first.symbolRect, width: 60, height: 64 },
+                imageObjectFit: "cover",
+                rasterLoaded: false,
+              }
+            : icon,
+        ),
+      }),
+    ).toEqual(
+      expect.arrayContaining([
+        "technology art does not use the 112 x 130 viewport",
+        "GATHERING technology raster is not loaded and contained",
+      ]),
+    );
+    expect(
+      technologyIconLayoutIssuesV6({
+        ...valid,
+        icons: valid.icons.slice(1),
+      }),
+    ).toContain(
+      "technology icon layout does not cover the frozen 25-node order",
     );
   });
 
@@ -219,6 +256,7 @@ function validFlow(): BrowserSmokeFlowEvidenceV6 {
         topologyFaithful: true,
         compactCardContent: true,
         iconDominant: true,
+        iconLayout: technologyIconLayout(),
         threeStatesAccessible: true,
         highContrastDistinct: true,
         desktopUnclipped: true,
@@ -267,6 +305,31 @@ function validFlow(): BrowserSmokeFlowEvidenceV6 {
       }));
     }),
   };
+}
+
+function technologyIconLayout() {
+  return {
+    artContract: { width: 112, height: 130 },
+    icons: RULESET6_SMOKE_TECH_IDS.map((tech, index) => ({
+      tech,
+      symbolKind: "accepted-raster",
+      assetId: `ui-tech-original-${tech.toLowerCase().replaceAll("_", "-")}`,
+      symbolRect: {
+        x: 8 + (index % 5) * 128,
+        y: 100 + Math.floor(index / 5) * 180,
+        width: 112,
+        height: 130,
+      },
+      imageRect: {
+        x: 8 + (index % 5) * 128,
+        y: 100 + Math.floor(index / 5) * 180,
+        width: 112,
+        height: 130,
+      },
+      imageObjectFit: "contain",
+      rasterLoaded: true,
+    })),
+  } as const;
 }
 
 function selectionIdentity(kind: "UNIT" | "CITY" | "TILE", title: string) {

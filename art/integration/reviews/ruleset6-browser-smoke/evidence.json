@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-02T21:49:12.223Z",
+  "generatedAt": "2026-09-02T22:08:33.478Z",
   "generatedBy": "npm run smoke:browser",
   "rulesetId": "pulp-wars-poc-6",
   "productionEntry": "src/main.ts",
@@ -629,6 +629,489 @@
           "topologyFaithful": true,
           "compactCardContent": true,
           "iconDominant": true,
+          "iconLayout": {
+            "artContract": {
+              "width": 112,
+              "height": 130
+            },
+            "icons": [
+              {
+                "tech": "GATHERING",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-original-gathering",
+                "symbolRect": {
+                  "x": 95.546875,
+                  "y": 251.265625,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 95.546875,
+                  "y": 251.265625,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "FARMING",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-original-farming",
+                "symbolRect": {
+                  "x": 27.265625,
+                  "y": 452.046875,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 27.265625,
+                  "y": 452.046875,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "MILLING",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-original-milling",
+                "symbolRect": {
+                  "x": 27.265625,
+                  "y": 654.828125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 27.265625,
+                  "y": 654.828125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "CRAFT",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-original-craft",
+                "symbolRect": {
+                  "x": 163.828125,
+                  "y": 451.046875,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 163.828125,
+                  "y": 451.046875,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "GRAND_WORKS",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-original-grand-works",
+                "symbolRect": {
+                  "x": 163.828125,
+                  "y": 654.828125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 163.828125,
+                  "y": 654.828125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "HUNTING",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-original-hunting",
+                "symbolRect": {
+                  "x": 379.765625,
+                  "y": 250.265625,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 379.765625,
+                  "y": 250.265625,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "FORESTRY",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-original-forestry",
+                "symbolRect": {
+                  "x": 311.484375,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 311.484375,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "SAWMILLING",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-original-sawmilling",
+                "symbolRect": {
+                  "x": 311.484375,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 311.484375,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "MARKSMANSHIP",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-original-marksmanship",
+                "symbolRect": {
+                  "x": 448.046875,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 448.046875,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "FIELDCRAFT",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-original-fieldcraft",
+                "symbolRect": {
+                  "x": 448.046875,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 448.046875,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "SURVEYING",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-original-surveying",
+                "symbolRect": {
+                  "x": 663.984375,
+                  "y": 250.265625,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 663.984375,
+                  "y": 250.265625,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "MINING",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-original-mining",
+                "symbolRect": {
+                  "x": 595.703125,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 595.703125,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "METALLURGY",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-original-metallurgy",
+                "symbolRect": {
+                  "x": 595.703125,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 595.703125,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "QUARRYING",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-original-quarrying",
+                "symbolRect": {
+                  "x": 732.265625,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 732.265625,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "MASONRY",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-original-masonry",
+                "symbolRect": {
+                  "x": 732.265625,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 732.265625,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "SCOUTING",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-original-scouting",
+                "symbolRect": {
+                  "x": 948.21875,
+                  "y": 250.265625,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 948.21875,
+                  "y": 250.265625,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "ROADS",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-original-roads",
+                "symbolRect": {
+                  "x": 879.9375,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 879.9375,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "COMMERCE",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-original-commerce",
+                "symbolRect": {
+                  "x": 879.9375,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 879.9375,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "RAIDING",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-original-raiding",
+                "symbolRect": {
+                  "x": 1016.5,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 1016.5,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "MANEUVER",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-original-maneuver",
+                "symbolRect": {
+                  "x": 1016.5,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 1016.5,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "DRILL",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-original-drill",
+                "symbolRect": {
+                  "x": 1232.4375,
+                  "y": 250.265625,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 1232.4375,
+                  "y": 250.265625,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "FORTIFICATION",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-original-fortification",
+                "symbolRect": {
+                  "x": 1164.15625,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 1164.15625,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "EXPLOSIVES",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-original-explosives",
+                "symbolRect": {
+                  "x": 1164.15625,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 1164.15625,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "MEDICINE",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-original-medicine",
+                "symbolRect": {
+                  "x": 1300.71875,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 1300.71875,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "RECOVERY",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-original-recovery",
+                "symbolRect": {
+                  "x": 1300.71875,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 1300.71875,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              }
+            ]
+          },
           "threeStatesAccessible": true,
           "highContrastDistinct": true,
           "desktopUnclipped": true,
@@ -648,8 +1131,8 @@
           "exactChoiceAccepted": true
         },
         "readiness": {
-          "fullDesktopChangedPixels": 1800,
-          "fullMobileChangedPixels": 3320,
+          "fullDesktopChangedPixels": 1803,
+          "fullMobileChangedPixels": 3325,
           "reducedDesktopChangedPixels": 0,
           "reducedMobileChangedPixels": 0,
           "handledChangedPixels": 0
@@ -768,8 +1251,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-high-contrast-mobile-native.png",
-          "bytes": 306825,
-          "sha256": "1e2a3ed0155b24e5e518a1a36f83dca24314cc27250a0dad3664a085e4543a99",
+          "bytes": 306793,
+          "sha256": "c3a5a67d87014e554b39c4d84a7ed34becd638aaf932c42facb2c95adc42a3f4",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -782,8 +1265,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-high-contrast-mobile-enlarged.png",
-          "bytes": 535999,
-          "sha256": "c0099cab6efd7785a9fee1f4fb77d922ddb0560a09c73f16577e179b7521e5a0",
+          "bytes": 536066,
+          "sha256": "0b1c6083e31daa8ac46fd97b0800583121d26d3f3b612ea59216206a67db294e",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -824,8 +1307,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-desktop-native.png",
-          "bytes": 315895,
-          "sha256": "682824b3e4773bd65f942f2fd9db6f11c526fb7f0df73159ec036871cace88d8",
+          "bytes": 315846,
+          "sha256": "f8c9f0ad1b064ba7b37c42a09853ad50e14ea8ce83c82e9a6712fb604b20d664",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -838,8 +1321,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-desktop-enlarged.png",
-          "bytes": 544146,
-          "sha256": "0c202555b9d9fff2f1dc75242d68ece547aa691127ed5758edb618428ff8d12a",
+          "bytes": 544181,
+          "sha256": "88d13635fcf638e3cd81551dbe7ab52c1d4cd55bebabeab6c1534f74eada6bcf",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -992,8 +1475,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-overview-desktop-native.png",
-          "bytes": 271676,
-          "sha256": "0f12cd118312475e8685c62abc0cba9e240e010f2edbd3a136c0b8969f616943",
+          "bytes": 379555,
+          "sha256": "d3230097240b81adaa94f4a67b0a7ba44e1e75c50826e082e0972cb565cc5d1c",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1006,8 +1489,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-overview-desktop-enlarged.png",
-          "bytes": 479797,
-          "sha256": "8476e47848015a6a9a1b5656e5666f0a0b2211f521249b9a78fb477852eda8d2",
+          "bytes": 692769,
+          "sha256": "b5826c4342e3d5e7bd6a4c821c4c7ee38eee1dd43078a637510cc4801155a80b",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -1020,8 +1503,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-overview-mobile-native.png",
-          "bytes": 222317,
-          "sha256": "48fb215cca55de77cc87f96b23b5035dfd6997c801fafb489d7fe249182259af",
+          "bytes": 245918,
+          "sha256": "4c9308370cd5914b3c51a090cdbbfb8f9eadc7d6e9d733032c199577f51a8133",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1034,8 +1517,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-overview-mobile-enlarged.png",
-          "bytes": 354719,
-          "sha256": "c27653f8090147d929f2223008fdb42a51aef853ec24116a2a837100434ca735",
+          "bytes": 399188,
+          "sha256": "037aa0a39ec6b1c1af78e87ec5fce8179bcba1ad86164c057a8a194d5764d0ca",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -1048,8 +1531,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-contrast-mobile-native.png",
-          "bytes": 218902,
-          "sha256": "e7ad39a2b3a6f31947d5c7b1935ec461e4fcf3ec29f0c0233d9332895af71cc4",
+          "bytes": 246108,
+          "sha256": "58de16d5cc562f025181ff36efc108fc022f354bfbc2d79c74e011be4dc5a071",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1062,8 +1545,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-contrast-mobile-enlarged.png",
-          "bytes": 357475,
-          "sha256": "bf0df2a070d6afb253edf86058901ec8273e55269ecdbc8d8fd007228dfe6b83",
+          "bytes": 416135,
+          "sha256": "758e3dc4a8a90b6d87da2f14ca4ecd17516ffc9e79949a770065d1b72de17c90",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -1076,8 +1559,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-detail-mobile-native.png",
-          "bytes": 145606,
-          "sha256": "aa3a0402709be92ad086712185f02d4dffddf91ebd0045201c7d870c89c69bc7",
+          "bytes": 145232,
+          "sha256": "30db34a7c19faa6cf653003c40b7958a89ae1551ec32e975970f9d5ab98fad04",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1090,8 +1573,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-detail-mobile-enlarged.png",
-          "bytes": 238816,
-          "sha256": "153609d07d9ecf6ef7410aad32221c477f8d7165e184e6dbca5f3979386a7c5e",
+          "bytes": 238928,
+          "sha256": "303b4b9a71e7c74e69dd8a3594c8778de0cbb4b101e85391f9bf835c7e0b41d7",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -1682,6 +2165,489 @@
           "topologyFaithful": true,
           "compactCardContent": true,
           "iconDominant": true,
+          "iconLayout": {
+            "artContract": {
+              "width": 112,
+              "height": 130
+            },
+            "icons": [
+              {
+                "tech": "GATHERING",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-candy-gathering",
+                "symbolRect": {
+                  "x": 95.546875,
+                  "y": 251.265625,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 95.546875,
+                  "y": 251.265625,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "FARMING",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-candy-farming",
+                "symbolRect": {
+                  "x": 27.265625,
+                  "y": 452.046875,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 27.265625,
+                  "y": 452.046875,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "MILLING",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-candy-milling",
+                "symbolRect": {
+                  "x": 27.265625,
+                  "y": 654.828125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 27.265625,
+                  "y": 654.828125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "CRAFT",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-candy-craft",
+                "symbolRect": {
+                  "x": 163.828125,
+                  "y": 451.046875,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 163.828125,
+                  "y": 451.046875,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "GRAND_WORKS",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-candy-grand-works",
+                "symbolRect": {
+                  "x": 163.828125,
+                  "y": 654.828125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 163.828125,
+                  "y": 654.828125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "HUNTING",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-candy-hunting",
+                "symbolRect": {
+                  "x": 379.765625,
+                  "y": 250.265625,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 379.765625,
+                  "y": 250.265625,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "FORESTRY",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-candy-forestry",
+                "symbolRect": {
+                  "x": 311.484375,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 311.484375,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "SAWMILLING",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-candy-sawmilling",
+                "symbolRect": {
+                  "x": 311.484375,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 311.484375,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "MARKSMANSHIP",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-candy-marksmanship",
+                "symbolRect": {
+                  "x": 448.046875,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 448.046875,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "FIELDCRAFT",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-candy-fieldcraft",
+                "symbolRect": {
+                  "x": 448.046875,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 448.046875,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "SURVEYING",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-candy-surveying",
+                "symbolRect": {
+                  "x": 663.984375,
+                  "y": 250.265625,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 663.984375,
+                  "y": 250.265625,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "MINING",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-candy-mining",
+                "symbolRect": {
+                  "x": 595.703125,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 595.703125,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "METALLURGY",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-candy-metallurgy",
+                "symbolRect": {
+                  "x": 595.703125,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 595.703125,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "QUARRYING",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-candy-quarrying",
+                "symbolRect": {
+                  "x": 732.265625,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 732.265625,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "MASONRY",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-candy-masonry",
+                "symbolRect": {
+                  "x": 732.265625,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 732.265625,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "SCOUTING",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-candy-scouting",
+                "symbolRect": {
+                  "x": 948.21875,
+                  "y": 250.265625,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 948.21875,
+                  "y": 250.265625,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "ROADS",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-candy-roads",
+                "symbolRect": {
+                  "x": 879.9375,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 879.9375,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "COMMERCE",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-candy-commerce",
+                "symbolRect": {
+                  "x": 879.9375,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 879.9375,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "RAIDING",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-candy-raiding",
+                "symbolRect": {
+                  "x": 1016.5,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 1016.5,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "MANEUVER",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-candy-maneuver",
+                "symbolRect": {
+                  "x": 1016.5,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 1016.5,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "DRILL",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-candy-drill",
+                "symbolRect": {
+                  "x": 1232.4375,
+                  "y": 250.265625,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 1232.4375,
+                  "y": 250.265625,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "FORTIFICATION",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-candy-fortification",
+                "symbolRect": {
+                  "x": 1164.15625,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 1164.15625,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "EXPLOSIVES",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-candy-explosives",
+                "symbolRect": {
+                  "x": 1164.15625,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 1164.15625,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "MEDICINE",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-candy-medicine",
+                "symbolRect": {
+                  "x": 1300.71875,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 1300.71875,
+                  "y": 452.578125,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              },
+              {
+                "tech": "RECOVERY",
+                "symbolKind": "accepted-raster",
+                "assetId": "ui-tech-candy-recovery",
+                "symbolRect": {
+                  "x": 1300.71875,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageRect": {
+                  "x": 1300.71875,
+                  "y": 655.359375,
+                  "width": 112,
+                  "height": 130
+                },
+                "imageObjectFit": "contain",
+                "rasterLoaded": true
+              }
+            ]
+          },
           "threeStatesAccessible": true,
           "highContrastDistinct": true,
           "desktopUnclipped": true,
@@ -1701,8 +2667,8 @@
           "exactChoiceAccepted": true
         },
         "readiness": {
-          "fullDesktopChangedPixels": 1602,
-          "fullMobileChangedPixels": 2950,
+          "fullDesktopChangedPixels": 1584,
+          "fullMobileChangedPixels": 2951,
           "reducedDesktopChangedPixels": 0,
           "reducedMobileChangedPixels": 0,
           "handledChangedPixels": 0
@@ -1821,8 +2787,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-high-contrast-mobile-native.png",
-          "bytes": 314406,
-          "sha256": "e7d5f7de330ce8e5c1cbbbe81864e6e36e485e0b0e32b042485652b1cd5fcacf",
+          "bytes": 314436,
+          "sha256": "8c913b8d04623133a51bdf35a2d875f320ad07e4acde5161d0106f6fab1759fb",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1835,8 +2801,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-high-contrast-mobile-enlarged.png",
-          "bytes": 548825,
-          "sha256": "c7ee8c794694c74feb5cda342d58e36755c0aa3df656a3a503f7694fe413b712",
+          "bytes": 548910,
+          "sha256": "d1ec38cd001a1704bb524803bae722c3d1edba2f2e141f9b49ca0cb51635dfce",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -1877,8 +2843,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-desktop-native.png",
-          "bytes": 320246,
-          "sha256": "43322177fdfbed20b8a3cd197c2d0763e45e194eedd648d789f2844999570bf4",
+          "bytes": 320256,
+          "sha256": "15cce8920922a54a032b636a76e85d70c5a15135b86e01b735b0d3dba2fab9a5",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1891,8 +2857,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-desktop-enlarged.png",
-          "bytes": 551213,
-          "sha256": "b39372eed163b117a24ff2f858fe67cc34f04e0c1d27600073436a4b97da5aac",
+          "bytes": 551283,
+          "sha256": "454211546bc5ea75fa099c0681757747032bb25e89dd16e08bfad9de59626ab7",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -2045,8 +3011,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-overview-desktop-native.png",
-          "bytes": 272733,
-          "sha256": "96bfc8788859b6d55300f39ce188c10ad539f70726a62c3765b71915ad7769bb",
+          "bytes": 379749,
+          "sha256": "c66987e8ce730ff1014065d9ce0412067da53e3852e8874c1d7926aa6ec264f1",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -2059,8 +3025,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-overview-desktop-enlarged.png",
-          "bytes": 479939,
-          "sha256": "ca0cef542a2cea46b974ddfd0ed7163641aec119c6b8aa46d72234725fc93325",
+          "bytes": 691653,
+          "sha256": "ce210fab2d8e8265d245e86ce8c88d8913ad0fe6be047d57b6c621d5d0cbc63d",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -2073,8 +3039,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-overview-mobile-native.png",
-          "bytes": 219897,
-          "sha256": "8b50da4b603daf63bb2adc9a2703fd58a435a43334dd790b02137edcbbfc6fce",
+          "bytes": 247401,
+          "sha256": "696aa886e3543ba6461678c4711087288997e827b38f95c11c6ca94527a953e5",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -2087,8 +3053,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-overview-mobile-enlarged.png",
-          "bytes": 347484,
-          "sha256": "ffae2d813d7d17821199e239ca448e3c40357fffd46a9614a1db5cdf5151120b",
+          "bytes": 400024,
+          "sha256": "be07897d693890d4ceca5e0d4180afd0ff77f0085058592187aeef97c8900c62",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -2101,8 +3067,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-contrast-mobile-native.png",
-          "bytes": 217867,
-          "sha256": "373e2ea3bf042784c35236248c28eb1ac1943ce35dfa803f500421a5801d6eb8",
+          "bytes": 247731,
+          "sha256": "21a9a360823924f1b414032fb53e4fa9f1ac7c95ed8d3c4bb06d711f1591e09b",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -2115,8 +3081,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-contrast-mobile-enlarged.png",
-          "bytes": 351340,
-          "sha256": "5a4f4f22eecd5638035661c33caed4c10be618775830be97c43975c5f025486d",
+          "bytes": 417188,
+          "sha256": "6a807137b8a9f173a35074b7cb6f82635be8becfca190ac018d0b836249d8919",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -2129,8 +3095,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-detail-mobile-native.png",
-          "bytes": 146762,
-          "sha256": "6b3cbf2382777fc212e0c15a2f1787a84997542147557b2c4d05628c0db72cd0",
+          "bytes": 147576,
+          "sha256": "f64a64438ff8c8c68b797e2769892b27ef8a7cc9086d60aa2165cd2139ab06ed",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -2143,8 +3109,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-detail-mobile-enlarged.png",
-          "bytes": 238723,
-          "sha256": "cf45ad8f03ffc08875945c0952b0357fe9abea6358058930687a4e7a0875400b",
+          "bytes": 241134,
+          "sha256": "d2d15ac2bc581fd18d448331f9bbeaa1a4c546cbcacdb7f7af42d718c155f120",
           "width": 1560,
           "height": 3376,
           "viewport": {
