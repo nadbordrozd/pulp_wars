@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-02T22:08:33.478Z",
+  "generatedAt": "2026-09-02T22:25:49.008Z",
   "generatedBy": "npm run smoke:browser",
   "rulesetId": "pulp-wars-poc-6",
   "productionEntry": "src/main.ts",
@@ -1131,8 +1131,8 @@
           "exactChoiceAccepted": true
         },
         "readiness": {
-          "fullDesktopChangedPixels": 1803,
-          "fullMobileChangedPixels": 3325,
+          "fullDesktopChangedPixels": 1816,
+          "fullMobileChangedPixels": 3313,
           "reducedDesktopChangedPixels": 0,
           "reducedMobileChangedPixels": 0,
           "handledChangedPixels": 0
@@ -1251,8 +1251,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-high-contrast-mobile-native.png",
-          "bytes": 306793,
-          "sha256": "c3a5a67d87014e554b39c4d84a7ed34becd638aaf932c42facb2c95adc42a3f4",
+          "bytes": 307050,
+          "sha256": "b4c689bf9e32b622cdadd228801b632e0cd0786d69416a3739f76da58c771f8a",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1265,8 +1265,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-high-contrast-mobile-enlarged.png",
-          "bytes": 536066,
-          "sha256": "0b1c6083e31daa8ac46fd97b0800583121d26d3f3b612ea59216206a67db294e",
+          "bytes": 535876,
+          "sha256": "485699be6b833e1707d97d6d5402a9667f3e7b3c8b5b9467a692506ff32954c8",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -1307,8 +1307,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-desktop-native.png",
-          "bytes": 315846,
-          "sha256": "f8c9f0ad1b064ba7b37c42a09853ad50e14ea8ce83c82e9a6712fb604b20d664",
+          "bytes": 315856,
+          "sha256": "34ede5b4430e632bd999917347adac5e565251f05ac56ab58221490dcdbf4331",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1321,8 +1321,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-desktop-enlarged.png",
-          "bytes": 544181,
-          "sha256": "88d13635fcf638e3cd81551dbe7ab52c1d4cd55bebabeab6c1534f74eada6bcf",
+          "bytes": 544011,
+          "sha256": "2283d87b7f7c3f5e4864bb43db438bea6f59c1d701d47fc9ea11344dd8133b96",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -1475,8 +1475,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-overview-desktop-native.png",
-          "bytes": 379555,
-          "sha256": "d3230097240b81adaa94f4a67b0a7ba44e1e75c50826e082e0972cb565cc5d1c",
+          "bytes": 379758,
+          "sha256": "a0fa5a7cbc8f10fc28620ad50472cadd1f8fa7daaf070be3115481c07c90cf36",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1489,8 +1489,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-overview-desktop-enlarged.png",
-          "bytes": 692769,
-          "sha256": "b5826c4342e3d5e7bd6a4c821c4c7ee38eee1dd43078a637510cc4801155a80b",
+          "bytes": 692953,
+          "sha256": "27980ee4161fe6c6fa8b3c5b0fe1bd8a5227f154656ddb4a7a0149950841e9e1",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -2667,8 +2667,8 @@
           "exactChoiceAccepted": true
         },
         "readiness": {
-          "fullDesktopChangedPixels": 1584,
-          "fullMobileChangedPixels": 2951,
+          "fullDesktopChangedPixels": 1624,
+          "fullMobileChangedPixels": 2926,
           "reducedDesktopChangedPixels": 0,
           "reducedMobileChangedPixels": 0,
           "handledChangedPixels": 0
@@ -2787,8 +2787,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-high-contrast-mobile-native.png",
-          "bytes": 314436,
-          "sha256": "8c913b8d04623133a51bdf35a2d875f320ad07e4acde5161d0106f6fab1759fb",
+          "bytes": 314483,
+          "sha256": "5ad0a9143776ff66dccd6ee810c905b63ab8420d4189a188dff6a3a843d16e8d",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -2801,8 +2801,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-high-contrast-mobile-enlarged.png",
-          "bytes": 548910,
-          "sha256": "d1ec38cd001a1704bb524803bae722c3d1edba2f2e141f9b49ca0cb51635dfce",
+          "bytes": 548922,
+          "sha256": "24b874a0a24bbbdf4362ba3dff6e1b0d2c053d51be7036f9bd505456daa02374",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -2843,8 +2843,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-desktop-native.png",
-          "bytes": 320256,
-          "sha256": "15cce8920922a54a032b636a76e85d70c5a15135b86e01b735b0d3dba2fab9a5",
+          "bytes": 320212,
+          "sha256": "68de52da51fdab88ab69e4ee3b467764f435e27231f390061ee09260ac46a407",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -2857,8 +2857,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-desktop-enlarged.png",
-          "bytes": 551283,
-          "sha256": "454211546bc5ea75fa099c0681757747032bb25e89dd16e08bfad9de59626ab7",
+          "bytes": 550907,
+          "sha256": "2278a005aadb038622df51b613aac2a5700b9c7fac27379e6fcb7d54df6290fd",
           "width": 2880,
           "height": 2000,
           "viewport": {
