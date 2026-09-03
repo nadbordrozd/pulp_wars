@@ -78,6 +78,40 @@ all-adjacency, dense mixed-faction, overlay, unchanged-unit, zoom, and DPR
 evidence. Accepted URLs remain unwired from runtime terrain coverage until the
 dedicated renderer integration bead.
 
+### Square resources and Road material
+
+The accepted square resource family contains exactly eight PixelLab source
+assets: Original and Candy Fruit, Original and Candy Game/Animal, shared Ore,
+Fertile Ground and Stone, plus one shared Road material. Resource overlays use
+an untrimmed transparent 256 x 384 canvas at anchor `(128,256)` and display at
+0.5 source scale. Their owning square is `x=0..255,y=128..383`; all resource
+alpha remains inside that square, including its left, right and bottom edges.
+Fruit bottoms align to source `y=320`, Game/Animal and Fertile Ground to
+`y=324`, and Ore and Stone to `y=320`. This gives the low objects useful access
+to the square's lower half without cosmetic runtime offsets.
+
+Original and Candy Fruit each use one broad three-form harvest cluster. The
+two Game/Animal assets are low southeast-facing boars: they draw after their
+faction Forest canopy and before any unit. Ore is one three-face amber vein and
+Stone one three-boulder blue-slate deposit; both are shared across factions.
+Fertile Ground is a broad centered soil patch with two sparse sprouts and must
+remain visually distinct from the later merged Farm treatment. These resources
+remain visible whenever authoritative visibility reveals them even if their
+harvest/build action technology is still locked. An unrevealed resource emits
+no raster, preserving hidden-resource safety.
+
+The accepted Road material is a full opaque 256 x 256 swatch at `(128,128)`.
+Checked-in deterministic processing radius-18 blurs the PixelLab swatch,
+retains sixteen percent of its authored color over canonical warm taupe
+`#9f8a67`, applies only a restrained northwest-to-southeast light drift, and
+converges the outer 24 pixels for equal opposing-edge material. The
+`orthogonal-square-road-mask-v1` derivation produces exactly 16 N/E/S/W masks
+on the same canvas. Enabled arms touch only the exact midpoint of their square
+edge; corners and diagonal joins remain transparent. Accepted IDs and URLs are
+registered now, but runtime square coverage remains reserved for the dedicated
+integration bead. Evidence is rebuilt with
+`npm run art:square-resource-road-review`.
+
 ## Ruleset-6 active inventory
 
 Ruleset 6 retains Grass, Forest, Mountain, Fruit, Game (the renamed Animal

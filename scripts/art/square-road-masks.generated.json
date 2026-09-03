@@ -1,0 +1,332 @@
+{
+  "schemaVersion": 1,
+  "algorithm": "orthogonal-square-road-mask-v1",
+  "deterministicProcessing": {
+    "source": "public/assets/pixellab/terrain-square/road-material.png",
+    "sourceSha256": "5276f5d00e19c7561bbcb4a1cc7062f0ccaf380a0e72b8c7615518a62c05cd9b",
+    "canvas": { "width": 256, "height": 256 },
+    "anchor": { "x": 128, "y": 128 },
+    "directionBitOrder": ["NORTH", "EAST", "SOUTH", "WEST"],
+    "directionBits": { "NORTH": 8, "EAST": 4, "SOUTH": 2, "WEST": 1 },
+    "centerPad": { "cx": 128, "cy": 128, "radius": 27 },
+    "arm": {
+      "strokeWidth": 42,
+      "lineCap": "round",
+      "endpoints": {
+        "NORTH": { "x": 128, "y": 0 },
+        "EAST": { "x": 256, "y": 128 },
+        "SOUTH": { "x": 128, "y": 256 },
+        "WEST": { "x": 0, "y": 128 }
+      }
+    },
+    "emptySemantics": "No ROAD render entry emits no overlay. Mask 0000 is an isolated Road tile and renders only the central material pad.",
+    "adjacencySemantics": "Each enabled arm reaches the exact midpoint of its NORTH, EAST, SOUTH, or WEST square edge, giving equal opposing-edge alpha.",
+    "diagonalSemantics": "No diagonal bits, diagonal arms, or diagonal joins exist; corner alpha remains transparent in all 16 masks."
+  },
+  "records": [
+    {
+      "id": "terrain-square-road-mask-0000",
+      "mask": 0,
+      "bits": "0000",
+      "semantics": [],
+      "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-0000.png",
+      "sha256": "c68b3e30c362ce16cf3cf8dc4b56fc4dc9963f86bc1831609116698ab7da4628",
+      "width": 256,
+      "height": 256,
+      "anchor": { "x": 128, "y": 128 },
+      "alphaBounds": {
+        "left": 101,
+        "top": 101,
+        "right": 155,
+        "bottom": 155,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-square-road-mask-0001",
+      "mask": 1,
+      "bits": "0001",
+      "semantics": ["WEST"],
+      "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-0001.png",
+      "sha256": "13d06d45338b79858704e8b9084d9727a845a50af786e1597d9bffc5172efed5",
+      "width": 256,
+      "height": 256,
+      "anchor": { "x": 128, "y": 128 },
+      "alphaBounds": {
+        "left": 0,
+        "top": 101,
+        "right": 155,
+        "bottom": 155,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-square-road-mask-0010",
+      "mask": 2,
+      "bits": "0010",
+      "semantics": ["SOUTH"],
+      "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-0010.png",
+      "sha256": "2d3a69e9c543940534d412d0813f341b9837e2ee8858f03599ccb90bf2e43c03",
+      "width": 256,
+      "height": 256,
+      "anchor": { "x": 128, "y": 128 },
+      "alphaBounds": {
+        "left": 101,
+        "top": 101,
+        "right": 155,
+        "bottom": 256,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-square-road-mask-0011",
+      "mask": 3,
+      "bits": "0011",
+      "semantics": ["SOUTH", "WEST"],
+      "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-0011.png",
+      "sha256": "0bfe7d26f276178aa35ca2173d7d6292cb59586f9b860337a7dc72807f043997",
+      "width": 256,
+      "height": 256,
+      "anchor": { "x": 128, "y": 128 },
+      "alphaBounds": {
+        "left": 0,
+        "top": 101,
+        "right": 155,
+        "bottom": 256,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-square-road-mask-0100",
+      "mask": 4,
+      "bits": "0100",
+      "semantics": ["EAST"],
+      "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-0100.png",
+      "sha256": "5d13caafa178a3d7620cbb17c1ffd21de83d8f394cd26f7e730af21b8af36110",
+      "width": 256,
+      "height": 256,
+      "anchor": { "x": 128, "y": 128 },
+      "alphaBounds": {
+        "left": 101,
+        "top": 101,
+        "right": 256,
+        "bottom": 155,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-square-road-mask-0101",
+      "mask": 5,
+      "bits": "0101",
+      "semantics": ["EAST", "WEST"],
+      "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-0101.png",
+      "sha256": "ebed6afc615c3913f75c6a0de69f09b4d303445ac92beb78b77fb92d4d5bef15",
+      "width": 256,
+      "height": 256,
+      "anchor": { "x": 128, "y": 128 },
+      "alphaBounds": {
+        "left": 0,
+        "top": 101,
+        "right": 256,
+        "bottom": 155,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-square-road-mask-0110",
+      "mask": 6,
+      "bits": "0110",
+      "semantics": ["EAST", "SOUTH"],
+      "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-0110.png",
+      "sha256": "f66e24e0318e2c4ccc7c9a149477304e84faa7fa0f016c755db90f510b057542",
+      "width": 256,
+      "height": 256,
+      "anchor": { "x": 128, "y": 128 },
+      "alphaBounds": {
+        "left": 101,
+        "top": 101,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-square-road-mask-0111",
+      "mask": 7,
+      "bits": "0111",
+      "semantics": ["EAST", "SOUTH", "WEST"],
+      "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-0111.png",
+      "sha256": "f7beced4289433e99217629b66436f8b84018bae50671444b660dadafcd37cee",
+      "width": 256,
+      "height": 256,
+      "anchor": { "x": 128, "y": 128 },
+      "alphaBounds": {
+        "left": 0,
+        "top": 101,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-square-road-mask-1000",
+      "mask": 8,
+      "bits": "1000",
+      "semantics": ["NORTH"],
+      "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-1000.png",
+      "sha256": "b076f47d91248a124c471c95f18de228056fb44b9ed0826fd3116d7d83541e94",
+      "width": 256,
+      "height": 256,
+      "anchor": { "x": 128, "y": 128 },
+      "alphaBounds": {
+        "left": 101,
+        "top": 0,
+        "right": 155,
+        "bottom": 155,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-square-road-mask-1001",
+      "mask": 9,
+      "bits": "1001",
+      "semantics": ["NORTH", "WEST"],
+      "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-1001.png",
+      "sha256": "5910746a1af0975fa9b6fb55b6b6d0e7740bf6bbb683c23533e4836311897787",
+      "width": 256,
+      "height": 256,
+      "anchor": { "x": 128, "y": 128 },
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 155,
+        "bottom": 155,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-square-road-mask-1010",
+      "mask": 10,
+      "bits": "1010",
+      "semantics": ["NORTH", "SOUTH"],
+      "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-1010.png",
+      "sha256": "9f950b319e563a707f51d8a6e125da25d71c3602378c3ee5b095cb95a091c8f4",
+      "width": 256,
+      "height": 256,
+      "anchor": { "x": 128, "y": 128 },
+      "alphaBounds": {
+        "left": 101,
+        "top": 0,
+        "right": 155,
+        "bottom": 256,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-square-road-mask-1011",
+      "mask": 11,
+      "bits": "1011",
+      "semantics": ["NORTH", "SOUTH", "WEST"],
+      "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-1011.png",
+      "sha256": "655202cefa873a2e6ed24b2d9a42662e3ddfdcf683acc9ca9c00da2a32e5a46b",
+      "width": 256,
+      "height": 256,
+      "anchor": { "x": 128, "y": 128 },
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 155,
+        "bottom": 256,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-square-road-mask-1100",
+      "mask": 12,
+      "bits": "1100",
+      "semantics": ["NORTH", "EAST"],
+      "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-1100.png",
+      "sha256": "b6f35f301e8e5f3df79c40d2a0c225f8723f9d9968d61f65d7524997fa610427",
+      "width": 256,
+      "height": 256,
+      "anchor": { "x": 128, "y": 128 },
+      "alphaBounds": {
+        "left": 101,
+        "top": 0,
+        "right": 256,
+        "bottom": 155,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-square-road-mask-1101",
+      "mask": 13,
+      "bits": "1101",
+      "semantics": ["NORTH", "EAST", "WEST"],
+      "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-1101.png",
+      "sha256": "7207887c4687972334385a5ac544f18d04c036ff26a492568e2fa213ada57d38",
+      "width": 256,
+      "height": 256,
+      "anchor": { "x": 128, "y": 128 },
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 155,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-square-road-mask-1110",
+      "mask": 14,
+      "bits": "1110",
+      "semantics": ["NORTH", "EAST", "SOUTH"],
+      "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-1110.png",
+      "sha256": "d7cbb8b6fedab78dd907c6dc858088bf71f2ac94b52494b19511567e1bab90c3",
+      "width": 256,
+      "height": 256,
+      "anchor": { "x": 128, "y": 128 },
+      "alphaBounds": {
+        "left": 101,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "accepted": true
+    },
+    {
+      "id": "terrain-square-road-mask-1111",
+      "mask": 15,
+      "bits": "1111",
+      "semantics": ["NORTH", "EAST", "SOUTH", "WEST"],
+      "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-1111.png",
+      "sha256": "14965c187e1687f2b483dd7a4e5a95c5abea2798c6d7f498cd472f8f72854b47",
+      "width": 256,
+      "height": 256,
+      "anchor": { "x": 128, "y": 128 },
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "accepted": true
+    }
+  ]
+}

@@ -58,9 +58,7 @@ describe("Candy square terrain family", () => {
     const source = JSON.parse(
       await readFile("scripts/art/pixellab-manifest.json", "utf8"),
     ) as { readonly recipes: readonly Recipe[] };
-    const square = source.recipes.filter(({ id }) =>
-      id.startsWith("terrain-square-candy-"),
-    );
+    const square = source.recipes.filter(({ id }) => ids.includes(id));
     expect(square.map(({ id }) => id)).toEqual([
       families.grass[0],
       families.forest[0],

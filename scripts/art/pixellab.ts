@@ -63,6 +63,7 @@ interface Recipe {
     | "sprite-derived-portrait"
     | "lanczos3-resize"
     | "square-ground-fill"
+    | "square-road-material"
     | "square-tall-ground-reference"
     | "square-mountain-ground-reference";
   readonly includeFactionLanguage?: boolean;
@@ -149,6 +150,9 @@ interface GenerationRecord {
   readonly rejectedAttempts?: readonly {
     readonly candidate: string;
     readonly candidateSha256?: string;
+    readonly providerOutputSha256?: string;
+    readonly jobId?: string;
+    readonly disposition?: "REJECTED" | "SUPERSEDED_DUPLICATE";
     readonly notes?: string;
     readonly reviewedAt?: string;
     readonly request?: RequestSnapshot;
@@ -167,6 +171,10 @@ const GENERATED_PATH = path.join(ROOT, "scripts/art/pixellab-generated.json");
 const ROAD_MASK_MANIFEST_PATH = path.join(
   ROOT,
   "scripts/art/road-masks.generated.json",
+);
+const SQUARE_ROAD_MASK_MANIFEST_PATH = path.join(
+  ROOT,
+  "scripts/art/square-road-masks.generated.json",
 );
 const CANDIDATE_ROOT = path.join(ROOT, "art/pixellab/candidates");
 const QUARANTINE_ROOT = path.join(ROOT, "art/pixellab/quarantine");
@@ -219,6 +227,7 @@ async function main(): Promise<void> {
     assertCandyUnitOrder(recipes, generated);
     assertRuleset6UiOrder(recipes, generated);
     assertSquareTerrainOrder(recipes, generated);
+    assertSquareResourceRoadOrder(recipes, generated);
     if (stage === "batch") assertBuildingBatchOrder(recipes, generated);
     const concurrency = Number(optionalOption("--concurrency") ?? "3");
     await generateRecipes(source, generated, recipes, concurrency);
@@ -243,6 +252,8 @@ async function main(): Promise<void> {
         await applyDiamondAlpha(candidate, recipe.outputSize);
       else if (recipe.postprocess === "square-ground-fill")
         await applySquareGroundFill(candidate, recipe);
+      else if (recipe.postprocess === "square-road-material")
+        await applySquareRoadMaterial(candidate, recipe);
       else if (
         recipe.postprocess === "square-tall-ground-reference" ||
         recipe.postprocess === "square-mountain-ground-reference"
@@ -270,6 +281,7 @@ async function main(): Promise<void> {
         await assertDiamondAlpha(candidate, recipe.outputSize);
       else if (
         recipe.postprocess === "square-ground-fill" ||
+        recipe.postprocess === "square-road-material" ||
         recipe.postprocess === "square-tall-ground-reference" ||
         recipe.postprocess === "square-mountain-ground-reference"
       )
@@ -341,6 +353,79 @@ async function main(): Promise<void> {
   }
   if (command === "review-sheets") {
     await createReviewSheets(source, generated);
+    return;
+  }
+  if (command === "archive-job") {
+    const id = requiredOption("--id");
+    const jobId = requiredOption("--job-id");
+    const notes = requiredOption("--notes");
+    const recipe = source.recipes.find((candidate) => candidate.id === id);
+    if (recipe === undefined) throw new Error(`Unknown recipe ${id}`);
+    const apiKey = process.env[source.provider.credentialEnvironmentVariable];
+    if (apiKey === undefined || apiKey.length === 0)
+      throw new Error(
+        `${source.provider.credentialEnvironmentVariable} is missing`,
+      );
+    const result = await pollJob(source.provider.apiBaseUrl, apiKey, jobId);
+    const encoded = findBase64Image(result);
+    if (encoded === null)
+      throw new Error("Completed PixelLab job contained no base64 image");
+    const input = decodeBase64Image(encoded);
+    const staging = path.join(
+      CANDIDATE_ROOT,
+      `${recipe.id}-archive-${jobId}.png`,
+    );
+    await mkdir(path.dirname(staging), { recursive: true });
+    await processCandidate(input, recipe, staging, source);
+    const inspection = await inspectPng(staging);
+    assertTechnical(recipe, inspection);
+    await mkdir(QUARANTINE_ROOT, { recursive: true });
+    const quarantine = path.join(
+      QUARANTINE_ROOT,
+      `${id}-superseded-${inspection.sha256.slice(0, 12)}.png`,
+    );
+    await rename(staging, quarantine);
+    const previous = generated.records[id];
+    if (previous === undefined)
+      throw new Error(`${id} needs a current record before archival`);
+    const request = requestSnapshot(source, recipe);
+    const referenceSha256 =
+      recipe.styleReference === undefined
+        ? undefined
+        : generated.records[recipe.styleReference]?.outputSha256;
+    const resolvedRequest =
+      recipe.styleReference === undefined
+        ? request
+        : {
+            ...request,
+            styleReference: {
+              id: recipe.styleReference,
+              ...(referenceSha256 === undefined
+                ? {}
+                : { sha256: referenceSha256 }),
+              ...(recipe.styleReferenceUsage === undefined
+                ? {}
+                : { usageDescription: recipe.styleReferenceUsage }),
+            },
+          };
+    (generated.records as Record<string, GenerationRecord>)[id] = {
+      ...previous,
+      rejectedAttempts: [
+        ...(previous.rejectedAttempts ?? []),
+        {
+          candidate: path.relative(ROOT, quarantine).replaceAll("\\", "/"),
+          candidateSha256: inspection.sha256,
+          providerOutputSha256: sha256(input),
+          jobId,
+          disposition: "SUPERSEDED_DUPLICATE",
+          notes,
+          reviewedAt: new Date().toISOString(),
+          request: resolvedRequest,
+        },
+      ],
+    };
+    await saveGenerated(generated);
+    console.log(`${id}: archived superseded provider job ${jobId}`);
     return;
   }
   if (command === "resume-job") {
@@ -417,7 +502,7 @@ async function main(): Promise<void> {
     return;
   }
   console.log(
-    "Usage: pixellab.ts credentials | snapshot | generate --stage sample|batch [--ids a,b] [--concurrency 3] | resume-job --id ID --job-id JOB | repair --ids a,b | derive --id ID | review --id ID --accept|--reject --notes TEXT [--source-pass --native-pass --enlarged-pass --minimum-pass --composition-pass] | review-sheets | validate",
+    "Usage: pixellab.ts credentials | snapshot | generate --stage sample|batch [--ids a,b] [--concurrency 3] | archive-job --id ID --job-id JOB --notes TEXT | resume-job --id ID --job-id JOB | repair --ids a,b | derive --id ID | review --id ID --accept|--reject --notes TEXT [--source-pass --native-pass --enlarged-pass --minimum-pass --composition-pass] | review-sheets | validate",
   );
 }
 
@@ -663,6 +748,53 @@ function validateSourceManifest(
     )
       throw new Error(`Square terrain geometry mismatch: ${contract.id}`);
   }
+  const squareResources = [
+    "terrain-square-original-fruit",
+    "terrain-square-candy-fruit",
+    "terrain-square-original-animal",
+    "terrain-square-candy-animal",
+    "terrain-square-ore",
+    "terrain-square-fertile-ground",
+    "terrain-square-stone",
+  ] as const;
+  for (const id of squareResources) {
+    const recipe = source.recipes.find((candidate) => candidate.id === id);
+    if (
+      recipe?.class !== "terrain" ||
+      recipe.stage !== "batch" ||
+      recipe.requestSize.width !== 256 ||
+      recipe.requestSize.height !== 384 ||
+      recipe.outputSize.width !== 256 ||
+      recipe.outputSize.height !== 384 ||
+      JSON.stringify(recipe.anchor) !== JSON.stringify({ x: 128, y: 256 }) ||
+      JSON.stringify(recipe.squareFootprint) !==
+        JSON.stringify({ left: 0, top: 128, right: 256, bottom: 384 }) ||
+      recipe.postprocess !== "preferred-low-marker-fit" ||
+      recipe.preferredBounds === undefined ||
+      recipe.groundContactY === undefined ||
+      recipe.hardBounds.left < 0 ||
+      recipe.hardBounds.top < 128 ||
+      recipe.hardBounds.right > 256 ||
+      recipe.hardBounds.bottom > 384
+    )
+      throw new Error(`Square resource geometry mismatch: ${id}`);
+  }
+  const squareRoad = source.recipes.find(
+    ({ id }) => id === "terrain-square-road-material",
+  );
+  if (
+    squareRoad?.class !== "terrain" ||
+    squareRoad.stage !== "batch" ||
+    squareRoad.requestSize.width !== 256 ||
+    squareRoad.requestSize.height !== 256 ||
+    squareRoad.outputSize.width !== 256 ||
+    squareRoad.outputSize.height !== 256 ||
+    JSON.stringify(squareRoad.anchor) !== JSON.stringify({ x: 128, y: 128 }) ||
+    JSON.stringify(squareRoad.squareFootprint) !==
+      JSON.stringify({ left: 0, top: 0, right: 256, bottom: 256 }) ||
+    squareRoad.postprocess !== "square-road-material"
+  )
+    throw new Error("Square Road material geometry mismatch");
   const candyTerrainIds = [
     "terrain-candy-grass-1",
     "terrain-candy-grass-2",
@@ -1270,6 +1402,45 @@ function assertSquareTerrainOrder(
   assertSquareTerrainFamilyOrder(recipes, generated, "candy");
 }
 
+function assertSquareResourceRoadOrder(
+  recipes: readonly Recipe[],
+  generated: GeneratedManifest,
+): void {
+  const groups = [
+    ["terrain-square-original-fruit", "terrain-square-candy-fruit"],
+    ["terrain-square-original-animal", "terrain-square-candy-animal"],
+    [
+      "terrain-square-ore",
+      "terrain-square-fertile-ground",
+      "terrain-square-stone",
+    ],
+    ["terrain-square-road-material"],
+  ] as const;
+  const selected = recipes
+    .map(({ id }) => id)
+    .filter((id) => groups.some((group) => group.includes(id as never)));
+  if (selected.length === 0) return;
+  if (selected.length > 3)
+    throw new Error(
+      "Square resource and Road PixelLab requests may contain at most three assets",
+    );
+  const groupIndex = groups.findIndex((group) =>
+    selected.every((id) => group.includes(id as never)),
+  );
+  if (groupIndex < 0)
+    throw new Error(
+      "Do not mix square Fruit, Animal, shared-low-resource, or Road material request families",
+    );
+  const missingBefore = groups
+    .slice(0, groupIndex)
+    .flat()
+    .filter((id) => generated.records[id]?.status !== "ACCEPTED");
+  if (missingBefore.length > 0)
+    throw new Error(
+      `Square resource request order requires acceptance first: ${missingBefore.join(", ")}`,
+    );
+}
+
 function assertSquareTerrainFamilyOrder(
   recipes: readonly Recipe[],
   generated: GeneratedManifest,
@@ -1765,6 +1936,31 @@ async function processCandidate(
     await assertSquareTerrainAlpha(destination, recipe);
     return;
   }
+  if (recipe.postprocess === "square-road-material") {
+    const providerMetadata = await sharp(input).metadata();
+    const providerWidth = providerMetadata.width ?? recipe.requestSize.width;
+    const providerHeight = providerMetadata.height ?? recipe.requestSize.height;
+    const presentationInset = Math.round(
+      Math.min(providerWidth, providerHeight) / 16,
+    );
+    await sharp(input)
+      .ensureAlpha()
+      .extract({
+        left: presentationInset,
+        top: presentationInset,
+        width: providerWidth - presentationInset * 2,
+        height: providerHeight - presentationInset * 2,
+      })
+      .resize(recipe.outputSize.width, recipe.outputSize.height, {
+        fit: "fill",
+        kernel: sharp.kernel.lanczos3,
+      })
+      .png({ compressionLevel: 9, adaptiveFiltering: false })
+      .toFile(destination);
+    await applySquareRoadMaterial(destination, recipe);
+    await assertSquareTerrainAlpha(destination, recipe);
+    return;
+  }
   let pipeline = sharp(input)
     .ensureAlpha()
     .resize(recipe.outputSize.width, recipe.outputSize.height, {
@@ -1867,6 +2063,63 @@ async function applySquareGroundFill(
       const offset = (y * info.width + x) * 4;
       for (let channel = 0; channel < 3; channel += 1) {
         const baseColor = base[channel] ?? 0;
+        data[offset + channel] = Math.round(
+          baseColor * (1 - authoredWeight) +
+            (data[offset + channel] ?? 0) * authoredWeight,
+        );
+      }
+      data[offset + 3] = 255;
+    }
+  }
+  await sharp(data, {
+    raw: { width: info.width, height: info.height, channels: 4 },
+  })
+    .png({ compressionLevel: 9, adaptiveFiltering: false })
+    .toFile(destination);
+}
+
+async function applySquareRoadMaterial(
+  destination: string,
+  recipe: Recipe,
+): Promise<void> {
+  if (
+    recipe.outputSize.width !== 256 ||
+    recipe.outputSize.height !== 256 ||
+    recipe.squareFootprint?.left !== 0 ||
+    recipe.squareFootprint.top !== 0 ||
+    recipe.squareFootprint.right !== 256 ||
+    recipe.squareFootprint.bottom !== 256
+  )
+    throw new Error(`${recipe.id}: invalid square Road material geometry`);
+  const { data, info } = await sharp(await readFile(destination))
+    .ensureAlpha()
+    .flatten({ background: "#9f8a67" })
+    .ensureAlpha(1)
+    .blur(18)
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const base = [0x9f, 0x8a, 0x67] as const;
+  const transition = 24;
+  for (let y = 0; y < info.height; y += 1) {
+    for (let x = 0; x < info.width; x += 1) {
+      const edgeDistance = Math.min(
+        x,
+        y,
+        info.width - 1 - x,
+        info.height - 1 - y,
+      );
+      const normalized = Math.min(1, edgeDistance / transition);
+      const authoredWeight =
+        0.16 * normalized * normalized * (3 - 2 * normalized);
+      const light = Math.round(
+        2.5 * (1 - (x + y) / (info.width + info.height - 2)) - 1.25,
+      );
+      const offset = (y * info.width + x) * 4;
+      for (let channel = 0; channel < 3; channel += 1) {
+        const baseColor = Math.max(
+          0,
+          Math.min(255, (base[channel] ?? 0) + light * normalized),
+        );
         data[offset + channel] = Math.round(
           baseColor * (1 - authoredWeight) +
             (data[offset + channel] ?? 0) * authoredWeight,
@@ -2494,6 +2747,7 @@ async function validateOutputs(
       );
     if (
       recipe.postprocess === "square-ground-fill" ||
+      recipe.postprocess === "square-road-material" ||
       recipe.postprocess === "square-tall-ground-reference" ||
       recipe.postprocess === "square-mountain-ground-reference"
     )
@@ -2531,6 +2785,10 @@ async function validateOutputs(
   }
   if (generated.records["terrain-road-material"]?.status === "ACCEPTED")
     await validateRoadMasks(generated.records["terrain-road-material"]);
+  if (generated.records["terrain-square-road-material"]?.status === "ACCEPTED")
+    await validateSquareRoadMasks(
+      generated.records["terrain-square-road-material"],
+    );
 }
 
 async function validateRoadMasks(
@@ -2587,6 +2845,62 @@ async function validateRoadMasks(
   }
 }
 
+async function validateSquareRoadMasks(
+  sourceRecord: GenerationRecord,
+): Promise<void> {
+  const parsed = JSON.parse(
+    await readFile(SQUARE_ROAD_MASK_MANIFEST_PATH, "utf8"),
+  ) as {
+    readonly schemaVersion: number;
+    readonly algorithm: string;
+    readonly deterministicProcessing: {
+      readonly sourceSha256: string;
+      readonly directionBitOrder: readonly string[];
+      readonly adjacencySemantics: string;
+      readonly diagonalSemantics: string;
+    };
+    readonly records: readonly {
+      readonly id: string;
+      readonly mask: number;
+      readonly bits: string;
+      readonly output: string;
+      readonly sha256: string;
+      readonly width: number;
+      readonly height: number;
+      readonly accepted: boolean;
+    }[];
+  };
+  if (
+    parsed.schemaVersion !== 1 ||
+    parsed.algorithm !== "orthogonal-square-road-mask-v1" ||
+    parsed.records.length !== 16 ||
+    parsed.deterministicProcessing.sourceSha256 !== sourceRecord.outputSha256 ||
+    JSON.stringify(parsed.deterministicProcessing.directionBitOrder) !==
+      JSON.stringify(["NORTH", "EAST", "SOUTH", "WEST"]) ||
+    !parsed.deterministicProcessing.adjacencySemantics.includes(
+      "exact midpoint",
+    ) ||
+    !parsed.deterministicProcessing.diagonalSemantics.includes("No diagonal")
+  )
+    throw new Error("Square Road-mask deterministic manifest mismatch");
+  for (let mask = 0; mask < 16; mask += 1) {
+    const record = parsed.records[mask];
+    const bits = mask.toString(2).padStart(4, "0");
+    if (
+      record?.id !== `terrain-square-road-mask-${bits}` ||
+      record.mask !== mask ||
+      record.bits !== bits ||
+      record.width !== 256 ||
+      record.height !== 256 ||
+      !record.accepted
+    )
+      throw new Error(`Square Road-mask record mismatch: ${bits}`);
+    const output = await readFile(path.join(ROOT, record.output));
+    if (sha256(output) !== record.sha256)
+      throw new Error(`Square Road-mask hash mismatch: ${bits}`);
+  }
+}
+
 async function syncRuntime(
   source: SourceManifest,
   generated: GeneratedManifest,
@@ -2610,6 +2924,17 @@ async function syncRuntime(
         };
       })
     : [];
+  const squareRoadMaskSourceAccepted =
+    generated.records["terrain-square-road-material"]?.status === "ACCEPTED";
+  const acceptedSquareRoadMasks = squareRoadMaskSourceAccepted
+    ? Array.from({ length: 16 }, (_, mask) => {
+        const bits = mask.toString(2).padStart(4, "0");
+        return {
+          id: `terrain-square-road-mask-${bits}`,
+          output: `public/assets/pixellab/terrain-square/road-masks/road-mask-${bits}.png`,
+        };
+      })
+    : [];
   const entries = [
     ...accepted.map((recipe) => ({ id: recipe.id, output: recipe.output })),
     ...acceptedAliases.map((alias) => {
@@ -2625,6 +2950,7 @@ async function syncRuntime(
       throw new Error(`Unknown alias source ${alias.source}`);
     }),
     ...acceptedRoadMasks,
+    ...acceptedSquareRoadMasks,
   ]
     .map((recipe) => {
       const publicPath = recipe.output.replace(/^public\//, "");

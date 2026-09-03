@@ -1,0 +1,841 @@
+{
+  "schemaVersion": 1,
+  "status": "READY_FOR_ORCHESTRATOR_REVIEW",
+  "blocker": null,
+  "pixelLabSourceCalls": 12,
+  "pixelLabCommandFamilies": 7,
+  "generationAccounting": "Eight accepted source assets. Twelve provider calls account for the intended 2/2/3/1 sources, one accidental duplicate two-Fruit invocation, one corrective Original Fruit regeneration, and one rejected Road-material regeneration. The final Road refinement reused its recorded provider job with deterministic postprocessing and made no new source call.",
+  "coherentRequestFamilies": [
+    [
+      "terrain-square-original-fruit",
+      "terrain-square-candy-fruit"
+    ],
+    [
+      "terrain-square-original-animal",
+      "terrain-square-candy-animal"
+    ],
+    [
+      "terrain-square-ore",
+      "terrain-square-fertile-ground",
+      "terrain-square-stone"
+    ],
+    [
+      "terrain-square-road-material"
+    ]
+  ],
+  "requiredCoverage": [
+    "all eight sources at source, enlarged, native 1x, minimum 0.625x and maximum 1.75x zoom",
+    "Original and Candy Fruit and Game/Animal against their accepted square Grass and Forest families",
+    "shared Ore and Stone on every Original and Candy Mountain variant and Fertile Ground on every Grass variant",
+    "revealed resources remain visible before action technology while unrevealed resources contribute no hidden raster",
+    "Forest canopy then Game/Animal then accepted unit layering for both factions and dense occupied contexts",
+    "all 16 deterministic orthogonal Road masks, exact N/E/S/W edge joins, no diagonal corner joins and repeated adjacency",
+    "Road coexistence with every compatible terrain/resource state, ownership, selection and fog overlays",
+    "0.625x, 1x and 1.75x contexts at DPR1 and DPR2 with identical CSS composition"
+  ],
+  "sampleGate": {
+    "terrain-square-original-fruit": {
+      "status": "ACCEPTED",
+      "outputSha256": "4642843133720393490b4649274ae6a8a7999cd07e9476cdd98bd6c84adf7d76",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      },
+      "visualFindings": "Accepted after rejecting and regenerating the four-form attempt. The final Original source has exactly three coral fruit, one compact leaf/stem cue, and a clean broad silhouette that remains distinct at source, enlarged, native 1x and minimum 0.625x. Its alpha is centered and wholly inside the square owning footprint, visibly smaller than units, and free of clipping, matte, ground patch or state marks. Northwest highlights and darker southeast planes match both terrain families; repeated, ownership, selection, Road, DPR1/2 and pre-action-technology contexts remain legible.",
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-square-original-fruit-8d6c831fbd8d.png",
+          "candidateSha256": "8d6c831fbd8d5a7623eca7621f92a53a760108c1b76cec9129440003d39d5eb8",
+          "disposition": "REJECTED",
+          "notes": "Rejected output from the accidental duplicate Fruit submission. The duplicate provider job ID and raw provider-response hash were not captured before that invocation overwrote the candidate record; this deterministically processed candidate is nevertheless preserved byte-for-byte with its hash, complete request snapshot, review time, and explicit disposition rather than being silently discarded. On final accepted-byte visual audit, the provider drew four distinct coral fruit forms (including a fourth raised fruit behind the cluster) despite the exact three-fruit prompt. The extra form makes the resource busier at minimum zoom and diverges from the established harvest silhouette. Geometry, transparency, northwest light, and centering were otherwise technically valid, but semantic count is an acceptance requirement and therefore the candidate is quarantined for provenance.",
+          "reviewedAt": "2026-09-03T16:34:28.017Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: three large coral-red fruit, one simple leaf and short stem, pale northwest highlight, dark teal southeast shadow and outline. Square-grid Original Fruit resource, one isolated harvestable cluster on transparent untrimmed 256 by 384 canvas. Exactly three large round coral-red fruit in one broad low triangular group, with one chunky green leaf and short stem. Center it over the lower half of owning square x0..255,y128..383, readable at 0.625 zoom, quieter and smaller than a unit. Soft upper-left northwest highlight, darker southeast planes, strong clean charcoal-teal outline and two flat cel-shaded tones. No ground or shadow. Processing fits within preferred x76..180,y232..320 and aligns the bottom to y320. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; more than three fruit, many berries, apple tree, basket, farm rows, fertile soil, flowers, candy stripes, unit, face, limbs, ground patch, platform, cast shadow, diamond, tile border, left right or bottom overflow, lower-right key light, ownership, selection, status, text, UI, realism, tiny texture.",
+            "prompt": "Square-grid Original Fruit resource, one isolated harvestable cluster on transparent untrimmed 256 by 384 canvas. Exactly three large round coral-red fruit in one broad low triangular group, with one chunky green leaf and short stem. Center it over the lower half of owning square x0..255,y128..383, readable at 0.625 zoom, quieter and smaller than a unit. Soft upper-left northwest highlight, darker southeast planes, strong clean charcoal-teal outline and two flat cel-shaded tones. No ground or shadow. Processing fits within preferred x76..180,y232..320 and aligns the bottom to y320.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; more than three fruit, many berries, apple tree, basket, farm rows, fertile soil, flowers, candy stripes, unit, face, limbs, ground patch, platform, cast shadow, diamond, tile border, left right or bottom overflow, lower-right key light, ownership, selection, status, text, UI, realism, tiny texture",
+            "requestSize": {
+              "width": 256,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 384
+            },
+            "seed": 106101,
+            "noBackground": true,
+            "palette": "three large coral-red fruit, one simple leaf and short stem, pale northwest highlight, dark teal southeast shadow and outline",
+            "postprocess": "preferred-low-marker-fit",
+            "groundContactY": 320,
+            "styleReference": {
+              "id": "terrain-fruit",
+              "sha256": "71d28e528ab3a4676b5396ca608181dbe815bca6843b190a54586c27d6324342",
+              "usageDescription": "Preserve the accepted Original Fruit's three-form harvest silhouette, charcoal-teal outline, flat two-level shading and coral-red palette. Recompose it lower and centered for the full square owning footprint and exact northwest light."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 128,
+              "right": 256,
+              "bottom": 384
+            }
+          }
+        },
+        {
+          "candidate": "art/pixellab/quarantine/terrain-square-original-fruit-superseded-fee6a7a118fe.png",
+          "candidateSha256": "fee6a7a118feda2107d17e002f7a8d3dfb99d231e832b177bbf21f9791b82ec8",
+          "providerOutputSha256": "8e83ad9f821fb304307aa1f1b7cf0dc862f3653331529991fd4af1c186e4dc6c",
+          "jobId": "69983ddd-0f0e-418c-a77f-e9113f4a473a",
+          "disposition": "SUPERSEDED_DUPLICATE",
+          "notes": "Superseded duplicate, not a visual rejection. This was the first Original Fruit provider result and it passed the exact three-fruit source inspection, but an accidental second invocation occurred before the accepted review command. The bytes are recovered by provider job ID, deterministically postprocessed, hashed, and quarantined so no generated output is silently overwritten or discarded; the later accepted three-fruit candidate remains canonical.",
+          "reviewedAt": "2026-09-03T16:59:55.207Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: three large coral-red fruit, one simple leaf and short stem, pale northwest highlight, dark teal southeast shadow and outline. Square-grid Original Fruit resource, one isolated harvestable cluster on transparent untrimmed 256 by 384 canvas. Exactly three large round coral-red fruit in one broad low triangular group, with one chunky green leaf and short stem. Center it over the lower half of owning square x0..255,y128..383, readable at 0.625 zoom, quieter and smaller than a unit. Soft upper-left northwest highlight, darker southeast planes, strong clean charcoal-teal outline and two flat cel-shaded tones. No ground or shadow. Processing fits within preferred x76..180,y232..320 and aligns the bottom to y320. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; more than three fruit, many berries, apple tree, basket, farm rows, fertile soil, flowers, candy stripes, unit, face, limbs, ground patch, platform, cast shadow, diamond, tile border, left right or bottom overflow, lower-right key light, ownership, selection, status, text, UI, realism, tiny texture.",
+            "prompt": "Square-grid Original Fruit resource, one isolated harvestable cluster on transparent untrimmed 256 by 384 canvas. Exactly three large round coral-red fruit in one broad low triangular group, with one chunky green leaf and short stem. Center it over the lower half of owning square x0..255,y128..383, readable at 0.625 zoom, quieter and smaller than a unit. Soft upper-left northwest highlight, darker southeast planes, strong clean charcoal-teal outline and two flat cel-shaded tones. No ground or shadow. Processing fits within preferred x76..180,y232..320 and aligns the bottom to y320.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; more than three fruit, many berries, apple tree, basket, farm rows, fertile soil, flowers, candy stripes, unit, face, limbs, ground patch, platform, cast shadow, diamond, tile border, left right or bottom overflow, lower-right key light, ownership, selection, status, text, UI, realism, tiny texture",
+            "requestSize": {
+              "width": 256,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 384
+            },
+            "seed": 106101,
+            "noBackground": true,
+            "palette": "three large coral-red fruit, one simple leaf and short stem, pale northwest highlight, dark teal southeast shadow and outline",
+            "postprocess": "preferred-low-marker-fit",
+            "groundContactY": 320,
+            "styleReference": {
+              "id": "terrain-fruit",
+              "sha256": "71d28e528ab3a4676b5396ca608181dbe815bca6843b190a54586c27d6324342",
+              "usageDescription": "Preserve the accepted Original Fruit's three-form harvest silhouette, charcoal-teal outline, flat two-level shading and coral-red palette. Recompose it lower and centered for the full square owning footprint and exact northwest light."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 128,
+              "right": 256,
+              "bottom": 384
+            }
+          }
+        }
+      ]
+    },
+    "terrain-square-candy-fruit": {
+      "status": "ACCEPTED",
+      "outputSha256": "ef727af46e7401ae8784b38f6069c7505b3609526c8044f599ea9af604e115ac",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      },
+      "visualFindings": "Accepted after source/native/enlarged/0.625x/1x review. The Candy three-fruit silhouette reads as one harvestable Fruit cluster rather than loose confectionery, with three coherent pink-and-cream peppermint forms and one cocoa stem. It is centered, low, smaller than units, fully inside the owning square, and clear on every Candy Grass variant. Northwest cream highlights, southeast cocoa planes, strong clean edges, Road/selection/ownership coexistence, repeated density, and DPR1/2 remain readable without matte, clipping, Farm confusion, state marks, or lateral/bottom overflow.",
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-square-candy-fruit-superseded-5687924837b5.png",
+          "candidateSha256": "5687924837b510e3dad61f6a5769d0141159219cfd744891567f88479a5f3d49",
+          "providerOutputSha256": "0425efa86412ceaf083f5a4927df64324098bca46aae2eb27e69b1031540cf3d",
+          "jobId": "1dfd1e61-e8bc-40bc-97be-f2e7234c7f74",
+          "disposition": "SUPERSEDED_DUPLICATE",
+          "notes": "Superseded duplicate, not a visual rejection. This was the first Candy Fruit provider result and passed source inspection as a coherent three-piece peppermint cluster, but an accidental second invocation occurred before acceptance. Its exact provider job is recovered, deterministically postprocessed, hashed, and quarantined for complete reproducible provenance rather than silently overwritten; the later accepted candidate remains canonical.",
+          "reviewedAt": "2026-09-03T17:00:02.557Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: three large muted pink and cream peppermint fruit, cocoa stem and outline, pale cream northwest highlight, deep cocoa southeast shadow. Square-grid Candy Fruit resource, one isolated harvestable confection cluster on transparent untrimmed 256 by 384 canvas. Exactly three large round peppermint fruit in one broad low triangular group, each with one or two thick cream curved bands, joined by one chunky cocoa stem and one muted green leaf. It must read as Fruit rather than loose candy or ownership. Center it over the lower half of owning square x0..255,y128..383, readable at 0.625 zoom, smaller than a unit. Soft northwest highlight, darker southeast planes, near-black cocoa outline and two flat cel-shaded tones. No ground or shadow. Processing fits preferred x76..180,y232..320 and bottom y320. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; more than three pieces, many sweets, candy cane, lollipop, bowl, basket, fruit tree, farm rows, fertile soil, sprinkles, rainbow, face, limbs, unit, ground patch, platform, cast shadow, diamond, tile border, left right or bottom overflow, lower-right key light, ownership, selection, status, text, UI, 3D render.",
+            "prompt": "Square-grid Candy Fruit resource, one isolated harvestable confection cluster on transparent untrimmed 256 by 384 canvas. Exactly three large round peppermint fruit in one broad low triangular group, each with one or two thick cream curved bands, joined by one chunky cocoa stem and one muted green leaf. It must read as Fruit rather than loose candy or ownership. Center it over the lower half of owning square x0..255,y128..383, readable at 0.625 zoom, smaller than a unit. Soft northwest highlight, darker southeast planes, near-black cocoa outline and two flat cel-shaded tones. No ground or shadow. Processing fits preferred x76..180,y232..320 and bottom y320.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; more than three pieces, many sweets, candy cane, lollipop, bowl, basket, fruit tree, farm rows, fertile soil, sprinkles, rainbow, face, limbs, unit, ground patch, platform, cast shadow, diamond, tile border, left right or bottom overflow, lower-right key light, ownership, selection, status, text, UI, 3D render",
+            "requestSize": {
+              "width": 256,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 384
+            },
+            "seed": 106102,
+            "noBackground": true,
+            "palette": "three large muted pink and cream peppermint fruit, cocoa stem and outline, pale cream northwest highlight, deep cocoa southeast shadow",
+            "postprocess": "preferred-low-marker-fit",
+            "groundContactY": 320,
+            "styleReference": {
+              "id": "terrain-candy-fruit",
+              "sha256": "a5635bf8a87629ee943f780dea95c9837a883de027106a78c12c7b74b2990aa5",
+              "usageDescription": "Preserve the accepted Candy Fruit's three-piece peppermint harvest silhouette, cocoa outline and flat cream/pink bands. Recompose it lower and centered for the full square owning footprint and exact northwest light."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 128,
+              "right": 256,
+              "bottom": 384
+            }
+          }
+        }
+      ]
+    },
+    "terrain-square-original-animal": {
+      "status": "ACCEPTED",
+      "outputSha256": "5817682f9520679c26ac1d2bc3bb42202c2167190c0433f01569482e3116ef0f",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      },
+      "visualFindings": "Accepted after source/native/enlarged/0.625x/1x and both-axis composition review. The low broad boar is unmistakable wildlife: quadruped stance, short legs, snout and tusks remain distinct from every accepted unit silhouette. Its alpha stays within the square footprint and cleanly draws after all four Original Forest canopies while remaining behind Fighter and Scout rasters without hiding their heads, equipment, owner cues or selection. Northwest cream highlights and southeast teal planes match the terrain family; no scenery, matte, clipping, status mark or left/right/bottom overflow appears.",
+      "rejectedAttempts": []
+    },
+    "terrain-square-candy-animal": {
+      "status": "ACCEPTED",
+      "outputSha256": "354f6745221ef4d0c7d62e5bcadd909633b50da90ab738d2311924f3879588a6",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      },
+      "visualFindings": "Accepted after source/native/enlarged/0.625x/1x and both-axis composition review. The berry-pink candy boar keeps a low quadruped wildlife silhouette with cream snout, tusks and tiny feet, never reading as the upright Candy units. It sits wholly inside the square footprint, remains clear in front of all four lollipop Forest canopies, and stays behind Candy Warrior and Jelly Scout without erasing unit identity, owner or selection cues. Soft northwest highlights, darker southeast cocoa planes, clean outline, dense repetition and DPR1/2 remain sound without scenery, matte, clipping or side/bottom overflow.",
+      "rejectedAttempts": []
+    },
+    "terrain-square-ore": {
+      "status": "ACCEPTED",
+      "outputSha256": "16394b3afdd295cf259d95ac1d519f34af5981129e34fdd7715d7b5bf29e8a00",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      },
+      "visualFindings": "Accepted after source/native/enlarged/0.625x/1x and complete Original/Candy Mountain compatibility review. Three large amber faces and the slate base read as one unmined Ore vein, clearly distinct from Stone, Mountain decoration, Mine, Quarry and status UI. The compact centered alpha stays inside the square footprint, with no side/bottom overflow, clipping, loose micro-shards or matte. Northwest highlights and darker southeast facets match every Mountain variant; revealed-before-Mining, hidden-resource absence, ownership, selection, dense repetition and unit coexistence remain readable.",
+      "rejectedAttempts": []
+    },
+    "terrain-square-fertile-ground": {
+      "status": "ACCEPTED",
+      "outputSha256": "f2c0c4913d01130979589b4ac7ccba50ef4b825976d9a398211eff64c82b67fd",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      },
+      "visualFindings": "Accepted after source/native/enlarged/0.625x/1x and all eight Original/Candy Grass compatibility contexts. The broad centered dark-soil patch with exactly two paired sprouts reads as undeveloped Fertile Ground and stays decisively distinct from Fruit, planted Farm rows, ownership and selection. It is low and quiet under units and Roads, fully inside the square footprint, and has clean alpha without matte, clipping or side/bottom overflow. Northwest rim light and southeast edge shade remain coherent through repetition, fog boundaries, DPR1/2 and pre-action-technology presentation.",
+      "rejectedAttempts": []
+    },
+    "terrain-square-stone": {
+      "status": "ACCEPTED",
+      "outputSha256": "c6143b3b75259dc91cb334959af79fa453128d02b4a300843cee19e029dfea25",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      },
+      "visualFindings": "Accepted after source/native/enlarged/0.625x/1x and complete Original/Candy Mountain compatibility review. Exactly three rounded blue-slate boulders form one compact Stone deposit, distinct from amber Ore, Mountain decoration, cut Quarry blocks and status icons even at minimum zoom. The resource is centered within the square footprint with no clipping, matte, tiny pebble noise or left/right/bottom overflow. Northwest pale faces and darker southeast planes are consistent; revealed-before-Quarrying, hidden absence, ownership, selection, dense repetition, units and both factions remain legible.",
+      "rejectedAttempts": []
+    },
+    "terrain-square-road-material": {
+      "status": "ACCEPTED",
+      "outputSha256": "5276f5d00e19c7561bbcb4a1cc7062f0ccaf380a0e72b8c7615518a62c05cd9b",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      },
+      "visualFindings": "Accepted after two quarantined material iterations and deterministic postprocess refinement. The final 256x256 RGBA swatch is calm compacted warm-taupe earth: radius-18 blur and sixteen-percent authored retention remove status-like flecks and false diagonal bands, while a restrained northwest-to-southeast value drift preserves shared lighting. Exact canonical outer-edge convergence supports seamless opposing Road joins. At source, enlarged, native and 0.625x it remains quieter than resources, units, ownership and selection and contains no baked path, direction, junction or UI cue.",
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-square-road-material-0e61fece6d72.png",
+          "candidateSha256": "0e61fece6d72fddd93fb37f1f1c248a0bf043d0859089a4ee52d99a8cd88f57a",
+          "notes": "Rejected at source/enlarged/native material review before any mask derivation. Although technically opaque and square, the swatch contains several large diagonal brush-like bands and dark directional patches. Those shapes would survive all 16 masks, suggest forbidden diagonal connectivity, compete with resources and selection, and stamp visibly across a repeated Road network. The candidate is quarantined; the revised deterministic recipe requires nearly uniform, non-directional mottling.",
+          "reviewedAt": "2026-09-03T16:55:13.057Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet warm taupe packed earth #9f8a67, restrained parchment northwest value, muted cool-gray southeast value, sparse broad charcoal-teal aggregate marks. Square Road source material only: a seamless full 256 by 256 swatch of quiet compacted warm-taupe earth with two or three enormous nearly invisible aggregate variations. Uniform material reaches every edge and corner. Soft northwest light is subtly lighter and southeast subtly darker without any line or boundary. This is material for deterministic code masks, not a road layout: draw no path, junction, arm, edge, curb, lane, tile outline or direction. Flat clean illustrated terrain quieter than resources and units. Processing crops the provider inset, expands to the full square and forces opaque alpha. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; road shape, line, stripe, crossroad, T junction, corner, bend, diagonal join, endpoint, lane marking, curb, cobblestone grid, bricks, tire tracks, footprints, diamond, transparent corner, rounded corner, border, frame, bevel, slab, seam, grass, resource, building, unit, ownership, selection, text, UI, noisy microtexture, lower-right light.",
+            "prompt": "Square Road source material only: a seamless full 256 by 256 swatch of quiet compacted warm-taupe earth with two or three enormous nearly invisible aggregate variations. Uniform material reaches every edge and corner. Soft northwest light is subtly lighter and southeast subtly darker without any line or boundary. This is material for deterministic code masks, not a road layout: draw no path, junction, arm, edge, curb, lane, tile outline or direction. Flat clean illustrated terrain quieter than resources and units. Processing crops the provider inset, expands to the full square and forces opaque alpha.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; road shape, line, stripe, crossroad, T junction, corner, bend, diagonal join, endpoint, lane marking, curb, cobblestone grid, bricks, tire tracks, footprints, diamond, transparent corner, rounded corner, border, frame, bevel, slab, seam, grass, resource, building, unit, ownership, selection, text, UI, noisy microtexture, lower-right light",
+            "requestSize": {
+              "width": 256,
+              "height": 256
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 256
+            },
+            "seed": 106401,
+            "noBackground": false,
+            "palette": "quiet warm taupe packed earth #9f8a67, restrained parchment northwest value, muted cool-gray southeast value, sparse broad charcoal-teal aggregate marks",
+            "postprocess": "square-road-material",
+            "styleReference": {
+              "id": "terrain-road-material",
+              "sha256": "d0f60535de68afa17fcc39f9fcc6cefd886d45292ad0e3216727c5dca850e84f",
+              "usageDescription": "Preserve the accepted Road material's quiet warm-gray packed-earth palette, almost textureless broad treatment and northwest-lit cel shading. Replace the diamond with a seamless full square material swatch for deterministic orthogonal masks."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 0,
+              "right": 256,
+              "bottom": 256
+            }
+          }
+        },
+        {
+          "candidate": "art/pixellab/quarantine/terrain-square-road-material-6c97f66b0875.png",
+          "candidateSha256": "6c97f66b087586c5c74bc113963a750002a17e550ab500afd71e461c119cce78",
+          "providerOutputSha256": "5c57c9da925208f62e6669bf10e5eb544392d2791f10b71b18e14c5995138cec",
+          "jobId": "77a14075-68c6-497c-9d54-d75687ccbaf9",
+          "disposition": "REJECTED",
+          "notes": "Rejected before Road-mask derivation. The revised provider output removed obvious road bands but introduced several isolated dark teal flecks and broad diagonal value swaths. At minimum zoom the flecks resemble resource/status pixels; in repeated masks the swaths would still create false diagonal flow and visible stamping. The candidate is quarantined. It uses the same recorded provider job and request as the accepted source; the final deterministic radius-18 blur and sixteen-percent authored blend were then reapplied to those provider bytes.",
+          "reviewedAt": "2026-09-03T16:57:19.000Z"
+        }
+      ]
+    }
+  },
+  "roadMasks": {
+    "schemaVersion": 1,
+    "algorithm": "orthogonal-square-road-mask-v1",
+    "deterministicProcessing": {
+      "source": "public/assets/pixellab/terrain-square/road-material.png",
+      "sourceSha256": "5276f5d00e19c7561bbcb4a1cc7062f0ccaf380a0e72b8c7615518a62c05cd9b",
+      "canvas": {
+        "width": 256,
+        "height": 256
+      },
+      "anchor": {
+        "x": 128,
+        "y": 128
+      },
+      "directionBitOrder": [
+        "NORTH",
+        "EAST",
+        "SOUTH",
+        "WEST"
+      ],
+      "directionBits": {
+        "NORTH": 8,
+        "EAST": 4,
+        "SOUTH": 2,
+        "WEST": 1
+      },
+      "centerPad": {
+        "cx": 128,
+        "cy": 128,
+        "radius": 27
+      },
+      "arm": {
+        "strokeWidth": 42,
+        "lineCap": "round",
+        "endpoints": {
+          "NORTH": {
+            "x": 128,
+            "y": 0
+          },
+          "EAST": {
+            "x": 256,
+            "y": 128
+          },
+          "SOUTH": {
+            "x": 128,
+            "y": 256
+          },
+          "WEST": {
+            "x": 0,
+            "y": 128
+          }
+        }
+      },
+      "emptySemantics": "No ROAD render entry emits no overlay. Mask 0000 is an isolated Road tile and renders only the central material pad.",
+      "adjacencySemantics": "Each enabled arm reaches the exact midpoint of its NORTH, EAST, SOUTH, or WEST square edge, giving equal opposing-edge alpha.",
+      "diagonalSemantics": "No diagonal bits, diagonal arms, or diagonal joins exist; corner alpha remains transparent in all 16 masks."
+    },
+    "records": [
+      {
+        "id": "terrain-square-road-mask-0000",
+        "mask": 0,
+        "bits": "0000",
+        "semantics": [],
+        "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-0000.png",
+        "sha256": "c68b3e30c362ce16cf3cf8dc4b56fc4dc9963f86bc1831609116698ab7da4628",
+        "width": 256,
+        "height": 256,
+        "anchor": {
+          "x": 128,
+          "y": 128
+        },
+        "alphaBounds": {
+          "left": 101,
+          "top": 101,
+          "right": 155,
+          "bottom": 155,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-square-road-mask-0001",
+        "mask": 1,
+        "bits": "0001",
+        "semantics": [
+          "WEST"
+        ],
+        "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-0001.png",
+        "sha256": "13d06d45338b79858704e8b9084d9727a845a50af786e1597d9bffc5172efed5",
+        "width": 256,
+        "height": 256,
+        "anchor": {
+          "x": 128,
+          "y": 128
+        },
+        "alphaBounds": {
+          "left": 0,
+          "top": 101,
+          "right": 155,
+          "bottom": 155,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-square-road-mask-0010",
+        "mask": 2,
+        "bits": "0010",
+        "semantics": [
+          "SOUTH"
+        ],
+        "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-0010.png",
+        "sha256": "2d3a69e9c543940534d412d0813f341b9837e2ee8858f03599ccb90bf2e43c03",
+        "width": 256,
+        "height": 256,
+        "anchor": {
+          "x": 128,
+          "y": 128
+        },
+        "alphaBounds": {
+          "left": 101,
+          "top": 101,
+          "right": 155,
+          "bottom": 256,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-square-road-mask-0011",
+        "mask": 3,
+        "bits": "0011",
+        "semantics": [
+          "SOUTH",
+          "WEST"
+        ],
+        "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-0011.png",
+        "sha256": "0bfe7d26f276178aa35ca2173d7d6292cb59586f9b860337a7dc72807f043997",
+        "width": 256,
+        "height": 256,
+        "anchor": {
+          "x": 128,
+          "y": 128
+        },
+        "alphaBounds": {
+          "left": 0,
+          "top": 101,
+          "right": 155,
+          "bottom": 256,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-square-road-mask-0100",
+        "mask": 4,
+        "bits": "0100",
+        "semantics": [
+          "EAST"
+        ],
+        "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-0100.png",
+        "sha256": "5d13caafa178a3d7620cbb17c1ffd21de83d8f394cd26f7e730af21b8af36110",
+        "width": 256,
+        "height": 256,
+        "anchor": {
+          "x": 128,
+          "y": 128
+        },
+        "alphaBounds": {
+          "left": 101,
+          "top": 101,
+          "right": 256,
+          "bottom": 155,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-square-road-mask-0101",
+        "mask": 5,
+        "bits": "0101",
+        "semantics": [
+          "EAST",
+          "WEST"
+        ],
+        "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-0101.png",
+        "sha256": "ebed6afc615c3913f75c6a0de69f09b4d303445ac92beb78b77fb92d4d5bef15",
+        "width": 256,
+        "height": 256,
+        "anchor": {
+          "x": 128,
+          "y": 128
+        },
+        "alphaBounds": {
+          "left": 0,
+          "top": 101,
+          "right": 256,
+          "bottom": 155,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-square-road-mask-0110",
+        "mask": 6,
+        "bits": "0110",
+        "semantics": [
+          "EAST",
+          "SOUTH"
+        ],
+        "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-0110.png",
+        "sha256": "f66e24e0318e2c4ccc7c9a149477304e84faa7fa0f016c755db90f510b057542",
+        "width": 256,
+        "height": 256,
+        "anchor": {
+          "x": 128,
+          "y": 128
+        },
+        "alphaBounds": {
+          "left": 101,
+          "top": 101,
+          "right": 256,
+          "bottom": 256,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-square-road-mask-0111",
+        "mask": 7,
+        "bits": "0111",
+        "semantics": [
+          "EAST",
+          "SOUTH",
+          "WEST"
+        ],
+        "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-0111.png",
+        "sha256": "f7beced4289433e99217629b66436f8b84018bae50671444b660dadafcd37cee",
+        "width": 256,
+        "height": 256,
+        "anchor": {
+          "x": 128,
+          "y": 128
+        },
+        "alphaBounds": {
+          "left": 0,
+          "top": 101,
+          "right": 256,
+          "bottom": 256,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-square-road-mask-1000",
+        "mask": 8,
+        "bits": "1000",
+        "semantics": [
+          "NORTH"
+        ],
+        "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-1000.png",
+        "sha256": "b076f47d91248a124c471c95f18de228056fb44b9ed0826fd3116d7d83541e94",
+        "width": 256,
+        "height": 256,
+        "anchor": {
+          "x": 128,
+          "y": 128
+        },
+        "alphaBounds": {
+          "left": 101,
+          "top": 0,
+          "right": 155,
+          "bottom": 155,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-square-road-mask-1001",
+        "mask": 9,
+        "bits": "1001",
+        "semantics": [
+          "NORTH",
+          "WEST"
+        ],
+        "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-1001.png",
+        "sha256": "5910746a1af0975fa9b6fb55b6b6d0e7740bf6bbb683c23533e4836311897787",
+        "width": 256,
+        "height": 256,
+        "anchor": {
+          "x": 128,
+          "y": 128
+        },
+        "alphaBounds": {
+          "left": 0,
+          "top": 0,
+          "right": 155,
+          "bottom": 155,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-square-road-mask-1010",
+        "mask": 10,
+        "bits": "1010",
+        "semantics": [
+          "NORTH",
+          "SOUTH"
+        ],
+        "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-1010.png",
+        "sha256": "9f950b319e563a707f51d8a6e125da25d71c3602378c3ee5b095cb95a091c8f4",
+        "width": 256,
+        "height": 256,
+        "anchor": {
+          "x": 128,
+          "y": 128
+        },
+        "alphaBounds": {
+          "left": 101,
+          "top": 0,
+          "right": 155,
+          "bottom": 256,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-square-road-mask-1011",
+        "mask": 11,
+        "bits": "1011",
+        "semantics": [
+          "NORTH",
+          "SOUTH",
+          "WEST"
+        ],
+        "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-1011.png",
+        "sha256": "655202cefa873a2e6ed24b2d9a42662e3ddfdcf683acc9ca9c00da2a32e5a46b",
+        "width": 256,
+        "height": 256,
+        "anchor": {
+          "x": 128,
+          "y": 128
+        },
+        "alphaBounds": {
+          "left": 0,
+          "top": 0,
+          "right": 155,
+          "bottom": 256,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-square-road-mask-1100",
+        "mask": 12,
+        "bits": "1100",
+        "semantics": [
+          "NORTH",
+          "EAST"
+        ],
+        "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-1100.png",
+        "sha256": "b6f35f301e8e5f3df79c40d2a0c225f8723f9d9968d61f65d7524997fa610427",
+        "width": 256,
+        "height": 256,
+        "anchor": {
+          "x": 128,
+          "y": 128
+        },
+        "alphaBounds": {
+          "left": 101,
+          "top": 0,
+          "right": 256,
+          "bottom": 155,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-square-road-mask-1101",
+        "mask": 13,
+        "bits": "1101",
+        "semantics": [
+          "NORTH",
+          "EAST",
+          "WEST"
+        ],
+        "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-1101.png",
+        "sha256": "7207887c4687972334385a5ac544f18d04c036ff26a492568e2fa213ada57d38",
+        "width": 256,
+        "height": 256,
+        "anchor": {
+          "x": 128,
+          "y": 128
+        },
+        "alphaBounds": {
+          "left": 0,
+          "top": 0,
+          "right": 256,
+          "bottom": 155,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-square-road-mask-1110",
+        "mask": 14,
+        "bits": "1110",
+        "semantics": [
+          "NORTH",
+          "EAST",
+          "SOUTH"
+        ],
+        "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-1110.png",
+        "sha256": "d7cbb8b6fedab78dd907c6dc858088bf71f2ac94b52494b19511567e1bab90c3",
+        "width": 256,
+        "height": 256,
+        "anchor": {
+          "x": 128,
+          "y": 128
+        },
+        "alphaBounds": {
+          "left": 101,
+          "top": 0,
+          "right": 256,
+          "bottom": 256,
+          "empty": false
+        },
+        "accepted": true
+      },
+      {
+        "id": "terrain-square-road-mask-1111",
+        "mask": 15,
+        "bits": "1111",
+        "semantics": [
+          "NORTH",
+          "EAST",
+          "SOUTH",
+          "WEST"
+        ],
+        "output": "public/assets/pixellab/terrain-square/road-masks/road-mask-1111.png",
+        "sha256": "14965c187e1687f2b483dd7a4e5a95c5abea2798c6d7f498cd472f8f72854b47",
+        "width": 256,
+        "height": 256,
+        "anchor": {
+          "x": 128,
+          "y": 128
+        },
+        "alphaBounds": {
+          "left": 0,
+          "top": 0,
+          "right": 256,
+          "bottom": 256,
+          "empty": false
+        },
+        "accepted": true
+      }
+    ]
+  },
+  "acceptedUnitByteHashes": {
+    "public/assets/pixellab/units/warrior.png": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1",
+    "public/assets/pixellab/units/defender.png": "930c31f9aa1bf5dacf0318484b31ac63504365482ae01a84a6a269d94de65e11",
+    "public/assets/pixellab/units/archer.png": "deb62a8a84dc28ceecd58047a3f65abdb67c0616851337c817452d75a5b73bb2",
+    "public/assets/pixellab/units/rider.png": "20bb28c79c28e262908e518124e776f30adf946254906e62245f0e9702606bb4",
+    "public/assets/pixellab/units/catapult.png": "cdf6ed34a67c1daf1bfd947b0b1af007b25d2a13ee88ee2df876bdb9f7ceec83",
+    "public/assets/pixellab/units/candy-warrior.png": "76456b060ba1701e75387285b4738d4c289c0617eb852f5552beadfe2eb1a2bc",
+    "public/assets/pixellab/units/candy-gumball-guard.png": "5a43d5f737bbf41f007c9bf8ee5f7fe5e0084bb13f9d243917d27c6f701f81b2",
+    "public/assets/pixellab/units/candy-donut.png": "041fd6defb9b46059e9036418c501cc287e8ac74180384594770e9d1d764a991",
+    "public/assets/pixellab/units/candy-choco-engineer.png": "020d0448b1db6be74b00aa3d468ca4f4aa7d9c2c700d63ae7c03a683ec314fcf",
+    "public/assets/pixellab/units/original-scout.png": "8663c5c6f95ed69481123245a7f7c5e6acf2b55ebb9c52ebbc46979252e60343",
+    "public/assets/pixellab/units/original-medic.png": "c30475f23be6a8ca9ee1957a327b3b764489e570d50cd69d5775006650af62c2",
+    "public/assets/pixellab/units/original-breacher.png": "1e752161cd63bcb7bc0e5a0989557f61d2d7f2d3e3d9597ccc9360ed11fca2ad",
+    "public/assets/pixellab/units/original-heavy.png": "8fe592d094ede939cf8a92119022c9606b6c12621ed4d6777b4056b8cadb3759",
+    "public/assets/pixellab/units/original-juggernaut.png": "c905126dc7c38683b1ecba0aa930a4add45426a26fa3560a78e2df21ddaccc9a",
+    "public/assets/pixellab/units/candy-jelly-scout.png": "c835c0a08cc24d5751c0dbc85365f638016029984162a6272387aa3efc2965a9",
+    "public/assets/pixellab/units/candy-marshmallow-medic.png": "868b00e650c05e22bd085d72f093fd8c80554ba17a3357a2982833c617e98327",
+    "public/assets/pixellab/units/candy-crusher.png": "d2fb335814ae4929cb47891bcb8561c8092a1bfc9fc53f98b9b4a32382898fca",
+    "public/assets/pixellab/units/candy-jawbreaker.png": "5897e7b0d7d8dd4746ff7ecadba4ba0b0d72266df4b33b25743fef33c5ee1455",
+    "public/assets/pixellab/units/candy-sugar-titan.png": "7d360ee7191644121f4397be91ac7ab42769883b44d6481d6c056ad7c5df76c9"
+  },
+  "runtimeCoverageSwitched": false,
+  "artifacts": [
+    {
+      "path": "art/pixellab/reviews/square-resources-roads/README.md",
+      "sha256": "99519c2a8a9939682c2593f36ec237662f24524d56e88fbfe800c86ae9824dd6",
+      "bytes": 698
+    },
+    {
+      "path": "art/pixellab/reviews/square-resources-roads/source-native-enlarged-zoom.png",
+      "sha256": "1afc20d9ce422ba5f94f54533852b2584c4112f2c8604798441f222f658ca1f5",
+      "bytes": 858380
+    },
+    {
+      "path": "art/pixellab/reviews/square-resources-roads/fruit-animal-family-gates.png",
+      "sha256": "a90b512066856357a90ca3ea14e79000ebbac2820dc4e32142592be7e3d84c85",
+      "bytes": 202703
+    },
+    {
+      "path": "art/pixellab/reviews/square-resources-roads/shared-low-family-gate.png",
+      "sha256": "82d648661202f91f158316d21fd51534f5b0441e7e8831d35791600602238a52",
+      "bytes": 164858
+    },
+    {
+      "path": "art/pixellab/reviews/square-resources-roads/factions-and-compatible-terrain.png",
+      "sha256": "770b715f50fc7b2cf7079df454901bfc3584ec3c26e381594888630882e0f61c",
+      "bytes": 208900
+    },
+    {
+      "path": "art/pixellab/reviews/square-resources-roads/visibility-layering-hidden-safety.png",
+      "sha256": "b997e2b97c6214aa4d52221272930955afe09c63a33f770812c180374f69500c",
+      "bytes": 219528
+    },
+    {
+      "path": "art/pixellab/reviews/square-resources-roads/road-16-masks-and-adjacency.png",
+      "sha256": "b040cde0f3aabd6cf0766bda10a9a38c32d7edc81bccb9e0c27c783e22d02046",
+      "bytes": 31127
+    },
+    {
+      "path": "art/pixellab/reviews/square-resources-roads/road-coexistence-dense-contexts.png",
+      "sha256": "5aecaf0fe9fa967991ba5968fca916ed9483ed0c2b0c4a7acaa76d490299296b",
+      "bytes": 177059
+    },
+    {
+      "path": "art/pixellab/reviews/square-resources-roads/zoom-dpr-overlays.png",
+      "sha256": "4d30072323388ee79750757117990da65f947d215350365c0d5a6f9864f46d65",
+      "bytes": 385211
+    },
+    {
+      "path": "art/pixellab/reviews/square-resources-roads/repetition-8x8.png",
+      "sha256": "9b513bd6f7c382a945b795f07d369224b940236488a34e161349b9b6f2301c6e",
+      "bytes": 427494
+    }
+  ]
+}

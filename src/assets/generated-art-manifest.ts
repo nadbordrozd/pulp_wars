@@ -329,6 +329,28 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   "terrain-square-candy-mountain-3": publicArtUrl(
     "assets/pixellab/terrain-square/candy-mountain-3.png",
   ),
+  "terrain-square-original-fruit": publicArtUrl(
+    "assets/pixellab/terrain-square/original-fruit.png",
+  ),
+  "terrain-square-candy-fruit": publicArtUrl(
+    "assets/pixellab/terrain-square/candy-fruit.png",
+  ),
+  "terrain-square-original-animal": publicArtUrl(
+    "assets/pixellab/terrain-square/original-animal.png",
+  ),
+  "terrain-square-candy-animal": publicArtUrl(
+    "assets/pixellab/terrain-square/candy-animal.png",
+  ),
+  "terrain-square-ore": publicArtUrl("assets/pixellab/terrain-square/ore.png"),
+  "terrain-square-fertile-ground": publicArtUrl(
+    "assets/pixellab/terrain-square/fertile-ground.png",
+  ),
+  "terrain-square-stone": publicArtUrl(
+    "assets/pixellab/terrain-square/stone.png",
+  ),
+  "terrain-square-road-material": publicArtUrl(
+    "assets/pixellab/terrain-square/road-material.png",
+  ),
   "terrain-game": publicArtUrl("assets/pixellab/terrain/animal.png"),
   "building-ruleset6-mine": publicArtUrl("assets/pixellab/buildings/mine.png"),
   "building-lumber-camp": publicArtUrl(
@@ -539,6 +561,54 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   ),
   "terrain-road-mask-1111": publicArtUrl(
     "assets/pixellab/terrain/road-masks/road-mask-1111.png",
+  ),
+  "terrain-square-road-mask-0000": publicArtUrl(
+    "assets/pixellab/terrain-square/road-masks/road-mask-0000.png",
+  ),
+  "terrain-square-road-mask-0001": publicArtUrl(
+    "assets/pixellab/terrain-square/road-masks/road-mask-0001.png",
+  ),
+  "terrain-square-road-mask-0010": publicArtUrl(
+    "assets/pixellab/terrain-square/road-masks/road-mask-0010.png",
+  ),
+  "terrain-square-road-mask-0011": publicArtUrl(
+    "assets/pixellab/terrain-square/road-masks/road-mask-0011.png",
+  ),
+  "terrain-square-road-mask-0100": publicArtUrl(
+    "assets/pixellab/terrain-square/road-masks/road-mask-0100.png",
+  ),
+  "terrain-square-road-mask-0101": publicArtUrl(
+    "assets/pixellab/terrain-square/road-masks/road-mask-0101.png",
+  ),
+  "terrain-square-road-mask-0110": publicArtUrl(
+    "assets/pixellab/terrain-square/road-masks/road-mask-0110.png",
+  ),
+  "terrain-square-road-mask-0111": publicArtUrl(
+    "assets/pixellab/terrain-square/road-masks/road-mask-0111.png",
+  ),
+  "terrain-square-road-mask-1000": publicArtUrl(
+    "assets/pixellab/terrain-square/road-masks/road-mask-1000.png",
+  ),
+  "terrain-square-road-mask-1001": publicArtUrl(
+    "assets/pixellab/terrain-square/road-masks/road-mask-1001.png",
+  ),
+  "terrain-square-road-mask-1010": publicArtUrl(
+    "assets/pixellab/terrain-square/road-masks/road-mask-1010.png",
+  ),
+  "terrain-square-road-mask-1011": publicArtUrl(
+    "assets/pixellab/terrain-square/road-masks/road-mask-1011.png",
+  ),
+  "terrain-square-road-mask-1100": publicArtUrl(
+    "assets/pixellab/terrain-square/road-masks/road-mask-1100.png",
+  ),
+  "terrain-square-road-mask-1101": publicArtUrl(
+    "assets/pixellab/terrain-square/road-masks/road-mask-1101.png",
+  ),
+  "terrain-square-road-mask-1110": publicArtUrl(
+    "assets/pixellab/terrain-square/road-masks/road-mask-1110.png",
+  ),
+  "terrain-square-road-mask-1111": publicArtUrl(
+    "assets/pixellab/terrain-square/road-masks/road-mask-1111.png",
   ),
 };
 

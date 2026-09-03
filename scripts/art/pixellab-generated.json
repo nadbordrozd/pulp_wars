@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "7feacc8996dba049fc3f509b6e9331e01ab13ad8d04cdeda6cbb5338dca9c1b7",
+  "sourceManifestSha256": "748ba1d8c8df2497d542857e38656b26ee8d84adcaa5c1f67e617c546b4a1f8e",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -8936,6 +8936,646 @@
       "outputSha256": "7c0b930cf36de969c472ce7b5405414268e9a13dfcf593ebbeb792996d1eafe5",
       "notes": "Accepted from the coherent Mountain batch after source/native/enlarged, mixed 8x8 repetition and adjacency review. The low horizontal silhouette has a flat-topped right mesa, long shallow left ridge and squat foreground shelf, materially distinct from the two tall variants. Shared northwest cream light, southeast cocoa shade, quiet planes, feathered opaque square, edge safety and no gameplay cue all pass.",
       "reviewedAt": "2026-09-03T15:43:09.263Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-candy-fruit": {
+      "id": "terrain-square-candy-fruit",
+      "status": "ACCEPTED",
+      "jobId": "cf6a6f27-acfe-4673-8f9d-cf790b36ef3e",
+      "candidate": "art/pixellab/candidates/terrain-square-candy-fruit.png",
+      "candidateSha256": "ef727af46e7401ae8784b38f6069c7505b3609526c8044f599ea9af604e115ac",
+      "providerOutputSha256": "cf6fb55712005629302d1d4ef799c0fc63cae63b7ebbb03b9b1b94dfb3b7eb40",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 76,
+        "top": 247,
+        "right": 180,
+        "bottom": 320,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: three large muted pink and cream peppermint fruit, cocoa stem and outline, pale cream northwest highlight, deep cocoa southeast shadow. Square-grid Candy Fruit resource, one isolated harvestable confection cluster on transparent untrimmed 256 by 384 canvas. Exactly three large round peppermint fruit in one broad low triangular group, each with one or two thick cream curved bands, joined by one chunky cocoa stem and one muted green leaf. It must read as Fruit rather than loose candy or ownership. Center it over the lower half of owning square x0..255,y128..383, readable at 0.625 zoom, smaller than a unit. Soft northwest highlight, darker southeast planes, near-black cocoa outline and two flat cel-shaded tones. No ground or shadow. Processing fits preferred x76..180,y232..320 and bottom y320. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; more than three pieces, many sweets, candy cane, lollipop, bowl, basket, fruit tree, farm rows, fertile soil, sprinkles, rainbow, face, limbs, unit, ground patch, platform, cast shadow, diamond, tile border, left right or bottom overflow, lower-right key light, ownership, selection, status, text, UI, 3D render.",
+        "prompt": "Square-grid Candy Fruit resource, one isolated harvestable confection cluster on transparent untrimmed 256 by 384 canvas. Exactly three large round peppermint fruit in one broad low triangular group, each with one or two thick cream curved bands, joined by one chunky cocoa stem and one muted green leaf. It must read as Fruit rather than loose candy or ownership. Center it over the lower half of owning square x0..255,y128..383, readable at 0.625 zoom, smaller than a unit. Soft northwest highlight, darker southeast planes, near-black cocoa outline and two flat cel-shaded tones. No ground or shadow. Processing fits preferred x76..180,y232..320 and bottom y320.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; more than three pieces, many sweets, candy cane, lollipop, bowl, basket, fruit tree, farm rows, fertile soil, sprinkles, rainbow, face, limbs, unit, ground patch, platform, cast shadow, diamond, tile border, left right or bottom overflow, lower-right key light, ownership, selection, status, text, UI, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 106102,
+        "noBackground": true,
+        "palette": "three large muted pink and cream peppermint fruit, cocoa stem and outline, pale cream northwest highlight, deep cocoa southeast shadow",
+        "postprocess": "preferred-low-marker-fit",
+        "groundContactY": 320,
+        "styleReference": {
+          "id": "terrain-candy-fruit",
+          "sha256": "a5635bf8a87629ee943f780dea95c9837a883de027106a78c12c7b74b2990aa5",
+          "usageDescription": "Preserve the accepted Candy Fruit's three-piece peppermint harvest silhouette, cocoa outline and flat cream/pink bands. Recompose it lower and centered for the full square owning footprint and exact northwest light."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        }
+      },
+      "outputSha256": "ef727af46e7401ae8784b38f6069c7505b3609526c8044f599ea9af604e115ac",
+      "notes": "Accepted after source/native/enlarged/0.625x/1x review. The Candy three-fruit silhouette reads as one harvestable Fruit cluster rather than loose confectionery, with three coherent pink-and-cream peppermint forms and one cocoa stem. It is centered, low, smaller than units, fully inside the owning square, and clear on every Candy Grass variant. Northwest cream highlights, southeast cocoa planes, strong clean edges, Road/selection/ownership coexistence, repeated density, and DPR1/2 remain readable without matte, clipping, Farm confusion, state marks, or lateral/bottom overflow.",
+      "reviewedAt": "2026-09-03T16:33:57.372Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-square-candy-fruit-superseded-5687924837b5.png",
+          "candidateSha256": "5687924837b510e3dad61f6a5769d0141159219cfd744891567f88479a5f3d49",
+          "providerOutputSha256": "0425efa86412ceaf083f5a4927df64324098bca46aae2eb27e69b1031540cf3d",
+          "jobId": "1dfd1e61-e8bc-40bc-97be-f2e7234c7f74",
+          "disposition": "SUPERSEDED_DUPLICATE",
+          "notes": "Superseded duplicate, not a visual rejection. This was the first Candy Fruit provider result and passed source inspection as a coherent three-piece peppermint cluster, but an accidental second invocation occurred before acceptance. Its exact provider job is recovered, deterministically postprocessed, hashed, and quarantined for complete reproducible provenance rather than silently overwritten; the later accepted candidate remains canonical.",
+          "reviewedAt": "2026-09-03T17:00:02.557Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: three large muted pink and cream peppermint fruit, cocoa stem and outline, pale cream northwest highlight, deep cocoa southeast shadow. Square-grid Candy Fruit resource, one isolated harvestable confection cluster on transparent untrimmed 256 by 384 canvas. Exactly three large round peppermint fruit in one broad low triangular group, each with one or two thick cream curved bands, joined by one chunky cocoa stem and one muted green leaf. It must read as Fruit rather than loose candy or ownership. Center it over the lower half of owning square x0..255,y128..383, readable at 0.625 zoom, smaller than a unit. Soft northwest highlight, darker southeast planes, near-black cocoa outline and two flat cel-shaded tones. No ground or shadow. Processing fits preferred x76..180,y232..320 and bottom y320. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; more than three pieces, many sweets, candy cane, lollipop, bowl, basket, fruit tree, farm rows, fertile soil, sprinkles, rainbow, face, limbs, unit, ground patch, platform, cast shadow, diamond, tile border, left right or bottom overflow, lower-right key light, ownership, selection, status, text, UI, 3D render.",
+            "prompt": "Square-grid Candy Fruit resource, one isolated harvestable confection cluster on transparent untrimmed 256 by 384 canvas. Exactly three large round peppermint fruit in one broad low triangular group, each with one or two thick cream curved bands, joined by one chunky cocoa stem and one muted green leaf. It must read as Fruit rather than loose candy or ownership. Center it over the lower half of owning square x0..255,y128..383, readable at 0.625 zoom, smaller than a unit. Soft northwest highlight, darker southeast planes, near-black cocoa outline and two flat cel-shaded tones. No ground or shadow. Processing fits preferred x76..180,y232..320 and bottom y320.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; more than three pieces, many sweets, candy cane, lollipop, bowl, basket, fruit tree, farm rows, fertile soil, sprinkles, rainbow, face, limbs, unit, ground patch, platform, cast shadow, diamond, tile border, left right or bottom overflow, lower-right key light, ownership, selection, status, text, UI, 3D render",
+            "requestSize": {
+              "width": 256,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 384
+            },
+            "seed": 106102,
+            "noBackground": true,
+            "palette": "three large muted pink and cream peppermint fruit, cocoa stem and outline, pale cream northwest highlight, deep cocoa southeast shadow",
+            "postprocess": "preferred-low-marker-fit",
+            "groundContactY": 320,
+            "styleReference": {
+              "id": "terrain-candy-fruit",
+              "sha256": "a5635bf8a87629ee943f780dea95c9837a883de027106a78c12c7b74b2990aa5",
+              "usageDescription": "Preserve the accepted Candy Fruit's three-piece peppermint harvest silhouette, cocoa outline and flat cream/pink bands. Recompose it lower and centered for the full square owning footprint and exact northwest light."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 128,
+              "right": 256,
+              "bottom": 384
+            }
+          }
+        }
+      ]
+    },
+    "terrain-square-original-fruit": {
+      "id": "terrain-square-original-fruit",
+      "status": "ACCEPTED",
+      "jobId": "a5126332-75ce-497c-bd0c-61f6c71406e0",
+      "candidate": "art/pixellab/candidates/terrain-square-original-fruit.png",
+      "candidateSha256": "4642843133720393490b4649274ae6a8a7999cd07e9476cdd98bd6c84adf7d76",
+      "providerOutputSha256": "4022698f8d1077ab9ea460dd9a0b409f7a365c6b3c22257a41eb4179348cfcf6",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 76,
+        "top": 237,
+        "right": 180,
+        "bottom": 320,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: three large coral-red fruit, one simple leaf and short stem, pale northwest highlight, dark teal southeast shadow and outline. Square-grid Original Fruit resource, one isolated harvestable cluster on transparent untrimmed 256 by 384 canvas. Exactly three large round coral-red fruit in one broad low triangular group, with one chunky green leaf and short stem. Center it over the lower half of owning square x0..255,y128..383, readable at 0.625 zoom, quieter and smaller than a unit. Soft upper-left northwest highlight, darker southeast planes, strong clean charcoal-teal outline and two flat cel-shaded tones. No ground or shadow. Processing fits within preferred x76..180,y232..320 and aligns the bottom to y320. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; more than three fruit, many berries, apple tree, basket, farm rows, fertile soil, flowers, candy stripes, unit, face, limbs, ground patch, platform, cast shadow, diamond, tile border, left right or bottom overflow, lower-right key light, ownership, selection, status, text, UI, realism, tiny texture.",
+        "prompt": "Square-grid Original Fruit resource, one isolated harvestable cluster on transparent untrimmed 256 by 384 canvas. Exactly three large round coral-red fruit in one broad low triangular group, with one chunky green leaf and short stem. Center it over the lower half of owning square x0..255,y128..383, readable at 0.625 zoom, quieter and smaller than a unit. Soft upper-left northwest highlight, darker southeast planes, strong clean charcoal-teal outline and two flat cel-shaded tones. No ground or shadow. Processing fits within preferred x76..180,y232..320 and aligns the bottom to y320.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; more than three fruit, many berries, apple tree, basket, farm rows, fertile soil, flowers, candy stripes, unit, face, limbs, ground patch, platform, cast shadow, diamond, tile border, left right or bottom overflow, lower-right key light, ownership, selection, status, text, UI, realism, tiny texture",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 106101,
+        "noBackground": true,
+        "palette": "three large coral-red fruit, one simple leaf and short stem, pale northwest highlight, dark teal southeast shadow and outline",
+        "postprocess": "preferred-low-marker-fit",
+        "groundContactY": 320,
+        "styleReference": {
+          "id": "terrain-fruit",
+          "sha256": "71d28e528ab3a4676b5396ca608181dbe815bca6843b190a54586c27d6324342",
+          "usageDescription": "Preserve the accepted Original Fruit's three-form harvest silhouette, charcoal-teal outline, flat two-level shading and coral-red palette. Recompose it lower and centered for the full square owning footprint and exact northwest light."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-square-original-fruit-8d6c831fbd8d.png",
+          "candidateSha256": "8d6c831fbd8d5a7623eca7621f92a53a760108c1b76cec9129440003d39d5eb8",
+          "disposition": "REJECTED",
+          "notes": "Rejected output from the accidental duplicate Fruit submission. The duplicate provider job ID and raw provider-response hash were not captured before that invocation overwrote the candidate record; this deterministically processed candidate is nevertheless preserved byte-for-byte with its hash, complete request snapshot, review time, and explicit disposition rather than being silently discarded. On final accepted-byte visual audit, the provider drew four distinct coral fruit forms (including a fourth raised fruit behind the cluster) despite the exact three-fruit prompt. The extra form makes the resource busier at minimum zoom and diverges from the established harvest silhouette. Geometry, transparency, northwest light, and centering were otherwise technically valid, but semantic count is an acceptance requirement and therefore the candidate is quarantined for provenance.",
+          "reviewedAt": "2026-09-03T16:34:28.017Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: three large coral-red fruit, one simple leaf and short stem, pale northwest highlight, dark teal southeast shadow and outline. Square-grid Original Fruit resource, one isolated harvestable cluster on transparent untrimmed 256 by 384 canvas. Exactly three large round coral-red fruit in one broad low triangular group, with one chunky green leaf and short stem. Center it over the lower half of owning square x0..255,y128..383, readable at 0.625 zoom, quieter and smaller than a unit. Soft upper-left northwest highlight, darker southeast planes, strong clean charcoal-teal outline and two flat cel-shaded tones. No ground or shadow. Processing fits within preferred x76..180,y232..320 and aligns the bottom to y320. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; more than three fruit, many berries, apple tree, basket, farm rows, fertile soil, flowers, candy stripes, unit, face, limbs, ground patch, platform, cast shadow, diamond, tile border, left right or bottom overflow, lower-right key light, ownership, selection, status, text, UI, realism, tiny texture.",
+            "prompt": "Square-grid Original Fruit resource, one isolated harvestable cluster on transparent untrimmed 256 by 384 canvas. Exactly three large round coral-red fruit in one broad low triangular group, with one chunky green leaf and short stem. Center it over the lower half of owning square x0..255,y128..383, readable at 0.625 zoom, quieter and smaller than a unit. Soft upper-left northwest highlight, darker southeast planes, strong clean charcoal-teal outline and two flat cel-shaded tones. No ground or shadow. Processing fits within preferred x76..180,y232..320 and aligns the bottom to y320.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; more than three fruit, many berries, apple tree, basket, farm rows, fertile soil, flowers, candy stripes, unit, face, limbs, ground patch, platform, cast shadow, diamond, tile border, left right or bottom overflow, lower-right key light, ownership, selection, status, text, UI, realism, tiny texture",
+            "requestSize": {
+              "width": 256,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 384
+            },
+            "seed": 106101,
+            "noBackground": true,
+            "palette": "three large coral-red fruit, one simple leaf and short stem, pale northwest highlight, dark teal southeast shadow and outline",
+            "postprocess": "preferred-low-marker-fit",
+            "groundContactY": 320,
+            "styleReference": {
+              "id": "terrain-fruit",
+              "sha256": "71d28e528ab3a4676b5396ca608181dbe815bca6843b190a54586c27d6324342",
+              "usageDescription": "Preserve the accepted Original Fruit's three-form harvest silhouette, charcoal-teal outline, flat two-level shading and coral-red palette. Recompose it lower and centered for the full square owning footprint and exact northwest light."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 128,
+              "right": 256,
+              "bottom": 384
+            }
+          }
+        },
+        {
+          "candidate": "art/pixellab/quarantine/terrain-square-original-fruit-superseded-fee6a7a118fe.png",
+          "candidateSha256": "fee6a7a118feda2107d17e002f7a8d3dfb99d231e832b177bbf21f9791b82ec8",
+          "providerOutputSha256": "8e83ad9f821fb304307aa1f1b7cf0dc862f3653331529991fd4af1c186e4dc6c",
+          "jobId": "69983ddd-0f0e-418c-a77f-e9113f4a473a",
+          "disposition": "SUPERSEDED_DUPLICATE",
+          "notes": "Superseded duplicate, not a visual rejection. This was the first Original Fruit provider result and it passed the exact three-fruit source inspection, but an accidental second invocation occurred before the accepted review command. The bytes are recovered by provider job ID, deterministically postprocessed, hashed, and quarantined so no generated output is silently overwritten or discarded; the later accepted three-fruit candidate remains canonical.",
+          "reviewedAt": "2026-09-03T16:59:55.207Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: three large coral-red fruit, one simple leaf and short stem, pale northwest highlight, dark teal southeast shadow and outline. Square-grid Original Fruit resource, one isolated harvestable cluster on transparent untrimmed 256 by 384 canvas. Exactly three large round coral-red fruit in one broad low triangular group, with one chunky green leaf and short stem. Center it over the lower half of owning square x0..255,y128..383, readable at 0.625 zoom, quieter and smaller than a unit. Soft upper-left northwest highlight, darker southeast planes, strong clean charcoal-teal outline and two flat cel-shaded tones. No ground or shadow. Processing fits within preferred x76..180,y232..320 and aligns the bottom to y320. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; more than three fruit, many berries, apple tree, basket, farm rows, fertile soil, flowers, candy stripes, unit, face, limbs, ground patch, platform, cast shadow, diamond, tile border, left right or bottom overflow, lower-right key light, ownership, selection, status, text, UI, realism, tiny texture.",
+            "prompt": "Square-grid Original Fruit resource, one isolated harvestable cluster on transparent untrimmed 256 by 384 canvas. Exactly three large round coral-red fruit in one broad low triangular group, with one chunky green leaf and short stem. Center it over the lower half of owning square x0..255,y128..383, readable at 0.625 zoom, quieter and smaller than a unit. Soft upper-left northwest highlight, darker southeast planes, strong clean charcoal-teal outline and two flat cel-shaded tones. No ground or shadow. Processing fits within preferred x76..180,y232..320 and aligns the bottom to y320.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; more than three fruit, many berries, apple tree, basket, farm rows, fertile soil, flowers, candy stripes, unit, face, limbs, ground patch, platform, cast shadow, diamond, tile border, left right or bottom overflow, lower-right key light, ownership, selection, status, text, UI, realism, tiny texture",
+            "requestSize": {
+              "width": 256,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 384
+            },
+            "seed": 106101,
+            "noBackground": true,
+            "palette": "three large coral-red fruit, one simple leaf and short stem, pale northwest highlight, dark teal southeast shadow and outline",
+            "postprocess": "preferred-low-marker-fit",
+            "groundContactY": 320,
+            "styleReference": {
+              "id": "terrain-fruit",
+              "sha256": "71d28e528ab3a4676b5396ca608181dbe815bca6843b190a54586c27d6324342",
+              "usageDescription": "Preserve the accepted Original Fruit's three-form harvest silhouette, charcoal-teal outline, flat two-level shading and coral-red palette. Recompose it lower and centered for the full square owning footprint and exact northwest light."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 128,
+              "right": 256,
+              "bottom": 384
+            }
+          }
+        }
+      ],
+      "outputSha256": "4642843133720393490b4649274ae6a8a7999cd07e9476cdd98bd6c84adf7d76",
+      "notes": "Accepted after rejecting and regenerating the four-form attempt. The final Original source has exactly three coral fruit, one compact leaf/stem cue, and a clean broad silhouette that remains distinct at source, enlarged, native 1x and minimum 0.625x. Its alpha is centered and wholly inside the square owning footprint, visibly smaller than units, and free of clipping, matte, ground patch or state marks. Northwest highlights and darker southeast planes match both terrain families; repeated, ownership, selection, Road, DPR1/2 and pre-action-technology contexts remain legible.",
+      "reviewedAt": "2026-09-03T16:37:05.732Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-original-animal": {
+      "id": "terrain-square-original-animal",
+      "status": "ACCEPTED",
+      "jobId": "46564514-317d-4395-a376-d8e9765f82a2",
+      "candidate": "art/pixellab/candidates/terrain-square-original-animal.png",
+      "candidateSha256": "5817682f9520679c26ac1d2bc3bb42202c2167190c0433f01569482e3116ef0f",
+      "providerOutputSha256": "4d1a7d895ce4b15be2e8dfed6aca931d3b652d09dfcbe6e76bd006827889edfe",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 68,
+        "top": 220,
+        "right": 188,
+        "bottom": 324,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm parchment-tan boar, muted moss snout and ears, coral accent tufts, dark teal southeast shadow and outline. Square-grid Original Game Animal resource: one cute chunky wild boar only, isolated on transparent untrimmed 256 by 384 canvas. Broad low body, short tiny legs, oversized moss-green snout, two simple tusks and one clear ear, facing southeast in a slight downward strategy view. It is wildlife scenery, not an armed character or unit. Center in the front/lower half of owning square x0..255,y128..383 so it can draw after Forest canopy and before a unit. Soft northwest key light, darker southeast planes, strong charcoal-teal outline and two flat cel-shaded tones. Processing fits preferred x68..188,y196..324 and bottom y324. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; human pose, upright character, weapon, armor, saddle, mount, pet collar, multiple animals, herd, realistic anatomy, detailed fur, grazing scene, tree, foliage, ground patch, platform, cast shadow, diamond, tile border, left right or bottom overflow, lower-right key light, ownership, selection, health, text, UI, 3D render.",
+        "prompt": "Square-grid Original Game Animal resource: one cute chunky wild boar only, isolated on transparent untrimmed 256 by 384 canvas. Broad low body, short tiny legs, oversized moss-green snout, two simple tusks and one clear ear, facing southeast in a slight downward strategy view. It is wildlife scenery, not an armed character or unit. Center in the front/lower half of owning square x0..255,y128..383 so it can draw after Forest canopy and before a unit. Soft northwest key light, darker southeast planes, strong charcoal-teal outline and two flat cel-shaded tones. Processing fits preferred x68..188,y196..324 and bottom y324.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; human pose, upright character, weapon, armor, saddle, mount, pet collar, multiple animals, herd, realistic anatomy, detailed fur, grazing scene, tree, foliage, ground patch, platform, cast shadow, diamond, tile border, left right or bottom overflow, lower-right key light, ownership, selection, health, text, UI, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 106201,
+        "noBackground": true,
+        "palette": "warm parchment-tan boar, muted moss snout and ears, coral accent tufts, dark teal southeast shadow and outline",
+        "postprocess": "preferred-low-marker-fit",
+        "groundContactY": 324,
+        "styleReference": {
+          "id": "terrain-animal",
+          "sha256": "db98acecba2d4a0b7a82e947da12dfa7a6761c645e951f789023efe819a0b536",
+          "usageDescription": "Preserve the accepted Animal's chunky boar identity, warm tan and moss palette, strong outline, southeast-facing three-quarter view and resource-not-unit simplicity. Recompose it low for a square Forest frontage."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        }
+      },
+      "outputSha256": "5817682f9520679c26ac1d2bc3bb42202c2167190c0433f01569482e3116ef0f",
+      "notes": "Accepted after source/native/enlarged/0.625x/1x and both-axis composition review. The low broad boar is unmistakable wildlife: quadruped stance, short legs, snout and tusks remain distinct from every accepted unit silhouette. Its alpha stays within the square footprint and cleanly draws after all four Original Forest canopies while remaining behind Fighter and Scout rasters without hiding their heads, equipment, owner cues or selection. Northwest cream highlights and southeast teal planes match the terrain family; no scenery, matte, clipping, status mark or left/right/bottom overflow appears.",
+      "reviewedAt": "2026-09-03T16:48:33.042Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-candy-animal": {
+      "id": "terrain-square-candy-animal",
+      "status": "ACCEPTED",
+      "jobId": "25aa96df-3e91-4dd7-98c9-46cc7bd2eb5b",
+      "candidate": "art/pixellab/candidates/terrain-square-candy-animal.png",
+      "candidateSha256": "354f6745221ef4d0c7d62e5bcadd909633b50da90ab738d2311924f3879588a6",
+      "providerOutputSha256": "0d3e30d4e0cfaa30265f53a68d70f175a5cd08e4ad30316fedbecf61cce774f1",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 68,
+        "top": 213,
+        "right": 188,
+        "bottom": 324,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted berry-pink candy boar, cream snout and northwest highlights, deep cocoa southeast planes and near-black cocoa outline. Square-grid Candy Game Animal resource: one cute chunky berry-candy wild boar only, isolated on transparent untrimmed 256 by 384 canvas. Broad low body, four short tiny legs, oversized cream snout, two simple tusks and one clear ear, facing southeast in a slight downward strategy view. It is wildlife scenery, not an anthropomorphic unit; no hands, weapon, clothes or upright pose. Center in the front/lower half of owning square x0..255,y128..383 so it draws after Candy Forest canopy and before a unit. Soft northwest key light, darker southeast cocoa-pink planes, strong cocoa outline and two flat tones. Processing fits preferred x68..188,y196..324 and bottom y324. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; gummy bear, upright character, human pose, weapon, armor, saddle, face with human mouth, multiple animals, herd, sprinkles, rainbow, realistic fur, tree, lollipop, ground patch, platform, cast shadow, diamond, tile border, left right or bottom overflow, lower-right key light, ownership, selection, health, text, UI, 3D render.",
+        "prompt": "Square-grid Candy Game Animal resource: one cute chunky berry-candy wild boar only, isolated on transparent untrimmed 256 by 384 canvas. Broad low body, four short tiny legs, oversized cream snout, two simple tusks and one clear ear, facing southeast in a slight downward strategy view. It is wildlife scenery, not an anthropomorphic unit; no hands, weapon, clothes or upright pose. Center in the front/lower half of owning square x0..255,y128..383 so it draws after Candy Forest canopy and before a unit. Soft northwest key light, darker southeast cocoa-pink planes, strong cocoa outline and two flat tones. Processing fits preferred x68..188,y196..324 and bottom y324.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; gummy bear, upright character, human pose, weapon, armor, saddle, face with human mouth, multiple animals, herd, sprinkles, rainbow, realistic fur, tree, lollipop, ground patch, platform, cast shadow, diamond, tile border, left right or bottom overflow, lower-right key light, ownership, selection, health, text, UI, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 106202,
+        "noBackground": true,
+        "palette": "muted berry-pink candy boar, cream snout and northwest highlights, deep cocoa southeast planes and near-black cocoa outline",
+        "postprocess": "preferred-low-marker-fit",
+        "groundContactY": 324,
+        "styleReference": {
+          "id": "terrain-candy-animal",
+          "sha256": "74bc017e812becb6d435e6401ddf28800132c61660d6683b7c0d7941cbe8edd6",
+          "usageDescription": "Preserve the accepted Candy Animal's chunky boar identity, muted berry-pink confection material, cocoa outline, southeast-facing view and resource-not-unit simplicity. Recompose it low for Candy Forest frontage."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        }
+      },
+      "outputSha256": "354f6745221ef4d0c7d62e5bcadd909633b50da90ab738d2311924f3879588a6",
+      "notes": "Accepted after source/native/enlarged/0.625x/1x and both-axis composition review. The berry-pink candy boar keeps a low quadruped wildlife silhouette with cream snout, tusks and tiny feet, never reading as the upright Candy units. It sits wholly inside the square footprint, remains clear in front of all four lollipop Forest canopies, and stays behind Candy Warrior and Jelly Scout without erasing unit identity, owner or selection cues. Soft northwest highlights, darker southeast cocoa planes, clean outline, dense repetition and DPR1/2 remain sound without scenery, matte, clipping or side/bottom overflow.",
+      "reviewedAt": "2026-09-03T16:48:38.977Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-fertile-ground": {
+      "id": "terrain-square-fertile-ground",
+      "status": "ACCEPTED",
+      "jobId": "2e550440-3ee2-47d3-ac09-daca53458752",
+      "candidate": "art/pixellab/candidates/terrain-square-fertile-ground.png",
+      "candidateSha256": "f2c0c4913d01130979589b4ac7ccba50ef4b825976d9a398211eff64c82b67fd",
+      "providerOutputSha256": "2766a3d1ab6c21e9299ffa71f778bd02c403e012fb96acaa95cef7b0b82f9d1c",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 59,
+        "top": 250,
+        "right": 196,
+        "bottom": 324,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: broad muted umber soil, two moss-green sprouts, parchment northwest rim, dark teal southeast edge and outline. Square-grid shared Fertile Ground resource, one broad centered low patch of rich dark soil only on transparent untrimmed 256 by 384 canvas. Use one soft-edged irregular oval with three enormous simple soil planes and exactly two sparse paired green sprouts near its center. It must read as undeveloped fertile land, never planted crop rows, tilled field, Farm, ownership or selection. Span much of the owning square's center/lower half while remaining quiet under units and Roads. Soft northwest rim light, darker southeast edge, clean charcoal-teal outline and flat two-level shading. Processing fits preferred x44..212,y250..324 and bottom y324. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; farm, crop rows, furrows, fence, barn, wheat, many plants, flowers, fruit, garden bed, rectangular field, checkerboard, selection circle, ownership color, road, building, unit, face, cast shadow, platform, diamond, tile border, left right or bottom overflow, lower-right key light, text, UI, realistic dirt, tiny texture.",
+        "prompt": "Square-grid shared Fertile Ground resource, one broad centered low patch of rich dark soil only on transparent untrimmed 256 by 384 canvas. Use one soft-edged irregular oval with three enormous simple soil planes and exactly two sparse paired green sprouts near its center. It must read as undeveloped fertile land, never planted crop rows, tilled field, Farm, ownership or selection. Span much of the owning square's center/lower half while remaining quiet under units and Roads. Soft northwest rim light, darker southeast edge, clean charcoal-teal outline and flat two-level shading. Processing fits preferred x44..212,y250..324 and bottom y324.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; farm, crop rows, furrows, fence, barn, wheat, many plants, flowers, fruit, garden bed, rectangular field, checkerboard, selection circle, ownership color, road, building, unit, face, cast shadow, platform, diamond, tile border, left right or bottom overflow, lower-right key light, text, UI, realistic dirt, tiny texture",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 106302,
+        "noBackground": true,
+        "palette": "broad muted umber soil, two moss-green sprouts, parchment northwest rim, dark teal southeast edge and outline",
+        "postprocess": "preferred-low-marker-fit",
+        "groundContactY": 324,
+        "styleReference": {
+          "id": "terrain-fertile-ground",
+          "sha256": "97545314656cee7b83d0744309086051f1d520957d0b982ff5e5515cba4adc6b",
+          "usageDescription": "Preserve only the accepted Fertile Ground's broad dark-soil identity, sparse paired sprouts, quiet contrast, strong outline and northwest lighting. Widen and center it for a square cell without copying a Farm field."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        }
+      },
+      "outputSha256": "f2c0c4913d01130979589b4ac7ccba50ef4b825976d9a398211eff64c82b67fd",
+      "notes": "Accepted after source/native/enlarged/0.625x/1x and all eight Original/Candy Grass compatibility contexts. The broad centered dark-soil patch with exactly two paired sprouts reads as undeveloped Fertile Ground and stays decisively distinct from Fruit, planted Farm rows, ownership and selection. It is low and quiet under units and Roads, fully inside the square footprint, and has clean alpha without matte, clipping or side/bottom overflow. Northwest rim light and southeast edge shade remain coherent through repetition, fog boundaries, DPR1/2 and pre-action-technology presentation.",
+      "reviewedAt": "2026-09-03T16:52:36.164Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-ore": {
+      "id": "terrain-square-ore",
+      "status": "ACCEPTED",
+      "jobId": "68e4fa33-379d-4c20-9439-fc47c32927d4",
+      "candidate": "art/pixellab/candidates/terrain-square-ore.png",
+      "candidateSha256": "16394b3afdd295cf259d95ac1d519f34af5981129e34fdd7715d7b5bf29e8a00",
+      "providerOutputSha256": "e31b8f311afca249a672e0f03f246cb6033b5b2d568b467f0649f57318a0e3ce",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 69,
+        "top": 224,
+        "right": 186,
+        "bottom": 320,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: three warm amber ore faces, pale parchment northwest highlights, muted slate rock base, dark teal southeast planes and outline. Square-grid shared Ore resource, isolated low mineral vein on transparent untrimmed 256 by 384 canvas. Exactly three large angular amber ore faces rising from one compact broken slate-rock base. Broad unmistakable deposit, not loose gems or a constructed Mine. Center it in the front/lower half of owning square x0..255,y128..383 and keep it readable on both Original slate and Candy cocoa Mountains at 0.625 zoom. Soft northwest key light, darker southeast facets, strong charcoal-teal outline, two-to-three large flat tones and no tiny shards. Processing fits preferred x68..188,y224..320 and bottom y320. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; mine entrance, rails, cart, pickaxe, quarry, cut stone blocks, many crystals, tiny shards, magic glow, status gem, unit, face, ground patch, platform, cast shadow, diamond, tile border, left right or bottom overflow, lower-right key light, ownership, selection, text, UI, realism, 3D render.",
+        "prompt": "Square-grid shared Ore resource, isolated low mineral vein on transparent untrimmed 256 by 384 canvas. Exactly three large angular amber ore faces rising from one compact broken slate-rock base. Broad unmistakable deposit, not loose gems or a constructed Mine. Center it in the front/lower half of owning square x0..255,y128..383 and keep it readable on both Original slate and Candy cocoa Mountains at 0.625 zoom. Soft northwest key light, darker southeast facets, strong charcoal-teal outline, two-to-three large flat tones and no tiny shards. Processing fits preferred x68..188,y224..320 and bottom y320.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; mine entrance, rails, cart, pickaxe, quarry, cut stone blocks, many crystals, tiny shards, magic glow, status gem, unit, face, ground patch, platform, cast shadow, diamond, tile border, left right or bottom overflow, lower-right key light, ownership, selection, text, UI, realism, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 106301,
+        "noBackground": true,
+        "palette": "three warm amber ore faces, pale parchment northwest highlights, muted slate rock base, dark teal southeast planes and outline",
+        "postprocess": "preferred-low-marker-fit",
+        "groundContactY": 320,
+        "styleReference": {
+          "id": "terrain-ore",
+          "sha256": "1ccc74e445d3568c9858e73c7a7aa14e9953239d2152defc2ed152c764c1f4f5",
+          "usageDescription": "Preserve the accepted Ore's three large amber crystal-vein silhouette, slate base, charcoal outline and flat northwest-lit planes. Recompose it broad and low for square Mountain frontage."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        }
+      },
+      "outputSha256": "16394b3afdd295cf259d95ac1d519f34af5981129e34fdd7715d7b5bf29e8a00",
+      "notes": "Accepted after source/native/enlarged/0.625x/1x and complete Original/Candy Mountain compatibility review. Three large amber faces and the slate base read as one unmined Ore vein, clearly distinct from Stone, Mountain decoration, Mine, Quarry and status UI. The compact centered alpha stays inside the square footprint, with no side/bottom overflow, clipping, loose micro-shards or matte. Northwest highlights and darker southeast facets match every Mountain variant; revealed-before-Mining, hidden-resource absence, ownership, selection, dense repetition and unit coexistence remain readable.",
+      "reviewedAt": "2026-09-03T16:52:28.323Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-stone": {
+      "id": "terrain-square-stone",
+      "status": "ACCEPTED",
+      "jobId": "79b7edbb-b1ff-48c5-8734-91de0b808383",
+      "candidate": "art/pixellab/candidates/terrain-square-stone.png",
+      "candidateSha256": "c6143b3b75259dc91cb334959af79fa453128d02b4a300843cee19e029dfea25",
+      "providerOutputSha256": "a45d7327216dd1497ca0ad62ff88737ae1f9078333bc7a8fcb5ee876df5c9d90",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 82,
+        "top": 232,
+        "right": 173,
+        "bottom": 320,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: three rounded muted blue-slate stones, parchment-gray northwest highlights, deep slate southeast planes, charcoal-teal outline. Square-grid shared Stone resource, one isolated low deposit on transparent untrimmed 256 by 384 canvas. Exactly three chunky rounded blue-slate boulders: one broad front stone, one medium back-left and one small back-right. No cut blocks, crystal points, machinery or Quarry structure. Center it in the front/lower half of owning square x0..255,y128..383, readable at 0.625 zoom against both Original slate and Candy cocoa Mountains. Soft northwest key light, darker southeast faces, strong charcoal-teal outline and two large flat tones. Processing fits preferred x78..178,y232..320 and bottom y320. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; ore, amber crystal, gemstones, quarry, cut square blocks, hoist, mine, many pebbles, mountain peak, status icon, unit, face, ground patch, platform, cast shadow, diamond, tile border, left right or bottom overflow, lower-right key light, ownership, selection, text, UI, realistic texture, 3D render.",
+        "prompt": "Square-grid shared Stone resource, one isolated low deposit on transparent untrimmed 256 by 384 canvas. Exactly three chunky rounded blue-slate boulders: one broad front stone, one medium back-left and one small back-right. No cut blocks, crystal points, machinery or Quarry structure. Center it in the front/lower half of owning square x0..255,y128..383, readable at 0.625 zoom against both Original slate and Candy cocoa Mountains. Soft northwest key light, darker southeast faces, strong charcoal-teal outline and two large flat tones. Processing fits preferred x78..178,y232..320 and bottom y320.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; ore, amber crystal, gemstones, quarry, cut square blocks, hoist, mine, many pebbles, mountain peak, status icon, unit, face, ground patch, platform, cast shadow, diamond, tile border, left right or bottom overflow, lower-right key light, ownership, selection, text, UI, realistic texture, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 106303,
+        "noBackground": true,
+        "palette": "three rounded muted blue-slate stones, parchment-gray northwest highlights, deep slate southeast planes, charcoal-teal outline",
+        "postprocess": "preferred-low-marker-fit",
+        "groundContactY": 320,
+        "styleReference": {
+          "id": "terrain-stone",
+          "sha256": "8d8719bec9de96392e1a205c38b0f74ebff32aaabbae046800ef23744bef2f14",
+          "usageDescription": "Preserve the accepted Stone's three rounded blue-slate boulders, quiet palette, strong outline and flat northwest-lit faces. Recompose it broad and low for square Mountain frontage and keep it distinct from amber Ore."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        }
+      },
+      "outputSha256": "c6143b3b75259dc91cb334959af79fa453128d02b4a300843cee19e029dfea25",
+      "notes": "Accepted after source/native/enlarged/0.625x/1x and complete Original/Candy Mountain compatibility review. Exactly three rounded blue-slate boulders form one compact Stone deposit, distinct from amber Ore, Mountain decoration, cut Quarry blocks and status icons even at minimum zoom. The resource is centered within the square footprint with no clipping, matte, tiny pebble noise or left/right/bottom overflow. Northwest pale faces and darker southeast planes are consistent; revealed-before-Quarrying, hidden absence, ownership, selection, dense repetition, units and both factions remain legible.",
+      "reviewedAt": "2026-09-03T16:52:45.241Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-road-material": {
+      "id": "terrain-square-road-material",
+      "status": "ACCEPTED",
+      "jobId": "77a14075-68c6-497c-9d54-d75687ccbaf9",
+      "candidate": "art/pixellab/candidates/terrain-square-road-material.png",
+      "candidateSha256": "5276f5d00e19c7561bbcb4a1cc7062f0ccaf380a0e72b8c7615518a62c05cd9b",
+      "providerOutputSha256": "5c57c9da925208f62e6669bf10e5eb544392d2791f10b71b18e14c5995138cec",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet warm taupe packed earth #9f8a67, restrained parchment northwest value, muted cool-gray southeast value, sparse broad charcoal-teal aggregate marks. Square Road source material only: a seamless full 256 by 256 swatch of almost uniform compacted warm-taupe earth. Use only one extremely subtle soft mottled value cloud with no orientation, contour or identifiable shape. Uniform material reaches every edge and corner. Soft northwest light is imperceptibly lighter and southeast imperceptibly darker without any band or boundary. This is material for deterministic code masks, not a road layout. Flat clean illustrated terrain quieter than every resource and unit. Processing crops the provider inset, expands to the full square and forces opaque alpha. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; road shape, directional texture, diagonal brush stroke, broad stripe, band, line, crossroad, T junction, corner, bend, diagonal join, endpoint, lane marking, curb, cobblestone grid, bricks, tire tracks, footprints, dark patch, recognizable aggregate, diamond, transparent corner, rounded corner, border, frame, bevel, slab, seam, grass, resource, building, unit, ownership, selection, text, UI, noisy microtexture, lower-right light.",
+        "prompt": "Square Road source material only: a seamless full 256 by 256 swatch of almost uniform compacted warm-taupe earth. Use only one extremely subtle soft mottled value cloud with no orientation, contour or identifiable shape. Uniform material reaches every edge and corner. Soft northwest light is imperceptibly lighter and southeast imperceptibly darker without any band or boundary. This is material for deterministic code masks, not a road layout. Flat clean illustrated terrain quieter than every resource and unit. Processing crops the provider inset, expands to the full square and forces opaque alpha.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; road shape, directional texture, diagonal brush stroke, broad stripe, band, line, crossroad, T junction, corner, bend, diagonal join, endpoint, lane marking, curb, cobblestone grid, bricks, tire tracks, footprints, dark patch, recognizable aggregate, diamond, transparent corner, rounded corner, border, frame, bevel, slab, seam, grass, resource, building, unit, ownership, selection, text, UI, noisy microtexture, lower-right light",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 106402,
+        "noBackground": false,
+        "palette": "quiet warm taupe packed earth #9f8a67, restrained parchment northwest value, muted cool-gray southeast value, sparse broad charcoal-teal aggregate marks",
+        "postprocess": "square-road-material",
+        "styleReference": {
+          "id": "terrain-road-material",
+          "sha256": "d0f60535de68afa17fcc39f9fcc6cefd886d45292ad0e3216727c5dca850e84f",
+          "usageDescription": "Preserve only the accepted Road material's quiet warm-gray packed-earth palette and almost textureless flat treatment. Replace the diamond with a seamless full square swatch whose internal value changes are non-directional and too subtle to imply a route."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 0,
+          "right": 256,
+          "bottom": 256
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-square-road-material-0e61fece6d72.png",
+          "candidateSha256": "0e61fece6d72fddd93fb37f1f1c248a0bf043d0859089a4ee52d99a8cd88f57a",
+          "notes": "Rejected at source/enlarged/native material review before any mask derivation. Although technically opaque and square, the swatch contains several large diagonal brush-like bands and dark directional patches. Those shapes would survive all 16 masks, suggest forbidden diagonal connectivity, compete with resources and selection, and stamp visibly across a repeated Road network. The candidate is quarantined; the revised deterministic recipe requires nearly uniform, non-directional mottling.",
+          "reviewedAt": "2026-09-03T16:55:13.057Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet warm taupe packed earth #9f8a67, restrained parchment northwest value, muted cool-gray southeast value, sparse broad charcoal-teal aggregate marks. Square Road source material only: a seamless full 256 by 256 swatch of quiet compacted warm-taupe earth with two or three enormous nearly invisible aggregate variations. Uniform material reaches every edge and corner. Soft northwest light is subtly lighter and southeast subtly darker without any line or boundary. This is material for deterministic code masks, not a road layout: draw no path, junction, arm, edge, curb, lane, tile outline or direction. Flat clean illustrated terrain quieter than resources and units. Processing crops the provider inset, expands to the full square and forces opaque alpha. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; road shape, line, stripe, crossroad, T junction, corner, bend, diagonal join, endpoint, lane marking, curb, cobblestone grid, bricks, tire tracks, footprints, diamond, transparent corner, rounded corner, border, frame, bevel, slab, seam, grass, resource, building, unit, ownership, selection, text, UI, noisy microtexture, lower-right light.",
+            "prompt": "Square Road source material only: a seamless full 256 by 256 swatch of quiet compacted warm-taupe earth with two or three enormous nearly invisible aggregate variations. Uniform material reaches every edge and corner. Soft northwest light is subtly lighter and southeast subtly darker without any line or boundary. This is material for deterministic code masks, not a road layout: draw no path, junction, arm, edge, curb, lane, tile outline or direction. Flat clean illustrated terrain quieter than resources and units. Processing crops the provider inset, expands to the full square and forces opaque alpha.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; road shape, line, stripe, crossroad, T junction, corner, bend, diagonal join, endpoint, lane marking, curb, cobblestone grid, bricks, tire tracks, footprints, diamond, transparent corner, rounded corner, border, frame, bevel, slab, seam, grass, resource, building, unit, ownership, selection, text, UI, noisy microtexture, lower-right light",
+            "requestSize": {
+              "width": 256,
+              "height": 256
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 256
+            },
+            "seed": 106401,
+            "noBackground": false,
+            "palette": "quiet warm taupe packed earth #9f8a67, restrained parchment northwest value, muted cool-gray southeast value, sparse broad charcoal-teal aggregate marks",
+            "postprocess": "square-road-material",
+            "styleReference": {
+              "id": "terrain-road-material",
+              "sha256": "d0f60535de68afa17fcc39f9fcc6cefd886d45292ad0e3216727c5dca850e84f",
+              "usageDescription": "Preserve the accepted Road material's quiet warm-gray packed-earth palette, almost textureless broad treatment and northwest-lit cel shading. Replace the diamond with a seamless full square material swatch for deterministic orthogonal masks."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 0,
+              "right": 256,
+              "bottom": 256
+            }
+          }
+        },
+        {
+          "candidate": "art/pixellab/quarantine/terrain-square-road-material-6c97f66b0875.png",
+          "candidateSha256": "6c97f66b087586c5c74bc113963a750002a17e550ab500afd71e461c119cce78",
+          "providerOutputSha256": "5c57c9da925208f62e6669bf10e5eb544392d2791f10b71b18e14c5995138cec",
+          "jobId": "77a14075-68c6-497c-9d54-d75687ccbaf9",
+          "disposition": "REJECTED",
+          "notes": "Rejected before Road-mask derivation. The revised provider output removed obvious road bands but introduced several isolated dark teal flecks and broad diagonal value swaths. At minimum zoom the flecks resemble resource/status pixels; in repeated masks the swaths would still create false diagonal flow and visible stamping. The candidate is quarantined. It uses the same recorded provider job and request as the accepted source; the final deterministic radius-18 blur and sixteen-percent authored blend were then reapplied to those provider bytes.",
+          "reviewedAt": "2026-09-03T16:57:19.000Z"
+        }
+      ],
+      "outputSha256": "5276f5d00e19c7561bbcb4a1cc7062f0ccaf380a0e72b8c7615518a62c05cd9b",
+      "notes": "Accepted after two quarantined material iterations and deterministic postprocess refinement. The final 256x256 RGBA swatch is calm compacted warm-taupe earth: radius-18 blur and sixteen-percent authored retention remove status-like flecks and false diagonal bands, while a restrained northwest-to-southeast value drift preserves shared lighting. Exact canonical outer-edge convergence supports seamless opposing Road joins. At source, enlarged, native and 0.625x it remains quieter than resources, units, ownership and selection and contains no baked path, direction, junction or UI cue.",
+      "reviewedAt": "2026-09-03T16:58:37.316Z",
       "reviewChecks": {
         "source": true,
         "native": true,

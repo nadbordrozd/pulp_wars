@@ -51,9 +51,7 @@ describe("Original square terrain family", () => {
         readonly seed: number;
       }[];
     };
-    const square = source.recipes.filter(({ id }) =>
-      id.startsWith("terrain-square-original-"),
-    );
+    const square = source.recipes.filter(({ id }) => ids.includes(id));
     expect(square.map(({ id }) => id)).toEqual([
       families.grass[0],
       families.forest[0],
