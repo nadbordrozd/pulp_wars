@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "507f03a4b3e6441ecc404b0bec31751c8135cb5b368958c992d3f56f7eafa138",
+  "sourceManifestSha256": "67b21f3fb53fa30c91261186d2fcc77a099030c1872366ee266f41f10a94f7a4",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -10005,6 +10005,165 @@
       "outputSha256": "47b1df228852d309078de50eb587a79be143251fa77d2b38d89d0b02d1d340eb",
       "notes": "Accepted after source/native/enlarged, 0.625x/1x/1.75x, DPR1/DPR2, both-faction dense-map, exact 112x130 UI, and zero/one/four/eight adjacent-Quarry plus opposite-pair and exact 0/1/8/16 graphical live-level-square review. The finished blue-slate arch, centered bronze hoist and two fitted bases create an unmistakable Stoneworks silhouette distinct from raw Stone, low Quarry, Mine, Forge, city walls and terrain. Alpha x88..296,y95..316 stays within the 384x384 processor canvas with 88/87 source-pixel lateral safety, 68 bottom pixels and only upward extension. At 0.3 map scale the 62.7x66.6 CSS silhouette remains smaller than square Forest/Mountain forms and leaves renderer-owned pair axes, contributor spokes, units and mint level squares unobscured. Northwest lighting matches the family; no directional or state mark is baked in.",
       "reviewedAt": "2026-09-03T20:23:27.547Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-square-market": {
+      "id": "building-square-market",
+      "status": "ACCEPTED",
+      "jobId": "a8a5d783-6493-46e9-946c-9bf1a593decf",
+      "candidate": "art/pixellab/candidates/building-square-market.png",
+      "candidateSha256": "2351c318e26d7ca18b12ec8fa9db7907e5fcd518c9a1242afc1d3bc85f1f727b",
+      "providerOutputSha256": "d770dca5dd59b5b42733b87e8e510d0b4561e23914cc0afc3a63d0491dd8a9c9",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 90,
+        "top": 92,
+        "right": 293,
+        "bottom": 316,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm bronze stall timber, broad off-white and muted golden canopy bands, parchment crates, slate-blue balance scale, dark teal-charcoal outline and southeast shadow. Shared square-grid Market on a transparent 384 by 384 canvas, anchor 192,288. One compact open four-post trading pavilion: oversized broad off-white-and-muted-gold striped canopy, unmistakable slate-blue balance scale and exactly two low crates. Open canopy plus scale read as commerce, never city, house, Workshop or ownership banner. Fit x86..298,y92..316, smaller than Forest and Mountain. Keep lower-center and lower-right open for a unit, four family marks, four income squares and separate capital-Road bonus indication to five. Southeast-facing three-quarter downward camera; soft northwest light, darker southeast planes, strong outline, two-to-three flat tones. Upward overflow only; no baked state. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; city, village, house, castle, skyline, row of shops, many stalls, street scene, crowd, merchant, sign, flag, banner, ownership standard, workshop, forge, windmill, giant scale, ground, platform, shadow, left right or bottom overflow, clipping, lower-right light, family icon, road connection, glow, ownership color, selection, mint square, coin, number, text, UI, realistic architecture, clutter, painterly, 3D.",
+        "prompt": "Shared square-grid Market on a transparent 384 by 384 canvas, anchor 192,288. One compact open four-post trading pavilion: oversized broad off-white-and-muted-gold striped canopy, unmistakable slate-blue balance scale and exactly two low crates. Open canopy plus scale read as commerce, never city, house, Workshop or ownership banner. Fit x86..298,y92..316, smaller than Forest and Mountain. Keep lower-center and lower-right open for a unit, four family marks, four income squares and separate capital-Road bonus indication to five. Southeast-facing three-quarter downward camera; soft northwest light, darker southeast planes, strong outline, two-to-three flat tones. Upward overflow only; no baked state.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; city, village, house, castle, skyline, row of shops, many stalls, street scene, crowd, merchant, sign, flag, banner, ownership standard, workshop, forge, windmill, giant scale, ground, platform, shadow, left right or bottom overflow, clipping, lower-right light, family icon, road connection, glow, ownership color, selection, mint square, coin, number, text, UI, realistic architecture, clutter, painterly, 3D",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 107303,
+        "noBackground": true,
+        "palette": "warm bronze stall timber, broad off-white and muted golden canopy bands, parchment crates, slate-blue balance scale, dark teal-charcoal outline and southeast shadow",
+        "postprocess": "compact-building-fit",
+        "groundContactY": 316,
+        "styleReference": {
+          "id": "building-market",
+          "sha256": "d3dfa959e971d5dff54a0a8c4c459ae4d38c8716b15fbc307a037aead3b148e3",
+          "usageDescription": "Input reference role: preserve the accepted Market's one open four-post trading pavilion, broad striped canopy, oversized balance scale, transparent isolation, strong outline and broad flat shading. Recompose it to the accepted square processor scale and northwest lighting without settlement, flag or baked economy-state cues."
+        }
+      },
+      "outputSha256": "2351c318e26d7ca18b12ec8fa9db7907e5fcd518c9a1242afc1d3bc85f1f727b",
+      "notes": "Accepted after native source and enlarged inspection plus deterministic both-faction distinct-family/income, mature 3x3 and expanded 5x5 cross-city, zoom/DPR, overlay and exact 112x130 UI review. The open four-post pavilion, oversized striped canopy, large balance scale and exactly two crates read immediately as commerce rather than a city, house, Workshop or ownership banner. Alpha x90..293,y92..316 gives 203 source pixels of width and 224 of height, with 90/90 lateral safety and 67 bottom pixels. At 0.3 map scale the 61.2x67.5 CSS silhouette remains smaller than accepted square Forest/Mountain mass. Original/Candy units, distinct-family marks for 0..4, exact income squares 0..4, cardinal Road and separate capital-Road bonus to five remain readable; no family, Road, value, ownership, text or UI state is baked in.",
+      "reviewedAt": "2026-09-03T20:50:54.925Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-square-workshop": {
+      "id": "building-square-workshop",
+      "status": "ACCEPTED",
+      "jobId": "e8700daf-c7f8-4a4b-94b0-cbd1010256f1",
+      "candidate": "art/pixellab/candidates/building-square-workshop.png",
+      "candidateSha256": "6fb28673147cd9b0c875a6d10aaec4d7673ce577cf2edb3e7814b24ef265fbbb",
+      "providerOutputSha256": "7d038e1b52dd0896b807c8779bba0e23975ae9db4ad9964f0053fc0f7f2d39f8",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 99,
+        "top": 104,
+        "right": 284,
+        "bottom": 316,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm parchment canopy, bronze timber bench and broad mallet, muted slate-blue gear, restrained moss accent, dark teal-charcoal outline and southeast shadow. Shared square-grid Workshop on a transparent 384 by 384 canvas, anchor 192,288. One compact open-front craft shelter: broad bronze workbench, oversized slate-blue gear, broad timber mallet and simple parchment canopy. These mixed tools read as general craft, never one specialized processor. Fit the single shed inside x94..290,y104..316, clearly smaller than Grand Works, Forest and Mountain. Keep lower-center and lower-right open for a unit, four contributor spokes and four renderer mint squares. Southeast-facing three-quarter downward camera; soft northwest light, darker southeast planes, strong charcoal-teal outline, two-to-three flat tones. Upward overflow only; no ground or baked marks. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; forge, anvil, sawmill, saw blade, quarry, stone arch, windmill, grand complex, multiple wings, tower, city, village, market stall, house, character, many tiny tools, ground, platform, shadow, left right or bottom overflow, clipping, lower-right light, ownership, selection, contributor line, family chip, mint square, pip, number, text, UI, realistic machinery, painterly, 3D.",
+        "prompt": "Shared square-grid Workshop on a transparent 384 by 384 canvas, anchor 192,288. One compact open-front craft shelter: broad bronze workbench, oversized slate-blue gear, broad timber mallet and simple parchment canopy. These mixed tools read as general craft, never one specialized processor. Fit the single shed inside x94..290,y104..316, clearly smaller than Grand Works, Forest and Mountain. Keep lower-center and lower-right open for a unit, four contributor spokes and four renderer mint squares. Southeast-facing three-quarter downward camera; soft northwest light, darker southeast planes, strong charcoal-teal outline, two-to-three flat tones. Upward overflow only; no ground or baked marks.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; forge, anvil, sawmill, saw blade, quarry, stone arch, windmill, grand complex, multiple wings, tower, city, village, market stall, house, character, many tiny tools, ground, platform, shadow, left right or bottom overflow, clipping, lower-right light, ownership, selection, contributor line, family chip, mint square, pip, number, text, UI, realistic machinery, painterly, 3D",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 107301,
+        "noBackground": true,
+        "palette": "warm parchment canopy, bronze timber bench and broad mallet, muted slate-blue gear, restrained moss accent, dark teal-charcoal outline and southeast shadow",
+        "postprocess": "compact-building-fit",
+        "groundContactY": 316,
+        "styleReference": {
+          "id": "building-workshop",
+          "sha256": "f1336fb53f069ad7956c6f6b565113ad3ab300c98a7cd1313ab3f3b08ce903d2",
+          "usageDescription": "Input reference role: preserve the accepted Workshop's open mixed-craft shed, oversized shared gear-and-bench shorthand, transparent isolation, strong outline and broad flat shading. Recompose it to the accepted square processor scale, northwest lighting and upward-only overflow while keeping lower-right contributor and population-square space clear."
+        }
+      },
+      "outputSha256": "6fb28673147cd9b0c875a6d10aaec4d7673ce577cf2edb3e7814b24ef265fbbb",
+      "notes": "Accepted after native source and enlarged inspection plus deterministic both-faction contributor/value, mature 3x3 and expanded 5x5, zoom/DPR, overlay and exact 112x130 UI review. The compact open single shed, oversized shared gear, broad bench and mallet read as mixed basic craft rather than a specialized Forge, Sawmill, Stoneworks or Windmill, and remain unmistakably simpler than Grand Works. Alpha x99..284,y104..316 gives 185 source pixels of width and 212 of height, with 99/99 lateral safety and 67 bottom pixels. At 0.3 map scale the 55.8x63.9 CSS silhouette stays below accepted square Forest/Mountain mass. Colocated Original/Candy units, four distinct-basic contributor spokes and exact 0..4 mint population squares remain readable; no state, ground, ownership, text or UI is baked in.",
+      "reviewedAt": "2026-09-03T20:50:29.698Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-square-grand-works": {
+      "id": "building-square-grand-works",
+      "status": "ACCEPTED",
+      "jobId": "d2f415a1-a343-438b-a820-5f5bee443824",
+      "candidate": "art/pixellab/candidates/building-square-grand-works.png",
+      "candidateSha256": "e5407270dc3c55eec4b9ee34c913afe7f79c0426a4ba8933ae82bfdd18bc50cf",
+      "providerOutputSha256": "41fe70e27894f42ed3db568d9bf8fd2637542a42d7d7c8190845099c2e36585c",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 80,
+        "top": 80,
+        "right": 304,
+        "bottom": 316,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: parchment central hall, warm bronze structural wings, muted slate-blue gear and fitted block, restrained golden cap, dark teal-charcoal outline and southeast shadow. Shared square-grid Grand Works on a transparent 384 by 384 canvas, anchor 192,288. One advanced landmark: tall parchment central hall, exactly three broad bronze discipline wings, oversized slate-blue gear, one fitted stone block and restrained golden cap. Its three-wing silhouette is grander than the single-shed Workshop but remains one building, never a city. Fit x80..304,y62..316, smaller than Forest and Mountain. Keep lower-center and lower-right open for a unit, three/four cross-city spokes and renderer-owned +6/+8 mint squares. Southeast-facing three-quarter downward camera; soft northwest light, darker southeast planes, strong outline, two-to-three flat tones. Upward overflow only; no baked state. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; single workshop shed, city, village, castle, skyline, houses, streets, market stalls, ownership banner, giant terrain scale, smoke, many chimneys, character, engineer, ground, platform, shadow, left right or bottom overflow, clipping, lower-right light, ownership, selection, contributor line, family chip, level square, plus sign, number, text, UI, realistic architecture, tiny clutter, painterly, 3D.",
+        "prompt": "Shared square-grid Grand Works on a transparent 384 by 384 canvas, anchor 192,288. One advanced landmark: tall parchment central hall, exactly three broad bronze discipline wings, oversized slate-blue gear, one fitted stone block and restrained golden cap. Its three-wing silhouette is grander than the single-shed Workshop but remains one building, never a city. Fit x80..304,y62..316, smaller than Forest and Mountain. Keep lower-center and lower-right open for a unit, three/four cross-city spokes and renderer-owned +6/+8 mint squares. Southeast-facing three-quarter downward camera; soft northwest light, darker southeast planes, strong outline, two-to-three flat tones. Upward overflow only; no baked state.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; single workshop shed, city, village, castle, skyline, houses, streets, market stalls, ownership banner, giant terrain scale, smoke, many chimneys, character, engineer, ground, platform, shadow, left right or bottom overflow, clipping, lower-right light, ownership, selection, contributor line, family chip, level square, plus sign, number, text, UI, realistic architecture, tiny clutter, painterly, 3D",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 107302,
+        "noBackground": true,
+        "palette": "parchment central hall, warm bronze structural wings, muted slate-blue gear and fitted block, restrained golden cap, dark teal-charcoal outline and southeast shadow",
+        "postprocess": "compact-building-fit",
+        "groundContactY": 316,
+        "styleReference": {
+          "id": "building-grand-works",
+          "sha256": "64313dbd7b577ea2433c738feb47049bb374db5d4c7f208823b79d935e4c16e6",
+          "usageDescription": "Input reference role: preserve the accepted Grand Works' single landmark composition, tall capped central hall, three broad discipline wings, transparent isolation, strong outline and broad flat shading. Recompose it to the accepted square processor scale and northwest lighting, clearly above Workshop complexity but below city and tall-terrain mass."
+        }
+      },
+      "outputSha256": "e5407270dc3c55eec4b9ee34c913afe7f79c0426a4ba8933ae82bfdd18bc50cf",
+      "notes": "Accepted after native source and enlarged inspection plus deterministic both-faction advanced-processor/value, mature 3x3 and expanded 5x5 cross-city, zoom/DPR, overlay and exact 112x130 UI review. The tall capped central hall, exactly three broad discipline wings, oversized gear and fitted-stone cue create a late-game multi-discipline landmark unmistakably grander than Workshop while remaining one functional improvement, not a city, castle or skyline. Alpha x80..304,y80..316 gives 224 source pixels of width and 236 of height, with 80/79 lateral safety and 67 bottom pixels. At 0.3 map scale the 67.5x71.1 CSS silhouette remains smaller than accepted square Forest/Mountain mass. Original/Candy units, three/four cross-city processor spokes and exact +6/+8 mint population squares remain readable; no links, values, ownership, text or UI are baked in.",
+      "reviewedAt": "2026-09-03T20:50:42.352Z",
       "reviewChecks": {
         "source": true,
         "native": true,

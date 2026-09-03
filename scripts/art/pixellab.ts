@@ -231,6 +231,7 @@ async function main(): Promise<void> {
     assertSquareResourceRoadOrder(recipes, generated);
     assertSquareImprovementSampleGate(recipes);
     assertSquareImprovementExpansionOrder(recipes, generated);
+    assertSquareCivicCommerceOrder(recipes, generated);
     if (stage === "batch") assertBuildingBatchOrder(recipes, generated);
     const concurrency = Number(optionalOption("--concurrency") ?? "3");
     await generateRecipes(source, generated, recipes, concurrency);
@@ -890,6 +891,32 @@ function validateSourceManifest(
       throw new Error(
         `Square extraction/processor geometry mismatch: ${contract.id}`,
       );
+  }
+  const squareCivicCommerce = [
+    "building-square-workshop",
+    "building-square-grand-works",
+    "building-square-market",
+  ] as const;
+  for (const id of squareCivicCommerce) {
+    const recipe = source.recipes.find((candidate) => candidate.id === id);
+    if (
+      recipe?.class !== "buildings" ||
+      recipe.stage !== "batch" ||
+      JSON.stringify(recipe.requestSize) !==
+        JSON.stringify({ width: 384, height: 384 }) ||
+      JSON.stringify(recipe.outputSize) !==
+        JSON.stringify({ width: 384, height: 384 }) ||
+      JSON.stringify(recipe.anchor) !== JSON.stringify({ x: 192, y: 288 }) ||
+      JSON.stringify(recipe.hardBounds) !==
+        JSON.stringify({ left: 8, top: 8, right: 376, bottom: 344 }) ||
+      recipe.postprocess !== "compact-building-fit" ||
+      recipe.styleReference === undefined ||
+      recipe.styleReferenceUsage === undefined ||
+      recipe.preferredBounds === undefined ||
+      recipe.fitBounds === undefined ||
+      recipe.groundContactY !== 316
+    )
+      throw new Error(`Square civic/commerce geometry mismatch: ${id}`);
   }
   const candyTerrainIds = [
     "terrain-candy-grass-1",
@@ -1588,6 +1615,40 @@ function assertSquareImprovementExpansionOrder(
   if (missingBefore.length > 0)
     throw new Error(
       `Accept the square extraction family before processors: ${missingBefore.join(", ")}`,
+    );
+}
+
+function assertSquareCivicCommerceOrder(
+  recipes: readonly Recipe[],
+  generated: GeneratedManifest,
+): void {
+  const ids = [
+    "building-square-workshop",
+    "building-square-grand-works",
+    "building-square-market",
+  ] as const;
+  const selected = recipes
+    .map(({ id }) => id)
+    .filter((id) => ids.includes(id as (typeof ids)[number]));
+  if (selected.length === 0) return;
+  if (
+    selected.length !== ids.length ||
+    selected.some((id, index) => id !== ids[index])
+  )
+    throw new Error(
+      "Square civic/commerce generation must use exactly Workshop + Grand Works + Market in one manifest-ordered request",
+    );
+  const prerequisites = [
+    "building-square-sawmill",
+    "building-square-forge",
+    "building-square-stoneworks",
+  ] as const;
+  const missing = prerequisites.filter(
+    (id) => generated.records[id]?.status !== "ACCEPTED",
+  );
+  if (missing.length > 0)
+    throw new Error(
+      `Accept square processors before civic/commerce generation: ${missing.join(", ")}`,
     );
 }
 

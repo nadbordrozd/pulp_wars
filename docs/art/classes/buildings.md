@@ -108,6 +108,40 @@ values `0/2/8/16`, and Stoneworks values `0/1/8/16`, including Stoneworks
 opposite-pair axes; squares wrap after eight and no contributor, pair, value or
 state mark is baked into a raster.
 
+## Accepted square civic and commerce family
+
+The final bounded square improvement family accepts exactly three shared
+PixelLab sources from one manifest-ordered invocation:
+`building-square-workshop`, `building-square-grand-works`, and
+`building-square-market`. All use the transparent 384 x 384 processor canvas,
+anchor `(192,288)`, display scale `0.30`, and deterministic
+`compact-building-fit` processing with ground contact at source `y=316`.
+Their accepted alpha bounds are respectively `x=99..284,y=104..316`,
+`x=80..304,y=80..316`, and `x=90..293,y=92..316`. They cross no lateral or
+bottom edge, stay smaller than the accepted square Forest and Mountain forms,
+and reserve the lower-center/lower-right attachment area for unchanged units
+and renderer-owned economy marks.
+
+Workshop is one modest open craft shed with an oversized gear, bench, and
+mallet: it reads as mixed basic craft rather than a specialized processor.
+Grand Works uses a tall capped central hall and three broad discipline wings:
+it is clearly grander than Workshop at minimum zoom without becoming a city.
+Market is one open striped pavilion with a large balance scale and two crates:
+it reads as commerce, never a settlement or ownership banner. All three share
+the accepted southeast-facing camera, soft northwest key light, dark southeast
+planes, strong charcoal-teal outline, and broad flat shading.
+
+Deterministic review covers both factions; source/native/enlarged inspection;
+`0.625x`, `1x`, and `1.75x` at DPR1/2; exact 112 x 130 action, selection, and
+technology reuse; occupied tiles; Roads, resources, city, fog, territory,
+ownership, and selection; and dense mature 3 x 3 plus expanded cross-city 5 x
+5 maps. Workshop shows distinct-basic contributors and exact population
+squares `0..4`; Grand Works shows three/four advanced-processor contributors
+and exact `+6/+8` squares; Market shows distinct-family income `0..4` plus the
+capital-Road bonus to `5`. Contributor lines, family shapes, live-value
+squares, and Road indication are code-native and unobscured. Accepted URLs are
+registered, but runtime asset coverage and bindings remain deferred to e1m.9.
+
 This contract specializes [Pulp Wars Art Direction](../ART_DIRECTION.md) for
 capitals, cities, villages, Mines, Lumber Mills, Chocolate Walls, and city
 reward markers.

@@ -1,0 +1,176 @@
+{
+  "status": "READY_FOR_ORCHESTRATOR_REVIEW",
+  "pixelLabFamilyRequests": 1,
+  "pixelLabSourceCalls": 3,
+  "acceptedSources": 3,
+  "rejectedSources": 0,
+  "exactFamily": {
+    "purpose": "square civic and commerce improvements",
+    "ids": [
+      "building-square-workshop",
+      "building-square-grand-works",
+      "building-square-market"
+    ],
+    "jobs": [
+      "e8700daf-c7f8-4a4b-94b0-cbd1010256f1",
+      "d2f415a1-a343-438b-a820-5f5bee443824",
+      "a8a5d783-6493-46e9-946c-9bf1a593decf"
+    ]
+  },
+  "providerRejections": [],
+  "acceptedAssets": {
+    "building-square-workshop": {
+      "seed": 107301,
+      "output": "public/assets/pixellab/buildings-square/workshop.png",
+      "jobId": "e8700daf-c7f8-4a4b-94b0-cbd1010256f1",
+      "providerOutputSha256": "7d038e1b52dd0896b807c8779bba0e23975ae9db4ad9964f0053fc0f7f2d39f8",
+      "outputSha256": "6fb28673147cd9b0c875a6d10aaec4d7673ce577cf2edb3e7814b24ef265fbbb",
+      "alphaBounds": {
+        "left": 99,
+        "top": 104,
+        "right": 284,
+        "bottom": 316,
+        "empty": false
+      },
+      "styleReference": "building-workshop"
+    },
+    "building-square-grand-works": {
+      "seed": 107302,
+      "output": "public/assets/pixellab/buildings-square/grand-works.png",
+      "jobId": "d2f415a1-a343-438b-a820-5f5bee443824",
+      "providerOutputSha256": "41fe70e27894f42ed3db568d9bf8fd2637542a42d7d7c8190845099c2e36585c",
+      "outputSha256": "e5407270dc3c55eec4b9ee34c913afe7f79c0426a4ba8933ae82bfdd18bc50cf",
+      "alphaBounds": {
+        "left": 80,
+        "top": 80,
+        "right": 304,
+        "bottom": 316,
+        "empty": false
+      },
+      "styleReference": "building-grand-works"
+    },
+    "building-square-market": {
+      "seed": 107303,
+      "output": "public/assets/pixellab/buildings-square/market.png",
+      "jobId": "a8a5d783-6493-46e9-946c-9bf1a593decf",
+      "providerOutputSha256": "d770dca5dd59b5b42733b87e8e510d0b4561e23914cc0afc3a63d0491dd8a9c9",
+      "outputSha256": "2351c318e26d7ca18b12ec8fa9db7907e5fcd518c9a1242afc1d3bc85f1f727b",
+      "alphaBounds": {
+        "left": 90,
+        "top": 92,
+        "right": 293,
+        "bottom": 316,
+        "empty": false
+      },
+      "styleReference": "building-market"
+    }
+  },
+  "economyContexts": {
+    "factions": [
+      "ORIGINAL",
+      "CANDY"
+    ],
+    "workshopDistinctBasicContributors": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "workshopPopulationSquares": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "grandWorksAdvancedProcessorContributors": [
+      3,
+      4
+    ],
+    "grandWorksPopulationSquares": [
+      6,
+      8
+    ],
+    "marketDistinctFamilyContributors": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "marketIncomeSquares": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "marketCapitalRoadBonusSquares": 5,
+    "marksAreCodeNative": true
+  },
+  "runtimeCoverageSwitched": false,
+  "acceptedUnitByteHashes": {
+    "public/assets/pixellab/units/warrior.png": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1",
+    "public/assets/pixellab/units/defender.png": "930c31f9aa1bf5dacf0318484b31ac63504365482ae01a84a6a269d94de65e11",
+    "public/assets/pixellab/units/archer.png": "deb62a8a84dc28ceecd58047a3f65abdb67c0616851337c817452d75a5b73bb2",
+    "public/assets/pixellab/units/rider.png": "20bb28c79c28e262908e518124e776f30adf946254906e62245f0e9702606bb4",
+    "public/assets/pixellab/units/catapult.png": "cdf6ed34a67c1daf1bfd947b0b1af007b25d2a13ee88ee2df876bdb9f7ceec83",
+    "public/assets/pixellab/units/candy-warrior.png": "76456b060ba1701e75387285b4738d4c289c0617eb852f5552beadfe2eb1a2bc",
+    "public/assets/pixellab/units/candy-gumball-guard.png": "5a43d5f737bbf41f007c9bf8ee5f7fe5e0084bb13f9d243917d27c6f701f81b2",
+    "public/assets/pixellab/units/candy-donut.png": "041fd6defb9b46059e9036418c501cc287e8ac74180384594770e9d1d764a991",
+    "public/assets/pixellab/units/candy-choco-engineer.png": "020d0448b1db6be74b00aa3d468ca4f4aa7d9c2c700d63ae7c03a683ec314fcf",
+    "public/assets/pixellab/units/original-scout.png": "8663c5c6f95ed69481123245a7f7c5e6acf2b55ebb9c52ebbc46979252e60343",
+    "public/assets/pixellab/units/original-medic.png": "c30475f23be6a8ca9ee1957a327b3b764489e570d50cd69d5775006650af62c2",
+    "public/assets/pixellab/units/original-breacher.png": "1e752161cd63bcb7bc0e5a0989557f61d2d7f2d3e3d9597ccc9360ed11fca2ad",
+    "public/assets/pixellab/units/original-heavy.png": "8fe592d094ede939cf8a92119022c9606b6c12621ed4d6777b4056b8cadb3759",
+    "public/assets/pixellab/units/original-juggernaut.png": "c905126dc7c38683b1ecba0aa930a4add45426a26fa3560a78e2df21ddaccc9a",
+    "public/assets/pixellab/units/candy-jelly-scout.png": "c835c0a08cc24d5751c0dbc85365f638016029984162a6272387aa3efc2965a9",
+    "public/assets/pixellab/units/candy-marshmallow-medic.png": "868b00e650c05e22bd085d72f093fd8c80554ba17a3357a2982833c617e98327",
+    "public/assets/pixellab/units/candy-crusher.png": "d2fb335814ae4929cb47891bcb8561c8092a1bfc9fc53f98b9b4a32382898fca",
+    "public/assets/pixellab/units/candy-jawbreaker.png": "5897e7b0d7d8dd4746ff7ecadba4ba0b0d72266df4b33b25743fef33c5ee1455",
+    "public/assets/pixellab/units/candy-sugar-titan.png": "7d360ee7191644121f4397be91ac7ab42769883b44d6481d6c056ad7c5df76c9"
+  },
+  "reviewCoverage": [
+    "all three sources at original/native, enlarged and native 1x map scale",
+    "Workshop distinct-basic contributors and exact population squares through four for both factions",
+    "Grand Works three/four advanced-processor cross-city contributors and exact +6/+8 population squares",
+    "Market zero-through-four distinct families plus capital-Road bonus to five with code-native marks",
+    "dense mature 3x3 and expanded 5x5 cross-city contexts with cities, units, Roads, resources, territory, fog, ownership and selection",
+    "0.625x, 1x and 1.75x composition at DPR1 and DPR2-equivalent backing",
+    "exact 112x130 contextual-action, selection-identity and technology-card raster reuse",
+    "accepted IDs/URLs registered while runtime coverage and bindings remain deferred to e1m.9"
+  ],
+  "artifacts": [
+    {
+      "path": "art/pixellab/reviews/square-civic-commerce/source-native-enlarged.png",
+      "sha256": "5aeac3914e6e9a6e7de7e4721c6c2fe8f1b104a59697febd1e83da57f4c791f3",
+      "bytes": 224724
+    },
+    {
+      "path": "art/pixellab/reviews/square-civic-commerce/values-contributors-both-factions.png",
+      "sha256": "cf6b626d95f40eb960fe9fd263f13fe7e2ecd2a3ac76be14e4e7873bf883bdb9",
+      "bytes": 226273
+    },
+    {
+      "path": "art/pixellab/reviews/square-civic-commerce/mature-3x3-both-factions.png",
+      "sha256": "d90babe4b36e30a1985985d3f81a366c8e1511c6b31f38f0e26e353edfec7571",
+      "bytes": 94523
+    },
+    {
+      "path": "art/pixellab/reviews/square-civic-commerce/mature-5x5-cross-city.png",
+      "sha256": "0fe4e917b449dd45c4f80b28153896758c3bd90cd43eddbea4678f032685bc6a",
+      "bytes": 181383
+    },
+    {
+      "path": "art/pixellab/reviews/square-civic-commerce/zoom-dpr-overlays.png",
+      "sha256": "943c65240c2b31ecd3300fc843e4e6f9595400bc72a8ac7b345af6842210362c",
+      "bytes": 622917
+    },
+    {
+      "path": "art/pixellab/reviews/square-civic-commerce/ui-reuse-112x130.png",
+      "sha256": "b6dc84e7e068763d8d9739e01bbced3a32448dddf666b879a9b540198ff5cd10",
+      "bytes": 73223
+    }
+  ]
+}
