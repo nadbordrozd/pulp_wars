@@ -13,8 +13,8 @@
     },
     {
       "path": "art/pixellab/reviews/buildings-contact-sheet.png",
-      "sha256": "ff7650edc3fe1802f4c06ec7b4c101ec59c796decb1b0348b23aa6d19446eff3",
-      "bytes": 708859
+      "sha256": "ab21b7d3032cb5c2884bf3814d298f1e5582a4529358be7bdf087e7e534a68fd",
+      "bytes": 778682
     },
     {
       "path": "art/pixellab/reviews/ui-contact-sheet.png",
@@ -38,7 +38,7 @@
     },
     {
       "path": "art/pixellab/reviews/map-review.html",
-      "sha256": "d758a369a309395fe0ae2c7f40c12f9b7a6e5f450f8bb1a45672de3a21db7f57",
+      "sha256": "92c0de71b7dc54e902e96d4267c2f9ab68dcaf6a6b667fea308c2ee4df423f0d",
       "bytes": 552
     }
   ]

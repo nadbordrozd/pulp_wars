@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "748ba1d8c8df2497d542857e38656b26ee8d84adcaa5c1f67e617c546b4a1f8e",
+  "sourceManifestSha256": "6143d0bb634870339cb9ae54a1486f77a375f63a798c3c9b835ab97f679dc63c",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -9576,6 +9576,170 @@
       "outputSha256": "5276f5d00e19c7561bbcb4a1cc7062f0ccaf380a0e72b8c7615518a62c05cd9b",
       "notes": "Accepted after two quarantined material iterations and deterministic postprocess refinement. The final 256x256 RGBA swatch is calm compacted warm-taupe earth: radius-18 blur and sixteen-percent authored retention remove status-like flecks and false diagonal bands, while a restrained northwest-to-southeast value drift preserves shared lighting. Exact canonical outer-edge convergence supports seamless opposing Road joins. At source, enlarged, native and 0.625x it remains quieter than resources, units, ownership and selection and contains no baked path, direction, junction or UI cue.",
       "reviewedAt": "2026-09-03T16:58:37.316Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-square-quarry": {
+      "id": "building-square-quarry",
+      "status": "ACCEPTED",
+      "jobId": "3299c53c-f6e6-4f7b-948e-90d7115701ee",
+      "candidate": "art/pixellab/candidates/building-square-quarry.png",
+      "candidateSha256": "c6061c6c4b687c05b4e94459f1224467cc3217f3e983579111929144ea5b94fd",
+      "providerOutputSha256": "401e4150ac8ccf52c5a028e5b9a1fa9d23e06b645a0fd8bc6794013fbaaadab0",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 64,
+        "top": 144,
+        "right": 191,
+        "bottom": 244,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted blue-slate cut stone, warm parchment timber, restrained bronze fittings, charcoal-teal outline and southeast shadow. Shared square-grid Quarry on a transparent 256 by 296 low-building canvas, anchor 128,222. One compact stepped excavation with exactly three large squared blue-slate blocks and one short parchment-timber lifting frame with a chunky bronze wheel. It reads as a worked Quarry, not loose Stone, Ore or Mine. Keep it centered, broad, low and smaller than Mountains/Forests, with open center space for a unit in front. Soft northwest light, darker southeast planes, strong charcoal-teal outline and two-to-three flat tones. No ground or shadow. Processing fits x48..208,y144..244 and retains transparent lateral/bottom safety. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; loose Stone resource, amber ore, crystal, cave, mine, rails, cart, tall crane, city, house, mountain, tree, farm, windmill, worker, face, unit, ground, platform, diamond, shadow, lateral or bottom overflow, clipping, lower-right light, ownership, selection, status, text, UI, realistic masonry, tiny rubble, painterly, 3D.",
+        "prompt": "Shared square-grid Quarry on a transparent 256 by 296 low-building canvas, anchor 128,222. One compact stepped excavation with exactly three large squared blue-slate blocks and one short parchment-timber lifting frame with a chunky bronze wheel. It reads as a worked Quarry, not loose Stone, Ore or Mine. Keep it centered, broad, low and smaller than Mountains/Forests, with open center space for a unit in front. Soft northwest light, darker southeast planes, strong charcoal-teal outline and two-to-three flat tones. No ground or shadow. Processing fits x48..208,y144..244 and retains transparent lateral/bottom safety.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; loose Stone resource, amber ore, crystal, cave, mine, rails, cart, tall crane, city, house, mountain, tree, farm, windmill, worker, face, unit, ground, platform, diamond, shadow, lateral or bottom overflow, clipping, lower-right light, ownership, selection, status, text, UI, realistic masonry, tiny rubble, painterly, 3D",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 107102,
+        "noBackground": true,
+        "palette": "muted blue-slate cut stone, warm parchment timber, restrained bronze fittings, charcoal-teal outline and southeast shadow",
+        "postprocess": "compact-building-fit",
+        "groundContactY": 244,
+        "styleReference": {
+          "id": "building-quarry",
+          "sha256": "edff5ef36e7b01edd640b4dfb006c1988a69582298f7400abba8fb5e8eef181c",
+          "usageDescription": "Preserve the accepted Quarry's functional cut-stone-and-hoist shorthand, chunky outline, flat planes and northwest light, while making a smaller square-cell-aware silhouette with clear transparent lateral and bottom safety."
+        }
+      },
+      "outputSha256": "c6061c6c4b687c05b4e94459f1224467cc3217f3e983579111929144ea5b94fd",
+      "notes": "Accepted after individual source/native/enlarged, 0.625x/1x/1.75x, DPR1/DPR2-equivalent, both-faction dense-map and exact 112x130 UI viewport review. Three squared blue-slate blocks and a short timber hoist read immediately as a worked Quarry, remaining distinct from loose Stone, amber Ore, Mine entrances, terrain and cities. The centered compact silhouette stays within alpha x64..191,y144..244 on the 256x296 canvas, has no left/right/bottom overflow, matches northwest lighting, remains smaller than Mountains and Forests, and leaves accepted units readable without changing their bytes.",
+      "reviewedAt": "2026-09-03T17:44:50.666Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-square-farm": {
+      "id": "building-square-farm",
+      "status": "ACCEPTED",
+      "jobId": "bf05cd0e-9e27-4a1c-b246-0e6fab1fa664",
+      "candidate": "art/pixellab/candidates/building-square-farm.png",
+      "candidateSha256": "34f46d4f1aad59200a53511dadfe460ba2ca465a7f4536985425d19b5cc03d0f",
+      "providerOutputSha256": "173235dc26cd7b0ba5dc409b48e73557791fab3071c49edd52a36422eb99f49a",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted warm umber cultivated earth #9c7343, broad parchment-tan northwest ridges, restrained moss crop green, deep charcoal-teal southeast furrow planes. Shared square Farm sample: a 256 by 256 cultivated ground treatment filling every edge and corner. Show four or five broad parallel warm-umber furrows with sparse chunky moss-green crop leaves. It reads as continuous worked land, not an isolated marker, property or building. Soft northwest key light gives subtly parchment-tan northwest ridges and darker southeast furrows. Clean flat 2D board-game illustration with terrain-quiet dark accents and minimal texture. Processing blends it into canonical umber, converges a broad edge band for seam-free repetition and forces every footprint pixel opaque. Connected-Farm state stays renderer-derived, never baked in. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; fertile marker, undeveloped oval, two sprouts, diamond, transparent or rounded corner, border, fence, barn, silo, windmill, haystack, scarecrow, fruit, road, ownership, selection, connection symbol, cluster outline, text, UI, people, animal, unit, isolated patch, shadow, bevel, slab, realistic dirt, tiny crop noise, lower-right light, 3D.",
+        "prompt": "Shared square Farm sample: a 256 by 256 cultivated ground treatment filling every edge and corner. Show four or five broad parallel warm-umber furrows with sparse chunky moss-green crop leaves. It reads as continuous worked land, not an isolated marker, property or building. Soft northwest key light gives subtly parchment-tan northwest ridges and darker southeast furrows. Clean flat 2D board-game illustration with terrain-quiet dark accents and minimal texture. Processing blends it into canonical umber, converges a broad edge band for seam-free repetition and forces every footprint pixel opaque. Connected-Farm state stays renderer-derived, never baked in.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; fertile marker, undeveloped oval, two sprouts, diamond, transparent or rounded corner, border, fence, barn, silo, windmill, haystack, scarecrow, fruit, road, ownership, selection, connection symbol, cluster outline, text, UI, people, animal, unit, isolated patch, shadow, bevel, slab, realistic dirt, tiny crop noise, lower-right light, 3D",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 107101,
+        "noBackground": false,
+        "palette": "muted warm umber cultivated earth #9c7343, broad parchment-tan northwest ridges, restrained moss crop green, deep charcoal-teal southeast furrow planes",
+        "postprocess": "square-farm-fill",
+        "styleReference": {
+          "id": "terrain-square-fertile-ground",
+          "sha256": "f2c0c4913d01130979589b4ac7ccba50ef4b825976d9a398211eff64c82b67fd",
+          "usageDescription": "Use the accepted Fertile Ground only as a semantic contrast reference: retain its northwest-lit warm soil family, but replace the undeveloped oval and two sprouts with unmistakable continuous cultivated earth. Do not copy its isolated marker footprint."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 0,
+          "right": 256,
+          "bottom": 256
+        }
+      },
+      "notes": "Accepted after individual source/native/enlarged, 0.625x/1x/1.75x, DPR1/DPR2-equivalent, dense-map, 6x4 adjacency/repetition and exact 112x130 UI viewport review. Provider-authored warm cultivated texture is deterministically normalized into a fully opaque 256x256 owning footprint with four continuous periodic furrows; opposing edge bytes match exactly, so orthogonally adjacent repeated Farms form one continuous field without cracks or quilt borders. The treatment remains plainly distinct from the isolated dark Fertile Ground marker, leaves units and overlays readable, and contains no baked connectivity, ownership, selection, resource, text or UI state.",
+      "outputSha256": "34f46d4f1aad59200a53511dadfe460ba2ca465a7f4536985425d19b5cc03d0f",
+      "reviewedAt": "2026-09-03T17:44:44.929Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-square-windmill": {
+      "id": "building-square-windmill",
+      "status": "ACCEPTED",
+      "jobId": "9609469e-4566-4bd4-8a13-25a09890966f",
+      "candidate": "art/pixellab/candidates/building-square-windmill.png",
+      "candidateSha256": "367b2186690ea72df3c9eab8558d903c51972081a3e26c4823681daacdbbd848",
+      "providerOutputSha256": "99ca962b0f0e70d9b32893805c156828828df7b6a6192d17a76c435fc1b07ede",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 94,
+        "top": 38,
+        "right": 290,
+        "bottom": 322,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm parchment sails and tower, muted moss-green roof accent, restrained bronze hub, deep charcoal-teal outline and southeast shadow. Shared square-grid Windmill processor on a transparent 384 by 384 canvas, anchor 192,288. One compact short round parchment tower, one narrow four-sail cross and a simple moss-green cap; all sails remain distinct at minimum zoom. Southeast-facing three-quarter downward view. Center it within x76..308 with base above y322. It is smaller and calmer than Mountains/Forests and leaves the lower-center foreground readable for a unit. Soft northwest light, darker southeast planes, strong charcoal-teal outline and two-to-three flat tones. No field, ground or shadow. Processing fits x76..308,y38..322. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; farm field, crop rows, fertile ground, giant turbine, realistic architecture, house, city, mountain, forest, watermill, sawmill, forge, quarry, multiple buildings, worker, face, unit, ground, platform, diamond, shadow, lateral or bottom overflow, clipped sail, lower-right light, ownership, selection, number, pips, contributor lines, cluster outline, text, UI, realistic texture, painterly, 3D.",
+        "prompt": "Shared square-grid Windmill processor on a transparent 384 by 384 canvas, anchor 192,288. One compact short round parchment tower, one narrow four-sail cross and a simple moss-green cap; all sails remain distinct at minimum zoom. Southeast-facing three-quarter downward view. Center it within x76..308 with base above y322. It is smaller and calmer than Mountains/Forests and leaves the lower-center foreground readable for a unit. Soft northwest light, darker southeast planes, strong charcoal-teal outline and two-to-three flat tones. No field, ground or shadow. Processing fits x76..308,y38..322.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; farm field, crop rows, fertile ground, giant turbine, realistic architecture, house, city, mountain, forest, watermill, sawmill, forge, quarry, multiple buildings, worker, face, unit, ground, platform, diamond, shadow, lateral or bottom overflow, clipped sail, lower-right light, ownership, selection, number, pips, contributor lines, cluster outline, text, UI, realistic texture, painterly, 3D",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 107103,
+        "noBackground": true,
+        "palette": "warm parchment sails and tower, muted moss-green roof accent, restrained bronze hub, deep charcoal-teal outline and southeast shadow",
+        "postprocess": "compact-building-fit",
+        "groundContactY": 322,
+        "styleReference": {
+          "id": "building-windmill",
+          "sha256": "6ce840dc94e39cddd63225eb804123e5774055dc025c25d7a38f40c8ad04068e",
+          "usageDescription": "Preserve the accepted Windmill's unmistakable four-sail silhouette, playful chunky functional language, flat planes and exact northwest light, while reducing width and base mass for a square cell and colocated-unit readability."
+        }
+      },
+      "outputSha256": "367b2186690ea72df3c9eab8558d903c51972081a3e26c4823681daacdbbd848",
+      "notes": "Accepted after individual source/native/enlarged, 0.625x/1x/1.75x, DPR1/DPR2-equivalent, both-faction dense-map and exact 112x130 UI viewport review. The four broad parchment sails, moss cap and short round tower form an unmistakable Windmill silhouette distinct from Farm, city and other terrain/improvements. Its centered alpha x94..290,y38..322 stays inside the 384x384 square-aware processor canvas with transparent left/right/bottom safety and only intended upward extension; it is compact relative to accepted Mountains/Forests and preserves colocated unit readability under the accepted northwest light.",
+      "reviewedAt": "2026-09-03T17:44:55.803Z",
       "reviewChecks": {
         "source": true,
         "native": true,

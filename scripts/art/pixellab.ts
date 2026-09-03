@@ -63,6 +63,7 @@ interface Recipe {
     | "sprite-derived-portrait"
     | "lanczos3-resize"
     | "square-ground-fill"
+    | "square-farm-fill"
     | "square-road-material"
     | "square-tall-ground-reference"
     | "square-mountain-ground-reference";
@@ -228,6 +229,7 @@ async function main(): Promise<void> {
     assertRuleset6UiOrder(recipes, generated);
     assertSquareTerrainOrder(recipes, generated);
     assertSquareResourceRoadOrder(recipes, generated);
+    assertSquareImprovementSampleGate(recipes);
     if (stage === "batch") assertBuildingBatchOrder(recipes, generated);
     const concurrency = Number(optionalOption("--concurrency") ?? "3");
     await generateRecipes(source, generated, recipes, concurrency);
@@ -252,6 +254,8 @@ async function main(): Promise<void> {
         await applyDiamondAlpha(candidate, recipe.outputSize);
       else if (recipe.postprocess === "square-ground-fill")
         await applySquareGroundFill(candidate, recipe);
+      else if (recipe.postprocess === "square-farm-fill")
+        await applySquareFarmFill(candidate, recipe);
       else if (recipe.postprocess === "square-road-material")
         await applySquareRoadMaterial(candidate, recipe);
       else if (
@@ -281,6 +285,7 @@ async function main(): Promise<void> {
         await assertDiamondAlpha(candidate, recipe.outputSize);
       else if (
         recipe.postprocess === "square-ground-fill" ||
+        recipe.postprocess === "square-farm-fill" ||
         recipe.postprocess === "square-road-material" ||
         recipe.postprocess === "square-tall-ground-reference" ||
         recipe.postprocess === "square-mountain-ground-reference"
@@ -795,6 +800,51 @@ function validateSourceManifest(
     squareRoad.postprocess !== "square-road-material"
   )
     throw new Error("Square Road material geometry mismatch");
+  const squareImprovements = [
+    {
+      id: "building-square-farm",
+      size: { width: 256, height: 256 },
+      anchor: { x: 128, y: 128 },
+      hardBounds: { left: 0, top: 0, right: 256, bottom: 256 },
+      postprocess: "square-farm-fill",
+    },
+    {
+      id: "building-square-quarry",
+      size: { width: 256, height: 296 },
+      anchor: { x: 128, y: 222 },
+      hardBounds: { left: 20, top: 12, right: 236, bottom: 252 },
+      postprocess: "compact-building-fit",
+    },
+    {
+      id: "building-square-windmill",
+      size: { width: 384, height: 384 },
+      anchor: { x: 192, y: 288 },
+      hardBounds: { left: 8, top: 8, right: 376, bottom: 344 },
+      postprocess: "compact-building-fit",
+    },
+  ] as const;
+  for (const contract of squareImprovements) {
+    const recipe = source.recipes.find(({ id }) => id === contract.id);
+    if (
+      recipe?.class !== "buildings" ||
+      recipe.stage !== "sample" ||
+      JSON.stringify(recipe.requestSize) !== JSON.stringify(contract.size) ||
+      JSON.stringify(recipe.outputSize) !== JSON.stringify(contract.size) ||
+      JSON.stringify(recipe.anchor) !== JSON.stringify(contract.anchor) ||
+      JSON.stringify(recipe.hardBounds) !==
+        JSON.stringify(contract.hardBounds) ||
+      recipe.postprocess !== contract.postprocess ||
+      recipe.styleReference === undefined ||
+      recipe.preferredBounds === undefined
+    )
+      throw new Error(`Square improvement geometry mismatch: ${contract.id}`);
+  }
+  const farm = source.recipes.find(({ id }) => id === "building-square-farm");
+  if (
+    JSON.stringify(farm?.squareFootprint) !==
+    JSON.stringify({ left: 0, top: 0, right: 256, bottom: 256 })
+  )
+    throw new Error("Square Farm needs one complete opaque owning footprint");
   const candyTerrainIds = [
     "terrain-candy-grass-1",
     "terrain-candy-grass-2",
@@ -1441,6 +1491,25 @@ function assertSquareResourceRoadOrder(
     );
 }
 
+function assertSquareImprovementSampleGate(recipes: readonly Recipe[]): void {
+  const ids = [
+    "building-square-farm",
+    "building-square-quarry",
+    "building-square-windmill",
+  ] as const;
+  const selected = recipes
+    .map(({ id }) => id)
+    .filter((id) => ids.includes(id as (typeof ids)[number]));
+  if (selected.length === 0) return;
+  if (
+    selected.length !== ids.length ||
+    selected.some((id, index) => id !== ids[index])
+  )
+    throw new Error(
+      "Square improvement sample gate must generate exactly Farm, Quarry, and Windmill together in manifest order",
+    );
+}
+
 function assertSquareTerrainFamilyOrder(
   recipes: readonly Recipe[],
   generated: GeneratedManifest,
@@ -1910,6 +1979,31 @@ async function processCandidate(
   destination: string,
   source: SourceManifest,
 ): Promise<void> {
+  if (recipe.postprocess === "square-farm-fill") {
+    const providerMetadata = await sharp(input).metadata();
+    const providerWidth = providerMetadata.width ?? recipe.requestSize.width;
+    const providerHeight = providerMetadata.height ?? recipe.requestSize.height;
+    const presentationInset = Math.round(
+      Math.min(providerWidth, providerHeight) / 16,
+    );
+    await sharp(input)
+      .ensureAlpha()
+      .extract({
+        left: presentationInset,
+        top: presentationInset,
+        width: providerWidth - presentationInset * 2,
+        height: providerHeight - presentationInset * 2,
+      })
+      .resize(recipe.outputSize.width, recipe.outputSize.height, {
+        fit: "fill",
+        kernel: sharp.kernel.lanczos3,
+      })
+      .png({ compressionLevel: 9, adaptiveFiltering: false })
+      .toFile(destination);
+    await applySquareFarmFill(destination, recipe);
+    await assertSquareTerrainAlpha(destination, recipe);
+    return;
+  }
   if (recipe.postprocess === "square-ground-fill") {
     const providerMetadata = await sharp(input).metadata();
     const providerWidth = providerMetadata.width ?? recipe.requestSize.width;
@@ -2028,6 +2122,66 @@ async function processCandidate(
     await applySquareTallGroundReference(destination, recipe, source);
     await assertSquareTerrainAlpha(destination, recipe);
   } else await normalizeToHardBounds(destination, recipe);
+}
+
+async function applySquareFarmFill(
+  destination: string,
+  recipe: Recipe,
+): Promise<void> {
+  if (
+    recipe.squareFootprint?.left !== 0 ||
+    recipe.squareFootprint.top !== 0 ||
+    recipe.squareFootprint.right !== recipe.outputSize.width ||
+    recipe.squareFootprint.bottom !== recipe.outputSize.height
+  )
+    throw new Error(`${recipe.id}: invalid complete Farm footprint`);
+  const provider = await sharp(await readFile(destination))
+    .removeAlpha()
+    .blur(1.2)
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const base = [0x9c, 0x73, 0x43] as const;
+  const { width, height } = provider.info;
+  const pixels = Buffer.alloc(width * height * 4);
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const offset3 = (y * width + x) * 3;
+      const offset4 = (y * width + x) * 4;
+      const edge = Math.min(x, y, width - 1 - x, height - 1 - y);
+      const providerWeight = Math.min(0.32, Math.max(0, edge - 20) / 96);
+      const edgeLightWeight = Math.min(1, Math.max(0, edge - 20) / 28);
+      const light = Math.round(
+        ((x + y) / (width + height) - 0.5) * -8 * edgeLightWeight,
+      );
+      const furrowPhase = Math.cos(
+        (Math.PI * 2 * 4 * x) / Math.max(1, width - 1),
+      );
+      const furrow = Math.round(
+        -12 * Math.max(0, furrowPhase) ** 5 +
+          4 * Math.max(0, -furrowPhase) ** 5,
+      );
+      for (let channel = 0; channel < 3; channel += 1) {
+        const fallback = base[channel] ?? 0;
+        const authored = provider.data[offset3 + channel] ?? fallback;
+        pixels[offset4 + channel] = Math.max(
+          0,
+          Math.min(
+            255,
+            Math.round(
+              fallback * (1 - providerWeight) +
+                authored * providerWeight +
+                light +
+                furrow,
+            ),
+          ),
+        );
+      }
+      pixels[offset4 + 3] = 255;
+    }
+  }
+  await sharp(pixels, { raw: { width, height, channels: 4 } })
+    .png({ compressionLevel: 9, adaptiveFiltering: false })
+    .toFile(destination);
 }
 
 async function applySquareGroundFill(
@@ -2747,6 +2901,7 @@ async function validateOutputs(
       );
     if (
       recipe.postprocess === "square-ground-fill" ||
+      recipe.postprocess === "square-farm-fill" ||
       recipe.postprocess === "square-road-material" ||
       recipe.postprocess === "square-tall-ground-reference" ||
       recipe.postprocess === "square-mountain-ground-reference"

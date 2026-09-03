@@ -49,6 +49,30 @@ are code-native. Existing ruleset-5 inventory prose below is historical where
 it limits the set; its style, alpha, anchor, sorting, and PixelLab gates remain
 active.
 
+## Accepted square improvement sample gate
+
+The active square sample gate accepts exactly these three shared sources:
+
+- `building-square-farm`: a fully opaque 256 x 256 ground treatment at
+  `(128,128)`. Checked-in deterministic processing preserves the PixelLab field
+  texture, supplies four periodic cultivated furrows, and makes opposing edge
+  pixels identical. Orthogonal Farm connectivity remains derived from public
+  Farm coordinates; connection, cluster, owner, and selection state are not
+  baked into the raster.
+- `building-square-quarry`: a transparent 256 x 296 low improvement at
+  `(128,222)`, accepted alpha bounds `x=64..191,y=144..244`. Three cut blocks
+  plus the short timber hoist distinguish it from Stone, Ore, Mine, city, and
+  terrain while leaving units readable.
+- `building-square-windmill`: a transparent 384 x 384 processor at `(192,288)`,
+  accepted alpha bounds `x=94..290,y=38..322`. Its four-sail silhouette keeps
+  lateral and bottom safety, permits only intentional upward extension, and is
+  smaller than the accepted square Mountain and Forest forms.
+
+All three match the northwest light, remain legible at 0.625x through 1.75x and
+DPR1/2, and fit the shared 112 x 130 action/selection/technology viewport.
+Their accepted IDs and URLs are registered, but map coverage deliberately
+continues to use the previous assets until the integration boundary in e1m.9.
+
 This contract specializes [Pulp Wars Art Direction](../ART_DIRECTION.md) for
 capitals, cities, villages, Mines, Lumber Mills, Chocolate Walls, and city
 reward markers.
