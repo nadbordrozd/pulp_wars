@@ -376,7 +376,7 @@ describe("Ruleset 6 building and Road production art", () => {
       expect(roadCoverageV6(mask)).toMatchObject({
         status: "ACCEPTED",
         semanticId: `infrastructure:ROAD:${bits}`,
-        assetId: record.id,
+        assetId: `terrain-square-road-mask-${bits}`,
         production: true,
       });
     }
@@ -415,7 +415,7 @@ describe("Ruleset 6 building and Road production art", () => {
         list.coverage.find((item) => item.entryKey === "ROAD:5,5"),
       ).toMatchObject({
         semanticId: `infrastructure:ROAD:${mask.toString(2).padStart(4, "0")}`,
-        assetId: `terrain-road-mask-${mask.toString(2).padStart(4, "0")}`,
+        assetId: `terrain-square-road-mask-${mask.toString(2).padStart(4, "0")}`,
       });
     }
     const diagonalPlan: BoardRenderPlanV6 = {

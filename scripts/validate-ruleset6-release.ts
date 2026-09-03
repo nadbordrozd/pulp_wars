@@ -5,6 +5,7 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { format } from "prettier";
 import { canonicalHash } from "../src/engine/replay/canonical";
+import { browserSmokeReleaseEvidenceV6 } from "./browser-smoke-v6-contract";
 import {
   COMMAND_KIND_ORDER_V6,
   ECONOMIC_IMPROVEMENT_IDS,
@@ -102,6 +103,7 @@ const EVIDENCE_FILES = [
   "art/pixellab/reviews/ruleset6-tech-economy-ui/review-evidence.json",
   "art/pixellab/reviews/ruleset6-terrain/review-evidence.json",
 ] as const;
+const BROWSER_SMOKE_EVIDENCE = EVIDENCE_FILES[0];
 
 interface MapCase {
   readonly id: string;
@@ -425,7 +427,12 @@ function evidenceRecord(relative: string): {
   }
   return {
     path: relative,
-    sha256: sha256(bytes),
+    sha256:
+      relative === BROWSER_SMOKE_EVIDENCE
+        ? sha256(
+            Buffer.from(canonicalJson(browserSmokeReleaseEvidenceV6(evidence))),
+          )
+        : sha256(bytes),
     artifactCount: artifacts.length,
   };
 }
@@ -501,6 +508,22 @@ function positive(values: readonly string[]): Readonly<Record<string, number>> {
 
 function sha256(bytes: Buffer): string {
   return createHash("sha256").update(bytes).digest("hex");
+}
+
+function canonicalJson(value: unknown): string {
+  if (value === null || typeof value === "boolean" || typeof value === "number")
+    return JSON.stringify(value);
+  if (typeof value === "string") return JSON.stringify(value);
+  if (Array.isArray(value))
+    return `[${value.map((entry) => canonicalJson(entry)).join(",")}]`;
+  if (typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    return `{${Object.keys(record)
+      .sort()
+      .map((key) => `${JSON.stringify(key)}:${canonicalJson(record[key])}`)
+      .join(",")}}`;
+  }
+  throw new TypeError("Release evidence contains a non-JSON value");
 }
 
 function fail(message: string): never {

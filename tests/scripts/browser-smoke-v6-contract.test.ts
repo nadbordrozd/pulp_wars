@@ -3,6 +3,7 @@ import {
   RULESET6_SMOKE_EVIDENCE_SUBJECTS,
   RULESET6_SMOKE_TECH_IDS,
   RULESET6_SMOKE_VIEWPORTS,
+  browserSmokeReleaseEvidenceV6,
   coordinateActivationIsVisibleV6,
   coordinateActivationPanStepV6,
   contextActionLayoutIssuesV6,
@@ -72,6 +73,48 @@ describe("ruleset-6 browser smoke contract", () => {
       "MEDICINE",
       "RECOVERY",
     ]);
+  });
+
+  it("normalizes only per-run screenshot encoding fields for release evidence", () => {
+    const flow = validFlow();
+    const evidence = { browser: "Chrome/test", flows: [flow] };
+    const changedIntegrity = {
+      ...evidence,
+      flows: [
+        {
+          ...flow,
+          screenshots: flow.screenshots.map((artifact) => ({
+            ...artifact,
+            bytes: artifact.bytes + 41,
+            sha256: "b".repeat(64),
+          })),
+        },
+      ],
+    };
+    expect(browserSmokeReleaseEvidenceV6(changedIntegrity)).toEqual(
+      browserSmokeReleaseEvidenceV6(evidence),
+    );
+    expect(
+      browserSmokeReleaseEvidenceV6({
+        ...evidence,
+        flows: [{ ...flow, seed: flow.seed + 1 }],
+      }),
+    ).not.toEqual(browserSmokeReleaseEvidenceV6(evidence));
+    expect(
+      browserSmokeReleaseEvidenceV6({
+        ...evidence,
+        flows: [
+          {
+            ...flow,
+            screenshots: flow.screenshots.map((artifact, index) =>
+              index === 0
+                ? { ...artifact, width: artifact.width + 1 }
+                : artifact,
+            ),
+          },
+        ],
+      }),
+    ).not.toEqual(browserSmokeReleaseEvidenceV6(evidence));
   });
 
   it("accepts real DPR backing and fixed map with responsive overlay regions", () => {
@@ -388,8 +431,8 @@ function selectionIdentity(kind: "UNIT" | "CITY" | "TILE", title: string) {
     ariaLabel: `${title} selected.`,
     assetId: `fixture-${kind.toLowerCase()}`,
     symbolKind: "accepted-raster",
-    rect: { x: 8, y: 700, width: 180, height: 60 },
-    artRect: { x: 8, y: 700, width: 56, height: 60 },
+    rect: { x: 8, y: 700, width: 180, height: 130 },
+    artRect: { x: 8, y: 700, width: 112, height: 130 },
   } as const;
 }
 

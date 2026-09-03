@@ -836,7 +836,7 @@ describe("playable ruleset-6 DOM shell", () => {
       expect(
         tileIdentity.querySelector<HTMLImageElement>("img")?.src,
       ).toContain(
-        `assets/pixellab/terrain/${faction === "CANDY" ? "candy-" : ""}mountain-`,
+        `assets/pixellab/terrain-square/${faction === "CANDY" ? "candy" : "original"}-mountain-`,
       );
       expect(document.querySelector("#v6-live")?.textContent).toBe(
         "Mountain selected.",

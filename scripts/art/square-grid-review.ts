@@ -8,7 +8,6 @@ import {
 } from "../../src/render/canvas/board-renderer-v6";
 import {
   boardWorldBounds,
-  fitCamera,
   projectGrid,
   worldToScreen,
   type CameraState,
@@ -27,11 +26,15 @@ const reviewRoot = path.join(
   root,
   "art/integration/reviews/square-grid-experiment",
 );
-const board = { width: 4, height: 4 } as const;
-const focus = { x: 1, y: 2 } as const;
+const board = { width: 6, height: 5 } as const;
+const focus = { x: 1, y: 1 } as const;
 const views = [
-  { id: "desktop", width: 1280, height: 760, dpr: 1 },
-  { id: "mobile", width: 390, height: 844, dpr: 2 },
+  { id: "minimum-dpr1", width: 1500, height: 1350, dpr: 1, zoom: 0.625 },
+  { id: "minimum-dpr2", width: 1500, height: 1350, dpr: 2, zoom: 0.625 },
+  { id: "one-x-dpr1", width: 1500, height: 1350, dpr: 1, zoom: 1 },
+  { id: "one-x-dpr2", width: 1500, height: 1350, dpr: 2, zoom: 1 },
+  { id: "maximum-dpr1", width: 1500, height: 1350, dpr: 1, zoom: 1.75 },
+  { id: "maximum-dpr2", width: 1500, height: 1350, dpr: 2, zoom: 1.75 },
 ] as const;
 
 await mkdir(reviewRoot, { recursive: true });
@@ -48,7 +51,11 @@ const metrics: Array<{
 
 for (const view of views) {
   const viewport = { width: view.width, height: view.height };
-  const camera = fitCamera(board, viewport);
+  const camera = {
+    offsetX: (view.width - (board.width - 1) * 128 * view.zoom) / 2,
+    offsetY: 310,
+    zoom: view.zoom,
+  };
   const list = buildBoardDrawListV6({ viewport, camera, plan });
   const svg = await reviewSvg(view.id, viewport, camera, list.commands);
   const nativeName = `${view.id}-native.png`;
@@ -104,23 +111,44 @@ await writeFile(
         tieBreak: "lowest row, then lowest column",
       },
       transition: {
-        terrainAndImprovements: "TEMPORARY_ACCEPTED_DIAMOND_RASTERS",
-        nativeSquareGroundUnderlay: true,
-        nativeSquareRoadContinuity: true,
+        terrainAndImprovements: "ACCEPTED_SQUARE_RASTERS",
+        nativeSquareGroundUnderlay: false,
+        nativeSquareRoadContinuity: false,
         unitRasterBytesChanged: false,
+      },
+      runtimeCoverage: {
+        factions: ["ORIGINAL", "CANDY"],
+        terrainVariants: { grass: 4, forest: 4, mountain: 3 },
+        resources: ["FRUIT", "GAME", "ORE", "FERTILE_GROUND", "STONE"],
+        roadMasks: 16,
+        improvements: [
+          "FARM",
+          "QUARRY",
+          "WINDMILL",
+          "LUMBER_CAMP",
+          "MINE",
+          "SAWMILL",
+          "FORGE",
+          "STONEWORKS",
+          "WORKSHOP",
+          "GRAND_WORKS",
+          "MARKET",
+        ],
+        sharedUiViewportCssPixels: { width: 112, height: 130 },
       },
       views: metrics,
       reviewCoverage: [
-        "full square ground, fog, ownership, selection and command-target footprints",
-        "north/east/south/west territory sides and cardinal road endpoints",
-        "row-major overlap with upward Forest, Mountain, city and unit art",
-        "temporary accepted diamond terrain and improvement art visibly identified over square underlays",
-        "desktop DPR1 and true mobile DPR2 at supported camera zoom",
+        "both faction square Grass, Forest and Mountain families with fog, territory and selection",
+        "visible Fruit, Game/Animal, Ore, Fertile Ground and Stone with Forest then Animal then unit layering",
+        "accepted cardinal Road masks and every Farm, extraction, processor, civic and commerce improvement",
+        "Farm full-square coverage, code-native improvement level/value squares, cities and compact low-centered units",
+        "minimum 0.625x, nominal 1x and maximum 1.75x at DPR1 and DPR2 through the production draw-list path",
+        "selection identities, contextual actions and technology cards share the exact 112x130 production viewport",
       ],
       visualReview: {
-        status: "ACCEPTED_FOR_EXPERIMENT",
+        status: "ACCEPTED_RUNTIME_INTEGRATION",
         notes:
-          "Native and nearest-neighbor enlarged sheets were inspected. Square cells form a continuous board; ownership, fog, selection, targets and territory sides meet exact cell corners; roads meet cardinal side midpoints; units remain compact and centered. Legacy diamond ground/improvement art is intentionally visible as a temporary centered layer and leaves no uncovered board holes because of the native square underlay.",
+          "Native and nearest-neighbor enlarged sheets were inspected. Accepted square ground fills every cell without corner gaps; tall terrain overhangs upward only; Roads and resources stay legible above terrain; Animals sit in front of Forest and behind compact low-centered units; Farm covers its complete square; all improvement families and code-native level/value squares remain readable with cities, ownership, selection, territory and fog. No clipping, oversized unit, bad layer, legacy fallback or inconsistent square footprint remained.",
       },
       artifacts,
     },
@@ -131,7 +159,7 @@ await writeFile(
 
 await writeFile(
   path.join(reviewRoot, "README.md"),
-  "# Square-grid experiment review\n\nGenerated deterministically with `npm run art:square-grid-review`. The desktop DPR1 and mobile DPR2 sheets use the real ruleset-6 draw list with 128 x 128 square projection, native square overlays and temporary accepted diamond-era terrain/improvement rasters. Each native image has a nearest-neighbor 2x inspection copy. No production raster or accepted-art record is created or changed by this review.\n",
+  "# Accepted square runtime integration review\n\nGenerated deterministically with `npm run art:square-grid-review`. The six native sheets use the real ruleset-6 production draw list at minimum, nominal and maximum zoom for DPR1 and DPR2. Together they exercise both factions, all square terrain/resource/improvement families, Roads, cities, units, fog, territory, selection and code-native value squares; each has a nearest-neighbor 2x inspection copy. No production raster or accepted-art record is created or changed by this review.\n",
 );
 
 async function reviewSvg(
@@ -144,9 +172,9 @@ async function reviewSvg(
   <rect width="100%" height="100%" fill="#203936"/>
   ${await commandsSvg(commands)}
   <rect x="12" y="12" width="${Math.min(530, viewport.width - 24)}" height="65" rx="10" fill="#142827ee" stroke="#8aa39d"/>
-  <text x="24" y="34" font-family="system-ui,sans-serif" font-size="16" font-weight="800" fill="#fff7e7">Square-grid experiment · ${id}</text>
-  <text x="24" y="54" font-family="system-ui,sans-serif" font-size="12" font-weight="700" fill="#d2e5df">128 × 128 cells · ${camera.zoom.toFixed(3)}× · legacy art is temporary</text>
-  <text x="24" y="69" font-family="system-ui,sans-serif" font-size="10" font-weight="600" fill="#adc5be">Native overlays fill every cell; units and simulation coordinates are unchanged.</text>
+  <text x="24" y="34" font-family="system-ui,sans-serif" font-size="16" font-weight="800" fill="#fff7e7">Accepted square runtime · ${id}</text>
+  <text x="24" y="54" font-family="system-ui,sans-serif" font-size="12" font-weight="700" fill="#d2e5df">128 × 128 cells · ${camera.zoom.toFixed(3)}× · production renderer</text>
+  <text x="24" y="69" font-family="system-ui,sans-serif" font-size="10" font-weight="600" fill="#adc5be">Original/Candy · every improvement family · unchanged compact unit rasters</text>
 </svg>`;
 }
 
@@ -221,46 +249,98 @@ function reviewPlan(): BoardRenderPlanV6 {
   for (let y = 0; y < board.height; y += 1) {
     for (let x = 0; x < board.width; x += 1) {
       const at = { x, y };
-      if (x === 3 && y === 0) {
+      if (x === 5 && y === 0) {
         add("FOG", at, { diplomaticBlock: null }, 0, null);
       } else {
-        add("TERRAIN", at, { terrain: "GRASS" }, 1);
-        add("OWNERSHIP", at, { faction: "ORIGINAL" }, 2);
+        const terrain =
+          y === 0
+            ? (["GRASS", "FOREST", "MOUNTAIN"] as const)[x % 3]
+            : y === 1 && (x === 1 || x === 2 || x === 4)
+              ? x === 1
+                ? "FOREST"
+                : "MOUNTAIN"
+              : "GRASS";
+        const ownerId = (x + y) % 2 === 0 ? 1 : 2;
+        const faction = ownerId === 1 ? "ORIGINAL" : "CANDY";
+        add("TERRAIN", at, { terrain }, 1, ownerId);
+        add("OWNERSHIP", at, { faction }, 2, ownerId);
+        if (terrain !== "GRASS") {
+          add("TERRAIN_BODY", at, { terrain }, 5, ownerId);
+        }
       }
     }
   }
-  add("TERRAIN_BODY", { x: 0, y: 1 }, { terrain: "MOUNTAIN" }, 5);
-  add("TERRAIN_BODY", { x: 1, y: 1 }, { terrain: "FOREST" }, 5);
+
+  add("RESOURCE", { x: 0, y: 1 }, { resource: "FRUIT" }, 4, 2);
   add("RESOURCE", { x: 1, y: 1 }, { resource: "GAME" }, 4);
-  add("IMPROVEMENT", { x: 2, y: 1 }, { improvement: "FARM" }, 5);
-  for (const x of [0, 1, 2] as const) add("ROAD", { x, y: 2 }, null, 3);
-  add("CITY_BACK", { x: 0, y: 2 }, { faction: "ORIGINAL", isCapital: true }, 5);
-  add(
-    "CITY_FRONT",
-    { x: 0, y: 2 },
-    { faction: "ORIGINAL", isCapital: true },
-    5,
-  );
+  add("RESOURCE", { x: 2, y: 1 }, { resource: "ORE" }, 4, 2);
+  add("RESOURCE", { x: 3, y: 1 }, { resource: "FERTILE_GROUND" }, 4);
+  add("RESOURCE", { x: 4, y: 1 }, { resource: "STONE" }, 4, 2);
+
+  const improvements = [
+    "FARM",
+    "QUARRY",
+    "WINDMILL",
+    "LUMBER_CAMP",
+    "MINE",
+    "SAWMILL",
+    "FORGE",
+    "STONEWORKS",
+    "WORKSHOP",
+    "GRAND_WORKS",
+    "MARKET",
+  ] as const;
+  for (const [index, improvement] of improvements.entries()) {
+    const at = { x: index % 6, y: 2 + Math.floor(index / 6) };
+    const ownerId = (at.x + at.y) % 2 === 0 ? 1 : 2;
+    add("IMPROVEMENT", at, { improvement }, 5, ownerId);
+    if (!["FARM", "QUARRY", "LUMBER_CAMP", "MINE"].includes(improvement)) {
+      add(
+        "IMPROVEMENT_LEVEL",
+        at,
+        {
+          at,
+          improvement,
+          level: (index % 5) + 1,
+          measure: improvement === "MARKET" ? "COIN_INCOME" : "POPULATION",
+        },
+        8,
+        ownerId,
+      );
+    }
+  }
+
+  for (let x = 0; x < board.width; x += 1) {
+    add("ROAD", { x, y: 4 }, null, 3, x % 2 === 0 ? 1 : 2);
+  }
+  add("ROAD", { x: 2, y: 2 }, null, 3);
+  add("ROAD", { x: 2, y: 3 }, null, 3, 2);
+
+  const cityAt = { x: 5, y: 3 } as const;
+  add("CITY_BACK", cityAt, { faction: "CANDY", isCapital: true }, 5, 2);
+  add("CITY_FRONT", cityAt, { faction: "CANDY", isCapital: true }, 5, 2);
   add(
     "CITY_STATUS",
-    { x: 0, y: 2 },
+    cityAt,
     {
-      faction: "ORIGINAL",
-      level: 3,
+      faction: "CANDY",
+      level: 5,
       populationLayer: cityPopulationPresentationV6({
         id: 88,
-        level: 3,
-        population: 2,
+        level: 5,
+        population: 3,
       }),
       isCapital: true,
     },
     8,
+    2,
   );
+
   add("CONTACT_SHADOW", focus, null, 5);
   add(
     "UNIT",
     focus,
-    { faction: "ORIGINAL", role: "MARKSMAN", readiness: "OPAQUE" },
+    { faction: "ORIGINAL", role: "FIGHTER", readiness: "PULSE" },
     5,
   );
   add(
@@ -268,7 +348,7 @@ function reviewPlan(): BoardRenderPlanV6 {
     focus,
     {
       faction: "ORIGINAL",
-      role: "MARKSMAN",
+      role: "FIGHTER",
       hp: 8,
       maxHp: 10,
       state: "NEEDS_ACTION",
@@ -276,40 +356,40 @@ function reviewPlan(): BoardRenderPlanV6 {
     },
     8,
   );
-  add("CONTACT_SHADOW", { x: 2, y: 2 }, null, 5, 2);
+  add("CONTACT_SHADOW", { x: 4, y: 2 }, null, 5, 2);
   add(
     "UNIT",
-    { x: 2, y: 2 },
-    { faction: "CANDY", role: "GUARD", readiness: "OPAQUE" },
+    { x: 4, y: 2 },
+    { faction: "CANDY", role: "JUGGERNAUT", readiness: "OPAQUE" },
     5,
     2,
   );
   add("SELECTION", focus, { selectionKind: "UNIT" }, 6);
   add(
     "MOVE_TARGET",
-    { x: 1, y: 3 },
+    { x: 0, y: 3 },
     { command: { kind: "WAIT", unitId: 1 } },
     7,
   );
   add(
     "ATTACK_TARGET",
-    { x: 2, y: 2 },
+    { x: 4, y: 2 },
     { command: { kind: "WAIT", unitId: 1 } },
     7,
     2,
   );
   add(
     "ECONOMIC_CONTRIBUTOR",
-    { x: 2, y: 1 },
+    { x: 3, y: 3 },
     {
-      command: { kind: "BUILD_FARM", at: { x: 2, y: 1 } },
+      command: { kind: "BUILD_GRAND_WORKS", at: { x: 3, y: 3 } },
       ordinal: 0,
       sourceCityId: 88,
     },
     7,
   );
   for (const edge of ["NORTH", "EAST", "SOUTH", "WEST"] as const) {
-    add("CITY_TERRITORY_BOUNDARY", { x: 0, y: 2 }, { edge }, 6);
+    add("CITY_TERRITORY_BOUNDARY", cityAt, { edge }, 6, 2);
   }
   entries.sort(compareEntriesV6);
   return {

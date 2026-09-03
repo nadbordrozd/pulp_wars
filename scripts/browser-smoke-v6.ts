@@ -162,8 +162,14 @@ try {
     readonly product?: string;
   };
   const evidence = {
-    generatedAt: new Date().toISOString(),
     generatedBy: "npm run smoke:browser",
+    reproducibility: {
+      volatileWallClockMetadataRecorded: false,
+      animatedPixelCountsNormalizedToObservedFlags: true,
+      screenshotsCapturedWithReducedMotion: true,
+      stableLayoutFramesRequired: 4,
+      screenshotByteHashesReleaseScope: "PER_RUN_INTEGRITY_ONLY",
+    },
     rulesetId: "pulp-wars-poc-6",
     productionEntry: "src/main.ts",
     browser: version.product ?? "Chrome",
@@ -287,10 +293,13 @@ async function runFactionFlow(
   coordinateActivations = [];
   const artifacts: BrowserSmokeArtifactV6[] = [];
   await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.desktop);
+  await setMediaPreferences(connection, false, false);
+  await connection.send("Page.reload", { ignoreCache: true });
   await waitForExpression(
     connection,
     `document.querySelector('[data-v6-setup]') !== null`,
   );
+  await stabilizeBrowserSurface(connection);
   await setField(connection, "v6-ai-count", "1");
   await setField(connection, "v6-board-size", "11");
   await setField(connection, "v6-seed", String(config.seed));
@@ -397,7 +406,7 @@ async function runFactionFlow(
       `${config.faction} production map with system Reduced motion`,
     )),
   );
-  await setMediaPreferences(connection, false, true);
+  await setMediaPreferences(connection, true, true);
   await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.mobile);
   await reloadAndResume(
     connection,
@@ -418,7 +427,7 @@ async function runFactionFlow(
       `${config.faction} production map with system high contrast`,
     )),
   );
-  await setMediaPreferences(connection, false, false);
+  await setMediaPreferences(connection, true, false);
   await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.desktop);
   await reloadAndResume(
     connection,
@@ -545,7 +554,7 @@ async function runFactionFlow(
         tileContext.identity,
         "TILE",
         "Fruit",
-        config.faction === "ORIGINAL" ? "terrain-fruit" : "terrain-candy-fruit",
+        `terrain-square-${config.faction.toLowerCase()}-fruit`,
         config.faction,
       );
       artifacts.push(
@@ -563,7 +572,7 @@ async function runFactionFlow(
         tileMobileContext.identity,
         "TILE",
         "Fruit",
-        config.faction === "ORIGINAL" ? "terrain-fruit" : "terrain-candy-fruit",
+        `terrain-square-${config.faction.toLowerCase()}-fruit`,
         config.faction,
       );
       artifacts.push(
@@ -838,11 +847,17 @@ async function runFactionFlow(
         exactChoiceAccepted: true,
       },
       readiness: {
-        fullDesktopChangedPixels: readinessFullDesktop.changedPixels,
-        fullMobileChangedPixels: readinessFullMobile.changedPixels,
-        reducedDesktopChangedPixels: readinessReducedDesktop.changedPixels,
-        reducedMobileChangedPixels: readinessReducedMobile.changedPixels,
-        handledChangedPixels: handledMotion.changedPixels,
+        fullDesktopChangedPixels: Number(
+          readinessFullDesktop.changedPixels > 0,
+        ),
+        fullMobileChangedPixels: Number(readinessFullMobile.changedPixels > 0),
+        reducedDesktopChangedPixels: Number(
+          readinessReducedDesktop.changedPixels > 0,
+        ),
+        reducedMobileChangedPixels: Number(
+          readinessReducedMobile.changedPixels > 0,
+        ),
+        handledChangedPixels: Number(handledMotion.changedPixels > 0),
       },
     } satisfies BrowserSmokeIntegratedAcceptanceV6,
     desktop,
@@ -1000,7 +1015,7 @@ async function browseAndResearchTechnology(
       `${faction} scrollable single-axis Technology tree`,
     )),
   );
-  await setMediaPreferences(connection, false, true);
+  await setMediaPreferences(connection, true, true);
   const highContrastDistinct = await evaluate<boolean>(
     connection,
     `(() => {
@@ -1017,7 +1032,7 @@ async function browseAndResearchTechnology(
       `${faction} Technology states with system high contrast`,
     )),
   );
-  await setMediaPreferences(connection, false, false);
+  await setMediaPreferences(connection, true, false);
   await clickSelector(connection, 'button[data-tech="HUNTING"]');
   const detailIsModal = await evaluate<boolean>(
     connection,
@@ -1239,6 +1254,8 @@ function assertSelectionIdentity(
     identity.assetId !== assetId ||
     identity.symbolKind !== "accepted-raster" ||
     identity.ariaLabel === null ||
+    Math.abs(identity.artRect.width - 112) > 1 ||
+    Math.abs(identity.artRect.height - 130) > 1 ||
     /\b\d+,\d+\b/.test(
       `${identity.title} ${identity.detail} ${identity.ariaLabel}`,
     )
@@ -1348,6 +1365,7 @@ async function coordinateActivationGeometry(
   readonly canvasOrigin: { readonly x: number; readonly y: number };
   readonly activationArea: { readonly width: number; readonly height: number };
 }> {
+  await stabilizeBrowserSurface(connection);
   return evaluate(
     connection,
     `(() => {
@@ -1652,6 +1670,7 @@ async function setMediaPreferences(
       },
     ],
   });
+  await stabilizeBrowserSurface(connection);
 }
 
 async function waitForResumeScreen(connection: Connection): Promise<void> {
@@ -1678,6 +1697,7 @@ async function reloadAndResume(
   ) {
     throw new Error("Motion-emulation reload changed the persisted boundary");
   }
+  await stabilizeBrowserSurface(connection);
 }
 
 async function measureReadinessMotion(
@@ -1802,6 +1822,7 @@ async function waitForAcceptedImages(connection: Connection): Promise<void> {
     `document.fonts === undefined || document.fonts.status === 'loaded'`,
   );
   await delay(300);
+  await stabilizeBrowserSurface(connection);
 }
 
 async function readBoundary(
@@ -1832,6 +1853,7 @@ async function readBoundary(
 async function readLayout(
   connection: Connection,
 ): Promise<BrowserSmokeLayoutV6> {
+  await stabilizeBrowserSurface(connection);
   return evaluate<BrowserSmokeLayoutV6>(
     connection,
     `(() => {
@@ -1933,7 +1955,62 @@ async function setViewport(
     connection,
     `innerWidth === ${viewport.width} && innerHeight === ${viewport.height} && devicePixelRatio === ${viewport.dpr}`,
   );
-  await delay(200);
+  await stabilizeBrowserSurface(connection);
+}
+
+/**
+ * ResizeObserver, font completion, and the board host's camera-preserving
+ * resize can settle on separate frames. Evidence is sampled only after the
+ * production DOM, Canvas backing store, and projected board coordinates have
+ * remained identical for four consecutive animation frames.
+ */
+async function stabilizeBrowserSurface(connection: Connection): Promise<void> {
+  await evaluate(
+    connection,
+    `(async () => {
+      if (document.fonts !== undefined) await document.fonts.ready;
+      const frame = () => new Promise((resolve) => requestAnimationFrame(resolve));
+      const rounded = (value) => Math.round(value * 1000) / 1000;
+      const rect = (node) => {
+        if (!(node instanceof HTMLElement)) return null;
+        const value = node.getBoundingClientRect();
+        return [value.x, value.y, value.width, value.height].map(rounded);
+      };
+      let previous = '';
+      let stableFrames = 0;
+      for (let attempt = 0; attempt < 120; attempt += 1) {
+        await frame();
+        const app = globalThis.__PULP_WARS_APP__;
+        const canvas = document.querySelector('.board-canvas-v6');
+        const point = (at) => {
+          const value = app?.view.boardScreenPoint(at);
+          return value === null || value === undefined
+            ? null
+            : [rounded(value.x), rounded(value.y)];
+        };
+        const sample = JSON.stringify({
+          viewport: [innerWidth, innerHeight, devicePixelRatio],
+          shell: rect(document.querySelector('.v6-match-shell')),
+          hud: rect(document.querySelector('.v6-hud')),
+          map: rect(document.querySelector('.v6-map-region')),
+          dock: rect(document.querySelector('.v6-action-dock')),
+          canvas: canvas instanceof HTMLCanvasElement
+            ? [
+                ...rect(canvas),
+                canvas.width,
+                canvas.height,
+              ]
+            : null,
+          boardCorners: [point({ x: 0, y: 0 }), point({ x: 10, y: 10 })],
+        });
+        stableFrames = sample === previous ? stableFrames + 1 : 0;
+        if (stableFrames >= 4) return true;
+        previous = sample;
+      }
+      throw new Error('Production browser surface did not stabilize');
+    })()`,
+    true,
+  );
 }
 
 async function capturePair(

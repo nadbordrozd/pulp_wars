@@ -232,6 +232,46 @@ export interface BrowserSmokeArtifactV6 {
   readonly subject: string;
 }
 
+/**
+ * Browser screenshot bytes are integrity-checked against their manifest on
+ * every audit, but Chromium may vary a handful of antialiased edge pixels
+ * between otherwise identical headless processes. Keep the checked release
+ * fingerprint sensitive to the complete behavior/layout record and artifact
+ * identity while excluding only the per-run screenshot encoding fields.
+ */
+export function browserSmokeReleaseEvidenceV6(value: unknown): unknown {
+  if (value === null || typeof value !== "object" || Array.isArray(value))
+    return value;
+  const evidence = value as Record<string, unknown>;
+  if (!Array.isArray(evidence.flows)) return value;
+  return {
+    ...evidence,
+    flows: evidence.flows.map((flow) => {
+      if (flow === null || typeof flow !== "object" || Array.isArray(flow))
+        return flow;
+      const flowRecord = flow as Record<string, unknown>;
+      if (!Array.isArray(flowRecord.screenshots)) return flow;
+      return {
+        ...flowRecord,
+        screenshots: flowRecord.screenshots.map((artifact) => {
+          if (
+            artifact === null ||
+            typeof artifact !== "object" ||
+            Array.isArray(artifact)
+          )
+            return artifact;
+          const releaseEvidence = {
+            ...(artifact as Record<string, unknown>),
+          };
+          delete releaseEvidence.bytes;
+          delete releaseEvidence.sha256;
+          return releaseEvidence;
+        }),
+      };
+    }),
+  };
+}
+
 export interface BrowserSmokeIntegratedAcceptanceV6 {
   readonly animalVisibility: {
     readonly visibleGameCount: number;
@@ -555,10 +595,8 @@ export function flowContractIssuesV6(
       ) ||
       identity.rect.width <= 0 ||
       identity.rect.height <= 0 ||
-      identity.artRect.width < 44 ||
-      identity.artRect.width > 80 ||
-      identity.artRect.height < 44 ||
-      identity.artRect.height > 80
+      Math.abs(identity.artRect.width - 112) > 1 ||
+      Math.abs(identity.artRect.height - 130) > 1
     ) {
       issues.push(`${name} selection identity is incomplete`);
     }

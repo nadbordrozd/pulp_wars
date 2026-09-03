@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 import { ACCEPTED_ART_URLS } from "../../src/assets/generated-art-manifest";
+import { improvementCoverageV6 } from "../../src/render/canvas/asset-coverage-v6";
 
 const IDS = [
   "building-square-lumber-camp",
@@ -194,17 +195,26 @@ describe("square extraction and processor art", () => {
     }
   });
 
-  it("keeps runtime coverage deferred and hashes every deterministic review artifact and accepted unit", async () => {
-    const [coverage, bindings, evidenceText] = await Promise.all([
-      readFile("src/render/canvas/asset-coverage-v6.ts", "utf8"),
+  it("switches current runtime coverage and hashes every deterministic review artifact and accepted unit", async () => {
+    const [bindings, evidenceText] = await Promise.all([
       readFile("src/render/canvas/pixellab-asset-bindings.ts", "utf8"),
       readFile(
         "art/pixellab/reviews/square-extraction-processors/review-evidence.json",
         "utf8",
       ),
     ]);
-    for (const id of IDS) {
-      expect(coverage, id).not.toContain(id);
+    const improvements = [
+      "LUMBER_CAMP",
+      "MINE",
+      "SAWMILL",
+      "FORGE",
+      "STONEWORKS",
+    ] as const;
+    for (const [index, id] of IDS.entries()) {
+      expect(
+        improvementCoverageV6(improvements[index] ?? "LUMBER_CAMP"),
+        id,
+      ).toMatchObject({ assetId: id });
       expect(bindings, id).not.toContain(id);
     }
     const evidence = JSON.parse(evidenceText) as {

@@ -96,11 +96,14 @@ describe("Ruleset 6 technology, economy, and action art contract", () => {
         ACCEPTED_ART_URLS[technologyArtIdV6("CANDY", technology)],
       );
     expect(technologyArtIdV6("ORIGINAL", "ROADS")).toBe(
-      "ui-tech-original-roads",
+      "terrain-square-road-mask-0101",
     );
-    expect(technologyArtIdV6("CANDY", "ROADS")).toBe("ui-tech-candy-roads");
-    for (const id of ["ui-tech-original-roads", "ui-tech-candy-roads"] as const)
-      expect(ACCEPTED_ART_URLS[id]).toMatch(/road-mask-0101\.png$/);
+    expect(technologyArtIdV6("CANDY", "ROADS")).toBe(
+      "terrain-square-road-mask-0101",
+    );
+    expect(ACCEPTED_ART_URLS["terrain-square-road-mask-0101"]).toMatch(
+      /terrain-square\/road-masks\/road-mask-0101\.png$/,
+    );
   });
 
   it("maps every contextual action and reward to accepted art while keeping map targeting native", () => {
@@ -133,7 +136,7 @@ describe("Ruleset 6 technology, economy, and action art contract", () => {
     );
     expect(
       commandArtIdV6({ kind: "BUILD_ROAD", at: { x: 1, y: 2 } }, "ORIGINAL"),
-    ).toBe("ui-hud-road");
+    ).toBe("terrain-square-road-mask-0101");
     expect(
       commandArtIdV6(
         { kind: "TRAIN", cityId: cityId(3), role: "FIGHTER" },

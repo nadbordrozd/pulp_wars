@@ -136,6 +136,9 @@ describe("DOM UI architecture and responsive contract", () => {
       /\.v6-app-shell\s*\{[^}]*--v6-map-max-unit-art-width:\s*112px[^}]*--v6-map-max-unit-art-height:\s*130px/s,
     );
     expect(css).toMatch(
+      /\.v6-selection-identity-art\s*\{[^}]*width:\s*var\(--v6-map-max-unit-art-width\)[^}]*height:\s*var\(--v6-map-max-unit-art-height\)/s,
+    );
+    expect(css).toMatch(
       /\.v6-command-list\s*>\s*\.v6-command-button\s+\.v6-command-symbol\s*\{[^}]*width:\s*var\(--v6-map-max-unit-art-width\)[^}]*height:\s*var\(--v6-map-max-unit-art-height\)[^}]*background:\s*transparent/s,
     );
     expect(css).toMatch(

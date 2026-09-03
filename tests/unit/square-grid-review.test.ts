@@ -18,6 +18,21 @@ interface Evidence {
     readonly nativeSquareRoadContinuity: boolean;
     readonly unitRasterBytesChanged: boolean;
   };
+  readonly runtimeCoverage: {
+    readonly factions: readonly string[];
+    readonly terrainVariants: {
+      readonly grass: number;
+      readonly forest: number;
+      readonly mountain: number;
+    };
+    readonly resources: readonly string[];
+    readonly roadMasks: number;
+    readonly improvements: readonly string[];
+    readonly sharedUiViewportCssPixels: {
+      readonly width: number;
+      readonly height: number;
+    };
+  };
   readonly views: readonly {
     readonly id: string;
     readonly cssSize: { readonly width: number; readonly height: number };
@@ -51,21 +66,45 @@ describe("square-grid deterministic visual review", () => {
       tieBreak: "lowest row, then lowest column",
     });
     expect(evidence.transition).toEqual({
-      terrainAndImprovements: "TEMPORARY_ACCEPTED_DIAMOND_RASTERS",
-      nativeSquareGroundUnderlay: true,
-      nativeSquareRoadContinuity: true,
+      terrainAndImprovements: "ACCEPTED_SQUARE_RASTERS",
+      nativeSquareGroundUnderlay: false,
+      nativeSquareRoadContinuity: false,
       unitRasterBytesChanged: false,
     });
     expect(evidence.views.map(({ id, dpr }) => [id, dpr])).toEqual([
-      ["desktop", 1],
-      ["mobile", 2],
+      ["minimum-dpr1", 1],
+      ["minimum-dpr2", 2],
+      ["one-x-dpr1", 1],
+      ["one-x-dpr2", 2],
+      ["maximum-dpr1", 1],
+      ["maximum-dpr2", 2],
     ]);
     expect(
       evidence.views.every(({ zoom }) => zoom >= 0.625 && zoom <= 1.75),
     ).toBe(true);
-    expect(evidence.reviewCoverage).toHaveLength(5);
-    expect(evidence.visualReview.status).toBe("ACCEPTED_FOR_EXPERIMENT");
-    expect(evidence.artifacts).toHaveLength(4);
+    expect(evidence.runtimeCoverage).toEqual({
+      factions: ["ORIGINAL", "CANDY"],
+      terrainVariants: { grass: 4, forest: 4, mountain: 3 },
+      resources: ["FRUIT", "GAME", "ORE", "FERTILE_GROUND", "STONE"],
+      roadMasks: 16,
+      improvements: [
+        "FARM",
+        "QUARRY",
+        "WINDMILL",
+        "LUMBER_CAMP",
+        "MINE",
+        "SAWMILL",
+        "FORGE",
+        "STONEWORKS",
+        "WORKSHOP",
+        "GRAND_WORKS",
+        "MARKET",
+      ],
+      sharedUiViewportCssPixels: { width: 112, height: 130 },
+    });
+    expect(evidence.reviewCoverage).toHaveLength(6);
+    expect(evidence.visualReview.status).toBe("ACCEPTED_RUNTIME_INTEGRATION");
+    expect(evidence.artifacts).toHaveLength(12);
 
     for (const artifact of evidence.artifacts) {
       const data = await readFile(artifact.path);

@@ -1,6 +1,12 @@
 {
-  "generatedAt": "2026-09-03T11:54:14.880Z",
   "generatedBy": "npm run smoke:browser",
+  "reproducibility": {
+    "volatileWallClockMetadataRecorded": false,
+    "animatedPixelCountsNormalizedToObservedFlags": true,
+    "screenshotsCapturedWithReducedMotion": true,
+    "stableLayoutFramesRequired": 4,
+    "screenshotByteHashesReleaseScope": "PER_RUN_INTEGRITY_ONLY"
+  },
   "rulesetId": "pulp-wars-poc-6",
   "productionEntry": "src/main.ts",
   "browser": "Chrome/152.0.7977.65",
@@ -190,17 +196,17 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 811.03125
+            "height": 741.03125
           },
           "before": {
             "x": 480,
             "y": 732.0625
           },
           "after": {
-            "x": 480,
-            "y": 732.0625
+            "x": 720,
+            "y": 385.546875
           },
-          "panSteps": 0
+          "panSteps": 1
         },
         {
           "at": {
@@ -209,15 +215,15 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 811.03125
+            "height": 741.03125
           },
           "before": {
-            "x": 480,
-            "y": 652.0625
+            "x": 720,
+            "y": 305.546875
           },
           "after": {
-            "x": 480,
-            "y": 652.0625
+            "x": 720,
+            "y": 305.546875
           },
           "panSteps": 0
         },
@@ -228,15 +234,15 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 811.03125
+            "height": 741.03125
           },
           "before": {
-            "x": 560,
-            "y": 652.0625
+            "x": 800,
+            "y": 305.546875
           },
           "after": {
-            "x": 560,
-            "y": 652.0625
+            "x": 800,
+            "y": 305.546875
           },
           "panSteps": 0
         },
@@ -247,17 +253,17 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 811.03125
+            "height": 741.03125
           },
           "before": {
-            "x": 480,
-            "y": 812.0625
+            "x": 720,
+            "y": 465.546875
           },
           "after": {
             "x": 720,
-            "y": 430.546875
+            "y": 465.546875
           },
-          "panSteps": 1
+          "panSteps": 0
         },
         {
           "at": {
@@ -266,7 +272,7 @@
           },
           "canvas": {
             "width": 390,
-            "height": 538.03125
+            "height": 468.03125
           },
           "before": {
             "x": 195,
@@ -285,7 +291,7 @@
           },
           "canvas": {
             "width": 390,
-            "height": 538.03125
+            "height": 468.03125
           },
           "before": {
             "x": 195,
@@ -304,7 +310,7 @@
           },
           "canvas": {
             "width": 390,
-            "height": 390.84375
+            "height": 320.84375
           },
           "before": {
             "x": 195,
@@ -323,7 +329,7 @@
           },
           "canvas": {
             "width": 390,
-            "height": 538.03125
+            "height": 468.03125
           },
           "before": {
             "x": 195,
@@ -342,7 +348,7 @@
           },
           "canvas": {
             "width": 390,
-            "height": 390.84375
+            "height": 320.84375
           },
           "before": {
             "x": 195,
@@ -361,17 +367,17 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 811.03125
+            "height": 741.03125
           },
           "before": {
             "x": 480,
             "y": 732.0625
           },
           "after": {
-            "x": 480,
-            "y": 732.0625
+            "x": 720,
+            "y": 385.546875
           },
-          "panSteps": 0
+          "panSteps": 1
         },
         {
           "at": {
@@ -380,15 +386,15 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 811.03125
+            "height": 741.03125
           },
           "before": {
-            "x": 560,
-            "y": 732.0625
+            "x": 800,
+            "y": 385.546875
           },
           "after": {
-            "x": 560,
-            "y": 732.0625
+            "x": 800,
+            "y": 385.546875
           },
           "panSteps": 0
         },
@@ -399,15 +405,15 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 811.03125
+            "height": 741.03125
           },
           "before": {
-            "x": 480,
-            "y": 492.0625
+            "x": 720,
+            "y": 145.546875
           },
           "after": {
-            "x": 480,
-            "y": 492.0625
+            "x": 720,
+            "y": 145.546875
           },
           "panSteps": 0
         },
@@ -418,15 +424,15 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 811.03125
+            "height": 741.03125
           },
           "before": {
-            "x": 640,
-            "y": 732.0625
+            "x": 880,
+            "y": 385.546875
           },
           "after": {
-            "x": 640,
-            "y": 732.0625
+            "x": 880,
+            "y": 385.546875
           },
           "panSteps": 0
         },
@@ -437,15 +443,15 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 811.03125
+            "height": 741.03125
           },
           "before": {
-            "x": 560,
-            "y": 572.0625
+            "x": 800,
+            "y": 225.546875
           },
           "after": {
-            "x": 560,
-            "y": 572.0625
+            "x": 800,
+            "y": 225.546875
           },
           "panSteps": 0
         },
@@ -456,15 +462,15 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 811.03125
+            "height": 741.03125
           },
           "before": {
-            "x": 720,
-            "y": 732.0625
+            "x": 960,
+            "y": 385.546875
           },
           "after": {
-            "x": 720,
-            "y": 732.0625
+            "x": 960,
+            "y": 385.546875
           },
           "panSteps": 0
         },
@@ -475,15 +481,15 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 811.03125
+            "height": 741.03125
           },
           "before": {
-            "x": 640,
-            "y": 652.0625
+            "x": 880,
+            "y": 305.546875
           },
           "after": {
-            "x": 640,
-            "y": 652.0625
+            "x": 880,
+            "y": 305.546875
           },
           "panSteps": 0
         },
@@ -494,15 +500,15 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 811.03125
+            "height": 741.03125
           },
           "before": {
-            "x": 800,
-            "y": 732.0625
+            "x": 1040,
+            "y": 385.546875
           },
           "after": {
-            "x": 800,
-            "y": 732.0625
+            "x": 1040,
+            "y": 385.546875
           },
           "panSteps": 0
         },
@@ -513,15 +519,15 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 811.03125
+            "height": 741.03125
           },
           "before": {
-            "x": 880,
-            "y": 732.0625
+            "x": 1120,
+            "y": 385.546875
           },
           "after": {
-            "x": 880,
-            "y": 732.0625
+            "x": 1120,
+            "y": 385.546875
           },
           "panSteps": 0
         }
@@ -556,15 +562,15 @@
               "symbolKind": "accepted-raster",
               "rect": {
                 "x": 12.796875,
-                "y": 742.453125,
-                "width": 129.921875,
-                "height": 60
+                "y": 672.453125,
+                "width": 185.921875,
+                "height": 130
               },
               "artRect": {
                 "x": 12.796875,
-                "y": 742.453125,
-                "width": 56,
-                "height": 60
+                "y": 672.453125,
+                "width": 112,
+                "height": 130
               }
             },
             "unitMobile": {
@@ -576,15 +582,15 @@
               "symbolKind": "accepted-raster",
               "rect": {
                 "x": 8.796875,
-                "y": 595.015625,
-                "width": 118.296875,
-                "height": 60
+                "y": 525.015625,
+                "width": 174.296875,
+                "height": 130
               },
               "artRect": {
                 "x": 8.796875,
-                "y": 595.015625,
-                "width": 56,
-                "height": 60
+                "y": 525.015625,
+                "width": 112,
+                "height": 130
               }
             },
             "cityDesktop": {
@@ -596,15 +602,15 @@
               "symbolKind": "accepted-raster",
               "rect": {
                 "x": 12.796875,
-                "y": 691.671875,
-                "width": 205.109375,
-                "height": 60
+                "y": 621.671875,
+                "width": 261.109375,
+                "height": 130
               },
               "artRect": {
                 "x": 12.796875,
-                "y": 691.671875,
-                "width": 56,
-                "height": 60
+                "y": 621.671875,
+                "width": 112,
+                "height": 130
               }
             },
             "cityMobile": {
@@ -616,15 +622,15 @@
               "symbolKind": "accepted-raster",
               "rect": {
                 "x": 8.796875,
-                "y": 544.234375,
-                "width": 204.515625,
-                "height": 60
+                "y": 475,
+                "width": 260.515625,
+                "height": 130
               },
               "artRect": {
                 "x": 8.796875,
-                "y": 544.234375,
-                "width": 56,
-                "height": 60
+                "y": 475,
+                "width": 112,
+                "height": 130
               }
             },
             "tileDesktop": {
@@ -632,19 +638,19 @@
               "title": "Fruit",
               "detail": "",
               "ariaLabel": "Fruit selected.",
-              "assetId": "terrain-fruit",
+              "assetId": "terrain-square-original-fruit",
               "symbolKind": "accepted-raster",
               "rect": {
                 "x": 12.796875,
-                "y": 742.453125,
-                "width": 110.6875,
-                "height": 60
+                "y": 672.453125,
+                "width": 166.6875,
+                "height": 130
               },
               "artRect": {
                 "x": 12.796875,
-                "y": 742.453125,
-                "width": 56,
-                "height": 60
+                "y": 672.453125,
+                "width": 112,
+                "height": 130
               }
             },
             "tileMobile": {
@@ -652,19 +658,19 @@
               "title": "Fruit",
               "detail": "",
               "ariaLabel": "Fruit selected.",
-              "assetId": "terrain-fruit",
+              "assetId": "terrain-square-original-fruit",
               "symbolKind": "accepted-raster",
               "rect": {
                 "x": 8.796875,
-                "y": 595.015625,
-                "width": 101.828125,
-                "height": 60
+                "y": 525.015625,
+                "width": 157.828125,
+                "height": 130
               },
               "artRect": {
                 "x": 8.796875,
-                "y": 595.015625,
-                "width": 56,
-                "height": 60
+                "y": 525.015625,
+                "width": 112,
+                "height": 130
               }
             }
           },
@@ -824,7 +830,7 @@
               },
               "list": {
                 "x": 8.796875,
-                "y": 667.015625,
+                "y": 667.78125,
                 "width": 372.40625,
                 "height": 168.1875
               },
@@ -841,7 +847,7 @@
                   "kind": "TRAIN",
                   "rect": {
                     "x": 8.796875,
-                    "y": 667.015625,
+                    "y": 667.78125,
                     "width": 176,
                     "height": 168.1875
                   },
@@ -849,7 +855,7 @@
                   "assetId": "unit-original-fighter",
                   "symbolRect": {
                     "x": 40.796875,
-                    "y": 675.203125,
+                    "y": 675.96875,
                     "width": 112,
                     "height": 130
                   },
@@ -857,7 +863,7 @@
                   "rasterLoaded": true,
                   "labelRect": {
                     "x": 16.984375,
-                    "y": 813.203125,
+                    "y": 813.96875,
                     "width": 159.625,
                     "height": 13.8125
                   },
@@ -895,7 +901,7 @@
                     "height": 172.75
                   },
                   "symbolKind": "accepted-raster",
-                  "assetId": "terrain-fruit",
+                  "assetId": "terrain-square-original-fruit",
                   "symbolRect": {
                     "x": 44.796875,
                     "y": 824.25,
@@ -944,7 +950,7 @@
                     "height": 168.1875
                   },
                   "symbolKind": "accepted-raster",
-                  "assetId": "terrain-fruit",
+                  "assetId": "terrain-square-original-fruit",
                   "symbolRect": {
                     "x": 40.796875,
                     "y": 675.203125,
@@ -982,7 +988,7 @@
               {
                 "tech": "GATHERING",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-original-gathering",
+                "assetId": "terrain-square-original-fruit",
                 "symbolRect": {
                   "x": 95.546875,
                   "y": 251.265625,
@@ -1001,7 +1007,7 @@
               {
                 "tech": "FARMING",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-original-farming",
+                "assetId": "building-square-farm",
                 "symbolRect": {
                   "x": 27.265625,
                   "y": 452.046875,
@@ -1020,7 +1026,7 @@
               {
                 "tech": "MILLING",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-original-milling",
+                "assetId": "building-square-windmill",
                 "symbolRect": {
                   "x": 27.265625,
                   "y": 654.828125,
@@ -1039,7 +1045,7 @@
               {
                 "tech": "CRAFT",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-original-craft",
+                "assetId": "building-square-workshop",
                 "symbolRect": {
                   "x": 163.828125,
                   "y": 451.046875,
@@ -1058,7 +1064,7 @@
               {
                 "tech": "GRAND_WORKS",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-original-grand-works",
+                "assetId": "building-square-grand-works",
                 "symbolRect": {
                   "x": 163.828125,
                   "y": 654.828125,
@@ -1077,7 +1083,7 @@
               {
                 "tech": "HUNTING",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-original-hunting",
+                "assetId": "terrain-square-original-animal",
                 "symbolRect": {
                   "x": 379.765625,
                   "y": 250.265625,
@@ -1096,7 +1102,7 @@
               {
                 "tech": "FORESTRY",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-original-forestry",
+                "assetId": "building-square-lumber-camp",
                 "symbolRect": {
                   "x": 311.484375,
                   "y": 452.578125,
@@ -1115,7 +1121,7 @@
               {
                 "tech": "SAWMILLING",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-original-sawmilling",
+                "assetId": "building-square-sawmill",
                 "symbolRect": {
                   "x": 311.484375,
                   "y": 655.359375,
@@ -1191,7 +1197,7 @@
               {
                 "tech": "MINING",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-original-mining",
+                "assetId": "building-square-mine",
                 "symbolRect": {
                   "x": 595.703125,
                   "y": 452.578125,
@@ -1210,7 +1216,7 @@
               {
                 "tech": "METALLURGY",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-original-metallurgy",
+                "assetId": "building-square-forge",
                 "symbolRect": {
                   "x": 595.703125,
                   "y": 655.359375,
@@ -1229,7 +1235,7 @@
               {
                 "tech": "QUARRYING",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-original-quarrying",
+                "assetId": "building-square-quarry",
                 "symbolRect": {
                   "x": 732.265625,
                   "y": 452.578125,
@@ -1248,7 +1254,7 @@
               {
                 "tech": "MASONRY",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-original-masonry",
+                "assetId": "building-square-stoneworks",
                 "symbolRect": {
                   "x": 732.265625,
                   "y": 655.359375,
@@ -1286,7 +1292,7 @@
               {
                 "tech": "ROADS",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-original-roads",
+                "assetId": "terrain-square-road-mask-0101",
                 "symbolRect": {
                   "x": 879.9375,
                   "y": 452.578125,
@@ -1305,7 +1311,7 @@
               {
                 "tech": "COMMERCE",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-original-commerce",
+                "assetId": "building-square-market",
                 "symbolRect": {
                   "x": 879.9375,
                   "y": 655.359375,
@@ -1475,8 +1481,8 @@
           "exactChoiceAccepted": true
         },
         "readiness": {
-          "fullDesktopChangedPixels": 856,
-          "fullMobileChangedPixels": 3318,
+          "fullDesktopChangedPixels": 1,
+          "fullMobileChangedPixels": 1,
           "reducedDesktopChangedPixels": 0,
           "reducedMobileChangedPixels": 0,
           "handledChangedPixels": 0
@@ -1510,9 +1516,9 @@
         },
         "dock": {
           "x": 0,
-          "y": 879.40625,
+          "y": 809.40625,
           "width": 1440,
-          "height": 120.59375
+          "height": 190.59375
         },
         "canvas": {
           "cssWidth": 1440,
@@ -1551,9 +1557,9 @@
         },
         "dock": {
           "x": 0,
-          "y": 731.40625,
+          "y": 661.40625,
           "width": 390,
-          "height": 112.59375
+          "height": 182.59375
         },
         "canvas": {
           "cssWidth": 390,
@@ -1567,8 +1573,8 @@
       "screenshots": [
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-reduced-motion-desktop-native.png",
-          "bytes": 119633,
-          "sha256": "44a1e97c624caeac372e542b83cfbf0f68c006e1b71d665727c7a48f0481fb37",
+          "bytes": 99303,
+          "sha256": "b8fc488e6ebf5abdae02cd7783b5361337d055718639acc72d745a0bac7c0005",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1581,8 +1587,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-reduced-motion-desktop-enlarged.png",
-          "bytes": 291773,
-          "sha256": "c76eb98d4a7519f3e21af6417bad681d429ff45e234e625b3c1f07274923c88d",
+          "bytes": 263924,
+          "sha256": "b320a2a644d1901d7576d10aeb774c9254e65903145b5f811db203ef02a93659",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -1595,8 +1601,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-high-contrast-mobile-native.png",
-          "bytes": 319068,
-          "sha256": "0ce30db62e1c06cdd94b0cce7f799234f8ed9e712fffdc92216f1451c2d6ee41",
+          "bytes": 258490,
+          "sha256": "b33a0777c0e662dcbf333bd6a31f1267fd6ee3c03c220f5b2bebba768dfdf16f",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1609,8 +1615,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-high-contrast-mobile-enlarged.png",
-          "bytes": 574614,
-          "sha256": "6d5861696aa482a327aeb579ba76d3688d092c0ce199a2b6fc23fffaea627943",
+          "bytes": 479027,
+          "sha256": "6dd22f6121e5d850914d85fbec19ca621bf8de32c0dd444a46f60f639fd5e13e",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -1623,8 +1629,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-mobile-native.png",
-          "bytes": 111188,
-          "sha256": "904b50953b7cf5e82cd77c9db89fe8dddfc1a6c4c89b07f57b662d3ebad655a3",
+          "bytes": 292957,
+          "sha256": "6a71cee377f2429e310ff4e81ca5fc46fc78e90ea1b357dbac5c3be3481fe58e",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1637,8 +1643,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-mobile-enlarged.png",
-          "bytes": 267406,
-          "sha256": "02fdcecadee0b87f2083e77fe7592399fee8c1bb664fd65ec3530f0d00f43829",
+          "bytes": 550483,
+          "sha256": "0657980804d45e198ce3f891872dc175f046f5d05b73437b4c59056358b94eba",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -1651,8 +1657,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-desktop-native.png",
-          "bytes": 109276,
-          "sha256": "8974563469ec4a57985497959ade992dfaf58c7b55a7318593c0d62cd300e1cb",
+          "bytes": 146637,
+          "sha256": "b336412bdf37c93769b593080f4b3263f6646f06f478c931a35eeeb31457bc25",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1665,8 +1671,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-desktop-enlarged.png",
-          "bytes": 275741,
-          "sha256": "14a7c0439bb8ed50aa4dea1fa9db895d60d13debc7fa9925aeb6199a08ede5a2",
+          "bytes": 338676,
+          "sha256": "de6902403c752a912e8312c3029d0bb793f549507e25f19874af2e2dbac6f35f",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -1679,8 +1685,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-tile-context-desktop-native.png",
-          "bytes": 96534,
-          "sha256": "4a3dbb5d5a53961060b12f48b0f323430aa367c63bed924472931b866ac98465",
+          "bytes": 121636,
+          "sha256": "b8077ca628cc52e966c8608c794b9e80036988545dcdff479f0796c753a1c7b1",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1693,8 +1699,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-tile-context-desktop-enlarged.png",
-          "bytes": 253527,
-          "sha256": "bd03b02d3cc19a5e77a2aa8e520195787e06de81297b8cea7c5710eeedc9cea8",
+          "bytes": 292737,
+          "sha256": "98ca80639d2628cff485216bfc8b7b0056f102fd03f79b1496c0f79cdd147792",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -1707,8 +1713,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-tile-context-mobile-native.png",
-          "bytes": 83176,
-          "sha256": "ec3ccc696efc1b0e99f6f26c966bc8886646b56fb4d8d38b3e829db1242aea59",
+          "bytes": 239230,
+          "sha256": "c2c0e08e7787f2d16824add8bac41e6e1512d37dbdbe1a2717acfff1be9fbd01",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1721,8 +1727,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-tile-context-mobile-enlarged.png",
-          "bytes": 213363,
-          "sha256": "c120b2c4307c650107220420b8e0485a3773c613543644d71de46559db8bda65",
+          "bytes": 458810,
+          "sha256": "0b9277cb33620f4eb076823ef7d8d253efbc985b659d26d460b70d2ea08a11c2",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -1735,8 +1741,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-reward-desktop-native.png",
-          "bytes": 86863,
-          "sha256": "f1d37b3f7046fc6e2914382aa717767886c4b892c95e04e3ce6f2eb5f9811a50",
+          "bytes": 76509,
+          "sha256": "24c32d64476edc3b6543b83f9002778c7716328e7c6a4576f2221103dcd3816f",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1749,8 +1755,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-reward-desktop-enlarged.png",
-          "bytes": 212759,
-          "sha256": "3d2c1db813913b34020e9897224e6cf58b1b9c8b5dcb9c94319362fc33dbd886",
+          "bytes": 199262,
+          "sha256": "1a32971a34ac945e7f87adf6658ef33451fe5d73caed08ea9422598d8006be91",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -1763,8 +1769,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-city-train-desktop-native.png",
-          "bytes": 146621,
-          "sha256": "cbd5bf99fb7b0a9854f0bea52711479de62a209a256d1f1a340b25ec791f20a1",
+          "bytes": 130859,
+          "sha256": "a4b3cb3aaed4c0a1043088f50bb6ee93aaee1c12a81f423e391550326a57a145",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1777,8 +1783,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-city-train-desktop-enlarged.png",
-          "bytes": 329126,
-          "sha256": "31098b05426f9efc71f081cab204d922751c538083e1bb17ce018a45f6a0dfe1",
+          "bytes": 311008,
+          "sha256": "fd132805d4d348065297c3428ea4f5a82e52c0667adb80c5d7206a1319d14a9f",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -1791,8 +1797,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-city-train-mobile-native.png",
-          "bytes": 268853,
-          "sha256": "ee140e67772d2a702b57f6ea5523ebc9a2a52f95e402b3179a257fa6f7e44aa8",
+          "bytes": 235739,
+          "sha256": "0ebda0bc9f769a90636d78f80512cc791510c4020bd8e0a5c62b86af67ed799f",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1805,8 +1811,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-city-train-mobile-enlarged.png",
-          "bytes": 493645,
-          "sha256": "cf76380131cca89906b11234ecbbce4f8ceb855acd3795e88648ec03aa0931db",
+          "bytes": 432503,
+          "sha256": "5885521968694fc29b1785754efb2612471fbeb5a073b5bd1f8ce2a74b3a7d9c",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -1819,8 +1825,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-overview-desktop-native.png",
-          "bytes": 379555,
-          "sha256": "d3230097240b81adaa94f4a67b0a7ba44e1e75c50826e082e0972cb565cc5d1c",
+          "bytes": 360898,
+          "sha256": "96fbe17aafe138af9d732b74b53c7a5cb436c9d580fd9df11ec8ee3768d422a2",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1833,8 +1839,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-overview-desktop-enlarged.png",
-          "bytes": 692769,
-          "sha256": "b5826c4342e3d5e7bd6a4c821c4c7ee38eee1dd43078a637510cc4801155a80b",
+          "bytes": 659584,
+          "sha256": "42f81206acdbf23f2c8050b13760cd4c721107faf11a1ac255afd4f6338767c5",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -1847,8 +1853,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-overview-mobile-native.png",
-          "bytes": 245918,
-          "sha256": "4c9308370cd5914b3c51a090cdbbfb8f9eadc7d6e9d733032c199577f51a8133",
+          "bytes": 238032,
+          "sha256": "48e41b80ca46ebf84954f8d4ad974db3c13a3c62f1dc7c644bdbc2e3906ff088",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1861,8 +1867,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-overview-mobile-enlarged.png",
-          "bytes": 399188,
-          "sha256": "037aa0a39ec6b1c1af78e87ec5fce8179bcba1ad86164c057a8a194d5764d0ca",
+          "bytes": 390584,
+          "sha256": "efb4a9b8f1c07ee49447c3616caa9caf075698f20eea5d5816e1d70534a2193e",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -1875,8 +1881,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-contrast-mobile-native.png",
-          "bytes": 246108,
-          "sha256": "58de16d5cc562f025181ff36efc108fc022f354bfbc2d79c74e011be4dc5a071",
+          "bytes": 238374,
+          "sha256": "db4138cda01892d76381b43aba9cdf7ccd988264759cd8d8e49ce5b524e24b01",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1889,8 +1895,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-contrast-mobile-enlarged.png",
-          "bytes": 416135,
-          "sha256": "758e3dc4a8a90b6d87da2f14ca4ecd17516ffc9e79949a770065d1b72de17c90",
+          "bytes": 404852,
+          "sha256": "64a468b41a8518db0fbd3fe8c8e2a92b1a7fd17552789a9c55123d38b94fe79a",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -1903,8 +1909,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-detail-mobile-native.png",
-          "bytes": 145232,
-          "sha256": "30db34a7c19faa6cf653003c40b7958a89ae1551ec32e975970f9d5ab98fad04",
+          "bytes": 143049,
+          "sha256": "673941387a832f1bc63f71b73296cea08d406ec4e8fabd5d17162e0cad9086ac",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1917,8 +1923,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-detail-mobile-enlarged.png",
-          "bytes": 238928,
-          "sha256": "303b4b9a71e7c74e69dd8a3594c8778de0cbb4b101e85391f9bf835c7e0b41d7",
+          "bytes": 235057,
+          "sha256": "05644da5209997c72b7df242c6ff5dd99106d2afd97c9f9e533e11cf04a15188",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -2070,17 +2076,17 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 811.03125
+            "height": 741.03125
           },
           "before": {
             "x": 480,
             "y": 732.0625
           },
           "after": {
-            "x": 480,
-            "y": 732.0625
+            "x": 720,
+            "y": 385.546875
           },
-          "panSteps": 0
+          "panSteps": 1
         },
         {
           "at": {
@@ -2089,15 +2095,15 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 811.03125
+            "height": 741.03125
           },
           "before": {
-            "x": 480,
-            "y": 652.0625
+            "x": 720,
+            "y": 305.546875
           },
           "after": {
-            "x": 480,
-            "y": 652.0625
+            "x": 720,
+            "y": 305.546875
           },
           "panSteps": 0
         },
@@ -2108,15 +2114,15 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 811.03125
+            "height": 741.03125
           },
           "before": {
-            "x": 560,
-            "y": 652.0625
+            "x": 800,
+            "y": 305.546875
           },
           "after": {
-            "x": 560,
-            "y": 652.0625
+            "x": 800,
+            "y": 305.546875
           },
           "panSteps": 0
         },
@@ -2127,17 +2133,17 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 811.03125
+            "height": 741.03125
           },
           "before": {
-            "x": 480,
-            "y": 812.0625
+            "x": 720,
+            "y": 465.546875
           },
           "after": {
             "x": 720,
-            "y": 430.546875
+            "y": 465.546875
           },
-          "panSteps": 1
+          "panSteps": 0
         },
         {
           "at": {
@@ -2146,7 +2152,7 @@
           },
           "canvas": {
             "width": 390,
-            "height": 538.03125
+            "height": 468.03125
           },
           "before": {
             "x": 195,
@@ -2165,7 +2171,7 @@
           },
           "canvas": {
             "width": 390,
-            "height": 538.03125
+            "height": 468.03125
           },
           "before": {
             "x": 195,
@@ -2184,7 +2190,7 @@
           },
           "canvas": {
             "width": 390,
-            "height": 390.84375
+            "height": 320.84375
           },
           "before": {
             "x": 195,
@@ -2203,7 +2209,7 @@
           },
           "canvas": {
             "width": 390,
-            "height": 538.03125
+            "height": 468.03125
           },
           "before": {
             "x": 195,
@@ -2222,7 +2228,7 @@
           },
           "canvas": {
             "width": 390,
-            "height": 390.84375
+            "height": 320.84375
           },
           "before": {
             "x": 195,
@@ -2241,17 +2247,17 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 811.03125
+            "height": 741.03125
           },
           "before": {
             "x": 480,
             "y": 732.0625
           },
           "after": {
-            "x": 480,
-            "y": 732.0625
+            "x": 720,
+            "y": 385.546875
           },
-          "panSteps": 0
+          "panSteps": 1
         },
         {
           "at": {
@@ -2260,15 +2266,15 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 811.03125
+            "height": 741.03125
           },
           "before": {
-            "x": 560,
-            "y": 732.0625
+            "x": 800,
+            "y": 385.546875
           },
           "after": {
-            "x": 560,
-            "y": 732.0625
+            "x": 800,
+            "y": 385.546875
           },
           "panSteps": 0
         },
@@ -2279,15 +2285,15 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 811.03125
+            "height": 741.03125
           },
           "before": {
-            "x": 480,
-            "y": 492.0625
+            "x": 720,
+            "y": 145.546875
           },
           "after": {
-            "x": 480,
-            "y": 492.0625
+            "x": 720,
+            "y": 145.546875
           },
           "panSteps": 0
         },
@@ -2298,15 +2304,15 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 811.03125
+            "height": 741.03125
           },
           "before": {
-            "x": 640,
-            "y": 732.0625
+            "x": 880,
+            "y": 385.546875
           },
           "after": {
-            "x": 640,
-            "y": 732.0625
+            "x": 880,
+            "y": 385.546875
           },
           "panSteps": 0
         },
@@ -2317,15 +2323,15 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 811.03125
+            "height": 741.03125
           },
           "before": {
-            "x": 560,
-            "y": 572.0625
+            "x": 800,
+            "y": 225.546875
           },
           "after": {
-            "x": 560,
-            "y": 572.0625
+            "x": 800,
+            "y": 225.546875
           },
           "panSteps": 0
         },
@@ -2336,15 +2342,15 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 811.03125
+            "height": 741.03125
           },
           "before": {
-            "x": 720,
-            "y": 732.0625
+            "x": 960,
+            "y": 385.546875
           },
           "after": {
-            "x": 720,
-            "y": 732.0625
+            "x": 960,
+            "y": 385.546875
           },
           "panSteps": 0
         },
@@ -2355,15 +2361,15 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 811.03125
+            "height": 741.03125
           },
           "before": {
-            "x": 640,
-            "y": 652.0625
+            "x": 880,
+            "y": 305.546875
           },
           "after": {
-            "x": 640,
-            "y": 652.0625
+            "x": 880,
+            "y": 305.546875
           },
           "panSteps": 0
         },
@@ -2374,15 +2380,15 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 811.03125
+            "height": 741.03125
           },
           "before": {
-            "x": 800,
-            "y": 732.0625
+            "x": 1040,
+            "y": 385.546875
           },
           "after": {
-            "x": 800,
-            "y": 732.0625
+            "x": 1040,
+            "y": 385.546875
           },
           "panSteps": 0
         },
@@ -2393,15 +2399,15 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 811.03125
+            "height": 741.03125
           },
           "before": {
-            "x": 880,
-            "y": 732.0625
+            "x": 1120,
+            "y": 385.546875
           },
           "after": {
-            "x": 880,
-            "y": 732.0625
+            "x": 1120,
+            "y": 385.546875
           },
           "panSteps": 0
         }
@@ -2436,15 +2442,15 @@
               "symbolKind": "accepted-raster",
               "rect": {
                 "x": 12.796875,
-                "y": 742.453125,
-                "width": 195.625,
-                "height": 60
+                "y": 672.453125,
+                "width": 251.625,
+                "height": 130
               },
               "artRect": {
                 "x": 12.796875,
-                "y": 742.453125,
-                "width": 56,
-                "height": 60
+                "y": 672.453125,
+                "width": 112,
+                "height": 130
               }
             },
             "unitMobile": {
@@ -2456,15 +2462,15 @@
               "symbolKind": "accepted-raster",
               "rect": {
                 "x": 8.796875,
-                "y": 595.015625,
-                "width": 169.78125,
-                "height": 60
+                "y": 525.015625,
+                "width": 225.78125,
+                "height": 130
               },
               "artRect": {
                 "x": 8.796875,
-                "y": 595.015625,
-                "width": 56,
-                "height": 60
+                "y": 525.015625,
+                "width": 112,
+                "height": 130
               }
             },
             "cityDesktop": {
@@ -2476,15 +2482,15 @@
               "symbolKind": "accepted-raster",
               "rect": {
                 "x": 12.796875,
-                "y": 691.671875,
-                "width": 204.515625,
-                "height": 60
+                "y": 621.671875,
+                "width": 260.515625,
+                "height": 130
               },
               "artRect": {
                 "x": 12.796875,
-                "y": 691.671875,
-                "width": 56,
-                "height": 60
+                "y": 621.671875,
+                "width": 112,
+                "height": 130
               }
             },
             "cityMobile": {
@@ -2496,15 +2502,15 @@
               "symbolKind": "accepted-raster",
               "rect": {
                 "x": 8.796875,
-                "y": 544.234375,
-                "width": 204.515625,
-                "height": 60
+                "y": 475,
+                "width": 260.515625,
+                "height": 130
               },
               "artRect": {
                 "x": 8.796875,
-                "y": 544.234375,
-                "width": 56,
-                "height": 60
+                "y": 475,
+                "width": 112,
+                "height": 130
               }
             },
             "tileDesktop": {
@@ -2512,19 +2518,19 @@
               "title": "Fruit",
               "detail": "",
               "ariaLabel": "Fruit selected.",
-              "assetId": "terrain-candy-fruit",
+              "assetId": "terrain-square-candy-fruit",
               "symbolKind": "accepted-raster",
               "rect": {
                 "x": 12.796875,
-                "y": 742.453125,
-                "width": 110.6875,
-                "height": 60
+                "y": 672.453125,
+                "width": 166.6875,
+                "height": 130
               },
               "artRect": {
                 "x": 12.796875,
-                "y": 742.453125,
-                "width": 56,
-                "height": 60
+                "y": 672.453125,
+                "width": 112,
+                "height": 130
               }
             },
             "tileMobile": {
@@ -2532,19 +2538,19 @@
               "title": "Fruit",
               "detail": "",
               "ariaLabel": "Fruit selected.",
-              "assetId": "terrain-candy-fruit",
+              "assetId": "terrain-square-candy-fruit",
               "symbolKind": "accepted-raster",
               "rect": {
                 "x": 8.796875,
-                "y": 595.015625,
-                "width": 101.828125,
-                "height": 60
+                "y": 525.015625,
+                "width": 157.828125,
+                "height": 130
               },
               "artRect": {
                 "x": 8.796875,
-                "y": 595.015625,
-                "width": 56,
-                "height": 60
+                "y": 525.015625,
+                "width": 112,
+                "height": 130
               }
             }
           },
@@ -2704,7 +2710,7 @@
               },
               "list": {
                 "x": 8.796875,
-                "y": 667.015625,
+                "y": 667.78125,
                 "width": 372.40625,
                 "height": 168.1875
               },
@@ -2721,7 +2727,7 @@
                   "kind": "TRAIN",
                   "rect": {
                     "x": 8.796875,
-                    "y": 667.015625,
+                    "y": 667.78125,
                     "width": 176,
                     "height": 168.1875
                   },
@@ -2729,7 +2735,7 @@
                   "assetId": "unit-candy-fighter",
                   "symbolRect": {
                     "x": 40.796875,
-                    "y": 675.203125,
+                    "y": 675.96875,
                     "width": 112,
                     "height": 130
                   },
@@ -2737,7 +2743,7 @@
                   "rasterLoaded": true,
                   "labelRect": {
                     "x": 16.984375,
-                    "y": 813.203125,
+                    "y": 813.96875,
                     "width": 159.625,
                     "height": 13.8125
                   },
@@ -2775,7 +2781,7 @@
                     "height": 172.75
                   },
                   "symbolKind": "accepted-raster",
-                  "assetId": "terrain-candy-fruit",
+                  "assetId": "terrain-square-candy-fruit",
                   "symbolRect": {
                     "x": 44.796875,
                     "y": 824.25,
@@ -2824,7 +2830,7 @@
                     "height": 168.1875
                   },
                   "symbolKind": "accepted-raster",
-                  "assetId": "terrain-candy-fruit",
+                  "assetId": "terrain-square-candy-fruit",
                   "symbolRect": {
                     "x": 40.796875,
                     "y": 675.203125,
@@ -2862,7 +2868,7 @@
               {
                 "tech": "GATHERING",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-candy-gathering",
+                "assetId": "terrain-square-candy-fruit",
                 "symbolRect": {
                   "x": 95.546875,
                   "y": 251.265625,
@@ -2881,7 +2887,7 @@
               {
                 "tech": "FARMING",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-candy-farming",
+                "assetId": "building-square-farm",
                 "symbolRect": {
                   "x": 27.265625,
                   "y": 452.046875,
@@ -2900,7 +2906,7 @@
               {
                 "tech": "MILLING",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-candy-milling",
+                "assetId": "building-square-windmill",
                 "symbolRect": {
                   "x": 27.265625,
                   "y": 654.828125,
@@ -2919,7 +2925,7 @@
               {
                 "tech": "CRAFT",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-candy-craft",
+                "assetId": "building-square-workshop",
                 "symbolRect": {
                   "x": 163.828125,
                   "y": 451.046875,
@@ -2938,7 +2944,7 @@
               {
                 "tech": "GRAND_WORKS",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-candy-grand-works",
+                "assetId": "building-square-grand-works",
                 "symbolRect": {
                   "x": 163.828125,
                   "y": 654.828125,
@@ -2957,7 +2963,7 @@
               {
                 "tech": "HUNTING",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-candy-hunting",
+                "assetId": "terrain-square-candy-animal",
                 "symbolRect": {
                   "x": 379.765625,
                   "y": 250.265625,
@@ -2976,7 +2982,7 @@
               {
                 "tech": "FORESTRY",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-candy-forestry",
+                "assetId": "building-square-lumber-camp",
                 "symbolRect": {
                   "x": 311.484375,
                   "y": 452.578125,
@@ -2995,7 +3001,7 @@
               {
                 "tech": "SAWMILLING",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-candy-sawmilling",
+                "assetId": "building-square-sawmill",
                 "symbolRect": {
                   "x": 311.484375,
                   "y": 655.359375,
@@ -3071,7 +3077,7 @@
               {
                 "tech": "MINING",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-candy-mining",
+                "assetId": "building-square-mine",
                 "symbolRect": {
                   "x": 595.703125,
                   "y": 452.578125,
@@ -3090,7 +3096,7 @@
               {
                 "tech": "METALLURGY",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-candy-metallurgy",
+                "assetId": "building-square-forge",
                 "symbolRect": {
                   "x": 595.703125,
                   "y": 655.359375,
@@ -3109,7 +3115,7 @@
               {
                 "tech": "QUARRYING",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-candy-quarrying",
+                "assetId": "building-square-quarry",
                 "symbolRect": {
                   "x": 732.265625,
                   "y": 452.578125,
@@ -3128,7 +3134,7 @@
               {
                 "tech": "MASONRY",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-candy-masonry",
+                "assetId": "building-square-stoneworks",
                 "symbolRect": {
                   "x": 732.265625,
                   "y": 655.359375,
@@ -3166,7 +3172,7 @@
               {
                 "tech": "ROADS",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-candy-roads",
+                "assetId": "terrain-square-road-mask-0101",
                 "symbolRect": {
                   "x": 879.9375,
                   "y": 452.578125,
@@ -3185,7 +3191,7 @@
               {
                 "tech": "COMMERCE",
                 "symbolKind": "accepted-raster",
-                "assetId": "ui-tech-candy-commerce",
+                "assetId": "building-square-market",
                 "symbolRect": {
                   "x": 879.9375,
                   "y": 655.359375,
@@ -3355,8 +3361,8 @@
           "exactChoiceAccepted": true
         },
         "readiness": {
-          "fullDesktopChangedPixels": 750,
-          "fullMobileChangedPixels": 2942,
+          "fullDesktopChangedPixels": 1,
+          "fullMobileChangedPixels": 1,
           "reducedDesktopChangedPixels": 0,
           "reducedMobileChangedPixels": 0,
           "handledChangedPixels": 0
@@ -3390,9 +3396,9 @@
         },
         "dock": {
           "x": 0,
-          "y": 879.40625,
+          "y": 809.40625,
           "width": 1440,
-          "height": 120.59375
+          "height": 190.59375
         },
         "canvas": {
           "cssWidth": 1440,
@@ -3431,9 +3437,9 @@
         },
         "dock": {
           "x": 0,
-          "y": 731.40625,
+          "y": 661.40625,
           "width": 390,
-          "height": 112.59375
+          "height": 182.59375
         },
         "canvas": {
           "cssWidth": 390,
@@ -3447,8 +3453,8 @@
       "screenshots": [
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-reduced-motion-desktop-native.png",
-          "bytes": 121832,
-          "sha256": "1c29fecea118fbfaa34e9c7c9bb8abf8834784e9d06b143f97666b07ab219758",
+          "bytes": 102583,
+          "sha256": "22c962d4fe0ee4895a6ff2cf3f369150758b121e391280acbc7a3dc4ffcd336c",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -3461,8 +3467,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-reduced-motion-desktop-enlarged.png",
-          "bytes": 294501,
-          "sha256": "f1edfcd9647a8275f189a59077217fd5c4428ce1987bcb1bcf78ea5fd26f4119",
+          "bytes": 270510,
+          "sha256": "43c6877e2c9639ab0836aa30006d70182a7bd49f44e66cf4e5511bf3dce99dbf",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -3475,8 +3481,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-high-contrast-mobile-native.png",
-          "bytes": 323739,
-          "sha256": "b911ec8df56267675446969a44310646b473357cba6fa9302efce561a2f31b11",
+          "bytes": 265338,
+          "sha256": "5c0db046196ea464a03ee0d9b634e837ad6d3bd555aa08930408f55c4241736a",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -3489,8 +3495,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-high-contrast-mobile-enlarged.png",
-          "bytes": 578964,
-          "sha256": "96a104a75e39c2a9a5676f5e2b9d5798c2549d7d8262130648a955378f4c6494",
+          "bytes": 495177,
+          "sha256": "22e815f4e88a423ef2b67e3a83317f7fb2c24fb773efb14a480fd9347b146fbf",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -3503,8 +3509,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-mobile-native.png",
-          "bytes": 111232,
-          "sha256": "854bc1f277f4bfd9290f0de316446fc2a8ec865f75768d82910a5d738c7b0d2b",
+          "bytes": 300209,
+          "sha256": "d2facde10bb5ddcf042a227cfa59c07a09240c3c3068bc4ae4947cf4231a39d9",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -3517,8 +3523,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-mobile-enlarged.png",
-          "bytes": 267320,
-          "sha256": "19e2c82e97870390b8f1bae5c8af868a01aaa1f72f7147e141816cfdd1c1e5db",
+          "bytes": 577857,
+          "sha256": "6590495c0b8c1203f9d62edd895189d18342f4ea68354e8db21112abb121b9bd",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -3531,8 +3537,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-desktop-native.png",
-          "bytes": 110484,
-          "sha256": "d90372a20d754137083bca27202b2adabccb5e2e61f3429e58bfe4c2f2a6493b",
+          "bytes": 151011,
+          "sha256": "c01fe71339f9fb4404271ea78c2d719545e706aaeb62b2538ddcbddd2d816144",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -3545,8 +3551,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-desktop-enlarged.png",
-          "bytes": 276862,
-          "sha256": "b34fcb82b35546ef8c3060f2672128caf5aa5637191c853cbec8d1f87eff3686",
+          "bytes": 346209,
+          "sha256": "574040a7f5d17e225886ef0124a8c9a374242b76b8a6593809efcc91986ae6d4",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -3559,8 +3565,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-tile-context-desktop-native.png",
-          "bytes": 98014,
-          "sha256": "f8f3a04f87cbe551d00f7646b4ef281e177131f2f66a970b5555f410477377d5",
+          "bytes": 127471,
+          "sha256": "c33952c0ec28defc70d57bedb14a64109f062700ee558613f115b279099c364d",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -3573,8 +3579,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-tile-context-desktop-enlarged.png",
-          "bytes": 256508,
-          "sha256": "5ff5dbff47110a060ae29938c578e113a31dd35552fb45dbdd03f7e771f574d7",
+          "bytes": 303951,
+          "sha256": "db513e00b4f63fa3d402e99f51f50da57ca295415717324c9e2638b04e6d61c6",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -3587,8 +3593,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-tile-context-mobile-native.png",
-          "bytes": 85624,
-          "sha256": "2f1450911d630b9e01f132976f0ce77d3768218d485fefa44f53659ad25f129e",
+          "bytes": 249025,
+          "sha256": "18e19138ff004d76548a2be8753a6f58b7c2b299417a7600fc6d5e3fd1ab9cfb",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -3601,8 +3607,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-tile-context-mobile-enlarged.png",
-          "bytes": 218215,
-          "sha256": "5efbf550c3dc0dde390e9ac62505f9153127963fe9d27026b64ea2f3445ec546",
+          "bytes": 478273,
+          "sha256": "bef7996441036ac3463c407ebbdeaf7093cd90706fc97f075a935f52fe54821f",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -3615,8 +3621,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-reward-desktop-native.png",
-          "bytes": 87100,
-          "sha256": "32452bf5b4074b6b899bc67c36176751062c267a312b5081bf2168a342e9f0bf",
+          "bytes": 77077,
+          "sha256": "1f91cddac9acbbab502d5db3edaf1ff09a48a29655bef8f9c24fe42289c19887",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -3629,8 +3635,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-reward-desktop-enlarged.png",
-          "bytes": 213196,
-          "sha256": "ac061c1c0d34f527dcefd4c2f99c886c922f72ea704215987fc7d650a60269bc",
+          "bytes": 200923,
+          "sha256": "d51c6032ceda31b10efb7c5d3e02895058412cb479bde85ce95623ea17d0c549",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -3643,8 +3649,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-city-train-desktop-native.png",
-          "bytes": 145176,
-          "sha256": "8ee0582fe6e77742a13235a55c5cb1b07355ea97bc313b2cdcf4c37bb722e9d6",
+          "bytes": 129068,
+          "sha256": "2b8847c61ed15302911e925d554a8ba89272dc51e4925dad395971e17def5aa0",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -3657,8 +3663,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-city-train-desktop-enlarged.png",
-          "bytes": 323486,
-          "sha256": "bad8831422eb01c9681381e7f8382ad2021b86a119457d7b6f6853148db3374d",
+          "bytes": 305551,
+          "sha256": "d4510d10a5bd28e4ebe66ad393d50eafb20844a3348bb2d1bbaf1b48fce49cd5",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -3671,8 +3677,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-city-train-mobile-native.png",
-          "bytes": 262228,
-          "sha256": "5786e2926c42c4cd0d15b8013a9ca710e0d869aadcc90adc58f1adc749a36a35",
+          "bytes": 229618,
+          "sha256": "e3617deeea52fcf7f21bba02613e214cf820cffaf360cac278678a0a62139bc5",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -3685,8 +3691,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-city-train-mobile-enlarged.png",
-          "bytes": 490433,
-          "sha256": "fe4a0fa4d8e3f36f03952514589f6e25a3e99d229634cff1403953432ff212ac",
+          "bytes": 436134,
+          "sha256": "1e11b2fbde47cc14bc64fe9a32d382830e287864967bc9dcf74e6478ac4d436e",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -3699,8 +3705,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-overview-desktop-native.png",
-          "bytes": 379834,
-          "sha256": "d39ed3e9ccacac0afb777e99ffb7687d9e9c1eba6fb4866501fb4e8d3427eff7",
+          "bytes": 361380,
+          "sha256": "8807278021c30107b6e4b2621291c2fd3b16bfcfb941a789753916e79dbeabbd",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -3713,8 +3719,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-overview-desktop-enlarged.png",
-          "bytes": 691835,
-          "sha256": "7cc2b1a7e678132f8eed6a2d65945e5d8a12cede0d8865fd0b276c55b577bfcd",
+          "bytes": 660787,
+          "sha256": "6cddf7747f712ed9014a1b3543b0bfa9556711f220bf402a2784812533eab882",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -3727,8 +3733,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-overview-mobile-native.png",
-          "bytes": 247401,
-          "sha256": "696aa886e3543ba6461678c4711087288997e827b38f95c11c6ca94527a953e5",
+          "bytes": 239545,
+          "sha256": "49ea5e1eae5c831e22a8009a5eac1bb6c92f2fbd6a9de1df1a890e3909aa5f66",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -3741,8 +3747,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-overview-mobile-enlarged.png",
-          "bytes": 400024,
-          "sha256": "be07897d693890d4ceca5e0d4180afd0ff77f0085058592187aeef97c8900c62",
+          "bytes": 390938,
+          "sha256": "f90f005cc2fc47ffc67a3803da77aaee218e572618d0988bf05e526b2dcf883d",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -3755,8 +3761,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-contrast-mobile-native.png",
-          "bytes": 247731,
-          "sha256": "21a9a360823924f1b414032fb53e4fa9f1ac7c95ed8d3c4bb06d711f1591e09b",
+          "bytes": 239812,
+          "sha256": "c55a88e5d6b1fa15b6358959c2ea54976161381db60896520e13a6e41ab93a56",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -3769,8 +3775,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-contrast-mobile-enlarged.png",
-          "bytes": 417188,
-          "sha256": "6a807137b8a9f173a35074b7cb6f82635be8becfca190ac018d0b836249d8919",
+          "bytes": 406274,
+          "sha256": "093dbc0d18dbc2ff79a0fc82a87b9d805cb14745d230a58d815471ce48338840",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -3783,8 +3789,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-detail-mobile-native.png",
-          "bytes": 147576,
-          "sha256": "f64a64438ff8c8c68b797e2769892b27ef8a7cc9086d60aa2165cd2139ab06ed",
+          "bytes": 145295,
+          "sha256": "fa582006dc92913923db479d64aec3bd1e3d9364d065068bc99b570c255e5b97",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -3797,8 +3803,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-detail-mobile-enlarged.png",
-          "bytes": 241134,
-          "sha256": "d2d15ac2bc581fd18d448331f9bbeaa1a4c546cbcacdb7f7af42d718c155f120",
+          "bytes": 237657,
+          "sha256": "7b56ef9e8066d3e8ba186239cdfd20dc215f477e3d8c7b0cdaeb301a54dffbf0",
           "width": 1560,
           "height": 3376,
           "viewport": {

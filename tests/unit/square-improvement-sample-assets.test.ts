@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 import { ACCEPTED_ART_URLS } from "../../src/assets/generated-art-manifest";
+import { improvementCoverageV6 } from "../../src/render/canvas/asset-coverage-v6";
 
 const IDS = [
   "building-square-farm",
@@ -201,19 +202,21 @@ describe("square economic-improvement sample art", () => {
     }
   });
 
-  it("registers URLs without switching runtime coverage and preserves review/unit evidence", async () => {
-    const [coverage, bindings, evidenceText, interactionTest] =
-      await Promise.all([
-        readFile("src/render/canvas/asset-coverage-v6.ts", "utf8"),
-        readFile("src/render/canvas/pixellab-asset-bindings.ts", "utf8"),
-        readFile(
-          "art/pixellab/reviews/square-improvement-samples/review-evidence.json",
-          "utf8",
-        ),
-        readFile("tests/integration/ruleset6-dom-shell.test.ts", "utf8"),
-      ]);
-    for (const id of IDS) {
-      expect(coverage, id).not.toContain(id);
+  it("switches current runtime coverage and preserves review/unit evidence", async () => {
+    const [bindings, evidenceText, interactionTest] = await Promise.all([
+      readFile("src/render/canvas/pixellab-asset-bindings.ts", "utf8"),
+      readFile(
+        "art/pixellab/reviews/square-improvement-samples/review-evidence.json",
+        "utf8",
+      ),
+      readFile("tests/integration/ruleset6-dom-shell.test.ts", "utf8"),
+    ]);
+    for (const [index, id] of IDS.entries()) {
+      const improvement = ["FARM", "QUARRY", "WINDMILL"] as const;
+      expect(
+        improvementCoverageV6(improvement[index] ?? "FARM"),
+        id,
+      ).toMatchObject({ assetId: id });
       expect(bindings, id).not.toContain(id);
     }
     expect(interactionTest).toContain(

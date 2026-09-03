@@ -3,6 +3,10 @@ import { readFile } from "node:fs/promises";
 import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 import { ACCEPTED_ART_URLS } from "../../src/assets/generated-art-manifest";
+import {
+  resourceCoverageV6,
+  roadCoverageV6,
+} from "../../src/render/canvas/asset-coverage-v6";
 
 const IDS = [
   "terrain-square-original-fruit",
@@ -346,7 +350,7 @@ describe("square resource and Road production art", () => {
     }
   }, 30_000);
 
-  it("keeps Road material quiet, registers accepted URLs without switching runtime coverage, and hashes complete review evidence", async () => {
+  it("keeps Road material quiet, switches current runtime coverage, and preserves the acceptance evidence", async () => {
     const road = await readFile(
       "public/assets/pixellab/terrain-square/road-material.png",
     );
@@ -375,14 +379,27 @@ describe("square resource and Road production art", () => {
       ),
     ).toBeLessThanOrEqual(10);
 
-    const [coverage, bindings] = await Promise.all([
-      readFile("src/render/canvas/asset-coverage-v6.ts", "utf8"),
-      readFile("src/render/canvas/pixellab-asset-bindings.ts", "utf8"),
-    ]);
-    for (const id of IDS) {
-      expect(coverage, id).not.toContain(id);
+    const bindings = await readFile(
+      "src/render/canvas/pixellab-asset-bindings.ts",
+      "utf8",
+    );
+    const resources = [
+      resourceCoverageV6("FRUIT", "ORIGINAL"),
+      resourceCoverageV6("FRUIT", "CANDY"),
+      resourceCoverageV6("GAME", "ORIGINAL"),
+      resourceCoverageV6("GAME", "CANDY"),
+      resourceCoverageV6("ORE", "ORIGINAL"),
+      resourceCoverageV6("FERTILE_GROUND", "ORIGINAL"),
+      resourceCoverageV6("STONE", "ORIGINAL"),
+    ];
+    for (const [index, id] of IDS.slice(0, -1).entries()) {
+      expect(resources[index], id).toMatchObject({ assetId: id });
       expect(bindings, id).not.toContain(id);
     }
+    for (let mask = 0; mask < 16; mask += 1)
+      expect(roadCoverageV6(mask)).toMatchObject({
+        assetId: `terrain-square-road-mask-${mask.toString(2).padStart(4, "0")}`,
+      });
     expect(bindings).not.toContain("terrain-square-road-mask-");
 
     const evidence = JSON.parse(

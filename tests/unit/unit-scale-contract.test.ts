@@ -6,6 +6,7 @@ import {
   BOARD_ART_GEOMETRY,
   PLACEMENT_ART_GEOMETRY,
   RULESET6_UNIT_COSMETIC_OFFSET_Y,
+  SQUARE_ART_GEOMETRY,
   UNIT_SCALE_CONTRACT,
 } from "../../src/render/canvas/board-art-geometry";
 import {
@@ -256,24 +257,27 @@ describe("unit map-scale contract", () => {
       }
     }
 
-    const fertileRecord = requiredRecord(generated, "terrain-fertile-ground");
+    const fertileRecord = requiredRecord(
+      generated,
+      "terrain-square-fertile-ground",
+    );
     if (fertileRecord.alphaBounds === undefined)
-      throw new Error("terrain-fertile-ground: accepted bounds missing");
+      throw new Error("terrain-square-fertile-ground: accepted bounds missing");
     const fertile = resourceCoverageV6("FERTILE_GROUND", "ORIGINAL");
     expect(fertile.geometry.displayScale).toBe(
-      BOARD_ART_GEOMETRY.lowObject.displayScale,
+      SQUARE_ART_GEOMETRY.resource.displayScale,
     );
-    expect(fertile.geometry.offsetY).toBe(18);
+    expect(fertile.geometry.offsetY).toBeUndefined();
     expect(
       (fertileRecord.alphaBounds.top - fertile.geometry.anchor.y) *
         fertile.geometry.displayScale +
         (fertile.geometry.offsetY ?? 0),
-    ).toBe(-21);
+    ).toBe(-3);
     expect(
       (fertileRecord.alphaBounds.bottom - fertile.geometry.anchor.y) *
         fertile.geometry.displayScale +
         (fertile.geometry.offsetY ?? 0),
-    ).toBe(18);
+    ).toBe(34);
   });
 
   it("checks in reproducible native/enlarged evidence for the complete matrix", async () => {

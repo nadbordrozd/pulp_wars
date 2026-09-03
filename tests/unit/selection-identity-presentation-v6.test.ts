@@ -37,17 +37,17 @@ const UNIT_ASSET_IDS = {
 } as const;
 
 const IMPROVEMENT_ASSET_IDS = {
-  FARM: "building-farm",
-  LUMBER_CAMP: "building-lumber-camp",
-  MINE: "building-ruleset6-mine",
-  QUARRY: "building-quarry",
-  WINDMILL: "building-windmill",
-  SAWMILL: "building-sawmill",
-  FORGE: "building-forge",
-  STONEWORKS: "building-stoneworks",
-  WORKSHOP: "building-workshop",
-  GRAND_WORKS: "building-grand-works",
-  MARKET: "building-market",
+  FARM: "building-square-farm",
+  LUMBER_CAMP: "building-square-lumber-camp",
+  MINE: "building-square-mine",
+  QUARRY: "building-square-quarry",
+  WINDMILL: "building-square-windmill",
+  SAWMILL: "building-square-sawmill",
+  FORGE: "building-square-forge",
+  STONEWORKS: "building-square-stoneworks",
+  WORKSHOP: "building-square-workshop",
+  GRAND_WORKS: "building-square-grand-works",
+  MARKET: "building-square-market",
 } as const;
 
 describe("ruleset-6 selection identity presentation", () => {
@@ -161,16 +161,16 @@ describe("ruleset-6 selection identity presentation", () => {
         );
         const expected =
           resource === "FRUIT"
-            ? `terrain-${faction === "CANDY" ? "candy-" : ""}fruit`
+            ? `terrain-square-${faction === "CANDY" ? "candy" : "original"}-fruit`
             : resource === "GAME"
               ? faction === "CANDY"
-                ? "terrain-candy-animal"
-                : "terrain-game"
+                ? "terrain-square-candy-animal"
+                : "terrain-square-original-animal"
               : resource === "ORE"
-                ? "terrain-ore"
+                ? "terrain-square-ore"
                 : resource === "STONE"
-                  ? "terrain-stone"
-                  : "terrain-fertile-ground";
+                  ? "terrain-square-stone"
+                  : "terrain-square-fertile-ground";
         expect(identity.artwork).toMatchObject({
           status: "ACCEPTED",
           assetId: expected,
@@ -191,7 +191,7 @@ describe("ruleset-6 selection identity presentation", () => {
         expect(identity.artwork).toMatchObject({ status: "ACCEPTED" });
         expect(acceptedAssetId(identity)).toMatch(
           new RegExp(
-            `^terrain-${faction === "CANDY" ? "candy-" : ""}${terrain.toLowerCase()}-[1-4]$`,
+            `^terrain-square-${faction === "CANDY" ? "candy" : "original"}-${terrain.toLowerCase()}-[1-4]$`,
           ),
         );
         expect(identity.accessibleLabel).toBe(

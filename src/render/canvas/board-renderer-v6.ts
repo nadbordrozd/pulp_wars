@@ -386,22 +386,6 @@ function drawEntry(
   const ownerColor = ownerColorFor(entry.ownerId);
   switch (entry.kind) {
     case "TERRAIN":
-      // Until the square production terrain batch lands, keep a complete
-      // code-native square footprint beneath the accepted legacy diamond.
-      commands.push(
-        ...groundFallback(entry.key, center, zoom, faction, entry.variant),
-      );
-      addCoveredAsset(
-        commands,
-        coverage,
-        entry.key,
-        terrainCoverageV6("GRASS", faction, entry.variant),
-        center,
-        zoom,
-        () => [],
-      );
-      return;
-    case "TERRAIN_BODY":
       addCoveredAsset(
         commands,
         coverage,
@@ -409,9 +393,12 @@ function drawEntry(
         terrainCoverageV6(entry.details.terrain, faction, entry.variant),
         center,
         zoom,
-        () =>
-          terrainBodyFallback(entry.key, center, zoom, entry.details.terrain),
+        () => [],
       );
+      return;
+    case "TERRAIN_BODY":
+      // Accepted square tall terrain includes its complete owning square and
+      // is drawn once by TERRAIN below all ownership/object layers.
       return;
     case "RESOURCE":
       addCoveredAsset(
@@ -558,9 +545,6 @@ function drawEntry(
       );
       return;
     case "ROAD":
-      // The accepted road material is temporarily diamond-shaped. The native
-      // square paths keep cardinal connectivity readable through the trial.
-      commands.push(...roadCommands(entry.key, center, zoom, roadMask));
       addCoveredAsset(
         commands,
         coverage,
@@ -1019,83 +1003,6 @@ function withCommandAlpha(
   return { ...command, alpha: command.alpha * alpha };
 }
 
-function groundFallback(
-  key: string,
-  center: Point,
-  zoom: number,
-  faction: FactionIdV6,
-  variant: number,
-): readonly BoardDrawCommandV6[] {
-  const fill = faction === "CANDY" ? "#8fa75d" : "#79ad61";
-  return [
-    tileFootprint(key, center, zoom, fill, "#28483d", 2),
-    ellipse(
-      key,
-      center.x + ((variant % 3) - 1) * 12 * zoom,
-      center.y + 8 * zoom,
-      14 * zoom,
-      4 * zoom,
-      faction === "CANDY" ? "#df9eb0" : "#d4df79",
-      null,
-      0,
-      0.32,
-    ),
-  ];
-}
-
-function terrainBodyFallback(
-  key: string,
-  center: Point,
-  zoom: number,
-  terrain: "FOREST" | "MOUNTAIN",
-): readonly BoardDrawCommandV6[] {
-  if (terrain === "FOREST") {
-    return [-24, 0, 24].flatMap((dx) => [
-      line(
-        key,
-        [p(center, dx - 3, -4, zoom), p(center, dx - 3, -42, zoom)],
-        "#5e4a31",
-        7 * zoom,
-      ),
-      ellipse(
-        key,
-        center.x + dx * zoom,
-        center.y - 48 * zoom,
-        20 * zoom,
-        25 * zoom,
-        "#3f8052",
-        INK,
-        3 * zoom,
-      ),
-    ]);
-  }
-  return [
-    polygon(
-      key,
-      [
-        p(center, -48, 8, zoom),
-        p(center, -8, -91, zoom),
-        p(center, 49, 8, zoom),
-      ],
-      "#858d96",
-      INK,
-      4 * zoom,
-    ),
-    polygon(
-      key,
-      [
-        p(center, -8, -91, zoom),
-        p(center, -25, -49, zoom),
-        p(center, -3, -59, zoom),
-        p(center, 14, -44, zoom),
-      ],
-      "#c4cccf",
-      null,
-      0,
-    ),
-  ];
-}
-
 function buildingFallback(
   key: string,
   center: Point,
@@ -1362,33 +1269,6 @@ function fogCommands(
       [5 * zoom, 6 * zoom],
     ),
   ];
-}
-
-function roadCommands(
-  key: string,
-  center: Point,
-  zoom: number,
-  mask: number,
-): readonly BoardDrawCommandV6[] {
-  const endpoints = [
-    [ROAD_DIRECTION_BITS_V6.NORTH, 0, -64],
-    [ROAD_DIRECTION_BITS_V6.EAST, 64, 0],
-    [ROAD_DIRECTION_BITS_V6.SOUTH, 0, 64],
-    [ROAD_DIRECTION_BITS_V6.WEST, -64, 0],
-  ] as const;
-  const result: BoardDrawCommandV6[] = [];
-  for (const [bit, x, y] of endpoints) {
-    if ((mask & bit) === 0) continue;
-    result.push(
-      line(key, [center, p(center, x, y, zoom)], "#3d3129", 9 * zoom),
-      line(key, [center, p(center, x, y, zoom)], "#a68761", 5 * zoom),
-    );
-  }
-  result.push(
-    ellipse(key, center.x, center.y, 13 * zoom, 7 * zoom, "#3d3129", null, 0),
-    ellipse(key, center.x, center.y, 9 * zoom, 4 * zoom, "#a68761", null, 0),
-  );
-  return result;
 }
 
 export function roadMaskAtV6(

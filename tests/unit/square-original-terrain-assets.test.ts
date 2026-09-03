@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import sharp from "sharp";
 import { describe, expect, it } from "vitest";
+import { terrainCoverageV6 } from "../../src/render/canvas/asset-coverage-v6";
 
 const families = {
   grass: [1, 2, 3, 4].map(
@@ -270,7 +271,7 @@ describe("Original square terrain family", () => {
     expect(hashes).toHaveLength(4);
   }, 20_000);
 
-  it("preserves sample and unit bytes and leaves runtime coverage unswitched", async () => {
+  it("preserves sample and unit bytes and switches current runtime coverage", async () => {
     const baselines: Readonly<Record<string, string>> = {
       "public/assets/pixellab/terrain-square/original-grass-1.png":
         "a20fbc91f4bcd6120fb8c9ce4bcd9ed9276fcdbd4f145d4153cc71c93bda6567",
@@ -320,15 +321,19 @@ describe("Original square terrain family", () => {
     for (const [file, expected] of Object.entries(baselines))
       expect(hash(await readFile(file)), file).toBe(expected);
 
-    const coverage = await readFile(
-      "src/render/canvas/asset-coverage-v6.ts",
-      "utf8",
-    );
     const bindings = await readFile(
       "src/render/canvas/pixellab-asset-bindings.ts",
       "utf8",
     );
-    expect(coverage).not.toContain("terrain-square-original-");
+    for (const [terrain, variants] of [
+      ["GRASS", 4],
+      ["FOREST", 4],
+      ["MOUNTAIN", 3],
+    ] as const)
+      for (let variant = 0; variant < variants; variant += 1)
+        expect(terrainCoverageV6(terrain, "ORIGINAL", variant)).toMatchObject({
+          assetId: `terrain-square-original-${terrain.toLowerCase()}-${variant + 1}`,
+        });
     expect(bindings).not.toContain("terrain-square-original-");
   });
 

@@ -22,8 +22,8 @@ import {
 } from "../../src/render/canvas/asset-coverage-v6";
 import {
   BOARD_ART_GEOMETRY,
-  PLACEMENT_ART_GEOMETRY,
   RULESET6_UNIT_COSMETIC_OFFSET_Y,
+  SQUARE_ART_GEOMETRY,
   anchoredDestinationRect,
 } from "../../src/render/canvas/board-art-geometry";
 import {
@@ -91,7 +91,6 @@ describe("ruleset-6 Canvas drawing layer", () => {
       });
       const fullCellKinds = new Set<RenderEntryKindV6>([
         "FOG",
-        "TERRAIN",
         "OWNERSHIP",
         "SELECTION",
         "MOVE_TARGET",
@@ -121,11 +120,29 @@ describe("ruleset-6 Canvas drawing layer", () => {
         });
       }
 
+      const terrain = plan.entries.find((entry) => entry.kind === "TERRAIN");
+      if (terrain === undefined) throw new Error("Missing terrain entry");
+      const center = worldToScreen(projectGrid(terrain.at), camera);
+      expect(
+        list.commands.find(
+          (command) =>
+            command.entryKey === terrain.key && command.kind === "IMAGE",
+        ),
+      ).toMatchObject({
+        kind: "IMAGE",
+        destination: {
+          x: center.x - 64 * zoom,
+          y: center.y - 64 * zoom,
+          width: 128 * zoom,
+          height: 128 * zoom,
+        },
+      });
+
       const boundary = plan.entries.find(
         (entry) => entry.kind === "CITY_TERRITORY_BOUNDARY",
       );
       if (boundary === undefined) throw new Error("Missing territory boundary");
-      const center = worldToScreen(projectGrid(boundary.at), camera);
+      const boundaryCenter = worldToScreen(projectGrid(boundary.at), camera);
       expect(
         list.commands.find(
           (command) =>
@@ -133,7 +150,7 @@ describe("ruleset-6 Canvas drawing layer", () => {
         ),
       ).toMatchObject({
         kind: "LINE",
-        points: tileFootprintPoints(center, zoom).slice(0, 2),
+        points: tileFootprintPoints(boundaryCenter, zoom).slice(0, 2),
       });
     },
   );
@@ -186,28 +203,21 @@ describe("ruleset-6 Canvas drawing layer", () => {
       }
 
       expect(roadMaskAtV6(plan, at)).toBe(15);
-      const expectedEndpoints = [
-        { x: center.x, y: center.y - 64 * zoom },
-        { x: center.x + 64 * zoom, y: center.y },
-        { x: center.x, y: center.y + 64 * zoom },
-        { x: center.x - 64 * zoom, y: center.y },
-      ];
-      const centerRoadLines = list.commands.filter(
+      const centerRoad = list.commands.find(
         (command) =>
           command.entryKey === `ROAD:${at.x},${at.y}` &&
-          command.kind === "LINE",
+          command.kind === "IMAGE",
       );
-      expect(centerRoadLines).toHaveLength(8);
-      for (const endpoint of expectedEndpoints) {
-        expect(
-          centerRoadLines.filter(
-            (command) =>
-              command.kind === "LINE" &&
-              command.points[1]?.x === endpoint.x &&
-              command.points[1]?.y === endpoint.y,
-          ),
-        ).toHaveLength(2);
-      }
+      expect(centerRoad).toMatchObject({
+        kind: "IMAGE",
+        assetId: "terrain-square-road-mask-1111",
+        destination: {
+          x: center.x - 64 * zoom,
+          y: center.y - 64 * zoom,
+          width: 128 * zoom,
+          height: 128 * zoom,
+        },
+      });
     },
   );
 
@@ -225,7 +235,6 @@ describe("ruleset-6 Canvas drawing layer", () => {
       "ROAD",
       "RESOURCE",
       "IMPROVEMENT",
-      "TERRAIN_BODY",
       "SITE",
       "CHOCOLATE_WALL",
       "CITY_BACK",
@@ -285,7 +294,7 @@ describe("ruleset-6 Canvas drawing layer", () => {
     expect(roadCoverageV6()).toMatchObject({
       status: "ACCEPTED",
       semanticId: "infrastructure:ROAD:0000",
-      assetId: "terrain-road-mask-0000",
+      assetId: "terrain-square-road-mask-0000",
       production: true,
     });
 
@@ -472,12 +481,11 @@ describe("ruleset-6 Canvas drawing layer", () => {
         );
         expect(imageCommands.map((command) => command.entryKey)).toEqual([
           "TERRAIN:3,3",
-          "TERRAIN_BODY:3,3",
           "RESOURCE:3,3",
           "UNIT:3,3",
         ]);
-        const forest = imageCommands[1];
-        const game = imageCommands[2];
+        const forest = imageCommands[0];
+        const game = imageCommands[1];
         expect(forest?.kind).toBe("IMAGE");
         expect(game?.kind).toBe("IMAGE");
         if (forest?.kind !== "IMAGE" || game?.kind !== "IMAGE") {
@@ -1061,7 +1069,7 @@ describe("ruleset-6 Canvas drawing layer", () => {
     );
     expect(road).toMatchObject({
       status: "ACCEPTED",
-      assetId: "terrain-road-mask-0000",
+      assetId: "terrain-square-road-mask-0000",
       production: true,
     });
     expect(roadMaskAtV6(plan, at)).toBe(0);
@@ -1298,11 +1306,13 @@ describe("ruleset-6 Canvas drawing layer", () => {
       }
 
       const fertile = resourceCoverageV6("FERTILE_GROUND", "ORIGINAL");
-      expect(fertile.geometry).toEqual(PLACEMENT_ART_GEOMETRY.fertileGround);
-      expect(
-        anchoredDestinationRect(center, zoom, fertile.geometry).y -
-          anchoredDestinationRect(center, zoom, BOARD_ART_GEOMETRY.lowObject).y,
-      ).toBeCloseTo(18 * zoom, 8);
+      expect(fertile.geometry).toEqual(SQUARE_ART_GEOMETRY.resource);
+      expect(anchoredDestinationRect(center, zoom, fertile.geometry)).toEqual({
+        x: center.x - 64 * zoom,
+        y: center.y - 128 * zoom,
+        width: 128 * zoom,
+        height: 192 * zoom,
+      });
     },
   );
 

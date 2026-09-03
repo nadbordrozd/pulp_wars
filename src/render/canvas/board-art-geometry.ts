@@ -103,6 +103,46 @@ export const BOARD_ART_GEOMETRY = {
 } as const satisfies Readonly<Record<string, SourceGeometry>>;
 
 /**
+ * Accepted square-grid sources use their source anchor as the owning cell
+ * center. Tall terrain includes the complete 256 x 256 owning footprint in
+ * source rows 128..383 and may therefore extend above, but never beside or
+ * below, the cell. These contracts intentionally live beside (rather than
+ * replace) the legacy diamond geometry so the rollback assets stay intact.
+ */
+export const SQUARE_ART_GEOMETRY = {
+  ground: {
+    width: 256,
+    height: 256,
+    anchor: { x: 128, y: 128 },
+    displayScale: 0.5,
+  },
+  tallTerrain: {
+    width: 256,
+    height: 384,
+    anchor: { x: 128, y: 256 },
+    displayScale: 0.5,
+  },
+  resource: {
+    width: 256,
+    height: 384,
+    anchor: { x: 128, y: 256 },
+    displayScale: 0.5,
+  },
+  lowImprovement: {
+    width: 256,
+    height: 296,
+    anchor: { x: 128, y: 222 },
+    displayScale: 0.5,
+  },
+  processor: {
+    width: 384,
+    height: 384,
+    anchor: { x: 192, y: 288 },
+    displayScale: 0.3,
+  },
+} as const satisfies Readonly<Record<string, SourceGeometry>>;
+
+/**
  * Ruleset-6 unit art is lowered from the authoritative ground coordinate so
  * its painted silhouette, rather than its transparent source canvas, is
  * visually centered on the owning cell. The offset is cosmetic, scales

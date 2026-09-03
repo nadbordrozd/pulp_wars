@@ -7,12 +7,10 @@ import type {
 } from "../../engine/index";
 import {
   BOARD_ART_GEOMETRY,
-  ECONOMIC_ART_GEOMETRY,
-  PLACEMENT_ART_GEOMETRY,
   RULESET6_UNIT_ART_GEOMETRY,
+  SQUARE_ART_GEOMETRY,
   SETTLEMENT_ART_GEOMETRY,
   cityArtLevel,
-  mountainGeometryForVariant,
   type SourceGeometry,
 } from "./board-art-geometry";
 import type { RenderEntryKindV6 } from "./render-plan-v6";
@@ -53,7 +51,9 @@ export const RENDER_ENTRY_COVERAGE_V6 = {
   IMPROVEMENT: "CONTENT_ASSET",
   IMPROVEMENT_LEVEL: "CODE_NATIVE",
   CONTACT_SHADOW: "CODE_NATIVE",
-  TERRAIN_BODY: "CONTENT_ASSET",
+  // Square Forest/Mountain sources combine the full ground and tall body, so
+  // TERRAIN owns their one raster draw and this structural plan arm is a no-op.
+  TERRAIN_BODY: "CODE_NATIVE",
   SITE: "CONTENT_ASSET",
   CHOCOLATE_WALL: "CONTENT_ASSET",
   CITY_BACK: "CONTENT_ASSET",
@@ -90,9 +90,9 @@ export function terrainCoverageV6(
     const candy = faction === "CANDY";
     return accepted(
       `terrain:${faction}:GRASS:${normalized}`,
-      `terrain-${candy ? "candy-" : ""}grass-${normalized}`,
-      `assets/pixellab/terrain/${candy ? "candy-" : ""}grass-${normalized}.png`,
-      BOARD_ART_GEOMETRY.ground,
+      `terrain-square-${candy ? "candy" : "original"}-grass-${normalized}`,
+      `assets/pixellab/terrain-square/${candy ? "candy" : "original"}-grass-${normalized}.png`,
+      SQUARE_ART_GEOMETRY.ground,
     );
   }
   const candy = faction === "CANDY";
@@ -100,17 +100,17 @@ export function terrainCoverageV6(
     const normalized = positiveModulo(variant, 4) + 1;
     return accepted(
       `terrain:${faction}:FOREST:${normalized}`,
-      `terrain-${candy ? "candy-" : ""}forest-${normalized}`,
-      `assets/pixellab/terrain/${candy ? "candy-" : ""}forest-${normalized}.png`,
-      PLACEMENT_ART_GEOMETRY.forest,
+      `terrain-square-${candy ? "candy" : "original"}-forest-${normalized}`,
+      `assets/pixellab/terrain-square/${candy ? "candy" : "original"}-forest-${normalized}.png`,
+      SQUARE_ART_GEOMETRY.tallTerrain,
     );
   }
   const normalized = positiveModulo(variant, 3) + 1;
   return accepted(
     `terrain:${faction}:MOUNTAIN:${normalized}`,
-    `terrain-${candy ? "candy-" : ""}mountain-${normalized}`,
-    `assets/pixellab/terrain/${candy ? "candy-" : ""}mountain-${normalized}.png`,
-    mountainGeometryForVariant(variant),
+    `terrain-square-${candy ? "candy" : "original"}-mountain-${normalized}`,
+    `assets/pixellab/terrain-square/${candy ? "candy" : "original"}-mountain-${normalized}.png`,
+    SQUARE_ART_GEOMETRY.tallTerrain,
   );
 }
 
@@ -123,37 +123,37 @@ export function resourceCoverageV6(
     case "FRUIT":
       return accepted(
         `resource:${faction}:FRUIT`,
-        candy ? "terrain-candy-fruit" : "terrain-fruit",
-        `assets/pixellab/terrain/${candy ? "candy-" : ""}fruit.png`,
-        PLACEMENT_ART_GEOMETRY.fruit,
+        `terrain-square-${candy ? "candy" : "original"}-fruit`,
+        `assets/pixellab/terrain-square/${candy ? "candy" : "original"}-fruit.png`,
+        SQUARE_ART_GEOMETRY.resource,
       );
     case "GAME":
       return accepted(
         `resource:${faction}:GAME`,
-        candy ? "terrain-candy-animal" : "terrain-game",
-        `assets/pixellab/terrain/${candy ? "candy-" : ""}animal.png`,
-        PLACEMENT_ART_GEOMETRY.animal,
+        `terrain-square-${candy ? "candy" : "original"}-animal`,
+        `assets/pixellab/terrain-square/${candy ? "candy" : "original"}-animal.png`,
+        SQUARE_ART_GEOMETRY.resource,
       );
     case "ORE":
       return accepted(
         `resource:${faction}:ORE`,
-        "terrain-ore",
-        "assets/pixellab/terrain/ore.png",
-        BOARD_ART_GEOMETRY.lowObject,
+        "terrain-square-ore",
+        "assets/pixellab/terrain-square/ore.png",
+        SQUARE_ART_GEOMETRY.resource,
       );
     case "FERTILE_GROUND":
       return accepted(
         `resource:${faction}:FERTILE_GROUND`,
-        "terrain-fertile-ground",
-        "assets/pixellab/terrain/fertile-ground.png",
-        PLACEMENT_ART_GEOMETRY.fertileGround,
+        "terrain-square-fertile-ground",
+        "assets/pixellab/terrain-square/fertile-ground.png",
+        SQUARE_ART_GEOMETRY.resource,
       );
     case "STONE":
       return accepted(
         `resource:${faction}:STONE`,
-        "terrain-stone",
-        "assets/pixellab/terrain/stone.png",
-        BOARD_ART_GEOMETRY.lowObject,
+        "terrain-square-stone",
+        "assets/pixellab/terrain-square/stone.png",
+        SQUARE_ART_GEOMETRY.resource,
       );
   }
 }
@@ -172,24 +172,24 @@ export function improvementCoverageV6(
     >
   > = {
     FARM: {
-      assetId: "building-farm",
+      assetId: "building-square-farm",
       filename: "farm.png",
-      geometry: ECONOMIC_ART_GEOMETRY.low,
+      geometry: SQUARE_ART_GEOMETRY.ground,
     },
     LUMBER_CAMP: {
-      assetId: "building-lumber-camp",
-      filename: "lumber-mill.png",
-      geometry: ECONOMIC_ART_GEOMETRY.low,
+      assetId: "building-square-lumber-camp",
+      filename: "lumber-camp.png",
+      geometry: SQUARE_ART_GEOMETRY.lowImprovement,
     },
     MINE: {
-      assetId: "building-ruleset6-mine",
+      assetId: "building-square-mine",
       filename: "mine.png",
-      geometry: ECONOMIC_ART_GEOMETRY.low,
+      geometry: SQUARE_ART_GEOMETRY.lowImprovement,
     },
     QUARRY: {
-      assetId: "building-quarry",
+      assetId: "building-square-quarry",
       filename: "quarry.png",
-      geometry: ECONOMIC_ART_GEOMETRY.low,
+      geometry: SQUARE_ART_GEOMETRY.lowImprovement,
     },
     WINDMILL: processor("windmill"),
     SAWMILL: processor("sawmill"),
@@ -203,7 +203,7 @@ export function improvementCoverageV6(
   return accepted(
     `improvement:${improvement}`,
     contract.assetId,
-    `assets/pixellab/buildings/${contract.filename}`,
+    `assets/pixellab/buildings-square/${contract.filename}`,
     contract.geometry,
   );
 }
@@ -215,9 +215,9 @@ export function roadCoverageV6(mask = 0): AssetCoverageV6 {
   const bits = mask.toString(2).padStart(4, "0");
   return accepted(
     `infrastructure:ROAD:${bits}`,
-    `terrain-road-mask-${bits}`,
-    `assets/pixellab/terrain/road-masks/road-mask-${bits}.png`,
-    BOARD_ART_GEOMETRY.ground,
+    `terrain-square-road-mask-${bits}`,
+    `assets/pixellab/terrain-square/road-masks/road-mask-${bits}.png`,
+    SQUARE_ART_GEOMETRY.ground,
   );
 }
 
@@ -374,9 +374,9 @@ function processor(filename: string): {
   readonly geometry: SourceGeometry;
 } {
   return {
-    assetId: `building-${filename}`,
+    assetId: `building-square-${filename}`,
     filename: `${filename}.png`,
-    geometry: ECONOMIC_ART_GEOMETRY.processor,
+    geometry: SQUARE_ART_GEOMETRY.processor,
   };
 }
 

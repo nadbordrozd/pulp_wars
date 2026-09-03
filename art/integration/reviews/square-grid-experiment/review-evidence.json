@@ -12,84 +12,229 @@
     "bounds": {
       "left": -92,
       "top": -148,
-      "right": 476,
-      "bottom": 448
+      "right": 732,
+      "bottom": 576
     },
     "tieBreak": "lowest row, then lowest column"
   },
   "transition": {
-    "terrainAndImprovements": "TEMPORARY_ACCEPTED_DIAMOND_RASTERS",
-    "nativeSquareGroundUnderlay": true,
-    "nativeSquareRoadContinuity": true,
+    "terrainAndImprovements": "ACCEPTED_SQUARE_RASTERS",
+    "nativeSquareGroundUnderlay": false,
+    "nativeSquareRoadContinuity": false,
     "unitRasterBytesChanged": false
+  },
+  "runtimeCoverage": {
+    "factions": [
+      "ORIGINAL",
+      "CANDY"
+    ],
+    "terrainVariants": {
+      "grass": 4,
+      "forest": 4,
+      "mountain": 3
+    },
+    "resources": [
+      "FRUIT",
+      "GAME",
+      "ORE",
+      "FERTILE_GROUND",
+      "STONE"
+    ],
+    "roadMasks": 16,
+    "improvements": [
+      "FARM",
+      "QUARRY",
+      "WINDMILL",
+      "LUMBER_CAMP",
+      "MINE",
+      "SAWMILL",
+      "FORGE",
+      "STONEWORKS",
+      "WORKSHOP",
+      "GRAND_WORKS",
+      "MARKET"
+    ],
+    "sharedUiViewportCssPixels": {
+      "width": 112,
+      "height": 130
+    }
   },
   "views": [
     {
-      "id": "desktop",
+      "id": "minimum-dpr1",
       "cssSize": {
-        "width": 1280,
-        "height": 760
+        "width": 1500,
+        "height": 1350
       },
       "backingSize": {
-        "width": 1280,
-        "height": 760
+        "width": 1500,
+        "height": 1350
+      },
+      "dpr": 1,
+      "zoom": 0.625,
+      "focusCenter": {
+        "x": 630,
+        "y": 390
+      }
+    },
+    {
+      "id": "minimum-dpr2",
+      "cssSize": {
+        "width": 1500,
+        "height": 1350
+      },
+      "backingSize": {
+        "width": 3000,
+        "height": 2700
+      },
+      "dpr": 2,
+      "zoom": 0.625,
+      "focusCenter": {
+        "x": 630,
+        "y": 390
+      }
+    },
+    {
+      "id": "one-x-dpr1",
+      "cssSize": {
+        "width": 1500,
+        "height": 1350
+      },
+      "backingSize": {
+        "width": 1500,
+        "height": 1350
       },
       "dpr": 1,
       "zoom": 1,
       "focusCenter": {
-        "x": 576,
-        "y": 486
+        "x": 558,
+        "y": 438
       }
     },
     {
-      "id": "mobile",
+      "id": "one-x-dpr2",
       "cssSize": {
-        "width": 390,
-        "height": 844
+        "width": 1500,
+        "height": 1350
       },
       "backingSize": {
-        "width": 780,
-        "height": 1688
+        "width": 3000,
+        "height": 2700
       },
       "dpr": 2,
-      "zoom": 0.6454225352112676,
+      "zoom": 1,
       "focusCenter": {
-        "x": 153.6929577464789,
-        "y": 490.4147887323944
+        "x": 558,
+        "y": 438
+      }
+    },
+    {
+      "id": "maximum-dpr1",
+      "cssSize": {
+        "width": 1500,
+        "height": 1350
+      },
+      "backingSize": {
+        "width": 1500,
+        "height": 1350
+      },
+      "dpr": 1,
+      "zoom": 1.75,
+      "focusCenter": {
+        "x": 414,
+        "y": 534
+      }
+    },
+    {
+      "id": "maximum-dpr2",
+      "cssSize": {
+        "width": 1500,
+        "height": 1350
+      },
+      "backingSize": {
+        "width": 3000,
+        "height": 2700
+      },
+      "dpr": 2,
+      "zoom": 1.75,
+      "focusCenter": {
+        "x": 414,
+        "y": 534
       }
     }
   ],
   "reviewCoverage": [
-    "full square ground, fog, ownership, selection and command-target footprints",
-    "north/east/south/west territory sides and cardinal road endpoints",
-    "row-major overlap with upward Forest, Mountain, city and unit art",
-    "temporary accepted diamond terrain and improvement art visibly identified over square underlays",
-    "desktop DPR1 and true mobile DPR2 at supported camera zoom"
+    "both faction square Grass, Forest and Mountain families with fog, territory and selection",
+    "visible Fruit, Game/Animal, Ore, Fertile Ground and Stone with Forest then Animal then unit layering",
+    "accepted cardinal Road masks and every Farm, extraction, processor, civic and commerce improvement",
+    "Farm full-square coverage, code-native improvement level/value squares, cities and compact low-centered units",
+    "minimum 0.625x, nominal 1x and maximum 1.75x at DPR1 and DPR2 through the production draw-list path",
+    "selection identities, contextual actions and technology cards share the exact 112x130 production viewport"
   ],
   "visualReview": {
-    "status": "ACCEPTED_FOR_EXPERIMENT",
-    "notes": "Native and nearest-neighbor enlarged sheets were inspected. Square cells form a continuous board; ownership, fog, selection, targets and territory sides meet exact cell corners; roads meet cardinal side midpoints; units remain compact and centered. Legacy diamond ground/improvement art is intentionally visible as a temporary centered layer and leaves no uncovered board holes because of the native square underlay."
+    "status": "ACCEPTED_RUNTIME_INTEGRATION",
+    "notes": "Native and nearest-neighbor enlarged sheets were inspected. Accepted square ground fills every cell without corner gaps; tall terrain overhangs upward only; Roads and resources stay legible above terrain; Animals sit in front of Forest and behind compact low-centered units; Farm covers its complete square; all improvement families and code-native level/value squares remain readable with cities, ownership, selection, territory and fog. No clipping, oversized unit, bad layer, legacy fallback or inconsistent square footprint remained."
   },
   "artifacts": [
     {
-      "path": "art/integration/reviews/square-grid-experiment/desktop-native.png",
-      "bytes": 108871,
-      "sha256": "7c7746779adf6fc89664e7bed760e9101c73870f2a75d55a94f37fe40789bfd8"
+      "path": "art/integration/reviews/square-grid-experiment/minimum-dpr1-native.png",
+      "bytes": 158780,
+      "sha256": "8756519504bd2b672e28ebe6062bb134ceffbbb9c8b0ae6636e51eac23668dc3"
     },
     {
-      "path": "art/integration/reviews/square-grid-experiment/desktop-enlarged.png",
-      "bytes": 202204,
-      "sha256": "71a2ce9b3c14b5ad93011c12b53c9001547da18134aec54048b60b6f6f9d0f94"
+      "path": "art/integration/reviews/square-grid-experiment/minimum-dpr1-enlarged.png",
+      "bytes": 319706,
+      "sha256": "03f2313b26ff7c0ce7a39c961a8074bb4f2297747eb8ef948115bc1bceebd883"
     },
     {
-      "path": "art/integration/reviews/square-grid-experiment/mobile-native.png",
-      "bytes": 183075,
-      "sha256": "376f0197e001d3d4c13b6cc786d2ebee1b0bed6fdaece78fd6d88c2858f5a2e7"
+      "path": "art/integration/reviews/square-grid-experiment/minimum-dpr2-native.png",
+      "bytes": 473323,
+      "sha256": "56d70ea4586b18f1e2b8f6588b73d08c68502e09c62a40bd31b2fb288f06eae6"
     },
     {
-      "path": "art/integration/reviews/square-grid-experiment/mobile-enlarged.png",
-      "bytes": 319977,
-      "sha256": "ededec7b3dd2d089c71ce57b5cee5d6bf4114a13687c93b5b12563a2cd9a119e"
+      "path": "art/integration/reviews/square-grid-experiment/minimum-dpr2-enlarged.png",
+      "bytes": 1139860,
+      "sha256": "a0ae6c71285a039af350e918b209628b589f00dee0e752d1e815f90b1a8a420f"
+    },
+    {
+      "path": "art/integration/reviews/square-grid-experiment/one-x-dpr1-native.png",
+      "bytes": 226392,
+      "sha256": "b81f3c575d52e4b6c360c53264bf08eb74ea330730a3d2508688375dfdd4fd8a"
+    },
+    {
+      "path": "art/integration/reviews/square-grid-experiment/one-x-dpr1-enlarged.png",
+      "bytes": 423110,
+      "sha256": "68ff87f2116d74d248d41faa4d673c18003334aaf84a1109cb8d26a76eee03cf"
+    },
+    {
+      "path": "art/integration/reviews/square-grid-experiment/one-x-dpr2-native.png",
+      "bytes": 636040,
+      "sha256": "ca781aa64d78c94ebdece3334c066859dab7c7768660bad868a554a964c76257"
+    },
+    {
+      "path": "art/integration/reviews/square-grid-experiment/one-x-dpr2-enlarged.png",
+      "bytes": 1435974,
+      "sha256": "90b2b70706433ae4690fdf16b78a5f57425ffe0049c920f397e746e6ea13dbe4"
+    },
+    {
+      "path": "art/integration/reviews/square-grid-experiment/maximum-dpr1-native.png",
+      "bytes": 471068,
+      "sha256": "5891d6df977a2e35173d3a1c235fd446bebbcb91dff79e838243c6bca4994449"
+    },
+    {
+      "path": "art/integration/reviews/square-grid-experiment/maximum-dpr1-enlarged.png",
+      "bytes": 778385,
+      "sha256": "e8c718c7f3f28a9f7ca26c10c30f727036cb77c1abd82f482c1363299d84748f"
+    },
+    {
+      "path": "art/integration/reviews/square-grid-experiment/maximum-dpr2-native.png",
+      "bytes": 1536470,
+      "sha256": "679ec57a857fa863e6b5ed9559a621259c021fe0083e0b678f31ac62f0ae4d1f"
+    },
+    {
+      "path": "art/integration/reviews/square-grid-experiment/maximum-dpr2-enlarged.png",
+      "bytes": 2809801,
+      "sha256": "7cc7d9cad2a23b95069b7d9b64c778cce884bd0e8f145568d3ed6c0ce2f4b78f"
     }
   ]
 }
