@@ -34,6 +34,8 @@
     "art:ruleset6-shell-review": "tsx scripts/art/ruleset6-shell-review.ts",
     "art:square-grid-review": "tsx scripts/art/square-grid-review.ts",
     "art:square-terrain-sample-review": "tsx scripts/art/square-terrain-sample-review.ts",
+    "art:square-original-terrain-review": "tsx scripts/art/square-original-terrain-review.ts",
+    "art:square-terrain-family-candidate-review": "tsx scripts/art/square-terrain-family-candidate-review.ts",
     "art:rendering-review": "tsx scripts/art/rendering-review.ts",
     "art:validate": "tsx scripts/art/pixellab.ts validate",
     "smoke:browser": "tsx scripts/browser-smoke-v6.ts",

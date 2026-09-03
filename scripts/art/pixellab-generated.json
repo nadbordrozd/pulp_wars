@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "3c7cb25ee8b0e58956c84d1e41a06f2f8a015b8b25df7d4d3a1b00da95de8e5b",
+  "sourceManifestSha256": "acaef532ad941c4a7cdd271dae486515d4214a23926dd6671ed5a7245f75f961",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -7477,6 +7477,622 @@
       "outputSha256": "b1c0435641bc80bc6f2814de3e49d45aeed88c875c3c87259bb307e8e92282b2",
       "notes": "Reaccepted without a new provider request after deterministic recomposition against final Grass a20fbc91f4bc. PixelLab provider job 58edecf3-f94f-4b31-a47d-c2370421f0f1 and provider hash 4908d69fe833 are unchanged; all three earlier provider rejections remain recorded. The slate-tinted exact square ground now derives from repetition-safe Grass while the accepted broad peak is still fully retained above y200 and smoothstep-feathered to zero by y304. Rechecked source/native/enlarged, 80/128/224px, DPR1/2, adjacency, unchanged Warrior, overlays, fog and upward-only bounds.",
       "reviewedAt": "2026-09-03T13:16:14.941Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-original-grass-4": {
+      "id": "terrain-square-original-grass-4",
+      "status": "ACCEPTED",
+      "jobId": "64668074-bd03-46d0-b168-5453f0aa7d27",
+      "candidate": "art/pixellab/candidates/terrain-square-original-grass-4.png",
+      "candidateSha256": "756a771edd6106ad1c0bbad62f8b2e9f2b3a666c368aae58cf7ba21173350987",
+      "providerOutputSha256": "56d3ec1a575abd5b2bf862f3d2661093525045d4db8f8a2ce3a209816a3e7463",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green #6f9255 base, muted moss-green southeast plane, restrained pale yellow-green northwest highlight, charcoal-teal sparse broad marks. Original square Grass variant 4, one axis-aligned 256 by 256 terrain field. Fill the entire canvas with restful nearly uniform leaf-green turf. Allow only two enormous fully blended areas of imperceptible color drift under the common soft northwest light and darker southeast value. They cannot read as patches, paths, rows, symbols or objects. Every edge and corner is continuous mid-green material. Flat clean 2D terrain much quieter than units. Deterministic processing removes the provider inset, expands and radius-24 blurs the turf, retains 4 percent over #6f9255, converges outer 48px to that color and forces opaque alpha. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, transparent corner, rounded corner, border, frame, perimeter outline, bevel, slab, seam, edge decoration, diagonal division, stripe, crescent, slash, repeated stamp, grass blade, footprint, tree, mountain, flower, fruit, animal, resource, road, ownership, selection, unit, building, text, UI, noisy texture, lower-right light.",
+        "prompt": "Original square Grass variant 4, one axis-aligned 256 by 256 terrain field. Fill the entire canvas with restful nearly uniform leaf-green turf. Allow only two enormous fully blended areas of imperceptible color drift under the common soft northwest light and darker southeast value. They cannot read as patches, paths, rows, symbols or objects. Every edge and corner is continuous mid-green material. Flat clean 2D terrain much quieter than units. Deterministic processing removes the provider inset, expands and radius-24 blurs the turf, retains 4 percent over #6f9255, converges outer 48px to that color and forces opaque alpha.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, transparent corner, rounded corner, border, frame, perimeter outline, bevel, slab, seam, edge decoration, diagonal division, stripe, crescent, slash, repeated stamp, grass blade, footprint, tree, mountain, flower, fruit, animal, resource, road, ownership, selection, unit, building, text, UI, noisy texture, lower-right light",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 104174,
+        "noBackground": false,
+        "palette": "quiet leaf green #6f9255 base, muted moss-green southeast plane, restrained pale yellow-green northwest highlight, charcoal-teal sparse broad marks",
+        "postprocess": "square-ground-fill",
+        "styleReference": {
+          "id": "terrain-square-original-grass-1",
+          "sha256": "a20fbc91f4bcd6120fb8c9ce4bcd9ed9276fcdbd4f145d4153cc71c93bda6567",
+          "usageDescription": "Input reference role: preserve the accepted exact quiet leaf-green palette, broad nearly invisible variation, seamless edge color and northwest light. Author a different low-salience field without copying any mark placement."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 0,
+          "right": 256,
+          "bottom": 256
+        }
+      },
+      "outputSha256": "756a771edd6106ad1c0bbad62f8b2e9f2b3a666c368aae58cf7ba21173350987",
+      "notes": "Accepted after individual source/native/enlarged and family 8x8 minimum-zoom inspection. Two fully blended low-amplitude areas remain unrecognizable as objects and do not repeat conspicuously; the tile has no band, stroke, cluster, resource or gameplay cue. Exact edge color, full opaque coverage, seam safety, palette and restrained northwest lighting match the accepted recipe.",
+      "reviewedAt": "2026-09-03T13:46:43.917Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-original-grass-3": {
+      "id": "terrain-square-original-grass-3",
+      "status": "ACCEPTED",
+      "jobId": "6d6e0db0-ebb3-46d8-bfd5-504b865dc33e",
+      "candidate": "art/pixellab/candidates/terrain-square-original-grass-3.png",
+      "candidateSha256": "4f83520813f2b81b722f68107f48367642365597cb145ab935fe54bf3e83b30e",
+      "providerOutputSha256": "d19278d096af896c97514511ee7827af2bcc591611bc43d09b4c37da528478a6",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green #6f9255 base, muted moss-green southeast plane, restrained pale yellow-green northwest highlight, charcoal-teal sparse broad marks. Original square Grass variant 3, one axis-aligned 256 by 256 terrain field. Fill every pixel with calm almost-uniform leaf-green turf. Use only a very broad diffuse center value variation and the shared barely perceptible northwest-to-southeast light; it must have no contour, direction line, repeated motif or recognizable object. Edges and corners remain continuous mid-green material. Flat clean 2D terrain much quieter than units. Deterministic processing removes the provider inset, expands and radius-24 blurs the turf, retains 4 percent over #6f9255, converges outer 48px to that color and forces opaque alpha. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, transparent corner, rounded corner, border, frame, perimeter outline, bevel, slab, seam, edge decoration, diagonal division, stripe, crescent, slash, repeated stamp, grass blade, footprint, tree, mountain, flower, fruit, animal, resource, road, ownership, selection, unit, building, text, UI, noisy texture, lower-right light.",
+        "prompt": "Original square Grass variant 3, one axis-aligned 256 by 256 terrain field. Fill every pixel with calm almost-uniform leaf-green turf. Use only a very broad diffuse center value variation and the shared barely perceptible northwest-to-southeast light; it must have no contour, direction line, repeated motif or recognizable object. Edges and corners remain continuous mid-green material. Flat clean 2D terrain much quieter than units. Deterministic processing removes the provider inset, expands and radius-24 blurs the turf, retains 4 percent over #6f9255, converges outer 48px to that color and forces opaque alpha.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, transparent corner, rounded corner, border, frame, perimeter outline, bevel, slab, seam, edge decoration, diagonal division, stripe, crescent, slash, repeated stamp, grass blade, footprint, tree, mountain, flower, fruit, animal, resource, road, ownership, selection, unit, building, text, UI, noisy texture, lower-right light",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 104173,
+        "noBackground": false,
+        "palette": "quiet leaf green #6f9255 base, muted moss-green southeast plane, restrained pale yellow-green northwest highlight, charcoal-teal sparse broad marks",
+        "postprocess": "square-ground-fill",
+        "styleReference": {
+          "id": "terrain-square-original-grass-1",
+          "sha256": "a20fbc91f4bcd6120fb8c9ce4bcd9ed9276fcdbd4f145d4153cc71c93bda6567",
+          "usageDescription": "Input reference role: preserve the accepted exact quiet leaf-green palette, broad nearly invisible variation, seamless edge color and northwest light. Author a different low-salience field without copying any mark placement."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 0,
+          "right": 256,
+          "bottom": 256
+        }
+      },
+      "outputSha256": "4f83520813f2b81b722f68107f48367642365597cb145ab935fe54bf3e83b30e",
+      "notes": "Accepted after individual source/native/enlarged and family 8x8 minimum-zoom inspection. The center-biased broad variation disappears into a continuous quiet field at play scale, creates no striping, scratch cluster, repeated stamp, path, ownership or resource cue, preserves exact opaque edges and corners, and stays distinct from other Grass hashes without salience. Shared northwest light remains extremely restrained.",
+      "reviewedAt": "2026-09-03T13:46:40.007Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-original-grass-2": {
+      "id": "terrain-square-original-grass-2",
+      "status": "ACCEPTED",
+      "jobId": "59754ee7-d5a2-4dc0-91a1-71e3e04e5b47",
+      "candidate": "art/pixellab/candidates/terrain-square-original-grass-2.png",
+      "candidateSha256": "bc96b408204000ae5d4057faeca841204a6fcef8ab63026236688adfced78891",
+      "providerOutputSha256": "795eb9c5cd4dd4716f3703ac4942077bb475b4f8ab469d1c5f569c794ddbd6ad",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green #6f9255 base, muted moss-green southeast plane, restrained pale yellow-green northwest highlight, charcoal-teal sparse broad marks. Original square Grass variant 2, one axis-aligned 256 by 256 terrain field. Fill the whole canvas with extremely quiet, nearly uniform leaf-green turf. Use one broad cloudlike value drift, subtly lighter toward northwest and darker toward southeast, without a visible boundary or identifiable mark. No object, band, stroke, cluster, patch edge or gameplay cue. Every edge and corner is continuous mid-green material. Flat clean 2D terrain much quieter than units. Deterministic processing removes the provider inset, expands and radius-24 blurs the turf, retains 4 percent over #6f9255, converges outer 48px to that color and forces opaque alpha. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, transparent corner, rounded corner, border, frame, perimeter outline, bevel, slab, seam, edge decoration, diagonal division, stripe, crescent, slash, repeated stamp, grass blade, footprint, tree, mountain, flower, fruit, animal, resource, road, ownership, selection, unit, building, text, UI, noisy texture, lower-right light.",
+        "prompt": "Original square Grass variant 2, one axis-aligned 256 by 256 terrain field. Fill the whole canvas with extremely quiet, nearly uniform leaf-green turf. Use one broad cloudlike value drift, subtly lighter toward northwest and darker toward southeast, without a visible boundary or identifiable mark. No object, band, stroke, cluster, patch edge or gameplay cue. Every edge and corner is continuous mid-green material. Flat clean 2D terrain much quieter than units. Deterministic processing removes the provider inset, expands and radius-24 blurs the turf, retains 4 percent over #6f9255, converges outer 48px to that color and forces opaque alpha.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, transparent corner, rounded corner, border, frame, perimeter outline, bevel, slab, seam, edge decoration, diagonal division, stripe, crescent, slash, repeated stamp, grass blade, footprint, tree, mountain, flower, fruit, animal, resource, road, ownership, selection, unit, building, text, UI, noisy texture, lower-right light",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 104172,
+        "noBackground": false,
+        "palette": "quiet leaf green #6f9255 base, muted moss-green southeast plane, restrained pale yellow-green northwest highlight, charcoal-teal sparse broad marks",
+        "postprocess": "square-ground-fill",
+        "styleReference": {
+          "id": "terrain-square-original-grass-1",
+          "sha256": "a20fbc91f4bcd6120fb8c9ce4bcd9ed9276fcdbd4f145d4153cc71c93bda6567",
+          "usageDescription": "Input reference role: preserve the accepted exact quiet leaf-green palette, broad nearly invisible variation, seamless edge color and northwest light. Author a different low-salience field without copying any mark placement."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 0,
+          "right": 256,
+          "bottom": 256
+        }
+      },
+      "outputSha256": "bc96b408204000ae5d4057faeca841204a6fcef8ab63026236688adfced78891",
+      "notes": "Accepted after individual source/native/enlarged and family 8x8 minimum-zoom inspection. The deterministic four-percent authored field is quiet and materially low-salience, has no repeated band, stamped stroke, resource or state cue, converges to the exact shared green perimeter, remains fully opaque, and provides subtle broad variation distinct from the sample without visible seams. Northwest-to-southeast lighting stays imperceptible and consistent.",
+      "reviewedAt": "2026-09-03T13:46:36.033Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-original-forest-2": {
+      "id": "terrain-square-original-forest-2",
+      "status": "ACCEPTED",
+      "jobId": "82d66189-2746-4bb7-aeae-897c50fa630b",
+      "candidate": "art/pixellab/candidates/terrain-square-original-forest-2.png",
+      "candidateSha256": "93a942c0a5828271bf478b03dea35673ccb2f456fe4da8e460909c75c5568b61",
+      "providerOutputSha256": "a8ea7ccebbad1ba63b1c373615484c68b4db5d9b4899c0a3d9e7b86a1af0cda8",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 61,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf and moss green, dark teal-green southeast canopy planes, restrained yellow-green northwest highlights, warm muted brown trunks, charcoal-teal outline. Original square Forest variant 2 on an untrimmed transparent 256 by 384 canvas. Draw exactly four chunky broadleaf trees: a tall tree at back-left, a broad tree at back-right, and two smaller staggered trees toward the front-center, making a distinct asymmetric clustered silhouette. Keep all trunks inside the owning square x0..255,y128..383; foliage may rise above y128 only. Leave transparent safety space at both lateral edges and above the bottom. Soft northwest key light with darker southeast canopy and trunk planes. Strong terrain-quiet outline, two-to-three flat tones, few huge leaf masses, no scenery or resource. Anchor 128,256. Deterministic processing composites accepted square Grass beneath the art. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, ground slab, transparent footprint corner, clipped canopy, left right or bottom overflow, lower-right key light, three trees, five trees, animal, fruit, lumber camp, stump, building, unit, road, ownership, selection, flowers, tiny leaves, dense foliage, realistic or painterly forest, text, UI.",
+        "prompt": "Original square Forest variant 2 on an untrimmed transparent 256 by 384 canvas. Draw exactly four chunky broadleaf trees: a tall tree at back-left, a broad tree at back-right, and two smaller staggered trees toward the front-center, making a distinct asymmetric clustered silhouette. Keep all trunks inside the owning square x0..255,y128..383; foliage may rise above y128 only. Leave transparent safety space at both lateral edges and above the bottom. Soft northwest key light with darker southeast canopy and trunk planes. Strong terrain-quiet outline, two-to-three flat tones, few huge leaf masses, no scenery or resource. Anchor 128,256. Deterministic processing composites accepted square Grass beneath the art.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, ground slab, transparent footprint corner, clipped canopy, left right or bottom overflow, lower-right key light, three trees, five trees, animal, fruit, lumber camp, stump, building, unit, road, ownership, selection, flowers, tiny leaves, dense foliage, realistic or painterly forest, text, UI",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 104202,
+        "noBackground": true,
+        "palette": "quiet leaf and moss green, dark teal-green southeast canopy planes, restrained yellow-green northwest highlights, warm muted brown trunks, charcoal-teal outline",
+        "postprocess": "square-tall-ground-reference",
+        "styleReference": {
+          "id": "terrain-square-original-forest-1",
+          "sha256": "ada147cc84e3b3dbd70cd0aa3e5f39a1a41dfe74be63833ad3c375fae316571f",
+          "usageDescription": "Input reference role: match the accepted broadleaf canopy language, tree scale, dark charcoal-teal outline, flat planes, palette and exact northwest lighting; copy no tree placement or ground shape."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        },
+        "groundReference": {
+          "id": "terrain-square-original-grass-1",
+          "sha256": "a20fbc91f4bcd6120fb8c9ce4bcd9ed9276fcdbd4f145d4153cc71c93bda6567",
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+        }
+      },
+      "outputSha256": "93a942c0a5828271bf478b03dea35673ccb2f456fe4da8e460909c75c5568b61",
+      "notes": "Accepted after individual source/native/enlarged, 8x8 mixed repetition and same/different adjacency inspection. Exactly four readable trees form the required staggered asymmetric cluster; the silhouette is distinct from sample 1, all trunks remain inside the owning square, canopy overhang is upward-only, and the shared northwest highlights, darker southeast planes, quiet detail, exact opaque Grass footprint and absence of resources/buildings all pass.",
+      "reviewedAt": "2026-09-03T13:53:18.821Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-original-forest-3": {
+      "id": "terrain-square-original-forest-3",
+      "status": "ACCEPTED",
+      "jobId": "ef4c44fa-1730-44af-aaef-ad013d5ee4da",
+      "candidate": "art/pixellab/candidates/terrain-square-original-forest-3.png",
+      "candidateSha256": "33700d975ac040df56cf355bb0330c6e3a04402f39d5bbe3117f65dde8386fa8",
+      "providerOutputSha256": "167b491da6acb31ef54c364bfb0939763c4a89b318ce234b58e83b4775667dc7",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 43,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf and moss green, dark teal-green southeast canopy planes, restrained yellow-green northwest highlights, warm muted brown trunks, charcoal-teal outline. Original square Forest variant 3 on an untrimmed transparent 256 by 384 canvas. Draw exactly three chunky broadleaf trees in a clearly different triangular arrangement: one tallest narrow-crowned tree at rear-center, one broad lower tree at front-left, and one medium tree at front-right with visible spacing between trunks. Keep trunks inside x0..255,y128..383; rounded foliage may rise above y128 only. Leave transparent safety space at both lateral edges and above the bottom. Soft northwest key light, darker southeast planes. Strong terrain-quiet outline, two-to-three flat tones, few huge leaf masses, no scenery or resource. Anchor 128,256. Deterministic processing composites accepted square Grass beneath the art. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, ground slab, transparent footprint corner, clipped canopy, left right or bottom overflow, lower-right key light, four trees, two trees, animal, fruit, lumber camp, stump, building, unit, road, ownership, selection, flowers, tiny leaves, dense foliage, realistic or painterly forest, text, UI.",
+        "prompt": "Original square Forest variant 3 on an untrimmed transparent 256 by 384 canvas. Draw exactly three chunky broadleaf trees in a clearly different triangular arrangement: one tallest narrow-crowned tree at rear-center, one broad lower tree at front-left, and one medium tree at front-right with visible spacing between trunks. Keep trunks inside x0..255,y128..383; rounded foliage may rise above y128 only. Leave transparent safety space at both lateral edges and above the bottom. Soft northwest key light, darker southeast planes. Strong terrain-quiet outline, two-to-three flat tones, few huge leaf masses, no scenery or resource. Anchor 128,256. Deterministic processing composites accepted square Grass beneath the art.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, ground slab, transparent footprint corner, clipped canopy, left right or bottom overflow, lower-right key light, four trees, two trees, animal, fruit, lumber camp, stump, building, unit, road, ownership, selection, flowers, tiny leaves, dense foliage, realistic or painterly forest, text, UI",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 104203,
+        "noBackground": true,
+        "palette": "quiet leaf and moss green, dark teal-green southeast canopy planes, restrained yellow-green northwest highlights, warm muted brown trunks, charcoal-teal outline",
+        "postprocess": "square-tall-ground-reference",
+        "styleReference": {
+          "id": "terrain-square-original-forest-1",
+          "sha256": "ada147cc84e3b3dbd70cd0aa3e5f39a1a41dfe74be63833ad3c375fae316571f",
+          "usageDescription": "Input reference role: match the accepted broadleaf canopy language, tree scale, dark charcoal-teal outline, flat planes, palette and exact northwest lighting; copy no tree placement or ground shape."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        },
+        "groundReference": {
+          "id": "terrain-square-original-grass-1",
+          "sha256": "a20fbc91f4bcd6120fb8c9ce4bcd9ed9276fcdbd4f145d4153cc71c93bda6567",
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+        }
+      },
+      "outputSha256": "33700d975ac040df56cf355bb0330c6e3a04402f39d5bbe3117f65dde8386fa8",
+      "notes": "Accepted after individual source/native/enlarged, 8x8 mixed repetition and same/different adjacency inspection. Exactly three trees form a materially distinct open triangle with one tall rear crown and two broad front crowns. Trunks stay inside the full opaque owning square, upper canopy has lateral safety, northwest lighting and southeast shading match the family, and no resource, building, ownership or state cue appears.",
+      "reviewedAt": "2026-09-03T13:53:22.714Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-original-forest-4": {
+      "id": "terrain-square-original-forest-4",
+      "status": "ACCEPTED",
+      "jobId": "8b68f229-e370-4b8f-9356-54447a822142",
+      "candidate": "art/pixellab/candidates/terrain-square-original-forest-4.png",
+      "candidateSha256": "405262746d5b95e5507dfad353938393ed4b809d77ffbe1b2832a4e3361de0c3",
+      "providerOutputSha256": "e69d7033f694b6a8aa77270feeed63a678370084cd3a26fb9ad185f29f463fb2",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 61,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf and moss green, dark teal-green southeast canopy planes, restrained yellow-green northwest highlights, warm muted brown trunks, charcoal-teal outline. Original square Forest variant 4 on an untrimmed transparent 256 by 384 canvas. Exactly four separate trees, arranged as a two-by-two group: one rear-left trunk and crown, one rear-right trunk and crown, one front-left trunk and crown, one front-right trunk and crown. The middle is empty ground: no central tree, no central trunk and no fifth crown. Rear pair is taller, front pair compact, with visible trunk spacing and an open notch between rear crowns. Keep trunks inside x0..255,y128..383; foliage may rise above y128 only. Leave transparent lateral and bottom safety. Soft northwest key light, darker southeast planes, strong terrain-quiet outline, two-to-three flat tones. Anchor 128,256. Deterministic processing composites accepted square Grass beneath. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; center tree, middle tree, center trunk, fifth crown, fifth tree, three trees, five trees, diamond, ground slab, transparent footprint corner, clipped canopy, left right or bottom overflow, lower-right key light, animal, fruit, lumber camp, stump, building, unit, road, ownership, selection, flowers, tiny leaves, dense foliage, realistic or painterly forest, text, UI.",
+        "prompt": "Original square Forest variant 4 on an untrimmed transparent 256 by 384 canvas. Exactly four separate trees, arranged as a two-by-two group: one rear-left trunk and crown, one rear-right trunk and crown, one front-left trunk and crown, one front-right trunk and crown. The middle is empty ground: no central tree, no central trunk and no fifth crown. Rear pair is taller, front pair compact, with visible trunk spacing and an open notch between rear crowns. Keep trunks inside x0..255,y128..383; foliage may rise above y128 only. Leave transparent lateral and bottom safety. Soft northwest key light, darker southeast planes, strong terrain-quiet outline, two-to-three flat tones. Anchor 128,256. Deterministic processing composites accepted square Grass beneath.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; center tree, middle tree, center trunk, fifth crown, fifth tree, three trees, five trees, diamond, ground slab, transparent footprint corner, clipped canopy, left right or bottom overflow, lower-right key light, animal, fruit, lumber camp, stump, building, unit, road, ownership, selection, flowers, tiny leaves, dense foliage, realistic or painterly forest, text, UI",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 104224,
+        "noBackground": true,
+        "palette": "quiet leaf and moss green, dark teal-green southeast canopy planes, restrained yellow-green northwest highlights, warm muted brown trunks, charcoal-teal outline",
+        "postprocess": "square-tall-ground-reference",
+        "styleReference": {
+          "id": "terrain-square-original-forest-2",
+          "sha256": "93a942c0a5828271bf478b03dea35673ccb2f456fe4da8e460909c75c5568b61",
+          "usageDescription": "Input reference role: preserve the accepted count of exactly four broadleaf trees plus its tree scale, charcoal-teal outline, flat planes, palette and northwest lighting. Recompose those four trees into the requested two-by-two arrangement; add no fifth crown or trunk."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        },
+        "groundReference": {
+          "id": "terrain-square-original-grass-1",
+          "sha256": "a20fbc91f4bcd6120fb8c9ce4bcd9ed9276fcdbd4f145d4153cc71c93bda6567",
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-square-original-forest-4-7fef5def51b3.png",
+          "candidateSha256": "7fef5def51b3174da007c9778c1e5211268700c6cc1806914aff3fdb4629c0f5",
+          "notes": "Rejected after source, native, enlarged and adjacency inspection. The deterministic eight-pixel upper-edge feather now proves the footprint and upward-only bounds can be made technically safe, but the authored silhouette contains five separate trees instead of the required four-tree crescent. Its extra center-rear trunk also makes the cluster busier than the terrain detail budget. Regenerate only this variant with four explicitly enumerated trunks and wider internal spacing.",
+          "reviewedAt": "2026-09-03T13:50:30.009Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf and moss green, dark teal-green southeast canopy planes, restrained yellow-green northwest highlights, warm muted brown trunks, charcoal-teal outline. Original square Forest variant 4 on an untrimmed transparent 256 by 384 canvas. Draw exactly four chunky broadleaf trees in a shallow crescent: two taller offset trees behind and two compact trees spread across the foreground, with an open notch at upper center and a broad low silhouette. Keep all trunks inside x0..255,y128..383; foliage may rise above y128 only. Leave transparent safety space at lateral edges and above the bottom. Soft northwest key light, darker southeast canopy and trunk planes. Strong terrain-quiet outline, two-to-three flat tones, few huge leaf masses, no scenery or resource. Anchor 128,256. Deterministic processing composites accepted square Grass beneath the art. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, ground slab, transparent footprint corner, clipped canopy, left right or bottom overflow, lower-right key light, three trees, five trees, animal, fruit, lumber camp, stump, building, unit, road, ownership, selection, flowers, tiny leaves, dense foliage, realistic or painterly forest, text, UI.",
+            "prompt": "Original square Forest variant 4 on an untrimmed transparent 256 by 384 canvas. Draw exactly four chunky broadleaf trees in a shallow crescent: two taller offset trees behind and two compact trees spread across the foreground, with an open notch at upper center and a broad low silhouette. Keep all trunks inside x0..255,y128..383; foliage may rise above y128 only. Leave transparent safety space at lateral edges and above the bottom. Soft northwest key light, darker southeast canopy and trunk planes. Strong terrain-quiet outline, two-to-three flat tones, few huge leaf masses, no scenery or resource. Anchor 128,256. Deterministic processing composites accepted square Grass beneath the art.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, ground slab, transparent footprint corner, clipped canopy, left right or bottom overflow, lower-right key light, three trees, five trees, animal, fruit, lumber camp, stump, building, unit, road, ownership, selection, flowers, tiny leaves, dense foliage, realistic or painterly forest, text, UI",
+            "requestSize": {
+              "width": 256,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 384
+            },
+            "seed": 104204,
+            "noBackground": true,
+            "palette": "quiet leaf and moss green, dark teal-green southeast canopy planes, restrained yellow-green northwest highlights, warm muted brown trunks, charcoal-teal outline",
+            "postprocess": "square-tall-ground-reference",
+            "styleReference": {
+              "id": "terrain-square-original-forest-1",
+              "sha256": "ada147cc84e3b3dbd70cd0aa3e5f39a1a41dfe74be63833ad3c375fae316571f",
+              "usageDescription": "Input reference role: match the accepted broadleaf canopy language, tree scale, dark charcoal-teal outline, flat planes, palette and exact northwest lighting; copy no tree placement or ground shape."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 128,
+              "right": 256,
+              "bottom": 384
+            },
+            "groundReference": {
+              "id": "terrain-square-original-grass-1",
+              "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe.",
+              "sha256": "a20fbc91f4bcd6120fb8c9ce4bcd9ed9276fcdbd4f145d4153cc71c93bda6567"
+            }
+          }
+        },
+        {
+          "candidate": "art/pixellab/quarantine/terrain-square-original-forest-4-188b374aa690.png",
+          "candidateSha256": "188b374aa6907537ddc1508208e5511882cefec73e6644addb8ed499c31cd595",
+          "notes": "Rejected after individual source/native/enlarged, 8x8 mixed repetition and adjacency inspection. The second request is technically safe and stylistically consistent, but again contains five trees: two rear crowns, a large middle tree and two front trees. The explicit four-tree requirement is semantic, not optional cosmetic detail, and this dense five-tree cluster would also overfill the family silhouette. Retry against accepted four-tree Forest 2 and forbid any center or middle trunk.",
+          "reviewedAt": "2026-09-03T13:53:26.737Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf and moss green, dark teal-green southeast canopy planes, restrained yellow-green northwest highlights, warm muted brown trunks, charcoal-teal outline. Original square Forest variant 4 on an untrimmed transparent 256 by 384 canvas. Draw four trees total and no other tree forms: tree one is tall at rear-left, tree two is tall at rear-right, tree three is compact at front-left, tree four is compact at front-right. Keep a clear open notch between the rear crowns and visible space between all four trunks, forming a shallow crescent and broad low silhouette. Keep trunks inside x0..255,y128..383; foliage may rise above y128 only. Leave transparent safety space at lateral edges and above the bottom. Soft northwest key light, darker southeast planes. Strong terrain-quiet outline, two-to-three flat tones, few huge leaf masses, no scenery or resource. Anchor 128,256. Deterministic processing composites accepted square Grass beneath the art. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, ground slab, transparent footprint corner, clipped canopy, left right or bottom overflow, lower-right key light, three trees, five trees, animal, fruit, lumber camp, stump, building, unit, road, ownership, selection, flowers, tiny leaves, dense foliage, realistic or painterly forest, text, UI.",
+            "prompt": "Original square Forest variant 4 on an untrimmed transparent 256 by 384 canvas. Draw four trees total and no other tree forms: tree one is tall at rear-left, tree two is tall at rear-right, tree three is compact at front-left, tree four is compact at front-right. Keep a clear open notch between the rear crowns and visible space between all four trunks, forming a shallow crescent and broad low silhouette. Keep trunks inside x0..255,y128..383; foliage may rise above y128 only. Leave transparent safety space at lateral edges and above the bottom. Soft northwest key light, darker southeast planes. Strong terrain-quiet outline, two-to-three flat tones, few huge leaf masses, no scenery or resource. Anchor 128,256. Deterministic processing composites accepted square Grass beneath the art.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, ground slab, transparent footprint corner, clipped canopy, left right or bottom overflow, lower-right key light, three trees, five trees, animal, fruit, lumber camp, stump, building, unit, road, ownership, selection, flowers, tiny leaves, dense foliage, realistic or painterly forest, text, UI",
+            "requestSize": {
+              "width": 256,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 384
+            },
+            "seed": 104214,
+            "noBackground": true,
+            "palette": "quiet leaf and moss green, dark teal-green southeast canopy planes, restrained yellow-green northwest highlights, warm muted brown trunks, charcoal-teal outline",
+            "postprocess": "square-tall-ground-reference",
+            "styleReference": {
+              "id": "terrain-square-original-forest-1",
+              "sha256": "ada147cc84e3b3dbd70cd0aa3e5f39a1a41dfe74be63833ad3c375fae316571f",
+              "usageDescription": "Input reference role: match the accepted broadleaf canopy language, tree scale, dark charcoal-teal outline, flat planes, palette and exact northwest lighting; copy no tree placement or ground shape."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 128,
+              "right": 256,
+              "bottom": 384
+            },
+            "groundReference": {
+              "id": "terrain-square-original-grass-1",
+              "sha256": "a20fbc91f4bcd6120fb8c9ce4bcd9ed9276fcdbd4f145d4153cc71c93bda6567",
+              "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+            }
+          }
+        }
+      ],
+      "outputSha256": "405262746d5b95e5507dfad353938393ed4b809d77ffbe1b2832a4e3361de0c3",
+      "notes": "Accepted on the third provider attempt after source/native/enlarged, 8x8 mixed repetition and same/different adjacency inspection. Exactly four trees now form the required two-rear/two-front arrangement with no center trunk or fifth crown. It is visibly distinct from Forests 1-3, stays terrain-quiet at minimum zoom, keeps every trunk within the fully opaque owning square and every canopy inside the upward-only safety, and matches the shared northwest light, southeast shade, palette and outline without resources or buildings.",
+      "reviewedAt": "2026-09-03T13:56:40.631Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-original-mountain-2": {
+      "id": "terrain-square-original-mountain-2",
+      "status": "ACCEPTED",
+      "jobId": "349082aa-a56f-42f3-ba55-7ab77b5fd923",
+      "candidate": "art/pixellab/candidates/terrain-square-original-mountain-2.png",
+      "candidateSha256": "6211a416eeabb65da06bebfbb6a530e50f44291cb37cd80610e38f7fa388c457",
+      "providerOutputSha256": "71b5fb078de277df2fb017ad3a8193c8bfdf07c53a296fbc53382c19de5a21f7",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 81,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted slate-blue rock, parchment-tan northwest faces, deep desaturated blue-gray southeast faces, sparse moss-green foothill contact, charcoal-teal outline. Original square Mountain variant 2, transparent 256 by 384 object canvas. Draw a broad twin-peak range: a taller blunt peak on the left, a lower angular peak on the right and one wide connecting shoulder. Rock fills most of the square width but keeps transparent safety at both lateral and bottom edges; draw no ground tile, platform, perimeter or base outline. Peaks may rise above y128. Soft northwest key light with broad parchment-slate northwest faces and darker blue-gray southeast planes. Strong terrain-quiet outline, two-to-three flat tones, few huge planes, no geological noise. Anchor 128,256. Deterministic processing supplies a slate-tinted full square and feathers the provider rock into it below y200. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, rhombus, V-shaped base, diagonal base edge, isometric ground, outlined ground, platform, tile perimeter, single central peak, narrow rock, clipped peak, lateral or bottom overflow, lower-right key light, snow noise, ore, crystal, mine, building, unit, animal, flag, ownership, selection, pebble scatter, realistic strata, photoreal, painterly, text, UI.",
+        "prompt": "Original square Mountain variant 2, transparent 256 by 384 object canvas. Draw a broad twin-peak range: a taller blunt peak on the left, a lower angular peak on the right and one wide connecting shoulder. Rock fills most of the square width but keeps transparent safety at both lateral and bottom edges; draw no ground tile, platform, perimeter or base outline. Peaks may rise above y128. Soft northwest key light with broad parchment-slate northwest faces and darker blue-gray southeast planes. Strong terrain-quiet outline, two-to-three flat tones, few huge planes, no geological noise. Anchor 128,256. Deterministic processing supplies a slate-tinted full square and feathers the provider rock into it below y200.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, rhombus, V-shaped base, diagonal base edge, isometric ground, outlined ground, platform, tile perimeter, single central peak, narrow rock, clipped peak, lateral or bottom overflow, lower-right key light, snow noise, ore, crystal, mine, building, unit, animal, flag, ownership, selection, pebble scatter, realistic strata, photoreal, painterly, text, UI",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 104232,
+        "noBackground": true,
+        "palette": "muted slate-blue rock, parchment-tan northwest faces, deep desaturated blue-gray southeast faces, sparse moss-green foothill contact, charcoal-teal outline",
+        "postprocess": "square-mountain-ground-reference",
+        "styleReference": {
+          "id": "terrain-square-original-mountain-1",
+          "sha256": "b1c0435641bc80bc6f2814de3e49d45aeed88c875c3c87259bb307e8e92282b2",
+          "usageDescription": "Input reference role: match only the accepted broad slate/tan rock planes, terrain-quiet outline, camera, palette and northwest key light. Create a new peak silhouette and no ground tile."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        },
+        "groundReference": {
+          "id": "terrain-square-original-grass-1",
+          "sha256": "a20fbc91f4bcd6120fb8c9ce4bcd9ed9276fcdbd4f145d4153cc71c93bda6567",
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+        }
+      },
+      "outputSha256": "6211a416eeabb65da06bebfbb6a530e50f44291cb37cd80610e38f7fa388c457",
+      "notes": "Accepted after individual source/native/enlarged, 8x8 mixed repetition and same/different adjacency inspection. The blunt tall left peak, lower right peak and connecting shoulder form a broad materially distinct silhouette with terrain-quiet planes. Northwest parchment faces and darker southeast slate match the accepted family, the authored base feathers cleanly into the full opaque square, and no lateral/bottom overflow, ore, building, resource or state cue appears.",
+      "reviewedAt": "2026-09-03T14:00:05.615Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-original-mountain-3": {
+      "id": "terrain-square-original-mountain-3",
+      "status": "ACCEPTED",
+      "jobId": "0c4eef64-0dde-4101-a46d-9b7141e83287",
+      "candidate": "art/pixellab/candidates/terrain-square-original-mountain-3.png",
+      "candidateSha256": "ed0b45b628f764570a06b32cc16b48254307e5061c39a5ef19e552329925e31f",
+      "providerOutputSha256": "159f40de462d2a8e9e212b454672a8d67490086c1219db5fe0d39d24ea976fa7",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 124,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted slate-blue rock, parchment-tan northwest faces, deep desaturated blue-gray southeast faces, sparse moss-green foothill contact, charcoal-teal outline. Original square Mountain variant 3, transparent 256 by 384 object canvas. Draw a low broad range across nearly the full width: one flat-topped right mesa shoulder, one long shallow left ridge and a squat foreground shelf. Its highest point is only modestly above owning-square y128; the silhouette is horizontal, never a tall triangle or sharp apex. Keep transparent lateral/bottom safety; no ground tile or base outline. Soft northwest key light, parchment-slate lit faces, darker southeast planes, terrain-quiet outline, two-to-three flat tones. Anchor 128,256. Processing supplies the slate square and feathers rock below y200. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; tall apex, sharp central peak, triangle, spire, tall twins, diamond, V base, isometric ground, platform, perimeter, small isolated rock, clipped rock, lateral or bottom overflow, lower-right light, snow, ore, crystal, mine, building, unit, animal, flag, ownership, selection, pebbles, realistic strata, photoreal, painterly, text, UI.",
+        "prompt": "Original square Mountain variant 3, transparent 256 by 384 object canvas. Draw a low broad range across nearly the full width: one flat-topped right mesa shoulder, one long shallow left ridge and a squat foreground shelf. Its highest point is only modestly above owning-square y128; the silhouette is horizontal, never a tall triangle or sharp apex. Keep transparent lateral/bottom safety; no ground tile or base outline. Soft northwest key light, parchment-slate lit faces, darker southeast planes, terrain-quiet outline, two-to-three flat tones. Anchor 128,256. Processing supplies the slate square and feathers rock below y200.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; tall apex, sharp central peak, triangle, spire, tall twins, diamond, V base, isometric ground, platform, perimeter, small isolated rock, clipped rock, lateral or bottom overflow, lower-right light, snow, ore, crystal, mine, building, unit, animal, flag, ownership, selection, pebbles, realistic strata, photoreal, painterly, text, UI",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 104243,
+        "noBackground": true,
+        "palette": "muted slate-blue rock, parchment-tan northwest faces, deep desaturated blue-gray southeast faces, sparse moss-green foothill contact, charcoal-teal outline",
+        "postprocess": "square-mountain-ground-reference",
+        "styleReference": {
+          "id": "terrain-square-original-mountain-2",
+          "sha256": "6211a416eeabb65da06bebfbb6a530e50f44291cb37cd80610e38f7fa388c457",
+          "usageDescription": "Input reference role: preserve only the accepted slate/tan rock planes, terrain-quiet outline, camera, palette and northwest light. Flatten and widen the silhouette into the requested low ridge; do not copy either peak."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        },
+        "groundReference": {
+          "id": "terrain-square-original-grass-1",
+          "sha256": "a20fbc91f4bcd6120fb8c9ce4bcd9ed9276fcdbd4f145d4153cc71c93bda6567",
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-square-original-mountain-3-a46531a86b45.png",
+          "candidateSha256": "a46531a86b45272b8b175b401c6ad774255f03e2e8f6e647d5d499f112df9f92",
+          "notes": "Rejected after individual source/native/enlarged, 8x8 mixed repetition and comparison with Mountains 1 and 2. Technical footprint, fade, lighting and edge safety pass, but the candidate is another tall pointed central peak closely resembling accepted Mountain 1. It does not deliver the specified materially lower, wider shoulder-led silhouette, so the family would repeat the same dominant triangular read. Retry as a low broad two-shoulder mesa/ridge with no tall apex.",
+          "reviewedAt": "2026-09-03T14:00:10.384Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted slate-blue rock, parchment-tan northwest faces, deep desaturated blue-gray southeast faces, sparse moss-green foothill contact, charcoal-teal outline. Original square Mountain variant 3, transparent 256 by 384 object canvas. Draw a distinct low wide range: one broad off-center peak on the right, a long descending shoulder to the left, and a squat foreground ridge. The silhouette must be materially wider and lower than variants 1 and 2. Rock occupies most square width but leaves transparent safety at both lateral and bottom edges; no ground tile, platform, perimeter or base outline. Soft northwest key light, parchment-slate northwest faces, darker blue-gray southeast planes. Strong terrain-quiet outline, two-to-three flat tones, few huge planes, no geological noise. Anchor 128,256. Deterministic processing supplies a slate-tinted full square and feathers provider rock into it below y200. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, rhombus, V-shaped base, diagonal base edge, isometric ground, outlined ground, platform, tile perimeter, twin equal peaks, tall narrow central peak, small rock, clipped peak, lateral or bottom overflow, lower-right key light, snow noise, ore, crystal, mine, building, unit, animal, flag, ownership, selection, pebble scatter, realistic strata, photoreal, painterly, text, UI.",
+            "prompt": "Original square Mountain variant 3, transparent 256 by 384 object canvas. Draw a distinct low wide range: one broad off-center peak on the right, a long descending shoulder to the left, and a squat foreground ridge. The silhouette must be materially wider and lower than variants 1 and 2. Rock occupies most square width but leaves transparent safety at both lateral and bottom edges; no ground tile, platform, perimeter or base outline. Soft northwest key light, parchment-slate northwest faces, darker blue-gray southeast planes. Strong terrain-quiet outline, two-to-three flat tones, few huge planes, no geological noise. Anchor 128,256. Deterministic processing supplies a slate-tinted full square and feathers provider rock into it below y200.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, rhombus, V-shaped base, diagonal base edge, isometric ground, outlined ground, platform, tile perimeter, twin equal peaks, tall narrow central peak, small rock, clipped peak, lateral or bottom overflow, lower-right key light, snow noise, ore, crystal, mine, building, unit, animal, flag, ownership, selection, pebble scatter, realistic strata, photoreal, painterly, text, UI",
+            "requestSize": {
+              "width": 256,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 384
+            },
+            "seed": 104233,
+            "noBackground": true,
+            "palette": "muted slate-blue rock, parchment-tan northwest faces, deep desaturated blue-gray southeast faces, sparse moss-green foothill contact, charcoal-teal outline",
+            "postprocess": "square-mountain-ground-reference",
+            "styleReference": {
+              "id": "terrain-square-original-mountain-1",
+              "sha256": "b1c0435641bc80bc6f2814de3e49d45aeed88c875c3c87259bb307e8e92282b2",
+              "usageDescription": "Input reference role: match only the accepted broad slate/tan rock planes, terrain-quiet outline, camera, palette and northwest key light. Create a new peak silhouette and no ground tile."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 128,
+              "right": 256,
+              "bottom": 384
+            },
+            "groundReference": {
+              "id": "terrain-square-original-grass-1",
+              "sha256": "a20fbc91f4bcd6120fb8c9ce4bcd9ed9276fcdbd4f145d4153cc71c93bda6567",
+              "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+            }
+          }
+        }
+      ],
+      "outputSha256": "ed0b45b628f764570a06b32cc16b48254307e5061c39a5ef19e552329925e31f",
+      "notes": "Accepted on the second provider attempt after source/native/enlarged, 8x8 mixed repetition, same/different adjacency and direct comparison with Mountains 1-2. The low flat-topped right mesa, long shallow left ridge and squat foreground shelf create the required materially wider/lower silhouette without a triangular apex. Shared northwest faces, darker southeast planes, quiet outline and slate square feather pass; bounds are upward-only with no resource, building or state cue.",
+      "reviewedAt": "2026-09-03T14:03:40.446Z",
       "reviewChecks": {
         "source": true,
         "native": true,

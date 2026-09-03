@@ -533,6 +533,7 @@ function validateSourceManifest(
   const squareTerrain = [
     {
       id: "terrain-square-original-grass-1",
+      stage: "sample",
       size: { width: 256, height: 256 },
       footprint: { left: 0, top: 0, right: 256, bottom: 256 },
       anchor: { x: 128, y: 128 },
@@ -541,6 +542,7 @@ function validateSourceManifest(
     },
     {
       id: "terrain-square-original-forest-1",
+      stage: "sample",
       size: { width: 256, height: 384 },
       footprint: { left: 0, top: 128, right: 256, bottom: 384 },
       anchor: { x: 128, y: 256 },
@@ -549,18 +551,46 @@ function validateSourceManifest(
     },
     {
       id: "terrain-square-original-mountain-1",
+      stage: "sample",
       size: { width: 256, height: 384 },
       footprint: { left: 0, top: 128, right: 256, bottom: 384 },
       anchor: { x: 128, y: 256 },
       postprocess: "square-mountain-ground-reference",
       groundReference: "terrain-square-original-grass-1",
     },
+    ...([2, 3, 4] as const).map((variant) => ({
+      id: `terrain-square-original-grass-${variant}`,
+      stage: "batch" as const,
+      size: { width: 256, height: 256 },
+      footprint: { left: 0, top: 0, right: 256, bottom: 256 },
+      anchor: { x: 128, y: 128 },
+      postprocess: "square-ground-fill" as const,
+      groundReference: undefined,
+    })),
+    ...([2, 3, 4] as const).map((variant) => ({
+      id: `terrain-square-original-forest-${variant}`,
+      stage: "batch" as const,
+      size: { width: 256, height: 384 },
+      footprint: { left: 0, top: 128, right: 256, bottom: 384 },
+      anchor: { x: 128, y: 256 },
+      postprocess: "square-tall-ground-reference" as const,
+      groundReference: "terrain-square-original-grass-1",
+    })),
+    ...([2, 3] as const).map((variant) => ({
+      id: `terrain-square-original-mountain-${variant}`,
+      stage: "batch" as const,
+      size: { width: 256, height: 384 },
+      footprint: { left: 0, top: 128, right: 256, bottom: 384 },
+      anchor: { x: 128, y: 256 },
+      postprocess: "square-mountain-ground-reference" as const,
+      groundReference: "terrain-square-original-grass-1",
+    })),
   ] as const;
   for (const contract of squareTerrain) {
     const recipe = source.recipes.find(({ id }) => id === contract.id);
     if (
       recipe?.class !== "terrain" ||
-      recipe.stage !== "sample" ||
+      recipe.stage !== contract.stage ||
       JSON.stringify(recipe.requestSize) !== JSON.stringify(contract.size) ||
       JSON.stringify(recipe.outputSize) !== JSON.stringify(contract.size) ||
       JSON.stringify(recipe.squareFootprint) !==
@@ -1188,20 +1218,60 @@ function assertSquareTerrainOrder(
   const selected = recipes.filter((recipe) =>
     samples.includes(recipe.id as (typeof samples)[number]),
   );
-  if (selected.length === 0) return;
-  if (selected.length !== 1)
-    throw new Error(
-      "Square Grass, Forest, and Mountain samples must be generated as separate individual requests",
+  if (selected.length > 0) {
+    if (selected.length !== 1)
+      throw new Error(
+        "Square Grass, Forest, and Mountain samples must be generated as separate individual requests",
+      );
+    const selectedIndex = samples.indexOf(
+      selected[0]?.id as (typeof samples)[number],
     );
-  const selectedIndex = samples.indexOf(
-    selected[0]?.id as (typeof samples)[number],
-  );
-  const missingEarlier = samples
-    .slice(0, selectedIndex)
-    .filter((id) => generated.records[id]?.status !== "ACCEPTED");
-  if (missingEarlier.length > 0)
+    const missingEarlier = samples
+      .slice(0, selectedIndex)
+      .filter((id) => generated.records[id]?.status !== "ACCEPTED");
+    if (missingEarlier.length > 0)
+      throw new Error(
+        `Square terrain sample order requires acceptance first: ${missingEarlier.join(", ")}`,
+      );
+    return;
+  }
+
+  const families = [
+    [
+      "terrain-square-original-grass-2",
+      "terrain-square-original-grass-3",
+      "terrain-square-original-grass-4",
+    ],
+    [
+      "terrain-square-original-forest-2",
+      "terrain-square-original-forest-3",
+      "terrain-square-original-forest-4",
+    ],
+    [
+      "terrain-square-original-mountain-2",
+      "terrain-square-original-mountain-3",
+    ],
+  ] as const;
+  const selectedBatch = recipes
+    .map(({ id }) => id)
+    .filter((id) => families.some((family) => family.includes(id as never)));
+  if (selectedBatch.length === 0) return;
+  if (selectedBatch.length > 3)
     throw new Error(
-      `Square terrain sample order requires acceptance first: ${missingEarlier.join(", ")}`,
+      "Original square terrain batches may contain at most three assets",
+    );
+  const familyIndex = families.findIndex((family) =>
+    selectedBatch.every((id) => family.includes(id as never)),
+  );
+  if (familyIndex < 0)
+    throw new Error("Do not mix Original square terrain family batches");
+  const requiredBefore = [...samples, ...families.slice(0, familyIndex).flat()];
+  const missingBefore = requiredBefore.filter(
+    (id) => generated.records[id]?.status !== "ACCEPTED",
+  );
+  if (missingBefore.length > 0)
+    throw new Error(
+      `Original square terrain batch order requires acceptance first: ${missingBefore.join(", ")}`,
     );
 }
 
@@ -1783,12 +1853,24 @@ async function applySquareTallGroundReference(
   )
     .png({ compressionLevel: 9, adaptiveFiltering: false })
     .toBuffer();
+  const provider = await sharp(await readFile(destination))
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const upperLateralSafety = 8;
+  for (let y = 0; y < footprint.top; y += 1) {
+    for (let x = 0; x < upperLateralSafety; x += 1) {
+      const retained = x / upperLateralSafety;
+      for (const safeX of [x, provider.info.width - 1 - x]) {
+        const alpha = (y * provider.info.width + safeX) * 4 + 3;
+        provider.data[alpha] = Math.round(
+          (provider.data[alpha] ?? 0) * retained,
+        );
+      }
+    }
+  }
   let providerLayer: Buffer;
   if (mountain) {
-    const provider = await sharp(await readFile(destination))
-      .ensureAlpha()
-      .raw()
-      .toBuffer({ resolveWithObject: true });
     const fadeStart = 200;
     const fadeEnd = 304;
     for (let y = fadeStart; y < provider.info.height; y += 1) {
@@ -1811,8 +1893,13 @@ async function applySquareTallGroundReference(
       .png({ compressionLevel: 9, adaptiveFiltering: false })
       .toBuffer();
   } else {
-    providerLayer = await sharp(await readFile(destination))
-      .ensureAlpha()
+    providerLayer = await sharp(provider.data, {
+      raw: {
+        width: provider.info.width,
+        height: provider.info.height,
+        channels: 4,
+      },
+    })
       .png({ compressionLevel: 9, adaptiveFiltering: false })
       .toBuffer();
   }

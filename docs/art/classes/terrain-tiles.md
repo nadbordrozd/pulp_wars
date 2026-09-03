@@ -10,6 +10,39 @@ diamond sources, anchors, clips, and measurements below are retained as
 temporary/historical provenance until the square asset beads replace them.
 They are not the generation target for new terrain.
 
+### Original square base-terrain family
+
+The accepted Original square family contains four Grass, four Forest, and
+three Mountain variants. Grass uses a 256 x 256 source with anchor `(128,128)`;
+Forest and Mountain use an untrimmed 256 x 384 source with anchor `(128,256)`,
+where source `x=0..255,y=128..383` owns the complete square. All owning-square
+pixels are opaque. Canopies and peaks may occupy only the transparent region
+above `y=128`; they never cross the left, right, or bottom canvas boundary.
+The checked-in tall-terrain composite applies an eight-pixel alpha feather to
+the lateral edges of that upper region as a deterministic final safety guard.
+
+Grass variants are deliberately less salient than distinct terrain objects.
+The checked-in processing crops the provider presentation inset, scales and
+radius-24 blurs the authored field, retains four percent of its color over the
+canonical `#6f9255` base, converges the outer 48 pixels to that exact shared
+color, and forces opaque alpha. The result supplies broad low-amplitude
+variation without stamped strokes, bands, paths, resources, or state cues.
+
+Forest variants use meaningfully different three- and four-tree arrangements;
+Mountain variants use meaningfully different broad peak-and-shoulder
+silhouettes. Both retain the accepted soft northwest key light and darker
+southeast planes. Their full owning square is composited deterministically from
+accepted Original square Grass 1; Mountain derives a quiet slate field from it
+and feathers the authored rock into that field. Generation is split into the
+coherent Grass 2-4, Forest 2-4, and Mountain 2-3 batches, with no request allowed
+to mix families or exceed three assets.
+
+The variants are cosmetic only. Variant selection must never read simulation
+PRNG or encode passability, resources, ownership, commands, AI, save, replay,
+or headless state. Acceptance evidence is rebuilt by
+`npm run art:square-original-terrain-review`; registering an accepted output URL
+does not switch runtime terrain coverage.
+
 ## Ruleset-6 active inventory
 
 Ruleset 6 retains Grass, Forest, Mountain, Fruit, Game (the renamed Animal

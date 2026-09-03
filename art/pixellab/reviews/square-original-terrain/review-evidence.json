@@ -1,0 +1,689 @@
+{
+  "schemaVersion": 1,
+  "generatedBy": "npm run art:square-original-terrain-review",
+  "gate": "ORIGINAL_SQUARE_TERRAIN_FAMILY",
+  "familyIds": {
+    "grass": [
+      "terrain-square-original-grass-1",
+      "terrain-square-original-grass-2",
+      "terrain-square-original-grass-3",
+      "terrain-square-original-grass-4"
+    ],
+    "forest": [
+      "terrain-square-original-forest-1",
+      "terrain-square-original-forest-2",
+      "terrain-square-original-forest-3",
+      "terrain-square-original-forest-4"
+    ],
+    "mountain": [
+      "terrain-square-original-mountain-1",
+      "terrain-square-original-mountain-2",
+      "terrain-square-original-mountain-3"
+    ]
+  },
+  "statuses": {
+    "terrain-square-original-grass-1": "ACCEPTED",
+    "terrain-square-original-grass-2": "ACCEPTED",
+    "terrain-square-original-grass-3": "ACCEPTED",
+    "terrain-square-original-grass-4": "ACCEPTED",
+    "terrain-square-original-forest-1": "ACCEPTED",
+    "terrain-square-original-forest-2": "ACCEPTED",
+    "terrain-square-original-forest-3": "ACCEPTED",
+    "terrain-square-original-forest-4": "ACCEPTED",
+    "terrain-square-original-mountain-1": "ACCEPTED",
+    "terrain-square-original-mountain-2": "ACCEPTED",
+    "terrain-square-original-mountain-3": "ACCEPTED"
+  },
+  "boundedProviderBatches": [
+    [
+      "terrain-square-original-grass-2",
+      "terrain-square-original-grass-3",
+      "terrain-square-original-grass-4"
+    ],
+    [
+      "terrain-square-original-forest-2",
+      "terrain-square-original-forest-3",
+      "terrain-square-original-forest-4"
+    ],
+    ["terrain-square-original-mountain-2", "terrain-square-original-mountain-3"]
+  ],
+  "geometry": {
+    "cellCssPixelsAt1x": {
+      "width": 128,
+      "height": 128
+    },
+    "grass": {
+      "source": {
+        "width": 256,
+        "height": 256
+      },
+      "anchor": {
+        "x": 128,
+        "y": 128
+      },
+      "owningSquare": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256
+      }
+    },
+    "tall": {
+      "source": {
+        "width": 256,
+        "height": 384
+      },
+      "anchor": {
+        "x": 128,
+        "y": 256
+      },
+      "owningSquare": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384
+      },
+      "overflow": "UPWARD_ONLY"
+    }
+  },
+  "deterministicProcessing": {
+    "grass": "Crop the one-sixteenth provider presentation inset; scale to 256x256; radius-24 blur; retain 4% authored color over #6f9255; smoothstep outer 48px to #6f9255; force alpha 255.",
+    "forest": "Apply an 8px lateral alpha safety feather above y128, then composite accepted Original square Grass 1 exactly into source y128..384 beneath each provider-authored Forest.",
+    "mountain": "Apply an 8px lateral alpha safety feather above y128; derive slate square ground by greyscale+tint #718391 from accepted Original square Grass 1; retain provider Mountain through y200 and smoothstep-fade its alpha to zero by y304.",
+    "variantSelection": "Cosmetic review selector only: (x*17 + y*31 + x*y*7) modulo family length. Runtime mechanics and simulation PRNG are not read or changed."
+  },
+  "lighting": "Every accepted source was visually checked for the same soft northwest key, pale upper-left planes and darker southeast planes; lighting carries no ownership, resource or state meaning.",
+  "displayChecks": {
+    "footprintCssPixels": [80, 128, 224],
+    "zooms": [0.625, 1, 1.75],
+    "devicePixelRatios": [1, 2],
+    "repetition": "8x8 per family with deterministic mixed variants",
+    "adjacency": ["SAME_VARIANT", "DIFFERENT_VARIANT"],
+    "unitSource": "unit-warrior",
+    "unitSourceSha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1",
+    "unitHashes": {
+      "public/assets/pixellab/units/archer.png": "deb62a8a84dc28ceecd58047a3f65abdb67c0616851337c817452d75a5b73bb2",
+      "public/assets/pixellab/units/candy-choco-engineer.png": "020d0448b1db6be74b00aa3d468ca4f4aa7d9c2c700d63ae7c03a683ec314fcf",
+      "public/assets/pixellab/units/candy-crusher.png": "d2fb335814ae4929cb47891bcb8561c8092a1bfc9fc53f98b9b4a32382898fca",
+      "public/assets/pixellab/units/candy-donut.png": "041fd6defb9b46059e9036418c501cc287e8ac74180384594770e9d1d764a991",
+      "public/assets/pixellab/units/candy-gumball-guard.png": "5a43d5f737bbf41f007c9bf8ee5f7fe5e0084bb13f9d243917d27c6f701f81b2",
+      "public/assets/pixellab/units/candy-jawbreaker.png": "5897e7b0d7d8dd4746ff7ecadba4ba0b0d72266df4b33b25743fef33c5ee1455",
+      "public/assets/pixellab/units/candy-jelly-scout.png": "c835c0a08cc24d5751c0dbc85365f638016029984162a6272387aa3efc2965a9",
+      "public/assets/pixellab/units/candy-marshmallow-medic.png": "868b00e650c05e22bd085d72f093fd8c80554ba17a3357a2982833c617e98327",
+      "public/assets/pixellab/units/candy-sugar-titan.png": "7d360ee7191644121f4397be91ac7ab42769883b44d6481d6c056ad7c5df76c9",
+      "public/assets/pixellab/units/candy-warrior.png": "76456b060ba1701e75387285b4738d4c289c0617eb852f5552beadfe2eb1a2bc",
+      "public/assets/pixellab/units/catapult.png": "cdf6ed34a67c1daf1bfd947b0b1af007b25d2a13ee88ee2df876bdb9f7ceec83",
+      "public/assets/pixellab/units/defender.png": "930c31f9aa1bf5dacf0318484b31ac63504365482ae01a84a6a269d94de65e11",
+      "public/assets/pixellab/units/original-breacher.png": "1e752161cd63bcb7bc0e5a0989557f61d2d7f2d3e3d9597ccc9360ed11fca2ad",
+      "public/assets/pixellab/units/original-heavy.png": "8fe592d094ede939cf8a92119022c9606b6c12621ed4d6777b4056b8cadb3759",
+      "public/assets/pixellab/units/original-juggernaut.png": "c905126dc7c38683b1ecba0aa930a4add45426a26fa3560a78e2df21ddaccc9a",
+      "public/assets/pixellab/units/original-medic.png": "c30475f23be6a8ca9ee1957a327b3b764489e570d50cd69d5775006650af62c2",
+      "public/assets/pixellab/units/original-scout.png": "8663c5c6f95ed69481123245a7f7c5e6acf2b55ebb9c52ebbc46979252e60343",
+      "public/assets/pixellab/units/rider.png": "20bb28c79c28e262908e518124e776f30adf946254906e62245f0e9702606bb4",
+      "public/assets/pixellab/units/warrior.png": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1"
+    },
+    "unitBytesChanged": false,
+    "overlays": ["OWNERSHIP", "SELECTION", "MOVEMENT_TARGET", "FOG_WITHHOLDING"]
+  },
+  "mechanicsIsolation": {
+    "cosmeticVariantsOnly": true,
+    "runtimeCoverageChanged": false,
+    "simulationStateRead": false,
+    "simulationPrngRead": false,
+    "notes": "This bead registers accepted URLs only in the generated art manifest. It does not switch terrain coverage, alter the renderer, or encode passability, resources, ownership, commands, saves, replay, AI or headless state."
+  },
+  "measurements": [
+    {
+      "id": "terrain-square-original-grass-1",
+      "output": "public/assets/pixellab/terrain-square/original-grass-1.png",
+      "outputSha256": "a20fbc91f4bcd6120fb8c9ce4bcd9ed9276fcdbd4f145d4153cc71c93bda6567",
+      "providerOutputSha256": "531332855f5819a93f62827ac40b9dda223d7e3d232b393e8c38b9c900fdd076",
+      "dimensions": {
+        "width": 256,
+        "height": 256
+      },
+      "anchor": {
+        "x": 128,
+        "y": 128
+      },
+      "squareFootprint": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256
+      },
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "nonOpaqueFootprintPixels": 0,
+      "upperLateralAlphaPixels": 0,
+      "channelRanges": [3, 2, 1],
+      "postprocess": "square-ground-fill"
+    },
+    {
+      "id": "terrain-square-original-grass-2",
+      "output": "public/assets/pixellab/terrain-square/original-grass-2.png",
+      "outputSha256": "bc96b408204000ae5d4057faeca841204a6fcef8ab63026236688adfced78891",
+      "providerOutputSha256": "795eb9c5cd4dd4716f3703ac4942077bb475b4f8ab469d1c5f569c794ddbd6ad",
+      "dimensions": {
+        "width": 256,
+        "height": 256
+      },
+      "anchor": {
+        "x": 128,
+        "y": 128
+      },
+      "squareFootprint": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256
+      },
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "nonOpaqueFootprintPixels": 0,
+      "upperLateralAlphaPixels": 0,
+      "channelRanges": [2, 3, 2],
+      "postprocess": "square-ground-fill"
+    },
+    {
+      "id": "terrain-square-original-grass-3",
+      "output": "public/assets/pixellab/terrain-square/original-grass-3.png",
+      "outputSha256": "4f83520813f2b81b722f68107f48367642365597cb145ab935fe54bf3e83b30e",
+      "providerOutputSha256": "d19278d096af896c97514511ee7827af2bcc591611bc43d09b4c37da528478a6",
+      "dimensions": {
+        "width": 256,
+        "height": 256
+      },
+      "anchor": {
+        "x": 128,
+        "y": 128
+      },
+      "squareFootprint": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256
+      },
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "nonOpaqueFootprintPixels": 0,
+      "upperLateralAlphaPixels": 0,
+      "channelRanges": [2, 2, 1],
+      "postprocess": "square-ground-fill"
+    },
+    {
+      "id": "terrain-square-original-grass-4",
+      "output": "public/assets/pixellab/terrain-square/original-grass-4.png",
+      "outputSha256": "756a771edd6106ad1c0bbad62f8b2e9f2b3a666c368aae58cf7ba21173350987",
+      "providerOutputSha256": "56d3ec1a575abd5b2bf862f3d2661093525045d4db8f8a2ce3a209816a3e7463",
+      "dimensions": {
+        "width": 256,
+        "height": 256
+      },
+      "anchor": {
+        "x": 128,
+        "y": 128
+      },
+      "squareFootprint": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256
+      },
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "nonOpaqueFootprintPixels": 0,
+      "upperLateralAlphaPixels": 0,
+      "channelRanges": [3, 2, 2],
+      "postprocess": "square-ground-fill"
+    },
+    {
+      "id": "terrain-square-original-forest-1",
+      "output": "public/assets/pixellab/terrain-square/original-forest-1.png",
+      "outputSha256": "ada147cc84e3b3dbd70cd0aa3e5f39a1a41dfe74be63833ad3c375fae316571f",
+      "providerOutputSha256": "387f5a7f1ef8666306c9e3aa4554720810363d6fef6229d82cd6b2f539192246",
+      "dimensions": {
+        "width": 256,
+        "height": 384
+      },
+      "anchor": {
+        "x": 128,
+        "y": 256
+      },
+      "squareFootprint": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384
+      },
+      "alphaBounds": {
+        "left": 0,
+        "top": 95,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "nonOpaqueFootprintPixels": 0,
+      "upperLateralAlphaPixels": 0,
+      "channelRanges": [205, 181, 170],
+      "postprocess": "square-tall-ground-reference"
+    },
+    {
+      "id": "terrain-square-original-forest-2",
+      "output": "public/assets/pixellab/terrain-square/original-forest-2.png",
+      "outputSha256": "93a942c0a5828271bf478b03dea35673ccb2f456fe4da8e460909c75c5568b61",
+      "providerOutputSha256": "a8ea7ccebbad1ba63b1c373615484c68b4db5d9b4899c0a3d9e7b86a1af0cda8",
+      "dimensions": {
+        "width": 256,
+        "height": 384
+      },
+      "anchor": {
+        "x": 128,
+        "y": 256
+      },
+      "squareFootprint": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384
+      },
+      "alphaBounds": {
+        "left": 0,
+        "top": 61,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "nonOpaqueFootprintPixels": 0,
+      "upperLateralAlphaPixels": 0,
+      "channelRanges": [205, 179, 160],
+      "postprocess": "square-tall-ground-reference"
+    },
+    {
+      "id": "terrain-square-original-forest-3",
+      "output": "public/assets/pixellab/terrain-square/original-forest-3.png",
+      "outputSha256": "33700d975ac040df56cf355bb0330c6e3a04402f39d5bbe3117f65dde8386fa8",
+      "providerOutputSha256": "167b491da6acb31ef54c364bfb0939763c4a89b318ce234b58e83b4775667dc7",
+      "dimensions": {
+        "width": 256,
+        "height": 384
+      },
+      "anchor": {
+        "x": 128,
+        "y": 256
+      },
+      "squareFootprint": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384
+      },
+      "alphaBounds": {
+        "left": 0,
+        "top": 43,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "nonOpaqueFootprintPixels": 0,
+      "upperLateralAlphaPixels": 0,
+      "channelRanges": [203, 173, 153],
+      "postprocess": "square-tall-ground-reference"
+    },
+    {
+      "id": "terrain-square-original-forest-4",
+      "output": "public/assets/pixellab/terrain-square/original-forest-4.png",
+      "outputSha256": "405262746d5b95e5507dfad353938393ed4b809d77ffbe1b2832a4e3361de0c3",
+      "providerOutputSha256": "e69d7033f694b6a8aa77270feeed63a678370084cd3a26fb9ad185f29f463fb2",
+      "dimensions": {
+        "width": 256,
+        "height": 384
+      },
+      "anchor": {
+        "x": 128,
+        "y": 256
+      },
+      "squareFootprint": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384
+      },
+      "alphaBounds": {
+        "left": 0,
+        "top": 61,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "nonOpaqueFootprintPixels": 0,
+      "upperLateralAlphaPixels": 0,
+      "channelRanges": [204, 179, 160],
+      "postprocess": "square-tall-ground-reference"
+    },
+    {
+      "id": "terrain-square-original-mountain-1",
+      "output": "public/assets/pixellab/terrain-square/original-mountain-1.png",
+      "outputSha256": "b1c0435641bc80bc6f2814de3e49d45aeed88c875c3c87259bb307e8e92282b2",
+      "providerOutputSha256": "4908d69fe833536c71f17132a2300653e751601b85ff5ca960d2aa8010be5969",
+      "dimensions": {
+        "width": 256,
+        "height": 384
+      },
+      "anchor": {
+        "x": 128,
+        "y": 256
+      },
+      "squareFootprint": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384
+      },
+      "alphaBounds": {
+        "left": 0,
+        "top": 81,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "nonOpaqueFootprintPixels": 0,
+      "upperLateralAlphaPixels": 0,
+      "channelRanges": [205, 166, 121],
+      "postprocess": "square-mountain-ground-reference"
+    },
+    {
+      "id": "terrain-square-original-mountain-2",
+      "output": "public/assets/pixellab/terrain-square/original-mountain-2.png",
+      "outputSha256": "6211a416eeabb65da06bebfbb6a530e50f44291cb37cd80610e38f7fa388c457",
+      "providerOutputSha256": "71b5fb078de277df2fb017ad3a8193c8bfdf07c53a296fbc53382c19de5a21f7",
+      "dimensions": {
+        "width": 256,
+        "height": 384
+      },
+      "anchor": {
+        "x": 128,
+        "y": 256
+      },
+      "squareFootprint": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384
+      },
+      "alphaBounds": {
+        "left": 0,
+        "top": 81,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "nonOpaqueFootprintPixels": 0,
+      "upperLateralAlphaPixels": 0,
+      "channelRanges": [224, 184, 146],
+      "postprocess": "square-mountain-ground-reference"
+    },
+    {
+      "id": "terrain-square-original-mountain-3",
+      "output": "public/assets/pixellab/terrain-square/original-mountain-3.png",
+      "outputSha256": "ed0b45b628f764570a06b32cc16b48254307e5061c39a5ef19e552329925e31f",
+      "providerOutputSha256": "159f40de462d2a8e9e212b454672a8d67490086c1219db5fe0d39d24ea976fa7",
+      "dimensions": {
+        "width": 256,
+        "height": 384
+      },
+      "anchor": {
+        "x": 128,
+        "y": 256
+      },
+      "squareFootprint": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384
+      },
+      "alphaBounds": {
+        "left": 0,
+        "top": 124,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "nonOpaqueFootprintPixels": 0,
+      "upperLateralAlphaPixels": 0,
+      "channelRanges": [229, 206, 192],
+      "postprocess": "square-mountain-ground-reference"
+    }
+  ],
+  "familyDifferences": {
+    "grass": [
+      {
+        "pair": [
+          "terrain-square-original-grass-1",
+          "terrain-square-original-grass-2"
+        ],
+        "meanAbsoluteRgbDifference": 0.2389
+      },
+      {
+        "pair": [
+          "terrain-square-original-grass-1",
+          "terrain-square-original-grass-3"
+        ],
+        "meanAbsoluteRgbDifference": 0.3171
+      },
+      {
+        "pair": [
+          "terrain-square-original-grass-1",
+          "terrain-square-original-grass-4"
+        ],
+        "meanAbsoluteRgbDifference": 0.3525
+      },
+      {
+        "pair": [
+          "terrain-square-original-grass-2",
+          "terrain-square-original-grass-3"
+        ],
+        "meanAbsoluteRgbDifference": 0.3423
+      },
+      {
+        "pair": [
+          "terrain-square-original-grass-2",
+          "terrain-square-original-grass-4"
+        ],
+        "meanAbsoluteRgbDifference": 0.2884
+      },
+      {
+        "pair": [
+          "terrain-square-original-grass-3",
+          "terrain-square-original-grass-4"
+        ],
+        "meanAbsoluteRgbDifference": 0.6132
+      }
+    ],
+    "forest": [
+      {
+        "pair": [
+          "terrain-square-original-forest-1",
+          "terrain-square-original-forest-2"
+        ],
+        "meanAbsoluteRgbDifference": 5.0664
+      },
+      {
+        "pair": [
+          "terrain-square-original-forest-1",
+          "terrain-square-original-forest-3"
+        ],
+        "meanAbsoluteRgbDifference": 16.2717
+      },
+      {
+        "pair": [
+          "terrain-square-original-forest-1",
+          "terrain-square-original-forest-4"
+        ],
+        "meanAbsoluteRgbDifference": 7.8757
+      },
+      {
+        "pair": [
+          "terrain-square-original-forest-2",
+          "terrain-square-original-forest-3"
+        ],
+        "meanAbsoluteRgbDifference": 17.7154
+      },
+      {
+        "pair": [
+          "terrain-square-original-forest-2",
+          "terrain-square-original-forest-4"
+        ],
+        "meanAbsoluteRgbDifference": 3.0376
+      },
+      {
+        "pair": [
+          "terrain-square-original-forest-3",
+          "terrain-square-original-forest-4"
+        ],
+        "meanAbsoluteRgbDifference": 17.7167
+      }
+    ],
+    "mountain": [
+      {
+        "pair": [
+          "terrain-square-original-mountain-1",
+          "terrain-square-original-mountain-2"
+        ],
+        "meanAbsoluteRgbDifference": 2.8783
+      },
+      {
+        "pair": [
+          "terrain-square-original-mountain-1",
+          "terrain-square-original-mountain-3"
+        ],
+        "meanAbsoluteRgbDifference": 6.108
+      },
+      {
+        "pair": [
+          "terrain-square-original-mountain-2",
+          "terrain-square-original-mountain-3"
+        ],
+        "meanAbsoluteRgbDifference": 7.4627
+      }
+    ]
+  },
+  "generationSummary": {
+    "providerCalls": {
+      "terrain-square-original-grass-2": 1,
+      "terrain-square-original-grass-3": 1,
+      "terrain-square-original-grass-4": 1,
+      "terrain-square-original-forest-2": 1,
+      "terrain-square-original-forest-3": 1,
+      "terrain-square-original-forest-4": 3,
+      "terrain-square-original-mountain-2": 1,
+      "terrain-square-original-mountain-3": 2
+    },
+    "rejectedAttempts": {
+      "terrain-square-original-grass-2": 0,
+      "terrain-square-original-grass-3": 0,
+      "terrain-square-original-grass-4": 0,
+      "terrain-square-original-forest-2": 0,
+      "terrain-square-original-forest-3": 0,
+      "terrain-square-original-forest-4": 2,
+      "terrain-square-original-mountain-2": 0,
+      "terrain-square-original-mountain-3": 1
+    }
+  },
+  "visualReview": {
+    "status": "ACCEPTED_ORIGINAL_SQUARE_TERRAIN_FAMILY",
+    "notes": "Reviewed every source at native and nearest-neighbor enlarged scale; all 11 together; deterministic 8x8 mixed repetition for Grass, Forest and Mountain; same/different adjacency; 0.625x, 1x and 1.75x at DPR1/2 with unchanged Warrior occupancy; and ownership, selection, target and opaque fog contexts. Grass remains broad and low-salience without stamped bands or gameplay cues. Forest variants use distinct three/four-tree arrangements without resources or buildings. Mountain variants use distinct broad peak-and-shoulder silhouettes with terrain-quiet detail. All own full opaque squares and tall forms overhang upward only."
+  },
+  "artifacts": [
+    {
+      "path": "art/pixellab/reviews/square-original-terrain/individual-native-enlarged.png",
+      "bytes": 368028,
+      "width": 1280,
+      "height": 1860,
+      "sha256": "7e32763a5ee81d89664d842a4d8b918137ded2de4b42b46d4cb18faca0956f7a"
+    },
+    {
+      "path": "art/pixellab/reviews/square-original-terrain/all-11-family.png",
+      "bytes": 114899,
+      "width": 720,
+      "height": 780,
+      "sha256": "5682ab06315c532ac9a829c2a25da58dcc5bdc05fb3c9632e9e48d57cb01ea85"
+    },
+    {
+      "path": "art/pixellab/reviews/square-original-terrain/repetition-mixed-8x8.png",
+      "bytes": 326091,
+      "width": 2040,
+      "height": 750,
+      "sha256": "510908d7cfeb6424f87bb19330374024cf4bb5a306048bae9fbae1ce6fc5c45f"
+    },
+    {
+      "path": "art/pixellab/reviews/square-original-terrain/adjacency-same-different.png",
+      "bytes": 227826,
+      "width": 1200,
+      "height": 1050,
+      "sha256": "c08d9ad4bff93a02f47639677500f69a65570451fcb86a6415812ef4e6eb66ab"
+    },
+    {
+      "path": "art/pixellab/reviews/square-original-terrain/zoom-contexts-dpr1.png",
+      "bytes": 466779,
+      "width": 1120,
+      "height": 2910,
+      "sha256": "31bacbc5ae0c57748241df8341f9e4cf4cb25d297957f0c43434a0edaf50d895"
+    },
+    {
+      "path": "art/pixellab/reviews/square-original-terrain/zoom-contexts-dpr2.png",
+      "bytes": 1109532,
+      "width": 2240,
+      "height": 5820,
+      "sha256": "07fc9a146f522b859eceed335d48c37e3c0316f8543cc61f07f6186ad759d3d6"
+    },
+    {
+      "path": "art/pixellab/reviews/square-original-terrain/gameplay-overlays-and-units.png",
+      "bytes": 141969,
+      "width": 1120,
+      "height": 960,
+      "sha256": "dae1e32567ca60529e2dcd71af7eedffd65ee4bf2ff5ed68e71b95eb552ad343"
+    },
+    {
+      "path": "art/pixellab/reviews/square-original-terrain/family-batch-grass.png",
+      "bytes": 67683,
+      "width": 1380,
+      "height": 1870,
+      "sha256": "ea0f64787c9e88f3958b96773259b648b885ecc56bcceb0825cde6fec826536e"
+    },
+    {
+      "path": "art/pixellab/reviews/square-original-terrain/family-batch-forest.png",
+      "bytes": 339574,
+      "width": 1380,
+      "height": 1870,
+      "sha256": "28951ede44990194b11360ae6e88493d439e1d5822ba97412726bad3db117633"
+    },
+    {
+      "path": "art/pixellab/reviews/square-original-terrain/family-batch-mountain.png",
+      "bytes": 245064,
+      "width": 1380,
+      "height": 1870,
+      "sha256": "3c070dabe5283a07a92b4b11d6d58e28021c292f83e2698d07bbfd3f42403a3c"
+    }
+  ]
+}
