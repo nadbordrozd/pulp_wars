@@ -31,27 +31,27 @@ interface RecordEntry {
 }
 
 const root = process.cwd();
+const candyMode = process.argv.includes("--candy");
+const faction = candyMode ? "Candy" : "Original";
+const factionSlug = candyMode ? "candy" : "original";
+const familyPrefix = `terrain-square-${factionSlug}`;
 const reviewRoot = path.join(
   root,
-  "art/pixellab/reviews/square-original-terrain",
+  `art/pixellab/reviews/square-${factionSlug}-terrain`,
 );
 const families = {
-  grass: [1, 2, 3, 4].map(
-    (variant) => `terrain-square-original-grass-${variant}`,
-  ),
-  forest: [1, 2, 3, 4].map(
-    (variant) => `terrain-square-original-forest-${variant}`,
-  ),
-  mountain: [1, 2, 3].map(
-    (variant) => `terrain-square-original-mountain-${variant}`,
-  ),
+  grass: [1, 2, 3, 4].map((variant) => `${familyPrefix}-grass-${variant}`),
+  forest: [1, 2, 3, 4].map((variant) => `${familyPrefix}-forest-${variant}`),
+  mountain: [1, 2, 3].map((variant) => `${familyPrefix}-mountain-${variant}`),
 } as const;
 const ids = [...families.grass, ...families.forest, ...families.mountain];
-const newIds = [
-  ...families.grass.slice(1),
-  ...families.forest.slice(1),
-  ...families.mountain.slice(1),
-];
+const newIds = candyMode
+  ? ids
+  : [
+      ...families.grass.slice(1),
+      ...families.forest.slice(1),
+      ...families.mountain.slice(1),
+    ];
 const source = JSON.parse(
   await readFile(path.join(root, "scripts/art/pixellab-manifest.json"), "utf8"),
 ) as { readonly recipes: readonly Recipe[] };
@@ -73,7 +73,7 @@ for (const id of ids) {
     recipes.get(id) === undefined ||
     !["ACCEPTED", "CANDIDATE"].includes(record?.status ?? "")
   )
-    throw new Error(`Reviewable Original square terrain missing: ${id}`);
+    throw new Error(`Reviewable ${faction} square terrain missing: ${id}`);
 }
 
 await mkdir(reviewRoot, { recursive: true });
@@ -84,8 +84,12 @@ await createAdjacencySheet();
 await createZoomSheet(1);
 await createZoomSheet(2);
 await createGameplayContextSheet();
+if (candyMode) {
+  await createFactionComparisonSheet();
+  await createDenseMixedFactionSheet();
+}
 
-const artifactNames = [
+const artifactNames: string[] = [
   "individual-native-enlarged.png",
   "all-11-family.png",
   "repetition-mixed-8x8.png",
@@ -96,13 +100,15 @@ const artifactNames = [
   "family-batch-grass.png",
   "family-batch-forest.png",
   "family-batch-mountain.png",
-] as const;
+];
+if (candyMode)
+  artifactNames.push("original-vs-candy.png", "dense-mixed-faction-map.png");
 const artifacts = await Promise.all(
   artifactNames.map(async (name) => {
     const data = await readFile(path.join(reviewRoot, name));
     const metadata = await sharp(data).metadata();
     return {
-      path: `art/pixellab/reviews/square-original-terrain/${name}`,
+      path: `art/pixellab/reviews/square-${factionSlug}-terrain/${name}`,
       bytes: data.byteLength,
       width: metadata.width,
       height: metadata.height,
@@ -148,15 +154,24 @@ await writeFile(
     `${JSON.stringify(
       {
         schemaVersion: 1,
-        generatedBy: "npm run art:square-original-terrain-review",
-        gate: "ORIGINAL_SQUARE_TERRAIN_FAMILY",
+        generatedBy: `npm run art:square-${factionSlug}-terrain-review`,
+        gate: `${faction.toUpperCase()}_SQUARE_TERRAIN_FAMILY`,
         familyIds: families,
         statuses,
-        boundedProviderBatches: [
-          families.grass.slice(1),
-          families.forest.slice(1),
-          families.mountain.slice(1),
-        ],
+        boundedProviderBatches: candyMode
+          ? [
+              families.grass.slice(0, 1),
+              families.forest.slice(0, 1),
+              families.mountain.slice(0, 1),
+              families.grass.slice(1),
+              families.forest.slice(1),
+              families.mountain.slice(1),
+            ]
+          : [
+              families.grass.slice(1),
+              families.forest.slice(1),
+              families.mountain.slice(1),
+            ],
         geometry: {
           cellCssPixelsAt1x: { width: 128, height: 128 },
           grass: {
@@ -174,10 +189,8 @@ await writeFile(
         deterministicProcessing: {
           grass:
             "Crop the one-sixteenth provider presentation inset; scale to 256x256; radius-24 blur; retain 4% authored color over #6f9255; smoothstep outer 48px to #6f9255; force alpha 255.",
-          forest:
-            "Apply an 8px lateral alpha safety feather above y128, then composite accepted Original square Grass 1 exactly into source y128..384 beneath each provider-authored Forest.",
-          mountain:
-            "Apply an 8px lateral alpha safety feather above y128; derive slate square ground by greyscale+tint #718391 from accepted Original square Grass 1; retain provider Mountain through y200 and smoothstep-fade its alpha to zero by y304.",
+          forest: `Apply an 8px lateral alpha safety feather above y128, then composite accepted ${faction} square Grass 1 exactly into source y128..384 beneath each provider-authored Forest.`,
+          mountain: `Apply an 8px lateral alpha safety feather above y128; derive slate square ground by greyscale+tint #718391 from accepted ${faction} square Grass 1; retain provider Mountain through y200 and smoothstep-fade its alpha to zero by y304.`,
           variantSelection:
             "Cosmetic review selector only: (x*17 + y*31 + x*y*7) modulo family length. Runtime mechanics and simulation PRNG are not read or changed.",
         },
@@ -189,7 +202,9 @@ await writeFile(
           devicePixelRatios: [1, 2],
           repetition: "8x8 per family with deterministic mixed variants",
           adjacency: ["SAME_VARIANT", "DIFFERENT_VARIANT"],
-          unitSource: "unit-warrior",
+          unitSources: candyMode
+            ? ["unit-warrior", "unit-candy-warrior"]
+            : ["unit-warrior"],
           unitSourceSha256: hash(warrior),
           unitHashes,
           unitBytesChanged: false,
@@ -226,10 +241,9 @@ await writeFile(
         },
         visualReview: {
           status: allAccepted
-            ? "ACCEPTED_ORIGINAL_SQUARE_TERRAIN_FAMILY"
+            ? `ACCEPTED_${faction.toUpperCase()}_SQUARE_TERRAIN_FAMILY`
             : "CANDIDATE_REVIEW",
-          notes:
-            "Reviewed every source at native and nearest-neighbor enlarged scale; all 11 together; deterministic 8x8 mixed repetition for Grass, Forest and Mountain; same/different adjacency; 0.625x, 1x and 1.75x at DPR1/2 with unchanged Warrior occupancy; and ownership, selection, target and opaque fog contexts. Grass remains broad and low-salience without stamped bands or gameplay cues. Forest variants use distinct three/four-tree arrangements without resources or buildings. Mountain variants use distinct broad peak-and-shoulder silhouettes with terrain-quiet detail. All own full opaque squares and tall forms overhang upward only.",
+          notes: `Reviewed every ${faction} source at native and nearest-neighbor enlarged scale; all 11 together; deterministic 8x8 mixed repetition for Grass, Forest and Mountain; same/different adjacency; 0.625x, 1x and 1.75x at DPR1/2 with unchanged ${candyMode ? "Original and Candy Warrior" : "Warrior"} occupancy; and ownership, selection, target and opaque fog contexts.${candyMode ? " Direct Original-vs-Candy and dense mixed-faction boards also pass." : ""} Grass remains broad and low-salience without stamped bands or gameplay cues. Forest variants use distinct three/four-tree arrangements without resources or buildings. Mountain variants use distinct broad peak-and-shoulder silhouettes with terrain-quiet detail. All own full opaque squares and tall forms overhang upward only.`,
         },
         artifacts,
       },
@@ -243,7 +257,7 @@ await writeFile(
 
 await writeFile(
   path.join(reviewRoot, "README.md"),
-  `# Original square terrain family\n\nThis directory is rebuilt deterministically with \`npm run art:square-original-terrain-review\`. It reviews all four Grass, four Forest and three Mountain variants without switching runtime coverage.\n\nThe PixelLab provider work is split into three coherent batches—Grass 2–4, Forest 2–4 and Mountain 2–3—and the checked-in generator refuses mixed families or more than three selected assets. Every Grass source is 256×256 at anchor (128,128). Every Forest and Mountain source is 256×384 at anchor (128,256), with y=128..383 exactly owning the square and only upward overhang allowed.\n\nGrass is deterministically subdued and edge-converged; Forest and Mountain reuse the accepted Grass 1 ground composite. Prompts, negative prompts, sizes, seeds, style references, provider hashes, output mapping, rejection history and processing are recorded in the PixelLab manifests. The complete evidence covers native/enlarged inspection, all 11 assets, three 8×8 mixed-family repetition boards, same/different adjacency, min/1x/max zoom, DPR1/2, unchanged unit occupancy, ownership, selection, movement targets and fog withholding.\n`,
+  `# ${faction} square terrain family\n\nThis directory is rebuilt deterministically with \`npm run art:square-${factionSlug}-terrain-review\`. It reviews all four Grass, four Forest and three Mountain variants without switching runtime coverage.\n\nThe PixelLab provider work ${candyMode ? "uses three one-asset sample gates followed by" : "is split into"} coherent Grass 2–4, Forest 2–4 and Mountain 2–3 batches; the checked-in generator refuses mixed families or more than three selected assets. Every Grass source is 256×256 at anchor (128,128). Every Forest and Mountain source is 256×384 at anchor (128,256), with y=128..383 exactly owning the square and only upward overhang allowed.\n\nGrass is deterministically subdued and edge-converged; Forest and Mountain reuse accepted ${faction} square Grass 1. Prompts, negatives, sizes, seeds, style references, provider hashes, output mapping, rejection history and processing are recorded in the PixelLab manifests. Evidence covers native/enlarged inspection, all 11 assets, three 8×8 repetitions, same/different adjacency, min/1x/max zoom, DPR1/2, unchanged ${candyMode ? "Original and Candy" : "Original"} unit occupancy, ownership, selection, movement targets and fog withholding${candyMode ? ", plus Original-vs-Candy and dense mixed-faction boards" : ""}.\n`,
   "utf8",
 );
 
@@ -402,6 +416,9 @@ async function createZoomSheet(dpr: 1 | 2): Promise<void> {
   const warrior = await readFile(
     path.join(root, "public/assets/pixellab/units/warrior.png"),
   );
+  const candyWarrior = await readFile(
+    path.join(root, "public/assets/pixellab/units/candy-warrior.png"),
+  );
   for (const [zoomIndex, zoom] of zooms.entries()) {
     const sectionTop = zoomIndex * sectionHeight;
     const tile = Math.round(128 * zoom * dpr);
@@ -436,7 +453,9 @@ async function createZoomSheet(dpr: 1 | 2): Promise<void> {
           left: centerX - Math.round(tile / 2),
           top: centerY - Math.round(tile / 2),
         });
-        const unit = await sharp(warrior)
+        const unit = await sharp(
+          candyMode && column % 2 === 1 ? candyWarrior : warrior,
+        )
           .resize(Math.round(64 * zoom * dpr), Math.round(74 * zoom * dpr), {
             fit: "fill",
           })
@@ -513,6 +532,168 @@ async function createGameplayContextSheet(): Promise<void> {
     }
   }
   await canvas(1120, 960, overlays, "gameplay-overlays-and-units.png");
+}
+
+async function createFactionComparisonSheet(): Promise<void> {
+  const overlays: OverlayOptions[] = [];
+  const originalFamilies = {
+    grass: [1, 2, 3, 4].map(
+      (variant) => `terrain-square-original-grass-${variant}`,
+    ),
+    forest: [1, 2, 3, 4].map(
+      (variant) => `terrain-square-original-forest-${variant}`,
+    ),
+    mountain: [1, 2, 3].map(
+      (variant) => `terrain-square-original-mountain-${variant}`,
+    ),
+  } as const;
+  overlays.push({
+    input: label("ORIGINAL / CANDY · matched geometry and lighting", "", 1200),
+    left: 0,
+    top: 4,
+  });
+  for (const [row, family] of ["grass", "forest", "mountain"].entries()) {
+    const candyIds = families[family as keyof typeof families];
+    const originalIds = originalFamilies[family as keyof typeof families];
+    overlays.push({
+      input: label(family.toUpperCase(), "", 150),
+      left: 0,
+      top: 120 + row * 300,
+    });
+    for (let column = 0; column < candyIds.length; column += 1) {
+      const candyId = candyIds[column];
+      const originalId = originalIds[column];
+      if (candyId === undefined || originalId === undefined) continue;
+      const candyRecipe = requiredRecipe(candyId);
+      const originalRecipe = source.recipes.find(({ id }) => id === originalId);
+      if (originalRecipe === undefined)
+        throw new Error(`Original comparison recipe missing: ${originalId}`);
+      const centerX = 250 + column * 240;
+      const centerY = 190 + row * 300;
+      overlays.push({
+        input: await sharp(path.join(root, originalRecipe.output))
+          .resize(
+            Math.round(originalRecipe.outputSize.width * 0.4),
+            Math.round(originalRecipe.outputSize.height * 0.4),
+            { fit: "fill" },
+          )
+          .png()
+          .toBuffer(),
+        left: centerX - 110,
+        top: centerY - Math.round(originalRecipe.anchor.y * 0.4),
+      });
+      overlays.push({
+        input: await display(candyId, 0.8, 1),
+        left: centerX + 10,
+        top: centerY - Math.round(candyRecipe.anchor.y * 0.4),
+      });
+      overlays.push({
+        input: label(`O / C · ${column + 1}`, "", 220),
+        left: centerX - 110,
+        top: centerY + 112,
+      });
+    }
+  }
+  await canvas(1200, 1020, overlays, "original-vs-candy.png");
+}
+
+async function createDenseMixedFactionSheet(): Promise<void> {
+  const overlays: OverlayOptions[] = [];
+  const originalWarrior = await readFile(
+    path.join(root, "public/assets/pixellab/units/warrior.png"),
+  );
+  const candyWarrior = await readFile(
+    path.join(root, "public/assets/pixellab/units/candy-warrior.png"),
+  );
+  const unitBuffers = await Promise.all(
+    [originalWarrior, candyWarrior].map((unit) =>
+      sharp(unit).resize(40, 46, { fit: "fill" }).png().toBuffer(),
+    ),
+  );
+  overlays.push({
+    input: label(
+      "8×8 DENSE MIX · both factions, units, overlays and fog · 0.625×",
+      "",
+      760,
+    ),
+    left: 0,
+    top: 4,
+  });
+  const tile = 80;
+  const mapLeft = 60;
+  const mapTop = 130;
+  const bodies: Array<{
+    readonly depth: number;
+    readonly overlay: OverlayOptions;
+  }> = [];
+  for (let y = 0; y < 8; y += 1) {
+    for (let x = 0; x < 8; x += 1) {
+      const family: keyof typeof families =
+        (x + y * 2) % 5 === 0
+          ? "mountain"
+          : (x * 2 + y) % 4 === 0
+            ? "forest"
+            : "grass";
+      const variantCount = families[family].length;
+      const variant = variantIndex(x, y, variantCount) + 1;
+      const candyTile = (x + y) % 2 === 1;
+      const id = `terrain-square-${candyTile ? "candy" : "original"}-${family}-${variant}`;
+      const recipe = source.recipes.find((entry) => entry.id === id);
+      if (recipe === undefined)
+        throw new Error(`Dense-map recipe missing: ${id}`);
+      const centerX = mapLeft + x * tile + tile / 2;
+      const centerY = mapTop + y * tile + tile / 2;
+      const fogged = (x * 5 + y) % 17 === 0;
+      if (!fogged)
+        bodies.push({
+          depth: y * 8 + x,
+          overlay: {
+            input: await sharp(path.join(root, recipe.output))
+              .resize(
+                Math.round(recipe.outputSize.width * 0.3125),
+                Math.round(recipe.outputSize.height * 0.3125),
+                { fit: "fill" },
+              )
+              .png()
+              .toBuffer(),
+            left: centerX - 40,
+            top: centerY - Math.round(recipe.anchor.y * 0.3125),
+          },
+        });
+      if (!fogged && (x * 7 + y * 3) % 9 === 0) {
+        const unit = unitBuffers[candyTile ? 1 : 0];
+        if (unit !== undefined)
+          bodies.push({
+            depth: y * 8 + x + 0.5,
+            overlay: { input: unit, left: centerX - 20, top: centerY - 35 },
+          });
+      }
+      if (!fogged && (x + y * 3) % 11 === 0)
+        bodies.push({
+          depth: y * 8 + x + 0.25,
+          overlay: {
+            input: gameplayOverlaySvg(
+              tile,
+              x % 2 === 0 ? "OWNERSHIP" : "SELECTION",
+            ),
+            left: centerX - 40,
+            top: centerY - 40,
+          },
+        });
+      if (fogged)
+        bodies.push({
+          depth: y * 8 + x + 1,
+          overlay: {
+            input: fogSvg(tile),
+            left: centerX - 40,
+            top: centerY - 40,
+          },
+        });
+    }
+  }
+  bodies.sort((left, right) => left.depth - right.depth);
+  overlays.push(...bodies.map(({ overlay }) => overlay));
+  await canvas(760, 830, overlays, "dense-mixed-faction-map.png");
 }
 
 async function measure(id: string): Promise<Record<string, unknown>> {
@@ -641,7 +822,7 @@ function resolvedFile(id: string): string {
 function requiredRecipe(id: string): Recipe {
   const recipe = recipes.get(id);
   if (recipe === undefined)
-    throw new Error(`Original square terrain recipe missing: ${id}`);
+    throw new Error(`${faction} square terrain recipe missing: ${id}`);
   return recipe;
 }
 
@@ -657,7 +838,7 @@ function variantIndex(x: number, y: number, length: number): number {
 }
 
 function shortId(id: string): string {
-  return id.replace("terrain-square-original-", "");
+  return id.replace(`${familyPrefix}-`, "");
 }
 
 function checker(width: number, height: number): Buffer {

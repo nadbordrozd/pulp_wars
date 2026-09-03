@@ -35,6 +35,7 @@
     "art:square-grid-review": "tsx scripts/art/square-grid-review.ts",
     "art:square-terrain-sample-review": "tsx scripts/art/square-terrain-sample-review.ts",
     "art:square-original-terrain-review": "tsx scripts/art/square-original-terrain-review.ts",
+    "art:square-candy-terrain-review": "tsx scripts/art/square-candy-terrain-review.ts",
     "art:square-terrain-family-candidate-review": "tsx scripts/art/square-terrain-family-candidate-review.ts",
     "art:rendering-review": "tsx scripts/art/rendering-review.ts",
     "art:validate": "tsx scripts/art/pixellab.ts validate",

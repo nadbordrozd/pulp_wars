@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "acaef532ad941c4a7cdd271dae486515d4214a23926dd6671ed5a7245f75f961",
+  "sourceManifestSha256": "7feacc8996dba049fc3f509b6e9331e01ab13ad8d04cdeda6cbb5338dca9c1b7",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -8093,6 +8093,849 @@
       "outputSha256": "ed0b45b628f764570a06b32cc16b48254307e5061c39a5ef19e552329925e31f",
       "notes": "Accepted on the second provider attempt after source/native/enlarged, 8x8 mixed repetition, same/different adjacency and direct comparison with Mountains 1-2. The low flat-topped right mesa, long shallow left ridge and squat foreground shelf create the required materially wider/lower silhouette without a triangular apex. Shared northwest faces, darker southeast planes, quiet outline and slate square feather pass; bounds are upward-only with no resource, building or state cue.",
       "reviewedAt": "2026-09-03T14:03:40.446Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-candy-grass-1": {
+      "id": "terrain-square-candy-grass-1",
+      "status": "ACCEPTED",
+      "jobId": "ea820263-0222-47b5-bf7a-0faaa8ce88e9",
+      "candidate": "art/pixellab/candidates/terrain-square-candy-grass-1.png",
+      "candidateSha256": "ed9f2155bcd70a5872ed6d5cb425c2bc7683373e8690b9509e01e7abb883ca4b",
+      "providerOutputSha256": "a26f3f12b96ebbc6abc7408bf49bc8c2e265e7ce3cf228dffff965af47effbba",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green #6f9255 base, muted moss-green southeast plane, extremely restrained cocoa, cream and warm-pink undertones, pale yellow-green northwest highlight. Candy square Grass sample, one axis-aligned 256 by 256 terrain field filling every edge and corner. It is ordinary continuous quiet leaf-green turf first, with only enormous fully blended cocoa, cream and muted-pink undertones visible on close inspection. Use a barely perceptible northwest-to-southeast light drift without contour or boundary. No recognizable swirl, candy piece, stripe, patch, path, object or gameplay cue. Flat clean 2D terrain much quieter than units and cities. Processing removes the provider inset, radius-24 blurs it, retains four percent over #6f9255, converges outer 48px to that exact color and forces opaque alpha. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, transparent corner, rounded corner, dark perimeter, border, frame, bevel, side wall, floating slab, seam, edge decoration, cocoa swirl, spiral, icing dash, candy carpet, cake, frosting, checkerboard, stripes, sprinkles, gumdrops, lollipop, candy cane, fruit, animal, resource, road, ownership, selection, unit, building, text, UI, noisy texture, lower-right light.",
+        "prompt": "Candy square Grass sample, one axis-aligned 256 by 256 terrain field filling every edge and corner. It is ordinary continuous quiet leaf-green turf first, with only enormous fully blended cocoa, cream and muted-pink undertones visible on close inspection. Use a barely perceptible northwest-to-southeast light drift without contour or boundary. No recognizable swirl, candy piece, stripe, patch, path, object or gameplay cue. Flat clean 2D terrain much quieter than units and cities. Processing removes the provider inset, radius-24 blurs it, retains four percent over #6f9255, converges outer 48px to that exact color and forces opaque alpha.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, transparent corner, rounded corner, dark perimeter, border, frame, bevel, side wall, floating slab, seam, edge decoration, cocoa swirl, spiral, icing dash, candy carpet, cake, frosting, checkerboard, stripes, sprinkles, gumdrops, lollipop, candy cane, fruit, animal, resource, road, ownership, selection, unit, building, text, UI, noisy texture, lower-right light",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 105171,
+        "noBackground": false,
+        "palette": "quiet leaf green #6f9255 base, muted moss-green southeast plane, extremely restrained cocoa, cream and warm-pink undertones, pale yellow-green northwest highlight",
+        "postprocess": "square-ground-fill",
+        "styleReference": {
+          "id": "terrain-candy-grass-1",
+          "sha256": "3efa473e2c67f746fac9371dfaafb4e36e4ac0f53143db9ce36950ea3a912ba2",
+          "usageDescription": "Input reference role: retain only the accepted Candy terrain's quiet leaf-green value family and restrained confection material language. Replace the diamond and its swirl with the exact full-square, nearly uniform northwest-lit field described here."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 0,
+          "right": 256,
+          "bottom": 256
+        }
+      },
+      "outputSha256": "ed9f2155bcd70a5872ed6d5cb425c2bc7683373e8690b9509e01e7abb883ca4b",
+      "notes": "Accepted after source/native/enlarged and repeated-edge assessment. The full square is opaque with exact shared #6f9255 corners and only 2/1/1 RGB range, so no seams, stamp, swirl, resource, ownership or state cue survives. The field remains calm green at 0.625x while retaining a barely perceptible warm Candy undertone and the common northwest light.",
+      "reviewedAt": "2026-09-03T14:29:34.855Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-candy-forest-1": {
+      "id": "terrain-square-candy-forest-1",
+      "status": "ACCEPTED",
+      "jobId": "c8ff2b0f-db03-4a04-973c-b4fbc3102a1a",
+      "candidate": "art/pixellab/candidates/terrain-square-candy-forest-1.png",
+      "candidateSha256": "0ef924e6df36e75faee69a11c3a8207cbcefa189d9b1b8a81515deee6b75171a",
+      "providerOutputSha256": "63443f6f8a71011c174418ea82efaaafde5e2c830c685006638b64ac0a6e44fa",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 99,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted warm-pink and cream lollipop foliage, deep cocoa southeast planes and trunks, restrained marshmallow northwest highlights, near-black cocoa outline. Isolated Candy tree cluster only on an untrimmed transparent 256 by 384 canvas; every pixel not belonging to a tree remains transparent. Draw exactly three chunky candy trees in the Original square Forest 1 arrangement: two broad rear canopies and one lower front-center canopy, each one rounded lollipop-like mass on a short cocoa wafer trunk. Keep trunks within x16..239,y128..300; canopies may rise above y128 and remain inside x8..247. Draw no ground, floor, turf, platform, tile or contact shape of any kind. Soft northwest cream highlights and darker southeast cocoa-pink planes. Strong terrain-quiet outline, two-to-three flat tones, few huge forms. Anchor 128,256. Processing alone supplies the full Candy Grass square beneath. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; any ground under trees, green floor, grass patch, turf, diamond, rhombus, ground slab, base plate, platform, tile outline, cast shadow, clipped canopy, left right or bottom overflow, lower-right light, ordinary green forest, Christmas tree, fruit, animal, lumber camp, building, unit, face, loose candy resource, sprinkles, many tiny sweets, tiny leaves, dense texture, ownership, selection, road, text, UI, photoreal food, 3D render.",
+        "prompt": "Isolated Candy tree cluster only on an untrimmed transparent 256 by 384 canvas; every pixel not belonging to a tree remains transparent. Draw exactly three chunky candy trees in the Original square Forest 1 arrangement: two broad rear canopies and one lower front-center canopy, each one rounded lollipop-like mass on a short cocoa wafer trunk. Keep trunks within x16..239,y128..300; canopies may rise above y128 and remain inside x8..247. Draw no ground, floor, turf, platform, tile or contact shape of any kind. Soft northwest cream highlights and darker southeast cocoa-pink planes. Strong terrain-quiet outline, two-to-three flat tones, few huge forms. Anchor 128,256. Processing alone supplies the full Candy Grass square beneath.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; any ground under trees, green floor, grass patch, turf, diamond, rhombus, ground slab, base plate, platform, tile outline, cast shadow, clipped canopy, left right or bottom overflow, lower-right light, ordinary green forest, Christmas tree, fruit, animal, lumber camp, building, unit, face, loose candy resource, sprinkles, many tiny sweets, tiny leaves, dense texture, ownership, selection, road, text, UI, photoreal food, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 105102,
+        "noBackground": true,
+        "palette": "muted warm-pink and cream lollipop foliage, deep cocoa southeast planes and trunks, restrained marshmallow northwest highlights, near-black cocoa outline",
+        "postprocess": "square-tall-ground-reference",
+        "styleReference": {
+          "id": "terrain-candy-forest-1",
+          "sha256": "03ffe1474c446cdebd00b762614569e4122e60a082116b5cbd1aefbd4c0d4589",
+          "usageDescription": "Input reference role: preserve the accepted Candy Forest's three rounded lollipop-tree read, muted warm-pink and cream planes, cocoa trunks, outline weight and terrain-quiet detail. Recompose it to match the Original square camera, scale, northwest lighting and footprint."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        },
+        "groundReference": {
+          "id": "terrain-square-candy-grass-1",
+          "sha256": "ed9f2155bcd70a5872ed6d5cb425c2bc7683373e8690b9509e01e7abb883ca4b",
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-square-candy-forest-1-7dec418e1fe8.png",
+          "candidateSha256": "7dec418e1fe8b197667e30c608f38dd4fd1f42ccf11da55ee66f5ccc3da6ef93",
+          "notes": "Rejected after source/native/enlarged inspection: although tree count, Candy palette, broad canopy planes and northwest highlights are strong, the provider painted a dark-outlined raised diamond slab beneath the trunks. That internal platform would remain visible over the deterministic full square, contradict the axis-aligned footprint, create diamond-era geometry, and repeat as a false boundary. Retry with isolated trees only on complete transparency; deterministic processing alone supplies ground.",
+          "reviewedAt": "2026-09-03T14:31:11.848Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted warm-pink and cream lollipop foliage, deep cocoa southeast planes and trunks, restrained marshmallow northwest highlights, near-black cocoa outline. Candy square Forest sample on an untrimmed transparent 256 by 384 canvas. Draw exactly three chunky candy trees in the Original square Forest 1 arrangement: two broad rear canopies and one lower front-center canopy, each one rounded lollipop-like mass on a short cocoa wafer trunk. Keep trunks inside owning square x0..255,y128..383; canopies may rise only above y128. Leave transparent lateral and bottom safety. Soft northwest key light creates restrained cream highlights; southeast canopy and trunk planes are darker cocoa and muted pink. Strong terrain-quiet outline, two-to-three flat tones and few huge forms. Anchor 128,256. Processing composites accepted Candy square Grass beneath. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, ground slab, transparent footprint corner, clipped canopy, left right or bottom overflow, lower-right light, ordinary green forest, Christmas tree, fruit, animal, lumber camp, building, unit, face, loose candy resource, sprinkles, many tiny sweets, tiny leaves, dense texture, ownership, selection, road, text, UI, photoreal food, 3D render.",
+            "prompt": "Candy square Forest sample on an untrimmed transparent 256 by 384 canvas. Draw exactly three chunky candy trees in the Original square Forest 1 arrangement: two broad rear canopies and one lower front-center canopy, each one rounded lollipop-like mass on a short cocoa wafer trunk. Keep trunks inside owning square x0..255,y128..383; canopies may rise only above y128. Leave transparent lateral and bottom safety. Soft northwest key light creates restrained cream highlights; southeast canopy and trunk planes are darker cocoa and muted pink. Strong terrain-quiet outline, two-to-three flat tones and few huge forms. Anchor 128,256. Processing composites accepted Candy square Grass beneath.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, ground slab, transparent footprint corner, clipped canopy, left right or bottom overflow, lower-right light, ordinary green forest, Christmas tree, fruit, animal, lumber camp, building, unit, face, loose candy resource, sprinkles, many tiny sweets, tiny leaves, dense texture, ownership, selection, road, text, UI, photoreal food, 3D render",
+            "requestSize": {
+              "width": 256,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 384
+            },
+            "seed": 105102,
+            "noBackground": true,
+            "palette": "muted warm-pink and cream lollipop foliage, deep cocoa southeast planes and trunks, restrained marshmallow northwest highlights, near-black cocoa outline",
+            "postprocess": "square-tall-ground-reference",
+            "styleReference": {
+              "id": "terrain-candy-forest-1",
+              "sha256": "03ffe1474c446cdebd00b762614569e4122e60a082116b5cbd1aefbd4c0d4589",
+              "usageDescription": "Input reference role: preserve the accepted Candy Forest's three rounded lollipop-tree read, muted warm-pink and cream planes, cocoa trunks, outline weight and terrain-quiet detail. Recompose it to match the Original square camera, scale, northwest lighting and footprint."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 128,
+              "right": 256,
+              "bottom": 384
+            },
+            "groundReference": {
+              "id": "terrain-square-candy-grass-1",
+              "sha256": "ed9f2155bcd70a5872ed6d5cb425c2bc7683373e8690b9509e01e7abb883ca4b",
+              "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+            }
+          }
+        }
+      ],
+      "outputSha256": "0ef924e6df36e75faee69a11c3a8207cbcefa189d9b1b8a81515deee6b75171a",
+      "notes": "Accepted on the second provider attempt after source/native/enlarged inspection and direct comparison with Original square Forest 1. Exactly three rounded Candy trees read as a quiet Forest; cream northwest highlights, muted-pink bodies, cocoa southeast planes and trunks share the family light. The rejected diamond slab is gone, every non-tree upper pixel is transparent, lateral edges are clear, and deterministic Candy Grass alone supplies the fully opaque owning square.",
+      "reviewedAt": "2026-09-03T14:35:33.455Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-candy-mountain-1": {
+      "id": "terrain-square-candy-mountain-1",
+      "status": "ACCEPTED",
+      "jobId": "ec3cb74b-f166-4d98-bcd9-7032fef18151",
+      "candidate": "art/pixellab/candidates/terrain-square-candy-mountain-1.png",
+      "candidateSha256": "1c39d7a6087a8024eaa221ecf88bcce44d4ecaf4fef94664ef9c92742f6e95bc",
+      "providerOutputSha256": "fa7fce7bf614a4cb821fc41f845c4e4015bb111dbaded0642964dfab2236aa14",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 84,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: cocoa brown rock-candy base, muted warm-pink stratum, restrained cream northwest faces, deep cocoa southeast planes, near-black cocoa outline. Candy square Mountain sample on a transparent 256 by 384 canvas. Draw a broad range matching Original square Mountain 1: one asymmetric main peak, one smaller shoulder and wide foothills. Use large cocoa rock-candy planes, one broad muted warm-pink stratum and restrained cream northwest faces; candy identity comes only from these materials. Rock fills most square width yet keeps transparent lateral and bottom safety; peak may rise above y128. Soft northwest key light and darker southeast planes, strong terrain-quiet outline, two-to-three flat tones, few huge planes. No ground tile. Anchor 128,256. Processing supplies a slate field from Candy square Grass and feathers rock below y200. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; cake slice, cupcake, ice cream cone, lollipop, candy cane pole, face, character, unit, city, building, flag, resource, ore, gumdrop pile, rainbow, sprinkles, tiny candy pieces, diamond, V base, platform, perimeter, clipped peak, left right or bottom overflow, lower-right light, snow noise, pebbles, realistic strata, text, UI, 3D render.",
+        "prompt": "Candy square Mountain sample on a transparent 256 by 384 canvas. Draw a broad range matching Original square Mountain 1: one asymmetric main peak, one smaller shoulder and wide foothills. Use large cocoa rock-candy planes, one broad muted warm-pink stratum and restrained cream northwest faces; candy identity comes only from these materials. Rock fills most square width yet keeps transparent lateral and bottom safety; peak may rise above y128. Soft northwest key light and darker southeast planes, strong terrain-quiet outline, two-to-three flat tones, few huge planes. No ground tile. Anchor 128,256. Processing supplies a slate field from Candy square Grass and feathers rock below y200.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; cake slice, cupcake, ice cream cone, lollipop, candy cane pole, face, character, unit, city, building, flag, resource, ore, gumdrop pile, rainbow, sprinkles, tiny candy pieces, diamond, V base, platform, perimeter, clipped peak, left right or bottom overflow, lower-right light, snow noise, pebbles, realistic strata, text, UI, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 105133,
+        "noBackground": true,
+        "palette": "cocoa brown rock-candy base, muted warm-pink stratum, restrained cream northwest faces, deep cocoa southeast planes, near-black cocoa outline",
+        "postprocess": "square-mountain-ground-reference",
+        "styleReference": {
+          "id": "terrain-candy-mountain-1",
+          "sha256": "9c3c0592d92cee0cde21ec064734c175357cf9dfa9b29023bc21d24c668124af",
+          "usageDescription": "Input reference role: preserve the accepted Candy Mountain's cocoa rock-candy planes, one broad muted-pink stratum, cream ridge highlight, outline weight and quiet detail. Recompose it to match the Original square camera, width, northwest light and footprint."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        },
+        "groundReference": {
+          "id": "terrain-square-candy-grass-1",
+          "sha256": "ed9f2155bcd70a5872ed6d5cb425c2bc7683373e8690b9509e01e7abb883ca4b",
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+        }
+      },
+      "outputSha256": "1c39d7a6087a8024eaa221ecf88bcce44d4ecaf4fef94664ef9c92742f6e95bc",
+      "notes": "Accepted after source/native/enlarged inspection and direct Original/Candy comparison. The asymmetric peak and subordinate shoulder match square Mountain 1 scale and camera while broad cocoa rock-candy, muted-pink stratum, cream northwest rim and darker southeast planes communicate Candy without a prop or resource. The peak overhang is upward-only, lateral safety is clear, and the provider base feathers cleanly into the deterministic opaque slate square.",
+      "reviewedAt": "2026-09-03T14:37:01.191Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-candy-grass-3": {
+      "id": "terrain-square-candy-grass-3",
+      "status": "ACCEPTED",
+      "jobId": "7cd91517-36f2-4e0f-a70f-af8525908131",
+      "candidate": "art/pixellab/candidates/terrain-square-candy-grass-3.png",
+      "candidateSha256": "0c9e281ac5469b3c6fb6a1233c649e22de86e74b2ff09e48402d43b073b89e09",
+      "providerOutputSha256": "55ac08ddb6572cb75490c5cc6e833fc4c20348277d9eb4aeab30690f93fcee61",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green #6f9255 base, muted moss-green southeast plane, extremely restrained cocoa, cream and warm-pink undertones, pale yellow-green northwest highlight. Candy square Grass variant 3, an exact full 256 by 256 continuous field. Calm nearly uniform leaf-green turf with only one diffuse central warm-pink-to-moss undertone and the shared soft northwest light. It has no edge, direction line, repeating motif, candy object or recognizable shape. Every edge and corner is seamless mid-green. Processing radius-24 blurs, retains four percent over #6f9255, converges outer 48px and forces opaque alpha. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, transparent corner, rounded corner, border, frame, bevel, slab, seam, spiral, stripe, checkerboard, candy piece, frosting, sprinkles, grass blades, fruit, animal, resource, road, ownership, selection, unit, building, text, UI, noisy texture, lower-right light.",
+        "prompt": "Candy square Grass variant 3, an exact full 256 by 256 continuous field. Calm nearly uniform leaf-green turf with only one diffuse central warm-pink-to-moss undertone and the shared soft northwest light. It has no edge, direction line, repeating motif, candy object or recognizable shape. Every edge and corner is seamless mid-green. Processing radius-24 blurs, retains four percent over #6f9255, converges outer 48px and forces opaque alpha.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, transparent corner, rounded corner, border, frame, bevel, slab, seam, spiral, stripe, checkerboard, candy piece, frosting, sprinkles, grass blades, fruit, animal, resource, road, ownership, selection, unit, building, text, UI, noisy texture, lower-right light",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 105173,
+        "noBackground": false,
+        "palette": "quiet leaf green #6f9255 base, muted moss-green southeast plane, extremely restrained cocoa, cream and warm-pink undertones, pale yellow-green northwest highlight",
+        "postprocess": "square-ground-fill",
+        "styleReference": {
+          "id": "terrain-square-candy-grass-1",
+          "sha256": "ed9f2155bcd70a5872ed6d5cb425c2bc7683373e8690b9509e01e7abb883ca4b",
+          "usageDescription": "Match the accepted Candy square Grass edge color, extreme quietness, broad diffuse variation and barely perceptible northwest light. Author different internal color drift without any discrete mark."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 0,
+          "right": 256,
+          "bottom": 256
+        }
+      },
+      "outputSha256": "0c9e281ac5469b3c6fb6a1233c649e22de86e74b2ff09e48402d43b073b89e09",
+      "notes": "Accepted with the coherent Grass batch after source/native/enlarged, deterministic 8x8 repetition and all-edge adjacency review. It is a distinct but extremely quiet diffuse field with exact opaque shared edges, no stamped motif, no false gameplay cue and no contrast competing with units.",
+      "reviewedAt": "2026-09-03T14:39:15.668Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-candy-grass-2": {
+      "id": "terrain-square-candy-grass-2",
+      "status": "ACCEPTED",
+      "jobId": "a7c339a0-dc20-44be-bf10-0a3bbc2de61d",
+      "candidate": "art/pixellab/candidates/terrain-square-candy-grass-2.png",
+      "candidateSha256": "f9a2879dc49d0546c9dbf43c8e74f1eddafec87248fe0a895ec1dc73f17ca898",
+      "providerOutputSha256": "6b07dfa9fbfcb1f018a6ec45902822f5bbdb9d5d4923d078f9cf3c411db0331e",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green #6f9255 base, muted moss-green southeast plane, extremely restrained cocoa, cream and warm-pink undertones, pale yellow-green northwest highlight. Candy square Grass variant 2, an exact full 256 by 256 continuous field. Ordinary quiet leaf-green turf with one enormous cloudlike cocoa-cream undertone and an imperceptibly lighter northwest, darker southeast drift. No contour, stripe, symbol, stamp, candy object or gameplay cue; all edges and corners remain continuous mid-green. Processing radius-24 blurs, retains four percent over #6f9255, converges outer 48px and forces opaque alpha. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, transparent corner, rounded corner, border, frame, bevel, slab, seam, spiral, stripe, checkerboard, candy piece, frosting, sprinkles, grass blades, fruit, animal, resource, road, ownership, selection, unit, building, text, UI, noisy texture, lower-right light.",
+        "prompt": "Candy square Grass variant 2, an exact full 256 by 256 continuous field. Ordinary quiet leaf-green turf with one enormous cloudlike cocoa-cream undertone and an imperceptibly lighter northwest, darker southeast drift. No contour, stripe, symbol, stamp, candy object or gameplay cue; all edges and corners remain continuous mid-green. Processing radius-24 blurs, retains four percent over #6f9255, converges outer 48px and forces opaque alpha.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, transparent corner, rounded corner, border, frame, bevel, slab, seam, spiral, stripe, checkerboard, candy piece, frosting, sprinkles, grass blades, fruit, animal, resource, road, ownership, selection, unit, building, text, UI, noisy texture, lower-right light",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 105172,
+        "noBackground": false,
+        "palette": "quiet leaf green #6f9255 base, muted moss-green southeast plane, extremely restrained cocoa, cream and warm-pink undertones, pale yellow-green northwest highlight",
+        "postprocess": "square-ground-fill",
+        "styleReference": {
+          "id": "terrain-square-candy-grass-1",
+          "sha256": "ed9f2155bcd70a5872ed6d5cb425c2bc7683373e8690b9509e01e7abb883ca4b",
+          "usageDescription": "Match the accepted Candy square Grass edge color, extreme quietness, broad diffuse variation and barely perceptible northwest light. Author different internal color drift without any discrete mark."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 0,
+          "right": 256,
+          "bottom": 256
+        }
+      },
+      "outputSha256": "f9a2879dc49d0546c9dbf43c8e74f1eddafec87248fe0a895ec1dc73f17ca898",
+      "notes": "Accepted with the coherent Grass batch after source/native/enlarged, deterministic 8x8 repetition and all-edge adjacency review. The exact opaque #6f9255 perimeter is seamless, internal change stays below gameplay salience, and no candy object, mark, resource or state cue survives processing.",
+      "reviewedAt": "2026-09-03T14:39:11.522Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-candy-grass-4": {
+      "id": "terrain-square-candy-grass-4",
+      "status": "ACCEPTED",
+      "jobId": "86ac614b-6ab4-4396-8bcc-6675ec8a9f3f",
+      "candidate": "art/pixellab/candidates/terrain-square-candy-grass-4.png",
+      "candidateSha256": "340cd8965b987cc720a7a202f337428371c84d96a6cd1f4b03c293f3ea7661a6",
+      "providerOutputSha256": "68bf84b249a8f102539729a1328d634c6172a67211630e81fea8328b25d22b25",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green #6f9255 base, muted moss-green southeast plane, extremely restrained cocoa, cream and warm-pink undertones, pale yellow-green northwest highlight. Candy square Grass variant 4, an exact full 256 by 256 continuous field. Restful nearly uniform leaf-green turf with two enormous fully blended cream-cocoa undertones under the common slightly lighter northwest and darker southeast light. They cannot read as patches, rows, paths, symbols or objects. All edges and corners are seamless mid-green. Processing radius-24 blurs, retains four percent over #6f9255, converges outer 48px and forces opaque alpha. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, transparent corner, rounded corner, border, frame, bevel, slab, seam, spiral, stripe, checkerboard, candy piece, frosting, sprinkles, grass blades, fruit, animal, resource, road, ownership, selection, unit, building, text, UI, noisy texture, lower-right light.",
+        "prompt": "Candy square Grass variant 4, an exact full 256 by 256 continuous field. Restful nearly uniform leaf-green turf with two enormous fully blended cream-cocoa undertones under the common slightly lighter northwest and darker southeast light. They cannot read as patches, rows, paths, symbols or objects. All edges and corners are seamless mid-green. Processing radius-24 blurs, retains four percent over #6f9255, converges outer 48px and forces opaque alpha.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, transparent corner, rounded corner, border, frame, bevel, slab, seam, spiral, stripe, checkerboard, candy piece, frosting, sprinkles, grass blades, fruit, animal, resource, road, ownership, selection, unit, building, text, UI, noisy texture, lower-right light",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 105174,
+        "noBackground": false,
+        "palette": "quiet leaf green #6f9255 base, muted moss-green southeast plane, extremely restrained cocoa, cream and warm-pink undertones, pale yellow-green northwest highlight",
+        "postprocess": "square-ground-fill",
+        "styleReference": {
+          "id": "terrain-square-candy-grass-1",
+          "sha256": "ed9f2155bcd70a5872ed6d5cb425c2bc7683373e8690b9509e01e7abb883ca4b",
+          "usageDescription": "Match the accepted Candy square Grass edge color, extreme quietness, broad diffuse variation and barely perceptible northwest light. Author different internal color drift without any discrete mark."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 0,
+          "right": 256,
+          "bottom": 256
+        }
+      },
+      "outputSha256": "340cd8965b987cc720a7a202f337428371c84d96a6cd1f4b03c293f3ea7661a6",
+      "notes": "Accepted with the coherent Grass batch after source/native/enlarged, deterministic 8x8 repetition and all-edge adjacency review. Broad processed undertones remain subtle, all corners and edges are exact and opaque, and the tile reads as continuous ordinary green Grass without symbols or seams.",
+      "reviewedAt": "2026-09-03T14:39:19.882Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-candy-forest-4": {
+      "id": "terrain-square-candy-forest-4",
+      "status": "ACCEPTED",
+      "jobId": "df2fcdcc-1211-4031-9e0b-c93e6d7e5e5e",
+      "candidate": "art/pixellab/candidates/terrain-square-candy-forest-4.png",
+      "candidateSha256": "fbb1a6faf1523480f6f74a785550bedc2a78ef81e8b1daffa990927abc6764a1",
+      "providerOutputSha256": "cc54819acb88492be59ac58b0581884eb0b84c5d678540c2a2326059640e6eef",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 26,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted warm-pink and cream lollipop foliage, deep cocoa southeast planes and trunks, restrained marshmallow northwest highlights, near-black cocoa outline. Isolated Candy tree cluster only on transparent 256 by 384; every non-tree pixel stays transparent. Exactly four separate trees in an open two-by-two group: rear-left, rear-right, front-left, front-right. Rear trees taller, front trees compact, open center with no fifth crown. Each has one rounded pink-or-cream lollipop canopy and short cocoa wafer trunk. Keep trees inside x8..247 with trunks y128..300; draw no ground, floor, turf, platform, tile or contact shape. Soft northwest light, darker southeast planes, terrain-quiet outline. Anchor 128,256; processing alone supplies Candy Grass beneath. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; any ground under trees, green floor, grass patch, turf, diamond, rhombus, ground slab, base plate, platform, tile outline, cast shadow, center tree, middle trunk, fifth crown, three trees, five trees, clipped canopy, left right or bottom overflow, lower-right light, ordinary green forest, fruit, animal, lumber camp, building, unit, face, loose candies, sprinkles, tiny leaves, dense texture, ownership, selection, road, text, UI, 3D render.",
+        "prompt": "Isolated Candy tree cluster only on transparent 256 by 384; every non-tree pixel stays transparent. Exactly four separate trees in an open two-by-two group: rear-left, rear-right, front-left, front-right. Rear trees taller, front trees compact, open center with no fifth crown. Each has one rounded pink-or-cream lollipop canopy and short cocoa wafer trunk. Keep trees inside x8..247 with trunks y128..300; draw no ground, floor, turf, platform, tile or contact shape. Soft northwest light, darker southeast planes, terrain-quiet outline. Anchor 128,256; processing alone supplies Candy Grass beneath.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; any ground under trees, green floor, grass patch, turf, diamond, rhombus, ground slab, base plate, platform, tile outline, cast shadow, center tree, middle trunk, fifth crown, three trees, five trees, clipped canopy, left right or bottom overflow, lower-right light, ordinary green forest, fruit, animal, lumber camp, building, unit, face, loose candies, sprinkles, tiny leaves, dense texture, ownership, selection, road, text, UI, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 105204,
+        "noBackground": true,
+        "palette": "muted warm-pink and cream lollipop foliage, deep cocoa southeast planes and trunks, restrained marshmallow northwest highlights, near-black cocoa outline",
+        "postprocess": "square-tall-ground-reference",
+        "styleReference": {
+          "id": "terrain-square-candy-forest-1",
+          "sha256": "0ef924e6df36e75faee69a11c3a8207cbcefa189d9b1b8a81515deee6b75171a",
+          "usageDescription": "Preserve the accepted Candy square tree scale, cocoa outline, flat planes and northwest light. Recompose exactly four trees into the specified open two-by-two arrangement without a fifth crown."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        },
+        "groundReference": {
+          "id": "terrain-square-candy-grass-1",
+          "sha256": "ed9f2155bcd70a5872ed6d5cb425c2bc7683373e8690b9509e01e7abb883ca4b",
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+        }
+      },
+      "outputSha256": "fbb1a6faf1523480f6f74a785550bedc2a78ef81e8b1daffa990927abc6764a1",
+      "notes": "Accepted from the coherent Forest batch after source/native/enlarged, 8x8 repetition and adjacency review. Exactly four separate trees form the requested open two-rear/two-front layout, materially distinct from Forest 2. Northwest highlights and southeast cocoa planes match the family; the full ground is opaque and no fifth crown, resource, building, gameplay cue or edge overflow appears.",
+      "reviewedAt": "2026-09-03T15:33:21.102Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-candy-forest-3": {
+      "id": "terrain-square-candy-forest-3",
+      "status": "ACCEPTED",
+      "jobId": "e3e842c2-1bc0-4442-8039-80e31e6df4e3",
+      "candidate": "art/pixellab/candidates/terrain-square-candy-forest-3.png",
+      "candidateSha256": "b047d1de093571468a97a270ac552a24d82db95f95ce750130a5ae3135518609",
+      "providerOutputSha256": "3125d25252dab663e2f5130cb231c81df00f25a62bd128cc923351f6d603598d",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 40,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted warm-pink and cream lollipop foliage, deep cocoa southeast planes and trunks, restrained marshmallow northwest highlights, near-black cocoa outline. Isolated Candy tree cluster only on transparent 256 by 384; every non-tree pixel stays transparent. EXACTLY THREE trees and THREE trunks total: tree one is tallest with one narrow muted-pink crown at rear-center; tree two has one broad cream crown at front-left; tree three has one medium pink crown at front-right. Leave the front-center visibly empty. Do not add any other crown, trunk or sapling. Keep trees inside x8..247 with trunks y128..300; no ground, floor, turf, platform, tile or contact shape. Soft northwest light, darker southeast planes, terrain-quiet outline, two-to-three flat tones. Anchor 128,256; processing alone supplies Candy Grass beneath. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; fourth tree, fourth canopy, fourth trunk, center foreground tree, extra crown, sapling, any ground under trees, green floor, grass patch, turf, diamond, rhombus, ground slab, base plate, platform, tile outline, cast shadow, four trees, two trees, multi-lobed noisy canopy, clipped canopy, left right or bottom overflow, lower-right light, ordinary green forest, fruit, animal, lumber camp, building, unit, face, loose candies, sprinkles, tiny leaves, dense texture, ownership, selection, road, text, UI, 3D render.",
+        "prompt": "Isolated Candy tree cluster only on transparent 256 by 384; every non-tree pixel stays transparent. EXACTLY THREE trees and THREE trunks total: tree one is tallest with one narrow muted-pink crown at rear-center; tree two has one broad cream crown at front-left; tree three has one medium pink crown at front-right. Leave the front-center visibly empty. Do not add any other crown, trunk or sapling. Keep trees inside x8..247 with trunks y128..300; no ground, floor, turf, platform, tile or contact shape. Soft northwest light, darker southeast planes, terrain-quiet outline, two-to-three flat tones. Anchor 128,256; processing alone supplies Candy Grass beneath.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; fourth tree, fourth canopy, fourth trunk, center foreground tree, extra crown, sapling, any ground under trees, green floor, grass patch, turf, diamond, rhombus, ground slab, base plate, platform, tile outline, cast shadow, four trees, two trees, multi-lobed noisy canopy, clipped canopy, left right or bottom overflow, lower-right light, ordinary green forest, fruit, animal, lumber camp, building, unit, face, loose candies, sprinkles, tiny leaves, dense texture, ownership, selection, road, text, UI, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 105206,
+        "noBackground": true,
+        "palette": "muted warm-pink and cream lollipop foliage, deep cocoa southeast planes and trunks, restrained marshmallow northwest highlights, near-black cocoa outline",
+        "postprocess": "square-tall-ground-reference",
+        "styleReference": {
+          "id": "terrain-square-original-forest-3",
+          "sha256": "33700d975ac040df56cf355bb0330c6e3a04402f39d5bbe3117f65dde8386fa8",
+          "usageDescription": "Preserve the accepted Original square Forest 3 count of exactly three trees, rear-center/front-left/front-right layout, scale, camera, outline weight and northwest light. Translate only the foliage and trunks into the specified Candy materials and palette."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        },
+        "groundReference": {
+          "id": "terrain-square-candy-grass-1",
+          "sha256": "ed9f2155bcd70a5872ed6d5cb425c2bc7683373e8690b9509e01e7abb883ca4b",
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-square-candy-forest-3-b24870c6394c.png",
+          "candidateSha256": "b24870c6394cc79561b4a678250b07b9ccbfb263f25c614e2bd6a39b76745bac",
+          "notes": "Rejected after source/native/enlarged, family and 8x8 repetition review. Palette, lighting, edge safety and transparent tree-only provider layer pass, but the composition contains four distinct canopies and trunks: a tall rear tree plus three foreground trees. Variant 3 requires exactly three trees in a rear-center, front-left, front-right triangle, so this extra front-center tree would collapse count and silhouette distinction from the four-tree variants.",
+          "reviewedAt": "2026-09-03T15:33:11.758Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted warm-pink and cream lollipop foliage, deep cocoa southeast planes and trunks, restrained marshmallow northwest highlights, near-black cocoa outline. Isolated Candy tree cluster only on transparent 256 by 384; every non-tree pixel stays transparent. Exactly three candy trees in a distinct triangle: tallest narrow-crowned muted-pink rear-center, broad lower cream front-left and medium pink front-right, with three separate short cocoa trunks. Keep trees inside x8..247 with trunks y128..300; draw no ground, floor, turf, platform, tile or contact shape. Soft northwest light, darker southeast planes, terrain-quiet outline, two-to-three flat tones. Anchor 128,256; processing alone supplies Candy Grass beneath. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; any ground under trees, green floor, grass patch, turf, diamond, rhombus, ground slab, base plate, platform, tile outline, cast shadow, four trees, two trees, extra crown, multi-lobed noisy canopy, clipped canopy, left right or bottom overflow, lower-right light, ordinary green forest, fruit, animal, lumber camp, building, unit, face, loose candies, sprinkles, tiny leaves, dense texture, ownership, selection, road, text, UI, 3D render.",
+            "prompt": "Isolated Candy tree cluster only on transparent 256 by 384; every non-tree pixel stays transparent. Exactly three candy trees in a distinct triangle: tallest narrow-crowned muted-pink rear-center, broad lower cream front-left and medium pink front-right, with three separate short cocoa trunks. Keep trees inside x8..247 with trunks y128..300; draw no ground, floor, turf, platform, tile or contact shape. Soft northwest light, darker southeast planes, terrain-quiet outline, two-to-three flat tones. Anchor 128,256; processing alone supplies Candy Grass beneath.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; any ground under trees, green floor, grass patch, turf, diamond, rhombus, ground slab, base plate, platform, tile outline, cast shadow, four trees, two trees, extra crown, multi-lobed noisy canopy, clipped canopy, left right or bottom overflow, lower-right light, ordinary green forest, fruit, animal, lumber camp, building, unit, face, loose candies, sprinkles, tiny leaves, dense texture, ownership, selection, road, text, UI, 3D render",
+            "requestSize": {
+              "width": 256,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 384
+            },
+            "seed": 105203,
+            "noBackground": true,
+            "palette": "muted warm-pink and cream lollipop foliage, deep cocoa southeast planes and trunks, restrained marshmallow northwest highlights, near-black cocoa outline",
+            "postprocess": "square-tall-ground-reference",
+            "styleReference": {
+              "id": "terrain-square-candy-forest-1",
+              "sha256": "0ef924e6df36e75faee69a11c3a8207cbcefa189d9b1b8a81515deee6b75171a",
+              "usageDescription": "Match the accepted Candy square tree scale, lollipop-canopy material, cocoa outline, two-to-three broad tones and exact northwest light; copy no placement."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 128,
+              "right": 256,
+              "bottom": 384
+            },
+            "groundReference": {
+              "id": "terrain-square-candy-grass-1",
+              "sha256": "ed9f2155bcd70a5872ed6d5cb425c2bc7683373e8690b9509e01e7abb883ca4b",
+              "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+            }
+          }
+        },
+        {
+          "candidate": "art/pixellab/quarantine/terrain-square-candy-forest-3-e33fe234afac.png",
+          "candidateSha256": "e33fe234afaca9c621beba62a5f069a607465c130612fc41705f5f2e0ee31bad",
+          "notes": "Rejected on the second provider attempt after source/native/enlarged comparison. The revised prompt still produced four distinct crowns and trunks, including a forbidden front-center tree, rather than the exact three-tree triangular silhouette. Geometry, lighting and Candy material pass, but accepting it would leave Forest 3 too close to the four-tree family variants. The next request will use accepted Original square Forest 3 as the explicit count-and-layout reference while translating only material and palette.",
+          "reviewedAt": "2026-09-03T15:36:12.588Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted warm-pink and cream lollipop foliage, deep cocoa southeast planes and trunks, restrained marshmallow northwest highlights, near-black cocoa outline. Isolated Candy tree cluster only on transparent 256 by 384; every non-tree pixel stays transparent. EXACTLY THREE trees and THREE trunks total: tree one is tallest with one narrow muted-pink crown at rear-center; tree two has one broad cream crown at front-left; tree three has one medium pink crown at front-right. Leave the front-center visibly empty. Do not add any other crown, trunk or sapling. Keep trees inside x8..247 with trunks y128..300; no ground, floor, turf, platform, tile or contact shape. Soft northwest light, darker southeast planes, terrain-quiet outline, two-to-three flat tones. Anchor 128,256; processing alone supplies Candy Grass beneath. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; fourth tree, fourth canopy, fourth trunk, center foreground tree, extra crown, sapling, any ground under trees, green floor, grass patch, turf, diamond, rhombus, ground slab, base plate, platform, tile outline, cast shadow, four trees, two trees, multi-lobed noisy canopy, clipped canopy, left right or bottom overflow, lower-right light, ordinary green forest, fruit, animal, lumber camp, building, unit, face, loose candies, sprinkles, tiny leaves, dense texture, ownership, selection, road, text, UI, 3D render.",
+            "prompt": "Isolated Candy tree cluster only on transparent 256 by 384; every non-tree pixel stays transparent. EXACTLY THREE trees and THREE trunks total: tree one is tallest with one narrow muted-pink crown at rear-center; tree two has one broad cream crown at front-left; tree three has one medium pink crown at front-right. Leave the front-center visibly empty. Do not add any other crown, trunk or sapling. Keep trees inside x8..247 with trunks y128..300; no ground, floor, turf, platform, tile or contact shape. Soft northwest light, darker southeast planes, terrain-quiet outline, two-to-three flat tones. Anchor 128,256; processing alone supplies Candy Grass beneath.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; fourth tree, fourth canopy, fourth trunk, center foreground tree, extra crown, sapling, any ground under trees, green floor, grass patch, turf, diamond, rhombus, ground slab, base plate, platform, tile outline, cast shadow, four trees, two trees, multi-lobed noisy canopy, clipped canopy, left right or bottom overflow, lower-right light, ordinary green forest, fruit, animal, lumber camp, building, unit, face, loose candies, sprinkles, tiny leaves, dense texture, ownership, selection, road, text, UI, 3D render",
+            "requestSize": {
+              "width": 256,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 384
+            },
+            "seed": 105205,
+            "noBackground": true,
+            "palette": "muted warm-pink and cream lollipop foliage, deep cocoa southeast planes and trunks, restrained marshmallow northwest highlights, near-black cocoa outline",
+            "postprocess": "square-tall-ground-reference",
+            "styleReference": {
+              "id": "terrain-square-candy-forest-1",
+              "sha256": "0ef924e6df36e75faee69a11c3a8207cbcefa189d9b1b8a81515deee6b75171a",
+              "usageDescription": "Match the accepted Candy square tree scale, lollipop-canopy material, cocoa outline, two-to-three broad tones and exact northwest light; copy no placement."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 128,
+              "right": 256,
+              "bottom": 384
+            },
+            "groundReference": {
+              "id": "terrain-square-candy-grass-1",
+              "sha256": "ed9f2155bcd70a5872ed6d5cb425c2bc7683373e8690b9509e01e7abb883ca4b",
+              "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+            }
+          }
+        }
+      ],
+      "outputSha256": "b047d1de093571468a97a270ac552a24d82db95f95ce750130a5ae3135518609",
+      "notes": "Accepted on the third provider attempt after source/native/enlarged, family-count, 8x8 repetition and adjacency review. The Original square Forest 3 reference successfully holds exactly three trunks and canopies in the tall rear-center/front-left/front-right triangle with open front-center. Muted pink, cream, cocoa planes and northwest highlights retain Candy identity; edge safety, full ground, quietness and absence of gameplay cues all pass.",
+      "reviewedAt": "2026-09-03T15:38:41.364Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-candy-forest-2": {
+      "id": "terrain-square-candy-forest-2",
+      "status": "ACCEPTED",
+      "jobId": "33e030cb-b4bd-469a-a37e-93cc8a2612aa",
+      "candidate": "art/pixellab/candidates/terrain-square-candy-forest-2.png",
+      "candidateSha256": "af73a0c17bee3c3c58bcc08b737591195b5a21037b2c902764636b1dbca0cceb",
+      "providerOutputSha256": "55f70085e01e24d8ffda163ed7d0bdd1ee0fffe5908f44e1c14cd960afd64b28",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 25,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted warm-pink and cream lollipop foliage, deep cocoa southeast planes and trunks, restrained marshmallow northwest highlights, near-black cocoa outline. Isolated Candy tree cluster only on transparent 256 by 384; every non-tree pixel stays transparent. Exactly four chunky candy trees: tall back-left, broad back-right and two smaller staggered front-center, each with one rounded pink-or-cream lollipop canopy and short cocoa wafer trunk. Keep trees inside x8..247 with trunks y128..300; draw no ground, floor, turf, platform, tile or contact shape. Soft northwest light, darker southeast cocoa-pink planes, terrain-quiet outline and few huge forms. Anchor 128,256; processing alone supplies Candy Grass beneath. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; any ground under trees, green floor, grass patch, turf, diamond, rhombus, ground slab, base plate, platform, tile outline, cast shadow, three trees, five trees, center fifth crown, clipped canopy, left right or bottom overflow, lower-right light, ordinary green forest, fruit, animal, lumber camp, building, unit, face, loose candies, sprinkles, tiny leaves, dense texture, ownership, selection, road, text, UI, 3D render.",
+        "prompt": "Isolated Candy tree cluster only on transparent 256 by 384; every non-tree pixel stays transparent. Exactly four chunky candy trees: tall back-left, broad back-right and two smaller staggered front-center, each with one rounded pink-or-cream lollipop canopy and short cocoa wafer trunk. Keep trees inside x8..247 with trunks y128..300; draw no ground, floor, turf, platform, tile or contact shape. Soft northwest light, darker southeast cocoa-pink planes, terrain-quiet outline and few huge forms. Anchor 128,256; processing alone supplies Candy Grass beneath.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; any ground under trees, green floor, grass patch, turf, diamond, rhombus, ground slab, base plate, platform, tile outline, cast shadow, three trees, five trees, center fifth crown, clipped canopy, left right or bottom overflow, lower-right light, ordinary green forest, fruit, animal, lumber camp, building, unit, face, loose candies, sprinkles, tiny leaves, dense texture, ownership, selection, road, text, UI, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 105202,
+        "noBackground": true,
+        "palette": "muted warm-pink and cream lollipop foliage, deep cocoa southeast planes and trunks, restrained marshmallow northwest highlights, near-black cocoa outline",
+        "postprocess": "square-tall-ground-reference",
+        "styleReference": {
+          "id": "terrain-square-candy-forest-1",
+          "sha256": "0ef924e6df36e75faee69a11c3a8207cbcefa189d9b1b8a81515deee6b75171a",
+          "usageDescription": "Match the accepted Candy square tree scale, lollipop-canopy material, cocoa outline, two-to-three broad tones and exact northwest light; copy no placement."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        },
+        "groundReference": {
+          "id": "terrain-square-candy-grass-1",
+          "sha256": "ed9f2155bcd70a5872ed6d5cb425c2bc7683373e8690b9509e01e7abb883ca4b",
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+        }
+      },
+      "outputSha256": "af73a0c17bee3c3c58bcc08b737591195b5a21037b2c902764636b1dbca0cceb",
+      "notes": "Accepted from the coherent Forest batch after source/native/enlarged, 8x8 repetition and adjacency review. Exactly four trees form the requested asymmetric tall-left, broad-right, two-small-front silhouette. The family northwest cream highlights and southeast cocoa shading are consistent, deterministic ground is seam-safe, and no resource, building, state cue or overflow appears.",
+      "reviewedAt": "2026-09-03T15:32:34.186Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-candy-mountain-2": {
+      "id": "terrain-square-candy-mountain-2",
+      "status": "ACCEPTED",
+      "jobId": "2cdde293-0cb1-4e12-97c9-879a5ac38e94",
+      "candidate": "art/pixellab/candidates/terrain-square-candy-mountain-2.png",
+      "candidateSha256": "0c1338d0f1eff4cb715066d654874b676ea1964002442e095e64ca2ab9f944af",
+      "providerOutputSha256": "18a3c98bc021b431b3f7fa09d899a7abcd6f08037c12586dbae0917a21ce2a2b",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 81,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: cocoa brown rock-candy base, muted warm-pink stratum, restrained cream northwest faces, deep cocoa southeast planes, near-black cocoa outline. Candy square Mountain variant 2, isolated rock on transparent 256 by 384. Preserve two materially separate peaks: a broad blunt flat-topped left summit, a lower angular right summit, and one wide saddle between them. The left top must not become a pointed triangle like Mountain 1. Build from huge cocoa rock-candy planes with one restrained cream band and muted-pink face. Fill most square width yet keep transparent lateral and bottom safety; peaks may rise above y128. No ground tile. Soft northwest light, darker southeast planes, terrain-quiet outline, two-to-three tones. Anchor 128,256; processing supplies the slate Candy square and feathers rock below y200. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pointed left apex, same silhouette as Mountain 1, single central peak, tiny subordinate shoulder, extra peaks, cake, cupcake, lollipop, candy cane, face, unit, building, resource, ore, gumdrop pile, rainbow, sprinkles, diamond, V base, platform, perimeter, clipped peak, left right or bottom overflow, lower-right light, snow noise, pebbles, realistic strata, text, UI, 3D render.",
+        "prompt": "Candy square Mountain variant 2, isolated rock on transparent 256 by 384. Preserve two materially separate peaks: a broad blunt flat-topped left summit, a lower angular right summit, and one wide saddle between them. The left top must not become a pointed triangle like Mountain 1. Build from huge cocoa rock-candy planes with one restrained cream band and muted-pink face. Fill most square width yet keep transparent lateral and bottom safety; peaks may rise above y128. No ground tile. Soft northwest light, darker southeast planes, terrain-quiet outline, two-to-three tones. Anchor 128,256; processing supplies the slate Candy square and feathers rock below y200.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pointed left apex, same silhouette as Mountain 1, single central peak, tiny subordinate shoulder, extra peaks, cake, cupcake, lollipop, candy cane, face, unit, building, resource, ore, gumdrop pile, rainbow, sprinkles, diamond, V base, platform, perimeter, clipped peak, left right or bottom overflow, lower-right light, snow noise, pebbles, realistic strata, text, UI, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 105234,
+        "noBackground": true,
+        "palette": "cocoa brown rock-candy base, muted warm-pink stratum, restrained cream northwest faces, deep cocoa southeast planes, near-black cocoa outline",
+        "postprocess": "square-mountain-ground-reference",
+        "styleReference": {
+          "id": "terrain-square-original-mountain-2",
+          "sha256": "6211a416eeabb65da06bebfbb6a530e50f44291cb37cd80610e38f7fa388c457",
+          "usageDescription": "Preserve the accepted Original square Mountain 2's blunt-left/angular-right twin-peak silhouette, broad connecting shoulder, scale, camera, terrain-quiet outline and northwest light. Translate only its rock materials into the specified Candy palette."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        },
+        "groundReference": {
+          "id": "terrain-square-candy-grass-1",
+          "sha256": "ed9f2155bcd70a5872ed6d5cb425c2bc7683373e8690b9509e01e7abb883ca4b",
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-square-candy-mountain-2-6d297c73f951.png",
+          "candidateSha256": "6d297c73f951e419e170bb4727a860a244434595954e99eb731113c8a061e667",
+          "notes": "Superseded after direct full-family and Original-vs-Candy review despite technical passes: the candidate repeats Mountain 1's same tall pointed left peak plus small right shoulder, with difference carried mainly by its cream band. That is not a sufficiently distinct twin-peak silhouette for 8x8 repetition. Retry against accepted Original square Mountain 2 so the blunt-left/angular-right geometry changes materially while Candy palette and shared northwest light remain prompt-controlled.",
+          "reviewedAt": "2026-09-03T15:44:34.359Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: cocoa brown rock-candy base, muted warm-pink stratum, restrained cream northwest faces, deep cocoa southeast planes, near-black cocoa outline. Candy square Mountain variant 2, transparent 256 by 384 canvas. A broad twin-peak range: taller blunt left peak, lower angular right peak and one wide connecting shoulder. Build it from huge cocoa rock-candy planes with one restrained cream band and muted-pink face. Fill most square width yet keep transparent lateral and bottom safety; peaks may rise above y128. No ground tile. Soft northwest key light, darker southeast planes, terrain-quiet outline, two-to-three tones. Anchor 128,256; processing supplies a slate field from Candy square Grass and feathers rock below y200. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; single central peak, extra peaks, cake, cupcake, lollipop, candy cane, face, unit, building, resource, ore, gumdrop pile, rainbow, sprinkles, diamond, V base, platform, perimeter, clipped peak, left right or bottom overflow, lower-right light, snow noise, pebbles, realistic strata, text, UI, 3D render.",
+            "prompt": "Candy square Mountain variant 2, transparent 256 by 384 canvas. A broad twin-peak range: taller blunt left peak, lower angular right peak and one wide connecting shoulder. Build it from huge cocoa rock-candy planes with one restrained cream band and muted-pink face. Fill most square width yet keep transparent lateral and bottom safety; peaks may rise above y128. No ground tile. Soft northwest key light, darker southeast planes, terrain-quiet outline, two-to-three tones. Anchor 128,256; processing supplies a slate field from Candy square Grass and feathers rock below y200.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; single central peak, extra peaks, cake, cupcake, lollipop, candy cane, face, unit, building, resource, ore, gumdrop pile, rainbow, sprinkles, diamond, V base, platform, perimeter, clipped peak, left right or bottom overflow, lower-right light, snow noise, pebbles, realistic strata, text, UI, 3D render",
+            "requestSize": {
+              "width": 256,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 384
+            },
+            "seed": 105232,
+            "noBackground": true,
+            "palette": "cocoa brown rock-candy base, muted warm-pink stratum, restrained cream northwest faces, deep cocoa southeast planes, near-black cocoa outline",
+            "postprocess": "square-mountain-ground-reference",
+            "styleReference": {
+              "id": "terrain-square-candy-mountain-1",
+              "sha256": "1c39d7a6087a8024eaa221ecf88bcce44d4ecaf4fef94664ef9c92742f6e95bc",
+              "usageDescription": "Match the accepted Candy square rock-candy planes, cocoa outline, terrain-quiet detail, camera and exact northwest light. Create the twin-peak silhouette without copying the first peak."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 128,
+              "right": 256,
+              "bottom": 384
+            },
+            "groundReference": {
+              "id": "terrain-square-candy-grass-1",
+              "sha256": "ed9f2155bcd70a5872ed6d5cb425c2bc7683373e8690b9509e01e7abb883ca4b",
+              "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+            }
+          }
+        }
+      ],
+      "outputSha256": "0c1338d0f1eff4cb715066d654874b676ea1964002442e095e64ca2ab9f944af",
+      "notes": "Accepted on the second provider attempt after direct family, Original comparison, native/enlarged and minimum-scale review. The broad flat-topped left massif, lower angular right summit and wide saddle now differ materially from Mountain 1's pointed peak. Cocoa rock-candy, restrained pink ledges, cream northwest faces and dark southeast planes retain Candy language without a resource or prop; footprint feather and edge safety pass.",
+      "reviewedAt": "2026-09-03T15:47:11.112Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-candy-mountain-3": {
+      "id": "terrain-square-candy-mountain-3",
+      "status": "ACCEPTED",
+      "jobId": "7c88d9a2-c125-40c5-a781-b40387ea0de8",
+      "candidate": "art/pixellab/candidates/terrain-square-candy-mountain-3.png",
+      "candidateSha256": "7c0b930cf36de969c472ce7b5405414268e9a13dfcf593ebbeb792996d1eafe5",
+      "providerOutputSha256": "a9138cd0a874f5eca368ca3b8dee16a84045c65bdad231cd2d8026b537b90306",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: cocoa brown rock-candy base, muted warm-pink stratum, restrained cream northwest faces, deep cocoa southeast planes, near-black cocoa outline. Candy square Mountain variant 3, transparent 256 by 384 canvas. Make a materially low broad range: one flat-topped right cocoa mesa shoulder, one long shallow muted-pink left ridge and a squat foreground cream-edged shelf. Highest point is only modestly above y128; silhouette is horizontal with no sharp apex. Keep transparent lateral and bottom safety and draw no ground tile. Soft northwest light, darker southeast planes, terrain-quiet outline, two-to-three huge tones. Anchor 128,256; processing supplies the slate Candy square and feathers rock below y200. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; tall apex, sharp central peak, triangle, spire, tall twins, cake, cupcake, lollipop, candy cane, face, unit, building, resource, ore, gumdrop pile, rainbow, sprinkles, diamond, V base, platform, perimeter, clipped rock, left right or bottom overflow, lower-right light, snow, pebbles, realistic strata, text, UI, 3D render.",
+        "prompt": "Candy square Mountain variant 3, transparent 256 by 384 canvas. Make a materially low broad range: one flat-topped right cocoa mesa shoulder, one long shallow muted-pink left ridge and a squat foreground cream-edged shelf. Highest point is only modestly above y128; silhouette is horizontal with no sharp apex. Keep transparent lateral and bottom safety and draw no ground tile. Soft northwest light, darker southeast planes, terrain-quiet outline, two-to-three huge tones. Anchor 128,256; processing supplies the slate Candy square and feathers rock below y200.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; tall apex, sharp central peak, triangle, spire, tall twins, cake, cupcake, lollipop, candy cane, face, unit, building, resource, ore, gumdrop pile, rainbow, sprinkles, diamond, V base, platform, perimeter, clipped rock, left right or bottom overflow, lower-right light, snow, pebbles, realistic strata, text, UI, 3D render",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 105243,
+        "noBackground": true,
+        "palette": "cocoa brown rock-candy base, muted warm-pink stratum, restrained cream northwest faces, deep cocoa southeast planes, near-black cocoa outline",
+        "postprocess": "square-mountain-ground-reference",
+        "styleReference": {
+          "id": "terrain-square-candy-mountain-1",
+          "sha256": "1c39d7a6087a8024eaa221ecf88bcce44d4ecaf4fef94664ef9c92742f6e95bc",
+          "usageDescription": "Retain only the accepted Candy square rock-candy palette, cocoa outline, camera, terrain-quiet planes and northwest light. Flatten and widen it into the requested low ridge without copying the accepted main peak."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        },
+        "groundReference": {
+          "id": "terrain-square-candy-grass-1",
+          "sha256": "ed9f2155bcd70a5872ed6d5cb425c2bc7683373e8690b9509e01e7abb883ca4b",
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+        }
+      },
+      "outputSha256": "7c0b930cf36de969c472ce7b5405414268e9a13dfcf593ebbeb792996d1eafe5",
+      "notes": "Accepted from the coherent Mountain batch after source/native/enlarged, mixed 8x8 repetition and adjacency review. The low horizontal silhouette has a flat-topped right mesa, long shallow left ridge and squat foreground shelf, materially distinct from the two tall variants. Shared northwest cream light, southeast cocoa shade, quiet planes, feathered opaque square, edge safety and no gameplay cue all pass.",
+      "reviewedAt": "2026-09-03T15:43:09.263Z",
       "reviewChecks": {
         "source": true,
         "native": true,

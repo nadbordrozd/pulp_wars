@@ -174,6 +174,7 @@ const REVIEW_ROOT = path.join(ROOT, "art/pixellab/reviews");
 const RUNTIME_PATH = path.join(ROOT, "src/assets/generated-art-manifest.ts");
 const POLL_INTERVAL_MS = 5_000;
 const MAX_POLL_MS = 12 * 60_000;
+let generatedSaveChain: Promise<void> = Promise.resolve();
 
 async function main(): Promise<void> {
   const command = process.argv[2] ?? "help";
@@ -585,6 +586,60 @@ function validateSourceManifest(
       postprocess: "square-mountain-ground-reference" as const,
       groundReference: "terrain-square-original-grass-1",
     })),
+    {
+      id: "terrain-square-candy-grass-1",
+      stage: "sample",
+      size: { width: 256, height: 256 },
+      footprint: { left: 0, top: 0, right: 256, bottom: 256 },
+      anchor: { x: 128, y: 128 },
+      postprocess: "square-ground-fill",
+      groundReference: undefined,
+    },
+    {
+      id: "terrain-square-candy-forest-1",
+      stage: "sample",
+      size: { width: 256, height: 384 },
+      footprint: { left: 0, top: 128, right: 256, bottom: 384 },
+      anchor: { x: 128, y: 256 },
+      postprocess: "square-tall-ground-reference",
+      groundReference: "terrain-square-candy-grass-1",
+    },
+    {
+      id: "terrain-square-candy-mountain-1",
+      stage: "sample",
+      size: { width: 256, height: 384 },
+      footprint: { left: 0, top: 128, right: 256, bottom: 384 },
+      anchor: { x: 128, y: 256 },
+      postprocess: "square-mountain-ground-reference",
+      groundReference: "terrain-square-candy-grass-1",
+    },
+    ...([2, 3, 4] as const).map((variant) => ({
+      id: `terrain-square-candy-grass-${variant}`,
+      stage: "batch" as const,
+      size: { width: 256, height: 256 },
+      footprint: { left: 0, top: 0, right: 256, bottom: 256 },
+      anchor: { x: 128, y: 128 },
+      postprocess: "square-ground-fill" as const,
+      groundReference: undefined,
+    })),
+    ...([2, 3, 4] as const).map((variant) => ({
+      id: `terrain-square-candy-forest-${variant}`,
+      stage: "batch" as const,
+      size: { width: 256, height: 384 },
+      footprint: { left: 0, top: 128, right: 256, bottom: 384 },
+      anchor: { x: 128, y: 256 },
+      postprocess: "square-tall-ground-reference" as const,
+      groundReference: "terrain-square-candy-grass-1",
+    })),
+    ...([2, 3] as const).map((variant) => ({
+      id: `terrain-square-candy-mountain-${variant}`,
+      stage: "batch" as const,
+      size: { width: 256, height: 384 },
+      footprint: { left: 0, top: 128, right: 256, bottom: 384 },
+      anchor: { x: 128, y: 256 },
+      postprocess: "square-mountain-ground-reference" as const,
+      groundReference: "terrain-square-candy-grass-1",
+    })),
   ] as const;
   for (const contract of squareTerrain) {
     const recipe = source.recipes.find(({ id }) => id === contract.id);
@@ -989,12 +1044,13 @@ async function loadGenerated(
 }
 
 async function saveGenerated(generated: GeneratedManifest): Promise<void> {
-  await mkdir(path.dirname(GENERATED_PATH), { recursive: true });
-  await writeFile(
-    GENERATED_PATH,
-    `${JSON.stringify(generated, null, 2)}\n`,
-    "utf8",
-  );
+  const serialized = `${JSON.stringify(generated, null, 2)}\n`;
+  const pending = generatedSaveChain.then(async () => {
+    await mkdir(path.dirname(GENERATED_PATH), { recursive: true });
+    await writeFile(GENERATED_PATH, serialized, "utf8");
+  });
+  generatedSaveChain = pending.catch(() => undefined);
+  await pending;
 }
 
 function assertSampleGate(
@@ -1210,10 +1266,20 @@ function assertSquareTerrainOrder(
   recipes: readonly Recipe[],
   generated: GeneratedManifest,
 ): void {
+  assertSquareTerrainFamilyOrder(recipes, generated, "original");
+  assertSquareTerrainFamilyOrder(recipes, generated, "candy");
+}
+
+function assertSquareTerrainFamilyOrder(
+  recipes: readonly Recipe[],
+  generated: GeneratedManifest,
+  faction: "original" | "candy",
+): void {
+  const factionLabel = faction === "original" ? "Original" : "Candy";
   const samples = [
-    "terrain-square-original-grass-1",
-    "terrain-square-original-forest-1",
-    "terrain-square-original-mountain-1",
+    `terrain-square-${faction}-grass-1`,
+    `terrain-square-${faction}-forest-1`,
+    `terrain-square-${faction}-mountain-1`,
   ] as const;
   const selected = recipes.filter((recipe) =>
     samples.includes(recipe.id as (typeof samples)[number]),
@@ -1221,7 +1287,7 @@ function assertSquareTerrainOrder(
   if (selected.length > 0) {
     if (selected.length !== 1)
       throw new Error(
-        "Square Grass, Forest, and Mountain samples must be generated as separate individual requests",
+        `${factionLabel} square Grass, Forest, and Mountain samples must be generated as separate individual requests`,
       );
     const selectedIndex = samples.indexOf(
       selected[0]?.id as (typeof samples)[number],
@@ -1238,40 +1304,44 @@ function assertSquareTerrainOrder(
 
   const families = [
     [
-      "terrain-square-original-grass-2",
-      "terrain-square-original-grass-3",
-      "terrain-square-original-grass-4",
+      `terrain-square-${faction}-grass-2`,
+      `terrain-square-${faction}-grass-3`,
+      `terrain-square-${faction}-grass-4`,
     ],
     [
-      "terrain-square-original-forest-2",
-      "terrain-square-original-forest-3",
-      "terrain-square-original-forest-4",
+      `terrain-square-${faction}-forest-2`,
+      `terrain-square-${faction}-forest-3`,
+      `terrain-square-${faction}-forest-4`,
     ],
     [
-      "terrain-square-original-mountain-2",
-      "terrain-square-original-mountain-3",
+      `terrain-square-${faction}-mountain-2`,
+      `terrain-square-${faction}-mountain-3`,
     ],
   ] as const;
   const selectedBatch = recipes
     .map(({ id }) => id)
     .filter((id) => families.some((family) => family.includes(id as never)));
   if (selectedBatch.length === 0) return;
-  if (selectedBatch.length > 3)
-    throw new Error(
-      "Original square terrain batches may contain at most three assets",
-    );
+  const batchLimitMessage =
+    faction === "original"
+      ? "Original square terrain batches may contain at most three assets"
+      : "Candy square terrain batches may contain at most three assets";
+  const mixedFamilyMessage =
+    faction === "original"
+      ? "Do not mix Original square terrain family batches"
+      : "Do not mix Candy square terrain family batches";
+  if (selectedBatch.length > 3) throw new Error(batchLimitMessage);
   const familyIndex = families.findIndex((family) =>
     selectedBatch.every((id) => family.includes(id as never)),
   );
-  if (familyIndex < 0)
-    throw new Error("Do not mix Original square terrain family batches");
+  if (familyIndex < 0) throw new Error(mixedFamilyMessage);
   const requiredBefore = [...samples, ...families.slice(0, familyIndex).flat()];
   const missingBefore = requiredBefore.filter(
     (id) => generated.records[id]?.status !== "ACCEPTED",
   );
   if (missingBefore.length > 0)
     throw new Error(
-      `Original square terrain batch order requires acceptance first: ${missingBefore.join(", ")}`,
+      `${factionLabel} square terrain batch order requires acceptance first: ${missingBefore.join(", ")}`,
     );
 }
 
@@ -1299,7 +1369,7 @@ async function generateRecipes(
           continue;
         }
         try {
-          const record = await generateOne(source, recipe, apiKey);
+          const record = await generateOne(source, recipe, apiKey, generated);
           const previous = generated.records[recipe.id];
           const rejectedAttempts = rejectedAttemptsFrom(previous);
           (generated.records as Record<string, GenerationRecord>)[recipe.id] =
@@ -1373,6 +1443,7 @@ async function generateOne(
   source: SourceManifest,
   recipe: Recipe,
   apiKey: string,
+  generated: GeneratedManifest,
 ): Promise<GenerationRecord> {
   const request = requestSnapshot(source, recipe);
   if (recipe.postprocess === "sprite-derived-portrait") {
@@ -1383,9 +1454,7 @@ async function generateOne(
     );
     if (referenceRecipe === undefined)
       throw new Error(`Unknown portrait source ${recipe.styleReference}`);
-    const sourceRecord = (
-      JSON.parse(await readFile(GENERATED_PATH, "utf8")) as GeneratedManifest
-    ).records[recipe.styleReference];
+    const sourceRecord = generated.records[recipe.styleReference];
     if (sourceRecord?.status !== "ACCEPTED")
       throw new Error(`${recipe.id}: portrait source is not accepted`);
     const reference = await readFile(path.join(ROOT, referenceRecipe.output));
@@ -1474,9 +1543,7 @@ async function generateOne(
     );
     if (groundRecipe === undefined)
       throw new Error(`Unknown ground reference ${recipe.groundReference}`);
-    const groundRecord = (
-      JSON.parse(await readFile(GENERATED_PATH, "utf8")) as GeneratedManifest
-    ).records[recipe.groundReference];
+    const groundRecord = generated.records[recipe.groundReference];
     if (groundRecord?.status !== "ACCEPTED")
       throw new Error(`${recipe.id}: square ground reference is not accepted`);
     resolvedRequest = {

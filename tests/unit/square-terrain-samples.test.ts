@@ -19,7 +19,7 @@ describe("square terrain sample gate", () => {
     const square = source.recipes.filter(
       ({ id, stage }) =>
         typeof id === "string" &&
-        id.startsWith("terrain-square-") &&
+        id.startsWith("terrain-square-original-") &&
         stage === "sample",
     );
     expect(square.map(({ id }) => id)).toEqual(ids);

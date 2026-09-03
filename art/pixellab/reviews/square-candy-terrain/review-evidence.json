@@ -1,0 +1,712 @@
+{
+  "schemaVersion": 1,
+  "generatedBy": "npm run art:square-candy-terrain-review",
+  "gate": "CANDY_SQUARE_TERRAIN_FAMILY",
+  "familyIds": {
+    "grass": [
+      "terrain-square-candy-grass-1",
+      "terrain-square-candy-grass-2",
+      "terrain-square-candy-grass-3",
+      "terrain-square-candy-grass-4"
+    ],
+    "forest": [
+      "terrain-square-candy-forest-1",
+      "terrain-square-candy-forest-2",
+      "terrain-square-candy-forest-3",
+      "terrain-square-candy-forest-4"
+    ],
+    "mountain": [
+      "terrain-square-candy-mountain-1",
+      "terrain-square-candy-mountain-2",
+      "terrain-square-candy-mountain-3"
+    ]
+  },
+  "statuses": {
+    "terrain-square-candy-grass-1": "ACCEPTED",
+    "terrain-square-candy-grass-2": "ACCEPTED",
+    "terrain-square-candy-grass-3": "ACCEPTED",
+    "terrain-square-candy-grass-4": "ACCEPTED",
+    "terrain-square-candy-forest-1": "ACCEPTED",
+    "terrain-square-candy-forest-2": "ACCEPTED",
+    "terrain-square-candy-forest-3": "ACCEPTED",
+    "terrain-square-candy-forest-4": "ACCEPTED",
+    "terrain-square-candy-mountain-1": "ACCEPTED",
+    "terrain-square-candy-mountain-2": "ACCEPTED",
+    "terrain-square-candy-mountain-3": "ACCEPTED"
+  },
+  "boundedProviderBatches": [
+    ["terrain-square-candy-grass-1"],
+    ["terrain-square-candy-forest-1"],
+    ["terrain-square-candy-mountain-1"],
+    [
+      "terrain-square-candy-grass-2",
+      "terrain-square-candy-grass-3",
+      "terrain-square-candy-grass-4"
+    ],
+    [
+      "terrain-square-candy-forest-2",
+      "terrain-square-candy-forest-3",
+      "terrain-square-candy-forest-4"
+    ],
+    ["terrain-square-candy-mountain-2", "terrain-square-candy-mountain-3"]
+  ],
+  "geometry": {
+    "cellCssPixelsAt1x": {
+      "width": 128,
+      "height": 128
+    },
+    "grass": {
+      "source": {
+        "width": 256,
+        "height": 256
+      },
+      "anchor": {
+        "x": 128,
+        "y": 128
+      },
+      "owningSquare": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256
+      }
+    },
+    "tall": {
+      "source": {
+        "width": 256,
+        "height": 384
+      },
+      "anchor": {
+        "x": 128,
+        "y": 256
+      },
+      "owningSquare": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384
+      },
+      "overflow": "UPWARD_ONLY"
+    }
+  },
+  "deterministicProcessing": {
+    "grass": "Crop the one-sixteenth provider presentation inset; scale to 256x256; radius-24 blur; retain 4% authored color over #6f9255; smoothstep outer 48px to #6f9255; force alpha 255.",
+    "forest": "Apply an 8px lateral alpha safety feather above y128, then composite accepted Candy square Grass 1 exactly into source y128..384 beneath each provider-authored Forest.",
+    "mountain": "Apply an 8px lateral alpha safety feather above y128; derive slate square ground by greyscale+tint #718391 from accepted Candy square Grass 1; retain provider Mountain through y200 and smoothstep-fade its alpha to zero by y304.",
+    "variantSelection": "Cosmetic review selector only: (x*17 + y*31 + x*y*7) modulo family length. Runtime mechanics and simulation PRNG are not read or changed."
+  },
+  "lighting": "Every accepted source was visually checked for the same soft northwest key, pale upper-left planes and darker southeast planes; lighting carries no ownership, resource or state meaning.",
+  "displayChecks": {
+    "footprintCssPixels": [80, 128, 224],
+    "zooms": [0.625, 1, 1.75],
+    "devicePixelRatios": [1, 2],
+    "repetition": "8x8 per family with deterministic mixed variants",
+    "adjacency": ["SAME_VARIANT", "DIFFERENT_VARIANT"],
+    "unitSources": ["unit-warrior", "unit-candy-warrior"],
+    "unitSourceSha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1",
+    "unitHashes": {
+      "public/assets/pixellab/units/archer.png": "deb62a8a84dc28ceecd58047a3f65abdb67c0616851337c817452d75a5b73bb2",
+      "public/assets/pixellab/units/candy-choco-engineer.png": "020d0448b1db6be74b00aa3d468ca4f4aa7d9c2c700d63ae7c03a683ec314fcf",
+      "public/assets/pixellab/units/candy-crusher.png": "d2fb335814ae4929cb47891bcb8561c8092a1bfc9fc53f98b9b4a32382898fca",
+      "public/assets/pixellab/units/candy-donut.png": "041fd6defb9b46059e9036418c501cc287e8ac74180384594770e9d1d764a991",
+      "public/assets/pixellab/units/candy-gumball-guard.png": "5a43d5f737bbf41f007c9bf8ee5f7fe5e0084bb13f9d243917d27c6f701f81b2",
+      "public/assets/pixellab/units/candy-jawbreaker.png": "5897e7b0d7d8dd4746ff7ecadba4ba0b0d72266df4b33b25743fef33c5ee1455",
+      "public/assets/pixellab/units/candy-jelly-scout.png": "c835c0a08cc24d5751c0dbc85365f638016029984162a6272387aa3efc2965a9",
+      "public/assets/pixellab/units/candy-marshmallow-medic.png": "868b00e650c05e22bd085d72f093fd8c80554ba17a3357a2982833c617e98327",
+      "public/assets/pixellab/units/candy-sugar-titan.png": "7d360ee7191644121f4397be91ac7ab42769883b44d6481d6c056ad7c5df76c9",
+      "public/assets/pixellab/units/candy-warrior.png": "76456b060ba1701e75387285b4738d4c289c0617eb852f5552beadfe2eb1a2bc",
+      "public/assets/pixellab/units/catapult.png": "cdf6ed34a67c1daf1bfd947b0b1af007b25d2a13ee88ee2df876bdb9f7ceec83",
+      "public/assets/pixellab/units/defender.png": "930c31f9aa1bf5dacf0318484b31ac63504365482ae01a84a6a269d94de65e11",
+      "public/assets/pixellab/units/original-breacher.png": "1e752161cd63bcb7bc0e5a0989557f61d2d7f2d3e3d9597ccc9360ed11fca2ad",
+      "public/assets/pixellab/units/original-heavy.png": "8fe592d094ede939cf8a92119022c9606b6c12621ed4d6777b4056b8cadb3759",
+      "public/assets/pixellab/units/original-juggernaut.png": "c905126dc7c38683b1ecba0aa930a4add45426a26fa3560a78e2df21ddaccc9a",
+      "public/assets/pixellab/units/original-medic.png": "c30475f23be6a8ca9ee1957a327b3b764489e570d50cd69d5775006650af62c2",
+      "public/assets/pixellab/units/original-scout.png": "8663c5c6f95ed69481123245a7f7c5e6acf2b55ebb9c52ebbc46979252e60343",
+      "public/assets/pixellab/units/rider.png": "20bb28c79c28e262908e518124e776f30adf946254906e62245f0e9702606bb4",
+      "public/assets/pixellab/units/warrior.png": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1"
+    },
+    "unitBytesChanged": false,
+    "overlays": ["OWNERSHIP", "SELECTION", "MOVEMENT_TARGET", "FOG_WITHHOLDING"]
+  },
+  "mechanicsIsolation": {
+    "cosmeticVariantsOnly": true,
+    "runtimeCoverageChanged": false,
+    "simulationStateRead": false,
+    "simulationPrngRead": false,
+    "notes": "This bead registers accepted URLs only in the generated art manifest. It does not switch terrain coverage, alter the renderer, or encode passability, resources, ownership, commands, saves, replay, AI or headless state."
+  },
+  "measurements": [
+    {
+      "id": "terrain-square-candy-grass-1",
+      "output": "public/assets/pixellab/terrain-square/candy-grass-1.png",
+      "outputSha256": "ed9f2155bcd70a5872ed6d5cb425c2bc7683373e8690b9509e01e7abb883ca4b",
+      "providerOutputSha256": "a26f3f12b96ebbc6abc7408bf49bc8c2e265e7ce3cf228dffff965af47effbba",
+      "dimensions": {
+        "width": 256,
+        "height": 256
+      },
+      "anchor": {
+        "x": 128,
+        "y": 128
+      },
+      "squareFootprint": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256
+      },
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "nonOpaqueFootprintPixels": 0,
+      "upperLateralAlphaPixels": 0,
+      "channelRanges": [2, 1, 1],
+      "postprocess": "square-ground-fill"
+    },
+    {
+      "id": "terrain-square-candy-grass-2",
+      "output": "public/assets/pixellab/terrain-square/candy-grass-2.png",
+      "outputSha256": "f9a2879dc49d0546c9dbf43c8e74f1eddafec87248fe0a895ec1dc73f17ca898",
+      "providerOutputSha256": "6b07dfa9fbfcb1f018a6ec45902822f5bbdb9d5d4923d078f9cf3c411db0331e",
+      "dimensions": {
+        "width": 256,
+        "height": 256
+      },
+      "anchor": {
+        "x": 128,
+        "y": 128
+      },
+      "squareFootprint": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256
+      },
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "nonOpaqueFootprintPixels": 0,
+      "upperLateralAlphaPixels": 0,
+      "channelRanges": [4, 5, 3],
+      "postprocess": "square-ground-fill"
+    },
+    {
+      "id": "terrain-square-candy-grass-3",
+      "output": "public/assets/pixellab/terrain-square/candy-grass-3.png",
+      "outputSha256": "0c9e281ac5469b3c6fb6a1233c649e22de86e74b2ff09e48402d43b073b89e09",
+      "providerOutputSha256": "55ac08ddb6572cb75490c5cc6e833fc4c20348277d9eb4aeab30690f93fcee61",
+      "dimensions": {
+        "width": 256,
+        "height": 256
+      },
+      "anchor": {
+        "x": 128,
+        "y": 128
+      },
+      "squareFootprint": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256
+      },
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "nonOpaqueFootprintPixels": 0,
+      "upperLateralAlphaPixels": 0,
+      "channelRanges": [4, 2, 2],
+      "postprocess": "square-ground-fill"
+    },
+    {
+      "id": "terrain-square-candy-grass-4",
+      "output": "public/assets/pixellab/terrain-square/candy-grass-4.png",
+      "outputSha256": "340cd8965b987cc720a7a202f337428371c84d96a6cd1f4b03c293f3ea7661a6",
+      "providerOutputSha256": "68bf84b249a8f102539729a1328d634c6172a67211630e81fea8328b25d22b25",
+      "dimensions": {
+        "width": 256,
+        "height": 256
+      },
+      "anchor": {
+        "x": 128,
+        "y": 128
+      },
+      "squareFootprint": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256
+      },
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "nonOpaqueFootprintPixels": 0,
+      "upperLateralAlphaPixels": 0,
+      "channelRanges": [4, 3, 3],
+      "postprocess": "square-ground-fill"
+    },
+    {
+      "id": "terrain-square-candy-forest-1",
+      "output": "public/assets/pixellab/terrain-square/candy-forest-1.png",
+      "outputSha256": "0ef924e6df36e75faee69a11c3a8207cbcefa189d9b1b8a81515deee6b75171a",
+      "providerOutputSha256": "63443f6f8a71011c174418ea82efaaafde5e2c830c685006638b64ac0a6e44fa",
+      "dimensions": {
+        "width": 256,
+        "height": 384
+      },
+      "anchor": {
+        "x": 128,
+        "y": 256
+      },
+      "squareFootprint": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384
+      },
+      "alphaBounds": {
+        "left": 0,
+        "top": 99,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "nonOpaqueFootprintPixels": 0,
+      "upperLateralAlphaPixels": 0,
+      "channelRanges": [192, 191, 163],
+      "postprocess": "square-tall-ground-reference"
+    },
+    {
+      "id": "terrain-square-candy-forest-2",
+      "output": "public/assets/pixellab/terrain-square/candy-forest-2.png",
+      "outputSha256": "af73a0c17bee3c3c58bcc08b737591195b5a21037b2c902764636b1dbca0cceb",
+      "providerOutputSha256": "55f70085e01e24d8ffda163ed7d0bdd1ee0fffe5908f44e1c14cd960afd64b28",
+      "dimensions": {
+        "width": 256,
+        "height": 384
+      },
+      "anchor": {
+        "x": 128,
+        "y": 256
+      },
+      "squareFootprint": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384
+      },
+      "alphaBounds": {
+        "left": 0,
+        "top": 25,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "nonOpaqueFootprintPixels": 0,
+      "upperLateralAlphaPixels": 0,
+      "channelRanges": [252, 238, 200],
+      "postprocess": "square-tall-ground-reference"
+    },
+    {
+      "id": "terrain-square-candy-forest-3",
+      "output": "public/assets/pixellab/terrain-square/candy-forest-3.png",
+      "outputSha256": "b047d1de093571468a97a270ac552a24d82db95f95ce750130a5ae3135518609",
+      "providerOutputSha256": "3125d25252dab663e2f5130cb231c81df00f25a62bd128cc923351f6d603598d",
+      "dimensions": {
+        "width": 256,
+        "height": 384
+      },
+      "anchor": {
+        "x": 128,
+        "y": 256
+      },
+      "squareFootprint": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384
+      },
+      "alphaBounds": {
+        "left": 0,
+        "top": 40,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "nonOpaqueFootprintPixels": 0,
+      "upperLateralAlphaPixels": 0,
+      "channelRanges": [198, 201, 174],
+      "postprocess": "square-tall-ground-reference"
+    },
+    {
+      "id": "terrain-square-candy-forest-4",
+      "output": "public/assets/pixellab/terrain-square/candy-forest-4.png",
+      "outputSha256": "fbb1a6faf1523480f6f74a785550bedc2a78ef81e8b1daffa990927abc6764a1",
+      "providerOutputSha256": "cc54819acb88492be59ac58b0581884eb0b84c5d678540c2a2326059640e6eef",
+      "dimensions": {
+        "width": 256,
+        "height": 384
+      },
+      "anchor": {
+        "x": 128,
+        "y": 256
+      },
+      "squareFootprint": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384
+      },
+      "alphaBounds": {
+        "left": 0,
+        "top": 26,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "nonOpaqueFootprintPixels": 0,
+      "upperLateralAlphaPixels": 0,
+      "channelRanges": [202, 222, 208],
+      "postprocess": "square-tall-ground-reference"
+    },
+    {
+      "id": "terrain-square-candy-mountain-1",
+      "output": "public/assets/pixellab/terrain-square/candy-mountain-1.png",
+      "outputSha256": "1c39d7a6087a8024eaa221ecf88bcce44d4ecaf4fef94664ef9c92742f6e95bc",
+      "providerOutputSha256": "fa7fce7bf614a4cb821fc41f845c4e4015bb111dbaded0642964dfab2236aa14",
+      "dimensions": {
+        "width": 256,
+        "height": 384
+      },
+      "anchor": {
+        "x": 128,
+        "y": 256
+      },
+      "squareFootprint": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384
+      },
+      "alphaBounds": {
+        "left": 0,
+        "top": 84,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "nonOpaqueFootprintPixels": 0,
+      "upperLateralAlphaPixels": 0,
+      "channelRanges": [204, 202, 169],
+      "postprocess": "square-mountain-ground-reference"
+    },
+    {
+      "id": "terrain-square-candy-mountain-2",
+      "output": "public/assets/pixellab/terrain-square/candy-mountain-2.png",
+      "outputSha256": "0c1338d0f1eff4cb715066d654874b676ea1964002442e095e64ca2ab9f944af",
+      "providerOutputSha256": "18a3c98bc021b431b3f7fa09d899a7abcd6f08037c12586dbae0917a21ce2a2b",
+      "dimensions": {
+        "width": 256,
+        "height": 384
+      },
+      "anchor": {
+        "x": 128,
+        "y": 256
+      },
+      "squareFootprint": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384
+      },
+      "alphaBounds": {
+        "left": 0,
+        "top": 81,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "nonOpaqueFootprintPixels": 0,
+      "upperLateralAlphaPixels": 0,
+      "channelRanges": [203, 198, 162],
+      "postprocess": "square-mountain-ground-reference"
+    },
+    {
+      "id": "terrain-square-candy-mountain-3",
+      "output": "public/assets/pixellab/terrain-square/candy-mountain-3.png",
+      "outputSha256": "7c0b930cf36de969c472ce7b5405414268e9a13dfcf593ebbeb792996d1eafe5",
+      "providerOutputSha256": "a9138cd0a874f5eca368ca3b8dee16a84045c65bdad231cd2d8026b537b90306",
+      "dimensions": {
+        "width": 256,
+        "height": 384
+      },
+      "anchor": {
+        "x": 128,
+        "y": 256
+      },
+      "squareFootprint": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384
+      },
+      "alphaBounds": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "nonOpaqueFootprintPixels": 0,
+      "upperLateralAlphaPixels": 0,
+      "channelRanges": [209, 210, 175],
+      "postprocess": "square-mountain-ground-reference"
+    }
+  ],
+  "familyDifferences": {
+    "grass": [
+      {
+        "pair": [
+          "terrain-square-candy-grass-1",
+          "terrain-square-candy-grass-2"
+        ],
+        "meanAbsoluteRgbDifference": 0.5357
+      },
+      {
+        "pair": [
+          "terrain-square-candy-grass-1",
+          "terrain-square-candy-grass-3"
+        ],
+        "meanAbsoluteRgbDifference": 0.4616
+      },
+      {
+        "pair": [
+          "terrain-square-candy-grass-1",
+          "terrain-square-candy-grass-4"
+        ],
+        "meanAbsoluteRgbDifference": 0.5018
+      },
+      {
+        "pair": [
+          "terrain-square-candy-grass-2",
+          "terrain-square-candy-grass-3"
+        ],
+        "meanAbsoluteRgbDifference": 0.295
+      },
+      {
+        "pair": [
+          "terrain-square-candy-grass-2",
+          "terrain-square-candy-grass-4"
+        ],
+        "meanAbsoluteRgbDifference": 0.6847
+      },
+      {
+        "pair": [
+          "terrain-square-candy-grass-3",
+          "terrain-square-candy-grass-4"
+        ],
+        "meanAbsoluteRgbDifference": 0.5363
+      }
+    ],
+    "forest": [
+      {
+        "pair": [
+          "terrain-square-candy-forest-1",
+          "terrain-square-candy-forest-2"
+        ],
+        "meanAbsoluteRgbDifference": 37.94
+      },
+      {
+        "pair": [
+          "terrain-square-candy-forest-1",
+          "terrain-square-candy-forest-3"
+        ],
+        "meanAbsoluteRgbDifference": 33.6483
+      },
+      {
+        "pair": [
+          "terrain-square-candy-forest-1",
+          "terrain-square-candy-forest-4"
+        ],
+        "meanAbsoluteRgbDifference": 54.8283
+      },
+      {
+        "pair": [
+          "terrain-square-candy-forest-2",
+          "terrain-square-candy-forest-3"
+        ],
+        "meanAbsoluteRgbDifference": 46.5896
+      },
+      {
+        "pair": [
+          "terrain-square-candy-forest-2",
+          "terrain-square-candy-forest-4"
+        ],
+        "meanAbsoluteRgbDifference": 56.3916
+      },
+      {
+        "pair": [
+          "terrain-square-candy-forest-3",
+          "terrain-square-candy-forest-4"
+        ],
+        "meanAbsoluteRgbDifference": 59.5064
+      }
+    ],
+    "mountain": [
+      {
+        "pair": [
+          "terrain-square-candy-mountain-1",
+          "terrain-square-candy-mountain-2"
+        ],
+        "meanAbsoluteRgbDifference": 11.4854
+      },
+      {
+        "pair": [
+          "terrain-square-candy-mountain-1",
+          "terrain-square-candy-mountain-3"
+        ],
+        "meanAbsoluteRgbDifference": 14.6986
+      },
+      {
+        "pair": [
+          "terrain-square-candy-mountain-2",
+          "terrain-square-candy-mountain-3"
+        ],
+        "meanAbsoluteRgbDifference": 16.613
+      }
+    ]
+  },
+  "generationSummary": {
+    "providerCalls": {
+      "terrain-square-candy-grass-1": 1,
+      "terrain-square-candy-grass-2": 1,
+      "terrain-square-candy-grass-3": 1,
+      "terrain-square-candy-grass-4": 1,
+      "terrain-square-candy-forest-1": 2,
+      "terrain-square-candy-forest-2": 1,
+      "terrain-square-candy-forest-3": 3,
+      "terrain-square-candy-forest-4": 1,
+      "terrain-square-candy-mountain-1": 1,
+      "terrain-square-candy-mountain-2": 2,
+      "terrain-square-candy-mountain-3": 1
+    },
+    "rejectedAttempts": {
+      "terrain-square-candy-grass-1": 0,
+      "terrain-square-candy-grass-2": 0,
+      "terrain-square-candy-grass-3": 0,
+      "terrain-square-candy-grass-4": 0,
+      "terrain-square-candy-forest-1": 1,
+      "terrain-square-candy-forest-2": 0,
+      "terrain-square-candy-forest-3": 2,
+      "terrain-square-candy-forest-4": 0,
+      "terrain-square-candy-mountain-1": 0,
+      "terrain-square-candy-mountain-2": 1,
+      "terrain-square-candy-mountain-3": 0
+    }
+  },
+  "visualReview": {
+    "status": "ACCEPTED_CANDY_SQUARE_TERRAIN_FAMILY",
+    "notes": "Reviewed every Candy source at native and nearest-neighbor enlarged scale; all 11 together; deterministic 8x8 mixed repetition for Grass, Forest and Mountain; same/different adjacency; 0.625x, 1x and 1.75x at DPR1/2 with unchanged Original and Candy Warrior occupancy; and ownership, selection, target and opaque fog contexts. Direct Original-vs-Candy and dense mixed-faction boards also pass. Grass remains broad and low-salience without stamped bands or gameplay cues. Forest variants use distinct three/four-tree arrangements without resources or buildings. Mountain variants use distinct broad peak-and-shoulder silhouettes with terrain-quiet detail. All own full opaque squares and tall forms overhang upward only."
+  },
+  "artifacts": [
+    {
+      "path": "art/pixellab/reviews/square-candy-terrain/individual-native-enlarged.png",
+      "bytes": 413993,
+      "width": 1280,
+      "height": 1860,
+      "sha256": "4b150434687c8eeec043aedfaa94968b29dde2cc2456f2bd1c737e4cedfd7179"
+    },
+    {
+      "path": "art/pixellab/reviews/square-candy-terrain/all-11-family.png",
+      "bytes": 135400,
+      "width": 720,
+      "height": 780,
+      "sha256": "d9b254b1413a7e2654ea77665cb2be2add9c37b16a0ec821650db0e3885cc073"
+    },
+    {
+      "path": "art/pixellab/reviews/square-candy-terrain/repetition-mixed-8x8.png",
+      "bytes": 416191,
+      "width": 2040,
+      "height": 750,
+      "sha256": "b2230989e156e3f26cd0af5a9bfd1aa5dda18e943aa50fb1a6b4dbcaf1e4cebf"
+    },
+    {
+      "path": "art/pixellab/reviews/square-candy-terrain/adjacency-same-different.png",
+      "bytes": 270339,
+      "width": 1200,
+      "height": 1050,
+      "sha256": "a45bc1028cc57894b88450bd205e998c2b10891d46a7422bfac73034c8910062"
+    },
+    {
+      "path": "art/pixellab/reviews/square-candy-terrain/zoom-contexts-dpr1.png",
+      "bytes": 629478,
+      "width": 1120,
+      "height": 2910,
+      "sha256": "a45f6120d0bd4220fd71506540fd76af181e2055975796d9b985c2d5fb6fa6c0"
+    },
+    {
+      "path": "art/pixellab/reviews/square-candy-terrain/zoom-contexts-dpr2.png",
+      "bytes": 1449189,
+      "width": 2240,
+      "height": 5820,
+      "sha256": "0540230dc00a6d10c0c1a4a5d130ae6b8a27a09a06116e969cca95b860854965"
+    },
+    {
+      "path": "art/pixellab/reviews/square-candy-terrain/gameplay-overlays-and-units.png",
+      "bytes": 148866,
+      "width": 1120,
+      "height": 960,
+      "sha256": "7c030c96a42a382e266559024d65e6dba052e685ec950166ee5a737c683585e5"
+    },
+    {
+      "path": "art/pixellab/reviews/square-candy-terrain/family-batch-grass.png",
+      "bytes": 87410,
+      "width": 1380,
+      "height": 1870,
+      "sha256": "4d13bf9ad5ec15b2a2f4b3e60a98615893beab7691543ac203bdd9c18e2901f3"
+    },
+    {
+      "path": "art/pixellab/reviews/square-candy-terrain/family-batch-forest.png",
+      "bytes": 430135,
+      "width": 1380,
+      "height": 1870,
+      "sha256": "10593700d786fc93944ce8f689949f9bff09dcb11cb075895aa6730ccd9e8cab"
+    },
+    {
+      "path": "art/pixellab/reviews/square-candy-terrain/family-batch-mountain.png",
+      "bytes": 251098,
+      "width": 1380,
+      "height": 1870,
+      "sha256": "227f68c5e733ee87d118daae6cb4a2e9e90d288e77466db7f6618980ee53f41a"
+    },
+    {
+      "path": "art/pixellab/reviews/square-candy-terrain/original-vs-candy.png",
+      "bytes": 187916,
+      "width": 1200,
+      "height": 1020,
+      "sha256": "6a40d12dde862d0fab1bb07ce100b40bb00bbda74fc8ce1eae85539665cfb58d"
+    },
+    {
+      "path": "art/pixellab/reviews/square-candy-terrain/dense-mixed-faction-map.png",
+      "bytes": 207952,
+      "width": 760,
+      "height": 830,
+      "sha256": "9861a5f341411a72b2613c679f6090e5be94e793bba0b291cd6a2791d7ed66b7"
+    }
+  ]
+}

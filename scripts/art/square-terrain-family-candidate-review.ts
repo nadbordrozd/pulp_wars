@@ -16,12 +16,15 @@ interface RecordEntry {
 }
 
 const root = process.cwd();
+const faction = optionalOption("--faction") ?? "original";
+if (!["original", "candy"].includes(faction))
+  throw new Error("--faction must be original or candy");
 const family = requiredOption("--family");
 if (!["grass", "forest", "mountain"].includes(family))
   throw new Error("--family must be grass, forest, or mountain");
 const variants = family === "mountain" ? [2, 3] : [2, 3, 4];
 const ids = variants.map(
-  (variant) => `terrain-square-original-${family}-${variant}`,
+  (variant) => `terrain-square-${faction}-${family}-${variant}`,
 );
 if (ids.length > 3)
   throw new Error("Candidate review may include at most three assets");
@@ -40,7 +43,7 @@ for (const id of ids)
 
 const reviewRoot = path.join(
   root,
-  "art/pixellab/reviews/square-original-terrain",
+  `art/pixellab/reviews/square-${faction}-terrain`,
 );
 await mkdir(reviewRoot, { recursive: true });
 const overlays: OverlayOptions[] = [];
@@ -176,10 +179,14 @@ function generatableFile(id: string): string | null {
 }
 
 function requiredOption(name: string): string {
-  const index = process.argv.indexOf(name);
-  const value = index < 0 ? undefined : process.argv[index + 1];
+  const value = optionalOption(name);
   if (!value) throw new Error(`Missing ${name}`);
   return value;
+}
+
+function optionalOption(name: string): string | undefined {
+  const index = process.argv.indexOf(name);
+  return index < 0 ? undefined : process.argv[index + 1];
 }
 
 function checker(width: number, height: number): Buffer {

@@ -43,6 +43,41 @@ or headless state. Acceptance evidence is rebuilt by
 `npm run art:square-original-terrain-review`; registering an accepted output URL
 does not switch runtime terrain coverage.
 
+### Candy square base-terrain family
+
+The Candy square family mirrors the Original source geometry exactly: four
+256 x 256 Grass sources at `(128,128)`, four 256 x 384 Forest sources and three
+256 x 384 Mountain sources at `(128,256)`, with `x=0..255,y=128..383` owning
+every tall tile's fully opaque square. Tall alpha is permitted only above that
+square and receives the same deterministic eight-pixel lateral safety feather;
+no terrain alpha may spill left, right, or below its owning footprint.
+
+Candy Grass remains ordinary, continuous, terrain-quiet green. Confection
+language is restricted to enormous fully blended cocoa, cream, and warm-pink
+undertones which cannot read as a swirl, candy piece, resource, owner, action,
+selection, or other gameplay mark. It uses the same radius-24 blur, four-percent
+authored contribution, exact `#6f9255` edge convergence, and forced opaque alpha
+as Original Grass.
+
+Candy Forest uses the established muted pink and cream lollipop-canopy masses,
+cocoa wafer trunks, and near-black cocoa outline while matching the Original
+square family's tree counts, visual footprint, camera, and silhouette variety.
+Candy Mountain uses broad cocoa rock-candy planes, a restrained muted-pink
+stratum, and cream northwest faces while matching the Original family’s broad
+peak, twin-peak, and low-ridge silhouette roles. Both remain quieter than units
+and cities and may not contain loose candy, resources, improvements, ownership,
+or state cues. Every Candy square terrain uses the same soft northwest key light
+and darker southeast planes as Original terrain.
+
+The three representative Candy samples are generated and reviewed one request
+at a time in Grass, Forest, Mountain order. Later work is split into coherent
+Grass 2-4, Forest 2-4, and Mountain 2-3 batches; no request mixes families or
+contains more than three assets. `npm run art:square-candy-terrain-review`
+rebuilds the complete faction comparison, native/enlarged, 8 x 8 repetition,
+all-adjacency, dense mixed-faction, overlay, unchanged-unit, zoom, and DPR
+evidence. Accepted URLs remain unwired from runtime terrain coverage until the
+dedicated renderer integration bead.
+
 ## Ruleset-6 active inventory
 
 Ruleset 6 retains Grass, Forest, Mountain, Fruit, Game (the renamed Animal
