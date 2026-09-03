@@ -49,6 +49,10 @@ interface Recipe {
   readonly fitBounds?: Bounds;
   /** Deterministic source-canvas translation after fitting and ground alignment. */
   readonly fitOffsetX?: number;
+  /** Exact owning square in source pixels for square-grid terrain recipes. */
+  readonly squareFootprint?: Bounds;
+  /** Accepted square ground composited beneath a tall terrain candidate. */
+  readonly groundReference?: string;
   readonly postprocess?:
     | "diamond-mask"
     | "diamond-mask-reference-edges"
@@ -57,7 +61,10 @@ interface Recipe {
     | "compact-building-fit"
     | "unit-fit"
     | "sprite-derived-portrait"
-    | "lanczos3-resize";
+    | "lanczos3-resize"
+    | "square-ground-fill"
+    | "square-tall-ground-reference"
+    | "square-mountain-ground-reference";
   readonly includeFactionLanguage?: boolean;
   readonly requestNoBackground?: boolean;
   readonly styleReference?: string;
@@ -82,6 +89,12 @@ interface RequestSnapshot {
     readonly id: string;
     readonly sha256?: string;
     readonly usageDescription?: string;
+  };
+  readonly squareFootprint?: Bounds;
+  readonly groundReference?: {
+    readonly id: string;
+    readonly sha256?: string;
+    readonly usageDescription: string;
   };
 }
 
@@ -204,6 +217,7 @@ async function main(): Promise<void> {
     assertOriginalUnitOrder(recipes, generated);
     assertCandyUnitOrder(recipes, generated);
     assertRuleset6UiOrder(recipes, generated);
+    assertSquareTerrainOrder(recipes, generated);
     if (stage === "batch") assertBuildingBatchOrder(recipes, generated);
     const concurrency = Number(optionalOption("--concurrency") ?? "3");
     await generateRecipes(source, generated, recipes, concurrency);
@@ -226,6 +240,13 @@ async function main(): Promise<void> {
       const candidate = path.join(CANDIDATE_ROOT, `${id}.png`);
       if (recipe.postprocess?.startsWith("diamond-mask"))
         await applyDiamondAlpha(candidate, recipe.outputSize);
+      else if (recipe.postprocess === "square-ground-fill")
+        await applySquareGroundFill(candidate, recipe);
+      else if (
+        recipe.postprocess === "square-tall-ground-reference" ||
+        recipe.postprocess === "square-mountain-ground-reference"
+      )
+        await applySquareTallGroundReference(candidate, recipe, source);
       else await normalizeToHardBounds(candidate, recipe);
       if (
         recipe.postprocess === "diamond-mask-reference-edges" &&
@@ -246,6 +267,12 @@ async function main(): Promise<void> {
       assertTechnical(recipe, inspection);
       if (recipe.postprocess?.startsWith("diamond-mask"))
         await assertDiamondAlpha(candidate, recipe.outputSize);
+      else if (
+        recipe.postprocess === "square-ground-fill" ||
+        recipe.postprocess === "square-tall-ground-reference" ||
+        recipe.postprocess === "square-mountain-ground-reference"
+      )
+        await assertSquareTerrainAlpha(candidate, recipe);
       (generated.records as Record<string, GenerationRecord>)[id] = {
         ...generated.records[id],
         id,
@@ -336,6 +363,20 @@ async function main(): Promise<void> {
     const inspection = await inspectPng(candidate);
     assertTechnical(recipe, inspection);
     const previous = generated.records[id];
+    const currentRequest = requestSnapshot(source, recipe);
+    const currentGroundSha256 =
+      currentRequest.groundReference === undefined
+        ? undefined
+        : generated.records[currentRequest.groundReference.id]?.outputSha256;
+    const currentGroundReference =
+      currentRequest.groundReference === undefined
+        ? undefined
+        : currentGroundSha256 === undefined
+          ? currentRequest.groundReference
+          : {
+              ...currentRequest.groundReference,
+              sha256: currentGroundSha256,
+            };
     (generated.records as Record<string, GenerationRecord>)[id] = {
       id,
       status: "CANDIDATE",
@@ -347,7 +388,18 @@ async function main(): Promise<void> {
       height: inspection.height,
       hasAlpha: inspection.hasAlpha,
       alphaBounds: inspection.alphaBounds,
-      request: previous?.request ?? requestSnapshot(source, recipe),
+      request:
+        previous?.request === undefined
+          ? currentRequest
+          : currentGroundReference === undefined
+            ? previous.request
+            : {
+                ...previous.request,
+                groundReference: currentGroundReference,
+              },
+      ...(previous?.rejectedAttempts === undefined
+        ? {}
+        : { rejectedAttempts: previous.rejectedAttempts }),
     };
     await saveGenerated(generated);
     console.log(
@@ -421,6 +473,15 @@ function validateSourceManifest(
         `Unknown style reference ${recipe.styleReference} for ${recipe.id}`,
       );
     if (
+      recipe.groundReference !== undefined &&
+      !source.recipes.some(
+        (candidate) => candidate.id === recipe.groundReference,
+      )
+    )
+      throw new Error(
+        `Unknown ground reference ${recipe.groundReference} for ${recipe.id}`,
+      );
+    if (
       recipe.styleReferenceUsage !== undefined &&
       recipe.styleReference === undefined
     )
@@ -469,6 +530,54 @@ function validateSourceManifest(
   );
   if (forestSamples.length < 3)
     throw new Error("Forest sample gate requires three canopy recipes");
+  const squareTerrain = [
+    {
+      id: "terrain-square-original-grass-1",
+      size: { width: 256, height: 256 },
+      footprint: { left: 0, top: 0, right: 256, bottom: 256 },
+      anchor: { x: 128, y: 128 },
+      postprocess: "square-ground-fill",
+      groundReference: undefined,
+    },
+    {
+      id: "terrain-square-original-forest-1",
+      size: { width: 256, height: 384 },
+      footprint: { left: 0, top: 128, right: 256, bottom: 384 },
+      anchor: { x: 128, y: 256 },
+      postprocess: "square-tall-ground-reference",
+      groundReference: "terrain-square-original-grass-1",
+    },
+    {
+      id: "terrain-square-original-mountain-1",
+      size: { width: 256, height: 384 },
+      footprint: { left: 0, top: 128, right: 256, bottom: 384 },
+      anchor: { x: 128, y: 256 },
+      postprocess: "square-mountain-ground-reference",
+      groundReference: "terrain-square-original-grass-1",
+    },
+  ] as const;
+  for (const contract of squareTerrain) {
+    const recipe = source.recipes.find(({ id }) => id === contract.id);
+    if (
+      recipe?.class !== "terrain" ||
+      recipe.stage !== "sample" ||
+      JSON.stringify(recipe.requestSize) !== JSON.stringify(contract.size) ||
+      JSON.stringify(recipe.outputSize) !== JSON.stringify(contract.size) ||
+      JSON.stringify(recipe.squareFootprint) !==
+        JSON.stringify(contract.footprint) ||
+      JSON.stringify(recipe.anchor) !== JSON.stringify(contract.anchor) ||
+      recipe.postprocess !== contract.postprocess ||
+      recipe.groundReference !== contract.groundReference ||
+      JSON.stringify(recipe.hardBounds) !==
+        JSON.stringify({
+          left: 0,
+          top: 0,
+          right: contract.size.width,
+          bottom: contract.size.height,
+        })
+    )
+      throw new Error(`Square terrain geometry mismatch: ${contract.id}`);
+  }
   const candyTerrainIds = [
     "terrain-candy-grass-1",
     "terrain-candy-grass-2",
@@ -1067,6 +1176,35 @@ function assertRuleset6UiOrder(
     throw new Error("Ruleset 6 UI batches may contain at most three assets");
 }
 
+function assertSquareTerrainOrder(
+  recipes: readonly Recipe[],
+  generated: GeneratedManifest,
+): void {
+  const samples = [
+    "terrain-square-original-grass-1",
+    "terrain-square-original-forest-1",
+    "terrain-square-original-mountain-1",
+  ] as const;
+  const selected = recipes.filter((recipe) =>
+    samples.includes(recipe.id as (typeof samples)[number]),
+  );
+  if (selected.length === 0) return;
+  if (selected.length !== 1)
+    throw new Error(
+      "Square Grass, Forest, and Mountain samples must be generated as separate individual requests",
+    );
+  const selectedIndex = samples.indexOf(
+    selected[0]?.id as (typeof samples)[number],
+  );
+  const missingEarlier = samples
+    .slice(0, selectedIndex)
+    .filter((id) => generated.records[id]?.status !== "ACCEPTED");
+  if (missingEarlier.length > 0)
+    throw new Error(
+      `Square terrain sample order requires acceptance first: ${missingEarlier.join(", ")}`,
+    );
+}
+
 async function generateRecipes(
   source: SourceManifest,
   generated: GeneratedManifest,
@@ -1260,6 +1398,29 @@ async function generateOne(
       },
     };
   }
+  if (recipe.groundReference !== undefined) {
+    const groundRecipe = source.recipes.find(
+      (candidate) => candidate.id === recipe.groundReference,
+    );
+    if (groundRecipe === undefined)
+      throw new Error(`Unknown ground reference ${recipe.groundReference}`);
+    const groundRecord = (
+      JSON.parse(await readFile(GENERATED_PATH, "utf8")) as GeneratedManifest
+    ).records[recipe.groundReference];
+    if (groundRecord?.status !== "ACCEPTED")
+      throw new Error(`${recipe.id}: square ground reference is not accepted`);
+    resolvedRequest = {
+      ...resolvedRequest,
+      groundReference: {
+        id: recipe.groundReference,
+        ...(groundRecord.outputSha256 === undefined
+          ? {}
+          : { sha256: groundRecord.outputSha256 }),
+        usageDescription:
+          "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe.",
+      },
+    };
+  }
   if (recipe.endpoint === "generate-ui-v2")
     body.color_palette = recipe.palette ?? source.shared.palette;
   const response = await fetch(
@@ -1358,6 +1519,18 @@ function requestSnapshot(
               : { usageDescription: recipe.styleReferenceUsage }),
           },
         }),
+    ...(recipe.squareFootprint === undefined
+      ? {}
+      : { squareFootprint: recipe.squareFootprint }),
+    ...(recipe.groundReference === undefined
+      ? {}
+      : {
+          groundReference: {
+            id: recipe.groundReference,
+            usageDescription:
+              "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe.",
+          },
+        }),
   };
 }
 
@@ -1429,6 +1602,32 @@ async function processCandidate(
   destination: string,
   source: SourceManifest,
 ): Promise<void> {
+  if (recipe.postprocess === "square-ground-fill") {
+    const providerMetadata = await sharp(input).metadata();
+    const providerWidth = providerMetadata.width ?? recipe.requestSize.width;
+    const providerHeight = providerMetadata.height ?? recipe.requestSize.height;
+    const presentationInset = Math.round(
+      Math.min(providerWidth, providerHeight) / 16,
+    );
+    await sharp(input)
+      .ensureAlpha()
+      .extract({
+        left: presentationInset,
+        top: presentationInset,
+        width: providerWidth - presentationInset * 2,
+        height: providerHeight - presentationInset * 2,
+      })
+      .resize(recipe.outputSize.width, recipe.outputSize.height, {
+        fit: "fill",
+        kernel: sharp.kernel.lanczos3,
+      })
+      .blur(24)
+      .png({ compressionLevel: 9, adaptiveFiltering: false })
+      .toFile(destination);
+    await applySquareGroundFill(destination, recipe);
+    await assertSquareTerrainAlpha(destination, recipe);
+    return;
+  }
   let pipeline = sharp(input)
     .ensureAlpha()
     .resize(recipe.outputSize.width, recipe.outputSize.height, {
@@ -1489,7 +1688,179 @@ async function processCandidate(
       );
     }
     await assertDiamondAlpha(destination, recipe.outputSize);
+  } else if (
+    recipe.postprocess === "square-tall-ground-reference" ||
+    recipe.postprocess === "square-mountain-ground-reference"
+  ) {
+    await applySquareTallGroundReference(destination, recipe, source);
+    await assertSquareTerrainAlpha(destination, recipe);
   } else await normalizeToHardBounds(destination, recipe);
+}
+
+async function applySquareGroundFill(
+  destination: string,
+  recipe: Recipe,
+): Promise<void> {
+  if (
+    recipe.squareFootprint?.left !== 0 ||
+    recipe.squareFootprint.top !== 0 ||
+    recipe.squareFootprint.right !== recipe.outputSize.width ||
+    recipe.squareFootprint.bottom !== recipe.outputSize.height
+  )
+    throw new Error(`${recipe.id}: invalid full-square ground footprint`);
+  const { data, info } = await sharp(await readFile(destination))
+    .ensureAlpha()
+    .flatten({ background: "#6f9255" })
+    .ensureAlpha(1)
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const base = [0x6f, 0x92, 0x55] as const;
+  const transition = 48;
+  for (let y = 0; y < info.height; y += 1) {
+    for (let x = 0; x < info.width; x += 1) {
+      const edgeDistance = Math.min(
+        x,
+        y,
+        info.width - 1 - x,
+        info.height - 1 - y,
+      );
+      const normalized = Math.min(1, edgeDistance / transition);
+      const authoredWeight =
+        0.04 * normalized * normalized * (3 - 2 * normalized);
+      const offset = (y * info.width + x) * 4;
+      for (let channel = 0; channel < 3; channel += 1) {
+        const baseColor = base[channel] ?? 0;
+        data[offset + channel] = Math.round(
+          baseColor * (1 - authoredWeight) +
+            (data[offset + channel] ?? 0) * authoredWeight,
+        );
+      }
+      data[offset + 3] = 255;
+    }
+  }
+  await sharp(data, {
+    raw: { width: info.width, height: info.height, channels: 4 },
+  })
+    .png({ compressionLevel: 9, adaptiveFiltering: false })
+    .toFile(destination);
+}
+
+async function applySquareTallGroundReference(
+  destination: string,
+  recipe: Recipe,
+  source: SourceManifest,
+): Promise<void> {
+  const footprint = recipe.squareFootprint;
+  if (
+    footprint === undefined ||
+    footprint.left !== 0 ||
+    footprint.right !== recipe.outputSize.width ||
+    footprint.bottom !== recipe.outputSize.height ||
+    footprint.top <= 0 ||
+    recipe.groundReference === undefined
+  )
+    throw new Error(`${recipe.id}: invalid tall square footprint contract`);
+  const groundRecipe = source.recipes.find(
+    ({ id }) => id === recipe.groundReference,
+  );
+  if (groundRecipe === undefined)
+    throw new Error(
+      `Unknown square ground reference ${recipe.groundReference}`,
+    );
+  const groundPipeline = sharp(path.join(ROOT, groundRecipe.output))
+    .ensureAlpha()
+    .resize(
+      footprint.right - footprint.left,
+      footprint.bottom - footprint.top,
+      {
+        fit: "fill",
+        kernel: sharp.kernel.lanczos3,
+      },
+    );
+  const mountain = recipe.postprocess === "square-mountain-ground-reference";
+  const ground = await (
+    mountain ? groundPipeline.greyscale().tint("#718391") : groundPipeline
+  )
+    .png({ compressionLevel: 9, adaptiveFiltering: false })
+    .toBuffer();
+  let providerLayer: Buffer;
+  if (mountain) {
+    const provider = await sharp(await readFile(destination))
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+    const fadeStart = 200;
+    const fadeEnd = 304;
+    for (let y = fadeStart; y < provider.info.height; y += 1) {
+      const normalized = Math.min(1, (y - fadeStart) / (fadeEnd - fadeStart));
+      const retained = 1 - normalized * normalized * (3 - 2 * normalized);
+      for (let x = 0; x < provider.info.width; x += 1) {
+        const alpha = (y * provider.info.width + x) * 4 + 3;
+        provider.data[alpha] = Math.round(
+          (provider.data[alpha] ?? 0) * retained,
+        );
+      }
+    }
+    providerLayer = await sharp(provider.data, {
+      raw: {
+        width: provider.info.width,
+        height: provider.info.height,
+        channels: 4,
+      },
+    })
+      .png({ compressionLevel: 9, adaptiveFiltering: false })
+      .toBuffer();
+  } else {
+    providerLayer = await sharp(await readFile(destination))
+      .ensureAlpha()
+      .png({ compressionLevel: 9, adaptiveFiltering: false })
+      .toBuffer();
+  }
+  await sharp({
+    create: {
+      width: recipe.outputSize.width,
+      height: recipe.outputSize.height,
+      channels: 4,
+      background: "#00000000",
+    },
+  })
+    .composite([
+      { input: ground, left: footprint.left, top: footprint.top },
+      { input: providerLayer, left: 0, top: 0 },
+    ])
+    .png({ compressionLevel: 9, adaptiveFiltering: false })
+    .toFile(destination);
+}
+
+async function assertSquareTerrainAlpha(
+  file: string,
+  recipe: Recipe,
+): Promise<void> {
+  const footprint = recipe.squareFootprint;
+  if (footprint === undefined)
+    throw new Error(`${recipe.id}: square footprint missing`);
+  const { data, info } = await sharp(file)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  for (let y = footprint.top; y < footprint.bottom; y += 1) {
+    for (let x = footprint.left; x < footprint.right; x += 1) {
+      if ((data[(y * info.width + x) * 4 + 3] ?? 0) !== 255)
+        throw new Error(
+          `${recipe.id}: square footprint has non-opaque pixel ${x},${y}`,
+        );
+    }
+  }
+  if (footprint.top > 0) {
+    for (let y = 0; y < footprint.top; y += 1) {
+      for (const x of [0, info.width - 1]) {
+        if ((data[(y * info.width + x) * 4 + 3] ?? 0) !== 0)
+          throw new Error(
+            `${recipe.id}: upward overhang reaches lateral canvas edge ${x},${y}`,
+          );
+      }
+    }
+  }
 }
 
 async function deriveRotatedDiamond(
@@ -1967,6 +2338,12 @@ async function validateOutputs(
         path.join(ROOT, recipe.output),
         recipe.outputSize,
       );
+    if (
+      recipe.postprocess === "square-ground-fill" ||
+      recipe.postprocess === "square-tall-ground-reference" ||
+      recipe.postprocess === "square-mountain-ground-reference"
+    )
+      await assertSquareTerrainAlpha(path.join(ROOT, recipe.output), recipe);
     if (inspection.sha256 !== record.outputSha256)
       throw new Error(`Hash mismatch for ${recipe.id}`);
     if (recipe.postprocess === "sprite-derived-portrait") {

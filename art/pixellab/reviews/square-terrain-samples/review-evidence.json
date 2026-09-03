@@ -1,0 +1,209 @@
+{
+  "schemaVersion": 1,
+  "generatedBy": "npm run art:square-terrain-sample-review",
+  "gate": "THREE_INDIVIDUAL_SQUARE_TERRAIN_SAMPLES",
+  "sampleIds": [
+    "terrain-square-original-grass-1",
+    "terrain-square-original-forest-1",
+    "terrain-square-original-mountain-1"
+  ],
+  "geometry": {
+    "cellCssPixelsAt1x": {
+      "width": 128,
+      "height": 128
+    },
+    "grass": {
+      "source": {
+        "width": 256,
+        "height": 256
+      },
+      "anchor": {
+        "x": 128,
+        "y": 128
+      },
+      "owningSquare": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256
+      }
+    },
+    "tall": {
+      "source": {
+        "width": 256,
+        "height": 384
+      },
+      "anchor": {
+        "x": 128,
+        "y": 256
+      },
+      "owningSquare": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384
+      },
+      "overflow": "UPWARD_ONLY"
+    }
+  },
+  "deterministicProcessing": {
+    "grass": "Remove one-sixteenth provider presentation inset; scale authored turf to 256x256; radius-24 blur; retain 4% authored color over #6f9255; smoothstep outer 48px to #6f9255; force alpha 255.",
+    "forest": "Composite accepted square Grass exactly into source y128..384 beneath provider-authored Forest.",
+    "mountain": "Derive slate square ground by greyscale+tint #718391 from accepted square Grass; retain provider Mountain fully through y200 and smoothstep-fade its alpha to zero by y304."
+  },
+  "lighting": "All samples use a soft upper-left/northwest key with lower-right/southeast darker planes; review confirms the direction is consistent and does not encode gameplay state.",
+  "displayChecks": {
+    "footprintCssPixels": [80, 128, 224],
+    "zooms": [0.625, 1, 1.75],
+    "devicePixelRatios": [1, 2],
+    "unitSource": "unit-warrior",
+    "unitSourceSha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1",
+    "unitBytesChanged": false,
+    "overlays": ["OWNERSHIP", "SELECTION", "FOG_WITHHOLDING"]
+  },
+  "measurements": [
+    {
+      "id": "terrain-square-original-grass-1",
+      "output": "public/assets/pixellab/terrain-square/original-grass-1.png",
+      "outputSha256": "a20fbc91f4bcd6120fb8c9ce4bcd9ed9276fcdbd4f145d4153cc71c93bda6567",
+      "providerOutputSha256": "531332855f5819a93f62827ac40b9dda223d7e3d232b393e8c38b9c900fdd076",
+      "dimensions": {
+        "width": 256,
+        "height": 256
+      },
+      "anchor": {
+        "x": 128,
+        "y": 128
+      },
+      "squareFootprint": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256
+      },
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "nonOpaqueFootprintPixels": 0,
+      "upperLateralAlphaPixels": 0,
+      "postprocess": "square-ground-fill"
+    },
+    {
+      "id": "terrain-square-original-forest-1",
+      "output": "public/assets/pixellab/terrain-square/original-forest-1.png",
+      "outputSha256": "ada147cc84e3b3dbd70cd0aa3e5f39a1a41dfe74be63833ad3c375fae316571f",
+      "providerOutputSha256": "387f5a7f1ef8666306c9e3aa4554720810363d6fef6229d82cd6b2f539192246",
+      "dimensions": {
+        "width": 256,
+        "height": 384
+      },
+      "anchor": {
+        "x": 128,
+        "y": 256
+      },
+      "squareFootprint": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384
+      },
+      "alphaBounds": {
+        "left": 0,
+        "top": 95,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "nonOpaqueFootprintPixels": 0,
+      "upperLateralAlphaPixels": 0,
+      "postprocess": "square-tall-ground-reference"
+    },
+    {
+      "id": "terrain-square-original-mountain-1",
+      "output": "public/assets/pixellab/terrain-square/original-mountain-1.png",
+      "outputSha256": "b1c0435641bc80bc6f2814de3e49d45aeed88c875c3c87259bb307e8e92282b2",
+      "providerOutputSha256": "4908d69fe833536c71f17132a2300653e751601b85ff5ca960d2aa8010be5969",
+      "dimensions": {
+        "width": 256,
+        "height": 384
+      },
+      "anchor": {
+        "x": 128,
+        "y": 256
+      },
+      "squareFootprint": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384
+      },
+      "alphaBounds": {
+        "left": 0,
+        "top": 81,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "nonOpaqueFootprintPixels": 0,
+      "upperLateralAlphaPixels": 0,
+      "postprocess": "square-mountain-ground-reference"
+    }
+  ],
+  "generationSummary": {
+    "providerCalls": {
+      "grass": 8,
+      "forest": 1,
+      "mountain": 4
+    },
+    "rejectedAttempts": {
+      "terrain-square-original-grass-1": 7,
+      "terrain-square-original-forest-1": 0,
+      "terrain-square-original-mountain-1": 3
+    }
+  },
+  "visualReview": {
+    "status": "ACCEPTED_SAMPLE_GATE",
+    "notes": "Every accepted source, native 128px footprint, nearest-neighbor enlarged view, 0.625x/1x/1.75x view at DPR1/2, same-type adjacency, 8x8 Grass repetition, unchanged Warrior occupancy, ownership, selection and fog-withholding context was inspected. Grass retains low-amplitude PixelLab-authored field variation without a visible repeated band or stroke cluster and is seam-safe; Forest reads as three compact trees; Mountain reads as a broad rocky square rather than a diamond. Tall alpha rises only above its owning square and never crosses a lateral or bottom source boundary."
+  },
+  "artifacts": [
+    {
+      "path": "art/pixellab/reviews/square-terrain-samples/individual-source-native-enlarged.png",
+      "bytes": 125509,
+      "width": 1320,
+      "height": 1100,
+      "sha256": "109669e321e8b79a35322bafb6eccf48efa42023fcd9ec12e990a7718574c9f7"
+    },
+    {
+      "path": "art/pixellab/reviews/square-terrain-samples/zoom-contexts-dpr1.png",
+      "bytes": 203066,
+      "width": 900,
+      "height": 1170,
+      "sha256": "28e35a409ee9410b308d001150c0b217588000ede9449c0bb4b03f1d9fa96c4c"
+    },
+    {
+      "path": "art/pixellab/reviews/square-terrain-samples/zoom-contexts-dpr2.png",
+      "bytes": 557314,
+      "width": 1800,
+      "height": 2340,
+      "sha256": "ca03fb74e8793955b26b9d32f98e8d39524b004389eb896b588b40fa90ae26c3"
+    },
+    {
+      "path": "art/pixellab/reviews/square-terrain-samples/adjacency-and-overlays.png",
+      "bytes": 114047,
+      "width": 1024,
+      "height": 640,
+      "sha256": "206bb384beea1b7bd20edd745c53559b1c29120ec34d2d4437406172aebb737a"
+    },
+    {
+      "path": "art/pixellab/reviews/square-terrain-samples/repetition-8x8-minimum.png",
+      "bytes": 14728,
+      "width": 640,
+      "height": 640,
+      "sha256": "f060ed89ea787ba26ca50bd0f157ddc0c94ae7eb694af8aaff356371fd4dc589"
+    }
+  ]
+}

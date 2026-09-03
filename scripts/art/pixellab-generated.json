@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "84028d971a57f60cd024a8c7ecc0741c201c5722562761d25498b93928574f57",
+  "sourceManifestSha256": "3c7cb25ee8b0e58956c84d1e41a06f2f8a015b8b25df7d4d3a1b00da95de8e5b",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -7141,6 +7141,342 @@
       "outputSha256": "931ba91e902cec673c5d7affc005279b3dd436794f56bff9f6169619c435d89c",
       "notes": "Accepted in final abstract-tech family: rolled bandage, resting helmet, and thick rising arrow remain legible at 64px and grayscale, communicate stronger healing/idle recovery, and use no protected medical emblem.",
       "reviewedAt": "2026-09-01T21:45:52.229Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-original-grass-1": {
+      "id": "terrain-square-original-grass-1",
+      "status": "ACCEPTED",
+      "jobId": "baf3c708-ec96-402a-a502-1e8dc5ed14a6",
+      "candidate": "art/pixellab/candidates/terrain-square-original-grass-1.png",
+      "candidateSha256": "a20fbc91f4bcd6120fb8c9ce4bcd9ed9276fcdbd4f145d4153cc71c93bda6567",
+      "providerOutputSha256": "531332855f5819a93f62827ac40b9dda223d7e3d232b393e8c38b9c900fdd076",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green #6f9255 base, muted moss-green southeast plane, restrained pale yellow-green northwest highlight, charcoal-teal sparse broad marks. Square-grid terrain sample: one axis-aligned Grass tile filling an exact 256 by 256 footprint. Quiet nearly uniform leaf-green turf with only broad indistinct color variation; no stroke, cluster, band, division or object. Every edge and corner is continuous mid-green material without outline. Northwest is imperceptibly lighter and southeast imperceptibly darker, with no directional boundary. Flat clean 2D illustration, much quieter than units. Deterministic processing removes the one-sixteenth inset, expands and radius-16 blurs the authored turf, retains 12 percent over #6f9255, converges the outer 32px to that color, and forces opaque alpha. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, transparent corner, rounded or cut corner, dark perimeter, border, frame, outline around tile, bevel, side wall, floating slab, raised tile, seam, edge decoration, sharp diagonal division, huge polygon, crescent, slash, grass stroke, footprint, object, tree, mountain, flower, fruit, animal, resource, road, ownership mark, selection, unit, building, text, UI, noisy blades, microtexture, lower-right light.",
+        "prompt": "Square-grid terrain sample: one axis-aligned Grass tile filling an exact 256 by 256 footprint. Quiet nearly uniform leaf-green turf with only broad indistinct color variation; no stroke, cluster, band, division or object. Every edge and corner is continuous mid-green material without outline. Northwest is imperceptibly lighter and southeast imperceptibly darker, with no directional boundary. Flat clean 2D illustration, much quieter than units. Deterministic processing removes the one-sixteenth inset, expands and radius-16 blurs the authored turf, retains 12 percent over #6f9255, converges the outer 32px to that color, and forces opaque alpha.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, transparent corner, rounded or cut corner, dark perimeter, border, frame, outline around tile, bevel, side wall, floating slab, raised tile, seam, edge decoration, sharp diagonal division, huge polygon, crescent, slash, grass stroke, footprint, object, tree, mountain, flower, fruit, animal, resource, road, ownership mark, selection, unit, building, text, UI, noisy blades, microtexture, lower-right light",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 104171,
+        "noBackground": false,
+        "palette": "quiet leaf green #6f9255 base, muted moss-green southeast plane, restrained pale yellow-green northwest highlight, charcoal-teal sparse broad marks",
+        "postprocess": "square-ground-fill",
+        "styleReference": {
+          "id": "terrain-grass-1",
+          "sha256": "2458b996dcaaa4168a4bf9504bc6a68352cfe780b8e4bf4d83ccaec259849a3b",
+          "usageDescription": "Input reference role: copy only the accepted quiet leaf-green palette, broad illustrated mark scale, clean outline language and two-level terrain shading. Replace the old diamond composition with the exact full square described here."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 0,
+          "right": 256,
+          "bottom": 256
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-square-original-grass-1-e38503bdea17.png",
+          "candidateSha256": "e38503bdea178a97a57a749095856099d00257c3404b4bfc58c7647d43655525",
+          "notes": "Rejected after source, native, enlarged and repeated-edge inspection: the provider created a heavy near-black frame on all four square edges plus large stair-stepped diagonal color blocks. Adjacent copies form an overly strong doubled grid seam, and the result drifts toward pixel-art rather than quiet terrain."
+        },
+        {
+          "candidate": "art/pixellab/quarantine/terrain-square-original-grass-1-be79860a1eef.png",
+          "candidateSha256": "be79860a1eef47340ba6c768e58dfa9c6e14ae70bd6ac95313885ea347684552",
+          "notes": "Rejected after source, native, enlarged and adjacency inspection: a bright raised bevel surrounds the entire tile, the northwest-to-southeast split remains a hard diagonal, and the central grass-blade glyph becomes a conspicuous repeated gameplay-scale symbol."
+        },
+        {
+          "candidate": "art/pixellab/quarantine/terrain-square-original-grass-1-61ef16f4bc82.png",
+          "candidateSha256": "61ef16f4bc824d6d4177fa4391d5ba4eda93c083b6fb39bb368767548cf7d2cb",
+          "notes": "Rejected after source, native and 8x8 inspection: the square has a high-contrast diagonal stripe, a dark crescent-shaped central mark, and dense mottling confined to one band. All three features repeat as an obvious stamped pattern and compete with units."
+        },
+        {
+          "candidate": "art/pixellab/quarantine/terrain-square-original-grass-1-feea86880305.png",
+          "candidateSha256": "feea86880305eb486aeb48bee111ccd8ad119a4c2129ec6a9c01205b71cb36b9",
+          "notes": "Rejected after source and minimum-zoom inspection: nearly the whole tile is occupied by a huge dark crescent with a heavy outline. It reads as a discrete resource or selection symbol instead of ground material and is far too salient when repeated."
+        },
+        {
+          "candidate": "art/pixellab/quarantine/terrain-square-original-grass-1-95e4f373338b.png",
+          "candidateSha256": "95e4f373338bf9631aa08e5450c766cc3fd21fc4aa136475647c2a0d04e0eaf9",
+          "notes": "Rejected after source, native, enlarged and adjacency inspection: the candidate still contains a large crescent glyph, bright corner wedges and a hard sweeping diagonal division. Repetition produces both a symbol grid and visible lighting bands."
+        },
+        {
+          "candidate": "art/pixellab/quarantine/terrain-square-original-grass-1-28f9a9d083d4.png",
+          "candidateSha256": "28f9a9d083d4ea331e372c866fb89dbb57e622f91704a187a79817fce27d1445",
+          "notes": "Rejected after source, native, enlarged and 8x8 inspection: deterministic edge correction removed the frame, but a full-cell pale diagonal band and several identical dark scratch clusters remain. At minimum zoom they form a regular quilt rather than quiet terrain."
+        },
+        {
+          "candidate": "art/pixellab/quarantine/terrain-square-original-grass-1-8b9d38011820.png",
+          "candidateSha256": "8b9d380118209866c97a14bc046a19aad811d6fb14351e93f51c3213222b8d8d",
+          "notes": "Superseded after root map-level review despite passing initial source and edge checks: the 8x8 minimum-zoom sheet exposes repeated full-tile diagonal light bands and the same dark scratch cluster in every cell. The footprint and alpha are correct, but the stamped quilt pattern is too prominent for production terrain."
+        }
+      ],
+      "outputSha256": "a20fbc91f4bcd6120fb8c9ce4bcd9ed9276fcdbd4f145d4153cc71c93bda6567",
+      "notes": "Accepted replacement after the seventh attempt was superseded for conspicuous 8x8 repetition. PixelLab call 8 produced a nearly uniform authored field; checked-in processing removes the one-sixteenth inset, radius-24 blurs it, retains 4% authored color over #6f9255, smoothstep-converges the outer 48px, and forces opaque alpha. Source, native 128px, 3x nearest-neighbor enlargement, 80/128/224px contexts, exact edges/corners and an 8x8 minimum-zoom sheet were inspected. The resulting RGB ranges remain 3/2/1 levels (meaningful authored variation) but the prior diagonal band, scratch cluster, square stamp and seams disappear at minimum zoom.",
+      "reviewedAt": "2026-09-03T13:09:37.557Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-original-forest-1": {
+      "id": "terrain-square-original-forest-1",
+      "status": "ACCEPTED",
+      "jobId": "ec6ea38b-3e69-47b2-8ed8-d4c0841e0430",
+      "candidate": "art/pixellab/candidates/terrain-square-original-forest-1.png",
+      "candidateSha256": "ada147cc84e3b3dbd70cd0aa3e5f39a1a41dfe74be63833ad3c375fae316571f",
+      "providerOutputSha256": "387f5a7f1ef8666306c9e3aa4554720810363d6fef6229d82cd6b2f539192246",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 95,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf and moss green, dark teal-green southeast canopy planes, restrained yellow-green northwest highlights, warm muted brown trunks, charcoal-teal outline. Square-grid Forest tile, untrimmed transparent 256 by 384 canvas. Owning square is exactly x0..255, y128..383: broad grassy contact material covers it, with exactly three chunky broadleaf trees inside. Rounded asymmetric canopies form one clear silhouette and may rise only above y128. Nothing passes left, right, or bottom edges. Soft upper-left/northwest key light; southeast canopy and trunk planes are darker. Strong terrain-quiet outline, flat two-to-three-tone cel shading, few large forms. Anchor 128,256. Deterministic processing puts accepted square Grass beneath the art for a fully opaque seam-safe footprint. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, transparent or rounded footprint corner, raised slab, side wall, clipped canopy, lateral or bottom overflow, lower-right key light, animal, fruit, lumber camp, building, unit, ownership mark, selection, road, flowers, tiny leaves, dense or realistic foliage, painterly forest, text, UI.",
+        "prompt": "Square-grid Forest tile, untrimmed transparent 256 by 384 canvas. Owning square is exactly x0..255, y128..383: broad grassy contact material covers it, with exactly three chunky broadleaf trees inside. Rounded asymmetric canopies form one clear silhouette and may rise only above y128. Nothing passes left, right, or bottom edges. Soft upper-left/northwest key light; southeast canopy and trunk planes are darker. Strong terrain-quiet outline, flat two-to-three-tone cel shading, few large forms. Anchor 128,256. Deterministic processing puts accepted square Grass beneath the art for a fully opaque seam-safe footprint.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, transparent or rounded footprint corner, raised slab, side wall, clipped canopy, lateral or bottom overflow, lower-right key light, animal, fruit, lumber camp, building, unit, ownership mark, selection, road, flowers, tiny leaves, dense or realistic foliage, painterly forest, text, UI",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 104102,
+        "noBackground": true,
+        "palette": "quiet leaf and moss green, dark teal-green southeast canopy planes, restrained yellow-green northwest highlights, warm muted brown trunks, charcoal-teal outline",
+        "postprocess": "square-tall-ground-reference",
+        "styleReference": {
+          "id": "terrain-forest-1",
+          "sha256": "e03c9e39ad7e57e407bbb393b83721b7e10f0b9c9fc07f152abecb7325bdbca5",
+          "usageDescription": "Input reference role: preserve only the accepted three-tree silhouette language, quiet broad canopy shapes, charcoal outline and flat terrain detail level. Recompose it over the exact square footprint and northwest lighting described here."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        },
+        "groundReference": {
+          "id": "terrain-square-original-grass-1",
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe.",
+          "sha256": "a20fbc91f4bcd6120fb8c9ce4bcd9ed9276fcdbd4f145d4153cc71c93bda6567"
+        }
+      },
+      "outputSha256": "ada147cc84e3b3dbd70cd0aa3e5f39a1a41dfe74be63833ad3c375fae316571f",
+      "notes": "Reaccepted without a new provider request after deterministic recomposition against final Grass a20fbc91f4bc. PixelLab provider job ec6ea38b-3e69-47b2-8ed8-d4c0841e0430 and provider hash 387f5a7f1ef8 are unchanged. The exact opaque x0..256,y128..384 ground now uses the quiet repetition-safe Grass while the accepted three-tree provider layer, upward-only silhouette, northwest light, southeast canopy planes, scale and lateral/bottom bounds remain unchanged. Rechecked source/native/enlarged, 80/128/224px, DPR1/2, adjacency, unchanged Warrior, overlays and fog.",
+      "reviewedAt": "2026-09-03T13:16:09.985Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-square-original-mountain-1": {
+      "id": "terrain-square-original-mountain-1",
+      "status": "ACCEPTED",
+      "jobId": "58edecf3-f94f-4b31-a47d-c2370421f0f1",
+      "candidate": "art/pixellab/candidates/terrain-square-original-mountain-1.png",
+      "candidateSha256": "b1c0435641bc80bc6f2814de3e49d45aeed88c875c3c87259bb307e8e92282b2",
+      "providerOutputSha256": "4908d69fe833536c71f17132a2300653e751601b85ff5ca960d2aa8010be5969",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 81,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted slate-blue rock, parchment-tan northwest faces, deep desaturated blue-gray southeast faces, sparse moss-green foothill contact, charcoal-teal outline. Square-grid Mountain object, transparent 256 by 384 canvas. Draw a broad rocky range in three-quarter strategy view: asymmetric main peak, smaller shoulder, wide foothills. Rock occupies most square width and depth with transparency around it; no ground tile or platform. Peak may rise above y128; nothing reaches left, right, or bottom edges. Soft northwest key light: parchment-slate lit faces and darker blue-gray southeast planes. Strong terrain-quiet outline, flat two-to-three-tone cel shading, few huge planes. Anchor 128,256. Deterministic processing converts accepted square Grass into a quiet slate rocky full-square field, then feathers the provider mountain from full opacity at y200 to transparent at y304 so its lower diamond boundary disappears into that field. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, rhombus, V-shaped base, diagonal base edge, isometric ground, outlined ground, base plate, platform, tile perimeter, line to corner, narrow small rock, raised slab, side wall, clipped peak, lateral or bottom overflow, lower-right key light, snow noise, ore, crystals, mine, building, unit, animal, flag, ownership mark, selection, pebbles, realistic strata, photoreal or painterly rock, text, UI.",
+        "prompt": "Square-grid Mountain object, transparent 256 by 384 canvas. Draw a broad rocky range in three-quarter strategy view: asymmetric main peak, smaller shoulder, wide foothills. Rock occupies most square width and depth with transparency around it; no ground tile or platform. Peak may rise above y128; nothing reaches left, right, or bottom edges. Soft northwest key light: parchment-slate lit faces and darker blue-gray southeast planes. Strong terrain-quiet outline, flat two-to-three-tone cel shading, few huge planes. Anchor 128,256. Deterministic processing converts accepted square Grass into a quiet slate rocky full-square field, then feathers the provider mountain from full opacity at y200 to transparent at y304 so its lower diamond boundary disappears into that field.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, rhombus, V-shaped base, diagonal base edge, isometric ground, outlined ground, base plate, platform, tile perimeter, line to corner, narrow small rock, raised slab, side wall, clipped peak, lateral or bottom overflow, lower-right key light, snow noise, ore, crystals, mine, building, unit, animal, flag, ownership mark, selection, pebbles, realistic strata, photoreal or painterly rock, text, UI",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 104133,
+        "noBackground": true,
+        "palette": "muted slate-blue rock, parchment-tan northwest faces, deep desaturated blue-gray southeast faces, sparse moss-green foothill contact, charcoal-teal outline",
+        "postprocess": "square-mountain-ground-reference",
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        },
+        "groundReference": {
+          "id": "terrain-square-original-grass-1",
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe.",
+          "sha256": "a20fbc91f4bcd6120fb8c9ce4bcd9ed9276fcdbd4f145d4153cc71c93bda6567"
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-square-original-mountain-1-1c65e7fcd1d1.png",
+          "candidateSha256": "1c65e7fcd1d130bb2e09847e40dd97b796b7f755907ee9503ab1e0e748ea96a5",
+          "notes": "Rejected after source/native/enlarged and adjacency inspection: the peak silhouette and northwest lighting are strong, but the provider added a thick dark diamond-shaped base outline from both lateral edges to the bottom anchor. That recreates the obsolete diamond footprint on top of the accepted square ground and would leave a conspicuous rotated-tile seam. Regenerate the broad mountain mass alone on transparency; the checked-in square Grass composite must be the only ground plane.",
+          "reviewedAt": "2026-09-03T12:31:26.356Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted slate-blue rock, parchment-tan northwest faces, deep desaturated blue-gray southeast faces, sparse moss-green foothill contact, charcoal-teal outline. Square-grid Mountain tile, untrimmed transparent 256 by 384 canvas. Owning square is exactly x0..255, y128..383: broad rocky foothill/contact material spans it, with one exaggerated asymmetric main peak and smaller shoulder rising only above y128. Mountain mass fills the footprint, not a small object. Nothing passes left, right, or bottom edges. Soft upper-left/northwest key light: broad parchment-slate lit faces, darker blue-gray southeast planes. Strong terrain-quiet outline, flat two-to-three-tone cel shading, few huge planes, no geological texture. Anchor 128,256. Deterministic processing puts accepted square Grass beneath the art for a fully opaque seam-safe footprint. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, transparent or rounded footprint corner, narrow isolated rock, small mountain, raised slab, side wall, clipped peak, lateral or bottom overflow, lower-right key light, snow noise, ore, crystals, mine, building, unit, animal, flag, ownership mark, selection, pebbles, realistic strata, photoreal or painterly rock, text, UI.",
+            "prompt": "Square-grid Mountain tile, untrimmed transparent 256 by 384 canvas. Owning square is exactly x0..255, y128..383: broad rocky foothill/contact material spans it, with one exaggerated asymmetric main peak and smaller shoulder rising only above y128. Mountain mass fills the footprint, not a small object. Nothing passes left, right, or bottom edges. Soft upper-left/northwest key light: broad parchment-slate lit faces, darker blue-gray southeast planes. Strong terrain-quiet outline, flat two-to-three-tone cel shading, few huge planes, no geological texture. Anchor 128,256. Deterministic processing puts accepted square Grass beneath the art for a fully opaque seam-safe footprint.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, transparent or rounded footprint corner, narrow isolated rock, small mountain, raised slab, side wall, clipped peak, lateral or bottom overflow, lower-right key light, snow noise, ore, crystals, mine, building, unit, animal, flag, ownership mark, selection, pebbles, realistic strata, photoreal or painterly rock, text, UI",
+            "requestSize": {
+              "width": 256,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 384
+            },
+            "seed": 104103,
+            "noBackground": true,
+            "palette": "muted slate-blue rock, parchment-tan northwest faces, deep desaturated blue-gray southeast faces, sparse moss-green foothill contact, charcoal-teal outline",
+            "postprocess": "square-tall-ground-reference",
+            "styleReference": {
+              "id": "terrain-mountain-1",
+              "sha256": "725afbf8ac29069ae7c9cc2c7a9474f14b261b7cd8c48bb43c732ba363d84c05",
+              "usageDescription": "Input reference role: preserve only the accepted exaggerated peak silhouette, broad slate/tan planes, clean charcoal outline and terrain-level simplicity. Recompose it over the exact square footprint and northwest lighting described here."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 128,
+              "right": 256,
+              "bottom": 384
+            },
+            "groundReference": {
+              "id": "terrain-square-original-grass-1",
+              "sha256": "8b9d380118209866c97a14bc046a19aad811d6fb14351e93f51c3213222b8d8d",
+              "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+            }
+          }
+        },
+        {
+          "candidate": "art/pixellab/quarantine/terrain-square-original-mountain-1-2f26d1efe81a.png",
+          "candidateSha256": "2f26d1efe81adec2b1424fcf3181ebf7697805f22333df891c32c0382f763623",
+          "notes": "Rejected after source/native and repeated adjacency inspection: removing the ground slab simplified the candidate, but the provider still copied the legacy reference into a mountain whose lower outline is an unmistakable diamond from x8,y230 through x128,y294 to x248,y230. It neither visually occupies the square footprint nor avoids the obsolete rotated-tile cue. Remove the legacy style image and explicitly require broad foothills with a nearly horizontal front contact inside the square.",
+          "reviewedAt": "2026-09-03T12:35:09.979Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted slate-blue rock, parchment-tan northwest faces, deep desaturated blue-gray southeast faces, sparse moss-green foothill contact, charcoal-teal outline. Square-grid Mountain object, untrimmed transparent 256 by 384 canvas. Draw only one broad mountain mass: an exaggerated asymmetric main peak and smaller shoulder, with wide foothills ending inside x8..247 and above y376. It fills most of the square visually but has transparent space around its lower silhouette; draw no ground tile, base plate, platform, perimeter, or border. Peak may rise above y128; nothing reaches left, right, or bottom canvas edges. Soft upper-left/northwest key light: broad parchment-slate lit faces, darker blue-gray southeast planes. Strong terrain-quiet outline, flat two-to-three-tone cel shading, few huge planes, no geological texture. Anchor 128,256. Deterministic processing supplies the exact opaque square Grass footprint beneath this authored mountain. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, isometric ground, outlined ground, base, platform, tile perimeter, line to corner, transparent or rounded footprint corner, narrow small rock, raised slab, side wall, clipped peak, lateral or bottom overflow, lower-right key light, snow noise, ore, crystals, mine, building, unit, animal, flag, ownership mark, selection, pebbles, realistic strata, photoreal or painterly rock, text, UI.",
+            "prompt": "Square-grid Mountain object, untrimmed transparent 256 by 384 canvas. Draw only one broad mountain mass: an exaggerated asymmetric main peak and smaller shoulder, with wide foothills ending inside x8..247 and above y376. It fills most of the square visually but has transparent space around its lower silhouette; draw no ground tile, base plate, platform, perimeter, or border. Peak may rise above y128; nothing reaches left, right, or bottom canvas edges. Soft upper-left/northwest key light: broad parchment-slate lit faces, darker blue-gray southeast planes. Strong terrain-quiet outline, flat two-to-three-tone cel shading, few huge planes, no geological texture. Anchor 128,256. Deterministic processing supplies the exact opaque square Grass footprint beneath this authored mountain.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, isometric ground, outlined ground, base, platform, tile perimeter, line to corner, transparent or rounded footprint corner, narrow small rock, raised slab, side wall, clipped peak, lateral or bottom overflow, lower-right key light, snow noise, ore, crystals, mine, building, unit, animal, flag, ownership mark, selection, pebbles, realistic strata, photoreal or painterly rock, text, UI",
+            "requestSize": {
+              "width": 256,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 384
+            },
+            "seed": 104113,
+            "noBackground": true,
+            "palette": "muted slate-blue rock, parchment-tan northwest faces, deep desaturated blue-gray southeast faces, sparse moss-green foothill contact, charcoal-teal outline",
+            "postprocess": "square-tall-ground-reference",
+            "styleReference": {
+              "id": "terrain-mountain-1",
+              "sha256": "725afbf8ac29069ae7c9cc2c7a9474f14b261b7cd8c48bb43c732ba363d84c05",
+              "usageDescription": "Input reference role: preserve only the accepted exaggerated peak silhouette, broad slate/tan planes, clean charcoal outline and terrain-level simplicity. Recompose it over the exact square footprint and northwest lighting described here."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 128,
+              "right": 256,
+              "bottom": 384
+            },
+            "groundReference": {
+              "id": "terrain-square-original-grass-1",
+              "sha256": "8b9d380118209866c97a14bc046a19aad811d6fb14351e93f51c3213222b8d8d",
+              "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+            }
+          }
+        },
+        {
+          "candidate": "art/pixellab/quarantine/terrain-square-original-mountain-1-34db27651f17.png",
+          "candidateSha256": "34db27651f17489eb0b98eb1f476556f4f3bbdc923474205ad28ad50ae547fcb",
+          "notes": "Rejected after source/native and footprint comparison: dropping the style image improved the rock planes, but PixelLab again produced a wide diamond-shaped lower silhouette. The mountain remains a centered rotated object rather than a square-filling terrain type. Keep this useful authored peak recipe, but add deterministic square-mountain processing: derive a quiet slate rocky square from the accepted ground and feather the provider peak into it before the obsolete lower diamond outline.",
+          "reviewedAt": "2026-09-03T12:39:53.281Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted slate-blue rock, parchment-tan northwest faces, deep desaturated blue-gray southeast faces, sparse moss-green foothill contact, charcoal-teal outline. Square-grid Mountain object, transparent 256 by 384 canvas. Draw a broad rocky range in three-quarter strategy view: asymmetric main peak, smaller shoulder, wide foothills. Front contact is one nearly horizontal irregular rock line from x12,y350 to x244,y350, never a diamond or V. Rock occupies most square width and depth with transparency around it. No ground tile, platform, perimeter, or corner lines. Peak may rise above y128; nothing reaches left, right, or bottom edges. Soft northwest key light: parchment-slate lit faces and darker blue-gray southeast planes. Strong terrain-quiet outline, flat two-to-three-tone cel shading, few huge planes. Anchor 128,256. Deterministic processing supplies opaque square Grass beneath it. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, rhombus, V-shaped base, diagonal base edge, isometric ground, outlined ground, base plate, platform, tile perimeter, line to corner, narrow small rock, raised slab, side wall, clipped peak, lateral or bottom overflow, lower-right key light, snow noise, ore, crystals, mine, building, unit, animal, flag, ownership mark, selection, pebbles, realistic strata, photoreal or painterly rock, text, UI.",
+            "prompt": "Square-grid Mountain object, transparent 256 by 384 canvas. Draw a broad rocky range in three-quarter strategy view: asymmetric main peak, smaller shoulder, wide foothills. Front contact is one nearly horizontal irregular rock line from x12,y350 to x244,y350, never a diamond or V. Rock occupies most square width and depth with transparency around it. No ground tile, platform, perimeter, or corner lines. Peak may rise above y128; nothing reaches left, right, or bottom edges. Soft northwest key light: parchment-slate lit faces and darker blue-gray southeast planes. Strong terrain-quiet outline, flat two-to-three-tone cel shading, few huge planes. Anchor 128,256. Deterministic processing supplies opaque square Grass beneath it.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; diamond, rhombus, V-shaped base, diagonal base edge, isometric ground, outlined ground, base plate, platform, tile perimeter, line to corner, narrow small rock, raised slab, side wall, clipped peak, lateral or bottom overflow, lower-right key light, snow noise, ore, crystals, mine, building, unit, animal, flag, ownership mark, selection, pebbles, realistic strata, photoreal or painterly rock, text, UI",
+            "requestSize": {
+              "width": 256,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 384
+            },
+            "seed": 104123,
+            "noBackground": true,
+            "palette": "muted slate-blue rock, parchment-tan northwest faces, deep desaturated blue-gray southeast faces, sparse moss-green foothill contact, charcoal-teal outline",
+            "postprocess": "square-tall-ground-reference",
+            "squareFootprint": {
+              "left": 0,
+              "top": 128,
+              "right": 256,
+              "bottom": 384
+            },
+            "groundReference": {
+              "id": "terrain-square-original-grass-1",
+              "sha256": "8b9d380118209866c97a14bc046a19aad811d6fb14351e93f51c3213222b8d8d",
+              "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+            }
+          }
+        }
+      ],
+      "outputSha256": "b1c0435641bc80bc6f2814de3e49d45aeed88c875c3c87259bb307e8e92282b2",
+      "notes": "Reaccepted without a new provider request after deterministic recomposition against final Grass a20fbc91f4bc. PixelLab provider job 58edecf3-f94f-4b31-a47d-c2370421f0f1 and provider hash 4908d69fe833 are unchanged; all three earlier provider rejections remain recorded. The slate-tinted exact square ground now derives from repetition-safe Grass while the accepted broad peak is still fully retained above y200 and smoothstep-feathered to zero by y304. Rechecked source/native/enlarged, 80/128/224px, DPR1/2, adjacency, unchanged Warrior, overlays, fog and upward-only bounds.",
+      "reviewedAt": "2026-09-03T13:16:14.941Z",
       "reviewChecks": {
         "source": true,
         "native": true,

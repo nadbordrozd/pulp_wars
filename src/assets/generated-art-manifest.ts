@@ -263,6 +263,15 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
     "assets/pixellab/ui/tech-fortification.png",
   ),
   "ui-tech-recovery": publicArtUrl("assets/pixellab/ui/tech-recovery.png"),
+  "terrain-square-original-grass-1": publicArtUrl(
+    "assets/pixellab/terrain-square/original-grass-1.png",
+  ),
+  "terrain-square-original-forest-1": publicArtUrl(
+    "assets/pixellab/terrain-square/original-forest-1.png",
+  ),
+  "terrain-square-original-mountain-1": publicArtUrl(
+    "assets/pixellab/terrain-square/original-mountain-1.png",
+  ),
   "terrain-game": publicArtUrl("assets/pixellab/terrain/animal.png"),
   "building-ruleset6-mine": publicArtUrl("assets/pixellab/buildings/mine.png"),
   "building-lumber-camp": publicArtUrl(
