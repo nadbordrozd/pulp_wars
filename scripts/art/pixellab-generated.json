@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "6143d0bb634870339cb9ae54a1486f77a375f63a798c3c9b835ab97f679dc63c",
+  "sourceManifestSha256": "507f03a4b3e6441ecc404b0bec31751c8135cb5b368958c992d3f56f7eafa138",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -9740,6 +9740,271 @@
       "outputSha256": "367b2186690ea72df3c9eab8558d903c51972081a3e26c4823681daacdbbd848",
       "notes": "Accepted after individual source/native/enlarged, 0.625x/1x/1.75x, DPR1/DPR2-equivalent, both-faction dense-map and exact 112x130 UI viewport review. The four broad parchment sails, moss cap and short round tower form an unmistakable Windmill silhouette distinct from Farm, city and other terrain/improvements. Its centered alpha x94..290,y38..322 stays inside the 384x384 square-aware processor canvas with transparent left/right/bottom safety and only intended upward extension; it is compact relative to accepted Mountains/Forests and preserves colocated unit readability under the accepted northwest light.",
       "reviewedAt": "2026-09-03T17:44:55.803Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-square-mine": {
+      "id": "building-square-mine",
+      "status": "ACCEPTED",
+      "jobId": "68026b11-f6eb-48d0-bd1d-19b094f0bec6",
+      "candidate": "art/pixellab/candidates/building-square-mine.png",
+      "candidateSha256": "a41a9f6819d2cd3b676661461942936d37fb532808854c87367260454faf1ed8",
+      "providerOutputSha256": "baa1bf03c71594a775586bb8cb929d8e22795a5da6e2c024b9fe0af1a406f891",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 88,
+        "top": 158,
+        "right": 167,
+        "bottom": 244,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: dark slate-blue opening and supports, warm bronze timber and pick, restrained parchment highlight, dark teal-charcoal outline and southeast shadow. Shared square-grid Mine low improvement on a transparent 256 by 296 canvas, anchor 128,222. Make one compact dark arched mine opening framed by exactly three chunky bronze timbers and one oversized diagonal pick fixed across the frame. Keep the low silhouette centered in x68..188,y158..244 so the accepted square Mountain remains plainly visible behind it and a colocated unit stays readable in front. Soft northwest key light, darker southeast planes, strong charcoal-teal outline and two-to-three flat tones. No mountain, ore vein, cart, ground or shadow; all alpha stays away from left, right and bottom edges. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; mountain replacement, rock peak, cave landscape, giant tunnel, mine cart, rails, loose ore, crystal, quarry blocks, forge, factory, city, house, worker, person, unit, ground, grass, tile, platform, diamond, cast shadow, lateral overflow, bottom overflow, clipping, lower-right light, ownership, selection, contributor mark, level square, pips, number, text, UI, realistic machinery, tiny rubble, painterly, 3D.",
+        "prompt": "Shared square-grid Mine low improvement on a transparent 256 by 296 canvas, anchor 128,222. Make one compact dark arched mine opening framed by exactly three chunky bronze timbers and one oversized diagonal pick fixed across the frame. Keep the low silhouette centered in x68..188,y158..244 so the accepted square Mountain remains plainly visible behind it and a colocated unit stays readable in front. Soft northwest key light, darker southeast planes, strong charcoal-teal outline and two-to-three flat tones. No mountain, ore vein, cart, ground or shadow; all alpha stays away from left, right and bottom edges.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; mountain replacement, rock peak, cave landscape, giant tunnel, mine cart, rails, loose ore, crystal, quarry blocks, forge, factory, city, house, worker, person, unit, ground, grass, tile, platform, diamond, cast shadow, lateral overflow, bottom overflow, clipping, lower-right light, ownership, selection, contributor mark, level square, pips, number, text, UI, realistic machinery, tiny rubble, painterly, 3D",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 107202,
+        "noBackground": true,
+        "palette": "dark slate-blue opening and supports, warm bronze timber and pick, restrained parchment highlight, dark teal-charcoal outline and southeast shadow",
+        "postprocess": "compact-building-fit",
+        "groundContactY": 244,
+        "styleReference": {
+          "id": "building-mine",
+          "sha256": "ed7b990bedc1158c80129423fe31024230199ee54f8e9dbbc51ff52b64369f31",
+          "usageDescription": "Input reference role: preserve the accepted Mine's timber arch, dark opening, pick shorthand, three-quarter camera and flat outlined shading. Recompose it as a much smaller square-aware working face that sits in front of the accepted square Mountain without replacing its terrain silhouette."
+        }
+      },
+      "outputSha256": "a41a9f6819d2cd3b676661461942936d37fb532808854c87367260454faf1ed8",
+      "notes": "Accepted after individual source/original-size inspection and deterministic both-faction Mountain→Mine→unit composition review. The compact dark arched opening, three broad timber braces and diagonal pick read as a worked Mine distinct from Ore, Quarry, Forge, cities and ordinary Mountain terrain. Alpha x88..167,y158..244 stays wholly inside the transparent 256x296 square-aware low-building canvas with clear left/right/bottom safety. At 0.5 map scale the 40x43.5 CSS silhouette remains subordinate to all accepted square Mountain variants, composes in front of the authoritative Mountain and behind unchanged Original/Candy unit rasters, uses northwest highlights and darker southeast planes, and contains no ground, ownership, selection, contributor, level-square or UI state.",
+      "reviewedAt": "2026-09-03T20:13:32.080Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-square-lumber-camp": {
+      "id": "building-square-lumber-camp",
+      "status": "ACCEPTED",
+      "jobId": "ee776017-628b-4fd3-b24f-6e68d260a429",
+      "candidate": "art/pixellab/candidates/building-square-lumber-camp.png",
+      "candidateSha256": "c3511299607d3524ba6fdd2828d4bef9c0ad50e9a35cd47d5abdf30d2d46479c",
+      "providerOutputSha256": "678bb34fc4e1e68ff4e373b112dc188181561d2cd09a08d0960b5ececf448d34",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 86,
+        "top": 164,
+        "right": 170,
+        "bottom": 244,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm muted bronze timber, parchment canvas, cool slate-blue saw metal, dark teal-charcoal outline and southeast shadow. Shared square-grid Lumber Camp low improvement on a transparent 256 by 296 canvas, anchor 128,222. Make one compact open timber rack with exactly two broad horizontal logs, one small but obvious upright slate-blue circular saw, and one short parchment canopy. Keep the low silhouette centered in x68..188,y164..244 so accepted square Forest trunks and canopy remain visibly authoritative around and behind it and a colocated unit remains clear in front. Soft northwest key light, darker southeast planes, strong charcoal-teal outline and two-to-three flat tones. No ground, stump field or shadow; all alpha stays away from left, right and bottom edges. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; large sawmill, factory, tall shed, giant saw blade, many logs, felled forest, tree canopy, forest replacement, stump field, lumberjack, person, unit, mine, cart, ore, quarry, city, house, ground, grass, tile, platform, diamond, cast shadow, lateral overflow, bottom overflow, clipping, lower-right light, ownership, selection, contributor mark, cluster outline, level square, pips, number, text, UI, realistic machinery, tiny clutter, painterly, 3D.",
+        "prompt": "Shared square-grid Lumber Camp low improvement on a transparent 256 by 296 canvas, anchor 128,222. Make one compact open timber rack with exactly two broad horizontal logs, one small but obvious upright slate-blue circular saw, and one short parchment canopy. Keep the low silhouette centered in x68..188,y164..244 so accepted square Forest trunks and canopy remain visibly authoritative around and behind it and a colocated unit remains clear in front. Soft northwest key light, darker southeast planes, strong charcoal-teal outline and two-to-three flat tones. No ground, stump field or shadow; all alpha stays away from left, right and bottom edges.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; large sawmill, factory, tall shed, giant saw blade, many logs, felled forest, tree canopy, forest replacement, stump field, lumberjack, person, unit, mine, cart, ore, quarry, city, house, ground, grass, tile, platform, diamond, cast shadow, lateral overflow, bottom overflow, clipping, lower-right light, ownership, selection, contributor mark, cluster outline, level square, pips, number, text, UI, realistic machinery, tiny clutter, painterly, 3D",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 107201,
+        "noBackground": true,
+        "palette": "warm muted bronze timber, parchment canvas, cool slate-blue saw metal, dark teal-charcoal outline and southeast shadow",
+        "postprocess": "compact-building-fit",
+        "groundContactY": 244,
+        "styleReference": {
+          "id": "building-lumber-mill",
+          "sha256": "ead21bcd2ffb376e883155a24c34a4fc4693d6df1d1d5c90ab964783998b3825",
+          "usageDescription": "Input reference role: preserve the accepted timber-and-saw functional language, northwest-lit broad flat planes, charcoal outline, transparent isolation and low-building camera. Recompose it as a much smaller square-cell Lumber Camp that remains readable inside the accepted square Forest."
+        }
+      },
+      "outputSha256": "c3511299607d3524ba6fdd2828d4bef9c0ad50e9a35cd47d5abdf30d2d46479c",
+      "notes": "Accepted after individual source/original-size inspection and deterministic both-faction Forest→Lumber Camp→unit composition review. The compact open timber rack, two broad logs, small upright slate saw and parchment canopy read as a low Lumber Camp distinct from the larger Sawmill, Mine, resources, cities and terrain. Alpha x86..170,y164..244 stays wholly inside the transparent 256x296 square-aware low-building canvas with clear left/right/bottom safety. At 0.5 map scale the 42.5x40.5 CSS silhouette remains subordinate to all accepted square Forest variants, composes in front of the authoritative Forest and behind unchanged Original/Candy unit rasters, uses northwest highlights and darker southeast planes, and contains no ground, ownership, selection, contributor, level-square or UI state.",
+      "reviewedAt": "2026-09-03T20:13:27.383Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-square-sawmill": {
+      "id": "building-square-sawmill",
+      "status": "ACCEPTED",
+      "jobId": "d0641570-5c81-4b53-b798-7148c3774549",
+      "candidate": "art/pixellab/candidates/building-square-sawmill.png",
+      "candidateSha256": "bc51ef67bba41d32d23d6ea4a2965d46f05b96fa3351bba4033c2c723df84688",
+      "providerOutputSha256": "5a005165a9ced23e00135d28266c9bf60bb8e53ea66da10e72ff544c51f9dfc1",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 86,
+        "top": 109,
+        "right": 298,
+        "bottom": 316,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm bronze timber, muted parchment canopy, cool slate-blue saw metal, dark teal-charcoal outline and southeast shadow. Shared square-grid Sawmill processor on a transparent 384 by 384 canvas, anchor 192,288. One compact open-sided timber shed with one enormous upright slate-blue circular saw and exactly three broad logs stacked low on its southeast side. Keep a distinct low-wide functional silhouette inside x86..298,y76..316, smaller than accepted square Forests and Mountains, with open lower-center and lower-right space for units, contributor marks and mint graphical level squares. Soft northwest key light, darker southeast planes, strong charcoal-teal outline and two-to-three flat tones. Only upward overhang is permitted; no ground, contributors, pips, numbers or UI. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; lumber camp, tiny hand saw, windmill, forge fire, anvil, quarry, stoneworks, city, sprawling factory, worker, person, unit, forest, trees, ground, platform, tile, cast shadow, left or right overflow, bottom overflow, clipping, lower-right light, ownership, selection, contributor line, cluster outline, level square, pip, number, text, UI, realistic machinery, tiny saw teeth, painterly, 3D.",
+        "prompt": "Shared square-grid Sawmill processor on a transparent 384 by 384 canvas, anchor 192,288. One compact open-sided timber shed with one enormous upright slate-blue circular saw and exactly three broad logs stacked low on its southeast side. Keep a distinct low-wide functional silhouette inside x86..298,y76..316, smaller than accepted square Forests and Mountains, with open lower-center and lower-right space for units, contributor marks and mint graphical level squares. Soft northwest key light, darker southeast planes, strong charcoal-teal outline and two-to-three flat tones. Only upward overhang is permitted; no ground, contributors, pips, numbers or UI.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; lumber camp, tiny hand saw, windmill, forge fire, anvil, quarry, stoneworks, city, sprawling factory, worker, person, unit, forest, trees, ground, platform, tile, cast shadow, left or right overflow, bottom overflow, clipping, lower-right light, ownership, selection, contributor line, cluster outline, level square, pip, number, text, UI, realistic machinery, tiny saw teeth, painterly, 3D",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 107203,
+        "noBackground": true,
+        "palette": "warm bronze timber, muted parchment canopy, cool slate-blue saw metal, dark teal-charcoal outline and southeast shadow",
+        "postprocess": "compact-building-fit",
+        "groundContactY": 316,
+        "styleReference": {
+          "id": "building-sawmill",
+          "sha256": "661acee29048d9e0e6d7ba8ea6bdfc546454d31e0ba576dde4a679bb1cf27f6c",
+          "usageDescription": "Input reference role: preserve the accepted Sawmill's enormous readable circular-saw shorthand, open timber frame, northwest-lit flat planes and strong outline. Reduce and recenter the complete silhouette for the square cell and keep renderer-owned contributor and level marks outside the raster."
+        }
+      },
+      "outputSha256": "bc51ef67bba41d32d23d6ea4a2965d46f05b96fa3351bba4033c2c723df84688",
+      "notes": "Accepted after source/native/enlarged, 0.625x/1x/1.75x, DPR1/DPR2, both-faction dense-map, exact 112x130 UI, and zero/one/four/eight contributor plus exact graphical live-level-square review. The open timber canopy, oversized upright slate saw and three broad foreground logs create a low-wide Sawmill silhouette distinct from the smaller Lumber Camp, Forge, Stoneworks, Windmill, cities and terrain. Alpha x86..298,y109..316 stays within the 384x384 processor canvas with 86/85 source-pixel lateral safety, 68 bottom pixels and only upward extension. At 0.3 map scale the 63.9x62.4 CSS silhouette remains smaller than square Forest/Mountain forms and leaves renderer-owned cluster spokes, units and mint level squares unobscured. Northwest highlights and darker southeast planes match the square family; no state is baked in.",
+      "reviewedAt": "2026-09-03T20:23:18.068Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-square-forge": {
+      "id": "building-square-forge",
+      "status": "ACCEPTED",
+      "jobId": "dc52deae-a174-4093-84aa-01062bd44183",
+      "candidate": "art/pixellab/candidates/building-square-forge.png",
+      "candidateSha256": "010ddd99d7f399edd6b73441f2d2a9713e7664a5cc5e8ab39ccae127ea7ed96a",
+      "providerOutputSha256": "e6640f8787cb5d2c91b7d8663a4362ed51072e58626352c625abad318d0313b5",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 90,
+        "top": 88,
+        "right": 294,
+        "bottom": 316,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: dark slate-blue masonry, warm bronze chimney and anvil, restrained coral-orange furnace glow, parchment highlight, dark teal-charcoal outline. Shared square-grid Forge processor on a transparent 384 by 384 canvas, anchor 192,288. One compact squat slate furnace with one broad bronze chimney, one large exterior anvil on the southeast side and one restrained coral furnace mouth. Keep an unmistakable chimney-plus-anvil silhouette inside x90..294,y72..316, smaller than accepted square Forests and Mountains, with clear lower-center and lower-right space for units, contributor marks and mint graphical level squares. Soft northwest key light, darker southeast planes, strong charcoal-teal outline and two-to-three flat tones. Only upward overhang is permitted; no smoke, ground, contributors, pips, numbers or UI. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; mine entrance, mountain, ore, quarry, saw blade, sawmill, windmill, many chimneys, smoke cloud, city, factory complex, blacksmith, person, unit, weapon pile, ground, platform, tile, cast shadow, left or right overflow, bottom overflow, clipping, lower-right light, ownership, selection, contributor line, adjacency glow, level square, pip, number, text, UI, realistic masonry, painterly, 3D.",
+        "prompt": "Shared square-grid Forge processor on a transparent 384 by 384 canvas, anchor 192,288. One compact squat slate furnace with one broad bronze chimney, one large exterior anvil on the southeast side and one restrained coral furnace mouth. Keep an unmistakable chimney-plus-anvil silhouette inside x90..294,y72..316, smaller than accepted square Forests and Mountains, with clear lower-center and lower-right space for units, contributor marks and mint graphical level squares. Soft northwest key light, darker southeast planes, strong charcoal-teal outline and two-to-three flat tones. Only upward overhang is permitted; no smoke, ground, contributors, pips, numbers or UI.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; mine entrance, mountain, ore, quarry, saw blade, sawmill, windmill, many chimneys, smoke cloud, city, factory complex, blacksmith, person, unit, weapon pile, ground, platform, tile, cast shadow, left or right overflow, bottom overflow, clipping, lower-right light, ownership, selection, contributor line, adjacency glow, level square, pip, number, text, UI, realistic masonry, painterly, 3D",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 107204,
+        "noBackground": true,
+        "palette": "dark slate-blue masonry, warm bronze chimney and anvil, restrained coral-orange furnace glow, parchment highlight, dark teal-charcoal outline",
+        "postprocess": "compact-building-fit",
+        "groundContactY": 316,
+        "styleReference": {
+          "id": "building-forge",
+          "sha256": "5abaf5b302712afca4897dd4d1e6cbbd4ec0437e40d8e7ebbf4e37d275d5b9d6",
+          "usageDescription": "Input reference role: preserve the accepted Forge's squat furnace, broad chimney, exterior anvil, restrained ember color, northwest-lit flat planes and strong outline. Reduce and recenter it for the square cell while reserving clear renderer-owned mark space."
+        }
+      },
+      "outputSha256": "010ddd99d7f399edd6b73441f2d2a9713e7664a5cc5e8ab39ccae127ea7ed96a",
+      "notes": "Accepted after source/native/enlarged, 0.625x/1x/1.75x, DPR1/DPR2, both-faction dense-map, exact 112x130 UI, and zero/one/four/eight adjacent-Mine plus exact 0/2/8/16 graphical live-level-square review. The squat slate furnace, broad bronze chimney, single restrained coral mouth and exterior anvil create an unmistakable Forge silhouette distinct from Mine, Sawmill, Stoneworks, Windmill, cities and terrain. Alpha x90..294,y88..316 stays within the 384x384 processor canvas with 90/89 source-pixel lateral safety, 68 bottom pixels and only upward extension. At 0.3 map scale the 61.5x68.7 CSS silhouette remains smaller than square Forest/Mountain forms and leaves renderer-owned adjacency spokes, units and mint level squares unobscured. Lighting and flat planes match the northwest-lit family; no state is baked in.",
+      "reviewedAt": "2026-09-03T20:23:22.853Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-square-stoneworks": {
+      "id": "building-square-stoneworks",
+      "status": "ACCEPTED",
+      "jobId": "cc1a9261-f175-4f05-89a7-5aae411add43",
+      "candidate": "art/pixellab/candidates/building-square-stoneworks.png",
+      "candidateSha256": "47b1df228852d309078de50eb587a79be143251fa77d2b38d89d0b02d1d340eb",
+      "providerOutputSha256": "8320906d16e16245a8fe1283bbc3a4e278e6fc4d71c2db39c58da197a339999f",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 88,
+        "top": 95,
+        "right": 296,
+        "bottom": 316,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted cool blue-slate cut stone, warm bronze hoist and braces, parchment rope and highlight, dark teal-charcoal outline. Shared square-grid Stoneworks processor on a transparent 384 by 384 canvas, anchor 192,288. One compact open masonry pavilion defined by one oversized finished blue-slate arch, one short bronze overhead hoist and exactly two large fitted blocks. Keep a unique arch-and-hoist silhouette inside x88..296,y74..316, smaller than accepted square Forests and Mountains, with clear lower-center and lower-right space for units, contributor marks, opposite-pair axes and mint graphical level squares. Soft northwest key light, darker southeast planes, strong charcoal-teal outline and two-to-three flat tones. Only upward overhang is permitted; no ground, directions, pips, numbers or UI. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; quarry pit, raw boulders, mountain, mine, forge fire, saw blade, windmill, castle gate, city wall, many blocks, sprawling factory, mason, person, unit, compass, pair axis, diagonal line, ground, platform, tile, cast shadow, left or right overflow, bottom overflow, clipping, lower-right light, ownership, selection, contributor line, level square, pip, number, text, UI, realistic masonry, tiny rubble, painterly, 3D.",
+        "prompt": "Shared square-grid Stoneworks processor on a transparent 384 by 384 canvas, anchor 192,288. One compact open masonry pavilion defined by one oversized finished blue-slate arch, one short bronze overhead hoist and exactly two large fitted blocks. Keep a unique arch-and-hoist silhouette inside x88..296,y74..316, smaller than accepted square Forests and Mountains, with clear lower-center and lower-right space for units, contributor marks, opposite-pair axes and mint graphical level squares. Soft northwest key light, darker southeast planes, strong charcoal-teal outline and two-to-three flat tones. Only upward overhang is permitted; no ground, directions, pips, numbers or UI.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; quarry pit, raw boulders, mountain, mine, forge fire, saw blade, windmill, castle gate, city wall, many blocks, sprawling factory, mason, person, unit, compass, pair axis, diagonal line, ground, platform, tile, cast shadow, left or right overflow, bottom overflow, clipping, lower-right light, ownership, selection, contributor line, level square, pip, number, text, UI, realistic masonry, tiny rubble, painterly, 3D",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 107205,
+        "noBackground": true,
+        "palette": "muted cool blue-slate cut stone, warm bronze hoist and braces, parchment rope and highlight, dark teal-charcoal outline",
+        "postprocess": "compact-building-fit",
+        "groundContactY": 316,
+        "styleReference": {
+          "id": "building-stoneworks",
+          "sha256": "bb0202ec44307e938d827568d541c64048a24ec06363b46720018489e9187ac4",
+          "usageDescription": "Input reference role: preserve the accepted Stoneworks' finished square-cut arch, short hoist, broad fitted blocks, northwest-lit flat planes and strong outline. Reduce and recenter it for the square cell without baking pair axes, contributors or level marks."
+        }
+      },
+      "outputSha256": "47b1df228852d309078de50eb587a79be143251fa77d2b38d89d0b02d1d340eb",
+      "notes": "Accepted after source/native/enlarged, 0.625x/1x/1.75x, DPR1/DPR2, both-faction dense-map, exact 112x130 UI, and zero/one/four/eight adjacent-Quarry plus opposite-pair and exact 0/1/8/16 graphical live-level-square review. The finished blue-slate arch, centered bronze hoist and two fitted bases create an unmistakable Stoneworks silhouette distinct from raw Stone, low Quarry, Mine, Forge, city walls and terrain. Alpha x88..296,y95..316 stays within the 384x384 processor canvas with 88/87 source-pixel lateral safety, 68 bottom pixels and only upward extension. At 0.3 map scale the 62.7x66.6 CSS silhouette remains smaller than square Forest/Mountain forms and leaves renderer-owned pair axes, contributor spokes, units and mint level squares unobscured. Northwest lighting matches the family; no directional or state mark is baked in.",
+      "reviewedAt": "2026-09-03T20:23:27.547Z",
       "reviewChecks": {
         "source": true,
         "native": true,

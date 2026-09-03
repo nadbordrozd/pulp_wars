@@ -73,6 +73,41 @@ DPR1/2, and fit the shared 112 x 130 action/selection/technology viewport.
 Their accepted IDs and URLs are registered, but map coverage deliberately
 continues to use the previous assets until the integration boundary in e1m.9.
 
+## Accepted square extraction and processor family
+
+The next square family accepts exactly five shared sources from two ordered,
+bounded PixelLab invocations: `building-square-lumber-camp` plus
+`building-square-mine`, followed by `building-square-sawmill`,
+`building-square-forge`, and `building-square-stoneworks`. The accepted IDs and
+URLs are registered, while runtime coverage remains deliberately deferred to
+e1m.9.
+
+Lumber Camp and Mine retain the 256 x 296 low-building canvas and `(128,222)`
+anchor. Their accepted alpha bounds are respectively `x=86..170,y=164..244`
+and `x=88..167,y=158..244`. At 0.5 source scale they remain compact in front of
+the complete accepted square Forest/Mountain treatment and behind unchanged
+units. Lumber Camp uses an open timber rack, upright saw and two logs; Mine uses
+a dark opening, three timber braces and diagonal pick. Neither replaces or
+hides its authoritative underlying terrain.
+
+Sawmill, Forge and Stoneworks retain the 384 x 384 processor canvas and
+`(192,288)` anchor. Their accepted alpha bounds are respectively
+`x=86..298,y=109..316`, `x=90..294,y=88..316`, and
+`x=88..296,y=95..316`. At 0.3 source scale every silhouette is smaller than the
+accepted square Forest and Mountain forms, crosses no lateral or bottom edge,
+and leaves the lower-right renderer attachment area clear. Sawmill is defined
+by its open canopy, upright circular saw and log stack; Forge by its squat
+furnace, chimney and exterior anvil; Stoneworks by its finished arch, short
+hoist and fitted blocks.
+
+Deterministic review covers both factions, all supported zoom/DPR pairs, dense
+Road/resource/city/fog/ownership/selection contexts, and exact 112 x 130 UI
+reuse. Processor contexts cover zero, one, four and eight contributors.
+Renderer-owned mint level squares show exact Sawmill values `0/1/4/8`, Forge
+values `0/2/8/16`, and Stoneworks values `0/1/8/16`, including Stoneworks
+opposite-pair axes; squares wrap after eight and no contributor, pair, value or
+state mark is baked into a raster.
+
 This contract specializes [Pulp Wars Art Direction](../ART_DIRECTION.md) for
 capitals, cities, villages, Mines, Lumber Mills, Chocolate Walls, and city
 reward markers.

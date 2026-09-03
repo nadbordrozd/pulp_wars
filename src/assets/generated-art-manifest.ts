@@ -360,6 +360,21 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   "building-square-windmill": publicArtUrl(
     "assets/pixellab/buildings-square/windmill.png",
   ),
+  "building-square-lumber-camp": publicArtUrl(
+    "assets/pixellab/buildings-square/lumber-camp.png",
+  ),
+  "building-square-mine": publicArtUrl(
+    "assets/pixellab/buildings-square/mine.png",
+  ),
+  "building-square-sawmill": publicArtUrl(
+    "assets/pixellab/buildings-square/sawmill.png",
+  ),
+  "building-square-forge": publicArtUrl(
+    "assets/pixellab/buildings-square/forge.png",
+  ),
+  "building-square-stoneworks": publicArtUrl(
+    "assets/pixellab/buildings-square/stoneworks.png",
+  ),
   "terrain-game": publicArtUrl("assets/pixellab/terrain/animal.png"),
   "building-ruleset6-mine": publicArtUrl("assets/pixellab/buildings/mine.png"),
   "building-lumber-camp": publicArtUrl(

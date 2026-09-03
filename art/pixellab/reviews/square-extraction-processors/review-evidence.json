@@ -1,0 +1,216 @@
+{
+  "status": "READY_FOR_ORCHESTRATOR_REVIEW",
+  "pixelLabFamilyRequests": 2,
+  "pixelLabSourceCalls": 5,
+  "acceptedSources": 5,
+  "rejectedSources": 0,
+  "exactFamilies": [
+    {
+      "order": 1,
+      "purpose": "square low extraction",
+      "ids": [
+        "building-square-lumber-camp",
+        "building-square-mine"
+      ],
+      "jobs": [
+        "ee776017-628b-4fd3-b24f-6e68d260a429",
+        "68026b11-f6eb-48d0-bd1d-19b094f0bec6"
+      ]
+    },
+    {
+      "order": 2,
+      "purpose": "square processors",
+      "ids": [
+        "building-square-sawmill",
+        "building-square-forge",
+        "building-square-stoneworks"
+      ],
+      "jobs": [
+        "d0641570-5c81-4b53-b798-7148c3774549",
+        "dc52deae-a174-4093-84aa-01062bd44183",
+        "cc1a9261-f175-4f05-89a7-5aae411add43"
+      ]
+    }
+  ],
+  "providerRejections": [],
+  "acceptedAssets": {
+    "building-square-lumber-camp": {
+      "seed": 107201,
+      "output": "public/assets/pixellab/buildings-square/lumber-camp.png",
+      "jobId": "ee776017-628b-4fd3-b24f-6e68d260a429",
+      "providerOutputSha256": "678bb34fc4e1e68ff4e373b112dc188181561d2cd09a08d0960b5ececf448d34",
+      "outputSha256": "c3511299607d3524ba6fdd2828d4bef9c0ad50e9a35cd47d5abdf30d2d46479c",
+      "alphaBounds": {
+        "left": 86,
+        "top": 164,
+        "right": 170,
+        "bottom": 244,
+        "empty": false
+      },
+      "styleReference": "building-lumber-mill"
+    },
+    "building-square-mine": {
+      "seed": 107202,
+      "output": "public/assets/pixellab/buildings-square/mine.png",
+      "jobId": "68026b11-f6eb-48d0-bd1d-19b094f0bec6",
+      "providerOutputSha256": "baa1bf03c71594a775586bb8cb929d8e22795a5da6e2c024b9fe0af1a406f891",
+      "outputSha256": "a41a9f6819d2cd3b676661461942936d37fb532808854c87367260454faf1ed8",
+      "alphaBounds": {
+        "left": 88,
+        "top": 158,
+        "right": 167,
+        "bottom": 244,
+        "empty": false
+      },
+      "styleReference": "building-mine"
+    },
+    "building-square-sawmill": {
+      "seed": 107203,
+      "output": "public/assets/pixellab/buildings-square/sawmill.png",
+      "jobId": "d0641570-5c81-4b53-b798-7148c3774549",
+      "providerOutputSha256": "5a005165a9ced23e00135d28266c9bf60bb8e53ea66da10e72ff544c51f9dfc1",
+      "outputSha256": "bc51ef67bba41d32d23d6ea4a2965d46f05b96fa3351bba4033c2c723df84688",
+      "alphaBounds": {
+        "left": 86,
+        "top": 109,
+        "right": 298,
+        "bottom": 316,
+        "empty": false
+      },
+      "styleReference": "building-sawmill"
+    },
+    "building-square-forge": {
+      "seed": 107204,
+      "output": "public/assets/pixellab/buildings-square/forge.png",
+      "jobId": "dc52deae-a174-4093-84aa-01062bd44183",
+      "providerOutputSha256": "e6640f8787cb5d2c91b7d8663a4362ed51072e58626352c625abad318d0313b5",
+      "outputSha256": "010ddd99d7f399edd6b73441f2d2a9713e7664a5cc5e8ab39ccae127ea7ed96a",
+      "alphaBounds": {
+        "left": 90,
+        "top": 88,
+        "right": 294,
+        "bottom": 316,
+        "empty": false
+      },
+      "styleReference": "building-forge"
+    },
+    "building-square-stoneworks": {
+      "seed": 107205,
+      "output": "public/assets/pixellab/buildings-square/stoneworks.png",
+      "jobId": "cc1a9261-f175-4f05-89a7-5aae411add43",
+      "providerOutputSha256": "8320906d16e16245a8fe1283bbc3a4e278e6fc4d71c2db39c58da197a339999f",
+      "outputSha256": "47b1df228852d309078de50eb587a79be143251fa77d2b38d89d0b02d1d340eb",
+      "alphaBounds": {
+        "left": 88,
+        "top": 95,
+        "right": 296,
+        "bottom": 316,
+        "empty": false
+      },
+      "styleReference": "building-stoneworks"
+    }
+  },
+  "extractionLayerOrder": [
+    "accepted square Forest/Mountain terrain",
+    "square Lumber Camp/Mine low improvement",
+    "accepted unchanged Original/Candy unit",
+    "renderer-owned ownership/selection/status"
+  ],
+  "processorContexts": {
+    "factions": [
+      "ORIGINAL",
+      "CANDY"
+    ],
+    "contributors": [
+      0,
+      1,
+      4,
+      8
+    ],
+    "sawmillLiveLevelSquares": [
+      0,
+      1,
+      4,
+      8
+    ],
+    "forgeLiveLevelSquares": [
+      0,
+      2,
+      8,
+      16
+    ],
+    "stoneworksLiveLevelSquares": [
+      0,
+      1,
+      8,
+      16
+    ],
+    "stoneworksOppositePairsIncluded": true,
+    "marksAreCodeNative": true,
+    "levelSquaresWrapAfter": 8
+  },
+  "runtimeCoverageSwitched": false,
+  "acceptedUnitByteHashes": {
+    "public/assets/pixellab/units/warrior.png": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1",
+    "public/assets/pixellab/units/defender.png": "930c31f9aa1bf5dacf0318484b31ac63504365482ae01a84a6a269d94de65e11",
+    "public/assets/pixellab/units/archer.png": "deb62a8a84dc28ceecd58047a3f65abdb67c0616851337c817452d75a5b73bb2",
+    "public/assets/pixellab/units/rider.png": "20bb28c79c28e262908e518124e776f30adf946254906e62245f0e9702606bb4",
+    "public/assets/pixellab/units/catapult.png": "cdf6ed34a67c1daf1bfd947b0b1af007b25d2a13ee88ee2df876bdb9f7ceec83",
+    "public/assets/pixellab/units/candy-warrior.png": "76456b060ba1701e75387285b4738d4c289c0617eb852f5552beadfe2eb1a2bc",
+    "public/assets/pixellab/units/candy-gumball-guard.png": "5a43d5f737bbf41f007c9bf8ee5f7fe5e0084bb13f9d243917d27c6f701f81b2",
+    "public/assets/pixellab/units/candy-donut.png": "041fd6defb9b46059e9036418c501cc287e8ac74180384594770e9d1d764a991",
+    "public/assets/pixellab/units/candy-choco-engineer.png": "020d0448b1db6be74b00aa3d468ca4f4aa7d9c2c700d63ae7c03a683ec314fcf",
+    "public/assets/pixellab/units/original-scout.png": "8663c5c6f95ed69481123245a7f7c5e6acf2b55ebb9c52ebbc46979252e60343",
+    "public/assets/pixellab/units/original-medic.png": "c30475f23be6a8ca9ee1957a327b3b764489e570d50cd69d5775006650af62c2",
+    "public/assets/pixellab/units/original-breacher.png": "1e752161cd63bcb7bc0e5a0989557f61d2d7f2d3e3d9597ccc9360ed11fca2ad",
+    "public/assets/pixellab/units/original-heavy.png": "8fe592d094ede939cf8a92119022c9606b6c12621ed4d6777b4056b8cadb3759",
+    "public/assets/pixellab/units/original-juggernaut.png": "c905126dc7c38683b1ecba0aa930a4add45426a26fa3560a78e2df21ddaccc9a",
+    "public/assets/pixellab/units/candy-jelly-scout.png": "c835c0a08cc24d5751c0dbc85365f638016029984162a6272387aa3efc2965a9",
+    "public/assets/pixellab/units/candy-marshmallow-medic.png": "868b00e650c05e22bd085d72f093fd8c80554ba17a3357a2982833c617e98327",
+    "public/assets/pixellab/units/candy-crusher.png": "d2fb335814ae4929cb47891bcb8561c8092a1bfc9fc53f98b9b4a32382898fca",
+    "public/assets/pixellab/units/candy-jawbreaker.png": "5897e7b0d7d8dd4746ff7ecadba4ba0b0d72266df4b33b25743fef33c5ee1455",
+    "public/assets/pixellab/units/candy-sugar-titan.png": "7d360ee7191644121f4397be91ac7ab42769883b44d6481d6c056ad7c5df76c9"
+  },
+  "reviewCoverage": [
+    "all five sources at source, enlarged, native 1x and 0.625x minimum gameplay zoom",
+    "0.625x, 1x and 1.75x map composition at DPR1 and DPR2-equivalent backing",
+    "Original and Candy Forest→Lumber Camp→unchanged unit and Mountain→Mine→unchanged unit layering",
+    "Sawmill, Forge and Stoneworks with zero, one, four and eight contributors and exact renderer-owned live-level squares",
+    "Stoneworks opposite-pair relationship axes and all processor contributor spokes remain code-native and unobscured",
+    "dense maps with Roads, resources, existing square samples, cities, fog, ownership and selection",
+    "exact 112x130 contextual-action, selection-identity and technology-card raster reuse",
+    "accepted IDs/URLs registered while asset coverage and runtime bindings remain deferred to e1m.9"
+  ],
+  "artifacts": [
+    {
+      "path": "art/pixellab/reviews/square-extraction-processors/source-native-enlarged.png",
+      "sha256": "3f162ec958d6091606bd87d57fcf51b043c17a9ebedb216a38e211ba23ce89fc",
+      "bytes": 265384
+    },
+    {
+      "path": "art/pixellab/reviews/square-extraction-processors/extraction-layering-both-factions.png",
+      "sha256": "8f84822e5a7167f573184c2da8cc62051d412f25ecc48b91ddcc57b351505ef5",
+      "bytes": 194733
+    },
+    {
+      "path": "art/pixellab/reviews/square-extraction-processors/processor-contributors-levels.png",
+      "sha256": "47d42c61dd723127bbdb2317ad16b9fb7895092a9eeb7001eeda0578a5c77c53",
+      "bytes": 173164
+    },
+    {
+      "path": "art/pixellab/reviews/square-extraction-processors/dense-overlays.png",
+      "sha256": "12ef14858798a44df24c67b0fcb91aaa2d0b68453da7b30a53a47811a2ddd011",
+      "bytes": 218577
+    },
+    {
+      "path": "art/pixellab/reviews/square-extraction-processors/zoom-dpr.png",
+      "sha256": "2caf11af8ba73330cad1ace15c45b682894e62436c8eb53fbc8b4114488971c2",
+      "bytes": 465583
+    },
+    {
+      "path": "art/pixellab/reviews/square-extraction-processors/ui-reuse-112x130.png",
+      "sha256": "177509c27b2ed823db5640712f22a396b283e44eec0262e6940ea55a212c7b2f",
+      "bytes": 66171
+    }
+  ]
+}

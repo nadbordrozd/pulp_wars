@@ -230,6 +230,7 @@ async function main(): Promise<void> {
     assertSquareTerrainOrder(recipes, generated);
     assertSquareResourceRoadOrder(recipes, generated);
     assertSquareImprovementSampleGate(recipes);
+    assertSquareImprovementExpansionOrder(recipes, generated);
     if (stage === "batch") assertBuildingBatchOrder(recipes, generated);
     const concurrency = Number(optionalOption("--concurrency") ?? "3");
     await generateRecipes(source, generated, recipes, concurrency);
@@ -845,6 +846,51 @@ function validateSourceManifest(
     JSON.stringify({ left: 0, top: 0, right: 256, bottom: 256 })
   )
     throw new Error("Square Farm needs one complete opaque owning footprint");
+  const squareImprovementExpansion = [
+    {
+      id: "building-square-lumber-camp",
+      size: { width: 256, height: 296 },
+      anchor: { x: 128, y: 222 },
+      hardBounds: { left: 20, top: 12, right: 236, bottom: 252 },
+    },
+    {
+      id: "building-square-mine",
+      size: { width: 256, height: 296 },
+      anchor: { x: 128, y: 222 },
+      hardBounds: { left: 20, top: 12, right: 236, bottom: 252 },
+    },
+    ...[
+      "building-square-sawmill",
+      "building-square-forge",
+      "building-square-stoneworks",
+    ].map((id) => ({
+      id,
+      size: { width: 384, height: 384 },
+      anchor: { x: 192, y: 288 },
+      hardBounds: { left: 8, top: 8, right: 376, bottom: 344 },
+    })),
+  ] as const;
+  for (const contract of squareImprovementExpansion) {
+    const recipe = source.recipes.find(({ id }) => id === contract.id);
+    if (
+      recipe?.class !== "buildings" ||
+      recipe.stage !== "batch" ||
+      JSON.stringify(recipe.requestSize) !== JSON.stringify(contract.size) ||
+      JSON.stringify(recipe.outputSize) !== JSON.stringify(contract.size) ||
+      JSON.stringify(recipe.anchor) !== JSON.stringify(contract.anchor) ||
+      JSON.stringify(recipe.hardBounds) !==
+        JSON.stringify(contract.hardBounds) ||
+      recipe.postprocess !== "compact-building-fit" ||
+      recipe.styleReference === undefined ||
+      recipe.styleReferenceUsage === undefined ||
+      recipe.preferredBounds === undefined ||
+      recipe.fitBounds === undefined ||
+      recipe.groundContactY === undefined
+    )
+      throw new Error(
+        `Square extraction/processor geometry mismatch: ${contract.id}`,
+      );
+  }
   const candyTerrainIds = [
     "terrain-candy-grass-1",
     "terrain-candy-grass-2",
@@ -1507,6 +1553,41 @@ function assertSquareImprovementSampleGate(recipes: readonly Recipe[]): void {
   )
     throw new Error(
       "Square improvement sample gate must generate exactly Farm, Quarry, and Windmill together in manifest order",
+    );
+}
+
+function assertSquareImprovementExpansionOrder(
+  recipes: readonly Recipe[],
+  generated: GeneratedManifest,
+): void {
+  const groups = [
+    ["building-square-lumber-camp", "building-square-mine"],
+    [
+      "building-square-sawmill",
+      "building-square-forge",
+      "building-square-stoneworks",
+    ],
+  ] as const;
+  const selected = recipes
+    .map(({ id }) => id)
+    .filter((id) => groups.some((group) => group.includes(id as never)));
+  if (selected.length === 0) return;
+  const groupIndex = groups.findIndex(
+    (group) =>
+      selected.length === group.length &&
+      selected.every((id, index) => id === group[index]),
+  );
+  if (groupIndex < 0)
+    throw new Error(
+      "Square extraction/processor generation must use exactly Lumber Camp + Mine or Sawmill + Forge + Stoneworks in manifest order",
+    );
+  const missingBefore = groups
+    .slice(0, groupIndex)
+    .flat()
+    .filter((id) => generated.records[id]?.status !== "ACCEPTED");
+  if (missingBefore.length > 0)
+    throw new Error(
+      `Accept the square extraction family before processors: ${missingBefore.join(", ")}`,
     );
 }
 
