@@ -99,7 +99,7 @@
     "devicePixelRatios": [1, 2],
     "repetition": "8x8 per family with deterministic mixed variants",
     "adjacency": ["SAME_VARIANT", "DIFFERENT_VARIANT"],
-    "unitSource": "unit-warrior",
+    "unitSources": ["unit-warrior"],
     "unitSourceSha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1",
     "unitHashes": {
       "public/assets/pixellab/units/archer.png": "deb62a8a84dc28ceecd58047a3f65abdb67c0616851337c817452d75a5b73bb2",
@@ -612,7 +612,7 @@
   },
   "visualReview": {
     "status": "ACCEPTED_ORIGINAL_SQUARE_TERRAIN_FAMILY",
-    "notes": "Reviewed every source at native and nearest-neighbor enlarged scale; all 11 together; deterministic 8x8 mixed repetition for Grass, Forest and Mountain; same/different adjacency; 0.625x, 1x and 1.75x at DPR1/2 with unchanged Warrior occupancy; and ownership, selection, target and opaque fog contexts. Grass remains broad and low-salience without stamped bands or gameplay cues. Forest variants use distinct three/four-tree arrangements without resources or buildings. Mountain variants use distinct broad peak-and-shoulder silhouettes with terrain-quiet detail. All own full opaque squares and tall forms overhang upward only."
+    "notes": "Reviewed every Original source at native and nearest-neighbor enlarged scale; all 11 together; deterministic 8x8 mixed repetition for Grass, Forest and Mountain; same/different adjacency; 0.625x, 1x and 1.75x at DPR1/2 with unchanged Warrior occupancy; and ownership, selection, target and opaque fog contexts. Grass remains broad and low-salience without stamped bands or gameplay cues. Forest variants use distinct three/four-tree arrangements without resources or buildings. Mountain variants use distinct broad peak-and-shoulder silhouettes with terrain-quiet detail. All own full opaque squares and tall forms overhang upward only."
   },
   "artifacts": [
     {
