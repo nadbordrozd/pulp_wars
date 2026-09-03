@@ -1,5 +1,14 @@
 # Unit Asset Contract
 
+## Active square-grid override
+
+The map now presents axis-aligned 128 x 128 cells under the
+[square-grid experiment](../SQUARE_GRID_EXPERIMENT.md). Every accepted unit
+PNG, byte hash, source canvas, anchor, display scale, and cosmetic baseline is
+unchanged. The 128 x 74 ratios below remain the acceptance record for those
+files, not a request to enlarge them for square cells; units intentionally stay
+compact relative to terrain.
+
 ## Ruleset-6 active inventory
 
 Ruleset 6 requires nine role sprites and portraits per faction. Original:

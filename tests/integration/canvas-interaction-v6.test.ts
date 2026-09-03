@@ -345,6 +345,9 @@ describe("ruleset-6 Canvas host", () => {
     expect(canvas.style.width).toBe("800px");
     expect(canvas.style.height).toBe("520px");
     expect(canvas.getAttribute("role")).toBe("application");
+    expect(canvas.getAttribute("aria-label")).toContain(
+      "square-grid battlefield",
+    );
     expect(canvas.getAttribute("aria-describedby")).toBe(
       activator.getAttribute("aria-describedby"),
     );
@@ -445,13 +448,13 @@ describe("ruleset-6 Canvas host", () => {
       host.update(model(fixture.view));
       host.activate(visibleGame.at);
       expect(container.textContent).toContain(
-        `Map cursor ${visibleGame.at.x}, ${visibleGame.at.y}: forest, game`,
+        `Map cursor column ${visibleGame.at.x + 1}, row ${visibleGame.at.y + 1}: forest, game`,
       );
       expect(container.textContent).not.toContain("Available: Hunt Game");
 
       host.activate(hiddenGame.at);
       expect(container.textContent).toContain(
-        `Map cursor ${hiddenGame.at.x}, ${hiddenGame.at.y}: fog; unexplored`,
+        `Map cursor column ${hiddenGame.at.x + 1}, row ${hiddenGame.at.y + 1}: fog; unexplored`,
       );
       expect(container.textContent).not.toContain("forest, game");
       host.destroy();
@@ -1152,7 +1155,7 @@ function pointer(
 function measuredZoom(host: CanvasBoardHostV6): number {
   const origin = requirePoint(host.screenPoint({ x: 0, y: 0 }));
   const east = requirePoint(host.screenPoint({ x: 1, y: 0 }));
-  return Math.abs(east.x - origin.x) / 64;
+  return Math.abs(east.x - origin.x) / 128;
 }
 
 function requirePoint<Value>(value: Value | null): Value {

@@ -3,6 +3,8 @@ import {
   RULESET6_SMOKE_EVIDENCE_SUBJECTS,
   RULESET6_SMOKE_TECH_IDS,
   RULESET6_SMOKE_VIEWPORTS,
+  coordinateActivationIsVisibleV6,
+  coordinateActivationPanStepV6,
   contextActionLayoutIssuesV6,
   flowContractIssuesV6,
   layoutContractIssuesV6,
@@ -12,6 +14,34 @@ import {
 } from "../../scripts/browser-smoke-v6-contract";
 
 describe("ruleset-6 browser smoke contract", () => {
+  it("brings arbitrary offscreen square coordinates into the pointer-safe Canvas through bounded pan steps", () => {
+    const canvas = { width: 390, height: 420 } as const;
+    expect(
+      coordinateActivationPanStepV6({ x: 195, y: 210 }, canvas),
+    ).toBeNull();
+
+    // More than the full CSS span of a 25 x 25 board at minimum zoom.
+    let point = { x: 2_100, y: 2_100 };
+    let steps = 0;
+    while (!coordinateActivationIsVisibleV6(point, canvas)) {
+      const step = coordinateActivationPanStepV6(point, canvas);
+      if (step === null) throw new Error("Missing offscreen pan step");
+      expect(step.start).toEqual({ x: 195, y: 210 });
+      expect(step.end.x).toBeGreaterThanOrEqual(24);
+      expect(step.end.x).toBeLessThanOrEqual(canvas.width - 24);
+      expect(step.end.y).toBeGreaterThanOrEqual(24);
+      expect(step.end.y).toBeLessThanOrEqual(canvas.height - 24);
+      point = { x: point.x + step.delta.x, y: point.y + step.delta.y };
+      steps += 1;
+      expect(steps).toBeLessThan(32);
+    }
+    expect(steps).toBeGreaterThan(1);
+    expect(point.x).toBeGreaterThanOrEqual(24);
+    expect(point.y).toBeGreaterThanOrEqual(24);
+    expect(point.x).toBeLessThanOrEqual(canvas.width - 24);
+    expect(point.y).toBeLessThanOrEqual(canvas.height - 24);
+  });
+
   it("freezes the complete five-branch technology order", () => {
     expect(RULESET6_SMOKE_TECH_IDS).toHaveLength(25);
     expect(new Set(RULESET6_SMOKE_TECH_IDS)).toHaveLength(25);
@@ -178,6 +208,15 @@ describe("ruleset-6 browser smoke contract", () => {
         "unit-context-desktop has invalid evidence metadata",
       ]),
     );
+    expect(
+      flowContractIssuesV6({
+        ...flow,
+        coordinateActivations: flow.coordinateActivations.map((activation) => ({
+          ...activation,
+          before: activation.after,
+        })),
+      }),
+    ).toContain("coordinate activation camera evidence is inconsistent");
   });
 });
 
@@ -211,6 +250,15 @@ function validFlow(): BrowserSmokeFlowEvidenceV6 {
       aiAcceptedCommands: 5,
     },
     resume: { commandIndex: 7, stateHash: "return" },
+    coordinateActivations: [
+      {
+        at: { x: 2, y: 9 },
+        canvas: { width: 390, height: 420 },
+        before: { x: 195, y: 840 },
+        after: { x: 195, y: 210 },
+        panSteps: 2,
+      },
+    ],
     acceptance: {
       animalVisibility: {
         visibleGameCount: 1,

@@ -93,11 +93,11 @@ export function drawBoard(options: DrawBoardOptions): void {
       options.candyElapsedMs ?? 0,
     );
   if (options.focused !== null)
-    drawDiamond(
+    drawTileFootprint(
       context,
       centerFor(options.camera, options.focused),
       128 * options.camera.zoom,
-      74 * options.camera.zoom,
+      128 * options.camera.zoom,
       "transparent",
       "#ffffff",
       Math.max(2, 3 * options.camera.zoom),
@@ -227,11 +227,11 @@ function drawEntry(options: DrawBoardOptions, entry: RenderPlanEntry): void {
       break;
     }
     case "SELECTION":
-      drawDiamond(
+      drawTileFootprint(
         context,
         center,
         128 * camera.zoom,
-        74 * camera.zoom,
+        128 * camera.zoom,
         "rgb(55 219 231 / 0.18)",
         "#6df4ff",
         Math.max(3, 5 * camera.zoom),
@@ -326,12 +326,12 @@ function drawTerritoryBoundary(
   ownerColor: string | null,
 ): void {
   const halfWidth = (128 * zoom) / 2;
-  const halfHeight = (74 * zoom) / 2;
+  const halfHeight = (128 * zoom) / 2;
   const points = [
-    { x: center.x - halfWidth, y: center.y },
-    { x: center.x, y: center.y - halfHeight },
-    { x: center.x + halfWidth, y: center.y },
-    { x: center.x, y: center.y + halfHeight },
+    { x: center.x - halfWidth, y: center.y - halfHeight },
+    { x: center.x + halfWidth, y: center.y - halfHeight },
+    { x: center.x + halfWidth, y: center.y + halfHeight },
+    { x: center.x - halfWidth, y: center.y + halfHeight },
   ];
   const start = points[edge];
   const end = points[(edge + 1) % points.length];
@@ -777,16 +777,24 @@ function drawOwnership(
 ): void {
   context.save();
   context.globalAlpha = 0.22;
-  drawDiamond(context, center, 121 * zoom, 68 * zoom, color, color, 2 * zoom);
+  drawTileFootprint(
+    context,
+    center,
+    121 * zoom,
+    121 * zoom,
+    color,
+    color,
+    2 * zoom,
+  );
   context.globalAlpha = 0.75;
   context.setLineDash(
     ownerId === null ? [] : ownerId % 2 === 0 ? [9, 5] : [3, 4],
   );
-  drawDiamond(
+  drawTileFootprint(
     context,
     center,
     118 * zoom,
-    65 * zoom,
+    118 * zoom,
     "transparent",
     color,
     Math.max(2, 3 * zoom),
@@ -824,11 +832,11 @@ function drawTarget(
   symbol: "MOVE" | "ATTACK" | "MINE" | "ROLL" | "WALL · 1★" | "−10",
   stopped: boolean,
 ): void {
-  drawDiamond(
+  drawTileFootprint(
     context,
     center,
     106 * zoom,
-    60 * zoom,
+    106 * zoom,
     "transparent",
     color,
     Math.max(3, 4 * zoom),
@@ -966,11 +974,11 @@ function drawFog(
   zoom: number,
   variant: number,
 ): void {
-  drawDiamond(
+  drawTileFootprint(
     context,
     center,
     130 * zoom,
-    76 * zoom,
+    130 * zoom,
     "#58676c",
     "#d2d8d4",
     Math.max(2, 2 * zoom),
@@ -1021,7 +1029,7 @@ function drawCombatPreview(
   context.restore();
 }
 
-function drawDiamond(
+function drawTileFootprint(
   context: CanvasRenderingContext2D,
   center: Point,
   width: number,
@@ -1033,10 +1041,10 @@ function drawDiamond(
 ): void {
   context.save();
   context.beginPath();
-  context.moveTo(center.x, center.y - height / 2);
-  context.lineTo(center.x + width / 2, center.y);
-  context.lineTo(center.x, center.y + height / 2);
-  context.lineTo(center.x - width / 2, center.y);
+  context.moveTo(center.x - width / 2, center.y - height / 2);
+  context.lineTo(center.x + width / 2, center.y - height / 2);
+  context.lineTo(center.x + width / 2, center.y + height / 2);
+  context.lineTo(center.x - width / 2, center.y + height / 2);
   context.closePath();
   if (fill !== "transparent") {
     context.fillStyle = fill;

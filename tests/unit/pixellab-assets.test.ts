@@ -273,7 +273,7 @@ describe("accepted PixelLab renderer binding", () => {
     ).toBe(7.5);
   });
 
-  it("clips mountain foreground alpha to the owning lower diamond", () => {
+  it("clips temporary mountain alpha to the square's left, right, and bottom edges", () => {
     const listeners = new Map<string, () => void>();
     const image = {
       addEventListener(type: string, listener: () => void): void {
@@ -299,10 +299,7 @@ describe("accepted PixelLab renderer binding", () => {
     listeners.get("load")?.();
     bindings.drawMountain(context, options);
 
-    expect(context.rect).toHaveBeenCalledWith(348.8, 225.6, 102.4, 74.4);
-    expect(context.moveTo).toHaveBeenCalledWith(336, 300);
-    expect(context.lineTo).toHaveBeenCalledWith(400, 337);
-    expect(context.lineTo).toHaveBeenCalledWith(464, 300);
+    expect(context.rect).toHaveBeenCalledWith(336, 225.6, 128, 138.4);
     expect(context.clip).toHaveBeenCalledOnce();
     expect(context.drawImage).toHaveBeenCalledWith(
       image,

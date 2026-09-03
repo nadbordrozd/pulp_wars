@@ -149,7 +149,7 @@ export class CanvasBoardHost implements BoardHost {
     canvas.setAttribute("role", "application");
     canvas.setAttribute(
       "aria-label",
-      "Isometric battlefield. Arrow keys move the map cursor, Enter or Space activates once, drag pans, and plus or minus zooms.",
+      "Square-grid battlefield. Arrow keys move the map cursor by row or column, Shift plus an arrow moves diagonally, Enter or Space activates once, drag pans, and plus or minus zooms.",
     );
     canvas.textContent =
       "The battlefield requires Canvas. Game information and actions are also available through semantic inspection controls.";
@@ -709,7 +709,7 @@ export class CanvasBoardHost implements BoardHost {
         : `Chocolate Wall ${wall.id}, Player ${wall.ownerId}, ${wall.hp} of ${wall.maxHp} HP`,
     ].filter((value): value is string => value !== null);
     this.#descriptionText(
-      `Map cursor ${focused.x}, ${focused.y}: ${tileDescription}. ${occupants.join(". ")}${occupants.length > 0 ? ". " : ""}${offered.length > 0 ? `Available: ${offered.join(", ")}.` : "No available action on this tile."}`,
+      `Map cursor column ${focused.x + 1}, row ${focused.y + 1}: ${tileDescription}. ${occupants.join(". ")}${occupants.length > 0 ? ". " : ""}${offered.length > 0 ? `Available: ${offered.join(", ")}.` : "No available action on this tile."}`,
     );
   }
 

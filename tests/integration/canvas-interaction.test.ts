@@ -15,11 +15,7 @@ import {
   spatialCommandAt,
   type BoardSelection,
 } from "../../src/render/canvas/board-host";
-import {
-  fitCamera,
-  projectGrid,
-  worldToScreen,
-} from "../../src/render/canvas/geometry";
+import { fitCamera } from "../../src/render/canvas/geometry";
 import type { BoardAssetBindings } from "../../src/render/canvas/asset-bindings";
 import { gameStateBuilder } from "../fixtures/builders";
 
@@ -1225,8 +1221,8 @@ describe("Canvas board interaction boundary", () => {
     });
     const canvas = container.querySelector("canvas");
     if (canvas === null) throw new Error("Missing Canvas");
-    const camera = fitCamera(view.board, { width: 1024, height: 592 });
-    const center = worldToScreen(projectGrid(unit.at), camera);
+    const center = host.screenPoint(unit.at);
+    if (center === null) throw new Error("Missing unit screen point");
     pointer(canvas, "pointerdown", 1, center.x, center.y, "mouse");
     pointer(canvas, "pointerup", 1, center.x, center.y, "mouse");
     expect(selected).toEqual([{ kind: "UNIT", unitId: unit.id }]);

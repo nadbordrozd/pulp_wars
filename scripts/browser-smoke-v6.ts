@@ -7,10 +7,13 @@ import sharp from "sharp";
 import {
   RULESET6_SMOKE_TECH_IDS,
   RULESET6_SMOKE_VIEWPORTS,
+  coordinateActivationIsVisibleV6,
+  coordinateActivationPanStepV6,
   flowContractIssuesV6,
   type BrowserSmokeArtifactV6,
   type BrowserSmokeBoundaryV6,
   type BrowserSmokeContextActionLayoutV6,
+  type BrowserSmokeCoordinateActivationV6,
   type BrowserSmokeFlowEvidenceV6,
   type BrowserSmokeIntegratedAcceptanceV6,
   type BrowserSmokeLayoutV6,
@@ -87,6 +90,8 @@ const userData = chrome.endsWith(".exe")
     );
 const pendingReviewFiles: { readonly path: string; readonly data: Buffer }[] =
   [];
+const MAX_COORDINATE_PAN_STEPS = 32;
+let coordinateActivations: BrowserSmokeCoordinateActivationV6[] = [];
 
 await mkdir(reviewRoot, { recursive: true });
 const browser = spawn(
@@ -177,7 +182,7 @@ try {
         "emulated prefers-contrast: more",
       ],
       exercisedThrough:
-        "exact production DOM controls and Canvas coordinate targets",
+        "exact production DOM controls and Canvas coordinate targets, including real pointer-drag camera pans for offscreen square cells",
     },
     productionRasterInventory: {
       status: "ACCEPTED_AND_LOADED",
@@ -187,7 +192,7 @@ try {
     visualReview: {
       status: "ACCEPTED",
       notes:
-        "Every bounded contextual, reward, city-training, and Technology capture was inspected individually at native output size and in its nearest-neighbor 2x companion. Contextual rasters, including faction-correct TRAIN world sprites, use the exact shared 112 x 130 CSS-pixel transparent viewport with contained aspect ratio at desktop and true 390x844 DPR2 mobile; code-native fallbacks retain the same framed footprint. Original and Candy Animals are visible on explored Forest from launch while Hunting remains unresearched and Hunt Game unavailable; hidden Animals remain redacted. Exact world-unit, faction/level city, and public Fruit selection identities remain compact and readable above their isolated actions with no coordinate text. Original and Candy labels/symbols remain distinct; the map stays primary; full Technology cards/details and blocking rewards fit without clipping or horizontal overflow. Direct selected-tile actions accept one boundary without a second map activation. No suspected visual failure remained after enlargement review.",
+        "Every bounded contextual, reward, city-training, and Technology capture was inspected individually at native output size and in its nearest-neighbor 2x companion. Contextual rasters, including faction-correct TRAIN world sprites, use the exact shared 112 x 130 CSS-pixel transparent viewport with contained aspect ratio at desktop and true 390x844 DPR2 mobile; code-native fallbacks retain the same framed footprint. Original and Candy Animals are visible on explored Forest from launch while Hunting remains unresearched and Hunt Game unavailable; hidden Animals remain redacted. Exact world-unit, faction/level city, and public Fruit selection identities remain compact and readable above their isolated actions with no coordinate text. Original and Candy labels/symbols remain distinct; the map stays primary; full Technology cards/details and blocking rewards fit without clipping or horizontal overflow. Offscreen square-cell targets are brought into the unobscured Canvas by bounded production pointer drags, with before/after camera evidence recorded for both factions. Direct selected-tile actions accept one boundary without a second map activation. No suspected visual failure remained after enlargement review.",
     },
     flows,
     aiFirstLaunch,
@@ -279,6 +284,7 @@ async function runFactionFlow(
     readonly seed: number;
   },
 ): Promise<BrowserSmokeFlowEvidenceV6> {
+  coordinateActivations = [];
   const artifacts: BrowserSmokeArtifactV6[] = [];
   await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.desktop);
   await waitForExpression(
@@ -782,6 +788,7 @@ async function runFactionFlow(
       commandIndex: resumed.commandIndex,
       stateHash: resumed.stateHash,
     },
+    coordinateActivations: [...coordinateActivations],
     acceptance: {
       animalVisibility,
       contextual: {
@@ -1246,17 +1253,74 @@ async function activateCoordinate(
   connection: Connection,
   at: CoordV6,
 ): Promise<void> {
-  const point = await evaluate<{ readonly x: number; readonly y: number }>(
-    connection,
-    `(() => {
-      const app = globalThis.__PULP_WARS_APP__;
-      const canvas = document.querySelector('.board-canvas-v6');
-      const point = app?.view.boardScreenPoint(${JSON.stringify(at)});
-      if (!app || !(canvas instanceof HTMLCanvasElement) || !point) throw new Error('Coordinate cannot be activated: ${at.x},${at.y}');
-      const rect = canvas.getBoundingClientRect();
-      return { x: rect.left + point.x, y: rect.top + point.y };
-    })()`,
-  );
+  const before = await coordinateActivationGeometry(connection, at);
+  let geometry = before;
+  let panSteps = 0;
+  while (
+    !coordinateActivationIsVisibleV6(geometry.point, geometry.activationArea)
+  ) {
+    const step = coordinateActivationPanStepV6(
+      geometry.point,
+      geometry.activationArea,
+    );
+    if (step === null) break;
+    await connection.send("Input.dispatchMouseEvent", {
+      type: "mousePressed",
+      x: geometry.canvasOrigin.x + step.start.x,
+      y: geometry.canvasOrigin.y + step.start.y,
+      button: "left",
+      buttons: 1,
+      clickCount: 1,
+    });
+    await connection.send("Input.dispatchMouseEvent", {
+      type: "mouseMoved",
+      x: geometry.canvasOrigin.x + step.end.x,
+      y: geometry.canvasOrigin.y + step.end.y,
+      button: "left",
+      buttons: 1,
+    });
+    await connection.send("Input.dispatchMouseEvent", {
+      type: "mouseReleased",
+      x: geometry.canvasOrigin.x + step.end.x,
+      y: geometry.canvasOrigin.y + step.end.y,
+      button: "left",
+      buttons: 0,
+      clickCount: 1,
+    });
+    await delay(40);
+    const prior = geometry;
+    geometry = await coordinateActivationGeometry(connection, at);
+    if (
+      Math.abs(geometry.point.x - prior.point.x - step.delta.x) > 1.5 ||
+      Math.abs(geometry.point.y - prior.point.y - step.delta.y) > 1.5
+    ) {
+      throw new Error(
+        `Square-grid camera pan did not move ${at.x},${at.y} by the pointer drag: ${JSON.stringify({ prior, step, geometry })}`,
+      );
+    }
+    panSteps += 1;
+    if (panSteps >= MAX_COORDINATE_PAN_STEPS) {
+      throw new Error(
+        `Coordinate remained outside the visible Canvas after ${panSteps} camera pans: ${at.x},${at.y}`,
+      );
+    }
+  }
+  coordinateActivations.push({
+    at,
+    canvas: geometry.activationArea,
+    before: before.point,
+    after: geometry.point,
+    panSteps,
+  });
+  if (panSteps > 0) {
+    console.log(
+      `Square-grid camera brought ${at.x},${at.y} from (${before.point.x.toFixed(1)}, ${before.point.y.toFixed(1)}) into ${geometry.activationArea.width.toFixed(1)} x ${geometry.activationArea.height.toFixed(1)} visible Canvas at (${geometry.point.x.toFixed(1)}, ${geometry.point.y.toFixed(1)}) in ${panSteps} pan step${panSteps === 1 ? "" : "s"}.`,
+    );
+  }
+  const point = {
+    x: geometry.canvasOrigin.x + geometry.point.x,
+    y: geometry.canvasOrigin.y + geometry.point.y,
+  };
   await connection.send("Input.dispatchMouseEvent", {
     type: "mousePressed",
     x: point.x,
@@ -1274,6 +1338,35 @@ async function activateCoordinate(
     clickCount: 1,
   });
   await delay(80);
+}
+
+async function coordinateActivationGeometry(
+  connection: Connection,
+  at: CoordV6,
+): Promise<{
+  readonly point: { readonly x: number; readonly y: number };
+  readonly canvasOrigin: { readonly x: number; readonly y: number };
+  readonly activationArea: { readonly width: number; readonly height: number };
+}> {
+  return evaluate(
+    connection,
+    `(() => {
+      const app = globalThis.__PULP_WARS_APP__;
+      const canvas = document.querySelector('.board-canvas-v6');
+      const point = app?.view.boardScreenPoint(${JSON.stringify(at)});
+      if (!app || !(canvas instanceof HTMLCanvasElement) || !point) throw new Error('Coordinate cannot be activated: ${at.x},${at.y}');
+      const rect = canvas.getBoundingClientRect();
+      const dock = document.querySelector('.v6-action-dock');
+      const dockRect = dock instanceof HTMLElement ? dock.getBoundingClientRect() : null;
+      const dockOverlapsCanvas = dockRect !== null && dockRect.bottom > rect.top && dockRect.top < rect.bottom;
+      const activationHeight = dockOverlapsCanvas ? Math.max(0, Math.min(rect.height, dockRect.top - rect.top)) : rect.height;
+      return {
+        point,
+        canvasOrigin: { x: rect.left, y: rect.top },
+        activationArea: { width: rect.width, height: activationHeight }
+      };
+    })()`,
+  );
 }
 
 async function activateAdjacentCoordinateWithKeyboard(

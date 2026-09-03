@@ -1,0 +1,95 @@
+{
+  "generatedBy": "npm run art:square-grid-review",
+  "renderer": "buildBoardDrawListV6",
+  "projection": {
+    "kind": "AXIS_ALIGNED_SQUARE",
+    "cellCssPixels": {
+      "width": 128,
+      "height": 128
+    },
+    "xAxis": "RIGHT",
+    "yAxis": "DOWN",
+    "bounds": {
+      "left": -92,
+      "top": -148,
+      "right": 476,
+      "bottom": 448
+    },
+    "tieBreak": "lowest row, then lowest column"
+  },
+  "transition": {
+    "terrainAndImprovements": "TEMPORARY_ACCEPTED_DIAMOND_RASTERS",
+    "nativeSquareGroundUnderlay": true,
+    "nativeSquareRoadContinuity": true,
+    "unitRasterBytesChanged": false
+  },
+  "views": [
+    {
+      "id": "desktop",
+      "cssSize": {
+        "width": 1280,
+        "height": 760
+      },
+      "backingSize": {
+        "width": 1280,
+        "height": 760
+      },
+      "dpr": 1,
+      "zoom": 1,
+      "focusCenter": {
+        "x": 576,
+        "y": 486
+      }
+    },
+    {
+      "id": "mobile",
+      "cssSize": {
+        "width": 390,
+        "height": 844
+      },
+      "backingSize": {
+        "width": 780,
+        "height": 1688
+      },
+      "dpr": 2,
+      "zoom": 0.6454225352112676,
+      "focusCenter": {
+        "x": 153.6929577464789,
+        "y": 490.4147887323944
+      }
+    }
+  ],
+  "reviewCoverage": [
+    "full square ground, fog, ownership, selection and command-target footprints",
+    "north/east/south/west territory sides and cardinal road endpoints",
+    "row-major overlap with upward Forest, Mountain, city and unit art",
+    "temporary accepted diamond terrain and improvement art visibly identified over square underlays",
+    "desktop DPR1 and true mobile DPR2 at supported camera zoom"
+  ],
+  "visualReview": {
+    "status": "ACCEPTED_FOR_EXPERIMENT",
+    "notes": "Native and nearest-neighbor enlarged sheets were inspected. Square cells form a continuous board; ownership, fog, selection, targets and territory sides meet exact cell corners; roads meet cardinal side midpoints; units remain compact and centered. Legacy diamond ground/improvement art is intentionally visible as a temporary centered layer and leaves no uncovered board holes because of the native square underlay."
+  },
+  "artifacts": [
+    {
+      "path": "art/integration/reviews/square-grid-experiment/desktop-native.png",
+      "bytes": 108871,
+      "sha256": "7c7746779adf6fc89664e7bed760e9101c73870f2a75d55a94f37fe40789bfd8"
+    },
+    {
+      "path": "art/integration/reviews/square-grid-experiment/desktop-enlarged.png",
+      "bytes": 202204,
+      "sha256": "71a2ce9b3c14b5ad93011c12b53c9001547da18134aec54048b60b6f6f9d0f94"
+    },
+    {
+      "path": "art/integration/reviews/square-grid-experiment/mobile-native.png",
+      "bytes": 183075,
+      "sha256": "376f0197e001d3d4c13b6cc786d2ebee1b0bed6fdaece78fd6d88c2858f5a2e7"
+    },
+    {
+      "path": "art/integration/reviews/square-grid-experiment/mobile-enlarged.png",
+      "bytes": 319977,
+      "sha256": "ededec7b3dd2d089c71ce57b5cee5d6bf4114a13687c93b5b12563a2cd9a119e"
+    }
+  ]
+}

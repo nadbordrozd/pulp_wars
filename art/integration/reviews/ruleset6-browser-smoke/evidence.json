@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-02T22:25:49.008Z",
+  "generatedAt": "2026-09-03T11:54:14.880Z",
   "generatedBy": "npm run smoke:browser",
   "rulesetId": "pulp-wars-poc-6",
   "productionEntry": "src/main.ts",
@@ -40,7 +40,7 @@
       "emulated prefers-reduced-motion: reduce",
       "emulated prefers-contrast: more"
     ],
-    "exercisedThrough": "exact production DOM controls and Canvas coordinate targets"
+    "exercisedThrough": "exact production DOM controls and Canvas coordinate targets, including real pointer-drag camera pans for offscreen square cells"
   },
   "productionRasterInventory": {
     "status": "ACCEPTED_AND_LOADED",
@@ -48,7 +48,7 @@
   },
   "visualReview": {
     "status": "ACCEPTED",
-    "notes": "Every bounded contextual, reward, city-training, and Technology capture was inspected individually at native output size and in its nearest-neighbor 2x companion. Contextual rasters, including faction-correct TRAIN world sprites, use the exact shared 112 x 130 CSS-pixel transparent viewport with contained aspect ratio at desktop and true 390x844 DPR2 mobile; code-native fallbacks retain the same framed footprint. Original and Candy Animals are visible on explored Forest from launch while Hunting remains unresearched and Hunt Game unavailable; hidden Animals remain redacted. Exact world-unit, faction/level city, and public Fruit selection identities remain compact and readable above their isolated actions with no coordinate text. Original and Candy labels/symbols remain distinct; the map stays primary; full Technology cards/details and blocking rewards fit without clipping or horizontal overflow. Direct selected-tile actions accept one boundary without a second map activation. No suspected visual failure remained after enlargement review."
+    "notes": "Every bounded contextual, reward, city-training, and Technology capture was inspected individually at native output size and in its nearest-neighbor 2x companion. Contextual rasters, including faction-correct TRAIN world sprites, use the exact shared 112 x 130 CSS-pixel transparent viewport with contained aspect ratio at desktop and true 390x844 DPR2 mobile; code-native fallbacks retain the same framed footprint. Original and Candy Animals are visible on explored Forest from launch while Hunting remains unresearched and Hunt Game unavailable; hidden Animals remain redacted. Exact world-unit, faction/level city, and public Fruit selection identities remain compact and readable above their isolated actions with no coordinate text. Original and Candy labels/symbols remain distinct; the map stays primary; full Technology cards/details and blocking rewards fit without clipping or horizontal overflow. Offscreen square-cell targets are brought into the unobscured Canvas by bounded production pointer drags, with before/after camera evidence recorded for both factions. Direct selected-tile actions accept one boundary without a second map activation. No suspected visual failure remained after enlargement review."
   },
   "flows": [
     {
@@ -182,6 +182,350 @@
         "commandIndex": 60,
         "stateHash": "603d4d4ca2a6e1d65fc86056a917038881b6ef49ae3943215a3f65351083a180"
       },
+      "coordinateActivations": [
+        {
+          "at": {
+            "x": 2,
+            "y": 8
+          },
+          "canvas": {
+            "width": 1440,
+            "height": 811.03125
+          },
+          "before": {
+            "x": 480,
+            "y": 732.0625
+          },
+          "after": {
+            "x": 480,
+            "y": 732.0625
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 2,
+            "y": 7
+          },
+          "canvas": {
+            "width": 1440,
+            "height": 811.03125
+          },
+          "before": {
+            "x": 480,
+            "y": 652.0625
+          },
+          "after": {
+            "x": 480,
+            "y": 652.0625
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 3,
+            "y": 7
+          },
+          "canvas": {
+            "width": 1440,
+            "height": 811.03125
+          },
+          "before": {
+            "x": 560,
+            "y": 652.0625
+          },
+          "after": {
+            "x": 560,
+            "y": 652.0625
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 2,
+            "y": 9
+          },
+          "canvas": {
+            "width": 1440,
+            "height": 811.03125
+          },
+          "before": {
+            "x": 480,
+            "y": 812.0625
+          },
+          "after": {
+            "x": 720,
+            "y": 430.546875
+          },
+          "panSteps": 1
+        },
+        {
+          "at": {
+            "x": 2,
+            "y": 8
+          },
+          "canvas": {
+            "width": 390,
+            "height": 538.03125
+          },
+          "before": {
+            "x": 195,
+            "y": 357.84375000000006
+          },
+          "after": {
+            "x": 195,
+            "y": 357.84375000000006
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 2,
+            "y": 7
+          },
+          "canvas": {
+            "width": 390,
+            "height": 538.03125
+          },
+          "before": {
+            "x": 195,
+            "y": 277.84375000000006
+          },
+          "after": {
+            "x": 195,
+            "y": 277.84375000000006
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 2,
+            "y": 6
+          },
+          "canvas": {
+            "width": 390,
+            "height": 390.84375
+          },
+          "before": {
+            "x": 195,
+            "y": 197.84375000000006
+          },
+          "after": {
+            "x": 195,
+            "y": 197.84375000000006
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 2,
+            "y": 6
+          },
+          "canvas": {
+            "width": 390,
+            "height": 538.03125
+          },
+          "before": {
+            "x": 195,
+            "y": 197.84375000000006
+          },
+          "after": {
+            "x": 195,
+            "y": 197.84375000000006
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 2,
+            "y": 5
+          },
+          "canvas": {
+            "width": 390,
+            "height": 390.84375
+          },
+          "before": {
+            "x": 195,
+            "y": 117.84375000000006
+          },
+          "after": {
+            "x": 195,
+            "y": 117.84375000000006
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 2,
+            "y": 8
+          },
+          "canvas": {
+            "width": 1440,
+            "height": 811.03125
+          },
+          "before": {
+            "x": 480,
+            "y": 732.0625
+          },
+          "after": {
+            "x": 480,
+            "y": 732.0625
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 3,
+            "y": 8
+          },
+          "canvas": {
+            "width": 1440,
+            "height": 811.03125
+          },
+          "before": {
+            "x": 560,
+            "y": 732.0625
+          },
+          "after": {
+            "x": 560,
+            "y": 732.0625
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 2,
+            "y": 5
+          },
+          "canvas": {
+            "width": 1440,
+            "height": 811.03125
+          },
+          "before": {
+            "x": 480,
+            "y": 492.0625
+          },
+          "after": {
+            "x": 480,
+            "y": 492.0625
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 4,
+            "y": 8
+          },
+          "canvas": {
+            "width": 1440,
+            "height": 811.03125
+          },
+          "before": {
+            "x": 640,
+            "y": 732.0625
+          },
+          "after": {
+            "x": 640,
+            "y": 732.0625
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 3,
+            "y": 6
+          },
+          "canvas": {
+            "width": 1440,
+            "height": 811.03125
+          },
+          "before": {
+            "x": 560,
+            "y": 572.0625
+          },
+          "after": {
+            "x": 560,
+            "y": 572.0625
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 5,
+            "y": 8
+          },
+          "canvas": {
+            "width": 1440,
+            "height": 811.03125
+          },
+          "before": {
+            "x": 720,
+            "y": 732.0625
+          },
+          "after": {
+            "x": 720,
+            "y": 732.0625
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 4,
+            "y": 7
+          },
+          "canvas": {
+            "width": 1440,
+            "height": 811.03125
+          },
+          "before": {
+            "x": 640,
+            "y": 652.0625
+          },
+          "after": {
+            "x": 640,
+            "y": 652.0625
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 6,
+            "y": 8
+          },
+          "canvas": {
+            "width": 1440,
+            "height": 811.03125
+          },
+          "before": {
+            "x": 800,
+            "y": 732.0625
+          },
+          "after": {
+            "x": 800,
+            "y": 732.0625
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 7,
+            "y": 8
+          },
+          "canvas": {
+            "width": 1440,
+            "height": 811.03125
+          },
+          "before": {
+            "x": 880,
+            "y": 732.0625
+          },
+          "after": {
+            "x": 880,
+            "y": 732.0625
+          },
+          "panSteps": 0
+        }
+      ],
       "acceptance": {
         "animalVisibility": {
           "visibleGameCount": 2,
@@ -1131,8 +1475,8 @@
           "exactChoiceAccepted": true
         },
         "readiness": {
-          "fullDesktopChangedPixels": 1816,
-          "fullMobileChangedPixels": 3313,
+          "fullDesktopChangedPixels": 856,
+          "fullMobileChangedPixels": 3318,
           "reducedDesktopChangedPixels": 0,
           "reducedMobileChangedPixels": 0,
           "handledChangedPixels": 0
@@ -1223,8 +1567,8 @@
       "screenshots": [
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-reduced-motion-desktop-native.png",
-          "bytes": 327662,
-          "sha256": "db80e79b0c15920853e91db4bc48674cdc3dea088890239de8de94949a3f445d",
+          "bytes": 119633,
+          "sha256": "44a1e97c624caeac372e542b83cfbf0f68c006e1b71d665727c7a48f0481fb37",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1237,8 +1581,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-reduced-motion-desktop-enlarged.png",
-          "bytes": 546425,
-          "sha256": "ee3713613fa3e569051250427bfd1687aca5ffc04c97ad7571c762fcacaaa51a",
+          "bytes": 291773,
+          "sha256": "c76eb98d4a7519f3e21af6417bad681d429ff45e234e625b3c1f07274923c88d",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -1251,8 +1595,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-high-contrast-mobile-native.png",
-          "bytes": 307050,
-          "sha256": "b4c689bf9e32b622cdadd228801b632e0cd0786d69416a3739f76da58c771f8a",
+          "bytes": 319068,
+          "sha256": "0ce30db62e1c06cdd94b0cce7f799234f8ed9e712fffdc92216f1451c2d6ee41",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1265,8 +1609,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-high-contrast-mobile-enlarged.png",
-          "bytes": 535876,
-          "sha256": "485699be6b833e1707d97d6d5402a9667f3e7b3c8b5b9467a692506ff32954c8",
+          "bytes": 574614,
+          "sha256": "6d5861696aa482a327aeb579ba76d3688d092c0ce199a2b6fc23fffaea627943",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -1279,8 +1623,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-mobile-native.png",
-          "bytes": 260475,
-          "sha256": "64b0776369e49ff398d98003c1aad62b8fd730645e16d00511bcf16556c12608",
+          "bytes": 111188,
+          "sha256": "904b50953b7cf5e82cd77c9db89fe8dddfc1a6c4c89b07f57b662d3ebad655a3",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1293,8 +1637,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-mobile-enlarged.png",
-          "bytes": 468326,
-          "sha256": "37f616014388760887040cf6a808812cf4e39ef32f5eb1949196d67d28fc4a49",
+          "bytes": 267406,
+          "sha256": "02fdcecadee0b87f2083e77fe7592399fee8c1bb664fd65ec3530f0d00f43829",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -1307,8 +1651,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-desktop-native.png",
-          "bytes": 315856,
-          "sha256": "34ede5b4430e632bd999917347adac5e565251f05ac56ab58221490dcdbf4331",
+          "bytes": 109276,
+          "sha256": "8974563469ec4a57985497959ade992dfaf58c7b55a7318593c0d62cd300e1cb",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1321,8 +1665,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-desktop-enlarged.png",
-          "bytes": 544011,
-          "sha256": "2283d87b7f7c3f5e4864bb43db438bea6f59c1d701d47fc9ea11344dd8133b96",
+          "bytes": 275741,
+          "sha256": "14a7c0439bb8ed50aa4dea1fa9db895d60d13debc7fa9925aeb6199a08ede5a2",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -1335,8 +1679,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-tile-context-desktop-native.png",
-          "bytes": 301055,
-          "sha256": "0491904f32b71b71d66d6b55c0e1b5dd39bae48bb28c9aac2b49975e38ece8bb",
+          "bytes": 96534,
+          "sha256": "4a3dbb5d5a53961060b12f48b0f323430aa367c63bed924472931b866ac98465",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1349,8 +1693,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-tile-context-desktop-enlarged.png",
-          "bytes": 514023,
-          "sha256": "3af4880ed7b60d00aa68b9b1a4f38ad17382d6e2f780b9bdea0c6d3fe2ed59bd",
+          "bytes": 253527,
+          "sha256": "bd03b02d3cc19a5e77a2aa8e520195787e06de81297b8cea7c5710eeedc9cea8",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -1363,8 +1707,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-tile-context-mobile-native.png",
-          "bytes": 232475,
-          "sha256": "637e461454b8b408cf4eaf2773f61555d7fcbf085553fda1278047b6d022525e",
+          "bytes": 83176,
+          "sha256": "ec3ccc696efc1b0e99f6f26c966bc8886646b56fb4d8d38b3e829db1242aea59",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1377,8 +1721,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-tile-context-mobile-enlarged.png",
-          "bytes": 413847,
-          "sha256": "74c9cea4f572074bc88a114990e6495d052d8e90a1833f74adf1ac7af4fdfd86",
+          "bytes": 213363,
+          "sha256": "c120b2c4307c650107220420b8e0485a3773c613543644d71de46559db8bda65",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -1391,8 +1735,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-reward-desktop-native.png",
-          "bytes": 171631,
-          "sha256": "d352a8edba290a24d4006c0b353f869e58bc692d94de2bc31c519f07b026cb13",
+          "bytes": 86863,
+          "sha256": "f1d37b3f7046fc6e2914382aa717767886c4b892c95e04e3ce6f2eb5f9811a50",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1405,8 +1749,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-reward-desktop-enlarged.png",
-          "bytes": 317736,
-          "sha256": "a3587201ae4ef4b0ea0ebcd63b504a1ac41e0235bd17a99b5a5a92e73631c501",
+          "bytes": 212759,
+          "sha256": "3d2c1db813913b34020e9897224e6cf58b1b9c8b5dcb9c94319362fc33dbd886",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -1419,8 +1763,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-city-train-desktop-native.png",
-          "bytes": 152892,
-          "sha256": "38a0a3463843acc2458ccd99a4268a5513820518f68681d4cc0868b5823cf505",
+          "bytes": 146621,
+          "sha256": "cbd5bf99fb7b0a9854f0bea52711479de62a209a256d1f1a340b25ec791f20a1",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1433,8 +1777,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-city-train-desktop-enlarged.png",
-          "bytes": 313830,
-          "sha256": "06d10c797246980b8389494a76a471978293dce0e99d40e289c78be24d2fd25b",
+          "bytes": 329126,
+          "sha256": "31098b05426f9efc71f081cab204d922751c538083e1bb17ce018a45f6a0dfe1",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -1447,8 +1791,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-city-train-mobile-native.png",
-          "bytes": 262688,
-          "sha256": "ec5c3d844afad44cef00ea062d61c967d7f788905b9f02549607772751fc023d",
+          "bytes": 268853,
+          "sha256": "ee140e67772d2a702b57f6ea5523ebc9a2a52f95e402b3179a257fa6f7e44aa8",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1461,8 +1805,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-city-train-mobile-enlarged.png",
-          "bytes": 471339,
-          "sha256": "9bb580375867ab01d595a39a2e69a80f5d4506f68e14e30697db7dee297fa4dc",
+          "bytes": 493645,
+          "sha256": "cf76380131cca89906b11234ecbbce4f8ceb855acd3795e88648ec03aa0931db",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -1475,8 +1819,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-overview-desktop-native.png",
-          "bytes": 379758,
-          "sha256": "a0fa5a7cbc8f10fc28620ad50472cadd1f8fa7daaf070be3115481c07c90cf36",
+          "bytes": 379555,
+          "sha256": "d3230097240b81adaa94f4a67b0a7ba44e1e75c50826e082e0972cb565cc5d1c",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1489,8 +1833,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-overview-desktop-enlarged.png",
-          "bytes": 692953,
-          "sha256": "27980ee4161fe6c6fa8b3c5b0fe1bd8a5227f154656ddb4a7a0149950841e9e1",
+          "bytes": 692769,
+          "sha256": "b5826c4342e3d5e7bd6a4c821c4c7ee38eee1dd43078a637510cc4801155a80b",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -1718,6 +2062,350 @@
         "commandIndex": 60,
         "stateHash": "4e36cbdb2a35b7e76e2c2d62942ab571268d9383e1d5d3d227e2fc1e951e9fb5"
       },
+      "coordinateActivations": [
+        {
+          "at": {
+            "x": 2,
+            "y": 8
+          },
+          "canvas": {
+            "width": 1440,
+            "height": 811.03125
+          },
+          "before": {
+            "x": 480,
+            "y": 732.0625
+          },
+          "after": {
+            "x": 480,
+            "y": 732.0625
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 2,
+            "y": 7
+          },
+          "canvas": {
+            "width": 1440,
+            "height": 811.03125
+          },
+          "before": {
+            "x": 480,
+            "y": 652.0625
+          },
+          "after": {
+            "x": 480,
+            "y": 652.0625
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 3,
+            "y": 7
+          },
+          "canvas": {
+            "width": 1440,
+            "height": 811.03125
+          },
+          "before": {
+            "x": 560,
+            "y": 652.0625
+          },
+          "after": {
+            "x": 560,
+            "y": 652.0625
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 2,
+            "y": 9
+          },
+          "canvas": {
+            "width": 1440,
+            "height": 811.03125
+          },
+          "before": {
+            "x": 480,
+            "y": 812.0625
+          },
+          "after": {
+            "x": 720,
+            "y": 430.546875
+          },
+          "panSteps": 1
+        },
+        {
+          "at": {
+            "x": 2,
+            "y": 8
+          },
+          "canvas": {
+            "width": 390,
+            "height": 538.03125
+          },
+          "before": {
+            "x": 195,
+            "y": 357.84375000000006
+          },
+          "after": {
+            "x": 195,
+            "y": 357.84375000000006
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 2,
+            "y": 7
+          },
+          "canvas": {
+            "width": 390,
+            "height": 538.03125
+          },
+          "before": {
+            "x": 195,
+            "y": 277.84375000000006
+          },
+          "after": {
+            "x": 195,
+            "y": 277.84375000000006
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 2,
+            "y": 6
+          },
+          "canvas": {
+            "width": 390,
+            "height": 390.84375
+          },
+          "before": {
+            "x": 195,
+            "y": 197.84375000000006
+          },
+          "after": {
+            "x": 195,
+            "y": 197.84375000000006
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 2,
+            "y": 6
+          },
+          "canvas": {
+            "width": 390,
+            "height": 538.03125
+          },
+          "before": {
+            "x": 195,
+            "y": 197.84375000000006
+          },
+          "after": {
+            "x": 195,
+            "y": 197.84375000000006
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 2,
+            "y": 5
+          },
+          "canvas": {
+            "width": 390,
+            "height": 390.84375
+          },
+          "before": {
+            "x": 195,
+            "y": 117.84375000000006
+          },
+          "after": {
+            "x": 195,
+            "y": 117.84375000000006
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 2,
+            "y": 8
+          },
+          "canvas": {
+            "width": 1440,
+            "height": 811.03125
+          },
+          "before": {
+            "x": 480,
+            "y": 732.0625
+          },
+          "after": {
+            "x": 480,
+            "y": 732.0625
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 3,
+            "y": 8
+          },
+          "canvas": {
+            "width": 1440,
+            "height": 811.03125
+          },
+          "before": {
+            "x": 560,
+            "y": 732.0625
+          },
+          "after": {
+            "x": 560,
+            "y": 732.0625
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 2,
+            "y": 5
+          },
+          "canvas": {
+            "width": 1440,
+            "height": 811.03125
+          },
+          "before": {
+            "x": 480,
+            "y": 492.0625
+          },
+          "after": {
+            "x": 480,
+            "y": 492.0625
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 4,
+            "y": 8
+          },
+          "canvas": {
+            "width": 1440,
+            "height": 811.03125
+          },
+          "before": {
+            "x": 640,
+            "y": 732.0625
+          },
+          "after": {
+            "x": 640,
+            "y": 732.0625
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 3,
+            "y": 6
+          },
+          "canvas": {
+            "width": 1440,
+            "height": 811.03125
+          },
+          "before": {
+            "x": 560,
+            "y": 572.0625
+          },
+          "after": {
+            "x": 560,
+            "y": 572.0625
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 5,
+            "y": 8
+          },
+          "canvas": {
+            "width": 1440,
+            "height": 811.03125
+          },
+          "before": {
+            "x": 720,
+            "y": 732.0625
+          },
+          "after": {
+            "x": 720,
+            "y": 732.0625
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 4,
+            "y": 7
+          },
+          "canvas": {
+            "width": 1440,
+            "height": 811.03125
+          },
+          "before": {
+            "x": 640,
+            "y": 652.0625
+          },
+          "after": {
+            "x": 640,
+            "y": 652.0625
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 6,
+            "y": 8
+          },
+          "canvas": {
+            "width": 1440,
+            "height": 811.03125
+          },
+          "before": {
+            "x": 800,
+            "y": 732.0625
+          },
+          "after": {
+            "x": 800,
+            "y": 732.0625
+          },
+          "panSteps": 0
+        },
+        {
+          "at": {
+            "x": 7,
+            "y": 8
+          },
+          "canvas": {
+            "width": 1440,
+            "height": 811.03125
+          },
+          "before": {
+            "x": 880,
+            "y": 732.0625
+          },
+          "after": {
+            "x": 880,
+            "y": 732.0625
+          },
+          "panSteps": 0
+        }
+      ],
       "acceptance": {
         "animalVisibility": {
           "visibleGameCount": 2,
@@ -2667,8 +3355,8 @@
           "exactChoiceAccepted": true
         },
         "readiness": {
-          "fullDesktopChangedPixels": 1624,
-          "fullMobileChangedPixels": 2926,
+          "fullDesktopChangedPixels": 750,
+          "fullMobileChangedPixels": 2942,
           "reducedDesktopChangedPixels": 0,
           "reducedMobileChangedPixels": 0,
           "handledChangedPixels": 0
@@ -2759,8 +3447,8 @@
       "screenshots": [
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-reduced-motion-desktop-native.png",
-          "bytes": 332809,
-          "sha256": "2f5e76aceadd356d264692f466020dd5e229a3f00f3be9d9f000afaa8ca48fee",
+          "bytes": 121832,
+          "sha256": "1c29fecea118fbfaa34e9c7c9bb8abf8834784e9d06b143f97666b07ab219758",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -2773,8 +3461,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-reduced-motion-desktop-enlarged.png",
-          "bytes": 555587,
-          "sha256": "58cfbb3495c608548de8a977be2365ebdd7d6140739d282a3a5b8ce81b375c05",
+          "bytes": 294501,
+          "sha256": "f1edfcd9647a8275f189a59077217fd5c4428ce1987bcb1bcf78ea5fd26f4119",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -2787,8 +3475,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-high-contrast-mobile-native.png",
-          "bytes": 314483,
-          "sha256": "5ad0a9143776ff66dccd6ee810c905b63ab8420d4189a188dff6a3a843d16e8d",
+          "bytes": 323739,
+          "sha256": "b911ec8df56267675446969a44310646b473357cba6fa9302efce561a2f31b11",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -2801,8 +3489,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-high-contrast-mobile-enlarged.png",
-          "bytes": 548922,
-          "sha256": "24b874a0a24bbbdf4362ba3dff6e1b0d2c053d51be7036f9bd505456daa02374",
+          "bytes": 578964,
+          "sha256": "96a104a75e39c2a9a5676f5e2b9d5798c2549d7d8262130648a955378f4c6494",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -2815,8 +3503,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-mobile-native.png",
-          "bytes": 260491,
-          "sha256": "63c6b4e8f9f5a474a3a4b0152f5115209dd1cfd600909b688cd52d69423b26ef",
+          "bytes": 111232,
+          "sha256": "854bc1f277f4bfd9290f0de316446fc2a8ec865f75768d82910a5d738c7b0d2b",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -2829,8 +3517,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-mobile-enlarged.png",
-          "bytes": 467720,
-          "sha256": "655bd955b436d1e932bdc2e79ebc2efdb0caac0554ae601bb764af1cce6db0da",
+          "bytes": 267320,
+          "sha256": "19e2c82e97870390b8f1bae5c8af868a01aaa1f72f7147e141816cfdd1c1e5db",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -2843,8 +3531,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-desktop-native.png",
-          "bytes": 320212,
-          "sha256": "68de52da51fdab88ab69e4ee3b467764f435e27231f390061ee09260ac46a407",
+          "bytes": 110484,
+          "sha256": "d90372a20d754137083bca27202b2adabccb5e2e61f3429e58bfe4c2f2a6493b",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -2857,8 +3545,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-desktop-enlarged.png",
-          "bytes": 550907,
-          "sha256": "2278a005aadb038622df51b613aac2a5700b9c7fac27379e6fcb7d54df6290fd",
+          "bytes": 276862,
+          "sha256": "b34fcb82b35546ef8c3060f2672128caf5aa5637191c853cbec8d1f87eff3686",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -2871,8 +3559,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-tile-context-desktop-native.png",
-          "bytes": 307568,
-          "sha256": "3c997f624a5d293565df498dad8c7547900f787519c676bf2d00eeede51b4813",
+          "bytes": 98014,
+          "sha256": "f8f3a04f87cbe551d00f7646b4ef281e177131f2f66a970b5555f410477377d5",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -2885,8 +3573,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-tile-context-desktop-enlarged.png",
-          "bytes": 527286,
-          "sha256": "ab19fb770cb5266d18a4de202d35ab656aa99d45c4507241b5c538db54e4f26c",
+          "bytes": 256508,
+          "sha256": "5ff5dbff47110a060ae29938c578e113a31dd35552fb45dbdd03f7e771f574d7",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -2899,8 +3587,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-tile-context-mobile-native.png",
-          "bytes": 234841,
-          "sha256": "54d8b13a4251865296e9a69f6eb2042a892e50cb44ea4cbcc180a224796a320d",
+          "bytes": 85624,
+          "sha256": "2f1450911d630b9e01f132976f0ce77d3768218d485fefa44f53659ad25f129e",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -2913,8 +3601,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-tile-context-mobile-enlarged.png",
-          "bytes": 418886,
-          "sha256": "592ff3b1bea148a536653bb11acad06ef1524cf47b414fada301b54e724f315b",
+          "bytes": 218215,
+          "sha256": "5efbf550c3dc0dde390e9ac62505f9153127963fe9d27026b64ea2f3445ec546",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -2927,8 +3615,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-reward-desktop-native.png",
-          "bytes": 172936,
-          "sha256": "62013aeef20065d156a2e089d8660c7df2175a38571ccac09e8a4b7cee20b859",
+          "bytes": 87100,
+          "sha256": "32452bf5b4074b6b899bc67c36176751062c267a312b5081bf2168a342e9f0bf",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -2941,8 +3629,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-reward-desktop-enlarged.png",
-          "bytes": 319421,
-          "sha256": "1da0faff536986a8ee4000d5896a97c8c8c8365edd032811bd89089818dcb606",
+          "bytes": 213196,
+          "sha256": "ac061c1c0d34f527dcefd4c2f99c886c922f72ea704215987fc7d650a60269bc",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -2955,8 +3643,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-city-train-desktop-native.png",
-          "bytes": 152023,
-          "sha256": "faea3e5ba61648325a6263e486cb98238d1218aba8d475df2878b497679c819a",
+          "bytes": 145176,
+          "sha256": "8ee0582fe6e77742a13235a55c5cb1b07355ea97bc313b2cdcf4c37bb722e9d6",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -2969,8 +3657,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-city-train-desktop-enlarged.png",
-          "bytes": 309374,
-          "sha256": "902c8e4bb562b17c2db065604edb5c100651769031d24e7db7d1c5d533586d26",
+          "bytes": 323486,
+          "sha256": "bad8831422eb01c9681381e7f8382ad2021b86a119457d7b6f6853148db3374d",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -2983,8 +3671,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-city-train-mobile-native.png",
-          "bytes": 261201,
-          "sha256": "e76865fd48e0997066fd81616cb6633d0703d9beeb3b6cddac41bf0907c05a4f",
+          "bytes": 262228,
+          "sha256": "5786e2926c42c4cd0d15b8013a9ca710e0d869aadcc90adc58f1adc749a36a35",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -2997,8 +3685,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-city-train-mobile-enlarged.png",
-          "bytes": 479344,
-          "sha256": "09ac42eaea81a2e259bcf6c54fab1b78faf1df49c20ab8c0b41916ad79d5d136",
+          "bytes": 490433,
+          "sha256": "fe4a0fa4d8e3f36f03952514589f6e25a3e99d229634cff1403953432ff212ac",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -3011,8 +3699,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-overview-desktop-native.png",
-          "bytes": 379749,
-          "sha256": "c66987e8ce730ff1014065d9ce0412067da53e3852e8874c1d7926aa6ec264f1",
+          "bytes": 379834,
+          "sha256": "d39ed3e9ccacac0afb777e99ffb7687d9e9c1eba6fb4866501fb4e8d3427eff7",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -3025,8 +3713,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-overview-desktop-enlarged.png",
-          "bytes": 691653,
-          "sha256": "ce210fab2d8e8265d245e86ce8c88d8913ad0fe6be047d57b6c621d5d0cbc63d",
+          "bytes": 691835,
+          "sha256": "7cc2b1a7e678132f8eed6a2d65945e5d8a12cede0d8865fd0b276c55b577bfcd",
           "width": 2880,
           "height": 2000,
           "viewport": {

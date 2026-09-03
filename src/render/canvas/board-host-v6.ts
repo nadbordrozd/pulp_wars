@@ -160,7 +160,7 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
     canvas.setAttribute("role", "application");
     canvas.setAttribute(
       "aria-label",
-      "Ruleset 6 isometric battlefield. Arrow keys move the map cursor, Enter or Space activates once, drag pans, and plus or minus zooms.",
+      "Ruleset 6 square-grid battlefield. Arrow keys move the map cursor by row or column, Shift plus an arrow moves diagonally, Enter or Space activates once, drag pans, and plus or minus zooms.",
     );
     canvas.setAttribute("aria-describedby", descriptionId);
     canvas.style.touchAction = "none";
@@ -676,11 +676,11 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
           ? `Available: ${commands.join(", ")}.`
           : `View only; ${commands.length} map action${commands.length === 1 ? " is" : "s are"} disabled.`;
     this.#descriptionText(
-      `Map cursor ${focused.x}, ${focused.y}: ${description}. ${actionText}`,
+      `Map cursor column ${focused.x + 1}, row ${focused.y + 1}: ${description}. ${actionText}`,
     );
     this.#activator?.setAttribute(
       "aria-label",
-      `Activate map cursor at ${focused.x}, ${focused.y}`,
+      `Activate map cursor at column ${focused.x + 1}, row ${focused.y + 1}`,
     );
   }
 

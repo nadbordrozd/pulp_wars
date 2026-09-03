@@ -1,7 +1,7 @@
 import type { Coord } from "../../engine/index";
 
 export const TILE_WIDTH = 128;
-export const TILE_HEIGHT = 74;
+export const TILE_HEIGHT = 128;
 export const MIN_ZOOM = 0.625;
 export const MAX_ZOOM = 1.75;
 
@@ -46,22 +46,21 @@ export interface UnitHealthBarGeometry {
   readonly fill: Rectangle;
 }
 
-export type DiamondEdge =
-  "NORTH_WEST" | "NORTH_EAST" | "SOUTH_EAST" | "SOUTH_WEST";
+export type TileEdge = "NORTH" | "EAST" | "SOUTH" | "WEST";
 
 export interface TerritoryBoundarySegment {
   readonly at: Coord;
-  readonly edge: DiamondEdge;
+  readonly edge: TileEdge;
 }
 
-const DIAMOND_EDGES: readonly {
-  readonly edge: DiamondEdge;
+const TILE_EDGES: readonly {
+  readonly edge: TileEdge;
   readonly neighbor: Coord;
 }[] = [
-  { edge: "NORTH_WEST", neighbor: { x: -1, y: 0 } },
-  { edge: "NORTH_EAST", neighbor: { x: 0, y: -1 } },
-  { edge: "SOUTH_EAST", neighbor: { x: 1, y: 0 } },
-  { edge: "SOUTH_WEST", neighbor: { x: 0, y: 1 } },
+  { edge: "NORTH", neighbor: { x: 0, y: -1 } },
+  { edge: "EAST", neighbor: { x: 1, y: 0 } },
+  { edge: "SOUTH", neighbor: { x: 0, y: 1 } },
+  { edge: "WEST", neighbor: { x: -1, y: 0 } },
 ];
 
 /**
@@ -80,7 +79,7 @@ export function territoryBoundarySegments(
   );
   const segments: TerritoryBoundarySegment[] = [];
   for (const at of ordered) {
-    for (const { edge, neighbor } of DIAMOND_EDGES) {
+    for (const { edge, neighbor } of TILE_EDGES) {
       if (!coordinates.has(`${at.x + neighbor.x},${at.y + neighbor.y}`))
         segments.push({ at, edge });
     }
@@ -88,14 +87,18 @@ export function territoryBoundarySegments(
   return segments;
 }
 
-export function diamondEdgeIndex(edge: DiamondEdge): number {
-  return DIAMOND_EDGES.findIndex((candidate) => candidate.edge === edge);
+export function tileEdgeIndex(edge: TileEdge): number {
+  return TILE_EDGES.findIndex((candidate) => candidate.edge === edge);
 }
 
+/**
+ * Axis-aligned square presentation only. Logical coordinates and cardinal
+ * adjacency remain owned by the engine and are intentionally unchanged.
+ */
 export function projectGrid(at: Coord, origin: Point = { x: 0, y: 0 }): Point {
   return {
-    x: origin.x + ((at.x - at.y) * TILE_WIDTH) / 2,
-    y: origin.y + ((at.x + at.y) * TILE_HEIGHT) / 2,
+    x: origin.x + at.x * TILE_WIDTH,
+    y: origin.y + at.y * TILE_HEIGHT,
   };
 }
 
@@ -114,11 +117,9 @@ export function screenToWorld(point: Point, camera: CameraState): Point {
 }
 
 export function inverseProject(point: Point): Point {
-  const horizontal = (2 * point.x) / TILE_WIDTH;
-  const vertical = (2 * point.y) / TILE_HEIGHT;
   return {
-    x: (vertical + horizontal) / 2,
-    y: (vertical - horizontal) / 2,
+    x: point.x / TILE_WIDTH,
+    y: point.y / TILE_HEIGHT,
   };
 }
 
@@ -141,10 +142,10 @@ export function pickGridTile(
   }
   const containing = candidates.filter((candidate) => {
     const center = projectGrid(candidate);
-    const normalized =
-      Math.abs(world.x - center.x) / (TILE_WIDTH / 2) +
-      Math.abs(world.y - center.y) / (TILE_HEIGHT / 2);
-    return normalized <= 1 + Number.EPSILON * 16;
+    return (
+      Math.abs(world.x - center.x) <= TILE_WIDTH / 2 + Number.EPSILON * 16 &&
+      Math.abs(world.y - center.y) <= TILE_HEIGHT / 2 + Number.EPSILON * 16
+    );
   });
   containing.sort((left, right) => {
     const leftCenter = projectGrid(left);
@@ -165,13 +166,15 @@ export function boardWorldBounds(width: number, height: number): WorldBounds {
   ];
   const xs = corners.map((point) => point.x);
   const ys = corners.map((point) => point.y);
-  // City sources permit 92 CSS px lateral, 148 px upward, and 38 px of
-  // label space below the ground anchor at nominal zoom.
+  // Square ground extends 64 CSS px from each center. Temporary accepted city
+  // sources still permit 92 px lateral and 148 px upward overhang; the final
+  // square art contract forbids left/right/bottom overflow but keeps upward
+  // overhang. Bounds deliberately accommodate both during the experiment.
   return {
     left: Math.min(...xs) - 92,
     top: Math.min(...ys) - 148,
     right: Math.max(...xs) + 92,
-    bottom: Math.max(...ys) + 62,
+    bottom: Math.max(...ys) + TILE_HEIGHT / 2,
   };
 }
 

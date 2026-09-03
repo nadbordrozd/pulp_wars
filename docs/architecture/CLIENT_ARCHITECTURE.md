@@ -753,6 +753,13 @@ stores only grid coordinates. Default projection and asset contracts live in
 [terrain tiles](../art/classes/terrain-tiles.md), [units](../art/classes/units.md),
 and [buildings](../art/classes/buildings.md).
 
+The active experiment is the axis-aligned
+[128 x 128 square presentation](../art/SQUARE_GRID_EXPERIMENT.md): logical x
+projects right, logical y projects down, inverse input covers the complete
+square, ties choose the lowest row then column, and body depth is row-major.
+This replaces only Canvas geometry. Engine coordinates, adjacency, legality,
+commands, AI, persistence, replay, and headless hashes remain unchanged.
+
 Large and Huge boards start at minimum zoom centered on the human capital when
 the whole board cannot fit. Pan, wheel/pinch, keyboard and explicit zoom
 controls remain camera-only and must retain tall-sprite overhang.

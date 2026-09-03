@@ -116,6 +116,7 @@ export function createPixelLabAssetBindings(
   return {
     drawGrass(context, options, faction = "ORIGINAL"): void {
       const variant = (options.variant % 4) + 1;
+      CODE_NATIVE_PLACEHOLDER_ASSETS.drawGrass(context, options);
       draw(
         context,
         faction === "CANDY"
@@ -123,7 +124,7 @@ export function createPixelLabAssetBindings(
           : `terrain-grass-${variant}`,
         options,
         BOARD_ART_GEOMETRY.ground,
-        () => CODE_NATIVE_PLACEHOLDER_ASSETS.drawGrass(context, options),
+        () => {},
       );
     },
     drawMountain(context, options, faction = "ORIGINAL"): void {
@@ -294,15 +295,11 @@ function clipToTileUpperPlaneAndLowerDiamond(
   const { center, zoom } = options;
   context.beginPath();
   context.rect(
-    destination.x,
+    center.x - (TILE_WIDTH / 2) * zoom,
     destination.y,
-    destination.width,
-    Math.max(0, center.y - destination.y),
+    TILE_WIDTH * zoom,
+    Math.max(0, center.y + (TILE_HEIGHT / 2) * zoom - destination.y),
   );
-  context.moveTo(center.x - (TILE_WIDTH / 2) * zoom, center.y);
-  context.lineTo(center.x, center.y + (TILE_HEIGHT / 2) * zoom);
-  context.lineTo(center.x + (TILE_WIDTH / 2) * zoom, center.y);
-  context.closePath();
   context.clip();
 }
 

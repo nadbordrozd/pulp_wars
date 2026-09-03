@@ -83,11 +83,11 @@ const INK = "#19282a";
 export const CODE_NATIVE_PLACEHOLDER_ASSETS: BoardAssetBindings = {
   drawGrass(context, options): void {
     const { center, zoom, variant } = options;
-    diamond(
+    tileFootprint(
       context,
       center,
       128 * zoom,
-      74 * zoom,
+      128 * zoom,
       "#79ad61",
       "#28483d",
       2 * zoom,
@@ -577,7 +577,7 @@ function drawTemporaryCatapult(
   context.restore();
 }
 
-function diamond(
+function tileFootprint(
   context: CanvasRenderingContext2D,
   center: Point,
   width: number,
@@ -588,10 +588,10 @@ function diamond(
 ): void {
   context.save();
   context.beginPath();
-  context.moveTo(center.x, center.y - height / 2);
-  context.lineTo(center.x + width / 2, center.y);
-  context.lineTo(center.x, center.y + height / 2);
-  context.lineTo(center.x - width / 2, center.y);
+  context.moveTo(center.x - width / 2, center.y - height / 2);
+  context.lineTo(center.x + width / 2, center.y - height / 2);
+  context.lineTo(center.x + width / 2, center.y + height / 2);
+  context.lineTo(center.x - width / 2, center.y + height / 2);
   context.closePath();
   context.fillStyle = fill;
   context.fill();

@@ -30,9 +30,15 @@ import {
   buildBoardDrawListV6,
   drawBoardV6,
   roadMaskAtV6,
+  tileFootprintPoints,
   unitScaleContractForRoleV6,
   unitVisibleFootprintV6,
 } from "../../src/render/canvas/board-renderer-v6";
+import {
+  centerCameraOn,
+  projectGrid,
+  worldToScreen,
+} from "../../src/render/canvas/geometry";
 import { createRuleset6AcceptedImageResolver } from "../../src/render/canvas/accepted-images-v6";
 import type {
   BoardRenderPlanV6,
@@ -72,6 +78,138 @@ describe("ruleset-6 Canvas drawing layer", () => {
     expect(context.stroke).toHaveBeenCalled();
     expect(context.drawImage).not.toHaveBeenCalled();
   });
+
+  it.each([0.625, 1, 1.75] as const)(
+    "aligns every tile-sized native overlay to the exact square footprint at %sx",
+    (zoom) => {
+      const plan = exhaustivePlan();
+      const camera = { offsetX: 91, offsetY: 73, zoom } as const;
+      const list = buildBoardDrawListV6({
+        viewport: { width: 1600, height: 1400 },
+        camera,
+        plan,
+      });
+      const fullCellKinds = new Set<RenderEntryKindV6>([
+        "FOG",
+        "TERRAIN",
+        "OWNERSHIP",
+        "SELECTION",
+        "MOVE_TARGET",
+        "ATTACK_TARGET",
+        "ROLL_TARGET",
+        "HEAL_TARGET",
+        "WALL_TARGET",
+        "ABILITY_TARGET",
+        "ECONOMIC_TARGET",
+        "TRAIN_TARGET",
+        "CHOICE_TARGET",
+        "ECONOMIC_CONTRIBUTOR",
+      ]);
+      for (const entry of plan.entries.filter((candidate) =>
+        fullCellKinds.has(candidate.kind),
+      )) {
+        const polygon = list.commands.find(
+          (command) =>
+            command.entryKey === entry.key && command.kind === "POLYGON",
+        );
+        expect(polygon, entry.kind).toMatchObject({
+          kind: "POLYGON",
+          points: tileFootprintPoints(
+            worldToScreen(projectGrid(entry.at), camera),
+            zoom,
+          ),
+        });
+      }
+
+      const boundary = plan.entries.find(
+        (entry) => entry.kind === "CITY_TERRITORY_BOUNDARY",
+      );
+      if (boundary === undefined) throw new Error("Missing territory boundary");
+      const center = worldToScreen(projectGrid(boundary.at), camera);
+      expect(
+        list.commands.find(
+          (command) =>
+            command.entryKey === boundary.key && command.kind === "LINE",
+        ),
+      ).toMatchObject({
+        kind: "LINE",
+        points: tileFootprintPoints(center, zoom).slice(0, 2),
+      });
+    },
+  );
+
+  it.each([0.625, 1, 1.75] as const)(
+    "maps all territory sides and cardinal roads to square edges at %sx",
+    (zoom) => {
+      const at = { x: 2, y: 2 } as const;
+      const edges = ["NORTH", "EAST", "SOUTH", "WEST"] as const;
+      const territoryEntries = edges.map((edge, index) => ({
+        ...fixtureEntry("CITY_TERRITORY_BOUNDARY", at, { edge }, 6),
+        key: `CITY_TERRITORY_BOUNDARY:${edge}`,
+        variant: index,
+      })) as readonly RenderPlanEntryV6[];
+      const roadCoordinates = [
+        at,
+        { x: 2, y: 1 },
+        { x: 3, y: 2 },
+        { x: 2, y: 3 },
+        { x: 1, y: 2 },
+      ] as const;
+      const roadEntries = roadCoordinates.map((roadAt) =>
+        fixtureEntry("ROAD", roadAt, null, 3),
+      );
+      const plan: BoardRenderPlanV6 = {
+        planVersion: 6,
+        entries: [...roadEntries, ...territoryEntries],
+        legalCommands: [],
+        commandTargets: [],
+        economicPreview: null,
+      };
+      const camera = { offsetX: 300, offsetY: 220, zoom } as const;
+      const list = buildBoardDrawListV6({
+        viewport: { width: 900, height: 800 },
+        camera,
+        plan,
+      });
+      const center = worldToScreen(projectGrid(at), camera);
+      const corners = tileFootprintPoints(center, zoom);
+      for (const [index, edge] of edges.entries()) {
+        const boundary = list.commands.find(
+          (command) =>
+            command.entryKey === `CITY_TERRITORY_BOUNDARY:${edge}` &&
+            command.kind === "LINE",
+        );
+        expect(boundary, edge).toMatchObject({
+          kind: "LINE",
+          points: [corners[index], corners[(index + 1) % corners.length]],
+        });
+      }
+
+      expect(roadMaskAtV6(plan, at)).toBe(15);
+      const expectedEndpoints = [
+        { x: center.x, y: center.y - 64 * zoom },
+        { x: center.x + 64 * zoom, y: center.y },
+        { x: center.x, y: center.y + 64 * zoom },
+        { x: center.x - 64 * zoom, y: center.y },
+      ];
+      const centerRoadLines = list.commands.filter(
+        (command) =>
+          command.entryKey === `ROAD:${at.x},${at.y}` &&
+          command.kind === "LINE",
+      );
+      expect(centerRoadLines).toHaveLength(8);
+      for (const endpoint of expectedEndpoints) {
+        expect(
+          centerRoadLines.filter(
+            (command) =>
+              command.kind === "LINE" &&
+              command.points[1]?.x === endpoint.x &&
+              command.points[1]?.y === endpoint.y,
+          ),
+        ).toHaveLength(2);
+      }
+    },
+  );
 
   it("owns every entry kind with exhaustive code-native or content coverage", () => {
     const kinds = exhaustivePlan().entries.map((entry) => entry.kind);
@@ -413,7 +551,7 @@ describe("ruleset-6 Canvas drawing layer", () => {
     expect(
       full.commands
         .filter((command) => command.entryKey === terrain.key)
-        .every((command) => command.alpha === 1),
+        .every((command) => command.alpha !== 0.62),
     ).toBe(true);
 
     const reduced = buildBoardDrawListV6({
@@ -535,6 +673,140 @@ describe("ruleset-6 Canvas drawing layer", () => {
       ),
     ).toBe(true);
   });
+
+  it.each([
+    ["NORTH", { x: 2, y: 1 }],
+    ["EAST", { x: 3, y: 2 }],
+    ["SOUTH", { x: 2, y: 3 }],
+    ["WEST", { x: 1, y: 2 }],
+  ] as const)(
+    "anchors melee travel and ranged projectile geometry from square cell centers toward %s",
+    (_direction, targetAt) => {
+      const attackerAt = { x: 2, y: 2 } as const;
+      const attacker = fixtureEntry(
+        "UNIT",
+        attackerAt,
+        { faction: "ORIGINAL", role: "FIGHTER", readiness: "OPAQUE" },
+        5,
+      );
+      const target = fixtureEntry(
+        "UNIT",
+        targetAt,
+        { faction: "CANDY", role: "GUARD", readiness: "OPAQUE" },
+        5,
+      );
+      const plan: BoardRenderPlanV6 = {
+        planVersion: 6,
+        entries: [attacker, target],
+        legalCommands: [],
+        commandTargets: [],
+        economicPreview: null,
+      };
+      const presentation: CombatPresentationV6 = {
+        key: `square-${targetAt.x}-${targetAt.y}`,
+        commandIndex: 20,
+        motion: "FULL",
+        durationMs: 420,
+        actorController: "HUMAN",
+        kind: "MELEE",
+        projectile: null,
+        attacker: {
+          id: unitId(attacker.id),
+          ownerId: 1,
+          faction: "ORIGINAL",
+          role: "FIGHTER",
+          at: attackerAt,
+        },
+        target: {
+          id: unitId(target.id),
+          ownerId: 2,
+          faction: "CANDY",
+          role: "GUARD",
+          at: targetAt,
+        },
+        targetWall: null,
+        targetAt,
+        damaged: [],
+        wallDamaged: false,
+        advances: false,
+      };
+      const viewport = { width: 900, height: 700 } as const;
+      const zoom = 1.25;
+      const camera = centerCameraOn(
+        { offsetX: 0, offsetY: 0, zoom },
+        projectGrid(attackerAt),
+        viewport,
+      );
+      const baseline = buildBoardDrawListV6({ viewport, camera, plan });
+      const baselineImage = baseline.commands.find(
+        (command) =>
+          command.entryKey === attacker.key && command.kind === "IMAGE",
+      );
+      if (baselineImage?.kind !== "IMAGE")
+        throw new Error("Missing baseline attacker");
+      const source = worldToScreen(projectGrid(attackerAt), camera);
+      const destination = worldToScreen(projectGrid(targetAt), camera);
+      const melee = buildBoardDrawListV6({
+        viewport,
+        camera,
+        plan,
+        combatPresentation: presentation,
+        combatFrame: {
+          attackerTravel: 0.25,
+          projectileTravel: 0,
+          projectileOpacity: 0,
+          shake: 0,
+          damagedOpacity: 1,
+        },
+      });
+      const meleeImage = melee.commands.find(
+        (command) =>
+          command.entryKey === attacker.key && command.kind === "IMAGE",
+      );
+      if (meleeImage?.kind !== "IMAGE")
+        throw new Error("Missing animated attacker");
+      expect(
+        meleeImage.destination.x - baselineImage.destination.x,
+      ).toBeCloseTo((destination.x - source.x) * 0.25);
+      expect(
+        meleeImage.destination.y - baselineImage.destination.y,
+      ).toBeCloseTo((destination.y - source.y) * 0.25);
+
+      const rangedPresentation: CombatPresentationV6 = {
+        ...presentation,
+        kind: "RANGED",
+        projectile: "ARROW",
+        attacker: { ...presentation.attacker, role: "MARKSMAN" },
+      };
+      const ranged = buildBoardDrawListV6({
+        viewport,
+        camera,
+        plan,
+        combatPresentation: rangedPresentation,
+        combatFrame: {
+          attackerTravel: 0,
+          projectileTravel: 0.5,
+          projectileOpacity: 1,
+          shake: 0,
+          damagedOpacity: 1,
+        },
+      });
+      const arrowHead = ranged.commands.find(
+        (command) =>
+          command.entryKey === `COMBAT_PROJECTILE:${presentation.key}` &&
+          command.kind === "POLYGON",
+      );
+      if (arrowHead?.kind !== "POLYGON")
+        throw new Error("Missing square-grid projectile");
+      expect(arrowHead.points[0]).toEqual({
+        x: source.x + (destination.x - source.x) * 0.5,
+        y:
+          source.y -
+          18 * zoom +
+          (destination.y - 16 * zoom - (source.y - 18 * zoom)) * 0.5,
+      });
+    },
+  );
 
   it("layers deterministic ranged projectiles after world bodies and before fog/interaction/status overlays", () => {
     const attackerAt = { x: 2, y: 2 } as const;
@@ -674,7 +946,11 @@ describe("ruleset-6 Canvas drawing layer", () => {
       ),
     ).toBe(true);
     for (const zoom of [0.625, 1, 1.75] as const) {
-      const camera = { offsetX: 400, offsetY: 180, zoom };
+      const camera = centerCameraOn(
+        { offsetX: 0, offsetY: 0, zoom },
+        projectGrid(presentation.attacker.at),
+        options.viewport,
+      );
       const renderAtDpr = (devicePixelRatio: 1 | 2) =>
         drawBoardV6({
           context: drawingContext(),
@@ -913,7 +1189,7 @@ describe("ruleset-6 Canvas drawing layer", () => {
     "lowers every faction role and Fertile Ground by painted-bound geometry at %sx with DPR-invariant output",
     (zoom) => {
       const camera = { offsetX: 400, offsetY: 180, zoom } as const;
-      const center = { x: 400, y: 180 + 148 * zoom } as const;
+      const center = worldToScreen(projectGrid(AT), camera);
       for (const faction of ["ORIGINAL", "CANDY"] as const) {
         for (const role of UNIT_ROLE_IDS) {
           const coverage = unitCoverageV6(faction, role);
@@ -1126,7 +1402,7 @@ function exhaustivePlan(): BoardRenderPlanV6 {
     UNIT: { faction: "ORIGINAL", role: "SCOUT", readiness: "OPAQUE" },
     CITY_FRONT: { faction: "ORIGINAL", isCapital: true },
     SELECTION: { selectionKind: "UNIT" },
-    CITY_TERRITORY_BOUNDARY: { edge: "NORTH_WEST" },
+    CITY_TERRITORY_BOUNDARY: { edge: "NORTH" },
     MOVE_TARGET: { command: WAIT },
     ATTACK_TARGET: { command: WAIT },
     ROLL_TARGET: { command: WAIT },

@@ -19,10 +19,10 @@ import {
 } from "../../engine/index";
 import {
   compareGroundAnchors,
-  diamondEdgeIndex,
   sameCoord,
+  tileEdgeIndex,
   territoryBoundarySegments,
-  type DiamondEdge,
+  type TileEdge,
 } from "./geometry";
 import { cityPopulationPresentationV6 } from "../city-population-presentation-v6";
 
@@ -139,7 +139,7 @@ interface RenderEntryDetailsV6 {
     readonly isCapital: boolean;
   };
   readonly SELECTION: { readonly selectionKind: BoardSelectionV6["kind"] };
-  readonly CITY_TERRITORY_BOUNDARY: { readonly edge: DiamondEdge };
+  readonly CITY_TERRITORY_BOUNDARY: { readonly edge: TileEdge };
   readonly MOVE_TARGET: { readonly command: CommandV6 };
   readonly ATTACK_TARGET: { readonly command: CommandV6 };
   readonly ROLL_TARGET: { readonly command: CommandV6 };
@@ -490,8 +490,8 @@ export function compareEntriesV6(
     if (ground !== 0) return ground;
   }
   return (
-    left.at.x + left.at.y - (right.at.x + right.at.y) ||
-    left.at.x - left.at.y - (right.at.x - right.at.y) ||
+    left.at.y - right.at.y ||
+    left.at.x - right.at.x ||
     left.kind.localeCompare(right.kind) ||
     left.id - right.id ||
     left.key.localeCompare(right.key)
@@ -552,7 +552,7 @@ function addSelectionEntriesV6(
         coordinateIdV6(segment.at, view.board.width),
         city.ownerId,
         { edge: segment.edge },
-        diamondEdgeIndex(segment.edge),
+        tileEdgeIndex(segment.edge),
       ),
     );
   }

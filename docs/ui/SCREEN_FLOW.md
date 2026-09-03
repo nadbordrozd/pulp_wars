@@ -381,6 +381,12 @@ damage and death/advance cues before activation, with the same text in its
 accessible name. Drag pans only after a movement threshold so a tap still
 selects. Wheel/pinch and zoom controls change camera only.
 
+The active battlefield is an axis-aligned square grid. Its accessible Canvas
+name says “square-grid battlefield”; cursor announcements identify a one-based
+column and row. Arrow keys move along the visible row/column axes, while
+Shift+Arrow remains an optional diagonal inspection shortcut. These words and
+inputs describe presentation only and do not alter cardinal game adjacency.
+
 Inspection activation uses a deterministic visible-occupant-first cycle. On an
 explored coordinate with a visible friendly or enemy unit, the first activation
 selects and highlights that unit. The second consecutive activation of exactly

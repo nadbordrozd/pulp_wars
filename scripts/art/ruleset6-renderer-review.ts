@@ -293,12 +293,7 @@ function representativePlan(faction: FactionIdV6): BoardRenderPlanV6 {
   });
 
   add("SELECTION", { x: 5, y: 2 }, { selectionKind: "UNIT" }, 6, null);
-  for (const edge of [
-    "NORTH_WEST",
-    "NORTH_EAST",
-    "SOUTH_EAST",
-    "SOUTH_WEST",
-  ] as const)
+  for (const edge of ["NORTH", "EAST", "SOUTH", "WEST"] as const)
     add("CITY_TERRITORY_BOUNDARY", { x: 0, y: 4 }, { edge }, 6);
   add(
     "ECONOMIC_CONTRIBUTOR",

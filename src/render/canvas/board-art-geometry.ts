@@ -1,4 +1,4 @@
-import { TILE_HEIGHT, TILE_WIDTH, type Point } from "./geometry";
+import type { Point } from "./geometry";
 
 export interface SourceGeometry {
   readonly width: number;
@@ -28,14 +28,13 @@ export interface UnitScaleClassContract {
 }
 
 /**
- * Nominal 128 x 74 tile occupancy is an art/rendering contract only. Ratios are
- * measured from non-zero source alpha after applying the class display scale.
- * Rear occlusion is alpha-weighted coverage of either immediately rear/above
- * adjacent projected diamond (logical NORTH or WEST); camera zoom and DPR
- * scale both sprite and diamond together, so the ratios remain invariant.
+ * The 128 x 74 reference below freezes the acceptance measurements of the
+ * unchanged production unit rasters. The active map presentation uses 128 x
+ * 128 square cells, which makes these same files visually more compact. Do not
+ * reinterpret the historical ratios as square-cell generation requirements.
  */
 export const UNIT_SCALE_CONTRACT = {
-  tile: { width: TILE_WIDTH, height: TILE_HEIGHT },
+  tile: { width: 128, height: 74 },
   standard: {
     displayScale: 0.25,
     preferredVisibleWidthRatio: [0.28, 0.44],
@@ -106,7 +105,7 @@ export const BOARD_ART_GEOMETRY = {
 /**
  * Ruleset-6 unit art is lowered from the authoritative ground coordinate so
  * its painted silhouette, rather than its transparent source canvas, is
- * visually centered on the owning diamond. The offset is cosmetic, scales
+ * visually centered on the owning cell. The offset is cosmetic, scales
  * with camera zoom, and never changes sorting or picking coordinates.
  */
 export const RULESET6_UNIT_ART_GEOMETRY = {

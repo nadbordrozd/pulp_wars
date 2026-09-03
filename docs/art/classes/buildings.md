@@ -1,5 +1,15 @@
 # Building and Settlement Asset Contract
 
+## Active square-grid override
+
+The active presentation follows the
+[square-grid experiment](../SQUARE_GRID_EXPERIMENT.md). Farmed land and every
+low improvement must fill or sit wholly inside the 128 x 128 square footprint;
+tall machinery and settlements may overflow upward only. Nothing may cross the
+left, right, or bottom edge. All replacements use upper-left key lighting.
+Diamond-era canvases and measurements below remain temporary historical
+provenance until their dedicated square batches are accepted.
+
 ## Ruleset-6 active inventory
 
 Ruleset 6 adds one shared functional production raster for Farm, Lumber Camp,

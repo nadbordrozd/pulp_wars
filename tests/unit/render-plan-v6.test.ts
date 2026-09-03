@@ -699,7 +699,7 @@ describe("ruleset-6 observation-safe render plan", () => {
     });
   });
 
-  it("uses stable isometric depth, body ties, and public IDs inside each layer", () => {
+  it("uses stable row-major square depth, body ties, and public IDs inside each layer", () => {
     const at = { x: 4, y: 4 } as const;
     let view = replaceTile(baseView(), at, {
       terrain: "FOREST",
@@ -727,6 +727,35 @@ describe("ruleset-6 observation-safe render plan", () => {
     expect(
       entriesOf(plan.entries, "UNIT").find((entry) => entry.id === unitId(777)),
     ).toMatchObject({ id: unitId(777), ownerId: OWN, at });
+  });
+
+  it("orders square body anchors by row, then column, before same-cell ties", () => {
+    const body = (
+      id: number,
+      at: CoordV6,
+      kind: "TERRAIN_BODY" | "UNIT" = "UNIT",
+    ): RenderPlanEntryV6 =>
+      ({
+        key: `${kind}:${id}`,
+        kind,
+        at,
+        id,
+        ownerId: OWN,
+        variant: 0,
+        layer: 5,
+        details:
+          kind === "UNIT"
+            ? { faction: "ORIGINAL", role: "FIGHTER", readiness: "OPAQUE" }
+            : { terrain: "FOREST" },
+      }) as RenderPlanEntryV6;
+    const entries = [
+      body(4, { x: 0, y: 1 }),
+      body(3, { x: 1, y: 0 }),
+      body(2, { x: 1, y: 1 }, "TERRAIN_BODY"),
+      body(1, { x: 0, y: 0 }),
+      body(5, { x: 1, y: 1 }),
+    ].sort(compareEntriesV6);
+    expect(entries.map(({ id }) => id)).toEqual([1, 3, 4, 2, 5]);
   });
 
   it("sorts Forest Game frontage after its canopy and before units without moving other resources", () => {

@@ -1,5 +1,15 @@
 # Terrain Tile Asset Contract
 
+## Active square-grid override
+
+The active presentation and all forthcoming terrain replacements follow the
+[square-grid experiment](../SQUARE_GRID_EXPERIMENT.md). Ground fills the full
+128 x 128 CSS square; Forest and Mountain may extend upward but never left,
+right, or below it; and all terrain shares upper-left key lighting. Existing
+diamond sources, anchors, clips, and measurements below are retained as
+temporary/historical provenance until the square asset beads replace them.
+They are not the generation target for new terrain.
+
 ## Ruleset-6 active inventory
 
 Ruleset 6 retains Grass, Forest, Mountain, Fruit, Game (the renamed Animal

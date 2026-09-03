@@ -31,6 +31,77 @@ export const RULESET6_SMOKE_VIEWPORTS = {
   mobile: { width: 390, height: 844, dpr: 2, mobile: true },
 } as const;
 
+export interface BrowserSmokePointV6 {
+  readonly x: number;
+  readonly y: number;
+}
+
+export interface BrowserSmokeActivationPanStepV6 {
+  readonly delta: BrowserSmokePointV6;
+  readonly start: BrowserSmokePointV6;
+  readonly end: BrowserSmokePointV6;
+}
+
+export interface BrowserSmokeCoordinateActivationV6 {
+  readonly at: BrowserSmokePointV6;
+  readonly canvas: { readonly width: number; readonly height: number };
+  readonly before: BrowserSmokePointV6;
+  readonly after: BrowserSmokePointV6;
+  readonly panSteps: number;
+}
+
+export const RULESET6_ACTIVATION_MARGIN = 24;
+
+/**
+ * Returns one real pointer-drag step that moves an offscreen projected anchor
+ * toward the center while keeping the drag endpoint inside the Canvas. Reapply
+ * after the host updates its camera until the coordinate enters the safe area.
+ */
+export function coordinateActivationPanStepV6(
+  point: BrowserSmokePointV6,
+  canvas: { readonly width: number; readonly height: number },
+  margin = RULESET6_ACTIVATION_MARGIN,
+): BrowserSmokeActivationPanStepV6 | null {
+  const safeMargin = Math.max(
+    0,
+    Math.min(margin, canvas.width / 2, canvas.height / 2),
+  );
+  if (
+    point.x >= safeMargin &&
+    point.y >= safeMargin &&
+    point.x <= canvas.width - safeMargin &&
+    point.y <= canvas.height - safeMargin
+  ) {
+    return null;
+  }
+  const start = { x: canvas.width / 2, y: canvas.height / 2 };
+  const delta = {
+    x: clamp(
+      start.x - point.x,
+      safeMargin - start.x,
+      canvas.width - safeMargin - start.x,
+    ),
+    y: clamp(
+      start.y - point.y,
+      safeMargin - start.y,
+      canvas.height - safeMargin - start.y,
+    ),
+  };
+  return {
+    delta,
+    start,
+    end: { x: start.x + delta.x, y: start.y + delta.y },
+  };
+}
+
+export function coordinateActivationIsVisibleV6(
+  point: BrowserSmokePointV6,
+  canvas: { readonly width: number; readonly height: number },
+  margin = RULESET6_ACTIVATION_MARGIN,
+): boolean {
+  return coordinateActivationPanStepV6(point, canvas, margin) === null;
+}
+
 export const RULESET6_SMOKE_EVIDENCE_SUBJECTS = [
   "unit-context-desktop",
   "unit-context-mobile",
@@ -256,6 +327,7 @@ export interface BrowserSmokeFlowEvidenceV6 {
     readonly commandIndex: number;
     readonly stateHash: string;
   };
+  readonly coordinateActivations: readonly BrowserSmokeCoordinateActivationV6[];
   readonly acceptance: BrowserSmokeIntegratedAcceptanceV6;
   readonly desktop: BrowserSmokeLayoutV6;
   readonly mobile: BrowserSmokeLayoutV6;
@@ -374,6 +446,19 @@ export function flowContractIssuesV6(
     flow.resume.stateHash !== flow.turnReturn.stateHash
   ) {
     issues.push("reload/resume did not preserve the exact boundary");
+  }
+  if (!flow.coordinateActivations.some(({ panSteps }) => panSteps > 0)) {
+    issues.push("square-grid smoke exercised no offscreen camera pan");
+  }
+  for (const activation of flow.coordinateActivations) {
+    if (
+      !coordinateActivationIsVisibleV6(activation.after, activation.canvas) ||
+      (activation.panSteps > 0 &&
+        coordinateActivationIsVisibleV6(activation.before, activation.canvas))
+    ) {
+      issues.push("coordinate activation camera evidence is inconsistent");
+      break;
+    }
   }
   issues.push(
     ...layoutContractIssuesV6(
@@ -732,4 +817,8 @@ function intersectionArea(
       Math.max(left.y, right.y),
   );
   return width * height;
+}
+
+function clamp(value: number, minimum: number, maximum: number): number {
+  return Math.max(minimum, Math.min(maximum, value));
 }

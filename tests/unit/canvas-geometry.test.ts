@@ -44,16 +44,56 @@ import {
 } from "../../src/render/canvas/readiness-presentation";
 import { gameStateBuilder } from "../fixtures/builders";
 
-describe("isometric projection, inverse picking, and camera", () => {
-  it("uses the exact documented 128 by 74 diamond projection", () => {
+describe("square projection, inverse picking, and camera", () => {
+  it("uses the exact documented 128 by 128 axis-aligned projection", () => {
     expect(TILE_WIDTH).toBe(128);
-    expect(TILE_HEIGHT).toBe(74);
+    expect(TILE_HEIGHT).toBe(128);
     expect(projectGrid({ x: 0, y: 0 })).toEqual({ x: 0, y: 0 });
-    expect(projectGrid({ x: 1, y: 0 })).toEqual({ x: 64, y: 37 });
-    expect(projectGrid({ x: 0, y: 1 })).toEqual({ x: -64, y: 37 });
-    expect(projectGrid({ x: 3, y: 5 })).toEqual({ x: -128, y: 296 });
+    expect(projectGrid({ x: 1, y: 0 })).toEqual({ x: 128, y: 0 });
+    expect(projectGrid({ x: 0, y: 1 })).toEqual({ x: 0, y: 128 });
+    expect(projectGrid({ x: 3, y: 5 })).toEqual({ x: 384, y: 640 });
+    expect(projectGrid({ x: 3, y: 5 }, { x: 17, y: -9 })).toEqual({
+      x: 401,
+      y: 631,
+    });
     expect(inverseProject(projectGrid({ x: 3, y: 5 }))).toEqual({ x: 3, y: 5 });
   });
+
+  it.each([MIN_ZOOM, 1, MAX_ZOOM])(
+    "resolves exact square side and corner ties deterministically at zoom %s",
+    (zoom) => {
+      const camera = { offsetX: 301.25, offsetY: 97.75, zoom };
+      const screen = (worldX: number, worldY: number) =>
+        worldToScreen({ x: worldX, y: worldY }, camera);
+      const board = { width: 2, height: 2 };
+      expect(pickGridTile(screen(-64, -64), camera, board)).toEqual({
+        x: 0,
+        y: 0,
+      });
+      expect(pickGridTile(screen(64, 0), camera, board)).toEqual({
+        x: 0,
+        y: 0,
+      });
+      expect(pickGridTile(screen(0, 64), camera, board)).toEqual({
+        x: 0,
+        y: 0,
+      });
+      expect(pickGridTile(screen(64, 64), camera, board)).toEqual({
+        x: 0,
+        y: 0,
+      });
+      expect(pickGridTile(screen(64 + 1e-6, 64), camera, board)).toEqual({
+        x: 1,
+        y: 0,
+      });
+      expect(pickGridTile(screen(64, 64 + 1e-6), camera, board)).toEqual({
+        x: 0,
+        y: 1,
+      });
+      expect(pickGridTile(screen(-64 - 1e-6, 0), camera, board)).toBeNull();
+      expect(pickGridTile(screen(192 + 1e-6, 192), camera, board)).toBeNull();
+    },
+  );
 
   it.each([MIN_ZOOM, 1, MAX_ZOOM])(
     "inverse-picks every tile center and interior at zoom %s",
@@ -165,7 +205,7 @@ describe("isometric projection, inverse picking, and camera", () => {
     });
     const bounds = boardWorldBounds(25, 25);
     expect(bounds.top).toBe(-148);
-    expect(bounds.bottom).toBe(projectGrid({ x: 24, y: 24 }).y + 62);
+    expect(bounds.bottom).toBe(projectGrid({ x: 24, y: 24 }).y + 64);
   });
 
   it.each([MIN_ZOOM, 1, MAX_ZOOM])(
@@ -200,6 +240,10 @@ describe("isometric projection, inverse picking, and camera", () => {
     expect(
       segments.filter((segment) => segment.at.x === 5 && segment.at.y === 7),
     ).toEqual([]);
+    expect(segments.slice(0, 2)).toEqual([
+      { at: { x: 4, y: 6 }, edge: "NORTH" },
+      { at: { x: 4, y: 6 }, edge: "WEST" },
+    ]);
   });
 });
 
@@ -212,8 +256,8 @@ describe("stable draw ordering and deterministic render fixtures", () => {
       { at: { x: 1, y: 1 }, tie: 10, id: 9 },
     ].sort(compareGroundAnchors);
     expect(anchors).toEqual([
-      { at: { x: 0, y: 1 }, tie: 0, id: 4 },
       { at: { x: 1, y: 0 }, tie: 0, id: 3 },
+      { at: { x: 0, y: 1 }, tie: 0, id: 4 },
       { at: { x: 1, y: 1 }, tie: 10, id: 9 },
       { at: { x: 1, y: 1 }, tie: 50, id: 2 },
     ]);

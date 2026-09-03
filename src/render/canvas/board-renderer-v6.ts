@@ -386,6 +386,11 @@ function drawEntry(
   const ownerColor = ownerColorFor(entry.ownerId);
   switch (entry.kind) {
     case "TERRAIN":
+      // Until the square production terrain batch lands, keep a complete
+      // code-native square footprint beneath the accepted legacy diamond.
+      commands.push(
+        ...groundFallback(entry.key, center, zoom, faction, entry.variant),
+      );
       addCoveredAsset(
         commands,
         coverage,
@@ -393,7 +398,7 @@ function drawEntry(
         terrainCoverageV6("GRASS", faction, entry.variant),
         center,
         zoom,
-        () => groundFallback(entry.key, center, zoom, faction, entry.variant),
+        () => [],
       );
       return;
     case "TERRAIN_BODY":
@@ -542,10 +547,20 @@ function drawEntry(
       return;
     case "OWNERSHIP":
       commands.push(
-        diamond(entry.key, center, zoom, `${ownerColor}24`, ownerColor, 2),
+        tileFootprint(
+          entry.key,
+          center,
+          zoom,
+          `${ownerColor}24`,
+          ownerColor,
+          2,
+        ),
       );
       return;
     case "ROAD":
+      // The accepted road material is temporarily diamond-shaped. The native
+      // square paths keep cardinal connectivity readable through the trial.
+      commands.push(...roadCommands(entry.key, center, zoom, roadMask));
       addCoveredAsset(
         commands,
         coverage,
@@ -553,7 +568,7 @@ function drawEntry(
         roadCoverageV6(roadMask),
         center,
         zoom,
-        () => [...roadCommands(entry.key, center, zoom, roadMask)],
+        () => [],
       );
       return;
     case "UNKNOWN_RESOURCE":
@@ -577,7 +592,7 @@ function drawEntry(
       return;
     case "SELECTION":
       commands.push(
-        diamond(entry.key, center, zoom, "#48e9f12d", "#75f7ff", 5),
+        tileFootprint(entry.key, center, zoom, "#48e9f12d", "#75f7ff", 5),
       );
       return;
     case "CITY_TERRITORY_BOUNDARY":
@@ -1013,7 +1028,7 @@ function groundFallback(
 ): readonly BoardDrawCommandV6[] {
   const fill = faction === "CANDY" ? "#8fa75d" : "#79ad61";
   return [
-    diamond(key, center, zoom, fill, "#28483d", 2),
+    tileFootprint(key, center, zoom, fill, "#28483d", 2),
     ellipse(
       key,
       center.x + ((variant % 3) - 1) * 12 * zoom,
@@ -1329,7 +1344,7 @@ function fogCommands(
   zoom: number,
 ): readonly BoardDrawCommandV6[] {
   return [
-    diamond(key, center, zoom, "#263638", "#18282b", 2),
+    tileFootprint(key, center, zoom, "#263638", "#18282b", 2),
     line(
       key,
       [p(center, -38, 8, zoom), p(center, -4, -20, zoom)],
@@ -1356,10 +1371,10 @@ function roadCommands(
   mask: number,
 ): readonly BoardDrawCommandV6[] {
   const endpoints = [
-    [ROAD_DIRECTION_BITS_V6.NORTH, 32, -18.5],
-    [ROAD_DIRECTION_BITS_V6.EAST, 32, 18.5],
-    [ROAD_DIRECTION_BITS_V6.SOUTH, -32, 18.5],
-    [ROAD_DIRECTION_BITS_V6.WEST, -32, -18.5],
+    [ROAD_DIRECTION_BITS_V6.NORTH, 0, -64],
+    [ROAD_DIRECTION_BITS_V6.EAST, 64, 0],
+    [ROAD_DIRECTION_BITS_V6.SOUTH, 0, 64],
+    [ROAD_DIRECTION_BITS_V6.WEST, -64, 0],
   ] as const;
   const result: BoardDrawCommandV6[] = [];
   for (const [bit, x, y] of endpoints) {
@@ -1414,7 +1429,10 @@ function targetCommands(
   label: string,
 ): readonly BoardDrawCommandV6[] {
   return [
-    diamond(key, center, zoom, `${color}28`, color, 4, [7 * zoom, 4 * zoom]),
+    tileFootprint(key, center, zoom, `${color}28`, color, 4, [
+      7 * zoom,
+      4 * zoom,
+    ]),
     ellipse(
       key,
       center.x,
@@ -1497,7 +1515,7 @@ function economicContributor(
   zoom: number,
 ): readonly BoardDrawCommandV6[] {
   return [
-    diamond(entry.key, center, zoom, "transparent", "#ffd85e", 3, [
+    tileFootprint(entry.key, center, zoom, "transparent", "#ffd85e", 3, [
       5 * zoom,
       3 * zoom,
     ]),
@@ -1763,15 +1781,15 @@ function territoryEdge(
   key: string,
   center: Point,
   zoom: number,
-  edge: "NORTH_WEST" | "NORTH_EAST" | "SOUTH_EAST" | "SOUTH_WEST",
+  edge: "NORTH" | "EAST" | "SOUTH" | "WEST",
   color: string,
 ): BoardDrawCommandV6 {
-  const vertices = diamondPoints(center, zoom);
+  const vertices = tileFootprintPoints(center, zoom);
   const indexes: Readonly<Record<typeof edge, readonly [number, number]>> = {
-    NORTH_WEST: [0, 1],
-    NORTH_EAST: [1, 2],
-    SOUTH_EAST: [2, 3],
-    SOUTH_WEST: [3, 0],
+    NORTH: [0, 1],
+    EAST: [1, 2],
+    SOUTH: [2, 3],
+    WEST: [3, 0],
   };
   const [start, end] = indexes[edge];
   return line(
@@ -1782,7 +1800,7 @@ function territoryEdge(
   );
 }
 
-function diamond(
+function tileFootprint(
   key: string,
   center: Point,
   zoom: number,
@@ -1793,7 +1811,7 @@ function diamond(
 ): BoardDrawCommandV6 {
   return polygon(
     key,
-    diamondPoints(center, zoom),
+    tileFootprintPoints(center, zoom),
     fill,
     stroke,
     Math.max(1, lineWidth * zoom),
@@ -1802,12 +1820,27 @@ function diamond(
   );
 }
 
-function diamondPoints(center: Point, zoom: number): readonly Point[] {
+export function tileFootprintPoints(
+  center: Point,
+  zoom: number,
+): readonly Point[] {
   return [
-    { x: center.x - (TILE_WIDTH / 2) * zoom, y: center.y },
-    { x: center.x, y: center.y - (TILE_HEIGHT / 2) * zoom },
-    { x: center.x + (TILE_WIDTH / 2) * zoom, y: center.y },
-    { x: center.x, y: center.y + (TILE_HEIGHT / 2) * zoom },
+    {
+      x: center.x - (TILE_WIDTH / 2) * zoom,
+      y: center.y - (TILE_HEIGHT / 2) * zoom,
+    },
+    {
+      x: center.x + (TILE_WIDTH / 2) * zoom,
+      y: center.y - (TILE_HEIGHT / 2) * zoom,
+    },
+    {
+      x: center.x + (TILE_WIDTH / 2) * zoom,
+      y: center.y + (TILE_HEIGHT / 2) * zoom,
+    },
+    {
+      x: center.x - (TILE_WIDTH / 2) * zoom,
+      y: center.y + (TILE_HEIGHT / 2) * zoom,
+    },
   ];
 }
 

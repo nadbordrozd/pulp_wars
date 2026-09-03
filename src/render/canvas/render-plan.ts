@@ -9,8 +9,8 @@ import {
 import type { BoardSelection, BoardTargetMode } from "./board-host";
 import {
   compareGroundAnchors,
-  diamondEdgeIndex,
   sameCoord,
+  tileEdgeIndex,
   territoryBoundarySegments,
 } from "./geometry";
 
@@ -208,7 +208,7 @@ export function buildRenderPlan(
           at: segment.at,
           id: coordinateId(segment.at),
           ownerId: city.ownerId,
-          variant: diamondEdgeIndex(segment.edge),
+          variant: tileEdgeIndex(segment.edge),
         });
       }
     }
@@ -330,8 +330,8 @@ export function compareEntries(
     );
   }
   return (
-    left.at.x + left.at.y - (right.at.x + right.at.y) ||
-    left.at.x - left.at.y - (right.at.x - right.at.y) ||
+    left.at.y - right.at.y ||
+    left.at.x - right.at.x ||
     left.kind.localeCompare(right.kind) ||
     left.id - right.id
   );

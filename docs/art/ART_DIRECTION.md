@@ -15,6 +15,15 @@ fallback is not accepted production raster art.
 
 The game should use a **chunky 2D illustrated strategy-game style**, not faux-3D or detailed pixel art.
 
+## Active square-grid experiment
+
+The current map presentation follows the
+[square-grid experiment contract](SQUARE_GRID_EXPERIMENT.md): axis-aligned
+128 x 128 CSS-pixel cells, full-footprint ground, upper-left lighting, and
+upward-only overflow for genuinely tall map forms. The diamond measurements
+later in this file remain historical acceptance provenance for unchanged unit
+rasters; they do not override the active square footprint.
+
 The visual target is somewhere between **board-game pieces, stickers, and simple cartoon sprites**. It should feel playful, readable, slightly ridiculous, and capable of supporting wildly different pulp factions such as pirates, robots, undead, cowboys, ninjas, dinosaurs, aliens, etc.
 
 ## Core principles
