@@ -228,9 +228,14 @@ describe("ruleset-6 observation-safe render plan", () => {
       expect(new Set(first.entries.map((entry) => entry.key)).size).toBe(
         first.entries.length,
       );
-      expect(first.entries.map((entry) => entry.layer)).toEqual(
-        [...first.entries.map((entry) => entry.layer)].sort((a, b) => a - b),
-      );
+      const firstOverlay = first.entries.findIndex((entry) => entry.layer > 5);
+      expect(firstOverlay).toBeGreaterThan(0);
+      expect(
+        first.entries.slice(0, firstOverlay).every((entry) => entry.layer <= 5),
+      ).toBe(true);
+      expect(
+        first.entries.slice(firstOverlay).every((entry) => entry.layer > 5),
+      ).toBe(true);
       const selection = entriesOf(first.entries, "SELECTION")[0];
       const statuses = first.entries.filter((entry) =>
         entry.kind.endsWith("STATUS"),
@@ -756,6 +761,118 @@ describe("ruleset-6 observation-safe render plan", () => {
       body(5, { x: 1, y: 1 }),
     ].sort(compareEntriesV6);
     expect(entries.map(({ id }) => id)).toEqual([1, 3, 4, 2, 5]);
+  });
+
+  it("keeps a northern Farm stack behind the complete Forest stack immediately south", () => {
+    const north = { x: 4, y: 3 } as const;
+    const south = { x: 4, y: 4 } as const;
+    let view = replaceTile(baseView(), north, { improvement: "FARM" });
+    view = replaceTile(view, south, { terrain: "FOREST" });
+
+    const plan = buildRenderPlanV6(inactive(view));
+    const adjacentWorld = plan.entries.filter(
+      (entry) =>
+        entry.layer <= 5 && (same(entry.at, north) || same(entry.at, south)),
+    );
+    const northIndexes = adjacentWorld.flatMap((entry, index) =>
+      same(entry.at, north) ? [index] : [],
+    );
+    const southIndexes = adjacentWorld.flatMap((entry, index) =>
+      same(entry.at, south) ? [index] : [],
+    );
+
+    expect(adjacentWorld.map((entry) => `${entry.kind}:${entry.at.y}`)).toEqual(
+      ["TERRAIN:3", "IMPROVEMENT:3", "TERRAIN:4", "TERRAIN_BODY:4"],
+    );
+    expect(Math.max(...northIndexes)).toBeLessThan(Math.min(...southIndexes));
+  });
+
+  it.each(ECONOMIC_IMPROVEMENT_IDS)(
+    "depth-sorts northern %s behind southern terrain/resource and city/unit stacks for both factions",
+    (improvement) => {
+      const north = { x: 7, y: 5 } as const;
+      const south = { x: 7, y: 6 } as const;
+      const base = replaceTile(baseView("CANDY"), north, { improvement });
+      const mountainView = replaceTile(base, south, {
+        terrain: "MOUNTAIN",
+        resource: "STONE",
+        road: true,
+      });
+      let occupiedCityView = replaceTile(base, south, {
+        site: "CITY",
+        territoryCityId: RIVAL_CITY,
+        territoryOwnerId: RIVAL,
+      });
+      occupiedCityView = {
+        ...occupiedCityView,
+        cities: [
+          ...occupiedCityView.cities,
+          city(RIVAL_CITY, RIVAL, south, false),
+        ],
+        units: [unit(779, OWN, "JUGGERNAUT", south)],
+      };
+
+      for (const [stack, view, expectedSouthKinds] of [
+        [
+          "terrain/resource",
+          mountainView,
+          ["TERRAIN", "ROAD", "RESOURCE", "TERRAIN_BODY"],
+        ],
+        [
+          "city/unit",
+          occupiedCityView,
+          [
+            "TERRAIN",
+            "OWNERSHIP",
+            "CONTACT_SHADOW",
+            "SITE",
+            "CITY_BACK",
+            "UNIT",
+            "CITY_FRONT",
+          ],
+        ],
+      ] as const) {
+        const adjacentWorld = buildRenderPlanV6(inactive(view)).entries.filter(
+          (entry) =>
+            entry.layer <= 5 &&
+            (same(entry.at, north) || same(entry.at, south)),
+        );
+        const lastNorth = adjacentWorld
+          .map((entry) => same(entry.at, north))
+          .lastIndexOf(true);
+        const firstSouth = adjacentWorld.findIndex((entry) =>
+          same(entry.at, south),
+        );
+
+        expect(lastNorth, `${improvement}:${stack}`).toBeGreaterThanOrEqual(0);
+        expect(firstSouth, `${improvement}:${stack}`).toBeGreaterThanOrEqual(0);
+        expect(lastNorth, `${improvement}:${stack}`).toBeLessThan(firstSouth);
+        expect(
+          adjacentWorld
+            .slice(firstSouth)
+            .filter((entry) => same(entry.at, south))
+            .map((entry) => entry.kind),
+        ).toEqual(expectedSouthKinds);
+      }
+    },
+  );
+
+  it("uses column order as the stable tie-break between complete stacks in one row", () => {
+    const west = { x: 3, y: 7 } as const;
+    const east = { x: 4, y: 7 } as const;
+    let view = replaceTile(baseView(), west, { improvement: "WINDMILL" });
+    view = replaceTile(view, east, { terrain: "FOREST" });
+
+    const entries = buildRenderPlanV6(inactive(view)).entries.filter(
+      (entry) =>
+        entry.layer <= 5 && (same(entry.at, west) || same(entry.at, east)),
+    );
+    const lastWest = entries
+      .map((entry) => same(entry.at, west))
+      .lastIndexOf(true);
+    const firstEast = entries.findIndex((entry) => same(entry.at, east));
+
+    expect(lastWest).toBeLessThan(firstEast);
   });
 
   it("sorts Forest Game frontage after its canopy and before units without moving other resources", () => {

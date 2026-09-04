@@ -681,7 +681,8 @@ function combatEntries(
   plan: BoardRenderPlanV6,
   presentation: CombatPresentationV6 | null | undefined,
 ): readonly RenderPlanEntryV6[] {
-  if (presentation === undefined || presentation === null) return plan.entries;
+  if (presentation === undefined || presentation === null)
+    return [...plan.entries].sort(compareEntriesV6);
   const snapshots = [presentation.attacker, presentation.target].filter(
     (sprite): sprite is CombatSpriteSnapshotV6 => sprite !== null,
   );

@@ -509,6 +509,83 @@ describe("ruleset-6 Canvas drawing layer", () => {
     },
   );
 
+  it.each([0.625, 1, 1.75] as const)(
+    "defensively emits a complete southern Forest/unit stack after a northern Farm at %sx zoom and DPR1/2",
+    (zoom) => {
+      const north = { x: 3, y: 2 } as const;
+      const south = { x: 3, y: 3 } as const;
+      const northernTerrain = fixtureEntry(
+        "TERRAIN",
+        north,
+        { terrain: "GRASS" },
+        1,
+      );
+      const northernFarm = fixtureEntry(
+        "IMPROVEMENT",
+        north,
+        { improvement: "FARM" },
+        5,
+      );
+      const southernForest = fixtureEntry(
+        "TERRAIN",
+        south,
+        { terrain: "FOREST" },
+        1,
+      );
+      const southernBody = fixtureEntry(
+        "TERRAIN_BODY",
+        south,
+        { terrain: "FOREST" },
+        5,
+      );
+      const southernUnit = fixtureEntry(
+        "UNIT",
+        south,
+        {
+          faction: "CANDY",
+          role: "JUGGERNAUT",
+          readiness: "OPAQUE",
+        },
+        5,
+      );
+      const plan: BoardRenderPlanV6 = {
+        planVersion: 6,
+        // Deliberately model the former global-layer order. The renderer owns
+        // a deterministic defensive sort at its public draw-list boundary.
+        entries: [
+          southernForest,
+          northernTerrain,
+          northernFarm,
+          southernBody,
+          southernUnit,
+        ],
+        legalCommands: [],
+        commandTargets: [],
+        economicPreview: null,
+      };
+
+      for (const devicePixelRatio of [1, 2] as const) {
+        const list = drawBoardV6({
+          context: drawingContext(),
+          viewport: { width: 900, height: 800 },
+          camera: { offsetX: 300, offsetY: 220, zoom },
+          plan,
+          devicePixelRatio,
+        });
+        expect(
+          list.commands
+            .filter((command) => command.kind === "IMAGE")
+            .map((command) => command.entryKey),
+        ).toEqual([
+          northernTerrain.key,
+          northernFarm.key,
+          southernForest.key,
+          southernUnit.key,
+        ]);
+      }
+    },
+  );
+
   it("applies the exact pulse opacity only to ready unit sprites and their fallbacks", () => {
     const plan = exhaustivePlan();
     const unit = plan.entries.find((entry) => entry.kind === "UNIT");

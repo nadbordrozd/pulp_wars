@@ -275,6 +275,29 @@ const BODY_TIE_V6: Readonly<Partial<Record<RenderEntryKindV6, number>>> = {
   CITY_FRONT: 50,
 };
 
+/**
+ * Accepted square map art is composited as one painter-ordered stack per tile.
+ * In particular, tall terrain includes its complete owning square in the
+ * TERRAIN image, so its row depth must be compared with every other world
+ * entry rather than only with the former layer-5 body entries.
+ */
+const TILE_STACK_KINDS_V6 = new Set<RenderEntryKindV6>([
+  "FOG",
+  "TERRAIN",
+  "OWNERSHIP",
+  "ROAD",
+  "RESOURCE",
+  "UNKNOWN_RESOURCE",
+  "CONTACT_SHADOW",
+  "TERRAIN_BODY",
+  "IMPROVEMENT",
+  "SITE",
+  "CHOCOLATE_WALL",
+  "CITY_BACK",
+  "UNIT",
+  "CITY_FRONT",
+]);
+
 const SELF_ABILITY_KINDS = new Set<CommandKindV6>([
   "RECOVER",
   "CAPTURE",
@@ -472,18 +495,22 @@ export function compareEntriesV6(
   left: RenderPlanEntryV6,
   right: RenderPlanEntryV6,
 ): number {
-  const layer = left.layer - right.layer;
-  if (layer !== 0) return layer;
-  if (left.layer === LAYER_V6.TERRAIN_BODY) {
+  const leftIsTileStack = TILE_STACK_KINDS_V6.has(left.kind);
+  const rightIsTileStack = TILE_STACK_KINDS_V6.has(right.kind);
+  const leftPhase = leftIsTileStack ? LAYER_V6.TERRAIN_BODY : left.layer;
+  const rightPhase = rightIsTileStack ? LAYER_V6.TERRAIN_BODY : right.layer;
+  const phase = leftPhase - rightPhase;
+  if (phase !== 0) return phase;
+  if (leftIsTileStack && rightIsTileStack) {
     const ground = compareGroundAnchors(
       {
         at: left.at,
-        tie: BODY_TIE_V6[left.kind] ?? 0,
+        tie: tileStackTieV6(left),
         id: left.id,
       },
       {
         at: right.at,
-        tie: BODY_TIE_V6[right.kind] ?? 0,
+        tie: tileStackTieV6(right),
         id: right.id,
       },
     );
@@ -496,6 +523,10 @@ export function compareEntriesV6(
     left.id - right.id ||
     left.key.localeCompare(right.key)
   );
+}
+
+function tileStackTieV6(entry: RenderPlanEntryV6): number {
+  return entry.layer * 100 + (BODY_TIE_V6[entry.kind] ?? 0);
 }
 
 export function selectionCoordV6(
