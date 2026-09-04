@@ -213,6 +213,7 @@ function baseView(
       unit(OWN_UNIT, OWN, "FIGHTER", ownCity.at),
       unit(ENEMY_UNIT, ENEMY, "FIGHTER", rivalCity.at),
     ],
+    unitStats: [],
     chocolateWalls: [],
     treasureChests: [],
     pendingChoices: [],

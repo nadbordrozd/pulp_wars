@@ -20,6 +20,7 @@ import type {
   TileStateV6,
   UnitStateV6,
 } from "./types";
+import { publicUnitStatsV6, type PublicUnitStatsV6 } from "./unit-stats";
 
 export const LEVELED_ECONOMIC_IMPROVEMENT_IDS_V6 = Object.freeze([
   "WINDMILL",
@@ -102,6 +103,8 @@ export interface PlayerViewV6 {
   /** Stable live values for the viewer's explored, owned leveled improvements. */
   readonly improvementValues: readonly PublicImprovementValueV6[];
   readonly units: readonly UnitStateV6[];
+  /** Authority-derived stat breakdowns for exactly the visible units. */
+  readonly unitStats: readonly PublicUnitStatsV6[];
   readonly chocolateWalls: readonly ChocolateWallStateV6[];
   /** Treasure locations are global public objectives, including through fog. */
   readonly treasureChests: readonly CoordV6[];
@@ -249,6 +252,9 @@ export function viewForV6(
       livingUnitCount: eliminated ? 0 : (livingUnitCounts.get(player.id) ?? 0),
     } satisfies PublicLeaderboardEntryV6;
   });
+  const visibleUnits = state.units.filter((unit) =>
+    exploredKeys.has(coordKey(unit.at)),
+  );
   return deepFreeze({
     schemaVersion: state.schemaVersion,
     rulesetId: state.rulesetId,
@@ -268,7 +274,8 @@ export function viewForV6(
     cities: state.cities.filter((city) => visibleCityIds.has(city.id)),
     populationContributions: visiblePopulationContributions,
     improvementValues,
-    units: state.units.filter((unit) => exploredKeys.has(coordKey(unit.at))),
+    units: visibleUnits,
+    unitStats: visibleUnits.map((unit) => publicUnitStatsV6(state, unit)),
     chocolateWalls: state.chocolateWalls.filter((wall) =>
       exploredKeys.has(coordKey(wall.at)),
     ),

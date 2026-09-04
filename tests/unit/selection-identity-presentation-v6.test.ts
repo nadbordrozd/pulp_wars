@@ -4,6 +4,7 @@ import {
   RESOURCE_IDS,
   UNIT_ROLE_IDS,
   createPlayableGameV6,
+  effectiveRoleRuleV6,
   viewForV6,
   type FactionIdV6,
   type MatchSetupV6,
@@ -72,8 +73,10 @@ describe("ruleset-6 selection identity presentation", () => {
           unitId: unit.id,
         });
         expect(identity.kind).toBe("UNIT");
-        expect(identity.detail).toBe("7/13 HP");
-        expect(identity.accessibleLabel).toContain("7/13 HP");
+        expect(identity.detail).toBeNull();
+        expect(identity.accessibleLabel).toBe(
+          `${effectiveRoleRuleV6(faction, role).label}, selected. Statistics follow.`,
+        );
         expect(identity.artwork).toMatchObject({
           status: "ACCEPTED",
           assetId: UNIT_ASSET_IDS[faction][role],

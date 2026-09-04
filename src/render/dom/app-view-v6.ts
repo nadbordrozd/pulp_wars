@@ -1533,10 +1533,57 @@ export class Ruleset6DomAppView {
     for (const stat of presentation.stats) {
       const item = el(this.#document, "div", "v6-unit-stat");
       item.dataset.unitStat = stat.id;
-      item.append(
-        text(this.#document, "dt", stat.label),
-        text(this.#document, "dd", stat.value),
+      const value = el(this.#document, "dd", "v6-unit-stat-value");
+      if (stat.current !== null) {
+        value.append(
+          text(
+            this.#document,
+            "span",
+            `${stat.current} / `,
+            "v6-unit-stat-current",
+          ),
+        );
+      }
+      value.append(
+        text(this.#document, "span", stat.baseValue, "v6-unit-stat-base"),
       );
+      for (const [index, modifier] of stat.modifiers.entries()) {
+        const tooltipId = unitStatTooltipId(
+          presentation.unitId,
+          stat.id,
+          index,
+        );
+        const modifierWrap = el(
+          this.#document,
+          "span",
+          "v6-unit-stat-modifier-wrap",
+        );
+        const term = text(
+          this.#document,
+          "span",
+          `+ ${modifier.value}`,
+          "v6-unit-stat-modifier",
+        );
+        term.tabIndex = 0;
+        term.dataset.unitStatModifier = modifier.source;
+        term.setAttribute("aria-label", `plus ${modifier.value}`);
+        term.setAttribute("aria-describedby", tooltipId);
+        const tooltip = el(this.#document, "span", "v6-unit-stat-tooltip");
+        tooltip.id = tooltipId;
+        tooltip.setAttribute("role", "tooltip");
+        tooltip.append(
+          text(
+            this.#document,
+            "strong",
+            modifier.sourceLabel,
+            "v6-unit-stat-tooltip-title",
+          ),
+          text(this.#document, "span", modifier.description),
+        );
+        modifierWrap.append(term, tooltip);
+        value.append(modifierWrap);
+      }
+      item.append(text(this.#document, "dt", stat.label), value);
       stats.append(item);
     }
     details.append(stats);
@@ -3001,6 +3048,14 @@ function abilityFocusId(
   ability: SpecialUnitAbilityIdV6,
 ): string {
   return `ability-${unitId}-${ability.toLowerCase()}`;
+}
+
+function unitStatTooltipId(
+  unitId: number,
+  stat: SelectedUnitPresentationV6["stats"][number]["id"],
+  modifierIndex: number,
+): string {
+  return `unit-${unitId}-${stat.toLowerCase()}-modifier-${modifierIndex + 1}`;
 }
 
 function title(value: string): string {

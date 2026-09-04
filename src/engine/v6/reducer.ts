@@ -55,6 +55,7 @@ import type {
   CardinalDirectionV6,
   UnitStateV6,
 } from "./types";
+import { unitSightRadiusForTerrainV6 } from "./unit-stats";
 
 export type RuleErrorCodeV6 =
   | "INVALID_SETUP"
@@ -1315,12 +1316,11 @@ function applyAttackCommand(
         unitId: attacker.id,
         path: [targetAt],
       });
-      const sight =
-        rule.sightRadius +
-        (tileAt(state, targetAt)?.terrain === "MOUNTAIN" &&
-        player.researchedTechs.includes("SURVEYING")
-          ? 1
-          : 0);
+      const sight = unitSightRadiusForTerrainV6(
+        rule,
+        player.researchedTechs,
+        tileAt(state, targetAt)?.terrain,
+      );
       const reveal = revealRadius(state, actor, targetAt, sight);
       players = state.players.map((candidate) =>
         candidate.id === actor

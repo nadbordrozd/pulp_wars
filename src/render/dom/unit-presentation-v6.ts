@@ -2,6 +2,7 @@ import {
   effectiveRoleRuleV6,
   type FactionIdV6,
   type PlayerViewV6,
+  type PublicUnitStatValueV6,
   type UnitRoleAbilityV6,
 } from "../../engine/index";
 
@@ -84,9 +85,17 @@ export const UNIT_ABILITY_DETAILS_V6: Readonly<
 });
 
 export interface SelectedUnitStatV6 {
-  readonly id: "ATTACK" | "DEFENSE" | "MOVE" | "RANGE" | "SIGHT";
+  readonly id: "HP" | "ATTACK" | "DEFENSE" | "MOVE" | "RANGE" | "SIGHT";
   readonly label: string;
-  readonly value: string;
+  readonly current: number | null;
+  readonly baseValue: string;
+  readonly modifiers: readonly {
+    readonly value: string;
+    readonly source: string;
+    readonly sourceLabel: string;
+    readonly description: string;
+  }[];
+  readonly totalValue: string;
 }
 
 export interface SelectedUnitPresentationV6 {
@@ -109,6 +118,10 @@ export function selectedUnitPresentationV6(
   )?.faction;
   if (faction === undefined) return null;
   const rule = effectiveRoleRuleV6(faction, unit.role);
+  const projected = view.unitStats.find(
+    (candidate) => candidate.unitId === unit.id,
+  );
+  if (projected === undefined) return null;
   const abilities = uniqueSpecialAbilities(rule.abilities).map(
     (ability) => UNIT_ABILITY_DETAILS_V6[ability],
   );
@@ -116,33 +129,27 @@ export function selectedUnitPresentationV6(
     unitId: unit.id,
     faction,
     label: rule.label,
-    stats: Object.freeze([
-      Object.freeze({
-        id: "ATTACK" as const,
-        label: "Attack",
-        value: formatHalfUnits(rule.attack2),
-      }),
-      Object.freeze({
-        id: "DEFENSE" as const,
-        label: "Defense",
-        value: formatHalfUnits(rule.defense2),
-      }),
-      Object.freeze({
-        id: "MOVE" as const,
-        label: "Move",
-        value: String(rule.move),
-      }),
-      Object.freeze({
-        id: "RANGE" as const,
-        label: "Range",
-        value: String(rule.range),
-      }),
-      Object.freeze({
-        id: "SIGHT" as const,
-        label: "Sight",
-        value: String(rule.sightRadius),
-      }),
-    ]),
+    stats: Object.freeze(
+      projected.stats.map((stat) =>
+        Object.freeze({
+          id: stat.id,
+          label: stat.label,
+          current: stat.current,
+          baseValue: formatStatValue(stat.base.value),
+          modifiers: Object.freeze(
+            stat.modifiers.map((term) =>
+              Object.freeze({
+                value: formatStatValue(term.value),
+                source: term.source,
+                sourceLabel: term.sourceLabel,
+                description: term.description,
+              }),
+            ),
+          ),
+          totalValue: formatStatValue(stat.total),
+        }),
+      ),
+    ),
     abilities: Object.freeze(abilities),
   });
 }
@@ -159,7 +166,15 @@ function isSpecialUnitAbilityV6(
   return SPECIAL_UNIT_ABILITY_IDS_V6.some((candidate) => candidate === ability);
 }
 
-function formatHalfUnits(value2: number): string {
-  const whole = Math.floor(value2 / 2);
-  return value2 % 2 === 0 ? String(whole) : `${whole}.5`;
+function formatStatValue(value: PublicUnitStatValueV6): string {
+  if (value.denominator === 1) return String(value.numerator);
+  if (value.denominator === 2) {
+    const whole = Math.floor(value.numerator / 2);
+    return `${whole}.5`;
+  }
+  if (value.denominator === 4) {
+    const whole = Math.floor(value.numerator / 4);
+    return `${whole}.${["", "25", "5", "75"][value.numerator % 4]}`;
+  }
+  return `${value.numerator}/${value.denominator}`;
 }

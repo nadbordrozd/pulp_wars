@@ -27,6 +27,7 @@ import {
   type UnitRoleId,
 } from "../engine/v6/types";
 import type { PlayerTileViewV6, PlayerViewV6 } from "../engine/v6/view";
+import { unitSightRadiusForTerrainV6 } from "../engine/v6/unit-stats";
 
 export const NORMAL_AI_MAX_ACCEPTED_COMMANDS_PER_TURN_V6 = 128;
 
@@ -1237,13 +1238,11 @@ function frontierGain(
   const rule = queryPublicRoleRuleV6(view, unit.ownerId, unit.role);
   if (rule === null) return 0;
   const tile = tileAt(view, at);
-  const sight =
-    rule.sightRadius +
-    (tile?.explored === true &&
-    tile.terrain === "MOUNTAIN" &&
-    view.viewer.researchedTechs.includes("SURVEYING")
-      ? 1
-      : 0);
+  const sight = unitSightRadiusForTerrainV6(
+    rule,
+    view.viewer.researchedTechs,
+    tile?.explored === true ? tile.terrain : undefined,
+  );
   return view.board.tiles.filter(
     (candidate) =>
       !candidate.explored &&

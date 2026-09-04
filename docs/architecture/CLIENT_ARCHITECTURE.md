@@ -135,6 +135,19 @@ interface PublicLeaderboardEntryV6 {
   readonly cityCount: number;
   readonly livingUnitCount: number;
 }
+
+interface PublicUnitStatsV6 {
+  readonly unitId: UnitId;
+  readonly stats: readonly PublicUnitStatBreakdownV6[];
+}
+
+interface PublicUnitStatBreakdownV6 {
+  readonly id: "HP" | "ATTACK" | "DEFENSE" | "MOVE" | "RANGE" | "SIGHT";
+  readonly current: number | null; // current HP only
+  readonly base: PublicUnitStatTermV6;
+  readonly modifiers: readonly PublicUnitStatTermV6[];
+  readonly total: { readonly numerator: number; readonly denominator: number };
+}
 ```
 
 Technology-hidden v6 resources project as a content-free `UNKNOWN_RESOURCE`
@@ -150,6 +163,19 @@ units in exact `turnOrder`, not reconstructed from fog-filtered entity arrays.
 It contains only stable player/seat presentation identity and the two approved
 global totals; it carries no city/unit entity IDs, coordinates, Coins,
 technologies, exploration, or other hidden state.
+
+`PlayerViewV6.unitStats` contains one entry for each and only each visible
+unit. It is projected by the authority from the same canonical helpers used by
+combat and exploration, so the client never recreates modifier formulas. Terms
+are exact reduced rationals in fixed HP, Attack, Defense, Move, Range, Sight
+order. Active modifiers retain a stable source ID, short source label, and
+public explanation. Current HP is paired with the attributed maximum: role
+base plus the promotion increase. Charge is the sole Attack modifier; defense
+reports the additive difference produced by the canonical greatest-single
+multiplier; Surveying high ground is the sole Sight modifier. Roads,
+Fieldcraft, and Maneuver affect path legality/cost rather than the unit's Move
+allowance and therefore do not fabricate Move terms. Hidden units have neither
+an entity nor a stat entry.
 
 Replay and save envelopes use version 6. A v6 save stores the complete ordered
 reward queue, exact faction tree IDs, live/cached economic values, Roads,

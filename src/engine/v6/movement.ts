@@ -9,6 +9,7 @@ import type {
   TileStateV6,
   UnitStateV6,
 } from "./types";
+import { unitSightRadiusForTerrainV6 } from "./unit-stats";
 
 export type MovementFailureReasonV6 =
   | "EMPTY_PATH"
@@ -135,12 +136,11 @@ export function validateMovementPathV6(
       player.researchedTechs.includes("MANEUVER") &&
       (unit.role === "SCOUT" || unit.role === "RAIDER");
     const previouslyExplored = explored;
-    const sightRadius =
-      role.sightRadius +
-      (tile.terrain === "MOUNTAIN" &&
-      player.researchedTechs.includes("SURVEYING")
-        ? 1
-        : 0);
+    const sightRadius = unitSightRadiusForTerrainV6(
+      role,
+      player.researchedTechs,
+      tile.terrain,
+    );
     const reveal = revealRadiusV6(state, explored, step, sightRadius);
     explored = reveal.explored;
     revealed.push(...reveal.revealed);

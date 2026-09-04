@@ -53,12 +53,11 @@ export function selectionIdentityPresentationV6(
     const faction = factionForOwnerV6(view, unit.ownerId);
     if (faction === null) return unavailableIdentity("UNIT", "Unit");
     const label = effectiveRoleRuleV6(faction, unit.role).label;
-    const detail = `${unit.hp}/${unit.maxHp} HP`;
     return {
       kind: "UNIT",
       title: label,
-      detail,
-      accessibleLabel: `${label}, ${detail}, selected.`,
+      detail: null,
+      accessibleLabel: `${label}, selected. Statistics follow.`,
       artwork: unitCoverageV6(faction, unit.role),
     };
   }

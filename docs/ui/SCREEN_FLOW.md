@@ -440,6 +440,19 @@ matches the selected owned unit may appear. Enemy, exhausted, and otherwise
 actionless units show summary/state only. Labels never encode unit coordinates
 or hidden options; the visible map selection supplies context.
 
+HP, Attack, Defense, Move, Range, and Sight use one compact typographic
+treatment rather than separate pills. The visible value is an ordered numeric
+expression such as `Defense 2 + 1`; source names never appear parenthetically
+in that line. Each active `+ value` term is independently focusable and has an
+ARIA-associated tooltip on pointer hover or keyboard/touch focus explaining
+its source. HP shows current HP before the attributed maximum expression. The
+authority supplies the complete breakdown: Promotion may add maximum HP,
+Charge may add Attack, the one greatest active city/terrain defense multiplier
+is represented by its exact additive difference, and Surveying may add
+Mountain Sight. The dock does not describe Roads, Fieldcraft, or Maneuver as a
+numeric Move increase because those rules affect paths rather than the unit's
+movement allowance. Ability tags and their detail cards remain a separate row.
+
 On a newly selected unit, Full motion gives the unit raster one subtle in-place
 jump: 12 nominal CSS px upward and back over 240 ms at Normal animation speed,
 or 120 ms at Fast. Pointer, touch, Enter/Space, the semantic unit option, and

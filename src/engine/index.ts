@@ -43,4 +43,5 @@ export * from "./v6/setup";
 export * from "./v6/spatial-economy";
 export * from "./v6/state-schema";
 export * from "./v6/types";
+export * from "./v6/unit-stats";
 export * from "./v6/view";

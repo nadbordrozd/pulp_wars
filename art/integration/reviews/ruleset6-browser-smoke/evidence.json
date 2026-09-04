@@ -215,7 +215,7 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 704.78125
+            "height": 705.03125
           },
           "before": {
             "x": 720,
@@ -234,7 +234,7 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 704.78125
+            "height": 705.03125
           },
           "before": {
             "x": 800,
@@ -310,7 +310,7 @@
           },
           "canvas": {
             "width": 390,
-            "height": 230.21875
+            "height": 216.453125
           },
           "before": {
             "x": 195,
@@ -348,7 +348,7 @@
           },
           "canvas": {
             "width": 390,
-            "height": 230.21875
+            "height": 230.46875
           },
           "before": {
             "x": 195,
@@ -480,19 +480,19 @@
             "unitDesktop": {
               "kind": "UNIT",
               "title": "Fighter",
-              "detail": "10/10 HP",
-              "ariaLabel": "Fighter, 10/10 HP, selected.",
+              "detail": "",
+              "ariaLabel": "Fighter, selected. Statistics follow.",
               "assetId": "unit-original-fighter",
               "symbolKind": "accepted-raster",
               "rect": {
                 "x": 12.796875,
-                "y": 636.203125,
+                "y": 636.453125,
                 "width": 185.921875,
                 "height": 130
               },
               "artRect": {
                 "x": 12.796875,
-                "y": 636.203125,
+                "y": 636.453125,
                 "width": 112,
                 "height": 130
               }
@@ -500,19 +500,19 @@
             "unitMobile": {
               "kind": "UNIT",
               "title": "Fighter",
-              "detail": "10/10 HP",
-              "ariaLabel": "Fighter, 10/10 HP, selected.",
+              "detail": "",
+              "ariaLabel": "Fighter, selected. Statistics follow.",
               "assetId": "unit-original-fighter",
               "symbolKind": "accepted-raster",
               "rect": {
                 "x": 8.796875,
-                "y": 488.765625,
-                "width": 174.296875,
+                "y": 475,
+                "width": 173.21875,
                 "height": 130
               },
               "artRect": {
                 "x": 8.796875,
-                "y": 488.765625,
+                "y": 475,
                 "width": 112,
                 "height": 130
               }
@@ -656,7 +656,7 @@
               },
               "list": {
                 "x": 8.796875,
-                "y": 667.015625,
+                "y": 679.875,
                 "width": 372.40625,
                 "height": 168.1875
               },
@@ -673,7 +673,7 @@
                   "kind": "WAIT",
                   "rect": {
                     "x": 8.796875,
-                    "y": 667.015625,
+                    "y": 679.875,
                     "width": 176,
                     "height": 168.1875
                   },
@@ -681,7 +681,7 @@
                   "assetId": "ui-action-wait",
                   "symbolRect": {
                     "x": 40.796875,
-                    "y": 675.203125,
+                    "y": 688.0625,
                     "width": 112,
                     "height": 130
                   },
@@ -689,7 +689,7 @@
                   "rasterLoaded": true,
                   "labelRect": {
                     "x": 16.984375,
-                    "y": 813.203125,
+                    "y": 826.0625,
                     "width": 159.625,
                     "height": 13.8125
                   },
@@ -1554,8 +1554,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-mobile-native.png",
-          "bytes": 284940,
-          "sha256": "b7c5b1b81b121be6c3a7454c8b554c57acd910461edd4bd3e6fbccaf8917bd71",
+          "bytes": 276969,
+          "sha256": "330d5d30c906b4a8c0f4d051279910c726b7e84571b97dd0066c7fc523adb8f7",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1568,8 +1568,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-mobile-enlarged.png",
-          "bytes": 530159,
-          "sha256": "b09875a23f511c3b721cb06c54bed67816dd859aadb38c6ad2da87290eca2124",
+          "bytes": 514271,
+          "sha256": "19a6a21e38ccec6d5bbf4ec5443c24bee288293cb5f044f1883ff1876168523f",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -1582,8 +1582,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-desktop-native.png",
-          "bytes": 151393,
-          "sha256": "0985663a934a526b255ffdc93f5d3e03ee9018fe45870d9bdf5ec8d7a39f5bc1",
+          "bytes": 150382,
+          "sha256": "6b9a256f918603d53e3e0dae66775a56b0868745f425219b6a46619a92ace3d3",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1596,8 +1596,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-desktop-enlarged.png",
-          "bytes": 344904,
-          "sha256": "9ecaa58a31c0ef2c02c927c883ba4a5a1c81369bd918ba8428e1814e16c36550",
+          "bytes": 343588,
+          "sha256": "81c085f956659c8d207c8cf6fda905f3d486edd7416cd744b1b4997e1aec51a1",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -2285,8 +2285,8 @@
             "unitDesktop": {
               "kind": "UNIT",
               "title": "Candy Warrior",
-              "detail": "10/10 HP",
-              "ariaLabel": "Candy Warrior, 10/10 HP, selected.",
+              "detail": "",
+              "ariaLabel": "Candy Warrior, selected. Statistics follow.",
               "assetId": "unit-candy-fighter",
               "symbolKind": "accepted-raster",
               "rect": {
@@ -2305,8 +2305,8 @@
             "unitMobile": {
               "kind": "UNIT",
               "title": "Candy Warrior",
-              "detail": "10/10 HP",
-              "ariaLabel": "Candy Warrior, 10/10 HP, selected.",
+              "detail": "",
+              "ariaLabel": "Candy Warrior, selected. Statistics follow.",
               "assetId": "unit-candy-fighter",
               "symbolKind": "accepted-raster",
               "rect": {
@@ -2461,7 +2461,7 @@
               },
               "list": {
                 "x": 8.796875,
-                "y": 704.4375,
+                "y": 731.0625,
                 "width": 372.40625,
                 "height": 168.1875
               },
@@ -2478,7 +2478,7 @@
                   "kind": "WAIT",
                   "rect": {
                     "x": 8.796875,
-                    "y": 704.4375,
+                    "y": 731.0625,
                     "width": 176,
                     "height": 168.1875
                   },
@@ -2486,7 +2486,7 @@
                   "assetId": "ui-action-wait",
                   "symbolRect": {
                     "x": 40.796875,
-                    "y": 712.625,
+                    "y": 739.25,
                     "width": 112,
                     "height": 130
                   },
@@ -2494,7 +2494,7 @@
                   "rasterLoaded": true,
                   "labelRect": {
                     "x": 16.984375,
-                    "y": 850.625,
+                    "y": 877.25,
                     "width": 159.625,
                     "height": 13.8125
                   },
@@ -3371,8 +3371,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-mobile-native.png",
-          "bytes": 288018,
-          "sha256": "43f78f800d145270e7128e276730a19d742018e53bb08e01cd4f6476796d41a8",
+          "bytes": 285846,
+          "sha256": "8c91b1468c08646001ce027ba4bcf021f70ed5f157ee7def21cf26050ff0525d",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -3385,8 +3385,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-mobile-enlarged.png",
-          "bytes": 545054,
-          "sha256": "1206d6f1d858b48b504a5284221a4053c8631e4875b80bf81e2844b87465396c",
+          "bytes": 541974,
+          "sha256": "f267a1784e80566fd7b1cb3f87d0c197fa0f3dc2b9492b553ab60922ee366f55",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -3399,8 +3399,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-desktop-native.png",
-          "bytes": 153626,
-          "sha256": "1182a32caf04fc5369b078b2fcac213b6b5d7b2ce6e055e368b61f2cea5328a0",
+          "bytes": 152513,
+          "sha256": "6182d5c7f6cf52f41b67054783fcc841ec8ec76948bd8960787432be58da514e",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -3413,8 +3413,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-desktop-enlarged.png",
-          "bytes": 345196,
-          "sha256": "a62f4b746bb96597ebb45bbabc92bf033b496206631fb20675bd55bf0368768c",
+          "bytes": 344080,
+          "sha256": "6e975298adede24df901bceca0c612b978deac251369e100846678ad1d243e43",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -3427,8 +3427,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-ability-detail-desktop-native.png",
-          "bytes": 92856,
-          "sha256": "414eca9baa4d762cd1a69832c9d8d0cb30e1acdcd01bb09d8706ef7e7bfa964e",
+          "bytes": 91901,
+          "sha256": "07cc77c7a922b4f19b7f293322c0b0fd727dc875a0ad5c95ab30fe0ecfbc117a",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -3441,8 +3441,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-ability-detail-desktop-enlarged.png",
-          "bytes": 220838,
-          "sha256": "0538bb4c980b0d2c734cd4c6e2b7c9a466112e178eacc7db338c32766eb56bdb",
+          "bytes": 220015,
+          "sha256": "fe77eda7c806da6039e8a6208c265818c8bcf4bc3c40d38374feb32c362fb5cf",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -3455,8 +3455,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-ability-detail-mobile-native.png",
-          "bytes": 226216,
-          "sha256": "4e749e0a62789816f81cf65bd2e37e04bc954801b2e3fbc695a516bd11cdc687",
+          "bytes": 225216,
+          "sha256": "57086f4423056f2ff9fd6909001c9206d99560ef62c9f0e95bc09b0cfcbe30cb",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -3469,8 +3469,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-ability-detail-mobile-enlarged.png",
-          "bytes": 370723,
-          "sha256": "f32f5c05c8d34b5d0d58a81747a5845b7f2263dbaa6ed82d70966655f45645ca",
+          "bytes": 369632,
+          "sha256": "b340fc89fa8802f149b11d8090d3986010fe0be3a7b2b2dc63abba5098719963",
           "width": 1560,
           "height": 3376,
           "viewport": {

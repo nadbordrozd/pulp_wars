@@ -5,6 +5,7 @@ import {
   effectiveRoleRuleV6,
   viewForV6,
   type FactionIdV6,
+  type GameStateV6,
   type MatchSetupV6,
   type PlayerViewV6,
   type UnitRoleId,
@@ -51,21 +52,21 @@ describe("ruleset-6 selected-unit presentation", () => {
       );
       if (selected === undefined) throw new Error("Missing owned unit");
       for (const role of UNIT_ROLE_IDS) {
-        const view: PlayerViewV6 = {
-          ...initial,
-          units: initial.units.map((unit) =>
-            unit.id === selected.id ? { ...unit, role } : unit,
-          ),
-        };
-        const presentation = selectedUnitPresentationV6(view, selected.id);
         const canonical = effectiveRoleRuleV6(faction, role);
+        const view = viewWithUnit(initial, selected.id, {
+          role,
+          hp: canonical.maxHp,
+          maxHp: canonical.maxHp,
+        });
+        const presentation = selectedUnitPresentationV6(view, selected.id);
         expect(presentation).not.toBeNull();
         expect(presentation?.label).toBe(canonical.label);
         expect(
           Object.fromEntries(
-            presentation?.stats.map((stat) => [stat.id, stat.value]) ?? [],
+            presentation?.stats.map((stat) => [stat.id, stat.baseValue]) ?? [],
           ),
         ).toEqual({
+          HP: String(canonical.maxHp),
           ATTACK: half(canonical.attack2),
           DEFENSE: half(canonical.defense2),
           MOVE: String(canonical.move),
@@ -95,20 +96,22 @@ describe("ruleset-6 selected-unit presentation", () => {
     );
     if (selected === undefined) throw new Error("Missing owned unit");
     const presentation = selectedUnitPresentationV6(
-      {
-        ...view,
-        units: view.units.map((unit) =>
-          unit.id === selected.id ? { ...unit, role: "RAIDER" } : unit,
-        ),
-      },
+      viewWithUnit(view, selected.id, {
+        role: "RAIDER",
+        hp: 10,
+        maxHp: 10,
+      }),
       selected.id,
     );
-    expect(presentation?.stats).toEqual([
-      { id: "ATTACK", label: "Attack", value: "0" },
-      { id: "DEFENSE", label: "Defense", value: "1" },
-      { id: "MOVE", label: "Move", value: "1" },
-      { id: "RANGE", label: "Range", value: "0" },
-      { id: "SIGHT", label: "Sight", value: "1" },
+    expect(
+      presentation?.stats.map((stat) => [stat.id, stat.label, stat.totalValue]),
+    ).toEqual([
+      ["HP", "HP", "10"],
+      ["ATTACK", "Attack", "0"],
+      ["DEFENSE", "Defense", "1.5"],
+      ["MOVE", "Move", "1"],
+      ["RANGE", "Range", "0"],
+      ["SIGHT", "Sight", "1"],
     ]);
     expect(presentation?.abilities.map((ability) => ability.name)).toEqual([
       "Candify",
@@ -172,4 +175,49 @@ function publicView(faction: FactionIdV6): PlayerViewV6 {
   const created = createPlayableGameV6(setup);
   if (!created.ok) throw new Error(created.error.code);
   return viewForV6(created.state, created.state.humanPlayerId);
+}
+
+function viewWithUnit(
+  initial: PlayerViewV6,
+  unitId: number,
+  changes: Partial<GameStateV6["units"][number]>,
+): PlayerViewV6 {
+  const unit = initial.units.find((candidate) => candidate.id === unitId);
+  if (unit === undefined) throw new Error("Missing unit");
+  const state = stateFromPublicView(initial);
+  return viewForV6(
+    {
+      ...state,
+      units: state.units.map((candidate) =>
+        candidate.id === unitId ? { ...candidate, ...changes } : candidate,
+      ),
+    },
+    initial.viewer.id,
+  );
+}
+
+function stateFromPublicView(view: PlayerViewV6): GameStateV6 {
+  return {
+    schemaVersion: view.schemaVersion,
+    rulesetId: view.rulesetId,
+    setup: view.setup,
+    random: { algorithm: "MULBERRY32", version: 1, state: 0 },
+    humanPlayerId: view.humanPlayerId,
+    nextEntityId: 1_000_000,
+    commandIndex: view.commandIndex,
+    round: view.round,
+    activeSeatIndex: view.activeSeatIndex,
+    turnOrder: view.turnOrder,
+    board: view.board as GameStateV6["board"],
+    players: view.players.map((player) =>
+      player.id === view.viewer.id ? view.viewer : { ...player, explored: [] },
+    ),
+    cities: view.cities,
+    populationContributions: view.populationContributions,
+    units: view.units,
+    chocolateWalls: view.chocolateWalls,
+    treasureChests: view.treasureChests,
+    pendingChoices: view.pendingChoices,
+    outcome: view.outcome,
+  };
 }

@@ -888,9 +888,11 @@ describe("playable ruleset-6 DOM shell", () => {
         faction === "ORIGINAL" ? "Fighter" : "Candy Warrior",
       );
       expect(
-        unitIdentity.querySelector(".v6-selection-identity-detail")
-          ?.textContent,
-      ).toBe(`${unit.hp}/${unit.maxHp} HP`);
+        unitIdentity.querySelector(".v6-selection-identity-detail"),
+      ).toBeNull();
+      expect(statVisibleValue(requireElement('[data-unit-stat="HP"]'))).toBe(
+        `${unit.hp} / ${unit.maxHp}`,
+      );
       expect(
         unitIdentity.querySelector<HTMLImageElement>("img")?.src,
       ).toContain(
@@ -951,21 +953,35 @@ describe("playable ruleset-6 DOM shell", () => {
   });
 
   it("shows canonical unit stats and opens view-only accessible ability cards", () => {
-    const initial = publicView("ORIGINAL");
-    const baseUnit = initial.units.find(
-      (candidate) => candidate.ownerId === initial.viewer.id,
+    const created = createPlayableGameV6(setup("ORIGINAL", 42));
+    if (!created.ok) throw new Error(created.error.code);
+    const baseUnit = created.state.units.find(
+      (candidate) => candidate.ownerId === created.state.humanPlayerId,
     );
-    const city = initial.cities.find(
-      (candidate) => candidate.ownerId === initial.viewer.id,
+    const city = created.state.cities.find(
+      (candidate) => candidate.ownerId === created.state.humanPlayerId,
     );
     if (baseUnit === undefined || city === undefined)
       throw new Error("Missing public entities");
-    const view: PlayerViewV6 = {
-      ...initial,
-      units: initial.units.map((unit) =>
-        unit.id === baseUnit.id ? { ...unit, role: "RAIDER" } : unit,
-      ),
-    };
+    const view = viewForV6(
+      {
+        ...created.state,
+        units: created.state.units.map((unit) =>
+          unit.id === baseUnit.id
+            ? {
+                ...unit,
+                role: "RAIDER" as const,
+                activation: {
+                  ...unit.activation,
+                  moved: true,
+                  movedPathLength: 2,
+                },
+              }
+            : unit,
+        ),
+      },
+      created.state.humanPlayerId,
+    );
     const fake = new FakeController(view, [{ kind: "END_TURN" }]);
     const host = new FakeBoardHostV6();
     const app = new Ruleset6DomAppView(document, requireElement("#app"), fake, {
@@ -977,20 +993,50 @@ describe("playable ruleset-6 DOM shell", () => {
       [...document.querySelectorAll<HTMLElement>("[data-unit-stat]")].map(
         (stat) => [
           stat.dataset.unitStat,
-          [
-            stat.querySelector("dt")?.textContent,
-            stat.querySelector("dd")?.textContent,
-          ],
+          [stat.querySelector("dt")?.textContent, statVisibleValue(stat)],
         ],
       ),
     );
     expect(stats).toEqual({
-      ATTACK: ["Attack", "2.5"],
-      DEFENSE: ["Defense", "1.5"],
+      HP: ["HP", "10 / 10"],
+      ATTACK: ["Attack", "2.5 + 1"],
+      DEFENSE: ["Defense", "1.5 + 0.75"],
       MOVE: ["Move", "2"],
       RANGE: ["Range", "1"],
       SIGHT: ["Sight", "1"],
     });
+    const modifiers = [
+      ...document.querySelectorAll<HTMLElement>("[data-unit-stat-modifier]"),
+    ];
+    expect(
+      modifiers.map((modifier) => [
+        modifier.dataset.unitStatModifier,
+        modifier.textContent,
+        modifier.tabIndex,
+        modifier.getAttribute("aria-describedby"),
+      ]),
+    ).toEqual([
+      ["CHARGE", "+ 1", 0, `unit-${baseUnit.id}-attack-modifier-1`],
+      ["FRIENDLY_CITY", "+ 0.75", 0, `unit-${baseUnit.id}-defense-modifier-1`],
+    ]);
+    for (const modifier of modifiers) {
+      const tooltipId = modifier.getAttribute("aria-describedby");
+      expect(tooltipId).not.toBeNull();
+      expect(
+        document.getElementById(tooltipId ?? "")?.getAttribute("role"),
+      ).toBe("tooltip");
+    }
+    const chargeModifier = modifiers[0];
+    if (chargeModifier === undefined) throw new Error("Missing stat modifier");
+    chargeModifier.focus();
+    expect(document.activeElement).toBe(chargeModifier);
+    expect(
+      document.getElementById(
+        chargeModifier.getAttribute("aria-describedby") ?? "",
+      )?.textContent,
+    ).toContain("moving at least two tiles");
+    chargeModifier.blur();
+    expect(document.body.textContent).not.toContain("+ 1 (Charge)");
     const tags = [
       ...document.querySelectorAll<HTMLButtonElement>("[data-ability]"),
     ];
@@ -2943,6 +2989,16 @@ function populationSquares(): readonly string[] {
   return [
     ...document.querySelectorAll<HTMLElement>("[data-population-square]"),
   ].map((square) => square.dataset.state ?? "");
+}
+
+function statVisibleValue(stat: HTMLElement): string {
+  return [
+    ...stat.querySelectorAll<HTMLElement>(
+      ".v6-unit-stat-current, .v6-unit-stat-base, .v6-unit-stat-modifier",
+    ),
+  ]
+    .map((part) => (part.textContent ?? "").trim())
+    .join(" ");
 }
 
 function setup(faction: "ORIGINAL" | "CANDY", seed: number): MatchSetupV6 {

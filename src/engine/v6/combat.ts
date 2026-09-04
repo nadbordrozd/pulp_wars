@@ -4,6 +4,7 @@ import type { CombatTargetRefV6 } from "./commands";
 import { arePlayersAlliedV6 } from "./economy";
 import type { CombatPreviewV6 } from "./events";
 import type { CoordV6, GameStateV6, UnitStateV6 } from "./types";
+import { unitChargeAttackBonus2V6, unitDefenseModifierV6 } from "./unit-stats";
 
 export interface DefenseBonusV6 {
   readonly numerator: 1 | 3 | 2 | 4;
@@ -17,37 +18,10 @@ export function defenseBonusForUnitV6(
   state: GameStateV6,
   unit: UnitStateV6,
 ): DefenseBonusV6 {
-  const player = state.players.find(
-    (candidate) => candidate.id === unit.ownerId,
-  );
-  if (player === undefined) throw new RangeError("INVALID_STATE");
-  const city = state.cities.find(
-    (candidate) =>
-      candidate.ownerId === unit.ownerId && sameCoord(candidate.at, unit.at),
-  );
-  if (
-    city?.rewards.some(
-      (record) => record.reachedLevel === 3 && record.reward === "WALLS",
-    )
-  ) {
-    return { numerator: 4, denominator: 1 };
-  }
-  if (
-    city !== undefined &&
-    player.researchedTechs.includes("FORTIFICATION") &&
-    (unit.role === "FIGHTER" || unit.role === "GUARD")
-  ) {
-    return { numerator: 2, denominator: 1 };
-  }
-  const tile = tileAt(state, unit.at);
-  if (
-    city !== undefined ||
-    tile?.terrain === "MOUNTAIN" ||
-    tile?.terrain === "FOREST"
-  ) {
-    return { numerator: 3, denominator: 2 };
-  }
-  return NO_BONUS;
+  const modifier = unitDefenseModifierV6(state, unit);
+  return modifier === null
+    ? NO_BONUS
+    : { numerator: modifier.numerator, denominator: modifier.denominator };
 }
 
 /**
@@ -89,11 +63,9 @@ export function calculateCombatPreviewV6(
     throw new RangeError("Combat target disappeared before preview");
   }
   const distance = chebyshev(attacker.at, targetAt);
-  const chargeApplied =
-    distance === 1 &&
-    attackerRule.abilities.includes("CHARGE") &&
-    attacker.activation.movedPathLength >= 2;
-  const attack2 = attackerRule.attack2 + (chargeApplied ? 2 : 0);
+  const chargeBonus2 = unitChargeAttackBonus2V6(attackerRule, attacker);
+  const chargeApplied = distance === 1 && chargeBonus2 > 0;
+  const attack2 = attackerRule.attack2 + (chargeApplied ? chargeBonus2 : 0);
   const breachApplied =
     defender !== undefined &&
     distance === 1 &&

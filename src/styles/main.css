@@ -1969,23 +1969,21 @@ fieldset {
   display: flex;
   flex: 0 1 auto;
   flex-wrap: wrap;
-  gap: 0.3rem;
+  gap: 0.18rem 0.75rem;
   min-width: 0;
   max-width: 100%;
   margin: 0;
 }
 
 .v6-unit-stat {
-  display: grid;
-  grid-template-columns: max-content max-content;
-  gap: 0.28rem;
+  position: relative;
+  display: flex;
+  gap: 0.25rem;
   align-items: baseline;
-  padding: 0.3rem 0.42rem;
-  border: 1px solid var(--line);
-  border-radius: 0.5rem;
-  background: rgb(8 18 19 / 0.62);
-  font-size: 0.72rem;
-  line-height: 1.1;
+  min-height: 1.5rem;
+  padding: 0.14rem 0;
+  font-size: 0.76rem;
+  line-height: 1.25;
 }
 
 .v6-unit-stat dt {
@@ -1994,8 +1992,59 @@ fieldset {
 }
 
 .v6-unit-stat dd {
+  display: inline-flex;
+  gap: 0.22rem;
+  align-items: baseline;
   margin: 0;
   font-weight: 950;
+}
+
+.v6-unit-stat-modifier-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.v6-unit-stat-modifier {
+  display: inline-block;
+  border-bottom: 1px dotted var(--gold);
+  color: #ffdc63;
+  cursor: help;
+  outline-offset: 0.15rem;
+}
+
+.v6-unit-stat-modifier:focus-visible {
+  border-radius: 0.15rem;
+  outline: 2px solid #fff2a8;
+}
+
+.v6-unit-stat-tooltip {
+  position: absolute;
+  z-index: 12;
+  bottom: calc(100% + 0.45rem);
+  left: 50%;
+  display: none;
+  width: min(17rem, calc(100vw - 2rem));
+  padding: 0.5rem 0.58rem;
+  border: 1px solid #7fcdb9;
+  border-radius: 0.45rem;
+  background: #071718;
+  box-shadow: 0 0.45rem 1rem rgb(0 0 0 / 0.45);
+  color: var(--paper);
+  font-size: 0.72rem;
+  font-weight: 650;
+  line-height: 1.3;
+  text-align: left;
+  transform: translateX(-50%);
+}
+
+.v6-unit-stat-tooltip-title {
+  display: block;
+  margin-bottom: 0.2rem;
+  color: var(--gold);
+}
+
+.v6-unit-stat-modifier-wrap:is(:hover, :focus-within) .v6-unit-stat-tooltip {
+  display: block;
 }
 
 .v6-unit-ability-tags {
@@ -3241,6 +3290,17 @@ fieldset {
   .match-hud {
     gap: 0.25rem;
     padding: 0.35rem;
+  }
+  .v6-unit-stats {
+    width: 100%;
+  }
+  .v6-unit-stat-tooltip {
+    position: fixed;
+    right: max(0.55rem, env(safe-area-inset-right));
+    bottom: max(0.55rem, env(safe-area-inset-bottom));
+    left: max(0.55rem, env(safe-area-inset-left));
+    width: auto;
+    transform: none;
   }
   .hud-chip {
     padding: 0.32rem 0.5rem;
