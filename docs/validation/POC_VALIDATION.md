@@ -1407,12 +1407,16 @@ uses a compact white silhouette, while health/owner status and the map's cyan
 selection outline remain steady and visually dominant.
 
 The focused Chrome matrix covers Original and Candy units on light Grass and
-dark Forest/Mountain at 0.625x, 1x, and 1.75x, plus Reduced motion and high
-contrast. All ten [native/enlarged captures and deterministic geometry
+dark Forest/Mountain at 0.625x, 1x, and 1.75x on DPR1 and DPR2, plus Reduced
+motion and high contrast. All sixteen [native/enlarged captures and deterministic geometry
 metrics](../../art/integration/reviews/ruleset6-readiness/review-evidence.json)
 were inspected individually. Ready silhouettes remain readable at minimum
 zoom, the spent comparison unit has no glow or scale treatment, all feet-anchor
-errors are zero, and selection renders after the unit treatment.
+errors are zero, every rendered glow matches its destination-local reference
+pixel for pixel, and selection renders after the unit treatment. The evidence
+records the destination rectangle and the rendered source/glow visible bounds
+for every Original and Candy sample; focused interpolation tests additionally
+hold the fractional moving-unit anchor while movement suppresses readiness.
 
 ### Greedy threat-aware Normal AI result
 

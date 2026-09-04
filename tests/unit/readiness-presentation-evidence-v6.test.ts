@@ -12,13 +12,21 @@ describe("ruleset-6 ready-unit checked visual evidence", () => {
     ) as {
       readonly fixture: string;
       readonly zooms: readonly number[];
+      readonly devicePixelRatios: readonly number[];
       readonly modes: readonly string[];
       readonly contrast: readonly string[];
       readonly frames: readonly {
         readonly metric: {
+          readonly zoom: number;
           readonly readyImages: number;
           readonly spentImages: number;
           readonly anchorErrors: number;
+          readonly devicePixelRatio: number;
+          readonly registrationSamples: number;
+          readonly registrationMismatchPixels: number;
+          readonly destinationRects: readonly unknown[];
+          readonly sourceVisibleBounds: readonly unknown[];
+          readonly glowVisibleBounds: readonly unknown[];
           readonly selectedOutlineAfterUnit: boolean;
         };
       }[];
@@ -35,15 +43,26 @@ describe("ruleset-6 ready-unit checked visual evidence", () => {
     expect(evidence.fixture).toContain("Original and Candy");
     expect(evidence.fixture).toContain("light Grass and dark Forest/Mountain");
     expect(evidence.zooms).toEqual([0.625, 1, 1.75]);
+    expect(evidence.devicePixelRatios).toEqual([1, 2]);
     expect(evidence.modes).toEqual(["FULL", "REDUCED"]);
     expect(evidence.contrast).toEqual(["STANDARD", "HIGH"]);
-    expect(evidence.frames).toHaveLength(5);
+    expect(evidence.frames).toHaveLength(8);
+    expect(
+      evidence.frames
+        .filter(({ metric }) => metric.devicePixelRatio === 2)
+        .map(({ metric }) => metric.zoom),
+    ).toEqual([0.625, 1, 1.75]);
     expect(
       evidence.frames.every(
         ({ metric }) =>
           metric.readyImages === 5 &&
           metric.spentImages === 1 &&
           metric.anchorErrors === 0 &&
+          metric.registrationSamples === 5 &&
+          metric.registrationMismatchPixels === 0 &&
+          metric.destinationRects.length === 5 &&
+          metric.sourceVisibleBounds.length === 5 &&
+          metric.glowVisibleBounds.length === 5 &&
           metric.selectedOutlineAfterUnit,
       ),
     ).toBe(true);
@@ -51,7 +70,7 @@ describe("ruleset-6 ready-unit checked visual evidence", () => {
       status: "ACCEPTED",
       nativeAndEnlarged: true,
     });
-    expect(evidence.artifacts).toHaveLength(10);
+    expect(evidence.artifacts).toHaveLength(16);
     for (const artifact of evidence.artifacts) {
       const data = await readFile(artifact.path);
       expect(data.byteLength, artifact.path).toBe(artifact.bytes);

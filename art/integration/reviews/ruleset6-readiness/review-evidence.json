@@ -6,6 +6,10 @@
     1,
     1.75
   ],
+  "devicePixelRatios": [
+    1,
+    2
+  ],
   "modes": [
     "FULL",
     "REDUCED"
@@ -19,6 +23,7 @@
       "name": "full-minimum",
       "metric": {
         "zoom": 0.625,
+        "devicePixelRatio": 1,
         "mode": "FULL",
         "highContrast": false,
         "readyImages": 5,
@@ -27,15 +32,124 @@
         "readyGlowColors": [
           "#fff09a"
         ],
-        "selectedOutlineAfterUnit": true
+        "selectedOutlineAfterUnit": true,
+        "registrationSamples": 5,
+        "registrationMismatchPixels": 0,
+        "destinationRects": [
+          {
+            "left": 348.4,
+            "top": 141.7875,
+            "right": 391.59999999999997,
+            "bottom": 191.7375,
+            "anchorX": 370,
+            "anchorY": 179.25
+          },
+          {
+            "left": 428.4,
+            "top": 141.7875,
+            "right": 471.59999999999997,
+            "bottom": 191.7375,
+            "anchorX": 450,
+            "anchorY": 179.25
+          },
+          {
+            "left": 348.4,
+            "top": 221.7875,
+            "right": 391.59999999999997,
+            "bottom": 271.7375,
+            "anchorX": 370,
+            "anchorY": 259.25
+          },
+          {
+            "left": 428.4,
+            "top": 221.7875,
+            "right": 471.59999999999997,
+            "bottom": 271.7375,
+            "anchorX": 450,
+            "anchorY": 259.25
+          },
+          {
+            "left": 508.4,
+            "top": 221.7875,
+            "right": 551.6,
+            "bottom": 271.7375,
+            "anchorX": 530,
+            "anchorY": 259.25
+          }
+        ],
+        "sourceVisibleBounds": [
+          {
+            "left": 351,
+            "top": 144,
+            "right": 388,
+            "bottom": 184
+          },
+          {
+            "left": 432,
+            "top": 142,
+            "right": 466,
+            "bottom": 179
+          },
+          {
+            "left": 354,
+            "top": 226,
+            "right": 386,
+            "bottom": 259
+          },
+          {
+            "left": 437,
+            "top": 222,
+            "right": 462,
+            "bottom": 259
+          },
+          {
+            "left": 516,
+            "top": 222,
+            "right": 544,
+            "bottom": 259
+          }
+        ],
+        "glowVisibleBounds": [
+          {
+            "left": 345,
+            "top": 137,
+            "right": 395,
+            "bottom": 190
+          },
+          {
+            "left": 426,
+            "top": 135,
+            "right": 474,
+            "bottom": 185
+          },
+          {
+            "left": 346,
+            "top": 219,
+            "right": 393,
+            "bottom": 265
+          },
+          {
+            "left": 430,
+            "top": 215,
+            "right": 469,
+            "bottom": 265
+          },
+          {
+            "left": 509,
+            "top": 215,
+            "right": 550,
+            "bottom": 265
+          }
+        ]
       },
       "native": "full-minimum-native.png",
       "enlarged": "full-minimum-enlarged.png"
     },
     {
-      "name": "full-one-x",
+      "name": "full-minimum-dpr2",
       "metric": {
-        "zoom": 1,
+        "zoom": 0.625,
+        "devicePixelRatio": 2,
         "mode": "FULL",
         "highContrast": false,
         "readyImages": 5,
@@ -44,15 +158,250 @@
         "readyGlowColors": [
           "#fff09a"
         ],
-        "selectedOutlineAfterUnit": true
+        "selectedOutlineAfterUnit": true,
+        "registrationSamples": 5,
+        "registrationMismatchPixels": 0,
+        "destinationRects": [
+          {
+            "left": 348.4,
+            "top": 141.7875,
+            "right": 391.59999999999997,
+            "bottom": 191.7375,
+            "anchorX": 370,
+            "anchorY": 179.25
+          },
+          {
+            "left": 428.4,
+            "top": 141.7875,
+            "right": 471.59999999999997,
+            "bottom": 191.7375,
+            "anchorX": 450,
+            "anchorY": 179.25
+          },
+          {
+            "left": 348.4,
+            "top": 221.7875,
+            "right": 391.59999999999997,
+            "bottom": 271.7375,
+            "anchorX": 370,
+            "anchorY": 259.25
+          },
+          {
+            "left": 428.4,
+            "top": 221.7875,
+            "right": 471.59999999999997,
+            "bottom": 271.7375,
+            "anchorX": 450,
+            "anchorY": 259.25
+          },
+          {
+            "left": 508.4,
+            "top": 221.7875,
+            "right": 551.6,
+            "bottom": 271.7375,
+            "anchorX": 530,
+            "anchorY": 259.25
+          }
+        ],
+        "sourceVisibleBounds": [
+          {
+            "left": 703,
+            "top": 289,
+            "right": 776,
+            "bottom": 368
+          },
+          {
+            "left": 865,
+            "top": 285,
+            "right": 933,
+            "bottom": 358
+          },
+          {
+            "left": 707,
+            "top": 452,
+            "right": 772,
+            "bottom": 518
+          },
+          {
+            "left": 875,
+            "top": 445,
+            "right": 924,
+            "bottom": 518
+          },
+          {
+            "left": 1031,
+            "top": 445,
+            "right": 1088,
+            "bottom": 518
+          }
+        ],
+        "glowVisibleBounds": [
+          {
+            "left": 690,
+            "top": 275,
+            "right": 791,
+            "bottom": 382
+          },
+          {
+            "left": 852,
+            "top": 269,
+            "right": 948,
+            "bottom": 372
+          },
+          {
+            "left": 693,
+            "top": 438,
+            "right": 786,
+            "bottom": 532
+          },
+          {
+            "left": 860,
+            "top": 430,
+            "right": 939,
+            "bottom": 532
+          },
+          {
+            "left": 1018,
+            "top": 429,
+            "right": 1102,
+            "bottom": 532
+          }
+        ]
+      },
+      "native": "full-minimum-dpr2-native.png",
+      "enlarged": "full-minimum-dpr2-enlarged.png"
+    },
+    {
+      "name": "full-one-x",
+      "metric": {
+        "zoom": 1,
+        "devicePixelRatio": 1,
+        "mode": "FULL",
+        "highContrast": false,
+        "readyImages": 5,
+        "spentImages": 1,
+        "anchorErrors": 0,
+        "readyGlowColors": [
+          "#fff09a"
+        ],
+        "selectedOutlineAfterUnit": true,
+        "registrationSamples": 5,
+        "registrationMismatchPixels": 0,
+        "destinationRects": [
+          {
+            "left": 287.44,
+            "top": 102.06,
+            "right": 356.56,
+            "bottom": 181.98000000000002,
+            "anchorX": 322,
+            "anchorY": 162
+          },
+          {
+            "left": 415.44,
+            "top": 102.06,
+            "right": 484.56,
+            "bottom": 181.98000000000002,
+            "anchorX": 450,
+            "anchorY": 162
+          },
+          {
+            "left": 287.44,
+            "top": 230.06,
+            "right": 356.56,
+            "bottom": 309.98,
+            "anchorX": 322,
+            "anchorY": 290
+          },
+          {
+            "left": 415.44,
+            "top": 230.06,
+            "right": 484.56,
+            "bottom": 309.98,
+            "anchorX": 450,
+            "anchorY": 290
+          },
+          {
+            "left": 543.44,
+            "top": 230.06,
+            "right": 612.5600000000001,
+            "bottom": 309.98,
+            "anchorX": 578,
+            "anchorY": 290
+          }
+        ],
+        "sourceVisibleBounds": [
+          {
+            "left": 293,
+            "top": 107,
+            "right": 350,
+            "bottom": 169
+          },
+          {
+            "left": 422,
+            "top": 103,
+            "right": 476,
+            "bottom": 161
+          },
+          {
+            "left": 296,
+            "top": 237,
+            "right": 347,
+            "bottom": 289
+          },
+          {
+            "left": 430,
+            "top": 231,
+            "right": 469,
+            "bottom": 289
+          },
+          {
+            "left": 555,
+            "top": 231,
+            "right": 600,
+            "bottom": 289
+          }
+        ],
+        "glowVisibleBounds": [
+          {
+            "left": 283,
+            "top": 96,
+            "right": 362,
+            "bottom": 180
+          },
+          {
+            "left": 413,
+            "top": 91,
+            "right": 488,
+            "bottom": 172
+          },
+          {
+            "left": 285,
+            "top": 226,
+            "right": 359,
+            "bottom": 301
+          },
+          {
+            "left": 419,
+            "top": 220,
+            "right": 480,
+            "bottom": 300
+          },
+          {
+            "left": 545,
+            "top": 219,
+            "right": 611,
+            "bottom": 301
+          }
+        ]
       },
       "native": "full-one-x-native.png",
       "enlarged": "full-one-x-enlarged.png"
     },
     {
-      "name": "full-maximum",
+      "name": "full-one-x-dpr2",
       "metric": {
-        "zoom": 1.75,
+        "zoom": 1,
+        "devicePixelRatio": 2,
         "mode": "FULL",
         "highContrast": false,
         "readyImages": 5,
@@ -61,15 +410,376 @@
         "readyGlowColors": [
           "#fff09a"
         ],
-        "selectedOutlineAfterUnit": true
+        "selectedOutlineAfterUnit": true,
+        "registrationSamples": 5,
+        "registrationMismatchPixels": 0,
+        "destinationRects": [
+          {
+            "left": 287.44,
+            "top": 102.06,
+            "right": 356.56,
+            "bottom": 181.98000000000002,
+            "anchorX": 322,
+            "anchorY": 162
+          },
+          {
+            "left": 415.44,
+            "top": 102.06,
+            "right": 484.56,
+            "bottom": 181.98000000000002,
+            "anchorX": 450,
+            "anchorY": 162
+          },
+          {
+            "left": 287.44,
+            "top": 230.06,
+            "right": 356.56,
+            "bottom": 309.98,
+            "anchorX": 322,
+            "anchorY": 290
+          },
+          {
+            "left": 415.44,
+            "top": 230.06,
+            "right": 484.56,
+            "bottom": 309.98,
+            "anchorX": 450,
+            "anchorY": 290
+          },
+          {
+            "left": 543.44,
+            "top": 230.06,
+            "right": 612.5600000000001,
+            "bottom": 309.98,
+            "anchorX": 578,
+            "anchorY": 290
+          }
+        ],
+        "sourceVisibleBounds": [
+          {
+            "left": 585,
+            "top": 214,
+            "right": 702,
+            "bottom": 339
+          },
+          {
+            "left": 845,
+            "top": 206,
+            "right": 953,
+            "bottom": 323
+          },
+          {
+            "left": 592,
+            "top": 474,
+            "right": 695,
+            "bottom": 579
+          },
+          {
+            "left": 860,
+            "top": 462,
+            "right": 939,
+            "bottom": 579
+          },
+          {
+            "left": 1111,
+            "top": 462,
+            "right": 1200,
+            "bottom": 579
+          }
+        ],
+        "glowVisibleBounds": [
+          {
+            "left": 564,
+            "top": 190,
+            "right": 726,
+            "bottom": 363
+          },
+          {
+            "left": 824,
+            "top": 181,
+            "right": 978,
+            "bottom": 347
+          },
+          {
+            "left": 568,
+            "top": 451,
+            "right": 719,
+            "bottom": 603
+          },
+          {
+            "left": 836,
+            "top": 439,
+            "right": 963,
+            "bottom": 603
+          },
+          {
+            "left": 1088,
+            "top": 437,
+            "right": 1224,
+            "bottom": 603
+          }
+        ]
+      },
+      "native": "full-one-x-dpr2-native.png",
+      "enlarged": "full-one-x-dpr2-enlarged.png"
+    },
+    {
+      "name": "full-maximum",
+      "metric": {
+        "zoom": 1.75,
+        "devicePixelRatio": 1,
+        "mode": "FULL",
+        "highContrast": false,
+        "readyImages": 5,
+        "spentImages": 1,
+        "anchorErrors": 0,
+        "readyGlowColors": [
+          "#fff09a"
+        ],
+        "selectedOutlineAfterUnit": true,
+        "registrationSamples": 5,
+        "registrationMismatchPixels": 0,
+        "destinationRects": [
+          {
+            "left": 165.51999999999998,
+            "top": 22.60499999999999,
+            "right": 286.48,
+            "bottom": 162.465,
+            "anchorX": 226,
+            "anchorY": 127.5
+          },
+          {
+            "left": 389.52,
+            "top": 22.60499999999999,
+            "right": 510.48,
+            "bottom": 162.465,
+            "anchorX": 450,
+            "anchorY": 127.5
+          },
+          {
+            "left": 165.51999999999998,
+            "top": 246.605,
+            "right": 286.48,
+            "bottom": 386.46500000000003,
+            "anchorX": 226,
+            "anchorY": 351.5
+          },
+          {
+            "left": 389.52,
+            "top": 246.605,
+            "right": 510.48,
+            "bottom": 386.46500000000003,
+            "anchorX": 450,
+            "anchorY": 351.5
+          },
+          {
+            "left": 613.52,
+            "top": 246.605,
+            "right": 734.48,
+            "bottom": 386.46500000000003,
+            "anchorX": 674,
+            "anchorY": 351.5
+          }
+        ],
+        "sourceVisibleBounds": [
+          {
+            "left": 175,
+            "top": 31,
+            "right": 277,
+            "bottom": 141
+          },
+          {
+            "left": 401,
+            "top": 24,
+            "right": 497,
+            "bottom": 127
+          },
+          {
+            "left": 180,
+            "top": 258,
+            "right": 271,
+            "bottom": 351
+          },
+          {
+            "left": 415,
+            "top": 248,
+            "right": 484,
+            "bottom": 351
+          },
+          {
+            "left": 634,
+            "top": 248,
+            "right": 713,
+            "bottom": 351
+          }
+        ],
+        "glowVisibleBounds": [
+          {
+            "left": 156,
+            "top": 9,
+            "right": 298,
+            "bottom": 161
+          },
+          {
+            "left": 383,
+            "top": 2,
+            "right": 519,
+            "bottom": 147
+          },
+          {
+            "left": 160,
+            "top": 238,
+            "right": 292,
+            "bottom": 371
+          },
+          {
+            "left": 394,
+            "top": 228,
+            "right": 505,
+            "bottom": 371
+          },
+          {
+            "left": 615,
+            "top": 226,
+            "right": 734,
+            "bottom": 371
+          }
+        ]
       },
       "native": "full-maximum-native.png",
       "enlarged": "full-maximum-enlarged.png"
     },
     {
+      "name": "full-maximum-dpr2",
+      "metric": {
+        "zoom": 1.75,
+        "devicePixelRatio": 2,
+        "mode": "FULL",
+        "highContrast": false,
+        "readyImages": 5,
+        "spentImages": 1,
+        "anchorErrors": 0,
+        "readyGlowColors": [
+          "#fff09a"
+        ],
+        "selectedOutlineAfterUnit": true,
+        "registrationSamples": 5,
+        "registrationMismatchPixels": 0,
+        "destinationRects": [
+          {
+            "left": 165.51999999999998,
+            "top": 22.60499999999999,
+            "right": 286.48,
+            "bottom": 162.465,
+            "anchorX": 226,
+            "anchorY": 127.5
+          },
+          {
+            "left": 389.52,
+            "top": 22.60499999999999,
+            "right": 510.48,
+            "bottom": 162.465,
+            "anchorX": 450,
+            "anchorY": 127.5
+          },
+          {
+            "left": 165.51999999999998,
+            "top": 246.605,
+            "right": 286.48,
+            "bottom": 386.46500000000003,
+            "anchorX": 226,
+            "anchorY": 351.5
+          },
+          {
+            "left": 389.52,
+            "top": 246.605,
+            "right": 510.48,
+            "bottom": 386.46500000000003,
+            "anchorX": 450,
+            "anchorY": 351.5
+          },
+          {
+            "left": 613.52,
+            "top": 246.605,
+            "right": 734.48,
+            "bottom": 386.46500000000003,
+            "anchorX": 674,
+            "anchorY": 351.5
+          }
+        ],
+        "sourceVisibleBounds": [
+          {
+            "left": 350,
+            "top": 62,
+            "right": 554,
+            "bottom": 283
+          },
+          {
+            "left": 804,
+            "top": 49,
+            "right": 994,
+            "bottom": 254
+          },
+          {
+            "left": 361,
+            "top": 517,
+            "right": 542,
+            "bottom": 702
+          },
+          {
+            "left": 831,
+            "top": 497,
+            "right": 968,
+            "bottom": 702
+          },
+          {
+            "left": 1269,
+            "top": 497,
+            "right": 1426,
+            "bottom": 702
+          }
+        ],
+        "glowVisibleBounds": [
+          {
+            "left": 314,
+            "top": 21,
+            "right": 597,
+            "bottom": 322
+          },
+          {
+            "left": 768,
+            "top": 6,
+            "right": 1037,
+            "bottom": 294
+          },
+          {
+            "left": 321,
+            "top": 478,
+            "right": 584,
+            "bottom": 743
+          },
+          {
+            "left": 789,
+            "top": 457,
+            "right": 1011,
+            "bottom": 743
+          },
+          {
+            "left": 1231,
+            "top": 454,
+            "right": 1468,
+            "bottom": 743
+          }
+        ]
+      },
+      "native": "full-maximum-dpr2-native.png",
+      "enlarged": "full-maximum-dpr2-enlarged.png"
+    },
+    {
       "name": "reduced-one-x",
       "metric": {
         "zoom": 1,
+        "devicePixelRatio": 1,
         "mode": "REDUCED",
         "highContrast": false,
         "readyImages": 5,
@@ -78,7 +788,115 @@
         "readyGlowColors": [
           "#fff09a"
         ],
-        "selectedOutlineAfterUnit": true
+        "selectedOutlineAfterUnit": true,
+        "registrationSamples": 5,
+        "registrationMismatchPixels": 0,
+        "destinationRects": [
+          {
+            "left": 288.72,
+            "top": 104.28,
+            "right": 355.28000000000003,
+            "bottom": 181.24,
+            "anchorX": 322,
+            "anchorY": 162
+          },
+          {
+            "left": 416.72,
+            "top": 104.28,
+            "right": 483.28000000000003,
+            "bottom": 181.24,
+            "anchorX": 450,
+            "anchorY": 162
+          },
+          {
+            "left": 288.72,
+            "top": 232.28,
+            "right": 355.28000000000003,
+            "bottom": 309.24,
+            "anchorX": 322,
+            "anchorY": 290
+          },
+          {
+            "left": 416.72,
+            "top": 232.28,
+            "right": 483.28000000000003,
+            "bottom": 309.24,
+            "anchorX": 450,
+            "anchorY": 290
+          },
+          {
+            "left": 544.72,
+            "top": 232.28,
+            "right": 611.28,
+            "bottom": 309.24,
+            "anchorX": 578,
+            "anchorY": 290
+          }
+        ],
+        "sourceVisibleBounds": [
+          {
+            "left": 294,
+            "top": 109,
+            "right": 349,
+            "bottom": 169
+          },
+          {
+            "left": 423,
+            "top": 105,
+            "right": 475,
+            "bottom": 161
+          },
+          {
+            "left": 297,
+            "top": 239,
+            "right": 346,
+            "bottom": 289
+          },
+          {
+            "left": 431,
+            "top": 233,
+            "right": 468,
+            "bottom": 289
+          },
+          {
+            "left": 556,
+            "top": 233,
+            "right": 599,
+            "bottom": 289
+          }
+        ],
+        "glowVisibleBounds": [
+          {
+            "left": 286,
+            "top": 100,
+            "right": 358,
+            "bottom": 177
+          },
+          {
+            "left": 416,
+            "top": 96,
+            "right": 484,
+            "bottom": 169
+          },
+          {
+            "left": 288,
+            "top": 231,
+            "right": 355,
+            "bottom": 298
+          },
+          {
+            "left": 422,
+            "top": 225,
+            "right": 477,
+            "bottom": 298
+          },
+          {
+            "left": 548,
+            "top": 224,
+            "right": 607,
+            "bottom": 298
+          }
+        ]
       },
       "native": "reduced-one-x-native.png",
       "enlarged": "reduced-one-x-enlarged.png"
@@ -87,6 +905,7 @@
       "name": "high-contrast-minimum",
       "metric": {
         "zoom": 0.625,
+        "devicePixelRatio": 1,
         "mode": "FULL",
         "highContrast": true,
         "readyImages": 5,
@@ -95,7 +914,115 @@
         "readyGlowColors": [
           "#ffffff"
         ],
-        "selectedOutlineAfterUnit": true
+        "selectedOutlineAfterUnit": true,
+        "registrationSamples": 5,
+        "registrationMismatchPixels": 0,
+        "destinationRects": [
+          {
+            "left": 348.4,
+            "top": 141.7875,
+            "right": 391.59999999999997,
+            "bottom": 191.7375,
+            "anchorX": 370,
+            "anchorY": 179.25
+          },
+          {
+            "left": 428.4,
+            "top": 141.7875,
+            "right": 471.59999999999997,
+            "bottom": 191.7375,
+            "anchorX": 450,
+            "anchorY": 179.25
+          },
+          {
+            "left": 348.4,
+            "top": 221.7875,
+            "right": 391.59999999999997,
+            "bottom": 271.7375,
+            "anchorX": 370,
+            "anchorY": 259.25
+          },
+          {
+            "left": 428.4,
+            "top": 221.7875,
+            "right": 471.59999999999997,
+            "bottom": 271.7375,
+            "anchorX": 450,
+            "anchorY": 259.25
+          },
+          {
+            "left": 508.4,
+            "top": 221.7875,
+            "right": 551.6,
+            "bottom": 271.7375,
+            "anchorX": 530,
+            "anchorY": 259.25
+          }
+        ],
+        "sourceVisibleBounds": [
+          {
+            "left": 351,
+            "top": 144,
+            "right": 388,
+            "bottom": 184
+          },
+          {
+            "left": 432,
+            "top": 142,
+            "right": 466,
+            "bottom": 179
+          },
+          {
+            "left": 354,
+            "top": 226,
+            "right": 386,
+            "bottom": 259
+          },
+          {
+            "left": 437,
+            "top": 222,
+            "right": 462,
+            "bottom": 259
+          },
+          {
+            "left": 516,
+            "top": 222,
+            "right": 544,
+            "bottom": 259
+          }
+        ],
+        "glowVisibleBounds": [
+          {
+            "left": 348,
+            "top": 140,
+            "right": 392,
+            "bottom": 188
+          },
+          {
+            "left": 429,
+            "top": 138,
+            "right": 471,
+            "bottom": 182
+          },
+          {
+            "left": 349,
+            "top": 222,
+            "right": 390,
+            "bottom": 263
+          },
+          {
+            "left": 433,
+            "top": 218,
+            "right": 466,
+            "bottom": 263
+          },
+          {
+            "left": 512,
+            "top": 218,
+            "right": 548,
+            "bottom": 263
+          }
+        ]
       },
       "native": "high-contrast-minimum-native.png",
       "enlarged": "high-contrast-minimum-enlarged.png"
@@ -104,58 +1031,88 @@
   "visualReview": {
     "status": "ACCEPTED",
     "nativeAndEnlarged": true,
-    "notes": "Every capture was inspected at native and nearest-neighbor 2x size. The warm or white silhouette stays attached to each ready raster, remains readable over Grass/Forest/Mountain for Original and Candy, does not appear on the spent unit, preserves the feet anchor, and remains subordinate to the cyan selected-cell outline. The Reduced frame is static and clearly distinct from the spent unit."
+    "notes": "Every capture was inspected at native and nearest-neighbor 2x size. At 0.625x, 1x and 1.75x on DPR1/DPR2, every rendered glow matches the destination-local reference pixel for pixel; destination anchors and source/glow visible bounds are recorded per sprite. The warm or white silhouette stays attached to each ready raster, remains readable over Grass/Forest/Mountain for Original and Candy, does not appear on the spent unit, preserves the feet anchor, and remains subordinate to the cyan selected-cell outline. The Reduced frame is static and clearly distinct from the spent unit."
   },
   "artifacts": [
     {
       "path": "art/integration/reviews/ruleset6-readiness/full-minimum-native.png",
-      "bytes": 36715,
-      "sha256": "61968f7ddc4a42b22e779b35d41ad60183008d2097799de5e9300ce41c7c01a3"
+      "bytes": 37492,
+      "sha256": "b42fe3410384e6bdda2bcf614b6c9fcfff70338828ee196bd14abc010dd3b3c7"
     },
     {
       "path": "art/integration/reviews/ruleset6-readiness/full-minimum-enlarged.png",
-      "bytes": 95972,
-      "sha256": "7e3073ce6589832e7f740589bc5a07cebabeeb0fd9437941e14f539c4bcc0e0a"
+      "bytes": 96243,
+      "sha256": "c5ddc156bf3e39211b1ec87959678a40022e61a9c21c850f397c89d3a2186008"
+    },
+    {
+      "path": "art/integration/reviews/ruleset6-readiness/full-minimum-dpr2-native.png",
+      "bytes": 36863,
+      "sha256": "2390c0ff285b62ca1d1f76f4776e54b97eab2b287ba9bfe7cc022a02dbee9a38"
+    },
+    {
+      "path": "art/integration/reviews/ruleset6-readiness/full-minimum-dpr2-enlarged.png",
+      "bytes": 94543,
+      "sha256": "d20cab58fdf92d8a704c44c5ee9d6c2a6975c64e0ee60bb05d7091fa35f8c78e"
     },
     {
       "path": "art/integration/reviews/ruleset6-readiness/full-one-x-native.png",
-      "bytes": 66382,
-      "sha256": "5e1d3bcc22bf76797bbe944761471333cdce82d588a3c0d923fe7c95165c4eb7"
+      "bytes": 66779,
+      "sha256": "1ae8cc6de19d7e4ad934a07e618083aa5b5a2ce6bc093cd608c6030eb9e02f79"
     },
     {
       "path": "art/integration/reviews/ruleset6-readiness/full-one-x-enlarged.png",
-      "bytes": 152498,
-      "sha256": "0230b584f55bbd708c06020a343ab6b17947e64159840b9fdadad4821738856f"
+      "bytes": 150750,
+      "sha256": "637c92df0b05fe9810a0ecb7b024a329946da9ce9852a6b65824567dd2ae56ec"
+    },
+    {
+      "path": "art/integration/reviews/ruleset6-readiness/full-one-x-dpr2-native.png",
+      "bytes": 65938,
+      "sha256": "8dbe9e391b98b6508060ac57670b69c347ed2fd3fad52c2c0c48f0509c6251c8"
+    },
+    {
+      "path": "art/integration/reviews/ruleset6-readiness/full-one-x-dpr2-enlarged.png",
+      "bytes": 148688,
+      "sha256": "64ff7946ccba32275a5dce344bc5c6d087782b4025610c7014ac0ef1a5be8ec4"
     },
     {
       "path": "art/integration/reviews/ruleset6-readiness/full-maximum-native.png",
-      "bytes": 153443,
-      "sha256": "c1aa4835f69d3e47de357fb2fe328f1df72a23dda11a195c0c4d049f0f69691b"
+      "bytes": 153486,
+      "sha256": "da9eb821f9dbe24dc65b63c7a5583970119abfd08333468e7c7b4b5f47cd4415"
     },
     {
       "path": "art/integration/reviews/ruleset6-readiness/full-maximum-enlarged.png",
-      "bytes": 330795,
-      "sha256": "1e2188fa13ae82533fee78f3263d97b98562563cedd76b57a45fc7965ae7c248"
+      "bytes": 326168,
+      "sha256": "1fc9a7c197e9101eb9235971f1d128b6d40bd1408c3fea15be5982cf7f64b7e2"
+    },
+    {
+      "path": "art/integration/reviews/ruleset6-readiness/full-maximum-dpr2-native.png",
+      "bytes": 152460,
+      "sha256": "96ca15bb53b59af21c288286d9bace63a921de7905cb2cf0f7d50b150bb41044"
+    },
+    {
+      "path": "art/integration/reviews/ruleset6-readiness/full-maximum-dpr2-enlarged.png",
+      "bytes": 321214,
+      "sha256": "515a47374f3564771e3ecee2042a09a53ba7e3bf4bb5f0cb8e7ff63f22d2d27a"
     },
     {
       "path": "art/integration/reviews/ruleset6-readiness/reduced-one-x-native.png",
-      "bytes": 64701,
-      "sha256": "150e763e3921b715859ba45f8a05d1baa7c6d206cd76cbf2d3c3bb419b64a913"
+      "bytes": 65955,
+      "sha256": "125631c29887746c8faaeadea8c9a87a8aae8a111620711074bd23162fd1d42f"
     },
     {
       "path": "art/integration/reviews/ruleset6-readiness/reduced-one-x-enlarged.png",
-      "bytes": 142865,
-      "sha256": "cb9a0b6b60e1a906282e05289ec8d6407842600a8c012d9793f91f3b46a90ba2"
+      "bytes": 146562,
+      "sha256": "e4db602179a1e8f9740bf82393c773dd5abc43ded0a475c2a0d5184efe5752c1"
     },
     {
       "path": "art/integration/reviews/ruleset6-readiness/high-contrast-minimum-native.png",
-      "bytes": 35122,
-      "sha256": "2f00598f2180643678047883861352ff7ea6f446bb847f8cb5931a229fbd16ef"
+      "bytes": 35584,
+      "sha256": "da7b29405a969b6125b2a221a98f8f508f2d83c951148f2a35d6ec7a9013dff2"
     },
     {
       "path": "art/integration/reviews/ruleset6-readiness/high-contrast-minimum-enlarged.png",
-      "bytes": 93110,
-      "sha256": "5cf6391b686309af0b10e607dda2f815dd074e08deb15059b2183ca69e7a1238"
+      "bytes": 91973,
+      "sha256": "772172460512cdb7bf3c5904bd9d7494c3513d1f2fb919aa4742716841d1ba4b"
     }
   ]
 }

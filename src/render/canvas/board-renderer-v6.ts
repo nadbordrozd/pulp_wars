@@ -168,6 +168,13 @@ export interface UnitVisibleFootprintV6 {
   readonly scaleClass: "standard" | "siege" | "giant";
 }
 
+interface ReadinessGlowSurfaceV6 {
+  readonly canvas: HTMLCanvasElement;
+  readonly context: CanvasRenderingContext2D;
+}
+
+const readinessGlowSurfacesV6 = new WeakMap<object, ReadinessGlowSurfaceV6>();
+
 const PLAYER_COLORS = ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"] as const;
 const INK = "#19282a";
 const CANDY_INK = "#4b2639";
@@ -327,21 +334,12 @@ export function executeDrawCommandV6(
     }
     context.save();
     if (command.glow !== undefined) {
-      context.globalAlpha = command.glow.alpha;
-      context.shadowColor = command.glow.color;
-      context.shadowBlur = command.glow.blur;
-      context.shadowOffsetX = 8_192;
-      context.shadowOffsetY = 0;
-      context.drawImage(
+      drawRegisteredImageGlowV6(
+        context,
         image,
-        command.destination.x - 8_192,
-        command.destination.y,
-        command.destination.width,
-        command.destination.height,
+        command.destination,
+        command.glow,
       );
-      context.shadowColor = "transparent";
-      context.shadowBlur = 0;
-      context.shadowOffsetX = 0;
     }
     context.globalAlpha = command.alpha;
     context.drawImage(
@@ -419,6 +417,105 @@ export function executeDrawCommandV6(
     }
   }
   context.restore();
+}
+
+/**
+ * Renders a glow in a local, device-pixel-aware buffer, removes the source
+ * silhouette from that buffer, then composites the remaining outline at the
+ * exact destination rect. This avoids the old far-off-canvas shadow trick,
+ * whose very large inverse offsets lost registration under browser backing
+ * transforms and fractional camera zoom.
+ */
+function drawRegisteredImageGlowV6(
+  context: CanvasRenderingContext2D,
+  image: CanvasImageSource,
+  destination: DestinationRect,
+  glow: NonNullable<DrawCommandBaseV6["glow"]>,
+): void {
+  const surface = readinessGlowSurfaceV6(context);
+  if (surface === null) return;
+  const transform = context.getTransform();
+  const deviceScaleX = Math.max(1, Math.hypot(transform.a, transform.b));
+  const deviceScaleY = Math.max(1, Math.hypot(transform.c, transform.d));
+  const blurDevicePx = glow.blur * Math.max(deviceScaleX, deviceScaleY);
+  const paddingDevicePx = Math.max(2, Math.ceil(blurDevicePx * 3));
+  const sourceWidthDevicePx = destination.width * deviceScaleX;
+  const sourceHeightDevicePx = destination.height * deviceScaleY;
+  const surfaceWidth = Math.max(
+    1,
+    Math.ceil(sourceWidthDevicePx + paddingDevicePx * 2),
+  );
+  const surfaceHeight = Math.max(
+    1,
+    Math.ceil(sourceHeightDevicePx + paddingDevicePx * 2),
+  );
+  if (
+    surface.canvas.width !== surfaceWidth ||
+    surface.canvas.height !== surfaceHeight
+  ) {
+    surface.canvas.width = surfaceWidth;
+    surface.canvas.height = surfaceHeight;
+  } else {
+    surface.context.clearRect(0, 0, surfaceWidth, surfaceHeight);
+  }
+
+  const glowContext = surface.context;
+  glowContext.save();
+  glowContext.setTransform(1, 0, 0, 1, 0, 0);
+  glowContext.globalCompositeOperation = "source-over";
+  glowContext.globalAlpha = glow.alpha;
+  glowContext.shadowColor = glow.color;
+  glowContext.shadowBlur = blurDevicePx;
+  glowContext.shadowOffsetX = 0;
+  glowContext.shadowOffsetY = 0;
+  glowContext.drawImage(
+    image,
+    paddingDevicePx,
+    paddingDevicePx,
+    sourceWidthDevicePx,
+    sourceHeightDevicePx,
+  );
+  glowContext.globalCompositeOperation = "destination-out";
+  glowContext.globalAlpha = 1;
+  glowContext.shadowColor = "transparent";
+  glowContext.shadowBlur = 0;
+  glowContext.drawImage(
+    image,
+    paddingDevicePx,
+    paddingDevicePx,
+    sourceWidthDevicePx,
+    sourceHeightDevicePx,
+  );
+  glowContext.restore();
+
+  context.drawImage(
+    surface.canvas,
+    0,
+    0,
+    surfaceWidth,
+    surfaceHeight,
+    destination.x - paddingDevicePx / deviceScaleX,
+    destination.y - paddingDevicePx / deviceScaleY,
+    surfaceWidth / deviceScaleX,
+    surfaceHeight / deviceScaleY,
+  );
+}
+
+function readinessGlowSurfaceV6(
+  context: CanvasRenderingContext2D,
+): ReadinessGlowSurfaceV6 | null {
+  const key = context.canvas as object | undefined;
+  if (key === undefined) return null;
+  const existing = readinessGlowSurfacesV6.get(key);
+  if (existing !== undefined) return existing;
+  const ownerDocument = (context.canvas as HTMLCanvasElement).ownerDocument;
+  if (ownerDocument === undefined) return null;
+  const canvas = ownerDocument.createElement("canvas");
+  const glowContext = canvas.getContext("2d");
+  if (glowContext === null) return null;
+  const created = { canvas, context: glowContext };
+  readinessGlowSurfacesV6.set(key, created);
+  return created;
 }
 
 function drawEntry(

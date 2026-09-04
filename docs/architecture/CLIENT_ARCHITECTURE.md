@@ -922,12 +922,18 @@ dock are forbidden from entering Canvas resize logic.
 
 Readiness is presentation derived from public activation. A surviving unit
 owned by the active human with `handled = false` pulses its actual sprite from
-opacity 1 to 0.62 and back over a 1.6-second ease-in-out loop. Health and owner
-cues remain steady. Reduced motion leaves the sprite fully opaque and schedules
-no readiness RAF; dock text and the semantic label say **Needs action**. No
-detached circle, check, tick, letter `W`/`R`, tile badge, or halo represents
-readiness. Wait or any handled action removes the pulse immediately after the
-accepted boundary without disabling remaining actions.
+opacity 1 to 0.62 and back, scales it about its feet anchor, and draws a compact
+unit-attached silhouette glow over a 1.6-second ease-in-out loop. The glow is
+rendered in a reusable destination-local buffer at the Canvas backing scale;
+the source silhouette is removed from that buffer before it is composited at
+the same destination rectangle. Far-off-canvas shadow offsets are forbidden,
+because they do not preserve registration across camera zoom and device-pixel
+ratios. Health and owner cues remain steady. Reduced motion leaves the sprite
+fully opaque, uses a static attached glow, and schedules no readiness RAF; dock
+text and the semantic label say **Needs action**. No detached circle, check,
+tick, letter `W`/`R`, or tile badge represents readiness. Wait or any handled
+action removes the treatment immediately after the accepted boundary without
+disabling remaining actions. Movement and combat presentation suppress it.
 
 All eligible sprites share one presentation phase keyed by match instance,
 active player, and the `TURN_STARTED` command boundary: opacity 1 at 0 ms, 0.62

@@ -29,6 +29,7 @@ import {
 import {
   buildBoardDrawListV6,
   drawBoardV6,
+  executeDrawCommandV6,
   roadMaskAtV6,
   tileFootprintPoints,
   type BoardDrawCommandV6,
@@ -806,6 +807,166 @@ describe("ruleset-6 Canvas drawing layer", () => {
       ),
     ).toMatchObject({ glow: { color: "#ffffff", alpha: 0.98, blur: 3.75 } });
   });
+
+  it.each(
+    ([0.625, 1, 1.75] as const).flatMap((zoom) =>
+      ([1, 2] as const).flatMap((devicePixelRatio) =>
+        (["ORIGINAL", "CANDY"] as const).map((faction) => ({
+          zoom,
+          devicePixelRatio,
+          faction,
+        })),
+      ),
+    ),
+  )(
+    "composites the $faction readiness silhouette locally at $zoom x / DPR $devicePixelRatio",
+    ({ zoom, devicePixelRatio, faction }) => {
+      const unit = fixtureEntry(
+        "UNIT",
+        { x: 2, y: 2 },
+        { faction, role: "FIGHTER", readiness: "PULSE" },
+        5,
+      );
+      const plan: BoardRenderPlanV6 = {
+        planVersion: 6,
+        entries: [unit],
+        legalCommands: [],
+        commandTargets: [],
+        economicPreview: null,
+      };
+      const command = buildBoardDrawListV6({
+        viewport: { width: 900, height: 600 },
+        camera: { offsetX: 221.25, offsetY: 139.5, zoom },
+        plan,
+        readinessElapsedMs: 800,
+      }).commands.find(
+        (candidate) =>
+          candidate.entryKey === unit.key && candidate.kind === "IMAGE",
+      );
+      if (command?.kind !== "IMAGE")
+        throw new Error("Missing ready unit image command");
+
+      const glowContext = drawingContext();
+      const glowCanvas = {
+        width: 0,
+        height: 0,
+        getContext: vi.fn(() => glowContext),
+      } as unknown as HTMLCanvasElement;
+      const ownerDocument = {
+        createElement: vi.fn(() => glowCanvas),
+      } as unknown as Document;
+      const mainContext = drawingContext();
+      Object.assign(mainContext, {
+        canvas: { ownerDocument },
+        getTransform: () => ({
+          a: devicePixelRatio,
+          b: 0,
+          c: 0,
+          d: devicePixelRatio,
+        }),
+      });
+      const image = {} as CanvasImageSource;
+
+      executeDrawCommandV6(mainContext, command, {
+        resolve: () => image,
+      });
+
+      const glowSourceCalls = vi.mocked(glowContext.drawImage).mock.calls;
+      expect(glowSourceCalls).toHaveLength(2);
+      expect(glowSourceCalls[0]?.[0]).toBe(image);
+      expect(glowSourceCalls[1]).toEqual(glowSourceCalls[0]);
+      expect(glowContext.shadowOffsetX).toBe(0);
+      expect(glowContext.shadowOffsetY).toBe(0);
+
+      const mainCalls = vi.mocked(mainContext.drawImage).mock.calls;
+      expect(mainCalls).toHaveLength(2);
+      expect(mainCalls[0]?.[0]).toBe(glowCanvas);
+      expect(mainCalls[1]).toEqual([
+        image,
+        command.destination.x,
+        command.destination.y,
+        command.destination.width,
+        command.destination.height,
+      ]);
+      const sourceX = Number(glowSourceCalls[0]?.[1]);
+      const sourceY = Number(glowSourceCalls[0]?.[2]);
+      const compositeX = Number(mainCalls[0]?.[5]);
+      const compositeY = Number(mainCalls[0]?.[6]);
+      expect(compositeX + sourceX / devicePixelRatio).toBeCloseTo(
+        command.destination.x,
+        10,
+      );
+      expect(compositeY + sourceY / devicePixelRatio).toBeCloseTo(
+        command.destination.y,
+        10,
+      );
+    },
+  );
+
+  it.each([0.625, 1, 1.75] as const)(
+    "keeps the interpolated movement sprite anchored and suppresses readiness at %sx",
+    (zoom) => {
+      const at = { x: 1.375, y: 0.625 } as const;
+      const unit = fixtureEntry(
+        "UNIT",
+        { x: 1, y: 2 },
+        { faction: "ORIGINAL", role: "FIGHTER", readiness: "PULSE" },
+        5,
+      );
+      const presentation: MovementPresentationV6 = {
+        key: "readiness-movement-precedence",
+        commandIndex: 4,
+        motion: "FULL",
+        durationMs: 120,
+        actorController: "HUMAN",
+        unit: {
+          id: unitId(unit.id),
+          ownerId: 1,
+          faction: "ORIGINAL",
+          role: "FIGHTER",
+          at: { x: 1, y: 0 },
+        },
+        path: [
+          { x: 1, y: 0 },
+          { x: 2, y: 1 },
+        ],
+        destination: { x: 2, y: 1 },
+      };
+      const camera = { offsetX: 211.25, offsetY: 133.5, zoom } as const;
+      const command = buildBoardDrawListV6({
+        viewport: { width: 900, height: 600 },
+        camera,
+        plan: {
+          planVersion: 6,
+          entries: [unit],
+          legalCommands: [],
+          commandTargets: [],
+          economicPreview: null,
+        },
+        readinessElapsedMs: 800,
+        movementPresentation: presentation,
+        movementFrame: {
+          at,
+          segmentIndex: 0,
+          segmentProgress: 0.625,
+          complete: false,
+        },
+      }).commands.find(
+        (candidate) =>
+          candidate.entryKey === unit.key && candidate.kind === "IMAGE",
+      );
+      if (command?.kind !== "IMAGE")
+        throw new Error("Missing interpolated unit command");
+      const expected = worldToScreen(projectGrid(at), camera);
+      expect(command.glow).toBeUndefined();
+      expect(
+        command.destination.x + command.destination.width * 0.5,
+      ).toBeCloseTo(expected.x, 10);
+      expect(
+        command.destination.y + command.destination.height * 0.75,
+      ).toBeCloseTo(expected.y + RULESET6_UNIT_COSMETIC_OFFSET_Y * zoom, 10);
+    },
+  );
 
   it("transforms only combatant sprites and restores a lethal public snapshot", () => {
     const attackerAt = { x: 2, y: 2 } as const;

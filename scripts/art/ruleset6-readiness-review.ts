@@ -25,6 +25,7 @@ type Connection = {
 
 interface FrameMetric {
   readonly zoom: number;
+  readonly devicePixelRatio: 1 | 2;
   readonly mode: "FULL" | "REDUCED";
   readonly highContrast: boolean;
   readonly readyImages: number;
@@ -32,6 +33,23 @@ interface FrameMetric {
   readonly anchorErrors: number;
   readonly readyGlowColors: readonly string[];
   readonly selectedOutlineAfterUnit: boolean;
+  readonly registrationSamples: number;
+  readonly registrationMismatchPixels: number;
+  readonly destinationRects: readonly DestinationTrace[];
+  readonly sourceVisibleBounds: readonly PixelBounds[];
+  readonly glowVisibleBounds: readonly PixelBounds[];
+}
+
+interface DestinationTrace extends PixelBounds {
+  readonly anchorX: number;
+  readonly anchorY: number;
+}
+
+interface PixelBounds {
+  readonly left: number;
+  readonly top: number;
+  readonly right: number;
+  readonly bottom: number;
 }
 
 const baseUrl = process.argv[2] ?? "http://localhost:6173";
@@ -51,13 +69,59 @@ const userData = chrome.endsWith(".exe")
   ? `C:\\Windows\\Temp\\pulp-wars-ruleset6-readiness-${process.pid}`
   : path.join(tmpdir(), `pulp-wars-ruleset6-readiness-${process.pid}`);
 const cases = [
-  { name: "full-minimum", zoom: 0.625, mode: "FULL", highContrast: false },
-  { name: "full-one-x", zoom: 1, mode: "FULL", highContrast: false },
-  { name: "full-maximum", zoom: 1.75, mode: "FULL", highContrast: false },
-  { name: "reduced-one-x", zoom: 1, mode: "REDUCED", highContrast: false },
+  {
+    name: "full-minimum",
+    zoom: 0.625,
+    devicePixelRatio: 1,
+    mode: "FULL",
+    highContrast: false,
+  },
+  {
+    name: "full-minimum-dpr2",
+    zoom: 0.625,
+    devicePixelRatio: 2,
+    mode: "FULL",
+    highContrast: false,
+  },
+  {
+    name: "full-one-x",
+    zoom: 1,
+    devicePixelRatio: 1,
+    mode: "FULL",
+    highContrast: false,
+  },
+  {
+    name: "full-one-x-dpr2",
+    zoom: 1,
+    devicePixelRatio: 2,
+    mode: "FULL",
+    highContrast: false,
+  },
+  {
+    name: "full-maximum",
+    zoom: 1.75,
+    devicePixelRatio: 1,
+    mode: "FULL",
+    highContrast: false,
+  },
+  {
+    name: "full-maximum-dpr2",
+    zoom: 1.75,
+    devicePixelRatio: 2,
+    mode: "FULL",
+    highContrast: false,
+  },
+  {
+    name: "reduced-one-x",
+    zoom: 1,
+    devicePixelRatio: 1,
+    mode: "REDUCED",
+    highContrast: false,
+  },
   {
     name: "high-contrast-minimum",
     zoom: 0.625,
+    devicePixelRatio: 1,
     mode: "FULL",
     highContrast: true,
   },
@@ -107,6 +171,7 @@ try {
     const metric = await renderFixture(
       connection,
       item.zoom,
+      item.devicePixelRatio,
       item.mode,
       item.highContrast,
     );
@@ -131,6 +196,7 @@ try {
     fixture:
       "Original and Candy Fighters on light Grass and dark Forest/Mountain, plus one spent Original and one selected Candy unit.",
     zooms: [0.625, 1, 1.75],
+    devicePixelRatios: [1, 2],
     modes: ["FULL", "REDUCED"],
     contrast: ["STANDARD", "HIGH"],
     frames,
@@ -138,7 +204,7 @@ try {
       status: "ACCEPTED",
       nativeAndEnlarged: true,
       notes:
-        "Every capture was inspected at native and nearest-neighbor 2x size. The warm or white silhouette stays attached to each ready raster, remains readable over Grass/Forest/Mountain for Original and Candy, does not appear on the spent unit, preserves the feet anchor, and remains subordinate to the cyan selected-cell outline. The Reduced frame is static and clearly distinct from the spent unit.",
+        "Every capture was inspected at native and nearest-neighbor 2x size. At 0.625x, 1x and 1.75x on DPR1/DPR2, every rendered glow matches the destination-local reference pixel for pixel; destination anchors and source/glow visible bounds are recorded per sprite. The warm or white silhouette stays attached to each ready raster, remains readable over Grass/Forest/Mountain for Original and Candy, does not appear on the spent unit, preserves the feet anchor, and remains subordinate to the cyan selected-cell outline. The Reduced frame is static and clearly distinct from the spent unit.",
     },
     artifacts: await artifactEvidence(filenames),
   };
@@ -155,6 +221,7 @@ try {
 async function renderFixture(
   connection: Connection,
   zoom: number,
+  devicePixelRatio: 1 | 2,
   mode: "FULL" | "REDUCED",
   highContrast: boolean,
 ): Promise<FrameMetric> {
@@ -180,11 +247,11 @@ async function renderFixture(
       Object.assign(document.documentElement.style, { width: '100%', height: '100%', overflow: 'hidden' });
       Object.assign(document.body.style, { width: '100%', height: '100%', margin: '0', overflow: 'hidden', background: '#172b2b' });
       const heading = document.createElement('div');
-      heading.textContent = ${JSON.stringify(`Ready unit cue · ${mode} · ${highContrast ? "High contrast" : "Standard contrast"} · ${zoom}x`)};
+      heading.textContent = ${JSON.stringify(`Ready unit cue · ${mode} · ${highContrast ? "High contrast" : "Standard contrast"} · ${zoom}x · DPR${devicePixelRatio}`)};
       Object.assign(heading.style, { height: '52px', boxSizing: 'border-box', padding: '14px 18px', color: '#fff', background: '#172b2b', font: '800 18px system-ui' });
       const canvas = document.createElement('canvas');
-      canvas.width = 900;
-      canvas.height = 568;
+      canvas.width = 900 * ${devicePixelRatio};
+      canvas.height = 568 * ${devicePixelRatio};
       canvas.style.width = '900px';
       canvas.style.height = '568px';
       root.append(heading, canvas);
@@ -222,7 +289,7 @@ async function renderFixture(
         viewport: { width: 900, height: 568 },
         camera,
         plan,
-        devicePixelRatio: 1,
+        devicePixelRatio: ${devicePixelRatio},
         images,
         readinessElapsedMs: 800,
         reducedMotion: ${JSON.stringify(mode)} === 'REDUCED',
@@ -245,15 +312,119 @@ async function renderFixture(
       }).length;
       const selectedUnitIndex = list.commands.findIndex((command) => command.entryKey === 'UNIT:29');
       const selectedOutlineIndex = list.commands.findIndex((command) => command.entryKey === 'SELECTION:30');
+      const alphaBounds = (canvas) => {
+        const context = canvas.getContext('2d');
+        if (!context) return null;
+        const { data, width, height } = context.getImageData(0, 0, canvas.width, canvas.height);
+        let left = width;
+        let top = height;
+        let right = -1;
+        let bottom = -1;
+        for (let y = 0; y < height; y += 1) {
+          for (let x = 0; x < width; x += 1) {
+            if (data[(y * width + x) * 4 + 3] < 2) continue;
+            left = Math.min(left, x);
+            top = Math.min(top, y);
+            right = Math.max(right, x);
+            bottom = Math.max(bottom, y);
+          }
+        }
+        return right < left ? null : { left, top, right, bottom };
+      };
+      const registrations = [];
+      for (const command of ready) {
+        const sourceCanvas = document.createElement('canvas');
+        sourceCanvas.width = 900 * ${devicePixelRatio};
+        sourceCanvas.height = 568 * ${devicePixelRatio};
+        const sourceContext = sourceCanvas.getContext('2d');
+        const glowCanvas = document.createElement('canvas');
+        glowCanvas.width = sourceCanvas.width;
+        glowCanvas.height = sourceCanvas.height;
+        const glowContext = glowCanvas.getContext('2d');
+        if (!sourceContext || !glowContext) throw new Error('Missing registration contexts');
+        sourceContext.setTransform(${devicePixelRatio}, 0, 0, ${devicePixelRatio}, 0, 0);
+        glowContext.setTransform(${devicePixelRatio}, 0, 0, ${devicePixelRatio}, 0, 0);
+        renderer.executeDrawCommandV6(sourceContext, { ...command, alpha: 1, glow: undefined }, images);
+        renderer.executeDrawCommandV6(glowContext, { ...command, alpha: 0 }, images);
+        const resolvedImage = images.resolve(command.assetId);
+        if (!resolvedImage) throw new Error('Missing accepted image for registration trace');
+        const expectedCanvas = document.createElement('canvas');
+        expectedCanvas.width = sourceCanvas.width;
+        expectedCanvas.height = sourceCanvas.height;
+        const expectedContext = expectedCanvas.getContext('2d');
+        const scratch = document.createElement('canvas');
+        const blurDevicePx = command.glow.blur * ${devicePixelRatio};
+        const paddingDevicePx = Math.max(2, Math.ceil(blurDevicePx * 3));
+        const sourceWidthDevicePx = command.destination.width * ${devicePixelRatio};
+        const sourceHeightDevicePx = command.destination.height * ${devicePixelRatio};
+        scratch.width = Math.ceil(sourceWidthDevicePx + paddingDevicePx * 2);
+        scratch.height = Math.ceil(sourceHeightDevicePx + paddingDevicePx * 2);
+        const scratchContext = scratch.getContext('2d');
+        if (!expectedContext || !scratchContext) throw new Error('Missing expected registration contexts');
+        scratchContext.globalAlpha = command.glow.alpha;
+        scratchContext.shadowColor = command.glow.color;
+        scratchContext.shadowBlur = blurDevicePx;
+        scratchContext.drawImage(resolvedImage, paddingDevicePx, paddingDevicePx, sourceWidthDevicePx, sourceHeightDevicePx);
+        scratchContext.globalCompositeOperation = 'destination-out';
+        scratchContext.globalAlpha = 1;
+        scratchContext.shadowColor = 'transparent';
+        scratchContext.shadowBlur = 0;
+        scratchContext.drawImage(resolvedImage, paddingDevicePx, paddingDevicePx, sourceWidthDevicePx, sourceHeightDevicePx);
+        expectedContext.setTransform(${devicePixelRatio}, 0, 0, ${devicePixelRatio}, 0, 0);
+        expectedContext.drawImage(
+          scratch,
+          0,
+          0,
+          scratch.width,
+          scratch.height,
+          command.destination.x - paddingDevicePx / ${devicePixelRatio},
+          command.destination.y - paddingDevicePx / ${devicePixelRatio},
+          scratch.width / ${devicePixelRatio},
+          scratch.height / ${devicePixelRatio}
+        );
+        const sourceBounds = alphaBounds(sourceCanvas);
+        const glowBounds = alphaBounds(glowCanvas);
+        if (!sourceBounds || !glowBounds) throw new Error('Missing source or glow alpha bounds');
+        const actualPixels = glowContext.getImageData(0, 0, glowCanvas.width, glowCanvas.height).data;
+        const expectedPixels = expectedContext.getImageData(0, 0, expectedCanvas.width, expectedCanvas.height).data;
+        let registrationMismatchPixels = 0;
+        for (let offset = 0; offset < actualPixels.length; offset += 4) {
+          if (
+            actualPixels[offset] !== expectedPixels[offset] ||
+            actualPixels[offset + 1] !== expectedPixels[offset + 1] ||
+            actualPixels[offset + 2] !== expectedPixels[offset + 2] ||
+            actualPixels[offset + 3] !== expectedPixels[offset + 3]
+          ) registrationMismatchPixels += 1;
+        }
+        registrations.push({
+          sourceBounds,
+          glowBounds,
+          registrationMismatchPixels,
+          destinationRect: {
+            left: command.destination.x,
+            top: command.destination.y,
+            right: command.destination.x + command.destination.width,
+            bottom: command.destination.y + command.destination.height,
+            anchorX: command.destination.x + command.destination.width * 0.5,
+            anchorY: command.destination.y + command.destination.height * 0.75
+          }
+        });
+      }
       return {
         zoom: ${zoom},
+        devicePixelRatio: ${devicePixelRatio},
         mode: ${JSON.stringify(mode)},
         highContrast: ${highContrast},
         readyImages: ready.length,
         spentImages: spent.length,
         anchorErrors,
         readyGlowColors: [...new Set(ready.map((command) => command.glow.color))],
-        selectedOutlineAfterUnit: selectedUnitIndex >= 0 && selectedOutlineIndex > selectedUnitIndex
+        selectedOutlineAfterUnit: selectedUnitIndex >= 0 && selectedOutlineIndex > selectedUnitIndex,
+        registrationSamples: registrations.length,
+        registrationMismatchPixels: registrations.reduce((sum, sample) => sum + sample.registrationMismatchPixels, 0),
+        destinationRects: registrations.map(({ destinationRect }) => destinationRect),
+        sourceVisibleBounds: registrations.map(({ sourceBounds }) => sourceBounds),
+        glowVisibleBounds: registrations.map(({ glowBounds }) => glowBounds)
       };
     })()`,
     true,
@@ -265,6 +436,8 @@ function validateMetric(name: string, metric: FrameMetric): void {
     metric.readyImages !== 5 ||
     metric.spentImages !== 1 ||
     metric.anchorErrors !== 0 ||
+    metric.registrationSamples !== 5 ||
+    metric.registrationMismatchPixels !== 0 ||
     !metric.selectedOutlineAfterUnit
   )
     throw new Error(
