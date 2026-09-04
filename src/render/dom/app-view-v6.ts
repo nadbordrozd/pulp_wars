@@ -28,6 +28,7 @@ import type {
   Ruleset6BrowserController,
   Ruleset6BrowserSnapshot,
 } from "../../app/v6-controller";
+import { downloadJsonFile } from "../../app/browser-download";
 import { CanvasBoardHostV6, type BoardHostV6 } from "../canvas/board-host-v6";
 import {
   EMPTY_BOARD_RENDER_INTERACTION_V6,
@@ -88,6 +89,7 @@ export interface MountRuleset6AppOptions {
   readonly boardHost?: BoardHostV6;
   readonly prefersReducedMotion?: boolean;
   readonly prefersHighContrast?: boolean;
+  readonly downloadDebugLog?: (source: string, filename: string) => void;
 }
 
 export type Ruleset6BrowserControllerPort = Pick<
@@ -100,6 +102,7 @@ export type Ruleset6BrowserControllerPort = Pick<
   | "progressAiTurns"
   | "restart"
   | "deleteStoredSave"
+  | "exportDebugLog"
 >;
 
 type ActionSymbol =
@@ -123,6 +126,7 @@ export class Ruleset6DomAppView {
   readonly #boardHost: BoardHostV6;
   readonly #prefersReducedMotion: boolean;
   readonly #prefersHighContrast: boolean;
+  readonly #downloadDebugLog: (source: string, filename: string) => void;
   #unsubscribe: (() => void) | null = null;
   #snapshot: Ruleset6BrowserSnapshot;
   #draft: Ruleset6SetupDraft = defaultDraft();
@@ -161,6 +165,10 @@ export class Ruleset6DomAppView {
       documentRoot.defaultView?.matchMedia?.("(prefers-contrast: more)")
         .matches ??
       false;
+    this.#downloadDebugLog =
+      options.downloadDebugLog ??
+      ((source, filename) =>
+        downloadJsonFile(this.#document, source, filename));
     this.#root.dataset.contrast = this.#prefersHighContrast
       ? "high"
       : "standard";
@@ -546,6 +554,9 @@ export class Ruleset6DomAppView {
       technology.onclick = () => this.#openTechnologyScreen();
       menu.append(technology);
     }
+    if (this.#snapshot.phase === "ACTIVE" && !mandatoryChoicePending) {
+      menu.append(this.#debugExportButton());
+    }
     const zoomOut = button(this.#document, "−", "v6-icon-button");
     zoomOut.ariaLabel = "Zoom out";
     zoomOut.onclick = () => {
@@ -602,14 +613,17 @@ export class Ruleset6DomAppView {
     if (this.#snapshot.phase === "COMPLETE") {
       dock.append(this.#resultPanel(view));
     } else if (this.#snapshot.phase === "ERROR") {
-      dock.append(
+      const failure = el(this.#document, "div", "v6-debug-failure");
+      failure.append(
         text(this.#document, "h2", "Match paused"),
         text(
           this.#document,
           "p",
           this.#snapshot.diagnostic ?? "The match encountered an error.",
         ),
+        this.#debugExportButton(),
       );
+      dock.append(failure);
     } else if (combatPresentation !== null) {
       dock.append(
         text(this.#document, "h2", "Combat"),
@@ -1327,6 +1341,9 @@ export class Ruleset6DomAppView {
       }
     }
     dialog.append(options);
+    const exportDebugLog = this.#debugExportLink();
+    exportDebugLog.dataset.mandatoryUtilityAction = "true";
+    dialog.append(exportDebugLog);
     backdrop.append(dialog);
     return backdrop;
   }
@@ -1447,7 +1464,7 @@ export class Ruleset6DomAppView {
     if (dialog === null) return;
     const focusable = [
       ...dialog.querySelectorAll<HTMLElement>(
-        "[data-mandatory-choice-action]:not([disabled])",
+        "[data-mandatory-choice-action]:not([disabled]), [data-mandatory-utility-action]",
       ),
     ];
     if (focusable.length === 0) {
@@ -1529,6 +1546,41 @@ export class Ruleset6DomAppView {
       return;
     }
     void this.#dispatch(command);
+  }
+
+  #debugExportButton(): HTMLButtonElement {
+    const exportDebugLog = button(
+      this.#document,
+      "Export debug log",
+      "secondary-action v6-debug-export",
+    );
+    exportDebugLog.dataset.action = "export-debug-log";
+    exportDebugLog.onclick = () => this.#exportDebugLog();
+    return exportDebugLog;
+  }
+
+  #debugExportLink(): HTMLAnchorElement {
+    const exportDebugLog = this.#document.createElement("a");
+    exportDebugLog.href = "#";
+    exportDebugLog.className = "secondary-action v6-debug-export";
+    exportDebugLog.textContent = "Export debug log";
+    exportDebugLog.dataset.action = "export-debug-log";
+    exportDebugLog.onclick = (event) => {
+      event.preventDefault();
+      this.#exportDebugLog();
+    };
+    return exportDebugLog;
+  }
+
+  #exportDebugLog(): void {
+    const result = this.#controller.exportDebugLog();
+    if (!result.ok) {
+      this.#error = "No active Ruleset 6 match is available to export.";
+      this.#render();
+      return;
+    }
+    this.#downloadDebugLog(result.source, result.filename);
+    this.#notice = "Debug log downloaded.";
   }
 
   async #dispatch(command: CommandV6): Promise<void> {

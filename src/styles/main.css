@@ -1757,6 +1757,8 @@ fieldset {
 }
 
 .v6-match-shell {
+  --v6-context-command-width: 11rem;
+
   position: relative;
   display: grid;
   grid-template-areas:
@@ -1821,6 +1823,43 @@ fieldset {
   min-height: 44px;
   padding: 0.4rem 0.62rem;
   font-size: 0.78rem;
+}
+
+.v6-debug-export {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--v6-context-command-width);
+  min-height: 44px;
+  flex: 0 0 var(--v6-context-command-width);
+  padding: 0.4rem 0.62rem;
+  border: 2px solid var(--line);
+  border-radius: 0.75rem;
+  color: inherit;
+  background: var(--panel-strong);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.v6-debug-failure {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--v6-context-command-width);
+  align-items: center;
+  gap: 0.35rem 0.75rem;
+}
+
+.v6-debug-failure h2,
+.v6-debug-failure p {
+  grid-column: 1;
+  margin: 0;
+}
+
+.v6-debug-failure .v6-debug-export {
+  grid-column: 2;
+  grid-row: 1 / span 2;
 }
 
 .v6-icon-button {
@@ -2646,6 +2685,19 @@ fieldset {
   .v6-icon-button {
     width: auto;
     min-width: 0;
+  }
+
+  .v6-hud-actions .v6-debug-export {
+    width: auto;
+  }
+
+  .v6-debug-failure {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .v6-debug-failure .v6-debug-export {
+    grid-column: 1;
+    grid-row: auto;
   }
 
   .v6-action-dock {

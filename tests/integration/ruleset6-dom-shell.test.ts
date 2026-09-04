@@ -68,9 +68,12 @@ const ECONOMIC_COMMAND_KINDS = [
 describe("playable ruleset-6 DOM shell", () => {
   it("boots the production v6 setup, constrains sizes, and launches explicit Candy seats", async () => {
     const host = new FakeBoardHostV6();
+    const downloadDebugLog = vi.fn();
     const app = bootstrapRuleset6App(document, {
       storage: null,
       boardHost: host,
+      diagnosticNow: () => "2026-09-04T12:34:56.789Z",
+      downloadDebugLog,
     });
     expect(document.querySelector("[data-v6-setup]")).not.toBeNull();
     expect(document.body.textContent).toContain("spatial economy");
@@ -100,6 +103,20 @@ describe("playable ruleset-6 DOM shell", () => {
     expect(document.body.textContent).toContain("Round");
     expect(document.querySelector("[data-tech-tree]")).toBeNull();
     expect(document.querySelector("[data-action=end-turn]")).not.toBeNull();
+    expect(
+      document.querySelectorAll("[data-action=export-debug-log]"),
+    ).toHaveLength(1);
+    click("[data-action=export-debug-log]");
+    expect(downloadDebugLog).toHaveBeenCalledOnce();
+    const [debugSource, debugFilename] = downloadDebugLog.mock.calls[0] ?? [];
+    expect(JSON.parse(debugSource ?? "{}")).toMatchObject({
+      version: 1,
+      controller: { phase: "ACTIVE", diagnostic: null },
+      reproduction: { save: { commandIndex: 0 } },
+    });
+    expect(debugFilename).toMatch(
+      /^pulp-wars-ruleset6-debug-20260904T123456789Z-[0-9a-f]{12}\.json$/,
+    );
     expect(document.body.textContent).toContain("Candy match launched.");
     app.destroy();
     expect(host.destroyCalls).toBeGreaterThan(0);
@@ -269,9 +286,12 @@ describe("playable ruleset-6 DOM shell", () => {
   });
 
   it("surfaces an AI-first progression failure without queuing a second operation", async () => {
+    const downloadDebugLog = vi.fn();
     const app = bootstrapRuleset6App(document, {
       storage: null,
       boardHost: new FakeBoardHostV6(),
+      diagnosticNow: () => "2026-09-04T12:34:56.789Z",
+      downloadDebugLog,
       chooseAiCommand: () => ({
         difficulty: "NORMAL",
         candidates: [],
@@ -299,6 +319,20 @@ describe("playable ruleset-6 DOM shell", () => {
     expect(document.querySelector("#v6-alert")?.textContent).toBe(
       "AI progression stopped: Normal AI produced no exact public command.",
     );
+    const exportButtons = document.querySelectorAll(
+      "[data-action=export-debug-log]",
+    );
+    expect(exportButtons).toHaveLength(1);
+    expect(exportButtons[0]?.closest(".v6-debug-failure")).not.toBeNull();
+    click("[data-action=export-debug-log]");
+    expect(downloadDebugLog).toHaveBeenCalledOnce();
+    const [debugSource] = downloadDebugLog.mock.calls[0] ?? [];
+    expect(JSON.parse(debugSource ?? "{}")).toMatchObject({
+      controller: {
+        phase: "ERROR",
+        diagnostic: "Normal AI produced no exact public command.",
+      },
+    });
     app.destroy();
   });
 
@@ -1632,8 +1666,16 @@ describe("playable ruleset-6 DOM shell", () => {
     const end = { kind: "END_TURN" } as const satisfies CommandV6;
     const fake = new FakeController(view, [end]);
     const host = new FakeBoardHostV6();
+    const downloadDebugLog = vi.fn();
+    fake.exportDebugLog.mockReturnValue({
+      ok: true,
+      bundle: null as never,
+      filename: "pulp-wars-ruleset6-debug-test.json",
+      source: '{"version":1}',
+    });
     const app = new Ruleset6DomAppView(document, requireElement("#app"), fake, {
       boardHost: host,
+      downloadDebugLog,
     });
     const staleTech = requireElement('[data-action="open-tech"]');
     staleTech.focus();
@@ -1709,7 +1751,19 @@ describe("playable ruleset-6 DOM shell", () => {
     expect(fake.dispatch).not.toHaveBeenCalled();
     expect(document.querySelector("[data-mandatory-choice]")).not.toBeNull();
 
-    rewardButtons[1]?.focus();
+    const mandatoryExport = requireElement("[data-mandatory-utility-action]");
+    expect(
+      document.querySelectorAll("[data-action=export-debug-log]"),
+    ).toHaveLength(1);
+    mandatoryExport.click();
+    expect(fake.exportDebugLog).toHaveBeenCalledOnce();
+    expect(downloadDebugLog).toHaveBeenCalledOnce();
+    expect(downloadDebugLog).toHaveBeenCalledWith(
+      '{"version":1}',
+      "pulp-wars-ruleset6-debug-test.json",
+    );
+    expect(fake.dispatch).not.toHaveBeenCalled();
+    mandatoryExport.focus();
     document.dispatchEvent(
       new KeyboardEvent("keydown", {
         key: "Tab",
@@ -1726,7 +1780,7 @@ describe("playable ruleset-6 DOM shell", () => {
         cancelable: true,
       }),
     );
-    expect(document.activeElement).toBe(rewardButtons[1]);
+    expect(document.activeElement).toBe(mandatoryExport);
 
     fake.dispatch.mockImplementationOnce(async (command) => {
       fake.setSnapshot({
@@ -2038,6 +2092,10 @@ class FakeController implements Ruleset6BrowserControllerPort {
   progressAiTurns = vi.fn<Ruleset6BrowserController["progressAiTurns"]>();
   restart = vi.fn<Ruleset6BrowserController["restart"]>();
   deleteStoredSave = vi.fn<Ruleset6BrowserController["deleteStoredSave"]>();
+  exportDebugLog = vi.fn<Ruleset6BrowserController["exportDebugLog"]>(() => ({
+    ok: false,
+    reason: "NO_ACTIVE_MATCH",
+  }));
   economicPreview = vi.fn<Ruleset6BrowserController["economicPreview"]>(() => ({
     ok: false,
     error: "NOT_OFFERED",

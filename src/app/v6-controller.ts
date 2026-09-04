@@ -36,6 +36,11 @@ import {
   type SaveEnvelopeV6,
   type StorageAdapter,
 } from "../persistence/index";
+import {
+  createRuleset6DebugLog,
+  ruleset6DebugLogFilename,
+  type Ruleset6DebugLogV1,
+} from "./v6-debug-export";
 
 export type Ruleset6BrowserPhase =
   "EMPTY" | "RESUMABLE" | "ACTIVE" | "COMPLETE" | "RECOVERY" | "ERROR";
@@ -125,7 +130,17 @@ export interface Ruleset6BrowserControllerOptions {
   readonly chooseAiCommand?: (
     view: PlayerViewV6,
   ) => NormalAiDecisionV6 | Promise<NormalAiDecisionV6>;
+  readonly diagnosticNow?: () => string;
 }
+
+export type Ruleset6DebugExportResult =
+  | {
+      readonly ok: true;
+      readonly bundle: Ruleset6DebugLogV1;
+      readonly filename: string;
+      readonly source: string;
+    }
+  | { readonly ok: false; readonly reason: "NO_ACTIVE_MATCH" };
 
 type SnapshotSubscriberV6 = (snapshot: Ruleset6BrowserSnapshot) => void;
 
@@ -140,6 +155,7 @@ export class Ruleset6BrowserController {
   readonly #chooseAiCommand: (
     view: PlayerViewV6,
   ) => NormalAiDecisionV6 | Promise<NormalAiDecisionV6>;
+  readonly #diagnosticNow: () => string;
   #match: GameStateV6 | null = null;
   #replay: ReplayFileV6 | null = null;
   #phase: Ruleset6BrowserPhase = "EMPTY";
@@ -154,6 +170,8 @@ export class Ruleset6BrowserController {
 
   constructor(options: Ruleset6BrowserControllerOptions = {}) {
     this.#chooseAiCommand = options.chooseAiCommand ?? chooseNormalCommandV6;
+    this.#diagnosticNow =
+      options.diagnosticNow ?? (() => new Date().toISOString());
     this.#persistence =
       options.storage === undefined || options.storage === null
         ? null
@@ -407,6 +425,28 @@ export class Ruleset6BrowserController {
       ...this.#replay,
       commands: [...this.#replay.commands],
       checkpoints: [...this.#replay.checkpoints],
+    });
+  }
+
+  exportDebugLog(): Ruleset6DebugExportResult {
+    if (this.#match === null || this.#replay === null) {
+      return { ok: false, reason: "NO_ACTIVE_MATCH" };
+    }
+    const exportedAt = this.#diagnosticNow();
+    const stateHash = canonicalHash(this.#match);
+    const bundle = createRuleset6DebugLog({
+      state: this.#match,
+      replay: this.#replay,
+      phase: this.#phase,
+      diagnostic: this.#diagnostic,
+      transitioning: this.#transitioning,
+      exportedAt,
+    });
+    return freezeBrowserValue({
+      ok: true,
+      bundle,
+      filename: ruleset6DebugLogFilename(exportedAt, stateHash),
+      source: JSON.stringify(bundle, null, 2),
     });
   }
 
