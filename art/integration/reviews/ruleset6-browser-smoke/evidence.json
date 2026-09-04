@@ -1825,8 +1825,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-overview-desktop-native.png",
-          "bytes": 360956,
-          "sha256": "bfc0fee593f592faa5e67360b69b14767a4f30785cd2403fcdf308e7d8467339",
+          "bytes": 361547,
+          "sha256": "e5933fab93a5320cf9c844f92b9e5e1ad25d87a7bd9097b761aa69ccd2a4e7a3",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1839,8 +1839,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-overview-desktop-enlarged.png",
-          "bytes": 659652,
-          "sha256": "99c6e08bfc72d9b06c6bf6f337d64a6adf4864297d5048ff0a58965c389a2b4f",
+          "bytes": 660088,
+          "sha256": "e5550e31eec0c216c7af548f3478a412634bd0f66353f1989ed7df408b1d1076",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -3705,8 +3705,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-overview-desktop-native.png",
-          "bytes": 361389,
-          "sha256": "352db1eceb5eefbaa33bbda2937a7bc5f5147d1f47241ac0c48ab61c906461dd",
+          "bytes": 361484,
+          "sha256": "14d07220d52fc8f6c6a4e94d880e5377793235f3230e685ee4a30e46dd3f2bb6",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -3719,8 +3719,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-overview-desktop-enlarged.png",
-          "bytes": 660777,
-          "sha256": "dcf5f89959c43b044e426528106700acdcca8b1ff032584ddd2fd159f02eb8e5",
+          "bytes": 660953,
+          "sha256": "5b0eaf1c4a55ba7b9679fc00b7645c6d8328737746e54ab6514450c8abc3e987",
           "width": 2880,
           "height": 2000,
           "viewport": {

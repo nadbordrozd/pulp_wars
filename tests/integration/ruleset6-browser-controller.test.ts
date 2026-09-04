@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  RULESET6_AI_COMMANDS_PER_SLICE,
   Ruleset6BrowserController,
   type Ruleset6BrowserSnapshot,
 } from "../../src/app/index";
@@ -136,6 +137,122 @@ describe("ruleset-6 browser session controller", () => {
       controller.snapshot().commandIndex,
     );
     controller.destroy();
+  });
+
+  it("does not schedule cooperative work when progression is already at the human", async () => {
+    let scheduleCalls = 0;
+    const controller = new Ruleset6BrowserController({
+      aiProgressScheduler: (resume) => {
+        scheduleCalls += 1;
+        resume();
+      },
+    });
+    expect((await controller.launch(setupV6("ORIGINAL", 42))).ok).toBe(true);
+
+    expect(await controller.progressAiTurns()).toMatchObject({
+      ok: true,
+      acceptedCommands: 0,
+    });
+    expect(scheduleCalls).toBe(0);
+    controller.destroy();
+  });
+
+  it("yields repeatedly on a large multi-AI board without changing deterministic results", async () => {
+    const setup = largeMultiAiSetupV6();
+    const baseline = new Ruleset6BrowserController({
+      aiProgressScheduler: (resume) => resume(),
+    });
+    const yieldedIndexes: number[] = [];
+    let macrotaskOpportunities = 0;
+    const responsive = new Ruleset6BrowserController({
+      aiProgressScheduler: (resume) => {
+        setTimeout(() => {
+          macrotaskOpportunities += 1;
+          yieldedIndexes.push(responsive.snapshot().commandIndex);
+          resume();
+        }, 0);
+      },
+    });
+    const emittedIndexes: number[] = [];
+    const unsubscribe = responsive.subscribe((snapshot) => {
+      if (
+        snapshot.transitioning &&
+        snapshot.commandIndex > (emittedIndexes.at(-1) ?? -1)
+      ) {
+        emittedIndexes.push(snapshot.commandIndex);
+      }
+    });
+
+    expect((await baseline.launch(setup)).ok).toBe(true);
+    expect((await responsive.launch(setup)).ok).toBe(true);
+    const initial = responsive.snapshot().view;
+    expect(initial?.turnOrder[initial.activeSeatIndex]).not.toBe(
+      initial?.viewer.id,
+    );
+
+    const baselineResult = await baseline.progressAiTurns();
+    const responsiveResult = await responsive.progressAiTurns();
+    expect(baselineResult.ok).toBe(true);
+    expect(responsiveResult.ok).toBe(true);
+    if (!baselineResult.ok || !responsiveResult.ok) {
+      throw new Error("Large multi-AI progression failed");
+    }
+    expect(responsiveResult.acceptedCommands).toBeGreaterThan(2);
+    expect(RULESET6_AI_COMMANDS_PER_SLICE).toBe(1);
+    expect(macrotaskOpportunities).toBe(responsiveResult.acceptedCommands);
+    expect(yieldedIndexes[0]).toBe(0);
+    expect(yieldedIndexes).toEqual(
+      Array.from(
+        { length: responsiveResult.acceptedCommands },
+        (_, index) => index,
+      ),
+    );
+    expect(emittedIndexes).toEqual(
+      Array.from(
+        { length: responsiveResult.acceptedCommands + 1 },
+        (_, index) => index,
+      ),
+    );
+    expect(responsiveResult.stateHash).toBe(baselineResult.stateHash);
+    expect(canonicalJson(responsive.exportReplay())).toBe(
+      canonicalJson(baseline.exportReplay()),
+    );
+    expect(
+      responsiveResult.presentationBoundaries.map(boundarySignature),
+    ).toEqual(baselineResult.presentationBoundaries.map(boundarySignature));
+    expect(responsive.snapshot()).toMatchObject({
+      commandIndex: baseline.snapshot().commandIndex,
+      stateHash: baseline.snapshot().stateHash,
+      phase: baseline.snapshot().phase,
+    });
+
+    unsubscribe();
+    responsive.destroy();
+    baseline.destroy();
+  });
+
+  it("stops before another AI command when destroyed during a cooperative yield", async () => {
+    const resumptions: (() => void)[] = [];
+    const controller = new Ruleset6BrowserController({
+      aiProgressScheduler: (resume) => resumptions.push(resume),
+    });
+    expect((await controller.launch(largeMultiAiSetupV6())).ok).toBe(true);
+
+    const progress = controller.progressAiTurns();
+    await waitUntil(() => resumptions.length === 1);
+    controller.destroy();
+    resumptions.shift()?.();
+
+    expect(await progress).toEqual({
+      ok: false,
+      acceptedCommands: 0,
+      diagnostic: "The ruleset-6 browser controller was destroyed.",
+    });
+    expect(controller.snapshot()).toMatchObject({
+      phase: "ERROR",
+      commandIndex: 0,
+      diagnostic: "The ruleset-6 browser controller was destroyed.",
+    });
   });
 
   it("serializes an asynchronous AI decision ahead of a queued restart", async () => {
@@ -363,6 +480,36 @@ function setupV6(humanFaction: FactionIdV6, seed: number): MatchSetupV6 {
   };
 }
 
+function largeMultiAiSetupV6(): MatchSetupV6 {
+  return {
+    rulesetId: "pulp-wars-poc-6",
+    mapGenerationRevision: "SPATIAL_ECONOMY",
+    seed: 42,
+    width: 25,
+    height: 25,
+    aiCount: 3,
+    aiDifficulty: "NORMAL",
+    aiMode: "RIVAL",
+    humanColor: "CORAL",
+    factions: ["ORIGINAL", "CANDY", "ORIGINAL", "CANDY"],
+  };
+}
+
+function boundarySignature(
+  boundary: Extract<
+    Awaited<ReturnType<Ruleset6BrowserController["progressAiTurns"]>>,
+    { readonly ok: true }
+  >["presentationBoundaries"][number],
+): unknown {
+  return {
+    actorId: boundary.actorId,
+    command: boundary.command,
+    events: boundary.events,
+    beforeCommandIndex: boundary.beforeView.commandIndex,
+    afterCommandIndex: boundary.afterView.commandIndex,
+  };
+}
+
 function requireView(snapshot: Ruleset6BrowserSnapshot): PlayerViewV6 {
   if (snapshot.view === null) throw new Error("Missing player view");
   return snapshot.view;
@@ -387,7 +534,7 @@ function requireCommand<K extends CommandV6["kind"]>(
 async function waitUntil(predicate: () => boolean): Promise<void> {
   for (let attempt = 0; attempt < 20; attempt += 1) {
     if (predicate()) return;
-    await Promise.resolve();
+    await new Promise<void>((resolve) => setTimeout(resolve, 0));
   }
   throw new Error("Timed out waiting for asynchronous controller transition");
 }

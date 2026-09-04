@@ -123,6 +123,12 @@ export interface Ruleset6AcceptedBoundaryV6 {
   readonly afterView: PlayerViewV6;
 }
 
+/** Schedules continuation of AI work in a later browser event-loop turn. */
+export type Ruleset6AiProgressScheduler = (resume: () => void) => void;
+
+/** One accepted command keeps each cooperative AI work slice bounded. */
+export const RULESET6_AI_COMMANDS_PER_SLICE = 1;
+
 export interface Ruleset6BrowserControllerOptions {
   readonly storage?: StorageAdapter | null;
   readonly persistenceNow?: () => string;
@@ -130,6 +136,7 @@ export interface Ruleset6BrowserControllerOptions {
   readonly chooseAiCommand?: (
     view: PlayerViewV6,
   ) => NormalAiDecisionV6 | Promise<NormalAiDecisionV6>;
+  readonly aiProgressScheduler?: Ruleset6AiProgressScheduler;
   readonly diagnosticNow?: () => string;
 }
 
@@ -144,6 +151,10 @@ export type Ruleset6DebugExportResult =
 
 type SnapshotSubscriberV6 = (snapshot: Ruleset6BrowserSnapshot) => void;
 
+const defaultAiProgressSchedulerV6: Ruleset6AiProgressScheduler = (resume) => {
+  setTimeout(resume, 0);
+};
+
 /**
  * DOM-free ruleset-6 browser session boundary. All mutations are serialized,
  * AI receives only PlayerViewV6, and every accepted boundary is replayed and
@@ -155,6 +166,7 @@ export class Ruleset6BrowserController {
   readonly #chooseAiCommand: (
     view: PlayerViewV6,
   ) => NormalAiDecisionV6 | Promise<NormalAiDecisionV6>;
+  readonly #aiProgressScheduler: Ruleset6AiProgressScheduler;
   readonly #diagnosticNow: () => string;
   #match: GameStateV6 | null = null;
   #replay: ReplayFileV6 | null = null;
@@ -170,6 +182,8 @@ export class Ruleset6BrowserController {
 
   constructor(options: Ruleset6BrowserControllerOptions = {}) {
     this.#chooseAiCommand = options.chooseAiCommand ?? chooseNormalCommandV6;
+    this.#aiProgressScheduler =
+      options.aiProgressScheduler ?? defaultAiProgressSchedulerV6;
     this.#diagnosticNow =
       options.diagnosticNow ?? (() => new Date().toISOString());
     this.#persistence =
@@ -298,7 +312,17 @@ export class Ruleset6BrowserController {
       }
       let currentAiId: number | null = null;
       let acceptedThisTurn = 0;
+      let acceptedThisSlice = 0;
       try {
+        const initialActorId =
+          this.#match.turnOrder[this.#match.activeSeatIndex];
+        if (initialActorId === undefined) {
+          throw new Error("The active player is missing.");
+        }
+        if (initialActorId !== this.#match.humanPlayerId) {
+          await this.#yieldAiProgress();
+          this.#assertNotDestroyed();
+        }
         while (this.#match.outcome === null) {
           const actorId = this.#match.turnOrder[this.#match.activeSeatIndex];
           if (actorId === undefined) {
@@ -314,9 +338,7 @@ export class Ruleset6BrowserController {
           }
           const view = viewForV6(this.#match, actorId);
           const decision = await this.#chooseAiCommand(view);
-          if (this.#destroyed) {
-            throw new Error("The ruleset-6 browser controller was destroyed.");
-          }
+          this.#assertNotDestroyed();
           const command = decision.command;
           if (command === null || !commandIsOffered(view, command)) {
             throw new Error("Normal AI produced no exact public command.");
@@ -331,9 +353,23 @@ export class Ruleset6BrowserController {
           }
           acceptedCommands += 1;
           acceptedThisTurn += 1;
+          acceptedThisSlice += 1;
           events.push(...result.events);
           presentationBoundaries.push(result.presentationBoundary);
           this.#emit();
+          const nextActorId =
+            this.#match.outcome === null
+              ? this.#match.turnOrder[this.#match.activeSeatIndex]
+              : this.#match.humanPlayerId;
+          if (
+            acceptedThisSlice >= RULESET6_AI_COMMANDS_PER_SLICE &&
+            this.#match.outcome === null &&
+            nextActorId !== this.#match.humanPlayerId
+          ) {
+            acceptedThisSlice = 0;
+            await this.#yieldAiProgress();
+            this.#assertNotDestroyed();
+          }
         }
       } catch (error) {
         this.flushPersistence();
@@ -589,6 +625,22 @@ export class Ruleset6BrowserController {
     return this.#match === null
       ? null
       : viewForV6(this.#match, this.#match.humanPlayerId);
+  }
+
+  #yieldAiProgress(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      try {
+        this.#aiProgressScheduler(resolve);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  #assertNotDestroyed(): void {
+    if (this.#destroyed) {
+      throw new Error("The ruleset-6 browser controller was destroyed.");
+    }
   }
 
   #serialize<T>(operation: () => Promise<T>): Promise<T> {
