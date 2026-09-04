@@ -1147,6 +1147,140 @@ describe("playable ruleset-6 DOM shell", () => {
     app.destroy();
   });
 
+  it("queues one accepted human MOVE, snaps to its public destination, and skips rejected or reduced movement", async () => {
+    const before = publicView("ORIGINAL");
+    const unit = before.units.find(
+      (candidate) => candidate.ownerId === before.viewer.id,
+    );
+    const path = before.board.tiles
+      .filter(
+        (tile) =>
+          tile.explored &&
+          (tile.at.x !== unit?.at.x || tile.at.y !== unit?.at.y),
+      )
+      .slice(0, 2)
+      .map((tile) => tile.at);
+    if (unit === undefined || path[0] === undefined || path[1] === undefined)
+      throw new Error("Missing movement fixture");
+    const move = {
+      kind: "MOVE",
+      unitId: unit.id,
+      path,
+    } as const satisfies CommandV6;
+    const moved = {
+      kind: "UNIT_MOVED",
+      unitId: unit.id,
+      path,
+    } as const satisfies DomainEventV6;
+    const after: PlayerViewV6 = {
+      ...before,
+      commandIndex: before.commandIndex + 1,
+      units: before.units.map((candidate) =>
+        candidate.id === unit.id
+          ? { ...candidate, at: path[1] as (typeof path)[number] }
+          : candidate,
+      ),
+    };
+    const fake = new FakeController(before, [move]);
+    fake.dispatch.mockImplementationOnce(async (command) => {
+      fake.setSnapshot({
+        ...fake.snapshot(),
+        view: after,
+        commandIndex: after.commandIndex,
+        offeredCommands: [],
+      });
+      return {
+        accepted: true,
+        command,
+        events: [moved],
+        stateHash: "after-move",
+        presentationBoundary: fakeBoundary(before, after, command, [moved]),
+      };
+    });
+    const host = new FakeBoardHostV6();
+    const app = new Ruleset6DomAppView(document, requireElement("#app"), fake, {
+      boardHost: host,
+    });
+    host.callbacks?.onCommandCandidates([target(move, path[1])], path[1]);
+    await waitUntil(() => host.model?.movementPresentation !== null);
+    expect(host.model).toMatchObject({
+      interactive: false,
+      movementPresentation: {
+        actorController: "HUMAN",
+        path: [unit.at, ...path],
+        destination: path[1],
+      },
+    });
+    const key = host.model?.movementPresentation?.key;
+    if (key === undefined) throw new Error("Missing movement key");
+    fake.setSnapshot(fake.snapshot());
+    expect(host.model?.movementPresentation?.key).toBe(key);
+    host.callbacks?.onMovementPresentationComplete?.("stale-key");
+    expect(host.model?.movementPresentation?.key).toBe(key);
+    host.callbacks?.onMovementPresentationComplete?.(key);
+    expect(host.model?.movementPresentation ?? null).toBeNull();
+    expect(
+      host.model?.view.units.find((candidate) => candidate.id === unit.id)?.at,
+    ).toEqual(path[1]);
+    app.destroy();
+
+    const rejectedFake = new FakeController(before, [move]);
+    rejectedFake.dispatch.mockResolvedValueOnce({
+      accepted: false,
+      reason: "ENGINE_REJECTED",
+    });
+    const rejectedHost = new FakeBoardHostV6();
+    const rejectedApp = new Ruleset6DomAppView(
+      document,
+      requireElement("#app"),
+      rejectedFake,
+      { boardHost: rejectedHost },
+    );
+    rejectedHost.callbacks?.onCommandCandidates(
+      [target(move, path[1])],
+      path[1],
+    );
+    await waitUntil(() => rejectedFake.dispatch.mock.calls.length === 1);
+    expect(rejectedHost.model?.movementPresentation ?? null).toBeNull();
+    rejectedApp.destroy();
+
+    const reducedFake = new FakeController(before, [move]);
+    reducedFake.dispatch.mockImplementationOnce(async (command) => {
+      reducedFake.setSnapshot({
+        ...reducedFake.snapshot(),
+        view: after,
+        commandIndex: after.commandIndex,
+        offeredCommands: [],
+      });
+      return {
+        accepted: true,
+        command,
+        events: [moved],
+        stateHash: "after-reduced-move",
+        presentationBoundary: fakeBoundary(before, after, command, [moved]),
+      };
+    });
+    const reducedHost = new FakeBoardHostV6();
+    const reducedApp = new Ruleset6DomAppView(
+      document,
+      requireElement("#app"),
+      reducedFake,
+      { boardHost: reducedHost, prefersReducedMotion: true },
+    );
+    reducedHost.callbacks?.onCommandCandidates(
+      [target(move, path[1])],
+      path[1],
+    );
+    await waitUntil(() => reducedFake.dispatch.mock.calls.length === 1);
+    expect(reducedHost.model?.movementPresentation ?? null).toBeNull();
+    expect(
+      reducedHost.model?.view.units.find(
+        (candidate) => candidate.id === unit.id,
+      )?.at,
+    ).toEqual(path[1]);
+    reducedApp.destroy();
+  });
+
   it("queues only accepted public ranged events, locks input, and drains by key", async () => {
     const initial = publicView("ORIGINAL");
     const baseAttacker = initial.units.find(
@@ -1393,6 +1527,117 @@ describe("playable ruleset-6 DOM shell", () => {
     expect(host.model?.combatPresentation ?? null).toBeNull();
     expect(fake.snapshot().stateHash).toBe(stateBeforeSkip);
     expect(fake.snapshot().commandIndex).toBe(3);
+    app.destroy();
+  });
+
+  it("presents an accepted AI MOVE and Fast Forward installs its final public view", async () => {
+    const initial = publicView("ORIGINAL");
+    const human = initial.units.find(
+      (unit) => unit.ownerId === initial.viewer.id,
+    );
+    const aiPlayer = initial.players.find(
+      (player) => player.id !== initial.viewer.id,
+    );
+    const explored = initial.board.tiles.filter((tile) => tile.explored);
+    if (
+      human === undefined ||
+      aiPlayer === undefined ||
+      explored[0] === undefined ||
+      explored[1] === undefined ||
+      explored[2] === undefined
+    ) {
+      throw new Error("Missing AI movement fixture");
+    }
+    const ai = {
+      ...human,
+      id: unitId(human.id + 70_000),
+      ownerId: aiPlayer.id,
+      at: explored[0].at,
+    };
+    const view: PlayerViewV6 = { ...initial, units: [human, ai] };
+    const end = { kind: "END_TURN" } as const satisfies CommandV6;
+    const path = [explored[1].at, explored[2].at] as const;
+    const move = {
+      kind: "MOVE",
+      unitId: ai.id,
+      path,
+    } as const satisfies CommandV6;
+    const moved = {
+      kind: "UNIT_MOVED",
+      unitId: ai.id,
+      path,
+    } as const satisfies DomainEventV6;
+    const aiTurn: PlayerViewV6 = {
+      ...view,
+      activeSeatIndex: 1,
+      commandIndex: 1,
+    };
+    const after: PlayerViewV6 = {
+      ...view,
+      commandIndex: 2,
+      units: view.units.map((unit) =>
+        unit.id === ai.id ? { ...unit, at: path[1] } : unit,
+      ),
+    };
+    const fake = new FakeController(view, [end]);
+    fake.dispatch.mockImplementationOnce(async (command) => {
+      fake.setSnapshot({
+        ...fake.snapshot(),
+        view: aiTurn,
+        commandIndex: aiTurn.commandIndex,
+        offeredCommands: [],
+      });
+      return {
+        accepted: true,
+        command,
+        events: [],
+        stateHash: "after-end",
+        presentationBoundary: fakeBoundary(view, aiTurn, command),
+      };
+    });
+    fake.progressAiTurns.mockImplementationOnce(async () => {
+      fake.setSnapshot({
+        ...fake.snapshot(),
+        view: after,
+        commandIndex: after.commandIndex,
+        offeredCommands: [end],
+        stateHash: "after-ai-move",
+      });
+      return {
+        ok: true,
+        acceptedCommands: 1,
+        events: [moved],
+        stateHash: "after-ai-move",
+        presentationBoundaries: [
+          {
+            actorId: aiPlayer.id,
+            command: move,
+            events: [moved],
+            beforeView: aiTurn,
+            afterView: after,
+          },
+        ],
+      };
+    });
+    const host = new FakeBoardHostV6();
+    const app = new Ruleset6DomAppView(document, requireElement("#app"), fake, {
+      boardHost: host,
+    });
+    requireElement('[data-action="end-turn"]').click();
+    await waitUntil(
+      () => host.model?.movementPresentation?.actorController === "AI",
+    );
+    expect(host.model?.movementPresentation).toMatchObject({
+      path: [ai.at, ...path],
+      destination: path[1],
+    });
+    const stateBeforeSkip = fake.snapshot().stateHash;
+    requireElement('[data-action="fast-forward-movement"]').click();
+    expect(host.model?.movementPresentation ?? null).toBeNull();
+    expect(fake.snapshot().stateHash).toBe(stateBeforeSkip);
+    expect(
+      host.model?.view.units.find((unit) => unit.id === ai.id)?.at,
+    ).toEqual(path[1]);
     app.destroy();
   });
 

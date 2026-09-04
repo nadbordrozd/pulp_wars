@@ -43,6 +43,10 @@ import {
   combatPresentationsFromEventsV6,
   type CombatPresentationV6,
 } from "../canvas/combat-presentation-v6";
+import {
+  movementPresentationFromAcceptedBoundaryV6,
+  type MovementPresentationV6,
+} from "../canvas/movement-presentation-v6";
 import { cityPopulationPresentationV6 } from "../city-population-presentation-v6";
 import {
   technologyTreeLayoutV6,
@@ -115,6 +119,16 @@ type ActionSymbol =
 
 type Ruleset6Screen = "MATCH" | "TECH";
 
+type BoardPresentationQueueEntryV6 =
+  | {
+      readonly kind: "MOVEMENT";
+      readonly presentation: MovementPresentationV6;
+    }
+  | {
+      readonly kind: "COMBAT";
+      readonly presentation: CombatPresentationV6;
+    };
+
 /**
  * Ruleset-6-only DOM composition. Gameplay data is limited to controller
  * snapshots and exact public commands; this layer never reconstructs legality.
@@ -142,7 +156,7 @@ export class Ruleset6DomAppView {
   #mandatoryChoiceKey: string | null = null;
   #mandatoryReturnFocusId: string | null = null;
   #restoreBoardFocus = false;
-  #combatQueue: readonly CombatPresentationV6[] = [];
+  #presentationQueue: readonly BoardPresentationQueueEntryV6[] = [];
   #destroyed = false;
 
   constructor(
@@ -188,7 +202,7 @@ export class Ruleset6DomAppView {
     this.#document.removeEventListener("keydown", this.#onKeyDown);
     this.#unsubscribe?.();
     this.#unsubscribe = null;
-    this.#combatQueue = [];
+    this.#presentationQueue = [];
     this.#boardHost.destroy();
     this.#root.replaceChildren();
   }
@@ -223,7 +237,7 @@ export class Ruleset6DomAppView {
     ) {
       return;
     }
-    if (this.#combatQueue.length > 0) {
+    if (this.#presentationQueue.length > 0) {
       event.preventDefault();
       event.stopPropagation();
       return;
@@ -507,9 +521,17 @@ export class Ruleset6DomAppView {
 
   #matchScreen(view: PlayerViewV6): HTMLElement {
     const main = el(this.#document, "main", "v6-match-shell");
-    const combatPresentation = this.#combatQueue[0] ?? null;
+    const activePresentation = this.#presentationQueue[0] ?? null;
+    const movementPresentation =
+      activePresentation?.kind === "MOVEMENT"
+        ? activePresentation.presentation
+        : null;
+    const combatPresentation =
+      activePresentation?.kind === "COMBAT"
+        ? activePresentation.presentation
+        : null;
     const humanCanAct =
-      canHumanAct(this.#snapshot) && combatPresentation === null;
+      canHumanAct(this.#snapshot) && activePresentation === null;
     const mandatoryChoicePending = view.pendingChoices.length > 0;
     const ownCities = view.cities.filter(
       (city) => city.ownerId === view.viewer.id,
@@ -550,7 +572,7 @@ export class Ruleset6DomAppView {
       technology.dataset.action = "open-tech";
       technology.dataset.focusId = "open-tech";
       technology.ariaLabel = "Open Technology (T)";
-      technology.disabled = combatPresentation !== null;
+      technology.disabled = activePresentation !== null;
       technology.onclick = () => this.#openTechnologyScreen();
       menu.append(technology);
     }
@@ -585,18 +607,21 @@ export class Ruleset6DomAppView {
       menu.append(endTurn);
     }
     if (
-      combatPresentation !== null &&
-      combatPresentation.actorController === "AI"
+      activePresentation !== null &&
+      activePresentation.presentation.actorController === "AI"
     ) {
       const fastForward = button(
         this.#document,
         "Fast Forward",
         "secondary-action",
       );
-      fastForward.dataset.action = "fast-forward-combat";
+      fastForward.dataset.action =
+        activePresentation.kind === "COMBAT"
+          ? "fast-forward-combat"
+          : "fast-forward-movement";
       fastForward.onclick = () => {
-        this.#combatQueue = [];
-        this.#notice = "Combat presentation skipped.";
+        this.#presentationQueue = [];
+        this.#notice = `${activePresentation.kind === "COMBAT" ? "Combat" : "Movement"} presentation skipped.`;
         this.#render();
       };
       menu.append(fastForward);
@@ -624,6 +649,11 @@ export class Ruleset6DomAppView {
         this.#debugExportButton(),
       );
       dock.append(failure);
+    } else if (movementPresentation !== null) {
+      dock.append(
+        text(this.#document, "h2", "Movement"),
+        text(this.#document, "p", "Following the accepted path…"),
+      );
     } else if (combatPresentation !== null) {
       dock.append(
         text(this.#document, "h2", "Combat"),
@@ -663,7 +693,7 @@ export class Ruleset6DomAppView {
       this.#hasMandatoryChoice()
     )
       return;
-    this.#combatQueue = [];
+    this.#presentationQueue = [];
     this.#screen = "TECH";
     this.#selectedTechnology = null;
     this.#pendingFocusSelector = '[data-focus-id="tech-back"]';
@@ -1097,21 +1127,41 @@ export class Ruleset6DomAppView {
         this.#commandChoices = [];
         this.#render();
       },
+      onMovementPresentationComplete: (key) => {
+        const current = this.#presentationQueue[0];
+        if (current?.kind !== "MOVEMENT" || current.presentation.key !== key) {
+          return;
+        }
+        this.#presentationQueue = this.#presentationQueue.slice(1);
+        this.#render();
+      },
       onCombatPresentationComplete: (key) => {
-        if (this.#combatQueue[0]?.key !== key) return;
-        this.#combatQueue = this.#combatQueue.slice(1);
+        const current = this.#presentationQueue[0];
+        if (current?.kind !== "COMBAT" || current.presentation.key !== key) {
+          return;
+        }
+        this.#presentationQueue = this.#presentationQueue.slice(1);
         this.#render();
       },
     });
-    const combatPresentation = this.#combatQueue[0] ?? null;
+    const activePresentation = this.#presentationQueue[0] ?? null;
+    const movementPresentation =
+      activePresentation?.kind === "MOVEMENT"
+        ? activePresentation.presentation
+        : null;
+    const combatPresentation =
+      activePresentation?.kind === "COMBAT"
+        ? activePresentation.presentation
+        : null;
     this.#boardHost.update({
       matchInstanceId: this.#matchInstanceId,
       view,
       interactive:
         canHumanAct(this.#snapshot) &&
-        combatPresentation === null &&
+        activePresentation === null &&
         view.pendingChoices.length === 0,
       motion: this.#prefersReducedMotion ? "REDUCED" : "FULL",
+      movementPresentation,
       combatPresentation,
       interaction: {
         ...EMPTY_BOARD_RENDER_INTERACTION_V6,
@@ -1606,7 +1656,7 @@ export class Ruleset6DomAppView {
       this.#render();
       return;
     }
-    this.#enqueueCombatBoundaries([result.presentationBoundary]);
+    this.#enqueuePresentationBoundaries([result.presentationBoundary]);
     this.#notice = `${commandLabel(command)} completed.`;
     this.#targetMode = null;
     this.#validatePresentation(this.#controller.snapshot().view);
@@ -1627,7 +1677,7 @@ export class Ruleset6DomAppView {
     if (!result.ok)
       this.#error = `AI progression stopped: ${result.diagnostic}`;
     else {
-      this.#enqueueCombatBoundaries(result.presentationBoundaries);
+      this.#enqueuePresentationBoundaries(result.presentationBoundaries);
       this.#notice = `AI completed ${result.acceptedCommands} action${result.acceptedCommands === 1 ? "" : "s"}. Your turn.`;
     }
     this.#render();
@@ -1669,7 +1719,8 @@ export class Ruleset6DomAppView {
 
   async #restart(): Promise<void> {
     if (this.#hasMandatoryChoice()) return;
-    this.#combatQueue = [];
+    this.#presentationQueue = [];
+    this.#render();
     const result = await this.#controller.restart();
     if (this.#destroyed) return;
     if (!result.ok) {
@@ -1686,7 +1737,8 @@ export class Ruleset6DomAppView {
 
   async #deleteSave(): Promise<void> {
     if (this.#hasMandatoryChoice()) return;
-    this.#combatQueue = [];
+    this.#presentationQueue = [];
+    this.#render();
     const deleted = await this.#controller.deleteStoredSave();
     if (this.#destroyed) return;
     if (!deleted) {
@@ -1795,30 +1847,51 @@ export class Ruleset6DomAppView {
     this.#screen = "MATCH";
     this.#selectedTechnology = null;
     this.#pendingFocusSelector = null;
-    this.#combatQueue = [];
+    this.#presentationQueue = [];
   }
 
-  #enqueueCombatBoundaries(
+  #enqueuePresentationBoundaries(
     boundaries: readonly {
+      readonly actorId: number;
+      readonly command: CommandV6;
       readonly events: readonly DomainEventV6[];
       readonly beforeView: PlayerViewV6 | null;
       readonly afterView: PlayerViewV6 | null;
     }[],
   ): void {
     const motion = this.#prefersReducedMotion ? "REDUCED" : "FULL";
-    const additions = boundaries.flatMap((boundary) =>
-      boundary.beforeView === null
-        ? []
-        : combatPresentationsFromEventsV6(
-            boundary.beforeView,
-            boundary.events,
-            boundary.afterView?.commandIndex ??
-              boundary.beforeView.commandIndex + 1,
-            motion,
-          ),
-    );
+    const additions = boundaries.flatMap((boundary) => {
+      if (boundary.beforeView === null || boundary.afterView === null)
+        return [];
+      const movement = movementPresentationFromAcceptedBoundaryV6(
+        boundary.actorId,
+        boundary.beforeView,
+        boundary.afterView,
+        boundary.command,
+        boundary.events,
+        motion,
+      );
+      const combat = combatPresentationsFromEventsV6(
+        boundary.beforeView,
+        boundary.events,
+        boundary.afterView.commandIndex,
+        motion,
+      );
+      return [
+        ...(movement === null
+          ? []
+          : [{ kind: "MOVEMENT" as const, presentation: movement }]),
+        ...combat.map((presentation) => ({
+          kind: "COMBAT" as const,
+          presentation,
+        })),
+      ];
+    });
     if (additions.length === 0) return;
-    this.#combatQueue = Object.freeze([...this.#combatQueue, ...additions]);
+    this.#presentationQueue = Object.freeze([
+      ...this.#presentationQueue,
+      ...additions,
+    ]);
     this.#render();
   }
 }

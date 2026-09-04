@@ -26,6 +26,7 @@ import {
   type CanvasBoardHostModelV6,
 } from "../../src/render/canvas/board-host-v6";
 import type { CombatPresentationV6 } from "../../src/render/canvas/combat-presentation-v6";
+import type { MovementPresentationV6 } from "../../src/render/canvas/movement-presentation-v6";
 import { UNIT_SCALE_CONTRACT } from "../../src/render/canvas/board-art-geometry";
 import {
   buildRenderPlanV6,
@@ -42,6 +43,77 @@ beforeEach(() => {
 });
 
 describe("ruleset-6 Canvas host", () => {
+  it("runs one movement RAF across rerenders and cancels on replacement and teardown", () => {
+    let now = 0;
+    vi.spyOn(window.performance, "now").mockImplementation(() => now);
+    let nextFrame = 1;
+    const frames = new Map<number, FrameRequestCallback>();
+    Object.defineProperty(window, "requestAnimationFrame", {
+      configurable: true,
+      writable: true,
+      value: vi.fn((callback: FrameRequestCallback) => {
+        const id = nextFrame++;
+        frames.set(id, callback);
+        return id;
+      }),
+    });
+    Object.defineProperty(window, "cancelAnimationFrame", {
+      configurable: true,
+      writable: true,
+      value: vi.fn((id: number) => frames.delete(id)),
+    });
+    const fixture = publicFixture();
+    const movement = movementPresentation(fixture.view, "move-a");
+    const completed: string[] = [];
+    const host = new CanvasBoardHostV6(document);
+    const container = sizedContainer(900, 600);
+    const mountedCallbacks = callbacks({
+      onMovementPresentationComplete: (key) => completed.push(key),
+    });
+    host.mount(container, mountedCallbacks);
+    const active = model(fixture.view, {
+      interactive: false,
+      movementPresentation: movement,
+    });
+    host.update(active);
+    expect(boardAnimationNeededV6(active)).toBe(true);
+    expect(frames.size).toBe(1);
+
+    now = 60;
+    host.update(active);
+    expect(frames.size).toBe(1);
+    host.mount(container, mountedCallbacks);
+    host.update(active);
+    expect(frames.size).toBe(1);
+
+    const final = [...frames.entries()][0];
+    if (final === undefined) throw new Error("Missing movement frame");
+    frames.delete(final[0]);
+    now = movement.durationMs;
+    final[1](now);
+    expect(completed).toEqual(["move-a"]);
+    expect(frames.size).toBe(0);
+
+    host.update({
+      ...active,
+      matchInstanceId: "replacement",
+      movementPresentation: { ...movement, key: "move-b" },
+    });
+    expect(frames.size).toBe(1);
+    host.update({
+      ...active,
+      matchInstanceId: "replacement-2",
+      movementPresentation: null,
+    });
+    expect(frames.size).toBe(0);
+    host.update({ ...active, movementPresentation: movement });
+    expect(frames.size).toBe(1);
+    host.destroy();
+    expect(frames.size).toBe(0);
+    now += 1_000;
+    expect(completed).toEqual(["move-a"]);
+  });
+
   it("runs one monotonic ranged RAF lifecycle and cancels it on replacement or unmount", () => {
     let now = 0;
     vi.spyOn(window.performance, "now").mockImplementation(() => now);
@@ -1058,6 +1130,33 @@ function combatPresentation(
     damaged: [target],
     wallDamaged: false,
     advances: false,
+  };
+}
+
+function movementPresentation(
+  view: PlayerViewV6,
+  key: string,
+): MovementPresentationV6 {
+  const unit = ownUnit(view);
+  const faction =
+    view.players.find((player) => player.id === unit.ownerId)?.faction ??
+    "ORIGINAL";
+  const destination = { x: unit.at.x, y: unit.at.y + 1 };
+  return {
+    key,
+    commandIndex: view.commandIndex + 1,
+    motion: "FULL",
+    durationMs: 120,
+    actorController: "HUMAN",
+    unit: {
+      id: unit.id,
+      ownerId: unit.ownerId,
+      faction,
+      role: unit.role,
+      at: unit.at,
+    },
+    path: [unit.at, destination],
+    destination,
   };
 }
 

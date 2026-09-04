@@ -38,6 +38,11 @@ import type {
   CombatSpriteSnapshotV6,
   CombatWallSnapshotV6,
 } from "./combat-presentation-v6";
+import type {
+  MovementAnimationFrameV6,
+  MovementPresentationV6,
+  MovementSpriteSnapshotV6,
+} from "./movement-presentation-v6";
 
 export interface Ruleset6AcceptedImageResolver {
   readonly resolve: (assetId: string) => CanvasImageSource | null;
@@ -52,6 +57,8 @@ export interface DrawBoardV6Options {
   readonly images?: Ruleset6AcceptedImageResolver;
   readonly readinessElapsedMs?: number;
   readonly reducedMotion?: boolean;
+  readonly movementPresentation?: MovementPresentationV6 | null;
+  readonly movementFrame?: MovementAnimationFrameV6 | null;
   readonly combatPresentation?: CombatPresentationV6 | null;
   readonly combatFrame?: CombatAnimationFrameV6 | null;
 }
@@ -62,6 +69,8 @@ export interface BuildBoardDrawListV6Options {
   readonly plan: BoardRenderPlanV6;
   readonly readinessElapsedMs?: number;
   readonly reducedMotion?: boolean;
+  readonly movementPresentation?: MovementPresentationV6 | null;
+  readonly movementFrame?: MovementAnimationFrameV6 | null;
   readonly combatPresentation?: CombatPresentationV6 | null;
   readonly combatFrame?: CombatAnimationFrameV6 | null;
 }
@@ -211,7 +220,14 @@ export function buildBoardDrawListV6(
       )
       .map((entry) => [entry.id, entry.details.level] as const),
   );
-  const entries = combatEntries(options.plan, options.combatPresentation);
+  const entries = combatEntries(
+    movementEntries(
+      options.plan,
+      options.movementPresentation,
+      options.movementFrame,
+    ),
+    options.combatPresentation,
+  );
   const roadCoordinates = new Set(
     entries
       .filter((entry) => entry.kind === "ROAD")
@@ -678,17 +694,17 @@ function improvementLevelPips(
 }
 
 function combatEntries(
-  plan: BoardRenderPlanV6,
+  planEntries: readonly RenderPlanEntryV6[],
   presentation: CombatPresentationV6 | null | undefined,
 ): readonly RenderPlanEntryV6[] {
   if (presentation === undefined || presentation === null)
-    return [...plan.entries].sort(compareEntriesV6);
+    return [...planEntries].sort(compareEntriesV6);
   const snapshots = [presentation.attacker, presentation.target].filter(
     (sprite): sprite is CombatSpriteSnapshotV6 => sprite !== null,
   );
   const byId = new Map(snapshots.map((sprite) => [sprite.id, sprite] as const));
   const seen = new Set<number>();
-  const entries = plan.entries.map((entry) => {
+  const entries = planEntries.map((entry) => {
     if (entry.kind !== "UNIT") return entry;
     const snapshot = byId.get(entry.id as CombatSpriteSnapshotV6["id"]);
     if (snapshot === undefined) return entry;
@@ -716,6 +732,58 @@ function combatEntries(
     entries.push(combatWallEntry(wall, presentation.key));
   }
   return entries.sort(compareEntriesV6);
+}
+
+function movementEntries(
+  plan: BoardRenderPlanV6,
+  presentation: MovementPresentationV6 | null | undefined,
+  frame: MovementAnimationFrameV6 | null | undefined,
+): readonly RenderPlanEntryV6[] {
+  if (
+    presentation === undefined ||
+    presentation === null ||
+    frame === undefined ||
+    frame === null
+  ) {
+    return plan.entries;
+  }
+  return plan.entries.map((entry) => {
+    if (entry.id !== presentation.unit.id) return entry;
+    if (entry.kind === "UNIT") {
+      return movementUnitEntry(
+        presentation.unit,
+        frame.at,
+        entry.key,
+        entry.variant,
+      );
+    }
+    if (entry.kind === "CONTACT_SHADOW") {
+      return { ...entry, at: frame.at };
+    }
+    return entry;
+  });
+}
+
+function movementUnitEntry(
+  sprite: MovementSpriteSnapshotV6,
+  at: MovementAnimationFrameV6["at"],
+  key: string,
+  variant: number,
+): Extract<RenderPlanEntryV6, { readonly kind: "UNIT" }> {
+  return {
+    key,
+    kind: "UNIT",
+    at,
+    id: sprite.id,
+    ownerId: sprite.ownerId,
+    variant,
+    layer: 5,
+    details: {
+      faction: sprite.faction,
+      role: sprite.role,
+      readiness: "OPAQUE",
+    },
+  };
 }
 
 function combatUnitEntry(

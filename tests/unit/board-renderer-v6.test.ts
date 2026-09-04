@@ -31,6 +31,7 @@ import {
   drawBoardV6,
   roadMaskAtV6,
   tileFootprintPoints,
+  type BoardDrawCommandV6,
   unitScaleContractForRoleV6,
   unitVisibleFootprintV6,
 } from "../../src/render/canvas/board-renderer-v6";
@@ -49,6 +50,7 @@ import {
   combatAnimationFrameV6,
   type CombatPresentationV6,
 } from "../../src/render/canvas/combat-presentation-v6";
+import type { MovementPresentationV6 } from "../../src/render/canvas/movement-presentation-v6";
 import { cityPopulationPresentationV6 } from "../../src/render/city-population-presentation-v6";
 
 const AT = { x: 2, y: 2 } as const;
@@ -56,6 +58,104 @@ const WAIT = { kind: "WAIT", unitId: 20 } as const;
 const BUILD = { kind: "BUILD_FARM", at: AT } as const;
 
 describe("ruleset-6 Canvas drawing layer", () => {
+  it("re-sorts a sliding unit through row tile stacks and snaps to its destination", () => {
+    const unit = fixtureEntry(
+      "UNIT",
+      { x: 1, y: 2 },
+      { faction: "ORIGINAL", role: "SCOUT", readiness: "OPAQUE" },
+      5,
+    );
+    const terrain = [0, 1, 2].map((y) =>
+      fixtureEntry("TERRAIN", { x: 1, y }, { terrain: "FOREST" }, 1),
+    );
+    const plan: BoardRenderPlanV6 = {
+      planVersion: 6,
+      entries: [...terrain, unit],
+      legalCommands: [],
+      commandTargets: [],
+      economicPreview: null,
+    };
+    const presentation: MovementPresentationV6 = {
+      key: "move-depth",
+      commandIndex: 4,
+      motion: "FULL",
+      durationMs: 240,
+      actorController: "HUMAN",
+      unit: {
+        id: unitId(unit.id),
+        ownerId: 1,
+        faction: "ORIGINAL",
+        role: "SCOUT",
+        at: { x: 1, y: 0 },
+      },
+      path: [
+        { x: 1, y: 0 },
+        { x: 1, y: 1 },
+        { x: 1, y: 2 },
+      ],
+      destination: { x: 1, y: 2 },
+    };
+    const options = {
+      viewport: { width: 800, height: 600 },
+      camera: { offsetX: 400, offsetY: 100, zoom: 1 },
+      plan,
+      movementPresentation: presentation,
+    } as const;
+
+    const halfwayFirst = buildBoardDrawListV6({
+      ...options,
+      movementFrame: {
+        at: { x: 1, y: 0.5 },
+        segmentIndex: 0,
+        segmentProgress: 0.5,
+        complete: false,
+      },
+    });
+    expect(entryOrder(halfwayFirst.commands, [...terrain, unit])).toEqual([
+      terrain[0]?.key,
+      unit.key,
+      terrain[1]?.key,
+      terrain[2]?.key,
+    ]);
+
+    const onMiddleRow = buildBoardDrawListV6({
+      ...options,
+      movementFrame: {
+        at: { x: 1, y: 1 },
+        segmentIndex: 1,
+        segmentProgress: 0,
+        complete: false,
+      },
+    });
+    expect(entryOrder(onMiddleRow.commands, [...terrain, unit])).toEqual([
+      terrain[0]?.key,
+      terrain[1]?.key,
+      unit.key,
+      terrain[2]?.key,
+    ]);
+
+    const final = buildBoardDrawListV6({
+      ...options,
+      movementFrame: {
+        at: presentation.destination,
+        segmentIndex: 1,
+        segmentProgress: 1,
+        complete: true,
+      },
+    });
+    const finalUnit = final.commands.find(
+      (command) => command.entryKey === unit.key && command.kind === "IMAGE",
+    );
+    const baselineUnit = buildBoardDrawListV6({
+      viewport: options.viewport,
+      camera: options.camera,
+      plan,
+    }).commands.find(
+      (command) => command.entryKey === unit.key && command.kind === "IMAGE",
+    );
+    expect(finalUnit).toEqual(baselineUnit);
+  });
+
   it("draws every RenderEntryKindV6 without consulting state", () => {
     const plan = exhaustivePlan();
     const context = drawingContext();
@@ -1575,6 +1675,19 @@ function fixtureEntry(
     layer,
     details,
   } as RenderPlanEntryV6;
+}
+
+function entryOrder(
+  commands: readonly BoardDrawCommandV6[],
+  entries: readonly RenderPlanEntryV6[],
+): readonly (string | undefined)[] {
+  const keys = new Set(entries.map((entry) => entry.key));
+  const seen = new Set<string>();
+  return commands.flatMap((command) => {
+    if (!keys.has(command.entryKey) || seen.has(command.entryKey)) return [];
+    seen.add(command.entryKey);
+    return [command.entryKey];
+  });
 }
 
 function drawingContext(): CanvasRenderingContext2D {

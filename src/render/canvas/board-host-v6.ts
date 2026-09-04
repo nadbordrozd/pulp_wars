@@ -33,12 +33,17 @@ import {
   combatAnimationFrameV6,
   type CombatPresentationV6,
 } from "./combat-presentation-v6";
+import {
+  movementAnimationFrameV6,
+  type MovementPresentationV6,
+} from "./movement-presentation-v6";
 
 export interface CanvasBoardHostModelV6 {
   readonly matchInstanceId: number | string;
   readonly view: PlayerViewV6;
   readonly interactive: boolean;
   readonly motion?: "FULL" | "REDUCED";
+  readonly movementPresentation?: MovementPresentationV6 | null;
   readonly combatPresentation?: CombatPresentationV6 | null;
   readonly interaction: BoardRenderInteractionV6;
 }
@@ -52,6 +57,7 @@ export interface CanvasBoardHostCallbacksV6 {
   ) => void;
   readonly onZoom: (direction: "IN" | "OUT") => void;
   readonly onCancel?: () => void;
+  readonly onMovementPresentationComplete?: (key: string) => void;
   readonly onCombatPresentationComplete?: (key: string) => void;
 }
 
@@ -132,6 +138,9 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
   #readinessPhaseKey: string | null = null;
   #readinessPhaseStartedAt = 0;
   #animationFrame: number | null = null;
+  #movementPresentationKey: string | null = null;
+  #movementPresentationStartedAt = 0;
+  #completedMovementPresentationKey: string | null = null;
   #combatPresentationKey: string | null = null;
   #combatPresentationStartedAt = 0;
   #completedCombatPresentationKey: string | null = null;
@@ -211,7 +220,7 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
     const matchChanged =
       previousModel === null ||
       previousModel.matchInstanceId !== model.matchInstanceId;
-    if (matchChanged) this.#resetCombatPresentation();
+    if (matchChanged) this.#resetPresentations();
     const commandChanged =
       !matchChanged &&
       this.#observedCommandIndex !== null &&
@@ -223,6 +232,7 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
       this.#readinessPhaseStartedAt = this.#now();
     }
     this.#model = model;
+    this.#syncMovementPresentationClock(model);
     this.#syncCombatPresentationClock(model);
     this.#observedCommandIndex = model.view.commandIndex;
 
@@ -318,7 +328,7 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
     this.#boardKey = null;
     this.#readinessPhaseKey = null;
     this.#readinessPhaseStartedAt = 0;
-    this.#resetCombatPresentation();
+    this.#resetPresentations();
     this.#camera = { offsetX: 0, offsetY: 0, zoom: 1 };
   }
 
@@ -609,6 +619,15 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
         images: this.#images,
         readinessElapsedMs: this.#now() - this.#readinessPhaseStartedAt,
         reducedMotion: !boardReadinessAnimationNeededV6(model),
+        movementPresentation: model.movementPresentation ?? null,
+        movementFrame:
+          model.movementPresentation === undefined ||
+          model.movementPresentation === null
+            ? null
+            : movementAnimationFrameV6(
+                model.movementPresentation,
+                this.#movementElapsedMs(),
+              ),
         combatPresentation: model.combatPresentation ?? null,
         combatFrame:
           model.combatPresentation === undefined ||
@@ -744,7 +763,7 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
     this.#activator = null;
     this.#description = null;
     this.#callbacks = null;
-    if (!preserveCombatClock) this.#resetCombatPresentation();
+    if (!preserveCombatClock) this.#resetPresentations();
   }
 
   #scheduleAnimationFrame(): void {
@@ -757,6 +776,10 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
       this.#animationFrame = null;
       const current = this.#model;
       if (current === null || !boardAnimationNeededV6(current)) return;
+      if (this.#movementPresentationFinished(current)) {
+        this.#completeMovementPresentation(current);
+        return;
+      }
       if (this.#combatPresentationFinished(current)) {
         this.#completeCombatPresentation(current);
         return;
@@ -784,6 +807,50 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
 
   #now(): number {
     return this.#document.defaultView?.performance.now() ?? 0;
+  }
+
+  #syncMovementPresentationClock(model: CanvasBoardHostModelV6): void {
+    const presentation = model.movementPresentation ?? null;
+    const key =
+      presentation === null
+        ? null
+        : `${String(model.matchInstanceId)}:${presentation.key}`;
+    if (key === this.#movementPresentationKey) return;
+    this.#movementPresentationKey = key;
+    this.#completedMovementPresentationKey = null;
+    this.#movementPresentationStartedAt = key === null ? 0 : this.#now();
+  }
+
+  #movementElapsedMs(): number {
+    return this.#movementPresentationKey === null
+      ? 0
+      : Math.max(0, this.#now() - this.#movementPresentationStartedAt);
+  }
+
+  #movementPresentationFinished(model: CanvasBoardHostModelV6): boolean {
+    const presentation = model.movementPresentation ?? null;
+    return (
+      presentation !== null &&
+      this.#movementElapsedMs() >= presentation.durationMs
+    );
+  }
+
+  #completeMovementPresentation(model: CanvasBoardHostModelV6): void {
+    const presentation = model.movementPresentation ?? null;
+    if (presentation === null) return;
+    const key = `${String(model.matchInstanceId)}:${presentation.key}`;
+    if (
+      key !== this.#movementPresentationKey ||
+      key === this.#completedMovementPresentationKey
+    ) {
+      return;
+    }
+    // Paint the exact authoritative destination before handing queue control
+    // back to the DOM owner, even when no subsequent presentation is queued.
+    this.#draw();
+    this.#completedMovementPresentationKey = key;
+    this.#cancelAnimationFrame();
+    this.#callbacks?.onMovementPresentationComplete?.(presentation.key);
   }
 
   #syncCombatPresentationClock(model: CanvasBoardHostModelV6): void {
@@ -857,8 +924,11 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
     this.#combatCompletionTimer = null;
   }
 
-  #resetCombatPresentation(): void {
+  #resetPresentations(): void {
     this.#cancelCombatCompletionTimer();
+    this.#movementPresentationKey = null;
+    this.#completedMovementPresentationKey = null;
+    this.#movementPresentationStartedAt = 0;
     this.#combatPresentationKey = null;
     this.#completedCombatPresentationKey = null;
     this.#combatPresentationStartedAt = 0;
@@ -866,8 +936,10 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
 }
 
 export function boardAnimationNeededV6(model: CanvasBoardHostModelV6): boolean {
+  const movement = model.movementPresentation ?? null;
   const combat = model.combatPresentation ?? null;
   return (
+    movement !== null ||
     (combat !== null && combat.motion === "FULL") ||
     boardReadinessAnimationNeededV6(model)
   );
