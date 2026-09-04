@@ -45,6 +45,11 @@ export interface ReachablePathV6 {
   readonly spentPoints2: number;
 }
 
+type MovementTileStateV6 = TileStateV6 & {
+  /** Observation-safe synthetic states retain this already-public owner. */
+  readonly territoryOwnerId?: PlayerId | null;
+};
+
 /** Validates v6 integer-half-point movement without consuming PRNG. */
 export function validateMovementPathV6(
   state: GameStateV6,
@@ -278,8 +283,9 @@ function ownedCityCenter(
 
 function tileOwnerId(
   state: Pick<GameStateV6, "cities">,
-  tile: TileStateV6,
+  tile: MovementTileStateV6,
 ): PlayerId | null {
+  if (tile.territoryOwnerId !== undefined) return tile.territoryOwnerId;
   if (tile.territoryCityId === null) return null;
   return (
     state.cities.find((city) => city.id === tile.territoryCityId)?.ownerId ??

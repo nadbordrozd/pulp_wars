@@ -1491,6 +1491,8 @@ function publicGraph(view: PlayerViewV6): {
           road: tile.road,
           site: tile.site,
           territoryCityId: tile.territoryCityId,
+          // Movement needs the already-public owner even when its city is hidden.
+          territoryOwnerId: tile.territoryOwnerId,
         }
       : {
           at: tile.at,

@@ -11,13 +11,17 @@ import {
 import type { PlayerId } from "../../src/engine/model/ids";
 import { compareCommandsV6 } from "../../src/engine/v6/commands";
 import { queryPlayerCommandsV6 } from "../../src/engine/v6/query";
-import { createPlayableGameV6 } from "../../src/engine/v6/reducer";
+import {
+  applyCommandV6,
+  createPlayableGameV6,
+} from "../../src/engine/v6/reducer";
 import {
   ReplayErrorV6,
   parseReplayFileV6,
   runReplayV6,
   type ReplayFileV6,
 } from "../../src/engine/v6/replay";
+import { parseGameStateV6 } from "../../src/engine/v6/state-schema";
 import type {
   AiModeV6,
   FactionIdV6,
@@ -315,7 +319,149 @@ describe("ruleset-6 Normal observation boundary", () => {
       chooseNormalCommandV6(alteredView),
     );
   });
+
+  it.each([
+    ["NEUTRAL", true],
+    ["ENEMY", true],
+    ["OWN", true],
+    ["ALLIED", false],
+  ] as const)(
+    "keeps an explored %s territory step aligned between the public query and reducer",
+    (relationship, offered) => {
+      const state = movementTerritoryState(relationship);
+      const actor = activePlayer(state);
+      const unit = state.units.find((candidate) => candidate.ownerId === actor);
+      if (unit === undefined) throw new Error("Missing movement actor");
+      const target = { x: 12, y: 12 };
+      const command = {
+        kind: "MOVE" as const,
+        unitId: unit.id,
+        path: [target],
+      };
+      const view = viewForV6(state, actor);
+      const publicTile =
+        view.board.tiles[target.y * view.board.width + target.x];
+      const publicCommands = queryPlayerCommandsV6(view);
+
+      expect(publicTile).toMatchObject({
+        explored: true,
+        territoryOwnerId:
+          relationship === "NEUTRAL"
+            ? null
+            : relationship === "OWN"
+              ? actor
+              : 3,
+      });
+      if (relationship === "ALLIED" || relationship === "ENEMY") {
+        expect(publicTile).toMatchObject({ territoryCityId: null });
+        expect(view.cities).not.toContainEqual(
+          expect.objectContaining({ id: 5, at: { x: 11, y: 11 } }),
+        );
+        expect(view.board.tiles[11 * view.board.width + 11]).toMatchObject({
+          at: { x: 11, y: 11 },
+          explored: false,
+        });
+      }
+      if (offered) expect(publicCommands).toContainEqual(command);
+      else expect(publicCommands).not.toContainEqual(command);
+
+      const applied = applyCommandV6(state, actor, command);
+      if (offered) {
+        expect(applied.accepted).toBe(true);
+      } else {
+        expect(applied).toMatchObject({
+          accepted: false,
+          error: {
+            code: "MOVEMENT_ILLEGAL",
+            params: { reason: "ALLY_TERRITORY_FORBIDDEN" },
+          },
+        });
+        const decision = chooseNormalCommandV6(view);
+        expect(decision.command).not.toEqual(command);
+        if (decision.command === null)
+          throw new Error("Missing fallback command");
+        expect(applyCommandV6(state, actor, decision.command).accepted).toBe(
+          true,
+        );
+      }
+    },
+  );
 });
+
+function movementTerritoryState(
+  relationship: "NEUTRAL" | "ENEMY" | "OWN" | "ALLIED",
+): GameStateV6 {
+  const state = structuredClone(
+    createdState(
+      setupV6({
+        aiCount: 2,
+        width: 14,
+        height: 14,
+        aiMode: relationship === "ENEMY" ? "RIVAL" : "COOPERATIVE",
+        factions: ["ORIGINAL", "CANDY", "ORIGINAL"],
+      }),
+    ),
+  );
+  const actorId = relationship === "OWN" ? (3 as PlayerId) : (2 as PlayerId);
+  const unit = state.units.find((candidate) => candidate.ownerId === actorId);
+  if (unit === undefined)
+    throw new Error("Missing deterministic movement unit");
+  const hiddenController = state.cities.find(
+    (city) => city.ownerId === (3 as PlayerId),
+  );
+  if (hiddenController === undefined) {
+    throw new Error("Missing deterministic territory controller");
+  }
+  const start = { x: 13, y: 13 };
+  const target = { x: 12, y: 12 };
+  const exploredAroundStart = [
+    { x: 12, y: 12 },
+    { x: 13, y: 12 },
+    { x: 12, y: 13 },
+    start,
+  ];
+  const candidate: GameStateV6 = {
+    ...state,
+    activeSeatIndex: state.turnOrder.indexOf(actorId),
+    board:
+      relationship === "NEUTRAL"
+        ? {
+            ...state.board,
+            tiles: state.board.tiles.map((tile) =>
+              tile.at.x === target.x && tile.at.y === target.y
+                ? { ...tile, territoryCityId: null }
+                : tile,
+            ),
+          }
+        : state.board,
+    players: state.players.map((player) =>
+      player.id === actorId
+        ? {
+            ...player,
+            explored: [...player.explored, ...exploredAroundStart]
+              .filter(
+                (at, index, all) =>
+                  all.findIndex(
+                    (candidateAt) =>
+                      candidateAt.x === at.x && candidateAt.y === at.y,
+                  ) === index,
+              )
+              .sort((left, right) => left.y - right.y || left.x - right.x),
+          }
+        : player,
+    ),
+    units: state.units.map((candidateUnit) =>
+      candidateUnit.id === unit.id
+        ? { ...candidateUnit, at: start }
+        : candidateUnit,
+    ),
+  };
+  const parsed = parseGameStateV6(candidate);
+  if (parsed === null) throw new Error("Invalid movement territory fixture");
+  expect(hiddenController.at).toEqual({ x: 11, y: 11 });
+  expect(unit.id).toBe(relationship === "OWN" ? 6 : 4);
+  return parsed;
+}
 
 describe("ruleset-6 deterministic headless execution", () => {
   it("repeats mixed-faction commands, events, checkpoints, and final state", () => {
