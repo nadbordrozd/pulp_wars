@@ -540,7 +540,14 @@ function drawEntry(
         commands,
         coverage,
         entry.key,
-        terrainCoverageV6(entry.details.terrain, faction, entry.variant),
+        terrainCoverageV6(
+          entry.details.groundOnly === true ? "GRASS" : entry.details.terrain,
+          faction,
+          // Every accepted Forest uses the faction's first Grass as its
+          // owning-square ground reference. Preserve that exact material when
+          // a Sawmill visually replaces only the same-tile canopy.
+          entry.details.groundOnly === true ? 0 : entry.variant,
+        ),
         center,
         zoom,
         () => [],

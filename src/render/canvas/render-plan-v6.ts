@@ -107,7 +107,11 @@ export interface MapCommandTargetV6 {
 
 interface RenderEntryDetailsV6 {
   readonly FOG: { readonly diplomaticBlock: "ALLIED_TERRITORY" | null };
-  readonly TERRAIN: { readonly terrain: TerrainIdV6 };
+  readonly TERRAIN: {
+    readonly terrain: TerrainIdV6;
+    /** Presentation-only: a same-tile processor replaces this tall body. */
+    readonly groundOnly?: boolean;
+  };
   readonly OWNERSHIP: { readonly faction: FactionIdV6 };
   readonly ROAD: null;
   readonly RESOURCE: { readonly resource: ResourceId };
@@ -372,6 +376,9 @@ export function buildRenderPlanV6(
     entries.push(
       entryV6("TERRAIN", tile.at, tileId, ownerId, {
         terrain: tile.terrain,
+        ...(tile.terrain === "FOREST" && tile.improvement === "SAWMILL"
+          ? { groundOnly: true }
+          : {}),
       }),
     );
     if (ownerId !== null && faction !== null) {

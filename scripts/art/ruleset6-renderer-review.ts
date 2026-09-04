@@ -12,6 +12,7 @@ import {
 import {
   PLACEMENT_ART_GEOMETRY,
   RULESET6_UNIT_COSMETIC_OFFSET_Y,
+  SQUARE_ART_GEOMETRY,
 } from "../../src/render/canvas/board-art-geometry";
 import {
   buildBoardDrawListV6,
@@ -36,6 +37,7 @@ const sheet = {
   height: panel.height * 3 + 120,
 } as const;
 const zooms = [0.625, 1, 1.75] as const;
+const MOUNTAIN_BODY_OFFSET_SOURCE_PIXELS = 40;
 const artifacts: string[] = [];
 
 await mkdir(reviewRoot, { recursive: true });
@@ -97,7 +99,7 @@ async function reviewSvg(faction: FactionIdV6): Promise<string> {
     .join("")}</defs>
   <rect width="100%" height="100%" fill="#172b2b"/>
   <text x="40" y="30" font-family="system-ui,sans-serif" font-size="20" font-weight="800" fill="#f5efe0">Ruleset 6 Canvas · ${faction} · zoom and coverage review</text>
-  <text x="40" y="53" font-family="system-ui,sans-serif" font-size="13" font-weight="600" fill="#c5d7d4">All nine roles + Fertile Ground · visible-bound centering · complete map overlays</text>
+  <text x="40" y="53" font-family="system-ui,sans-serif" font-size="13" font-weight="600" fill="#c5d7d4">Grounded Mountains · Forest/Camp and replaced-canopy Sawmill · enlarged chest · all nine roles</text>
   ${panels
     .map(
       ({ index, zoom, commands, accepted, placeholders }) => `<g>
@@ -190,21 +192,23 @@ function representativePlan(faction: FactionIdV6): BoardRenderPlanV6 {
         add("FOG", at, { diplomaticBlock: null }, 0, null);
         continue;
       }
-      add("TERRAIN", at, { terrain: "GRASS" }, 1);
+      const terrain = terrainAt(x, y);
+      add(
+        "TERRAIN",
+        at,
+        {
+          terrain,
+          ...(x === 5 && y === 2 ? { groundOnly: true } : {}),
+        },
+        1,
+        1,
+        y === 0 && x <= 3 ? x : (x * 3 + y) % 4,
+      );
       add("OWNERSHIP", at, { faction }, 2);
       if (y === 3) add("ROAD", at, null, 3);
+      if (terrain !== "GRASS") add("TERRAIN_BODY", at, { terrain }, 5);
     }
   }
-
-  const bodies = [
-    [{ x: 0, y: 0 }, "MOUNTAIN"],
-    [{ x: 1, y: 0 }, "FOREST"],
-    [{ x: 1, y: 1 }, "FOREST"],
-    [{ x: 3, y: 1 }, "MOUNTAIN"],
-    [{ x: 4, y: 1 }, "MOUNTAIN"],
-    [{ x: 5, y: 2 }, "FOREST"],
-  ] as const;
-  for (const [at, terrain] of bodies) add("TERRAIN_BODY", at, { terrain }, 5);
 
   RESOURCE_IDS.forEach((resource, index) =>
     add(
@@ -214,8 +218,8 @@ function representativePlan(faction: FactionIdV6): BoardRenderPlanV6 {
       resource === "GAME" ? 5 : 4,
     ),
   );
-  add("RESOURCE", { x: 5, y: 2 }, { resource: "GAME" }, 5);
   add("UNKNOWN_RESOURCE", { x: 5, y: 1 }, null, 4);
+  add("TREASURE", { x: 4, y: 0 }, null, 5, null);
 
   ECONOMIC_IMPROVEMENT_IDS.forEach((improvement, index) => {
     const at = { x: index % 6, y: 2 + Math.floor(index / 6) };
@@ -262,7 +266,7 @@ function representativePlan(faction: FactionIdV6): BoardRenderPlanV6 {
   add("CHOCOLATE_WALL_STATUS", { x: 4, y: 4 }, { hp: 7 }, 8);
 
   const unitCoords = [
-    { x: 5, y: 2 },
+    { x: 1, y: 4 },
     { x: 2, y: 4 },
     { x: 3, y: 4 },
     { x: 1, y: 5 },
@@ -292,7 +296,7 @@ function representativePlan(faction: FactionIdV6): BoardRenderPlanV6 {
     );
   });
 
-  add("SELECTION", { x: 5, y: 2 }, { selectionKind: "UNIT" }, 6, null);
+  add("SELECTION", { x: 1, y: 4 }, { selectionKind: "UNIT" }, 6, null);
   for (const edge of ["NORTH", "EAST", "SOUTH", "WEST"] as const)
     add("CITY_TERRITORY_BOUNDARY", { x: 0, y: 4 }, { edge }, 6);
   add(
@@ -364,9 +368,18 @@ function representativePlan(faction: FactionIdV6): BoardRenderPlanV6 {
   };
 }
 
+function terrainAt(x: number, y: number): "GRASS" | "FOREST" | "MOUNTAIN" {
+  if (y === 0 && x <= 2) return "MOUNTAIN";
+  if (y === 1 && x === 1) return "FOREST";
+  if (y === 1 && (x === 2 || x === 4)) return "MOUNTAIN";
+  if (y === 2 && (x === 1 || x === 5)) return "FOREST";
+  if (y === 2 && (x === 2 || x === 3)) return "MOUNTAIN";
+  return "GRASS";
+}
+
 function centeredCamera(
   width: number,
-  height: number,
+  _height: number,
   zoom: number,
   viewport: {
     readonly x: number;
@@ -375,14 +388,11 @@ function centeredCamera(
     readonly height: number;
   },
 ) {
-  const centerWorld = {
-    x: ((width - height) * 64) / 2,
-    y: ((width + height - 2) * 37) / 2,
-  };
+  const centerWorldX = ((width - 1) * 128) / 2;
   return {
     zoom,
-    offsetX: viewport.x + viewport.width / 2 - centerWorld.x * zoom,
-    offsetY: viewport.y + viewport.height / 2 - centerWorld.y * zoom + 42,
+    offsetX: viewport.x + viewport.width / 2 - centerWorldX * zoom,
+    offsetY: viewport.y + 64 * zoom + 12,
   };
 }
 
@@ -444,21 +454,35 @@ async function writeEvidence(): Promise<void> {
           fertileGroundOffsetY: PLACEMENT_ART_GEOMETRY.fertileGround.offsetY,
           coordinateSpace: "nominal CSS pixels at 1x zoom",
         },
+        mapObjectContracts: {
+          mountainBodyOffsetSourcePixels: MOUNTAIN_BODY_OFFSET_SOURCE_PIXELS,
+          lumberCampVisibleCssAt1x: { width: 58.8, height: 56 },
+          sawmillVisibleCssAt1x: { width: 76.32, height: 74.52 },
+          treasureVisibleCssAt1x: { width: 40.5, height: 43 },
+          displayScales: {
+            lumberCamp: SQUARE_ART_GEOMETRY.lumberCamp.displayScale,
+            sawmill: SQUARE_ART_GEOMETRY.sawmill.displayScale,
+            treasure: SQUARE_ART_GEOMETRY.treasure.displayScale,
+          },
+        },
         reviewCoverage: [
           "complete accepted production raster inventory with zero placeholders",
           "all nine role silhouettes with ordinary units smaller than Forest and Mountain",
           "all nine Original and all nine Candy unit silhouettes visibly centered at 0.625x, 1x and 1.75x",
-          "Fertile Ground painted bounds centered across the owning diamond instead of ending at tile center",
+          "Fertile Ground painted bounds centered across the owning square instead of ending at tile center",
           "accepted Road masks, economic contributor numbers, opposite-pair axis and value chip",
           "all seven leveled improvements with exact zero, one, and multi-value compact square pips",
           "selection, move/attack targets, unit/city/wall status and fog",
-          "Forest Game/Animal frontage without a unit and beneath an occupied selected unit",
+          "Forest Game/Animal frontage in front of its owning canopy",
+          "all three newly grounded Mountain variants with fixed square ground and no lateral or bottom overflow",
+          "larger Lumber Camp over retained Forest and larger Sawmill over same-tile faction ground with its canopy suppressed",
+          "larger neutral treasure chest below units and major terrain",
           "level-4 negative population as exactly two leading red deficit squares within the fixed five-square layer",
         ],
         visualReview: {
           status: "ACCEPTED",
           notes:
-            "Native and enlarged sheets were inspected individually. Every Original and Candy role keeps its accepted compact scale while the painted feet or ground mass occupies the owning diamond's lower-center; heads overlap rear tiles only modestly. Fertile Ground spans both halves around tile center instead of floating above it. Shadows and status markers remain attached, selection and target overlays remain tile-aligned, and melee/ranged/damage presentation remains renderer-owned. Game/Animal remains visible in front of each Forest canopy, including beneath a selected occupied tile.",
+            "Native and enlarged sheets were inspected individually at 0.625x, 1x and 1.75x for DPR1/2. Every Original and Candy Mountain body is grounded in the lower half of its unchanged square without lateral or bottom spill. Lumber Camp remains subordinate to its visible Forest; Sawmill is legible over matching ground with only its own Forest canopy suppressed; the enlarged chest remains below units and major terrain. Every faction role retains its accepted compact scale, Game stays in front of Forest, and shadows, status, selection, targets, picking and authoritative coordinates remain unchanged.",
         },
         artifacts: records,
       },
@@ -471,6 +495,6 @@ async function writeEvidence(): Promise<void> {
 async function writeReadme(): Promise<void> {
   await writeFile(
     path.join(reviewRoot, "README.md"),
-    `# Ruleset-6 Canvas renderer review\n\nGenerated deterministically with \`npm run art:ruleset6-renderer-review\`. The eight sheets cover Original and Candy at 0.625x, 1x, and 1.75x for DPR1 and DPR2, each at native backing resolution and nearest-neighbor 2x inspection scale. Each vertically stacked zoom panel keeps all nine faction roles and Fertile Ground visible for direct painted-bound placement review. Units retain their accepted standard, siege, and giant scales while receiving the shared +${RULESET6_UNIT_COSMETIC_OFFSET_Y} CSS px baseline correction at 1x; Fertile Ground receives +${PLACEMENT_ART_GEOMETRY.fertileGround.offsetY} CSS px. Shadows and status markers follow unit placement, while selection, sorting, picking, combat origins, and authoritative tile coordinates remain unchanged.\n\nThe resource row includes an unoccupied Forest Game/Animal tile, and the right-side Forest includes Game beneath a selected unit. These prove canopy → Animal → unit → interaction/status ordering without changing shared anchors. Technology-hidden resources intentionally add no world marker: explored ordinary terrain is the complete visual. Accepted, semantically identical existing rasters are embedded from checked-in files; fog, ownership, targets, economic contributors and statuses remain intentionally code-native.\n`,
+    `# Ruleset-6 Canvas renderer review\n\nGenerated deterministically with \`npm run art:ruleset6-renderer-review\`. The eight sheets cover Original and Candy at 0.625x, 1x, and 1.75x for DPR1 and DPR2, each at native backing resolution and nearest-neighbor 2x inspection scale. The panels include every newly grounded Mountain variant, enlarged Lumber Camp and treasure chest, and the larger Sawmill with its same-tile Forest canopy replaced by exact faction ground. The Camp comparison retains Forest, proving suppression is specific to Sawmill. All nine faction roles and Fertile Ground remain visible for scale comparison.\n\nUnits retain accepted standard, siege, and giant scales with the shared +${RULESET6_UNIT_COSMETIC_OFFSET_Y} CSS px baseline correction; Fertile Ground retains +${PLACEMENT_ART_GEOMETRY.fertileGround.offsetY} CSS px. The resource row keeps Game/Animal in front of Forest. Fog, ownership, targets, contributor marks and status remain code-native. Sorting, picking, combat origins, simulation terrain, mechanics and authoritative coordinates are unchanged.\n`,
   );
 }

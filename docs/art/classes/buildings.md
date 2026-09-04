@@ -90,6 +90,11 @@ units. Lumber Camp uses an open timber rack, upright saw and two logs; Mine uses
 a dark opening, three timber braces and diagonal pick. Neither replaces or
 hides its authoritative underlying terrain.
 
+Map-scale play review increases only the Lumber Camp runtime display scale from
+`0.5` to `0.7`; its accepted source, anchor, and bottom contact remain
+unchanged. The visible Camp becomes roughly 59 x 56 CSS pixels at 1x while the
+Forest remains authoritative and materially larger.
+
 Sawmill, Forge and Stoneworks retain the 384 x 384 processor canvas and
 `(192,288)` anchor. Their accepted alpha bounds are respectively
 `x=86..298,y=109..316`, `x=90..294,y=88..316`, and
@@ -99,6 +104,14 @@ and leaves the lower-right renderer attachment area clear. Sawmill is defined
 by its open canopy, upright circular saw and log stack; Forge by its squat
 furnace, chimney and exterior anvil; Stoneworks by its finished arch, short
 hoist and fitted blocks.
+
+The Sawmill alone displays at `0.36` after map-scale play review, producing an
+approximately 77 x 75 CSS-pixel visible body at 1x. When a Sawmill occupies an
+authoritative Forest tile, presentation replaces that same tile's canopy with
+the exact faction-matching ground reference. The simulation terrain stays
+Forest; Lumber Camps and every other Forest improvement continue to show the
+canopy. This presentation-only suppression never affects adjacent Forests,
+movement, defense, economy, picking, or state hashes.
 
 Deterministic review covers both factions, all supported zoom/DPR pairs, dense
 Road/resource/city/fog/ownership/selection contexts, and exact 112 x 130 UI
@@ -220,6 +233,10 @@ the owning square to the left, right, or bottom. It renders as a low tile-stack
 body above terrain/fog and below units and interaction/status overlays. Review
 the exact source at native and nearest-neighbor enlarged scale, then at
 0.625x/1x/1.75x over representative Original and Candy terrain.
+
+Its accepted 256 x 296 source displays at `0.5` after map-scale play review,
+making the visible chest approximately 41 x 43 CSS pixels at 1x. It remains
+smaller than ordinary units and substantially smaller than Forest or Mountain.
 
 ## Draw composition and anchor behavior
 

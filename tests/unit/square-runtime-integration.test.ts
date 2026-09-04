@@ -112,9 +112,13 @@ describe("accepted square runtime integration", () => {
       expect(coverage.geometry).toEqual(
         improvement === "FARM"
           ? SQUARE_ART_GEOMETRY.ground
-          : ["LUMBER_CAMP", "MINE", "QUARRY"].includes(improvement)
-            ? SQUARE_ART_GEOMETRY.lowImprovement
-            : SQUARE_ART_GEOMETRY.processor,
+          : improvement === "LUMBER_CAMP"
+            ? SQUARE_ART_GEOMETRY.lumberCamp
+            : ["MINE", "QUARRY"].includes(improvement)
+              ? SQUARE_ART_GEOMETRY.lowImprovement
+              : improvement === "SAWMILL"
+                ? SQUARE_ART_GEOMETRY.sawmill
+                : SQUARE_ART_GEOMETRY.processor,
       );
     }
   });

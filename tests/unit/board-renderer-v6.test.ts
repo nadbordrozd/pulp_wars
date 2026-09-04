@@ -18,6 +18,7 @@ import {
   resourceCoverageV6,
   siteCoverageV6,
   terrainCoverageV6,
+  treasureCoverageV6,
   unitCoverageV6,
 } from "../../src/render/canvas/asset-coverage-v6";
 import {
@@ -429,6 +430,57 @@ describe("ruleset-6 Canvas drawing layer", () => {
     expect(
       list.coverage.filter((item) => item.entryKey === unknown.key),
     ).toEqual([]);
+  });
+
+  it.each(["ORIGINAL", "CANDY"] as const)(
+    "draws the %s Sawmill over matching ground without its same-tile Forest canopy",
+    (faction) => {
+      const at = { x: 2, y: 2 } as const;
+      const plan: BoardRenderPlanV6 = {
+        planVersion: 6,
+        entries: [
+          fixtureEntry(
+            "TERRAIN",
+            at,
+            { terrain: "FOREST", groundOnly: true },
+            1,
+          ),
+          fixtureEntry("OWNERSHIP", at, { faction }, 2),
+          fixtureEntry("IMPROVEMENT", at, { improvement: "SAWMILL" }, 5),
+        ],
+        legalCommands: [],
+        commandTargets: [],
+        economicPreview: null,
+      };
+      const images = buildBoardDrawListV6({
+        viewport: { width: 800, height: 600 },
+        camera: { offsetX: 400, offsetY: 180, zoom: 1 },
+        plan,
+      }).commands.filter((command) => command.kind === "IMAGE");
+      expect(images.map((command) => command.assetId)).toEqual([
+        `terrain-square-${faction.toLowerCase()}-grass-1`,
+        "building-square-sawmill",
+      ]);
+    },
+  );
+
+  it("scales Camps, Sawmills, and treasure for map readability while keeping them below major terrain", () => {
+    expect(improvementCoverageV6("LUMBER_CAMP").geometry).toEqual(
+      SQUARE_ART_GEOMETRY.lumberCamp,
+    );
+    expect(improvementCoverageV6("SAWMILL").geometry).toEqual(
+      SQUARE_ART_GEOMETRY.sawmill,
+    );
+    expect(treasureCoverageV6().geometry).toEqual(SQUARE_ART_GEOMETRY.treasure);
+    expect(SQUARE_ART_GEOMETRY.lumberCamp.displayScale).toBe(0.7);
+    expect(SQUARE_ART_GEOMETRY.sawmill.displayScale).toBe(0.36);
+    expect(SQUARE_ART_GEOMETRY.treasure.displayScale).toBe(0.5);
+    expect(256 * SQUARE_ART_GEOMETRY.lumberCamp.displayScale).toBeLessThan(
+      256 * SQUARE_ART_GEOMETRY.tallTerrain.displayScale * 1.5,
+    );
+    expect(384 * SQUARE_ART_GEOMETRY.sawmill.displayScale).toBeLessThan(
+      256 * SQUARE_ART_GEOMETRY.tallTerrain.displayScale * 1.5,
+    );
   });
 
   it("draws exactly one compact outlined pip per live improvement level and none at level zero", () => {
@@ -1725,6 +1777,22 @@ describe("ruleset-6 Canvas drawing layer", () => {
         readonly fertileGroundOffsetY: number;
         readonly coordinateSpace: string;
       };
+      readonly mapObjectContracts: {
+        readonly mountainBodyOffsetSourcePixels: number;
+        readonly lumberCampVisibleCssAt1x: {
+          readonly width: number;
+          readonly height: number;
+        };
+        readonly sawmillVisibleCssAt1x: {
+          readonly width: number;
+          readonly height: number;
+        };
+        readonly treasureVisibleCssAt1x: {
+          readonly width: number;
+          readonly height: number;
+        };
+        readonly displayScales: Readonly<Record<string, number>>;
+      };
       readonly reviewCoverage: readonly string[];
       readonly visualReview: { readonly status: string };
       readonly artifacts: readonly {
@@ -1746,14 +1814,30 @@ describe("ruleset-6 Canvas drawing layer", () => {
       fertileGroundOffsetY: 18,
       coordinateSpace: "nominal CSS pixels at 1x zoom",
     });
+    expect(evidence.mapObjectContracts).toEqual({
+      mountainBodyOffsetSourcePixels: 40,
+      lumberCampVisibleCssAt1x: { width: 58.8, height: 56 },
+      sawmillVisibleCssAt1x: { width: 76.32, height: 74.52 },
+      treasureVisibleCssAt1x: { width: 40.5, height: 43 },
+      displayScales: { lumberCamp: 0.7, sawmill: 0.36, treasure: 0.5 },
+    });
     expect(evidence.reviewCoverage).toContain(
       "all nine Original and all nine Candy unit silhouettes visibly centered at 0.625x, 1x and 1.75x",
     );
     expect(evidence.reviewCoverage).toContain(
-      "Fertile Ground painted bounds centered across the owning diamond instead of ending at tile center",
+      "Fertile Ground painted bounds centered across the owning square instead of ending at tile center",
     );
     expect(evidence.reviewCoverage).toContain(
-      "Forest Game/Animal frontage without a unit and beneath an occupied selected unit",
+      "Forest Game/Animal frontage in front of its owning canopy",
+    );
+    expect(evidence.reviewCoverage).toContain(
+      "all three newly grounded Mountain variants with fixed square ground and no lateral or bottom overflow",
+    );
+    expect(evidence.reviewCoverage).toContain(
+      "larger Lumber Camp over retained Forest and larger Sawmill over same-tile faction ground with its canopy suppressed",
+    );
+    expect(evidence.reviewCoverage).toContain(
+      "larger neutral treasure chest below units and major terrain",
     );
     expect(evidence.reviewCoverage).toContain(
       "all seven leveled improvements with exact zero, one, and multi-value compact square pips",

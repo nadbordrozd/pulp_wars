@@ -187,6 +187,78 @@ describe("square terrain sample gate", () => {
     expect(ranges).toEqual([3, 2, 1]);
   });
 
+  it("reframes every accepted Mountain body downward without moving its square ground", async () => {
+    const source = JSON.parse(
+      await readFile("scripts/art/pixellab-manifest.json", "utf8"),
+    ) as {
+      readonly recipes: readonly {
+        readonly id: string;
+        readonly output: string;
+        readonly outputSize: {
+          readonly width: number;
+          readonly height: number;
+        };
+        readonly groundReference?: string;
+        readonly squareFootprint?: { readonly top: number };
+        readonly bodyOffsetY?: number;
+        readonly reframeSource?: string;
+        readonly reframeSourceSha256?: string;
+      }[];
+    };
+    const mountains = source.recipes.filter(
+      ({ id }) => id.startsWith("terrain-square-") && id.includes("-mountain-"),
+    );
+    expect(mountains).toHaveLength(6);
+
+    for (const recipe of mountains) {
+      expect(recipe.bodyOffsetY, recipe.id).toBe(40);
+      expect(recipe.reframeSource, recipe.id).toMatch(
+        /^art\/pixellab\/reframe-sources\/.+\.png$/,
+      );
+      if (
+        recipe.reframeSource === undefined ||
+        recipe.reframeSourceSha256 === undefined ||
+        recipe.groundReference === undefined ||
+        recipe.squareFootprint === undefined
+      )
+        throw new Error(`Incomplete Mountain reframe fixture: ${recipe.id}`);
+      const groundRecipe = source.recipes.find(
+        ({ id }) => id === recipe.groundReference,
+      );
+      if (groundRecipe === undefined)
+        throw new Error(`Missing ground fixture: ${recipe.groundReference}`);
+
+      const immutableSource = await readFile(recipe.reframeSource);
+      expect(hash(immutableSource), recipe.id).toBe(recipe.reframeSourceSha256);
+      const groundPng = await sharp(groundRecipe.output)
+        .ensureAlpha()
+        .resize(recipe.outputSize.width, recipe.outputSize.width, {
+          fit: "fill",
+          kernel: sharp.kernel.lanczos3,
+        })
+        .greyscale()
+        .tint("#718391")
+        .png({ compressionLevel: 9, adaptiveFiltering: false })
+        .toBuffer();
+      const [before, after] = await Promise.all([
+        mountainBodyBounds(
+          immutableSource,
+          groundPng,
+          recipe.squareFootprint.top,
+        ),
+        mountainBodyBounds(
+          await readFile(recipe.output),
+          groundPng,
+          recipe.squareFootprint.top,
+        ),
+      ]);
+      expect(after.minY - before.minY, recipe.id).toBe(40);
+      expect(after.maxY - before.maxY, recipe.id).toBe(40);
+      expect(after.minY, recipe.id).toBeGreaterThanOrEqual(121);
+      expect(after.maxY, recipe.id).toBeLessThanOrEqual(320);
+    }
+  }, 20_000);
+
   it("checks in complete deterministic visual-review evidence", async () => {
     const evidence = JSON.parse(
       await readFile(
@@ -282,4 +354,54 @@ function pixel(
     data[offset + 2] ?? 0,
     data[offset + 3] ?? 0,
   ];
+}
+
+async function mountainBodyBounds(
+  source: Buffer,
+  groundPng: Buffer,
+  footprintTop: number,
+): Promise<{ readonly minY: number; readonly maxY: number }> {
+  const image = await sharp(source)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const ground = await sharp(groundPng)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  let minY = image.info.height;
+  let maxY = -1;
+  for (let y = 0; y < image.info.height; y += 1) {
+    for (let x = 0; x < image.info.width; x += 1) {
+      const offset = (y * image.info.width + x) * 4;
+      const difference =
+        y < footprintTop
+          ? (image.data[offset + 3] ?? 0)
+          : Math.max(
+              Math.abs(
+                (image.data[offset] ?? 0) -
+                  (ground.data[
+                    ((y - footprintTop) * ground.info.width + x) * 4
+                  ] ?? 0),
+              ),
+              Math.abs(
+                (image.data[offset + 1] ?? 0) -
+                  (ground.data[
+                    ((y - footprintTop) * ground.info.width + x) * 4 + 1
+                  ] ?? 0),
+              ),
+              Math.abs(
+                (image.data[offset + 2] ?? 0) -
+                  (ground.data[
+                    ((y - footprintTop) * ground.info.width + x) * 4 + 2
+                  ] ?? 0),
+              ),
+            );
+      if (difference <= 15) continue;
+      minY = Math.min(minY, y);
+      maxY = Math.max(maxY, y);
+    }
+  }
+  if (maxY < 0) throw new Error("Mountain body fixture contains no pixels");
+  return { minY, maxY };
 }

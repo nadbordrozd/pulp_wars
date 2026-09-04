@@ -134,17 +134,29 @@ export const SQUARE_ART_GEOMETRY = {
     anchor: { x: 128, y: 222 },
     displayScale: 0.5,
   },
+  lumberCamp: {
+    width: 256,
+    height: 296,
+    anchor: { x: 128, y: 222 },
+    displayScale: 0.7,
+  },
   treasure: {
     width: 256,
     height: 296,
     anchor: { x: 128, y: 222 },
-    displayScale: 0.3,
+    displayScale: 0.5,
   },
   processor: {
     width: 384,
     height: 384,
     anchor: { x: 192, y: 288 },
     displayScale: 0.3,
+  },
+  sawmill: {
+    width: 384,
+    height: 384,
+    anchor: { x: 192, y: 288 },
+    displayScale: 0.36,
   },
 } as const satisfies Readonly<Record<string, SourceGeometry>>;
 

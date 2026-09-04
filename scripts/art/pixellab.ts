@@ -49,6 +49,11 @@ interface Recipe {
   readonly fitBounds?: Bounds;
   /** Deterministic source-canvas translation after fitting and ground alignment. */
   readonly fitOffsetX?: number;
+  /** Deterministic downward translation of a tall terrain body before ground composition. */
+  readonly bodyOffsetY?: number;
+  /** Immutable accepted source used when reframing an already-produced body. */
+  readonly reframeSource?: string;
+  readonly reframeSourceSha256?: string;
   /** Exact owning square in source pixels for square-grid terrain recipes. */
   readonly squareFootprint?: Bounds;
   /** Accepted square ground composited beneath a tall terrain candidate. */
@@ -87,6 +92,7 @@ interface RequestSnapshot {
   readonly postprocess?: Recipe["postprocess"];
   readonly groundContactY?: number;
   readonly fitOffsetX?: number;
+  readonly bodyOffsetY?: number;
   readonly styleReference?: {
     readonly id: string;
     readonly sha256?: string;
@@ -252,7 +258,12 @@ async function main(): Promise<void> {
       const recipe = source.recipes.find((candidate) => candidate.id === id);
       if (recipe === undefined) throw new Error(`Unknown recipe ${id}`);
       const candidate = path.join(CANDIDATE_ROOT, `${id}.png`);
-      if (recipe.postprocess?.startsWith("diamond-mask"))
+      if (
+        recipe.postprocess === "square-mountain-ground-reference" &&
+        recipe.reframeSource !== undefined
+      ) {
+        await reframeAcceptedSquareMountain(candidate, recipe, source);
+      } else if (recipe.postprocess?.startsWith("diamond-mask"))
         await applyDiamondAlpha(candidate, recipe.outputSize);
       else if (recipe.postprocess === "square-ground-fill")
         await applySquareGroundFill(candidate, recipe);
@@ -306,13 +317,38 @@ async function main(): Promise<void> {
         notes: recipe.postprocess?.startsWith("diamond-mask")
           ? "Deterministic supersampled diamond alpha mask applied by checked-in pipeline."
           : "Deterministic hard-bounds normalization applied by checked-in pipeline.",
-        request: requestSnapshot(source, recipe),
+        request: resolvedRepairRequestSnapshot(
+          source,
+          generated,
+          recipe,
+          generated.records[id]?.request,
+        ),
       };
       console.log(
         `${id}: repaired candidate (${inspection.sha256.slice(0, 12)})`,
       );
     }
     await saveGenerated(generated);
+    return;
+  }
+  if (command === "snapshot-reframe-sources") {
+    const ids = requiredOption("--ids").split(",").filter(Boolean);
+    for (const id of ids) {
+      const recipe = source.recipes.find((candidate) => candidate.id === id);
+      if (
+        recipe === undefined ||
+        recipe.reframeSource === undefined ||
+        recipe.reframeSourceSha256 === undefined
+      )
+        throw new Error(`${id}: immutable reframe source contract missing`);
+      const input = await readFile(path.join(ROOT, recipe.output));
+      if (sha256(input) !== recipe.reframeSourceSha256)
+        throw new Error(`${id}: current output is not the declared source`);
+      const destination = path.join(ROOT, recipe.reframeSource);
+      await mkdir(path.dirname(destination), { recursive: true });
+      await writeFile(destination, input);
+      console.log(`${id}: snapshotted immutable reframe source`);
+    }
     return;
   }
   if (command === "derive") {
@@ -509,8 +545,41 @@ async function main(): Promise<void> {
     return;
   }
   console.log(
-    "Usage: pixellab.ts credentials | snapshot | generate --stage sample|batch [--ids a,b] [--concurrency 3] | archive-job --id ID --job-id JOB --notes TEXT | resume-job --id ID --job-id JOB | repair --ids a,b | derive --id ID | review --id ID --accept|--reject --notes TEXT [--source-pass --native-pass --enlarged-pass --minimum-pass --composition-pass] | review-sheets | validate",
+    "Usage: pixellab.ts credentials | snapshot | snapshot-reframe-sources --ids a,b | generate --stage sample|batch [--ids a,b] [--concurrency 3] | archive-job --id ID --job-id JOB --notes TEXT | resume-job --id ID --job-id JOB | repair --ids a,b | derive --id ID | review --id ID --accept|--reject --notes TEXT [--source-pass --native-pass --enlarged-pass --minimum-pass --composition-pass] | review-sheets | validate",
   );
+}
+
+function resolvedRepairRequestSnapshot(
+  source: SourceManifest,
+  generated: GeneratedManifest,
+  recipe: Recipe,
+  previous?: RequestSnapshot,
+): RequestSnapshot {
+  const request = requestSnapshot(source, recipe);
+  const styleReference =
+    request.styleReference !== undefined &&
+    previous?.styleReference?.id === request.styleReference.id &&
+    previous.styleReference.sha256 !== undefined
+      ? {
+          ...request.styleReference,
+          sha256: previous.styleReference.sha256,
+        }
+      : request.styleReference;
+  if (request.groundReference === undefined)
+    return {
+      ...request,
+      ...(styleReference === undefined ? {} : { styleReference }),
+    };
+  const groundHash =
+    generated.records[request.groundReference.id]?.outputSha256;
+  return {
+    ...request,
+    ...(styleReference === undefined ? {} : { styleReference }),
+    groundReference: {
+      ...request.groundReference,
+      ...(groundHash === undefined ? {} : { sha256: groundHash }),
+    },
+  };
 }
 
 function validateSourceManifest(
@@ -556,6 +625,26 @@ function validateSourceManifest(
       throw new Error(`Invalid ground contact for ${recipe.id}`);
     if (recipe.fitOffsetX !== undefined && !Number.isInteger(recipe.fitOffsetX))
       throw new Error(`Invalid deterministic fit offset for ${recipe.id}`);
+    if (
+      recipe.bodyOffsetY !== undefined &&
+      (!Number.isInteger(recipe.bodyOffsetY) || recipe.bodyOffsetY < 0)
+    )
+      throw new Error(`Invalid deterministic body offset for ${recipe.id}`);
+    if (
+      (recipe.reframeSource === undefined) !==
+      (recipe.reframeSourceSha256 === undefined)
+    )
+      throw new Error(`Incomplete immutable reframe source for ${recipe.id}`);
+    if (
+      recipe.reframeSource !== undefined &&
+      !recipe.reframeSource.startsWith("art/pixellab/reframe-sources/")
+    )
+      throw new Error(`Invalid immutable reframe path for ${recipe.id}`);
+    if (
+      recipe.reframeSourceSha256 !== undefined &&
+      !/^[a-f0-9]{64}$/.test(recipe.reframeSourceSha256)
+    )
+      throw new Error(`Invalid immutable reframe hash for ${recipe.id}`);
     if (
       recipe.styleReference !== undefined &&
       !source.recipes.some(
@@ -2028,6 +2117,9 @@ function requestSnapshot(
     ...(recipe.fitOffsetX === undefined
       ? {}
       : { fitOffsetX: recipe.fitOffsetX }),
+    ...(recipe.bodyOffsetY === undefined
+      ? {}
+      : { bodyOffsetY: recipe.bodyOffsetY }),
     ...(recipe.styleReference === undefined
       ? {}
       : {
@@ -2473,6 +2565,16 @@ async function applySquareTallGroundReference(
     .ensureAlpha()
     .raw()
     .toBuffer({ resolveWithObject: true });
+  if (mountain && (recipe.bodyOffsetY ?? 0) > 0) {
+    provider.data.set(
+      shiftRgbaDown(
+        provider.data,
+        provider.info.width,
+        provider.info.height,
+        recipe.bodyOffsetY ?? 0,
+      ),
+    );
+  }
   const upperLateralSafety = 8;
   for (let y = 0; y < footprint.top; y += 1) {
     for (let x = 0; x < upperLateralSafety; x += 1) {
@@ -2487,8 +2589,8 @@ async function applySquareTallGroundReference(
   }
   let providerLayer: Buffer;
   if (mountain) {
-    const fadeStart = 200;
-    const fadeEnd = 304;
+    const fadeStart = 200 + (recipe.bodyOffsetY ?? 0);
+    const fadeEnd = 304 + (recipe.bodyOffsetY ?? 0);
     for (let y = fadeStart; y < provider.info.height; y += 1) {
       const normalized = Math.min(1, (y - fadeStart) / (fadeEnd - fadeStart));
       const retained = 1 - normalized * normalized * (3 - 2 * normalized);
@@ -2533,6 +2635,130 @@ async function applySquareTallGroundReference(
     ])
     .png({ compressionLevel: 9, adaptiveFiltering: false })
     .toFile(destination);
+}
+
+/**
+ * Reframes the exact previously accepted PixelLab Mountain without asking the
+ * provider to redraw its already-approved silhouette. The square ground is
+ * reconstructed from its canonical reference, while pixels which differ from
+ * that ground become a translated body layer. Immutable source bytes and their
+ * hash are declared by the recipe, so this maintenance path is repeatable.
+ */
+async function reframeAcceptedSquareMountain(
+  destination: string,
+  recipe: Recipe,
+  source: SourceManifest,
+): Promise<void> {
+  if (
+    recipe.reframeSource === undefined ||
+    recipe.reframeSourceSha256 === undefined ||
+    recipe.groundReference === undefined ||
+    recipe.squareFootprint === undefined ||
+    recipe.bodyOffsetY === undefined
+  )
+    throw new Error(`${recipe.id}: incomplete Mountain reframe contract`);
+  const sourceBytes = await readFile(path.join(ROOT, recipe.reframeSource));
+  if (sha256(sourceBytes) !== recipe.reframeSourceSha256)
+    throw new Error(`${recipe.id}: immutable reframe source hash mismatch`);
+  const groundRecipe = source.recipes.find(
+    ({ id }) => id === recipe.groundReference,
+  );
+  if (groundRecipe === undefined)
+    throw new Error(
+      `Unknown square ground reference ${recipe.groundReference}`,
+    );
+  const ground = await sharp(path.join(ROOT, groundRecipe.output))
+    .ensureAlpha()
+    .resize(recipe.outputSize.width, recipe.outputSize.width, {
+      fit: "fill",
+      kernel: sharp.kernel.lanczos3,
+    })
+    .greyscale()
+    .tint("#718391")
+    .png({ compressionLevel: 9, adaptiveFiltering: false })
+    .toBuffer();
+  const groundRaw = await sharp(ground)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const accepted = await sharp(sourceBytes)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const body = Buffer.alloc(accepted.data.length);
+  const footprintTop = recipe.squareFootprint.top;
+  for (let y = 0; y < accepted.info.height; y += 1) {
+    for (let x = 0; x < accepted.info.width; x += 1) {
+      const offset = (y * accepted.info.width + x) * 4;
+      const sourceAlpha = accepted.data[offset + 3] ?? 0;
+      let bodyAlpha = sourceAlpha;
+      if (y >= footprintTop) {
+        const groundOffset =
+          ((y - footprintTop) * groundRaw.info.width + x) * 4;
+        const difference = Math.max(
+          Math.abs(
+            (accepted.data[offset] ?? 0) - (groundRaw.data[groundOffset] ?? 0),
+          ),
+          Math.abs(
+            (accepted.data[offset + 1] ?? 0) -
+              (groundRaw.data[groundOffset + 1] ?? 0),
+          ),
+          Math.abs(
+            (accepted.data[offset + 2] ?? 0) -
+              (groundRaw.data[groundOffset + 2] ?? 0),
+          ),
+        );
+        bodyAlpha = Math.max(0, Math.min(255, (difference - 5) * 28));
+      }
+      body[offset] = accepted.data[offset] ?? 0;
+      body[offset + 1] = accepted.data[offset + 1] ?? 0;
+      body[offset + 2] = accepted.data[offset + 2] ?? 0;
+      body[offset + 3] = Math.min(sourceAlpha, bodyAlpha);
+    }
+  }
+  const translatedBody = shiftRgbaDown(
+    body,
+    accepted.info.width,
+    accepted.info.height,
+    recipe.bodyOffsetY,
+  );
+  const bodyPng = await sharp(translatedBody, {
+    raw: {
+      width: accepted.info.width,
+      height: accepted.info.height,
+      channels: 4,
+    },
+  })
+    .png({ compressionLevel: 9, adaptiveFiltering: false })
+    .toBuffer();
+  await sharp({
+    create: {
+      width: recipe.outputSize.width,
+      height: recipe.outputSize.height,
+      channels: 4,
+      background: "#00000000",
+    },
+  })
+    .composite([
+      { input: ground, left: 0, top: footprintTop },
+      { input: bodyPng, left: 0, top: 0 },
+    ])
+    .png({ compressionLevel: 9, adaptiveFiltering: false })
+    .toFile(destination);
+  await assertSquareTerrainAlpha(destination, recipe);
+}
+
+function shiftRgbaDown(
+  input: Buffer,
+  width: number,
+  height: number,
+  offsetY: number,
+): Buffer {
+  if (offsetY === 0) return Buffer.from(input);
+  const shifted = Buffer.alloc(input.length);
+  const copiedRows = Math.max(0, height - offsetY);
+  input.copy(shifted, offsetY * width * 4, 0, copiedRows * width * 4);
+  return shifted;
 }
 
 async function assertSquareTerrainAlpha(
@@ -3031,6 +3257,16 @@ async function validateOutputs(
   for (const recipe of source.recipes) {
     const record = generated.records[recipe.id];
     if (record?.status !== "ACCEPTED") continue;
+    if (
+      recipe.reframeSource !== undefined &&
+      recipe.reframeSourceSha256 !== undefined
+    ) {
+      const reframeSource = await readFile(
+        path.join(ROOT, recipe.reframeSource),
+      );
+      if (sha256(reframeSource) !== recipe.reframeSourceSha256)
+        throw new Error(`Reframe source hash mismatch for ${recipe.id}`);
+    }
     const inspection = await inspectPng(path.join(ROOT, recipe.output));
     assertTechnical(recipe, inspection);
     if (

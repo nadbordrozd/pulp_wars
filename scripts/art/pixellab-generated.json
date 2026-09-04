@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "bbcc56ca6431667c1e52711821d3864bc4252f627d8914e068870fc1721c206f",
+  "sourceManifestSha256": "b0342a1fd4b50f2cbb8a45426f9f6d97f00d1925b8d89377d4f1117bc0c65caf",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -7312,14 +7312,14 @@
       "status": "ACCEPTED",
       "jobId": "58edecf3-f94f-4b31-a47d-c2370421f0f1",
       "candidate": "art/pixellab/candidates/terrain-square-original-mountain-1.png",
-      "candidateSha256": "b1c0435641bc80bc6f2814de3e49d45aeed88c875c3c87259bb307e8e92282b2",
+      "candidateSha256": "f06a33808ece1fff3ef05ad87d731013910189fa18639bda9c3ceceaf34fd7f5",
       "providerOutputSha256": "4908d69fe833536c71f17132a2300653e751601b85ff5ca960d2aa8010be5969",
       "width": 256,
       "height": 384,
       "hasAlpha": true,
       "alphaBounds": {
         "left": 0,
-        "top": 81,
+        "top": 121,
         "right": 256,
         "bottom": 384,
         "empty": false
@@ -7342,6 +7342,7 @@
         "noBackground": true,
         "palette": "muted slate-blue rock, parchment-tan northwest faces, deep desaturated blue-gray southeast faces, sparse moss-green foothill contact, charcoal-teal outline",
         "postprocess": "square-mountain-ground-reference",
+        "bodyOffsetY": 40,
         "squareFootprint": {
           "left": 0,
           "top": 128,
@@ -7474,9 +7475,9 @@
           }
         }
       ],
-      "outputSha256": "b1c0435641bc80bc6f2814de3e49d45aeed88c875c3c87259bb307e8e92282b2",
-      "notes": "Reaccepted without a new provider request after deterministic recomposition against final Grass a20fbc91f4bc. PixelLab provider job 58edecf3-f94f-4b31-a47d-c2370421f0f1 and provider hash 4908d69fe833 are unchanged; all three earlier provider rejections remain recorded. The slate-tinted exact square ground now derives from repetition-safe Grass while the accepted broad peak is still fully retained above y200 and smoothstep-feathered to zero by y304. Rechecked source/native/enlarged, 80/128/224px, DPR1/2, adjacency, unchanged Warrior, overlays, fog and upward-only bounds.",
-      "reviewedAt": "2026-09-03T13:16:14.941Z",
+      "outputSha256": "f06a33808ece1fff3ef05ad87d731013910189fa18639bda9c3ceceaf34fd7f5",
+      "notes": "Accepted deterministic 40-source-pixel body-only downward reframe after native and enlarged inspection: silhouette and northwest lighting remain intact, owning ground stays fixed, base is lower, upward overlap is modest, and there is no lateral or bottom overflow.",
+      "reviewedAt": "2026-09-04T20:04:53.807Z",
       "reviewChecks": {
         "source": true,
         "native": true,
@@ -7937,14 +7938,14 @@
       "status": "ACCEPTED",
       "jobId": "349082aa-a56f-42f3-ba55-7ab77b5fd923",
       "candidate": "art/pixellab/candidates/terrain-square-original-mountain-2.png",
-      "candidateSha256": "6211a416eeabb65da06bebfbb6a530e50f44291cb37cd80610e38f7fa388c457",
+      "candidateSha256": "07ec9e3c1fb5273119e0e96bcc6f1daa28c6e7c552aef26e0b8b9b0a2ef4df1b",
       "providerOutputSha256": "71b5fb078de277df2fb017ad3a8193c8bfdf07c53a296fbc53382c19de5a21f7",
       "width": 256,
       "height": 384,
       "hasAlpha": true,
       "alphaBounds": {
         "left": 0,
-        "top": 81,
+        "top": 121,
         "right": 256,
         "bottom": 384,
         "empty": false
@@ -7967,6 +7968,7 @@
         "noBackground": true,
         "palette": "muted slate-blue rock, parchment-tan northwest faces, deep desaturated blue-gray southeast faces, sparse moss-green foothill contact, charcoal-teal outline",
         "postprocess": "square-mountain-ground-reference",
+        "bodyOffsetY": 40,
         "styleReference": {
           "id": "terrain-square-original-mountain-1",
           "sha256": "b1c0435641bc80bc6f2814de3e49d45aeed88c875c3c87259bb307e8e92282b2",
@@ -7980,13 +7982,13 @@
         },
         "groundReference": {
           "id": "terrain-square-original-grass-1",
-          "sha256": "a20fbc91f4bcd6120fb8c9ce4bcd9ed9276fcdbd4f145d4153cc71c93bda6567",
-          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe.",
+          "sha256": "a20fbc91f4bcd6120fb8c9ce4bcd9ed9276fcdbd4f145d4153cc71c93bda6567"
         }
       },
-      "outputSha256": "6211a416eeabb65da06bebfbb6a530e50f44291cb37cd80610e38f7fa388c457",
-      "notes": "Accepted after individual source/native/enlarged, 8x8 mixed repetition and same/different adjacency inspection. The blunt tall left peak, lower right peak and connecting shoulder form a broad materially distinct silhouette with terrain-quiet planes. Northwest parchment faces and darker southeast slate match the accepted family, the authored base feathers cleanly into the full opaque square, and no lateral/bottom overflow, ore, building, resource or state cue appears.",
-      "reviewedAt": "2026-09-03T14:00:05.615Z",
+      "outputSha256": "07ec9e3c1fb5273119e0e96bcc6f1daa28c6e7c552aef26e0b8b9b0a2ef4df1b",
+      "notes": "Accepted deterministic 40-source-pixel body-only downward reframe after native and enlarged inspection: silhouette and northwest lighting remain intact, owning ground stays fixed, base is lower, upward overlap is modest, and there is no lateral or bottom overflow.",
+      "reviewedAt": "2026-09-04T20:04:59.248Z",
       "reviewChecks": {
         "source": true,
         "native": true,
@@ -8000,14 +8002,14 @@
       "status": "ACCEPTED",
       "jobId": "0c4eef64-0dde-4101-a46d-9b7141e83287",
       "candidate": "art/pixellab/candidates/terrain-square-original-mountain-3.png",
-      "candidateSha256": "ed0b45b628f764570a06b32cc16b48254307e5061c39a5ef19e552329925e31f",
+      "candidateSha256": "1335cdfa2c8f334de981f00fb6c4fc434231216df5d7e7fc1fefdbbf6a6d4d3c",
       "providerOutputSha256": "159f40de462d2a8e9e212b454672a8d67490086c1219db5fe0d39d24ea976fa7",
       "width": 256,
       "height": 384,
       "hasAlpha": true,
       "alphaBounds": {
         "left": 0,
-        "top": 124,
+        "top": 128,
         "right": 256,
         "bottom": 384,
         "empty": false
@@ -8030,6 +8032,7 @@
         "noBackground": true,
         "palette": "muted slate-blue rock, parchment-tan northwest faces, deep desaturated blue-gray southeast faces, sparse moss-green foothill contact, charcoal-teal outline",
         "postprocess": "square-mountain-ground-reference",
+        "bodyOffsetY": 40,
         "styleReference": {
           "id": "terrain-square-original-mountain-2",
           "sha256": "6211a416eeabb65da06bebfbb6a530e50f44291cb37cd80610e38f7fa388c457",
@@ -8043,8 +8046,8 @@
         },
         "groundReference": {
           "id": "terrain-square-original-grass-1",
-          "sha256": "a20fbc91f4bcd6120fb8c9ce4bcd9ed9276fcdbd4f145d4153cc71c93bda6567",
-          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe.",
+          "sha256": "a20fbc91f4bcd6120fb8c9ce4bcd9ed9276fcdbd4f145d4153cc71c93bda6567"
         }
       },
       "rejectedAttempts": [
@@ -8090,9 +8093,9 @@
           }
         }
       ],
-      "outputSha256": "ed0b45b628f764570a06b32cc16b48254307e5061c39a5ef19e552329925e31f",
-      "notes": "Accepted on the second provider attempt after source/native/enlarged, 8x8 mixed repetition, same/different adjacency and direct comparison with Mountains 1-2. The low flat-topped right mesa, long shallow left ridge and squat foreground shelf create the required materially wider/lower silhouette without a triangular apex. Shared northwest faces, darker southeast planes, quiet outline and slate square feather pass; bounds are upward-only with no resource, building or state cue.",
-      "reviewedAt": "2026-09-03T14:03:40.446Z",
+      "outputSha256": "1335cdfa2c8f334de981f00fb6c4fc434231216df5d7e7fc1fefdbbf6a6d4d3c",
+      "notes": "Accepted deterministic 40-source-pixel body-only downward reframe after native and enlarged inspection: silhouette and northwest lighting remain intact, owning ground stays fixed, base is lower, upward overlap is modest, and there is no lateral or bottom overflow.",
+      "reviewedAt": "2026-09-04T20:05:04.725Z",
       "reviewChecks": {
         "source": true,
         "native": true,
@@ -8270,14 +8273,14 @@
       "status": "ACCEPTED",
       "jobId": "ec3cb74b-f166-4d98-bcd9-7032fef18151",
       "candidate": "art/pixellab/candidates/terrain-square-candy-mountain-1.png",
-      "candidateSha256": "1c39d7a6087a8024eaa221ecf88bcce44d4ecaf4fef94664ef9c92742f6e95bc",
+      "candidateSha256": "bc726475165d26a5b12c534b91b9d93a445e30306a077664367ba5e4e89fb747",
       "providerOutputSha256": "fa7fce7bf614a4cb821fc41f845c4e4015bb111dbaded0642964dfab2236aa14",
       "width": 256,
       "height": 384,
       "hasAlpha": true,
       "alphaBounds": {
         "left": 0,
-        "top": 84,
+        "top": 124,
         "right": 256,
         "bottom": 384,
         "empty": false
@@ -8300,6 +8303,7 @@
         "noBackground": true,
         "palette": "cocoa brown rock-candy base, muted warm-pink stratum, restrained cream northwest faces, deep cocoa southeast planes, near-black cocoa outline",
         "postprocess": "square-mountain-ground-reference",
+        "bodyOffsetY": 40,
         "styleReference": {
           "id": "terrain-candy-mountain-1",
           "sha256": "9c3c0592d92cee0cde21ec064734c175357cf9dfa9b29023bc21d24c668124af",
@@ -8313,13 +8317,13 @@
         },
         "groundReference": {
           "id": "terrain-square-candy-grass-1",
-          "sha256": "ed9f2155bcd70a5872ed6d5cb425c2bc7683373e8690b9509e01e7abb883ca4b",
-          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe.",
+          "sha256": "ed9f2155bcd70a5872ed6d5cb425c2bc7683373e8690b9509e01e7abb883ca4b"
         }
       },
-      "outputSha256": "1c39d7a6087a8024eaa221ecf88bcce44d4ecaf4fef94664ef9c92742f6e95bc",
-      "notes": "Accepted after source/native/enlarged inspection and direct Original/Candy comparison. The asymmetric peak and subordinate shoulder match square Mountain 1 scale and camera while broad cocoa rock-candy, muted-pink stratum, cream northwest rim and darker southeast planes communicate Candy without a prop or resource. The peak overhang is upward-only, lateral safety is clear, and the provider base feathers cleanly into the deterministic opaque slate square.",
-      "reviewedAt": "2026-09-03T14:37:01.191Z",
+      "outputSha256": "bc726475165d26a5b12c534b91b9d93a445e30306a077664367ba5e4e89fb747",
+      "notes": "Accepted deterministic 40-source-pixel body-only downward reframe after native and enlarged inspection: silhouette and northwest lighting remain intact, owning ground stays fixed, base is lower, upward overlap is modest, and there is no lateral or bottom overflow.",
+      "reviewedAt": "2026-09-04T20:05:10.279Z",
       "reviewChecks": {
         "source": true,
         "native": true,
@@ -8780,14 +8784,14 @@
       "status": "ACCEPTED",
       "jobId": "2cdde293-0cb1-4e12-97c9-879a5ac38e94",
       "candidate": "art/pixellab/candidates/terrain-square-candy-mountain-2.png",
-      "candidateSha256": "0c1338d0f1eff4cb715066d654874b676ea1964002442e095e64ca2ab9f944af",
+      "candidateSha256": "d4ef112e78abbc89d9ee091e92f1868b50ea4f5b8120da93ceb2a175dd3df1d2",
       "providerOutputSha256": "18a3c98bc021b431b3f7fa09d899a7abcd6f08037c12586dbae0917a21ce2a2b",
       "width": 256,
       "height": 384,
       "hasAlpha": true,
       "alphaBounds": {
         "left": 0,
-        "top": 81,
+        "top": 121,
         "right": 256,
         "bottom": 384,
         "empty": false
@@ -8810,6 +8814,7 @@
         "noBackground": true,
         "palette": "cocoa brown rock-candy base, muted warm-pink stratum, restrained cream northwest faces, deep cocoa southeast planes, near-black cocoa outline",
         "postprocess": "square-mountain-ground-reference",
+        "bodyOffsetY": 40,
         "styleReference": {
           "id": "terrain-square-original-mountain-2",
           "sha256": "6211a416eeabb65da06bebfbb6a530e50f44291cb37cd80610e38f7fa388c457",
@@ -8823,8 +8828,8 @@
         },
         "groundReference": {
           "id": "terrain-square-candy-grass-1",
-          "sha256": "ed9f2155bcd70a5872ed6d5cb425c2bc7683373e8690b9509e01e7abb883ca4b",
-          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe.",
+          "sha256": "ed9f2155bcd70a5872ed6d5cb425c2bc7683373e8690b9509e01e7abb883ca4b"
         }
       },
       "rejectedAttempts": [
@@ -8870,9 +8875,9 @@
           }
         }
       ],
-      "outputSha256": "0c1338d0f1eff4cb715066d654874b676ea1964002442e095e64ca2ab9f944af",
-      "notes": "Accepted on the second provider attempt after direct family, Original comparison, native/enlarged and minimum-scale review. The broad flat-topped left massif, lower angular right summit and wide saddle now differ materially from Mountain 1's pointed peak. Cocoa rock-candy, restrained pink ledges, cream northwest faces and dark southeast planes retain Candy language without a resource or prop; footprint feather and edge safety pass.",
-      "reviewedAt": "2026-09-03T15:47:11.112Z",
+      "outputSha256": "d4ef112e78abbc89d9ee091e92f1868b50ea4f5b8120da93ceb2a175dd3df1d2",
+      "notes": "Accepted deterministic 40-source-pixel body-only downward reframe after native and enlarged inspection: silhouette and northwest lighting remain intact, owning ground stays fixed, base is lower, upward overlap is modest, and there is no lateral or bottom overflow.",
+      "reviewedAt": "2026-09-04T20:05:16.098Z",
       "reviewChecks": {
         "source": true,
         "native": true,
@@ -8886,7 +8891,7 @@
       "status": "ACCEPTED",
       "jobId": "7c88d9a2-c125-40c5-a781-b40387ea0de8",
       "candidate": "art/pixellab/candidates/terrain-square-candy-mountain-3.png",
-      "candidateSha256": "7c0b930cf36de969c472ce7b5405414268e9a13dfcf593ebbeb792996d1eafe5",
+      "candidateSha256": "24f629af7a5c3b53645afa3d0f329f671718fbb117993ce8f10beadccc877241",
       "providerOutputSha256": "a9138cd0a874f5eca368ca3b8dee16a84045c65bdad231cd2d8026b537b90306",
       "width": 256,
       "height": 384,
@@ -8916,6 +8921,7 @@
         "noBackground": true,
         "palette": "cocoa brown rock-candy base, muted warm-pink stratum, restrained cream northwest faces, deep cocoa southeast planes, near-black cocoa outline",
         "postprocess": "square-mountain-ground-reference",
+        "bodyOffsetY": 40,
         "styleReference": {
           "id": "terrain-square-candy-mountain-1",
           "sha256": "1c39d7a6087a8024eaa221ecf88bcce44d4ecaf4fef94664ef9c92742f6e95bc",
@@ -8929,13 +8935,13 @@
         },
         "groundReference": {
           "id": "terrain-square-candy-grass-1",
-          "sha256": "ed9f2155bcd70a5872ed6d5cb425c2bc7683373e8690b9509e01e7abb883ca4b",
-          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe.",
+          "sha256": "ed9f2155bcd70a5872ed6d5cb425c2bc7683373e8690b9509e01e7abb883ca4b"
         }
       },
-      "outputSha256": "7c0b930cf36de969c472ce7b5405414268e9a13dfcf593ebbeb792996d1eafe5",
-      "notes": "Accepted from the coherent Mountain batch after source/native/enlarged, mixed 8x8 repetition and adjacency review. The low horizontal silhouette has a flat-topped right mesa, long shallow left ridge and squat foreground shelf, materially distinct from the two tall variants. Shared northwest cream light, southeast cocoa shade, quiet planes, feathered opaque square, edge safety and no gameplay cue all pass.",
-      "reviewedAt": "2026-09-03T15:43:09.263Z",
+      "outputSha256": "24f629af7a5c3b53645afa3d0f329f671718fbb117993ce8f10beadccc877241",
+      "notes": "Accepted deterministic 40-source-pixel body-only downward reframe after native and enlarged inspection: silhouette and northwest lighting remain intact, owning ground stays fixed, base is lower, upward overlap is modest, and there is no lateral or bottom overflow.",
+      "reviewedAt": "2026-09-04T20:05:21.793Z",
       "reviewChecks": {
         "source": true,
         "native": true,

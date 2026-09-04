@@ -1,18 +1,8 @@
 {
   "generatedBy": "npm run art:ruleset6-renderer-review",
-  "factions": [
-    "ORIGINAL",
-    "CANDY"
-  ],
-  "zooms": [
-    0.625,
-    1,
-    1.75
-  ],
-  "devicePixelRatios": [
-    1,
-    2
-  ],
+  "factions": ["ORIGINAL", "CANDY"],
+  "zooms": [0.625, 1, 1.75],
+  "devicePixelRatios": [1, 2],
   "scaleContracts": {
     "standard": 0.25,
     "breacher": 0.24,
@@ -23,61 +13,84 @@
     "fertileGroundOffsetY": 18,
     "coordinateSpace": "nominal CSS pixels at 1x zoom"
   },
+  "mapObjectContracts": {
+    "mountainBodyOffsetSourcePixels": 40,
+    "lumberCampVisibleCssAt1x": {
+      "width": 58.8,
+      "height": 56
+    },
+    "sawmillVisibleCssAt1x": {
+      "width": 76.32,
+      "height": 74.52
+    },
+    "treasureVisibleCssAt1x": {
+      "width": 40.5,
+      "height": 43
+    },
+    "displayScales": {
+      "lumberCamp": 0.7,
+      "sawmill": 0.36,
+      "treasure": 0.5
+    }
+  },
   "reviewCoverage": [
     "complete accepted production raster inventory with zero placeholders",
     "all nine role silhouettes with ordinary units smaller than Forest and Mountain",
     "all nine Original and all nine Candy unit silhouettes visibly centered at 0.625x, 1x and 1.75x",
-    "Fertile Ground painted bounds centered across the owning diamond instead of ending at tile center",
+    "Fertile Ground painted bounds centered across the owning square instead of ending at tile center",
     "accepted Road masks, economic contributor numbers, opposite-pair axis and value chip",
     "all seven leveled improvements with exact zero, one, and multi-value compact square pips",
     "selection, move/attack targets, unit/city/wall status and fog",
-    "Forest Game/Animal frontage without a unit and beneath an occupied selected unit",
+    "Forest Game/Animal frontage in front of its owning canopy",
+    "all three newly grounded Mountain variants with fixed square ground and no lateral or bottom overflow",
+    "larger Lumber Camp over retained Forest and larger Sawmill over same-tile faction ground with its canopy suppressed",
+    "larger neutral treasure chest below units and major terrain",
     "level-4 negative population as exactly two leading red deficit squares within the fixed five-square layer"
   ],
   "visualReview": {
     "status": "ACCEPTED",
-    "notes": "Native and enlarged sheets were inspected individually. Every Original and Candy role keeps its accepted compact scale while the painted feet or ground mass occupies the owning diamond's lower-center; heads overlap rear tiles only modestly. Fertile Ground spans both halves around tile center instead of floating above it. Shadows and status markers remain attached, selection and target overlays remain tile-aligned, and melee/ranged/damage presentation remains renderer-owned. Game/Animal remains visible in front of each Forest canopy, including beneath a selected occupied tile."
+    "notes": "Native and enlarged sheets were inspected individually at 0.625x, 1x and 1.75x for DPR1/2. Every Original and Candy Mountain body is grounded in the lower half of its unchanged square without lateral or bottom spill. Lumber Camp remains subordinate to its visible Forest; Sawmill is legible over matching ground with only its own Forest canopy suppressed; the enlarged chest remains below units and major terrain. Every faction role retains its accepted compact scale, Game stays in front of Forest, and shadows, status, selection, targets, picking and authoritative coordinates remain unchanged."
   },
   "artifacts": [
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/original-dpr1-native.png",
-      "bytes": 1117169,
-      "sha256": "2265beddc002ed4c7e0e49d6afe13508b9e8fa646e1d81481c5f777836b11dce"
+      "bytes": 980006,
+      "sha256": "5f04e389c710a89d076a7619c2d528b22c56c20d063307c335592e4ac5b8a448"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/original-dpr1-enlarged.png",
-      "bytes": 1593944,
-      "sha256": "66353063c5480d58872fa19b78ba8263871e0e85316e5aa8743bb37000c2027b"
+      "bytes": 1521185,
+      "sha256": "12eabd5a0a024ca77c47e90875573d5a6883c421f50b4e016947154d71eb7a39"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/original-dpr2-native.png",
-      "bytes": 3473305,
-      "sha256": "be2ab5a3784ea266929cd5b5ba2fb62c43fad76f4c10c9c93501926a9ab3831d"
+      "bytes": 3072255,
+      "sha256": "c577e4e72aecf86a7c5da2db106a7a8f78f03f989c38127f89c24e57db154711"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/original-dpr2-enlarged.png",
-      "bytes": 5479958,
-      "sha256": "5e4f2bb27d08d2fcd30a03f3a41b682d9571bad36b7e6f7f5a3e914ab8ef08bb"
+      "bytes": 5336127,
+      "sha256": "5c85395649e4ac0bf66763a05c7bc9ef55caa108b1cdcae7c2386533087924f0"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/candy-dpr1-native.png",
-      "bytes": 1127667,
-      "sha256": "d15daaa113d95b2d3a67070aefed3d70b5a35495f6185df1007d3738b7e112c7"
+      "bytes": 958448,
+      "sha256": "e78ab26a9dfec7259de45dca21ea0b70fa9cd9cf91a5b1e46c2f2c169be4de9c"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/candy-dpr1-enlarged.png",
-      "bytes": 1606295,
-      "sha256": "9fa8c2b818a5cf62fc4ce0d72ac5f2e29db754b2216080bab1b8753157d61ec3"
+      "bytes": 1495829,
+      "sha256": "fcaa75a9f0c0bdedf3122aecdb32e6680bde672f191e6c95ed10246b70a12b2f"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/candy-dpr2-native.png",
-      "bytes": 3455970,
-      "sha256": "70f9d4406eb4f6d5637472a7171160ed461ceff11e7d1aa2cd45e8bad109b4aa"
+      "bytes": 2953504,
+      "sha256": "e374ef675b8e85d436faa0335d31ebe1c10381d80721d2554587a5e5d6b1b501"
     },
     {
       "path": "art/pixellab/reviews/ruleset6-canvas-renderer/candy-dpr2-enlarged.png",
-      "bytes": 5497841,
-      "sha256": "d20c03a6d7dfe0ea6c02003f2e83e692379975461cd0b509ce1bbf5528831c59"
+      "bytes": 5282840,
+      "sha256": "20e7f3198efe4ed3620cfaeef226d3f9f1866de096bd09a1dc6c6e8efea1a13e"
     }
   ]
 }

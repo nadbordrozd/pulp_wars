@@ -211,6 +211,45 @@ describe("ruleset-6 observation-safe render plan", () => {
   });
 
   it.each(["ORIGINAL", "CANDY"] as const)(
+    "suppresses only the same-tile Forest body beneath a %s Sawmill",
+    (faction) => {
+      const sawmillAt = { x: 2, y: 2 } as const;
+      const campAt = { x: 3, y: 2 } as const;
+      const grassSawmillAt = { x: 4, y: 2 } as const;
+      let view = baseView(faction);
+      view = replaceTile(view, sawmillAt, {
+        terrain: "FOREST",
+        improvement: "SAWMILL",
+      });
+      view = replaceTile(view, campAt, {
+        terrain: "FOREST",
+        improvement: "LUMBER_CAMP",
+      });
+      view = replaceTile(view, grassSawmillAt, {
+        terrain: "GRASS",
+        improvement: "SAWMILL",
+      });
+
+      const terrain = entriesOf(
+        buildRenderPlanV6(inactive(view)).entries,
+        "TERRAIN",
+      );
+      expect(
+        terrain.find((entry) => same(entry.at, sawmillAt))?.details,
+      ).toEqual({
+        terrain: "FOREST",
+        groundOnly: true,
+      });
+      expect(terrain.find((entry) => same(entry.at, campAt))?.details).toEqual({
+        terrain: "FOREST",
+      });
+      expect(
+        terrain.find((entry) => same(entry.at, grassSawmillAt))?.details,
+      ).toEqual({ terrain: "GRASS" });
+    },
+  );
+
+  it.each(["ORIGINAL", "CANDY"] as const)(
     "is byte-identical for equal %s PlayerViewV6 values and remains stably ordered",
     (faction) => {
       const firstView = inactive(baseView(faction));

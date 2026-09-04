@@ -180,7 +180,7 @@ export function improvementCoverageV6(
     LUMBER_CAMP: {
       assetId: "building-square-lumber-camp",
       filename: "lumber-camp.png",
-      geometry: SQUARE_ART_GEOMETRY.lowImprovement,
+      geometry: SQUARE_ART_GEOMETRY.lumberCamp,
     },
     MINE: {
       assetId: "building-square-mine",
@@ -193,7 +193,10 @@ export function improvementCoverageV6(
       geometry: SQUARE_ART_GEOMETRY.lowImprovement,
     },
     WINDMILL: processor("windmill"),
-    SAWMILL: processor("sawmill"),
+    SAWMILL: {
+      ...processor("sawmill"),
+      geometry: SQUARE_ART_GEOMETRY.sawmill,
+    },
     FORGE: processor("forge"),
     STONEWORKS: processor("stoneworks"),
     WORKSHOP: processor("workshop"),

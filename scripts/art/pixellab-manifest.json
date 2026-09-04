@@ -2798,6 +2798,9 @@
       "negativePrompt": "diamond, rhombus, V-shaped base, diagonal base edge, isometric ground, outlined ground, base plate, platform, tile perimeter, line to corner, narrow small rock, raised slab, side wall, clipped peak, lateral or bottom overflow, lower-right key light, snow noise, ore, crystals, mine, building, unit, animal, flag, ownership mark, selection, pebbles, realistic strata, photoreal or painterly rock, text, UI",
       "output": "public/assets/pixellab/terrain-square/original-mountain-1.png",
       "anchor": { "x": 128, "y": 256 },
+      "bodyOffsetY": 40,
+      "reframeSource": "art/pixellab/reframe-sources/terrain-square-original-mountain-1.png",
+      "reframeSourceSha256": "b1c0435641bc80bc6f2814de3e49d45aeed88c875c3c87259bb307e8e92282b2",
       "squareFootprint": { "left": 0, "top": 128, "right": 256, "bottom": 384 },
       "hardBounds": { "left": 0, "top": 0, "right": 256, "bottom": 384 }
     },
@@ -2952,6 +2955,9 @@
       "negativePrompt": "diamond, rhombus, V-shaped base, diagonal base edge, isometric ground, outlined ground, platform, tile perimeter, single central peak, narrow rock, clipped peak, lateral or bottom overflow, lower-right key light, snow noise, ore, crystal, mine, building, unit, animal, flag, ownership, selection, pebble scatter, realistic strata, photoreal, painterly, text, UI",
       "output": "public/assets/pixellab/terrain-square/original-mountain-2.png",
       "anchor": { "x": 128, "y": 256 },
+      "bodyOffsetY": 40,
+      "reframeSource": "art/pixellab/reframe-sources/terrain-square-original-mountain-2.png",
+      "reframeSourceSha256": "6211a416eeabb65da06bebfbb6a530e50f44291cb37cd80610e38f7fa388c457",
       "squareFootprint": { "left": 0, "top": 128, "right": 256, "bottom": 384 },
       "hardBounds": { "left": 0, "top": 0, "right": 256, "bottom": 384 }
     },
@@ -2974,6 +2980,9 @@
       "negativePrompt": "tall apex, sharp central peak, triangle, spire, tall twins, diamond, V base, isometric ground, platform, perimeter, small isolated rock, clipped rock, lateral or bottom overflow, lower-right light, snow, ore, crystal, mine, building, unit, animal, flag, ownership, selection, pebbles, realistic strata, photoreal, painterly, text, UI",
       "output": "public/assets/pixellab/terrain-square/original-mountain-3.png",
       "anchor": { "x": 128, "y": 256 },
+      "bodyOffsetY": 40,
+      "reframeSource": "art/pixellab/reframe-sources/terrain-square-original-mountain-3.png",
+      "reframeSourceSha256": "ed0b45b628f764570a06b32cc16b48254307e5061c39a5ef19e552329925e31f",
       "squareFootprint": { "left": 0, "top": 128, "right": 256, "bottom": 384 },
       "hardBounds": { "left": 0, "top": 0, "right": 256, "bottom": 384 }
     },
@@ -3040,6 +3049,9 @@
       "negativePrompt": "cake slice, cupcake, ice cream cone, lollipop, candy cane pole, face, character, unit, city, building, flag, resource, ore, gumdrop pile, rainbow, sprinkles, tiny candy pieces, diamond, V base, platform, perimeter, clipped peak, left right or bottom overflow, lower-right light, snow noise, pebbles, realistic strata, text, UI, 3D render",
       "output": "public/assets/pixellab/terrain-square/candy-mountain-1.png",
       "anchor": { "x": 128, "y": 256 },
+      "bodyOffsetY": 40,
+      "reframeSource": "art/pixellab/reframe-sources/terrain-square-candy-mountain-1.png",
+      "reframeSourceSha256": "1c39d7a6087a8024eaa221ecf88bcce44d4ecaf4fef94664ef9c92742f6e95bc",
       "squareFootprint": { "left": 0, "top": 128, "right": 256, "bottom": 384 },
       "hardBounds": { "left": 0, "top": 0, "right": 256, "bottom": 384 }
     },
@@ -3194,6 +3206,9 @@
       "negativePrompt": "pointed left apex, same silhouette as Mountain 1, single central peak, tiny subordinate shoulder, extra peaks, cake, cupcake, lollipop, candy cane, face, unit, building, resource, ore, gumdrop pile, rainbow, sprinkles, diamond, V base, platform, perimeter, clipped peak, left right or bottom overflow, lower-right light, snow noise, pebbles, realistic strata, text, UI, 3D render",
       "output": "public/assets/pixellab/terrain-square/candy-mountain-2.png",
       "anchor": { "x": 128, "y": 256 },
+      "bodyOffsetY": 40,
+      "reframeSource": "art/pixellab/reframe-sources/terrain-square-candy-mountain-2.png",
+      "reframeSourceSha256": "0c1338d0f1eff4cb715066d654874b676ea1964002442e095e64ca2ab9f944af",
       "squareFootprint": { "left": 0, "top": 128, "right": 256, "bottom": 384 },
       "hardBounds": { "left": 0, "top": 0, "right": 256, "bottom": 384 }
     },
@@ -3216,6 +3231,9 @@
       "negativePrompt": "tall apex, sharp central peak, triangle, spire, tall twins, cake, cupcake, lollipop, candy cane, face, unit, building, resource, ore, gumdrop pile, rainbow, sprinkles, diamond, V base, platform, perimeter, clipped rock, left right or bottom overflow, lower-right light, snow, pebbles, realistic strata, text, UI, 3D render",
       "output": "public/assets/pixellab/terrain-square/candy-mountain-3.png",
       "anchor": { "x": 128, "y": 256 },
+      "bodyOffsetY": 40,
+      "reframeSource": "art/pixellab/reframe-sources/terrain-square-candy-mountain-3.png",
+      "reframeSourceSha256": "7c0b930cf36de969c472ce7b5405414268e9a13dfcf593ebbeb792996d1eafe5",
       "squareFootprint": { "left": 0, "top": 128, "right": 256, "bottom": 384 },
       "hardBounds": { "left": 0, "top": 0, "right": 256, "bottom": 384 }
     },

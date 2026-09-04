@@ -37,6 +37,14 @@ and feathers the authored rock into that field. Generation is split into the
 coherent Grass 2-4, Forest 2-4, and Mountain 2-3 batches, with no request allowed
 to mix families or exceed three assets.
 
+Map-scale play review retains every accepted Mountain silhouette but lowers its
+rock body by 40 source pixels inside the unchanged 256 x 384 canvas. The
+canonical slate ground remains fixed to `y=128..383`; only body pixels are
+reframed, so Mountain bases occupy the lower half of the square without moving
+the owning footprint or introducing left, right, or bottom overflow. The exact
+pre-reframe PixelLab outputs and hashes are checked in as immutable inputs to
+the deterministic repair path.
+
 The variants are cosmetic only. Variant selection must never read simulation
 PRNG or encode passability, resources, ownership, commands, AI, save, replay,
 or headless state. Acceptance evidence is rebuilt by
@@ -68,6 +76,10 @@ peak, twin-peak, and low-ridge silhouette roles. Both remain quieter than units
 and cities and may not contain loose candy, resources, improvements, ownership,
 or state cues. Every Candy square terrain uses the same soft northwest key light
 and darker southeast planes as Original terrain.
+
+Candy Mountains receive the same 40-source-pixel body-only downward reframe as
+Original Mountains, preserving exact faction parity in ground anchoring and
+overflow constraints.
 
 The three representative Candy samples are generated and reviewed one request
 at a time in Grass, Forest, Mountain order. Later work is split into coherent
