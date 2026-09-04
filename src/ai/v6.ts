@@ -9,6 +9,7 @@ import {
   queryPublicRoleRuleV6,
   queryTechnologyTreeV6,
   scorePublicSpatialPlanV6,
+  unitSightRadiusForTerrainV6,
   type EconomicPreviewV6,
   type PublicTechnologyTreeV6,
 } from "../engine/v6/query";
@@ -27,7 +28,6 @@ import {
   type UnitRoleId,
 } from "../engine/v6/types";
 import type { PlayerTileViewV6, PlayerViewV6 } from "../engine/v6/view";
-import { unitSightRadiusForTerrainV6 } from "../engine/v6/unit-stats";
 
 export const NORMAL_AI_MAX_ACCEPTED_COMMANDS_PER_TURN_V6 = 128;
 

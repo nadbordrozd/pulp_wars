@@ -51,6 +51,8 @@ import type {
 import { CARDINAL_DIRECTION_ORDER_V6, UNIT_ROLE_IDS } from "./types";
 import type { PlayerTileViewV6, PlayerViewV6 } from "./view";
 
+export { unitSightRadiusForTerrainV6 } from "./unit-stats";
+
 export interface CityValueDeltaV6 {
   readonly cityId: CityId;
   readonly delta: number;
