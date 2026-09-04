@@ -375,7 +375,7 @@ describe("ruleset-6 observation-safe render plan", () => {
     },
   );
 
-  it("derives exact Move, Attack, self-action, and selected path targets from public commands", () => {
+  it("keeps exact direct-action metadata while rendering only positional map targets", () => {
     let view = baseView();
     view = {
       ...view,
@@ -430,7 +430,7 @@ describe("ruleset-6 observation-safe render plan", () => {
     ).toEqual(expect.arrayContaining(["RECOVER", "WAIT"]));
     expect(entriesOf(plan.entries, "MOVE_TARGET").length).toBeGreaterThan(0);
     expect(entriesOf(plan.entries, "ATTACK_TARGET")).toHaveLength(2);
-    expect(entriesOf(plan.entries, "ABILITY_TARGET").length).toBeGreaterThan(0);
+    expect(entriesOf(plan.entries, "ABILITY_TARGET")).toHaveLength(0);
     expect(
       entriesOf(plan.entries, "MOVE_PATH").map((entry) => entry.at),
     ).toEqual(move.path);
@@ -586,13 +586,13 @@ describe("ruleset-6 observation-safe render plan", () => {
     expect(entriesOf(rejected.entries, "ECONOMIC_CONTRIBUTOR")).toHaveLength(0);
   });
 
-  it("maps Train, reward choice, Candify choice, Capture, and Candify to exact public entities", () => {
+  it("keeps direct Train and unit actions off-map while mapping mandatory choices", () => {
     const training = buildRenderPlanV6(baseView(), {
       ...EMPTY_BOARD_RENDER_INTERACTION_V6,
       selection: { kind: "CITY", cityId: OWN_CITY },
     });
     expect(targetCommands(training.commandTargets, "TRAIN").length).toBe(8);
-    expect(entriesOf(training.entries, "TRAIN_TARGET")).toHaveLength(8);
+    expect(entriesOf(training.entries, "TRAIN_TARGET")).toHaveLength(0);
 
     const rewardView: PlayerViewV6 = {
       ...baseView(),
@@ -677,6 +677,7 @@ describe("ruleset-6 observation-safe render plan", () => {
       kind: "CAPTURE",
       unitId: unitId(240),
     });
+    expect(entriesOf(capture.entries, "ABILITY_TARGET")).toHaveLength(0);
 
     let candifyView = baseView("CANDY");
     candifyView = replaceTile(
@@ -702,6 +703,7 @@ describe("ruleset-6 observation-safe render plan", () => {
       kind: "CANDIFY",
       unitId: unitId(250),
     });
+    expect(entriesOf(candify.entries, "ABILITY_TARGET")).toHaveLength(0);
   });
 
   it("uses stable row-major square depth, body ties, and public IDs inside each layer", () => {

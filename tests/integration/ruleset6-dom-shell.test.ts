@@ -375,6 +375,67 @@ describe("playable ruleset-6 DOM shell", () => {
     app.destroy();
   });
 
+  it("does not repeat selected-context actions in a Choose an action dialog", async () => {
+    const view = publicView("CANDY");
+    const commands = commandCatalogue(view);
+    const fake = new FakeController(view, commands);
+    const host = new FakeBoardHostV6();
+    const app = new Ruleset6DomAppView(document, requireElement("#app"), fake, {
+      boardHost: host,
+    });
+    const unit = view.units.find(
+      (candidate) => candidate.ownerId === view.viewer.id,
+    );
+    if (unit === undefined) throw new Error("Missing owned unit");
+    const recover = commands.find((command) => command.kind === "RECOVER");
+    const wait = commands.find((command) => command.kind === "WAIT");
+    const roll = commands.find((command) => command.kind === "KAMIKAZE_ROLL");
+    const wall = commands.find(
+      (command) => command.kind === "BUILD_CHOCOLATE_WALL",
+    );
+    if (
+      recover === undefined ||
+      wait === undefined ||
+      roll === undefined ||
+      wall === undefined
+    ) {
+      throw new Error("Missing contextual command fixture");
+    }
+
+    host.callbacks?.onSelection({ kind: "UNIT", unitId: unit.id });
+    expect(commandButton(recover)).toBeTruthy();
+    expect(commandButton(wait)).toBeTruthy();
+    expect(
+      document.querySelectorAll('[data-command-kind="RECOVER"]'),
+    ).toHaveLength(1);
+    expect(
+      document.querySelectorAll('[data-command-kind="WAIT"]'),
+    ).toHaveLength(1);
+
+    host.callbacks?.onCommandCandidates(
+      [target(recover, unit.at), target(wait, unit.at)],
+      unit.at,
+    );
+    expect(document.querySelector(".v6-command-dialog")).toBeNull();
+    expect(fake.dispatch).not.toHaveBeenCalled();
+
+    commandButton(wait).click();
+    await waitUntil(() => fake.dispatch.mock.calls.length === 1);
+    expect(fake.dispatch).toHaveBeenCalledWith(wait);
+
+    host.callbacks?.onCommandCandidates(
+      [
+        { ...target(roll, unit.at), family: "ROLL" },
+        { ...target(wall, unit.at), family: "WALL" },
+      ],
+      unit.at,
+    );
+    const choice = requireElement(".v6-command-dialog");
+    expect(choice.getAttribute("aria-label")).toBe("Choose exact map action");
+    expect(choice.querySelectorAll("[data-command]")).toHaveLength(2);
+    app.destroy();
+  });
+
   it("resumes, restarts, deletes, recovers corrupt saves, and flushes on lifecycle boundaries", async () => {
     const storage = new MemoryStorage();
     const first = bootstrapRuleset6App(document, {

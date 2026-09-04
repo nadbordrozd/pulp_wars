@@ -805,9 +805,13 @@ describe("ruleset-6 Canvas host", () => {
     });
   });
 
-  it("returns exact stable single and ambiguous plan candidates and never guesses or commands while view-only", () => {
+  it("keeps direct contextual actions off the map so activation inspects the stack", () => {
     const fixture = publicFixture();
     const unit = ownUnit(fixture.view);
+    const city = fixture.view.cities.find((candidate) =>
+      same(candidate.at, unit.at),
+    );
+    if (city === undefined) throw new Error("Missing city under selected unit");
     const selected = { kind: "UNIT", unitId: unit.id } as const;
     const interaction = {
       selection: selected,
@@ -817,9 +821,9 @@ describe("ruleset-6 Canvas host", () => {
       readyUnitIds: [],
     } as const;
     const freshPlan = buildRenderPlanV6(fixture.view, interaction);
-    const single = commandCandidatesAtV6(freshPlan, unit.at);
-    expect(single.map((candidate) => candidate.command.kind)).toEqual(["WAIT"]);
-    expect(Object.isFrozen(single)).toBe(true);
+    const direct = commandCandidatesAtV6(freshPlan, unit.at);
+    expect(direct).toEqual([]);
+    expect(Object.isFrozen(direct)).toBe(true);
 
     const damagedView: PlayerViewV6 = {
       ...fixture.view,
@@ -829,19 +833,11 @@ describe("ruleset-6 Canvas host", () => {
           : candidate,
       ),
     };
-    const ambiguous = commandCandidatesAtV6(
+    const damagedDirect = commandCandidatesAtV6(
       buildRenderPlanV6(damagedView, interaction),
       unit.at,
     );
-    expect(ambiguous.map((candidate) => candidate.command.kind)).toEqual([
-      "RECOVER",
-      "WAIT",
-    ]);
-    expect(ambiguous.map((candidate) => candidate.command)).toEqual(
-      queryPlayerCommandsV6(damagedView).filter(
-        (command) => command.kind === "RECOVER" || command.kind === "WAIT",
-      ),
-    );
+    expect(damagedDirect).toEqual([]);
 
     const economic = queryPlayerCommandsV6(fixture.view).find(
       (command): command is EconomicCommandV6 =>
@@ -868,20 +864,22 @@ describe("ruleset-6 Canvas host", () => {
     );
     host.update(model(fixture.view, { interaction }));
     host.activate(unit.at);
-    expect(emitted).toEqual([[single[0]?.command]]);
+    expect(emitted).toEqual([]);
+    expect(inspected).toEqual([selected]);
 
     host.update(model(damagedView, { interaction }));
     host.activate(unit.at);
-    expect(emitted).toEqual([
-      [single[0]?.command],
-      ambiguous.map((candidate) => candidate.command),
-    ]);
-    expect(inspected).toEqual([]);
+    expect(emitted).toEqual([]);
+    expect(inspected).toEqual([selected, { kind: "CITY", cityId: city.id }]);
 
     host.update(model(damagedView, { interactive: false, interaction }));
     host.activate(unit.at);
-    expect(emitted).toHaveLength(2);
-    expect(inspected).toEqual([{ kind: "UNIT", unitId: unit.id }]);
+    expect(emitted).toHaveLength(0);
+    expect(inspected).toEqual([
+      selected,
+      { kind: "CITY", cityId: city.id },
+      selected,
+    ]);
     expect(requireCanvas(container).getAttribute("aria-disabled")).toBe("true");
   });
 

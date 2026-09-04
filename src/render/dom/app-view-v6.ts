@@ -1136,10 +1136,20 @@ export class Ruleset6DomAppView {
       },
       onCommandCandidates: (candidates) => {
         if (this.#hasMandatoryChoice()) return;
+        const directContextKeys = new Set(
+          selectedCommands(
+            view,
+            this.#snapshot.offeredCommands,
+            this.#selection,
+          )
+            .filter((command) => !isMapTargetFamily(command))
+            .map((command) => canonicalJson(command)),
+        );
         const mapCandidates = candidates.filter(
           (candidate) =>
             candidate.command.kind !== "RESEARCH" &&
-            candidate.command.kind !== "END_TURN",
+            candidate.command.kind !== "END_TURN" &&
+            !directContextKeys.has(canonicalJson(candidate.command)),
         );
         const positional = mapCandidates.filter(
           (candidate) =>

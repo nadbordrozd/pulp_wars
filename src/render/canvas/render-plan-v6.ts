@@ -330,6 +330,12 @@ const ECONOMIC_COMMAND_KINDS = new Set<CommandKindV6>([
   "REDEVELOP",
 ]);
 
+const DIRECT_CONTEXT_TARGET_FAMILIES = new Set<MapCommandTargetFamilyV6>([
+  "SELF_ABILITY",
+  "ECONOMIC",
+  "TRAIN",
+]);
+
 /**
  * Produces the versioned ruleset-6 Canvas plan from observation-safe values.
  * The signature deliberately excludes GameStateV6 and the implementation never
@@ -607,10 +613,10 @@ function addTargetEntriesV6(
 ): void {
   for (const target of commandTargets) {
     if (!targetMatchesSelectionV6(target, interaction.selection)) continue;
-    // Economy commands already name the selected tile. They remain exact
-    // public command metadata, but never become Canvas targets: the semantic
-    // context button dispatches them directly without a map confirmation.
-    if (target.family === "ECONOMIC") continue;
+    // Exact self, economy, and training commands already have semantic
+    // controls in the selected-context dock. They remain public command
+    // metadata, but never become duplicate Canvas targets or choices.
+    if (DIRECT_CONTEXT_TARGET_FAMILIES.has(target.family)) continue;
     if (
       target.family === "ROLL" &&
       (interaction.targetMode?.kind !== "KAMIKAZE_ROLL" ||
