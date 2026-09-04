@@ -578,14 +578,17 @@ the space remaining above a non-scrolling dock is removed; exact geometry and
 the accessibility overflow fallback are in Screen Flow.
 
 No detached letter badge, yellow circle, `W`, or `R` may be drawn on a tile to
-communicate Wait/readiness or resource state. An active-human owned unit with
-`handled = false` pulses the actual unit sprite from opacity 1 to 0.62 and back
-over a 1.6-second ease-in-out loop; health and owner cues remain steady. Full
-motion never exceeds one opacity cycle per 1.6 seconds and contains no rapid
-flash. Reduced motion keeps the sprite at opacity 1 with no attention tween;
-the dock text **Needs action** and semantic unit label remain the redundant cue.
-Any handled action removes the pulse at the accepted boundary; Promote alone
-does not.
+communicate Wait/readiness or resource state. An active-human owned unit named
+by an exact offered Move command receives a unit-attached silhouette glow while
+the actual unit sprite follows an anchor-preserving 1–1.08 scale and 1–0.62
+opacity rhythm over a 1.6-second ease-in-out loop; health and owner cues remain
+steady. Full motion never exceeds one cycle per 1.6 seconds and contains no
+rapid flash. Reduced motion requests no attention frame and holds the unit at
+opacity 1, scale 1.04, with a strong static silhouette glow. High contrast uses
+a compact white outline. Movement/combat/damage presentation suppresses the
+readiness treatment. The dock text **Needs action** and semantic unit label
+remain the redundant cue. Any handled action removes the treatment at the
+accepted boundary; Promote alone does not.
 
 Archer-archetype Attack consumes `COMBAT_RESOLVED` like every combat. Under
 Full/Normal animation, Original draws the retained arrow primitive and Candy

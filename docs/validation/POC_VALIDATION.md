@@ -1396,6 +1396,24 @@ passed: 1 AI victory in 403 commands, 2 AI defeat in 540, and 3 AI defeat in 225
 - [static reduced-motion halo desktop](../../art/integration/reviews/readiness-halo-reduced-motion-desktop.png),
   SHA-256 `3850274e9e50d5b78ff1f3474496d9d696dd46deaca2d266e9b5afe9d7ae1039`
 
+### Stronger ruleset-6 ready-unit cue result
+
+The ruleset-6 Canvas now combines the retained slow opacity cycle with a
+compact silhouette glow and an anchor-preserving scale rhythm. Exact offered
+Move commands remain the only readiness source. The cue is absent from spent,
+rival, hidden, inactive, movement, and combat frames; Reduced motion renders a
+strong static silhouette without requesting animation frames. High contrast
+uses a compact white silhouette, while health/owner status and the map's cyan
+selection outline remain steady and visually dominant.
+
+The focused Chrome matrix covers Original and Candy units on light Grass and
+dark Forest/Mountain at 0.625x, 1x, and 1.75x, plus Reduced motion and high
+contrast. All ten [native/enlarged captures and deterministic geometry
+metrics](../../art/integration/reviews/ruleset6-readiness/review-evidence.json)
+were inspected individually. Ready silhouettes remain readable at minimum
+zoom, the spent comparison unit has no glow or scale treatment, all feet-anchor
+errors are zero, and selection renders after the unit treatment.
+
 ### Greedy threat-aware Normal AI result
 
 Normal now rebuilds a complete public-query candidate set after every accepted

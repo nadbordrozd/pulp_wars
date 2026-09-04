@@ -438,12 +438,16 @@ targeting never dims the map and Escape cancels it.
 
 The old circle/check readiness mark and every detached yellow `W`/`R` tile
 badge are removed entirely. During the human turn, each owned surviving unit
-with `handled = false` pulses its actual sprite from opacity 1 to 0.62 and back
-on a 1.6 s ease-in-out loop; owner cue and health stay steady. Move, Attack,
-Escape, Recover, Capture, or Wait stops the pulse at the accepted command
-boundary; Promote alone does not. Reduced motion leaves the sprite fully opaque
-and schedules no pulse. The unit dock and semantic label say **Needs action**
-or **Handled**, so motion/color is never the only signal.
+named by an exact offered Move command receives one unit-attached silhouette
+glow and an anchor-preserving 1–1.08 scale/1–0.62 opacity rhythm on the retained
+1.6 s ease-in-out loop; owner cue and health stay steady. The white high-
+contrast outline remains legible on light and dark terrain. Move, Attack,
+Escape, Recover, Capture, or Wait stops the cue at the accepted command
+boundary; Promote alone does not. Movement and combat presentation suppress it
+so travel, contact, and damage remain unambiguous. Reduced motion schedules no
+readiness frame and instead holds a strong static 1.04-scale silhouette glow.
+The unit dock and semantic label say **Needs action** or **Handled**, so
+motion/color is never the only signal.
 
 Selecting any visible owned or rival city opens the parallel non-scrolling
 selected-city dock in the bottom HUD. The board stays undimmed, pannable, and

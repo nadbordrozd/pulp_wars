@@ -18,6 +18,7 @@
     "art:hud-readiness-review": "tsx scripts/art/hud-readiness-review.ts",
     "art:archer-review": "tsx scripts/art/archer-projectile-review.ts",
     "art:selection-jump-review": "tsx scripts/art/selection-jump-review.ts",
+    "art:ruleset6-readiness-review": "tsx scripts/art/ruleset6-readiness-review.ts",
     "art:candy-terrain-review": "tsx scripts/art/candy-terrain-review.ts",
     "art:ruleset6-terrain-review": "tsx scripts/art/ruleset6-terrain-review.ts",
     "art:road-masks": "tsx scripts/art/road-masks.ts",

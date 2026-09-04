@@ -687,7 +687,7 @@ describe("ruleset-6 Canvas drawing layer", () => {
     },
   );
 
-  it("applies the exact pulse opacity only to ready unit sprites and their fallbacks", () => {
+  it("applies the anchor-preserving readiness rhythm only to ready unit sprites and fallbacks", () => {
     const plan = exhaustivePlan();
     const unit = plan.entries.find((entry) => entry.kind === "UNIT");
     const status = plan.entries.find((entry) => entry.kind === "UNIT_STATUS");
@@ -725,10 +725,43 @@ describe("ruleset-6 Canvas drawing layer", () => {
     expect(unitCommands[0]).toMatchObject({
       kind: "IMAGE",
       alpha: 0.62,
+      glow: { color: "#fff09a", blur: 12 },
       fallback: expect.arrayContaining([
-        expect.objectContaining({ alpha: 0.62 }),
+        expect.objectContaining({
+          alpha: 0.62,
+          glow: expect.objectContaining({ color: "#fff09a", blur: 12 }),
+        }),
       ]),
     });
+    if (unitCommands[0]?.kind !== "IMAGE")
+      throw new Error("Missing ready unit image");
+    expect(unitCommands[0].glow?.alpha).toBeCloseTo(0.92, 10);
+    expect(unitCommands[0].fallback[0]?.glow?.alpha).toBeCloseTo(0.92, 10);
+    const base = buildBoardDrawListV6({
+      viewport: { width: 800, height: 600 },
+      camera: { offsetX: 400, offsetY: 180, zoom: 1 },
+      plan: pulsingPlan,
+      readinessVisible: false,
+    }).commands.find(
+      (command) => command.entryKey === unit.key && command.kind === "IMAGE",
+    );
+    if (base?.kind !== "IMAGE") throw new Error("Missing base unit image");
+    const readyAnchor = {
+      x:
+        unitCommands[0].destination.x + unitCommands[0].destination.width * 0.5,
+      y:
+        unitCommands[0].destination.y +
+        unitCommands[0].destination.height * 0.75,
+    };
+    const baseAnchor = {
+      x: base.destination.x + base.destination.width * 0.5,
+      y: base.destination.y + base.destination.height * 0.75,
+    };
+    expect(readyAnchor).toEqual(baseAnchor);
+    expect(unitCommands[0].destination.width).toBeCloseTo(
+      base.destination.width * 1.08,
+      10,
+    );
     expect(
       full.commands
         .filter((command) => command.entryKey === status.key)
@@ -752,6 +785,26 @@ describe("ruleset-6 Canvas drawing layer", () => {
         .filter((command) => command.entryKey === unit.key)
         .every((command) => command.alpha === 1),
     ).toBe(true);
+    expect(
+      reduced.commands.find(
+        (command) => command.entryKey === unit.key && command.kind === "IMAGE",
+      ),
+    ).toMatchObject({
+      glow: { color: "#fff09a", alpha: 0.94, blur: 9 },
+    });
+
+    const contrast = buildBoardDrawListV6({
+      viewport: { width: 800, height: 600 },
+      camera: { offsetX: 400, offsetY: 180, zoom: 0.625 },
+      plan: pulsingPlan,
+      readinessElapsedMs: 800,
+      highContrast: true,
+    });
+    expect(
+      contrast.commands.find(
+        (command) => command.entryKey === unit.key && command.kind === "IMAGE",
+      ),
+    ).toMatchObject({ glow: { color: "#ffffff", alpha: 0.98, blur: 3.75 } });
   });
 
   it("transforms only combatant sprites and restores a lethal public snapshot", () => {
@@ -1443,6 +1496,7 @@ describe("ruleset-6 Canvas drawing layer", () => {
               plan,
               devicePixelRatio,
               readinessElapsedMs: 125,
+              readinessVisible: false,
             });
           const dpr1 = renderAtDpr(1);
           const dpr2 = renderAtDpr(2);

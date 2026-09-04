@@ -32,7 +32,7 @@ import {
   type BoardRenderPlanV6,
   type RenderPlanEntryV6,
 } from "./render-plan-v6";
-import { readinessSpriteOpacity } from "./readiness-presentation";
+import { readinessUnitStyleV6 } from "./readiness-presentation";
 import type {
   CombatAnimationFrameV6,
   CombatPresentationV6,
@@ -58,6 +58,8 @@ export interface DrawBoardV6Options {
   readonly images?: Ruleset6AcceptedImageResolver;
   readonly readinessElapsedMs?: number;
   readonly reducedMotion?: boolean;
+  readonly readinessVisible?: boolean;
+  readonly highContrast?: boolean;
   readonly movementPresentation?: MovementPresentationV6 | null;
   readonly movementFrame?: MovementAnimationFrameV6 | null;
   readonly combatPresentation?: CombatPresentationV6 | null;
@@ -70,6 +72,8 @@ export interface BuildBoardDrawListV6Options {
   readonly plan: BoardRenderPlanV6;
   readonly readinessElapsedMs?: number;
   readonly reducedMotion?: boolean;
+  readonly readinessVisible?: boolean;
+  readonly highContrast?: boolean;
   readonly movementPresentation?: MovementPresentationV6 | null;
   readonly movementFrame?: MovementAnimationFrameV6 | null;
   readonly combatPresentation?: CombatPresentationV6 | null;
@@ -86,6 +90,11 @@ export interface DrawCoverageLabelV6 {
 
 interface DrawCommandBaseV6 {
   readonly entryKey: string;
+  readonly glow?: {
+    readonly color: string;
+    readonly alpha: number;
+    readonly blur: number;
+  };
 }
 
 export type BoardDrawCommandV6 =
@@ -263,6 +272,8 @@ export function buildBoardDrawListV6(
       cityLevels.get(entry.id) ?? 1,
       options.readinessElapsedMs ?? 0,
       options.reducedMotion ?? false,
+      options.readinessVisible ?? true,
+      options.highContrast ?? false,
       combatEntryStyle(
         entry,
         options.camera,
@@ -315,6 +326,23 @@ export function executeDrawCommandV6(
       return;
     }
     context.save();
+    if (command.glow !== undefined) {
+      context.globalAlpha = command.glow.alpha;
+      context.shadowColor = command.glow.color;
+      context.shadowBlur = command.glow.blur;
+      context.shadowOffsetX = 8_192;
+      context.shadowOffsetY = 0;
+      context.drawImage(
+        image,
+        command.destination.x - 8_192,
+        command.destination.y,
+        command.destination.width,
+        command.destination.height,
+      );
+      context.shadowColor = "transparent";
+      context.shadowBlur = 0;
+      context.shadowOffsetX = 0;
+    }
     context.globalAlpha = command.alpha;
     context.drawImage(
       image,
@@ -328,6 +356,12 @@ export function executeDrawCommandV6(
   }
   context.save();
   context.globalAlpha = command.alpha;
+  if (command.glow !== undefined) {
+    context.shadowColor = command.glow.color;
+    context.shadowBlur = command.glow.blur;
+    context.shadowOffsetX = 0;
+    context.shadowOffsetY = 0;
+  }
   if (command.kind === "TEXT") {
     context.fillStyle = command.fill;
     context.font = `${command.weight} ${command.fontSize}px system-ui, sans-serif`;
@@ -397,6 +431,8 @@ function drawEntry(
   cityLevel: number,
   readinessElapsedMs: number,
   reducedMotion: boolean,
+  readinessVisible: boolean,
+  highContrast: boolean,
   combatStyle: { readonly offset: Point; readonly alpha: number } | null,
   roadMask: number,
 ): void {
@@ -525,10 +561,14 @@ function drawEntry(
       return;
     }
     case "UNIT": {
-      const spriteOpacity =
-        entry.details.readiness === "PULSE"
-          ? readinessSpriteOpacity(readinessElapsedMs, reducedMotion)
-          : 1;
+      const readinessStyle =
+        entry.details.readiness === "PULSE" && readinessVisible
+          ? readinessUnitStyleV6(
+              readinessElapsedMs,
+              reducedMotion,
+              highContrast,
+            )
+          : null;
       const spriteCenter = transformedCenter(center, combatStyle);
       addCoveredAsset(
         commands,
@@ -553,7 +593,17 @@ function drawEntry(
             ownerColor,
           );
         },
-        spriteOpacity * (combatStyle?.alpha ?? 1),
+        (readinessStyle?.opacity ?? 1) * (combatStyle?.alpha ?? 1),
+        readinessStyle === null
+          ? undefined
+          : {
+              scale: readinessStyle.scale,
+              glow: {
+                color: readinessStyle.glow.color,
+                alpha: readinessStyle.glow.alpha,
+                blur: readinessStyle.glow.blurCssPx * zoom,
+              },
+            },
       );
       return;
     }
@@ -1042,6 +1092,10 @@ function addCoveredAsset(
   zoom: number,
   fallback: (item: AssetCoverageV6) => readonly BoardDrawCommandV6[],
   alpha = 1,
+  appearance?: {
+    readonly scale: number;
+    readonly glow: NonNullable<DrawCommandBaseV6["glow"]>;
+  },
 ): void {
   labels.push({
     entryKey,
@@ -1050,38 +1104,124 @@ function addCoveredAsset(
     assetId: item.status === "ACCEPTED" ? item.assetId : null,
     production: item.production,
   });
-  const fallbackCommands = fallback(item).map((command) =>
-    withCommandAlpha(command, alpha),
-  );
+  const anchor = geometryOffsetCenter(center, zoom, item.geometry.offsetY);
+  const fallbackCommands = fallback(item).map((command) => {
+    const transformed =
+      appearance === undefined
+        ? command
+        : transformCommandAboutAnchor(command, anchor, appearance.scale);
+    return withCommandAppearance(transformed, alpha, appearance?.glow);
+  });
   if (item.status === "PLACEHOLDER") {
     commands.push(...fallbackCommands);
     return;
   }
+  const destination = anchoredDestinationRect(center, zoom, item.geometry);
   commands.push({
     kind: "IMAGE",
     entryKey,
     assetId: item.assetId,
     publicPath: item.publicPath,
-    destination: anchoredDestinationRect(center, zoom, item.geometry),
+    destination:
+      appearance === undefined
+        ? destination
+        : scaleDestinationAboutAnchor(destination, anchor, appearance.scale),
     alpha,
     fallback: fallbackCommands,
+    ...(appearance === undefined ? {} : { glow: appearance.glow }),
   });
 }
 
-function withCommandAlpha(
+function withCommandAppearance(
   command: BoardDrawCommandV6,
   alpha: number,
+  glow?: NonNullable<DrawCommandBaseV6["glow"]>,
 ): BoardDrawCommandV6 {
   if (command.kind === "IMAGE") {
     return {
       ...command,
       alpha: command.alpha * alpha,
       fallback: command.fallback.map((fallback) =>
-        withCommandAlpha(fallback, alpha),
+        withCommandAppearance(fallback, alpha, glow),
+      ),
+      ...(glow === undefined ? {} : { glow }),
+    };
+  }
+  return {
+    ...command,
+    alpha: command.alpha * alpha,
+    ...(glow === undefined ? {} : { glow }),
+  };
+}
+
+function scaleDestinationAboutAnchor(
+  destination: DestinationRect,
+  anchor: Point,
+  scale: number,
+): DestinationRect {
+  return {
+    x: anchor.x + (destination.x - anchor.x) * scale,
+    y: anchor.y + (destination.y - anchor.y) * scale,
+    width: destination.width * scale,
+    height: destination.height * scale,
+  };
+}
+
+function transformCommandAboutAnchor(
+  command: BoardDrawCommandV6,
+  anchor: Point,
+  scale: number,
+): BoardDrawCommandV6 {
+  const point = (value: Point): Point => ({
+    x: anchor.x + (value.x - anchor.x) * scale,
+    y: anchor.y + (value.y - anchor.y) * scale,
+  });
+  if (command.kind === "IMAGE") {
+    return {
+      ...command,
+      destination: scaleDestinationAboutAnchor(
+        command.destination,
+        anchor,
+        scale,
+      ),
+      fallback: command.fallback.map((fallback) =>
+        transformCommandAboutAnchor(fallback, anchor, scale),
       ),
     };
   }
-  return { ...command, alpha: command.alpha * alpha };
+  if (command.kind === "ELLIPSE") {
+    return {
+      ...command,
+      center: point(command.center),
+      radiusX: command.radiusX * scale,
+      radiusY: command.radiusY * scale,
+      lineWidth: command.lineWidth * scale,
+    };
+  }
+  if (command.kind === "RECT") {
+    const topLeft = point({ x: command.x, y: command.y });
+    return {
+      ...command,
+      x: topLeft.x,
+      y: topLeft.y,
+      width: command.width * scale,
+      height: command.height * scale,
+      lineWidth: command.lineWidth * scale,
+    };
+  }
+  if (command.kind === "TEXT") {
+    return {
+      ...command,
+      at: point(command.at),
+      fontSize: command.fontSize * scale,
+    };
+  }
+  return {
+    ...command,
+    points: command.points.map(point),
+    lineWidth: command.lineWidth * scale,
+    dash: command.dash.map((value) => value * scale),
+  };
 }
 
 function buildingFallback(

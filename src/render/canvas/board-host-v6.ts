@@ -43,6 +43,7 @@ export interface CanvasBoardHostModelV6 {
   readonly view: PlayerViewV6;
   readonly interactive: boolean;
   readonly motion?: "FULL" | "REDUCED";
+  readonly highContrast?: boolean;
   readonly movementPresentation?: MovementPresentationV6 | null;
   readonly combatPresentation?: CombatPresentationV6 | null;
   readonly interaction: BoardRenderInteractionV6;
@@ -618,7 +619,9 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
         devicePixelRatio: this.#devicePixelRatio,
         images: this.#images,
         readinessElapsedMs: this.#now() - this.#readinessPhaseStartedAt,
-        reducedMotion: !boardReadinessAnimationNeededV6(model),
+        reducedMotion: model.motion === "REDUCED",
+        readinessVisible: boardReadinessVisibleV6(model),
+        highContrast: model.highContrast ?? false,
         movementPresentation: model.movementPresentation ?? null,
         movementFrame:
           model.movementPresentation === undefined ||
@@ -948,7 +951,18 @@ export function boardAnimationNeededV6(model: CanvasBoardHostModelV6): boolean {
 export function boardReadinessAnimationNeededV6(
   model: CanvasBoardHostModelV6,
 ): boolean {
-  if (!model.interactive || model.motion === "REDUCED") return false;
+  return boardReadinessVisibleV6(model) && model.motion !== "REDUCED";
+}
+
+export function boardReadinessVisibleV6(
+  model: CanvasBoardHostModelV6,
+): boolean {
+  if (
+    !model.interactive ||
+    model.movementPresentation != null ||
+    model.combatPresentation != null
+  )
+    return false;
   const activePlayerId = model.view.turnOrder[model.view.activeSeatIndex];
   if (activePlayerId !== model.view.viewer.id) return false;
   const viewer = model.view.players.find(

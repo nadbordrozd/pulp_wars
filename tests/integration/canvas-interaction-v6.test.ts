@@ -20,6 +20,7 @@ import {
   CanvasBoardHostV6,
   boardAnimationNeededV6,
   boardReadinessAnimationNeededV6,
+  boardReadinessVisibleV6,
   commandCandidatesAtV6,
   resolveInspectionActivationV6,
   type CanvasBoardHostCallbacksV6,
@@ -396,6 +397,27 @@ describe("ruleset-6 Canvas host", () => {
         ...base,
         motion: "REDUCED",
         interaction: { ...base.interaction, readyUnitIds: [own.id] },
+      }),
+    ).toBe(false);
+    expect(
+      boardReadinessVisibleV6({
+        ...base,
+        motion: "REDUCED",
+        interaction: { ...base.interaction, readyUnitIds: [own.id] },
+      }),
+    ).toBe(true);
+    expect(
+      boardReadinessVisibleV6({
+        ...base,
+        interaction: { ...base.interaction, readyUnitIds: [own.id] },
+        movementPresentation: movementPresentation(testView, "moving"),
+      }),
+    ).toBe(false);
+    expect(
+      boardReadinessVisibleV6({
+        ...base,
+        interaction: { ...base.interaction, readyUnitIds: [own.id] },
+        combatPresentation: combatPresentation(testView, "combat"),
       }),
     ).toBe(false);
   });

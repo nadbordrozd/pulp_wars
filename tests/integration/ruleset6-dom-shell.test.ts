@@ -1309,11 +1309,13 @@ describe("playable ruleset-6 DOM shell", () => {
     const view = publicView("ORIGINAL");
     const fake = new FakeController(view, []);
     const before = fake.snapshot();
+    const host = new FakeBoardHostV6();
     const app = new Ruleset6DomAppView(document, requireElement("#app"), fake, {
-      boardHost: new FakeBoardHostV6(),
+      boardHost: host,
       prefersHighContrast: true,
     });
     expect(requireElement("#app").dataset.contrast).toBe("high");
+    expect(host.model?.highContrast).toBe(true);
     expect(fake.snapshot()).toEqual(before);
     expect(fake.dispatch).not.toHaveBeenCalled();
     app.destroy();

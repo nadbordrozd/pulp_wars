@@ -1200,6 +1200,7 @@ export class Ruleset6DomAppView {
         view.pendingChoices.length === 0 &&
         this.#selectedAbility === null,
       motion: this.#prefersReducedMotion ? "REDUCED" : "FULL",
+      highContrast: this.#prefersHighContrast,
       movementPresentation,
       combatPresentation,
       interaction: {
