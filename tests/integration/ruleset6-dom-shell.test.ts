@@ -1521,6 +1521,89 @@ describe("playable ruleset-6 DOM shell", () => {
     reducedApp.destroy();
   });
 
+  it("coalesces transition snapshots into the first accepted movement presentation render", async () => {
+    const before = publicView("ORIGINAL");
+    const unit = before.units.find(
+      (candidate) => candidate.ownerId === before.viewer.id,
+    );
+    const destination = before.board.tiles.find(
+      (tile) =>
+        tile.explored && (tile.at.x !== unit?.at.x || tile.at.y !== unit?.at.y),
+    )?.at;
+    if (unit === undefined || destination === undefined)
+      throw new Error("Missing movement fixture");
+    const move = {
+      kind: "MOVE",
+      unitId: unit.id,
+      path: [destination],
+    } as const satisfies CommandV6;
+    const moved = {
+      kind: "UNIT_MOVED",
+      unitId: unit.id,
+      path: [destination],
+    } as const satisfies DomainEventV6;
+    const after: PlayerViewV6 = {
+      ...before,
+      commandIndex: before.commandIndex + 1,
+      units: before.units.map((candidate) =>
+        candidate.id === unit.id
+          ? { ...candidate, at: destination }
+          : candidate,
+      ),
+    };
+    const fake = new FakeController(before, [move]);
+    fake.dispatch.mockImplementationOnce(async (command) => {
+      fake.setSnapshot({ ...fake.snapshot(), transitioning: true });
+      fake.setSnapshot({
+        ...fake.snapshot(),
+        view: after,
+        commandIndex: after.commandIndex,
+        offeredCommands: [],
+        transitioning: true,
+      });
+      fake.setSnapshot({ ...fake.snapshot(), transitioning: false });
+      return {
+        accepted: true,
+        command,
+        events: [moved],
+        stateHash: "after-move",
+        presentationBoundary: fakeBoundary(before, after, command, [moved]),
+      };
+    });
+    const host = new FakeBoardHostV6();
+    const app = new Ruleset6DomAppView(document, requireElement("#app"), fake, {
+      boardHost: host,
+    });
+    const updatesBeforeActivation = host.models.length;
+    const shellBeforeActivation = requireElement(".v6-app-shell");
+
+    host.callbacks?.onCommandCandidates(
+      [target(move, destination)],
+      destination,
+    );
+    await waitUntil(() => host.model?.movementPresentation !== null);
+
+    const activationModels = host.models.slice(updatesBeforeActivation);
+    expect(activationModels).toHaveLength(1);
+    expect(requireElement(".v6-app-shell")).toBe(shellBeforeActivation);
+    expect(requireElement(".v6-action-dock").textContent).toContain(
+      "Following the accepted path",
+    );
+    expect(
+      document.querySelector<HTMLButtonElement>('[data-action="open-tech"]')
+        ?.disabled,
+    ).toBe(true);
+    expect(activationModels[0]).toMatchObject({
+      interactive: false,
+      view: { commandIndex: after.commandIndex },
+      movementPresentation: {
+        path: [unit.at, destination],
+        destination,
+      },
+    });
+    app.destroy();
+  });
+
   it("queues only accepted public ranged events, locks input, and drains by key", async () => {
     const initial = publicView("ORIGINAL");
     const baseAttacker = initial.units.find(
@@ -2699,6 +2782,7 @@ describe("playable ruleset-6 DOM shell", () => {
 class FakeBoardHostV6 implements BoardHostV6 {
   callbacks: CanvasBoardHostCallbacksV6 | null = null;
   model: CanvasBoardHostModelV6 | null = null;
+  readonly models: CanvasBoardHostModelV6[] = [];
   destroyCalls = 0;
   readonly updateIds: Array<number | string> = [];
   unmountCalls = 0;
@@ -2712,6 +2796,7 @@ class FakeBoardHostV6 implements BoardHostV6 {
   }
   update(model: CanvasBoardHostModelV6): void {
     this.model = model;
+    this.models.push(model);
     this.updateIds.push(model.matchInstanceId);
   }
   activate(): void {}

@@ -170,6 +170,7 @@ export class Ruleset6DomAppView {
   #mandatoryReturnFocusId: string | null = null;
   #restoreBoardFocus = false;
   #presentationQueue: readonly BoardPresentationQueueEntryV6[] = [];
+  #humanDispatchPending = false;
   #destroyed = false;
 
   constructor(
@@ -205,7 +206,7 @@ export class Ruleset6DomAppView {
       if (this.#destroyed) return;
       this.#snapshot = snapshot;
       this.#validatePresentation(snapshot.view);
-      this.#render();
+      if (!this.#humanDispatchPending) this.#render();
     });
   }
 
@@ -1392,6 +1393,10 @@ export class Ruleset6DomAppView {
         this.#render();
       },
     });
+    this.#updateBoard(view);
+  }
+
+  #updateBoard(view: PlayerViewV6): void {
     const activePresentation = this.#presentationQueue[0] ?? null;
     const movementPresentation =
       activePresentation?.kind === "MOVEMENT"
@@ -1422,6 +1427,32 @@ export class Ruleset6DomAppView {
         ),
       },
     });
+  }
+
+  #startAcceptedMovementWithoutRemount(view: PlayerViewV6): boolean {
+    if (
+      this.#screen !== "MATCH" ||
+      this.#presentationQueue[0]?.kind !== "MOVEMENT" ||
+      this.#root.querySelector("[data-v6-board]") === null
+    ) {
+      return false;
+    }
+    const dock = this.#root.querySelector<HTMLElement>(".v6-action-dock");
+    if (dock !== null) {
+      dock.replaceChildren(
+        text(this.#document, "h2", "Movement"),
+        text(this.#document, "p", "Following the accepted path…"),
+      );
+    }
+    for (const control of this.#root.querySelectorAll<HTMLButtonElement>(
+      '[data-action="open-tech"], [data-action="end-turn"]',
+    )) {
+      control.disabled = true;
+    }
+    const notice = this.#root.querySelector<HTMLElement>("#v6-live");
+    if (notice !== null) notice.textContent = this.#notice ?? "";
+    this.#updateBoard(view);
+    return true;
   }
 
   #normalActionPanel(view: PlayerViewV6): HTMLElement {
@@ -2048,7 +2079,7 @@ export class Ruleset6DomAppView {
     ) {
       return;
     }
-    if (!isStillOffered(this.#controller.snapshot(), command)) {
+    if (!isStillOffered(this.#snapshot, command)) {
       this.#error =
         "That action is no longer offered. The action list was refreshed.";
       this.#render();
@@ -2056,7 +2087,13 @@ export class Ruleset6DomAppView {
     }
     this.#error = null;
     this.#commandChoices = [];
-    const result = await this.#controller.dispatch(command);
+    this.#humanDispatchPending = true;
+    let result: Awaited<ReturnType<Ruleset6BrowserControllerPort["dispatch"]>>;
+    try {
+      result = await this.#controller.dispatch(command);
+    } finally {
+      this.#humanDispatchPending = false;
+    }
     if (this.#destroyed) return;
     if (!result.accepted) {
       this.#error = `Action rejected: ${result.reason}${result.error === undefined ? "" : ` (${result.error.code})`}.`;
@@ -2066,8 +2103,13 @@ export class Ruleset6DomAppView {
     this.#enqueuePresentationBoundaries([result.presentationBoundary]);
     this.#notice = `${commandLabel(command)} completed.`;
     this.#targetMode = null;
-    this.#validatePresentation(this.#controller.snapshot().view);
-    this.#render();
+    this.#validatePresentation(this.#snapshot.view);
+    if (
+      this.#snapshot.view === null ||
+      !this.#startAcceptedMovementWithoutRemount(this.#snapshot.view)
+    ) {
+      this.#render();
+    }
     await this.#progressAiIfNeeded();
   }
 
@@ -2327,7 +2369,6 @@ export class Ruleset6DomAppView {
       ...this.#presentationQueue,
       ...additions,
     ]);
-    this.#render();
   }
 }
 

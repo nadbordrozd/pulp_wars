@@ -218,6 +218,7 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
 
   update(model: CanvasBoardHostModelV6): void {
     const previousModel = this.#model;
+    const previousMovementKey = this.#movementPresentationKey;
     const matchChanged =
       previousModel === null ||
       previousModel.matchInstanceId !== model.matchInstanceId;
@@ -270,6 +271,13 @@ export class CanvasBoardHostV6 implements BoardHostV6 {
     this.#canvas?.setAttribute("aria-disabled", String(!model.interactive));
     if (this.#canvas !== null)
       this.#canvas.dataset.interactive = String(model.interactive);
+    if (
+      this.#movementPresentationKey !== null &&
+      this.#movementPresentationKey !== previousMovementKey
+    ) {
+      this.#syncAnimationFrame();
+      if (this.#animationFrame !== null) return;
+    }
     this.#draw();
     this.#syncAnimationFrame();
   }

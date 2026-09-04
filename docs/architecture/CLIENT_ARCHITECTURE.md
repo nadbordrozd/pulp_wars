@@ -683,6 +683,21 @@ choosing. Visual animation does not lock the engine: it locks human input in the
 controller and consumes the already-produced event queue. A Fast Forward action
 drains presentation immediately without changing state transitions.
 
+The DOM consumes every controller snapshot emitted during a human dispatch but
+coalesces its transitioning, accepted-state, and settled notifications into one
+render after the dispatch result is available. That render installs the accepted
+post-command view and its movement/combat presentation together. It must not
+remount and redraw the complete Canvas once per intermediate notification: on a
+large board that presentation-only churn delays the first animation frame even
+though validation and reduction have already completed. Rejected commands never
+install a presentation, and controller serialization remains the input lock.
+For an accepted visible Move, the DOM updates the already-mounted board with the
+post-command view and movement presentation before rebuilding surrounding HUD
+chrome; the action dock is replaced with its locked Movement status in place.
+The host schedules that movement before any redundant zero-progress redraw; the
+previous accepted frame already contains the authoritative origin. The normal
+shell render resumes when the slide completes.
+
 ## 6. Determinism, PRNG, and canonical data
 
 ### 6.1 Seed conversion and PRNG
