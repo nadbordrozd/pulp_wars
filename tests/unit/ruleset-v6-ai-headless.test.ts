@@ -675,10 +675,14 @@ describe("ruleset-6 deterministic headless execution", () => {
         factionTreesBySeat: ["ORIGINAL_BASELINE", "ORIGINAL_BASELINE"],
       },
     });
+    const initial = createdState(
+      setupV6({ factions: ["ORIGINAL", "ORIGINAL"] }),
+    );
     expect(defaults.entries[0]?.metrics.mapHash).toBe(
-      canonicalHash(
-        createdState(setupV6({ factions: ["ORIGINAL", "ORIGINAL"] })).board,
-      ),
+      canonicalHash({
+        board: initial.board,
+        treasureChests: initial.treasureChests,
+      }),
     );
   });
 });

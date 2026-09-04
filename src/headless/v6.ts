@@ -117,6 +117,11 @@ export interface HeadlessMetricsV6 {
   readonly improvementsBuilt: Readonly<Record<EconomicImprovementId, number>>;
   readonly improvementsRemoved: Readonly<Record<EconomicImprovementId, number>>;
   readonly roadsBuilt: number;
+  readonly treasuresGenerated: number;
+  readonly treasuresCaptured: number;
+  readonly treasureCoinRewards: number;
+  readonly treasureHeavyRewards: number;
+  readonly treasureHeavyFallbacks: number;
   readonly liveContributionHistograms: Readonly<
     Record<EconomicImprovementId | "ROAD", Readonly<Record<string, number>>>
   >;
@@ -591,6 +596,11 @@ interface MutableHeadlessMetricsV6 {
   improvementsBuilt: Record<EconomicImprovementId, number>;
   improvementsRemoved: Record<EconomicImprovementId, number>;
   roadsBuilt: number;
+  treasuresGenerated: number;
+  treasuresCaptured: number;
+  treasureCoinRewards: number;
+  treasureHeavyRewards: number;
+  treasureHeavyFallbacks: number;
   liveContributionHistograms: Record<
     EconomicImprovementId | "ROAD",
     Record<string, number>
@@ -664,6 +674,11 @@ function createMetricsV6(state: GameStateV6): MutableHeadlessMetricsV6 {
     improvementsBuilt: zeroRecord(ECONOMIC_IMPROVEMENT_IDS),
     improvementsRemoved: zeroRecord(ECONOMIC_IMPROVEMENT_IDS),
     roadsBuilt: 0,
+    treasuresGenerated: state.treasureChests.length,
+    treasuresCaptured: 0,
+    treasureCoinRewards: 0,
+    treasureHeavyRewards: 0,
+    treasureHeavyFallbacks: 0,
     liveContributionHistograms: contributionHistograms,
     windmillClusterSizes: {},
     sawmillClusterSizes: {},
@@ -723,7 +738,10 @@ function createMetricsV6(state: GameStateV6): MutableHeadlessMetricsV6 {
     eventHash: "",
     checkpointHash: "",
     finalHash: "",
-    mapHash: canonicalHash(state.board),
+    mapHash: canonicalHash({
+      board: state.board,
+      treasureChests: state.treasureChests,
+    }),
     postGenerationPrngHash: canonicalHash(state.random),
     finalPrngHash: "",
   };
@@ -886,6 +904,15 @@ function recordAcceptedCommandV6(
       metrics.improvementsRemoved[event.improvement] += 1;
     } else if (event.kind === "ROAD_BUILT") {
       metrics.roadsBuilt += 1;
+    } else if (event.kind === "TREASURE_CAPTURED") {
+      metrics.treasuresCaptured += 1;
+      if (event.grantedReward === "COINS") {
+        metrics.treasureCoinRewards += 1;
+        metrics.coinsEarned += event.coinDelta;
+      } else {
+        metrics.treasureHeavyRewards += 1;
+      }
+      if (event.heavyFallback) metrics.treasureHeavyFallbacks += 1;
     } else if (event.kind === "UNIT_HEALED") {
       metrics.abilityActions.HEAL += 1;
     } else if (event.kind === "UNIT_PUSHED") {

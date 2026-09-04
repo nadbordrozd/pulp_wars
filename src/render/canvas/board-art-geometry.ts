@@ -134,6 +134,12 @@ export const SQUARE_ART_GEOMETRY = {
     anchor: { x: 128, y: 222 },
     displayScale: 0.5,
   },
+  treasure: {
+    width: 256,
+    height: 296,
+    anchor: { x: 128, y: 222 },
+    displayScale: 0.3,
+  },
   processor: {
     width: 384,
     height: 384,

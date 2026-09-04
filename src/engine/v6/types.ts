@@ -319,6 +319,8 @@ export interface GameStateV6 {
   readonly populationContributions: readonly PopulationContributionV6[];
   readonly units: readonly UnitStateV6[];
   readonly chocolateWalls: readonly ChocolateWallStateV6[];
+  /** Public neutral pickups, sorted canonically by (y,x). */
+  readonly treasureChests: readonly CoordV6[];
   readonly pendingChoices: readonly PendingChoiceV6[];
   readonly outcome: MatchOutcomeV6 | null;
 }

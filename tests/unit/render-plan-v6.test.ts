@@ -1025,6 +1025,7 @@ function baseView(faction: "ORIGINAL" | "CANDY" = "ORIGINAL"): PlayerViewV6 {
     improvementValues: [],
     units: [],
     chocolateWalls: [],
+    treasureChests: [],
     pendingChoices: [],
     outcome: null,
   };

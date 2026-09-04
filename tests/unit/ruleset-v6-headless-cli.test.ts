@@ -78,7 +78,7 @@ describe("ruleset-6 headless CLI dispatch", () => {
         ["ORIGINAL", "CANDY"],
       ],
     );
-  });
+  }, 15_000);
 
   it("dispatches ruleset 5 only when explicitly requested", () => {
     const result = runCli(

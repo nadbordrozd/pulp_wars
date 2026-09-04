@@ -142,7 +142,7 @@ describe("playable ruleset-6 DOM shell", () => {
       transitioning: false,
       commandIndex: 3,
       stateHash:
-        "56fc6cb52c2babc1947d77843220dbb03d871c715aee01098f1066fe197b5928",
+        "a5dafbc371f24e285ea3d3f9b4bc49872b638cdb57f14d7a041371f7406a9d01",
       view: {
         turnOrder: [2, 1],
         activeSeatIndex: 1,

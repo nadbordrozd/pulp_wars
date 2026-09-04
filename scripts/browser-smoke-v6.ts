@@ -193,12 +193,12 @@ try {
     productionRasterInventory: {
       status: "ACCEPTED_AND_LOADED",
       treatment:
-        "The production browser loaded the checked-in ruleset-6 terrain, resource, building, Road, 18-role, portrait, Coin, action, reward, and explicitly registered 25-node technology raster inventory. Code-native geometry remains limited to the categories required by the art contracts.",
+        "The production browser loaded the checked-in ruleset-6 terrain, resource, building, neutral treasure, Road, 18-role, portrait, Coin, action, reward, and explicitly registered 25-node technology raster inventory. Code-native geometry remains limited to the categories required by the art contracts.",
     },
     visualReview: {
       status: "ACCEPTED",
       notes:
-        "Every bounded contextual, ability-detail, reward, city-training, and Technology capture was inspected individually at native output size and in its nearest-neighbor 2x companion. Contextual rasters, including faction-correct TRAIN world sprites, use the exact shared 112 x 130 CSS-pixel transparent viewport with contained aspect ratio at desktop and true 390x844 DPR2 mobile; code-native fallbacks retain the same framed footprint. Original and Candy Animals are visible on explored Forest from launch while Hunting remains unresearched and Hunt Game unavailable; hidden Animals remain redacted. Exact world-unit, faction/level city, and public Fruit selection identities remain compact and readable above their isolated actions with no coordinate text. The Candy Warrior's Candify card is readable and unclipped at desktop and mobile, remains view-only, blocks outside input while open, and restores the selected-unit dock after closing without advancing a command boundary. Original and Candy labels/symbols remain distinct; the map stays primary; full Technology cards/details and blocking rewards fit without clipping or horizontal overflow. Offscreen square-cell targets are brought into the unobscured Canvas by bounded production pointer drags, with before/after camera evidence recorded for both factions. Direct selected-tile actions accept one boundary without a second map activation. No suspected visual failure remained after enlargement review.",
+        "Every bounded contextual, ability-detail, reward, city-training, and Technology capture was inspected individually at native output size and in its nearest-neighbor 2x companion. Contextual rasters, including faction-correct TRAIN world sprites, use the exact shared 112 x 130 CSS-pixel transparent viewport with contained aspect ratio at desktop and true 390x844 DPR2 mobile; code-native fallbacks retain the same framed footprint. Original and Candy Animals are visible on explored Forest from launch while Hunting remains unresearched and Hunt Game unavailable; hidden Animals remain redacted. Neutral treasure chests remain compact and readable through fog without disclosing the underlying tile. Exact world-unit, faction/level city, and public Fruit selection identities remain compact and readable above their isolated actions with no coordinate text. The Candy Warrior's Candify card is readable and unclipped at desktop and mobile, remains view-only, blocks outside input while open, and restores the selected-unit dock after closing without advancing a command boundary. Original and Candy labels/symbols remain distinct; the map stays primary; full Technology cards/details and blocking rewards fit without clipping or horizontal overflow. Offscreen square-cell targets are brought into the unobscured Canvas by bounded production pointer drags, with before/after camera evidence recorded for both factions. Direct selected-tile actions accept one boundary without a second map activation. No suspected visual failure remained after enlargement review.",
     },
     flows,
     aiFirstLaunch,
@@ -268,7 +268,7 @@ async function runAiFirstLaunchRegression(
   if (
     evidence.commandIndex !== 3 ||
     evidence.stateHash !==
-      "5bb0964730b810c1a5c6111761fb3c16c40257df34bda9f507b5c2b0bf46ce7b"
+      "8ac59929ca4b2a28f259e14f3669261627d080cf9517b0ed56376c11b53cef7e"
   ) {
     throw new Error(
       `AI-first deterministic boundary changed: ${JSON.stringify(evidence)}`,

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "67b21f3fb53fa30c91261186d2fcc77a099030c1872366ee266f41f10a94f7a4",
+  "sourceManifestSha256": "bbcc56ca6431667c1e52711821d3864bc4252f627d8914e068870fc1721c206f",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -10164,6 +10164,59 @@
       "outputSha256": "e5407270dc3c55eec4b9ee34c913afe7f79c0426a4ba8933ae82bfdd18bc50cf",
       "notes": "Accepted after native source and enlarged inspection plus deterministic both-faction advanced-processor/value, mature 3x3 and expanded 5x5 cross-city, zoom/DPR, overlay and exact 112x130 UI review. The tall capped central hall, exactly three broad discipline wings, oversized gear and fitted-stone cue create a late-game multi-discipline landmark unmistakably grander than Workshop while remaining one functional improvement, not a city, castle or skyline. Alpha x80..304,y80..316 gives 224 source pixels of width and 236 of height, with 80/79 lateral safety and 67 bottom pixels. At 0.3 map scale the 67.5x71.1 CSS silhouette remains smaller than accepted square Forest/Mountain mass. Original/Candy units, three/four cross-city processor spokes and exact +6/+8 mint population squares remain readable; no links, values, ownership, text or UI are baked in.",
       "reviewedAt": "2026-09-03T20:50:42.352Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-treasure-chest": {
+      "id": "building-treasure-chest",
+      "status": "ACCEPTED",
+      "jobId": "667f2f05-4ecc-4a17-8c75-5dc42b4a4a50",
+      "candidate": "art/pixellab/candidates/building-treasure-chest.png",
+      "candidateSha256": "6ff3cf3eb52dac0e9fff73911a622a5ac0ef4f3bc54bcba643d2b0557f19dbca",
+      "providerOutputSha256": "e1eeb10493cc1eef4cf711821c16323e95a19b777308a262ffdcad2bc216c42b",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 87,
+        "top": 136,
+        "right": 168,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm bronze bands, parchment-gold wood, restrained dark-teal lock, charcoal-teal outline, northwest highlight and southeast shadow. Exactly one compact closed neutral treasure chest pickup on a transparent 256 by 296 canvas, grounded at x128 y222. One low broad toy-like wooden box with a rounded lid, two oversized warm-bronze bands and one large dark-teal keyhole plate. Southeast-facing three-quarter downward square-map camera, soft northwest key light and darker southeast planes, strong charcoal-teal outline, two-to-three broad flat tones. Fit the full silhouette within x68..188,y136..222 so it is much smaller than a unit, village, Forest or Mountain while still readable at 0.625 map zoom. Isolated pickup only; no ground, glow, coins or baked UI. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; open chest, visible contents, spilling coins, gems, loose coin, reward choice, heavy unit, character, mimic, face, arms, legs, village, house, building, terrain, grass, platform, pedestal, cast shadow, glow, magic aura, ownership color, selection ring, status badge, text, letters, number, UI, left overflow, right overflow, bottom overflow, lower-right light, photorealism, realistic wood grain, painterly, faux 3D, pixel art, tiny detail, blur, matte, halo, cropped silhouette.",
+        "prompt": "Exactly one compact closed neutral treasure chest pickup on a transparent 256 by 296 canvas, grounded at x128 y222. One low broad toy-like wooden box with a rounded lid, two oversized warm-bronze bands and one large dark-teal keyhole plate. Southeast-facing three-quarter downward square-map camera, soft northwest key light and darker southeast planes, strong charcoal-teal outline, two-to-three broad flat tones. Fit the full silhouette within x68..188,y136..222 so it is much smaller than a unit, village, Forest or Mountain while still readable at 0.625 map zoom. Isolated pickup only; no ground, glow, coins or baked UI.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; open chest, visible contents, spilling coins, gems, loose coin, reward choice, heavy unit, character, mimic, face, arms, legs, village, house, building, terrain, grass, platform, pedestal, cast shadow, glow, magic aura, ownership color, selection ring, status badge, text, letters, number, UI, left overflow, right overflow, bottom overflow, lower-right light, photorealism, realistic wood grain, painterly, faux 3D, pixel art, tiny detail, blur, matte, halo, cropped silhouette",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 109600,
+        "noBackground": true,
+        "palette": "warm bronze bands, parchment-gold wood, restrained dark-teal lock, charcoal-teal outline, northwest highlight and southeast shadow",
+        "postprocess": "compact-building-fit",
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "building-village",
+          "sha256": "b699a29255672ef8d992e519c508992bac6926dc41aa9f19980842aa345bff14",
+          "usageDescription": "Input reference role: copy only the accepted neutral village's square-map three-quarter downward camera, strong charcoal outline, warm neutral palette, broad flat cel shading and gameplay-scale clarity; replace the architecture with one much smaller closed treasure chest."
+        }
+      },
+      "outputSha256": "6ff3cf3eb52dac0e9fff73911a622a5ac0ef4f3bc54bcba643d2b0557f19dbca",
+      "notes": "Accepted after native and nearest-neighbor enlarged inspection plus deterministic 0.625x/1x/1.75x square-map context review. Closed chest silhouette and lock remain readable at minimum zoom; warm bronze NW lighting matches both faction terrain; transparent alpha is clean; compact footprint is substantially smaller than terrain and has no left/right/bottom overflow.",
+      "reviewedAt": "2026-09-04T13:31:47.431Z",
       "reviewChecks": {
         "source": true,
         "native": true,

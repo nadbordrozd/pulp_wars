@@ -85,6 +85,8 @@ export interface PlayerViewV6 {
   readonly improvementValues: readonly PublicImprovementValueV6[];
   readonly units: readonly UnitStateV6[];
   readonly chocolateWalls: readonly ChocolateWallStateV6[];
+  /** Treasure locations are global public objectives, including through fog. */
+  readonly treasureChests: readonly CoordV6[];
   readonly pendingChoices: readonly PendingChoiceV6[];
   readonly outcome: MatchOutcomeV6 | null;
 }
@@ -218,6 +220,7 @@ export function viewForV6(
     chocolateWalls: state.chocolateWalls.filter((wall) =>
       exploredKeys.has(coordKey(wall.at)),
     ),
+    treasureChests: state.treasureChests,
     pendingChoices,
     outcome: state.outcome,
   });

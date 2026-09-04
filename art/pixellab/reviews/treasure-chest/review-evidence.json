@@ -1,0 +1,38 @@
+{
+  "generatedBy": "npm run art:treasure-chest-review",
+  "source": "public/assets/pixellab/buildings-square/treasure-chest.png",
+  "sourceSha256": "6ff3cf3eb52dac0e9fff73911a622a5ac0ef4f3bc54bcba643d2b0557f19dbca",
+  "sourceSize": {
+    "width": 256,
+    "height": 296
+  },
+  "alphaBounds": {
+    "left": 87,
+    "top": 136,
+    "right": 167,
+    "bottom": 221
+  },
+  "display": {
+    "scale": 0.3,
+    "anchor": {
+      "x": 128,
+      "y": 222
+    },
+    "zooms": [
+      0.625,
+      1,
+      1.75
+    ],
+    "renderedWidthAtOne": 77,
+    "owningTileAtOne": 128
+  },
+  "checks": {
+    "transparentBackground": true,
+    "noLeftRightBottomOverflow": true,
+    "substantiallySmallerThanTile": true
+  },
+  "artifacts": {
+    "source-native-enlarged.png": "d63760408ea26c946611c1df732651f36dcafff366ba59d77c91c6500d66d5d9",
+    "zoom-contexts.png": "6f79bebbee0bd967a044feda336d7b6b0a03cc6d7dfd24cf14095f6354adcccb"
+  }
+}

@@ -116,7 +116,8 @@ export function parseSaveV6(source: string): SaveLoadResultV6 {
         };
   }
   const setup = parseMatchSetupV6(input.setup);
-  const state = parseGameStateV6(input.state);
+  const parsedState = parsePersistedStateV6(input.state);
+  const state = parsedState?.state ?? null;
   const commands = parseCommandsV6(input.acceptedCommands);
   if (
     setup === null ||
@@ -132,7 +133,8 @@ export function parseSaveV6(source: string): SaveLoadResultV6 {
     !isIsoTimestampV6(input.savedAt) ||
     canonicalJson(setup) !== canonicalJson(state.setup) ||
     safeCanonicalJson(input.randomState) !== canonicalJson(state.random) ||
-    canonicalHash(state) !== input.stateHash
+    parsedState === null ||
+    parsedState.sourceHash !== input.stateHash
   ) {
     return corrupt(
       "Saved match schema or deterministic integrity validation failed.",
@@ -149,10 +151,33 @@ export function parseSaveV6(source: string): SaveLoadResultV6 {
       randomState: state.random,
       acceptedCommands: commands,
       commandIndex: input.commandIndex as number,
-      stateHash: input.stateHash,
+      stateHash: canonicalHash(state),
       savedAt: input.savedAt,
     },
   };
+}
+
+/**
+ * Compatibility boundary for saves written before treasure state existed.
+ * The source hash is checked against the untouched old payload, then the
+ * in-memory state is normalized with an empty public chest collection.
+ */
+function parsePersistedStateV6(
+  input: unknown,
+): { readonly state: GameStateV6; readonly sourceHash: string } | null {
+  const current = parseGameStateV6(input);
+  if (current !== null)
+    return { state: current, sourceHash: canonicalHash(current) };
+  if (!isRecord(input) || Object.hasOwn(input, "treasureChests")) return null;
+  const migrated = parseGameStateV6({ ...input, treasureChests: [] });
+  if (migrated === null) return null;
+  let sourceHash: string;
+  try {
+    sourceHash = canonicalHash(input);
+  } catch {
+    return null;
+  }
+  return { state: migrated, sourceHash };
 }
 
 function parseCommandsV6(input: unknown): readonly CommandV6[] | null {

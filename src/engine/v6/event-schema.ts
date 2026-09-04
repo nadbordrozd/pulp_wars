@@ -91,6 +91,19 @@ const EVENT_FIELDS = {
   UNIT_HEALED: ["kind", "medicId", "targetUnitId", "amount", "hpAfter"],
   UNIT_PUSHED: ["kind", "sourceUnitId", "targetUnitId", "from", "to"],
   UNIT_MOVED: ["kind", "unitId", "path"],
+  TREASURE_CAPTURED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "at",
+    "requestedReward",
+    "grantedReward",
+    "coinDelta",
+    "heavyFallback",
+    "spawnedUnitId",
+    "spawnedAt",
+    "homeCityId",
+  ],
   UNIT_MOVE_INTERRUPTED: ["kind", "unitId", "at", "reason"],
   TILES_REVEALED: ["kind", "playerId", "tiles"],
   COMBAT_RESOLVED: ["kind", "preview"],
@@ -310,6 +323,30 @@ function eventPayloadIsValid(
         parseCoordV6(event.from) !== null &&
         parseCoordV6(event.to) !== null
       );
+    case "TREASURE_CAPTURED": {
+      const at = parseCoordV6(event.at);
+      const spawnedAt =
+        event.spawnedAt === null ? null : parseCoordV6(event.spawnedAt);
+      const isCoin = event.grantedReward === "COINS";
+      return (
+        isId(event.playerId) &&
+        isId(event.unitId) &&
+        at !== null &&
+        (event.requestedReward === "COINS" ||
+          event.requestedReward === "HEAVY") &&
+        (isCoin || event.grantedReward === "HEAVY") &&
+        typeof event.heavyFallback === "boolean" &&
+        event.heavyFallback === (event.requestedReward === "HEAVY" && isCoin) &&
+        event.coinDelta === (isCoin ? 5 : 0) &&
+        (isCoin
+          ? event.spawnedUnitId === null &&
+            event.spawnedAt === null &&
+            event.homeCityId === null
+          : isId(event.spawnedUnitId) &&
+            spawnedAt !== null &&
+            isId(event.homeCityId))
+      );
+    }
     case "UNIT_MOVED":
       return isId(event.unitId) && isCoordArray(event.path);
     case "UNIT_MOVE_INTERRUPTED":

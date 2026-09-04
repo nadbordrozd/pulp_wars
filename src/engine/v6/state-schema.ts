@@ -63,6 +63,7 @@ const STATE_KEYS_V6 = [
   "rulesetId",
   "schemaVersion",
   "setup",
+  "treasureChests",
   "turnOrder",
   "units",
 ] as const;
@@ -88,6 +89,7 @@ export function parseGameStateV6(input: unknown): GameStateV6 | null {
   );
   const units = parseUnits(input.units);
   const walls = parseWalls(input.chocolateWalls);
+  const treasureChests = parseSortedCoords(input.treasureChests);
   const pendingChoices = parsePendingChoices(input.pendingChoices);
   const outcome = parseOutcome(input.outcome);
   const turnOrder = parsePlayerIdArray(input.turnOrder);
@@ -101,6 +103,7 @@ export function parseGameStateV6(input: unknown): GameStateV6 | null {
     populationContributions === null ||
     units === null ||
     walls === null ||
+    treasureChests === null ||
     pendingChoices === null ||
     outcome === undefined ||
     turnOrder === null ||
@@ -134,6 +137,7 @@ export function parseGameStateV6(input: unknown): GameStateV6 | null {
       populationContributions,
       units,
       walls,
+      treasureChests,
       pendingChoices,
       outcome,
     ) ||
@@ -159,6 +163,7 @@ export function parseGameStateV6(input: unknown): GameStateV6 | null {
     populationContributions,
     units,
     chocolateWalls: walls,
+    treasureChests,
     pendingChoices,
     outcome,
   };
@@ -817,6 +822,7 @@ function crossReferencesAreValid(
   contributions: readonly PopulationContributionV6[],
   units: readonly UnitStateV6[],
   walls: readonly ChocolateWallStateV6[],
+  treasureChests: readonly CoordV6[],
   pendingChoices: readonly PendingChoiceV6[],
   outcome: MatchOutcomeV6 | null,
 ): boolean {
@@ -854,6 +860,16 @@ function crossReferencesAreValid(
       contributions,
       units,
       walls,
+    ) ||
+    treasureChests.some(
+      (at) =>
+        at.x < 0 ||
+        at.y < 0 ||
+        at.x >= board.width ||
+        at.y >= board.height ||
+        board.tiles[at.y * board.width + at.x]?.terrain === "MOUNTAIN" ||
+        units.some((unit) => unit.hp > 0 && sameCoord(unit.at, at)) ||
+        walls.some((wall) => sameCoord(wall.at, at)),
     ) ||
     !occupancyIsValid(units, walls) ||
     !populationLedgerIsValid(board, cities, contributions) ||

@@ -119,6 +119,7 @@ interface GameState {
   readonly schemaVersion: 6;
   readonly rulesetId: "pulp-wars-poc-6";
   readonly pendingChoices: readonly PendingChoice[];
+  readonly treasureChests: readonly Coord[];
   // retained setup, board, players, cities, units, walls, PRNG and turn data
 }
 
@@ -288,6 +289,16 @@ Game, Ore, Stone, and an empty Forest each count as one opportunity; a Game
 Forest counts once. Reject unless every resource type occurs globally. These
 checks happen after all draws and use the continued PRNG stream on retry.
 
+After an accepted map passes those checks, place neutral treasure chests from
+the same continued serialized PRNG stream: 2 chests on 11/14/16, 4 on 20, and
+5 on 25. Candidates are `(y,x)`-ordered, passable land in the eight-way
+component reachable from a capital, excluding settlements, resources, and
+improvements. Sample without replacement, consume one bounded draw per placed
+chest, and serialize the sorted coordinates. If a constrained board supplies
+fewer candidates than requested, place only the available candidates without
+failing generation. Chests are globally public from match start, do not block
+movement, and are neither resources nor improvements.
+
 Resource visibility is technology-gated even on explored tiles except for
 Game, which is visible from match start whenever its Forest tile is explored.
 Fruit and Fertile Ground require Gathering; Ore and Stone require Surveying.
@@ -406,6 +417,17 @@ Forest and Mountain steps end the Move even when the Road discount applied;
 Fieldcraft removes Forest termination for Scout and Marksman. Surveying is
 required to enter Mountain. Road cost never bypasses a missing terrain unlock.
 Diagonal movement is legal but never receives the Road discount.
+
+An accepted Move ending on a treasure chest removes it at that same command
+boundary and consumes one bounded PRNG draw. A draw modulo 2 of zero grants
+exactly 5 Coins. A draw of one grants the moving player's faction-resolved
+Heavy at full HP, exhausted for the current turn, on the first legal adjacent
+coordinate in `(y,x)` order and assigned to the first owned city with capacity
+(the mover's home city first, then city ID). The spawn may not overlap a unit,
+Chocolate Wall, or another chest, may not enter allied AI territory, and needs
+Surveying for Mountain. If no owned city has capacity or no adjacent legal
+coordinate exists, the Heavy reward falls back to exactly 5 Coins. Coin
+overflow rejects the whole Move without consuming the chest or PRNG draw.
 
 ## 8. Technology registrations
 
@@ -606,14 +628,16 @@ apply permanent population when applicable; resolve levels and append rewards;
 emit the command-specific fact; emit economy deltas; emit level events;
 increment `commandIndex`. Research, rewards, and unit actions use their stated
 domain order. No v6 economy, technology, movement, or ability command consumes
-PRNG.
+PRNG except an accepted Move that captures a treasure chest as specified in
+section 4.
 
 The event union includes `TECH_RESEARCHED`, `FRUIT_HARVESTED`, `GAME_HUNTED`,
 `ECONOMIC_BUILDING_BUILT`,
 `ECONOMIC_BUILDING_REMOVED`, `FOREST_CLEARED`, `FOREST_REPLANTED`,
 `ROAD_BUILT`, `CITY_ECONOMY_CHANGED`, `CITY_LEVELED_UP`,
 `CITY_REWARD_QUEUED`, `CITY_REWARD_CHOSEN`, `CITY_TERRITORY_EXPANDED`,
-`UNIT_TRAINED`, `UNIT_REWARD_GRANTED`, `UNIT_HEALED`, `UNIT_PUSHED`, and the
+`UNIT_TRAINED`, `UNIT_REWARD_GRANTED`, `UNIT_HEALED`, `UNIT_PUSHED`,
+`TREASURE_CAPTURED`, and the
 retained movement/combat/capture/wall/Roll/Candify/turn/outcome facts. Building
 events carry player, city, coordinate, improvement, cost, and resulting
 building contribution. Economy changes carry city ID, prior/new economic
@@ -639,6 +663,14 @@ unitId, role }`; `UNIT_HEALED { medicId, targetUnitId, amount, hpAfter }`; and
 reward order. After each `CITY_LEVELED_UP`, emit its `CITY_REWARD_QUEUED` before
 the next reached level. Retained event payloads stay exact under their
 deliberately imported v5 sections with renamed v6 role/currency fields.
+
+`TREASURE_CAPTURED` is exact
+`{ playerId, unitId, at, requestedReward, grantedReward, coinDelta,
+heavyFallback, spawnedUnitId, spawnedAt, homeCityId }`. Reward values are
+`COINS | HEAVY`. A granted Coin arm has `coinDelta: 5` and null spawn fields;
+a granted Heavy arm has `coinDelta: 0`, all spawn fields present, and
+`heavyFallback: false`. `heavyFallback` is true exactly when Heavy was drawn
+but Coins were granted.
 
 After common gates `MATCH_ENDED`, `PLAYER_ELIMINATED`, `NOT_ACTIVE_PLAYER`, and
 `PENDING_CHOICE`, tile actions validate in this exact order:
@@ -703,13 +735,15 @@ queries follow the same equality rule.
 
 ## 14. Normal AI and headless behavior
 
-Normal remains deterministic, observation-safe, and PRNG-free. It consumes only
+Normal remains deterministic, observation-safe, and PRNG-free itself. It consumes only
 `PlayerView`, public commands, and public previews. Its exact tuple and policy
 are in [Normal AI](../architecture/NORMAL_AI.md). Spatial economy is not a
 random placement fallback: the policy scores the full post-command live delta,
 preserves high-value future processor/Grand Works cells, prefers level-crossing
 growth, connects built Markets to capitals, and researches shortest visible
-unlock chains. It never reads unrevealed resources.
+unlock chains. It values globally public chest coordinates, including direct
+capture and pathing toward them, but never predicts the hidden 50/50 outcome.
+It never reads unrevealed resources.
 
 Headless exposes the same v6 parser/kernel, exact faction trees, metrics, and
 caps described in [Headless Simulation](../architecture/HEADLESS_SIMULATION.md).
@@ -740,6 +774,12 @@ and animation are never required. The city dock shows
 Market Coins, total next-turn income, and `assigned / (level + 1)` capacity.
 Responsive docks retain the fixed-Canvas, non-modal, 44 CSS px, 320 px/200%
 zoom, keyboard, touch, and reduced-motion contracts.
+
+Treasure chests render from their public coordinates even through fog. They
+use tile-stack depth, disappear from the post-command view before movement
+presentation completes, and expose no reward outcome until the accepted
+`TREASURE_CAPTURED` event. Their sprite remains a compact neutral pickup below
+major terrain/unit scale with no left, right, or bottom footprint overflow.
 
 ## 16. Production asset inventory and gates
 

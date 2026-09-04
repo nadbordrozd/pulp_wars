@@ -348,6 +348,9 @@ function scoreCommandV6WithContext(
       resultTile = command.path.at(-1) ?? actingUnit?.at ?? null;
       if (actingUnit === null || resultTile === null) break;
       const destination = resultTile;
+      const capturesTreasure = view.treasureChests.some((at) =>
+        same(at, destination),
+      );
       const threatenedCity = context.threats.find(
         (value) =>
           same(value.city.at, destination) &&
@@ -355,7 +358,11 @@ function scoreCommandV6WithContext(
             (unit) => unit.hp > 0 && same(unit.at, value.city.at),
           ),
       );
-      if (threatenedCity !== undefined) {
+      if (capturesTreasure) {
+        priority = 1330;
+        strategicValue = 1;
+        immediateValue = 5;
+      } else if (threatenedCity !== undefined) {
         priority = 1250;
         strategicValue = threatenedCity.severity;
       } else if (moveCreatesCandifyFrontier(view, actingUnit, resultTile)) {
@@ -1188,6 +1195,7 @@ function selectedObjective(view: PlayerViewV6, from: CoordV6): CoordV6 | null {
 
 function knownObjectives(view: PlayerViewV6): CoordV6[] {
   return [
+    ...view.treasureChests,
     ...view.board.tiles
       .filter(
         (

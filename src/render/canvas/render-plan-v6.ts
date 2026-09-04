@@ -116,6 +116,7 @@ interface RenderEntryDetailsV6 {
     readonly improvement: EconomicImprovementId;
   };
   readonly IMPROVEMENT_LEVEL: PublicImprovementValueV6;
+  readonly TREASURE: null;
   readonly CONTACT_SHADOW: null;
   readonly TERRAIN_BODY: {
     readonly terrain: Exclude<TerrainIdV6, "GRASS">;
@@ -237,6 +238,7 @@ const LAYER_V6: Readonly<Record<RenderEntryKindV6, number>> = {
   TERRAIN_BODY: 5,
   IMPROVEMENT: 5,
   IMPROVEMENT_LEVEL: 8,
+  TREASURE: 5,
   SITE: 5,
   CHOCOLATE_WALL: 5,
   CITY_BACK: 5,
@@ -268,6 +270,7 @@ const BODY_TIE_V6: Readonly<Partial<Record<RenderEntryKindV6, number>>> = {
   TERRAIN_BODY: 10,
   RESOURCE: 15,
   IMPROVEMENT: 20,
+  TREASURE: 23,
   SITE: 25,
   CHOCOLATE_WALL: 30,
   CITY_BACK: 35,
@@ -291,6 +294,7 @@ const TILE_STACK_KINDS_V6 = new Set<RenderEntryKindV6>([
   "CONTACT_SHADOW",
   "TERRAIN_BODY",
   "IMPROVEMENT",
+  "TREASURE",
   "SITE",
   "CHOCOLATE_WALL",
   "CITY_BACK",
@@ -351,6 +355,9 @@ export function buildRenderPlanV6(
           diplomaticBlock: tile.diplomaticBlock ?? null,
         }),
       );
+      if (view.treasureChests.some((at) => sameCoord(at, tile.at))) {
+        entries.push(entryV6("TREASURE", tile.at, tileId, null, null));
+      }
       continue;
     }
 
@@ -396,6 +403,9 @@ export function buildRenderPlanV6(
           entryV6("IMPROVEMENT_LEVEL", tile.at, tileId, ownerId, value),
         );
       }
+    }
+    if (view.treasureChests.some((at) => sameCoord(at, tile.at))) {
+      entries.push(entryV6("TREASURE", tile.at, tileId, null, null));
     }
     if (tile.site !== null) {
       entries.push(

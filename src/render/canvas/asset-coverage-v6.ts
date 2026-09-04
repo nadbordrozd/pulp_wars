@@ -50,6 +50,7 @@ export const RENDER_ENTRY_COVERAGE_V6 = {
   UNKNOWN_RESOURCE: "CODE_NATIVE",
   IMPROVEMENT: "CONTENT_ASSET",
   IMPROVEMENT_LEVEL: "CODE_NATIVE",
+  TREASURE: "CONTENT_ASSET",
   CONTACT_SHADOW: "CODE_NATIVE",
   // Square Forest/Mountain sources combine the full ground and tall body, so
   // TERRAIN owns their one raster draw and this structural plan arm is a no-op.
@@ -255,6 +256,15 @@ export function chocolateWallCoverageV6(): AssetCoverageV6 {
     "building-chocolate-wall",
     "assets/pixellab/buildings/chocolate-wall.png",
     BOARD_ART_GEOMETRY.lowObject,
+  );
+}
+
+export function treasureCoverageV6(): AssetCoverageV6 {
+  return accepted(
+    "pickup:TREASURE",
+    "building-treasure-chest",
+    "assets/pixellab/buildings-square/treasure-chest.png",
+    SQUARE_ART_GEOMETRY.treasure,
   );
 }
 

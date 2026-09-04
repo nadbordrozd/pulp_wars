@@ -40,6 +40,7 @@
     "art:square-improvement-sample-review": "tsx scripts/art/square-improvement-sample-review.ts",
     "art:square-extraction-processor-review": "tsx scripts/art/square-extraction-processor-review.ts",
     "art:square-civic-commerce-review": "tsx scripts/art/square-civic-commerce-review.ts",
+    "art:treasure-chest-review": "tsx scripts/art/treasure-chest-review.ts",
     "art:square-road-masks": "tsx scripts/art/square-road-masks.ts",
     "art:square-terrain-family-candidate-review": "tsx scripts/art/square-terrain-family-candidate-review.ts",
     "art:rendering-review": "tsx scripts/art/rendering-review.ts",

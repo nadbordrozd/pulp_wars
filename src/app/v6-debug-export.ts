@@ -38,6 +38,7 @@ export interface Ruleset6DebugLogV1 {
     readonly activeSeatIndex: number;
     readonly activePlayerId: number;
     readonly humanPlayerId: number;
+    readonly treasureChestsRemaining: number;
     readonly pendingChoiceKinds: readonly string[];
     readonly outcomeKind: string | null;
   };
@@ -96,6 +97,7 @@ export function createRuleset6DebugLog(
       activeSeatIndex: input.state.activeSeatIndex,
       activePlayerId,
       humanPlayerId: input.state.humanPlayerId,
+      treasureChestsRemaining: input.state.treasureChests.length,
       pendingChoiceKinds: input.state.pendingChoices.map(
         (choice) => choice.kind,
       ),

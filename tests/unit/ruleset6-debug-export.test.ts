@@ -62,7 +62,7 @@ describe("ruleset-6 gameplay debug export", () => {
         replay: 6,
       },
       controller: { phase: "ACTIVE", diagnostic: null },
-      context: { commandIndex: 1 },
+      context: { commandIndex: 1, treasureChestsRemaining: 2 },
       reproduction: {
         replay: { commands: [wait] },
         save: { acceptedCommands: [wait], commandIndex: 1 },
@@ -78,6 +78,7 @@ describe("ruleset-6 gameplay debug export", () => {
       "activeSeatIndex",
       "activePlayerId",
       "humanPlayerId",
+      "treasureChestsRemaining",
       "pendingChoiceKinds",
       "outcomeKind",
     ]);

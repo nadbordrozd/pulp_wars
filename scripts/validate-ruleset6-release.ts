@@ -74,6 +74,7 @@ const REQUIRED_SCENARIOS = [
   "replayHeadlessExactness",
   "legacyCompatibility",
   "cooperativeNoAlliedHarm",
+  "treasureCaptureReward",
 ] as const;
 
 const COVERAGE_SOURCES = {
@@ -86,6 +87,7 @@ const COVERAGE_SOURCES = {
   candyRoles: "tests/unit/ruleset-v6-candy-roster.test.ts",
   abilities: "tests/unit/ruleset-v6-normal-policy.test.ts",
   maps: "tests/unit/ruleset-v6-map.test.ts",
+  treasures: "tests/unit/ruleset-v6-treasure.test.ts",
   headless: "tests/unit/ruleset-v6-ai-headless.test.ts",
   browser: "tests/scripts/browser-smoke-v6-contract.test.ts",
 } as const;
@@ -102,6 +104,7 @@ const EVIDENCE_FILES = [
   "art/pixellab/reviews/ruleset6-playable-shell/review-evidence.json",
   "art/pixellab/reviews/ruleset6-tech-economy-ui/review-evidence.json",
   "art/pixellab/reviews/ruleset6-terrain/review-evidence.json",
+  "art/pixellab/reviews/treasure-chest/review-evidence.json",
 ] as const;
 const BROWSER_SMOKE_EVIDENCE = EVIDENCE_FILES[0];
 
@@ -250,17 +253,28 @@ async function buildMapMatrix(): Promise<readonly MapCase[]> {
         if (!allOriginal.ok)
           throw new Error(`Parity map creation failed for ${id(setup)}`);
         const initialHash = canonicalHash(first.state);
-        const mapHash = canonicalHash(first.state.board);
+        const mapHash = canonicalHash({
+          board: first.state.board,
+          treasureChests: first.state.treasureChests,
+        });
         const postGenerationPrngHash = canonicalHash(first.state.random);
         if (
           initialHash !== canonicalHash(repeat.state) ||
-          mapHash !== canonicalHash(repeat.state.board) ||
+          mapHash !==
+            canonicalHash({
+              board: repeat.state.board,
+              treasureChests: repeat.state.treasureChests,
+            }) ||
           postGenerationPrngHash !== canonicalHash(repeat.state.random)
         ) {
           throw new Error(`Repeat mismatch for ${id(setup)}`);
         }
         if (
-          mapHash !== canonicalHash(allOriginal.state.board) ||
+          mapHash !==
+            canonicalHash({
+              board: allOriginal.state.board,
+              treasureChests: allOriginal.state.treasureChests,
+            }) ||
           postGenerationPrngHash !== canonicalHash(allOriginal.state.random)
         ) {
           throw new Error(`Faction-only map/PRNG mismatch for ${id(setup)}`);
@@ -334,6 +348,7 @@ async function runNormalEvidence(): Promise<NormalEvidence> {
       roads: metrics.roadsBuilt,
       markets: metrics.improvementsBuilt.MARKET,
       captures: metrics.commandsByKind.CAPTURE ?? 0,
+      treasures: metrics.treasuresCaptured,
       rewards: metrics.commandsByKind.CHOOSE_CITY_REWARD ?? 0,
       attacks: metrics.commandsByKind.ATTACK ?? 0,
       push: metrics.abilityActions.PUSH,
@@ -349,33 +364,34 @@ function fixedNormalEvidence(): NormalEvidence {
     setup: makeSetup(1, 11, "RIVAL", ["ORIGINAL", "CANDY"], 0),
     termination: "OUTCOME",
     outcome: "VICTORY",
-    rounds: 50,
-    commands: 742,
+    rounds: 24,
+    commands: 348,
     errors: 0,
     stalls: 0,
     capHits: 0,
     commandHash:
-      "7fc1a0f69054fe2045174d369179579b3e60f450accc7800f4a6c32e9f3f308c",
+      "e9a860fc537df43bbb5c94d498ad1ad0f06f92a703678459c6fcea419289728e",
     eventHash:
-      "2d75aa07456568ed05314f33135754c3a6aeb52b44203a32d5438fbcd35ee067",
+      "99a7f8e2137ba2d1cfbfaa66634ff32618d8bb764a5c0ff669052e75fd1eac74",
     checkpointHash:
-      "1cb23625f79faa7c50eb46e6c2ba12c3237cd4f6fe4f6d1d076c5ff443267eb4",
+      "bdf0003b05a90ea7ef2e1230e93f09d3b419a7ee6db7c9d7533a8effbdfec010",
     finalHash:
-      "a1a67fba473ded644350df0567c42b26d61761ca29ba9aea687c8522277ccd40",
+      "f28b1afd39d011306c5b933a55abb7539914e9ceeba4a847427f04523757f89a",
     repeatMatched: true,
     relationshipViolations: 0,
     publicEqualityMismatches: 0,
     participation: {
-      research: 26,
-      economicBuilds: 56,
-      roads: 4,
-      markets: 5,
-      captures: 9,
-      rewards: 20,
-      attacks: 155,
-      push: 17,
-      wall: 2,
-      candify: 2,
+      research: 16,
+      economicBuilds: 20,
+      roads: 1,
+      markets: 0,
+      captures: 6,
+      treasures: 2,
+      rewards: 13,
+      attacks: 46,
+      push: 0,
+      wall: 0,
+      candify: 0,
     },
   };
 }

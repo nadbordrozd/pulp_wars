@@ -140,6 +140,33 @@ describe("ruleset-6 persistence schema", () => {
     ).toMatchObject({ kind: "CORRUPT" });
   });
 
+  it("loads pre-treasure schema-6 saves as an empty chest collection without rewriting source bytes", () => {
+    const state = stateFixture();
+    const legacyState = Object.fromEntries(
+      Object.entries(state).filter(([key]) => key !== "treasureChests"),
+    );
+    const current = createSaveEnvelopeV6(
+      { state, replay: createReplayV6(setup) },
+      "2026-08-30T12:00:00.000Z",
+    );
+    const legacyEnvelope = {
+      ...current,
+      state: legacyState,
+      stateHash: canonicalHash(legacyState),
+    };
+    const source = JSON.stringify(legacyEnvelope);
+    const parsed = parseSaveV6(source);
+    expect(parsed).toMatchObject({
+      kind: "VALID",
+      save: { state: { treasureChests: [] } },
+    });
+    expect(source).toBe(JSON.stringify(legacyEnvelope));
+    if (parsed.kind === "VALID") {
+      expect(parsed.save.stateHash).toBe(canonicalHash(parsed.save.state));
+      expect(parsed.save.stateHash).not.toBe(legacyEnvelope.stateHash);
+    }
+  });
+
   it("classifies recognized save versions 1 through 5 without touching source", () => {
     for (const version of [1, 2, 3, 4, 5]) {
       const source = JSON.stringify({
@@ -216,6 +243,7 @@ function stateFixture(): GameStateV6 {
     populationContributions: [],
     units: [],
     chocolateWalls: [],
+    treasureChests: [],
     pendingChoices: [],
     outcome: null,
   };

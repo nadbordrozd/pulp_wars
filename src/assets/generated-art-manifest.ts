@@ -384,6 +384,9 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   "building-square-market": publicArtUrl(
     "assets/pixellab/buildings-square/market.png",
   ),
+  "building-treasure-chest": publicArtUrl(
+    "assets/pixellab/buildings-square/treasure-chest.png",
+  ),
   "terrain-game": publicArtUrl("assets/pixellab/terrain/animal.png"),
   "building-ruleset6-mine": publicArtUrl("assets/pixellab/buildings/mine.png"),
   "building-lumber-camp": publicArtUrl(

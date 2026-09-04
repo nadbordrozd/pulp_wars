@@ -28,19 +28,10 @@
   },
   "passMetadata": {
     "status": "PASS",
-    "factions": [
-      "ORIGINAL",
-      "CANDY"
-    ],
+    "factions": ["ORIGINAL", "CANDY"],
     "factionComposition": "mixed-faction human/AI seats in both live flows",
-    "aiModes": [
-      "RIVAL",
-      "COOPERATIVE"
-    ],
-    "surfaces": [
-      "desktop",
-      "390x844 DPR2 mobile"
-    ],
+    "aiModes": ["RIVAL", "COOPERATIVE"],
+    "surfaces": ["desktop", "390x844 DPR2 mobile"],
     "motionModes": [
       "FULL",
       "emulated prefers-reduced-motion: reduce",
@@ -50,11 +41,11 @@
   },
   "productionRasterInventory": {
     "status": "ACCEPTED_AND_LOADED",
-    "treatment": "The production browser loaded the checked-in ruleset-6 terrain, resource, building, Road, 18-role, portrait, Coin, action, reward, and explicitly registered 25-node technology raster inventory. Code-native geometry remains limited to the categories required by the art contracts."
+    "treatment": "The production browser loaded the checked-in ruleset-6 terrain, resource, building, neutral treasure, Road, 18-role, portrait, Coin, action, reward, and explicitly registered 25-node technology raster inventory. Code-native geometry remains limited to the categories required by the art contracts."
   },
   "visualReview": {
     "status": "ACCEPTED",
-    "notes": "Every bounded contextual, ability-detail, reward, city-training, and Technology capture was inspected individually at native output size and in its nearest-neighbor 2x companion. Contextual rasters, including faction-correct TRAIN world sprites, use the exact shared 112 x 130 CSS-pixel transparent viewport with contained aspect ratio at desktop and true 390x844 DPR2 mobile; code-native fallbacks retain the same framed footprint. Original and Candy Animals are visible on explored Forest from launch while Hunting remains unresearched and Hunt Game unavailable; hidden Animals remain redacted. Exact world-unit, faction/level city, and public Fruit selection identities remain compact and readable above their isolated actions with no coordinate text. The Candy Warrior's Candify card is readable and unclipped at desktop and mobile, remains view-only, blocks outside input while open, and restores the selected-unit dock after closing without advancing a command boundary. Original and Candy labels/symbols remain distinct; the map stays primary; full Technology cards/details and blocking rewards fit without clipping or horizontal overflow. Offscreen square-cell targets are brought into the unobscured Canvas by bounded production pointer drags, with before/after camera evidence recorded for both factions. Direct selected-tile actions accept one boundary without a second map activation. No suspected visual failure remained after enlargement review."
+    "notes": "Every bounded contextual, ability-detail, reward, city-training, and Technology capture was inspected individually at native output size and in its nearest-neighbor 2x companion. Contextual rasters, including faction-correct TRAIN world sprites, use the exact shared 112 x 130 CSS-pixel transparent viewport with contained aspect ratio at desktop and true 390x844 DPR2 mobile; code-native fallbacks retain the same framed footprint. Original and Candy Animals are visible on explored Forest from launch while Hunting remains unresearched and Hunt Game unavailable; hidden Animals remain redacted. Neutral treasure chests remain compact and readable through fog without disclosing the underlying tile. Exact world-unit, faction/level city, and public Fruit selection identities remain compact and readable above their isolated actions with no coordinate text. The Candy Warrior's Candify card is readable and unclipped at desktop and mobile, remains view-only, blocks outside input while open, and restores the selected-unit dock after closing without advancing a command boundary. Original and Candy labels/symbols remain distinct; the map stays primary; full Technology cards/details and blocking rewards fit without clipping or horizontal overflow. Offscreen square-cell targets are brought into the unobscured Canvas by bounded production pointer drags, with before/after camera evidence recorded for both factions. Direct selected-tile actions accept one boundary without a second map activation. No suspected visual failure remained after enlargement review."
   },
   "flows": [
     {
@@ -65,7 +56,7 @@
         "phase": "ACTIVE",
         "transitioning": false,
         "commandIndex": 0,
-        "stateHash": "e6804a11c6cd662004b32fa15d1a74ebcc0ffc4426e30f2d567a800c227ef095",
+        "stateHash": "771d80e2fdc7d83429e5f0ddef282c5e79275f61f9eb9c9e8932d2f37240c40d",
         "faction": "ORIGINAL",
         "factionTreeId": "ORIGINAL_BASELINE",
         "seed": 20,
@@ -145,7 +136,7 @@
           }
         ]
       },
-      "deterministicRestartHash": "e6804a11c6cd662004b32fa15d1a74ebcc0ffc4426e30f2d567a800c227ef095",
+      "deterministicRestartHash": "771d80e2fdc7d83429e5f0ddef282c5e79275f61f9eb9c9e8932d2f37240c40d",
       "technologyIds": [
         "GATHERING",
         "FARMING",
@@ -177,16 +168,16 @@
         "encoded": "{\"kind\":\"WAIT\",\"unitId\":2}",
         "beforeIndex": 0,
         "afterIndex": 1,
-        "afterHash": "968134b7d5ca7b1379c5f9bfc292c9638f8f7674b4dc766197b5c1244a91b3b7"
+        "afterHash": "5252f996198ac2ce9cbfbbcb42381265ec401628ec0b7bac2d4eee43a8c5b27a"
       },
       "turnReturn": {
-        "commandIndex": 60,
-        "stateHash": "603d4d4ca2a6e1d65fc86056a917038881b6ef49ae3943215a3f65351083a180",
-        "aiAcceptedCommands": 8
+        "commandIndex": 44,
+        "stateHash": "821fcb9bc00493c60370cb49786aa56cffd5d1405b4bf1d48179caad15bb5d52",
+        "aiAcceptedCommands": 5
       },
       "resume": {
-        "commandIndex": 60,
-        "stateHash": "603d4d4ca2a6e1d65fc86056a917038881b6ef49ae3943215a3f65351083a180"
+        "commandIndex": 44,
+        "stateHash": "821fcb9bc00493c60370cb49786aa56cffd5d1405b4bf1d48179caad15bb5d52"
       },
       "coordinateActivations": [
         {
@@ -438,25 +429,6 @@
         },
         {
           "at": {
-            "x": 3,
-            "y": 6
-          },
-          "canvas": {
-            "width": 1440,
-            "height": 741.03125
-          },
-          "before": {
-            "x": 800,
-            "y": 225.546875
-          },
-          "after": {
-            "x": 800,
-            "y": 225.546875
-          },
-          "panSteps": 0
-        },
-        {
-          "at": {
             "x": 5,
             "y": 8
           },
@@ -470,63 +442,6 @@
           },
           "after": {
             "x": 960,
-            "y": 385.546875
-          },
-          "panSteps": 0
-        },
-        {
-          "at": {
-            "x": 4,
-            "y": 7
-          },
-          "canvas": {
-            "width": 1440,
-            "height": 741.03125
-          },
-          "before": {
-            "x": 880,
-            "y": 305.546875
-          },
-          "after": {
-            "x": 880,
-            "y": 305.546875
-          },
-          "panSteps": 0
-        },
-        {
-          "at": {
-            "x": 6,
-            "y": 8
-          },
-          "canvas": {
-            "width": 1440,
-            "height": 741.03125
-          },
-          "before": {
-            "x": 1040,
-            "y": 385.546875
-          },
-          "after": {
-            "x": 1040,
-            "y": 385.546875
-          },
-          "panSteps": 0
-        },
-        {
-          "at": {
-            "x": 7,
-            "y": 8
-          },
-          "canvas": {
-            "width": 1440,
-            "height": 741.03125
-          },
-          "before": {
-            "x": 1120,
-            "y": 385.546875
-          },
-          "after": {
-            "x": 1120,
             "y": 385.546875
           },
           "panSteps": 0
@@ -1574,8 +1489,8 @@
       "screenshots": [
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-reduced-motion-desktop-native.png",
-          "bytes": 100076,
-          "sha256": "9caff0689d65b2b558b01317c4098e7c354669b09cb127795a51b97146ff806f",
+          "bytes": 100996,
+          "sha256": "85ef1ab505b05310677bca293ac3c7b2efeb30963b32419e6c1e3bad4207b667",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1588,8 +1503,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-reduced-motion-desktop-enlarged.png",
-          "bytes": 265354,
-          "sha256": "9397801c8b249baa965f49e1bbb89d3aea2aa16ea43aace4860230975cf14d54",
+          "bytes": 267691,
+          "sha256": "120ef80af5318997a21d44889ef25e6b84ac7a1bab04026c46cdcf3de68d2ac7",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -1602,8 +1517,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-high-contrast-mobile-native.png",
-          "bytes": 249460,
-          "sha256": "62379a2ca890667fea0fb1f659bb1d20d09e6876ca5909d06f2c9bc3fd3f7401",
+          "bytes": 250194,
+          "sha256": "6d6191b67aabf2b6b8b750c53f7b35bd71fbe67a3feaca76a3e453a8d6ab8f53",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1616,8 +1531,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-high-contrast-mobile-enlarged.png",
-          "bytes": 460844,
-          "sha256": "9d00e11a58bbe128457fed1277e0ab066dd309442a1ec1a23269aaae242492c7",
+          "bytes": 461829,
+          "sha256": "13f1950e9b0afbdc1a1df5d04806ef4db33295660145c05a306dbc9fc54b5a4d",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -1630,8 +1545,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-mobile-native.png",
-          "bytes": 280534,
-          "sha256": "da96fe4da7cf650345a587a16c42f7557031c909c29686e715cbb66c0582b3a7",
+          "bytes": 281199,
+          "sha256": "1cbc7aeba99a0a920e6555a3c0302ee49c7cf22bd3dd6272957ccc2b31eab1e7",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1644,8 +1559,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-mobile-enlarged.png",
-          "bytes": 520403,
-          "sha256": "12f9314b758a0a21ec1907c35eadd265402113167b5fe71c4a11215411d48b89",
+          "bytes": 521502,
+          "sha256": "f86255cd508f341733baf38bf97efc98328b0a586d73c342e53d698d0bc16cbf",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -1658,8 +1573,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-desktop-native.png",
-          "bytes": 150026,
-          "sha256": "3b79ea17bb40caaa8b9f4fcc25ef2a69b159da469b1f700cd6bff1445d2810e4",
+          "bytes": 150675,
+          "sha256": "b7f76200d69ca24de80ad7e0adada8fa206992672af85f69bf69710b95efeb19",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1672,8 +1587,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-desktop-enlarged.png",
-          "bytes": 341620,
-          "sha256": "ef2381ea2c0f91c9ade1456dbf44ea4b5154ec677c9e087522bd2280d5a6fbc8",
+          "bytes": 343151,
+          "sha256": "b4ce7024032712e07be3a82bd79619e6250bd0e5ec8027425126e0f7c2b9bf6c",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -1686,8 +1601,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-tile-context-desktop-native.png",
-          "bytes": 122449,
-          "sha256": "200f486d2e9f833c91885dcb731b643a263d1d4d92258b5092b23935634bb4ca",
+          "bytes": 123146,
+          "sha256": "21fa53310fe2de4dca7129fb5704edc24d9361be078481ce1aff231d7e1715ca",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1700,8 +1615,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-tile-context-desktop-enlarged.png",
-          "bytes": 294098,
-          "sha256": "04e7ede62fde27a2c1b3c5c8d4d5197dac31ecd7a817ca9c7b2eafdb900f3eee",
+          "bytes": 295348,
+          "sha256": "ca1a6a7ff816b2993b608f5a02a0ce018c710f8ad6d4bfb9e6c5844523c89879",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -1714,8 +1629,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-tile-context-mobile-native.png",
-          "bytes": 228263,
-          "sha256": "c12e561bbc07ca8a1b32ee292afe01eb92d36371ff24a6c6693764eedea5ca41",
+          "bytes": 228986,
+          "sha256": "96af4bdaadd79baba2de335cfd3adfd4be09a5b6eeea8312d14baa9631235d79",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1728,8 +1643,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-tile-context-mobile-enlarged.png",
-          "bytes": 436103,
-          "sha256": "d61a7c4790ad84c525f7a102143359efb0996f56953d7e62bd0c6c6eff7a3bbb",
+          "bytes": 437079,
+          "sha256": "b4052c3e3376d52281468b37ccd13551211692b0832e18dacdb29d8b8521b115",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -1770,8 +1685,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-city-train-desktop-native.png",
-          "bytes": 131816,
-          "sha256": "dcb01ad7b9a3c599a49a0a358c09f6bcb096b203980f558e4728adc69db63ded",
+          "bytes": 132841,
+          "sha256": "c42b2cfd52e19a78eca33c44511191b2d9f7b8b3693a1ddd2149ea9c3e4f0604",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1784,8 +1699,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-city-train-desktop-enlarged.png",
-          "bytes": 312400,
-          "sha256": "0df6ab8e90bad90e8f820481085e157a64f28b9b3194e96582a92604bad9b242",
+          "bytes": 314639,
+          "sha256": "0c713bc262ef3ace7c0d13eca7d9fed12223eff04c204431e22ba099dd6ff531",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -1798,8 +1713,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-city-train-mobile-native.png",
-          "bytes": 221741,
-          "sha256": "adea8f98b6514aaa1d820e3d121f409efa11ee762c866853653f485f786ed688",
+          "bytes": 222489,
+          "sha256": "207d5b303d07411f1465021bfbf9e6f738ba15932f94a1a69bd7f12b7712188a",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1812,8 +1727,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-city-train-mobile-enlarged.png",
-          "bytes": 404869,
-          "sha256": "f14972376d5df26afc844ea48cf66c5031531acaa1b76f81e95a29453e757f37",
+          "bytes": 405847,
+          "sha256": "b900403eaf187eaab9dacbcf745dd3aa53a50c11656c5c253870bd1b801047ce",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -1826,8 +1741,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-overview-desktop-native.png",
-          "bytes": 360766,
-          "sha256": "2d0bf27ed50a1c9c065a33847b462fffe25d7c558dea81f8974167486330f732",
+          "bytes": 360691,
+          "sha256": "ffed0d2d87ca8ae858f9cfd761991ccd69e7643524e99c2563b1a6561fc27caa",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1840,8 +1755,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-overview-desktop-enlarged.png",
-          "bytes": 659547,
-          "sha256": "ad06a1f6d6fab241c14f99f58e996f20456f9c7212a721f02dd087f704ba8237",
+          "bytes": 659502,
+          "sha256": "96a3a129343efcd16ebef4458591df311a9d9e0475aa95718d19a3b48199a974",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -1946,7 +1861,7 @@
         "phase": "ACTIVE",
         "transitioning": false,
         "commandIndex": 0,
-        "stateHash": "24bab2bb4ae271388ba41e2e70c2dcf54ea8fd62f32a976ca63b81062e901d0d",
+        "stateHash": "6f05a1a8b4db4c9a5353ffad7504edd48310005490b0c047fd6a1f1edc614054",
         "faction": "CANDY",
         "factionTreeId": "CANDY_BASELINE_V1",
         "seed": 20,
@@ -2026,7 +1941,7 @@
           }
         ]
       },
-      "deterministicRestartHash": "24bab2bb4ae271388ba41e2e70c2dcf54ea8fd62f32a976ca63b81062e901d0d",
+      "deterministicRestartHash": "6f05a1a8b4db4c9a5353ffad7504edd48310005490b0c047fd6a1f1edc614054",
       "technologyIds": [
         "GATHERING",
         "FARMING",
@@ -2058,16 +1973,16 @@
         "encoded": "{\"kind\":\"WAIT\",\"unitId\":2}",
         "beforeIndex": 0,
         "afterIndex": 1,
-        "afterHash": "459df2ccc5165d78b157697c34f190788baf09de6ceb85a4f44c45e4ca47e8d8"
+        "afterHash": "a884fcf00ffce1f904d85fc2ce70d2361d97d8ca0f6f001895c3b81bb720f196"
       },
       "turnReturn": {
-        "commandIndex": 60,
-        "stateHash": "4e36cbdb2a35b7e76e2c2d62942ab571268d9383e1d5d3d227e2fc1e951e9fb5",
-        "aiAcceptedCommands": 8
+        "commandIndex": 44,
+        "stateHash": "a6a7c5d6de22ddb0b7839af9790c440d7bd0961a06f5fe9e97e853e906522930",
+        "aiAcceptedCommands": 5
       },
       "resume": {
-        "commandIndex": 60,
-        "stateHash": "4e36cbdb2a35b7e76e2c2d62942ab571268d9383e1d5d3d227e2fc1e951e9fb5"
+        "commandIndex": 44,
+        "stateHash": "a6a7c5d6de22ddb0b7839af9790c440d7bd0961a06f5fe9e97e853e906522930"
       },
       "coordinateActivations": [
         {
@@ -2319,25 +2234,6 @@
         },
         {
           "at": {
-            "x": 3,
-            "y": 6
-          },
-          "canvas": {
-            "width": 1440,
-            "height": 741.03125
-          },
-          "before": {
-            "x": 800,
-            "y": 225.546875
-          },
-          "after": {
-            "x": 800,
-            "y": 225.546875
-          },
-          "panSteps": 0
-        },
-        {
-          "at": {
             "x": 5,
             "y": 8
           },
@@ -2351,63 +2247,6 @@
           },
           "after": {
             "x": 960,
-            "y": 385.546875
-          },
-          "panSteps": 0
-        },
-        {
-          "at": {
-            "x": 4,
-            "y": 7
-          },
-          "canvas": {
-            "width": 1440,
-            "height": 741.03125
-          },
-          "before": {
-            "x": 880,
-            "y": 305.546875
-          },
-          "after": {
-            "x": 880,
-            "y": 305.546875
-          },
-          "panSteps": 0
-        },
-        {
-          "at": {
-            "x": 6,
-            "y": 8
-          },
-          "canvas": {
-            "width": 1440,
-            "height": 741.03125
-          },
-          "before": {
-            "x": 1040,
-            "y": 385.546875
-          },
-          "after": {
-            "x": 1040,
-            "y": 385.546875
-          },
-          "panSteps": 0
-        },
-        {
-          "at": {
-            "x": 7,
-            "y": 8
-          },
-          "canvas": {
-            "width": 1440,
-            "height": 741.03125
-          },
-          "before": {
-            "x": 1120,
-            "y": 385.546875
-          },
-          "after": {
-            "x": 1120,
             "y": 385.546875
           },
           "panSteps": 0
@@ -3467,8 +3306,8 @@
       "screenshots": [
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-reduced-motion-desktop-native.png",
-          "bytes": 103466,
-          "sha256": "ef32b8c8542059986b143ed6d9d77d4f7255abda9447a43deb0b49530f789583",
+          "bytes": 104374,
+          "sha256": "6b1e172c92ac5d1b2b411a2741f7beaaba2fa38c8158c406790f3448fc7717a4",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -3481,8 +3320,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-reduced-motion-desktop-enlarged.png",
-          "bytes": 271830,
-          "sha256": "1271d28f9065cc159883dc442e66ea33fd78d8e70fdac9cd29ed634770c0f4dd",
+          "bytes": 274100,
+          "sha256": "3ae2a74e0e46788a72953f7f54256e4025999d6ea62919bc078811a78014924b",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -3495,8 +3334,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-high-contrast-mobile-native.png",
-          "bytes": 254410,
-          "sha256": "34ac7f7a82d7bfbc0ef47594fbbba2530daf3c6f75307ba9384c19a92c7635d1",
+          "bytes": 255126,
+          "sha256": "bd0955b82cbdf928e60482d30ee0dd7c1cb585ac1e792cfe72415055120a3830",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -3509,8 +3348,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-high-contrast-mobile-enlarged.png",
-          "bytes": 470666,
-          "sha256": "796df2ef377892593569f9bb97caf26cbc113e92b6680e8f7e8f0916ccd0d9c9",
+          "bytes": 471666,
+          "sha256": "f68d509df30fe252662020d5cd590e4675fc26af8aaecdd76145022530656397",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -3523,8 +3362,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-mobile-native.png",
-          "bytes": 283977,
-          "sha256": "e6166fbce8de3aae26c21c61ce634ae0b8365497203ba7a295bb6ed7ba74c3b2",
+          "bytes": 284702,
+          "sha256": "c53a413d2934421da6ad049628389717de5bf28f9597250779c3f329dd03019e",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -3537,8 +3376,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-mobile-enlarged.png",
-          "bytes": 536808,
-          "sha256": "461061113dc15761619e3e01fefa37449548fa970f4be1aa2916e5e50e94bffa",
+          "bytes": 537846,
+          "sha256": "792c14190617efd0e2351a3efb352b7d889789b647b20a3ccef466b32e4361d0",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -3551,8 +3390,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-desktop-native.png",
-          "bytes": 152762,
-          "sha256": "a54ed0c3b853033f853de083ecbb0c1e3425df1ba3b2e95640a8fd7302ef7d32",
+          "bytes": 153084,
+          "sha256": "40ef79ed4beb59547abc462f8427528d0218c2f8d3d76ffe5cce68cf929e1d8b",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -3565,8 +3404,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-desktop-enlarged.png",
-          "bytes": 343895,
-          "sha256": "4fe0988a90660f16056190f403a493da3ecc111ed6743beb55e93eb7c0a3f288",
+          "bytes": 344410,
+          "sha256": "f4c1cbc187ec38cf0bef1c1ca296aa1cac66168c3d809ada38d75e2581eeb0c3",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -3635,8 +3474,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-tile-context-desktop-native.png",
-          "bytes": 128346,
-          "sha256": "c5a6bc6c076801b2d91b41304c318bc2e48de7eb2e3a86ab502f9fdadd2f57b1",
+          "bytes": 129042,
+          "sha256": "c250cf6ee88119d04a437f30b78652af73bde6b021ba9abca5c12b491cb03ca6",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -3649,8 +3488,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-tile-context-desktop-enlarged.png",
-          "bytes": 305289,
-          "sha256": "411321f67feabe59113a527714deb4f0e341b1fd677136da512a091f5c491d3a",
+          "bytes": 306553,
+          "sha256": "6b0fe75f2f84a75e7be3eb1c408ec533a93f9d75e5d92688b75c237e1ccb1f56",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -3663,8 +3502,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-tile-context-mobile-native.png",
-          "bytes": 238786,
-          "sha256": "7217c3ca2399f55f25774365a617b87ee1b8bee56e7a6e28fa762ca22b641410",
+          "bytes": 239503,
+          "sha256": "b025903a068f1ed624709d73e818b1ea4b13613d461a3db2e097f0270761ab8a",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -3677,8 +3516,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-tile-context-mobile-enlarged.png",
-          "bytes": 454590,
-          "sha256": "8cc33518e56e6b001d132695a7522f87b55b2a273d52f6ce90bd554d8dc7969d",
+          "bytes": 455519,
+          "sha256": "2dce4effc7a01d09106ebbf6906152a7cc5e34550b7b0b96b1fdcd7e0bf77e18",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -3719,8 +3558,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-city-train-desktop-native.png",
-          "bytes": 129813,
-          "sha256": "fc48b1e3193767092f1a779cb8f173cbd2a59bd9671e18e2673de51209884659",
+          "bytes": 130835,
+          "sha256": "de6cc46ef0e6601cceb7f356b7ebc5dcde9329a09a055bcc723ed674c28196df",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -3733,8 +3572,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-city-train-desktop-enlarged.png",
-          "bytes": 307039,
-          "sha256": "1efc9c0bb89dc97855e51b84747524855513ec57a3055b12150c48a0002c3e08",
+          "bytes": 309416,
+          "sha256": "530aa5a0be4ddf710ffafaf7a47156c06f3d9a9868dc7e87b1f35960b8db1533",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -3747,8 +3586,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-city-train-mobile-native.png",
-          "bytes": 217897,
-          "sha256": "0d56d40e525e3fab090ad530842d5e556c2075111fc8f3932e93327ea971d5ed",
+          "bytes": 218594,
+          "sha256": "140300c9c7e0f13a3bc95798b8bebdd03f3e90f025a99abe90f72b6254154cb0",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -3761,8 +3600,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-city-train-mobile-enlarged.png",
-          "bytes": 413460,
-          "sha256": "99cfabd1aa0569bc68608ff01f390e628e3e78cc55952a9de724a0b5e44f55f0",
+          "bytes": 414412,
+          "sha256": "fbbced8bb2f18e57b8bfa681db87dcf6e32217a85c55614abc1dfde03a9d7bfd",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -3775,8 +3614,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-overview-desktop-native.png",
-          "bytes": 361380,
-          "sha256": "8807278021c30107b6e4b2621291c2fd3b16bfcfb941a789753916e79dbeabbd",
+          "bytes": 361389,
+          "sha256": "352db1eceb5eefbaa33bbda2937a7bc5f5147d1f47241ac0c48ab61c906461dd",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -3789,8 +3628,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-overview-desktop-enlarged.png",
-          "bytes": 660787,
-          "sha256": "6cddf7747f712ed9014a1b3543b0bfa9556711f220bf402a2784812533eab882",
+          "bytes": 660777,
+          "sha256": "dcf5f89959c43b044e426528106700acdcca8b1ff032584ddd2fd159f02eb8e5",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -3891,14 +3730,11 @@
   "aiFirstLaunch": {
     "seed": 314159,
     "aiMode": "COOPERATIVE",
-    "turnOrder": [
-      2,
-      1
-    ],
+    "turnOrder": [2, 1],
     "commandIndex": 3,
-    "stateHash": "5bb0964730b810c1a5c6111761fb3c16c40257df34bda9f507b5c2b0bf46ce7b",
-    "replayStateHash": "5bb0964730b810c1a5c6111761fb3c16c40257df34bda9f507b5c2b0bf46ce7b",
-    "persistedStateHash": "5bb0964730b810c1a5c6111761fb3c16c40257df34bda9f507b5c2b0bf46ce7b",
+    "stateHash": "8ac59929ca4b2a28f259e14f3669261627d080cf9517b0ed56376c11b53cef7e",
+    "replayStateHash": "8ac59929ca4b2a28f259e14f3669261627d080cf9517b0ed56376c11b53cef7e",
+    "persistedStateHash": "8ac59929ca4b2a28f259e14f3669261627d080cf9517b0ed56376c11b53cef7e",
     "notice": "AI completed 3 actions. Your turn."
   }
 }

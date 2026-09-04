@@ -33,6 +33,7 @@ improvement, direction, or zero. No query iteration order survives this tuple.
 |     1400 | Capture that visibly ends the match                                   |
 |     1360 | Other hostile-city Capture                                            |
 |     1340 | Neutral-village Capture                                               |
+|     1330 | Move directly onto a globally public treasure chest                   |
 |     1320 | Promote                                                               |
 |     1300 | Mandatory city/Candify choice                                         |
 |     1280 | Guaranteed kill of a unit threatening an owned city                   |
@@ -109,11 +110,17 @@ that could attack the acting unit's result tile without moving. Breach, Charge,
 and known Push use the public combat estimator. Hidden terrain/units and
 `UNKNOWN_RESOURCE` contribute zero.
 
-Known objectives are visible neutral villages and hostile cities. Objective
+Known objectives are globally public treasure chests, visible neutral villages,
+and hostile cities. Objective
 value is negative Chebyshev distance from the resulting tile; equal objectives
 use `(y,x)`. With none, frontier value is the number of new non-allied-blocked
 coordinates in the public reveal result, then displacement from start. A
 zero-gain move may reduce distance to the nearest public unexplored coordinate.
+
+A direct chest Move uses `strategicValue = 1` and `immediateValue = 5`; this is
+the fixed expected utility used for ordering, not a prediction or PRNG draw.
+Pathing sees only the public coordinate, and reward resolution remains wholly
+inside the authoritative reducer.
 
 ## 4. Spatial planning score
 

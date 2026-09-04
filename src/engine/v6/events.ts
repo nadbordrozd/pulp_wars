@@ -163,6 +163,19 @@ export type DomainEventV6 =
       readonly path: readonly CoordV6[];
     }
   | {
+      readonly kind: "TREASURE_CAPTURED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly at: CoordV6;
+      readonly requestedReward: "COINS" | "HEAVY";
+      readonly grantedReward: "COINS" | "HEAVY";
+      readonly coinDelta: 0 | 5;
+      readonly heavyFallback: boolean;
+      readonly spawnedUnitId: UnitId | null;
+      readonly spawnedAt: CoordV6 | null;
+      readonly homeCityId: CityId | null;
+    }
+  | {
       readonly kind: "UNIT_MOVE_INTERRUPTED";
       readonly unitId: UnitId;
       readonly at: CoordV6;

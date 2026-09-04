@@ -13,6 +13,7 @@ import {
   resourceCoverageV6,
   siteCoverageV6,
   terrainCoverageV6,
+  treasureCoverageV6,
   unitCoverageV6,
   type AssetCoverageStatusV6,
   type AssetCoverageV6,
@@ -462,6 +463,17 @@ function drawEntry(
               : entry.details.improvement,
             item.status === "PLACEHOLDER",
           ),
+      );
+      return;
+    case "TREASURE":
+      addCoveredAsset(
+        commands,
+        coverage,
+        entry.key,
+        treasureCoverageV6(),
+        center,
+        zoom,
+        () => buildingFallback(entry.key, center, zoom, "TREASURE", false),
       );
       return;
     case "SITE":

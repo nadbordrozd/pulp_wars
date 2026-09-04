@@ -859,7 +859,7 @@ describe("ruleset-6 live spatial economy", () => {
       measure: "POPULATION",
     });
     expect(canonicalHash(result.state)).toBe(
-      "e786f4d4908641bb3f1b03ef9d70f2bc8e515c25d261e30342effbb1f0f97b8f",
+      "aa827bc602f8f4e057890cdbd19675074e50cf75bb809afb002d1ecc21b0e97e",
     );
     const forge = must(
       result.state.populationContributions.find(

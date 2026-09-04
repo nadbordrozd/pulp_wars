@@ -71,6 +71,7 @@ export interface GeneratedMapV6 {
   readonly capitalAssignments: readonly CoordV6[];
   /** Player seat indices in turn order. */
   readonly turnOrderSeats: readonly number[];
+  readonly treasureChests: readonly CoordV6[];
   readonly random: RandomStateV6;
   readonly attempt: number;
   readonly attempts: readonly MapGenerationAttemptV6[];
@@ -154,6 +155,11 @@ export function generateInitialMapV6(
       failures,
     });
     if (failures.length === 0) {
+      const treasures = placeTreasureChestsV6(
+        candidate.board,
+        candidate.capitals,
+        candidate.random,
+      );
       return {
         ok: true,
         map: deepFreeze({
@@ -162,7 +168,8 @@ export function generateInitialMapV6(
           villages: candidate.villages,
           capitalAssignments: candidate.capitalAssignments,
           turnOrderSeats: candidate.turnOrderSeats,
-          random: candidate.random,
+          treasureChests: treasures.treasureChests,
+          random: treasures.random,
           attempt,
           attempts,
         }),
@@ -191,6 +198,83 @@ export function neutralVillageCountV6(setup: MatchSetupV6): number {
     : setup.width === 20
       ? LARGE_NEUTRAL_VILLAGES[setup.aiCount]
       : STANDARD_NEUTRAL_VILLAGES[setup.aiCount];
+}
+
+/** Frozen size-scaled neutral treasure count for generated square boards. */
+export function treasureChestCountV6(width: BoardStateV6["width"]): number {
+  return width === 20 ? 4 : width === 25 ? 5 : 2;
+}
+
+export interface TreasurePlacementV6 {
+  readonly treasureChests: readonly CoordV6[];
+  readonly random: RandomStateV6;
+}
+
+/**
+ * Samples without replacement from canonical reachable, passable empty land.
+ * Only the accepted map consumes these draws; scarce candidates safely yield a
+ * smaller collection.
+ */
+export function placeTreasureChestsV6(
+  board: BoardStateV6,
+  capitals: readonly CoordV6[],
+  initialRandom: RandomStateV6,
+): TreasurePlacementV6 {
+  const reachable = reachableLandKeysV6(board, capitals);
+  const candidates = board.tiles
+    .filter(
+      (tile) =>
+        reachable.has(coordKey(tile.at)) &&
+        tile.terrain !== "MOUNTAIN" &&
+        tile.site === null &&
+        tile.resource === null &&
+        tile.improvement === null,
+    )
+    .map((tile) => tile.at)
+    .sort(compareCoordsV6);
+  const selected: CoordV6[] = [];
+  let random = initialRandom;
+  const count = Math.min(treasureChestCountV6(board.width), candidates.length);
+  for (
+    let remaining = candidates.length;
+    selected.length < count;
+    remaining -= 1
+  ) {
+    const draw = nextBounded(random, remaining);
+    random = draw.random;
+    const chosen = candidates[draw.value];
+    const last = candidates[remaining - 1];
+    if (chosen === undefined || last === undefined)
+      throw new RangeError("Treasure candidate selection failed");
+    selected.push(chosen);
+    candidates[draw.value] = last;
+  }
+  return {
+    treasureChests: selected.sort(compareCoordsV6),
+    random,
+  };
+}
+
+function reachableLandKeysV6(
+  board: BoardStateV6,
+  starts: readonly CoordV6[],
+): ReadonlySet<string> {
+  const visited = new Set<string>();
+  const queue = [...starts].sort(compareCoordsV6);
+  for (const at of queue) visited.add(coordKey(at));
+  for (let index = 0; index < queue.length; index += 1) {
+    const at = queue[index];
+    if (at === undefined) continue;
+    for (const tile of [...neighbors(board, at)].sort((left, right) =>
+      compareCoordsV6(left.at, right.at),
+    )) {
+      const key = coordKey(tile.at);
+      if (tile.terrain === "MOUNTAIN" || visited.has(key)) continue;
+      visited.add(key);
+      queue.push(tile.at);
+    }
+  }
+  return visited;
 }
 
 export function resourceForTerrainV6(
@@ -338,7 +422,11 @@ export function validateMapInvariantsV6(
 }
 
 export function canonicalMapRandomHashV6(map: GeneratedMapV6): string {
-  return canonicalHash({ board: map.board, random: map.random });
+  return canonicalHash({
+    board: map.board,
+    treasureChests: map.treasureChests,
+    random: map.random,
+  });
 }
 
 /** Assigns every supplied city's disjoint centered 3 x 3 initial footprint. */
@@ -567,6 +655,7 @@ export function createInitialMapStateV6(
     populationContributions: [],
     units: entities.units,
     chocolateWalls: [],
+    treasureChests: generated.map.treasureChests,
     pendingChoices: [],
     outcome: null,
   });

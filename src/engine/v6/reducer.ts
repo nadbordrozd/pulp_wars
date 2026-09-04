@@ -15,6 +15,7 @@ import {
   type SpatialEconomicCommandKindV6,
 } from "../rules/ruleset-v6";
 import { deepFreeze } from "../model/freeze";
+import { nextBounded } from "../random/random";
 import { hasExactKeysV6, parseCommandV6, type CommandV6 } from "./commands";
 import {
   cityFootprintContainsV6,
@@ -1564,6 +1565,7 @@ function applyBuildChocolateWallCommand(
   }
   if (
     tile.site !== null ||
+    state.treasureChests.some((chest) => sameCoord(chest, command.at)) ||
     state.units.some(
       (candidate) => candidate.hp > 0 && sameCoord(candidate.at, command.at),
     ) ||
@@ -2102,7 +2104,13 @@ function applyMoveCommand(
     });
   }
   try {
-    const players = state.players.map((candidate) =>
+    const treasure = resolveTreasureCaptureV6(
+      state,
+      actor,
+      unit,
+      validation.destination,
+    );
+    const players = (treasure?.players ?? state.players).map((candidate) =>
       candidate.id === actor
         ? { ...candidate, explored: validation.explored }
         : candidate,
@@ -2122,10 +2130,21 @@ function applyMoveCommand(
           }
         : candidate,
     );
+    if (treasure?.spawnedUnit !== null && treasure?.spawnedUnit !== undefined) {
+      units.push(treasure.spawnedUnit);
+    }
     const commandIndex = state.commandIndex + 1;
     if (!Number.isSafeInteger(commandIndex))
       throw new RangeError("INTEGER_OVERFLOW");
-    const nextState = checkedState({ ...state, commandIndex, players, units });
+    const nextState = checkedState({
+      ...state,
+      commandIndex,
+      players,
+      units,
+      random: treasure?.random ?? state.random,
+      nextEntityId: treasure?.nextEntityId ?? state.nextEntityId,
+      treasureChests: treasure?.treasureChests ?? state.treasureChests,
+    });
     const events: DomainEventV6[] = [];
     if (validation.traversedPath.length > 0) {
       events.push({
@@ -2134,6 +2153,7 @@ function applyMoveCommand(
         path: validation.traversedPath,
       });
     }
+    if (treasure !== null) events.push(treasure.event);
     if (validation.interruption !== null) {
       events.push({
         kind: "UNIT_MOVE_INTERRUPTED",
@@ -2156,6 +2176,156 @@ function applyMoveCommand(
     }
     return rejected(original, "INVALID_STATE");
   }
+}
+
+interface TreasureCaptureResolutionV6 {
+  readonly players: readonly PlayerStateV6[];
+  readonly random: GameStateV6["random"];
+  readonly nextEntityId: number;
+  readonly treasureChests: readonly CoordV6[];
+  readonly spawnedUnit: UnitStateV6 | null;
+  readonly event: Extract<
+    DomainEventV6,
+    { readonly kind: "TREASURE_CAPTURED" }
+  >;
+}
+
+function resolveTreasureCaptureV6(
+  state: GameStateV6,
+  actor: PlayerId,
+  capturingUnit: UnitStateV6,
+  at: CoordV6,
+): TreasureCaptureResolutionV6 | null {
+  if (!state.treasureChests.some((candidate) => sameCoord(candidate, at))) {
+    return null;
+  }
+  const draw = nextBounded(state.random, 2);
+  const requestedReward = draw.value === 0 ? "COINS" : "HEAVY";
+  const heavyPlacement =
+    requestedReward === "HEAVY"
+      ? treasureHeavyPlacementV6(state, actor, capturingUnit, at)
+      : null;
+  if (heavyPlacement !== null) {
+    const allocation = allocateUnitId(state.nextEntityId);
+    const rule = effectiveRoleRuleV6(
+      requirePlayer(state, actor).faction,
+      "HEAVY",
+    );
+    const spawnedUnit: UnitStateV6 = {
+      id: allocation.id,
+      ownerId: actor,
+      homeCityId: heavyPlacement.homeCityId,
+      role: "HEAVY",
+      at: heavyPlacement.at,
+      hp: rule.maxHp,
+      maxHp: rule.maxHp,
+      kills: 0,
+      veteran: false,
+      captureEligible: false,
+      activation: exhaustedActivation(),
+    };
+    return {
+      players: state.players,
+      random: draw.random,
+      nextEntityId: allocation.nextEntityId,
+      treasureChests: state.treasureChests.filter(
+        (candidate) => !sameCoord(candidate, at),
+      ),
+      spawnedUnit,
+      event: {
+        kind: "TREASURE_CAPTURED",
+        playerId: actor,
+        unitId: capturingUnit.id,
+        at,
+        requestedReward,
+        grantedReward: "HEAVY",
+        coinDelta: 0,
+        heavyFallback: false,
+        spawnedUnitId: spawnedUnit.id,
+        spawnedAt: spawnedUnit.at,
+        homeCityId: spawnedUnit.homeCityId,
+      },
+    };
+  }
+  const player = requirePlayer(state, actor);
+  const coins = player.coins + 5;
+  if (!Number.isSafeInteger(coins)) throw new RangeError("INTEGER_OVERFLOW");
+  return {
+    players: state.players.map((candidate) =>
+      candidate.id === actor ? { ...candidate, coins } : candidate,
+    ),
+    random: draw.random,
+    nextEntityId: state.nextEntityId,
+    treasureChests: state.treasureChests.filter(
+      (candidate) => !sameCoord(candidate, at),
+    ),
+    spawnedUnit: null,
+    event: {
+      kind: "TREASURE_CAPTURED",
+      playerId: actor,
+      unitId: capturingUnit.id,
+      at,
+      requestedReward,
+      grantedReward: "COINS",
+      coinDelta: 5,
+      heavyFallback: requestedReward === "HEAVY",
+      spawnedUnitId: null,
+      spawnedAt: null,
+      homeCityId: null,
+    },
+  };
+}
+
+function treasureHeavyPlacementV6(
+  state: GameStateV6,
+  actor: PlayerId,
+  capturingUnit: UnitStateV6,
+  at: CoordV6,
+): { readonly at: CoordV6; readonly homeCityId: CityStateV6["id"] } | null {
+  const cities = state.cities
+    .filter(
+      (city) =>
+        city.ownerId === actor &&
+        assignedUnitCountV6(state, city.id) < cityUnitCapacityV6(city),
+    )
+    .sort((left, right) => {
+      const leftHome = left.id === capturingUnit.homeCityId ? 0 : 1;
+      const rightHome = right.id === capturingUnit.homeCityId ? 0 : 1;
+      return leftHome - rightHome || left.id - right.id;
+    });
+  const player = requirePlayer(state, actor);
+  for (const city of cities) {
+    const adjacent: CoordV6[] = [];
+    for (let dy = -1; dy <= 1; dy += 1) {
+      for (let dx = -1; dx <= 1; dx += 1) {
+        if (dx !== 0 || dy !== 0) adjacent.push({ x: at.x + dx, y: at.y + dy });
+      }
+    }
+    for (const candidate of adjacent.sort(compareCoords)) {
+      const tile = tileAt(state, candidate);
+      if (
+        tile === undefined ||
+        (tile.terrain === "MOUNTAIN" &&
+          !player.researchedTechs.includes("SURVEYING")) ||
+        state.units.some(
+          (unit) => unit.hp > 0 && sameCoord(unit.at, candidate),
+        ) ||
+        state.chocolateWalls.some((wall) => sameCoord(wall.at, candidate)) ||
+        state.treasureChests.some((chest) => sameCoord(chest, candidate)) ||
+        (tile.territoryCityId !== null &&
+          arePlayersAlliedV6(
+            state,
+            actor,
+            state.cities.find((owner) => owner.id === tile.territoryCityId)
+              ?.ownerId ?? actor,
+          ))
+      ) {
+        continue;
+      }
+      return { at: candidate, homeCityId: city.id };
+    }
+  }
+  return null;
 }
 
 function applyEndTurn(

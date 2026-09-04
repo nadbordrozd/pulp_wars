@@ -211,6 +211,16 @@ or a unit. POC city sprites
 may use the chosen test-faction visual language, but should not silently canonize
 one of the example factions from general art direction.
 
+The neutral treasure chest is one compact closed pickup, not a settlement,
+resource node, improvement, or unit. Its lock and lid silhouette must survive
+minimum zoom, while its painted bounds remain smaller than standard map units
+and substantially smaller than a terrain body. Use the shared northwest light,
+transparent background, and a centered ground anchor; no alpha may overflow
+the owning square to the left, right, or bottom. It renders as a low tile-stack
+body above terrain/fog and below units and interaction/status overlays. Review
+the exact source at native and nearest-neighbor enlarged scale, then at
+0.625x/1x/1.75x over representative Original and Candy terrain.
+
 ## Draw composition and anchor behavior
 
 Buildings sit at their ground anchor at the projected tile center and share the

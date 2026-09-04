@@ -51,6 +51,7 @@ interface GameStateV6 {
   readonly rulesetId: "pulp-wars-poc-6";
   readonly setup: MatchSetupV6;
   readonly pendingChoices: readonly PendingChoiceV6[];
+  readonly treasureChests: readonly Coord[];
   // retained deterministic turn, board, player, entity, PRNG, and outcome data
 }
 
@@ -486,6 +487,14 @@ boundary, such as a pending same-coordinate inspection cycle; it conveys no
 hidden board or entity data. Harmless rerenders retain the same value. Canvas
 occupancy, selection, and disappearance checks still use only the visible
 entities and explored tiles in `PlayerView`.
+
+`PlayerViewV6.treasureChests` is an explicit globally public coordinate list,
+including coordinates whose tile arm remains fogged. Public movement treats a
+chest as non-blocking; the reducer alone draws and resolves its reward after an
+accepted Move. The Canvas plan may therefore draw `FOG` and `TREASURE` for one
+coordinate without reconstructing terrain, and removes the chest from the
+post-command snapshot before presenting the unit slide. Reward fields enter
+presentation only through the exact `TREASURE_CAPTURED` event.
 
 Territory-themed map art is a cosmetic projection of that same public view.
 For every explored tile, Canvas resolves `PlayerTileView.territoryOwnerId`
@@ -990,6 +999,14 @@ implicit best-effort conversion. Explicit pure migrations may be added later
 and must have fixture tests. Corrupt/incompatible saves remain untouched until
 the user confirms Delete Save; New Match does not silently overwrite a save
 until final setup confirmation.
+
+The schema-6 treasure addition has one deliberately narrow persistence-boundary
+compatibility rule: a valid version-6 save whose state predates the
+`treasureChests` field is hash-checked against its untouched source state, then
+normalized in memory to `treasureChests: []` and a new canonical hash. The
+strict runtime state parser, replay parser, and new save writer still require
+the field; no command or replay history is synthesized, and source bytes are
+never rewritten.
 
 Storage is an adapter: unit tests use memory repositories. Storage failure must
 not crash an active match. No IndexedDB, cloud sync, cookies, or server storage

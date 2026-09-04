@@ -411,6 +411,7 @@ export function queryPlayerCommandsV6(
           tile.explored &&
           chebyshev(unit.at, tile.at) === 1 &&
           tile.site === null &&
+          !view.treasureChests.some((chest) => sameCoord(chest, tile.at)) &&
           !publicTileIsAlliedTerritory(view, tile) &&
           !view.units.some(
             (candidate) => candidate.hp > 0 && sameCoord(candidate.at, tile.at),
@@ -1533,6 +1534,7 @@ function publicStateForMovement(view: PlayerViewV6): GameStateV6 {
     populationContributions: view.populationContributions,
     units: view.units,
     chocolateWalls: view.chocolateWalls,
+    treasureChests: view.treasureChests,
     pendingChoices: view.pendingChoices,
     outcome: view.outcome,
   };

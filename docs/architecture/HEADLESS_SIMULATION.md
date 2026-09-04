@@ -33,6 +33,8 @@ Every full result records the retained deterministic hashes and at least:
 - `resourcesGenerated/revealed/consumed` for all five IDs;
 - build/remove counts and live contribution histograms for all eleven economic
   improvements plus Roads;
+- treasures generated/captured, Coin/Heavy rewards, and Heavy-to-Coin
+  fallbacks;
 - Windmill/Sawmill cluster sizes, Forge Mine adjacency, Stoneworks adjacency
   and opposite pairs, Workshop basic diversity, Grand Works processor
   diversity, Market family count and capital-Road bonus;
@@ -58,7 +60,10 @@ commands, ordered events, checkpoints, and final state. Faction-only changes
 must preserve terrain/resource/settlement/turn-order/post-generation PRNG when
 the resolved setup is otherwise equal. V6 map corpora assert the exact resource
 draw thresholds, every-resource presence, three opportunities/two families per
-settlement, and no hidden-resource query leak.
+settlement, and no hidden-resource query leak. Map hashes include the sorted
+serialized treasure coordinates as well as the board, and post-generation PRNG
+hashes include placement draws. Event and checkpoint hashes cover the exact
+`TREASURE_CAPTURED` reward arm and optional spawned unit.
 
 Normal participation must include every technology, role, basic action,
 processor, mixed building, Market/Road bonus, reward tier, and faction

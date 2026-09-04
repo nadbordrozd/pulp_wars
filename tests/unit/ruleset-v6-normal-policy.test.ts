@@ -190,6 +190,7 @@ function baseView(
       unit(ENEMY_UNIT, ENEMY, "FIGHTER", rivalCity.at),
     ],
     chocolateWalls: [],
+    treasureChests: [],
     pendingChoices: [],
     outcome: null,
   };

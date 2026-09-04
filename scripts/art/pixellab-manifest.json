@@ -3704,6 +3704,34 @@
       "fitBounds": { "left": 86, "top": 92, "right": 298, "bottom": 316 },
       "postprocess": "compact-building-fit",
       "hardBounds": { "left": 8, "top": 8, "right": 376, "bottom": 344 }
+    },
+    {
+      "id": "building-treasure-chest",
+      "class": "buildings",
+      "stage": "batch",
+      "endpoint": "generate-image-v2",
+      "seed": 109600,
+      "requestSize": { "width": 256, "height": 296 },
+      "outputSize": { "width": 256, "height": 296 },
+      "transparent": true,
+      "includeFactionLanguage": false,
+      "styleReference": "building-village",
+      "styleReferenceUsage": "Input reference role: copy only the accepted neutral village's square-map three-quarter downward camera, strong charcoal outline, warm neutral palette, broad flat cel shading and gameplay-scale clarity; replace the architecture with one much smaller closed treasure chest.",
+      "palette": "warm bronze bands, parchment-gold wood, restrained dark-teal lock, charcoal-teal outline, northwest highlight and southeast shadow",
+      "prompt": "Exactly one compact closed neutral treasure chest pickup on a transparent 256 by 296 canvas, grounded at x128 y222. One low broad toy-like wooden box with a rounded lid, two oversized warm-bronze bands and one large dark-teal keyhole plate. Southeast-facing three-quarter downward square-map camera, soft northwest key light and darker southeast planes, strong charcoal-teal outline, two-to-three broad flat tones. Fit the full silhouette within x68..188,y136..222 so it is much smaller than a unit, village, Forest or Mountain while still readable at 0.625 map zoom. Isolated pickup only; no ground, glow, coins or baked UI.",
+      "negativePrompt": "open chest, visible contents, spilling coins, gems, loose coin, reward choice, heavy unit, character, mimic, face, arms, legs, village, house, building, terrain, grass, platform, pedestal, cast shadow, glow, magic aura, ownership color, selection ring, status badge, text, letters, number, UI, left overflow, right overflow, bottom overflow, lower-right light, photorealism, realistic wood grain, painterly, faux 3D, pixel art, tiny detail, blur, matte, halo, cropped silhouette",
+      "output": "public/assets/pixellab/buildings-square/treasure-chest.png",
+      "anchor": { "x": 128, "y": 222 },
+      "groundContactY": 222,
+      "preferredBounds": {
+        "left": 62,
+        "top": 126,
+        "right": 194,
+        "bottom": 222
+      },
+      "fitBounds": { "left": 68, "top": 136, "right": 188, "bottom": 222 },
+      "postprocess": "compact-building-fit",
+      "hardBounds": { "left": 20, "top": 16, "right": 236, "bottom": 246 }
     }
   ]
 }
