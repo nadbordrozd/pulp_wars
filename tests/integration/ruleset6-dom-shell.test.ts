@@ -839,7 +839,13 @@ describe("playable ruleset-6 DOM shell", () => {
         document.querySelector(".v6-action-panel")?.firstElementChild,
       ).toBe(unitIdentity);
       expect(unitIdentity.nextElementSibling?.classList).toContain(
-        "v6-command-list",
+        "v6-unit-details",
+      );
+      expect(
+        unitIdentity.nextElementSibling?.nextElementSibling?.classList,
+      ).toContain("v6-command-list");
+      expect(document.querySelector(".v6-unit-ability-tags") === null).toBe(
+        faction === "ORIGINAL",
       );
 
       host.callbacks?.onSelection({ kind: "CITY", cityId: city.id });
@@ -881,6 +887,172 @@ describe("playable ruleset-6 DOM shell", () => {
       app.destroy();
       document.body.innerHTML = '<div id="app"></div>';
     }
+  });
+
+  it("shows canonical unit stats and opens view-only accessible ability cards", () => {
+    const initial = publicView("ORIGINAL");
+    const baseUnit = initial.units.find(
+      (candidate) => candidate.ownerId === initial.viewer.id,
+    );
+    const city = initial.cities.find(
+      (candidate) => candidate.ownerId === initial.viewer.id,
+    );
+    if (baseUnit === undefined || city === undefined)
+      throw new Error("Missing public entities");
+    const view: PlayerViewV6 = {
+      ...initial,
+      units: initial.units.map((unit) =>
+        unit.id === baseUnit.id ? { ...unit, role: "RAIDER" } : unit,
+      ),
+    };
+    const fake = new FakeController(view, [{ kind: "END_TURN" }]);
+    const host = new FakeBoardHostV6();
+    const app = new Ruleset6DomAppView(document, requireElement("#app"), fake, {
+      boardHost: host,
+    });
+
+    host.callbacks?.onSelection({ kind: "UNIT", unitId: baseUnit.id });
+    const stats = Object.fromEntries(
+      [...document.querySelectorAll<HTMLElement>("[data-unit-stat]")].map(
+        (stat) => [
+          stat.dataset.unitStat,
+          [
+            stat.querySelector("dt")?.textContent,
+            stat.querySelector("dd")?.textContent,
+          ],
+        ],
+      ),
+    );
+    expect(stats).toEqual({
+      ATTACK: ["Attack", "2.5"],
+      DEFENSE: ["Defense", "1.5"],
+      MOVE: ["Move", "2"],
+      RANGE: ["Range", "1"],
+      SIGHT: ["Sight", "1"],
+    });
+    const tags = [
+      ...document.querySelectorAll<HTMLButtonElement>("[data-ability]"),
+    ];
+    expect(tags.map((tag) => [tag.dataset.ability, tag.textContent])).toEqual([
+      ["CHARGE", "Charge"],
+      ["IGNORE_ZOC_WITH_MANEUVER", "Maneuver"],
+    ]);
+    expect(
+      tags.every((tag) => tag.getAttribute("aria-haspopup") === "dialog"),
+    ).toBe(true);
+
+    const charge = tags[0];
+    if (charge === undefined) throw new Error("Missing Charge tag");
+    charge.focus();
+    charge.click();
+    const detail = requireElement("[data-ability-detail=CHARGE]");
+    expect(detail.getAttribute("role")).toBe("dialog");
+    expect(detail.getAttribute("aria-modal")).toBe("true");
+    expect(detail.getAttribute("aria-labelledby")).toBe(
+      "v6-ability-detail-heading",
+    );
+    expect(detail.getAttribute("aria-describedby")).toBe(
+      "v6-ability-detail-description",
+    );
+    expect(detail.textContent).toContain("at least two tiles");
+    expect(document.activeElement).toBe(detail);
+    expect(document.querySelector<HTMLElement>("[data-v6-board]")?.inert).toBe(
+      true,
+    );
+    expect(host.model?.interactive).toBe(false);
+    expect(detail.querySelector("[data-command]")).toBeNull();
+    expect(fake.dispatch).not.toHaveBeenCalled();
+
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "Tab",
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    expect(document.activeElement).toBe(
+      document.querySelector('[data-action="close-ability-detail"]'),
+    );
+    requireElement('[data-action="close-ability-detail"]').dispatchEvent(
+      new MouseEvent("click", { bubbles: true }),
+    );
+    expect(document.querySelector("[data-ability-detail]")).toBeNull();
+    expect(document.activeElement).toBe(
+      document.querySelector('[data-ability="CHARGE"]'),
+    );
+
+    requireElement('[data-ability="CHARGE"]').dispatchEvent(
+      new MouseEvent("click", { bubbles: true }),
+    );
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "Escape",
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    expect(document.querySelector("[data-ability-detail]")).toBeNull();
+    expect(document.activeElement).toBe(
+      document.querySelector('[data-ability="CHARGE"]'),
+    );
+    expect(host.model?.interactive).toBe(true);
+
+    requireElement('[data-ability="CHARGE"]').dispatchEvent(
+      new MouseEvent("click", { bubbles: true }),
+    );
+    requireElement("[data-ability-detail-overlay]").dispatchEvent(
+      new MouseEvent("click", { bubbles: true }),
+    );
+    expect(document.querySelector("[data-ability-detail]")).toBeNull();
+    expect(fake.dispatch).not.toHaveBeenCalled();
+
+    requireElement('[data-ability="CHARGE"]').dispatchEvent(
+      new MouseEvent("click", { bubbles: true }),
+    );
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "t", bubbles: true }),
+    );
+    expect(document.querySelector("[data-tech-screen]")).toBeNull();
+    expect(document.querySelector("[data-ability-detail]")).not.toBeNull();
+    host.callbacks?.onSelection({ kind: "CITY", cityId: city.id });
+    expect(document.querySelector("[data-ability-detail]")).toBeNull();
+    expect(document.querySelector("[data-unit-details]")).toBeNull();
+
+    host.callbacks?.onSelection({ kind: "UNIT", unitId: baseUnit.id });
+    requireElement('[data-ability="CHARGE"]').dispatchEvent(
+      new MouseEvent("click", { bubbles: true }),
+    );
+    const nextView = { ...view, commandIndex: view.commandIndex + 1 };
+    fake.setSnapshot({
+      ...fake.snapshot(),
+      view: nextView,
+      commandIndex: nextView.commandIndex,
+    });
+    expect(document.querySelector("[data-ability-detail]")).toBeNull();
+
+    host.callbacks?.onSelection({ kind: "UNIT", unitId: baseUnit.id });
+    requireElement('[data-ability="CHARGE"]').dispatchEvent(
+      new MouseEvent("click", { bubbles: true }),
+    );
+    fake.setSnapshot({
+      ...fake.snapshot(),
+      view: {
+        ...nextView,
+        pendingChoices: [
+          {
+            kind: "CITY_REWARD",
+            cityId: city.id,
+            reachedLevel: 2,
+            candidates: ["SURVEY", "STOCKPILE"],
+          },
+        ],
+      },
+    });
+    expect(document.querySelector("[data-ability-detail]")).toBeNull();
+    expect(document.querySelector("[data-mandatory-choice]")).not.toBeNull();
+    expect(fake.dispatch).not.toHaveBeenCalled();
+
+    app.destroy();
   });
 
   it("renders an accessible fixed city population layer and live-updates gain, loss, and level-up", () => {

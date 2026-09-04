@@ -54,7 +54,7 @@
   },
   "visualReview": {
     "status": "ACCEPTED",
-    "notes": "Every bounded contextual, reward, city-training, and Technology capture was inspected individually at native output size and in its nearest-neighbor 2x companion. Contextual rasters, including faction-correct TRAIN world sprites, use the exact shared 112 x 130 CSS-pixel transparent viewport with contained aspect ratio at desktop and true 390x844 DPR2 mobile; code-native fallbacks retain the same framed footprint. Original and Candy Animals are visible on explored Forest from launch while Hunting remains unresearched and Hunt Game unavailable; hidden Animals remain redacted. Exact world-unit, faction/level city, and public Fruit selection identities remain compact and readable above their isolated actions with no coordinate text. Original and Candy labels/symbols remain distinct; the map stays primary; full Technology cards/details and blocking rewards fit without clipping or horizontal overflow. Offscreen square-cell targets are brought into the unobscured Canvas by bounded production pointer drags, with before/after camera evidence recorded for both factions. Direct selected-tile actions accept one boundary without a second map activation. No suspected visual failure remained after enlargement review."
+    "notes": "Every bounded contextual, ability-detail, reward, city-training, and Technology capture was inspected individually at native output size and in its nearest-neighbor 2x companion. Contextual rasters, including faction-correct TRAIN world sprites, use the exact shared 112 x 130 CSS-pixel transparent viewport with contained aspect ratio at desktop and true 390x844 DPR2 mobile; code-native fallbacks retain the same framed footprint. Original and Candy Animals are visible on explored Forest from launch while Hunting remains unresearched and Hunt Game unavailable; hidden Animals remain redacted. Exact world-unit, faction/level city, and public Fruit selection identities remain compact and readable above their isolated actions with no coordinate text. The Candy Warrior's Candify card is readable and unclipped at desktop and mobile, remains view-only, blocks outside input while open, and restores the selected-unit dock after closing without advancing a command boundary. Original and Candy labels/symbols remain distinct; the map stays primary; full Technology cards/details and blocking rewards fit without clipping or horizontal overflow. Offscreen square-cell targets are brought into the unobscured Canvas by bounded production pointer drags, with before/after camera evidence recorded for both factions. Direct selected-tile actions accept one boundary without a second map activation. No suspected visual failure remained after enlargement review."
   },
   "flows": [
     {
@@ -215,7 +215,7 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 741.03125
+            "height": 704.78125
           },
           "before": {
             "x": 720,
@@ -234,7 +234,7 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 741.03125
+            "height": 704.78125
           },
           "before": {
             "x": 800,
@@ -310,7 +310,7 @@
           },
           "canvas": {
             "width": 390,
-            "height": 266.46875
+            "height": 230.21875
           },
           "before": {
             "x": 195,
@@ -348,7 +348,7 @@
           },
           "canvas": {
             "width": 390,
-            "height": 266.46875
+            "height": 230.21875
           },
           "before": {
             "x": 195,
@@ -562,13 +562,13 @@
               "symbolKind": "accepted-raster",
               "rect": {
                 "x": 12.796875,
-                "y": 672.453125,
+                "y": 636.203125,
                 "width": 185.921875,
                 "height": 130
               },
               "artRect": {
                 "x": 12.796875,
-                "y": 672.453125,
+                "y": 636.203125,
                 "width": 112,
                 "height": 130
               }
@@ -582,13 +582,13 @@
               "symbolKind": "accepted-raster",
               "rect": {
                 "x": 8.796875,
-                "y": 525.015625,
+                "y": 488.765625,
                 "width": 174.296875,
                 "height": 130
               },
               "artRect": {
                 "x": 8.796875,
-                "y": 525.015625,
+                "y": 488.765625,
                 "width": 112,
                 "height": 130
               }
@@ -969,7 +969,8 @@
                 }
               ]
             }
-          }
+          },
+          "abilityDetail": null
         },
         "technology": {
           "mainResearchButtonCount": 0,
@@ -1629,8 +1630,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-mobile-native.png",
-          "bytes": 281379,
-          "sha256": "b2059286c1373a01c8c657b6c2e4b28a5bdb7e123bf0fca7b2464cbafedff352",
+          "bytes": 280534,
+          "sha256": "da96fe4da7cf650345a587a16c42f7557031c909c29686e715cbb66c0582b3a7",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -1643,8 +1644,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-mobile-enlarged.png",
-          "bytes": 526872,
-          "sha256": "2b403398e074d03691bf97212250fe47b2e046008d6df931414682bfd6d90433",
+          "bytes": 520403,
+          "sha256": "12f9314b758a0a21ec1907c35eadd265402113167b5fe71c4a11215411d48b89",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -1657,8 +1658,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-desktop-native.png",
-          "bytes": 147553,
-          "sha256": "4628d0714827048a54ea07abff278196dcfc270ade980095b700d277d5e72c24",
+          "bytes": 150026,
+          "sha256": "3b79ea17bb40caaa8b9f4fcc25ef2a69b159da469b1f700cd6bff1445d2810e4",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1671,8 +1672,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-unit-context-desktop-enlarged.png",
-          "bytes": 340317,
-          "sha256": "ca6953341500fb2993d6a6e9d831a2c207a3123c0ffc4de2ba8058a88464d352",
+          "bytes": 341620,
+          "sha256": "ef2381ea2c0f91c9ade1456dbf44ea4b5154ec677c9e087522bd2280d5a6fbc8",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -1825,8 +1826,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-overview-desktop-native.png",
-          "bytes": 361547,
-          "sha256": "e5933fab93a5320cf9c844f92b9e5e1ad25d87a7bd9097b761aa69ccd2a4e7a3",
+          "bytes": 360766,
+          "sha256": "2d0bf27ed50a1c9c065a33847b462fffe25d7c558dea81f8974167486330f732",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -1839,8 +1840,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/original-technology-overview-desktop-enlarged.png",
-          "bytes": 660088,
-          "sha256": "e5550e31eec0c216c7af548f3478a412634bd0f66353f1989ed7df408b1d1076",
+          "bytes": 659547,
+          "sha256": "ad06a1f6d6fab241c14f99f58e996f20456f9c7212a721f02dd087f704ba8237",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -2095,7 +2096,7 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 741.03125
+            "height": 685.03125
           },
           "before": {
             "x": 720,
@@ -2114,7 +2115,7 @@
           },
           "canvas": {
             "width": 1440,
-            "height": 741.03125
+            "height": 685.03125
           },
           "before": {
             "x": 800,
@@ -2190,7 +2191,7 @@
           },
           "canvas": {
             "width": 390,
-            "height": 266.46875
+            "height": 216.453125
           },
           "before": {
             "x": 195,
@@ -2228,7 +2229,7 @@
           },
           "canvas": {
             "width": 390,
-            "height": 266.46875
+            "height": 216.453125
           },
           "before": {
             "x": 195,
@@ -2442,13 +2443,13 @@
               "symbolKind": "accepted-raster",
               "rect": {
                 "x": 12.796875,
-                "y": 672.453125,
+                "y": 616.453125,
                 "width": 251.625,
                 "height": 130
               },
               "artRect": {
                 "x": 12.796875,
-                "y": 672.453125,
+                "y": 616.453125,
                 "width": 112,
                 "height": 130
               }
@@ -2462,13 +2463,13 @@
               "symbolKind": "accepted-raster",
               "rect": {
                 "x": 8.796875,
-                "y": 525.015625,
+                "y": 475,
                 "width": 225.78125,
                 "height": 130
               },
               "artRect": {
                 "x": 8.796875,
-                "y": 525.015625,
+                "y": 475,
                 "width": 112,
                 "height": 130
               }
@@ -2612,7 +2613,7 @@
               },
               "list": {
                 "x": 8.796875,
-                "y": 667.015625,
+                "y": 704.4375,
                 "width": 372.40625,
                 "height": 168.1875
               },
@@ -2629,7 +2630,7 @@
                   "kind": "WAIT",
                   "rect": {
                     "x": 8.796875,
-                    "y": 667.015625,
+                    "y": 704.4375,
                     "width": 176,
                     "height": 168.1875
                   },
@@ -2637,7 +2638,7 @@
                   "assetId": "ui-action-wait",
                   "symbolRect": {
                     "x": 40.796875,
-                    "y": 675.203125,
+                    "y": 712.625,
                     "width": 112,
                     "height": 130
                   },
@@ -2645,7 +2646,7 @@
                   "rasterLoaded": true,
                   "labelRect": {
                     "x": 16.984375,
-                    "y": 813.203125,
+                    "y": 850.625,
                     "width": 159.625,
                     "height": 13.8125
                   },
@@ -2849,6 +2850,19 @@
                 }
               ]
             }
+          },
+          "abilityDetail": {
+            "ability": "CANDIFY",
+            "desktopOpen": true,
+            "mobileOpen": true,
+            "viewOnly": true,
+            "outsideInputBlocked": true,
+            "desktopFits": true,
+            "mobileFits": true,
+            "closes": true,
+            "restoresTagFocus": true,
+            "restoresDock": true,
+            "exactBoundaryPreserved": true
           }
         },
         "technology": {
@@ -3509,8 +3523,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-mobile-native.png",
-          "bytes": 288956,
-          "sha256": "25c7a7a2a2b48d8df93b4ce9e2cd92fd13a5e61455c8cfcde22a3ba8c49e0457",
+          "bytes": 283977,
+          "sha256": "e6166fbce8de3aae26c21c61ce634ae0b8365497203ba7a295bb6ed7ba74c3b2",
           "width": 780,
           "height": 1688,
           "viewport": {
@@ -3523,8 +3537,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-mobile-enlarged.png",
-          "bytes": 553839,
-          "sha256": "13f2814fe578b6973344cf9e899cfa2d6616d5b37fd43a9240e6d8f28e938705",
+          "bytes": 536808,
+          "sha256": "461061113dc15761619e3e01fefa37449548fa970f4be1aa2916e5e50e94bffa",
           "width": 1560,
           "height": 3376,
           "viewport": {
@@ -3537,8 +3551,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-desktop-native.png",
-          "bytes": 151986,
-          "sha256": "b4d4ca971e56421c86204c13109ee0e2aa9bf5e61f91a2ffcc2824be77bbe2e3",
+          "bytes": 152762,
+          "sha256": "a54ed0c3b853033f853de083ecbb0c1e3425df1ba3b2e95640a8fd7302ef7d32",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -3551,8 +3565,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-unit-context-desktop-enlarged.png",
-          "bytes": 347614,
-          "sha256": "01718ad0030ab9deb4b5d3273ececd688b8e84147d8db3c971d2ad3ab14800a6",
+          "bytes": 343895,
+          "sha256": "4fe0988a90660f16056190f403a493da3ecc111ed6743beb55e93eb7c0a3f288",
           "width": 2880,
           "height": 2000,
           "viewport": {
@@ -3562,6 +3576,62 @@
           },
           "inspectionScale": 2,
           "subject": "CANDY exact-unit contextual dock and map-only movement targets"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-ability-detail-desktop-native.png",
+          "bytes": 92440,
+          "sha256": "800c47ab6f74bcf3f968707858a654d37fca844e41f6a417ea443ff5e80b030d",
+          "width": 1440,
+          "height": 1000,
+          "viewport": {
+            "width": 1440,
+            "height": 1000,
+            "dpr": 1
+          },
+          "inspectionScale": 1,
+          "subject": "CANDY Candify view-only ability detail on desktop"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-ability-detail-desktop-enlarged.png",
+          "bytes": 220340,
+          "sha256": "3bfe3002a2c34e109170663894a7ea082a6b374618fabfb89d3b301e8d61994e",
+          "width": 2880,
+          "height": 2000,
+          "viewport": {
+            "width": 1440,
+            "height": 1000,
+            "dpr": 1
+          },
+          "inspectionScale": 2,
+          "subject": "CANDY Candify view-only ability detail on desktop"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-ability-detail-mobile-native.png",
+          "bytes": 224379,
+          "sha256": "64eba6b2d4a3f77c60dd6b3534015ff4f11b6e8389ee781096257ae9307437ed",
+          "width": 780,
+          "height": 1688,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "inspectionScale": 1,
+          "subject": "CANDY Candify view-only ability detail on mobile"
+        },
+        {
+          "path": "art/integration/reviews/ruleset6-browser-smoke/candy-ability-detail-mobile-enlarged.png",
+          "bytes": 367768,
+          "sha256": "1667f18e4c23af65179d82f1fe2d4582779d6e8235935e8682d42c217efc51a3",
+          "width": 1560,
+          "height": 3376,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "inspectionScale": 2,
+          "subject": "CANDY Candify view-only ability detail on mobile"
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-tile-context-desktop-native.png",
@@ -3705,8 +3775,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-overview-desktop-native.png",
-          "bytes": 361484,
-          "sha256": "14d07220d52fc8f6c6a4e94d880e5377793235f3230e685ee4a30e46dd3f2bb6",
+          "bytes": 361380,
+          "sha256": "8807278021c30107b6e4b2621291c2fd3b16bfcfb941a789753916e79dbeabbd",
           "width": 1440,
           "height": 1000,
           "viewport": {
@@ -3719,8 +3789,8 @@
         },
         {
           "path": "art/integration/reviews/ruleset6-browser-smoke/candy-technology-overview-desktop-enlarged.png",
-          "bytes": 660953,
-          "sha256": "5b0eaf1c4a55ba7b9679fc00b7645c6d8328737746e54ab6514450c8abc3e987",
+          "bytes": 660787,
+          "sha256": "6cddf7747f712ed9014a1b3543b0bfa9556711f220bf402a2784812533eab882",
           "width": 2880,
           "height": 2000,
           "viewport": {

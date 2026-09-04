@@ -29,8 +29,10 @@ import type { CombatPresentationV6 } from "../../src/render/canvas/combat-presen
 import type { MovementPresentationV6 } from "../../src/render/canvas/movement-presentation-v6";
 import { UNIT_SCALE_CONTRACT } from "../../src/render/canvas/board-art-geometry";
 import {
+  EMPTY_BOARD_RENDER_INTERACTION_V6,
   buildRenderPlanV6,
   type EconomicCommandV6,
+  type MapCommandTargetV6,
 } from "../../src/render/canvas/render-plan-v6";
 
 beforeEach(() => {
@@ -688,6 +690,40 @@ describe("ruleset-6 Canvas host", () => {
     );
     key(canvas, "Escape");
     expect(cancelled).toBe(1);
+  });
+
+  it("keeps selected-unit detail controls outside Canvas command targeting", () => {
+    const fixture = publicFixture();
+    const selections: unknown[] = [];
+    const commandCandidates: Array<readonly MapCommandTargetV6[]> = [];
+    const host = new CanvasBoardHostV6(document);
+    const container = sizedContainer(900, 600);
+    host.mount(
+      container,
+      callbacks({
+        onSelection: (selection) => selections.push(selection),
+        onCommandCandidates: (candidates) => commandCandidates.push(candidates),
+      }),
+    );
+    const unit = ownUnit(fixture.view);
+    host.update(model(fixture.view));
+    host.activate(unit.at);
+    expect(selections).toEqual([{ kind: "UNIT", unitId: unit.id }]);
+    expect(commandCandidates).toEqual([]);
+
+    host.update(
+      model(fixture.view, {
+        interaction: {
+          ...EMPTY_BOARD_RENDER_INTERACTION_V6,
+          selection: { kind: "UNIT", unitId: unit.id },
+        },
+      }),
+    );
+    expect(commandCandidates).toEqual([]);
+    expect(requireCanvas(container).getAttribute("aria-label")).toContain(
+      "square-grid battlefield",
+    );
+    host.destroy();
   });
 
   it("cycles visible unit/city/tile and Wall/tile stacks while fog remains content-free", () => {

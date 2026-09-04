@@ -159,6 +159,24 @@ describe("DOM UI architecture and responsive contract", () => {
     expect(css).toMatch(
       /@media \(max-width: 560px\)[\s\S]*\.v6-hud-actions\s*\{[^}]*grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\)/s,
     );
+    expect(css).toMatch(
+      /\.v6-unit-details\s*\{[^}]*flex-wrap:\s*wrap[^}]*max-width:\s*100%/s,
+    );
+    expect(css).toMatch(
+      /\.v6-unit-stats\s*\{[^}]*flex-wrap:\s*wrap[^}]*max-width:\s*100%/s,
+    );
+    expect(css).toMatch(
+      /\.v6-unit-ability-tags\s*\{[^}]*flex-wrap:\s*wrap[^}]*max-width:\s*100%/s,
+    );
+    expect(css).toMatch(
+      /\.v6-unit-ability-tag\s*\{[^}]*width:\s*8\.5rem[^}]*max-width:\s*100%[^}]*min-height:\s*44px/s,
+    );
+    expect(css).toMatch(
+      /\.v6-ability-detail\s*\{[^}]*max-height:\s*calc\(100dvh - 2rem\)[^}]*overflow-y:\s*auto/s,
+    );
+    expect(css).toMatch(
+      /@media \(max-width: 700px\)[\s\S]*\.v6-ability-detail-backdrop\s*\{[^}]*place-items:\s*end stretch[\s\S]*\.v6-ability-detail\s*\{[^}]*max-height:\s*92dvh/s,
+    );
   });
 
   it("lays out the icon-dominant ruleset-6 tree as five wide branching columns and one compact axis", () => {

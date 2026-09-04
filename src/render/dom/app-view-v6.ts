@@ -56,6 +56,12 @@ import {
   selectionIdentityPresentationV6,
   type SelectionIdentityPresentationV6,
 } from "./selection-identity-v6";
+import {
+  selectedUnitPresentationV6,
+  type SelectedUnitPresentationV6,
+  type SpecialUnitAbilityIdV6,
+  type UnitAbilityDetailV6,
+} from "./unit-presentation-v6";
 
 const BOARD_SIZES = [11, 14, 16, 20, 25] as const;
 const COLORS: readonly PlayerColorV6[] = ["CORAL", "TEAL", "GOLD", "VIOLET"];
@@ -129,6 +135,12 @@ type BoardPresentationQueueEntryV6 =
       readonly presentation: CombatPresentationV6;
     };
 
+interface SelectedAbilityDetailV6 {
+  readonly unitId: number;
+  readonly ability: SpecialUnitAbilityIdV6;
+  readonly commandIndex: number;
+}
+
 /**
  * Ruleset-6-only DOM composition. Gameplay data is limited to controller
  * snapshots and exact public commands; this layer never reconstructs legality.
@@ -152,6 +164,7 @@ export class Ruleset6DomAppView {
   #error: string | null = null;
   #screen: Ruleset6Screen = "MATCH";
   #selectedTechnology: TechnologyId | null = null;
+  #selectedAbility: SelectedAbilityDetailV6 | null = null;
   #pendingFocusSelector: string | null = null;
   #mandatoryChoiceKey: string | null = null;
   #mandatoryReturnFocusId: string | null = null;
@@ -227,6 +240,15 @@ export class Ruleset6DomAppView {
       ) {
         event.preventDefault();
         event.stopPropagation();
+      }
+      return;
+    }
+    if (this.#selectedAbility !== null) {
+      if (event.key === "Escape") {
+        this.#closeAbilityDetail();
+        event.preventDefault();
+      } else if (event.key === "Tab") {
+        this.#trapAbilityDetailFocus(event);
       }
       return;
     }
@@ -533,6 +555,7 @@ export class Ruleset6DomAppView {
     const humanCanAct =
       canHumanAct(this.#snapshot) && activePresentation === null;
     const mandatoryChoicePending = view.pendingChoices.length > 0;
+    const abilityDetail = this.#selectedAbilityPresentation(view);
     const ownCities = view.cities.filter(
       (city) => city.ownerId === view.viewer.id,
     );
@@ -682,6 +705,12 @@ export class Ruleset6DomAppView {
       map.inert = true;
       main.dataset.inputBlocked = "mandatory-choice";
       main.append(this.#mandatoryChoiceDialog(view));
+    } else if (abilityDetail !== null) {
+      hud.inert = true;
+      map.inert = true;
+      dock.inert = true;
+      main.dataset.inputBlocked = "ability-detail";
+      main.append(this.#abilityDetailDialog(abilityDetail));
     }
     return main;
   }
@@ -696,6 +725,7 @@ export class Ruleset6DomAppView {
     this.#presentationQueue = [];
     this.#screen = "TECH";
     this.#selectedTechnology = null;
+    this.#selectedAbility = null;
     this.#pendingFocusSelector = '[data-focus-id="tech-back"]';
     this.#render();
   }
@@ -1085,6 +1115,10 @@ export class Ruleset6DomAppView {
     this.#boardHost.mount(container, {
       onSelection: (selection) => {
         if (this.#hasMandatoryChoice()) return;
+        if (this.#selectedAbility !== null) {
+          this.#selectedAbility = null;
+          this.#restoreBoardFocus = true;
+        }
         this.#selection = selection;
         this.#targetMode = null;
         this.#commandChoices = [];
@@ -1092,6 +1126,10 @@ export class Ruleset6DomAppView {
       },
       onInspect: (selection) => {
         if (this.#hasMandatoryChoice()) return;
+        if (this.#selectedAbility !== null) {
+          this.#selectedAbility = null;
+          this.#restoreBoardFocus = true;
+        }
         this.#selection = selection;
         this.#notice = describeSelection(view, selection);
         this.#render();
@@ -1159,7 +1197,8 @@ export class Ruleset6DomAppView {
       interactive:
         canHumanAct(this.#snapshot) &&
         activePresentation === null &&
-        view.pendingChoices.length === 0,
+        view.pendingChoices.length === 0 &&
+        this.#selectedAbility === null,
       motion: this.#prefersReducedMotion ? "REDUCED" : "FULL",
       movementPresentation,
       combatPresentation,
@@ -1183,6 +1222,10 @@ export class Ruleset6DomAppView {
         (candidate) => candidate.id === selection.cityId,
       );
       if (city !== undefined) panel.append(this.#cityPopulationLayer(city));
+    }
+    if (selection?.kind === "UNIT") {
+      const unit = selectedUnitPresentationV6(view, selection.unitId);
+      if (unit !== null) panel.append(this.#selectedUnitDetails(unit));
     }
     const selected = selectedCommands(
       view,
@@ -1234,6 +1277,159 @@ export class Ruleset6DomAppView {
     }
     identity.append(artwork, copy);
     return identity;
+  }
+
+  #selectedUnitDetails(presentation: SelectedUnitPresentationV6): HTMLElement {
+    const details = el(this.#document, "section", "v6-unit-details");
+    details.dataset.unitDetails = String(presentation.unitId);
+    details.setAttribute(
+      "aria-label",
+      `${presentation.label} statistics${presentation.abilities.length === 0 ? "" : " and special abilities"}`,
+    );
+
+    const stats = el(this.#document, "dl", "v6-unit-stats");
+    for (const stat of presentation.stats) {
+      const item = el(this.#document, "div", "v6-unit-stat");
+      item.dataset.unitStat = stat.id;
+      item.append(
+        text(this.#document, "dt", stat.label),
+        text(this.#document, "dd", stat.value),
+      );
+      stats.append(item);
+    }
+    details.append(stats);
+
+    if (presentation.abilities.length > 0) {
+      const abilities = el(this.#document, "div", "v6-unit-ability-tags");
+      abilities.setAttribute("aria-label", "Special abilities");
+      for (const ability of presentation.abilities) {
+        const tag = button(this.#document, ability.name, "v6-unit-ability-tag");
+        tag.dataset.ability = ability.id;
+        tag.dataset.focusId = abilityFocusId(presentation.unitId, ability.id);
+        tag.setAttribute("aria-haspopup", "dialog");
+        tag.ariaLabel = `${ability.name}. Open ability details.`;
+        tag.onclick = () =>
+          this.#openAbilityDetail(presentation.unitId, ability.id);
+        abilities.append(tag);
+      }
+      details.append(abilities);
+    }
+    return details;
+  }
+
+  #openAbilityDetail(unitId: number, ability: SpecialUnitAbilityIdV6): void {
+    const view = this.#snapshot.view;
+    if (
+      view === null ||
+      this.#screen !== "MATCH" ||
+      this.#hasMandatoryChoice() ||
+      this.#presentationQueue.length > 0
+    ) {
+      return;
+    }
+    const presentation = selectedUnitPresentationV6(view, unitId);
+    if (!presentation?.abilities.some((candidate) => candidate.id === ability))
+      return;
+    this.#selectedAbility = {
+      unitId,
+      ability,
+      commandIndex: view.commandIndex,
+    };
+    this.#targetMode = null;
+    this.#commandChoices = [];
+    this.#pendingFocusSelector = "[data-ability-detail]";
+    this.#render();
+  }
+
+  #abilityDetailDialog(ability: UnitAbilityDetailV6): HTMLElement {
+    const backdrop = el(this.#document, "div", "v6-ability-detail-backdrop");
+    backdrop.dataset.abilityDetailOverlay = "true";
+    backdrop.onclick = (event) => {
+      if (event.target === backdrop) this.#closeAbilityDetail();
+    };
+    const detail = el(this.#document, "section", "v6-ability-detail");
+    detail.dataset.abilityDetail = ability.id;
+    detail.dataset.focusId = "ability-detail";
+    detail.tabIndex = -1;
+    detail.setAttribute("role", "dialog");
+    detail.setAttribute("aria-modal", "true");
+    detail.setAttribute("aria-labelledby", "v6-ability-detail-heading");
+    detail.setAttribute("aria-describedby", "v6-ability-detail-description");
+    const close = button(
+      this.#document,
+      "Close",
+      "secondary-action v6-ability-detail-close",
+    );
+    close.dataset.action = "close-ability-detail";
+    close.onclick = () => this.#closeAbilityDetail();
+    const heading = text(
+      this.#document,
+      "h2",
+      ability.name,
+      "v6-ability-detail-heading",
+    );
+    heading.id = "v6-ability-detail-heading";
+    const description = text(
+      this.#document,
+      "p",
+      ability.description,
+      "v6-ability-detail-description",
+    );
+    description.id = "v6-ability-detail-description";
+    detail.append(close, heading, description);
+    backdrop.append(detail);
+    return backdrop;
+  }
+
+  #closeAbilityDetail(): void {
+    const selected = this.#selectedAbility;
+    this.#selectedAbility = null;
+    if (selected !== null) {
+      this.#pendingFocusSelector = `[data-focus-id="${cssEscape(abilityFocusId(selected.unitId, selected.ability))}"]`;
+    }
+    this.#render();
+  }
+
+  #trapAbilityDetailFocus(event: KeyboardEvent): void {
+    const detail = this.#root.querySelector<HTMLElement>(
+      "[data-ability-detail]",
+    );
+    if (detail === null) return;
+    const focusable = [
+      ...detail.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
+      ),
+    ];
+    const first = focusable[0];
+    const last = focusable.at(-1);
+    if (first === undefined || last === undefined) {
+      detail.focus({ preventScroll: true });
+      event.preventDefault();
+      return;
+    }
+    if (
+      (event.shiftKey &&
+        (this.#document.activeElement === first ||
+          this.#document.activeElement === detail ||
+          !detail.contains(this.#document.activeElement))) ||
+      (!event.shiftKey &&
+        (this.#document.activeElement === last ||
+          this.#document.activeElement === detail ||
+          !detail.contains(this.#document.activeElement)))
+    ) {
+      (event.shiftKey ? last : first).focus();
+      event.preventDefault();
+    }
+  }
+
+  #selectedAbilityPresentation(view: PlayerViewV6): UnitAbilityDetailV6 | null {
+    const selected = this.#selectedAbility;
+    if (selected === null) return null;
+    return (
+      selectedUnitPresentationV6(view, selected.unitId)?.abilities.find(
+        (ability) => ability.id === selected.ability,
+      ) ?? null
+    );
   }
 
   #cityPopulationLayer(city: PlayerViewV6["cities"][number]): HTMLElement {
@@ -1785,6 +1981,7 @@ export class Ruleset6DomAppView {
     if (view.pendingChoices.length > 0) {
       this.#screen = "MATCH";
       this.#selectedTechnology = null;
+      this.#selectedAbility = null;
       this.#selection = null;
       this.#targetMode = null;
       this.#commandChoices = [];
@@ -1793,8 +1990,28 @@ export class Ruleset6DomAppView {
     if (
       this.#selection !== null &&
       selectionCoordV6(view, this.#selection) === null
-    )
+    ) {
       this.#selection = null;
+      this.#selectedAbility = null;
+    }
+    if (this.#selectedAbility !== null) {
+      const unit = selectedUnitPresentationV6(
+        view,
+        this.#selectedAbility.unitId,
+      );
+      const valid =
+        view.commandIndex === this.#selectedAbility.commandIndex &&
+        this.#selection?.kind === "UNIT" &&
+        this.#selection.unitId === this.#selectedAbility.unitId &&
+        unit?.abilities.some(
+          (ability) => ability.id === this.#selectedAbility?.ability,
+        ) === true;
+      if (!valid) {
+        this.#selectedAbility = null;
+        this.#pendingFocusSelector = null;
+        this.#restoreBoardFocus = true;
+      }
+    }
     if (
       this.#commandChoices.some(
         (choice) => !isStillOffered(this.#snapshot, choice.command),
@@ -1817,7 +2034,11 @@ export class Ruleset6DomAppView {
       : null;
     const nextKey = nextChoice === null ? null : canonicalJson(nextChoice);
     if (nextKey !== null && this.#mandatoryChoiceKey === null) {
-      this.#mandatoryReturnFocusId = previousFocusId ?? null;
+      this.#mandatoryReturnFocusId =
+        previousFocusId === "ability-detail" ||
+        previousFocusId?.startsWith("ability-")
+          ? null
+          : (previousFocusId ?? null);
       this.#pendingFocusSelector =
         "[data-mandatory-choice-action]:not([disabled])";
     } else if (
@@ -1846,6 +2067,7 @@ export class Ruleset6DomAppView {
     this.#error = null;
     this.#screen = "MATCH";
     this.#selectedTechnology = null;
+    this.#selectedAbility = null;
     this.#pendingFocusSelector = null;
     this.#presentationQueue = [];
   }
@@ -2518,6 +2740,13 @@ function coordLabel(
   at: { readonly x: number; readonly y: number } | undefined,
 ): string {
   return at === undefined ? "unknown" : `${at.x + 1},${at.y + 1}`;
+}
+
+function abilityFocusId(
+  unitId: number,
+  ability: SpecialUnitAbilityIdV6,
+): string {
+  return `ability-${unitId}-${ability.toLowerCase()}`;
 }
 
 function title(value: string): string {

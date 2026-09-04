@@ -198,7 +198,7 @@ try {
     visualReview: {
       status: "ACCEPTED",
       notes:
-        "Every bounded contextual, reward, city-training, and Technology capture was inspected individually at native output size and in its nearest-neighbor 2x companion. Contextual rasters, including faction-correct TRAIN world sprites, use the exact shared 112 x 130 CSS-pixel transparent viewport with contained aspect ratio at desktop and true 390x844 DPR2 mobile; code-native fallbacks retain the same framed footprint. Original and Candy Animals are visible on explored Forest from launch while Hunting remains unresearched and Hunt Game unavailable; hidden Animals remain redacted. Exact world-unit, faction/level city, and public Fruit selection identities remain compact and readable above their isolated actions with no coordinate text. Original and Candy labels/symbols remain distinct; the map stays primary; full Technology cards/details and blocking rewards fit without clipping or horizontal overflow. Offscreen square-cell targets are brought into the unobscured Canvas by bounded production pointer drags, with before/after camera evidence recorded for both factions. Direct selected-tile actions accept one boundary without a second map activation. No suspected visual failure remained after enlargement review.",
+        "Every bounded contextual, ability-detail, reward, city-training, and Technology capture was inspected individually at native output size and in its nearest-neighbor 2x companion. Contextual rasters, including faction-correct TRAIN world sprites, use the exact shared 112 x 130 CSS-pixel transparent viewport with contained aspect ratio at desktop and true 390x844 DPR2 mobile; code-native fallbacks retain the same framed footprint. Original and Candy Animals are visible on explored Forest from launch while Hunting remains unresearched and Hunt Game unavailable; hidden Animals remain redacted. Exact world-unit, faction/level city, and public Fruit selection identities remain compact and readable above their isolated actions with no coordinate text. The Candy Warrior's Candify card is readable and unclipped at desktop and mobile, remains view-only, blocks outside input while open, and restores the selected-unit dock after closing without advancing a command boundary. Original and Candy labels/symbols remain distinct; the map stays primary; full Technology cards/details and blocking rewards fit without clipping or horizontal overflow. Offscreen square-cell targets are brought into the unobscured Canvas by bounded production pointer drags, with before/after camera evidence recorded for both factions. Direct selected-tile actions accept one boundary without a second map activation. No suspected visual failure remained after enlargement review.",
     },
     flows,
     aiFirstLaunch,
@@ -495,6 +495,10 @@ async function runFactionFlow(
       `${config.faction} exact-unit contextual dock and map-only movement targets`,
     )),
   );
+  const abilityDetail =
+    config.faction === "CANDY"
+      ? await captureCandyAbilityDetail(connection, artifacts, restarted)
+      : null;
 
   await clickEncodedCommand(connection, wait.encoded);
   await waitForHumanBoundary(connection, restarted.commandIndex + 1);
@@ -835,6 +839,7 @@ async function runFactionFlow(
           tileDesktop: tileDesktopButtonLayout,
           tileMobile: tileMobileButtonLayout,
         },
+        abilityDetail,
       },
       technology: technology.acceptance,
       mandatoryChoice: {
@@ -864,6 +869,135 @@ async function runFactionFlow(
     mobile,
     screenshots: artifacts,
   };
+}
+
+async function captureCandyAbilityDetail(
+  connection: Connection,
+  artifacts: BrowserSmokeArtifactV6[],
+  boundary: BrowserSmokeBoundaryV6,
+): Promise<
+  NonNullable<BrowserSmokeIntegratedAcceptanceV6["contextual"]["abilityDetail"]>
+> {
+  const desktop = await captureCandyAbilityDetailAtViewport(
+    connection,
+    artifacts,
+    "desktop",
+  );
+  await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.mobile);
+  const mobile = await captureCandyAbilityDetailAtViewport(
+    connection,
+    artifacts,
+    "mobile",
+  );
+  await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.desktop);
+  const after = await readBoundary(connection);
+  return {
+    ability: "CANDIFY",
+    desktopOpen: desktop.open,
+    mobileOpen: mobile.open,
+    viewOnly: desktop.viewOnly && mobile.viewOnly,
+    outsideInputBlocked:
+      desktop.outsideInputBlocked && mobile.outsideInputBlocked,
+    desktopFits: desktop.fits,
+    mobileFits: mobile.fits,
+    closes: desktop.closes && mobile.closes,
+    restoresTagFocus: desktop.restoresTagFocus && mobile.restoresTagFocus,
+    restoresDock: desktop.restoresDock && mobile.restoresDock,
+    exactBoundaryPreserved:
+      after.commandIndex === boundary.commandIndex &&
+      after.stateHash === boundary.stateHash,
+  };
+}
+
+async function captureCandyAbilityDetailAtViewport(
+  connection: Connection,
+  artifacts: BrowserSmokeArtifactV6[],
+  viewport: "desktop" | "mobile",
+): Promise<{
+  readonly open: boolean;
+  readonly viewOnly: boolean;
+  readonly outsideInputBlocked: boolean;
+  readonly fits: boolean;
+  readonly closes: boolean;
+  readonly restoresTagFocus: boolean;
+  readonly restoresDock: boolean;
+}> {
+  const before = await readBoundary(connection);
+  await clickSelector(connection, '[data-ability="CANDIFY"]');
+  await waitForExpression(
+    connection,
+    `document.querySelector('[data-ability-detail="CANDIFY"]') !== null`,
+  );
+  const open = await evaluate<{
+    readonly open: boolean;
+    readonly viewOnly: boolean;
+    readonly outsideInputBlocked: boolean;
+    readonly fits: boolean;
+  }>(
+    connection,
+    `(() => {
+      const detail = document.querySelector('[data-ability-detail="CANDIFY"]');
+      const dock = document.querySelector('.v6-action-dock');
+      const map = document.querySelector('.v6-map-region');
+      const canvas = document.querySelector('.board-canvas-v6');
+      if (!(detail instanceof HTMLElement) || !(dock instanceof HTMLElement) || !(map instanceof HTMLElement) || !(canvas instanceof HTMLCanvasElement)) throw new Error('Candify detail surface is incomplete');
+      const rect = detail.getBoundingClientRect();
+      const text = detail.textContent ?? '';
+      return {
+        open: detail.getAttribute('role') === 'dialog' && detail.getAttribute('aria-modal') === 'true' && text.includes('Candify'),
+        viewOnly: detail.querySelector('[data-command]') === null && [...detail.querySelectorAll('button')].every((button) => button.getAttribute('data-action') === 'close-ability-detail'),
+        outsideInputBlocked: dock.inert && map.inert && canvas.dataset.interactive === 'false',
+        fits: rect.left >= 0 && rect.top >= 0 && rect.right <= innerWidth && rect.bottom <= innerHeight && document.documentElement.scrollWidth <= document.documentElement.clientWidth,
+      };
+    })()`,
+  );
+  if (!open.open || !open.viewOnly || !open.outsideInputBlocked || !open.fits) {
+    throw new Error(
+      `Candy ${viewport} ability detail failed: ${JSON.stringify(open)}`,
+    );
+  }
+  artifacts.push(
+    ...(await capturePair(
+      connection,
+      `candy-ability-detail-${viewport}`,
+      `CANDY Candify view-only ability detail on ${viewport}`,
+    )),
+  );
+  await clickSelector(connection, '[data-action="close-ability-detail"]');
+  await waitForExpression(
+    connection,
+    `document.querySelector('[data-ability-detail]') === null`,
+  );
+  const restored = await evaluate<{
+    readonly closes: boolean;
+    readonly restoresTagFocus: boolean;
+    readonly restoresDock: boolean;
+  }>(
+    connection,
+    `(() => {
+      const dock = document.querySelector('.v6-action-dock');
+      const tag = document.querySelector('[data-ability="CANDIFY"]');
+      const canvas = document.querySelector('.board-canvas-v6');
+      return {
+        closes: document.querySelector('[data-ability-detail]') === null,
+        restoresTagFocus: tag instanceof HTMLButtonElement && document.activeElement === tag,
+        restoresDock: dock instanceof HTMLElement && !dock.inert && canvas instanceof HTMLCanvasElement && canvas.dataset.interactive === 'true',
+      };
+    })()`,
+  );
+  const after = await readBoundary(connection);
+  if (
+    !restored.closes ||
+    !restored.restoresTagFocus ||
+    !restored.restoresDock ||
+    after.commandIndex !== before.commandIndex ||
+    after.stateHash !== before.stateHash
+  ) {
+    throw new Error(
+      `Candy ${viewport} ability detail did not close without a command: ${JSON.stringify({ restored, before, after })}`,
+    );
+  }
+  return { ...open, ...restored };
 }
 
 function assertLaunch(

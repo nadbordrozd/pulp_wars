@@ -118,6 +118,11 @@ export const RULESET6_SMOKE_EVIDENCE_SUBJECTS = [
   "high-contrast-mobile",
 ] as const;
 
+export const RULESET6_SMOKE_CANDY_EVIDENCE_SUBJECTS = [
+  "ability-detail-desktop",
+  "ability-detail-mobile",
+] as const;
+
 export interface BrowserSmokeRectV6 {
   readonly x: number;
   readonly y: number;
@@ -308,6 +313,19 @@ export interface BrowserSmokeIntegratedAcceptanceV6 {
       readonly tileDesktop: BrowserSmokeContextActionLayoutV6;
       readonly tileMobile: BrowserSmokeContextActionLayoutV6;
     };
+    readonly abilityDetail: {
+      readonly ability: "CANDIFY";
+      readonly desktopOpen: boolean;
+      readonly mobileOpen: boolean;
+      readonly viewOnly: boolean;
+      readonly outsideInputBlocked: boolean;
+      readonly desktopFits: boolean;
+      readonly mobileFits: boolean;
+      readonly closes: boolean;
+      readonly restoresTagFocus: boolean;
+      readonly restoresDock: boolean;
+      readonly exactBoundaryPreserved: boolean;
+    } | null;
   };
   readonly technology: {
     readonly mainResearchButtonCount: number;
@@ -509,14 +527,18 @@ export function flowContractIssuesV6(
       (issue) => `mobile: ${issue}`,
     ),
   );
-  if (flow.screenshots.length !== RULESET6_SMOKE_EVIDENCE_SUBJECTS.length * 2) {
+  const evidenceSubjects = [
+    ...RULESET6_SMOKE_EVIDENCE_SUBJECTS,
+    ...(flow.faction === "CANDY" ? RULESET6_SMOKE_CANDY_EVIDENCE_SUBJECTS : []),
+  ];
+  if (flow.screenshots.length !== evidenceSubjects.length * 2) {
     issues.push("flow does not include the bounded native/enlarged review set");
   }
   const screenshotPaths = new Set(flow.screenshots.map(({ path }) => path));
   if (screenshotPaths.size !== flow.screenshots.length) {
     issues.push("evidence paths are not unique");
   }
-  for (const subject of RULESET6_SMOKE_EVIDENCE_SUBJECTS) {
+  for (const subject of evidenceSubjects) {
     const pair = flow.screenshots.filter((artifact) =>
       artifact.path.includes(`-${subject}-`),
     );
@@ -575,6 +597,25 @@ export function flowContractIssuesV6(
     !contextual.exactAttackAccepted
   ) {
     issues.push("contextual unit/city/tile acceptance is incomplete");
+  }
+  const abilityDetail = contextual.abilityDetail;
+  if (
+    flow.faction === "CANDY"
+      ? abilityDetail === null ||
+        abilityDetail.ability !== "CANDIFY" ||
+        !abilityDetail.desktopOpen ||
+        !abilityDetail.mobileOpen ||
+        !abilityDetail.viewOnly ||
+        !abilityDetail.outsideInputBlocked ||
+        !abilityDetail.desktopFits ||
+        !abilityDetail.mobileFits ||
+        !abilityDetail.closes ||
+        !abilityDetail.restoresTagFocus ||
+        !abilityDetail.restoresDock ||
+        !abilityDetail.exactBoundaryPreserved
+      : abilityDetail !== null
+  ) {
+    issues.push("Candy ability-detail acceptance is incomplete");
   }
   for (const [name, identity, expectedKind] of [
     ["unit desktop", contextual.identity.unitDesktop, "UNIT"],

@@ -1956,6 +1956,72 @@ fieldset {
   line-height: 1.15;
 }
 
+.v6-unit-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.65rem;
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.v6-unit-stats {
+  display: flex;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+}
+
+.v6-unit-stat {
+  display: grid;
+  grid-template-columns: max-content max-content;
+  gap: 0.28rem;
+  align-items: baseline;
+  padding: 0.3rem 0.42rem;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: rgb(8 18 19 / 0.62);
+  font-size: 0.72rem;
+  line-height: 1.1;
+}
+
+.v6-unit-stat dt {
+  color: var(--muted);
+  font-weight: 750;
+}
+
+.v6-unit-stat dd {
+  margin: 0;
+  font-weight: 950;
+}
+
+.v6-unit-ability-tags {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.v6-unit-ability-tag {
+  flex: 0 1 8.5rem;
+  width: 8.5rem;
+  max-width: 100%;
+  min-height: 44px;
+  padding: 0.38rem 0.55rem;
+  border: 2px solid #7fcdb9;
+  border-radius: 999px;
+  color: var(--paper);
+  background: rgb(127 205 185 / 0.13);
+  font-size: 0.75rem;
+  font-weight: 850;
+  overflow-wrap: anywhere;
+}
+
 .v6-city-population-progress {
   display: flex;
   flex-wrap: wrap;
@@ -2550,6 +2616,47 @@ fieldset {
   background: rgb(4 8 9 / 0.76);
 }
 
+.v6-ability-detail-backdrop {
+  position: fixed;
+  z-index: 70;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgb(4 8 9 / 0.76);
+}
+
+.v6-ability-detail {
+  position: relative;
+  display: grid;
+  gap: 0.65rem;
+  width: min(32rem, 100%);
+  max-height: calc(100dvh - 2rem);
+  padding: 1rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border: 3px solid var(--focus);
+  border-radius: 1rem;
+  background: var(--panel);
+  box-shadow: 0 1rem 3rem rgb(0 0 0 / 0.58);
+}
+
+.v6-ability-detail > h2,
+.v6-ability-detail > p {
+  margin: 0;
+}
+
+.v6-ability-detail-close {
+  justify-self: end;
+  min-width: 5rem;
+  min-height: 44px;
+}
+
+.v6-ability-detail-description {
+  color: var(--paper);
+  line-height: 1.5;
+}
+
 .v6-tech-detail {
   position: relative;
   display: grid;
@@ -2793,7 +2900,24 @@ fieldset {
     padding: 0;
   }
 
+  .v6-ability-detail-backdrop {
+    place-items: end stretch;
+    padding: 0;
+  }
+
   .v6-tech-detail {
+    width: 100%;
+    max-height: 92dvh;
+    padding: 0.8rem max(0.7rem, env(safe-area-inset-right))
+      max(0.8rem, env(safe-area-inset-bottom))
+      max(0.7rem, env(safe-area-inset-left));
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-radius: 1rem 1rem 0 0;
+  }
+
+  .v6-ability-detail {
     width: 100%;
     max-height: 92dvh;
     padding: 0.8rem max(0.7rem, env(safe-area-inset-right))

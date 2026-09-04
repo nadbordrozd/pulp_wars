@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  RULESET6_SMOKE_CANDY_EVIDENCE_SUBJECTS,
   RULESET6_SMOKE_EVIDENCE_SUBJECTS,
   RULESET6_SMOKE_TECH_IDS,
   RULESET6_SMOKE_VIEWPORTS,
@@ -261,20 +262,57 @@ describe("ruleset-6 browser smoke contract", () => {
       }),
     ).toContain("coordinate activation camera evidence is inconsistent");
   });
+
+  it("requires Candy's view-only Candify detail and its desktop/mobile evidence", () => {
+    const candy = validFlow("CANDY");
+    const abilityDetail = candy.acceptance.contextual.abilityDetail;
+    if (abilityDetail === null)
+      throw new Error("Missing Candy ability-detail fixture");
+    expect(flowContractIssuesV6(candy)).toEqual([]);
+    expect(
+      flowContractIssuesV6({
+        ...candy,
+        acceptance: {
+          ...candy.acceptance,
+          contextual: {
+            ...candy.acceptance.contextual,
+            abilityDetail: {
+              ...abilityDetail,
+              viewOnly: false,
+              restoresDock: false,
+            },
+          },
+        },
+        screenshots: candy.screenshots.filter(
+          ({ path }) => !path.includes("-ability-detail-mobile-"),
+        ),
+      }),
+    ).toEqual(
+      expect.arrayContaining([
+        "flow does not include the bounded native/enlarged review set",
+        "ability-detail-mobile is missing its native/enlarged evidence pair",
+        "Candy ability-detail acceptance is incomplete",
+      ]),
+    );
+  });
 });
 
-function validFlow(): BrowserSmokeFlowEvidenceV6 {
+function validFlow(
+  faction: "ORIGINAL" | "CANDY" = "ORIGINAL",
+): BrowserSmokeFlowEvidenceV6 {
+  const factionTreeId =
+    faction === "ORIGINAL" ? "ORIGINAL_BASELINE" : "CANDY_BASELINE_V1";
   return {
-    faction: "ORIGINAL",
-    factionTreeId: "ORIGINAL_BASELINE",
+    faction,
+    factionTreeId,
     seed: 42,
     launch: {
       phase: "ACTIVE",
       transitioning: false,
       commandIndex: 0,
       stateHash: "launch",
-      faction: "ORIGINAL",
-      factionTreeId: "ORIGINAL_BASELINE",
+      faction,
+      factionTreeId,
       seed: 42,
       activeIsHuman: true,
       offered: [],
@@ -338,6 +376,22 @@ function validFlow(): BrowserSmokeFlowEvidenceV6 {
           tileDesktop: contextActionLayout(1440, 1000, 1),
           tileMobile: contextActionLayout(390, 844, 2),
         },
+        abilityDetail:
+          faction === "CANDY"
+            ? {
+                ability: "CANDIFY",
+                desktopOpen: true,
+                mobileOpen: true,
+                viewOnly: true,
+                outsideInputBlocked: true,
+                desktopFits: true,
+                mobileFits: true,
+                closes: true,
+                restoresTagFocus: true,
+                restoresDock: true,
+                exactBoundaryPreserved: true,
+              }
+            : null,
       },
       technology: {
         mainResearchButtonCount: 0,
@@ -376,12 +430,15 @@ function validFlow(): BrowserSmokeFlowEvidenceV6 {
     },
     desktop: layout(1440, 1000, 1, false),
     mobile: layout(390, 844, 2, true),
-    screenshots: RULESET6_SMOKE_EVIDENCE_SUBJECTS.flatMap((subject) => {
+    screenshots: [
+      ...RULESET6_SMOKE_EVIDENCE_SUBJECTS,
+      ...(faction === "CANDY" ? RULESET6_SMOKE_CANDY_EVIDENCE_SUBJECTS : []),
+    ].flatMap((subject) => {
       const viewport = subject.endsWith("-desktop")
         ? RULESET6_SMOKE_VIEWPORTS.desktop
         : RULESET6_SMOKE_VIEWPORTS.mobile;
       return ([1, 2] as const).map((inspectionScale) => ({
-        path: `original-${subject}-${inspectionScale}.png`,
+        path: `${faction.toLowerCase()}-${subject}-${inspectionScale}.png`,
         bytes: 1,
         sha256: "a".repeat(64),
         width: viewport.width * viewport.dpr * inspectionScale,
@@ -392,7 +449,7 @@ function validFlow(): BrowserSmokeFlowEvidenceV6 {
           dpr: viewport.dpr,
         },
         inspectionScale,
-        subject: `ORIGINAL ${subject}`,
+        subject: `${faction} ${subject}`,
       }));
     }),
   };

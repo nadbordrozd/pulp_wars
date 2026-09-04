@@ -97,13 +97,15 @@ nearest-neighbor enlargement:
 - the exact 112 x 130 contextual-art viewport, contained raster padding,
   faction-correct Train world sprites, readable labels, and 176 px wrapping
   controls at desktop DPR1 and true mobile DPR2;
+- Candy Warrior Candify ability details at desktop and mobile, including
+  view-only modal input blocking and exact dock focus restoration;
 - mobile high contrast and desktop reduced motion for both factions;
 - melee contact/impact and reduced-motion response;
 - Original arrow and Candy gumball ranged flight/impact;
 - map renderer/host, compact unit scale, terrain, resources, buildings, Roads,
   contributor geometry, and both complete technology trees.
 
-The release corpus recursively verifies 11 evidence manifests and 106 hashed
+The release corpus recursively verifies 11 evidence manifests and 110 hashed
 artifacts. `art:validate` verifies accepted PixelLab source dimensions, alpha,
 hashes, explicit reuse aliases, quarantine history, and manifest completeness.
 No placeholder production asset or unregistered fallback remains reachable.
