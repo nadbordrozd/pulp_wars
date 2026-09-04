@@ -227,8 +227,11 @@ Each generated or captured city begins with its centered 3 x 3 Chebyshev
 footprint. A tile belongs to at most one city. Level-4 Expand permanently sets
 `expanded = true` and claims every on-board neutral tile in the centered 5 x 5
 footprint; tiles already assigned to any city are retained by that city.
-Consequently close cities can have a clipped contested footprint. Capture
-transfers every tile assigned to the captured city.
+Every tile successfully claimed by Expand is immediately added to the owner's
+persistent explored set. Already assigned, out-of-bounds, and out-of-footprint
+tiles are neither claimed nor revealed, and no other player's explored set
+changes. Consequently close cities can have a clipped contested footprint.
+Capture transfers every tile assigned to the captured city.
 
 Ruleset-6 Candify no longer grows unbounded chains. Its target must lie within
 the chosen city's current 3 x 3 footprint, or 5 x 5 when expanded. It may annex
@@ -659,10 +662,14 @@ reachedLevel, candidates }`; `CITY_REWARD_CHOSEN { playerId, cityId,
 reachedLevel, reward }`; `CITY_TERRITORY_EXPANDED { playerId, cityId, tiles }`
 with `(y,x)` tiles; `UNIT_REWARD_GRANTED { playerId, cityId, reachedLevel,
 unitId, role }`; `UNIT_HEALED { medicId, targetUnitId, amount, hpAfter }`; and
-`UNIT_PUSHED { sourceUnitId, targetUnitId, from, to }`. Candidate arrays use
-reward order. After each `CITY_LEVELED_UP`, emit its `CITY_REWARD_QUEUED` before
-the next reached level. Retained event payloads stay exact under their
-deliberately imported v5 sections with renamed v6 role/currency fields.
+`UNIT_PUSHED { sourceUnitId, targetUnitId, from, to }`. Expand emits
+`CITY_REWARD_CHOSEN`, then `CITY_TERRITORY_EXPANDED`, then a `TILES_REVEALED`
+containing only successfully claimed tiles that were previously unexplored;
+each coordinate array is sorted by `(y,x)`, and an empty reveal event is
+omitted. Candidate arrays use reward order. After each `CITY_LEVELED_UP`, emit
+its `CITY_REWARD_QUEUED` before the next reached level. Retained event payloads
+stay exact under their deliberately imported v5 sections with renamed v6
+role/currency fields.
 
 `TREASURE_CAPTURED` is exact
 `{ playerId, unitId, at, requestedReward, grantedReward, coinDelta,

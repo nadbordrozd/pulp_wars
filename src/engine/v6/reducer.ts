@@ -945,12 +945,34 @@ function applyCityRewardCommand(
         }),
       };
       claimed.sort(compareCoords);
+      const player = requirePlayer(state, actor);
+      const exploredKeys = new Set(player.explored.map(coordKey));
+      const revealed = claimed.filter((at) => !exploredKeys.has(coordKey(at)));
+      if (revealed.length > 0) {
+        players = players.map((candidate) =>
+          candidate.id === actor
+            ? {
+                ...candidate,
+                explored: [...candidate.explored, ...revealed].sort(
+                  compareCoords,
+                ),
+              }
+            : candidate,
+        );
+      }
       events.push({
         kind: "CITY_TERRITORY_EXPANDED",
         playerId: actor,
         cityId: city.id,
         tiles: claimed,
       });
+      if (revealed.length > 0) {
+        events.push({
+          kind: "TILES_REVEALED",
+          playerId: actor,
+          tiles: revealed,
+        });
+      }
     } else if (command.reward === "BOOM") {
       const allocationId = nextEntityId;
       nextEntityId += 1;

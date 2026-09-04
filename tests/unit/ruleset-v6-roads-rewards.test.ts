@@ -633,6 +633,10 @@ describe("ruleset-6 Roads, redevelopment, forest, and rewards", () => {
       if (reward === "EXPAND") {
         expect(ownCity(result.state).expanded).toBe(true);
         expect(result.events[1]?.kind).toBe("CITY_TERRITORY_EXPANDED");
+        expect(result.events.map((event) => event.kind)).toEqual([
+          "CITY_REWARD_CHOSEN",
+          "CITY_TERRITORY_EXPANDED",
+        ]);
         expect(
           result.state.board.tiles.find(
             (tile) => tile.at.x === city.at.x + 2 && tile.at.y === city.at.y,
@@ -662,10 +666,23 @@ describe("ruleset-6 Roads, redevelopment, forest, and rewards", () => {
     }
     const corner = { x: 0, y: 0 };
     const contested = { x: 2, y: 2 };
+    const rivalExplored =
+      other.ownerId === state.humanPlayerId
+        ? []
+        : state.players.find((player) => player.id === other.ownerId)?.explored;
+    const cornerExplored = state.board.tiles
+      .filter((tile) => Math.max(tile.at.x, tile.at.y) <= 1)
+      .map((tile) => tile.at)
+      .sort((left, right) => left.y - right.y || left.x - right.x);
     state = checked({
       ...state,
       cities: state.cities.map((candidate) =>
         candidate.id === city.id ? { ...candidate, at: corner } : candidate,
+      ),
+      players: state.players.map((player) =>
+        player.id === city.ownerId
+          ? { ...player, explored: cornerExplored }
+          : player,
       ),
       board: {
         ...state.board,
@@ -716,13 +733,246 @@ describe("ruleset-6 Roads, redevelopment, forest, and rewards", () => {
     if (expanded?.kind !== "CITY_TERRITORY_EXPANDED") {
       throw new Error("missing Expand event");
     }
-    expect(expanded.tiles).toHaveLength(4);
+    const expectedClaimed = [
+      { x: 2, y: 0 },
+      { x: 2, y: 1 },
+      { x: 0, y: 2 },
+      { x: 1, y: 2 },
+    ];
+    expect(expanded.tiles).toEqual(expectedClaimed);
+    expect(result.events).toContainEqual({
+      kind: "TILES_REVEALED",
+      playerId: city.ownerId,
+      tiles: expectedClaimed,
+    });
+    expect(ownPlayer(result.state).explored).toEqual(
+      [...cornerExplored, ...expectedClaimed].sort(
+        (left, right) => left.y - right.y || left.x - right.x,
+      ),
+    );
+    expect(ownPlayer(result.state).explored).not.toContainEqual(contested);
+    expect(
+      result.state.players.find((player) => player.id === other.ownerId)
+        ?.explored,
+    ).toEqual(rivalExplored);
     expect(tileAt(result.state, contested).territoryCityId).toBe(other.id);
     expect(
       result.state.board.tiles.filter(
         (tile) => tile.territoryCityId === city.id,
       ),
     ).toHaveLength(8);
+  });
+
+  it("explores exactly the hidden cells claimed by a production-reachable 5x5 Expand", () => {
+    let state = baseState();
+    const city = ownCity(state);
+    const rival = state.players.find((player) => player.id !== city.ownerId);
+    if (rival === undefined) throw new Error("missing rival player");
+    const innerFootprint = state.board.tiles
+      .filter(
+        (tile) =>
+          Math.max(
+            Math.abs(tile.at.x - city.at.x),
+            Math.abs(tile.at.y - city.at.y),
+          ) <= 1,
+      )
+      .map((tile) => tile.at)
+      .sort((left, right) => left.y - right.y || left.x - right.x);
+    const farmSites = state.board.tiles
+      .filter(
+        (tile) =>
+          tile.territoryCityId === city.id &&
+          tile.site === null &&
+          !same(tile.at, city.at),
+      )
+      .slice(0, 5)
+      .map((tile) => tile.at);
+    expect(farmSites).toHaveLength(5);
+    const [firstFarm, secondFarm, thirdFarm, fourthFarm, fifthFarm] = farmSites;
+    if (
+      firstFarm === undefined ||
+      secondFarm === undefined ||
+      thirdFarm === undefined ||
+      fourthFarm === undefined ||
+      fifthFarm === undefined
+    ) {
+      throw new Error("missing farm growth fixture");
+    }
+    state = checked({
+      ...state,
+      players: state.players.map((player) =>
+        player.id === city.ownerId
+          ? { ...player, explored: innerFootprint }
+          : player,
+      ),
+      board: {
+        ...state.board,
+        tiles: state.board.tiles.map((tile) =>
+          farmSites.some((at) => same(at, tile.at))
+            ? {
+                ...tile,
+                terrain: "GRASS" as const,
+                resource: "FERTILE_GROUND" as const,
+                improvement: null,
+                road: false,
+                site: null,
+                territoryCityId: city.id,
+              }
+            : tile,
+        ),
+      },
+    });
+
+    const acceptedCommands: Parameters<typeof applyCommandV6>[2][] = [];
+    const acceptedStates: GameStateV6[] = [];
+    const apply = (
+      command: Parameters<typeof applyCommandV6>[2],
+    ): ReturnType<typeof applyCommandV6> => {
+      acceptedCommands.push(command);
+      const result = applyCommandV6(state, state.humanPlayerId, command);
+      expect(result.accepted).toBe(true);
+      if (result.accepted) {
+        state = result.state;
+        acceptedStates.push(state);
+      }
+      return result;
+    };
+    apply({ kind: "BUILD_FARM", at: firstFarm });
+    apply({
+      kind: "CHOOSE_CITY_REWARD",
+      cityId: city.id,
+      reachedLevel: 2,
+      reward: "STOCKPILE",
+    });
+    apply({ kind: "BUILD_FARM", at: secondFarm });
+    apply({ kind: "BUILD_FARM", at: thirdFarm });
+    apply({
+      kind: "CHOOSE_CITY_REWARD",
+      cityId: city.id,
+      reachedLevel: 3,
+      reward: "WALLS",
+    });
+    apply({ kind: "BUILD_FARM", at: fourthFarm });
+    const levelFour = apply({ kind: "BUILD_FARM", at: fifthFarm });
+    expect(levelFour.accepted && ownCity(levelFour.state).level).toBe(4);
+    expect(state.pendingChoices[0]).toEqual({
+      kind: "CITY_REWARD",
+      cityId: city.id,
+      reachedLevel: 4,
+      candidates: ["EXPAND", "BOOM"],
+    });
+
+    const beforeExpand = state;
+    const priorExplored = ownPlayer(beforeExpand).explored;
+    const rivalExplored = rival.explored;
+    const claimable = beforeExpand.board.tiles
+      .filter(
+        (tile) =>
+          tile.territoryCityId === null &&
+          Math.max(
+            Math.abs(tile.at.x - city.at.x),
+            Math.abs(tile.at.y - city.at.y),
+          ) <= 2,
+      )
+      .map((tile) => tile.at)
+      .sort((left, right) => left.y - right.y || left.x - right.x);
+    const expectedRevealed = claimable.filter(
+      (at) => !priorExplored.some((known) => same(known, at)),
+    );
+    expect(expectedRevealed.length).toBeGreaterThan(0);
+    const firstRevealed = expectedRevealed[0];
+    if (firstRevealed === undefined) throw new Error("missing revealed tile");
+    const hiddenOutside = beforeExpand.board.tiles.find(
+      (tile) =>
+        Math.max(
+          Math.abs(tile.at.x - city.at.x),
+          Math.abs(tile.at.y - city.at.y),
+        ) > 2 &&
+        !priorExplored.some((known) => same(known, tile.at)) &&
+        !rivalExplored.some((known) => same(known, tile.at)),
+    );
+    if (hiddenOutside === undefined)
+      throw new Error("missing outside fog tile");
+
+    const expansionCommand = {
+      kind: "CHOOSE_CITY_REWARD",
+      cityId: city.id,
+      reachedLevel: 4,
+      reward: "EXPAND",
+    } as const;
+    const expanded = apply(expansionCommand);
+    if (!expanded.accepted) return;
+    expect(expanded.events).toEqual([
+      {
+        kind: "CITY_REWARD_CHOSEN",
+        playerId: city.ownerId,
+        cityId: city.id,
+        reachedLevel: 4,
+        reward: "EXPAND",
+      },
+      {
+        kind: "CITY_TERRITORY_EXPANDED",
+        playerId: city.ownerId,
+        cityId: city.id,
+        tiles: claimable,
+      },
+      {
+        kind: "TILES_REVEALED",
+        playerId: city.ownerId,
+        tiles: expectedRevealed,
+      },
+    ]);
+    expect(expanded.events.every((event) => parseEventV6(event).ok)).toBe(true);
+    expect(ownPlayer(expanded.state).explored).toEqual(
+      [...priorExplored, ...expectedRevealed].sort(
+        (left, right) => left.y - right.y || left.x - right.x,
+      ),
+    );
+    expect(
+      expanded.state.players.find((player) => player.id === rival.id)?.explored,
+    ).toEqual(rivalExplored);
+    expect(
+      expanded.state.board.tiles
+        .filter((tile) => claimable.some((at) => same(at, tile.at)))
+        .every((tile) => tile.territoryCityId === city.id),
+    ).toBe(true);
+    expect(expanded.state.pendingChoices).toEqual([]);
+    const ownerView = viewForV6(expanded.state, city.ownerId);
+    expect(
+      expectedRevealed.every(
+        (at) =>
+          ownerView.board.tiles.find((tile) => same(tile.at, at))?.explored ===
+          true,
+      ),
+    ).toBe(true);
+    expect(
+      ownerView.board.tiles.find((tile) => same(tile.at, hiddenOutside.at)),
+    ).toEqual({ at: hiddenOutside.at, explored: false });
+    expect(
+      viewForV6(expanded.state, rival.id).board.tiles.find((tile) =>
+        same(tile.at, firstRevealed),
+      ),
+    ).toEqual({ at: firstRevealed, explored: false });
+
+    const repeated = applyCommandV6(
+      beforeExpand,
+      beforeExpand.humanPlayerId,
+      expansionCommand,
+    );
+    expect(repeated).toEqual(expanded);
+    expect(canonicalHash(repeated.state)).toBe(canonicalHash(expanded.state));
+
+    const replay = acceptedCommands.reduce((current, command, index) => {
+      const acceptedState = acceptedStates[index];
+      if (acceptedState === undefined)
+        throw new Error("missing accepted state");
+      return appendReplayCommandV6(current, command, acceptedState);
+    }, createReplayV6(setup));
+    const save = createSaveEnvelopeV6(
+      { state: expanded.state, replay },
+      "2026-09-04T12:00:00.000Z",
+    );
+    expect(parseSaveV6(JSON.stringify(save))).toEqual({ kind: "VALID", save });
   });
 
   it("Boom inserts cascade rewards ahead of the tail and repeated level-5+ choices resolve once", () => {
