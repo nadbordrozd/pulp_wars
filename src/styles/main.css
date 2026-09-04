@@ -2256,6 +2256,165 @@ fieldset {
   background: rgb(240 185 63 / 0.12);
 }
 
+.v6-leaderboard-backdrop {
+  position: fixed;
+  z-index: 80;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: max(0.75rem, env(safe-area-inset-top))
+    max(0.75rem, env(safe-area-inset-right))
+    max(0.75rem, env(safe-area-inset-bottom))
+    max(0.75rem, env(safe-area-inset-left));
+  overflow: hidden;
+  background: rgb(4 10 13 / 0.78);
+}
+
+.v6-leaderboard-dialog {
+  display: grid;
+  gap: 1rem;
+  width: min(100%, 52rem);
+  max-height: calc(100dvh - 1.5rem);
+  padding: clamp(0.8rem, 2.5vw, 1.25rem);
+  overflow-x: hidden;
+  overflow-y: auto;
+  border: 3px solid var(--focus);
+  border-radius: 1.1rem;
+  background: rgb(23 23 34 / 0.99);
+  box-shadow: 0 1rem 3.5rem rgb(0 0 0 / 0.6);
+}
+
+.v6-leaderboard-header {
+  display: flex;
+  gap: 0.75rem;
+  align-items: start;
+  justify-content: space-between;
+}
+
+.v6-leaderboard-heading-copy {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.v6-leaderboard-heading {
+  font-size: clamp(2rem, 7vw, 4rem);
+}
+
+.v6-leaderboard-summary,
+.v6-leaderboard-table caption {
+  color: var(--muted);
+}
+
+.v6-leaderboard-close {
+  flex: 0 0 auto;
+  min-width: 5rem;
+}
+
+.v6-leaderboard-table {
+  width: 100%;
+  min-width: 0;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.v6-leaderboard-table caption {
+  padding-bottom: 0.45rem;
+  font-size: 0.82rem;
+  text-align: left;
+}
+
+.v6-leaderboard-table th,
+.v6-leaderboard-table td {
+  min-width: 0;
+  padding: clamp(0.38rem, 1.5vw, 0.7rem);
+  border-bottom: 1px solid var(--line);
+  overflow-wrap: anywhere;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.v6-leaderboard-table thead th {
+  color: var(--gold);
+  font-size: 0.76rem;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+.v6-leaderboard-table th:first-child {
+  width: 28%;
+}
+
+.v6-leaderboard-table th:nth-child(2) {
+  width: 18%;
+}
+
+.v6-leaderboard-table th:nth-child(3) {
+  width: 22%;
+}
+
+.v6-leaderboard-table th:nth-child(4),
+.v6-leaderboard-table th:nth-child(5) {
+  width: 16%;
+}
+
+.v6-leaderboard-table .numeric {
+  font-size: 1.1rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 900;
+  text-align: center;
+}
+
+.v6-leaderboard-player-identity {
+  display: grid;
+  grid-template-columns: 0.75rem minmax(0, 1fr);
+  gap: 0.15rem 0.4rem;
+  align-items: center;
+}
+
+.v6-leaderboard-swatch {
+  grid-row: 1 / span 2;
+  width: 0.75rem;
+  height: 0.75rem;
+  border: 1px solid var(--paper);
+  border-radius: 50%;
+  background: var(--line);
+}
+
+.v6-leaderboard-swatch[data-player-color="CORAL"] {
+  background: var(--accent);
+}
+
+.v6-leaderboard-swatch[data-player-color="TEAL"] {
+  background: var(--teal);
+}
+
+.v6-leaderboard-swatch[data-player-color="GOLD"] {
+  background: var(--gold);
+}
+
+.v6-leaderboard-swatch[data-player-color="VIOLET"] {
+  background: var(--violet);
+}
+
+.v6-leaderboard-player-name {
+  line-height: 1.1;
+}
+
+.v6-leaderboard-status {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.v6-leaderboard-status.eliminated {
+  color: #ffb5b0;
+}
+
+.v6-leaderboard-table tr[data-player-status="eliminated"] {
+  background: rgb(255 107 104 / 0.07);
+}
+
 .v6-mandatory-option.is-unavailable {
   border-color: var(--line);
   background: rgb(255 255 255 / 0.04);
@@ -2814,6 +2973,40 @@ fieldset {
   .v6-command-button {
     padding: 0.45rem;
     font-size: 0.72rem;
+  }
+
+  .v6-leaderboard-backdrop {
+    place-items: end stretch;
+    padding: max(0.45rem, env(safe-area-inset-top)) 0 0;
+  }
+
+  .v6-leaderboard-dialog {
+    width: 100%;
+    max-height: calc(100dvh - max(0.45rem, env(safe-area-inset-top)));
+    padding: 0.8rem max(0.45rem, env(safe-area-inset-right))
+      max(0.8rem, env(safe-area-inset-bottom))
+      max(0.45rem, env(safe-area-inset-left));
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-radius: 1rem 1rem 0 0;
+  }
+
+  .v6-leaderboard-table {
+    font-size: 0.72rem;
+  }
+
+  .v6-leaderboard-table th,
+  .v6-leaderboard-table td {
+    padding: 0.38rem 0.2rem;
+  }
+
+  .v6-leaderboard-table thead th {
+    font-size: 0.62rem;
+  }
+
+  .v6-leaderboard-table .numeric {
+    font-size: 0.9rem;
   }
 
   .v6-mandatory-backdrop {

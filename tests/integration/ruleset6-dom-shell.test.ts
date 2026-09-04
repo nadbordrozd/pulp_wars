@@ -1448,6 +1448,11 @@ describe("playable ruleset-6 DOM shell", () => {
     });
     const key = host.model?.movementPresentation?.key;
     if (key === undefined) throw new Error("Missing movement key");
+    click('[data-action="open-leaderboard"]');
+    expect(document.querySelector("[data-leaderboard]")).not.toBeNull();
+    expect(host.model?.movementPresentation?.key).toBe(key);
+    click('[data-action="close-leaderboard"]');
+    expect(host.model?.movementPresentation?.key).toBe(key);
     fake.setSnapshot(fake.snapshot());
     expect(host.model?.movementPresentation?.key).toBe(key);
     host.callbacks?.onMovementPresentationComplete?.("stale-key");
@@ -2330,6 +2335,209 @@ describe("playable ruleset-6 DOM shell", () => {
     app.destroy();
   });
 
+  it("opens a semantic view-only leaderboard and restores selection and focus", () => {
+    const view = publicView("ORIGINAL");
+    const fake = new FakeController(view, queryPlayerCommandsV6(view));
+    const host = new FakeBoardHostV6();
+    const app = new Ruleset6DomAppView(document, requireElement("#app"), fake, {
+      boardHost: host,
+    });
+    const unit = view.units.find(
+      (candidate) => candidate.ownerId === view.viewer.id,
+    );
+    if (unit === undefined) throw new Error("Missing owned unit");
+    host.callbacks?.onSelection({ kind: "UNIT", unitId: unit.id });
+    const before = fake.snapshot();
+    const open = requireElement('[data-action="open-leaderboard"]');
+    open.focus();
+    open.click();
+
+    const dialog = requireElement("[data-leaderboard]");
+    expect(dialog.getAttribute("role")).toBe("dialog");
+    expect(dialog.getAttribute("aria-modal")).toBe("true");
+    expect(document.activeElement).toBe(
+      document.querySelector('[data-action="close-leaderboard"]'),
+    );
+    expect(
+      [...dialog.querySelectorAll<HTMLTableCellElement>("thead th")].map(
+        (cell) => [cell.textContent, cell.scope],
+      ),
+    ).toEqual([
+      ["Player", "col"],
+      ["Faction", "col"],
+      ["Controller", "col"],
+      ["Cities", "col"],
+      ["Units", "col"],
+    ]);
+    expect(dialog.querySelector("caption")?.textContent).toBe(
+      "Players in turn order",
+    );
+    const rows = [
+      ...dialog.querySelectorAll<HTMLTableRowElement>(
+        "tbody [data-leaderboard-player]",
+      ),
+    ];
+    expect(rows.map((row) => Number(row.dataset.leaderboardPlayer))).toEqual(
+      view.leaderboard.map((entry) => entry.playerId),
+    );
+    expect(rows).toHaveLength(view.players.length);
+    for (const [index, entry] of view.leaderboard.entries()) {
+      const row = rows[index];
+      if (row === undefined) throw new Error("Missing leaderboard row");
+      expect(row.querySelector("th")?.getAttribute("scope")).toBe("row");
+      expect(row.textContent).toContain(`Player ${entry.seat + 1}`);
+      expect(row.textContent).toContain(titleForTest(entry.faction));
+      expect(row.textContent).toContain(String(entry.cityCount));
+      expect(row.textContent).toContain(String(entry.livingUnitCount));
+      expect(row.textContent).toContain(entry.isViewer ? "You" : "Normal AI");
+    }
+    expect(dialog.querySelectorAll("[data-command]")).toHaveLength(0);
+    expect(dialog.textContent).not.toContain("Coins");
+    expect(dialog.textContent).not.toContain("Gathering");
+    expect(fake.snapshot()).toBe(before);
+    expect(fake.dispatch).not.toHaveBeenCalled();
+    expect(host.model?.interaction.selection).toEqual({
+      kind: "UNIT",
+      unitId: unit.id,
+    });
+
+    const close = requireElement('[data-action="close-leaderboard"]');
+    close.focus();
+    const tab = new KeyboardEvent("keydown", {
+      key: "Tab",
+      bubbles: true,
+      cancelable: true,
+    });
+    document.dispatchEvent(tab);
+    expect(tab.defaultPrevented).toBe(true);
+    expect(document.activeElement).toBe(close);
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "Tab",
+        shiftKey: true,
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    expect(document.activeElement).toBe(close);
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "Escape",
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    expect(document.querySelector("[data-leaderboard]")).toBeNull();
+    expect(document.activeElement).toBe(
+      document.querySelector('[data-action="open-leaderboard"]'),
+    );
+    expect(host.model?.interaction.selection).toEqual({
+      kind: "UNIT",
+      unitId: unit.id,
+    });
+    expect(fake.snapshot()).toBe(before);
+    app.destroy();
+  });
+
+  it("keeps leaderboard access during AI work and yields to mandatory choices", () => {
+    const base = publicView("CANDY");
+    const aiSeat = base.turnOrder.findIndex(
+      (playerId) => playerId !== base.viewer.id,
+    );
+    if (aiSeat < 0) throw new Error("Missing AI seat");
+    const fake = new FakeController(base, []);
+    const host = new FakeBoardHostV6();
+    const app = new Ruleset6DomAppView(document, requireElement("#app"), fake, {
+      boardHost: host,
+    });
+    fake.setSnapshot({
+      ...fake.snapshot(),
+      transitioning: true,
+      view: { ...base, activeSeatIndex: aiSeat },
+    });
+    const open = requireElement('[data-action="open-leaderboard"]');
+    expect((open as HTMLButtonElement).disabled).toBe(false);
+    open.focus();
+    open.click();
+    expect(document.querySelector("[data-leaderboard]")).not.toBeNull();
+    expect(fake.dispatch).not.toHaveBeenCalled();
+
+    const aiPlayerId = base.turnOrder[aiSeat];
+    if (aiPlayerId === undefined) throw new Error("Missing active AI player");
+    const progressed = {
+      ...base,
+      commandIndex: base.commandIndex + 1,
+      activeSeatIndex: aiSeat,
+      leaderboard: base.leaderboard.map((entry) =>
+        entry.playerId === aiPlayerId
+          ? { ...entry, livingUnitCount: entry.livingUnitCount + 1 }
+          : entry,
+      ),
+    };
+    fake.setSnapshot({
+      ...fake.snapshot(),
+      commandIndex: progressed.commandIndex,
+      stateHash: "ai-progressed",
+      view: progressed,
+    });
+    const progressedRow = requireElement(
+      `[data-leaderboard-player="${aiPlayerId}"]`,
+    );
+    expect(progressedRow.querySelector("td:last-child")?.textContent).toBe(
+      String(
+        progressed.leaderboard.find((entry) => entry.playerId === aiPlayerId)
+          ?.livingUnitCount,
+      ),
+    );
+    expect(document.activeElement?.getAttribute("data-action")).toBe(
+      "close-leaderboard",
+    );
+
+    const city = base.cities.find(
+      (candidate) => candidate.ownerId === base.viewer.id,
+    );
+    if (city === undefined) throw new Error("Missing owned city");
+    const reward = {
+      kind: "CHOOSE_CITY_REWARD",
+      cityId: city.id,
+      reachedLevel: 2,
+      reward: "SURVEY",
+    } as const satisfies CommandV6;
+    fake.setSnapshot({
+      ...fake.snapshot(),
+      transitioning: false,
+      offeredCommands: [reward],
+      view: {
+        ...base,
+        pendingChoices: [
+          {
+            kind: "CITY_REWARD",
+            cityId: city.id,
+            reachedLevel: 2,
+            candidates: ["SURVEY", "STOCKPILE"],
+          },
+        ],
+      },
+    });
+    expect(document.querySelector("[data-leaderboard]")).toBeNull();
+    expect(document.querySelector("[data-mandatory-choice]")).not.toBeNull();
+    open.click();
+    expect(document.querySelector("[data-leaderboard]")).toBeNull();
+    expect(fake.dispatch).not.toHaveBeenCalled();
+
+    fake.setSnapshot({
+      ...fake.snapshot(),
+      offeredCommands: [],
+      view: { ...base, activeSeatIndex: aiSeat, pendingChoices: [] },
+    });
+    expect(document.activeElement).toBe(
+      document.querySelector('[data-action="open-leaderboard"]'),
+    );
+    expect(host.model?.interactive).toBe(false);
+    expect(fake.dispatch).not.toHaveBeenCalled();
+    app.destroy();
+  });
+
   it("shows public unavailable reward reasons without inventing command controls", () => {
     const view = publicView("CANDY");
     const city = view.cities.find(
@@ -2619,6 +2827,13 @@ function publicView(faction: "ORIGINAL" | "CANDY"): PlayerViewV6 {
   const created = createPlayableGameV6(setup(faction, 42));
   if (!created.ok) throw new Error(created.error.code);
   return viewForV6(created.state, created.state.humanPlayerId);
+}
+
+function titleForTest(value: string): string {
+  return value
+    .toLowerCase()
+    .replaceAll("_", " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 function replacePublicCity(

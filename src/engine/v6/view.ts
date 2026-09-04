@@ -67,6 +67,22 @@ export interface PlayerBoardViewV6 {
 
 export type PublicPlayerStateV6 = Omit<PlayerStateV6, "explored">;
 
+/**
+ * Globally public match standings. Counts are projected from authoritative
+ * state so clients never infer rival totals from fog-filtered entities.
+ */
+export interface PublicLeaderboardEntryV6 {
+  readonly playerId: PlayerId;
+  readonly seat: number;
+  readonly controller: PlayerStateV6["controller"];
+  readonly color: PlayerStateV6["color"];
+  readonly faction: PlayerStateV6["faction"];
+  readonly status: PlayerStateV6["status"];
+  readonly isViewer: boolean;
+  readonly cityCount: number;
+  readonly livingUnitCount: number;
+}
+
 export interface PlayerViewV6 {
   readonly schemaVersion: 6;
   readonly rulesetId: RulesetIdV6;
@@ -78,6 +94,8 @@ export interface PlayerViewV6 {
   readonly turnOrder: readonly PlayerId[];
   readonly viewer: PlayerStateV6;
   readonly players: readonly PublicPlayerStateV6[];
+  /** Turn-order standings with aggregate counts and no entity locations. */
+  readonly leaderboard: readonly PublicLeaderboardEntryV6[];
   readonly board: PlayerBoardViewV6;
   readonly cities: readonly CityStateV6[];
   readonly populationContributions: readonly PopulationContributionV6[];
@@ -198,6 +216,39 @@ export function viewForV6(
           ];
     },
   );
+  const playersById = new Map(
+    state.players.map((player) => [player.id, player] as const),
+  );
+  const cityCounts = new Map<PlayerId, number>();
+  for (const city of state.cities) {
+    cityCounts.set(city.ownerId, (cityCounts.get(city.ownerId) ?? 0) + 1);
+  }
+  const livingUnitCounts = new Map<PlayerId, number>();
+  for (const unit of state.units) {
+    if (unit.hp <= 0) continue;
+    livingUnitCounts.set(
+      unit.ownerId,
+      (livingUnitCounts.get(unit.ownerId) ?? 0) + 1,
+    );
+  }
+  const leaderboard = state.turnOrder.map((playerId) => {
+    const player = playersById.get(playerId);
+    if (player === undefined) {
+      throw new RangeError(`Turn order contains unknown player: ${playerId}`);
+    }
+    const eliminated = player.status === "ELIMINATED";
+    return {
+      playerId: player.id,
+      seat: player.seat,
+      controller: player.controller,
+      color: player.color,
+      faction: player.faction,
+      status: player.status,
+      isViewer: player.id === viewerId,
+      cityCount: eliminated ? 0 : (cityCounts.get(player.id) ?? 0),
+      livingUnitCount: eliminated ? 0 : (livingUnitCounts.get(player.id) ?? 0),
+    } satisfies PublicLeaderboardEntryV6;
+  });
   return deepFreeze({
     schemaVersion: state.schemaVersion,
     rulesetId: state.rulesetId,
@@ -212,6 +263,7 @@ export function viewForV6(
       void _explored;
       return player;
     }),
+    leaderboard,
     board: { width: state.board.width, height: state.board.height, tiles },
     cities: state.cities.filter((city) => visibleCityIds.has(city.id)),
     populationContributions: visiblePopulationContributions,

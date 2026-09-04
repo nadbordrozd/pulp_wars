@@ -194,6 +194,26 @@ diagnostic details. Rules/Help teaches cluster, adjacency, opposite pairs,
 diversity, Grand Works, and Road-connected Markets with small code-native
 diagrams and exact formulas.
 
+### Live match leaderboard
+
+The match HUD includes one clearly labeled **Leaderboard** control. It opens a
+view-only layer over the live match with every seat exactly once in stored turn
+order. Each row uses player number and color together, and shows faction,
+Human/You or Normal AI controller identity, active/eliminated status, total
+owned cities, and total living units. Eliminated players remain present with
+zero totals. These two aggregate totals are intentionally global public
+information; authority projects them directly rather than asking the client to
+count fog-filtered entities. The projection exposes no city/unit IDs or
+locations, Coins, technologies, or other hidden facts.
+
+Leaderboard access is available while AI work progresses and does not pause,
+dispatch, or mutate the match. It preserves map selection, command boundary,
+state hash, and presentation queues. A mandatory choice takes precedence and
+closes/blocks the layer. The semantic table has a caption, column and row
+headers, an explicit close control, trapped focus, and focus return to the HUD
+control. It fits a 390 x 844 DPR2 viewport without horizontal scrolling and
+uses only established code-native UI tokens.
+
 All contributor patterns, signed population, Road connectivity, Charge, Heal,
 Push, Breach, resource-hidden state, and reward position have semantic text and
 live announcements. Motion may animate building placement, field merging,
@@ -261,8 +281,9 @@ Explicit omissions and placeholders:
 
 - Multiplayer: visible only as a non-interactive “Not in this POC” label if it
   helps communicate scope; it has no lobby route.
-- Profile/customization, leaderboards/scores, throne room, store, and recurring
-  challenge: omitted, not disabled mystery icons.
+- Profile/customization, online or persistent leaderboards/scores, throne room,
+  store, and recurring challenge: omitted, not disabled mystery icons. The
+  live in-match city/unit leaderboard is distinct and remains available.
 - About/Rules is a small local help panel, not a progression screen.
 
 Hub -> Resume validates the full save and enters Match. Hub -> New Conquest
@@ -352,7 +373,7 @@ Persistent HUD content:
 - Stars as `stock (+next income)`, where besieged-city effects are current;
 - Round and active player/turn status;
 - owned cities and units as compact counts;
-- Settings, Stats, Tech, and End Turn actions;
+- Settings, Stats, Tech, Leaderboard, and End Turn actions;
 - a Fast Forward action only during AI presentation.
 
 The POC does not maintain a Polytopia-compatible score, so the researched Score
@@ -470,8 +491,8 @@ population guidance, or other metadata.
 End Turn dispatches immediately whenever offered, including when units remain
 unhandled, affordable training remains, or a capture is available. Mandatory
 pending choices prevent it from being offered. During an AI turn map
-inspection, Stats, Tech, and Settings are allowed, but gameplay commands and
-End Turn are disabled.
+inspection, Stats, Tech, Leaderboard, and Settings are allowed, but gameplay
+commands and End Turn are disabled.
 
 ## 8. Context panels
 
@@ -556,7 +577,8 @@ round. The current turn is marked. The heading shows **Rival AI** or
 **Cooperative AI against you** from setup; no mutable pairwise diplomacy is
 calculated. A short objective states “Capture all hostile cities before losing
 your last city.” No score, rank, percentage rating, online profile, or
-leaderboard is calculated.
+persistent/online leaderboard is calculated. The Ruleset-6 live leaderboard is
+limited to authority-projected city and living-unit totals.
 
 Stats is view-only and can open during human or AI presentation. Close restores
 prior map selection/focus.

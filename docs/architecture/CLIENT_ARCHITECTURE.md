@@ -123,6 +123,18 @@ interface PublicRulesApiV6 {
     target: CombatTargetRef,
   ): CombatPreviewV6;
 }
+
+interface PublicLeaderboardEntryV6 {
+  readonly playerId: PlayerId; // stable public player identity, not EntityId
+  readonly seat: number;
+  readonly controller: "HUMAN" | "AI";
+  readonly color: PlayerColor;
+  readonly faction: FactionId;
+  readonly status: "ACTIVE" | "ELIMINATED";
+  readonly isViewer: boolean;
+  readonly cityCount: number;
+  readonly livingUnitCount: number;
+}
 ```
 
 Technology-hidden v6 resources project as a content-free `UNKNOWN_RESOURCE`
@@ -133,6 +145,11 @@ available only for an exact public offered command and is complete;
 contributors are sorted `(y,x)`. Combat preview represents hidden-behind Push
 as `UNKNOWN_BEHIND_FOG`, which resolves as no Push. Equal `PlayerViewV6` values
 must produce byte-identical commands, previews, AI tuples, and selections.
+`PlayerViewV6.leaderboard` is projected from authoritative cities and living
+units in exact `turnOrder`, not reconstructed from fog-filtered entity arrays.
+It contains only stable player/seat presentation identity and the two approved
+global totals; it carries no city/unit entity IDs, coordinates, Coins,
+technologies, exploration, or other hidden state.
 
 Replay and save envelopes use version 6. A v6 save stores the complete ordered
 reward queue, exact faction tree IDs, live/cached economic values, Roads,

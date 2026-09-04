@@ -123,7 +123,7 @@ type ActionSymbol =
     }
   | { readonly kind: "FALLBACK"; readonly value: string };
 
-type Ruleset6Screen = "MATCH" | "TECH";
+type Ruleset6Screen = "MATCH" | "TECH" | "LEADERBOARD";
 
 type BoardPresentationQueueEntryV6 =
   | {
@@ -240,6 +240,15 @@ export class Ruleset6DomAppView {
       ) {
         event.preventDefault();
         event.stopPropagation();
+      }
+      return;
+    }
+    if (this.#screen === "LEADERBOARD") {
+      if (event.key === "Escape") {
+        this.#closeLeaderboard();
+        event.preventDefault();
+      } else if (event.key === "Tab") {
+        this.#trapLeaderboardFocus(event);
       }
       return;
     }
@@ -598,6 +607,17 @@ export class Ruleset6DomAppView {
       technology.disabled = activePresentation !== null;
       technology.onclick = () => this.#openTechnologyScreen();
       menu.append(technology);
+
+      const leaderboard = button(
+        this.#document,
+        "Leaderboard",
+        "secondary-action v6-leaderboard-navigation",
+      );
+      leaderboard.dataset.action = "open-leaderboard";
+      leaderboard.dataset.focusId = "open-leaderboard";
+      leaderboard.ariaLabel = "Open Leaderboard";
+      leaderboard.onclick = () => this.#openLeaderboard();
+      menu.append(leaderboard);
     }
     if (this.#snapshot.phase === "ACTIVE" && !mandatoryChoicePending) {
       menu.append(this.#debugExportButton());
@@ -705,6 +725,12 @@ export class Ruleset6DomAppView {
       map.inert = true;
       main.dataset.inputBlocked = "mandatory-choice";
       main.append(this.#mandatoryChoiceDialog(view));
+    } else if (this.#screen === "LEADERBOARD") {
+      hud.inert = true;
+      map.inert = true;
+      dock.inert = true;
+      main.dataset.inputBlocked = "leaderboard";
+      main.append(this.#leaderboardDialog(view));
     } else if (abilityDetail !== null) {
       hud.inert = true;
       map.inert = true;
@@ -713,6 +739,180 @@ export class Ruleset6DomAppView {
       main.append(this.#abilityDetailDialog(abilityDetail));
     }
     return main;
+  }
+
+  #openLeaderboard(): void {
+    if (
+      this.#snapshot.phase !== "ACTIVE" ||
+      this.#snapshot.view === null ||
+      this.#hasMandatoryChoice() ||
+      this.#selectedAbility !== null
+    ) {
+      return;
+    }
+    this.#screen = "LEADERBOARD";
+    this.#pendingFocusSelector = '[data-focus-id="leaderboard-close"]';
+    this.#render();
+  }
+
+  #closeLeaderboard(): void {
+    this.#screen = "MATCH";
+    if (this.#snapshot.phase === "ACTIVE") {
+      this.#pendingFocusSelector = '[data-focus-id="open-leaderboard"]';
+    } else {
+      this.#pendingFocusSelector = null;
+      this.#restoreBoardFocus = true;
+    }
+    this.#render();
+  }
+
+  #leaderboardDialog(view: PlayerViewV6): HTMLElement {
+    const backdrop = el(this.#document, "div", "v6-leaderboard-backdrop");
+    backdrop.dataset.leaderboardOverlay = "true";
+    backdrop.onclick = (event) => {
+      if (event.target === backdrop) this.#closeLeaderboard();
+    };
+
+    const dialog = el(this.#document, "section", "v6-leaderboard-dialog");
+    dialog.dataset.leaderboard = "true";
+    dialog.setAttribute("role", "dialog");
+    dialog.setAttribute("aria-modal", "true");
+    dialog.setAttribute("aria-labelledby", "v6-leaderboard-heading");
+    dialog.setAttribute("aria-describedby", "v6-leaderboard-summary");
+
+    const close = button(
+      this.#document,
+      "Close",
+      "secondary-action v6-leaderboard-close",
+    );
+    close.dataset.action = "close-leaderboard";
+    close.dataset.focusId = "leaderboard-close";
+    close.onclick = () => this.#closeLeaderboard();
+
+    const heading = text(
+      this.#document,
+      "h1",
+      "Leaderboard",
+      "v6-leaderboard-heading",
+    );
+    heading.id = "v6-leaderboard-heading";
+    const summary = text(
+      this.#document,
+      "p",
+      `Round ${view.round} · live city and unit totals`,
+      "v6-leaderboard-summary",
+    );
+    summary.id = "v6-leaderboard-summary";
+
+    const header = el(this.#document, "header", "v6-leaderboard-header");
+    const headingCopy = el(
+      this.#document,
+      "div",
+      "v6-leaderboard-heading-copy",
+    );
+    headingCopy.append(heading, summary);
+    header.append(headingCopy, close);
+
+    const table = this.#document.createElement("table");
+    table.className = "v6-leaderboard-table";
+    const caption = this.#document.createElement("caption");
+    caption.textContent = "Players in turn order";
+    const tableHead = this.#document.createElement("thead");
+    const headerRow = this.#document.createElement("tr");
+    for (const label of [
+      "Player",
+      "Faction",
+      "Controller",
+      "Cities",
+      "Units",
+    ]) {
+      const cell = this.#document.createElement("th");
+      cell.scope = "col";
+      cell.textContent = label;
+      headerRow.append(cell);
+    }
+    tableHead.append(headerRow);
+
+    const tableBody = this.#document.createElement("tbody");
+    for (const entry of view.leaderboard) {
+      const row = this.#document.createElement("tr");
+      row.dataset.leaderboardPlayer = String(entry.playerId);
+      row.dataset.playerStatus = entry.status.toLowerCase();
+      const identity = this.#document.createElement("th");
+      identity.scope = "row";
+      const identityCopy = el(
+        this.#document,
+        "span",
+        "v6-leaderboard-player-identity",
+      );
+      const swatch = el(this.#document, "span", "v6-leaderboard-swatch");
+      swatch.dataset.playerColor = entry.color;
+      swatch.setAttribute("aria-hidden", "true");
+      identityCopy.append(
+        swatch,
+        text(
+          this.#document,
+          "strong",
+          `Player ${entry.seat + 1}`,
+          "v6-leaderboard-player-name",
+        ),
+        text(
+          this.#document,
+          "span",
+          title(entry.status),
+          `v6-leaderboard-status ${entry.status.toLowerCase()}`,
+        ),
+      );
+      identity.append(identityCopy);
+      row.append(
+        identity,
+        tableCell(this.#document, title(entry.faction)),
+        tableCell(
+          this.#document,
+          entry.controller === "AI"
+            ? "Normal AI"
+            : entry.isViewer
+              ? "Human · You"
+              : "Human",
+        ),
+        tableCell(this.#document, String(entry.cityCount), "numeric"),
+        tableCell(this.#document, String(entry.livingUnitCount), "numeric"),
+      );
+      tableBody.append(row);
+    }
+    table.append(caption, tableHead, tableBody);
+    dialog.append(header, table);
+    backdrop.append(dialog);
+    return backdrop;
+  }
+
+  #trapLeaderboardFocus(event: KeyboardEvent): void {
+    const dialog = this.#root.querySelector<HTMLElement>("[data-leaderboard]");
+    if (dialog === null) return;
+    const focusable = [
+      ...dialog.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
+      ),
+    ];
+    const first = focusable[0];
+    const last = focusable.at(-1);
+    if (first === undefined || last === undefined) {
+      dialog.tabIndex = -1;
+      dialog.focus({ preventScroll: true });
+      event.preventDefault();
+      return;
+    }
+    if (
+      (event.shiftKey &&
+        (this.#document.activeElement === first ||
+          !dialog.contains(this.#document.activeElement))) ||
+      (!event.shiftKey &&
+        (this.#document.activeElement === last ||
+          !dialog.contains(this.#document.activeElement)))
+    ) {
+      (event.shiftKey ? last : first).focus();
+      event.preventDefault();
+    }
   }
 
   #openTechnologyScreen(): void {
@@ -2049,7 +2249,9 @@ export class Ruleset6DomAppView {
         previousFocusId === "ability-detail" ||
         previousFocusId?.startsWith("ability-")
           ? null
-          : (previousFocusId ?? null);
+          : previousFocusId === "leaderboard-close"
+            ? "open-leaderboard"
+            : (previousFocusId ?? null);
       this.#pendingFocusSelector =
         "[data-mandatory-choice-action]:not([disabled])";
     } else if (
@@ -2791,6 +2993,17 @@ function text(
   className?: string,
 ): HTMLElement {
   const node = el(documentRoot, tag, className);
+  node.textContent = value;
+  return node;
+}
+
+function tableCell(
+  documentRoot: Document,
+  value: string,
+  className?: string,
+): HTMLTableCellElement {
+  const node = documentRoot.createElement("td");
+  if (className !== undefined) node.className = className;
   node.textContent = value;
   return node;
 }
