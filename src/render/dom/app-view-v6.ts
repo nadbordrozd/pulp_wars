@@ -53,6 +53,8 @@ import {
   type TechnologyTreeLayoutNodeV6,
 } from "./technology-tree-layout-v6";
 import {
+  selectionIdentityArtworkFrameV6,
+  selectionIdentityArtworkLayoutV6,
   selectionIdentityPresentationV6,
   type SelectionIdentityPresentationV6,
 } from "./selection-identity-v6";
@@ -2992,6 +2994,19 @@ function selectionIdentityArtworkNode(
       image.decoding = "async";
       wrapper.dataset.symbolKind = "accepted-raster";
       wrapper.dataset.assetId = artwork.assetId;
+      const frame = selectionIdentityArtworkFrameV6(artwork);
+      if (frame !== null) {
+        wrapper.dataset.frameMode = frame.mode
+          .toLowerCase()
+          .replaceAll("_", "-");
+        if (frame.mode === "VISIBLE_ALPHA") {
+          const layout = selectionIdentityArtworkLayoutV6(frame);
+          image.style.left = `${layout.image.left}px`;
+          image.style.top = `${layout.image.top}px`;
+          image.style.width = `${layout.image.width}px`;
+          image.style.height = `${layout.image.height}px`;
+        }
+      }
       wrapper.append(image);
       return wrapper;
     }

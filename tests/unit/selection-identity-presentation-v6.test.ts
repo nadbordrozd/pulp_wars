@@ -10,7 +10,12 @@ import {
   type MatchSetupV6,
   type PlayerViewV6,
 } from "../../src/engine/index";
-import { selectionIdentityPresentationV6 } from "../../src/render/dom/selection-identity-v6";
+import {
+  SELECTION_IDENTITY_ARTWORK_VIEWPORT_V6,
+  selectionIdentityArtworkFrameV6,
+  selectionIdentityArtworkLayoutV6,
+  selectionIdentityPresentationV6,
+} from "../../src/render/dom/selection-identity-v6";
 
 const UNIT_ASSET_IDS = {
   ORIGINAL: {
@@ -213,6 +218,110 @@ describe("ruleset-6 selection identity presentation", () => {
       expect(hiddenResource.title).toBe("Mountain");
       expect(acceptedAssetId(hiddenResource)).toMatch(/mountain/);
       expect(JSON.stringify(hiddenResource)).not.toContain("Unknown resource");
+    }
+  });
+
+  it("centers complete Game and Fertile Ground alpha while preserving ordinary identity framing", () => {
+    for (const faction of ["ORIGINAL", "CANDY"] as const) {
+      const initial = publicView(faction);
+      const tile = initial.board.tiles.find(
+        (candidate) =>
+          candidate.explored &&
+          candidate.territoryOwnerId === initial.viewer.id,
+      );
+      if (tile?.explored !== true) throw new Error("Missing explored tile");
+      const select = { kind: "TILE", at: tile.at } as const;
+
+      for (const resource of ["GAME", "FERTILE_GROUND"] as const) {
+        const identity = selectionIdentityPresentationV6(
+          withTile(initial, tile.at, {
+            terrain: resource === "GAME" ? "FOREST" : "GRASS",
+            resource,
+            improvement: null,
+          }),
+          select,
+        );
+        const frame = selectionIdentityArtworkFrameV6(identity.artwork);
+        expect(frame?.mode).toBe("VISIBLE_ALPHA");
+        if (frame === null) throw new Error("Missing selection frame");
+        expect(frame.visibleBounds).toEqual(
+          resource === "FERTILE_GROUND"
+            ? { left: 59, top: 250, right: 196, bottom: 324 }
+            : {
+                left: 68,
+                top: faction === "ORIGINAL" ? 220 : 213,
+                right: 188,
+                bottom: 324,
+              },
+        );
+        const layout = selectionIdentityArtworkLayoutV6(frame);
+        if (layout.visible === null)
+          throw new Error("Missing visible-alpha layout");
+        expect((layout.visible.left + layout.visible.right) / 2).toBeCloseTo(
+          SELECTION_IDENTITY_ARTWORK_VIEWPORT_V6.width / 2,
+          8,
+        );
+        expect((layout.visible.top + layout.visible.bottom) / 2).toBeCloseTo(
+          SELECTION_IDENTITY_ARTWORK_VIEWPORT_V6.height / 2,
+          8,
+        );
+        expect(layout.visible.left).toBeGreaterThanOrEqual(
+          SELECTION_IDENTITY_ARTWORK_VIEWPORT_V6.visibleInset,
+        );
+        expect(layout.visible.top).toBeGreaterThanOrEqual(
+          SELECTION_IDENTITY_ARTWORK_VIEWPORT_V6.visibleInset,
+        );
+        expect(layout.visible.right).toBeLessThanOrEqual(
+          SELECTION_IDENTITY_ARTWORK_VIEWPORT_V6.width -
+            SELECTION_IDENTITY_ARTWORK_VIEWPORT_V6.visibleInset,
+        );
+        expect(layout.visible.bottom).toBeLessThanOrEqual(
+          SELECTION_IDENTITY_ARTWORK_VIEWPORT_V6.height -
+            SELECTION_IDENTITY_ARTWORK_VIEWPORT_V6.visibleInset,
+        );
+      }
+
+      const ownedUnit = initial.units.find(
+        (candidate) => candidate.ownerId === initial.viewer.id,
+      );
+      const ownedCity = initial.cities.find(
+        (candidate) => candidate.ownerId === initial.viewer.id,
+      );
+      if (ownedUnit === undefined || ownedCity === undefined)
+        throw new Error("Missing representative identities");
+      const ordinaryIdentities = [
+        selectionIdentityPresentationV6(initial, {
+          kind: "UNIT",
+          unitId: ownedUnit.id,
+        }),
+        selectionIdentityPresentationV6(initial, {
+          kind: "CITY",
+          cityId: ownedCity.id,
+        }),
+        selectionIdentityPresentationV6(
+          withTile(initial, tile.at, {
+            terrain: "MOUNTAIN",
+            resource: null,
+            improvement: null,
+          }),
+          select,
+        ),
+        selectionIdentityPresentationV6(
+          withTile(initial, tile.at, {
+            terrain: "GRASS",
+            resource: null,
+            improvement: "WINDMILL",
+          }),
+          select,
+        ),
+      ];
+      for (const identity of ordinaryIdentities) {
+        const frame = selectionIdentityArtworkFrameV6(identity.artwork);
+        expect(frame).toMatchObject({
+          mode: "SOURCE_CANVAS",
+          visibleBounds: null,
+        });
+      }
     }
   });
 

@@ -1,0 +1,253 @@
+{
+  "generatedBy": "npm run art:ruleset6-selection-identity-review",
+  "status": "READY_FOR_ORCHESTRATOR_REVIEW",
+  "viewport": {
+    "width": 112,
+    "height": 130,
+    "visibleInset": 4
+  },
+  "method": "Production selection framing calculator with exact accepted raster bytes; desktop DPR1 and mobile DPR2 layouts plus nearest-neighbor 2x inspection copies.",
+  "samples": [
+    {
+      "id": "game-original",
+      "label": "Game · Original",
+      "frame": {
+        "mode": "VISIBLE_ALPHA",
+        "source": {
+          "width": 256,
+          "height": 384
+        },
+        "visibleBounds": {
+          "left": 68,
+          "top": 220,
+          "right": 188,
+          "bottom": 324
+        }
+      },
+      "layout": {
+        "image": {
+          "left": -54.93333333333334,
+          "top": -170.73333333333335,
+          "width": 221.86666666666667,
+          "height": 332.8
+        },
+        "visible": {
+          "left": 4,
+          "top": 19.933333333333337,
+          "right": 108,
+          "bottom": 110.06666666666666
+        }
+      },
+      "sha256": "5817682f9520679c26ac1d2bc3bb42202c2167190c0433f01569482e3116ef0f",
+      "assetId": "terrain-square-original-animal",
+      "publicPath": "assets/pixellab/terrain-square/original-animal.png",
+      "visibleWithinViewport": true
+    },
+    {
+      "id": "game-candy",
+      "label": "Game · Candy",
+      "frame": {
+        "mode": "VISIBLE_ALPHA",
+        "source": {
+          "width": 256,
+          "height": 384
+        },
+        "visibleBounds": {
+          "left": 68,
+          "top": 213,
+          "right": 188,
+          "bottom": 324
+        }
+      },
+      "layout": {
+        "image": {
+          "left": -54.93333333333334,
+          "top": -167.70000000000002,
+          "width": 221.86666666666667,
+          "height": 332.8
+        },
+        "visible": {
+          "left": 4,
+          "top": 16.899999999999977,
+          "right": 108,
+          "bottom": 113.1
+        }
+      },
+      "sha256": "354f6745221ef4d0c7d62e5bcadd909633b50da90ab738d2311924f3879588a6",
+      "assetId": "terrain-square-candy-animal",
+      "publicPath": "assets/pixellab/terrain-square/candy-animal.png",
+      "visibleWithinViewport": true
+    },
+    {
+      "id": "fertile-ground",
+      "label": "Fertile Ground",
+      "frame": {
+        "mode": "VISIBLE_ALPHA",
+        "source": {
+          "width": 256,
+          "height": 384
+        },
+        "visibleBounds": {
+          "left": 59,
+          "top": 250,
+          "right": 196,
+          "bottom": 324
+        }
+      },
+      "layout": {
+        "image": {
+          "left": -40.78832116788321,
+          "top": -152.86861313868613,
+          "width": 194.33576642335765,
+          "height": 291.5036496350365
+        },
+        "visible": {
+          "left": 4,
+          "top": 36.91240875912408,
+          "right": 107.99999999999999,
+          "bottom": 93.0875912408759
+        }
+      },
+      "sha256": "f2c0c4913d01130979589b4ac7ccba50ef4b825976d9a398211eff64c82b67fd",
+      "assetId": "terrain-square-fertile-ground",
+      "publicPath": "assets/pixellab/terrain-square/fertile-ground.png",
+      "visibleWithinViewport": true
+    },
+    {
+      "id": "fighter",
+      "label": "Fighter",
+      "frame": {
+        "mode": "SOURCE_CANVAS",
+        "source": {
+          "width": 256,
+          "height": 296
+        },
+        "visibleBounds": null
+      },
+      "layout": {
+        "image": {
+          "left": 0,
+          "top": 0.25,
+          "width": 112,
+          "height": 129.5
+        },
+        "visible": null
+      },
+      "sha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1",
+      "assetId": "unit-original-fighter",
+      "publicPath": "assets/pixellab/units/warrior.png",
+      "visibleWithinViewport": true
+    },
+    {
+      "id": "city",
+      "label": "Original City · L2",
+      "frame": {
+        "mode": "SOURCE_CANVAS",
+        "source": {
+          "width": 384,
+          "height": 384
+        },
+        "visibleBounds": null
+      },
+      "layout": {
+        "image": {
+          "left": 0,
+          "top": 9,
+          "width": 112,
+          "height": 112
+        },
+        "visible": null
+      },
+      "sha256": "330af593e490f2c491f89ea131f8df966809f0ccddc02054801b5dfe0fd7951c",
+      "assetId": "building-city-2",
+      "publicPath": "assets/pixellab/buildings/city-2.png",
+      "visibleWithinViewport": true
+    },
+    {
+      "id": "mountain",
+      "label": "Mountain",
+      "frame": {
+        "mode": "SOURCE_CANVAS",
+        "source": {
+          "width": 256,
+          "height": 384
+        },
+        "visibleBounds": null
+      },
+      "layout": {
+        "image": {
+          "left": 12.666666666666664,
+          "top": 0,
+          "width": 86.66666666666667,
+          "height": 130
+        },
+        "visible": null
+      },
+      "sha256": "f06a33808ece1fff3ef05ad87d731013910189fa18639bda9c3ceceaf34fd7f5",
+      "assetId": "terrain-square-original-mountain-1",
+      "publicPath": "assets/pixellab/terrain-square/original-mountain-1.png",
+      "visibleWithinViewport": true
+    },
+    {
+      "id": "farm",
+      "label": "Farm",
+      "frame": {
+        "mode": "SOURCE_CANVAS",
+        "source": {
+          "width": 256,
+          "height": 256
+        },
+        "visibleBounds": null
+      },
+      "layout": {
+        "image": {
+          "left": 0,
+          "top": 9,
+          "width": 112,
+          "height": 112
+        },
+        "visible": null
+      },
+      "sha256": "34f46d4f1aad59200a53511dadfe460ba2ca465a7f4536985425d19b5cc03d0f",
+      "assetId": "building-square-farm",
+      "publicPath": "assets/pixellab/buildings-square/farm.png",
+      "visibleWithinViewport": true
+    }
+  ],
+  "unchangedPresentationSamples": [
+    "fighter",
+    "city",
+    "mountain",
+    "farm"
+  ],
+  "artifacts": [
+    {
+      "path": "art/pixellab/reviews/ruleset6-selection-identities/desktop-native.png",
+      "bytes": 93309,
+      "sha256": "7af48fb603ab5708c1a28fef402504504bdda815caecbf4cd6d4ce516b48d71e",
+      "width": 1280,
+      "height": 240
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-selection-identities/desktop-enlarged.png",
+      "bytes": 140719,
+      "sha256": "411d8a78696c9038281751ee427846fd9bf507fbb56f481bedef0b07fd7b8e71",
+      "width": 2560,
+      "height": 480
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-selection-identities/mobile-native.png",
+      "bytes": 283292,
+      "sha256": "37a87e924ed9b9718b1265ad0549ce12991deeabf5074e3e935c0c6fafdb0311",
+      "width": 780,
+      "height": 1660
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset6-selection-identities/mobile-enlarged.png",
+      "bytes": 458846,
+      "sha256": "8a2ed86688c96a936b0e7e2f5b5f1d27f5d8f2a66265641c680442d2ec27cc27",
+      "width": 1560,
+      "height": 3320
+    }
+  ]
+}

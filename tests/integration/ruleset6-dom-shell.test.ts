@@ -947,6 +947,51 @@ describe("playable ruleset-6 DOM shell", () => {
       expect(tileIdentity.textContent).not.toMatch(/\d+,\d+/);
       expect(tileIdentity.getAttribute("aria-label")).not.toMatch(/\d+,\d+/);
 
+      for (const resource of ["GAME", "FERTILE_GROUND"] as const) {
+        const resourceView: PlayerViewV6 = {
+          ...initial,
+          board: {
+            ...initial.board,
+            tiles: initial.board.tiles.map((tile) =>
+              tile.at.x === city.at.x &&
+              tile.at.y === city.at.y &&
+              tile.explored
+                ? {
+                    ...tile,
+                    terrain: resource === "GAME" ? "FOREST" : "GRASS",
+                    resource,
+                    improvement: null,
+                  }
+                : tile,
+            ),
+          },
+        };
+        fake.setSnapshot({
+          ...fake.snapshot(),
+          view: resourceView,
+          offeredCommands: [],
+        });
+        host.callbacks?.onInspect({ kind: "TILE", at: city.at });
+        const resourceIdentity = requireElement(".v6-selection-identity");
+        const resourceArt = resourceIdentity.querySelector<HTMLElement>(
+          ".v6-selection-identity-art",
+        );
+        const resourceImage =
+          resourceArt?.querySelector<HTMLImageElement>("img");
+        expect(resourceIdentity.querySelector("h2")?.textContent).toBe(
+          resource === "GAME" ? "Game" : "Fertile Ground",
+        );
+        expect(resourceArt?.dataset.frameMode).toBe("visible-alpha");
+        expect(resourceImage?.style.left).toMatch(/^-\d/);
+        expect(resourceImage?.style.top).toMatch(/^-\d/);
+        expect(
+          Number.parseFloat(resourceImage?.style.width ?? "0"),
+        ).toBeGreaterThan(112);
+        expect(
+          Number.parseFloat(resourceImage?.style.height ?? "0"),
+        ).toBeGreaterThan(130);
+      }
+
       app.destroy();
       document.body.innerHTML = '<div id="app"></div>';
     }

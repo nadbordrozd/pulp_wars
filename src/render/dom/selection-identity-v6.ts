@@ -26,6 +26,152 @@ export interface SelectionIdentityPresentationV6 {
   readonly artwork: AssetCoverageV6 | null;
 }
 
+export interface SelectionIdentityArtworkFrameV6 {
+  readonly mode: "SOURCE_CANVAS" | "VISIBLE_ALPHA";
+  readonly source: {
+    readonly width: number;
+    readonly height: number;
+  };
+  readonly visibleBounds: {
+    readonly left: number;
+    readonly top: number;
+    readonly right: number;
+    readonly bottom: number;
+  } | null;
+}
+
+export interface SelectionIdentityArtworkLayoutV6 {
+  readonly image: {
+    readonly left: number;
+    readonly top: number;
+    readonly width: number;
+    readonly height: number;
+  };
+  readonly visible: {
+    readonly left: number;
+    readonly top: number;
+    readonly right: number;
+    readonly bottom: number;
+  } | null;
+}
+
+export interface SelectionIdentityArtworkViewportV6 {
+  readonly width: number;
+  readonly height: number;
+  readonly visibleInset: number;
+}
+
+export const SELECTION_IDENTITY_ARTWORK_VIEWPORT_V6 = {
+  width: 112,
+  height: 130,
+  visibleInset: 4,
+} as const satisfies SelectionIdentityArtworkViewportV6;
+
+/**
+ * UI-only alpha metadata for accepted low-profile sprites whose world source
+ * canvas deliberately reserves a large transparent upper region. Keeping it
+ * here prevents the map's ground anchors from leaking into dock layout.
+ */
+const SELECTION_VISIBLE_ALPHA_BOUNDS_V6: Readonly<
+  Record<
+    string,
+    {
+      readonly left: number;
+      readonly top: number;
+      readonly right: number;
+      readonly bottom: number;
+    }
+  >
+> = {
+  "terrain-square-original-animal": {
+    left: 68,
+    top: 220,
+    right: 188,
+    bottom: 324,
+  },
+  "terrain-square-candy-animal": {
+    left: 68,
+    top: 213,
+    right: 188,
+    bottom: 324,
+  },
+  "terrain-square-fertile-ground": {
+    left: 59,
+    top: 250,
+    right: 196,
+    bottom: 324,
+  },
+};
+
+export function selectionIdentityArtworkFrameV6(
+  artwork: AssetCoverageV6 | null,
+): SelectionIdentityArtworkFrameV6 | null {
+  if (artwork?.status !== "ACCEPTED") return null;
+  return {
+    mode:
+      SELECTION_VISIBLE_ALPHA_BOUNDS_V6[artwork.assetId] === undefined
+        ? "SOURCE_CANVAS"
+        : "VISIBLE_ALPHA",
+    source: {
+      width: artwork.geometry.width,
+      height: artwork.geometry.height,
+    },
+    visibleBounds: SELECTION_VISIBLE_ALPHA_BOUNDS_V6[artwork.assetId] ?? null,
+  };
+}
+
+/**
+ * Mirrors centered `object-fit: contain` for ordinary art. Opted-in low art
+ * instead contains and centers its accepted visible-alpha rectangle, clipping
+ * transparent source padding only.
+ */
+export function selectionIdentityArtworkLayoutV6(
+  frame: SelectionIdentityArtworkFrameV6,
+  viewport: SelectionIdentityArtworkViewportV6 = SELECTION_IDENTITY_ARTWORK_VIEWPORT_V6,
+): SelectionIdentityArtworkLayoutV6 {
+  const bounds = frame.visibleBounds;
+  const targetWidth =
+    bounds === null
+      ? viewport.width
+      : viewport.width - viewport.visibleInset * 2;
+  const targetHeight =
+    bounds === null
+      ? viewport.height
+      : viewport.height - viewport.visibleInset * 2;
+  const measuredWidth =
+    bounds === null ? frame.source.width : bounds.right - bounds.left;
+  const measuredHeight =
+    bounds === null ? frame.source.height : bounds.bottom - bounds.top;
+  const scale = Math.min(
+    targetWidth / measuredWidth,
+    targetHeight / measuredHeight,
+  );
+  const measuredCenterX =
+    bounds === null ? frame.source.width / 2 : (bounds.left + bounds.right) / 2;
+  const measuredCenterY =
+    bounds === null
+      ? frame.source.height / 2
+      : (bounds.top + bounds.bottom) / 2;
+  const image = {
+    left: viewport.width / 2 - measuredCenterX * scale,
+    top: viewport.height / 2 - measuredCenterY * scale,
+    width: frame.source.width * scale,
+    height: frame.source.height * scale,
+  };
+  return {
+    image,
+    visible:
+      bounds === null
+        ? null
+        : {
+            left: image.left + bounds.left * scale,
+            top: image.top + bounds.top * scale,
+            right: image.left + bounds.right * scale,
+            bottom: image.top + bounds.bottom * scale,
+          },
+  };
+}
+
 /**
  * Resolves the selected dock identity exclusively from the observation-safe
  * player view and the same accepted coverage registry used by the map.
