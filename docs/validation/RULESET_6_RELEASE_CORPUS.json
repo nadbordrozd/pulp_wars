@@ -524,7 +524,7 @@
   "evidence": [
     {
       "path": "art/integration/reviews/ruleset6-browser-smoke/evidence.json",
-      "sha256": "a0cd6ef9d02fc88a818ac7b0be2345ddb15183b80f066dbde3025eb0befcb807",
+      "sha256": "00eea5dc61e5784e7f92afd3c2ef14b0ed3637b20f7e462c52f8c9fca57bf70e",
       "artifactCount": 56
     },
     {
