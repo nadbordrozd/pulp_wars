@@ -14,24 +14,29 @@ research model. Redesign what the nodes contain:
 
 - every major branch supplies both an economic reason and a military reason
   to enter it;
-- nine nodes become explicitly dual-use instead of being narrow one-unlock
+- ten nodes become explicitly dual-use instead of being narrow one-unlock
   purchases;
-- Original gains one new mid-tier unit, the **Pikeman**, and one new tier-3
-  unit, the **Catapult**;
+- Original replaces the indistinct Pikeman concept with a fragile **Envoy**
+  whose delayed Defection threat can dislodge isolated premium defenders;
+- the kill-chaining **Lancer** and concealed **Saboteur** join the Envoy as
+  three high-variance counter-archetypes with explicit reply windows;
 - the Catapult is true range-3 siege and shares **Sawmilling** with the
   Sawmill, echoing the desirable “economic processor plus military payoff”
   pattern without copying another game's complete tree;
-- Heavy and Breacher remain tier-3 units, so the proposal has three distinct
+- Heavy and Breacher remain tier-3 units, so the proposal has five distinct
   trainable tier-3 roles;
-- the Raider becomes a sharper flanker: cheaper stats than a Fighter head-on,
-  but fast enough to punish Marksmen and Catapults;
+- the Raider remains the affordable single-target flanker, while the expensive
+  Lancer punishes clusters of weak units through a bounded three-attack Pursuit
+  sequence rather than an unlimited action reset;
 - Ore and Stone frequencies stay unchanged, but Mines, Quarries, Forges, and
   Stoneworks become much more productive per opportunity; hard processor caps
   preserve exceptional cities without allowing one build to create an
   excessive reward queue;
-- Craft, rather than already-attractive Farming, unlocks the Pikeman, while
+- Craft, rather than already-attractive Farming, unlocks the Envoy, while
   Quarrying also unlocks the terrain-independent Barracks; these are deliberate
   fallbacks when the local map does not support a branch's resource action;
+- Fieldcraft pairs forest economics with a covert city-disruption unit, and
+  Maneuver pairs ZOC freedom with the roster's costly sweeper payoff;
 - Warfare gains a bounded conquest economy—first-capture Spoils, modest
   Pillage, and Disband—rather than an arbitrary peaceful population building;
 - no counter is expressed as “unit X deals bonus damage to unit Y.” Counterplay
@@ -215,6 +220,10 @@ city and contesting the artillery screen.
    Industry is high-variance/high-payoff, Mobility compounds through position
    and Markets, and Warfare earns through conflict. Equal tile counts would
    erase those identities.
+9. **Spectacular abilities need visible exits.** A gridlock breaker may look
+   overpowered in its intended situation, but its timing window, state cap,
+   cost, exposure, and ordinary-stat weaknesses must leave a deterministic
+   response. The answer is never a hidden unit-ID damage multiplier.
 
 ## 5. Research structure and costs
 
@@ -245,33 +254,33 @@ conquest-economy effects.
 
 ### 6.1 All nodes
 
-| Branch     | Tier | Technology        | Prerequisite           | Economic unlocks                                                                                | Military/utility unlocks                                                        |
-| ---------- | ---: | ----------------- | ---------------------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| Settlement |    1 | **Gathering**     | —; researched at start | Reveal Fruit/Fertile Ground; Harvest Fruit (2 Coins, +1 permanent population)                   | —                                                                               |
-| Settlement |    2 | **Farming**       | Gathering              | Farm (5 Coins, +2 live population); connected-field visuals                                     | —                                                                               |
-| Settlement |    3 | **Milling**       | Farming                | Windmill (5 Coins, +1 per connected Farm, cap 8)                                                | —                                                                               |
-| Settlement |    2 | **Craft**         | Gathering              | Workshop (4 Coins, +1 per distinct adjacent basic family, 2–4)                                  | Train Pikeman                                                                   |
-| Settlement |    3 | **Grand Works**   | Craft                  | Grand Works (7 Coins, +2 per distinct adjacent processor, 6–8); Redevelop                       | —                                                                               |
-| Wilds      |    1 | **Hunting**       | —                      | Hunt visible Game (2 Coins, +1 permanent population)                                            | —                                                                               |
-| Wilds      |    2 | **Forestry**      | Hunting                | Lumber Camp (3 Coins, +1 live population); Clear Forest (+1 Coin)                               | —                                                                               |
-| Wilds      |    3 | **Sawmilling**    | Forestry               | Sawmill (5 Coins, +1 per connected Lumber Camp, cap 8)                                          | Train Catapult                                                                  |
-| Wilds      |    2 | **Marksmanship**  | Hunting                | —                                                                                               | Train Marksman                                                                  |
-| Wilds      |    3 | **Fieldcraft**    | Marksmanship           | Replant Forest (4 Coins); preserves future Camp/Sawmill planning                                | Scout and Marksman ignore Forest movement termination; Marksman sight becomes 2 |
-| Industry   |    1 | **Surveying**     | —                      | Reveal Ore/Stone                                                                                | Enter Mountain; +1 sight radius while on Mountain                               |
-| Industry   |    2 | **Mining**        | Surveying              | Mine (6 Coins, +4 live population)                                                              | —                                                                               |
-| Industry   |    3 | **Metallurgy**    | Mining                 | Forge (6 Coins, +3 per adjacent Mine, cap 18)                                                   | Train Heavy                                                                     |
-| Industry   |    2 | **Quarrying**     | Surveying              | Quarry (5 Coins, +3 live population)                                                            | Barracks (6 Coins, maximum one per city, +1 unit capacity)                      |
-| Industry   |    3 | **Masonry**       | Quarrying              | Stoneworks (6 Coins, +2 per adjacent Quarry and +2 per opposite pair, cap 16)                   | Stone-based population accelerates city capacity and reward access              |
-| Mobility   |    1 | **Scouting**      | —                      | Earlier villages/chests/resources improve expansion choices                                     | Train Scout; sight radius 2                                                     |
-| Mobility   |    2 | **Roads**         | Scouting               | Road (2 Coins); enables Market connection bonus                                                 | Half-cost orthogonal movement on connected friendly road/city network           |
-| Mobility   |    3 | **Commerce**      | Roads                  | Market (7 Coins, +1 Coin/turn per adjacent family, plus 1 for capital-road connection; cap 5)   | Roads support reinforcement and flanking                                        |
-| Mobility   |    2 | **Raiding**       | Scouting               | —                                                                                               | Train Raider; Charge after moving at least two path cells                       |
-| Mobility   |    3 | **Maneuver**      | Raiding                | —                                                                                               | Scout/Raider ignore hostile ZOC; Raider Move becomes 3                          |
-| Warfare    |    1 | **Drill**         | —                      | Spoils: +2 Coins on a player's first hostile capture of each city; neutral villages pay nothing | Train Guard                                                                     |
-| Warfare    |    2 | **Fortification** | Drill                  | —                                                                                               | Fighter/Guard receive 2× defense in an unwalled friendly city                   |
-| Warfare    |    3 | **Explosives**    | Fortification          | Pillage: destroy the hostile improvement beneath a unit for +1 Coin; terminal action            | Train Breacher; Breach ignores ordinary terrain/city defense multipliers        |
-| Warfare    |    2 | **Medicine**      | Drill                  | Sustaining damaged units avoids replacement cost                                                | Train Medic; Heal adjacent owned unit by 4 HP                                   |
-| Warfare    |    3 | **Recovery**      | Medicine               | Disband a trainable unit for `floor(training cost / 2)` Coins                                   | Medic heals 6; fully idle units recover 6 HP in friendly territory              |
+| Branch     | Tier | Technology        | Prerequisite           | Economic unlocks                                                                                | Military/utility unlocks                                                     |
+| ---------- | ---: | ----------------- | ---------------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Settlement |    1 | **Gathering**     | —; researched at start | Reveal Fruit/Fertile Ground; Harvest Fruit (2 Coins, +1 permanent population)                   | —                                                                            |
+| Settlement |    2 | **Farming**       | Gathering              | Farm (5 Coins, +2 live population); connected-field visuals                                     | —                                                                            |
+| Settlement |    3 | **Milling**       | Farming                | Windmill (5 Coins, +1 per connected Farm, cap 8)                                                | —                                                                            |
+| Settlement |    2 | **Craft**         | Gathering              | Workshop (4 Coins, +1 per distinct adjacent basic family, 2–4)                                  | Train Envoy                                                                  |
+| Settlement |    3 | **Grand Works**   | Craft                  | Grand Works (7 Coins, +2 per distinct adjacent processor, 6–8); Redevelop                       | —                                                                            |
+| Wilds      |    1 | **Hunting**       | —                      | Hunt visible Game (2 Coins, +1 permanent population)                                            | —                                                                            |
+| Wilds      |    2 | **Forestry**      | Hunting                | Lumber Camp (3 Coins, +1 live population); Clear Forest (+1 Coin)                               | —                                                                            |
+| Wilds      |    3 | **Sawmilling**    | Forestry               | Sawmill (5 Coins, +1 per connected Lumber Camp, cap 8)                                          | Train Catapult                                                               |
+| Wilds      |    2 | **Marksmanship**  | Hunting                | —                                                                                               | Train Marksman                                                               |
+| Wilds      |    3 | **Fieldcraft**    | Marksmanship           | Replant Forest (4 Coins); preserves future Camp/Sawmill planning                                | Train Saboteur; Scout/Marksman gain Forest freedom; Marksman sight becomes 2 |
+| Industry   |    1 | **Surveying**     | —                      | Reveal Ore/Stone                                                                                | Enter Mountain; +1 sight radius while on Mountain                            |
+| Industry   |    2 | **Mining**        | Surveying              | Mine (6 Coins, +4 live population)                                                              | —                                                                            |
+| Industry   |    3 | **Metallurgy**    | Mining                 | Forge (6 Coins, +3 per adjacent Mine, cap 18)                                                   | Train Heavy                                                                  |
+| Industry   |    2 | **Quarrying**     | Surveying              | Quarry (5 Coins, +3 live population)                                                            | Barracks (6 Coins, maximum one per city, +1 unit capacity)                   |
+| Industry   |    3 | **Masonry**       | Quarrying              | Stoneworks (6 Coins, +2 per adjacent Quarry and +2 per opposite pair, cap 16)                   | Stone-based population accelerates city capacity and reward access           |
+| Mobility   |    1 | **Scouting**      | —                      | Earlier villages/chests/resources improve expansion choices                                     | Train Scout; sight radius 2                                                  |
+| Mobility   |    2 | **Roads**         | Scouting               | Road (2 Coins); enables Market connection bonus                                                 | Half-cost orthogonal movement on connected friendly road/city network        |
+| Mobility   |    3 | **Commerce**      | Roads                  | Market (7 Coins, +1 Coin/turn per adjacent family, plus 1 for capital-road connection; cap 5)   | Roads support reinforcement and flanking                                     |
+| Mobility   |    2 | **Raiding**       | Scouting               | —                                                                                               | Train Raider; Charge after moving at least two path cells                    |
+| Mobility   |    3 | **Maneuver**      | Raiding                | —                                                                                               | Train Lancer; Scout/Raider/Lancer ignore hostile ZOC                         |
+| Warfare    |    1 | **Drill**         | —                      | Spoils: +2 Coins on a player's first hostile capture of each city; neutral villages pay nothing | Train Guard                                                                  |
+| Warfare    |    2 | **Fortification** | Drill                  | —                                                                                               | Fighter/Guard receive 2× defense in an unwalled friendly city                |
+| Warfare    |    3 | **Explosives**    | Fortification          | Pillage: destroy the hostile improvement beneath a unit for +1 Coin; terminal action            | Train Breacher; Breach ignores ordinary terrain/city defense multipliers     |
+| Warfare    |    2 | **Medicine**      | Drill                  | Sustaining damaged units avoids replacement cost                                                | Train Medic; Heal adjacent owned unit by 4 HP                                |
+| Warfare    |    3 | **Recovery**      | Medicine               | Disband a trainable unit for `floor(training cost / 2)` Coins                                   | Medic heals 6; fully idle units recover 6 HP in friendly territory           |
 
 ### 6.2 Graph audit
 
@@ -303,17 +312,18 @@ or cross-branch display parents.
 
 ### 6.3 Explicit dual-use nodes
 
-| Node       | Economic use                              | Military use                                |
-| ---------- | ----------------------------------------- | ------------------------------------------- |
-| Craft      | Rewards a mixed basic-economy site        | Unlocks Pikeman                             |
-| Sawmilling | Multiplies Lumber Camp clusters           | Unlocks Catapult                            |
-| Fieldcraft | Replants future timber clusters           | Improves forest movement and Marksman sight |
-| Metallurgy | Multiplies rare Mines                     | Unlocks Heavy                               |
-| Quarrying  | Converts Stone at high efficiency         | Unlocks terrain-independent city capacity   |
-| Roads      | Enables Market network                    | Accelerates reinforcement                   |
-| Drill      | Pays conquest Spoils                      | Unlocks Guard                               |
-| Explosives | Converts destruction into Pillage Coins   | Unlocks Breacher                            |
-| Recovery   | Recovers part of obsolete-unit investment | Improves healing and recovery               |
+| Node       | Economic use                              | Military use                               |
+| ---------- | ----------------------------------------- | ------------------------------------------ |
+| Craft      | Rewards a mixed basic-economy site        | Unlocks Envoy                              |
+| Sawmilling | Multiplies Lumber Camp clusters           | Unlocks Catapult                           |
+| Fieldcraft | Replants future timber clusters           | Unlocks Saboteur; improves forest movement |
+| Metallurgy | Multiplies rare Mines                     | Unlocks Heavy                              |
+| Quarrying  | Converts Stone at high efficiency         | Unlocks terrain-independent city capacity  |
+| Scouting   | Finds expansion/economic targets earlier  | Unlocks Scout                              |
+| Roads      | Enables Market network                    | Accelerates reinforcement                  |
+| Drill      | Pays conquest Spoils                      | Unlocks Guard                              |
+| Explosives | Converts destruction into Pillage Coins   | Unlocks Breacher                           |
+| Recovery   | Recovers part of obsolete-unit investment | Improves healing and recovery              |
 
 This is more than the minimum “one economy plus one unit” bundling. It also
 lets a player justify a node from the board position rather than from a fixed
@@ -327,41 +337,187 @@ build order.
 | ---------- | ----------------- | ---: | --: | -----: | ------: | ---: | ----: | ------------: | ------------------------- |
 | Fighter    | Start             |    2 |  10 |      2 |       2 |    1 |     1 |             1 | Yes                       |
 | Scout      | Scouting (T1)     |    4 |  10 |    1.5 |       1 |    2 |     1 |             1 | Yes                       |
-| Pikeman    | Craft (T2)        |    4 |  12 |    2.5 |       2 |    1 |     1 |             1 | Yes                       |
+| Envoy      | Craft (T2)        |    6 |   7 |      0 |     0.5 |    1 |     2 |             1 | Yes, Defection only       |
 | Marksman   | Marksmanship (T2) |    3 |  10 |      2 |       1 |    1 |     2 |             1 | Yes                       |
 | Guard      | Drill (T1)        |    3 |  15 |    1.5 |       3 |    1 |     1 |             1 | No                        |
 | Raider     | Raiding (T2)      |    4 |  10 |      2 |       1 |    2 |     1 |             1 | Yes                       |
 | Medic      | Medicine (T2)     |    4 |  10 |    0.5 |     1.5 |    1 |     1 |             1 | Yes                       |
 | Catapult   | Sawmilling (T3)   |    8 |  10 |    3.5 |     0.5 |    1 |     3 |             2 | No                        |
+| Saboteur   | Fieldcraft (T3)   |    7 |  10 |      2 |       1 |    2 |     1 |             1 | Yes                       |
 | Heavy      | Metallurgy (T3)   |    7 |  20 |    3.5 |     3.5 |    1 |     1 |             1 | Yes                       |
+| Lancer     | Maneuver (T3)     |    9 |  12 |      3 |     1.5 |    3 |     1 |             1 | Yes                       |
 | Breacher   | Explosives (T3)   |    6 |  10 |      4 |       1 |    1 |     1 |             1 | No                        |
 | Juggernaut | City reward only  |    — |  40 |      4 |       4 |    1 |     1 |             1 | Yes                       |
 
-The table shows base role stats. Maneuver changes Raider Move from 2 to 3 for
-players who have researched it; no other proposed technology changes a role's
-numeric stat.
+These are base role stats. Technology does not modify a role's numeric stat;
+Maneuver's movement benefit is now the new Move-3 Lancer rather than a hidden
+Raider stat increase. The roster has five trainable tier-3 units with distinct
+jobs and prices: Catapult 8, Saboteur 7, Heavy 7, Lancer 9, and Breacher 6.
+None is merely Fighter with every number increased.
 
-The roster has three trainable tier-3 units with different jobs and prices:
-Catapult 8, Heavy 7, and Breacher 6. None is merely Fighter with every number
-increased.
+Roster audit: 13 unique roles comprise 12 trainable units (the starting
+Fighter plus 11 technology unlocks) and one reward-only Juggernaut. The five
+tier-3 trainable roles are the five named above; no node unlocks the same role
+twice.
 
 ### 7.2 Abilities and restrictions
 
-| Unit       | Abilities and restrictions                                                                                                                                                                                                        |
-| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Fighter    | Attack, Capture. Its 2-Coin price is its late-game advantage.                                                                                                                                                                     |
-| Scout      | Attack, Capture, sight 2; gains Forest freedom from Fieldcraft and ZOC freedom from Maneuver.                                                                                                                                     |
-| Pikeman    | Attack, Capture. No matchup bonus: Attack 2.5 and Dash make it a mobile line attacker; HP 12 and Defense 2 keep it materially less durable than Guard.                                                                            |
-| Marksman   | Attack at range 1–2, Capture, no advance after a ranged kill; Fieldcraft grants Forest freedom and sight 2.                                                                                                                       |
-| Guard      | Attack, Capture, cannot attack after moving; strongest cheap base defense and benefits from Fortification.                                                                                                                        |
-| Raider     | Attack, Capture; Charge adds +1 Attack only after an accepted move of at least two path cells; Maneuver removes hostile-ZOC termination and raises Move from 2 to 3. Base Attack/Defense are both reduced from current Ruleset 6. |
-| Medic      | Weak Attack or Heal; does not Capture. Heal is 4, upgraded to 6 by Recovery.                                                                                                                                                      |
-| Catapult   | Attack only at range 2–3; cannot attack after moving, Capture, retaliate at range 1, or advance after a kill. It may retaliate at range 2–3, using its ordinary Defense 0.5 retaliation force.                                    |
-| Heavy      | Attack, Capture, Push a surviving melee target when the behind tile is legal. High HP lets it stay on the front line.                                                                                                             |
-| Breacher   | Melee Attack with Breach; cannot attack after moving or Capture. Breach replaces the defender's ordinary terrain/city multiplier with 1×, but does not alter base Defense.                                                        |
-| Juggernaut | Attack, Capture, Push; reward-only and unchanged in purpose.                                                                                                                                                                      |
+| Unit       | Abilities and restrictions                                                                                                                                                                                                            |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Fighter    | Attack, Capture. Its 2-Coin price is its late-game advantage.                                                                                                                                                                         |
+| Scout      | Attack, Capture, sight 2; gains Forest freedom from Fieldcraft and ZOC freedom from Maneuver.                                                                                                                                         |
+| Envoy      | Defection after moving; no ordinary Attack, retaliation, Capture, or city-defense bonus. The delayed conversion requires one uninterrupted enemy reply and a reserved friendly capacity slot.                                         |
+| Marksman   | Attack at range 1–2, Capture, no advance after a ranged kill; Fieldcraft grants Forest freedom and sight 2.                                                                                                                           |
+| Guard      | Attack, Capture, cannot attack after moving; strongest cheap base defense and benefits from Fortification.                                                                                                                            |
+| Raider     | Attack, Capture; Charge adds +1 Attack only after an accepted move of at least two path cells. Maneuver removes hostile-ZOC termination but no longer changes Raider Move. Base Attack/Defense remain reduced from current Ruleset 6. |
+| Medic      | Weak Attack or Heal; does not Capture. Heal is 4, upgraded to 6 by Recovery.                                                                                                                                                          |
+| Catapult   | Attack only at range 2–3; cannot attack after moving, Capture, retaliate at range 1, or advance after a kill. It may retaliate at range 2–3, using its ordinary Defense 0.5 retaliation force.                                        |
+| Saboteur   | Attack, Conceal, and Blackout after moving; no Capture. Attacking or using Blackout exposes it. Its low Defense and mandatory adjacency to a city give the defender a reply.                                                          |
+| Heavy      | Attack, Capture, Push a surviving melee target when the behind tile is legal. High HP lets it stay on the front line.                                                                                                                 |
+| Lancer     | Attack, Capture, Pursuit, and Dash; Maneuver lets it ignore hostile ZOC. It can make at most three attacks in a turn and only a lethal unit attack continues the sequence.                                                            |
+| Breacher   | Melee Attack with Breach; cannot attack after moving or Capture. Breach replaces the defender's ordinary terrain/city multiplier with 1×, but does not alter base Defense.                                                            |
+| Juggernaut | Attack, Capture, Push; reward-only and unchanged in purpose.                                                                                                                                                                          |
 
-### 7.3 Why the advanced prices are justified
+### 7.3 Gridlock-breaker state machines
+
+The three new high-variance mechanics are commands and serialized state, not
+informal exceptions. All coordinate lists and target choices use the engine's
+canonical ordering; none consumes gameplay PRNG.
+
+These are original implementations of portable jobs, not copies of another
+game's units: Pursuit is a three-attack movement sequence rather than an
+unlimited kill reset; Defection is delayed, interruptible, and capacity-backed
+rather than an immediate attack replacement; Blackout suppresses one city's
+income/actions and creates neither revolt units nor theft income.
+
+#### Lancer: bounded Pursuit
+
+1. A Lancer begins each turn with `attacksUsed = 0` and no Pursuit state. It
+   may take its ordinary Move and melee Attack using Move 3 and Dash.
+2. Every Attack increments `attacksUsed`. After one that kills a hostile
+   **unit**, if the Lancer survives retaliation and the resulting count is 1
+   or 2, it enters `PURSUIT_READY`: `attacked` clears and exactly one follow-up
+   Attack remains available. Ordinary melee advance into the defeated unit's
+   cell resolves before Pursuit opens. A resulting count of 3 ends the
+   activation. Killing a wall or structure never qualifies.
+3. From `PURSUIT_READY`, the player may attack an adjacent hostile unit
+   immediately, issue one `PURSUE` path of at most two entered cells and then
+   attack, or `END_PURSUIT`. A Pursue path costs one point per cell; Roads do
+   not discount it. Ordinary occupancy, Mountain access, Forest/unexplored
+   termination, map bounds, and allied-territory rules apply. Maneuver's ZOC
+   freedom applies because the Lancer is unlocked by that technology.
+4. After a Pursue path the unit enters `PURSUIT_MOVED`; only an Attack against
+   a hostile unit or `END_PURSUIT` is legal. A nonlethal attack, death to
+   retaliation, the third attack, or `END_PURSUIT` sets
+   `attacked = handled = true` and clears Pursuit. It cannot Move, Capture,
+   Heal, Pillage, attack a structure, or Wait between follow-up attacks.
+
+Thus a Lancer can erase at most three exposed low-defense units, not an
+unlimited army. Attack 3 kills a full-health Defense-1 Marksman or Catapult but
+deals only about 8 to a full-health Defense-2 Fighter. Each surviving defender
+retaliates normally. At 9 Coins, the Lancer is poor value against Fighters,
+Guards, Heavies, walls, spaced formations, and any screen it cannot kill; those
+properties create the counter without an anti-role modifier.
+
+#### Envoy: delayed Defection
+
+1. `OFFER_DEFECTION` is a terminal primary action after an optional ordinary
+   Move. It targets one visible hostile unit at Chebyshev range 1–2 with no
+   existing Defection mark and names one owned city with an unreserved capacity
+   slot. The slot becomes reserved immediately. The action deals no damage and
+   causes no retaliation.
+2. The mark stores source unit, target unit, initiating player, recorded target
+   owner, reserved home city, `offeredAtCommandIndex`, and phase
+   `WAITING_FOR_REPLY`. Source and target owners see the mark; other players see
+   it only while they can see its source or target.
+3. The **first accepted `END_TURN` by the recorded target owner after the
+   offer** is the reply boundary, whether that turn occurs later in the current
+   round or in the next round. The owner receives that turn's normal Start Turn
+   income, activation reset, pending-choice flow, unit commands, and End Turn
+   recovery. Immediately after recovery and before the next seat starts, a
+   surviving mark changes to `ARMED`. This guarantees exactly one complete
+   target-owner activation window and never grants an extra action.
+4. An `ARMED` mark resolves at the initiating player's first subsequent Start
+   Turn. That Start Turn first resets units the player already owned, then
+   resolves armed marks in ascending mark ID, then reveals from successful
+   conversions and awards income. Because the target changes owner **after**
+   the reset, the converted unit is explicitly exhausted for that whole turn:
+   Capture is false and every activation flag, including `handled`, is true.
+5. At both the arming and resolution boundaries, the source and target must be
+   alive, the source must still belong to the initiator, the target must still
+   have its recorded hostile owner, both must be within range 2, and the
+   initiator must still own the reserved city and slot. Failure clears the mark
+   and reservation. Moving either unit out of range, killing, converting, or
+   pushing the Envoy, changing the target's ownership, capturing its reserved
+   city, or reducing that city's capacity can break the attempt.
+6. On success, the target keeps role, current HP, kills, and veteran status but
+   changes owner and home city and counts against the reserved city's capacity.
+   It reveals terrain from its current cell by its normal sight rules but
+   transfers none of its former owner's exploration. Its old home city frees
+   its former counted assignment.
+
+Every hostile role, including a reward-only Juggernaut, is eligible. That is
+the Envoy's deliberately alarming payoff, but even a Juggernaut can step away
+or kill the Defense-0.5, 7-HP Envoy during the guaranteed reply. A converted
+reward unit is re-homed against the reserved city rather than using reward
+placement's permission to create an over-capacity state. Multiple Envoys cannot
+mark one target or reserve one slot. A city defender may abandon its fortified
+cell to move out of range; mobile attackers can instead close and kill the
+Envoy. Walls and defense
+multipliers do not block an offer because no combat occurs. As with current
+ranged combat, intervening units and terrain do not create line of sight; the
+target must nevertheless be present in the acting player's public view.
+
+#### Saboteur: concealed Blackout
+
+1. **Conceal** omits an enemy Saboteur from a player's view unless it is within
+   Chebyshev distance 1 of one of that player's units or city centers, or has
+   an exposure marker visible to that player. Owners always see their own
+   Saboteurs. Exploration remains permanent terrain knowledge; Conceal affects
+   only the unit entity.
+2. `BLACKOUT_CITY` is a terminal primary action after an optional Move. It
+   targets an adjacent hostile city with no pending Blackout and applies a
+   pending effect visible to source and target owners; another player sees it
+   only while that city is visible. The Saboteur becomes exposed to the target
+   owner and its allies through the end of the owner's next turn. It stores
+   `nextBlackoutOwnerTurn = currentOwnerTurn + 3`; the command is illegal on
+   the next two owner turns and becomes legal on the third.
+3. At the target owner's next Start Turn, before income, Blackout suppresses
+   up to 3 Coins of that city's calculated income rather than subtracting an
+   existing treasury. Through that turn the city cannot Train, and its
+   territory cannot take economic build, clear, replant, or Redevelop actions.
+   Existing population, capacity, rewards, defenses, Roads, units, and
+   improvements continue to function. The effect clears at End Turn.
+4. Capturing the city before the trigger cancels the pending effect. Blackout
+   gives the Saboteur's owner no Coins, does not damage or spawn units, and
+   cannot stack, so trading or repeatedly recapturing a city creates no reward
+   loop. One Saboteur can affect a city at most once every three of its owner's
+   turns because of cooldown.
+
+City-center detection means the Saboteur is revealed as soon as it reaches
+Blackout range. The action still lands before the defender can reply, but the
+7-Coin attacker remains exposed to nearby mobile or ranged units. Empty rear
+cities are therefore valid targets; screened front-line cities are dangerous.
+Attacking instead uses ordinary combat and exposes the Saboteur to the target
+owner and its allies through the end of that owner's next turn without
+creating Blackout. Other players still apply detection independently.
+
+### 7.4 Shared interaction contract for the new mechanics
+
+| System                   | Exact interaction                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Fog and hidden occupancy | Defection targets must be visible when offered and never reveal later target movement. If an enemy path enters a concealed Saboteur's cell, authority accepts the visible legal prefix, stops before the occupied cell, consumes that unit's ordinary Move, and reveals the Saboteur to that mover through the turn; a Dash unit may then attack. Public path enumeration treats the cell as empty until contact. No rejection or target list may leak concealment.                                                   |
+| Detection                | Enemy units and city centers detect Saboteurs at radius 1 regardless of terrain, Walls, or technology. Attacks cannot target a concealed entity. Concealment is recalculated per viewer, so one opponent's detection does not reveal it to everyone.                                                                                                                                                                                                                                                                  |
+| Cities and Walls         | Lancer and ordinary attacks use normal defense and wall rules. Defection ignores multipliers but does not capture its occupied city. Blackout ignores multipliers, leaves Walls/fortification intact, and cancels on city ownership change.                                                                                                                                                                                                                                                                           |
+| Retaliation              | Every Lancer strike receives ordinary retaliation when legal. Defection and Blackout are non-Attack terminal actions and cause none. Envoy Attack 0 means it never retaliates; Saboteur retaliates normally while revealed or concealed because concealment does not alter authoritative combat.                                                                                                                                                                                                                      |
+| ZOC and Roads            | Envoy and Saboteur use ordinary ZOC and Road movement. Scout, Raider, and Lancer ignore hostile ZOC with Maneuver. Roads affect an ordinary Lancer move but never its two-cell Pursue budget.                                                                                                                                                                                                                                                                                                                         |
+| Capacity and training    | Training all three requires one free city slot. A pending Defection reserves a second slot for its target; loss of that slot cancels resolution. Blackout blocks training only for the affected turn. Pursuit never creates units or capacity.                                                                                                                                                                                                                                                                        |
+| Capture and rewards      | Lancer has Capture but cannot use it during Pursuit; Envoy and Saboteur lack Capture. Defection never captures a city or grants capture/Spoils income. Converted reward units are allowed but counted; no unit can be converted during placement, and occupied reward spawn selection remains unchanged. Blackout cannot create reward choices.                                                                                                                                                                       |
+| Healing and status       | Healing does not clear Defection, exposure, cooldown, Pursuit, or Blackout. Source or target death/removal immediately cancels its Defection mark and releases the reservation; a planted Blackout persists after Saboteur death and cancels only on city ownership change. Dead Lancers lose Pursuit with their entity. Start/End Turn ordering, not healing, advances timers. Converted HP is not restored.                                                                                                         |
+| Replay and schemas       | Pursuit mode/counter, Defection reservation/phase plus offer command index, per-view exposure, Saboteur cooldown, and city Blackout are authoritative serialized fields or entities. Commands and events carry explicit IDs/coordinates and deterministic timers. Defection emits separate offered, armed/cancelled, and resolved/cancelled events at its exact End/Start boundaries. Replays never infer state from animation or recompute a hidden target from client data.                                         |
+| AI and UI targeting      | Legal-action queries expose Pursue/End, Defection plus eligible home-city slots, and Blackout only to the acting player. AI evaluates bounded action sequences, reserved capacity, the target's guaranteed complete reply turn, detection risk, and lost city income. UI previews show `waiting for target reply` versus `armed`, the resolving player's next Start boundary, every break condition, chain attacks remaining, detection/exposure, cooldown, and Blackout's capped loss without exposing hidden units. |
+
+### 7.5 Why the advanced prices are justified
 
 - A **Catapult** costs 4 Fighters and safely deals approximately 4 damage per
   full-health shot to a Guard under a 4× city-wall multiplier. A Marksman deals
@@ -373,6 +529,17 @@ increased.
 - A **Breacher** costs 3 Fighters and can deal approximately 10 damage to a
   full-health Guard while ignoring its city multiplier. It pays for that burst
   with 10 HP, Defense 1, range 1, no Dash, and no Capture.
+- A **Lancer** costs 4.5 Fighters. Its first strike is only slightly stronger
+  than a Raider's Charge, and it cannot begin a chain through a healthy Fighter.
+  The premium buys a three-attack ceiling when the opponent clusters fragile
+  or wounded units.
+- A **Saboteur** costs 3.5 Fighters for Fighter-level Attack, half the Defense,
+  no Capture, and a delayed two-turn cooldown. Its value is positional economic
+  denial, not efficient front-line combat.
+- An **Envoy** costs 3 Fighters despite having no Attack and only 7 HP. It pays
+  off only when an expensive target cannot spend its reply moving away or
+  removing the Envoy; the capacity reservation prevents free over-capacity
+  conversion.
 
 Capacity concentration matters: three or four Fighters need three or four city
 slots, while one advanced unit needs one. That is a real part of advanced-unit
@@ -380,6 +547,37 @@ value and should be shown in balancing, not treated as free. The Scout's
 increase from 3 to 4 Coins is also intentional: on large maps its sight,
 village access, and route to globally public treasure chests are economic
 effects, not free military utility.
+
+### 7.6 Cross-faction archetype charter
+
+Future factions should retain the battlefield questions in the **Invariant
+job** column. They do not need to copy Original's names, art, exact stats, or
+mechanic text. A faction may combine two jobs in one unit or split one job
+across two units only if its complete roster still supplies the listed pressure
+and counter-pressure at a comparable research/price horizon.
+
+| Portable archetype | Original expression | Invariant job                                                                          | Faction-specific freedom                                                 |
+| ------------------ | ------------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Generalist         | Fighter             | Cheap capture-capable body; efficient screen and baseline trade                        | Weapon, movement rider, exact 2/2 stats                                  |
+| Explorer           | Scout               | Early sight/mobility that converts information into expansion                          | Detection, terrain affinity, Capture, combat strength                    |
+| Defender           | Guard               | Cheap high-defense occupation that makes frontal melee inefficient                     | Fortify rule, HP/Defense mix, city affinity                              |
+| Basic ranged       | Marksman            | Mobile short-range pressure with low durability                                        | Range pattern, move-fire rule, damage curve                              |
+| Flanker            | Raider              | Affordable fast single-target closer that punishes exposed ranged units                | Charge, escape, road/terrain interaction                                 |
+| Support            | Medic               | Sustains allies while sacrificing direct offense and tempo                             | Heal, cleanse, shield, or another bounded support action                 |
+| Artillery          | Catapult            | Expensive long-range siege pressure with a close-range/setup weakness                  | Minimum range, reload, line of fire, projectile theme                    |
+| Anchor             | Heavy               | Capacity-efficient durable front-line power that displaces or survives                 | Push, armor, HP pool, movement limitation                                |
+| Direct siege       | Breacher            | High-risk adjacent answer to extreme static defense                                    | Defense stripping, structure attack, positional setup                    |
+| Sweeper            | Lancer              | Costly mobility plus bounded repeat actions that punish weak-unit concentration        | Chain trigger, cap, fatigue, route rules; never a unit-ID damage bonus   |
+| Controller         | Envoy               | Fragile delayed threat to an isolated premium unit, forcing movement or rescue         | Conversion, disable, displacement, or possession with a guaranteed reply |
+| Infiltrator        | Saboteur            | Situational hidden access to neglected rear areas and bounded city/economic disruption | Detection model, theft/denial payload, cooldown, reveal condition        |
+| Super-unit         | Juggernaut          | Rare reward-only strategic concentration that ordinary rosters must answer             | Reward source, scale, movement, signature action                         |
+
+The Sweeper, Controller, and Infiltrator are high-variance jobs, not promises
+that every faction receives Pursuit, Defection, and Blackout. Their shared
+contract is the tactical question they pose: do not mass fragile units, do not
+leave an expensive immobile unit unsupported, and do not neglect the rear. A
+future faction's answer may look radically different while preserving those
+three checks and equally legible counterplay.
 
 ## 8. Economy and improvement numbers
 
@@ -430,18 +628,17 @@ levels. The player has paid for Surveying, Mining, Metallurgy, four deposits,
 an exact adjacency tile, and 30 Coins of construction. That should feel like a
 spectacular payoff, not like an ordinary Farm cluster with fewer candidates.
 
-The initial draft's uncapped `+4/Mine` Forge was not a safe baseline. Eight
-adjacent Mines plus that Forge represented 64 population: enough to take a
-fresh city to level 10 and create nine reward decisions over the complex's
-construction. Under the revised limits, the absolute basic-plus-processor
-maxima are 50 for eight Mines and a capped `+18` Forge, and 40 for eight
-Quarries and a capped `+16` Stoneworks. Starting from no other population,
-those totals reach levels 9 and 8 respectively. Because basic builds must drain
-their own reward queues before construction continues, the final Forge can add
-at most two queued levels after eight Mines; the final Stoneworks can add at
-most two after eight Quarries. Exceptional mixed cities can still grow beyond
-those levels through other families and Grand Works, but one processor cannot
-create an uncontrolled modal/reward-unit cascade.
+Eight adjacent Mines plus the rejected uncapped `+4/Mine` Forge represented 64
+population: enough to take a fresh city to level 10 and create nine reward
+decisions over the complex's construction. Under the revised limits, the
+absolute basic-plus-processor maxima are 50 for eight Mines and a capped `+18`
+Forge, and 40 for eight Quarries and a capped `+16` Stoneworks. Starting from
+no other population, those totals reach levels 9 and 8 respectively. Because
+basic builds must drain their own reward queues before construction continues,
+the final Forge can add at most two queued levels after eight Mines; the final
+Stoneworks can add at most two after eight Quarries. Exceptional mixed cities
+can still grow beyond those levels through other families and Grand Works, but
+one processor cannot create an uncontrolled modal/reward-unit cascade.
 
 ### 8.4 Conflict and capacity rules
 
@@ -496,10 +693,10 @@ available geometric stone/capacity engine, not two resource-only dead ends.
 
 | Branch     | Dependable economic value                                                                  | Military value                                              | Why enter it even on imperfect terrain                                                                    |
 | ---------- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| Settlement | Most abundant permanent/Farm growth; Workshop and Grand Works turn mixed sites into growth | Craft unlocks a mobile, capacity-efficient Pikeman          | Gathering is already known; Craft still rewards mixed maps with few Fertile tiles                         |
-| Wilds      | Game, cheap Camps, Sawmill clusters, clearing/replanting                                   | Marksman plus true range-3 Catapult; Fieldcraft mobility    | Forest is 24% of every generated board; artillery remains useful after local forests are developed        |
+| Settlement | Most abundant permanent/Farm growth; Workshop and Grand Works turn mixed sites into growth | Craft unlocks the high-leverage but answerable Envoy        | Gathering is already known; Craft still rewards mixed maps with few Fertile tiles                         |
+| Wilds      | Game, cheap Camps, Sawmill clusters, clearing/replanting                                   | Marksman, range-3 Catapult, and covert Saboteur             | Forest is 24% of every board; artillery and disruption remain useful after forests are developed          |
 | Industry   | Very high population per rare deposit; two different jackpot geometries                    | Barracks adds capacity; Heavy concentrates front-line power | Surveying always provides Mountain access/vision; Barracks and Heavy work without a nearby deposit        |
-| Mobility   | Roads save movement; Markets produce up to 5 recurring Coins per city                      | Scout exploration and Raider flanking/ZOC penetration       | Every accepted settlement has at least two nearby economic families, supporting eventual Market diversity |
+| Mobility   | Roads save movement; Markets produce up to 5 recurring Coins per city                      | Scout/Raider mobility plus Lancer anti-mass breakthrough    | Every accepted settlement has at least two nearby economic families, supporting eventual Market diversity |
 | Warfare    | Bounded Spoils, Pillage, partial Disband refund, and replacement-cost savings              | Guard, Medic, Breacher, city fortification, recovery        | Its economy is conflict-driven and independent of resource generation                                     |
 
 Parity does not mean identical unlock counts. Warfare should retain the widest
@@ -508,13 +705,13 @@ Industry need fewer roles because their city-growth ceilings are much higher.
 
 ### 9.3 Unit-unlock distribution
 
-| Branch     | Proposed unit unlocks  | Count |
-| ---------- | ---------------------- | ----: |
-| Settlement | Pikeman                |     1 |
-| Wilds      | Marksman, Catapult     |     2 |
-| Industry   | Heavy                  |     1 |
-| Mobility   | Scout, Raider          |     2 |
-| Warfare    | Guard, Medic, Breacher |     3 |
+| Branch     | Proposed unit unlocks        | Count |
+| ---------- | ---------------------------- | ----: |
+| Settlement | Envoy                        |     1 |
+| Wilds      | Marksman, Catapult, Saboteur |     3 |
+| Industry   | Heavy                        |     1 |
+| Mobility   | Scout, Raider, Lancer        |     3 |
+| Warfare    | Guard, Medic, Breacher       |     3 |
 
 No branch is now militarily empty. The remaining asymmetry is deliberate and
 offset by economic scope rather than by making every branch contain the same
@@ -525,22 +722,24 @@ number of units.
 ### 10.1 Intended pressure loop
 
 ```text
-Guard / Pikeman line
-    holds cheap melee and Raider charges
+Fighter / Guard screen
+    absorbs ordinary melee and blocks lanes
         ↓ invites
 Marksman / Catapult fire
     attacks without ordinary melee retaliation
         ↓ invites
-Raider flanking
-    closes quickly and exploits Defense 1 / 0.5
+Raider / Lancer breakthrough
+    closes quickly; Lancer punishes a clustered fragile back line
         ↓ invites
-Fighter screens, Pikemen, Guards, and ZOC
+spaced Fighters, Guards, Heavies, and overlapping retaliation
 ```
 
-Breacher and Heavy sit beside this loop rather than replacing it. Breacher is
-the risky adjacent solution to extreme defense. Heavy is a capacity-efficient
-front-line anchor and positional displacer, but attacking a 4× walled Guard
-head-on is still inefficient.
+Envoy and Saboteur attack overreliance from different axes. An isolated premium
+anchor must spend its reply escaping or removing the Envoy. An army that
+commits every unit to one front leaves rear cities open to Blackout. Breacher
+remains the risky adjacent solution to extreme defense, while Heavy is the
+capacity-efficient front-line anchor and positional displacer. None replaces
+ordinary screens, spacing, detection, and reserve units.
 
 ### 10.2 Full-health illustrative exchanges
 
@@ -548,19 +747,20 @@ These use proposed stats, ordinary current combat arithmetic, and no promotion.
 “Damage” is defender damage / attacker retaliation. A killed defender does not
 retaliate.
 
-| Attack                    | Context                                  | Approx. damage | Meaning                                                              |
-| ------------------------- | ---------------------------------------- | -------------: | -------------------------------------------------------------------- |
-| Fighter → Raider          | Open ground                              |          6 / 2 | A 2-Coin Fighter trades efficiently into the 4-Coin flanker.         |
-| Charged Raider → Fighter  | Open ground                              |          8 / 4 | Raider hurts but does not erase its screen in one attack.            |
-| Charged Raider → Guard    | Guard on ordinary 1.5× defensive terrain |          5 / 8 | Charging a prepared defensive body is a losing exchange.             |
-| Charged Raider → Pikeman  | Open ground                              |          8 / 4 | The Pike survives, but is not a second cheap Guard.                  |
-| Charged Raider → Marksman | Open ground                              |         10 / 0 | An exposed Marksman is removed if the Raider finds a two-step lane.  |
-| Charged Raider → Catapult | Open ground                              |         10 / 0 | Minimum range and Defense 0.5 make unsupported artillery vulnerable. |
-| Fighter → Pikeman         | Open ground                              |          5 / 5 | Pike gains capacity density, not Guard-level staying power.          |
-| Pikeman → Guard           | Open ground                              |          5 / 7 | Guard wins the static melee trade; Pike's advantage is Dash/Attack.  |
-| Marksman → walled Guard   | 4× city defense                          |          1 / 0 | Safe chip damage alone is too slow for strong siege.                 |
-| Catapult → walled Guard   | Range 2–3, 4× city defense               |          4 / 0 | Expensive artillery creates real pressure but needs four shots.      |
-| Breacher → walled Guard   | Breach replaces multiplier with 1×       |         10 / 6 | Direct siege is faster but exposes the fragile attacker.             |
+| Attack                    | Context                                  | Approx. damage | Meaning                                                                 |
+| ------------------------- | ---------------------------------------- | -------------: | ----------------------------------------------------------------------- |
+| Fighter → Raider          | Open ground                              |          6 / 2 | A 2-Coin Fighter trades efficiently into the 4-Coin flanker.            |
+| Charged Raider → Fighter  | Open ground                              |          8 / 4 | Raider hurts but does not erase its screen in one attack.               |
+| Charged Raider → Guard    | Guard on ordinary 1.5× defensive terrain |          5 / 8 | Charging a prepared defensive body is a losing exchange.                |
+| Charged Raider → Marksman | Open ground                              |         10 / 0 | An exposed Marksman is removed if the Raider finds a two-step lane.     |
+| Charged Raider → Catapult | Open ground                              |         10 / 0 | Minimum range and Defense 0.5 make unsupported artillery vulnerable.    |
+| Lancer → Marksman         | Open ground                              |         10 / 0 | A kill opens Pursuit; clustering up to two more fragile units is risky. |
+| Lancer → Fighter          | Open ground                              |          8 / 4 | A healthy Fighter stops Pursuit and extracts ordinary retaliation.      |
+| Fighter → Lancer          | Open ground                              |          5 / 3 | Cheap bodies trade efficiently into the 9-Coin sweeper.                 |
+| Charged Raider → Envoy    | Open ground                              |          7 / 0 | A mobile attacker removes the controller before Defection resolves.     |
+| Marksman → walled Guard   | 4× city defense                          |          1 / 0 | Safe chip damage alone is too slow for strong siege.                    |
+| Catapult → walled Guard   | Range 2–3, 4× city defense               |          4 / 0 | Expensive artillery creates real pressure but needs four shots.         |
+| Breacher → walled Guard   | Breach replaces multiplier with 1×       |         10 / 6 | Direct siege is faster but exposes the fragile attacker.                |
 
 Nothing in those outcomes checks the defender's unit ID. If future stat tuning
 changes the matchups, it does so through universal combat properties.
@@ -568,8 +768,8 @@ changes the matchups, it does so through universal combat properties.
 ### 10.3 Position and combined arms
 
 - ZOC from a cheap Fighter can close the route to a Catapult. Maneuver lets a
-  Move-3 Raider bypass that stop, but occupancy and surviving defenders still
-  matter.
+  Raider or Lancer bypass that stop, but occupancy and surviving defenders
+  still matter.
 - Catapult minimum range 2 means a unit that reaches adjacency shuts down its
   attack without a special “silence artillery” rule. It may move away, but
   cannot fire on that turn.
@@ -583,6 +783,17 @@ changes the matchups, it does so through universal combat properties.
   of setup after every move, and the need for adjacent screens. Range 3 still
   ignores intervening units and terrain, so artillery concentration remains a
   specific playtest risk rather than a solved theorem.
+- A Lancer can devastate three adjacent Marksmen/Catapults, yet one healthy
+  Fighter ends the sequence because Attack 3 does not kill Defense 2 from full
+  HP. Spacing fragile units more than two Pursue cells apart also ends the
+  threat without a special protection aura.
+- A Guard or Juggernaut threatened by Defection can retreat out of range,
+  close and attack if it has move-then-attack, accept allied help, or allow a
+  Push to separate the units. An unsupported static defender may have to vacate
+  the position it was meant to hold, which is the intended gridlock break.
+- Saboteur detection is supplied by any unit, including a cheap rear Fighter.
+  Blackout cannot remove existing defenses, so it disrupts reinforcement and
+  development rather than directly opening a defended city.
 - Roads increase the practical threat radius of reinforcements, but Forest,
   Mountain prerequisites, unexplored stops, and ZOC remain impartial checks.
 
@@ -595,8 +806,8 @@ everything at once:
 
 - **Settlement:** keep the starting branch advantage and spend 2 per Fruit for
   immediate growth. Farming is the reliable abundant-resource fork; Craft is
-  the mixed-site fork and pairs its Workshop with a 4-Coin Pikeman, so the
-  branch still has an off-terrain military purchase.
+  the mixed-site fork and pairs its Workshop with a 6-Coin Envoy. That unit is
+  a positional threat, not a replacement for starting Fighters.
 - **Wilds:** spend 5 on Hunting and 2 to Hunt one visible Game. The same branch
   leads to cheap timber or Marksmen; the terrain decides the fork.
 - **Industry:** spend all 5 on Surveying for Mountain access, both resource
@@ -620,6 +831,9 @@ so the endpoint must serve more than one purpose.
   Sawmilling. It can immediately build a 5-Coin Sawmill where profitable and
   train 8-Coin Catapults for a fortified frontier. Economy and war share the
   same research purchase.
+- An empire facing protected Catapults can buy Maneuver for ZOC freedom and a
+  9-Coin Lancer. The Lancer is wasteful against the Guard screen but threatens
+  a decisive Pursuit if a Raider or Heavy first opens a lane.
 - An Ore-rich city spends 11 on Mining, then 15 on Metallurgy. Four 6-Coin
   Mines plus a 6-Coin Forge produce 28 live population and unlock a 20-HP Heavy.
   The 56-Coin research/build commitment is enormous, but its local city and
@@ -647,6 +861,8 @@ planning rather than completion for its own sake:
   longer fit the plan.
 - Explosives adds both Breachers and 1-Coin Pillage pressure against a dense
   enemy economy.
+- Fieldcraft adds Saboteurs whose Blackout punishes undefended rear production,
+  but a 7-Coin infiltrator that finds every city detected is a failed purchase.
 
 If playtests show that players correctly identify these benefits but still
 never buy tier 3 after reaching four or five cities, reduce only the tier-3
@@ -667,10 +883,27 @@ goldens should remain readable only under their original contract.
 
 ### Engine and data model
 
-- Add Pikeman and Catapult role IDs/rules; add `minimumRange` to role rules,
-  authoritative Attack legality, public enumeration/preview, retaliation,
-  threat projection, and AI range checks. Catapult uses the same minimum for
-  attacks and retaliation.
+- Add Envoy, Catapult, Saboteur, and Lancer role IDs/rules; add `minimumRange`
+  to role rules, authoritative Attack legality, public enumeration/preview,
+  retaliation, threat projection, and AI range checks. Catapult uses the same
+  minimum for attacks and retaliation.
+- Replace the single-attack activation assumption with explicit bounded
+  Pursuit state and `PURSUE`/`END_PURSUIT` commands. Combat events must state
+  whether a unit kill opened another attack; ordinary movement cannot be
+  smuggled into a Pursuit sequence.
+- Add phased Defection marks and capacity reservations. The recorded target
+  owner's first accepted End Turn after the offer arms the mark after recovery;
+  the initiator's first subsequent Start Turn resolves it after existing-unit
+  activation reset and before income. Current city capacity queries must count
+  reservations, conversion must re-home converted units transactionally, and
+  every failure path must release the reserved slot. Unlike reward placement,
+  conversion cannot create a new over-capacity state.
+- Add per-view Conceal/detection, contact-safe movement into concealed
+  occupancy, exposure/cooldown state, and city Blackout state. Current v6 makes
+  every unit on a permanently explored cell visible, so simply filtering the
+  view is insufficient: movement validation, public path enumeration, command
+  rejection detail, combat targets, threat queries, and AI observations all
+  require the same observation-safe rule.
 - Add Quarrying's Barracks as a non-economic city improvement or a clearly
   separated capacity-building layer; define capture, destruction,
   serialization, and live capacity recomputation.
@@ -678,14 +911,30 @@ goldens should remain readable only under their original contract.
   validation order, overflow behavior, and transaction ordering. Spoils needs
   deterministic per-city/per-player first-capture history in the new schema.
 - Change Mine, Quarry, Forge, and Stoneworks costs/formulas and update previews.
-- Maneuver's Raider Move 3 requires player-capability-aware effective role
-  resolution. The current faction-only `effectiveRoleRuleV6(faction, role)`
-  cannot represent a researched numeric role modifier safely; movement,
-  threat, UI stat, combat-preview, and AI callers must share one new resolver.
+- Maneuver no longer changes Raider Move, avoiding a researched numeric role
+  modifier that the current faction-only
+  `effectiveRoleRuleV6(faction, role)` cannot represent. Its ZOC capability
+  must include the new Lancer everywhere movement and threat are computed.
 - A Catapult can retaliate at range 2–3 under the ordinary rule and cannot at
   adjacency because of minimum range. Its Defense 0.5, rather than Attack 3.5,
   supplies retaliation force under the existing combat formula.
 - Preserve deterministic integer arithmetic and no new gameplay PRNG.
+- Define canonical boundaries. End Turn performs recovery, validates and arms
+  eligible Defections, emits their events, then advances the active seat. Start
+  Turn resets activations for units already owned by the incoming player,
+  resolves that player's armed Defections in mark-ID order, reveals from
+  successful conversions, evaluates Saboteur eligibility turns, triggers
+  Blackout, and only then calculates income. Converted units are inserted
+  exhausted after reset. Pending city rewards still block unrelated commands
+  and cannot be bypassed by these automatic transitions.
+- Add a deterministic Defection timing matrix for 2-, 3-, and 4-player games,
+  with target seats before and after the initiator: each case must observe
+  exactly one target Start/income/action/End window, arm only after that End
+  Turn's recovery, resolve only at the initiator's following Start after reset
+  and before income, and leave the converted unit exhausted. Cover pending
+  choices, intervening-player kills/pushes, target or initiator elimination,
+  city/capacity loss, multiple marks in ID order, save/resume at both phases,
+  and replay event equality.
 
 ### Factions
 
@@ -699,8 +948,17 @@ silently from Candy to Original. This proposal makes no Candy choices.
 
 - Replace fixed nine-role ordering and “missing role” research assumptions.
 - Teach AI the Catapult minimum range, protected firing positions, anti-siege
-  closing, Pikeman/Guard distinction, Barracks capacity, first-capture Spoils,
-  Pillage, Disband, and Maneuver's effective Raider Move 3.
+  closing, Barracks capacity, first-capture Spoils, Pillage, and Disband.
+- Teach AI to search at most three Lancer attacks without treating a potential
+  kill as certain; reserve cheap screens between Lancers and fragile units;
+  value a Defection only after modeling the target owner's guaranteed complete
+  reply turn and any intervening seats; maintain rear detection coverage; and
+  value Blackout by attributable city income and action denial rather than a
+  flat role bonus.
+- AI observations and debug logs must never expose concealed authoritative
+  units to a player policy. Deterministic tie-breaks order Pursuit paths,
+  eligible Defection cities, and Blackout targets by existing canonical IDs
+  and coordinates.
 - Rebalance economic research value so rare high-output extraction is not
   undervalued by raw target count. Passive/off-terrain unlocks such as
   Barracks and Spoils need explicit node utility; the current shortest-chain
@@ -714,32 +972,42 @@ silently from Candy to Original. This proposal makes no Candy choices.
 - The 25-node graph and single-parent branch layout remain compatible with the
   existing wide/compact Tech screen.
 - Node detail copy and unlock icon lists need revision; Sawmilling must show
-  both Sawmill and Catapult.
-- New Original world sprites/portraits are required for Pikeman and Catapult,
-  plus Barracks and Pillage/Spoils/Disband action symbols. Production art would
-  follow the checked-in PixelLab workflow only after art direction and the
-  design contract are approved.
+  Sawmill and Catapult, Fieldcraft must show Saboteur, and Maneuver must show
+  Lancer.
+- New Original world sprites/portraits are required for Envoy, Catapult,
+  Saboteur, and Lancer, plus Barracks and action/status symbols for Defection,
+  Pursuit, detection/exposure, Blackout, Pillage, Spoils, and Disband.
+  Production art would follow the checked-in PixelLab workflow only after art
+  direction and the design contract are approved.
 - Combat preview must display minimum range, inability to move-and-fire, and
   expected ranged retaliation without relying on color alone.
+- The map and action bar must show remaining Pursuit attacks and legal follow-up
+  cells, Defection's waiting/armed phase, target reply owner, next safe
+  resolution boundary, break conditions, and reserved city, plus Saboteur
+  detection/exposure/cooldown. Enemy UI must never show concealed selections,
+  blocked paths, threat overlays, or rejection text that leaks a Saboteur.
 
 ## 13. Risks and tunable parameters
 
-| Risk                                           | Proposed baseline                                                  | Safe first tuning range                            | Evidence to watch                                            |
-| ---------------------------------------------- | ------------------------------------------------------------------ | -------------------------------------------------- | ------------------------------------------------------------ |
-| One Mine causes excessive reward queues        | +4 pop for 6                                                       | +3 to +4                                           | Levels per Mine; reward modal frequency; Mining adoption     |
-| Forge jackpot snowballs too hard               | +3/Mine, cost 6, processor cap 18                                  | cap 15–18; Mine base +3–4                          | Population from top 5% of Forges; reward choices from build  |
-| Stone pairs overpay                            | +2/Quarry +2/pair, processor cap 16                                | cap 14–16; pair +1 to +2                           | Stoneworks distribution versus Windmill/Sawmill              |
-| Industry still feels too map-dependent         | unchanged frequencies                                              | boost Surveying utility before altering generation | Root adoption on starts with zero owned mountain resources   |
-| Catapult creates static artillery balls        | cost 8, A3.5, R2–3, D0.5, no Dash                                  | cost 8–9; A3–3.5; R3 fixed                         | Siege duration; Catapult survival with/without screens       |
-| Raider still wins frontal trades               | cost4, A2, D1, Charge +1                                           | Charge +0.5–1; D1–1.5                              | Coin-normalized losses versus Fighter/Pikeman/Guard          |
-| Maneuver makes conquest mobility oppressive    | Raider Move3 plus Scout/Raider ZOC freedom at tier 3               | keep Move2 or remove Scout ZOC freedom             | Captures/pillages per Raider; response time to breakthroughs |
-| Pikeman overlaps Guard                         | Pike cost4, HP12, A2.5/D2/Dash; Guard cost3, HP15, A1.5/D3/no Dash | Pike A2–2.5 or HP 10–12                            | Pick rates by offensive/defensive posture                    |
-| Spoils accelerates conquest snowball           | first hostile capture/city/player +2; neutral 0                    | +1 to +2                                           | Drill opening win rate and Coins earned before round 10      |
-| Pillage is more valuable than occupation       | flat +1, terminal                                                  | 0 to +1                                            | Pillage frequency and net destroyed build cost               |
-| Barracks bypasses city development too cheaply | cost6, +1 capacity, one/city, Quarrying                            | cost6–8                                            | Barracks adoption and units per city level                   |
-| Scout makes Mobility a mandatory opener        | cost4, sight2, Move2, Capture                                      | cost4–5 or remove Capture only after evidence      | First-root adoption; chest/village captures by role          |
-| Tier 3 remains too late                        | current `9 + 3(C-1)`                                               | coefficient 2–3                                    | First tier-3 round, match share with any tier-3 tech         |
-| Advanced units crowd out Fighters              | 6–8 Coins and one slot                                             | +1 unit cost before stat nerf                      | Coin-normalized damage, captures, and survival by role       |
+| Risk                                           | Proposed baseline                                                           | Safe first tuning range                            | Evidence to watch                                           |
+| ---------------------------------------------- | --------------------------------------------------------------------------- | -------------------------------------------------- | ----------------------------------------------------------- |
+| One Mine causes excessive reward queues        | +4 pop for 6                                                                | +3 to +4                                           | Levels per Mine; reward modal frequency; Mining adoption    |
+| Forge jackpot snowballs too hard               | +3/Mine, cost 6, processor cap 18                                           | cap 15–18; Mine base +3–4                          | Population from top 5% of Forges; reward choices from build |
+| Stone pairs overpay                            | +2/Quarry +2/pair, processor cap 16                                         | cap 14–16; pair +1 to +2                           | Stoneworks distribution versus Windmill/Sawmill             |
+| Industry still feels too map-dependent         | unchanged frequencies                                                       | boost Surveying utility before altering generation | Root adoption on starts with zero owned mountain resources  |
+| Catapult creates static artillery balls        | cost 8, A3.5, R2–3, D0.5, no Dash                                           | cost 8–9; A3–3.5; R3 fixed                         | Siege duration; Catapult survival with/without screens      |
+| Raider still wins frontal trades               | cost4, A2, D1, Charge +1                                                    | Charge +0.5–1; D1–1.5                              | Coin-normalized losses versus Fighter/Guard                 |
+| Lancer chain wipes lack a reply                | cost9, A3/D1.5, three attacks, two-cell Pursue                              | cost9–10; attack cap 2–3; Pursue 1–2               | Units killed/turn; chains stopped by healthy screens        |
+| Defection trivializes premium units            | one complete target-owner turn, 7 HP/D0.5, cost6, capacity reservation      | cost6–7; require one or two turns                  | Marks armed/resolved; value converted; response chosen      |
+| Converted rewards bypass capacity              | all roles eligible; conversion requires a reserved slot and re-homes target | exclude super-units only after evidence            | Converted Juggernauts; capacity/reward integrity            |
+| Concealment leaks or feels arbitrary           | radius-1 unit/city detection; contact-safe movement                         | detection radius 1–2                               | Hidden-info test failures; surprise/contact outcomes        |
+| Blackout locks cities too reliably             | suppress up to 3 income; one turn of actions; two intervening-turn cooldown | cap 2–3; deny Train only                           | Income denied; actions denied; Saboteur survival            |
+| Spoils accelerates conquest snowball           | first hostile capture/city/player +2; neutral 0                             | +1 to +2                                           | Drill opening win rate and Coins earned before round 10     |
+| Pillage is more valuable than occupation       | flat +1, terminal                                                           | 0 to +1                                            | Pillage frequency and net destroyed build cost              |
+| Barracks bypasses city development too cheaply | cost6, +1 capacity, one/city, Quarrying                                     | cost6–8                                            | Barracks adoption and units per city level                  |
+| Scout makes Mobility a mandatory opener        | cost4, sight2, Move2, Capture                                               | cost4–5 or remove Capture only after evidence      | First-root adoption; chest/village captures by role         |
+| Tier 3 remains too late                        | current `9 + 3(C-1)`                                                        | coefficient 2–3                                    | First tier-3 round, match share with any tier-3 tech        |
+| Advanced units crowd out Fighters              | 6–9 Coins and one slot                                                      | +1 unit cost before stat nerf                      | Coin-normalized damage, captures, and survival by role      |
 
 Recommended balance telemetry for seeded AI and human playtests:
 
@@ -748,14 +1016,21 @@ Recommended balance telemetry for seeded AI and human playtests:
 - eligible resource markers converted by family;
 - city levels and income attributable to each economic family;
 - combat damage, kills, survival turns, and captures per unit Coin;
+- Lancer attacks and kills per activation, sequence stops, and target spacing;
+- Defection offers, target reply turns, arms, resolutions/cancellations, break
+  reason, converted value, and reserved-slot turns;
+- Saboteur turns concealed/detected, Blackout income/actions denied, and
+  survival after exposure;
 - turns from first walled-Guard siege contact to capture;
 - win rate conditional on first tier-3 node;
 - top-decile Forge/Stoneworks values rather than averages alone.
 
 ## 14. Independent review
 
-This section records the adversarial second pass. It is part of the proposal,
-not evidence that the design has been playtested or approved.
+This section records the prior adversarial second pass plus the explicit
+pressure test applied while adding the gridlock-breaker roster. It is part of
+the proposal, not evidence that the design has been playtested or approved.
+The Envoy/Lancer/Saboteur revision still requires a fresh independent review.
 
 ### 14.1 Opportunity-cost audit
 
@@ -773,9 +1048,10 @@ nodes in the path.
 
 That five-to-seven-Coin Settlement advantage is intentional starting-faction
 identity, but it means Farming cannot also receive the branch's only unit and
-remain an obviously neutral choice. The Pikeman therefore moved to Craft.
+remain an obviously neutral choice. The military fallback therefore remains
+on Craft, now as the Envoy rather than an interchangeable line attacker.
 Farming is the reliable abundant-resource fork; Craft is the mixed-site plus
-military fork.
+high-leverage control fork.
 
 Representative complete economic packages show why raw opportunity counts and
 population-per-Coin must both be considered. “Entry” includes new research and
@@ -805,7 +1081,7 @@ Military access is also asymmetric without being empty:
 
 | Branch     | Earliest universal or off-resource military payoff at one city                                                           |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------ |
-| Settlement | Craft 7 + Pikeman 4; Gathering parent already known                                                                      |
+| Settlement | Craft 7 + Envoy 6; Gathering parent already known                                                                        |
 | Wilds      | Hunting + Marksmanship 12 + Marksman 3                                                                                   |
 | Industry   | Surveying 5 gives Mountain access/vision; Quarrying 12 enables a 6-Coin Barracks anywhere; Heavy is the 21-Coin endpoint |
 | Mobility   | Scouting 5 + Scout 4; Raiding costs 12 before its 4-Coin Raider                                                          |
@@ -813,9 +1089,11 @@ Military access is also asymmetric without being empty:
 
 Industry is still the least dependable opening military branch, but it no
 longer requires a usable Stone tile to obtain value from Quarrying. Wilds has
-the strongest combined ranged roster, offset by two prerequisite paths,
-fragility, and Catapult setup. Warfare remains the quickest direct defense.
-These are hypotheses to test, not proof of equal win rate.
+the strongest combined ranged/covert roster, but reaching both Catapult and
+Saboteur requires two different tier-2 forks and 37 research Coins at one city
+from no Wilds technology (`5 + 7 + 9 + 7 + 9`). Mobility similarly needs both
+forks to combine the Raider and Lancer. Warfare remains the quickest direct
+defense. These are hypotheses to test, not proof of equal win rate.
 
 ### 14.2 Findings incorporated
 
@@ -823,16 +1101,35 @@ These are hypotheses to test, not proof of equal win rate.
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | An uncapped eight-Mine Forge represented 64 population and a level-10 fresh city, with a long sequence of mandatory rewards.                                                           | Forge is now +3/Mine capped at +18. Stoneworks is capped at +16. Exact maximum levels and queue increments are stated in section 8.3.                                             |
 | Whole-board resource frequency disguised severe settlement-local scarcity: 93.3% of sampled initial footprints had no Ore and 84.9% had no Stone.                                      | Added the 240-map/3,000-footprint audit; retained bold Mine/Quarry basics; gave Quarrying a Barracks that works without a deposit.                                                |
-| Farming was already the cheap, abundant, free-parent path; adding the branch's unit there made Craft a likely dead fork.                                                               | Pikeman moved from Farming to Craft.                                                                                                                                              |
-| The original Pikeman was almost a cheaper Guard with Dash and also an efficient Fighter replacement.                                                                                   | Pikeman is now cost 4, HP 12, Attack 2.5, Defense 2. Guard remains the cheaper 15-HP Defense-3 city specialist.                                                                   |
+| Farming was already the cheap, abundant, free-parent path; adding the branch's unit there made Craft a likely dead fork.                                                               | The branch's military fallback stays on Craft, now as Envoy.                                                                                                                      |
+| Both earlier Pikeman drafts remained line infantry competing with Fighter/Guard and did not create a new decision.                                                                     | Pikeman is removed. Envoy instead threatens a delayed, interruptible Defection and has no ordinary Attack.                                                                        |
 | Neutral Spoils discounted the strongest early snowball, while level-scaled hostile Spoils and +2 Pillage paid a winner for taking income and destroying it. Recapture could be farmed. | Neutral captures pay zero; hostile Spoils is +2 only on that player's first capture of that city; Pillage is +1 and terminal.                                                     |
 | Attack 4.5, cost-7 range-3 artillery killed most field units while also dealing 6 to a walled Guard, making protected Catapult balls too efficient.                                    | Catapult is cost 8 and Attack 3.5. It deals 4 to the walled Guard, still kills an open Fighter, cannot move-and-fire, and is disabled at adjacency.                               |
 | “Minimum range” was underspecified for retaliation and does not exist in the current role model.                                                                                       | Minimum range is explicitly 2 for both Attack and retaliation; ranged retaliation uses Defense 0.5 under the existing formula; every affected engine/public/AI surface is listed. |
-| Maneuver's ZOC-only tier-3 benefit was difficult to justify at a five-city price of 21, especially after artillery created a need for a credible closing unit.                         | Maneuver also raises Raider Move to 3. Low Defense, Fighter/Guard screens, cost, and occupancy remain impartial checks.                                                           |
+| Maneuver's ZOC-only tier-3 benefit was difficult to justify at a five-city price of 21, while artillery created a need for a credible closing unit.                                    | Maneuver unlocks the 9-Coin Lancer; Raider remains Move 2. Lancer Pursuit is capped at three attacks and stopped by a healthy Fighter.                                            |
 | A 3-Coin Scout could repay itself from a single public chest while accelerating village captures, exploration, and future resource knowledge.                                          | Scout now costs 4. Removing Capture is held as a stronger fallback only if adoption/win telemetry still shows a mandatory opener.                                                 |
 | Existing Normal AI values visible economic targets and missing roles, not passive unlocks, per-city first-capture history, minimum range, or protected artillery formations.           | The implementation-impact section now requires explicit utility and tactical support; this redesign cannot safely reuse current weights or fixed role orders.                     |
 
-### 14.3 Failure modes that remain live
+### 14.3 Gridlock-breaker exploit audit
+
+| Exploit or degeneracy                               | Baseline guardrail                                                                                                                                                        | Residual test question                                                                                                     |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Infinite Lancer action reset                        | Only lethal hostile-unit attacks qualify; maximum three attacks; one Pursue path between attacks; every nonlethal result and explicit End terminates                      | Does a two-attack cap still feel spectacular if three routinely decides battles?                                           |
+| Chain through walls or disposable structures        | Structure kills never open Pursuit; ordinary retaliation and occupancy apply to every target                                                                              | Can allied disposable units be manipulated into lanes? Allied attacks are illegal, so no.                                  |
+| Lancer makes all mobile units obsolete              | Cost 9; Defense 1.5; full-health Fighter survives Attack 3 and stops the chain; Raider costs 4 and reaches its single priority target earlier in the tree                 | Compare coin-normalized kills/captures against mixed and spaced armies, not only ideal weak clusters.                      |
+| Defection steals a premium unit without reply       | The next target-owner End arms only after its complete turn/recovery; the initiator's following Start resolves; range 2 must survive both boundaries                      | Is one complete turn enough around immobilized walled defenders, or should conversion require two?                         |
+| Reward/super-unit conversion bypasses scarcity      | Reward roles are eligible but require a reserved slot, cannot act on conversion turn, and transfer no exploration; conversion cannot create over-capacity                 | Does the emotional swing of a converted Juggernaut outweigh the rare setup even when rules remain sound?                   |
+| Conversion overfills or corrupts home-city capacity | The slot is reserved at offer time and revalidated atomically; every cancel releases it; successful target is re-homed and counted                                        | Fuzz simultaneous city loss, negative population, Disband, and multiple reservations.                                      |
+| Defection captures a city in the same transaction   | Conversion clears Capture eligibility and grants no Spoils; a converted city occupant must survive until a later Start Turn                                               | Does delayed Capture remain obvious in UI and AI planning?                                                                 |
+| Concealed unit leaks through queries/rejections     | Public paths assume a concealed cell is empty; collision accepts a visible prefix and reveals on contact; target/threat lists omit the entity                             | Observation-equivalence tests must compare every command/query result for states differing only by an undetected Saboteur. |
+| Permanent invisibility removes counterplay          | Any enemy unit or city center detects at radius 1; Attack/Blackout creates timed exposure; Blackout itself requires entering city detection                               | Is radius 1 enough on large maps, or does Scout need a larger faction-neutral detection job?                               |
+| Blackout/recapture becomes a money farm             | No payout, no spawn, no damage; one pending effect per city; city ownership change cancels it; Saboteur waits two intervening owner turns                                 | Measure denial loops between the same player/city and consider a per-city immunity turn if still repetitive.               |
+| Disruption invalidates population/reward state      | Blackout suppresses at most 3 incoming Coins and future actions only; it never removes live population, capacity, rewards, Roads, or defense                              | Is blocking both training and development too broad despite state safety?                                                  |
+| Hidden Saboteur blocks a reward spawn               | Existing authoritative spawn selection sees occupancy and chooses its next canonical legal tile; the viewer learns nothing until placement is published or contact occurs | Verify no candidate-count or rejection detail reveals the concealed occupant before the spawn event.                       |
+| Sweeper/controller simply amplify artillery balls   | Lancer must pass occupancy and kill a screen; Envoy must remain within range 2 through a reply; Catapult still cannot fire after moving or at adjacency                   | Test protected artillery against equal-Coin Fighter/Guard spacing plus mobile reserves.                                    |
+| One branch supplies an entire dominant army         | Wilds and Mobility each have three units, but their two endpoints require both forks; Wilds' full unit set costs 37 research Coins at one city before training            | Track single-branch win rate and role diversity; move Saboteur only if its dual-use Fieldcraft home proves dominant.       |
+
+### 14.4 Failure modes that remain live
 
 - **Dominant opener:** Drill is the cheapest durable defense and Scouting still
   turns information into expansion. Craft is unusually cheap because Gathering
@@ -851,14 +1148,21 @@ These are hypotheses to test, not proof of equal win rate.
   and ignore intervening terrain. Cost, capacity, setup, minimum range, and
   Raider penetration are checks, but concentrated ranged armies may still
   erase screens faster than the defender can close.
-- **Mobility/conquest snowball:** Move-3 Maneuver Raiders can reach chests,
-  villages, pillage targets, and artillery quickly. First-capture-only Spoils
+- **Mobility/conquest snowball:** Maneuver Lancers and ZOC-free Move-2 Raiders
+  can reach artillery and open chains quickly. First-capture-only Spoils
   prevents cycling but does not remove the ordinary reward of taking a city.
+- **High-variance frustration:** Defection and Blackout can feel worse than
+  their average economic value, while an ideal Pursuit can decide a turn.
+  Measure resignations/misclicks and player comprehension alongside win rate.
+- **Visibility complexity:** Concealment is the only proposed mechanic that
+  weakens the current “explored means permanently visible unit” contract. It
+  requires observation-equivalence tests across commands, previews, AI, logs,
+  animation, and reconnect/resume, not just a filtered renderer.
 - **Reward cadence:** even capped industrial complexes can generate consecutive
   choices. Measure choices per build and time blocked in the reward queue, not
   just final city level.
 
-### 14.4 Explicit product alternatives
+### 14.5 Explicit product alternatives
 
 The following are real judgment calls rather than hidden recommendations:
 
@@ -866,10 +1170,10 @@ The following are real judgment calls rather than hidden recommendations:
    feels thematically forced, rename the node **Stonecraft**. Moving Barracks
    back to Fortification is mechanically simpler but reopens Industry's
    off-deposit-value problem and strengthens Warfare turtling.
-2. **Pikeman identity:** baseline is a 4-Coin mobile attacker, not an anti-Raider
-   flag. If testing still treats it as Fighter+, remove it rather than add a
-   matchup bonus; a universal stationary “Brace” mechanic is the more complex
-   fallback.
+2. **Controller identity:** baseline replaces Pikeman with the 6-Coin Envoy and
+   a one-reply Defection. If full conversion is too swingy, keep the Controller
+   archetype but convert the resolution into a one-turn disable or forced
+   displacement; do not restore Fighter+ line infantry.
 3. **Artillery lethality:** baseline Attack 3.5 produces 4 damage against a
    full-health walled Guard and 10 against an open Fighter. Attack 3 produces
    only 3 and 8 respectively; use that fallback if ranged armies dominate.
@@ -877,13 +1181,22 @@ The following are real judgment calls rather than hidden recommendations:
    The simpler alternative is no capture payout at all. An unrestricted or
    level-scaled payout is not recommended because it permits cycling and
    compounds conquest.
-5. **Maneuver payoff:** baseline gives Raider Move 3 plus ZOC freedom. Keeping
-   Move 2 is the first rollback if Mobility dominates; Escape-after-attack is
-   not recommended as an initial addition because it removes too much reply
-   opportunity.
+5. **Maneuver payoff:** baseline keeps Raider Move 2, adds ZOC freedom, and
+   unlocks the 9-Coin Lancer. Reduce Pursuit from three attacks to two before
+   reducing healthy-screen durability; unlimited resets are not recommended.
 6. **Research scaling:** retain the existing formula for the first prototype.
    If eligible tier-3 nodes remain unused, lower only the tier-3 city
    coefficient from 3 to 2 before increasing already-potent unit stats.
+7. **Reward conversion:** baseline allows Juggernauts because the guaranteed
+   reply and capacity reservation create the desired anti-super-unit threat.
+   Excluding reward-only roles is the safe rollback if the swing is fun-killing
+   even when rare; do not make the outcome random.
+8. **Concealment:** baseline uses radius-1 unit/city detection. Radius 2 on
+   Scouts is the first addition if rear defense becomes tedious, while global
+   visibility after every move would erase the Infiltrator job.
+9. **Blackout payload:** baseline suppresses up to 3 income and one turn of
+   Train/development actions. If denial is oppressive, retain the income loss
+   and remove development lockout before changing concealment.
 
 ## 15. Review questions
 
@@ -899,9 +1212,9 @@ The following are real judgment calls rather than hidden recommendations:
 5. Is range 3 with minimum range 2 the right Catapult geometry? In particular,
    should a Catapult retaliate weakly against another range-2/3 attacker under
    normal Defense-based retaliation, as proposed?
-6. Is the cost-4, HP-12, Attack-2.5, Defense-2 Pikeman distinct enough from the
-   cheaper, tougher, no-Dash Guard? If not, should it be removed or given a
-   universal positional ability rather than a matchup bonus?
+6. Is the 6-Coin, 7-HP Envoy's delayed full Defection an exciting answer to an
+   isolated premium unit, or should the Controller archetype impose a temporary
+   disable/displacement instead of ownership change?
 7. Are Spoils and Pillage the right economic identity for Warfare, or would a
    peaceful production/refund model be preferable despite weaker theme?
 8. Should Quarrying's Barracks consume a map tile for +1 capacity, and does the
@@ -909,12 +1222,19 @@ The following are real judgment calls rather than hidden recommendations:
    city level?
 9. Should the current research-cost formula be frozen for the first playtest,
    or is the five-city tier-3 cost of 21 already known to be too punitive?
-10. Is three trainable tier-3 units—Catapult, Heavy, Breacher—enough, or should
-    Fieldcraft, Masonry, Maneuver, or Recovery also introduce a distinct
-    advanced role?
-11. Is Raider Move 3 plus hostile-ZOC freedom an appropriate tier-3 Maneuver
-    payoff, or does that make Mobility's conquest tempo too strong?
-12. For implementation sequencing, should a new ruleset wait for a complete
+10. Is five trainable tier-3 units—Catapult, Saboteur, Heavy, Lancer, and
+    Breacher—the right payoff density, or do Wilds/Mobility now carry too much
+    of the military roster?
+11. Is the Lancer's three-attack cap large enough to punish weak-unit masses
+    while remaining legibly bounded, or should the safe baseline start at two?
+12. Does radius-1 unit/city detection make Saboteur counterplay active without
+    making rear-area coverage tedious? Should Scout receive radius-2 detection?
+13. Should Blackout deny both Train and tile development for one turn, or is
+    the capped 3-Coin income suppression plus Train denial sufficient?
+14. Should reward-only Juggernauts remain eligible for Defection when the
+    attempt reserves capacity, waits through one reply, and consumes the
+    converted unit's first turn?
+15. For implementation sequencing, should a new ruleset wait for a complete
     Candy adaptation, or may an explicitly Original-only experimental ruleset
     ship first?
 
