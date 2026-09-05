@@ -271,7 +271,7 @@ conquest-economy effects.
 | Industry   |    3 | **Metallurgy**    | Mining                 | Forge (6 Coins, +3 per adjacent Mine, cap 18)                                                   | Train Heavy                                                                  |
 | Industry   |    2 | **Quarrying**     | Surveying              | Quarry (5 Coins, +3 live population)                                                            | Barracks (6 Coins, maximum one per city, +1 unit capacity)                   |
 | Industry   |    3 | **Masonry**       | Quarrying              | Stoneworks (6 Coins, +2 per adjacent Quarry and +2 per opposite pair, cap 16)                   | Stone-based population accelerates city capacity and reward access           |
-| Mobility   |    1 | **Scouting**      | —                      | Earlier villages/chests/resources improve expansion choices                                     | Train Scout; sight radius 2                                                  |
+| Mobility   |    1 | **Scouting**      | —                      | Earlier villages/chests/resources improve expansion choices                                     | Train Scout; sight 2; detect concealed units at radius 2                     |
 | Mobility   |    2 | **Roads**         | Scouting               | Road (2 Coins); enables Market connection bonus                                                 | Half-cost orthogonal movement on connected friendly road/city network        |
 | Mobility   |    3 | **Commerce**      | Roads                  | Market (7 Coins, +1 Coin/turn per adjacent family, plus 1 for capital-road connection; cap 5)   | Roads support reinforcement and flanking                                     |
 | Mobility   |    2 | **Raiding**       | Scouting               | —                                                                                               | Train Raider; Charge after moving at least two path cells                    |
@@ -362,21 +362,21 @@ twice.
 
 ### 7.2 Abilities and restrictions
 
-| Unit       | Abilities and restrictions                                                                                                                                                                                                            |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Fighter    | Attack, Capture. Its 2-Coin price is its late-game advantage.                                                                                                                                                                         |
-| Scout      | Attack, Capture, sight 2; gains Forest freedom from Fieldcraft and ZOC freedom from Maneuver.                                                                                                                                         |
-| Envoy      | Defection after moving; no ordinary Attack, retaliation, Capture, or city-defense bonus. The delayed conversion requires one uninterrupted enemy reply and a reserved friendly capacity slot.                                         |
-| Marksman   | Attack at range 1–2, Capture, no advance after a ranged kill; Fieldcraft grants Forest freedom and sight 2.                                                                                                                           |
-| Guard      | Attack, Capture, cannot attack after moving; strongest cheap base defense and benefits from Fortification.                                                                                                                            |
-| Raider     | Attack, Capture; Charge adds +1 Attack only after an accepted move of at least two path cells. Maneuver removes hostile-ZOC termination but no longer changes Raider Move. Base Attack/Defense remain reduced from current Ruleset 6. |
-| Medic      | Weak Attack or Heal; does not Capture. Heal is 4, upgraded to 6 by Recovery.                                                                                                                                                          |
-| Catapult   | Attack only at range 2–3; cannot attack after moving, Capture, retaliate at range 1, or advance after a kill. It may retaliate at range 2–3, using its ordinary Defense 0.5 retaliation force.                                        |
-| Saboteur   | Attack, Conceal, and Blackout after moving; no Capture. Attacking or using Blackout exposes it. Its low Defense and mandatory adjacency to a city give the defender a reply.                                                          |
-| Heavy      | Attack, Capture, Push a surviving melee target when the behind tile is legal. High HP lets it stay on the front line.                                                                                                                 |
-| Lancer     | Attack, Capture, Pursuit, and Dash; Maneuver lets it ignore hostile ZOC. It can make at most three attacks in a turn and only a lethal unit attack continues the sequence.                                                            |
-| Breacher   | Melee Attack with Breach; cannot attack after moving or Capture. Breach replaces the defender's ordinary terrain/city multiplier with 1×, but does not alter base Defense.                                                            |
-| Juggernaut | Attack, Capture, Push; reward-only and unchanged in purpose.                                                                                                                                                                          |
+| Unit       | Abilities and restrictions                                                                                                                                                                                                                              |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Fighter    | Attack, Capture. Its 2-Coin price is its late-game advantage.                                                                                                                                                                                           |
+| Scout      | Attack, Capture, sight 2; detects concealed units at radius 2 rather than the ordinary radius 1; gains Forest freedom from Fieldcraft and ZOC freedom from Maneuver.                                                                                    |
+| Envoy      | Defection after moving; no ordinary Attack, retaliation, Capture, or city-defense bonus. The delayed conversion requires one uninterrupted enemy reply and a reserved friendly capacity slot.                                                           |
+| Marksman   | Attack at range 1–2, Capture, no advance after a ranged kill; Fieldcraft grants Forest freedom and sight 2.                                                                                                                                             |
+| Guard      | Attack, Capture, cannot attack after moving; strongest cheap base defense and benefits from Fortification.                                                                                                                                              |
+| Raider     | Attack, Capture; Charge adds +1 Attack only after an accepted move of at least two path cells. Maneuver removes hostile-ZOC termination but no longer changes Raider Move. Base Attack/Defense remain reduced from current Ruleset 6.                   |
+| Medic      | Weak Attack or Heal; does not Capture. Heal is 4, upgraded to 6 by Recovery.                                                                                                                                                                            |
+| Catapult   | Attack only at range 2–3; cannot attack after moving, Capture, retaliate at range 1, or advance after a kill. It may retaliate at range 2–3, using its ordinary Defense 0.5 retaliation force.                                                          |
+| Saboteur   | Attack, Conceal, and Blackout after moving; no Capture. Blackout requires an unpicketed city: detection by a hostile unit makes the action illegal, while city-center detection alone only reveals the attempt. Attacking or using Blackout exposes it. |
+| Heavy      | Attack, Capture, Push a surviving melee target when the behind tile is legal. High HP lets it stay on the front line.                                                                                                                                   |
+| Lancer     | Attack, Capture, Pursuit, and Dash; Maneuver lets it ignore hostile ZOC. It can make at most three attacks in a turn and only a lethal unit attack continues the sequence.                                                                              |
+| Breacher   | Melee Attack with Breach; cannot attack after moving or Capture. Breach replaces the defender's ordinary terrain/city multiplier with 1×, but does not alter base Defense.                                                                              |
+| Juggernaut | Attack, Capture, Push; reward-only and unchanged in purpose.                                                                                                                                                                                            |
 
 ### 7.3 Gridlock-breaker state machines
 
@@ -396,28 +396,40 @@ income/actions and creates neither revolt units nor theft income.
    may take its ordinary Move and melee Attack using Move 3 and Dash.
 2. Every Attack increments `attacksUsed`. After one that kills a hostile
    **unit**, if the Lancer survives retaliation and the resulting count is 1
-   or 2, it enters `PURSUIT_READY`: `attacked` clears and exactly one follow-up
-   Attack remains available. Ordinary melee advance into the defeated unit's
-   cell resolves before Pursuit opens. A resulting count of 3 ends the
-   activation. Killing a wall or structure never qualifies.
-3. From `PURSUIT_READY`, the player may attack an adjacent hostile unit
-   immediately, issue one `PURSUE` path of at most two entered cells and then
-   attack, or `END_PURSUIT`. A Pursue path costs one point per cell; Roads do
-   not discount it. Ordinary occupancy, Mountain access, Forest/unexplored
+   or 2, it enters `PURSUIT_READY`: `attacked` clears and
+   `3 - attacksUsed` attacks remain in the activation. Ordinary melee advance
+   into the defeated unit's cell, its sight reveal, and all combat events
+   resolve before Pursuit opens. A resulting count of 3 ends the activation.
+   Killing a wall or structure never qualifies.
+3. From `PURSUIT_READY`, the player may attack an adjacent visible hostile
+   unit immediately, issue one `PURSUE` path of one or two entered cells and
+   then attack, or `END_PURSUIT`. A Pursue path costs one point per cell; Roads
+   do not discount it. Ordinary occupancy, Mountain access, Forest/unexplored
    termination, map bounds, and allied-territory rules apply. Maneuver's ZOC
-   freedom applies because the Lancer is unlocked by that technology.
+   freedom applies because the Lancer is unlocked by that technology. A
+   Pursue path may not enter a globally public treasure-chest cell, so a chain
+   cannot consume PRNG, create a reward unit, or change capacity mid-sequence.
 4. After a Pursue path the unit enters `PURSUIT_MOVED`; only an Attack against
-   a hostile unit or `END_PURSUIT` is legal. A nonlethal attack, death to
+   an adjacent visible hostile unit or `END_PURSUIT` is legal. Contact with a
+   concealed occupant or its newly detected ZOC uses the observation-safe
+   stop in section 7.4; the revealed unit may be attacked if adjacent, but the
+   Lancer receives no replacement path. A nonlethal attack, death to
    retaliation, the third attack, or `END_PURSUIT` sets
-   `attacked = handled = true` and clears Pursuit. It cannot Move, Capture,
-   Heal, Pillage, attack a structure, or Wait between follow-up attacks.
+   `attacked = handled = true` and clears Pursuit. It cannot ordinary Move,
+   Capture, Promote, Heal, Pillage, attack a structure, collect a chest, or
+   Wait between follow-up attacks. End Turn is unavailable until the player
+   explicitly ends a still-open sequence.
 
 Thus a Lancer can erase at most three exposed low-defense units, not an
-unlimited army. Attack 3 kills a full-health Defense-1 Marksman or Catapult but
-deals only about 8 to a full-health Defense-2 Fighter. Each surviving defender
-retaliates normally. At 9 Coins, the Lancer is poor value against Fighters,
-Guards, Heavies, walls, spaced formations, and any screen it cannot kill; those
-properties create the counter without an anti-role modifier.
+unlimited army. Because a melee kill normally advances one cell before the
+next two-cell Pursue, a next target can be as far as three Chebyshev cells from
+the previous target; “spacing” means more than that or an occupied/durable
+intervening screen, not merely two empty cells. Attack 3 kills a full-health
+Defense-1 Marksman or Catapult but deals only about 8 to a full-health
+Defense-2 Fighter. Each surviving defender retaliates normally. At 9 Coins,
+the Lancer is poor value against Fighters, Guards, Heavies, walls, spaced
+formations, and any screen it cannot kill; those properties create the counter
+without an anti-role modifier.
 
 #### Envoy: delayed Defection
 
@@ -428,8 +440,12 @@ properties create the counter without an anti-role modifier.
    causes no retaliation.
 2. The mark stores source unit, target unit, initiating player, recorded target
    owner, reserved home city, `offeredAtCommandIndex`, and phase
-   `WAITING_FOR_REPLY`. Source and target owners see the mark; other players see
-   it only while they can see its source or target.
+   `WAITING_FOR_REPLY`. Offering explicitly reveals the Envoy entity and its
+   current coordinate—but no surrounding terrain—to the recorded target owner
+   and that owner's formal allies until the mark ends. The initiator and target
+   owner receive the full mark. A third party that can see only one endpoint
+   receives only a status badge on that endpoint; it receives the linked unit
+   ID and coordinate only while both endpoints are independently visible.
 3. The **first accepted `END_TURN` by the recorded target owner after the
    offer** is the reply boundary, whether that turn occurs later in the current
    round or in the next round. The owner receives that turn's normal Start Turn
@@ -454,7 +470,10 @@ properties create the counter without an anti-role modifier.
    changes owner and home city and counts against the reserved city's capacity.
    It reveals terrain from its current cell by its normal sight rules but
    transfers none of its former owner's exploration. Its old home city frees
-   its former counted assignment.
+   its former counted assignment. Ownership-dependent states are then
+   normalized: any Defection sourced by that unit cancels, open Pursuit clears,
+   and Capture remains false; role-owned neutral timers such as Blackout
+   cooldown persist under their ownership-safe representation.
 
 Every hostile role, including a reward-only Juggernaut, is eligible. That is
 the Envoy's deliberately alarming payoff, but even a Juggernaut can step away
@@ -468,54 +487,109 @@ multipliers do not block an offer because no combat occurs. As with current
 ranged combat, intervening units and terrain do not create line of sight; the
 target must nevertheless be present in the acting player's public view.
 
+The timing is independent of player count. In every row below the target gets
+exactly one full Start/income/action/recovery window after the offer; extra
+seats change only how many third parties can disrupt the setup.
+
+| Target seat relative to initiator | Reply boundary                                                     | Resolution boundary                                                 |
+| --------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| Later in the current round        | Target's End Turn in the offer round, after recovery               | Initiator's Start Turn in the next round, before income             |
+| Earlier in turn order             | Target's End Turn in the next round, after its complete activation | Initiator's later Start Turn in that same next round, before income |
+
+| Player count | Complete target activations before resolution | Other-player activations before resolution | Consequence                                                                 |
+| -----------: | --------------------------------------------: | -----------------------------------------: | --------------------------------------------------------------------------- |
+|            2 |                                             1 |                                          0 | Pure source-versus-target reply; no third-party rescue or interference      |
+|            3 |                                             1 |                                          1 | One third party acts either before arming or between arming and resolution  |
+|            4 |                                             1 |                                          2 | Both third parties act once somewhere in the same offer-to-resolution cycle |
+
+A pending mandatory choice merely delays the target's accepted End Turn and
+therefore delays arming; it never shortens the reply. Initiator or target
+elimination, source/target removal, or a relationship/ownership change cancels
+the mark immediately. When several marks resolve at one Start Turn, mark-ID
+order is also the transaction order: each valid reservation is consumed by its
+own target, and every cancelled reservation is released before the next mark
+is checked.
+
+Converting a city occupant does not transfer or Capture the city. The unit is
+now hostile to that city, so friendly-city, Fortification, and Walls defense
+are recalculated and normally disappear; it may besiege the city until removed,
+but its exhausted state prevents Capture on the conversion turn. This
+secondary denial is part of Defection's premium-target payoff and must be
+included in its preview and valuation.
+
+A converted unit may be targeted by a later new offer, but conversion never
+chains automatically and confers no immunity bypass. The later controller must
+provide another Envoy, another reserved slot, and another complete target-owner
+reply. Even when that offer is made at the first possible opposing turn, the
+current owner receives one normal activation with the unit before a
+reconversion can resolve. This permits costly tug-of-war without instant
+ping-pong or a single command cascading through multiple owners.
+
 #### Saboteur: concealed Blackout
 
 1. **Conceal** omits an enemy Saboteur from a player's view unless it is within
-   Chebyshev distance 1 of one of that player's units or city centers, or has
-   an exposure marker visible to that player. Owners always see their own
-   Saboteurs. Exploration remains permanent terrain knowledge; Conceal affects
-   only the unit entity.
+   Chebyshev distance 1 of one of that player's units or city centers, within
+   distance 2 of one of that player's Scouts, or has an exposure marker visible
+   to that player. Formal allies share those detections. Owners always see
+   their own Saboteurs. Exploration remains permanent terrain knowledge;
+   Conceal affects only the unit entity, not terrain or globally public
+   aggregate standings.
 2. `BLACKOUT_CITY` is a terminal primary action after an optional Move. It
-   targets an adjacent hostile city with no pending Blackout and applies a
-   pending effect visible to source and target owners; another player sees it
-   only while that city is visible. The Saboteur becomes exposed to the target
-   owner and its allies through the end of the owner's next turn. It stores
-   `nextBlackoutOwnerTurn = currentOwnerTurn + 3`; the command is illegal on
-   the next two owner turns and becomes legal on the third.
+   targets an adjacent hostile city with no pending/active Blackout and no
+   recovery protection. At validation time the Saboteur must not be detected
+   by any hostile **unit**; detection by the target city center reveals the
+   Saboteur but does not itself prevent the action. Consequently one garrison
+   on the city center blocks Blackout, a nearby ordinary unit covers part of
+   the approach ring, and a center Scout covers all of it. The pending effect
+   is visible to source and target owners; another player sees it only while
+   that city is visible. The Saboteur becomes exposed to the target owner and
+   its allies through the end of the owner's next turn. It stores
+   `blackoutEligibleRound = actionRound + 3`; it is illegal in rounds
+   `actionRound + 1` and `actionRound + 2` and becomes legal in round
+   `actionRound + 3`, even if Defection changes its owner.
 3. At the target owner's next Start Turn, before income, Blackout suppresses
    up to 3 Coins of that city's calculated income rather than subtracting an
    existing treasury. Through that turn the city cannot Train, and its
    territory cannot take economic build, clear, replant, or Redevelop actions.
    Existing population, capacity, rewards, defenses, Roads, units, and
    improvements continue to function. The effect clears at End Turn.
-4. Capturing the city before the trigger cancels the pending effect. Blackout
-   gives the Saboteur's owner no Coins, does not damage or spawn units, and
-   cannot stack, so trading or repeatedly recapturing a city creates no reward
-   loop. One Saboteur can affect a city at most once every three of its owner's
-   turns because of cooldown.
+4. When the affected turn ends, the city enters `BLACKOUT_RECOVERY`. It must
+   complete one later owner turn with normal income and actions before another
+   Blackout can be planted; the protection clears after that unaffected End
+   Turn. Pending, active, and recovery state is attached to the city entity.
+   Capturing the city cancels a pending or active effect but leaves/starts
+   recovery protection until the new owner completes one unaffected turn, so
+   capture and recapture cannot reset the lockout. Blackout gives the
+   Saboteur's owner no Coins, does not damage or spawn units, and cannot stack.
+   The per-city recovery window prevents alternating Saboteurs from denying
+   every owner turn, while the per-unit round cooldown prevents one infiltrator
+   from rotating across cities continuously.
 
 City-center detection means the Saboteur is revealed as soon as it reaches
-Blackout range. The action still lands before the defender can reply, but the
+Blackout range. The action still lands before an **unpicketed** city's owner
+can reply, but any detecting hostile unit makes Blackout illegal and the
 7-Coin attacker remains exposed to nearby mobile or ranged units. Empty rear
-cities are therefore valid targets; screened front-line cities are dangerous.
-Attacking instead uses ordinary combat and exposes the Saboteur to the target
-owner and its allies through the end of that owner's next turn without
-creating Blackout. Other players still apply detection independently.
+cities are therefore valid targets; a city-center garrison is a simple hard
+counter, and a Scout is the strongest proactive picket. Attacking instead uses
+ordinary combat and exposes the Saboteur to the target owner and its allies
+through the end of that owner's next turn without creating Blackout. Other
+players still apply detection independently.
 
 ### 7.4 Shared interaction contract for the new mechanics
 
-| System                   | Exact interaction                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Fog and hidden occupancy | Defection targets must be visible when offered and never reveal later target movement. If an enemy path enters a concealed Saboteur's cell, authority accepts the visible legal prefix, stops before the occupied cell, consumes that unit's ordinary Move, and reveals the Saboteur to that mover through the turn; a Dash unit may then attack. Public path enumeration treats the cell as empty until contact. No rejection or target list may leak concealment.                                                   |
-| Detection                | Enemy units and city centers detect Saboteurs at radius 1 regardless of terrain, Walls, or technology. Attacks cannot target a concealed entity. Concealment is recalculated per viewer, so one opponent's detection does not reveal it to everyone.                                                                                                                                                                                                                                                                  |
-| Cities and Walls         | Lancer and ordinary attacks use normal defense and wall rules. Defection ignores multipliers but does not capture its occupied city. Blackout ignores multipliers, leaves Walls/fortification intact, and cancels on city ownership change.                                                                                                                                                                                                                                                                           |
-| Retaliation              | Every Lancer strike receives ordinary retaliation when legal. Defection and Blackout are non-Attack terminal actions and cause none. Envoy Attack 0 means it never retaliates; Saboteur retaliates normally while revealed or concealed because concealment does not alter authoritative combat.                                                                                                                                                                                                                      |
-| ZOC and Roads            | Envoy and Saboteur use ordinary ZOC and Road movement. Scout, Raider, and Lancer ignore hostile ZOC with Maneuver. Roads affect an ordinary Lancer move but never its two-cell Pursue budget.                                                                                                                                                                                                                                                                                                                         |
-| Capacity and training    | Training all three requires one free city slot. A pending Defection reserves a second slot for its target; loss of that slot cancels resolution. Blackout blocks training only for the affected turn. Pursuit never creates units or capacity.                                                                                                                                                                                                                                                                        |
-| Capture and rewards      | Lancer has Capture but cannot use it during Pursuit; Envoy and Saboteur lack Capture. Defection never captures a city or grants capture/Spoils income. Converted reward units are allowed but counted; no unit can be converted during placement, and occupied reward spawn selection remains unchanged. Blackout cannot create reward choices.                                                                                                                                                                       |
-| Healing and status       | Healing does not clear Defection, exposure, cooldown, Pursuit, or Blackout. Source or target death/removal immediately cancels its Defection mark and releases the reservation; a planted Blackout persists after Saboteur death and cancels only on city ownership change. Dead Lancers lose Pursuit with their entity. Start/End Turn ordering, not healing, advances timers. Converted HP is not restored.                                                                                                         |
-| Replay and schemas       | Pursuit mode/counter, Defection reservation/phase plus offer command index, per-view exposure, Saboteur cooldown, and city Blackout are authoritative serialized fields or entities. Commands and events carry explicit IDs/coordinates and deterministic timers. Defection emits separate offered, armed/cancelled, and resolved/cancelled events at its exact End/Start boundaries. Replays never infer state from animation or recompute a hidden target from client data.                                         |
-| AI and UI targeting      | Legal-action queries expose Pursue/End, Defection plus eligible home-city slots, and Blackout only to the acting player. AI evaluates bounded action sequences, reserved capacity, the target's guaranteed complete reply turn, detection risk, and lost city income. UI previews show `waiting for target reply` versus `armed`, the resolving player's next Start boundary, every break condition, chain attacks remaining, detection/exposure, cooldown, and Blackout's capped loss without exposing hidden units. |
+| System                   | Exact interaction                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Fog and hidden occupancy | Defection targets must be visible when offered and never reveal later hidden target movement. Public paths treat an undetected Saboteur and its ZOC as absent. Authority resolves an accepted path stepwise: entry toward its occupied cell stops on the legal prefix before it; entry into its newly detected hostile ZOC stops on the entered cell unless the mover ignores ZOC. Either contact consumes Move/Pursue, reveals the Saboteur to the detecting side, and never returns a hidden-specific rejection. Ordinary and Pursue paths use the same rule.                                                                                                                                                                  |
+| Detection                | Enemy units/city centers detect at radius 1 and Scouts at radius 2, regardless of terrain or Walls; formal allies share detection. Attacks, Defection, and other entity-targeted commands cannot target a concealed unit. A hostile unit's detection also blocks Blackout; city-center detection alone does not. Concealment is recalculated per viewer, so one side's detection does not globally reveal it. Blind area/displacement contact may reveal a unit on actual interaction but may not make it targetable beforehand.                                                                                                                                                                                                 |
+| Cities and Walls         | Lancer and ordinary attacks use normal defense and wall rules. Defection ignores multipliers and does not capture its occupied city; after conversion, all defense is recalculated for the new owner. Blackout ignores multipliers and leaves Walls/fortification intact. City ownership change cancels pending/active denial but preserves/starts the one-unaffected-turn recovery state.                                                                                                                                                                                                                                                                                                                                       |
+| Retaliation              | Every Lancer strike receives ordinary retaliation when legal. Defection and Blackout are non-Attack terminal actions and cause none. Envoy Attack 0 means it never retaliates; Saboteur retaliates normally while revealed or concealed because concealment does not alter authoritative combat.                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ZOC and Roads            | Envoy and Saboteur use ordinary ZOC and Road movement. Scout, Raider, and Lancer ignore hostile ZOC with Maneuver. Roads affect an ordinary Lancer move but never its two-cell Pursue budget.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Capacity and training    | Training all three requires one free city slot. A pending Defection reserves a second slot for its target; public capacity queries subtract owned reservations, and loss of that exact reservation cancels resolution. Blackout blocks training only for the affected turn. Pursuit cannot collect chests and therefore never creates units or capacity.                                                                                                                                                                                                                                                                                                                                                                         |
+| Capture and rewards      | Lancer has Capture but cannot use it during Pursuit; Envoy and Saboteur lack Capture. Defection never captures a city or grants capture/Spoils income. Converted reward units are allowed but counted; no unit can be converted during placement, and occupied reward spawn selection remains unchanged. Blackout cannot create reward choices.                                                                                                                                                                                                                                                                                                                                                                                  |
+| Healing and status       | Healing does not clear Defection, exposure, cooldown, Pursuit, or Blackout. Source or target death/removal immediately cancels its Defection mark and releases the reservation; a planted Blackout persists after Saboteur death. City ownership change cancels pending/active Blackout but preserves one unaffected-turn recovery. Dead Lancers lose Pursuit with their entity. Start/End Turn and round ordering, not healing, advances timers. Converted HP is not restored.                                                                                                                                                                                                                                                  |
+| Replay and schemas       | Pursuit mode/counter, Defection reservation/phase plus offer command index, per-view exposure, round-based Saboteur cooldown, and city Blackout/recovery are authoritative serialized fields or entities. Commands and canonical events carry explicit IDs/coordinates and deterministic timers. Defection emits offered, armed/cancelled, and resolved/cancelled facts at exact boundaries. Canonical replay/save/checkpoints remain omniscient reproduction artifacts; live player-facing events require a viewer projection.                                                                                                                                                                                                  |
+| Public observation       | `PlayerView.units`, stat/selection/threat/target queries, movement reachability, combat previews, AI candidates/tuples, animations, notices, and ordinary logs omit undetected entity/location data. Guessed hidden IDs receive the same generic invalid-target result as empty/unseen IDs. Globally public leaderboard unit totals may still include Saboteurs, revealing roster quantity but never role or location. Push/other blind displacement previews report concealed-occupancy uncertainty; actual blocked contact reveals only to sides whose units then detect it. Debug export, raw save, canonical replay, and state hashes are explicitly omniscient and must be labelled/withheld from competitive live viewing. |
+| AI and UI targeting      | Legal-action queries expose Pursue/End, Defection plus eligible home-city slots, and Blackout only to the acting player. AI evaluates bounded sequences, reserved capacity, the target's guaranteed reply, detection/picket risk, recovery protection, and lost city income. UI previews show reply/resolution boundaries, break conditions, besieging-on-conversion, attacks remaining, Pursuit reach including advance, detection versus Blackout-blocking unit detection, exposure, eligible round, capped loss, and city recovery without exposing hidden endpoints.                                                                                                                                                         |
 
 ### 7.5 Why the advanced prices are justified
 
@@ -534,8 +608,10 @@ creating Blackout. Other players still apply detection independently.
   The premium buys a three-attack ceiling when the opponent clusters fragile
   or wounded units.
 - A **Saboteur** costs 3.5 Fighters for Fighter-level Attack, half the Defense,
-  no Capture, and a delayed two-turn cooldown. Its value is positional economic
-  denial, not efficient front-line combat.
+  no Capture, a round-based two-turn cooldown, and a payload that fails while a
+  hostile unit detects it. Its value is positional economic denial against an
+  unpicketed city, not efficient front-line combat or a guaranteed tax on every
+  city it can reach.
 - An **Envoy** costs 3 Fighters despite having no Attack and only 7 HP. It pays
   off only when an expensive target cannot spend its reply moving away or
   removing the Envoy; the capacity reservation prevents free over-capacity
@@ -556,21 +632,21 @@ mechanic text. A faction may combine two jobs in one unit or split one job
 across two units only if its complete roster still supplies the listed pressure
 and counter-pressure at a comparable research/price horizon.
 
-| Portable archetype | Original expression | Invariant job                                                                          | Faction-specific freedom                                                 |
-| ------------------ | ------------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| Generalist         | Fighter             | Cheap capture-capable body; efficient screen and baseline trade                        | Weapon, movement rider, exact 2/2 stats                                  |
-| Explorer           | Scout               | Early sight/mobility that converts information into expansion                          | Detection, terrain affinity, Capture, combat strength                    |
-| Defender           | Guard               | Cheap high-defense occupation that makes frontal melee inefficient                     | Fortify rule, HP/Defense mix, city affinity                              |
-| Basic ranged       | Marksman            | Mobile short-range pressure with low durability                                        | Range pattern, move-fire rule, damage curve                              |
-| Flanker            | Raider              | Affordable fast single-target closer that punishes exposed ranged units                | Charge, escape, road/terrain interaction                                 |
-| Support            | Medic               | Sustains allies while sacrificing direct offense and tempo                             | Heal, cleanse, shield, or another bounded support action                 |
-| Artillery          | Catapult            | Expensive long-range siege pressure with a close-range/setup weakness                  | Minimum range, reload, line of fire, projectile theme                    |
-| Anchor             | Heavy               | Capacity-efficient durable front-line power that displaces or survives                 | Push, armor, HP pool, movement limitation                                |
-| Direct siege       | Breacher            | High-risk adjacent answer to extreme static defense                                    | Defense stripping, structure attack, positional setup                    |
-| Sweeper            | Lancer              | Costly mobility plus bounded repeat actions that punish weak-unit concentration        | Chain trigger, cap, fatigue, route rules; never a unit-ID damage bonus   |
-| Controller         | Envoy               | Fragile delayed threat to an isolated premium unit, forcing movement or rescue         | Conversion, disable, displacement, or possession with a guaranteed reply |
-| Infiltrator        | Saboteur            | Situational hidden access to neglected rear areas and bounded city/economic disruption | Detection model, theft/denial payload, cooldown, reveal condition        |
-| Super-unit         | Juggernaut          | Rare reward-only strategic concentration that ordinary rosters must answer             | Reward source, scale, movement, signature action                         |
+| Portable archetype | Original expression | Invariant job                                                                                               | Faction-specific freedom                                                                                            |
+| ------------------ | ------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Generalist         | Fighter             | Cheap capture-capable body; efficient screen and baseline trade                                             | Weapon, movement rider, exact 2/2 stats                                                                             |
+| Explorer           | Scout               | Early sight/mobility that converts information into expansion and supplies timely anti-concealment coverage | Detection radius may live here or on another comparably early unit/rule; terrain affinity, Capture, combat strength |
+| Defender           | Guard               | Cheap high-defense occupation that makes frontal melee inefficient                                          | Fortify rule, HP/Defense mix, city affinity                                                                         |
+| Basic ranged       | Marksman            | Mobile short-range pressure with low durability                                                             | Range pattern, move-fire rule, damage curve                                                                         |
+| Flanker            | Raider              | Affordable fast single-target closer that punishes exposed ranged units                                     | Charge, escape, road/terrain interaction                                                                            |
+| Support            | Medic               | Sustains allies while sacrificing direct offense and tempo                                                  | Heal, cleanse, shield, or another bounded support action                                                            |
+| Artillery          | Catapult            | Expensive long-range siege pressure with a close-range/setup weakness                                       | Minimum range, reload, line of fire, projectile theme                                                               |
+| Anchor             | Heavy               | Capacity-efficient durable front-line power that displaces or survives                                      | Push, armor, HP pool, movement limitation                                                                           |
+| Direct siege       | Breacher            | High-risk adjacent answer to extreme static defense                                                         | Defense stripping, structure attack, positional setup                                                               |
+| Sweeper            | Lancer              | Costly mobility plus bounded repeat actions that punish weak-unit concentration                             | Chain trigger, cap, fatigue, route rules; never a unit-ID damage bonus                                              |
+| Controller         | Envoy               | Fragile delayed threat to an isolated premium unit, forcing movement or rescue                              | Conversion, disable, displacement, or possession with a guaranteed reply                                            |
+| Infiltrator        | Saboteur            | Situational hidden access to neglected rear areas and bounded city/economic disruption                      | Detection model, theft/denial payload, cooldown, reveal condition; never removes the roster's timely picket counter |
+| Super-unit         | Juggernaut          | Rare reward-only strategic concentration that ordinary rosters must answer                                  | Reward source, scale, movement, signature action                                                                    |
 
 The Sweeper, Controller, and Infiltrator are high-variance jobs, not promises
 that every faction receives Pursuit, Defection, and Blackout. Their shared
@@ -578,6 +654,22 @@ contract is the tactical question they pose: do not mass fragile units, do not
 leave an expensive immobile unit unsupported, and do not neglect the rear. A
 future faction's answer may look radically different while preserving those
 three checks and equally legible counterplay.
+
+Portability includes the **counter contract**, not only the spectacular side
+of each role:
+
+| Job         | Invariant safety envelope                                                                                                                                                         |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sweeper     | Finite repeat-action ceiling; a durable ordinary screen or adequate spacing ends the sequence; no action, promotion, loot, or structure side door resets the ceiling.             |
+| Controller  | Full target-owner reply after a visible telegraph; fragile/costly source; deterministic cancellation; no capacity bypass; ownership change never grants an immediate action.      |
+| Infiltrator | Early universal or comparable detector/picket access; disruption fails against an actively garrisoned target; per-unit cooldown and per-target recovery prevent permanent denial. |
+
+A future faction may answer concealment with a watchtower, aura, or different
+early unit instead of a Scout, for example, but it may not ship an Infiltrator
+into a roster whose opponents lack a practical pre-impact counter. Likewise,
+“bounded” does not require exactly three attacks or exactly one unaffected city
+turn; it requires a visible finite ceiling that survives all faction-specific
+interactions.
 
 ## 8. Economy and improvement numbers
 
@@ -783,17 +875,23 @@ changes the matchups, it does so through universal combat properties.
   of setup after every move, and the need for adjacent screens. Range 3 still
   ignores intervening units and terrain, so artillery concentration remains a
   specific playtest risk rather than a solved theorem.
-- A Lancer can devastate three adjacent Marksmen/Catapults, yet one healthy
-  Fighter ends the sequence because Attack 3 does not kill Defense 2 from full
-  HP. Spacing fragile units more than two Pursue cells apart also ends the
-  threat without a special protection aura.
-- A Guard or Juggernaut threatened by Defection can retreat out of range,
+- A Lancer can devastate three Marksmen/Catapults along a reachable lane, yet
+  one healthy Fighter ends the sequence because Attack 3 does not kill Defense
+  2 from full HP. Because kill advance plus Pursue can bridge three Chebyshev
+  cells between targets, safe spacing must exceed that reach or include an
+  occupied/durable screen.
+- A Guard or Juggernaut threatened by Defection sees the Envoy and can retreat out of range,
   close and attack if it has move-then-attack, accept allied help, or allow a
   Push to separate the units. An unsupported static defender may have to vacate
-  the position it was meant to hold, which is the intended gridlock break.
-- Saboteur detection is supplied by any unit, including a cheap rear Fighter.
-  Blackout cannot remove existing defenses, so it disrupts reinforcement and
-  development rather than directly opening a defended city.
+  the position it was meant to hold, which is the intended gridlock break. If
+  it remains on a city and converts, it loses friendly city/Wall defense and is
+  exhausted, giving the former owner a normal combat reply despite the siege.
+- Saboteur detection is supplied at radius 1 by any unit and at radius 2 by a
+  Scout. Any hostile unit detection makes Blackout illegal, so a center
+  garrison is a hard counter rather than merely revenge after the denial lands.
+  Blackout cannot remove existing defenses and a city must receive one normal
+  turn between effects, so it disrupts neglected reinforcement/development
+  rather than permanently locking a defended city.
 - Roads increase the practical threat radius of reinforcements, but Forest,
   Mountain prerequisites, unexplored stops, and ZOC remain impartial checks.
 
@@ -862,7 +960,8 @@ planning rather than completion for its own sake:
 - Explosives adds both Breachers and 1-Coin Pillage pressure against a dense
   enemy economy.
 - Fieldcraft adds Saboteurs whose Blackout punishes undefended rear production,
-  but a 7-Coin infiltrator that finds every city detected is a failed purchase.
+  but a 7-Coin infiltrator that finds every city garrisoned or within a Scout's
+  detection radius cannot use its payload and is a failed purchase.
 
 If playtests show that players correctly identify these benefits but still
 never buy tier 3 after reaching four or five cities, reduce only the tier-3
@@ -890,7 +989,9 @@ goldens should remain readable only under their original contract.
 - Replace the single-attack activation assumption with explicit bounded
   Pursuit state and `PURSUE`/`END_PURSUIT` commands. Combat events must state
   whether a unit kill opened another attack; ordinary movement cannot be
-  smuggled into a Pursuit sequence.
+  smuggled into a Pursuit sequence. Pursue has a separate two-point budget,
+  forbids public chest cells, uses contact-safe hidden occupancy/ZOC stops, and
+  cannot be bypassed by Promote, Wait, End Turn, or faction specials.
 - Add phased Defection marks and capacity reservations. The recorded target
   owner's first accepted End Turn after the offer arms the mark after recovery;
   the initiator's first subsequent Start Turn resolves it after existing-unit
@@ -899,11 +1000,15 @@ goldens should remain readable only under their original contract.
   every failure path must release the reserved slot. Unlike reward placement,
   conversion cannot create a new over-capacity state.
 - Add per-view Conceal/detection, contact-safe movement into concealed
-  occupancy, exposure/cooldown state, and city Blackout state. Current v6 makes
-  every unit on a permanently explored cell visible, so simply filtering the
-  view is insufficient: movement validation, public path enumeration, command
-  rejection detail, combat targets, threat queries, and AI observations all
-  require the same observation-safe rule.
+  occupancy and newly detected ZOC, exposure/round-cooldown state, Scout
+  radius-2 detection, unit-detection Blackout prevention, and city
+  Blackout/recovery state. Current v6 makes every unit on a permanently
+  explored cell visible, so simply filtering the view is insufficient:
+  movement validation/enumeration, blind displacement, generic rejection
+  detail, combat/ability targets and previews, stats/selections/threats,
+  leaderboard aggregates, AI inputs/tuples, live event projection, animation,
+  notices, logs, reconnect, and spectator/debug/replay access all require an
+  explicit observation-safe rule.
 - Add Quarrying's Barracks as a non-economic city improvement or a clearly
   separated capacity-building layer; define capture, destruction,
   serialization, and live capacity recomputation.
@@ -923,10 +1028,12 @@ goldens should remain readable only under their original contract.
   eligible Defections, emits their events, then advances the active seat. Start
   Turn resets activations for units already owned by the incoming player,
   resolves that player's armed Defections in mark-ID order, reveals from
-  successful conversions, evaluates Saboteur eligibility turns, triggers
-  Blackout, and only then calculates income. Converted units are inserted
-  exhausted after reset. Pending city rewards still block unrelated commands
-  and cannot be bypassed by these automatic transitions.
+  successful conversions, evaluates round-based Saboteur eligibility, triggers
+  Blackout, and only then calculates income. End Turn clears an active
+  Blackout into recovery or clears recovery after one unaffected owner turn.
+  Converted units are inserted exhausted after reset. Pending city rewards
+  still block unrelated commands and cannot be bypassed by these automatic
+  transitions.
 - Add a deterministic Defection timing matrix for 2-, 3-, and 4-player games,
   with target seats before and after the initiator: each case must observe
   exactly one target Start/income/action/End window, arm only after that End
@@ -934,7 +1041,8 @@ goldens should remain readable only under their original contract.
   and before income, and leave the converted unit exhausted. Cover pending
   choices, intervening-player kills/pushes, target or initiator elimination,
   city/capacity loss, multiple marks in ID order, save/resume at both phases,
-  and replay event equality.
+  converted city occupants/defense recalculation, ownership-dependent state
+  cleanup, and replay event equality.
 
 ### Factions
 
@@ -952,13 +1060,15 @@ silently from Candy to Original. This proposal makes no Candy choices.
 - Teach AI to search at most three Lancer attacks without treating a potential
   kill as certain; reserve cheap screens between Lancers and fragile units;
   value a Defection only after modeling the target owner's guaranteed complete
-  reply turn and any intervening seats; maintain rear detection coverage; and
-  value Blackout by attributable city income and action denial rather than a
-  flat role bonus.
-- AI observations and debug logs must never expose concealed authoritative
-  units to a player policy. Deterministic tie-breaks order Pursuit paths,
-  eligible Defection cities, and Blackout targets by existing canonical IDs
-  and coordinates.
+  reply turn and any intervening seats; garrison valuable rear cities or use
+  Scout pickets; respect per-city recovery; and value Blackout by attributable
+  city income/action denial rather than a flat role bonus.
+- AI observations, policy diagnostics, and ordinary player-facing logs must
+  never expose concealed authoritative units. Raw debug exports, saves,
+  canonical replays, and hashes remain explicitly omniscient diagnostic
+  artifacts and should not be offered as safe live-player views.
+  Deterministic tie-breaks order Pursuit paths, eligible Defection cities, and
+  Blackout targets by existing canonical IDs and coordinates.
 - Rebalance economic research value so rare high-output extraction is not
   undervalued by raw target count. Passive/off-terrain unlocks such as
   Barracks and Spoils need explicit node utility; the current shortest-chain
@@ -982,32 +1092,34 @@ silently from Candy to Original. This proposal makes no Candy choices.
 - Combat preview must display minimum range, inability to move-and-fire, and
   expected ranged retaliation without relying on color alone.
 - The map and action bar must show remaining Pursuit attacks and legal follow-up
-  cells, Defection's waiting/armed phase, target reply owner, next safe
-  resolution boundary, break conditions, and reserved city, plus Saboteur
-  detection/exposure/cooldown. Enemy UI must never show concealed selections,
-  blocked paths, threat overlays, or rejection text that leaks a Saboteur.
+  cells/reach, Defection's waiting/armed phase, revealed source, target reply
+  owner, next safe resolution boundary, break conditions, converted-city
+  siege, and reserved city, plus Saboteur detection source, whether a hostile
+  unit blocks Blackout, exposure, eligible round, and target-city recovery.
+  Enemy UI must never show concealed selections, blocked paths, threat overlays,
+  event animations, or rejection text that leaks a Saboteur.
 
 ## 13. Risks and tunable parameters
 
-| Risk                                           | Proposed baseline                                                           | Safe first tuning range                            | Evidence to watch                                           |
-| ---------------------------------------------- | --------------------------------------------------------------------------- | -------------------------------------------------- | ----------------------------------------------------------- |
-| One Mine causes excessive reward queues        | +4 pop for 6                                                                | +3 to +4                                           | Levels per Mine; reward modal frequency; Mining adoption    |
-| Forge jackpot snowballs too hard               | +3/Mine, cost 6, processor cap 18                                           | cap 15–18; Mine base +3–4                          | Population from top 5% of Forges; reward choices from build |
-| Stone pairs overpay                            | +2/Quarry +2/pair, processor cap 16                                         | cap 14–16; pair +1 to +2                           | Stoneworks distribution versus Windmill/Sawmill             |
-| Industry still feels too map-dependent         | unchanged frequencies                                                       | boost Surveying utility before altering generation | Root adoption on starts with zero owned mountain resources  |
-| Catapult creates static artillery balls        | cost 8, A3.5, R2–3, D0.5, no Dash                                           | cost 8–9; A3–3.5; R3 fixed                         | Siege duration; Catapult survival with/without screens      |
-| Raider still wins frontal trades               | cost4, A2, D1, Charge +1                                                    | Charge +0.5–1; D1–1.5                              | Coin-normalized losses versus Fighter/Guard                 |
-| Lancer chain wipes lack a reply                | cost9, A3/D1.5, three attacks, two-cell Pursue                              | cost9–10; attack cap 2–3; Pursue 1–2               | Units killed/turn; chains stopped by healthy screens        |
-| Defection trivializes premium units            | one complete target-owner turn, 7 HP/D0.5, cost6, capacity reservation      | cost6–7; require one or two turns                  | Marks armed/resolved; value converted; response chosen      |
-| Converted rewards bypass capacity              | all roles eligible; conversion requires a reserved slot and re-homes target | exclude super-units only after evidence            | Converted Juggernauts; capacity/reward integrity            |
-| Concealment leaks or feels arbitrary           | radius-1 unit/city detection; contact-safe movement                         | detection radius 1–2                               | Hidden-info test failures; surprise/contact outcomes        |
-| Blackout locks cities too reliably             | suppress up to 3 income; one turn of actions; two intervening-turn cooldown | cap 2–3; deny Train only                           | Income denied; actions denied; Saboteur survival            |
-| Spoils accelerates conquest snowball           | first hostile capture/city/player +2; neutral 0                             | +1 to +2                                           | Drill opening win rate and Coins earned before round 10     |
-| Pillage is more valuable than occupation       | flat +1, terminal                                                           | 0 to +1                                            | Pillage frequency and net destroyed build cost              |
-| Barracks bypasses city development too cheaply | cost6, +1 capacity, one/city, Quarrying                                     | cost6–8                                            | Barracks adoption and units per city level                  |
-| Scout makes Mobility a mandatory opener        | cost4, sight2, Move2, Capture                                               | cost4–5 or remove Capture only after evidence      | First-root adoption; chest/village captures by role         |
-| Tier 3 remains too late                        | current `9 + 3(C-1)`                                                        | coefficient 2–3                                    | First tier-3 round, match share with any tier-3 tech        |
-| Advanced units crowd out Fighters              | 6–9 Coins and one slot                                                      | +1 unit cost before stat nerf                      | Coin-normalized damage, captures, and survival by role      |
+| Risk                                           | Proposed baseline                                                                                                           | Safe first tuning range                            | Evidence to watch                                           |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- | ----------------------------------------------------------- |
+| One Mine causes excessive reward queues        | +4 pop for 6                                                                                                                | +3 to +4                                           | Levels per Mine; reward modal frequency; Mining adoption    |
+| Forge jackpot snowballs too hard               | +3/Mine, cost 6, processor cap 18                                                                                           | cap 15–18; Mine base +3–4                          | Population from top 5% of Forges; reward choices from build |
+| Stone pairs overpay                            | +2/Quarry +2/pair, processor cap 16                                                                                         | cap 14–16; pair +1 to +2                           | Stoneworks distribution versus Windmill/Sawmill             |
+| Industry still feels too map-dependent         | unchanged frequencies                                                                                                       | boost Surveying utility before altering generation | Root adoption on starts with zero owned mountain resources  |
+| Catapult creates static artillery balls        | cost 8, A3.5, R2–3, D0.5, no Dash                                                                                           | cost 8–9; A3–3.5; R3 fixed                         | Siege duration; Catapult survival with/without screens      |
+| Raider still wins frontal trades               | cost4, A2, D1, Charge +1                                                                                                    | Charge +0.5–1; D1–1.5                              | Coin-normalized losses versus Fighter/Guard                 |
+| Lancer chain wipes lack a reply                | cost9, A3/D1.5, three attacks, two-cell Pursue; no chest/Promote/action reset                                               | cost9–10; attack cap 2–3; Pursue 1–2               | Units killed/turn; chains stopped by healthy screens        |
+| Defection trivializes premium units            | revealed Envoy; one complete target-owner turn, 7 HP/D0.5, cost6, capacity reservation                                      | cost6–7; require one or two turns                  | Marks armed/resolved; value converted; response chosen      |
+| Converted rewards bypass capacity              | all roles eligible; conversion requires a reserved slot and re-homes target                                                 | exclude super-units only after evidence            | Converted Juggernauts; capacity/reward integrity            |
+| Concealment leaks or feels arbitrary           | radius-1 unit/city and radius-2 Scout detection; contact-safe movement/ZOC; projected live events                           | Scout radius 1–2                                   | Hidden-info test failures; surprise/contact outcomes        |
+| Blackout locks cities too reliably             | unit detection blocks; suppress up to 3 income/one action turn; one normal city turn between effects; round+3 unit cooldown | cap 2–3; deny Train only                           | Income/actions denied; protected turns; Saboteur survival   |
+| Spoils accelerates conquest snowball           | first hostile capture/city/player +2; neutral 0                                                                             | +1 to +2                                           | Drill opening win rate and Coins earned before round 10     |
+| Pillage is more valuable than occupation       | flat +1, terminal                                                                                                           | 0 to +1                                            | Pillage frequency and net destroyed build cost              |
+| Barracks bypasses city development too cheaply | cost6, +1 capacity, one/city, Quarrying                                                                                     | cost6–8                                            | Barracks adoption and units per city level                  |
+| Scout makes Mobility a mandatory opener        | cost4, sight2, Move2, Capture                                                                                               | cost4–5 or remove Capture only after evidence      | First-root adoption; chest/village captures by role         |
+| Tier 3 remains too late                        | current `9 + 3(C-1)`                                                                                                        | coefficient 2–3                                    | First tier-3 round, match share with any tier-3 tech        |
+| Advanced units crowd out Fighters              | 6–9 Coins and one slot                                                                                                      | +1 unit cost before stat nerf                      | Coin-normalized damage, captures, and survival by role      |
 
 Recommended balance telemetry for seeded AI and human playtests:
 
@@ -1019,18 +1131,21 @@ Recommended balance telemetry for seeded AI and human playtests:
 - Lancer attacks and kills per activation, sequence stops, and target spacing;
 - Defection offers, target reply turns, arms, resolutions/cancellations, break
   reason, converted value, and reserved-slot turns;
-- Saboteur turns concealed/detected, Blackout income/actions denied, and
-  survival after exposure;
+- Saboteur turns concealed/detected by source, Blackouts blocked by pickets,
+  income/actions denied, protected normal city turns, and survival after
+  exposure;
 - turns from first walled-Guard siege contact to capture;
 - win rate conditional on first tier-3 node;
 - top-decile Forge/Stoneworks values rather than averages alone.
 
 ## 14. Independent review
 
-This section records the prior adversarial second pass plus the explicit
-pressure test applied while adding the gridlock-breaker roster. It is part of
-the proposal, not evidence that the design has been playtested or approved.
-The Envoy/Lancer/Saboteur revision still requires a fresh independent review.
+This section records the economic/map review, the pressure test applied while
+adding the gridlock-breaker roster, and a fresh independent adversarial review
+of that roster revision. It is part of the proposal, not evidence that the
+design has been playtested or approved. The latest review found and corrected
+material timing, repeat-denial, counter-availability, and hidden-information
+gaps; section 14.4 records them separately from the author's initial audit.
 
 ### 14.1 Opportunity-cost audit
 
@@ -1112,24 +1227,83 @@ defense. These are hypotheses to test, not proof of equal win rate.
 
 ### 14.3 Gridlock-breaker exploit audit
 
-| Exploit or degeneracy                               | Baseline guardrail                                                                                                                                                        | Residual test question                                                                                                     |
-| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| Infinite Lancer action reset                        | Only lethal hostile-unit attacks qualify; maximum three attacks; one Pursue path between attacks; every nonlethal result and explicit End terminates                      | Does a two-attack cap still feel spectacular if three routinely decides battles?                                           |
-| Chain through walls or disposable structures        | Structure kills never open Pursuit; ordinary retaliation and occupancy apply to every target                                                                              | Can allied disposable units be manipulated into lanes? Allied attacks are illegal, so no.                                  |
-| Lancer makes all mobile units obsolete              | Cost 9; Defense 1.5; full-health Fighter survives Attack 3 and stops the chain; Raider costs 4 and reaches its single priority target earlier in the tree                 | Compare coin-normalized kills/captures against mixed and spaced armies, not only ideal weak clusters.                      |
-| Defection steals a premium unit without reply       | The next target-owner End arms only after its complete turn/recovery; the initiator's following Start resolves; range 2 must survive both boundaries                      | Is one complete turn enough around immobilized walled defenders, or should conversion require two?                         |
-| Reward/super-unit conversion bypasses scarcity      | Reward roles are eligible but require a reserved slot, cannot act on conversion turn, and transfer no exploration; conversion cannot create over-capacity                 | Does the emotional swing of a converted Juggernaut outweigh the rare setup even when rules remain sound?                   |
-| Conversion overfills or corrupts home-city capacity | The slot is reserved at offer time and revalidated atomically; every cancel releases it; successful target is re-homed and counted                                        | Fuzz simultaneous city loss, negative population, Disband, and multiple reservations.                                      |
-| Defection captures a city in the same transaction   | Conversion clears Capture eligibility and grants no Spoils; a converted city occupant must survive until a later Start Turn                                               | Does delayed Capture remain obvious in UI and AI planning?                                                                 |
-| Concealed unit leaks through queries/rejections     | Public paths assume a concealed cell is empty; collision accepts a visible prefix and reveals on contact; target/threat lists omit the entity                             | Observation-equivalence tests must compare every command/query result for states differing only by an undetected Saboteur. |
-| Permanent invisibility removes counterplay          | Any enemy unit or city center detects at radius 1; Attack/Blackout creates timed exposure; Blackout itself requires entering city detection                               | Is radius 1 enough on large maps, or does Scout need a larger faction-neutral detection job?                               |
-| Blackout/recapture becomes a money farm             | No payout, no spawn, no damage; one pending effect per city; city ownership change cancels it; Saboteur waits two intervening owner turns                                 | Measure denial loops between the same player/city and consider a per-city immunity turn if still repetitive.               |
-| Disruption invalidates population/reward state      | Blackout suppresses at most 3 incoming Coins and future actions only; it never removes live population, capacity, rewards, Roads, or defense                              | Is blocking both training and development too broad despite state safety?                                                  |
-| Hidden Saboteur blocks a reward spawn               | Existing authoritative spawn selection sees occupancy and chooses its next canonical legal tile; the viewer learns nothing until placement is published or contact occurs | Verify no candidate-count or rejection detail reveals the concealed occupant before the spawn event.                       |
-| Sweeper/controller simply amplify artillery balls   | Lancer must pass occupancy and kill a screen; Envoy must remain within range 2 through a reply; Catapult still cannot fire after moving or at adjacency                   | Test protected artillery against equal-Coin Fighter/Guard spacing plus mobile reserves.                                    |
-| One branch supplies an entire dominant army         | Wilds and Mobility each have three units, but their two endpoints require both forks; Wilds' full unit set costs 37 research Coins at one city before training            | Track single-branch win rate and role diversity; move Saboteur only if its dual-use Fieldcraft home proves dominant.       |
+| Exploit or degeneracy                                | Baseline guardrail                                                                                                                                                                                                   | Residual test question                                                                                                      |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Infinite Lancer action reset                         | Only lethal hostile-unit attacks qualify; maximum three attacks; one Pursue path between attacks; no chest, Promote, Wait, End Turn, special, or structure reset; every nonlethal result and explicit End terminates | Does a two-attack cap still feel spectacular if three routinely decides battles?                                            |
+| Chain through walls or disposable structures         | Structure kills never open Pursuit; ordinary retaliation and occupancy apply to every target                                                                                                                         | Can allied disposable units be manipulated into lanes? Allied attacks are illegal, so no.                                   |
+| Lancer makes all mobile units obsolete               | Cost 9; Defense 1.5; full-health Fighter survives Attack 3 and stops the chain; Raider costs 4 and reaches its single priority target earlier in the tree                                                            | Compare coin-normalized kills/captures against mixed armies; spacing must account for kill advance plus two-cell Pursue.    |
+| Defection steals a premium unit without reply        | Offer reveals the Envoy to target owner/allies; next target-owner End arms only after a complete turn/recovery; initiator's following Start resolves; range 2 survives both boundaries                               | Is one complete turn enough around immobilized walled defenders, or should conversion require two?                          |
+| Reward/super-unit conversion bypasses scarcity       | Reward roles are eligible but require a reserved slot, cannot act on conversion turn, and transfer no exploration; conversion cannot create over-capacity                                                            | Does the emotional swing of a converted Juggernaut outweigh the rare setup even when rules remain sound?                    |
+| Conversion overfills or corrupts home-city capacity  | The slot is reserved at offer time and revalidated atomically; every cancel releases it; successful target is re-homed and counted                                                                                   | Fuzz simultaneous city loss, negative population, Disband, and multiple reservations.                                       |
+| Defection captures a city in the same transaction    | Conversion clears Capture eligibility and grants no Spoils; a converted city occupant must survive until a later Start Turn                                                                                          | Does delayed Capture remain obvious in UI and AI planning?                                                                  |
+| Concealed unit leaks through queries/rejections      | Public paths assume hidden occupancy/ZOC absent; stepwise authority accepts a visible prefix, reveals on contact, and uses generic target failures; all player-facing events/diagnostics are projected               | Observation-equivalence must cover every public command/query/event/animation surface, not only `PlayerView.units`.         |
+| Permanent invisibility removes counterplay           | Any enemy unit/city detects at radius 1, Scout at radius 2; hostile-unit detection makes Blackout illegal; Attack/Blackout creates timed exposure                                                                    | Is one center garrison too binary, or does it create the intended “neglected rear only” niche?                              |
+| Blackout/recapture or alternating units locks a city | No payout/spawn/damage; one pending effect; city ownership starts/preserves recovery; one unaffected owner turn is mandatory; each Saboteur waits until action round +3                                              | Measure denial cadence and remove development lockout first if one affected turn remains too broad.                         |
+| Disruption invalidates population/reward state       | Blackout suppresses at most 3 incoming Coins and future actions only; it never removes live population, capacity, rewards, Roads, or defense                                                                         | Is blocking both training and development too broad despite state safety?                                                   |
+| Hidden Saboteur changes spawn/displacement outcomes  | City-adjacent spawn cells already fall inside city/unit detection; other blind displacement reports uncertainty and reveals only on actual contact                                                                   | Verify reward/treasure placement, Push, future area effects, and event projection never leak an undetected remote location. |
+| Sweeper/controller simply amplify artillery balls    | Lancer must pass occupancy and kill a screen; Envoy must remain within range 2 through a reply; Catapult still cannot fire after moving or at adjacency                                                              | Test protected artillery against equal-Coin Fighter/Guard spacing plus mobile reserves.                                     |
+| One branch supplies an entire dominant army          | Wilds and Mobility each have three units, but their two endpoints require both forks; Wilds' full unit set costs 37 research Coins at one city before training                                                       | Track single-branch win rate and role diversity; move Saboteur only if its dual-use Fieldcraft home proves dominant.        |
 
-### 14.4 Failure modes that remain live
+### 14.4 Fresh independent gridlock-breaker review
+
+The reviewer traced the three mechanics through current Ruleset 6 combat,
+movement, capacity, reward, turn, view, query, AI, replay, and debug-export
+contracts. This was a design audit, not an implementation test. The following
+issues were material enough to revise the baseline rather than defer to
+playtesting:
+
+| Review finding                                                                                                                                                                            | Revision incorporated                                                                                                                                                                |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Pursuit's “exactly one follow-up” wording contradicted its three-attack ceiling, and the state machine did not explicitly block Promote, End Turn, faction specials, or chest collection. | Remaining attacks are exactly `3 - attacksUsed`; only Attack, one bounded Pursue, or explicit End is legal; chest cells and every reset/side-action route are excluded.              |
+| A melee kill advances before the two-cell Pursue, so successive targets can be three cells apart. “More than two cells” understated the real wipe corridor.                               | All positioning guidance and UI reach requirements now include the ordinary advance; durable occupancy or spacing beyond three cells is the stated counter.                          |
+| Concealed occupancy was covered, but concealed ZOC could still make authoritative movement differ from public pathing without a fair contact rule.                                        | Ordinary and Pursue paths are resolved stepwise; hidden occupancy stops before contact and newly detected ZOC stops on the entered cell, while ZOC-immune units continue normally.   |
+| A range-2 Defection could be offered from terrain the target owner had never explored, leaving the threatened player unable to locate the fragile source.                                 | Offering reveals the Envoy entity/coordinate to target owner and allies for the mark's duration without revealing surrounding terrain.                                               |
+| “One target reply” was correct in intent but not demonstrated for seats before/after the initiator in 2-, 3-, and 4-player order.                                                         | A relative-seat timing table now proves that later-seat targets reply in the offer round and earlier-seat targets reply next round; intervening seats only add disruption chances.   |
+| Full mark metadata shown when a third party saw only one endpoint could reveal the hidden counterpart.                                                                                    | Third parties receive an endpoint badge only; linked IDs/coordinates require both endpoints to be independently visible.                                                             |
+| Converting a fortified city occupant did not specify recalculated defense, immediate siege/income implications, or ownership-bound state cleanup.                                         | Friendly city/Wall/Fortification defense is recalculated for the new owner, the resulting siege is explicit, the unit remains exhausted, and sourced marks/open Pursuit cancel.      |
+| A successfully converted premium unit could be offered back immediately, making “no existing mark” look like protection against a conversion chain when it was not.                       | Re-marking is allowed but never automatic: it costs a new Envoy/reservation and the current owner receives a complete usable reply activation before any reconversion resolves.      |
+| A per-Saboteur cooldown did not prevent two Saboteurs from alternating Blackout on one city forever; capture also reset the only city-side guardrail.                                     | Every affected city must complete one normal owner turn between Blackouts, and that recovery follows the city through capture; denial still never pays or spawns units.              |
+| `currentOwnerTurn + 3` became ambiguous if Defection changed the Saboteur's owner.                                                                                                        | Cooldown is now `actionRound + 3`, a serialized global-round threshold that survives ownership changes and is identical at every player count.                                       |
+| Radius-1 detection merely revealed a Saboteur after it had moved adjacent and fired, so the proposed “cheap rear Fighter” was revenge, not pre-impact counterplay.                        | Blackout is illegal while any hostile unit detects the Saboteur; a center garrison blocks the ring, and Scouts detect at radius 2 to provide an early proactive picket.              |
+| Filtering `PlayerView.units` alone would still leak through targets, paths, ZOC, Push previews, AI tuples, animations, events, logs, saves, replays, and hashes.                          | Section 7.4 now defines the public projection surface, generic guessed-ID failures, blind-displacement uncertainty, and labels raw save/replay/debug/hash artifacts as omniscient.   |
+| The portable charter preserved the threats but did not require future factions to preserve their counters.                                                                                | Each high-variance archetype now carries an invariant safety envelope; factions may reskin/reimplement the job but may not omit finite ceilings, reply windows, or timely detection. |
+
+#### Independent verdict
+
+- **Lancer/Pursuit:** retains the intended spectacular three-kill ceiling. It
+  is broadly useful because Move 3, Dash, Capture, and one strong attack are
+  valuable, but 9 Coins and Defense 1.5 make that package inefficient unless
+  mobility or a weak-unit corridor matters. A healthy Fighter/Guard/Heavy,
+  occupied lane, ordinary retaliation, or spacing beyond the full
+  advance-plus-Pursue reach ends the chain. No unit-ID matchup modifier is
+  needed.
+- **Envoy/Defection:** is the sharpest anti-anchor mechanic and the greatest
+  emotional-risk item. Full conversion, including Juggernauts, remains in the
+  baseline because source revelation, one complete target-owner activation,
+  range revalidation, source fragility, deterministic cancellation, reserved
+  capacity, exhausted arrival, and loss of captured-city defense provide real
+  ordinary-mechanics answers. The safe rollback remains disable/displacement
+  if human playtests find ownership loss fun-killing despite understanding the
+  reply.
+- **Saboteur/Blackout:** now has a narrow, legible target: an unpicketed rear
+  city. A garrison prevents the payload, a Scout patrol detects earlier, the
+  infiltrator is exposed after acting, and every affected city receives a full
+  recovery turn. This preserves a strong positional punishment without a
+  permanent economic lock or recapture farm.
+- **Branch parity:** the revisions add no node or role and do not change the
+  25-node graph. Scout detection modestly improves Mobility specifically as a
+  counter to Wilds' Saboteur, strengthening cross-branch incentive rather than
+  concentrating another payoff in Wilds. Settlement still owns the cheapest
+  high-variance unit path, but Envoy's zero Attack and reserved capacity make
+  it a situational purchase rather than a general army core.
+
+The mechanics are sufficiently bounded for an implementation contract, but
+their emotional fairness, AI competence, and prices remain playtest claims.
+The implementation should ship observation-equivalence, timer, and action-
+state tests before balance simulation; otherwise a balance result could merely
+be measuring information leaks or illegal extra actions.
+
+### 14.5 Failure modes that remain live
 
 - **Dominant opener:** Drill is the cheapest durable defense and Scouting still
   turns information into expansion. Craft is unusually cheap because Gathering
@@ -1153,16 +1327,20 @@ defense. These are hypotheses to test, not proof of equal win rate.
   prevents cycling but does not remove the ordinary reward of taking a city.
 - **High-variance frustration:** Defection and Blackout can feel worse than
   their average economic value, while an ideal Pursuit can decide a turn.
-  Measure resignations/misclicks and player comprehension alongside win rate.
+  Source telegraphs, full-reach previews, garrison blocking, and recovery
+  badges must be comprehensible before measuring resignations/misclicks
+  alongside win rate.
 - **Visibility complexity:** Concealment is the only proposed mechanic that
   weakens the current “explored means permanently visible unit” contract. It
-  requires observation-equivalence tests across commands, previews, AI, logs,
-  animation, and reconnect/resume, not just a filtered renderer.
+  requires observation-equivalence tests across commands, generic rejections,
+  path/ZOC contact, displacement, previews, AI, projected events/logs,
+  animation, reconnect/resume, and omniscient-artifact access, not just a
+  filtered renderer.
 - **Reward cadence:** even capped industrial complexes can generate consecutive
   choices. Measure choices per build and time blocked in the reward queue, not
   just final city level.
 
-### 14.5 Explicit product alternatives
+### 14.6 Explicit product alternatives
 
 The following are real judgment calls rather than hidden recommendations:
 
@@ -1191,12 +1369,15 @@ The following are real judgment calls rather than hidden recommendations:
    reply and capacity reservation create the desired anti-super-unit threat.
    Excluding reward-only roles is the safe rollback if the swing is fun-killing
    even when rare; do not make the outcome random.
-8. **Concealment:** baseline uses radius-1 unit/city detection. Radius 2 on
-   Scouts is the first addition if rear defense becomes tedious, while global
-   visibility after every move would erase the Infiltrator job.
+8. **Concealment:** baseline uses radius-1 unit/city detection and radius 2 on
+   Scouts; hostile-unit detection blocks Blackout. If rear defense is still
+   tedious, widen another early picket tool before making every hidden move
+   globally visible, which would erase the Infiltrator job.
 9. **Blackout payload:** baseline suppresses up to 3 income and one turn of
-   Train/development actions. If denial is oppressive, retain the income loss
-   and remove development lockout before changing concealment.
+   Train/development actions, followed by one unaffected owner turn. If denial
+   is oppressive, retain the income loss and Train denial but remove
+   development lockout before changing concealment, picket blocking, or city
+   recovery.
 
 ## 15. Review questions
 
@@ -1227,10 +1408,12 @@ The following are real judgment calls rather than hidden recommendations:
     of the military roster?
 11. Is the Lancer's three-attack cap large enough to punish weak-unit masses
     while remaining legibly bounded, or should the safe baseline start at two?
-12. Does radius-1 unit/city detection make Saboteur counterplay active without
-    making rear-area coverage tedious? Should Scout receive radius-2 detection?
-13. Should Blackout deny both Train and tile development for one turn, or is
-    the capped 3-Coin income suppression plus Train denial sufficient?
+12. Is the baseline counter—radius-1 unit/city detection, radius-2 Scout
+    detection, and Blackout blocked by hostile-unit detection—legible and
+    active, or does a center garrison make the infiltrator's niche too binary?
+13. With one guaranteed unaffected city turn between effects, should Blackout
+    still deny both Train and tile development for its affected turn, or is the
+    capped 3-Coin suppression plus Train denial sufficient?
 14. Should reward-only Juggernauts remain eligible for Defection when the
     attempt reserves capacity, waits through one reply, and consumes the
     converted unit's first turn?
