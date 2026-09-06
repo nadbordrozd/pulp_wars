@@ -1,0 +1,188 @@
+import { canonicalHash, canonicalJson } from "../replay/canonical";
+import { parseCommandV7, type CommandV7 } from "./commands";
+import { createInitialMapStateV7 } from "./map";
+import {
+  hasExactKeysV7,
+  isDenseArrayV7,
+  isNonNegativeSafeIntegerV7,
+} from "./schema";
+import { parseMatchSetupV7 } from "./setup";
+import { parseGameStateV7 } from "./state-schema";
+import type { GameStateV7, MatchSetupV7 } from "./types";
+
+export interface ReplayCheckpointV7 {
+  readonly index: number;
+  readonly stateHash: string;
+}
+export interface ReplayFileV7 {
+  readonly format: "pulp-wars-replay";
+  readonly version: 7;
+  readonly setup: MatchSetupV7;
+  readonly commands: readonly CommandV7[];
+  readonly checkpoints: readonly ReplayCheckpointV7[];
+}
+export type ReplayParseResultV7 =
+  | { readonly kind: "VALID"; readonly replay: ReplayFileV7 }
+  | { readonly kind: "INCOMPATIBLE_REPLAY" }
+  | { readonly kind: "INVALID_REPLAY" };
+export type ReplayErrorCodeV7 =
+  | "INCOMPATIBLE_REPLAY"
+  | "INVALID_REPLAY"
+  | "CREATE_REJECTED"
+  | "COMMAND_REPLAY_NOT_IMPLEMENTED"
+  | "CHECKPOINT_MISMATCH";
+
+export class ReplayErrorV7 extends Error {
+  readonly code: ReplayErrorCodeV7;
+  readonly index: number | null;
+  constructor(code: ReplayErrorCodeV7, index: number | null = null) {
+    super(index === null ? code : `${code} at command index ${index}`);
+    this.name = "ReplayErrorV7";
+    this.code = code;
+    this.index = index;
+  }
+}
+
+export interface ReplayRunResultV7 {
+  readonly acceptedCommands: number;
+  readonly state: GameStateV7;
+  readonly stateHash: string;
+}
+
+export function createReplayV7(input: unknown): ReplayFileV7 {
+  const setup = parseMatchSetupV7(input);
+  if (setup === null) throw new RangeError("INVALID_SETUP");
+  return {
+    format: "pulp-wars-replay",
+    version: 7,
+    setup,
+    commands: [],
+    checkpoints: [],
+  };
+}
+
+export function appendReplayCommandV7(
+  replayInput: unknown,
+  commandInput: unknown,
+  stateInput: unknown,
+): ReplayFileV7 {
+  const replay = parseReplayFileV7(replayInput);
+  const command = parseCommandV7(commandInput);
+  const state = parseGameStateV7(stateInput);
+  if (
+    replay.kind !== "VALID" ||
+    !command.ok ||
+    state === null ||
+    state.commandIndex !== replay.replay.commands.length + 1 ||
+    canonicalJson(state.setup) !== canonicalJson(replay.replay.setup)
+  )
+    throw new RangeError("INVALID_REPLAY");
+  return {
+    ...replay.replay,
+    commands: [...replay.replay.commands, command.value],
+    checkpoints: [
+      ...replay.replay.checkpoints,
+      { index: state.commandIndex, stateHash: canonicalHash(state) },
+    ],
+  };
+}
+
+export function parseReplayFileV7(input: unknown): ReplayParseResultV7 {
+  if (hasFormatVersion(input, "pulp-wars-replay") && isPreV7(input.version))
+    return { kind: "INCOMPATIBLE_REPLAY" };
+  if (
+    !hasExactKeysV7(input, [
+      "checkpoints",
+      "commands",
+      "format",
+      "setup",
+      "version",
+    ]) ||
+    input.format !== "pulp-wars-replay" ||
+    input.version !== 7 ||
+    !isDenseArrayV7(input.commands) ||
+    !isDenseArrayV7(input.checkpoints)
+  )
+    return { kind: "INVALID_REPLAY" };
+  const setup = parseMatchSetupV7(input.setup);
+  if (setup === null) return { kind: "INVALID_REPLAY" };
+  const commands: CommandV7[] = [];
+  for (const item of input.commands) {
+    const parsed = parseCommandV7(item);
+    if (!parsed.ok) return { kind: "INVALID_REPLAY" };
+    commands.push(parsed.value);
+  }
+  const checkpoints: ReplayCheckpointV7[] = [];
+  let prior = -1;
+  for (const item of input.checkpoints) {
+    if (
+      !hasExactKeysV7(item, ["index", "stateHash"]) ||
+      !isNonNegativeSafeIntegerV7(item.index) ||
+      item.index > commands.length ||
+      item.index <= prior ||
+      typeof item.stateHash !== "string" ||
+      !/^[0-9a-f]{64}$/.test(item.stateHash)
+    )
+      return { kind: "INVALID_REPLAY" };
+    checkpoints.push({ index: item.index, stateHash: item.stateHash });
+    prior = item.index;
+  }
+  return {
+    kind: "VALID",
+    replay: {
+      format: "pulp-wars-replay",
+      version: 7,
+      setup,
+      commands,
+      checkpoints,
+    },
+  };
+}
+
+export function parseReplayJsonV7(source: string): ReplayParseResultV7 {
+  try {
+    return parseReplayFileV7(JSON.parse(source) as unknown);
+  } catch {
+    return { kind: "INVALID_REPLAY" };
+  }
+}
+
+/** Foundation runner. Command execution is deliberately unavailable until the v7 reducer lands. */
+export function runReplayV7(input: unknown): ReplayRunResultV7 {
+  const parsed = parseReplayFileV7(input);
+  if (parsed.kind === "INCOMPATIBLE_REPLAY")
+    throw new ReplayErrorV7("INCOMPATIBLE_REPLAY");
+  if (parsed.kind !== "VALID") throw new ReplayErrorV7("INVALID_REPLAY");
+  if (parsed.replay.commands.length !== 0)
+    throw new ReplayErrorV7("COMMAND_REPLAY_NOT_IMPLEMENTED", 1);
+  const created = createInitialMapStateV7(parsed.replay.setup);
+  if (!created.ok) throw new ReplayErrorV7("CREATE_REJECTED");
+  const hash = canonicalHash(created.state);
+  const checkpoint = parsed.replay.checkpoints.find((item) => item.index === 0);
+  if (checkpoint !== undefined && checkpoint.stateHash !== hash)
+    throw new ReplayErrorV7("CHECKPOINT_MISMATCH", 0);
+  return { acceptedCommands: 0, state: created.state, stateHash: hash };
+}
+
+function hasFormatVersion(
+  input: unknown,
+  format: string,
+): input is { format: string; version: unknown } {
+  return (
+    typeof input === "object" &&
+    input !== null &&
+    !Array.isArray(input) &&
+    (input as Record<string, unknown>).format === format &&
+    Object.hasOwn(input, "version")
+  );
+}
+function isPreV7(input: unknown): boolean {
+  return (
+    input === 1 ||
+    input === 2 ||
+    input === 3 ||
+    input === 4 ||
+    input === 5 ||
+    input === 6
+  );
+}
