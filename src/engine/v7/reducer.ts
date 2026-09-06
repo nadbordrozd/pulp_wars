@@ -1,5 +1,6 @@
 import { allocateCityId, allocateUnitId, type PlayerId } from "../model/ids";
 import { deepFreeze } from "../model/freeze";
+import { nextBounded } from "../random/random";
 import type { JsonValue } from "../replay/canonical";
 import {
   BASIC_ECONOMIC_ACTIONS_V7,
@@ -29,7 +30,9 @@ import {
   type CityEconomyChangeV7,
 } from "./economy";
 import type { DomainEventV7 } from "./events";
+import { calculateCombatPreviewV7, pushedDestinationV7 } from "./combat";
 import { createInitialMapStateV7 } from "./map";
+import { unitSightRadiusAtV7, validateMovementPathV7 } from "./movement";
 import { parseGameStateV7 } from "./state-schema";
 import {
   adjacentTilesV7,
@@ -89,6 +92,20 @@ export type RuleErrorCodeV7 =
   | "UNIT_ROLE_INVALID"
   | "CAPTURE_NOT_ELIGIBLE"
   | "TARGET_ALLIED"
+  | "TARGET_NOT_FOUND"
+  | "TARGET_OUT_OF_RANGE"
+  | "ATTACK_NOT_LEGAL"
+  | "MOVEMENT_ILLEGAL"
+  | "INVALID_PATH"
+  | "PURSUIT_NOT_READY"
+  | "PURSUIT_NOT_OPEN"
+  | "HEAL_TARGET_NOT_FOUND"
+  | "HEAL_TARGET_NOT_OWNED"
+  | "HEAL_TARGET_NOT_ADJACENT"
+  | "HEAL_TARGET_FULL"
+  | "RECOVER_NOT_LEGAL"
+  | "PROMOTION_NOT_ELIGIBLE"
+  | "UNIT_ALREADY_HANDLED"
   | "PILLAGE_INVALID_TARGET"
   | "PURSUIT_MUST_END";
 export interface RuleErrorV7 {
@@ -129,7 +146,10 @@ export function createPlayableGameV7(
   if (player === undefined)
     return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
   try {
-    const started = startTurnEconomyV7(created.state, player);
+    const started = startTurnEconomyV7(
+      resetTurnUnits(created.state, player.id),
+      player,
+    );
     return {
       ok: true,
       state: checked(started.state),
@@ -194,6 +214,20 @@ export function applyCommandV7(
     return applyTrain(stateInput, state, actor, command);
   if (command.kind === "CHOOSE_CITY_REWARD")
     return applyReward(stateInput, state, actor, command);
+  if (command.kind === "MOVE" || command.kind === "PURSUE")
+    return applyMove(stateInput, state, actor, command);
+  if (command.kind === "ATTACK")
+    return applyAttack(stateInput, state, actor, command);
+  if (command.kind === "HEAL_ADJACENT")
+    return applyHeal(stateInput, state, actor, command);
+  if (command.kind === "RECOVER")
+    return applyRecover(stateInput, state, actor, command.unitId);
+  if (command.kind === "PROMOTE")
+    return applyPromote(stateInput, state, actor, command.unitId);
+  if (command.kind === "WAIT")
+    return applyWait(stateInput, state, actor, command.unitId);
+  if (command.kind === "END_PURSUIT")
+    return applyEndPursuit(stateInput, state, actor, command.unitId);
   if (command.kind === "CAPTURE")
     return applyCapture(stateInput, state, actor, command.unitId);
   if (command.kind === "PILLAGE")
@@ -202,9 +236,11 @@ export function applyCommandV7(
     return applyDisband(stateInput, state, actor, command.unitId);
   if (command.kind === "END_TURN")
     return applyEndTurn(stateInput, state, actor);
-  return rejected(stateInput, "COMMAND_NOT_IMPLEMENTED", {
-    kind: command.kind,
-  });
+  if (command.kind === "OFFER_DEFECTION" || command.kind === "BLACKOUT_CITY")
+    return rejected(stateInput, "COMMAND_NOT_IMPLEMENTED", {
+      kind: command.kind,
+    });
+  return rejected(stateInput, "INVALID_COMMAND");
 }
 
 function applyResearch(
@@ -896,6 +932,683 @@ function applyReward(
   }
 }
 
+function applyMove(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  command: Extract<CommandV7, { kind: "MOVE" | "PURSUE" }>,
+): ApplyCommandResultV7 {
+  const actorCheck = validateUnitActor(state, actor, command.unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  const { unit } = actorCheck;
+  if (command.kind === "PURSUE") {
+    if (unit.role !== "LANCER")
+      return rejected(original, "UNIT_ROLE_INVALID", { role: unit.role });
+    if (unit.activation.pursuitPhase !== "PURSUIT_READY")
+      return rejected(original, "PURSUIT_NOT_READY");
+  } else if (
+    unit.activation.pursuitPhase !== "NONE" ||
+    unit.activation.moved ||
+    primaryUsed(unit)
+  ) {
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: unit.id });
+  }
+  const validation = validateMovementPathV7(
+    state,
+    unit,
+    command.path,
+    command.kind,
+  );
+  if (!validation.legal)
+    return rejected(
+      original,
+      command.kind === "PURSUE" ? "INVALID_PATH" : "MOVEMENT_ILLEGAL",
+      {
+        reason: validation.reason,
+      },
+    );
+  try {
+    const treasure =
+      command.kind === "MOVE"
+        ? resolveTreasure(state, actor, unit, validation.destination)
+        : null;
+    let players = treasure?.players ?? state.players;
+    players = setExplored(players, actor, validation.explored);
+    let units = state.units.map((candidate) =>
+      candidate.id === unit.id
+        ? {
+            ...candidate,
+            at: validation.destination,
+            captureEligible: false,
+            activation:
+              command.kind === "PURSUE"
+                ? {
+                    ...candidate.activation,
+                    pursuitPhase: "PURSUIT_MOVED" as const,
+                  }
+                : {
+                    ...candidate.activation,
+                    moved: true,
+                    movedPathLength: validation.traversedPath.length,
+                    handled: true,
+                  },
+          }
+        : candidate,
+    );
+    if (treasure?.spawnedUnit !== null && treasure?.spawnedUnit !== undefined) {
+      units = [...units, treasure.spawnedUnit];
+      const sight = revealRadius(
+        { ...state, players, units } as GameStateV7,
+        actor,
+        treasure.spawnedUnit.at,
+        unitSightRadiusAtV7(
+          { ...state, players, units } as GameStateV7,
+          treasure.spawnedUnit,
+        ),
+      );
+      players = setExplored(players, actor, sight.explored);
+      treasure.extraRevealed.push(...sight.revealed);
+    }
+    const events: DomainEventV7[] = [];
+    if (validation.traversedPath.length > 0)
+      events.push(
+        command.kind === "PURSUE"
+          ? {
+              kind: "UNIT_PURSUED",
+              unitId: unit.id,
+              path: validation.traversedPath,
+              from: unit.at,
+              to: validation.destination,
+            }
+          : {
+              kind: "UNIT_MOVED",
+              unitId: unit.id,
+              path: validation.traversedPath,
+            },
+      );
+    if (treasure !== null) events.push(treasure.event);
+    if (validation.interruption !== null)
+      events.push({
+        kind: "UNIT_MOVE_INTERRUPTED",
+        unitId: unit.id,
+        at: validation.interruption.at,
+        reason: validation.interruption.reason,
+      });
+    const revealed = uniqueCoords([
+      ...validation.revealed,
+      ...(treasure?.extraRevealed ?? []),
+    ]);
+    if (revealed.length > 0)
+      events.push({ kind: "TILES_REVEALED", playerId: actor, tiles: revealed });
+    return accepted(
+      checked({
+        ...state,
+        commandIndex: nextSafe(state.commandIndex),
+        players,
+        units,
+        random: treasure?.random ?? state.random,
+        nextEntityId: treasure?.nextEntityId ?? state.nextEntityId,
+        treasureChests: treasure?.treasureChests ?? state.treasureChests,
+      }),
+      events,
+    );
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
+}
+
+interface TreasureResolutionV7 {
+  readonly players: readonly PlayerStateV7[];
+  readonly random: GameStateV7["random"];
+  readonly nextEntityId: number;
+  readonly treasureChests: readonly CoordV7[];
+  readonly spawnedUnit: UnitStateV7 | null;
+  readonly extraRevealed: CoordV7[];
+  readonly event: Extract<DomainEventV7, { kind: "TREASURE_CAPTURED" }>;
+}
+
+function resolveTreasure(
+  state: GameStateV7,
+  actor: PlayerId,
+  mover: UnitStateV7,
+  at: CoordV7,
+): TreasureResolutionV7 | null {
+  if (!state.treasureChests.some((chest) => same(chest, at))) return null;
+  const draw = nextBounded(state.random, 2);
+  const requestedReward = draw.value === 0 ? "COINS" : "HEAVY";
+  const placement =
+    requestedReward === "HEAVY"
+      ? treasureHeavyPlacement(state, actor, mover, at)
+      : null;
+  if (placement !== null) {
+    const allocation = allocateUnitId(state.nextEntityId);
+    const rule = effectiveRoleRuleV7("HEAVY");
+    const spawnedUnit: UnitStateV7 = {
+      id: allocation.id,
+      ownerId: actor,
+      homeCityId: placement.homeCityId,
+      role: "HEAVY",
+      at: placement.at,
+      hp: rule.maxHp,
+      maxHp: rule.maxHp,
+      kills: 0,
+      veteran: false,
+      captureEligible: false,
+      activation: exhaustedActivation(),
+      blackoutEligibleRound: null,
+    };
+    return {
+      players: state.players,
+      random: draw.random,
+      nextEntityId: allocation.nextEntityId,
+      treasureChests: state.treasureChests.filter((chest) => !same(chest, at)),
+      spawnedUnit,
+      extraRevealed: [],
+      event: {
+        kind: "TREASURE_CAPTURED",
+        playerId: actor,
+        unitId: mover.id,
+        at,
+        requestedReward,
+        grantedReward: "HEAVY",
+        coinDelta: 0,
+        heavyFallback: false,
+        spawnedUnitId: spawnedUnit.id,
+        spawnedAt: spawnedUnit.at,
+        homeCityId: spawnedUnit.homeCityId,
+      },
+    };
+  }
+  const player = requirePlayer(state, actor);
+  const coins = player.coins + 5;
+  if (!Number.isSafeInteger(coins)) throw new RangeError("INTEGER_OVERFLOW");
+  return {
+    players: state.players.map((candidate) =>
+      candidate.id === actor ? { ...candidate, coins } : candidate,
+    ),
+    random: draw.random,
+    nextEntityId: state.nextEntityId,
+    treasureChests: state.treasureChests.filter((chest) => !same(chest, at)),
+    spawnedUnit: null,
+    extraRevealed: [],
+    event: {
+      kind: "TREASURE_CAPTURED",
+      playerId: actor,
+      unitId: mover.id,
+      at,
+      requestedReward,
+      grantedReward: "COINS",
+      coinDelta: 5,
+      heavyFallback: requestedReward === "HEAVY",
+      spawnedUnitId: null,
+      spawnedAt: null,
+      homeCityId: null,
+    },
+  };
+}
+
+function treasureHeavyPlacement(
+  state: GameStateV7,
+  actor: PlayerId,
+  mover: UnitStateV7,
+  at: CoordV7,
+): { readonly at: CoordV7; readonly homeCityId: CityStateV7["id"] } | null {
+  const cities = state.cities
+    .filter(
+      (city) =>
+        city.ownerId === actor &&
+        assignedUnitCountV7(state, city.id) +
+          reservedCapacityCountV7(state, city.id) <
+          cityUnitCapacityV7(state, city),
+    )
+    .sort(
+      (a, b) =>
+        Number(b.id === mover.homeCityId) - Number(a.id === mover.homeCityId) ||
+        a.id - b.id,
+    );
+  const player = requirePlayer(state, actor);
+  for (const city of cities)
+    for (const candidate of adjacentCoords(state, at)) {
+      const tile = tileAtV7(state.board, candidate);
+      if (
+        tile === undefined ||
+        tile.site !== null ||
+        (tile.terrain === "MOUNTAIN" &&
+          !player.researchedTechs.includes("SURVEYING")) ||
+        state.units.some((unit) => unit.hp > 0 && same(unit.at, candidate)) ||
+        state.treasureChests.some((chest) => same(chest, candidate))
+      )
+        continue;
+      const territoryOwner = state.cities.find(
+        (owner) => owner.id === tile.territoryCityId,
+      )?.ownerId;
+      if (
+        territoryOwner !== undefined &&
+        arePlayersAlliedV7(state, actor, territoryOwner)
+      )
+        continue;
+      return { at: candidate, homeCityId: city.id };
+    }
+  return null;
+}
+
+function applyAttack(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+): ApplyCommandResultV7 {
+  const actorCheck = validateUnitActor(state, actor, command.unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  const attacker = actorCheck.unit;
+  const rule = effectiveRoleRuleV7(attacker.role);
+  const inPursuit = attacker.activation.pursuitPhase !== "NONE";
+  if (
+    (inPursuit && attacker.role !== "LANCER") ||
+    (!inPursuit &&
+      (primaryUsed(attacker) ||
+        (attacker.activation.moved && !rule.mayUsePrimaryActionAfterMove)))
+  )
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: attacker.id });
+  if (!rule.abilities.includes("ATTACK") || rule.attack2 <= 0)
+    return rejected(original, "ATTACK_NOT_LEGAL", { reason: "NO_ATTACK" });
+  const defender = state.units.find(
+    (unit) => unit.id === command.targetUnitId && unit.hp > 0,
+  );
+  if (defender === undefined)
+    return rejected(original, "TARGET_NOT_FOUND", {
+      targetUnitId: command.targetUnitId,
+    });
+  if (
+    defender.ownerId === actor ||
+    arePlayersAlliedV7(state, actor, defender.ownerId)
+  )
+    return rejected(original, "TARGET_ALLIED");
+  const player = requirePlayer(state, actor);
+  if (!isExplored(player, defender.at))
+    return rejected(original, "TARGET_NOT_FOUND", {
+      targetUnitId: command.targetUnitId,
+    });
+  const distance = chebyshev(attacker.at, defender.at);
+  if (
+    distance < rule.minimumRange ||
+    distance > rule.range ||
+    (inPursuit && distance !== 1)
+  )
+    return rejected(original, "TARGET_OUT_OF_RANGE");
+  try {
+    const preview = calculateCombatPreviewV7(state, attacker.id, defender.id);
+    const attacksUsed = attacker.activation.attacksUsed + 1;
+    const attackerKills = attacker.kills + (preview.defenderDies ? 1 : 0);
+    const defenderKills = defender.kills + (preview.attackerDies ? 1 : 0);
+    if (
+      attacksUsed > 3 ||
+      !Number.isSafeInteger(attackerKills) ||
+      !Number.isSafeInteger(defenderKills)
+    )
+      throw new RangeError("INTEGER_OVERFLOW");
+    const pushDestination =
+      preview.push === "WILL_PUSH"
+        ? pushedDestinationV7(state, attacker, defender)
+        : null;
+    const opens = preview.pursuitWillOpen;
+    const attackerAfter: UnitStateV7 = {
+      ...attacker,
+      at: preview.advances ? defender.at : attacker.at,
+      hp: attacker.hp - preview.damageToAttacker,
+      kills: attackerKills,
+      captureEligible: false,
+      activation: opens
+        ? {
+            ...attacker.activation,
+            attacked: false,
+            attacksUsed: attacksUsed as 1 | 2,
+            pursuitPhase: "PURSUIT_READY",
+            handled: false,
+          }
+        : {
+            ...attacker.activation,
+            attacked: true,
+            attacksUsed: attacksUsed as 1 | 2 | 3,
+            pursuitPhase: "NONE",
+            handled: true,
+          },
+    };
+    const defenderAfter: UnitStateV7 = {
+      ...defender,
+      at: pushDestination ?? defender.at,
+      hp: defender.hp - preview.damageToDefender,
+      kills: defenderKills,
+      captureEligible:
+        pushDestination === null ? defender.captureEligible : false,
+    };
+    const units = state.units
+      .map((unit) =>
+        unit.id === attacker.id
+          ? attackerAfter
+          : unit.id === defender.id
+            ? defenderAfter
+            : unit,
+      )
+      .filter((unit) => unit.hp > 0);
+    const events: DomainEventV7[] = [{ kind: "COMBAT_RESOLVED", preview }];
+    if (preview.defenderDies)
+      events.push({ kind: "UNIT_DIED", unitId: defender.id, cause: "ATTACK" });
+    if (preview.attackerDies)
+      events.push({
+        kind: "UNIT_DIED",
+        unitId: attacker.id,
+        cause: "RETALIATION",
+      });
+    if (preview.advances)
+      events.push({
+        kind: "UNIT_MOVED",
+        unitId: attacker.id,
+        path: [defender.at],
+      });
+    if (pushDestination !== null)
+      events.push({
+        kind: "UNIT_PUSHED",
+        sourceUnitId: attacker.id,
+        targetUnitId: defender.id,
+        from: defender.at,
+        to: pushDestination,
+      });
+    let players = state.players;
+    if (preview.advances) {
+      const reveal = revealRadius(
+        { ...state, units } as GameStateV7,
+        actor,
+        defender.at,
+        unitSightRadiusAtV7({ ...state, units } as GameStateV7, attackerAfter),
+      );
+      players = setExplored(players, actor, reveal.explored);
+      if (reveal.revealed.length)
+        events.push({
+          kind: "TILES_REVEALED",
+          playerId: actor,
+          tiles: reveal.revealed,
+        });
+    }
+    if (pushDestination !== null) {
+      const reveal = revealRadius(
+        { ...state, players, units } as GameStateV7,
+        defender.ownerId,
+        pushDestination,
+        unitSightRadiusAtV7(
+          { ...state, players, units } as GameStateV7,
+          defenderAfter,
+        ),
+      );
+      players = setExplored(players, defender.ownerId, reveal.explored);
+      if (reveal.revealed.length)
+        events.push({
+          kind: "TILES_REVEALED",
+          playerId: defender.ownerId,
+          tiles: reveal.revealed,
+        });
+    }
+    let marks = state.defectionMarks;
+    for (const dead of [
+      ...(preview.defenderDies ? [defender.id] : []),
+      ...(preview.attackerDies ? [attacker.id] : []),
+    ]) {
+      const removal = removeMarksForUnit(marks, dead);
+      marks = removal.marks;
+      events.push(...removal.events);
+    }
+    const capacity = revalidateReservations(
+      { ...state, units, defectionMarks: marks },
+      "CAPACITY_LOST",
+    );
+    marks = capacity.marks;
+    events.push(...capacity.events);
+    if (opens)
+      events.push({
+        kind: "PURSUIT_OPENED",
+        unitId: attacker.id,
+        attacksUsed: attacksUsed as 1 | 2,
+        attacksRemaining: (3 - attacksUsed) as 1 | 2,
+      });
+    else if (attacker.role === "LANCER")
+      events.push({
+        kind: "PURSUIT_ENDED",
+        unitId: attacker.id,
+        attacksUsed: attacksUsed as 1 | 2 | 3,
+        reason: preview.attackerDies
+          ? "ATTACKER_DIED"
+          : attacksUsed === 3
+            ? "THIRD_ATTACK"
+            : "NONLETHAL",
+      });
+    return accepted(
+      checked({
+        ...state,
+        commandIndex: nextSafe(state.commandIndex),
+        players,
+        units,
+        defectionMarks: marks,
+        saboteurExposures: state.saboteurExposures.filter((exposure) =>
+          units.some((unit) => unit.id === exposure.unitId),
+        ),
+      }),
+      events,
+    );
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
+}
+
+function applyHeal(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  command: Extract<CommandV7, { kind: "HEAL_ADJACENT" }>,
+): ApplyCommandResultV7 {
+  const actorCheck = validateUnitActor(state, actor, command.unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  const medic = actorCheck.unit;
+  const rule = effectiveRoleRuleV7(medic.role);
+  if (!rule.abilities.includes("HEAL_ADJACENT"))
+    return rejected(original, "UNIT_ROLE_INVALID", { role: medic.role });
+  if (
+    primaryUsed(medic) ||
+    medic.activation.pursuitPhase !== "NONE" ||
+    (medic.activation.moved && !rule.mayUsePrimaryActionAfterMove)
+  )
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: medic.id });
+  const target = state.units.find(
+    (unit) => unit.id === command.targetUnitId && unit.hp > 0,
+  );
+  if (target === undefined) return rejected(original, "HEAL_TARGET_NOT_FOUND");
+  if (target.ownerId !== actor)
+    return rejected(original, "HEAL_TARGET_NOT_OWNED");
+  if (target.id === medic.id || chebyshev(medic.at, target.at) !== 1)
+    return rejected(original, "HEAL_TARGET_NOT_ADJACENT");
+  if (target.hp >= target.maxHp) return rejected(original, "HEAL_TARGET_FULL");
+  if (state.commandIndex >= Number.MAX_SAFE_INTEGER)
+    return rejected(original, "INTEGER_OVERFLOW");
+  const amount = Math.min(
+    requirePlayer(state, actor).researchedTechs.includes("RECOVERY") ? 6 : 4,
+    target.maxHp - target.hp,
+  );
+  return accepted(
+    checked({
+      ...state,
+      commandIndex: nextSafe(state.commandIndex),
+      units: state.units.map((unit) =>
+        unit.id === medic.id
+          ? {
+              ...unit,
+              activation: { ...unit.activation, healed: true, handled: true },
+            }
+          : unit.id === target.id
+            ? { ...unit, hp: unit.hp + amount }
+            : unit,
+      ),
+    }),
+    [
+      {
+        kind: "UNIT_HEALED",
+        medicId: medic.id,
+        targetUnitId: target.id,
+        amount,
+        hpAfter: target.hp + amount,
+      },
+    ],
+  );
+}
+
+function applyRecover(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  unitId: UnitStateV7["id"],
+): ApplyCommandResultV7 {
+  const actorCheck = validateUnitActor(state, actor, unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  const unit = actorCheck.unit;
+  if (
+    primaryUsed(unit) ||
+    unit.activation.moved ||
+    unit.activation.pursuitPhase !== "NONE"
+  )
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
+  if (unit.hp >= unit.maxHp)
+    return rejected(original, "RECOVER_NOT_LEGAL", { reason: "FULL_HP" });
+  if (state.commandIndex >= Number.MAX_SAFE_INTEGER)
+    return rejected(original, "INTEGER_OVERFLOW");
+  const amount = Math.min(recoveryAmount(state, unit), unit.maxHp - unit.hp);
+  return accepted(
+    checked({
+      ...state,
+      commandIndex: nextSafe(state.commandIndex),
+      units: state.units.map((candidate) =>
+        candidate.id === unitId
+          ? {
+              ...candidate,
+              hp: candidate.hp + amount,
+              activation: {
+                ...candidate.activation,
+                recovered: true,
+                handled: true,
+              },
+            }
+          : candidate,
+      ),
+    }),
+    [{ kind: "UNIT_RECOVERED", unitId, amount, automatic: false }],
+  );
+}
+
+function applyPromote(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  unitId: UnitStateV7["id"],
+): ApplyCommandResultV7 {
+  const actorCheck = validateUnitActor(state, actor, unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  const unit = actorCheck.unit;
+  if (unit.activation.pursuitPhase !== "NONE")
+    return rejected(original, "PURSUIT_MUST_END");
+  if (unit.veteran || unit.kills < 3)
+    return rejected(original, "PROMOTION_NOT_ELIGIBLE", { unitId });
+  const maxHp = unit.maxHp + 5;
+  if (
+    !Number.isSafeInteger(maxHp) ||
+    !Number.isSafeInteger(unit.hp + 5) ||
+    state.commandIndex >= Number.MAX_SAFE_INTEGER
+  )
+    return rejected(original, "INTEGER_OVERFLOW");
+  return accepted(
+    checked({
+      ...state,
+      commandIndex: nextSafe(state.commandIndex),
+      units: state.units.map((candidate) =>
+        candidate.id === unitId
+          ? { ...candidate, veteran: true, maxHp, hp: candidate.hp + 5 }
+          : candidate,
+      ),
+    }),
+    [{ kind: "UNIT_PROMOTED", unitId, maxHp }],
+  );
+}
+
+function applyWait(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  unitId: UnitStateV7["id"],
+): ApplyCommandResultV7 {
+  const actorCheck = validateUnitActor(state, actor, unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  if (actorCheck.unit.activation.pursuitPhase !== "NONE")
+    return rejected(original, "PURSUIT_MUST_END");
+  if (actorCheck.unit.activation.handled)
+    return rejected(original, "UNIT_ALREADY_HANDLED", { unitId });
+  if (state.commandIndex >= Number.MAX_SAFE_INTEGER)
+    return rejected(original, "INTEGER_OVERFLOW");
+  return accepted(
+    checked({
+      ...state,
+      commandIndex: nextSafe(state.commandIndex),
+      units: state.units.map((unit) =>
+        unit.id === unitId
+          ? { ...unit, activation: { ...unit.activation, handled: true } }
+          : unit,
+      ),
+    }),
+    [{ kind: "UNIT_WAITED", playerId: actor, unitId }],
+  );
+}
+
+function applyEndPursuit(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  unitId: UnitStateV7["id"],
+): ApplyCommandResultV7 {
+  const actorCheck = validateUnitActor(state, actor, unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  if (actorCheck.unit.role !== "LANCER")
+    return rejected(original, "UNIT_ROLE_INVALID", {
+      role: actorCheck.unit.role,
+    });
+  if (actorCheck.unit.activation.pursuitPhase === "NONE")
+    return rejected(original, "PURSUIT_NOT_OPEN");
+  if (state.commandIndex >= Number.MAX_SAFE_INTEGER)
+    return rejected(original, "INTEGER_OVERFLOW");
+  const attacksUsed = actorCheck.unit.activation.attacksUsed as 1 | 2;
+  return accepted(
+    checked({
+      ...state,
+      commandIndex: nextSafe(state.commandIndex),
+      units: state.units.map((unit) =>
+        unit.id === unitId
+          ? {
+              ...unit,
+              activation: {
+                ...unit.activation,
+                pursuitPhase: "NONE",
+                attacked: true,
+                handled: true,
+              },
+            }
+          : unit,
+      ),
+    }),
+    [{ kind: "PURSUIT_ENDED", unitId, attacksUsed, reason: "EXPLICIT_END" }],
+  );
+}
+
 function applyPillage(
   original: GameStateV7,
   state: GameStateV7,
@@ -1337,10 +2050,11 @@ function applyEndTurn(
     if (nextPlayer === undefined) return rejected(original, "INVALID_STATE");
     const round =
       nextIndex <= state.activeSeatIndex ? nextSafe(state.round) : state.round;
-    const started = startTurnEconomyV7(
+    const advanced = resetTurnUnits(
       { ...recovery.state, activeSeatIndex: nextIndex, round },
-      nextPlayer,
+      nextPlayer.id,
     );
+    const started = startTurnEconomyV7(advanced, nextPlayer);
     return accepted(
       checked({ ...started.state, commandIndex: nextSafe(state.commandIndex) }),
       [
@@ -1525,13 +2239,8 @@ function recoverIdleUnits(
     )
     .sort((a, b) => a.id - b.id)
     .map((unit) => {
-      const tile = tileAtV7(state.board, unit.at);
-      const city = state.cities.find(
-        (item) => item.id === tile?.territoryCityId,
-      );
-      const friendly = city?.ownerId === player.id;
       const amount = Math.min(
-        friendly && recovery6 ? 6 : friendly ? 4 : 2,
+        recoveryAmount(state, unit, recovery6),
         unit.maxHp - unit.hp,
       );
       return { unitId: unit.id, amount };
@@ -1555,6 +2264,39 @@ function recoverIdleUnits(
   };
 }
 
+function recoveryAmount(
+  state: GameStateV7,
+  unit: UnitStateV7,
+  recoveryKnown = requirePlayer(state, unit.ownerId).researchedTechs.includes(
+    "RECOVERY",
+  ),
+): number {
+  const tile = tileAtV7(state.board, unit.at);
+  const city = state.cities.find((item) => item.id === tile?.territoryCityId);
+  const friendly = city?.ownerId === unit.ownerId;
+  return friendly && recoveryKnown ? 6 : friendly ? 4 : 2;
+}
+
+function adjacentCoords(
+  state: Pick<GameStateV7, "board">,
+  center: CoordV7,
+): readonly CoordV7[] {
+  const result: CoordV7[] = [];
+  for (let y = center.y - 1; y <= center.y + 1; y += 1)
+    for (let x = center.x - 1; x <= center.x + 1; x += 1) {
+      const at = { x, y };
+      if (!same(at, center) && tileAtV7(state.board, at) !== undefined)
+        result.push(at);
+    }
+  return result.sort(compareCoords);
+}
+
+function uniqueCoords(values: readonly CoordV7[]): CoordV7[] {
+  return [...new Map(values.map((at) => [key(at), at])).values()].sort(
+    compareCoords,
+  );
+}
+
 function commonError(
   state: GameStateV7,
   actor: PlayerId,
@@ -1568,7 +2310,51 @@ function commonError(
   const head = state.pendingChoices[0];
   if (head !== undefined && command.kind !== "CHOOSE_CITY_REWARD")
     return error("PENDING_CHOICE", { kind: head.kind });
+  const pursuit = state.units.find(
+    (unit) => unit.ownerId === actor && unit.activation.pursuitPhase !== "NONE",
+  );
+  if (
+    pursuit !== undefined &&
+    (!("unitId" in command) ||
+      command.unitId !== pursuit.id ||
+      !["ATTACK", "PURSUE", "END_PURSUIT"].includes(command.kind))
+  )
+    return error("PURSUIT_MUST_END", { unitId: pursuit.id });
   return null;
+}
+
+function resetTurnUnits(state: GameStateV7, playerId: PlayerId): GameStateV7 {
+  return {
+    ...state,
+    units: state.units.map((unit) => {
+      if (unit.ownerId !== playerId) return unit;
+      const city = state.cities.find((candidate) =>
+        same(candidate.at, unit.at),
+      );
+      const tile = tileAtV7(state.board, unit.at);
+      const captureEligible =
+        effectiveRoleRuleV7(unit.role).abilities.includes("CAPTURE") &&
+        (tile?.site === "VILLAGE" ||
+          (city !== undefined &&
+            arePlayersHostileV7(state, playerId, city.ownerId)));
+      return {
+        ...unit,
+        captureEligible,
+        activation: {
+          moved: false,
+          movedPathLength: 0,
+          attacked: false,
+          attacksUsed: 0,
+          pursuitPhase: "NONE",
+          healed: false,
+          recovered: false,
+          captured: false,
+          handled: false,
+          specialActed: false,
+        },
+      };
+    }),
+  };
 }
 function exactUnknownResearchTech(command: unknown): string | null {
   return hasExactKeysV7(command, ["kind", "tech"]) &&

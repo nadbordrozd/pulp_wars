@@ -118,6 +118,7 @@ export type UnitRoleAbilityV7 =
   | "CHARGE"
   | "CONCEALMENT"
   | "DEFECTION"
+  | "DASH"
   | "HEAL_ADJACENT"
   | "IGNORE_ZOC_WITH_MANEUVER"
   | "PUSH"
@@ -774,7 +775,13 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "MANEUVER",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "IGNORE_ZOC_WITH_MANEUVER", "PURSUIT"],
+    abilities: [
+      "ATTACK",
+      "CAPTURE",
+      "DASH",
+      "IGNORE_ZOC_WITH_MANEUVER",
+      "PURSUIT",
+    ],
   }),
   BREACHER: role({
     role: "BREACHER",

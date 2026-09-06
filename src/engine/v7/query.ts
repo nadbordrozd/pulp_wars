@@ -20,6 +20,9 @@ import {
   reservedCapacityCountV7,
 } from "./economy";
 import { applyCommandV7 } from "./reducer";
+import { calculateCombatPreviewV7 } from "./combat";
+import type { CombatPreviewV7 } from "./events";
+import { reachableMovementPathsV7 } from "./movement";
 import {
   isCapitalConnectedRoadV7,
   spatialContributionAtV7,
@@ -33,7 +36,9 @@ import {
   type ImprovementIdV7,
   type TechnologyIdV7,
   type UnitRoleIdV7,
+  type UnitStateV7,
 } from "./types";
+import { publicUnitStatsV7, type PublicUnitStatsV7 } from "./unit-stats";
 
 export type PublicTechnologyStateV7 = "OWNED" | "AVAILABLE" | "BLOCKED";
 export interface PublicTechnologyNodeV7 {
@@ -204,15 +209,248 @@ export function queryPlayerCommandsV7(
         candidates.push({ kind: "TRAIN", cityId: city.id, role });
   for (const unit of state.units)
     if (unit.ownerId === viewerId) {
+      if (unit.activation.pursuitPhase !== "NONE") {
+        candidates.push({ kind: "END_PURSUIT", unitId: unit.id });
+        for (const target of state.units)
+          if (target.ownerId !== viewerId)
+            candidates.push({
+              kind: "ATTACK",
+              unitId: unit.id,
+              targetUnitId: target.id,
+            });
+        if (unit.activation.pursuitPhase === "PURSUIT_READY")
+          for (const reachable of reachableMovementPathsV7(
+            state,
+            unit,
+            "PURSUE",
+          ))
+            candidates.push({
+              kind: "PURSUE",
+              unitId: unit.id,
+              path: reachable.path,
+            });
+        continue;
+      }
+      if (!unit.activation.moved && !primaryUsedForQuery(unit))
+        for (const reachable of reachableMovementPathsV7(state, unit))
+          candidates.push({
+            kind: "MOVE",
+            unitId: unit.id,
+            path: reachable.path,
+          });
+      for (const target of state.units) {
+        if (target.ownerId !== viewerId)
+          candidates.push({
+            kind: "ATTACK",
+            unitId: unit.id,
+            targetUnitId: target.id,
+          });
+        if (target.ownerId === viewerId && target.id !== unit.id)
+          candidates.push({
+            kind: "HEAL_ADJACENT",
+            unitId: unit.id,
+            targetUnitId: target.id,
+          });
+      }
+      candidates.push({ kind: "RECOVER", unitId: unit.id });
       candidates.push({ kind: "CAPTURE", unitId: unit.id });
+      candidates.push({ kind: "PROMOTE", unitId: unit.id });
       candidates.push({ kind: "PILLAGE", unitId: unit.id });
       candidates.push({ kind: "DISBAND", unitId: unit.id });
+      candidates.push({ kind: "WAIT", unitId: unit.id });
     }
   candidates.push({ kind: "END_TURN" });
   return store(
     byPlayer,
     viewerId,
     acceptedCandidates(state, viewerId, candidates).sort(compareCommandsV7),
+  );
+}
+
+/** Exact authoritative preview for an offered attack. */
+export function queryCombatPreviewV7(
+  state: GameStateV7,
+  viewerId: PlayerId,
+  attackerId: UnitId,
+  targetUnitId: UnitId,
+): CombatPreviewV7 | null {
+  const offered = applyCommandV7(state, viewerId, {
+    kind: "ATTACK",
+    unitId: attackerId,
+    targetUnitId,
+  }).accepted;
+  return offered
+    ? calculateCombatPreviewV7(state, attackerId, targetUnitId)
+    : null;
+}
+
+export function estimateCombatV7(
+  state: GameStateV7,
+  attackerId: UnitId,
+  targetUnitId: UnitId,
+): CombatPreviewV7 | null {
+  const attacker = state.units.find(
+    (unit) => unit.id === attackerId && unit.hp > 0,
+  );
+  const target = state.units.find(
+    (unit) => unit.id === targetUnitId && unit.hp > 0,
+  );
+  if (attacker === undefined || target === undefined) return null;
+  const rule = effectiveRoleRuleV7(attacker.role);
+  const distance = Math.max(
+    Math.abs(attacker.at.x - target.at.x),
+    Math.abs(attacker.at.y - target.at.y),
+  );
+  if (
+    !rule.abilities.includes("ATTACK") ||
+    distance < rule.minimumRange ||
+    distance > rule.range
+  )
+    return null;
+  return calculateCombatPreviewV7(state, attackerId, targetUnitId);
+}
+
+export function queryUnitStatsV7(
+  state: GameStateV7,
+  unitId: UnitId,
+): PublicUnitStatsV7 | null {
+  const unit = state.units.find(
+    (candidate) => candidate.id === unitId && candidate.hp > 0,
+  );
+  return unit === undefined ? null : publicUnitStatsV7(state, unit);
+}
+
+export interface PursuitPathPreviewV7 {
+  readonly path: readonly CoordV7[];
+  readonly destination: CoordV7;
+  readonly targetUnitIds: readonly UnitId[];
+}
+export interface PursuitPreviewV7 {
+  readonly unitId: UnitId;
+  readonly phase: "PURSUIT_READY" | "PURSUIT_MOVED";
+  readonly attacksUsed: 1 | 2;
+  readonly attacksRemaining: 1 | 2;
+  readonly directTargetUnitIds: readonly UnitId[];
+  readonly pursuePaths: readonly PursuitPathPreviewV7[];
+}
+export function queryPursuitPreviewV7(
+  state: GameStateV7,
+  viewerId: PlayerId,
+  unitId: UnitId,
+): PursuitPreviewV7 | null {
+  const unit = state.units.find(
+    (candidate) =>
+      candidate.id === unitId &&
+      candidate.ownerId === viewerId &&
+      candidate.hp > 0,
+  );
+  if (unit === undefined || unit.activation.pursuitPhase === "NONE")
+    return null;
+  const hostileAdjacent = (at: CoordV7) =>
+    state.units
+      .filter(
+        (target) =>
+          target.ownerId !== viewerId &&
+          Math.max(
+            Math.abs(target.at.x - at.x),
+            Math.abs(target.at.y - at.y),
+          ) === 1 &&
+          applyCommandV7(
+            {
+              ...state,
+              units: state.units.map((candidate) =>
+                candidate.id === unit.id ? { ...candidate, at } : candidate,
+              ),
+            } as GameStateV7,
+            viewerId,
+            { kind: "ATTACK", unitId, targetUnitId: target.id },
+          ).accepted,
+      )
+      .map((target) => target.id)
+      .sort((a, b) => a - b);
+  const paths =
+    unit.activation.pursuitPhase === "PURSUIT_READY"
+      ? reachableMovementPathsV7(state, unit, "PURSUE").map((reachable) => ({
+          path: reachable.path,
+          destination: reachable.destination,
+          targetUnitIds: state.units
+            .filter(
+              (target) =>
+                target.ownerId !== viewerId &&
+                Math.max(
+                  Math.abs(target.at.x - reachable.destination.x),
+                  Math.abs(target.at.y - reachable.destination.y),
+                ) === 1,
+            )
+            .map((target) => target.id)
+            .sort((a, b) => a - b),
+        }))
+      : [];
+  return {
+    unitId,
+    phase: unit.activation.pursuitPhase,
+    attacksUsed: unit.activation.attacksUsed as 1 | 2,
+    attacksRemaining: (3 - unit.activation.attacksUsed) as 1 | 2,
+    directTargetUnitIds: hostileAdjacent(unit.at),
+    pursuePaths: paths,
+  };
+}
+
+/** Geometry-safe threat envelope, including Lancer kill-advance plus Pursue reach. */
+export function queryThreatenedTilesV7(
+  state: GameStateV7,
+  unitId: UnitId,
+): readonly CoordV7[] {
+  const unit = state.units.find(
+    (candidate) => candidate.id === unitId && candidate.hp > 0,
+  );
+  if (unit === undefined) return [];
+  const rule = effectiveRoleRuleV7(unit.role);
+  if (!rule.abilities.includes("ATTACK")) return [];
+  const origins = [
+    unit.at,
+    ...reachableMovementPathsV7(state, unit).map((path) => path.destination),
+  ];
+  const direct = state.board.tiles
+    .map((tile) => tile.at)
+    .filter((at) =>
+      origins.some((origin) => {
+        const distance = Math.max(
+          Math.abs(origin.x - at.x),
+          Math.abs(origin.y - at.y),
+        );
+        return distance >= rule.minimumRange && distance <= rule.range;
+      }),
+    );
+  const all =
+    unit.role === "LANCER"
+      ? [
+          ...direct,
+          ...state.board.tiles
+            .map((tile) => tile.at)
+            .filter((at) =>
+              direct.some(
+                (prior) =>
+                  Math.max(
+                    Math.abs(prior.x - at.x),
+                    Math.abs(prior.y - at.y),
+                  ) <= 3,
+              ),
+            ),
+        ]
+      : direct;
+  return [...new Map(all.map((at) => [`${at.y},${at.x}`, at])).values()].sort(
+    (a, b) => a.y - b.y || a.x - b.x,
+  );
+}
+
+function primaryUsedForQuery(unit: UnitStateV7): boolean {
+  return (
+    unit.activation.attacked ||
+    unit.activation.healed ||
+    unit.activation.recovered ||
+    unit.activation.captured ||
+    unit.activation.specialActed
   );
 }
 
