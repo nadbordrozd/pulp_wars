@@ -1,5 +1,6 @@
 import { deepFreeze } from "../model/freeze";
 import { canonicalHash } from "../replay/canonical";
+import { ORIGINAL_BASELINE_V2_TREE, RULESET_7 } from "../rules/ruleset-v7";
 import {
   createInitialMapStateV6,
   generateInitialMapV6,
@@ -99,8 +100,8 @@ export function createInitialMapStateV7(
       faction: "ORIGINAL",
       factionTreeId: "ORIGINAL_BASELINE_V2",
       status: player.status,
-      coins: player.coins,
-      researchedTechs: player.researchedTechs,
+      coins: RULESET_7.startingCoins,
+      researchedTechs: ORIGINAL_BASELINE_V2_TREE.startingTechIds,
       explored: player.explored,
       spoilsClaimedCityIds: [],
     })),

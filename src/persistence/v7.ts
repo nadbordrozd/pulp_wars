@@ -54,8 +54,6 @@ export function createSaveEnvelopeV7(
     !iso(savedAt)
   )
     throw new RangeError("Invalid ruleset-7 save input");
-  if (state.commandIndex !== 0)
-    throw new RangeError("COMMAND_REPLAY_NOT_IMPLEMENTED");
   return {
     format: "pulp-wars-save",
     version: 7,
@@ -134,16 +132,12 @@ export function parseSaveV7(source: string): SaveLoadResultV7 {
     return corrupt(
       "Saved match schema or deterministic integrity validation failed.",
     );
-  if (commands.length !== 0)
-    return corrupt(
-      "Ruleset-7 command replay is not implemented by this foundation build.",
-    );
   const replay = {
     format: "pulp-wars-replay",
     version: 7,
     setup,
     commands,
-    checkpoints: [{ index: 0, stateHash: input.stateHash }],
+    checkpoints: [{ index: commands.length, stateHash: input.stateHash }],
   } as const;
   const parsedReplay = parseReplayFileV7(replay);
   if (parsedReplay.kind !== "VALID")

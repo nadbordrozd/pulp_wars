@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   RULESET_7_ID,
-  ReplayErrorV7,
   SAVE_STORAGE_KEY_V7,
+  appendReplayCommandV7,
+  applyCommandV7,
   canonicalHash,
   createInitialMapStateV7,
   createReplayV7,
@@ -43,6 +44,29 @@ describe("ruleset-7 save and replay foundation", () => {
     });
   });
 
+  it("round-trips a command-bearing v7 save through reducer replay", () => {
+    const created = createInitialMapStateV7(setup);
+    if (!created.ok) throw new Error(created.error.code);
+    const actor = created.state.turnOrder[created.state.activeSeatIndex];
+    if (actor === undefined) throw new Error("active actor missing");
+    const applied = applyCommandV7(created.state, actor, {
+      kind: "RESEARCH",
+      tech: "HUNTING",
+    });
+    if (!applied.accepted) throw new Error(applied.error.code);
+    const replay = appendReplayCommandV7(
+      createReplayV7(setup),
+      { kind: "RESEARCH", tech: "HUNTING" },
+      applied.state,
+    );
+    const save = createSaveEnvelopeV7(
+      { state: applied.state, replay },
+      "2026-09-06T12:30:00.000Z",
+    );
+    expect(parseSaveV7(JSON.stringify(save))).toEqual({ kind: "VALID", save });
+    expect(runReplayV7(replay).state).toEqual(applied.state);
+  });
+
   it("classifies every v1-v6 artifact as incompatible without migration", () => {
     for (const version of [1, 2, 3, 4, 5, 6]) {
       const replay = { format: "pulp-wars-replay", version, opaque: "keep" };
@@ -61,7 +85,7 @@ describe("ruleset-7 save and replay foundation", () => {
     }
   });
 
-  it("rejects unknown fields, malformed checkpoints, hash drift, and unsupported command execution", () => {
+  it("rejects unknown fields, malformed checkpoints, hash drift, and rejected command execution", () => {
     const created = createInitialMapStateV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const replay = createReplayV7(setup);
@@ -83,15 +107,15 @@ describe("ruleset-7 save and replay foundation", () => {
     ).toMatchObject({ kind: "CORRUPT" });
     const withCommand = {
       ...replay,
-      commands: [{ kind: "END_TURN" }],
+      commands: [
+        { kind: "MOVE", unitId: created.state.units[0]?.id, path: [] },
+      ],
     } as const;
-    expect(() => runReplayV7(withCommand)).toThrowError(ReplayErrorV7);
+    expect(() => runReplayV7(withCommand)).toThrowError("COMMAND_REJECTED");
     try {
       runReplayV7(withCommand);
     } catch (error) {
-      expect((error as ReplayErrorV7).code).toBe(
-        "COMMAND_REPLAY_NOT_IMPLEMENTED",
-      );
+      expect((error as { code: string }).code).toBe("COMMAND_REJECTED");
     }
   });
 

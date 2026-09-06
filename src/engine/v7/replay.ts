@@ -1,6 +1,7 @@
 import { canonicalHash, canonicalJson } from "../replay/canonical";
 import { parseCommandV7, type CommandV7 } from "./commands";
 import { createInitialMapStateV7 } from "./map";
+import { applyCommandV7 } from "./reducer";
 import {
   hasExactKeysV7,
   isDenseArrayV7,
@@ -29,7 +30,7 @@ export type ReplayErrorCodeV7 =
   | "INCOMPATIBLE_REPLAY"
   | "INVALID_REPLAY"
   | "CREATE_REJECTED"
-  | "COMMAND_REPLAY_NOT_IMPLEMENTED"
+  | "COMMAND_REJECTED"
   | "CHECKPOINT_MISMATCH";
 
 export class ReplayErrorV7 extends Error {
@@ -147,21 +148,40 @@ export function parseReplayJsonV7(source: string): ReplayParseResultV7 {
   }
 }
 
-/** Foundation runner. Command execution is deliberately unavailable until the v7 reducer lands. */
 export function runReplayV7(input: unknown): ReplayRunResultV7 {
   const parsed = parseReplayFileV7(input);
   if (parsed.kind === "INCOMPATIBLE_REPLAY")
     throw new ReplayErrorV7("INCOMPATIBLE_REPLAY");
   if (parsed.kind !== "VALID") throw new ReplayErrorV7("INVALID_REPLAY");
-  if (parsed.replay.commands.length !== 0)
-    throw new ReplayErrorV7("COMMAND_REPLAY_NOT_IMPLEMENTED", 1);
   const created = createInitialMapStateV7(parsed.replay.setup);
   if (!created.ok) throw new ReplayErrorV7("CREATE_REJECTED");
-  const hash = canonicalHash(created.state);
+  let state = created.state;
+  let hash = canonicalHash(state);
   const checkpoint = parsed.replay.checkpoints.find((item) => item.index === 0);
   if (checkpoint !== undefined && checkpoint.stateHash !== hash)
     throw new ReplayErrorV7("CHECKPOINT_MISMATCH", 0);
-  return { acceptedCommands: 0, state: created.state, stateHash: hash };
+  for (let index = 0; index < parsed.replay.commands.length; index += 1) {
+    const command = parsed.replay.commands[index];
+    if (command === undefined) throw new ReplayErrorV7("INVALID_REPLAY");
+    const actor = state.turnOrder[state.activeSeatIndex];
+    if (actor === undefined)
+      throw new ReplayErrorV7("COMMAND_REJECTED", index + 1);
+    const result = applyCommandV7(state, actor, command);
+    if (!result.accepted)
+      throw new ReplayErrorV7("COMMAND_REJECTED", index + 1);
+    state = result.state;
+    hash = canonicalHash(state);
+    const expected = parsed.replay.checkpoints.find(
+      (item) => item.index === index + 1,
+    );
+    if (expected !== undefined && expected.stateHash !== hash)
+      throw new ReplayErrorV7("CHECKPOINT_MISMATCH", index + 1);
+  }
+  return {
+    acceptedCommands: parsed.replay.commands.length,
+    state,
+    stateHash: hash,
+  };
 }
 
 function hasFormatVersion(

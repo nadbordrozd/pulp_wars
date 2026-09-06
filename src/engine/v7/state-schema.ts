@@ -1116,8 +1116,11 @@ function validateCrossReferences(value: CrossInput): boolean {
       (tile) =>
         tile.territoryCityId === city.id && tile.improvement === "BARRACKS",
     );
-    if (assigned + reservations > city.level + 1 + (barracks ? 1 : 0))
-      return false;
+    const availableForReservations = Math.max(
+      0,
+      city.level + 1 + (barracks ? 1 : 0) - assigned,
+    );
+    if (reservations > availableForReservations) return false;
   }
   const exposureKeys = new Set<string>();
   for (const exposure of exposures) {
