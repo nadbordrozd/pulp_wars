@@ -522,6 +522,7 @@ describe("ruleset-7 economy", () => {
       "CITY_LEVELED_UP",
       "CITY_LEVELED_UP",
       "CITY_REWARD_QUEUED",
+      "ACHIEVEMENT_UNLOCKED",
     ]);
     expect(parseGameStateV7(built.state)).toEqual(built.state);
 

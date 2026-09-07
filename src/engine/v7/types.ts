@@ -36,6 +36,11 @@ export const IMPROVEMENT_IDS_V7 = Object.freeze([
   "GRAND_WORKS",
   "MARKET",
   "BARRACKS",
+  "MONUMENT",
+] as const);
+export const ACHIEVEMENT_IDS_V7 = Object.freeze([
+  "ENGINEER",
+  "MUSTER",
 ] as const);
 export const UNIT_ROLE_IDS_V7 = Object.freeze([
   "FIGHTER",
@@ -108,6 +113,7 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "BUILD_GRAND_WORKS",
   "BUILD_MARKET",
   "BUILD_BARRACKS",
+  "BUILD_MONUMENT",
   "CLEAR_FOREST",
   "REPLANT_FOREST",
   "BUILD_ROAD",
@@ -176,7 +182,10 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "CITY_LEVELED_UP",
   "CITY_REWARD_QUEUED",
   "CITY_REWARD_CHOSEN",
+  "CITY_REWARD_AUTOMATICALLY_GRANTED",
   "CITY_TERRITORY_EXPANDED",
+  "ACHIEVEMENT_UNLOCKED",
+  "MONUMENT_BUILT",
   "UNIT_TRAINED",
   "UNIT_REWARD_GRANTED",
   "UNIT_HEALED",
@@ -200,7 +209,6 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "IMPROVEMENT_PILLAGED",
   "UNIT_DISBANDED",
   "SPOILS_AWARDED",
-  "CITY_REWARD_AUTOMATICALLY_GRANTED",
   "UNIT_RECOVERED",
   "UNIT_WAITED",
   "UNIT_PROMOTED",
@@ -223,6 +231,7 @@ export type FactionTreeIdV7 = (typeof FACTION_TREE_IDS_V7)[number];
 export type TerrainIdV7 = (typeof TERRAIN_IDS_V7)[number];
 export type ResourceIdV7 = (typeof RESOURCE_IDS_V7)[number];
 export type ImprovementIdV7 = (typeof IMPROVEMENT_IDS_V7)[number];
+export type AchievementIdV7 = (typeof ACHIEVEMENT_IDS_V7)[number];
 export type UnitRoleIdV7 = (typeof UNIT_ROLE_IDS_V7)[number];
 export type TechnologyIdV7 = (typeof TECHNOLOGY_IDS_V7)[number];
 export type CommandKindV7 = (typeof COMMAND_KIND_ORDER_V7)[number];
@@ -286,6 +295,13 @@ export interface PlayerStateV7 {
   readonly researchedTechs: readonly TechnologyIdV7[];
   readonly explored: readonly CoordV7[];
   readonly spoilsClaimedCityIds: readonly CityId[];
+  readonly achievementEntitlements: readonly AchievementEntitlementV7[];
+}
+
+export interface AchievementEntitlementV7 {
+  readonly achievement: AchievementIdV7;
+  readonly unlocked: boolean;
+  readonly spent: boolean;
 }
 
 export interface UnitActivationV7 {
@@ -386,6 +402,11 @@ export type PopulationContributionSourceV7 =
       readonly kind: "CITY_REWARD";
       readonly reward: "BOOM";
       readonly reachedLevel: 4;
+      readonly at: CoordV7;
+    }
+  | {
+      readonly kind: "MONUMENT";
+      readonly achievement: AchievementIdV7;
       readonly at: CoordV7;
     };
 

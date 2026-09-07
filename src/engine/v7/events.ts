@@ -1,5 +1,6 @@
 import type { CityId, PlayerId, UnitId } from "../model/ids";
 import type {
+  AchievementIdV7,
   CoordV7,
   DefectionCancellationReasonV7,
   ImprovementIdV7,
@@ -128,10 +129,31 @@ export type DomainEventV7 =
       readonly coinDelta: number;
     }
   | {
+      readonly kind: "CITY_REWARD_AUTOMATICALLY_GRANTED";
+      readonly playerId: PlayerId;
+      readonly cityId: CityId;
+      readonly reachedLevel: number;
+      readonly reward: "TREASURY";
+      readonly coins: 12;
+    }
+  | {
       readonly kind: "CITY_TERRITORY_EXPANDED";
       readonly playerId: PlayerId;
       readonly cityId: CityId;
       readonly tiles: readonly CoordV7[];
+    }
+  | {
+      readonly kind: "ACHIEVEMENT_UNLOCKED";
+      readonly playerId: PlayerId;
+      readonly achievement: AchievementIdV7;
+    }
+  | {
+      readonly kind: "MONUMENT_BUILT";
+      readonly playerId: PlayerId;
+      readonly cityId: CityId;
+      readonly achievement: AchievementIdV7;
+      readonly at: CoordV7;
+      readonly populationAdded: 3;
     }
   | {
       readonly kind: "UNIT_TRAINED";
@@ -293,14 +315,6 @@ export type DomainEventV7 =
       readonly coins: 2;
     }
   | {
-      readonly kind: "CITY_REWARD_AUTOMATICALLY_GRANTED";
-      readonly playerId: PlayerId;
-      readonly cityId: CityId;
-      readonly reachedLevel: number;
-      readonly reward: "TREASURY";
-      readonly coins: 12;
-    }
-  | {
       readonly kind: "UNIT_RECOVERED";
       readonly unitId: UnitId;
       readonly amount: number;
@@ -384,12 +398,36 @@ export type ProjectedResourceRestorationEventV7 =
         "FERTILE_GROUND" | "ORE" | "STONE" | "UNKNOWN_RESOURCE" | null;
     });
 
+export type ProjectedMonumentBuiltV7 =
+  | {
+      readonly kind: "MONUMENT_BUILT";
+      readonly visibility: "FULL";
+      readonly playerId: PlayerId;
+      readonly cityId: CityId;
+      readonly achievement: AchievementIdV7;
+      readonly at: CoordV7;
+      readonly populationAdded: 3;
+    }
+  | {
+      readonly kind: "MONUMENT_BUILT";
+      readonly visibility: "BUILDING_ONLY";
+      readonly cityId: CityId;
+      readonly at: CoordV7;
+      readonly populationAdded: 3;
+    };
+
 export type PlayerEventV7 =
   | Exclude<
       DomainEventV7,
-      { kind: "ECONOMIC_BUILDING_REMOVED" | "IMPROVEMENT_PILLAGED" }
+      {
+        kind:
+          | "ECONOMIC_BUILDING_REMOVED"
+          | "IMPROVEMENT_PILLAGED"
+          | "MONUMENT_BUILT";
+      }
     >
   | ProjectedResourceRestorationEventV7
+  | ProjectedMonumentBuiltV7
   | PlayerPresentationEventV7;
 
 export interface PlayerEventEnvelopeV7 {

@@ -67,6 +67,7 @@ export function spatialContributionAtV7(
   if (improvement === "QUARRY") return fixed(3, at, improvement);
   if (improvement === "BARRACKS")
     return result({ capacity: 2, contributingTiles: [at], placementCount: 1 });
+  if (improvement === "MONUMENT") return fixed(3, at, improvement);
   if (improvement === "WINDMILL" || improvement === "SAWMILL") {
     const type = improvement === "WINDMILL" ? "FARM" : "LUMBER_CAMP";
     const contributors = connectedSameCityComponent(

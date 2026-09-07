@@ -1024,7 +1024,7 @@ export function assertRuleset7Registry(): void {
     ) ||
     Reflect.ownKeys(ORIGINAL_ROLE_RULES_V7).length !==
       UNIT_ROLE_IDS_V7.length ||
-    IMPROVEMENT_IDS_V7.length !== 12
+    IMPROVEMENT_IDS_V7.length !== 13
   )
     throw new Error("Ruleset-7 registry is incomplete");
 }

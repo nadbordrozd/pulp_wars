@@ -8,6 +8,7 @@ import {
 import { spatialContributionAtV7 } from "./spatial-economy";
 import type {
   BoardSizeV7,
+  AchievementIdV7,
   CityBlackoutV7,
   CoordV7,
   GameStateV7,
@@ -152,11 +153,48 @@ export type PublicImprovementValueV7 = {
     | "WORKSHOP"
     | "GRAND_WORKS"
     | "MARKET"
-    | "BARRACKS";
+    | "BARRACKS"
+    | "MONUMENT";
   readonly level: number;
   readonly measure: "POPULATION" | "COIN_INCOME" | "CAPACITY";
   readonly contributingTiles: readonly CoordV7[];
 };
+
+export type AchievementProgressV7 =
+  | {
+      readonly achievement: "ENGINEER";
+      readonly currentMaximumOutput: number;
+      readonly requiredOutput: 6;
+    }
+  | {
+      readonly achievement: "MUSTER";
+      readonly currentDistinctTrainableRoles: number;
+      readonly requiredDistinctTrainableRoles: 4;
+    };
+
+export type PublicPopulationContributionV7 =
+  | (Omit<PopulationContributionV7, "source"> & {
+      readonly source: Exclude<
+        PopulationContributionV7["source"],
+        { kind: "MONUMENT" }
+      >;
+    })
+  | (Omit<PopulationContributionV7, "amount" | "category" | "source"> & {
+      readonly category: "LIVE";
+      readonly amount: 3;
+      readonly source:
+        | {
+            readonly kind: "MONUMENT";
+            readonly visibility: "FULL";
+            readonly achievement: AchievementIdV7;
+            readonly at: CoordV7;
+          }
+        | {
+            readonly kind: "MONUMENT";
+            readonly visibility: "BUILDING_ONLY";
+            readonly at: CoordV7;
+          };
+    });
 
 export interface PlayerViewV7 {
   readonly schemaVersion: 7;
@@ -168,11 +206,12 @@ export interface PlayerViewV7 {
   readonly activeSeatIndex: number;
   readonly turnOrder: readonly PlayerId[];
   readonly viewer: PlayerStateV7;
+  readonly achievementProgress: readonly AchievementProgressV7[];
   readonly players: readonly PublicPlayerV7[];
   readonly leaderboard: readonly PublicLeaderboardEntryV7[];
   readonly board: PlayerBoardViewV7;
   readonly cities: readonly PublicCityV7[];
-  readonly populationContributions: readonly PopulationContributionV7[];
+  readonly populationContributions: readonly PublicPopulationContributionV7[];
   readonly improvementValues: readonly PublicImprovementValueV7[];
   readonly units: readonly PublicUnitV7[];
   readonly unitStats: readonly PublicUnitStatsV7[];
@@ -245,12 +284,35 @@ export function viewForV7(
         ? { known: true, round: unit.blackoutEligibleRound }
         : { known: false },
   }));
-  const visibleContributions = state.populationContributions.filter(
-    (contribution) =>
-      explored.has(key(contribution.source.at)) &&
-      state.cities.some(
-        (city) => city.id === contribution.cityId && city.ownerId === viewerId,
-      ),
+  const visibleContributions = state.populationContributions.flatMap(
+    (contribution): readonly PublicPopulationContributionV7[] => {
+      if (!explored.has(key(contribution.source.at))) return [];
+      const owner = state.cities.find(
+        (city) => city.id === contribution.cityId,
+      )?.ownerId;
+      if (contribution.source.kind !== "MONUMENT")
+        return owner === viewerId
+          ? [{ ...contribution, source: contribution.source }]
+          : [];
+      return [
+        {
+          ...contribution,
+          category: "LIVE",
+          amount: 3,
+          source:
+            owner === viewerId
+              ? {
+                  ...contribution.source,
+                  visibility: "FULL" as const,
+                }
+              : {
+                  kind: "MONUMENT" as const,
+                  visibility: "BUILDING_ONLY" as const,
+                  at: contribution.source.at,
+                },
+        },
+      ];
+    },
   );
   const improvementValues = state.board.tiles.flatMap(
     (tile): readonly PublicImprovementValueV7[] => {
@@ -259,6 +321,16 @@ export function viewForV7(
         tile.territoryCityId === null
           ? undefined
           : citiesById.get(tile.territoryCityId);
+      if (tile.improvement === "MONUMENT")
+        return [
+          {
+            at: tile.at,
+            improvement: "MONUMENT",
+            level: 3,
+            measure: "POPULATION",
+            contributingTiles: [],
+          },
+        ];
       if (city?.ownerId !== viewerId || !isValued(tile.improvement)) return [];
       if (tile.improvement === "BARRACKS")
         return [
@@ -398,18 +470,21 @@ export function viewForV7(
     activeSeatIndex: state.activeSeatIndex,
     turnOrder: state.turnOrder,
     viewer,
+    achievementProgress: achievementProgressV7(state, viewerId),
     players: state.players.map(
       ({
         coins: _coins,
         researchedTechs: _techs,
         explored: _explored,
         spoilsClaimedCityIds: _spoils,
+        achievementEntitlements: _achievements,
         ...player
       }) => {
         void _coins;
         void _techs;
         void _explored;
         void _spoils;
+        void _achievements;
         return player;
       },
     ),
@@ -444,6 +519,46 @@ export function viewForV7(
     ),
     outcome: state.outcome,
   });
+}
+
+export function achievementProgressV7(
+  state: GameStateV7,
+  playerId: PlayerId,
+): readonly AchievementProgressV7[] {
+  const currentMaximumOutput = state.populationContributions.reduce(
+    (maximum, contribution) =>
+      contribution.category === "LIVE" &&
+      contribution.source.kind === "IMPROVEMENT" &&
+      [
+        "WINDMILL",
+        "SAWMILL",
+        "FORGE",
+        "STONEWORKS",
+        "WORKSHOP",
+        "GRAND_WORKS",
+      ].includes(contribution.source.improvement) &&
+      state.cities.some(
+        (city) => city.id === contribution.cityId && city.ownerId === playerId,
+      )
+        ? Math.max(maximum, contribution.amount)
+        : maximum,
+    0,
+  );
+  const roles = new Set(
+    state.units.flatMap((unit) =>
+      unit.ownerId === playerId && unit.hp > 0 && unit.role !== "JUGGERNAUT"
+        ? [unit.role]
+        : [],
+    ),
+  );
+  return [
+    { achievement: "ENGINEER", currentMaximumOutput, requiredOutput: 6 },
+    {
+      achievement: "MUSTER",
+      currentDistinctTrainableRoles: roles.size,
+      requiredDistinctTrainableRoles: 4,
+    },
+  ];
 }
 
 export function publicResourceV7(
@@ -495,6 +610,7 @@ function isValued(
     "GRAND_WORKS",
     "MARKET",
     "BARRACKS",
+    "MONUMENT",
   ].includes(improvement);
 }
 function countBy(values: readonly PlayerId[]): Map<PlayerId, number> {

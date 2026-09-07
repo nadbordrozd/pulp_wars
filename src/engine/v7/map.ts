@@ -104,6 +104,10 @@ export function createInitialMapStateV7(
       researchedTechs: ORIGINAL_BASELINE_V3_TREE.startingTechIds,
       explored: player.explored,
       spoilsClaimedCityIds: [],
+      achievementEntitlements: [
+        { achievement: "ENGINEER", unlocked: false, spent: false },
+        { achievement: "MUSTER", unlocked: false, spent: false },
+      ],
     })),
     cities: v6.state.cities.map((city) => ({ ...city, blackout: null })),
     populationContributions: v6.state.populationContributions,

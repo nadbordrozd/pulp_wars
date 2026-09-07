@@ -5,6 +5,7 @@ import type {
   PlayerEventV7,
 } from "./events";
 import {
+  ACHIEVEMENT_IDS_V7,
   DOMAIN_EVENT_KIND_ORDER_V7,
   DEFECTION_CANCELLATION_REASON_ORDER_V7,
   IMPROVEMENT_IDS_V7,
@@ -92,7 +93,24 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "reward",
     "coinDelta",
   ],
+  CITY_REWARD_AUTOMATICALLY_GRANTED: [
+    "kind",
+    "playerId",
+    "cityId",
+    "reachedLevel",
+    "reward",
+    "coins",
+  ],
   CITY_TERRITORY_EXPANDED: ["kind", "playerId", "cityId", "tiles"],
+  ACHIEVEMENT_UNLOCKED: ["kind", "playerId", "achievement"],
+  MONUMENT_BUILT: [
+    "kind",
+    "playerId",
+    "cityId",
+    "achievement",
+    "at",
+    "populationAdded",
+  ],
   UNIT_TRAINED: ["kind", "playerId", "cityId", "unitId", "role", "cost", "at"],
   UNIT_REWARD_GRANTED: [
     "kind",
@@ -164,14 +182,6 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   ],
   UNIT_DISBANDED: ["kind", "playerId", "unitId", "role", "coinDelta"],
   SPOILS_AWARDED: ["kind", "playerId", "cityId", "coins"],
-  CITY_REWARD_AUTOMATICALLY_GRANTED: [
-    "kind",
-    "playerId",
-    "cityId",
-    "reachedLevel",
-    "reward",
-    "coins",
-  ],
   UNIT_RECOVERED: ["kind", "unitId", "amount", "automatic"],
   UNIT_WAITED: ["kind", "playerId", "unitId"],
   UNIT_PROMOTED: ["kind", "unitId", "maxHp"],
@@ -224,6 +234,44 @@ export function parseEventEnvelopeV7(
   };
 }
 
+function parseProjectedMonumentBuilt(input: unknown): PlayerEventV7 | null {
+  if (
+    hasExactKeysV7(input, [
+      "achievement",
+      "at",
+      "cityId",
+      "kind",
+      "playerId",
+      "populationAdded",
+      "visibility",
+    ]) &&
+    input.kind === "MONUMENT_BUILT" &&
+    input.visibility === "FULL" &&
+    id(input.playerId) &&
+    id(input.cityId) &&
+    ACHIEVEMENT_IDS_V7.includes(input.achievement as never) &&
+    parseCoordV7(input.at) !== null &&
+    input.populationAdded === 3
+  )
+    return input as PlayerEventV7;
+  if (
+    hasExactKeysV7(input, [
+      "at",
+      "cityId",
+      "kind",
+      "populationAdded",
+      "visibility",
+    ]) &&
+    input.kind === "MONUMENT_BUILT" &&
+    input.visibility === "BUILDING_ONLY" &&
+    id(input.cityId) &&
+    parseCoordV7(input.at) !== null &&
+    input.populationAdded === 3
+  )
+    return input as PlayerEventV7;
+  return null;
+}
+
 export function parsePlayerEventEnvelopeV7(
   input: unknown,
 ):
@@ -246,6 +294,18 @@ export function parsePlayerEventEnvelopeV7(
     return bad("envelope");
   const events: PlayerEventV7[] = [];
   for (const candidate of input.events) {
+    const monument = parseProjectedMonumentBuilt(candidate);
+    if (monument !== null) {
+      events.push(monument);
+      continue;
+    }
+    if (
+      typeof candidate === "object" &&
+      candidate !== null &&
+      !Array.isArray(candidate) &&
+      (candidate as Record<string, unknown>).kind === "MONUMENT_BUILT"
+    )
+      return bad("MONUMENT_BUILT");
     const projectedRestoration = parseProjectedRestorationEvent(candidate);
     if (projectedRestoration !== null) {
       events.push(projectedRestoration);
@@ -258,6 +318,7 @@ export function parsePlayerEventEnvelopeV7(
     }
     const canonical = parseEventV7(candidate);
     if (!canonical.ok) return canonical;
+    if (canonical.value.kind === "MONUMENT_BUILT") return bad("MONUMENT_BUILT");
     events.push(canonical.value);
   }
   return {
@@ -370,6 +431,7 @@ function validPayload(
       return (
         playerCityAt(e) &&
         IMPROVEMENT_IDS_V7.includes(e.improvement as never) &&
+        e.improvement !== "MONUMENT" &&
         e.cost === improvementCost(e.improvement as ImprovementIdV7) &&
         [e.populationContribution, e.marketIncome].every(nn) &&
         e.capacityDelta === (e.improvement === "BARRACKS" ? 2 : 0)
@@ -418,8 +480,29 @@ function validPayload(
         e.coinDelta ===
           (e.reward === "STOCKPILE" ? 4 : e.reward === "TREASURY" ? 12 : 0)
       );
+    case "CITY_REWARD_AUTOMATICALLY_GRANTED":
+      return (
+        id(e.playerId) &&
+        id(e.cityId) &&
+        pos(e.reachedLevel) &&
+        (e.reachedLevel as number) >= 5 &&
+        e.reward === "TREASURY" &&
+        e.coins === 12
+      );
     case "CITY_TERRITORY_EXPANDED":
       return id(e.playerId) && id(e.cityId) && sortedCoords(e.tiles);
+    case "ACHIEVEMENT_UNLOCKED":
+      return (
+        id(e.playerId) && ACHIEVEMENT_IDS_V7.includes(e.achievement as never)
+      );
+    case "MONUMENT_BUILT":
+      return (
+        id(e.playerId) &&
+        id(e.cityId) &&
+        ACHIEVEMENT_IDS_V7.includes(e.achievement as never) &&
+        parseCoordV7(e.at) !== null &&
+        e.populationAdded === 3
+      );
     case "UNIT_TRAINED":
       return (
         id(e.playerId) &&
@@ -573,15 +656,6 @@ function validPayload(
       );
     case "SPOILS_AWARDED":
       return id(e.playerId) && id(e.cityId) && e.coins === 2;
-    case "CITY_REWARD_AUTOMATICALLY_GRANTED":
-      return (
-        id(e.playerId) &&
-        id(e.cityId) &&
-        pos(e.reachedLevel) &&
-        (e.reachedLevel as number) >= 5 &&
-        e.reward === "TREASURY" &&
-        e.coins === 12
-      );
     case "UNIT_RECOVERED":
       return id(e.unitId) && pos(e.amount) && typeof e.automatic === "boolean";
     case "UNIT_WAITED":
@@ -762,6 +836,8 @@ function improvementCost(improvement: ImprovementIdV7): number {
     case "GRAND_WORKS":
     case "MARKET":
       return 7;
+    case "MONUMENT":
+      return 0;
   }
 }
 function trainingCost(role: UnitRoleIdV7): number {

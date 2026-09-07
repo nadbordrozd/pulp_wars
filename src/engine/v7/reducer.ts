@@ -77,6 +77,8 @@ export type RuleErrorCodeV7 =
   | "CITY_REWARD_PENDING"
   | "CITY_BUILDING_LIMIT"
   | "PLACEMENT_REQUIREMENT_UNMET"
+  | "ACHIEVEMENT_NOT_UNLOCKED"
+  | "ACHIEVEMENT_ENTITLEMENT_SPENT"
   | "TECH_NOT_FOUND"
   | "TECH_ALREADY_RESEARCHED"
   | "TECH_PREREQUISITE_MISSING"
@@ -152,10 +154,11 @@ export function createPlayableGameV7(
       resetTurnUnits(created.state, player.id),
       player,
     );
+    const achievements = evaluateAchievementsV7(started.state, player.id);
     return {
       ok: true,
-      state: checked(started.state),
-      events: started.events,
+      state: checked(achievements.state),
+      events: [...started.events, ...achievements.events],
       mapAttempt: created.mapAttempt,
     };
   } catch {
@@ -187,6 +190,8 @@ export function applyCommandV7(
   if (common !== null) return rejected(stateInput, common.code, common.params);
   if (command.kind === "RESEARCH")
     return applyResearch(stateInput, state, actor, command.tech);
+  if (command.kind === "BUILD_MONUMENT")
+    return applyMonument(stateInput, state, actor, command);
   if (BASIC_KINDS.has(command.kind))
     return applyBasic(
       stateInput,
@@ -357,7 +362,8 @@ function applyBasic(
       populationContributions: recalculation.populationContributions,
     };
     const settlement = settleCityRewardsV7(staged);
-    const next = checked(settlement.state);
+    const achievements = evaluateAchievementsV7(settlement.state, actor);
+    const next = checked(achievements.state);
     const fact: DomainEventV7 =
       rule.populationCategory === "PERMANENT"
         ? {
@@ -383,6 +389,7 @@ function applyBasic(
       fact,
       ...economyAndGrowth(recalculation.changes),
       ...settlement.events,
+      ...achievements.events,
     ]);
   } catch (cause) {
     return arithmeticFailure(original, cause);
@@ -486,7 +493,8 @@ function applySpatial(
       populationContributions: recalculation.populationContributions,
     };
     const settlement = settleCityRewardsV7(staged);
-    const next = checked(settlement.state);
+    const achievements = evaluateAchievementsV7(settlement.state, actor);
+    const next = checked(achievements.state);
     return accepted(next, [
       {
         kind: "ECONOMIC_BUILDING_BUILT",
@@ -501,6 +509,116 @@ function applySpatial(
       },
       ...economyAndGrowth(recalculation.changes),
       ...settlement.events,
+      ...achievements.events,
+    ]);
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
+}
+
+function applyMonument(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  command: Extract<CommandV7, { kind: "BUILD_MONUMENT" }>,
+): ApplyCommandResultV7 {
+  const player = requirePlayer(state, actor);
+  const tile = tileAtV7(state.board, command.at);
+  if (tile === undefined) return rejected(original, "TILE_NOT_FOUND");
+  if (!isExplored(player, command.at))
+    return rejected(original, "TILE_UNEXPLORED");
+  const city = state.cities.find((item) => item.id === tile.territoryCityId);
+  if (city === undefined || city.ownerId !== actor)
+    return rejected(original, "TERRITORY_NOT_OWNED");
+  if (isCityBesiegedV7(state, city)) return rejected(original, "CITY_BESIEGED");
+  if (city.blackout?.phase === "ACTIVE")
+    return rejected(original, "CITY_BLACKED_OUT");
+  if (hasCityChoice(state, city.id))
+    return rejected(original, "CITY_REWARD_PENDING");
+  if (
+    state.board.tiles.some(
+      (candidate) =>
+        candidate.territoryCityId === city.id &&
+        candidate.improvement === "MONUMENT",
+    )
+  )
+    return rejected(original, "CITY_BUILDING_LIMIT", {
+      improvement: "MONUMENT",
+    });
+  if (
+    tile.site !== null ||
+    tile.resource !== null ||
+    tile.improvement !== null ||
+    state.treasureChests.some((chest) => same(chest, command.at))
+  )
+    return rejected(original, "INVALID_TILE", { action: "BUILD_MONUMENT" });
+  const entitlement = player.achievementEntitlements.find(
+    (item) => item.achievement === command.achievement,
+  );
+  if (entitlement?.unlocked !== true)
+    return rejected(original, "ACHIEVEMENT_NOT_UNLOCKED", {
+      achievement: command.achievement,
+    });
+  if (entitlement.spent)
+    return rejected(original, "ACHIEVEMENT_ENTITLEMENT_SPENT", {
+      achievement: command.achievement,
+    });
+  try {
+    const board = replaceTile(state, command.at, {
+      ...tile,
+      improvement: "MONUMENT",
+    });
+    const contribution: PopulationContributionV7 = {
+      id: state.nextEntityId,
+      cityId: city.id,
+      category: "LIVE",
+      amount: 3,
+      source: {
+        kind: "MONUMENT",
+        achievement: command.achievement,
+        at: command.at,
+      },
+    };
+    const recalculation = recomputeLiveEconomyV7(
+      state,
+      { board, cities: state.cities },
+      [...state.populationContributions, contribution],
+    );
+    const staged: GameStateV7 = {
+      ...state,
+      nextEntityId: nextSafe(state.nextEntityId),
+      commandIndex: nextSafe(state.commandIndex),
+      board,
+      players: state.players.map((candidate) =>
+        candidate.id === actor
+          ? {
+              ...candidate,
+              achievementEntitlements: candidate.achievementEntitlements.map(
+                (item) =>
+                  item.achievement === command.achievement
+                    ? { ...item, spent: true }
+                    : item,
+              ),
+            }
+          : candidate,
+      ),
+      cities: recalculation.cities,
+      populationContributions: recalculation.populationContributions,
+    };
+    const settlement = settleCityRewardsV7(staged);
+    const achievements = evaluateAchievementsV7(settlement.state, actor);
+    return accepted(checked(achievements.state), [
+      {
+        kind: "MONUMENT_BUILT",
+        playerId: actor,
+        cityId: city.id,
+        achievement: command.achievement,
+        at: command.at,
+        populationAdded: 3,
+      },
+      ...economyAndGrowth(recalculation.changes),
+      ...settlement.events,
+      ...achievements.events,
     ]);
   } catch (cause) {
     return arithmeticFailure(original, cause);
@@ -566,11 +684,7 @@ function applyInfrastructure(
     const removedContribution =
       removed === null || removed === "MARKET" || removed === "BARRACKS"
         ? undefined
-        : state.populationContributions.find(
-            (item) =>
-              item.source.kind === "IMPROVEMENT" &&
-              same(item.source.at, command.at),
-          );
+        : populationContributionAt(state, command.at);
     if (
       removed !== null &&
       removed !== "MARKET" &&
@@ -627,7 +741,8 @@ function applyInfrastructure(
       defectionMarks: cancellation.marks,
     };
     const settlement = settleCityRewardsV7(staged);
-    const next = checked(settlement.state);
+    const achievements = evaluateAchievementsV7(settlement.state, actor);
+    const next = checked(achievements.state);
     const fact: DomainEventV7 =
       command.kind === "BUILD_ROAD"
         ? {
@@ -669,6 +784,7 @@ function applyInfrastructure(
       ...cancellation.events,
       ...economyAndGrowth(recalculation.changes),
       ...settlement.events,
+      ...achievements.events,
     ]);
   } catch (cause) {
     return arithmeticFailure(original, cause);
@@ -725,26 +841,26 @@ function applyTrain(
       activation: exhaustedActivation(),
       blackoutEligibleRound: command.role === "SABOTEUR" ? 1 : null,
     };
-    return accepted(
-      checked({
-        ...state,
-        nextEntityId: allocation.nextEntityId,
-        commandIndex: nextSafe(state.commandIndex),
-        players: debit(state.players, actor, rule.cost),
-        units: [...state.units, trained],
-      }),
-      [
-        {
-          kind: "UNIT_TRAINED",
-          playerId: actor,
-          cityId: city.id,
-          unitId: trained.id,
-          role: trained.role,
-          cost: rule.cost,
-          at: trained.at,
-        },
-      ],
-    );
+    const staged = {
+      ...state,
+      nextEntityId: allocation.nextEntityId,
+      commandIndex: nextSafe(state.commandIndex),
+      players: debit(state.players, actor, rule.cost),
+      units: [...state.units, trained],
+    };
+    const achievements = evaluateAchievementsV7(staged, actor);
+    return accepted(checked(achievements.state), [
+      {
+        kind: "UNIT_TRAINED",
+        playerId: actor,
+        cityId: city.id,
+        unitId: trained.id,
+        role: trained.role,
+        cost: rule.cost,
+        at: trained.at,
+      },
+      ...achievements.events,
+    ]);
   } catch (cause) {
     return arithmeticFailure(original, cause);
   }
@@ -940,9 +1056,11 @@ function applyReward(
       defectionMarks: cancellation.marks,
     });
     events.push(...settlement.events);
+    const achievements = evaluateAchievementsV7(settlement.state, actor);
+    events.push(...achievements.events);
     return accepted(
       checked({
-        ...settlement.state,
+        ...achievements.state,
         commandIndex: nextSafe(state.commandIndex),
       }),
       events,
@@ -1061,18 +1179,20 @@ function applyMove(
     ]);
     if (revealed.length > 0)
       events.push({ kind: "TILES_REVEALED", playerId: actor, tiles: revealed });
-    return accepted(
-      checked({
-        ...state,
-        commandIndex: nextSafe(state.commandIndex),
-        players,
-        units,
-        random: treasure?.random ?? state.random,
-        nextEntityId: treasure?.nextEntityId ?? state.nextEntityId,
-        treasureChests: treasure?.treasureChests ?? state.treasureChests,
-      }),
-      events,
-    );
+    const staged: GameStateV7 = {
+      ...state,
+      commandIndex: nextSafe(state.commandIndex),
+      players,
+      units,
+      random: treasure?.random ?? state.random,
+      nextEntityId: treasure?.nextEntityId ?? state.nextEntityId,
+      treasureChests: treasure?.treasureChests ?? state.treasureChests,
+    };
+    const achievements = evaluateAchievementsV7(staged, actor);
+    return accepted(checked(achievements.state), [
+      ...events,
+      ...achievements.events,
+    ]);
   } catch (cause) {
     return arithmeticFailure(original, cause);
   }
@@ -1687,11 +1807,7 @@ function applyPillage(
     const contribution =
       improvement === "MARKET" || improvement === "BARRACKS"
         ? undefined
-        : state.populationContributions.find(
-            (item) =>
-              item.source.kind === "IMPROVEMENT" &&
-              same(item.source.at, tile.at),
-          );
+        : populationContributionAt(state, tile.at);
     if (
       improvement !== "MARKET" &&
       improvement !== "BARRACKS" &&
@@ -1752,7 +1868,8 @@ function applyPillage(
       defectionMarks: cancellation.marks,
     };
     const settlement = settleCityRewardsV7(staged);
-    const next = checked(settlement.state);
+    const achievements = evaluateAchievementsV7(settlement.state, actor);
+    const next = checked(achievements.state);
     return accepted(next, [
       {
         kind: "IMPROVEMENT_PILLAGED",
@@ -1767,6 +1884,7 @@ function applyPillage(
       ...cancellation.events,
       ...economyAndGrowth(recalc.changes),
       ...settlement.events,
+      ...achievements.events,
     ]);
   } catch (cause) {
     return arithmeticFailure(original, cause);
@@ -2021,6 +2139,21 @@ function applyCapture(
     cities = settlement.state.cities;
     choices = settlement.state.pendingChoices;
     events.push(...settlement.events);
+    const achievements = evaluateAchievementsV7(
+      {
+        ...state,
+        board,
+        players,
+        cities,
+        units,
+        populationContributions: contributions,
+        pendingChoices: choices,
+        defectionMarks: marks,
+      },
+      actor,
+    );
+    players = achievements.state.players;
+    events.push(...achievements.events);
     if (
       formerOwner !== null &&
       !cities.some((item) => item.ownerId === formerOwner)
@@ -2131,8 +2264,12 @@ function applyEndTurn(
       nextPlayer.id,
     );
     const started = startTurnEconomyV7(advanced, nextPlayer);
+    const achievements = evaluateAchievementsV7(started.state, nextPlayer.id);
     return accepted(
-      checked({ ...started.state, commandIndex: nextSafe(state.commandIndex) }),
+      checked({
+        ...achievements.state,
+        commandIndex: nextSafe(state.commandIndex),
+      }),
       [
         ...recovery.events,
         {
@@ -2143,6 +2280,7 @@ function applyEndTurn(
         },
         { kind: "TURN_ENDED", playerId: actor },
         ...started.events,
+        ...achievements.events,
       ],
     );
   } catch (cause) {
@@ -2532,6 +2670,72 @@ function settleCityRewardsV7(state: GameStateV7): {
   }
   return { state: { ...state, players, cities, pendingChoices: [] }, events };
 }
+function evaluateAchievementsV7(
+  state: GameStateV7,
+  playerId: PlayerId,
+): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
+  const player = state.players.find((candidate) => candidate.id === playerId);
+  if (player?.status !== "ACTIVE") return { state, events: [] };
+  const engineer = state.populationContributions.some(
+    (contribution) =>
+      contribution.category === "LIVE" &&
+      contribution.amount >= 6 &&
+      contribution.source.kind === "IMPROVEMENT" &&
+      [
+        "WINDMILL",
+        "SAWMILL",
+        "FORGE",
+        "STONEWORKS",
+        "WORKSHOP",
+        "GRAND_WORKS",
+      ].includes(contribution.source.improvement) &&
+      state.cities.some(
+        (city) => city.id === contribution.cityId && city.ownerId === playerId,
+      ),
+  );
+  const trainableRoles = new Set(
+    state.units.flatMap((unit) =>
+      unit.ownerId === playerId &&
+      unit.hp > 0 &&
+      effectiveRoleRuleV7(unit.role).cost !== null
+        ? [unit.role]
+        : [],
+    ),
+  );
+  const qualifies = {
+    ENGINEER: engineer,
+    MUSTER: trainableRoles.size >= 4,
+  } as const;
+  const unlocked = player.achievementEntitlements.filter(
+    (entitlement) =>
+      !entitlement.unlocked && qualifies[entitlement.achievement],
+  );
+  if (unlocked.length === 0) return { state, events: [] };
+  const unlockedIds = new Set(unlocked.map((item) => item.achievement));
+  return {
+    state: {
+      ...state,
+      players: state.players.map((candidate) =>
+        candidate.id === playerId
+          ? {
+              ...candidate,
+              achievementEntitlements: candidate.achievementEntitlements.map(
+                (entitlement) =>
+                  unlockedIds.has(entitlement.achievement)
+                    ? { ...entitlement, unlocked: true }
+                    : entitlement,
+              ),
+            }
+          : candidate,
+      ),
+    },
+    events: unlocked.map((entitlement) => ({
+      kind: "ACHIEVEMENT_UNLOCKED" as const,
+      playerId,
+      achievement: entitlement.achievement,
+    })),
+  };
+}
 function unitSightRadius(
   state: GameStateV7,
   ownerId: PlayerId,
@@ -2609,6 +2813,16 @@ function restoredResourceForImprovement(
       : improvement === "QUARRY"
         ? "STONE"
         : null;
+}
+function populationContributionAt(
+  state: GameStateV7,
+  at: CoordV7,
+): PopulationContributionV7 | undefined {
+  return state.populationContributions.find(
+    (item) =>
+      (item.source.kind === "IMPROVEMENT" || item.source.kind === "MONUMENT") &&
+      same(item.source.at, at),
+  );
 }
 function exhaustedActivation(): UnitStateV7["activation"] {
   return {

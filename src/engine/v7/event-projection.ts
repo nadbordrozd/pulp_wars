@@ -291,7 +291,10 @@ function eventVisible(
       return cityVisible(before, after, viewerId, event.cityId);
     case "SPOILS_AWARDED":
     case "CITY_REWARD_AUTOMATICALLY_GRANTED":
+    case "ACHIEVEMENT_UNLOCKED":
       return event.playerId === viewerId;
+    case "MONUMENT_BUILT":
+      return coordVisible(before, after, viewerId, event.at);
     case "CITY_REWARD_QUEUED":
     case "CITY_ECONOMY_CHANGED":
     case "ECONOMIC_BUILDING_REMOVED":
@@ -337,6 +340,20 @@ function projectEventPayload(
   viewerId: PlayerId,
   event: DomainEventV7,
 ): PlayerEventV7 {
+  if (event.kind === "MONUMENT_BUILT") {
+    const currentOwner = after.cities.find(
+      (city) => city.id === event.cityId,
+    )?.ownerId;
+    return currentOwner === viewerId
+      ? { ...event, visibility: "FULL" }
+      : {
+          kind: "MONUMENT_BUILT",
+          visibility: "BUILDING_ONLY",
+          cityId: event.cityId,
+          at: event.at,
+          populationAdded: 3,
+        };
+  }
   if (
     event.kind === "ECONOMIC_BUILDING_REMOVED" ||
     event.kind === "IMPROVEMENT_PILLAGED"

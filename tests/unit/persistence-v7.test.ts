@@ -10,7 +10,10 @@ import {
   parseReplayFileV7,
   runReplayV7,
   type CommandV7,
+  type CoordV7,
+  type GameStateV7,
   type MatchSetupV7,
+  type ReplayFileV7,
 } from "../../src/engine/index";
 import { createSaveEnvelopeV7, parseSaveV7 } from "../../src/persistence/index";
 
@@ -66,6 +69,110 @@ describe("ruleset-7 save and replay foundation", () => {
     );
     expect(parseSaveV7(JSON.stringify(save))).toEqual({ kind: "VALID", save });
     expect(runReplayV7(replay).state).toEqual(applied.state);
+  });
+
+  it("naturally replays Muster unlock and its command-bearing Monument placement", () => {
+    const created = createInitialMapStateV7(setup);
+    if (!created.ok) throw new Error(created.error.code);
+    let state: GameStateV7 = created.state;
+    let replay: ReplayFileV7 = createReplayV7(setup);
+    const humanId = state.humanPlayerId;
+    const city = state.cities.find(
+      (candidate) => candidate.ownerId === humanId,
+    );
+    if (city === undefined) throw new Error("human city missing");
+    const apply = (command: CommandV7) => {
+      const actor = state.turnOrder[state.activeSeatIndex];
+      if (actor === undefined) throw new Error("active actor missing");
+      const result = applyCommandV7(state, actor, command);
+      if (!result.accepted)
+        throw new Error(`${command.kind}: ${result.error.code}`);
+      state = result.state;
+      replay = appendReplayCommandV7(replay, command, state);
+      return result.events;
+    };
+    const fundHuman = (coins: number) => {
+      for (let guard = 0; guard < 100; guard += 1) {
+        const active = state.turnOrder[state.activeSeatIndex];
+        const human = state.players.find((player) => player.id === humanId);
+        if (active === humanId && human !== undefined && human.coins >= coins)
+          return;
+        apply({ kind: "END_TURN" });
+      }
+      throw new Error("funding guard exhausted");
+    };
+    fundHuman(5);
+    apply({ kind: "RESEARCH", tech: "SCOUTING" });
+    fundHuman(7);
+    apply({ kind: "RESEARCH", tech: "RAIDING" });
+    fundHuman(9);
+    apply({ kind: "RESEARCH", tech: "DRILL" });
+    fundHuman(5);
+    apply({ kind: "RESEARCH", tech: "SURVEYING" });
+    fundHuman(7);
+    apply({ kind: "RESEARCH", tech: "QUARRYING" });
+
+    const openTiles = () =>
+      state.board.tiles.filter(
+        (tile) =>
+          tile.territoryCityId === city.id &&
+          tile.site === null &&
+          tile.terrain !== "MOUNTAIN" &&
+          tile.resource === null &&
+          tile.improvement === null &&
+          !state.treasureChests.some((chest) => sameCoord(chest, tile.at)) &&
+          !state.units.some((unit) => sameCoord(unit.at, tile.at)),
+      );
+    fundHuman(4);
+    const barracksAt = openTiles().find(
+      (tile) => chebyshev(tile.at, city.at) === 1,
+    )?.at;
+    if (barracksAt === undefined) throw new Error("barracks tile missing");
+    apply({ kind: "BUILD_BARRACKS", at: barracksAt });
+
+    const roles = ["SCOUT", "RAIDER", "GUARD"] as const;
+    for (const role of roles) {
+      const cost = role === "GUARD" ? 3 : 4;
+      fundHuman(cost);
+      const occupant = state.units.find(
+        (unit) => unit.ownerId === humanId && sameCoord(unit.at, city.at),
+      );
+      if (occupant === undefined) throw new Error("city occupant missing");
+      const destination = openTiles().find(
+        (tile) => chebyshev(tile.at, city.at) === 1,
+      )?.at;
+      if (destination === undefined) throw new Error("movement tile missing");
+      apply({ kind: "MOVE", unitId: occupant.id, path: [destination] });
+      const events = apply({ kind: "TRAIN", cityId: city.id, role });
+      if (role === "GUARD")
+        expect(events).toContainEqual({
+          kind: "ACHIEVEMENT_UNLOCKED",
+          playerId: humanId,
+          achievement: "MUSTER",
+        });
+    }
+    const monumentAt = openTiles()[0]?.at;
+    if (monumentAt === undefined) throw new Error("Monument tile missing");
+    const monumentEvents = apply({
+      kind: "BUILD_MONUMENT",
+      achievement: "MUSTER",
+      at: monumentAt,
+    });
+    expect(monumentEvents[0]).toMatchObject({
+      kind: "MONUMENT_BUILT",
+      achievement: "MUSTER",
+      populationAdded: 3,
+    });
+    const save = createSaveEnvelopeV7(
+      { state, replay },
+      "2026-09-07T17:00:00.000Z",
+    );
+    expect(parseSaveV7(JSON.stringify(save))).toEqual({ kind: "VALID", save });
+    expect(runReplayV7(replay)).toMatchObject({
+      acceptedCommands: replay.commands.length,
+      state,
+      stateHash: canonicalHash(state),
+    });
   });
 
   it("replays natural Windmill dependency loss, marker restoration, and full-cost repair", () => {
@@ -362,3 +469,8 @@ describe("ruleset-7 save and replay foundation", () => {
     ).toMatchObject({ kind: "CORRUPT" });
   });
 });
+
+const sameCoord = (left: CoordV7, right: CoordV7) =>
+  left.x === right.x && left.y === right.y;
+const chebyshev = (left: CoordV7, right: CoordV7) =>
+  Math.max(Math.abs(left.x - right.x), Math.abs(left.y - right.y));

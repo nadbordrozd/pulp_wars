@@ -1,4 +1,5 @@
 import {
+  ACHIEVEMENT_IDS_V7,
   BLACKOUT_PHASE_ORDER_V7,
   CARDINAL_DIRECTION_ORDER_V7,
   DEFECTION_PHASE_ORDER_V7,
@@ -19,6 +20,7 @@ import {
 export const compareTerrainIdsV7 = ordinalComparator(TERRAIN_IDS_V7);
 export const compareResourceIdsV7 = ordinalComparator(RESOURCE_IDS_V7);
 export const compareImprovementIdsV7 = ordinalComparator(IMPROVEMENT_IDS_V7);
+export const compareAchievementIdsV7 = ordinalComparator(ACHIEVEMENT_IDS_V7);
 export const compareUnitRoleIdsV7 = ordinalComparator(UNIT_ROLE_IDS_V7);
 export const compareTechnologyIdsV7 = ordinalComparator(TECHNOLOGY_IDS_V7);
 export const compareRewardIdsV7 = ordinalComparator(REWARD_IDS_V7);

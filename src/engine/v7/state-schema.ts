@@ -1,5 +1,6 @@
 import { canonicalHash, canonicalJson } from "../replay/canonical";
 import {
+  ACHIEVEMENT_IDS_V7,
   IMPROVEMENT_IDS_V7,
   RESOURCE_IDS_V7,
   REWARD_IDS_V7,
@@ -8,6 +9,8 @@ import {
   TERRAIN_IDS_V7,
   UNIT_ROLE_IDS_V7,
   type BoardStateV7,
+  type AchievementEntitlementV7,
+  type AchievementIdV7,
   type CityBlackoutV7,
   type CityRewardRecordV7,
   type CityStateV7,
@@ -347,6 +350,7 @@ function parsePlayer(input: unknown): PlayerStateV7 | null {
       "coins",
       "color",
       "controller",
+      "achievementEntitlements",
       "explored",
       "faction",
       "factionTreeId",
@@ -375,12 +379,16 @@ function parsePlayer(input: unknown): PlayerStateV7 | null {
     input.spoilsClaimedCityIds,
     parseCityIdV7,
   );
+  const achievementEntitlements = parseAchievementEntitlements(
+    input.achievementEntitlements,
+  );
   if (
     id === null ||
     researched === null ||
     researched[0] !== "GATHERING" ||
     explored === null ||
     spoils === null ||
+    achievementEntitlements === null ||
     researched.some((tech) => {
       const required = PREREQUISITE[tech];
       return required !== undefined && !researched.includes(required);
@@ -399,7 +407,33 @@ function parsePlayer(input: unknown): PlayerStateV7 | null {
     researchedTechs: researched,
     explored,
     spoilsClaimedCityIds: spoils,
+    achievementEntitlements,
   };
+}
+
+function parseAchievementEntitlements(
+  input: unknown,
+): readonly AchievementEntitlementV7[] | null {
+  if (!isDenseArrayV7(input) || input.length !== ACHIEVEMENT_IDS_V7.length)
+    return null;
+  const values: AchievementEntitlementV7[] = [];
+  for (let index = 0; index < input.length; index += 1) {
+    const candidate = input[index];
+    if (
+      !hasExactKeysV7(candidate, ["achievement", "spent", "unlocked"]) ||
+      candidate.achievement !== ACHIEVEMENT_IDS_V7[index] ||
+      typeof candidate.unlocked !== "boolean" ||
+      typeof candidate.spent !== "boolean" ||
+      (candidate.spent && !candidate.unlocked)
+    )
+      return null;
+    values.push({
+      achievement: candidate.achievement as AchievementIdV7,
+      unlocked: candidate.unlocked,
+      spent: candidate.spent,
+    });
+  }
+  return values;
 }
 
 function parseCities(input: unknown): readonly CityStateV7[] | null {
@@ -578,9 +612,10 @@ function parseContributions(
       city === null ||
       source === null ||
       (candidate.category === "PERMANENT") !==
-        (source.kind !== "IMPROVEMENT") ||
+        (source.kind === "RESOURCE_ACTION" || source.kind === "CITY_REWARD") ||
       (candidate.category === "PERMANENT" &&
         candidate.amount !== (source.kind === "CITY_REWARD" ? 3 : 1)) ||
+      (source.kind === "MONUMENT" && candidate.amount !== 3) ||
       (source.kind === "IMPROVEMENT" &&
         (source.improvement === "MARKET" ||
           source.improvement === "BARRACKS")) ||
@@ -612,9 +647,24 @@ function parseContributionSource(
       : { kind: "RESOURCE_ACTION", action: input.action, at };
   }
   if (
+    hasExactKeysV7(input, ["achievement", "at", "kind"]) &&
+    input.kind === "MONUMENT" &&
+    ACHIEVEMENT_IDS_V7.includes(input.achievement as never)
+  ) {
+    const at = parseCoordV7(input.at);
+    return at === null
+      ? null
+      : {
+          kind: "MONUMENT",
+          achievement: input.achievement as AchievementIdV7,
+          at,
+        };
+  }
+  if (
     hasExactKeysV7(input, ["at", "improvement", "kind"]) &&
     input.kind === "IMPROVEMENT" &&
-    IMPROVEMENT_IDS_V7.includes(input.improvement as ImprovementIdV7)
+    IMPROVEMENT_IDS_V7.includes(input.improvement as ImprovementIdV7) &&
+    input.improvement !== "MONUMENT"
   ) {
     const at = parseCoordV7(input.at);
     return at === null
@@ -1092,6 +1142,20 @@ function validateCrossReferences(value: CrossInput): boolean {
   }
   if (!populationLedgerValid(board, players, cities, contributions))
     return false;
+  for (const achievement of ACHIEVEMENT_IDS_V7) {
+    const monuments = contributions.filter(
+      (contribution) =>
+        contribution.source.kind === "MONUMENT" &&
+        contribution.source.achievement === achievement,
+    ).length;
+    const funded = players.filter(
+      (player) =>
+        player.achievementEntitlements.find(
+          (entitlement) => entitlement.achievement === achievement,
+        )?.spent === true,
+    ).length;
+    if (monuments > funded) return false;
+  }
   const targetMarks = new Set<number>();
   for (const mark of marks) {
     const source = unitById.get(mark.sourceUnitId);
@@ -1198,15 +1262,18 @@ function populationLedgerValid(
     if (city === undefined) return false;
     if (contribution.category === "LIVE") {
       if (
-        contribution.source.kind !== "IMPROVEMENT" ||
+        (contribution.source.kind !== "IMPROVEMENT" &&
+          contribution.source.kind !== "MONUMENT") ||
         liveByCoord.has(key(contribution.source.at))
       )
         return false;
       const tile = tileAt(board, contribution.source.at);
       if (
         tile?.territoryCityId !== city.id ||
-        tile.improvement !== contribution.source.improvement ||
-        contribution.amount !== liveValue(board, cities, tile)
+        (contribution.source.kind === "IMPROVEMENT"
+          ? tile.improvement !== contribution.source.improvement ||
+            contribution.amount !== liveValue(board, cities, tile)
+          : tile.improvement !== "MONUMENT" || contribution.amount !== 3)
       )
         return false;
       liveByCoord.set(key(tile.at), contribution);

@@ -1,10 +1,12 @@
 import type { CityId, UnitId } from "../model/ids";
 import {
+  ACHIEVEMENT_IDS_V7,
   COMMAND_KIND_ORDER_V7,
   REWARD_IDS_V7,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
   type CommandKindV7,
+  type AchievementIdV7,
   type CoordV7,
   type RewardIdV7,
   type TechnologyIdV7,
@@ -80,6 +82,11 @@ export type CommandV7 =
   | { readonly kind: "RESEARCH"; readonly tech: TechnologyIdV7 }
   | { readonly kind: TileCommandKindV7; readonly at: CoordV7 }
   | {
+      readonly kind: "BUILD_MONUMENT";
+      readonly achievement: AchievementIdV7;
+      readonly at: CoordV7;
+    }
+  | {
       readonly kind: "TRAIN";
       readonly cityId: CityId;
       readonly role: UnitRoleIdV7;
@@ -102,7 +109,10 @@ export type CommandParseResultV7 =
   | { readonly ok: true; readonly value: CommandV7 }
   | { readonly ok: false; readonly field: string };
 
-const TILE_KINDS = new Set<CommandKindV7>(COMMAND_KIND_ORDER_V7.slice(14, 32));
+const TILE_KINDS = new Set<CommandKindV7>([
+  ...COMMAND_KIND_ORDER_V7.slice(14, 28),
+  ...COMMAND_KIND_ORDER_V7.slice(29, 33),
+]);
 const UNIT_ONLY_KINDS = new Set<CommandKindV7>([
   "RECOVER",
   "CAPTURE",
@@ -165,6 +175,22 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
     return at === null
       ? invalid(kind)
       : { ok: true, value: { kind: kind as TileCommandKindV7, at } };
+  }
+  if (kind === "BUILD_MONUMENT") {
+    const at = hasExactKeysV7(input, ["achievement", "at", "kind"])
+      ? parseCoordV7(candidate.at)
+      : null;
+    return at === null ||
+      !ACHIEVEMENT_IDS_V7.includes(candidate.achievement as AchievementIdV7)
+      ? invalid(kind)
+      : {
+          ok: true,
+          value: {
+            kind,
+            achievement: candidate.achievement as AchievementIdV7,
+            at,
+          },
+        };
   }
   if (kind === "MOVE" || kind === "PURSUE") {
     const id = hasExactKeysV7(input, ["kind", "unitId", "path"])
@@ -317,6 +343,8 @@ function referencedOrdinal(command: CommandV7): number {
   if (command.kind === "TRAIN") return UNIT_ROLE_IDS_V7.indexOf(command.role);
   if (command.kind === "CHOOSE_CITY_REWARD")
     return REWARD_IDS_V7.indexOf(command.reward);
+  if (command.kind === "BUILD_MONUMENT")
+    return ACHIEVEMENT_IDS_V7.indexOf(command.achievement);
   if (
     command.kind === "ATTACK" ||
     command.kind === "HEAL_ADJACENT" ||

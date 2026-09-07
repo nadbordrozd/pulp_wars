@@ -170,20 +170,26 @@ export function recomputeLiveEconomyV7(
 ): LiveEconomyResultV7 {
   const populationContributions = contributions.map((contribution) => {
     if (contribution.category === "PERMANENT") return contribution;
-    if (contribution.source.kind !== "IMPROVEMENT")
-      throw new RangeError("INVALID_STATE");
     const tile =
       finalGraph.board.tiles[
         contribution.source.at.y * finalGraph.board.width +
           contribution.source.at.x
       ];
+    if (tile?.territoryCityId === null || tile?.territoryCityId === undefined)
+      throw new RangeError("INVALID_STATE");
+    if (contribution.source.kind === "MONUMENT") {
+      if (tile.improvement !== "MONUMENT")
+        throw new RangeError("INVALID_STATE");
+      return { ...contribution, cityId: tile.territoryCityId, amount: 3 };
+    }
     if (
-      tile?.at.x !== contribution.source.at.x ||
+      contribution.source.kind !== "IMPROVEMENT" ||
+      tile.at.x !== contribution.source.at.x ||
       tile.at.y !== contribution.source.at.y ||
       tile.improvement !== contribution.source.improvement ||
-      tile.territoryCityId === null ||
       tile.improvement === "MARKET" ||
-      tile.improvement === "BARRACKS"
+      tile.improvement === "BARRACKS" ||
+      tile.improvement === "MONUMENT"
     )
       throw new RangeError("INVALID_STATE");
     return {

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  ACHIEVEMENT_IDS_V7,
   BLACKOUT_PHASE_ORDER_V7,
   COMMAND_KIND_ORDER_V7,
   DOMAIN_EVENT_KIND_ORDER_V7,
@@ -39,7 +40,9 @@ describe("ruleset-7 deterministic foundation", () => {
     expect(RULESET_7_ID).toBe("pulp-wars-poc-7r2");
     expect(FACTION_IDS_V7).toEqual(["ORIGINAL"]);
     expect(FACTION_TREE_IDS_V7).toEqual(["ORIGINAL_BASELINE_V3"]);
-    expect(IMPROVEMENT_IDS_V7).toHaveLength(12);
+    expect(IMPROVEMENT_IDS_V7).toHaveLength(13);
+    expect(IMPROVEMENT_IDS_V7.at(-1)).toBe("MONUMENT");
+    expect(ACHIEVEMENT_IDS_V7).toEqual(["ENGINEER", "MUSTER"]);
     expect(UNIT_ROLE_IDS_V7).toEqual([
       "FIGHTER",
       "SCOUT",
@@ -56,8 +59,17 @@ describe("ruleset-7 deterministic foundation", () => {
       "JUGGERNAUT",
     ]);
     expect(TECHNOLOGY_IDS_V7).toHaveLength(25);
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(35);
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(49);
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(36);
+    expect(COMMAND_KIND_ORDER_V7[28]).toBe("BUILD_MONUMENT");
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(51);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7.slice(15, 21)).toEqual([
+      "CITY_REWARD_CHOSEN",
+      "CITY_REWARD_AUTOMATICALLY_GRANTED",
+      "CITY_TERRITORY_EXPANDED",
+      "ACHIEVEMENT_UNLOCKED",
+      "MONUMENT_BUILT",
+      "UNIT_TRAINED",
+    ]);
     expect(PLAYER_EVENT_KIND_ORDER_V7.slice(-3)).toEqual([
       "UNIT_REVEALED",
       "UNIT_CONCEALED",
@@ -68,6 +80,7 @@ describe("ruleset-7 deterministic foundation", () => {
       FACTION_IDS_V7,
       FACTION_TREE_IDS_V7,
       IMPROVEMENT_IDS_V7,
+      ACHIEVEMENT_IDS_V7,
       UNIT_ROLE_IDS_V7,
       TECHNOLOGY_IDS_V7,
       COMMAND_KIND_ORDER_V7,
@@ -104,10 +117,23 @@ describe("ruleset-7 deterministic foundation", () => {
       { kind: "OFFER_DEFECTION", unitId: 1, targetUnitId: 2, homeCityId: 3 },
       { kind: "BLACKOUT_CITY", unitId: 1, cityId: 3 },
       { kind: "BUILD_BARRACKS", at: { x: 2, y: 3 } },
+      {
+        kind: "BUILD_MONUMENT",
+        achievement: "ENGINEER",
+        at: { x: 2, y: 3 },
+      },
       { kind: "DISBAND", unitId: 1 },
       { kind: "END_PURSUIT", unitId: 1 },
     ])
       expect(parseCommandV7(command).ok).toBe(true);
+    expect(
+      parseCommandV7({
+        kind: "BUILD_MONUMENT",
+        achievement: "ENGINEER",
+        at: { x: 2, y: 3 },
+        extra: true,
+      }).ok,
+    ).toBe(false);
     expect(
       parseCommandV7({
         kind: "ATTACK",

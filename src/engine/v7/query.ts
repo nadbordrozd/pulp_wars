@@ -17,11 +17,12 @@ import {
   assignedUnitCountV7,
   cityIncomeV7,
   cityUnitCapacityV7,
+  rewardCandidatesForLevelV7,
   reservedCapacityCountV7,
 } from "./economy";
 import { applyCommandV7 } from "./reducer";
 import { calculateCombatPreviewV7 } from "./combat";
-import type { CombatPreviewV7 } from "./events";
+import type { CombatPreviewV7, DomainEventV7 } from "./events";
 import { reachablePlayerMovementPathsV7 } from "./movement";
 import {
   isCapitalConnectedRoadV7,
@@ -34,6 +35,8 @@ import {
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
   type CoordV7,
+  type AchievementEntitlementV7,
+  type AchievementIdV7,
   type GameStateV7,
   type ImprovementIdV7,
   type TechnologyIdV7,
@@ -163,6 +166,29 @@ export function queryPlayerCommandsV7(
     for (const kind of TILE_KINDS)
       if (publicTileCommandLegal(view, tile, kind, unlocked))
         candidates.push({ kind, at: tile.at } as CommandV7);
+    const monumentCity = view.cities.find(
+      (city) => city.id === tile.territoryCityId,
+    );
+    if (
+      monumentCity?.ownerId === player.id &&
+      !publicCityBesieged(view, monumentCity.at) &&
+      monumentCity.blackout?.phase !== "ACTIVE" &&
+      publicCityDevelopmentFootprintKnown(view, monumentCity) &&
+      !view.pendingChoices.some(
+        (choice) => choice.cityId === monumentCity.id,
+      ) &&
+      tile.site === null &&
+      tile.resource === null &&
+      tile.improvement === null &&
+      !cityHasImprovement(view, monumentCity.id, "MONUMENT")
+    )
+      for (const entitlement of player.achievementEntitlements)
+        if (entitlement.unlocked && !entitlement.spent)
+          candidates.push({
+            kind: "BUILD_MONUMENT",
+            achievement: entitlement.achievement,
+            at: tile.at,
+          });
   }
   for (const city of view.cities) {
     if (city.ownerId !== player.id || publicCityBesieged(view, city.at))
@@ -302,6 +328,169 @@ export function queryPlayerCommandsV7(
   if (view.defectionStatuses.length === 0 && view.blackoutStatuses.length === 0)
     candidates.push({ kind: "END_TURN" });
   return store(view, candidates.sort(compareCommandsV7));
+}
+
+export interface MonumentPreviewV7 {
+  readonly achievement: AchievementIdV7;
+  readonly entitlement: AchievementEntitlementV7;
+  readonly at: CoordV7;
+  readonly cityId: CityId;
+  readonly cityHasMonument: false;
+  readonly onePerCityAvailable: true;
+  readonly populationAdded: 3;
+  readonly levelsReached: readonly number[];
+  readonly rewardWork: readonly Extract<
+    DomainEventV7,
+    {
+      kind: "CITY_REWARD_AUTOMATICALLY_GRANTED" | "CITY_REWARD_QUEUED";
+    }
+  >[];
+  readonly lostEmptyTile: true;
+  readonly complete: true;
+}
+
+export type MonumentPreviewResultV7 =
+  | { readonly ok: true; readonly preview: MonumentPreviewV7 }
+  | { readonly ok: false; readonly error: "NOT_OFFERED" };
+
+export function previewMonumentV7(
+  input: GameStateV7 | PlayerViewV7,
+  viewerOrCommand: PlayerId | Extract<CommandV7, { kind: "BUILD_MONUMENT" }>,
+  maybeCommand?: Extract<CommandV7, { kind: "BUILD_MONUMENT" }>,
+): MonumentPreviewResultV7 {
+  const view =
+    maybeCommand === undefined
+      ? (input as PlayerViewV7)
+      : asView(input, viewerOrCommand as PlayerId);
+  const command =
+    maybeCommand ??
+    (viewerOrCommand as Extract<CommandV7, { kind: "BUILD_MONUMENT" }>);
+  const offered = queryPlayerCommandsV7(view).some(
+    (candidate) =>
+      candidate.kind === "BUILD_MONUMENT" &&
+      candidate.achievement === command.achievement &&
+      same(candidate.at, command.at),
+  );
+  if (!offered) return { ok: false, error: "NOT_OFFERED" };
+  const tile = view.board.tiles[command.at.y * view.board.width + command.at.x];
+  const entitlement = view.viewer.achievementEntitlements.find(
+    (item) => item.achievement === command.achievement,
+  );
+  if (
+    tile?.explored !== true ||
+    tile.territoryCityId === null ||
+    entitlement === undefined
+  )
+    return { ok: false, error: "NOT_OFFERED" };
+  const city = view.cities.find(
+    (candidate) => candidate.id === tile.territoryCityId,
+  );
+  if (city === undefined) return { ok: false, error: "NOT_OFFERED" };
+  const levelsReached: number[] = [];
+  const total = city.permanentPopulation + city.economicPopulation + 3;
+  if (!Number.isSafeInteger(total)) return { ok: false, error: "NOT_OFFERED" };
+  let level = city.level;
+  while (total - growthSpentForPreview(level) >= level + 1) {
+    level += 1;
+    levelsReached.push(level);
+  }
+  const rewardWork: Extract<
+    DomainEventV7,
+    { kind: "CITY_REWARD_AUTOMATICALLY_GRANTED" | "CITY_REWARD_QUEUED" }
+  >[] = [];
+  for (const reachedLevel of levelsReached) {
+    if (reachedLevel >= 5) {
+      const placement = publicRewardPlacementStatus(view, city.id);
+      if (placement === "UNKNOWN") return { ok: false, error: "NOT_OFFERED" };
+      if (placement === "NONE") {
+        rewardWork.push({
+          kind: "CITY_REWARD_AUTOMATICALLY_GRANTED",
+          playerId: view.viewer.id,
+          cityId: city.id,
+          reachedLevel,
+          reward: "TREASURY",
+          coins: 12,
+        });
+        continue;
+      }
+    }
+    rewardWork.push({
+      kind: "CITY_REWARD_QUEUED",
+      cityId: city.id,
+      reachedLevel,
+      candidates: rewardCandidatesForLevelV7(reachedLevel),
+    });
+    break;
+  }
+  const automaticCoins =
+    rewardWork.filter(
+      (event) => event.kind === "CITY_REWARD_AUTOMATICALLY_GRANTED",
+    ).length * 12;
+  if (!Number.isSafeInteger(view.viewer.coins + automaticCoins))
+    return { ok: false, error: "NOT_OFFERED" };
+  return {
+    ok: true,
+    preview: {
+      achievement: command.achievement,
+      entitlement,
+      at: command.at,
+      cityId: tile.territoryCityId,
+      cityHasMonument: false,
+      onePerCityAvailable: true,
+      populationAdded: 3,
+      levelsReached,
+      rewardWork,
+      lostEmptyTile: true,
+      complete: true,
+    },
+  };
+}
+
+function growthSpentForPreview(level: number): number {
+  const result = (level * (level + 1)) / 2 - 1;
+  if (!Number.isSafeInteger(result)) throw new RangeError("INTEGER_OVERFLOW");
+  return result;
+}
+
+function publicRewardPlacementStatus(
+  view: PlayerViewV7,
+  cityId: CityId,
+): "AVAILABLE" | "NONE" | "UNKNOWN" {
+  const city = view.cities.find((candidate) => candidate.id === cityId);
+  if (city === undefined) return "UNKNOWN";
+  const candidates = view.board.tiles.filter(
+    (tile): tile is Extract<PlayerTileViewV7, { explored: true }> =>
+      tile.explored &&
+      tile.territoryCityId === cityId &&
+      (tile.terrain !== "MOUNTAIN" ||
+        view.viewer.researchedTechs.includes("SURVEYING")),
+  );
+  let hasConcealableCell = false;
+  for (const tile of candidates) {
+    if (view.units.some((unit) => unit.hp > 0 && same(unit.at, tile.at)))
+      continue;
+    const detected =
+      view.cities.some(
+        (city) =>
+          city.ownerId === view.viewer.id && chebyshev(city.at, tile.at) <= 1,
+      ) ||
+      view.units.some(
+        (unit) =>
+          unit.ownerId === view.viewer.id &&
+          chebyshev(unit.at, tile.at) <= (unit.role === "SCOUT" ? 2 : 1),
+      );
+    if (detected) return "AVAILABLE";
+    hasConcealableCell = true;
+  }
+  if (
+    view.board.tiles.some(
+      (tile) =>
+        !tile.explored &&
+        chebyshev(tile.at, city.at) <= (city.expanded ? 2 : 1),
+    )
+  )
+    return "UNKNOWN";
+  return hasConcealableCell ? "UNKNOWN" : "NONE";
 }
 
 /** Observation-safe exact preview for an offered attack. */
@@ -913,6 +1102,16 @@ function publicCityBesieged(view: PlayerViewV7, at: CoordV7): boolean {
       unit.hp > 0 &&
       publicHostile(view, view.viewer.id, unit.ownerId) &&
       same(unit.at, at),
+  );
+}
+
+function publicCityDevelopmentFootprintKnown(
+  view: PlayerViewV7,
+  city: PlayerViewV7["cities"][number],
+): boolean {
+  const radius = city.expanded ? 2 : 1;
+  return view.board.tiles.every(
+    (tile) => chebyshev(tile.at, city.at) > radius || tile.explored,
   );
 }
 
