@@ -493,7 +493,19 @@ function publicTileAt(
   view: PlayerViewV7,
   at: CoordV7,
 ): PlayerTileViewV7 | undefined {
-  return view.board.tiles[at.y * view.board.width + at.x];
+  if (!publicCoordOnBoard(view, at)) return undefined;
+  const tile = view.board.tiles[at.y * view.board.width + at.x];
+  return tile?.at.x === at.x && tile.at.y === at.y ? tile : undefined;
+}
+function publicCoordOnBoard(view: PlayerViewV7, at: CoordV7): boolean {
+  return (
+    Number.isSafeInteger(at.x) &&
+    Number.isSafeInteger(at.y) &&
+    at.x >= 0 &&
+    at.y >= 0 &&
+    at.x < view.board.width &&
+    at.y < view.board.height
+  );
 }
 function adjacentPublic(view: PlayerViewV7, at: CoordV7): CoordV7[] {
   const result: CoordV7[] = [];

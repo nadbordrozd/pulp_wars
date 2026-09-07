@@ -203,12 +203,15 @@ describe("ruleset-7 save and replay foundation", () => {
     });
   });
 
+  // This integration-style case rebuilds five replay checkpoints, so its
+  // timeout is intentionally local rather than changing the global budget.
   it("naturally saves and replays every Blackout and recovery phase", () => {
     const created = createInitialMapStateV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     let state = created.state;
     let replay = createReplayV7(setup);
     const humanId = state.humanPlayerId;
+    const seatCount = state.turnOrder.length;
     const targetCity = state.cities.find((city) => city.ownerId !== humanId);
     if (targetCity === undefined) throw new Error("target city missing");
     const accept = (command: CommandV7) => {
@@ -364,9 +367,6 @@ describe("ruleset-7 save and replay foundation", () => {
                 { readonly path: readonly CoordV7[] }
               > => command.kind === "MOVE" && command.unitId === enemy.id,
             )
-            // TODO(pulp_wars-aya.27): remove once movement query stops
-            // aliasing off-board edge coordinates to public board tiles.
-            .filter((command) => onBoard(state, moveEndpoint(command)))
             .sort(
               (left, right) =>
                 chebyshev(moveEndpoint(right), targetCity.at) -
@@ -383,11 +383,17 @@ describe("ruleset-7 save and replay foundation", () => {
     if (!planted) throw new Error("Blackout planting guard exhausted");
     checkpoint("PENDING");
 
-    while (
-      state.cities.find((city) => city.id === targetCity.id)?.blackout
-        ?.phase !== "ACTIVE"
+    const blackoutPhase = () =>
+      state.cities.find((city) => city.id === targetCity.id)?.blackout?.phase ??
+      null;
+    for (
+      let guard = 0;
+      guard < seatCount && blackoutPhase() !== "ACTIVE";
+      guard += 1
     )
       accept({ kind: "END_TURN" });
+    if (blackoutPhase() !== "ACTIVE")
+      throw new Error("Blackout activation seat window exhausted");
     checkpoint("ACTIVE");
     accept({ kind: "END_TURN" });
     checkpoint("RECOVERY");
@@ -397,11 +403,14 @@ describe("ruleset-7 save and replay foundation", () => {
       )?.blackout;
       return blackout?.phase === "RECOVERY" && blackout.unaffectedTurnStarted;
     };
-    while (!recoveryTurnStarted()) accept({ kind: "END_TURN" });
+    for (let guard = 0; guard < seatCount && !recoveryTurnStarted(); guard += 1)
+      accept({ kind: "END_TURN" });
+    if (!recoveryTurnStarted())
+      throw new Error("Blackout recovery seat window exhausted");
     checkpoint("RECOVERY");
     accept({ kind: "END_TURN" });
     checkpoint(null);
-  });
+  }, 15_000);
 
   it("naturally replays Muster unlock and its command-bearing Monument placement", () => {
     const created = createInitialMapStateV7(setup);
@@ -816,13 +825,4 @@ function moveEndpoint(
   command: Extract<CommandV7, { readonly path: readonly CoordV7[] }>,
 ): CoordV7 {
   return required(command.path.at(-1), "move endpoint missing");
-}
-
-function onBoard(state: GameStateV7, at: CoordV7): boolean {
-  return (
-    at.x >= 0 &&
-    at.y >= 0 &&
-    at.x < state.board.width &&
-    at.y < state.board.height
-  );
 }

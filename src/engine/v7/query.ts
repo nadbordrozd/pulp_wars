@@ -786,7 +786,7 @@ export function previewMonumentV7(
       same(candidate.at, command.at),
   );
   if (!offered) return { ok: false, error: "NOT_OFFERED" };
-  const tile = view.board.tiles[command.at.y * view.board.width + command.at.x];
+  const tile = tileAtView(view, command.at);
   const entitlement = view.viewer.achievementEntitlements.find(
     (item) => item.achievement === command.achievement,
   );
@@ -1572,7 +1572,17 @@ function asView(
 }
 
 function tileAtView(view: PlayerViewV7, at: CoordV7) {
-  return view.board.tiles[at.y * view.board.width + at.x];
+  if (
+    !Number.isSafeInteger(at.x) ||
+    !Number.isSafeInteger(at.y) ||
+    at.x < 0 ||
+    at.y < 0 ||
+    at.x >= view.board.width ||
+    at.y >= view.board.height
+  )
+    return undefined;
+  const tile = view.board.tiles[at.y * view.board.width + at.x];
+  return tile?.at.x === at.x && tile.at.y === at.y ? tile : undefined;
 }
 
 function publicHostile(

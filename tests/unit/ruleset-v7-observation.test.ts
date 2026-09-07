@@ -27,7 +27,12 @@ import {
   type PlayerId,
   type UnitStateV7,
 } from "../../src/engine/index";
-import { allTechsV7, checkedV7, initialV7 } from "../fixtures/v7-builders";
+import {
+  allTechsV7,
+  checkedV7,
+  exploredAllV7,
+  initialV7,
+} from "../fixtures/v7-builders";
 
 const READY: UnitStateV7["activation"] = {
   moved: false,
@@ -616,6 +621,85 @@ describe("ruleset-7 observation safety and Concealment", () => {
     expect(JSON.stringify(projected)).not.toContain(
       `"targetUnitId":${blockerId}`,
     );
+  });
+
+  it("keeps an off-board edge Push blocked in its preview and projected event", () => {
+    const base = exploredAllV7(allTechsV7(initialV7(2_401)));
+    const attackerAt = { x: 9, y: 5 };
+    const defenderAt = { x: 10, y: 5 };
+    const aliasedTile = { x: 0, y: 6 };
+    const state = checkedV7({
+      ...base,
+      treasureChests: base.treasureChests.filter(
+        (at) => ![attackerAt, defenderAt].some((used) => same(at, used)),
+      ),
+      units: base.units.map((unit) =>
+        unit.ownerId === base.humanPlayerId
+          ? {
+              ...unit,
+              role: "HEAVY" as const,
+              at: attackerAt,
+              hp: 20,
+              maxHp: 20,
+              activation: READY,
+            }
+          : {
+              ...unit,
+              role: "HEAVY" as const,
+              at: defenderAt,
+              hp: 20,
+              maxHp: 20,
+              activation: READY,
+            },
+      ),
+      board: {
+        ...base.board,
+        tiles: base.board.tiles.map((tile) =>
+          [attackerAt, defenderAt, aliasedTile].some((at) => same(tile.at, at))
+            ? {
+                ...tile,
+                terrain: "GRASS" as const,
+                resource: null,
+                improvement: null,
+                site: null,
+                road: false,
+              }
+            : tile,
+        ),
+      },
+    });
+    const attacker = state.units.find(
+      (unit) => unit.ownerId === state.humanPlayerId,
+    )!;
+    const defender = state.units.find(
+      (unit) => unit.ownerId !== state.humanPlayerId,
+    )!;
+    expect(
+      queryCombatPreviewV7(
+        viewForV7(state, state.humanPlayerId),
+        attacker.id,
+        defender.id,
+      ),
+    ).toMatchObject({ defenderDies: false, push: "BLOCKED" });
+
+    const attacked = applyCommandV7(state, state.humanPlayerId, {
+      kind: "ATTACK",
+      unitId: attacker.id,
+      targetUnitId: defender.id,
+    });
+    expect(attacked.accepted).toBe(true);
+    if (!attacked.accepted) return;
+    expect(
+      attacked.events.find((event) => event.kind === "COMBAT_RESOLVED"),
+    ).toMatchObject({ preview: { push: "BLOCKED" } });
+    expect(
+      projectEventsV7(
+        state,
+        attacked.state,
+        state.humanPlayerId,
+        attacked.events,
+      ).events.find((event) => event.kind === "COMBAT_RESOLVED"),
+    ).toMatchObject({ preview: { push: "BLOCKED" } });
   });
 
   it("keeps raw hashes behind an explicit spoiler capability while safe logs accept only projected batches", () => {

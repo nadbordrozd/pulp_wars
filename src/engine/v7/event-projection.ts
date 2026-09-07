@@ -425,7 +425,13 @@ function projectEventPayload(
     y: defender.at.y * 2 - attacker.at.y,
   };
   const view = viewForV7(before, viewerId);
-  const tile = view.board.tiles[behind.y * view.board.width + behind.x];
+  const tile =
+    behind.x >= 0 &&
+    behind.y >= 0 &&
+    behind.x < view.board.width &&
+    behind.y < view.board.height
+      ? view.board.tiles[behind.y * view.board.width + behind.x]
+      : undefined;
   if (
     tile?.explored !== true ||
     tile.site !== null ||
