@@ -33,6 +33,7 @@ import type { DomainEventV7 } from "./events";
 import { calculateCombatPreviewV7, pushedDestinationV7 } from "./combat";
 import { createInitialMapStateV7 } from "./map";
 import { unitSightRadiusAtV7, validateMovementPathV7 } from "./movement";
+import { isUnitVisibleToPlayerV7 } from "./observation";
 import { parseGameStateV7 } from "./state-schema";
 import {
   adjacentTilesV7,
@@ -305,6 +306,7 @@ function applyBasic(
     rule.technology,
     kind,
     (tile) =>
+      !state.treasureChests.some((chest) => same(chest, command.at)) &&
       tile.site === null &&
       tile.terrain === rule.terrain &&
       tile.resource === rule.resource &&
@@ -399,7 +401,12 @@ function applySpatial(
     return rejected(original, "TILE_UNEXPLORED");
   if (!player.researchedTechs.includes(rule.technology))
     return rejected(original, "TECH_REQUIRED", { tech: rule.technology });
-  if (tile.site !== null || tile.resource !== null || tile.improvement !== null)
+  if (
+    state.treasureChests.some((chest) => same(chest, command.at)) ||
+    tile.site !== null ||
+    tile.resource !== null ||
+    tile.improvement !== null
+  )
     return rejected(original, "INVALID_TILE", { action: kind });
   const city = state.cities.find((item) => item.id === tile.territoryCityId);
   if (city === undefined || city.ownerId !== actor)
@@ -1221,16 +1228,15 @@ function applyAttack(
     return rejected(original, "TARGET_NOT_FOUND", {
       targetUnitId: command.targetUnitId,
     });
+  if (!isUnitVisibleToPlayerV7(state, actor, defender))
+    return rejected(original, "TARGET_NOT_FOUND", {
+      targetUnitId: command.targetUnitId,
+    });
   if (
     defender.ownerId === actor ||
     arePlayersAlliedV7(state, actor, defender.ownerId)
   )
     return rejected(original, "TARGET_ALLIED");
-  const player = requirePlayer(state, actor);
-  if (!isExplored(player, defender.at))
-    return rejected(original, "TARGET_NOT_FOUND", {
-      targetUnitId: command.targetUnitId,
-    });
   const distance = chebyshev(attacker.at, defender.at);
   if (
     distance < rule.minimumRange ||
@@ -1365,6 +1371,37 @@ function applyAttack(
     );
     marks = capacity.marks;
     events.push(...capacity.events);
+    let exposures = state.saboteurExposures.filter((exposure) =>
+      units.some((living) => living.id === exposure.unitId),
+    );
+    if (
+      attacker.role === "SABOTEUR" &&
+      units.some((living) => living.id === attacker.id)
+    ) {
+      exposures = [
+        ...exposures.filter(
+          (entry) =>
+            entry.unitId !== attacker.id ||
+            entry.anchorPlayerId !== defender.ownerId,
+        ),
+        {
+          unitId: attacker.id,
+          anchorPlayerId: defender.ownerId,
+          reason: "ATTACK" as const,
+          clearsAtAnchorNextEndTurn: true as const,
+        },
+      ].sort(
+        (left, right) =>
+          left.unitId - right.unitId ||
+          left.anchorPlayerId - right.anchorPlayerId,
+      );
+      events.push({
+        kind: "SABOTEUR_EXPOSED",
+        unitId: attacker.id,
+        anchorPlayerId: defender.ownerId,
+        reason: "ATTACK",
+      });
+    }
     if (opens)
       events.push({
         kind: "PURSUIT_OPENED",
@@ -1390,9 +1427,7 @@ function applyAttack(
         players,
         units,
         defectionMarks: marks,
-        saboteurExposures: state.saboteurExposures.filter((exposure) =>
-          units.some((unit) => unit.id === exposure.unitId),
-        ),
+        saboteurExposures: exposures,
       }),
       events,
     );
@@ -1423,7 +1458,8 @@ function applyHeal(
   const target = state.units.find(
     (unit) => unit.id === command.targetUnitId && unit.hp > 0,
   );
-  if (target === undefined) return rejected(original, "HEAL_TARGET_NOT_FOUND");
+  if (target === undefined || !isUnitVisibleToPlayerV7(state, actor, target))
+    return rejected(original, "HEAL_TARGET_NOT_FOUND");
   if (target.ownerId !== actor)
     return rejected(original, "HEAL_TARGET_NOT_OWNED");
   if (target.id === medic.id || chebyshev(medic.at, target.at) !== 1)
@@ -2032,8 +2068,7 @@ function applyEndTurn(
     return rejected(original, "PURSUIT_MUST_END");
   if (
     state.defectionMarks.length > 0 ||
-    state.cities.some((city) => city.blackout !== null) ||
-    state.saboteurExposures.length > 0
+    state.cities.some((city) => city.blackout !== null)
   )
     return rejected(original, "COMMAND_NOT_IMPLEMENTED", {
       kind: "END_TURN_STATE_MACHINES",
@@ -2051,7 +2086,14 @@ function applyEndTurn(
     const round =
       nextIndex <= state.activeSeatIndex ? nextSafe(state.round) : state.round;
     const advanced = resetTurnUnits(
-      { ...recovery.state, activeSeatIndex: nextIndex, round },
+      {
+        ...recovery.state,
+        activeSeatIndex: nextIndex,
+        round,
+        saboteurExposures: recovery.state.saboteurExposures.filter(
+          (exposure) => exposure.anchorPlayerId !== actor,
+        ),
+      },
       nextPlayer.id,
     );
     const started = startTurnEconomyV7(advanced, nextPlayer);

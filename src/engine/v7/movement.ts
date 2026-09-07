@@ -4,6 +4,10 @@ import {
   technologyCapabilitiesV7,
 } from "../rules/ruleset-v7";
 import { arePlayersAlliedV7, arePlayersHostileV7 } from "./economy";
+import {
+  isUnitVisibleToPlayerV7,
+  withUnitAtForObservationV7,
+} from "./observation";
 import { capitalConnectedRoadKeysV7, tileAtV7 } from "./spatial-economy";
 import type {
   CoordV7,
@@ -12,6 +16,7 @@ import type {
   TileStateV7,
   UnitStateV7,
 } from "./types";
+import type { PlayerTileViewV7, PlayerViewV7, PublicUnitV7 } from "./view";
 
 export type MovementFailureReasonV7 =
   | "EMPTY_PATH"
@@ -94,23 +99,24 @@ export function validateMovementPathV7(
     const owner = tileOwner(state, tile);
     if (owner !== null && arePlayersAlliedV7(state, player.id, owner))
       return { legal: false, reason: "ALLY_TERRITORY_FORBIDDEN" };
-    const occupied = state.units.some(
+    const occupant = state.units.find(
       (candidate) =>
         candidate.id !== unit.id &&
         candidate.hp > 0 &&
         same(candidate.at, step),
     );
+    const occupied = occupant !== undefined;
     const surveyingRequired =
       tile.terrain === "MOUNTAIN" && !capabilities.mountainMovement;
     if (occupied || surveyingRequired) {
-      if (wasExplored)
+      const occupantVisible =
+        occupant !== undefined &&
+        isUnitVisibleToPlayerV7(state, player.id, occupant);
+      if (occupantVisible || (surveyingRequired && wasExplored))
         return {
           legal: false,
           reason: occupied ? "OCCUPIED" : "SURVEYING_REQUIRED",
         };
-      const sight = revealRadius(state, explored, step, 1);
-      explored = sight.explored;
-      revealed.push(...sight.revealed);
       return {
         legal: true,
         destination: current,
@@ -134,8 +140,9 @@ export function validateMovementPathV7(
     const sight = revealRadius(state, explored, step, sightRadius);
     explored = sight.explored;
     revealed.push(...sight.revealed);
+    const observationState = withUnitAtForObservationV7(state, unit.id, step);
     const entersZoc =
-      !ignoresZoc && inHostileZoc(state, player.id, step, explored);
+      !ignoresZoc && inHostileZoc(observationState, player.id, step, explored);
     const newlyRevealedZoc =
       entersZoc && !inHostileZoc(state, player.id, step, beforeReveal);
     const terrainStops =
@@ -200,7 +207,6 @@ export function reachableMovementPathsV7(
     (candidate) => candidate.id === unit.ownerId,
   );
   if (player === undefined) return [];
-  const explored = new Set(player.explored.map(key));
   const queue: CoordV7[][] = [[]];
   const best = new Map<string, number>([[key(unit.at), 0]]);
   const results = new Map<string, ReachablePathV7>();
@@ -209,7 +215,6 @@ export function reachableMovementPathsV7(
     if (path === undefined) break;
     const current = path.at(-1) ?? unit.at;
     for (const destination of adjacent(state, current)) {
-      if (!explored.has(key(destination))) continue;
       const candidate = [...path, destination];
       const validation = validateMovementPathV7(state, unit, candidate, mode);
       if (
@@ -232,6 +237,150 @@ export function reachableMovementPathsV7(
   return [...results.values()].sort((a, b) =>
     compare(a.destination, b.destination),
   );
+}
+
+/** Observation-only movement enumeration used by presentation and Normal AI. */
+export function reachablePlayerMovementPathsV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+  mode: "MOVE" | "PURSUE" = "MOVE",
+): readonly ReachablePathV7[] {
+  const queue: CoordV7[][] = [[]];
+  const best = new Map<string, number>([[key(unit.at), 0]]);
+  const results = new Map<string, ReachablePathV7>();
+  while (queue.length > 0) {
+    const path = queue.shift();
+    if (path === undefined) break;
+    const current = path.at(-1) ?? unit.at;
+    for (const destination of adjacentPublic(view, current)) {
+      const candidate = [...path, destination];
+      const validation = validatePlayerMovementPathV7(
+        view,
+        unit,
+        candidate,
+        mode,
+      );
+      if (
+        !validation.legal ||
+        validation.traversedPath.length !== candidate.length
+      )
+        continue;
+      const destinationKey = key(validation.destination);
+      const prior = best.get(destinationKey);
+      if (prior !== undefined && prior <= validation.spentPoints2) continue;
+      best.set(destinationKey, validation.spentPoints2);
+      results.set(destinationKey, {
+        destination: validation.destination,
+        path: candidate,
+        spentPoints2: validation.spentPoints2,
+      });
+      if (!validation.stopped) queue.push(candidate);
+    }
+  }
+  return [...results.values()].sort((left, right) =>
+    compare(left.destination, right.destination),
+  );
+}
+
+export function validatePlayerMovementPathV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+  path: readonly CoordV7[],
+  mode: "MOVE" | "PURSUE" = "MOVE",
+): MovementPathResultV7 {
+  if (path.length === 0) return { legal: false, reason: "EMPTY_PATH" };
+  const role = effectiveRoleRuleV7(unit.role);
+  const capabilities = technologyCapabilitiesV7(view.viewer.researchedTechs);
+  const budget2 = mode === "PURSUE" ? 4 : role.move * 2;
+  if (mode === "PURSUE" && path.length > 2)
+    return { legal: false, reason: "BUDGET_EXCEEDED" };
+  let current = unit.at;
+  let spentPoints2 = 0;
+  const traversedPath: CoordV7[] = [];
+  for (let index = 0; index < path.length; index += 1) {
+    const step = path[index];
+    if (step === undefined) return { legal: false, reason: "OUT_OF_BOUNDS" };
+    if (chebyshev(current, step) !== 1)
+      return { legal: false, reason: "NOT_ADJACENT" };
+    const tile = publicTileAt(view, step);
+    if (tile === undefined) return { legal: false, reason: "OUT_OF_BOUNDS" };
+    if (
+      mode === "PURSUE" &&
+      view.treasureChests.some((chest) => same(chest, step))
+    )
+      return { legal: false, reason: "TREASURE_FORBIDDEN" };
+    spentPoints2 +=
+      mode === "PURSUE" ? 2 : publicStepCost2(view, current, tile);
+    if (spentPoints2 > budget2)
+      return { legal: false, reason: "BUDGET_EXCEEDED" };
+    if (tile.explored === false && tile.diplomaticBlock === "ALLIED_TERRITORY")
+      return { legal: false, reason: "ALLY_TERRITORY_FORBIDDEN" };
+    if (
+      view.units.some(
+        (candidate) =>
+          candidate.id !== unit.id &&
+          candidate.hp > 0 &&
+          same(candidate.at, step),
+      )
+    )
+      return { legal: false, reason: "OCCUPIED" };
+    if (
+      tile.explored &&
+      tile.territoryOwnerId !== null &&
+      publicAllied(view, unit.ownerId, tile.territoryOwnerId)
+    )
+      return { legal: false, reason: "ALLY_TERRITORY_FORBIDDEN" };
+    if (
+      tile.explored &&
+      tile.terrain === "MOUNTAIN" &&
+      !capabilities.mountainMovement
+    )
+      return { legal: false, reason: "SURVEYING_REQUIRED" };
+    const ignoresForest = capabilities.forestMovementFreedomRoles.includes(
+      unit.role,
+    );
+    const ignoresZoc = capabilities.ignoreHostileZocRoles.includes(unit.role);
+    const entersZoc = !ignoresZoc && publicHostileZoc(view, unit.ownerId, step);
+    const terrainStops =
+      tile.explored &&
+      (tile.terrain === "MOUNTAIN" ||
+        (tile.terrain === "FOREST" && !ignoresForest));
+    const stops = !tile.explored || terrainStops || entersZoc;
+    traversedPath.push(step);
+    current = step;
+    if (stops && index < path.length - 1)
+      return {
+        legal: false,
+        reason: !tile.explored
+          ? "UNEXPLORED_INTERMEDIATE"
+          : tile.terrain === "MOUNTAIN"
+            ? "MOUNTAIN_STOPS_MOVE"
+            : tile.terrain === "FOREST" && !ignoresForest
+              ? "FOREST_STOPS_MOVE"
+              : "ZOC_STOPS_MOVE",
+      };
+    if (stops)
+      return {
+        legal: true,
+        destination: current,
+        traversedPath,
+        spentPoints2,
+        stopped: true,
+        explored: view.viewer.explored,
+        revealed: [],
+        interruption: null,
+      };
+  }
+  return {
+    legal: true,
+    destination: current,
+    traversedPath,
+    spentPoints2,
+    stopped: false,
+    explored: view.viewer.explored,
+    revealed: [],
+    interruption: null,
+  };
 }
 
 export function movementStepCost2V7(
@@ -334,8 +483,111 @@ function inHostileZoc(
       unit.hp > 0 &&
       arePlayersHostileV7(state, ownerId, unit.ownerId) &&
       contains(explored, unit.at) &&
+      (unit.role !== "SABOTEUR" ||
+        isUnitVisibleToPlayerV7(state, ownerId, unit)) &&
       chebyshev(unit.at, at) === 1,
   );
+}
+
+function publicTileAt(
+  view: PlayerViewV7,
+  at: CoordV7,
+): PlayerTileViewV7 | undefined {
+  return view.board.tiles[at.y * view.board.width + at.x];
+}
+function adjacentPublic(view: PlayerViewV7, at: CoordV7): CoordV7[] {
+  const result: CoordV7[] = [];
+  for (let y = at.y - 1; y <= at.y + 1; y += 1)
+    for (let x = at.x - 1; x <= at.x + 1; x += 1) {
+      const candidate = { x, y };
+      if (!same(at, candidate) && publicTileAt(view, candidate) !== undefined)
+        result.push(candidate);
+    }
+  return result.sort(compare);
+}
+function publicAllied(
+  view: PlayerViewV7,
+  left: PlayerId,
+  right: PlayerId,
+): boolean {
+  return (
+    left !== right &&
+    view.setup.aiMode === "COOPERATIVE" &&
+    left !== view.humanPlayerId &&
+    right !== view.humanPlayerId
+  );
+}
+function publicHostileZoc(
+  view: PlayerViewV7,
+  ownerId: PlayerId,
+  at: CoordV7,
+): boolean {
+  return view.units.some(
+    (candidate) =>
+      candidate.hp > 0 &&
+      candidate.ownerId !== ownerId &&
+      !publicAllied(view, ownerId, candidate.ownerId) &&
+      chebyshev(candidate.at, at) === 1,
+  );
+}
+function publicStepCost2(
+  view: PlayerViewV7,
+  from: CoordV7,
+  to: PlayerTileViewV7,
+): 1 | 2 {
+  if (
+    !view.viewer.researchedTechs.includes("ROADS") ||
+    manhattan(from, to.at) !== 1
+  )
+    return 2;
+  const fromTile = publicTileAt(view, from);
+  if (fromTile?.explored !== true || to.explored !== true) return 2;
+  const fromRoad =
+    fromTile.road && fromTile.territoryOwnerId === view.viewer.id;
+  const toRoad = to.road && to.territoryOwnerId === view.viewer.id;
+  const fromCity = view.cities.some(
+    (city) => city.ownerId === view.viewer.id && same(city.at, fromTile.at),
+  );
+  const toCity = view.cities.some(
+    (city) => city.ownerId === view.viewer.id && same(city.at, to.at),
+  );
+  const connected = publicCapitalConnectedRoads(view);
+  return (fromRoad || fromCity) &&
+    (toRoad || toCity) &&
+    ((fromRoad && connected.has(key(fromTile.at))) ||
+      (toRoad && connected.has(key(to.at))))
+    ? 1
+    : 2;
+}
+
+function publicCapitalConnectedRoads(view: PlayerViewV7): ReadonlySet<string> {
+  const roads = new Map(
+    view.board.tiles.flatMap((tile) =>
+      tile.explored && tile.road && tile.territoryOwnerId === view.viewer.id
+        ? [[key(tile.at), tile.at] as const]
+        : [],
+    ),
+  );
+  const capitals = view.cities.filter(
+    (city) => city.ownerId === view.viewer.id && city.isCapital,
+  );
+  const connected = new Set<string>();
+  const queue = [...roads.values()].filter((road) =>
+    capitals.some((city) => manhattan(city.at, road) === 1),
+  );
+  for (const road of queue) connected.add(key(road));
+  while (queue.length > 0) {
+    const current = queue.shift();
+    if (current === undefined) break;
+    for (const candidate of roads.values()) {
+      const candidateKey = key(candidate);
+      if (!connected.has(candidateKey) && manhattan(current, candidate) === 1) {
+        connected.add(candidateKey);
+        queue.push(candidate);
+      }
+    }
+  }
+  return connected;
 }
 function tileOwner(
   state: Pick<GameStateV7, "cities">,

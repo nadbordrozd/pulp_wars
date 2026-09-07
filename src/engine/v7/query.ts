@@ -22,7 +22,7 @@ import {
 import { applyCommandV7 } from "./reducer";
 import { calculateCombatPreviewV7 } from "./combat";
 import type { CombatPreviewV7 } from "./events";
-import { reachableMovementPathsV7 } from "./movement";
+import { reachablePlayerMovementPathsV7 } from "./movement";
 import {
   isCapitalConnectedRoadV7,
   spatialContributionAtV7,
@@ -30,6 +30,8 @@ import {
   type OppositePairAxisV7,
 } from "./spatial-economy";
 import {
+  COMMAND_KIND_ORDER_V7,
+  TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
   type CoordV7,
   type GameStateV7,
@@ -39,6 +41,7 @@ import {
   type UnitStateV7,
 } from "./types";
 import { publicUnitStatsV7, type PublicUnitStatsV7 } from "./unit-stats";
+import { viewForV7, type PlayerTileViewV7, type PlayerViewV7 } from "./view";
 
 export type PublicTechnologyStateV7 = "OWNED" | "AVAILABLE" | "BLOCKED";
 export interface PublicTechnologyNodeV7 {
@@ -63,12 +66,13 @@ export interface PublicTechnologyTreeV7 {
 }
 
 export function queryTechnologyTreeV7(
-  state: GameStateV7,
-  viewerId: PlayerId,
+  input: GameStateV7 | PlayerViewV7,
+  viewerId?: PlayerId,
 ): PublicTechnologyTreeV7 {
-  const player = requirePlayer(state, viewerId);
-  const ownedCityCount = state.cities.filter(
-    (city) => city.ownerId === viewerId,
+  const view = asView(input, viewerId);
+  const player = view.viewer;
+  const ownedCityCount = view.cities.filter(
+    (city) => city.ownerId === player.id,
   ).length;
   if (ownedCityCount < 1) throw new RangeError("Technology requires a city");
   const owned = new Set(player.researchedTechs);
@@ -105,11 +109,11 @@ export function queryTechnologyTreeV7(
 }
 
 export function queryTechnologyCapabilitiesV7(
-  state: GameStateV7,
-  viewerId: PlayerId,
+  input: GameStateV7 | PlayerViewV7,
+  viewerId?: PlayerId,
 ): TechnologyCapabilitiesV7 {
   return technologyCapabilitiesV7(
-    requirePlayer(state, viewerId).researchedTechs,
+    asView(input, viewerId).viewer.researchedTechs,
   );
 }
 
@@ -121,31 +125,24 @@ const TILE_KINDS = [
   "BUILD_ROAD",
   "REDEVELOP",
 ] as const;
-const COMMAND_CACHE = new WeakMap<
-  GameStateV7,
-  Map<PlayerId, readonly CommandV7[]>
->();
+const COMMAND_CACHE = new WeakMap<PlayerViewV7, readonly CommandV7[]>();
 
-/** Authority-backed enumeration for the implemented v7 slice. */
+/** PlayerView-only enumeration for the implemented v7 slice. */
 export function queryPlayerCommandsV7(
-  state: GameStateV7,
-  viewerId: PlayerId,
+  input: GameStateV7 | PlayerViewV7,
+  viewerId?: PlayerId,
 ): readonly CommandV7[] {
-  let byPlayer = COMMAND_CACHE.get(state);
-  if (byPlayer === undefined) {
-    byPlayer = new Map();
-    COMMAND_CACHE.set(state, byPlayer);
-  }
-  const cached = byPlayer.get(viewerId);
+  const view = asView(input, viewerId);
+  const cached = COMMAND_CACHE.get(view);
   if (cached !== undefined) return cached;
-  const player = requirePlayer(state, viewerId);
+  const player = view.viewer;
   if (
-    state.outcome !== null ||
+    view.outcome !== null ||
     player.status !== "ACTIVE" ||
-    state.turnOrder[state.activeSeatIndex] !== viewerId
+    view.turnOrder[view.activeSeatIndex] !== player.id
   )
-    return store(byPlayer, viewerId, []);
-  const head = state.pendingChoices[0];
+    return store(view, []);
+  const head = view.pendingChoices[0];
   if (head !== undefined) {
     const choices = head.candidates.map((reward): CommandV7 => ({
       kind: "CHOOSE_CITY_REWARD",
@@ -153,74 +150,69 @@ export function queryPlayerCommandsV7(
       reachedLevel: head.reachedLevel,
       reward,
     }));
-    return store(
-      byPlayer,
-      viewerId,
-      acceptedCandidates(state, viewerId, choices),
-    );
+    return store(view, choices.sort(compareCommandsV7));
   }
   const candidates: CommandV7[] = [];
-  const capabilities = queryTechnologyCapabilitiesV7(state, viewerId);
+  const capabilities = queryTechnologyCapabilitiesV7(view);
   const unlocked = new Set(capabilities.commands);
-  for (const node of queryTechnologyTreeV7(state, viewerId).nodes)
+  for (const node of queryTechnologyTreeV7(view).nodes)
     if (node.state === "AVAILABLE" && node.affordable)
       candidates.push({ kind: "RESEARCH", tech: node.id });
-  const explored = new Set(player.explored.map((at) => `${at.y},${at.x}`));
-  for (const tile of state.board.tiles)
-    if (explored.has(`${tile.at.y},${tile.at.x}`)) {
-      if (tile.resource === "FRUIT" && unlocked.has("HARVEST_FRUIT"))
-        candidates.push({ kind: "HARVEST_FRUIT", at: tile.at });
-      if (tile.resource === "GAME" && unlocked.has("HUNT_GAME"))
-        candidates.push({ kind: "HUNT_GAME", at: tile.at });
-      if (tile.resource === "FERTILE_GROUND" && unlocked.has("BUILD_FARM"))
-        candidates.push({ kind: "BUILD_FARM", at: tile.at });
+  for (const tile of view.board.tiles) {
+    if (!tile.explored) continue;
+    for (const kind of TILE_KINDS)
+      if (publicTileCommandLegal(view, tile, kind, unlocked))
+        candidates.push({ kind, at: tile.at } as CommandV7);
+  }
+  for (const city of view.cities) {
+    if (city.ownerId !== player.id || publicCityBesieged(view, city.at))
+      continue;
+    const centerOccupied = view.units.some((unit) => same(unit.at, city.at));
+    const capacity =
+      city.level + 1 + (cityHasImprovement(view, city.id, "BARRACKS") ? 1 : 0);
+    const assigned = view.units.filter(
+      (unit) => unit.ownerId === player.id && unit.homeCityId === city.id,
+    ).length;
+    const reserved = view.defectionStatuses.filter(
+      (status) =>
+        status.visibility === "FULL" &&
+        status.initiatingPlayerId === player.id &&
+        status.reservedHomeCityId === city.id,
+    ).length;
+    if (
+      centerOccupied ||
+      assigned + reserved >= capacity ||
+      city.blackout?.phase === "ACTIVE"
+    )
+      continue;
+    for (const role of UNIT_ROLE_IDS_V7) {
+      const rule = effectiveRoleRuleV7(role);
       if (
-        tile.terrain === "FOREST" &&
-        tile.resource === null &&
-        tile.improvement === null &&
-        unlocked.has("BUILD_LUMBER_CAMP")
+        rule.cost !== null &&
+        rule.cost <= player.coins &&
+        (rule.technology === null ||
+          player.researchedTechs.includes(rule.technology))
       )
-        candidates.push({ kind: "BUILD_LUMBER_CAMP", at: tile.at });
-      if (tile.resource === "ORE" && unlocked.has("BUILD_MINE"))
-        candidates.push({ kind: "BUILD_MINE", at: tile.at });
-      if (tile.resource === "STONE" && unlocked.has("BUILD_QUARRY"))
-        candidates.push({ kind: "BUILD_QUARRY", at: tile.at });
-      if (
-        tile.site === null &&
-        tile.resource === null &&
-        tile.improvement === null
-      ) {
-        for (const kind of Object.keys(SPATIAL_ECONOMIC_ACTIONS_V7))
-          if (unlocked.has(kind as never))
-            candidates.push({ kind, at: tile.at } as CommandV7);
-        if (tile.terrain === "FOREST" && unlocked.has("CLEAR_FOREST"))
-          candidates.push({ kind: "CLEAR_FOREST", at: tile.at });
-        if (tile.terrain === "GRASS" && unlocked.has("REPLANT_FOREST"))
-          candidates.push({ kind: "REPLANT_FOREST", at: tile.at });
-      }
-      if (tile.site === null && !tile.road && unlocked.has("BUILD_ROAD"))
-        candidates.push({ kind: "BUILD_ROAD", at: tile.at });
-      if (tile.improvement !== null && unlocked.has("REDEVELOP"))
-        candidates.push({ kind: "REDEVELOP", at: tile.at });
-    }
-  for (const city of state.cities)
-    if (city.ownerId === viewerId)
-      for (const role of UNIT_ROLE_IDS_V7)
         candidates.push({ kind: "TRAIN", cityId: city.id, role });
-  for (const unit of state.units)
-    if (unit.ownerId === viewerId) {
+    }
+  }
+  for (const unit of view.units)
+    if (unit.ownerId === player.id) {
       if (unit.activation.pursuitPhase !== "NONE") {
         candidates.push({ kind: "END_PURSUIT", unitId: unit.id });
-        for (const target of state.units)
-          if (target.ownerId !== viewerId)
+        for (const target of view.units)
+          if (
+            publicHostile(view, player.id, target.ownerId) &&
+            chebyshev(unit.at, target.at) === 1
+          )
             candidates.push({
               kind: "ATTACK",
               unitId: unit.id,
               targetUnitId: target.id,
             });
         if (unit.activation.pursuitPhase === "PURSUIT_READY")
-          for (const reachable of reachableMovementPathsV7(
-            state,
+          for (const reachable of reachablePlayerMovementPathsV7(
+            view,
             unit,
             "PURSUE",
           ))
@@ -232,56 +224,109 @@ export function queryPlayerCommandsV7(
         continue;
       }
       if (!unit.activation.moved && !primaryUsedForQuery(unit))
-        for (const reachable of reachableMovementPathsV7(state, unit))
+        for (const reachable of reachablePlayerMovementPathsV7(view, unit))
           candidates.push({
             kind: "MOVE",
             unitId: unit.id,
             path: reachable.path,
           });
-      for (const target of state.units) {
-        if (target.ownerId !== viewerId)
+      const rule = effectiveRoleRuleV7(unit.role);
+      const primaryReady =
+        !primaryUsedForQuery(unit) &&
+        (!unit.activation.moved || rule.mayUsePrimaryActionAfterMove);
+      for (const target of view.units) {
+        const distance = chebyshev(unit.at, target.at);
+        if (
+          primaryReady &&
+          rule.abilities.includes("ATTACK") &&
+          publicHostile(view, player.id, target.ownerId) &&
+          distance >= rule.minimumRange &&
+          distance <= rule.range
+        )
           candidates.push({
             kind: "ATTACK",
             unitId: unit.id,
             targetUnitId: target.id,
           });
-        if (target.ownerId === viewerId && target.id !== unit.id)
+        if (
+          primaryReady &&
+          rule.abilities.includes("HEAL_ADJACENT") &&
+          target.ownerId === player.id &&
+          target.id !== unit.id &&
+          target.hp < target.maxHp &&
+          distance === 1
+        )
           candidates.push({
             kind: "HEAL_ADJACENT",
             unitId: unit.id,
             targetUnitId: target.id,
           });
       }
-      candidates.push({ kind: "RECOVER", unitId: unit.id });
-      candidates.push({ kind: "CAPTURE", unitId: unit.id });
-      candidates.push({ kind: "PROMOTE", unitId: unit.id });
-      candidates.push({ kind: "PILLAGE", unitId: unit.id });
-      candidates.push({ kind: "DISBAND", unitId: unit.id });
-      candidates.push({ kind: "WAIT", unitId: unit.id });
+      if (
+        !unit.activation.moved &&
+        !primaryUsedForQuery(unit) &&
+        unit.hp < unit.maxHp
+      )
+        candidates.push({ kind: "RECOVER", unitId: unit.id });
+      if (
+        !unit.activation.moved &&
+        !primaryUsedForQuery(unit) &&
+        unit.captureEligible &&
+        publicCaptureTarget(view, unit.at)
+      )
+        candidates.push({ kind: "CAPTURE", unitId: unit.id });
+      if (unit.kills >= 3 && !unit.veteran)
+        candidates.push({ kind: "PROMOTE", unitId: unit.id });
+      const tile = tileAtView(view, unit.at);
+      if (
+        player.researchedTechs.includes("EXPLOSIVES") &&
+        primaryReady &&
+        tile?.explored === true &&
+        tile.improvement !== null &&
+        tile.territoryOwnerId !== null &&
+        publicHostile(view, player.id, tile.territoryOwnerId)
+      )
+        candidates.push({ kind: "PILLAGE", unitId: unit.id });
+      if (
+        player.researchedTechs.includes("RECOVERY") &&
+        primaryReady &&
+        unit.role !== "JUGGERNAUT"
+      )
+        candidates.push({ kind: "DISBAND", unitId: unit.id });
+      if (!unit.activation.handled)
+        candidates.push({ kind: "WAIT", unitId: unit.id });
     }
-  candidates.push({ kind: "END_TURN" });
-  return store(
-    byPlayer,
-    viewerId,
-    acceptedCandidates(state, viewerId, candidates).sort(compareCommandsV7),
-  );
+  if (view.defectionStatuses.length === 0 && view.blackoutStatuses.length === 0)
+    candidates.push({ kind: "END_TURN" });
+  return store(view, candidates.sort(compareCommandsV7));
 }
 
-/** Exact authoritative preview for an offered attack. */
+/** Observation-safe exact preview for an offered attack. */
+export function queryCombatPreviewV7(
+  view: PlayerViewV7,
+  attackerId: UnitId,
+  targetUnitId: UnitId,
+): CombatPreviewV7 | null;
 export function queryCombatPreviewV7(
   state: GameStateV7,
   viewerId: PlayerId,
   attackerId: UnitId,
   targetUnitId: UnitId,
+): CombatPreviewV7 | null;
+export function queryCombatPreviewV7(
+  input: GameStateV7 | PlayerViewV7,
+  viewerOrAttacker: PlayerId | UnitId,
+  attackerOrTarget: UnitId,
+  maybeTarget?: UnitId,
 ): CombatPreviewV7 | null {
-  const offered = applyCommandV7(state, viewerId, {
-    kind: "ATTACK",
-    unitId: attackerId,
-    targetUnitId,
-  }).accepted;
-  return offered
-    ? calculateCombatPreviewV7(state, attackerId, targetUnitId)
-    : null;
+  const view =
+    maybeTarget === undefined
+      ? (input as PlayerViewV7)
+      : asView(input, viewerOrAttacker as PlayerId);
+  const attackerId =
+    maybeTarget === undefined ? (viewerOrAttacker as UnitId) : attackerOrTarget;
+  const targetUnitId = maybeTarget ?? attackerOrTarget;
+  return publicCombatPreview(view, attackerId, targetUnitId);
 }
 
 export function estimateCombatV7(
@@ -311,13 +356,108 @@ export function estimateCombatV7(
 }
 
 export function queryUnitStatsV7(
-  state: GameStateV7,
+  input: GameStateV7 | PlayerViewV7,
   unitId: UnitId,
+  viewerId?: PlayerId,
 ): PublicUnitStatsV7 | null {
-  const unit = state.units.find(
+  if ("leaderboard" in input)
+    return input.unitStats.find((stats) => stats.unitId === unitId) ?? null;
+  if (viewerId !== undefined) {
+    const view = viewForV7(input, viewerId);
+    return view.unitStats.find((stats) => stats.unitId === unitId) ?? null;
+  }
+  const unit = input.units.find(
     (candidate) => candidate.id === unitId && candidate.hp > 0,
   );
-  return unit === undefined ? null : publicUnitStatsV7(state, unit);
+  return unit === undefined ? null : publicUnitStatsV7(input, unit);
+}
+
+export type PublicSelectionV7 =
+  | {
+      readonly kind: "UNIT";
+      readonly unit: PlayerViewV7["units"][number];
+      readonly stats: PublicUnitStatsV7;
+    }
+  | { readonly kind: "CITY"; readonly city: PlayerViewV7["cities"][number] }
+  | { readonly kind: "TILE"; readonly tile: PlayerTileViewV7 };
+
+/** Selection lookup cannot name an entity omitted from PlayerView. */
+export function queryPublicSelectionV7(
+  view: PlayerViewV7,
+  at: CoordV7,
+): PublicSelectionV7 {
+  const unit = view.units.find((candidate) => same(candidate.at, at));
+  if (unit !== undefined) {
+    const stats = view.unitStats.find((entry) => entry.unitId === unit.id);
+    if (stats === undefined) throw new RangeError("Visible unit stats missing");
+    return { kind: "UNIT", unit, stats };
+  }
+  const city = view.cities.find((candidate) => same(candidate.at, at));
+  if (city !== undefined) return { kind: "CITY", city };
+  const tile = tileAtView(view, at);
+  if (tile === undefined) throw new RangeError("Tile missing");
+  return { kind: "TILE", tile };
+}
+
+export interface AiReadyCommandV7 {
+  readonly command: CommandV7;
+  readonly tuple: readonly [
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+  ];
+}
+
+/**
+ * Observation-safe deterministic candidate substrate. The policy bead fills
+ * the first six scores; this boundary freezes only public tie-break fields.
+ */
+export function queryAiReadyCommandsV7(
+  view: PlayerViewV7,
+): readonly AiReadyCommandV7[] {
+  return queryPlayerCommandsV7(view).map((command) => {
+    const target = publicCommandTarget(view, command);
+    const primary =
+      "unitId" in command
+        ? command.unitId
+        : "cityId" in command
+          ? command.cityId
+          : 0;
+    const content =
+      command.kind === "RESEARCH"
+        ? TECHNOLOGY_IDS_V7.indexOf(command.tech)
+        : command.kind === "TRAIN"
+          ? UNIT_ROLE_IDS_V7.indexOf(command.role)
+          : command.kind === "CHOOSE_CITY_REWARD"
+            ? ORIGINAL_BASELINE_V2_TREE.nodes.length + command.reachedLevel
+            : "targetUnitId" in command
+              ? command.targetUnitId
+              : 0;
+    return {
+      command,
+      tuple: [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        -COMMAND_KIND_ORDER_V7.indexOf(command.kind),
+        -target.y,
+        -target.x,
+        -primary,
+        -content,
+      ],
+    };
+  });
 }
 
 export interface PursuitPathPreviewV7 {
@@ -334,57 +474,55 @@ export interface PursuitPreviewV7 {
   readonly pursuePaths: readonly PursuitPathPreviewV7[];
 }
 export function queryPursuitPreviewV7(
-  state: GameStateV7,
-  viewerId: PlayerId,
-  unitId: UnitId,
+  input: GameStateV7 | PlayerViewV7,
+  viewerOrUnit: PlayerId | UnitId,
+  maybeUnitId?: UnitId,
 ): PursuitPreviewV7 | null {
-  const unit = state.units.find(
+  const view =
+    maybeUnitId === undefined
+      ? (input as PlayerViewV7)
+      : asView(input, viewerOrUnit as PlayerId);
+  const unitId = maybeUnitId ?? (viewerOrUnit as UnitId);
+  const unit = view.units.find(
     (candidate) =>
       candidate.id === unitId &&
-      candidate.ownerId === viewerId &&
+      candidate.ownerId === view.viewer.id &&
       candidate.hp > 0,
   );
   if (unit === undefined || unit.activation.pursuitPhase === "NONE")
     return null;
   const hostileAdjacent = (at: CoordV7) =>
-    state.units
+    view.units
       .filter(
         (target) =>
-          target.ownerId !== viewerId &&
+          publicHostile(view, view.viewer.id, target.ownerId) &&
           Math.max(
             Math.abs(target.at.x - at.x),
             Math.abs(target.at.y - at.y),
           ) === 1 &&
-          applyCommandV7(
-            {
-              ...state,
-              units: state.units.map((candidate) =>
-                candidate.id === unit.id ? { ...candidate, at } : candidate,
-              ),
-            } as GameStateV7,
-            viewerId,
-            { kind: "ATTACK", unitId, targetUnitId: target.id },
-          ).accepted,
+          queryCombatPreviewAtV7(view, unit, at, target) !== null,
       )
       .map((target) => target.id)
       .sort((a, b) => a - b);
   const paths =
     unit.activation.pursuitPhase === "PURSUIT_READY"
-      ? reachableMovementPathsV7(state, unit, "PURSUE").map((reachable) => ({
-          path: reachable.path,
-          destination: reachable.destination,
-          targetUnitIds: state.units
-            .filter(
-              (target) =>
-                target.ownerId !== viewerId &&
-                Math.max(
-                  Math.abs(target.at.x - reachable.destination.x),
-                  Math.abs(target.at.y - reachable.destination.y),
-                ) === 1,
-            )
-            .map((target) => target.id)
-            .sort((a, b) => a - b),
-        }))
+      ? reachablePlayerMovementPathsV7(view, unit, "PURSUE").map(
+          (reachable) => ({
+            path: reachable.path,
+            destination: reachable.destination,
+            targetUnitIds: view.units
+              .filter(
+                (target) =>
+                  publicHostile(view, view.viewer.id, target.ownerId) &&
+                  Math.max(
+                    Math.abs(target.at.x - reachable.destination.x),
+                    Math.abs(target.at.y - reachable.destination.y),
+                  ) === 1,
+              )
+              .map((target) => target.id)
+              .sort((a, b) => a - b),
+          }),
+        )
       : [];
   return {
     unitId,
@@ -398,10 +536,15 @@ export function queryPursuitPreviewV7(
 
 /** Geometry-safe threat envelope, including Lancer kill-advance plus Pursue reach. */
 export function queryThreatenedTilesV7(
-  state: GameStateV7,
+  input: GameStateV7 | PlayerViewV7,
   unitId: UnitId,
+  viewerId?: PlayerId,
 ): readonly CoordV7[] {
-  const unit = state.units.find(
+  const view =
+    "leaderboard" in input
+      ? input
+      : viewForV7(input, viewerId ?? input.humanPlayerId);
+  const unit = view.units.find(
     (candidate) => candidate.id === unitId && candidate.hp > 0,
   );
   if (unit === undefined) return [];
@@ -409,9 +552,11 @@ export function queryThreatenedTilesV7(
   if (!rule.abilities.includes("ATTACK")) return [];
   const origins = [
     unit.at,
-    ...reachableMovementPathsV7(state, unit).map((path) => path.destination),
+    ...reachablePlayerMovementPathsV7(view, unit).map(
+      (path) => path.destination,
+    ),
   ];
-  const direct = state.board.tiles
+  const direct = view.board.tiles
     .map((tile) => tile.at)
     .filter((at) =>
       origins.some((origin) => {
@@ -426,7 +571,7 @@ export function queryThreatenedTilesV7(
     unit.role === "LANCER"
       ? [
           ...direct,
-          ...state.board.tiles
+          ...view.board.tiles
             .map((tile) => tile.at)
             .filter((at) =>
               direct.some(
@@ -444,7 +589,7 @@ export function queryThreatenedTilesV7(
   );
 }
 
-function primaryUsedForQuery(unit: UnitStateV7): boolean {
+function primaryUsedForQuery(unit: Pick<UnitStateV7, "activation">): boolean {
   return (
     unit.activation.attacked ||
     unit.activation.healed ||
@@ -703,25 +848,469 @@ export function previewCaptureSpoilsV7(
   };
 }
 
-function acceptedCandidates(
-  state: GameStateV7,
-  playerId: PlayerId,
-  candidates: readonly CommandV7[],
-): CommandV7[] {
-  return candidates.filter(
-    (command) => applyCommandV7(state, playerId, command).accepted,
-  );
-}
 function store(
-  cache: Map<PlayerId, readonly CommandV7[]>,
-  playerId: PlayerId,
+  view: PlayerViewV7,
   commands: readonly CommandV7[],
 ): readonly CommandV7[] {
-  cache.set(playerId, commands);
+  COMMAND_CACHE.set(view, commands);
   return commands;
 }
-function requirePlayer(state: GameStateV7, id: PlayerId) {
-  const player = state.players.find((item) => item.id === id);
-  if (player === undefined) throw new RangeError("Player missing");
-  return player;
+function asView(
+  input: GameStateV7 | PlayerViewV7,
+  viewerId?: PlayerId,
+): PlayerViewV7 {
+  if ("leaderboard" in input) return input;
+  if (viewerId === undefined)
+    throw new RangeError("A viewer is required for authoritative state");
+  return viewForV7(input, viewerId);
 }
+
+function tileAtView(view: PlayerViewV7, at: CoordV7) {
+  return view.board.tiles[at.y * view.board.width + at.x];
+}
+
+function publicHostile(
+  view: PlayerViewV7,
+  left: PlayerId,
+  right: PlayerId,
+): boolean {
+  if (left === right) return false;
+  return (
+    view.setup.aiMode === "RIVAL" ||
+    left === view.humanPlayerId ||
+    right === view.humanPlayerId
+  );
+}
+
+function publicCityBesieged(view: PlayerViewV7, at: CoordV7): boolean {
+  return view.units.some(
+    (unit) =>
+      unit.hp > 0 &&
+      publicHostile(view, view.viewer.id, unit.ownerId) &&
+      same(unit.at, at),
+  );
+}
+
+function publicCaptureTarget(view: PlayerViewV7, at: CoordV7): boolean {
+  const tile = tileAtView(view, at);
+  if (tile?.explored !== true) return false;
+  if (tile.site === "VILLAGE" && tile.territoryOwnerId === null) return true;
+  const city = view.cities.find((candidate) => same(candidate.at, at));
+  return (
+    city !== undefined &&
+    publicHostile(view, view.viewer.id, city.ownerId) &&
+    !view.units.some(
+      (unit) =>
+        unit.ownerId !== view.viewer.id && unit.hp > 0 && same(unit.at, at),
+    )
+  );
+}
+
+function cityHasImprovement(
+  view: PlayerViewV7,
+  cityId: CityId,
+  improvement: ImprovementIdV7,
+): boolean {
+  return view.board.tiles.some(
+    (tile) =>
+      tile.explored &&
+      tile.territoryCityId === cityId &&
+      tile.improvement === improvement,
+  );
+}
+
+function publicTileCommandLegal(
+  view: PlayerViewV7,
+  tile: Extract<PlayerTileViewV7, { explored: true }>,
+  kind: (typeof TILE_KINDS)[number],
+  unlocked: ReadonlySet<string>,
+): boolean {
+  if (!unlocked.has(kind)) return false;
+  const city = view.cities.find(
+    (candidate) => candidate.id === tile.territoryCityId,
+  );
+  if (
+    city?.ownerId !== view.viewer.id ||
+    publicCityBesieged(view, city.at) ||
+    city.blackout?.phase === "ACTIVE" ||
+    view.pendingChoices.some((choice) => choice.cityId === city.id)
+  )
+    return false;
+  const basic =
+    BASIC_ECONOMIC_ACTIONS_V7[kind as keyof typeof BASIC_ECONOMIC_ACTIONS_V7];
+  if (basic !== undefined)
+    return (
+      view.viewer.coins >= basic.cost &&
+      !view.treasureChests.some((chest) => same(chest, tile.at)) &&
+      tile.site === null &&
+      tile.terrain === basic.terrain &&
+      tile.resource === basic.resource &&
+      tile.improvement === null
+    );
+  const spatial =
+    SPATIAL_ECONOMIC_ACTIONS_V7[
+      kind as keyof typeof SPATIAL_ECONOMIC_ACTIONS_V7
+    ];
+  if (spatial !== undefined) {
+    if (
+      view.viewer.coins < spatial.cost ||
+      view.treasureChests.some((chest) => same(chest, tile.at)) ||
+      tile.site !== null ||
+      tile.resource !== null ||
+      tile.improvement !== null ||
+      cityHasImprovement(view, city.id, spatial.improvement)
+    )
+      return false;
+    if (kind === "BUILD_BARRACKS") return chebyshev(tile.at, city.at) === 1;
+    const adjacent = adjacentPublicTiles(view, tile.at).filter(
+      (candidate): candidate is Extract<PlayerTileViewV7, { explored: true }> =>
+        candidate.explored,
+    );
+    if (kind === "BUILD_WINDMILL")
+      return adjacent.some(
+        (item) =>
+          item.territoryCityId === city.id && item.improvement === "FARM",
+      );
+    if (kind === "BUILD_SAWMILL")
+      return adjacent.some(
+        (item) =>
+          item.territoryCityId === city.id &&
+          item.improvement === "LUMBER_CAMP",
+      );
+    if (kind === "BUILD_WORKSHOP")
+      return (
+        distinct(
+          adjacent.flatMap((item) =>
+            item.territoryOwnerId === view.viewer.id &&
+            item.improvement !== null &&
+            ["FARM", "LUMBER_CAMP", "MINE", "QUARRY"].includes(item.improvement)
+              ? [item.improvement]
+              : [],
+          ),
+        ).length >= 2
+      );
+    if (kind === "BUILD_GRAND_WORKS")
+      return (
+        distinct(
+          adjacent.flatMap((item) =>
+            item.territoryOwnerId === view.viewer.id &&
+            item.improvement !== null &&
+            ["WINDMILL", "SAWMILL", "FORGE", "STONEWORKS"].includes(
+              item.improvement,
+            )
+              ? [item.improvement]
+              : [],
+          ),
+        ).length >= 3
+      );
+    if (kind === "BUILD_MARKET")
+      return (
+        distinct(
+          adjacent.flatMap((item) => {
+            if (item.territoryOwnerId !== view.viewer.id) return [];
+            const family = improvementFamily(item.improvement);
+            return family === null ? [] : [family];
+          }),
+        ).length >= 2
+      );
+    return true;
+  }
+  if (kind === "CLEAR_FOREST")
+    return (
+      tile.site === null &&
+      tile.terrain === "FOREST" &&
+      tile.resource === null &&
+      tile.improvement === null
+    );
+  if (kind === "REPLANT_FOREST")
+    return (
+      view.viewer.coins >= 4 &&
+      tile.site === null &&
+      tile.terrain === "GRASS" &&
+      tile.resource === null &&
+      tile.improvement === null
+    );
+  if (kind === "BUILD_ROAD")
+    return view.viewer.coins >= 2 && tile.site === null && !tile.road;
+  return kind === "REDEVELOP" && tile.improvement !== null;
+}
+
+function adjacentPublicTiles(
+  view: PlayerViewV7,
+  at: CoordV7,
+): PlayerTileViewV7[] {
+  const result: PlayerTileViewV7[] = [];
+  for (let y = at.y - 1; y <= at.y + 1; y += 1)
+    for (let x = at.x - 1; x <= at.x + 1; x += 1) {
+      if (x === at.x && y === at.y) continue;
+      const tile = tileAtView(view, { x, y });
+      if (tile !== undefined) result.push(tile);
+    }
+  return result;
+}
+
+function improvementFamily(improvement: ImprovementIdV7 | null): string | null {
+  if (improvement === "FARM" || improvement === "WINDMILL")
+    return "AGRICULTURE";
+  if (improvement === "LUMBER_CAMP" || improvement === "SAWMILL")
+    return "TIMBER";
+  if (improvement === "MINE" || improvement === "FORGE") return "METAL";
+  if (improvement === "QUARRY" || improvement === "STONEWORKS") return "STONE";
+  return null;
+}
+
+function distinct<T>(values: readonly T[]): T[] {
+  return [...new Set(values)];
+}
+
+function publicCombatPreview(
+  view: PlayerViewV7,
+  attackerId: UnitId,
+  targetUnitId: UnitId,
+): CombatPreviewV7 | null {
+  const attacker = view.units.find(
+    (unit) => unit.id === attackerId && unit.ownerId === view.viewer.id,
+  );
+  const target = view.units.find((unit) => unit.id === targetUnitId);
+  if (
+    attacker === undefined ||
+    target === undefined ||
+    !publicHostile(view, attacker.ownerId, target.ownerId)
+  )
+    return null;
+  const attackerRule = effectiveRoleRuleV7(attacker.role);
+  const defenderRule = effectiveRoleRuleV7(target.role);
+  const distance = chebyshev(attacker.at, target.at);
+  if (
+    !attackerRule.abilities.includes("ATTACK") ||
+    primaryUsedForQuery(attacker) ||
+    (attacker.activation.moved && !attackerRule.mayUsePrimaryActionAfterMove) ||
+    distance < attackerRule.minimumRange ||
+    distance > attackerRule.range ||
+    (attacker.activation.pursuitPhase !== "NONE" && distance !== 1)
+  )
+    return null;
+  const attackStats = view.unitStats.find(
+    (stats) => stats.unitId === attacker.id,
+  );
+  const defenseStats = view.unitStats.find(
+    (stats) => stats.unitId === target.id,
+  );
+  if (attackStats === undefined || defenseStats === undefined) return null;
+  const attack = attackStats.stats.find((stat) => stat.id === "ATTACK");
+  const defense = defenseStats.stats.find((stat) => stat.id === "DEFENSE");
+  if (attack === undefined || defense === undefined) return null;
+  const attack2 = rationalToHalfUnits(attack.total);
+  const defense2 = defenderRule.defense2;
+  const bonus = ratio(defense.total, defense.base.value);
+  const breachApplied =
+    attackerRule.abilities.includes("BREACH") && distance === 1;
+  const applied = breachApplied ? { numerator: 1, denominator: 1 } : bonus;
+  const attackForceNumerator = BigInt(attack2) * BigInt(attacker.hp);
+  const attackForceDenominator = 2n * BigInt(attacker.maxHp);
+  const defenseForceNumerator =
+    BigInt(defense2) * BigInt(target.hp) * BigInt(applied.numerator);
+  const defenseForceDenominator =
+    2n * BigInt(target.maxHp) * BigInt(applied.denominator);
+  const attackOnCommon = attackForceNumerator * defenseForceDenominator;
+  const defenseOnCommon = defenseForceNumerator * attackForceDenominator;
+  const total = attackOnCommon + defenseOnCommon;
+  if (total <= 0n) return null;
+  const damageToDefender = Math.min(
+    target.hp,
+    roundHalfUpPublic(attackOnCommon * BigInt(attack2) * 9n, total * 4n),
+  );
+  const defenderDies = damageToDefender >= target.hp;
+  const retaliation =
+    !defenderDies &&
+    defenderRule.abilities.includes("ATTACK") &&
+    defenderRule.attack2 > 0 &&
+    distance >= defenderRule.minimumRange &&
+    distance <= defenderRule.range;
+  const damageToAttacker = retaliation
+    ? Math.min(
+        attacker.hp,
+        roundHalfUpPublic(
+          defenseOnCommon * BigInt(defenderRule.defense2) * 9n,
+          total * 4n,
+        ),
+      )
+    : 0;
+  const attackerDies = damageToAttacker >= attacker.hp;
+  const advances =
+    defenderDies &&
+    !attackerDies &&
+    distance === 1 &&
+    attacker.role !== "CATAPULT";
+  const nextAttacks = attacker.activation.attacksUsed + 1;
+  return {
+    attackerId,
+    targetUnitId,
+    attack2,
+    defense2,
+    minimumRange: attackerRule.minimumRange,
+    maximumRange: attackerRule.range,
+    chargeApplied: attack2 > attackerRule.attack2,
+    breachApplied,
+    defenseBonusNumerator: applied.numerator,
+    defenseBonusDenominator: applied.denominator,
+    damageToDefender,
+    damageToAttacker,
+    defenderDies,
+    attackerDies,
+    retaliation,
+    noRetaliationReason: defenderDies
+      ? "DEFENDER_DIED"
+      : retaliation
+        ? null
+        : "OUT_OF_RANGE",
+    advances,
+    push: publicPushState(
+      view,
+      attacker,
+      target,
+      !defenderDies && distance === 1,
+    ),
+    pursuitWillOpen:
+      attacker.role === "LANCER" &&
+      defenderDies &&
+      !attackerDies &&
+      nextAttacks < 3,
+  };
+}
+
+function queryCombatPreviewAtV7(
+  view: PlayerViewV7,
+  attacker: PlayerViewV7["units"][number],
+  at: CoordV7,
+  target: PlayerViewV7["units"][number],
+): CombatPreviewV7 | null {
+  return publicCombatPreview(
+    {
+      ...view,
+      units: view.units.map((unit) =>
+        unit.id === attacker.id ? { ...unit, at } : unit,
+      ),
+    },
+    attacker.id,
+    target.id,
+  );
+}
+
+function publicPushState(
+  view: PlayerViewV7,
+  attacker: PlayerViewV7["units"][number],
+  defender: PlayerViewV7["units"][number],
+  survivesMelee: boolean,
+): CombatPreviewV7["push"] {
+  if (
+    !survivesMelee ||
+    !effectiveRoleRuleV7(attacker.role).abilities.includes("PUSH")
+  )
+    return "BLOCKED";
+  const behind = {
+    x: defender.at.x * 2 - attacker.at.x,
+    y: defender.at.y * 2 - attacker.at.y,
+  };
+  const tile = tileAtView(view, behind);
+  if (tile === undefined) return "BLOCKED";
+  if (!tile.explored) return "UNKNOWN_BEHIND_FOG";
+  if (!publicDetectionCovers(view, behind)) return "UNKNOWN_BEHIND_FOG";
+  if (
+    tile.site !== null ||
+    view.units.some(
+      (unit) => unit.id !== defender.id && same(unit.at, behind),
+    ) ||
+    (tile.territoryOwnerId !== null &&
+      publicAllied(view, defender.ownerId, tile.territoryOwnerId))
+  )
+    return "BLOCKED";
+  if (tile.terrain === "MOUNTAIN" && defender.ownerId !== view.viewer.id)
+    return "UNKNOWN_BEHIND_FOG";
+  if (
+    tile.terrain === "MOUNTAIN" &&
+    !view.viewer.researchedTechs.includes("SURVEYING")
+  )
+    return "BLOCKED";
+  return "WILL_PUSH";
+}
+
+function publicDetectionCovers(view: PlayerViewV7, at: CoordV7): boolean {
+  return (
+    view.cities.some(
+      (city) => city.ownerId === view.viewer.id && chebyshev(city.at, at) <= 1,
+    ) ||
+    view.units.some(
+      (unit) =>
+        unit.ownerId === view.viewer.id &&
+        chebyshev(unit.at, at) <= (unit.role === "SCOUT" ? 2 : 1),
+    )
+  );
+}
+
+function publicAllied(
+  view: PlayerViewV7,
+  left: PlayerId,
+  right: PlayerId,
+): boolean {
+  return (
+    left !== right &&
+    view.setup.aiMode === "COOPERATIVE" &&
+    left !== view.humanPlayerId &&
+    right !== view.humanPlayerId
+  );
+}
+
+function rationalToHalfUnits(value: {
+  numerator: number;
+  denominator: number;
+}): number {
+  const result = (value.numerator * 2) / value.denominator;
+  if (!Number.isInteger(result)) throw new RangeError("Non-half-unit stat");
+  return result;
+}
+function ratio(
+  total: { numerator: number; denominator: number },
+  base: { numerator: number; denominator: number },
+) {
+  return reduceRational(
+    total.numerator * base.denominator,
+    total.denominator * base.numerator,
+  );
+}
+function reduceRational(numerator: number, denominator: number) {
+  const divisor = gcdPublic(Math.abs(numerator), Math.abs(denominator));
+  return { numerator: numerator / divisor, denominator: denominator / divisor };
+}
+function gcdPublic(left: number, right: number): number {
+  while (right !== 0) [left, right] = [right, left % right];
+  return left || 1;
+}
+function roundHalfUpPublic(numerator: bigint, denominator: bigint): number {
+  return Number((2n * numerator + denominator) / (2n * denominator));
+}
+
+function publicCommandTarget(view: PlayerViewV7, command: CommandV7): CoordV7 {
+  if ("at" in command) return command.at;
+  if ("path" in command) return command.path.at(-1) ?? { x: -1, y: -1 };
+  if ("targetUnitId" in command)
+    return (
+      view.units.find((unit) => unit.id === command.targetUnitId)?.at ?? {
+        x: -1,
+        y: -1,
+      }
+    );
+  if ("cityId" in command)
+    return (
+      view.cities.find((city) => city.id === command.cityId)?.at ?? {
+        x: -1,
+        y: -1,
+      }
+    );
+  return { x: -1, y: -1 };
+}
+
+const same = (left: CoordV7, right: CoordV7) =>
+  left.x === right.x && left.y === right.y;
+const chebyshev = (left: CoordV7, right: CoordV7) =>
+  Math.max(Math.abs(left.x - right.x), Math.abs(left.y - right.y));
