@@ -203,6 +203,206 @@ describe("ruleset-7 save and replay foundation", () => {
     });
   });
 
+  it("naturally saves and replays every Blackout and recovery phase", () => {
+    const created = createInitialMapStateV7(setup);
+    if (!created.ok) throw new Error(created.error.code);
+    let state = created.state;
+    let replay = createReplayV7(setup);
+    const humanId = state.humanPlayerId;
+    const targetCity = state.cities.find((city) => city.ownerId !== humanId);
+    if (targetCity === undefined) throw new Error("target city missing");
+    const accept = (command: CommandV7) => {
+      const actor = state.turnOrder[state.activeSeatIndex];
+      if (actor === undefined) throw new Error("active actor missing");
+      const result = applyCommandV7(state, actor, command);
+      if (!result.accepted)
+        throw new Error(`${command.kind}: ${result.error.code}`);
+      state = result.state;
+      replay = appendReplayCommandV7(replay, command, state);
+      return result.events;
+    };
+    const checkpoint = (phase: "PENDING" | "ACTIVE" | "RECOVERY" | null) => {
+      expect(
+        state.cities.find((city) => city.id === targetCity.id)?.blackout
+          ?.phase ?? null,
+      ).toBe(phase);
+      const save = createSaveEnvelopeV7(
+        { state, replay },
+        `2026-09-07T20:00:0${phase === null ? 4 : phase.length % 4}.000Z`,
+      );
+      expect(parseSaveV7(JSON.stringify(save))).toEqual({
+        kind: "VALID",
+        save,
+      });
+      expect(runReplayV7(replay)).toMatchObject({
+        acceptedCommands: replay.commands.length,
+        state,
+        stateHash: canonicalHash(state),
+      });
+    };
+
+    let trainedId: number | null = null;
+    let starterMoved = false;
+    const researchOrder = ["HUNTING", "MARKSMANSHIP", "FIELDCRAFT"] as const;
+    for (let guard = 0; guard < 100 && trainedId === null; guard += 1) {
+      const actor = required(
+        state.turnOrder[state.activeSeatIndex],
+        "active actor missing",
+      );
+      if (actor === humanId) {
+        const commands = queryPlayerCommandsV7(viewForV7(state, actor));
+        if (!starterMoved) {
+          const starter = required(
+            state.units.find((unit) => unit.ownerId === actor),
+            "starter unit missing",
+          );
+          const move = commands.find(
+            (command) =>
+              command.kind === "MOVE" && command.unitId === starter.id,
+          );
+          if (move?.kind === "MOVE") {
+            accept(move);
+            starterMoved = true;
+          }
+        }
+        const player = required(
+          state.players.find((candidate) => candidate.id === actor),
+          "active player missing",
+        );
+        const nextTech = researchOrder.find(
+          (technology) => !player.researchedTechs.includes(technology),
+        );
+        if (nextTech !== undefined) {
+          const research = queryPlayerCommandsV7(viewForV7(state, actor)).find(
+            (command) =>
+              command.kind === "RESEARCH" && command.tech === nextTech,
+          );
+          if (research?.kind === "RESEARCH") accept(research);
+        } else {
+          const train = queryPlayerCommandsV7(viewForV7(state, actor)).find(
+            (command) =>
+              command.kind === "TRAIN" && command.role === "SABOTEUR",
+          );
+          if (train?.kind === "TRAIN") {
+            const events = accept(train);
+            trainedId =
+              events.find((event) => event.kind === "UNIT_TRAINED")?.unitId ??
+              null;
+          }
+        }
+      }
+      if (trainedId === null) accept({ kind: "END_TURN" });
+    }
+    if (trainedId === null)
+      throw new Error("Saboteur training guard exhausted");
+    accept({ kind: "END_TURN" });
+
+    let planted = false;
+    for (let guard = 0; guard < 160 && !planted; guard += 1) {
+      const actor = required(
+        state.turnOrder[state.activeSeatIndex],
+        "active actor missing",
+      );
+      const saboteur = state.units.find((unit) => unit.id === trainedId);
+      if (saboteur === undefined) throw new Error("Saboteur disappeared");
+      if (actor === humanId) {
+        if (chebyshev(saboteur.at, targetCity.at) !== 1) {
+          const move = queryPlayerCommandsV7(viewForV7(state, humanId))
+            .filter(
+              (
+                command,
+              ): command is Extract<
+                CommandV7,
+                { readonly path: readonly CoordV7[] }
+              > => command.kind === "MOVE" && command.unitId === saboteur.id,
+            )
+            .sort(
+              (left, right) =>
+                chebyshev(moveEndpoint(left), targetCity.at) -
+                  chebyshev(moveEndpoint(right), targetCity.at) ||
+                left.path.length - right.path.length,
+            )[0];
+          if (move === undefined) throw new Error("Saboteur route stalled");
+          accept(move);
+        }
+        const current = required(
+          state.units.find((unit) => unit.id === trainedId),
+          "trained Saboteur missing",
+        );
+        if (chebyshev(current.at, targetCity.at) === 1) {
+          const result = applyCommandV7(state, humanId, {
+            kind: "BLACKOUT_CITY",
+            unitId: current.id,
+            cityId: targetCity.id,
+          });
+          if (result.accepted) {
+            state = result.state;
+            replay = appendReplayCommandV7(
+              replay,
+              {
+                kind: "BLACKOUT_CITY",
+                unitId: current.id,
+                cityId: targetCity.id,
+              },
+              state,
+            );
+            planted = true;
+            break;
+          }
+          if (result.error.code !== "SABOTEUR_DETECTED")
+            throw new Error(`BLACKOUT_CITY: ${result.error.code}`);
+        }
+      } else {
+        const enemy = state.units.find((unit) => unit.ownerId === actor);
+        if (enemy !== undefined) {
+          const moves = queryPlayerCommandsV7(viewForV7(state, actor))
+            .filter(
+              (
+                command,
+              ): command is Extract<
+                CommandV7,
+                { readonly path: readonly CoordV7[] }
+              > => command.kind === "MOVE" && command.unitId === enemy.id,
+            )
+            // TODO(pulp_wars-aya.27): remove once movement query stops
+            // aliasing off-board edge coordinates to public board tiles.
+            .filter((command) => onBoard(state, moveEndpoint(command)))
+            .sort(
+              (left, right) =>
+                chebyshev(moveEndpoint(right), targetCity.at) -
+                  chebyshev(moveEndpoint(left), targetCity.at) ||
+                chebyshev(moveEndpoint(right), saboteur.at) -
+                  chebyshev(moveEndpoint(left), saboteur.at),
+            );
+          const move = moves[0];
+          if (move !== undefined) accept(move);
+        }
+      }
+      accept({ kind: "END_TURN" });
+    }
+    if (!planted) throw new Error("Blackout planting guard exhausted");
+    checkpoint("PENDING");
+
+    while (
+      state.cities.find((city) => city.id === targetCity.id)?.blackout
+        ?.phase !== "ACTIVE"
+    )
+      accept({ kind: "END_TURN" });
+    checkpoint("ACTIVE");
+    accept({ kind: "END_TURN" });
+    checkpoint("RECOVERY");
+    const recoveryTurnStarted = () => {
+      const blackout = state.cities.find(
+        (city) => city.id === targetCity.id,
+      )?.blackout;
+      return blackout?.phase === "RECOVERY" && blackout.unaffectedTurnStarted;
+    };
+    while (!recoveryTurnStarted()) accept({ kind: "END_TURN" });
+    checkpoint("RECOVERY");
+    accept({ kind: "END_TURN" });
+    checkpoint(null);
+  });
+
   it("naturally replays Muster unlock and its command-bearing Monument placement", () => {
     const created = createInitialMapStateV7(setup);
     if (!created.ok) throw new Error(created.error.code);
@@ -606,3 +806,23 @@ const sameCoord = (left: CoordV7, right: CoordV7) =>
   left.x === right.x && left.y === right.y;
 const chebyshev = (left: CoordV7, right: CoordV7) =>
   Math.max(Math.abs(left.x - right.x), Math.abs(left.y - right.y));
+
+function required<T>(value: T | undefined, message: string): T {
+  if (value === undefined) throw new Error(message);
+  return value;
+}
+
+function moveEndpoint(
+  command: Extract<CommandV7, { readonly path: readonly CoordV7[] }>,
+): CoordV7 {
+  return required(command.path.at(-1), "move endpoint missing");
+}
+
+function onBoard(state: GameStateV7, at: CoordV7): boolean {
+  return (
+    at.x >= 0 &&
+    at.y >= 0 &&
+    at.x < state.board.width &&
+    at.y < state.board.height
+  );
+}

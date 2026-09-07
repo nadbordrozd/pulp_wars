@@ -128,6 +128,28 @@ const TILE_KINDS = [
   "BUILD_ROAD",
   "REDEVELOP",
 ] as const;
+const BLACKOUT_BLOCKED_COMMANDS_V7: readonly CommandV7["kind"][] = [
+  "HARVEST_FRUIT",
+  "HUNT_GAME",
+  "BUILD_FARM",
+  "BUILD_LUMBER_CAMP",
+  "BUILD_MINE",
+  "BUILD_QUARRY",
+  "BUILD_WINDMILL",
+  "BUILD_SAWMILL",
+  "BUILD_FORGE",
+  "BUILD_STONEWORKS",
+  "BUILD_WORKSHOP",
+  "BUILD_GRAND_WORKS",
+  "BUILD_MARKET",
+  "BUILD_BARRACKS",
+  "BUILD_MONUMENT",
+  "CLEAR_FOREST",
+  "REPLANT_FOREST",
+  "BUILD_ROAD",
+  "REDEVELOP",
+  "TRAIN",
+];
 const COMMAND_CACHE = new WeakMap<PlayerViewV7, readonly CommandV7[]>();
 
 /** PlayerView-only enumeration for the implemented v7 slice. */
@@ -314,6 +336,27 @@ export function queryPlayerCommandsV7(
             });
       }
       if (
+        primaryReady &&
+        unit.role === "SABOTEUR" &&
+        unit.blackoutEligibility.known &&
+        view.round >= unit.blackoutEligibility.round &&
+        Number.isSafeInteger(view.round + 3)
+      ) {
+        const detection = publicBlackoutDetectionV7(view, unit);
+        if (detection.clearanceKnown && detection.sources.length === 0)
+          for (const city of view.cities)
+            if (
+              publicHostile(view, player.id, city.ownerId) &&
+              chebyshev(unit.at, city.at) === 1 &&
+              city.blackout === null
+            )
+              candidates.push({
+                kind: "BLACKOUT_CITY",
+                unitId: unit.id,
+                cityId: city.id,
+              });
+      }
+      if (
         !unit.activation.moved &&
         !primaryUsedForQuery(unit) &&
         unit.hp < unit.maxHp
@@ -330,7 +373,8 @@ export function queryPlayerCommandsV7(
         candidates.push({ kind: "PROMOTE", unitId: unit.id });
       const tile = tileAtView(view, unit.at);
       if (
-        player.researchedTechs.includes("EXPLOSIVES") &&
+        (unit.role === "SABOTEUR" ||
+          player.researchedTechs.includes("EXPLOSIVES")) &&
         primaryReady &&
         tile?.explored === true &&
         tile.improvement !== null &&
@@ -347,7 +391,13 @@ export function queryPlayerCommandsV7(
       if (!unit.activation.handled)
         candidates.push({ kind: "WAIT", unitId: unit.id });
     }
-  if (view.blackoutStatuses.length === 0) candidates.push({ kind: "END_TURN" });
+  if (
+    !view.units.some(
+      (unit) =>
+        unit.ownerId === player.id && unit.activation.pursuitPhase !== "NONE",
+    )
+  )
+    candidates.push({ kind: "END_TURN" });
   return store(view, candidates.sort(compareCommandsV7));
 }
 
@@ -550,6 +600,146 @@ export function previewDefectionV7(
       },
       cityOccupantSiegeConsequence: siege,
       complete: true,
+    },
+  };
+}
+
+export interface BlackoutDetectorV7 {
+  readonly unitId: UnitId;
+  readonly ownerId: PlayerId;
+  readonly role: UnitRoleIdV7;
+  readonly at: CoordV7;
+  readonly detectionRadius: 1 | 2;
+}
+
+export interface BlackoutPreviewV7 {
+  readonly sourceUnitId: UnitId;
+  readonly target: {
+    readonly cityId: CityId;
+    readonly ownerId: PlayerId;
+    readonly at: CoordV7;
+  };
+  readonly detectingSources: readonly BlackoutDetectorV7[];
+  readonly unitDetectionBlocks: boolean;
+  readonly cityDetectionBlocks: false;
+  readonly actionRound: number;
+  readonly nextEligibleRound: number;
+  readonly incomeDenial: {
+    readonly suppressionCap: 3;
+    readonly exactFutureSuppressedCoins: null;
+    readonly resolvesAt: "TARGET_OWNER_NEXT_START_TURN";
+  };
+  readonly blockedCommandKinds: readonly CommandV7["kind"][];
+  readonly mandatoryRewardsRemainAvailable: true;
+  readonly unitActionsRemainAvailable: true;
+  readonly existingInfrastructureRemainsEffective: true;
+  readonly exposureBoundary: {
+    readonly kind: "TARGET_OWNER_NEXT_END_TURN";
+    readonly playerId: PlayerId;
+    readonly earliestRound: number;
+  };
+  readonly unaffectedRecoveryTurn: {
+    readonly kind: "TARGET_CITY_CURRENT_OWNER_FULL_TURN";
+    readonly earliestRound: number;
+  };
+  readonly prospective: true;
+}
+
+export type BlackoutPreviewResultV7 =
+  | { readonly ok: true; readonly preview: BlackoutPreviewV7 }
+  | {
+      readonly ok: false;
+      readonly error: "NOT_PREVIEWABLE" | "DETECTION_UNKNOWN";
+    };
+
+export function previewBlackoutV7(
+  view: PlayerViewV7,
+  command: Extract<CommandV7, { kind: "BLACKOUT_CITY" }>,
+): BlackoutPreviewResultV7;
+export function previewBlackoutV7(
+  state: GameStateV7,
+  viewerId: PlayerId,
+  command: Extract<CommandV7, { kind: "BLACKOUT_CITY" }>,
+): BlackoutPreviewResultV7;
+export function previewBlackoutV7(
+  input: GameStateV7 | PlayerViewV7,
+  viewerOrCommand: PlayerId | Extract<CommandV7, { kind: "BLACKOUT_CITY" }>,
+  maybeCommand?: Extract<CommandV7, { kind: "BLACKOUT_CITY" }>,
+): BlackoutPreviewResultV7 {
+  const view =
+    maybeCommand === undefined
+      ? (input as PlayerViewV7)
+      : asView(input, viewerOrCommand as PlayerId);
+  const command =
+    maybeCommand ??
+    (viewerOrCommand as Extract<CommandV7, { kind: "BLACKOUT_CITY" }>);
+  const source = view.units.find(
+    (unit) => unit.id === command.unitId && unit.ownerId === view.viewer.id,
+  );
+  const city = view.cities.find((candidate) => candidate.id === command.cityId);
+  const active =
+    view.outcome === null &&
+    view.viewer.status === "ACTIVE" &&
+    view.turnOrder[view.activeSeatIndex] === view.viewer.id &&
+    view.pendingChoices.length === 0;
+  if (
+    !active ||
+    source?.role !== "SABOTEUR" ||
+    primaryUsedForQuery(source) ||
+    (source.activation.moved &&
+      !effectiveRoleRuleV7(source.role).mayUsePrimaryActionAfterMove) ||
+    source.activation.pursuitPhase !== "NONE" ||
+    !source.blackoutEligibility.known ||
+    view.round < source.blackoutEligibility.round ||
+    city === undefined ||
+    !publicHostile(view, view.viewer.id, city.ownerId) ||
+    chebyshev(source.at, city.at) !== 1 ||
+    city.blackout !== null
+  )
+    return { ok: false, error: "NOT_PREVIEWABLE" };
+  const detection = publicBlackoutDetectionV7(view, source);
+  if (!detection.clearanceKnown && detection.sources.length === 0)
+    return { ok: false, error: "DETECTION_UNKNOWN" };
+  const sourceTurnIndex = view.turnOrder.indexOf(view.viewer.id);
+  const targetTurnIndex = view.turnOrder.indexOf(city.ownerId);
+  if (sourceTurnIndex < 0 || targetTurnIndex < 0)
+    return { ok: false, error: "NOT_PREVIEWABLE" };
+  const affectedRound = view.round + Number(targetTurnIndex <= sourceTurnIndex);
+  if (
+    !Number.isSafeInteger(view.round + 3) ||
+    !Number.isSafeInteger(affectedRound) ||
+    !Number.isSafeInteger(affectedRound + 1)
+  )
+    return { ok: false, error: "NOT_PREVIEWABLE" };
+  return {
+    ok: true,
+    preview: {
+      sourceUnitId: source.id,
+      target: { cityId: city.id, ownerId: city.ownerId, at: city.at },
+      detectingSources: detection.sources,
+      unitDetectionBlocks: detection.sources.length > 0,
+      cityDetectionBlocks: false,
+      actionRound: view.round,
+      nextEligibleRound: view.round + 3,
+      incomeDenial: {
+        suppressionCap: 3,
+        exactFutureSuppressedCoins: null,
+        resolvesAt: "TARGET_OWNER_NEXT_START_TURN",
+      },
+      blockedCommandKinds: BLACKOUT_BLOCKED_COMMANDS_V7,
+      mandatoryRewardsRemainAvailable: true,
+      unitActionsRemainAvailable: true,
+      existingInfrastructureRemainsEffective: true,
+      exposureBoundary: {
+        kind: "TARGET_OWNER_NEXT_END_TURN",
+        playerId: city.ownerId,
+        earliestRound: affectedRound,
+      },
+      unaffectedRecoveryTurn: {
+        kind: "TARGET_CITY_CURRENT_OWNER_FULL_TURN",
+        earliestRound: affectedRound + 1,
+      },
+      prospective: true,
     },
   };
 }
@@ -1807,6 +1997,34 @@ function publicDetectionCovers(view: PlayerViewV7, at: CoordV7): boolean {
         chebyshev(unit.at, at) <= (unit.role === "SCOUT" ? 2 : 1),
     )
   );
+}
+
+function publicBlackoutDetectionV7(
+  view: PlayerViewV7,
+  source: PlayerViewV7["units"][number],
+): {
+  readonly clearanceKnown: boolean;
+  readonly sources: readonly BlackoutDetectorV7[];
+} {
+  const sources = view.units
+    .filter(
+      (unit) =>
+        unit.id !== source.id &&
+        publicHostile(view, source.ownerId, unit.ownerId) &&
+        chebyshev(source.at, unit.at) <= (unit.role === "SCOUT" ? 2 : 1),
+    )
+    .map((unit): BlackoutDetectorV7 => ({
+      unitId: unit.id,
+      ownerId: unit.ownerId,
+      role: unit.role,
+      at: unit.at,
+      detectionRadius: unit.role === "SCOUT" ? 2 : 1,
+    }))
+    .sort((left, right) => left.unitId - right.unitId);
+  const clearanceKnown = view.board.tiles
+    .filter((tile) => chebyshev(source.at, tile.at) <= 2)
+    .every((tile) => tile.explored);
+  return { clearanceKnown, sources };
 }
 
 function publicAllied(

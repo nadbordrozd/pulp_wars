@@ -263,7 +263,7 @@ export type DomainEventV7 =
       readonly kind: "SABOTEUR_EXPOSED";
       readonly unitId: UnitId;
       readonly anchorPlayerId: PlayerId;
-      readonly reason: "ATTACK" | "BLACKOUT";
+      readonly reason: "ATTACK" | "PILLAGE" | "BLACKOUT";
     }
   | {
       readonly kind: "BLACKOUT_PLANTED";

@@ -881,7 +881,9 @@ function parseExposures(input: unknown): readonly SaboteurExposureV7[] | null {
         "unitId",
       ]) ||
       candidate.clearsAtAnchorNextEndTurn !== true ||
-      (candidate.reason !== "ATTACK" && candidate.reason !== "BLACKOUT")
+      (candidate.reason !== "ATTACK" &&
+        candidate.reason !== "PILLAGE" &&
+        candidate.reason !== "BLACKOUT")
     )
       return null;
     const unit = parseUnitIdV7(candidate.unitId);

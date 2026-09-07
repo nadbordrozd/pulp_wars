@@ -604,7 +604,9 @@ function validPayload(
       return (
         id(e.unitId) &&
         id(e.anchorPlayerId) &&
-        (e.reason === "ATTACK" || e.reason === "BLACKOUT")
+        (e.reason === "ATTACK" ||
+          e.reason === "PILLAGE" ||
+          e.reason === "BLACKOUT")
       );
     case "BLACKOUT_PLANTED":
       return (

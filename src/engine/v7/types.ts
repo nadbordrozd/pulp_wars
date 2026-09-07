@@ -383,7 +383,7 @@ export interface DefectionMarkV7 {
 export interface SaboteurExposureV7 {
   readonly unitId: UnitId;
   readonly anchorPlayerId: PlayerId;
-  readonly reason: "ATTACK" | "BLACKOUT";
+  readonly reason: "ATTACK" | "PILLAGE" | "BLACKOUT";
   readonly clearsAtAnchorNextEndTurn: true;
 }
 

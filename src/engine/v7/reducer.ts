@@ -18,6 +18,7 @@ import {
   arePlayersAlliedV7,
   arePlayersHostileV7,
   assignedUnitCountV7,
+  cityIncomeV7,
   cityUnitCapacityV7,
   economyEventsV7,
   growthEventsV7,
@@ -99,6 +100,9 @@ export type RuleErrorCodeV7 =
   | "TARGET_NOT_FOUND"
   | "TARGET_OUT_OF_RANGE"
   | "DEFECTION_TARGET_MARKED"
+  | "BLACKOUT_PROTECTED"
+  | "BLACKOUT_COOLDOWN"
+  | "SABOTEUR_DETECTED"
   | "ATTACK_NOT_LEGAL"
   | "MOVEMENT_ILLEGAL"
   | "INVALID_PATH"
@@ -244,12 +248,10 @@ export function applyCommandV7(
     return applyDisband(stateInput, state, actor, command.unitId);
   if (command.kind === "OFFER_DEFECTION")
     return applyOfferDefection(stateInput, state, actor, command);
+  if (command.kind === "BLACKOUT_CITY")
+    return applyBlackout(stateInput, state, actor, command);
   if (command.kind === "END_TURN")
     return applyEndTurn(stateInput, state, actor);
-  if (command.kind === "BLACKOUT_CITY")
-    return rejected(stateInput, "COMMAND_NOT_IMPLEMENTED", {
-      kind: command.kind,
-    });
   return rejected(stateInput, "INVALID_COMMAND");
 }
 
@@ -1801,12 +1803,15 @@ function applyPillage(
   const actorCheck = validateUnitActor(state, actor, unitId);
   if (!actorCheck.ok)
     return rejected(original, actorCheck.code, actorCheck.params);
-  const player = requirePlayer(state, actor);
-  if (!player.researchedTechs.includes("EXPLOSIVES"))
-    return rejected(original, "TECH_REQUIRED", { tech: "EXPLOSIVES" });
   const { unit } = actorCheck;
   if (primaryUsed(unit) || unit.activation.pursuitPhase !== "NONE")
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
+  const player = requirePlayer(state, actor);
+  if (
+    unit.role !== "SABOTEUR" &&
+    !player.researchedTechs.includes("EXPLOSIVES")
+  )
+    return rejected(original, "TECH_REQUIRED", { tech: "EXPLOSIVES" });
   const tile = tileAtV7(state.board, unit.at);
   const city = state.cities.find((item) => item.id === tile?.territoryCityId);
   if (
@@ -1869,6 +1874,18 @@ function applyPillage(
           }
         : item,
     );
+    const exposure =
+      unit.role === "SABOTEUR"
+        ? exposeSaboteurV7(
+            state.saboteurExposures,
+            unit.id,
+            city.ownerId,
+            "PILLAGE",
+          )
+        : {
+            exposures: state.saboteurExposures,
+            event: null,
+          };
     const staged: GameStateV7 = {
       ...state,
       commandIndex: nextSafe(state.commandIndex),
@@ -1880,6 +1897,7 @@ function applyPillage(
       populationContributions: recalc.populationContributions,
       units,
       defectionMarks: cancellation.marks,
+      saboteurExposures: exposure.exposures,
     };
     const settlement = settleCityRewardsV7(staged);
     const achievements = evaluateAchievementsV7(settlement.state, actor);
@@ -1895,11 +1913,112 @@ function applyPillage(
         resourceRestored,
         coinDelta: 1,
       },
+      ...(exposure.event === null ? [] : [exposure.event]),
       ...cancellation.events,
       ...economyAndGrowth(recalc.changes),
       ...settlement.events,
       ...achievements.events,
     ]);
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
+}
+
+function applyBlackout(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  command: Extract<CommandV7, { kind: "BLACKOUT_CITY" }>,
+): ApplyCommandResultV7 {
+  const actorCheck = validateUnitActor(state, actor, command.unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  const source = actorCheck.unit;
+  if (source.role !== "SABOTEUR")
+    return rejected(original, "UNIT_ROLE_INVALID", { role: source.role });
+  if (
+    primaryUsed(source) ||
+    source.activation.pursuitPhase !== "NONE" ||
+    (source.activation.moved &&
+      !effectiveRoleRuleV7(source.role).mayUsePrimaryActionAfterMove)
+  )
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: source.id });
+  const player = requirePlayer(state, actor);
+  const city = state.cities.find(
+    (candidate) =>
+      candidate.id === command.cityId && isExplored(player, candidate.at),
+  );
+  if (city === undefined)
+    return rejected(original, "CITY_NOT_FOUND", { cityId: command.cityId });
+  if (city.ownerId === actor || arePlayersAlliedV7(state, actor, city.ownerId))
+    return rejected(original, "TARGET_ALLIED");
+  if (chebyshev(source.at, city.at) !== 1)
+    return rejected(original, "TARGET_OUT_OF_RANGE");
+  if (city.blackout !== null)
+    return rejected(original, "BLACKOUT_PROTECTED", { cityId: city.id });
+  if (
+    source.blackoutEligibleRound === null ||
+    state.round < source.blackoutEligibleRound
+  )
+    return rejected(original, "BLACKOUT_COOLDOWN", {
+      eligibleRound: source.blackoutEligibleRound,
+    });
+  const detector = hostileUnitDetectorV7(state, source);
+  if (detector !== undefined)
+    return rejected(original, "SABOTEUR_DETECTED", { unitId: source.id });
+  try {
+    const eligibleRound = nextSafeBy(state.round, 3);
+    const exposure = exposeSaboteurV7(
+      state.saboteurExposures,
+      source.id,
+      city.ownerId,
+      "BLACKOUT",
+    );
+    return accepted(
+      checked({
+        ...state,
+        commandIndex: nextSafe(state.commandIndex),
+        cities: state.cities.map((candidate) =>
+          candidate.id === city.id
+            ? {
+                ...candidate,
+                blackout: {
+                  phase: "PENDING",
+                  sourceUnitId: source.id,
+                  sourceOwnerId: actor,
+                  plantedRound: state.round,
+                },
+              }
+            : candidate,
+        ),
+        units: state.units.map((unit) =>
+          unit.id === source.id
+            ? {
+                ...unit,
+                blackoutEligibleRound: eligibleRound,
+                activation: {
+                  ...unit.activation,
+                  handled: true,
+                  specialActed: true,
+                },
+              }
+            : unit,
+        ),
+        saboteurExposures: exposure.exposures,
+      }),
+      [
+        {
+          kind: "BLACKOUT_PLANTED",
+          cityId: city.id,
+          sourceUnitId: source.id,
+          sourceOwnerId: actor,
+          targetOwnerId: city.ownerId,
+          actionRound: state.round,
+          eligibleRound,
+        },
+        exposure.event,
+      ],
+    );
   } catch (cause) {
     return arithmeticFailure(original, cause);
   }
@@ -2347,15 +2466,12 @@ function applyEndTurn(
     )
   )
     return rejected(original, "PURSUIT_MUST_END");
-  if (state.cities.some((city) => city.blackout !== null))
-    return rejected(original, "COMMAND_NOT_IMPLEMENTED", {
-      kind: "END_TURN_STATE_MACHINES",
-    });
   try {
     const current = requirePlayer(state, actor);
     const recovery = recoverIdleUnits(state, current);
     const armed = armWaitingDefectionsV7(recovery.state, actor);
-    const preview = playerIncomeV7(armed.state, actor);
+    const endedBlackouts = endTurnBlackoutsV7(armed.state, actor);
+    const preview = playerIncomeV7(endedBlackouts.state, actor);
     const nextIndex = nextActiveSeat(state);
     if (nextIndex === null) return rejected(original, "INVALID_STATE");
     const nextPlayer = state.players.find(
@@ -2364,19 +2480,23 @@ function applyEndTurn(
     if (nextPlayer === undefined) return rejected(original, "INVALID_STATE");
     const round =
       nextIndex <= state.activeSeatIndex ? nextSafe(state.round) : state.round;
-    const advanced = resetTurnUnits(
-      {
-        ...armed.state,
-        activeSeatIndex: nextIndex,
-        round,
-        saboteurExposures: recovery.state.saboteurExposures.filter(
-          (exposure) => exposure.anchorPlayerId !== actor,
-        ),
-      },
+    const advanced = startRecoveryTurnsV7(
+      resetTurnUnits(
+        {
+          ...endedBlackouts.state,
+          activeSeatIndex: nextIndex,
+          round,
+          saboteurExposures: endedBlackouts.state.saboteurExposures.filter(
+            (exposure) => exposure.anchorPlayerId !== actor,
+          ),
+        },
+        nextPlayer.id,
+      ),
       nextPlayer.id,
     );
     const resolved = resolveArmedDefectionsV7(advanced, nextPlayer.id);
-    const started = startTurnEconomyV7(resolved.state, nextPlayer, false);
+    const activated = activatePendingBlackoutsV7(resolved.state, nextPlayer.id);
+    const started = startTurnEconomyV7(activated.state, nextPlayer, false);
     const turnStarted = started.events[0];
     if (turnStarted === undefined) throw new RangeError("INVALID_STATE");
     const achievements = evaluateAchievementsV7(started.state, nextPlayer.id);
@@ -2388,6 +2508,7 @@ function applyEndTurn(
       [
         ...recovery.events,
         ...armed.events,
+        ...endedBlackouts.events,
         {
           kind: "INCOME_PREVIEWED",
           playerId: actor,
@@ -2397,6 +2518,7 @@ function applyEndTurn(
         { kind: "TURN_ENDED", playerId: actor },
         turnStarted,
         ...resolved.events,
+        ...activated.events,
         ...started.events.slice(1),
         ...achievements.events,
       ],
@@ -2404,6 +2526,118 @@ function applyEndTurn(
   } catch (cause) {
     return arithmeticFailure(original, cause);
   }
+}
+
+function startRecoveryTurnsV7(
+  state: GameStateV7,
+  playerId: PlayerId,
+): GameStateV7 {
+  return {
+    ...state,
+    cities: state.cities.map((city) =>
+      city.ownerId === playerId &&
+      city.blackout?.phase === "RECOVERY" &&
+      !city.blackout.unaffectedTurnStarted
+        ? {
+            ...city,
+            blackout: { ...city.blackout, unaffectedTurnStarted: true },
+          }
+        : city,
+    ),
+  };
+}
+
+function activatePendingBlackoutsV7(
+  state: GameStateV7,
+  playerId: PlayerId,
+): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
+  const activations = [...state.cities]
+    .filter(
+      (city) => city.ownerId === playerId && city.blackout?.phase === "PENDING",
+    )
+    .sort((left, right) => left.id - right.id)
+    .map((city) => ({
+      city,
+      sourceOwnerId:
+        city.blackout?.phase === "PENDING"
+          ? city.blackout.sourceOwnerId
+          : playerId,
+      suppressedCoins: Math.min(3, cityIncomeV7(state, city)),
+    }));
+  const byCityId = new Map(activations.map((item) => [item.city.id, item]));
+  return {
+    state: {
+      ...state,
+      cities: state.cities.map((city) => {
+        const activation = byCityId.get(city.id);
+        return activation === undefined
+          ? city
+          : {
+              ...city,
+              blackout: {
+                phase: "ACTIVE",
+                sourceOwnerId: activation.sourceOwnerId,
+                suppressedCoins: activation.suppressedCoins,
+              },
+            };
+      }),
+    },
+    events: activations.map((activation): DomainEventV7 => ({
+      kind: "BLACKOUT_ACTIVATED",
+      cityId: activation.city.id,
+      ownerId: playerId,
+      suppressedCoins: activation.suppressedCoins,
+    })),
+  };
+}
+
+function endTurnBlackoutsV7(
+  state: GameStateV7,
+  playerId: PlayerId,
+): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
+  const transitions = [...state.cities]
+    .filter(
+      (city) =>
+        city.ownerId === playerId &&
+        (city.blackout?.phase === "ACTIVE" ||
+          (city.blackout?.phase === "RECOVERY" &&
+            city.blackout.unaffectedTurnStarted)),
+    )
+    .sort((left, right) => left.id - right.id);
+  const transitionIds = new Set(transitions.map((city) => city.id));
+  return {
+    state: {
+      ...state,
+      cities: state.cities.map((city) =>
+        !transitionIds.has(city.id)
+          ? city
+          : city.blackout?.phase === "ACTIVE"
+            ? {
+                ...city,
+                blackout: {
+                  phase: "RECOVERY",
+                  recoveryOwnerId: playerId,
+                  unaffectedTurnStarted: false,
+                },
+              }
+            : { ...city, blackout: null },
+      ),
+    },
+    events: transitions.map((city): DomainEventV7 =>
+      city.blackout?.phase === "ACTIVE"
+        ? {
+            kind: "BLACKOUT_RECOVERY_STARTED",
+            cityId: city.id,
+            ownerId: playerId,
+            reason: "AFFECTED_TURN_ENDED",
+          }
+        : {
+            kind: "BLACKOUT_RECOVERY_COMPLETED",
+            cityId: city.id,
+            ownerId: playerId,
+          },
+    ),
+  };
 }
 
 function validateTileContext(
@@ -3060,6 +3294,48 @@ function populationContributionAt(
       same(item.source.at, at),
   );
 }
+function hostileUnitDetectorV7(
+  state: GameStateV7,
+  saboteur: UnitStateV7,
+): UnitStateV7 | undefined {
+  return [...state.units]
+    .filter(
+      (unit) =>
+        unit.hp > 0 &&
+        arePlayersHostileV7(state, saboteur.ownerId, unit.ownerId) &&
+        chebyshev(unit.at, saboteur.at) <= (unit.role === "SCOUT" ? 2 : 1),
+    )
+    .sort((left, right) => left.id - right.id)[0];
+}
+function exposeSaboteurV7(
+  exposures: GameStateV7["saboteurExposures"],
+  unitId: UnitStateV7["id"],
+  anchorPlayerId: PlayerId,
+  reason: GameStateV7["saboteurExposures"][number]["reason"],
+): {
+  readonly exposures: GameStateV7["saboteurExposures"];
+  readonly event: Extract<DomainEventV7, { kind: "SABOTEUR_EXPOSED" }>;
+} {
+  return {
+    exposures: [
+      ...exposures.filter(
+        (entry) =>
+          entry.unitId !== unitId || entry.anchorPlayerId !== anchorPlayerId,
+      ),
+      {
+        unitId,
+        anchorPlayerId,
+        reason,
+        clearsAtAnchorNextEndTurn: true as const,
+      },
+    ].sort(
+      (left, right) =>
+        left.unitId - right.unitId ||
+        left.anchorPlayerId - right.anchorPlayerId,
+    ),
+    event: { kind: "SABOTEUR_EXPOSED", unitId, anchorPlayerId, reason },
+  };
+}
 function exhaustedActivation(): UnitStateV7["activation"] {
   return {
     moved: true,
@@ -3126,6 +3402,11 @@ function checked(state: GameStateV7): GameStateV7 {
 }
 function nextSafe(value: number): number {
   const result = value + 1;
+  if (!Number.isSafeInteger(result)) throw new RangeError("INTEGER_OVERFLOW");
+  return result;
+}
+function nextSafeBy(value: number, delta: number): number {
+  const result = value + delta;
   if (!Number.isSafeInteger(result)) throw new RangeError("INTEGER_OVERFLOW");
   return result;
 }
