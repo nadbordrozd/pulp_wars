@@ -4,7 +4,7 @@ import { nextBounded } from "../random/random";
 import type { JsonValue } from "../replay/canonical";
 import {
   BASIC_ECONOMIC_ACTIONS_V7,
-  ORIGINAL_BASELINE_V2_TREE,
+  ORIGINAL_BASELINE_V3_TREE,
   SPATIAL_ECONOMIC_ACTIONS_V7,
   effectiveRoleRuleV7,
   technologyCapabilitiesV7,
@@ -251,7 +251,7 @@ function applyResearch(
   tech: (typeof TECHNOLOGY_IDS_V7)[number],
 ): ApplyCommandResultV7 {
   const player = requirePlayer(state, actor);
-  const node = ORIGINAL_BASELINE_V2_TREE.nodes.find((item) => item.id === tech);
+  const node = ORIGINAL_BASELINE_V3_TREE.nodes.find((item) => item.id === tech);
   if (node === undefined) return rejected(original, "TECH_NOT_FOUND", { tech });
   if (player.researchedTechs.includes(tech))
     return rejected(original, "TECH_ALREADY_RESEARCHED", { tech });

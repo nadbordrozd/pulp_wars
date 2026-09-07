@@ -1,7 +1,7 @@
 import type { CityId, PlayerId, UnitId } from "../model/ids";
 import {
   BASIC_ECONOMIC_ACTIONS_V7,
-  ORIGINAL_BASELINE_V2_TREE,
+  ORIGINAL_BASELINE_V3_TREE,
   SPATIAL_ECONOMIC_ACTIONS_V7,
   TECHNOLOGY_BRANCH_IDS_V7,
   effectiveRoleRuleV7,
@@ -57,7 +57,7 @@ export interface PublicTechnologyNodeV7 {
   readonly unlockedRoleRules: readonly EffectiveRoleRuleV7[];
 }
 export interface PublicTechnologyTreeV7 {
-  readonly id: "ORIGINAL_BASELINE_V2";
+  readonly id: "ORIGINAL_BASELINE_V3";
   readonly faction: "ORIGINAL";
   readonly ownedCityCount: number;
   readonly branches: typeof TECHNOLOGY_BRANCH_IDS_V7;
@@ -77,11 +77,11 @@ export function queryTechnologyTreeV7(
   if (ownedCityCount < 1) throw new RangeError("Technology requires a city");
   const owned = new Set(player.researchedTechs);
   return {
-    id: "ORIGINAL_BASELINE_V2",
+    id: "ORIGINAL_BASELINE_V3",
     faction: "ORIGINAL",
     ownedCityCount,
     branches: TECHNOLOGY_BRANCH_IDS_V7,
-    nodes: ORIGINAL_BASELINE_V2_TREE.nodes.map((node) => {
+    nodes: ORIGINAL_BASELINE_V3_TREE.nodes.map((node) => {
       const missingPrerequisites = node.prerequisites.filter(
         (tech) => !owned.has(tech),
       );
@@ -104,7 +104,7 @@ export function queryTechnologyTreeV7(
         unlockedRoleRules: node.unlockedRoles.map(effectiveRoleRuleV7),
       };
     }),
-    roleBindings: ORIGINAL_BASELINE_V2_TREE.roleRules,
+    roleBindings: ORIGINAL_BASELINE_V3_TREE.roleRules,
   };
 }
 
@@ -437,7 +437,7 @@ export function queryAiReadyCommandsV7(
         : command.kind === "TRAIN"
           ? UNIT_ROLE_IDS_V7.indexOf(command.role)
           : command.kind === "CHOOSE_CITY_REWARD"
-            ? ORIGINAL_BASELINE_V2_TREE.nodes.length + command.reachedLevel
+            ? ORIGINAL_BASELINE_V3_TREE.nodes.length + command.reachedLevel
             : "targetUnitId" in command
               ? command.targetUnitId
               : 0;

@@ -28,7 +28,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 save and replay foundation", () => {
   it("uses an independent v7 save key and round-trips a canonical initial save", () => {
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7.current");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r2.current");
     const created = createInitialMapStateV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const replay = createReplayV7(setup);
@@ -83,6 +83,98 @@ describe("ruleset-7 save and replay foundation", () => {
         JSON.stringify({ format: "pulp-wars-save", version, opaque: "keep" }),
       );
     }
+  });
+
+  it("preserves the r1 development identity as incompatible and never executes it", () => {
+    const developmentSetup = {
+      ...setup,
+      rulesetId: "pulp-wars-poc-7",
+    };
+    const developmentReplay = {
+      format: "pulp-wars-replay",
+      version: 7,
+      setup: developmentSetup,
+      commands: [{ kind: "UNKNOWN_DEVELOPMENT_COMMAND" }],
+      checkpoints: [],
+    };
+    expect(parseReplayFileV7(developmentReplay)).toEqual({
+      kind: "INCOMPATIBLE_REPLAY",
+    });
+    expect(() => runReplayV7(developmentReplay)).toThrowError(
+      "INCOMPATIBLE_REPLAY",
+    );
+
+    const created = createInitialMapStateV7(setup);
+    if (!created.ok) throw new Error(created.error.code);
+    const current = createSaveEnvelopeV7(
+      { state: created.state, replay: createReplayV7(setup) },
+      "2026-09-06T12:00:00.000Z",
+    );
+    const developmentState = {
+      ...current.state,
+      rulesetId: "pulp-wars-poc-7",
+      setup: developmentSetup,
+      players: current.state.players.map((player) => ({
+        ...player,
+        factionTreeId: "ORIGINAL_BASELINE_V2",
+      })),
+    };
+    const developmentSave = {
+      ...current,
+      rulesetId: "pulp-wars-poc-7",
+      setup: developmentSetup,
+      state: developmentState,
+      randomState: developmentState.random,
+      stateHash: canonicalHash(developmentState),
+    };
+    const source = JSON.stringify(developmentSave);
+    expect(parseSaveV7(source)).toMatchObject({ kind: "INCOMPATIBLE" });
+    expect(source).toBe(JSON.stringify(developmentSave));
+  });
+
+  it("rejects mixed and unknown r1/r2 identities without fallback", () => {
+    const created = createInitialMapStateV7(setup);
+    if (!created.ok) throw new Error(created.error.code);
+    const replay = createReplayV7(setup);
+    const save = createSaveEnvelopeV7(
+      { state: created.state, replay },
+      "2026-09-06T12:00:00.000Z",
+    );
+
+    expect(
+      parseReplayFileV7({
+        ...replay,
+        setup: { ...setup, rulesetId: "pulp-wars-poc-unknown" },
+      }),
+    ).toEqual({ kind: "INVALID_REPLAY" });
+    expect(
+      parseSaveV7(
+        JSON.stringify({
+          ...save,
+          setup: { ...setup, rulesetId: "pulp-wars-poc-7" },
+        }),
+      ),
+    ).toMatchObject({ kind: "CORRUPT" });
+    expect(
+      parseSaveV7(
+        JSON.stringify({
+          ...save,
+          state: {
+            ...save.state,
+            players: save.state.players.map((player, index) =>
+              index === 0
+                ? { ...player, factionTreeId: "ORIGINAL_BASELINE_V2" }
+                : player,
+            ),
+          },
+        }),
+      ),
+    ).toMatchObject({ kind: "CORRUPT" });
+    expect(
+      parseSaveV7(
+        JSON.stringify({ ...save, rulesetId: "pulp-wars-poc-unknown" }),
+      ),
+    ).toMatchObject({ kind: "INCOMPATIBLE" });
   });
 
   it("rejects unknown fields, malformed checkpoints, hash drift, and rejected command execution", () => {

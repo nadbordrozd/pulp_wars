@@ -359,7 +359,7 @@ function parsePlayer(input: unknown): PlayerStateV7 | null {
     (input.controller !== "HUMAN" && input.controller !== "AI") ||
     !isColor(input.color) ||
     input.faction !== "ORIGINAL" ||
-    input.factionTreeId !== "ORIGINAL_BASELINE_V2" ||
+    input.factionTreeId !== "ORIGINAL_BASELINE_V3" ||
     (input.status !== "ACTIVE" && input.status !== "ELIMINATED") ||
     !isNonNegativeSafeIntegerV7(input.coins)
   )
@@ -392,7 +392,7 @@ function parsePlayer(input: unknown): PlayerStateV7 | null {
     controller: input.controller,
     color: input.color,
     faction: "ORIGINAL",
-    factionTreeId: "ORIGINAL_BASELINE_V2",
+    factionTreeId: "ORIGINAL_BASELINE_V3",
     status: input.status,
     coins: input.coins,
     researchedTechs: researched,

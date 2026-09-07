@@ -141,7 +141,7 @@ export interface EffectiveRoleRuleV7 {
 }
 
 export interface FactionTechnologyTreeV7 {
-  readonly id: "ORIGINAL_BASELINE_V2";
+  readonly id: "ORIGINAL_BASELINE_V3";
   readonly faction: "ORIGINAL";
   readonly startingTechIds: readonly ["GATHERING"];
   readonly nodes: readonly TechnologyNodeV7[];
@@ -326,7 +326,7 @@ function node(
   });
 }
 
-export const ORIGINAL_BASELINE_V2_NODES = deepFreeze([
+export const ORIGINAL_BASELINE_V3_NODES = deepFreeze([
   node(
     "GATHERING",
     "SETTLEMENT",
@@ -815,19 +815,19 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
   }),
 });
 
-export const ORIGINAL_BASELINE_V2_TREE: FactionTechnologyTreeV7 = deepFreeze({
-  id: "ORIGINAL_BASELINE_V2",
+export const ORIGINAL_BASELINE_V3_TREE: FactionTechnologyTreeV7 = deepFreeze({
+  id: "ORIGINAL_BASELINE_V3",
   faction: "ORIGINAL",
   startingTechIds: ["GATHERING"],
-  nodes: ORIGINAL_BASELINE_V2_NODES,
+  nodes: ORIGINAL_BASELINE_V3_NODES,
   roleRules: ORIGINAL_ROLE_RULES_V7,
 });
 export const RULESET_7 = deepFreeze({
   id: RULESET_7_ID,
   version: 7 as const,
   startingCoins: 5 as const,
-  technologies: ORIGINAL_BASELINE_V2_NODES,
-  tree: ORIGINAL_BASELINE_V2_TREE,
+  technologies: ORIGINAL_BASELINE_V3_NODES,
+  tree: ORIGINAL_BASELINE_V3_TREE,
 });
 
 export function technologyResearchCostV7(
@@ -852,14 +852,14 @@ export function effectiveRoleRuleV7(roleId: UnitRoleIdV7): EffectiveRoleRuleV7 {
   return ORIGINAL_ROLE_RULES_V7[roleId];
 }
 export function requireTechnologyNodeV7(id: TechnologyIdV7): TechnologyNodeV7 {
-  const result = ORIGINAL_BASELINE_V2_NODES.find((item) => item.id === id);
+  const result = ORIGINAL_BASELINE_V3_NODES.find((item) => item.id === id);
   if (result === undefined)
     throw new RangeError(`Unknown v7 technology: ${id}`);
   return result;
 }
 
 export interface TechnologyCapabilitiesV7 {
-  readonly treeId: "ORIGINAL_BASELINE_V2";
+  readonly treeId: "ORIGINAL_BASELINE_V3";
   readonly resourceReveals: readonly ResourceIdV7[];
   readonly commands: readonly TechnologyUnlockedCommandV7[];
   readonly trainableRoles: readonly UnitRoleIdV7[];
@@ -894,7 +894,7 @@ export function technologyCapabilitiesV7(
   researchedTechs: readonly TechnologyIdV7[],
 ): TechnologyCapabilitiesV7 {
   const known = new Set(researchedTechs);
-  const unlocks = ORIGINAL_BASELINE_V2_NODES.filter((node) =>
+  const unlocks = ORIGINAL_BASELINE_V3_NODES.filter((node) =>
     known.has(node.id),
   ).flatMap((node) => node.unlocks);
   const resources = new Set<ResourceIdV7>();
@@ -978,7 +978,7 @@ export function technologyCapabilitiesV7(
         break;
     }
   return deepFreeze({
-    treeId: "ORIGINAL_BASELINE_V2",
+    treeId: "ORIGINAL_BASELINE_V3",
     resourceReveals: RESOURCE_IDS_V7.filter((item) => resources.has(item)),
     commands: COMMAND_KIND_ORDER_V7.filter((item) =>
       commands.has(item as TechnologyUnlockedCommandV7),
@@ -1010,8 +1010,8 @@ export function technologyCapabilitiesV7(
 
 export function assertRuleset7Registry(): void {
   if (
-    ORIGINAL_BASELINE_V2_NODES.length !== TECHNOLOGY_IDS_V7.length ||
-    !ORIGINAL_BASELINE_V2_NODES.every(
+    ORIGINAL_BASELINE_V3_NODES.length !== TECHNOLOGY_IDS_V7.length ||
+    !ORIGINAL_BASELINE_V3_NODES.every(
       (node, index) => node.id === TECHNOLOGY_IDS_V7[index],
     ) ||
     Reflect.ownKeys(ORIGINAL_ROLE_RULES_V7).length !==

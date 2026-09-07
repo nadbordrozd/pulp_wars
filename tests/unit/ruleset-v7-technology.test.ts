@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
-  ORIGINAL_BASELINE_V2_NODES,
-  ORIGINAL_BASELINE_V2_TREE,
+  ORIGINAL_BASELINE_V3_NODES,
+  ORIGINAL_BASELINE_V3_TREE,
   ORIGINAL_ROLE_RULES_V7,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
@@ -23,15 +23,15 @@ import { checkedV7, initialV7, richV7, setupV7 } from "../fixtures/v7-builders";
 describe("ruleset-7 technology", () => {
   it("registers the exact ordered 25-node Original graph and start", () => {
     assertRuleset7Registry();
-    expect(ORIGINAL_BASELINE_V2_NODES.map((node) => node.id)).toEqual(
+    expect(ORIGINAL_BASELINE_V3_NODES.map((node) => node.id)).toEqual(
       TECHNOLOGY_IDS_V7,
     );
-    expect(ORIGINAL_BASELINE_V2_TREE).toMatchObject({
-      id: "ORIGINAL_BASELINE_V2",
+    expect(ORIGINAL_BASELINE_V3_TREE).toMatchObject({
+      id: "ORIGINAL_BASELINE_V3",
       faction: "ORIGINAL",
       startingTechIds: ["GATHERING"],
     });
-    expect(ORIGINAL_BASELINE_V2_NODES.map((node) => node.branch)).toEqual([
+    expect(ORIGINAL_BASELINE_V3_NODES.map((node) => node.branch)).toEqual([
       ...Array(5).fill("SETTLEMENT"),
       ...Array(5).fill("WILDS"),
       ...Array(5).fill("INDUSTRY"),
@@ -39,13 +39,13 @@ describe("ruleset-7 technology", () => {
       ...Array(5).fill("WARFARE"),
     ]);
     expect(
-      ORIGINAL_BASELINE_V2_NODES.filter((node) => node.tier === 1),
+      ORIGINAL_BASELINE_V3_NODES.filter((node) => node.tier === 1),
     ).toHaveLength(5);
     expect(
-      ORIGINAL_BASELINE_V2_NODES.filter((node) => node.tier === 2),
+      ORIGINAL_BASELINE_V3_NODES.filter((node) => node.tier === 2),
     ).toHaveLength(10);
     expect(
-      ORIGINAL_BASELINE_V2_NODES.filter((node) => node.tier === 3),
+      ORIGINAL_BASELINE_V3_NODES.filter((node) => node.tier === 3),
     ).toHaveLength(10);
     expect(
       initialV7().players.every(
@@ -54,7 +54,7 @@ describe("ruleset-7 technology", () => {
           player.researchedTechs[0] === "GATHERING",
       ),
     ).toBe(true);
-    expect(Object.isFrozen(ORIGINAL_BASELINE_V2_NODES)).toBe(true);
+    expect(Object.isFrozen(ORIGINAL_BASELINE_V3_NODES)).toBe(true);
   });
 
   it("uses the exact city-scaled formula without unsafe arithmetic", () => {
@@ -166,7 +166,7 @@ describe("ruleset-7 technology", () => {
       state.humanPlayerId,
     );
     expect(capabilities).toMatchObject({
-      treeId: "ORIGINAL_BASELINE_V2",
+      treeId: "ORIGINAL_BASELINE_V3",
       hostileCaptureSpoilsCoins: 2,
       medicHealAmount: 6,
       friendlyIdleRecoveryAmount: 6,

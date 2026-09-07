@@ -60,7 +60,7 @@ export interface PublicPlayerV7 {
   readonly controller: "HUMAN" | "AI";
   readonly color: PlayerColorV7;
   readonly faction: "ORIGINAL";
-  readonly factionTreeId: "ORIGINAL_BASELINE_V2";
+  readonly factionTreeId: "ORIGINAL_BASELINE_V3";
   readonly status: "ACTIVE" | "ELIMINATED";
 }
 

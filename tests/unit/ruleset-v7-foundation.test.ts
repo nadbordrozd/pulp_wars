@@ -36,9 +36,9 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 deterministic foundation", () => {
   it("freezes the exact v7 IDs and semantic orders", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r2");
     expect(FACTION_IDS_V7).toEqual(["ORIGINAL"]);
-    expect(FACTION_TREE_IDS_V7).toEqual(["ORIGINAL_BASELINE_V2"]);
+    expect(FACTION_TREE_IDS_V7).toEqual(["ORIGINAL_BASELINE_V3"]);
     expect(IMPROVEMENT_IDS_V7).toHaveLength(12);
     expect(UNIT_ROLE_IDS_V7).toEqual([
       "FIGHTER",
@@ -84,6 +84,12 @@ describe("ruleset-7 deterministic foundation", () => {
     ).toBeNull();
     expect(
       parseMatchSetupV7({ ...setup, rulesetId: "pulp-wars-poc-6" }),
+    ).toBeNull();
+    expect(
+      parseMatchSetupV7({ ...setup, rulesetId: "pulp-wars-poc-7" }),
+    ).toBeNull();
+    expect(
+      parseMatchSetupV7({ ...setup, rulesetId: "pulp-wars-poc-unknown" }),
     ).toBeNull();
     expect(parseMatchSetupV7({ ...setup, scenario: "DEMO" })).toBeNull();
     expect(parseMatchSetupV7({ ...setup, width: 11, height: 14 })).toBeNull();
@@ -221,6 +227,38 @@ describe("ruleset-7 deterministic foundation", () => {
     const state = created.state;
     expect(parseGameStateV7(state)).toEqual(state);
     expect(parseGameStateV7({ ...state, schemaVersion: 6 })).toBeNull();
+    expect(
+      parseGameStateV7({
+        ...state,
+        rulesetId: "pulp-wars-poc-7",
+      }),
+    ).toBeNull();
+    expect(
+      parseGameStateV7({
+        ...state,
+        setup: { ...state.setup, rulesetId: "pulp-wars-poc-7" },
+      }),
+    ).toBeNull();
+    expect(
+      parseGameStateV7({
+        ...state,
+        players: state.players.map((player, index) =>
+          index === 0
+            ? { ...player, factionTreeId: "ORIGINAL_BASELINE_V2" }
+            : player,
+        ),
+      }),
+    ).toBeNull();
+    expect(
+      parseGameStateV7({
+        ...state,
+        players: state.players.map((player, index) =>
+          index === 0
+            ? { ...player, factionTreeId: "ORIGINAL_UNKNOWN" }
+            : player,
+        ),
+      }),
+    ).toBeNull();
     expect(
       parseGameStateV7({
         ...state,

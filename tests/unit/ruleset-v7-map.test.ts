@@ -50,10 +50,10 @@ describe("ruleset-7 map adapter", () => {
     const created = createInitialMapStateV7(setup(3, 16, 41));
     if (!created.ok) throw new Error(created.error.code);
     expect(parseGameStateV7(created.state)).toEqual(created.state);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r2");
     expect(
       created.state.players.every(
-        (player) => player.factionTreeId === "ORIGINAL_BASELINE_V2",
+        (player) => player.factionTreeId === "ORIGINAL_BASELINE_V3",
       ),
     ).toBe(true);
     expect(

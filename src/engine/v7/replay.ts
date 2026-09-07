@@ -92,6 +92,12 @@ export function parseReplayFileV7(input: unknown): ReplayParseResultV7 {
   if (hasFormatVersion(input, "pulp-wars-replay") && isPreV7(input.version))
     return { kind: "INCOMPATIBLE_REPLAY" };
   if (
+    hasFormatVersion(input, "pulp-wars-replay") &&
+    input.version === 7 &&
+    hasRulesetSetup(input, "pulp-wars-poc-7")
+  )
+    return { kind: "INCOMPATIBLE_REPLAY" };
+  if (
     !hasExactKeysV7(input, [
       "checkpoints",
       "commands",
@@ -194,6 +200,18 @@ function hasFormatVersion(
     !Array.isArray(input) &&
     (input as Record<string, unknown>).format === format &&
     Object.hasOwn(input, "version")
+  );
+}
+function hasRulesetSetup(
+  input: { format: string; version: unknown },
+  rulesetId: string,
+): boolean {
+  const setup = (input as Record<string, unknown>).setup;
+  return (
+    typeof setup === "object" &&
+    setup !== null &&
+    !Array.isArray(setup) &&
+    (setup as Record<string, unknown>).rulesetId === rulesetId
   );
 }
 function isPreV7(input: unknown): boolean {
