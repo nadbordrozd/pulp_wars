@@ -30,9 +30,10 @@ fixtures, saves, AI, UI, or assets were changed or playtested.
 5. Keep one currency, direct map interaction, increasing marginal city growth,
    no inventories, and no city-management screen. Spatial planning should stay
    legible through clusters, adjacency, shapes, and mixed industries.
-6. Preserve meaningful midgame development and occasional spectacular cities.
-   Limit reward queues and free armies so stronger population sources remain an
-   economic achievement rather than a repeated super-unit dispenser.
+6. Preserve meaningful midgame development and spectacular high-level cities.
+   Frequent giant-or-Treasury rewards are an intentional payoff for repeated
+   growth, not a frequency problem to suppress preemptively; measure whether
+   they actually create conquest snowball or crowd out ordinary armies.
 7. Give every unit a distinct battlefield job. Keep Fighters and other basic
    roles relevant through low price and tactical flexibility while recognizing
    that advanced units deliberately concentrate more value into scarce
@@ -58,7 +59,7 @@ fixtures, saves, AI, UI, or assets were changed or playtested.
 
 The map counts and combat/research arithmetic below are observations from the
 unchanged generator and exact formulas. The revised prices, outputs, reward
-cadence, and achievement rules are design judgments informed by those
+frequency, and achievement rules are design judgments informed by those
 observations. They have not been validated by human play or balance simulation.
 
 ### 2.1 Research and total access costs
@@ -262,11 +263,11 @@ A minimal illustrative Windmill + Forge + Grand Works package using one Farm
 and one Mine costs 29 construction Coins and contributes 20 total live
 population: Farm 2, Windmill 3, Mine 4, Forge 3, and Grand Works 8. A fresh city
 with 20 total population reaches level 6 exactly. Its reward work is level 2,
-3, and 4 choices, a level-5 Juggernaut/Treasury-12 choice, then automatic
-Treasury 5 at level 6, processed sequentially. Grand Works output 8 also unlocks
-Engineer. This is intentionally spectacular, but it requires three tier-3
-paths, exact adjacency, resource access, and construction; it remains a primary
-playtest risk.
+3, and 4 choices, then separate Juggernaut/Treasury-12 choices at levels 5 and
+6, processed sequentially with only one pending choice at a time. Grand Works
+output 8 also unlocks Engineer. This is intentionally spectacular, but it
+requires three tier-3 paths, exact adjacency, resource access, and construction;
+it remains a primary playtest risk.
 
 Farm, Mine, and Quarry now cover their markers while built and restore Fertile
 Ground, Ore, or Stone when Pillaged or Redeveloped. A removed Camp leaves its
@@ -310,22 +311,27 @@ same static defense the siege roster is meant to challenge.
 ### 4.3 High-level rewards
 
 Cumulative population needed to reach levels 5 through 11 is 14, 20, 27, 35,
-44, 54, and 65. The previous rule offered a 40-HP Juggernaut at every one of
-those levels. Revision 2 offers the unit/Treasury choice only at 5, 8, 11, ...;
-levels 6, 7, 9, 10, ... automatically grant 5 Coins without a modal.
+44, 54, and 65. Every one of those levels offers the same choice: one 40-HP
+Juggernaut or 12 Treasury Coins. The reviewed third-level cadence (choice at
+5/8/11/... with automatic 5-Coin grants between) is superseded design history,
+not a normative revision-2 rule; the latest direction intentionally keeps the
+spectacular choice frequent.
 
 Eligible Treasury is 12 Coins, not 5. Twelve Coins can fund six Fighters if
 capacity permits, or a 7-Coin Heavy and 4-Coin Medic after their research, while
 Juggernaut concentrates 40 HP, Attack 4, Defense 4, Push, and Capture into one
 capacity slot. The comparison is now army concentration versus flexibility or
 economic reinvestment. It is still a design judgment, not proof of equal pick
-rate. If Juggernaut has no legal placement when the milestone becomes next,
-Treasury 12 resolves automatically rather than showing a one-button modal.
+rate. If Juggernaut has no legal placement when a level-5-or-higher reward
+becomes next, Treasury 12 resolves automatically rather than showing a
+one-button modal.
 
-From level 5 through 10, a city now offers at most two Juggernauts and receives
-20 automatic Treasury Coins at the intervening levels. Unique reached-level
-history, monotonic city level, and sequential reward settlement prevent capture,
-population loss, or rebuilding from repeating a payout.
+From level 5 through 10, a city resolves six separate rewards and may therefore
+receive at most six Juggernauts or 72 Treasury Coins, including any mix between
+those endpoints; a reward becomes automatic only when Juggernaut placement is
+impossible. Unique reached-level history, monotonic city level, one global
+pending choice, and sequential reward settlement prevent capture, population
+loss, or rebuilding from repeating a payout or stacking simultaneous modals.
 
 ### 4.4 Saboteur
 
@@ -402,9 +408,10 @@ rewards and may prove unnecessary or snowballing in playtest.
 - **Saboteur:** retain concealment and Blackout, with only the cost/Pillage
   revision above. A center garrison intentionally blocks Blackout but no longer
   erases the role's whole disruption purpose.
-- **Juggernaut:** keep exact combat stats and reward-only status. Scarcity comes
-  from revised cadence rather than a stat nerf. Defection eligibility remains
-  a visible, interruptible high-swing test item.
+- **Juggernaut:** keep exact combat stats and reward-only status. Frequent
+  level-5-or-higher access is intentional rather than constrained through
+  cadence or a stat nerf. Defection eligibility remains a visible,
+  interruptible high-swing test item.
 
 No role-ID matchup bonus is added. The review found no missing mandatory role,
 so the wildcard remains design room rather than content.
@@ -421,8 +428,9 @@ so the wildcard remains design room rather than content.
   outages, repair turns, output resumption, and time spent at the one-Coin floor;
 - Fortification and Barracks adoption, slots used, overcapacity, Defection
   reservation displacement, and capacity gained through conquest;
-- reward choice rate at 12 Coins, Juggernauts per city/match, automatic Treasury
-  timing, and city reward time/modal count;
+- reward choice rate at 12 Coins, Juggernauts per city/match, no-placement
+  automatic Treasury timing, city reward time/modal count, and whether frequent
+  rewards empirically create conquest snowball or displace ordinary armies;
 - Engineer/Muster unlock and placement round, city selected, forgone tile value,
   levels/rewards caused, captured Monuments, and whether either achievement
   changes play or merely pays normal progress;

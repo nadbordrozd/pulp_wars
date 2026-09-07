@@ -19,8 +19,8 @@ and [Ruleset 7 design review](RULESET_7_DESIGN_REVIEW.md)
 
 Ruleset 7 revision 2 is the approved Original-faction implementation baseline.
 It retains the reviewed 25-node technology graph and 13-role Original roster,
-revises weak ordinary economic sites and excessive super-unit rewards, adds two
-bounded personal achievements, and preserves the Pursuit, Defection,
+revises weak ordinary economic sites and high-level reward alternatives, adds
+two bounded personal achievements, and preserves the Pursuit, Defection,
 Concealment, and Blackout state machines. The proposal remains design history;
 alternatives, arithmetic, and review questions in it are not normative.
 
@@ -610,11 +610,11 @@ whose entitlement placed it.
 
 City reward history contains at most one entry per reached level and none above
 the current level. At most one pending choice exists globally; it is the first
-unrewarded choice level in city-ID/reached-level scan order. Automatic Treasury
-levels never appear in `pendingChoices`. Any later unrewarded levels are legal
-only while that earlier modal choice blocks the settlement scan. The recorded
-reward at level 2/3/4 or a 5/8/11/... milestone must be legal for that level;
-every other recorded level at 5+ is Treasury.
+unrewarded choice level in city-ID/reached-level scan order. A no-placement
+automatic Treasury grant never appears in `pendingChoices`. Any later
+unrewarded levels are legal only while that earlier modal choice blocks the
+settlement scan. The recorded reward at level 2/3/4 must be legal for that
+level; every recorded level at 5+ is Juggernaut or Treasury.
 
 Defection capacity is an ordered entitlement rather than a numeric slot field.
 For each city, living assigned units consume capacity first; surviving marks
@@ -674,29 +674,26 @@ transfers the exact current footprint. A tile belongs to at most one city.
 
 Each reached level receives exactly one stored reward:
 
-|                Reached level | Resolution                                                               |
-| ---------------------------: | ------------------------------------------------------------------------ |
-|                            2 | choose Survey: reveal radius 3, or Stockpile: +4 Coins                   |
-|                            3 | choose Walls: 4x city defense, or Militia: free Fighter                  |
-|                            4 | choose Expand: neutral 5 x 5 footprint, or Boom: +3 permanent population |
-| `L >= 5` and `(L - 5) % 3=0` | choose Juggernaut reward unit, or Treasury: +12 Coins                    |
-|    all other levels `L >= 5` | automatically grant Treasury: +5 Coins; never create a pending choice    |
+| Reached level | Resolution                                                               |
+| ------------: | ------------------------------------------------------------------------ |
+|             2 | choose Survey: reveal radius 3, or Stockpile: +4 Coins                   |
+|             3 | choose Walls: 4x city defense, or Militia: free Fighter                  |
+|             4 | choose Expand: neutral 5 x 5 footprint, or Boom: +3 permanent population |
+|      `L >= 5` | choose Juggernaut reward unit, or Treasury: +12 Coins                    |
 
 After an economy mutation, every new `CITY_LEVELED_UP` fact is emitted before
 this reward scan begins. Reward settlement scans cities by city ID and
-unrewarded reached levels in ascending order. It automatically grants and
-records each no-choice Treasury,
-emitting `CITY_REWARD_AUTOMATICALLY_GRANTED`, before advancing to the next
-level. At the first level requiring input it creates the sole pending choice
-and stops. Resolving that choice records it and resumes the same scan before
-ordinary play. Thus no automatic level creates a ghost `PendingChoice`, and a
-level-4 Boom resolves any newly reached automatic rewards or the next modal
-choice before later city work.
+unrewarded reached levels in ascending order. At the first level requiring
+input it creates the sole pending choice and stops. Resolving that choice
+records it and resumes the same scan before ordinary play. A level-4 Boom can
+therefore expose the next level-5-or-higher modal choice before later city
+work.
 
-At a level-5/8/11/... milestone, if no legal Juggernaut placement exists when
-that reward becomes next, Treasury is the only usable arm and is granted
-automatically for 12 Coins with the same event/history contract. Otherwise the
-two-arm choice is queued. Militia/Juggernaut uses empty center, then owned
+At any level `L >= 5`, if no legal Juggernaut placement exists when that reward
+becomes next, Treasury is the only usable arm and is granted automatically for
+12 Coins with the same event/history contract. The scan then advances until it
+reaches another modal choice or finishes. Otherwise the two-arm choice is
+queued. Militia/Juggernaut uses empty center, then owned
 traversable city tiles by distance and `(y,x)`; an unavailable unit arm may not
 be chosen. Reward units are full-health, assigned, exhausted, and may overfill
 capacity. A pending Blackout does not block a reward; a reward-created unit can
@@ -965,10 +962,10 @@ building/destruction/capture fact first; capacity-reservation cancellation
 facts follow that mutation fact; then emit `CITY_ECONOMY_CHANGED`. Apply every
 reachable level increase and emit all `CITY_LEVELED_UP` facts in
 city-ID/reached-level order before reward settlement. Then scan unrewarded
-levels in that same order: emit and record each automatic Treasury grant, or
-emit the first `CITY_REWARD_QUEUED` and stop at that modal boundary. Never emit
-a queued fact for an automatic grant, and never pre-create facts for choices
-beyond the first pending modal.
+levels in that same order: emit and record each no-placement automatic
+Treasury-12 grant, or emit the first `CITY_REWARD_QUEUED` and stop at that modal
+boundary. Never emit a queued fact for an automatic grant, and never pre-create
+facts for choices beyond the first pending modal.
 
 ## 6. Original roster, movement, combat, and lifecycle
 
@@ -1530,7 +1527,7 @@ Start Turn. Later batches correspond one-to-one with accepted commands.
 | `IMPROVEMENT_PILLAGED`              | `{ playerId, unitId, cityId, at, improvement, resourceRestored, coinDelta: 1 }`                                        |
 | `UNIT_DISBANDED`                    | `{ playerId, unitId, role, coinDelta }`                                                                                |
 | `SPOILS_AWARDED`                    | `{ playerId, cityId, coins: 2 }`                                                                                       |
-| `CITY_REWARD_AUTOMATICALLY_GRANTED` | `{ playerId, cityId, reachedLevel, reward: TREASURY, coins: 5 \| 12 }`                                                 |
+| `CITY_REWARD_AUTOMATICALLY_GRANTED` | `{ playerId, cityId, reachedLevel, reward: TREASURY, coins: 12 }`                                                      |
 | `ACHIEVEMENT_UNLOCKED`              | `{ playerId, achievement }`                                                                                            |
 | `MONUMENT_BUILT`                    | `{ playerId, cityId, achievement, at, populationAdded: 3 }`                                                            |
 
@@ -1559,8 +1556,8 @@ populationBefore, populationAfter, marketBefore, marketAfter }`,
   `CITY_LEVELED_UP { cityId, level }`,
   `CITY_REWARD_QUEUED { cityId, reachedLevel, candidates }`,
   `CITY_REWARD_CHOSEN { playerId, cityId, reachedLevel, reward, coinDelta }`
-  where Stockpile is 4, a milestone Treasury is 12, and every other choice is
-  0, and
+  where Stockpile is 4, Treasury at any level 5 or higher is 12, and every
+  other choice is 0, and
   `CITY_TERRITORY_EXPANDED { playerId, cityId, tiles }`;
 - `UNIT_TRAINED { playerId, cityId, unitId, role, cost, at }`,
   `UNIT_REWARD_GRANTED { playerId, cityId, reachedLevel, unitId, role }`,
@@ -1605,17 +1602,19 @@ original command cannot preflight an option the player has not selected.
 - Economic build/harvest: deduct Coins; mutate tile/resource/improvement/Road;
   emit action/build fact; revalidate capacity/Defection; recompute economy;
   apply permanent population; emit economy and all new level facts; settle
-  automatic rewards until the next modal choice, queue that choice, then
-  evaluate achievements.
+  no-placement automatic Treasury-12 grants until the next modal choice, queue
+  that choice, then evaluate achievements.
 - Monument: validate and spend the entitlement; place Monument and its +3 LIVE
   contribution; emit `MONUMENT_BUILT`; recompute economy and levels; settle
-  automatic rewards until the next modal choice; evaluate the other still-
-  locked achievement. Monument itself is excluded from Engineer.
+  no-placement automatic Treasury-12 grants until the next modal choice;
+  evaluate the other still-locked achievement. Monument itself is excluded
+  from Engineer.
 - City reward choice: record the reached-level reward once, apply its exact
   Coin/population/territory/unit result, emit choice and result facts, revalidate
-  capacity after a reward unit, then resume automatic reward settlement and the
-  next modal choice before evaluating achievements. A no-placement milestone
-  Treasury follows the same order without an accepted choice command.
+  capacity after a reward unit, then resume reward settlement through any
+  no-placement automatic Treasury-12 grants and the next modal choice before
+  evaluating achievements. A no-placement Treasury follows the same order
+  without an accepted choice command.
 - Attack: resolve combat from one pre-exchange preview; emit
   `COMBAT_RESOLVED`, deaths, advance/Push, reveal, cancellation/ownership-safe
   cleanup, then Pursuit open/end. Retaliation deaths use the same ordering.
@@ -1623,9 +1622,9 @@ original command cannot preflight an option the player has not selected.
   interruption, reveal, then phase mutation. It cannot trigger a chest.
 - Capture: transfer city/territory; emit `CITY_CAPTURED`; normalize Blackout;
   cancel affected Defections; grant/record Spoils; reveal; recompute economy;
-  emit economy and all new level facts; orphan/re-home units; settle automatic
-  rewards through the next modal and queue it; evaluate the captor's
-  achievements; then elimination/outcome.
+  emit economy and all new level facts; orphan/re-home units; settle
+  no-placement automatic Treasury-12 grants through the next modal and queue
+  it; evaluate the captor's achievements; then elimination/outcome.
 - Offer/Blackout: allocate/store state, set terminal activation, emit the
   offer/plant fact and exposure. No combat or income occurs.
 - Defection boundary: cancel invalid marks or mutate ownership, emit
@@ -1634,10 +1633,10 @@ original command cannot preflight an option the player has not selected.
 - Pillage: destroy improvement and restore the exact section-5.2 production
   marker when applicable; grant 1 Coin; emit Pillage and any Saboteur exposure;
   revalidate reservations/capacity; recompute dependency-ordered live economy;
-  emit economy and all new level facts; settle automatic rewards through the
-  next modal and queue it; then evaluate achievements. Redevelop uses the same
-  removal/restoration, economy, level, reward, and achievement sequence without
-  the Pillage Coin or exposure.
+  emit economy and all new level facts; settle no-placement automatic
+  Treasury-12 grants through the next modal and queue it; then evaluate
+  achievements. Redevelop uses the same removal/restoration, economy, level,
+  reward, and achievement sequence without the Pillage Coin or exposure.
 - Disband: remove unit, grant refund, emit Disband, cancel marks/exposures
   involving it, then revalidate reservations.
 
@@ -1864,8 +1863,9 @@ movement resolved by the accepted interruption contract.
   `complete: true` only for an exact public target.
 - Monument preview includes achievement entitlement, one-per-city status, +3
   live population, resulting level/reward work, and the lost empty tile. It
-  derives from owner-safe progress only. City reward preview distinguishes the
-  12-Coin milestone Treasury from automatic 5-Coin Treasury levels.
+  derives from owner-safe progress only. City reward preview shows the 12-Coin
+  Treasury alternative at every level 5 or higher and whether lack of legal
+  Juggernaut placement will grant it automatically.
 - Combat preview uses the same rational calculation as resolution and includes
   Catapult minimum range/retaliation, Charge, Breach, Push certainty, damage,
   death, advance, and whether a Lancer kill would open Pursuit.
@@ -2161,11 +2161,10 @@ confirmation and keeps the tree/focus open. The main match screen never exposes
 a Research button.
 
 Mandatory city reward choices use the existing blocking popup and dispatch on
-the chosen reward with no second confirmation. Automatic 5-Coin Treasury and
-the no-placement 12-Coin Treasury use a brief notice and never create or flash
-a one-button modal. Defection home-city choice uses the same focus-safe choice
-pattern. A mandatory choice suppresses Leaderboard and other overlays until
-resolved.
+the chosen reward with no second confirmation. A no-placement automatic
+12-Coin Treasury uses a brief notice and never creates or flashes a one-button
+modal. Defection home-city choice uses the same focus-safe choice pattern. A
+mandatory choice suppresses Leaderboard and other overlays until resolved.
 
 An owner-only Achievements panel lists Engineer and Muster in fixed order with
 exact current/required progress, locked/unlocked/spent state, and plain-language
@@ -2346,8 +2345,8 @@ Release evidence must prove:
 - all 25 nodes, formulas, 13 improvements, 13 roles, five tier-3 trainables,
   contributor-loss zero outputs and resumption, Farm/Mine/Quarry marker
   restoration for Pillage/Redevelop but no other regeneration, the non-besieged
-  one-Coin income floor and Blackout/siege exceptions, milestone-choice/
-  automatic reward ordering, roads, both capacity sources, capture, Walls,
+  one-Coin income floor and Blackout/siege exceptions, every-level-5+ choice/
+  no-placement automatic reward ordering, roads, both capacity sources, capture, Walls,
   negative population, training, promotion, healing, Spoils, Pillage, and
   Disband;
 - the level-6 20-live package repair case: Mine removal leaves 5 live and -15
@@ -2361,9 +2360,9 @@ Release evidence must prove:
   placement from a different unused entitlement after removal, public +3 with
   owner-only source achievement, nested growth and reward ordering, save/resume,
   replay, and deterministic AI placement;
-- all level facts before sequential automatic-grant/first-queue facts, no ghost
-  queue for automatic Treasury, atomic preflight only through the next modal
-  boundary, and a later reward choice as its own transaction;
+- all level facts before sequential no-placement automatic-grant/first-queue
+  facts, no ghost queue for automatic Treasury, atomic preflight only through
+  the next modal boundary, and each later reward choice as its own transaction;
 - Pursuit termination/three-attack ceiling across kill, retaliation death,
   city defense, non-unit removals, promotion, chests, hidden contact, Capture,
   Wait, End Turn,
@@ -2422,8 +2421,9 @@ revision-2 playable baseline:
   Fighter/Guard defense.
 - Drill grants +2 first-hostile-city Spoils; Explosives grants terminal +1
   Pillage; Recovery grants half-cost trainable-unit Disband.
-- Reward choices after level 4 occur only at levels 5/8/11/... and pair a
-  Juggernaut with 12 Coins; intervening levels automatically grant 5 Coins.
+- Every reached level after level 4 pairs a Juggernaut with 12 Coins; lack of a
+  legal Juggernaut placement automatically grants the 12 Coins without a
+  pending choice.
   Engineer and Muster each fund one free +3-live-population shared Monument,
   with one Monument per city, no refund or same-entitlement reuse, and public
   +3 population but owner-only source-achievement provenance.
