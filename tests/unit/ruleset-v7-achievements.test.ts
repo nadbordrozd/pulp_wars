@@ -530,6 +530,38 @@ describe("ruleset-7 achievements and Monuments", () => {
     });
   });
 
+  it("does not offer or preview a Monument on a visible treasure chest", () => {
+    const base = levelTwoWithoutPopulation(
+      unlockEntitlement(exploredAllV7(initialV7(707)), "ENGINEER"),
+    );
+    const city = required(
+      base.cities.find((candidate) => candidate.ownerId === base.humanPlayerId),
+      "human city missing",
+    );
+    const at = emptyOwnedTile(base, city.id);
+    const state = checkedV7({
+      ...base,
+      treasureChests: [...base.treasureChests, at].sort(
+        (left, right) => left.y - right.y || left.x - right.x,
+      ),
+    });
+    const command = {
+      kind: "BUILD_MONUMENT",
+      achievement: "ENGINEER",
+      at,
+    } as const;
+    const view = viewForV7(state, state.humanPlayerId);
+    expect(queryPlayerCommandsV7(view)).not.toContainEqual(command);
+    expect(previewMonumentV7(view, command)).toEqual({
+      ok: false,
+      error: "NOT_OFFERED",
+    });
+    expect(applyCommandV7(state, state.humanPlayerId, command)).toMatchObject({
+      accepted: false,
+      error: { code: "INVALID_TILE" },
+    });
+  });
+
   it("uses exact canonical/player Monument event boundaries and rejects generic Monument provenance", () => {
     const unlocked = unlockEntitlement(
       exploredAllV7(initialV7(704)),

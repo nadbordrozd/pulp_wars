@@ -95,6 +95,366 @@ describe("ruleset-7 economy", () => {
     },
   );
 
+  it("keeps hidden Mountain resources observation-equivalent at the economic preview boundary", () => {
+    const forbiddenIndustry = new Set([
+      "SURVEYING",
+      "MINING",
+      "METALLURGY",
+      "QUARRYING",
+      "MASONRY",
+    ]);
+    const base = exploredAllV7(allTechsV7(initialV7(4_242)));
+    const city = required(
+      base.cities.find((candidate) => candidate.ownerId === base.humanPlayerId),
+      "human city missing",
+    );
+    const target = required(
+      base.board.tiles.find(
+        (candidate) =>
+          candidate.territoryCityId === city.id &&
+          candidate.site === null &&
+          neighbors(candidate.at).some((at) => {
+            const support = tileAt(base, at);
+            return (
+              support?.territoryCityId === city.id && support.site === null
+            );
+          }),
+      ),
+      "workshop target missing",
+    ).at;
+    const farmAt = required(
+      neighbors(target)
+        .map((at) => tileAt(base, at))
+        .find(
+          (candidate) =>
+            candidate?.territoryCityId === city.id && candidate.site === null,
+        ),
+      "farm support missing",
+    ).at;
+    const staged = checkedV7({
+      ...base,
+      nextEntityId: base.nextEntityId + 1,
+      treasureChests: [],
+      players: base.players.map((player) =>
+        player.id === base.humanPlayerId
+          ? {
+              ...player,
+              researchedTechs: player.researchedTechs.filter(
+                (tech) => !forbiddenIndustry.has(tech),
+              ),
+            }
+          : player,
+      ),
+      board: {
+        ...base.board,
+        tiles: base.board.tiles.map((tile) =>
+          same(tile.at, target)
+            ? {
+                ...tile,
+                terrain: "MOUNTAIN" as const,
+                resource: null,
+                improvement: null,
+              }
+            : same(tile.at, farmAt)
+              ? {
+                  ...tile,
+                  terrain: "GRASS" as const,
+                  resource: null,
+                  improvement: "FARM" as const,
+                }
+              : tile,
+        ),
+      },
+      cities: base.cities.map((candidate) =>
+        candidate.id === city.id
+          ? {
+              ...candidate,
+              level: 2,
+              permanentPopulation: 0,
+              economicPopulation: 2,
+              population: 0,
+              expanded: false,
+              rewards: [{ reachedLevel: 2, reward: "STOCKPILE" as const }],
+            }
+          : candidate,
+      ),
+      populationContributions: [
+        {
+          id: base.nextEntityId,
+          cityId: city.id,
+          category: "LIVE",
+          amount: 2,
+          source: { kind: "IMPROVEMENT", improvement: "FARM", at: farmAt },
+        },
+      ],
+    });
+    const make = (resource: "ORE" | "STONE" | null) =>
+      checkedV7({
+        ...staged,
+        board: {
+          ...staged.board,
+          tiles: staged.board.tiles.map((tile) =>
+            same(tile.at, target) ? { ...tile, resource } : tile,
+          ),
+        },
+      });
+    const hidden = [make(null), make("ORE"), make("STONE")];
+    const views = hidden.map((state) => viewForV7(state, state.humanPlayerId));
+    expect(new Set(views.map((view) => JSON.stringify(view))).size).toBe(1);
+    const command = { kind: "BUILD_WORKSHOP", at: target } as const;
+    const previews = hidden.map((state) => {
+      const before = JSON.stringify(state);
+      const random = state.random;
+      expect(
+        queryPlayerCommandsV7(viewForV7(state, state.humanPlayerId)),
+      ).toContainEqual({ kind: "RESEARCH", tech: "SURVEYING" });
+      const preview = previewEconomicV7(state, state.humanPlayerId, command);
+      expect(JSON.stringify(state)).toBe(before);
+      expect(state.random).toEqual(random);
+      return preview;
+    });
+    expect(previews).toEqual([
+      { ok: false, error: "NOT_OFFERED" },
+      { ok: false, error: "NOT_OFFERED" },
+      { ok: false, error: "NOT_OFFERED" },
+    ]);
+
+    const empty = required(hidden[0], "empty hidden-resource state missing");
+    const surveyed = checkedV7({
+      ...empty,
+      players: empty.players.map((player) =>
+        player.id === empty.humanPlayerId
+          ? {
+              ...player,
+              researchedTechs: required(
+                base.players.find(
+                  (candidate) => candidate.id === base.humanPlayerId,
+                ),
+                "base human player missing",
+              ).researchedTechs.filter(
+                (tech) => tech === "SURVEYING" || !forbiddenIndustry.has(tech),
+              ),
+            }
+          : player,
+      ),
+    });
+    expect(
+      queryPlayerCommandsV7(viewForV7(surveyed, surveyed.humanPlayerId)),
+    ).toContainEqual(command);
+    expect(
+      previewEconomicV7(surveyed, surveyed.humanPlayerId, command),
+    ).toEqual({
+      ok: true,
+      preview: {
+        at: target,
+        cost: 4,
+        ownerCityId: city.id,
+        populationDeltaByCity: [{ cityId: city.id, delta: 2 }],
+        coinIncomeDeltaByCity: [],
+        resultingContribution: 2,
+        capacityDelta: 0,
+        resourceRestored: null,
+        levelsReached: [],
+        distinctTypes: ["FARM"],
+        distinctFamilies: [],
+        contributingTiles: [farmAt],
+        oppositePairAxes: [],
+        capitalRoadConnected: false,
+        buildingLimitReached: false,
+        complete: true,
+      },
+    });
+    const built = applyCommandV7(surveyed, surveyed.humanPlayerId, command);
+    if (!built.accepted) throw new Error(built.error.code);
+    expect(
+      previewEconomicV7(built.state, built.state.humanPlayerId, {
+        kind: "REDEVELOP",
+        at: target,
+      }),
+    ).toMatchObject({
+      ok: true,
+      preview: {
+        cost: 0,
+        populationDeltaByCity: [{ cityId: city.id, delta: -2 }],
+        resourceRestored: null,
+        complete: true,
+      },
+    });
+  });
+
+  it("keeps exact non-graph previews at a sight edge with irrelevant fog", () => {
+    const base = exploredAllV7(allTechsV7(initialV7(4_243)));
+    const city = required(
+      base.cities.find((candidate) => candidate.ownerId === base.humanPlayerId),
+      "human city missing",
+    );
+    const edge = required(
+      base.board.tiles.find(
+        (candidate) =>
+          candidate.territoryCityId === city.id &&
+          candidate.site === null &&
+          neighbors(candidate.at).some((at) => {
+            const neighbor = tileAt(base, at);
+            return (
+              neighbor !== undefined && neighbor.territoryCityId !== city.id
+            );
+          }),
+      ),
+      "owned sight-edge tile missing",
+    );
+    const hiddenAt = required(
+      neighbors(edge.at).find((at) => {
+        const neighbor = tileAt(base, at);
+        return neighbor !== undefined && neighbor.territoryCityId !== city.id;
+      }),
+      "irrelevant fog coordinate missing",
+    );
+    const state = checkedV7({
+      ...base,
+      treasureChests: base.treasureChests.filter(
+        (chest) => !same(chest, edge.at),
+      ),
+      players: base.players.map((player) =>
+        player.id === base.humanPlayerId
+          ? {
+              ...player,
+              explored: player.explored.filter((at) => !same(at, hiddenAt)),
+            }
+          : player,
+      ),
+      board: {
+        ...base.board,
+        tiles: base.board.tiles.map((tile) =>
+          same(tile.at, edge.at)
+            ? {
+                ...tile,
+                terrain: "FOREST" as const,
+                resource: null,
+                improvement: null,
+              }
+            : tile,
+        ),
+      },
+    });
+    const command = { kind: "CLEAR_FOREST", at: edge.at } as const;
+    expect(
+      queryPlayerCommandsV7(viewForV7(state, state.humanPlayerId)),
+    ).toContainEqual(command);
+    expect(
+      previewEconomicV7(state, state.humanPlayerId, command),
+    ).toMatchObject({
+      ok: true,
+      preview: {
+        at: edge.at,
+        cost: 0,
+        ownerCityId: city.id,
+        populationDeltaByCity: [],
+        coinIncomeDeltaByCity: [],
+        resultingContribution: 0,
+        contributingTiles: [],
+        complete: true,
+      },
+    });
+  });
+
+  it("withholds connected-support coordinates hidden inside an owned footprint", () => {
+    const base = exploredAllV7(allTechsV7(initialV7(4_244)));
+    const city = required(
+      base.cities.find((candidate) => candidate.ownerId === base.humanPlayerId),
+      "human city missing",
+    );
+    const line = required(
+      base.board.tiles
+        .filter(
+          (candidate) =>
+            candidate.territoryCityId === city.id && candidate.site === null,
+        )
+        .flatMap((target) =>
+          (
+            [
+              [1, 0],
+              [0, 1],
+            ] as const
+          ).flatMap(([dx, dy]) => {
+            const first = tileAt(base, {
+              x: target.at.x + dx,
+              y: target.at.y + dy,
+            });
+            const second = tileAt(base, {
+              x: target.at.x + dx * 2,
+              y: target.at.y + dy * 2,
+            });
+            return first?.territoryCityId === city.id &&
+              first.site === null &&
+              second?.territoryCityId === city.id &&
+              second.site === null
+              ? [[target.at, first.at, second.at] as const]
+              : [];
+          }),
+        )[0],
+      "three-tile owned line missing",
+    );
+    const [target, visibleFarm, hiddenFarm] = line;
+    const state = checkedV7({
+      ...base,
+      nextEntityId: base.nextEntityId + 2,
+      treasureChests: [],
+      players: base.players.map((player) =>
+        player.id === base.humanPlayerId
+          ? {
+              ...player,
+              explored: player.explored.filter((at) => !same(at, hiddenFarm)),
+            }
+          : player,
+      ),
+      board: {
+        ...base.board,
+        tiles: base.board.tiles.map((tile) =>
+          same(tile.at, target)
+            ? { ...tile, resource: null, improvement: null }
+            : same(tile.at, visibleFarm) || same(tile.at, hiddenFarm)
+              ? {
+                  ...tile,
+                  terrain: "GRASS" as const,
+                  resource: null,
+                  improvement: "FARM" as const,
+                }
+              : tile,
+        ),
+      },
+      cities: base.cities.map((candidate) =>
+        candidate.id === city.id
+          ? {
+              ...candidate,
+              level: 2,
+              permanentPopulation: 0,
+              economicPopulation: 4,
+              population: 2,
+              expanded: false,
+              rewards: [{ reachedLevel: 2, reward: "STOCKPILE" as const }],
+            }
+          : candidate,
+      ),
+      populationContributions: [visibleFarm, hiddenFarm].map((at, index) => ({
+        id: base.nextEntityId + index,
+        cityId: city.id,
+        category: "LIVE" as const,
+        amount: 2,
+        source: {
+          kind: "IMPROVEMENT" as const,
+          improvement: "FARM" as const,
+          at,
+        },
+      })),
+    });
+    const command = { kind: "BUILD_WINDMILL", at: target } as const;
+    const view = viewForV7(state, state.humanPlayerId);
+    expect(queryPlayerCommandsV7(view)).toContainEqual(command);
+    const preview = previewEconomicV7(state, state.humanPlayerId, command);
+    expect(preview).toEqual({ ok: false, error: "NOT_OFFERED" });
+    expect(JSON.stringify(preview)).not.toContain(JSON.stringify(hiddenFarm));
+  });
+
   it("calculates capped Forge and paired Stoneworks output from the final graph", () => {
     const state = allTechsV7(initialV7(103));
     const city = state.cities.find(

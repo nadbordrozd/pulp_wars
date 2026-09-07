@@ -177,6 +177,7 @@ export function queryPlayerCommandsV7(
       !view.pendingChoices.some(
         (choice) => choice.cityId === monumentCity.id,
       ) &&
+      !view.treasureChests.some((chest) => same(chest, tile.at)) &&
       tile.site === null &&
       tile.resource === null &&
       tile.improvement === null &&
@@ -825,6 +826,15 @@ export function previewEconomicV7(
 ): EconomicPreviewResultV7 {
   if (!("at" in command) || !TILE_KINDS.includes(command.kind as never))
     return { ok: false, error: "NOT_OFFERED" };
+  const view = viewForV7(state, viewerId);
+  const offered = queryPlayerCommandsV7(view).some(
+    (candidate) =>
+      candidate.kind === command.kind &&
+      "at" in candidate &&
+      same(candidate.at, command.at),
+  );
+  if (!offered || !publicEconomicPreviewExact(view, command))
+    return { ok: false, error: "NOT_OFFERED" };
   const result = applyCommandV7(state, viewerId, command);
   if (!result.accepted) return { ok: false, error: "NOT_OFFERED" };
   const tile =
@@ -943,6 +953,75 @@ export function previewEconomicV7(
       complete: true,
     },
   };
+}
+
+function publicEconomicPreviewExact(
+  view: PlayerViewV7,
+  command: Extract<CommandV7, { at: CoordV7 }>,
+): boolean {
+  const tile = tileAtView(view, command.at);
+  if (tile?.explored !== true || tile.territoryCityId === null) return false;
+  const city = view.cities.find(
+    (candidate) => candidate.id === tile.territoryCityId,
+  );
+  if (city === undefined) return false;
+  // A changed improvement can propagate through connected same-city basics,
+  // processors, and adjacent same-owner buildings across city borders. Every
+  // tile in every owned city footprint must therefore be public before a
+  // canonical reducer result can be reported as an exact public preview.
+  const changesImprovementGraph =
+    command.kind === "REDEVELOP" ||
+    command.kind === "BUILD_ROAD" ||
+    command.kind === "BUILD_FARM" ||
+    command.kind === "BUILD_LUMBER_CAMP" ||
+    command.kind === "BUILD_MINE" ||
+    command.kind === "BUILD_QUARRY" ||
+    command.kind in SPATIAL_ECONOMIC_ACTIONS_V7;
+  const ownedCities = view.cities.filter(
+    (candidate) => candidate.ownerId === view.viewer.id,
+  );
+  const publicOwnedCityCount = view.leaderboard.find(
+    (entry) => entry.isViewer,
+  )?.cityCount;
+  if (
+    changesImprovementGraph &&
+    (publicOwnedCityCount !== ownedCities.length ||
+      ownedCities.some(
+        (candidate) => !publicCityDevelopmentFootprintKnown(view, candidate),
+      ))
+  )
+    return false;
+
+  // Reward placement is absent from this preview, so hidden occupancy matters
+  // only when automatic Treasury work could make canonical acceptance overflow.
+  // Eighteen population per board tile is a conservative upper bound on newly
+  // crossed reward levels for one economic mutation.
+  const maximumAutomaticRewardCoins = view.board.tiles.length * 18 * 12;
+  if (
+    economicCommandCanAddPopulation(command.kind) &&
+    view.viewer.coins > Number.MAX_SAFE_INTEGER - maximumAutomaticRewardCoins &&
+    view.cities.some(
+      (candidate) =>
+        candidate.ownerId === view.viewer.id &&
+        publicRewardPlacementStatus(view, candidate.id) === "UNKNOWN",
+    )
+  )
+    return false;
+  return true;
+}
+
+function economicCommandCanAddPopulation(kind: CommandV7["kind"]): boolean {
+  return (
+    kind === "HARVEST_FRUIT" ||
+    kind === "HUNT_GAME" ||
+    kind === "BUILD_FARM" ||
+    kind === "BUILD_LUMBER_CAMP" ||
+    kind === "BUILD_MINE" ||
+    kind === "BUILD_QUARRY" ||
+    (kind in SPATIAL_ECONOMIC_ACTIONS_V7 &&
+      kind !== "BUILD_MARKET" &&
+      kind !== "BUILD_BARRACKS")
+  );
 }
 
 export function previewCityCapacityV7(
