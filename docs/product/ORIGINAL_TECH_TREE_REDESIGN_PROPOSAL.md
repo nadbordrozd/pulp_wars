@@ -1,11 +1,15 @@
 # Original Technology Tree Redesign Proposal
 
-> **DRAFT — NOT IMPLEMENTED — ORIGINAL FACTION ONLY**
+> **HISTORICAL — SUPERSEDED — ORIGINAL FACTION ONLY**
 >
-> This is a review proposal, not an authoritative rules contract. It does not
-> change Ruleset 6, game code, saves, assets, AI, or the Candy faction. If the
-> direction is approved, it should be converted into a separately reviewed
-> implementation contract before any gameplay work begins.
+> This proposal records the first Ruleset-7 redesign and preserves the evidence,
+> alternatives, and arithmetic as they were reviewed. It is not the current
+> rules contract and must not be used to recover exact prices, formulas, rewards,
+> identifiers, or implementation behavior. The authoritative contract is
+> [Pulp Wars Ruleset 7](RULESET_7.md); the subsequent findings and reasons for
+> revision 2 are in the
+> [Ruleset 7 design review](RULESET_7_DESIGN_REVIEW.md). Ruleset 6 and Candy
+> remain unchanged.
 
 ## 1. Decision summary
 

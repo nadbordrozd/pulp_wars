@@ -1,12 +1,13 @@
 # Pulp Wars Ruleset 7
 
-**Status:** authoritative new-match contract; implementation may follow this
-document, but this document does not claim that implementation is complete
+**Status:** authoritative revision-2 new-match contract; the current partial
+implementation intentionally does not yet satisfy this document
 
-**Ruleset ID:** `pulp-wars-poc-7`
+**Ruleset ID:** `pulp-wars-poc-7r2`
 
 **Design history:**
 [Original technology-tree redesign proposal](ORIGINAL_TECH_TREE_REDESIGN_PROPOSAL.md)
+and [Ruleset 7 design review](RULESET_7_DESIGN_REVIEW.md)
 
 **Compatibility contract:** [Pulp Wars Ruleset 6](RULESET_6.md)
 
@@ -16,11 +17,12 @@ document, but this document does not claim that implementation is complete
 [screen flow](../ui/SCREEN_FLOW.md), and
 [art direction](../art/ART_DIRECTION.md)
 
-Ruleset 7 is the approved Original-faction implementation baseline. It freezes
-the reviewed 25-node technology graph, revised mountain economy, 13-role
-Original roster, and the Pursuit, Defection, Concealment, and Blackout state
-machines. The proposal remains design history; alternatives and review
-questions in it are not normative.
+Ruleset 7 revision 2 is the approved Original-faction implementation baseline.
+It retains the reviewed 25-node technology graph and 13-role Original roster,
+revises weak ordinary economic sites and excessive super-unit rewards, adds two
+bounded personal achievements, and preserves the Pursuit, Defection,
+Concealment, and Blackout state machines. The proposal remains design history;
+alternatives, arithmetic, and review questions in it are not normative.
 
 Ruleset 7 does not alter Ruleset 6. Candy remains fully playable only in the
 frozen Ruleset-6 route until it receives its own separately approved Ruleset-7
@@ -35,17 +37,17 @@ New v7 data uses these exact identifiers:
 
 | Boundary              | Exact value                    |
 | --------------------- | ------------------------------ |
-| Ruleset               | `pulp-wars-poc-7`              |
+| Ruleset               | `pulp-wars-poc-7r2`            |
 | Game-state schema     | `7`                            |
 | Command envelope      | `pulp-wars-command`, `7`       |
 | Canonical event batch | `pulp-wars-events`, `7`        |
 | Player event batch    | `pulp-wars-player-events`, `7` |
 | Save envelope         | `pulp-wars-save`, `7`          |
-| Browser autosave      | `pulpWars.save.v7.current`     |
+| Browser autosave      | `pulpWars.save.v7r2.current`   |
 | Replay file           | `pulp-wars-replay`, `7`        |
 | Map revision          | `SPATIAL_ECONOMY`              |
 | Faction               | `ORIGINAL`                     |
-| Faction tree          | `ORIGINAL_BASELINE_V2`         |
+| Faction tree          | `ORIGINAL_BASELINE_V3`         |
 
 Game state, setup, command/event envelopes, saves, and replays are strict exact-
 key schemas. Unknown fields, sparse arrays, unsafe integers, wrong versions,
@@ -55,10 +57,14 @@ version 1, uint32 seeds, immutable rules data, monotonic positive entity IDs,
 and round-half-up rational arithmetic remain the shared kernel contracts.
 
 Versions 1 through 6 are recognized as incompatible by v7 save/replay readers,
-preserved byte-for-byte, and never migrated or replayed under v7. Ruleset-6
-readers remain available and continue to read v6 only. The one historical v6
-save normalization for a missing `treasureChests` field remains confined to the
-v6 loader and is not copied into v7.
+preserved byte-for-byte, and never migrated or replayed under v7. The partial
+development contract `pulp-wars-poc-7` with faction tree
+`ORIGINAL_BASELINE_V2` is likewise recognized as an incompatible older v7
+identity, not corrupt data. Its saves remain untouched and its replays reject
+from their exact setup identity; there is no migration. Ruleset-6 readers
+remain available and continue to read v6 only. The one historical v6 save
+normalization for a missing `treasureChests` field remains confined to the v6
+loader and is not copied into v7.
 
 ### 1.2 Browser and headless routing
 
@@ -68,17 +74,21 @@ v6 loader and is not copied into v7.
   route, not a development-only flag.
 - Any other nonempty `ruleset` value shows an unsupported-ruleset error and
   creates no match. It never falls back to v7 or v6.
-- Ruleset 7 reads, writes, resumes, replaces, restarts, and deletes only the
-  `pulpWars.save.v7.current` autosave key. Ruleset 6 continues to own and use
+- Ruleset 7 revision 2 reads, writes, resumes, replaces, restarts, and deletes
+  only the `pulpWars.save.v7r2.current` autosave key. The older development key
+  `pulpWars.save.v7.current` is ignored and never silently deleted or replaced.
+  Ruleset 6 continues to own and use
   its unchanged historical `pulpWars.save.current` key.
-- Both autosaves may coexist. A route ignores the other version's key for Hub
+- All three autosaves may coexist. A route ignores every other contract's key for Hub
   state and save lifecycle decisions. Switching between the normal/v7 route
   and exact `?ruleset=6` route never prompts deletion or replacement of the
   other version's save. Starting a new match may offer Replace only when that
   route's own autosave exists; explicit Delete or Restart affects only that
   same route's key.
-- Headless match/batch requires `--ruleset pulp-wars-poc-7` for v7. Replay
-  dispatch selects only by the exact parsed envelope version. Unknown or
+- Headless match/batch requires `--ruleset pulp-wars-poc-7r2` for v7 revision 2. Replay dispatch selects by numeric envelope version and then requires exact
+  `setup.rulesetId`; the selected ruleset's Original faction registration and
+  each reconstructed player's state `factionTreeId` must derive to
+  `ORIGINAL_BASELINE_V3`. `MatchSetupV7` has no tree-ID field. Unknown or
   mismatched identifiers reject rather than falling back.
 
 Settings remain shared in `pulpWars.settings.v1`; save storage does not.
@@ -92,7 +102,7 @@ and content ordinals.
 
 `FactionId`: `ORIGINAL`.
 
-`FactionTreeId`: `ORIGINAL_BASELINE_V2`.
+`FactionTreeId`: `ORIGINAL_BASELINE_V3`.
 
 `TerrainId`: `GRASS`, `FOREST`, `MOUNTAIN`.
 
@@ -100,7 +110,10 @@ and content ordinals.
 
 `ImprovementId`: `FARM`, `LUMBER_CAMP`, `MINE`, `QUARRY`, `WINDMILL`,
 `SAWMILL`, `FORGE`, `STONEWORKS`, `WORKSHOP`, `GRAND_WORKS`, `MARKET`,
-`BARRACKS`. `ROAD` remains a separate boolean infrastructure layer.
+`BARRACKS`, `MONUMENT`. `ROAD` remains a separate boolean infrastructure
+layer.
+
+`AchievementId`: `ENGINEER`, `MUSTER`.
 
 `UnitRoleId`:
 
@@ -176,13 +189,14 @@ and content ordinals.
 26. `BUILD_GRAND_WORKS`
 27. `BUILD_MARKET`
 28. `BUILD_BARRACKS`
-29. `CLEAR_FOREST`
-30. `REPLANT_FOREST`
-31. `BUILD_ROAD`
-32. `REDEVELOP`
-33. `TRAIN`
-34. `CHOOSE_CITY_REWARD`
-35. `END_TURN`
+29. `BUILD_MONUMENT`
+30. `CLEAR_FOREST`
+31. `REPLANT_FOREST`
+32. `BUILD_ROAD`
+33. `REDEVELOP`
+34. `TRAIN`
+35. `CHOOSE_CITY_REWARD`
+36. `END_TURN`
 
 `RewardId`: `SURVEY`, `STOCKPILE`, `WALLS`, `MILITIA`, `EXPAND`, `BOOM`,
 `JUGGERNAUT`, `TREASURY`.
@@ -191,7 +205,9 @@ and content ordinals.
 `TURN_ENDED`, `TECH_RESEARCHED`, `FRUIT_HARVESTED`, `GAME_HUNTED`,
 `ECONOMIC_BUILDING_BUILT`, `ECONOMIC_BUILDING_REMOVED`, `FOREST_CLEARED`,
 `FOREST_REPLANTED`, `ROAD_BUILT`, `CITY_ECONOMY_CHANGED`, `CITY_LEVELED_UP`,
-`CITY_REWARD_QUEUED`, `CITY_REWARD_CHOSEN`, `CITY_TERRITORY_EXPANDED`,
+`CITY_REWARD_QUEUED`, `CITY_REWARD_CHOSEN`,
+`CITY_REWARD_AUTOMATICALLY_GRANTED`, `CITY_TERRITORY_EXPANDED`,
+`ACHIEVEMENT_UNLOCKED`, `MONUMENT_BUILT`,
 `UNIT_TRAINED`, `UNIT_REWARD_GRANTED`, `UNIT_HEALED`, `UNIT_PUSHED`,
 `UNIT_MOVED`, `UNIT_PURSUED`, `UNIT_MOVE_INTERRUPTED`, `TILES_REVEALED`,
 `COMBAT_RESOLVED`, `PURSUIT_OPENED`, `PURSUIT_ENDED`, `DEFECTION_OFFERED`,
@@ -226,8 +242,9 @@ otherwise.
 For query ordering, target is tile `at`, Move/Pursue destination, target
 unit/city's current coordinate, or `(-1,-1)` when none. Acting entity is unit,
 then city, then zero. Referenced content is Technology order, UnitRole order,
-Reward order, target entity ID, and (for equal Defection targets) home-city ID;
-otherwise zero. This ordering is derived from public view only.
+Reward order, Achievement order, target entity ID, and (for equal Defection
+targets) home-city ID; otherwise zero. This ordering is derived from public
+view only.
 
 ## 2. Match setup, map generation, players, and turns
 
@@ -235,7 +252,7 @@ otherwise zero. This ordering is derived from public view only.
 
 ```ts
 interface MatchSetupV7 {
-  readonly rulesetId: "pulp-wars-poc-7";
+  readonly rulesetId: "pulp-wars-poc-7r2";
   readonly seed: number; // uint32
   readonly width: 11 | 14 | 16 | 20 | 25;
   readonly height: 11 | 14 | 16 | 20 | 25;
@@ -319,8 +336,9 @@ draw or chest removal. Pursue cannot enter a chest coordinate.
 ### 2.3 Players, relationships, victory, and turn sequence
 
 All seats begin with 5 Coins, `GATHERING`, a level-1 capital, one full-HP
-Original Fighter assigned to that capital, and radius-2 exploration. Initial
-income is not prepaid. `round` starts at 1. Turn order is stored explicitly.
+Original Fighter assigned to that capital, locked/unspent `ENGINEER` and
+`MUSTER` entitlements, and radius-2 exploration. Initial income is not prepaid.
+`round` starts at 1. Turn order is stored explicitly.
 
 In Rival mode every different owner is hostile. In Cooperative mode the stored
 `humanPlayerId` is hostile to every AI, every pair of non-human AI seats is
@@ -349,7 +367,9 @@ Start Turn has this exact transaction order:
 4. apply successful-conversion sight and emit its reveal facts;
 5. activate `PENDING` Blackouts on that player's cities in ascending city ID;
 6. calculate city income after conversion siege and Blackout suppression,
-   credit it in city-ID order, then emit `INCOME_AWARDED`.
+   credit it in city-ID order, then emit `INCOME_AWARDED`;
+7. evaluate that player's still-locked achievements after all conversion and
+   income facts.
 
 End Turn is unavailable during a mandatory choice or open Pursuit. Its exact
 order is:
@@ -375,7 +395,7 @@ with the exact replacements below. It has no Candy or Chocolate-Wall state.
 ```ts
 interface GameStateV7 {
   readonly schemaVersion: 7;
-  readonly rulesetId: "pulp-wars-poc-7";
+  readonly rulesetId: "pulp-wars-poc-7r2";
   readonly setup: MatchSetupV7;
   readonly random: {
     readonly algorithm: "MULBERRY32";
@@ -406,12 +426,19 @@ interface PlayerStateV7 {
   readonly controller: "HUMAN" | "AI";
   readonly color: "CORAL" | "TEAL" | "GOLD" | "VIOLET";
   readonly faction: "ORIGINAL";
-  readonly factionTreeId: "ORIGINAL_BASELINE_V2";
+  readonly factionTreeId: "ORIGINAL_BASELINE_V3";
   readonly status: "ACTIVE" | "ELIMINATED";
   readonly coins: number;
   readonly researchedTechs: readonly TechnologyId[];
   readonly explored: readonly Coord[];
   readonly spoilsClaimedCityIds: readonly CityId[];
+  readonly achievementEntitlements: readonly AchievementEntitlementV7[];
+}
+
+interface AchievementEntitlementV7 {
+  readonly achievement: AchievementId;
+  readonly unlocked: boolean;
+  readonly spent: boolean;
 }
 
 interface TileStateV7 {
@@ -507,7 +534,7 @@ interface DefectionMarkV7 {
 interface SaboteurExposureV7 {
   readonly unitId: UnitId;
   readonly anchorPlayerId: PlayerId;
-  readonly reason: "ATTACK" | "BLACKOUT";
+  readonly reason: "ATTACK" | "PILLAGE" | "BLACKOUT";
   readonly clearsAtAnchorNextEndTurn: true;
 }
 
@@ -531,6 +558,11 @@ type PopulationContributionV7 = {
         readonly kind: "CITY_REWARD";
         readonly reward: "BOOM";
         readonly reachedLevel: 4;
+        readonly at: Coord;
+      }
+    | {
+        readonly kind: "MONUMENT";
+        readonly achievement: AchievementId;
         readonly at: Coord;
       };
 };
@@ -565,8 +597,24 @@ not share cells because v7 contains units only. Every coordinate is on-board;
 every home/territory/contribution/mark reference resolves; role-specific state
 matches its role; all mark endpoints are different living units at parse time;
 all exposure records name a living Saboteur and active anchor player.
-Only population-producing resources/improvements and Boom create population
-contribution records; Market and Barracks never create zero-valued records.
+Each player's `achievementEntitlements` contains exactly `ENGINEER`, then
+`MUSTER`. A spent entitlement is unlocked; neither flag ever changes from true
+to false. Missing, duplicate, reordered, or inconsistent achievement state is
+invalid under the revision-2 identity. Only population-producing
+resources/improvements, Boom, and Monument create population contribution
+records; Market and Barracks never create zero-valued records. Every built
+population improvement has exactly one matching LIVE record whose amount is
+updated in place and may be zero while required contributors are absent. Every
+Monument has exactly one matching +3 LIVE contribution naming the achievement
+whose entitlement placed it.
+
+City reward history contains at most one entry per reached level and none above
+the current level. At most one pending choice exists globally; it is the first
+unrewarded choice level in city-ID/reached-level scan order. Automatic Treasury
+levels never appear in `pendingChoices`. Any later unrewarded levels are legal
+only while that earlier modal choice blocks the settlement scan. The recorded
+reward at level 2/3/4 or a 5/8/11/... milestone must be legal for that level;
+every other recorded level at 5+ is Treasury.
 
 Defection capacity is an ordered entitlement rather than a numeric slot field.
 For each city, living assigned units consume capacity first; surviving marks
@@ -577,7 +625,9 @@ after every capacity/ownership/unit-count mutation. Training requires
 and therefore can invalidate later reservations; cancelled reservations never
 revive automatically.
 
-## 4. Cities, population, territory, capacity, and rewards
+## 4. Cities, population, territory, capacity, rewards, and achievements
+
+### 4.1 Cities, growth, capacity, and level rewards
 
 For level `L`:
 
@@ -585,7 +635,9 @@ For level `L`:
 growthSpent(L) = L * (L + 1) / 2 - 1
 population = permanentPopulation + economicPopulation - growthSpent(level)
 next threshold = L + 1
-capacity = L + 1 + (live owned Barracks ? 1 : 0)
+capacity = L + 1
+  + (current owner has Fortification ? 1 : 0)
+  + (live owned Barracks ? 2 : 0)
 ```
 
 All arithmetic is safe-integer, preflighted, and atomic. Positive changes level
@@ -597,10 +649,15 @@ capacity. At Start Turn a non-besieged city produces:
 base = level + (isCapital ? 1 : 0)
 market = current Market output
 negative = min(0, population)
-preBlackout = max(0, base + market + negative)
+preBlackout = max(1, base + market + negative)
 blackoutLoss = ACTIVE ? min(3, preBlackout) : 0
 income = preBlackout - blackoutLoss
 ```
+
+The one-Coin floor applies to every non-besieged city, including a non-capital,
+after negative population. It is not credit or a population adjustment. Siege
+still sets income to zero, and an active Blackout may suppress the floor for its
+affected turn; the ordinary recovery boundary restores it.
 
 An enemy on the city center besieges it: zero income, no training, and no
 economic construction. Existing mandatory rewards remain resolvable. A unit
@@ -615,22 +672,90 @@ Expand permanently claims neutral cells in its centered 5 x 5, preserves cells
 assigned to other cities, and reveals every newly claimed cell. Capture
 transfers the exact current footprint. A tile belongs to at most one city.
 
-Rewards remain mandatory and ordered:
+Each reached level receives exactly one stored reward:
 
-| Reached level | Choice A                        | Choice B                      |
-| ------------: | ------------------------------- | ----------------------------- |
-|             2 | Survey: reveal radius 3         | Stockpile: +4 Coins           |
-|             3 | Walls: 4x city defense          | Militia: free Fighter         |
-|             4 | Expand: neutral 5 x 5 footprint | Boom: +3 permanent population |
-|            5+ | Juggernaut reward unit          | Treasury: +5 Coins            |
+|                Reached level | Resolution                                                               |
+| ---------------------------: | ------------------------------------------------------------------------ |
+|                            2 | choose Survey: reveal radius 3, or Stockpile: +4 Coins                   |
+|                            3 | choose Walls: 4x city defense, or Militia: free Fighter                  |
+|                            4 | choose Expand: neutral 5 x 5 footprint, or Boom: +3 permanent population |
+| `L >= 5` and `(L - 5) % 3=0` | choose Juggernaut reward unit, or Treasury: +12 Coins                    |
+|    all other levels `L >= 5` | automatically grant Treasury: +5 Coins; never create a pending choice    |
 
-New rewards append in city-ID/reached-level order. Only the queue head may
-resolve. Boom-generated rewards insert before later work. Militia/Juggernaut
-uses empty center, then owned traversable city tiles by distance and `(y,x)`;
-otherwise that arm is unavailable. Reward units are full-health, assigned,
-exhausted, and may overfill capacity. A pending Blackout does not block a
-reward; a reward-created unit can cancel an uncovered Defection reservation
-under the entitlement rule.
+After an economy mutation, every new `CITY_LEVELED_UP` fact is emitted before
+this reward scan begins. Reward settlement scans cities by city ID and
+unrewarded reached levels in ascending order. It automatically grants and
+records each no-choice Treasury,
+emitting `CITY_REWARD_AUTOMATICALLY_GRANTED`, before advancing to the next
+level. At the first level requiring input it creates the sole pending choice
+and stops. Resolving that choice records it and resumes the same scan before
+ordinary play. Thus no automatic level creates a ghost `PendingChoice`, and a
+level-4 Boom resolves any newly reached automatic rewards or the next modal
+choice before later city work.
+
+At a level-5/8/11/... milestone, if no legal Juggernaut placement exists when
+that reward becomes next, Treasury is the only usable arm and is granted
+automatically for 12 Coins with the same event/history contract. Otherwise the
+two-arm choice is queued. Militia/Juggernaut uses empty center, then owned
+traversable city tiles by distance and `(y,x)`; an unavailable unit arm may not
+be chosen. Reward units are full-health, assigned, exhausted, and may overfill
+capacity. A pending Blackout does not block a reward; a reward-created unit can
+cancel an uncovered Defection reservation under the entitlement rule.
+
+City level never decreases, and reward history is keyed by unique reached
+level. Capture, later population loss, rebuilding, and recomputation therefore
+cannot repeat any reward. Coin overflow, unit placement, population changes,
+all deterministic reward work through the next modal boundary, and event/ID
+allocation are preflighted before the accepted command mutates state. A later
+player choice is not knowable or preflighted by the command that first exposes
+its modal; resolving that choice is its own accepted, atomic transaction.
+
+### 4.2 Personal achievements and Monuments
+
+Achievements are personal deterministic milestones, never races. Each player
+begins with locked, unspent `ENGINEER` and `MUSTER` entitlements. Progress may
+fall, but unlocking is permanent:
+
+- **Engineer:** unlock when one currently owned `WINDMILL`, `SAWMILL`, `FORGE`,
+  `STONEWORKS`, `WORKSHOP`, or `GRAND_WORKS` has a final current individual
+  live population output of at least 6 after the dependency-ordered
+  recomputation in section 5.3. Basic improvements, Markets, Barracks, and
+  Monuments do not qualify. Workshop's present maximum is 5, so it cannot
+  satisfy the threshold under this revision even though it remains explicitly
+  in the population-building class.
+- **Muster:** unlock when the player simultaneously owns living units of at
+  least four distinct trainable roles. Fighter and any technology-trained,
+  converted, treasure-granted, or otherwise reward-created trainable role
+  count. Multiple units of one role count once. Reward-only Juggernaut does not
+  count, and current research ownership is irrelevant.
+
+After the final ownership, unit, economy, and reward mutation of each accepted
+command or automatic turn boundary that can change either condition, evaluate
+still-locked achievements in `ENGINEER`, `MUSTER` order. Unlocking emits
+`ACHIEVEMENT_UNLOCKED { playerId, achievement }` in that same batch and does not
+consume a command, Coin, action, or PRNG draw. It reveals no enemy state.
+
+`BUILD_MONUMENT { achievement, at }` spends one unlocked, unspent entitlement.
+It costs 0 and places the shared `MONUMENT` improvement with +3 LIVE population.
+The target must be an explored, owned, non-site tile with no resource or
+improvement, in a non-besieged and non-blacked-out city with no pending reward.
+Any terrain is legal, an existing Road remains, and each city may contain at
+most one Monument. The command marks the entitlement spent, creates the exact
+live contribution, recomputes growth/rewards, and emits `MONUMENT_BUILT` before
+economy and level facts.
+
+Unlock and spent state remain with the player for the match. Loss, capture,
+Pillage, or Redevelop never refunds a consumed entitlement or re-triggers its
+achievement. After a Monument is removed, the same spent entitlement cannot
+replace it, but the current owner may spend a different unlocked entitlement
+on that now-eligible city if one remains unused. A captured Monument and its +3
+contribution transfer with the city like other live improvements; its original
+achievement provenance remains on the contribution, without an original-player
+link and without spending or requiring the captor's matching entitlement. The
+captor's own entitlements remain independent. Consequently a player can fund
+at most two placements but can own more than two captured Monuments and receive
+more than +6 Monument population. A Monument can be Pillaged or Redeveloped and
+never produces Coins, recurring triggers, or further achievement progress.
 
 ## 5. Technology and economy
 
@@ -669,7 +794,7 @@ tier 3 = 9 + 3 * (C - 1)
 |  18 | Mobility   |    2 | Raiding       | Scouting        | Raider; Charge                                                            |
 |  19 | Mobility   |    3 | Maneuver      | Raiding         | Lancer; Scout/Raider/Lancer ignore hostile ZOC                            |
 |  20 | Warfare    |    1 | Drill         | —               | Guard; first-capture Spoils                                               |
-|  21 | Warfare    |    2 | Fortification | Drill           | Fighter/Guard 2x defense in unwalled friendly city                        |
+|  21 | Warfare    |    2 | Fortification | Drill           | Fighter/Guard 2x defense in unwalled friendly city; +1 capacity per city  |
 |  22 | Warfare    |    3 | Explosives    | Fortification   | Breacher; Pillage                                                         |
 |  23 | Warfare    |    2 | Medicine      | Drill           | Medic; Heal 4                                                             |
 |  24 | Warfare    |    3 | Recovery      | Medicine        | Heal 6; idle friendly recovery 6; Disband                                 |
@@ -698,8 +823,19 @@ Drill
 └── Medicine ───── Recovery
 ```
 
-Every non-root has exactly one prerequisite. There are no cross-branch hidden
-requirements or faction fallback nodes.
+Every non-root has exactly one research prerequisite, and there are no faction
+fallback nodes. The displayed placement rules for Workshop, Grand Works, and
+Market still create intentional cross-branch construction requirements; those
+are not additional research edges.
+
+Masonry reserves design room for one optional future trainable wildcard role.
+Revision 2 does not define a role ID, stats, ability, command, art, UI control,
+or serialization for it, and Stoneworks must justify Masonry without it. A
+later contract may use this extension point only for a coherent battlefield job
+shown by playtest to be missing; it may not be a random unit, a generic stat
+upgrade, or a compulsory counter absent from the current roster. It adds no
+26th technology and requires a separately versioned review before becoming
+gameplay.
 
 ### 5.2 Resources, visibility, and basic actions
 
@@ -712,14 +848,25 @@ Tile economy requires an explored tile assigned to an owned non-besieged city
 without a pending reward for that city. A unit is not required and does not
 block the action. Roads coexist and do not change validity.
 
-| Action            | Tech      | Exact target                    | Cost | Result                                     |
-| ----------------- | --------- | ------------------------------- | ---: | ------------------------------------------ |
-| Harvest Fruit     | Gathering | Grass + Fruit                   |    2 | consume resource; +1 permanent population  |
-| Hunt Game         | Hunting   | Forest + Game                   |    2 | consume resource; +1 permanent population  |
-| Build Farm        | Farming   | Grass + Fertile Ground          |    5 | consume marker; Farm; +2 live population   |
-| Build Lumber Camp | Forestry  | Forest, no resource/improvement |    3 | Forest remains; +1 live population         |
-| Build Mine        | Mining    | Mountain + Ore                  |    6 | consume marker; Mine; +4 live population   |
-| Build Quarry      | Quarrying | Mountain + Stone                |    5 | consume marker; Quarry; +3 live population |
+| Action            | Tech      | Exact target                    | Cost | Result                                    |
+| ----------------- | --------- | ------------------------------- | ---: | ----------------------------------------- |
+| Harvest Fruit     | Gathering | Grass + Fruit                   |    2 | consume resource; +1 permanent population |
+| Hunt Game         | Hunting   | Forest + Game                   |    2 | consume resource; +1 permanent population |
+| Build Farm        | Farming   | Grass + Fertile Ground          |    5 | cover marker; Farm; +2 live population    |
+| Build Lumber Camp | Forestry  | Forest, no resource/improvement |    3 | Forest remains; +1 live population        |
+| Build Mine        | Mining    | Mountain + Ore                  |    6 | cover marker; Mine; +4 live population    |
+| Build Quarry      | Quarrying | Mountain + Stone                |    5 | cover marker; Quarry; +3 live population  |
+
+Building a Farm, Mine, or Quarry replaces and covers its qualifying production
+marker while the improvement exists: the serialized tile's `resource` field is
+`null`, so no new underlying-resource field is added. Removing that improvement
+by either Redevelop or Pillage restores `FERTILE_GROUND`, `ORE`, or `STONE`
+respectively on the unchanged terrain. Removing a Lumber Camp leaves its
+existing Forest but restores no Game. Harvested Fruit and Game never regenerate,
+and removal of any other improvement restores no resource. Restoration grants
+no refund or population; rebuilding pays the normal Coin cost and recreates the
+ordinary live contribution. The restored marker follows its normal visibility
+gate in every projected tile view.
 
 Clear Forest requires Forestry, costs zero, targets owned explored Forest with
 no site/resource/improvement, preserves Road, converts it to Grass, and grants
@@ -736,14 +883,14 @@ friendly contributors.
 
 | Improvement | Cost | Placement/limit                                    | Exact live output                                                                                                                  |
 | ----------- | ---: | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| Windmill    |    5 | one/city; touches Farm                             | +1 per Farm in touching orthogonally connected same-city cluster; cap 8                                                            |
+| Windmill    |    5 | one/city; touches Farm                             | 0 with no reachable Farm; otherwise +2 base plus +1 per Farm in touching orthogonally connected same-city cluster; total cap 8     |
 | Sawmill     |    5 | one/city; touches Lumber Camp                      | +1 per Camp in touching orthogonally connected same-city cluster; cap 8                                                            |
 | Forge       |    6 | one/city                                           | +3 per adjacent same-city Mine; cap 18                                                                                             |
-| Stoneworks  |    6 | one/city                                           | +2 per adjacent same-city Quarry plus +2 per complete N/S, E/W, NE/SW, or NW/SE pair; cap 16                                       |
-| Workshop    |    4 | one/city; at least two adjacent basic types        | +1 per distinct Farm/Camp/Mine/Quarry type; 2–4                                                                                    |
-| Grand Works |    7 | one/city; at least three adjacent processor types  | +2 per distinct Windmill/Sawmill/Forge/Stoneworks type; 6 or 8                                                                     |
+| Stoneworks  |    6 | one/city; at least one adjacent same-city Quarry   | 0 with no adjacent same-city Quarry; otherwise +2 base, +2 per Quarry, and +2 per complete N/S, E/W, NE/SW, or NW/SE pair; cap 16  |
+| Workshop    |    4 | one/city; at least one adjacent basic type         | 0 with no adjacent Farm/Camp/Mine/Quarry type; otherwise +1 base plus +1 per distinct type; 2–5                                    |
+| Grand Works |    7 | one/city; at least two adjacent processor types    | 0 with fewer than two qualifying types; otherwise +4 base plus +2 per distinct qualifying type; 8, 10, or 12; cap 12               |
 | Market      |    7 | one/city; at least two adjacent families           | +1 recurring Coin for each Agriculture/Timber/Metal/Stone family, plus 1 when adjacent to a capital-connected friendly Road; cap 5 |
-| Barracks    |    6 | one/city; empty owned tile adjacent to city center | +1 unit capacity; no population or Coins                                                                                           |
+| Barracks    |    4 | one/city; empty owned tile adjacent to city center | +2 unit capacity; no population or Coins                                                                                           |
 
 All listed buildings target an owned, explored, non-site tile with no resource
 or improvement in a non-besieged city without a pending city reward. Except for
@@ -753,8 +900,23 @@ preserved. Barracks is an improvement for occupancy, destruction, capture,
 serialization, selection, and Redevelop, but not an economic-population or
 Market family contributor.
 
+Placement evaluates the listed minimum against the current graph. After
+construction, a Windmill, Stoneworks, Workshop, or Grand Works remains on the
+map when contributors are lost but produces zero below its minimum and resumes
+its formula when qualifying support is rebuilt. Compute basic-improvement
+contributions first; then specialized Windmill, Sawmill, Forge, and Stoneworks
+outputs; then Workshop and Grand Works. Grand Works counts a distinct adjacent
+Windmill/Sawmill/Forge/Stoneworks type only when that individual processor's
+current output is positive, so an empty zero-output Forge cannot qualify it.
+This dependency is acyclic. Market's unchanged family formula counts the
+adjacent improvement families stated above and does not acquire a positive-
+output requirement.
+
 `REDEVELOP` requires Grand Works and removes any owned improvement, including
-Barracks, without cost/refund/resource restoration. `BUILD_ROAD` requires Roads,
+Barracks or Monument, without cost, refund, or achievement-entitlement
+restoration. It restores only the Farm/Mine/Quarry production markers defined
+in section 5.2.
+`BUILD_ROAD` requires Roads,
 costs 2, targets an explored owned non-settlement tile without Road, and may
 coexist with any resource/improvement/unit. Road components and discounts use
 orthogonal edges only; Market adjacency remains eight-way.
@@ -773,23 +935,40 @@ capital. Capture recomputes it immediately.
   improvement in hostile territory may destroy it and gain 1 Coin. It may
   follow ordinary Move but not Attack, Heal, Recover, Capture, another special,
   or Pursuit. It is terminal. It never targets Roads, terrain, resources, city
-  centers, or Walls. Barracks destruction immediately recomputes capacity and
-  reservations.
+  centers, or Walls. Destruction restores only the Farm/Mine/Quarry production
+  marker defined in section 5.2; all other targets restore no resource.
+  Barracks destruction immediately recomputes capacity and reservations.
+- **Saboteur Pillage:** a Saboteur may Pillage without Explosives under the
+  same target, payout, and terminal-action rules. Actor ownership/role is
+  validated before applying this exception, so it cannot disclose a concealed
+  or guessed enemy entity. A successful Saboteur Pillage exposes it to the
+  improvement city's owner and formal allies through that owner's next accepted
+  End Turn, exactly as an Attack exposure; Pillage has no separate cooldown.
+  Every other role still requires Explosives.
 - **Disband:** with Recovery, an owned trainable role may remove itself for
   `floor(trainingCost / 2)` Coins. It may follow ordinary Move but not another
   primary action or Pursuit and is terminal. Juggernaut has no refund and may
   not Disband. Converted trainable units use their v7 role cost. Removal frees
   home-city capacity before reservation revalidation.
-- **Barracks:** one live owned Barracks raises only its city's capacity by 1.
+- **Barracks:** one live owned Barracks raises only its city's capacity by 2.
   Losing it may leave a legal over-capacity city; no unit is destroyed and
   training remains disabled until usage plus reservations is below capacity.
+- **Fortification:** while its current owner has Fortification, every owned
+  city has +1 capacity, including newly captured cities. Research only adds
+  capacity. Capture or any ownership change recomputes the old/new owner tech
+  effect and then revalidates Defection reservations; capacity loss never
+  destroys an existing unit.
 
 After build, removal, capture, territory transfer, or destruction, recompute
-affected city live economy from the final graph in city-ID order, then resolve
-levels in city-ID/reached-level order. Building/destruction/capture facts emit
-first, then `CITY_ECONOMY_CHANGED`, then each `CITY_LEVELED_UP` immediately
-followed by `CITY_REWARD_QUEUED`. Capacity-reservation cancellation facts emit
-after the mutation fact and before economy/level facts.
+affected city live economy from the final graph in city-ID order. Emit the
+building/destruction/capture fact first; capacity-reservation cancellation
+facts follow that mutation fact; then emit `CITY_ECONOMY_CHANGED`. Apply every
+reachable level increase and emit all `CITY_LEVELED_UP` facts in
+city-ID/reached-level order before reward settlement. Then scan unrewarded
+levels in that same order: emit and record each automatic Treasury grant, or
+emit the first `CITY_REWARD_QUEUED` and stop at that modal boundary. Never emit
+a queued fact for an automatic grant, and never pre-create facts for choices
+beyond the first pending modal.
 
 ## 6. Original roster, movement, combat, and lifecycle
 
@@ -807,7 +986,7 @@ Stats are base values; no technology silently mutates a numeric role stat.
 | Raider     | Raiding      |    4 |  10 |      2 |       1 |    2 |     1 |         1 | Yes                |
 | Medic      | Medicine     |    4 |  10 |    0.5 |     1.5 |    1 |     1 |         1 | Yes                |
 | Catapult   | Sawmilling   |    8 |  10 |    3.5 |     0.5 |    1 |     3 |         2 | No                 |
-| Saboteur   | Fieldcraft   |    7 |  10 |      2 |       1 |    2 |     1 |         1 | Yes                |
+| Saboteur   | Fieldcraft   |    6 |  10 |      2 |       1 |    2 |     1 |         1 | Yes                |
 | Heavy      | Metallurgy   |    7 |  20 |    3.5 |     3.5 |    1 |     1 |         1 | Yes                |
 | Lancer     | Maneuver     |    9 |  12 |      3 |     1.5 |    3 |     1 |         1 | Yes                |
 | Breacher   | Explosives   |    6 |  10 |      4 |       1 |    1 |     1 |         1 | No                 |
@@ -824,6 +1003,13 @@ terrain, city, Walls, and Fortification never improve it. Guard, Catapult, and
 Breacher cannot Attack after Move. Catapult cannot fire at range 1, retaliate
 at range 1, Capture, or advance. Marksman attacks range 1–2 and does not
 advance on a ranged kill.
+
+Minimum range limits only the chosen target. An adjacent enemy cannot be
+targeted by a Catapult, but its presence does not globally silence that
+Catapult: if action state and geometry permit, the Catapult may still attack a
+different visible hostile unit at range 2–3. Occupancy, ZOC, screening, and the
+adjacent unit's own attack create the close-range pressure through ordinary
+rules.
 
 Scout sight is 2. Fieldcraft makes Marksman sight 2 and removes Forest movement
 termination for both Scout and Marksman. Other base sight is 1. Surveying adds
@@ -909,6 +1095,17 @@ normal sight. A ranged kill never advances. Every surviving eligible Lancer
 strike retaliates normally. No rule contains a role-ID-specific damage bonus:
 all counters emerge from these universal stats, ranges, actions, geometry,
 retaliation, terrain, city defense, capacity, and price.
+
+Against a full-health 15-HP Guard under 4x Walls, a full-health Attack-3.5
+Catapult initially deals 4 damage. With no other interference and one owner
+heal between firing turns, one Catapult makes no lasting progress against
+either ordinary friendly recovery 4 or Recovery 6. Two Catapults kill in three
+firing turns under either heal rate; the per-turn shot sequences are `4,4`,
+then `4,6`, then `5` against heal 4 and `4,4`, then `4,5`, then `5,5` against
+heal 6. Three Catapults kill in two firing turns. One full-health Catapult plus
+one full-health Breacher kills the same full-health defender in one coordinated
+turn if both already have legal attacks. These are deterministic diagnostic
+scenarios, not proof that either siege role is balanced or survives the setup.
 
 ### 6.4 Portable faction archetypes
 
@@ -1041,6 +1238,15 @@ mark. Moving/pushing either endpoint out of range, death/removal, source or
 target conversion, relationship change, player elimination, reserved-city
 capture, Barracks loss, or capacity displacement can cancel.
 
+Retreat is geometry, not a blanket reply. A Move-1 Guard offered at range 2
+can ordinarily step directly away to range 3, subject to terrain, occupancy,
+ZOC, and bounds. The same Guard offered at range 1 can reach only range 2 in
+one ordinary Move and therefore cannot cancel by retreat alone; it must kill or
+displace the Envoy, receive help, exploit terrain/road geometry available under
+ordinary rules, or expect the Envoy's next movement to be revalidated. UI and
+AI must calculate the actual endpoints rather than presenting “move away” as a
+universal escape.
+
 On success, atomically:
 
 1. remove the target from its former home-city count;
@@ -1085,10 +1291,12 @@ after every movement step, ownership change, death, spawn, and turn boundary.
 
 An ordinary Attack by a Saboteur creates an exposure to the target owner and
 its formal allies through the end of that owner's next accepted End Turn.
-Blackout creates the same timed exposure to the target city owner. Repeated
-exposure extends to the new boundary. Exposure changes observation only; it
-does not change combat stats, target legality for a viewer that still cannot
-observe it, or terrain exploration.
+Pillage creates the same exposure to the improvement city's owner, and Blackout
+creates it for the target city owner. Repeated exposure extends to the new
+boundary. Exposure changes observation only; it does not change combat stats,
+target legality for a viewer that still cannot observe it, or terrain
+exploration. Pillage uses no Blackout cooldown and does not create city
+Blackout/recovery state.
 
 `BLACKOUT_CITY { unitId, cityId }` is a terminal primary action after optional
 ordinary Move. It requires:
@@ -1203,6 +1411,11 @@ type CommandV7 =
   | { readonly kind: "RESEARCH"; readonly tech: TechnologyId }
   | { readonly kind: TileCommandKindV7; readonly at: Coord }
   | {
+      readonly kind: "BUILD_MONUMENT";
+      readonly achievement: AchievementId;
+      readonly at: Coord;
+    }
+  | {
       readonly kind: "TRAIN";
       readonly cityId: CityId;
       readonly role: UnitRoleId;
@@ -1216,10 +1429,10 @@ type CommandV7 =
   | { readonly kind: "END_TURN" };
 ```
 
-`TileCommandKindV7` is exactly command ordinals 15–32. Attack has no structure
-arm in Original-only v7. Command envelope keys are exactly `format`, `version`,
-`command`. Every parser checks exact payload keys and frozen IDs before rule
-validation.
+`TileCommandKindV7` is command ordinals 15–28 and 30–33; Monument has its
+separate achievement-bearing arm. Attack has no structure arm in Original-only
+v7. Command envelope keys are exactly `format`, `version`, `command`. Every
+parser checks exact payload keys and frozen IDs before rule validation.
 
 ### 8.2 Common validation and observation-safe errors
 
@@ -1250,6 +1463,9 @@ Tile commands validate in this exact order:
 
 Redevelop omits building/placement gates; Clear/Replant use their specific
 invalid-tile code. Barracks checks its one-per-city limit before adjacency.
+Monument follows bounds/exploration/owned-city, siege, Blackout, pending-reward,
+one-per-city, and empty-tile gates, then `ACHIEVEMENT_NOT_UNLOCKED` and
+`ACHIEVEMENT_ENTITLEMENT_SPENT`, in that order; it has no Coin or tech gate.
 Research after common gates is `TECH_NOT_FOUND`,
 `TECH_ALREADY_RESEARCHED`, `TECH_PREREQUISITE_MISSING`,
 `INSUFFICIENT_COINS`, `INTEGER_OVERFLOW`. Train validates city existence,
@@ -1269,8 +1485,10 @@ New commands use these exact post-actor orders:
 - Blackout: `UNIT_ROLE_INVALID`, `UNIT_ALREADY_ACTED`, `CITY_NOT_FOUND`,
   `TARGET_ALLIED`, `TARGET_OUT_OF_RANGE`, `BLACKOUT_PROTECTED`,
   `BLACKOUT_COOLDOWN`, `SABOTEUR_DETECTED`, `INTEGER_OVERFLOW`.
-- Pillage: `TECH_REQUIRED`, `UNIT_ALREADY_ACTED`,
-  `PILLAGE_INVALID_TARGET`, `INTEGER_OVERFLOW`.
+- Pillage: `UNIT_ALREADY_ACTED`, then `TECH_REQUIRED` unless the already
+  validated owned actor is a Saboteur, then `PILLAGE_INVALID_TARGET`,
+  `INTEGER_OVERFLOW`. The role exception is never evaluated for a missing,
+  unowned, or concealed guessed actor.
 - Disband: `TECH_REQUIRED`, `UNIT_ROLE_INVALID`, `UNIT_ALREADY_ACTED`,
   `INTEGER_OVERFLOW`.
 - End Turn: after common gates, `PURSUIT_MUST_END` if any owned Lancer has an
@@ -1295,23 +1513,26 @@ interface EventEnvelopeV7 {
 Match creation emits the same envelope at `commandIndex: 0` for its initial
 Start Turn. Later batches correspond one-to-one with accepted commands.
 
-| Event                         | Exact payload                                                                                                          |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `PURSUIT_OPENED`              | `{ unitId, attacksUsed, attacksRemaining }`                                                                            |
-| `UNIT_PURSUED`                | `{ unitId, path, from, to }`                                                                                           |
-| `PURSUIT_ENDED`               | `{ unitId, attacksUsed, reason: NONLETHAL \| THIRD_ATTACK \| ATTACKER_DIED \| EXPLICIT_END \| STATE_CANCELLED }`       |
-| `DEFECTION_OFFERED`           | `{ markId, sourceUnitId, targetUnitId, initiatingPlayerId, targetOwnerId, reservedHomeCityId, offeredAtCommandIndex }` |
-| `DEFECTION_ARMED`             | `{ markId, sourceUnitId, targetUnitId, targetOwnerId }`                                                                |
-| `DEFECTION_CANCELLED`         | `{ markId, reason }` with the frozen reason list below                                                                 |
-| `DEFECTION_RESOLVED`          | `{ markId, sourceUnitId, targetUnitId, fromPlayerId, toPlayerId, homeCityId, at }`                                     |
-| `SABOTEUR_EXPOSED`            | `{ unitId, anchorPlayerId, reason: ATTACK \| BLACKOUT }`                                                               |
-| `BLACKOUT_PLANTED`            | `{ cityId, sourceUnitId, sourceOwnerId, targetOwnerId, actionRound, eligibleRound }`                                   |
-| `BLACKOUT_ACTIVATED`          | `{ cityId, ownerId, suppressedCoins }`                                                                                 |
-| `BLACKOUT_RECOVERY_STARTED`   | `{ cityId, ownerId, reason: AFFECTED_TURN_ENDED \| CITY_CAPTURED }`                                                    |
-| `BLACKOUT_RECOVERY_COMPLETED` | `{ cityId, ownerId }`                                                                                                  |
-| `IMPROVEMENT_PILLAGED`        | `{ playerId, unitId, cityId, at, improvement, coinDelta: 1 }`                                                          |
-| `UNIT_DISBANDED`              | `{ playerId, unitId, role, coinDelta }`                                                                                |
-| `SPOILS_AWARDED`              | `{ playerId, cityId, coins: 2 }`                                                                                       |
+| Event                               | Exact payload                                                                                                          |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `PURSUIT_OPENED`                    | `{ unitId, attacksUsed, attacksRemaining }`                                                                            |
+| `UNIT_PURSUED`                      | `{ unitId, path, from, to }`                                                                                           |
+| `PURSUIT_ENDED`                     | `{ unitId, attacksUsed, reason: NONLETHAL \| THIRD_ATTACK \| ATTACKER_DIED \| EXPLICIT_END \| STATE_CANCELLED }`       |
+| `DEFECTION_OFFERED`                 | `{ markId, sourceUnitId, targetUnitId, initiatingPlayerId, targetOwnerId, reservedHomeCityId, offeredAtCommandIndex }` |
+| `DEFECTION_ARMED`                   | `{ markId, sourceUnitId, targetUnitId, targetOwnerId }`                                                                |
+| `DEFECTION_CANCELLED`               | `{ markId, reason }` with the frozen reason list below                                                                 |
+| `DEFECTION_RESOLVED`                | `{ markId, sourceUnitId, targetUnitId, fromPlayerId, toPlayerId, homeCityId, at }`                                     |
+| `SABOTEUR_EXPOSED`                  | `{ unitId, anchorPlayerId, reason: ATTACK \| PILLAGE \| BLACKOUT }`                                                    |
+| `BLACKOUT_PLANTED`                  | `{ cityId, sourceUnitId, sourceOwnerId, targetOwnerId, actionRound, eligibleRound }`                                   |
+| `BLACKOUT_ACTIVATED`                | `{ cityId, ownerId, suppressedCoins }`                                                                                 |
+| `BLACKOUT_RECOVERY_STARTED`         | `{ cityId, ownerId, reason: AFFECTED_TURN_ENDED \| CITY_CAPTURED }`                                                    |
+| `BLACKOUT_RECOVERY_COMPLETED`       | `{ cityId, ownerId }`                                                                                                  |
+| `IMPROVEMENT_PILLAGED`              | `{ playerId, unitId, cityId, at, improvement, resourceRestored, coinDelta: 1 }`                                        |
+| `UNIT_DISBANDED`                    | `{ playerId, unitId, role, coinDelta }`                                                                                |
+| `SPOILS_AWARDED`                    | `{ playerId, cityId, coins: 2 }`                                                                                       |
+| `CITY_REWARD_AUTOMATICALLY_GRANTED` | `{ playerId, cityId, reachedLevel, reward: TREASURY, coins: 5 \| 12 }`                                                 |
+| `ACHIEVEMENT_UNLOCKED`              | `{ playerId, achievement }`                                                                                            |
+| `MONUMENT_BUILT`                    | `{ playerId, cityId, achievement, at, populationAdded: 3 }`                                                            |
 
 Defection cancellation reason order is `SOURCE_MISSING`, `TARGET_MISSING`,
 `SOURCE_OWNER_CHANGED`, `TARGET_OWNER_CHANGED`, `RELATIONSHIP_CHANGED`,
@@ -1329,14 +1550,17 @@ permanentPopulationAdded: 1 }`;
 - `ECONOMIC_BUILDING_BUILT { playerId, cityId, at, improvement, cost,
 populationContribution, marketIncome, capacityDelta }` and
   `ECONOMIC_BUILDING_REMOVED { playerId, cityId, at, improvement,
-populationContributionRemoved, marketIncomeRemoved, capacityDelta }`;
+populationContributionRemoved, marketIncomeRemoved, capacityDelta,
+resourceRestored }`;
 - `FOREST_CLEARED | FOREST_REPLANTED { playerId, cityId, at, coinDelta }`
   and `ROAD_BUILT { playerId, cityId, at, cost: 2 }`;
 - `CITY_ECONOMY_CHANGED { cityId, economicBefore, economicAfter,
 populationBefore, populationAfter, marketBefore, marketAfter }`,
   `CITY_LEVELED_UP { cityId, level }`,
   `CITY_REWARD_QUEUED { cityId, reachedLevel, candidates }`,
-  `CITY_REWARD_CHOSEN { playerId, cityId, reachedLevel, reward }`, and
+  `CITY_REWARD_CHOSEN { playerId, cityId, reachedLevel, reward, coinDelta }`
+  where Stockpile is 4, a milestone Treasury is 12, and every other choice is
+  0, and
   `CITY_TERRITORY_EXPANDED { playerId, cityId, tiles }`;
 - `UNIT_TRAINED { playerId, cityId, unitId, role, cost, at }`,
   `UNIT_REWARD_GRANTED { playerId, cityId, reachedLevel, unitId, role }`,
@@ -1355,6 +1579,10 @@ populationBefore, populationAfter, marketBefore, marketAfter }`,
   `PLAYER_ELIMINATED { playerId }`, and
   `MATCH_ENDED { outcome }`.
 
+For `ECONOMIC_BUILDING_REMOVED` and `IMPROVEMENT_PILLAGED`,
+`resourceRestored` is exactly
+`"FERTILE_GROUND" | "ORE" | "STONE" | null` under section 5.2's mapping.
+
 `COMBAT_RESOLVED` includes attacker/target IDs, exact Attack and Defense
 half-units, minimum/maximum range, Charge/Breach, defense multiplier, damage,
 death, retaliation/no-retaliation reason, advance, Push, and
@@ -1364,13 +1592,30 @@ death, retaliation/no-retaliation reason, advance, Push, and
 ### 8.4 Transaction order
 
 An accepted command preflights all costs, integer effects, allocations, and
-deterministic target choices before mutation. It then mutates atomically, emits
-domain facts in the stated order, increments `commandIndex` exactly once, and
-deep-freezes the result.
+determinable target choices only through the next modal boundary before
+mutation. It then mutates atomically, emits domain facts in the stated order,
+increments `commandIndex` exactly once, and deep-freezes the result. A future
+choice exposed at that boundary is a separate command and transaction; the
+original command cannot preflight an option the player has not selected.
 
+- Research: deduct Coins, insert the technology in frozen order, and emit
+  `TECH_RESEARCHED`. Fortification immediately changes capacity queries for all
+  owned cities; no existing unit is removed and added space needs no
+  reservation cancellation.
 - Economic build/harvest: deduct Coins; mutate tile/resource/improvement/Road;
   emit action/build fact; revalidate capacity/Defection; recompute economy;
-  apply permanent population; emit economy then level/reward facts.
+  apply permanent population; emit economy and all new level facts; settle
+  automatic rewards until the next modal choice, queue that choice, then
+  evaluate achievements.
+- Monument: validate and spend the entitlement; place Monument and its +3 LIVE
+  contribution; emit `MONUMENT_BUILT`; recompute economy and levels; settle
+  automatic rewards until the next modal choice; evaluate the other still-
+  locked achievement. Monument itself is excluded from Engineer.
+- City reward choice: record the reached-level reward once, apply its exact
+  Coin/population/territory/unit result, emit choice and result facts, revalidate
+  capacity after a reward unit, then resume automatic reward settlement and the
+  next modal choice before evaluating achievements. A no-placement milestone
+  Treasury follows the same order without an accepted choice command.
 - Attack: resolve combat from one pre-exchange preview; emit
   `COMBAT_RESOLVED`, deaths, advance/Push, reveal, cancellation/ownership-safe
   cleanup, then Pursuit open/end. Retaliation deaths use the same ordering.
@@ -1378,14 +1623,21 @@ deep-freezes the result.
   interruption, reveal, then phase mutation. It cannot trigger a chest.
 - Capture: transfer city/territory; emit `CITY_CAPTURED`; normalize Blackout;
   cancel affected Defections; grant/record Spoils; reveal; recompute economy;
-  emit levels/rewards; orphan/re-home units; then elimination/outcome.
+  emit economy and all new level facts; orphan/re-home units; settle automatic
+  rewards through the next modal and queue it; evaluate the captor's
+  achievements; then elimination/outcome.
 - Offer/Blackout: allocate/store state, set terminal activation, emit the
   offer/plant fact and exposure. No combat or income occurs.
 - Defection boundary: cancel invalid marks or mutate ownership, emit
   resolution, cancellation cleanup, reveal, and derived siege/capacity facts
   before Blackout and income.
-- Pillage: destroy improvement, grant 1 Coin, emit Pillage, revalidate
-  reservations/capacity, then recompute economy and levels.
+- Pillage: destroy improvement and restore the exact section-5.2 production
+  marker when applicable; grant 1 Coin; emit Pillage and any Saboteur exposure;
+  revalidate reservations/capacity; recompute dependency-ordered live economy;
+  emit economy and all new level facts; settle automatic rewards through the
+  next modal and queue it; then evaluate achievements. Redevelop uses the same
+  removal/restoration, economy, level, reward, and achievement sequence without
+  the Pillage Coin or exposure.
 - Disband: remove unit, grant refund, emit Disband, cancel marks/exposures
   involving it, then revalidate reservations.
 
@@ -1407,7 +1659,7 @@ interface PublicPlayerV7 {
   readonly controller: "HUMAN" | "AI";
   readonly color: "CORAL" | "TEAL" | "GOLD" | "VIOLET";
   readonly faction: "ORIGINAL";
-  readonly factionTreeId: "ORIGINAL_BASELINE_V2";
+  readonly factionTreeId: "ORIGINAL_BASELINE_V3";
   readonly status: "ACTIVE" | "ELIMINATED";
 }
 
@@ -1509,7 +1761,7 @@ interface PublicLeaderboardEntryV7 {
 
 interface PlayerViewV7 {
   readonly schemaVersion: 7;
-  readonly rulesetId: "pulp-wars-poc-7";
+  readonly rulesetId: "pulp-wars-poc-7r2";
   readonly commandIndex: number;
   readonly setup: MatchSetupV7;
   readonly humanPlayerId: PlayerId;
@@ -1517,11 +1769,12 @@ interface PlayerViewV7 {
   readonly activeSeatIndex: number;
   readonly turnOrder: readonly PlayerId[];
   readonly viewer: PlayerStateV7;
+  readonly achievementProgress: readonly AchievementProgressV7[];
   readonly players: readonly PublicPlayerV7[];
   readonly leaderboard: readonly PublicLeaderboardEntryV7[];
   readonly board: PlayerBoardViewV7;
   readonly cities: readonly PublicCityV7[];
-  readonly populationContributions: readonly PopulationContributionV7[];
+  readonly populationContributions: readonly PublicPopulationContributionV7[];
   readonly improvementValues: readonly PublicImprovementValueV7[];
   readonly units: readonly PublicUnitV7[];
   readonly unitStats: readonly PublicUnitStatsV7[];
@@ -1531,12 +1784,36 @@ interface PlayerViewV7 {
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
 }
+
+type AchievementProgressV7 =
+  | {
+      readonly achievement: "ENGINEER";
+      readonly currentMaximumOutput: number;
+      readonly requiredOutput: 6;
+    }
+  | {
+      readonly achievement: "MUSTER";
+      readonly currentDistinctTrainableRoles: number;
+      readonly requiredDistinctTrainableRoles: 4;
+    };
 ```
 
+`PublicPopulationContributionV7` retains every non-Monument contribution arm.
+Its Monument contribution always exposes `amount: 3` when the building is
+visible; fixed population is not private. Its source is exactly one of
+`{ kind: "MONUMENT", visibility: "FULL", achievement, at }` for the current
+owner or `{ kind: "MONUMENT", visibility: "BUILDING_ONLY", at }` for another
+viewer. The full arm retains the contribution's source achievement after city
+capture even if the current owner has not spent the matching entitlement. The
+redacted arm has no achievement or original-player field, and neither arm
+invents an original-player link.
+
 `PublicPlayerV7` deliberately omits Coins, researched technologies, exploration,
-and Spoils history for non-viewers. `viewer` retains those own values. Public
-tile/city/unit/status arms are exact discriminated unions: redacted arms carry
-none of the omitted fields.
+Spoils history, achievement entitlements, and achievement progress for non-
+viewers. `viewer` retains the owner's entitlement state, and
+`achievementProgress` is derived only from that viewer's current public-own
+state. Public tile/city/unit/status arms are exact discriminated unions:
+redacted arms carry none of the omitted fields.
 
 Projection rules are exact:
 
@@ -1554,8 +1831,11 @@ Projection rules are exact:
   Roads, Fieldcraft, Maneuver, Concealment, Pursuit, and cooldown do not invent
   numeric Move/stat terms; they appear as ability/status data.
 - Owned improvement live values expose population, Market income, or Barracks
-  capacity contribution. Processor contributors are exposed only when the
-  underlying cells are public.
+  capacity contribution. A Monument's fixed +3 is visible to every viewer who
+  sees the building; only its source achievement is limited to the current
+  owner. Another viewer sees an ordinary shared Monument without entitlement
+  provenance. Processor contributors are exposed only when the underlying
+  cells are public.
 - Blackout owner/source details are complete to source and target owners. Other
   viewers get city phase only while the city is independently visible and no
   hidden source ID/location.
@@ -1577,8 +1857,15 @@ movement resolved by the accepted interruption contract.
 
 - Economic preview returns exact cost, city, signed population and recurring-
   income deltas by city, contribution, capacity delta, distinct types/families,
-  connected coordinates, opposite axes, Road connection, limits, and
+  connected coordinates, opposite axes, Road connection, limits, the exact
+  post-removal `resourceRestored` under the after-state visibility gate
+  (`UNKNOWN_RESOURCE` where required), and resulting output-zero/resumption
+  states. It applies the one-Coin non-besieged income floor and returns
   `complete: true` only for an exact public target.
+- Monument preview includes achievement entitlement, one-per-city status, +3
+  live population, resulting level/reward work, and the lost empty tile. It
+  derives from owner-safe progress only. City reward preview distinguishes the
+  12-Coin milestone Treasury from automatic 5-Coin Treasury levels.
 - Combat preview uses the same rational calculation as resolution and includes
   Catapult minimum range/retaliation, Charge, Breach, Push certainty, damage,
   death, advance, and whether a Lancer kill would open Pursuit.
@@ -1613,6 +1900,33 @@ interface PlayerEventEnvelopeV7 {
 }
 ```
 
+The `MONUMENT_BUILT` member of `PlayerEventV7` is exactly:
+
+```ts
+type ProjectedMonumentBuiltV7 =
+  | {
+      readonly kind: "MONUMENT_BUILT";
+      readonly visibility: "FULL";
+      readonly playerId: PlayerId;
+      readonly cityId: CityId;
+      readonly achievement: AchievementId;
+      readonly at: Coord;
+      readonly populationAdded: 3;
+    }
+  | {
+      readonly kind: "MONUMENT_BUILT";
+      readonly visibility: "BUILDING_ONLY";
+      readonly cityId: CityId;
+      readonly at: Coord;
+      readonly populationAdded: 3;
+    };
+```
+
+`FULL` goes only to the current owner of the building's city at projection;
+`BUILDING_ONLY` goes to any other viewer for whom the tile is independently
+public. The latter omits builder/entitlement identity but not the publicly
+knowable fixed population.
+
 Projection may omit an event, redact fields, or add the presentation facts
 `UNIT_REVEALED { unitId, at, reason }`,
 `UNIT_CONCEALED { unitId, lastSeenAt }`, and
@@ -1627,9 +1941,17 @@ Projection may omit an event, redact fields, or add the presentation facts
 - Contact interruption is shown only after contact itself makes the Saboteur
   detectable. The public `OCCUPIED`/`ZOC` result contains no former hidden path
   content.
-- Saboteur Attack/Blackout exposure emits `UNIT_REVEALED` before the visible
-  combat/plant event to the target side. Other viewers receive only events
-  allowed by their independent visibility.
+- Saboteur Attack/Pillage/Blackout exposure emits `UNIT_REVEALED` before the
+  visible combat/pillage/plant event to the target side. Other viewers receive
+  only events allowed by their independent visibility.
+- `ACHIEVEMENT_UNLOCKED` and achievement progress are owner-only.
+  `MONUMENT_BUILT` uses the exact `FULL`/`BUILDING_ONLY` arms above. A captured
+  Monument's current owner can inspect the source achievement retained on its
+  population contribution; other viewers cannot. Captured Monument population
+  follows ordinary visible-city economy projection.
+- Projected removal/Pillage facts retain `resourceRestored` only as the
+  viewer's after-state tile would show it: exact public marker, `null`, or
+  `UNKNOWN_RESOURCE`. They never bypass Surveying.
 - Defection's target side receives the explicitly revealed source coordinate
   but no terrain ring. Third-party link fields require both endpoints visible.
 - Public economy, research, own commands, global captures/eliminations/outcome,
@@ -1670,9 +1992,11 @@ objectiveValue, -commandKindOrdinal, -targetY, -targetX,
 -primaryEntityId, -contentOrdinal
 ```
 
-The existing v6 economic, capture, defense, training, research-chain, Road,
-reward, combat, movement, and Cooperative priorities remain numerically stable
-for equivalent v7 candidates. V7 adds these deterministic requirements:
+The existing v6 candidate structure, public-information boundary, and signed-
+integer tie-break shape remain stable. Numeric economic, capacity, reward,
+research-chain, and siege assumptions must be recalibrated for revision 2's
+actual outputs and opportunity costs rather than copied from v6 or the older v7
+development contract. V7 adds these deterministic requirements:
 
 - In open Pursuit, search the complete public tree to the three-attack ceiling.
   Score guaranteed kills, damage, retaliation, resulting safety, target cost,
@@ -1684,9 +2008,10 @@ for equivalent v7 candidates. V7 adds these deterministic requirements:
   corridor; do not use a role-ID anti-Lancer score.
 - An Envoy offer includes target role cost/value, target owner's guaranteed
   complete reply, visible escape/kill/rescue options, source survival, reserved
-  capacity duration, conversion exhaustion, and city siege. Juggernaut has a
-  fixed valuation equal to 12 Coins for AI comparison only; it is not a hidden
-  training cost or rules value. Candidate home cities sort by free capacity,
+  capacity duration, conversion exhaustion, and city siege. Reward choice
+  compares the actual 12-Coin Treasury alternative with Juggernaut's 40 HP,
+  one-slot concentration, Push, placement, and current army/economic need; 12
+  is not a hidden Juggernaut training cost. Candidate home cities sort by free capacity,
   then safety from visible capture, then city ID.
 - A threatened AI moves a marked target out of range or attacks/pushes the
   Envoy when that produces greater retained value than its ordinary action.
@@ -1698,12 +2023,28 @@ for equivalent v7 candidates. V7 adds these deterministic requirements:
   visible Saboteur risk justifies the opportunity cost, and respects city
   recovery and unit eligible round.
 - Catapult plans only range 2–3 shots, screens adjacency, and accounts for one
-  setup turn after moving. Anti-artillery units value closing to range 1.
-- Barracks value is one slot minus its 6-Coin/opportunity cost. Mine/Forge and
-  Quarry/Stoneworks research uses live output, not raw deposit count. Spoils is
-  valued only before that player's first hostile capture; Pillage includes the
-  destroyed live value and 1 Coin; Disband is chosen only when its refund plus
-  freed capacity exceeds retaining the unit under the standard safety score.
+  setup turn after moving. It forecasts target healing and coordinated shot
+  count. An adjacent enemy is an immediate survival/targeting threat but does
+  not prevent firing at another legal range-2/3 target. Anti-artillery units
+  value attacking, occupying fire lanes, and forcing unsafe repositioning.
+- Barracks value is two local slots minus its 4-Coin/tile opportunity cost;
+  Fortification includes one slot per owned city and must be valued on capture
+  as well as research. Mine/Forge and Quarry/Stoneworks research uses
+  dependency-ordered live output, not raw deposit or building count. AI
+  reconstruction recognizes zero-output buildings, restored production sites,
+  normal rebuild cost, the one-Coin ruined-city floor, and output resumption.
+  Spoils is valued only before that player's first hostile capture; Pillage
+  includes the immediate live-output outage and 1 Coin but not permanent
+  deletion of a Farm/Mine/Quarry site. Raid danger and repair priority account
+  for rebuild Coins/turns, contributor cascades, exposure, and likely survival.
+  Disband is chosen only when its refund plus freed capacity exceeds retaining
+  the unit under the standard safety score.
+- Saboteur compares innate Pillage against Attack and Blackout using destroyed
+  live value, exposure, survival, and tempo; it never assigns a cooldown to
+  ordinary Pillage. Achievement progress and Monument placement use only the
+  actor's public-own state. Normal values the free +3 live population, imminent
+  reward thresholds, one-per-city limit, and lost tile opportunity, and never
+  forecasts enemy research or hidden counterpressure.
 
 The per-turn command cap remains 128, while the match caps remain 30,000
 accepted commands and 750 rounds. The runner reserves enough slots to drain the
@@ -1720,9 +2061,13 @@ Required metrics include:
 
 - command/event/error/stall counts and hashes; ruleset/setup/map/PRNG hashes;
 - research adoption/first round for all 25 nodes and branch;
-- Coin income/spend, negative-population losses, Spoils, Pillage, Disband;
-- all resource conversions, 12 improvements, Roads, live contributions,
-  Barracks capacity/overcapacity/reservation turns;
+- Coin income/spend, one-Coin floor turns, negative-population losses, Spoils,
+  Pillage, Disband;
+- all resource conversions/restorations/rebuilds, 13 improvements, Roads, live
+  contributions including zero-output outages/resumption,
+  Barracks/Fortification capacity, overcapacity, and reservation turns;
+- Engineer/Muster progress and unlock rounds, Monument placements/transfers/
+  losses, attributable population, and rewards reached from Monument growth;
 - role training/actions/damage/kills/losses/captures/survival per Coin for all
   13 roles;
 - Lancer attacks/kills per activation, Pursuit paths/stops/end reasons and
@@ -1732,7 +2077,8 @@ Required metrics include:
 - Saboteur concealed/detected/exposed turns by source, Blackouts blocked,
   suppression and actions denied, recovery turns, cooldown, and post-exposure
   survival;
-- Catapult shot ranges, setup turns, siege duration, and screen survival;
+- Catapult shot ranges, setup turns, healing between volleys, coordinated
+  attackers, siege duration, and screen survival;
 - observation-equivalence assertions and any hidden-information violation.
 
 V7 receives new fixtures/corpora and never refreshes a v6 golden. Equal v6/v7
@@ -1760,8 +2106,9 @@ resize or jump when dock content changes. Docks omit tile coordinates.
 
 Every exact unambiguous contextual command executes from one button activation
 against the already-selected entity/tile. Harvest, Hunt, Build, Clear, Replant,
-Road, Redevelop, Barracks, Capture, Recover, Promote, Wait, Pillage, Disband,
-and End Pursuit never ask for the same target again and never add confirmation.
+Road, Redevelop, Barracks, Monument, Capture, Recover, Promote, Wait, Pillage,
+Disband, and End Pursuit never ask for the same target again and never add
+confirmation.
 Training buttons dispatch their exact city/role immediately. Confirmation is
 used only where this contract explicitly names one. Buttons are 176 CSS pixels
 wide, at least 44 x 44, grow vertically, and wrap without horizontal overflow.
@@ -1813,18 +2160,32 @@ state, and Research only when offered. Research dispatches immediately without
 confirmation and keeps the tree/focus open. The main match screen never exposes
 a Research button.
 
-Mandatory city rewards use the existing blocking popup and dispatch on the
-chosen reward with no second confirmation. Defection home-city choice uses the
-same focus-safe choice pattern. A mandatory choice suppresses Leaderboard and
-other overlays until resolved.
+Mandatory city reward choices use the existing blocking popup and dispatch on
+the chosen reward with no second confirmation. Automatic 5-Coin Treasury and
+the no-placement 12-Coin Treasury use a brief notice and never create or flash
+a one-button modal. Defection home-city choice uses the same focus-safe choice
+pattern. A mandatory choice suppresses Leaderboard and other overlays until
+resolved.
+
+An owner-only Achievements panel lists Engineer and Muster in fixed order with
+exact current/required progress, locked/unlocked/spent state, and plain-language
+conditions. It shows no opponent progress. Selecting an unlocked unspent entry
+highlights legal Monument tiles; selecting a highlighted tile dispatches the
+single `BUILD_MONUMENT` command immediately. An explored Monument is visible to
+any viewer as the shared building with its fixed +3 population; its source
+achievement badge is visible only to the building's current owner, including
+after capture. Unlock uses a nonmodal notice and never interrupts another
+command or mandatory reward.
 
 City population shows only the current layer of `level + 1` tiny squares,
 filled left-to-right; negative progress uses red leading squares capped
 visually to the layer while semantic text states the full deficit. Windmill,
 Sawmill, Forge, Stoneworks, Workshop, Grand Works, and Market show one compact
-code-native value square per public contribution, wrapping after eight.
-Barracks shows exactly one capacity square while live. No number is baked into
-building art.
+code-native value square per public contribution, wrapping after eight;
+supported population buildings explicitly show 0 while offline.
+Barracks shows exactly two capacity squares while live. Every publicly visible
+Monument shows the same three population squares; only its source-achievement
+badge is owner-only. No number is baked into building art.
 
 Only the owner sees a concealed Saboteur marker. A detecting enemy sees a
 Reveal/Detected state only while legal; exposure and Defection source reveal
@@ -1875,18 +2236,22 @@ Required v7 inventory is:
 - 13 explicit Original role world-sprite registrations and 13 matching role
   portraits. Existing accepted v6 Original assets are explicit aliases only;
   new production assets are Envoy, Catapult, Saboteur, and Lancer.
-- one shared Barracks world sprite and selection/action registration;
+- one shared Barracks world sprite and selection/action registration, plus one
+  shared Monument world sprite used by both achievements;
 - raster action symbols for Defection, Blackout, Pillage, and Disband;
   Pursue/End Pursuit, detection/exposure, Spoils, cooldown, Blackout phases,
   and capacity reservation may be code-native symbols but must have explicit
   manifest/component registrations and semantic labels;
-- 25 explicit `ORIGINAL_BASELINE_V2` technology-icon registrations. An accepted
+- 25 explicit `ORIGINAL_BASELINE_V3` technology-icon registrations. An accepted
   existing resource/building/unit icon may be aliased explicitly. Sawmilling
   may reuse Sawmill art while its detail lists Catapult; Fieldcraft may reuse
   its forest/Saboteur symbol; Maneuver may reuse Lancer; no key falls back;
 - retained terrain, resource, city, economic-building, Road, Coin, population,
-  reward, HUD, movement, combat, and shell inventory, with Forge/Stoneworks
-  value visuals updated code-native for the new caps and Barracks capacity.
+  reward, HUD, movement, combat, and shell inventory, with Windmill,
+  Stoneworks, Workshop, Grand Works, and Barracks values updated code-native.
+  Achievement progress, entitlement state, and the current-owner-only source-
+  achievement badge may be code-native but require explicit component
+  registrations and semantic labels.
 
 Envoy, Saboteur, and Lancer use the standard unit contract: untrimmed transparent
 256 x 296 source, anchor `(128,222)`, map scale `0.25`, and shared 18 CSS-pixel
@@ -1909,6 +2274,11 @@ the 128 x 128 square left/right/bottom, may overflow upward only, uses the
 shared upper-left key light, remains below unit/status layers, and leaves the
 unit anchor/selection readable.
 
+Monument uses that same processor/mid-building source, anchor, scale, bounds,
+lighting, and layer contract. Its design is deferred to the future checked-in
+PixelLab asset task under the approved art direction; this rules document does
+not prescribe canonical styling.
+
 All contextual and technology raster art occupies an exact 112 x 130 CSS-pixel
 transparent `object-fit: contain` viewport with original transparent padding.
 Action buttons are 176 CSS pixels wide. Standard action/status icons are
@@ -1924,46 +2294,76 @@ baked into production rasters.
 
 V7 save keys are exactly `format`, `version`, `rulesetId`, `setup`, `state`,
 `randomState`, `acceptedCommands`, `commandIndex`, `stateHash`, and `savedAt`.
-Format/version/ruleset are `pulp-wars-save`/7/`pulp-wars-poc-7`. The UTF-8 limit
-is 1,572,864 bytes. ISO timestamp is metadata outside canonical state. Setup,
+Format/version/ruleset are `pulp-wars-save`/7/`pulp-wars-poc-7r2`. The UTF-8
+limit is 1,572,864 bytes. ISO timestamp is metadata outside canonical state. Setup,
 random state, command count/index, canonical state hash, and complete replay
 reconstruction must agree before atomic installation.
 
 V7 replay keys are exactly `format`, `version`, `setup`, `commands`, and
 `checkpoints`; each checkpoint is exact `{ index, stateHash }`, indices strictly
 increase within command count, and hashes are lowercase 64-hex SHA-256. Format
-and version are `pulp-wars-replay` and 7. Replays create the exact v7 setup,
-apply accepted commands through the shared reducer as the stored active player,
-verify checkpoints, and reject schema errors, command rejection, mismatch, or
-commands after outcome. Saves/replays include Pursuit, Defection reservations,
-exposure/cooldown, Blackout/recovery, Spoils history, and Barracks state through
-canonical state/commands; no timer or hidden state is reconstructed from UI.
+and version are `pulp-wars-replay` and 7. Replays require exact
+`setup.rulesetId: "pulp-wars-poc-7r2"`, derive the Original faction registration
+from that ruleset, and require every reconstructed player state to use
+`ORIGINAL_BASELINE_V3`; there is no setup tree-ID field. They apply accepted
+commands through the shared reducer as the stored active player, verify
+checkpoints, and reject schema errors, command rejection, mismatch, or commands
+after outcome. Saves/replays include Pursuit, Defection reservations,
+exposure/cooldown, Blackout/recovery, Spoils history, capacity, reward history,
+achievement entitlements, and Monument state through canonical state/commands;
+Farm/Mine/Quarry restoration is reproduced from the removed improvement and
+needs no hidden underlying-resource field. No timer or hidden state is
+reconstructed from UI.
 
 Autosave occurs at creation and every accepted command boundary after replay
 append/checkpoint. It never captures an animation, transient target mode,
 non-authoritative dialog, or AI thought. It does preserve mandatory rewards and
 all new authoritative phases. Browser v7 persists this envelope only at
-`pulpWars.save.v7.current`. Restart reproduces the identical v7 setup/seed and
-replaces only that key; Delete removes only that key. Browser v6 continues to
-use `pulpWars.save.current` without any v7 read, write, migration, replacement,
-restart, or deletion. The two autosaves can coexist independently.
+`pulpWars.save.v7r2.current`. Restart reproduces the identical v7 revision-2
+setup/seed and replaces only that key; Delete removes only that key. The older
+development key `pulpWars.save.v7.current` and v6 key
+`pulpWars.save.current` are never read, migrated, replaced, restarted, or
+deleted by this route. All three keys can coexist independently.
 
 ### 13.2 Required compatibility and validation
 
 Release evidence must prove:
 
-- strict version-7 setup/state/command/canonical-event/player-event/save/replay
-  parsing, round trips, invariants, hashes, and malformed-data rejection;
+- strict version-7, revision-2 setup/state/command/canonical-event/player-event/
+  save/replay parsing, exact `setup.rulesetId`, derived faction registration and
+  state tree identity, round trips, invariants, hashes, and malformed-data
+  rejection;
 - versions 1–6 remain preserved/incompatible to v7, v6 goldens remain unchanged,
   and `?ruleset=6` can create/resume Candy while v7 rejects every Candy setup;
-- `pulpWars.save.v7.current` and the unchanged v6
-  `pulpWars.save.current` coexist; each route reads/writes/resumes/replaces,
-  restarts, and deletes only its own key, and route switching causes no
-  cross-version Replace/Delete prompt or mutation;
+- the older `pulp-wars-poc-7`/`ORIGINAL_BASELINE_V2` setup and
+  `pulpWars.save.v7.current` are recognized as incompatible development data,
+  not corrupt revision-2 data; replay rejects from exact setup identity and no
+  old data is migrated or deleted;
+- `pulpWars.save.v7r2.current`, the older development key, and unchanged v6
+  `pulpWars.save.current` coexist; each active route mutates only its own key,
+  and route switching causes no cross-contract Replace/Delete prompt;
 - equal v6/v7 all-Original setup map/PRNG parity and no new PRNG consumption;
-- all 25 nodes, formulas, 12 improvements, 13 roles, five tier-3 trainables,
-  rewards, roads, capacity, capture, Walls, negative population, training,
-  promotion, healing, Spoils, Pillage, and Disband;
+- all 25 nodes, formulas, 13 improvements, 13 roles, five tier-3 trainables,
+  contributor-loss zero outputs and resumption, Farm/Mine/Quarry marker
+  restoration for Pillage/Redevelop but no other regeneration, the non-besieged
+  one-Coin income floor and Blackout/siege exceptions, milestone-choice/
+  automatic reward ordering, roads, both capacity sources, capture, Walls,
+  negative population, training, promotion, healing, Spoils, Pillage, and
+  Disband;
+- the level-6 20-live package repair case: Mine removal leaves 5 live and -15
+  progress, Forge/Grand Works at 0, regular/capital income 1/1, restored Ore,
+  Mine rebuild for 6, outputs restored to 20 and income to 6/7, with no repeat
+  level reward or Engineer unlock; siege remains zero and Blackout may suppress
+  the floor;
+- Engineer/Muster trigger and persistence, owner-safe progress, free Monument
+  placement, one-per-city and two-entitlement limits, capture transfer,
+  Pillage/Redevelop/loss without refund, no same-entitlement reuse or re-trigger,
+  placement from a different unused entitlement after removal, public +3 with
+  owner-only source achievement, nested growth and reward ordering, save/resume,
+  replay, and deterministic AI placement;
+- all level facts before sequential automatic-grant/first-queue facts, no ghost
+  queue for automatic Treasury, atomic preflight only through the next modal
+  boundary, and a later reward choice as its own transaction;
 - Pursuit termination/three-attack ceiling across kill, retaliation death,
   city defense, non-unit removals, promotion, chests, hidden contact, Capture,
   Wait, End Turn,
@@ -1979,6 +2379,8 @@ Release evidence must prove:
 - Blackout unit-vs-city detection, global-round cooldown after conversion,
   capped suppression, action blocking, alternating Saboteurs, capture/recapture,
   one complete unaffected owner turn, death/elimination, and timer replay;
+- Saboteur's 6-Coin cost, innate no-cooldown Pillage, exposure reason and
+  boundary, and the unchanged Explosives requirement for every other role;
 - deterministic Normal participation, no `MOVEMENT_ILLEGAL` retry/stall,
   scheduled browser yielding, headless/browser parity, 30,000-command/750-round
   caps, and the complete telemetry inventory;
@@ -1996,16 +2398,35 @@ and v6 compatibility route pass together.
 ## 14. Frozen judgments
 
 The following choices close every proposal alternative for the first v7
-playable baseline:
+revision-2 playable baseline:
 
 - Ruleset 7 is Original-only; Candy remains supported at `?ruleset=6` and is
   never silently adapted.
-- The 25-node graph and research formula are unchanged.
-- Mine is 6/+4, Quarry 5/+3, Forge 6/+3 per Mine cap 18, and Stoneworks 6/+2
-  per Quarry plus +2/opposite pair cap 16.
-- Quarrying unlocks the 6-Coin one-per-city Barracks for +1 capacity.
+- The 25-node graph, research formula, map generator, Envoy, and Lancer are
+  retained. Masonry reserves a versioned future wildcard-role extension point
+  but revision 2 adds no role or placeholder.
+- Mine is 6/+4, Quarry 5/+3, and Forge is 6/+3 per Mine cap 18. Windmill is
+  5/+2 base plus +1 connected Farm cap 8. Stoneworks is 6/+2 base, +2 per
+  Quarry, +2/opposite pair cap 16 and requires a Quarry.
+- Workshop is 4/+1 base plus one per distinct basic type with minimum one;
+  Grand Works is 7/+4 base plus two per distinct processor with minimum two and
+  cap 12; revised buildings fall to zero below their support minimum and resume
+  after rebuilding. Grand Works counts only positive-output specialized
+  processors. Market and Sawmill are unchanged.
+- Farm/Mine/Quarry removal restores its covered Fertile Ground/Ore/Stone marker;
+  Camp removal and consumed Fruit/Game restore nothing. Non-besieged city
+  income has a one-Coin floor after negative population, subject to ordinary
+  Blackout suppression; siege remains zero.
+- Quarrying unlocks the 4-Coin one-per-city Barracks for +2 capacity;
+  Fortification adds +1 capacity to every owned city alongside its unwalled
+  Fighter/Guard defense.
 - Drill grants +2 first-hostile-city Spoils; Explosives grants terminal +1
   Pillage; Recovery grants half-cost trainable-unit Disband.
+- Reward choices after level 4 occur only at levels 5/8/11/... and pair a
+  Juggernaut with 12 Coins; intervening levels automatically grant 5 Coins.
+  Engineer and Muster each fund one free +3-live-population shared Monument,
+  with one Monument per city, no refund or same-entitlement reuse, and public
+  +3 population but owner-only source-achievement provenance.
 - Catapult is Attack 3.5, cost 8, range 2–3, cannot move-and-fire, and uses
   Defense 0.5 retaliation only at range 2–3.
 - Lancer is cost 9 with a maximum of three total attacks and at most two Pursue
@@ -2013,7 +2434,8 @@ playable baseline:
 - Envoy performs full delayed ownership conversion, including reward units,
   only after one complete target-owner reply and with a live capacity
   reservation; conversion is exhausted.
-- Saboteur uses viewer-relative concealment, radius-1 ordinary/city and radius-2
+- Saboteur costs 6 and has innate terminal +1 Pillage with ordinary exposure
+  and no Pillage cooldown. It uses viewer-relative concealment, radius-1 ordinary/city and radius-2
   Scout detection, hostile-unit Blackout blocking, 3-Coin suppression, one
   affected action turn, `actionRound + 3` unit cooldown, and one complete
   unaffected city-owner turn of recovery.
