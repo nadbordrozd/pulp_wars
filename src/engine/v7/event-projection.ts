@@ -9,6 +9,7 @@ import type {
 import {
   detectionCoversCoordV7,
   isUnitVisibleToPlayerV7,
+  isUnitVisibleWithoutDefectionV7,
   withUnitAtForObservationV7,
 } from "./observation";
 import type { CoordV7, GameStateV7, UnitStateV7 } from "./types";
@@ -90,9 +91,16 @@ export function projectEventsV7(
       event.kind === "DEFECTION_OFFERED" ||
       event.kind === "DEFECTION_ARMED"
     ) {
-      const endpoint = viewForV7(afterState, viewerId).defectionStatuses.find(
+      const expectedPhase =
+        event.kind === "DEFECTION_ARMED" ? "ARMED" : "WAITING_FOR_REPLY";
+      const endpoint = [
+        ...viewForV7(afterState, viewerId).defectionStatuses,
+        ...viewForV7(beforeState, viewerId).defectionStatuses,
+      ].find(
         (status) =>
           status.visibility === "ENDPOINT" &&
+          (status.phase === expectedPhase ||
+            event.kind === "DEFECTION_ARMED") &&
           (status.endpointUnitId === event.sourceUnitId ||
             status.endpointUnitId === event.targetUnitId),
       );
@@ -100,7 +108,7 @@ export function projectEventsV7(
         projected.push({
           kind: "DEFECTION_ENDPOINT_STATUS",
           unitId: endpoint.endpointUnitId,
-          phase: endpoint.phase,
+          phase: expectedPhase,
         });
     }
   }
@@ -261,13 +269,38 @@ function eventVisible(
         arePlayersAlliedV7(after, viewerId, event.anchorPlayerId)
       );
     case "DEFECTION_OFFERED":
-    case "DEFECTION_ARMED":
-    case "DEFECTION_RESOLVED":
       return defectionVisible(
         after,
         viewerId,
         event.sourceUnitId,
         event.targetUnitId,
+      );
+    case "DEFECTION_ARMED":
+      return (
+        defectionVisible(
+          after,
+          viewerId,
+          event.sourceUnitId,
+          event.targetUnitId,
+        ) ||
+        defectionVisible(
+          before,
+          viewerId,
+          event.sourceUnitId,
+          event.targetUnitId,
+        )
+      );
+    case "DEFECTION_RESOLVED":
+      return (
+        viewerId === event.fromPlayerId ||
+        viewerId === event.toPlayerId ||
+        independentlyVisibleDefectionEndpoints(
+          before,
+          after,
+          viewerId,
+          event.sourceUnitId,
+          event.targetUnitId,
+        )
       );
     case "DEFECTION_CANCELLED":
       return (
@@ -465,6 +498,25 @@ function defectionVisible(
       status.sourceUnitId === sourceUnitId &&
       status.targetUnitId === targetUnitId,
   );
+}
+function independentlyVisibleDefectionEndpoints(
+  before: GameStateV7,
+  after: GameStateV7,
+  viewerId: PlayerId,
+  sourceUnitId: UnitId,
+  targetUnitId: UnitId,
+): boolean {
+  const visible = (unitId: UnitId) => {
+    const unit =
+      after.units.find((candidate) => candidate.id === unitId) ??
+      before.units.find((candidate) => candidate.id === unitId);
+    return (
+      unit !== undefined &&
+      (isUnitVisibleWithoutDefectionV7(after, viewerId, unit) ||
+        isUnitVisibleWithoutDefectionV7(before, viewerId, unit))
+    );
+  };
+  return visible(sourceUnitId) && visible(targetUnitId);
 }
 function fullBlackoutVisible(
   state: GameStateV7,

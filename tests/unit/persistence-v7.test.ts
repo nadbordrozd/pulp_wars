@@ -8,7 +8,9 @@ import {
   createInitialMapStateV7,
   createReplayV7,
   parseReplayFileV7,
+  queryPlayerCommandsV7,
   runReplayV7,
+  viewForV7,
   type CommandV7,
   type CoordV7,
   type GameStateV7,
@@ -69,6 +71,136 @@ describe("ruleset-7 save and replay foundation", () => {
     );
     expect(parseSaveV7(JSON.stringify(save))).toEqual({ kind: "VALID", save });
     expect(runReplayV7(replay).state).toEqual(applied.state);
+  });
+
+  it("naturally replays an offered, armed, and resolved Defection through save", () => {
+    const created = createInitialMapStateV7(setup);
+    if (!created.ok) throw new Error(created.error.code);
+    let state = created.state;
+    let replay = createReplayV7(setup);
+    const humanId = state.humanPlayerId;
+    const enemyUnit = state.units.find((unit) => unit.ownerId !== humanId);
+    if (enemyUnit === undefined) throw new Error("enemy unit missing");
+    const apply = (command: CommandV7) => {
+      const actor = state.turnOrder[state.activeSeatIndex];
+      if (actor === undefined) throw new Error("active actor missing");
+      const result = applyCommandV7(state, actor, command);
+      if (!result.accepted)
+        throw new Error(`${command.kind}: ${result.error.code}`);
+      state = result.state;
+      replay = appendReplayCommandV7(replay, command, state);
+      return result.events;
+    };
+    const commands = () => queryPlayerCommandsV7(viewForV7(state, humanId));
+    const fundHuman = (minimum: number) => {
+      for (let guard = 0; guard < 100; guard += 1) {
+        const human = state.players.find((player) => player.id === humanId);
+        if (
+          state.turnOrder[state.activeSeatIndex] === humanId &&
+          human !== undefined &&
+          human.coins >= minimum
+        )
+          return;
+        apply({ kind: "END_TURN" });
+      }
+      throw new Error("funding guard exhausted");
+    };
+    fundHuman(7);
+    apply({ kind: "RESEARCH", tech: "CRAFT" });
+    fundHuman(5);
+    apply({ kind: "RESEARCH", tech: "SURVEYING" });
+    fundHuman(7);
+    apply({ kind: "RESEARCH", tech: "QUARRYING" });
+    fundHuman(4);
+    const barracks = commands().find(
+      (command): command is Extract<CommandV7, { kind: "BUILD_BARRACKS" }> =>
+        command.kind === "BUILD_BARRACKS",
+    );
+    if (barracks === undefined) throw new Error("Barracks command missing");
+    apply(barracks);
+    fundHuman(6);
+    const fighter = state.units.find(
+      (unit) => unit.ownerId === humanId && unit.role === "FIGHTER",
+    );
+    if (fighter === undefined) throw new Error("fighter missing");
+    const fighterMove = commands().find(
+      (command): command is Extract<CommandV7, { kind: "MOVE" }> =>
+        command.kind === "MOVE" && command.unitId === fighter.id,
+    );
+    if (fighterMove === undefined) throw new Error("fighter move missing");
+    apply(fighterMove);
+    const humanCity = state.cities.find((city) => city.ownerId === humanId);
+    if (humanCity === undefined) throw new Error("human city missing");
+    apply({ kind: "TRAIN", cityId: humanCity.id, role: "ENVOY" });
+    const envoy = state.units.find(
+      (unit) => unit.ownerId === humanId && unit.role === "ENVOY",
+    );
+    if (envoy === undefined) throw new Error("Envoy missing");
+    apply({ kind: "END_TURN" });
+
+    let offered = false;
+    for (let guard = 0; guard < 80 && !offered; guard += 1) {
+      const active = state.turnOrder[state.activeSeatIndex];
+      if (active === humanId) {
+        const offer = commands().find(
+          (
+            command,
+          ): command is Extract<CommandV7, { kind: "OFFER_DEFECTION" }> =>
+            command.kind === "OFFER_DEFECTION" &&
+            command.unitId === envoy.id &&
+            command.targetUnitId === enemyUnit.id,
+        );
+        if (offer !== undefined) {
+          apply(offer);
+          offered = true;
+          break;
+        }
+        const moves = commands()
+          .filter(
+            (
+              command,
+            ): command is Extract<
+              CommandV7,
+              { readonly path: readonly CoordV7[] }
+            > => command.kind === "MOVE" && command.unitId === envoy.id,
+          )
+          .sort((left, right) => {
+            const leftAt = left.path.at(-1);
+            const rightAt = right.path.at(-1);
+            if (leftAt === undefined || rightAt === undefined) return 0;
+            return (
+              chebyshev(leftAt, enemyUnit.at) -
+                chebyshev(rightAt, enemyUnit.at) ||
+              leftAt.y - rightAt.y ||
+              leftAt.x - rightAt.x
+            );
+          });
+        const move = moves[0];
+        if (move === undefined) throw new Error("Envoy route stalled");
+        apply(move);
+      }
+      apply({ kind: "END_TURN" });
+    }
+    if (!offered) throw new Error("Defection offer guard exhausted");
+    let resolved = false;
+    for (let guard = 0; guard < 8 && !resolved; guard += 1) {
+      const events = apply({ kind: "END_TURN" });
+      resolved = events.some((event) => event.kind === "DEFECTION_RESOLVED");
+    }
+    expect(resolved).toBe(true);
+    expect(state.units.find((unit) => unit.id === enemyUnit.id)?.ownerId).toBe(
+      humanId,
+    );
+    const save = createSaveEnvelopeV7(
+      { state, replay },
+      "2026-09-07T19:00:00.000Z",
+    );
+    expect(parseSaveV7(JSON.stringify(save))).toEqual({ kind: "VALID", save });
+    expect(runReplayV7(replay)).toMatchObject({
+      acceptedCommands: replay.commands.length,
+      state,
+      stateHash: canonicalHash(state),
+    });
   });
 
   it("naturally replays Muster unlock and its command-bearing Monument placement", () => {

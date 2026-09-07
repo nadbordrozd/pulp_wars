@@ -291,6 +291,27 @@ export function queryPlayerCommandsV7(
             unitId: unit.id,
             targetUnitId: target.id,
           });
+        if (
+          primaryReady &&
+          rule.abilities.includes("DEFECTION") &&
+          publicHostile(view, player.id, target.ownerId) &&
+          distance >= 1 &&
+          distance <= 2 &&
+          !view.defectionStatuses.some(
+            (status) =>
+              (status.visibility === "FULL" &&
+                status.targetUnitId === target.id) ||
+              (status.visibility === "ENDPOINT" &&
+                status.endpointUnitId === target.id),
+          )
+        )
+          for (const city of availableDefectionCitiesV7(view))
+            candidates.push({
+              kind: "OFFER_DEFECTION",
+              unitId: unit.id,
+              targetUnitId: target.id,
+              homeCityId: city.cityId,
+            });
       }
       if (
         !unit.activation.moved &&
@@ -326,9 +347,211 @@ export function queryPlayerCommandsV7(
       if (!unit.activation.handled)
         candidates.push({ kind: "WAIT", unitId: unit.id });
     }
-  if (view.defectionStatuses.length === 0 && view.blackoutStatuses.length === 0)
-    candidates.push({ kind: "END_TURN" });
+  if (view.blackoutStatuses.length === 0) candidates.push({ kind: "END_TURN" });
   return store(view, candidates.sort(compareCommandsV7));
+}
+
+export interface PublicDefectionCityCapacityV7 {
+  readonly cityId: CityId;
+  readonly capacity: number;
+  readonly assigned: number;
+  readonly reservedBeforeOffer: number;
+  readonly availableBeforeOffer: number;
+  readonly reservedAfterOffer: number;
+  readonly availableAfterOffer: number;
+}
+
+function availableDefectionCitiesV7(
+  view: PlayerViewV7,
+): readonly PublicDefectionCityCapacityV7[] {
+  return view.cities
+    .filter(
+      (city) =>
+        city.ownerId === view.viewer.id &&
+        publicCityDevelopmentFootprintKnown(view, city),
+    )
+    .map((city) => {
+      const capacity =
+        city.level +
+        1 +
+        (view.viewer.researchedTechs.includes("FORTIFICATION") ? 1 : 0) +
+        (cityHasImprovement(view, city.id, "BARRACKS") ? 2 : 0);
+      const assigned = view.units.filter(
+        (unit) =>
+          unit.ownerId === view.viewer.id && unit.homeCityId === city.id,
+      ).length;
+      const reservedBeforeOffer = view.defectionStatuses.filter(
+        (status) =>
+          status.visibility === "FULL" &&
+          status.initiatingPlayerId === view.viewer.id &&
+          status.reservedHomeCityId === city.id,
+      ).length;
+      return {
+        cityId: city.id,
+        capacity,
+        assigned,
+        reservedBeforeOffer,
+        availableBeforeOffer: Math.max(
+          0,
+          capacity - assigned - reservedBeforeOffer,
+        ),
+        reservedAfterOffer: reservedBeforeOffer + 1,
+        availableAfterOffer: Math.max(
+          0,
+          capacity - assigned - reservedBeforeOffer - 1,
+        ),
+      };
+    })
+    .filter((city) => city.availableBeforeOffer > 0)
+    .sort((left, right) => left.cityId - right.cityId);
+}
+
+export interface DefectionPreviewV7 {
+  readonly sourceUnitId: UnitId;
+  readonly target: {
+    readonly unitId: UnitId;
+    readonly ownerId: PlayerId;
+    readonly role: UnitRoleIdV7;
+    readonly at: CoordV7;
+  };
+  readonly reservedCity: PublicDefectionCityCapacityV7;
+  readonly recordedReplyOwnerId: PlayerId;
+  readonly replyBoundary: {
+    readonly kind: "TARGET_OWNER_NEXT_END_TURN";
+    readonly playerId: PlayerId;
+    readonly earliestRound: number;
+  };
+  readonly earliestResolutionBoundary: {
+    readonly kind: "INITIATOR_NEXT_START_TURN_AFTER_REPLY";
+    readonly playerId: PlayerId;
+    readonly earliestRound: number;
+  };
+  readonly cancellationConditions: readonly [
+    "SOURCE_MISSING",
+    "TARGET_MISSING",
+    "SOURCE_OWNER_CHANGED",
+    "TARGET_OWNER_CHANGED",
+    "RELATIONSHIP_CHANGED",
+    "OUT_OF_RANGE",
+    "RESERVED_CITY_LOST",
+    "CAPACITY_LOST",
+    "INITIATOR_ELIMINATED",
+    "TARGET_OWNER_ELIMINATED",
+    "STATE_CANCELLED",
+  ];
+  readonly conversion: {
+    readonly whollyExhausted: true;
+    readonly captureEligible: false;
+    readonly preservesRoleHpVeteranKillsAndCooldown: true;
+  };
+  readonly cityOccupantSiegeConsequence:
+    | "BESIEGES_HOSTILE_CITY"
+    | "RELIEVES_FRIENDLY_CITY_SIEGE"
+    | "NONE"
+    | "UNKNOWN_HIDDEN_TILE";
+  readonly complete: true;
+}
+
+export type DefectionPreviewResultV7 =
+  | { readonly ok: true; readonly preview: DefectionPreviewV7 }
+  | { readonly ok: false; readonly error: "NOT_OFFERED" };
+
+export function previewDefectionV7(
+  view: PlayerViewV7,
+  command: Extract<CommandV7, { kind: "OFFER_DEFECTION" }>,
+): DefectionPreviewResultV7;
+export function previewDefectionV7(
+  state: GameStateV7,
+  viewerId: PlayerId,
+  command: Extract<CommandV7, { kind: "OFFER_DEFECTION" }>,
+): DefectionPreviewResultV7;
+export function previewDefectionV7(
+  input: GameStateV7 | PlayerViewV7,
+  viewerOrCommand: PlayerId | Extract<CommandV7, { kind: "OFFER_DEFECTION" }>,
+  maybeCommand?: Extract<CommandV7, { kind: "OFFER_DEFECTION" }>,
+): DefectionPreviewResultV7 {
+  const view =
+    maybeCommand === undefined
+      ? (input as PlayerViewV7)
+      : asView(input, viewerOrCommand as PlayerId);
+  const command =
+    maybeCommand ??
+    (viewerOrCommand as Extract<CommandV7, { kind: "OFFER_DEFECTION" }>);
+  const offered = queryPlayerCommandsV7(view).some(
+    (candidate) =>
+      candidate.kind === "OFFER_DEFECTION" &&
+      candidate.unitId === command.unitId &&
+      candidate.targetUnitId === command.targetUnitId &&
+      candidate.homeCityId === command.homeCityId,
+  );
+  if (!offered) return { ok: false, error: "NOT_OFFERED" };
+  const target = view.units.find((unit) => unit.id === command.targetUnitId);
+  const reservedCity = availableDefectionCitiesV7(view).find(
+    (city) => city.cityId === command.homeCityId,
+  );
+  if (target === undefined || reservedCity === undefined)
+    return { ok: false, error: "NOT_OFFERED" };
+  const tile = tileAtView(view, target.at);
+  const city = view.cities.find((candidate) => same(candidate.at, target.at));
+  const siege =
+    tile?.explored !== true
+      ? "UNKNOWN_HIDDEN_TILE"
+      : city !== undefined && publicHostile(view, view.viewer.id, city.ownerId)
+        ? "BESIEGES_HOSTILE_CITY"
+        : city !== undefined &&
+            publicHostile(view, target.ownerId, city.ownerId) &&
+            !publicHostile(view, view.viewer.id, city.ownerId)
+          ? "RELIEVES_FRIENDLY_CITY_SIEGE"
+          : "NONE";
+  const targetTurnIndex = view.turnOrder.indexOf(target.ownerId);
+  const initiatorTurnIndex = view.turnOrder.indexOf(view.viewer.id);
+  if (targetTurnIndex < 0 || initiatorTurnIndex < 0)
+    return { ok: false, error: "NOT_OFFERED" };
+  return {
+    ok: true,
+    preview: {
+      sourceUnitId: command.unitId,
+      target: {
+        unitId: target.id,
+        ownerId: target.ownerId,
+        role: target.role,
+        at: target.at,
+      },
+      reservedCity,
+      recordedReplyOwnerId: target.ownerId,
+      replyBoundary: {
+        kind: "TARGET_OWNER_NEXT_END_TURN",
+        playerId: target.ownerId,
+        earliestRound:
+          view.round + Number(targetTurnIndex <= initiatorTurnIndex),
+      },
+      earliestResolutionBoundary: {
+        kind: "INITIATOR_NEXT_START_TURN_AFTER_REPLY",
+        playerId: view.viewer.id,
+        earliestRound: view.round + 1,
+      },
+      cancellationConditions: [
+        "SOURCE_MISSING",
+        "TARGET_MISSING",
+        "SOURCE_OWNER_CHANGED",
+        "TARGET_OWNER_CHANGED",
+        "RELATIONSHIP_CHANGED",
+        "OUT_OF_RANGE",
+        "RESERVED_CITY_LOST",
+        "CAPACITY_LOST",
+        "INITIATOR_ELIMINATED",
+        "TARGET_OWNER_ELIMINATED",
+        "STATE_CANCELLED",
+      ],
+      conversion: {
+        whollyExhausted: true,
+        captureEligible: false,
+        preservesRoleHpVeteranKillsAndCooldown: true,
+      },
+      cityOccupantSiegeConsequence: siege,
+      complete: true,
+    },
+  };
 }
 
 export interface MonumentPreviewV7 {
@@ -1466,7 +1689,8 @@ function publicCombatPreview(
     defenderDies &&
     !attackerDies &&
     distance === 1 &&
-    attacker.role !== "CATAPULT";
+    attacker.role !== "CATAPULT" &&
+    publicAdvanceDestinationLegal(view, target.at);
   const nextAttacks = attacker.activation.attacksUsed + 1;
   return {
     attackerId,
@@ -1502,6 +1726,18 @@ function publicCombatPreview(
       !attackerDies &&
       nextAttacks < 3,
   };
+}
+
+function publicAdvanceDestinationLegal(
+  view: PlayerViewV7,
+  at: CoordV7,
+): boolean {
+  const tile = tileAtView(view, at);
+  return (
+    tile?.explored === true &&
+    (tile.terrain !== "MOUNTAIN" ||
+      view.viewer.researchedTechs.includes("SURVEYING"))
+  );
 }
 
 function queryCombatPreviewAtV7(

@@ -290,6 +290,7 @@ export function unitOccupiesCapturableSiteV7(
 export function startTurnEconomyV7(
   state: GameStateV7,
   player: PlayerStateV7,
+  resetActivation = true,
 ): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
   const income = playerIncomeV7(state, player.id);
   const coins = player.coins + income.totalCoins;
@@ -301,7 +302,7 @@ export function startTurnEconomyV7(
         item.id === player.id ? { ...item, coins } : item,
       ),
       units: state.units.map((unit) =>
-        unit.ownerId === player.id && unit.hp > 0
+        resetActivation && unit.ownerId === player.id && unit.hp > 0
           ? {
               ...unit,
               captureEligible: unitOccupiesCapturableSiteV7(state, unit),

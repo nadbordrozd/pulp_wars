@@ -98,6 +98,7 @@ export type RuleErrorCodeV7 =
   | "TARGET_ALLIED"
   | "TARGET_NOT_FOUND"
   | "TARGET_OUT_OF_RANGE"
+  | "DEFECTION_TARGET_MARKED"
   | "ATTACK_NOT_LEGAL"
   | "MOVEMENT_ILLEGAL"
   | "INVALID_PATH"
@@ -241,9 +242,11 @@ export function applyCommandV7(
     return applyPillage(stateInput, state, actor, command.unitId);
   if (command.kind === "DISBAND")
     return applyDisband(stateInput, state, actor, command.unitId);
+  if (command.kind === "OFFER_DEFECTION")
+    return applyOfferDefection(stateInput, state, actor, command);
   if (command.kind === "END_TURN")
     return applyEndTurn(stateInput, state, actor);
-  if (command.kind === "OFFER_DEFECTION" || command.kind === "BLACKOUT_CITY")
+  if (command.kind === "BLACKOUT_CITY")
     return rejected(stateInput, "COMMAND_NOT_IMPLEMENTED", {
       kind: command.kind,
     });
@@ -1188,9 +1191,14 @@ function applyMove(
       nextEntityId: treasure?.nextEntityId ?? state.nextEntityId,
       treasureChests: treasure?.treasureChests ?? state.treasureChests,
     };
-    const achievements = evaluateAchievementsV7(staged, actor);
+    const capacity = revalidateReservations(staged, "CAPACITY_LOST");
+    const achievements = evaluateAchievementsV7(
+      { ...staged, defectionMarks: capacity.marks },
+      actor,
+    );
     return accepted(checked(achievements.state), [
       ...events,
+      ...capacity.events,
       ...achievements.events,
     ]);
   } catch (cause) {
@@ -1378,7 +1386,22 @@ function applyAttack(
   )
     return rejected(original, "TARGET_OUT_OF_RANGE");
   try {
-    const preview = calculateCombatPreviewV7(state, attacker.id, defender.id);
+    const calculated = calculateCombatPreviewV7(
+      state,
+      attacker.id,
+      defender.id,
+    );
+    const destinationTile = tileAtV7(state.board, defender.at);
+    const canAdvance =
+      calculated.advances &&
+      isExplored(requirePlayer(state, actor), defender.at) &&
+      destinationTile !== undefined &&
+      (destinationTile.terrain !== "MOUNTAIN" ||
+        requirePlayer(state, actor).researchedTechs.includes("SURVEYING"));
+    const preview =
+      canAdvance === calculated.advances
+        ? calculated
+        : { ...calculated, advances: canAdvance };
     const attacksUsed = attacker.activation.attacksUsed + 1;
     const attackerKills = attacker.kills + (preview.defenderDies ? 1 : 0);
     const defenderKills = defender.kills + (preview.attackerDies ? 1 : 0);
@@ -1489,20 +1512,11 @@ function applyAttack(
           tiles: reveal.revealed,
         });
     }
-    let marks = state.defectionMarks;
-    for (const dead of [
-      ...(preview.defenderDies ? [defender.id] : []),
-      ...(preview.attackerDies ? [attacker.id] : []),
-    ]) {
-      const removal = removeMarksForUnit(marks, dead);
-      marks = removal.marks;
-      events.push(...removal.events);
-    }
     const capacity = revalidateReservations(
-      { ...state, units, defectionMarks: marks },
+      { ...state, units, defectionMarks: state.defectionMarks },
       "CAPACITY_LOST",
     );
-    marks = capacity.marks;
+    const marks = capacity.marks;
     events.push(...capacity.events);
     let exposures = state.saboteurExposures.filter((exposure) =>
       units.some((living) => living.id === exposure.unitId),
@@ -2221,6 +2235,106 @@ function applyCapture(
   }
 }
 
+function applyOfferDefection(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  command: Extract<CommandV7, { kind: "OFFER_DEFECTION" }>,
+): ApplyCommandResultV7 {
+  const actorCheck = validateUnitActor(state, actor, command.unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  const source = actorCheck.unit;
+  if (source.role !== "ENVOY")
+    return rejected(original, "UNIT_ROLE_INVALID", { role: source.role });
+  if (
+    primaryUsed(source) ||
+    source.activation.pursuitPhase !== "NONE" ||
+    (source.activation.moved &&
+      !effectiveRoleRuleV7(source.role).mayUsePrimaryActionAfterMove)
+  )
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: source.id });
+  const target = state.units.find(
+    (unit) => unit.id === command.targetUnitId && unit.hp > 0,
+  );
+  if (target === undefined || !isUnitVisibleToPlayerV7(state, actor, target))
+    return rejected(original, "TARGET_NOT_FOUND", {
+      targetUnitId: command.targetUnitId,
+    });
+  if (
+    target.ownerId === actor ||
+    arePlayersAlliedV7(state, actor, target.ownerId)
+  )
+    return rejected(original, "TARGET_ALLIED");
+  if (
+    chebyshev(source.at, target.at) < 1 ||
+    chebyshev(source.at, target.at) > 2
+  )
+    return rejected(original, "TARGET_OUT_OF_RANGE");
+  if (state.defectionMarks.some((mark) => mark.targetUnitId === target.id))
+    return rejected(original, "DEFECTION_TARGET_MARKED", {
+      targetUnitId: target.id,
+    });
+  const city = state.cities.find((item) => item.id === command.homeCityId);
+  if (city === undefined)
+    return rejected(original, "CITY_NOT_FOUND", { cityId: command.homeCityId });
+  if (city.ownerId !== actor)
+    return rejected(original, "CITY_NOT_OWNED", { cityId: city.id });
+  if (
+    assignedUnitCountV7(state, city.id) +
+      reservedCapacityCountV7(state, city.id) >=
+    cityUnitCapacityV7(state, city)
+  )
+    return rejected(original, "CITY_CAPACITY_FULL", { cityId: city.id });
+  try {
+    const markId = state.nextEntityId;
+    const commandIndex = nextSafe(state.commandIndex);
+    const nextEntityId = nextSafe(markId);
+    const mark: DefectionMarkV7 = {
+      id: markId,
+      sourceUnitId: source.id,
+      targetUnitId: target.id,
+      initiatingPlayerId: actor,
+      recordedTargetOwnerId: target.ownerId,
+      reservedHomeCityId: city.id,
+      offeredAtCommandIndex: commandIndex,
+      phase: "WAITING_FOR_REPLY",
+    };
+    const next = checked({
+      ...state,
+      commandIndex,
+      nextEntityId,
+      units: state.units.map((unit) =>
+        unit.id === source.id
+          ? {
+              ...unit,
+              activation: {
+                ...unit.activation,
+                handled: true,
+                specialActed: true,
+              },
+            }
+          : unit,
+      ),
+      defectionMarks: [...state.defectionMarks, mark],
+    });
+    return accepted(next, [
+      {
+        kind: "DEFECTION_OFFERED",
+        markId,
+        sourceUnitId: source.id,
+        targetUnitId: target.id,
+        initiatingPlayerId: actor,
+        targetOwnerId: target.ownerId,
+        reservedHomeCityId: city.id,
+        offeredAtCommandIndex: commandIndex,
+      },
+    ]);
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
+}
+
 function applyEndTurn(
   original: GameStateV7,
   state: GameStateV7,
@@ -2233,17 +2347,15 @@ function applyEndTurn(
     )
   )
     return rejected(original, "PURSUIT_MUST_END");
-  if (
-    state.defectionMarks.length > 0 ||
-    state.cities.some((city) => city.blackout !== null)
-  )
+  if (state.cities.some((city) => city.blackout !== null))
     return rejected(original, "COMMAND_NOT_IMPLEMENTED", {
       kind: "END_TURN_STATE_MACHINES",
     });
   try {
     const current = requirePlayer(state, actor);
-    const preview = playerIncomeV7(state, actor);
     const recovery = recoverIdleUnits(state, current);
+    const armed = armWaitingDefectionsV7(recovery.state, actor);
+    const preview = playerIncomeV7(armed.state, actor);
     const nextIndex = nextActiveSeat(state);
     if (nextIndex === null) return rejected(original, "INVALID_STATE");
     const nextPlayer = state.players.find(
@@ -2254,7 +2366,7 @@ function applyEndTurn(
       nextIndex <= state.activeSeatIndex ? nextSafe(state.round) : state.round;
     const advanced = resetTurnUnits(
       {
-        ...recovery.state,
+        ...armed.state,
         activeSeatIndex: nextIndex,
         round,
         saboteurExposures: recovery.state.saboteurExposures.filter(
@@ -2263,7 +2375,10 @@ function applyEndTurn(
       },
       nextPlayer.id,
     );
-    const started = startTurnEconomyV7(advanced, nextPlayer);
+    const resolved = resolveArmedDefectionsV7(advanced, nextPlayer.id);
+    const started = startTurnEconomyV7(resolved.state, nextPlayer, false);
+    const turnStarted = started.events[0];
+    if (turnStarted === undefined) throw new RangeError("INVALID_STATE");
     const achievements = evaluateAchievementsV7(started.state, nextPlayer.id);
     return accepted(
       checked({
@@ -2272,6 +2387,7 @@ function applyEndTurn(
       }),
       [
         ...recovery.events,
+        ...armed.events,
         {
           kind: "INCOME_PREVIEWED",
           playerId: actor,
@@ -2279,7 +2395,9 @@ function applyEndTurn(
           cities: preview.cities,
         },
         { kind: "TURN_ENDED", playerId: actor },
-        ...started.events,
+        turnStarted,
+        ...resolved.events,
+        ...started.events.slice(1),
         ...achievements.events,
       ],
     );
@@ -2318,6 +2436,124 @@ function validateTileContext(
   if (hasCityChoice(state, city.id))
     return { ok: false, code: "CITY_REWARD_PENDING", params: {} };
   return { ok: true, player, tile, city };
+}
+
+function armWaitingDefectionsV7(
+  state: GameStateV7,
+  targetOwnerId: PlayerId,
+): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
+  const validation = revalidateReservations(state, "CAPACITY_LOST");
+  const kept = new Map(validation.marks.map((mark) => [mark.id, mark]));
+  const cancellations = new Map(
+    validation.events.flatMap((event) =>
+      event.kind === "DEFECTION_CANCELLED" ? [[event.markId, event]] : [],
+    ),
+  );
+  const marks: DefectionMarkV7[] = [];
+  const events: DomainEventV7[] = [];
+  for (const original of [...state.defectionMarks].sort(
+    (left, right) => left.id - right.id,
+  )) {
+    const cancellation = cancellations.get(original.id);
+    if (cancellation !== undefined) {
+      events.push(cancellation);
+      continue;
+    }
+    const mark = kept.get(original.id);
+    if (mark === undefined) throw new RangeError("INVALID_STATE");
+    if (
+      mark.phase === "WAITING_FOR_REPLY" &&
+      mark.recordedTargetOwnerId === targetOwnerId
+    ) {
+      const armed: DefectionMarkV7 = { ...mark, phase: "ARMED" };
+      marks.push(armed);
+      events.push({
+        kind: "DEFECTION_ARMED",
+        markId: armed.id,
+        sourceUnitId: armed.sourceUnitId,
+        targetUnitId: armed.targetUnitId,
+        targetOwnerId: armed.recordedTargetOwnerId,
+      });
+    } else marks.push(mark);
+  }
+  return { state: { ...state, defectionMarks: marks }, events };
+}
+
+function resolveArmedDefectionsV7(
+  state: GameStateV7,
+  initiatingPlayerId: PlayerId,
+): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
+  const boundaryMarkIds = state.defectionMarks
+    .filter(
+      (mark) =>
+        mark.phase === "ARMED" &&
+        mark.initiatingPlayerId === initiatingPlayerId,
+    )
+    .map((mark) => mark.id)
+    .sort((left, right) => left - right);
+  let current = state;
+  const events: DomainEventV7[] = [];
+  for (const markId of boundaryMarkIds) {
+    const validation = revalidateReservations(current, "CAPACITY_LOST");
+    current = { ...current, defectionMarks: validation.marks };
+    events.push(...validation.events);
+    const mark = current.defectionMarks.find((item) => item.id === markId);
+    if (mark === undefined) continue;
+    const target = current.units.find(
+      (unit) => unit.id === mark.targetUnitId && unit.hp > 0,
+    );
+    if (target === undefined) throw new RangeError("INVALID_STATE");
+    const converted: UnitStateV7 = {
+      ...target,
+      ownerId: initiatingPlayerId,
+      homeCityId: mark.reservedHomeCityId,
+      captureEligible: false,
+      activation: exhaustedActivation(),
+    };
+    current = {
+      ...current,
+      units: current.units.map((unit) =>
+        unit.id === target.id ? converted : unit,
+      ),
+      defectionMarks: current.defectionMarks.filter(
+        (item) => item.id !== mark.id,
+      ),
+    };
+    events.push({
+      kind: "DEFECTION_RESOLVED",
+      markId: mark.id,
+      sourceUnitId: mark.sourceUnitId,
+      targetUnitId: mark.targetUnitId,
+      fromPlayerId: mark.recordedTargetOwnerId,
+      toPlayerId: initiatingPlayerId,
+      homeCityId: mark.reservedHomeCityId,
+      at: converted.at,
+    });
+    const cleanup = revalidateReservations(current, "CAPACITY_LOST");
+    current = { ...current, defectionMarks: cleanup.marks };
+    events.push(...cleanup.events);
+    const reveal = revealRadius(
+      current,
+      initiatingPlayerId,
+      converted.at,
+      unitSightRadiusAtV7(current, converted),
+    );
+    current = {
+      ...current,
+      players: setExplored(
+        current.players,
+        initiatingPlayerId,
+        reveal.explored,
+      ),
+    };
+    if (reveal.revealed.length > 0)
+      events.push({
+        kind: "TILES_REVEALED",
+        playerId: initiatingPlayerId,
+        tiles: reveal.revealed,
+      });
+  }
+  return { state: current, events };
 }
 
 function validateUnitActor(
