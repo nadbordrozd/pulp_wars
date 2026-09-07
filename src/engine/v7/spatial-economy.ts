@@ -1,11 +1,5 @@
 import type { CityId, PlayerId } from "../model/ids";
-import type {
-  BoardStateV7,
-  CityStateV7,
-  CoordV7,
-  ImprovementIdV7,
-  TileStateV7,
-} from "./types";
+import type { CoordV7, ImprovementIdV7 } from "./types";
 
 export const ECONOMIC_FAMILY_ORDER_V7 = Object.freeze([
   "AGRICULTURE",
@@ -34,10 +28,26 @@ export interface SpatialContributionV7 {
   readonly placementCount: number;
 }
 
-type EconomyGraphV7 = {
-  readonly board: BoardStateV7;
-  readonly cities: readonly CityStateV7[];
-};
+export interface EconomyGraphTileV7 {
+  readonly at: CoordV7;
+  readonly improvement: ImprovementIdV7 | null;
+  readonly road: boolean;
+  readonly territoryCityId: CityId | null;
+}
+export interface EconomyGraphCityV7 {
+  readonly id: CityId;
+  readonly ownerId: PlayerId;
+  readonly at: CoordV7;
+  readonly isCapital: boolean;
+}
+export interface EconomyGraphV7 {
+  readonly board: {
+    readonly width: number;
+    readonly height: number;
+    readonly tiles: readonly EconomyGraphTileV7[];
+  };
+  readonly cities: readonly EconomyGraphCityV7[];
+}
 const BASIC = ["FARM", "LUMBER_CAMP", "MINE", "QUARRY"] as const;
 const PROCESSORS = ["WINDMILL", "SAWMILL", "FORGE", "STONEWORKS"] as const;
 const AXES: readonly {
@@ -210,8 +220,8 @@ export function isCapitalConnectedRoadV7(
   return capitalConnectedRoadKeysV7(graph, playerId).has(key(at));
 }
 
-function connectedSameCityComponent(
-  board: BoardStateV7,
+function connectedSameCityComponent<T extends EconomyGraphTileV7>(
+  board: EconomyBoardV7<T>,
   center: CoordV7,
   cityId: CityId,
   improvement: "FARM" | "LUMBER_CAMP",
@@ -242,7 +252,7 @@ function friendlyAdjacent<T extends ImprovementIdV7>(
   at: CoordV7,
   ownerId: PlayerId,
   allowed: readonly T[],
-): readonly TileStateV7[] {
+): readonly EconomyGraphTileV7[] {
   return adjacentTilesV7(graph.board, at).filter(
     (tile) =>
       tile.improvement !== null &&
@@ -251,7 +261,7 @@ function friendlyAdjacent<T extends ImprovementIdV7>(
   );
 }
 function orderedTypes<T extends ImprovementIdV7>(
-  tiles: readonly TileStateV7[],
+  tiles: readonly EconomyGraphTileV7[],
   order: readonly T[],
 ): readonly T[] {
   return order.filter((type) =>
@@ -265,14 +275,17 @@ function familyFor(value: ImprovementIdV7 | null): EconomicFamilyV7 | null {
   if (value === "QUARRY" || value === "STONEWORKS") return "STONE";
   return null;
 }
-function tileOwner(graph: EconomyGraphV7, tile: TileStateV7): PlayerId | null {
+function tileOwner(
+  graph: EconomyGraphV7,
+  tile: EconomyGraphTileV7,
+): PlayerId | null {
   return tile.territoryCityId === null
     ? null
     : (graph.cities.find((city) => city.id === tile.territoryCityId)?.ownerId ??
         null);
 }
-function isSameCityImprovement(
-  board: BoardStateV7,
+function isSameCityImprovement<T extends EconomyGraphTileV7>(
+  board: EconomyBoardV7<T>,
   at: CoordV7,
   [dx, dy]: readonly [number, number],
   cityId: CityId,
@@ -281,11 +294,17 @@ function isSameCityImprovement(
   const tile = tileAtV7(board, { x: at.x + dx, y: at.y + dy });
   return tile?.territoryCityId === cityId && tile.improvement === improvement;
 }
-export function adjacentTilesV7(
-  board: BoardStateV7,
+type EconomyBoardV7<T extends EconomyGraphTileV7 = EconomyGraphTileV7> = {
+  readonly width: number;
+  readonly height: number;
+  readonly tiles: readonly T[];
+};
+
+export function adjacentTilesV7<T extends EconomyGraphTileV7>(
+  board: EconomyBoardV7<T>,
   at: CoordV7,
-): readonly TileStateV7[] {
-  const values: TileStateV7[] = [];
+): readonly T[] {
+  const values: T[] = [];
   for (let dy = -1; dy <= 1; dy += 1)
     for (let dx = -1; dx <= 1; dx += 1)
       if (dx !== 0 || dy !== 0) {
@@ -294,10 +313,10 @@ export function adjacentTilesV7(
       }
   return values.sort((left, right) => compareCoords(left.at, right.at));
 }
-export function tileAtV7(
-  board: BoardStateV7,
+export function tileAtV7<T extends EconomyGraphTileV7>(
+  board: EconomyBoardV7<T>,
   at: CoordV7,
-): TileStateV7 | undefined {
+): T | undefined {
   if (at.x < 0 || at.y < 0 || at.x >= board.width || at.y >= board.height)
     return undefined;
   const tile = board.tiles[at.y * board.width + at.x];

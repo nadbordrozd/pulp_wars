@@ -253,6 +253,16 @@ describe("ruleset-7 economy", () => {
         coinIncomeDeltaByCity: [],
         resultingContribution: 2,
         capacityDelta: 0,
+        outputTransitions: [
+          {
+            at: target,
+            improvement: "WORKSHOP",
+            measure: "POPULATION",
+            before: 0,
+            after: 2,
+            change: "CREATED",
+          },
+        ],
         resourceRestored: null,
         levelsReached: [],
         distinctTypes: ["FARM"],
@@ -1043,9 +1053,51 @@ describe("ruleset-7 economy", () => {
         player.id === state.humanPlayerId ? { ...player, coins: 0 } : player,
       ),
     });
-    const removed = applyCommandV7(state, state.humanPlayerId, {
+    const removalCommand = {
       kind: "REDEVELOP",
       at: staged.mineAt,
+    } as const;
+    const removalFromView = previewEconomicV7(
+      viewForV7(state, state.humanPlayerId),
+      removalCommand,
+    );
+    expect(
+      previewEconomicV7(state, state.humanPlayerId, removalCommand),
+    ).toEqual(removalFromView);
+    expect(removalFromView).toMatchObject({
+      ok: true,
+      preview: {
+        populationDeltaByCity: [{ cityId: staged.cityId, delta: -15 }],
+        coinIncomeDeltaByCity: [{ cityId: staged.cityId, delta: -6 }],
+        resourceRestored: "ORE",
+        levelsReached: [],
+        outputTransitions: expect.arrayContaining([
+          expect.objectContaining({
+            at: staged.mineAt,
+            improvement: "MINE",
+            before: 4,
+            after: 0,
+            change: "REMOVED",
+          }),
+          expect.objectContaining({
+            at: staged.forgeAt,
+            improvement: "FORGE",
+            before: 3,
+            after: 0,
+            change: "OUTAGE",
+          }),
+          expect.objectContaining({
+            at: staged.grandWorksAt,
+            improvement: "GRAND_WORKS",
+            before: 8,
+            after: 0,
+            change: "OUTAGE",
+          }),
+        ]),
+      },
+    });
+    const removed = applyCommandV7(state, state.humanPlayerId, {
+      ...removalCommand,
     });
     if (!removed.accepted) throw new Error(removed.error.code);
     state = removed.state;
@@ -1082,9 +1134,48 @@ describe("ruleset-7 economy", () => {
     expect(
       state.players.find((player) => player.id === state.humanPlayerId)?.coins,
     ).toBe(6);
+    const repairCommand = { kind: "BUILD_MINE", at: staged.mineAt } as const;
+    const repairFromView = previewEconomicV7(
+      viewForV7(state, state.humanPlayerId),
+      repairCommand,
+    );
+    expect(
+      previewEconomicV7(state, state.humanPlayerId, repairCommand),
+    ).toEqual(repairFromView);
+    expect(repairFromView).toMatchObject({
+      ok: true,
+      preview: {
+        cost: 6,
+        populationDeltaByCity: [{ cityId: staged.cityId, delta: 15 }],
+        coinIncomeDeltaByCity: [{ cityId: staged.cityId, delta: 6 }],
+        levelsReached: [],
+        outputTransitions: expect.arrayContaining([
+          expect.objectContaining({
+            at: staged.mineAt,
+            improvement: "MINE",
+            before: 0,
+            after: 4,
+            change: "CREATED",
+          }),
+          expect.objectContaining({
+            at: staged.forgeAt,
+            improvement: "FORGE",
+            before: 0,
+            after: 3,
+            change: "RESUMED",
+          }),
+          expect.objectContaining({
+            at: staged.grandWorksAt,
+            improvement: "GRAND_WORKS",
+            before: 0,
+            after: 8,
+            change: "RESUMED",
+          }),
+        ]),
+      },
+    });
     const repaired = applyCommandV7(state, state.humanPlayerId, {
-      kind: "BUILD_MINE",
-      at: staged.mineAt,
+      ...repairCommand,
     });
     if (!repaired.accepted) throw new Error(repaired.error.code);
     const restored = required(

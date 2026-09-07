@@ -7,7 +7,9 @@ import {
   effectiveRoleRuleV7,
   technologyCapabilitiesV7,
   technologyResearchCostV7,
+  type BasicEconomicCommandKindV7,
   type EffectiveRoleRuleV7,
+  type SpatialEconomicCommandKindV7,
   type TechnologyBranchIdV7,
   type TechnologyCapabilitiesV7,
   type TechnologyUnlockV7,
@@ -15,7 +17,6 @@ import {
 import { compareCommandsV7, type CommandV7 } from "./commands";
 import {
   assignedUnitCountV7,
-  cityIncomeV7,
   cityUnitCapacityV7,
   rewardCandidatesForLevelV7,
   reservedCapacityCountV7,
@@ -27,11 +28,14 @@ import { reachablePlayerMovementPathsV7 } from "./movement";
 import {
   isCapitalConnectedRoadV7,
   spatialContributionAtV7,
+  type EconomyGraphV7,
   type EconomicFamilyV7,
   type OppositePairAxisV7,
 } from "./spatial-economy";
 import {
   COMMAND_KIND_ORDER_V7,
+  ACHIEVEMENT_IDS_V7,
+  REWARD_IDS_V7,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
   type CoordV7,
@@ -120,9 +124,15 @@ export function queryTechnologyCapabilitiesV7(
   );
 }
 
+const BASIC_KINDS = Object.keys(
+  BASIC_ECONOMIC_ACTIONS_V7,
+) as BasicEconomicCommandKindV7[];
+const SPATIAL_KINDS = Object.keys(
+  SPATIAL_ECONOMIC_ACTIONS_V7,
+) as SpatialEconomicCommandKindV7[];
 const TILE_KINDS = [
-  ...Object.keys(BASIC_ECONOMIC_ACTIONS_V7),
-  ...Object.keys(SPATIAL_ECONOMIC_ACTIONS_V7),
+  ...BASIC_KINDS,
+  ...SPATIAL_KINDS,
   "CLEAR_FOREST",
   "REPLANT_FOREST",
   "BUILD_ROAD",
@@ -1043,10 +1053,12 @@ export function queryAiReadyCommandsV7(
         : command.kind === "TRAIN"
           ? UNIT_ROLE_IDS_V7.indexOf(command.role)
           : command.kind === "CHOOSE_CITY_REWARD"
-            ? ORIGINAL_BASELINE_V3_TREE.nodes.length + command.reachedLevel
-            : "targetUnitId" in command
-              ? command.targetUnitId
-              : 0;
+            ? REWARD_IDS_V7.indexOf(command.reward)
+            : command.kind === "BUILD_MONUMENT"
+              ? ACHIEVEMENT_IDS_V7.indexOf(command.achievement)
+              : "targetUnitId" in command
+                ? command.targetUnitId
+                : 0;
     return {
       command,
       tuple: [
@@ -1217,6 +1229,7 @@ export interface EconomicPreviewV7 {
   readonly coinIncomeDeltaByCity: readonly CityValueDeltaV7[];
   readonly resultingContribution: number;
   readonly capacityDelta: number;
+  readonly outputTransitions: readonly EconomicOutputTransitionV7[];
   readonly resourceRestored:
     "FERTILE_GROUND" | "ORE" | "STONE" | "UNKNOWN_RESOURCE" | null;
   readonly levelsReached: readonly number[];
@@ -1228,18 +1241,56 @@ export interface EconomicPreviewV7 {
   readonly buildingLimitReached: false;
   readonly complete: true;
 }
+export interface EconomicOutputTransitionV7 {
+  readonly at: CoordV7;
+  readonly improvement: ImprovementIdV7;
+  readonly measure: "POPULATION" | "COIN_INCOME" | "CAPACITY";
+  readonly before: number;
+  readonly after: number;
+  readonly change: "CREATED" | "REMOVED" | "OUTAGE" | "RESUMED" | "CHANGED";
+}
 export type EconomicPreviewResultV7 =
   | { readonly ok: true; readonly preview: EconomicPreviewV7 }
   | { readonly ok: false; readonly error: "NOT_OFFERED" };
 
 export function previewEconomicV7(
+  view: PlayerViewV7,
+  command: CommandV7,
+): EconomicPreviewResultV7;
+export function previewEconomicV7(
   state: GameStateV7,
   viewerId: PlayerId,
+  command: CommandV7,
+): EconomicPreviewResultV7;
+export function previewEconomicV7(
+  input: GameStateV7 | PlayerViewV7,
+  viewerOrCommand: PlayerId | CommandV7,
+  maybeCommand?: CommandV7,
+): EconomicPreviewResultV7 {
+  const view =
+    maybeCommand === undefined
+      ? (input as PlayerViewV7)
+      : asView(input, viewerOrCommand as PlayerId);
+  const command = maybeCommand ?? (viewerOrCommand as CommandV7);
+  let cachedForView = PUBLIC_ECONOMIC_PREVIEWS.get(view);
+  if (cachedForView === undefined) {
+    cachedForView = new Map();
+    PUBLIC_ECONOMIC_PREVIEWS.set(view, cachedForView);
+  }
+  const cacheKey = JSON.stringify(command);
+  const cached = cachedForView.get(cacheKey);
+  if (cached !== undefined) return cached;
+  const result = calculatePublicEconomicPreviewV7(view, command);
+  cachedForView.set(cacheKey, result);
+  return result;
+}
+
+function calculatePublicEconomicPreviewV7(
+  view: PlayerViewV7,
   command: CommandV7,
 ): EconomicPreviewResultV7 {
   if (!("at" in command) || !TILE_KINDS.includes(command.kind as never))
     return { ok: false, error: "NOT_OFFERED" };
-  const view = viewForV7(state, viewerId);
   const offered = queryPlayerCommandsV7(view).some(
     (candidate) =>
       candidate.kind === command.kind &&
@@ -1248,124 +1299,136 @@ export function previewEconomicV7(
   );
   if (!offered || !publicEconomicPreviewExact(view, command))
     return { ok: false, error: "NOT_OFFERED" };
-  const result = applyCommandV7(state, viewerId, command);
-  if (!result.accepted) return { ok: false, error: "NOT_OFFERED" };
-  const tile =
-    state.board.tiles[command.at.y * state.board.width + command.at.x];
-  if (tile === undefined || tile.territoryCityId === null)
+  const tile = tileAtView(view, command.at);
+  if (tile?.explored !== true || tile.territoryCityId === null)
     return { ok: false, error: "NOT_OFFERED" };
-  const build = result.events.find(
-    (event) =>
-      event.kind === "ECONOMIC_BUILDING_BUILT" ||
-      event.kind === "ECONOMIC_BUILDING_REMOVED",
+  const city = view.cities.find(
+    (candidate) => candidate.id === tile.territoryCityId,
   );
-  const afterTile =
-    result.state.board.tiles[
-      command.at.y * result.state.board.width + command.at.x
-    ];
-  const afterPublicTile = viewForV7(result.state, viewerId).board.tiles[
-    command.at.y * result.state.board.width + command.at.x
-  ];
-  const improvement =
-    afterTile?.improvement ??
-    (build?.kind === "ECONOMIC_BUILDING_REMOVED" ? build.improvement : null);
-  const evaluation =
-    afterTile !== undefined && afterTile.improvement !== null
-      ? spatialContributionAtV7(result.state, command.at, afterTile.improvement)
-      : null;
-  const costEvent = result.events.find(
-    (event) =>
-      event.kind === "FRUIT_HARVESTED" ||
-      event.kind === "GAME_HUNTED" ||
-      event.kind === "ECONOMIC_BUILDING_BUILT" ||
-      event.kind === "ROAD_BUILT",
-  );
+  if (city === undefined) return { ok: false, error: "NOT_OFFERED" };
+  const beforeGraph = publicEconomyGraph(view);
+  const basic =
+    BASIC_ECONOMIC_ACTIONS_V7[command.kind as BasicEconomicCommandKindV7];
+  const spatial =
+    SPATIAL_ECONOMIC_ACTIONS_V7[command.kind as SpatialEconomicCommandKindV7];
+  const improvement = basic?.improvement ?? spatial?.improvement ?? null;
   const cost =
-    costEvent !== undefined && "cost" in costEvent
-      ? costEvent.cost
+    basic?.cost ??
+    spatial?.cost ??
+    (command.kind === "BUILD_ROAD"
+      ? 2
       : command.kind === "REPLANT_FOREST"
         ? 4
+        : 0);
+  const afterGraph = graphAfterTileCommandV7(view, beforeGraph, command, tile);
+  if (afterGraph === null) return { ok: false, error: "NOT_OFFERED" };
+  const evaluation =
+    improvement !== null
+      ? spatialContributionAtV7(afterGraph, command.at, improvement)
+      : null;
+  try {
+    const populationDeltaByCity: CityValueDeltaV7[] = [];
+    const coinIncomeDeltaByCity: CityValueDeltaV7[] = [];
+    const levelsReached: number[] = [];
+    const reachedLevelsByCity = new Map<CityId, readonly number[]>();
+    const changesLiveGraph = economicCommandChangesLiveGraphV7(command.kind);
+    for (const candidate of view.cities
+      .filter((value) => value.ownerId === view.viewer.id)
+      .sort((left, right) => left.id - right.id)) {
+      const permanentDelta =
+        candidate.id === city.id && basic?.populationCategory === "PERMANENT"
+          ? basic.population
+          : 0;
+      const liveDelta = changesLiveGraph
+        ? liveTotalForCityV7(afterGraph, candidate.id) -
+          liveTotalForCityV7(beforeGraph, candidate.id)
         : 0;
-  const populationDeltaByCity = state.cities
-    .map((city) => {
-      const after = result.state.cities.find((item) => item.id === city.id);
-      return {
-        cityId: city.id,
-        delta:
-          after === undefined
-            ? 0
-            : after.permanentPopulation +
-              after.economicPopulation -
-              city.permanentPopulation -
-              city.economicPopulation,
-      };
-    })
-    .filter((entry) => entry.delta !== 0);
-  const coinIncomeDeltaByCity = state.cities
-    .map((city) => {
-      const after = result.state.cities.find((item) => item.id === city.id);
-      return {
-        cityId: city.id,
-        delta:
-          after === undefined
-            ? 0
-            : cityIncomeV7(result.state, after) - cityIncomeV7(state, city),
-      };
-    })
-    .filter((entry) => entry.delta !== 0);
-  return {
-    ok: true,
-    preview: {
-      at: command.at,
-      cost: typeof cost === "number" ? cost : 0,
-      ownerCityId: tile.territoryCityId,
-      populationDeltaByCity,
-      coinIncomeDeltaByCity,
-      resultingContribution:
-        build?.kind === "ECONOMIC_BUILDING_BUILT"
-          ? build.populationContribution
-          : result.events.some(
-                (event) =>
-                  event.kind === "FRUIT_HARVESTED" ||
-                  event.kind === "GAME_HUNTED",
-              )
-            ? 1
-            : (evaluation?.population ?? 0),
-      capacityDelta:
-        build?.kind === "ECONOMIC_BUILDING_BUILT" ||
-        build?.kind === "ECONOMIC_BUILDING_REMOVED"
-          ? build.capacityDelta
-          : 0,
-      resourceRestored:
-        build?.kind === "ECONOMIC_BUILDING_REMOVED" &&
-        afterPublicTile?.explored === true
-          ? projectedRestoredResource(afterPublicTile.resource)
-          : null,
-      levelsReached: result.events
-        .filter((event) => event.kind === "CITY_LEVELED_UP")
-        .map((event) => event.level),
-      distinctTypes:
-        evaluation?.distinctTypes ??
-        (improvement === null ? [] : [improvement]),
-      distinctFamilies: evaluation?.distinctFamilies ?? [],
-      contributingTiles:
-        evaluation?.contributingTiles ??
-        (result.events.some(
-          (event) =>
-            event.kind === "FRUIT_HARVESTED" || event.kind === "GAME_HUNTED",
-        )
-          ? [command.at]
-          : []),
-      oppositePairAxes: evaluation?.oppositePairAxes ?? [],
-      capitalRoadConnected:
-        evaluation?.capitalRoadConnected ??
-        (command.kind === "BUILD_ROAD"
-          ? isCapitalConnectedRoadV7(result.state, command.at, viewerId)
-          : false),
-      buildingLimitReached: false,
-      complete: true,
-    },
-  };
+      const delta = permanentDelta + liveDelta;
+      const growth = resolvePublicCityGrowthV7(
+        candidate,
+        candidate.permanentPopulation + permanentDelta,
+        candidate.economicPopulation + liveDelta,
+      );
+      const incomeDelta = changesLiveGraph
+        ? publicCityIncomeV7(
+            view,
+            growth.city,
+            marketForCityV7(afterGraph, candidate.id),
+          ) -
+          publicCityIncomeV7(
+            view,
+            candidate,
+            marketForCityV7(beforeGraph, candidate.id),
+          )
+        : exactIncomeDeltaWithUnchangedMarketV7(view, candidate, growth.city);
+      if (incomeDelta === null) throw new RangeError("PUBLIC_GRAPH_AMBIGUOUS");
+      if (delta !== 0)
+        populationDeltaByCity.push({ cityId: candidate.id, delta });
+      if (incomeDelta !== 0)
+        coinIncomeDeltaByCity.push({
+          cityId: candidate.id,
+          delta: incomeDelta,
+        });
+      levelsReached.push(...growth.reachedLevels);
+      reachedLevelsByCity.set(candidate.id, growth.reachedLevels);
+    }
+    const automaticRewardCoins = publicAutomaticRewardCoinsV7(
+      view,
+      reachedLevelsByCity,
+    );
+    const immediateCoins = command.kind === "CLEAR_FOREST" ? 1 : 0;
+    const coinsAfterAutomaticRewards =
+      BigInt(view.viewer.coins) -
+      BigInt(cost) +
+      BigInt(immediateCoins) +
+      BigInt(automaticRewardCoins);
+    if (coinsAfterAutomaticRewards > BigInt(Number.MAX_SAFE_INTEGER))
+      throw new RangeError("INTEGER_OVERFLOW");
+    return {
+      ok: true,
+      preview: {
+        at: command.at,
+        cost,
+        ownerCityId: tile.territoryCityId,
+        populationDeltaByCity,
+        coinIncomeDeltaByCity,
+        resultingContribution: evaluation?.population ?? basic?.population ?? 0,
+        capacityDelta:
+          spatial?.improvement === "BARRACKS"
+            ? 2
+            : command.kind === "REDEVELOP" && tile.improvement === "BARRACKS"
+              ? -2
+              : 0,
+        outputTransitions: economicOutputTransitionsV7(
+          view,
+          beforeGraph,
+          afterGraph,
+        ),
+        resourceRestored:
+          command.kind === "REDEVELOP"
+            ? publicRestoredResourceV7(view, tile.terrain, tile.improvement)
+            : null,
+        levelsReached,
+        distinctTypes:
+          evaluation?.distinctTypes ??
+          (improvement === null ? [] : [improvement]),
+        distinctFamilies: evaluation?.distinctFamilies ?? [],
+        contributingTiles:
+          evaluation?.contributingTiles ??
+          (basic !== undefined ? [command.at] : []),
+        oppositePairAxes: evaluation?.oppositePairAxes ?? [],
+        capitalRoadConnected:
+          evaluation?.capitalRoadConnected ??
+          (command.kind === "BUILD_ROAD"
+            ? isCapitalConnectedRoadV7(afterGraph, command.at, view.viewer.id)
+            : false),
+        buildingLimitReached: false,
+        complete: true,
+      },
+    };
+  } catch {
+    return { ok: false, error: "NOT_OFFERED" };
+  }
 }
 
 function publicEconomicPreviewExact(
@@ -1435,6 +1498,925 @@ function economicCommandCanAddPopulation(kind: CommandV7["kind"]): boolean {
       kind !== "BUILD_MARKET" &&
       kind !== "BUILD_BARRACKS")
   );
+}
+
+function publicAutomaticRewardCoinsV7(
+  view: PlayerViewV7,
+  reachedLevelsByCity: ReadonlyMap<CityId, readonly number[]>,
+): number {
+  let coins = 0;
+  for (const city of [...view.cities]
+    .filter((candidate) => candidate.ownerId === view.viewer.id)
+    .sort((left, right) => left.id - right.id)) {
+    for (const level of reachedLevelsByCity.get(city.id) ?? []) {
+      if (level < 5) return coins;
+      const placement = publicRewardPlacementStatus(view, city.id);
+      if (placement !== "NONE") return coins;
+      coins += 12;
+      if (!Number.isSafeInteger(coins))
+        throw new RangeError("INTEGER_OVERFLOW");
+    }
+  }
+  return coins;
+}
+
+function economicCommandChangesLiveGraphV7(kind: CommandV7["kind"]): boolean {
+  return (
+    kind === "BUILD_FARM" ||
+    kind === "BUILD_LUMBER_CAMP" ||
+    kind === "BUILD_MINE" ||
+    kind === "BUILD_QUARRY" ||
+    kind === "BUILD_ROAD" ||
+    kind === "REDEVELOP" ||
+    kind in SPATIAL_ECONOMIC_ACTIONS_V7
+  );
+}
+
+type PublicEconomyGraphTileV7 = EconomyGraphV7["board"]["tiles"][number] & {
+  readonly explored: boolean;
+  readonly terrain:
+    Extract<PlayerTileViewV7, { explored: true }>["terrain"] | null;
+  readonly resource:
+    Extract<PlayerTileViewV7, { explored: true }>["resource"] | null;
+  readonly site: "CAPITAL" | "VILLAGE" | "CITY" | null;
+  readonly territoryOwnerId: PlayerId | null;
+};
+type PublicEconomyGraphV7 = {
+  readonly board: {
+    readonly width: number;
+    readonly height: number;
+    readonly tiles: readonly PublicEconomyGraphTileV7[];
+  };
+  readonly cities: PlayerViewV7["cities"];
+  readonly resolvedPendingCityIds: ReadonlySet<CityId>;
+  readonly remainingMonumentEntitlements: number;
+};
+
+const PUBLIC_ECONOMY_GRAPHS = new WeakMap<PlayerViewV7, PublicEconomyGraphV7>();
+const PUBLIC_ECONOMIC_PREVIEWS = new WeakMap<
+  PlayerViewV7,
+  Map<string, EconomicPreviewResultV7>
+>();
+const PUBLIC_SPATIAL_SCORES = new WeakMap<PlayerViewV7, Map<string, number>>();
+const PUBLIC_SPATIAL_BASELINES = new WeakMap<PlayerViewV7, number>();
+const PUBLIC_ECONOMIC_POTENTIALS = new WeakMap<
+  PlayerViewV7,
+  readonly PublicEconomicPotentialV7[]
+>();
+const PUBLIC_GRAPH_TOTALS = new WeakMap<
+  PublicEconomyGraphV7,
+  Map<
+    PlayerId,
+    { readonly population: number; readonly recurringCoins: number }
+  >
+>();
+const PUBLIC_GRAPH_HAS_GRAND_WORKS_SITE = new WeakMap<
+  PublicEconomyGraphV7,
+  Map<PlayerId, boolean>
+>();
+
+function publicEconomyGraph(view: PlayerViewV7): PublicEconomyGraphV7 {
+  const cached = PUBLIC_ECONOMY_GRAPHS.get(view);
+  if (cached !== undefined) return cached;
+  const graph: PublicEconomyGraphV7 = {
+    board: {
+      width: view.board.width,
+      height: view.board.height,
+      tiles: view.board.tiles.map((tile): PublicEconomyGraphTileV7 =>
+        tile.explored
+          ? {
+              at: tile.at,
+              explored: true,
+              terrain: tile.terrain,
+              resource: tile.resource,
+              improvement: tile.improvement,
+              road: tile.road,
+              site: tile.site,
+              territoryCityId: tile.territoryCityId,
+              territoryOwnerId: tile.territoryOwnerId,
+            }
+          : {
+              at: tile.at,
+              explored: false,
+              terrain: null,
+              resource: null,
+              improvement: null,
+              road: false,
+              site: null,
+              territoryCityId: null,
+              territoryOwnerId: null,
+            },
+      ),
+    },
+    cities: view.cities,
+    resolvedPendingCityIds: new Set(),
+    remainingMonumentEntitlements: view.viewer.achievementEntitlements.filter(
+      (entitlement) => entitlement.unlocked && !entitlement.spent,
+    ).length,
+  };
+  PUBLIC_ECONOMY_GRAPHS.set(view, graph);
+  return graph;
+}
+
+function replacePublicGraphTileV7(
+  graph: PublicEconomyGraphV7,
+  at: CoordV7,
+  replacement: Partial<PublicEconomyGraphTileV7>,
+): PublicEconomyGraphV7 {
+  return {
+    ...graph,
+    board: {
+      ...graph.board,
+      tiles: graph.board.tiles.map((tile) =>
+        same(tile.at, at) ? { ...tile, ...replacement, at: tile.at } : tile,
+      ),
+    },
+  };
+}
+
+function graphAfterTileCommandV7(
+  view: PlayerViewV7,
+  graph: PublicEconomyGraphV7,
+  command: Extract<CommandV7, { at: CoordV7 }>,
+  tile = graph.board.tiles.find((candidate) => same(candidate.at, command.at)),
+): PublicEconomyGraphV7 | null {
+  if (tile === undefined || !tile.explored) return null;
+  const basic =
+    BASIC_ECONOMIC_ACTIONS_V7[command.kind as BasicEconomicCommandKindV7];
+  const spatial =
+    SPATIAL_ECONOMIC_ACTIONS_V7[command.kind as SpatialEconomicCommandKindV7];
+  if (basic !== undefined)
+    return replacePublicGraphTileV7(graph, command.at, {
+      resource: projectedResourceAfterMutationV7(view, tile.terrain, null),
+      improvement: basic.improvement,
+    });
+  if (spatial !== undefined)
+    return replacePublicGraphTileV7(graph, command.at, {
+      improvement: spatial.improvement,
+    });
+  if (command.kind === "CLEAR_FOREST")
+    return replacePublicGraphTileV7(graph, command.at, {
+      terrain: "GRASS",
+      resource: projectedResourceAfterMutationV7(view, "GRASS", null),
+    });
+  if (command.kind === "REPLANT_FOREST")
+    return replacePublicGraphTileV7(graph, command.at, {
+      terrain: "FOREST",
+      resource: projectedResourceAfterMutationV7(view, "FOREST", null),
+    });
+  if (command.kind === "BUILD_ROAD")
+    return replacePublicGraphTileV7(graph, command.at, { road: true });
+  if (command.kind === "REDEVELOP")
+    return replacePublicGraphTileV7(graph, command.at, {
+      improvement: null,
+      resource: publicRestoredResourceV7(view, tile.terrain, tile.improvement),
+    });
+  return null;
+}
+
+function liveTotalForCityV7(
+  graph: PublicEconomyGraphV7,
+  cityId: CityId,
+): number {
+  return graph.board.tiles
+    .filter(
+      (tile) => tile.territoryCityId === cityId && tile.improvement !== null,
+    )
+    .reduce((total, tile) => {
+      const improvement = tile.improvement;
+      if (improvement === null) return total;
+      const value =
+        total + spatialContributionAtV7(graph, tile.at, improvement).population;
+      if (!Number.isSafeInteger(value))
+        throw new RangeError("INTEGER_OVERFLOW");
+      return value;
+    }, 0);
+}
+
+function marketForCityV7(graph: PublicEconomyGraphV7, cityId: CityId): number {
+  return graph.board.tiles
+    .filter(
+      (tile) =>
+        tile.territoryCityId === cityId && tile.improvement === "MARKET",
+    )
+    .reduce((total, tile) => {
+      const value =
+        total + spatialContributionAtV7(graph, tile.at, "MARKET").marketIncome;
+      if (!Number.isSafeInteger(value))
+        throw new RangeError("INTEGER_OVERFLOW");
+      return value;
+    }, 0);
+}
+
+function resolvePublicCityGrowthV7(
+  city: PlayerViewV7["cities"][number],
+  permanentPopulation: number,
+  economicPopulation: number,
+) {
+  const total = permanentPopulation + economicPopulation;
+  if (
+    !Number.isSafeInteger(permanentPopulation) ||
+    permanentPopulation < 0 ||
+    !Number.isSafeInteger(economicPopulation) ||
+    economicPopulation < 0 ||
+    !Number.isSafeInteger(total)
+  )
+    throw new RangeError("INTEGER_OVERFLOW");
+  let level = city.level;
+  const reachedLevels: number[] = [];
+  while (total - growthSpentForPreview(level) >= level + 1) {
+    level += 1;
+    if (!Number.isSafeInteger(level)) throw new RangeError("INTEGER_OVERFLOW");
+    reachedLevels.push(level);
+  }
+  const population = total - growthSpentForPreview(level);
+  if (!Number.isSafeInteger(population))
+    throw new RangeError("INTEGER_OVERFLOW");
+  return {
+    city: {
+      ...city,
+      level,
+      permanentPopulation,
+      economicPopulation,
+      population,
+    },
+    reachedLevels,
+  };
+}
+
+function publicCityIncomeV7(
+  view: PlayerViewV7,
+  city: PlayerViewV7["cities"][number],
+  market: number,
+): number {
+  if (publicCityBesieged(view, city.at)) return 0;
+  const preBlackout = Math.max(
+    1,
+    city.level +
+      (city.isCapital ? 1 : 0) +
+      market +
+      Math.min(0, city.population),
+  );
+  const result =
+    preBlackout -
+    (city.blackout?.phase === "ACTIVE" ? Math.min(3, preBlackout) : 0);
+  if (!Number.isSafeInteger(result)) throw new RangeError("INTEGER_OVERFLOW");
+  return result;
+}
+
+function exactIncomeDeltaWithUnchangedMarketV7(
+  view: PlayerViewV7,
+  before: PlayerViewV7["cities"][number],
+  after: PlayerViewV7["cities"][number],
+): number | null {
+  if (before.level === after.level && before.population === after.population)
+    return 0;
+  const knownMarket = exactVisibleMarketIncomeV7(view, before.id);
+  if (knownMarket !== null)
+    return (
+      publicCityIncomeV7(view, after, knownMarket) -
+      publicCityIncomeV7(view, before, knownMarket)
+    );
+  const possible = new Set<number>();
+  for (let market = 0; market <= 5; market += 1)
+    possible.add(
+      publicCityIncomeV7(view, after, market) -
+        publicCityIncomeV7(view, before, market),
+    );
+  const only = [...possible][0];
+  return possible.size === 1 && only !== undefined ? only : null;
+}
+
+function exactVisibleMarketIncomeV7(
+  view: PlayerViewV7,
+  cityId: CityId,
+): number | null {
+  const city = view.cities.find((candidate) => candidate.id === cityId);
+  if (city === undefined) return null;
+  const market = view.improvementValues.find((value) => {
+    if (value.improvement !== "MARKET" || value.measure !== "COIN_INCOME")
+      return false;
+    const tile = tileAtView(view, value.at);
+    return tile?.explored === true && tile.territoryCityId === cityId;
+  });
+  if (market !== undefined) return market.level;
+  if (publicPlanningGraphExact(view))
+    return marketForCityV7(publicEconomyGraph(view), cityId);
+  return publicCityDevelopmentFootprintKnown(view, city) ? 0 : null;
+}
+
+function publicRestoredResourceV7(
+  view: PlayerViewV7,
+  terrain: PublicEconomyGraphTileV7["terrain"],
+  improvement: ImprovementIdV7 | null,
+): EconomicPreviewV7["resourceRestored"] {
+  const restored =
+    improvement === "FARM"
+      ? "FERTILE_GROUND"
+      : improvement === "MINE"
+        ? "ORE"
+        : improvement === "QUARRY"
+          ? "STONE"
+          : null;
+  return projectedResourceAfterMutationV7(view, terrain, restored);
+}
+
+function projectedResourceAfterMutationV7(
+  view: PlayerViewV7,
+  terrain: PublicEconomyGraphTileV7["terrain"],
+  resource: "FERTILE_GROUND" | "ORE" | "STONE" | null,
+): EconomicPreviewV7["resourceRestored"] {
+  if (terrain === null) return null;
+  if (terrain === "FOREST") return resource;
+  const revealed =
+    terrain === "GRASS"
+      ? view.viewer.researchedTechs.includes("GATHERING")
+      : view.viewer.researchedTechs.includes("SURVEYING");
+  return revealed ? resource : "UNKNOWN_RESOURCE";
+}
+
+function economicOutputTransitionsV7(
+  view: PlayerViewV7,
+  before: PublicEconomyGraphV7,
+  after: PublicEconomyGraphV7,
+): readonly EconomicOutputTransitionV7[] {
+  const outputAt = (graph: PublicEconomyGraphV7, at: CoordV7) => {
+    const tile = graph.board.tiles.find((candidate) => same(candidate.at, at));
+    if (
+      tile?.improvement === null ||
+      tile?.improvement === undefined ||
+      tile.territoryOwnerId !== view.viewer.id
+    )
+      return null;
+    const evaluation = spatialContributionAtV7(
+      graph,
+      tile.at,
+      tile.improvement,
+    );
+    return {
+      improvement: tile.improvement,
+      measure:
+        tile.improvement === "MARKET"
+          ? ("COIN_INCOME" as const)
+          : tile.improvement === "BARRACKS"
+            ? ("CAPACITY" as const)
+            : ("POPULATION" as const),
+      value:
+        tile.improvement === "MARKET"
+          ? evaluation.marketIncome
+          : tile.improvement === "BARRACKS"
+            ? evaluation.capacity
+            : evaluation.population,
+    };
+  };
+  return before.board.tiles
+    .map((tile) => {
+      const prior = outputAt(before, tile.at);
+      const next = outputAt(after, tile.at);
+      if (
+        prior?.improvement === next?.improvement &&
+        prior?.measure === next?.measure &&
+        prior?.value === next?.value
+      )
+        return null;
+      const improvement = next?.improvement ?? prior?.improvement;
+      const measure = next?.measure ?? prior?.measure;
+      if (improvement === undefined || measure === undefined) return null;
+      const beforeValue = prior?.value ?? 0;
+      const afterValue = next?.value ?? 0;
+      return {
+        at: tile.at,
+        improvement,
+        measure,
+        before: beforeValue,
+        after: afterValue,
+        change:
+          prior === null
+            ? ("CREATED" as const)
+            : next === null
+              ? ("REMOVED" as const)
+              : beforeValue > 0 && afterValue === 0
+                ? ("OUTAGE" as const)
+                : beforeValue === 0 && afterValue > 0
+                  ? ("RESUMED" as const)
+                  : ("CHANGED" as const),
+      };
+    })
+    .filter((value): value is EconomicOutputTransitionV7 => value !== null)
+    .sort((left, right) => left.at.y - right.at.y || left.at.x - right.at.x);
+}
+
+const ECONOMIC_POTENTIAL_KINDS_V7 = [
+  ...(Object.keys(BASIC_ECONOMIC_ACTIONS_V7) as BasicEconomicCommandKindV7[]),
+  ...(Object.keys(
+    SPATIAL_ECONOMIC_ACTIONS_V7,
+  ) as SpatialEconomicCommandKindV7[]),
+  "BUILD_MONUMENT",
+  "CLEAR_FOREST",
+  "REPLANT_FOREST",
+  "BUILD_ROAD",
+  "REDEVELOP",
+] as const;
+type PublicEconomicPotentialKindV7 =
+  (typeof ECONOMIC_POTENTIAL_KINDS_V7)[number];
+interface PublicPlacementV7 {
+  readonly cityId: CityId;
+  readonly at: CoordV7;
+  readonly kind: PublicEconomicPotentialKindV7;
+}
+export interface PublicEconomicPotentialV7 {
+  readonly command: PublicEconomicPotentialKindV7;
+  readonly targets: number;
+  readonly bestSpatialScore: number;
+}
+
+/** Known legal public placement potential with only Coin/technology gates removed. */
+export function queryPublicEconomicPotentialsV7(
+  view: PlayerViewV7,
+): readonly PublicEconomicPotentialV7[] {
+  const cached = PUBLIC_ECONOMIC_POTENTIALS.get(view);
+  if (cached !== undefined) return cached;
+  const graph = publicEconomyGraph(view);
+  const placements = publicPlanningGraphExact(view)
+    ? enumeratePublicPlacementsIgnoringGatesV7(view, graph)
+    : [];
+  const result = ECONOMIC_POTENTIAL_KINDS_V7.map((command) => {
+    const matching = placements.filter(
+      (placement) => placement.kind === command,
+    );
+    return {
+      command,
+      targets: matching.length,
+      bestSpatialScore: matching.reduce(
+        (best, placement) =>
+          Math.max(best, scorePublicPlacementV7(view, graph, placement)),
+        0,
+      ),
+    };
+  });
+  PUBLIC_ECONOMIC_POTENTIALS.set(view, result);
+  return result;
+}
+
+/** Deterministic one-step per-city public spatial reservation score. */
+export function scorePublicSpatialPlanV7(
+  view: PlayerViewV7,
+  candidate: CommandV7,
+): number {
+  let cachedForView = PUBLIC_SPATIAL_SCORES.get(view);
+  if (cachedForView === undefined) {
+    cachedForView = new Map();
+    PUBLIC_SPATIAL_SCORES.set(view, cachedForView);
+  }
+  const cacheKey = JSON.stringify(candidate);
+  const cached = cachedForView.get(cacheKey);
+  if (cached !== undefined) return cached;
+  if (!publicPlanningGraphExact(view)) {
+    cachedForView.set(cacheKey, 0);
+    return 0;
+  }
+  const before = publicEconomyGraph(view);
+  const after = graphAfterPublicCandidateV7(view, before, candidate);
+  const result =
+    after === null
+      ? 0
+      : bestPublicNextPlacementTotalV7(view, after) -
+        publicSpatialBaselineV7(view, before);
+  cachedForView.set(cacheKey, result);
+  return result;
+}
+
+function publicPlanningGraphExact(view: PlayerViewV7): boolean {
+  const ownedCities = view.cities.filter(
+    (city) => city.ownerId === view.viewer.id,
+  );
+  return (
+    view.leaderboard.find((entry) => entry.isViewer)?.cityCount ===
+      ownedCities.length &&
+    ownedCities.every((city) => publicCityDevelopmentFootprintKnown(view, city))
+  );
+}
+
+function publicSpatialBaselineV7(
+  view: PlayerViewV7,
+  graph: PublicEconomyGraphV7,
+): number {
+  const cached = PUBLIC_SPATIAL_BASELINES.get(view);
+  if (cached !== undefined) return cached;
+  const score = bestPublicNextPlacementTotalV7(view, graph);
+  PUBLIC_SPATIAL_BASELINES.set(view, score);
+  return score;
+}
+
+function graphAfterPublicCandidateV7(
+  view: PlayerViewV7,
+  graph: PublicEconomyGraphV7,
+  candidate: CommandV7,
+): PublicEconomyGraphV7 | null {
+  if (candidate.kind === "CHOOSE_CITY_REWARD") {
+    const city = view.cities.find(
+      (value) =>
+        value.id === candidate.cityId && value.ownerId === view.viewer.id,
+    );
+    if (city === undefined) return null;
+    const resolvedPendingCityIds = new Set(graph.resolvedPendingCityIds);
+    resolvedPendingCityIds.add(city.id);
+    if (candidate.reward !== "EXPAND")
+      return { ...graph, resolvedPendingCityIds };
+    return {
+      ...graph,
+      cities: graph.cities.map((value) =>
+        value.id === city.id ? { ...value, expanded: true } : value,
+      ),
+      resolvedPendingCityIds,
+      board: {
+        ...graph.board,
+        tiles: graph.board.tiles.map((tile) =>
+          tile.explored &&
+          tile.territoryCityId === null &&
+          tile.territoryOwnerId === null &&
+          chebyshev(tile.at, city.at) <= 2
+            ? {
+                ...tile,
+                territoryCityId: city.id,
+                territoryOwnerId: view.viewer.id,
+              }
+            : tile,
+        ),
+      },
+    };
+  }
+  if (candidate.kind === "BUILD_MONUMENT")
+    return {
+      ...replacePublicGraphTileV7(graph, candidate.at, {
+        improvement: "MONUMENT",
+      }),
+      remainingMonumentEntitlements: Math.max(
+        0,
+        graph.remainingMonumentEntitlements - 1,
+      ),
+    };
+  if (!("at" in candidate)) return null;
+  return graphAfterTileCommandV7(view, graph, candidate);
+}
+
+function bestPublicNextPlacementTotalV7(
+  view: PlayerViewV7,
+  graph: PublicEconomyGraphV7,
+): number {
+  const placements = enumeratePublicPlacementsIgnoringGatesV7(view, graph);
+  const reservedTargets = new Set<string>();
+  let remainingMonumentEntitlements = graph.remainingMonumentEntitlements;
+  let total = 0;
+  for (const city of graph.cities
+    .filter((value) => value.ownerId === view.viewer.id)
+    .sort((left, right) => left.id - right.id)) {
+    const best = placements
+      .filter(
+        (placement) =>
+          placement.cityId === city.id &&
+          (placement.kind !== "BUILD_MONUMENT" ||
+            remainingMonumentEntitlements > 0) &&
+          !reservedTargets.has(coordKeyV7(placement.at)),
+      )
+      .map((placement) => ({
+        placement,
+        score: scorePublicPlacementV7(view, graph, placement),
+      }))
+      .sort(
+        (left, right) =>
+          right.score - left.score ||
+          potentialKindOrdinalV7(left.placement.kind) -
+            potentialKindOrdinalV7(right.placement.kind) ||
+          left.placement.at.y - right.placement.at.y ||
+          left.placement.at.x - right.placement.at.x,
+      )[0];
+    if (best !== undefined && best.score > 0) {
+      total += best.score;
+      if (!Number.isSafeInteger(total))
+        throw new RangeError("INTEGER_OVERFLOW");
+      reservedTargets.add(coordKeyV7(best.placement.at));
+      if (best.placement.kind === "BUILD_MONUMENT")
+        remainingMonumentEntitlements -= 1;
+    }
+  }
+  return total;
+}
+
+function enumeratePublicPlacementsIgnoringGatesV7(
+  view: PlayerViewV7,
+  graph: PublicEconomyGraphV7,
+): readonly PublicPlacementV7[] {
+  const placements: PublicPlacementV7[] = [];
+  const entitlementsAvailable = graph.remainingMonumentEntitlements > 0;
+  for (const tile of graph.board.tiles) {
+    if (
+      !tile.explored ||
+      tile.territoryOwnerId !== view.viewer.id ||
+      tile.territoryCityId === null ||
+      !publicCityAllowsDevelopmentV7(view, graph, tile.territoryCityId)
+    )
+      continue;
+    for (const kind of Object.keys(
+      BASIC_ECONOMIC_ACTIONS_V7,
+    ) as BasicEconomicCommandKindV7[]) {
+      const rule = BASIC_ECONOMIC_ACTIONS_V7[kind];
+      if (
+        tile.site === null &&
+        tile.terrain === rule.terrain &&
+        tile.resource === rule.resource &&
+        tile.improvement === null &&
+        !view.treasureChests.some((chest) => same(chest, tile.at))
+      )
+        placements.push({ cityId: tile.territoryCityId, at: tile.at, kind });
+    }
+    for (const kind of Object.keys(
+      SPATIAL_ECONOMIC_ACTIONS_V7,
+    ) as SpatialEconomicCommandKindV7[]) {
+      const rule = SPATIAL_ECONOMIC_ACTIONS_V7[kind];
+      if (
+        tile.site !== null ||
+        tile.resource !== null ||
+        tile.improvement !== null ||
+        view.treasureChests.some((chest) => same(chest, tile.at)) ||
+        graph.board.tiles.some(
+          (candidate) =>
+            candidate.territoryCityId === tile.territoryCityId &&
+            candidate.improvement === rule.improvement,
+        )
+      )
+        continue;
+      const city = graph.cities.find(
+        (candidate) => candidate.id === tile.territoryCityId,
+      );
+      if (
+        rule.improvement === "BARRACKS" &&
+        (city === undefined || chebyshev(tile.at, city.at) !== 1)
+      )
+        continue;
+      const placed = replacePublicGraphTileV7(graph, tile.at, {
+        improvement: rule.improvement,
+      });
+      if (
+        spatialContributionAtV7(placed, tile.at, rule.improvement)
+          .placementCount >= rule.placementMinimum
+      )
+        placements.push({ cityId: tile.territoryCityId, at: tile.at, kind });
+    }
+    if (
+      entitlementsAvailable &&
+      tile.site === null &&
+      tile.resource === null &&
+      tile.improvement === null &&
+      !view.treasureChests.some((chest) => same(chest, tile.at)) &&
+      !graph.board.tiles.some(
+        (candidate) =>
+          candidate.territoryCityId === tile.territoryCityId &&
+          candidate.improvement === "MONUMENT",
+      )
+    )
+      placements.push({
+        cityId: tile.territoryCityId,
+        at: tile.at,
+        kind: "BUILD_MONUMENT",
+      });
+    if (
+      tile.site === null &&
+      tile.resource === null &&
+      tile.improvement === null &&
+      tile.terrain === "FOREST"
+    )
+      placements.push({
+        cityId: tile.territoryCityId,
+        at: tile.at,
+        kind: "CLEAR_FOREST",
+      });
+    if (
+      tile.site === null &&
+      tile.resource === null &&
+      tile.improvement === null &&
+      tile.terrain === "GRASS"
+    )
+      placements.push({
+        cityId: tile.territoryCityId,
+        at: tile.at,
+        kind: "REPLANT_FOREST",
+      });
+    if (tile.site === null && !tile.road)
+      placements.push({
+        cityId: tile.territoryCityId,
+        at: tile.at,
+        kind: "BUILD_ROAD",
+      });
+    if (tile.improvement !== null)
+      placements.push({
+        cityId: tile.territoryCityId,
+        at: tile.at,
+        kind: "REDEVELOP",
+      });
+  }
+  return placements;
+}
+
+function scorePublicPlacementV7(
+  view: PlayerViewV7,
+  graph: PublicEconomyGraphV7,
+  placement: PublicPlacementV7,
+): number {
+  const tile = graph.board.tiles.find((candidate) =>
+    same(candidate.at, placement.at),
+  );
+  if (tile === undefined) return 0;
+  const basic =
+    BASIC_ECONOMIC_ACTIONS_V7[placement.kind as BasicEconomicCommandKindV7];
+  const spatial =
+    SPATIAL_ECONOMIC_ACTIONS_V7[placement.kind as SpatialEconomicCommandKindV7];
+  const after =
+    placement.kind === "BUILD_MONUMENT"
+      ? replacePublicGraphTileV7(graph, placement.at, {
+          improvement: "MONUMENT",
+        })
+      : graphAfterTileCommandV7(view, graph, {
+          kind: placement.kind as Exclude<
+            PublicEconomicPotentialKindV7,
+            "BUILD_MONUMENT"
+          >,
+          at: placement.at,
+        } as Extract<CommandV7, { at: CoordV7 }>);
+  if (after === null) return 0;
+  const beforeTotals = publicGraphTotalsV7(graph, view.viewer.id);
+  const afterTotals = publicGraphTotalsV7(after, view.viewer.id);
+  const permanentPopulation =
+    basic?.populationCategory === "PERMANENT" ? basic.population : 0;
+  const populationDelta =
+    permanentPopulation + afterTotals.population - beforeTotals.population;
+  const recurringCoinDelta =
+    afterTotals.recurringCoins - beforeTotals.recurringCoins;
+  const improvement =
+    placement.kind === "BUILD_MONUMENT"
+      ? "MONUMENT"
+      : (basic?.improvement ?? spatial?.improvement ?? null);
+  const evaluation =
+    improvement === null
+      ? null
+      : spatialContributionAtV7(after, placement.at, improvement);
+  const createsGrandWorks =
+    isProcessorImprovementV7(improvement) &&
+    !hasLegalGrandWorksSiteV7(view, graph, view.viewer.id) &&
+    createsGrandWorksSiteNearV7(view, after, view.viewer.id, placement.at);
+  return (
+    8 * populationDelta +
+    18 * recurringCoinDelta +
+    2 * (evaluation?.contributingTiles.length ?? 0) +
+    3 *
+      Math.max(
+        evaluation?.distinctTypes.length ?? 0,
+        evaluation?.distinctFamilies.length ?? 0,
+      ) +
+    4 * (evaluation?.oppositePairAxes.length ?? 0) +
+    (createsGrandWorks ? 6 : 0) +
+    (placement.kind === "BUILD_ROAD" && recurringCoinDelta > 0 ? 4 : 0)
+  );
+}
+
+function publicGraphTotalsV7(
+  graph: PublicEconomyGraphV7,
+  ownerId: PlayerId,
+): { readonly population: number; readonly recurringCoins: number } {
+  let byOwner = PUBLIC_GRAPH_TOTALS.get(graph);
+  if (byOwner === undefined) {
+    byOwner = new Map();
+    PUBLIC_GRAPH_TOTALS.set(graph, byOwner);
+  }
+  const cached = byOwner.get(ownerId);
+  if (cached !== undefined) return cached;
+  const ownedCityIds = new Set(
+    graph.cities
+      .filter((city) => city.ownerId === ownerId)
+      .map((city) => city.id),
+  );
+  let population = 0;
+  for (const tile of graph.board.tiles)
+    if (
+      tile.improvement !== null &&
+      tile.territoryCityId !== null &&
+      ownedCityIds.has(tile.territoryCityId)
+    ) {
+      population += spatialContributionAtV7(
+        graph,
+        tile.at,
+        tile.improvement,
+      ).population;
+      if (!Number.isSafeInteger(population))
+        throw new RangeError("INTEGER_OVERFLOW");
+    }
+  let recurringCoins = 0;
+  for (const city of graph.cities)
+    if (city.ownerId === ownerId) {
+      recurringCoins += marketForCityV7(graph, city.id);
+      if (!Number.isSafeInteger(recurringCoins))
+        throw new RangeError("INTEGER_OVERFLOW");
+    }
+  const totals = { population, recurringCoins };
+  byOwner.set(ownerId, totals);
+  return totals;
+}
+
+function isProcessorImprovementV7(
+  improvement: ImprovementIdV7 | null,
+): improvement is "WINDMILL" | "SAWMILL" | "FORGE" | "STONEWORKS" {
+  return (
+    improvement === "WINDMILL" ||
+    improvement === "SAWMILL" ||
+    improvement === "FORGE" ||
+    improvement === "STONEWORKS"
+  );
+}
+
+function createsGrandWorksSiteNearV7(
+  view: PlayerViewV7,
+  graph: PublicEconomyGraphV7,
+  ownerId: PlayerId,
+  placedAt: CoordV7,
+): boolean {
+  return graph.board.tiles.some(
+    (tile) =>
+      chebyshev(tile.at, placedAt) === 1 &&
+      isLegalGrandWorksSiteV7(view, graph, ownerId, tile),
+  );
+}
+
+function hasLegalGrandWorksSiteV7(
+  view: PlayerViewV7,
+  graph: PublicEconomyGraphV7,
+  ownerId: PlayerId,
+): boolean {
+  let byOwner = PUBLIC_GRAPH_HAS_GRAND_WORKS_SITE.get(graph);
+  if (byOwner === undefined) {
+    byOwner = new Map();
+    PUBLIC_GRAPH_HAS_GRAND_WORKS_SITE.set(graph, byOwner);
+  }
+  const cached = byOwner.get(ownerId);
+  if (cached !== undefined) return cached;
+  const result = graph.board.tiles.some((tile) =>
+    isLegalGrandWorksSiteV7(view, graph, ownerId, tile),
+  );
+  byOwner.set(ownerId, result);
+  return result;
+}
+
+function isLegalGrandWorksSiteV7(
+  view: PlayerViewV7,
+  graph: PublicEconomyGraphV7,
+  ownerId: PlayerId,
+  tile: PublicEconomyGraphTileV7,
+): boolean {
+  if (
+    !tile.explored ||
+    tile.site !== null ||
+    tile.resource !== null ||
+    tile.improvement !== null ||
+    tile.territoryCityId === null ||
+    !publicCityAllowsDevelopmentV7(view, graph, tile.territoryCityId) ||
+    view.treasureChests.some((chest) => same(chest, tile.at)) ||
+    graph.board.tiles.some(
+      (candidate) =>
+        candidate.territoryCityId === tile.territoryCityId &&
+        candidate.improvement === "GRAND_WORKS",
+    ) ||
+    graph.cities.find((city) => city.id === tile.territoryCityId)?.ownerId !==
+      ownerId
+  )
+    return false;
+  const placed = replacePublicGraphTileV7(graph, tile.at, {
+    improvement: "GRAND_WORKS",
+  });
+  return (
+    spatialContributionAtV7(placed, tile.at, "GRAND_WORKS").placementCount >= 2
+  );
+}
+
+function publicCityAllowsDevelopmentV7(
+  view: PlayerViewV7,
+  graph: PublicEconomyGraphV7,
+  cityId: CityId,
+): boolean {
+  const city = view.cities.find((candidate) => candidate.id === cityId);
+  return (
+    city?.ownerId === view.viewer.id &&
+    !publicCityBesieged(view, city.at) &&
+    city.blackout?.phase !== "ACTIVE" &&
+    (!view.pendingChoices.some((choice) => choice.cityId === city.id) ||
+      graph.resolvedPendingCityIds.has(city.id))
+  );
+}
+
+function potentialKindOrdinalV7(kind: PublicEconomicPotentialKindV7): number {
+  return ECONOMIC_POTENTIAL_KINDS_V7.indexOf(kind);
+}
+
+function coordKeyV7(at: CoordV7): string {
+  return `${at.y},${at.x}`;
 }
 
 export function previewCityCapacityV7(
