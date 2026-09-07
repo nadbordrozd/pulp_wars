@@ -169,7 +169,10 @@ export function queryPlayerCommandsV7(
       continue;
     const centerOccupied = view.units.some((unit) => same(unit.at, city.at));
     const capacity =
-      city.level + 1 + (cityHasImprovement(view, city.id, "BARRACKS") ? 1 : 0);
+      city.level +
+      1 +
+      (player.researchedTechs.includes("FORTIFICATION") ? 1 : 0) +
+      (cityHasImprovement(view, city.id, "BARRACKS") ? 2 : 0);
     const assigned = view.units.filter(
       (unit) => unit.ownerId === player.id && unit.homeCityId === city.id,
     ).length;
@@ -611,6 +614,8 @@ export interface EconomicPreviewV7 {
   readonly coinIncomeDeltaByCity: readonly CityValueDeltaV7[];
   readonly resultingContribution: number;
   readonly capacityDelta: number;
+  readonly resourceRestored:
+    "FERTILE_GROUND" | "ORE" | "STONE" | "UNKNOWN_RESOURCE" | null;
   readonly levelsReached: readonly number[];
   readonly distinctTypes: readonly ImprovementIdV7[];
   readonly distinctFamilies: readonly EconomicFamilyV7[];
@@ -646,6 +651,9 @@ export function previewEconomicV7(
     result.state.board.tiles[
       command.at.y * result.state.board.width + command.at.x
     ];
+  const afterPublicTile = viewForV7(result.state, viewerId).board.tiles[
+    command.at.y * result.state.board.width + command.at.x
+  ];
   const improvement =
     afterTile?.improvement ??
     (build?.kind === "ECONOMIC_BUILDING_REMOVED" ? build.improvement : null);
@@ -716,6 +724,11 @@ export function previewEconomicV7(
         build?.kind === "ECONOMIC_BUILDING_REMOVED"
           ? build.capacityDelta
           : 0,
+      resourceRestored:
+        build?.kind === "ECONOMIC_BUILDING_REMOVED" &&
+        afterPublicTile?.explored === true
+          ? projectedRestoredResource(afterPublicTile.resource)
+          : null,
       levelsReached: result.events
         .filter((event) => event.kind === "CITY_LEVELED_UP")
         .map((event) => event.level),
@@ -803,7 +816,9 @@ export function previewPillageV7(
   readonly cityId: CityId;
   readonly improvement: ImprovementIdV7;
   readonly coinDelta: 1;
-  readonly capacityDelta: 0 | -1;
+  readonly capacityDelta: 0 | -2;
+  readonly resourceRestored:
+    "FERTILE_GROUND" | "ORE" | "STONE" | "UNKNOWN_RESOURCE" | null;
   readonly complete: true;
 } | null {
   const result = applyCommandV7(state, viewerId, { kind: "PILLAGE", unitId });
@@ -811,6 +826,12 @@ export function previewPillageV7(
   const event = result.events.find(
     (item) => item.kind === "IMPROVEMENT_PILLAGED",
   );
+  const afterTile =
+    event?.kind === "IMPROVEMENT_PILLAGED"
+      ? viewForV7(result.state, viewerId).board.tiles[
+          event.at.y * result.state.board.width + event.at.x
+        ]
+      : undefined;
   return event?.kind === "IMPROVEMENT_PILLAGED"
     ? {
         unitId,
@@ -818,7 +839,11 @@ export function previewPillageV7(
         cityId: event.cityId,
         improvement: event.improvement,
         coinDelta: 1,
-        capacityDelta: event.improvement === "BARRACKS" ? -1 : 0,
+        capacityDelta: event.improvement === "BARRACKS" ? -2 : 0,
+        resourceRestored:
+          afterTile?.explored === true
+            ? projectedRestoredResource(afterTile.resource)
+            : null,
         complete: true,
       }
     : null;
@@ -906,6 +931,17 @@ function publicCaptureTarget(view: PlayerViewV7, at: CoordV7): boolean {
   );
 }
 
+function projectedRestoredResource(
+  resource: Extract<PlayerTileViewV7, { explored: true }>["resource"],
+): "FERTILE_GROUND" | "ORE" | "STONE" | "UNKNOWN_RESOURCE" | null {
+  return resource === "FERTILE_GROUND" ||
+    resource === "ORE" ||
+    resource === "STONE" ||
+    resource === "UNKNOWN_RESOURCE"
+    ? resource
+    : null;
+}
+
 function cityHasImprovement(
   view: PlayerViewV7,
   cityId: CityId,
@@ -977,6 +1013,11 @@ function publicTileCommandLegal(
           item.territoryCityId === city.id &&
           item.improvement === "LUMBER_CAMP",
       );
+    if (kind === "BUILD_STONEWORKS")
+      return adjacent.some(
+        (item) =>
+          item.territoryCityId === city.id && item.improvement === "QUARRY",
+      );
     if (kind === "BUILD_WORKSHOP")
       return (
         distinct(
@@ -987,7 +1028,7 @@ function publicTileCommandLegal(
               ? [item.improvement]
               : [],
           ),
-        ).length >= 2
+        ).length >= 1
       );
     if (kind === "BUILD_GRAND_WORKS")
       return (
@@ -997,11 +1038,17 @@ function publicTileCommandLegal(
             item.improvement !== null &&
             ["WINDMILL", "SAWMILL", "FORGE", "STONEWORKS"].includes(
               item.improvement,
+            ) &&
+            view.improvementValues.some(
+              (value) =>
+                same(value.at, item.at) &&
+                value.measure === "POPULATION" &&
+                value.level > 0,
             )
               ? [item.improvement]
               : [],
           ),
-        ).length >= 3
+        ).length >= 2
       );
     if (kind === "BUILD_MARKET")
       return (

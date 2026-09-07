@@ -95,7 +95,7 @@ describe("ruleset-7 technology", () => {
       ["RAIDER", 4, 10, 4, 2, 2, 1, 1, "RAIDING", true],
       ["MEDIC", 4, 10, 1, 3, 1, 1, 1, "MEDICINE", true],
       ["CATAPULT", 8, 10, 7, 1, 1, 3, 2, "SAWMILLING", false],
-      ["SABOTEUR", 7, 10, 4, 2, 2, 1, 1, "FIELDCRAFT", true],
+      ["SABOTEUR", 6, 10, 4, 2, 2, 1, 1, "FIELDCRAFT", true],
       ["HEAVY", 7, 20, 7, 7, 1, 1, 1, "METALLURGY", true],
       ["LANCER", 9, 12, 6, 3, 3, 1, 1, "MANEUVER", true],
       ["BREACHER", 6, 10, 8, 2, 1, 1, 1, "EXPLOSIVES", false],
@@ -172,7 +172,14 @@ describe("ruleset-7 technology", () => {
       friendlyIdleRecoveryAmount: 6,
       mountainMovement: true,
       scoutDetectionRadius: 2,
+      ownedCityCapacityBonus: 1,
     });
+    expect(capabilities.friendlyCityFortification).toMatchObject({
+      roles: ["FIGHTER", "GUARD"],
+    });
+    expect(
+      tree.nodes.find((node) => node.id === "FORTIFICATION")?.effects,
+    ).toContainEqual({ kind: "OWNED_CITY_CAPACITY_BONUS", capacity: 1 });
     expect(capabilities.trainableRoles).toHaveLength(12);
     expect(capabilities.commands).toEqual(
       expect.arrayContaining(["BUILD_BARRACKS", "PILLAGE", "DISBAND"]),

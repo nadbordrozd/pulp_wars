@@ -9,6 +9,7 @@ import {
   createReplayV7,
   parseReplayFileV7,
   runReplayV7,
+  type CommandV7,
   type MatchSetupV7,
 } from "../../src/engine/index";
 import { createSaveEnvelopeV7, parseSaveV7 } from "../../src/persistence/index";
@@ -65,6 +66,139 @@ describe("ruleset-7 save and replay foundation", () => {
     );
     expect(parseSaveV7(JSON.stringify(save))).toEqual({ kind: "VALID", save });
     expect(runReplayV7(replay).state).toEqual(applied.state);
+  });
+
+  it("replays natural Windmill dependency loss, marker restoration, and full-cost repair", () => {
+    const created = createInitialMapStateV7(setup);
+    if (!created.ok) throw new Error(created.error.code);
+    let state = created.state;
+    let replay = createReplayV7(setup);
+    const humanId = state.humanPlayerId;
+    const city = state.cities.find(
+      (candidate) => candidate.ownerId === humanId,
+    );
+    if (city === undefined) throw new Error("human city missing");
+    const farmTile = state.board.tiles.find(
+      (tile) =>
+        tile.territoryCityId === city.id &&
+        tile.terrain === "GRASS" &&
+        tile.resource === "FERTILE_GROUND" &&
+        tile.improvement === null &&
+        tile.site === null,
+    );
+    if (farmTile === undefined) throw new Error("natural farm missing");
+    const windmillTile = state.board.tiles.find(
+      (tile) =>
+        tile.territoryCityId === city.id &&
+        tile.resource === null &&
+        tile.improvement === null &&
+        tile.site === null &&
+        Math.max(
+          Math.abs(tile.at.x - farmTile.at.x),
+          Math.abs(tile.at.y - farmTile.at.y),
+        ) === 1,
+    );
+    if (windmillTile === undefined)
+      throw new Error("natural mill site missing");
+
+    const apply = (command: CommandV7) => {
+      const actor = state.turnOrder[state.activeSeatIndex];
+      if (actor === undefined) throw new Error("active actor missing");
+      const result = applyCommandV7(state, actor, command);
+      if (!result.accepted)
+        throw new Error(`${command.kind}:${result.error.code}`);
+      state = result.state;
+      replay = appendReplayCommandV7(replay, command, state);
+      return result.events;
+    };
+    const fundHuman = (minimum: number) => {
+      for (let guard = 0; guard < 100; guard += 1) {
+        const active = state.turnOrder[state.activeSeatIndex];
+        const coins = state.players.find(
+          (player) => player.id === humanId,
+        )?.coins;
+        if (active === humanId && coins !== undefined && coins >= minimum)
+          return;
+        apply({ kind: "END_TURN" });
+      }
+      throw new Error("funding guard exhausted");
+    };
+
+    fundHuman(7);
+    apply({ kind: "RESEARCH", tech: "FARMING" });
+    fundHuman(5);
+    apply({ kind: "BUILD_FARM", at: farmTile.at });
+    apply({
+      kind: "CHOOSE_CITY_REWARD",
+      cityId: city.id,
+      reachedLevel: 2,
+      reward: "STOCKPILE",
+    });
+    fundHuman(9);
+    apply({ kind: "RESEARCH", tech: "MILLING" });
+    fundHuman(5);
+    apply({ kind: "BUILD_WINDMILL", at: windmillTile.at });
+    apply({
+      kind: "CHOOSE_CITY_REWARD",
+      cityId: city.id,
+      reachedLevel: 3,
+      reward: "WALLS",
+    });
+    fundHuman(7);
+    apply({ kind: "RESEARCH", tech: "CRAFT" });
+    fundHuman(9);
+    apply({ kind: "RESEARCH", tech: "GRAND_WORKS" });
+    const removedEvents = apply({ kind: "REDEVELOP", at: farmTile.at });
+    expect(removedEvents).toContainEqual(
+      expect.objectContaining({
+        kind: "ECONOMIC_BUILDING_REMOVED",
+        resourceRestored: "FERTILE_GROUND",
+      }),
+    );
+    const damaged = state.cities.find((candidate) => candidate.id === city.id);
+    expect(damaged).toMatchObject({
+      level: 3,
+      economicPopulation: 0,
+      population: -5,
+    });
+    fundHuman(5);
+    const repairingPlayer = state.players.find(
+      (player) => player.id === humanId,
+    );
+    if (repairingPlayer === undefined) throw new Error("human player missing");
+    const coinsBeforeRepair = repairingPlayer.coins;
+    const repairedEvents = apply({ kind: "BUILD_FARM", at: farmTile.at });
+    expect(state.players.find((player) => player.id === humanId)?.coins).toBe(
+      coinsBeforeRepair - 5,
+    );
+    expect(
+      state.cities.find((candidate) => candidate.id === city.id),
+    ).toMatchObject({
+      level: 3,
+      economicPopulation: 5,
+      population: 0,
+      rewards: [
+        { reachedLevel: 2, reward: "STOCKPILE" },
+        { reachedLevel: 3, reward: "WALLS" },
+      ],
+    });
+    expect(
+      repairedEvents.some(
+        (event) =>
+          event.kind === "CITY_LEVELED_UP" || event.kind.includes("REWARD"),
+      ),
+    ).toBe(false);
+
+    const save = createSaveEnvelopeV7(
+      { state, replay },
+      "2026-09-06T13:00:00.000Z",
+    );
+    expect(parseSaveV7(JSON.stringify(save))).toEqual({ kind: "VALID", save });
+    expect(runReplayV7(replay)).toMatchObject({
+      acceptedCommands: replay.commands.length,
+      state,
+      stateHash: canonicalHash(state),
+    });
   });
 
   it("classifies every v1-v6 artifact as incompatible without migration", () => {

@@ -265,7 +265,7 @@ export function viewForV7(
           {
             at: tile.at,
             improvement: "BARRACKS",
-            level: 1,
+            level: 2,
             measure: "CAPACITY",
             contributingTiles: [],
           },

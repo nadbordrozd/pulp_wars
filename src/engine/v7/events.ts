@@ -82,6 +82,7 @@ export type DomainEventV7 =
       readonly populationContributionRemoved: number;
       readonly marketIncomeRemoved: number;
       readonly capacityDelta: number;
+      readonly resourceRestored: "FERTILE_GROUND" | "ORE" | "STONE" | null;
     }
   | {
       readonly kind: "FOREST_CLEARED" | "FOREST_REPLANTED";
@@ -124,6 +125,7 @@ export type DomainEventV7 =
       readonly cityId: CityId;
       readonly reachedLevel: number;
       readonly reward: RewardIdV7;
+      readonly coinDelta: number;
     }
   | {
       readonly kind: "CITY_TERRITORY_EXPANDED";
@@ -274,6 +276,7 @@ export type DomainEventV7 =
       readonly cityId: CityId;
       readonly at: CoordV7;
       readonly improvement: ImprovementIdV7;
+      readonly resourceRestored: "FERTILE_GROUND" | "ORE" | "STONE" | null;
       readonly coinDelta: 1;
     }
   | {
@@ -288,6 +291,14 @@ export type DomainEventV7 =
       readonly playerId: PlayerId;
       readonly cityId: CityId;
       readonly coins: 2;
+    }
+  | {
+      readonly kind: "CITY_REWARD_AUTOMATICALLY_GRANTED";
+      readonly playerId: PlayerId;
+      readonly cityId: CityId;
+      readonly reachedLevel: number;
+      readonly reward: "TREASURY";
+      readonly coins: 12;
     }
   | {
       readonly kind: "UNIT_RECOVERED";
@@ -357,7 +368,29 @@ export type PlayerPresentationEventV7 =
       readonly phase: "WAITING_FOR_REPLY" | "ARMED";
     };
 
-export type PlayerEventV7 = DomainEventV7 | PlayerPresentationEventV7;
+export type ProjectedResourceRestorationEventV7 =
+  | (Omit<
+      Extract<DomainEventV7, { kind: "ECONOMIC_BUILDING_REMOVED" }>,
+      "resourceRestored"
+    > & {
+      readonly resourceRestored:
+        "FERTILE_GROUND" | "ORE" | "STONE" | "UNKNOWN_RESOURCE" | null;
+    })
+  | (Omit<
+      Extract<DomainEventV7, { kind: "IMPROVEMENT_PILLAGED" }>,
+      "resourceRestored"
+    > & {
+      readonly resourceRestored:
+        "FERTILE_GROUND" | "ORE" | "STONE" | "UNKNOWN_RESOURCE" | null;
+    });
+
+export type PlayerEventV7 =
+  | Exclude<
+      DomainEventV7,
+      { kind: "ECONOMIC_BUILDING_REMOVED" | "IMPROVEMENT_PILLAGED" }
+    >
+  | ProjectedResourceRestorationEventV7
+  | PlayerPresentationEventV7;
 
 export interface PlayerEventEnvelopeV7 {
   readonly format: "pulp-wars-player-events";

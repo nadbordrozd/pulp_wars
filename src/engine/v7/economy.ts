@@ -4,7 +4,6 @@ import { spatialContributionAtV7 } from "./spatial-economy";
 import type {
   CityStateV7,
   GameStateV7,
-  PendingChoiceV7,
   PlayerStateV7,
   PopulationContributionV7,
   RewardIdV7,
@@ -13,7 +12,6 @@ import type {
 export interface CityGrowthResultV7 {
   readonly city: CityStateV7;
   readonly reachedLevels: readonly number[];
-  readonly pendingChoices: readonly PendingChoiceV7[];
 }
 export interface CityEconomyChangeV7 {
   readonly cityId: CityId;
@@ -27,7 +25,6 @@ export interface LiveEconomyResultV7 {
   readonly cities: readonly CityStateV7[];
   readonly populationContributions: readonly PopulationContributionV7[];
   readonly changes: readonly CityEconomyChangeV7[];
-  readonly pendingChoices: readonly PendingChoiceV7[];
 }
 
 export function growthSpentV7(level: number): number {
@@ -40,14 +37,17 @@ export function growthSpentV7(level: number): number {
 }
 
 export function cityUnitCapacityV7(
-  state: Pick<GameStateV7, "board">,
-  city: Pick<CityStateV7, "id" | "level">,
+  state: Pick<GameStateV7, "board" | "players">,
+  city: Pick<CityStateV7, "id" | "level" | "ownerId">,
 ): number {
   const barracks = state.board.tiles.some(
     (tile) =>
       tile.territoryCityId === city.id && tile.improvement === "BARRACKS",
   );
-  const result = city.level + 1 + (barracks ? 1 : 0);
+  const fortified = state.players
+    .find((player) => player.id === city.ownerId)
+    ?.researchedTechs.includes("FORTIFICATION");
+  const result = city.level + 1 + (fortified ? 1 : 0) + (barracks ? 2 : 0);
   if (!Number.isSafeInteger(result)) throw new RangeError("INTEGER_OVERFLOW");
   return result;
 }
@@ -114,12 +114,6 @@ export function resolveCityGrowthV7(
       population,
     },
     reachedLevels,
-    pendingChoices: reachedLevels.map((reachedLevel) => ({
-      kind: "CITY_REWARD",
-      cityId: city.id,
-      reachedLevel,
-      candidates: rewardCandidatesForLevelV7(reachedLevel),
-    })),
   };
 }
 
@@ -200,7 +194,6 @@ export function recomputeLiveEconomyV7(
     };
   });
   const changes: CityEconomyChangeV7[] = [];
-  const pendingChoices: PendingChoiceV7[] = [];
   const cities: CityStateV7[] = [];
   for (const city of [...finalGraph.cities].sort((a, b) => a.id - b.id)) {
     let permanent = 0;
@@ -215,7 +208,6 @@ export function recomputeLiveEconomyV7(
       }
     const growth = resolveCityGrowthV7(city, permanent, live);
     cities.push(growth.city);
-    pendingChoices.push(...growth.pendingChoices);
     const before = beforeState.cities.find((item) => item.id === city.id);
     if (before === undefined) continue;
     const marketBefore = marketIncomeForCityV7(beforeState, before);
@@ -234,14 +226,14 @@ export function recomputeLiveEconomyV7(
         reachedLevels: growth.reachedLevels,
       });
   }
-  return { cities, populationContributions, changes, pendingChoices };
+  return { cities, populationContributions, changes };
 }
 
 export function cityIncomeV7(state: GameStateV7, city: CityStateV7): number {
   if (isCityBesiegedV7(state, city)) return 0;
   const base = city.level + (city.isCapital ? 1 : 0);
   const preBlackout = Math.max(
-    0,
+    1,
     base + marketIncomeForCityV7(state, city) + Math.min(0, city.population),
   );
   const suppression =
@@ -353,14 +345,10 @@ export function growthEventsV7(
   changes: readonly CityEconomyChangeV7[],
 ): readonly DomainEventV7[] {
   return changes.flatMap((change) =>
-    change.reachedLevels.flatMap((level): readonly DomainEventV7[] => [
-      { kind: "CITY_LEVELED_UP", cityId: change.cityId, level },
-      {
-        kind: "CITY_REWARD_QUEUED",
-        cityId: change.cityId,
-        reachedLevel: level,
-        candidates: rewardCandidatesForLevelV7(level),
-      },
-    ]),
+    change.reachedLevels.map((level): DomainEventV7 => ({
+      kind: "CITY_LEVELED_UP",
+      cityId: change.cityId,
+      level,
+    })),
   );
 }

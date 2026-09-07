@@ -31,6 +31,7 @@ import {
   type UnitStateV7,
 } from "./types";
 import { parseMatchSetupV7 } from "./setup";
+import { spatialContributionAtV7 } from "./spatial-economy";
 import {
   compareCoordsV7,
   hasExactKeysV7,
@@ -855,7 +856,7 @@ function parseExposures(input: unknown): readonly SaboteurExposureV7[] | null {
 }
 
 function parseChoices(input: unknown): readonly PendingChoiceV7[] | null {
-  if (!isDenseArrayV7(input)) return null;
+  if (!isDenseArrayV7(input) || input.length > 1) return null;
   const values: PendingChoiceV7[] = [];
   for (const candidate of input) {
     if (
@@ -1068,16 +1069,26 @@ function validateCrossReferences(value: CrossInput): boolean {
     )
       return false;
   }
-  for (const city of cities) {
-    for (let level = 2; level <= city.level; level += 1) {
-      const resolved = city.rewards.some(
-        (reward) => reward.reachedLevel === level,
-      );
-      const queued = choices.some(
-        (choice) => choice.cityId === city.id && choice.reachedLevel === level,
-      );
-      if (resolved === queued) return false;
-    }
+  const firstUnrewarded = [...cities]
+    .sort((left, right) => left.id - right.id)
+    .flatMap((city) => {
+      for (let level = 2; level <= city.level; level += 1)
+        if (!city.rewards.some((reward) => reward.reachedLevel === level))
+          return [{ city, level }];
+      return [];
+    })[0];
+  if (firstUnrewarded === undefined) {
+    if (choices.length !== 0) return false;
+  } else {
+    const choice = choices[0];
+    if (
+      choice === undefined ||
+      choice.cityId !== firstUnrewarded.city.id ||
+      choice.reachedLevel !== firstUnrewarded.level ||
+      (firstUnrewarded.level >= 5 &&
+        !hasRewardPlacement(board, players, units, firstUnrewarded.city))
+    )
+      return false;
   }
   if (!populationLedgerValid(board, players, cities, contributions))
     return false;
@@ -1116,9 +1127,12 @@ function validateCrossReferences(value: CrossInput): boolean {
       (tile) =>
         tile.territoryCityId === city.id && tile.improvement === "BARRACKS",
     );
+    const fortified = playerById
+      .get(city.ownerId)
+      ?.researchedTechs.includes("FORTIFICATION");
     const availableForReservations = Math.max(
       0,
-      city.level + 1 + (barracks ? 1 : 0) - assigned,
+      city.level + 1 + (fortified ? 1 : 0) + (barracks ? 2 : 0) - assigned,
     );
     if (reservations > availableForReservations) return false;
   }
@@ -1192,7 +1206,7 @@ function populationLedgerValid(
       if (
         tile?.territoryCityId !== city.id ||
         tile.improvement !== contribution.source.improvement ||
-        contribution.amount !== liveValue(board, cities, city, tile)
+        contribution.amount !== liveValue(board, cities, tile)
       )
         return false;
       liveByCoord.set(key(tile.at), contribution);
@@ -1257,143 +1271,28 @@ function populationLedgerValid(
 function liveValue(
   board: BoardStateV7,
   cities: readonly CityStateV7[],
+  tile: TileStateV7,
+): number {
+  return tile.improvement === null
+    ? 0
+    : spatialContributionAtV7({ board, cities }, tile.at, tile.improvement)
+        .population;
+}
+
+function hasRewardPlacement(
+  board: BoardStateV7,
+  players: readonly PlayerStateV7[],
+  units: readonly UnitStateV7[],
   city: CityStateV7,
-  tile: TileStateV7,
-): number {
-  switch (tile.improvement) {
-    case "FARM":
-      return 2;
-    case "LUMBER_CAMP":
-      return 1;
-    case "MINE":
-      return 4;
-    case "QUARRY":
-      return 3;
-    case "WINDMILL":
-      return Math.min(8, connectedBasicCount(board, tile, city.id, "FARM"));
-    case "SAWMILL":
-      return Math.min(
-        8,
-        connectedBasicCount(board, tile, city.id, "LUMBER_CAMP"),
-      );
-    case "FORGE":
-      return Math.min(
-        18,
-        adjacentTiles(board, tile.at).filter(
-          (item) =>
-            item.territoryCityId === city.id && item.improvement === "MINE",
-        ).length * 3,
-      );
-    case "STONEWORKS": {
-      const quarries = new Set(
-        adjacentTiles(board, tile.at)
-          .filter(
-            (item) =>
-              item.territoryCityId === city.id && item.improvement === "QUARRY",
-          )
-          .map((item) => `${item.at.x - tile.at.x},${item.at.y - tile.at.y}`),
-      );
-      const pairs = [
-        ["0,-1", "0,1"],
-        ["1,0", "-1,0"],
-        ["1,-1", "-1,1"],
-        ["-1,-1", "1,1"],
-      ].filter(
-        ([a, b]) => quarries.has(a as string) && quarries.has(b as string),
-      ).length;
-      return Math.min(16, quarries.size * 2 + pairs * 2);
-    }
-    case "WORKSHOP":
-      return new Set(
-        adjacentTiles(board, tile.at)
-          .filter((item) => ownedBy(item, city.ownerId, cities))
-          .map((item) => item.improvement)
-          .filter(
-            (item): item is ImprovementIdV7 =>
-              item !== null &&
-              ["FARM", "LUMBER_CAMP", "MINE", "QUARRY"].includes(item),
-          ),
-      ).size;
-    case "GRAND_WORKS":
-      return (
-        new Set(
-          adjacentTiles(board, tile.at)
-            .filter((item) => ownedBy(item, city.ownerId, cities))
-            .map((item) => item.improvement)
-            .filter(
-              (item): item is ImprovementIdV7 =>
-                item !== null &&
-                ["WINDMILL", "SAWMILL", "FORGE", "STONEWORKS"].includes(item),
-            ),
-        ).size * 2
-      );
-    case "MARKET":
-    case "BARRACKS":
-    case null:
-      return 0;
-  }
-}
-
-function connectedBasicCount(
-  board: BoardStateV7,
-  start: TileStateV7,
-  cityId: CityStateV7["id"],
-  improvement: "FARM" | "LUMBER_CAMP",
-): number {
-  const seeds = adjacentTiles(board, start.at).filter(
-    (tile) =>
-      tile.territoryCityId === cityId && tile.improvement === improvement,
-  );
-  const queue = [...seeds];
-  const seen = new Set(queue.map((tile) => key(tile.at)));
-  for (let index = 0; index < queue.length; index += 1) {
-    const tile = queue[index];
-    if (tile === undefined) continue;
-    for (const at of [
-      { x: tile.at.x, y: tile.at.y - 1 },
-      { x: tile.at.x + 1, y: tile.at.y },
-      { x: tile.at.x, y: tile.at.y + 1 },
-      { x: tile.at.x - 1, y: tile.at.y },
-    ]) {
-      const candidate = tileAt(board, at);
-      const candidateKey = key(at);
-      if (
-        candidate?.territoryCityId === cityId &&
-        candidate.improvement === improvement &&
-        !seen.has(candidateKey)
-      ) {
-        seen.add(candidateKey);
-        queue.push(candidate);
-      }
-    }
-  }
-  return seen.size;
-}
-
-function adjacentTiles(
-  board: BoardStateV7,
-  at: CoordV7,
-): readonly TileStateV7[] {
-  const result: TileStateV7[] = [];
-  for (let dy = -1; dy <= 1; dy += 1)
-    for (let dx = -1; dx <= 1; dx += 1)
-      if (dx !== 0 || dy !== 0) {
-        const tile = tileAt(board, { x: at.x + dx, y: at.y + dy });
-        if (tile !== undefined) result.push(tile);
-      }
-  return result;
-}
-
-function ownedBy(
-  tile: TileStateV7,
-  ownerId: PlayerStateV7["id"],
-  cities: readonly CityStateV7[],
 ): boolean {
-  return (
-    tile.territoryCityId !== null &&
-    cities.some(
-      (city) => city.id === tile.territoryCityId && city.ownerId === ownerId,
-    )
+  const surveyed = players
+    .find((player) => player.id === city.ownerId)
+    ?.researchedTechs.includes("SURVEYING");
+  return board.tiles.some(
+    (tile) =>
+      tile.territoryCityId === city.id &&
+      (tile.terrain !== "MOUNTAIN" || surveyed) &&
+      !units.some((unit) => unit.hp > 0 && sameCoordV7(unit.at, tile.at)),
   );
 }
 

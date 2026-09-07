@@ -25,6 +25,7 @@ import {
   marketIncomeForCityV7,
   playerIncomeV7,
   recomputeLiveEconomyV7,
+  rewardCandidatesForLevelV7,
   reservedCapacityCountV7,
   startTurnEconomyV7,
   type CityEconomyChangeV7,
@@ -346,7 +347,7 @@ function applyBasic(
       { board, cities: state.cities },
       [...state.populationContributions, contribution],
     );
-    const next = checked({
+    const staged: GameStateV7 = {
       ...state,
       nextEntityId: nextSafe(state.nextEntityId),
       commandIndex: nextSafe(state.commandIndex),
@@ -354,11 +355,9 @@ function applyBasic(
       players: debit(state.players, actor, rule.cost),
       cities: recalculation.cities,
       populationContributions: recalculation.populationContributions,
-      pendingChoices: [
-        ...state.pendingChoices,
-        ...recalculation.pendingChoices,
-      ],
-    });
+    };
+    const settlement = settleCityRewardsV7(staged);
+    const next = checked(settlement.state);
     const fact: DomainEventV7 =
       rule.populationCategory === "PERMANENT"
         ? {
@@ -380,7 +379,11 @@ function applyBasic(
             marketIncome: 0,
             capacityDelta: 0,
           };
-    return accepted(next, [fact, ...economyAndGrowth(recalculation.changes)]);
+    return accepted(next, [
+      fact,
+      ...economyAndGrowth(recalculation.changes),
+      ...settlement.events,
+    ]);
   } catch (cause) {
     return arithmeticFailure(original, cause);
   }
@@ -473,7 +476,7 @@ function applySpatial(
       { board, cities: state.cities },
       contributions,
     );
-    const next = checked({
+    const staged: GameStateV7 = {
       ...state,
       nextEntityId,
       commandIndex: nextSafe(state.commandIndex),
@@ -481,11 +484,9 @@ function applySpatial(
       players: debit(state.players, actor, rule.cost),
       cities: recalculation.cities,
       populationContributions: recalculation.populationContributions,
-      pendingChoices: [
-        ...state.pendingChoices,
-        ...recalculation.pendingChoices,
-      ],
-    });
+    };
+    const settlement = settleCityRewardsV7(staged);
+    const next = checked(settlement.state);
     return accepted(next, [
       {
         kind: "ECONOMIC_BUILDING_BUILT",
@@ -496,9 +497,10 @@ function applySpatial(
         cost: rule.cost,
         populationContribution: evaluation.population,
         marketIncome: evaluation.marketIncome,
-        capacityDelta: rule.improvement === "BARRACKS" ? 1 : 0,
+        capacityDelta: rule.improvement === "BARRACKS" ? 2 : 0,
       },
       ...economyAndGrowth(recalculation.changes),
+      ...settlement.events,
     ]);
   } catch (cause) {
     return arithmeticFailure(original, cause);
@@ -578,6 +580,7 @@ function applyInfrastructure(
       return rejected(original, "INVALID_STATE");
     const marketRemoved =
       removed === "MARKET" ? marketIncomeForCityV7(state, city) : 0;
+    const resourceRestored = restoredResourceForImprovement(removed);
     const board = replaceTile(state, command.at, {
       ...tile,
       terrain:
@@ -588,6 +591,7 @@ function applyInfrastructure(
             : tile.terrain,
       road: command.kind === "BUILD_ROAD" ? true : tile.road,
       improvement: command.kind === "REDEVELOP" ? null : tile.improvement,
+      resource: command.kind === "REDEVELOP" ? resourceRestored : tile.resource,
     });
     const contributions =
       removedContribution === undefined
@@ -611,7 +615,7 @@ function applyInfrastructure(
     );
     const coins = player.coins + (command.kind === "CLEAR_FOREST" ? 1 : -cost);
     if (!Number.isSafeInteger(coins)) throw new RangeError("INTEGER_OVERFLOW");
-    const next = checked({
+    const staged: GameStateV7 = {
       ...state,
       commandIndex: nextSafe(state.commandIndex),
       board,
@@ -621,11 +625,9 @@ function applyInfrastructure(
       cities: recalculation.cities,
       populationContributions: recalculation.populationContributions,
       defectionMarks: cancellation.marks,
-      pendingChoices: [
-        ...state.pendingChoices,
-        ...recalculation.pendingChoices,
-      ],
-    });
+    };
+    const settlement = settleCityRewardsV7(staged);
+    const next = checked(settlement.state);
     const fact: DomainEventV7 =
       command.kind === "BUILD_ROAD"
         ? {
@@ -659,12 +661,14 @@ function applyInfrastructure(
                 improvement: requireValue(removed),
                 populationContributionRemoved: removedContribution?.amount ?? 0,
                 marketIncomeRemoved: marketRemoved,
-                capacityDelta: removed === "BARRACKS" ? -1 : 0,
+                capacityDelta: removed === "BARRACKS" ? -2 : 0,
+                resourceRestored,
               };
     return accepted(next, [
       fact,
       ...cancellation.events,
       ...economyAndGrowth(recalculation.changes),
+      ...settlement.events,
     ]);
   } catch (cause) {
     return arithmeticFailure(original, cause);
@@ -784,7 +788,7 @@ function applyReward(
     let cities: readonly CityStateV7[] = state.cities;
     let units = state.units;
     let contributions = state.populationContributions;
-    let choices: readonly PendingChoiceV7[] = state.pendingChoices.slice(1);
+    const choices: readonly PendingChoiceV7[] = state.pendingChoices.slice(1);
     const events: DomainEventV7[] = [
       {
         kind: "CITY_REWARD_CHOSEN",
@@ -792,6 +796,12 @@ function applyReward(
         cityId: city.id,
         reachedLevel: command.reachedLevel,
         reward: command.reward,
+        coinDelta:
+          command.reward === "STOCKPILE"
+            ? 4
+            : command.reward === "TREASURY"
+              ? 12
+              : 0,
       },
     ];
     const rewarded = {
@@ -816,7 +826,7 @@ function applyReward(
       command.reward === "STOCKPILE" ||
       command.reward === "TREASURY"
     ) {
-      const amount = command.reward === "STOCKPILE" ? 4 : 5;
+      const amount = command.reward === "STOCKPILE" ? 4 : 12;
       const coins = requirePlayer(state, actor).coins + amount;
       if (!Number.isSafeInteger(coins))
         throw new RangeError("INTEGER_OVERFLOW");
@@ -884,7 +894,6 @@ function applyReward(
       );
       cities = recalc.cities;
       contributions = recalc.populationContributions;
-      choices = [...recalc.pendingChoices, ...choices];
       events.push(...economyAndGrowth(recalc.changes));
     } else if (unitRole !== null && placement !== null) {
       const allocation = allocateUnitId(nextEntityId);
@@ -919,18 +928,22 @@ function applyReward(
       "CAPACITY_LOST",
     );
     events.push(...cancellation.events);
+    const settlement = settleCityRewardsV7({
+      ...state,
+      nextEntityId,
+      players,
+      board,
+      cities,
+      units,
+      populationContributions: contributions,
+      pendingChoices: choices,
+      defectionMarks: cancellation.marks,
+    });
+    events.push(...settlement.events);
     return accepted(
       checked({
-        ...state,
-        nextEntityId,
+        ...settlement.state,
         commandIndex: nextSafe(state.commandIndex),
-        players,
-        board,
-        cities,
-        units,
-        populationContributions: contributions,
-        pendingChoices: choices,
-        defectionMarks: cancellation.marks,
       }),
       events,
     );
@@ -1685,7 +1698,12 @@ function applyPillage(
       contribution === undefined
     )
       return rejected(original, "INVALID_STATE");
-    const board = replaceTile(state, tile.at, { ...tile, improvement: null });
+    const resourceRestored = restoredResourceForImprovement(improvement);
+    const board = replaceTile(state, tile.at, {
+      ...tile,
+      resource: resourceRestored,
+      improvement: null,
+    });
     const contributions =
       contribution === undefined
         ? state.populationContributions
@@ -1721,7 +1739,7 @@ function applyPillage(
           }
         : item,
     );
-    const next = checked({
+    const staged: GameStateV7 = {
       ...state,
       commandIndex: nextSafe(state.commandIndex),
       board,
@@ -1732,8 +1750,9 @@ function applyPillage(
       populationContributions: recalc.populationContributions,
       units,
       defectionMarks: cancellation.marks,
-      pendingChoices: [...state.pendingChoices, ...recalc.pendingChoices],
-    });
+    };
+    const settlement = settleCityRewardsV7(staged);
+    const next = checked(settlement.state);
     return accepted(next, [
       {
         kind: "IMPROVEMENT_PILLAGED",
@@ -1742,10 +1761,12 @@ function applyPillage(
         cityId: city.id,
         at: tile.at,
         improvement,
+        resourceRestored,
         coinDelta: 1,
       },
       ...cancellation.events,
       ...economyAndGrowth(recalc.changes),
+      ...settlement.events,
     ]);
   } catch (cause) {
     return arithmeticFailure(original, cause);
@@ -1985,8 +2006,21 @@ function applyCapture(
     );
     cities = recalc.cities;
     contributions = recalc.populationContributions;
-    choices = [...choices, ...recalc.pendingChoices];
     events.push(...economyAndGrowth(recalc.changes));
+    const settlement = settleCityRewardsV7({
+      ...state,
+      board,
+      players,
+      cities,
+      units,
+      populationContributions: contributions,
+      pendingChoices: choices,
+      defectionMarks: marks,
+    });
+    players = settlement.state.players;
+    cities = settlement.state.cities;
+    choices = settlement.state.pendingChoices;
+    events.push(...settlement.events);
     if (
       formerOwner !== null &&
       !cities.some((item) => item.ownerId === formerOwner)
@@ -2427,6 +2461,77 @@ function rewardPlacement(
       )[0]?.at ?? null
   );
 }
+function settleCityRewardsV7(state: GameStateV7): {
+  readonly state: GameStateV7;
+  readonly events: readonly DomainEventV7[];
+} {
+  if (state.pendingChoices.length > 0) return { state, events: [] };
+  let players = state.players;
+  let cities = state.cities;
+  const events: DomainEventV7[] = [];
+  for (const current of [...cities].sort((left, right) => left.id - right.id)) {
+    for (
+      let reachedLevel = 2;
+      reachedLevel <= current.level;
+      reachedLevel += 1
+    ) {
+      const city = cities.find((candidate) => candidate.id === current.id);
+      if (city === undefined) throw new RangeError("INVALID_STATE");
+      if (city.rewards.some((reward) => reward.reachedLevel === reachedLevel))
+        continue;
+      const candidates = rewardCandidatesForLevelV7(reachedLevel);
+      const owner = players.find((player) => player.id === city.ownerId);
+      if (owner?.status !== "ACTIVE") throw new RangeError("INVALID_STATE");
+      if (
+        reachedLevel >= 5 &&
+        rewardPlacement({ ...state, players, cities }, city) === null
+      ) {
+        const coins = owner.coins + 12;
+        if (!Number.isSafeInteger(coins))
+          throw new RangeError("INTEGER_OVERFLOW");
+        players = players.map((player) =>
+          player.id === owner.id ? { ...player, coins } : player,
+        );
+        cities = cities.map((candidate) =>
+          candidate.id === city.id
+            ? {
+                ...candidate,
+                rewards: [
+                  ...candidate.rewards,
+                  { reachedLevel, reward: "TREASURY" as const },
+                ],
+              }
+            : candidate,
+        );
+        events.push({
+          kind: "CITY_REWARD_AUTOMATICALLY_GRANTED",
+          playerId: owner.id,
+          cityId: city.id,
+          reachedLevel,
+          reward: "TREASURY",
+          coins: 12,
+        });
+        continue;
+      }
+      const pendingChoices: readonly PendingChoiceV7[] = [
+        { kind: "CITY_REWARD", cityId: city.id, reachedLevel, candidates },
+      ];
+      return {
+        state: { ...state, players, cities, pendingChoices },
+        events: [
+          ...events,
+          {
+            kind: "CITY_REWARD_QUEUED",
+            cityId: city.id,
+            reachedLevel,
+            candidates,
+          },
+        ],
+      };
+    }
+  }
+  return { state: { ...state, players, cities, pendingChoices: [] }, events };
+}
 function unitSightRadius(
   state: GameStateV7,
   ownerId: PlayerId,
@@ -2492,10 +2597,18 @@ function nextActiveSeat(state: GameStateV7): number | null {
 function economyAndGrowth(
   changes: readonly CityEconomyChangeV7[],
 ): readonly DomainEventV7[] {
-  return changes.flatMap((change) => [
-    ...economyEventsV7([change]),
-    ...growthEventsV7([change]),
-  ]);
+  return [...economyEventsV7(changes), ...growthEventsV7(changes)];
+}
+function restoredResourceForImprovement(
+  improvement: TileStateV7["improvement"],
+): "FERTILE_GROUND" | "ORE" | "STONE" | null {
+  return improvement === "FARM"
+    ? "FERTILE_GROUND"
+    : improvement === "MINE"
+      ? "ORE"
+      : improvement === "QUARRY"
+        ? "STONE"
+        : null;
 }
 function exhaustedActivation(): UnitStateV7["activation"] {
   return {

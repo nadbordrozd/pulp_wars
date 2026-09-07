@@ -67,6 +67,7 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "populationContributionRemoved",
     "marketIncomeRemoved",
     "capacityDelta",
+    "resourceRestored",
   ],
   FOREST_CLEARED: ["kind", "playerId", "cityId", "at", "coinDelta"],
   FOREST_REPLANTED: ["kind", "playerId", "cityId", "at", "coinDelta"],
@@ -83,7 +84,14 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   ],
   CITY_LEVELED_UP: ["kind", "cityId", "level"],
   CITY_REWARD_QUEUED: ["kind", "cityId", "reachedLevel", "candidates"],
-  CITY_REWARD_CHOSEN: ["kind", "playerId", "cityId", "reachedLevel", "reward"],
+  CITY_REWARD_CHOSEN: [
+    "kind",
+    "playerId",
+    "cityId",
+    "reachedLevel",
+    "reward",
+    "coinDelta",
+  ],
   CITY_TERRITORY_EXPANDED: ["kind", "playerId", "cityId", "tiles"],
   UNIT_TRAINED: ["kind", "playerId", "cityId", "unitId", "role", "cost", "at"],
   UNIT_REWARD_GRANTED: [
@@ -151,10 +159,19 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "cityId",
     "at",
     "improvement",
+    "resourceRestored",
     "coinDelta",
   ],
   UNIT_DISBANDED: ["kind", "playerId", "unitId", "role", "coinDelta"],
   SPOILS_AWARDED: ["kind", "playerId", "cityId", "coins"],
+  CITY_REWARD_AUTOMATICALLY_GRANTED: [
+    "kind",
+    "playerId",
+    "cityId",
+    "reachedLevel",
+    "reward",
+    "coins",
+  ],
   UNIT_RECOVERED: ["kind", "unitId", "amount", "automatic"],
   UNIT_WAITED: ["kind", "playerId", "unitId"],
   UNIT_PROMOTED: ["kind", "unitId", "maxHp"],
@@ -229,6 +246,11 @@ export function parsePlayerEventEnvelopeV7(
     return bad("envelope");
   const events: PlayerEventV7[] = [];
   for (const candidate of input.events) {
+    const projectedRestoration = parseProjectedRestorationEvent(candidate);
+    if (projectedRestoration !== null) {
+      events.push(projectedRestoration);
+      continue;
+    }
     const presentation = parsePresentationEvent(candidate);
     if (presentation !== null) {
       events.push(presentation);
@@ -248,6 +270,27 @@ export function parsePlayerEventEnvelopeV7(
       events,
     },
   };
+}
+
+function parseProjectedRestorationEvent(input: unknown): PlayerEventV7 | null {
+  if (
+    typeof input !== "object" ||
+    input === null ||
+    Array.isArray(input) ||
+    !("resourceRestored" in input) ||
+    input.resourceRestored !== "UNKNOWN_RESOURCE" ||
+    !("kind" in input) ||
+    (input.kind !== "ECONOMIC_BUILDING_REMOVED" &&
+      input.kind !== "IMPROVEMENT_PILLAGED")
+  )
+    return null;
+  const canonical = parseEventV7({
+    ...input,
+    resourceRestored: expectedRestoredResource(
+      "improvement" in input ? (input.improvement as ImprovementIdV7) : null,
+    ),
+  });
+  return canonical.ok ? (input as PlayerEventV7) : null;
 }
 
 function parsePresentationEvent(input: unknown): PlayerEventV7 | null {
@@ -329,14 +372,15 @@ function validPayload(
         IMPROVEMENT_IDS_V7.includes(e.improvement as never) &&
         e.cost === improvementCost(e.improvement as ImprovementIdV7) &&
         [e.populationContribution, e.marketIncome].every(nn) &&
-        e.capacityDelta === (e.improvement === "BARRACKS" ? 1 : 0)
+        e.capacityDelta === (e.improvement === "BARRACKS" ? 2 : 0)
       );
     case "ECONOMIC_BUILDING_REMOVED":
       return (
         playerCityAt(e) &&
         IMPROVEMENT_IDS_V7.includes(e.improvement as never) &&
         [e.populationContributionRemoved, e.marketIncomeRemoved].every(nn) &&
-        e.capacityDelta === (e.improvement === "BARRACKS" ? -1 : 0)
+        e.capacityDelta === (e.improvement === "BARRACKS" ? -2 : 0) &&
+        restoredResource(e.resourceRestored, e.improvement as ImprovementIdV7)
       );
     case "FOREST_CLEARED":
       return playerCityAt(e) && e.coinDelta === 1;
@@ -370,7 +414,9 @@ function validPayload(
         id(e.cityId) &&
         pos(e.reachedLevel) &&
         REWARD_IDS_V7.includes(e.reward as never) &&
-        rewardMatches(e.reward as RewardIdV7, e.reachedLevel as number)
+        rewardMatches(e.reward as RewardIdV7, e.reachedLevel as number) &&
+        e.coinDelta ===
+          (e.reward === "STOCKPILE" ? 4 : e.reward === "TREASURY" ? 12 : 0)
       );
     case "CITY_TERRITORY_EXPANDED":
       return id(e.playerId) && id(e.cityId) && sortedCoords(e.tiles);
@@ -511,6 +557,10 @@ function validPayload(
         id(e.cityId) &&
         parseCoordV7(e.at) !== null &&
         IMPROVEMENT_IDS_V7.includes(e.improvement as never) &&
+        restoredResource(
+          e.resourceRestored,
+          e.improvement as ImprovementIdV7,
+        ) &&
         e.coinDelta === 1
       );
     case "UNIT_DISBANDED":
@@ -523,6 +573,15 @@ function validPayload(
       );
     case "SPOILS_AWARDED":
       return id(e.playerId) && id(e.cityId) && e.coins === 2;
+    case "CITY_REWARD_AUTOMATICALLY_GRANTED":
+      return (
+        id(e.playerId) &&
+        id(e.cityId) &&
+        pos(e.reachedLevel) &&
+        (e.reachedLevel as number) >= 5 &&
+        e.reward === "TREASURY" &&
+        e.coins === 12
+      );
     case "UNIT_RECOVERED":
       return id(e.unitId) && pos(e.amount) && typeof e.automatic === "boolean";
     case "UNIT_WAITED":
@@ -696,9 +755,9 @@ function improvementCost(improvement: ImprovementIdV7): number {
     case "MINE":
     case "FORGE":
     case "STONEWORKS":
-    case "BARRACKS":
       return 6;
     case "WORKSHOP":
+    case "BARRACKS":
       return 4;
     case "GRAND_WORKS":
     case "MARKET":
@@ -715,13 +774,30 @@ function trainingCost(role: UnitRoleIdV7): number {
     RAIDER: 4,
     MEDIC: 4,
     CATAPULT: 8,
-    SABOTEUR: 7,
+    SABOTEUR: 6,
     HEAVY: 7,
     LANCER: 9,
     BREACHER: 6,
     JUGGERNAUT: 0,
   };
   return costs[role];
+}
+function restoredResource(
+  value: unknown,
+  improvement: ImprovementIdV7,
+): boolean {
+  return value === expectedRestoredResource(improvement);
+}
+function expectedRestoredResource(
+  improvement: ImprovementIdV7 | null,
+): "FERTILE_GROUND" | "ORE" | "STONE" | null {
+  return improvement === "FARM"
+    ? "FERTILE_GROUND"
+    : improvement === "MINE"
+      ? "ORE"
+      : improvement === "QUARRY"
+        ? "STONE"
+        : null;
 }
 const id = isPositiveSafeIntegerV7;
 const nn = isNonNegativeSafeIntegerV7;

@@ -97,6 +97,7 @@ export type TechnologyUnlockV7 =
       readonly defenseNumerator: 2;
       readonly defenseDenominator: 1;
     }
+  | { readonly kind: "OWNED_CITY_CAPACITY_BONUS"; readonly capacity: 1 }
   | { readonly kind: "MEDIC_HEAL"; readonly amount: 4 | 6 }
   | { readonly kind: "FRIENDLY_IDLE_RECOVERY"; readonly amount: 6 }
   | { readonly kind: "FIRST_HOSTILE_CAPTURE_SPOILS"; readonly coins: 2 };
@@ -273,21 +274,21 @@ export const SPATIAL_ECONOMIC_ACTIONS_V7 = deepFreeze({
     technology: "MASONRY",
     cost: 6,
     improvement: "STONEWORKS",
-    placementMinimum: 0,
+    placementMinimum: 1,
   },
   BUILD_WORKSHOP: {
     command: "BUILD_WORKSHOP",
     technology: "CRAFT",
     cost: 4,
     improvement: "WORKSHOP",
-    placementMinimum: 2,
+    placementMinimum: 1,
   },
   BUILD_GRAND_WORKS: {
     command: "BUILD_GRAND_WORKS",
     technology: "GRAND_WORKS",
     cost: 7,
     improvement: "GRAND_WORKS",
-    placementMinimum: 3,
+    placementMinimum: 2,
   },
   BUILD_MARKET: {
     command: "BUILD_MARKET",
@@ -299,7 +300,7 @@ export const SPATIAL_ECONOMIC_ACTIONS_V7 = deepFreeze({
   BUILD_BARRACKS: {
     command: "BUILD_BARRACKS",
     technology: "QUARRYING",
-    cost: 6,
+    cost: 4,
     improvement: "BARRACKS",
     placementMinimum: 0,
   },
@@ -572,6 +573,7 @@ export const ORIGINAL_BASELINE_V3_NODES = deepFreeze([
         defenseNumerator: 2,
         defenseDenominator: 1,
       },
+      { kind: "OWNED_CITY_CAPACITY_BONUS", capacity: 1 },
     ],
   ),
   node(
@@ -735,7 +737,7 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
   SABOTEUR: role({
     role: "SABOTEUR",
     label: "Saboteur",
-    cost: 7,
+    cost: 6,
     maxHp: 10,
     attack2: 4,
     defense2: 2,
@@ -885,6 +887,7 @@ export interface TechnologyCapabilitiesV7 {
     readonly defenseNumerator: 2;
     readonly defenseDenominator: 1;
   } | null;
+  readonly ownedCityCapacityBonus: 0 | 1;
   readonly medicHealAmount: 0 | 4 | 6;
   readonly friendlyIdleRecoveryAmount: 0 | 6;
   readonly hostileCaptureSpoilsCoins: 0 | 2;
@@ -913,6 +916,7 @@ export function technologyCapabilitiesV7(
   let marketCapitalRoadBonusCoins: 0 | 1 = 0;
   let friendlyCityFortification: TechnologyCapabilitiesV7["friendlyCityFortification"] =
     null;
+  let ownedCityCapacityBonus: 0 | 1 = 0;
   let medicHealAmount: 0 | 4 | 6 = 0;
   let friendlyIdleRecoveryAmount: 0 | 6 = 0;
   let hostileCaptureSpoilsCoins: 0 | 2 = 0;
@@ -967,6 +971,9 @@ export function technologyCapabilitiesV7(
           defenseDenominator: 1,
         };
         break;
+      case "OWNED_CITY_CAPACITY_BONUS":
+        ownedCityCapacityBonus = 1;
+        break;
       case "MEDIC_HEAL":
         medicHealAmount = unlock.amount;
         break;
@@ -1002,6 +1009,7 @@ export function technologyCapabilitiesV7(
     marketCapitalRoadBonusCoins,
     ignoreHostileZocRoles: UNIT_ROLE_IDS_V7.filter((item) => zoc.has(item)),
     friendlyCityFortification,
+    ownedCityCapacityBonus,
     medicHealAmount,
     friendlyIdleRecoveryAmount,
     hostileCaptureSpoilsCoins,

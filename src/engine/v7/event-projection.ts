@@ -83,7 +83,9 @@ export function projectEventsV7(
       afterVisible,
     );
     if (visible)
-      projected.push(projectEventPayload(beforeState, viewerId, event));
+      projected.push(
+        projectEventPayload(beforeState, afterState, viewerId, event),
+      );
     else if (
       event.kind === "DEFECTION_OFFERED" ||
       event.kind === "DEFECTION_ARMED"
@@ -288,6 +290,7 @@ function eventVisible(
     case "BLACKOUT_RECOVERY_COMPLETED":
       return cityVisible(before, after, viewerId, event.cityId);
     case "SPOILS_AWARDED":
+    case "CITY_REWARD_AUTOMATICALLY_GRANTED":
       return event.playerId === viewerId;
     case "CITY_REWARD_QUEUED":
     case "CITY_ECONOMY_CHANGED":
@@ -330,9 +333,27 @@ function unitIds(event: DomainEventV7): readonly UnitId[] {
 
 function projectEventPayload(
   before: GameStateV7,
+  after: GameStateV7,
   viewerId: PlayerId,
   event: DomainEventV7,
-): DomainEventV7 {
+): PlayerEventV7 {
+  if (
+    event.kind === "ECONOMIC_BUILDING_REMOVED" ||
+    event.kind === "IMPROVEMENT_PILLAGED"
+  ) {
+    const tile = viewForV7(after, viewerId).board.tiles[
+      event.at.y * after.board.width + event.at.x
+    ];
+    const visible = tile?.explored === true ? tile.resource : null;
+    const resourceRestored =
+      visible === "FERTILE_GROUND" ||
+      visible === "ORE" ||
+      visible === "STONE" ||
+      visible === "UNKNOWN_RESOURCE"
+        ? visible
+        : null;
+    return { ...event, resourceRestored };
+  }
   if (event.kind !== "COMBAT_RESOLVED" || event.preview.push !== "BLOCKED")
     return event;
   const attacker = before.units.find(

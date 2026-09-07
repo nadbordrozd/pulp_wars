@@ -366,6 +366,80 @@ describe("ruleset-7 observation safety and Concealment", () => {
     expect(JSON.stringify(projected)).not.toContain(String(saboteur.id));
   });
 
+  it("projects restored production markers from the viewer's after-state knowledge", () => {
+    const before = initialV7(1_306);
+    const city = before.cities.find(
+      (candidate) => candidate.ownerId === before.humanPlayerId,
+    )!;
+    const at = before.board.tiles.find(
+      (tile) =>
+        tile.territoryCityId === city.id &&
+        tile.site === null &&
+        tile.improvement === null &&
+        !before.units.some((unit) => same(unit.at, tile.at)) &&
+        !before.treasureChests.some((chest) => same(chest, tile.at)),
+    )!.at;
+    const after = checkedV7({
+      ...before,
+      commandIndex: before.commandIndex + 1,
+      board: {
+        ...before.board,
+        tiles: before.board.tiles.map((tile) =>
+          same(tile.at, at)
+            ? {
+                ...tile,
+                terrain: "MOUNTAIN" as const,
+                resource: "ORE" as const,
+              }
+            : tile,
+        ),
+      },
+    });
+    const event: DomainEventV7 = {
+      kind: "ECONOMIC_BUILDING_REMOVED",
+      playerId: before.humanPlayerId,
+      cityId: city.id,
+      at,
+      improvement: "MINE",
+      populationContributionRemoved: 4,
+      marketIncomeRemoved: 0,
+      capacityDelta: 0,
+      resourceRestored: "ORE",
+    };
+    const hidden = projectEventsV7(before, after, before.humanPlayerId, [
+      event,
+    ]);
+    expect(hidden.events).toEqual([
+      { ...event, resourceRestored: "UNKNOWN_RESOURCE" },
+    ]);
+    expect(parsePlayerEventEnvelopeV7(hidden)).toMatchObject({ ok: true });
+
+    const surveyedBefore = checkedV7({
+      ...before,
+      players: before.players.map((player) =>
+        player.id === before.humanPlayerId
+          ? { ...player, researchedTechs: ["GATHERING", "SURVEYING"] }
+          : player,
+      ),
+    });
+    const surveyedAfter = checkedV7({
+      ...after,
+      players: after.players.map((player) =>
+        player.id === after.humanPlayerId
+          ? { ...player, researchedTechs: ["GATHERING", "SURVEYING"] }
+          : player,
+      ),
+    });
+    const revealed = projectEventsV7(
+      surveyedBefore,
+      surveyedAfter,
+      before.humanPlayerId,
+      [event],
+    );
+    expect(revealed.events).toEqual([event]);
+    expect(parsePlayerEventEnvelopeV7(revealed)).toMatchObject({ ok: true });
+  });
+
   it("records attack exposure, shares it, preserves it in canonical state, and clears it only at the anchor End Turn", () => {
     const state = exposedAttackScenario();
     const saboteur = state.units[0]!;

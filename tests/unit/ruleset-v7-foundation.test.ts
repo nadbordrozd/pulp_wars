@@ -57,7 +57,7 @@ describe("ruleset-7 deterministic foundation", () => {
     ]);
     expect(TECHNOLOGY_IDS_V7).toHaveLength(25);
     expect(COMMAND_KIND_ORDER_V7).toHaveLength(35);
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(48);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(49);
     expect(PLAYER_EVENT_KIND_ORDER_V7.slice(-3)).toEqual([
       "UNIT_REVEALED",
       "UNIT_CONCEALED",

@@ -66,7 +66,7 @@ export function spatialContributionAtV7(
   if (improvement === "MINE") return fixed(4, at, improvement);
   if (improvement === "QUARRY") return fixed(3, at, improvement);
   if (improvement === "BARRACKS")
-    return result({ capacity: 1, contributingTiles: [at], placementCount: 1 });
+    return result({ capacity: 2, contributingTiles: [at], placementCount: 1 });
   if (improvement === "WINDMILL" || improvement === "SAWMILL") {
     const type = improvement === "WINDMILL" ? "FARM" : "LUMBER_CAMP";
     const contributors = connectedSameCityComponent(
@@ -76,7 +76,10 @@ export function spatialContributionAtV7(
       type,
     );
     return result({
-      population: Math.min(8, contributors.length),
+      population:
+        improvement === "WINDMILL" && contributors.length > 0
+          ? Math.min(8, 2 + contributors.length)
+          : Math.min(8, contributors.length),
       contributingTiles: contributors,
       distinctTypes: contributors.length === 0 ? [] : [type],
       placementCount: contributors.length,
@@ -104,7 +107,10 @@ export function spatialContributionAtV7(
         isSameCityImprovement(graph.board, at, axis.second, city.id, "QUARRY"),
     ).map((axis) => axis.id);
     return result({
-      population: Math.min(16, contributors.length * 2 + axes.length * 2),
+      population:
+        contributors.length === 0
+          ? 0
+          : Math.min(16, 2 + contributors.length * 2 + axes.length * 2),
       contributingTiles: contributors.map((tile) => tile.at),
       distinctTypes: contributors.length === 0 ? [] : ["QUARRY"],
       oppositePairAxes: axes,
@@ -115,17 +121,27 @@ export function spatialContributionAtV7(
     const contributors = friendlyAdjacent(graph, at, city.ownerId, BASIC);
     const types = orderedTypes(contributors, BASIC);
     return result({
-      population: types.length,
+      population: types.length === 0 ? 0 : 1 + types.length,
       contributingTiles: contributors.map((tile) => tile.at),
       distinctTypes: types,
       placementCount: types.length,
     });
   }
   if (improvement === "GRAND_WORKS") {
-    const contributors = friendlyAdjacent(graph, at, city.ownerId, PROCESSORS);
+    const contributors = friendlyAdjacent(
+      graph,
+      at,
+      city.ownerId,
+      PROCESSORS,
+    ).filter(
+      (tile) =>
+        tile.improvement !== null &&
+        spatialContributionAtV7(graph, tile.at, tile.improvement).population >
+          0,
+    );
     const types = orderedTypes(contributors, PROCESSORS);
     return result({
-      population: types.length * 2,
+      population: types.length < 2 ? 0 : Math.min(12, 4 + types.length * 2),
       contributingTiles: contributors.map((tile) => tile.at),
       distinctTypes: types,
       placementCount: types.length,
