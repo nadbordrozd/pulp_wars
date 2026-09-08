@@ -1716,6 +1716,32 @@ interface PublicUnitV7 {
   readonly blackoutEligibility:
     | { readonly known: true; readonly round: number }
     | { readonly known: false };
+  readonly visibility?: PublicUnitVisibilityV7;
+}
+
+interface PublicUnitVisibilityV7 {
+  readonly concealment?: "OWNER_CAPABILITY";
+  readonly detection?: {
+    readonly kind: "DETECTED";
+    readonly breakCondition: "OUTSIDE_ALL_LEGAL_DETECTOR_RANGE";
+  };
+  readonly exposures?: readonly {
+    readonly reason: "ATTACK" | "PILLAGE" | "BLACKOUT";
+    readonly boundary: {
+      readonly kind: "ANCHOR_NEXT_ACCEPTED_END_TURN";
+      readonly anchorPlayerId: PlayerId;
+      readonly round:
+        | { readonly known: true; readonly value: number }
+        | {
+            readonly known: false;
+            readonly reason: "SAFE_INTEGER_OVERFLOW";
+          };
+    };
+  }[];
+  readonly defectionReveals?: readonly {
+    readonly phase: "WAITING_FOR_REPLY" | "ARMED";
+    readonly breakCondition: "MARK_RESOLVES_OR_CANCELS";
+  }[];
 }
 
 type PublicDefectionStatusV7 =
@@ -1826,6 +1852,18 @@ Projection rules are exact:
 - A city appears only when its center is explored. A normal unit appears on an
   explored tile. A Saboteur appears only when section 7.3 makes it visible to
   that viewer.
+- Fresh projection adds `visibility` only when a visible unit has a special
+  viewer-safe fact. An owned Saboteur receives the capability marker, never a
+  promise that opponents cannot see it. A nonowner receives generic current
+  detection without detector identity, applicable exposure records only for
+  that viewer/formal ally, and every active Defection reason that explicitly
+  reveals that endpoint. These reasons may overlap. Exposure `round` is derived
+  from the stored current round and seat: an anchor before the active seat ends
+  next round; the current or a later anchor ends this round. A maximum-safe
+  round that cannot represent the increment retains the exact accepted-End-Turn
+  boundary with `known: false`. The current owner sees all exposure records for
+  its own unit, including after conversion; unrelated viewers never receive an
+  anchor, recipient, mark, counterpart, reserved city, or detector identity.
 - `unitStats` contains one entry for each and only each visible unit, computed
   by authority in fixed HP, Attack, Defense, Move, Range, Sight order. It uses
   exact rational base/total values and separately attributed active modifier
@@ -1833,6 +1871,12 @@ Projection rules are exact:
   defense multiplier reports its additive difference; Mountain modifies Sight.
   Roads, Fieldcraft, Maneuver, Concealment, Pursuit, and cooldown do not invent
   numeric Move/stat terms; they appear as ability/status data.
+- A Defense or Sight row whose exact value could disclose an unexplored
+  position omits every position-derived modifier, recomputes its displayed
+  total, and carries optional `visibility: "BASE_ONLY"`; absence retains the
+  exact prior contract. Envoy Defense remains exact because its fixed 1x
+  multiplier ignores terrain and city defense. A public combat preview never
+  treats a `BASE_ONLY` defender as exact.
 - Owned improvement live values expose population, Market income, or Barracks
   capacity contribution. A Monument's fixed +3 is visible to every viewer who
   sees the building; only its source achievement is limited to the current
@@ -1870,9 +1914,13 @@ movement resolved by the accepted interruption contract.
   derives from owner-safe progress only. City reward preview shows the 12-Coin
   Treasury alternative at every level 5 or higher and whether lack of legal
   Juggernaut placement will grant it automatically.
-- Combat preview uses the same rational calculation as resolution and includes
-  Catapult minimum range/retaliation, Charge, Breach, Push certainty, damage,
-  death, advance, and whether a Lancer kill would open Pursuit.
+- Combat preview uses the same rational calculation as resolution when the
+  public defender stat is exact and includes Catapult minimum
+  range/retaliation, Charge, Breach, Push certainty, damage, death, advance,
+  and whether a Lancer kill would open Pursuit. It returns no exact preview for
+  a `BASE_ONLY` defender; the explicitly revealed Envoy remains exact at fixed
+  1x without disclosing terrain. Preview uncertainty does not remove an
+  otherwise legal offered Attack.
 - Pursuit preview includes current `attacksUsed`, attacks remaining, direct
   adjacent targets, every canonical one/two-cell path and resulting attack
   target, ordinary kill-advance reach, and public stop reasons.

@@ -2,8 +2,10 @@ import { deepFreeze } from "../model/freeze";
 import type { CityId, PlayerId, UnitId } from "../model/ids";
 import { arePlayersAlliedV7 } from "./economy";
 import {
+  detectionCoversCoordV7,
   isUnitVisibleToPlayerV7,
   isUnitVisibleWithoutDefectionV7,
+  unitExplicitlyRevealedByDefectionV7,
 } from "./observation";
 import { spatialContributionAtV7 } from "./spatial-economy";
 import type {
@@ -112,6 +114,37 @@ export interface PublicUnitV7 {
   readonly blackoutEligibility:
     | { readonly known: true; readonly round: number }
     | { readonly known: false };
+  /** Present only for viewer-safe Concealment and special reveal facts. */
+  readonly visibility?: PublicUnitVisibilityV7;
+}
+
+export interface PublicUnitVisibilityV7 {
+  readonly concealment?: "OWNER_CAPABILITY";
+  readonly detection?: {
+    readonly kind: "DETECTED";
+    readonly breakCondition: "OUTSIDE_ALL_LEGAL_DETECTOR_RANGE";
+  };
+  readonly exposures?: readonly PublicSaboteurExposureV7[];
+  readonly defectionReveals?: readonly PublicDefectionRevealV7[];
+}
+
+export interface PublicSaboteurExposureV7 {
+  readonly reason: "ATTACK" | "PILLAGE" | "BLACKOUT";
+  readonly boundary: {
+    readonly kind: "ANCHOR_NEXT_ACCEPTED_END_TURN";
+    readonly anchorPlayerId: PlayerId;
+    readonly round:
+      | { readonly known: true; readonly value: number }
+      | {
+          readonly known: false;
+          readonly reason: "SAFE_INTEGER_OVERFLOW";
+        };
+  };
+}
+
+export interface PublicDefectionRevealV7 {
+  readonly phase: "WAITING_FOR_REPLY" | "ARMED";
+  readonly breakCondition: "MARK_RESOLVES_OR_CANCELS";
 }
 
 export type PublicDefectionStatusV7 =
@@ -267,23 +300,27 @@ export function viewForV7(
   const visibleUnits = state.units.filter((unit) =>
     isUnitVisibleToPlayerV7(state, viewerId, unit),
   );
-  const publicUnits = visibleUnits.map((unit): PublicUnitV7 => ({
-    id: unit.id,
-    ownerId: unit.ownerId,
-    homeCityId: unit.ownerId === viewerId ? unit.homeCityId : null,
-    role: unit.role,
-    at: unit.at,
-    hp: unit.hp,
-    maxHp: unit.maxHp,
-    kills: unit.kills,
-    veteran: unit.veteran,
-    captureEligible: unit.captureEligible,
-    activation: unit.activation,
-    blackoutEligibility:
-      unit.ownerId === viewerId && unit.blackoutEligibleRound !== null
-        ? { known: true, round: unit.blackoutEligibleRound }
-        : { known: false },
-  }));
+  const publicUnits = visibleUnits.map((unit): PublicUnitV7 => {
+    const visibility = publicUnitVisibilityV7(state, viewerId, unit);
+    return {
+      id: unit.id,
+      ownerId: unit.ownerId,
+      homeCityId: unit.ownerId === viewerId ? unit.homeCityId : null,
+      role: unit.role,
+      at: unit.at,
+      hp: unit.hp,
+      maxHp: unit.maxHp,
+      kills: unit.kills,
+      veteran: unit.veteran,
+      captureEligible: unit.captureEligible,
+      activation: unit.activation,
+      blackoutEligibility:
+        unit.ownerId === viewerId && unit.blackoutEligibleRound !== null
+          ? { known: true, round: unit.blackoutEligibleRound }
+          : { known: false },
+      ...(visibility === undefined ? {} : { visibility }),
+    };
+  });
   const visibleContributions = state.populationContributions.flatMap(
     (contribution): readonly PublicPopulationContributionV7[] => {
       if (!explored.has(key(contribution.source.at))) return [];
@@ -495,7 +532,11 @@ export function viewForV7(
     improvementValues,
     units: publicUnits,
     unitStats: visibleUnits.map((unit) => {
-      const stats = publicUnitStatsV7(state, unit);
+      const stats = publicUnitStatsForViewerV7(
+        publicUnitStatsV7(state, unit),
+        unit.role,
+        explored.has(key(unit.at)),
+      );
       const exposed = state.saboteurExposures.some(
         (exposure) =>
           exposure.unitId === unit.id &&
@@ -519,6 +560,138 @@ export function viewForV7(
     ),
     outcome: state.outcome,
   });
+}
+
+function publicUnitVisibilityV7(
+  state: GameStateV7,
+  viewerId: PlayerId,
+  unit: GameStateV7["units"][number],
+): PublicUnitVisibilityV7 | undefined {
+  const concealment =
+    unit.role === "SABOTEUR" && unit.ownerId === viewerId
+      ? ("OWNER_CAPABILITY" as const)
+      : undefined;
+  const detection =
+    unit.role === "SABOTEUR" &&
+    unit.ownerId !== viewerId &&
+    !arePlayersAlliedV7(state, viewerId, unit.ownerId) &&
+    detectionCoversCoordV7(state, viewerId, unit.at)
+      ? ({
+          kind: "DETECTED",
+          breakCondition: "OUTSIDE_ALL_LEGAL_DETECTOR_RANGE",
+        } as const)
+      : undefined;
+  const exposures = state.saboteurExposures.flatMap(
+    (exposure): readonly PublicSaboteurExposureV7[] =>
+      exposure.unitId === unit.id &&
+      (unit.ownerId === viewerId ||
+        exposure.anchorPlayerId === viewerId ||
+        arePlayersAlliedV7(state, viewerId, exposure.anchorPlayerId))
+        ? [
+            {
+              reason: exposure.reason,
+              boundary: {
+                kind: "ANCHOR_NEXT_ACCEPTED_END_TURN",
+                anchorPlayerId: exposure.anchorPlayerId,
+                round: nextExposureBoundaryRoundV7(
+                  state,
+                  exposure.anchorPlayerId,
+                ),
+              },
+            },
+          ]
+        : [],
+  );
+  const defectionReveals = state.defectionMarks.flatMap(
+    (mark): readonly PublicDefectionRevealV7[] =>
+      unit.ownerId !== viewerId &&
+      unitExplicitlyRevealedByDefectionV7(state, viewerId, unit, mark)
+        ? [
+            {
+              phase: mark.phase,
+              breakCondition: "MARK_RESOLVES_OR_CANCELS",
+            },
+          ]
+        : [],
+  );
+  if (
+    concealment === undefined &&
+    detection === undefined &&
+    exposures.length === 0 &&
+    defectionReveals.length === 0
+  )
+    return undefined;
+  return {
+    ...(concealment === undefined ? {} : { concealment }),
+    ...(detection === undefined ? {} : { detection }),
+    ...(exposures.length === 0 ? {} : { exposures }),
+    ...(defectionReveals.length === 0 ? {} : { defectionReveals }),
+  };
+}
+
+function nextExposureBoundaryRoundV7(
+  state: GameStateV7,
+  anchorPlayerId: PlayerId,
+): PublicSaboteurExposureV7["boundary"]["round"] {
+  const anchorIndex = state.turnOrder.indexOf(anchorPlayerId);
+  if (anchorIndex < 0) throw new RangeError("Unknown exposure anchor");
+  const round = state.round + Number(anchorIndex < state.activeSeatIndex);
+  return Number.isSafeInteger(round)
+    ? { known: true, value: round }
+    : { known: false, reason: "SAFE_INTEGER_OVERFLOW" };
+}
+
+const HIDDEN_POSITION_MODIFIERS_V7 = new Set([
+  "CITY_WALLS",
+  "FORTIFICATION",
+  "FRIENDLY_CITY",
+  "MOUNTAIN",
+  "FOREST",
+  "HIGH_GROUND",
+]);
+
+function publicUnitStatsForViewerV7(
+  stats: PublicUnitStatsV7,
+  role: UnitRoleIdV7,
+  positionExplored: boolean,
+): PublicUnitStatsV7 {
+  if (positionExplored) return stats;
+  return {
+    ...stats,
+    stats: stats.stats.map((entry) => {
+      const positionCanModify =
+        entry.id === "SIGHT" || (entry.id === "DEFENSE" && role !== "ENVOY");
+      if (!positionCanModify) return entry;
+      const modifiers = entry.modifiers.filter(
+        (modifier) => !HIDDEN_POSITION_MODIFIERS_V7.has(modifier.source),
+      );
+      return {
+        ...entry,
+        modifiers,
+        total: modifiers.reduce(
+          (total, modifier) => addPublicStatValues(total, modifier.value),
+          entry.base.value,
+        ),
+        visibility: "BASE_ONLY" as const,
+      };
+    }),
+  };
+}
+
+function addPublicStatValues(
+  left: { readonly numerator: number; readonly denominator: number },
+  right: { readonly numerator: number; readonly denominator: number },
+): { readonly numerator: number; readonly denominator: number } {
+  const numerator =
+    left.numerator * right.denominator + right.numerator * left.denominator;
+  const denominator = left.denominator * right.denominator;
+  const divisor = greatestCommonDivisor(Math.abs(numerator), denominator);
+  return { numerator: numerator / divisor, denominator: denominator / divisor };
+}
+
+function greatestCommonDivisor(left: number, right: number): number {
+  while (right !== 0) [left, right] = [right, left % right];
+  return left || 1;
 }
 
 export function achievementProgressV7(

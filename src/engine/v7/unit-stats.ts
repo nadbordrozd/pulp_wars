@@ -41,6 +41,8 @@ export interface PublicUnitStatBreakdownV7 {
   readonly base: PublicUnitStatTermV7;
   readonly modifiers: readonly PublicUnitStatTermV7[];
   readonly total: PublicUnitStatValueV7;
+  /** Omitted means the exact historical contract; BASE_ONLY redacts position. */
+  readonly visibility?: "BASE_ONLY";
 }
 export interface PublicUnitStatsV7 {
   readonly unitId: UnitStateV7["id"];

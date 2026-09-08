@@ -305,10 +305,13 @@ describe("Ruleset 7 tactical action and status assets", () => {
     });
     expect(
       RULESET7_TACTICAL_UI_SYMBOL_BY_ID["ui-status-detected"].projectedSource,
-    ).toContain("aya.31");
+    ).toContain("visibility detection DETECTED");
+    expect(
+      RULESET7_TACTICAL_UI_SYMBOL_BY_ID["ui-status-detected"].projectedSource,
+    ).toContain("no detector identity");
     expect(
       RULESET7_TACTICAL_UI_SYMBOL_BY_ID["ui-status-exposed"].projectedSource,
-    ).toContain("exact safe expiry requires future aya.31");
+    ).toContain("ANCHOR_NEXT_ACCEPTED_END_TURN");
     expect(
       RULESET7_TACTICAL_UI_SYMBOL_BY_ID["ui-status-defection-reservation"],
     ).toMatchObject({ visibility: "DEFECTION_FULL_ONLY" });

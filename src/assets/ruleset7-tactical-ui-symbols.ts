@@ -217,7 +217,7 @@ const RULESET7_TACTICAL_UI_SYMBOL_DEFINITIONS = [
     semanticRole: "visibility",
     visibility: "OWNER_ONLY",
     projectedSource:
-      "owner's projected Saboteur ability; this symbol makes no claim about another viewer's current detection",
+      "PublicUnitV7 visibility concealment OWNER_CAPABILITY; this symbol makes no claim about another viewer's current detection",
     reducedMotion: "STATIC",
     primitives: [
       polygon(
@@ -242,7 +242,7 @@ const RULESET7_TACTICAL_UI_SYMBOL_DEFINITIONS = [
     semanticRole: "visibility",
     visibility: "DETECTED_VIEWER_ONLY",
     projectedSource:
-      "future aya.31 viewer-safe reveal reason; do not infer detection from mere unit visibility or use city-center detection as Blackout blocking",
+      "PublicUnitV7 visibility detection DETECTED; generic range-break fact only, with no detector identity or owner-facing detection oracle",
     reducedMotion: "STATIC",
     primitives: [
       polygon(
@@ -267,7 +267,7 @@ const RULESET7_TACTICAL_UI_SYMBOL_DEFINITIONS = [
     semanticRole: "visibility",
     visibility: "OWNER_OR_EXPOSURE_RECIPIENT",
     projectedSource:
-      "PlayerViewV7 unitStats status EXPOSED; exact safe expiry requires future aya.31 projection data",
+      "PublicUnitV7 visibility exposures reason and exact ANCHOR_NEXT_ACCEPTED_END_TURN boundary",
     reducedMotion: "STATIC",
     primitives: [
       circle(12, 12, 8, "paper"),

@@ -10,6 +10,12 @@ view.
 
 The retained seed-0 Rival-3 command-1100 public view has a 16 by 16 board, 9
 public cities, 23 visible units, 93 explored Roads, and 199 ordered commands.
+It is deliberately a historical planning-only snapshot from before the
+optional Ruleset-7 durable visibility details were added. It is not evidence
+of a fresh `viewForV7` visibility projection. The missing optional details are
+not consumed by command, economic, spatial, or Normal-policy planning, so its
+checked provenance, bytes, full-view hash, query hashes, and policy hashes stay
+unchanged; do not synthesize visibility facts without the source authority.
 Before the shared movement context was introduced, root and worker cold command
 measurements took roughly 604–1,850 ms. Reusing exact public Road connectivity
 and movement indexes reduces that same cold enumeration to about 16–21 ms on

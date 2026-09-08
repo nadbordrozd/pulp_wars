@@ -244,10 +244,34 @@ describe("ruleset-7 save and replay foundation", () => {
         { state, replay },
         `2026-09-07T20:00:0${phase === null ? 4 : phase.length % 4}.000Z`,
       );
-      expect(parseSaveV7(JSON.stringify(save))).toEqual({
+      const parsed = parseSaveV7(JSON.stringify(save));
+      expect(parsed).toEqual({
         kind: "VALID",
         save,
       });
+      if (phase === "PENDING") {
+        if (parsed.kind !== "VALID") throw new Error(parsed.diagnostic);
+        const beforeVisibility = required(
+          viewForV7(state, targetCity.ownerId).units.find(
+            (unit) => unit.id === trainedId,
+          )?.visibility,
+          "live exposure visibility missing",
+        );
+        expect(beforeVisibility.exposures).toEqual([
+          expect.objectContaining({
+            reason: "BLACKOUT",
+            boundary: expect.objectContaining({
+              kind: "ANCHOR_NEXT_ACCEPTED_END_TURN",
+              anchorPlayerId: targetCity.ownerId,
+            }),
+          }),
+        ]);
+        expect(
+          viewForV7(parsed.save.state, targetCity.ownerId).units.find(
+            (unit) => unit.id === trainedId,
+          )?.visibility,
+        ).toEqual(beforeVisibility);
+      }
       expect(runReplayV7(replay)).toMatchObject({
         acceptedCommands: replay.commands.length,
         state,

@@ -3391,6 +3391,7 @@ function publicCombatPreview(
   const attack = attackStats.stats.find((stat) => stat.id === "ATTACK");
   const defense = defenseStats.stats.find((stat) => stat.id === "DEFENSE");
   if (attack === undefined || defense === undefined) return null;
+  if (defense.visibility === "BASE_ONLY") return null;
   const attack2 = rationalToHalfUnits(attack.total);
   const defense2 = defenderRule.defense2;
   const bonus = ratio(defense.total, defense.base.value);
