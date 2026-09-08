@@ -4006,6 +4006,44 @@
       "negativePrompt": "person, face, soldier, dead body, blood, injury, surrender flag, white flag, coin, refund, number, plus sign, pillage, broken building, mallet, weapon, hourglass, wait, clock, running figure, arrow, ground, scene, panel, button, state badge, ownership color, text, letters, thin lines, tiny detail, glow, gradient, cast shadow",
       "output": "public/assets/pixellab/ui/action-disband.png",
       "hardBounds": { "left": 10, "top": 10, "right": 118, "bottom": 118 }
+    },
+    {
+      "id": "ui-action-defection",
+      "class": "ui",
+      "stage": "batch",
+      "endpoint": "generate-ui-v2",
+      "seed": 107503,
+      "requestSize": { "width": 384, "height": 384 },
+      "outputSize": { "width": 128, "height": 128 },
+      "transparent": true,
+      "includeFactionLanguage": false,
+      "postprocess": "lanczos3-resize",
+      "styleReference": "ui-action-disband",
+      "styleReferenceUsage": "Match only the accepted action family's centered transparent safe area, heavy charcoal-teal outline, northwest light, flat two-level shading and small-size visual weight. Create a distinct nonviolent two-party treaty symbol, never the accepted Disband hand and helmet identity.",
+      "palette": "parchment treaty gloves and scroll, muted slate-blue cuffs, warm bronze seal, dark teal-charcoal outline",
+      "prompt": "Exactly one isolated Defection action icon: two oversized parchment-gloved treaty hands clasping, filling roughly three quarters of the safe area with broad fingers and slate-blue cuffs. One small short curved parchment roll with one bronze seal tucks beneath the clasp and stays secondary. Make the two-hand agreement distinct from one hand setting down a helmet. Compact connected nonviolent silhouette on transparency, centered with eight percent safe area, readable at 32 CSS pixels. Northwest highlight, darker southeast planes, strong charcoal-teal outline, flat two-level shading. No enclosure or dynamic state.",
+      "negativePrompt": "clipboard, board, border, frame, panel, card, screen, inset area, button, rectangular enclosure, form, document page, UI, single hand, waving hand, helmet, disband, person, face, soldier, weapon, surrender flag, money, coin, chains, broken object, lantern, fire, glow, ground, scene, state badge, owner color, text, letters, numbers, thin fingers, tiny detail, gradient, cast shadow",
+      "output": "public/assets/pixellab/ui/action-defection.png",
+      "hardBounds": { "left": 10, "top": 10, "right": 118, "bottom": 118 }
+    },
+    {
+      "id": "ui-action-blackout",
+      "class": "ui",
+      "stage": "batch",
+      "endpoint": "generate-ui-v2",
+      "seed": 107502,
+      "requestSize": { "width": 384, "height": 384 },
+      "outputSize": { "width": 128, "height": 128 },
+      "transparent": true,
+      "includeFactionLanguage": false,
+      "postprocess": "lanczos3-resize",
+      "styleReference": "ui-action-pillage",
+      "styleReferenceUsage": "Match only the accepted action family's centered transparent safe area, heavy charcoal-teal outline, northwest light, flat two-level shading and small-size visual weight. Create an intact temporarily shuttered lantern, never Pillage destruction, loot or fire.",
+      "palette": "muted slate-blue intact lantern, parchment-dark closed aperture shutters, restrained warm bronze frame, dark teal-charcoal outline",
+      "prompt": "Exactly one standard action icon for Blackout only: one intact chunky bronze-framed slate-blue lantern with its broad front aperture fully covered by two closed dark parchment shutters forming a bold flat crossbar. The lantern remains upright and unbroken; the closed aperture reads as temporary suppression without light. One compact centered silhouette with at least eight percent transparent safe area, readable without text at 32 CSS pixels and in the 112 by 130 contextual viewport. Soft northwest highlight, darker southeast planes, strong charcoal-teal outline and two-level flat cel shading. No radiating glow, timer or phase state.",
+      "negativePrompt": "light beam, radiating glow, rays, visible flame, fire, smoke, sparks, explosion, broken lantern, smashed object, cracks, mallet, pillage, loot, theft, coin, person, saboteur, city, building, electricity, lightning, hourglass, clock, cooldown, pending, recovery, ground, scene, panel, button, state badge, ownership color, text, letters, numbers, thin lines, tiny detail, gradient, cast shadow",
+      "output": "public/assets/pixellab/ui/action-blackout.png",
+      "hardBounds": { "left": 10, "top": 10, "right": 118, "bottom": 118 }
     }
   ]
 }

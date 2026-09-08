@@ -419,6 +419,10 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   ),
   "ui-action-pillage": publicArtUrl("assets/pixellab/ui/action-pillage.png"),
   "ui-action-disband": publicArtUrl("assets/pixellab/ui/action-disband.png"),
+  "ui-action-defection": publicArtUrl(
+    "assets/pixellab/ui/action-defection.png",
+  ),
+  "ui-action-blackout": publicArtUrl("assets/pixellab/ui/action-blackout.png"),
   "terrain-game": publicArtUrl("assets/pixellab/terrain/animal.png"),
   "building-ruleset6-mine": publicArtUrl("assets/pixellab/buildings/mine.png"),
   "building-lumber-camp": publicArtUrl(

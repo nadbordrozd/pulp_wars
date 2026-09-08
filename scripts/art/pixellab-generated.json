@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "b1c6520fdc5dd818f22bc89cdfeeeb60506b46b0cbd4abf3503f2f23e11421c9",
+  "sourceManifestSha256": "665cc6c8604ec5b141eb0d0b534f5ca55970ccf091ce7d4923ca2abaefa8d636",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -10984,6 +10984,145 @@
       "outputSha256": "34c33e31dc1694e9e7147bcb0d2f7c99f3501788a71091bdc4d64ce255773336",
       "notes": "Accepted exact initial-pair Pillage candidate after worker and independent orchestrator review. PixelLab job 64394eb2-ee33-4d81-b1e1-282ecf77f85a and candidate 34c33e31dc16 preserve one oversized bronze mallet cracking one broad parchment timber into two large readable pieces. Source128, enlarged inspection, actual32 CSS light/dark/grayscale, exact112x130 transparent original-padding light/dark/high-contrast viewport and exact176 CSS-pixel action-button context pass. Bounds x15..113 y10..115 preserve safe transparent space and the strong charcoal-teal outline. The destructive-economy silhouette is distinct from Disband, Redevelop and construction, with no coin, loot, amount, unit, owner, state, focus, scene or text baked into the raster.",
       "reviewedAt": "2026-09-08T16:41:18.733Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-action-blackout": {
+      "id": "ui-action-blackout",
+      "status": "ACCEPTED",
+      "jobId": "452bf2e6-146b-46e0-b549-327279fa70f4",
+      "candidate": "art/pixellab/candidates/ui-action-blackout.png",
+      "candidateSha256": "a0e3cd93efa402ee0854c3acbbcf138a1b8ecec176e499df739e236a37513ae3",
+      "providerOutputSha256": "1bcb180a447ed7164814da01750f510a966ae71bb8537735067e36a18bf923bb",
+      "width": 128,
+      "height": 128,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 30,
+        "top": 10,
+        "right": 98,
+        "bottom": 118,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted slate-blue intact lantern, parchment-dark closed aperture shutters, restrained warm bronze frame, dark teal-charcoal outline. Exactly one standard action icon for Blackout only: one intact chunky bronze-framed slate-blue lantern with its broad front aperture fully covered by two closed dark parchment shutters forming a bold flat crossbar. The lantern remains upright and unbroken; the closed aperture reads as temporary suppression without light. One compact centered silhouette with at least eight percent transparent safe area, readable without text at 32 CSS pixels and in the 112 by 130 contextual viewport. Soft northwest highlight, darker southeast planes, strong charcoal-teal outline and two-level flat cel shading. No radiating glow, timer or phase state. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; light beam, radiating glow, rays, visible flame, fire, smoke, sparks, explosion, broken lantern, smashed object, cracks, mallet, pillage, loot, theft, coin, person, saboteur, city, building, electricity, lightning, hourglass, clock, cooldown, pending, recovery, ground, scene, panel, button, state badge, ownership color, text, letters, numbers, thin lines, tiny detail, gradient, cast shadow.",
+        "prompt": "Exactly one standard action icon for Blackout only: one intact chunky bronze-framed slate-blue lantern with its broad front aperture fully covered by two closed dark parchment shutters forming a bold flat crossbar. The lantern remains upright and unbroken; the closed aperture reads as temporary suppression without light. One compact centered silhouette with at least eight percent transparent safe area, readable without text at 32 CSS pixels and in the 112 by 130 contextual viewport. Soft northwest highlight, darker southeast planes, strong charcoal-teal outline and two-level flat cel shading. No radiating glow, timer or phase state.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; light beam, radiating glow, rays, visible flame, fire, smoke, sparks, explosion, broken lantern, smashed object, cracks, mallet, pillage, loot, theft, coin, person, saboteur, city, building, electricity, lightning, hourglass, clock, cooldown, pending, recovery, ground, scene, panel, button, state badge, ownership color, text, letters, numbers, thin lines, tiny detail, gradient, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 128,
+          "height": 128
+        },
+        "seed": 107502,
+        "noBackground": true,
+        "palette": "muted slate-blue intact lantern, parchment-dark closed aperture shutters, restrained warm bronze frame, dark teal-charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-action-pillage",
+          "sha256": "34c33e31dc1694e9e7147bcb0d2f7c99f3501788a71091bdc4d64ce255773336",
+          "usageDescription": "Match only the accepted action family's centered transparent safe area, heavy charcoal-teal outline, northwest light, flat two-level shading and small-size visual weight. Create an intact temporarily shuttered lantern, never Pillage destruction, loot or fire."
+        }
+      },
+      "outputSha256": "a0e3cd93efa402ee0854c3acbbcf138a1b8ecec176e499df739e236a37513ae3",
+      "notes": "Accepted exact initial-pair Blackout candidate after source and complete context review. PixelLab job 452bf2e6-146b-46e0-b549-327279fa70f4 and candidate a0e3cd93efa4 preserve one intact upright bronze-framed slate lantern with a broad fully shuttered dark aperture and no emitted light. Source128, enlarged, actual32 CSS, exact112x130 transparent-padding contain, exact176 CSS-pixel button, DPR1/2 CSS-normalized, actual200%, light/dark/high-contrast, grayscale/color-vision, busy-map, disabled/focus/selected contexts pass. Bounds x30..98 y10..118 retain clean safe padding and no clipping. It stays distinct from Pillage destruction and bakes no flame, glow, rays, smoke, damage, loot, timer, phase, owner, city, UI, text or number.",
+      "reviewedAt": "2026-09-08T17:26:08.559Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-action-defection": {
+      "id": "ui-action-defection",
+      "status": "ACCEPTED",
+      "jobId": "93f0f484-3325-47a8-9df8-605cfaa10edb",
+      "candidate": "art/pixellab/candidates/ui-action-defection.png",
+      "candidateSha256": "e266d4fc426d4a181f6ccde401d2b9a524912f88dbe7a42bdbf6d2e644e21da3",
+      "providerOutputSha256": "7fd3945a0633fbb05009d7d11440316a61359cce3ae71911d094b6671d62fff1",
+      "width": 128,
+      "height": 128,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 10,
+        "top": 15,
+        "right": 118,
+        "bottom": 112,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: parchment treaty gloves and scroll, muted slate-blue cuffs, warm bronze seal, dark teal-charcoal outline. Exactly one isolated Defection action icon: two oversized parchment-gloved treaty hands clasping, filling roughly three quarters of the safe area with broad fingers and slate-blue cuffs. One small short curved parchment roll with one bronze seal tucks beneath the clasp and stays secondary. Make the two-hand agreement distinct from one hand setting down a helmet. Compact connected nonviolent silhouette on transparency, centered with eight percent safe area, readable at 32 CSS pixels. Northwest highlight, darker southeast planes, strong charcoal-teal outline, flat two-level shading. No enclosure or dynamic state. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; clipboard, board, border, frame, panel, card, screen, inset area, button, rectangular enclosure, form, document page, UI, single hand, waving hand, helmet, disband, person, face, soldier, weapon, surrender flag, money, coin, chains, broken object, lantern, fire, glow, ground, scene, state badge, owner color, text, letters, numbers, thin fingers, tiny detail, gradient, cast shadow.",
+        "prompt": "Exactly one isolated Defection action icon: two oversized parchment-gloved treaty hands clasping, filling roughly three quarters of the safe area with broad fingers and slate-blue cuffs. One small short curved parchment roll with one bronze seal tucks beneath the clasp and stays secondary. Make the two-hand agreement distinct from one hand setting down a helmet. Compact connected nonviolent silhouette on transparency, centered with eight percent safe area, readable at 32 CSS pixels. Northwest highlight, darker southeast planes, strong charcoal-teal outline, flat two-level shading. No enclosure or dynamic state.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; clipboard, board, border, frame, panel, card, screen, inset area, button, rectangular enclosure, form, document page, UI, single hand, waving hand, helmet, disband, person, face, soldier, weapon, surrender flag, money, coin, chains, broken object, lantern, fire, glow, ground, scene, state badge, owner color, text, letters, numbers, thin fingers, tiny detail, gradient, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 128,
+          "height": 128
+        },
+        "seed": 107503,
+        "noBackground": true,
+        "palette": "parchment treaty gloves and scroll, muted slate-blue cuffs, warm bronze seal, dark teal-charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-action-disband",
+          "sha256": "e6d7bc99de393c63a1c7e9aa51169fef87ec52f7841f1b0d43cdaf94d9d57548",
+          "usageDescription": "Match only the accepted action family's centered transparent safe area, heavy charcoal-teal outline, northwest light, flat two-level shading and small-size visual weight. Create a distinct nonviolent two-party treaty symbol, never the accepted Disband hand and helmet identity."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/ui-action-defection-66aea22e8e3b.png",
+          "candidateSha256": "66aea22e8e3bb159519f40c94ce82c7e55d0e64655712fe6c4d240ec0edcc262",
+          "providerOutputSha256": "6b2e212b03dc747fe838ca34587d6f993b4a4616f757a05ed0203498f1875223",
+          "jobId": "4f3d1e23-45fa-4bef-819c-69a00d0cea7b",
+          "disposition": "REJECTED",
+          "notes": "Rejected initial Defection candidate from exact approved pair. The provider output is dominated by a rectangular clipboard/control panel with two small button-like inset rectangles; the clasped hands and short scroll are tiny at its center and lose semantic identity at 32 CSS pixels. This violates the isolated dominant silhouette, no panel/button/UI, and small-size readability contracts. Blackout peer remains untouched. Targeted retry must use two oversized clasped treaty hands filling most of the safe area over one small short curved parchment roll, with no clipboard, board, border, frame, panel, card, screen, inset area, button, rectangular enclosure, person, weapon, faction, owner, timer, phase, text or number.",
+          "reviewedAt": "2026-09-08T17:05:52.990Z",
+          "request": {
+            "endpoint": "generate-ui-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: parchment treaty gloves and scroll, muted slate-blue cuffs, warm bronze seal, dark teal-charcoal outline. Exactly one standard action icon for Defection only: two large parchment-gloved hands clasping each other symmetrically above one short broad rolled treaty scroll with one simple bronze seal. The two-hand agreement must be unmistakable and distinct from one hand setting down a helmet. One compact connected nonviolent silhouette, centered with at least eight percent transparent safe area, readable without text at 32 CSS pixels and in the 112 by 130 contextual viewport. Soft northwest highlight, darker southeast planes, strong charcoal-teal outline and two-level flat cel shading. No faction, owner, target, timer or phase state. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; single hand, open waving hand, discarded helmet, disband, person, face, soldier, weapon, sword, attack, surrender flag, white flag, handshake with arms or bodies, money, coin, bribery, chains, broken object, lantern, fire, glow, rays, ground, scene, panel, button, state badge, ownership color, text, letters, numbers, thin fingers, tiny detail, gradient, cast shadow.",
+            "prompt": "Exactly one standard action icon for Defection only: two large parchment-gloved hands clasping each other symmetrically above one short broad rolled treaty scroll with one simple bronze seal. The two-hand agreement must be unmistakable and distinct from one hand setting down a helmet. One compact connected nonviolent silhouette, centered with at least eight percent transparent safe area, readable without text at 32 CSS pixels and in the 112 by 130 contextual viewport. Soft northwest highlight, darker southeast planes, strong charcoal-teal outline and two-level flat cel shading. No faction, owner, target, timer or phase state.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; single hand, open waving hand, discarded helmet, disband, person, face, soldier, weapon, sword, attack, surrender flag, white flag, handshake with arms or bodies, money, coin, bribery, chains, broken object, lantern, fire, glow, rays, ground, scene, panel, button, state badge, ownership color, text, letters, numbers, thin fingers, tiny detail, gradient, cast shadow",
+            "requestSize": {
+              "width": 384,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 128,
+              "height": 128
+            },
+            "seed": 107501,
+            "noBackground": true,
+            "palette": "parchment treaty gloves and scroll, muted slate-blue cuffs, warm bronze seal, dark teal-charcoal outline",
+            "postprocess": "lanczos3-resize",
+            "styleReference": {
+              "id": "ui-action-disband",
+              "sha256": "e6d7bc99de393c63a1c7e9aa51169fef87ec52f7841f1b0d43cdaf94d9d57548",
+              "usageDescription": "Match only the accepted action family's centered transparent safe area, heavy charcoal-teal outline, northwest light, flat two-level shading and small-size visual weight. Create a distinct nonviolent two-party treaty symbol, never the accepted Disband hand and helmet identity."
+            }
+          }
+        }
+      ],
+      "outputSha256": "e266d4fc426d4a181f6ccde401d2b9a524912f88dbe7a42bdbf6d2e644e21da3",
+      "notes": "Accepted targeted-retry Defection candidate after exact initial candidate was rejected and quarantined for a clipboard/UI-panel composition. PixelLab job 93f0f484-3325-47a8-9df8-605cfaa10edb and candidate e266d4fc426d preserve two oversized clasped parchment treaty hands with broad readable fingers and slate cuffs; the small curved roll and one bronze seal remain secondary. Source128, enlarged, actual32 CSS, exact112x130 transparent-padding contain, exact176 CSS-pixel button, DPR1/2 CSS-normalized, actual200%, light/dark/high-contrast, grayscale/color-vision, busy-map, disabled/focus/selected contexts pass. Bounds x10..118 y15..112 stay unclipped. It is distinct from Disband's one-hand/helmet and bakes no panel, button, person, owner, target, state, timer, text or number.",
+      "reviewedAt": "2026-09-08T17:26:06.761Z",
       "reviewChecks": {
         "source": true,
         "native": true,

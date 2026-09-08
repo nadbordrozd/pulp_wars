@@ -30,6 +30,7 @@
     "art:ruleset7-original-unit-review": "tsx scripts/art/ruleset7-original-unit-review.ts",
     "art:ruleset7-catapult-review": "tsx scripts/art/ruleset7-catapult-review.ts",
     "art:ruleset7-building-economy-review": "tsx scripts/art/ruleset7-building-economy-review.ts",
+    "art:ruleset7-tactical-ui-review": "tsx scripts/art/ruleset7-tactical-ui-review.ts",
     "art:ruleset6-candy-unit-review": "tsx scripts/art/ruleset6-candy-unit-review.ts",
     "art:ruleset6-tech-economy-ui-review": "tsx scripts/art/ruleset6-tech-economy-ui-review.ts",
     "art:ruleset6-renderer-review": "tsx scripts/art/ruleset6-renderer-review.ts",

@@ -14,6 +14,7 @@ import sharp, { type OverlayOptions } from "sharp";
 import { assertRuleset7BuildingEconomyOrder } from "./ruleset7-building-economy-order";
 import { assertRuleset7CatapultOrder } from "./ruleset7-catapult-order";
 import { assertRuleset7OriginalUnitOrder } from "./ruleset7-original-unit-order";
+import { assertRuleset7TacticalUiOrder } from "./ruleset7-tactical-ui-order";
 import { resolveUnitFitOffset } from "./unit-fit-offset";
 
 type ArtClass = "units" | "terrain" | "buildings" | "ui";
@@ -240,6 +241,7 @@ async function main(): Promise<void> {
     assertRuleset7CatapultOrder(recipes, generated);
     assertRuleset7BuildingEconomyOrder(recipes, generated);
     assertRuleset7OriginalUnitOrder(recipes, generated);
+    assertRuleset7TacticalUiOrder(recipes, generated);
     assertOriginalUnitOrder(recipes, generated);
     assertCandyUnitOrder(recipes, generated);
     assertRuleset6UiOrder(recipes, generated);
@@ -1044,7 +1046,12 @@ function validateSourceManifest(
     )
       throw new Error(`Ruleset 7 building geometry mismatch: ${id}`);
   }
-  for (const id of ["ui-action-pillage", "ui-action-disband"] as const) {
+  for (const id of [
+    "ui-action-pillage",
+    "ui-action-disband",
+    "ui-action-defection",
+    "ui-action-blackout",
+  ] as const) {
     const recipe = source.recipes.find((candidate) => candidate.id === id);
     if (
       recipe?.class !== "ui" ||

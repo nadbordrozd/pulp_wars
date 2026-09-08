@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "status": "COMPLETE",
+  "generationOrder": ["ui-action-defection", "ui-action-blackout"],
+  "rasterInventory": ["ui-action-defection", "ui-action-blackout"],
+  "codeNativeInventory": [
+    "ui-action-pursue",
+    "ui-action-end-pursuit",
+    "ui-status-concealed",
+    "ui-status-detected",
+    "ui-status-exposed",
+    "ui-status-defection-waiting",
+    "ui-status-defection-armed",
+    "ui-status-defection-reservation",
+    "ui-status-spoils",
+    "ui-status-blackout-cooldown",
+    "ui-status-blackout-pending",
+    "ui-status-blackout-active",
+    "ui-status-blackout-recovery",
+    "ui-status-capacity-reservation",
+    "ui-status-achievement-progress",
+    "ui-status-achievement-entitlement-locked",
+    "ui-status-achievement-entitlement-unlocked",
+    "ui-status-achievement-entitlement-spent",
+    "ui-status-achievement-source-current-owner"
+  ],
+  "reviewCoverage": [
+    "every source 128 and enlarged plus actual 32 CSS identity",
+    "exact 112x130 original transparent-padding contain and 176px buttons",
+    "light/dark/high-contrast/grayscale/protanopia/deuteranopia/tritanopia and busy map",
+    "DPR1/2 and 200% with rest/focus/selected/disabled states",
+    "all code-native primitives at actual 24/32 CSS and enlarged, static and readable without color or motion",
+    "Defection and Blackout distinct from accepted Wait/Pillage/Disband"
+  ],
+  "projectionSafety": "Synthetic examples render static manifest metadata only. They do not derive concealed entities, hidden detectors, Defection counterpart links, or owner-only achievement provenance.",
+  "assets": {
+    "ui-action-defection": {
+      "seed": 107503,
+      "jobId": "93f0f484-3325-47a8-9df8-605cfaa10edb",
+      "candidateSha256": "e266d4fc426d4a181f6ccde401d2b9a524912f88dbe7a42bdbf6d2e644e21da3",
+      "providerOutputSha256": "7fd3945a0633fbb05009d7d11440316a61359cce3ae71911d094b6671d62fff1",
+      "outputSha256": "e266d4fc426d4a181f6ccde401d2b9a524912f88dbe7a42bdbf6d2e644e21da3",
+      "alphaBounds": {
+        "left": 10,
+        "top": 15,
+        "right": 118,
+        "bottom": 112,
+        "empty": false
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/ui-action-defection-66aea22e8e3b.png",
+          "candidateSha256": "66aea22e8e3bb159519f40c94ce82c7e55d0e64655712fe6c4d240ec0edcc262",
+          "providerOutputSha256": "6b2e212b03dc747fe838ca34587d6f993b4a4616f757a05ed0203498f1875223",
+          "jobId": "4f3d1e23-45fa-4bef-819c-69a00d0cea7b",
+          "disposition": "REJECTED",
+          "notes": "Rejected initial Defection candidate from exact approved pair. The provider output is dominated by a rectangular clipboard/control panel with two small button-like inset rectangles; the clasped hands and short scroll are tiny at its center and lose semantic identity at 32 CSS pixels. This violates the isolated dominant silhouette, no panel/button/UI, and small-size readability contracts. Blackout peer remains untouched. Targeted retry must use two oversized clasped treaty hands filling most of the safe area over one small short curved parchment roll, with no clipboard, board, border, frame, panel, card, screen, inset area, button, rectangular enclosure, person, weapon, faction, owner, timer, phase, text or number.",
+          "reviewedAt": "2026-09-08T17:05:52.990Z",
+          "request": {
+            "endpoint": "generate-ui-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: parchment treaty gloves and scroll, muted slate-blue cuffs, warm bronze seal, dark teal-charcoal outline. Exactly one standard action icon for Defection only: two large parchment-gloved hands clasping each other symmetrically above one short broad rolled treaty scroll with one simple bronze seal. The two-hand agreement must be unmistakable and distinct from one hand setting down a helmet. One compact connected nonviolent silhouette, centered with at least eight percent transparent safe area, readable without text at 32 CSS pixels and in the 112 by 130 contextual viewport. Soft northwest highlight, darker southeast planes, strong charcoal-teal outline and two-level flat cel shading. No faction, owner, target, timer or phase state. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; single hand, open waving hand, discarded helmet, disband, person, face, soldier, weapon, sword, attack, surrender flag, white flag, handshake with arms or bodies, money, coin, bribery, chains, broken object, lantern, fire, glow, rays, ground, scene, panel, button, state badge, ownership color, text, letters, numbers, thin fingers, tiny detail, gradient, cast shadow.",
+            "prompt": "Exactly one standard action icon for Defection only: two large parchment-gloved hands clasping each other symmetrically above one short broad rolled treaty scroll with one simple bronze seal. The two-hand agreement must be unmistakable and distinct from one hand setting down a helmet. One compact connected nonviolent silhouette, centered with at least eight percent transparent safe area, readable without text at 32 CSS pixels and in the 112 by 130 contextual viewport. Soft northwest highlight, darker southeast planes, strong charcoal-teal outline and two-level flat cel shading. No faction, owner, target, timer or phase state.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; single hand, open waving hand, discarded helmet, disband, person, face, soldier, weapon, sword, attack, surrender flag, white flag, handshake with arms or bodies, money, coin, bribery, chains, broken object, lantern, fire, glow, rays, ground, scene, panel, button, state badge, ownership color, text, letters, numbers, thin fingers, tiny detail, gradient, cast shadow",
+            "requestSize": { "width": 384, "height": 384 },
+            "outputSize": { "width": 128, "height": 128 },
+            "seed": 107501,
+            "noBackground": true,
+            "palette": "parchment treaty gloves and scroll, muted slate-blue cuffs, warm bronze seal, dark teal-charcoal outline",
+            "postprocess": "lanczos3-resize",
+            "styleReference": {
+              "id": "ui-action-disband",
+              "sha256": "e6d7bc99de393c63a1c7e9aa51169fef87ec52f7841f1b0d43cdaf94d9d57548",
+              "usageDescription": "Match only the accepted action family's centered transparent safe area, heavy charcoal-teal outline, northwest light, flat two-level shading and small-size visual weight. Create a distinct nonviolent two-party treaty symbol, never the accepted Disband hand and helmet identity."
+            }
+          }
+        }
+      ]
+    },
+    "ui-action-blackout": {
+      "seed": 107502,
+      "jobId": "452bf2e6-146b-46e0-b549-327279fa70f4",
+      "candidateSha256": "a0e3cd93efa402ee0854c3acbbcf138a1b8ecec176e499df739e236a37513ae3",
+      "providerOutputSha256": "1bcb180a447ed7164814da01750f510a966ae71bb8537735067e36a18bf923bb",
+      "outputSha256": "a0e3cd93efa402ee0854c3acbbcf138a1b8ecec176e499df739e236a37513ae3",
+      "alphaBounds": {
+        "left": 30,
+        "top": 10,
+        "right": 98,
+        "bottom": 118,
+        "empty": false
+      },
+      "rejectedAttempts": []
+    }
+  },
+  "artifacts": [
+    {
+      "filename": "raster-source-native-enlarged.png",
+      "sha256": "e670d26ae8db34e52d898e9295192cb9da1dd05c7bb5679e8557d5bddf7a7975",
+      "bytes": 331346
+    },
+    {
+      "filename": "raster-context-accessibility.png",
+      "sha256": "baa15add9b73d87911be737b6daebf9e3eeccc4fc3991a07836783e0cc544123",
+      "bytes": 94581
+    },
+    {
+      "filename": "raster-viewport-buttons-dpr.png",
+      "sha256": "e65beb7b8f93a190970a379ab30486de32e4b048e1c4ac3be7aaf802735f7c59",
+      "bytes": 329434
+    },
+    {
+      "filename": "code-native-symbol-inventory.png",
+      "sha256": "6680598c453d81d662c92a66be01b51f937d933d7ebc304e50c32e11cb4a6af7",
+      "bytes": 225420
+    },
+    {
+      "filename": "code-native-state-context.png",
+      "sha256": "687c39891481dc7b2f216276797437632f6aba37dbf7e2f8a57ac31e0a55a537",
+      "bytes": 99405
+    }
+  ]
+}
