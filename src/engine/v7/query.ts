@@ -187,6 +187,9 @@ export function queryPlayerCommandsV7(
     }));
     return store(view, choices.sort(compareCommandsV7));
   }
+  const pursuit = firstOpenPursuitUnitV7(view);
+  if (pursuit !== undefined)
+    return store(view, publicPursuitCommandsV7(view, pursuit));
   const candidates: CommandV7[] = [];
   const capabilities = queryTechnologyCapabilitiesV7(view);
   const unlocked = new Set(capabilities.commands);
@@ -260,31 +263,6 @@ export function queryPlayerCommandsV7(
   }
   for (const unit of view.units)
     if (unit.ownerId === player.id) {
-      if (unit.activation.pursuitPhase !== "NONE") {
-        candidates.push({ kind: "END_PURSUIT", unitId: unit.id });
-        for (const target of view.units)
-          if (
-            publicHostile(view, player.id, target.ownerId) &&
-            chebyshev(unit.at, target.at) === 1
-          )
-            candidates.push({
-              kind: "ATTACK",
-              unitId: unit.id,
-              targetUnitId: target.id,
-            });
-        if (unit.activation.pursuitPhase === "PURSUIT_READY")
-          for (const reachable of reachablePlayerMovementPathsV7(
-            view,
-            unit,
-            "PURSUE",
-          ))
-            candidates.push({
-              kind: "PURSUE",
-              unitId: unit.id,
-              path: reachable.path,
-            });
-        continue;
-      }
       if (!unit.activation.moved && !primaryUsedForQuery(unit))
         for (const reachable of reachablePlayerMovementPathsV7(view, unit))
           candidates.push({
@@ -401,14 +379,37 @@ export function queryPlayerCommandsV7(
       if (!unit.activation.handled)
         candidates.push({ kind: "WAIT", unitId: unit.id });
     }
-  if (
-    !view.units.some(
-      (unit) =>
-        unit.ownerId === player.id && unit.activation.pursuitPhase !== "NONE",
-    )
-  )
-    candidates.push({ kind: "END_TURN" });
+  candidates.push({ kind: "END_TURN" });
   return store(view, candidates.sort(compareCommandsV7));
+}
+
+function publicPursuitCommandsV7(
+  view: PlayerViewV7,
+  unit: PlayerViewV7["units"][number],
+): readonly CommandV7[] {
+  const candidates: CommandV7[] = [{ kind: "END_PURSUIT", unitId: unit.id }];
+  for (const target of view.units)
+    if (
+      publicHostile(view, view.viewer.id, target.ownerId) &&
+      chebyshev(unit.at, target.at) === 1
+    )
+      candidates.push({
+        kind: "ATTACK",
+        unitId: unit.id,
+        targetUnitId: target.id,
+      });
+  if (unit.activation.pursuitPhase === "PURSUIT_READY")
+    for (const reachable of reachablePlayerMovementPathsV7(
+      view,
+      unit,
+      "PURSUE",
+    ))
+      candidates.push({
+        kind: "PURSUE",
+        unitId: unit.id,
+        path: reachable.path,
+      });
+  return candidates.sort(compareCommandsV7);
 }
 
 export interface PublicDefectionCityCapacityV7 {
@@ -683,6 +684,8 @@ export function previewBlackoutV7(
   const command =
     maybeCommand ??
     (viewerOrCommand as Extract<CommandV7, { kind: "BLACKOUT_CITY" }>);
+  if (!publicCommandOfferingAllowedV7(view, command.kind, command.unitId))
+    return { ok: false, error: "NOT_PREVIEWABLE" };
   const source = view.units.find(
     (unit) => unit.id === command.unitId && unit.ownerId === view.viewer.id,
   );
@@ -942,6 +945,7 @@ export function queryCombatPreviewV7(
   const attackerId =
     maybeTarget === undefined ? (viewerOrAttacker as UnitId) : attackerOrTarget;
   const targetUnitId = maybeTarget ?? attackerOrTarget;
+  if (!publicCommandOfferingAllowedV7(view, "ATTACK", attackerId)) return null;
   return publicCombatPreview(view, attackerId, targetUnitId);
 }
 
@@ -1101,6 +1105,7 @@ export function queryPursuitPreviewV7(
       ? (input as PlayerViewV7)
       : asView(input, viewerOrUnit as PlayerId);
   const unitId = maybeUnitId ?? (viewerOrUnit as UnitId);
+  if (!publicCommandOfferingAllowedV7(view, "END_PURSUIT", unitId)) return null;
   const unit = view.units.find(
     (candidate) =>
       candidate.id === unitId &&
@@ -2543,6 +2548,37 @@ function store(
   COMMAND_CACHE.set(view, commands);
   return commands;
 }
+
+function firstOpenPursuitUnitV7(
+  view: PlayerViewV7,
+): PlayerViewV7["units"][number] | undefined {
+  return view.units.find(
+    (unit) =>
+      unit.ownerId === view.viewer.id &&
+      unit.activation.pursuitPhase !== "NONE",
+  );
+}
+
+function publicCommandOfferingAllowedV7(
+  view: PlayerViewV7,
+  kind: CommandV7["kind"],
+  unitId?: UnitId,
+): boolean {
+  if (
+    view.outcome !== null ||
+    view.viewer.status !== "ACTIVE" ||
+    view.turnOrder[view.activeSeatIndex] !== view.viewer.id ||
+    view.pendingChoices.length > 0
+  )
+    return false;
+  const pursuit = firstOpenPursuitUnitV7(view);
+  return (
+    pursuit === undefined ||
+    (unitId === pursuit.id &&
+      (kind === "ATTACK" || kind === "PURSUE" || kind === "END_PURSUIT"))
+  );
+}
+
 function asView(
   input: GameStateV7 | PlayerViewV7,
   viewerId?: PlayerId,

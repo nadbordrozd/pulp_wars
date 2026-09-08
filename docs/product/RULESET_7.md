@@ -1169,7 +1169,11 @@ timing, capacity, and price—not hidden role matchup bonuses.
    `attacked = handled = true`. While Pursuit is open, ordinary Move, Capture,
    Recover, Heal, Defection, Blackout, Pillage, Disband, Promote, Wait,
    economic/faction special actions, structure attacks, chest collection, and
-   End Turn are illegal.
+   End Turn are illegal for the player. The first owned unit in stored unit
+   order with an open Pursuit globally locks public commands and offered-command
+   previews to that unit's `ATTACK`, `PURSUE`, and `END_PURSUIT` until its
+   sequence closes. A pending mandatory reward choice takes precedence over
+   that lock.
 7. A Pursuit Attack receives ordinary retaliation and ordinary melee advance.
    A nonlethal second strike ends the entire sequence. No death, promotion,
    reward, loot, structure, action, or ownership transition can reset the
@@ -2033,7 +2037,8 @@ development contract. V7 adds these deterministic requirements:
   dependency-ordered live output, not raw deposit or building count. AI
   reconstruction recognizes zero-output buildings, restored production sites,
   normal rebuild cost, the one-Coin ruined-city floor, and output resumption.
-  Spoils is valued only before that player's first hostile capture; Pillage
+  Spoils is valued only before that player's first hostile capture of a given
+  city; Pillage
   includes the immediate live-output outage and 1 Coin but not permanent
   deletion of a Farm/Mine/Quarry site. Raid danger and repair priority account
   for rebuild Coins/turns, contributor cascades, exposure, and likely survival.
