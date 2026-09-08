@@ -11,6 +11,7 @@ import path from "node:path";
 import process from "node:process";
 import { format } from "prettier";
 import sharp, { type OverlayOptions } from "sharp";
+import { assertRuleset7OriginalUnitOrder } from "./ruleset7-original-unit-order";
 
 type ArtClass = "units" | "terrain" | "buildings" | "ui";
 type Stage = "sample" | "batch";
@@ -230,6 +231,7 @@ async function main(): Promise<void> {
         (ids === undefined || ids.includes(recipe.id)),
     );
     if (recipes.length === 0) throw new Error("No recipes selected");
+    assertRuleset7OriginalUnitOrder(recipes, generated);
     assertOriginalUnitOrder(recipes, generated);
     assertCandyUnitOrder(recipes, generated);
     assertRuleset6UiOrder(recipes, generated);
@@ -249,7 +251,8 @@ async function main(): Promise<void> {
     await reviewCandidate(source, generated);
     await saveGenerated(generated);
     await syncRuntime(source, generated);
-    await createReviewSheets(source, generated);
+    if (!process.argv.includes("--skip-overview-sheets"))
+      await createReviewSheets(source, generated);
     return;
   }
   if (command === "repair") {
@@ -545,7 +548,7 @@ async function main(): Promise<void> {
     return;
   }
   console.log(
-    "Usage: pixellab.ts credentials | snapshot | snapshot-reframe-sources --ids a,b | generate --stage sample|batch [--ids a,b] [--concurrency 3] | archive-job --id ID --job-id JOB --notes TEXT | resume-job --id ID --job-id JOB | repair --ids a,b | derive --id ID | review --id ID --accept|--reject --notes TEXT [--source-pass --native-pass --enlarged-pass --minimum-pass --composition-pass] | review-sheets | validate",
+    "Usage: pixellab.ts credentials | snapshot | snapshot-reframe-sources --ids a,b | generate --stage sample|batch [--ids a,b] [--concurrency 3] | archive-job --id ID --job-id JOB --notes TEXT | resume-job --id ID --job-id JOB | repair --ids a,b | derive --id ID | review --id ID --accept|--reject --notes TEXT [--source-pass --native-pass --enlarged-pass --minimum-pass --composition-pass] [--skip-overview-sheets] | review-sheets | validate",
   );
 }
 
@@ -1234,6 +1237,9 @@ function validateSourceManifest(
     ["unit-original-breacher", "sample", 384, 384, 192, 288],
     ["unit-original-heavy", "batch", 256, 296, 128, 222],
     ["unit-original-juggernaut", "batch", 384, 448, 192, 336],
+    ["unit-original-envoy", "sample", 256, 296, 128, 222],
+    ["unit-original-lancer", "sample", 256, 296, 128, 222],
+    ["unit-original-saboteur", "sample", 256, 296, 128, 222],
   ] as const;
   for (const [id, stage, width, height, anchorX, anchorY] of originalUnits) {
     const recipe = source.recipes.find((candidate) => candidate.id === id);
@@ -1262,6 +1268,9 @@ function validateSourceManifest(
     ["heavy", "unit-original-heavy"],
     ["breacher", "unit-original-breacher"],
     ["juggernaut", "unit-original-juggernaut"],
+    ["envoy", "unit-original-envoy"],
+    ["lancer", "unit-original-lancer"],
+    ["saboteur", "unit-original-saboteur"],
   ]);
   for (const [role, portraitSource] of portraitSources) {
     const id = `portrait-original-${role}`;
@@ -1900,6 +1909,11 @@ function rejectedAttemptsFrom(
       ...(previous.candidateSha256 === undefined
         ? {}
         : { candidateSha256: previous.candidateSha256 }),
+      ...(previous.providerOutputSha256 === undefined
+        ? {}
+        : { providerOutputSha256: previous.providerOutputSha256 }),
+      ...(previous.jobId === undefined ? {} : { jobId: previous.jobId }),
+      disposition: "REJECTED",
       ...(previous.notes === undefined ? {} : { notes: previous.notes }),
       ...(previous.reviewedAt === undefined
         ? {}

@@ -34,6 +34,15 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   "unit-original-juggernaut": publicArtUrl(
     "assets/pixellab/units/original-juggernaut.png",
   ),
+  "unit-original-envoy": publicArtUrl(
+    "assets/pixellab/units/original-envoy.png",
+  ),
+  "unit-original-lancer": publicArtUrl(
+    "assets/pixellab/units/original-lancer.png",
+  ),
+  "unit-original-saboteur": publicArtUrl(
+    "assets/pixellab/units/original-saboteur.png",
+  ),
   "portrait-original-fighter": publicArtUrl(
     "assets/pixellab/ui/portrait-original-fighter.png",
   ),
@@ -60,6 +69,15 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   ),
   "portrait-original-juggernaut": publicArtUrl(
     "assets/pixellab/ui/portrait-original-juggernaut.png",
+  ),
+  "portrait-original-envoy": publicArtUrl(
+    "assets/pixellab/ui/portrait-original-envoy.png",
+  ),
+  "portrait-original-lancer": publicArtUrl(
+    "assets/pixellab/ui/portrait-original-lancer.png",
+  ),
+  "portrait-original-saboteur": publicArtUrl(
+    "assets/pixellab/ui/portrait-original-saboteur.png",
   ),
   "unit-candy-scout": publicArtUrl(
     "assets/pixellab/units/candy-jelly-scout.png",

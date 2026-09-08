@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "b0342a1fd4b50f2cbb8a45426f9f6d97f00d1925b8d89377d4f1117bc0c65caf",
+  "sourceManifestSha256": "ce0b7007b84485ade5af95d14cd6fb855b7a3e43d0a7aeb568c1e49e566a9457",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -10223,6 +10223,349 @@
       "outputSha256": "6ff3cf3eb52dac0e9fff73911a622a5ac0ef4f3bc54bcba643d2b0557f19dbca",
       "notes": "Accepted after native and nearest-neighbor enlarged inspection plus deterministic 0.625x/1x/1.75x square-map context review. Closed chest silhouette and lock remain readable at minimum zoom; warm bronze NW lighting matches both faction terrain; transparent alpha is clean; compact footprint is substantially smaller than terrain and has no left/right/bottom overflow.",
       "reviewedAt": "2026-09-04T13:31:47.431Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "unit-original-lancer": {
+      "id": "unit-original-lancer",
+      "status": "ACCEPTED",
+      "jobId": "0a4f655c-0046-45eb-aa2a-c40015031a24",
+      "candidate": "art/pixellab/candidates/unit-original-lancer.png",
+      "candidateSha256": "64fb8dc3325fa9030e79fa355dea96c0bec47b4bfff0f73adda77045fb7cec0d",
+      "providerOutputSha256": "a606fcaa9e4191c640692cd0be8917ba4792e8c4e802e5a923d0a8d88a392e68",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 32,
+        "top": 86,
+        "right": 224,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated full-body Original Lancer sprite, southeast-facing downward view. One cute chunky unmounted foot lancer, visible feet straddling x128 y222 in a low forward sprint. Hold one sweeping lance: long narrow dark-teal shaft continuously visible from rear hand to a compact contrasting leaf-shaped bronze head under one quarter of weapon length. Near-horizontal shaft and footwork read at minimum zoom, never terrain-sized. Tan tunic, streaming off-white scarf, bronze badge; northwest key light, darker southeast planes. No motion effect. Transparent 256x296; preferred x32..224 y26..222, hard x16..240 y4..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; wide triangular weapon, paddle, bat, sword, oversized spearhead, blade replacing shaft, horse, mount, rider, upright pike, giant scale, speed lines, hidden feet.",
+        "prompt": "Isolated full-body Original Lancer sprite, southeast-facing downward view. One cute chunky unmounted foot lancer, visible feet straddling x128 y222 in a low forward sprint. Hold one sweeping lance: long narrow dark-teal shaft continuously visible from rear hand to a compact contrasting leaf-shaped bronze head under one quarter of weapon length. Near-horizontal shaft and footwork read at minimum zoom, never terrain-sized. Tan tunic, streaming off-white scarf, bronze badge; northwest key light, darker southeast planes. No motion effect. Transparent 256x296; preferred x32..224 y26..222, hard x16..240 y4..252.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; wide triangular weapon, paddle, bat, sword, oversized spearhead, blade replacing shaft, horse, mount, rider, upright pike, giant scale, speed lines, hidden feet",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 97112,
+        "noBackground": true,
+        "postprocess": "unit-fit",
+        "groundContactY": 222,
+        "styleReference": {
+          "id": "unit-warrior",
+          "sha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1",
+          "usageDescription": "Match the accepted Original faction tan tunic, off-white scarf, dark-teal equipment, bronze accents, chunky proportions, strong outline, flat shading, southeast camera, and simple detail budget only; create an unmounted fast sweeping Lancer silhouette distinct from Raider."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/unit-original-lancer-7bdcd352ee61.png",
+          "candidateSha256": "7bdcd352ee613de59ba95dcc8e6fa71b02d4df77b3de2af65729cb696acfc71f",
+          "providerOutputSha256": "d484174ff984a7f486ec6f6dc754619c176189292390ee572b2be2ea9d07e923",
+          "jobId": "55526405-30bd-48dc-bb64-baa35ece1fd7",
+          "disposition": "REJECTED",
+          "notes": "Rejected after source, native, and 0.625x inspection: broad triangular head obscured the shaft and read as a wooden sword or paddle rather than a sweeping lance.",
+          "reviewedAt": "2026-09-08T12:57:28.222Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated full-body Original Lancer sprite, southeast-facing three-quarter downward view. One cute chunky unmounted foot lancer, large head, short body, visible feet straddling x128 y222 in a low forward sprint. One oversized broad-tipped bronze lance held in both hands across a near-horizontal southeast sweep. Lance and footwork read at minimum zoom while compact, never tall or terrain-sized. Established tan tunic, streaming off-white scarf, dark-teal wrap, bronze diamond badge. Upper-left northwest key light with simple darker lower-right planes. No mount or motion effect. Transparent 256x296; preferred alpha x32..224 y26..222, hard x16..240 y4..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; horse, mount, saddle, rider, Raider, upright spear, tall pike, giant scale, sword, bow, shield, extra weapon, speed lines, attack arc, hidden feet.",
+            "prompt": "Isolated full-body Original Lancer sprite, southeast-facing three-quarter downward view. One cute chunky unmounted foot lancer, large head, short body, visible feet straddling x128 y222 in a low forward sprint. One oversized broad-tipped bronze lance held in both hands across a near-horizontal southeast sweep. Lance and footwork read at minimum zoom while compact, never tall or terrain-sized. Established tan tunic, streaming off-white scarf, dark-teal wrap, bronze diamond badge. Upper-left northwest key light with simple darker lower-right planes. No mount or motion effect. Transparent 256x296; preferred alpha x32..224 y26..222, hard x16..240 y4..252.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; horse, mount, saddle, rider, Raider, upright spear, tall pike, giant scale, sword, bow, shield, extra weapon, speed lines, attack arc, hidden feet",
+            "requestSize": {
+              "width": 256,
+              "height": 296
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 296
+            },
+            "seed": 97102,
+            "noBackground": true,
+            "postprocess": "unit-fit",
+            "groundContactY": 222,
+            "styleReference": {
+              "id": "unit-warrior",
+              "sha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1",
+              "usageDescription": "Match the accepted Original faction tan tunic, off-white scarf, dark-teal equipment, bronze accents, chunky proportions, strong outline, flat shading, southeast camera, and simple detail budget only; create an unmounted fast sweeping Lancer silhouette distinct from Raider."
+            }
+          }
+        }
+      ],
+      "outputSha256": "64fb8dc3325fa9030e79fa355dea96c0bec47b4bfff0f73adda77045fb7cec0d",
+      "notes": "Accepted targeted second candidate after individual source, enlarged, native, 0.625x/1x/1.75x, DPR1/2, active-square context and Raider comparison review. Continuous narrow shaft and compact bronze point read as a fast sweeping lance; compact crouched height remains readable and within hard maxima.",
+      "reviewedAt": "2026-09-08T13:05:44.834Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "unit-original-saboteur": {
+      "id": "unit-original-saboteur",
+      "status": "ACCEPTED",
+      "jobId": "b7c6a707-8f7a-4c97-b6a0-c8bbead52560",
+      "candidate": "art/pixellab/candidates/unit-original-saboteur.png",
+      "candidateSha256": "a58a182db7e110b10ecf2ecbaadfb45834acd77342911fb9bd9784e46322d6fc",
+      "providerOutputSha256": "74863db96494ab77c4633fc855a51816d17f68c4ed2b5bbc7d76af80e764fb23",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 33,
+        "top": 44,
+        "right": 201,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated full-body Original Saboteur sprite, southeast-facing three-quarter downward view. One cute compact utility infiltrator, large head, short body, visible feet straddling x128 y222 in a cautious low stance. One oversized simple bronze pry-wrench across the body and broad dark-teal tool satchel. Established tan tunic, open off-white neck scarf, bronze diamond badge, visible friendly face. Tool silhouette reads at minimum zoom. Upper-left northwest key light with simple darker lower-right planes. Fully opaque and present, without disguise, concealment, status or motion effects. Transparent 256x296; preferred alpha x44..212 y24..222, hard x16..240 y4..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; ninja, assassin, thief costume, hood, mask, hidden face, black costume, ghost, translucency, invisibility, smoke, stealth aura, exposure mark, bomb, explosion, projectile, hidden feet.",
+        "prompt": "Isolated full-body Original Saboteur sprite, southeast-facing three-quarter downward view. One cute compact utility infiltrator, large head, short body, visible feet straddling x128 y222 in a cautious low stance. One oversized simple bronze pry-wrench across the body and broad dark-teal tool satchel. Established tan tunic, open off-white neck scarf, bronze diamond badge, visible friendly face. Tool silhouette reads at minimum zoom. Upper-left northwest key light with simple darker lower-right planes. Fully opaque and present, without disguise, concealment, status or motion effects. Transparent 256x296; preferred alpha x44..212 y24..222, hard x16..240 y4..252.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; ninja, assassin, thief costume, hood, mask, hidden face, black costume, ghost, translucency, invisibility, smoke, stealth aura, exposure mark, bomb, explosion, projectile, hidden feet",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 97103,
+        "noBackground": true,
+        "postprocess": "unit-fit",
+        "groundContactY": 222,
+        "fitOffsetX": -11,
+        "styleReference": {
+          "id": "unit-warrior",
+          "usageDescription": "Match the accepted Original faction tan tunic, off-white scarf, dark-teal equipment, bronze accents, chunky proportions, strong outline, flat shading, southeast camera, and simple detail budget only; create a fully visible covert utility silhouette without ninja or ghost language.",
+          "sha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1"
+        }
+      },
+      "notes": "Accepted after individual source, enlarged, native, 0.625x/1x/1.75x, DPR1/2, active-square context and Scout comparison review. Fully opaque visible-face pry-wrench/tool-satchel utility silhouette has no ninja, ghost, concealment or status motif; deterministic -11 source-x fit centers two visible foot contacts.",
+      "outputSha256": "a58a182db7e110b10ecf2ecbaadfb45834acd77342911fb9bd9784e46322d6fc",
+      "reviewedAt": "2026-09-08T13:05:47.170Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "unit-original-envoy": {
+      "id": "unit-original-envoy",
+      "status": "ACCEPTED",
+      "jobId": "8355e284-51d8-49ff-aca9-f3e2d386ee33",
+      "candidate": "art/pixellab/candidates/unit-original-envoy.png",
+      "candidateSha256": "84d6b1862eaf0688e51ccd75c8cae08d0e48dec4a45f774a25a82938ba16409f",
+      "providerOutputSha256": "f4681f914ae7e8cce96de8f04cae86b37eeb92f27df70f53d1a74100f2c01004",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 32,
+        "top": 66,
+        "right": 192,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated full-body Original Envoy sprite, southeast-facing three-quarter downward view. One cute slight negotiator, large head, short fragile body, visible feet straddling x128 y222, calm open hand, and one oversized bronze-capped treaty scroll held horizontally away from the torso. Established rounded tan tunic, off-white neck scarf, dark-teal narrow hip satchel, bronze diamond badge. Scroll and open hand read at minimum zoom; satchel is dark teal, not Medic's pale bag. Upper-left northwest key light with simple darker lower-right planes. Fully opaque compact silhouette on transparent 256x296; preferred alpha x48..208 y22..222, hard x16..240 y4..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; medical bag, bandage, medical emblem, healer pose, weapon, spear, bow, shield, hood, mask, ghost, smoke, aura, status effect, hidden feet.",
+        "prompt": "Isolated full-body Original Envoy sprite, southeast-facing three-quarter downward view. One cute slight negotiator, large head, short fragile body, visible feet straddling x128 y222, calm open hand, and one oversized bronze-capped treaty scroll held horizontally away from the torso. Established rounded tan tunic, off-white neck scarf, dark-teal narrow hip satchel, bronze diamond badge. Scroll and open hand read at minimum zoom; satchel is dark teal, not Medic's pale bag. Upper-left northwest key light with simple darker lower-right planes. Fully opaque compact silhouette on transparent 256x296; preferred alpha x48..208 y22..222, hard x16..240 y4..252.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; medical bag, bandage, medical emblem, healer pose, weapon, spear, bow, shield, hood, mask, ghost, smoke, aura, status effect, hidden feet",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 97101,
+        "noBackground": true,
+        "postprocess": "unit-fit",
+        "groundContactY": 222,
+        "fitOffsetX": -16,
+        "styleReference": {
+          "id": "unit-warrior",
+          "usageDescription": "Match the accepted Original faction tan tunic, off-white scarf, dark-teal equipment, bronze accents, chunky proportions, strong outline, flat shading, southeast camera, and simple detail budget only; create a fragile controller silhouette distinct from Medic.",
+          "sha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1"
+        }
+      },
+      "notes": "Accepted after individual source, enlarged, native, 0.625x/1x/1.75x, DPR1/2, active-square terrain/city/building/Road/neighbor/owner/selection/damage and role-comparison review. Scroll/open-hand controller silhouette remains distinct from Medic; deterministic -16 source-x fit centers two visible foot contacts without changing anchor.",
+      "outputSha256": "84d6b1862eaf0688e51ccd75c8cae08d0e48dec4a45f774a25a82938ba16409f",
+      "reviewedAt": "2026-09-08T13:05:42.440Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "portrait-original-saboteur": {
+      "id": "portrait-original-saboteur",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/portrait-original-saboteur.png",
+      "candidateSha256": "8a1494d068a5d1222ae2fdf62a869b2646d2659bee6013b7cd48e09fb41675db",
+      "providerOutputSha256": "a58a182db7e110b10ecf2ecbaadfb45834acd77342911fb9bd9784e46322d6fc",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 26,
+        "top": 20,
+        "right": 230,
+        "bottom": 236,
+        "empty": false
+      },
+      "notes": "Accepted deterministic sprite-derived portrait after source/enlarged and nominal 64px review; the separate 112x130 UI preview uses the untrimmed 256x296 Saboteur world sprite on light, dark and high-contrast panels. Exact accepted Saboteur source hash is recorded; no portrait provider request was made.",
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Original Saboteur sprite, preserving its complete silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+        "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Original Saboteur sprite, preserving its complete silhouette and palette with a 20 pixel transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 97203,
+        "noBackground": true,
+        "postprocess": "sprite-derived-portrait",
+        "styleReference": {
+          "id": "unit-original-saboteur",
+          "sha256": "a58a182db7e110b10ecf2ecbaadfb45834acd77342911fb9bd9784e46322d6fc",
+          "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+        }
+      },
+      "outputSha256": "8a1494d068a5d1222ae2fdf62a869b2646d2659bee6013b7cd48e09fb41675db",
+      "reviewedAt": "2026-09-08T13:06:43.457Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "portrait-original-lancer": {
+      "id": "portrait-original-lancer",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/portrait-original-lancer.png",
+      "candidateSha256": "b4ff02b3716cbe2b48ed4157cf623e6eb6cad8a82d49a2a196373d8b3b6ebcaf",
+      "providerOutputSha256": "64fb8dc3325fa9030e79fa355dea96c0bec47b4bfff0f73adda77045fb7cec0d",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 20,
+        "top": 51,
+        "right": 236,
+        "bottom": 204,
+        "empty": false
+      },
+      "notes": "Accepted deterministic sprite-derived portrait after source/enlarged and nominal 64px review; the separate 112x130 UI preview uses the untrimmed 256x296 Lancer world sprite on light, dark and high-contrast panels. Exact accepted Lancer source hash is recorded; no portrait provider request was made.",
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Original Lancer sprite, preserving its complete silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+        "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Original Lancer sprite, preserving its complete silhouette and palette with a 20 pixel transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 97202,
+        "noBackground": true,
+        "postprocess": "sprite-derived-portrait",
+        "styleReference": {
+          "id": "unit-original-lancer",
+          "sha256": "64fb8dc3325fa9030e79fa355dea96c0bec47b4bfff0f73adda77045fb7cec0d",
+          "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+        }
+      },
+      "outputSha256": "b4ff02b3716cbe2b48ed4157cf623e6eb6cad8a82d49a2a196373d8b3b6ebcaf",
+      "reviewedAt": "2026-09-08T13:06:41.418Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "portrait-original-envoy": {
+      "id": "portrait-original-envoy",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/portrait-original-envoy.png",
+      "candidateSha256": "1f1efb1d20235c21fb230a60c96763b77227efa79225af6ab3c502c907895269",
+      "providerOutputSha256": "84d6b1862eaf0688e51ccd75c8cae08d0e48dec4a45f774a25a82938ba16409f",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 20,
+        "top": 22,
+        "right": 236,
+        "bottom": 233,
+        "empty": false
+      },
+      "notes": "Accepted deterministic sprite-derived portrait after source/enlarged and nominal 64px review; the separate 112x130 UI preview uses the untrimmed 256x296 Envoy world sprite on light, dark and high-contrast panels. Exact accepted Envoy source hash is recorded; no portrait provider request was made.",
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Original Envoy sprite, preserving its complete silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+        "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Original Envoy sprite, preserving its complete silhouette and palette with a 20 pixel transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 97201,
+        "noBackground": true,
+        "postprocess": "sprite-derived-portrait",
+        "styleReference": {
+          "id": "unit-original-envoy",
+          "sha256": "84d6b1862eaf0688e51ccd75c8cae08d0e48dec4a45f774a25a82938ba16409f",
+          "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+        }
+      },
+      "outputSha256": "1f1efb1d20235c21fb230a60c96763b77227efa79225af6ab3c502c907895269",
+      "reviewedAt": "2026-09-08T13:06:39.242Z",
       "reviewChecks": {
         "source": true,
         "native": true,

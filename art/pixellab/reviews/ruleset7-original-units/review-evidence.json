@@ -1,0 +1,492 @@
+{
+  "schemaVersion": 1,
+  "status": "READY_FOR_ORCHESTRATOR_REVIEW",
+  "phase": "COMPLETE_TRIO",
+  "assetClass": "ruleset7-original-standard-units-and-portraits",
+  "generationOrder": {
+    "firstWorldCall": [
+      "unit-original-envoy",
+      "unit-original-lancer",
+      "unit-original-saboteur"
+    ],
+    "maximumSelectedPerCall": 3,
+    "portraitCall": [
+      "portrait-original-envoy",
+      "portrait-original-lancer",
+      "portrait-original-saboteur"
+    ],
+    "portraitsAreProviderGenerated": false,
+    "portraitMethod": "sprite-derived-portrait"
+  },
+  "generationRecords": [
+    {
+      "id": "unit-original-envoy",
+      "status": "ACCEPTED",
+      "jobId": "8355e284-51d8-49ff-aca9-f3e2d386ee33",
+      "sourcePath": "public/assets/pixellab/units/original-envoy.png",
+      "sourceSha256": "84d6b1862eaf0688e51ccd75c8cae08d0e48dec4a45f774a25a82938ba16409f",
+      "providerOutputSha256": "f4681f914ae7e8cce96de8f04cae86b37eeb92f27df70f53d1a74100f2c01004",
+      "rejectedAttempts": []
+    },
+    {
+      "id": "unit-original-lancer",
+      "status": "ACCEPTED",
+      "jobId": "0a4f655c-0046-45eb-aa2a-c40015031a24",
+      "sourcePath": "public/assets/pixellab/units/original-lancer.png",
+      "sourceSha256": "64fb8dc3325fa9030e79fa355dea96c0bec47b4bfff0f73adda77045fb7cec0d",
+      "providerOutputSha256": "a606fcaa9e4191c640692cd0be8917ba4792e8c4e802e5a923d0a8d88a392e68",
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/unit-original-lancer-7bdcd352ee61.png",
+          "candidateSha256": "7bdcd352ee613de59ba95dcc8e6fa71b02d4df77b3de2af65729cb696acfc71f",
+          "providerOutputSha256": "d484174ff984a7f486ec6f6dc754619c176189292390ee572b2be2ea9d07e923",
+          "jobId": "55526405-30bd-48dc-bb64-baa35ece1fd7",
+          "disposition": "REJECTED",
+          "notes": "Rejected after source, native, and 0.625x inspection: broad triangular head obscured the shaft and read as a wooden sword or paddle rather than a sweeping lance.",
+          "reviewedAt": "2026-09-08T12:57:28.222Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated full-body Original Lancer sprite, southeast-facing three-quarter downward view. One cute chunky unmounted foot lancer, large head, short body, visible feet straddling x128 y222 in a low forward sprint. One oversized broad-tipped bronze lance held in both hands across a near-horizontal southeast sweep. Lance and footwork read at minimum zoom while compact, never tall or terrain-sized. Established tan tunic, streaming off-white scarf, dark-teal wrap, bronze diamond badge. Upper-left northwest key light with simple darker lower-right planes. No mount or motion effect. Transparent 256x296; preferred alpha x32..224 y26..222, hard x16..240 y4..252. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; horse, mount, saddle, rider, Raider, upright spear, tall pike, giant scale, sword, bow, shield, extra weapon, speed lines, attack arc, hidden feet.",
+            "prompt": "Isolated full-body Original Lancer sprite, southeast-facing three-quarter downward view. One cute chunky unmounted foot lancer, large head, short body, visible feet straddling x128 y222 in a low forward sprint. One oversized broad-tipped bronze lance held in both hands across a near-horizontal southeast sweep. Lance and footwork read at minimum zoom while compact, never tall or terrain-sized. Established tan tunic, streaming off-white scarf, dark-teal wrap, bronze diamond badge. Upper-left northwest key light with simple darker lower-right planes. No mount or motion effect. Transparent 256x296; preferred alpha x32..224 y26..222, hard x16..240 y4..252.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; horse, mount, saddle, rider, Raider, upright spear, tall pike, giant scale, sword, bow, shield, extra weapon, speed lines, attack arc, hidden feet",
+            "requestSize": {
+              "width": 256,
+              "height": 296
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 296
+            },
+            "seed": 97102,
+            "noBackground": true,
+            "postprocess": "unit-fit",
+            "groundContactY": 222,
+            "styleReference": {
+              "id": "unit-warrior",
+              "sha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1",
+              "usageDescription": "Match the accepted Original faction tan tunic, off-white scarf, dark-teal equipment, bronze accents, chunky proportions, strong outline, flat shading, southeast camera, and simple detail budget only; create an unmounted fast sweeping Lancer silhouette distinct from Raider."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "unit-original-saboteur",
+      "status": "ACCEPTED",
+      "jobId": "b7c6a707-8f7a-4c97-b6a0-c8bbead52560",
+      "sourcePath": "public/assets/pixellab/units/original-saboteur.png",
+      "sourceSha256": "a58a182db7e110b10ecf2ecbaadfb45834acd77342911fb9bd9784e46322d6fc",
+      "providerOutputSha256": "74863db96494ab77c4633fc855a51816d17f68c4ed2b5bbc7d76af80e764fb23",
+      "rejectedAttempts": []
+    }
+  ],
+  "portraitProvenance": [
+    {
+      "id": "portrait-original-envoy",
+      "status": "ACCEPTED",
+      "outputPath": "public/assets/pixellab/ui/portrait-original-envoy.png",
+      "outputSha256": "1f1efb1d20235c21fb230a60c96763b77227efa79225af6ab3c502c907895269",
+      "sourceId": "unit-original-envoy",
+      "sourceSha256": "84d6b1862eaf0688e51ccd75c8cae08d0e48dec4a45f774a25a82938ba16409f",
+      "postprocess": "sprite-derived-portrait",
+      "providerRequestMade": false,
+      "providerOutputSha256FieldMeaning": "accepted world-sprite source hash used by deterministic derivation; not a new provider portrait output",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    {
+      "id": "portrait-original-lancer",
+      "status": "ACCEPTED",
+      "outputPath": "public/assets/pixellab/ui/portrait-original-lancer.png",
+      "outputSha256": "b4ff02b3716cbe2b48ed4157cf623e6eb6cad8a82d49a2a196373d8b3b6ebcaf",
+      "sourceId": "unit-original-lancer",
+      "sourceSha256": "64fb8dc3325fa9030e79fa355dea96c0bec47b4bfff0f73adda77045fb7cec0d",
+      "postprocess": "sprite-derived-portrait",
+      "providerRequestMade": false,
+      "providerOutputSha256FieldMeaning": "accepted world-sprite source hash used by deterministic derivation; not a new provider portrait output",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    {
+      "id": "portrait-original-saboteur",
+      "status": "ACCEPTED",
+      "outputPath": "public/assets/pixellab/ui/portrait-original-saboteur.png",
+      "outputSha256": "8a1494d068a5d1222ae2fdf62a869b2646d2659bee6013b7cd48e09fb41675db",
+      "sourceId": "unit-original-saboteur",
+      "sourceSha256": "a58a182db7e110b10ecf2ecbaadfb45834acd77342911fb9bd9784e46322d6fc",
+      "postprocess": "sprite-derived-portrait",
+      "providerRequestMade": false,
+      "providerOutputSha256FieldMeaning": "accepted world-sprite source hash used by deterministic derivation; not a new provider portrait output",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    }
+  ],
+  "measurements": [
+    {
+      "id": "unit-original-envoy",
+      "role": "Envoy",
+      "status": "ACCEPTED",
+      "sourcePath": "public/assets/pixellab/units/original-envoy.png",
+      "sourceSha256": "84d6b1862eaf0688e51ccd75c8cae08d0e48dec4a45f774a25a82938ba16409f",
+      "providerOutputSha256": "f4681f914ae7e8cce96de8f04cae86b37eeb92f27df70f53d1a74100f2c01004",
+      "sourceDimensions": {
+        "width": 256,
+        "height": 296
+      },
+      "alphaBounds": {
+        "left": 32,
+        "top": 66,
+        "right": 192,
+        "bottom": 222
+      },
+      "preferredBounds": {
+        "left": 48,
+        "top": 22,
+        "right": 208,
+        "bottom": 222
+      },
+      "hardBounds": {
+        "left": 16,
+        "top": 4,
+        "right": 240,
+        "bottom": 252
+      },
+      "anchor": {
+        "x": 128,
+        "y": 222
+      },
+      "displayScale": 0.25,
+      "baselineOffsetCssPx": 18,
+      "fitOffsetXSourcePx": -16,
+      "feetCalibration": {
+        "method": "two contiguous foot-contact alpha runs in the lowest 14 source rows; threshold is summed alpha greater than 1",
+        "contactRuns": [
+          {
+            "left": 84,
+            "right": 111
+          },
+          {
+            "left": 152,
+            "right": 176
+          }
+        ],
+        "contactCentersX": [
+          97.5,
+          164
+        ],
+        "footContactMidpointX": 130.75,
+        "xDeltaFromAnchor": 2.75,
+        "paintedLowExtentY": 221,
+        "yDeltaFromAnchor": -1
+      },
+      "legacyDiamondContract": {
+        "visibleWidthRatio": 0.3125,
+        "visibleHeightRatio": 0.527027,
+        "opaqueAreaRatio": 0.174801,
+        "adjacentOcclusionRatio": {
+          "NORTH": 0.002297,
+          "EAST": 0,
+          "SOUTH": 0,
+          "WEST": 0.003947
+        },
+        "maximumRearOcclusionRatio": 0.003947,
+        "preferredWidthRange": [
+          0.28,
+          0.44
+        ],
+        "preferredHeightRange": [
+          0.66,
+          0.8
+        ],
+        "meetsPreferredWidth": true,
+        "meetsPreferredHeight": false
+      },
+      "activeSquareContract": {
+        "cellSizeCssPx": 128,
+        "placedAlphaBoundsCssPx": {
+          "left": 40,
+          "top": 43,
+          "right": 80,
+          "bottom": 82
+        },
+        "noLeftOverflow": true,
+        "noRightOverflow": true,
+        "noBottomOverflow": true,
+        "visibleFeetInsideCell": true,
+        "adjacentOcclusionRatio": {
+          "NORTH": 0,
+          "EAST": 0,
+          "SOUTH": 0,
+          "WEST": 0
+        }
+      }
+    },
+    {
+      "id": "unit-original-lancer",
+      "role": "Lancer",
+      "status": "ACCEPTED",
+      "sourcePath": "public/assets/pixellab/units/original-lancer.png",
+      "sourceSha256": "64fb8dc3325fa9030e79fa355dea96c0bec47b4bfff0f73adda77045fb7cec0d",
+      "providerOutputSha256": "a606fcaa9e4191c640692cd0be8917ba4792e8c4e802e5a923d0a8d88a392e68",
+      "sourceDimensions": {
+        "width": 256,
+        "height": 296
+      },
+      "alphaBounds": {
+        "left": 32,
+        "top": 86,
+        "right": 224,
+        "bottom": 222
+      },
+      "preferredBounds": {
+        "left": 32,
+        "top": 26,
+        "right": 224,
+        "bottom": 222
+      },
+      "hardBounds": {
+        "left": 16,
+        "top": 4,
+        "right": 240,
+        "bottom": 252
+      },
+      "anchor": {
+        "x": 128,
+        "y": 222
+      },
+      "displayScale": 0.25,
+      "baselineOffsetCssPx": 18,
+      "fitOffsetXSourcePx": 0,
+      "feetCalibration": {
+        "method": "two contiguous foot-contact alpha runs in the lowest 14 source rows; threshold is summed alpha greater than 1",
+        "contactRuns": [
+          {
+            "left": 105,
+            "right": 123
+          },
+          {
+            "left": 144,
+            "right": 155
+          }
+        ],
+        "contactCentersX": [
+          114,
+          149.5
+        ],
+        "footContactMidpointX": 131.75,
+        "xDeltaFromAnchor": 3.75,
+        "paintedLowExtentY": 221,
+        "yDeltaFromAnchor": -1
+      },
+      "legacyDiamondContract": {
+        "visibleWidthRatio": 0.375,
+        "visibleHeightRatio": 0.459459,
+        "opaqueAreaRatio": 0.142354,
+        "adjacentOcclusionRatio": {
+          "NORTH": 0.003363,
+          "EAST": 0,
+          "SOUTH": 0,
+          "WEST": 0.000881
+        },
+        "maximumRearOcclusionRatio": 0.003363,
+        "preferredWidthRange": [
+          0.28,
+          0.44
+        ],
+        "preferredHeightRange": [
+          0.66,
+          0.8
+        ],
+        "meetsPreferredWidth": true,
+        "meetsPreferredHeight": false
+      },
+      "activeSquareContract": {
+        "cellSizeCssPx": 128,
+        "placedAlphaBoundsCssPx": {
+          "left": 40,
+          "top": 48,
+          "right": 88,
+          "bottom": 82
+        },
+        "noLeftOverflow": true,
+        "noRightOverflow": true,
+        "noBottomOverflow": true,
+        "visibleFeetInsideCell": true,
+        "adjacentOcclusionRatio": {
+          "NORTH": 0,
+          "EAST": 0,
+          "SOUTH": 0,
+          "WEST": 0
+        }
+      }
+    },
+    {
+      "id": "unit-original-saboteur",
+      "role": "Saboteur",
+      "status": "ACCEPTED",
+      "sourcePath": "public/assets/pixellab/units/original-saboteur.png",
+      "sourceSha256": "a58a182db7e110b10ecf2ecbaadfb45834acd77342911fb9bd9784e46322d6fc",
+      "providerOutputSha256": "74863db96494ab77c4633fc855a51816d17f68c4ed2b5bbc7d76af80e764fb23",
+      "sourceDimensions": {
+        "width": 256,
+        "height": 296
+      },
+      "alphaBounds": {
+        "left": 33,
+        "top": 44,
+        "right": 201,
+        "bottom": 222
+      },
+      "preferredBounds": {
+        "left": 44,
+        "top": 24,
+        "right": 212,
+        "bottom": 222
+      },
+      "hardBounds": {
+        "left": 16,
+        "top": 4,
+        "right": 240,
+        "bottom": 252
+      },
+      "anchor": {
+        "x": 128,
+        "y": 222
+      },
+      "displayScale": 0.25,
+      "baselineOffsetCssPx": 18,
+      "fitOffsetXSourcePx": -11,
+      "feetCalibration": {
+        "method": "two contiguous foot-contact alpha runs in the lowest 14 source rows; threshold is summed alpha greater than 1",
+        "contactRuns": [
+          {
+            "left": 75,
+            "right": 103
+          },
+          {
+            "left": 158,
+            "right": 191
+          }
+        ],
+        "contactCentersX": [
+          89,
+          174.5
+        ],
+        "footContactMidpointX": 131.75,
+        "xDeltaFromAnchor": 3.75,
+        "paintedLowExtentY": 221,
+        "yDeltaFromAnchor": -1
+      },
+      "legacyDiamondContract": {
+        "visibleWidthRatio": 0.328125,
+        "visibleHeightRatio": 0.601351,
+        "opaqueAreaRatio": 0.206242,
+        "adjacentOcclusionRatio": {
+          "NORTH": 0.012317,
+          "EAST": 0,
+          "SOUTH": 0,
+          "WEST": 0.005527
+        },
+        "maximumRearOcclusionRatio": 0.012317,
+        "preferredWidthRange": [
+          0.28,
+          0.44
+        ],
+        "preferredHeightRange": [
+          0.66,
+          0.8
+        ],
+        "meetsPreferredWidth": true,
+        "meetsPreferredHeight": false
+      },
+      "activeSquareContract": {
+        "cellSizeCssPx": 128,
+        "placedAlphaBoundsCssPx": {
+          "left": 40.25,
+          "top": 37.5,
+          "right": 82.25,
+          "bottom": 82
+        },
+        "noLeftOverflow": true,
+        "noRightOverflow": true,
+        "noBottomOverflow": true,
+        "visibleFeetInsideCell": true,
+        "adjacentOcclusionRatio": {
+          "NORTH": 0,
+          "EAST": 0,
+          "SOUTH": 0,
+          "WEST": 0
+        }
+      }
+    }
+  ],
+  "reviewCoverage": [
+    "each source at 256x296, enlarged, native 0.25 display, and minimum 0.625 zoom",
+    "each role at 0.625x, 1x, and 1.75x with DPR1 and DPR2 backing",
+    "active 128x128 square Grass, Forest, Mountain, city, building, and Road contexts",
+    "all owner colors plus code-native selected and damaged states",
+    "all four square neighbors with rear target visibility",
+    "Envoy/Medic, Lancer/Raider, and Saboteur/Scout silhouette comparisons",
+    "accepted sprite-derived portraits at nominal 64x64 and, separately, untrimmed 256x296 world sprites in the 112x130 object-fit UI preview on light, dark, and high-contrast panels",
+    "visual inspection confirms southeast facing, northwest light, visible feet, compact hierarchy, clean transparency, and no baked state"
+  ],
+  "workerVisualAssessment": {
+    "envoy": "Fragile open-handed controller; large scroll reads separately from Medic's pale satchel and bandage.",
+    "lancer": "Unmounted forward sweeper; broad near-horizontal lance and foot stance remain distinct from Raider.",
+    "saboteur": "Fully opaque utility infiltrator; visible face, pry-wrench and tool satchel avoid ninja, ghost and concealment language.",
+    "common": "Established tan/off-white/dark-teal/bronze language, chunky illustrated treatment, strong outline, upper-left light and darker lower-right planes are preserved."
+  },
+  "artifacts": [
+    {
+      "filename": "world-source-native-enlarged.png",
+      "sha256": "b66afcd137da38f2254625805555dd21fb9f4630aaf663b21eaf312b77394bbd",
+      "bytes": 482294
+    },
+    {
+      "filename": "world-zoom-dpr-square.png",
+      "sha256": "b17111f5d9408b80df4032414fc7f7730e7a1ca771f15b57bd67c4c49ebd2c71",
+      "bytes": 248444
+    },
+    {
+      "filename": "world-square-contexts.png",
+      "sha256": "3bc09592ac6efbbd57aafd5a99f8c8c64e85f8c2b8906ca705f15b77b53283c8",
+      "bytes": 304253
+    },
+    {
+      "filename": "world-all-owner-colors.png",
+      "sha256": "0f35999803d9f949d4ba20ec53d32d83a326883dd12ba611d3e89388c320e16f",
+      "bytes": 86429
+    },
+    {
+      "filename": "world-square-all-direction-neighbors.png",
+      "sha256": "819cd59d5e1a9531b4e4a500b0d3e9f707a261213d7f33bf8e3930340685306c",
+      "bytes": 50169
+    },
+    {
+      "filename": "world-role-silhouette-comparisons.png",
+      "sha256": "a667fe71a1542ecfefcc8534f75138fef7f1f7c898c49f3ad6842aac537cabdd",
+      "bytes": 76707
+    },
+    {
+      "filename": "portrait-contexts.png",
+      "sha256": "325db933ba0f4acda80d63bd65797ea005ed7ef89a13fe01382e31bfc9165b65",
+      "bytes": 322129
+    }
+  ]
+}
