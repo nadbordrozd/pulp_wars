@@ -106,6 +106,11 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     readonly shakeCssPx: number;
     readonly flashAlpha: number;
   } | null = null;
+  #statusPulse: {
+    readonly at: CoordV7;
+    readonly progress: number;
+    readonly statusId: string;
+  } | null = null;
   #crossfade: {
     readonly before: PlayerViewV7;
     readonly after: PlayerViewV7;
@@ -271,6 +276,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#animatedUnit = null;
     this.#projectile = null;
     this.#impact = null;
+    this.#statusPulse = null;
     this.#crossfade = null;
     this.#selectionJump = null;
     const resolve = this.#animationResolve;
@@ -304,7 +310,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       this.#draw();
       return;
     }
-    for (const step of corePresentationPlanV7(before, envelope)) {
+    for (const step of corePresentationPlanV7(before, envelope, after)) {
       if (step.kind === "MOVE") {
         this.#presentedView = after;
         await this.#animatePath(
@@ -312,7 +318,11 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           step.path,
           step.durationMs * durationScale,
         );
-      } else {
+      } else if (
+        step.kind === "MELEE" ||
+        step.kind === "RANGED" ||
+        step.kind === "CATAPULT"
+      ) {
         this.#presentedView = before;
         if (step.kind === "MELEE")
           await this.#animateLunge(
@@ -332,6 +342,27 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         this.#presentedView = after;
         await this.#animateImpact(step.to, 100 * durationScale);
         if (token !== this.#presentationToken) return;
+      } else if (step.kind === "VISIBILITY_CROSSFADE") {
+        this.#crossfade = { before, after, progress: 0 };
+        await this.#animate(step.durationMs * durationScale, (progress) => {
+          this.#crossfade = { before, after, progress };
+          this.#draw();
+        });
+        if (token !== this.#presentationToken) return;
+        this.#crossfade = null;
+        this.#presentedView = after;
+      } else if (step.kind === "TACTICAL_STATUS") {
+        this.#presentedView = after;
+        await this.#animate(step.durationMs * durationScale, (progress) => {
+          this.#statusPulse = {
+            at: step.at,
+            statusId: step.symbolId,
+            progress,
+          };
+          this.#draw();
+        });
+        if (token !== this.#presentationToken) return;
+        this.#statusPulse = null;
       }
       if (token !== this.#presentationToken) return;
     }
@@ -411,6 +442,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         clear,
         sceneAlpha,
         impact: this.#impact,
+        statusPulse: this.#statusPulse,
         selectionJump:
           jump === null
             ? null
@@ -542,9 +574,11 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     })
       .targets.filter((target) => same(target.at, at))
       .map((target) =>
-        target.previewLabel === undefined
-          ? target.family
-          : `${target.family}: ${target.previewLabel}`,
+        target.semanticLabel !== undefined
+          ? target.semanticLabel
+          : target.previewLabel === undefined
+            ? target.family
+            : `${target.family}: ${target.previewLabel}`,
       );
     this.#description.textContent = [
       title(tile.terrain),
@@ -723,13 +757,43 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   };
 
   #keepFocusedOnscreen(): void {
-    if (this.#focused === null) return;
+    const canvas = this.#canvas;
+    if (this.#focused === null || canvas === null) return;
     const point = worldToScreen(projectGrid(this.#focused), this.#camera);
     const margin = Math.min(
       64,
       this.#viewport.width / 4,
       this.#viewport.height / 4,
     );
+    const canvasRect = canvas.getBoundingClientRect();
+    const shell = canvas.closest<HTMLElement>(".v7-app-shell");
+    const hudRect = shell
+      ?.querySelector<HTMLElement>(".v7-match-hud")
+      ?.getBoundingClientRect();
+    const dockRect = shell
+      ?.querySelector<HTMLElement>(".v7-selection-dock")
+      ?.getBoundingClientRect();
+    const unobscuredTop = Math.max(
+      0,
+      hudRect === undefined || hudRect.bottom <= canvasRect.top
+        ? 0
+        : Math.min(this.#viewport.height, hudRect.bottom - canvasRect.top),
+    );
+    const unobscuredBottom = Math.min(
+      this.#viewport.height,
+      dockRect === undefined || dockRect.top >= canvasRect.bottom
+        ? this.#viewport.height
+        : Math.max(0, dockRect.top - canvasRect.top),
+    );
+    const unobscuredHeight = unobscuredBottom - unobscuredTop;
+    const verticalInset =
+      unobscuredHeight > 0 ? Math.min(margin, unobscuredHeight / 4) : margin;
+    const safeTop =
+      unobscuredHeight > 0 ? unobscuredTop + verticalInset : margin;
+    const safeBottom =
+      unobscuredHeight > 0
+        ? unobscuredBottom - verticalInset
+        : this.#viewport.height - margin;
     const dx =
       point.x < margin
         ? margin - point.x
@@ -737,10 +801,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           ? this.#viewport.width - margin - point.x
           : 0;
     const dy =
-      point.y < margin
-        ? margin - point.y
-        : point.y > this.#viewport.height - margin
-          ? this.#viewport.height - margin - point.y
+      point.y < safeTop
+        ? safeTop - point.y
+        : point.y > safeBottom
+          ? safeBottom - point.y
           : 0;
     if (dx !== 0 || dy !== 0)
       this.#camera = panCamera(this.#camera, { x: dx, y: dy });

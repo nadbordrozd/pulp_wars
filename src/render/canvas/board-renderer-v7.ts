@@ -23,6 +23,16 @@ import {
 } from "./geometry";
 import { readinessUnitStyleV6 } from "./readiness-presentation";
 import { selectionJumpOffsetCssPx } from "./selection-jump-presentation";
+import { RULESET7_TACTICAL_UI_SYMBOL_BY_ID } from "../../assets/ruleset7-tactical-ui-symbols";
+import {
+  blackoutTargetsV7,
+  defectionLinksV7,
+  defectionTargetsV7,
+  pursuitPresentationV7,
+  tacticalAttachmentsV7,
+  playerLabelV7,
+  type TacticalTargetModeV7,
+} from "../tactical-presentation-v7";
 
 export type BoardSelectionV7 =
   | { readonly kind: "TILE"; readonly at: CoordV7 }
@@ -34,13 +44,16 @@ export interface BoardRenderInteractionV7 {
   readonly selectedUnitId: number | null;
   readonly selectedAchievement: "ENGINEER" | "MUSTER" | null;
   readonly cursor?: CoordV7 | null;
+  readonly tacticalTargetMode?: TacticalTargetModeV7 | null;
 }
 
 export interface MapCommandTargetV7 {
   readonly at: CoordV7;
   readonly command: CommandV7;
-  readonly family: "MOVE" | "ATTACK" | "PURSUIT" | "MONUMENT";
+  readonly family:
+    "MOVE" | "ATTACK" | "PURSUIT" | "MONUMENT" | "DEFECTION" | "BLACKOUT";
   readonly previewLabel?: string;
+  readonly semanticLabel?: string;
 }
 
 export interface BoardRenderPlanEntryV7 {
@@ -59,6 +72,9 @@ export interface BoardRenderPlanEntryV7 {
     | "UNIT"
     | "VALUE"
     | "TARGET"
+    | "REACH"
+    | "STATUS"
+    | "LINK"
     | "SELECTION"
     | "CURSOR";
   readonly assetId?: string;
@@ -72,6 +88,10 @@ export interface BoardRenderPlanEntryV7 {
   readonly ready?: boolean;
   readonly ownerColor?: string;
   readonly ownerSeat?: number;
+  readonly statusId?: string;
+  readonly pulse?: boolean;
+  readonly linkTo?: CoordV7;
+  readonly attachmentSlot?: number;
 }
 
 export interface BoardRenderPlanV7 {
@@ -202,12 +222,72 @@ export function buildBoardRenderPlanV7(
       value: value.level,
       label: value.measure,
     });
-  const targets = mapTargets(
-    view,
-    commands,
-    interaction.selectedUnitId,
-    interaction.selectedAchievement,
+  for (const link of defectionLinksV7(view))
+    entries.push({
+      key: link.key,
+      kind: "LINK",
+      layer: 6,
+      at: link.from,
+      linkTo: link.to,
+      label: link.phase,
+    });
+  const attachmentSlots = new Map<string, number>();
+  for (const attachment of tacticalAttachmentsV7(view)) {
+    const coordKey = `${attachment.at.x},${attachment.at.y}`;
+    const slot = attachmentSlots.get(coordKey) ?? 0;
+    attachmentSlots.set(coordKey, slot + 1);
+    entries.push({
+      key: attachment.key,
+      kind: "STATUS",
+      layer: 6,
+      at: attachment.at,
+      statusId: attachment.symbolId,
+      label: attachment.label,
+      pulse: attachment.pulse,
+      attachmentSlot: slot,
+    });
+  }
+  const pursuit = pursuitPresentationV7(view, commands);
+  if (pursuit !== null && interaction.selectedUnitId === pursuit.unitId)
+    for (const unitId of pursuit.laterTargetUnitIds) {
+      const target = view.units.find((unit) => unit.id === unitId);
+      if (target !== undefined)
+        entries.push({
+          key: `pursuit-reach:${unitId}`,
+          kind: "REACH",
+          layer: 7,
+          at: target.at,
+          label: "Reachable after a canonical Pursue path",
+        });
+    }
+  const targets = dedupeMapTargets(
+    mapTargets(
+      view,
+      commands,
+      interaction.selectedUnitId,
+      interaction.selectedAchievement,
+      interaction.tacticalTargetMode ?? null,
+    ),
   );
+  const focusedPursuit = targets.find(
+    (target) =>
+      target.family === "PURSUIT" &&
+      target.command.kind === "PURSUE" &&
+      interaction.cursor !== null &&
+      interaction.cursor !== undefined &&
+      same(target.at, interaction.cursor),
+  );
+  if (focusedPursuit?.command.kind === "PURSUE")
+    for (const [index, at] of focusedPursuit.command.path.entries()) {
+      if (index === focusedPursuit.command.path.length - 1) continue;
+      entries.push({
+        key: `pursuit-path:${focusedPursuit.command.unitId}:${index}:${at.x},${at.y}`,
+        kind: "REACH",
+        layer: 8,
+        at,
+        label: `Pursue step ${index + 1} of ${focusedPursuit.command.path.length}`,
+      });
+    }
   for (const target of targets)
     entries.push({
       key: `target:${target.family}:${target.at.x},${target.at.y}`,
@@ -267,6 +347,11 @@ export function drawBoardV7(input: {
     readonly shakeCssPx: number;
     readonly flashAlpha: number;
   } | null;
+  readonly statusPulse?: {
+    readonly at: CoordV7;
+    readonly progress: number;
+    readonly statusId: string;
+  } | null;
 }): void {
   const { context, viewport, devicePixelRatio, camera } = input;
   const sceneAlpha = input.sceneAlpha ?? 1;
@@ -279,6 +364,7 @@ export function drawBoardV7(input: {
   context.save();
   context.globalAlpha = sceneAlpha;
   for (const entry of input.plan.entries) {
+    if (entry.kind === "LINK") continue;
     const impacted =
       input.impact !== null &&
       input.impact !== undefined &&
@@ -306,23 +392,35 @@ export function drawBoardV7(input: {
     }
     if (
       entry.kind === "TARGET" ||
+      entry.kind === "REACH" ||
       entry.kind === "SELECTION" ||
       entry.kind === "CURSOR"
     ) {
       context.save();
       context.lineWidth =
-        (entry.kind === "SELECTION" ? 5 : entry.kind === "CURSOR" ? 3 : 4) *
-        camera.zoom;
+        (entry.kind === "SELECTION"
+          ? 5
+          : entry.kind === "CURSOR"
+            ? 3
+            : entry.kind === "REACH"
+              ? 2
+              : 4) * camera.zoom;
       context.strokeStyle =
         entry.kind === "SELECTION"
           ? "#fff6b0"
           : entry.kind === "CURSOR"
             ? "#ffffff"
-            : entry.target?.family === "ATTACK"
-              ? "#ff655f"
-              : "#64e6cf";
+            : entry.kind === "REACH"
+              ? "#ffd34e"
+              : entry.target?.family === "ATTACK"
+                ? "#ff655f"
+                : entry.target?.family === "DEFECTION"
+                  ? "#ffd34e"
+                  : entry.target?.family === "BLACKOUT"
+                    ? "#da8fff"
+                    : "#64e6cf";
       context.setLineDash(
-        entry.kind === "TARGET"
+        entry.kind === "TARGET" || entry.kind === "REACH"
           ? [9 * camera.zoom, 5 * camera.zoom]
           : entry.kind === "CURSOR"
             ? [3 * camera.zoom, 3 * camera.zoom]
@@ -348,6 +446,31 @@ export function drawBoardV7(input: {
         context.textAlign = "center";
         context.fillText(entry.target.previewLabel, x, y + 52 * camera.zoom);
       }
+      context.restore();
+      continue;
+    }
+    if (entry.kind === "STATUS") {
+      const pulse =
+        input.statusPulse !== null &&
+        input.statusPulse !== undefined &&
+        same(entry.at, input.statusPulse.at) &&
+        entry.statusId === input.statusPulse.statusId &&
+        !(input.reducedMotion ?? false)
+          ? 1 + 0.22 * Math.sin(input.statusPulse.progress * Math.PI)
+          : 1;
+      const symbolSize = 22 * camera.zoom * pulse;
+      const slot = entry.attachmentSlot ?? 0;
+      const statusX = x + (30 - slot * 24) * camera.zoom;
+      const statusY = y - 39 * camera.zoom;
+      context.save();
+      drawTacticalSymbolOnCanvas(
+        context,
+        entry.statusId,
+        statusX - symbolSize / 2,
+        statusY - symbolSize / 2,
+        symbolSize,
+        input.highContrast ?? false,
+      );
       context.restore();
       continue;
     }
@@ -500,6 +623,48 @@ export function drawBoardV7(input: {
       }
     }
   }
+  const publicLinks = input.plan.entries.filter(
+    (entry) => entry.kind === "LINK" && entry.linkTo !== undefined,
+  );
+  if (publicLinks.length > 0) {
+    context.save();
+    for (const entry of input.plan.entries) {
+      const exclusion = tacticalLinkExclusionRect(entry, camera);
+      if (exclusion === null) continue;
+      context.beginPath();
+      context.rect(0, 0, viewport.width, viewport.height);
+      context.rect(exclusion.x, exclusion.y, exclusion.width, exclusion.height);
+      context.clip("evenodd");
+    }
+    for (const link of publicLinks) drawPublicLink(context, camera, link);
+    context.restore();
+  }
+  const statusPulse = input.statusPulse;
+  if (
+    statusPulse !== null &&
+    statusPulse !== undefined &&
+    !input.plan.entries.some(
+      (entry) =>
+        entry.kind === "STATUS" &&
+        entry.statusId === statusPulse.statusId &&
+        same(entry.at, statusPulse.at),
+    )
+  ) {
+    const x = camera.offsetX + statusPulse.at.x * TILE_WIDTH * camera.zoom;
+    const y = camera.offsetY + statusPulse.at.y * TILE_HEIGHT * camera.zoom;
+    const pulse = input.reducedMotion
+      ? 1
+      : 1 + 0.22 * Math.sin(statusPulse.progress * Math.PI);
+    const size = 22 * camera.zoom * pulse;
+    drawTacticalSymbolOnCanvas(
+      context,
+      statusPulse.statusId,
+      x + 30 * camera.zoom - size / 2,
+      y - 39 * camera.zoom - size / 2,
+      size,
+      input.highContrast ?? false,
+    );
+  }
   if (input.impact !== null && input.impact !== undefined) {
     const x =
       camera.offsetX +
@@ -515,6 +680,66 @@ export function drawBoardV7(input: {
     context.restore();
   }
   context.restore();
+}
+
+function drawPublicLink(
+  context: CanvasRenderingContext2D,
+  camera: CameraState,
+  entry: BoardRenderPlanEntryV7,
+): void {
+  if (entry.linkTo === undefined) return;
+  const x = camera.offsetX + entry.at.x * TILE_WIDTH * camera.zoom;
+  const y = camera.offsetY + entry.at.y * TILE_HEIGHT * camera.zoom;
+  const toX = camera.offsetX + entry.linkTo.x * TILE_WIDTH * camera.zoom;
+  const toY = camera.offsetY + entry.linkTo.y * TILE_HEIGHT * camera.zoom;
+  context.save();
+  context.strokeStyle = entry.label === "ARMED" ? "#ffd34e" : "#71cfef";
+  context.lineWidth = 3 * camera.zoom;
+  context.setLineDash([7 * camera.zoom, 5 * camera.zoom]);
+  context.beginPath();
+  context.moveTo(x, y - 22 * camera.zoom);
+  context.lineTo(toX, toY - 22 * camera.zoom);
+  context.stroke();
+  context.restore();
+}
+
+function tacticalLinkExclusionRect(
+  entry: BoardRenderPlanEntryV7,
+  camera: CameraState,
+): {
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+} | null {
+  const x = camera.offsetX + entry.at.x * TILE_WIDTH * camera.zoom;
+  const y = camera.offsetY + entry.at.y * TILE_HEIGHT * camera.zoom;
+  if (entry.kind === "STATUS") {
+    const slot = entry.attachmentSlot ?? 0;
+    const size = 26 * camera.zoom;
+    return {
+      x: x + (30 - slot * 24) * camera.zoom - size / 2,
+      y: y - 39 * camera.zoom - size / 2,
+      width: size,
+      height: size,
+    };
+  }
+  if (entry.kind !== "UNIT" && entry.kind !== "CITY") return null;
+  const sprite = anchoredDestinationRect(
+    { x, y },
+    camera.zoom,
+    geometryFor(entry),
+  );
+  const annotationLeft = x - 34 * camera.zoom;
+  const annotationTop = y + 10 * camera.zoom;
+  const annotationRight = x + 34 * camera.zoom;
+  const annotationBottom = y + 36 * camera.zoom;
+  const padding = 3 * camera.zoom;
+  const left = Math.min(sprite.x, annotationLeft) - padding;
+  const top = Math.min(sprite.y, annotationTop) - padding;
+  const right = Math.max(sprite.x + sprite.width, annotationRight) + padding;
+  const bottom = Math.max(sprite.y + sprite.height, annotationBottom) + padding;
+  return { x: left, y: top, width: right - left, height: bottom - top };
 }
 
 export function createBoardImageResolverV7(
@@ -548,7 +773,40 @@ function mapTargets(
   commands: readonly CommandV7[],
   selectedUnitId: number | null,
   selectedAchievement: "ENGINEER" | "MUSTER" | null,
+  tacticalTargetMode: TacticalTargetModeV7 | null,
 ): MapCommandTargetV7[] {
+  if (tacticalTargetMode?.kind === "DEFECTION")
+    return defectionTargetsV7(
+      view,
+      commands,
+      tacticalTargetMode.sourceUnitId,
+    ).flatMap((target): readonly MapCommandTargetV7[] => {
+      const first = target.choices[0];
+      return first === undefined
+        ? []
+        : [
+            {
+              at: target.at,
+              command: first.command,
+              family: "DEFECTION",
+              previewLabel: `${target.choices.length} home ${target.choices.length === 1 ? "city" : "cities"}`,
+              semanticLabel: `Defection target. ${playerLabelV7(view, first.preview.replyBoundary.playerId)} replies at their next accepted End Turn; ${playerLabelV7(view, first.preview.earliestResolutionBoundary.playerId)} resolves at a later Start Turn. ${title(first.preview.cityOccupantSiegeConsequence)}.`,
+            },
+          ];
+    });
+  if (tacticalTargetMode?.kind === "BLACKOUT")
+    return blackoutTargetsV7(
+      view,
+      commands,
+      tacticalTargetMode.sourceUnitId,
+    ).map((target) => ({
+      at: target.at,
+      command: target.command,
+      family: "BLACKOUT",
+      previewLabel: "City blackout",
+      semanticLabel:
+        "Blackout target. Pending until the city's next owner Start Turn; future income denial is capped at 3 Coins and exact amount is not predicted.",
+    }));
   return commands.flatMap((command): readonly MapCommandTargetV7[] => {
     if (
       command.kind === "BUILD_MONUMENT" &&
@@ -568,6 +826,11 @@ function mapTargets(
               at,
               command,
               family: command.kind === "MOVE" ? "MOVE" : "PURSUIT",
+              ...(command.kind === "PURSUE"
+                ? {
+                    semanticLabel: `Pursue ${command.path.length} ${command.path.length === 1 ? "cell" : "cells"}: ${command.path.map((step) => `${step.x},${step.y}`).join(" then ")}`,
+                  }
+                : {}),
             },
           ];
     }
@@ -595,6 +858,107 @@ function mapTargets(
     }
     return [];
   });
+}
+
+function dedupeMapTargets(
+  targets: readonly MapCommandTargetV7[],
+): MapCommandTargetV7[] {
+  const seen = new Set<string>();
+  return targets.filter((target) => {
+    const key = `${target.family}:${target.at.x},${target.at.y}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function drawTacticalSymbolOnCanvas(
+  context: CanvasRenderingContext2D,
+  statusId: string | undefined,
+  left: number,
+  top: number,
+  size: number,
+  highContrast: boolean,
+): void {
+  if (
+    statusId === undefined ||
+    !(statusId in RULESET7_TACTICAL_UI_SYMBOL_BY_ID)
+  )
+    return;
+  const id = statusId as keyof typeof RULESET7_TACTICAL_UI_SYMBOL_BY_ID;
+  const definition = RULESET7_TACTICAL_UI_SYMBOL_BY_ID[id];
+  const tones = highContrast
+    ? {
+        ink: "#ffffff",
+        paper: "#000000",
+        slate: "#000000",
+        bronze: "#ffffff",
+        coral: "#ffffff",
+      }
+    : {
+        ink: "#f8f2df",
+        paper: "#6f5a34",
+        slate: "#31565e",
+        bronze: "#755020",
+        coral: "#7b3836",
+      };
+  const scale = size / 24;
+  const point = (value: number): number => value * scale;
+  context.save();
+  context.translate(left, top);
+  for (const primitive of definition.primitives) {
+    const stroke = highContrast
+      ? "#ffffff"
+      : tones[primitive.kind === "line" ? primitive.tone : primitive.stroke];
+    context.strokeStyle = stroke;
+    context.lineWidth = point(
+      primitive.kind === "line" ? primitive.width : 1.5,
+    );
+    context.lineCap = "round";
+    context.lineJoin = "round";
+    if (primitive.kind === "line") {
+      context.beginPath();
+      context.moveTo(point(primitive.x1), point(primitive.y1));
+      context.lineTo(point(primitive.x2), point(primitive.y2));
+      context.stroke();
+    } else if (primitive.kind === "circle") {
+      context.fillStyle = tones[primitive.fill];
+      context.beginPath();
+      context.arc(
+        point(primitive.cx),
+        point(primitive.cy),
+        point(primitive.radius),
+        0,
+        Math.PI * 2,
+      );
+      context.fill();
+      context.stroke();
+    } else if (primitive.kind === "rect") {
+      context.fillStyle = tones[primitive.fill];
+      context.beginPath();
+      context.roundRect(
+        point(primitive.x),
+        point(primitive.y),
+        point(primitive.width),
+        point(primitive.height),
+        point(primitive.radius),
+      );
+      context.fill();
+      context.stroke();
+    } else {
+      const first = primitive.points[0];
+      if (first === undefined) continue;
+      context.fillStyle = tones[primitive.fill];
+      context.beginPath();
+      context.moveTo(point(first[0]), point(first[1]));
+      for (const [x, y] of primitive.points.slice(1))
+        context.lineTo(point(x), point(y));
+      context.closePath();
+      context.fill();
+      context.stroke();
+    }
+  }
+  context.restore();
 }
 
 function geometryFor(entry: BoardRenderPlanEntryV7): SourceGeometry {

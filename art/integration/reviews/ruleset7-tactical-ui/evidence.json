@@ -1,0 +1,65 @@
+{
+  "setup": "ENGINE_APPLIED_SYNTHETIC_FIXTURE",
+  "note": "Not a natural campaign. Test-owned strict controller exposes public snapshots/offered commands/projected accepted events only.",
+  "pursuitPath": [
+    { "x": 4, "y": 3 },
+    { "x": 3, "y": 2 }
+  ],
+  "pursuitCursorText": "Mountain. Available: Pursue 2 cells: 4,3 then 3,2",
+  "rewardPursuitPrecedence": {
+    "accepted": ["CHOOSE_CITY_REWARD"],
+    "offeredAfterReward": [
+      "PURSUE",
+      "PURSUE",
+      "PURSUE",
+      "PURSUE",
+      "PURSUE",
+      "PURSUE",
+      "PURSUE",
+      "PURSUE",
+      "PURSUE",
+      "PURSUE",
+      "PURSUE",
+      "PURSUE",
+      "PURSUE",
+      "PURSUE",
+      "PURSUE",
+      "PURSUE",
+      "PURSUE",
+      "PURSUE",
+      "PURSUE",
+      "PURSUE",
+      "PURSUE",
+      "PURSUE",
+      "PURSUE",
+      "ATTACK",
+      "END_PURSUIT"
+    ],
+    "statusText": "Pursuit locked globallyPursuit ready · 1 attacks used · 2 remaining of 31 direct attacks · 23 canonical 1–2 cell paths · 1 later targets in reach"
+  },
+  "browserEvidence": {
+    "fixtureLabel": "ENGINE_APPLIED_SYNTHETIC_FIXTURE",
+    "controllerBoundary": "STRICT_OFFERED_COMMANDS_REAL_ENGINE_APPLY_PROJECTED_EVENTS",
+    "accepted": [{ "kind": "BLACKOUT_CITY", "unitId": 2, "cityId": 3 }],
+    "publicStatus": [
+      {
+        "visibility": "FULL",
+        "cityId": 3,
+        "phase": "PENDING",
+        "sourceUnitId": 2,
+        "suppressedCoins": null,
+        "unaffectedTurnStarted": null
+      }
+    ],
+    "route": "?ruleset=7"
+  },
+  "screenshots": [
+    "tactical-pursuit-identity-1024-dpr1.png",
+    "tactical-pursuit-1024-dpr1.png",
+    "tactical-reward-pursuit-1024-dpr1.png",
+    "tactical-defection-choice-390-dpr2.png",
+    "tactical-defection-status-390-dpr2.png",
+    "tactical-blackout-status-320-dpr1.png",
+    "tactical-blackout-600-zoom200-high-contrast-reduced.png"
+  ]
+}
