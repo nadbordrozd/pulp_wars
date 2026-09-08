@@ -245,6 +245,7 @@ export function reachablePlayerMovementPathsV7(
   unit: PublicUnitV7,
   mode: "MOVE" | "PURSUE" = "MOVE",
 ): readonly ReachablePathV7[] {
+  const context = publicMovementContextV7(view);
   const queue: CoordV7[][] = [[]];
   const best = new Map<string, number>([[key(unit.at), 0]]);
   const results = new Map<string, ReachablePathV7>();
@@ -254,11 +255,12 @@ export function reachablePlayerMovementPathsV7(
     const current = path.at(-1) ?? unit.at;
     for (const destination of adjacentPublic(view, current)) {
       const candidate = [...path, destination];
-      const validation = validatePlayerMovementPathV7(
+      const validation = validatePlayerMovementPathWithContextV7(
         view,
         unit,
         candidate,
         mode,
+        context,
       );
       if (
         !validation.legal ||
@@ -288,9 +290,54 @@ export function validatePlayerMovementPathV7(
   path: readonly CoordV7[],
   mode: "MOVE" | "PURSUE" = "MOVE",
 ): MovementPathResultV7 {
+  return validatePlayerMovementPathWithContextV7(
+    view,
+    unit,
+    path,
+    mode,
+    publicMovementContextV7(view),
+  );
+}
+
+interface PublicMovementContextV7 {
+  readonly capabilities: ReturnType<typeof technologyCapabilitiesV7>;
+  readonly connectedRoads: ReadonlySet<string>;
+  readonly ownedCityKeys: ReadonlySet<string>;
+  readonly treasureKeys: ReadonlySet<string>;
+}
+
+const PUBLIC_MOVEMENT_CONTEXTS_V7 = new WeakMap<
+  PlayerViewV7,
+  PublicMovementContextV7
+>();
+
+function publicMovementContextV7(view: PlayerViewV7): PublicMovementContextV7 {
+  const cached = PUBLIC_MOVEMENT_CONTEXTS_V7.get(view);
+  if (cached !== undefined) return cached;
+  const context: PublicMovementContextV7 = {
+    capabilities: technologyCapabilitiesV7(view.viewer.researchedTechs),
+    connectedRoads: publicCapitalConnectedRoads(view),
+    ownedCityKeys: new Set(
+      view.cities
+        .filter((city) => city.ownerId === view.viewer.id)
+        .map((city) => key(city.at)),
+    ),
+    treasureKeys: new Set(view.treasureChests.map(key)),
+  };
+  PUBLIC_MOVEMENT_CONTEXTS_V7.set(view, context);
+  return context;
+}
+
+function validatePlayerMovementPathWithContextV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+  path: readonly CoordV7[],
+  mode: "MOVE" | "PURSUE",
+  context: PublicMovementContextV7,
+): MovementPathResultV7 {
   if (path.length === 0) return { legal: false, reason: "EMPTY_PATH" };
   const role = effectiveRoleRuleV7(unit.role);
-  const capabilities = technologyCapabilitiesV7(view.viewer.researchedTechs);
+  const capabilities = context.capabilities;
   const budget2 = mode === "PURSUE" ? 4 : role.move * 2;
   if (mode === "PURSUE" && path.length > 2)
     return { legal: false, reason: "BUDGET_EXCEEDED" };
@@ -304,13 +351,10 @@ export function validatePlayerMovementPathV7(
       return { legal: false, reason: "NOT_ADJACENT" };
     const tile = publicTileAt(view, step);
     if (tile === undefined) return { legal: false, reason: "OUT_OF_BOUNDS" };
-    if (
-      mode === "PURSUE" &&
-      view.treasureChests.some((chest) => same(chest, step))
-    )
+    if (mode === "PURSUE" && context.treasureKeys.has(key(step)))
       return { legal: false, reason: "TREASURE_FORBIDDEN" };
     spentPoints2 +=
-      mode === "PURSUE" ? 2 : publicStepCost2(view, current, tile);
+      mode === "PURSUE" ? 2 : publicStepCost2(view, current, tile, context);
     if (spentPoints2 > budget2)
       return { legal: false, reason: "BUDGET_EXCEEDED" };
     if (tile.explored === false && tile.diplomaticBlock === "ALLIED_TERRITORY")
@@ -546,6 +590,7 @@ function publicStepCost2(
   view: PlayerViewV7,
   from: CoordV7,
   to: PlayerTileViewV7,
+  context = publicMovementContextV7(view),
 ): 1 | 2 {
   if (
     !view.viewer.researchedTechs.includes("ROADS") ||
@@ -557,13 +602,9 @@ function publicStepCost2(
   const fromRoad =
     fromTile.road && fromTile.territoryOwnerId === view.viewer.id;
   const toRoad = to.road && to.territoryOwnerId === view.viewer.id;
-  const fromCity = view.cities.some(
-    (city) => city.ownerId === view.viewer.id && same(city.at, fromTile.at),
-  );
-  const toCity = view.cities.some(
-    (city) => city.ownerId === view.viewer.id && same(city.at, to.at),
-  );
-  const connected = publicCapitalConnectedRoads(view);
+  const fromCity = context.ownedCityKeys.has(key(fromTile.at));
+  const toCity = context.ownedCityKeys.has(key(to.at));
+  const connected = context.connectedRoads;
   return (fromRoad || fromCity) &&
     (toRoad || toCity) &&
     ((fromRoad && connected.has(key(fromTile.at))) ||
@@ -584,16 +625,23 @@ function publicCapitalConnectedRoads(view: PlayerViewV7): ReadonlySet<string> {
     (city) => city.ownerId === view.viewer.id && city.isCapital,
   );
   const connected = new Set<string>();
-  const queue = [...roads.values()].filter((road) =>
-    capitals.some((city) => manhattan(city.at, road) === 1),
-  );
-  for (const road of queue) connected.add(key(road));
-  while (queue.length > 0) {
-    const current = queue.shift();
+  const queue: CoordV7[] = [];
+  for (const capital of capitals)
+    for (const [dx, dy] of CARDINAL) {
+      const road = { x: capital.at.x + dx, y: capital.at.y + dy };
+      const roadKey = key(road);
+      if (roads.has(roadKey) && !connected.has(roadKey)) {
+        connected.add(roadKey);
+        queue.push(road);
+      }
+    }
+  for (let index = 0; index < queue.length; index += 1) {
+    const current = queue[index];
     if (current === undefined) break;
-    for (const candidate of roads.values()) {
+    for (const [dx, dy] of CARDINAL) {
+      const candidate = { x: current.x + dx, y: current.y + dy };
       const candidateKey = key(candidate);
-      if (!connected.has(candidateKey) && manhattan(current, candidate) === 1) {
+      if (roads.has(candidateKey) && !connected.has(candidateKey)) {
         connected.add(candidateKey);
         queue.push(candidate);
       }
@@ -650,3 +698,9 @@ const chebyshev = (a: CoordV7, b: CoordV7) =>
   Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
 const manhattan = (a: CoordV7, b: CoordV7) =>
   Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+const CARDINAL = [
+  [0, -1],
+  [1, 0],
+  [0, 1],
+  [-1, 0],
+] as const;

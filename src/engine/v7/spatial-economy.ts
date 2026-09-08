@@ -48,6 +48,31 @@ export interface EconomyGraphV7 {
   };
   readonly cities: readonly EconomyGraphCityV7[];
 }
+
+interface EconomyGraphIndexV7 {
+  readonly cityById: ReadonlyMap<CityId, EconomyGraphCityV7>;
+  readonly roadKeysByOwner: Map<PlayerId, ReadonlySet<string>>;
+  readonly connectedComponents: Map<string, readonly CoordV7[]>;
+  readonly contributions: Map<string, SpatialContributionV7>;
+}
+
+const ECONOMY_GRAPH_INDEXES_V7 = new WeakMap<
+  EconomyGraphV7,
+  EconomyGraphIndexV7
+>();
+
+function economyGraphIndexV7(graph: EconomyGraphV7): EconomyGraphIndexV7 {
+  const cached = ECONOMY_GRAPH_INDEXES_V7.get(graph);
+  if (cached !== undefined) return cached;
+  const index: EconomyGraphIndexV7 = {
+    cityById: new Map(graph.cities.map((city) => [city.id, city])),
+    roadKeysByOwner: new Map(),
+    connectedComponents: new Map(),
+    contributions: new Map(),
+  };
+  ECONOMY_GRAPH_INDEXES_V7.set(graph, index);
+  return index;
+}
 const BASIC = ["FARM", "LUMBER_CAMP", "MINE", "QUARRY"] as const;
 const PROCESSORS = ["WINDMILL", "SAWMILL", "FORGE", "STONEWORKS"] as const;
 const AXES: readonly {
@@ -66,10 +91,25 @@ export function spatialContributionAtV7(
   at: CoordV7,
   improvement: ImprovementIdV7,
 ): SpatialContributionV7 {
+  const index = economyGraphIndexV7(graph);
+  const cacheKey = `${improvement}:${key(at)}`;
+  const cached = index.contributions.get(cacheKey);
+  if (cached !== undefined) return cached;
+  const contribution = calculateSpatialContributionAtV7(graph, at, improvement);
+  index.contributions.set(cacheKey, contribution);
+  return contribution;
+}
+
+function calculateSpatialContributionAtV7(
+  graph: EconomyGraphV7,
+  at: CoordV7,
+  improvement: ImprovementIdV7,
+): SpatialContributionV7 {
   const center = tileAtV7(graph.board, at);
-  const city = graph.cities.find(
-    (candidate) => candidate.id === center?.territoryCityId,
-  );
+  const city =
+    center?.territoryCityId === null || center?.territoryCityId === undefined
+      ? undefined
+      : economyGraphIndexV7(graph).cityById.get(center.territoryCityId);
   if (center === undefined || city === undefined) return result({});
   if (improvement === "FARM") return fixed(2, at, improvement);
   if (improvement === "LUMBER_CAMP") return fixed(1, at, improvement);
@@ -80,12 +120,7 @@ export function spatialContributionAtV7(
   if (improvement === "MONUMENT") return fixed(3, at, improvement);
   if (improvement === "WINDMILL" || improvement === "SAWMILL") {
     const type = improvement === "WINDMILL" ? "FARM" : "LUMBER_CAMP";
-    const contributors = connectedSameCityComponent(
-      graph.board,
-      at,
-      city.id,
-      type,
-    );
+    const contributors = connectedSameCityComponent(graph, at, city.id, type);
     return result({
       population:
         improvement === "WINDMILL" && contributors.length > 0
@@ -186,6 +221,9 @@ export function capitalConnectedRoadKeysV7(
   graph: EconomyGraphV7,
   playerId: PlayerId,
 ): ReadonlySet<string> {
+  const index = economyGraphIndexV7(graph);
+  const cached = index.roadKeysByOwner.get(playerId);
+  if (cached !== undefined) return cached;
   const roadKeys = new Set(
     graph.board.tiles
       .filter((tile) => tile.road && tileOwner(graph, tile) === playerId)
@@ -199,8 +237,8 @@ export function capitalConnectedRoadKeysV7(
     for (const [dx, dy] of CARDINAL)
       if (roadKeys.has(key({ x: capital.at.x + dx, y: capital.at.y + dy })))
         queue.push({ x: capital.at.x + dx, y: capital.at.y + dy });
-  while (queue.length > 0) {
-    const at = queue.shift();
+  for (let queueIndex = 0; queueIndex < queue.length; queueIndex += 1) {
+    const at = queue[queueIndex];
     if (at === undefined || connected.has(key(at))) continue;
     connected.add(key(at));
     for (const [dx, dy] of CARDINAL) {
@@ -209,6 +247,7 @@ export function capitalConnectedRoadKeysV7(
         queue.push(next);
     }
   }
+  index.roadKeysByOwner.set(playerId, connected);
   return connected;
 }
 
@@ -220,13 +259,17 @@ export function isCapitalConnectedRoadV7(
   return capitalConnectedRoadKeysV7(graph, playerId).has(key(at));
 }
 
-function connectedSameCityComponent<T extends EconomyGraphTileV7>(
-  board: EconomyBoardV7<T>,
+function connectedSameCityComponent(
+  graph: EconomyGraphV7,
   center: CoordV7,
   cityId: CityId,
   improvement: "FARM" | "LUMBER_CAMP",
 ): readonly CoordV7[] {
-  const queue = adjacentTilesV7(board, center)
+  const cacheKey = `${cityId}:${improvement}:${key(center)}`;
+  const index = economyGraphIndexV7(graph);
+  const cached = index.connectedComponents.get(cacheKey);
+  if (cached !== undefined) return cached;
+  const queue = adjacentTilesV7(graph.board, center)
     .filter(
       (tile) =>
         tile.territoryCityId === cityId && tile.improvement === improvement,
@@ -234,17 +277,19 @@ function connectedSameCityComponent<T extends EconomyGraphTileV7>(
     .map((tile) => tile.at);
   const seen = new Set<string>();
   const result: CoordV7[] = [];
-  while (queue.length > 0) {
-    const at = queue.shift();
+  for (let queueIndex = 0; queueIndex < queue.length; queueIndex += 1) {
+    const at = queue[queueIndex];
     if (at === undefined || seen.has(key(at))) continue;
-    const tile = tileAtV7(board, at);
+    const tile = tileAtV7(graph.board, at);
     if (tile?.territoryCityId !== cityId || tile.improvement !== improvement)
       continue;
     seen.add(key(at));
     result.push(at);
     queue.push(...CARDINAL.map(([dx, dy]) => ({ x: at.x + dx, y: at.y + dy })));
   }
-  return result.sort(compareCoords);
+  const sorted = result.sort(compareCoords);
+  index.connectedComponents.set(cacheKey, sorted);
+  return sorted;
 }
 
 function friendlyAdjacent<T extends ImprovementIdV7>(
@@ -281,7 +326,7 @@ function tileOwner(
 ): PlayerId | null {
   return tile.territoryCityId === null
     ? null
-    : (graph.cities.find((city) => city.id === tile.territoryCityId)?.ownerId ??
+    : (economyGraphIndexV7(graph).cityById.get(tile.territoryCityId)?.ownerId ??
         null);
 }
 function isSameCityImprovement<T extends EconomyGraphTileV7>(
