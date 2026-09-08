@@ -18,7 +18,7 @@ beforeEach(() => {
   window.localStorage.clear();
 });
 
-describe("Ruleset 7 temporary preview route", () => {
+describe("Ruleset 7 application route", () => {
   it("keeps default and exact v6 compatibility routing while rejecting unsupported nonempty values", () => {
     expect(selectBrowserRulesetRoute("", true)).toEqual({
       kind: "RULESET_6",
@@ -58,10 +58,7 @@ describe("Ruleset 7 temporary preview route", () => {
       downloadDebugBundle: debugDownload,
       diagnosticNow: () => "2026-09-08T12:34:56.789Z",
     });
-    expect(document.body.textContent).toContain(
-      "temporary integration preview",
-    );
-    expect(document.body.textContent).toContain("Original-only");
+    expect(document.body.textContent).toContain("Original-only local conquest");
     expect(document.body.textContent).not.toContain("CANDY");
 
     const count = requiredSelect("v7-ai-count");
@@ -90,6 +87,7 @@ describe("Ruleset 7 temporary preview route", () => {
       "canonical Start Turn boundary",
     );
 
+    requiredButton('[data-action="settings"]').click();
     requiredButton('[data-action="export-safe-log"]').click();
     expect(safeDownload).toHaveBeenCalledOnce();
     expect(JSON.parse(safeDownload.mock.calls[0]?.[0] ?? "{}")).toMatchObject({
@@ -129,17 +127,31 @@ describe("Ruleset 7 temporary preview route", () => {
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => app.controller.snapshot().ai.active);
     const fast = requiredButton('[data-action="fast-forward"]');
-    const restart = requiredButton('[data-action="restart"]');
     fast.focus();
     fast.click();
     expect(document.activeElement).toBe(fast);
     expect(requiredButton('[data-action="fast-forward"]')).toBe(fast);
     expect(fast.textContent).toContain("enabled");
 
+    const settings = requiredButton('[data-action="settings"]');
+    settings.click();
+    await Promise.resolve();
+    const restart = requiredButton('[data-action="restart"]');
+    restart.focus();
     restart.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
     scheduler.runNext();
     await Promise.resolve();
     expect(requiredButton('[data-action="restart"]')).toBe(restart);
+    expect(requiredButton('[data-action="settings"]')).toBe(settings);
+    expect(document.activeElement).toBe(restart);
+    const priorIndex = app.controller.snapshot().view?.commandIndex ?? 0;
+    scheduler.runNext();
+    await waitUntil(
+      () => (app.controller.snapshot().view?.commandIndex ?? 0) > priorIndex,
+    );
+    expect(requiredButton('[data-action="restart"]')).toBe(restart);
+    expect(requiredButton('[data-action="settings"]')).toBe(settings);
+    expect(document.activeElement).toBe(restart);
     restart.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
     restart.click();
     await waitUntil(
@@ -148,7 +160,7 @@ describe("Ruleset 7 temporary preview route", () => {
         scheduler.activeCount() === 1,
     );
     expect(restart.isConnected).toBe(false);
-    expect(document.body.textContent).toContain("Restart");
+    expect(document.body.textContent).toContain("restarted");
     app.destroy();
   });
 

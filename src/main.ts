@@ -28,7 +28,7 @@ function renderUnsupportedRuleset(value: string): { destroy(): void } {
   const title = document.createElement("h1");
   title.textContent = "Unsupported ruleset";
   const detail = document.createElement("p");
-  detail.textContent = `Ruleset ${value} is not available. Use ?ruleset=6 or the temporary ?ruleset=7 integration preview.`;
+  detail.textContent = `Ruleset ${value} is not available. Use ?ruleset=6 or ?ruleset=7.`;
   main.append(title, detail);
   root.replaceChildren(main);
   return { destroy: () => root.replaceChildren() };

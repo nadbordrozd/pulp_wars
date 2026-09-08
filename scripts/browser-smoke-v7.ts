@@ -325,20 +325,24 @@ try {
     readonly clientWidth: number;
     readonly scrollWidth: number;
     readonly minimumControlHeight: number;
+    readonly menuVisible: boolean;
   }>(
     connection,
     `(() => {
-      const controls = Array.from(document.querySelectorAll('button, input, select'));
+      const controls = Array.from(document.querySelectorAll('button, input, select')).filter((control) => { const rect = control.getBoundingClientRect(); return rect.width > 0 && rect.height > 0 && getComputedStyle(control).visibility !== 'hidden'; });
+      const menu = document.querySelector('[data-action="compact-menu"]');
       return {
         clientWidth: document.documentElement.clientWidth,
         scrollWidth: document.documentElement.scrollWidth,
         minimumControlHeight: Math.min(...controls.map((control) => control.getBoundingClientRect().height)),
+        menuVisible: menu instanceof HTMLButtonElement && menu.getBoundingClientRect().width > 0 && menu.getBoundingClientRect().height >= 44,
       };
     })()`,
   );
   if (
     mobile.scrollWidth > mobile.clientWidth ||
-    mobile.minimumControlHeight < 44
+    mobile.minimumControlHeight < 44 ||
+    !mobile.menuVisible
   ) {
     throw new Error(
       `mobile preview contract failed: ${JSON.stringify(mobile)}`,
@@ -350,6 +354,7 @@ try {
     connection,
     `globalThis.__PULP_WARS_APP__.controller.exportDebugBundle({ acknowledgeHiddenInformation: true }).bundle.payload.reproduction.save.stateHash`,
   );
+  await openCompactSettings(connection);
   await touchClick(connection, '[data-action="restart"]');
   await waitForExpression(
     connection,
@@ -377,6 +382,7 @@ try {
     connection,
     `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); return s?.phase === 'ACTIVE' && !s.transitioning && s.view?.commandIndex === ${resumeIndex}; })()`,
   );
+  await openCompactSettings(connection);
   await touchClick(connection, '[data-action="delete-save"]');
   await waitForExpression(
     connection,
@@ -625,6 +631,31 @@ async function touchClick(
     type: "touchEnd",
     touchPoints: [],
   });
+}
+
+async function openCompactSettings(connection: Connection): Promise<void> {
+  const settingsVisible = await evaluate<boolean>(
+    connection,
+    `(() => {
+      const node = document.querySelector('[data-action="settings"]');
+      if (!(node instanceof HTMLButtonElement)) return false;
+      const rect = node.getBoundingClientRect();
+      const style = getComputedStyle(node);
+      return rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden';
+    })()`,
+  );
+  if (!settingsVisible) {
+    await touchClick(connection, '[data-action="compact-menu"]');
+    await waitForExpression(
+      connection,
+      `document.querySelector('[data-action="compact-menu"]')?.getAttribute('aria-expanded') === 'true'`,
+    );
+  }
+  await touchClick(connection, '[data-action="settings"]');
+  await waitForExpression(
+    connection,
+    `document.querySelector('#v7-motion') !== null`,
+  );
 }
 
 async function elementCenter(

@@ -334,7 +334,7 @@ export function executeDrawCommandV6(
     }
     context.save();
     if (command.glow !== undefined) {
-      drawRegisteredImageGlowV6(
+      drawRegisteredImageGlow(
         context,
         image,
         command.destination,
@@ -426,11 +426,15 @@ export function executeDrawCommandV6(
  * whose very large inverse offsets lost registration under browser backing
  * transforms and fractional camera zoom.
  */
-function drawRegisteredImageGlowV6(
+export function drawRegisteredImageGlow(
   context: CanvasRenderingContext2D,
   image: CanvasImageSource,
   destination: DestinationRect,
-  glow: NonNullable<DrawCommandBaseV6["glow"]>,
+  glow: {
+    readonly color: string;
+    readonly alpha: number;
+    readonly blur: number;
+  },
 ): void {
   const surface = readinessGlowSurfaceV6(context);
   if (surface === null) return;

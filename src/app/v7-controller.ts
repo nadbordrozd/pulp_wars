@@ -70,6 +70,13 @@ export interface Ruleset7BrowserSnapshot {
   readonly ai: Ruleset7AiPresentationState;
 }
 
+export interface Ruleset7AcceptedBoundary {
+  readonly actor: "HUMAN" | "AI";
+  readonly beforeView: PlayerViewV7;
+  readonly afterView: PlayerViewV7;
+  readonly playerEvents: PlayerEventEnvelopeV7;
+}
+
 export type Ruleset7LaunchResult =
   | {
       readonly ok: true;
@@ -159,6 +166,9 @@ export interface Ruleset7BrowserControllerOptions {
 }
 
 type SnapshotSubscriberV7 = (snapshot: Ruleset7BrowserSnapshot) => void;
+type AcceptedBoundarySubscriberV7 = (
+  boundary: Ruleset7AcceptedBoundary,
+) => void;
 
 interface AiRunV7 {
   readonly generation: number;
@@ -188,6 +198,8 @@ const defaultReadClockV7 = (): number =>
  */
 export class Ruleset7BrowserController {
   readonly #subscribers = new Set<SnapshotSubscriberV7>();
+  readonly #acceptedBoundarySubscribers =
+    new Set<AcceptedBoundarySubscriberV7>();
   readonly #persistence: BrowserPersistenceV7 | null;
   readonly #createAiPolicyWork: (
     view: PlayerViewV7,
@@ -257,6 +269,14 @@ export class Ruleset7BrowserController {
     this.#subscribers.add(subscriber);
     subscriber(this.snapshot());
     return () => this.#subscribers.delete(subscriber);
+  }
+
+  subscribeAcceptedBoundary(
+    subscriber: AcceptedBoundarySubscriberV7,
+  ): () => void {
+    if (this.#destroyed) return () => {};
+    this.#acceptedBoundarySubscribers.add(subscriber);
+    return () => this.#acceptedBoundarySubscribers.delete(subscriber);
   }
 
   snapshot(): Ruleset7BrowserSnapshot {
@@ -540,6 +560,7 @@ export class Ruleset7BrowserController {
     this.#cancelAiWork();
     this.#persistence?.destroy();
     this.#subscribers.clear();
+    this.#acceptedBoundarySubscribers.clear();
   }
 
   #loadInitialSave(loaded: BrowserSaveLoadResultV7): void {
@@ -629,12 +650,26 @@ export class Ruleset7BrowserController {
     this.#persistCurrent(
       command.kind === "END_TURN" || applied.state.outcome !== null,
     );
-    return freezeBrowserValueV7({
-      accepted: true,
+    const result = freezeBrowserValueV7({
+      accepted: true as const,
       beforeView,
       afterView,
       playerEvents,
     });
+    const boundary = freezeBrowserValueV7({
+      actor: actorId === humanId ? ("HUMAN" as const) : ("AI" as const),
+      beforeView,
+      afterView,
+      playerEvents,
+    });
+    for (const subscriber of this.#acceptedBoundarySubscribers) {
+      try {
+        subscriber(boundary);
+      } catch {
+        // Presentation observers cannot reject or perturb an accepted boundary.
+      }
+    }
+    return result;
   }
 
   #scheduleAiCallback(run: AiRunV7): void {

@@ -946,6 +946,12 @@ env(safe-area-inset-bottom))` and its own vertical overflow. The map remains
 pannable behind every non-modal dock. ResizeObserver callbacks caused only by a
 dock are forbidden from entering Canvas resize logic.
 
+Ruleset 7 revision 2 keeps the fixed Canvas and non-modal dock layering but
+broadens that dock-only overflow exception: compact-width, 200% UI-scale, or a
+viewer-safe late-game command set whose natural wrapping would otherwise make
+legal actions unreachable may use the bounded vertical scroller. Normal-width
+content continues to grow and reflow without horizontal or page scrolling.
+
 Readiness is presentation derived from public activation. A surviving unit
 owned by the active human with `handled = false` pulses its actual sprite from
 opacity 1 to 0.62 and back, scales it about its feet anchor, and draws a compact

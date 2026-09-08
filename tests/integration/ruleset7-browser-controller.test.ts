@@ -12,6 +12,7 @@ import {
   type CommandV7,
   type MatchSetupV7,
   type PlayerViewV7,
+  type UnitId,
 } from "../../src/engine/index";
 import {
   SAVE_STORAGE_KEY_V7,
@@ -325,6 +326,73 @@ describe("Ruleset 7 browser controller", () => {
     if (second === null) throw new Error("updated safe log missing");
     expect(JSON.parse(second.source).log.eventBatches).toHaveLength(2);
     controller.destroy();
+  });
+
+  it("publishes each accepted public boundary once and isolates observer failures", async () => {
+    const controller = new Ruleset7BrowserController({
+      createAiPolicyWork: immediateEndTurnWork,
+    });
+    const observed: Array<{
+      actor: "HUMAN" | "AI";
+      commandIndex: number;
+    }> = [];
+    controller.subscribeAcceptedBoundary(() => {
+      throw new Error("presentation observer failure");
+    });
+    const unsubscribe = controller.subscribeAcceptedBoundary((boundary) => {
+      expect(Object.isFrozen(boundary)).toBe(true);
+      expect(Object.isFrozen(boundary.beforeView)).toBe(true);
+      expect(Object.isFrozen(boundary.afterView)).toBe(true);
+      expect(Object.isFrozen(boundary.playerEvents)).toBe(true);
+      expect(Object.isFrozen(boundary.playerEvents.events)).toBe(true);
+      expect(boundary.beforeView.viewer.id).toBe(
+        boundary.beforeView.humanPlayerId,
+      );
+      expect(boundary.afterView.viewer.id).toBe(
+        boundary.afterView.humanPlayerId,
+      );
+      expect(boundary).not.toHaveProperty("command");
+      expect(boundary).not.toHaveProperty("state");
+      expect(boundary).not.toHaveProperty("stateHash");
+      observed.push({
+        actor: boundary.actor,
+        commandIndex: boundary.afterView.commandIndex,
+      });
+    });
+    const launched = await controller.launch(setupV7(2, 1));
+    if (!launched.ok) throw new Error(launched.diagnostic);
+    expect(
+      (
+        await controller.dispatch({
+          kind: "ATTACK",
+          unitId: 999_999 as UnitId,
+          targetUnitId: 888_888 as UnitId,
+        })
+      ).accepted,
+    ).toBe(false);
+    expect(observed).toEqual([]);
+    await dispatchKind(controller, "WAIT");
+    await dispatchKind(controller, "END_TURN");
+    const progress = await controller.progressAiTurns();
+    expect(progress.ok).toBe(true);
+    expect(observed.filter((entry) => entry.actor === "HUMAN")).toHaveLength(2);
+    expect(observed.filter((entry) => entry.actor === "AI")).toHaveLength(1);
+    unsubscribe();
+    const prior = observed.length;
+    await dispatchKind(controller, "WAIT");
+    expect(observed).toHaveLength(prior);
+    controller.destroy();
+  });
+
+  it("clears accepted-boundary subscribers on destroy", async () => {
+    const controller = new Ruleset7BrowserController();
+    let observed = 0;
+    controller.subscribeAcceptedBoundary(() => {
+      observed += 1;
+    });
+    controller.destroy();
+    expect(await controller.launch(setupV7(2, 1))).toMatchObject({ ok: false });
+    expect(observed).toBe(0);
   });
 });
 

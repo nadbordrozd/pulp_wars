@@ -121,6 +121,558 @@
   display: none;
 }
 
+.v7-app-shell {
+  width: 100%;
+  min-height: 100dvh;
+  color: var(--paper);
+  background: #171722;
+  font-size: calc(1rem * var(--ui-scale));
+}
+
+.v7-app-shell[data-contrast="high"] {
+  --line: #fff;
+  --focus: #fff;
+  filter: contrast(1.22);
+}
+
+.v7-front-screen {
+  display: grid;
+  align-content: start;
+  gap: 1.25rem;
+  width: min(68rem, 100%);
+  min-height: 100dvh;
+  margin-inline: auto;
+  padding: clamp(1rem, 5vw, 4rem);
+}
+
+.v7-brand {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.v7-setup-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+}
+
+.v7-setup-form label {
+  display: grid;
+  gap: 0.4rem;
+  font-weight: 800;
+}
+
+.v7-fixed-faction {
+  grid-column: 1 / -1;
+}
+
+.v7-match-root {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  background: #173632;
+}
+
+.v7-match-shell > .v7-live,
+.v7-match-shell > .v7-alert {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.v7-board-host,
+.board-canvas-v7 {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.v7-match-hud {
+  position: absolute;
+  z-index: 10;
+  inset: max(0.5rem, env(safe-area-inset-top))
+    max(0.5rem, env(safe-area-inset-right)) auto
+    max(0.5rem, env(safe-area-inset-left));
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.7rem;
+  min-width: 0;
+  padding: 0.55rem;
+  border: 2px solid var(--line);
+  border-radius: 1rem;
+  background: #20232eea;
+  backdrop-filter: blur(7px);
+}
+
+.v7-hud-title {
+  display: grid;
+  min-width: max-content;
+}
+
+.v7-hud-title span,
+.v7-turn-status {
+  color: var(--muted);
+  font-size: 0.83rem;
+}
+
+.v7-coins {
+  min-width: max-content;
+  color: var(--gold);
+  font-weight: 900;
+}
+
+.v7-hud-nav {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.v7-hud-nav button {
+  padding: 0.55rem 0.7rem;
+}
+
+.v7-hud-message {
+  flex-basis: 100%;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: var(--panel-strong);
+}
+
+.v7-hud-error {
+  border-color: #ff7975;
+}
+
+.v7-selection-dock {
+  position: absolute;
+  z-index: 12;
+  inset-inline: 0;
+  bottom: env(safe-area-inset-bottom);
+  display: grid;
+  grid-template-columns: minmax(13rem, 20rem) minmax(14rem, 1fr) auto;
+  gap: 0.8rem;
+  align-items: start;
+  padding: 0.8rem max(0.8rem, env(safe-area-inset-right)) 0.8rem
+    max(0.8rem, env(safe-area-inset-left));
+  border-top: 3px solid var(--line);
+  background: #20232ef2;
+  backdrop-filter: blur(8px);
+}
+
+.v7-selection-dock[data-selection-kind="unit"] {
+  grid-template-columns:
+    minmax(13rem, 20rem) minmax(14rem, 1fr) minmax(11rem, 24rem)
+    auto;
+}
+
+.v7-selection-dock[data-selection-kind="unit"] > .v7-identity {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.v7-selection-dock[data-selection-kind="unit"] > .v7-unit-stats {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.v7-selection-dock[data-selection-kind="unit"] > .v7-abilities {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.v7-selection-dock[data-selection-kind="unit"] > .v7-ability-card {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+.v7-selection-dock[data-selection-kind="unit"] > .v7-readiness-label,
+.v7-selection-dock[data-selection-kind="unit"] > .v7-unit-status {
+  grid-column: 1;
+}
+
+.v7-selection-dock[data-selection-kind="unit"] > .v7-context-actions {
+  grid-column: 3;
+  grid-row: 1 / span 4;
+}
+
+.v7-selection-dock[data-selection-kind="unit"] > .close-button {
+  grid-column: 4;
+  grid-row: 1;
+}
+
+.v7-identity {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.v7-art-frame {
+  display: block;
+  width: 112px;
+  height: 130px;
+  object-fit: contain;
+  object-position: center;
+}
+
+.v7-identity-art {
+  position: relative;
+  display: grid;
+  width: 112px;
+  height: 130px;
+  place-items: center;
+  overflow: hidden;
+}
+
+.v7-identity-art[data-frame-mode="visible-alpha"] .v7-art-frame {
+  position: absolute;
+  max-width: none;
+  max-height: none;
+}
+
+.v7-unit-stats {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 0.25rem 0.65rem;
+}
+
+.v7-unit-stats dt {
+  font-weight: 900;
+}
+
+.v7-unit-stats dd {
+  margin: 0;
+}
+
+.v7-stat-value {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.v7-stat-modifier,
+.v7-ability-tag {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0.35rem 0.55rem;
+  border-radius: 999px;
+}
+
+.v7-stat-modifier-detail {
+  flex-basis: 100%;
+  padding: 0.55rem;
+  border: 2px solid var(--line);
+  border-radius: 0.5rem;
+  background: var(--panel-strong);
+}
+
+.v7-stat-modifier::after {
+  position: fixed;
+  z-index: 60;
+  display: none;
+  max-width: min(24rem, calc(100vw - 2rem));
+  padding: 0.55rem;
+  border: 2px solid var(--paper);
+  border-radius: 0.5rem;
+  color: var(--paper);
+  background: var(--ink);
+  content: attr(data-tooltip);
+}
+
+.v7-stat-modifier:hover::after,
+.v7-stat-modifier:focus-visible::after,
+.v7-stat-modifier:active::after {
+  display: block;
+}
+
+.v7-abilities,
+.v7-context-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.v7-command-economy {
+  display: block;
+  font-size: 0.82em;
+  font-weight: 700;
+}
+
+.v7-context-action,
+.v7-train-action,
+.v7-reward-action {
+  display: grid;
+  width: 176px;
+  max-width: 100%;
+  justify-items: center;
+}
+
+.v7-tactical-symbol {
+  display: block;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+}
+
+.v7-achievement-symbols {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.v7-monument-source {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.v7-fast-forward {
+  position: absolute;
+  z-index: 11;
+  right: max(0.75rem, env(safe-area-inset-right));
+  bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+
+.v7-hud-end-turn {
+  border-color: var(--gold);
+}
+
+.v7-compact-menu-toggle {
+  display: none;
+}
+
+.v7-app-shell[data-ui-scale="2"] .v7-compact-menu-toggle {
+  display: block;
+}
+
+.v7-app-shell[data-ui-scale="2"]
+  .v7-hud-nav[data-compact-menu="closed"]
+  .v7-secondary-nav-action {
+  display: none;
+}
+
+.v7-fast-forward {
+  right: auto;
+  left: max(0.75rem, env(safe-area-inset-left));
+}
+
+.v7-overlay,
+.v7-mandatory-choice,
+.v7-results {
+  position: absolute;
+  z-index: 30;
+  inset: clamp(0.5rem, 5vw, 3rem);
+  display: grid;
+  grid-auto-rows: max-content;
+  align-content: start;
+  gap: 1rem;
+  overflow: auto;
+  padding: clamp(1rem, 3vw, 2rem);
+  border: 3px solid var(--line);
+  border-radius: 1.2rem;
+  background: #292b39f8;
+}
+
+.v7-mandatory-choice,
+.v7-results {
+  inset: 50% auto auto 50%;
+  width: min(36rem, calc(100% - 2rem));
+  max-height: calc(100dvh - 2rem);
+  transform: translate(-50%, -50%);
+}
+
+.v7-tech-graph {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+  gap: 1rem;
+  min-width: 0;
+}
+
+.v7-tech-branch-selector {
+  position: sticky;
+  z-index: 4;
+  top: 0;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(44px, 1fr));
+  gap: 0.35rem;
+  padding: 0.35rem;
+  background: var(--panel);
+}
+
+.v7-tech-branch-jump {
+  min-height: 44px;
+  overflow-wrap: anywhere;
+}
+
+.v7-tech-branch {
+  display: grid;
+  gap: 0.6rem;
+  align-content: start;
+}
+
+.v7-tech-node,
+.v7-tech-edge {
+  display: grid;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.v7-tech-children {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+  padding-top: 0.7rem;
+  border-top: 3px solid var(--line);
+}
+
+.v7-tech-edge {
+  position: relative;
+  padding-top: 0.6rem;
+}
+
+.v7-tech-edge::before {
+  position: absolute;
+  top: -0.7rem;
+  left: 50%;
+  width: 3px;
+  height: 1.3rem;
+  background: var(--line);
+  content: "";
+}
+
+.v7-tech-card {
+  display: grid;
+  justify-items: center;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  padding: 0.5rem;
+  border-style: dashed;
+}
+
+.v7-tech-card.state-owned {
+  border-style: double;
+  border-color: var(--teal);
+}
+
+.v7-tech-card.state-available {
+  border-style: solid;
+  border-color: var(--gold);
+}
+
+.v7-tech-detail,
+.v7-ability-card,
+.v7-achievement {
+  display: grid;
+  gap: 0.65rem;
+  padding: 0.8rem;
+  border: 2px solid var(--line);
+  border-radius: 0.8rem;
+  background: var(--panel-strong);
+}
+
+.v7-live:empty,
+.v7-alert:empty {
+  display: none;
+}
+
+@media (max-width: 800px) {
+  .v7-match-hud {
+    flex-wrap: wrap;
+  }
+
+  .v7-hud-nav {
+    display: grid;
+    flex-basis: 100%;
+    grid-template-columns: repeat(auto-fit, minmax(min(7rem, 100%), 1fr));
+  }
+
+  .v7-hud-nav button {
+    padding: 0.4rem 0.3rem;
+    font-size: 0.82rem;
+  }
+
+  .v7-selection-dock {
+    grid-template-columns: minmax(0, 1fr) auto;
+    max-height: calc(100dvh - 8rem);
+    overflow-y: auto;
+  }
+
+  .v7-selection-dock[data-selection-kind="unit"] {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .v7-selection-dock[data-selection-kind="unit"] > * {
+    grid-row: auto;
+  }
+
+  .v7-selection-dock[data-selection-kind="unit"] > .v7-identity {
+    grid-column: 1;
+  }
+
+  .v7-selection-dock[data-selection-kind="unit"] > .close-button {
+    grid-column: 2;
+  }
+
+  .v7-selection-dock > :not(.v7-identity, .close-button) {
+    grid-column: 1 / -1;
+  }
+
+  .v7-tech-graph {
+    grid-template-columns: minmax(0, 1fr);
+    overflow-x: visible;
+  }
+
+  .v7-tech-branch > h3 {
+    position: sticky;
+    z-index: 2;
+    top: 0;
+    padding: 0.45rem;
+    background: var(--panel);
+  }
+}
+
+@media (max-width: 599px) {
+  .v7-match-hud {
+    inset-inline: 0.25rem;
+  }
+
+  .v7-compact-menu-toggle {
+    display: block;
+  }
+
+  .v7-hud-nav[data-compact-menu="closed"] .v7-secondary-nav-action {
+    display: none;
+  }
+
+  .v7-hud-nav button {
+    flex: 0 0 auto;
+  }
+
+  .v7-overlay {
+    inset: 0;
+    border-radius: 0;
+  }
+}
+
+@media (max-width: 320px),
+  (min-width: 600px) and (max-width: 1023px) and (min-resolution: 1.9dppx) {
+  .v7-selection-dock {
+    max-height: calc(100dvh - 8rem);
+    overflow-y: auto;
+  }
+}
+
 * {
   box-sizing: border-box;
 }
