@@ -3,12 +3,122 @@
 The headless entry point runs replay verification and complete equal-rules
 Normal-policy matches without DOM or Canvas imports.
 
+## Ruleset-7 revision-2 active contract
+
+Ruleset 7 is selected explicitly as `pulp-wars-poc-7r2`; the v6 CLI default is
+unchanged. Match creation uses the canonical playable boundary: map generation
+creates five Coins per seat, then exactly one initial `START_TURN` awards the
+first active player its two-Coin capital income, producing the initial 7/5 Coin
+split. Replay command zero reconstructs that same playable state rather than a
+raw generated map.
+
+```bash
+npm run headless -- replay path/to/v7-replay.json
+npm run headless -- match --ruleset pulp-wars-poc-7r2 --ai-count 3 --seed 0 --max-commands 30000 --max-rounds 750
+npm run headless -- batch --ruleset pulp-wars-poc-7r2 --seeds 0 --ai-counts 1,2,3 --modes rival,cooperative --max-commands 30000 --max-rounds 750
+```
+
+Only Original is registered for this revision, so an explicit faction list
+must contain `original` once per seat. Auto boards remain 11/14/16 for one,
+two, or three AI opponents. `runAiMatchV7` policy-drives every seat through the
+same `PlayerViewV7`, public Normal policy, reducer, event stream, and canonical
+hash path. Limits are 128 accepted commands per turn, 30,000 per match, and 750
+rounds. A command rejection, missing candidate, non-advancing accepted command,
+mandatory-work overflow, stall, or either match cap is a structured failure,
+not an outcome.
+
+Long local soaks may pass `onProgress` with a positive
+`progressEveryCommands` interval. The callback receives only immutable accepted
+command count, round, and active-player ID after each interval; it cannot alter
+policy inputs and is absent from canonical results and deterministic hashes.
+
+```ts
+runAiMatchV7(setup, {
+  progressEveryCommands: 100,
+  onProgress: ({ acceptedCommands, round, activePlayerId }) => {
+    // Diagnostic reporting only.
+  },
+});
+```
+
+The checked seed-0 1/2/3-AI × Rival/Cooperative completion evidence is
+[RULESET_7_NORMAL_AI_MATRIX.json](../validation/RULESET_7_NORMAL_AI_MATRIX.json).
+Regenerate its twelve actual runs from current runtime sources with:
+
+```bash
+npx tsx scripts/validate-ruleset-v7-normal-ai-matrix.ts --output docs/validation/RULESET_7_NORMAL_AI_MATRIX.json
+```
+
+The default deliberately ignores an existing artifact. An interrupted run may
+continue with `--resume`, but only without runtime changes: the validator binds
+the evidence to a fingerprint of `src/ai`, `src/engine`, and `src/headless` and
+validates every retained cell, repeat count, zero diagnostic, outcome, and hash
+before skipping it. It writes after every completed run. The fingerprint covers
+runtime TypeScript sources, not harness or toolchain
+configuration; changes outside those runtime directories still require their
+ordinary focused validation. The checked compact
+entries retain outcome, rounds, accepted-command count, diagnostics, and
+command/event/checkpoint/final hashes; repeat equality compares those four
+hashes. Wall-clock measurements are diagnostics and are deliberately excluded
+from deterministic evidence.
+
+Every result initializes zero-filled inventories for all 25 technologies, 13
+roles, 13 improvements, command kinds, event kinds, resources, rewards, and
+Defection cancellation reasons. Thus absence is represented by zero rather
+than a missing key. Counters have these units:
+
+- `commandsByKind` and `eventsByKind` count accepted commands and emitted domain
+  events. Research adoption and first round count actual `TECH_RESEARCHED`
+  events; role actions count accepted unit commands, while trained, damage,
+  kills, losses, captures, training Coins, survivors, and survivor-per-training-
+  Coin ratios retain their stated units.
+- `coinsEarned` sums positive accepted-event Coin deltas: turn income, Forest
+  clearing, Coin treasure, chosen Stockpile/Treasury, automatic Treasury,
+  Spoils, Pillage, and Disband. `coinsSpent` sums accepted public preview or
+  fixed research/training costs. The one-Coin floor counts actual income awards
+  at eligible non-besieged, non-Blackout cities; negative population records
+  the magnitude sampled at active-player turn boundaries.
+- Resource and improvement build/remove/restore/rebuild fields count events.
+  A rebuild is a later same-coordinate production build after a restoration.
+  Outage and resumption count transitions across zero live output. Live-output
+  histograms count improvement instances at active-player turn-boundary
+  snapshots, so they are samples, not lifetime event totals.
+- Pursuit activation counts the first `PURSUIT_OPENED` event only; attacks,
+  kills, paths, interruption reasons, end reasons, target spacing, and public
+  tree nodes are separate counts. Defection reservation duration is accepted
+  commands from offer through cancellation/resolution; reply and reservation
+  boundary fields count actual transitions or boundary samples.
+- Saboteur concealed/detected/exposed/cooldown values are unit-turn samples at
+  the named boundary. Blackout suppression is actual `suppressedCoins`.
+  `actionsDenied` is the count of public Train/economic command instances that
+  would be offered for that city with the active Blackout removed; it is a
+  counterfactual availability measure, not observed attempted commands or
+  private player intent.
+- Catapult shot ranges, setup turns, siege boundaries, and screened survival
+  are events or turn-boundary samples as named. Healing between volleys is the
+  sum of actual `UNIT_HEALED` and explicit/automatic `UNIT_RECOVERED` HP applied
+  to a target after one recorded Catapult shot and before its next recorded
+  Catapult shot. Coordinated attackers sums legal public Catapult shooters at
+  each shot; it is not a unique-unit count.
+
+For the first 32 accepted-command positions, the runner serializes a public
+view clone and compares public commands, applicable previews, and policy output
+against that clone. These checks detect nondeterminism or dependence on object
+identity, but clone equality alone is not proof against omniscience. Separate
+fixtures construct byte-equal public views backed by different concealed
+authority states and assert byte-equal decisions. Cooperative relationship
+audits require zero allied hostile actions and zero allied-territory path steps.
+
+The v7 API and CLI have no DOM, Canvas, animation, or presentation imports.
+Browser pacing and the yielding host callback cannot change score tuples,
+commands, ordered events, or hashes.
+
 ## Ruleset-6 active contract
 
-Headless creates `pulp-wars-poc-6`, schema/replay version 6, unless it is
-explicitly reading a historical fixture for incompatibility diagnostics. The
-ruleset-5 examples and metrics below are historical; they cannot supply a
-missing v6 default.
+The default or explicit v6 route creates `pulp-wars-poc-6`, schema/replay
+version 6, unless it is explicitly reading a historical fixture for
+incompatibility diagnostics. The ruleset-5 examples and metrics below are
+historical; they cannot supply a missing v6 default.
 
 Match and batch writers always emit required
 `mapGenerationRevision: "SPATIAL_ECONOMY"`; no CLI option produces an unmarked

@@ -6,6 +6,7 @@ import {
   authorizeOmniscientArtifactV7,
   canonicalGameStateHashV7,
   createInitialMapStateV7,
+  createPlayableGameV7,
   createReplayV7,
   createSafeLiveLogV7,
   packageOmniscientArtifactV7,
@@ -743,7 +744,7 @@ describe("ruleset-7 observation safety and Concealment", () => {
 
   it("replays a naturally researched and trained concealed Saboteur exactly", () => {
     const setup = initialV7(1_337).setup;
-    const created = createInitialMapStateV7(setup);
+    const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     let state = created.state;
     let replay = createReplayV7(setup);

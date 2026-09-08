@@ -5,7 +5,7 @@ import {
   appendReplayCommandV7,
   applyCommandV7,
   canonicalHash,
-  createInitialMapStateV7,
+  createPlayableGameV7,
   createReplayV7,
   parseReplayFileV7,
   queryPlayerCommandsV7,
@@ -35,7 +35,7 @@ const setup: MatchSetupV7 = {
 describe("ruleset-7 save and replay foundation", () => {
   it("uses an independent v7 save key and round-trips a canonical initial save", () => {
     expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r2.current");
-    const created = createInitialMapStateV7(setup);
+    const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const replay = createReplayV7(setup);
     const save = createSaveEnvelopeV7(
@@ -44,14 +44,25 @@ describe("ruleset-7 save and replay foundation", () => {
     );
     expect(parseSaveV7(JSON.stringify(save))).toEqual({ kind: "VALID", save });
     expect(save.stateHash).toBe(canonicalHash(created.state));
+    const active = created.state.turnOrder[created.state.activeSeatIndex];
+    expect(created.state.commandIndex).toBe(0);
+    expect(
+      created.state.players.find((player) => player.id === active)?.coins,
+    ).toBe(7);
+    expect(
+      created.state.players
+        .filter((player) => player.id !== active)
+        .map((player) => player.coins),
+    ).toEqual([5]);
     expect(runReplayV7(replay)).toMatchObject({
       acceptedCommands: 0,
+      state: created.state,
       stateHash: save.stateHash,
     });
   });
 
   it("round-trips a command-bearing v7 save through reducer replay", () => {
-    const created = createInitialMapStateV7(setup);
+    const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const actor = created.state.turnOrder[created.state.activeSeatIndex];
     if (actor === undefined) throw new Error("active actor missing");
@@ -74,7 +85,7 @@ describe("ruleset-7 save and replay foundation", () => {
   });
 
   it("naturally replays an offered, armed, and resolved Defection through save", () => {
-    const created = createInitialMapStateV7(setup);
+    const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     let state = created.state;
     let replay = createReplayV7(setup);
@@ -206,7 +217,7 @@ describe("ruleset-7 save and replay foundation", () => {
   // This integration-style case rebuilds five replay checkpoints, so its
   // timeout is intentionally local rather than changing the global budget.
   it("naturally saves and replays every Blackout and recovery phase", () => {
-    const created = createInitialMapStateV7(setup);
+    const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     let state = created.state;
     let replay = createReplayV7(setup);
@@ -413,7 +424,7 @@ describe("ruleset-7 save and replay foundation", () => {
   }, 15_000);
 
   it("naturally replays Muster unlock and its command-bearing Monument placement", () => {
-    const created = createInitialMapStateV7(setup);
+    const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     let state: GameStateV7 = created.state;
     let replay: ReplayFileV7 = createReplayV7(setup);
@@ -517,7 +528,7 @@ describe("ruleset-7 save and replay foundation", () => {
   });
 
   it("replays natural Windmill dependency loss, marker restoration, and full-cost repair", () => {
-    const created = createInitialMapStateV7(setup);
+    const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     let state = created.state;
     let replay = createReplayV7(setup);
@@ -686,7 +697,7 @@ describe("ruleset-7 save and replay foundation", () => {
       "INCOMPATIBLE_REPLAY",
     );
 
-    const created = createInitialMapStateV7(setup);
+    const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const current = createSaveEnvelopeV7(
       { state: created.state, replay: createReplayV7(setup) },
@@ -715,7 +726,7 @@ describe("ruleset-7 save and replay foundation", () => {
   });
 
   it("rejects mixed and unknown r1/r2 identities without fallback", () => {
-    const created = createInitialMapStateV7(setup);
+    const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const replay = createReplayV7(setup);
     const save = createSaveEnvelopeV7(
@@ -760,7 +771,7 @@ describe("ruleset-7 save and replay foundation", () => {
   });
 
   it("rejects unknown fields, malformed checkpoints, hash drift, and rejected command execution", () => {
-    const created = createInitialMapStateV7(setup);
+    const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const replay = createReplayV7(setup);
     expect(parseReplayFileV7({ ...replay, unknown: true })).toEqual({
@@ -794,7 +805,7 @@ describe("ruleset-7 save and replay foundation", () => {
   });
 
   it("does not copy the v6 missing-treasure normalization", () => {
-    const created = createInitialMapStateV7(setup);
+    const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const save = createSaveEnvelopeV7(
       { state: created.state, replay: createReplayV7(setup) },

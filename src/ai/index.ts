@@ -18,6 +18,7 @@ import {
 } from "../engine/index";
 
 export * from "./v6";
+export * from "./v7";
 
 export const NORMAL_AI_MAX_ACCEPTED_COMMANDS_PER_TURN = 128;
 

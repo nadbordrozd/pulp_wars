@@ -9,7 +9,7 @@ import {
   appendReplayCommandV7,
   assertRuleset7Registry,
   canonicalHash,
-  createInitialMapStateV7,
+  createPlayableGameV7,
   createReplayV7,
   parseEventV7,
   queryPlayerCommandsV7,
@@ -199,7 +199,7 @@ describe("ruleset-7 technology", () => {
       events: [],
     });
     expect(wrongPrerequisite.state).toBe(initial);
-    const created = createInitialMapStateV7(setup);
+    const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const base = created.state;
     const actor = base.turnOrder[base.activeSeatIndex];

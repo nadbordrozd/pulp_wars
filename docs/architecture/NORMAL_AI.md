@@ -1,4 +1,110 @@
-# Greedy Normal Ruleset-6 AI
+# Greedy Normal AI
+
+## Ruleset-7 revision-2 policy
+
+Ruleset 7 Normal is a deterministic, PRNG-free policy over `PlayerViewV7`,
+`queryAiReadyCommandsV7`, and public query/preview results. It does not import
+the reducer, `GameStateV7`, map generation, authoritative combat estimates, or
+private opponent research and economy. Browser and headless scheduling use the
+same selector. Two equal public views therefore produce byte-identical
+candidates, signed scores, and commands even when their concealed authority
+states differ.
+
+Every decision rebuilds the public candidates and compares this tuple
+lexicographically, larger first:
+
+```text
+priority, strategicValue, immediateValue, futureValue, safetyValue,
+objectiveValue, -commandKindOrdinal, -targetY, -targetX,
+-primaryEntityId, -contentOrdinal
+```
+
+The final fields use the Ruleset-7 frozen command, technology, role, reward,
+coordinate, and entity orders. `WAIT` is not a policy candidate. Mandatory
+reward choices take precedence; when no modal or Pursuit sequence is open,
+`END_TURN` is the zero-priority fallback.
+
+Research scores the marginal first step and total cost of a shortest public
+chain to a currently visible economic action or missing trainable role. Spatial
+plans use exact public previews, including recurring output, outages and
+resumptions, restored-site rebuild costs, Barracks capacity, Fortification,
+Road/Market connection, and Monument opportunity cost. An ordinary income
+floor is valued as one Coin only when the public city is neither besieged nor
+in active Blackout. Treasury is worth its actual 12 Coins; Juggernaut is a
+40-HP one-slot unit with public Push and placement consequences, not a
+fictitious purchase price. Drill Spoils is valued on the first hostile capture
+of each specific city.
+
+Combat uses only published roles, stats, positions, activation and previews.
+There are no role-ID matchup bonuses. Visible Lancer threat includes its
+public move/Charge corridor and Pursuit reach, with durable public screens
+priced separately. An open Pursuit is a global sequence lock: Normal searches
+the complete remaining public tree through at most three total attacks,
+including Pursue and End leaves. Whole branches compare strategic value,
+immediate combat value, resulting safety, and hostile spacing in that order.
+Projected Pursue preserves its special activation semantics and never invents
+ordinary movement Charge. Concealed-contact paths use conservative public leaf
+values. `END_PURSUIT` wins when no complete branch improves on ending at the
+current position. The incremental search yields between nodes; elapsed time
+never enters the score.
+
+Defection values the visible target, reserved home-city capacity, source
+survival, public escape/kill/rescue replies, duration, and visible siege
+consequence. Candidate home cities are ordered by free capacity, visible
+safety, then city ID. A reply attack counts only when its public origin, role
+range, minimum range, and move-then-primary rule make it legal; a Guard cannot
+move then attack, an adjacent Catapult cannot fire, and the marked unit may
+move through its own territory but not another allied player's territory.
+Unknown roads, blockers, or research never manufacture a guaranteed reply.
+
+Blackout value uses attributable public city income and source exposure risk.
+The policy does not infer private Coins, research, or hypothetical purchases.
+Catapult coordination sums actual public damage from every currently legal
+range-2/3 shot, setup state, public healing/recovery between volleys, screens,
+and siege geometry; an adjacent enemy blocks only that Catapult's invalid shot,
+not another unit's legal ranged shot.
+
+The per-turn cap is 128 accepted commands. Before choosing productive work,
+the scheduler reserves enough slots for every authoritative pending reward,
+every defensively observed open Lancer, and End Turn. Execution resolves the
+first serialized open Pursuit, matching the reducer's global lock. Rejection,
+missing public work, non-advancing acceptance, or inability to drain mandatory
+work is a structured failure; Normal never retries using hidden authority.
+
+`NormalPolicyWorkV7` persists command preparation, public economic/spatial
+planning, visible-hostile context, and candidate scoring for one exact view.
+Command and planning preparation each advance with an operation budget of one;
+ready tuples are created only after command preparation, and synchronous
+potential/plan consumers run only after planning has primed their exact caches.
+A globally Pursuit-locked command set skips economy planning because its public
+commands are exclusively Attack, Pursue, and End Pursuit and no candidate path
+consumes an economic potential or spatial score. The complete three-attack tree
+still yields between nodes. Synchronous selection drains this same work object,
+so time slicing changes only pause boundaries.
+
+Run the checked retained command-1100 policy benchmark with:
+
+```bash
+npx tsx scripts/benchmark-ruleset-v7-normal-policy.ts
+```
+
+It complements the separate public-planning benchmark's independently frozen
+public-query hashes with a new same-core sync/chunk policy regression. This
+command checks the retained view and policy decision hashes, not every engine
+hash itself. The new policy decision hash was recorded after scheduler
+integration, so it is not represented as a pre-refactor golden. On the
+development machine, observed constructor time was 0.9–1.5 ms, total sliced preparation/scoring was
+1.16–1.20 seconds, the largest 8 ms host slice was 12.6–13.5 ms, and no measured
+slice exceeded 16 ms. These are load-sensitive diagnostics, not portable timing
+guarantees; browser integration must measure its own host responsiveness.
+
+A Capture receives match-ending priority only when the public reducer outcome
+would end: capturing the human's last city is immediate Defeat, while removing
+the last nonhuman rival is Victory only when the human is the sole remaining
+active player. Eliminating one rival while another remains uses ordinary
+hostile-city priority.
+
+## Frozen Ruleset-6 policy
 
 Normal is deterministic, renderer-independent, observation-safe, and
 PRNG-free. It receives only `PlayerViewV6`, `queryPlayerCommands(view)`, and

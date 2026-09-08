@@ -1,7 +1,6 @@
 import { canonicalHash, canonicalJson } from "../replay/canonical";
 import { parseCommandV7, type CommandV7 } from "./commands";
-import { createInitialMapStateV7 } from "./map";
-import { applyCommandV7 } from "./reducer";
+import { applyCommandV7, createPlayableGameV7 } from "./reducer";
 import {
   hasExactKeysV7,
   isDenseArrayV7,
@@ -159,7 +158,10 @@ export function runReplayV7(input: unknown): ReplayRunResultV7 {
   if (parsed.kind === "INCOMPATIBLE_REPLAY")
     throw new ReplayErrorV7("INCOMPATIBLE_REPLAY");
   if (parsed.kind !== "VALID") throw new ReplayErrorV7("INVALID_REPLAY");
-  const created = createInitialMapStateV7(parsed.replay.setup);
+  // Replay begins at the canonical playable boundary: raw setup gives every
+  // seat five Coins, then exactly one command-index-zero Start Turn awards the
+  // first active seat's income. Hydration never runs that boundary again.
+  const created = createPlayableGameV7(parsed.replay.setup);
   if (!created.ok) throw new ReplayErrorV7("CREATE_REJECTED");
   let state = created.state;
   let hash = canonicalHash(state);

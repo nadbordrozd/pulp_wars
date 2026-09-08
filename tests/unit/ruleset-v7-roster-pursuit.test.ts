@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   applyCommandV7,
   calculateCombatPreviewV7,
-  createInitialMapStateV7,
+  createPlayableGameV7,
   createReplayV7,
   effectiveRoleRuleV7,
   movementStepCost2V7,
@@ -595,7 +595,7 @@ describe("ruleset-7 conventional roster, movement, combat, and Pursuit", () => {
 
   it("round-trips a naturally opened Pursuit through replay and save", () => {
     const setup = setupV7();
-    const created = createInitialMapStateV7(setup);
+    const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     let state = created.state;
     let replay = createReplayV7(setup);

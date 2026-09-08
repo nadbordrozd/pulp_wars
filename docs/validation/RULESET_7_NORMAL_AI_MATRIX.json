@@ -1,0 +1,204 @@
+{
+  "format": "pulp-wars-ruleset-7-normal-ai-matrix",
+  "version": 1,
+  "rulesetId": "pulp-wars-poc-7r2",
+  "runtimeFingerprint": "2cc7be54974171897f52f5503b86bd678084bc280d9df3491aabe8b57aa5b950",
+  "seed": 0,
+  "repeats": 2,
+  "expectedCells": 6,
+  "completedCells": 6,
+  "complete": true,
+  "limits": {
+    "acceptedCommandsPerTurn": 128,
+    "acceptedCommandsPerMatch": 30000,
+    "rounds": 750
+  },
+  "entries": [
+    {
+      "aiCount": 1,
+      "aiMode": "RIVAL",
+      "outcome": {
+        "kind": "DEFEAT",
+        "humanId": 1,
+        "defeatedByPlayerId": 2
+      },
+      "termination": "OUTCOME",
+      "rounds": 53,
+      "acceptedCommands": 971,
+      "diagnostics": {
+        "errors": 0,
+        "rejectedCommands": 0,
+        "mandatoryWorkOverflows": 0,
+        "stalls": 0,
+        "hiddenInformationViolations": 0,
+        "alliedHostileActions": 0,
+        "alliedTerritoryPathSteps": 0,
+        "commandCapHits": 0,
+        "roundCapHits": 0
+      },
+      "hashes": {
+        "command": "fab7a10741dad7ea432d27282c9138124e4770a73b185b9697eaa67468e9636f",
+        "event": "9f5fd78e2ebba61b6e7229d7c377899176d02179874aaf95d82ec67ba74d88f2",
+        "checkpoint": "fb6850b5d1cb19c42c794ace9cd0cfbaf5d49304a470a612228ca8b6a145a696",
+        "final": "8e449210463ad8f0c3b98ecc22ead91e69aed3f6426755db3e59f875ce3fae00"
+      },
+      "completedRuns": 2,
+      "repeatHashesEqual": true
+    },
+    {
+      "aiCount": 2,
+      "aiMode": "RIVAL",
+      "outcome": {
+        "kind": "DEFEAT",
+        "humanId": 1,
+        "defeatedByPlayerId": 3
+      },
+      "termination": "OUTCOME",
+      "rounds": 18,
+      "acceptedCommands": 319,
+      "diagnostics": {
+        "errors": 0,
+        "rejectedCommands": 0,
+        "mandatoryWorkOverflows": 0,
+        "stalls": 0,
+        "hiddenInformationViolations": 0,
+        "alliedHostileActions": 0,
+        "alliedTerritoryPathSteps": 0,
+        "commandCapHits": 0,
+        "roundCapHits": 0
+      },
+      "hashes": {
+        "command": "d5128561cd1f74acc8794ea9906ec981751d206093aeb1a91df679d7944a8767",
+        "event": "b8d71c1a2f09f0328e14acf5fe53b9cfe6c663b413cbcc30c051542c5f472ceb",
+        "checkpoint": "766cd5522233fd0f72c596e68c375bb68b3a093cae78ff008364f4d0fbb72a6a",
+        "final": "290ee9643ddb87b20edc8f60634f0f98c596e5ac1881d66b4bb993a3839b7706"
+      },
+      "completedRuns": 2,
+      "repeatHashesEqual": true
+    },
+    {
+      "aiCount": 3,
+      "aiMode": "RIVAL",
+      "outcome": {
+        "kind": "DEFEAT",
+        "humanId": 1,
+        "defeatedByPlayerId": 3
+      },
+      "termination": "OUTCOME",
+      "rounds": 40,
+      "acceptedCommands": 1334,
+      "diagnostics": {
+        "errors": 0,
+        "rejectedCommands": 0,
+        "mandatoryWorkOverflows": 0,
+        "stalls": 0,
+        "hiddenInformationViolations": 0,
+        "alliedHostileActions": 0,
+        "alliedTerritoryPathSteps": 0,
+        "commandCapHits": 0,
+        "roundCapHits": 0
+      },
+      "hashes": {
+        "command": "a676480b610c3e9118d878732884183735bd8e142dbbb40a8af5d154633bbc2b",
+        "event": "1d272cc8479de4f2100b3d6e0fb61978260f6a99af67e908e1d665a4cfd73cdc",
+        "checkpoint": "104f37f21df1adbbb0717ace27db4e17f27c03f15f48764129706edccb513c15",
+        "final": "6c62f1fee2e68279a226bf54d2ab27105b7be3532d2ea044c9cfd966a225a711"
+      },
+      "completedRuns": 2,
+      "repeatHashesEqual": true
+    },
+    {
+      "aiCount": 1,
+      "aiMode": "COOPERATIVE",
+      "outcome": {
+        "kind": "DEFEAT",
+        "humanId": 1,
+        "defeatedByPlayerId": 2
+      },
+      "termination": "OUTCOME",
+      "rounds": 53,
+      "acceptedCommands": 971,
+      "diagnostics": {
+        "errors": 0,
+        "rejectedCommands": 0,
+        "mandatoryWorkOverflows": 0,
+        "stalls": 0,
+        "hiddenInformationViolations": 0,
+        "alliedHostileActions": 0,
+        "alliedTerritoryPathSteps": 0,
+        "commandCapHits": 0,
+        "roundCapHits": 0
+      },
+      "hashes": {
+        "command": "fab7a10741dad7ea432d27282c9138124e4770a73b185b9697eaa67468e9636f",
+        "event": "9f5fd78e2ebba61b6e7229d7c377899176d02179874aaf95d82ec67ba74d88f2",
+        "checkpoint": "237c75f935fcd60668ce406504cfc3ad7c46f8a43f582e2df90235ca780d7ab5",
+        "final": "628b8ddee36fe9e0bdaaea0c0f353a7367e29f065789e5b8f40f55dfea377994"
+      },
+      "completedRuns": 2,
+      "repeatHashesEqual": true
+    },
+    {
+      "aiCount": 2,
+      "aiMode": "COOPERATIVE",
+      "outcome": {
+        "kind": "DEFEAT",
+        "humanId": 1,
+        "defeatedByPlayerId": 3
+      },
+      "termination": "OUTCOME",
+      "rounds": 19,
+      "acceptedCommands": 352,
+      "diagnostics": {
+        "errors": 0,
+        "rejectedCommands": 0,
+        "mandatoryWorkOverflows": 0,
+        "stalls": 0,
+        "hiddenInformationViolations": 0,
+        "alliedHostileActions": 0,
+        "alliedTerritoryPathSteps": 0,
+        "commandCapHits": 0,
+        "roundCapHits": 0
+      },
+      "hashes": {
+        "command": "f329c2e97c7be69dea9b252c330e3aa0b6b9547589f5d4c7796dd2e33ecfc09a",
+        "event": "4c88946a9868abdc200ed721bab3e46021b8d4e79e0bcbf0cc97791438525c62",
+        "checkpoint": "c2dd75e6741a92192664156858e1ed910f826afdaf61e4622275c28aebf1ae00",
+        "final": "9f56640f433e5c89e2f5593aff50420a9e32e86230194289414af178a20f11cb"
+      },
+      "completedRuns": 2,
+      "repeatHashesEqual": true
+    },
+    {
+      "aiCount": 3,
+      "aiMode": "COOPERATIVE",
+      "outcome": {
+        "kind": "DEFEAT",
+        "humanId": 1,
+        "defeatedByPlayerId": 2
+      },
+      "termination": "OUTCOME",
+      "rounds": 31,
+      "acceptedCommands": 993,
+      "diagnostics": {
+        "errors": 0,
+        "rejectedCommands": 0,
+        "mandatoryWorkOverflows": 0,
+        "stalls": 0,
+        "hiddenInformationViolations": 0,
+        "alliedHostileActions": 0,
+        "alliedTerritoryPathSteps": 0,
+        "commandCapHits": 0,
+        "roundCapHits": 0
+      },
+      "hashes": {
+        "command": "2e5bb823c53187b361fd1b528b5095e18074fa2b805b7c38ca0cf2be7668ebac",
+        "event": "44ecff42b0fc29366d19ef94bd6747f0f10c80984fb5c248c45ce7017c0d6c26",
+        "checkpoint": "a5db9157e993de59f720da4946b4843a6e84014b8fabaf1a577467697d4e8016",
+        "final": "5d095b755ed2a3535ad98a6449179bb160bd538b0f9a10d2c24a997c01bd7add"
+      },
+      "completedRuns": 2,
+      "repeatHashesEqual": true
+    }
+  ]
+}

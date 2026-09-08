@@ -30,6 +30,7 @@ import {
 } from "../engine/index";
 
 export * from "./v6";
+export * from "./v7";
 
 export type HeadlessResult = ReplayRunResult;
 

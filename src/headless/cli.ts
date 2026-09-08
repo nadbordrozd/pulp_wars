@@ -9,12 +9,19 @@ import {
 } from "../engine/index";
 import type { AiModeV6, FactionIdV6, MatchSetupV6 } from "../engine/v6/types";
 import type { ReplayFileV6 } from "../engine/v6/replay";
+import type { ReplayFileV7 } from "../engine/v7/replay";
+import type { MatchSetupV7 } from "../engine/v7/types";
 import { headless } from "./index";
 import {
   V6_MATCH_MAX_COMMANDS_DEFAULT,
   V6_MATCH_MAX_ROUNDS_DEFAULT,
   headlessV6,
 } from "./v6";
+import {
+  V7_MATCH_MAX_COMMANDS_DEFAULT,
+  V7_MATCH_MAX_ROUNDS_DEFAULT,
+  headlessV7,
+} from "./v7";
 
 const args = process.argv.slice(2);
 const mode = args[0] ?? "match";
@@ -27,20 +34,63 @@ if (mode === "replay") {
     readonly version?: unknown;
   };
   const result =
-    replay.version === 6
-      ? await headlessV6.run(replay as ReplayFileV6)
-      : await headless.run(replay as ReplayFile);
+    replay.version === 7
+      ? await headlessV7.run(replay as ReplayFileV7)
+      : replay.version === 6
+        ? await headlessV6.run(replay as ReplayFileV6)
+        : await headless.run(replay as ReplayFile);
   process.stdout.write(`${canonicalJson(result)}\n`);
 } else if (mode === "match") {
-  if (ruleset === "pulp-wars-poc-6") await runV6Match();
+  if (ruleset === "pulp-wars-poc-7r2") await runV7Match();
+  else if (ruleset === "pulp-wars-poc-6") await runV6Match();
   else if (ruleset === "pulp-wars-poc-5") await runV5Match();
   else invalidRuleset();
 } else if (mode === "batch") {
-  if (ruleset === "pulp-wars-poc-6") await runV6Batch();
+  if (ruleset === "pulp-wars-poc-7r2") await runV7Batch();
+  else if (ruleset === "pulp-wars-poc-6") await runV6Batch();
   else if (ruleset === "pulp-wars-poc-5") await runV5Batch();
   else invalidRuleset();
 } else {
   throw new Error(`Unknown mode: ${mode}`);
+}
+
+async function runV7Match(): Promise<void> {
+  if (args.includes("--demo"))
+    throw new Error("ruleset 7 does not support --demo");
+  const aiCount = aiCountArg("--ai-count", 1);
+  const size = boardSizeArg(aiCount);
+  const setup: MatchSetupV7 = {
+    rulesetId: "pulp-wars-poc-7r2",
+    mapGenerationRevision: "SPATIAL_ECONOMY",
+    seed: numberArg("--seed", 0),
+    width: size,
+    height: size,
+    aiCount,
+    aiDifficulty: "NORMAL",
+    aiMode: args.includes("--cooperative") ? "COOPERATIVE" : "RIVAL",
+    humanColor: "CORAL",
+    factions: factionsArgV7(aiCount),
+  };
+  const result = await headlessV7.runAiMatch(setup, {
+    maxCommands: numberArg("--max-commands", V7_MATCH_MAX_COMMANDS_DEFAULT),
+    maxRounds: numberArg("--max-rounds", V7_MATCH_MAX_ROUNDS_DEFAULT),
+  });
+  writeMatchSummary(result);
+}
+
+async function runV7Batch(): Promise<void> {
+  if (args.includes("--factions")) factionsArgV7(uniqueBatchAiCount());
+  const result = await headlessV7.runAiBatch({
+    seeds: commaNumbers("--seeds", "0,1,2,3,4,5,6,7"),
+    aiCounts: batchAiCounts(),
+    modes: modesArg(),
+    maxCommands: numberArg("--max-commands", V7_MATCH_MAX_COMMANDS_DEFAULT),
+    maxRounds: numberArg("--max-rounds", V7_MATCH_MAX_ROUNDS_DEFAULT),
+    ...(optionalNumberArg("--size") === null
+      ? {}
+      : { boardSize: boardSizeArg(1) }),
+  });
+  process.stdout.write(`${canonicalJson(result)}\n`);
 }
 
 async function runV6Match(): Promise<void> {
@@ -219,6 +269,18 @@ function factionsArgV6(aiCount: 1 | 2 | 3): readonly FactionIdV6[] {
     : Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const);
 }
 
+function factionsArgV7(aiCount: 1 | 2 | 3): readonly "ORIGINAL"[] {
+  if (!args.includes("--factions"))
+    return Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const);
+  const values = stringArg("--factions", "").split(",");
+  if (
+    values.length !== aiCount + 1 ||
+    values.some((value) => value !== "original")
+  )
+    throw new Error("ruleset 7 factions must be original for every seat");
+  return values.map(() => "ORIGINAL" as const);
+}
+
 function factionsArgV5(
   aiCount: 1 | 2 | 3,
   demo: boolean,
@@ -274,5 +336,7 @@ function parseFactionValues(
 }
 
 function invalidRuleset(): never {
-  throw new Error("--ruleset must be pulp-wars-poc-6 or pulp-wars-poc-5");
+  throw new Error(
+    "--ruleset must be pulp-wars-poc-7r2, pulp-wars-poc-6, or pulp-wars-poc-5",
+  );
 }
