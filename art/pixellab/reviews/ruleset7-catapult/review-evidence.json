@@ -1,0 +1,210 @@
+{
+  "schemaVersion": 1,
+  "status": "READY_FOR_ORCHESTRATOR_REVIEW",
+  "phase": "COMPLETE_WITH_PORTRAIT",
+  "assetClass": "ruleset7-original-catapult-world-and-portrait",
+  "world": {
+    "id": "unit-original-catapult",
+    "status": "ACCEPTED",
+    "sourcePath": "public/assets/pixellab/units/original-catapult.png",
+    "sourceSha256": "67e7f8cb6fc9a36b385eed9aecc2a12fb2884701cb7661d5503f8dbcf373c360",
+    "providerOutputSha256": "87ee3c107d205769db888bc297974d3e5a608ded5cae53c74e802c00338027dc",
+    "jobId": "a134aedb-a599-4034-b4bc-67e715f8adc4",
+    "rejectedAttempts": [
+      {
+        "candidate": "art/pixellab/quarantine/unit-original-catapult-b2f39125a2ff.png",
+        "candidateSha256": "b2f39125a2ff47f7496dbc446d8628f32c12d77774d2834679b599cfb8c061bf",
+        "providerOutputSha256": "5219cf93e4edfb05f9600e9bc7197f2bd81b8ab748b79b96133e88abccbe6525",
+        "jobId": "31b3e8b9-92ad-43a8-a854-2dfa4b9d4e76",
+        "disposition": "REJECTED",
+        "notes": "Rejected after source inspection: clear artillery arm/bowl, palette, and Breacher separation, but actual visible wheel contacts near (73,242) and (186,288) yield midpoint about (130,265), outside the required anchor tolerance; bottom-band whole-alpha alignment cannot repair the wheel geometry.",
+        "reviewedAt": "2026-09-08T13:36:26.377Z",
+        "request": {
+          "endpoint": "generate-image-v2",
+          "model": "generate-image-v2",
+          "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated Original Catapult artillery world sprite, southeast-facing three-quarter downward view. One low-wide torsion catapult with exactly two separated wheel contacts straddling x192 y288, compact tan wooden chassis, bronze braces, fixed dark-teal bindings, and one oversized diagonal throwing arm ending in an empty bowl or sling. Open negative space makes range-three artillery readable at minimum zoom. Northwest key light; darker southeast planes. No ownership mark. Transparent untrimmed 384x384; preferred alpha x30..354 y24..318, hard x16..368 y8..336. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; battering ram, explosive charge, crew, person, bow, arrow, ballista, cannon, stone, ammunition, projectile, launch trail, status or ownership mark, tall tower, floating or merged wheels, terrain-sized silhouette, city, building, road.",
+          "prompt": "Isolated Original Catapult artillery world sprite, southeast-facing three-quarter downward view. One low-wide torsion catapult with exactly two separated wheel contacts straddling x192 y288, compact tan wooden chassis, bronze braces, fixed dark-teal bindings, and one oversized diagonal throwing arm ending in an empty bowl or sling. Open negative space makes range-three artillery readable at minimum zoom. Northwest key light; darker southeast planes. No ownership mark. Transparent untrimmed 384x384; preferred alpha x30..354 y24..318, hard x16..368 y8..336.",
+          "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; battering ram, explosive charge, crew, person, bow, arrow, ballista, cannon, stone, ammunition, projectile, launch trail, status or ownership mark, tall tower, floating or merged wheels, terrain-sized silhouette, city, building, road",
+          "requestSize": { "width": 384, "height": 384 },
+          "outputSize": { "width": 384, "height": 384 },
+          "seed": 97301,
+          "noBackground": true,
+          "postprocess": "unit-fit",
+          "groundContactY": 288,
+          "styleReference": {
+            "id": "unit-original-breacher",
+            "sha256": "1e752161cd63bcb7bc0e5a0989557f61d2d7f2d3e3d9597ccc9360ed11fca2ad",
+            "usageDescription": "Match only the accepted Original siege palette, outline, flat shading, southeast camera, broad toy construction, and detail budget; replace the Breacher ram with long-range artillery."
+          }
+        }
+      },
+      {
+        "candidate": "art/pixellab/quarantine/unit-original-catapult-9682d35f047f.png",
+        "candidateSha256": "9682d35f047f799ebf5258347c25abb0294250631b267f12761e7a44373214af",
+        "providerOutputSha256": "faec97fd6c982d2d4d3b17bc01631c06ab66176f4b2409a031bf9c96ca9679b8",
+        "jobId": "6af7e988-f377-40fc-9490-673e8b3c216d",
+        "disposition": "REJECTED",
+        "notes": "Rejected after source inspection: clear empty bowl and artillery arm, but the tall A-frame and perspective-staggered contacts miss the actual paired midpoint and low-wide silhouette requirements. Three visible wheels diverged from this retry's two-wheel prompt preference, not from a normative wheel-count rule.",
+        "reviewedAt": "2026-09-08T13:41:42.894Z",
+        "request": {
+          "endpoint": "generate-image-v2",
+          "model": "generate-image-v2",
+          "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated Original Catapult artillery sprite, southeast-facing three-quarter downward view. One low-wide torsion catapult with exactly two equal wheels left-right: their bottom contacts share y288 at x128 and x256, paired midpoint x192 y288. Compact tan wood chassis, bronze braces, fixed dark-teal bindings, and one oversized diagonal arm ending in an empty bowl or sling. Open negative space makes range-three artillery readable at minimum zoom. Northwest light; darker southeast planes. No ownership mark. Transparent untrimmed 384x384; preferred alpha x30..354 y24..318, hard x16..368 y8..336. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; third wheel, perspective-staggered wheel baseline, small raised far wheel, battering ram, explosive charge, crew, person, bow, arrow, ballista, cannon, stone, ammunition, projectile, launch trail, status or ownership mark, tall tower, floating or merged wheels, terrain-sized silhouette, city, building, road.",
+          "prompt": "Isolated Original Catapult artillery sprite, southeast-facing three-quarter downward view. One low-wide torsion catapult with exactly two equal wheels left-right: their bottom contacts share y288 at x128 and x256, paired midpoint x192 y288. Compact tan wood chassis, bronze braces, fixed dark-teal bindings, and one oversized diagonal arm ending in an empty bowl or sling. Open negative space makes range-three artillery readable at minimum zoom. Northwest light; darker southeast planes. No ownership mark. Transparent untrimmed 384x384; preferred alpha x30..354 y24..318, hard x16..368 y8..336.",
+          "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; third wheel, perspective-staggered wheel baseline, small raised far wheel, battering ram, explosive charge, crew, person, bow, arrow, ballista, cannon, stone, ammunition, projectile, launch trail, status or ownership mark, tall tower, floating or merged wheels, terrain-sized silhouette, city, building, road",
+          "requestSize": { "width": 384, "height": 384 },
+          "outputSize": { "width": 384, "height": 384 },
+          "seed": 97311,
+          "noBackground": true,
+          "postprocess": "unit-fit",
+          "groundContactY": 288,
+          "styleReference": {
+            "id": "unit-original-breacher",
+            "sha256": "1e752161cd63bcb7bc0e5a0989557f61d2d7f2d3e3d9597ccc9360ed11fca2ad",
+            "usageDescription": "Match only the accepted Original siege palette, outline, flat shading, southeast camera, broad toy construction, and detail budget; replace the Breacher ram with long-range artillery."
+          }
+        }
+      }
+    ]
+  },
+  "portraitProvenance": {
+    "id": "portrait-original-catapult",
+    "status": "ACCEPTED",
+    "outputSha256": "18e928c5584fc31bd9e451601c55f7fc5b5d08a264f562b77c556c394e00dd4c",
+    "sourceSha256": "67e7f8cb6fc9a36b385eed9aecc2a12fb2884701cb7661d5503f8dbcf373c360",
+    "postprocess": "sprite-derived-portrait",
+    "providerRequestMade": false,
+    "providerOutputSha256FieldMeaning": "accepted world-source hash, not a provider portrait response"
+  },
+  "portraitReview": {
+    "status": "ACCEPTED",
+    "path": "public/assets/pixellab/ui/portrait-original-catapult.png",
+    "sha256": "18e928c5584fc31bd9e451601c55f7fc5b5d08a264f562b77c556c394e00dd4c",
+    "alphaBounds": {
+      "left": 20,
+      "top": 27,
+      "right": 236,
+      "bottom": 229,
+      "empty": false
+    },
+    "sourceSha256": "67e7f8cb6fc9a36b385eed9aecc2a12fb2884701cb7661d5503f8dbcf373c360",
+    "providerRequestMade": false
+  },
+  "measurement": {
+    "sourceDimensions": { "width": 384, "height": 384 },
+    "alphaBounds": { "left": 122, "top": 85, "right": 361, "bottom": 309 },
+    "preferredBounds": { "left": 30, "top": 64, "right": 354, "bottom": 318 },
+    "normativePreferredBounds": {
+      "left": 30,
+      "top": 24,
+      "right": 354,
+      "bottom": 318
+    },
+    "hardBounds": { "left": 16, "top": 8, "right": 368, "bottom": 336 },
+    "anchor": { "x": 192, "y": 288 },
+    "displayScale": 0.24,
+    "baselineOffsetCssPx": 18,
+    "deterministicFit": {
+      "fitOffsetXSourcePx": 50,
+      "fitOffsetYSourcePx": 21,
+      "preRepairCandidateSha256": "9b993ad52eb5aed9aea1e64a4288c7d67158028aeb50ee90e8cdb5fb8d1e4d83",
+      "method": "uniform Lanczos3 unit-fit into effective x30..354,y64..288 followed by (+50,+21) source-pixel translation"
+    },
+    "wheelContacts": {
+      "method": "explicit individually inspected prominent-wheel ground contacts tied to the final source hash; not inferred from whole bounds or bottom-band centroid",
+      "points": [
+        {
+          "x": 142,
+          "y": 267,
+          "description": "left prominent wheel ground contact"
+        },
+        {
+          "x": 240,
+          "y": 309,
+          "description": "front prominent wheel ground contact"
+        }
+      ],
+      "midpoint": { "x": 191, "y": 288 },
+      "xDeltaFromAnchor": -1,
+      "yDeltaFromAnchor": 0
+    },
+    "historicalDiamondWithoutBaselineOffset": {
+      "visibleWidthRatio": 0.4481,
+      "visibleHeightRatio": 0.7265,
+      "opaqueAreaRatio": 0.3089,
+      "adjacentOcclusionRatio": {
+        "NORTH": 0.034,
+        "EAST": 0,
+        "SOUTH": 0,
+        "WEST": 0.0187
+      },
+      "maximumRearOcclusionRatio": 0.034,
+      "preferredWidthRange": [0.5, 0.61],
+      "preferredHeightRange": [0.75, 0.95],
+      "meetsPreferredWidth": false,
+      "meetsPreferredHeight": false,
+      "preferredShortfallAcceptedForReview": "Fit prioritizes the normative actual wheel midpoint and hard bounds; minimum/native sheets retain the final CSS size for readability judgment."
+    },
+    "activeSquareWithBaselineOffset": {
+      "cellSizeCssPx": 128,
+      "placedAlphaBoundsCssPx": {
+        "left": 47.2,
+        "top": 33.28,
+        "right": 104.56,
+        "bottom": 87.04
+      },
+      "noLeftOverflow": true,
+      "noRightOverflow": true,
+      "noBottomOverflow": true,
+      "adjacentOcclusionRatio": { "NORTH": 0, "EAST": 0, "SOUTH": 0, "WEST": 0 }
+    }
+  },
+  "reviewCoverage": [
+    "source 384x384, enlarged, actual native 92.16 CSS px, and actual minimum 57.6 CSS px",
+    "0.625x, 1x, and 1.75x at DPR1 and DPR2 without panel-size normalization",
+    "active-square Grass, Forest, Mountain, city, dense building, Road, all-direction neighbor and dense-unit contexts",
+    "current-geometry city L3/population badge below the sprite and unit health above it remain visible",
+    "all four renderer-owned owner colors plus selection, damage and dim states",
+    "Catapult versus Breacher, Forest and Mountain silhouette hierarchy",
+    "accepted deterministic 256x256 portrait at nominal 64px plus separate 112x130 untrimmed WORLD-PNG contain preview",
+    "manual review: southeast camera, northwest light, low-wide arm/bowl artillery, visible contacts, no baked projectile/status/ownership/shadow/scenery"
+  ],
+  "workerVisualAssessment": "Compact low-wide throwing engine remains recognizable at minimum zoom, clearly differs from the forward Breacher ram, stays materially smaller than Forest/Mountain, and preserves city, adjacent target, label, unit and status visibility.",
+  "artifacts": [
+    {
+      "filename": "world-source-native-enlarged.png",
+      "sha256": "dc97566998bb74662b4d39a85558a2d3f7e5f73181a45b4391986906f3afc8ff",
+      "bytes": 287376
+    },
+    {
+      "filename": "world-zoom-dpr-square.png",
+      "sha256": "ff9d17462009b4465373456310d6d157d2c0b70679b9bba8deb48007ec676cd8",
+      "bytes": 113901
+    },
+    {
+      "filename": "world-square-contexts.png",
+      "sha256": "ec6fd250f5006fa7dc9485442c17281f99c226ff2525594048f1a0a6e484e5ce",
+      "bytes": 111447
+    },
+    {
+      "filename": "world-square-all-direction-neighbors.png",
+      "sha256": "e1f8c8f68f417db26a38c83bb5336011e55aea05cd7eb4371a79df00c8616313",
+      "bytes": 30291
+    },
+    {
+      "filename": "world-dense-units-owners-states.png",
+      "sha256": "6828d01d58aaac04e54458bd28048b1ad19585d546efc44d84de658f1614e22e",
+      "bytes": 68142
+    },
+    {
+      "filename": "world-silhouette-hierarchy-ui.png",
+      "sha256": "415b5c14ffeb9860ddd69fc04cd1e1bd811a3edda6f1a3b9c7c99f3ca50d9bb2",
+      "bytes": 93773
+    },
+    {
+      "filename": "portrait-source-64-contexts.png",
+      "sha256": "ba99edc1e31fc1686f61c87372b53d24ac02df4546e6f1f61ec9378d83f26a60",
+      "bytes": 130967
+    }
+  ]
+}

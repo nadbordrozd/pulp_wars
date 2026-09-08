@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "ce0b7007b84485ade5af95d14cd6fb855b7a3e43d0a7aeb568c1e49e566a9457",
+  "sourceManifestSha256": "5ccc620e247cf558ce578fa76ddb6a9a87b74c7166cf192802fffd827b9df21f",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -10566,6 +10566,178 @@
       },
       "outputSha256": "1f1efb1d20235c21fb230a60c96763b77227efa79225af6ab3c502c907895269",
       "reviewedAt": "2026-09-08T13:06:39.242Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "unit-original-catapult": {
+      "id": "unit-original-catapult",
+      "status": "ACCEPTED",
+      "jobId": "a134aedb-a599-4034-b4bc-67e715f8adc4",
+      "candidate": "art/pixellab/candidates/unit-original-catapult.png",
+      "candidateSha256": "67e7f8cb6fc9a36b385eed9aecc2a12fb2884701cb7661d5503f8dbcf373c360",
+      "providerOutputSha256": "87ee3c107d205769db888bc297974d3e5a608ded5cae53c74e802c00338027dc",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 122,
+        "top": 85,
+        "right": 361,
+        "bottom": 309,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated Original Catapult artillery sprite, southeast-facing three-quarter downward view. One squat low-wide chassis and EXACTLY TWO wheel circles total on one horizontal axle, equal wheels left and right with bottom contacts on one ground line at x128 y288 and x256 y288; paired midpoint x192 y288. Compact tan wood and bronze chassis, fixed dark-teal bindings, one oversized diagonal arm with empty bowl or sling. Open negative space makes range-three artillery readable at minimum zoom. Northwest light, darker southeast planes. No ownership mark. Transparent untrimmed 384x384; preferred x30..354 y24..318, hard x16..368 y8..336. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; third wheel, rear wheel, far wheel, staggered wheel baseline, A-frame tower, tall frame, battering ram, explosive, crew, person, bow, arrow, ballista, cannon, stone, ammunition, projectile, trail, status or ownership mark, floating or merged wheels, terrain-sized silhouette, city, building, road.",
+        "prompt": "Isolated Original Catapult artillery sprite, southeast-facing three-quarter downward view. One squat low-wide chassis and EXACTLY TWO wheel circles total on one horizontal axle, equal wheels left and right with bottom contacts on one ground line at x128 y288 and x256 y288; paired midpoint x192 y288. Compact tan wood and bronze chassis, fixed dark-teal bindings, one oversized diagonal arm with empty bowl or sling. Open negative space makes range-three artillery readable at minimum zoom. Northwest light, darker southeast planes. No ownership mark. Transparent untrimmed 384x384; preferred x30..354 y24..318, hard x16..368 y8..336.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; third wheel, rear wheel, far wheel, staggered wheel baseline, A-frame tower, tall frame, battering ram, explosive, crew, person, bow, arrow, ballista, cannon, stone, ammunition, projectile, trail, status or ownership mark, floating or merged wheels, terrain-sized silhouette, city, building, road",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 97312,
+        "noBackground": true,
+        "postprocess": "unit-fit",
+        "groundContactY": 288,
+        "fitOffsetX": 50,
+        "fitOffsetY": 21,
+        "styleReference": {
+          "id": "unit-warrior",
+          "usageDescription": "Match only the Original tan, bronze, dark-teal palette, strong outline, flat shading, southeast camera, and playful detail budget; create new artillery machinery.",
+          "sha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1"
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/unit-original-catapult-b2f39125a2ff.png",
+          "candidateSha256": "b2f39125a2ff47f7496dbc446d8628f32c12d77774d2834679b599cfb8c061bf",
+          "providerOutputSha256": "5219cf93e4edfb05f9600e9bc7197f2bd81b8ab748b79b96133e88abccbe6525",
+          "jobId": "31b3e8b9-92ad-43a8-a854-2dfa4b9d4e76",
+          "disposition": "REJECTED",
+          "notes": "Rejected after source inspection: clear artillery arm/bowl, palette, and Breacher separation, but actual visible wheel contacts near (73,242) and (186,288) yield midpoint about (130,265), outside the required anchor tolerance; bottom-band whole-alpha alignment cannot repair the wheel geometry.",
+          "reviewedAt": "2026-09-08T13:36:26.377Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated Original Catapult artillery world sprite, southeast-facing three-quarter downward view. One low-wide torsion catapult with exactly two separated wheel contacts straddling x192 y288, compact tan wooden chassis, bronze braces, fixed dark-teal bindings, and one oversized diagonal throwing arm ending in an empty bowl or sling. Open negative space makes range-three artillery readable at minimum zoom. Northwest key light; darker southeast planes. No ownership mark. Transparent untrimmed 384x384; preferred alpha x30..354 y24..318, hard x16..368 y8..336. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; battering ram, explosive charge, crew, person, bow, arrow, ballista, cannon, stone, ammunition, projectile, launch trail, status or ownership mark, tall tower, floating or merged wheels, terrain-sized silhouette, city, building, road.",
+            "prompt": "Isolated Original Catapult artillery world sprite, southeast-facing three-quarter downward view. One low-wide torsion catapult with exactly two separated wheel contacts straddling x192 y288, compact tan wooden chassis, bronze braces, fixed dark-teal bindings, and one oversized diagonal throwing arm ending in an empty bowl or sling. Open negative space makes range-three artillery readable at minimum zoom. Northwest key light; darker southeast planes. No ownership mark. Transparent untrimmed 384x384; preferred alpha x30..354 y24..318, hard x16..368 y8..336.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; battering ram, explosive charge, crew, person, bow, arrow, ballista, cannon, stone, ammunition, projectile, launch trail, status or ownership mark, tall tower, floating or merged wheels, terrain-sized silhouette, city, building, road",
+            "requestSize": {
+              "width": 384,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 384,
+              "height": 384
+            },
+            "seed": 97301,
+            "noBackground": true,
+            "postprocess": "unit-fit",
+            "groundContactY": 288,
+            "styleReference": {
+              "id": "unit-original-breacher",
+              "sha256": "1e752161cd63bcb7bc0e5a0989557f61d2d7f2d3e3d9597ccc9360ed11fca2ad",
+              "usageDescription": "Match only the accepted Original siege palette, outline, flat shading, southeast camera, broad toy construction, and detail budget; replace the Breacher ram with long-range artillery."
+            }
+          }
+        },
+        {
+          "candidate": "art/pixellab/quarantine/unit-original-catapult-9682d35f047f.png",
+          "candidateSha256": "9682d35f047f799ebf5258347c25abb0294250631b267f12761e7a44373214af",
+          "providerOutputSha256": "faec97fd6c982d2d4d3b17bc01631c06ab66176f4b2409a031bf9c96ca9679b8",
+          "jobId": "6af7e988-f377-40fc-9490-673e8b3c216d",
+          "disposition": "REJECTED",
+          "notes": "Rejected after source inspection: clear empty bowl and artillery arm, but the tall A-frame and perspective-staggered contacts miss the actual paired midpoint and low-wide silhouette requirements. Three visible wheels diverged from this retry's two-wheel prompt preference, not from a normative wheel-count rule.",
+          "reviewedAt": "2026-09-08T13:41:42.894Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Isolated Original Catapult artillery sprite, southeast-facing three-quarter downward view. One low-wide torsion catapult with exactly two equal wheels left-right: their bottom contacts share y288 at x128 and x256, paired midpoint x192 y288. Compact tan wood chassis, bronze braces, fixed dark-teal bindings, and one oversized diagonal arm ending in an empty bowl or sling. Open negative space makes range-three artillery readable at minimum zoom. Northwest light; darker southeast planes. No ownership mark. Transparent untrimmed 384x384; preferred alpha x30..354 y24..318, hard x16..368 y8..336. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; third wheel, perspective-staggered wheel baseline, small raised far wheel, battering ram, explosive charge, crew, person, bow, arrow, ballista, cannon, stone, ammunition, projectile, launch trail, status or ownership mark, tall tower, floating or merged wheels, terrain-sized silhouette, city, building, road.",
+            "prompt": "Isolated Original Catapult artillery sprite, southeast-facing three-quarter downward view. One low-wide torsion catapult with exactly two equal wheels left-right: their bottom contacts share y288 at x128 and x256, paired midpoint x192 y288. Compact tan wood chassis, bronze braces, fixed dark-teal bindings, and one oversized diagonal arm ending in an empty bowl or sling. Open negative space makes range-three artillery readable at minimum zoom. Northwest light; darker southeast planes. No ownership mark. Transparent untrimmed 384x384; preferred alpha x30..354 y24..318, hard x16..368 y8..336.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; third wheel, perspective-staggered wheel baseline, small raised far wheel, battering ram, explosive charge, crew, person, bow, arrow, ballista, cannon, stone, ammunition, projectile, launch trail, status or ownership mark, tall tower, floating or merged wheels, terrain-sized silhouette, city, building, road",
+            "requestSize": {
+              "width": 384,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 384,
+              "height": 384
+            },
+            "seed": 97311,
+            "noBackground": true,
+            "postprocess": "unit-fit",
+            "groundContactY": 288,
+            "styleReference": {
+              "id": "unit-original-breacher",
+              "sha256": "1e752161cd63bcb7bc0e5a0989557f61d2d7f2d3e3d9597ccc9360ed11fca2ad",
+              "usageDescription": "Match only the accepted Original siege palette, outline, flat shading, southeast camera, broad toy construction, and detail budget; replace the Breacher ram with long-range artillery."
+            }
+          }
+        }
+      ],
+      "notes": "Approved individual Ruleset 7 Catapult after source/enlarged, actual native/minimum/normal/maximum zoom, DPR1/2, all terrain/city/current status/building/Road/neighbor/dense-unit/owner/selection/damage/dim/UI and Breacher/Forest/Mountain comparison review. Hash-locked visible contacts (142,267) and (240,309) midpoint (191,288); compact preferred-minimum shortfalls explicitly accepted while hard bounds, occlusion and readability pass.",
+      "outputSha256": "67e7f8cb6fc9a36b385eed9aecc2a12fb2884701cb7661d5503f8dbcf373c360",
+      "reviewedAt": "2026-09-08T14:03:13.433Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "portrait-original-catapult": {
+      "id": "portrait-original-catapult",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/portrait-original-catapult.png",
+      "candidateSha256": "18e928c5584fc31bd9e451601c55f7fc5b5d08a264f562b77c556c394e00dd4c",
+      "providerOutputSha256": "67e7f8cb6fc9a36b385eed9aecc2a12fb2884701cb7661d5503f8dbcf373c360",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 20,
+        "top": 27,
+        "right": 236,
+        "bottom": 229,
+        "empty": false
+      },
+      "notes": "Accepted deterministic sprite-derived Catapult portrait after 256x256 source, enlarged, nominal 64px light/dark/high-contrast, and separate untrimmed world-sprite 112x130 contain review. Alpha x20..236 y27..229 preserves the 20px safe area; exact accepted world source hash is recorded and no portrait provider request was made.",
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted Original Catapult world sprite, preserving its complete silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+        "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Original Catapult world sprite, preserving its complete silhouette and palette with a 20 pixel transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 97302,
+        "noBackground": true,
+        "postprocess": "sprite-derived-portrait",
+        "styleReference": {
+          "id": "unit-original-catapult",
+          "sha256": "67e7f8cb6fc9a36b385eed9aecc2a12fb2884701cb7661d5503f8dbcf373c360",
+          "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+        }
+      },
+      "outputSha256": "18e928c5584fc31bd9e451601c55f7fc5b5d08a264f562b77c556c394e00dd4c",
+      "reviewedAt": "2026-09-08T14:05:18.035Z",
       "reviewChecks": {
         "source": true,
         "native": true,

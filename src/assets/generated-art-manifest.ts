@@ -43,6 +43,9 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   "unit-original-saboteur": publicArtUrl(
     "assets/pixellab/units/original-saboteur.png",
   ),
+  "unit-original-catapult": publicArtUrl(
+    "assets/pixellab/units/original-catapult.png",
+  ),
   "portrait-original-fighter": publicArtUrl(
     "assets/pixellab/ui/portrait-original-fighter.png",
   ),
@@ -78,6 +81,9 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   ),
   "portrait-original-saboteur": publicArtUrl(
     "assets/pixellab/ui/portrait-original-saboteur.png",
+  ),
+  "portrait-original-catapult": publicArtUrl(
+    "assets/pixellab/ui/portrait-original-catapult.png",
   ),
   "unit-candy-scout": publicArtUrl(
     "assets/pixellab/units/candy-jelly-scout.png",

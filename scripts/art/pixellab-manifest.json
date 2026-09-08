@@ -709,6 +709,28 @@
       "hardBounds": { "left": 16, "top": 4, "right": 240, "bottom": 252 }
     },
     {
+      "id": "unit-original-catapult",
+      "class": "units",
+      "stage": "sample",
+      "endpoint": "generate-image-v2",
+      "seed": 97312,
+      "requestSize": { "width": 384, "height": 384 },
+      "outputSize": { "width": 384, "height": 384 },
+      "transparent": true,
+      "postprocess": "unit-fit",
+      "styleReference": "unit-warrior",
+      "styleReferenceUsage": "Match only the Original tan, bronze, dark-teal palette, strong outline, flat shading, southeast camera, and playful detail budget; create new artillery machinery.",
+      "prompt": "Isolated Original Catapult artillery sprite, southeast-facing three-quarter downward view. One squat low-wide chassis and EXACTLY TWO wheel circles total on one horizontal axle, equal wheels left and right with bottom contacts on one ground line at x128 y288 and x256 y288; paired midpoint x192 y288. Compact tan wood and bronze chassis, fixed dark-teal bindings, one oversized diagonal arm with empty bowl or sling. Open negative space makes range-three artillery readable at minimum zoom. Northwest light, darker southeast planes. No ownership mark. Transparent untrimmed 384x384; preferred x30..354 y24..318, hard x16..368 y8..336.",
+      "negativePrompt": "third wheel, rear wheel, far wheel, staggered wheel baseline, A-frame tower, tall frame, battering ram, explosive, crew, person, bow, arrow, ballista, cannon, stone, ammunition, projectile, trail, status or ownership mark, floating or merged wheels, terrain-sized silhouette, city, building, road",
+      "output": "public/assets/pixellab/units/original-catapult.png",
+      "anchor": { "x": 192, "y": 288 },
+      "groundContactY": 288,
+      "fitOffsetX": 50,
+      "fitOffsetY": 21,
+      "preferredBounds": { "left": 30, "top": 64, "right": 354, "bottom": 318 },
+      "hardBounds": { "left": 16, "top": 8, "right": 368, "bottom": 336 }
+    },
+    {
       "id": "portrait-original-fighter",
       "class": "ui",
       "stage": "batch",
@@ -898,6 +920,22 @@
       "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Original Saboteur sprite, preserving its complete silhouette and palette with a 20 pixel transparent safe area.",
       "negativePrompt": "No newly generated content; deterministic accepted-sprite fit only.",
       "output": "public/assets/pixellab/ui/portrait-original-saboteur.png",
+      "hardBounds": { "left": 20, "top": 20, "right": 236, "bottom": 236 }
+    },
+    {
+      "id": "portrait-original-catapult",
+      "class": "ui",
+      "stage": "batch",
+      "endpoint": "generate-ui-v2",
+      "seed": 97302,
+      "requestSize": { "width": 256, "height": 256 },
+      "outputSize": { "width": 256, "height": 256 },
+      "transparent": true,
+      "postprocess": "sprite-derived-portrait",
+      "styleReference": "unit-original-catapult",
+      "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Original Catapult world sprite, preserving its complete silhouette and palette with a 20 pixel transparent safe area.",
+      "negativePrompt": "No newly generated content; deterministic accepted-sprite fit only.",
+      "output": "public/assets/pixellab/ui/portrait-original-catapult.png",
       "hardBounds": { "left": 20, "top": 20, "right": 236, "bottom": 236 }
     },
     {

@@ -11,7 +11,9 @@ import path from "node:path";
 import process from "node:process";
 import { format } from "prettier";
 import sharp, { type OverlayOptions } from "sharp";
+import { assertRuleset7CatapultOrder } from "./ruleset7-catapult-order";
 import { assertRuleset7OriginalUnitOrder } from "./ruleset7-original-unit-order";
+import { resolveUnitFitOffset } from "./unit-fit-offset";
 
 type ArtClass = "units" | "terrain" | "buildings" | "ui";
 type Stage = "sample" | "batch";
@@ -50,6 +52,8 @@ interface Recipe {
   readonly fitBounds?: Bounds;
   /** Deterministic source-canvas translation after fitting and ground alignment. */
   readonly fitOffsetX?: number;
+  /** Deterministic vertical translation after fitting and ground alignment. */
+  readonly fitOffsetY?: number;
   /** Deterministic downward translation of a tall terrain body before ground composition. */
   readonly bodyOffsetY?: number;
   /** Immutable accepted source used when reframing an already-produced body. */
@@ -93,6 +97,7 @@ interface RequestSnapshot {
   readonly postprocess?: Recipe["postprocess"];
   readonly groundContactY?: number;
   readonly fitOffsetX?: number;
+  readonly fitOffsetY?: number;
   readonly bodyOffsetY?: number;
   readonly styleReference?: {
     readonly id: string;
@@ -231,6 +236,7 @@ async function main(): Promise<void> {
         (ids === undefined || ids.includes(recipe.id)),
     );
     if (recipes.length === 0) throw new Error("No recipes selected");
+    assertRuleset7CatapultOrder(recipes, generated);
     assertRuleset7OriginalUnitOrder(recipes, generated);
     assertOriginalUnitOrder(recipes, generated);
     assertCandyUnitOrder(recipes, generated);
@@ -627,6 +633,8 @@ function validateSourceManifest(
     )
       throw new Error(`Invalid ground contact for ${recipe.id}`);
     if (recipe.fitOffsetX !== undefined && !Number.isInteger(recipe.fitOffsetX))
+      throw new Error(`Invalid deterministic fit offset for ${recipe.id}`);
+    if (recipe.fitOffsetY !== undefined && !Number.isInteger(recipe.fitOffsetY))
       throw new Error(`Invalid deterministic fit offset for ${recipe.id}`);
     if (
       recipe.bodyOffsetY !== undefined &&
@@ -1240,6 +1248,7 @@ function validateSourceManifest(
     ["unit-original-envoy", "sample", 256, 296, 128, 222],
     ["unit-original-lancer", "sample", 256, 296, 128, 222],
     ["unit-original-saboteur", "sample", 256, 296, 128, 222],
+    ["unit-original-catapult", "sample", 384, 384, 192, 288],
   ] as const;
   for (const [id, stage, width, height, anchorX, anchorY] of originalUnits) {
     const recipe = source.recipes.find((candidate) => candidate.id === id);
@@ -1271,6 +1280,7 @@ function validateSourceManifest(
     ["envoy", "unit-original-envoy"],
     ["lancer", "unit-original-lancer"],
     ["saboteur", "unit-original-saboteur"],
+    ["catapult", "unit-original-catapult"],
   ]);
   for (const [role, portraitSource] of portraitSources) {
     const id = `portrait-original-${role}`;
@@ -2131,6 +2141,9 @@ function requestSnapshot(
     ...(recipe.fitOffsetX === undefined
       ? {}
       : { fitOffsetX: recipe.fitOffsetX }),
+    ...(recipe.fitOffsetY === undefined
+      ? {}
+      : { fitOffsetY: recipe.fitOffsetY }),
     ...(recipe.bodyOffsetY === undefined
       ? {}
       : { bodyOffsetY: recipe.bodyOffsetY }),
@@ -3047,26 +3060,23 @@ async function normalizeToHardBounds(
         groundShift,
       );
   }
-  if (recipe.fitOffsetX !== undefined && recipe.fitOffsetX !== 0) {
+  if (
+    (recipe.fitOffsetX !== undefined && recipe.fitOffsetX !== 0) ||
+    (recipe.fitOffsetY !== undefined && recipe.fitOffsetY !== 0)
+  ) {
     inspection = await inspectPng(destination);
-    const shifted = {
-      ...inspection.alphaBounds,
-      left: inspection.alphaBounds.left + recipe.fitOffsetX,
-      right: inspection.alphaBounds.right + recipe.fitOffsetX,
-    };
-    if (
-      shifted.left < recipe.hardBounds.left ||
-      shifted.right > recipe.hardBounds.right
-    )
-      throw new Error(
-        `${recipe.id} deterministic x offset exceeds hard bounds`,
-      );
+    const offset = resolveUnitFitOffset(
+      inspection.alphaBounds,
+      recipe.hardBounds,
+      recipe.fitOffsetX,
+      recipe.fitOffsetY,
+    );
     await translatePng(
       destination,
       recipe.outputSize.width,
       recipe.outputSize.height,
-      recipe.fitOffsetX,
-      0,
+      offset.x,
+      offset.y,
     );
   }
 }
