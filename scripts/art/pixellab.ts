@@ -11,6 +11,7 @@ import path from "node:path";
 import process from "node:process";
 import { format } from "prettier";
 import sharp, { type OverlayOptions } from "sharp";
+import { assertRuleset7BuildingEconomyOrder } from "./ruleset7-building-economy-order";
 import { assertRuleset7CatapultOrder } from "./ruleset7-catapult-order";
 import { assertRuleset7OriginalUnitOrder } from "./ruleset7-original-unit-order";
 import { resolveUnitFitOffset } from "./unit-fit-offset";
@@ -237,6 +238,7 @@ async function main(): Promise<void> {
     );
     if (recipes.length === 0) throw new Error("No recipes selected");
     assertRuleset7CatapultOrder(recipes, generated);
+    assertRuleset7BuildingEconomyOrder(recipes, generated);
     assertRuleset7OriginalUnitOrder(recipes, generated);
     assertOriginalUnitOrder(recipes, generated);
     assertCandyUnitOrder(recipes, generated);
@@ -501,6 +503,7 @@ async function main(): Promise<void> {
     const inspection = await inspectPng(candidate);
     assertTechnical(recipe, inspection);
     const previous = generated.records[id];
+    const rejectedAttempts = rejectedAttemptsFrom(previous);
     const currentRequest = requestSnapshot(source, recipe);
     const currentGroundSha256 =
       currentRequest.groundReference === undefined
@@ -535,9 +538,7 @@ async function main(): Promise<void> {
                 ...previous.request,
                 groundReference: currentGroundReference,
               },
-      ...(previous?.rejectedAttempts === undefined
-        ? {}
-        : { rejectedAttempts: previous.rejectedAttempts }),
+      ...(rejectedAttempts.length === 0 ? {} : { rejectedAttempts }),
     };
     await saveGenerated(generated);
     console.log(
@@ -1017,6 +1018,49 @@ function validateSourceManifest(
       recipe.groundContactY !== 316
     )
       throw new Error(`Square civic/commerce geometry mismatch: ${id}`);
+  }
+  for (const id of [
+    "building-square-barracks",
+    "building-square-monument",
+  ] as const) {
+    const recipe = source.recipes.find((candidate) => candidate.id === id);
+    if (
+      recipe?.class !== "buildings" ||
+      recipe.stage !== "batch" ||
+      JSON.stringify(recipe.requestSize) !==
+        JSON.stringify({ width: 384, height: 384 }) ||
+      JSON.stringify(recipe.outputSize) !==
+        JSON.stringify({ width: 384, height: 384 }) ||
+      JSON.stringify(recipe.anchor) !== JSON.stringify({ x: 192, y: 288 }) ||
+      recipe.groundContactY !== 316 ||
+      recipe.postprocess !== "compact-building-fit" ||
+      JSON.stringify(recipe.preferredBounds) !==
+        JSON.stringify({ left: 24, top: 24, right: 360, bottom: 326 }) ||
+      JSON.stringify(recipe.hardBounds) !==
+        JSON.stringify({ left: 8, top: 8, right: 376, bottom: 344 }) ||
+      recipe.fitBounds === undefined ||
+      recipe.styleReference === undefined ||
+      recipe.styleReferenceUsage === undefined
+    )
+      throw new Error(`Ruleset 7 building geometry mismatch: ${id}`);
+  }
+  for (const id of ["ui-action-pillage", "ui-action-disband"] as const) {
+    const recipe = source.recipes.find((candidate) => candidate.id === id);
+    if (
+      recipe?.class !== "ui" ||
+      recipe.stage !== "batch" ||
+      recipe.endpoint !== "generate-ui-v2" ||
+      JSON.stringify(recipe.requestSize) !==
+        JSON.stringify({ width: 384, height: 384 }) ||
+      JSON.stringify(recipe.outputSize) !==
+        JSON.stringify({ width: 128, height: 128 }) ||
+      recipe.postprocess !== "lanczos3-resize" ||
+      JSON.stringify(recipe.hardBounds) !==
+        JSON.stringify({ left: 10, top: 10, right: 118, bottom: 118 }) ||
+      recipe.styleReference === undefined ||
+      recipe.styleReferenceUsage === undefined
+    )
+      throw new Error(`Ruleset 7 action geometry mismatch: ${id}`);
   }
   const candyTerrainIds = [
     "terrain-candy-grass-1",

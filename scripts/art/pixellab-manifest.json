@@ -33,6 +33,30 @@
       "notes": "Ruleset 6 Lumber Camp deliberately reuses the accepted Lumber Mill raster after dedicated Forest-cluster and contributor revalidation; no duplicate raster is generated."
     },
     {
+      "id": "ui-selection-barracks",
+      "source": "building-square-barracks",
+      "semanticRole": "BARRACKS_SELECTION",
+      "notes": "Ruleset 7 Barracks selection identity explicitly reuses the exact accepted shared world sprite with its original transparent padding in the 112 x 130 viewport."
+    },
+    {
+      "id": "ui-action-build-barracks",
+      "source": "building-square-barracks",
+      "semanticRole": "BUILD_BARRACKS",
+      "notes": "Ruleset 7 Build Barracks explicitly reuses the exact accepted shared world sprite in the contextual action viewport; cost, capacity and availability remain code-native."
+    },
+    {
+      "id": "ui-selection-monument",
+      "source": "building-square-monument",
+      "semanticRole": "MONUMENT_SELECTION",
+      "notes": "Ruleset 7 Monument selection identity explicitly reuses the exact accepted shared world sprite with its original transparent padding in the 112 x 130 viewport."
+    },
+    {
+      "id": "ui-action-build-monument",
+      "source": "building-square-monument",
+      "semanticRole": "BUILD_MONUMENT",
+      "notes": "Ruleset 7 Build Monument explicitly reuses one accepted shared civic world sprite for both Engineer and Muster; achievement source, entitlement, +3 population and availability remain code-native."
+    },
+    {
       "id": "unit-original-fighter",
       "source": "unit-warrior",
       "semanticRole": "ORIGINAL_FIGHTER",
@@ -3898,6 +3922,90 @@
       "fitBounds": { "left": 68, "top": 136, "right": 188, "bottom": 222 },
       "postprocess": "compact-building-fit",
       "hardBounds": { "left": 20, "top": 16, "right": 236, "bottom": 246 }
+    },
+    {
+      "id": "building-square-barracks",
+      "class": "buildings",
+      "stage": "batch",
+      "endpoint": "generate-image-v2",
+      "seed": 107401,
+      "requestSize": { "width": 384, "height": 384 },
+      "outputSize": { "width": 384, "height": 384 },
+      "transparent": true,
+      "includeFactionLanguage": false,
+      "postprocess": "compact-building-fit",
+      "styleReference": "building-square-workshop",
+      "styleReferenceUsage": "Match only the accepted square Workshop's transparent isolation, compact processor scale, strong charcoal-teal outline, broad flat shading, southeast three-quarter camera and northwest light. Create a distinct low-wide military training structure, not another craft shed.",
+      "palette": "warm bronze training timber, parchment lintel and bindings, muted slate-blue shield rack, restrained moss accent, dark teal-charcoal outline and southeast shadow",
+      "prompt": "Shared square-grid Barracks on a transparent 384 by 384 canvas, anchor 192,288. One squat open military drill shelter with a single broad crenellated parchment lintel, exactly two oversized crossed bronze practice spears and one wide slate-blue shield rack. Its low-wide functional silhouette reads as training capacity, distinct from the Workshop, Grand Works, Market and cities. Fit x88..296,y110..316 with centered grounded mass and clear lower-center space for an unchanged unit and status. Southeast-facing three-quarter downward camera; soft northwest key light, darker southeast planes, strong charcoal-teal outline and two-to-three flat tones. Upward overflow only; no ground or baked state.",
+      "negativePrompt": "soldier, person, unit, armory interior, weapon pile, sword rack, arrows, target dummy, flag, banner, ownership color, fortress, castle, city wall, watchtower, city, village, house, workshop gear, market canopy, monument, trophy, ground, platform, cast shadow, left right or bottom overflow, clipping, lower-right light, capacity square, pip, number, cost, selection, status, text, UI, realistic architecture, tiny detail, painterly, 3D",
+      "output": "public/assets/pixellab/buildings-square/barracks.png",
+      "anchor": { "x": 192, "y": 288 },
+      "groundContactY": 316,
+      "preferredBounds": { "left": 24, "top": 24, "right": 360, "bottom": 326 },
+      "fitBounds": { "left": 88, "top": 110, "right": 296, "bottom": 316 },
+      "hardBounds": { "left": 8, "top": 8, "right": 376, "bottom": 344 }
+    },
+    {
+      "id": "building-square-monument",
+      "class": "buildings",
+      "stage": "batch",
+      "endpoint": "generate-image-v2",
+      "seed": 107402,
+      "requestSize": { "width": 384, "height": 384 },
+      "outputSize": { "width": 384, "height": 384 },
+      "transparent": true,
+      "includeFactionLanguage": false,
+      "postprocess": "compact-building-fit",
+      "styleReference": "building-square-grand-works",
+      "styleReferenceUsage": "Match only the accepted square civic family's isolation, strong outline, flat shading, southeast camera, northwest light and neutral palette; create a simpler shared landmark.",
+      "palette": "parchment and muted blue-slate civic stone, warm bronze open laurel arc, restrained golden cap, dark teal-charcoal outline and southeast shadow",
+      "prompt": "One shared square-grid civic Monument on a transparent 384 by 384 canvas, anchor 192,288, reused unchanged for Engineer and Muster. A broad two-step blue-slate plinth supports one tall rounded parchment stele, one open warm-bronze laurel arc and one small faceted muted-gold cap. Its restrained tall-narrow civic silhouette is distinct from every processor, Workshop, Grand Works, Market and city without becoming a settlement. Fit x104..280,y72..316 with visibly centered grounded mass and clear unit/status space. Southeast-facing three-quarter downward camera; soft northwest key light, darker southeast planes, strong charcoal-teal outline and two-to-three flat tones. Upward overflow only; no ground or baked state.",
+      "negativePrompt": "two monuments, achievement variant, engineer or muster symbol, trophy, crown, flag, ownership color, person, statue, religious or national symbol, faction motif, temple, obelisk, tower, castle, city, village, workshop, factory, market, street, ground, cast shadow, left right or bottom overflow, clipping, lower-right light, population square, plus sign, pips, number, entitlement, selection, status, text, UI, realistic architecture, tiny engraving, painterly, 3D",
+      "output": "public/assets/pixellab/buildings-square/monument.png",
+      "anchor": { "x": 192, "y": 288 },
+      "groundContactY": 316,
+      "preferredBounds": { "left": 24, "top": 24, "right": 360, "bottom": 326 },
+      "fitBounds": { "left": 104, "top": 72, "right": 280, "bottom": 316 },
+      "hardBounds": { "left": 8, "top": 8, "right": 376, "bottom": 344 }
+    },
+    {
+      "id": "ui-action-pillage",
+      "class": "ui",
+      "stage": "batch",
+      "endpoint": "generate-ui-v2",
+      "seed": 107403,
+      "requestSize": { "width": 384, "height": 384 },
+      "outputSize": { "width": 128, "height": 128 },
+      "transparent": true,
+      "includeFactionLanguage": false,
+      "postprocess": "lanczos3-resize",
+      "styleReference": "ui-action-redevelop",
+      "styleReferenceUsage": "Match only the accepted action family's centered transparent safe area, heavy charcoal-teal outline, flat two-level shading and small-size readability. Create a distinct destructive-economy symbol, not a replacement or construction command.",
+      "palette": "warm bronze mallet, parchment splintered plank, restrained coral break accent, dark teal-charcoal outline",
+      "prompt": "Exactly one standard action icon for Pillage only: one enormous diagonal warm-bronze war mallet cracking one broad parchment timber plank into exactly two large pieces. One compact connected destructive silhouette, centered with at least eight percent transparent safe area, readable without text at 32 CSS pixels and in the 112 by 130 contextual viewport. Soft northwest highlight, darker southeast planes, strong charcoal-teal outline and two-level flat cel shading. No loot or reward amount.",
+      "negativePrompt": "coin, spoils, treasure, money bag, number, plus one, fire, flames, explosion, blood, person, unit, sword, axe, construction, repair, recycle arrow, disband, waving hand, running figure, ground, scene, panel, button, state badge, ownership color, text, letters, thin lines, tiny fragments, glow, gradient, cast shadow",
+      "output": "public/assets/pixellab/ui/action-pillage.png",
+      "hardBounds": { "left": 10, "top": 10, "right": 118, "bottom": 118 }
+    },
+    {
+      "id": "ui-action-disband",
+      "class": "ui",
+      "stage": "batch",
+      "endpoint": "generate-ui-v2",
+      "seed": 107404,
+      "requestSize": { "width": 384, "height": 384 },
+      "outputSize": { "width": 128, "height": 128 },
+      "transparent": true,
+      "includeFactionLanguage": false,
+      "postprocess": "lanczos3-resize",
+      "styleReference": "ui-action-wait",
+      "styleReferenceUsage": "Match only the accepted action family's centered transparent safe area, heavy charcoal-teal outline, flat two-level shading and small-size readability. Create a peaceful remove-unit command that cannot read as Wait or Pillage.",
+      "palette": "parchment glove, muted slate-blue empty helmet, warm bronze strap, dark teal-charcoal outline",
+      "prompt": "Exactly one standard action icon for Disband only: one large open parchment gloved hand setting down one empty slate-blue helmet with a loose warm-bronze chin strap. One compact connected peaceful farewell silhouette, centered with at least eight percent transparent safe area, readable without text at 32 CSS pixels and in the 112 by 130 contextual viewport. Soft northwest highlight, darker southeast planes, strong charcoal-teal outline and two-level flat cel shading. No person, injury or coin refund.",
+      "negativePrompt": "person, face, soldier, dead body, blood, injury, surrender flag, white flag, coin, refund, number, plus sign, pillage, broken building, mallet, weapon, hourglass, wait, clock, running figure, arrow, ground, scene, panel, button, state badge, ownership color, text, letters, thin lines, tiny detail, glow, gradient, cast shadow",
+      "output": "public/assets/pixellab/ui/action-disband.png",
+      "hardBounds": { "left": 10, "top": 10, "right": 118, "bottom": 118 }
     }
   ]
 }

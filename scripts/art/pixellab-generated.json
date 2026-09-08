@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "5ccc620e247cf558ce578fa76ddb6a9a87b74c7166cf192802fffd827b9df21f",
+  "sourceManifestSha256": "b1c6520fdc5dd818f22bc89cdfeeeb60506b46b0cbd4abf3503f2f23e11421c9",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -10738,6 +10738,252 @@
       },
       "outputSha256": "18e928c5584fc31bd9e451601c55f7fc5b5d08a264f562b77c556c394e00dd4c",
       "reviewedAt": "2026-09-08T14:05:18.035Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-square-barracks": {
+      "id": "building-square-barracks",
+      "status": "ACCEPTED",
+      "jobId": "769b92db-ad81-4cfe-bcbe-6358b4a485db",
+      "candidate": "art/pixellab/candidates/building-square-barracks.png",
+      "candidateSha256": "f924d1646ec42185ef42dbb79966e0405b2e619447365044bda8b2d46037fae6",
+      "providerOutputSha256": "b19ea66fc3f9a81e564a60928c91303eaacd6f70f4f4460d80704df38007aef2",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 103,
+        "top": 110,
+        "right": 280,
+        "bottom": 316,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm bronze training timber, parchment lintel and bindings, muted slate-blue shield rack, restrained moss accent, dark teal-charcoal outline and southeast shadow. Shared square-grid Barracks on a transparent 384 by 384 canvas, anchor 192,288. One squat open military drill shelter with a single broad crenellated parchment lintel, exactly two oversized crossed bronze practice spears and one wide slate-blue shield rack. Its low-wide functional silhouette reads as training capacity, distinct from the Workshop, Grand Works, Market and cities. Fit x88..296,y110..316 with centered grounded mass and clear lower-center space for an unchanged unit and status. Southeast-facing three-quarter downward camera; soft northwest key light, darker southeast planes, strong charcoal-teal outline and two-to-three flat tones. Upward overflow only; no ground or baked state. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; soldier, person, unit, armory interior, weapon pile, sword rack, arrows, target dummy, flag, banner, ownership color, fortress, castle, city wall, watchtower, city, village, house, workshop gear, market canopy, monument, trophy, ground, platform, cast shadow, left right or bottom overflow, clipping, lower-right light, capacity square, pip, number, cost, selection, status, text, UI, realistic architecture, tiny detail, painterly, 3D.",
+        "prompt": "Shared square-grid Barracks on a transparent 384 by 384 canvas, anchor 192,288. One squat open military drill shelter with a single broad crenellated parchment lintel, exactly two oversized crossed bronze practice spears and one wide slate-blue shield rack. Its low-wide functional silhouette reads as training capacity, distinct from the Workshop, Grand Works, Market and cities. Fit x88..296,y110..316 with centered grounded mass and clear lower-center space for an unchanged unit and status. Southeast-facing three-quarter downward camera; soft northwest key light, darker southeast planes, strong charcoal-teal outline and two-to-three flat tones. Upward overflow only; no ground or baked state.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; soldier, person, unit, armory interior, weapon pile, sword rack, arrows, target dummy, flag, banner, ownership color, fortress, castle, city wall, watchtower, city, village, house, workshop gear, market canopy, monument, trophy, ground, platform, cast shadow, left right or bottom overflow, clipping, lower-right light, capacity square, pip, number, cost, selection, status, text, UI, realistic architecture, tiny detail, painterly, 3D",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 107401,
+        "noBackground": true,
+        "palette": "warm bronze training timber, parchment lintel and bindings, muted slate-blue shield rack, restrained moss accent, dark teal-charcoal outline and southeast shadow",
+        "postprocess": "compact-building-fit",
+        "groundContactY": 316,
+        "styleReference": {
+          "id": "building-square-workshop",
+          "sha256": "6fb28673147cd9b0c875a6d10aaec4d7673ce577cf2edb3e7814b24ef265fbbb",
+          "usageDescription": "Match only the accepted square Workshop's transparent isolation, compact processor scale, strong charcoal-teal outline, broad flat shading, southeast three-quarter camera and northwest light. Create a distinct low-wide military training structure, not another craft shed."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/building-square-barracks-f924d1646ec4.png",
+          "candidateSha256": "f924d1646ec42185ef42dbb79966e0405b2e619447365044bda8b2d46037fae6",
+          "providerOutputSha256": "b19ea66fc3f9a81e564a60928c91303eaacd6f70f4f4460d80704df38007aef2",
+          "jobId": "769b92db-ad81-4cfe-bcbe-6358b4a485db",
+          "disposition": "REJECTED",
+          "notes": "Rejected after source/native/enlarged, actual 0.625/1/1.75 DPR1/2, square Road and occupied-unit/status review: the silhouette is readable and bounded, but the provider added a solid tan floor/base plate. That baked ground obscures authoritative terrain and Road treatment and violates the transparent isolated-building contract. Retry with four independently visible post feet ending directly on transparency and a simpler non-fortress training-rack lintel.",
+          "reviewedAt": "2026-09-08T15:20:42.653Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm bronze training timber, parchment lintel and bindings, muted slate-blue shield rack, restrained moss accent, dark teal-charcoal outline and southeast shadow. Shared square-grid Barracks on a transparent 384 by 384 canvas, anchor 192,288. One squat open military drill shelter with a single broad crenellated parchment lintel, exactly two oversized crossed bronze practice spears and one wide slate-blue shield rack. Its low-wide functional silhouette reads as training capacity, distinct from the Workshop, Grand Works, Market and cities. Fit x88..296,y110..316 with centered grounded mass and clear lower-center space for an unchanged unit and status. Southeast-facing three-quarter downward camera; soft northwest key light, darker southeast planes, strong charcoal-teal outline and two-to-three flat tones. Upward overflow only; no ground or baked state. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; soldier, person, unit, armory interior, weapon pile, sword rack, arrows, target dummy, flag, banner, ownership color, fortress, castle, city wall, watchtower, city, village, house, workshop gear, market canopy, monument, trophy, ground, platform, cast shadow, left right or bottom overflow, clipping, lower-right light, capacity square, pip, number, cost, selection, status, text, UI, realistic architecture, tiny detail, painterly, 3D.",
+            "prompt": "Shared square-grid Barracks on a transparent 384 by 384 canvas, anchor 192,288. One squat open military drill shelter with a single broad crenellated parchment lintel, exactly two oversized crossed bronze practice spears and one wide slate-blue shield rack. Its low-wide functional silhouette reads as training capacity, distinct from the Workshop, Grand Works, Market and cities. Fit x88..296,y110..316 with centered grounded mass and clear lower-center space for an unchanged unit and status. Southeast-facing three-quarter downward camera; soft northwest key light, darker southeast planes, strong charcoal-teal outline and two-to-three flat tones. Upward overflow only; no ground or baked state.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; soldier, person, unit, armory interior, weapon pile, sword rack, arrows, target dummy, flag, banner, ownership color, fortress, castle, city wall, watchtower, city, village, house, workshop gear, market canopy, monument, trophy, ground, platform, cast shadow, left right or bottom overflow, clipping, lower-right light, capacity square, pip, number, cost, selection, status, text, UI, realistic architecture, tiny detail, painterly, 3D",
+            "requestSize": {
+              "width": 384,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 384,
+              "height": 384
+            },
+            "seed": 107401,
+            "noBackground": true,
+            "palette": "warm bronze training timber, parchment lintel and bindings, muted slate-blue shield rack, restrained moss accent, dark teal-charcoal outline and southeast shadow",
+            "postprocess": "compact-building-fit",
+            "groundContactY": 316,
+            "styleReference": {
+              "id": "building-square-workshop",
+              "sha256": "6fb28673147cd9b0c875a6d10aaec4d7673ce577cf2edb3e7814b24ef265fbbb",
+              "usageDescription": "Match only the accepted square Workshop's transparent isolation, compact processor scale, strong charcoal-teal outline, broad flat shading, southeast three-quarter camera and northwest light. Create a distinct low-wide military training structure, not another craft shed."
+            }
+          }
+        }
+      ],
+      "outputSha256": "f924d1646ec42185ef42dbb79966e0405b2e619447365044bda8b2d46037fae6",
+      "notes": "Accepted after orchestrator reconsideration of the preserved first rejection: the compact tan plane is a legitimate shelter floor structurally tied to four posts, not scenery or a tile-sized terrain slab, and is consistent with accepted Workshop/Market bases. Exact resumed provider job and candidate bytes match the independently approved f924d1646ec4 candidate. Source/native/enlarged, actual 0.625/1/1.75 DPR1/2 square placement, Road/ownership/selection, nearby processors, unchanged occupied Warrior/status and exact 112x130 original-padding viewport pass. The crossed practice spears and shield rack remain readable, the crenellated lintel does not read as a city/fortress at gameplay scale, NW light and darker SE planes match the family, bounds x103..280 y110..316 are centered/grounded with no lateral/bottom overflow, and no owner/capacity/count/text/state is baked.",
+      "reviewedAt": "2026-09-08T15:24:55.195Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-square-monument": {
+      "id": "building-square-monument",
+      "status": "ACCEPTED",
+      "jobId": "37681323-f764-4a9a-95ed-01311bb5b455",
+      "candidate": "art/pixellab/candidates/building-square-monument.png",
+      "candidateSha256": "7224ed8251b4bc99d289716eddc13ed240bbf63abb671100e408e5f1c5f99ce4",
+      "providerOutputSha256": "01ed81006160cb02c11d638cf941ef55b7d25640161566f549c25e9176107f45",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 117,
+        "top": 72,
+        "right": 266,
+        "bottom": 316,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: parchment and muted blue-slate civic stone, warm bronze open laurel arc, restrained golden cap, dark teal-charcoal outline and southeast shadow. One shared square-grid civic Monument on a transparent 384 by 384 canvas, anchor 192,288, reused unchanged for Engineer and Muster. A broad two-step blue-slate plinth supports one tall rounded parchment stele, one open warm-bronze laurel arc and one small faceted muted-gold cap. Its restrained tall-narrow civic silhouette is distinct from every processor, Workshop, Grand Works, Market and city without becoming a settlement. Fit x104..280,y72..316 with visibly centered grounded mass and clear unit/status space. Southeast-facing three-quarter downward camera; soft northwest key light, darker southeast planes, strong charcoal-teal outline and two-to-three flat tones. Upward overflow only; no ground or baked state. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; two monuments, achievement variant, engineer or muster symbol, trophy, crown, flag, ownership color, person, statue, religious or national symbol, faction motif, temple, obelisk, tower, castle, city, village, workshop, factory, market, street, ground, cast shadow, left right or bottom overflow, clipping, lower-right light, population square, plus sign, pips, number, entitlement, selection, status, text, UI, realistic architecture, tiny engraving, painterly, 3D.",
+        "prompt": "One shared square-grid civic Monument on a transparent 384 by 384 canvas, anchor 192,288, reused unchanged for Engineer and Muster. A broad two-step blue-slate plinth supports one tall rounded parchment stele, one open warm-bronze laurel arc and one small faceted muted-gold cap. Its restrained tall-narrow civic silhouette is distinct from every processor, Workshop, Grand Works, Market and city without becoming a settlement. Fit x104..280,y72..316 with visibly centered grounded mass and clear unit/status space. Southeast-facing three-quarter downward camera; soft northwest key light, darker southeast planes, strong charcoal-teal outline and two-to-three flat tones. Upward overflow only; no ground or baked state.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; two monuments, achievement variant, engineer or muster symbol, trophy, crown, flag, ownership color, person, statue, religious or national symbol, faction motif, temple, obelisk, tower, castle, city, village, workshop, factory, market, street, ground, cast shadow, left right or bottom overflow, clipping, lower-right light, population square, plus sign, pips, number, entitlement, selection, status, text, UI, realistic architecture, tiny engraving, painterly, 3D",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 107402,
+        "noBackground": true,
+        "palette": "parchment and muted blue-slate civic stone, warm bronze open laurel arc, restrained golden cap, dark teal-charcoal outline and southeast shadow",
+        "postprocess": "compact-building-fit",
+        "groundContactY": 316,
+        "styleReference": {
+          "id": "building-square-grand-works",
+          "sha256": "e5407270dc3c55eec4b9ee34c913afe7f79c0426a4ba8933ae82bfdd18bc50cf",
+          "usageDescription": "Match only the accepted square civic family's isolation, strong outline, flat shading, southeast camera, northwest light and neutral palette; create a simpler shared landmark."
+        }
+      },
+      "outputSha256": "7224ed8251b4bc99d289716eddc13ed240bbf63abb671100e408e5f1c5f99ce4",
+      "notes": "Accepted after worker and independent orchestrator review of exact candidate 7224ed8251b4 from PixelLab job 37681323-f764-4a9a-95ed-01311bb5b455. This successful request follows the preserved earlier pre-job HTTP 402 funding failure, which produced no job or candidate. Source/native/enlarged and actual 0.625/1/1.75 DPR1/2 padded square proofs pass; bounds x117..266 y72..316 are centered on anchor192,288 with grounded stepped plinth, fully visible small golden cap and no lateral/bottom overflow. Forest/Mountain/city/processor/Road/multiple-owner/selection/unchanged-unit/status and actual building-under-fog contexts pass. The neutral rounded parchment stele, blue-slate plinth and open bronze laurel remain legible at minimum zoom, distinct from cities and economic processors, match northwest light and flat family shading, and bake no achievement, owner, state, person, faction, text or UI. Exact 112x130 original transparent-padding contain remains readable on light, dark and high-contrast panels.",
+      "reviewedAt": "2026-09-08T16:33:03.963Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-action-disband": {
+      "id": "ui-action-disband",
+      "status": "ACCEPTED",
+      "jobId": "b147b4e3-b084-4554-a194-843541182298",
+      "candidate": "art/pixellab/candidates/ui-action-disband.png",
+      "candidateSha256": "e6d7bc99de393c63a1c7e9aa51169fef87ec52f7841f1b0d43cdaf94d9d57548",
+      "providerOutputSha256": "d30aba10ab8a21b65b6e976490d31a0263a1b3ca5ff5118770bb29115d38188c",
+      "width": 128,
+      "height": 128,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 19,
+        "top": 10,
+        "right": 109,
+        "bottom": 118,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: parchment glove, muted slate-blue empty helmet, warm bronze strap, dark teal-charcoal outline. Exactly one standard action icon for Disband only: one large open parchment gloved hand setting down one empty slate-blue helmet with a loose warm-bronze chin strap. One compact connected peaceful farewell silhouette, centered with at least eight percent transparent safe area, readable without text at 32 CSS pixels and in the 112 by 130 contextual viewport. Soft northwest highlight, darker southeast planes, strong charcoal-teal outline and two-level flat cel shading. No person, injury or coin refund. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; person, face, soldier, dead body, blood, injury, surrender flag, white flag, coin, refund, number, plus sign, pillage, broken building, mallet, weapon, hourglass, wait, clock, running figure, arrow, ground, scene, panel, button, state badge, ownership color, text, letters, thin lines, tiny detail, glow, gradient, cast shadow.",
+        "prompt": "Exactly one standard action icon for Disband only: one large open parchment gloved hand setting down one empty slate-blue helmet with a loose warm-bronze chin strap. One compact connected peaceful farewell silhouette, centered with at least eight percent transparent safe area, readable without text at 32 CSS pixels and in the 112 by 130 contextual viewport. Soft northwest highlight, darker southeast planes, strong charcoal-teal outline and two-level flat cel shading. No person, injury or coin refund.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; person, face, soldier, dead body, blood, injury, surrender flag, white flag, coin, refund, number, plus sign, pillage, broken building, mallet, weapon, hourglass, wait, clock, running figure, arrow, ground, scene, panel, button, state badge, ownership color, text, letters, thin lines, tiny detail, glow, gradient, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 128,
+          "height": 128
+        },
+        "seed": 107404,
+        "noBackground": true,
+        "palette": "parchment glove, muted slate-blue empty helmet, warm bronze strap, dark teal-charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-action-wait",
+          "sha256": "453bb7b53e3244749e3e312451a28c0601040584ff83d1aba57c2d22751ca2fa",
+          "usageDescription": "Match only the accepted action family's centered transparent safe area, heavy charcoal-teal outline, flat two-level shading and small-size readability. Create a peaceful remove-unit command that cannot read as Wait or Pillage."
+        }
+      },
+      "outputSha256": "e6d7bc99de393c63a1c7e9aa51169fef87ec52f7841f1b0d43cdaf94d9d57548",
+      "notes": "Accepted exact initial-pair Disband candidate after worker and independent orchestrator review. PixelLab job b147b4e3-b084-4554-a194-843541182298 and candidate e6d7bc99de39 preserve one open parchment hand setting down one empty slate-blue helmet with a loose bronze strap. Source128, enlarged inspection, actual32 CSS light/dark/grayscale, exact112x130 transparent original-padding light/dark/high-contrast viewport and exact176 CSS-pixel action-button context pass. Bounds x19..109 y10..118 retain safe transparent space and clean strong outline. The peaceful remove-unit silhouette stays distinct from Wait and Pillage and includes no person, death, injury, surrender, refund, coin, amount, owner, state, focus, scene or text baked into the raster.",
+      "reviewedAt": "2026-09-08T16:41:20.537Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-action-pillage": {
+      "id": "ui-action-pillage",
+      "status": "ACCEPTED",
+      "jobId": "64394eb2-ee33-4d81-b1e1-282ecf77f85a",
+      "candidate": "art/pixellab/candidates/ui-action-pillage.png",
+      "candidateSha256": "34c33e31dc1694e9e7147bcb0d2f7c99f3501788a71091bdc4d64ce255773336",
+      "providerOutputSha256": "5cbaef65241c6f4c4bd8da90773d8d06ea153796e35b1ded057d65c8d40dc47f",
+      "width": 128,
+      "height": 128,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 15,
+        "top": 10,
+        "right": 113,
+        "bottom": 115,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm bronze mallet, parchment splintered plank, restrained coral break accent, dark teal-charcoal outline. Exactly one standard action icon for Pillage only: one enormous diagonal warm-bronze war mallet cracking one broad parchment timber plank into exactly two large pieces. One compact connected destructive silhouette, centered with at least eight percent transparent safe area, readable without text at 32 CSS pixels and in the 112 by 130 contextual viewport. Soft northwest highlight, darker southeast planes, strong charcoal-teal outline and two-level flat cel shading. No loot or reward amount. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; coin, spoils, treasure, money bag, number, plus one, fire, flames, explosion, blood, person, unit, sword, axe, construction, repair, recycle arrow, disband, waving hand, running figure, ground, scene, panel, button, state badge, ownership color, text, letters, thin lines, tiny fragments, glow, gradient, cast shadow.",
+        "prompt": "Exactly one standard action icon for Pillage only: one enormous diagonal warm-bronze war mallet cracking one broad parchment timber plank into exactly two large pieces. One compact connected destructive silhouette, centered with at least eight percent transparent safe area, readable without text at 32 CSS pixels and in the 112 by 130 contextual viewport. Soft northwest highlight, darker southeast planes, strong charcoal-teal outline and two-level flat cel shading. No loot or reward amount.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; coin, spoils, treasure, money bag, number, plus one, fire, flames, explosion, blood, person, unit, sword, axe, construction, repair, recycle arrow, disband, waving hand, running figure, ground, scene, panel, button, state badge, ownership color, text, letters, thin lines, tiny fragments, glow, gradient, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 128,
+          "height": 128
+        },
+        "seed": 107403,
+        "noBackground": true,
+        "palette": "warm bronze mallet, parchment splintered plank, restrained coral break accent, dark teal-charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-action-redevelop",
+          "sha256": "ef289cf3b0712229a92aeec1769a15dddf6765983ced244043f5def001ed3d46",
+          "usageDescription": "Match only the accepted action family's centered transparent safe area, heavy charcoal-teal outline, flat two-level shading and small-size readability. Create a distinct destructive-economy symbol, not a replacement or construction command."
+        }
+      },
+      "outputSha256": "34c33e31dc1694e9e7147bcb0d2f7c99f3501788a71091bdc4d64ce255773336",
+      "notes": "Accepted exact initial-pair Pillage candidate after worker and independent orchestrator review. PixelLab job 64394eb2-ee33-4d81-b1e1-282ecf77f85a and candidate 34c33e31dc16 preserve one oversized bronze mallet cracking one broad parchment timber into two large readable pieces. Source128, enlarged inspection, actual32 CSS light/dark/grayscale, exact112x130 transparent original-padding light/dark/high-contrast viewport and exact176 CSS-pixel action-button context pass. Bounds x15..113 y10..115 preserve safe transparent space and the strong charcoal-teal outline. The destructive-economy silhouette is distinct from Disband, Redevelop and construction, with no coin, loot, amount, unit, owner, state, focus, scene or text baked into the raster.",
+      "reviewedAt": "2026-09-08T16:41:18.733Z",
       "reviewChecks": {
         "source": true,
         "native": true,

@@ -411,10 +411,30 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   "building-treasure-chest": publicArtUrl(
     "assets/pixellab/buildings-square/treasure-chest.png",
   ),
+  "building-square-barracks": publicArtUrl(
+    "assets/pixellab/buildings-square/barracks.png",
+  ),
+  "building-square-monument": publicArtUrl(
+    "assets/pixellab/buildings-square/monument.png",
+  ),
+  "ui-action-pillage": publicArtUrl("assets/pixellab/ui/action-pillage.png"),
+  "ui-action-disband": publicArtUrl("assets/pixellab/ui/action-disband.png"),
   "terrain-game": publicArtUrl("assets/pixellab/terrain/animal.png"),
   "building-ruleset6-mine": publicArtUrl("assets/pixellab/buildings/mine.png"),
   "building-lumber-camp": publicArtUrl(
     "assets/pixellab/buildings/lumber-mill.png",
+  ),
+  "ui-selection-barracks": publicArtUrl(
+    "assets/pixellab/buildings-square/barracks.png",
+  ),
+  "ui-action-build-barracks": publicArtUrl(
+    "assets/pixellab/buildings-square/barracks.png",
+  ),
+  "ui-selection-monument": publicArtUrl(
+    "assets/pixellab/buildings-square/monument.png",
+  ),
+  "ui-action-build-monument": publicArtUrl(
+    "assets/pixellab/buildings-square/monument.png",
   ),
   "unit-original-fighter": publicArtUrl("assets/pixellab/units/warrior.png"),
   "unit-original-marksman": publicArtUrl("assets/pixellab/units/archer.png"),
@@ -676,6 +696,10 @@ export const ACCEPTED_ART_ALIASES: Readonly<Record<string, string>> = {
   "terrain-game": "terrain-animal",
   "building-ruleset6-mine": "building-mine",
   "building-lumber-camp": "building-lumber-mill",
+  "ui-selection-barracks": "building-square-barracks",
+  "ui-action-build-barracks": "building-square-barracks",
+  "ui-selection-monument": "building-square-monument",
+  "ui-action-build-monument": "building-square-monument",
   "unit-original-fighter": "unit-warrior",
   "unit-original-marksman": "unit-archer",
   "unit-original-guard": "unit-defender",

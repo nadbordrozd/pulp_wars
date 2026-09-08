@@ -1,0 +1,145 @@
+{
+  "status": "COMPLETE",
+  "generationOrder": [
+    "building-square-barracks",
+    "building-square-monument",
+    "ui-action-pillage",
+    "ui-action-disband"
+  ],
+  "worldApprovalGate": true,
+  "pixelLabRequests": [
+    ["building-square-barracks"],
+    ["building-square-monument"],
+    ["ui-action-pillage", "ui-action-disband"]
+  ],
+  "assets": {
+    "building-square-barracks": {
+      "seed": 107401,
+      "output": "public/assets/pixellab/buildings-square/barracks.png",
+      "jobId": "769b92db-ad81-4cfe-bcbe-6358b4a485db",
+      "providerOutputSha256": "b19ea66fc3f9a81e564a60928c91303eaacd6f70f4f4460d80704df38007aef2",
+      "outputSha256": "f924d1646ec42185ef42dbb79966e0405b2e619447365044bda8b2d46037fae6",
+      "alphaBounds": {
+        "left": 103,
+        "top": 110,
+        "right": 280,
+        "bottom": 316,
+        "empty": false
+      },
+      "styleReference": "building-square-workshop",
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/building-square-barracks-f924d1646ec4.png",
+          "candidateSha256": "f924d1646ec42185ef42dbb79966e0405b2e619447365044bda8b2d46037fae6",
+          "providerOutputSha256": "b19ea66fc3f9a81e564a60928c91303eaacd6f70f4f4460d80704df38007aef2",
+          "jobId": "769b92db-ad81-4cfe-bcbe-6358b4a485db",
+          "disposition": "REJECTED",
+          "notes": "Rejected after source/native/enlarged, actual 0.625/1/1.75 DPR1/2, square Road and occupied-unit/status review: the silhouette is readable and bounded, but the provider added a solid tan floor/base plate. That baked ground obscures authoritative terrain and Road treatment and violates the transparent isolated-building contract. Retry with four independently visible post feet ending directly on transparency and a simpler non-fortress training-rack lintel.",
+          "reviewedAt": "2026-09-08T15:20:42.653Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm bronze training timber, parchment lintel and bindings, muted slate-blue shield rack, restrained moss accent, dark teal-charcoal outline and southeast shadow. Shared square-grid Barracks on a transparent 384 by 384 canvas, anchor 192,288. One squat open military drill shelter with a single broad crenellated parchment lintel, exactly two oversized crossed bronze practice spears and one wide slate-blue shield rack. Its low-wide functional silhouette reads as training capacity, distinct from the Workshop, Grand Works, Market and cities. Fit x88..296,y110..316 with centered grounded mass and clear lower-center space for an unchanged unit and status. Southeast-facing three-quarter downward camera; soft northwest key light, darker southeast planes, strong charcoal-teal outline and two-to-three flat tones. Upward overflow only; no ground or baked state. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; soldier, person, unit, armory interior, weapon pile, sword rack, arrows, target dummy, flag, banner, ownership color, fortress, castle, city wall, watchtower, city, village, house, workshop gear, market canopy, monument, trophy, ground, platform, cast shadow, left right or bottom overflow, clipping, lower-right light, capacity square, pip, number, cost, selection, status, text, UI, realistic architecture, tiny detail, painterly, 3D.",
+            "prompt": "Shared square-grid Barracks on a transparent 384 by 384 canvas, anchor 192,288. One squat open military drill shelter with a single broad crenellated parchment lintel, exactly two oversized crossed bronze practice spears and one wide slate-blue shield rack. Its low-wide functional silhouette reads as training capacity, distinct from the Workshop, Grand Works, Market and cities. Fit x88..296,y110..316 with centered grounded mass and clear lower-center space for an unchanged unit and status. Southeast-facing three-quarter downward camera; soft northwest key light, darker southeast planes, strong charcoal-teal outline and two-to-three flat tones. Upward overflow only; no ground or baked state.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; soldier, person, unit, armory interior, weapon pile, sword rack, arrows, target dummy, flag, banner, ownership color, fortress, castle, city wall, watchtower, city, village, house, workshop gear, market canopy, monument, trophy, ground, platform, cast shadow, left right or bottom overflow, clipping, lower-right light, capacity square, pip, number, cost, selection, status, text, UI, realistic architecture, tiny detail, painterly, 3D",
+            "requestSize": { "width": 384, "height": 384 },
+            "outputSize": { "width": 384, "height": 384 },
+            "seed": 107401,
+            "noBackground": true,
+            "palette": "warm bronze training timber, parchment lintel and bindings, muted slate-blue shield rack, restrained moss accent, dark teal-charcoal outline and southeast shadow",
+            "postprocess": "compact-building-fit",
+            "groundContactY": 316,
+            "styleReference": {
+              "id": "building-square-workshop",
+              "sha256": "6fb28673147cd9b0c875a6d10aaec4d7673ce577cf2edb3e7814b24ef265fbbb",
+              "usageDescription": "Match only the accepted square Workshop's transparent isolation, compact processor scale, strong charcoal-teal outline, broad flat shading, southeast three-quarter camera and northwest light. Create a distinct low-wide military training structure, not another craft shed."
+            }
+          }
+        }
+      ]
+    },
+    "building-square-monument": {
+      "seed": 107402,
+      "output": "public/assets/pixellab/buildings-square/monument.png",
+      "jobId": "37681323-f764-4a9a-95ed-01311bb5b455",
+      "providerOutputSha256": "01ed81006160cb02c11d638cf941ef55b7d25640161566f549c25e9176107f45",
+      "outputSha256": "7224ed8251b4bc99d289716eddc13ed240bbf63abb671100e408e5f1c5f99ce4",
+      "alphaBounds": {
+        "left": 117,
+        "top": 72,
+        "right": 266,
+        "bottom": 316,
+        "empty": false
+      },
+      "styleReference": "building-square-grand-works",
+      "rejectedAttempts": []
+    },
+    "ui-action-pillage": {
+      "seed": 107403,
+      "output": "public/assets/pixellab/ui/action-pillage.png",
+      "jobId": "64394eb2-ee33-4d81-b1e1-282ecf77f85a",
+      "providerOutputSha256": "5cbaef65241c6f4c4bd8da90773d8d06ea153796e35b1ded057d65c8d40dc47f",
+      "outputSha256": "34c33e31dc1694e9e7147bcb0d2f7c99f3501788a71091bdc4d64ce255773336",
+      "alphaBounds": {
+        "left": 15,
+        "top": 10,
+        "right": 113,
+        "bottom": 115,
+        "empty": false
+      },
+      "styleReference": "ui-action-redevelop",
+      "rejectedAttempts": []
+    },
+    "ui-action-disband": {
+      "seed": 107404,
+      "output": "public/assets/pixellab/ui/action-disband.png",
+      "jobId": "b147b4e3-b084-4554-a194-843541182298",
+      "providerOutputSha256": "d30aba10ab8a21b65b6e976490d31a0263a1b3ca5ff5118770bb29115d38188c",
+      "outputSha256": "e6d7bc99de393c63a1c7e9aa51169fef87ec52f7841f1b0d43cdaf94d9d57548",
+      "alphaBounds": {
+        "left": 19,
+        "top": 10,
+        "right": 109,
+        "bottom": 118,
+        "empty": false
+      },
+      "styleReference": "ui-action-wait",
+      "rejectedAttempts": []
+    }
+  },
+  "reviewCoverage": [
+    "world sources at 384x384, native 0.30 scale and enlarged scale with exact ground guide",
+    "actual padded square terrain and Road composition at 0.625/1/1.75 zoom and DPR1/2 backing render normalized to CSS",
+    "neighboring Forest, Mountain, city, Workshop, Grand Works and Market with four owners, selection, unchanged units/status and representative building-under-fog suppression",
+    "Pillage and Disband at 128 source, 32 CSS, light/dark/grayscale, exact 112x130 transparent contain and 176 CSS-pixel action buttons",
+    "all four accepted rasters in the exact 112x130 light/dark/high-contrast object-fit contain viewport with original padding",
+    "no rasterized text, number, owner, selection, status, Spoils, achievement or capacity state"
+  ],
+  "artifacts": [
+    {
+      "filename": "world-source-native-enlarged.png",
+      "sha256": "ec656ae464ad3fa019d4533cd10fd535859d45421072c2a0edeae38cad8f034b",
+      "bytes": 230376
+    },
+    {
+      "filename": "world-zoom-dpr-context.png",
+      "sha256": "7962512a6479937ac4220520725db42c747c5ddf5452dec80ea02ab217849fe8",
+      "bytes": 345827
+    },
+    {
+      "filename": "world-square-neighbors-units-status.png",
+      "sha256": "3aa9ac627d8aa4d37eec9f69e10892bb2c145a8e992ae810b2c71600dae5aa43",
+      "bytes": 265666
+    },
+    {
+      "filename": "ui-icons-native-context.png",
+      "sha256": "86f63698c8bc7415a67cd80e7a165512866a58c6d284b79438391bc15af318ba",
+      "bytes": 171703
+    },
+    {
+      "filename": "ui-viewport-112x130.png",
+      "sha256": "99c58c7d317bc59a5e0d5412812f4c7eb9b49153f3288f6d79ed32f347db19b8",
+      "bytes": 119088
+    }
+  ]
+}
