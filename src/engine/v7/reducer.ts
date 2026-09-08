@@ -2992,8 +2992,10 @@ function commonError(
   if (player === undefined || state.turnOrder[state.activeSeatIndex] !== actor)
     return error("NOT_ACTIVE_PLAYER");
   const head = state.pendingChoices[0];
-  if (head !== undefined && command.kind !== "CHOOSE_CITY_REWARD")
-    return error("PENDING_CHOICE", { kind: head.kind });
+  if (head !== undefined)
+    return command.kind === "CHOOSE_CITY_REWARD"
+      ? null
+      : error("PENDING_CHOICE", { kind: head.kind });
   const pursuit = state.units.find(
     (unit) => unit.ownerId === actor && unit.activation.pursuitPhase !== "NONE",
   );
