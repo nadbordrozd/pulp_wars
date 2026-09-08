@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdtemp, readFile, readdir, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -37,17 +37,18 @@ describe("GitHub Pages deployment", () => {
     expect(projectUrls.every((url) => url.startsWith(PAGES_BASE))).toBe(true);
     expect(html).not.toContain("/src/main.ts");
 
-    const moduleUrl = projectUrls.find((url) => url.endsWith(".js"));
-    expect(moduleUrl).toBeDefined();
-    const modulePath = path.join(
-      outputRoot,
-      moduleUrl?.slice(PAGES_BASE.length) ?? "",
+    expect(projectUrls.some((url) => url.endsWith(".js"))).toBe(true);
+    const builtFiles = await readdir(outputRoot, { recursive: true });
+    const moduleSources = await Promise.all(
+      builtFiles
+        .filter((file) => file.endsWith(".js"))
+        .map((file) => readFile(path.join(outputRoot, file), "utf8")),
     );
-    const moduleSource = await readFile(modulePath, "utf8");
+    const completeModuleSource = moduleSources.join("\n");
 
-    expect(moduleSource).toContain(PAGES_BASE);
-    expect(moduleSource).toContain("assets/pixellab/units/");
-    expect(moduleSource).not.toMatch(/["'`]\/assets\/pixellab\//);
+    expect(completeModuleSource).toContain(PAGES_BASE);
+    expect(completeModuleSource).toContain("assets/pixellab/units/");
+    expect(completeModuleSource).not.toMatch(/["'`]\/assets\/pixellab\//);
     await expect(
       readFile(path.join(outputRoot, "assets/pixellab/units/warrior.png")),
     ).resolves.not.toHaveLength(0);

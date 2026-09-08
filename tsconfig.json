@@ -27,6 +27,7 @@
     "scripts/browser-smoke.ts",
     "scripts/browser-smoke-v6.ts",
     "scripts/browser-smoke-v6-contract.ts",
+    "scripts/browser-smoke-v7.ts",
     "vite.config.ts",
     "eslint.config.js"
   ]
