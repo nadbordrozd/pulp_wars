@@ -278,7 +278,7 @@ describe("Original square terrain family", () => {
       "public/assets/pixellab/terrain-square/original-forest-1.png":
         "ada147cc84e3b3dbd70cd0aa3e5f39a1a41dfe74be63833ad3c375fae316571f",
       "public/assets/pixellab/terrain-square/original-mountain-1.png":
-        "b1c0435641bc80bc6f2814de3e49d45aeed88c875c3c87259bb307e8e92282b2",
+        "f06a33808ece1fff3ef05ad87d731013910189fa18639bda9c3ceceaf34fd7f5",
       "public/assets/pixellab/units/archer.png":
         "deb62a8a84dc28ceecd58047a3f65abdb67c0616851337c817452d75a5b73bb2",
       "public/assets/pixellab/units/candy-choco-engineer.png":

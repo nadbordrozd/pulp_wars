@@ -1,6 +1,7 @@
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import process from "node:process";
 import sharp from "sharp";
@@ -67,9 +68,13 @@ interface MotionEvidenceV6 {
   };
 }
 
-const baseUrl =
+const requestedBaseUrl =
   process.argv.slice(2).find((argument) => !argument.startsWith("--")) ??
   "http://localhost:6173/?browser-smoke=1";
+const baseLocation = new URL(requestedBaseUrl);
+baseLocation.searchParams.set("ruleset", "6");
+baseLocation.searchParams.set("browser-smoke", "1");
+const baseUrl = baseLocation.href;
 const reviewRoot = path.join(
   process.cwd(),
   "art/integration/reviews/ruleset6-browser-smoke",
@@ -92,6 +97,7 @@ const pendingReviewFiles: { readonly path: string; readonly data: Buffer }[] =
   [];
 const MAX_COORDINATE_PAN_STEPS = 32;
 let coordinateActivations: BrowserSmokeCoordinateActivationV6[] = [];
+const mountainLiveOnly = process.argv.includes("--mountain-live");
 
 await mkdir(reviewRoot, { recursive: true });
 const browser = spawn(
@@ -127,97 +133,438 @@ try {
     `document.querySelector('[data-v6-setup]') !== null`,
   );
 
-  const flows: BrowserSmokeFlowEvidenceV6[] = [];
-  flows.push(
-    await runFactionFlow(connection, {
-      faction: "ORIGINAL",
-      factionTreeId: "ORIGINAL_BASELINE",
-      seed: 20,
-    }),
-  );
-  flows.push(
-    await runFactionFlow(connection, {
-      faction: "CANDY",
-      factionTreeId: "CANDY_BASELINE_V1",
-      seed: 20,
-    }),
-  );
-  const aiFirstLaunch = await runAiFirstLaunchRegression(connection);
+  if (mountainLiveOnly) {
+    await runMountainLiveDiagnostic(connection, browserErrors);
+    connection.close();
+  } else {
+    const flows: BrowserSmokeFlowEvidenceV6[] = [];
+    flows.push(
+      await runFactionFlow(connection, {
+        faction: "ORIGINAL",
+        factionTreeId: "ORIGINAL_BASELINE",
+        seed: 20,
+      }),
+    );
+    flows.push(
+      await runFactionFlow(connection, {
+        faction: "CANDY",
+        factionTreeId: "CANDY_BASELINE_V1",
+        seed: 20,
+      }),
+    );
+    const aiFirstLaunch = await runAiFirstLaunchRegression(connection);
 
-  await delay(250);
-  if (browserErrors.length > 0) {
+    await delay(250);
+    if (browserErrors.length > 0) {
+      throw new Error(
+        `Browser emitted page/console errors: ${JSON.stringify(browserErrors)}`,
+      );
+    }
+    for (const flow of flows) {
+      const issues = flowContractIssuesV6(flow);
+      if (issues.length > 0) {
+        throw new Error(
+          `${flow.faction} smoke evidence failed: ${issues.join("; ")}; acceptance=${JSON.stringify(flow.acceptance)}`,
+        );
+      }
+    }
+    const version = (await connection.send("Browser.getVersion")) as {
+      readonly product?: string;
+    };
+    const evidence = {
+      generatedBy: "npm run smoke:browser",
+      reproducibility: {
+        volatileWallClockMetadataRecorded: false,
+        animatedPixelCountsNormalizedToObservedFlags: true,
+        screenshotsCapturedWithReducedMotion: true,
+        stableLayoutFramesRequired: 4,
+        screenshotByteHashesReleaseScope: "PER_RUN_INTEGRITY_ONLY",
+      },
+      rulesetId: "pulp-wars-poc-6",
+      productionEntry: "src/main.ts",
+      browser: version.product ?? "Chrome",
+      technologyNodeCount: RULESET6_SMOKE_TECH_IDS.length,
+      pageAndConsoleErrors: browserErrors,
+      viewportContract: RULESET6_SMOKE_VIEWPORTS,
+      passMetadata: {
+        status: "PASS",
+        factions: ["ORIGINAL", "CANDY"],
+        factionComposition: "mixed-faction human/AI seats in both live flows",
+        aiModes: ["RIVAL", "COOPERATIVE"],
+        surfaces: ["desktop", "390x844 DPR2 mobile"],
+        motionModes: [
+          "FULL",
+          "emulated prefers-reduced-motion: reduce",
+          "emulated prefers-contrast: more",
+        ],
+        exercisedThrough:
+          "exact production DOM controls and Canvas coordinate targets, including real pointer-drag camera pans for offscreen square cells",
+      },
+      productionRasterInventory: {
+        status: "ACCEPTED_AND_LOADED",
+        treatment:
+          "The production browser loaded the checked-in ruleset-6 terrain, resource, building, neutral treasure, Road, 18-role, portrait, Coin, action, reward, and explicitly registered 25-node technology raster inventory. Code-native geometry remains limited to the categories required by the art contracts.",
+      },
+      visualReview: {
+        status: "ACCEPTED",
+        notes:
+          "Every bounded contextual, ability-detail, reward, city-training, and Technology capture was inspected individually at native output size and in its nearest-neighbor 2x companion. Contextual rasters, including faction-correct TRAIN world sprites, use the exact shared 112 x 130 CSS-pixel transparent viewport with contained aspect ratio at desktop and true 390x844 DPR2 mobile; code-native fallbacks retain the same framed footprint. Original and Candy Animals are visible on explored Forest from launch while Hunting remains unresearched and Hunt Game unavailable; hidden Animals remain redacted. Neutral treasure chests remain compact and readable through fog without disclosing the underlying tile. Exact world-unit, faction/level city, and public Fruit selection identities remain compact and readable above their isolated actions with no coordinate text. The Candy Warrior's Candify card is readable and unclipped at desktop and mobile, remains view-only, blocks outside input while open, and restores the selected-unit dock after closing without advancing a command boundary. Original and Candy labels/symbols remain distinct; the map stays primary; full Technology cards/details and blocking rewards fit without clipping or horizontal overflow. Offscreen square-cell targets are brought into the unobscured Canvas by bounded production pointer drags, with before/after camera evidence recorded for both factions. Direct selected-tile actions accept one boundary without a second map activation. No suspected visual failure remained after enlargement review.",
+      },
+      flows,
+      aiFirstLaunch,
+    };
+    await Promise.all(
+      pendingReviewFiles.map((artifact) =>
+        writeFile(artifact.path, artifact.data),
+      ),
+    );
+    await writeFile(
+      path.join(reviewRoot, "evidence.json"),
+      `${JSON.stringify(evidence, null, 2)}\n`,
+    );
+    connection.close();
+    console.log(
+      `Ruleset-6 browser smoke passed in ${evidence.browser}: Original ${flows[0]?.turnReturn.stateHash}, Candy ${flows[1]?.turnReturn.stateHash}, AI-first ${aiFirstLaunch.stateHash}. Evidence: ${reviewRoot}`,
+    );
+  }
+} finally {
+  browser.kill();
+}
+
+interface MountainDrawTraceV6 {
+  readonly url: string;
+  readonly naturalWidth: number;
+  readonly naturalHeight: number;
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+  readonly devicePixelRatio: number;
+}
+
+interface MountainDrawFrameV6 {
+  readonly draws: readonly MountainDrawTraceV6[];
+  readonly centers: readonly { readonly x: number; readonly y: number }[];
+}
+
+interface MountainFetchEvidenceV6 {
+  readonly url: string;
+  readonly sha256: string;
+  readonly bytes: number;
+  readonly cacheControl: string | null;
+  readonly etag: string | null;
+}
+
+function mountainAssetPathsV6(): readonly string[] {
+  return ["original", "candy"].flatMap((faction) =>
+    [1, 2, 3].map(
+      (variant) =>
+        `assets/pixellab/terrain-square/${faction}-mountain-${variant}.png`,
+    ),
+  );
+}
+
+/**
+ * Bounded production-page diagnostic for the Mountain deployment regression.
+ * It observes the real accepted-image resolver and Canvas drawImage calls; it
+ * deliberately writes no review screenshots or release evidence.
+ */
+async function runMountainLiveDiagnostic(
+  connection: Connection,
+  browserErrors: BrowserErrorV6[],
+): Promise<void> {
+  await setViewport(connection, {
+    width: 1_800,
+    height: 1_900,
+    dpr: 1,
+    mobile: false,
+  });
+  await installMountainDrawTrace(connection);
+  const liveFrames: Array<{
+    readonly faction: "ORIGINAL" | "CANDY";
+    readonly label: string;
+    readonly frame: MountainDrawFrameV6;
+  }> = [];
+  const screenshots: string[] = [];
+  for (const faction of ["ORIGINAL", "CANDY"] as const) {
+    if (faction === "CANDY") {
+      await clickSelector(connection, '[data-action="delete-save"]');
+      await waitForExpression(
+        connection,
+        `document.querySelector('[data-v6-setup]') !== null`,
+      );
+      await connection.send("Page.reload", { ignoreCache: true });
+      await waitForExpression(
+        connection,
+        `document.querySelector('[data-v6-setup]') !== null`,
+      );
+      await installMountainDrawTrace(connection);
+    }
+    await setField(connection, "v6-ai-count", "1");
+    await setField(connection, "v6-board-size", "11");
+    await setField(connection, "v6-seed", "0");
+    await setField(connection, "v6-faction-0", faction);
+    await setField(connection, "v6-faction-1", faction);
+    await clearMountainDraws(connection);
+    await clickSelector(connection, '[data-action="launch"]');
+    await waitForHumanBoundary(connection, 0, 900);
+    await waitForMountainDraw(connection);
+
+    const nominalDpr1 = await mountainDraws(connection);
+    assertMountainDrawFrame(`${faction} nominal DPR1`, nominalDpr1, 1, 1);
+    liveFrames.push({ faction, label: "nominal DPR1", frame: nominalDpr1 });
+    const screenshot = path.join(
+      tmpdir(),
+      `pulp-wars-mountain-live-${faction.toLowerCase()}-1x-dpr1.png`,
+    );
+    await writeFile(screenshot, await captureBuffer(connection));
+    screenshots.push(screenshot);
+
+    await setViewport(connection, {
+      width: 1_800,
+      height: 1_900,
+      dpr: 2,
+      mobile: false,
+    });
+    const nominalDpr2 = await redrawAndReadMountains(connection);
+    assertMountainDrawFrame(`${faction} nominal DPR2`, nominalDpr2, 1, 2);
+    liveFrames.push({ faction, label: "nominal DPR2", frame: nominalDpr2 });
+
+    for (let step = 0; step < 8; step += 1)
+      await clickSelector(connection, 'button[aria-label="Zoom out"]');
+    const minimumDpr2 = await redrawAndReadMountains(connection);
+    assertMountainDrawFrame(`${faction} minimum DPR2`, minimumDpr2, 0.625, 2);
+    liveFrames.push({ faction, label: "minimum DPR2", frame: minimumDpr2 });
+
+    await setViewport(connection, {
+      width: 1_800,
+      height: 1_900,
+      dpr: 1,
+      mobile: false,
+    });
+    const minimumDpr1 = await redrawAndReadMountains(connection);
+    assertMountainDrawFrame(`${faction} minimum DPR1`, minimumDpr1, 0.625, 1);
+    liveFrames.push({ faction, label: "minimum DPR1", frame: minimumDpr1 });
+
+    for (let step = 0; step < 8; step += 1)
+      await clickSelector(connection, 'button[aria-label="Zoom in"]');
+    const maximumDpr1 = await redrawAndReadMountains(connection);
+    assertMountainDrawFrame(`${faction} maximum DPR1`, maximumDpr1, 1.75, 1);
+    liveFrames.push({ faction, label: "maximum DPR1", frame: maximumDpr1 });
+
+    await setViewport(connection, {
+      width: 1_800,
+      height: 1_900,
+      dpr: 2,
+      mobile: false,
+    });
+    const maximumDpr2 = await redrawAndReadMountains(connection);
+    assertMountainDrawFrame(`${faction} maximum DPR2`, maximumDpr2, 1.75, 2);
+    liveFrames.push({ faction, label: "maximum DPR2", frame: maximumDpr2 });
+
+    await setViewport(connection, {
+      width: 1_800,
+      height: 1_900,
+      dpr: 1,
+      mobile: false,
+    });
+  }
+  const fetched = await evaluate<readonly MountainFetchEvidenceV6[]>(
+    connection,
+    `(async () => Promise.all(${JSON.stringify(mountainAssetPathsV6())}.map(async (path) => {
+      const response = await fetch(new URL(path, document.baseURI), { cache: 'reload' });
+      if (!response.ok) throw new Error(path + ': HTTP ' + response.status);
+      const bytes = await response.arrayBuffer();
+      const digest = await crypto.subtle.digest('SHA-256', bytes);
+      return {
+        url: response.url,
+        sha256: [...new Uint8Array(digest)].map((value) => value.toString(16).padStart(2, '0')).join(''),
+        bytes: bytes.byteLength,
+        cacheControl: response.headers.get('cache-control'),
+        etag: response.headers.get('etag')
+      };
+    })))()`,
+    true,
+  );
+  const local = await Promise.all(
+    mountainAssetPathsV6().map(async (assetPath) => {
+      const bytes = await readFile(
+        path.join(process.cwd(), "public", assetPath),
+      );
+      return {
+        path: assetPath,
+        sha256: createHash("sha256").update(bytes).digest("hex"),
+        bytes: bytes.length,
+      };
+    }),
+  );
+  for (const [index, expected] of local.entries()) {
+    const actual = fetched[index];
+    if (
+      actual === undefined ||
+      actual.sha256 !== expected.sha256 ||
+      actual.bytes !== expected.bytes
+    )
+      throw new Error(
+        `${expected.path}: browser bytes do not match the checked-in production asset; expected=${JSON.stringify(expected)} actual=${JSON.stringify(actual)}`,
+      );
+  }
+  const observedUrls = new Set(
+    liveFrames.flatMap(({ frame }) =>
+      frame.draws.map(({ url }) => new URL(url).pathname),
+    ),
+  );
+  const selected = mountainAssetPathsV6().filter((assetPath) =>
+    [...observedUrls].some((url) => url.endsWith(`/${assetPath}`)),
+  );
+  for (const faction of ["original", "candy"])
+    if (
+      !selected.some((assetPath) => assetPath.includes(`${faction}-mountain-`))
+    )
+      throw new Error(
+        `The live production match selected no ${faction} Mountain`,
+      );
+  await delay(100);
+  if (browserErrors.length > 0)
     throw new Error(
       `Browser emitted page/console errors: ${JSON.stringify(browserErrors)}`,
     );
-  }
-  for (const flow of flows) {
-    const issues = flowContractIssuesV6(flow);
-    if (issues.length > 0) {
-      throw new Error(
-        `${flow.faction} smoke evidence failed: ${issues.join("; ")}; acceptance=${JSON.stringify(flow.acceptance)}`,
-      );
-    }
-  }
-  const version = (await connection.send("Browser.getVersion")) as {
-    readonly product?: string;
-  };
-  const evidence = {
-    generatedBy: "npm run smoke:browser",
-    reproducibility: {
-      volatileWallClockMetadataRecorded: false,
-      animatedPixelCountsNormalizedToObservedFlags: true,
-      screenshotsCapturedWithReducedMotion: true,
-      stableLayoutFramesRequired: 4,
-      screenshotByteHashesReleaseScope: "PER_RUN_INTEGRITY_ONLY",
-    },
-    rulesetId: "pulp-wars-poc-6",
-    productionEntry: "src/main.ts",
-    browser: version.product ?? "Chrome",
-    technologyNodeCount: RULESET6_SMOKE_TECH_IDS.length,
-    pageAndConsoleErrors: browserErrors,
-    viewportContract: RULESET6_SMOKE_VIEWPORTS,
-    passMetadata: {
-      status: "PASS",
-      factions: ["ORIGINAL", "CANDY"],
-      factionComposition: "mixed-faction human/AI seats in both live flows",
-      aiModes: ["RIVAL", "COOPERATIVE"],
-      surfaces: ["desktop", "390x844 DPR2 mobile"],
-      motionModes: [
-        "FULL",
-        "emulated prefers-reduced-motion: reduce",
-        "emulated prefers-contrast: more",
-      ],
-      exercisedThrough:
-        "exact production DOM controls and Canvas coordinate targets, including real pointer-drag camera pans for offscreen square cells",
-    },
-    productionRasterInventory: {
-      status: "ACCEPTED_AND_LOADED",
-      treatment:
-        "The production browser loaded the checked-in ruleset-6 terrain, resource, building, neutral treasure, Road, 18-role, portrait, Coin, action, reward, and explicitly registered 25-node technology raster inventory. Code-native geometry remains limited to the categories required by the art contracts.",
-    },
-    visualReview: {
-      status: "ACCEPTED",
-      notes:
-        "Every bounded contextual, ability-detail, reward, city-training, and Technology capture was inspected individually at native output size and in its nearest-neighbor 2x companion. Contextual rasters, including faction-correct TRAIN world sprites, use the exact shared 112 x 130 CSS-pixel transparent viewport with contained aspect ratio at desktop and true 390x844 DPR2 mobile; code-native fallbacks retain the same framed footprint. Original and Candy Animals are visible on explored Forest from launch while Hunting remains unresearched and Hunt Game unavailable; hidden Animals remain redacted. Neutral treasure chests remain compact and readable through fog without disclosing the underlying tile. Exact world-unit, faction/level city, and public Fruit selection identities remain compact and readable above their isolated actions with no coordinate text. The Candy Warrior's Candify card is readable and unclipped at desktop and mobile, remains view-only, blocks outside input while open, and restores the selected-unit dock after closing without advancing a command boundary. Original and Candy labels/symbols remain distinct; the map stays primary; full Technology cards/details and blocking rewards fit without clipping or horizontal overflow. Offscreen square-cell targets are brought into the unobscured Canvas by bounded production pointer drags, with before/after camera evidence recorded for both factions. Direct selected-tile actions accept one boundary without a second map activation. No suspected visual failure remained after enlargement review.",
-    },
-    flows,
-    aiFirstLaunch,
-  };
-  await Promise.all(
-    pendingReviewFiles.map((artifact) =>
-      writeFile(artifact.path, artifact.data),
+
+  console.log(
+    JSON.stringify(
+      {
+        status: "PASS",
+        productionEntry: "src/main.ts",
+        setup: { seed: 0, factions: ["ORIGINAL", "CANDY"] },
+        fetched,
+        allSixFetched: fetched.length === 6,
+        selectedLiveSubset: selected,
+        destinationContracts: liveFrames.map(({ faction, label, frame }) => ({
+          faction,
+          label,
+          ...summarizeMountainDraws(frame),
+        })),
+        screenshotPaths: screenshots,
+        browserErrors,
+      },
+      null,
+      2,
     ),
   );
-  await writeFile(
-    path.join(reviewRoot, "evidence.json"),
-    `${JSON.stringify(evidence, null, 2)}\n`,
+}
+
+async function installMountainDrawTrace(connection: Connection): Promise<void> {
+  await evaluate(
+    connection,
+    `(() => {
+      globalThis.__PULP_WARS_MOUNTAIN_DRAWS__ = [];
+      const prototype = CanvasRenderingContext2D.prototype;
+      if (!prototype.__pulpWarsMountainDrawImage) {
+        const original = prototype.drawImage;
+        Object.defineProperty(prototype, '__pulpWarsMountainDrawImage', { value: original });
+        prototype.drawImage = function(image, ...args) {
+          const url = image instanceof HTMLImageElement ? image.currentSrc || image.src : '';
+          if (url.includes('/terrain-square/') && url.includes('-mountain-') && args.length === 4) {
+            globalThis.__PULP_WARS_MOUNTAIN_DRAWS__.push({
+              url,
+              naturalWidth: image.naturalWidth,
+              naturalHeight: image.naturalHeight,
+              x: args[0], y: args[1], width: args[2], height: args[3],
+              devicePixelRatio
+            });
+          }
+          return original.call(this, image, ...args);
+        };
+      }
+      return true;
+    })()`,
   );
-  connection.close();
-  console.log(
-    `Ruleset-6 browser smoke passed in ${evidence.browser}: Original ${flows[0]?.turnReturn.stateHash}, Candy ${flows[1]?.turnReturn.stateHash}, AI-first ${aiFirstLaunch.stateHash}. Evidence: ${reviewRoot}`,
+}
+
+async function mountainDraws(
+  connection: Connection,
+): Promise<MountainDrawFrameV6> {
+  return evaluate<MountainDrawFrameV6>(
+    connection,
+    `(() => {
+      const app = globalThis.__PULP_WARS_APP__;
+      const view = app?.controller.snapshot().view;
+      if (!app || !view) throw new Error('Live production view is unavailable');
+      return {
+        draws: globalThis.__PULP_WARS_MOUNTAIN_DRAWS__ ?? [],
+        centers: view.board.tiles
+          .filter((tile) => tile.explored && tile.terrain === 'MOUNTAIN')
+          .map((tile) => app.view.boardScreenPoint(tile.at))
+          .filter(Boolean)
+      };
+    })()`,
   );
-} finally {
-  browser.kill();
+}
+
+async function clearMountainDraws(connection: Connection): Promise<void> {
+  await evaluate(connection, "globalThis.__PULP_WARS_MOUNTAIN_DRAWS__ = []");
+}
+
+async function waitForMountainDraw(connection: Connection): Promise<void> {
+  await waitForExpression(
+    connection,
+    `globalThis.__PULP_WARS_MOUNTAIN_DRAWS__?.some((draw) => draw.naturalWidth === 256 && draw.naturalHeight === 384) === true`,
+  );
+  await delay(150);
+}
+
+async function redrawAndReadMountains(
+  connection: Connection,
+): Promise<MountainDrawFrameV6> {
+  await clearMountainDraws(connection);
+  await evaluate(connection, "globalThis.dispatchEvent(new Event('resize'))");
+  await waitForMountainDraw(connection);
+  return mountainDraws(connection);
+}
+
+function assertMountainDrawFrame(
+  label: string,
+  frame: MountainDrawFrameV6,
+  zoom: number,
+  devicePixelRatio: number,
+): void {
+  const expectedWidth = 256 * 0.5 * zoom;
+  const expectedHeight = 384 * 0.5 * zoom;
+  const draws = frame.draws;
+  if (draws.length === 0) throw new Error(`${label}: no Mountain image draws`);
+  if (frame.centers.length === 0)
+    throw new Error(`${label}: no explored Mountain centers`);
+  for (const draw of draws) {
+    const anchorMatches = frame.centers.some(
+      (center) =>
+        Math.abs(draw.x + 128 * 0.5 * zoom - center.x) <= 0.01 &&
+        Math.abs(draw.y + 256 * 0.5 * zoom - center.y) <= 0.01,
+    );
+    if (
+      draw.naturalWidth !== 256 ||
+      draw.naturalHeight !== 384 ||
+      Math.abs(draw.width - expectedWidth) > 0.01 ||
+      Math.abs(draw.height - expectedHeight) > 0.01 ||
+      draw.devicePixelRatio !== devicePixelRatio ||
+      !anchorMatches
+    )
+      throw new Error(
+        `${label}: unexpected Mountain draw ${JSON.stringify(draw)}`,
+      );
+  }
+}
+
+function summarizeMountainDraws(frame: MountainDrawFrameV6) {
+  const first = frame.draws[0];
+  if (first === undefined) throw new Error("Missing Mountain draw summary");
+  return {
+    zoom: first.width / 128,
+    devicePixelRatio: first.devicePixelRatio,
+    source: { width: first.naturalWidth, height: first.naturalHeight },
+    destination: { width: first.width, height: first.height },
+    draws: frame.draws.length,
+    anchorMatchesTileCenter: true,
+  };
 }
 
 async function runAiFirstLaunchRegression(

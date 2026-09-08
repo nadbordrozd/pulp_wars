@@ -118,9 +118,13 @@
       "public/assets/pixellab/units/catapult.png": "cdf6ed34a67c1daf1bfd947b0b1af007b25d2a13ee88ee2df876bdb9f7ceec83",
       "public/assets/pixellab/units/defender.png": "930c31f9aa1bf5dacf0318484b31ac63504365482ae01a84a6a269d94de65e11",
       "public/assets/pixellab/units/original-breacher.png": "1e752161cd63bcb7bc0e5a0989557f61d2d7f2d3e3d9597ccc9360ed11fca2ad",
+      "public/assets/pixellab/units/original-catapult.png": "67e7f8cb6fc9a36b385eed9aecc2a12fb2884701cb7661d5503f8dbcf373c360",
+      "public/assets/pixellab/units/original-envoy.png": "84d6b1862eaf0688e51ccd75c8cae08d0e48dec4a45f774a25a82938ba16409f",
       "public/assets/pixellab/units/original-heavy.png": "8fe592d094ede939cf8a92119022c9606b6c12621ed4d6777b4056b8cadb3759",
       "public/assets/pixellab/units/original-juggernaut.png": "c905126dc7c38683b1ecba0aa930a4add45426a26fa3560a78e2df21ddaccc9a",
+      "public/assets/pixellab/units/original-lancer.png": "64fb8dc3325fa9030e79fa355dea96c0bec47b4bfff0f73adda77045fb7cec0d",
       "public/assets/pixellab/units/original-medic.png": "c30475f23be6a8ca9ee1957a327b3b764489e570d50cd69d5775006650af62c2",
+      "public/assets/pixellab/units/original-saboteur.png": "a58a182db7e110b10ecf2ecbaadfb45834acd77342911fb9bd9784e46322d6fc",
       "public/assets/pixellab/units/original-scout.png": "8663c5c6f95ed69481123245a7f7c5e6acf2b55ebb9c52ebbc46979252e60343",
       "public/assets/pixellab/units/rider.png": "20bb28c79c28e262908e518124e776f30adf946254906e62245f0e9702606bb4",
       "public/assets/pixellab/units/warrior.png": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1"
@@ -387,7 +391,7 @@
     {
       "id": "terrain-square-candy-mountain-1",
       "output": "public/assets/pixellab/terrain-square/candy-mountain-1.png",
-      "outputSha256": "1c39d7a6087a8024eaa221ecf88bcce44d4ecaf4fef94664ef9c92742f6e95bc",
+      "outputSha256": "bc726475165d26a5b12c534b91b9d93a445e30306a077664367ba5e4e89fb747",
       "providerOutputSha256": "fa7fce7bf614a4cb821fc41f845c4e4015bb111dbaded0642964dfab2236aa14",
       "dimensions": {
         "width": 256,
@@ -405,7 +409,7 @@
       },
       "alphaBounds": {
         "left": 0,
-        "top": 84,
+        "top": 124,
         "right": 256,
         "bottom": 384,
         "empty": false
@@ -418,7 +422,7 @@
     {
       "id": "terrain-square-candy-mountain-2",
       "output": "public/assets/pixellab/terrain-square/candy-mountain-2.png",
-      "outputSha256": "0c1338d0f1eff4cb715066d654874b676ea1964002442e095e64ca2ab9f944af",
+      "outputSha256": "d4ef112e78abbc89d9ee091e92f1868b50ea4f5b8120da93ceb2a175dd3df1d2",
       "providerOutputSha256": "18a3c98bc021b431b3f7fa09d899a7abcd6f08037c12586dbae0917a21ce2a2b",
       "dimensions": {
         "width": 256,
@@ -436,7 +440,7 @@
       },
       "alphaBounds": {
         "left": 0,
-        "top": 81,
+        "top": 121,
         "right": 256,
         "bottom": 384,
         "empty": false
@@ -449,7 +453,7 @@
     {
       "id": "terrain-square-candy-mountain-3",
       "output": "public/assets/pixellab/terrain-square/candy-mountain-3.png",
-      "outputSha256": "7c0b930cf36de969c472ce7b5405414268e9a13dfcf593ebbeb792996d1eafe5",
+      "outputSha256": "24f629af7a5c3b53645afa3d0f329f671718fbb117993ce8f10beadccc877241",
       "providerOutputSha256": "a9138cd0a874f5eca368ca3b8dee16a84045c65bdad231cd2d8026b537b90306",
       "dimensions": {
         "width": 256,
@@ -573,21 +577,21 @@
           "terrain-square-candy-mountain-1",
           "terrain-square-candy-mountain-2"
         ],
-        "meanAbsoluteRgbDifference": 11.4854
+        "meanAbsoluteRgbDifference": 11.5176
       },
       {
         "pair": [
           "terrain-square-candy-mountain-1",
           "terrain-square-candy-mountain-3"
         ],
-        "meanAbsoluteRgbDifference": 14.6986
+        "meanAbsoluteRgbDifference": 13.7369
       },
       {
         "pair": [
           "terrain-square-candy-mountain-2",
           "terrain-square-candy-mountain-3"
         ],
-        "meanAbsoluteRgbDifference": 16.613
+        "meanAbsoluteRgbDifference": 15.3457
       }
     ]
   },
@@ -626,52 +630,52 @@
   "artifacts": [
     {
       "path": "art/pixellab/reviews/square-candy-terrain/individual-native-enlarged.png",
-      "bytes": 413993,
+      "bytes": 408467,
       "width": 1280,
       "height": 1860,
-      "sha256": "4b150434687c8eeec043aedfaa94968b29dde2cc2456f2bd1c737e4cedfd7179"
+      "sha256": "9a231e011a837cbbf0c2babd6107ba204026eb44a03cde99914b751b9a4dbb37"
     },
     {
       "path": "art/pixellab/reviews/square-candy-terrain/all-11-family.png",
-      "bytes": 135400,
+      "bytes": 135250,
       "width": 720,
       "height": 780,
-      "sha256": "d9b254b1413a7e2654ea77665cb2be2add9c37b16a0ec821650db0e3885cc073"
+      "sha256": "bc8e0242bf35962868c73156e909970fe56f64c71ad4352a062e17008a3c50b8"
     },
     {
       "path": "art/pixellab/reviews/square-candy-terrain/repetition-mixed-8x8.png",
-      "bytes": 416191,
+      "bytes": 415862,
       "width": 2040,
       "height": 750,
-      "sha256": "b2230989e156e3f26cd0af5a9bfd1aa5dda18e943aa50fb1a6b4dbcaf1e4cebf"
+      "sha256": "7eceb822b21e0be929f93d09c054d82909dca3d5d01fb30dc501988a73ea1c05"
     },
     {
       "path": "art/pixellab/reviews/square-candy-terrain/adjacency-same-different.png",
-      "bytes": 270339,
+      "bytes": 269795,
       "width": 1200,
       "height": 1050,
-      "sha256": "a45bc1028cc57894b88450bd205e998c2b10891d46a7422bfac73034c8910062"
+      "sha256": "e9c938d96c62cba6773845191db9b8a43acbbe1b5e0e063b85f62dc7a38d2314"
     },
     {
       "path": "art/pixellab/reviews/square-candy-terrain/zoom-contexts-dpr1.png",
-      "bytes": 629478,
+      "bytes": 632607,
       "width": 1120,
       "height": 2910,
-      "sha256": "a45f6120d0bd4220fd71506540fd76af181e2055975796d9b985c2d5fb6fa6c0"
+      "sha256": "1a0a8805d877e493722f48620743e5e6956b0884b33263db051464dd079bb183"
     },
     {
       "path": "art/pixellab/reviews/square-candy-terrain/zoom-contexts-dpr2.png",
-      "bytes": 1449189,
+      "bytes": 1452033,
       "width": 2240,
       "height": 5820,
-      "sha256": "0540230dc00a6d10c0c1a4a5d130ae6b8a27a09a06116e969cca95b860854965"
+      "sha256": "acd776a94c96541c290047f67ee8e18a2930ff69c1925757465ce4aa1c3a3123"
     },
     {
       "path": "art/pixellab/reviews/square-candy-terrain/gameplay-overlays-and-units.png",
-      "bytes": 148866,
+      "bytes": 147607,
       "width": 1120,
       "height": 960,
-      "sha256": "7c030c96a42a382e266559024d65e6dba052e685ec950166ee5a737c683585e5"
+      "sha256": "30697ea30d4b131f076aecf4a79c0a8b46fd4f6dde4e075fe0d6295d411dcaf9"
     },
     {
       "path": "art/pixellab/reviews/square-candy-terrain/family-batch-grass.png",
@@ -696,17 +700,17 @@
     },
     {
       "path": "art/pixellab/reviews/square-candy-terrain/original-vs-candy.png",
-      "bytes": 187916,
+      "bytes": 188005,
       "width": 1200,
       "height": 1020,
-      "sha256": "6a40d12dde862d0fab1bb07ce100b40bb00bbda74fc8ce1eae85539665cfb58d"
+      "sha256": "70fc8b264b4f6a027306787f6f7d4d189911cc1efc849bcec7c574aafc1ca2c4"
     },
     {
       "path": "art/pixellab/reviews/square-candy-terrain/dense-mixed-faction-map.png",
-      "bytes": 207952,
+      "bytes": 208125,
       "width": 760,
       "height": 830,
-      "sha256": "9861a5f341411a72b2613c679f6090e5be94e793bba0b291cd6a2791d7ed66b7"
+      "sha256": "2749bd26fdcdb5d3370f087990cfd801b1586dc4ca46152c3464fb7b297a2116"
     }
   ]
 }

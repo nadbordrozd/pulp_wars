@@ -115,9 +115,13 @@
       "public/assets/pixellab/units/catapult.png": "cdf6ed34a67c1daf1bfd947b0b1af007b25d2a13ee88ee2df876bdb9f7ceec83",
       "public/assets/pixellab/units/defender.png": "930c31f9aa1bf5dacf0318484b31ac63504365482ae01a84a6a269d94de65e11",
       "public/assets/pixellab/units/original-breacher.png": "1e752161cd63bcb7bc0e5a0989557f61d2d7f2d3e3d9597ccc9360ed11fca2ad",
+      "public/assets/pixellab/units/original-catapult.png": "67e7f8cb6fc9a36b385eed9aecc2a12fb2884701cb7661d5503f8dbcf373c360",
+      "public/assets/pixellab/units/original-envoy.png": "84d6b1862eaf0688e51ccd75c8cae08d0e48dec4a45f774a25a82938ba16409f",
       "public/assets/pixellab/units/original-heavy.png": "8fe592d094ede939cf8a92119022c9606b6c12621ed4d6777b4056b8cadb3759",
       "public/assets/pixellab/units/original-juggernaut.png": "c905126dc7c38683b1ecba0aa930a4add45426a26fa3560a78e2df21ddaccc9a",
+      "public/assets/pixellab/units/original-lancer.png": "64fb8dc3325fa9030e79fa355dea96c0bec47b4bfff0f73adda77045fb7cec0d",
       "public/assets/pixellab/units/original-medic.png": "c30475f23be6a8ca9ee1957a327b3b764489e570d50cd69d5775006650af62c2",
+      "public/assets/pixellab/units/original-saboteur.png": "a58a182db7e110b10ecf2ecbaadfb45834acd77342911fb9bd9784e46322d6fc",
       "public/assets/pixellab/units/original-scout.png": "8663c5c6f95ed69481123245a7f7c5e6acf2b55ebb9c52ebbc46979252e60343",
       "public/assets/pixellab/units/rider.png": "20bb28c79c28e262908e518124e776f30adf946254906e62245f0e9702606bb4",
       "public/assets/pixellab/units/warrior.png": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1"
@@ -384,7 +388,7 @@
     {
       "id": "terrain-square-original-mountain-1",
       "output": "public/assets/pixellab/terrain-square/original-mountain-1.png",
-      "outputSha256": "b1c0435641bc80bc6f2814de3e49d45aeed88c875c3c87259bb307e8e92282b2",
+      "outputSha256": "f06a33808ece1fff3ef05ad87d731013910189fa18639bda9c3ceceaf34fd7f5",
       "providerOutputSha256": "4908d69fe833536c71f17132a2300653e751601b85ff5ca960d2aa8010be5969",
       "dimensions": {
         "width": 256,
@@ -402,7 +406,7 @@
       },
       "alphaBounds": {
         "left": 0,
-        "top": 81,
+        "top": 121,
         "right": 256,
         "bottom": 384,
         "empty": false
@@ -415,7 +419,7 @@
     {
       "id": "terrain-square-original-mountain-2",
       "output": "public/assets/pixellab/terrain-square/original-mountain-2.png",
-      "outputSha256": "6211a416eeabb65da06bebfbb6a530e50f44291cb37cd80610e38f7fa388c457",
+      "outputSha256": "07ec9e3c1fb5273119e0e96bcc6f1daa28c6e7c552aef26e0b8b9b0a2ef4df1b",
       "providerOutputSha256": "71b5fb078de277df2fb017ad3a8193c8bfdf07c53a296fbc53382c19de5a21f7",
       "dimensions": {
         "width": 256,
@@ -433,7 +437,7 @@
       },
       "alphaBounds": {
         "left": 0,
-        "top": 81,
+        "top": 121,
         "right": 256,
         "bottom": 384,
         "empty": false
@@ -446,7 +450,7 @@
     {
       "id": "terrain-square-original-mountain-3",
       "output": "public/assets/pixellab/terrain-square/original-mountain-3.png",
-      "outputSha256": "ed0b45b628f764570a06b32cc16b48254307e5061c39a5ef19e552329925e31f",
+      "outputSha256": "1335cdfa2c8f334de981f00fb6c4fc434231216df5d7e7fc1fefdbbf6a6d4d3c",
       "providerOutputSha256": "159f40de462d2a8e9e212b454672a8d67490086c1219db5fe0d39d24ea976fa7",
       "dimensions": {
         "width": 256,
@@ -464,7 +468,7 @@
       },
       "alphaBounds": {
         "left": 0,
-        "top": 124,
+        "top": 128,
         "right": 256,
         "bottom": 384,
         "empty": false
@@ -570,21 +574,21 @@
           "terrain-square-original-mountain-1",
           "terrain-square-original-mountain-2"
         ],
-        "meanAbsoluteRgbDifference": 2.8783
+        "meanAbsoluteRgbDifference": 2.2423
       },
       {
         "pair": [
           "terrain-square-original-mountain-1",
           "terrain-square-original-mountain-3"
         ],
-        "meanAbsoluteRgbDifference": 6.108
+        "meanAbsoluteRgbDifference": 4.6144
       },
       {
         "pair": [
           "terrain-square-original-mountain-2",
           "terrain-square-original-mountain-3"
         ],
-        "meanAbsoluteRgbDifference": 7.4627
+        "meanAbsoluteRgbDifference": 5.2814
       }
     ]
   },
@@ -617,52 +621,52 @@
   "artifacts": [
     {
       "path": "art/pixellab/reviews/square-original-terrain/individual-native-enlarged.png",
-      "bytes": 368028,
+      "bytes": 364300,
       "width": 1280,
       "height": 1860,
-      "sha256": "7e32763a5ee81d89664d842a4d8b918137ded2de4b42b46d4cb18faca0956f7a"
+      "sha256": "3f4e4ece07cba03bf8a784db8c7a70eade794722b94fba4af25645464a8ee556"
     },
     {
       "path": "art/pixellab/reviews/square-original-terrain/all-11-family.png",
-      "bytes": 114899,
+      "bytes": 115169,
       "width": 720,
       "height": 780,
-      "sha256": "5682ab06315c532ac9a829c2a25da58dcc5bdc05fb3c9632e9e48d57cb01ea85"
+      "sha256": "4d1f31265d79f3686e90549402af7501dad8a1625aa9493472aaf222e6edc54a"
     },
     {
       "path": "art/pixellab/reviews/square-original-terrain/repetition-mixed-8x8.png",
-      "bytes": 326091,
+      "bytes": 327215,
       "width": 2040,
       "height": 750,
-      "sha256": "510908d7cfeb6424f87bb19330374024cf4bb5a306048bae9fbae1ce6fc5c45f"
+      "sha256": "9216c799d32fd6e45e244351038bb95d754a3cfd2de034b0618a2fe7425699c8"
     },
     {
       "path": "art/pixellab/reviews/square-original-terrain/adjacency-same-different.png",
-      "bytes": 227826,
+      "bytes": 228356,
       "width": 1200,
       "height": 1050,
-      "sha256": "c08d9ad4bff93a02f47639677500f69a65570451fcb86a6415812ef4e6eb66ab"
+      "sha256": "e0f171deffd7dbfe001ef67946c84d4d538ecb126af34580963372ac4a0c87e9"
     },
     {
       "path": "art/pixellab/reviews/square-original-terrain/zoom-contexts-dpr1.png",
-      "bytes": 466779,
+      "bytes": 469617,
       "width": 1120,
       "height": 2910,
-      "sha256": "31bacbc5ae0c57748241df8341f9e4cf4cb25d297957f0c43434a0edaf50d895"
+      "sha256": "175e9a64a7dad009fb641d769dfceb104af942a7876f3eda0c66efe98fd2bda4"
     },
     {
       "path": "art/pixellab/reviews/square-original-terrain/zoom-contexts-dpr2.png",
-      "bytes": 1109532,
+      "bytes": 1112910,
       "width": 2240,
       "height": 5820,
-      "sha256": "07fc9a146f522b859eceed335d48c37e3c0316f8543cc61f07f6186ad759d3d6"
+      "sha256": "93122ab9a038012b5baa51378baf3d6f4a0d7041f82ca9291751d260b385f215"
     },
     {
       "path": "art/pixellab/reviews/square-original-terrain/gameplay-overlays-and-units.png",
-      "bytes": 141969,
+      "bytes": 141769,
       "width": 1120,
       "height": 960,
-      "sha256": "dae1e32567ca60529e2dcd71af7eedffd65ee4bf2ff5ed68e71b95eb552ad343"
+      "sha256": "4f3051fcb22f2ea6fba00088ed3e635980e25e94987cc074dbf74378de39008c"
     },
     {
       "path": "art/pixellab/reviews/square-original-terrain/family-batch-grass.png",
