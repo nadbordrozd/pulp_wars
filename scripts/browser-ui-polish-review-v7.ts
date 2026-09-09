@@ -28,10 +28,14 @@ interface Coord {
 const baseUrl =
   process.argv.find((argument) => argument.startsWith("http")) ??
   "http://localhost:6173/?ruleset=7";
-const outputRoot = path.join(
-  process.cwd(),
-  "art/integration/reviews/ruleset7-ui-polish",
+const selectionOnly = process.argv.includes("--selection-only");
+const outputArgument = process.argv.find((argument) =>
+  argument.startsWith("--output="),
 );
+const outputRoot =
+  outputArgument === undefined
+    ? path.join(process.cwd(), "art/integration/reviews/ruleset7-ui-polish")
+    : path.resolve(outputArgument.slice("--output=".length));
 const chrome =
   process.env.CHROME_PATH ??
   (process.platform === "win32"
@@ -79,6 +83,11 @@ try {
   await click(connection, '[data-action="launch"]');
   await waitForHuman(connection);
 
+  if (selectionOnly) {
+    await runSelectionReview(connection);
+    browser.kill();
+    process.exit(0);
+  }
   const canvasBefore = await rect(connection, ".board-canvas-v7");
   await key(connection, "Enter", "Enter");
   await key(connection, "Enter", "Enter");
@@ -88,14 +97,13 @@ try {
   );
   const cityLayout1024 = await dockEvidence(connection);
   assert(
-    cityLayout1024.width < 900 && cityLayout1024.centerOffset < 2,
-    `1024 city dock is not compact and centered: ${JSON.stringify(cityLayout1024)}`,
+    Math.abs(cityLayout1024.width - 1024) <= 1 &&
+      cityLayout1024.centerOffset < 2,
+    `1024 city dock is not viewport-wide: ${JSON.stringify(cityLayout1024)}`,
   );
   assert(
     cityLayout1024.detailsGrouped &&
       cityLayout1024.closeWidth < 140 &&
-      cityLayout1024.summaryToActions >= 0 &&
-      cityLayout1024.summaryToActions < 24 &&
       !cityLayout1024.identityDetailsOverlap,
     `city facts or Close control are not grouped: ${JSON.stringify(cityLayout1024)}`,
   );
@@ -121,10 +129,8 @@ try {
   );
   const multipleActionLayout = await dockEvidence(connection);
   assert(
-    multipleActionLayout.width < 1050 &&
+    Math.abs(multipleActionLayout.width - 1440) <= 1 &&
       multipleActionLayout.actionWidth === 176 &&
-      multipleActionLayout.summaryToActions >= 0 &&
-      multipleActionLayout.summaryToActions < 24 &&
       !multipleActionLayout.identityDetailsOverlap,
     `synthetic multiple-action dock overlaps or separates content: ${JSON.stringify(multipleActionLayout)}`,
   );
@@ -168,13 +174,11 @@ try {
   const canvasDesktop = await rect(connection, ".board-canvas-v7");
   const tileLayout = await dockEvidence(connection);
   assert(
-    tileLayout.width < 1050 &&
+    Math.abs(tileLayout.width - 1920) <= 1 &&
       tileLayout.centerOffset < 2 &&
       tileLayout.identityArtWidth === 112 &&
       tileLayout.identityArtHeight === 130 &&
       tileLayout.actionWidth === 176 &&
-      tileLayout.summaryToActions >= 0 &&
-      tileLayout.summaryToActions < 24 &&
       !tileLayout.identityDetailsOverlap,
     `1920 tile identity/actions are not a coherent dock: ${JSON.stringify(tileLayout)}`,
   );
@@ -387,6 +391,182 @@ try {
   browser.kill();
 }
 
+async function runSelectionReview(connection: Connection): Promise<void> {
+  await viewport(connection, 1440, 1000, 1);
+  const canvas1440 = await rect(connection, ".board-canvas-v7");
+  const movement = await evaluate<{
+    readonly capital: Coord;
+    readonly unit: Coord;
+    readonly unitId: number;
+    readonly targetCount: number;
+    readonly edgeCount: number;
+    readonly uniquePhysicalEdges: number;
+  }>(
+    connection,
+    `(async () => { const { buildBoardRenderPlanV7 } = await import('/src/render/canvas/board-renderer-v7.ts'); const snapshot = globalThis.__PULP_WARS_APP__.controller.snapshot(); const view = snapshot.view; const owned = view.units.filter((unit) => unit.ownerId === view.viewer.id); const candidate = owned.map((unit) => ({ unit, moves: snapshot.offeredCommands.filter((command) => command.kind === 'MOVE' && command.unitId === unit.id) })).sort((left, right) => right.moves.length - left.moves.length)[0]; const capital = view.cities.find((city) => city.ownerId === view.viewer.id && city.isCapital); if (!candidate || !capital || candidate.moves.length < 2) throw new Error('Natural movement-range fixture missing'); const plan = buildBoardRenderPlanV7(view, snapshot.offeredCommands, { selection: { kind: 'UNIT', unitId: candidate.unit.id }, selectedUnitId: candidate.unit.id, selectedAchievement: null }); const targets = plan.entries.filter((entry) => entry.kind === 'TARGET'); const edgeKey = (entry, edge) => edge === 'NORTH' ? 'h:' + entry.at.x + ':' + entry.at.y : edge === 'SOUTH' ? 'h:' + entry.at.x + ':' + (entry.at.y + 1) : edge === 'WEST' ? 'v:' + entry.at.x + ':' + entry.at.y : 'v:' + (entry.at.x + 1) + ':' + entry.at.y; const edges = targets.flatMap((entry) => (entry.targetEdges || []).map((edge) => edgeKey(entry, edge))); return { capital: capital.at, unit: candidate.unit.at, unitId: candidate.unit.id, targetCount: plan.targets.length, edgeCount: edges.length, uniquePhysicalEdges: new Set(edges).size }; })()`,
+  );
+  assert(
+    movement.targetCount >= 2 &&
+      movement.edgeCount > 0 &&
+      movement.edgeCount === movement.uniquePhysicalEdges,
+    `movement physical-edge contract failed: ${JSON.stringify(movement)}`,
+  );
+  await moveCursor(connection, movement.capital, movement.unit);
+  await key(connection, "Enter", "Enter");
+  await waitFor(
+    connection,
+    `document.querySelector('.v7-selection-dock')?.dataset.selectionKind === 'unit'`,
+  );
+  const unitLayout = await selectionDockEvidence(connection);
+  assertSelectionDock(unitLayout, 1440, "1440 unit");
+  assert(
+    unitLayout.height <= 300 && unitLayout.actionsBesideIdentity,
+    `1440 unit dock is not compact and horizontal: ${JSON.stringify(unitLayout)}`,
+  );
+  assertSameRect(canvas1440, await rect(connection, ".board-canvas-v7"));
+  await capture(connection, "selection-1440-unit-movement.png");
+
+  const moved = await evaluate<{
+    readonly capital: Coord;
+    readonly beforeCommandIndex: number;
+  }>(
+    connection,
+    `(async () => { const controller = globalThis.__PULP_WARS_APP__.controller; const before = controller.snapshot(); const capital = before.view.cities.find((city) => city.ownerId === before.view.viewer.id && city.isCapital); const occupant = before.view.units.find((unit) => capital && unit.ownerId === before.view.viewer.id && unit.at.x === capital.at.x && unit.at.y === capital.at.y); const move = occupant && before.offeredCommands.find((command) => command.kind === 'MOVE' && command.unitId === occupant.id); if (!capital || !move) throw new Error('Legal capital-clearing Move missing'); const result = await controller.dispatch(move); if (!result.accepted) throw new Error('Capital-clearing Move rejected'); return { capital: capital.at, beforeCommandIndex: before.view.commandIndex }; })()`,
+  );
+  await waitFor(
+    connection,
+    `(() => { const snapshot = globalThis.__PULP_WARS_APP__.controller.snapshot(); return !snapshot.transitioning && snapshot.view.commandIndex > ${String(moved.beforeCommandIndex)}; })()`,
+  );
+  await click(connection, '[data-action="close-dock"]');
+  await moveCursor(connection, movement.unit, moved.capital);
+  await key(connection, "Enter", "Enter");
+  await waitFor(
+    connection,
+    `document.querySelector('.v7-selection-dock')?.dataset.selectionKind === 'city' && document.querySelectorAll('.v7-train-action').length >= 1`,
+  );
+  await viewport(connection, 1920, 1080, 1);
+  const canvas1920 = await rect(connection, ".board-canvas-v7");
+  const city1920 = await selectionDockEvidence(connection);
+  assertSelectionDock(city1920, 1920, "1920 city");
+  assert(
+    city1920.height <= 300 && city1920.actionsBesideIdentity,
+    `1920 city dock is not compact and horizontal: ${JSON.stringify(city1920)}`,
+  );
+  await capture(connection, "selection-1920-city-actions.png");
+
+  await viewport(connection, 390, 844, 2);
+  const crowdedFixture = await evaluate<{
+    readonly label: string;
+    readonly naturalTrainActions: number;
+    readonly syntheticActions: number;
+  }>(
+    connection,
+    `(() => { const actions = document.querySelector('.v7-selection-dock > .v7-context-actions'); const source = actions?.querySelector('.v7-train-action'); if (!(actions instanceof HTMLElement) || !(source instanceof HTMLButtonElement)) throw new Error('Natural Train source missing'); const naturalTrainActions = actions.querySelectorAll('.v7-train-action').length; for (let index = 1; index <= 5; index += 1) { const synthetic = source.cloneNode(true); synthetic.className = 'v7-context-action'; synthetic.dataset.syntheticLayout = 'true'; synthetic.removeAttribute('data-action'); synthetic.setAttribute('aria-label', 'Synthetic overflow card ' + index); for (const child of synthetic.childNodes) if (child.nodeType === Node.TEXT_NODE) child.textContent = 'Synthetic overflow ' + index; synthetic.querySelector('.v7-command-economy')?.remove(); actions.append(synthetic); } return { label: 'SYNTHETIC_CROWDED_LAYOUT_ONLY_REAL_TRAIN_COUNT_REPORTED_SEPARATELY', naturalTrainActions, syntheticActions: 5 }; })()`,
+  );
+  const canvas390 = await rect(connection, ".board-canvas-v7");
+  const city390Before = await selectionDockEvidence(connection);
+  assertSelectionDock(city390Before, 390, "390 city");
+  assert(
+    city390Before.actionCount >= 2 &&
+      city390Before.actionScrollWidth > city390Before.actionClientWidth &&
+      Math.abs(
+        city390Before.actionClientWidth - city390Before.dockInnerWidth,
+      ) <= 1 &&
+      city390Before.actionRowVisible,
+    `390 natural Train row is not visibly scrollable: ${JSON.stringify(city390Before)}`,
+  );
+  const tabReach = await focusLastActionWithTab(connection);
+  assert(
+    tabReach.focusedLast && tabReach.lastVisible && tabReach.scrollLeft > 0,
+    `Tab did not reveal the last action: ${JSON.stringify(tabReach)}`,
+  );
+  const wheelReach = await wheelActionRow(connection);
+  assert(
+    wheelReach.defaultPrevented && wheelReach.scrollLeft > 0,
+    `pointer wheel did not scroll the action row: ${JSON.stringify(wheelReach)}`,
+  );
+  const touchReach = await swipeActionRow(connection);
+  assert(
+    touchReach.scrollLeft > 0,
+    `touch swipe did not scroll the action row: ${JSON.stringify(touchReach)}`,
+  );
+  assertSameRect(canvas390, await rect(connection, ".board-canvas-v7"));
+  await capture(connection, "selection-390-city-actions-dpr2.png");
+  const trainBoundary = await evaluate<{
+    readonly commandIndex: number;
+    readonly unitCount: number;
+    readonly action: string;
+  }>(
+    connection,
+    `(() => { const snapshot = globalThis.__PULP_WARS_APP__.controller.snapshot(); const action = document.querySelector('.v7-train-action'); if (!(action instanceof HTMLButtonElement) || action.disabled) throw new Error('Legal Train button missing'); return { commandIndex: snapshot.view.commandIndex, unitCount: snapshot.view.units.length, action: action.getAttribute('aria-label') || action.textContent || '' }; })()`,
+  );
+  await click(connection, ".v7-train-action");
+  await waitFor(
+    connection,
+    `(() => { const snapshot = globalThis.__PULP_WARS_APP__.controller.snapshot(); return snapshot.view.commandIndex === ${String(trainBoundary.commandIndex + 1)} && snapshot.view.units.length === ${String(trainBoundary.unitCount + 1)}; })()`,
+  );
+
+  const tileTarget = await evaluate<{
+    readonly from: Coord;
+    readonly at: Coord;
+    readonly kind: string;
+  }>(
+    connection,
+    `(() => { const snapshot = globalThis.__PULP_WARS_APP__.controller.snapshot(); const city = snapshot.view.cities.find((candidate) => candidate.ownerId === snapshot.view.viewer.id && candidate.isCapital); const command = snapshot.offeredCommands.find((candidate) => 'at' in candidate && candidate.kind !== 'BUILD_MONUMENT'); if (!city || !command || !('at' in command)) throw new Error('Natural actionable tile missing'); return { from: city.at, at: command.at, kind: command.kind }; })()`,
+  );
+  await click(connection, '[data-action="close-dock"]');
+  await moveCursor(connection, tileTarget.from, tileTarget.at);
+  await key(connection, "Enter", "Enter");
+  await waitFor(
+    connection,
+    `document.querySelector('.v7-selection-dock')?.dataset.selectionKind === 'tile' && document.querySelector('.v7-context-actions button') !== null`,
+  );
+  await viewport(connection, 320, 720, 1);
+  await openCompactAction(connection, "settings");
+  await selectValue(connection, "#v7-ui-scale", "2");
+  await waitFor(
+    connection,
+    `document.querySelector('.v7-app-shell')?.dataset.uiScale === '2'`,
+  );
+  await click(connection, '[data-action="close-overlay"]');
+  const canvas320 = await rect(connection, ".board-canvas-v7");
+  const tile320 = await selectionDockEvidence(connection);
+  assertSelectionDock(tile320, 320, "320 tile at 200% UI scale");
+  assert(
+    tile320.actionRowVisible &&
+      Math.abs(tile320.actionClientWidth - tile320.dockInnerWidth) <= 1 &&
+      tile320.dockTop >= tile320.hudBottom - 1 &&
+      tile320.endTurnReachable,
+    `320 action/HUD geometry failed: ${JSON.stringify(tile320)}`,
+  );
+  await capture(connection, "selection-320-tile-ui-scale-200.png");
+
+  const evidence = {
+    source: "PRODUCTION_SELECTION_UI_FOCUSED_REVIEW",
+    movement,
+    unitLayout,
+    city1920,
+    city390: {
+      crowdedFixture,
+      layout: city390Before,
+      tabReach,
+      wheelReach,
+      touchReach,
+    },
+    legalTrainDispatch: trainBoundary.action,
+    tile320: { command: tileTarget.kind, layout: tile320 },
+    canvas: { canvas1440, canvas1920, canvas390, canvas320 },
+  };
+  await writeFile(
+    path.join(outputRoot, "selection-evidence.json"),
+    `${JSON.stringify(evidence, null, 2)}\n`,
+  );
+  connection.close();
+  console.log(
+    `Ruleset-7 focused selection review passed: ${JSON.stringify(evidence)}. Evidence: ${outputRoot}`,
+  );
+}
+
 async function compactMatchEvidence(connection: Connection): Promise<{
   readonly mainMenuReachable: boolean;
   readonly endTurnReachable: boolean;
@@ -431,6 +611,133 @@ async function dockEvidence(connection: Connection): Promise<{
   return evaluate(
     connection,
     `(() => { const dock = document.querySelector('.v7-selection-dock'); const summary = dock?.querySelector('.v7-selection-summary'); const identity = dock?.querySelector('.v7-identity'); const art = dock?.querySelector('.v7-art-frame'); const details = dock?.querySelector('.v7-selection-details'); const actions = dock?.querySelector('.v7-context-actions'); const action = actions?.querySelector('button'); const close = dock?.querySelector('.close-button'); if (!(dock instanceof HTMLElement) || !(identity instanceof HTMLElement) || !(close instanceof HTMLElement)) throw new Error('Dock evidence missing'); const d = dock.getBoundingClientRect(); const s = summary?.getBoundingClientRect(); const i = identity.getBoundingClientRect(); const detailRect = details?.getBoundingClientRect(); const a = art?.getBoundingClientRect(); const group = actions?.getBoundingClientRect(); const button = action?.getBoundingClientRect(); return { width: d.width, centerOffset: Math.abs(d.left + d.width / 2 - innerWidth / 2), detailsGrouped: details instanceof HTMLElement && [...details.children].every((child) => child.tagName === 'P' || child.classList.contains('v7-tactical-status') || child.classList.contains('v7-context-actions')), closeWidth: close.getBoundingClientRect().width, identityArtWidth: a?.width ?? 0, identityArtHeight: a?.height ?? 0, actionWidth: button?.width ?? 0, identityToActions: group ? group.left - i.right : 0, summaryToActions: group && s ? group.left - s.right : 0, identityDetailsOverlap: Boolean(detailRect && detailRect.top < i.bottom - 1) }; })()`,
+  );
+}
+
+interface SelectionDockEvidence {
+  readonly width: number;
+  readonly height: number;
+  readonly left: number;
+  readonly right: number;
+  readonly dockTop: number;
+  readonly dockInnerWidth: number;
+  readonly hudBottom: number;
+  readonly endTurnReachable: boolean;
+  readonly closeReachable: boolean;
+  readonly identityCloseOverlap: boolean;
+  readonly actionsBesideIdentity: boolean;
+  readonly identityArtWidth: number;
+  readonly identityArtHeight: number;
+  readonly actionCount: number;
+  readonly actionWidth: number;
+  readonly actionClientWidth: number;
+  readonly actionScrollWidth: number;
+  readonly actionClientHeight: number;
+  readonly actionScrollHeight: number;
+  readonly actionTopDelta: number;
+  readonly actionRowVisible: boolean;
+  readonly flexWrap: string;
+  readonly overflowX: string;
+  readonly overflowY: string;
+  readonly touchAction: string;
+  readonly pageClientWidth: number;
+  readonly pageScrollWidth: number;
+}
+
+async function selectionDockEvidence(
+  connection: Connection,
+): Promise<SelectionDockEvidence> {
+  return evaluate(
+    connection,
+    `(() => { const dock = document.querySelector('.v7-selection-dock'); const actions = dock?.querySelector(':scope > .v7-context-actions'); const close = dock?.querySelector(':scope > .close-button'); const identity = dock?.querySelector('.v7-identity'); const art = identity?.querySelector('.v7-art-frame'); const hud = document.querySelector('.v7-match-hud'); const endTurn = document.querySelector('[data-action="end-turn"]'); if (!(dock instanceof HTMLElement) || !(actions instanceof HTMLElement) || !(close instanceof HTMLElement) || !(identity instanceof HTMLElement) || !(art instanceof HTMLElement) || !(hud instanceof HTMLElement) || !(endTurn instanceof HTMLElement)) throw new Error('Selection dock evidence missing'); const d = dock.getBoundingClientRect(); const group = actions.getBoundingClientRect(); const closeRect = close.getBoundingClientRect(); const identityRect = identity.getBoundingClientRect(); const artRect = art.getBoundingClientRect(); const hudRect = hud.getBoundingClientRect(); const endTurnRect = endTurn.getBoundingClientRect(); const buttons = [...actions.querySelectorAll('button')]; const buttonRects = buttons.map((button) => button.getBoundingClientRect()); const style = getComputedStyle(actions); const dockStyle = getComputedStyle(dock); const overlaps = (left, right) => left.left < right.right && left.right > right.left && left.top < right.bottom && left.bottom > right.top; return { width: d.width, height: d.height, left: d.left, right: d.right, dockTop: d.top, dockInnerWidth: d.width - parseFloat(dockStyle.paddingLeft) - parseFloat(dockStyle.paddingRight), hudBottom: hudRect.bottom, endTurnReachable: endTurnRect.width >= 44 && endTurnRect.height >= 44 && endTurnRect.left >= 0 && endTurnRect.right <= innerWidth && endTurnRect.top >= 0 && endTurnRect.bottom <= innerHeight && !overlaps(endTurnRect, d), closeReachable: closeRect.width >= 44 && closeRect.height >= 44 && closeRect.left >= 0 && closeRect.right <= innerWidth && closeRect.top >= 0 && closeRect.bottom <= innerHeight, identityCloseOverlap: overlaps(identityRect, closeRect), actionsBesideIdentity: group.top < identityRect.bottom && group.bottom > identityRect.top, identityArtWidth: artRect.width, identityArtHeight: artRect.height, actionCount: buttons.length, actionWidth: buttonRects[0]?.width || 0, actionClientWidth: actions.clientWidth, actionScrollWidth: actions.scrollWidth, actionClientHeight: actions.clientHeight, actionScrollHeight: actions.scrollHeight, actionTopDelta: buttonRects.length === 0 ? 0 : Math.max(...buttonRects.map((rect) => Math.abs(rect.top - buttonRects[0].top))), actionRowVisible: group.width > 0 && group.height > 0 && group.top >= 0 && group.bottom <= innerHeight, flexWrap: style.flexWrap, overflowX: style.overflowX, overflowY: style.overflowY, touchAction: style.touchAction, pageClientWidth: document.documentElement.clientWidth, pageScrollWidth: document.documentElement.scrollWidth }; })()`,
+  );
+}
+
+function assertSelectionDock(
+  evidence: SelectionDockEvidence,
+  viewportWidth: number,
+  label: string,
+): void {
+  assert(
+    Math.abs(evidence.width - viewportWidth) <= 1 &&
+      Math.abs(evidence.left) <= 1 &&
+      Math.abs(evidence.right - viewportWidth) <= 1 &&
+      evidence.closeReachable &&
+      !evidence.identityCloseOverlap &&
+      evidence.identityArtWidth === 112 &&
+      evidence.identityArtHeight === 130 &&
+      evidence.actionCount > 0 &&
+      evidence.actionWidth === 176 &&
+      evidence.actionTopDelta <= 1 &&
+      evidence.actionScrollHeight <= evidence.actionClientHeight + 1 &&
+      evidence.actionRowVisible &&
+      evidence.flexWrap === "nowrap" &&
+      (evidence.overflowX === "auto" || evidence.overflowX === "scroll") &&
+      evidence.overflowY === "hidden" &&
+      evidence.touchAction === "pan-x" &&
+      evidence.pageScrollWidth <= evidence.pageClientWidth,
+    `${label} selection dock failed: ${JSON.stringify(evidence)}`,
+  );
+}
+
+async function focusLastActionWithTab(connection: Connection): Promise<{
+  readonly focusedLast: boolean;
+  readonly lastVisible: boolean;
+  readonly scrollLeft: number;
+}> {
+  const count = await evaluate<number>(
+    connection,
+    `(() => { const actions = document.querySelector('.v7-selection-dock > .v7-context-actions'); const buttons = [...(actions?.querySelectorAll('button') || [])]; if (!(actions instanceof HTMLElement) || buttons.length < 2 || !(buttons[0] instanceof HTMLButtonElement)) throw new Error('Crowded action row missing'); actions.scrollLeft = 0; buttons[0].focus(); return buttons.length; })()`,
+  );
+  for (let index = 1; index < count; index += 1)
+    await key(connection, "Tab", "Tab");
+  return evaluate(
+    connection,
+    `(() => { const actions = document.querySelector('.v7-selection-dock > .v7-context-actions'); const buttons = [...(actions?.querySelectorAll('button') || [])]; const last = buttons.at(-1); if (!(actions instanceof HTMLElement) || !(last instanceof HTMLButtonElement)) throw new Error('Last action missing'); const a = actions.getBoundingClientRect(); const b = last.getBoundingClientRect(); return { focusedLast: document.activeElement === last, lastVisible: b.left >= a.left - 1 && b.right <= a.right + 1, scrollLeft: actions.scrollLeft }; })()`,
+  );
+}
+
+async function wheelActionRow(connection: Connection): Promise<{
+  readonly defaultPrevented: boolean;
+  readonly scrollLeft: number;
+}> {
+  return evaluate(
+    connection,
+    `(() => { const actions = document.querySelector('.v7-selection-dock > .v7-context-actions'); if (!(actions instanceof HTMLElement)) throw new Error('Action row missing'); actions.scrollLeft = 0; const event = new WheelEvent('wheel', { deltaY: 160, bubbles: true, cancelable: true }); actions.dispatchEvent(event); return { defaultPrevented: event.defaultPrevented, scrollLeft: actions.scrollLeft }; })()`,
+  );
+}
+
+async function swipeActionRow(connection: Connection): Promise<{
+  readonly scrollLeft: number;
+}> {
+  const points = await evaluate<{
+    readonly start: { readonly x: number; readonly y: number };
+    readonly middle: { readonly x: number; readonly y: number };
+    readonly end: { readonly x: number; readonly y: number };
+  }>(
+    connection,
+    `(() => { const actions = document.querySelector('.v7-selection-dock > .v7-context-actions'); if (!(actions instanceof HTMLElement)) throw new Error('Action row missing'); actions.scrollLeft = 0; const rect = actions.getBoundingClientRect(); const y = rect.top + Math.min(rect.height / 2, 80); return { start: { x: rect.right - 24, y }, middle: { x: rect.left + rect.width / 2, y }, end: { x: rect.left + 24, y } }; })()`,
+  );
+  await connection.send("Input.dispatchTouchEvent", {
+    type: "touchStart",
+    touchPoints: [points.start],
+  });
+  await connection.send("Input.dispatchTouchEvent", {
+    type: "touchMove",
+    touchPoints: [points.middle],
+  });
+  await connection.send("Input.dispatchTouchEvent", {
+    type: "touchMove",
+    touchPoints: [points.end],
+  });
+  await connection.send("Input.dispatchTouchEvent", {
+    type: "touchEnd",
+    touchPoints: [],
+  });
+  await delay(120);
+  return evaluate(
+    connection,
+    `(() => { const actions = document.querySelector('.v7-selection-dock > .v7-context-actions'); if (!(actions instanceof HTMLElement)) throw new Error('Action row missing'); return { scrollLeft: actions.scrollLeft }; })()`,
   );
 }
 
@@ -617,6 +924,7 @@ async function key(
   code: string,
 ): Promise<void> {
   const keyCode: Readonly<Record<string, number>> = {
+    Tab: 9,
     Enter: 13,
     Escape: 27,
     ArrowLeft: 37,

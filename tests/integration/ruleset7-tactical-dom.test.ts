@@ -51,7 +51,11 @@ describe("Ruleset 7 tactical DOM controls", () => {
         ),
     );
     host.callbacks?.onSelection({ kind: "UNIT", unitId: envoy.id });
-    requiredButton("defection").click();
+    const defection = requiredButton("defection");
+    const ordinaryAction = requiredButton("command-wait");
+    expect(defection.parentElement).toBe(ordinaryAction.parentElement);
+    expect(defection.parentElement?.classList).toContain("v7-context-actions");
+    defection.click();
     const model = required(host.lastModel);
     expect(model.interaction.tacticalTargetMode).toEqual({
       kind: "DEFECTION",

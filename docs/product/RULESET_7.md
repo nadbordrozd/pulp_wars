@@ -2155,12 +2155,13 @@ Selecting a visible unit, city, or tile opens exactly one nonmodal dock. It
 never opens the obsolete duplicate “Choose an action” surface. The map remains
 pannable/zoomable and the fixed Canvas host, camera, zoom, and selection never
 resize or jump when dock content changes. Docks omit tile coordinates.
-On wide desktop, the dock is centered and content-bounded: identity, grouped
-semantic facts, contextual actions, and a label-sized Close control remain a
-coherent cluster instead of stretching to opposite viewport edges. Compact,
-mobile, 320 CSS-pixel, and 200% UI-scale layouts reflow this same content into a
-reachable bottom dock without horizontal overflow. This Ruleset-7 layout
-specializes the otherwise retained screen-flow dock contract.
+The unit, city, and tile dock spans the full viewport width on desktop and
+compact layouts. Identity and semantic facts may reflow or scroll within that
+bottom bar, while its label-sized Close control remains reachable. Contextual
+and tactical action buttons share one left-aligned, nonwrapping horizontal row;
+only that row scrolls horizontally, by touch, pointer wheel, or focus-following
+keyboard navigation, without creating page-level horizontal overflow. This
+Ruleset-7 layout specializes the otherwise retained screen-flow dock contract.
 
 Every exact unambiguous contextual command executes from one button activation
 against the already-selected entity/tile. Harvest, Hunt, Build, Clear, Replant,
@@ -2169,7 +2170,8 @@ Disband, and End Pursuit never ask for the same target again and never add
 confirmation.
 Training buttons dispatch their exact city/role immediately. Confirmation is
 used only where this contract explicitly names one. Buttons are 176 CSS pixels
-wide, at least 44 x 44, grow vertically, and wrap without horizontal overflow.
+wide, at least 44 x 44, grow vertically, and remain in the dock's single
+horizontally scrolling action row rather than wrapping into a vertical list.
 
 Move, ordinary Attack, and Pursuit movement/attacks remain highlighted on the
 map and are never duplicated as destination/target buttons. A Pursuit kill

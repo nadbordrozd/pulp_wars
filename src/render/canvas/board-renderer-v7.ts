@@ -105,6 +105,7 @@ export interface BoardRenderPlanEntryV7 {
   readonly linkTo?: CoordV7;
   readonly attachmentSlot?: number;
   readonly edge?: TileEdge;
+  readonly targetEdges?: readonly TileEdge[];
   readonly boundaryStyle?: "OWNER" | "CITY" | "POTENTIAL";
 }
 
@@ -120,6 +121,8 @@ const PLAYER_COLORS = {
   GOLD: "#e2b63f",
   VIOLET: "#a277d2",
 } as const;
+
+const TILE_EDGES: readonly TileEdge[] = ["NORTH", "EAST", "SOUTH", "WEST"];
 
 export function buildBoardRenderPlanV7(
   view: PlayerViewV7,
@@ -316,6 +319,7 @@ export function buildBoardRenderPlanV7(
         label: `Pursue step ${index + 1} of ${focusedPursuit.command.path.length}`,
       });
     }
+  const targetEdges = mapTargetEdges(targets);
   for (const target of targets)
     entries.push({
       key: `target:${target.family}:${target.at.x},${target.at.y}`,
@@ -323,6 +327,8 @@ export function buildBoardRenderPlanV7(
       layer: 7,
       at: target.at,
       target,
+      targetEdges:
+        targetEdges.get(`${target.family}:${target.at.x},${target.at.y}`) ?? [],
     });
   const selectedAt = selectionCoord(view, interaction.selection);
   if (selectedAt !== null)
@@ -392,7 +398,12 @@ export function drawBoardV7(input: {
   context.save();
   context.globalAlpha = sceneAlpha;
   for (const entry of input.plan.entries) {
-    if (entry.kind === "LINK" || entry.kind === "TERRITORY_BOUNDARY") continue;
+    if (
+      entry.kind === "LINK" ||
+      entry.kind === "TARGET" ||
+      entry.kind === "TERRITORY_BOUNDARY"
+    )
+      continue;
     const impacted =
       input.impact !== null &&
       input.impact !== undefined &&
@@ -419,36 +430,22 @@ export function drawBoardV7(input: {
       context.fillRect(left, top, size, size);
     }
     if (
-      entry.kind === "TARGET" ||
       entry.kind === "REACH" ||
       entry.kind === "SELECTION" ||
       entry.kind === "CURSOR"
     ) {
       context.save();
       context.lineWidth =
-        (entry.kind === "SELECTION"
-          ? 5
-          : entry.kind === "CURSOR"
-            ? 3
-            : entry.kind === "REACH"
-              ? 2
-              : 4) * camera.zoom;
+        (entry.kind === "SELECTION" ? 5 : entry.kind === "CURSOR" ? 3 : 2) *
+        camera.zoom;
       context.strokeStyle =
         entry.kind === "SELECTION"
           ? "#fff6b0"
           : entry.kind === "CURSOR"
             ? "#ffffff"
-            : entry.kind === "REACH"
-              ? "#ffd34e"
-              : entry.target?.family === "ATTACK"
-                ? "#ff655f"
-                : entry.target?.family === "DEFECTION"
-                  ? "#ffd34e"
-                  : entry.target?.family === "BLACKOUT"
-                    ? "#da8fff"
-                    : "#64e6cf";
+            : "#ffd34e";
       context.setLineDash(
-        entry.kind === "TARGET" || entry.kind === "REACH"
+        entry.kind === "REACH"
           ? [9 * camera.zoom, 5 * camera.zoom]
           : entry.kind === "CURSOR"
             ? [3 * camera.zoom, 3 * camera.zoom]
@@ -460,20 +457,6 @@ export function drawBoardV7(input: {
         size - 8 * camera.zoom,
         size - 8 * camera.zoom,
       );
-      if (entry.target?.previewLabel !== undefined) {
-        context.setLineDash([]);
-        context.fillStyle = "#171722dd";
-        context.fillRect(
-          x - 45 * camera.zoom,
-          y + 39 * camera.zoom,
-          90 * camera.zoom,
-          18 * camera.zoom,
-        );
-        context.fillStyle = "#fff8df";
-        context.font = `${700} ${10 * camera.zoom}px system-ui`;
-        context.textAlign = "center";
-        context.fillText(entry.target.previewLabel, x, y + 52 * camera.zoom);
-      }
       context.restore();
       continue;
     }
@@ -651,9 +634,27 @@ export function drawBoardV7(input: {
       }
     }
   }
+  const targetEdgeKeys = new Set(
+    input.plan.entries.flatMap((entry) =>
+      entry.kind === "TARGET"
+        ? (entry.targetEdges ?? TILE_EDGES).map((edge) =>
+            edgeKey(entry.at, edge),
+          )
+        : [],
+    ),
+  );
   for (const boundary of input.plan.entries) {
     if (boundary.kind !== "TERRITORY_BOUNDARY") continue;
+    if (
+      boundary.edge !== undefined &&
+      targetEdgeKeys.has(edgeKey(boundary.at, boundary.edge))
+    )
+      continue;
     drawTerritoryBoundary(context, camera, boundary);
+  }
+  for (const target of input.plan.entries) {
+    if (target.kind !== "TARGET") continue;
+    drawMapTarget(context, camera, target);
   }
   const publicLinks = input.plan.entries.filter(
     (entry) => entry.kind === "LINK" && entry.linkTo !== undefined,
@@ -823,14 +824,89 @@ function edgeKey(at: CoordV7, edge: TileEdge): string {
   return `v:${at.x + 1}:${at.y}`;
 }
 
-function drawTerritoryBoundary(
+function mapTargetEdges(
+  targets: readonly MapCommandTargetV7[],
+): ReadonlyMap<string, readonly TileEdge[]> {
+  const winners = new Map<
+    string,
+    { readonly target: MapCommandTargetV7; readonly edge: TileEdge }
+  >();
+  for (const target of targets)
+    for (const edge of TILE_EDGES) {
+      const key = edgeKey(target.at, edge);
+      const winner = winners.get(key);
+      if (
+        winner === undefined ||
+        targetPriority(target.family) > targetPriority(winner.target.family)
+      )
+        winners.set(key, { target, edge });
+    }
+  const result = new Map<string, TileEdge[]>();
+  for (const { target, edge } of winners.values()) {
+    const key = `${target.family}:${target.at.x},${target.at.y}`;
+    const edges = result.get(key) ?? [];
+    edges.push(edge);
+    result.set(key, edges);
+  }
+  return result;
+}
+
+function targetPriority(family: MapCommandTargetV7["family"]): number {
+  if (family === "ATTACK") return 6;
+  if (family === "DEFECTION") return 5;
+  if (family === "BLACKOUT") return 4;
+  if (family === "PURSUIT") return 3;
+  if (family === "MONUMENT") return 2;
+  return 1;
+}
+
+function targetStroke(
+  family: MapCommandTargetV7["family"] | undefined,
+): string {
+  if (family === "ATTACK") return "#ff655f";
+  if (family === "DEFECTION") return "#ffd34e";
+  if (family === "BLACKOUT") return "#da8fff";
+  return "#64e6cf";
+}
+
+function drawMapTarget(
   context: CanvasRenderingContext2D,
   camera: CameraState,
   entry: BoardRenderPlanEntryV7,
 ): void {
-  if (entry.edge === undefined) return;
   const x = camera.offsetX + entry.at.x * TILE_WIDTH * camera.zoom;
   const y = camera.offsetY + entry.at.y * TILE_HEIGHT * camera.zoom;
+  context.save();
+  context.lineWidth = 4 * camera.zoom;
+  context.strokeStyle = targetStroke(entry.target?.family);
+  context.setLineDash([9 * camera.zoom, 5 * camera.zoom]);
+  for (const edge of entry.targetEdges ?? TILE_EDGES)
+    strokeTileEdge(context, camera, entry.at, edge);
+  if (entry.target?.previewLabel !== undefined) {
+    context.setLineDash([]);
+    context.fillStyle = "#171722dd";
+    context.fillRect(
+      x - 45 * camera.zoom,
+      y + 39 * camera.zoom,
+      90 * camera.zoom,
+      18 * camera.zoom,
+    );
+    context.fillStyle = "#fff8df";
+    context.font = `${700} ${10 * camera.zoom}px system-ui`;
+    context.textAlign = "center";
+    context.fillText(entry.target.previewLabel, x, y + 52 * camera.zoom);
+  }
+  context.restore();
+}
+
+function strokeTileEdge(
+  context: CanvasRenderingContext2D,
+  camera: CameraState,
+  at: CoordV7,
+  edge: TileEdge,
+): void {
+  const x = camera.offsetX + at.x * TILE_WIDTH * camera.zoom;
+  const y = camera.offsetY + at.y * TILE_HEIGHT * camera.zoom;
   const half = (TILE_WIDTH * camera.zoom) / 2;
   const endpoints: Readonly<
     Record<TileEdge, readonly [number, number, number, number]>
@@ -840,7 +916,19 @@ function drawTerritoryBoundary(
     SOUTH: [x + half, y + half, x - half, y + half],
     WEST: [x - half, y + half, x - half, y - half],
   };
-  const [fromX, fromY, toX, toY] = endpoints[entry.edge];
+  const [fromX, fromY, toX, toY] = endpoints[edge];
+  context.beginPath();
+  context.moveTo(fromX, fromY);
+  context.lineTo(toX, toY);
+  context.stroke();
+}
+
+function drawTerritoryBoundary(
+  context: CanvasRenderingContext2D,
+  camera: CameraState,
+  entry: BoardRenderPlanEntryV7,
+): void {
+  if (entry.edge === undefined) return;
   context.save();
   context.strokeStyle =
     entry.boundaryStyle === "POTENTIAL"
@@ -857,10 +945,7 @@ function drawTerritoryBoundary(
       ? [9 * camera.zoom, 6 * camera.zoom]
       : [],
   );
-  context.beginPath();
-  context.moveTo(fromX, fromY);
-  context.lineTo(toX, toY);
-  context.stroke();
+  strokeTileEdge(context, camera, entry.at, entry.edge);
   context.restore();
 }
 

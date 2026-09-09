@@ -342,6 +342,99 @@ describe("Ruleset 7 board renderer", () => {
     ).toBe(!city.expanded);
   });
 
+  it("strokes each physical movement-target edge once", () => {
+    const state = exploredAllV7(initialV7(1520));
+    const view = viewForV7(state, state.humanPlayerId);
+    const unit = view.units.find(
+      (candidate) => candidate.ownerId === view.viewer.id,
+    );
+    if (unit === undefined) throw new Error("owned unit missing");
+    const plan = buildBoardRenderPlanV7(
+      view,
+      [
+        { kind: "MOVE", unitId: unit.id, path: [{ x: 1, y: 1 }] },
+        { kind: "MOVE", unitId: unit.id, path: [{ x: 2, y: 1 }] },
+      ],
+      {
+        selection: { kind: "UNIT", unitId: unit.id },
+        selectedUnitId: unit.id,
+        selectedAchievement: null,
+      },
+    );
+    const targetEntries = plan.entries.filter(
+      (entry) => entry.kind === "TARGET",
+    );
+    const physicalEdges = targetEntries.flatMap((entry) =>
+      (entry.targetEdges ?? []).map((edge) => testEdgeKey(entry.at, edge)),
+    );
+    expect(plan.targets).toHaveLength(2);
+    expect(targetEntries).toHaveLength(2);
+    expect(physicalEdges).toHaveLength(7);
+    expect(new Set(physicalEdges).size).toBe(physicalEdges.length);
+
+    const lineTo = vi.fn();
+    const strokeRect = vi.fn();
+    const lineDashes: number[][] = [];
+    drawBoardV7({
+      context: drawingContext(vi.fn(), vi.fn(), {
+        lineTo,
+        strokeRect,
+        setLineDash: vi.fn((dash: number[]) => lineDashes.push(dash)),
+      }),
+      viewport: { width: 500, height: 300 },
+      devicePixelRatio: 1,
+      camera: { offsetX: 100, offsetY: 100, zoom: 1 },
+      plan: { ...plan, entries: targetEntries },
+      images: { resolve: () => null },
+    });
+    expect(lineTo).toHaveBeenCalledTimes(7);
+    expect(strokeRect).not.toHaveBeenCalled();
+    expect(lineDashes).toContainEqual([9, 5]);
+
+    const firstTarget = plan.targets[0];
+    if (firstTarget === undefined) throw new Error("Move target missing");
+    let strokeStyle = "";
+    const strokedStyles: string[] = [];
+    drawBoardV7({
+      context: drawingContext(
+        vi.fn(),
+        vi.fn(),
+        { stroke: vi.fn(() => strokedStyles.push(strokeStyle)) },
+        (key, value) => {
+          if (key === "strokeStyle") strokeStyle = String(value);
+        },
+      ),
+      viewport: { width: 300, height: 300 },
+      devicePixelRatio: 1,
+      camera: { offsetX: 100, offsetY: 100, zoom: 1 },
+      plan: {
+        version: 7,
+        targets: [firstTarget],
+        entries: [
+          {
+            key: "territory-owner:v:2:1",
+            kind: "TERRITORY_BOUNDARY",
+            layer: 7,
+            at: { x: 1, y: 1 },
+            edge: "EAST",
+            boundaryStyle: "OWNER",
+            ownerColor: "#f06762",
+          },
+          {
+            key: "target:MOVE:1,1",
+            kind: "TARGET",
+            layer: 7,
+            at: { x: 1, y: 1 },
+            target: firstTarget,
+            targetEdges: ["EAST"],
+          },
+        ],
+      },
+      images: { resolve: () => null },
+    });
+    expect(strokedStyles).toEqual(["#64e6cf"]);
+  });
+
   it("wraps the ninth processor pip onto a second row", () => {
     const fillRect = vi.fn();
     const context = drawingContext(vi.fn(), fillRect);

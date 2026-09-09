@@ -1028,15 +1028,18 @@ export class Ruleset7DomAppView {
         );
         dock.append(cooldown);
       }
-      this.#appendTacticalActions(dock, view, unit.id);
-      dock.append(
-        this.#commandButtons(
-          (command) =>
-            "unitId" in command &&
-            command.unitId === unit.id &&
-            !NON_BUTTON_COMMANDS.has(command.kind),
-        ),
+      const actions = this.#commandButtons(
+        (command) =>
+          "unitId" in command &&
+          command.unitId === unit.id &&
+          !NON_BUTTON_COMMANDS.has(command.kind),
       );
+      this.#appendTacticalActions(dock, actions, view, unit.id);
+      if (actions.querySelector("button") !== null) {
+        actions.querySelector("p")?.remove();
+        dock.dataset.hasActions = "true";
+      }
+      dock.append(actions);
     } else if (selection.kind === "CITY") {
       const city = view.cities.find(
         (candidate) => candidate.id === selection.cityId,
@@ -1209,6 +1212,29 @@ export class Ruleset7DomAppView {
 
   #commandButtons(predicate: (command: CommandV7) => boolean): HTMLElement {
     const actions = el(this.#document, "div", "v7-context-actions");
+    actions.addEventListener("focusin", (event) => {
+      if (!(event.target instanceof HTMLElement)) return;
+      const rowBounds = actions.getBoundingClientRect();
+      const actionBounds = event.target.getBoundingClientRect();
+      if (actionBounds.right > rowBounds.right)
+        actions.scrollLeft += actionBounds.right - rowBounds.right;
+      else if (actionBounds.left < rowBounds.left)
+        actions.scrollLeft -= rowBounds.left - actionBounds.left;
+    });
+    actions.addEventListener(
+      "wheel",
+      (event) => {
+        if (
+          event.ctrlKey ||
+          actions.scrollWidth <= actions.clientWidth ||
+          Math.abs(event.deltaY) <= Math.abs(event.deltaX)
+        )
+          return;
+        event.preventDefault();
+        actions.scrollLeft += event.deltaY;
+      },
+      { passive: false },
+    );
     for (const command of this.#snapshot.offeredCommands.filter(predicate)) {
       const action = button(
         this.#document,
@@ -1280,6 +1306,7 @@ export class Ruleset7DomAppView {
 
   #appendTacticalActions(
     dock: HTMLElement,
+    actions: HTMLElement,
     view: PlayerViewV7,
     unitId: number,
   ): void {
@@ -1339,7 +1366,7 @@ export class Ruleset7DomAppView {
         this.#render();
         this.#queueBoardFocus();
       };
-      dock.append(action);
+      actions.append(action);
     }
     const firstBlackout = blackouts[0];
     if (firstBlackout !== undefined) {
@@ -1389,7 +1416,7 @@ export class Ruleset7DomAppView {
         this.#render();
         this.#queueBoardFocus();
       };
-      dock.append(action);
+      actions.append(action);
     }
   }
 

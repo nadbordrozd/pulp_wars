@@ -155,8 +155,11 @@ Every raster in its contextual action list uses the shared 112 x 130 CSS-pixel
 transparent viewport without cropping or distortion. The fixed 176 CSS-pixel
 button grows vertically around that art and readable label. A code-native
 fallback uses the same viewport with a visible high-contrast frame and the
-button's semantic accessible name; contextual lists wrap without horizontal
-overflow.
+button's semantic accessible name. Frozen Ruleset 6 contextual lists continue
+to wrap without horizontal overflow. For Ruleset 7, every selected unit, city,
+and tile bar spans the viewport, and contextual plus tactical buttons stay in
+one left-aligned, nonwrapping, horizontally scrollable row without page-level
+horizontal overflow; identity and facts may reflow or scroll separately.
 
 Required layer order is map ground/objects, sprite readiness plus
 selection/target effects,
