@@ -76,6 +76,7 @@ interface Recipe {
     | "lanczos3-resize"
     | "square-ground-fill"
     | "square-farm-fill"
+    | "farm-full-rectangle"
     | "square-road-material"
     | "square-tall-ground-reference"
     | "square-mountain-ground-reference";
@@ -248,6 +249,7 @@ async function main(): Promise<void> {
     assertSquareTerrainOrder(recipes, generated);
     assertSquareResourceRoadOrder(recipes, generated);
     assertSquareImprovementSampleGate(recipes);
+    assertRuleset7FarmSampleOrder(recipes, generated);
     assertSquareImprovementExpansionOrder(recipes, generated);
     assertSquareCivicCommerceOrder(recipes, generated);
     if (stage === "batch") assertBuildingBatchOrder(recipes, generated);
@@ -282,6 +284,8 @@ async function main(): Promise<void> {
         await applySquareGroundFill(candidate, recipe);
       else if (recipe.postprocess === "square-farm-fill")
         await applySquareFarmFill(candidate, recipe);
+      else if (recipe.postprocess === "farm-full-rectangle")
+        await applyFarmFullRectangle(candidate, recipe);
       else if (recipe.postprocess === "square-road-material")
         await applySquareRoadMaterial(candidate, recipe);
       else if (
@@ -312,6 +316,7 @@ async function main(): Promise<void> {
       else if (
         recipe.postprocess === "square-ground-fill" ||
         recipe.postprocess === "square-farm-fill" ||
+        recipe.postprocess === "farm-full-rectangle" ||
         recipe.postprocess === "square-road-material" ||
         recipe.postprocess === "square-tall-ground-reference" ||
         recipe.postprocess === "square-mountain-ground-reference"
@@ -950,6 +955,54 @@ function validateSourceManifest(
     JSON.stringify({ left: 0, top: 0, right: 256, bottom: 256 })
   )
     throw new Error("Square Farm needs one complete opaque owning footprint");
+  const ruleset7Farms = [
+    {
+      id: "building-ruleset7-farm-single",
+      size: { width: 256, height: 256 },
+      styleReference: "terrain-square-original-forest-1",
+    },
+    {
+      id: "building-ruleset7-farm-pair-horizontal",
+      size: { width: 512, height: 256 },
+      styleReference: "building-ruleset7-farm-single",
+    },
+    {
+      id: "building-ruleset7-farm-pair-vertical",
+      size: { width: 256, height: 512 },
+      styleReference: "building-ruleset7-farm-single",
+    },
+  ] as const;
+  for (const contract of ruleset7Farms) {
+    const recipe = source.recipes.find(({ id }) => id === contract.id);
+    if (
+      recipe?.class !== "buildings" ||
+      recipe.stage !== "sample" ||
+      recipe.endpoint !== "generate-image-v2" ||
+      JSON.stringify(recipe.requestSize) !== JSON.stringify(contract.size) ||
+      JSON.stringify(recipe.outputSize) !== JSON.stringify(contract.size) ||
+      JSON.stringify(recipe.squareFootprint) !==
+        JSON.stringify({
+          left: 0,
+          top: 0,
+          right: contract.size.width,
+          bottom: contract.size.height,
+        }) ||
+      JSON.stringify(recipe.hardBounds) !==
+        JSON.stringify({
+          left: 0,
+          top: 0,
+          right: contract.size.width,
+          bottom: contract.size.height,
+        }) ||
+      recipe.anchor?.x !== contract.size.width / 2 ||
+      recipe.anchor.y !== contract.size.height / 2 ||
+      recipe.postprocess !== "farm-full-rectangle" ||
+      recipe.requestNoBackground !== false ||
+      recipe.styleReference !== contract.styleReference ||
+      recipe.styleReferenceUsage === undefined
+    )
+      throw new Error(`Ruleset 7 Farm geometry mismatch: ${contract.id}`);
+  }
   const squareImprovementExpansion = [
     {
       id: "building-square-lumber-camp",
@@ -1742,6 +1795,38 @@ function assertSquareImprovementSampleGate(recipes: readonly Recipe[]): void {
     );
 }
 
+function assertRuleset7FarmSampleOrder(
+  recipes: readonly Recipe[],
+  generated: GeneratedManifest,
+): void {
+  const ids = [
+    "building-ruleset7-farm-single",
+    "building-ruleset7-farm-pair-horizontal",
+    "building-ruleset7-farm-pair-vertical",
+  ] as const;
+  const selected = recipes
+    .map(({ id }) => id)
+    .filter((id) => ids.includes(id as (typeof ids)[number]));
+  if (selected.length === 0) return;
+  if (selected.length !== 1)
+    throw new Error(
+      "Ruleset 7 Farm samples must be generated one independent request at a time",
+    );
+  const selectedIndex = ids.indexOf(selected[0] as (typeof ids)[number]);
+  const missingBefore = ids
+    .slice(0, selectedIndex)
+    .filter(
+      (id) =>
+        !["CANDIDATE", "ACCEPTED"].includes(
+          generated.records[id]?.status ?? "",
+        ),
+    );
+  if (missingBefore.length > 0)
+    throw new Error(
+      `Ruleset 7 Farm sample order requires a reviewed candidate first: ${missingBefore.join(", ")}`,
+    );
+}
+
 function assertSquareImprovementExpansionOrder(
   recipes: readonly Recipe[],
   generated: GeneratedManifest,
@@ -2291,6 +2376,19 @@ async function processCandidate(
   destination: string,
   source: SourceManifest,
 ): Promise<void> {
+  if (recipe.postprocess === "farm-full-rectangle") {
+    await sharp(input)
+      .ensureAlpha()
+      .resize(recipe.outputSize.width, recipe.outputSize.height, {
+        fit: "fill",
+        kernel: sharp.kernel.lanczos3,
+      })
+      .png({ compressionLevel: 9, adaptiveFiltering: false })
+      .toFile(destination);
+    await applyFarmFullRectangle(destination, recipe);
+    await assertSquareTerrainAlpha(destination, recipe);
+    return;
+  }
   if (recipe.postprocess === "square-farm-fill") {
     const providerMetadata = await sharp(input).metadata();
     const providerWidth = providerMetadata.width ?? recipe.requestSize.width;
@@ -2434,6 +2532,25 @@ async function processCandidate(
     await applySquareTallGroundReference(destination, recipe, source);
     await assertSquareTerrainAlpha(destination, recipe);
   } else await normalizeToHardBounds(destination, recipe);
+}
+
+async function applyFarmFullRectangle(
+  destination: string,
+  recipe: Recipe,
+): Promise<void> {
+  if (
+    recipe.squareFootprint?.left !== 0 ||
+    recipe.squareFootprint.top !== 0 ||
+    recipe.squareFootprint.right !== recipe.outputSize.width ||
+    recipe.squareFootprint.bottom !== recipe.outputSize.height
+  )
+    throw new Error(`${recipe.id}: invalid complete Farm rectangle`);
+  await sharp(await readFile(destination))
+    .ensureAlpha()
+    .flatten({ background: "#9c7343" })
+    .ensureAlpha(1)
+    .png({ compressionLevel: 9, adaptiveFiltering: false })
+    .toFile(destination);
 }
 
 async function applySquareFarmFill(
@@ -3355,6 +3472,7 @@ async function validateOutputs(
     if (
       recipe.postprocess === "square-ground-fill" ||
       recipe.postprocess === "square-farm-fill" ||
+      recipe.postprocess === "farm-full-rectangle" ||
       recipe.postprocess === "square-road-material" ||
       recipe.postprocess === "square-tall-ground-reference" ||
       recipe.postprocess === "square-mountain-ground-reference"

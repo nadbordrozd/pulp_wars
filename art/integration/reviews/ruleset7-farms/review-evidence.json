@@ -1,0 +1,389 @@
+{
+  "natural": {
+    "first": {
+      "capital": {
+        "x": 2,
+        "y": 8
+      },
+      "farm": {
+        "x": 1,
+        "y": 7
+      },
+      "accepted": true
+    },
+    "second": {
+      "capital": {
+        "x": 2,
+        "y": 8
+      },
+      "farm": {
+        "x": 1,
+        "y": 8
+      },
+      "accepted": true
+    },
+    "firstPointer": {
+      "point": {
+        "x": 632,
+        "y": 417.75000000000006
+      },
+      "picked": {
+        "x": 1,
+        "y": 7
+      }
+    },
+    "firstPairedPointer": {
+      "point": {
+        "x": 632,
+        "y": 417.75000000000006
+      },
+      "picked": {
+        "x": 1,
+        "y": 7
+      }
+    },
+    "secondPointer": {
+      "point": {
+        "x": 632,
+        "y": 497.75000000000006
+      },
+      "picked": {
+        "x": 1,
+        "y": 8
+      }
+    }
+  },
+  "synthetic": {
+    "label": "SYNTHETIC_PRESENTATION_ONLY",
+    "renderer": "drawBoardV7",
+    "layouts": {
+      "ISOLATED": [
+        {
+          "at": {
+            "x": 1,
+            "y": 1
+          },
+          "assetId": "building-ruleset7-farm-single"
+        }
+      ],
+      "HORIZONTAL": [
+        {
+          "at": {
+            "x": 1,
+            "y": 1
+          },
+          "assetId": "building-ruleset7-farm-pair-horizontal",
+          "sourceCrop": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "farmPartner": {
+            "x": 2,
+            "y": 1
+          }
+        },
+        {
+          "at": {
+            "x": 2,
+            "y": 1
+          },
+          "assetId": "building-ruleset7-farm-pair-horizontal",
+          "sourceCrop": {
+            "x": 256,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "farmPartner": {
+            "x": 1,
+            "y": 1
+          }
+        }
+      ],
+      "VERTICAL": [
+        {
+          "at": {
+            "x": 1,
+            "y": 1
+          },
+          "assetId": "building-ruleset7-farm-pair-vertical",
+          "sourceCrop": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "farmPartner": {
+            "x": 1,
+            "y": 2
+          }
+        },
+        {
+          "at": {
+            "x": 1,
+            "y": 2
+          },
+          "assetId": "building-ruleset7-farm-pair-vertical",
+          "sourceCrop": {
+            "x": 0,
+            "y": 256,
+            "width": 256,
+            "height": 256
+          },
+          "farmPartner": {
+            "x": 1,
+            "y": 1
+          }
+        }
+      ],
+      "L": [
+        {
+          "at": {
+            "x": 1,
+            "y": 1
+          },
+          "assetId": "building-ruleset7-farm-pair-horizontal",
+          "sourceCrop": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "farmPartner": {
+            "x": 2,
+            "y": 1
+          }
+        },
+        {
+          "at": {
+            "x": 2,
+            "y": 1
+          },
+          "assetId": "building-ruleset7-farm-pair-horizontal",
+          "sourceCrop": {
+            "x": 256,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "farmPartner": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "at": {
+            "x": 1,
+            "y": 2
+          },
+          "assetId": "building-ruleset7-farm-single"
+        }
+      ],
+      "T": [
+        {
+          "at": {
+            "x": 1,
+            "y": 1
+          },
+          "assetId": "building-ruleset7-farm-pair-horizontal",
+          "sourceCrop": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "farmPartner": {
+            "x": 2,
+            "y": 1
+          }
+        },
+        {
+          "at": {
+            "x": 2,
+            "y": 1
+          },
+          "assetId": "building-ruleset7-farm-pair-horizontal",
+          "sourceCrop": {
+            "x": 256,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "farmPartner": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "at": {
+            "x": 3,
+            "y": 1
+          },
+          "assetId": "building-ruleset7-farm-single"
+        },
+        {
+          "at": {
+            "x": 2,
+            "y": 2
+          },
+          "assetId": "building-ruleset7-farm-single"
+        }
+      ],
+      "2x2": [
+        {
+          "at": {
+            "x": 1,
+            "y": 1
+          },
+          "assetId": "building-ruleset7-farm-pair-horizontal",
+          "sourceCrop": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "farmPartner": {
+            "x": 2,
+            "y": 1
+          }
+        },
+        {
+          "at": {
+            "x": 2,
+            "y": 1
+          },
+          "assetId": "building-ruleset7-farm-pair-horizontal",
+          "sourceCrop": {
+            "x": 256,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "farmPartner": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "at": {
+            "x": 1,
+            "y": 2
+          },
+          "assetId": "building-ruleset7-farm-pair-horizontal",
+          "sourceCrop": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "farmPartner": {
+            "x": 2,
+            "y": 2
+          }
+        },
+        {
+          "at": {
+            "x": 2,
+            "y": 2
+          },
+          "assetId": "building-ruleset7-farm-pair-horizontal",
+          "sourceCrop": {
+            "x": 256,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "farmPartner": {
+            "x": 1,
+            "y": 2
+          }
+        }
+      ],
+      "ODD_LONG": [
+        {
+          "at": {
+            "x": 1,
+            "y": 1
+          },
+          "assetId": "building-ruleset7-farm-pair-horizontal",
+          "sourceCrop": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "farmPartner": {
+            "x": 2,
+            "y": 1
+          }
+        },
+        {
+          "at": {
+            "x": 2,
+            "y": 1
+          },
+          "assetId": "building-ruleset7-farm-pair-horizontal",
+          "sourceCrop": {
+            "x": 256,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "farmPartner": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "at": {
+            "x": 3,
+            "y": 1
+          },
+          "assetId": "building-ruleset7-farm-pair-horizontal",
+          "sourceCrop": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "farmPartner": {
+            "x": 4,
+            "y": 1
+          }
+        },
+        {
+          "at": {
+            "x": 4,
+            "y": 1
+          },
+          "assetId": "building-ruleset7-farm-pair-horizontal",
+          "sourceCrop": {
+            "x": 256,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "farmPartner": {
+            "x": 3,
+            "y": 1
+          }
+        },
+        {
+          "at": {
+            "x": 5,
+            "y": 1
+          },
+          "assetId": "building-ruleset7-farm-single"
+        }
+      ]
+    },
+    "renderedDprs": [1, 2],
+    "acceptedIds": [
+      "building-ruleset7-farm-pair-horizontal",
+      "building-ruleset7-farm-pair-vertical",
+      "building-ruleset7-farm-single"
+    ]
+  }
+}

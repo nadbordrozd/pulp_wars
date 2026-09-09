@@ -1,6 +1,7 @@
 import { ACCEPTED_ART_URLS } from "../../assets/generated-art-manifest";
 import {
   RULESET7_IMPROVEMENT_ART_IDS,
+  RULESET7_FARM_ART_IDS,
   RULESET7_RESOURCE_ART_IDS,
   RULESET7_UNIT_ART_IDS,
 } from "../../assets/ruleset7-ui-art";
@@ -81,6 +82,14 @@ export interface BoardRenderPlanEntryV7 {
     | "SELECTION"
     | "CURSOR";
   readonly assetId?: string;
+  /** A pair Farm is cropped into one source half per authoritative cell. */
+  readonly sourceCrop?: {
+    readonly x: number;
+    readonly y: number;
+    readonly width: number;
+    readonly height: number;
+  };
+  readonly farmPartner?: CoordV7;
   readonly label?: string;
   readonly ownerId?: number | null;
   readonly hp?: number;
@@ -118,6 +127,7 @@ export function buildBoardRenderPlanV7(
   interaction: BoardRenderInteractionV7,
 ): BoardRenderPlanV7 {
   const entries: BoardRenderPlanEntryV7[] = [];
+  const farmPresentation = farmPresentationV7(view);
   for (const tile of view.board.tiles) {
     if (!tile.explored) {
       entries.push({
@@ -158,15 +168,27 @@ export function buildBoardRenderPlanV7(
         at: tile.at,
         assetId: RULESET7_RESOURCE_ART_IDS[tile.resource],
       });
-    if (tile.improvement !== null)
+    if (tile.improvement !== null) {
+      const farm =
+        tile.improvement === "FARM"
+          ? farmPresentation.get(coordKey(tile.at))
+          : undefined;
       entries.push({
         key: `improvement:${tile.at.x},${tile.at.y}`,
         kind: "IMPROVEMENT",
-        layer: 4,
+        // A Farm is opaque ground treatment and must remain under a
+        // coexisting Road. Other improvement layering is unchanged.
+        layer: tile.improvement === "FARM" ? 1.5 : 4,
         at: tile.at,
-        assetId: RULESET7_IMPROVEMENT_ART_IDS[tile.improvement],
+        assetId:
+          farm?.assetId ?? RULESET7_IMPROVEMENT_ART_IDS[tile.improvement],
+        ...(farm?.sourceCrop === undefined
+          ? {}
+          : { sourceCrop: farm.sourceCrop }),
+        ...(farm?.partner === undefined ? {} : { farmPartner: farm.partner }),
         label: title(tile.improvement),
       });
+    }
     if (tile.site === "VILLAGE")
       entries.push({
         key: `site:${tile.at.x},${tile.at.y}`,
@@ -522,7 +544,20 @@ export function drawBoardV7(input: {
         }
         context.save();
         context.globalAlpha = alpha * sceneAlpha;
-        context.drawImage(image, rect.x, rect.y, rect.width, rect.height);
+        if (entry.sourceCrop === undefined)
+          context.drawImage(image, rect.x, rect.y, rect.width, rect.height);
+        else
+          context.drawImage(
+            image,
+            entry.sourceCrop.x,
+            entry.sourceCrop.y,
+            entry.sourceCrop.width,
+            entry.sourceCrop.height,
+            rect.x,
+            rect.y,
+            rect.width,
+            rect.height,
+          );
         context.restore();
       }
     }
@@ -1130,6 +1165,12 @@ function geometryFor(entry: BoardRenderPlanEntryV7): SourceGeometry {
     return RULESET6_UNIT_ART_GEOMETRY.standard;
   }
   if (entry.kind === "IMPROVEMENT") {
+    if (
+      entry.assetId === RULESET7_FARM_ART_IDS.SINGLE ||
+      entry.assetId === RULESET7_FARM_ART_IDS.HORIZONTAL_PAIR ||
+      entry.assetId === RULESET7_FARM_ART_IDS.VERTICAL_PAIR
+    )
+      return SQUARE_ART_GEOMETRY.ground;
     if (entry.assetId === RULESET7_IMPROVEMENT_ART_IDS.LUMBER_CAMP)
       return SQUARE_ART_GEOMETRY.lumberCamp;
     if (entry.assetId === RULESET7_IMPROVEMENT_ART_IDS.SAWMILL)
@@ -1156,6 +1197,102 @@ function geometryFor(entry: BoardRenderPlanEntryV7): SourceGeometry {
     return SQUARE_ART_GEOMETRY.lowImprovement;
   }
   return SQUARE_ART_GEOMETRY.ground;
+}
+
+export interface FarmPresentationV7 {
+  readonly assetId: (typeof RULESET7_FARM_ART_IDS)[keyof typeof RULESET7_FARM_ART_IDS];
+  readonly sourceCrop?: {
+    readonly x: number;
+    readonly y: number;
+    readonly width: 256;
+    readonly height: 256;
+  };
+  readonly partner?: CoordV7;
+}
+
+type RevealedTileV7 = Extract<
+  PlayerViewV7["board"]["tiles"][number],
+  { readonly explored: true }
+>;
+
+/**
+ * Farms pair for presentation only. Revealed same-city Farms are scanned in
+ * canonical (y,x) order; each takes the first still-free E, S, W, N neighbor.
+ * Every pair is drawn as independently cropped cell halves so row depth, fog,
+ * picking, selection and authoritative economy remain per tile.
+ */
+export function farmPresentationV7(
+  view: PlayerViewV7,
+): ReadonlyMap<string, FarmPresentationV7> {
+  const farms = view.board.tiles
+    .filter(
+      (tile): tile is RevealedTileV7 =>
+        tile.explored &&
+        tile.improvement === "FARM" &&
+        tile.territoryCityId !== null,
+    )
+    .sort((a, b) => a.at.y - b.at.y || a.at.x - b.at.x);
+  const byCoord = new Map(farms.map((tile) => [coordKey(tile.at), tile]));
+  const paired = new Set<string>();
+  const result = new Map<string, FarmPresentationV7>();
+  const directions = [
+    { dx: 1, dy: 0 },
+    { dx: 0, dy: 1 },
+    { dx: -1, dy: 0 },
+    { dx: 0, dy: -1 },
+  ] as const;
+  for (const tile of farms) {
+    const key = coordKey(tile.at);
+    if (paired.has(key)) continue;
+    const neighbor = directions
+      .map(({ dx, dy }) => ({ x: tile.at.x + dx, y: tile.at.y + dy }))
+      .map((at) => byCoord.get(coordKey(at)))
+      .find(
+        (candidate) =>
+          candidate !== undefined &&
+          candidate.territoryCityId === tile.territoryCityId &&
+          !paired.has(coordKey(candidate.at)),
+      );
+    if (neighbor === undefined) {
+      result.set(key, { assetId: RULESET7_FARM_ART_IDS.SINGLE });
+      continue;
+    }
+    const neighborKey = coordKey(neighbor.at);
+    paired.add(key);
+    paired.add(neighborKey);
+    if (tile.at.y === neighbor.at.y) {
+      const left = tile.at.x < neighbor.at.x ? tile : neighbor;
+      const right = left === tile ? neighbor : tile;
+      result.set(coordKey(left.at), {
+        assetId: RULESET7_FARM_ART_IDS.HORIZONTAL_PAIR,
+        sourceCrop: { x: 0, y: 0, width: 256, height: 256 },
+        partner: right.at,
+      });
+      result.set(coordKey(right.at), {
+        assetId: RULESET7_FARM_ART_IDS.HORIZONTAL_PAIR,
+        sourceCrop: { x: 256, y: 0, width: 256, height: 256 },
+        partner: left.at,
+      });
+    } else {
+      const top = tile.at.y < neighbor.at.y ? tile : neighbor;
+      const bottom = top === tile ? neighbor : tile;
+      result.set(coordKey(top.at), {
+        assetId: RULESET7_FARM_ART_IDS.VERTICAL_PAIR,
+        sourceCrop: { x: 0, y: 0, width: 256, height: 256 },
+        partner: bottom.at,
+      });
+      result.set(coordKey(bottom.at), {
+        assetId: RULESET7_FARM_ART_IDS.VERTICAL_PAIR,
+        sourceCrop: { x: 0, y: 256, width: 256, height: 256 },
+        partner: top.at,
+      });
+    }
+  }
+  return result;
+}
+
+function coordKey(at: CoordV7): string {
+  return `${at.x},${at.y}`;
 }
 
 function roadAssetId(view: PlayerViewV7, at: CoordV7): string {

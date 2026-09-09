@@ -6,11 +6,13 @@ import {
   applyCommandV7,
   projectEventsV7,
   queryPlayerCommandsV7,
+  type CityId,
   type PlayerEventEnvelopeV7,
   type PlayerViewV7,
   viewForV7,
 } from "../../src/engine/index";
 import { CanvasBoardHostV7 } from "../../src/render/canvas/board-host-v7";
+import { buildBoardRenderPlanV7 } from "../../src/render/canvas/board-renderer-v7";
 import type {
   BoardHostCallbacksV7,
   BoardHostModelV7,
@@ -61,6 +63,112 @@ describe("Ruleset 7 Canvas interaction", () => {
       true,
     );
     app.destroy();
+  });
+
+  it("keeps paired Farm halves independently selectable and fog-protected", () => {
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(null);
+    const container = document.createElement("div");
+    Object.defineProperty(container, "getBoundingClientRect", {
+      value: () => ({
+        width: 800,
+        height: 600,
+        left: 0,
+        top: 0,
+        right: 800,
+        bottom: 600,
+      }),
+    });
+    document.body.append(container);
+    const host = new CanvasBoardHostV7(document);
+    const selections = vi.fn();
+    host.mount(container, { onSelection: selections, onCommand: vi.fn() });
+    const state = exploredAllV7(initialV7(7722));
+    const base = viewForV7(state, state.humanPlayerId);
+    const occupied = new Set([
+      ...base.units.map((unit) => `${unit.at.x},${unit.at.y}`),
+      ...base.cities.map((city) => `${city.at.x},${city.at.y}`),
+    ]);
+    const left = base.board.tiles.find(
+      (tile) =>
+        tile.explored &&
+        !occupied.has(`${tile.at.x},${tile.at.y}`) &&
+        base.board.tiles.some(
+          (right) =>
+            right.explored &&
+            right.at.x === tile.at.x + 1 &&
+            right.at.y === tile.at.y &&
+            !occupied.has(`${right.at.x},${right.at.y}`),
+        ),
+    );
+    if (left === undefined) throw new Error("vacant adjacent tiles missing");
+    const right = { x: left.at.x + 1, y: left.at.y };
+    const pairView: PlayerViewV7 = {
+      ...base,
+      board: {
+        ...base.board,
+        tiles: base.board.tiles.map((tile) =>
+          tile.explored &&
+          ((tile.at.x === left.at.x && tile.at.y === left.at.y) ||
+            (tile.at.x === right.x && tile.at.y === right.y))
+            ? {
+                ...tile,
+                improvement: "FARM" as const,
+                territoryCityId: 1 as CityId,
+              }
+            : tile,
+        ),
+      },
+    };
+    const model = (view: PlayerViewV7): BoardHostModelV7 => ({
+      matchInstanceId: 1,
+      view,
+      offeredCommands: [],
+      interactive: true,
+      motion: "REDUCED",
+      animationSpeed: "FAST",
+      presentationPaused: false,
+      highContrast: false,
+      interaction: {
+        selection: null,
+        selectedUnitId: null,
+        selectedAchievement: null,
+      },
+    });
+    host.update(model(pairView));
+    host.activate(left.at);
+    host.activate(right);
+    expect(selections.mock.calls.map(([selection]) => selection)).toEqual([
+      { kind: "TILE", at: left.at },
+      { kind: "TILE", at: right },
+    ]);
+    const foggedView: PlayerViewV7 = {
+      ...pairView,
+      board: {
+        ...pairView.board,
+        tiles: pairView.board.tiles.map((tile) =>
+          tile.at.x === right.x && tile.at.y === right.y
+            ? { at: tile.at, explored: false as const }
+            : tile,
+        ),
+      },
+    };
+    host.update(model(foggedView));
+    host.activate(right);
+    expect(selections.mock.calls[2]?.[0]).toEqual({ kind: "TILE", at: right });
+    const foggedEntries = buildBoardRenderPlanV7(foggedView, [], {
+      selection: null,
+      selectedUnitId: null,
+      selectedAchievement: null,
+    }).entries.filter(
+      (entry) => entry.at.x === right.x && entry.at.y === right.y,
+    );
+    expect(foggedEntries).toContainEqual(
+      expect.objectContaining({ kind: "FOG" }),
+    );
+    expect(foggedEntries.some((entry) => entry.kind === "IMPROVEMENT")).toBe(
+      false,
+    );
+    host.destroy();
   });
 
   it("uses occupant-first cycling while exact map commands take activation priority", () => {

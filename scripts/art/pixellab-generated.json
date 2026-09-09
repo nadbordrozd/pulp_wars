@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "665cc6c8604ec5b141eb0d0b534f5ca55970ccf091ce7d4923ca2abaefa8d636",
+  "sourceManifestSha256": "a0333d038bc07878421fbca84e3b6f0a17087973cd915255ede5930ecdb46f50",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -11123,6 +11123,342 @@
       "outputSha256": "e266d4fc426d4a181f6ccde401d2b9a524912f88dbe7a42bdbf6d2e644e21da3",
       "notes": "Accepted targeted-retry Defection candidate after exact initial candidate was rejected and quarantined for a clipboard/UI-panel composition. PixelLab job 93f0f484-3325-47a8-9df8-605cfaa10edb and candidate e266d4fc426d preserve two oversized clasped parchment treaty hands with broad readable fingers and slate cuffs; the small curved roll and one bronze seal remain secondary. Source128, enlarged, actual32 CSS, exact112x130 transparent-padding contain, exact176 CSS-pixel button, DPR1/2 CSS-normalized, actual200%, light/dark/high-contrast, grayscale/color-vision, busy-map, disabled/focus/selected contexts pass. Bounds x10..118 y15..112 stay unclipped. It is distinct from Disband's one-hand/helmet and bakes no panel, button, person, owner, target, state, timer, text or number.",
       "reviewedAt": "2026-09-08T17:26:06.761Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-ruleset7-farm-single": {
+      "id": "building-ruleset7-farm-single",
+      "status": "ACCEPTED",
+      "jobId": "133e69e5-9445-4d52-bf86-5d1e54d0c08e",
+      "candidate": "art/pixellab/candidates/building-ruleset7-farm-single.png",
+      "candidateSha256": "211ff46d8e091dc11fea9ee48ac2b0b5fd9953f4506542314772cd98a5bc28ea",
+      "providerOutputSha256": "8e97544424b0f7fa16bbed73177bb98f5a5bee43e86e8a62e64f819f066e8c24",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted warm umber soil, broad golden-parchment crop bands, restrained moss-green leaves, deep charcoal-teal outlines and southeast planes. Ruleset 7 single-cell Farm, one continuous 256 by 256 warm-soil field filling every pixel. Four broad shallow furrow grooves are carved directly into the soil, with a few large moss-green crop leaves growing from them. Use chunky charcoal-teal outlines only around the leaves and along the recessed soil grooves; all rows remain part of one flat ground plane. Three-quarter downward strategy-board view, soft northwest light, darker southeast groove faces, broad flat two-to-three-tone cel shading, readable at 80 pixels. Keep one consistent crop scale. No perimeter border, separate crop beds, floating strips or raised slab. This is one isolated farm identity with no neighbor state. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; beige planks, timber rows, separate raised beds, floating strips, raised slab, platform, blurred timber, procedural furrow texture, thin repeated stripes, tiny crop noise, photoreal dirt, painterly field, 3D render, perimeter fence, border, frame, diamond, rounded tile, transparent gap, barn, house, silo, windmill, haystack, scarecrow, road, fruit, resource marker, ownership, selection, UI, text, person, animal, unit, cast shadow, lower-right light.",
+        "prompt": "Ruleset 7 single-cell Farm, one continuous 256 by 256 warm-soil field filling every pixel. Four broad shallow furrow grooves are carved directly into the soil, with a few large moss-green crop leaves growing from them. Use chunky charcoal-teal outlines only around the leaves and along the recessed soil grooves; all rows remain part of one flat ground plane. Three-quarter downward strategy-board view, soft northwest light, darker southeast groove faces, broad flat two-to-three-tone cel shading, readable at 80 pixels. Keep one consistent crop scale. No perimeter border, separate crop beds, floating strips or raised slab. This is one isolated farm identity with no neighbor state.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; beige planks, timber rows, separate raised beds, floating strips, raised slab, platform, blurred timber, procedural furrow texture, thin repeated stripes, tiny crop noise, photoreal dirt, painterly field, 3D render, perimeter fence, border, frame, diamond, rounded tile, transparent gap, barn, house, silo, windmill, haystack, scarecrow, road, fruit, resource marker, ownership, selection, UI, text, person, animal, unit, cast shadow, lower-right light",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 117701,
+        "noBackground": false,
+        "palette": "muted warm umber soil, broad golden-parchment crop bands, restrained moss-green leaves, deep charcoal-teal outlines and southeast planes",
+        "postprocess": "farm-full-rectangle",
+        "styleReference": {
+          "id": "terrain-square-original-forest-1",
+          "sha256": "ada147cc84e3b3dbd70cd0aa3e5f39a1a41dfe74be63833ad3c375fae316571f",
+          "usageDescription": "Copy only the accepted square terrain's charcoal-teal outline weight, broad flat cel-shaded organic forms, restrained palette contrast and northwest lighting. Create cultivated ground, not trees or a raised object."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 0,
+          "right": 256,
+          "bottom": 256
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/building-ruleset7-farm-single-0730eeb2a680.png",
+          "candidateSha256": "0730eeb2a6802264c5a5b99faa79f5ef94fabd92c144ff3d1757d29b033b462e",
+          "providerOutputSha256": "29e4487fc4ece68299c60485d787e5d45eeff19077e87e15ca85c12bf546a7fc",
+          "jobId": "7b6ff792-62fb-494d-a0a7-82e24d988024",
+          "disposition": "REJECTED",
+          "notes": "Rejected worker review: four crop rows read as separate raised timber/plank slabs floating on a flat brown background instead of one cultivated field; violates no-raised-slab and integrated-ground requirements.",
+          "reviewedAt": "2026-09-09T11:03:00.558Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted warm umber soil, broad golden-parchment crop bands, restrained moss-green leaves, deep charcoal-teal outlines and southeast planes. Ruleset 7 single-cell Farm, one complete 256 by 256 rectangular field filling every pixel. Draw four broad simple cultivated rows as chunky illustrated crop bands, each with a dark charcoal-teal edge and a few large moss-green leaf shapes. Three-quarter downward strategy-board view, soft northwest light, darker southeast faces, broad flat two-to-three-tone cel shading. The rows sit directly in warm soil and remain readable at 80 pixels. Keep one consistent crop scale. No perimeter border or enclosing outline; no raised slab. This is one isolated farm identity and contains no neighbor state. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; blurred timber, procedural furrow texture, thin repeated stripes, tiny crop noise, photoreal dirt, painterly field, 3D render, perimeter fence, border, frame, enclosed platform, diamond, rounded tile, transparent gap, barn, house, silo, windmill, haystack, scarecrow, road, fruit, resource marker, ownership, selection, UI, text, person, animal, unit, cast shadow, lower-right light.",
+            "prompt": "Ruleset 7 single-cell Farm, one complete 256 by 256 rectangular field filling every pixel. Draw four broad simple cultivated rows as chunky illustrated crop bands, each with a dark charcoal-teal edge and a few large moss-green leaf shapes. Three-quarter downward strategy-board view, soft northwest light, darker southeast faces, broad flat two-to-three-tone cel shading. The rows sit directly in warm soil and remain readable at 80 pixels. Keep one consistent crop scale. No perimeter border or enclosing outline; no raised slab. This is one isolated farm identity and contains no neighbor state.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; blurred timber, procedural furrow texture, thin repeated stripes, tiny crop noise, photoreal dirt, painterly field, 3D render, perimeter fence, border, frame, enclosed platform, diamond, rounded tile, transparent gap, barn, house, silo, windmill, haystack, scarecrow, road, fruit, resource marker, ownership, selection, UI, text, person, animal, unit, cast shadow, lower-right light",
+            "requestSize": {
+              "width": 256,
+              "height": 256
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 256
+            },
+            "seed": 117701,
+            "noBackground": false,
+            "palette": "muted warm umber soil, broad golden-parchment crop bands, restrained moss-green leaves, deep charcoal-teal outlines and southeast planes",
+            "postprocess": "farm-full-rectangle",
+            "styleReference": {
+              "id": "building-square-quarry",
+              "sha256": "c6061c6c4b687c05b4e94459f1224467cc3217f3e983579111929144ea5b94fd",
+              "usageDescription": "Copy only the accepted square scene's charcoal-teal outline weight, broad flat cel-shaded forms, restrained palette contrast and northwest lighting. Create cultivated ground, not stonework or a raised object."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 0,
+              "right": 256,
+              "bottom": 256
+            }
+          }
+        }
+      ],
+      "outputSha256": "211ff46d8e091dc11fea9ee48ac2b0b5fd9953f4506542314772cd98a5bc28ea",
+      "notes": "Accepted after worker and independent root review of exact retry candidate 211ff46d8e09 from PixelLab job 133e69e5-9445-4d52-bf86-5d1e54d0c08e. Full opaque 256x256 footprint, source/enlarged/native/0.625x occupied scene and exact 112x130 light/dark/high-contrast identity pass. Three broad recessed charcoal-teal grooves and five simple moss leaves read as flat cultivated ground, remain quieter than the unchanged Warrior, match northwest light, and contain no slab, perimeter, state, text or UI.",
+      "reviewedAt": "2026-09-09T11:23:02.955Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-ruleset7-farm-pair-horizontal": {
+      "id": "building-ruleset7-farm-pair-horizontal",
+      "status": "ACCEPTED",
+      "jobId": "eef9d66a-cc3f-48f4-8509-da820d068088",
+      "candidate": "art/pixellab/candidates/building-ruleset7-farm-pair-horizontal.png",
+      "candidateSha256": "3f031732b63f8d50bb4cbb06896e751dc593f110ee8dea09868f2595b621aeeb",
+      "providerOutputSha256": "00470d61048b5e831050aac2a561fe3660db98112f822f3c54860809a6343637",
+      "width": 512,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 512,
+        "bottom": 256,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted warm umber soil, broad golden-parchment crop bands, restrained moss-green leaves, deep charcoal-teal outlines and southeast planes. Horizontal two-cell Farm pair, one flat 512 by 256 rectangle. Copy the accepted reference's exact look: one uniform medium warm-brown soil background; six broad diagonal charcoal-teal recessed grooves continuing across the center; exactly ten isolated simple two-leaf green sprouts total, each the same size as a reference sprout. Keep large empty soil areas between grooves. Flat two-tone cel shading and tiny northwest leaf highlights only. Add field area, never enlarge or repeat densely. The center is invisible: no divider, gap or change. Absolutely no tan, cream, yellow or bright soil bands; no separate beds, floating strips, raised forms, perimeter border or tile outline. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; golden row, yellow ridge, cream highlight on soil, many leaves, dense crops, oversized plant, two tiles, center seam, gap, planks, timber rows, separate beds, floating strips, raised slab, platform, fence, border, frame, diamond, transparent gap, blur, thin stripes, tiny texture, realistic dirt, painterly, 3D, building, road, resource, ownership, selection, UI, text, person, animal, shadow, lower-right light.",
+        "prompt": "Horizontal two-cell Farm pair, one flat 512 by 256 rectangle. Copy the accepted reference's exact look: one uniform medium warm-brown soil background; six broad diagonal charcoal-teal recessed grooves continuing across the center; exactly ten isolated simple two-leaf green sprouts total, each the same size as a reference sprout. Keep large empty soil areas between grooves. Flat two-tone cel shading and tiny northwest leaf highlights only. Add field area, never enlarge or repeat densely. The center is invisible: no divider, gap or change. Absolutely no tan, cream, yellow or bright soil bands; no separate beds, floating strips, raised forms, perimeter border or tile outline.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; golden row, yellow ridge, cream highlight on soil, many leaves, dense crops, oversized plant, two tiles, center seam, gap, planks, timber rows, separate beds, floating strips, raised slab, platform, fence, border, frame, diamond, transparent gap, blur, thin stripes, tiny texture, realistic dirt, painterly, 3D, building, road, resource, ownership, selection, UI, text, person, animal, shadow, lower-right light",
+        "requestSize": {
+          "width": 512,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 512,
+          "height": 256
+        },
+        "seed": 117702,
+        "noBackground": false,
+        "palette": "muted warm umber soil, broad golden-parchment crop bands, restrained moss-green leaves, deep charcoal-teal outlines and southeast planes",
+        "postprocess": "farm-full-rectangle",
+        "styleReference": {
+          "id": "building-ruleset7-farm-single",
+          "sha256": "211ff46d8e091dc11fea9ee48ac2b0b5fd9953f4506542314772cd98a5bc28ea",
+          "usageDescription": "Extend the accepted single horizontally without changing its colors or form sizes: uniform medium-brown soil, dark charcoal-teal grooves, five isolated two-leaf sprouts per 256 pixels, flat shading and northwest highlights."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 0,
+          "right": 512,
+          "bottom": 256
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/building-ruleset7-farm-pair-horizontal-74673f3f686f.png",
+          "candidateSha256": "74673f3f686f616c2d9d375846170de04926c1c747617a240e4444b77585c056",
+          "providerOutputSha256": "104fefe3d68aa056559d7a63205f9a3b7184ae2da6f69849f36d8ab30f90c77b",
+          "jobId": "5f0e4bac-b604-44b6-a27b-dc962d264e3d",
+          "disposition": "REJECTED",
+          "notes": "Rejected worker/root visual review: bright raised golden ridges, white scratch highlights, dense multi-leaf clumps and cropped edge plants are noisier and larger than the approved single-family composition.",
+          "reviewedAt": "2026-09-09T11:13:56.751Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted warm umber soil, broad golden-parchment crop bands, restrained moss-green leaves, deep charcoal-teal outlines and southeast planes. Horizontal two-cell Farm pair: one continuous 512 by 256 warm-soil field filling every pixel. Broad shallow furrow grooves continue through the center seam; a few large moss-green leaves grow from them. Chunky charcoal-teal outlines mark leaves and recessed grooves while all rows stay in one flat ground plane. Three-quarter downward board view, northwest light, dark southeast groove faces, broad two-to-three-tone cel shading. Match 256-square crop scale by adding plants, never stretching. No center divider, gap, perimeter border, separate beds, floating strips or raised slab. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; two tiles, center seam, gap, planks, timber rows, separate beds, floating strips, raised slab, platform, fence, border, frame, diamond, transparent gap, blur, thin stripes, tiny crop noise, realistic dirt, painterly, 3D, barn, silo, windmill, road, resource, ownership, selection, UI, text, person, animal, shadow, lower-right light.",
+            "prompt": "Horizontal two-cell Farm pair: one continuous 512 by 256 warm-soil field filling every pixel. Broad shallow furrow grooves continue through the center seam; a few large moss-green leaves grow from them. Chunky charcoal-teal outlines mark leaves and recessed grooves while all rows stay in one flat ground plane. Three-quarter downward board view, northwest light, dark southeast groove faces, broad two-to-three-tone cel shading. Match 256-square crop scale by adding plants, never stretching. No center divider, gap, perimeter border, separate beds, floating strips or raised slab.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; two tiles, center seam, gap, planks, timber rows, separate beds, floating strips, raised slab, platform, fence, border, frame, diamond, transparent gap, blur, thin stripes, tiny crop noise, realistic dirt, painterly, 3D, barn, silo, windmill, road, resource, ownership, selection, UI, text, person, animal, shadow, lower-right light",
+            "requestSize": {
+              "width": 512,
+              "height": 256
+            },
+            "outputSize": {
+              "width": 512,
+              "height": 256
+            },
+            "seed": 117702,
+            "noBackground": false,
+            "palette": "muted warm umber soil, broad golden-parchment crop bands, restrained moss-green leaves, deep charcoal-teal outlines and southeast planes",
+            "postprocess": "farm-full-rectangle",
+            "styleReference": {
+              "id": "terrain-square-original-forest-1",
+              "sha256": "ada147cc84e3b3dbd70cd0aa3e5f39a1a41dfe74be63833ad3c375fae316571f",
+              "usageDescription": "Copy only the accepted square terrain's charcoal-teal outline weight, broad flat cel-shaded organic forms, restrained palette contrast and northwest lighting. Create cultivated ground, not trees or a raised object."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 0,
+              "right": 512,
+              "bottom": 256
+            }
+          }
+        },
+        {
+          "candidate": "art/pixellab/quarantine/building-ruleset7-farm-pair-horizontal-4335776ac096.png",
+          "candidateSha256": "4335776ac0967a179bfd50b9e4af2783b6227cd31116900ec6a5bfafdd11f307",
+          "providerOutputSha256": "4195cc01675f395ff1286cb2da764063f6f239f9445b31c96c74cd4b1af7a541",
+          "jobId": "a8dca787-48a3-4c6d-bda6-54c21b4228ec",
+          "disposition": "REJECTED",
+          "notes": "Rejected second horizontal attempt: despite accepted-single reference it returned bright raised golden beds and sixteen oversized densely repeated leaves; fails exact family palette, groove treatment, leaf count/scale and quietness.",
+          "reviewedAt": "2026-09-09T11:26:48.051Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted warm umber soil, broad golden-parchment crop bands, restrained moss-green leaves, deep charcoal-teal outlines and southeast planes. Horizontal two-cell Farm pair: one continuous 512 by 256 warm-soil field filling every pixel. Broad shallow furrow grooves continue through the center seam; a few large moss-green leaves grow from them. Chunky charcoal-teal outlines mark leaves and recessed grooves while all rows stay in one flat ground plane. Three-quarter downward board view, northwest light, dark southeast groove faces, broad two-to-three-tone cel shading. Match 256-square crop scale by adding plants, never stretching. No center divider, gap, perimeter border, separate beds, floating strips or raised slab. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; two tiles, center seam, gap, planks, timber rows, separate beds, floating strips, raised slab, platform, fence, border, frame, diamond, transparent gap, blur, thin stripes, tiny crop noise, realistic dirt, painterly, 3D, barn, silo, windmill, road, resource, ownership, selection, UI, text, person, animal, shadow, lower-right light.",
+            "prompt": "Horizontal two-cell Farm pair: one continuous 512 by 256 warm-soil field filling every pixel. Broad shallow furrow grooves continue through the center seam; a few large moss-green leaves grow from them. Chunky charcoal-teal outlines mark leaves and recessed grooves while all rows stay in one flat ground plane. Three-quarter downward board view, northwest light, dark southeast groove faces, broad two-to-three-tone cel shading. Match 256-square crop scale by adding plants, never stretching. No center divider, gap, perimeter border, separate beds, floating strips or raised slab.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; two tiles, center seam, gap, planks, timber rows, separate beds, floating strips, raised slab, platform, fence, border, frame, diamond, transparent gap, blur, thin stripes, tiny crop noise, realistic dirt, painterly, 3D, barn, silo, windmill, road, resource, ownership, selection, UI, text, person, animal, shadow, lower-right light",
+            "requestSize": {
+              "width": 512,
+              "height": 256
+            },
+            "outputSize": {
+              "width": 512,
+              "height": 256
+            },
+            "seed": 117702,
+            "noBackground": false,
+            "palette": "muted warm umber soil, broad golden-parchment crop bands, restrained moss-green leaves, deep charcoal-teal outlines and southeast planes",
+            "postprocess": "farm-full-rectangle",
+            "styleReference": {
+              "id": "building-ruleset7-farm-single",
+              "sha256": "211ff46d8e091dc11fea9ee48ac2b0b5fd9953f4506542314772cd98a5bc28ea",
+              "usageDescription": "Extend the accepted v7 single Farm into two cells. Match its flat warm soil, exact leaf size, three broad dark recessed grooves, outline weight, simple flat shading and northwest light; add field area without stretching forms."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 0,
+              "right": 512,
+              "bottom": 256
+            }
+          }
+        }
+      ],
+      "outputSha256": "3f031732b63f8d50bb4cbb06896e751dc593f110ee8dea09868f2595b621aeeb",
+      "notes": "Accepted after worker and independent root review of exact retry candidate 3f031732b63f from PixelLab job eef9d66a-5461-476c-8e7e-0930e1418fba. Full opaque 512x256 two-cell rectangle, independently cropped halves, source/native/enlarged, adjacency L/T/2x2/long-odd layouts, min/1/max zoom at DPR1/2, dense accepted Forest/City/Warrior and occupied Farm+Road contexts pass. Quiet broad charcoal-teal grooves and same-scale moss leaves match accepted single 211ff46d8e09 without divider, perimeter, raised slab, stretch, holes, spill, state, text or UI.",
+      "reviewedAt": "2026-09-09T11:45:50.502Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-ruleset7-farm-pair-vertical": {
+      "id": "building-ruleset7-farm-pair-vertical",
+      "status": "ACCEPTED",
+      "jobId": "78f32cec-5233-4e4f-b23c-e5ccfa04932e",
+      "candidate": "art/pixellab/candidates/building-ruleset7-farm-pair-vertical.png",
+      "candidateSha256": "96df40cad6ec0a6bf8d8cd95623abd7ada30f6f91f95c4b07a7da06a93187bb9",
+      "providerOutputSha256": "a209857092d1786e25660563dd1af3371f54e6b71d75b0f2f3749f4f813ff58a",
+      "width": 256,
+      "height": 512,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 512,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted warm umber soil, broad golden-parchment crop bands, restrained moss-green leaves, deep charcoal-teal outlines and southeast planes. Vertical two-cell Farm pair, one flat 256 by 512 rectangle. Copy the accepted reference's exact look: one uniform medium warm-brown soil background; six broad diagonal charcoal-teal recessed grooves continuing across the center; exactly ten isolated simple two-leaf green sprouts total, each the same size as a reference sprout. Keep large empty soil areas between grooves. Flat two-tone cel shading and tiny northwest leaf highlights only. Add field area, never enlarge or repeat densely. The center is invisible: no divider, gap or change. Absolutely no tan, cream, yellow or bright soil bands; no separate beds, floating strips, raised forms, perimeter border or tile outline. Draw vertically with northwest light; never rotate another image. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; rotated art, rotated lighting, golden row, yellow ridge, cream highlight on soil, many leaves, dense crops, oversized plant, two tiles, center seam, gap, planks, timber rows, separate beds, floating strips, raised slab, platform, fence, border, frame, diamond, transparent gap, blur, thin stripes, tiny texture, realistic dirt, painterly, 3D, building, road, resource, ownership, selection, UI, text, person, animal, shadow, lower-right light.",
+        "prompt": "Vertical two-cell Farm pair, one flat 256 by 512 rectangle. Copy the accepted reference's exact look: one uniform medium warm-brown soil background; six broad diagonal charcoal-teal recessed grooves continuing across the center; exactly ten isolated simple two-leaf green sprouts total, each the same size as a reference sprout. Keep large empty soil areas between grooves. Flat two-tone cel shading and tiny northwest leaf highlights only. Add field area, never enlarge or repeat densely. The center is invisible: no divider, gap or change. Absolutely no tan, cream, yellow or bright soil bands; no separate beds, floating strips, raised forms, perimeter border or tile outline. Draw vertically with northwest light; never rotate another image.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; rotated art, rotated lighting, golden row, yellow ridge, cream highlight on soil, many leaves, dense crops, oversized plant, two tiles, center seam, gap, planks, timber rows, separate beds, floating strips, raised slab, platform, fence, border, frame, diamond, transparent gap, blur, thin stripes, tiny texture, realistic dirt, painterly, 3D, building, road, resource, ownership, selection, UI, text, person, animal, shadow, lower-right light",
+        "requestSize": {
+          "width": 256,
+          "height": 512
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 512
+        },
+        "seed": 117703,
+        "noBackground": false,
+        "palette": "muted warm umber soil, broad golden-parchment crop bands, restrained moss-green leaves, deep charcoal-teal outlines and southeast planes",
+        "postprocess": "farm-full-rectangle",
+        "styleReference": {
+          "id": "building-ruleset7-farm-single",
+          "sha256": "211ff46d8e091dc11fea9ee48ac2b0b5fd9953f4506542314772cd98a5bc28ea",
+          "usageDescription": "Extend the accepted single vertically without changing its colors or form sizes: uniform medium-brown soil, dark charcoal-teal grooves, five isolated two-leaf sprouts per 256 pixels, flat shading and northwest highlights."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 0,
+          "right": 256,
+          "bottom": 512
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/building-ruleset7-farm-pair-vertical-255f4d2d6a70.png",
+          "candidateSha256": "255f4d2d6a70d6e9279a125ececee4e39a97d7a614badeea44c0ea5c67f1c03e",
+          "providerOutputSha256": "bb2f7642415db1d65325dd4c87e02ab9025c5049d95fb66682462827bebd0019",
+          "jobId": "4b19cecb-b593-42c7-9f4b-a3b9540626a7",
+          "disposition": "REJECTED",
+          "notes": "Rejected worker visual review: a thick center divider reads as a road and the golden raised rows do not match the approved single's flat warm-soil grooves; family scale and simplicity are inconsistent.",
+          "reviewedAt": "2026-09-09T11:14:03.151Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted warm umber soil, broad golden-parchment crop bands, restrained moss-green leaves, deep charcoal-teal outlines and southeast planes. Vertical two-cell Farm pair: one continuous 256 by 512 warm-soil field filling every pixel. Broad shallow furrow grooves continue through the center seam; a few large moss-green leaves grow from them. Chunky charcoal-teal outlines mark leaves and recessed grooves while all rows stay in one flat ground plane. Three-quarter downward board view, northwest light, dark southeast groove faces, broad two-to-three-tone cel shading. Match 256-square crop scale by adding plants, never stretching. No center divider, gap, perimeter border, separate beds, floating strips or raised slab. Independently drawn, never rotated. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; rotated lighting, two tiles, center seam, gap, planks, timber rows, separate beds, floating strips, raised slab, platform, fence, border, frame, diamond, transparent gap, blur, thin stripes, tiny crop noise, realistic dirt, painterly, 3D, barn, silo, windmill, road, resource, ownership, selection, UI, text, person, animal, shadow, lower-right light.",
+            "prompt": "Vertical two-cell Farm pair: one continuous 256 by 512 warm-soil field filling every pixel. Broad shallow furrow grooves continue through the center seam; a few large moss-green leaves grow from them. Chunky charcoal-teal outlines mark leaves and recessed grooves while all rows stay in one flat ground plane. Three-quarter downward board view, northwest light, dark southeast groove faces, broad two-to-three-tone cel shading. Match 256-square crop scale by adding plants, never stretching. No center divider, gap, perimeter border, separate beds, floating strips or raised slab. Independently drawn, never rotated.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; rotated lighting, two tiles, center seam, gap, planks, timber rows, separate beds, floating strips, raised slab, platform, fence, border, frame, diamond, transparent gap, blur, thin stripes, tiny crop noise, realistic dirt, painterly, 3D, barn, silo, windmill, road, resource, ownership, selection, UI, text, person, animal, shadow, lower-right light",
+            "requestSize": {
+              "width": 256,
+              "height": 512
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 512
+            },
+            "seed": 117703,
+            "noBackground": false,
+            "palette": "muted warm umber soil, broad golden-parchment crop bands, restrained moss-green leaves, deep charcoal-teal outlines and southeast planes",
+            "postprocess": "farm-full-rectangle",
+            "styleReference": {
+              "id": "terrain-square-original-forest-1",
+              "sha256": "ada147cc84e3b3dbd70cd0aa3e5f39a1a41dfe74be63833ad3c375fae316571f",
+              "usageDescription": "Copy the outline weight, broad organic flat shapes, restrained contrast and northwest lighting only; draw ground, not trees."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 0,
+              "right": 256,
+              "bottom": 512
+            }
+          }
+        }
+      ],
+      "outputSha256": "96df40cad6ec0a6bf8d8cd95623abd7ada30f6f91f95c4b07a7da06a93187bb9",
+      "notes": "Accepted after worker and independent root review of exact retry candidate 96df40cad6ec from PixelLab job 78f32cec-5233-4e4f-b23c-e5ccfa04932e. Full opaque 256x512 two-cell rectangle, independently cropped halves, source/native/enlarged, adjacency L/T/2x2/long-odd layouts, min/1/max zoom at DPR1/2, dense accepted Forest/City/Warrior and occupied Farm+Road contexts pass. Quiet broad charcoal-teal grooves and same-scale moss leaves match accepted single 211ff46d8e09 without divider, perimeter, raised slab, stretch, holes, spill, state, text or UI; northwest lighting is not rotated.",
+      "reviewedAt": "2026-09-09T11:46:09.390Z",
       "reviewChecks": {
         "source": true,
         "native": true,

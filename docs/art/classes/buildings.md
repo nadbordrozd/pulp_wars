@@ -10,6 +10,28 @@ left, right, or bottom edge. All replacements use upper-left key lighting.
 Diamond-era canvases and measurements below remain temporary historical
 provenance until their dedicated square batches are accepted.
 
+### Ruleset-7 Farm override
+
+Ruleset 7 explicitly supersedes the Ruleset-6 processed periodic Farm material
+with three independently generated PixelLab sources: one opaque 256 x 256
+single tile, one opaque 512 x 256 horizontal pair, and one opaque 256 x 512
+vertical pair. Each pair is one coherent full rectangle with no baked divider;
+the renderer crops it into two authoritative 256 x 256 cells. All three fill
+their complete rectangles, never spill on any side, use the same crop scale,
+warm soil, broad dark grooves, simple outlined leaves, flat shading, and
+northwest light. The single is also the Ruleset-7 Farm technology, action, and
+identity art. Ruleset 6 and its historical processed Farm remain unchanged.
+
+Pair selection is deterministic presentation only: revealed Farms belonging to
+the same city are scanned in canonical `(y,x)` order and each unpaired tile
+takes the first free cardinal neighbor in east, south, west, north order.
+Odd, L, T, 2 x 2, and longer components therefore resolve to pair-plus-single
+coverage without gaps or double-painting. Removal, pillage, fog, or territory
+city changes recompute the partition. Per-cell crops retain independent row
+depth, fog protection, hit testing, selection, and authoritative economy.
+Because Farm is opaque ground treatment, it draws below a coexisting Road;
+other improvement layering is unchanged.
+
 ## Ruleset-6 active inventory
 
 Ruleset 6 adds one shared functional production raster for Farm, Lumber Camp,

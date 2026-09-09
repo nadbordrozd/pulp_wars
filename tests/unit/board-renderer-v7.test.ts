@@ -25,7 +25,12 @@ describe("Ruleset 7 board renderer", () => {
         ...view.board,
         tiles: view.board.tiles.map((tile) =>
           tile.at.x === unitAt.x && tile.at.y === unitAt.y && tile.explored
-            ? { ...tile, improvement: "FARM" as const, resource: null }
+            ? {
+                ...tile,
+                improvement: "FARM" as const,
+                resource: null,
+                road: true,
+              }
             : tile.at.x === 0 && tile.at.y === 0
               ? {
                   ...tile,
@@ -86,7 +91,11 @@ describe("Ruleset 7 board renderer", () => {
     }
     const overlap = byCell.get(`${unitAt.x},${unitAt.y}`) ?? [];
     expect(overlap.some((entry) => entry.kind === "IMPROVEMENT")).toBe(true);
+    expect(overlap.some((entry) => entry.kind === "ROAD")).toBe(true);
     expect(overlap.some((entry) => entry.kind === "UNIT")).toBe(true);
+    expect(
+      overlap.findIndex((entry) => entry.kind === "IMPROVEMENT"),
+    ).toBeLessThan(overlap.findIndex((entry) => entry.kind === "ROAD"));
     const forestIndex = plan.entries.findIndex(
       (entry) => entry.assetId === "terrain-square-original-forest-1",
     );
@@ -146,6 +155,91 @@ describe("Ruleset 7 board renderer", () => {
       ),
     ))
       expect(actual).toBeCloseTo(expected);
+  });
+
+  it("draws single and pair Farm crops at exact ground-cell rectangles", () => {
+    const drawImage = vi.fn();
+    drawBoardV7({
+      context: drawingContext(drawImage),
+      viewport: { width: 400, height: 300 },
+      devicePixelRatio: 1,
+      camera: { offsetX: 100, offsetY: 100, zoom: 1 },
+      plan: {
+        version: 7,
+        targets: [],
+        entries: [
+          imageEntry(
+            "farm-single",
+            "IMPROVEMENT",
+            "building-ruleset7-farm-single",
+            0,
+            0,
+          ),
+          {
+            ...imageEntry(
+              "farm-left",
+              "IMPROVEMENT",
+              "building-ruleset7-farm-pair-horizontal",
+              1,
+              0,
+            ),
+            sourceCrop: { x: 0, y: 0, width: 256, height: 256 },
+          },
+          {
+            ...imageEntry(
+              "farm-right",
+              "IMPROVEMENT",
+              "building-ruleset7-farm-pair-horizontal",
+              2,
+              0,
+            ),
+            sourceCrop: { x: 256, y: 0, width: 256, height: 256 },
+          },
+          {
+            ...imageEntry(
+              "farm-top",
+              "IMPROVEMENT",
+              "building-ruleset7-farm-pair-vertical",
+              0,
+              1,
+            ),
+            sourceCrop: { x: 0, y: 0, width: 256, height: 256 },
+          },
+          {
+            ...imageEntry(
+              "farm-bottom",
+              "IMPROVEMENT",
+              "building-ruleset7-farm-pair-vertical",
+              0,
+              2,
+            ),
+            sourceCrop: { x: 0, y: 256, width: 256, height: 256 },
+          },
+        ],
+      },
+      images: { resolve: () => ({}) as CanvasImageSource },
+    });
+    expect(drawImage).toHaveBeenCalledTimes(5);
+    expect(drawImage.mock.calls[0]?.slice(1)).toEqual([36, 36, 128, 128]);
+    expect(
+      drawImage.mock.calls.slice(1).map((call) => call.slice(1, 5)),
+    ).toEqual([
+      [0, 0, 256, 256],
+      [256, 0, 256, 256],
+      [0, 0, 256, 256],
+      [0, 256, 256, 256],
+    ]);
+    expect(drawImage.mock.calls.slice(1).map((call) => call.slice(5))).toEqual([
+      [164, 36, 128, 128],
+      [292, 36, 128, 128],
+      [36, 164, 128, 128],
+      [36, 292, 128, 128],
+    ]);
+    for (const call of drawImage.mock.calls.slice(1)) {
+      expect(call).toHaveLength(9);
+      expect(call[7]).toBe(128);
+      expect(call[8]).toBe(128);
+    }
   });
 
   it("derives the exact road mask from public orthogonal connectivity", () => {

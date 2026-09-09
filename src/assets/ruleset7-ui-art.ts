@@ -40,9 +40,15 @@ export const RULESET7_PORTRAIT_ART_IDS = {
   JUGGERNAUT: "portrait-original-juggernaut",
 } as const satisfies Readonly<Record<UnitRoleIdV7, string>>;
 
+export const RULESET7_FARM_ART_IDS = {
+  SINGLE: "building-ruleset7-farm-single",
+  HORIZONTAL_PAIR: "building-ruleset7-farm-pair-horizontal",
+  VERTICAL_PAIR: "building-ruleset7-farm-pair-vertical",
+} as const;
+
 export const RULESET7_TECH_ART_IDS = {
   GATHERING: "terrain-square-original-fruit",
-  FARMING: "building-square-farm",
+  FARMING: RULESET7_FARM_ART_IDS.SINGLE,
   MILLING: "building-square-windmill",
   CRAFT: "building-square-workshop",
   GRAND_WORKS: "building-square-grand-works",
@@ -69,7 +75,7 @@ export const RULESET7_TECH_ART_IDS = {
 } as const satisfies Readonly<Record<TechnologyIdV7, string>>;
 
 export const RULESET7_IMPROVEMENT_ART_IDS = {
-  FARM: "building-square-farm",
+  FARM: RULESET7_FARM_ART_IDS.SINGLE,
   LUMBER_CAMP: "building-square-lumber-camp",
   MINE: "building-square-mine",
   QUARRY: "building-square-quarry",
