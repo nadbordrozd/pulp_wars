@@ -1,9 +1,9 @@
 # Ruleset 7 release validation
 
-**Status:** production release contract for `pulp-wars-poc-7r2`; the local
-release profile, fresh Normal matrix, and approved initial v7 corpus refresh
-passed, including ordinary v7 corpus validation. Actual Pages publication and
-deployed verification remain pending at this record update.
+**Status:** final acceptance passed for `pulp-wars-poc-7r2`. Runtime candidate
+`7831cc95bcba4b5938d414d817744c7e2ee34ca2` is published on `main`, verified on
+`origin/main`, deployed successfully to GitHub Pages, and verified through the
+actual production URL.
 
 Ruleset 7 is the normal browser default and the supported Original-faction
 game. Exact `?ruleset=7` selects the same contract. Frozen Ruleset 6 remains a
@@ -199,17 +199,31 @@ production distribution served locally under `/pulp_wars/`: three initial AI
 commands over 14 scheduled slices with a 38.6 ms maximum callback, followed by
 the real second AI return, DOM Main menu/resume command-and-hash equality,
 restart, reload, delete, and compatibility routing. This validates the built
-probe path but is not evidence that the final GitHub Pages deployment has been
-published or checked.
+probe path independently of the subsequent actual Pages verification.
 
 Timing results are run-specific acceptance observations, not universal
 performance guarantees. Earlier development-host attempts recorded 45.3 ms
 and 41.4 ms callbacks; those failures remain in the Beads validation history
 and are not relabeled as passes.
 
-The remaining release gate is to publish the reviewed final revision to Pages
-and verify the deployed default Ruleset 7 entry, explicit Ruleset 6 route, and
-bounded production-bundle probe.
+GitHub Pages workflow
+[34377218485](https://github.com/nadbordrozd/pulp_wars/actions/runs/34377218485)
+completed Build and Deploy successfully at `2026-09-09T16:33:19Z`. The actual
+deployed verification command was:
 
-Until that gate passes, this record does not claim that final release
-acceptance or deployment is complete.
+```bash
+npx tsx scripts/browser-smoke-v7.ts --deployed 'https://nadbordrozd.github.io/pulp_wars/?browser-smoke=1'
+```
+
+It passed in Chrome 153.0.8010.36 with three initial AI commands over 14
+scheduled slices and a 39.9 ms maximum callback against the 40 ms limit. The
+production-bundle path loaded no source or test modules and passed default-v7
+launch, the real second AI return, DOM Main menu to `RESUMABLE` and Resume with
+exact command-index/hash preservation, deterministic restart, reload/resume,
+route-owned delete, old-v7 and v6 key isolation, exact Ruleset 6 Original/Candy
+discovery, and unsupported-route isolation.
+
+All release acceptance and actual deployment checks are therefore complete.
+Any subsequent commit containing this final record and tracker closures is
+documentation/tracker-only and introduces no runtime changes; no future commit
+SHA is asserted here.
