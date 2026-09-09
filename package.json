@@ -53,6 +53,7 @@
     "art:validate": "tsx scripts/art/pixellab.ts validate",
     "diagnose:mountain-live": "tsx scripts/browser-smoke-v6.ts --mountain-live",
     "smoke:browser": "tsx scripts/browser-smoke-v6.ts",
+    "review:ruleset7-ui-polish": "tsx scripts/browser-ui-polish-review-v7.ts",
     "smoke:browser:legacy-v5": "tsx scripts/browser-smoke.ts http://localhost:6173/?legacy-v5=1",
     "review:faction-setup": "tsx scripts/browser-smoke.ts --faction-setup-review",
     "validate:poc": "tsx scripts/validate-poc.ts",

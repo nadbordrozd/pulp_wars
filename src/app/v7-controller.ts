@@ -367,6 +367,26 @@ export class Ruleset7BrowserController {
     });
   }
 
+  returnToMenu(): Promise<boolean> {
+    this.#cancelAiWork();
+    return this.#serialize(async () => {
+      if (
+        this.#destroyed ||
+        this.#match === null ||
+        this.#replay === null ||
+        this.#phase !== "ACTIVE"
+      )
+        return false;
+      const queued = this.#persistCurrent(false);
+      if (!queued || !this.flushPersistence()) return false;
+      this.#phase = "RESUMABLE";
+      this.#diagnostic = null;
+      this.#fastForward = false;
+      this.#emit();
+      return true;
+    });
+  }
+
   dispatch(command: CommandV7): Promise<Ruleset7DispatchResult> {
     return this.#serialize(async () => {
       if (this.#destroyed)
@@ -834,13 +854,13 @@ export class Ruleset7BrowserController {
     });
   }
 
-  #persistCurrent(immediate: boolean): void {
+  #persistCurrent(immediate: boolean): boolean {
     if (
       this.#persistence === null ||
       this.#match === null ||
       this.#replay === null
     ) {
-      return;
+      return true;
     }
     try {
       this.#savedAt = this.#persistence.queueSave({
@@ -849,9 +869,11 @@ export class Ruleset7BrowserController {
       });
       this.#storedSavePresent = true;
       this.#saveWarning = null;
-      if (immediate) this.flushPersistence();
+      if (immediate) return this.flushPersistence();
+      return true;
     } catch (error) {
       this.#saveWarning = `Autosave preparation failed: ${safeDiagnosticV7(error)}`;
+      return false;
     }
   }
 

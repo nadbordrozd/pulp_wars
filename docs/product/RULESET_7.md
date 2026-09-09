@@ -2156,6 +2156,12 @@ Selecting a visible unit, city, or tile opens exactly one nonmodal dock. It
 never opens the obsolete duplicate “Choose an action” surface. The map remains
 pannable/zoomable and the fixed Canvas host, camera, zoom, and selection never
 resize or jump when dock content changes. Docks omit tile coordinates.
+On wide desktop, the dock is centered and content-bounded: identity, grouped
+semantic facts, contextual actions, and a label-sized Close control remain a
+coherent cluster instead of stretching to opposite viewport edges. Compact,
+mobile, 320 CSS-pixel, and 200% UI-scale layouts reflow this same content into a
+reachable bottom dock without horizontal overflow. This Ruleset-7 layout
+specializes the otherwise retained screen-flow dock contract.
 
 Every exact unambiguous contextual command executes from one button activation
 against the already-selected entity/tile. Harvest, Hunt, Build, Clear, Replant,
@@ -2212,6 +2218,19 @@ shape. Selecting a card opens details with prerequisite, exact unlocks/formula,
 state, and Research only when offered. Research dispatches immediately without
 confirmation and keeps the tree/focus open. The main match screen never exposes
 a Research button.
+Wide screens show each branch name once as its accessible column heading and
+omit redundant branch-jump controls. Compact/mobile and the 200% UI-scale
+fallback show one readable branch selector; activation keeps keyboard focus on
+the native selector while scrolling the corresponding branch into view. Ordinary wide-screen overlays use content-appropriate
+bounded widths, and every Close control fits its label while retaining at least
+a 44 x 44 CSS-pixel target.
+
+An ACTIVE match exposes a clearly labelled **Main menu** action in the HUD.
+It flushes the latest accepted authoritative boundary, cancels only pending AI
+and presentation work, and returns to the route-owned Hub without deleting or
+replacing the match. The existing **Resume** action restores that exact human,
+AI, or mandatory-reward boundary; a save failure leaves the in-memory match
+active with an actionable warning so the player can retry safely.
 
 Mandatory city reward choices use the existing blocking popup and dispatch on
 the chosen reward with no second confirmation. A no-placement automatic

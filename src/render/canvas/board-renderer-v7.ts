@@ -18,8 +18,10 @@ import { drawRegisteredImageGlow } from "./board-renderer-v6";
 import {
   TILE_HEIGHT,
   TILE_WIDTH,
+  territoryBoundarySegments,
   type CameraState,
   type Size,
+  type TileEdge,
 } from "./geometry";
 import { readinessUnitStyleV6 } from "./readiness-presentation";
 import { selectionJumpOffsetCssPx } from "./selection-jump-presentation";
@@ -75,6 +77,7 @@ export interface BoardRenderPlanEntryV7 {
     | "REACH"
     | "STATUS"
     | "LINK"
+    | "TERRITORY_BOUNDARY"
     | "SELECTION"
     | "CURSOR";
   readonly assetId?: string;
@@ -92,6 +95,8 @@ export interface BoardRenderPlanEntryV7 {
   readonly pulse?: boolean;
   readonly linkTo?: CoordV7;
   readonly attachmentSlot?: number;
+  readonly edge?: TileEdge;
+  readonly boundaryStyle?: "OWNER" | "CITY" | "POTENTIAL";
 }
 
 export interface BoardRenderPlanV7 {
@@ -247,6 +252,7 @@ export function buildBoardRenderPlanV7(
       attachmentSlot: slot,
     });
   }
+  addTerritoryBoundaries(entries, view, interaction.selection);
   const pursuit = pursuitPresentationV7(view, commands);
   if (pursuit !== null && interaction.selectedUnitId === pursuit.unitId)
     for (const unitId of pursuit.laterTargetUnitIds) {
@@ -364,7 +370,7 @@ export function drawBoardV7(input: {
   context.save();
   context.globalAlpha = sceneAlpha;
   for (const entry of input.plan.entries) {
-    if (entry.kind === "LINK") continue;
+    if (entry.kind === "LINK" || entry.kind === "TERRITORY_BOUNDARY") continue;
     const impacted =
       input.impact !== null &&
       input.impact !== undefined &&
@@ -520,19 +526,6 @@ export function drawBoardV7(input: {
         context.restore();
       }
     }
-    if (entry.kind === "TERRAIN" && entry.ownerColor !== undefined) {
-      context.save();
-      context.strokeStyle = entry.ownerColor;
-      context.lineWidth = 3 * camera.zoom;
-      context.setLineDash([8 * camera.zoom, 5 * camera.zoom]);
-      context.strokeRect(
-        left + 2 * camera.zoom,
-        top + 2 * camera.zoom,
-        size - 4 * camera.zoom,
-        size - 4 * camera.zoom,
-      );
-      context.restore();
-    }
     if (
       (entry.kind === "UNIT" || entry.kind === "CITY") &&
       entry.ownerColor !== undefined
@@ -623,6 +616,10 @@ export function drawBoardV7(input: {
       }
     }
   }
+  for (const boundary of input.plan.entries) {
+    if (boundary.kind !== "TERRITORY_BOUNDARY") continue;
+    drawTerritoryBoundary(context, camera, boundary);
+  }
   const publicLinks = input.plan.entries.filter(
     (entry) => entry.kind === "LINK" && entry.linkTo !== undefined,
   );
@@ -679,6 +676,156 @@ export function drawBoardV7(input: {
     context.fill();
     context.restore();
   }
+  context.restore();
+}
+
+function addTerritoryBoundaries(
+  entries: BoardRenderPlanEntryV7[],
+  view: PlayerViewV7,
+  selection: BoardSelectionV7 | null,
+): void {
+  const selectedCity =
+    selection?.kind === "CITY"
+      ? view.cities.find((city) => city.id === selection.cityId)
+      : undefined;
+  const selectedTerritory =
+    selectedCity === undefined
+      ? []
+      : view.board.tiles
+          .filter(
+            (tile) => tile.explored && tile.territoryCityId === selectedCity.id,
+          )
+          .map((tile) => tile.at);
+  const selectedSegments = territoryBoundarySegments(selectedTerritory);
+  const selectedEdgeKeys = new Set(
+    selectedSegments.map((segment) => edgeKey(segment.at, segment.edge)),
+  );
+  const potentialSegments =
+    selectedCity === undefined || selectedCity.expanded
+      ? []
+      : territoryBoundarySegments(
+          view.board.tiles
+            .filter(
+              (tile) =>
+                tile.explored &&
+                Math.abs(tile.at.x - selectedCity.at.x) <= 2 &&
+                Math.abs(tile.at.y - selectedCity.at.y) <= 2,
+            )
+            .map((tile) => tile.at),
+        );
+  const potentialEdgeKeys = new Set(
+    potentialSegments.map((segment) => edgeKey(segment.at, segment.edge)),
+  );
+
+  // One physical edge has one winner: selected city, then its potential
+  // footprint, then the ambient public-owner contour.
+  const ownerTerritories = new Map<number, CoordV7[]>();
+  for (const tile of view.board.tiles) {
+    if (!tile.explored || tile.territoryOwnerId === null) continue;
+    const territory = ownerTerritories.get(tile.territoryOwnerId) ?? [];
+    territory.push(tile.at);
+    ownerTerritories.set(tile.territoryOwnerId, territory);
+  }
+  const paintedOwnerEdges = new Set<string>();
+  for (const [ownerId, territory] of ownerTerritories) {
+    const ownerColor = ownerPresentation(view, ownerId).ownerColor;
+    if (ownerColor === undefined) continue;
+    for (const segment of territoryBoundarySegments(territory)) {
+      const key = edgeKey(segment.at, segment.edge);
+      if (
+        selectedEdgeKeys.has(key) ||
+        potentialEdgeKeys.has(key) ||
+        paintedOwnerEdges.has(key)
+      )
+        continue;
+      paintedOwnerEdges.add(key);
+      entries.push({
+        key: `territory-owner:${key}`,
+        kind: "TERRITORY_BOUNDARY",
+        layer: 7,
+        at: segment.at,
+        edge: segment.edge,
+        boundaryStyle: "OWNER",
+        ownerColor,
+      });
+    }
+  }
+
+  if (selectedCity === undefined) return;
+  const selectedColor = ownerPresentation(
+    view,
+    selectedCity.ownerId,
+  ).ownerColor;
+  for (const segment of selectedSegments)
+    entries.push({
+      key: `territory-city:${selectedCity.id}:${edgeKey(segment.at, segment.edge)}`,
+      kind: "TERRITORY_BOUNDARY",
+      layer: 8,
+      at: segment.at,
+      edge: segment.edge,
+      boundaryStyle: "CITY",
+      ...(selectedColor === undefined ? {} : { ownerColor: selectedColor }),
+    });
+
+  for (const segment of potentialSegments) {
+    const key = edgeKey(segment.at, segment.edge);
+    if (selectedEdgeKeys.has(key)) continue;
+    entries.push({
+      key: `territory-potential:${selectedCity.id}:${key}`,
+      kind: "TERRITORY_BOUNDARY",
+      layer: 7,
+      at: segment.at,
+      edge: segment.edge,
+      boundaryStyle: "POTENTIAL",
+    });
+  }
+}
+
+function edgeKey(at: CoordV7, edge: TileEdge): string {
+  if (edge === "NORTH") return `h:${at.x}:${at.y}`;
+  if (edge === "SOUTH") return `h:${at.x}:${at.y + 1}`;
+  if (edge === "WEST") return `v:${at.x}:${at.y}`;
+  return `v:${at.x + 1}:${at.y}`;
+}
+
+function drawTerritoryBoundary(
+  context: CanvasRenderingContext2D,
+  camera: CameraState,
+  entry: BoardRenderPlanEntryV7,
+): void {
+  if (entry.edge === undefined) return;
+  const x = camera.offsetX + entry.at.x * TILE_WIDTH * camera.zoom;
+  const y = camera.offsetY + entry.at.y * TILE_HEIGHT * camera.zoom;
+  const half = (TILE_WIDTH * camera.zoom) / 2;
+  const endpoints: Readonly<
+    Record<TileEdge, readonly [number, number, number, number]>
+  > = {
+    NORTH: [x - half, y - half, x + half, y - half],
+    EAST: [x + half, y - half, x + half, y + half],
+    SOUTH: [x + half, y + half, x - half, y + half],
+    WEST: [x - half, y + half, x - half, y - half],
+  };
+  const [fromX, fromY, toX, toY] = endpoints[entry.edge];
+  context.save();
+  context.strokeStyle =
+    entry.boundaryStyle === "POTENTIAL"
+      ? "#fff6b0"
+      : (entry.ownerColor ?? "#fff6b0");
+  context.lineWidth =
+    (entry.boundaryStyle === "CITY"
+      ? 5
+      : entry.boundaryStyle === "OWNER"
+        ? 3
+        : 3) * camera.zoom;
+  context.setLineDash(
+    entry.boundaryStyle === "POTENTIAL"
+      ? [9 * camera.zoom, 6 * camera.zoom]
+      : [],
+  );
+  context.beginPath();
+  context.moveTo(fromX, fromY);
+  context.lineTo(toX, toY);
+  context.stroke();
   context.restore();
 }
 

@@ -44,7 +44,32 @@ describe("Ruleset 7 DOM shell", () => {
     requiredButton('[data-action="tech"]').click();
     expect(document.querySelectorAll(".v7-tech-card")).toHaveLength(25);
     expect(document.querySelectorAll(".v7-tech-edge")).toHaveLength(20);
-    expect(document.querySelectorAll(".v7-tech-branch-jump")).toHaveLength(5);
+    expect(document.querySelectorAll(".v7-tech-children.is-unary").length).toBe(
+      10,
+    );
+    const branchSelect = document.querySelector<HTMLSelectElement>(
+      ".v7-tech-branch-select",
+    );
+    if (branchSelect === null) throw new Error("Branch selector missing");
+    expect(branchSelect.options).toHaveLength(5);
+    const headings = [
+      ...document.querySelectorAll<HTMLElement>(".v7-tech-branch > h3"),
+    ];
+    expect(headings).toHaveLength(5);
+    expect(new Set(headings.map((heading) => heading.textContent)).size).toBe(
+      5,
+    );
+    const lastBranch = document.querySelector<HTMLElement>(
+      '[data-tech-branch="WARFARE"]',
+    );
+    if (lastBranch === null) throw new Error("Technology branch missing");
+    const scrollIntoView = vi.fn();
+    lastBranch.scrollIntoView = scrollIntoView;
+    branchSelect.focus();
+    branchSelect.value = "WARFARE";
+    branchSelect.dispatchEvent(new Event("change", { bubbles: true }));
+    expect(scrollIntoView).toHaveBeenCalledWith({ block: "start" });
+    expect(document.activeElement).toBe(branchSelect);
     expect(document.querySelectorAll(".v7-art-frame").length).toBeGreaterThan(
       20,
     );
@@ -92,6 +117,31 @@ describe("Ruleset 7 DOM shell", () => {
     expect(
       requiredButton('[data-action="export-debug-with-spoilers"]').ariaLabel,
     ).toContain("hidden map and units");
+    app.destroy();
+  });
+
+  it("returns a real accepted match boundary to Main menu and resumes it", async () => {
+    const app = bootstrapRuleset7App(document);
+    requiredInput("v7-seed").value = "2";
+    requiredButton('[data-action="launch"]').click();
+    await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
+    const wait = app.controller
+      .snapshot()
+      .offeredCommands.find((command) => command.kind === "WAIT");
+    if (wait === undefined) throw new Error("WAIT missing");
+    expect((await app.controller.dispatch(wait)).accepted).toBe(true);
+    const commandIndex = app.controller.snapshot().view?.commandIndex;
+
+    requiredButton('[data-action="main-menu"]').click();
+    await waitUntil(() => app.controller.snapshot().phase === "RESUMABLE");
+    expect(document.querySelector(".v7-match-root")).toBeNull();
+    expect(requiredButton('[data-action="resume"]').textContent).toBe("Resume");
+    expect(app.controller.snapshot().view?.commandIndex).toBe(commandIndex);
+
+    requiredButton('[data-action="resume"]').click();
+    await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
+    expect(document.querySelector(".v7-match-root")).not.toBeNull();
+    expect(app.controller.snapshot().view?.commandIndex).toBe(commandIndex);
     app.destroy();
   });
 
@@ -145,7 +195,9 @@ describe("Ruleset 7 DOM shell", () => {
     await Promise.resolve();
     expect(app.controller.snapshot().view?.commandIndex).toBe(before);
     const controls = [
-      ...modal.querySelectorAll<HTMLButtonElement>("button:not(:disabled)"),
+      ...modal.querySelectorAll<HTMLElement>(
+        'button:not(:disabled), input:not(:disabled), select:not(:disabled), [tabindex]:not([tabindex="-1"])',
+      ),
     ];
     const first = controls[0];
     const last = controls.at(-1);
@@ -356,6 +408,13 @@ describe("Ruleset 7 DOM shell", () => {
       "Save warning: synthetic autosave failure",
     );
     host.callbacks?.onSelection({ kind: "CITY", cityId: city.id });
+    expect(document.querySelectorAll(".v7-selection-details")).toHaveLength(1);
+    expect(
+      document.querySelector(".v7-selection-details")?.textContent,
+    ).toContain("Population");
+    expect(
+      document.querySelector(".v7-selection-details")?.textContent,
+    ).toContain("Assigned units");
     const trainCost = document.querySelector<HTMLElement>(
       ".v7-train-action .v7-command-economy",
     );
@@ -495,6 +554,7 @@ function fixturePort(
     subscribeAcceptedBoundary: () => () => {},
     launch: source.launch.bind(source),
     resume: source.resume.bind(source),
+    returnToMenu: source.returnToMenu.bind(source),
     dispatch,
     progressAiTurns: source.progressAiTurns.bind(source),
     restart: source.restart.bind(source),

@@ -290,6 +290,7 @@ async function mountFixture(
         },
         launch: async () => ({ ok: false, code: 'INVALID_SETUP', diagnostic: 'Fixture active' }),
         resume: async () => false,
+        returnToMenu: async () => false,
         progressAiTurns: async () => ({ ok: false, cancelled: true, acceptedCommands: 0, diagnostic: 'Fixture has no AI runner' }),
         restart: async () => ({ ok: false, code: 'CONTROLLER_DESTROYED', diagnostic: 'Fixture restart disabled' }),
         deleteStoredSave: async () => false,

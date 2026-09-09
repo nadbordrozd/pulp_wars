@@ -79,6 +79,7 @@ export type Ruleset7ControllerPortV7 = Pick<
   | "subscribeAcceptedBoundary"
   | "launch"
   | "resume"
+  | "returnToMenu"
   | "dispatch"
   | "progressAiTurns"
   | "restart"
@@ -285,6 +286,7 @@ export class Ruleset7DomAppView {
       this.#renderStableMatch(this.#snapshot.view);
       return;
     }
+    if (this.#matchRoot !== null) this.#boardHost.destroy();
     this.#matchShell = null;
     this.#matchRoot = null;
     this.#boardContainer = null;
@@ -553,6 +555,16 @@ export class Ruleset7DomAppView {
     status.dataset.v7AiProgress = "true";
     const nav = el(this.#document, "nav", "v7-hud-nav");
     nav.dataset.compactMenu = this.#compactMenuOpen ? "open" : "closed";
+    if (this.#snapshot.phase === "ACTIVE") {
+      const mainMenu = button(
+        this.#document,
+        "Main menu",
+        "main-menu",
+        "hud-button v7-main-menu-action",
+      );
+      mainMenu.onclick = () => void this.#returnToMenu();
+      nav.append(mainMenu);
+    }
     for (const [label, screen, action] of [
       ["Tech", "TECH", "tech"],
       ["Leaderboard", "LEADERBOARD", "leaderboard"],
@@ -717,6 +729,7 @@ export class Ruleset7DomAppView {
   #dock(view: PlayerViewV7, selection: BoardSelectionV7): HTMLElement | null {
     const dock = el(this.#document, "section", "v7-selection-dock");
     dock.dataset.selectionKind = selection.kind.toLowerCase();
+    dock.dataset.hasActions = "false";
     dock.setAttribute("aria-label", "Selected map object");
     const close = button(this.#document, "Close", "close-dock", "close-button");
     close.onclick = () => {
@@ -1011,13 +1024,15 @@ export class Ruleset7DomAppView {
         (candidate) => candidate.id === selection.cityId,
       );
       if (city === undefined) return null;
-      dock.append(
+      const summary = el(this.#document, "div", "v7-selection-summary");
+      summary.append(
         identity(
           this.#document,
           `building-city-${Math.max(1, Math.min(3, city.level))}`,
           `${city.isCapital ? "Capital" : "City"} · level ${city.level}`,
         ),
       );
+      const details = el(this.#document, "div", "v7-selection-details");
       const blackout = view.blackoutStatuses.find(
         (status) => status.cityId === city.id,
       );
@@ -1039,9 +1054,9 @@ export class Ruleset7DomAppView {
               "City-only status · source and exact suppression remain private.",
             ),
           );
-        dock.append(status);
+        details.append(status);
       }
-      dock.append(
+      details.append(
         text(
           this.#document,
           "p",
@@ -1069,7 +1084,7 @@ export class Ruleset7DomAppView {
           1 +
           (view.viewer.researchedTechs.includes("FORTIFICATION") ? 1 : 0) +
           (barracks ? 2 : 0);
-        dock.append(
+        details.append(
           text(
             this.#document,
             "p",
@@ -1083,14 +1098,9 @@ export class Ruleset7DomAppView {
               : `Blackout ${title(city.blackout.phase)} · next income ${cityIncomeForViewerV7(view, city.id) ?? "unknown"}`,
           ),
         );
-        dock.append(
-          this.#commandButtons(
-            (command) => command.kind === "TRAIN" && command.cityId === city.id,
-          ),
-        );
       } else {
         const owner = view.players.find((player) => player.id === city.ownerId);
-        dock.append(
+        details.append(
           text(
             this.#document,
             "p",
@@ -1098,6 +1108,14 @@ export class Ruleset7DomAppView {
           ),
         );
       }
+      summary.append(details);
+      dock.append(summary);
+      if (city.ownerId === view.viewer.id)
+        this.#appendCommandArea(
+          dock,
+          details,
+          (command) => command.kind === "TRAIN" && command.cityId === city.id,
+        );
     } else {
       const tile = view.board.tiles.find((candidate) =>
         same(candidate.at, selection.at),
@@ -1117,8 +1135,10 @@ export class Ruleset7DomAppView {
               ? title(tile.resource)
               : title(tile.terrain)
             : title(tile.improvement);
-        dock.append(
-          identity(this.#document, asset, name),
+        const summary = el(this.#document, "div", "v7-selection-summary");
+        summary.append(identity(this.#document, asset, name));
+        const details = el(this.#document, "div", "v7-selection-details");
+        details.append(
           text(
             this.#document,
             "p",
@@ -1129,7 +1149,7 @@ export class Ruleset7DomAppView {
           same(entry.at, tile.at),
         );
         if (value !== undefined)
-          dock.append(
+          details.append(
             text(
               this.#document,
               "p",
@@ -1151,15 +1171,17 @@ export class Ruleset7DomAppView {
               `${title(monumentSource)} Monument · source visible to the current city owner`,
             ),
           );
-          dock.append(source);
+          details.append(source);
         }
-        dock.append(
-          this.#commandButtons(
-            (command) =>
-              "at" in command &&
-              same(command.at, tile.at) &&
-              command.kind !== "BUILD_MONUMENT",
-          ),
+        summary.append(details);
+        dock.append(summary);
+        this.#appendCommandArea(
+          dock,
+          details,
+          (command) =>
+            "at" in command &&
+            same(command.at, tile.at) &&
+            command.kind !== "BUILD_MONUMENT",
         );
       }
     }
@@ -1222,6 +1244,20 @@ export class Ruleset7DomAppView {
         text(this.#document, "p", "No direct action is currently offered."),
       );
     return actions;
+  }
+
+  #appendCommandArea(
+    dock: HTMLElement,
+    details: HTMLElement,
+    predicate: (command: CommandV7) => boolean,
+  ): void {
+    const actions = this.#commandButtons(predicate);
+    if (actions.querySelector("button") !== null) {
+      dock.dataset.hasActions = "true";
+      dock.append(actions);
+      return;
+    }
+    details.append(...actions.childNodes);
   }
 
   #appendTacticalActions(
@@ -1460,6 +1496,7 @@ export class Ruleset7DomAppView {
 
   #overlay(view: PlayerViewV7): HTMLElement {
     const overlay = el(this.#document, "section", "v7-overlay");
+    overlay.dataset.screen = this.#screen.toLowerCase();
     overlay.dataset.v7Region = `overlay-${this.#screen.toLowerCase()}`;
     overlay.setAttribute("role", "dialog");
     overlay.setAttribute("aria-modal", "true");
@@ -1499,13 +1536,21 @@ export class Ruleset7DomAppView {
     const layout = technologyTreeLayoutV7(tree.nodes);
     const branches = el(this.#document, "nav", "v7-tech-branch-selector");
     branches.setAttribute("aria-label", "Technology branches");
+    const branchSelect = this.#document.createElement("select");
+    branchSelect.className = "v7-tech-branch-select";
+    branchSelect.dataset.action = "tech-branch-select";
+    branchSelect.setAttribute("aria-label", "Jump to technology branch");
     const graph = el(this.#document, "div", "v7-tech-graph");
     for (const branch of layout) {
       const column = el(this.#document, "section", "v7-tech-branch");
       const branchId = `v7-tech-branch-${branch.node.branch.toLowerCase()}`;
       column.id = branchId;
+      column.dataset.techBranch = branch.node.branch;
       column.tabIndex = -1;
-      column.append(text(this.#document, "h3", title(branch.node.branch)));
+      const heading = text(this.#document, "h3", title(branch.node.branch));
+      heading.id = `${branchId}-heading`;
+      column.setAttribute("aria-labelledby", heading.id);
+      column.append(heading);
       appendTechNode(
         this.#document,
         column,
@@ -1522,19 +1567,19 @@ export class Ruleset7DomAppView {
         },
         this.#selectedTech,
       );
-      const jump = button(
-        this.#document,
-        title(branch.node.branch),
-        `tech-branch-${branch.node.branch.toLowerCase()}`,
-        "v7-tech-branch-jump",
-      );
-      jump.onclick = () => {
-        column.scrollIntoView?.({ block: "start" });
-        column.focus({ preventScroll: true });
-      };
-      branches.append(jump);
+      const option = this.#document.createElement("option");
+      option.value = branch.node.branch;
+      option.textContent = title(branch.node.branch);
+      branchSelect.append(option);
       graph.append(column);
     }
+    branchSelect.onchange = () => {
+      const column = graph.querySelector<HTMLElement>(
+        `[data-tech-branch="${branchSelect.value}"]`,
+      );
+      column?.scrollIntoView?.({ block: "start" });
+    };
+    branches.append(branchSelect);
     section.append(branches, graph);
     const selected =
       tree.nodes.find((node) => node.id === this.#selectedTech) ??
@@ -1956,6 +2001,28 @@ export class Ruleset7DomAppView {
     this.#render();
     await this.#progressAi();
   }
+  async #returnToMenu(): Promise<void> {
+    this.#error = "";
+    const returned = await this.#controller.returnToMenu();
+    if (this.#destroyed) return;
+    if (!returned) {
+      this.#error =
+        this.#controller.snapshot().saveWarning ??
+        "Main menu is unavailable until the current accepted boundary is saved. Retry Main menu.";
+      this.#render();
+      await this.#progressAi();
+      return;
+    }
+    this.#cancelPresentations();
+    this.#selection = null;
+    this.#tacticalTargetMode = null;
+    this.#defectionChoice = null;
+    this.#screen = "MATCH";
+    this.#compactMenuOpen = false;
+    this.#notice =
+      "Match saved at its last accepted command. Resume when ready.";
+    this.#render();
+  }
   async #dispatch(command: CommandV7): Promise<void> {
     if (this.#localBusy()) return;
     const restoreAction =
@@ -2370,6 +2437,7 @@ function appendTechNode(
   node.append(card);
   if (layout.children.length > 0) {
     const children = el(documentRoot, "div", "v7-tech-children");
+    if (layout.children.length === 1) children.classList.add("is-unary");
     for (const child of layout.children) {
       const edge = el(documentRoot, "div", "v7-tech-edge");
       edge.dataset.parentTech = layout.node.id;

@@ -416,6 +416,9 @@ class SnapshotController implements Ruleset7ControllerPortV7 {
   readonly resume: Ruleset7ControllerPortV7["resume"] = vi.fn(
     async () => false,
   );
+  readonly returnToMenu: Ruleset7ControllerPortV7["returnToMenu"] = vi.fn(
+    async () => false,
+  );
   readonly progressAiTurns: Ruleset7ControllerPortV7["progressAiTurns"] = vi.fn(
     async () => ({
       ok: false as const,

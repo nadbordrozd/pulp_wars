@@ -349,6 +349,8 @@ class TacticalFixtureController implements Ruleset7ControllerPortV7 {
     diagnostic: "Fixture is already launched",
   });
   readonly resume: Ruleset7ControllerPortV7["resume"] = async () => false;
+  readonly returnToMenu: Ruleset7ControllerPortV7["returnToMenu"] = async () =>
+    false;
   readonly progressAiTurns: Ruleset7ControllerPortV7["progressAiTurns"] =
     async () => ({
       ok: false,

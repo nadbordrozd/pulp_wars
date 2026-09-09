@@ -163,6 +163,85 @@ describe("Ruleset 7 browser controller", () => {
     controller.destroy();
   });
 
+  it("returns an accepted human boundary to the resumable menu without changing it", async () => {
+    const storage = new MemoryStorage();
+    const controller = new Ruleset7BrowserController({ storage });
+    const launched = await controller.launch(setupV7(2, 1));
+    if (!launched.ok) throw new Error(launched.diagnostic);
+    const dispatch = controller.dispatch(
+      requireCommand(controller.snapshot(), "WAIT"),
+    );
+    const returning = controller.returnToMenu();
+    expect(await dispatch).toMatchObject({ accepted: true });
+    const boundary = requireView(controller.snapshot());
+
+    expect(await returning).toBe(true);
+    expect(controller.snapshot()).toMatchObject({
+      phase: "RESUMABLE",
+      view: { commandIndex: boundary.commandIndex },
+      hasStoredSave: true,
+    });
+    expect(await controller.resume()).toBe(true);
+    expect(requireView(controller.snapshot())).toEqual(boundary);
+    controller.destroy();
+  });
+
+  it("serializes a same-tick menu request behind a pending launch", async () => {
+    const controller = new Ruleset7BrowserController();
+    const launch = controller.launch(setupV7(2, 1));
+    const returning = controller.returnToMenu();
+    expect(await launch).toMatchObject({ ok: true });
+    expect(await returning).toBe(true);
+    expect(controller.snapshot()).toMatchObject({
+      phase: "RESUMABLE",
+      view: { commandIndex: 0 },
+    });
+    controller.destroy();
+  });
+
+  it("cancels AI at its accepted prefix and ignores an already-issued stale callback", async () => {
+    const storage = new MemoryStorage();
+    let scheduled: (() => void) | null = null;
+    const controller = new Ruleset7BrowserController({
+      storage,
+      aiProgressScheduler: (resume) => {
+        scheduled = resume;
+        return () => {};
+      },
+      createAiPolicyWork: (view) => immediateDecisionWork(view, "WAIT"),
+    });
+    const launched = await controller.launch(setupV7(2, 1));
+    if (!launched.ok) throw new Error(launched.diagnostic);
+    await dispatchKind(controller, "END_TURN");
+    const progress = controller.progressAiTurns();
+    await waitUntil(() => scheduled !== null);
+    const firstScheduled = scheduled as unknown as (() => void) | null;
+    if (firstScheduled === null) throw new Error("AI callback missing");
+    firstScheduled();
+    await waitUntil(
+      () => requireView(controller.snapshot()).commandIndex === 2,
+    );
+    const stale = scheduled as unknown as (() => void) | null;
+    const returned = controller.returnToMenu();
+    expect(await progress).toMatchObject({
+      ok: false,
+      cancelled: true,
+      acceptedCommands: 1,
+    });
+    expect(await returned).toBe(true);
+    expect(controller.snapshot()).toMatchObject({
+      phase: "RESUMABLE",
+      view: { commandIndex: 2 },
+    });
+    stale?.();
+    await Promise.resolve();
+    expect(requireView(controller.snapshot()).commandIndex).toBe(2);
+    expect(
+      parseSaveV7(storage.getItem(SAVE_STORAGE_KEY_V7) ?? ""),
+    ).toMatchObject({ kind: "VALID", save: { commandIndex: 2 } });
+    controller.destroy();
+  });
+
   it("keeps a queued accepted save when a replacement setup fails", async () => {
     const storage = new MemoryStorage();
     const saves = manualPersistenceScheduler();
@@ -267,7 +346,11 @@ describe("Ruleset 7 browser controller", () => {
       kind: "CITY_REWARD",
       reachedLevel: 2,
     });
-    expect(controller.flushPersistence()).toBe(true);
+    expect(await controller.returnToMenu()).toBe(true);
+    expect(controller.snapshot()).toMatchObject({
+      phase: "RESUMABLE",
+      view: { pendingChoices: boundary.pendingChoices },
+    });
     controller.destroy();
 
     const loaded = new Ruleset7BrowserController({ storage });
@@ -302,6 +385,34 @@ describe("Ruleset 7 browser controller", () => {
     const wait = requireCommand(controller.snapshot(), "WAIT");
     expect((await controller.dispatch(wait)).accepted).toBe(true);
     expect(requireView(controller.snapshot()).commandIndex).toBe(1);
+    controller.destroy();
+  });
+
+  it("keeps the match active when menu persistence fails and allows a safe retry", async () => {
+    const storage = new ToggleWriteStorage();
+    const controller = new Ruleset7BrowserController({ storage });
+    const launched = await controller.launch(setupV7(42, 1));
+    if (!launched.ok) throw new Error(launched.diagnostic);
+    await dispatchKind(controller, "WAIT");
+    const commandIndex = requireView(controller.snapshot()).commandIndex;
+    storage.failWrites = true;
+
+    expect(await controller.returnToMenu()).toBe(false);
+    expect(controller.snapshot()).toMatchObject({
+      phase: "ACTIVE",
+      view: { commandIndex },
+    });
+    expect(controller.snapshot().saveWarning).toContain("write");
+
+    storage.failWrites = false;
+    expect(await controller.returnToMenu()).toBe(true);
+    expect(controller.snapshot()).toMatchObject({
+      phase: "RESUMABLE",
+      view: { commandIndex },
+      saveWarning: null,
+    });
+    expect(await controller.resume()).toBe(true);
+    expect(requireView(controller.snapshot()).commandIndex).toBe(commandIndex);
     controller.destroy();
   });
 
@@ -573,4 +684,13 @@ class WriteFailingStorage implements StorageAdapter {
   }
 
   removeItem(): void {}
+}
+
+class ToggleWriteStorage extends MemoryStorage {
+  failWrites = false;
+
+  override setItem(key: string, value: string): void {
+    if (this.failWrites) throw new Error("write unavailable");
+    super.setItem(key, value);
+  }
 }

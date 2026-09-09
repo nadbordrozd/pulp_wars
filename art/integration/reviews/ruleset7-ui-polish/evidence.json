@@ -1,0 +1,156 @@
+{
+  "source": "PRODUCTION_CONTROLLER_AND_RENDER_PLAN",
+  "route": "?ruleset=7",
+  "cityLayout1024": {
+    "width": 468.234375,
+    "centerOffset": 0,
+    "detailsGrouped": true,
+    "closeWidth": 77.84375,
+    "identityArtWidth": 112,
+    "identityArtHeight": 130,
+    "actionWidth": 0,
+    "identityToActions": 0,
+    "summaryToActions": 0,
+    "identityDetailsOverlap": false
+  },
+  "cityLayout": {
+    "width": 468.234375,
+    "centerOffset": 0,
+    "detailsGrouped": true,
+    "closeWidth": 77.84375,
+    "identityArtWidth": 112,
+    "identityArtHeight": 130,
+    "actionWidth": 0,
+    "identityToActions": 0,
+    "summaryToActions": 0,
+    "identityDetailsOverlap": false
+  },
+  "syntheticLayout": {
+    "label": "SYNTHETIC_LAYOUT_ONLY_REPRESENTATIVE_CARDS_NOT_LEGAL_COMMANDS",
+    "layout": {
+      "actionCount": 4,
+      "artCount": 4
+    },
+    "measured": {
+      "width": 833.03125,
+      "centerOffset": 0,
+      "detailsGrouped": true,
+      "closeWidth": 77.84375,
+      "identityArtWidth": 112,
+      "identityArtHeight": 130,
+      "actionWidth": 176,
+      "identityToActions": 12.796875,
+      "summaryToActions": 12.796875,
+      "identityDetailsOverlap": false
+    }
+  },
+  "mobileNoActionCity": {
+    "width": 390,
+    "centerOffset": 0,
+    "detailsGrouped": true,
+    "closeWidth": 77.84375,
+    "identityArtWidth": 112,
+    "identityArtHeight": 130,
+    "actionWidth": 0,
+    "identityToActions": 0,
+    "summaryToActions": 0,
+    "identityDetailsOverlap": false
+  },
+  "tileLayout": {
+    "width": 657.03125,
+    "centerOffset": 0,
+    "detailsGrouped": true,
+    "closeWidth": 77.84375,
+    "identityArtWidth": 112,
+    "identityArtHeight": 130,
+    "actionWidth": 176,
+    "identityToActions": 12.796875,
+    "summaryToActions": 12.796875,
+    "identityDetailsOverlap": false
+  },
+  "contours": {
+    "total": 32,
+    "owner": 0,
+    "city": 12,
+    "potential": 20,
+    "uniquePhysicalEdges": 32,
+    "allAnchorsExplored": true
+  },
+  "desktopTech": {
+    "visibleHeadings": 5,
+    "uniqueHeadings": 5,
+    "visibleSelectors": 0,
+    "cardsContained": true,
+    "overlayWidth": 1440,
+    "closeWidth": 77.84375
+  },
+  "desktopTechAssets": {
+    "count": 25,
+    "assetIds": [
+      "terrain-square-original-fruit",
+      "building-square-farm",
+      "building-square-windmill",
+      "building-square-workshop",
+      "building-square-grand-works",
+      "terrain-square-original-animal",
+      "building-square-lumber-camp",
+      "building-square-sawmill",
+      "ui-tech-original-marksmanship",
+      "ui-tech-original-fieldcraft",
+      "ui-tech-original-surveying",
+      "building-square-mine",
+      "building-square-forge",
+      "building-square-quarry",
+      "building-square-stoneworks",
+      "ui-tech-original-scouting",
+      "terrain-square-road-mask-0101",
+      "building-square-market",
+      "ui-tech-original-raiding",
+      "unit-original-lancer",
+      "ui-tech-original-drill",
+      "ui-tech-original-fortification",
+      "ui-tech-original-explosives",
+      "ui-tech-original-medicine",
+      "ui-tech-original-recovery"
+    ]
+  },
+  "settings": {
+    "width": 736,
+    "closeWidth": 77.84375
+  },
+  "mobileTech": {
+    "visibleHeadings": 5,
+    "uniqueHeadings": 5,
+    "visibleSelectors": 1,
+    "cardsContained": true,
+    "overlayWidth": 366,
+    "closeWidth": 77.84375,
+    "focusedBranch": "WARFARE"
+  },
+  "compactMatch": {
+    "mainMenuReachable": true,
+    "endTurnReachable": true,
+    "mapBand": 134.859375,
+    "hudBottom": 239.546875,
+    "dockTop": 374.40625,
+    "boardTop": 0,
+    "boardBottom": 720
+  },
+  "boundaries": {
+    "human": 0,
+    "pendingReward": 2,
+    "aiBeforeMenu": 3,
+    "aiSavedPrefix": 4
+  },
+  "final": {
+    "phase": "ACTIVE",
+    "commandIndex": 7,
+    "pendingChoices": 0,
+    "aiActive": false,
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "uiScale": "2"
+  }
+}

@@ -5,6 +5,10 @@ import {
   drawBoardV7,
   type BoardRenderPlanEntryV7,
 } from "../../src/render/canvas/board-renderer-v7";
+import {
+  territoryBoundarySegments,
+  type TileEdge,
+} from "../../src/render/canvas/geometry";
 import { exploredAllV7, initialV7 } from "../fixtures/v7-builders";
 
 describe("Ruleset 7 board renderer", () => {
@@ -178,6 +182,72 @@ describe("Ruleset 7 board renderer", () => {
     ).toBe("terrain-square-road-mask-1100");
   });
 
+  it("emits one public contour winner per physical owner, city, or potential edge", () => {
+    const state = exploredAllV7(initialV7(1519));
+    const base = viewForV7(state, state.humanPlayerId);
+    const city = base.cities.find(
+      (candidate) => candidate.ownerId === base.viewer.id,
+    );
+    if (city === undefined) throw new Error("owned city missing");
+    const hidden = base.board.tiles.find(
+      (tile) =>
+        tile.explored &&
+        tile.territoryCityId === city.id &&
+        (tile.at.x !== city.at.x || tile.at.y !== city.at.y),
+    );
+    if (hidden === undefined) throw new Error("territory tile missing");
+    const view = {
+      ...base,
+      board: {
+        ...base.board,
+        tiles: base.board.tiles.map((tile) =>
+          tile.at.x === hidden.at.x && tile.at.y === hidden.at.y
+            ? ({ at: tile.at, explored: false as const } as const)
+            : tile,
+        ),
+      },
+    };
+    const ambient = buildBoardRenderPlanV7(view, [], {
+      selection: null,
+      selectedUnitId: null,
+      selectedAchievement: null,
+    }).entries.filter((entry) => entry.kind === "TERRITORY_BOUNDARY");
+    expect(ambient.length).toBeGreaterThan(0);
+    expect(ambient.every((entry) => entry.boundaryStyle === "OWNER")).toBe(
+      true,
+    );
+    const plan = buildBoardRenderPlanV7(view, [], {
+      selection: { kind: "CITY", cityId: city.id },
+      selectedUnitId: null,
+      selectedAchievement: null,
+    });
+    const boundaries = plan.entries.filter(
+      (entry) => entry.kind === "TERRITORY_BOUNDARY",
+    );
+    const physicalEdges = boundaries.map((entry) =>
+      testEdgeKey(entry.at, entry.edge ?? "NORTH"),
+    );
+    expect(new Set(physicalEdges).size).toBe(physicalEdges.length);
+    expect(
+      boundaries.every(
+        (entry) => entry.at.x !== hidden.at.x || entry.at.y !== hidden.at.y,
+      ),
+    ).toBe(true);
+
+    const observableAssigned = view.board.tiles
+      .filter((tile) => tile.explored && tile.territoryCityId === city.id)
+      .map((tile) => tile.at);
+    const selected = boundaries.filter(
+      (entry) => entry.boundaryStyle === "CITY",
+    );
+    expect(selected).toHaveLength(
+      territoryBoundarySegments(observableAssigned).length,
+    );
+    expect(
+      boundaries.some((entry) => entry.boundaryStyle === "POTENTIAL"),
+    ).toBe(!city.expanded);
+  });
+
   it("wraps the ninth processor pip onto a second row", () => {
     const fillRect = vi.fn();
     const context = drawingContext(vi.fn(), fillRect);
@@ -294,6 +364,16 @@ function imageEntry(
   y: number,
 ): BoardRenderPlanEntryV7 {
   return { key, kind, assetId, at: { x, y }, layer: 1 };
+}
+
+function testEdgeKey(
+  at: { readonly x: number; readonly y: number },
+  edge: TileEdge,
+): string {
+  if (edge === "NORTH") return `h:${at.x}:${at.y}`;
+  if (edge === "SOUTH") return `h:${at.x}:${at.y + 1}`;
+  if (edge === "WEST") return `v:${at.x}:${at.y}`;
+  return `v:${at.x + 1}:${at.y}`;
 }
 
 function drawingContext(
