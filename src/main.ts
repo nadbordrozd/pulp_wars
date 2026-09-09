@@ -4,7 +4,7 @@ import "./styles/main.css";
 const location = new URL(globalThis.location.href);
 const route = selectBrowserRulesetRoute(location.search, import.meta.env.DEV);
 const app =
-  route.kind === "RULESET_7_PREVIEW"
+  route.kind === "RULESET_7"
     ? (await import("./app/v7-bootstrap")).bootstrapRuleset7App(document)
     : route.kind === "RULESET_6"
       ? (await import("./app/v6-bootstrap")).bootstrapRuleset6App(document)

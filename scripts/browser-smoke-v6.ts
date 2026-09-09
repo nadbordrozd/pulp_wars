@@ -8,6 +8,7 @@ import sharp from "sharp";
 import {
   RULESET6_SMOKE_TECH_IDS,
   RULESET6_SMOKE_VIEWPORTS,
+  browserSmokeUrlV6,
   coordinateActivationIsVisibleV6,
   coordinateActivationPanStepV6,
   flowContractIssuesV6,
@@ -68,13 +69,10 @@ interface MotionEvidenceV6 {
   };
 }
 
-const requestedBaseUrl =
-  process.argv.slice(2).find((argument) => !argument.startsWith("--")) ??
-  "http://localhost:6173/?browser-smoke=1";
-const baseLocation = new URL(requestedBaseUrl);
-baseLocation.searchParams.set("ruleset", "6");
-baseLocation.searchParams.set("browser-smoke", "1");
-const baseUrl = baseLocation.href;
+const requestedBaseUrl = process.argv
+  .slice(2)
+  .find((argument) => !argument.startsWith("--"));
+const baseUrl = browserSmokeUrlV6(requestedBaseUrl);
 const reviewRoot = path.join(
   process.cwd(),
   "art/integration/reviews/ruleset6-browser-smoke",
@@ -97,6 +95,7 @@ const pendingReviewFiles: { readonly path: string; readonly data: Buffer }[] =
   [];
 const MAX_COORDINATE_PAN_STEPS = 32;
 let coordinateActivations: BrowserSmokeCoordinateActivationV6[] = [];
+let reloadDocumentSequence = 0;
 const mountainLiveOnly = process.argv.includes("--mountain-live");
 
 await mkdir(reviewRoot, { recursive: true });
@@ -293,9 +292,9 @@ async function runMountainLiveDiagnostic(
         connection,
         `document.querySelector('[data-v6-setup]') !== null`,
       );
-      await connection.send("Page.reload", { ignoreCache: true });
-      await waitForExpression(
+      await reloadAndWaitForFreshDocument(
         connection,
+        "Candy Mountain setup",
         `document.querySelector('[data-v6-setup]') !== null`,
       );
       await installMountainDrawTrace(connection);
@@ -641,9 +640,9 @@ async function runFactionFlow(
   const artifacts: BrowserSmokeArtifactV6[] = [];
   await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.desktop);
   await setMediaPreferences(connection, false, false);
-  await connection.send("Page.reload", { ignoreCache: true });
-  await waitForExpression(
+  await reloadAndWaitForFreshDocument(
     connection,
+    `${config.faction} setup`,
     `document.querySelector('[data-v6-setup]') !== null`,
   );
   await stabilizeBrowserSurface(connection);
@@ -1091,8 +1090,12 @@ async function runFactionFlow(
     throw new Error(`${config.faction} AI did not accept a command`);
   }
 
-  await connection.send("Page.reload", { ignoreCache: true });
-  await waitForResumeScreen(connection);
+  await reloadAndWaitForFreshDocument(
+    connection,
+    `${config.faction} saved boundary`,
+    resumeScreenReadyExpressionV6(),
+    600,
+  );
   const stored = await readBoundary(connection);
   if (
     stored.commandIndex !== returned.commandIndex ||
@@ -2154,21 +2157,17 @@ async function setMediaPreferences(
   await stabilizeBrowserSurface(connection);
 }
 
-async function waitForResumeScreen(connection: Connection): Promise<void> {
-  await waitForExpression(
-    connection,
-    `(() => { const snapshot = globalThis.__PULP_WARS_APP__?.controller.snapshot(); return document.querySelector('.v6-resume-screen') !== null && snapshot?.phase === 'RESUMABLE' && !snapshot.transitioning; })()`,
-    600,
-  );
-}
-
 async function reloadAndResume(
   connection: Connection,
   commandIndex: number,
   stateHash: string | null,
 ): Promise<void> {
-  await connection.send("Page.reload", { ignoreCache: true });
-  await waitForResumeScreen(connection);
+  await reloadAndWaitForFreshDocument(
+    connection,
+    "motion-emulation saved boundary",
+    resumeScreenReadyExpressionV6(),
+    600,
+  );
   await clickSelector(connection, '[data-action="resume"]');
   await waitForHumanBoundary(connection, commandIndex, 900);
   const resumed = await readBoundary(connection);
@@ -2617,6 +2616,41 @@ async function waitForExpression(
   throw new Error(
     `Chrome timed out waiting for: ${expression}. Diagnostic: ${JSON.stringify(diagnostic)}`,
   );
+}
+
+async function reloadAndWaitForFreshDocument(
+  connection: Connection,
+  stage: string,
+  readinessExpression: string,
+  attempts = 300,
+): Promise<void> {
+  reloadDocumentSequence += 1;
+  const marker = `__PULP_WARS_V6_RELOAD_${process.pid}_${reloadDocumentSequence}__`;
+  const before = await evaluate<{
+    readonly url: string;
+    readonly readyState: string;
+    readonly timeOrigin: number;
+  }>(
+    connection,
+    `(() => { globalThis[${JSON.stringify(marker)}] = true; return { url: location.href, readyState: document.readyState, timeOrigin: performance.timeOrigin }; })()`,
+  );
+  await connection.send("Page.reload", { ignoreCache: true });
+  try {
+    await waitForExpression(
+      connection,
+      `globalThis[${JSON.stringify(marker)}] !== true && performance.timeOrigin !== ${JSON.stringify(before.timeOrigin)} && document.readyState === 'complete' && JSON.stringify(new URLSearchParams(location.search).getAll('ruleset')) === '["6"]' && Boolean(${readinessExpression})`,
+      attempts,
+    );
+  } catch (error) {
+    throw new Error(
+      `${stage} did not reach a fresh Ruleset 6 document after reloading ${JSON.stringify(before)}: ${error instanceof Error ? error.message : String(error)}`,
+      { cause: error },
+    );
+  }
+}
+
+function resumeScreenReadyExpressionV6(): string {
+  return `(() => { const snapshot = globalThis.__PULP_WARS_APP__?.controller.snapshot(); return document.querySelector('.v6-resume-screen') !== null && snapshot?.phase === 'RESUMABLE' && !snapshot.transitioning; })()`;
 }
 
 async function waitForTarget(

@@ -2,7 +2,7 @@
   "format": "pulp-wars-ruleset-7-normal-ai-matrix",
   "version": 1,
   "rulesetId": "pulp-wars-poc-7r2",
-  "runtimeFingerprint": "2cc7be54974171897f52f5503b86bd678084bc280d9df3491aabe8b57aa5b950",
+  "runtimeFingerprint": "52b0d0d0b63692b9f49a0d01ca0043d4463fb05051508bb6bb73410d214b5c1e",
   "seed": 0,
   "repeats": 2,
   "expectedCells": 6,

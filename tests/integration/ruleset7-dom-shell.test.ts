@@ -145,6 +145,49 @@ describe("Ruleset 7 DOM shell", () => {
     app.destroy();
   });
 
+  it("labels a completed match without leaving a stale AI thinking status", async () => {
+    const source = new Ruleset7BrowserController({
+      aiProgressScheduler: () => () => {},
+    });
+    const launched = await source.launch(setupV7(2));
+    if (!launched.ok) throw new Error(launched.diagnostic);
+    const initial = source.snapshot();
+    if (initial.view === null) throw new Error("public view missing");
+    const opponent = initial.view.players.find(
+      (player) => player.id !== initial.view?.humanPlayerId,
+    );
+    if (opponent === undefined) throw new Error("opponent missing");
+    const snapshot: Ruleset7BrowserSnapshot = {
+      ...initial,
+      phase: "COMPLETE",
+      view: {
+        ...initial.view,
+        outcome: {
+          kind: "DEFEAT",
+          humanId: initial.view.humanPlayerId,
+          defeatedByPlayerId: opponent.id,
+        },
+      },
+      offeredCommands: [],
+      ai: { ...initial.ai, active: false },
+    };
+    const app = new Ruleset7DomAppView(
+      document,
+      requiredRoot(),
+      fixturePort(source, snapshot, async () => ({
+        accepted: false,
+        reason: "NOT_OFFERED",
+      })),
+      { boardHost: new CapturingBoardHost(), settingsStorage: null },
+    );
+    expect(document.querySelector(".v7-turn-status")?.textContent).toBe(
+      "Match complete",
+    );
+    expect(document.body.textContent).not.toContain("is thinking");
+    app.destroy();
+    source.destroy();
+  });
+
   it("researches only inside Tech, preserves card focus, and shows exact formulas", async () => {
     const app = bootstrapRuleset7App(document, { storage: null });
     requiredInput("v7-seed").value = "2";

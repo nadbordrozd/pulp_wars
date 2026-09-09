@@ -46,7 +46,7 @@ describe("ruleset-7 map adapter", () => {
     },
   );
 
-  it("creates a strict v7 staged state without selecting it in production", () => {
+  it("creates the strict v7 production state with frozen v6 map parity", () => {
     const created = createInitialMapStateV7(setup(3, 16, 41));
     if (!created.ok) throw new Error(created.error.code);
     expect(parseGameStateV7(created.state)).toEqual(created.state);

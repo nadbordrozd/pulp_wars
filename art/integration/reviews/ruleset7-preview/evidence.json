@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS",
+  "rulesetId": "pulp-wars-poc-7r2",
+  "runtimeFingerprint": "5ac3ffd00c5ede87e2410ab94c7c13cd08d33fc772c18bc9d197854b46b0d358",
+  "productionEntry": "src/main.ts",
+  "route": "DEFAULT_NO_RULESET_PARAMETER",
+  "controllerBoundary": "PUBLIC_SNAPSHOT_OFFERED_COMMANDS_AND_PRODUCTION_DOM_CONTROLS_ONLY",
+  "setup": {
+    "seed": 0,
+    "aiCount": 1,
+    "aiMode": "RIVAL",
+    "factions": ["ORIGINAL", "ORIGINAL"]
+  },
+  "outcome": {
+    "outcome": "DEFEAT",
+    "round": 18,
+    "commandIndex": 161,
+    "humanEndTurns": 17,
+    "humanRewardChoices": 0,
+    "policySlices": 9
+  },
+  "persistence": {
+    "launch": true,
+    "restartSameHash": true,
+    "resumeSameCommandIndex": true,
+    "routeOwnedDelete": true,
+    "oldV7KeyPreserved": true,
+    "v6KeyPreserved": true
+  },
+  "compatibility": {
+    "explicitRuleset6OriginalAndCandy": true,
+    "unsupportedRouteTouchesNoStorage": true
+  },
+  "note": "Natural production match: the human used only offered End Turn and reward buttons while the shipped Normal AI played every non-human command.",
+  "artifacts": {
+    "desktop-ai-return.png": "ab24c248831c492ad12498fb11765ce50bbbf8aec98f569afff5d37eb49d2b29",
+    "mobile-ai-return-390-dpr2.png": "e48ebd69b50d46bc3ad93a0c85f0e426abd31093f63b4a74461d322aec44657d",
+    "default-v7-outcome-desktop.png": "3b739f36d6c3958d85bff6f7689fdb8595ea7025dc6314adc31a5f42640223d8",
+    "default-v7-setup-compatibility.png": "30ab7e4e62952c6d72bc2271f1347adef122f03d3596280969361181c5c0340d"
+  }
+}

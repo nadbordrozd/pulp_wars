@@ -78,6 +78,13 @@
   align-self: end;
 }
 
+.v7-compatibility-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  margin-top: 0.75rem;
+}
+
 .v7-preview-fixed-faction {
   grid-column: 1 / -1;
 }

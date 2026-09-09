@@ -53,7 +53,9 @@
     "art:rendering-review": "tsx scripts/art/rendering-review.ts",
     "art:validate": "tsx scripts/art/pixellab.ts validate",
     "diagnose:mountain-live": "tsx scripts/browser-smoke-v6.ts --mountain-live",
-    "smoke:browser": "tsx scripts/browser-smoke-v6.ts",
+    "smoke:browser": "tsx scripts/browser-smoke-v7.ts",
+    "smoke:browser:ruleset7": "tsx scripts/browser-smoke-v7.ts",
+    "smoke:browser:ruleset6": "tsx scripts/browser-smoke-v6.ts",
     "review:ruleset7-ui-polish": "tsx scripts/browser-ui-polish-review-v7.ts",
     "smoke:browser:legacy-v5": "tsx scripts/browser-smoke.ts http://localhost:6173/?legacy-v5=1",
     "review:faction-setup": "tsx scripts/browser-smoke.ts --faction-setup-review",
@@ -66,6 +68,8 @@
     "validate:v4-map": "tsx scripts/validate-v4-map.ts",
     "validate:ruleset6-release": "tsx scripts/validate-ruleset6-release.ts",
     "validate:ruleset6-release:refresh": "tsx scripts/validate-ruleset6-release.ts --refresh-normal --write",
+    "validate:ruleset7-release": "tsx scripts/validate-ruleset7-release.ts",
+    "validate:ruleset7-release:refresh": "tsx scripts/validate-ruleset7-release.ts --write",
     "test": "vitest run",
     "test:watch": "vitest",
     "headless": "tsx src/headless/cli.ts",
@@ -79,11 +83,11 @@
     "eslint": "^10.8.1",
     "jsdom": "^29.1.1",
     "prettier": "^3.9.6",
-    "sharp": "^0.35.3",
+    "sharp": "^0.35.4",
     "tsx": "^4.23.12",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.67.0",
     "vite": "^8.2.1",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   }
 }

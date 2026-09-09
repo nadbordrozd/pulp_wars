@@ -1,0 +1,843 @@
+{
+  "schemaVersion": 1,
+  "rulesetId": "pulp-wars-poc-7r2",
+  "generatedOn": "2026-09-09",
+  "mapMatrix": [
+    {
+      "id": "rival-1ai-11-seed-7122",
+      "aiCount": 1,
+      "aiMode": "RIVAL",
+      "size": 11,
+      "seed": 7122,
+      "mapHash": "2dd2fb58b54c26b5aff52083179bbbb9900cccbf96c1e008e681b3b3608d5ff0",
+      "postGenerationPrngHash": "b43940e69e3e4e992af72dfe4f9d976612e0259a89175868f16ce66b2c9df950",
+      "repeatMatched": true,
+      "frozenV6Parity": true
+    },
+    {
+      "id": "cooperative-1ai-11-seed-7123",
+      "aiCount": 1,
+      "aiMode": "COOPERATIVE",
+      "size": 11,
+      "seed": 7123,
+      "mapHash": "a92a37fa37de4403ffc1299b9c56a3023e7cd3174d118b880eb4f3fbe5865e14",
+      "postGenerationPrngHash": "b7f0ca5de476a7db0ae759ecf47583ccd8b807ad0055db0e9de006fe1a4e4c85",
+      "repeatMatched": true,
+      "frozenV6Parity": true
+    },
+    {
+      "id": "rival-1ai-14-seed-7128",
+      "aiCount": 1,
+      "aiMode": "RIVAL",
+      "size": 14,
+      "seed": 7128,
+      "mapHash": "bbd2e77544be5c3867f16af2e1204bef913cf8f1c5e6b1205a5a6ded340f0762",
+      "postGenerationPrngHash": "51ed3e93036b1079452a453f0abaac5aad17e456123b64fceb96a0a6b4b3a3f7",
+      "repeatMatched": true,
+      "frozenV6Parity": true
+    },
+    {
+      "id": "cooperative-1ai-14-seed-7129",
+      "aiCount": 1,
+      "aiMode": "COOPERATIVE",
+      "size": 14,
+      "seed": 7129,
+      "mapHash": "3506d2fb5aa7d8d67e315dd320b95d19443cf703589324c9ce433195364878d1",
+      "postGenerationPrngHash": "720f6b474917e3fee0703834a790dc23868d49bb00f0cc52bd631a36d87b9101",
+      "repeatMatched": true,
+      "frozenV6Parity": true
+    },
+    {
+      "id": "rival-1ai-16-seed-7132",
+      "aiCount": 1,
+      "aiMode": "RIVAL",
+      "size": 16,
+      "seed": 7132,
+      "mapHash": "1c952ba13647a337d254e5535b1f8b9bb856a86e7cdef9b7912fab64c6b7534a",
+      "postGenerationPrngHash": "71a8f3dee6b41386c5cd9e727ac7c7c28ef434aef1df7a9bfa86e71ae7cadee4",
+      "repeatMatched": true,
+      "frozenV6Parity": true
+    },
+    {
+      "id": "cooperative-1ai-16-seed-7133",
+      "aiCount": 1,
+      "aiMode": "COOPERATIVE",
+      "size": 16,
+      "seed": 7133,
+      "mapHash": "7e65d52acbc5cba61b7d06c6e3784a67af810cc5e5544bae7cdb0900421e63c0",
+      "postGenerationPrngHash": "0910d9e225293fd14477d28615a6aec80ebbacb8cb5ada465cab49c255123760",
+      "repeatMatched": true,
+      "frozenV6Parity": true
+    },
+    {
+      "id": "rival-1ai-20-seed-7140",
+      "aiCount": 1,
+      "aiMode": "RIVAL",
+      "size": 20,
+      "seed": 7140,
+      "mapHash": "64db679f7ff56966b572e6e2c98838cc88bbc6f523e98770084eae0c8c447863",
+      "postGenerationPrngHash": "3c126f99408f9f7d3ccd8eb3feedca2a60f86c224ba9245d12676d5a98f33c19",
+      "repeatMatched": true,
+      "frozenV6Parity": true
+    },
+    {
+      "id": "cooperative-1ai-20-seed-7141",
+      "aiCount": 1,
+      "aiMode": "COOPERATIVE",
+      "size": 20,
+      "seed": 7141,
+      "mapHash": "00eedb30e029f8da3fee5eac573fa60ec3bd7ba1c711c3387b5aedc563fa058e",
+      "postGenerationPrngHash": "90f940674eef984f5f41abeb09ea44a94b53d8aef21b9b8f9d267ced6862a0b7",
+      "repeatMatched": true,
+      "frozenV6Parity": true
+    },
+    {
+      "id": "rival-1ai-25-seed-7150",
+      "aiCount": 1,
+      "aiMode": "RIVAL",
+      "size": 25,
+      "seed": 7150,
+      "mapHash": "a1377a0ebb1fca778706a614b0fa1d2023b77e9e7560c9e94d45ad71db2f4c22",
+      "postGenerationPrngHash": "4cda391c5364367a66459f4d4af49523d64bb91086b3c79680b609f42ef64473",
+      "repeatMatched": true,
+      "frozenV6Parity": true
+    },
+    {
+      "id": "cooperative-1ai-25-seed-7151",
+      "aiCount": 1,
+      "aiMode": "COOPERATIVE",
+      "size": 25,
+      "seed": 7151,
+      "mapHash": "da856455d67cfdd33a4aa9eb6b73aef876ab0cc7edb5288e42da741731c5976d",
+      "postGenerationPrngHash": "ef23a877b1159e70a5a9255cb970c4073f34da5b99016f575cbfa51bcc81bc1e",
+      "repeatMatched": true,
+      "frozenV6Parity": true
+    },
+    {
+      "id": "rival-2ai-14-seed-7228",
+      "aiCount": 2,
+      "aiMode": "RIVAL",
+      "size": 14,
+      "seed": 7228,
+      "mapHash": "d295e3ead1166dd1e7c7923462a59d0170aad754cb8346b4e3cede87deecaf62",
+      "postGenerationPrngHash": "13346591b996722ba033600e0e8102c6d81e4e7d35a5ca693d5ea04f938d8088",
+      "repeatMatched": true,
+      "frozenV6Parity": true
+    },
+    {
+      "id": "cooperative-2ai-14-seed-7229",
+      "aiCount": 2,
+      "aiMode": "COOPERATIVE",
+      "size": 14,
+      "seed": 7229,
+      "mapHash": "1aae2a8310a75f3ead907198d4232e7f16e16c73494908a8e745bf673cfd2e36",
+      "postGenerationPrngHash": "7d13f8f9cc9f5fc6868e521da234a3b6e285c9201ea46116f7b33ae9a03588db",
+      "repeatMatched": true,
+      "frozenV6Parity": true
+    },
+    {
+      "id": "rival-2ai-16-seed-7232",
+      "aiCount": 2,
+      "aiMode": "RIVAL",
+      "size": 16,
+      "seed": 7232,
+      "mapHash": "17721976fef01ca98e5e484cf82cfd722167fec726f8dbef4a080592336604e3",
+      "postGenerationPrngHash": "a6f601f7fbde7141ac5fabeab83bd535d4dbb4f84d44eb46114d29ebb295aea1",
+      "repeatMatched": true,
+      "frozenV6Parity": true
+    },
+    {
+      "id": "cooperative-2ai-16-seed-7233",
+      "aiCount": 2,
+      "aiMode": "COOPERATIVE",
+      "size": 16,
+      "seed": 7233,
+      "mapHash": "2c8dcf0e423c74b56eedc225c0f4bb12208a619d66ae2b7134cc5a51f2b938fa",
+      "postGenerationPrngHash": "c6ca5d7d831e13ef8da87ccb73d314f4ad57d1500bf85e29cb6ca765bf9b0f1e",
+      "repeatMatched": true,
+      "frozenV6Parity": true
+    },
+    {
+      "id": "rival-2ai-20-seed-7240",
+      "aiCount": 2,
+      "aiMode": "RIVAL",
+      "size": 20,
+      "seed": 7240,
+      "mapHash": "90db326b15652e839e7384eb3ef9da5258ffce38e1401d1ceaeef3c0d22bbbe3",
+      "postGenerationPrngHash": "2b833e434ca5b8ef892a7f9b7a7a3446850f95de02d1297ccc754e39ed1a6c6c",
+      "repeatMatched": true,
+      "frozenV6Parity": true
+    },
+    {
+      "id": "cooperative-2ai-20-seed-7241",
+      "aiCount": 2,
+      "aiMode": "COOPERATIVE",
+      "size": 20,
+      "seed": 7241,
+      "mapHash": "a5e5d680037eb795ec7d7ef50d88705a4f33e52c8f1a19bd2552dd25178e3594",
+      "postGenerationPrngHash": "f1988d89ed39f2faae25faf882edc2faad1e4c890a8ea0d55f827c571ab78f22",
+      "repeatMatched": true,
+      "frozenV6Parity": true
+    },
+    {
+      "id": "rival-2ai-25-seed-7250",
+      "aiCount": 2,
+      "aiMode": "RIVAL",
+      "size": 25,
+      "seed": 7250,
+      "mapHash": "b7d79cfcc4688c6b7201b48996ab090869bffb99e333512d1947eff2c45034dc",
+      "postGenerationPrngHash": "b45c5eaee66953739add4949003a22c0cd2b02d2fc6d095c4eb7a21b036e1db5",
+      "repeatMatched": true,
+      "frozenV6Parity": true
+    },
+    {
+      "id": "cooperative-2ai-25-seed-7251",
+      "aiCount": 2,
+      "aiMode": "COOPERATIVE",
+      "size": 25,
+      "seed": 7251,
+      "mapHash": "46899464ee7600a18ea9fbbb8a03876c600e1223c09e457179c8dc326e7cdac5",
+      "postGenerationPrngHash": "ead4ab2cb2b0541eb6f921901a0402050c0fe2d1a9e7f89f98daec26a2991c46",
+      "repeatMatched": true,
+      "frozenV6Parity": true
+    },
+    {
+      "id": "rival-3ai-16-seed-7332",
+      "aiCount": 3,
+      "aiMode": "RIVAL",
+      "size": 16,
+      "seed": 7332,
+      "mapHash": "fd2d268380d381a42c8a4dab32d44e302b88bdcecde5b7e3efe3dcfaf5ea8135",
+      "postGenerationPrngHash": "dfc9e881b587daab4b2ffad37f3c34f1dcb727fd5f4d24a31842af3fee8de6ad",
+      "repeatMatched": true,
+      "frozenV6Parity": true
+    },
+    {
+      "id": "cooperative-3ai-16-seed-7333",
+      "aiCount": 3,
+      "aiMode": "COOPERATIVE",
+      "size": 16,
+      "seed": 7333,
+      "mapHash": "84e0b3061c490fc8983f491b34f52f9be9c52835da08a34ec4877225eec8bf67",
+      "postGenerationPrngHash": "7aa4ad3a63ff1292be8391182594d86837902597ce47d5c4bc023754206e3c23",
+      "repeatMatched": true,
+      "frozenV6Parity": true
+    },
+    {
+      "id": "rival-3ai-20-seed-7340",
+      "aiCount": 3,
+      "aiMode": "RIVAL",
+      "size": 20,
+      "seed": 7340,
+      "mapHash": "79822a60278dd049a55a26d16645bf7e54d600ea7874855925b60b2a2aba03f2",
+      "postGenerationPrngHash": "dd4df3cf376e847812a0498d6fbbfbac445ea379b848d810a59f3da302eb1ab3",
+      "repeatMatched": true,
+      "frozenV6Parity": true
+    },
+    {
+      "id": "cooperative-3ai-20-seed-7341",
+      "aiCount": 3,
+      "aiMode": "COOPERATIVE",
+      "size": 20,
+      "seed": 7341,
+      "mapHash": "88c58da098b5de083d8846f25590e7d99bc114d0804aa495f571abac841c7671",
+      "postGenerationPrngHash": "50e532d3967c318c0d3992ab680a9e817d85ca24cf6edd383381f2c22872b056",
+      "repeatMatched": true,
+      "frozenV6Parity": true
+    },
+    {
+      "id": "rival-3ai-25-seed-7350",
+      "aiCount": 3,
+      "aiMode": "RIVAL",
+      "size": 25,
+      "seed": 7350,
+      "mapHash": "3993709dddb954540c5c2b4eec8511909e1547ca413ace93c30ad23fd32e909d",
+      "postGenerationPrngHash": "783dd44b0786adbd942575ff358005e8b80db2e8994c881d734a9b741d58b0a7",
+      "repeatMatched": true,
+      "frozenV6Parity": true
+    },
+    {
+      "id": "cooperative-3ai-25-seed-7351",
+      "aiCount": 3,
+      "aiMode": "COOPERATIVE",
+      "size": 25,
+      "seed": 7351,
+      "mapHash": "d93191c2e4d99155c635027a3a7b99ec57a997c49c756ea5a3eff80293e3e417",
+      "postGenerationPrngHash": "f94f951b49ac015fbfa616722a2695fe1e40160a1b82c6766d4542da4917be37",
+      "repeatMatched": true,
+      "frozenV6Parity": true
+    }
+  ],
+  "fixtures": [
+    {
+      "id": "foundation-identifiers",
+      "source": "tests/unit/ruleset-v7-foundation.test.ts",
+      "test": "freezes the exact v7 IDs and semantic orders"
+    },
+    {
+      "id": "foundation-setup",
+      "source": "tests/unit/ruleset-v7-foundation.test.ts",
+      "test": "accepts only exact dense all-Original setup"
+    },
+    {
+      "id": "foundation-command-schema",
+      "source": "tests/unit/ruleset-v7-foundation.test.ts",
+      "test": "parses every new command arm with exact keys and rejects v6 arms"
+    },
+    {
+      "id": "foundation-event-schema",
+      "source": "tests/unit/ruleset-v7-foundation.test.ts",
+      "test": "strictly parses canonical v7 event envelopes"
+    },
+    {
+      "id": "foundation-state-schema",
+      "source": "tests/unit/ruleset-v7-foundation.test.ts",
+      "test": "rejects malformed authoritative timers, occupancy, IDs, and cross-references"
+    },
+    {
+      "id": "technology-graph",
+      "source": "tests/unit/ruleset-v7-technology.test.ts",
+      "test": "registers the exact ordered 25-node Original graph and start"
+    },
+    {
+      "id": "technology-formula",
+      "source": "tests/unit/ruleset-v7-technology.test.ts",
+      "test": "uses the exact city-scaled formula without unsafe arithmetic"
+    },
+    {
+      "id": "technology-participation",
+      "source": "tests/unit/ruleset-v7-technology.test.ts",
+      "test": "researches the entire graph for 180 coins without PRNG use"
+    },
+    {
+      "id": "role-rules",
+      "source": "tests/unit/ruleset-v7-technology.test.ts",
+      "test": "binds every Original role to its exact immutable v7 roster values"
+    },
+    {
+      "id": "research-replay",
+      "source": "tests/unit/ruleset-v7-technology.test.ts",
+      "test": "replays supported research commands deterministically and rejects atomically"
+    },
+    {
+      "id": "economy-registration",
+      "source": "tests/unit/ruleset-v7-economy.test.ts",
+      "test": "registers the retained economy and revised Industry values exactly"
+    },
+    {
+      "id": "economy-spatial",
+      "source": "tests/unit/ruleset-v7-economy.test.ts",
+      "test": "retains farm/camp processors, mixed buildings, Market, roads, and forest actions"
+    },
+    {
+      "id": "economy-roads",
+      "source": "tests/unit/ruleset-v7-economy.test.ts",
+      "test": "preserves Roads through free Clear Forest and paid Replant, and builds Roads for 2"
+    },
+    {
+      "id": "economy-negative-population",
+      "source": "tests/unit/ruleset-v7-economy.test.ts",
+      "test": "keeps city level while live loss can drive current population negative"
+    },
+    {
+      "id": "reward-sequential",
+      "source": "tests/unit/ruleset-v7-economy.test.ts",
+      "test": "queues one every-level reward at a time and stops preflight at the modal"
+    },
+    {
+      "id": "reward-level2-offered-contract",
+      "source": "tests/unit/ruleset-v7-pursuit-query.test.ts",
+      "test": "keeps pending reward choice precedence over an open sequence"
+    },
+    {
+      "id": "reward-level3-accepted-and-offered-contract",
+      "source": "tests/unit/ruleset-v7-command-precedence.test.ts",
+      "test": "keeps canonical reward order blocking until the queue drains, then resumes PURSUIT_READY"
+    },
+    {
+      "id": "reward-level4-policy-contract",
+      "source": "tests/unit/ruleset-v7-normal-policy.test.ts",
+      "test": "chooses a safe reward when BOOM would cascade beyond the remaining cap"
+    },
+    {
+      "id": "reward-juggernaut",
+      "source": "tests/unit/ruleset-v7-economy.test.ts",
+      "test": "settles successful Juggernaut rewards sequentially through one modal"
+    },
+    {
+      "id": "reward-treasury",
+      "source": "tests/unit/ruleset-v7-economy.test.ts",
+      "test": "automatically grants Treasury 12 at every blocked level with no ghost queue"
+    },
+    {
+      "id": "economy-level6-repair",
+      "source": "tests/unit/ruleset-v7-economy.test.ts",
+      "test": "repairs the exact level-6 live20 package from floor income without repeating rewards"
+    },
+    {
+      "id": "economy-income-exceptions",
+      "source": "tests/unit/ruleset-v7-economy.test.ts",
+      "test": "floors only nonbesieged pre-Blackout income and keeps suppression bounded"
+    },
+    {
+      "id": "capacity-sources",
+      "source": "tests/unit/ruleset-v7-conflict-capacity.test.ts",
+      "test": "stacks owner Fortification with one adjacent 4-Coin Barracks for two capacity"
+    },
+    {
+      "id": "training",
+      "source": "tests/unit/ruleset-v7-conflict-capacity.test.ts",
+      "test": "trains an unlocked unit at exact cost into available city capacity"
+    },
+    {
+      "id": "overcapacity",
+      "source": "tests/unit/ruleset-v7-conflict-capacity.test.ts",
+      "test": "allows legal over-capacity after hostile Pillage destroys Barracks"
+    },
+    {
+      "id": "resource-restoration",
+      "source": "tests/unit/ruleset-v7-conflict-capacity.test.ts",
+      "test": "restores a production marker once when hostile Pillage destroys its improvement"
+    },
+    {
+      "id": "capacity-reservation",
+      "source": "tests/unit/ruleset-v7-conflict-capacity.test.ts",
+      "test": "cancels ordered capacity reservations immediately after Barracks removal"
+    },
+    {
+      "id": "disband",
+      "source": "tests/unit/ruleset-v7-conflict-capacity.test.ts",
+      "test": "refunds floor half cost for trainable Disband and excludes reward units"
+    },
+    {
+      "id": "spoils",
+      "source": "tests/unit/ruleset-v7-conflict-capacity.test.ts",
+      "test": "awards Spoils once per hostile city and never for neutral villages"
+    },
+    {
+      "id": "achievement-engineer",
+      "source": "tests/unit/ruleset-v7-achievements.test.ts",
+      "test": "unlocks Engineer only from a final individual qualifying output of six"
+    },
+    {
+      "id": "achievement-muster",
+      "source": "tests/unit/ruleset-v7-achievements.test.ts",
+      "test": "counts four distinct living trainable roles for Muster and excludes Juggernaut"
+    },
+    {
+      "id": "monument-lifetime",
+      "source": "tests/unit/ruleset-v7-achievements.test.ts",
+      "test": "spends each entitlement once for a free +3 Monument and allows the other after removal"
+    },
+    {
+      "id": "monument-transfer",
+      "source": "tests/unit/ruleset-v7-achievements.test.ts",
+      "test": "keeps captured provenance current-owner-only without spending captor entitlements"
+    },
+    {
+      "id": "monument-events",
+      "source": "tests/unit/ruleset-v7-achievements.test.ts",
+      "test": "uses exact canonical/player Monument event boundaries and rejects generic Monument provenance"
+    },
+    {
+      "id": "conventional-combat",
+      "source": "tests/unit/ruleset-v7-roster-pursuit.test.ts",
+      "test": "applies ordinary role restrictions, Charge, Breach, Push, and ranged advance"
+    },
+    {
+      "id": "healing-promotion-lifecycle",
+      "source": "tests/unit/ruleset-v7-roster-pursuit.test.ts",
+      "test": "supports Heal, Recover, Wait, Promote, stat attribution, and automatic recovery"
+    },
+    {
+      "id": "pursuit",
+      "source": "tests/unit/ruleset-v7-roster-pursuit.test.ts",
+      "test": "runs the bounded three-attack Pursuit state machine with no side doors"
+    },
+    {
+      "id": "pursuit-persistence",
+      "source": "tests/unit/ruleset-v7-roster-pursuit.test.ts",
+      "test": "round-trips a naturally opened Pursuit through replay and save"
+    },
+    {
+      "id": "defection-timing",
+      "source": "tests/unit/ruleset-v7-defection.test.ts",
+      "test": "gives one complete reply activation and resolves at the later initiator Start Turn (2 seats, 0 -> 1)"
+    },
+    {
+      "id": "defection-city-occupant",
+      "source": "tests/unit/ruleset-v7-defection.test.ts",
+      "test": "converts a city occupant without Capture or Spoils and immediately changes siege"
+    },
+    {
+      "id": "defection-reward-unit",
+      "source": "tests/unit/ruleset-v7-defection.test.ts",
+      "test": "converts Juggernaut through ordinary reserved capacity and preserves all durable fields"
+    },
+    {
+      "id": "defection-cleanup",
+      "source": "tests/unit/ruleset-v7-defection.test.ts",
+      "test": "cancels a converted Envoy's later mark in canonical order and releases its reservation"
+    },
+    {
+      "id": "observation-equivalence",
+      "source": "tests/unit/ruleset-v7-observation.test.ts",
+      "test": "makes observation-equivalent hidden positions byte-identical across every public input"
+    },
+    {
+      "id": "concealed-contact",
+      "source": "tests/unit/ruleset-v7-observation.test.ts",
+      "test": "offers optimistic paths, accepts hidden ZOC contact, consumes movement, and reveals before interruption"
+    },
+    {
+      "id": "safe-debug-boundary",
+      "source": "tests/unit/ruleset-v7-observation.test.ts",
+      "test": "keeps raw hashes behind an explicit spoiler capability while safe logs accept only projected batches"
+    },
+    {
+      "id": "blackout-detection",
+      "source": "tests/unit/ruleset-v7-blackout.test.ts",
+      "test": "allows city-center detection but blocks ordinary, Scout, and third-rival unit detection"
+    },
+    {
+      "id": "blackout-recovery",
+      "source": "tests/unit/ruleset-v7-blackout.test.ts",
+      "test": "caps suppression at three without touching treasury and restores full recovery income"
+    },
+    {
+      "id": "blackout-actions",
+      "source": "tests/unit/ruleset-v7-blackout.test.ts",
+      "test": "blocks development and Train while retaining unit actions and existing capacity"
+    },
+    {
+      "id": "saboteur-innate-pillage",
+      "source": "tests/unit/ruleset-v7-blackout.test.ts",
+      "test": "bypasses Explosives, exposes with the strict PILLAGE arm, and leaves cooldown unchanged"
+    },
+    {
+      "id": "save-replay",
+      "source": "tests/unit/persistence-v7.test.ts",
+      "test": "round-trips a command-bearing v7 save through reducer replay"
+    },
+    {
+      "id": "save-boundary-certificates",
+      "source": "tests/unit/persistence-v7.test.ts",
+      "test": "reuses only exact immutable accepted-boundary identities without changing save bytes"
+    },
+    {
+      "id": "save-v1-v6-incompatible",
+      "source": "tests/unit/persistence-v7.test.ts",
+      "test": "classifies every v1-v6 artifact as incompatible without migration"
+    },
+    {
+      "id": "save-r1-incompatible",
+      "source": "tests/unit/persistence-v7.test.ts",
+      "test": "preserves the r1 development identity as incompatible and never executes it"
+    },
+    {
+      "id": "browser-storage-isolation",
+      "source": "tests/unit/persistence-browser-v7.test.ts",
+      "test": "reads, writes, and deletes only the revision-2 key"
+    },
+    {
+      "id": "browser-old-v7-isolation",
+      "source": "tests/unit/persistence-browser-v7.test.ts",
+      "test": "preserves incompatible r1 bytes and never consults the old development key"
+    },
+    {
+      "id": "normal-public-boundary",
+      "source": "tests/unit/ruleset-v7-normal-policy.test.ts",
+      "test": "keeps authority, reducer, map generation, and PRNG out of policy imports"
+    },
+    {
+      "id": "normal-pursuit",
+      "source": "tests/unit/ruleset-v7-normal-policy.test.ts",
+      "test": "selects the public Pursue, second kill, Pursue, and third kill chain"
+    },
+    {
+      "id": "normal-yielding",
+      "source": "tests/unit/ruleset-v7-normal-policy.test.ts",
+      "test": "yields inside a dense Pursuit tree without changing the frozen result"
+    },
+    {
+      "id": "telemetry-inventory",
+      "source": "tests/unit/ruleset-v7-ai-headless.test.ts",
+      "test": "publishes complete zero-filled command, event, tech, role, and improvement inventories"
+    },
+    {
+      "id": "telemetry-restoration",
+      "source": "tests/unit/ruleset-v7-ai-headless.test.ts",
+      "test": "counts restoration and only the subsequent same-site build as rebuild"
+    },
+    {
+      "id": "telemetry-coins",
+      "source": "tests/unit/ruleset-v7-ai-headless.test.ts",
+      "test": "reconciles every positive coin delta from accepted events"
+    },
+    {
+      "id": "telemetry-catapult",
+      "source": "tests/unit/ruleset-v7-ai-headless.test.ts",
+      "test": "counts explicit and automatic recovery between Catapult volleys"
+    },
+    {
+      "id": "telemetry-pursuit",
+      "source": "tests/unit/ruleset-v7-ai-headless.test.ts",
+      "test": "counts one Pursuit activation once and attributes retaliation to defender role"
+    },
+    {
+      "id": "telemetry-blackout",
+      "source": "tests/unit/ruleset-v7-ai-headless.test.ts",
+      "test": "samples Blackout and exposure once at the actual target turn boundary"
+    },
+    {
+      "id": "asset-inventory",
+      "source": "tests/unit/ruleset7-ui-assets.test.ts",
+      "test": "has explicit resolvable entries for every role, technology and improvement"
+    },
+    {
+      "id": "asset-standard-units",
+      "source": "tests/unit/ruleset7-original-unit-assets.test.ts",
+      "test": "records exact standard geometry, role language, and accepted world hashes"
+    },
+    {
+      "id": "asset-catapult",
+      "source": "tests/unit/ruleset7-catapult-assets.test.ts",
+      "test": "records a new accepted world asset with calibrated siege geometry"
+    },
+    {
+      "id": "asset-buildings",
+      "source": "tests/unit/ruleset7-building-economy-assets.test.ts",
+      "test": "defines exactly four new assets with strict geometry and no Spoils raster"
+    },
+    {
+      "id": "asset-tactical",
+      "source": "tests/unit/ruleset7-tactical-ui-assets.test.ts",
+      "test": "registers every required code-native role with unique static metadata"
+    },
+    {
+      "id": "asset-farms",
+      "source": "tests/unit/ruleset7-farm-assets.test.ts",
+      "test": "records three accepted independent PixelLab recipes with opaque exact footprints"
+    },
+    {
+      "id": "farm-pairing",
+      "source": "tests/unit/ruleset7-farm-assets.test.ts",
+      "test": "pairs canonical same-city revealed cardinal layouts without holes"
+    },
+    {
+      "id": "farm-pairing-boundaries",
+      "source": "tests/unit/ruleset7-farm-assets.test.ts",
+      "test": "recomputes presentation after removal, fog, pillage, or city ownership partition changes"
+    },
+    {
+      "id": "main-menu-resume",
+      "source": "tests/integration/ruleset7-dom-shell.test.ts",
+      "test": "returns a real accepted match boundary to Main menu and resumes it"
+    },
+    {
+      "id": "completed-hud",
+      "source": "tests/integration/ruleset7-dom-shell.test.ts",
+      "test": "labels a completed match without leaving a stale AI thinking status"
+    }
+  ],
+  "inventoryCoverage": {
+    "technologies": {
+      "GATHERING": "technology-participation",
+      "FARMING": "technology-participation",
+      "MILLING": "technology-participation",
+      "CRAFT": "technology-participation",
+      "GRAND_WORKS": "technology-participation",
+      "HUNTING": "technology-participation",
+      "FORESTRY": "technology-participation",
+      "SAWMILLING": "technology-participation",
+      "MARKSMANSHIP": "technology-participation",
+      "FIELDCRAFT": "technology-participation",
+      "SURVEYING": "technology-participation",
+      "MINING": "technology-participation",
+      "METALLURGY": "technology-participation",
+      "QUARRYING": "technology-participation",
+      "MASONRY": "technology-participation",
+      "SCOUTING": "technology-participation",
+      "ROADS": "technology-participation",
+      "COMMERCE": "technology-participation",
+      "RAIDING": "technology-participation",
+      "MANEUVER": "technology-participation",
+      "DRILL": "technology-participation",
+      "FORTIFICATION": "technology-participation",
+      "EXPLOSIVES": "technology-participation",
+      "MEDICINE": "technology-participation",
+      "RECOVERY": "technology-participation"
+    },
+    "roles": {
+      "FIGHTER": "role-rules",
+      "SCOUT": "role-rules",
+      "ENVOY": "role-rules",
+      "MARKSMAN": "role-rules",
+      "GUARD": "role-rules",
+      "RAIDER": "role-rules",
+      "MEDIC": "role-rules",
+      "CATAPULT": "role-rules",
+      "SABOTEUR": "role-rules",
+      "HEAVY": "role-rules",
+      "LANCER": "role-rules",
+      "BREACHER": "role-rules",
+      "JUGGERNAUT": "role-rules"
+    },
+    "improvements": {
+      "FARM": "economy-registration",
+      "LUMBER_CAMP": "economy-registration",
+      "MINE": "economy-registration",
+      "QUARRY": "economy-registration",
+      "WINDMILL": "economy-registration",
+      "SAWMILL": "economy-registration",
+      "FORGE": "economy-registration",
+      "STONEWORKS": "economy-registration",
+      "WORKSHOP": "economy-registration",
+      "GRAND_WORKS": "economy-registration",
+      "MARKET": "economy-registration",
+      "BARRACKS": "economy-registration",
+      "MONUMENT": "monument-lifetime"
+    },
+    "rewards": {
+      "SURVEY": "reward-level2-offered-contract",
+      "STOCKPILE": "reward-level2-offered-contract",
+      "WALLS": "reward-level3-accepted-and-offered-contract",
+      "MILITIA": "reward-level3-accepted-and-offered-contract",
+      "EXPAND": "reward-level4-policy-contract",
+      "BOOM": "reward-level4-policy-contract",
+      "JUGGERNAUT": "reward-juggernaut",
+      "TREASURY": "reward-treasury"
+    }
+  },
+  "mechanicCoverage": {
+    "exactVersionIdentities": "foundation-identifiers",
+    "strictSetupAndOriginalOnly": "foundation-setup",
+    "commandEnvelopeParsing": "foundation-command-schema",
+    "canonicalAndPlayerEventParsing": "foundation-event-schema",
+    "authoritativeStateInvariants": "foundation-state-schema",
+    "technologyFormulaAndGraph": "technology-formula",
+    "all25AcceptedResearchCommands": "technology-participation",
+    "noWildcardRoleImplemented": "role-rules",
+    "replayedResearch": "research-replay",
+    "revisedEconomyFormulas": "economy-registration",
+    "contributorLossAndResumption": "economy-spatial",
+    "roads": "economy-roads",
+    "negativePopulation": "economy-negative-population",
+    "sequentialEveryLevelRewards": "reward-sequential",
+    "juggernautReward": "reward-juggernaut",
+    "treasury12AutomaticFallback": "reward-treasury",
+    "level6Live20Repair": "economy-level6-repair",
+    "incomeFloorSiegeAndBlackout": "economy-income-exceptions",
+    "barracksAndFortificationCapacity": "capacity-sources",
+    "exactRoleTraining": "training",
+    "legalOvercapacity": "overcapacity",
+    "productionMarkerRestoration": "resource-restoration",
+    "reservationCancellation": "capacity-reservation",
+    "disband": "disband",
+    "firstHostileCaptureSpoils": "spoils",
+    "engineerAchievement": "achievement-engineer",
+    "musterAchievement": "achievement-muster",
+    "monumentEntitlementLifetime": "monument-lifetime",
+    "monumentCaptureTransfer": "monument-transfer",
+    "monumentPublicProjection": "monument-events",
+    "combatRoleAbilities": "conventional-combat",
+    "healingPromotionAndLifecycle": "healing-promotion-lifecycle",
+    "pursuitThreeAttackCeilingAndTermination": "pursuit",
+    "pursuitSaveAndReplay": "pursuit-persistence",
+    "defectionSeatTiming": "defection-timing",
+    "defectionCityOccupation": "defection-city-occupant",
+    "defectionRewardUnit": "defection-reward-unit",
+    "defectionMultipleMarkCleanup": "defection-cleanup",
+    "concealmentObservationEquivalence": "observation-equivalence",
+    "hiddenContact": "concealed-contact",
+    "safeLogAndDebugBoundary": "safe-debug-boundary",
+    "blackoutDetection": "blackout-detection",
+    "blackoutSuppressionAndRecovery": "blackout-recovery",
+    "blackoutActionBlocking": "blackout-actions",
+    "saboteurInnatePillage": "saboteur-innate-pillage",
+    "saveReplayRoundTrip": "save-replay",
+    "immutableAcceptedBoundaryCertificates": "save-boundary-certificates",
+    "v1ThroughV6Incompatibility": "save-v1-v6-incompatible",
+    "revision1Incompatibility": "save-r1-incompatible",
+    "revision2BrowserStorageIsolation": "browser-storage-isolation",
+    "oldV7BrowserStorageIsolation": "browser-old-v7-isolation",
+    "normalUsesOnlyPublicInputs": "normal-public-boundary",
+    "normalPursuitSearch": "normal-pursuit",
+    "browserPolicyYielding": "normal-yielding",
+    "completeProductionAssetRegistration": "asset-inventory",
+    "standardUnitArtGeometry": "asset-standard-units",
+    "catapultArtGeometry": "asset-catapult",
+    "buildingAndEconomyArtGeometry": "asset-buildings",
+    "tacticalRasterAndCodeNativeRegistry": "asset-tactical",
+    "farmAcceptedProductionAssets": "asset-farms",
+    "farmCanonicalPairing": "farm-pairing",
+    "farmPairingVisibilityAndOwnershipBoundaries": "farm-pairing-boundaries",
+    "routeOwnedMainMenuResume": "main-menu-resume",
+    "completedMatchStatus": "completed-hud"
+  },
+  "telemetryCoverage": {
+    "completeZeroFilledInventory": "telemetry-inventory",
+    "acceptedRestorationAndRebuildTransitions": "telemetry-restoration",
+    "acceptedCoinEventReconciliation": "telemetry-coins",
+    "acceptedCatapultRecoveryTransitions": "telemetry-catapult",
+    "acceptedPursuitTransitions": "telemetry-pursuit",
+    "acceptedBlackoutAndExposureTransitions": "telemetry-blackout"
+  },
+  "evidence": [
+    {
+      "path": "art/pixellab/reviews/ruleset7-original-units/review-evidence.json",
+      "sha256": "ee393cf18ba13a3ba3921080026437a91957711d56ea3b69ebaa5fad74d328ee",
+      "artifactCount": 14
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset7-catapult/review-evidence.json",
+      "sha256": "468fa274c04645ff2426c2ee2024acc0012896ee597636b5d0c5e4d9188a397e",
+      "artifactCount": 11
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset7-building-economy/review-evidence.json",
+      "sha256": "6be043fdab846211aa6a515e0ef447820d9b8f15a2aea5f940fd5e3e06f0e6e9",
+      "artifactCount": 10
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset7-tactical-ui/review-evidence.json",
+      "sha256": "6df69ad3286e7be473db80947a3a007b99adf6d7dab1f33b5638a9ad26cc1bb1",
+      "artifactCount": 6
+    },
+    {
+      "path": "art/pixellab/reviews/ruleset7-farms/review-evidence.json",
+      "sha256": "4f9e5c8bd1e649ffcd7a3bff4313c4eb723ff775584e5c7dfb327e713338ce9d",
+      "artifactCount": 15
+    },
+    {
+      "path": "art/integration/reviews/ruleset7-tactical-ui/evidence.json",
+      "sha256": "47dcdcf987f38ba09afecab41901fe5bb3a0583c1659d39ca2f0a5e2617eacb3",
+      "artifactCount": 7
+    },
+    {
+      "path": "art/integration/reviews/ruleset7-preview/evidence.json",
+      "sha256": "2bc51b88393182de48e1b98676c45702ac2c78fb1d718440be0c6df0c24f9fd2",
+      "artifactCount": 4
+    },
+    {
+      "path": "art/integration/reviews/ruleset7-core-ui",
+      "sha256": "75c69f45f633e6a16232b467ff79dfe1d93774f65c4186301f6d3dd28bc1e093",
+      "artifactCount": 9
+    },
+    {
+      "path": "art/integration/reviews/ruleset7-farms",
+      "sha256": "e4c3782bde32b295eb40b613e8d0b25c3f09a0d28e17f7d066807b968bcf6637",
+      "artifactCount": 5
+    },
+    {
+      "path": "art/integration/reviews/ruleset7-ui-polish",
+      "sha256": "1a6dc75d04d4b83a704861d88c550becfc97c6626d742fde2cf7841e18cb3366",
+      "artifactCount": 12
+    }
+  ],
+  "normalMatrixPath": "docs/validation/RULESET_7_NORMAL_AI_MATRIX.json",
+  "frozenRuleset6Corpus": {
+    "path": "docs/validation/RULESET_6_RELEASE_CORPUS.json",
+    "sha256": "70a3074be0ac565c7bd5c25a5733796ca7ff262fe8c5931b70bc3d41a90ff77e"
+  }
+}

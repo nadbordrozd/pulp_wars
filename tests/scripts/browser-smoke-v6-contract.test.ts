@@ -4,6 +4,7 @@ import {
   RULESET6_SMOKE_EVIDENCE_SUBJECTS,
   RULESET6_SMOKE_TECH_IDS,
   RULESET6_SMOKE_VIEWPORTS,
+  browserSmokeUrlV6,
   browserSmokeReleaseEvidenceV6,
   coordinateActivationIsVisibleV6,
   coordinateActivationPanStepV6,
@@ -16,6 +17,23 @@ import {
 } from "../../scripts/browser-smoke-v6-contract";
 
 describe("ruleset-6 browser smoke contract", () => {
+  it("selects frozen Ruleset 6 by default while preserving a supplied deployment URL", () => {
+    expect(browserSmokeUrlV6()).toBe(
+      "http://localhost:6173/?ruleset=6&browser-smoke=1",
+    );
+    const supplied = new URL(
+      browserSmokeUrlV6(
+        "https://example.test/pulp_wars/?review=keep&ruleset=7#section",
+      ),
+    );
+    expect(supplied.origin).toBe("https://example.test");
+    expect(supplied.pathname).toBe("/pulp_wars/");
+    expect(supplied.searchParams.get("review")).toBe("keep");
+    expect(supplied.searchParams.getAll("ruleset")).toEqual(["6"]);
+    expect(supplied.searchParams.get("browser-smoke")).toBe("1");
+    expect(supplied.hash).toBe("#section");
+  });
+
   it("brings arbitrary offscreen square coordinates into the pointer-safe Canvas through bounded pan steps", () => {
     const canvas = { width: 390, height: 420 } as const;
     expect(

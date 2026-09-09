@@ -19,24 +19,24 @@ beforeEach(() => {
 });
 
 describe("Ruleset 7 application route", () => {
-  it("keeps default and exact v6 compatibility routing while rejecting unsupported nonempty values", () => {
+  it("makes v7 the production default and keeps exact v6 compatibility while rejecting unsupported values", () => {
     expect(selectBrowserRulesetRoute("", true)).toEqual({
-      kind: "RULESET_6",
+      kind: "RULESET_7",
     });
     expect(selectBrowserRulesetRoute("?ruleset=", true)).toEqual({
-      kind: "RULESET_6",
+      kind: "RULESET_7",
     });
     expect(selectBrowserRulesetRoute("?ruleset=6", true)).toEqual({
       kind: "RULESET_6",
     });
     expect(selectBrowserRulesetRoute("?ruleset=7", true)).toEqual({
-      kind: "RULESET_7_PREVIEW",
+      kind: "RULESET_7",
     });
     expect(selectBrowserRulesetRoute("?legacy-v5=1", true)).toEqual({
       kind: "LEGACY_V5",
     });
     expect(selectBrowserRulesetRoute("?legacy-v5=1", false)).toEqual({
-      kind: "RULESET_6",
+      kind: "RULESET_7",
     });
     expect(selectBrowserRulesetRoute("?ruleset=8", true)).toEqual({
       kind: "UNSUPPORTED",
@@ -60,6 +60,11 @@ describe("Ruleset 7 application route", () => {
     });
     expect(document.body.textContent).toContain("Original-only local conquest");
     expect(document.body.textContent).not.toContain("CANDY");
+    const frozenSix = document.querySelector<HTMLAnchorElement>(
+      '[data-route="ruleset-6"]',
+    );
+    expect(frozenSix?.textContent).toContain("Original or Candy");
+    expect(frozenSix?.getAttribute("href")).toBe("?ruleset=6");
 
     const count = requiredSelect("v7-ai-count");
     const launch = requiredButton('[data-action="launch"]');

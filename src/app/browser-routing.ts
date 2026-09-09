@@ -1,5 +1,5 @@
 export type BrowserRulesetRoute =
-  | { readonly kind: "RULESET_7_PREVIEW" }
+  | { readonly kind: "RULESET_7" }
   | { readonly kind: "RULESET_6" }
   | { readonly kind: "LEGACY_V5" }
   | { readonly kind: "UNSUPPORTED"; readonly value: string };
@@ -14,11 +14,10 @@ export function selectBrowserRulesetRoute(
   if (values.length > 1)
     return { kind: "UNSUPPORTED", value: values.join(",") };
   const value = values[0];
-  if (value === "7") return { kind: "RULESET_7_PREVIEW" };
+  if (value === "7") return { kind: "RULESET_7" };
   if (value === "6") return { kind: "RULESET_6" };
   if (value !== undefined) return { kind: "UNSUPPORTED", value };
   if (development && params.get("legacy-v5") === "1")
     return { kind: "LEGACY_V5" };
-  // The release-default switch belongs to Ruleset-7 release bead 18.
-  return { kind: "RULESET_6" };
+  return { kind: "RULESET_7" };
 }

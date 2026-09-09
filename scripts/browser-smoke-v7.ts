@@ -1,7 +1,10 @@
 import { spawn } from "node:child_process";
-import { mkdir, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
+import { format } from "prettier";
+import { browserReleaseRuntimeFingerprintV7 } from "./ruleset7-browser-release-fingerprint";
 
 interface DebugTarget {
   readonly type: string;
@@ -68,6 +71,15 @@ interface ColdPolicyEvidenceV7 {
   readonly decisionKind: string | null;
 }
 
+interface OutcomeEvidenceV7 {
+  readonly outcome: "VICTORY" | "DEFEAT";
+  readonly round: number;
+  readonly commandIndex: number;
+  readonly humanEndTurns: number;
+  readonly humanRewardChoices: number;
+  readonly policySlices: number;
+}
+
 type Connection = {
   readonly send: (method: string, params?: object) => Promise<unknown>;
   readonly onEvent: (
@@ -76,9 +88,11 @@ type Connection = {
   readonly close: () => void;
 };
 
-const baseUrl =
-  process.argv.slice(2).find((argument) => !argument.startsWith("--")) ??
-  "http://localhost:6173/?ruleset=7";
+const deployed = process.argv.includes("--deployed");
+const baseUrl = smokeUrl(
+  process.argv.slice(2).find((argument) => argument.startsWith("http")) ??
+    "http://localhost:6173/",
+);
 const reviewRoot = path.join(
   process.cwd(),
   "art/integration/reviews/ruleset7-preview",
@@ -160,6 +174,8 @@ try {
       });
     })()`,
   );
+  if (!deployed)
+    await capture(connection, "default-v7-setup-compatibility.png");
   await pointerClick(connection, "#v7-ai-count");
   await pressKey(connection, "ArrowDown", "ArrowDown");
   await pressKey(connection, "Enter", "Enter");
@@ -256,11 +272,13 @@ try {
     })()`,
   );
   validatePreview(preview);
-  await capture(connection, "desktop-ai-return.png");
+  if (!deployed) await capture(connection, "desktop-ai-return.png");
 
-  const cold = await evaluate<ColdPolicyEvidenceV7>(
-    connection,
-    `(async () => {
+  const cold = deployed
+    ? null
+    : await evaluate<ColdPolicyEvidenceV7>(
+        connection,
+        `(async () => {
       const [{ NormalPolicyWorkV7 }] = await Promise.all([
         import('/src/ai/index.ts'),
       ]);
@@ -311,9 +329,9 @@ try {
         decisionKind: decision?.command?.kind ?? null,
       };
     })()`,
-    true,
-  );
-  validateColdPolicy(cold);
+        true,
+      );
+  if (cold !== null) validateColdPolicy(cold);
 
   await connection.send("Emulation.setDeviceMetricsOverride", {
     width: 390,
@@ -348,12 +366,58 @@ try {
       `mobile preview contract failed: ${JSON.stringify(mobile)}`,
     );
   }
-  await capture(connection, "mobile-ai-return-390-dpr2.png");
+  if (!deployed) await capture(connection, "mobile-ai-return-390-dpr2.png");
 
   const firstDebugHash = await evaluate<string>(
     connection,
     `globalThis.__PULP_WARS_APP__.controller.exportDebugBundle({ acknowledgeHiddenInformation: true }).bundle.payload.reproduction.save.stateHash`,
   );
+
+  if (deployed) {
+    const beforeEndTurn = preview.returned.commandIndex;
+    await touchClick(connection, '[data-action="end-turn"]');
+    await waitForExpression(
+      connection,
+      `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const v = s?.view; return s?.phase === 'ACTIVE' && !s.transitioning && !s.ai.active && v?.commandIndex > ${beforeEndTurn} && v.turnOrder[v.activeSeatIndex] === v.humanPlayerId; })()`,
+      900,
+    );
+    const menuBoundary = await evaluate<{
+      readonly commandIndex: number;
+      readonly stateHash: string;
+    }>(
+      connection,
+      `(() => { const controller = globalThis.__PULP_WARS_APP__.controller; return { commandIndex: controller.snapshot().view.commandIndex, stateHash: controller.exportDebugBundle({ acknowledgeHiddenInformation: true }).bundle.payload.reproduction.save.stateHash }; })()`,
+    );
+    await touchClick(connection, '[data-action="main-menu"]');
+    await waitForExpression(
+      connection,
+      `(() => { const snapshot = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const panel = document.querySelector('.v7-front-screen'); const resume = document.querySelector('[data-action="resume"]'); if (snapshot?.phase !== 'RESUMABLE' || snapshot.view === null || !(panel instanceof HTMLElement) || !(resume instanceof HTMLButtonElement) || resume.disabled) return false; const rect = resume.getBoundingClientRect(); return panel.contains(resume) && resume.textContent?.trim() === 'Resume' && rect.width >= 44 && rect.height >= 44 && rect.left >= 0 && rect.top >= 0 && rect.right <= innerWidth && rect.bottom <= innerHeight; })()`,
+    );
+    const resumableBoundary = await evaluate<{
+      readonly commandIndex: number;
+      readonly stateHash: string;
+    }>(
+      connection,
+      `(() => { const controller = globalThis.__PULP_WARS_APP__.controller; return { commandIndex: controller.snapshot().view.commandIndex, stateHash: controller.exportDebugBundle({ acknowledgeHiddenInformation: true }).bundle.payload.reproduction.save.stateHash }; })()`,
+    );
+    if (
+      resumableBoundary.commandIndex !== menuBoundary.commandIndex ||
+      resumableBoundary.stateHash !== menuBoundary.stateHash
+    )
+      throw new Error("Main menu changed the accepted deployed boundary");
+    await touchClick(connection, '[data-action="resume"]');
+    await waitForExpression(
+      connection,
+      `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); return s?.phase === 'ACTIVE' && !s.transitioning && !s.ai.active && s.view?.commandIndex === ${menuBoundary.commandIndex} && s.view.turnOrder[s.view.activeSeatIndex] === s.view.humanPlayerId; })()`,
+    );
+    const resumedHash = await evaluate<string>(
+      connection,
+      `globalThis.__PULP_WARS_APP__.controller.exportDebugBundle({ acknowledgeHiddenInformation: true }).bundle.payload.reproduction.save.stateHash`,
+    );
+    if (resumedHash !== menuBoundary.stateHash)
+      throw new Error("Resume changed the accepted deployed boundary");
+  }
+
   await openCompactSettings(connection);
   await touchClick(connection, '[data-action="restart"]');
   await waitForExpression(
@@ -403,12 +467,87 @@ try {
   )
     throw new Error(`route-owned delete failed: ${JSON.stringify(keys)}`);
 
+  let outcome: OutcomeEvidenceV7 | null = null;
+  let pendingReleaseEvidence: string | null = null;
+  if (!deployed) {
+    await connection.send("Emulation.setDeviceMetricsOverride", {
+      width: 1440,
+      height: 1000,
+      deviceScaleFactor: 1,
+      mobile: false,
+    });
+    await pointerClick(connection, "#v7-seed");
+    await pressKey(connection, "a", "KeyA", 2);
+    await connection.send("Input.insertText", { text: "0" });
+    await pointerClick(connection, '[data-action="launch"]');
+    await waitForExpression(
+      connection,
+      `globalThis.__PULP_WARS_APP__?.controller.snapshot().ai.active === true`,
+      900,
+      10,
+    );
+    await pointerClick(connection, '[data-action="fast-forward"]');
+    outcome = await driveDefaultMatchToOutcome(connection);
+    await waitForExpression(
+      connection,
+      `document.querySelector('[data-v7-region="results"]') !== null`,
+    );
+    await capture(connection, "default-v7-outcome-desktop.png");
+    const artifacts = {
+      "desktop-ai-return.png": await fileSha256(
+        path.join(reviewRoot, "desktop-ai-return.png"),
+      ),
+      "mobile-ai-return-390-dpr2.png": await fileSha256(
+        path.join(reviewRoot, "mobile-ai-return-390-dpr2.png"),
+      ),
+      "default-v7-outcome-desktop.png": await fileSha256(
+        path.join(reviewRoot, "default-v7-outcome-desktop.png"),
+      ),
+      "default-v7-setup-compatibility.png": await fileSha256(
+        path.join(reviewRoot, "default-v7-setup-compatibility.png"),
+      ),
+    };
+    pendingReleaseEvidence = await format(
+      JSON.stringify({
+        schemaVersion: 1,
+        status: "PASS",
+        rulesetId: "pulp-wars-poc-7r2",
+        runtimeFingerprint: browserReleaseRuntimeFingerprintV7(process.cwd()),
+        productionEntry: "src/main.ts",
+        route: "DEFAULT_NO_RULESET_PARAMETER",
+        controllerBoundary:
+          "PUBLIC_SNAPSHOT_OFFERED_COMMANDS_AND_PRODUCTION_DOM_CONTROLS_ONLY",
+        setup: {
+          seed: 0,
+          aiCount: 1,
+          aiMode: "RIVAL",
+          factions: ["ORIGINAL", "ORIGINAL"],
+        },
+        outcome,
+        persistence: {
+          launch: true,
+          restartSameHash: true,
+          resumeSameCommandIndex: true,
+          routeOwnedDelete: true,
+          oldV7KeyPreserved: true,
+          v6KeyPreserved: true,
+        },
+        compatibility: {
+          explicitRuleset6OriginalAndCandy: true,
+          unsupportedRouteTouchesNoStorage: true,
+        },
+        note: "Natural production match: the human used only offered End Turn and reward buttons while the shipped Normal AI played every non-human command.",
+        artifacts,
+      }),
+      { parser: "json" },
+    );
+  }
+
   await evaluate(
     connection,
     `localStorage.removeItem('pulpWars.save.current')`,
   );
-  const explicitSixUrl = routeUrl(baseUrl, "?ruleset=6");
-  await connection.send("Page.navigate", { url: explicitSixUrl });
+  await pointerClick(connection, '[data-route="ruleset-6"]');
   await waitForExpression(
     connection,
     `document.querySelector('[data-v6-setup]') !== null`,
@@ -469,15 +608,88 @@ try {
   await delay(200);
   if (browserErrors.length > 0)
     throw new Error(`browser emitted errors: ${JSON.stringify(browserErrors)}`);
+  if (pendingReleaseEvidence !== null)
+    await writeFile(
+      path.join(reviewRoot, "evidence.json"),
+      pendingReleaseEvidence,
+    );
   const version = (await connection.send("Browser.getVersion")) as {
     readonly product?: string;
   };
   connection.close();
+  const coldSummary =
+    cold === null
+      ? "deployed production bundle (no source/test imports)"
+      : `cold command-1100 policy ${cold.callbacks} callbacks/${cold.hostTicks} host ticks/max ${cold.maximumCallbackMilliseconds.toFixed(1)}ms/${cold.totalMilliseconds.toFixed(1)}ms total`;
+  const outcomeSummary =
+    outcome === null
+      ? "bounded launch/End Turn/resume compatibility probe"
+      : `natural default match ${outcome.outcome} in round ${outcome.round}/${outcome.commandIndex} commands`;
   console.log(
-    `Ruleset-7 preview smoke passed in ${version.product ?? "Chrome"}: production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; cold command-1100 policy ${cold.callbacks} callbacks/${cold.hostTicks} host ticks/max ${cold.maximumCallbackMilliseconds.toFixed(1)}ms/${cold.totalMilliseconds.toFixed(1)}ms total; real pointer/keyboard/touch at desktop and mobile 390x844 DPR2; launch/resume/restart/delete, routing and three-key isolation passed. Screenshots: ${reviewRoot}`,
+    `Ruleset-7 browser smoke passed in ${version.product ?? "Chrome"}: production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed.${deployed ? "" : ` Evidence: ${reviewRoot}`}`,
   );
 } finally {
   browser.kill();
+}
+
+async function driveDefaultMatchToOutcome(
+  connection: Connection,
+): Promise<OutcomeEvidenceV7> {
+  let humanEndTurns = 0;
+  let humanRewardChoices = 0;
+  for (let boundary = 0; boundary < 1_500; boundary += 1) {
+    await waitForExpression(
+      connection,
+      `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const v = s?.view; const actionable = document.querySelector('[data-mandatory-choice] button:not(:disabled), [data-action="end-turn"]:not(:disabled)') !== null; return s?.phase === 'COMPLETE' || (s?.phase === 'ACTIVE' && !s.transitioning && !s.ai.active && v?.turnOrder[v.activeSeatIndex] === v.humanPlayerId && actionable); })()`,
+      1_800,
+    );
+    const state = await evaluate<{
+      readonly phase: string;
+      readonly commandIndex: number;
+      readonly rewardAction: string | null;
+      readonly endTurn: boolean;
+    }>(
+      connection,
+      `(() => { const s = globalThis.__PULP_WARS_APP__.controller.snapshot(); const reward = document.querySelector('[data-mandatory-choice] button:not(:disabled)'); const end = document.querySelector('[data-action="end-turn"]:not(:disabled)'); return { phase: s.phase, commandIndex: s.view?.commandIndex ?? -1, rewardAction: reward instanceof HTMLButtonElement ? reward.dataset.action ?? null : null, endTurn: end instanceof HTMLButtonElement }; })()`,
+    );
+    if (state.phase === "COMPLETE") {
+      const result = await evaluate<OutcomeEvidenceV7>(
+        connection,
+        `(() => { const s = globalThis.__PULP_WARS_APP__.controller.snapshot(); const v = s.view; if (!v?.outcome) throw new Error('Completed match has no public outcome'); return { outcome: v.outcome.kind, round: v.round, commandIndex: v.commandIndex, humanEndTurns: ${humanEndTurns}, humanRewardChoices: ${humanRewardChoices}, policySlices: s.ai.policySlices }; })()`,
+      );
+      if (
+        result.commandIndex <= 0 ||
+        result.round <= 0 ||
+        result.humanEndTurns <= 0 ||
+        result.policySlices <= 0
+      )
+        throw new Error(
+          `Incomplete outcome evidence: ${JSON.stringify(result)}`,
+        );
+      return result;
+    }
+    if (state.rewardAction !== null) {
+      await pointerClick(
+        connection,
+        `[data-action=${JSON.stringify(state.rewardAction)}]`,
+      );
+      humanRewardChoices += 1;
+    } else if (state.endTurn) {
+      await pointerClick(connection, '[data-action="end-turn"]');
+      humanEndTurns += 1;
+    } else {
+      throw new Error(
+        `Human turn exposed neither an offered reward nor End Turn: ${JSON.stringify(state)}`,
+      );
+    }
+  }
+  throw new Error("Default v7 browser match exceeded 1,500 human boundaries");
+}
+
+async function fileSha256(filename: string): Promise<string> {
+  return createHash("sha256")
+    .update(await readFile(filename))
+    .digest("hex");
 }
 
 function validatePreview(evidence: PreviewEvidenceV7): void {
@@ -722,6 +934,13 @@ async function capture(connection: Connection, name: string): Promise<void> {
 function routeUrl(current: string, search: string): string {
   const url = new URL(current);
   url.search = search;
+  return url.href;
+}
+
+function smokeUrl(input: string): string {
+  const url = new URL(input);
+  url.searchParams.delete("ruleset");
+  url.searchParams.set("browser-smoke", "1");
   return url.href;
 }
 

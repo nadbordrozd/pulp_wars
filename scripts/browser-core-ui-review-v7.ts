@@ -163,6 +163,13 @@ try {
   await waitForImages(connection);
   await capture(connection, "core-320-fertile-dock.png");
 
+  await assertActionVisible(connection, '[data-action="compact-menu"]');
+  await touch(connection, '[data-action="compact-menu"]');
+  await waitFor(
+    connection,
+    `document.querySelector('[data-action="compact-menu"]')?.getAttribute('aria-expanded') === 'true'`,
+  );
+  await assertActionVisible(connection, '[data-action="tech"]');
   await touch(connection, '[data-action="tech"]');
   await waitFor(
     connection,

@@ -1,3 +1,14 @@
+export const RULESET6_BROWSER_SMOKE_DEFAULT_URL =
+  "http://localhost:6173/?ruleset=6&browser-smoke=1";
+
+/** Keeps a caller's host, path, and unrelated query while selecting frozen v6. */
+export function browserSmokeUrlV6(requestedUrl?: string): string {
+  const location = new URL(requestedUrl ?? RULESET6_BROWSER_SMOKE_DEFAULT_URL);
+  location.searchParams.set("ruleset", "6");
+  location.searchParams.set("browser-smoke", "1");
+  return location.href;
+}
+
 export const RULESET6_SMOKE_TECH_IDS = [
   "GATHERING",
   "FARMING",

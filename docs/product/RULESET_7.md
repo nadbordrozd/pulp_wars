@@ -1,7 +1,6 @@
 # Pulp Wars Ruleset 7
 
-**Status:** authoritative revision-2 new-match contract; the current partial
-implementation intentionally does not yet satisfy this document
+**Status:** authoritative revision-2 production contract
 
 **Ruleset ID:** `pulp-wars-poc-7r2`
 

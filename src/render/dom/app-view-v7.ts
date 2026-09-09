@@ -410,7 +410,7 @@ export class Ruleset7DomAppView {
       }
       void this.#launch(setup, replace);
     });
-    main.append(form);
+    main.append(form, this.#ruleset6Link());
     return main;
   }
 
@@ -444,7 +444,7 @@ export class Ruleset7DomAppView {
     );
     remove.onclick = () => void this.#deleteSave();
     actions.append(resume, replace, remove);
-    main.append(actions);
+    main.append(actions, this.#ruleset6Link());
     return main;
   }
 
@@ -467,8 +467,24 @@ export class Ruleset7DomAppView {
       "destructive",
     );
     remove.onclick = () => void this.#deleteSave();
-    main.append(remove);
+    main.append(remove, this.#ruleset6Link());
     return main;
+  }
+
+  #ruleset6Link(): HTMLAnchorElement {
+    const link = this.#document.createElement("a");
+    const params = new URLSearchParams({ ruleset: "6" });
+    if (
+      new URLSearchParams(this.#document.defaultView?.location.search).get(
+        "browser-smoke",
+      ) === "1"
+    )
+      params.set("browser-smoke", "1");
+    link.className = "v7-compatibility-link";
+    link.dataset.route = "ruleset-6";
+    link.href = `?${params.toString()}`;
+    link.textContent = "Play frozen Ruleset 6 · Original or Candy";
+    return link;
   }
 
   #renderStableMatch(view: PlayerViewV7): void {
@@ -547,9 +563,11 @@ export class Ruleset7DomAppView {
     const status = text(
       this.#document,
       "p",
-      active?.controller === "HUMAN"
-        ? "Your turn"
-        : `Player ${(active?.seat ?? 0) + 1} is thinking…`,
+      this.#snapshot.phase === "COMPLETE"
+        ? "Match complete"
+        : active?.controller === "HUMAN"
+          ? "Your turn"
+          : `Player ${(active?.seat ?? 0) + 1} is thinking…`,
       "v7-turn-status",
     );
     status.dataset.v7AiProgress = "true";
@@ -1915,7 +1933,7 @@ export class Ruleset7DomAppView {
     );
     const restart = button(this.#document, "Play Again", "restart");
     restart.onclick = () => void this.#restart();
-    result.append(restart);
+    result.append(restart, this.#ruleset6Link());
     return result;
   }
 
