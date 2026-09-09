@@ -4,12 +4,14 @@ import {
   SAVE_STORAGE_KEY_V7,
   appendReplayCommandV7,
   applyCommandV7,
+  cachedAcceptedReplayStateHashV7,
   canonicalHash,
   createPlayableGameV7,
   createReplayV7,
   parseReplayFileV7,
   queryPlayerCommandsV7,
   runReplayV7,
+  isAcceptedStateCertificateV7,
   viewForV7,
   type CommandV7,
   type CoordV7,
@@ -17,7 +19,11 @@ import {
   type MatchSetupV7,
   type ReplayFileV7,
 } from "../../src/engine/index";
-import { createSaveEnvelopeV7, parseSaveV7 } from "../../src/persistence/index";
+import {
+  createSaveEnvelopeV7,
+  parseSaveV7,
+  type SaveInputV7,
+} from "../../src/persistence/index";
 
 const setup: MatchSetupV7 = {
   rulesetId: RULESET_7_ID,
@@ -82,6 +88,198 @@ describe("ruleset-7 save and replay foundation", () => {
     );
     expect(parseSaveV7(JSON.stringify(save))).toEqual({ kind: "VALID", save });
     expect(runReplayV7(replay).state).toEqual(applied.state);
+  });
+
+  it("reuses only exact immutable accepted-boundary identities without changing save bytes", () => {
+    const created = createPlayableGameV7(setup);
+    if (!created.ok) throw new Error(created.error.code);
+    expect(isAcceptedStateCertificateV7(created.state)).toBe(false);
+    const actor = created.state.turnOrder[created.state.activeSeatIndex];
+    if (actor === undefined) throw new Error("active actor missing");
+    const command = { kind: "RESEARCH", tech: "HUNTING" } as const;
+    const applied = applyCommandV7(created.state, actor, command);
+    if (!applied.accepted) throw new Error(applied.error.code);
+    const replay = appendReplayCommandV7(
+      createReplayV7(setup),
+      command,
+      applied.state,
+    );
+    const expectedHash = canonicalHash(applied.state);
+
+    expect(isAcceptedStateCertificateV7(applied.state)).toBe(true);
+    expect(Object.isFrozen(applied.state)).toBe(true);
+    expect(Object.isFrozen(applied.state.board.tiles)).toBe(true);
+    expect(Object.isFrozen(applied.state.board.tiles[0])).toBe(true);
+    expect(Object.isFrozen(replay)).toBe(true);
+    expect(Object.isFrozen(replay.commands)).toBe(true);
+    expect(Object.isFrozen(replay.commands[0])).toBe(true);
+    expect(Object.isFrozen(replay.checkpoints)).toBe(true);
+    expect(Object.isFrozen(replay.checkpoints[0])).toBe(true);
+    expect(cachedAcceptedReplayStateHashV7(replay, applied.state)).toBe(
+      expectedHash,
+    );
+
+    const clonedState = structuredClone(applied.state);
+    const clonedReplay = structuredClone(replay);
+    const shallowFrozenState = Object.freeze(structuredClone(applied.state));
+    const shallowFrozenReplay = Object.freeze(structuredClone(replay));
+    expect(isAcceptedStateCertificateV7(clonedState)).toBe(false);
+    expect(isAcceptedStateCertificateV7(shallowFrozenState)).toBe(false);
+    expect(cachedAcceptedReplayStateHashV7(clonedReplay, applied.state)).toBe(
+      null,
+    );
+    expect(
+      cachedAcceptedReplayStateHashV7(shallowFrozenReplay, applied.state),
+    ).toBe(null);
+    expect(cachedAcceptedReplayStateHashV7(replay, clonedState)).toBe(null);
+    expect(cachedAcceptedReplayStateHashV7(replay, shallowFrozenState)).toBe(
+      null,
+    );
+
+    const savedAt = "2026-09-06T12:30:00.000Z";
+    const cachedSave = createSaveEnvelopeV7(
+      { state: applied.state, replay },
+      savedAt,
+    );
+    let certifiedStateReads = 0;
+    let certifiedReplayReads = 0;
+    const certifiedThenMalformed: SaveInputV7 = {
+      get state() {
+        certifiedStateReads += 1;
+        return certifiedStateReads === 1
+          ? applied.state
+          : ({ schemaVersion: 7 } as GameStateV7);
+      },
+      get replay() {
+        certifiedReplayReads += 1;
+        return certifiedReplayReads === 1
+          ? replay
+          : ({ format: "pulp-wars-replay" } as ReplayFileV7);
+      },
+    };
+    expect(
+      JSON.stringify(createSaveEnvelopeV7(certifiedThenMalformed, savedAt)),
+    ).toBe(JSON.stringify(cachedSave));
+    expect(certifiedStateReads).toBe(1);
+    expect(certifiedReplayReads).toBe(1);
+
+    const fullyValidatedSave = createSaveEnvelopeV7(
+      { state: clonedState, replay: clonedReplay },
+      savedAt,
+    );
+    expect(JSON.stringify(cachedSave)).toBe(JSON.stringify(fullyValidatedSave));
+    expect(
+      JSON.stringify(
+        createSaveEnvelopeV7(
+          { state: shallowFrozenState, replay: clonedReplay },
+          savedAt,
+        ),
+      ),
+    ).toBe(JSON.stringify(cachedSave));
+
+    let untrustedStateReads = 0;
+    let untrustedReplayReads = 0;
+    const malformedThenCertified: SaveInputV7 = {
+      get state() {
+        untrustedStateReads += 1;
+        return untrustedStateReads === 1
+          ? ({ schemaVersion: 7 } as GameStateV7)
+          : applied.state;
+      },
+      get replay() {
+        untrustedReplayReads += 1;
+        return untrustedReplayReads === 1
+          ? ({ format: "pulp-wars-replay" } as ReplayFileV7)
+          : replay;
+      },
+    };
+    expect(() => createSaveEnvelopeV7(malformedThenCertified, savedAt)).toThrow(
+      "Invalid ruleset-7 save input",
+    );
+    expect(untrustedStateReads).toBe(1);
+    expect(untrustedReplayReads).toBe(1);
+
+    const malformedCommandReplay = structuredClone(replay) as unknown as {
+      commands: Array<{ kind: string }>;
+    };
+    const firstCommand = malformedCommandReplay.commands[0];
+    if (firstCommand === undefined) throw new Error("first command missing");
+    firstCommand.kind = "UNTRUSTED_COMMAND";
+    expect(() =>
+      createSaveEnvelopeV7(
+        {
+          state: applied.state,
+          replay: malformedCommandReplay as unknown as ReplayFileV7,
+        },
+        savedAt,
+      ),
+    ).toThrow("Invalid ruleset-7 save input");
+
+    const malformedCheckpointReplay = structuredClone(replay) as unknown as {
+      checkpoints: Array<{ index: number }>;
+    };
+    const firstCheckpoint = malformedCheckpointReplay.checkpoints[0];
+    if (firstCheckpoint === undefined)
+      throw new Error("first checkpoint missing");
+    firstCheckpoint.index = 99;
+    expect(() =>
+      createSaveEnvelopeV7(
+        {
+          state: applied.state,
+          replay: malformedCheckpointReplay as unknown as ReplayFileV7,
+        },
+        savedAt,
+      ),
+    ).toThrow("Invalid ruleset-7 save input");
+
+    const malformedSetupReplay = structuredClone(replay) as unknown as {
+      setup: { rulesetId: string };
+    };
+    malformedSetupReplay.setup.rulesetId = "pulp-wars-poc-7";
+    expect(() =>
+      createSaveEnvelopeV7(
+        {
+          state: applied.state,
+          replay: malformedSetupReplay as unknown as ReplayFileV7,
+        },
+        savedAt,
+      ),
+    ).toThrow("Invalid ruleset-7 save input");
+
+    const nextApplied = applyCommandV7(applied.state, actor, {
+      kind: "END_TURN",
+    });
+    if (!nextApplied.accepted) throw new Error(nextApplied.error.code);
+    const nextReplay = appendReplayCommandV7(
+      replay,
+      { kind: "END_TURN" },
+      nextApplied.state,
+    );
+    expect(cachedAcceptedReplayStateHashV7(replay, nextApplied.state)).toBe(
+      null,
+    );
+    expect(cachedAcceptedReplayStateHashV7(nextReplay, applied.state)).toBe(
+      null,
+    );
+    expect(cachedAcceptedReplayStateHashV7(nextReplay, nextApplied.state)).toBe(
+      canonicalHash(nextApplied.state),
+    );
+
+    const mutatedState = structuredClone(applied.state) as unknown as {
+      players: Array<{ coins: number }>;
+    };
+    const firstPlayer = mutatedState.players[0];
+    if (firstPlayer === undefined) throw new Error("first player missing");
+    firstPlayer.coins = -1;
+    expect(() =>
+      createSaveEnvelopeV7(
+        {
+          state: mutatedState as unknown as GameStateV7,
+          replay,
+        },
+        savedAt,
+      ),
+    ).toThrow("Invalid ruleset-7 save input");
   });
 
   it("naturally replays an offered, armed, and resolved Defection through save", () => {

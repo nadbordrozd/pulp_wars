@@ -144,6 +144,16 @@ export type CreatePlayableGameResultV7 =
 
 const BASIC_KINDS = new Set<string>(Object.keys(BASIC_ECONOMIC_ACTIONS_V7));
 const SPATIAL_KINDS = new Set<string>(Object.keys(SPATIAL_ECONOMIC_ACTIONS_V7));
+const acceptedStateCertificatesV7 = new WeakSet<object>();
+
+/**
+ * Reports only states returned by this reducer at a completed accepted
+ * boundary. Certificates are identity-bound and cannot be supplied by a
+ * caller, so parsed external values continue through the strict parser.
+ */
+export function isAcceptedStateCertificateV7(state: GameStateV7): boolean {
+  return acceptedStateCertificatesV7.has(state);
+}
 
 export function createPlayableGameV7(
   setup: MatchSetupV7,
@@ -3416,7 +3426,9 @@ function accepted(
   state: GameStateV7,
   events: readonly DomainEventV7[],
 ): ApplyCommandResultV7 {
-  return { accepted: true, state: deepFreeze(state), events };
+  const frozen = deepFreeze(state);
+  acceptedStateCertificatesV7.add(frozen);
+  return { accepted: true, state: frozen, events };
 }
 function rejected(
   state: GameStateV7,

@@ -1,6 +1,11 @@
 import { canonicalHash, canonicalJson } from "../replay/canonical";
+import { deepFreeze } from "../model/freeze";
 import { parseCommandV7, type CommandV7 } from "./commands";
-import { applyCommandV7, createPlayableGameV7 } from "./reducer";
+import {
+  applyCommandV7,
+  createPlayableGameV7,
+  isAcceptedStateCertificateV7,
+} from "./reducer";
 import {
   hasExactKeysV7,
   isDenseArrayV7,
@@ -49,16 +54,42 @@ export interface ReplayRunResultV7 {
   readonly stateHash: string;
 }
 
+interface AcceptedReplayBoundaryCertificateV7 {
+  readonly state: GameStateV7;
+  readonly stateHash: string;
+}
+
+const internalReplayCertificatesV7 = new WeakSet<ReplayFileV7>();
+const acceptedReplayBoundaryCertificatesV7 = new WeakMap<
+  ReplayFileV7,
+  AcceptedReplayBoundaryCertificateV7
+>();
+
+/**
+ * Returns the already-computed checkpoint hash only for the exact immutable
+ * state/replay pair produced by appendReplayCommandV7. Structurally equal,
+ * cloned, shallow-frozen, or mismatched external values never qualify.
+ */
+export function cachedAcceptedReplayStateHashV7(
+  replay: ReplayFileV7,
+  state: GameStateV7,
+): string | null {
+  const certificate = acceptedReplayBoundaryCertificatesV7.get(replay);
+  return certificate?.state === state ? certificate.stateHash : null;
+}
+
 export function createReplayV7(input: unknown): ReplayFileV7 {
   const setup = parseMatchSetupV7(input);
   if (setup === null) throw new RangeError("INVALID_SETUP");
-  return {
+  const replay = deepFreeze({
     format: "pulp-wars-replay",
     version: 7,
     setup,
     commands: [],
     checkpoints: [],
-  };
+  } as const);
+  internalReplayCertificatesV7.add(replay);
+  return replay;
 }
 
 export function appendReplayCommandV7(
@@ -66,25 +97,40 @@ export function appendReplayCommandV7(
   commandInput: unknown,
   stateInput: unknown,
 ): ReplayFileV7 {
-  const replay = parseReplayFileV7(replayInput);
+  const certifiedReplay = internalReplayCertificatesV7.has(
+    replayInput as ReplayFileV7,
+  )
+    ? (replayInput as ReplayFileV7)
+    : null;
+  const parsedReplay =
+    certifiedReplay === null ? parseReplayFileV7(replayInput) : null;
   const command = parseCommandV7(commandInput);
-  const state = parseGameStateV7(stateInput);
+  const state = isAcceptedStateCertificateV7(stateInput as GameStateV7)
+    ? (stateInput as GameStateV7)
+    : parseGameStateV7(stateInput);
+  const replay =
+    certifiedReplay ??
+    (parsedReplay?.kind === "VALID" ? parsedReplay.replay : null);
   if (
-    replay.kind !== "VALID" ||
+    replay === null ||
     !command.ok ||
     state === null ||
-    state.commandIndex !== replay.replay.commands.length + 1 ||
-    canonicalJson(state.setup) !== canonicalJson(replay.replay.setup)
+    state.commandIndex !== replay.commands.length + 1 ||
+    canonicalJson(state.setup) !== canonicalJson(replay.setup)
   )
     throw new RangeError("INVALID_REPLAY");
-  return {
-    ...replay.replay,
-    commands: [...replay.replay.commands, command.value],
+  const stateHash = canonicalHash(state);
+  const nextReplay = deepFreeze({
+    ...replay,
+    commands: [...replay.commands, command.value],
     checkpoints: [
-      ...replay.replay.checkpoints,
-      { index: state.commandIndex, stateHash: canonicalHash(state) },
+      ...replay.checkpoints,
+      { index: state.commandIndex, stateHash },
     ],
-  };
+  });
+  internalReplayCertificatesV7.add(nextReplay);
+  acceptedReplayBoundaryCertificatesV7.set(nextReplay, { state, stateHash });
+  return nextReplay;
 }
 
 export function parseReplayFileV7(input: unknown): ReplayParseResultV7 {

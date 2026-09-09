@@ -980,8 +980,13 @@ function safeDiagnosticV7(error: unknown): string {
   return error instanceof Error ? error.message : "Unknown controller error";
 }
 
+const deeplyFrozenBrowserValuesV7 = new WeakSet<object>();
+
 function freezeBrowserValueV7<T>(value: T): T {
   if (typeof value !== "object" || value === null) return value;
+  if (deeplyFrozenBrowserValuesV7.has(value)) return value;
   for (const child of Object.values(value)) freezeBrowserValueV7(child);
-  return Object.isFrozen(value) ? value : Object.freeze(value);
+  const frozen = Object.isFrozen(value) ? value : Object.freeze(value);
+  deeplyFrozenBrowserValuesV7.add(frozen);
+  return frozen;
 }

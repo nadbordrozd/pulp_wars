@@ -1,6 +1,7 @@
 import {
   RULESET_7_ID,
   SAVE_STORAGE_KEY_V7,
+  cachedAcceptedReplayStateHashV7,
   canonicalHash,
   canonicalJson,
   hasExactKeysV7,
@@ -44,13 +45,27 @@ export function createSaveEnvelopeV7(
   input: SaveInputV7,
   savedAt: string,
 ): SaveEnvelopeV7 {
-  const state = parseGameStateV7(input.state);
-  const replay = parseReplayFileV7(input.replay);
+  const stateInput = input.state;
+  const replayInput = input.replay;
+  const cachedStateHash = cachedAcceptedReplayStateHashV7(
+    replayInput,
+    stateInput,
+  );
+  const state =
+    cachedStateHash === null ? parseGameStateV7(stateInput) : stateInput;
+  const parsedReplay =
+    cachedStateHash === null ? parseReplayFileV7(replayInput) : null;
+  const replay =
+    cachedStateHash === null
+      ? parsedReplay?.kind === "VALID"
+        ? parsedReplay.replay
+        : null
+      : replayInput;
   if (
     state === null ||
-    replay.kind !== "VALID" ||
-    replay.replay.commands.length !== state.commandIndex ||
-    canonicalJson(replay.replay.setup) !== canonicalJson(state.setup) ||
+    replay === null ||
+    replay.commands.length !== state.commandIndex ||
+    canonicalJson(replay.setup) !== canonicalJson(state.setup) ||
     !iso(savedAt)
   )
     throw new RangeError("Invalid ruleset-7 save input");
@@ -61,9 +76,9 @@ export function createSaveEnvelopeV7(
     setup: state.setup,
     state,
     randomState: state.random,
-    acceptedCommands: [...replay.replay.commands],
+    acceptedCommands: [...replay.commands],
     commandIndex: state.commandIndex,
-    stateHash: canonicalHash(state),
+    stateHash: cachedStateHash ?? canonicalHash(state),
     savedAt,
   };
 }
