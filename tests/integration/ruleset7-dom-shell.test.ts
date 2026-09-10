@@ -110,7 +110,7 @@ describe("Ruleset 7 DOM shell", () => {
     expect(symbol.textContent).toBe("");
   });
 
-  it("keeps settings route-scoped and exposes spoiler-safe export labels", async () => {
+  it("keeps settings route-scoped, exposes spoiler-safe export labels, and reports current save deletion", async () => {
     const app = bootstrapRuleset7App(document, { storage: null });
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
@@ -124,6 +124,15 @@ describe("Ruleset 7 DOM shell", () => {
     expect(
       requiredButton('[data-action="export-debug-with-spoilers"]').ariaLabel,
     ).toContain("hidden map and units");
+    requiredButton('[data-action="delete-save"]').click();
+    await waitUntil(
+      () =>
+        document.querySelector("#v7-live")?.textContent ===
+        "Only the Ruleset 7 revision-3 save was deleted.",
+    );
+    expect(document.querySelector("#v7-live")?.textContent).toBe(
+      "Only the Ruleset 7 revision-3 save was deleted.",
+    );
     app.destroy();
   });
 

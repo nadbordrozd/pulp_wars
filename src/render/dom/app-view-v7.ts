@@ -2007,7 +2007,7 @@ export class Ruleset7DomAppView {
     if (deleted) {
       this.#selection = null;
       this.#screen = "MATCH";
-      this.#notice = "Only the Ruleset 7 revision-2 save was deleted.";
+      this.#notice = "Only the Ruleset 7 revision-3 save was deleted.";
     } else this.#error = "The Ruleset 7 save could not be deleted.";
     this.#render();
   }
