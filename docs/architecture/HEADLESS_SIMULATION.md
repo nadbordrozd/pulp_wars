@@ -3,7 +3,13 @@
 The headless entry point runs replay verification and complete equal-rules
 Normal-policy matches without DOM or Canvas imports.
 
-## Ruleset-7 revision-2 active contract
+## Ruleset-7 revision-2 historical implementation contract
+
+The commands, identifiers, inventory counts, and checked matrix below describe
+the historical revision-2 implementation. They are not revision-3 evidence.
+The authoritative revision-3 headless and telemetry contract is
+[Ruleset 7](../product/RULESET_7.md#10-normal-ai-scheduling-headless-and-telemetry)
+and supersedes conflicting revision-2 details here for subsequent implementation.
 
 Ruleset 7 is selected explicitly as `pulp-wars-poc-7r2`; the v6 CLI default is
 unchanged. Match creation uses the canonical playable boundary: map generation

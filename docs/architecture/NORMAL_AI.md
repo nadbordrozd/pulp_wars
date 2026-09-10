@@ -1,6 +1,12 @@
 # Greedy Normal AI
 
-## Ruleset-7 revision-2 policy
+## Ruleset-7 revision-2 policy (historical implementation)
+
+This section documents the historical revision-2 implementation and evidence.
+It is not the revision-3 policy contract. The authoritative revision-3 Horse
+Archer, reduced economy, command, and telemetry requirements are in
+[Ruleset 7](../product/RULESET_7.md#10-normal-ai-scheduling-headless-and-telemetry)
+and supersede conflicting revision-2 details here for subsequent implementation.
 
 Ruleset 7 Normal is a deterministic, PRNG-free policy over `PlayerViewV7`,
 `queryAiReadyCommandsV7`, and public query/preview results. It does not import

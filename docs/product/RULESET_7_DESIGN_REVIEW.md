@@ -1,13 +1,19 @@
 # Ruleset 7 Design Review
 
+**Historical status:** this review records revision 2. The authoritative
+[Ruleset 7 revision-3 prototype](RULESET_7.md) supersedes its gameplay
+decisions; the evidence and rejected alternatives below remain unchanged for
+provenance.
+
 **Decision:** revise the authoritative Original contract as Ruleset 7 revision
 2, with exact ruleset ID `pulp-wars-poc-7r2` and faction tree
 `ORIGINAL_BASELINE_V3`.
 
-**Authority:** [Pulp Wars Ruleset 7](RULESET_7.md) contains the resulting exact
-rules. This report records objectives, evidence, judgments, and implementation
-impact. The [original redesign proposal](ORIGINAL_TECH_TREE_REDESIGN_PROPOSAL.md)
-is historical and retains its old numbers for provenance.
+**Historical authority:** this report records the objectives, evidence,
+judgments, and implementation impact that produced revision 2. The current
+[Pulp Wars Ruleset 7](RULESET_7.md) is revision 3. The
+[original redesign proposal](ORIGINAL_TECH_TREE_REDESIGN_PROPOSAL.md) is also
+historical and retains its old numbers for provenance.
 
 **Scope:** Original only. Ruleset 6, its release corpus, and Candy remain
 unchanged. This was a design and documentation review; no runtime code, tests,

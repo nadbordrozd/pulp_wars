@@ -946,6 +946,11 @@ env(safe-area-inset-bottom))` and its own vertical overflow. The map remains
 pannable behind every non-modal dock. ResizeObserver callbacks caused only by a
 dock are forbidden from entering Canvas resize logic.
 
+The following paragraph describes the historical Ruleset-7 revision-2
+implementation. The authoritative revision-3 interaction changes are in
+[Ruleset 7](../product/RULESET_7.md#11-domcanvas-interaction-contract) and
+supersede conflicting revision-2 content for subsequent implementation.
+
 Ruleset 7 revision 2 keeps the fixed Canvas and non-modal dock layering but
 broadens that dock-only overflow exception: compact-width, 200% UI-scale, or a
 viewer-safe late-game command set whose natural wrapping would otherwise make

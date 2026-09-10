@@ -1,12 +1,16 @@
 # Ruleset 7 release validation
 
-**Status:** final acceptance passed for `pulp-wars-poc-7r2`. Runtime candidate
+**Status:** historical revision-2 evidence; final acceptance passed for
+`pulp-wars-poc-7r2`. This evidence is not current for the authoritative
+[revision-3 prototype](../product/RULESET_7.md) and must not be relabeled or
+refreshed as revision-3 evidence. Runtime candidate
 `7831cc95bcba4b5938d414d817744c7e2ee34ca2` is published on `main`, verified on
 `origin/main`, deployed successfully to GitHub Pages, and verified through the
 actual production URL.
 
-Ruleset 7 is the normal browser default and the supported Original-faction
-game. Exact `?ruleset=7` selects the same contract. Frozen Ruleset 6 remains a
+For that revision-2 release, Ruleset 7 was the normal browser default and the
+supported Original-faction game. Exact `?ruleset=7` selected the same contract.
+Frozen Ruleset 6 remains a
 discoverable compatibility game at exact `?ruleset=6`, including Candy setup
 and its historical save. Development-only `?legacy-v5=1` remains available to
 the retained legacy smoke.
