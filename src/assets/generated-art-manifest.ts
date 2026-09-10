@@ -287,6 +287,27 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
     "assets/pixellab/ui/tech-fortification.png",
   ),
   "ui-tech-recovery": publicArtUrl("assets/pixellab/ui/tech-recovery.png"),
+  "terrain-ruleset7-original-grass-1": publicArtUrl(
+    "assets/pixellab/terrain-ruleset7/original-grass-1.png",
+  ),
+  "terrain-ruleset7-original-grass-2": publicArtUrl(
+    "assets/pixellab/terrain-ruleset7/original-grass-2.png",
+  ),
+  "terrain-ruleset7-original-grass-3": publicArtUrl(
+    "assets/pixellab/terrain-ruleset7/original-grass-3.png",
+  ),
+  "terrain-ruleset7-original-forest-1": publicArtUrl(
+    "assets/pixellab/terrain-ruleset7/original-forest-1.png",
+  ),
+  "terrain-ruleset7-original-forest-2": publicArtUrl(
+    "assets/pixellab/terrain-ruleset7/original-forest-2.png",
+  ),
+  "terrain-ruleset7-original-forest-3": publicArtUrl(
+    "assets/pixellab/terrain-ruleset7/original-forest-3.png",
+  ),
+  "terrain-ruleset7-original-forest-4": publicArtUrl(
+    "assets/pixellab/terrain-ruleset7/original-forest-4.png",
+  ),
   "terrain-square-original-grass-1": publicArtUrl(
     "assets/pixellab/terrain-square/original-grass-1.png",
   ),
@@ -392,6 +413,9 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   ),
   "building-square-windmill": publicArtUrl(
     "assets/pixellab/buildings-square/windmill.png",
+  ),
+  "building-ruleset7-lumber-camp": publicArtUrl(
+    "assets/pixellab/buildings-ruleset7/lumber-camp.png",
   ),
   "building-square-lumber-camp": publicArtUrl(
     "assets/pixellab/buildings-square/lumber-camp.png",

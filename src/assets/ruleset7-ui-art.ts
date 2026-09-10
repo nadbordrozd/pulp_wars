@@ -76,7 +76,7 @@ export const RULESET7_TECH_ART_IDS = {
 
 export const RULESET7_IMPROVEMENT_ART_IDS = {
   FARM: RULESET7_FARM_ART_IDS.SINGLE,
-  LUMBER_CAMP: "building-square-lumber-camp",
+  LUMBER_CAMP: "building-ruleset7-lumber-camp",
   MINE: "building-square-mine",
   QUARRY: "building-square-quarry",
   WINDMILL: "building-square-windmill",
@@ -99,8 +99,8 @@ export const RULESET7_RESOURCE_ART_IDS = {
 } as const satisfies Readonly<Record<ResourceIdV7, string>>;
 
 export const RULESET7_TERRAIN_ART_IDS = {
-  GRASS: "terrain-square-original-grass-1",
-  FOREST: "terrain-square-original-forest-1",
+  GRASS: "terrain-ruleset7-original-grass-1",
+  FOREST: "terrain-ruleset7-original-forest-1",
   MOUNTAIN: "terrain-square-original-mountain-1",
 } as const satisfies Readonly<Record<TerrainIdV7, string>>;
 

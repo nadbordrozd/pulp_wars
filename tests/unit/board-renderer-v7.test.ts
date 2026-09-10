@@ -66,9 +66,10 @@ describe("Ruleset 7 board renderer", () => {
     expect(
       plan.entries.find((entry) => entry.key === `unit:${owned?.id}`),
     ).toMatchObject({ ownerColor: "#f06762", ownerSeat: 0 });
-    for (let index = 1; index < plan.entries.length; index += 1) {
-      const prior = plan.entries[index - 1];
-      const next = plan.entries[index];
+    const worldEntries = plan.entries.filter((entry) => entry.kind !== "VALUE");
+    for (let index = 1; index < worldEntries.length; index += 1) {
+      const prior = worldEntries[index - 1];
+      const next = worldEntries[index];
       expect(
         prior === undefined ||
           next === undefined ||
@@ -97,7 +98,7 @@ describe("Ruleset 7 board renderer", () => {
       overlap.findIndex((entry) => entry.kind === "IMPROVEMENT"),
     ).toBeLessThan(overlap.findIndex((entry) => entry.kind === "ROAD"));
     const forestIndex = plan.entries.findIndex(
-      (entry) => entry.assetId === "terrain-square-original-forest-1",
+      (entry) => entry.assetId === "terrain-ruleset7-original-forest-1",
     );
     const gameIndex = plan.entries.findIndex(
       (entry) =>
@@ -120,13 +121,122 @@ describe("Ruleset 7 board renderer", () => {
     expect(plan.targets.every((target) => target.at !== undefined)).toBe(true);
   });
 
+  it("suppresses only the same-cell Forest canopy for Camp, Windmill, and Sawmill and restores it after removal", () => {
+    const state = exploredAllV7(initialV7(1517));
+    const base = viewForV7(state, state.humanPlayerId);
+    const improvements = ["LUMBER_CAMP", "WINDMILL", "SAWMILL", null] as const;
+    const view = {
+      ...base,
+      board: {
+        ...base.board,
+        tiles: base.board.tiles.map((tile) => {
+          const index = improvements.findIndex(
+            (_improvement, candidate) =>
+              tile.at.x === candidate && tile.at.y === 0,
+          );
+          return index >= 0 && tile.explored
+            ? {
+                ...tile,
+                terrain: "FOREST" as const,
+                resource: null,
+                improvement: improvements[index] ?? null,
+              }
+            : tile;
+        }),
+      },
+    };
+    const plan = buildBoardRenderPlanV7(view, [], {
+      selection: null,
+      selectedUnitId: null,
+      selectedAchievement: null,
+    });
+    for (let x = 0; x < 3; x += 1)
+      expect(
+        plan.entries.find(
+          (entry) =>
+            entry.kind === "TERRAIN" && entry.at.x === x && entry.at.y === 0,
+        )?.assetId,
+      ).toBe("terrain-ruleset7-original-grass-1");
+    expect(
+      plan.entries.find(
+        (entry) =>
+          entry.kind === "TERRAIN" && entry.at.x === 3 && entry.at.y === 0,
+      )?.assetId,
+    ).toMatch(/^terrain-ruleset7-original-forest-/);
+    expect(
+      view.board.tiles
+        .filter((tile) => tile.explored && tile.at.y === 0 && tile.at.x < 4)
+        .every((tile) => tile.explored && tile.terrain === "FOREST"),
+    ).toBe(true);
+    const removedView = {
+      ...view,
+      board: {
+        ...view.board,
+        tiles: view.board.tiles.map((tile) =>
+          tile.explored && tile.at.x === 0 && tile.at.y === 0
+            ? { ...tile, improvement: null }
+            : tile,
+        ),
+      },
+    };
+    const restoredPlan = buildBoardRenderPlanV7(removedView, [], {
+      selection: null,
+      selectedUnitId: null,
+      selectedAchievement: null,
+    });
+    expect(
+      restoredPlan.entries.find(
+        (entry) =>
+          entry.kind === "TERRAIN" && entry.at.x === 0 && entry.at.y === 0,
+      )?.assetId,
+    ).toBe("terrain-ruleset7-original-forest-1");
+    expect(
+      removedView.board.tiles.find(
+        (tile) => tile.at.x === 0 && tile.at.y === 0,
+      ),
+    ).toMatchObject({ explored: true, terrain: "FOREST", improvement: null });
+  });
+
+  it("sorts improvement value squares after every lower-row world sprite", () => {
+    const state = exploredAllV7(initialV7(1521));
+    const base = viewForV7(state, state.humanPlayerId);
+    const valueAt = { x: 0, y: 0 };
+    const view = {
+      ...base,
+      improvementValues: [
+        {
+          at: valueAt,
+          improvement: "WINDMILL" as const,
+          level: 4,
+          measure: "POPULATION" as const,
+          contributingTiles: [],
+        },
+      ],
+    };
+    const plan = buildBoardRenderPlanV7(view, [], {
+      selection: null,
+      selectedUnitId: null,
+      selectedAchievement: null,
+    });
+    const firstValueIndex = plan.entries.findIndex(
+      (entry) => entry.kind === "VALUE",
+    );
+    const lastWorldIndex = plan.entries.reduce(
+      (lastIndex, entry, index) => (entry.kind !== "VALUE" ? index : lastIndex),
+      -1,
+    );
+    expect(firstValueIndex).toBeGreaterThan(lastWorldIndex);
+    expect(plan.entries[firstValueIndex]).toMatchObject({ at: valueAt });
+  });
+
   it("uses calibrated accepted aspect ratios for units, processors and cities", () => {
     const entries: BoardRenderPlanEntryV7[] = [
       imageEntry("standard", "UNIT", "unit-original-fighter", 0, 0),
       imageEntry("catapult", "UNIT", "unit-original-catapult", 1, 0),
       imageEntry("giant", "UNIT", "unit-original-juggernaut", 2, 0),
       imageEntry("processor", "IMPROVEMENT", "building-square-windmill", 3, 0),
-      { ...imageEntry("city", "CITY", "building-city-2", 4, 0), value: 2 },
+      imageEntry("camp", "IMPROVEMENT", "building-ruleset7-lumber-camp", 4, 0),
+      { ...imageEntry("city", "CITY", "building-city-2", 5, 0), value: 2 },
     ];
     const drawImage = vi.fn();
     const context = drawingContext(drawImage);
@@ -149,6 +259,7 @@ describe("Ruleset 7 board renderer", () => {
               [92.16, 92.16],
               [96, 112],
               [115.2, 115.2],
+              [138.24, 138.24],
               [115.2, 115.2],
             ][index]?.[axis] ?? 0,
           ] as const,

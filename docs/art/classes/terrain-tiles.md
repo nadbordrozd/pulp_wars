@@ -10,6 +10,24 @@ diamond sources, anchors, clips, and measurements below are retained as
 temporary/historical provenance until the square asset beads replace them.
 They are not the generation target for new terrain.
 
+### Ruleset-7 readability override
+
+Ruleset 7 supersedes the Original family’s near-flat four-Grass presentation
+with exactly three v7-specific 256 x 256 PixelLab textures. They retain the
+canonical `#6f9255` ground and exact converged edges, but preserve restrained
+fine nubs and broad low-contrast mottling after a 1.2-radius soften and 28%
+authored blend. Large blades, savanna language, paths, bands, radial forms and
+recognizable stamped motifs are rejected. Ruleset 6 and every Candy source
+remain byte-frozen.
+
+Ruleset 7 also derives four v7-specific Original Forests from the immutable
+accepted PixelLab bodies. The owning square and replacement Grass ground stay
+fixed while body-only offsets `64/44/0/44` lower variants 1/2/3/4 respectively;
+variant 3 is already grounded and its body pixels do not move. Border-connected
+ground extraction fills enclosed canopy interiors before translation so flat
+green painted canopy pixels are preserved rather than replaced by new Grass.
+No accepted tree is redrawn, scaled or shifted laterally.
+
 ### Original square base-terrain family
 
 The accepted Original square family contains four Grass, four Forest, and

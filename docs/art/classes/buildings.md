@@ -32,6 +32,22 @@ depth, fog protection, hit testing, selection, and authoritative economy.
 Because Farm is opaque ground treatment, it draws below a coexisting Road;
 other improvement layering is unchanged.
 
+### Ruleset-7 map-readability override
+
+Ruleset 7 uses one v7-specific 384 x 384 Lumber Camp at `(192,288)`, displayed
+at `0.36`. Its coherent outdoor silhouette contains two integral rear trees, an
+open cutting bench, one upright hand saw and a three-log stack, with alpha fit
+inside `x=52..332,y=54..326`. The lower-center/right stays readable for a unit.
+The Ruleset-6 Camp source and scale remain unchanged.
+
+On an authoritative Forest tile, Lumber Camp and Windmill join Sawmill in the
+same presentation-only canopy-suppression predicate: the same cell draws the
+exact v7 Original Grass ground beneath the improvement instead of its Forest
+body. The terrain remains `FOREST`; adjacent canopies, rules, picking and state
+do not change, and removing the improvement restores the original coordinate-
+selected Forest variant. Renderer-owned improvement value squares draw in a
+final foreground pass above later-row world sprites.
+
 ## Ruleset-6 active inventory
 
 Ruleset 6 adds one shared functional production raster for Farm, Lumber Camp,

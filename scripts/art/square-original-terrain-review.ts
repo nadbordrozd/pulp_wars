@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { spawn } from "node:child_process";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { format } from "prettier";
@@ -31,6 +32,15 @@ interface RecordEntry {
 }
 
 const root = process.cwd();
+const ruleset7ReadabilityMode = process.argv.includes("--ruleset7-readability");
+if (ruleset7ReadabilityMode) {
+  const outputIndex = process.argv.indexOf("--output");
+  const output = outputIndex < 0 ? undefined : process.argv[outputIndex + 1];
+  if (output === undefined)
+    throw new Error("--ruleset7-readability requires --output <directory>");
+  await createRuleset7ReadabilityReview(path.resolve(root, output));
+  process.exit(0);
+}
 const candyMode = process.argv.includes("--candy");
 const faction = candyMode ? "Candy" : "Original";
 const factionSlug = candyMode ? "candy" : "original";
@@ -896,4 +906,551 @@ function escapeXml(value: string): string {
 
 function hash(data: Buffer): string {
   return createHash("sha256").update(data).digest("hex");
+}
+
+async function createRuleset7ReadabilityReview(
+  outputRoot: string,
+): Promise<void> {
+  const manifest = JSON.parse(
+    await readFile(
+      path.join(root, "scripts/art/pixellab-manifest.json"),
+      "utf8",
+    ),
+  ) as { readonly recipes: readonly Recipe[] };
+  const records = JSON.parse(
+    await readFile(
+      path.join(root, "scripts/art/pixellab-generated.json"),
+      "utf8",
+    ),
+  ) as { readonly records: Readonly<Record<string, RecordEntry>> };
+  const grassIds = [1, 2, 3].map(
+    (variant) => `terrain-ruleset7-original-grass-${variant}`,
+  );
+  const forestIds = [1, 2, 3, 4].map(
+    (variant) => `terrain-ruleset7-original-forest-${variant}`,
+  );
+  const campId = "building-ruleset7-lumber-camp";
+  const reviewIds = [...grassIds, ...forestIds, campId];
+  const recipeById = new Map(
+    manifest.recipes
+      .filter(({ id }) => reviewIds.includes(id))
+      .map((recipe) => [recipe.id, recipe] as const),
+  );
+  for (const id of reviewIds) {
+    if (
+      recipeById.get(id) === undefined ||
+      records.records[id]?.status !== "ACCEPTED"
+    )
+      throw new Error(`Accepted Ruleset 7 readability asset missing: ${id}`);
+  }
+  await mkdir(outputRoot, { recursive: true });
+  const fileFor = (id: string): string => {
+    const recipe = recipeById.get(id);
+    if (recipe === undefined) throw new Error(`Recipe missing: ${id}`);
+    return path.join(root, recipe.output);
+  };
+  const artifacts: string[] = [];
+
+  const sourceOverlays: OverlayOptions[] = [];
+  for (const [index, id] of reviewIds.entries()) {
+    const recipe = recipeById.get(id);
+    if (recipe === undefined) continue;
+    const column = index % 2;
+    const row = Math.floor(index / 2);
+    sourceOverlays.push({
+      input: label(id.replace("terrain-ruleset7-original-", ""), "", 1300),
+      left: column * 1300,
+      top: row * 820,
+    });
+    sourceOverlays.push({
+      input: await sharp(fileFor(id)).png().toBuffer(),
+      left: column * 1300 + 20,
+      top: row * 820 + 70,
+    });
+    sourceOverlays.push({
+      input: await sharp(fileFor(id))
+        .resize(recipe.outputSize.width * 2, recipe.outputSize.height * 2, {
+          fit: "fill",
+          kernel: sharp.kernel.nearest,
+        })
+        .png()
+        .toBuffer(),
+      left: column * 1300 + 500,
+      top: row * 820 + 50,
+    });
+    const nativeWidth = Math.round(
+      recipe.outputSize.width * (id === campId ? 0.36 : 0.5),
+    );
+    const nativeHeight = Math.round(
+      recipe.outputSize.height * (id === campId ? 0.36 : 0.5),
+    );
+    sourceOverlays.push({
+      input: await sharp(fileFor(id))
+        .resize(nativeWidth, nativeHeight, { fit: "fill" })
+        .png()
+        .toBuffer(),
+      left: column * 1300 + Math.round((420 - nativeWidth) / 2),
+      top: row * 820 + 500,
+    });
+  }
+  const sourceName = "source-native-enlarged.png";
+  await sharp({
+    create: { width: 2600, height: 3280, channels: 4, background: "#203936" },
+  })
+    .composite(sourceOverlays)
+    .png()
+    .toFile(path.join(outputRoot, sourceName));
+  artifacts.push(sourceName);
+
+  const grassTiles = await Promise.all(
+    grassIds.map((id) => sharp(fileFor(id)).resize(128, 128).png().toBuffer()),
+  );
+  const grassOverlays: OverlayOptions[] = [];
+  for (let y = 0; y < 6; y += 1)
+    for (let x = 0; x < 8; x += 1)
+      grassOverlays.push({
+        input: grassTiles[(x * 17 + y * 31 + x * y * 7) % 3] as Buffer,
+        left: x * 128,
+        top: y * 128,
+      });
+  const grassName = "grass-repetition-and-seams.png";
+  await sharp({
+    create: { width: 1024, height: 768, channels: 4, background: "#6f9255" },
+  })
+    .composite(grassOverlays)
+    .png()
+    .toFile(path.join(outputRoot, grassName));
+  artifacts.push(grassName);
+
+  const beforeAfter: OverlayOptions[] = [];
+  for (let variant = 1; variant <= 4; variant += 1) {
+    for (const [column, file] of [
+      path.join(
+        root,
+        `public/assets/pixellab/terrain-square/original-forest-${variant}.png`,
+      ),
+      fileFor(`terrain-ruleset7-original-forest-${variant}`),
+    ].entries())
+      beforeAfter.push({
+        input: await sharp(file).resize(128, 192).png().toBuffer(),
+        left: 30 + column * 170,
+        top: (variant - 1) * 210,
+      });
+    beforeAfter.push({
+      input: label(`Forest ${variant} · before / v7`, "", 420),
+      left: 340,
+      top: (variant - 1) * 210 + 72,
+    });
+  }
+  const forestName = "forest-before-after.png";
+  await sharp({
+    create: { width: 760, height: 840, channels: 4, background: "#203936" },
+  })
+    .composite(beforeAfter)
+    .png()
+    .toFile(path.join(outputRoot, forestName));
+  artifacts.push(forestName);
+
+  const tileCenters = Array.from({ length: 8 }, (_, index) => ({
+    x: 96 + (index % 4) * 128,
+    y: 96 + Math.floor(index / 4) * 128,
+  }));
+  const scene: OverlayOptions[] = [];
+  for (const [index, center] of tileCenters.entries())
+    scene.push({
+      input: grassTiles[index % grassTiles.length] as Buffer,
+      left: center.x - 64,
+      top: center.y - 64,
+    });
+  for (let variant = 1; variant <= 4; variant += 1) {
+    const center = tileCenters[variant - 1];
+    if (center === undefined) continue;
+    scene.push({
+      input: await sharp(fileFor(`terrain-ruleset7-original-forest-${variant}`))
+        .resize(128, 192)
+        .png()
+        .toBuffer(),
+      left: center.x - 64,
+      top: center.y - 128,
+    });
+  }
+  const camp = await sharp(fileFor(campId)).resize(138, 138).png().toBuffer();
+  const unit = await sharp(
+    path.join(root, "public/assets/pixellab/units/warrior.png"),
+  )
+    .resize(64, 74)
+    .png()
+    .toBuffer();
+  for (const index of [4, 5]) {
+    const center = tileCenters[index];
+    if (center === undefined) continue;
+    scene.push({ input: camp, left: center.x - 69, top: center.y - 104 });
+    if (index === 5)
+      scene.push({ input: unit, left: center.x - 32, top: center.y - 38 });
+  }
+  const processorIds = ["building-square-windmill", "building-square-sawmill"];
+  for (const [offset, id] of processorIds.entries()) {
+    const center = tileCenters[6 + offset];
+    const recipe = manifest.recipes.find((candidate) => candidate.id === id);
+    if (center === undefined || recipe === undefined) continue;
+    const scale = id.endsWith("sawmill") ? 0.36 : 0.3;
+    const image = await sharp(path.join(root, recipe.output))
+      .resize(Math.round(384 * scale), Math.round(384 * scale))
+      .png()
+      .toBuffer();
+    scene.push({
+      input: image,
+      left: center.x - Math.round(192 * scale),
+      top: center.y - Math.round(288 * scale),
+    });
+  }
+  // Renderer-owned value squares are deliberately composited only after every
+  // row's terrain, improvement and unit sprites.
+  for (const [index, center] of tileCenters.slice(0, 4).entries())
+    scene.push({
+      input: Buffer.from(
+        `<svg width="64" height="24" xmlns="http://www.w3.org/2000/svg">${Array.from(
+          { length: index + 1 },
+          (_, pip) =>
+            `<rect x="${pip * 8}" y="8" width="6" height="6" fill="#8ce5b2" stroke="#19312e" stroke-width="1"/>`,
+        ).join("")}</svg>`,
+      ),
+      left: center.x - 30,
+      top: center.y + 30,
+    });
+  const sceneName = "synthetic-composition-scene.png";
+  await sharp({
+    create: { width: 640, height: 360, channels: 4, background: "#203936" },
+  })
+    .composite(scene)
+    .png()
+    .toFile(path.join(outputRoot, sceneName));
+  artifacts.push(sceneName);
+
+  const browserEvidence = await createRuleset7RendererCapture(outputRoot);
+  artifacts.push("drawboardv7-desktop-canvas.png");
+
+  const artifactEvidence = await Promise.all(
+    artifacts.map(async (name) => {
+      const bytes = await readFile(path.join(outputRoot, name));
+      const metadata = await sharp(bytes).metadata();
+      return {
+        path: name,
+        width: metadata.width,
+        height: metadata.height,
+        sha256: hash(bytes),
+      };
+    }),
+  );
+  await writeFile(
+    path.join(outputRoot, "review-evidence.json"),
+    await format(
+      `${JSON.stringify(
+        {
+          schemaVersion: 1,
+          generatedBy:
+            "npm run art:square-original-terrain-review -- --ruleset7-readability --output <unique-directory>",
+          acceptedIds: reviewIds,
+          rendererContract: {
+            terrainIds: {
+              grass: grassIds,
+              forest: forestIds,
+            },
+            campId,
+            canopySuppression: ["LUMBER_CAMP", "WINDMILL", "SAWMILL"],
+            terrainStateUnchanged: "FOREST",
+            valueSquares: "final foreground after all row-major world sprites",
+            sceneGeometry:
+              "The synthetic companion mirrors drawBoardV7 geometry; drawboardv7-desktop-canvas.png is captured from the actual production drawBoardV7 function.",
+            browserEvidence,
+          },
+          visualChecks: [
+            "three quiet Grass variants, mixed repetition and every orthogonal seam",
+            "all four Forest sources before/after with variant 3 body preserved",
+            "larger Camp alone and occupied by an unchanged Original Fighter",
+            "Camp, Windmill and Sawmill over exact Grass ground without a Forest canopy",
+            "row-zero value squares composited after lower-row tall sprites",
+          ],
+          artifacts: artifactEvidence,
+        },
+        null,
+        2,
+      )}\n`,
+      { parser: "json" },
+    ),
+    "utf8",
+  );
+  console.log(`Ruleset 7 readability review: ${outputRoot}`);
+}
+
+interface ReadabilityCdpMessage {
+  readonly id?: number;
+  readonly result?: unknown;
+  readonly error?: { readonly message?: string };
+}
+
+interface ReadabilityCdpConnection {
+  send(method: string, params?: object): Promise<unknown>;
+  close(): void;
+}
+
+async function createRuleset7RendererCapture(
+  outputRoot: string,
+): Promise<Record<string, unknown>> {
+  const chrome =
+    process.env.CHROME_PATH ??
+    (process.platform === "win32"
+      ? "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+      : "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe");
+  const port = 11_120 + (process.pid % 200);
+  const userData = chrome.endsWith(".exe")
+    ? `C:\\Windows\\Temp\\pulp-wars-ysv2-readability-${process.pid}`
+    : path.join(
+        process.env.TMPDIR ?? "/tmp",
+        `pulp-wars-ysv2-readability-${process.pid}`,
+      );
+  const browser = spawn(
+    chrome,
+    [
+      "--headless=new",
+      "--disable-gpu",
+      "--hide-scrollbars",
+      "--no-first-run",
+      "--no-default-browser-check",
+      `--remote-debugging-port=${port}`,
+      `--user-data-dir=${userData}`,
+      "--window-size=900,600",
+      "http://localhost:6173/?ruleset=7",
+    ],
+    { stdio: "ignore" },
+  );
+  let connection: ReadabilityCdpConnection | undefined;
+  try {
+    const target = await waitForReadabilityTarget(port);
+    connection = await connectReadabilityCdp(target.webSocketDebuggerUrl);
+    await connection.send("Page.enable");
+    await connection.send("Runtime.enable");
+    await waitForReadabilityExpression(
+      connection,
+      "document.querySelector('[data-v7-setup]')",
+    );
+    await evaluateReadability(
+      connection,
+      `(() => { const seed = document.querySelector('#v7-seed'); if (seed instanceof HTMLInputElement) { seed.value = '1'; seed.dispatchEvent(new Event('input', { bubbles: true })); } const launch = document.querySelector('[data-action="launch"]'); if (!(launch instanceof HTMLElement)) throw new Error('Ruleset 7 launch missing'); launch.click(); })()`,
+    );
+    await waitForReadabilityExpression(
+      connection,
+      "globalThis.__PULP_WARS_APP__?.controller?.snapshot()?.view",
+    );
+    const evidence = await evaluateReadability<Record<string, unknown>>(
+      connection,
+      `(async () => {
+        const { ACCEPTED_ART_URLS } = await import('/src/assets/generated-art-manifest.ts');
+        const { buildBoardRenderPlanV7, drawBoardV7 } = await import('/src/render/canvas/board-renderer-v7.ts');
+        const base = globalThis.__PULP_WARS_APP__.controller.snapshot().view;
+        const template = base.board.tiles.find((tile) => tile.explored);
+        if (!template) throw new Error('No revealed tile template');
+        const improvements = new Map([
+          ['0,2', 'LUMBER_CAMP'], ['1,2', 'WINDMILL'], ['2,2', 'SAWMILL'], ['3,2', null],
+        ]);
+        const selected = new Set([...Array.from({ length: 4 }, (_, x) => x + ',1'), ...improvements.keys()]);
+        const tiles = base.board.tiles.map((tile) => {
+          const key = tile.at.x + ',' + tile.at.y;
+          if (!selected.has(key)) return tile;
+          return {
+            ...template,
+            at: tile.at,
+            explored: true,
+            terrain: 'FOREST',
+            resource: null,
+            improvement: improvements.has(key) ? improvements.get(key) : null,
+            road: false,
+            site: null,
+            territoryOwnerId: null,
+            territoryCityId: null,
+          };
+        });
+        const fighter = base.units[0];
+        if (!fighter) throw new Error('No unit template');
+        const view = {
+          ...base,
+          board: { ...base.board, tiles },
+          cities: [],
+          treasureChests: [],
+          units: [{ ...fighter, at: { x: 0, y: 2 } }],
+          improvementValues: Array.from({ length: 4 }, (_, x) => ({
+            at: { x, y: 1 }, improvement: 'WINDMILL', level: x + 1,
+            measure: 'POPULATION', contributingTiles: [],
+          })),
+        };
+        const plan = buildBoardRenderPlanV7(view, [], {
+          selection: null, selectedUnitId: null, selectedAchievement: null,
+        });
+        const entries = plan.entries.filter((entry) => selected.has(entry.at.x + ',' + entry.at.y) && ['TERRAIN','IMPROVEMENT','UNIT','VALUE'].includes(entry.kind));
+        const firstValue = entries.findIndex((entry) => entry.kind === 'VALUE');
+        const lastWorld = entries.findLastIndex((entry) => entry.kind !== 'VALUE');
+        if (!(firstValue > lastWorld)) throw new Error('VALUE entries are not final foreground');
+        for (const x of [0,1,2]) {
+          const terrain = entries.find((entry) => entry.kind === 'TERRAIN' && entry.at.x === x && entry.at.y === 2);
+          if (terrain?.assetId !== 'terrain-ruleset7-original-grass-1') throw new Error('Forest canopy suppression mismatch at ' + x);
+        }
+        const restored = entries.find((entry) => entry.kind === 'TERRAIN' && entry.at.x === 3 && entry.at.y === 2);
+        if (!restored?.assetId?.startsWith('terrain-ruleset7-original-forest-')) throw new Error('Bare Forest canopy not restored');
+        const images = new Map();
+        for (const entry of entries) if (entry.assetId && !images.has(entry.assetId)) {
+          const image = new Image(); image.src = ACCEPTED_ART_URLS[entry.assetId]; await image.decode(); images.set(entry.assetId, image);
+        }
+        const overlay = document.createElement('main');
+        overlay.id = 'ruleset7-readability-review';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#203936;color:#fff;padding:20px;font:16px system-ui';
+        overlay.innerHTML = '<h1 style="margin:0 0 4px">RULESET 7 MAP READABILITY · drawBoardV7</h1><p style="margin:0 0 10px;color:#bfd2cb">Forest variants · Camp occupied · Windmill/Sawmill canopy suppression · final foreground pips</p><canvas width="640" height="360" style="display:block;width:640px;height:360px"></canvas>';
+        document.body.append(overlay);
+        const canvas = overlay.querySelector('canvas');
+        const context = canvas.getContext('2d');
+        drawBoardV7({
+          context, viewport: { width: 640, height: 360 }, devicePixelRatio: 1,
+          camera: { offsetX: 96, offsetY: -32, zoom: 1 },
+          plan: { version: 7, entries, targets: [] },
+          images: { resolve: (id) => images.get(id) ?? null },
+        });
+        const rect = canvas.getBoundingClientRect();
+        globalThis.__ruleset7ReadabilityCanvasRect = { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+        return {
+          renderer: 'drawBoardV7',
+          entryOrder: entries.map(({ kind, at, assetId, value }) => ({ kind, at, assetId, value })),
+          firstValueIndex: firstValue,
+          lastWorldIndex: lastWorld,
+          canopySuppressionIds: [0,1,2].map((x) => entries.find((entry) => entry.kind === 'TERRAIN' && entry.at.x === x && entry.at.y === 2)?.assetId),
+          restoredForestId: restored.assetId,
+          sourceStateTerrain: tiles.filter((tile) => tile.explored && tile.at.y === 2 && tile.at.x < 4).map((tile) => tile.terrain),
+        };
+      })()`,
+    );
+    const clip = await evaluateReadability<{
+      readonly x: number;
+      readonly y: number;
+      readonly width: number;
+      readonly height: number;
+    }>(connection, "globalThis.__ruleset7ReadabilityCanvasRect");
+    const capture = (await connection.send("Page.captureScreenshot", {
+      format: "png",
+      fromSurface: true,
+      clip: { ...clip, scale: 1 },
+    })) as { readonly data?: string };
+    if (capture.data === undefined) throw new Error("Canvas capture missing");
+    await writeFile(
+      path.join(outputRoot, "drawboardv7-desktop-canvas.png"),
+      Buffer.from(capture.data, "base64"),
+    );
+    return evidence;
+  } finally {
+    connection?.close();
+    browser.kill();
+  }
+}
+
+async function waitForReadabilityTarget(
+  port: number,
+): Promise<{ readonly webSocketDebuggerUrl: string }> {
+  for (let attempt = 0; attempt < 160; attempt += 1) {
+    try {
+      const response = await fetch(`http://localhost:${port}/json/list`);
+      const targets = (await response.json()) as readonly {
+        readonly type: string;
+        readonly url: string;
+        readonly webSocketDebuggerUrl: string;
+      }[];
+      const target = targets.find(
+        (candidate) =>
+          candidate.type === "page" && candidate.url.includes("localhost:6173"),
+      );
+      if (target !== undefined) return target;
+    } catch {
+      // Chrome's debugging endpoint is not ready yet.
+    }
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+  throw new Error("Ruleset 7 readability Chrome target did not start");
+}
+
+async function connectReadabilityCdp(
+  url: string,
+): Promise<ReadabilityCdpConnection> {
+  const socket = new WebSocket(url);
+  await new Promise<void>((resolve, reject) => {
+    socket.addEventListener("open", () => resolve(), { once: true });
+    socket.addEventListener(
+      "error",
+      () => reject(new Error("CDP socket failed")),
+      {
+        once: true,
+      },
+    );
+  });
+  let nextId = 1;
+  const pending = new Map<
+    number,
+    {
+      readonly resolve: (value: unknown) => void;
+      readonly reject: (error: Error) => void;
+    }
+  >();
+  socket.addEventListener("message", (event) => {
+    const message = JSON.parse(String(event.data)) as ReadabilityCdpMessage;
+    if (message.id === undefined) return;
+    const handler = pending.get(message.id);
+    if (handler === undefined) return;
+    pending.delete(message.id);
+    if (message.error !== undefined)
+      handler.reject(new Error(message.error.message ?? "CDP error"));
+    else handler.resolve(message.result);
+  });
+  return {
+    send(method, params = {}) {
+      const id = nextId;
+      nextId += 1;
+      return new Promise((resolve, reject) => {
+        pending.set(id, { resolve, reject });
+        socket.send(JSON.stringify({ id, method, params }));
+      });
+    },
+    close() {
+      socket.close();
+    },
+  };
+}
+
+async function evaluateReadability<T = unknown>(
+  connection: ReadabilityCdpConnection,
+  expression: string,
+): Promise<T> {
+  const response = (await connection.send("Runtime.evaluate", {
+    expression,
+    awaitPromise: true,
+    returnByValue: true,
+  })) as {
+    readonly result?: { readonly value?: T; readonly description?: string };
+    readonly exceptionDetails?: { readonly text?: string };
+  };
+  if (response.exceptionDetails !== undefined)
+    throw new Error(
+      response.result?.description ??
+        response.exceptionDetails.text ??
+        "Browser evaluation failed",
+    );
+  return response.result?.value as T;
+}
+
+async function waitForReadabilityExpression(
+  connection: ReadabilityCdpConnection,
+  expression: string,
+): Promise<void> {
+  for (let attempt = 0; attempt < 200; attempt += 1) {
+    if (
+      await evaluateReadability<boolean>(connection, `Boolean(${expression})`)
+    )
+      return;
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+  throw new Error(`Browser expression did not become true: ${expression}`);
 }

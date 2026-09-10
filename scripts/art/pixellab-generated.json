@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "a0333d038bc07878421fbca84e3b6f0a17087973cd915255ede5930ecdb46f50",
+  "sourceManifestSha256": "fa8fe6b22bfc3da27d3771901b9b96ea6c7f7ba054568e97b55965c77a73b00c",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -11459,6 +11459,558 @@
       "outputSha256": "96df40cad6ec0a6bf8d8cd95623abd7ada30f6f91f95c4b07a7da06a93187bb9",
       "notes": "Accepted after worker and independent root review of exact retry candidate 96df40cad6ec from PixelLab job 78f32cec-5233-4e4f-b23c-e5ccfa04932e. Full opaque 256x512 two-cell rectangle, independently cropped halves, source/native/enlarged, adjacency L/T/2x2/long-odd layouts, min/1/max zoom at DPR1/2, dense accepted Forest/City/Warrior and occupied Farm+Road contexts pass. Quiet broad charcoal-teal grooves and same-scale moss leaves match accepted single 211ff46d8e09 without divider, perimeter, raised slab, stretch, holes, spill, state, text or UI; northwest lighting is not rotated.",
       "reviewedAt": "2026-09-09T11:46:09.390Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-ruleset7-original-grass-3": {
+      "id": "terrain-ruleset7-original-grass-3",
+      "status": "ACCEPTED",
+      "jobId": "310389c5-1f4f-482a-9e43-ad59c1353455",
+      "candidate": "art/pixellab/candidates/terrain-ruleset7-original-grass-3.png",
+      "candidateSha256": "ba32bf23507c4edf3a79bc55c2b9f05e39f6b4fa9431d0dd59819b6f72a987ec",
+      "providerOutputSha256": "99ca4299dd0a831bc518bafafaf52e149e2045a5f854533a5f9cf2c6a206b591",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green #6f9255 base, muted moss-green mottling, restrained pale yellow-green northwest highlights, deep desaturated green shallow recesses. Ruleset 7 Original Grass variant 3: full-square 256 turf material. Match reference Grass 1's subtle fine scattered short rounded nubs and broad soft mottling at the same scale and contrast, but use another even random distribution. No center, ring, swirl, radial form, focal cluster or recognizable motif. Flat ground plane, northwest light, quiet cel shading, uninterrupted green edges. Processing converges the outer band to #6f9255 and forces opaque alpha. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; savanna, prairie, wheat, dry grass, tall grass, long blades, giant blades, reed, stalk, lawn stripes, mowing lines, path, band, grid, large stamped tuft, repeated symbol, flower, fruit, animal, resource, tree, rock, road, ownership, selection, building, unit, diamond, transparent corner, border, bevel, raised slab, cast shadow, lower-right light, noisy microtexture, realistic turf, painterly, 3D, text, UI.",
+        "prompt": "Ruleset 7 Original Grass variant 3: full-square 256 turf material. Match reference Grass 1's subtle fine scattered short rounded nubs and broad soft mottling at the same scale and contrast, but use another even random distribution. No center, ring, swirl, radial form, focal cluster or recognizable motif. Flat ground plane, northwest light, quiet cel shading, uninterrupted green edges. Processing converges the outer band to #6f9255 and forces opaque alpha.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; savanna, prairie, wheat, dry grass, tall grass, long blades, giant blades, reed, stalk, lawn stripes, mowing lines, path, band, grid, large stamped tuft, repeated symbol, flower, fruit, animal, resource, tree, rock, road, ownership, selection, building, unit, diamond, transparent corner, border, bevel, raised slab, cast shadow, lower-right light, noisy microtexture, realistic turf, painterly, 3D, text, UI",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 107803,
+        "noBackground": false,
+        "palette": "quiet leaf green #6f9255 base, muted moss-green mottling, restrained pale yellow-green northwest highlights, deep desaturated green shallow recesses",
+        "postprocess": "square-grass-texture-v7",
+        "styleReference": {
+          "id": "terrain-ruleset7-original-grass-1",
+          "sha256": "51143c23f5e61781c74861a3167557651e189b5104dcabfac1b17daaf55ea466",
+          "usageDescription": "Match Grass 1's fine scattered nub scale, broad soft mottling, low contrast, palette and northwest light. Change only the random distribution; create no large motif."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 0,
+          "right": 256,
+          "bottom": 256
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-ruleset7-original-grass-3-c2b0787924c9.png",
+          "candidateSha256": "c2b0787924c99f0495ecd7b588d769520ff71b79f23bf02e0a11d34533fa98f5",
+          "providerOutputSha256": "9fb332309d3301e9eef5ffcb4e38b6e39d9644ee0aa0966e5cade150b6a9754e",
+          "jobId": "0be3c3bb-6a62-4ba2-abc2-7c2d7401ce3b",
+          "disposition": "REJECTED",
+          "notes": "Rejected: dominant circular tuft ring creates one large stamped focal mark and visible repetition.",
+          "reviewedAt": "2026-09-10T09:49:04.088Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green #6f9255 base, muted moss-green mottling, restrained pale yellow-green northwest highlights, deep desaturated green shallow recesses. Ruleset 7 Original Grass variant 3: one axis-aligned 256 by 256 full-square turf material with subtle hand-drawn texture. Use shallow softly curved turf creases and sparse tiny rounded leaf nubs embedded in broad irregular green mottling, with no directional flow or focal stamp. The texture remains visible at 128 pixels but much quieter than units, resources and improvements. Soft northwest light, darker southeast micro-planes, two-to-three flat cel-shaded tones. Every edge and corner is uninterrupted mid-green material with no perimeter. Deterministic processing crops the provider inset, retains restrained authored texture over #6f9255, converges the outer 32 pixels to the shared base and forces opaque alpha. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; savanna, prairie, wheat, dry grass, tall grass, long blades, giant blades, reed, stalk, lawn stripes, mowing lines, path, band, grid, large stamped tuft, repeated symbol, flower, fruit, animal, resource, tree, rock, road, ownership, selection, building, unit, diamond, transparent corner, border, bevel, raised slab, cast shadow, lower-right light, noisy microtexture, realistic turf, painterly, 3D, text, UI.",
+            "prompt": "Ruleset 7 Original Grass variant 3: one axis-aligned 256 by 256 full-square turf material with subtle hand-drawn texture. Use shallow softly curved turf creases and sparse tiny rounded leaf nubs embedded in broad irregular green mottling, with no directional flow or focal stamp. The texture remains visible at 128 pixels but much quieter than units, resources and improvements. Soft northwest light, darker southeast micro-planes, two-to-three flat cel-shaded tones. Every edge and corner is uninterrupted mid-green material with no perimeter. Deterministic processing crops the provider inset, retains restrained authored texture over #6f9255, converges the outer 32 pixels to the shared base and forces opaque alpha.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; savanna, prairie, wheat, dry grass, tall grass, long blades, giant blades, reed, stalk, lawn stripes, mowing lines, path, band, grid, large stamped tuft, repeated symbol, flower, fruit, animal, resource, tree, rock, road, ownership, selection, building, unit, diamond, transparent corner, border, bevel, raised slab, cast shadow, lower-right light, noisy microtexture, realistic turf, painterly, 3D, text, UI",
+            "requestSize": {
+              "width": 256,
+              "height": 256
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 256
+            },
+            "seed": 107803,
+            "noBackground": false,
+            "palette": "quiet leaf green #6f9255 base, muted moss-green mottling, restrained pale yellow-green northwest highlights, deep desaturated green shallow recesses",
+            "postprocess": "square-grass-texture-v7",
+            "styleReference": {
+              "id": "terrain-square-original-grass-1",
+              "sha256": "a20fbc91f4bcd6120fb8c9ce4bcd9ed9276fcdbd4f145d4153cc71c93bda6567",
+              "usageDescription": "Match only the approved quiet leaf-green palette, flat illustrated terrain treatment, northwest lighting and low contrast. Author a distinct new subtly textured turf surface; do not copy the reference's near-flat finish or any composition."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 0,
+              "right": 256,
+              "bottom": 256
+            }
+          }
+        }
+      ],
+      "outputSha256": "ba32bf23507c4edf3a79bc55c2b9f05e39f6b4fa9431d0dd59819b6f72a987ec",
+      "notes": "Accepted after regenerated source/native/enlarged and mixed 8x6 adjacency review: fine scattered nubs and distinct quiet mottling distribution, no radial stamp, savanna blades, focal motif or seams.",
+      "reviewedAt": "2026-09-10T09:54:35.310Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-ruleset7-original-grass-1": {
+      "id": "terrain-ruleset7-original-grass-1",
+      "status": "ACCEPTED",
+      "jobId": "cab2706d-d5ae-480b-900f-caea73b9cbde",
+      "candidate": "art/pixellab/candidates/terrain-ruleset7-original-grass-1.png",
+      "candidateSha256": "51143c23f5e61781c74861a3167557651e189b5104dcabfac1b17daaf55ea466",
+      "providerOutputSha256": "1610f8caf5308087fbd35297865921d8b6823942cc2ce3c127ae2fd19504bb63",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green #6f9255 base, muted moss-green mottling, restrained pale yellow-green northwest highlights, deep desaturated green shallow recesses. Ruleset 7 Original Grass variant 1: one axis-aligned 256 by 256 full-square turf material with subtle hand-drawn texture. Use sparse very short rounded grass nubs and broad irregular mossy color mottling spread evenly across the field, all low contrast and lying flat in the ground plane. The marks must remain visible at 128 pixels but stay much quieter than units, resources and improvements. Soft northwest light, darker southeast micro-planes, two-to-three flat cel-shaded tones. Every edge and corner is uninterrupted mid-green material with no perimeter. Deterministic processing crops the provider inset, retains restrained authored texture over #6f9255, converges the outer 32 pixels to the shared base and forces opaque alpha. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; savanna, prairie, wheat, dry grass, tall grass, long blades, giant blades, reed, stalk, lawn stripes, mowing lines, path, band, grid, large stamped tuft, repeated symbol, flower, fruit, animal, resource, tree, rock, road, ownership, selection, building, unit, diamond, transparent corner, border, bevel, raised slab, cast shadow, lower-right light, noisy microtexture, realistic turf, painterly, 3D, text, UI.",
+        "prompt": "Ruleset 7 Original Grass variant 1: one axis-aligned 256 by 256 full-square turf material with subtle hand-drawn texture. Use sparse very short rounded grass nubs and broad irregular mossy color mottling spread evenly across the field, all low contrast and lying flat in the ground plane. The marks must remain visible at 128 pixels but stay much quieter than units, resources and improvements. Soft northwest light, darker southeast micro-planes, two-to-three flat cel-shaded tones. Every edge and corner is uninterrupted mid-green material with no perimeter. Deterministic processing crops the provider inset, retains restrained authored texture over #6f9255, converges the outer 32 pixels to the shared base and forces opaque alpha.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; savanna, prairie, wheat, dry grass, tall grass, long blades, giant blades, reed, stalk, lawn stripes, mowing lines, path, band, grid, large stamped tuft, repeated symbol, flower, fruit, animal, resource, tree, rock, road, ownership, selection, building, unit, diamond, transparent corner, border, bevel, raised slab, cast shadow, lower-right light, noisy microtexture, realistic turf, painterly, 3D, text, UI",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 107801,
+        "noBackground": false,
+        "palette": "quiet leaf green #6f9255 base, muted moss-green mottling, restrained pale yellow-green northwest highlights, deep desaturated green shallow recesses",
+        "postprocess": "square-grass-texture-v7",
+        "styleReference": {
+          "id": "terrain-square-original-grass-1",
+          "sha256": "a20fbc91f4bcd6120fb8c9ce4bcd9ed9276fcdbd4f145d4153cc71c93bda6567",
+          "usageDescription": "Match only the approved quiet leaf-green palette, flat illustrated terrain treatment, northwest lighting and low contrast. Author a new subtly textured turf surface; do not copy the reference's near-flat finish or any composition."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 0,
+          "right": 256,
+          "bottom": 256
+        }
+      },
+      "outputSha256": "51143c23f5e61781c74861a3167557651e189b5104dcabfac1b17daaf55ea466",
+      "notes": "Accepted after source, 128px native, nearest-neighbor enlarged and 6x4 repetition review: subtle scattered nubs and broad low-contrast mottling remain readable without seams, savanna blades or gameplay-like marks.",
+      "reviewedAt": "2026-09-10T09:50:23.994Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-ruleset7-original-grass-2": {
+      "id": "terrain-ruleset7-original-grass-2",
+      "status": "ACCEPTED",
+      "jobId": "813f8373-7261-4b12-a087-6671ef50049a",
+      "candidate": "art/pixellab/candidates/terrain-ruleset7-original-grass-2.png",
+      "candidateSha256": "405930da92c596d07c41991848c2eb3aee730b5d180752408b038214fc6cb7af",
+      "providerOutputSha256": "8736c1d456f776662c4d9aac97c9f9d005222397ff61b8fd5467fff46d4bfe39",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green #6f9255 base, muted moss-green mottling, restrained pale yellow-green northwest highlights, deep desaturated green shallow recesses. Ruleset 7 Original Grass variant 2: full-square 256 turf material. Match reference Grass 1's subtle fine scattered short rounded nubs and broad soft mottling at the same scale and contrast, but use a different even random distribution. No center, radial form, focal cluster or recognizable motif. Flat ground plane, northwest light, quiet cel shading, uninterrupted green edges. Processing converges the outer band to #6f9255 and forces opaque alpha. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; savanna, prairie, wheat, dry grass, tall grass, long blades, giant blades, reed, stalk, lawn stripes, mowing lines, path, band, grid, large stamped tuft, repeated symbol, flower, fruit, animal, resource, tree, rock, road, ownership, selection, building, unit, diamond, transparent corner, border, bevel, raised slab, cast shadow, lower-right light, noisy microtexture, realistic turf, painterly, 3D, text, UI.",
+        "prompt": "Ruleset 7 Original Grass variant 2: full-square 256 turf material. Match reference Grass 1's subtle fine scattered short rounded nubs and broad soft mottling at the same scale and contrast, but use a different even random distribution. No center, radial form, focal cluster or recognizable motif. Flat ground plane, northwest light, quiet cel shading, uninterrupted green edges. Processing converges the outer band to #6f9255 and forces opaque alpha.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; savanna, prairie, wheat, dry grass, tall grass, long blades, giant blades, reed, stalk, lawn stripes, mowing lines, path, band, grid, large stamped tuft, repeated symbol, flower, fruit, animal, resource, tree, rock, road, ownership, selection, building, unit, diamond, transparent corner, border, bevel, raised slab, cast shadow, lower-right light, noisy microtexture, realistic turf, painterly, 3D, text, UI",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 107802,
+        "noBackground": false,
+        "palette": "quiet leaf green #6f9255 base, muted moss-green mottling, restrained pale yellow-green northwest highlights, deep desaturated green shallow recesses",
+        "postprocess": "square-grass-texture-v7",
+        "styleReference": {
+          "id": "terrain-ruleset7-original-grass-1",
+          "sha256": "51143c23f5e61781c74861a3167557651e189b5104dcabfac1b17daaf55ea466",
+          "usageDescription": "Match Grass 1's fine scattered nub scale, broad soft mottling, low contrast, palette and northwest light. Change only the random distribution; create no large motif."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 0,
+          "right": 256,
+          "bottom": 256
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-ruleset7-original-grass-2-dfd590ad27ee.png",
+          "candidateSha256": "dfd590ad27ee460ee22388eef954d2d1253a3e69b3400983bcf7d413d9f1cb6b",
+          "providerOutputSha256": "1078b6a6a75206625db56feea9e6f280d1d6bd370894290d1dd6cf85524a39f2",
+          "jobId": "9ff13d8b-edc9-498f-9267-8d8645a69d32",
+          "disposition": "REJECTED",
+          "notes": "Rejected: oversized clover stamps create high-contrast repeated gameplay-like marks at native scale.",
+          "reviewedAt": "2026-09-10T09:49:01.669Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green #6f9255 base, muted moss-green mottling, restrained pale yellow-green northwest highlights, deep desaturated green shallow recesses. Ruleset 7 Original Grass variant 2: one axis-aligned 256 by 256 full-square turf material with subtle hand-drawn texture. Use a few low rounded clover-like leaf impressions and broad irregular green mottling, separated and distributed without a focal cluster. Everything lies flat in the ground plane, remains visible at 128 pixels, and stays much quieter than units, resources and improvements. Soft northwest light, darker southeast micro-planes, two-to-three flat cel-shaded tones. Every edge and corner is uninterrupted mid-green material with no perimeter. Deterministic processing crops the provider inset, retains restrained authored texture over #6f9255, converges the outer 32 pixels to the shared base and forces opaque alpha. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; savanna, prairie, wheat, dry grass, tall grass, long blades, giant blades, reed, stalk, lawn stripes, mowing lines, path, band, grid, large stamped tuft, repeated symbol, flower, fruit, animal, resource, tree, rock, road, ownership, selection, building, unit, diamond, transparent corner, border, bevel, raised slab, cast shadow, lower-right light, noisy microtexture, realistic turf, painterly, 3D, text, UI.",
+            "prompt": "Ruleset 7 Original Grass variant 2: one axis-aligned 256 by 256 full-square turf material with subtle hand-drawn texture. Use a few low rounded clover-like leaf impressions and broad irregular green mottling, separated and distributed without a focal cluster. Everything lies flat in the ground plane, remains visible at 128 pixels, and stays much quieter than units, resources and improvements. Soft northwest light, darker southeast micro-planes, two-to-three flat cel-shaded tones. Every edge and corner is uninterrupted mid-green material with no perimeter. Deterministic processing crops the provider inset, retains restrained authored texture over #6f9255, converges the outer 32 pixels to the shared base and forces opaque alpha.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; savanna, prairie, wheat, dry grass, tall grass, long blades, giant blades, reed, stalk, lawn stripes, mowing lines, path, band, grid, large stamped tuft, repeated symbol, flower, fruit, animal, resource, tree, rock, road, ownership, selection, building, unit, diamond, transparent corner, border, bevel, raised slab, cast shadow, lower-right light, noisy microtexture, realistic turf, painterly, 3D, text, UI",
+            "requestSize": {
+              "width": 256,
+              "height": 256
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 256
+            },
+            "seed": 107802,
+            "noBackground": false,
+            "palette": "quiet leaf green #6f9255 base, muted moss-green mottling, restrained pale yellow-green northwest highlights, deep desaturated green shallow recesses",
+            "postprocess": "square-grass-texture-v7",
+            "styleReference": {
+              "id": "terrain-square-original-grass-1",
+              "sha256": "a20fbc91f4bcd6120fb8c9ce4bcd9ed9276fcdbd4f145d4153cc71c93bda6567",
+              "usageDescription": "Match only the approved quiet leaf-green palette, flat illustrated terrain treatment, northwest lighting and low contrast. Author a distinct new subtly textured turf surface; do not copy the reference's near-flat finish or any composition."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 0,
+              "right": 256,
+              "bottom": 256
+            }
+          }
+        }
+      ],
+      "outputSha256": "405930da92c596d07c41991848c2eb3aee730b5d180752408b038214fc6cb7af",
+      "notes": "Accepted after regenerated source/native/enlarged and mixed 8x6 adjacency review: fine scattered nubs and broad soft mottling, no clover stamps, savanna blades, focal motif or seams.",
+      "reviewedAt": "2026-09-10T09:54:32.957Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-ruleset7-lumber-camp": {
+      "id": "building-ruleset7-lumber-camp",
+      "status": "ACCEPTED",
+      "jobId": "a59f8139-1370-4b2c-9722-395f7c894568",
+      "candidate": "art/pixellab/candidates/building-ruleset7-lumber-camp.png",
+      "candidateSha256": "c8e817f34cb267cf2327dbf64effce3aded23310e3ff6068bfd5a4ac61acea22",
+      "providerOutputSha256": "aaf83be0f09f4bc2c6c2124475f4695fd7ed5e3ab66984c7a734b55e1a865c24",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 52,
+        "top": 102,
+        "right": 332,
+        "bottom": 326,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm muted bronze timber, parchment canvas and cut wood faces, cool slate-blue saw metal, restrained moss-green foliage, dark teal-charcoal outline and southeast shadow. Ruleset 7 shared Lumber Camp, transparent 384 by 384, anchor 192,288. One coherent medium-large outdoor camp: exactly two sturdy intact trees with compact crowns frame one broad cutting bench, one oversized upright slate-blue hand saw and exactly three large cut logs in one low stack. Trees are integral to the camp silhouette, not separate scenery. Keep lower-center/right open for a unit. Southeast three-quarter view, northwest light, charcoal-teal outline, broad flat cel shading. Fit x52..332,y54..326, contact y326; upward overflow only, no ground or shadow. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; tiny camp, disconnected props, loose trees, dense forest, stumps, many logs, more than two trees, factory, enclosed sawmill, circular saw, person, unit, mine, city, ground, tile, shadow, side or bottom overflow, lower-right light, ownership, selection, pip, number, text, UI, realistic, painterly, 3D.",
+        "prompt": "Ruleset 7 shared Lumber Camp, transparent 384 by 384, anchor 192,288. One coherent medium-large outdoor camp: exactly two sturdy intact trees with compact crowns frame one broad cutting bench, one oversized upright slate-blue hand saw and exactly three large cut logs in one low stack. Trees are integral to the camp silhouette, not separate scenery. Keep lower-center/right open for a unit. Southeast three-quarter view, northwest light, charcoal-teal outline, broad flat cel shading. Fit x52..332,y54..326, contact y326; upward overflow only, no ground or shadow.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; tiny camp, disconnected props, loose trees, dense forest, stumps, many logs, more than two trees, factory, enclosed sawmill, circular saw, person, unit, mine, city, ground, tile, shadow, side or bottom overflow, lower-right light, ownership, selection, pip, number, text, UI, realistic, painterly, 3D",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 107811,
+        "noBackground": true,
+        "palette": "warm muted bronze timber, parchment canvas and cut wood faces, cool slate-blue saw metal, restrained moss-green foliage, dark teal-charcoal outline and southeast shadow",
+        "postprocess": "compact-building-fit",
+        "groundContactY": 326,
+        "styleReference": {
+          "id": "building-square-sawmill",
+          "usageDescription": "Match the approved timber palette, chunky outline, flat planes, three-quarter camera and northwest light; create an outdoor Camp, not the Sawmill shed."
+        }
+      },
+      "outputSha256": "c8e817f34cb267cf2327dbf64effce3aded23310e3ff6068bfd5a4ac61acea22",
+      "notes": "Accepted after source/native/enlarged and on-map occupied review: coherent medium-large camp with two integral trees, bench, upright hand saw and three-log stack; readable with standard unit and no ground or UI.",
+      "reviewedAt": "2026-09-10T09:54:37.389Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-ruleset7-original-forest-1": {
+      "id": "terrain-ruleset7-original-forest-1",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/terrain-ruleset7-original-forest-1.png",
+      "candidateSha256": "d8ddf3b19b3b16248da9d67580d8f77fb6ca6342f9831477e03437a7ca1f1e87",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "notes": "Accepted corrected deterministic +64px body-only reframe after source/native/enlarged review: border flood-fill preserves enclosed flat-green canopy pixels exactly; fixed v7 Grass ground and anchor unchanged.",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: preserve accepted Original Forest source exactly; accepted Ruleset 7 Grass ground. Deterministic body-only reframe of the immutable accepted PixelLab Original Forest 1 source. Preserve its exact three-tree silhouette, pixels, northwest light and lateral placement. Keep the owning square and anchor fixed; translate only tree-body pixels down 64 source pixels and restore the accepted Ruleset 7 Grass 1 ground. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; provider redraw, ground translation, lateral translation, scale change, crop, new tree, removed tree, canopy repaint, bottom overflow.",
+        "prompt": "Deterministic body-only reframe of the immutable accepted PixelLab Original Forest 1 source. Preserve its exact three-tree silhouette, pixels, northwest light and lateral placement. Keep the owning square and anchor fixed; translate only tree-body pixels down 64 source pixels and restore the accepted Ruleset 7 Grass 1 ground.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; provider redraw, ground translation, lateral translation, scale change, crop, new tree, removed tree, canopy repaint, bottom overflow",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 104102,
+        "noBackground": true,
+        "palette": "preserve accepted Original Forest source exactly; accepted Ruleset 7 Grass ground",
+        "postprocess": "square-tall-reframe-ground-reference",
+        "bodyOffsetY": 64,
+        "styleReference": {
+          "id": "terrain-square-original-forest-1",
+          "usageDescription": "Immutable accepted PixelLab source. Deterministically isolate its tree body from the old ground, translate only that body 64 source pixels downward, and composite the accepted Ruleset 7 Grass ground without redrawing."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        },
+        "groundReference": {
+          "id": "terrain-ruleset7-original-grass-1",
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe.",
+          "sha256": "51143c23f5e61781c74861a3167557651e189b5104dcabfac1b17daaf55ea466"
+        }
+      },
+      "outputSha256": "d8ddf3b19b3b16248da9d67580d8f77fb6ca6342f9831477e03437a7ca1f1e87",
+      "reviewedAt": "2026-09-10T10:00:13.651Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-ruleset7-original-forest-2": {
+      "id": "terrain-ruleset7-original-forest-2",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/terrain-ruleset7-original-forest-2.png",
+      "candidateSha256": "88dd6238e449dd5dfff000827f069077e84c2295d63696a703cb7a4687c94d29",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 105,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "notes": "Accepted corrected deterministic +44px body-only reframe after source/native/enlarged review: enclosed canopy interiors preserve exact source pixels; fixed v7 Grass ground and anchor unchanged.",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: preserve accepted Original Forest source exactly; accepted Ruleset 7 Grass ground. Deterministic body-only reframe of the immutable accepted PixelLab Original Forest 2 source. Preserve its exact four-tree silhouette, pixels, northwest light and lateral placement. Keep the owning square and anchor fixed; translate only tree-body pixels down 44 source pixels and restore the accepted Ruleset 7 Grass 1 ground. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; provider redraw, ground translation, lateral translation, scale change, crop, new tree, removed tree, canopy repaint, bottom overflow.",
+        "prompt": "Deterministic body-only reframe of the immutable accepted PixelLab Original Forest 2 source. Preserve its exact four-tree silhouette, pixels, northwest light and lateral placement. Keep the owning square and anchor fixed; translate only tree-body pixels down 44 source pixels and restore the accepted Ruleset 7 Grass 1 ground.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; provider redraw, ground translation, lateral translation, scale change, crop, new tree, removed tree, canopy repaint, bottom overflow",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 104182,
+        "noBackground": true,
+        "palette": "preserve accepted Original Forest source exactly; accepted Ruleset 7 Grass ground",
+        "postprocess": "square-tall-reframe-ground-reference",
+        "bodyOffsetY": 44,
+        "styleReference": {
+          "id": "terrain-square-original-forest-2",
+          "usageDescription": "Immutable accepted PixelLab source. Deterministically isolate its tree body from the old ground, translate only that body 44 source pixels downward, and composite the accepted Ruleset 7 Grass ground without redrawing."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        },
+        "groundReference": {
+          "id": "terrain-ruleset7-original-grass-1",
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe.",
+          "sha256": "51143c23f5e61781c74861a3167557651e189b5104dcabfac1b17daaf55ea466"
+        }
+      },
+      "outputSha256": "88dd6238e449dd5dfff000827f069077e84c2295d63696a703cb7a4687c94d29",
+      "reviewedAt": "2026-09-10T10:00:15.798Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-ruleset7-original-forest-3": {
+      "id": "terrain-ruleset7-original-forest-3",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/terrain-ruleset7-original-forest-3.png",
+      "candidateSha256": "f67c649898d53a9094efbbb6ed06b98dd2b0b1c1e5d32213947d8b6992ccffa8",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 43,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "notes": "Accepted corrected deterministic zero-offset derivation: sampled canopy interiors are byte-identical to immutable approved source; border flood-fill prevents new Grass bleed-through.",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: preserve accepted Original Forest source exactly; accepted Ruleset 7 Grass ground. Deterministic ground-only derivation of the immutable accepted PixelLab Original Forest 3 source. Preserve its exact already-grounded three-tree body, pixels, northwest light and placement at offset zero. Keep the owning square and anchor fixed and restore the accepted Ruleset 7 Grass 1 ground. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; provider redraw, ground translation, body translation, lateral translation, scale change, crop, new tree, removed tree, canopy repaint.",
+        "prompt": "Deterministic ground-only derivation of the immutable accepted PixelLab Original Forest 3 source. Preserve its exact already-grounded three-tree body, pixels, northwest light and placement at offset zero. Keep the owning square and anchor fixed and restore the accepted Ruleset 7 Grass 1 ground.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; provider redraw, ground translation, body translation, lateral translation, scale change, crop, new tree, removed tree, canopy repaint",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 104203,
+        "noBackground": true,
+        "palette": "preserve accepted Original Forest source exactly; accepted Ruleset 7 Grass ground",
+        "postprocess": "square-tall-reframe-ground-reference",
+        "bodyOffsetY": 0,
+        "styleReference": {
+          "id": "terrain-square-original-forest-3",
+          "usageDescription": "Immutable accepted PixelLab source. Deterministically isolate and preserve its already well-grounded tree body at offset zero, then composite the accepted Ruleset 7 Grass ground without redrawing."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        },
+        "groundReference": {
+          "id": "terrain-ruleset7-original-grass-1",
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe.",
+          "sha256": "51143c23f5e61781c74861a3167557651e189b5104dcabfac1b17daaf55ea466"
+        }
+      },
+      "outputSha256": "f67c649898d53a9094efbbb6ed06b98dd2b0b1c1e5d32213947d8b6992ccffa8",
+      "reviewedAt": "2026-09-10T10:00:18.074Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-ruleset7-original-forest-4": {
+      "id": "terrain-ruleset7-original-forest-4",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/terrain-ruleset7-original-forest-4.png",
+      "candidateSha256": "00027dd0144a3a445868111f6130ca7a0b5552d561b97b9feb8fb2be936658d7",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 105,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "notes": "Accepted corrected deterministic +44px body-only reframe after source/native/enlarged review: enclosed canopy interiors preserve exact source pixels; fixed v7 Grass ground and anchor unchanged.",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: preserve accepted Original Forest source exactly; accepted Ruleset 7 Grass ground. Deterministic body-only reframe of the immutable accepted PixelLab Original Forest 4 source. Preserve its exact four-tree silhouette, pixels, northwest light and lateral placement. Keep the owning square and anchor fixed; translate only tree-body pixels down 44 source pixels and restore the accepted Ruleset 7 Grass 1 ground. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; provider redraw, ground translation, lateral translation, scale change, crop, new tree, removed tree, canopy repaint, bottom overflow.",
+        "prompt": "Deterministic body-only reframe of the immutable accepted PixelLab Original Forest 4 source. Preserve its exact four-tree silhouette, pixels, northwest light and lateral placement. Keep the owning square and anchor fixed; translate only tree-body pixels down 44 source pixels and restore the accepted Ruleset 7 Grass 1 ground.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; provider redraw, ground translation, lateral translation, scale change, crop, new tree, removed tree, canopy repaint, bottom overflow",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 104224,
+        "noBackground": true,
+        "palette": "preserve accepted Original Forest source exactly; accepted Ruleset 7 Grass ground",
+        "postprocess": "square-tall-reframe-ground-reference",
+        "bodyOffsetY": 44,
+        "styleReference": {
+          "id": "terrain-square-original-forest-4",
+          "usageDescription": "Immutable accepted PixelLab source. Deterministically isolate its tree body from the old ground, translate only that body 44 source pixels downward, and composite the accepted Ruleset 7 Grass ground without redrawing."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        },
+        "groundReference": {
+          "id": "terrain-ruleset7-original-grass-1",
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe.",
+          "sha256": "51143c23f5e61781c74861a3167557651e189b5104dcabfac1b17daaf55ea466"
+        }
+      },
+      "outputSha256": "00027dd0144a3a445868111f6130ca7a0b5552d561b97b9feb8fb2be936658d7",
+      "reviewedAt": "2026-09-10T10:00:20.239Z",
       "reviewChecks": {
         "source": true,
         "native": true,

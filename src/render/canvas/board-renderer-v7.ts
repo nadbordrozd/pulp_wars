@@ -5,7 +5,12 @@ import {
   RULESET7_RESOURCE_ART_IDS,
   RULESET7_UNIT_ART_IDS,
 } from "../../assets/ruleset7-ui-art";
-import type { CommandV7, CoordV7, PlayerViewV7 } from "../../engine/index";
+import type {
+  CommandV7,
+  CoordV7,
+  ImprovementIdV7,
+  PlayerViewV7,
+} from "../../engine/index";
 import { queryCombatPreviewV7 } from "../../engine/index";
 import {
   RULESET6_UNIT_ART_GEOMETRY,
@@ -148,9 +153,11 @@ export function buildBoardRenderPlanV7(
       at: tile.at,
       assetId:
         tile.terrain === "GRASS"
-          ? `terrain-square-original-grass-${variant(tile.at, 4)}`
+          ? `terrain-ruleset7-original-grass-${variant(tile.at, 3)}`
           : tile.terrain === "FOREST"
-            ? `terrain-square-original-forest-${variant(tile.at, 4)}`
+            ? suppressesForestCanopyV7(tile.improvement)
+              ? "terrain-ruleset7-original-grass-1"
+              : `terrain-ruleset7-original-forest-${variant(tile.at, 4)}`
             : `terrain-square-original-mountain-${variant(tile.at, 3)}`,
       ownerId: tile.territoryOwnerId,
       ...ownerPresentation(view, tile.territoryOwnerId),
@@ -347,12 +354,24 @@ export function buildBoardRenderPlanV7(
     });
   entries.sort(
     (a, b) =>
+      Number(a.kind === "VALUE") - Number(b.kind === "VALUE") ||
       a.at.y - b.at.y ||
       a.at.x - b.at.x ||
       a.layer - b.layer ||
       a.key.localeCompare(b.key),
   );
   return { version: 7, entries, targets };
+}
+
+/** Presentation-only replacement of a same-cell Forest canopy with its ground. */
+export function suppressesForestCanopyV7(
+  improvement: ImprovementIdV7 | null,
+): boolean {
+  return (
+    improvement === "LUMBER_CAMP" ||
+    improvement === "WINDMILL" ||
+    improvement === "SAWMILL"
+  );
 }
 
 export interface BoardImageResolverV7 {
@@ -1257,7 +1276,7 @@ function geometryFor(entry: BoardRenderPlanEntryV7): SourceGeometry {
     )
       return SQUARE_ART_GEOMETRY.ground;
     if (entry.assetId === RULESET7_IMPROVEMENT_ART_IDS.LUMBER_CAMP)
-      return SQUARE_ART_GEOMETRY.lumberCamp;
+      return SQUARE_ART_GEOMETRY.ruleset7LumberCamp;
     if (entry.assetId === RULESET7_IMPROVEMENT_ART_IDS.SAWMILL)
       return SQUARE_ART_GEOMETRY.sawmill;
     if (

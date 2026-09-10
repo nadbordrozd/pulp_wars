@@ -140,6 +140,12 @@ export const SQUARE_ART_GEOMETRY = {
     anchor: { x: 128, y: 222 },
     displayScale: 0.7,
   },
+  ruleset7LumberCamp: {
+    width: 384,
+    height: 384,
+    anchor: { x: 192, y: 288 },
+    displayScale: 0.36,
+  },
   treasure: {
     width: 256,
     height: 296,
