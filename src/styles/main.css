@@ -851,6 +851,15 @@
 }
 
 @media (min-width: 801px) {
+  .v7-mandatory-choice[data-v7-region="mandatory-reward"] {
+    grid-template-columns: repeat(2, 176px);
+    justify-content: center;
+  }
+
+  .v7-mandatory-choice[data-v7-region="mandatory-reward"] > h2 {
+    grid-column: 1 / -1;
+  }
+
   .v7-tech-branch-selector {
     display: none;
   }

@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 
+import { readFileSync } from "node:fs";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   bootstrapRuleset7App,
@@ -30,6 +31,13 @@ beforeEach(() => {
 });
 
 describe("Ruleset 7 DOM shell", () => {
+  it("keeps the two mandatory reward actions in one desktop row", () => {
+    const css = readFileSync("src/styles/main.css", "utf8");
+    expect(css).toMatch(
+      /@media \(min-width: 801px\) \{[\s\S]*?\.v7-mandatory-choice\[data-v7-region="mandatory-reward"\] \{[\s\S]*?grid-template-columns: repeat\(2, 176px\);[\s\S]*?\.v7-mandatory-choice\[data-v7-region="mandatory-reward"\] > h2 \{[\s\S]*?grid-column: 1 \/ -1;/,
+    );
+  });
+
   it("launches the complete board-first shell with semantic public overlays", async () => {
     const app = bootstrapRuleset7App(document, { storage: null });
     expect(document.body.textContent).toContain("Original-only local conquest");
