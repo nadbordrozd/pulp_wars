@@ -61,9 +61,9 @@ spoil directly into that rock mass. The fixed restoration mapping is Mountain
 Mountain 3.
 
 The terrain remains authoritatively `MOUNTAIN`; constructing/removing a Mine
-will later swap the whole same-cell presentation between its matched combined
-states. This asset bead does not change the live renderer or reuse/erase any old
-Mine, Original, Ruleset-6, or Candy source.
+swaps the whole same-cell presentation between its matched combined states in
+the live Ruleset 7 revision-3 renderer. No loose Mine overlay is drawn, and no
+old Mine, Original, Ruleset-6, or Candy source is reused or erased.
 
 ## Ruleset-6 active inventory
 

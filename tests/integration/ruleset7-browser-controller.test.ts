@@ -567,7 +567,6 @@ function decisionV7(command: CommandV7): NormalAiDecisionV7 {
       },
     ],
     command,
-    pursuitNodesSearched: 0,
     prngDraws: 0,
   };
 }

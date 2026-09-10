@@ -43,10 +43,9 @@ owning region `x=0..255,y=128..383`, upward-only overflow, and the established
 40-source-pixel body lowering. Border-connected old ground extraction plus
 enclosed-body preservation prevents flat painted interior rock colors from
 being stripped. The ordinal source mapping is fixed: old Mountain 1/2/3 becomes
-`terrain-ruleset7-revision3-mountain-1/2/3` respectively. These assets are
-registered only; runtime terrain selection remains unchanged until the later
-integration bead. All earlier Original, Ruleset-6, and Candy terrain files stay
-byte-frozen.
+`terrain-ruleset7-revision3-mountain-1/2/3` respectively. Ruleset 7 revision 3
+uses these three assets for coordinate-selected live Mountain terrain. All
+earlier Original, Ruleset-6, and Candy terrain files stay byte-frozen.
 
 ### Original square base-terrain family
 

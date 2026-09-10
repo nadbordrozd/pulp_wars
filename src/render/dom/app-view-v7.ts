@@ -45,11 +45,7 @@ import { selectionIdentityArtworkLayoutV6 } from "./selection-identity-v6";
 import {
   blackoutStatusTextV7,
   blackoutTargetsV7,
-  defectionEscapeGeometryV7,
-  defectionTargetsV7,
-  defectionTimelineV7,
   playerLabelV7,
-  pursuitPresentationV7,
   type TacticalTargetModeV7,
 } from "../tactical-presentation-v7";
 
@@ -57,9 +53,7 @@ const BOARD_SIZES = [11, 14, 16, 20, 25] as const;
 const COLORS: readonly PlayerColorV7[] = ["CORAL", "TEAL", "GOLD", "VIOLET"];
 const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   "MOVE",
-  "PURSUE",
   "ATTACK",
-  "OFFER_DEFECTION",
   "BLACKOUT_CITY",
   "RESEARCH",
   "CHOOSE_CITY_REWARD",
@@ -70,6 +64,7 @@ export interface MountRuleset7AppOptions {
   readonly downloadSafeLog?: (source: string, filename: string) => void;
   readonly downloadDebugBundle?: (source: string, filename: string) => void;
   readonly settingsStorage?: StorageAdapter | null;
+  readonly startupNotice?: string;
 }
 
 export type Ruleset7ControllerPortV7 = Pick<
@@ -132,10 +127,6 @@ export class Ruleset7DomAppView {
   #selectedAbility: string | null = null;
   #selectedModifier: string | null = null;
   #tacticalTargetMode: TacticalTargetModeV7 | null = null;
-  #defectionChoice: {
-    readonly sourceUnitId: number;
-    readonly targetUnitId: number;
-  } | null = null;
   #modalReturnAction: string | null = null;
   #compactMenuOpen = false;
   #notice = "";
@@ -175,6 +166,7 @@ export class Ruleset7DomAppView {
       options.downloadDebugBundle ??
       ((source, filename) => downloadJsonFile(documentRoot, source, filename));
     this.#settingsStorage = options.settingsStorage ?? null;
+    this.#notice = options.startupNotice ?? "";
     this.#motion =
       documentRoot.defaultView?.matchMedia?.("(prefers-reduced-motion: reduce)")
         .matches === true
@@ -373,7 +365,7 @@ export class Ruleset7DomAppView {
       text(
         this.#document,
         "p",
-        `${this.#draft.aiCount + 1} fixed Original seats · ORIGINAL_BASELINE_V3`,
+        `${this.#draft.aiCount + 1} fixed Original seats · ORIGINAL_BASELINE_V4`,
         "v7-fixed-faction",
       ),
     );
@@ -397,7 +389,7 @@ export class Ruleset7DomAppView {
         );
       const faction = form.querySelector(".v7-fixed-faction");
       if (faction !== null)
-        faction.textContent = `${this.#draft.aiCount + 1} fixed Original seats · ORIGINAL_BASELINE_V3`;
+        faction.textContent = `${this.#draft.aiCount + 1} fixed Original seats · ORIGINAL_BASELINE_V4`;
     });
     form.addEventListener("submit", (event) => {
       event.preventDefault();
@@ -514,7 +506,6 @@ export class Ruleset7DomAppView {
         onSelection: (selection) => {
           this.#selection = selection;
           this.#tacticalTargetMode = null;
-          this.#defectionChoice = null;
           this.#selectedAchievement = null;
           this.#selectedAbility = null;
           this.#selectedModifier = null;
@@ -528,18 +519,8 @@ export class Ruleset7DomAppView {
     if (liveNode !== null) liveNode.textContent = this.#notice;
     if (alertNode !== null) alertNode.textContent = this.#error;
     const nextChildren: HTMLElement[] = [];
-    const pursuit = pursuitPresentationV7(view, this.#snapshot.offeredCommands);
     if (view.pendingChoices.length > 0) {
       this.#tacticalTargetMode = null;
-      this.#defectionChoice = null;
-    } else if (
-      pursuit !== null &&
-      (this.#selection?.kind !== "UNIT" ||
-        this.#selection.unitId !== pursuit.unitId)
-    ) {
-      this.#selection = { kind: "UNIT", unitId: pursuit.unitId };
-      this.#tacticalTargetMode = null;
-      this.#defectionChoice = null;
     }
     const activeId = view.turnOrder[view.activeSeatIndex];
     const active = view.players.find((player) => player.id === activeId);
@@ -689,8 +670,6 @@ export class Ruleset7DomAppView {
       nextChildren.push(this.#overlay(view));
     if (view.pendingChoices[0] !== undefined)
       nextChildren.push(this.#reward(view));
-    else if (this.#defectionChoice !== null)
-      nextChildren.push(this.#defectionHomeCityChoice(view));
     if (this.#snapshot.phase === "COMPLETE")
       nextChildren.push(this.#results(view));
     if (this.#snapshot.phase === "ERROR") nextChildren.push(this.#errorPanel());
@@ -767,31 +746,28 @@ export class Ruleset7DomAppView {
           `${title(unit.role)} · ${unit.hp}/${unit.maxHp} HP`,
         ),
       );
-      const pursuit = pursuitPresentationV7(
-        view,
-        this.#snapshot.offeredCommands,
-      );
-      if (pursuit?.unitId === unit.id) {
+      if (unit.role === "HORSE_ARCHER") {
         const state = el(this.#document, "section", "v7-tactical-state");
-        state.dataset.tacticalState = "pursuit";
+        state.dataset.tacticalState = "horse-archer";
+        const unusedShots = Math.max(0, 2 - unit.activation.attacksUsed);
+        const legalShots = this.#snapshot.offeredCommands.some(
+          (command) => command.kind === "ATTACK" && command.unitId === unit.id,
+        )
+          ? unusedShots
+          : 0;
         state.append(
-          createTacticalSymbolV7(
-            this.#document,
-            "ui-action-pursue",
-            this.#tacticalTheme(),
-          ),
-          text(this.#document, "strong", "Pursuit locked globally"),
+          text(this.#document, "strong", "Two-shot activation"),
           text(
             this.#document,
             "span",
-            `${title(pursuit.phase)} · ${pursuit.attacksUsed} attacks used · ${pursuit.attacksRemaining} remaining of 3`,
+            `${unit.activation.attacksUsed} attacks used · ${unusedShots} unused · ${legalShots} currently legal`,
           ),
           text(
             this.#document,
             "span",
-            pursuit.phase === "PURSUIT_READY"
-              ? `${pursuit.directAttackCommands.length} direct attacks · ${pursuit.pursueCommands.length} canonical 1–2 cell paths · ${pursuit.laterTargetUnitIds.length} later targets in reach`
-              : `${pursuit.directAttackCommands.length} direct attacks · movement already used`,
+            unit.activation.attacksUsed === 1
+              ? "Second shot remains available from this cell. This unit cannot move or use another action; other units remain available."
+              : "May move before the first shot; never advances or captures.",
           ),
         );
         dock.append(state);
@@ -936,87 +912,6 @@ export class Ruleset7DomAppView {
             `Exposed by ${title(exposure.reason)} until ${playerLabelV7(view, exposure.boundary.anchorPlayerId)}'s next accepted End Turn${exposure.boundary.round.known ? ` in round ${exposure.boundary.round.value}` : " (round cannot be represented safely)"}`,
           ),
         );
-      for (const reveal of visibility?.defectionReveals ?? [])
-        dock.append(
-          text(
-            this.#document,
-            "p",
-            `Defection ${title(reveal.phase)} · reveal ends when the mark resolves or cancels`,
-            "v7-unit-status",
-          ),
-        );
-      for (const mark of view.defectionStatuses.filter((status) =>
-        status.visibility === "FULL"
-          ? status.sourceUnitId === unit.id || status.targetUnitId === unit.id
-          : status.endpointUnitId === unit.id,
-      )) {
-        const detail = el(this.#document, "section", "v7-tactical-state");
-        detail.dataset.tacticalState = "defection";
-        detail.append(
-          createTacticalSymbolV7(
-            this.#document,
-            mark.phase === "ARMED"
-              ? "ui-status-defection-armed"
-              : "ui-status-defection-waiting",
-            this.#tacticalTheme(),
-          ),
-          text(this.#document, "strong", `Defection ${title(mark.phase)}`),
-        );
-        if (mark.visibility === "FULL") {
-          detail.append(
-            text(
-              this.#document,
-              "span",
-              mark.phase === "ARMED"
-                ? `Reply completed · resolution: ${playerLabelV7(view, mark.initiatingPlayerId)} next Start Turn`
-                : `Reply: ${playerLabelV7(view, mark.targetOwnerId)} next accepted End Turn · then resolution: ${playerLabelV7(view, mark.initiatingPlayerId)} first later Start Turn`,
-            ),
-            text(
-              this.#document,
-              "span",
-              `Reserved home city ${mark.reservedHomeCityId} · cancels if an endpoint/owner/relationship/city/capacity entitlement is lost or range exceeds 2`,
-            ),
-          );
-          const escape = defectionEscapeGeometryV7(
-            view,
-            this.#snapshot.offeredCommands,
-            mark,
-          );
-          if (escape.kind === "EXACT")
-            detail.append(
-              text(
-                this.#document,
-                "span",
-                escape.endpoints.length === 0
-                  ? "No escape endpoint beyond range 2 is currently offered."
-                  : `${escape.endpoints.length} current offered Move ${escape.endpoints.length === 1 ? "endpoint leaves" : "endpoints leave"} range 2 and can cancel the mark.`,
-              ),
-            );
-          else if (unit.id === mark.targetUnitId)
-            detail.append(
-              text(
-                this.#document,
-                "span",
-                "Escape geometry is not currently actionable; it will use exact offered Move endpoints during the target owner's reply turn.",
-              ),
-            );
-        } else
-          detail.append(
-            text(
-              this.#document,
-              "span",
-              "Endpoint-only status · counterpart identity, coordinate, city and capacity remain private.",
-            ),
-          );
-        detail.append(
-          text(
-            this.#document,
-            "span",
-            "Conversion is fully handled: no Capture, Spoils, or free action is granted.",
-          ),
-        );
-        dock.append(detail);
-      }
       if (unit.role === "SABOTEUR" && unit.ownerId === view.viewer.id) {
         const cooldown = this.#statusRow(
           "ui-status-blackout-cooldown",
@@ -1089,28 +984,12 @@ export class Ruleset7DomAppView {
           (unit) =>
             unit.ownerId === view.viewer.id && unit.homeCityId === city.id,
         ).length;
-        const reserved = view.defectionStatuses.filter(
-          (status) =>
-            status.visibility === "FULL" &&
-            status.initiatingPlayerId === view.viewer.id &&
-            status.reservedHomeCityId === city.id,
-        ).length;
-        const barracks = view.improvementValues.some(
-          (value) =>
-            value.improvement === "BARRACKS" &&
-            tileCity(view, value.at) === city.id,
-        );
         const capacity =
           city.level +
           1 +
-          (view.viewer.researchedTechs.includes("FORTIFICATION") ? 1 : 0) +
-          (barracks ? 2 : 0);
+          (view.viewer.researchedTechs.includes("FORTIFICATION") ? 1 : 0);
         details.append(
-          text(
-            this.#document,
-            "p",
-            `Assigned units ${assigned} + ${reserved} reserved / ${capacity}`,
-          ),
+          text(this.#document, "p", `Assigned units ${assigned} / ${capacity}`),
           text(
             this.#document,
             "p",
@@ -1244,14 +1123,6 @@ export class Ruleset7DomAppView {
       );
       const artId = commandArtIdV7(command);
       if (artId !== null) action.prepend(art(this.#document, artId, ""));
-      else if (command.kind === "END_PURSUIT")
-        action.prepend(
-          createTacticalSymbolV7(
-            this.#document,
-            "ui-action-end-pursuit",
-            this.#highContrast ? "HIGH_CONTRAST" : "DARK",
-          ),
-        );
       if (command.kind === "TRAIN") {
         const rule = effectiveRoleRuleV7(command.role);
         action.setAttribute(
@@ -1310,64 +1181,11 @@ export class Ruleset7DomAppView {
     view: PlayerViewV7,
     unitId: number,
   ): void {
-    const defections = defectionTargetsV7(
-      view,
-      this.#snapshot.offeredCommands,
-      unitId,
-    );
     const blackouts = blackoutTargetsV7(
       view,
       this.#snapshot.offeredCommands,
       unitId,
     );
-    const firstDefection = defections[0];
-    if (firstDefection !== undefined) {
-      const explanation = el(this.#document, "section", "v7-tactical-state");
-      explanation.dataset.tacticalState = "defection-preview";
-      explanation.append(
-        createTacticalSymbolV7(
-          this.#document,
-          "ui-status-defection-waiting",
-          this.#tacticalTheme(),
-        ),
-        text(
-          this.#document,
-          "span",
-          "Defection marks one visible hostile target. Its owner gets one complete reply through their next accepted End Turn; resolution follows at the initiator's first later Start Turn. Endpoint, owner, relationship, range-2, reserved-city and ordered-capacity loss cancel it. A converted city occupant may change siege but never captures, grants Spoils, or receives a free action.",
-        ),
-      );
-      dock.append(explanation);
-      const action = button(
-        this.#document,
-        this.#tacticalTargetMode?.kind === "DEFECTION"
-          ? "Cancel Defection targeting"
-          : "Defection",
-        "defection",
-        "v7-context-action v7-tactical-action",
-      );
-      const firstChoice = firstDefection.choices[0];
-      const artId =
-        firstChoice === undefined ? null : commandArtIdV7(firstChoice.command);
-      if (artId !== null) action.prepend(art(this.#document, artId, ""));
-      action.disabled = this.#localBusy();
-      action.setAttribute(
-        "aria-pressed",
-        String(this.#tacticalTargetMode?.kind === "DEFECTION"),
-      );
-      action.onclick = () => {
-        this.#tacticalTargetMode =
-          this.#tacticalTargetMode?.kind === "DEFECTION"
-            ? null
-            : { kind: "DEFECTION", sourceUnitId: unitId };
-        this.#notice =
-          this.#tacticalTargetMode === null
-            ? "Defection targeting cancelled."
-            : `Choose one of ${defections.length} highlighted visible targets.`;
-        this.#render();
-        this.#queueBoardFocus();
-      };
-      actions.append(action);
-    }
     const firstBlackout = blackouts[0];
     if (firstBlackout !== undefined) {
       const explanation = el(this.#document, "section", "v7-tactical-state");
@@ -1424,106 +1242,8 @@ export class Ruleset7DomAppView {
     const view = this.#snapshot.view;
     if (view === null) return;
     const command = target.command;
-    if (target.family === "DEFECTION" && command.kind === "OFFER_DEFECTION") {
-      const presentation = defectionTargetsV7(
-        view,
-        this.#snapshot.offeredCommands,
-        command.unitId,
-      ).find((candidate) => candidate.targetUnitId === command.targetUnitId);
-      if (presentation === undefined) return;
-      const firstChoice = presentation.choices[0];
-      if (firstChoice === undefined) return;
-      if (presentation.choices.length === 1) {
-        this.#tacticalTargetMode = null;
-        await this.#dispatch(firstChoice.command);
-      } else {
-        this.#tacticalTargetMode = null;
-        this.#defectionChoice = {
-          sourceUnitId: command.unitId,
-          targetUnitId: command.targetUnitId,
-        };
-        this.#pendingFocusAction = `defection-city-${firstChoice.preview.reservedCity.cityId}`;
-        this.#render();
-      }
-      return;
-    }
     if (target.family === "BLACKOUT") this.#tacticalTargetMode = null;
     await this.#dispatch(command);
-  }
-
-  #defectionHomeCityChoice(view: PlayerViewV7): HTMLElement {
-    const modal = el(
-      this.#document,
-      "section",
-      "v7-mandatory-choice v7-defection-choice",
-    );
-    modal.dataset.v7Region = "defection-home-city-choice";
-    modal.dataset.mandatoryChoice = "true";
-    modal.setAttribute("role", "alertdialog");
-    modal.setAttribute("aria-modal", "true");
-    modal.append(text(this.#document, "h2", "Choose home city"));
-    const choice = this.#defectionChoice;
-    if (choice === null) return modal;
-    const target = defectionTargetsV7(
-      view,
-      this.#snapshot.offeredCommands,
-      choice.sourceUnitId,
-    ).find((candidate) => candidate.targetUnitId === choice.targetUnitId);
-    if (target === undefined || target.choices.length === 0) {
-      this.#defectionChoice = null;
-      return modal;
-    }
-    const firstChoice = target.choices[0];
-    if (firstChoice === undefined) return modal;
-    const firstPreview = firstChoice.preview;
-    modal.append(
-      text(
-        this.#document,
-        "p",
-        `Convert visible ${title(firstPreview.target.role)} ${firstPreview.target.unitId}. This deals no damage and grants no retaliation.`,
-      ),
-    );
-    const timeline = this.#document.createElement("ol");
-    for (const item of defectionTimelineV7(view, firstPreview))
-      timeline.append(text(this.#document, "li", item));
-    modal.append(timeline);
-    for (const item of target.choices) {
-      const city = item.preview.reservedCity;
-      const action = button(
-        this.#document,
-        `City ${city.cityId} · capacity ${city.capacity} · assigned ${city.assigned} · reserved ${city.reservedBeforeOffer} → ${city.reservedAfterOffer} · available after ${city.availableAfterOffer}`,
-        `defection-city-${city.cityId}`,
-        "v7-defection-city-action",
-      );
-      action.prepend(
-        createTacticalSymbolV7(
-          this.#document,
-          "ui-status-defection-reservation",
-          this.#tacticalTheme(),
-        ),
-      );
-      action.disabled = this.#localBusy();
-      action.onclick = () => {
-        this.#defectionChoice = null;
-        void this.#dispatch(item.command);
-      };
-      modal.append(action);
-    }
-    modal.append(
-      text(
-        this.#document,
-        "p",
-        `Cancellation: ${firstPreview.cancellationConditions.map(title).join(" · ")}.`,
-        "v7-tactical-fineprint",
-      ),
-      text(
-        this.#document,
-        "p",
-        `${title(firstPreview.cityOccupantSiegeConsequence)}. Conversion preserves role, HP, veteran state, kills and cooldown, but is fully handled with Capture false; it grants no Capture, Spoils, or free action.`,
-        "v7-tactical-fineprint",
-      ),
-    );
-    return modal;
   }
 
   #statusRow(id: Ruleset7TacticalUiSymbolId, label: string): HTMLElement {
@@ -1586,8 +1306,16 @@ export class Ruleset7DomAppView {
     branchSelect.dataset.action = "tech-branch-select";
     branchSelect.setAttribute("aria-label", "Jump to technology branch");
     const graph = el(this.#document, "div", "v7-tech-graph");
+    graph.style.setProperty(
+      "--v7-tech-total-leaves",
+      String(layout.reduce((total, branch) => total + branch.leafCount, 0)),
+    );
     for (const branch of layout) {
       const column = el(this.#document, "section", "v7-tech-branch");
+      column.style.setProperty(
+        "--v7-tech-branch-span",
+        String(branch.leafCount),
+      );
       const branchId = `v7-tech-branch-${branch.node.branch.toLowerCase()}`;
       column.id = branchId;
       column.dataset.techBranch = branch.node.branch;
@@ -2014,7 +1742,6 @@ export class Ruleset7DomAppView {
     this.#cancelPresentations();
     this.#error = "";
     this.#tacticalTargetMode = null;
-    this.#defectionChoice = null;
     const result = await this.#controller.launch(setup, {
       replaceStoredMatch: replace,
     });
@@ -2061,7 +1788,6 @@ export class Ruleset7DomAppView {
     this.#cancelPresentations();
     this.#selection = null;
     this.#tacticalTargetMode = null;
-    this.#defectionChoice = null;
     this.#screen = "MATCH";
     this.#compactMenuOpen = false;
     this.#notice =
@@ -2084,7 +1810,6 @@ export class Ruleset7DomAppView {
     }
     this.#error = "";
     this.#tacticalTargetMode = null;
-    this.#defectionChoice = null;
     this.#notice =
       specialBoundaryNoticeV7(
         result.playerEvents.events,
@@ -2482,9 +2207,11 @@ function appendTechNode(
   node.append(card);
   if (layout.children.length > 0) {
     const children = el(documentRoot, "div", "v7-tech-children");
+    children.style.setProperty("--v7-tech-leaves", String(layout.leafCount));
     if (layout.children.length === 1) children.classList.add("is-unary");
     for (const child of layout.children) {
       const edge = el(documentRoot, "div", "v7-tech-edge");
+      edge.style.gridColumn = `span ${child.leafCount}`;
       edge.dataset.parentTech = layout.node.id;
       edge.dataset.childTech = child.node.id;
       appendTechNode(documentRoot, edge, child, choose, selected);
@@ -2541,7 +2268,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r2",
+    rulesetId: "pulp-wars-poc-7r3",
     seed,
     width: draft.boardSize,
     height: draft.boardSize,
@@ -2617,8 +2344,6 @@ function effectDescription(
       return "Ordinary step costs 1; orthogonally connected Road step costs ½";
     case "MARKET_CAPITAL_ROAD_BONUS":
       return `Market connected to the capital adds +${effect.coins} Coin`;
-    case "IGNORE_HOSTILE_ZOC":
-      return `${effect.roles.map(title).join(", ")} ignore hostile control after Maneuver`;
     case "FRIENDLY_CITY_FORTIFICATION":
       return "Fighter and Guard receive ×2 defense in an owned unwalled city";
     case "OWNED_CITY_CAPACITY_BONUS":
@@ -2651,18 +2376,12 @@ function abilityDescription(
       return "A surviving adjacent defender is pushed one cell directly away when the public destination is legal.";
     case "BREACH":
       return "Adjacent attacks ignore the defender's terrain or city defense multiplier.";
-    case "PURSUIT":
-      return "After a qualifying kill, make bounded Pursuit attacks and movement, or choose End Pursuit.";
-    case "DEFECTION":
-      return "Offer conversion to a visible hostile unit using reserved home-city capacity; it resolves or cancels at its rule boundary.";
     case "CONCEALMENT":
-      return "Hidden from hostile viewers unless legally detected, exposed, or explicitly revealed by Defection. The owner marker denotes the ability, not guaranteed invisibility.";
+      return "Hidden from hostile viewers unless legally detected or exposed. The owner marker denotes the ability, not guaranteed invisibility.";
     case "BLACKOUT":
       return "Plant Blackout in an adjacent hostile city when offered. City-only detection reveals but does not block it; hostile-unit detection blocks without identifying hidden detectors.";
     case "DASH":
-      return "May use its primary action after moving.";
-    case "IGNORE_ZOC_WITH_MANEUVER":
-      return "After Maneuver, ignores hostile zones of control while moving.";
+      return "May take its ordinary Move before its first Attack.";
     default:
       return `${title(ability)} ability.`;
   }
@@ -2672,21 +2391,16 @@ export function economicFormulaV7(
   formula: string,
 ): string {
   if (improvement === "WINDMILL" && formula === "CONNECTED_ORTHOGONAL_CLUSTER")
-    return "Windmill: 0 with no reachable Farm; otherwise +2 base and +1 per Farm in its touching orthogonal same-city cluster, cap 8 population";
+    return "Windmill: +1 population per Farm in its touching orthogonal same-city cluster, cap 8; unsupported produces 0";
   if (improvement === "SAWMILL" && formula === "CONNECTED_ORTHOGONAL_CLUSTER")
     return "Sawmill: +1 population per Lumber Camp in its touching orthogonal same-city cluster, cap 8";
   if (improvement === "FORGE" && formula === "ADJACENT_MINES")
     return "Forge: +3 population per adjacent same-city Mine, cap 18; an empty Forge produces 0";
-  if (
-    improvement === "STONEWORKS" &&
-    formula === "ADJACENT_QUARRIES_AND_OPPOSITE_PAIRS"
-  )
-    return "Stoneworks: 0 with no adjacent same-city Quarry; otherwise +2 base, +2 per Quarry and +2 per complete opposite Quarry pair, cap 16 population";
   if (improvement === "WORKSHOP" && formula === "DISTINCT_BASIC_TYPES")
-    return "Workshop: 0 with no adjacent Farm, Camp, Mine or Quarry type; otherwise +1 base and +1 per distinct basic type, producing 2–5 population";
+    return "Workshop: 0 with no adjacent Farm, Camp, or Mine; otherwise +1 plus the number of distinct adjacent types, cap 4 population";
   if (improvement === "GRAND_WORKS" && formula === "DISTINCT_PROCESSOR_TYPES")
-    return "Grand Works: 0 below two adjacent positive-output processor types; otherwise +4 base and +2 per qualifying type, producing 8, 10 or 12 population (cap 12)";
-  return "Market: +1 recurring Coin per adjacent Agriculture, Timber, Metal or Stone family, including supported or inactive processors, plus +1 for an adjacent capital-connected friendly Road; cap 5";
+    return "Grand Works: 0 below two adjacent positive-output processor types; otherwise +4 plus +2 per qualifying type, cap 10 population";
+  return "Market: +1 recurring Coin per adjacent Agriculture, Timber, or Metal family, including inactive processors, plus +1 for an adjacent capital-connected friendly Road; cap 4";
 }
 export function monumentSourceForViewerV7(
   view: PlayerViewV7,
@@ -2737,7 +2451,6 @@ function rewardLabel(reward: string, level: number): string {
 }
 function commandLabel(command: CommandV7): string {
   if (command.kind === "TRAIN") return effectiveRoleRuleV7(command.role).label;
-  if (command.kind === "END_PURSUIT") return "End Pursuit";
   return title(command.kind);
 }
 function economicPreviewLabelV7(preview: EconomicPreviewV7): string {
@@ -2755,9 +2468,6 @@ function economicPreviewLabelV7(preview: EconomicPreviewV7): string {
       ? null
       : `population ${population > 0 ? "+" : ""}${population}`,
     income === 0 ? null : `income ${income > 0 ? "+" : ""}${income}`,
-    preview.capacityDelta === 0
-      ? null
-      : `capacity ${preview.capacityDelta > 0 ? "+" : ""}${preview.capacityDelta}`,
   ].filter((detail): detail is string => detail !== null);
   return details.join(" · ");
 }

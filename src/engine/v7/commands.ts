@@ -27,15 +27,12 @@ export type TileCommandKindV7 =
   | "BUILD_FARM"
   | "BUILD_LUMBER_CAMP"
   | "BUILD_MINE"
-  | "BUILD_QUARRY"
   | "BUILD_WINDMILL"
   | "BUILD_SAWMILL"
   | "BUILD_FORGE"
-  | "BUILD_STONEWORKS"
   | "BUILD_WORKSHOP"
   | "BUILD_GRAND_WORKS"
   | "BUILD_MARKET"
-  | "BUILD_BARRACKS"
   | "CLEAR_FOREST"
   | "REPLANT_FOREST"
   | "BUILD_ROAD"
@@ -43,7 +40,7 @@ export type TileCommandKindV7 =
 
 export type CommandV7 =
   | {
-      readonly kind: "MOVE" | "PURSUE";
+      readonly kind: "MOVE";
       readonly unitId: UnitId;
       readonly path: readonly CoordV7[];
     }
@@ -51,12 +48,6 @@ export type CommandV7 =
       readonly kind: "ATTACK";
       readonly unitId: UnitId;
       readonly targetUnitId: UnitId;
-    }
-  | {
-      readonly kind: "OFFER_DEFECTION";
-      readonly unitId: UnitId;
-      readonly targetUnitId: UnitId;
-      readonly homeCityId: CityId;
     }
   | {
       readonly kind: "BLACKOUT_CITY";
@@ -70,13 +61,7 @@ export type CommandV7 =
     }
   | {
       readonly kind:
-        | "RECOVER"
-        | "CAPTURE"
-        | "PROMOTE"
-        | "PILLAGE"
-        | "DISBAND"
-        | "END_PURSUIT"
-        | "WAIT";
+        "RECOVER" | "CAPTURE" | "PROMOTE" | "PILLAGE" | "DISBAND" | "WAIT";
       readonly unitId: UnitId;
     }
   | { readonly kind: "RESEARCH"; readonly tech: TechnologyIdV7 }
@@ -110,8 +95,21 @@ export type CommandParseResultV7 =
   | { readonly ok: false; readonly field: string };
 
 const TILE_KINDS = new Set<CommandKindV7>([
-  ...COMMAND_KIND_ORDER_V7.slice(14, 28),
-  ...COMMAND_KIND_ORDER_V7.slice(29, 33),
+  "HARVEST_FRUIT",
+  "HUNT_GAME",
+  "BUILD_FARM",
+  "BUILD_LUMBER_CAMP",
+  "BUILD_MINE",
+  "BUILD_WINDMILL",
+  "BUILD_SAWMILL",
+  "BUILD_FORGE",
+  "BUILD_WORKSHOP",
+  "BUILD_GRAND_WORKS",
+  "BUILD_MARKET",
+  "CLEAR_FOREST",
+  "REPLANT_FOREST",
+  "BUILD_ROAD",
+  "REDEVELOP",
 ]);
 const UNIT_ONLY_KINDS = new Set<CommandKindV7>([
   "RECOVER",
@@ -119,7 +117,6 @@ const UNIT_ONLY_KINDS = new Set<CommandKindV7>([
   "PROMOTE",
   "PILLAGE",
   "DISBAND",
-  "END_PURSUIT",
   "WAIT",
 ]);
 
@@ -192,7 +189,7 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
           },
         };
   }
-  if (kind === "MOVE" || kind === "PURSUE") {
+  if (kind === "MOVE") {
     const id = hasExactKeysV7(input, ["kind", "unitId", "path"])
       ? parseUnitIdV7(candidate.unitId)
       : null;
@@ -209,21 +206,6 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
     return unit === null || target === null
       ? invalid(kind)
       : { ok: true, value: { kind, unitId: unit, targetUnitId: target } };
-  }
-  if (kind === "OFFER_DEFECTION") {
-    if (
-      !hasExactKeysV7(input, ["kind", "unitId", "targetUnitId", "homeCityId"])
-    )
-      return invalid(kind);
-    const unit = parseUnitIdV7(candidate.unitId);
-    const target = parseUnitIdV7(candidate.targetUnitId);
-    const home = parseCityIdV7(candidate.homeCityId);
-    return unit === null || target === null || home === null
-      ? invalid(kind)
-      : {
-          ok: true,
-          value: { kind, unitId: unit, targetUnitId: target, homeCityId: home },
-        };
   }
   if (kind === "BLACKOUT_CITY") {
     if (!hasExactKeysV7(input, ["kind", "unitId", "cityId"]))
@@ -294,13 +276,8 @@ export function compareCommandsV7(left: CommandV7, right: CommandV7): number {
   if (byActor !== 0) return byActor;
   const byContent = referencedOrdinal(left) - referencedOrdinal(right);
   if (byContent !== 0) return byContent;
-  if (
-    (left.kind === "MOVE" || left.kind === "PURSUE") &&
-    (right.kind === "MOVE" || right.kind === "PURSUE")
-  )
+  if (left.kind === "MOVE" && right.kind === "MOVE")
     return comparePaths(left.path, right.path);
-  if (left.kind === "OFFER_DEFECTION" && right.kind === "OFFER_DEFECTION")
-    return left.homeCityId - right.homeCityId;
   return 0;
 }
 
@@ -317,8 +294,7 @@ function parsePath(input: unknown): readonly CoordV7[] | null {
 
 function targetCoord(command: CommandV7): CoordV7 | null {
   if ("at" in command) return command.at;
-  if (command.kind === "MOVE" || command.kind === "PURSUE")
-    return command.path.at(-1) ?? null;
+  if (command.kind === "MOVE") return command.path.at(-1) ?? null;
   return null;
 }
 
@@ -345,11 +321,7 @@ function referencedOrdinal(command: CommandV7): number {
     return REWARD_IDS_V7.indexOf(command.reward);
   if (command.kind === "BUILD_MONUMENT")
     return ACHIEVEMENT_IDS_V7.indexOf(command.achievement);
-  if (
-    command.kind === "ATTACK" ||
-    command.kind === "HEAL_ADJACENT" ||
-    command.kind === "OFFER_DEFECTION"
-  )
+  if (command.kind === "ATTACK" || command.kind === "HEAL_ADJACENT")
     return command.targetUnitId;
   if (command.kind === "BLACKOUT_CITY") return command.cityId;
   return 0;

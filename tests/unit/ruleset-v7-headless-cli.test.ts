@@ -30,8 +30,8 @@ function runCli(...args: readonly string[]): CliSummary {
   return JSON.parse(output) as CliSummary;
 }
 
-describe("ruleset-7 revision-2 headless CLI dispatch", () => {
-  it("requires the explicit r2 ruleset while preserving the v6 default", () => {
+describe("ruleset-7 revision-3 headless CLI dispatch", () => {
+  it("requires the explicit r3 ruleset while preserving the v6 default", () => {
     const defaultResult = runCli(
       "match",
       "--max-commands",
@@ -47,7 +47,7 @@ describe("ruleset-7 revision-2 headless CLI dispatch", () => {
     const result = runCli(
       "match",
       "--ruleset",
-      "pulp-wars-poc-7r2",
+      "pulp-wars-poc-7r3",
       "--max-commands",
       "1",
       "--max-rounds",
@@ -56,7 +56,7 @@ describe("ruleset-7 revision-2 headless CLI dispatch", () => {
     expect(result).toMatchObject({
       acceptedCommands: 1,
       termination: "COMMAND_CAP",
-      metrics: { rulesetId: "pulp-wars-poc-7r2" },
+      metrics: { rulesetId: "pulp-wars-poc-7r3" },
     });
   });
 
@@ -65,7 +65,7 @@ describe("ruleset-7 revision-2 headless CLI dispatch", () => {
       runCli(
         "match",
         "--ruleset",
-        "pulp-wars-poc-7r2",
+        "pulp-wars-poc-7r3",
         "--factions",
         "original,candy",
         "--max-commands",
@@ -74,8 +74,8 @@ describe("ruleset-7 revision-2 headless CLI dispatch", () => {
     ).toThrow(/ruleset 7 factions must be original/);
     expect(() =>
       runCli("match", "--ruleset", "pulp-wars-poc-7", "--max-commands", "1"),
-    ).toThrow(/pulp-wars-poc-7r2/);
-  });
+    ).toThrow(/pulp-wars-poc-7r3/);
+  }, 15_000);
 
   it("dispatches a command-zero v7 replay through canonical playable creation", () => {
     const setup = setupV7(42);

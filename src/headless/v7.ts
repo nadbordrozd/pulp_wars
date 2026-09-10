@@ -8,6 +8,7 @@ import {
 import type { PlayerId, UnitId } from "../engine/model/ids";
 import { canonicalHash, canonicalJson } from "../engine/replay/canonical";
 import {
+  ORIGINAL_BASELINE_V4_TREE,
   TECHNOLOGY_BRANCH_IDS_V7,
   effectiveRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
@@ -20,7 +21,6 @@ import {
 import type { DomainEventV7 } from "../engine/v7/events";
 import {
   previewBlackoutV7,
-  previewDefectionV7,
   previewEconomicV7,
   previewMonumentV7,
   queryCombatPreviewV7,
@@ -40,7 +40,6 @@ import {
 import { spatialContributionAtV7 } from "../engine/v7/spatial-economy";
 import {
   COMMAND_KIND_ORDER_V7,
-  DEFECTION_CANCELLATION_REASON_ORDER_V7,
   DOMAIN_EVENT_KIND_ORDER_V7,
   IMPROVEMENT_IDS_V7,
   RESOURCE_IDS_V7,
@@ -49,7 +48,6 @@ import {
   UNIT_ROLE_IDS_V7,
   type AiCountV7,
   type BoardSizeV7,
-  type DefectionCancellationReasonV7,
   type GameStateV7,
   type ImprovementIdV7,
   type MatchOutcomeV7,
@@ -84,7 +82,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r2";
+  readonly rulesetId: "pulp-wars-poc-7r3";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -127,10 +125,8 @@ export interface HeadlessMetricsV7 {
     roadsBuilt: number;
   };
   readonly capacity: {
-    barracksBuilt: number;
     fortificationAdoptions: number;
     overcapacityStates: number;
-    reservationTurnBoundaries: number;
   };
   readonly achievements: {
     readonly progressMaximum: Record<"ENGINEER" | "MUSTER", number>;
@@ -153,25 +149,19 @@ export interface HeadlessMetricsV7 {
     readonly survivors: Record<UnitRoleIdV7, number>;
     readonly survivalPerCoin: Record<UnitRoleIdV7, number>;
   };
-  readonly pursuit: {
+  readonly horseArcher: {
     activations: number;
-    attacks: number;
-    kills: number;
-    paths: number;
-    readonly stops: Record<string, number>;
-    readonly endReasons: Record<string, number>;
-    readonly targetSpacing: Record<string, number>;
-    publicNodesSearched: number;
-  };
-  readonly defection: {
-    offers: number;
-    replyTurns: number;
-    arms: number;
-    resolutions: number;
-    readonly cancellations: Record<DefectionCancellationReasonV7, number>;
-    readonly convertedRoles: Record<UnitRoleIdV7, number>;
-    convertedPublicValue: number;
-    reservationDurationCommands: number;
+    shots: number;
+    firstShots: number;
+    secondShots: number;
+    splitFireChoices: number;
+    retaliations: number;
+    survivals: number;
+    postFirstShotCommandInterleaving: number;
+    attemptedMovementViolations: number;
+    attemptedCaptureViolations: number;
+    advanceViolations: number;
+    readonly shotsPerActivation: Record<string, number>;
   };
   readonly saboteur: {
     concealedTurns: number;
@@ -433,7 +423,6 @@ function runAiMatchInternalV7(
     let command: CommandV7 | null;
     try {
       const decision = chooseNormalCommandV7(view);
-      metrics.pursuit.publicNodesSearched += decision.pursuitNodesSearched;
       command = chooseNormalTurnCommandV7(
         view,
         commandsThisTurn,
@@ -596,7 +585,7 @@ export async function runAiBatchV7(
         await new Promise<void>((resolve) => setTimeout(resolve, 0));
         const result = runAiMatchInternalV7(
           {
-            rulesetId: "pulp-wars-poc-7r2",
+            rulesetId: "pulp-wars-poc-7r3",
             mapGenerationRevision: "SPATIAL_ECONOMY",
             seed,
             width: size,
@@ -666,7 +655,8 @@ interface TelemetryStateV7 {
     string,
     { readonly improvement: ImprovementIdV7; readonly value: number }
   >;
-  readonly defectionOffers: Map<number, number>;
+  readonly horseArcherFirstTargets: Map<UnitId, UnitId>;
+  readonly horseArcherInterleaved: Set<UnitId>;
   readonly catapultShotTargets: Set<UnitId>;
   readonly healingSinceCatapultShot: Map<UnitId, number>;
   readonly catapultSetupUnits: Set<UnitId>;
@@ -677,7 +667,8 @@ interface TelemetryStateV7 {
 function createTelemetryState(state: GameStateV7): TelemetryStateV7 {
   return {
     contributionByTile: currentContributions(state),
-    defectionOffers: new Map(),
+    horseArcherFirstTargets: new Map(),
+    horseArcherInterleaved: new Set(),
     catapultShotTargets: new Set(),
     healingSinceCatapultShot: new Map(),
     catapultSetupUnits: new Set(),
@@ -691,7 +682,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r2",
+    rulesetId: "pulp-wars-poc-7r3",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,
@@ -738,10 +729,8 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
       roadsBuilt: 0,
     },
     capacity: {
-      barracksBuilt: 0,
       fortificationAdoptions: 0,
       overcapacityStates: 0,
-      reservationTurnBoundaries: 0,
     },
     achievements: {
       progressMaximum: { ENGINEER: 0, MUSTER: 0 },
@@ -764,25 +753,19 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
       survivors: zeroRecord(UNIT_ROLE_IDS_V7),
       survivalPerCoin: zeroRecord(UNIT_ROLE_IDS_V7),
     },
-    pursuit: {
+    horseArcher: {
       activations: 0,
-      attacks: 0,
-      kills: 0,
-      paths: 0,
-      stops: {},
-      endReasons: {},
-      targetSpacing: {},
-      publicNodesSearched: 0,
-    },
-    defection: {
-      offers: 0,
-      replyTurns: 0,
-      arms: 0,
-      resolutions: 0,
-      cancellations: zeroRecord(DEFECTION_CANCELLATION_REASON_ORDER_V7),
-      convertedRoles: zeroRecord(UNIT_ROLE_IDS_V7),
-      convertedPublicValue: 0,
-      reservationDurationCommands: 0,
+      shots: 0,
+      firstShots: 0,
+      secondShots: 0,
+      splitFireChoices: 0,
+      retaliations: 0,
+      survivals: 0,
+      postFirstShotCommandInterleaving: 0,
+      attemptedMovementViolations: 0,
+      attemptedCaptureViolations: 0,
+      advanceViolations: 0,
+      shotsPerActivation: {},
     },
     saboteur: {
       concealedTurns: 0,
@@ -832,15 +815,20 @@ function recordCommandAndEventsV7(
     "unitId" in command
       ? before.units.find((unit) => unit.id === command.unitId)
       : undefined;
+  for (const unitId of telemetry.horseArcherFirstTargets.keys())
+    if (
+      !telemetry.horseArcherInterleaved.has(unitId) &&
+      !(
+        command.kind === "ATTACK" &&
+        command.unitId === unitId &&
+        actorUnit?.activation.attacksUsed === 1
+      )
+    ) {
+      telemetry.horseArcherInterleaved.add(unitId);
+      metrics.horseArcher.postFirstShotCommandInterleaving += 1;
+    }
   if (actorUnit !== undefined) metrics.roles.actions[actorUnit.role] += 1;
   recordCommandCost(before, actorId, command, metrics);
-  if (command.kind === "PURSUE") metrics.pursuit.paths += 1;
-  if (command.kind === "PURSUE")
-    for (const event of events)
-      if (event.kind === "UNIT_MOVE_INTERRUPTED")
-        increment(metrics.pursuit.stops, event.reason);
-  if (command.kind === "ATTACK" && actorUnit?.role === "LANCER")
-    metrics.pursuit.attacks += 1;
   if (command.kind === "ATTACK" && actorUnit?.role === "CATAPULT") {
     const target = before.units.find(
       (unit) => unit.id === command.targetUnitId,
@@ -868,6 +856,13 @@ function recordCommandAndEventsV7(
     metrics.roles.captures[actorUnit.role] += 1;
   recordEventsV7(before, after, events, metrics, telemetry);
   if (command.kind === "END_TURN") {
+    for (const [unitId] of telemetry.horseArcherFirstTargets) {
+      const unit = before.units.find((candidate) => candidate.id === unitId);
+      if (unit?.ownerId !== actorId) continue;
+      increment(metrics.horseArcher.shotsPerActivation, "1");
+      telemetry.horseArcherFirstTargets.delete(unitId);
+      telemetry.horseArcherInterleaved.delete(unitId);
+    }
     metrics.catapult.setupTurns += [...telemetry.catapultSetupUnits].filter(
       (unitId) =>
         before.units.some(
@@ -877,7 +872,6 @@ function recordCommandAndEventsV7(
     for (const unit of before.units)
       if (unit.ownerId === actorId)
         telemetry.catapultSetupUnits.delete(unit.id);
-    metrics.capacity.reservationTurnBoundaries += after.defectionMarks.length;
     for (const exposure of before.saboteurExposures)
       if (
         !after.saboteurExposures.some(
@@ -965,17 +959,12 @@ function recordEventsV7(
     if (event.kind === "GAME_HUNTED") metrics.resources.converted.GAME += 1;
     if (event.kind === "ECONOMIC_BUILDING_BUILT") {
       metrics.improvements.built[event.improvement] += 1;
-      if (event.improvement === "BARRACKS") metrics.capacity.barracksBuilt += 1;
       const prior = before.board.tiles.find((tile) =>
         same(tile.at, event.at),
       )?.resource;
       if (prior !== null && prior !== undefined) {
         metrics.resources.converted[prior] += 1;
-        if (
-          (prior === "FERTILE_GROUND" && event.improvement === "FARM") ||
-          (prior === "ORE" && event.improvement === "MINE") ||
-          (prior === "STONE" && event.improvement === "QUARRY")
-        )
+        if (prior === "FERTILE_GROUND" && event.improvement === "FARM")
           metrics.resources.rebuilt[prior] += Number(
             telemetry.restoredSites.delete(coordKey(event.at)),
           );
@@ -1027,16 +1016,28 @@ function recordEventsV7(
       if (attacker !== undefined) {
         metrics.roles.damage[attacker.role] += preview.damageToDefender;
         if (preview.defenderDies) metrics.roles.kills[attacker.role] += 1;
-        if (attacker.role === "LANCER" && preview.defenderDies) {
-          metrics.pursuit.kills += 1;
-          const target = before.units.find(
-            (unit) => unit.id === preview.targetUnitId,
-          );
-          if (target !== undefined)
-            increment(
-              metrics.pursuit.targetSpacing,
-              String(chebyshev(attacker.at, target.at)),
+        if (attacker.role === "HORSE_ARCHER") {
+          metrics.horseArcher.shots += 1;
+          metrics.horseArcher.retaliations += Number(preview.retaliation);
+          metrics.horseArcher.survivals += Number(!preview.attackerDies);
+          metrics.horseArcher.advanceViolations += Number(preview.advances);
+          if (preview.attacksUsed === 1) {
+            metrics.horseArcher.activations += 1;
+            metrics.horseArcher.firstShots += 1;
+            telemetry.horseArcherFirstTargets.set(
+              attacker.id,
+              preview.targetUnitId,
             );
+          } else {
+            metrics.horseArcher.secondShots += 1;
+            metrics.horseArcher.splitFireChoices += Number(
+              telemetry.horseArcherFirstTargets.get(attacker.id) !==
+                preview.targetUnitId,
+            );
+            increment(metrics.horseArcher.shotsPerActivation, "2");
+            telemetry.horseArcherFirstTargets.delete(attacker.id);
+            telemetry.horseArcherInterleaved.delete(attacker.id);
+          }
         }
       }
       const defender = before.units.find(
@@ -1053,45 +1054,11 @@ function recordEventsV7(
       telemetry.catapultShotTargets.delete(event.unitId);
       telemetry.healingSinceCatapultShot.delete(event.unitId);
       telemetry.catapultSetupUnits.delete(event.unitId);
-    }
-    if (event.kind === "PURSUIT_OPENED" && event.attacksUsed === 1)
-      metrics.pursuit.activations += 1;
-    if (event.kind === "PURSUIT_ENDED")
-      increment(metrics.pursuit.endReasons, event.reason);
-    if (event.kind === "DEFECTION_OFFERED") {
-      metrics.defection.offers += 1;
-      telemetry.defectionOffers.set(event.markId, event.offeredAtCommandIndex);
-    }
-    if (event.kind === "DEFECTION_ARMED") {
-      metrics.defection.arms += 1;
-      metrics.defection.replyTurns += 1;
-    }
-    if (event.kind === "DEFECTION_CANCELLED") {
-      metrics.defection.cancellations[event.reason] += 1;
-      const start = telemetry.defectionOffers.get(event.markId);
-      if (start !== undefined)
-        metrics.defection.reservationDurationCommands +=
-          after.commandIndex - start;
-      telemetry.defectionOffers.delete(event.markId);
-    }
-    if (event.kind === "DEFECTION_RESOLVED") {
-      metrics.defection.resolutions += 1;
-      const converted = after.units.find(
-        (unit) => unit.id === event.targetUnitId,
-      );
-      if (converted !== undefined) {
-        metrics.defection.convertedRoles[converted.role] += 1;
-        metrics.defection.convertedPublicValue += publicRoleValue(
-          converted.role,
-          converted.hp,
-        );
+      if (telemetry.horseArcherFirstTargets.has(event.unitId)) {
+        increment(metrics.horseArcher.shotsPerActivation, "1");
+        telemetry.horseArcherFirstTargets.delete(event.unitId);
+        telemetry.horseArcherInterleaved.delete(event.unitId);
       }
-      const marks = [...telemetry.defectionOffers.entries()];
-      const matching = marks.find(([markId]) => markId === event.markId);
-      if (matching !== undefined)
-        metrics.defection.reservationDurationCommands +=
-          after.commandIndex - matching[1];
-      telemetry.defectionOffers.delete(event.markId);
     }
     if (event.kind === "SABOTEUR_EXPOSED")
       telemetry.exposedSaboteurs.add(event.unitId);
@@ -1209,11 +1176,7 @@ function recordSnapshotV7(
       if (tile.improvement === null) continue;
       const value = spatialContributionAtV7(state, tile.at, tile.improvement);
       const output =
-        tile.improvement === "MARKET"
-          ? value.marketIncome
-          : tile.improvement === "BARRACKS"
-            ? value.capacity
-            : value.population;
+        tile.improvement === "MARKET" ? value.marketIncome : value.population;
       increment(
         metrics.improvements.liveOutputHistogram[tile.improvement],
         String(output),
@@ -1282,9 +1245,7 @@ function currentContributions(state: GameStateV7) {
       value:
         tile.improvement === "MARKET"
           ? contribution.marketIncome
-          : tile.improvement === "BARRACKS"
-            ? contribution.capacity
-            : contribution.population,
+          : contribution.population,
     });
   }
   return result;
@@ -1310,11 +1271,6 @@ function auditPublicEqualityV7(
       previews.push(
         queryCombatPreviewV7(view, command.unitId, command.targetUnitId),
         queryCombatPreviewV7(equal, command.unitId, command.targetUnitId),
-      );
-    if (command.kind === "OFFER_DEFECTION")
-      previews.push(
-        previewDefectionV7(view, command),
-        previewDefectionV7(equal, command),
       );
     if (command.kind === "BLACKOUT_CITY")
       previews.push(
@@ -1348,8 +1304,20 @@ function auditRelationshipCommandV7(
   command: CommandV7,
   metrics: HeadlessMetricsV7,
 ): void {
+  const actorUnit =
+    "unitId" in command
+      ? state.units.find((unit) => unit.id === command.unitId)
+      : undefined;
   if (
-    (command.kind === "ATTACK" || command.kind === "OFFER_DEFECTION") &&
+    command.kind === "MOVE" &&
+    actorUnit?.role === "HORSE_ARCHER" &&
+    actorUnit.activation.attacksUsed > 0
+  )
+    metrics.horseArcher.attemptedMovementViolations += 1;
+  if (command.kind === "CAPTURE" && actorUnit?.role === "HORSE_ARCHER")
+    metrics.horseArcher.attemptedCaptureViolations += 1;
+  if (
+    command.kind === "ATTACK" &&
     arePlayersAlliedV7(
       state,
       actor,
@@ -1367,7 +1335,7 @@ function auditRelationshipCommandV7(
     )
   )
     metrics.relationships.alliedHostileActions += 1;
-  if (command.kind === "MOVE" || command.kind === "PURSUE")
+  if (command.kind === "MOVE")
     for (const at of command.path) {
       const tile = state.board.tiles.find((item) => same(item.at, at));
       const owner = state.cities.find(
@@ -1430,28 +1398,25 @@ function cityIsBesieged(state: GameStateV7, cityId: number): boolean {
 }
 
 function technologyBranch(tech: TechnologyIdV7): string {
-  const ordinal = TECHNOLOGY_IDS_V7.indexOf(tech);
-  return TECHNOLOGY_BRANCH_IDS_V7[Math.floor(ordinal / 5)] ?? "SETTLEMENT";
+  return (
+    ORIGINAL_BASELINE_V4_TREE.nodes.find((node) => node.id === tech)?.branch ??
+    "SETTLEMENT"
+  );
 }
 
 function queryResearchCost(view: PlayerViewV7, tech: TechnologyIdV7): number {
   const cities = view.cities.filter(
     (city) => city.ownerId === view.viewer.id,
   ).length;
-  const position = TECHNOLOGY_IDS_V7.indexOf(tech) % 5;
-  const tier = position === 0 ? 1 : position === 1 || position === 3 ? 2 : 3;
+  const tier = ORIGINAL_BASELINE_V4_TREE.nodes.find(
+    (node) => node.id === tech,
+  )?.tier;
+  if (tier === undefined) throw new RangeError("Unknown technology");
   return tier === 1
     ? 5 + cities - 1
     : tier === 2
       ? 7 + 2 * (cities - 1)
       : 9 + 3 * (cities - 1);
-}
-
-function publicRoleValue(role: UnitRoleIdV7, hp: number): number {
-  const rule = effectiveRoleRuleV7(role);
-  return role === "JUGGERNAUT"
-    ? 40 + rule.attack2 + rule.defense2 + 8
-    : (rule.cost ?? 0) * 4 + hp;
 }
 
 function activePlayerIdV7(state: GameStateV7): PlayerId {

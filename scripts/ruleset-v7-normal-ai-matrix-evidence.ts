@@ -10,6 +10,17 @@ export interface MatrixHashesV7 {
   readonly final: string;
 }
 
+export const ARCHIVED_NORMAL_MATRIX_RULESET_ID = "pulp-wars-poc-7r2" as const;
+
+export function assertNormalMatrixArchiveRuntime(
+  runtimeRulesetId: string,
+): void {
+  if (runtimeRulesetId !== ARCHIVED_NORMAL_MATRIX_RULESET_ID)
+    throw new Error(
+      `Normal AI matrix evidence is an ${ARCHIVED_NORMAL_MATRIX_RULESET_ID} archive and cannot run against ${runtimeRulesetId}; write a separately approved current-revision matrix instead of relabeling archived evidence`,
+    );
+}
+
 export interface MatrixDiagnosticsV7 {
   readonly errors: number;
   readonly rejectedCommands: number;

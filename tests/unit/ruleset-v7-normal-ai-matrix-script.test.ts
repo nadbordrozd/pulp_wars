@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  assertNormalMatrixArchiveRuntime,
   requireUniqueMatrixSelectors,
   selectInitialMatrixEntries,
   validateResumableMatrixEvidence,
@@ -28,6 +29,15 @@ const EXPECTED: MatrixResumeExpectationV7 = {
 };
 
 describe("ruleset-7 Normal matrix evidence resume", () => {
+  it("rejects the revision-3 runtime instead of relabeling revision-2 evidence", () => {
+    expect(() => assertNormalMatrixArchiveRuntime("pulp-wars-poc-7r3")).toThrow(
+      /7r2 archive.*7r3/,
+    );
+    expect(() =>
+      assertNormalMatrixArchiveRuntime("pulp-wars-poc-7r2"),
+    ).not.toThrow();
+  });
+
   it("ignores existing output by default and reuses it only when explicit", () => {
     const evidence = validEvidence();
     expect(

@@ -177,7 +177,12 @@ describe("Ruleset 7 application route", () => {
     const recovery = bootstrapRuleset7App(document, {
       storage: window.localStorage,
     });
-    expect(document.body.textContent).toContain("Preserved Ruleset 7 save");
+    expect(document.body.textContent).toContain(
+      "1 obsolete Ruleset 7 save was removed",
+    );
+    expect(
+      window.localStorage.getItem("pulpWars.save.v7r2.current"),
+    ).toBeNull();
     recovery.destroy();
 
     window.localStorage.clear();
@@ -258,7 +263,6 @@ function endTurnDecision(view: PlayerViewV7): NormalAiDecisionV7 {
       },
     ],
     command,
-    pursuitNodesSearched: 0,
     prngDraws: 0,
   };
 }

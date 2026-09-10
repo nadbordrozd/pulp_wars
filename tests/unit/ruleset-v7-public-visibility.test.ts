@@ -17,7 +17,6 @@ const READY: UnitStateV7["activation"] = {
   movedPathLength: 0,
   attacked: false,
   attacksUsed: 0,
-  pursuitPhase: "NONE",
   healed: false,
   recovered: false,
   captured: false,
@@ -26,7 +25,7 @@ const READY: UnitStateV7["activation"] = {
 };
 
 describe("ruleset-7 durable public visibility", () => {
-  it("projects overlapping detection, exposure, and Defection without unrelated details", () => {
+  it("projects overlapping detection and exposure without unrelated details", () => {
     const { state, source, subject, thirdPlayerId } = visibilityScenario();
     const viewer = source.ownerId;
     const view = viewForV7(state, viewer);
@@ -45,12 +44,6 @@ describe("ruleset-7 durable public visibility", () => {
           },
         },
       ],
-      defectionReveals: [
-        {
-          phase: "WAITING_FOR_REPLY",
-          breakCondition: "MARK_RESOLVES_OR_CANCELS",
-        },
-      ],
     });
 
     const ownerView = viewForV7(state, subject.ownerId);
@@ -63,14 +56,9 @@ describe("ruleset-7 durable public visibility", () => {
         }),
       ],
     });
-    expect(unit(ownerView, source.id).visibility).toEqual({
-      defectionReveals: [
-        {
-          phase: "WAITING_FOR_REPLY",
-          breakCondition: "MARK_RESOLVES_OR_CANCELS",
-        },
-      ],
-    });
+    expect(
+      ownerView.units.some((candidate) => candidate.id === source.id),
+    ).toBe(false);
 
     const thirdView = viewForV7(state, thirdPlayerId);
     expect(unit(thirdView, subject.id).visibility).toEqual({
@@ -131,7 +119,6 @@ describe("ruleset-7 durable public visibility", () => {
     const cooperative = checkedV7({
       ...state,
       setup: { ...state.setup, aiMode: "COOPERATIVE" },
-      defectionMarks: [],
       units: state.units.map((unit) =>
         unit.id === source.id
           ? {
@@ -168,7 +155,6 @@ describe("ruleset-7 durable public visibility", () => {
     const far = farCoordinate(state, subject.at, [source.at]);
     const base = checkedV7({
       ...state,
-      defectionMarks: [],
       saboteurExposures: [],
       players: state.players.map((player) =>
         player.id === viewer
@@ -220,7 +206,7 @@ describe("ruleset-7 durable public visibility", () => {
     );
   });
 
-  it("removes detection independently while exposure and Defection keep visibility", () => {
+  it("removes detection independently while exposure keeps visibility", () => {
     const { state, source, subject } = visibilityScenario();
     const viewer = source.ownerId;
     const rangeTwo = coordinateAtDistance(state, subject.at, 2, [source.at]);
@@ -236,13 +222,10 @@ describe("ruleset-7 durable public visibility", () => {
     expect(unit(viewForV7(moved, viewer), subject.id).visibility).toEqual({
       exposures: unit(viewForV7(state, viewer), subject.id).visibility
         ?.exposures,
-      defectionReveals: unit(viewForV7(state, viewer), subject.id).visibility
-        ?.defectionReveals,
     });
 
     const concealed = checkedV7({
       ...moved,
-      defectionMarks: [],
       saboteurExposures: [],
     });
     expect(
@@ -252,12 +235,12 @@ describe("ruleset-7 durable public visibility", () => {
     ).toBe(false);
   });
 
-  it("makes unexplored positional stats observation-equivalent and keeps Envoy defense exact", () => {
+  it("makes unexplored positional stats observation-equivalent and keeps ordinary defense exact", () => {
     const { state, source, subject } = visibilityScenario();
-    const viewer = subject.ownerId;
-    const hidden = hiddenFrom(state, viewer, source.at);
-    const mountain = withTerrain(hidden, source.at, "MOUNTAIN");
-    const grass = withTerrain(hidden, source.at, "GRASS");
+    const viewer = source.ownerId;
+    const hidden = hiddenFrom(state, viewer, subject.at);
+    const mountain = withTerrain(hidden, subject.at, "MOUNTAIN");
+    const grass = withTerrain(hidden, subject.at, "GRASS");
     const targetTurn = (input: GameStateV7) =>
       checkedV7({
         ...input,
@@ -268,8 +251,8 @@ describe("ruleset-7 durable public visibility", () => {
     expect(mountainView).toEqual(grassView);
 
     const stats = required(
-      mountainView.unitStats.find((entry) => entry.unitId === source.id),
-      "source stats missing",
+      mountainView.unitStats.find((entry) => entry.unitId === subject.id),
+      "subject stats missing",
     );
     expect(stat(stats, "SIGHT")).toMatchObject({
       modifiers: [],
@@ -278,16 +261,12 @@ describe("ruleset-7 durable public visibility", () => {
     });
     expect(stat(stats, "DEFENSE")).toMatchObject({
       modifiers: [],
-      total: { numerator: 1, denominator: 2 },
+      total: { numerator: 1, denominator: 1 },
+      visibility: "BASE_ONLY",
     });
-    expect(stat(stats, "DEFENSE")).not.toHaveProperty("visibility");
     expect(
-      queryCombatPreviewV7(mountainView, subject.id, source.id),
-    ).toMatchObject({
-      targetUnitId: source.id,
-      defenseBonusNumerator: 1,
-      defenseBonusDenominator: 1,
-    });
+      queryCombatPreviewV7(mountainView, source.id, subject.id),
+    ).toBeNull();
   });
 
   it("does not treat a hidden-position BASE_ONLY defense as an exact combat preview", () => {
@@ -389,10 +368,10 @@ function visibilityScenario(): {
   const [sourceAt, subjectAt, thirdAt] = openLine(created.state);
   const source: UnitStateV7 = {
     ...sourceBase,
-    role: "ENVOY",
+    role: "FIGHTER",
     at: sourceAt,
-    hp: 7,
-    maxHp: 7,
+    hp: 10,
+    maxHp: 10,
     activation: READY,
     blackoutEligibleRound: null,
   };
@@ -418,35 +397,26 @@ function visibilityScenario(): {
     ...created.state,
     commandIndex: 1,
     activeSeatIndex: created.state.turnOrder.indexOf(human.id),
-    nextEntityId: created.state.nextEntityId + 1,
     players: created.state.players.map((player) => ({
       ...player,
-      researchedTechs:
-        player.id === human.id
-          ? [...player.researchedTechs, "SURVEYING"]
-          : player.researchedTechs,
       explored:
         player.id === human.id
           ? created.state.board.tiles
               .map((tile) => tile.at)
               .filter((at) => !same(at, subjectAt))
-          : player.explored.filter((at) => !same(at, sourceAt)),
+          : player.id === third.id
+            ? [
+                ...player.explored.filter(
+                  (at) => !same(at, subjectAt) && !same(at, thirdAt),
+                ),
+                subjectAt,
+                thirdAt,
+              ].sort((left, right) => left.y - right.y || left.x - right.x)
+            : player.explored.filter((at) => !same(at, sourceAt)),
     })),
     units: [source, subject, thirdDetector].sort(
       (left, right) => left.id - right.id,
     ),
-    defectionMarks: [
-      {
-        id: created.state.nextEntityId,
-        sourceUnitId: source.id,
-        targetUnitId: subject.id,
-        initiatingPlayerId: human.id,
-        recordedTargetOwnerId: targetOwner.id,
-        reservedHomeCityId: required(source.homeCityId, "home city missing"),
-        offeredAtCommandIndex: 1,
-        phase: "WAITING_FOR_REPLY",
-      },
-    ],
     saboteurExposures: [
       {
         unitId: subject.id,

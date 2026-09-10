@@ -28,21 +28,34 @@ describe("ruleset-7 map adapter", () => {
     [2, 25, 0],
     [3, 25, 0],
   ] as const)(
-    "preserves exact v6 board, settlements, treasure, and PRNG for %i AI size %i seed %i",
+    "runs v6 then strips only Mountain ore/stone for %i AI size %i seed %i",
     (aiCount, size, seed) => {
       const v7Setup = setup(aiCount, size, seed);
       const v6 = generateInitialMapV6(toV6Setup(v7Setup));
       const v7 = generateInitialMapV7(v7Setup);
       if (!v6.ok || !v7.ok) throw new Error("map generation failed");
-      expect(v7.map.board).toEqual(v6.map.board);
+      expect(v7.map.board).toEqual({
+        ...v6.map.board,
+        tiles: v6.map.board.tiles.map((tile) => ({
+          ...tile,
+          resource:
+            tile.terrain === "MOUNTAIN" &&
+            (tile.resource === "ORE" || tile.resource === "STONE")
+              ? null
+              : tile.resource,
+        })),
+      });
       expect(v7.map.capitalAssignments).toEqual(v6.map.capitalAssignments);
       expect(v7.map.turnOrderSeats).toEqual(v6.map.turnOrderSeats);
       expect(v7.map.villages).toEqual(v6.map.villages);
       expect(v7.map.treasureChests).toEqual(v6.map.treasureChests);
       expect(v7.map.random).toEqual(v6.map.random);
+      const repeated = generateInitialMapV7(v7Setup);
+      if (!repeated.ok) throw new Error("repeated map generation failed");
       expect(canonicalMapRandomHashV7(v7.map)).toBe(
-        canonicalMapRandomHashV6(v6.map),
+        canonicalMapRandomHashV7(repeated.map),
       );
+      expect(canonicalMapRandomHashV6(v6.map)).toBeTypeOf("string");
     },
   );
 
@@ -50,10 +63,10 @@ describe("ruleset-7 map adapter", () => {
     const created = createInitialMapStateV7(setup(3, 16, 41));
     if (!created.ok) throw new Error(created.error.code);
     expect(parseGameStateV7(created.state)).toEqual(created.state);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r2");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r3");
     expect(
       created.state.players.every(
-        (player) => player.factionTreeId === "ORIGINAL_BASELINE_V3",
+        (player) => player.factionTreeId === "ORIGINAL_BASELINE_V4",
       ),
     ).toBe(true);
     expect(
@@ -61,8 +74,14 @@ describe("ruleset-7 map adapter", () => {
         (player) => player.spoilsClaimedCityIds.length === 0,
       ),
     ).toBe(true);
-    expect(created.state.defectionMarks).toEqual([]);
     expect(created.state.saboteurExposures).toEqual([]);
+    expect(
+      created.state.board.tiles.every(
+        (tile) =>
+          tile.resource !== ("ORE" as never) &&
+          tile.resource !== ("STONE" as never),
+      ),
+    ).toBe(true);
   });
 });
 

@@ -553,15 +553,6 @@
   width: 176px;
 }
 
-.v7-defection-city-action {
-  display: flex;
-  width: 100%;
-  min-height: 52px;
-  gap: 0.7rem;
-  align-items: center;
-  text-align: start;
-}
-
 .v7-tactical-fineprint {
   color: var(--muted);
   font-size: 0.88rem;
@@ -651,9 +642,13 @@
 
 .v7-tech-graph {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+  grid-template-columns: repeat(
+    var(--v7-tech-total-leaves, 8),
+    minmax(8.5rem, 1fr)
+  );
   gap: 1rem;
   min-width: 0;
+  overflow-x: auto;
 }
 
 .v7-tech-branch-selector {
@@ -672,6 +667,7 @@
 
 .v7-tech-branch {
   display: grid;
+  grid-column: span var(--v7-tech-branch-span, 2);
   gap: 0.6rem;
   align-content: start;
 }
@@ -685,7 +681,7 @@
 
 .v7-tech-children {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--v7-tech-leaves, 2), minmax(0, 1fr));
   gap: 0.7rem;
   padding-top: 0.7rem;
   border-top: 3px solid var(--line);
@@ -846,6 +842,7 @@
   }
 
   .v7-tech-branch {
+    grid-column: auto;
     scroll-margin-top: calc(3.75rem * var(--ui-scale));
   }
 }

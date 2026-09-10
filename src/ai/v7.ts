@@ -1,6 +1,6 @@
 import type { CityId, PlayerId, UnitId } from "../engine/model/ids";
 import {
-  ORIGINAL_BASELINE_V3_TREE,
+  ORIGINAL_BASELINE_V4_TREE,
   effectiveRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
@@ -9,7 +9,6 @@ import {
   createPublicCommandWorkV7,
   createPublicPlanningWorkV7,
   previewBlackoutV7,
-  previewDefectionV7,
   previewEconomicV7,
   previewMonumentV7,
   queryAiReadyCommandsV7,
@@ -75,7 +74,6 @@ export interface NormalAiDecisionV7 {
   readonly difficulty: "NORMAL";
   readonly candidates: readonly ScoredAiCandidateV7[];
   readonly command: CommandV7 | null;
-  readonly pursuitNodesSearched: number;
   readonly prngDraws: 0;
 }
 
@@ -90,7 +88,6 @@ interface PolicyContextV7 {
   readonly commands: readonly CommandV7[];
   readonly threats: ThreatV7[];
   readonly threatenedTiles: ReadonlyMap<UnitId, ReadonlySet<string>>;
-  pursuitNodesSearched: number;
 }
 
 type AiReadyItemV7 = ReturnType<typeof queryAiReadyCommandsV7>[number];
@@ -106,8 +103,7 @@ const THREATENED_ROLE_ORDER = [
   "BREACHER",
   "CATAPULT",
   "SABOTEUR",
-  "LANCER",
-  "ENVOY",
+  "HORSE_ARCHER",
 ] as const satisfies readonly UnitRoleIdV7[];
 
 const GENERAL_ROLE_ORDER = [
@@ -119,9 +115,8 @@ const GENERAL_ROLE_ORDER = [
   "HEAVY",
   "BREACHER",
   "CATAPULT",
-  "LANCER",
+  "HORSE_ARCHER",
   "SABOTEUR",
-  "ENVOY",
   "FIGHTER",
 ] as const satisfies readonly UnitRoleIdV7[];
 
@@ -145,13 +140,15 @@ export function scoreCommandV7(
     (item) => JSON.stringify(item.command) === JSON.stringify(command),
   );
   const tie = ready?.tuple ?? fallbackTie(view, command);
-  return scoreCommandWithContext(
-    makeContext(
-      view,
-      queryAiReadyCommandsV7(view).map((item) => item.command),
+  return drain(
+    scoreCommandSteps(
+      makeContext(
+        view,
+        queryAiReadyCommandsV7(view).map((item) => item.command),
+      ),
+      command,
+      tie,
     ),
-    command,
-    tie,
   );
 }
 
@@ -206,15 +203,11 @@ export class NormalPolicyWorkV7 {
       if (this.phase === "COMMAND_PREPARATION") {
         const progress = this.commandWork.advance(1);
         if (!progress.done || progress.commands === null) continue;
-        if (isGloballyPursuitLockedCommands(progress.commands)) {
-          this.prepareScoringContext();
-        } else {
-          this.planningWork = createPublicPlanningWorkV7(
-            this.view,
-            progress.commands,
-          );
-          this.phase = "PLANNING_PREPARATION";
-        }
+        this.planningWork = createPublicPlanningWorkV7(
+          this.view,
+          progress.commands,
+        );
+        this.phase = "PLANNING_PREPARATION";
         continue;
       }
       if (this.phase === "PLANNING_PREPARATION") {
@@ -290,24 +283,9 @@ export class NormalPolicyWorkV7 {
       difficulty: "NORMAL",
       candidates: this.scored,
       command: this.scored[0]?.command ?? null,
-      pursuitNodesSearched: context.pursuitNodesSearched,
       prngDraws: 0,
     };
   }
-}
-
-function isGloballyPursuitLockedCommands(
-  commands: readonly CommandV7[],
-): boolean {
-  return (
-    commands.length > 0 &&
-    commands.every(
-      (command) =>
-        command.kind === "ATTACK" ||
-        command.kind === "PURSUE" ||
-        command.kind === "END_PURSUIT",
-    )
-  );
 }
 
 export async function chooseNormalCommandYieldingV7(
@@ -326,9 +304,7 @@ export async function chooseNormalCommandYieldingV7(
 
 export class NormalTurnCommandCapErrorV7 extends Error {
   constructor() {
-    super(
-      "Reward work, open Pursuit sequences, and End Turn cannot drain within the turn cap",
-    );
+    super("Reward work and End Turn cannot drain within the turn cap");
     this.name = "NormalTurnCommandCapErrorV7";
   }
 }
@@ -342,12 +318,7 @@ export function normalTurnClosureSlotsV7(view: PlayerViewV7): number {
         total + Math.max(0, city.level - 1 - city.rewards.length),
       0,
     );
-  const openPursuits = view.units.filter(
-    (unit) =>
-      unit.ownerId === view.viewer.id &&
-      unit.activation.pursuitPhase !== "NONE",
-  ).length;
-  return unrewardedLevels + openPursuits + 1;
+  return unrewardedLevels + 1;
 }
 
 /** Select one command while preserving enough accepted slots to close the turn. */
@@ -379,21 +350,13 @@ function forcedClosureCommands(
 ): readonly CommandV7[] {
   if (view.pendingChoices.length > 0)
     return queryAiReadyCommandsV7(view).map((item) => item.command);
-  const open = view.units
-    .filter(
-      (unit) =>
-        unit.ownerId === view.viewer.id &&
-        unit.activation.pursuitPhase !== "NONE",
-    )
-    .sort((left, right) => left.id - right.id)[0];
-  if (open !== undefined) return [{ kind: "END_PURSUIT", unitId: open.id }];
   return decision.command?.kind === "END_TURN"
     ? [decision.command]
     : [{ kind: "END_TURN" }];
 }
 
 function mandatoryWorkDeltaV7(view: PlayerViewV7, command: CommandV7): number {
-  if (command.kind === "END_TURN" || command.kind === "END_PURSUIT") return -1;
+  if (command.kind === "END_TURN") return -1;
   if (command.kind === "CHOOSE_CITY_REWARD") {
     if (command.reward !== "BOOM") return -1;
     const city = view.cities.find((item) => item.id === command.cityId);
@@ -406,19 +369,6 @@ function mandatoryWorkDeltaV7(view: PlayerViewV7, command: CommandV7): number {
   if (command.kind === "BUILD_MONUMENT") {
     const preview = previewMonumentV7(view, command);
     return preview.ok ? preview.preview.levelsReached.length : 0;
-  }
-  if (command.kind === "ATTACK") {
-    const actor = view.units.find((unit) => unit.id === command.unitId);
-    const preview = queryCombatPreviewV7(
-      view,
-      command.unitId,
-      command.targetUnitId,
-    );
-    if (actor === undefined || preview === null)
-      return Number.POSITIVE_INFINITY;
-    const wasOpen = actor.activation.pursuitPhase !== "NONE";
-    const remainsOpen = preview.pursuitWillOpen;
-    return Number(remainsOpen) - Number(wasOpen);
   }
   if (command.kind === "CAPTURE") {
     const actor = view.units.find((unit) => unit.id === command.unitId);
@@ -461,7 +411,7 @@ function bareContext(
 ): PolicyContextV7 {
   const threatenedTiles = new Map<UnitId, ReadonlySet<string>>();
   const threats: ThreatV7[] = [];
-  return { view, commands, threats, threatenedTiles, pursuitNodesSearched: 0 };
+  return { view, commands, threats, threatenedTiles };
 }
 
 function addHostileThreats(context: PolicyContextV7, unit: PublicUnitV7): void {
@@ -519,7 +469,7 @@ function publicThreatenedTilesForVisibleHostile(
         if (
           tile.explored &&
           tile.terrain === "MOUNTAIN" &&
-          !publicOwnerHasSurveying(view, unit.ownerId)
+          !publicOwnerHasEngineering(view, unit.ownerId)
         )
           continue;
         if (
@@ -564,16 +514,7 @@ function publicThreatenedTilesForVisibleHostile(
         return range >= rule.minimumRange && range <= rule.range;
       }),
     );
-  const result =
-    unit.role === "LANCER"
-      ? [
-          ...direct,
-          ...view.board.tiles
-            .map((tile) => tile.at)
-            .filter((at) => direct.some((origin) => distance(origin, at) <= 3)),
-        ]
-      : direct;
-  return [...new Map(result.map((at) => [coordKey(at), at])).values()];
+  return [...new Map(direct.map((at) => [coordKey(at), at])).values()];
 }
 
 function isPolicyCandidate(
@@ -596,12 +537,12 @@ function scoreCommandWithContext(
   context: PolicyContextV7,
   command: CommandV7,
   readyTuple: readonly number[],
-  precomputedPursuit?: PursuitSequenceValue,
+  precomputedHorseArcher?: HorseArcherSequenceValue,
 ): AiScoreV7 {
   const view = context.view;
   const actor = unitForCommand(view, command);
   const resultAt =
-    command.kind === "MOVE" || command.kind === "PURSUE"
+    command.kind === "MOVE"
       ? (command.path.at(-1) ?? actor?.at ?? null)
       : (actor?.at ?? null);
   let priority = -1;
@@ -635,11 +576,6 @@ function scoreCommandWithContext(
       priority = 1120;
     else if (population > 0 || command.kind === "CLEAR_FOREST") priority = 1140;
     else if (futureValue > 0) priority = 1100;
-    if (command.kind === "BUILD_BARRACKS") {
-      strategicValue += 2 * economic.preview.capacityDelta - 4;
-      if (freeCapacity(view, economic.preview.ownerCityId) <= 0)
-        strategicValue += 8;
-    }
     if (
       economic.preview.outputTransitions.some(
         (item) => item.change === "RESUMED",
@@ -729,38 +665,18 @@ function scoreCommandWithContext(
           ? 1240
           : 900;
       strategicValue += combatStrategicValue(context, command, preview);
-      if (actor?.activation.pursuitPhase !== "NONE") {
+      if (
+        actor?.role === "HORSE_ARCHER" &&
+        actor.activation.attacksUsed === 0
+      ) {
         const sequence =
-          precomputedPursuit ?? bestPursuitContinuation(context, view, command);
+          precomputedHorseArcher ??
+          bestHorseArcherSequence(context, view, command);
         immediateValue = sequence.immediate;
         strategicValue = sequence.strategic;
         safetyValue = sequence.safety;
         objectiveValue = sequence.spacing;
-        priority = sequence.improves ? 1290 : -1;
       }
-    }
-  }
-
-  if (command.kind === "PURSUE") {
-    const sequence =
-      precomputedPursuit ??
-      bestPursuitContinuation(context, view, command as PursuitMoveCommandV7);
-    priority = sequence.improves ? 1290 : -1;
-    immediateValue = sequence.immediate;
-    strategicValue = sequence.strategic;
-    safetyValue = sequence.safety;
-    objectiveValue = sequence.spacing;
-  }
-
-  if (command.kind === "END_PURSUIT") {
-    // End is the zero-value leaf. Any improving complete public sequence beats
-    // it on the remaining tuple; when none improves it is the sole fallback.
-    priority = 1290;
-    immediateValue = 0;
-    if (actor !== undefined) {
-      const leaf = pursuitLeafValue(view, actor.id, context);
-      safetyValue = leaf.safety;
-      objectiveValue = leaf.spacing;
     }
   }
 
@@ -814,16 +730,12 @@ function scoreCommandWithContext(
 
   if (command.kind === "MOVE" && actor !== undefined) {
     const chest = view.treasureChests.some((at) => same(at, resultAt));
-    const defectionEscape = markedTargetEscapeValue(view, actor, resultAt);
     const picket = scoutPicketValue(view, actor, resultAt);
     const screen = screenValue(view, actor, resultAt);
     if (chest) {
       priority = 1330;
       strategicValue = 1;
       immediateValue = 5;
-    } else if (defectionEscape > 0) {
-      priority = 1285;
-      strategicValue = defectionEscape;
     } else if (movesOntoThreatenedCity(context, resultAt)) {
       priority = 1250;
     } else {
@@ -833,43 +745,15 @@ function scoreCommandWithContext(
       strategicValue = picket + screen;
       if (strategicValue > 0) priority = Math.max(priority, 710);
     }
-  }
-
-  if (command.kind === "OFFER_DEFECTION") {
-    const preview = previewDefectionV7(view, command);
-    if (preview.ok) {
-      const target = view.units.find(
-        (item) => item.id === command.targetUnitId,
+    if (actor.role === "HORSE_ARCHER" && precomputedHorseArcher !== undefined) {
+      immediateValue += precomputedHorseArcher.immediate;
+      strategicValue += precomputedHorseArcher.strategic;
+      safetyValue = precomputedHorseArcher.safety;
+      objectiveValue += precomputedHorseArcher.spacing;
+      priority = Math.max(
+        priority,
+        precomputedHorseArcher.strategic > 0 ? 1175 : 905,
       );
-      const source = view.units.find((item) => item.id === command.unitId);
-      const targetValue = target === undefined ? 0 : retainedUnitValue(target);
-      const sourceRisk =
-        source === undefined
-          ? 0
-          : visibleImmediateDamage(view, source, source.at, context);
-      const escapeOptions = countVisibleDefectionRepliesV7(
-        view,
-        command.unitId,
-        command.targetUnitId,
-      );
-      strategicValue =
-        targetValue -
-        sourceRisk -
-        4 * escapeOptions -
-        3 * Math.max(0, 2 - preview.preview.reservedCity.availableAfterOffer);
-      futureValue = preview.preview.reservedCity.availableAfterOffer;
-      safetyValue -= context.threats
-        .filter(
-          (threat) => threat.cityId === preview.preview.reservedCity.cityId,
-        )
-        .reduce((total, threat) => total + threat.severity, 0);
-      objectiveValue = -preview.preview.reservedCity.cityId;
-      if (
-        preview.preview.cityOccupantSiegeConsequence === "BESIEGES_HOSTILE_CITY"
-      )
-        strategicValue += 20;
-      immediateValue = -6;
-      priority = strategicValue > 0 ? 1190 : -1;
     }
   }
 
@@ -914,7 +798,10 @@ function scoreCommandWithContext(
   safetyValue +=
     actor === undefined ||
     resultAt === null ||
-    actor.activation.pursuitPhase !== "NONE"
+    command.kind === "ATTACK" ||
+    (command.kind === "MOVE" &&
+      actor.role === "HORSE_ARCHER" &&
+      precomputedHorseArcher !== undefined)
       ? 0
       : -visibleImmediateDamage(view, actor, resultAt, context);
   const tie = readyTuple.slice(-5) as [number, number, number, number, number];
@@ -952,170 +839,173 @@ function* scoreCommandSteps(
   readyTuple: readonly number[],
 ): Generator<void, AiScoreV7> {
   const actor = unitForCommand(context.view, command);
-  const pursuitCommand =
-    command.kind === "PURSUE" ||
-    (command.kind === "ATTACK" && actor?.activation.pursuitPhase !== "NONE")
-      ? (command as PursuitMoveCommandV7 | PursuitAttackCommandV7)
-      : null;
-  const pursuit =
-    pursuitCommand === null
-      ? undefined
-      : yield* bestPursuitContinuationSteps(
-          context,
-          context.view,
-          pursuitCommand,
-        );
-  return scoreCommandWithContext(context, command, readyTuple, pursuit);
+  const horseArcher =
+    command.kind === "ATTACK" &&
+    actor?.role === "HORSE_ARCHER" &&
+    actor.activation.attacksUsed === 0
+      ? yield* bestHorseArcherSequenceSteps(context, context.view, command)
+      : command.kind === "MOVE" &&
+          actor?.role === "HORSE_ARCHER" &&
+          actor.activation.attacksUsed === 0
+        ? yield* bestHorseArcherMoveSequenceSteps(
+            context,
+            context.view,
+            command,
+          )
+        : undefined;
+  return scoreCommandWithContext(context, command, readyTuple, horseArcher);
 }
 
-interface PursuitSequenceValue {
-  readonly improves: boolean;
+interface HorseArcherSequenceValue {
   readonly immediate: number;
   readonly strategic: number;
   readonly safety: number;
   readonly spacing: number;
 }
 
-type PursuitAttackCommandV7 = Extract<CommandV7, { kind: "ATTACK" }>;
-type PursuitMoveCommandV7 = {
-  readonly kind: "PURSUE";
-  readonly unitId: UnitId;
-  readonly path: readonly CoordV7[];
-};
-type EndPursuitCommandV7 = {
-  readonly kind: "END_PURSUIT";
-  readonly unitId: UnitId;
-};
-type PursuitCommandV7 =
-  PursuitAttackCommandV7 | PursuitMoveCommandV7 | EndPursuitCommandV7;
+type AttackCommandV7 = Extract<CommandV7, { kind: "ATTACK" }>;
+type MoveCommandV7 = Extract<CommandV7, { kind: "MOVE" }>;
 type DisbandCommandV7 = { readonly kind: "DISBAND"; readonly unitId: UnitId };
 
-/** Complete public tree; depth is bounded by the authoritative three attacks. */
-function bestPursuitContinuation(
+/** Bounded public two-shot valuation from the Horse Archer's fixed coordinate. */
+function bestHorseArcherSequence(
   context: PolicyContextV7,
   view: PlayerViewV7,
-  first: PursuitCommandV7,
-): PursuitSequenceValue {
-  return drain(bestPursuitContinuationSteps(context, view, first));
+  first: AttackCommandV7,
+): HorseArcherSequenceValue {
+  return drain(bestHorseArcherSequenceSteps(context, view, first));
 }
 
-function* bestPursuitContinuationSteps(
+function* bestHorseArcherMoveSequenceSteps(
   context: PolicyContextV7,
   view: PlayerViewV7,
-  first: PursuitCommandV7,
-): Generator<void, PursuitSequenceValue> {
-  const value = yield* pursueBranchSteps(context, view, first);
-  const baseline = pursuitLeafValue(view, first.unitId, context);
-  return {
-    ...value,
-    improves:
-      compareNumericTuple(pursuitValueTuple(value), [
-        0,
-        0,
-        baseline.safety,
-        baseline.spacing,
-      ]) > 0,
-  };
-}
-
-function* pursueBranchSteps(
-  context: PolicyContextV7,
-  view: PlayerViewV7,
-  command: PursuitCommandV7,
-): Generator<void, Omit<PursuitSequenceValue, "improves">> {
-  context.pursuitNodesSearched += 1;
-  yield;
-  if (command.kind === "END_PURSUIT")
-    return {
-      immediate: 0,
-      strategic: 0,
-      ...pursuitLeafValue(view, command.unitId, context),
-    };
-  const actor = view.units.find((item) => item.id === command.unitId);
-  if (actor === undefined)
-    return { immediate: -10_000, strategic: 0, safety: -10_000, spacing: 0 };
-  if (command.kind === "PURSUE") {
-    const expected = command.path.at(-1) ?? actor.at;
-    // A path outside existing public detection can legally shorten on concealed
-    // contact. It remains a candidate, but no future target geometry is assumed.
-    const guaranteed = command.path.every((at) =>
-      publiclyDetected(view, at, actor.id),
+  move: MoveCommandV7,
+): Generator<void, HorseArcherSequenceValue | undefined> {
+  const actor = view.units.find((unit) => unit.id === move.unitId);
+  const at = move.path.at(-1);
+  if (actor === undefined || at === undefined) return undefined;
+  const moved = projectPublicUnitForPolicyV7(view, actor.id, {
+    at,
+    activation: {
+      ...actor.activation,
+      moved: true,
+      movedPathLength: move.path.length,
+    },
+  });
+  const attacks = yield* publicHorseArcherAttacksSteps(moved, actor.id);
+  let best: HorseArcherSequenceValue | undefined;
+  for (const attack of attacks) {
+    const candidate = yield* bestHorseArcherSequenceSteps(
+      context,
+      moved,
+      attack,
     );
-    const moved = projectPublicUnitForPolicyV7(view, actor.id, {
-      at: expected,
-      activation: { ...actor.activation, pursuitPhase: "PURSUIT_MOVED" },
-    });
-    if (!guaranteed)
-      return {
-        immediate: 0,
-        strategic: 0,
-        ...pursuitConservativeMoveLeaf(context, view, actor, command.path),
-      };
-    const next = pursuitCommands(moved, actor.id);
-    return yield* bestPursuitBranchSteps(context, moved, next);
-  }
-  const preview = queryCombatPreviewV7(
-    view,
-    command.unitId,
-    command.targetUnitId,
-  );
-  if (preview === null)
-    return { immediate: -10_000, strategic: 0, safety: -10_000, spacing: 0 };
-  const immediate = combatImmediateValue(preview);
-  const target = view.units.find((item) => item.id === command.targetUnitId);
-  if (target === undefined)
-    return { immediate: -10_000, strategic: 0, safety: -10_000, spacing: 0 };
-  const after = projectPursuitAttack(view, actor, target, preview);
-  if (!preview.defenderDies || preview.attackerDies || !preview.pursuitWillOpen)
-    return {
-      immediate,
-      strategic: targetStrategicValue(view, command.targetUnitId),
-      ...pursuitLeafValue(after, actor.id, context),
-    };
-  const next = pursuitCommands(after, actor.id);
-  const continuation = yield* bestPursuitBranchSteps(context, after, next);
-  return {
-    immediate: immediate + continuation.immediate,
-    strategic:
-      targetStrategicValue(view, command.targetUnitId) + continuation.strategic,
-    safety: continuation.safety,
-    spacing: continuation.spacing,
-  };
-}
-
-function* bestPursuitBranchSteps(
-  context: PolicyContextV7,
-  view: PlayerViewV7,
-  commands: readonly PursuitCommandV7[],
-): Generator<void, Omit<PursuitSequenceValue, "improves">> {
-  let best = {
-    immediate: 0,
-    strategic: 0,
-    ...pursuitLeafValue(view, commands[0]?.unitId, context),
-  };
-  let bestTuple = pursuitValueTuple(best);
-  for (const command of commands) {
-    const value = yield* pursueBranchSteps(context, view, command);
-    const tuple = pursuitValueTuple(value);
-    if (compareNumericTuple(tuple, bestTuple) > 0) {
-      best = value;
-      bestTuple = tuple;
-    }
+    if (
+      best === undefined ||
+      compareNumericTuple(
+        horseArcherValueTuple(candidate),
+        horseArcherValueTuple(best),
+      ) > 0
+    )
+      best = candidate;
   }
   return best;
 }
 
-function pursuitValueTuple(
-  value: Omit<PursuitSequenceValue, "improves">,
+function* bestHorseArcherSequenceSteps(
+  context: PolicyContextV7,
+  view: PlayerViewV7,
+  first: AttackCommandV7,
+): Generator<void, HorseArcherSequenceValue> {
+  const actor = view.units.find((item) => item.id === first.unitId);
+  const target = view.units.find((item) => item.id === first.targetUnitId);
+  yield;
+  const preview = queryCombatPreviewV7(view, first.unitId, first.targetUnitId);
+  if (actor === undefined || target === undefined || preview === null)
+    return { immediate: -10_000, strategic: 0, safety: -10_000, spacing: 0 };
+  const afterFirst = projectHorseArcherAttack(view, actor, target, preview);
+  const base: HorseArcherSequenceValue = {
+    immediate: combatImmediateValue(preview),
+    strategic: combatTargetStrategicValue(view, target, preview),
+    ...horseArcherLeafValue(afterFirst, actor.id, context),
+  };
+  if (preview.attackerDies || preview.attacksRemaining === 0) return base;
+  const secondAttacks = yield* publicHorseArcherAttacksSteps(
+    afterFirst,
+    actor.id,
+  );
+  let best = base;
+  for (const second of secondAttacks) {
+    yield;
+    const secondActor = afterFirst.units.find((unit) => unit.id === actor.id);
+    const secondTarget = afterFirst.units.find(
+      (unit) => unit.id === second.targetUnitId,
+    );
+    const secondPreview = queryCombatPreviewV7(
+      afterFirst,
+      second.unitId,
+      second.targetUnitId,
+    );
+    if (
+      secondActor === undefined ||
+      secondTarget === undefined ||
+      secondPreview === null
+    )
+      continue;
+    const afterSecond = projectHorseArcherAttack(
+      afterFirst,
+      secondActor,
+      secondTarget,
+      secondPreview,
+    );
+    const candidate: HorseArcherSequenceValue = {
+      immediate: base.immediate + combatImmediateValue(secondPreview),
+      strategic:
+        base.strategic +
+        combatTargetStrategicValue(afterFirst, secondTarget, secondPreview),
+      ...horseArcherLeafValue(afterSecond, actor.id, context),
+    };
+    if (
+      compareNumericTuple(
+        horseArcherValueTuple(candidate),
+        horseArcherValueTuple(best),
+      ) > 0
+    )
+      best = candidate;
+  }
+  return best;
+}
+
+function* publicHorseArcherAttacksSteps(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): Generator<void, readonly AttackCommandV7[]> {
+  const result: AttackCommandV7[] = [];
+  for (const target of view.units) {
+    if (!isHostile(view, target.ownerId)) continue;
+    yield;
+    const command: AttackCommandV7 = {
+      kind: "ATTACK",
+      unitId,
+      targetUnitId: target.id,
+    };
+    if (queryCombatPreviewV7(view, unitId, target.id) !== null)
+      result.push(command);
+  }
+  return result;
+}
+
+function horseArcherValueTuple(
+  value: HorseArcherSequenceValue,
 ): readonly number[] {
   return [value.strategic, value.immediate, value.safety, value.spacing];
 }
 
-function pursuitLeafValue(
+function horseArcherLeafValue(
   view: PlayerViewV7,
-  unitId: UnitId | undefined,
+  unitId: UnitId,
   threatContext: PolicyContextV7,
-): Pick<PursuitSequenceValue, "safety" | "spacing"> {
+): Pick<HorseArcherSequenceValue, "safety" | "spacing"> {
   const actor = view.units.find((unit) => unit.id === unitId);
   if (actor === undefined) return { safety: -10_000, spacing: 0 };
   const hostiles = view.units.filter((unit) => isHostile(view, unit.ownerId));
@@ -1128,42 +1018,13 @@ function pursuitLeafValue(
   };
 }
 
-function pursuitConservativeMoveLeaf(
-  context: PolicyContextV7,
-  view: PlayerViewV7,
-  actor: PublicUnitV7,
-  path: readonly CoordV7[],
-): Pick<PursuitSequenceValue, "safety" | "spacing"> {
-  let worst = pursuitLeafValue(view, actor.id, context);
-  for (let index = 0; index < path.length; index += 1) {
-    const at = path[index];
-    if (at === undefined) continue;
-    const projected = projectPublicUnitForPolicyV7(view, actor.id, {
-      at,
-      activation: {
-        ...actor.activation,
-        pursuitPhase: "PURSUIT_MOVED",
-      },
-    });
-    const candidate = pursuitLeafValue(projected, actor.id, context);
-    if (
-      compareNumericTuple(
-        [candidate.safety, candidate.spacing],
-        [worst.safety, worst.spacing],
-      ) < 0
-    )
-      worst = candidate;
-  }
-  return worst;
-}
-
-function projectPursuitAttack(
+function projectHorseArcherAttack(
   view: PlayerViewV7,
   actor: PublicUnitV7,
   target: PublicUnitV7,
   preview: CombatPreviewV7,
 ): PlayerViewV7 {
-  const nextAttacks = (actor.activation.attacksUsed + 1) as 1 | 2 | 3;
+  const nextAttacks = preview.attacksUsed as 1 | 2;
   const units = view.units.flatMap((unit): readonly PublicUnitV7[] => {
     if (unit.id === target.id)
       return preview.defenderDies
@@ -1174,35 +1035,43 @@ function projectPursuitAttack(
     return [
       {
         ...unit,
-        at: preview.advances ? target.at : unit.at,
         hp: unit.hp - preview.damageToAttacker,
         activation: {
           ...unit.activation,
-          attacked: !preview.pursuitWillOpen,
+          attacked: true,
           attacksUsed: nextAttacks,
-          pursuitPhase: preview.pursuitWillOpen ? "PURSUIT_READY" : "NONE",
-          handled: !preview.pursuitWillOpen,
+          handled: preview.attacksRemaining === 0,
         },
       },
     ];
   });
-  return projectPublicUnits(view, units, [actor.id, target.id]);
+  return projectPublicUnitVitals(view, units, [actor.id, target.id]);
 }
 
-function pursuitCommands(
+function projectPublicUnitVitals(
   view: PlayerViewV7,
-  unitId: UnitId,
-): readonly PursuitCommandV7[] {
-  return queryAiReadyCommandsV7(view)
-    .map((item) => item.command)
-    .filter(
-      (command): command is CommandV7 & PursuitCommandV7 =>
-        "unitId" in command &&
-        command.unitId === unitId &&
-        (command.kind === "ATTACK" ||
-          command.kind === "PURSUE" ||
-          command.kind === "END_PURSUIT"),
-    );
+  units: readonly PublicUnitV7[],
+  changedUnitIds: readonly UnitId[],
+): PlayerViewV7 {
+  const byId = new Map(units.map((unit) => [unit.id, unit] as const));
+  const changed = new Set(changedUnitIds);
+  return {
+    ...view,
+    units,
+    unitStats: view.unitStats.flatMap((stats) => {
+      const unit = byId.get(stats.unitId);
+      if (unit === undefined) return [];
+      if (!changed.has(unit.id)) return [stats];
+      return [
+        {
+          ...stats,
+          stats: stats.stats.map((stat) =>
+            stat.id === "HP" ? { ...stat, current: unit.hp } : stat,
+          ),
+        },
+      ];
+    }),
+  };
 }
 
 function combatImmediateValue(preview: CombatPreviewV7): number {
@@ -1212,6 +1081,17 @@ function combatImmediateValue(preview: CombatPreviewV7): number {
     10 * preview.damageToDefender -
     8 * preview.damageToAttacker
   );
+}
+
+function combatTargetStrategicValue(
+  view: PlayerViewV7,
+  target: PublicUnitV7,
+  preview: CombatPreviewV7,
+): number {
+  const retained = targetStrategicValue(view, target.id);
+  return preview.defenderDies
+    ? retained
+    : Math.floor((retained * preview.damageToDefender) / target.hp);
 }
 
 function combatStrategicValue(
@@ -1363,7 +1243,7 @@ function shortestResearchChainForCommand(
   view: PlayerViewV7,
   command: string,
 ): readonly TechnologyIdV7[] {
-  const target = ORIGINAL_BASELINE_V3_TREE.nodes.find((node) =>
+  const target = ORIGINAL_BASELINE_V4_TREE.nodes.find((node) =>
     node.unlocks.some(
       (unlock) => unlock.kind === "COMMAND" && unlock.command === command,
     ),
@@ -1387,7 +1267,7 @@ function researchChain(
   const result: TechnologyIdV7[] = [];
   const visit = (tech: TechnologyIdV7): void => {
     if (owned.has(tech) || result.includes(tech)) return;
-    const node = ORIGINAL_BASELINE_V3_TREE.nodes.find(
+    const node = ORIGINAL_BASELINE_V4_TREE.nodes.find(
       (item) => item.id === tech,
     );
     for (const prerequisite of node?.prerequisites ?? []) visit(prerequisite);
@@ -1508,142 +1388,6 @@ function trainingStrategicValue(
   return value;
 }
 
-function markedTargetEscapeValue(
-  view: PlayerViewV7,
-  actor: PublicUnitV7,
-  resultAt: CoordV7 | null,
-): number {
-  if (resultAt === null) return 0;
-  const mark = view.defectionStatuses.find(
-    (status) =>
-      status.visibility === "FULL" && status.targetUnitId === actor.id,
-  );
-  if (mark?.visibility !== "FULL") return 0;
-  const source = view.units.find((item) => item.id === mark.sourceUnitId);
-  return source !== undefined && distance(resultAt, source.at) > 2
-    ? retainedUnitValue(actor)
-    : 0;
-}
-
-export function countVisibleDefectionRepliesV7(
-  view: PlayerViewV7,
-  sourceId: UnitId,
-  targetId: UnitId,
-): number {
-  const source = view.units.find((item) => item.id === sourceId);
-  const target = view.units.find((item) => item.id === targetId);
-  if (source === undefined || target === undefined) return 0;
-  const rule = effectiveRoleRuleV7(target.role);
-  const origins = publicDefectionReplyOrigins(view, target);
-  const lethalReply =
-    rule.abilities.includes("ATTACK") &&
-    origins.some(({ at, pathLength }) => {
-      if (pathLength > 0 && !rule.mayUsePrimaryActionAfterMove) return false;
-      const range = distance(at, source.at);
-      if (range < rule.minimumRange || range > rule.range) return false;
-      const projected = projectPublicUnitForPolicyV7(view, target.id, {
-        at,
-        activation: {
-          ...target.activation,
-          moved: pathLength > 0,
-          movedPathLength: pathLength,
-          attacked: false,
-          handled: false,
-        },
-      });
-      const projectedTarget = projected.units.find(
-        (unit) => unit.id === target.id,
-      );
-      const projectedSource = projected.units.find(
-        (unit) => unit.id === source.id,
-      );
-      return (
-        projectedTarget !== undefined &&
-        projectedSource !== undefined &&
-        publicProjectedDamage(
-          projected,
-          projectedTarget,
-          projectedSource,
-          projectedSource.at,
-          { breach: rule.abilities.includes("BREACH") && range === 1 },
-        ) >= projectedSource.hp
-      );
-    });
-  const escapeOptions = origins.filter(
-    ({ at, pathLength }) => pathLength > 0 && distance(at, source.at) > 2,
-  ).length;
-  return Number(lethalReply) + escapeOptions;
-}
-
-interface PublicReplyOriginV7 {
-  readonly at: CoordV7;
-  readonly pathLength: number;
-  readonly spent2: number;
-}
-
-/**
- * Conservative public movement for the marked unit's next reply. Hidden
- * research, concealed blockers, and unobserved road connectivity never create
- * a reply that the offering player cannot guarantee from its current view.
- */
-function publicDefectionReplyOrigins(
-  view: PlayerViewV7,
-  target: PublicUnitV7,
-): readonly PublicReplyOriginV7[] {
-  const rule = effectiveRoleRuleV7(target.role);
-  const start: PublicReplyOriginV7 = {
-    at: target.at,
-    pathLength: 0,
-    spent2: 0,
-  };
-  const results = new Map([[coordKey(target.at), start]]);
-  const queue: PublicReplyOriginV7[] = [start];
-  while (queue.length > 0) {
-    const current = queue.shift();
-    if (current === undefined) break;
-    for (const tile of view.board.tiles) {
-      if (!tile.explored || distance(tile.at, current.at) !== 1) continue;
-      if (
-        tile.territoryOwnerId !== null &&
-        tile.territoryOwnerId !== target.ownerId &&
-        publicPlayersAllied(view, target.ownerId, tile.territoryOwnerId)
-      )
-        continue;
-      if (
-        tile.terrain === "MOUNTAIN" &&
-        !publicOwnerHasSurveying(view, target.ownerId)
-      )
-        continue;
-      if (
-        view.units.some(
-          (unit) => unit.id !== target.id && same(unit.at, tile.at),
-        )
-      )
-        continue;
-      const spent2 = current.spent2 + 2;
-      if (spent2 > rule.move * 2) continue;
-      const next: PublicReplyOriginV7 = {
-        at: tile.at,
-        pathLength: current.pathLength + 1,
-        spent2,
-      };
-      const key = coordKey(tile.at);
-      const prior = results.get(key);
-      if (prior !== undefined && prior.spent2 <= spent2) continue;
-      results.set(key, next);
-      const terrainStops =
-        tile.terrain === "FOREST" || tile.terrain === "MOUNTAIN";
-      const visibleHostileZoc = view.units.some(
-        (unit) =>
-          !publicPlayersAllied(view, target.ownerId, unit.ownerId) &&
-          distance(unit.at, tile.at) === 1,
-      );
-      if (!terrainStops && !visibleHostileZoc) queue.push(next);
-    }
-  }
-  return [...results.values()];
-}
-
 function movementObjectiveValue(
   view: PlayerViewV7,
   from: CoordV7,
@@ -1753,12 +1497,6 @@ function visibleImmediateDamage(
     const reachableThreat =
       context?.threatenedTiles.get(hostile.id)?.has(coordKey(at)) ?? false;
     if (!directlyThreatened && !reachableThreat) continue;
-    if (
-      hostile.role === "LANCER" &&
-      !directlyThreatened &&
-      hasVisibleDurableLancerScreen(view, hostile, actor, at)
-    )
-      continue;
     total += publicProjectedDamage(view, hostile, actor, at, {
       maximumCharge: !directlyThreatened,
       breach: rule.abilities.includes("BREACH"),
@@ -1818,29 +1556,11 @@ function publicProjectedDamage(
   );
 }
 
-function hasVisibleDurableLancerScreen(
-  view: PlayerViewV7,
-  lancer: PublicUnitV7,
-  protectedUnit: PublicUnitV7,
-  protectedAt: CoordV7,
-): boolean {
-  return view.units.some(
-    (unit) =>
-      unit.id !== protectedUnit.id &&
-      unit.ownerId === view.viewer.id &&
-      unit.hp * 2 >= unit.maxHp &&
-      effectiveRoleRuleV7(unit.role).defense2 >= 4 &&
-      distance(unit.at, protectedAt) === 1 &&
-      distance(unit.at, lancer.at) < distance(protectedAt, lancer.at),
-  );
-}
-
 function projectedDefenseBonus(
   view: PlayerViewV7,
   unit: PublicUnitV7,
   at: CoordV7,
 ): { readonly numerator: number; readonly denominator: number } {
-  if (unit.role === "ENVOY") return { numerator: 1, denominator: 1 };
   const city = view.cities.find(
     (candidate) => candidate.ownerId === unit.ownerId && same(candidate.at, at),
   );
@@ -1873,22 +1593,14 @@ function visibleImprovementValueAt(
   if (tile?.explored !== true || tile.improvement === null) return null;
   const published = view.improvementValues.find((item) => same(item.at, at));
   if (published !== undefined) return published.level;
-  if (
-    ["FARM", "LUMBER_CAMP", "MINE", "QUARRY", "BARRACKS", "MONUMENT"].includes(
-      tile.improvement,
-    )
-  )
+  if (["FARM", "LUMBER_CAMP", "MINE", "MONUMENT"].includes(tile.improvement))
     return tile.improvement === "FARM"
       ? 2
       : tile.improvement === "LUMBER_CAMP"
         ? 1
         : tile.improvement === "MINE"
           ? 4
-          : tile.improvement === "QUARRY"
-            ? 3
-            : tile.improvement === "BARRACKS"
-              ? 2
-              : 3;
+          : 3;
   const city =
     tile.territoryCityId === null
       ? undefined
@@ -1911,9 +1623,7 @@ function visibleImprovementValueAt(
   const contribution = spatialContributionAtV7(graph, at, tile.improvement);
   return tile.improvement === "MARKET"
     ? contribution.marketIncome
-    : tile.improvement === "BARRACKS"
-      ? contribution.capacity
-      : contribution.population;
+    : contribution.population;
 }
 
 function attributableCityIncome(
@@ -1995,12 +1705,12 @@ function targetStrategicValue(view: PlayerViewV7, unitId: UnitId): number {
     : (rule.cost ?? 0) * 4 + unit.hp;
 }
 
-function publicOwnerHasSurveying(
+function publicOwnerHasEngineering(
   view: PlayerViewV7,
   ownerId: PlayerId,
 ): boolean {
   if (ownerId === view.viewer.id)
-    return view.viewer.researchedTechs.includes("SURVEYING");
+    return view.viewer.researchedTechs.includes("ENGINEERING");
   // A visible unit standing on Mountain proves the public movement capability;
   // otherwise opponent research remains unknown and is never assumed.
   return view.units.some(
@@ -2031,51 +1741,14 @@ function freeCapacity(view: PlayerViewV7, cityId: CityId | null): number {
     (item) => item.id === cityId && item.ownerId === view.viewer.id,
   );
   if (city === undefined) return 0;
-  const barracks =
-    view.improvementValues.find(
-      (item) =>
-        item.improvement === "BARRACKS" &&
-        item.measure === "CAPACITY" &&
-        view.board.tiles.some(
-          (tile) =>
-            tile.explored &&
-            tile.territoryCityId === cityId &&
-            same(tile.at, item.at),
-        ),
-    )?.level ?? 0;
   const capacity =
     city.level +
     1 +
-    Number(view.viewer.researchedTechs.includes("FORTIFICATION")) +
-    barracks;
+    Number(view.viewer.researchedTechs.includes("FORTIFICATION"));
   const assigned = view.units.filter(
     (unit) => unit.ownerId === view.viewer.id && unit.homeCityId === cityId,
   ).length;
-  const reserved = view.defectionStatuses.filter(
-    (status) =>
-      status.visibility === "FULL" &&
-      status.initiatingPlayerId === view.viewer.id &&
-      status.reservedHomeCityId === cityId,
-  ).length;
-  return capacity - assigned - reserved;
-}
-
-function publiclyDetected(
-  view: PlayerViewV7,
-  at: CoordV7,
-  movingUnitId: UnitId,
-): boolean {
-  return (
-    view.cities.some(
-      (city) => city.ownerId === view.viewer.id && distance(city.at, at) <= 1,
-    ) ||
-    view.units.some(
-      (unit) =>
-        unit.id !== movingUnitId &&
-        unit.ownerId === view.viewer.id &&
-        distance(unit.at, at) <= (unit.role === "SCOUT" ? 2 : 1),
-    )
-  );
+  return capacity - assigned;
 }
 
 /** Reprojects public-only unit facts after a hypothetical policy move. */
@@ -2136,15 +1809,7 @@ function projectPublicUnits(
                     }
                   : stat,
           ),
-          statuses: [
-            ...stats.statuses.filter(
-              (status) =>
-                status !== "PURSUIT_READY" && status !== "PURSUIT_MOVED",
-            ),
-            ...(unit.activation.pursuitPhase === "NONE"
-              ? []
-              : [unit.activation.pursuitPhase]),
-          ],
+          statuses: stats.statuses,
         },
       ];
     }),

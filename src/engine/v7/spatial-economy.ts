@@ -5,7 +5,6 @@ export const ECONOMIC_FAMILY_ORDER_V7 = Object.freeze([
   "AGRICULTURE",
   "TIMBER",
   "METAL",
-  "STONE",
 ] as const);
 export type EconomicFamilyV7 = (typeof ECONOMIC_FAMILY_ORDER_V7)[number];
 export const OPPOSITE_PAIR_AXIS_ORDER_V7 = Object.freeze([
@@ -73,18 +72,8 @@ function economyGraphIndexV7(graph: EconomyGraphV7): EconomyGraphIndexV7 {
   ECONOMY_GRAPH_INDEXES_V7.set(graph, index);
   return index;
 }
-const BASIC = ["FARM", "LUMBER_CAMP", "MINE", "QUARRY"] as const;
-const PROCESSORS = ["WINDMILL", "SAWMILL", "FORGE", "STONEWORKS"] as const;
-const AXES: readonly {
-  readonly id: OppositePairAxisV7;
-  readonly first: readonly [number, number];
-  readonly second: readonly [number, number];
-}[] = [
-  { id: "NORTH_SOUTH", first: [0, -1], second: [0, 1] },
-  { id: "EAST_WEST", first: [1, 0], second: [-1, 0] },
-  { id: "NORTHEAST_SOUTHWEST", first: [1, -1], second: [-1, 1] },
-  { id: "NORTHWEST_SOUTHEAST", first: [-1, -1], second: [1, 1] },
-];
+const BASIC = ["FARM", "LUMBER_CAMP", "MINE"] as const;
+const PROCESSORS = ["WINDMILL", "SAWMILL", "FORGE"] as const;
 
 export function spatialContributionAtV7(
   graph: EconomyGraphV7,
@@ -114,18 +103,12 @@ function calculateSpatialContributionAtV7(
   if (improvement === "FARM") return fixed(2, at, improvement);
   if (improvement === "LUMBER_CAMP") return fixed(1, at, improvement);
   if (improvement === "MINE") return fixed(4, at, improvement);
-  if (improvement === "QUARRY") return fixed(3, at, improvement);
-  if (improvement === "BARRACKS")
-    return result({ capacity: 2, contributingTiles: [at], placementCount: 1 });
   if (improvement === "MONUMENT") return fixed(3, at, improvement);
   if (improvement === "WINDMILL" || improvement === "SAWMILL") {
     const type = improvement === "WINDMILL" ? "FARM" : "LUMBER_CAMP";
     const contributors = connectedSameCityComponent(graph, at, city.id, type);
     return result({
-      population:
-        improvement === "WINDMILL" && contributors.length > 0
-          ? Math.min(8, 2 + contributors.length)
-          : Math.min(8, contributors.length),
+      population: Math.min(8, contributors.length),
       contributingTiles: contributors,
       distinctTypes: contributors.length === 0 ? [] : [type],
       placementCount: contributors.length,
@@ -139,27 +122,6 @@ function calculateSpatialContributionAtV7(
       population: Math.min(18, contributors.length * 3),
       contributingTiles: contributors.map((tile) => tile.at),
       distinctTypes: contributors.length === 0 ? [] : ["MINE"],
-      placementCount: contributors.length,
-    });
-  }
-  if (improvement === "STONEWORKS") {
-    const contributors = adjacentTilesV7(graph.board, at).filter(
-      (tile) =>
-        tile.territoryCityId === city.id && tile.improvement === "QUARRY",
-    );
-    const axes = AXES.filter(
-      (axis) =>
-        isSameCityImprovement(graph.board, at, axis.first, city.id, "QUARRY") &&
-        isSameCityImprovement(graph.board, at, axis.second, city.id, "QUARRY"),
-    ).map((axis) => axis.id);
-    return result({
-      population:
-        contributors.length === 0
-          ? 0
-          : Math.min(16, 2 + contributors.length * 2 + axes.length * 2),
-      contributingTiles: contributors.map((tile) => tile.at),
-      distinctTypes: contributors.length === 0 ? [] : ["QUARRY"],
-      oppositePairAxes: axes,
       placementCount: contributors.length,
     });
   }
@@ -187,7 +149,7 @@ function calculateSpatialContributionAtV7(
     );
     const types = orderedTypes(contributors, PROCESSORS);
     return result({
-      population: types.length < 2 ? 0 : Math.min(12, 4 + types.length * 2),
+      population: types.length < 2 ? 0 : Math.min(10, 4 + types.length * 2),
       contributingTiles: contributors.map((tile) => tile.at),
       distinctTypes: types,
       placementCount: types.length,
@@ -208,7 +170,7 @@ function calculateSpatialContributionAtV7(
       connected.has(key(tile.at)),
   );
   return result({
-    marketIncome: Math.min(5, families.length + (capitalRoadConnected ? 1 : 0)),
+    marketIncome: Math.min(4, families.length + (capitalRoadConnected ? 1 : 0)),
     contributingTiles: contributors.map((tile) => tile.at),
     distinctTypes: orderedTypes(contributors, [...BASIC, ...PROCESSORS]),
     distinctFamilies: families,
@@ -317,7 +279,6 @@ function familyFor(value: ImprovementIdV7 | null): EconomicFamilyV7 | null {
   if (value === "FARM" || value === "WINDMILL") return "AGRICULTURE";
   if (value === "LUMBER_CAMP" || value === "SAWMILL") return "TIMBER";
   if (value === "MINE" || value === "FORGE") return "METAL";
-  if (value === "QUARRY" || value === "STONEWORKS") return "STONE";
   return null;
 }
 function tileOwner(
@@ -328,16 +289,6 @@ function tileOwner(
     ? null
     : (economyGraphIndexV7(graph).cityById.get(tile.territoryCityId)?.ownerId ??
         null);
-}
-function isSameCityImprovement<T extends EconomyGraphTileV7>(
-  board: EconomyBoardV7<T>,
-  at: CoordV7,
-  [dx, dy]: readonly [number, number],
-  cityId: CityId,
-  improvement: ImprovementIdV7,
-): boolean {
-  const tile = tileAtV7(board, { x: at.x + dx, y: at.y + dy });
-  return tile?.territoryCityId === cityId && tile.improvement === improvement;
 }
 type EconomyBoardV7<T extends EconomyGraphTileV7 = EconomyGraphTileV7> = {
   readonly width: number;

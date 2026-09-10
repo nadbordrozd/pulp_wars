@@ -27,7 +27,6 @@ const READY: UnitStateV7["activation"] = {
   movedPathLength: 0,
   attacked: false,
   attacksUsed: 0,
-  pursuitPhase: "NONE",
   healed: false,
   recovered: false,
   captured: false,
@@ -38,7 +37,6 @@ const READY: UnitStateV7["activation"] = {
 const HP: Record<UnitRoleIdV7, number> = {
   FIGHTER: 10,
   SCOUT: 10,
-  ENVOY: 7,
   MARKSMAN: 10,
   GUARD: 15,
   RAIDER: 10,
@@ -46,7 +44,7 @@ const HP: Record<UnitRoleIdV7, number> = {
   CATAPULT: 10,
   SABOTEUR: 10,
   HEAVY: 20,
-  LANCER: 12,
+  HORSE_ARCHER: 10,
   BREACHER: 15,
   JUGGERNAUT: 40,
 };
@@ -497,77 +495,6 @@ describe("ruleset-7 Saboteur Blackout", () => {
     expect(result.state).toBe(overflow);
   });
 
-  it("does not offer End Turn while an owned Lancer Pursuit remains open", () => {
-    const base = blackoutScenario(2, 0, 1);
-    const source = base.units[0]!;
-    const state = checkedV7({
-      ...base,
-      units: [
-        {
-          ...source,
-          role: "LANCER",
-          hp: 12,
-          maxHp: 12,
-          blackoutEligibleRound: null,
-          activation: {
-            ...READY,
-            attacksUsed: 1,
-            pursuitPhase: "PURSUIT_READY",
-          },
-        },
-      ],
-    });
-    expect(
-      queryPlayerCommandsV7(viewForV7(state, source.ownerId)),
-    ).not.toContainEqual({
-      kind: "END_TURN",
-    });
-    expect(
-      applyCommandV7(state, source.ownerId, { kind: "END_TURN" }),
-    ).toMatchObject({
-      accepted: false,
-      error: { code: "PURSUIT_MUST_END" },
-      events: [],
-    });
-  });
-
-  it("resolves Defection before activation and income while preserving the converted cooldown", () => {
-    const state = conversionBeforeBlackoutScenario();
-    const targetOwner = state.turnOrder[1]!;
-    const saboteur = state.units.find((unit) => unit.role === "SABOTEUR")!;
-    const targetCity = state.cities.find(
-      (city) => city.ownerId === targetOwner,
-    )!;
-    const result = endTurn(state);
-    const resolvedIndex = result.events.findIndex(
-      (event) => event.kind === "DEFECTION_RESOLVED",
-    );
-    const activatedIndex = result.events.findIndex(
-      (event) => event.kind === "BLACKOUT_ACTIVATED",
-    );
-    const incomeIndex = result.events.findIndex(
-      (event) => event.kind === "INCOME_AWARDED",
-    );
-    expect(resolvedIndex).toBeGreaterThan(-1);
-    expect(activatedIndex).toBeGreaterThan(resolvedIndex);
-    expect(incomeIndex).toBeGreaterThan(activatedIndex);
-    expect(
-      result.state.units.find((unit) => unit.id === saboteur.id),
-    ).toMatchObject({
-      ownerId: targetOwner,
-      blackoutEligibleRound: 9,
-      activation: { handled: true, specialActed: true },
-    });
-    const active = result.state.cities.find(
-      (city) => city.id === targetCity.id,
-    )?.blackout;
-    expect(active).toMatchObject({ phase: "ACTIVE" });
-    expect(result.events[activatedIndex]).toMatchObject({
-      kind: "BLACKOUT_ACTIVATED",
-      suppressedCoins: Math.min(3, targetCity.level + 1),
-    });
-  });
-
   it("caps suppression at three without touching treasury and restores full recovery income", () => {
     let state = blackoutScenario(2, 0, 1);
     const source = state.units[0]!;
@@ -780,7 +707,7 @@ describe("ruleset-7 Saboteur Blackout", () => {
                 ...tile,
                 terrain: "GRASS",
                 resource: null,
-                improvement: "BARRACKS",
+                improvement: null,
                 road: false,
               }
             : tile,
@@ -791,7 +718,13 @@ describe("ruleset-7 Saboteur Blackout", () => {
           ? {
               ...player,
               explored: state.board.tiles.map((tile) => tile.at),
-              researchedTechs: ["GATHERING", "SCOUTING", "ROADS"],
+              researchedTechs: [
+                "GATHERING",
+                "SCOUTING",
+                "ROADS",
+                "DRILL",
+                "FORTIFICATION",
+              ],
             }
           : player,
       ),
@@ -819,7 +752,7 @@ describe("ruleset-7 Saboteur Blackout", () => {
       nextEntityId: state.nextEntityId + 1,
     });
     const unit = state.units[0]!;
-    expect(cityUnitCapacityV7(state, target)).toBe(target.level + 3);
+    expect(cityUnitCapacityV7(state, target)).toBe(target.level + 2);
     expect(
       cityIncomeV7(
         state,
@@ -1065,64 +998,6 @@ function blackoutScenario(
         : player,
     ),
     units: [source],
-  });
-}
-
-function conversionBeforeBlackoutScenario(): GameStateV7 {
-  const state = initialV7ForSeats(2);
-  const human = state.turnOrder[0]!;
-  const targetOwner = state.turnOrder[1]!;
-  const humanCity = state.cities.find((city) => city.ownerId === human)!;
-  const targetCity = state.cities.find((city) => city.ownerId === targetOwner)!;
-  const saboteur = {
-    ...makeUnit(
-      state.nextEntityId,
-      human,
-      humanCity.id,
-      "SABOTEUR",
-      targetCity.at,
-    ),
-    blackoutEligibleRound: 9,
-  };
-  const envoy = makeUnit(
-    state.nextEntityId + 1,
-    targetOwner,
-    targetCity.id,
-    "ENVOY",
-    adjacentOpenCoordinate(state, targetCity),
-  );
-  const markId = state.nextEntityId + 2;
-  return checkedV7({
-    ...state,
-    nextEntityId: markId + 1,
-    activeSeatIndex: 0,
-    units: [saboteur, envoy].sort((left, right) => left.id - right.id),
-    cities: state.cities.map((city) =>
-      city.id === targetCity.id
-        ? {
-            ...city,
-            blackout: {
-              phase: "PENDING",
-              sourceUnitId: saboteur.id,
-              sourceOwnerId: human,
-              plantedRound: state.round,
-            },
-          }
-        : city,
-    ),
-    defectionMarks: [
-      {
-        id: markId,
-        sourceUnitId: envoy.id,
-        targetUnitId: saboteur.id,
-        initiatingPlayerId: targetOwner,
-        recordedTargetOwnerId: human,
-        reservedHomeCityId: targetCity.id,
-        offeredAtCommandIndex: 1,
-        phase: "ARMED",
-      },
-    ],
-    commandIndex: 1,
   });
 }
 

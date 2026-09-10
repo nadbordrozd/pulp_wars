@@ -24,7 +24,7 @@ import {
   Ruleset7DomAppView,
   type Ruleset7ControllerPortV7,
 } from "../../src/render/dom/app-view-v7";
-import { defectionPublicFixtureV7 } from "../fixtures/ruleset7-tactical-ui";
+import { blackoutPublicFixtureV7 } from "../fixtures/ruleset7-tactical-ui";
 import { checkedV7, initialV7 } from "../fixtures/v7-builders";
 
 beforeEach(() => {
@@ -32,73 +32,8 @@ beforeEach(() => {
 });
 
 describe("Ruleset 7 tactical observation-safe UI", () => {
-  it("keeps ENDPOINT Defection counterpart, reservation, and escape geometry absent", () => {
-    const fixture = defectionPublicFixtureV7(false);
-    const source = required(
-      fixture.view.units.find(
-        (unit) => unit.ownerId === fixture.view.viewer.id,
-      ),
-    );
-    const target = required(
-      fixture.view.units.find(
-        (unit) => unit.ownerId !== fixture.view.viewer.id,
-      ),
-    );
-    const reserved = required(fixture.view.cities[0]);
-    const full: PlayerViewV7 = {
-      ...fixture.view,
-      defectionStatuses: [
-        {
-          visibility: "FULL",
-          markId: 501,
-          sourceUnitId: source.id,
-          targetUnitId: target.id,
-          initiatingPlayerId: source.ownerId,
-          targetOwnerId: target.ownerId,
-          reservedHomeCityId: reserved.id,
-          phase: "WAITING_FOR_REPLY",
-        },
-      ],
-    };
-    const endpoint: PlayerViewV7 = {
-      ...fixture.view,
-      defectionStatuses: [
-        {
-          visibility: "ENDPOINT",
-          endpointUnitId: target.id,
-          phase: "WAITING_FOR_REPLY",
-        },
-      ],
-    };
-
-    const fullUi = renderSelection(full, [], {
-      kind: "UNIT",
-      unitId: target.id,
-    });
-    expect(fullUi.text).toContain(`Reserved home city ${reserved.id}`);
-    expect(fullUi.plan.entries.some((entry) => entry.kind === "LINK")).toBe(
-      true,
-    );
-    fullUi.app.destroy();
-
-    document.body.innerHTML = '<div id="app"></div>';
-    const endpointUi = renderSelection(endpoint, [], {
-      kind: "UNIT",
-      unitId: target.id,
-    });
-    expect(endpointUi.text).toContain(
-      "Endpoint-only status · counterpart identity, coordinate, city and capacity remain private.",
-    );
-    expect(endpointUi.text).not.toContain(`Reserved home city ${reserved.id}`);
-    expect(endpointUi.text).not.toContain("escape endpoint");
-    expect(endpointUi.plan.entries.some((entry) => entry.kind === "LINK")).toBe(
-      false,
-    );
-    endpointUi.app.destroy();
-  });
-
   it("keeps CITY_ONLY Blackout source and exact income suppression absent", () => {
-    const fixture = defectionPublicFixtureV7(false);
+    const fixture = blackoutPublicFixtureV7();
     const city = required(
       fixture.view.cities.find(
         (candidate) => candidate.ownerId !== fixture.view.viewer.id,
@@ -134,7 +69,7 @@ describe("Ruleset 7 tactical observation-safe UI", () => {
   });
 
   it("distinguishes all public Blackout phases and recovery booleans without coupling timers", () => {
-    const fixture = defectionPublicFixtureV7(false);
+    const fixture = blackoutPublicFixtureV7();
     const city = required(fixture.view.cities[0]);
     const cases: readonly [PublicBlackoutStatusV7, string][] = [
       [
@@ -258,77 +193,6 @@ describe("Ruleset 7 tactical observation-safe UI", () => {
       corePresentationPlanV7(viewB, eventsB, afterB),
     );
     second.app.destroy();
-  });
-
-  it("drops stale FULL details when one mounted app reprojects ENDPOINT then absent", () => {
-    const fixture = defectionPublicFixtureV7(false);
-    const source = required(
-      fixture.view.units.find(
-        (unit) => unit.ownerId === fixture.view.viewer.id,
-      ),
-    );
-    const target = required(
-      fixture.view.units.find(
-        (unit) => unit.ownerId !== fixture.view.viewer.id,
-      ),
-    );
-    const reserved = required(fixture.view.cities[0]);
-    const full: PlayerViewV7 = {
-      ...fixture.view,
-      defectionStatuses: [
-        {
-          visibility: "FULL",
-          markId: 701,
-          sourceUnitId: source.id,
-          targetUnitId: target.id,
-          initiatingPlayerId: source.ownerId,
-          targetOwnerId: target.ownerId,
-          reservedHomeCityId: reserved.id,
-          phase: "WAITING_FOR_REPLY",
-        },
-      ],
-    };
-    const controller = new SnapshotController(full, []);
-    const host = new ObservationBoardHost();
-    const root = required(document.querySelector<HTMLElement>("#app"));
-    const app = new Ruleset7DomAppView(document, root, controller, {
-      boardHost: host,
-      settingsStorage: null,
-    });
-    host.callbacks?.onSelection({ kind: "UNIT", unitId: target.id });
-    expect(root.textContent).toContain(`Reserved home city ${reserved.id}`);
-    controller.update({
-      ...full,
-      units: full.units.filter((unit) => unit.id !== source.id),
-      defectionStatuses: [
-        {
-          visibility: "ENDPOINT",
-          endpointUnitId: target.id,
-          phase: "ARMED",
-        },
-      ],
-    });
-    expect(root.textContent).toContain("Endpoint-only status");
-    expect(root.textContent).not.toContain(`Reserved home city ${reserved.id}`);
-    const endpointModel = required(host.model);
-    expect(endpointModel.interaction.tacticalTargetMode).toBeNull();
-    expect(
-      buildBoardRenderPlanV7(
-        endpointModel.view,
-        endpointModel.offeredCommands,
-        endpointModel.interaction,
-      ).entries.some((entry) => entry.kind === "LINK"),
-    ).toBe(false);
-    controller.update({
-      ...full,
-      units: full.units.filter(
-        (unit) => unit.id !== source.id && unit.id !== target.id,
-      ),
-      defectionStatuses: [],
-    });
-    expect(root.textContent).not.toContain("Defection");
-    expect(root.textContent).not.toContain(`Reserved home city ${reserved.id}`);
-    app.destroy();
   });
 });
 

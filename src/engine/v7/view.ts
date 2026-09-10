@@ -1,12 +1,7 @@
 import { deepFreeze } from "../model/freeze";
 import type { CityId, PlayerId, UnitId } from "../model/ids";
 import { arePlayersAlliedV7 } from "./economy";
-import {
-  detectionCoversCoordV7,
-  isUnitVisibleToPlayerV7,
-  isUnitVisibleWithoutDefectionV7,
-  unitExplicitlyRevealedByDefectionV7,
-} from "./observation";
+import { detectionCoversCoordV7, isUnitVisibleToPlayerV7 } from "./observation";
 import { spatialContributionAtV7 } from "./spatial-economy";
 import type {
   BoardSizeV7,
@@ -63,7 +58,7 @@ export interface PublicPlayerV7 {
   readonly controller: "HUMAN" | "AI";
   readonly color: PlayerColorV7;
   readonly faction: "ORIGINAL";
-  readonly factionTreeId: "ORIGINAL_BASELINE_V3";
+  readonly factionTreeId: "ORIGINAL_BASELINE_V4";
   readonly status: "ACTIVE" | "ELIMINATED";
 }
 
@@ -125,7 +120,6 @@ export interface PublicUnitVisibilityV7 {
     readonly breakCondition: "OUTSIDE_ALL_LEGAL_DETECTOR_RANGE";
   };
   readonly exposures?: readonly PublicSaboteurExposureV7[];
-  readonly defectionReveals?: readonly PublicDefectionRevealV7[];
 }
 
 export interface PublicSaboteurExposureV7 {
@@ -141,28 +135,6 @@ export interface PublicSaboteurExposureV7 {
         };
   };
 }
-
-export interface PublicDefectionRevealV7 {
-  readonly phase: "WAITING_FOR_REPLY" | "ARMED";
-  readonly breakCondition: "MARK_RESOLVES_OR_CANCELS";
-}
-
-export type PublicDefectionStatusV7 =
-  | {
-      readonly visibility: "FULL";
-      readonly markId: number;
-      readonly sourceUnitId: UnitId;
-      readonly targetUnitId: UnitId;
-      readonly initiatingPlayerId: PlayerId;
-      readonly targetOwnerId: PlayerId;
-      readonly reservedHomeCityId: CityId;
-      readonly phase: "WAITING_FOR_REPLY" | "ARMED";
-    }
-  | {
-      readonly visibility: "ENDPOINT";
-      readonly endpointUnitId: UnitId;
-      readonly phase: "WAITING_FOR_REPLY" | "ARMED";
-    };
 
 export interface PublicLeaderboardEntryV7 {
   readonly playerId: PlayerId;
@@ -182,14 +154,12 @@ export type PublicImprovementValueV7 = {
     | "WINDMILL"
     | "SAWMILL"
     | "FORGE"
-    | "STONEWORKS"
     | "WORKSHOP"
     | "GRAND_WORKS"
     | "MARKET"
-    | "BARRACKS"
     | "MONUMENT";
   readonly level: number;
-  readonly measure: "POPULATION" | "COIN_INCOME" | "CAPACITY";
+  readonly measure: "POPULATION" | "COIN_INCOME";
   readonly contributingTiles: readonly CoordV7[];
 };
 
@@ -249,7 +219,6 @@ export interface PlayerViewV7 {
   readonly units: readonly PublicUnitV7[];
   readonly unitStats: readonly PublicUnitStatsV7[];
   readonly treasureChests: readonly CoordV7[];
-  readonly defectionStatuses: readonly PublicDefectionStatusV7[];
   readonly blackoutStatuses: readonly PublicBlackoutStatusV7[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
@@ -369,16 +338,6 @@ export function viewForV7(
           },
         ];
       if (city?.ownerId !== viewerId || !isValued(tile.improvement)) return [];
-      if (tile.improvement === "BARRACKS")
-        return [
-          {
-            at: tile.at,
-            improvement: "BARRACKS",
-            level: 2,
-            measure: "CAPACITY",
-            contributingTiles: [],
-          },
-        ];
       const evaluation = spatialContributionAtV7(
         state,
         tile.at,
@@ -404,48 +363,6 @@ export function viewForV7(
           ),
         },
       ];
-    },
-  );
-  const visibleIds = new Set(publicUnits.map((unit) => unit.id));
-  const defectionStatuses = state.defectionMarks.flatMap(
-    (mark): readonly PublicDefectionStatusV7[] => {
-      const privileged =
-        viewerId === mark.initiatingPlayerId ||
-        viewerId === mark.recordedTargetOwnerId;
-      const source = state.units.find((unit) => unit.id === mark.sourceUnitId);
-      const target = state.units.find((unit) => unit.id === mark.targetUnitId);
-      const sourceIndependent =
-        source !== undefined &&
-        isUnitVisibleWithoutDefectionV7(state, viewerId, source);
-      const targetIndependent =
-        target !== undefined &&
-        isUnitVisibleWithoutDefectionV7(state, viewerId, target);
-      if (privileged || (sourceIndependent && targetIndependent))
-        return [
-          {
-            visibility: "FULL",
-            markId: mark.id,
-            sourceUnitId: mark.sourceUnitId,
-            targetUnitId: mark.targetUnitId,
-            initiatingPlayerId: mark.initiatingPlayerId,
-            targetOwnerId: mark.recordedTargetOwnerId,
-            reservedHomeCityId: mark.reservedHomeCityId,
-            phase: mark.phase,
-          },
-        ];
-      const sourceVisible = visibleIds.has(mark.sourceUnitId);
-      const targetVisible = visibleIds.has(mark.targetUnitId);
-      if (sourceVisible || targetVisible)
-        return [
-          {
-            visibility: "ENDPOINT",
-            endpointUnitId: sourceVisible
-              ? mark.sourceUnitId
-              : mark.targetUnitId,
-            phase: mark.phase,
-          },
-        ];
-      return [];
     },
   );
   const blackoutStatuses = visibleCities.flatMap(
@@ -551,7 +468,6 @@ export function viewForV7(
     treasureChests: state.treasureChests.filter((chest) =>
       explored.has(key(chest)),
     ),
-    defectionStatuses,
     blackoutStatuses,
     pendingChoices: state.pendingChoices.filter((choice) =>
       state.cities.some(
@@ -602,30 +518,16 @@ function publicUnitVisibilityV7(
           ]
         : [],
   );
-  const defectionReveals = state.defectionMarks.flatMap(
-    (mark): readonly PublicDefectionRevealV7[] =>
-      unit.ownerId !== viewerId &&
-      unitExplicitlyRevealedByDefectionV7(state, viewerId, unit, mark)
-        ? [
-            {
-              phase: mark.phase,
-              breakCondition: "MARK_RESOLVES_OR_CANCELS",
-            },
-          ]
-        : [],
-  );
   if (
     concealment === undefined &&
     detection === undefined &&
-    exposures.length === 0 &&
-    defectionReveals.length === 0
+    exposures.length === 0
   )
     return undefined;
   return {
     ...(concealment === undefined ? {} : { concealment }),
     ...(detection === undefined ? {} : { detection }),
     ...(exposures.length === 0 ? {} : { exposures }),
-    ...(defectionReveals.length === 0 ? {} : { defectionReveals }),
   };
 }
 
@@ -652,15 +554,14 @@ const HIDDEN_POSITION_MODIFIERS_V7 = new Set([
 
 function publicUnitStatsForViewerV7(
   stats: PublicUnitStatsV7,
-  role: UnitRoleIdV7,
+  _role: UnitRoleIdV7,
   positionExplored: boolean,
 ): PublicUnitStatsV7 {
   if (positionExplored) return stats;
   return {
     ...stats,
     stats: stats.stats.map((entry) => {
-      const positionCanModify =
-        entry.id === "SIGHT" || (entry.id === "DEFENSE" && role !== "ENVOY");
+      const positionCanModify = entry.id === "SIGHT" || entry.id === "DEFENSE";
       if (!positionCanModify) return entry;
       const modifiers = entry.modifiers.filter(
         (modifier) => !HIDDEN_POSITION_MODIFIERS_V7.has(modifier.source),
@@ -702,14 +603,9 @@ export function achievementProgressV7(
     (maximum, contribution) =>
       contribution.category === "LIVE" &&
       contribution.source.kind === "IMPROVEMENT" &&
-      [
-        "WINDMILL",
-        "SAWMILL",
-        "FORGE",
-        "STONEWORKS",
-        "WORKSHOP",
-        "GRAND_WORKS",
-      ].includes(contribution.source.improvement) &&
+      ["WINDMILL", "SAWMILL", "FORGE", "WORKSHOP", "GRAND_WORKS"].includes(
+        contribution.source.improvement,
+      ) &&
       state.cities.some(
         (city) => city.id === contribution.cityId && city.ownerId === playerId,
       )
@@ -741,12 +637,8 @@ export function publicResourceV7(
   },
   technologies: readonly string[],
 ): PublicResourceV7 {
-  if (tile.terrain === "FOREST") return tile.resource;
-  const revealed =
-    tile.terrain === "GRASS"
-      ? technologies.includes("GATHERING")
-      : technologies.includes("SURVEYING");
-  return revealed ? tile.resource : UNKNOWN_RESOURCE_V7;
+  void technologies;
+  return tile.resource;
 }
 
 function publicBlackout(
@@ -778,11 +670,9 @@ function isValued(
     "WINDMILL",
     "SAWMILL",
     "FORGE",
-    "STONEWORKS",
     "WORKSHOP",
     "GRAND_WORKS",
     "MARKET",
-    "BARRACKS",
     "MONUMENT",
   ].includes(improvement);
 }

@@ -1,8 +1,13 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { performance } from "node:perf_hooks";
 import { runAiMatchV7 } from "../src/headless/v7";
-import type { AiCountV7, MatchSetupV7 } from "../src/engine/index";
 import {
+  RULESET_7_ID,
+  type AiCountV7,
+  type MatchSetupV7,
+} from "../src/engine/index";
+import {
+  assertNormalMatrixArchiveRuntime,
   matrixCellKey,
   normalAiRuntimeFingerprint,
   requireUniqueMatrixSelectors,
@@ -10,6 +15,8 @@ import {
   type MatrixDiagnosticsV7,
   type MatrixHashesV7,
 } from "./ruleset-v7-normal-ai-matrix-evidence";
+
+assertNormalMatrixArchiveRuntime(RULESET_7_ID);
 
 const aiCounts = parseAiCounts(valueAfter("--ai-counts") ?? "1,2,3");
 const modes = parseModes(valueAfter("--modes") ?? "rival,cooperative");

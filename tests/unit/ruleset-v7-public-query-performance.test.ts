@@ -30,12 +30,12 @@ describe("ruleset-7 late public query performance", () => {
     const commands = queryPlayerCommandsV7(view);
     const elapsed = performance.now() - started;
 
-    expect(commands).toHaveLength(199);
+    expect(commands).toHaveLength(75);
     expect(canonicalHash(commands)).toBe(
-      "719c2273e9451a28d5f7641f69b6046e7cd6c3acd988f1bcc8915d43f4eafa90",
+      "14d61b0aa76e888773bc96b8f956a2b8a973f7117278b073b4b404e4828e95a5",
     );
     expect(canonicalHash(queryAiReadyCommandsV7(view))).toBe(
-      "fb9deaa2f9777abca458246f5236f80c399b0209ac4b7a90e270bbab33ceb83e",
+      "e5fbeec912a504c54c3bc9d7794d42dfe3576088445aa868ee2d731a71bf8da3",
     );
     expect(
       canonicalHash(
@@ -44,7 +44,7 @@ describe("ruleset-7 late public query performance", () => {
           result: previewEconomicV7(view, command),
         })),
       ),
-    ).toBe("e56d86d315454c47d1c02ae239bdc04f4f3350f255f89200751a5d04aaec42d5");
+    ).toBe("7ce8e475397e40bd561f7a8defc3da91005c50b1e54970d3018511049131b55f");
     expect(elapsed).toBeLessThan(250);
 
     const incrementalView = structuredClone(RETAINED_VIEW);
@@ -96,9 +96,7 @@ describe("ruleset-7 late public query performance", () => {
         expected.potentials,
       );
       const interleavedCommand = required(
-        expectedCommands.find(
-          (command) => command.kind === "BUILD_LUMBER_CAMP",
-        ),
+        expectedCommands.find((command) => command.kind === "BUILD_FORGE"),
       );
       expect(scorePublicSpatialPlanV7(leftView, interleavedCommand)).toBe(
         required(
@@ -123,10 +121,10 @@ describe("ruleset-7 late public query performance", () => {
       expect(canonicalHash(leftResult)).toBe(canonicalHash(expected));
       expect(canonicalHash(rightResult)).toBe(canonicalHash(expected));
       expect(canonicalHash(leftResult.potentials)).toBe(
-        "06e29a094c03ed387458fd33468b7e0fab2a110ce4eedada18100645abb9f16d",
+        "76079f3a0174ad4e509d0294d7bc5c85724a027c1b556a13cf058b16380c0d47",
       );
       expect(canonicalHash(leftResult.scores)).toBe(
-        "a38fddc5d6f265715dbfbe940b5049062ae52b237c69cb6d4df2fe3137a6ca67",
+        "ab0e2035511d929add5f2044c35c9ad91425aacbcd00eed5b3ac45664f964aac",
       );
       expect(queryPublicEconomicPotentialsV7(leftView)).toBe(
         leftResult.potentials,
@@ -144,7 +142,7 @@ describe("ruleset-7 late public query performance", () => {
     const duplicateView = structuredClone(RETAINED_VIEW);
     const command = required(
       queryPlayerCommandsV7(duplicateView).find(
-        (candidate) => candidate.kind === "BUILD_LUMBER_CAMP",
+        (candidate) => candidate.kind === "BUILD_FORGE",
       ),
     );
     const duplicate = drain(
@@ -187,23 +185,31 @@ describe("ruleset-7 late public query performance", () => {
   it("keys movement preparation to the exact changed public view", () => {
     const original = structuredClone(RETAINED_VIEW);
     expect(canonicalHash(queryPlayerCommandsV7(original))).toBe(
-      "719c2273e9451a28d5f7641f69b6046e7cd6c3acd988f1bcc8915d43f4eafa90",
+      "14d61b0aa76e888773bc96b8f956a2b8a973f7117278b073b4b404e4828e95a5",
     );
+    const firstMove = required(
+      queryPlayerCommandsV7(original).find(
+        (command) => command.kind === "MOVE",
+      ),
+    );
+    if (firstMove.kind !== "MOVE") throw new Error("Move fixture malformed");
     const changed = {
       ...original,
-      viewer: {
-        ...original.viewer,
-        researchedTechs: original.viewer.researchedTechs.filter(
-          (technology) => technology !== "ROADS",
-        ),
-      },
+      units: original.units.map((unit) =>
+        unit.id === firstMove.unitId
+          ? {
+              ...unit,
+              activation: { ...unit.activation, handled: true },
+            }
+          : unit,
+      ),
     };
     const changedCommands = queryPlayerCommandsV7(changed);
     expect(canonicalHash(changedCommands)).toBe(
       canonicalHash(queryPlayerCommandsV7(structuredClone(changed))),
     );
     expect(canonicalHash(changedCommands)).toBe(
-      "84996f51c636125d001f92730b4530e6af1102a0b29ec32e9e37cd7ba7137f46",
+      "057de2a1d24b873d3c917969b59ad89207dc1d397ce0d27ac34bf62f551f4a04",
     );
   });
 
@@ -214,11 +220,9 @@ describe("ruleset-7 late public query performance", () => {
       "WINDMILL",
       "SAWMILL",
       "FORGE",
-      "STONEWORKS",
       "WORKSHOP",
       "GRAND_WORKS",
       "MARKET",
-      "BARRACKS",
     ] as const;
     for (const improvement of kinds) {
       const placed = withImprovement(graph, target, improvement);
@@ -321,7 +325,7 @@ function spatialPremiseGraph(): EconomyGraphV7 {
                 : at.x === 3 && at.y === 2
                   ? ("FORGE" as const)
                   : at.x === 3 && at.y === 3
-                    ? ("QUARRY" as const)
+                    ? ("MINE" as const)
                     : null;
         return {
           at,

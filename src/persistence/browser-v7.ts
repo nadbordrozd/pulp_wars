@@ -31,7 +31,52 @@ export type BrowserSaveLoadResultV7 =
       readonly diagnostic: string;
     };
 
-/** Browser-only revision-2 repository. It owns exactly the v7r2 save key. */
+export const OBSOLETE_SAVE_STORAGE_KEYS_V7 = Object.freeze([
+  "pulpWars.save.v7.current",
+  "pulpWars.save.v7r2.current",
+] as const);
+
+export interface ObsoleteSaveCleanupResultV7 {
+  readonly removedKeys: readonly (typeof OBSOLETE_SAVE_STORAGE_KEYS_V7)[number][];
+  readonly removedCount: number;
+  readonly warning: string | null;
+}
+
+/** Removes only the two incompatible prototype keys and reports actual removals. */
+export function cleanupObsoleteRuleset7Saves(
+  storage: StorageAdapter | null,
+): ObsoleteSaveCleanupResultV7 {
+  if (storage === null)
+    return { removedKeys: [], removedCount: 0, warning: null };
+  const removedKeys: (typeof OBSOLETE_SAVE_STORAGE_KEYS_V7)[number][] = [];
+  const failures: string[] = [];
+  for (const key of OBSOLETE_SAVE_STORAGE_KEYS_V7) {
+    let present: boolean;
+    try {
+      present = storage.getItem(key) !== null;
+    } catch (error) {
+      failures.push(persistenceDiagnosticV7(`Unable to inspect ${key}`, error));
+      continue;
+    }
+    if (!present) continue;
+    try {
+      storage.removeItem(key);
+      removedKeys.push(key);
+    } catch (error) {
+      failures.push(persistenceDiagnosticV7(`Unable to remove ${key}`, error));
+    }
+  }
+  return {
+    removedKeys,
+    removedCount: removedKeys.length,
+    warning:
+      failures.length === 0
+        ? null
+        : `Obsolete Ruleset 7 save cleanup was incomplete: ${failures.join("; ")}`,
+  };
+}
+
+/** Browser-only revision-3 repository. It owns exactly the v7r3 save key. */
 export class BrowserPersistenceV7 {
   readonly #storage: StorageAdapter;
   readonly #now: () => string;

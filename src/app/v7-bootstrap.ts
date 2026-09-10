@@ -4,6 +4,10 @@ import {
 } from "../render/dom/app-view-v7";
 import type { StorageAdapter } from "../persistence/index";
 import {
+  cleanupObsoleteRuleset7Saves,
+  type ObsoleteSaveCleanupResultV7,
+} from "../persistence/index";
+import {
   Ruleset7BrowserController,
   type Ruleset7BrowserControllerOptions,
 } from "./v7-controller";
@@ -17,6 +21,7 @@ export interface BootstrapRuleset7Options
 export interface BootstrappedRuleset7App {
   readonly controller: Ruleset7BrowserController;
   readonly view: Ruleset7DomAppView;
+  readonly obsoleteSaveCleanup: ObsoleteSaveCleanupResultV7;
   destroy(): void;
 }
 
@@ -29,9 +34,20 @@ export function bootstrapRuleset7App(
   const browser = documentRoot.defaultView;
   const storage =
     options.storage === undefined ? browserStorageV7(browser) : options.storage;
-  const controller = new Ruleset7BrowserController({ ...options, storage });
+  const obsoleteSaveCleanup = cleanupObsoleteRuleset7Saves(storage);
+  const controller = new Ruleset7BrowserController({
+    ...options,
+    storage,
+    initialSaveWarning:
+      obsoleteSaveCleanup.warning ?? options.initialSaveWarning ?? null,
+  });
   const view = new Ruleset7DomAppView(documentRoot, root, controller, {
     ...options,
+    ...(obsoleteSaveCleanup.removedCount === 0
+      ? {}
+      : {
+          startupNotice: `${obsoleteSaveCleanup.removedCount} obsolete Ruleset 7 ${obsoleteSaveCleanup.removedCount === 1 ? "save was" : "saves were"} removed from this browser.`,
+        }),
     settingsStorage:
       options.settingsStorage === undefined
         ? browserStorageV7(browser)
@@ -48,6 +64,7 @@ export function bootstrapRuleset7App(
   return {
     controller,
     view,
+    obsoleteSaveCleanup,
     destroy(): void {
       documentRoot.removeEventListener("visibilitychange", onVisibilityChange);
       browser?.removeEventListener("pagehide", flush);

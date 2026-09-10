@@ -2,14 +2,11 @@ import {
   ACHIEVEMENT_IDS_V7,
   BLACKOUT_PHASE_ORDER_V7,
   CARDINAL_DIRECTION_ORDER_V7,
-  DEFECTION_PHASE_ORDER_V7,
-  DEFECTION_CANCELLATION_REASON_ORDER_V7,
   DOMAIN_EVENT_KIND_ORDER_V7,
   FACTION_IDS_V7,
   FACTION_TREE_IDS_V7,
   IMPROVEMENT_IDS_V7,
   PLAYER_EVENT_KIND_ORDER_V7,
-  PURSUIT_PHASE_ORDER_V7,
   RESOURCE_IDS_V7,
   REWARD_IDS_V7,
   TECHNOLOGY_IDS_V7,
@@ -28,13 +25,6 @@ export const compareFactionIdsV7 = ordinalComparator(FACTION_IDS_V7);
 export const compareFactionTreeIdsV7 = ordinalComparator(FACTION_TREE_IDS_V7);
 export const compareCardinalDirectionsV7 = ordinalComparator(
   CARDINAL_DIRECTION_ORDER_V7,
-);
-export const comparePursuitPhasesV7 = ordinalComparator(PURSUIT_PHASE_ORDER_V7);
-export const compareDefectionPhasesV7 = ordinalComparator(
-  DEFECTION_PHASE_ORDER_V7,
-);
-export const compareDefectionCancellationReasonsV7 = ordinalComparator(
-  DEFECTION_CANCELLATION_REASON_ORDER_V7,
 );
 export const compareBlackoutPhasesV7 = ordinalComparator(
   BLACKOUT_PHASE_ORDER_V7,

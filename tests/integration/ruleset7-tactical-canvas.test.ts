@@ -14,10 +14,7 @@ import {
   drawBoardV7,
 } from "../../src/render/canvas/board-renderer-v7";
 import { corePresentationPlanV7 } from "../../src/render/canvas/presentation-plan-v7";
-import {
-  defectionPublicFixtureV7,
-  pursuitPublicFixtureV7,
-} from "../fixtures/ruleset7-tactical-ui";
+import { horseArcherPublicFixtureV7 } from "../fixtures/ruleset7-tactical-ui";
 
 beforeEach(() => {
   document.body.innerHTML = "";
@@ -82,7 +79,7 @@ describe("Ruleset 7 tactical Canvas presentation", () => {
             kind: "STATUS",
             layer: 6,
             at: { x: 0, y: 0 },
-            statusId: "ui-status-defection-waiting",
+            statusId: "ui-status-blackout-active",
           },
           {
             key: "city:1",
@@ -122,20 +119,21 @@ describe("Ruleset 7 tactical Canvas presentation", () => {
     ).toHaveLength(1);
   });
 
-  it("renders deduplicated tactical targets, reach, links, and non-overlapping registry attachments", () => {
-    const defection = defectionPublicFixtureV7(true);
-    const envoy = required(
-      defection.view.units.find(
+  it("renders deduplicated two-shot targets and non-overlapping registry attachments", () => {
+    const fixture = horseArcherPublicFixtureV7();
+    const horseArcher = required(
+      fixture.view.units.find(
         (unit) =>
-          unit.ownerId === defection.view.viewer.id && unit.role === "ENVOY",
+          unit.ownerId === fixture.view.viewer.id &&
+          unit.role === "HORSE_ARCHER",
       ),
     );
     const target = required(
-      defection.view.units.find((unit) => unit.ownerId !== envoy.ownerId),
+      fixture.view.units.find((unit) => unit.ownerId !== horseArcher.ownerId),
     );
     const fullView: PlayerViewV7 = {
-      ...defection.view,
-      units: defection.view.units.map((unit) =>
+      ...fixture.view,
+      units: fixture.view.units.map((unit) =>
         unit.id === target.id
           ? {
               ...unit,
@@ -151,7 +149,7 @@ describe("Ruleset 7 tactical Canvas presentation", () => {
                     boundary: {
                       kind: "ANCHOR_NEXT_ACCEPTED_END_TURN",
                       anchorPlayerId: target.ownerId,
-                      round: { known: true, value: defection.view.round + 1 },
+                      round: { known: true, value: fixture.view.round + 1 },
                     },
                   },
                 ],
@@ -159,39 +157,26 @@ describe("Ruleset 7 tactical Canvas presentation", () => {
             }
           : unit,
       ),
-      defectionStatuses: [
-        {
-          visibility: "FULL",
-          markId: 19,
-          sourceUnitId: envoy.id,
-          targetUnitId: target.id,
-          initiatingPlayerId: envoy.ownerId,
-          targetOwnerId: target.ownerId,
-          reservedHomeCityId: required(defection.view.cities[0]).id,
-          phase: "WAITING_FOR_REPLY",
-        },
-      ],
     };
     const targetPlan = buildBoardRenderPlanV7(
-      defection.view,
-      defection.offeredCommands,
+      fixture.view,
+      fixture.offeredCommands,
       {
-        selection: { kind: "UNIT", unitId: envoy.id },
-        selectedUnitId: envoy.id,
+        selection: { kind: "UNIT", unitId: horseArcher.id },
+        selectedUnitId: horseArcher.id,
         selectedAchievement: null,
-        tacticalTargetMode: { kind: "DEFECTION", sourceUnitId: envoy.id },
       },
     );
     expect(
-      targetPlan.targets.filter((entry) => entry.family === "DEFECTION"),
-    ).toHaveLength(1);
+      targetPlan.targets.filter((entry) => entry.family === "ATTACK"),
+    ).toHaveLength(2);
     const plan = buildBoardRenderPlanV7(fullView, [], {
       selection: null,
       selectedUnitId: null,
       selectedAchievement: null,
     });
     expect(plan.entries.filter((entry) => entry.kind === "LINK")).toHaveLength(
-      1,
+      0,
     );
     const coLocated = plan.entries.filter(
       (entry) =>
@@ -204,70 +189,23 @@ describe("Ruleset 7 tactical Canvas presentation", () => {
         "ui-status-concealed",
         "ui-status-detected",
         "ui-status-exposed",
-        "ui-status-defection-waiting",
       ]),
     );
     expect(
       coLocated
         .map((entry) => entry.attachmentSlot)
         .sort((left, right) => (left ?? 0) - (right ?? 0)),
-    ).toEqual([0, 1, 2, 3]);
-
-    const pursuit = pursuitPublicFixtureV7();
-    const endPursuit = pursuit.offeredCommands.find(
-      (command) => command.kind === "END_PURSUIT",
+    ).toEqual([0, 1, 2]);
+    expect(new Set(targetPlan.targets.map(targetKey)).size).toBe(
+      targetPlan.targets.length,
     );
-    if (endPursuit?.kind !== "END_PURSUIT")
-      throw new Error("Pursuit fixture missing global end command");
-    const pursuingUnitId = endPursuit.unitId;
-    const twoCellPursue = pursuit.offeredCommands.find(
-      (command) => command.kind === "PURSUE" && command.path.length === 2,
+    expect(targetPlan.entries.some((entry) => entry.kind === "REACH")).toBe(
+      false,
     );
-    if (twoCellPursue?.kind !== "PURSUE")
-      throw new Error("Two-cell Pursue fixture missing");
-    const pursuitDestination = required(twoCellPursue.path.at(-1));
-    const pursuitPlan = buildBoardRenderPlanV7(
-      pursuit.view,
-      pursuit.offeredCommands,
-      {
-        selection: { kind: "UNIT", unitId: pursuingUnitId },
-        selectedUnitId: pursuingUnitId,
-        selectedAchievement: null,
-        cursor: pursuitDestination,
-      },
-    );
-    expect(new Set(pursuitPlan.targets.map(targetKey)).size).toBe(
-      pursuitPlan.targets.length,
-    );
-    expect(pursuitPlan.entries.some((entry) => entry.kind === "REACH")).toBe(
-      true,
-    );
-    const focusedPath = pursuitPlan.entries.filter((entry) =>
-      entry.key.startsWith("pursuit-path:"),
-    );
-    expect(focusedPath).toHaveLength(1);
-    const focusedStep = required(focusedPath[0]);
-    const targetUnderStep = required(
-      pursuitPlan.entries.find(
-        (entry) =>
-          entry.kind === "TARGET" &&
-          entry.at.x === focusedStep.at.x &&
-          entry.at.y === focusedStep.at.y,
-      ),
-    );
-    expect(focusedStep.layer).toBeGreaterThan(targetUnderStep.layer);
-    expect(
-      pursuitPlan.targets.find(
-        (target) =>
-          target.family === "PURSUIT" &&
-          target.at.x === pursuitDestination.x &&
-          target.at.y === pursuitDestination.y,
-      )?.semanticLabel,
-    ).toContain("Pursue 2 cells");
   });
 
   it("coalesces visibility fades and never reconstructs stale tactical coordinates", () => {
-    const fixture = defectionPublicFixtureV7(false);
+    const fixture = horseArcherPublicFixtureV7();
     const unit = required(fixture.view.units[0]);
     const visibilityEnvelope = envelope(fixture.view, [
       {
@@ -294,9 +232,10 @@ describe("Ruleset 7 tactical Canvas presentation", () => {
       fixture.view,
       envelope(fixture.view, [
         {
-          kind: "DEFECTION_ENDPOINT_STATUS",
+          kind: "SABOTEUR_EXPOSED",
           unitId: unit.id,
-          phase: "ARMED",
+          anchorPlayerId: fixture.view.viewer.id,
+          reason: "ATTACK",
         },
       ]),
       disappeared,
@@ -323,7 +262,7 @@ describe("Ruleset 7 tactical Canvas presentation", () => {
       configurable: true,
       value: vi.fn((id: number) => frames.delete(id)),
     });
-    const fixture = defectionPublicFixtureV7(false);
+    const fixture = horseArcherPublicFixtureV7();
     const unit = required(fixture.view.units[0]);
     const container = document.createElement("div");
     Object.defineProperty(container, "getBoundingClientRect", {
@@ -366,9 +305,10 @@ describe("Ruleset 7 tactical Canvas presentation", () => {
       fixture.view,
       envelope(fixture.view, [
         {
-          kind: "DEFECTION_ENDPOINT_STATUS",
+          kind: "SABOTEUR_EXPOSED",
           unitId: unit.id,
-          phase: "ARMED",
+          anchorPlayerId: fixture.view.viewer.id,
+          reason: "ATTACK",
         },
       ]),
     );
@@ -427,9 +367,9 @@ describe("Ruleset 7 tactical Canvas presentation", () => {
       configurable: true,
       value: vi.fn((id: number) => frames.delete(id)),
     });
-    const arcs = vi.fn();
+    const roundRects = vi.fn();
     const context = new Proxy<Record<PropertyKey, unknown>>(
-      { arc: arcs },
+      { roundRect: roundRects },
       {
         get: (target, key) => (key in target ? target[key] : vi.fn()),
         set: (target, key, value) => {
@@ -441,17 +381,8 @@ describe("Ruleset 7 tactical Canvas presentation", () => {
     vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(
       context,
     );
-    const fixture = defectionPublicFixtureV7(false);
-    const source = required(
-      fixture.view.units.find(
-        (unit) => unit.ownerId === fixture.view.viewer.id,
-      ),
-    );
-    const target = required(
-      fixture.view.units.find(
-        (unit) => unit.ownerId !== fixture.view.viewer.id,
-      ),
-    );
+    const fixture = horseArcherPublicFixtureV7();
+    const city = required(fixture.view.cities[0]);
     const container = document.createElement("div");
     Object.defineProperty(container, "getBoundingClientRect", {
       value: () => ({ width: 800, height: 600 }),
@@ -474,26 +405,21 @@ describe("Ruleset 7 tactical Canvas presentation", () => {
       presentationPaused: false,
       highContrast: false,
     });
-    arcs.mockClear();
+    roundRects.mockClear();
     const presentation = host.presentBoundary(
       fixture.view,
       fixture.view,
       envelope(fixture.view, [
         {
-          kind: "DEFECTION_RESOLVED",
-          markId: 91,
-          sourceUnitId: source.id,
-          targetUnitId: target.id,
-          fromPlayerId: target.ownerId,
-          toPlayerId: source.ownerId,
-          homeCityId: required(fixture.view.cities[0]).id,
-          at: target.at,
+          kind: "BLACKOUT_RECOVERY_COMPLETED",
+          cityId: city.id,
+          ownerId: city.ownerId,
         },
       ]),
     );
     now = 120;
     takeFrame(frames)(now);
-    expect(arcs).toHaveBeenCalled();
+    expect(roundRects).toHaveBeenCalled();
     host.finishPresentations();
     await presentation;
     host.destroy();
@@ -524,7 +450,7 @@ describe("Ruleset 7 tactical Canvas presentation", () => {
     vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(
       context,
     );
-    const fixture = pursuitPublicFixtureV7();
+    const fixture = horseArcherPublicFixtureV7();
     const shell = document.createElement("section");
     shell.className = "v7-app-shell";
     const hud = document.createElement("header");

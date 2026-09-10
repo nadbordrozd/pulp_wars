@@ -1,7 +1,7 @@
 import type { CityId, PlayerId, UnitId } from "../model/ids";
 import {
   BASIC_ECONOMIC_ACTIONS_V7,
-  ORIGINAL_BASELINE_V3_TREE,
+  ORIGINAL_BASELINE_V4_TREE,
   SPATIAL_ECONOMIC_ACTIONS_V7,
   TECHNOLOGY_BRANCH_IDS_V7,
   effectiveRoleRuleV7,
@@ -19,7 +19,6 @@ import {
   assignedUnitCountV7,
   cityUnitCapacityV7,
   rewardCandidatesForLevelV7,
-  reservedCapacityCountV7,
 } from "./economy";
 import { applyCommandV7 } from "./reducer";
 import { calculateCombatPreviewV7 } from "./combat";
@@ -64,7 +63,7 @@ export interface PublicTechnologyNodeV7 {
   readonly unlockedRoleRules: readonly EffectiveRoleRuleV7[];
 }
 export interface PublicTechnologyTreeV7 {
-  readonly id: "ORIGINAL_BASELINE_V3";
+  readonly id: "ORIGINAL_BASELINE_V4";
   readonly faction: "ORIGINAL";
   readonly ownedCityCount: number;
   readonly branches: typeof TECHNOLOGY_BRANCH_IDS_V7;
@@ -84,11 +83,11 @@ export function queryTechnologyTreeV7(
   if (ownedCityCount < 1) throw new RangeError("Technology requires a city");
   const owned = new Set(player.researchedTechs);
   return {
-    id: "ORIGINAL_BASELINE_V3",
+    id: "ORIGINAL_BASELINE_V4",
     faction: "ORIGINAL",
     ownedCityCount,
     branches: TECHNOLOGY_BRANCH_IDS_V7,
-    nodes: ORIGINAL_BASELINE_V3_TREE.nodes.map((node) => {
+    nodes: ORIGINAL_BASELINE_V4_TREE.nodes.map((node) => {
       const missingPrerequisites = node.prerequisites.filter(
         (tech) => !owned.has(tech),
       );
@@ -111,7 +110,7 @@ export function queryTechnologyTreeV7(
         unlockedRoleRules: node.unlockedRoles.map(effectiveRoleRuleV7),
       };
     }),
-    roleBindings: ORIGINAL_BASELINE_V3_TREE.roleRules,
+    roleBindings: ORIGINAL_BASELINE_V4_TREE.roleRules,
   };
 }
 
@@ -144,15 +143,12 @@ const BLACKOUT_BLOCKED_COMMANDS_V7: readonly CommandV7["kind"][] = [
   "BUILD_FARM",
   "BUILD_LUMBER_CAMP",
   "BUILD_MINE",
-  "BUILD_QUARRY",
   "BUILD_WINDMILL",
   "BUILD_SAWMILL",
   "BUILD_FORGE",
-  "BUILD_STONEWORKS",
   "BUILD_WORKSHOP",
   "BUILD_GRAND_WORKS",
   "BUILD_MARKET",
-  "BUILD_BARRACKS",
   "BUILD_MONUMENT",
   "CLEAR_FOREST",
   "REPLANT_FOREST",
@@ -225,11 +221,6 @@ class IncrementalPublicCommandWorkV7 implements PublicCommandWorkV7 {
           reward,
         })),
       );
-      return;
-    }
-    const pursuit = firstOpenPursuitUnitV7(view);
-    if (pursuit !== undefined) {
-      this.finish(publicPursuitCommandsV7(view, pursuit));
       return;
     }
     this.unlocked = new Set(queryTechnologyCapabilitiesV7(view).commands);
@@ -340,22 +331,13 @@ function appendPublicCityCommandsV7(
   if (city.ownerId !== player.id || publicCityBesieged(view, city.at)) return;
   const centerOccupied = view.units.some((unit) => same(unit.at, city.at));
   const capacity =
-    city.level +
-    1 +
-    (player.researchedTechs.includes("FORTIFICATION") ? 1 : 0) +
-    (cityHasImprovement(view, city.id, "BARRACKS") ? 2 : 0);
+    city.level + 1 + (player.researchedTechs.includes("FORTIFICATION") ? 1 : 0);
   const assigned = view.units.filter(
     (unit) => unit.ownerId === player.id && unit.homeCityId === city.id,
   ).length;
-  const reserved = view.defectionStatuses.filter(
-    (status) =>
-      status.visibility === "FULL" &&
-      status.initiatingPlayerId === player.id &&
-      status.reservedHomeCityId === city.id,
-  ).length;
   if (
     centerOccupied ||
-    assigned + reserved >= capacity ||
+    assigned >= capacity ||
     city.blackout?.phase === "ACTIVE"
   )
     return;
@@ -385,10 +367,18 @@ function appendPublicUnitCommandsV7(
   const primaryReady =
     !primaryUsedForQuery(unit) &&
     (!unit.activation.moved || rule.mayUsePrimaryActionAfterMove);
+  const attackReady =
+    primaryReady ||
+    (unit.role === "HORSE_ARCHER" &&
+      unit.activation.attacksUsed === 1 &&
+      !unit.activation.healed &&
+      !unit.activation.recovered &&
+      !unit.activation.captured &&
+      !unit.activation.specialActed);
   for (const target of view.units) {
     const distance = chebyshev(unit.at, target.at);
     if (
-      primaryReady &&
+      attackReady &&
       rule.abilities.includes("ATTACK") &&
       publicHostile(view, player.id, target.ownerId) &&
       distance >= rule.minimumRange &&
@@ -412,26 +402,6 @@ function appendPublicUnitCommandsV7(
         unitId: unit.id,
         targetUnitId: target.id,
       });
-    if (
-      primaryReady &&
-      rule.abilities.includes("DEFECTION") &&
-      publicHostile(view, player.id, target.ownerId) &&
-      distance >= 1 &&
-      distance <= 2 &&
-      !view.defectionStatuses.some(
-        (status) =>
-          (status.visibility === "FULL" && status.targetUnitId === target.id) ||
-          (status.visibility === "ENDPOINT" &&
-            status.endpointUnitId === target.id),
-      )
-    )
-      for (const city of availableDefectionCitiesV7(view))
-        candidates.push({
-          kind: "OFFER_DEFECTION",
-          unitId: unit.id,
-          targetUnitId: target.id,
-          homeCityId: city.cityId,
-        });
   }
   if (
     primaryReady &&
@@ -488,238 +458,6 @@ function appendPublicUnitCommandsV7(
     candidates.push({ kind: "DISBAND", unitId: unit.id });
   if (!unit.activation.handled)
     candidates.push({ kind: "WAIT", unitId: unit.id });
-}
-
-function publicPursuitCommandsV7(
-  view: PlayerViewV7,
-  unit: PlayerViewV7["units"][number],
-): readonly CommandV7[] {
-  const candidates: CommandV7[] = [{ kind: "END_PURSUIT", unitId: unit.id }];
-  for (const target of view.units)
-    if (
-      publicHostile(view, view.viewer.id, target.ownerId) &&
-      chebyshev(unit.at, target.at) === 1
-    )
-      candidates.push({
-        kind: "ATTACK",
-        unitId: unit.id,
-        targetUnitId: target.id,
-      });
-  if (unit.activation.pursuitPhase === "PURSUIT_READY")
-    for (const reachable of reachablePlayerMovementPathsV7(
-      view,
-      unit,
-      "PURSUE",
-    ))
-      candidates.push({
-        kind: "PURSUE",
-        unitId: unit.id,
-        path: reachable.path,
-      });
-  return candidates.sort(compareCommandsV7);
-}
-
-export interface PublicDefectionCityCapacityV7 {
-  readonly cityId: CityId;
-  readonly capacity: number;
-  readonly assigned: number;
-  readonly reservedBeforeOffer: number;
-  readonly availableBeforeOffer: number;
-  readonly reservedAfterOffer: number;
-  readonly availableAfterOffer: number;
-}
-
-function availableDefectionCitiesV7(
-  view: PlayerViewV7,
-): readonly PublicDefectionCityCapacityV7[] {
-  return view.cities
-    .filter(
-      (city) =>
-        city.ownerId === view.viewer.id &&
-        publicCityDevelopmentFootprintKnown(view, city),
-    )
-    .map((city) => {
-      const capacity =
-        city.level +
-        1 +
-        (view.viewer.researchedTechs.includes("FORTIFICATION") ? 1 : 0) +
-        (cityHasImprovement(view, city.id, "BARRACKS") ? 2 : 0);
-      const assigned = view.units.filter(
-        (unit) =>
-          unit.ownerId === view.viewer.id && unit.homeCityId === city.id,
-      ).length;
-      const reservedBeforeOffer = view.defectionStatuses.filter(
-        (status) =>
-          status.visibility === "FULL" &&
-          status.initiatingPlayerId === view.viewer.id &&
-          status.reservedHomeCityId === city.id,
-      ).length;
-      return {
-        cityId: city.id,
-        capacity,
-        assigned,
-        reservedBeforeOffer,
-        availableBeforeOffer: Math.max(
-          0,
-          capacity - assigned - reservedBeforeOffer,
-        ),
-        reservedAfterOffer: reservedBeforeOffer + 1,
-        availableAfterOffer: Math.max(
-          0,
-          capacity - assigned - reservedBeforeOffer - 1,
-        ),
-      };
-    })
-    .filter((city) => city.availableBeforeOffer > 0)
-    .sort((left, right) => left.cityId - right.cityId);
-}
-
-export interface DefectionPreviewV7 {
-  readonly sourceUnitId: UnitId;
-  readonly target: {
-    readonly unitId: UnitId;
-    readonly ownerId: PlayerId;
-    readonly role: UnitRoleIdV7;
-    readonly at: CoordV7;
-  };
-  readonly reservedCity: PublicDefectionCityCapacityV7;
-  readonly recordedReplyOwnerId: PlayerId;
-  readonly replyBoundary: {
-    readonly kind: "TARGET_OWNER_NEXT_END_TURN";
-    readonly playerId: PlayerId;
-    readonly earliestRound: number;
-  };
-  readonly earliestResolutionBoundary: {
-    readonly kind: "INITIATOR_NEXT_START_TURN_AFTER_REPLY";
-    readonly playerId: PlayerId;
-    readonly earliestRound: number;
-  };
-  readonly cancellationConditions: readonly [
-    "SOURCE_MISSING",
-    "TARGET_MISSING",
-    "SOURCE_OWNER_CHANGED",
-    "TARGET_OWNER_CHANGED",
-    "RELATIONSHIP_CHANGED",
-    "OUT_OF_RANGE",
-    "RESERVED_CITY_LOST",
-    "CAPACITY_LOST",
-    "INITIATOR_ELIMINATED",
-    "TARGET_OWNER_ELIMINATED",
-    "STATE_CANCELLED",
-  ];
-  readonly conversion: {
-    readonly whollyExhausted: true;
-    readonly captureEligible: false;
-    readonly preservesRoleHpVeteranKillsAndCooldown: true;
-  };
-  readonly cityOccupantSiegeConsequence:
-    | "BESIEGES_HOSTILE_CITY"
-    | "RELIEVES_FRIENDLY_CITY_SIEGE"
-    | "NONE"
-    | "UNKNOWN_HIDDEN_TILE";
-  readonly complete: true;
-}
-
-export type DefectionPreviewResultV7 =
-  | { readonly ok: true; readonly preview: DefectionPreviewV7 }
-  | { readonly ok: false; readonly error: "NOT_OFFERED" };
-
-export function previewDefectionV7(
-  view: PlayerViewV7,
-  command: Extract<CommandV7, { kind: "OFFER_DEFECTION" }>,
-): DefectionPreviewResultV7;
-export function previewDefectionV7(
-  state: GameStateV7,
-  viewerId: PlayerId,
-  command: Extract<CommandV7, { kind: "OFFER_DEFECTION" }>,
-): DefectionPreviewResultV7;
-export function previewDefectionV7(
-  input: GameStateV7 | PlayerViewV7,
-  viewerOrCommand: PlayerId | Extract<CommandV7, { kind: "OFFER_DEFECTION" }>,
-  maybeCommand?: Extract<CommandV7, { kind: "OFFER_DEFECTION" }>,
-): DefectionPreviewResultV7 {
-  const view =
-    maybeCommand === undefined
-      ? (input as PlayerViewV7)
-      : asView(input, viewerOrCommand as PlayerId);
-  const command =
-    maybeCommand ??
-    (viewerOrCommand as Extract<CommandV7, { kind: "OFFER_DEFECTION" }>);
-  const offered = queryPlayerCommandsV7(view).some(
-    (candidate) =>
-      candidate.kind === "OFFER_DEFECTION" &&
-      candidate.unitId === command.unitId &&
-      candidate.targetUnitId === command.targetUnitId &&
-      candidate.homeCityId === command.homeCityId,
-  );
-  if (!offered) return { ok: false, error: "NOT_OFFERED" };
-  const target = view.units.find((unit) => unit.id === command.targetUnitId);
-  const reservedCity = availableDefectionCitiesV7(view).find(
-    (city) => city.cityId === command.homeCityId,
-  );
-  if (target === undefined || reservedCity === undefined)
-    return { ok: false, error: "NOT_OFFERED" };
-  const tile = tileAtView(view, target.at);
-  const city = view.cities.find((candidate) => same(candidate.at, target.at));
-  const siege =
-    tile?.explored !== true
-      ? "UNKNOWN_HIDDEN_TILE"
-      : city !== undefined && publicHostile(view, view.viewer.id, city.ownerId)
-        ? "BESIEGES_HOSTILE_CITY"
-        : city !== undefined &&
-            publicHostile(view, target.ownerId, city.ownerId) &&
-            !publicHostile(view, view.viewer.id, city.ownerId)
-          ? "RELIEVES_FRIENDLY_CITY_SIEGE"
-          : "NONE";
-  const targetTurnIndex = view.turnOrder.indexOf(target.ownerId);
-  const initiatorTurnIndex = view.turnOrder.indexOf(view.viewer.id);
-  if (targetTurnIndex < 0 || initiatorTurnIndex < 0)
-    return { ok: false, error: "NOT_OFFERED" };
-  return {
-    ok: true,
-    preview: {
-      sourceUnitId: command.unitId,
-      target: {
-        unitId: target.id,
-        ownerId: target.ownerId,
-        role: target.role,
-        at: target.at,
-      },
-      reservedCity,
-      recordedReplyOwnerId: target.ownerId,
-      replyBoundary: {
-        kind: "TARGET_OWNER_NEXT_END_TURN",
-        playerId: target.ownerId,
-        earliestRound:
-          view.round + Number(targetTurnIndex <= initiatorTurnIndex),
-      },
-      earliestResolutionBoundary: {
-        kind: "INITIATOR_NEXT_START_TURN_AFTER_REPLY",
-        playerId: view.viewer.id,
-        earliestRound: view.round + 1,
-      },
-      cancellationConditions: [
-        "SOURCE_MISSING",
-        "TARGET_MISSING",
-        "SOURCE_OWNER_CHANGED",
-        "TARGET_OWNER_CHANGED",
-        "RELATIONSHIP_CHANGED",
-        "OUT_OF_RANGE",
-        "RESERVED_CITY_LOST",
-        "CAPACITY_LOST",
-        "INITIATOR_ELIMINATED",
-        "TARGET_OWNER_ELIMINATED",
-        "STATE_CANCELLED",
-      ],
-      conversion: {
-        whollyExhausted: true,
-        captureEligible: false,
-        preservesRoleHpVeteranKillsAndCooldown: true,
-      },
-      cityOccupantSiegeConsequence: siege,
-      complete: true,
-    },
-  };
 }
 
 export interface BlackoutDetectorV7 {
@@ -791,7 +529,7 @@ export function previewBlackoutV7(
   const command =
     maybeCommand ??
     (viewerOrCommand as Extract<CommandV7, { kind: "BLACKOUT_CITY" }>);
-  if (!publicCommandOfferingAllowedV7(view, command.kind, command.unitId))
+  if (!publicCommandOfferingAllowedV7(view))
     return { ok: false, error: "NOT_PREVIEWABLE" };
   const source = view.units.find(
     (unit) => unit.id === command.unitId && unit.ownerId === view.viewer.id,
@@ -808,7 +546,6 @@ export function previewBlackoutV7(
     primaryUsedForQuery(source) ||
     (source.activation.moved &&
       !effectiveRoleRuleV7(source.role).mayUsePrimaryActionAfterMove) ||
-    source.activation.pursuitPhase !== "NONE" ||
     !source.blackoutEligibility.known ||
     view.round < source.blackoutEligibility.round ||
     city === undefined ||
@@ -997,7 +734,7 @@ function publicRewardPlacementStatus(
       tile.explored &&
       tile.territoryCityId === cityId &&
       (tile.terrain !== "MOUNTAIN" ||
-        view.viewer.researchedTechs.includes("SURVEYING")),
+        view.viewer.researchedTechs.includes("ENGINEERING")),
   );
   let hasConcealableCell = false;
   for (const tile of candidates) {
@@ -1052,7 +789,7 @@ export function queryCombatPreviewV7(
   const attackerId =
     maybeTarget === undefined ? (viewerOrAttacker as UnitId) : attackerOrTarget;
   const targetUnitId = maybeTarget ?? attackerOrTarget;
-  if (!publicCommandOfferingAllowedV7(view, "ATTACK", attackerId)) return null;
+  if (!publicCommandOfferingAllowedV7(view)) return null;
   return publicCombatPreview(view, attackerId, targetUnitId);
 }
 
@@ -1189,82 +926,7 @@ export function queryAiReadyCommandsV7(
   });
 }
 
-export interface PursuitPathPreviewV7 {
-  readonly path: readonly CoordV7[];
-  readonly destination: CoordV7;
-  readonly targetUnitIds: readonly UnitId[];
-}
-export interface PursuitPreviewV7 {
-  readonly unitId: UnitId;
-  readonly phase: "PURSUIT_READY" | "PURSUIT_MOVED";
-  readonly attacksUsed: 1 | 2;
-  readonly attacksRemaining: 1 | 2;
-  readonly directTargetUnitIds: readonly UnitId[];
-  readonly pursuePaths: readonly PursuitPathPreviewV7[];
-}
-export function queryPursuitPreviewV7(
-  input: GameStateV7 | PlayerViewV7,
-  viewerOrUnit: PlayerId | UnitId,
-  maybeUnitId?: UnitId,
-): PursuitPreviewV7 | null {
-  const view =
-    maybeUnitId === undefined
-      ? (input as PlayerViewV7)
-      : asView(input, viewerOrUnit as PlayerId);
-  const unitId = maybeUnitId ?? (viewerOrUnit as UnitId);
-  if (!publicCommandOfferingAllowedV7(view, "END_PURSUIT", unitId)) return null;
-  const unit = view.units.find(
-    (candidate) =>
-      candidate.id === unitId &&
-      candidate.ownerId === view.viewer.id &&
-      candidate.hp > 0,
-  );
-  if (unit === undefined || unit.activation.pursuitPhase === "NONE")
-    return null;
-  const hostileAdjacent = (at: CoordV7) =>
-    view.units
-      .filter(
-        (target) =>
-          publicHostile(view, view.viewer.id, target.ownerId) &&
-          Math.max(
-            Math.abs(target.at.x - at.x),
-            Math.abs(target.at.y - at.y),
-          ) === 1 &&
-          queryCombatPreviewAtV7(view, unit, at, target) !== null,
-      )
-      .map((target) => target.id)
-      .sort((a, b) => a - b);
-  const paths =
-    unit.activation.pursuitPhase === "PURSUIT_READY"
-      ? reachablePlayerMovementPathsV7(view, unit, "PURSUE").map(
-          (reachable) => ({
-            path: reachable.path,
-            destination: reachable.destination,
-            targetUnitIds: view.units
-              .filter(
-                (target) =>
-                  publicHostile(view, view.viewer.id, target.ownerId) &&
-                  Math.max(
-                    Math.abs(target.at.x - reachable.destination.x),
-                    Math.abs(target.at.y - reachable.destination.y),
-                  ) === 1,
-              )
-              .map((target) => target.id)
-              .sort((a, b) => a - b),
-          }),
-        )
-      : [];
-  return {
-    unitId,
-    phase: unit.activation.pursuitPhase,
-    attacksUsed: unit.activation.attacksUsed as 1 | 2,
-    attacksRemaining: (3 - unit.activation.attacksUsed) as 1 | 2,
-    directTargetUnitIds: hostileAdjacent(unit.at),
-    pursuePaths: paths,
-  };
-}
-
-/** Geometry-safe threat envelope, including Lancer kill-advance plus Pursue reach. */
+/** Geometry-safe threat envelope for movement plus attack range. */
 export function queryThreatenedTilesV7(
   input: GameStateV7 | PlayerViewV7,
   unitId: UnitId,
@@ -1297,26 +959,9 @@ export function queryThreatenedTilesV7(
         return distance >= rule.minimumRange && distance <= rule.range;
       }),
     );
-  const all =
-    unit.role === "LANCER"
-      ? [
-          ...direct,
-          ...view.board.tiles
-            .map((tile) => tile.at)
-            .filter((at) =>
-              direct.some(
-                (prior) =>
-                  Math.max(
-                    Math.abs(prior.x - at.x),
-                    Math.abs(prior.y - at.y),
-                  ) <= 3,
-              ),
-            ),
-        ]
-      : direct;
-  return [...new Map(all.map((at) => [`${at.y},${at.x}`, at])).values()].sort(
-    (a, b) => a.y - b.y || a.x - b.x,
-  );
+  return [
+    ...new Map(direct.map((at) => [`${at.y},${at.x}`, at])).values(),
+  ].sort((a, b) => a.y - b.y || a.x - b.x);
 }
 
 function primaryUsedForQuery(unit: Pick<UnitStateV7, "activation">): boolean {
@@ -1340,10 +985,8 @@ export interface EconomicPreviewV7 {
   readonly populationDeltaByCity: readonly CityValueDeltaV7[];
   readonly coinIncomeDeltaByCity: readonly CityValueDeltaV7[];
   readonly resultingContribution: number;
-  readonly capacityDelta: number;
   readonly outputTransitions: readonly EconomicOutputTransitionV7[];
-  readonly resourceRestored:
-    "FERTILE_GROUND" | "ORE" | "STONE" | "UNKNOWN_RESOURCE" | null;
+  readonly resourceRestored: "FERTILE_GROUND" | "UNKNOWN_RESOURCE" | null;
   readonly levelsReached: readonly number[];
   readonly distinctTypes: readonly ImprovementIdV7[];
   readonly distinctFamilies: readonly EconomicFamilyV7[];
@@ -1356,7 +999,7 @@ export interface EconomicPreviewV7 {
 export interface EconomicOutputTransitionV7 {
   readonly at: CoordV7;
   readonly improvement: ImprovementIdV7;
-  readonly measure: "POPULATION" | "COIN_INCOME" | "CAPACITY";
+  readonly measure: "POPULATION" | "COIN_INCOME";
   readonly before: number;
   readonly after: number;
   readonly change: "CREATED" | "REMOVED" | "OUTAGE" | "RESUMED" | "CHANGED";
@@ -1505,12 +1148,6 @@ function calculatePublicEconomicPreviewV7(
         populationDeltaByCity,
         coinIncomeDeltaByCity,
         resultingContribution: evaluation?.population ?? basic?.population ?? 0,
-        capacityDelta:
-          spatial?.improvement === "BARRACKS"
-            ? 2
-            : command.kind === "REDEVELOP" && tile.improvement === "BARRACKS"
-              ? -2
-              : 0,
         outputTransitions: economicOutputTransitionsV7(
           view,
           beforeGraph,
@@ -1563,7 +1200,6 @@ function publicEconomicPreviewExact(
     command.kind === "BUILD_FARM" ||
     command.kind === "BUILD_LUMBER_CAMP" ||
     command.kind === "BUILD_MINE" ||
-    command.kind === "BUILD_QUARRY" ||
     command.kind in SPATIAL_ECONOMIC_ACTIONS_V7;
   const ownedCities = view.cities.filter(
     (candidate) => candidate.ownerId === view.viewer.id,
@@ -1605,10 +1241,7 @@ function economicCommandCanAddPopulation(kind: CommandV7["kind"]): boolean {
     kind === "BUILD_FARM" ||
     kind === "BUILD_LUMBER_CAMP" ||
     kind === "BUILD_MINE" ||
-    kind === "BUILD_QUARRY" ||
-    (kind in SPATIAL_ECONOMIC_ACTIONS_V7 &&
-      kind !== "BUILD_MARKET" &&
-      kind !== "BUILD_BARRACKS")
+    (kind in SPATIAL_ECONOMIC_ACTIONS_V7 && kind !== "BUILD_MARKET")
   );
 }
 
@@ -1637,7 +1270,6 @@ function economicCommandChangesLiveGraphV7(kind: CommandV7["kind"]): boolean {
     kind === "BUILD_FARM" ||
     kind === "BUILD_LUMBER_CAMP" ||
     kind === "BUILD_MINE" ||
-    kind === "BUILD_QUARRY" ||
     kind === "BUILD_ROAD" ||
     kind === "REDEVELOP" ||
     kind in SPATIAL_ECONOMIC_ACTIONS_V7
@@ -1922,29 +1554,18 @@ function publicRestoredResourceV7(
   terrain: PublicEconomyGraphTileV7["terrain"],
   improvement: ImprovementIdV7 | null,
 ): EconomicPreviewV7["resourceRestored"] {
-  const restored =
-    improvement === "FARM"
-      ? "FERTILE_GROUND"
-      : improvement === "MINE"
-        ? "ORE"
-        : improvement === "QUARRY"
-          ? "STONE"
-          : null;
+  const restored = improvement === "FARM" ? "FERTILE_GROUND" : null;
   return projectedResourceAfterMutationV7(view, terrain, restored);
 }
 
 function projectedResourceAfterMutationV7(
-  view: PlayerViewV7,
+  _view: PlayerViewV7,
   terrain: PublicEconomyGraphTileV7["terrain"],
-  resource: "FERTILE_GROUND" | "ORE" | "STONE" | null,
+  resource: "FERTILE_GROUND" | null,
 ): EconomicPreviewV7["resourceRestored"] {
   if (terrain === null) return null;
   if (terrain === "FOREST") return resource;
-  const revealed =
-    terrain === "GRASS"
-      ? view.viewer.researchedTechs.includes("GATHERING")
-      : view.viewer.researchedTechs.includes("SURVEYING");
-  return revealed ? resource : "UNKNOWN_RESOURCE";
+  return resource;
 }
 
 function economicOutputTransitionsV7(
@@ -1970,15 +1591,11 @@ function economicOutputTransitionsV7(
       measure:
         tile.improvement === "MARKET"
           ? ("COIN_INCOME" as const)
-          : tile.improvement === "BARRACKS"
-            ? ("CAPACITY" as const)
-            : ("POPULATION" as const),
+          : ("POPULATION" as const),
       value:
         tile.improvement === "MARKET"
           ? evaluation.marketIncome
-          : tile.improvement === "BARRACKS"
-            ? evaluation.capacity
-            : evaluation.population,
+          : evaluation.population,
     };
   };
   return before.board.tiles
@@ -2014,7 +1631,7 @@ function economicOutputTransitionsV7(
                   : ("CHANGED" as const),
       };
     })
-    .filter((value): value is EconomicOutputTransitionV7 => value !== null)
+    .filter((value) => value !== null)
     .sort((left, right) => left.at.y - right.at.y || left.at.x - right.at.x);
 }
 
@@ -2331,14 +1948,6 @@ function appendPublicPlacementsForTileV7(
         tile.improvement !== null ||
         treasureKeys.has(coordKeyV7(tile.at)) ||
         cityImprovementKeys.has(`${tile.territoryCityId}:${rule.improvement}`)
-      )
-        continue;
-      const city = graph.cities.find(
-        (candidate) => candidate.id === tile.territoryCityId,
-      );
-      if (
-        rule.improvement === "BARRACKS" &&
-        (city === undefined || chebyshev(tile.at, city.at) !== 1)
       )
         continue;
       if (
@@ -2788,7 +2397,6 @@ const GRAPH_DEPENDENT_IMPROVEMENTS_V7: ReadonlySet<ImprovementIdV7> = new Set([
   "WINDMILL",
   "SAWMILL",
   "FORGE",
-  "STONEWORKS",
   "WORKSHOP",
   "GRAND_WORKS",
   "MARKET",
@@ -2857,12 +2465,11 @@ function publicTileGraphOutputV7(
 
 function isProcessorImprovementV7(
   improvement: ImprovementIdV7 | null,
-): improvement is "WINDMILL" | "SAWMILL" | "FORGE" | "STONEWORKS" {
+): improvement is "WINDMILL" | "SAWMILL" | "FORGE" {
   return (
     improvement === "WINDMILL" ||
     improvement === "SAWMILL" ||
-    improvement === "FORGE" ||
-    improvement === "STONEWORKS"
+    improvement === "FORGE"
   );
 }
 
@@ -2956,7 +2563,6 @@ export function previewCityCapacityV7(
   readonly cityId: CityId;
   readonly capacity: number;
   readonly assigned: number;
-  readonly reserved: number;
   readonly available: number;
   readonly overCapacity: number;
 } | null {
@@ -2964,13 +2570,11 @@ export function previewCityCapacityV7(
   if (city === undefined) return null;
   const capacity = cityUnitCapacityV7(state, city);
   const assigned = assignedUnitCountV7(state, cityId);
-  const reserved = reservedCapacityCountV7(state, cityId);
   return {
     cityId,
     capacity,
     assigned,
-    reserved,
-    available: Math.max(0, capacity - assigned - reserved),
+    available: Math.max(0, capacity - assigned),
     overCapacity: Math.max(0, assigned - capacity),
   };
 }
@@ -3009,9 +2613,7 @@ export function previewPillageV7(
   readonly cityId: CityId;
   readonly improvement: ImprovementIdV7;
   readonly coinDelta: 1;
-  readonly capacityDelta: 0 | -2;
-  readonly resourceRestored:
-    "FERTILE_GROUND" | "ORE" | "STONE" | "UNKNOWN_RESOURCE" | null;
+  readonly resourceRestored: "FERTILE_GROUND" | "UNKNOWN_RESOURCE" | null;
   readonly complete: true;
 } | null {
   const result = applyCommandV7(state, viewerId, { kind: "PILLAGE", unitId });
@@ -3032,7 +2634,6 @@ export function previewPillageV7(
         cityId: event.cityId,
         improvement: event.improvement,
         coinDelta: 1,
-        capacityDelta: event.improvement === "BARRACKS" ? -2 : 0,
         resourceRestored:
           afterTile?.explored === true
             ? projectedRestoredResource(afterTile.resource)
@@ -3074,21 +2675,7 @@ function store(
   return commands;
 }
 
-function firstOpenPursuitUnitV7(
-  view: PlayerViewV7,
-): PlayerViewV7["units"][number] | undefined {
-  return view.units.find(
-    (unit) =>
-      unit.ownerId === view.viewer.id &&
-      unit.activation.pursuitPhase !== "NONE",
-  );
-}
-
-function publicCommandOfferingAllowedV7(
-  view: PlayerViewV7,
-  kind: CommandV7["kind"],
-  unitId?: UnitId,
-): boolean {
+function publicCommandOfferingAllowedV7(view: PlayerViewV7): boolean {
   if (
     view.outcome !== null ||
     view.viewer.status !== "ACTIVE" ||
@@ -3096,12 +2683,7 @@ function publicCommandOfferingAllowedV7(
     view.pendingChoices.length > 0
   )
     return false;
-  const pursuit = firstOpenPursuitUnitV7(view);
-  return (
-    pursuit === undefined ||
-    (unitId === pursuit.id &&
-      (kind === "ATTACK" || kind === "PURSUE" || kind === "END_PURSUIT"))
-  );
+  return true;
 }
 
 function asView(
@@ -3177,11 +2759,8 @@ function publicCaptureTarget(view: PlayerViewV7, at: CoordV7): boolean {
 
 function projectedRestoredResource(
   resource: Extract<PlayerTileViewV7, { explored: true }>["resource"],
-): "FERTILE_GROUND" | "ORE" | "STONE" | "UNKNOWN_RESOURCE" | null {
-  return resource === "FERTILE_GROUND" ||
-    resource === "ORE" ||
-    resource === "STONE" ||
-    resource === "UNKNOWN_RESOURCE"
+): "FERTILE_GROUND" | "UNKNOWN_RESOURCE" | null {
+  return resource === "FERTILE_GROUND" || resource === "UNKNOWN_RESOURCE"
     ? resource
     : null;
 }
@@ -3241,7 +2820,6 @@ function publicTileCommandLegal(
       cityHasImprovement(view, city.id, spatial.improvement)
     )
       return false;
-    if (kind === "BUILD_BARRACKS") return chebyshev(tile.at, city.at) === 1;
     const adjacent = adjacentPublicTiles(view, tile.at).filter(
       (candidate): candidate is Extract<PlayerTileViewV7, { explored: true }> =>
         candidate.explored,
@@ -3257,18 +2835,13 @@ function publicTileCommandLegal(
           item.territoryCityId === city.id &&
           item.improvement === "LUMBER_CAMP",
       );
-    if (kind === "BUILD_STONEWORKS")
-      return adjacent.some(
-        (item) =>
-          item.territoryCityId === city.id && item.improvement === "QUARRY",
-      );
     if (kind === "BUILD_WORKSHOP")
       return (
         distinct(
           adjacent.flatMap((item) =>
             item.territoryOwnerId === view.viewer.id &&
             item.improvement !== null &&
-            ["FARM", "LUMBER_CAMP", "MINE", "QUARRY"].includes(item.improvement)
+            ["FARM", "LUMBER_CAMP", "MINE"].includes(item.improvement)
               ? [item.improvement]
               : [],
           ),
@@ -3280,9 +2853,7 @@ function publicTileCommandLegal(
           adjacent.flatMap((item) =>
             item.territoryOwnerId === view.viewer.id &&
             item.improvement !== null &&
-            ["WINDMILL", "SAWMILL", "FORGE", "STONEWORKS"].includes(
-              item.improvement,
-            ) &&
+            ["WINDMILL", "SAWMILL", "FORGE"].includes(item.improvement) &&
             view.improvementValues.some(
               (value) =>
                 same(value.at, item.at) &&
@@ -3346,7 +2917,6 @@ function improvementFamily(improvement: ImprovementIdV7 | null): string | null {
   if (improvement === "LUMBER_CAMP" || improvement === "SAWMILL")
     return "TIMBER";
   if (improvement === "MINE" || improvement === "FORGE") return "METAL";
-  if (improvement === "QUARRY" || improvement === "STONEWORKS") return "STONE";
   return null;
 }
 
@@ -3372,13 +2942,22 @@ function publicCombatPreview(
   const attackerRule = effectiveRoleRuleV7(attacker.role);
   const defenderRule = effectiveRoleRuleV7(target.role);
   const distance = chebyshev(attacker.at, target.at);
+  const attackReady =
+    !primaryUsedForQuery(attacker) ||
+    (attacker.role === "HORSE_ARCHER" &&
+      attacker.activation.attacksUsed === 1 &&
+      !attacker.activation.healed &&
+      !attacker.activation.recovered &&
+      !attacker.activation.captured &&
+      !attacker.activation.specialActed);
   if (
     !attackerRule.abilities.includes("ATTACK") ||
-    primaryUsedForQuery(attacker) ||
+    !attackReady ||
+    attacker.activation.attacksUsed >=
+      (attacker.role === "HORSE_ARCHER" ? 2 : 1) ||
     (attacker.activation.moved && !attackerRule.mayUsePrimaryActionAfterMove) ||
     distance < attackerRule.minimumRange ||
-    distance > attackerRule.range ||
-    (attacker.activation.pursuitPhase !== "NONE" && distance !== 1)
+    distance > attackerRule.range
   )
     return null;
   const attackStats = view.unitStats.find(
@@ -3434,6 +3013,8 @@ function publicCombatPreview(
     !attackerDies &&
     distance === 1 &&
     attacker.role !== "CATAPULT" &&
+    attacker.role !== "HORSE_ARCHER" &&
+    !(attacker.role === "MARKSMAN" && distance > 1) &&
     publicAdvanceDestinationLegal(view, target.at);
   const nextAttacks = attacker.activation.attacksUsed + 1;
   return {
@@ -3464,11 +3045,9 @@ function publicCombatPreview(
       target,
       !defenderDies && distance === 1,
     ),
-    pursuitWillOpen:
-      attacker.role === "LANCER" &&
-      defenderDies &&
-      !attackerDies &&
-      nextAttacks < 3,
+    attacksUsed: nextAttacks,
+    attacksRemaining:
+      attacker.role === "HORSE_ARCHER" ? Math.max(0, 2 - nextAttacks) : 0,
   };
 }
 
@@ -3480,25 +3059,7 @@ function publicAdvanceDestinationLegal(
   return (
     tile?.explored === true &&
     (tile.terrain !== "MOUNTAIN" ||
-      view.viewer.researchedTechs.includes("SURVEYING"))
-  );
-}
-
-function queryCombatPreviewAtV7(
-  view: PlayerViewV7,
-  attacker: PlayerViewV7["units"][number],
-  at: CoordV7,
-  target: PlayerViewV7["units"][number],
-): CombatPreviewV7 | null {
-  return publicCombatPreview(
-    {
-      ...view,
-      units: view.units.map((unit) =>
-        unit.id === attacker.id ? { ...unit, at } : unit,
-      ),
-    },
-    attacker.id,
-    target.id,
+      view.viewer.researchedTechs.includes("ENGINEERING"))
   );
 }
 
@@ -3534,7 +3095,7 @@ function publicPushState(
     return "UNKNOWN_BEHIND_FOG";
   if (
     tile.terrain === "MOUNTAIN" &&
-    !view.viewer.researchedTechs.includes("SURVEYING")
+    !view.viewer.researchedTechs.includes("ENGINEERING")
   )
     return "BLOCKED";
   return "WILL_PUSH";

@@ -303,12 +303,11 @@ async function symbolInventorySheet(): Promise<void> {
 
 async function symbolStateSheet(): Promise<void> {
   const representatives = [
-    "ui-action-pursue",
     "ui-status-concealed",
     "ui-status-detected",
     "ui-status-exposed",
-    "ui-status-defection-waiting",
-    "ui-status-defection-armed",
+    "ui-status-spoils",
+    "ui-status-blackout-cooldown",
     "ui-status-blackout-pending",
     "ui-status-blackout-active",
     "ui-status-blackout-recovery",

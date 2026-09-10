@@ -40,14 +40,10 @@ export function cityUnitCapacityV7(
   state: Pick<GameStateV7, "board" | "players">,
   city: Pick<CityStateV7, "id" | "level" | "ownerId">,
 ): number {
-  const barracks = state.board.tiles.some(
-    (tile) =>
-      tile.territoryCityId === city.id && tile.improvement === "BARRACKS",
-  );
   const fortified = state.players
     .find((player) => player.id === city.ownerId)
     ?.researchedTechs.includes("FORTIFICATION");
-  const result = city.level + 1 + (fortified ? 1 : 0) + (barracks ? 2 : 0);
+  const result = city.level + 1 + (fortified ? 1 : 0);
   if (!Number.isSafeInteger(result)) throw new RangeError("INTEGER_OVERFLOW");
   return result;
 }
@@ -58,15 +54,6 @@ export function assignedUnitCountV7(
 ): number {
   return state.units.filter((unit) => unit.hp > 0 && unit.homeCityId === cityId)
     .length;
-}
-
-export function reservedCapacityCountV7(
-  state: Pick<GameStateV7, "defectionMarks">,
-  cityId: CityId,
-): number {
-  return state.defectionMarks.filter(
-    (mark) => mark.reservedHomeCityId === cityId,
-  ).length;
 }
 
 export function rewardCandidatesForLevelV7(
@@ -188,7 +175,6 @@ export function recomputeLiveEconomyV7(
       tile.at.y !== contribution.source.at.y ||
       tile.improvement !== contribution.source.improvement ||
       tile.improvement === "MARKET" ||
-      tile.improvement === "BARRACKS" ||
       tile.improvement === "MONUMENT"
     )
       throw new RangeError("INVALID_STATE");
@@ -311,7 +297,6 @@ export function startTurnEconomyV7(
                 movedPathLength: 0,
                 attacked: false,
                 attacksUsed: 0 as const,
-                pursuitPhase: "NONE" as const,
                 healed: false,
                 recovered: false,
                 captured: false,

@@ -15,7 +15,6 @@ export function defenseBonusForUnitV7(
   state: GameStateV7,
   unit: UnitStateV7,
 ): DefenseBonusV7 {
-  if (unit.role === "ENVOY") return NO_BONUS;
   const owner = requirePlayer(state, unit.ownerId);
   const city = state.cities.find(
     (candidate) =>
@@ -99,7 +98,9 @@ export function calculateCombatPreviewV7(
     defenderDies &&
     !attackerDies &&
     distance === 1 &&
-    attacker.role !== "CATAPULT";
+    attacker.role !== "CATAPULT" &&
+    attacker.role !== "HORSE_ARCHER" &&
+    !(attacker.role === "MARKSMAN" && distance > 1);
   const push = pushState(
     state,
     attacker,
@@ -130,11 +131,9 @@ export function calculateCombatPreviewV7(
         : "OUT_OF_RANGE",
     advances,
     push,
-    pursuitWillOpen:
-      attacker.role === "LANCER" &&
-      defenderDies &&
-      !attackerDies &&
-      nextAttacks < 3,
+    attacksUsed: nextAttacks,
+    attacksRemaining:
+      attacker.role === "HORSE_ARCHER" ? Math.max(0, 2 - nextAttacks) : 0,
   };
 }
 
@@ -154,7 +153,7 @@ export function pushedDestinationV7(
   const defenderOwner = requirePlayer(state, defender.ownerId);
   if (
     (tile.terrain === "MOUNTAIN" &&
-      !defenderOwner.researchedTechs.includes("SURVEYING")) ||
+      !defenderOwner.researchedTechs.includes("ENGINEERING")) ||
     state.units.some(
       (unit) =>
         unit.id !== defender.id && unit.hp > 0 && same(unit.at, destination),

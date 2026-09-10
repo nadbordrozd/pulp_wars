@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import {
   applyCommandV7,
   projectEventsV7,
@@ -19,17 +19,13 @@ import type {
   BoardHostModelV7,
   BoardHostV7,
 } from "../../src/render/canvas/board-host-v7";
-import { CanvasBoardHostV7 } from "../../src/render/canvas/board-host-v7";
-import { buildBoardRenderPlanV7 } from "../../src/render/canvas/board-renderer-v7";
 import {
   Ruleset7DomAppView,
   type Ruleset7ControllerPortV7,
 } from "../../src/render/dom/app-view-v7";
 import {
   blackoutPublicFixtureV7,
-  defectionPublicFixtureV7,
-  pursuitPublicFixtureV7,
-  pursuitRewardPublicFixtureV7,
+  horseArcherPublicFixtureV7,
 } from "../fixtures/ruleset7-tactical-ui";
 
 beforeEach(() => {
@@ -37,235 +33,66 @@ beforeEach(() => {
 });
 
 describe("Ruleset 7 tactical DOM controls", () => {
-  it("highlights one Defection target, traps ordered city choice, and dispatches once", async () => {
-    const fixture = defectionPublicFixtureV7(true);
+  it("distinguishes unused from legal Horse Archer shots and explains the first-shot lock", async () => {
+    const fixture = horseArcherPublicFixtureV7();
     const controller = new TacticalFixtureController(fixture.state);
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
-    const envoy = required(
+    const horseArcher = required(
       controller
         .snapshot()
         .view?.units.find(
           (unit) =>
-            unit.role === "ENVOY" && unit.ownerId === unitOwner(controller),
+            unit.ownerId === unitOwner(controller) &&
+            unit.role === "HORSE_ARCHER",
         ),
     );
-    host.callbacks?.onSelection({ kind: "UNIT", unitId: envoy.id });
-    const defection = requiredButton("defection");
-    const ordinaryAction = requiredButton("command-wait");
-    expect(defection.parentElement).toBe(ordinaryAction.parentElement);
-    expect(defection.parentElement?.classList).toContain("v7-context-actions");
-    defection.click();
-    const model = required(host.lastModel);
-    expect(model.interaction.tacticalTargetMode).toEqual({
-      kind: "DEFECTION",
-      sourceUnitId: envoy.id,
-    });
-    const plan = buildBoardRenderPlanV7(
-      model.view,
-      model.offeredCommands,
-      model.interaction,
+    host.callbacks?.onSelection({ kind: "UNIT", unitId: horseArcher.id });
+    expect(document.body.textContent).toContain("Two-shot activation");
+    expect(document.body.textContent).toContain(
+      "0 attacks used · 2 unused · 2 currently legal",
     );
-    const target = required(
-      plan.targets.find((candidate) => candidate.family === "DEFECTION"),
-    );
-    expect(
-      plan.targets.filter((candidate) => candidate.family === "DEFECTION"),
-    ).toHaveLength(1);
-    host.callbacks?.onCommand(target);
-    await Promise.resolve();
-    const modal = document.querySelector<HTMLElement>(
-      '[data-v7-region="defection-home-city-choice"]',
-    );
-    expect(modal?.getAttribute("aria-modal")).toBe("true");
-    const cityButtons = [
-      ...(modal?.querySelectorAll<HTMLButtonElement>(
-        '[data-action^="defection-city-"]',
-      ) ?? []),
-    ];
-    expect(cityButtons.length).toBeGreaterThan(1);
-    expect(cityButtons.map((button) => button.textContent)).toEqual(
-      [...cityButtons]
-        .sort(
-          (left, right) =>
-            Number(left.dataset.action?.split("-").at(-1)) -
-            Number(right.dataset.action?.split("-").at(-1)),
-        )
-        .map((button) => button.textContent),
-    );
-    expect(cityButtons[0]?.textContent).toContain("capacity");
-    expect(cityButtons[0]?.textContent).toContain("assigned");
-    expect(cityButtons[0]?.textContent).toContain("reserved");
-    expect(modal?.textContent).toContain("next accepted End Turn");
-    expect(modal?.textContent).toContain("first later Start Turn");
-    cityButtons[0]?.click();
-    await waitUntil(() => controller.accepted.length === 1);
-    expect(controller.accepted[0]).toMatchObject({
-      kind: "OFFER_DEFECTION",
-      unitId: envoy.id,
-    });
-    expect(controller.snapshot().view?.defectionStatuses[0]).toMatchObject({
-      visibility: "FULL",
-      phase: "WAITING_FOR_REPLY",
-    });
-    app.destroy();
-  });
 
-  it("keeps targeting keyboard-first and traps chooser focus without duplicate dispatch", async () => {
-    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(null);
-    const fixture = defectionPublicFixtureV7(true);
-    const controller = new TacticalFixtureController(fixture.state);
-    const host = new CanvasBoardHostV7(document);
-    const app = mount(controller, host);
-    const source = required(
+    const firstShot = required(
       controller
         .snapshot()
-        .view?.units.find(
-          (unit) =>
-            unit.role === "ENVOY" && unit.ownerId === unitOwner(controller),
+        .offeredCommands.find(
+          (command) =>
+            command.kind === "ATTACK" && command.unitId === horseArcher.id,
         ),
     );
-    host.activate(source.at);
-    requiredButton("defection").click();
-    await Promise.resolve();
-    const canvas = required(
-      document.querySelector<HTMLCanvasElement>("canvas"),
+    expect((await controller.dispatch(firstShot)).accepted).toBe(true);
+    expect(document.body.textContent).toContain(
+      "1 attacks used · 1 unused · 1 currently legal",
     );
-    expect(document.activeElement).toBe(canvas);
-    canvas.dispatchEvent(
-      new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }),
+    expect(document.body.textContent).toContain(
+      "This unit cannot move or use another action; other units remain available.",
     );
-    canvas.dispatchEvent(
-      new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }),
-    );
-    canvas.dispatchEvent(
-      new KeyboardEvent("keydown", { key: "Enter", bubbles: true }),
-    );
-    await Promise.resolve();
-    const modal = required(
-      document.querySelector<HTMLElement>(
-        '[data-v7-region="defection-home-city-choice"]',
-      ),
-    );
-    const cityButtons = [
-      ...modal.querySelectorAll<HTMLButtonElement>(
-        '[data-action^="defection-city-"]',
-      ),
-    ];
-    const first = required(cityButtons[0]);
-    const last = required(cityButtons.at(-1));
-    expect(document.activeElement).toBe(first);
-    first.dispatchEvent(
-      new KeyboardEvent("keydown", {
-        key: "Tab",
-        shiftKey: true,
-        bubbles: true,
-      }),
-    );
-    expect(document.activeElement).toBe(last);
-    last.dispatchEvent(
-      new KeyboardEvent("keydown", { key: "Tab", bubbles: true }),
-    );
-    expect(document.activeElement).toBe(first);
-    first.click();
-    first.click();
-    await waitUntil(() => controller.accepted.length === 1);
-    expect(controller.accepted).toHaveLength(1);
-    app.destroy();
-  });
-
-  it("dispatches the single Defection home city and single Blackout city directly", async () => {
-    for (const fixture of [
-      defectionPublicFixtureV7(false),
-      blackoutPublicFixtureV7(),
-    ]) {
-      document.body.innerHTML = '<div id="app"></div>';
-      const controller = new TacticalFixtureController(fixture.state);
-      const host = new RecordingBoardHost();
-      const app = mount(controller, host);
-      const role = fixture.state.units[0]?.role;
-      const source = required(
-        controller.snapshot().view?.units.find((unit) => unit.role === role),
-      );
-      host.callbacks?.onSelection({ kind: "UNIT", unitId: source.id });
-      const action = role === "ENVOY" ? "defection" : "blackout";
-      requiredButton(action).click();
-      if (role === "ENVOY") {
-        const model = required(host.lastModel);
-        const target = required(
-          buildBoardRenderPlanV7(
-            model.view,
-            model.offeredCommands,
-            model.interaction,
-          ).targets.find((candidate) => candidate.family === "DEFECTION"),
-        );
-        host.callbacks?.onCommand(target);
-      }
-      await waitUntil(() => controller.accepted.length === 1);
-      expect(document.querySelector(".v7-defection-choice")).toBeNull();
-      expect(controller.accepted[0]?.kind).toBe(
-        role === "ENVOY" ? "OFFER_DEFECTION" : "BLACKOUT_CITY",
-      );
-      app.destroy();
-    }
-  });
-
-  it("auto-selects the engine-opened global Pursuit and leaves End Pursuit reachable", async () => {
-    const fixture = pursuitPublicFixtureV7();
-    const controller = new TacticalFixtureController(fixture.state);
-    const host = new RecordingBoardHost();
-    const app = mount(controller, host);
-    const pursuit = controller
-      .snapshot()
-      .offeredCommands.find((command) => command.kind === "END_PURSUIT");
-    if (pursuit?.kind !== "END_PURSUIT")
-      throw new Error("Pursuit fixture missing global End Pursuit");
-    expect(host.lastModel?.interaction.selectedUnitId).toBe(pursuit.unitId);
-    expect(document.body.textContent).toContain("1 attacks used");
-    expect(document.body.textContent).toContain("2 remaining of 3");
-    requiredButton("command-end_pursuit").click();
-    await waitUntil(() => controller.accepted.length === 1);
-    expect(controller.accepted[0]?.kind).toBe("END_PURSUIT");
     expect(
       controller
         .snapshot()
-        .offeredCommands.some((command) => command.kind === "END_PURSUIT"),
+        .offeredCommands.some(
+          (command) =>
+            command.kind === "MOVE" && command.unitId === horseArcher.id,
+        ),
     ).toBe(false);
     app.destroy();
   });
 
-  it("keeps a mandatory city reward ahead of Pursuit, then resumes the open sequence", async () => {
-    const fixture = pursuitRewardPublicFixtureV7();
+  it("dispatches a single legal Blackout city directly", async () => {
+    const fixture = blackoutPublicFixtureV7();
     const controller = new TacticalFixtureController(fixture.state);
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
-    expect(
-      document.querySelector('[data-v7-region="mandatory-reward"]'),
-    ).not.toBeNull();
-    expect(host.lastModel?.interaction.selectedUnitId).toBeNull();
-    expect(
+    const saboteur = required(
       controller
         .snapshot()
-        .offeredCommands.every(
-          (command) => command.kind === "CHOOSE_CITY_REWARD",
-        ),
-    ).toBe(true);
-    requiredButton("reward-survey").click();
-    await waitUntil(
-      () =>
-        controller.accepted.length === 1 &&
-        host.lastModel?.interaction.selectedUnitId !== null,
+        .view?.units.find((unit) => unit.role === "SABOTEUR"),
     );
-    expect(controller.accepted[0]?.kind).toBe("CHOOSE_CITY_REWARD");
-    expect(
-      document.querySelector('[data-v7-region="mandatory-reward"]'),
-    ).toBeNull();
-    expect(
-      controller
-        .snapshot()
-        .offeredCommands.some((command) => command.kind === "END_PURSUIT"),
-    ).toBe(true);
-    expect(document.body.textContent).toContain("2 remaining of 3");
+    host.callbacks?.onSelection({ kind: "UNIT", unitId: saboteur.id });
+    requiredButton("blackout").click();
+    await waitUntil(() => controller.accepted.length === 1);
+    expect(controller.accepted[0]?.kind).toBe("BLACKOUT_CITY");
     app.destroy();
   });
 });
@@ -285,11 +112,9 @@ class TacticalFixtureController implements Ruleset7ControllerPortV7 {
     this.#state = state;
     this.#snapshot = snapshotOf(state);
   }
-
   snapshot(): Ruleset7BrowserSnapshot {
     return this.#snapshot;
   }
-
   subscribe(
     subscriber: (snapshot: Ruleset7BrowserSnapshot) => void,
   ): () => void {
@@ -297,14 +122,12 @@ class TacticalFixtureController implements Ruleset7ControllerPortV7 {
     subscriber(this.#snapshot);
     return () => this.#snapshotSubscribers.delete(subscriber);
   }
-
   subscribeAcceptedBoundary(
     subscriber: (boundary: Ruleset7AcceptedBoundary) => void,
   ): () => void {
     this.#boundarySubscribers.add(subscriber);
     return () => this.#boundarySubscribers.delete(subscriber);
   }
-
   async dispatch(command: CommandV7): Promise<Ruleset7DispatchResult> {
     if (
       !this.#snapshot.offeredCommands.some(
@@ -425,20 +248,20 @@ function mount(
   controller: TacticalFixtureController,
   host: BoardHostV7,
 ): Ruleset7DomAppView {
-  const root = document.querySelector<HTMLElement>("#app");
-  if (root === null) throw new Error("App root missing");
-  return new Ruleset7DomAppView(document, root, controller, {
-    boardHost: host,
-    settingsStorage: null,
-  });
+  return new Ruleset7DomAppView(
+    document,
+    required(document.querySelector<HTMLElement>("#app")),
+    controller,
+    { boardHost: host, settingsStorage: null },
+  );
 }
 
 function requiredButton(action: string): HTMLButtonElement {
-  const button = document.querySelector<HTMLButtonElement>(
+  const result = document.querySelector<HTMLButtonElement>(
     `[data-action="${action}"]`,
   );
-  if (button === null) throw new Error(`Action ${action} missing`);
-  return button;
+  if (result === null) throw new Error(`Action ${action} missing`);
+  return result;
 }
 
 function unitOwner(controller: TacticalFixtureController): number {

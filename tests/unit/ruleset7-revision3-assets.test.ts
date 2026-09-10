@@ -14,6 +14,12 @@ import {
   resolveRepairStyleReferenceHash,
 } from "../../scripts/art/ruleset7-revision3-art-order";
 import { ACCEPTED_ART_URLS } from "../../src/assets/generated-art-manifest";
+import {
+  RULESET7_IMPROVEMENT_ART_IDS,
+  RULESET7_PORTRAIT_ART_IDS,
+  RULESET7_TERRAIN_ART_IDS,
+  RULESET7_UNIT_ART_IDS,
+} from "../../src/assets/ruleset7-ui-art";
 
 interface Bounds {
   readonly left: number;
@@ -381,7 +387,7 @@ describe("Ruleset 7 revision-3 art assets", () => {
     }
   });
 
-  it("accepts and registers every new asset without changing live Ruleset 7 mappings", async () => {
+  it("accepts and registers every new asset in the live revision-3 mappings", async () => {
     const { recipes, records } = await manifests();
     const ids = [
       RULESET7_REVISION3_HORSE_ARCHER_ID,
@@ -402,15 +408,24 @@ describe("Ruleset 7 revision-3 art assets", () => {
         records[id]?.outputSha256,
       );
     }
-    const runtimeMappings = await readFile(
-      "src/assets/ruleset7-ui-art.ts",
+    expect(RULESET7_UNIT_ART_IDS.HORSE_ARCHER).toBe(
+      RULESET7_REVISION3_HORSE_ARCHER_ID,
+    );
+    expect(RULESET7_PORTRAIT_ART_IDS.HORSE_ARCHER).toBe(
+      RULESET7_REVISION3_HORSE_ARCHER_PORTRAIT_ID,
+    );
+    expect(RULESET7_TERRAIN_ART_IDS.MOUNTAIN).toBe(
+      RULESET7_REVISION3_MOUNTAIN_IDS[0],
+    );
+    expect(RULESET7_IMPROVEMENT_ART_IDS.MINE).toBe(
+      RULESET7_REVISION3_MINED_MOUNTAIN_IDS[0],
+    );
+    const renderer = await readFile(
+      "src/render/canvas/board-renderer-v7.ts",
       "utf8",
     );
-    expect(runtimeMappings).toContain('MINE: "building-square-mine"');
-    expect(runtimeMappings).toContain(
-      'MOUNTAIN: "terrain-square-original-mountain-1"',
-    );
-    for (const id of ids) expect(runtimeMappings).not.toContain(id);
+    expect(renderer).toContain("terrain-ruleset7-revision3-");
+    expect(renderer).toContain('tile.improvement === "MINE" ? "mined-"');
   });
 
   it("leaves all prior accepted generated outputs byte-identical to their recorded hashes", async () => {

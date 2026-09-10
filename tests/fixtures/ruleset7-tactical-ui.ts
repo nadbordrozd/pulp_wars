@@ -1,5 +1,4 @@
 import {
-  applyCommandV7,
   createInitialMapStateV7,
   queryPlayerCommandsV7,
   TECHNOLOGY_IDS_V7,
@@ -17,7 +16,6 @@ const READY: UnitStateV7["activation"] = {
   movedPathLength: 0,
   attacked: false,
   attacksUsed: 0,
-  pursuitPhase: "NONE",
   healed: false,
   recovered: false,
   captured: false,
@@ -32,7 +30,7 @@ export interface TacticalPublicFixtureV7 {
   readonly offeredCommands: readonly CommandV7[];
 }
 
-export function pursuitPublicFixtureV7(): TacticalPublicFixtureV7 {
+export function horseArcherPublicFixtureV7(): TacticalPublicFixtureV7 {
   const base = tacticalBase(1701);
   const own = required(
     base.units.find((unit) => unit.ownerId === base.humanPlayerId),
@@ -40,133 +38,16 @@ export function pursuitPublicFixtureV7(): TacticalPublicFixtureV7 {
   const rival = required(
     base.units.find((unit) => unit.ownerId !== base.humanPlayerId),
   );
-  const readyToKill = checkedV7({
+  const state = checkedV7({
     ...base,
     nextEntityId: base.nextEntityId + 1,
     units: [
       {
         ...own,
-        role: "LANCER" as const,
+        role: "HORSE_ARCHER" as const,
         at: { x: 4, y: 4 },
-        hp: 12,
-        maxHp: 12,
-        activation: READY,
-      },
-      {
-        ...rival,
-        role: "GUARD" as const,
-        at: { x: 5, y: 4 },
-        hp: 1,
-        maxHp: 15,
-        activation: READY,
-      },
-      {
-        ...rival,
-        id: unitId(base.nextEntityId),
-        role: "FIGHTER" as const,
-        at: { x: 6, y: 4 },
         hp: 10,
         maxHp: 10,
-        activation: READY,
-      },
-    ].sort((left, right) => left.id - right.id),
-  });
-  const killed = applyCommandV7(readyToKill, readyToKill.humanPlayerId, {
-    kind: "ATTACK",
-    unitId: own.id,
-    targetUnitId: rival.id,
-  });
-  if (!killed.accepted) throw new Error(killed.error.code);
-  return project(killed.state);
-}
-
-export function pursuitRewardPublicFixtureV7(): TacticalPublicFixtureV7 {
-  const pursuit = pursuitPublicFixtureV7();
-  const city = required(
-    pursuit.state.cities.find(
-      (candidate) => candidate.ownerId === pursuit.state.humanPlayerId,
-    ),
-  );
-  const populationCoords = pursuit.state.board.tiles
-    .filter((tile) => tile.territoryCityId === city.id)
-    .slice(0, 2)
-    .map((tile) => tile.at);
-  if (populationCoords.length !== 2)
-    throw new Error("Pursuit reward population coordinates missing");
-  return project(
-    checkedV7({
-      ...pursuit.state,
-      nextEntityId: pursuit.state.nextEntityId + 2,
-      cities: pursuit.state.cities.map((candidate) =>
-        candidate.id === city.id
-          ? {
-              ...candidate,
-              level: 2,
-              permanentPopulation: 2,
-              economicPopulation: 0,
-              population: 0,
-            }
-          : candidate,
-      ),
-      populationContributions: populationCoords.map((at, index) => ({
-        id: pursuit.state.nextEntityId + index,
-        cityId: city.id,
-        category: "PERMANENT" as const,
-        amount: 1,
-        source: {
-          kind: "RESOURCE_ACTION" as const,
-          action: "HARVEST_FRUIT" as const,
-          at,
-        },
-      })),
-      pendingChoices: [
-        {
-          kind: "CITY_REWARD",
-          cityId: city.id,
-          reachedLevel: 2,
-          candidates: ["SURVEY", "STOCKPILE"],
-        },
-      ],
-    }),
-  );
-}
-
-export function defectionPublicFixtureV7(
-  multipleHomeCities = true,
-): TacticalPublicFixtureV7 {
-  const base = tacticalBase(1702, multipleHomeCities ? 2 : 1);
-  const own = required(
-    base.units.find((unit) => unit.ownerId === base.humanPlayerId),
-  );
-  const rival = required(
-    base.units.find((unit) => unit.ownerId !== base.humanPlayerId),
-  );
-  const targetOwnerId = rival.ownerId;
-  const donor = multipleHomeCities
-    ? required(
-        base.players.find(
-          (player) =>
-            player.id !== base.humanPlayerId && player.id !== targetOwnerId,
-        ),
-      )
-    : undefined;
-  const state = checkedV7({
-    ...base,
-    players: base.players.map((player) =>
-      player.id === donor?.id ? { ...player, status: "ELIMINATED" } : player,
-    ),
-    cities: base.cities.map((city) =>
-      city.ownerId === donor?.id
-        ? { ...city, ownerId: base.humanPlayerId }
-        : city,
-    ),
-    units: [
-      {
-        ...own,
-        role: "ENVOY" as const,
-        at: { x: 4, y: 4 },
-        hp: 7,
-        maxHp: 7,
         activation: READY,
       },
       {
@@ -177,9 +58,16 @@ export function defectionPublicFixtureV7(
         maxHp: 15,
         activation: READY,
       },
-    ]
-      .filter((unit) => unit.ownerId !== donor?.id)
-      .sort((left, right) => left.id - right.id),
+      {
+        ...rival,
+        id: unitId(base.nextEntityId),
+        role: "FIGHTER" as const,
+        at: { x: 4, y: 6 },
+        hp: 10,
+        maxHp: 10,
+        activation: READY,
+      },
+    ].sort((left, right) => left.id - right.id),
   });
   return project(state);
 }

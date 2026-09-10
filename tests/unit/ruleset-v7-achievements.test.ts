@@ -280,7 +280,7 @@ describe("ruleset-7 achievements and Monuments", () => {
                     ? "FRUIT"
                     : candidate.terrain === "FOREST"
                       ? "GAME"
-                      : "ORE",
+                      : "GAME",
               }
             : candidate,
         ),
@@ -487,7 +487,7 @@ describe("ruleset-7 achievements and Monuments", () => {
     ).toBe(true);
   });
 
-  it("does not offer or preview a Monument through unknown Mountain resources", () => {
+  it("offers and previews a Monument on an empty Mountain", () => {
     const base = levelTwoWithoutPopulation(
       unlockEntitlement(exploredAllV7(initialV7(707)), "ENGINEER"),
     );
@@ -496,38 +496,25 @@ describe("ruleset-7 achievements and Monuments", () => {
       "human city missing",
     );
     const at = emptyOwnedTile(base, city.id);
-    const make = (resource: "ORE" | null) =>
-      checkedV7({
-        ...base,
-        board: {
-          ...base.board,
-          tiles: base.board.tiles.map((candidate) =>
-            same(candidate.at, at)
-              ? { ...candidate, terrain: "MOUNTAIN", resource }
-              : candidate,
-          ),
-        },
-      });
-    const empty = make(null);
-    const ore = make("ORE");
-    const left = viewForV7(empty, empty.humanPlayerId);
-    const right = viewForV7(ore, ore.humanPlayerId);
-    expect(JSON.stringify(left)).toBe(JSON.stringify(right));
+    const mountain = checkedV7({
+      ...base,
+      board: {
+        ...base.board,
+        tiles: base.board.tiles.map((candidate) =>
+          same(candidate.at, at)
+            ? { ...candidate, terrain: "MOUNTAIN", resource: null }
+            : candidate,
+        ),
+      },
+    });
+    const view = viewForV7(mountain, mountain.humanPlayerId);
     const command = {
       kind: "BUILD_MONUMENT",
       achievement: "ENGINEER",
       at,
     } as const;
-    expect(queryPlayerCommandsV7(left)).not.toContainEqual(command);
-    expect(queryPlayerCommandsV7(right)).not.toContainEqual(command);
-    expect(previewMonumentV7(left, command)).toEqual({
-      ok: false,
-      error: "NOT_OFFERED",
-    });
-    expect(previewMonumentV7(right, command)).toEqual({
-      ok: false,
-      error: "NOT_OFFERED",
-    });
+    expect(queryPlayerCommandsV7(view)).toContainEqual(command);
+    expect(previewMonumentV7(view, command)).toMatchObject({ ok: true });
   });
 
   it("does not offer or preview a Monument on a visible treasure chest", () => {
@@ -818,35 +805,41 @@ function musterTrainingState(): GameStateV7 {
         candidate.territoryCityId === city.id && candidate.site === null,
     )
     .slice(0, 4);
-  const [fighterAt, scoutAt, guardAt, barracksAt] = positions.map(
-    (item) => item.at,
-  ) as [CoordV7, CoordV7, CoordV7, CoordV7];
+  const [fighterAt, scoutAt, guardAt] = positions.map((item) => item.at) as [
+    CoordV7,
+    CoordV7,
+    CoordV7,
+  ];
   const fighter = required(
     base.units.find((unit) => unit.ownerId === base.humanPlayerId),
     "fighter missing",
   );
   const added = [
-    makeUnit(base.nextEntityId, base.humanPlayerId, city.id, "SCOUT", scoutAt),
-    makeUnit(
-      base.nextEntityId + 1,
-      base.humanPlayerId,
-      city.id,
-      "GUARD",
-      guardAt,
-    ),
+    {
+      ...makeUnit(
+        base.nextEntityId,
+        base.humanPlayerId,
+        city.id,
+        "SCOUT",
+        scoutAt,
+      ),
+      homeCityId: null,
+    },
+    {
+      ...makeUnit(
+        base.nextEntityId + 1,
+        base.humanPlayerId,
+        city.id,
+        "GUARD",
+        guardAt,
+      ),
+      homeCityId: null,
+    },
   ];
   return checkedV7({
     ...base,
     nextEntityId: base.nextEntityId + added.length,
     treasureChests: [],
-    board: {
-      ...base.board,
-      tiles: base.board.tiles.map((candidate) =>
-        same(candidate.at, barracksAt)
-          ? { ...candidate, resource: null, improvement: "BARRACKS" }
-          : candidate,
-      ),
-    },
     units: [
       ...base.units.map((unit) =>
         unit.id === fighter.id ? { ...unit, at: fighterAt } : unit,
@@ -1049,7 +1042,6 @@ function readyActivation(): UnitStateV7["activation"] {
     movedPathLength: 0,
     attacked: false,
     attacksUsed: 0,
-    pursuitPhase: "NONE",
     healed: false,
     recovered: false,
     captured: false,

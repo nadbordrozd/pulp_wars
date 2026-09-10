@@ -11,7 +11,6 @@ import type {
 export const RULESET7_UNIT_ART_IDS = {
   FIGHTER: "unit-original-fighter",
   SCOUT: "unit-original-scout",
-  ENVOY: "unit-original-envoy",
   MARKSMAN: "unit-original-marksman",
   GUARD: "unit-original-guard",
   RAIDER: "unit-original-raider",
@@ -19,7 +18,7 @@ export const RULESET7_UNIT_ART_IDS = {
   CATAPULT: "unit-original-catapult",
   SABOTEUR: "unit-original-saboteur",
   HEAVY: "unit-original-heavy",
-  LANCER: "unit-original-lancer",
+  HORSE_ARCHER: "unit-original-horse-archer",
   BREACHER: "unit-original-breacher",
   JUGGERNAUT: "unit-original-juggernaut",
 } as const satisfies Readonly<Record<UnitRoleIdV7, string>>;
@@ -27,7 +26,6 @@ export const RULESET7_UNIT_ART_IDS = {
 export const RULESET7_PORTRAIT_ART_IDS = {
   FIGHTER: "portrait-original-fighter",
   SCOUT: "portrait-original-scout",
-  ENVOY: "portrait-original-envoy",
   MARKSMAN: "portrait-original-marksman",
   GUARD: "portrait-original-guard",
   RAIDER: "portrait-original-raider",
@@ -35,7 +33,7 @@ export const RULESET7_PORTRAIT_ART_IDS = {
   CATAPULT: "portrait-original-catapult",
   SABOTEUR: "portrait-original-saboteur",
   HEAVY: "portrait-original-heavy",
-  LANCER: "portrait-original-lancer",
+  HORSE_ARCHER: "portrait-original-horse-archer",
   BREACHER: "portrait-original-breacher",
   JUGGERNAUT: "portrait-original-juggernaut",
 } as const satisfies Readonly<Record<UnitRoleIdV7, string>>;
@@ -50,43 +48,36 @@ export const RULESET7_TECH_ART_IDS = {
   GATHERING: "terrain-square-original-fruit",
   FARMING: RULESET7_FARM_ART_IDS.SINGLE,
   MILLING: "building-square-windmill",
-  CRAFT: "building-square-workshop",
-  GRAND_WORKS: "building-square-grand-works",
+  MEDICINE: "ui-tech-original-medicine",
+  RECOVERY: "ui-tech-original-recovery",
   HUNTING: "terrain-square-original-animal",
   FORESTRY: "building-square-lumber-camp",
   SAWMILLING: "building-square-sawmill",
   MARKSMANSHIP: "ui-tech-original-marksmanship",
   FIELDCRAFT: "ui-tech-original-fieldcraft",
-  SURVEYING: "ui-tech-original-surveying",
-  MINING: "building-square-mine",
-  METALLURGY: "building-square-forge",
-  QUARRYING: "building-square-quarry",
-  MASONRY: "building-square-stoneworks",
   SCOUTING: "ui-tech-original-scouting",
   ROADS: "terrain-square-road-mask-0101",
   COMMERCE: "building-square-market",
   RAIDING: "ui-tech-original-raiding",
-  MANEUVER: "unit-original-lancer",
+  MOUNTED_ARCHERY: "unit-original-horse-archer",
   DRILL: "ui-tech-original-drill",
   FORTIFICATION: "ui-tech-original-fortification",
   EXPLOSIVES: "ui-tech-original-explosives",
-  MEDICINE: "ui-tech-original-medicine",
-  RECOVERY: "ui-tech-original-recovery",
+  ENGINEERING: "terrain-ruleset7-revision3-mountain-1",
+  METALLURGY: "building-square-forge",
+  GRAND_WORKS: "building-square-grand-works",
 } as const satisfies Readonly<Record<TechnologyIdV7, string>>;
 
 export const RULESET7_IMPROVEMENT_ART_IDS = {
   FARM: RULESET7_FARM_ART_IDS.SINGLE,
   LUMBER_CAMP: "building-ruleset7-lumber-camp",
-  MINE: "building-square-mine",
-  QUARRY: "building-square-quarry",
+  MINE: "terrain-ruleset7-revision3-mined-mountain-1",
   WINDMILL: "building-square-windmill",
   SAWMILL: "building-square-sawmill",
   FORGE: "building-square-forge",
-  STONEWORKS: "building-square-stoneworks",
   WORKSHOP: "building-square-workshop",
   GRAND_WORKS: "building-square-grand-works",
   MARKET: "building-square-market",
-  BARRACKS: "building-square-barracks",
   MONUMENT: "building-square-monument",
 } as const satisfies Readonly<Record<ImprovementIdV7, string>>;
 
@@ -94,20 +85,17 @@ export const RULESET7_RESOURCE_ART_IDS = {
   FRUIT: "terrain-square-original-fruit",
   GAME: "terrain-square-original-animal",
   FERTILE_GROUND: "terrain-square-fertile-ground",
-  ORE: "terrain-square-ore",
-  STONE: "terrain-square-stone",
 } as const satisfies Readonly<Record<ResourceIdV7, string>>;
 
 export const RULESET7_TERRAIN_ART_IDS = {
   GRASS: "terrain-ruleset7-original-grass-1",
   FOREST: "terrain-ruleset7-original-forest-1",
-  MOUNTAIN: "terrain-square-original-mountain-1",
+  MOUNTAIN: "terrain-ruleset7-revision3-mountain-1",
 } as const satisfies Readonly<Record<TerrainIdV7, string>>;
 
 const STATIC_COMMAND_ART_IDS: Readonly<
   Partial<Record<CommandV7["kind"], string>>
 > = {
-  OFFER_DEFECTION: "ui-action-defection",
   BLACKOUT_CITY: "ui-action-blackout",
   HEAL_ADJACENT: "ui-action-heal",
   RECOVER: "ui-action-recover",
@@ -121,15 +109,12 @@ const STATIC_COMMAND_ART_IDS: Readonly<
   BUILD_FARM: RULESET7_IMPROVEMENT_ART_IDS.FARM,
   BUILD_LUMBER_CAMP: RULESET7_IMPROVEMENT_ART_IDS.LUMBER_CAMP,
   BUILD_MINE: RULESET7_IMPROVEMENT_ART_IDS.MINE,
-  BUILD_QUARRY: RULESET7_IMPROVEMENT_ART_IDS.QUARRY,
   BUILD_WINDMILL: RULESET7_IMPROVEMENT_ART_IDS.WINDMILL,
   BUILD_SAWMILL: RULESET7_IMPROVEMENT_ART_IDS.SAWMILL,
   BUILD_FORGE: RULESET7_IMPROVEMENT_ART_IDS.FORGE,
-  BUILD_STONEWORKS: RULESET7_IMPROVEMENT_ART_IDS.STONEWORKS,
   BUILD_WORKSHOP: RULESET7_IMPROVEMENT_ART_IDS.WORKSHOP,
   BUILD_GRAND_WORKS: RULESET7_IMPROVEMENT_ART_IDS.GRAND_WORKS,
   BUILD_MARKET: RULESET7_IMPROVEMENT_ART_IDS.MARKET,
-  BUILD_BARRACKS: RULESET7_IMPROVEMENT_ART_IDS.BARRACKS,
   BUILD_MONUMENT: RULESET7_IMPROVEMENT_ART_IDS.MONUMENT,
   CLEAR_FOREST: "ui-action-clear-forest",
   REPLANT_FOREST: "ui-action-replant-forest",
@@ -138,14 +123,9 @@ const STATIC_COMMAND_ART_IDS: Readonly<
   END_TURN: "ui-action-end-turn",
 };
 
-/** Move, Pursue and Attack are deliberately map-targeted. */
+/** Move and Attack are deliberately map-targeted. */
 export function commandArtIdV7(command: CommandV7): string | null {
-  if (
-    command.kind === "MOVE" ||
-    command.kind === "PURSUE" ||
-    command.kind === "ATTACK"
-  )
-    return null;
+  if (command.kind === "MOVE" || command.kind === "ATTACK") return null;
   if (command.kind === "RESEARCH") return RULESET7_TECH_ART_IDS[command.tech];
   if (command.kind === "TRAIN") return RULESET7_UNIT_ART_IDS[command.role];
   if (command.kind === "CHOOSE_CITY_REWARD")

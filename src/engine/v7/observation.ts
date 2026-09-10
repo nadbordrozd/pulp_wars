@@ -49,20 +49,6 @@ export function isUnitVisibleToPlayerV7(
   viewerId: PlayerId,
   unit: UnitStateV7,
 ): boolean {
-  return (
-    isUnitVisibleWithoutDefectionV7(state, viewerId, unit) ||
-    state.defectionMarks.some((mark) =>
-      unitExplicitlyRevealedByDefectionV7(state, viewerId, unit, mark),
-    )
-  );
-}
-
-/** Independent visibility used when deciding whether a third party sees a link. */
-export function isUnitVisibleWithoutDefectionV7(
-  state: GameStateV7,
-  viewerId: PlayerId,
-  unit: UnitStateV7,
-): boolean {
   const viewer = state.players.find((player) => player.id === viewerId);
   if (viewer === undefined) throw new RangeError("Unknown viewer");
   if (unit.ownerId === viewerId) return true;
@@ -89,21 +75,6 @@ export function visibleUnitIdsV7(
       .filter((unit) => isUnitVisibleToPlayerV7(state, viewerId, unit))
       .map((unit) => unit.id),
   );
-}
-
-export function unitExplicitlyRevealedByDefectionV7(
-  state: GameStateV7,
-  viewerId: PlayerId,
-  unit: UnitStateV7,
-  mark: GameStateV7["defectionMarks"][number],
-): boolean {
-  if (unit.id === mark.sourceUnitId)
-    return (
-      viewerId === mark.initiatingPlayerId ||
-      viewerId === mark.recordedTargetOwnerId ||
-      arePlayersAlliedV7(state, viewerId, mark.recordedTargetOwnerId)
-    );
-  return unit.id === mark.targetUnitId && viewerId === mark.initiatingPlayerId;
 }
 
 export function withUnitAtForObservationV7(

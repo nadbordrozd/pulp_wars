@@ -188,17 +188,17 @@ try {
   await click(connection, '[data-action="tech"]');
   await waitFor(
     connection,
-    `document.querySelectorAll('.v7-tech-card').length === 25`,
+    `document.querySelectorAll('.v7-tech-card').length === 21`,
   );
   const desktopTechAssets = await assertImagesDecoded(
     connection,
     ".v7-tech-card .v7-art-frame",
-    25,
+    21,
   );
   const desktopTech = await techEvidence(connection);
   assert(
-    desktopTech.visibleHeadings === 5 &&
-      desktopTech.uniqueHeadings === 5 &&
+    desktopTech.visibleHeadings === 4 &&
+      desktopTech.uniqueHeadings === 4 &&
       desktopTech.visibleSelectors === 0 &&
       desktopTech.cardsContained &&
       desktopTech.overlayWidth <= 1440 &&
@@ -221,17 +221,17 @@ try {
   await openCompactAction(connection, "tech");
   await waitFor(
     connection,
-    `document.querySelectorAll('.v7-tech-card').length === 25`,
+    `document.querySelectorAll('.v7-tech-card').length === 21`,
   );
   const mobileBefore = await techEvidence(connection);
   assert(
     mobileBefore.visibleSelectors === 1 && mobileBefore.cardsContained,
     `390 branch navigation is not available: ${JSON.stringify(mobileBefore)}`,
   );
-  await selectOption(connection, ".v7-tech-branch-select", 4);
+  await selectOption(connection, ".v7-tech-branch-select", 3);
   await waitFor(
     connection,
-    `(() => { const select = document.querySelector('.v7-tech-branch-select'); const branch = document.querySelector('[data-tech-branch="WARFARE"]'); const heading = branch?.querySelector('h3'); const overlay = document.querySelector('.v7-overlay'); if (document.activeElement !== select || select?.value !== 'WARFARE' || !heading || !overlay) return false; const h = heading.getBoundingClientRect(); const s = select.getBoundingClientRect(); const o = overlay.getBoundingClientRect(); const hit = document.elementFromPoint(h.left + h.width / 2, h.top + h.height / 2); return h.top >= s.bottom - 1 && h.bottom <= o.bottom + 1 && (hit === heading || heading.contains(hit)); })()`,
+    `(() => { const select = document.querySelector('.v7-tech-branch-select'); const branch = document.querySelector('[data-tech-branch="INDUSTRY_WARFARE"]'); const heading = branch?.querySelector('h3'); const overlay = document.querySelector('.v7-overlay'); if (document.activeElement !== select || select?.value !== 'INDUSTRY_WARFARE' || !heading || !overlay) return false; const h = heading.getBoundingClientRect(); const s = select.getBoundingClientRect(); const o = overlay.getBoundingClientRect(); const hit = document.elementFromPoint(h.left + h.width / 2, h.top + h.height / 2); return h.top >= s.bottom - 1 && h.bottom <= o.bottom + 1 && (hit === heading || heading.contains(hit)); })()`,
   );
   await assertLayout(connection, "390 mobile branch jump");
   await capture(connection, "ui-polish-390-tech-branch-select-dpr2.png");
@@ -365,7 +365,7 @@ try {
     settings,
     mobileTech: {
       ...mobileBefore,
-      focusedBranch: "WARFARE",
+      focusedBranch: "INDUSTRY_WARFARE",
     },
     compactMatch,
     boundaries: {

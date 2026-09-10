@@ -50,31 +50,31 @@ describe("Ruleset 7 DOM shell", () => {
     expect(document.body.textContent).not.toContain("CANDY");
 
     requiredButton('[data-action="tech"]').click();
-    expect(document.querySelectorAll(".v7-tech-card")).toHaveLength(25);
-    expect(document.querySelectorAll(".v7-tech-edge")).toHaveLength(20);
+    expect(document.querySelectorAll(".v7-tech-card")).toHaveLength(21);
+    expect(document.querySelectorAll(".v7-tech-edge")).toHaveLength(17);
     expect(document.querySelectorAll(".v7-tech-children.is-unary").length).toBe(
-      10,
+      7,
     );
     const branchSelect = document.querySelector<HTMLSelectElement>(
       ".v7-tech-branch-select",
     );
     if (branchSelect === null) throw new Error("Branch selector missing");
-    expect(branchSelect.options).toHaveLength(5);
+    expect(branchSelect.options).toHaveLength(4);
     const headings = [
       ...document.querySelectorAll<HTMLElement>(".v7-tech-branch > h3"),
     ];
-    expect(headings).toHaveLength(5);
+    expect(headings).toHaveLength(4);
     expect(new Set(headings.map((heading) => heading.textContent)).size).toBe(
-      5,
+      4,
     );
     const lastBranch = document.querySelector<HTMLElement>(
-      '[data-tech-branch="WARFARE"]',
+      '[data-tech-branch="INDUSTRY_WARFARE"]',
     );
     if (lastBranch === null) throw new Error("Technology branch missing");
     const scrollIntoView = vi.fn();
     lastBranch.scrollIntoView = scrollIntoView;
     branchSelect.focus();
-    branchSelect.value = "WARFARE";
+    branchSelect.value = "INDUSTRY_WARFARE";
     branchSelect.dispatchEvent(new Event("change", { bubbles: true }));
     expect(scrollIntoView).toHaveBeenCalledWith({ block: "start" });
     expect(document.activeElement).toBe(branchSelect);
@@ -99,15 +99,13 @@ describe("Ruleset 7 DOM shell", () => {
     app.destroy();
   });
 
-  it("renders the accepted End Pursuit code-native registry primitives", () => {
+  it("renders the retained Blackout code-native registry primitive", () => {
     const symbol = createTacticalSymbolV7(
       document,
-      "ui-action-end-pursuit",
+      "ui-status-blackout-active",
       "DARK",
     );
     expect(symbol.getAttribute("viewBox")).toBe("0 0 24 24");
-    expect(symbol.querySelectorAll("rect")).toHaveLength(1);
-    expect(symbol.querySelectorAll("line")).toHaveLength(2);
     expect(symbol.textContent).toBe("");
   });
 

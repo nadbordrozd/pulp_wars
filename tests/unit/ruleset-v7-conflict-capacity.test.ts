@@ -1,11 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   applyCommandV7,
-  parseEventV7,
-  parseGameStateV7,
+  cityUnitCapacityV7,
   previewCityCapacityV7,
   previewDisbandV7,
-  previewPillageV7,
   type GameStateV7,
   type UnitStateV7,
   unitId,
@@ -19,76 +17,16 @@ import {
 } from "../fixtures/v7-builders";
 
 describe("ruleset-7 conflict economy and capacity", () => {
-  it("stacks owner Fortification with one adjacent 4-Coin Barracks for two capacity", () => {
-    const state = exploredAllV7(allTechsV7(initialV7(111)));
+  it("gives every owned city exactly one Fortification capacity", () => {
+    const state = allTechsV7(initialV7());
     const city = state.cities.find(
-      (item) => item.ownerId === state.humanPlayerId,
+      (candidate) => candidate.ownerId === state.humanPlayerId,
     );
-    const tile = state.board.tiles.find(
-      (item) =>
-        item.territoryCityId === city?.id &&
-        item.site === null &&
-        item.resource === null &&
-        item.improvement === null &&
-        Math.max(
-          Math.abs(item.at.x - city.at.x),
-          Math.abs(item.at.y - city.at.y),
-        ) === 1,
-    );
-    if (city === undefined || tile === undefined)
-      throw new Error("fixture missing");
-    const result = applyCommandV7(state, state.humanPlayerId, {
-      kind: "BUILD_BARRACKS",
-      at: tile.at,
-    });
-    expect(result.accepted).toBe(true);
-    if (!result.accepted) return;
-    expect(result.events).toEqual([
-      {
-        kind: "ECONOMIC_BUILDING_BUILT",
-        playerId: state.humanPlayerId,
-        cityId: city.id,
-        at: tile.at,
-        improvement: "BARRACKS",
-        cost: 4,
-        populationContribution: 0,
-        marketIncome: 0,
-        capacityDelta: 2,
-      },
-    ]);
-    expect(parseEventV7(result.events[0])).toEqual({
-      ok: true,
-      value: result.events[0],
-    });
-    expect(result.state.populationContributions).toEqual(
-      state.populationContributions,
-    );
-    expect(previewCityCapacityV7(result.state, city.id)).toMatchObject({
-      capacity: 5,
+    if (city === undefined) throw new Error("city missing");
+    expect(cityUnitCapacityV7(state, city)).toBe(city.level + 2);
+    expect(previewCityCapacityV7(state, city.id)).toMatchObject({
+      capacity: city.level + 2,
       assigned: 1,
-      available: 4,
-      overCapacity: 0,
-    });
-    const secondTile = result.state.board.tiles.find(
-      (item) =>
-        item.territoryCityId === city.id &&
-        item.site === null &&
-        item.resource === null &&
-        item.improvement === null &&
-        Math.max(
-          Math.abs(item.at.x - city.at.x),
-          Math.abs(item.at.y - city.at.y),
-        ) === 1,
-    );
-    if (secondTile === undefined) throw new Error("second tile missing");
-    expect(
-      applyCommandV7(result.state, state.humanPlayerId, {
-        kind: "BUILD_BARRACKS",
-        at: secondTile.at,
-      }),
-    ).toMatchObject({
-      accepted: false,
-      error: { code: "CITY_BUILDING_LIMIT" },
     });
   });
 
@@ -148,103 +86,6 @@ describe("ruleset-7 conflict economy and capacity", () => {
     });
   });
 
-  it("allows legal over-capacity after hostile Pillage destroys Barracks", () => {
-    let state = allTechsV7(initialV7(112));
-    const human = required(state.players[0], "human missing");
-    const enemy = required(state.players[1], "enemy missing");
-    const city = required(
-      state.cities.find((item) => item.ownerId === human.id),
-      "city missing",
-    );
-    const sites = state.board.tiles
-      .filter(
-        (item) =>
-          item.territoryCityId === city.id &&
-          item.site === null &&
-          item.resource === null,
-      )
-      .slice(0, 5);
-    if (sites.length < 5) throw new Error("sites missing");
-    const enemyUnit = required(
-      state.units.find((item) => item.ownerId === enemy.id),
-      "enemy unit missing",
-    );
-    const barracksSite = required(sites[0], "barracks site missing");
-    const firstExtraSite = required(sites[1], "first extra site missing");
-    const secondExtraSite = required(sites[2], "second extra site missing");
-    const thirdExtraSite = required(sites[3], "third extra site missing");
-    const fourthExtraSite = required(sites[4], "fourth extra site missing");
-    const extra1 = freshFighter(
-      state.nextEntityId,
-      human.id,
-      city.id,
-      firstExtraSite.at,
-    );
-    const extra2 = freshFighter(
-      state.nextEntityId + 1,
-      human.id,
-      city.id,
-      secondExtraSite.at,
-    );
-    const extra3 = freshFighter(
-      state.nextEntityId + 2,
-      human.id,
-      city.id,
-      thirdExtraSite.at,
-    );
-    const extra4 = freshFighter(
-      state.nextEntityId + 3,
-      human.id,
-      city.id,
-      fourthExtraSite.at,
-    );
-    state = checkedV7({
-      ...state,
-      nextEntityId: state.nextEntityId + 4,
-      activeSeatIndex: state.turnOrder.indexOf(enemy.id),
-      board: {
-        ...state.board,
-        tiles: state.board.tiles.map((tile) =>
-          tile.at.x === barracksSite.at.x && tile.at.y === barracksSite.at.y
-            ? { ...tile, improvement: "BARRACKS" }
-            : tile,
-        ),
-      },
-      units: [
-        ...state.units.filter((item) => item.id !== enemyUnit.id),
-        { ...enemyUnit, at: barracksSite.at, activation: readyActivation() },
-        extra1,
-        extra2,
-        extra3,
-        extra4,
-      ],
-    });
-    expect(previewCityCapacityV7(state, city.id)).toMatchObject({
-      capacity: 5,
-      assigned: 5,
-    });
-    expect(previewPillageV7(state, enemy.id, enemyUnit.id)).toMatchObject({
-      improvement: "BARRACKS",
-      coinDelta: 1,
-      capacityDelta: -2,
-    });
-    const result = applyCommandV7(state, enemy.id, {
-      kind: "PILLAGE",
-      unitId: enemyUnit.id,
-    });
-    expect(result.accepted).toBe(true);
-    if (!result.accepted) return;
-    expect(previewCityCapacityV7(result.state, city.id)).toMatchObject({
-      capacity: 3,
-      assigned: 5,
-      overCapacity: 2,
-    });
-    expect(
-      result.state.units.filter((item) => item.homeCityId === city.id),
-    ).toHaveLength(5);
-    expect(parseGameStateV7(result.state)).toEqual(result.state);
-  });
-
   it("restores a production marker once when hostile Pillage destroys its improvement", () => {
     let state = exploredAllV7(allTechsV7(initialV7(1_308)));
     const human = required(state.players[0], "human missing");
@@ -265,7 +106,7 @@ describe("ruleset-7 conflict economy and capacity", () => {
     );
     state = replaceTileV7(state, tile.at, {
       terrain: "MOUNTAIN",
-      resource: "ORE",
+      resource: null,
       improvement: null,
     });
     const built = applyCommandV7(state, human.id, {
@@ -302,11 +143,11 @@ describe("ruleset-7 conflict economy and capacity", () => {
     expect(pillaged.events[0]).toMatchObject({
       kind: "IMPROVEMENT_PILLAGED",
       improvement: "MINE",
-      resourceRestored: "ORE",
+      resourceRestored: null,
     });
     expect(
       pillaged.state.board.tiles.find((item) => key(item.at) === key(tile.at)),
-    ).toMatchObject({ improvement: null, resource: "ORE" });
+    ).toMatchObject({ improvement: null, resource: null });
     const reset = checkedV7({
       ...pillaged.state,
       units: pillaged.state.units.map((unit) =>
@@ -325,134 +166,6 @@ describe("ruleset-7 conflict economy and capacity", () => {
       error: { code: "PILLAGE_INVALID_TARGET" },
       events: [],
     });
-  });
-
-  it("cancels ordered capacity reservations immediately after Barracks removal", () => {
-    let state = exploredAllV7(allTechsV7(initialV7(117)));
-    const human = required(state.players[0], "human missing");
-    const enemy = required(state.players[1], "enemy missing");
-    const city = required(
-      state.cities.find((item) => item.ownerId === human.id),
-      "city missing",
-    );
-    const enemyUnit = required(
-      state.units.find((item) => item.ownerId === enemy.id),
-      "enemy unit missing",
-    );
-    const blocked = new Set([
-      ...state.units.map((unit) => `${unit.at.y},${unit.at.x}`),
-      ...state.treasureChests.map((at) => `${at.y},${at.x}`),
-    ]);
-    const sourceTile = state.board.tiles.find(
-      (tile) => tile.site === null && !blocked.has(`${tile.at.y},${tile.at.x}`),
-    );
-    const targetTile =
-      sourceTile === undefined
-        ? undefined
-        : state.board.tiles.find(
-            (tile) =>
-              tile.site === null &&
-              !blocked.has(`${tile.at.y},${tile.at.x}`) &&
-              Math.max(
-                Math.abs(tile.at.x - sourceTile.at.x),
-                Math.abs(tile.at.y - sourceTile.at.y),
-              ) === 1,
-          );
-    const barracksTile = state.board.tiles.find(
-      (tile) =>
-        tile.territoryCityId === city.id &&
-        tile.site === null &&
-        !blocked.has(`${tile.at.y},${tile.at.x}`) &&
-        !(tile.at.x === sourceTile?.at.x && tile.at.y === sourceTile?.at.y) &&
-        !(tile.at.x === targetTile?.at.x && tile.at.y === targetTile?.at.y) &&
-        Math.max(
-          Math.abs(tile.at.x - city.at.x),
-          Math.abs(tile.at.y - city.at.y),
-        ) === 1,
-    );
-    if (
-      sourceTile === undefined ||
-      targetTile === undefined ||
-      barracksTile === undefined
-    )
-      throw new Error("reservation fixture missing");
-    const envoy = {
-      ...freshFighter(state.nextEntityId, human.id, city.id, sourceTile.at),
-      role: "ENVOY" as const,
-      hp: 7,
-      maxHp: 7,
-    };
-    const markId = state.nextEntityId + 1;
-    state = checkedV7({
-      ...state,
-      commandIndex: 1,
-      nextEntityId: markId + 1,
-      players: state.players.map((player) =>
-        player.id === human.id
-          ? {
-              ...player,
-              researchedTechs: player.researchedTechs.filter(
-                (tech) => tech !== "FORTIFICATION" && tech !== "EXPLOSIVES",
-              ),
-            }
-          : player,
-      ),
-      board: {
-        ...state.board,
-        tiles: state.board.tiles.map((tile) =>
-          tile.at.x === barracksTile.at.x && tile.at.y === barracksTile.at.y
-            ? {
-                ...tile,
-                site: null,
-                resource: null,
-                improvement: "BARRACKS",
-              }
-            : tile,
-        ),
-      },
-      units: [
-        ...state.units.filter((unit) => unit.id !== enemyUnit.id),
-        envoy,
-        { ...enemyUnit, at: targetTile.at },
-      ].sort((a, b) => a.id - b.id),
-      defectionMarks: [
-        {
-          id: markId,
-          sourceUnitId: envoy.id,
-          targetUnitId: enemyUnit.id,
-          initiatingPlayerId: human.id,
-          recordedTargetOwnerId: enemy.id,
-          reservedHomeCityId: city.id,
-          offeredAtCommandIndex: 1,
-          phase: "WAITING_FOR_REPLY",
-        },
-      ],
-    });
-    expect(previewCityCapacityV7(state, city.id)).toMatchObject({
-      capacity: 4,
-      assigned: 2,
-      reserved: 1,
-    });
-    const result = applyCommandV7(state, human.id, {
-      kind: "REDEVELOP",
-      at: barracksTile.at,
-    });
-    expect(result.accepted).toBe(true);
-    if (!result.accepted) return;
-    expect(result.events.slice(0, 2)).toEqual([
-      expect.objectContaining({
-        kind: "ECONOMIC_BUILDING_REMOVED",
-        improvement: "BARRACKS",
-        capacityDelta: -2,
-        resourceRestored: null,
-      }),
-      {
-        kind: "DEFECTION_CANCELLED",
-        markId,
-        reason: "CAPACITY_LOST",
-      },
-    ]);
-    expect(result.state.defectionMarks).toEqual([]);
   });
 
   it("refunds floor half cost for trainable Disband and excludes reward units", () => {
@@ -540,7 +253,7 @@ describe("ruleset-7 conflict economy and capacity", () => {
       ),
     });
     expect(previewCityCapacityV7(staged, target.id)).toMatchObject({
-      capacity: 4,
+      capacity: 2,
       assigned: 1,
     });
     const result = applyCommandV7(staged, actor, {
@@ -561,7 +274,7 @@ describe("ruleset-7 conflict economy and capacity", () => {
     );
     expect(result.state.players[0]?.spoilsClaimedCityIds).toContain(target.id);
     expect(previewCityCapacityV7(result.state, target.id)).toMatchObject({
-      capacity: 5,
+      capacity: 3,
       assigned: 1,
     });
 
@@ -677,25 +390,9 @@ function stageHostileCapture(
     ),
     "retreat missing",
   );
-  const barracks = required(
-    state.board.tiles.find(
-      (tile) =>
-        tile.territoryCityId === target.id &&
-        tile.site === null &&
-        !(tile.at.x === retreat.at.x && tile.at.y === retreat.at.y),
-    ),
-    "barracks tile missing",
-  );
   return checkedV7({
     ...state,
-    board: {
-      ...state.board,
-      tiles: state.board.tiles.map((tile) =>
-        tile.at.x === barracks.at.x && tile.at.y === barracks.at.y
-          ? { ...tile, resource: null, improvement: "BARRACKS" }
-          : tile,
-      ),
-    },
+    board: state.board,
     players: state.players.map((player) =>
       player.id === human.id
         ? {
@@ -782,7 +479,6 @@ function readyActivation(): UnitStateV7["activation"] {
     movedPathLength: 0,
     attacked: false,
     attacksUsed: 0,
-    pursuitPhase: "NONE",
     healed: false,
     recovered: false,
     captured: false,

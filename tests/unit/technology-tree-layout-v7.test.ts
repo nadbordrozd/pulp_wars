@@ -4,18 +4,17 @@ import { technologyTreeLayoutV7 } from "../../src/render/dom/technology-tree-lay
 import { initialV7 } from "../fixtures/v7-builders";
 
 describe("Ruleset 7 technology tree layout", () => {
-  it("retains the frozen five branches and two tier-two paths per root", () => {
+  it("lays out four branches and weights Industry for its third leaf", () => {
     const state = initialV7(1515);
     const tree = queryTechnologyTreeV7(viewForV7(state, state.humanPlayerId));
     const layout = technologyTreeLayoutV7(tree.nodes);
     expect(layout.map((root) => root.node.branch)).toEqual([
       "SETTLEMENT",
       "WILDS",
-      "INDUSTRY",
-      "MOBILITY",
-      "WARFARE",
+      "MOBILITY_TRADE",
+      "INDUSTRY_WARFARE",
     ]);
-    expect(layout).toHaveLength(5);
+    expect(layout).toHaveLength(4);
     expect(layout.every((root) => root.children.length === 2)).toBe(true);
     expect(
       layout.flatMap((root) => [
@@ -25,6 +24,12 @@ describe("Ruleset 7 technology tree layout", () => {
           ...child.children.map((grandchild) => grandchild.node.id),
         ]),
       ]),
-    ).toHaveLength(25);
+    ).toHaveLength(21);
+    expect(layout.map((root) => root.leafCount)).toEqual([2, 2, 2, 3]);
+    const industry = layout[3];
+    expect(industry?.children.map((child) => child.leafCount)).toEqual([1, 2]);
+    expect(
+      industry?.children[1]?.children.map((child) => child.node.id),
+    ).toEqual(["METALLURGY", "GRAND_WORKS"]);
   });
 });

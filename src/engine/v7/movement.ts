@@ -24,13 +24,12 @@ export type MovementFailureReasonV7 =
   | "NOT_ADJACENT"
   | "OUT_OF_BOUNDS"
   | "OCCUPIED"
-  | "SURVEYING_REQUIRED"
+  | "ENGINEERING_REQUIRED"
   | "UNEXPLORED_INTERMEDIATE"
   | "MOUNTAIN_STOPS_MOVE"
   | "FOREST_STOPS_MOVE"
   | "ZOC_STOPS_MOVE"
-  | "ALLY_TERRITORY_FORBIDDEN"
-  | "TREASURE_FORBIDDEN";
+  | "ALLY_TERRITORY_FORBIDDEN";
 
 export type MovementPathResultV7 =
   | {
@@ -43,7 +42,7 @@ export type MovementPathResultV7 =
       readonly revealed: readonly CoordV7[];
       readonly interruption: {
         readonly at: CoordV7;
-        readonly reason: "OCCUPIED" | "SURVEYING_REQUIRED" | "ZOC";
+        readonly reason: "OCCUPIED" | "ENGINEERING_REQUIRED" | "ZOC";
       } | null;
     }
   | { readonly legal: false; readonly reason: MovementFailureReasonV7 };
@@ -54,20 +53,17 @@ export interface ReachablePathV7 {
   readonly spentPoints2: number;
 }
 
-/** Validates ordinary movement or the deliberately undiscounted Pursue step. */
+/** Validates ordinary movement. */
 export function validateMovementPathV7(
   state: GameStateV7,
   unit: UnitStateV7,
   path: readonly CoordV7[],
-  mode: "MOVE" | "PURSUE" = "MOVE",
 ): MovementPathResultV7 {
   if (path.length === 0) return { legal: false, reason: "EMPTY_PATH" };
   const player = requirePlayer(state, unit.ownerId);
   const rule = effectiveRoleRuleV7(unit.role);
   const capabilities = technologyCapabilitiesV7(player.researchedTechs);
-  const budget2 = mode === "PURSUE" ? 4 : rule.move * 2;
-  if (mode === "PURSUE" && path.length > 2)
-    return { legal: false, reason: "BUDGET_EXCEEDED" };
+  const budget2 = rule.move * 2;
   const connectedRoads = capitalConnectedRoadKeysV7(state, player.id);
   let explored = player.explored;
   const revealed: CoordV7[] = [];
@@ -82,18 +78,10 @@ export function validateMovementPathV7(
       return { legal: false, reason: "NOT_ADJACENT" };
     const tile = tileAtV7(state.board, step);
     if (tile === undefined) return { legal: false, reason: "OUT_OF_BOUNDS" };
-    if (
-      mode === "PURSUE" &&
-      state.treasureChests.some((chest) => same(chest, step))
-    )
-      return { legal: false, reason: "TREASURE_FORBIDDEN" };
     const wasExplored = contains(explored, step);
-    spentPoints2 +=
-      mode === "PURSUE"
-        ? 2
-        : wasExplored
-          ? movementStepCost2V7(state, player, current, step, connectedRoads)
-          : 2;
+    spentPoints2 += wasExplored
+      ? movementStepCost2V7(state, player, current, step, connectedRoads)
+      : 2;
     if (spentPoints2 > budget2)
       return { legal: false, reason: "BUDGET_EXCEEDED" };
     const owner = tileOwner(state, tile);
@@ -106,16 +94,16 @@ export function validateMovementPathV7(
         same(candidate.at, step),
     );
     const occupied = occupant !== undefined;
-    const surveyingRequired =
+    const engineeringRequired =
       tile.terrain === "MOUNTAIN" && !capabilities.mountainMovement;
-    if (occupied || surveyingRequired) {
+    if (occupied || engineeringRequired) {
       const occupantVisible =
         occupant !== undefined &&
         isUnitVisibleToPlayerV7(state, player.id, occupant);
-      if (occupantVisible || (surveyingRequired && wasExplored))
+      if (occupantVisible || (engineeringRequired && wasExplored))
         return {
           legal: false,
-          reason: occupied ? "OCCUPIED" : "SURVEYING_REQUIRED",
+          reason: occupied ? "OCCUPIED" : "ENGINEERING_REQUIRED",
         };
       return {
         legal: true,
@@ -127,22 +115,20 @@ export function validateMovementPathV7(
         revealed: unique(revealed),
         interruption: {
           at: step,
-          reason: occupied ? "OCCUPIED" : "SURVEYING_REQUIRED",
+          reason: occupied ? "OCCUPIED" : "ENGINEERING_REQUIRED",
         },
       };
     }
     const ignoresForest = capabilities.forestMovementFreedomRoles.includes(
       unit.role,
     );
-    const ignoresZoc = capabilities.ignoreHostileZocRoles.includes(unit.role);
     const beforeReveal = explored;
     const sightRadius = unitSightRadiusAtV7(state, unit, tile);
     const sight = revealRadius(state, explored, step, sightRadius);
     explored = sight.explored;
     revealed.push(...sight.revealed);
     const observationState = withUnitAtForObservationV7(state, unit.id, step);
-    const entersZoc =
-      !ignoresZoc && inHostileZoc(observationState, player.id, step, explored);
+    const entersZoc = inHostileZoc(observationState, player.id, step, explored);
     const newlyRevealedZoc =
       entersZoc && !inHostileZoc(state, player.id, step, beforeReveal);
     const terrainStops =
@@ -201,7 +187,6 @@ export function validateMovementPathV7(
 export function reachableMovementPathsV7(
   state: GameStateV7,
   unit: UnitStateV7,
-  mode: "MOVE" | "PURSUE" = "MOVE",
 ): readonly ReachablePathV7[] {
   const player = state.players.find(
     (candidate) => candidate.id === unit.ownerId,
@@ -216,7 +201,7 @@ export function reachableMovementPathsV7(
     const current = path.at(-1) ?? unit.at;
     for (const destination of adjacent(state, current)) {
       const candidate = [...path, destination];
-      const validation = validateMovementPathV7(state, unit, candidate, mode);
+      const validation = validateMovementPathV7(state, unit, candidate);
       if (
         !validation.legal ||
         validation.traversedPath.length !== candidate.length
@@ -243,7 +228,6 @@ export function reachableMovementPathsV7(
 export function reachablePlayerMovementPathsV7(
   view: PlayerViewV7,
   unit: PublicUnitV7,
-  mode: "MOVE" | "PURSUE" = "MOVE",
 ): readonly ReachablePathV7[] {
   const context = publicMovementContextV7(view);
   const queue: CoordV7[][] = [[]];
@@ -259,7 +243,6 @@ export function reachablePlayerMovementPathsV7(
         view,
         unit,
         candidate,
-        mode,
         context,
       );
       if (
@@ -288,13 +271,11 @@ export function validatePlayerMovementPathV7(
   view: PlayerViewV7,
   unit: PublicUnitV7,
   path: readonly CoordV7[],
-  mode: "MOVE" | "PURSUE" = "MOVE",
 ): MovementPathResultV7 {
   return validatePlayerMovementPathWithContextV7(
     view,
     unit,
     path,
-    mode,
     publicMovementContextV7(view),
   );
 }
@@ -303,7 +284,6 @@ interface PublicMovementContextV7 {
   readonly capabilities: ReturnType<typeof technologyCapabilitiesV7>;
   readonly connectedRoads: ReadonlySet<string>;
   readonly ownedCityKeys: ReadonlySet<string>;
-  readonly treasureKeys: ReadonlySet<string>;
 }
 
 const PUBLIC_MOVEMENT_CONTEXTS_V7 = new WeakMap<
@@ -322,7 +302,6 @@ function publicMovementContextV7(view: PlayerViewV7): PublicMovementContextV7 {
         .filter((city) => city.ownerId === view.viewer.id)
         .map((city) => key(city.at)),
     ),
-    treasureKeys: new Set(view.treasureChests.map(key)),
   };
   PUBLIC_MOVEMENT_CONTEXTS_V7.set(view, context);
   return context;
@@ -332,15 +311,12 @@ function validatePlayerMovementPathWithContextV7(
   view: PlayerViewV7,
   unit: PublicUnitV7,
   path: readonly CoordV7[],
-  mode: "MOVE" | "PURSUE",
   context: PublicMovementContextV7,
 ): MovementPathResultV7 {
   if (path.length === 0) return { legal: false, reason: "EMPTY_PATH" };
   const role = effectiveRoleRuleV7(unit.role);
   const capabilities = context.capabilities;
-  const budget2 = mode === "PURSUE" ? 4 : role.move * 2;
-  if (mode === "PURSUE" && path.length > 2)
-    return { legal: false, reason: "BUDGET_EXCEEDED" };
+  const budget2 = role.move * 2;
   let current = unit.at;
   let spentPoints2 = 0;
   const traversedPath: CoordV7[] = [];
@@ -351,10 +327,7 @@ function validatePlayerMovementPathWithContextV7(
       return { legal: false, reason: "NOT_ADJACENT" };
     const tile = publicTileAt(view, step);
     if (tile === undefined) return { legal: false, reason: "OUT_OF_BOUNDS" };
-    if (mode === "PURSUE" && context.treasureKeys.has(key(step)))
-      return { legal: false, reason: "TREASURE_FORBIDDEN" };
-    spentPoints2 +=
-      mode === "PURSUE" ? 2 : publicStepCost2(view, current, tile, context);
+    spentPoints2 += publicStepCost2(view, current, tile, context);
     if (spentPoints2 > budget2)
       return { legal: false, reason: "BUDGET_EXCEEDED" };
     if (tile.explored === false && tile.diplomaticBlock === "ALLIED_TERRITORY")
@@ -379,12 +352,11 @@ function validatePlayerMovementPathWithContextV7(
       tile.terrain === "MOUNTAIN" &&
       !capabilities.mountainMovement
     )
-      return { legal: false, reason: "SURVEYING_REQUIRED" };
+      return { legal: false, reason: "ENGINEERING_REQUIRED" };
     const ignoresForest = capabilities.forestMovementFreedomRoles.includes(
       unit.role,
     );
-    const ignoresZoc = capabilities.ignoreHostileZocRoles.includes(unit.role);
-    const entersZoc = !ignoresZoc && publicHostileZoc(view, unit.ownerId, step);
+    const entersZoc = publicHostileZoc(view, unit.ownerId, step);
     const terrainStops =
       tile.explored &&
       (tile.terrain === "MOUNTAIN" ||

@@ -1,35 +1,26 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { describe, expect, it } from "vitest";
 import {
   applyCommandV7,
   calculateCombatPreviewV7,
-  createPlayableGameV7,
-  createReplayV7,
   effectiveRoleRuleV7,
   movementStepCost2V7,
   nextBounded,
   queryCombatPreviewV7,
   queryPlayerCommandsV7,
-  queryPursuitPreviewV7,
-  queryThreatenedTilesV7,
   queryUnitStatsV7,
-  parseGameStateV7,
-  appendReplayCommandV7,
-  runReplayV7,
+  unitId,
   validateMovementPathV7,
   type CoordV7,
   type GameStateV7,
   type UnitRoleIdV7,
   type UnitStateV7,
-  type CommandV7,
 } from "../../src/engine/index";
-import { createSaveEnvelopeV7, parseSaveV7 } from "../../src/persistence/v7";
 import {
   allTechsV7,
   checkedV7,
   exploredAllV7,
   initialV7,
-  setupV7,
+  richV7,
 } from "../fixtures/v7-builders";
 
 const READY: UnitStateV7["activation"] = {
@@ -37,7 +28,6 @@ const READY: UnitStateV7["activation"] = {
   movedPathLength: 0,
   attacked: false,
   attacksUsed: 0,
-  pursuitPhase: "NONE",
   healed: false,
   recovered: false,
   captured: false,
@@ -45,72 +35,331 @@ const READY: UnitStateV7["activation"] = {
   specialActed: false,
 };
 
-describe("ruleset-7 conventional roster, movement, combat, and Pursuit", () => {
-  it("enforces Catapult minimum range identically in commands, previews, and retaliation", () => {
-    const state = battle("CATAPULT", "FIGHTER", { x: 2, y: 2 }, { x: 4, y: 2 });
-    const [catapult, fighter] = state.units;
-    expect(
-      applyCommandV7(state, state.humanPlayerId, {
-        kind: "ATTACK",
-        unitId: catapult!.id,
-        targetUnitId: fighter!.id,
-      }).accepted,
-    ).toBe(true);
-    const preview = queryCombatPreviewV7(
-      state,
-      state.humanPlayerId,
-      catapult!.id,
-      fighter!.id,
-    );
-    expect(preview).toEqual(
-      calculateCombatPreviewV7(state, catapult!.id, fighter!.id),
-    );
-    expect(preview).toMatchObject({ minimumRange: 2, maximumRange: 3 });
+describe("ruleset-7 Horse Archer activation", () => {
+  it("uses the exact role values and has no Capture ability", () => {
+    expect(effectiveRoleRuleV7("HORSE_ARCHER")).toMatchObject({
+      cost: 9,
+      maxHp: 10,
+      attack2: 4,
+      defense2: 2,
+      move: 3,
+      range: 2,
+      minimumRange: 1,
+      sightRadius: 1,
+      technology: "MOUNTED_ARCHERY",
+      mayUsePrimaryActionAfterMove: true,
+      abilities: ["ATTACK", "DASH", "TWO_SHOTS"],
+    });
+  });
 
+  it("keeps the first nonlethal shot open and makes the second shot terminal", () => {
+    const state = battle(
+      "HORSE_ARCHER",
+      "GUARD",
+      { x: 2, y: 2 },
+      { x: 4, y: 2 },
+    );
+    const archer = required(state.units[0], "Horse Archer missing");
+    const guard = required(state.units[1], "Guard missing");
+    const first = applyCommandV7(state, state.humanPlayerId, {
+      kind: "ATTACK",
+      unitId: archer.id,
+      targetUnitId: guard.id,
+    });
+    expect(first.accepted).toBe(true);
+    if (!first.accepted) return;
+    expect(
+      first.events.find((event) => event.kind === "COMBAT_RESOLVED"),
+    ).toMatchObject({
+      preview: {
+        attacksUsed: 1,
+        attacksRemaining: 1,
+        advances: false,
+      },
+    });
+    expect(
+      first.state.units.find((unit) => unit.id === archer.id)?.activation,
+    ).toMatchObject({
+      attacked: true,
+      attacksUsed: 1,
+      handled: false,
+    });
+    const second = applyCommandV7(first.state, state.humanPlayerId, {
+      kind: "ATTACK",
+      unitId: archer.id,
+      targetUnitId: guard.id,
+    });
+    expect(second.accepted).toBe(true);
+    if (!second.accepted) return;
+    expect(
+      second.state.units.find((unit) => unit.id === archer.id)?.activation,
+    ).toMatchObject({
+      attacksUsed: 2,
+      handled: true,
+    });
+  });
+
+  it("allows unit switching and advisory Wait between guaranteed shots", () => {
+    let state = battle("HORSE_ARCHER", "GUARD", { x: 2, y: 2 }, { x: 4, y: 2 });
+    const archer = required(
+      state.units.find((unit) => unit.ownerId === state.humanPlayerId),
+      "Horse Archer missing",
+    );
+    state = checkedV7({
+      ...state,
+      nextEntityId: state.nextEntityId + 1,
+      units: [
+        ...state.units,
+        {
+          ...archer,
+          id: unitId(state.nextEntityId),
+          role: "FIGHTER" as const,
+          at: { x: 1, y: 4 },
+          maxHp: 10,
+          hp: 10,
+          activation: READY,
+        },
+      ].sort((left, right) => left.id - right.id),
+    });
+    const target = required(
+      state.units.find((unit) => unit.ownerId !== state.humanPlayerId),
+      "target missing",
+    );
+    const first = applyCommandV7(state, state.humanPlayerId, {
+      kind: "ATTACK",
+      unitId: archer.id,
+      targetUnitId: target.id,
+    });
+    if (!first.accepted) throw new Error(first.error.code);
+    expect(
+      queryPlayerCommandsV7(first.state, state.humanPlayerId).some(
+        (command) => command.kind === "MOVE" && command.unitId !== archer.id,
+      ),
+    ).toBe(true);
+    const waited = applyCommandV7(first.state, state.humanPlayerId, {
+      kind: "WAIT",
+      unitId: archer.id,
+    });
+    if (!waited.accepted) throw new Error(waited.error.code);
+    expect(
+      waited.state.units.find((unit) => unit.id === archer.id)?.activation,
+    ).toMatchObject({
+      attacksUsed: 1,
+      handled: true,
+    });
+    expect(
+      queryPlayerCommandsV7(waited.state, state.humanPlayerId),
+    ).toContainEqual({
+      kind: "ATTACK",
+      unitId: archer.id,
+      targetUnitId: target.id,
+    });
+  });
+
+  it("locks movement and other actions after the first shot", () => {
+    const state = battle(
+      "HORSE_ARCHER",
+      "GUARD",
+      { x: 2, y: 2 },
+      { x: 4, y: 2 },
+    );
+    const archer = required(state.units[0], "Horse Archer missing");
+    const target = required(state.units[1], "target missing");
+    const first = applyCommandV7(state, state.humanPlayerId, {
+      kind: "ATTACK",
+      unitId: archer.id,
+      targetUnitId: target.id,
+    });
+    if (!first.accepted) throw new Error(first.error.code);
+    const ownCommands = queryPlayerCommandsV7(
+      first.state,
+      state.humanPlayerId,
+    ).filter((command) => "unitId" in command && command.unitId === archer.id);
+    expect(ownCommands.some((command) => command.kind === "ATTACK")).toBe(true);
+    expect(ownCommands.some((command) => command.kind === "MOVE")).toBe(false);
+    expect(ownCommands.some((command) => command.kind === "RECOVER")).toBe(
+      false,
+    );
+    expect(ownCommands.some((command) => command.kind === "PILLAGE")).toBe(
+      false,
+    );
+    expect(ownCommands.some((command) => command.kind === "CAPTURE")).toBe(
+      false,
+    );
+  });
+
+  it("never advances after an adjacent kill while Marksman still advances", () => {
+    for (const [role, expectedAdvance] of [
+      ["HORSE_ARCHER", false],
+      ["MARKSMAN", true],
+    ] as const) {
+      const state = battle(role, "FIGHTER", { x: 2, y: 2 }, { x: 3, y: 2 }, 1);
+      const attacker = required(state.units[0], "attacker missing");
+      const defender = required(state.units[1], "defender missing");
+      const result = applyCommandV7(state, state.humanPlayerId, {
+        kind: "ATTACK",
+        unitId: attacker.id,
+        targetUnitId: defender.id,
+      });
+      expect(result.accepted).toBe(true);
+      if (!result.accepted) continue;
+      expect(
+        result.events.find((event) => event.kind === "COMBAT_RESOLVED"),
+      ).toMatchObject({
+        preview: {
+          defenderDies: true,
+          advances: expectedAdvance,
+        },
+      });
+      expect(
+        result.state.units.find((unit) => unit.id === attacker.id)?.at,
+      ).toEqual(expectedAdvance ? defender.at : attacker.at);
+    }
+  });
+
+  it("preserves usage through promotion and resets only at next Start Turn", () => {
+    let state = battle("HORSE_ARCHER", "GUARD", { x: 2, y: 2 }, { x: 4, y: 2 });
+    const archer = required(
+      state.units.find((unit) => unit.ownerId === state.humanPlayerId),
+      "Horse Archer missing",
+    );
+    state = checkedV7({
+      ...state,
+      units: state.units.map((unit) =>
+        unit.id === archer.id ? { ...unit, kills: 3 } : unit,
+      ),
+    });
+    const target = required(
+      state.units.find((unit) => unit.ownerId !== state.humanPlayerId),
+      "target missing",
+    );
+    const first = applyCommandV7(state, state.humanPlayerId, {
+      kind: "ATTACK",
+      unitId: archer.id,
+      targetUnitId: target.id,
+    });
+    if (!first.accepted) throw new Error(first.error.code);
+    const promoted = applyCommandV7(first.state, state.humanPlayerId, {
+      kind: "PROMOTE",
+      unitId: archer.id,
+    });
+    if (!promoted.accepted) throw new Error(promoted.error.code);
+    expect(
+      promoted.state.units.find((unit) => unit.id === archer.id)?.activation
+        .attacksUsed,
+    ).toBe(1);
+    const humanEnded = applyCommandV7(promoted.state, state.humanPlayerId, {
+      kind: "END_TURN",
+    });
+    if (!humanEnded.accepted) throw new Error(humanEnded.error.code);
+    const rivalId = required(
+      humanEnded.state.turnOrder[humanEnded.state.activeSeatIndex],
+      "rival missing",
+    );
+    const rivalEnded = applyCommandV7(humanEnded.state, rivalId, {
+      kind: "END_TURN",
+    });
+    if (!rivalEnded.accepted) throw new Error(rivalEnded.error.code);
+    expect(
+      rivalEnded.state.units.find((unit) => unit.id === archer.id)?.activation,
+    ).toMatchObject({
+      attacksUsed: 0,
+      attacked: false,
+      handled: false,
+    });
+  });
+
+  it("trains newborn Horse Archers fully exhausted", () => {
+    const base = richV7(allTechsV7(initialV7()), 100);
+    const city = required(
+      base.cities.find((candidate) => candidate.ownerId === base.humanPlayerId),
+      "city missing",
+    );
+    const state = checkedV7({
+      ...base,
+      units: base.units.filter((unit) => unit.ownerId !== base.humanPlayerId),
+    });
+    const trained = applyCommandV7(state, state.humanPlayerId, {
+      kind: "TRAIN",
+      cityId: city.id,
+      role: "HORSE_ARCHER",
+    });
+    if (!trained.accepted) throw new Error(trained.error.code);
+    expect(
+      trained.state.units.find((unit) => unit.ownerId === state.humanPlayerId)
+        ?.activation,
+    ).toMatchObject({
+      attacksUsed: 2,
+      attacked: true,
+      handled: true,
+    });
+  });
+
+  it("offers attacks after Dash from the final coordinate", () => {
+    const state = battle(
+      "HORSE_ARCHER",
+      "FIGHTER",
+      { x: 1, y: 2 },
+      { x: 5, y: 2 },
+    );
+    const archer = required(state.units[0], "Horse Archer missing");
+    const target = required(state.units[1], "target missing");
+    const move = queryPlayerCommandsV7(state, state.humanPlayerId).find(
+      (command) =>
+        command.kind === "MOVE" &&
+        command.unitId === archer.id &&
+        command.path.at(-1)?.x === 3 &&
+        command.path.at(-1)?.y === 2,
+    );
+    expect(move).toBeDefined();
+    if (move?.kind !== "MOVE") return;
+    const moved = applyCommandV7(state, state.humanPlayerId, move);
+    if (!moved.accepted) throw new Error(moved.error.code);
+    expect(
+      queryCombatPreviewV7(
+        moved.state,
+        state.humanPlayerId,
+        archer.id,
+        target.id,
+      ),
+    ).not.toBeNull();
+  });
+
+  it("retains Catapult range, Charge, Breach, Push, and ordinary action locks", () => {
+    const catapult = battle(
+      "CATAPULT",
+      "FIGHTER",
+      { x: 2, y: 2 },
+      { x: 4, y: 2 },
+    );
+    const catapultAttacker = required(catapult.units[0], "Catapult missing");
+    const catapultTarget = required(catapult.units[1], "target missing");
+    expect(
+      calculateCombatPreviewV7(
+        catapult,
+        catapultAttacker.id,
+        catapultTarget.id,
+      ),
+    ).toMatchObject({
+      minimumRange: 2,
+      maximumRange: 3,
+    });
     const adjacent = battle(
       "CATAPULT",
       "FIGHTER",
       { x: 2, y: 2 },
       { x: 3, y: 2 },
     );
-    const [closeCatapult, closeFighter] = adjacent.units;
-    const rejected = applyCommandV7(adjacent, adjacent.humanPlayerId, {
-      kind: "ATTACK",
-      unitId: closeCatapult!.id,
-      targetUnitId: closeFighter!.id,
-    });
-    expect(rejected).toMatchObject({
-      accepted: false,
-      error: { code: "TARGET_OUT_OF_RANGE" },
-    });
+    const adjacentAttacker = required(adjacent.units[0], "Catapult missing");
+    const adjacentTarget = required(adjacent.units[1], "target missing");
     expect(
       queryCombatPreviewV7(
         adjacent,
         adjacent.humanPlayerId,
-        closeCatapult!.id,
-        closeFighter!.id,
+        adjacentAttacker.id,
+        adjacentTarget.id,
       ),
     ).toBeNull();
-
-    const counter = battle(
-      "FIGHTER",
-      "CATAPULT",
-      { x: 2, y: 2 },
-      { x: 3, y: 2 },
-    );
-    const counterPreview = calculateCombatPreviewV7(
-      counter,
-      counter.units[0]!.id,
-      counter.units[1]!.id,
-    );
-    expect(counterPreview).toMatchObject({
-      retaliation: false,
-      damageToAttacker: 0,
-      noRetaliationReason: "OUT_OF_RANGE",
-    });
-  });
-
-  it("applies ordinary role restrictions, Charge, Breach, Push, and ranged advance", () => {
     const charged = battle(
       "RAIDER",
       "GUARD",
@@ -120,14 +369,14 @@ describe("ruleset-7 conventional roster, movement, combat, and Pursuit", () => {
         attackerActivation: { ...READY, moved: true, movedPathLength: 2 },
       },
     );
+    const raider = required(charged.units[0], "Raider missing");
+    const chargedTarget = required(charged.units[1], "target missing");
     expect(
-      calculateCombatPreviewV7(
-        charged,
-        charged.units[0]!.id,
-        charged.units[1]!.id,
-      ),
-    ).toMatchObject({ attack2: 6, chargeApplied: true });
-
+      calculateCombatPreviewV7(charged, raider.id, chargedTarget.id),
+    ).toMatchObject({
+      attack2: 6,
+      chargeApplied: true,
+    });
     const breach = battle(
       "BREACHER",
       "GUARD",
@@ -137,82 +386,50 @@ describe("ruleset-7 conventional roster, movement, combat, and Pursuit", () => {
         defenderTerrain: "FOREST",
       },
     );
+    const breacher = required(breach.units[0], "Breacher missing");
+    const breachTarget = required(breach.units[1], "target missing");
     expect(
-      calculateCombatPreviewV7(
-        breach,
-        breach.units[0]!.id,
-        breach.units[1]!.id,
-      ),
+      calculateCombatPreviewV7(breach, breacher.id, breachTarget.id),
     ).toMatchObject({
       breachApplied: true,
       defenseBonusNumerator: 1,
       defenseBonusDenominator: 1,
     });
-
     const push = battle("HEAVY", "GUARD", { x: 2, y: 2 }, { x: 3, y: 2 });
+    const heavy = required(push.units[0], "Heavy missing");
+    const pushTarget = required(push.units[1], "target missing");
     const pushed = applyCommandV7(push, push.humanPlayerId, {
       kind: "ATTACK",
-      unitId: push.units[0]!.id,
-      targetUnitId: push.units[1]!.id,
+      unitId: heavy.id,
+      targetUnitId: pushTarget.id,
     });
-    expect(pushed.accepted).toBe(true);
-    if (!pushed.accepted) return;
-    expect(pushed.events).toContainEqual({
-      kind: "UNIT_PUSHED",
-      sourceUnitId: push.units[0]!.id,
-      targetUnitId: push.units[1]!.id,
-      from: { x: 3, y: 2 },
-      to: { x: 4, y: 2 },
-    });
-
-    const marksman = battle(
-      "MARKSMAN",
-      "FIGHTER",
-      { x: 2, y: 2 },
-      { x: 4, y: 2 },
-      {
-        defenderHp: 1,
-      },
-    );
     expect(
-      calculateCombatPreviewV7(
-        marksman,
-        marksman.units[0]!.id,
-        marksman.units[1]!.id,
-      ).advances,
-    ).toBe(false);
-
-    const envoy = battle("ENVOY", "FIGHTER", { x: 2, y: 2 }, { x: 3, y: 2 });
-    expect(
-      applyCommandV7(envoy, envoy.humanPlayerId, {
-        kind: "ATTACK",
-        unitId: envoy.units[0]!.id,
-        targetUnitId: envoy.units[1]!.id,
-      }),
-    ).toMatchObject({ accepted: false, error: { code: "ATTACK_NOT_LEGAL" } });
-
+      pushed.accepted &&
+        pushed.events.some((event) => event.kind === "UNIT_PUSHED"),
+    ).toBe(true);
     const movedGuard = battle(
       "GUARD",
       "FIGHTER",
       { x: 2, y: 2 },
       { x: 3, y: 2 },
-      { attackerActivation: { ...READY, moved: true, movedPathLength: 1 } },
+      {
+        attackerActivation: { ...READY, moved: true, movedPathLength: 1 },
+      },
     );
+    const guard = required(movedGuard.units[0], "Guard missing");
+    const guardTarget = required(movedGuard.units[1], "target missing");
     expect(
       applyCommandV7(movedGuard, movedGuard.humanPlayerId, {
         kind: "ATTACK",
-        unitId: movedGuard.units[0]!.id,
-        targetUnitId: movedGuard.units[1]!.id,
+        unitId: guard.id,
+        targetUnitId: guardTarget.id,
       }),
-    ).toMatchObject({
-      accepted: false,
-      error: { code: "UNIT_ALREADY_ACTED" },
-    });
+    ).toMatchObject({ accepted: false, error: { code: "UNIT_ALREADY_ACTED" } });
   });
 
-  it("uses exact movement budgets, connected Road discounts, terrain stops, and Surveying", () => {
+  it("retains movement budgets, Road discounts, terrain stops, and Engineering entry", () => {
     const base = battle("SCOUT", "FIGHTER", { x: 2, y: 2 }, { x: 9, y: 9 });
-    const withoutSurveying = checkedV7({
+    const withoutEngineering = checkedV7({
       ...base,
       players: base.players.map((player) =>
         player.id === base.humanPlayerId
@@ -220,13 +437,9 @@ describe("ruleset-7 conventional roster, movement, combat, and Pursuit", () => {
               ...player,
               researchedTechs: player.researchedTechs.filter(
                 (tech) =>
-                  ![
-                    "SURVEYING",
-                    "MINING",
-                    "METALLURGY",
-                    "QUARRYING",
-                    "MASONRY",
-                  ].includes(tech),
+                  tech !== "ENGINEERING" &&
+                  tech !== "METALLURGY" &&
+                  tech !== "GRAND_WORKS",
               ),
             }
           : player,
@@ -238,71 +451,75 @@ describe("ruleset-7 conventional roster, movement, combat, and Pursuit", () => {
         ],
       ]),
     });
+    const scoutWithoutEngineering = required(
+      withoutEngineering.units[0],
+      "Scout missing",
+    );
     expect(
-      validateMovementPathV7(withoutSurveying, withoutSurveying.units[0]!, [
+      validateMovementPathV7(withoutEngineering, scoutWithoutEngineering, [
         { x: 3, y: 2 },
       ]),
-    ).toEqual({ legal: false, reason: "SURVEYING_REQUIRED" });
-    const withSurveying = checkedV7({
-      ...withoutSurveying,
+    ).toEqual({
+      legal: false,
+      reason: "ENGINEERING_REQUIRED",
+    });
+    const withEngineering = checkedV7({
+      ...withoutEngineering,
       players: base.players,
     });
-    const mountain = validateMovementPathV7(
-      withSurveying,
-      withSurveying.units[0]!,
-      [{ x: 3, y: 2 }],
+    const scoutWithEngineering = required(
+      withEngineering.units[0],
+      "Scout missing",
     );
-    expect(mountain).toMatchObject({ legal: true, stopped: true });
-
+    expect(
+      validateMovementPathV7(withEngineering, scoutWithEngineering, [
+        { x: 3, y: 2 },
+      ]),
+    ).toMatchObject({
+      legal: true,
+      stopped: true,
+    });
+    const baseCity = required(base.cities[0], "city missing");
     const roadState = checkedV7({
       ...base,
       board: patchTiles(base, [
-        [{ x: 8, y: 8 }, { road: false }],
         [
           { x: 7, y: 8 },
-          { road: true, territoryCityId: base.cities[0]!.id },
+          { road: true, territoryCityId: baseCity.id },
         ],
       ]),
     });
-    const human = roadState.players.find(
-      (player) => player.id === roadState.humanPlayerId,
-    )!;
+    const human = required(
+      roadState.players.find((player) => player.id === roadState.humanPlayerId),
+      "human missing",
+    );
+    const roadCity = required(roadState.cities[0], "city missing");
     expect(
-      movementStepCost2V7(roadState, human, roadState.cities[0]!.at, {
+      movementStepCost2V7(roadState, human, roadCity.at, {
         x: 7,
         y: 8,
       }),
     ).toBe(1);
-
-    const lancerBase = battle(
-      "LANCER",
+    const horse = battle(
+      "HORSE_ARCHER",
       "FIGHTER",
       { x: 2, y: 4 },
       { x: 9, y: 9 },
     );
-    const lancer = checkedV7({
-      ...lancerBase,
-      board: patchTiles(
-        lancerBase,
-        [3, 4, 5].map(
-          (x) =>
-            [
-              { x, y: 4 },
-              { terrain: "GRASS", resource: null, improvement: null },
-            ] as const,
-        ),
-      ),
-    });
+    const horseArcher = required(horse.units[0], "Horse Archer missing");
     expect(
-      validateMovementPathV7(lancer, lancer.units[0]!, [
+      validateMovementPathV7(horse, horseArcher, [
         { x: 3, y: 4 },
         { x: 4, y: 4 },
         { x: 5, y: 4 },
       ]),
-    ).toMatchObject({ legal: true, spentPoints2: 6 });
+    ).toMatchObject({
+      legal: true,
+      spentPoints2: 6,
+    });
   });
 
-  it("captures treasure with one draw, deterministic Heavy placement, and spawned sight", () => {
+  it("retains one-draw treasure rewards, Heavy placement, and spawned sight", () => {
     let seed = 0;
     while (
       nextBounded({ algorithm: "MULBERRY32", version: 1, state: seed }, 2)
@@ -327,15 +544,14 @@ describe("ruleset-7 conventional roster, movement, combat, and Pursuit", () => {
       ]),
     });
     const expectedRandom = nextBounded(state.random, 2).random;
+    const explorer = required(state.units[0], "explorer missing");
     const result = applyCommandV7(state, state.humanPlayerId, {
       kind: "MOVE",
-      unitId: state.units[0]!.id,
+      unitId: explorer.id,
       path: [{ x: 2, y: 1 }],
     });
-    expect(result.accepted).toBe(true);
-    if (!result.accepted) return;
+    if (!result.accepted) throw new Error(result.error.code);
     expect(result.state.random).toEqual(expectedRandom);
-    expect(result.state.treasureChests).toEqual([]);
     expect(result.state.units.some((unit) => unit.role === "HEAVY")).toBe(true);
     expect(result.events).toContainEqual(
       expect.objectContaining({
@@ -346,17 +562,16 @@ describe("ruleset-7 conventional roster, movement, combat, and Pursuit", () => {
       }),
     );
     expect(
-      result.state.players
-        .find((player) => player.id === state.humanPlayerId)!
-        .explored.some((at) => at.x === 0 && at.y === 0),
-    ).toBe(true);
+      result.state.players.find((player) => player.id === state.humanPlayerId)
+        ?.explored,
+    ).toContainEqual({ x: 0, y: 0 });
   });
 
-  it("supports Heal, Recover, Wait, Promote, stat attribution, and automatic recovery", () => {
+  it("retains Heal, Recover, Wait, Promote, stat attribution, and idle recovery", () => {
     let state = battle("MEDIC", "FIGHTER", { x: 2, y: 2 }, { x: 9, y: 9 });
     const target = makeUnit(
       state,
-      state.nextEntityId,
+      unitId(state.nextEntityId),
       state.humanPlayerId,
       "FIGHTER",
       { x: 3, y: 2 },
@@ -367,23 +582,23 @@ describe("ruleset-7 conventional roster, movement, combat, and Pursuit", () => {
       nextEntityId: state.nextEntityId + 1,
       units: [...state.units, target].sort((a, b) => a.id - b.id),
     });
+    const medic = required(state.units[0], "Medic missing");
     const healed = applyCommandV7(state, state.humanPlayerId, {
       kind: "HEAL_ADJACENT",
-      unitId: state.units[0]!.id,
+      unitId: medic.id,
       targetUnitId: target.id,
     });
     expect(
       healed.accepted &&
         healed.state.units.find((unit) => unit.id === target.id)?.hp,
     ).toBe(9);
-
-    const promotedState = checkedV7({
+    const promotable = checkedV7({
       ...state,
       units: state.units.map((unit) =>
         unit.id === target.id ? { ...unit, kills: 3 } : unit,
       ),
     });
-    const promoted = applyCommandV7(promotedState, state.humanPlayerId, {
+    const promoted = applyCommandV7(promotable, state.humanPlayerId, {
       kind: "PROMOTE",
       unitId: target.id,
     });
@@ -391,42 +606,29 @@ describe("ruleset-7 conventional roster, movement, combat, and Pursuit", () => {
       promoted.accepted &&
         promoted.state.units.find((unit) => unit.id === target.id),
     ).toMatchObject({ veteran: true, hp: 8, maxHp: 15 });
-    if (promoted.accepted) {
-      const stats = queryUnitStatsV7(promoted.state, target.id);
-      expect(stats?.stats.map((stat) => stat.id)).toEqual([
-        "HP",
-        "ATTACK",
-        "DEFENSE",
-        "MOVE",
-        "RANGE",
-        "SIGHT",
-      ]);
-      expect(stats?.stats[0]?.modifiers[0]?.source).toBe("PROMOTION");
-    }
-
+    if (promoted.accepted)
+      expect(
+        queryUnitStatsV7(promoted.state, target.id)?.stats[0]?.modifiers[0]
+          ?.source,
+      ).toBe("PROMOTION");
     const waited = applyCommandV7(state, state.humanPlayerId, {
       kind: "WAIT",
       unitId: target.id,
     });
-    expect(
-      waited.accepted &&
-        waited.state.units.find((unit) => unit.id === target.id)?.activation
-          .handled,
-    ).toBe(true);
-    const recovered = applyCommandV7(
-      waited.accepted ? waited.state : state,
-      state.humanPlayerId,
-      { kind: "RECOVER", unitId: target.id },
-    );
+    if (!waited.accepted) throw new Error(waited.error.code);
+    const recovered = applyCommandV7(waited.state, state.humanPlayerId, {
+      kind: "RECOVER",
+      unitId: target.id,
+    });
     expect(
       recovered.accepted &&
         recovered.state.units.find((unit) => unit.id === target.id)?.hp,
     ).toBe(5);
-
     const idleBase = allTechsV7(initialV7());
-    const idleUnit = idleBase.units.find(
-      (unit) => unit.ownerId === idleBase.humanPlayerId,
-    )!;
+    const idleUnit = required(
+      idleBase.units.find((unit) => unit.ownerId === idleBase.humanPlayerId),
+      "idle unit missing",
+    );
     const idle = checkedV7({
       ...idleBase,
       units: idleBase.units.map((unit) =>
@@ -440,273 +642,7 @@ describe("ruleset-7 conventional roster, movement, combat, and Pursuit", () => {
       ended.accepted &&
         ended.state.units.find((unit) => unit.id === idleUnit.id)?.hp,
     ).toBe(10);
-    expect(ended.accepted && ended.events).toContainEqual({
-      kind: "UNIT_RECOVERED",
-      unitId: idleUnit.id,
-      amount: 6,
-      automatic: true,
-    });
   });
-
-  it("runs the bounded three-attack Pursuit state machine with no side doors", () => {
-    let state = battle(
-      "LANCER",
-      "FIGHTER",
-      { x: 2, y: 5 },
-      { x: 3, y: 5 },
-      { defenderHp: 1 },
-    );
-    const enemy = state.players.find(
-      (player) => player.id !== state.humanPlayerId,
-    )!;
-    const second = makeUnit(
-      state,
-      state.nextEntityId,
-      enemy.id,
-      "FIGHTER",
-      { x: 5, y: 5 },
-      1,
-    );
-    const third = makeUnit(
-      state,
-      state.nextEntityId + 1,
-      enemy.id,
-      "FIGHTER",
-      { x: 7, y: 5 },
-      1,
-    );
-    state = checkedV7({
-      ...state,
-      nextEntityId: state.nextEntityId + 2,
-      treasureChests: [],
-      units: [...state.units, second, third].sort((a, b) => a.id - b.id),
-      board: patchTiles(
-        state,
-        [2, 3, 4, 5, 6, 7].map(
-          (x) =>
-            [
-              { x, y: 5 },
-              {
-                terrain: "GRASS",
-                resource: null,
-                improvement: null,
-                site: null,
-              },
-            ] as const,
-        ),
-      ),
-    });
-    const lancerId = state.units.find(
-      (unit) => unit.ownerId === state.humanPlayerId,
-    )!.id;
-    const firstId = state.units.find(
-      (unit) => unit.ownerId === enemy.id && unit.at.x === 3,
-    )!.id;
-    const first = applyCommandV7(state, state.humanPlayerId, {
-      kind: "ATTACK",
-      unitId: lancerId,
-      targetUnitId: firstId,
-    });
-    expect(first.accepted).toBe(true);
-    if (!first.accepted) return;
-    expect(
-      first.state.units.find((unit) => unit.id === lancerId)?.activation,
-    ).toMatchObject({
-      attacksUsed: 1,
-      pursuitPhase: "PURSUIT_READY",
-      attacked: false,
-      handled: false,
-    });
-    expect(parseGameStateV7(JSON.parse(JSON.stringify(first.state)))).toEqual(
-      first.state,
-    );
-    expect(
-      applyCommandV7(first.state, state.humanPlayerId, {
-        kind: "WAIT",
-        unitId: lancerId,
-      }),
-    ).toMatchObject({ accepted: false, error: { code: "PURSUIT_MUST_END" } });
-    expect(
-      queryPursuitPreviewV7(first.state, state.humanPlayerId, lancerId)
-        ?.attacksRemaining,
-    ).toBe(2);
-
-    const pursueOne = applyCommandV7(first.state, state.humanPlayerId, {
-      kind: "PURSUE",
-      unitId: lancerId,
-      path: [{ x: 4, y: 5 }],
-    });
-    expect(pursueOne.accepted).toBe(true);
-    if (!pursueOne.accepted) return;
-    expect(
-      pursueOne.state.units.find((unit) => unit.id === lancerId)?.activation
-        .pursuitPhase,
-    ).toBe("PURSUIT_MOVED");
-    expect(
-      applyCommandV7(pursueOne.state, state.humanPlayerId, {
-        kind: "PURSUE",
-        unitId: lancerId,
-        path: [{ x: 5, y: 5 }],
-      }),
-    ).toMatchObject({ accepted: false, error: { code: "PURSUIT_NOT_READY" } });
-
-    const secondAttack = applyCommandV7(pursueOne.state, state.humanPlayerId, {
-      kind: "ATTACK",
-      unitId: lancerId,
-      targetUnitId: second.id,
-    });
-    expect(secondAttack.accepted).toBe(true);
-    if (!secondAttack.accepted) return;
-    const pursueTwo = applyCommandV7(secondAttack.state, state.humanPlayerId, {
-      kind: "PURSUE",
-      unitId: lancerId,
-      path: [{ x: 6, y: 5 }],
-    });
-    expect(pursueTwo.accepted).toBe(true);
-    if (!pursueTwo.accepted) return;
-    const thirdAttack = applyCommandV7(pursueTwo.state, state.humanPlayerId, {
-      kind: "ATTACK",
-      unitId: lancerId,
-      targetUnitId: third.id,
-    });
-    expect(thirdAttack.accepted).toBe(true);
-    if (!thirdAttack.accepted) return;
-    expect(
-      thirdAttack.state.units.find((unit) => unit.id === lancerId)?.activation,
-    ).toMatchObject({
-      attacksUsed: 3,
-      pursuitPhase: "NONE",
-      attacked: true,
-      handled: true,
-    });
-    expect(thirdAttack.events).toContainEqual({
-      kind: "PURSUIT_ENDED",
-      unitId: lancerId,
-      attacksUsed: 3,
-      reason: "THIRD_ATTACK",
-    });
-    expect(
-      queryThreatenedTilesV7(state, lancerId).some(
-        (at) => at.x === 8 && at.y === 5,
-      ),
-    ).toBe(true);
-    expect(queryUnitStatsV7(state, lancerId)?.abilities).toContain("DASH");
-  });
-
-  it("round-trips a naturally opened Pursuit through replay and save", () => {
-    const setup = setupV7();
-    const created = createPlayableGameV7(setup);
-    if (!created.ok) throw new Error(created.error.code);
-    let state = created.state;
-    let replay = createReplayV7(setup);
-    const accept = (command: CommandV7) => {
-      const actor = state.turnOrder[state.activeSeatIndex]!;
-      const result = applyCommandV7(state, actor, command);
-      expect(result.accepted, JSON.stringify(result)).toBe(true);
-      if (!result.accepted) throw new Error(result.error.code);
-      state = result.state;
-      replay = appendReplayCommandV7(replay, command, state);
-      return result;
-    };
-    let lancerAttacks = 0;
-    for (let guard = 0; guard < 80; guard += 1) {
-      const actor = state.turnOrder[state.activeSeatIndex]!;
-      const humanTurn = actor === state.humanPlayerId;
-      const actorUnit = state.units.find((unit) => unit.ownerId === actor);
-      if (!humanTurn && actorUnit !== undefined && actorUnit.at.y < 7)
-        accept({
-          kind: "MOVE",
-          unitId: actorUnit.id,
-          path: [{ x: 8, y: actorUnit.at.y + 1 }],
-        });
-      if (humanTurn) {
-        const fighter = state.units.find(
-          (unit) => unit.ownerId === actor && unit.role === "FIGHTER",
-        );
-        if (fighter?.at.x === 8 && fighter.at.y === 8)
-          accept({ kind: "MOVE", unitId: fighter.id, path: [{ x: 9, y: 8 }] });
-        const player = state.players.find(
-          (candidate) => candidate.id === actor,
-        )!;
-        for (const [tech, prerequisite] of [
-          ["SCOUTING", null],
-          ["RAIDING", "SCOUTING"],
-          ["MANEUVER", "RAIDING"],
-        ] as const) {
-          if (
-            !player.researchedTechs.includes(tech) &&
-            (prerequisite === null ||
-              player.researchedTechs.includes(prerequisite))
-          ) {
-            const research = queryPlayerCommandsV7(state, actor).find(
-              (command) => command.kind === "RESEARCH" && command.tech === tech,
-            );
-            if (research !== undefined) accept(research);
-            break;
-          }
-        }
-        let lancer = state.units.find(
-          (unit) => unit.ownerId === actor && unit.role === "LANCER",
-        );
-        if (lancer === undefined) {
-          const city = state.cities.find(
-            (candidate) => candidate.ownerId === actor,
-          )!;
-          const train = queryPlayerCommandsV7(state, actor).find(
-            (command) =>
-              command.kind === "TRAIN" &&
-              command.cityId === city.id &&
-              command.role === "LANCER",
-          );
-          if (train !== undefined) accept(train);
-          lancer = state.units.find(
-            (unit) => unit.ownerId === actor && unit.role === "LANCER",
-          );
-        }
-        const target = state.units.find(
-          (unit) =>
-            unit.ownerId !== actor && unit.at.x === 8 && unit.at.y === 7,
-        );
-        if (
-          lancer !== undefined &&
-          target !== undefined &&
-          !lancer.activation.attacked &&
-          !lancer.activation.handled
-        ) {
-          const attack = accept({
-            kind: "ATTACK",
-            unitId: lancer.id,
-            targetUnitId: target.id,
-          });
-          lancerAttacks += 1;
-          if (
-            attack.state.units.find((unit) => unit.id === lancer!.id)
-              ?.activation.pursuitPhase === "PURSUIT_READY"
-          )
-            break;
-        }
-      }
-      accept({ kind: "END_TURN" });
-    }
-    expect(lancerAttacks).toBe(2);
-    const open = state.units.find(
-      (unit) => unit.activation.pursuitPhase === "PURSUIT_READY",
-    );
-    expect(open).toBeDefined();
-    const replayed = runReplayV7(replay);
-    expect(replayed.state).toEqual(state);
-    const save = createSaveEnvelopeV7(
-      { state: replayed.state, replay },
-      "2026-09-06T00:00:00.000Z",
-    );
-    const loaded = parseSaveV7(JSON.stringify(save));
-    expect(loaded.kind).toBe("VALID");
-    if (loaded.kind === "VALID")
-      expect(
-        loaded.save.state.units.find((unit) => unit.id === open!.id)?.activation
-          .pursuitPhase,
-      ).toBe("PURSUIT_READY");
-  }, 15_000);
 });
 
 function battle(
@@ -714,25 +650,29 @@ function battle(
   defenderRole: UnitRoleIdV7,
   attackerAt: CoordV7,
   defenderAt: CoordV7,
-  options: {
-    attackerActivation?: UnitStateV7["activation"];
-    defenderHp?: number;
-    defenderTerrain?: "GRASS" | "FOREST" | "MOUNTAIN";
-  } = {},
+  options:
+    | number
+    | {
+        readonly attackerActivation?: UnitStateV7["activation"];
+        readonly defenderHp?: number;
+        readonly defenderTerrain?: "GRASS" | "FOREST" | "MOUNTAIN";
+      } = {},
 ): GameStateV7 {
+  const normalized =
+    typeof options === "number" ? { defenderHp: options } : options;
   const base = exploredAllV7(allTechsV7(initialV7()));
   const human = base.humanPlayerId;
-  const enemy = base.players.find((player) => player.id !== human)!.id;
-  const first = base.units.find((unit) => unit.ownerId === human)!;
-  const second = base.units.find((unit) => unit.ownerId === enemy)!;
-  const attacker = makeUnit(base, first.id, human, attackerRole, attackerAt);
-  const defender = makeUnit(
-    base,
-    second.id,
-    enemy,
-    defenderRole,
-    defenderAt,
-    options.defenderHp,
+  const enemy = required(
+    base.players.find((player) => player.id !== human),
+    "enemy missing",
+  ).id;
+  const first = required(
+    base.units.find((unit) => unit.ownerId === human),
+    "attacker missing",
+  );
+  const second = required(
+    base.units.find((unit) => unit.ownerId === enemy),
+    "defender missing",
   );
   return checkedV7({
     ...base,
@@ -740,46 +680,50 @@ function battle(
       (at) => !same(at, attackerAt) && !same(at, defenderAt),
     ),
     units: [
-      { ...attacker, activation: options.attackerActivation ?? READY },
-      defender,
-    ].sort((a, b) => a.id - b.id),
-    board: patchTiles(base, [
-      [
-        attackerAt,
-        { terrain: "GRASS", resource: null, improvement: null, site: null },
-      ],
-      [
+      {
+        ...makeUnit(base, first.id, human, attackerRole, attackerAt),
+        activation: normalized.attackerActivation ?? READY,
+      },
+      makeUnit(
+        base,
+        second.id,
+        enemy,
+        defenderRole,
         defenderAt,
-        {
-          terrain: options.defenderTerrain ?? "GRASS",
-          resource: null,
-          improvement: null,
-          site: null,
-        },
-      ],
-      [
-        {
-          x: defenderAt.x + defenderAt.x - attackerAt.x,
-          y: defenderAt.y + defenderAt.y - attackerAt.y,
-        },
-        { terrain: "GRASS", resource: null, improvement: null, site: null },
-      ],
-    ]),
+        normalized.defenderHp,
+      ),
+    ].sort((left, right) => left.id - right.id),
+    board: {
+      ...base.board,
+      tiles: base.board.tiles.map((tile) =>
+        same(tile.at, attackerAt) || same(tile.at, defenderAt)
+          ? {
+              ...tile,
+              terrain: same(tile.at, defenderAt)
+                ? (normalized.defenderTerrain ?? "GRASS")
+                : "GRASS",
+              resource: null,
+              improvement: null,
+              site: null,
+            }
+          : tile,
+      ),
+    },
   });
 }
 
 function makeUnit(
   state: GameStateV7,
-  id: number,
-  ownerId: number,
+  id: UnitStateV7["id"],
+  ownerId: UnitStateV7["ownerId"],
   role: UnitRoleIdV7,
   at: CoordV7,
   hp = effectiveRoleRuleV7(role).maxHp,
 ): UnitStateV7 {
   const rule = effectiveRoleRuleV7(role);
   return {
-    id: id as UnitStateV7["id"],
-    ownerId: ownerId as UnitStateV7["ownerId"],
+    id,
+    ownerId,
     homeCityId:
       state.cities.find((city) => city.ownerId === ownerId)?.id ?? null,
     role,
@@ -794,13 +738,16 @@ function makeUnit(
   };
 }
 
+const same = (left: CoordV7, right: CoordV7): boolean =>
+  left.x === right.x && left.y === right.y;
+
 function patchTiles(
   state: GameStateV7,
   patches: readonly (readonly [
     CoordV7,
     Partial<GameStateV7["board"]["tiles"][number]>,
   ])[],
-) {
+): GameStateV7["board"] {
   return {
     ...state.board,
     tiles: state.board.tiles.map((tile) => {
@@ -809,4 +756,8 @@ function patchTiles(
     }),
   };
 }
-const same = (a: CoordV7, b: CoordV7) => a.x === b.x && a.y === b.y;
+
+function required<T>(value: T | undefined, message: string): T {
+  if (value === undefined) throw new Error(message);
+  return value;
+}

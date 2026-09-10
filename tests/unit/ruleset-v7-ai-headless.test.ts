@@ -46,7 +46,6 @@ const READY: UnitStateV7["activation"] = {
   movedPathLength: 0,
   attacked: false,
   attacksUsed: 0,
-  pursuitPhase: "NONE",
   healed: false,
   recovered: false,
   captured: false,
@@ -54,7 +53,7 @@ const READY: UnitStateV7["activation"] = {
   specialActed: false,
 };
 
-describe("ruleset-7 revision-2 AI headless runner", () => {
+describe("ruleset-7 revision-3 AI headless runner", () => {
   it("retains the v7 safety caps and imports no presentation layer", () => {
     expect(V7_MATCH_MAX_COMMANDS_DEFAULT).toBe(30_000);
     expect(V7_MATCH_MAX_ROUNDS_DEFAULT).toBe(750);
@@ -67,9 +66,9 @@ describe("ruleset-7 revision-2 AI headless runner", () => {
 
   it("publishes complete zero-filled command, event, tech, role, and improvement inventories", () => {
     const metrics = collectAcceptedTelemetryV7(initialV7(0), [], []);
-    expect(TECHNOLOGY_IDS_V7).toHaveLength(25);
-    expect(UNIT_ROLE_IDS_V7).toHaveLength(13);
-    expect(IMPROVEMENT_IDS_V7).toHaveLength(13);
+    expect(TECHNOLOGY_IDS_V7).toHaveLength(21);
+    expect(UNIT_ROLE_IDS_V7).toHaveLength(12);
+    expect(IMPROVEMENT_IDS_V7).toHaveLength(10);
     expect(Object.keys(metrics.commandsByKind)).toEqual(COMMAND_KIND_ORDER_V7);
     expect(Object.keys(metrics.eventsByKind)).toEqual(
       DOMAIN_EVENT_KIND_ORDER_V7,
@@ -86,7 +85,6 @@ describe("ruleset-7 revision-2 AI headless runner", () => {
       metrics.roles.trainingCoins,
       metrics.roles.survivors,
       metrics.roles.survivalPerCoin,
-      metrics.defection.convertedRoles,
     ])
       expect(Object.keys(inventory)).toEqual(UNIT_ROLE_IDS_V7);
     for (const inventory of [
@@ -132,7 +130,7 @@ describe("ruleset-7 revision-2 AI headless runner", () => {
       errors: [],
       stalls: [],
       metrics: {
-        rulesetId: "pulp-wars-poc-7r2",
+        rulesetId: "pulp-wars-poc-7r3",
         commandCapHits: 1,
       },
     });
@@ -146,8 +144,8 @@ describe("ruleset-7 revision-2 AI headless runner", () => {
     ]);
     expect(first.commandLog.map((entry) => entry.command.kind)).toEqual([
       "RESEARCH",
+      "HARVEST_FRUIT",
       "MOVE",
-      "END_TURN",
     ]);
     expect(
       canonicalJson({
@@ -339,7 +337,7 @@ describe("ruleset-7 revision-2 AI headless runner", () => {
     expect(
       collectAcceptedTelemetryV7(fixture.state, [], transitions).economy
         .coinsEarned,
-    ).toBe(blocked ? 24 : 12);
+    ).toBe(12);
   });
 
   it("counts explicit and automatic recovery between Catapult volleys", () => {
@@ -413,12 +411,14 @@ describe("ruleset-7 revision-2 AI headless runner", () => {
     ).toBe(recoveries.reduce((total, event) => total + event.amount, 0));
   });
 
-  it("counts one Pursuit activation once and attributes retaliation to defender role", () => {
+  it("counts both Horse Archer shots and attributes retaliation to defender role", () => {
     const initial = combatTelemetryState();
     const transitions: AcceptedTelemetryTransitionV7[] = [];
     let state = initial;
-    const lancer = state.units.find((unit) => unit.role === "LANCER");
-    const victim = state.units.find(
+    const horseArcher = state.units.find(
+      (unit) => unit.role === "HORSE_ARCHER",
+    );
+    const victims = state.units.filter(
       (unit) => unit.ownerId !== state.humanPlayerId && unit.role === "FIGHTER",
     );
     const fighter = state.units.find(
@@ -426,8 +426,8 @@ describe("ruleset-7 revision-2 AI headless runner", () => {
     );
     const guard = state.units.find((unit) => unit.role === "GUARD");
     if (
-      lancer === undefined ||
-      victim === undefined ||
+      horseArcher === undefined ||
+      victims.length !== 2 ||
       fighter === undefined ||
       guard === undefined
     )
@@ -435,13 +435,21 @@ describe("ruleset-7 revision-2 AI headless runner", () => {
     state = accept(
       state,
       state.humanPlayerId,
-      { kind: "ATTACK", unitId: lancer.id, targetUnitId: victim.id },
+      {
+        kind: "ATTACK",
+        unitId: horseArcher.id,
+        targetUnitId: victims[0]?.id as UnitStateV7["id"],
+      },
       transitions,
     );
     state = accept(
       state,
       state.humanPlayerId,
-      { kind: "END_PURSUIT", unitId: lancer.id },
+      {
+        kind: "ATTACK",
+        unitId: horseArcher.id,
+        targetUnitId: victims[1]?.id as UnitStateV7["id"],
+      },
       transitions,
     );
     const beforeRetaliation = viewForV7(state, state.humanPlayerId);
@@ -459,14 +467,17 @@ describe("ruleset-7 revision-2 AI headless runner", () => {
       transitions,
     );
     const metrics = collectAcceptedTelemetryV7(initial, [], transitions);
-    expect(metrics.pursuit).toMatchObject({
+    expect(metrics.horseArcher).toMatchObject({
       activations: 1,
-      attacks: 1,
-      kills: 1,
-      paths: 0,
+      shots: 2,
+      firstShots: 1,
+      secondShots: 1,
+      splitFireChoices: 1,
+      advanceViolations: 0,
+      shotsPerActivation: { "2": 1 },
     });
     expect(metrics.roles.damage.GUARD).toBe(preview.damageToAttacker);
-    expect(metrics.roles.kills.LANCER).toBe(1);
+    expect(metrics.roles.kills.HORSE_ARCHER).toBe(1);
     expect(metrics.roles.losses.FIGHTER).toBe(1);
   });
 
@@ -551,8 +562,9 @@ function combatTelemetryState(): GameStateV7 {
   const enemy = base.players.find((player) => player.id !== base.humanPlayerId);
   if (enemy === undefined) throw new Error("Enemy missing");
   const specs = [
-    ["LANCER", { x: 2, y: 5 }, base.humanPlayerId, 12],
+    ["HORSE_ARCHER", { x: 2, y: 5 }, base.humanPlayerId, 10],
     ["FIGHTER", { x: 3, y: 5 }, enemy.id, 1],
+    ["FIGHTER", { x: 4, y: 5 }, enemy.id, 10],
     ["FIGHTER", { x: 5, y: 5 }, base.humanPlayerId, 10],
     ["GUARD", { x: 6, y: 5 }, enemy.id, 15],
   ] as const;
@@ -750,7 +762,7 @@ function treasuryRewardState(blocked: boolean): {
     [key(mineAt), "MINE" as const],
   ]);
   const contributionSpecs = [
-    [windmillAt, "WINDMILL", 3],
+    [windmillAt, "WINDMILL", 1],
     [farmAt, "FARM", 2],
     [forgeAt, "FORGE", 3],
     [mineAt, "MINE", 4],
@@ -804,8 +816,8 @@ function treasuryRewardState(blocked: boolean): {
               ...candidate,
               level: 4,
               permanentPopulation: 0,
-              economicPopulation: 12,
-              population: 3,
+              economicPopulation: 10,
+              population: 1,
               expanded: true,
               rewards: [
                 { reachedLevel: 2, reward: "STOCKPILE" as const },

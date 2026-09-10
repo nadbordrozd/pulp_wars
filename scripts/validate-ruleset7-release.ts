@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { format } from "prettier";
 import {
   IMPROVEMENT_IDS_V7,
+  RULESET_7_ID,
   REWARD_IDS_V7,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
@@ -23,6 +24,7 @@ import { browserReleaseRuntimeFingerprintV7 } from "./ruleset7-browser-release-f
 import {
   REQUIRED_RELEASE_EVIDENCE_PATHS_V7,
   RELEASE_FIXTURES_V7,
+  assertRuleset7ReleaseArchiveRuntime,
   fixtureExecutionKey,
   validateCompleteNormalMatrixEvidenceV7,
   validateRuleset7ReleaseCorpus,
@@ -44,6 +46,8 @@ const frozenV6CorpusPath = path.join(
   "docs/validation/RULESET_6_RELEASE_CORPUS.json",
 );
 const write = process.argv.includes("--write");
+
+assertRuleset7ReleaseArchiveRuntime(RULESET_7_ID);
 
 const passedFixtureTests = runFixtureTests();
 const corpus = buildCorpus();

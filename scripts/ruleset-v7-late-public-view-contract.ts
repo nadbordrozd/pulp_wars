@@ -1,0 +1,6 @@
+export const RULESET7_LATE_PUBLIC_VIEW_FIXTURE_PATH =
+  "tests/fixtures/ruleset-v7-late-public-view.json";
+
+export const RULESET7_LATE_PUBLIC_VIEW_FIXTURE_URL = `/${RULESET7_LATE_PUBLIC_VIEW_FIXTURE_PATH}`;
+
+export const RULESET7_LATE_PUBLIC_VIEW_COMMAND_INDEX = 150;

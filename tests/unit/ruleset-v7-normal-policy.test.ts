@@ -5,7 +5,6 @@ import {
   chooseNormalCommandV7,
   chooseNormalCommandYieldingV7,
   chooseNormalTurnCommandV7,
-  countVisibleDefectionRepliesV7,
   normalTurnClosureSlotsV7,
   projectPublicUnitForPolicyV7,
   scoreCommandV7,
@@ -39,7 +38,6 @@ const READY: UnitStateV7["activation"] = {
   movedPathLength: 0,
   attacked: false,
   attacksUsed: 0,
-  pursuitPhase: "NONE",
   healed: false,
   recovered: false,
   captured: false,
@@ -47,7 +45,7 @@ const READY: UnitStateV7["activation"] = {
   specialActed: false,
 };
 
-describe("ruleset-7 revision-2 Normal public policy", () => {
+describe("ruleset-7 revision-3 Normal public policy", () => {
   it("keeps authority, reducer, map generation, and PRNG out of policy imports", () => {
     const source = readFileSync("src/ai/v7.ts", "utf8");
     const imports = [...source.matchAll(/from\s+["']([^"']+)["']/g)].map(
@@ -78,7 +76,7 @@ describe("ruleset-7 revision-2 Normal public policy", () => {
     const view = viewForV7(state, state.humanPlayerId);
     const decision = chooseNormalCommandV7(view);
     expect(queryPlayerCommandsV7(view)).toContainEqual({ kind: "END_TURN" });
-    expect(decision.command).toEqual({ kind: "RESEARCH", tech: "HUNTING" });
+    expect(decision.command).toEqual({ kind: "RESEARCH", tech: "DRILL" });
     expect(decision.candidates[0]?.score.priority).toBe(1160);
     expect(
       decision.candidates.some(({ command }) => command.kind === "WAIT"),
@@ -117,7 +115,7 @@ describe("ruleset-7 revision-2 Normal public policy", () => {
             ? {
                 ...tile,
                 terrain: tile.terrain === "MOUNTAIN" ? "GRASS" : "MOUNTAIN",
-                resource: tile.resource === "ORE" ? "STONE" : "ORE",
+                resource: tile.resource === "FRUIT" ? "GAME" : "FRUIT",
               }
             : tile,
         ),
@@ -131,73 +129,56 @@ describe("ruleset-7 revision-2 Normal public policy", () => {
     );
   });
 
-  it("selects the public Pursue, second kill, Pursue, and third kill chain", () => {
-    let state = pursuitLine();
-    const lancerId = ownUnit(state, "LANCER").id;
-    const chooseAndApply = (kind: CommandV7["kind"], minimumNodes = 0) => {
-      const decision = chooseNormalCommandV7(
-        viewForV7(state, state.humanPlayerId),
-      );
-      expect(decision.command?.kind).toBe(kind);
-      expect(decision.pursuitNodesSearched).toBeGreaterThan(minimumNodes);
-      if (decision.command === null) throw new Error("Pursuit command missing");
-      const applied = applyCommandV7(
-        state,
-        state.humanPlayerId,
-        decision.command,
-      );
-      if (!applied.accepted) throw new Error(applied.error.code);
-      state = applied.state;
-      return decision.command;
-    };
-
-    expect(chooseAndApply("PURSUE", 3)).toMatchObject({ unitId: lancerId });
-    chooseAndApply("ATTACK");
-    chooseAndApply("PURSUE");
-    chooseAndApply("ATTACK");
-    expect(
-      state.units.find((unit) => unit.id === lancerId)?.activation,
-    ).toMatchObject({ attacksUsed: 3, pursuitPhase: "NONE", attacked: true });
-    expect(
-      state.units.filter((unit) => unit.ownerId !== state.humanPlayerId),
-    ).toHaveLength(0);
-  });
-
-  it("ends Pursuit when no complete public sequence improves value", () => {
-    const state = openPursuitWithoutTarget();
-    const lancer = ownUnit(state, "LANCER");
-    expect(
-      chooseNormalCommandV7(viewForV7(state, state.humanPlayerId)).command,
-    ).toEqual({ kind: "END_PURSUIT", unitId: lancer.id });
-  });
-
-  it("uses terminal Pursuit safety before the deterministic target tie-break", () => {
-    const state = thirdAttackSafetyPursuit();
+  it("scores both stationary Horse Archer shots with standalone parity", () => {
+    const state = horseArcherLine();
     const view = viewForV7(state, state.humanPlayerId);
     const decision = chooseNormalCommandV7(view);
-    const attacks = decision.candidates.filter(
-      (
-        candidate,
-      ): candidate is typeof candidate & {
-        command: Extract<CommandV7, { kind: "ATTACK" }>;
-      } => candidate.command.kind === "ATTACK",
+    const attack = decision.candidates.find(
+      (candidate) => candidate.command.kind === "ATTACK",
     );
-    expect(attacks).toHaveLength(2);
-    const byTargetX = new Map(
-      attacks.map((candidate) => [
-        view.units.find((unit) => unit.id === candidate.command.targetUnitId)
-          ?.at.x,
-        candidate,
-      ]),
+    if (attack === undefined) throw new Error("Horse Archer attack missing");
+    expect(scoreCommandV7(view, attack.command)).toEqual(attack.score);
+    if (attack.command.kind !== "ATTACK")
+      throw new Error("Horse Archer attack malformed");
+    const preview = queryCombatPreviewV7(
+      view,
+      attack.command.unitId,
+      attack.command.targetUnitId,
     );
-    expect(byTargetX.get(4)?.score.safetyValue).toBeLessThan(
-      byTargetX.get(6)?.score.safetyValue ?? Number.NEGATIVE_INFINITY,
+    expect(preview).not.toBeNull();
+    expect(attack.score.immediateValue).toBeGreaterThan(
+      10 * (preview?.damageToDefender ?? 0) -
+        8 * (preview?.damageToAttacker ?? 0),
     );
-    expect(decision.command).toEqual(byTargetX.get(6)?.command);
   });
 
-  it("yields inside a dense Pursuit tree without changing the frozen result", async () => {
-    const state = densePursuit();
+  it("values two-shot attacks from a legal post-Move firing coordinate", () => {
+    const state = horseArcherMoveLine();
+    const view = viewForV7(state, state.humanPlayerId);
+    const horseArcher = ownUnit(state, "HORSE_ARCHER");
+    const move = required(
+      queryPlayerCommandsV7(view).find(
+        (command) =>
+          command.kind === "MOVE" &&
+          command.unitId === horseArcher.id &&
+          same(command.path.at(-1) ?? { x: -1, y: -1 }, { x: 3, y: 5 }),
+      ),
+      "Horse Archer firing-position Move missing",
+    );
+    const decision = chooseNormalCommandV7(view);
+    const candidate = required(
+      decision.candidates.find(
+        (entry) => canonicalJson(entry.command) === canonicalJson(move),
+      ),
+      "Horse Archer Move score missing",
+    );
+    expect(scoreCommandV7(view, move)).toEqual(candidate.score);
+    expect(candidate.score.immediateValue).toBeGreaterThan(0);
+    expect(candidate.score.safetyValue).toBeLessThanOrEqual(0);
+  });
+
+  it("yields inside a dense Horse Archer search without changing the frozen result", async () => {
+    const state = denseHorseArcher();
     const view = viewForV7(state, state.humanPlayerId);
     const sync = chooseNormalCommandV7(view);
     let clock = 0;
@@ -209,14 +190,55 @@ describe("ruleset-7 revision-2 Normal public policy", () => {
       },
       () => (clock += 9),
     );
-    expect(sync.pursuitNodesSearched).toBeGreaterThan(20);
-    expect(hostYields).toBeGreaterThan(5);
+    expect(hostYields).toBeGreaterThan(1);
     expect(yielded.command).toEqual(sync.command);
     expect(yielded.candidates).toEqual(sync.candidates);
 
     clock = 0;
     const work = new NormalPolicyWorkV7(view, () => (clock += 9));
     expect(work.runSlice(8)).toBeNull();
+  });
+
+  it("preserves a fortified hostile defender's published stats for the second shot", () => {
+    const state = fortifiedHorseArcherTarget();
+    const view = viewForV7(state, state.humanPlayerId);
+    const horseArcher = ownUnit(state, "HORSE_ARCHER");
+    const target = state.units.find(
+      (unit) => unit.ownerId !== state.humanPlayerId && unit.role === "FIGHTER",
+    );
+    if (target === undefined) throw new Error("Fortified target missing");
+    const command = {
+      kind: "ATTACK" as const,
+      unitId: horseArcher.id,
+      targetUnitId: target.id,
+    };
+    const first = queryCombatPreviewV7(
+      view,
+      command.unitId,
+      command.targetUnitId,
+    );
+    if (first === null) throw new Error("First attack preview missing");
+    const applied = applyCommandV7(state, state.humanPlayerId, command);
+    if (!applied.accepted) throw new Error(applied.error.code);
+    const afterFirst = viewForV7(applied.state, state.humanPlayerId);
+    const second = queryCombatPreviewV7(
+      afterFirst,
+      command.unitId,
+      command.targetUnitId,
+    );
+    if (second === null) throw new Error("Second attack preview missing");
+    const publishedDefense = view.unitStats
+      .find((entry) => entry.unitId === target.id)
+      ?.stats.find((stat) => stat.id === "DEFENSE");
+    expect(publishedDefense?.total).toEqual({ numerator: 4, denominator: 1 });
+    expect(scoreCommandV7(view, command).immediateValue).toBe(
+      10 * (first.damageToDefender + second.damageToDefender) -
+        8 * (first.damageToAttacker + second.damageToAttacker) +
+        20 * Number(first.defenderDies) +
+        20 * Number(second.defenderDies) -
+        16 * Number(first.attackerDies) -
+        16 * Number(second.attackerDies),
+    );
   });
 
   it("prepares the retained late public view incrementally with exact sync parity", () => {
@@ -240,13 +262,13 @@ describe("ruleset-7 revision-2 Normal public policy", () => {
       slices += 1;
     }
     const sync = chooseNormalCommandV7(structuredClone(source));
-    expect(slices).toBeGreaterThan(25_000);
+    expect(slices).toBeGreaterThan(5_000);
     expect(sliced.command).toEqual({
-      kind: "BUILD_LUMBER_CAMP",
-      at: { x: 12, y: 14 },
+      kind: "BUILD_FORGE",
+      at: { x: 9, y: 8 },
     });
     expect(canonicalHash(sliced)).toBe(
-      "e3a9cb0f00b414c0220e01ff57b0d6cec3e5cd762f6c2cfeb83ab00d349a5e95",
+      "c5d38ea77c2efa7b859191f3e3449082e75f0753273308e1192535742b9d1f82",
     );
     expect(canonicalHash(sync)).toBe(canonicalHash(sliced));
     expect(sync).toEqual(sliced);
@@ -355,9 +377,9 @@ describe("ruleset-7 revision-2 Normal public policy", () => {
     );
   });
 
-  it("prices a visible Lancer corridor and recognizes a durable screen", () => {
+  it("prices a visible Raider corridor and recognizes a durable screen", () => {
     const exposed = fixtureState([
-      ["LANCER", { x: 3, y: 5 }, false, 10],
+      ["RAIDER", { x: 3, y: 5 }, false, 10],
       ["MARKSMAN", { x: 7, y: 5 }, true, 10],
     ]);
     const marksman = ownUnit(exposed, "MARKSMAN");
@@ -371,7 +393,7 @@ describe("ruleset-7 revision-2 Normal public policy", () => {
       move,
     ).safetyValue;
     const screened = fixtureState([
-      ["LANCER", { x: 3, y: 5 }, false, 10],
+      ["RAIDER", { x: 3, y: 5 }, false, 10],
       ["GUARD", { x: 5, y: 5 }, true, 15],
       ["MARKSMAN", { x: 7, y: 5 }, true, 10],
     ]);
@@ -425,52 +447,6 @@ describe("ruleset-7 revision-2 Normal public policy", () => {
         .map((candidate) => candidate.command.role);
     expect(trainedRoles(state)).toEqual(["SCOUT"]);
     expect(trainedRoles(concealed)).not.toEqual(["SCOUT"]);
-  });
-
-  it("counts only geometrically legal public Defection replies", () => {
-    const replies = (role: UnitRoleIdV7, targetX: number) => {
-      const state = fixtureState([
-        ["ENVOY", { x: 5, y: 5 }, true, 1],
-        [role, { x: targetX, y: 5 }, false, 1],
-      ]);
-      const source = ownUnit(state, "ENVOY");
-      const target = state.units.find(
-        (unit) => unit.ownerId !== source.ownerId,
-      );
-      if (target === undefined) throw new Error("Defection target missing");
-      return countVisibleDefectionRepliesV7(
-        viewForV7(state, state.humanPlayerId),
-        source.id,
-        target.id,
-      );
-    };
-
-    expect(replies("GUARD", 7)).toBe(replies("ENVOY", 7));
-    expect(replies("CATAPULT", 6)).toBe(replies("ENVOY", 6));
-    expect(replies("FIGHTER", 7)).toBe(replies("ENVOY", 7) + 1);
-
-    const state = fixtureState([
-      ["ENVOY", { x: 5, y: 5 }, true, 1],
-      ["ENVOY", { x: 7, y: 5 }, false, 1],
-    ]);
-    const source = ownUnit(state, "ENVOY");
-    const target = state.units.find((unit) => unit.ownerId !== source.ownerId);
-    if (target === undefined) throw new Error("Owned-territory target missing");
-    const neutral = viewForV7(state, state.humanPlayerId);
-    const ownTerritory = {
-      ...neutral,
-      board: {
-        ...neutral.board,
-        tiles: neutral.board.tiles.map((tile) =>
-          same(tile.at, { x: 8, y: 5 })
-            ? { ...tile, territoryOwnerId: target.ownerId }
-            : tile,
-        ),
-      },
-    };
-    expect(
-      countVisibleDefectionRepliesV7(ownTerritory, source.id, target.id),
-    ).toBe(countVisibleDefectionRepliesV7(neutral, source.id, target.id));
   });
 
   it("sums each injured Catapult preview and public minimum healing", () => {
@@ -690,8 +666,8 @@ describe("ruleset-7 revision-2 Normal public policy", () => {
     );
   });
 
-  it("reserves every reward, every open Lancer, and End without large arrays", () => {
-    const base = openPursuitWithoutTarget();
+  it("reserves every reward and End without large arrays", () => {
+    const base = fixtureState([]);
     const city = base.cities.find(
       (item) => item.ownerId === base.humanPlayerId,
     );
@@ -703,20 +679,20 @@ describe("ruleset-7 revision-2 Normal public policy", () => {
         item.id === city.id ? { ...item, level: 1_000_000, rewards: [] } : item,
       ),
     };
-    expect(normalTurnClosureSlotsV7(high)).toBe(1_000_001);
+    expect(normalTurnClosureSlotsV7(high)).toBe(1_000_000);
   });
 
   it("finishes early when a candidate would exceed prospective mandatory work", () => {
     const state = initialV7(0);
     const view = viewForV7(state, state.humanPlayerId);
     const decision = chooseNormalCommandV7(view);
-    expect(decision.command).toEqual({ kind: "RESEARCH", tech: "HUNTING" });
+    expect(decision.command).toEqual({ kind: "RESEARCH", tech: "DRILL" });
     expect(chooseNormalTurnCommandV7(view, 127, 128, decision)).toEqual({
       kind: "END_TURN",
     });
 
     const killState = fixtureState([
-      ["LANCER", { x: 3, y: 5 }, true, 10],
+      ["FIGHTER", { x: 3, y: 5 }, true, 10],
       ["FIGHTER", { x: 4, y: 5 }, false, 1],
     ]);
     const killView = viewForV7(killState, killState.humanPlayerId);
@@ -788,7 +764,6 @@ describe("ruleset-7 revision-2 Normal public policy", () => {
           tuple: [1],
         },
       ],
-      pursuitNodesSearched: 0,
       prngDraws: 0 as const,
     };
     expect(normalTurnClosureSlotsV7(view)).toBe(2);
@@ -801,37 +776,29 @@ describe("ruleset-7 revision-2 Normal public policy", () => {
   });
 });
 
-function pursuitLine(): GameStateV7 {
-  const state = fixtureState([
-    ["LANCER", { x: 3, y: 5 }, true, 10],
+function horseArcherLine(): GameStateV7 {
+  return fixtureState([
+    ["HORSE_ARCHER", { x: 3, y: 5 }, true, 10],
     ["SCOUT", { x: 4, y: 4 }, true, 10],
-    ["SCOUT", { x: 6, y: 4 }, true, 10],
-    ["FIGHTER", { x: 5, y: 5 }, false, 1],
-    ["FIGHTER", { x: 7, y: 5 }, false, 1],
+    ["SCOUT", { x: 5, y: 5 }, false, 10],
   ]);
-  const lancer = ownUnit(state, "LANCER");
-  return checkedV7({
-    ...state,
-    units: state.units.map((unit) =>
-      unit.id === lancer.id
-        ? {
-            ...unit,
-            activation: {
-              ...READY,
-              attacksUsed: 1,
-              pursuitPhase: "PURSUIT_READY",
-            },
-          }
-        : unit,
-    ),
-  });
 }
 
-function densePursuit(): GameStateV7 {
+function horseArcherMoveLine(): GameStateV7 {
+  return fixtureState([
+    ["HORSE_ARCHER", { x: 1, y: 5 }, true, 10],
+    ["SCOUT", { x: 4, y: 5 }, true, 10],
+    ["GUARD", { x: 5, y: 4 }, false, 15],
+    ["FIGHTER", { x: 5, y: 6 }, false, 10],
+  ]);
+}
+
+function denseHorseArcher(): GameStateV7 {
   const specs: UnitSpec[] = [
-    ["LANCER", { x: 5, y: 5 }, true, 10],
-    ["SCOUT", { x: 5, y: 3 }, true, 10],
-    ["SCOUT", { x: 7, y: 5 }, true, 10],
+    ["HORSE_ARCHER", { x: 5, y: 5 }, true, 10],
+    ["SCOUT", { x: 5, y: 2 }, true, 10],
+    ["SCOUT", { x: 8, y: 5 }, true, 10],
+    ["SCOUT", { x: 5, y: 8 }, true, 10],
   ];
   for (const at of [
     { x: 3, y: 3 },
@@ -845,69 +812,27 @@ function densePursuit(): GameStateV7 {
     { x: 4, y: 7 },
     { x: 6, y: 7 },
   ] as const)
-    specs.push(["FIGHTER", at, false, 1]);
-  const state = fixtureState(specs);
-  const lancer = ownUnit(state, "LANCER");
-  return checkedV7({
-    ...state,
-    units: state.units.map((unit) =>
-      unit.id === lancer.id
-        ? {
-            ...unit,
-            activation: {
-              ...READY,
-              attacksUsed: 1,
-              pursuitPhase: "PURSUIT_READY",
-            },
-          }
-        : unit,
-    ),
-  });
+    specs.push(["FIGHTER", at, false, 10]);
+  return fixtureState(specs);
 }
 
-function thirdAttackSafetyPursuit(): GameStateV7 {
-  const state = fixtureState([
-    ["LANCER", { x: 5, y: 5 }, true, 10],
-    ["FIGHTER", { x: 4, y: 5 }, false, 1],
-    ["FIGHTER", { x: 6, y: 5 }, false, 1],
-    ["CATAPULT", { x: 2, y: 5 }, false, 10],
+function fortifiedHorseArcherTarget(): GameStateV7 {
+  const base = exploredAllV7(allTechsV7(initialV7(13)));
+  const city = base.cities.find((item) => item.ownerId !== base.humanPlayerId);
+  if (city === undefined) throw new Error("Hostile city missing");
+  const horseArcherAt =
+    city.at.x >= 2
+      ? { x: city.at.x - 2, y: city.at.y }
+      : { x: city.at.x + 2, y: city.at.y };
+  const scoutAt =
+    city.at.y > 0
+      ? { x: city.at.x, y: city.at.y - 1 }
+      : { x: city.at.x, y: city.at.y + 1 };
+  return fixtureState([
+    ["HORSE_ARCHER", horseArcherAt, true, 10],
+    ["SCOUT", scoutAt, true, 10],
+    ["FIGHTER", city.at, false, 10],
   ]);
-  const lancer = ownUnit(state, "LANCER");
-  return checkedV7({
-    ...state,
-    units: state.units.map((unit) =>
-      unit.id === lancer.id
-        ? {
-            ...unit,
-            activation: {
-              ...READY,
-              attacksUsed: 2,
-              pursuitPhase: "PURSUIT_READY",
-            },
-          }
-        : unit,
-    ),
-  });
-}
-
-function openPursuitWithoutTarget(): GameStateV7 {
-  const state = fixtureState([["LANCER", { x: 5, y: 5 }, true, 10]]);
-  const lancer = ownUnit(state, "LANCER");
-  return checkedV7({
-    ...state,
-    units: state.units.map((unit) =>
-      unit.id === lancer.id
-        ? {
-            ...unit,
-            activation: {
-              ...READY,
-              attacksUsed: 1,
-              pursuitPhase: "PURSUIT_READY",
-            },
-          }
-        : unit,
-    ),
-  });
 }
 
 type UnitSpec = readonly [
@@ -981,6 +906,11 @@ function emptyScore() {
     objectiveValue: 0,
     deterministicTieBreak: [0, 0, 0, 0, 0] as const,
   };
+}
+
+function required<T>(value: T | undefined, message: string): T {
+  if (value === undefined) throw new Error(message);
+  return value;
 }
 
 function combatTotals(

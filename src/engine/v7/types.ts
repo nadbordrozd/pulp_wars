@@ -5,11 +5,11 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r2" as const;
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r2.current" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r3" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r3.current" as const;
 export const FACTION_IDS_V7 = Object.freeze(["ORIGINAL"] as const);
 export const FACTION_TREE_IDS_V7 = Object.freeze([
-  "ORIGINAL_BASELINE_V3",
+  "ORIGINAL_BASELINE_V4",
 ] as const);
 export const TERRAIN_IDS_V7 = Object.freeze([
   "GRASS",
@@ -18,24 +18,19 @@ export const TERRAIN_IDS_V7 = Object.freeze([
 ] as const);
 export const RESOURCE_IDS_V7 = Object.freeze([
   "FRUIT",
-  "GAME",
   "FERTILE_GROUND",
-  "ORE",
-  "STONE",
+  "GAME",
 ] as const);
 export const IMPROVEMENT_IDS_V7 = Object.freeze([
   "FARM",
   "LUMBER_CAMP",
   "MINE",
-  "QUARRY",
   "WINDMILL",
   "SAWMILL",
   "FORGE",
-  "STONEWORKS",
   "WORKSHOP",
   "GRAND_WORKS",
   "MARKET",
-  "BARRACKS",
   "MONUMENT",
 ] as const);
 export const ACHIEVEMENT_IDS_V7 = Object.freeze([
@@ -45,7 +40,6 @@ export const ACHIEVEMENT_IDS_V7 = Object.freeze([
 export const UNIT_ROLE_IDS_V7 = Object.freeze([
   "FIGHTER",
   "SCOUT",
-  "ENVOY",
   "MARKSMAN",
   "GUARD",
   "RAIDER",
@@ -53,7 +47,7 @@ export const UNIT_ROLE_IDS_V7 = Object.freeze([
   "CATAPULT",
   "SABOTEUR",
   "HEAVY",
-  "LANCER",
+  "HORSE_ARCHER",
   "BREACHER",
   "JUGGERNAUT",
 ] as const);
@@ -61,34 +55,28 @@ export const TECHNOLOGY_IDS_V7 = Object.freeze([
   "GATHERING",
   "FARMING",
   "MILLING",
-  "CRAFT",
-  "GRAND_WORKS",
+  "MEDICINE",
+  "RECOVERY",
   "HUNTING",
   "FORESTRY",
   "SAWMILLING",
   "MARKSMANSHIP",
   "FIELDCRAFT",
-  "SURVEYING",
-  "MINING",
-  "METALLURGY",
-  "QUARRYING",
-  "MASONRY",
   "SCOUTING",
   "ROADS",
   "COMMERCE",
   "RAIDING",
-  "MANEUVER",
+  "MOUNTED_ARCHERY",
   "DRILL",
   "FORTIFICATION",
   "EXPLOSIVES",
-  "MEDICINE",
-  "RECOVERY",
+  "ENGINEERING",
+  "METALLURGY",
+  "GRAND_WORKS",
 ] as const);
 export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "MOVE",
-  "PURSUE",
   "ATTACK",
-  "OFFER_DEFECTION",
   "BLACKOUT_CITY",
   "HEAL_ADJACENT",
   "RECOVER",
@@ -96,7 +84,6 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "PROMOTE",
   "PILLAGE",
   "DISBAND",
-  "END_PURSUIT",
   "WAIT",
   "RESEARCH",
   "HARVEST_FRUIT",
@@ -104,15 +91,12 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "BUILD_FARM",
   "BUILD_LUMBER_CAMP",
   "BUILD_MINE",
-  "BUILD_QUARRY",
   "BUILD_WINDMILL",
   "BUILD_SAWMILL",
   "BUILD_FORGE",
-  "BUILD_STONEWORKS",
   "BUILD_WORKSHOP",
   "BUILD_GRAND_WORKS",
   "BUILD_MARKET",
-  "BUILD_BARRACKS",
   "BUILD_MONUMENT",
   "CLEAR_FOREST",
   "REPLANT_FOREST",
@@ -137,28 +121,6 @@ export const CARDINAL_DIRECTION_ORDER_V7 = Object.freeze([
   "EAST",
   "SOUTH",
   "WEST",
-] as const);
-export const PURSUIT_PHASE_ORDER_V7 = Object.freeze([
-  "NONE",
-  "PURSUIT_READY",
-  "PURSUIT_MOVED",
-] as const);
-export const DEFECTION_PHASE_ORDER_V7 = Object.freeze([
-  "WAITING_FOR_REPLY",
-  "ARMED",
-] as const);
-export const DEFECTION_CANCELLATION_REASON_ORDER_V7 = Object.freeze([
-  "SOURCE_MISSING",
-  "TARGET_MISSING",
-  "SOURCE_OWNER_CHANGED",
-  "TARGET_OWNER_CHANGED",
-  "RELATIONSHIP_CHANGED",
-  "OUT_OF_RANGE",
-  "RESERVED_CITY_LOST",
-  "CAPACITY_LOST",
-  "INITIATOR_ELIMINATED",
-  "TARGET_OWNER_ELIMINATED",
-  "STATE_CANCELLED",
 ] as const);
 export const BLACKOUT_PHASE_ORDER_V7 = Object.freeze([
   "PENDING",
@@ -191,16 +153,9 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "UNIT_HEALED",
   "UNIT_PUSHED",
   "UNIT_MOVED",
-  "UNIT_PURSUED",
   "UNIT_MOVE_INTERRUPTED",
   "TILES_REVEALED",
   "COMBAT_RESOLVED",
-  "PURSUIT_OPENED",
-  "PURSUIT_ENDED",
-  "DEFECTION_OFFERED",
-  "DEFECTION_ARMED",
-  "DEFECTION_CANCELLED",
-  "DEFECTION_RESOLVED",
   "SABOTEUR_EXPOSED",
   "BLACKOUT_PLANTED",
   "BLACKOUT_ACTIVATED",
@@ -222,7 +177,6 @@ export const PLAYER_EVENT_KIND_ORDER_V7 = Object.freeze([
   ...DOMAIN_EVENT_KIND_ORDER_V7,
   "UNIT_REVEALED",
   "UNIT_CONCEALED",
-  "DEFECTION_ENDPOINT_STATUS",
 ] as const);
 
 export type RulesetIdV7 = typeof RULESET_7_ID;
@@ -237,8 +191,6 @@ export type TechnologyIdV7 = (typeof TECHNOLOGY_IDS_V7)[number];
 export type CommandKindV7 = (typeof COMMAND_KIND_ORDER_V7)[number];
 export type RewardIdV7 = (typeof REWARD_IDS_V7)[number];
 export type DomainEventKindV7 = (typeof DOMAIN_EVENT_KIND_ORDER_V7)[number];
-export type DefectionCancellationReasonV7 =
-  (typeof DEFECTION_CANCELLATION_REASON_ORDER_V7)[number];
 export type BoardSizeV7 = 11 | 14 | 16 | 20 | 25;
 export type AiCountV7 = 1 | 2 | 3;
 export type PlayerColorV7 = "CORAL" | "TEAL" | "GOLD" | "VIOLET";
@@ -289,7 +241,7 @@ export interface PlayerStateV7 {
   readonly controller: "HUMAN" | "AI";
   readonly color: PlayerColorV7;
   readonly faction: "ORIGINAL";
-  readonly factionTreeId: "ORIGINAL_BASELINE_V3";
+  readonly factionTreeId: "ORIGINAL_BASELINE_V4";
   readonly status: "ACTIVE" | "ELIMINATED";
   readonly coins: number;
   readonly researchedTechs: readonly TechnologyIdV7[];
@@ -308,8 +260,7 @@ export interface UnitActivationV7 {
   readonly moved: boolean;
   readonly movedPathLength: number;
   readonly attacked: boolean;
-  readonly attacksUsed: 0 | 1 | 2 | 3;
-  readonly pursuitPhase: "NONE" | "PURSUIT_READY" | "PURSUIT_MOVED";
+  readonly attacksUsed: 0 | 1 | 2;
   readonly healed: boolean;
   readonly recovered: boolean;
   readonly captured: boolean;
@@ -367,17 +318,6 @@ export interface CityStateV7 {
   readonly expanded: boolean;
   readonly rewards: readonly CityRewardRecordV7[];
   readonly blackout: CityBlackoutV7 | null;
-}
-
-export interface DefectionMarkV7 {
-  readonly id: number;
-  readonly sourceUnitId: UnitId;
-  readonly targetUnitId: UnitId;
-  readonly initiatingPlayerId: PlayerId;
-  readonly recordedTargetOwnerId: PlayerId;
-  readonly reservedHomeCityId: CityId;
-  readonly offeredAtCommandIndex: number;
-  readonly phase: "WAITING_FOR_REPLY" | "ARMED";
 }
 
 export interface SaboteurExposureV7 {
@@ -451,7 +391,6 @@ export interface GameStateV7 {
   readonly populationContributions: readonly PopulationContributionV7[];
   readonly units: readonly UnitStateV7[];
   readonly treasureChests: readonly CoordV7[];
-  readonly defectionMarks: readonly DefectionMarkV7[];
   readonly saboteurExposures: readonly SaboteurExposureV7[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;

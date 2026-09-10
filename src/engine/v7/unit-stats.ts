@@ -151,18 +151,14 @@ export function publicUnitStatsV7(
                 1,
                 "HIGH_GROUND",
                 "High ground",
-                "Surveying adds 1 Sight while standing on a Mountain.",
+                "Engineering adds 1 Sight while standing on a Mountain.",
               ),
             ]
           : [],
       ),
     ],
     abilities: role.abilities,
-    statuses: [
-      ...(unit.activation.pursuitPhase !== "NONE"
-        ? [unit.activation.pursuitPhase]
-        : []),
-    ],
+    statuses: [],
   };
 }
 
@@ -171,7 +167,7 @@ function defenseSourceAt(
   unit: UnitStateV7,
   numerator: number,
 ): UnitStatModifierSourceV7 | null {
-  if (numerator === 1 || unit.role === "ENVOY") return null;
+  if (numerator === 1) return null;
   const owner = state.players.find((player) => player.id === unit.ownerId);
   const city = state.cities.find(
     (candidate) =>

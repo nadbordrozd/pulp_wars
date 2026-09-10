@@ -7,7 +7,6 @@ import type {
 import {
   ACHIEVEMENT_IDS_V7,
   DOMAIN_EVENT_KIND_ORDER_V7,
-  DEFECTION_CANCELLATION_REASON_ORDER_V7,
   IMPROVEMENT_IDS_V7,
   REWARD_IDS_V7,
   TECHNOLOGY_IDS_V7,
@@ -57,7 +56,6 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "cost",
     "populationContribution",
     "marketIncome",
-    "capacityDelta",
   ],
   ECONOMIC_BUILDING_REMOVED: [
     "kind",
@@ -67,7 +65,6 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "improvement",
     "populationContributionRemoved",
     "marketIncomeRemoved",
-    "capacityDelta",
     "resourceRestored",
   ],
   FOREST_CLEARED: ["kind", "playerId", "cityId", "at", "coinDelta"],
@@ -123,40 +120,9 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   UNIT_HEALED: ["kind", "medicId", "targetUnitId", "amount", "hpAfter"],
   UNIT_PUSHED: ["kind", "sourceUnitId", "targetUnitId", "from", "to"],
   UNIT_MOVED: ["kind", "unitId", "path"],
-  UNIT_PURSUED: ["kind", "unitId", "path", "from", "to"],
   UNIT_MOVE_INTERRUPTED: ["kind", "unitId", "at", "reason"],
   TILES_REVEALED: ["kind", "playerId", "tiles"],
   COMBAT_RESOLVED: ["kind", "preview"],
-  PURSUIT_OPENED: ["kind", "unitId", "attacksUsed", "attacksRemaining"],
-  PURSUIT_ENDED: ["kind", "unitId", "attacksUsed", "reason"],
-  DEFECTION_OFFERED: [
-    "kind",
-    "markId",
-    "sourceUnitId",
-    "targetUnitId",
-    "initiatingPlayerId",
-    "targetOwnerId",
-    "reservedHomeCityId",
-    "offeredAtCommandIndex",
-  ],
-  DEFECTION_ARMED: [
-    "kind",
-    "markId",
-    "sourceUnitId",
-    "targetUnitId",
-    "targetOwnerId",
-  ],
-  DEFECTION_CANCELLED: ["kind", "markId", "reason"],
-  DEFECTION_RESOLVED: [
-    "kind",
-    "markId",
-    "sourceUnitId",
-    "targetUnitId",
-    "fromPlayerId",
-    "toPlayerId",
-    "homeCityId",
-    "at",
-  ],
   SABOTEUR_EXPOSED: ["kind", "unitId", "anchorPlayerId", "reason"],
   BLACKOUT_PLANTED: [
     "kind",
@@ -373,14 +339,6 @@ function parsePresentationEvent(input: unknown): PlayerEventV7 | null {
   ) {
     return input as unknown as PlayerEventV7;
   }
-  if (
-    hasExactKeysV7(input, ["kind", "phase", "unitId"]) &&
-    input.kind === "DEFECTION_ENDPOINT_STATUS" &&
-    isPositiveSafeIntegerV7(input.unitId) &&
-    (input.phase === "WAITING_FOR_REPLY" || input.phase === "ARMED")
-  ) {
-    return input as unknown as PlayerEventV7;
-  }
   return null;
 }
 
@@ -433,15 +391,13 @@ function validPayload(
         IMPROVEMENT_IDS_V7.includes(e.improvement as never) &&
         e.improvement !== "MONUMENT" &&
         e.cost === improvementCost(e.improvement as ImprovementIdV7) &&
-        [e.populationContribution, e.marketIncome].every(nn) &&
-        e.capacityDelta === (e.improvement === "BARRACKS" ? 2 : 0)
+        [e.populationContribution, e.marketIncome].every(nn)
       );
     case "ECONOMIC_BUILDING_REMOVED":
       return (
         playerCityAt(e) &&
         IMPROVEMENT_IDS_V7.includes(e.improvement as never) &&
         [e.populationContributionRemoved, e.marketIncomeRemoved].every(nn) &&
-        e.capacityDelta === (e.improvement === "BARRACKS" ? -2 : 0) &&
         restoredResource(e.resourceRestored, e.improvement as ImprovementIdV7)
       );
     case "FOREST_CLEARED":
@@ -534,72 +490,16 @@ function validPayload(
       );
     case "UNIT_MOVED":
       return id(e.unitId) && coords(e.path);
-    case "UNIT_PURSUED":
-      return (
-        id(e.unitId) &&
-        coords(e.path) &&
-        parseCoordV7(e.from) !== null &&
-        parseCoordV7(e.to) !== null
-      );
     case "UNIT_MOVE_INTERRUPTED":
       return (
         id(e.unitId) &&
         parseCoordV7(e.at) !== null &&
-        ["OCCUPIED", "SURVEYING_REQUIRED", "ZOC"].includes(e.reason as string)
+        ["OCCUPIED", "ENGINEERING_REQUIRED", "ZOC"].includes(e.reason as string)
       );
     case "TILES_REVEALED":
       return id(e.playerId) && sortedCoords(e.tiles);
     case "COMBAT_RESOLVED":
       return combat(e.preview);
-    case "PURSUIT_OPENED":
-      return (
-        id(e.unitId) &&
-        (e.attacksUsed === 1 || e.attacksUsed === 2) &&
-        e.attacksRemaining === 3 - e.attacksUsed
-      );
-    case "PURSUIT_ENDED":
-      return (
-        id(e.unitId) &&
-        [1, 2, 3].includes(e.attacksUsed as number) &&
-        [
-          "NONLETHAL",
-          "THIRD_ATTACK",
-          "ATTACKER_DIED",
-          "EXPLICIT_END",
-          "STATE_CANCELLED",
-        ].includes(e.reason as string)
-      );
-    case "DEFECTION_OFFERED":
-      return (
-        [
-          e.markId,
-          e.sourceUnitId,
-          e.targetUnitId,
-          e.initiatingPlayerId,
-          e.targetOwnerId,
-          e.reservedHomeCityId,
-        ].every(id) && nn(e.offeredAtCommandIndex)
-      );
-    case "DEFECTION_ARMED":
-      return [e.markId, e.sourceUnitId, e.targetUnitId, e.targetOwnerId].every(
-        id,
-      );
-    case "DEFECTION_CANCELLED":
-      return (
-        id(e.markId) &&
-        DEFECTION_CANCELLATION_REASON_ORDER_V7.includes(e.reason as never)
-      );
-    case "DEFECTION_RESOLVED":
-      return (
-        [
-          e.markId,
-          e.sourceUnitId,
-          e.targetUnitId,
-          e.fromPlayerId,
-          e.toPlayerId,
-          e.homeCityId,
-        ].every(id) && parseCoordV7(e.at) !== null
-      );
     case "SABOTEUR_EXPOSED":
       return (
         id(e.unitId) &&
@@ -693,10 +593,11 @@ function combat(input: unknown): boolean {
       "defenseBonusDenominator",
       "defenseBonusNumerator",
       "defenderDies",
+      "attacksRemaining",
+      "attacksUsed",
       "maximumRange",
       "minimumRange",
       "noRetaliationReason",
-      "pursuitWillOpen",
       "push",
       "retaliation",
       "targetUnitId",
@@ -714,6 +615,11 @@ function combat(input: unknown): boolean {
       input.minimumRange,
       input.maximumRange,
     ].every(pos) &&
+    (input.attacksUsed === 1 || input.attacksUsed === 2) &&
+    (input.attacksRemaining === 0 || input.attacksRemaining === 1) &&
+    ((input.attacksUsed === 1 &&
+      (input.attacksRemaining === 0 || input.attacksRemaining === 1)) ||
+      (input.attacksUsed === 2 && input.attacksRemaining === 0)) &&
     [input.damageToAttacker, input.damageToDefender].every(nn) &&
     [
       input.chargeApplied,
@@ -722,7 +628,6 @@ function combat(input: unknown): boolean {
       input.attackerDies,
       input.retaliation,
       input.advances,
-      input.pursuitWillOpen,
     ].every((item) => typeof item === "boolean") &&
     ["WILL_PUSH", "BLOCKED", "UNKNOWN_BEHIND_FOG"].includes(
       input.push as string,
@@ -824,16 +729,13 @@ function improvementCost(improvement: ImprovementIdV7): number {
     case "FARM":
     case "WINDMILL":
     case "SAWMILL":
-    case "QUARRY":
       return 5;
     case "LUMBER_CAMP":
       return 3;
     case "MINE":
     case "FORGE":
-    case "STONEWORKS":
       return 6;
     case "WORKSHOP":
-    case "BARRACKS":
       return 4;
     case "GRAND_WORKS":
     case "MARKET":
@@ -846,7 +748,6 @@ function trainingCost(role: UnitRoleIdV7): number {
   const costs: Readonly<Record<UnitRoleIdV7, number>> = {
     FIGHTER: 2,
     SCOUT: 4,
-    ENVOY: 6,
     MARKSMAN: 3,
     GUARD: 3,
     RAIDER: 4,
@@ -854,7 +755,7 @@ function trainingCost(role: UnitRoleIdV7): number {
     CATAPULT: 8,
     SABOTEUR: 6,
     HEAVY: 7,
-    LANCER: 9,
+    HORSE_ARCHER: 9,
     BREACHER: 6,
     JUGGERNAUT: 0,
   };
@@ -868,14 +769,8 @@ function restoredResource(
 }
 function expectedRestoredResource(
   improvement: ImprovementIdV7 | null,
-): "FERTILE_GROUND" | "ORE" | "STONE" | null {
-  return improvement === "FARM"
-    ? "FERTILE_GROUND"
-    : improvement === "MINE"
-      ? "ORE"
-      : improvement === "QUARRY"
-        ? "STONE"
-        : null;
+): "FERTILE_GROUND" | null {
+  return improvement === "FARM" ? "FERTILE_GROUND" : null;
 }
 const id = isPositiveSafeIntegerV7;
 const nn = isNonNegativeSafeIntegerV7;

@@ -87,18 +87,18 @@ const report = {
 
 if (
   report.fixtureViewHash !==
-    "9826c2f0c2a3c93a461b4bbb1f31f9f1a7d3ee02047c9ef96246d0e68e7f0a77" ||
+    "d095b657a12242e56e4bf3ada5e3a0a8d1982da358a906c9bd477e0eabe6c75b" ||
   report.commandHash !==
-    "719c2273e9451a28d5f7641f69b6046e7cd6c3acd988f1bcc8915d43f4eafa90" ||
+    "14d61b0aa76e888773bc96b8f956a2b8a973f7117278b073b4b404e4828e95a5" ||
   canonicalHash(coldCommands) !== report.commandHash ||
   report.aiReadyHash !==
-    "fb9deaa2f9777abca458246f5236f80c399b0209ac4b7a90e270bbab33ceb83e" ||
+    "e5fbeec912a504c54c3bc9d7794d42dfe3576088445aa868ee2d731a71bf8da3" ||
   report.previewHash !==
-    "e56d86d315454c47d1c02ae239bdc04f4f3350f255f89200751a5d04aaec42d5" ||
+    "7ce8e475397e40bd561f7a8defc3da91005c50b1e54970d3018511049131b55f" ||
   report.incremental.potentialHash !==
-    "06e29a094c03ed387458fd33468b7e0fab2a110ce4eedada18100645abb9f16d" ||
+    "76079f3a0174ad4e509d0294d7bc5c85724a027c1b556a13cf058b16380c0d47" ||
   report.incremental.scoreHash !==
-    "a38fddc5d6f265715dbfbe940b5049062ae52b237c69cb6d4df2fe3137a6ca67"
+    "ab0e2035511d929add5f2044c35c9ad91425aacbcd00eed5b3ac45664f964aac"
 )
   throw new Error(`Public query parity changed: ${JSON.stringify(report)}`);
 

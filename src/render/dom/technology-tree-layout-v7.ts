@@ -7,6 +7,8 @@ export interface TechnologyTreeLayoutNodeV7 {
   readonly node: PublicTechnologyNodeV7;
   readonly parentId: TechnologyIdV7 | null;
   readonly children: readonly TechnologyTreeLayoutNodeV7[];
+  /** Number of leaf cards below this node, used to keep sibling paths legible. */
+  readonly leafCount: number;
 }
 
 export function technologyTreeLayoutV7(
@@ -34,10 +36,15 @@ export function technologyTreeLayoutV7(
     if (node === undefined) throw new RangeError(`Technology missing ${id}`);
     const parentId =
       node.prerequisites.find((entry) => byId.has(entry)) ?? null;
+    const childNodes = (children.get(id) ?? []).map(build);
     const result = {
       node,
       parentId,
-      children: (children.get(id) ?? []).map(build),
+      children: childNodes,
+      leafCount:
+        childNodes.length === 0
+          ? 1
+          : childNodes.reduce((total, child) => total + child.leafCount, 0),
     };
     visiting.delete(id);
     visited.add(id);

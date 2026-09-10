@@ -4,6 +4,17 @@ export interface ReleaseFixtureV7 {
   readonly test: string;
 }
 
+export const ARCHIVED_RULESET7_RELEASE_ID = "pulp-wars-poc-7r2" as const;
+
+export function assertRuleset7ReleaseArchiveRuntime(
+  runtimeRulesetId: string,
+): void {
+  if (runtimeRulesetId !== ARCHIVED_RULESET7_RELEASE_ID)
+    throw new Error(
+      `Ruleset 7 release evidence is an ${ARCHIVED_RULESET7_RELEASE_ID} archive and cannot validate ${runtimeRulesetId}; create a separately approved current-revision release corpus instead of relabeling archived evidence`,
+    );
+}
+
 export interface ReleaseEvidenceV7 {
   readonly path: string;
   readonly sha256: string;
@@ -12,7 +23,7 @@ export interface ReleaseEvidenceV7 {
 
 export interface ReleaseCorpusV7 {
   readonly schemaVersion: 1;
-  readonly rulesetId: "pulp-wars-poc-7r2";
+  readonly rulesetId: typeof ARCHIVED_RULESET7_RELEASE_ID;
   readonly generatedOn: "2026-09-09";
   readonly mapMatrix: readonly {
     readonly id: string;

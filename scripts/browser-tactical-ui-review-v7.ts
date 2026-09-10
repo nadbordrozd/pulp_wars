@@ -3,6 +3,12 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import { format } from "prettier";
+import { RULESET_7_ID } from "../src/engine/index";
+
+if ((RULESET_7_ID as string) !== "pulp-wars-poc-7r2")
+  throw new Error(
+    `This tactical browser review is archived for pulp-wars-poc-7r2 and cannot run against ${RULESET_7_ID}; use a separately approved revision-3 review instead of overwriting historical evidence`,
+  );
 
 interface DebugTarget {
   readonly type: string;

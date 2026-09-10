@@ -14,6 +14,7 @@ import type {
 import { queryCombatPreviewV7 } from "../../engine/index";
 import {
   RULESET6_UNIT_ART_GEOMETRY,
+  RULESET7_HORSE_ARCHER_ART_GEOMETRY,
   SETTLEMENT_ART_GEOMETRY,
   SQUARE_ART_GEOMETRY,
   anchoredDestinationRect,
@@ -34,11 +35,7 @@ import { selectionJumpOffsetCssPx } from "./selection-jump-presentation";
 import { RULESET7_TACTICAL_UI_SYMBOL_BY_ID } from "../../assets/ruleset7-tactical-ui-symbols";
 import {
   blackoutTargetsV7,
-  defectionLinksV7,
-  defectionTargetsV7,
-  pursuitPresentationV7,
   tacticalAttachmentsV7,
-  playerLabelV7,
   type TacticalTargetModeV7,
 } from "../tactical-presentation-v7";
 
@@ -58,8 +55,7 @@ export interface BoardRenderInteractionV7 {
 export interface MapCommandTargetV7 {
   readonly at: CoordV7;
   readonly command: CommandV7;
-  readonly family:
-    "MOVE" | "ATTACK" | "PURSUIT" | "MONUMENT" | "DEFECTION" | "BLACKOUT";
+  readonly family: "MOVE" | "ATTACK" | "MONUMENT" | "BLACKOUT";
   readonly previewLabel?: string;
   readonly semanticLabel?: string;
 }
@@ -158,7 +154,7 @@ export function buildBoardRenderPlanV7(
             ? suppressesForestCanopyV7(tile.improvement)
               ? "terrain-ruleset7-original-grass-1"
               : `terrain-ruleset7-original-forest-${variant(tile.at, 4)}`
-            : `terrain-square-original-mountain-${variant(tile.at, 3)}`,
+            : `terrain-ruleset7-revision3-${tile.improvement === "MINE" ? "mined-" : ""}mountain-${variant(tile.at, 3)}`,
       ownerId: tile.territoryOwnerId,
       ...ownerPresentation(view, tile.territoryOwnerId),
     });
@@ -178,7 +174,7 @@ export function buildBoardRenderPlanV7(
         at: tile.at,
         assetId: RULESET7_RESOURCE_ART_IDS[tile.resource],
       });
-    if (tile.improvement !== null) {
+    if (tile.improvement !== null && tile.improvement !== "MINE") {
       const farm =
         tile.improvement === "FARM"
           ? farmPresentation.get(coordKey(tile.at))
@@ -259,15 +255,6 @@ export function buildBoardRenderPlanV7(
       value: value.level,
       label: value.measure,
     });
-  for (const link of defectionLinksV7(view))
-    entries.push({
-      key: link.key,
-      kind: "LINK",
-      layer: 6,
-      at: link.from,
-      linkTo: link.to,
-      label: link.phase,
-    });
   const attachmentSlots = new Map<string, number>();
   for (const attachment of tacticalAttachmentsV7(view)) {
     const coordKey = `${attachment.at.x},${attachment.at.y}`;
@@ -285,19 +272,6 @@ export function buildBoardRenderPlanV7(
     });
   }
   addTerritoryBoundaries(entries, view, interaction.selection);
-  const pursuit = pursuitPresentationV7(view, commands);
-  if (pursuit !== null && interaction.selectedUnitId === pursuit.unitId)
-    for (const unitId of pursuit.laterTargetUnitIds) {
-      const target = view.units.find((unit) => unit.id === unitId);
-      if (target !== undefined)
-        entries.push({
-          key: `pursuit-reach:${unitId}`,
-          kind: "REACH",
-          layer: 7,
-          at: target.at,
-          label: "Reachable after a canonical Pursue path",
-        });
-    }
   const targets = dedupeMapTargets(
     mapTargets(
       view,
@@ -307,25 +281,6 @@ export function buildBoardRenderPlanV7(
       interaction.tacticalTargetMode ?? null,
     ),
   );
-  const focusedPursuit = targets.find(
-    (target) =>
-      target.family === "PURSUIT" &&
-      target.command.kind === "PURSUE" &&
-      interaction.cursor !== null &&
-      interaction.cursor !== undefined &&
-      same(target.at, interaction.cursor),
-  );
-  if (focusedPursuit?.command.kind === "PURSUE")
-    for (const [index, at] of focusedPursuit.command.path.entries()) {
-      if (index === focusedPursuit.command.path.length - 1) continue;
-      entries.push({
-        key: `pursuit-path:${focusedPursuit.command.unitId}:${index}:${at.x},${at.y}`,
-        kind: "REACH",
-        layer: 8,
-        at,
-        label: `Pursue step ${index + 1} of ${focusedPursuit.command.path.length}`,
-      });
-    }
   const targetEdges = mapTargetEdges(targets);
   for (const target of targets)
     entries.push({
@@ -872,9 +827,7 @@ function mapTargetEdges(
 
 function targetPriority(family: MapCommandTargetV7["family"]): number {
   if (family === "ATTACK") return 6;
-  if (family === "DEFECTION") return 5;
   if (family === "BLACKOUT") return 4;
-  if (family === "PURSUIT") return 3;
   if (family === "MONUMENT") return 2;
   return 1;
 }
@@ -883,7 +836,6 @@ function targetStroke(
   family: MapCommandTargetV7["family"] | undefined,
 ): string {
   if (family === "ATTACK") return "#ff655f";
-  if (family === "DEFECTION") return "#ffd34e";
   if (family === "BLACKOUT") return "#da8fff";
   return "#64e6cf";
 }
@@ -1061,25 +1013,6 @@ function mapTargets(
   selectedAchievement: "ENGINEER" | "MUSTER" | null,
   tacticalTargetMode: TacticalTargetModeV7 | null,
 ): MapCommandTargetV7[] {
-  if (tacticalTargetMode?.kind === "DEFECTION")
-    return defectionTargetsV7(
-      view,
-      commands,
-      tacticalTargetMode.sourceUnitId,
-    ).flatMap((target): readonly MapCommandTargetV7[] => {
-      const first = target.choices[0];
-      return first === undefined
-        ? []
-        : [
-            {
-              at: target.at,
-              command: first.command,
-              family: "DEFECTION",
-              previewLabel: `${target.choices.length} home ${target.choices.length === 1 ? "city" : "cities"}`,
-              semanticLabel: `Defection target. ${playerLabelV7(view, first.preview.replyBoundary.playerId)} replies at their next accepted End Turn; ${playerLabelV7(view, first.preview.earliestResolutionBoundary.playerId)} resolves at a later Start Turn. ${title(first.preview.cityOccupantSiegeConsequence)}.`,
-            },
-          ];
-    });
   if (tacticalTargetMode?.kind === "BLACKOUT")
     return blackoutTargetsV7(
       view,
@@ -1100,10 +1033,7 @@ function mapTargets(
     )
       return [{ at: command.at, command, family: "MONUMENT" }];
     if (selectedUnitId === null) return [];
-    if (
-      (command.kind === "MOVE" || command.kind === "PURSUE") &&
-      command.unitId === selectedUnitId
-    ) {
+    if (command.kind === "MOVE" && command.unitId === selectedUnitId) {
       const at = command.path.at(-1);
       return at === undefined
         ? []
@@ -1111,12 +1041,7 @@ function mapTargets(
             {
               at,
               command,
-              family: command.kind === "MOVE" ? "MOVE" : "PURSUIT",
-              ...(command.kind === "PURSUE"
-                ? {
-                    semanticLabel: `Pursue ${command.path.length} ${command.path.length === 1 ? "cell" : "cells"}: ${command.path.map((step) => `${step.x},${step.y}`).join(" then ")}`,
-                  }
-                : {}),
+              family: "MOVE",
             },
           ];
     }
@@ -1259,6 +1184,8 @@ function geometryFor(entry: BoardRenderPlanEntryV7): SourceGeometry {
   if (entry.kind === "CITY")
     return SETTLEMENT_ART_GEOMETRY.cities[cityArtLevel(entry.value ?? 1)];
   if (entry.kind === "UNIT") {
+    if (entry.assetId === RULESET7_UNIT_ART_IDS.HORSE_ARCHER)
+      return RULESET7_HORSE_ARCHER_ART_GEOMETRY;
     if (
       entry.assetId === RULESET7_UNIT_ART_IDS.CATAPULT ||
       entry.assetId === RULESET7_UNIT_ART_IDS.BREACHER
@@ -1283,11 +1210,9 @@ function geometryFor(entry: BoardRenderPlanEntryV7): SourceGeometry {
       [
         "WINDMILL",
         "FORGE",
-        "STONEWORKS",
         "WORKSHOP",
         "GRAND_WORKS",
         "MARKET",
-        "BARRACKS",
         "MONUMENT",
       ].some(
         (name) =>

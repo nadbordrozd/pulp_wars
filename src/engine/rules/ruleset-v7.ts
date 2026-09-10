@@ -17,9 +17,8 @@ import {
 export const TECHNOLOGY_BRANCH_IDS_V7 = deepFreeze([
   "SETTLEMENT",
   "WILDS",
-  "INDUSTRY",
-  "MOBILITY",
-  "WARFARE",
+  "MOBILITY_TRADE",
+  "INDUSTRY_WARFARE",
 ] as const);
 export type TechnologyBranchIdV7 = (typeof TECHNOLOGY_BRANCH_IDS_V7)[number];
 
@@ -30,15 +29,12 @@ export type TechnologyUnlockedCommandV7 = Extract<
   | "BUILD_FARM"
   | "BUILD_LUMBER_CAMP"
   | "BUILD_MINE"
-  | "BUILD_QUARRY"
   | "BUILD_WINDMILL"
   | "BUILD_SAWMILL"
   | "BUILD_FORGE"
-  | "BUILD_STONEWORKS"
   | "BUILD_WORKSHOP"
   | "BUILD_GRAND_WORKS"
   | "BUILD_MARKET"
-  | "BUILD_BARRACKS"
   | "CLEAR_FOREST"
   | "REPLANT_FOREST"
   | "BUILD_ROAD"
@@ -60,7 +56,6 @@ export type TechnologyUnlockV7 =
       readonly formula:
         | "CONNECTED_ORTHOGONAL_CLUSTER"
         | "ADJACENT_MINES"
-        | "ADJACENT_QUARRIES_AND_OPPOSITE_PAIRS"
         | "DISTINCT_BASIC_TYPES"
         | "DISTINCT_PROCESSOR_TYPES"
         | "DISTINCT_ECONOMIC_FAMILIES";
@@ -88,10 +83,6 @@ export type TechnologyUnlockV7 =
     }
   | { readonly kind: "MARKET_CAPITAL_ROAD_BONUS"; readonly coins: 1 }
   | {
-      readonly kind: "IGNORE_HOSTILE_ZOC";
-      readonly roles: readonly UnitRoleIdV7[];
-    }
-  | {
       readonly kind: "FRIENDLY_CITY_FORTIFICATION";
       readonly roles: readonly UnitRoleIdV7[];
       readonly defenseNumerator: 2;
@@ -118,12 +109,10 @@ export type UnitRoleAbilityV7 =
   | "CAPTURE"
   | "CHARGE"
   | "CONCEALMENT"
-  | "DEFECTION"
   | "DASH"
   | "HEAL_ADJACENT"
-  | "IGNORE_ZOC_WITH_MANEUVER"
   | "PUSH"
-  | "PURSUIT";
+  | "TWO_SHOTS";
 
 export interface EffectiveRoleRuleV7 {
   readonly role: UnitRoleIdV7;
@@ -142,7 +131,7 @@ export interface EffectiveRoleRuleV7 {
 }
 
 export interface FactionTechnologyTreeV7 {
-  readonly id: "ORIGINAL_BASELINE_V3";
+  readonly id: "ORIGINAL_BASELINE_V4";
   readonly faction: "ORIGINAL";
   readonly startingTechIds: readonly ["GATHERING"];
   readonly nodes: readonly TechnologyNodeV7[];
@@ -154,8 +143,7 @@ export type BasicEconomicCommandKindV7 =
   | "HUNT_GAME"
   | "BUILD_FARM"
   | "BUILD_LUMBER_CAMP"
-  | "BUILD_MINE"
-  | "BUILD_QUARRY";
+  | "BUILD_MINE";
 export interface BasicEconomicActionRuleV7 {
   readonly command: BasicEconomicCommandKindV7;
   readonly technology: TechnologyIdV7;
@@ -209,23 +197,13 @@ export const BASIC_ECONOMIC_ACTIONS_V7 = deepFreeze({
   },
   BUILD_MINE: {
     command: "BUILD_MINE",
-    technology: "MINING",
+    technology: "ENGINEERING",
     terrain: "MOUNTAIN",
-    resource: "ORE",
+    resource: null,
     cost: 6,
     population: 4,
     populationCategory: "LIVE",
     improvement: "MINE",
-  },
-  BUILD_QUARRY: {
-    command: "BUILD_QUARRY",
-    technology: "QUARRYING",
-    terrain: "MOUNTAIN",
-    resource: "STONE",
-    cost: 5,
-    population: 3,
-    populationCategory: "LIVE",
-    improvement: "QUARRY",
   },
 } satisfies Readonly<
   Record<BasicEconomicCommandKindV7, BasicEconomicActionRuleV7>
@@ -235,11 +213,9 @@ export type SpatialEconomicCommandKindV7 =
   | "BUILD_WINDMILL"
   | "BUILD_SAWMILL"
   | "BUILD_FORGE"
-  | "BUILD_STONEWORKS"
   | "BUILD_WORKSHOP"
   | "BUILD_GRAND_WORKS"
-  | "BUILD_MARKET"
-  | "BUILD_BARRACKS";
+  | "BUILD_MARKET";
 export interface SpatialEconomicActionRuleV7 {
   readonly command: SpatialEconomicCommandKindV7;
   readonly technology: TechnologyIdV7;
@@ -269,16 +245,9 @@ export const SPATIAL_ECONOMIC_ACTIONS_V7 = deepFreeze({
     improvement: "FORGE",
     placementMinimum: 0,
   },
-  BUILD_STONEWORKS: {
-    command: "BUILD_STONEWORKS",
-    technology: "MASONRY",
-    cost: 6,
-    improvement: "STONEWORKS",
-    placementMinimum: 1,
-  },
   BUILD_WORKSHOP: {
     command: "BUILD_WORKSHOP",
-    technology: "CRAFT",
+    technology: "ENGINEERING",
     cost: 4,
     improvement: "WORKSHOP",
     placementMinimum: 1,
@@ -296,13 +265,6 @@ export const SPATIAL_ECONOMIC_ACTIONS_V7 = deepFreeze({
     cost: 7,
     improvement: "MARKET",
     placementMinimum: 2,
-  },
-  BUILD_BARRACKS: {
-    command: "BUILD_BARRACKS",
-    technology: "QUARRYING",
-    cost: 4,
-    improvement: "BARRACKS",
-    placementMinimum: 0,
   },
 } satisfies Readonly<
   Record<SpatialEconomicCommandKindV7, SpatialEconomicActionRuleV7>
@@ -327,7 +289,7 @@ function node(
   });
 }
 
-export const ORIGINAL_BASELINE_V3_NODES = deepFreeze([
+export const ORIGINAL_BASELINE_V4_NODES = deepFreeze([
   node(
     "GATHERING",
     "SETTLEMENT",
@@ -363,33 +325,24 @@ export const ORIGINAL_BASELINE_V3_NODES = deepFreeze([
     ],
   ),
   node(
-    "CRAFT",
+    "MEDICINE",
     "SETTLEMENT",
     2,
     ["GATHERING"],
     [
-      { kind: "COMMAND", command: "BUILD_WORKSHOP" },
-      {
-        kind: "ECONOMIC_FORMULA",
-        improvement: "WORKSHOP",
-        formula: "DISTINCT_BASIC_TYPES",
-      },
-      { kind: "UNIT_ROLE", role: "ENVOY" },
+      { kind: "UNIT_ROLE", role: "MEDIC" },
+      { kind: "MEDIC_HEAL", amount: 4 },
     ],
   ),
   node(
-    "GRAND_WORKS",
+    "RECOVERY",
     "SETTLEMENT",
     3,
-    ["CRAFT"],
+    ["MEDICINE"],
     [
-      { kind: "COMMAND", command: "BUILD_GRAND_WORKS" },
-      {
-        kind: "ECONOMIC_FORMULA",
-        improvement: "GRAND_WORKS",
-        formula: "DISTINCT_PROCESSOR_TYPES",
-      },
-      { kind: "COMMAND", command: "REDEVELOP" },
+      { kind: "MEDIC_HEAL", amount: 6 },
+      { kind: "FRIENDLY_IDLE_RECOVERY", amount: 6 },
+      { kind: "COMMAND", command: "DISBAND" },
     ],
   ),
   node("HUNTING", "WILDS", 1, [], [{ kind: "COMMAND", command: "HUNT_GAME" }]),
@@ -438,65 +391,8 @@ export const ORIGINAL_BASELINE_V3_NODES = deepFreeze([
     ],
   ),
   node(
-    "SURVEYING",
-    "INDUSTRY",
-    1,
-    [],
-    [
-      { kind: "MOUNTAIN_MOVEMENT" },
-      { kind: "RESOURCE_REVEAL", resources: ["ORE", "STONE"] },
-      { kind: "HIGH_GROUND_VISION", radiusBonus: 1 },
-    ],
-  ),
-  node(
-    "MINING",
-    "INDUSTRY",
-    2,
-    ["SURVEYING"],
-    [{ kind: "COMMAND", command: "BUILD_MINE" }],
-  ),
-  node(
-    "METALLURGY",
-    "INDUSTRY",
-    3,
-    ["MINING"],
-    [
-      { kind: "COMMAND", command: "BUILD_FORGE" },
-      {
-        kind: "ECONOMIC_FORMULA",
-        improvement: "FORGE",
-        formula: "ADJACENT_MINES",
-      },
-      { kind: "UNIT_ROLE", role: "HEAVY" },
-    ],
-  ),
-  node(
-    "QUARRYING",
-    "INDUSTRY",
-    2,
-    ["SURVEYING"],
-    [
-      { kind: "COMMAND", command: "BUILD_QUARRY" },
-      { kind: "COMMAND", command: "BUILD_BARRACKS" },
-    ],
-  ),
-  node(
-    "MASONRY",
-    "INDUSTRY",
-    3,
-    ["QUARRYING"],
-    [
-      { kind: "COMMAND", command: "BUILD_STONEWORKS" },
-      {
-        kind: "ECONOMIC_FORMULA",
-        improvement: "STONEWORKS",
-        formula: "ADJACENT_QUARRIES_AND_OPPOSITE_PAIRS",
-      },
-    ],
-  ),
-  node(
     "SCOUTING",
-    "MOBILITY",
+    "MOBILITY_TRADE",
     1,
     [],
     [
@@ -507,7 +403,7 @@ export const ORIGINAL_BASELINE_V3_NODES = deepFreeze([
   ),
   node(
     "ROADS",
-    "MOBILITY",
+    "MOBILITY_TRADE",
     2,
     ["SCOUTING"],
     [
@@ -521,7 +417,7 @@ export const ORIGINAL_BASELINE_V3_NODES = deepFreeze([
   ),
   node(
     "COMMERCE",
-    "MOBILITY",
+    "MOBILITY_TRADE",
     3,
     ["ROADS"],
     [
@@ -536,24 +432,21 @@ export const ORIGINAL_BASELINE_V3_NODES = deepFreeze([
   ),
   node(
     "RAIDING",
-    "MOBILITY",
+    "MOBILITY_TRADE",
     2,
     ["SCOUTING"],
     [{ kind: "UNIT_ROLE", role: "RAIDER" }],
   ),
   node(
-    "MANEUVER",
-    "MOBILITY",
+    "MOUNTED_ARCHERY",
+    "MOBILITY_TRADE",
     3,
     ["RAIDING"],
-    [
-      { kind: "UNIT_ROLE", role: "LANCER" },
-      { kind: "IGNORE_HOSTILE_ZOC", roles: ["SCOUT", "RAIDER", "LANCER"] },
-    ],
+    [{ kind: "UNIT_ROLE", role: "HORSE_ARCHER" }],
   ),
   node(
     "DRILL",
-    "WARFARE",
+    "INDUSTRY_WARFARE",
     1,
     [],
     [
@@ -563,7 +456,7 @@ export const ORIGINAL_BASELINE_V3_NODES = deepFreeze([
   ),
   node(
     "FORTIFICATION",
-    "WARFARE",
+    "INDUSTRY_WARFARE",
     2,
     ["DRILL"],
     [
@@ -578,7 +471,7 @@ export const ORIGINAL_BASELINE_V3_NODES = deepFreeze([
   ),
   node(
     "EXPLOSIVES",
-    "WARFARE",
+    "INDUSTRY_WARFARE",
     3,
     ["FORTIFICATION"],
     [
@@ -587,24 +480,50 @@ export const ORIGINAL_BASELINE_V3_NODES = deepFreeze([
     ],
   ),
   node(
-    "MEDICINE",
-    "WARFARE",
+    "ENGINEERING",
+    "INDUSTRY_WARFARE",
     2,
     ["DRILL"],
     [
-      { kind: "UNIT_ROLE", role: "MEDIC" },
-      { kind: "MEDIC_HEAL", amount: 4 },
+      { kind: "COMMAND", command: "BUILD_MINE" },
+      { kind: "COMMAND", command: "BUILD_WORKSHOP" },
+      {
+        kind: "ECONOMIC_FORMULA",
+        improvement: "WORKSHOP",
+        formula: "DISTINCT_BASIC_TYPES",
+      },
+      { kind: "MOUNTAIN_MOVEMENT" },
+      { kind: "HIGH_GROUND_VISION", radiusBonus: 1 },
     ],
   ),
   node(
-    "RECOVERY",
-    "WARFARE",
+    "METALLURGY",
+    "INDUSTRY_WARFARE",
     3,
-    ["MEDICINE"],
+    ["ENGINEERING"],
     [
-      { kind: "MEDIC_HEAL", amount: 6 },
-      { kind: "FRIENDLY_IDLE_RECOVERY", amount: 6 },
-      { kind: "COMMAND", command: "DISBAND" },
+      { kind: "COMMAND", command: "BUILD_FORGE" },
+      {
+        kind: "ECONOMIC_FORMULA",
+        improvement: "FORGE",
+        formula: "ADJACENT_MINES",
+      },
+      { kind: "UNIT_ROLE", role: "HEAVY" },
+    ],
+  ),
+  node(
+    "GRAND_WORKS",
+    "INDUSTRY_WARFARE",
+    3,
+    ["ENGINEERING"],
+    [
+      { kind: "COMMAND", command: "BUILD_GRAND_WORKS" },
+      {
+        kind: "ECONOMIC_FORMULA",
+        improvement: "GRAND_WORKS",
+        formula: "DISTINCT_PROCESSOR_TYPES",
+      },
+      { kind: "COMMAND", command: "REDEVELOP" },
     ],
   ),
 ] as const);
@@ -642,22 +561,7 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     sightRadius: 2,
     technology: "SCOUTING",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "IGNORE_ZOC_WITH_MANEUVER"],
-  }),
-  ENVOY: role({
-    role: "ENVOY",
-    label: "Envoy",
-    cost: 6,
-    maxHp: 7,
-    attack2: 0,
-    defense2: 1,
-    move: 1,
-    range: 2,
-    minimumRange: 1,
-    sightRadius: 1,
-    technology: "CRAFT",
-    mayUsePrimaryActionAfterMove: true,
-    abilities: ["DEFECTION"],
+    abilities: ["ATTACK", "CAPTURE"],
   }),
   MARKSMAN: role({
     role: "MARKSMAN",
@@ -702,7 +606,7 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "RAIDING",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "CHARGE", "IGNORE_ZOC_WITH_MANEUVER"],
+    abilities: ["ATTACK", "CAPTURE", "CHARGE"],
   }),
   MEDIC: role({
     role: "MEDIC",
@@ -764,26 +668,20 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: true,
     abilities: ["ATTACK", "CAPTURE", "PUSH"],
   }),
-  LANCER: role({
-    role: "LANCER",
-    label: "Lancer",
+  HORSE_ARCHER: role({
+    role: "HORSE_ARCHER",
+    label: "Horse Archer",
     cost: 9,
-    maxHp: 12,
-    attack2: 6,
-    defense2: 3,
+    maxHp: 10,
+    attack2: 4,
+    defense2: 2,
     move: 3,
-    range: 1,
+    range: 2,
     minimumRange: 1,
     sightRadius: 1,
-    technology: "MANEUVER",
+    technology: "MOUNTED_ARCHERY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: [
-      "ATTACK",
-      "CAPTURE",
-      "DASH",
-      "IGNORE_ZOC_WITH_MANEUVER",
-      "PURSUIT",
-    ],
+    abilities: ["ATTACK", "DASH", "TWO_SHOTS"],
   }),
   BREACHER: role({
     role: "BREACHER",
@@ -817,19 +715,19 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
   }),
 });
 
-export const ORIGINAL_BASELINE_V3_TREE: FactionTechnologyTreeV7 = deepFreeze({
-  id: "ORIGINAL_BASELINE_V3",
+export const ORIGINAL_BASELINE_V4_TREE: FactionTechnologyTreeV7 = deepFreeze({
+  id: "ORIGINAL_BASELINE_V4",
   faction: "ORIGINAL",
   startingTechIds: ["GATHERING"],
-  nodes: ORIGINAL_BASELINE_V3_NODES,
+  nodes: ORIGINAL_BASELINE_V4_NODES,
   roleRules: ORIGINAL_ROLE_RULES_V7,
 });
 export const RULESET_7 = deepFreeze({
   id: RULESET_7_ID,
   version: 7 as const,
   startingCoins: 5 as const,
-  technologies: ORIGINAL_BASELINE_V3_NODES,
-  tree: ORIGINAL_BASELINE_V3_TREE,
+  technologies: ORIGINAL_BASELINE_V4_NODES,
+  tree: ORIGINAL_BASELINE_V4_TREE,
 });
 
 export function technologyResearchCostV7(
@@ -854,14 +752,14 @@ export function effectiveRoleRuleV7(roleId: UnitRoleIdV7): EffectiveRoleRuleV7 {
   return ORIGINAL_ROLE_RULES_V7[roleId];
 }
 export function requireTechnologyNodeV7(id: TechnologyIdV7): TechnologyNodeV7 {
-  const result = ORIGINAL_BASELINE_V3_NODES.find((item) => item.id === id);
+  const result = ORIGINAL_BASELINE_V4_NODES.find((item) => item.id === id);
   if (result === undefined)
     throw new RangeError(`Unknown v7 technology: ${id}`);
   return result;
 }
 
 export interface TechnologyCapabilitiesV7 {
-  readonly treeId: "ORIGINAL_BASELINE_V3";
+  readonly treeId: "ORIGINAL_BASELINE_V4";
   readonly resourceReveals: readonly ResourceIdV7[];
   readonly commands: readonly TechnologyUnlockedCommandV7[];
   readonly trainableRoles: readonly UnitRoleIdV7[];
@@ -881,7 +779,6 @@ export interface TechnologyCapabilitiesV7 {
     readonly connectedOrthogonalStepCost2: 1;
   } | null;
   readonly marketCapitalRoadBonusCoins: 0 | 1;
-  readonly ignoreHostileZocRoles: readonly UnitRoleIdV7[];
   readonly friendlyCityFortification: {
     readonly roles: readonly UnitRoleIdV7[];
     readonly defenseNumerator: 2;
@@ -897,7 +794,7 @@ export function technologyCapabilitiesV7(
   researchedTechs: readonly TechnologyIdV7[],
 ): TechnologyCapabilitiesV7 {
   const known = new Set(researchedTechs);
-  const unlocks = ORIGINAL_BASELINE_V3_NODES.filter((node) =>
+  const unlocks = ORIGINAL_BASELINE_V4_NODES.filter((node) =>
     known.has(node.id),
   ).flatMap((node) => node.unlocks);
   const resources = new Set<ResourceIdV7>();
@@ -907,7 +804,6 @@ export function technologyCapabilitiesV7(
     [];
   const forest = new Set<UnitRoleIdV7>();
   const sights: Partial<Record<UnitRoleIdV7, number>> = {};
-  const zoc = new Set<UnitRoleIdV7>();
   let connectedFarmVisuals = false;
   let mountainMovement = false;
   let highGroundVisionRadiusBonus: 0 | 1 = 0;
@@ -961,9 +857,6 @@ export function technologyCapabilitiesV7(
       case "MARKET_CAPITAL_ROAD_BONUS":
         marketCapitalRoadBonusCoins = 1;
         break;
-      case "IGNORE_HOSTILE_ZOC":
-        unlock.roles.forEach((item) => zoc.add(item));
-        break;
       case "FRIENDLY_CITY_FORTIFICATION":
         friendlyCityFortification = {
           roles: unlock.roles,
@@ -985,7 +878,7 @@ export function technologyCapabilitiesV7(
         break;
     }
   return deepFreeze({
-    treeId: "ORIGINAL_BASELINE_V3",
+    treeId: "ORIGINAL_BASELINE_V4",
     resourceReveals: RESOURCE_IDS_V7.filter((item) => resources.has(item)),
     commands: COMMAND_KIND_ORDER_V7.filter((item) =>
       commands.has(item as TechnologyUnlockedCommandV7),
@@ -1007,7 +900,6 @@ export function technologyCapabilitiesV7(
     scoutDetectionRadius,
     roadMovement,
     marketCapitalRoadBonusCoins,
-    ignoreHostileZocRoles: UNIT_ROLE_IDS_V7.filter((item) => zoc.has(item)),
     friendlyCityFortification,
     ownedCityCapacityBonus,
     medicHealAmount,
@@ -1018,13 +910,13 @@ export function technologyCapabilitiesV7(
 
 export function assertRuleset7Registry(): void {
   if (
-    ORIGINAL_BASELINE_V3_NODES.length !== TECHNOLOGY_IDS_V7.length ||
-    !ORIGINAL_BASELINE_V3_NODES.every(
+    ORIGINAL_BASELINE_V4_NODES.length !== TECHNOLOGY_IDS_V7.length ||
+    !ORIGINAL_BASELINE_V4_NODES.every(
       (node, index) => node.id === TECHNOLOGY_IDS_V7[index],
     ) ||
     Reflect.ownKeys(ORIGINAL_ROLE_RULES_V7).length !==
       UNIT_ROLE_IDS_V7.length ||
-    IMPROVEMENT_IDS_V7.length !== 13
+    IMPROVEMENT_IDS_V7.length !== 10
   )
     throw new Error("Ruleset-7 registry is incomplete");
 }

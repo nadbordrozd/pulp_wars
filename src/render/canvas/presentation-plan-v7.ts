@@ -39,7 +39,7 @@ export function corePresentationPlanV7(
   const steps: CorePresentationStepV7[] = [];
   let visibilityCrossfadeAdded = false;
   for (const event of envelope.events) {
-    if (event.kind === "UNIT_MOVED" || event.kind === "UNIT_PURSUED") {
+    if (event.kind === "UNIT_MOVED") {
       const origin = before.units.find((unit) => unit.id === event.unitId)?.at;
       if (origin !== undefined && event.path.length > 0)
         steps.push({
@@ -57,7 +57,9 @@ export function corePresentationPlanV7(
       );
       if (attacker === undefined || defender === undefined) continue;
       const ranged =
-        attacker.role === "MARKSMAN" || attacker.role === "CATAPULT";
+        attacker.role === "MARKSMAN" ||
+        attacker.role === "CATAPULT" ||
+        attacker.role === "HORSE_ARCHER";
       steps.push({
         kind:
           attacker.role === "CATAPULT"
@@ -92,11 +94,7 @@ export function corePresentationPlanV7(
 }
 
 function isTacticalStatusEvent(kind: string): boolean {
-  return (
-    kind.startsWith("DEFECTION_") ||
-    kind.startsWith("BLACKOUT_") ||
-    kind === "SABOTEUR_EXPOSED"
-  );
+  return kind.startsWith("BLACKOUT_") || kind === "SABOTEUR_EXPOSED";
 }
 
 function tacticalStatusPresentation(
@@ -123,25 +121,5 @@ function tacticalStatusPresentation(
     const at = after.units.find((unit) => unit.id === event.unitId)?.at;
     return at === undefined ? null : { at, symbolId: "ui-status-exposed" };
   }
-  if (event.kind === "DEFECTION_CANCELLED") return null;
-  const unitId =
-    event.kind === "DEFECTION_RESOLVED"
-      ? event.targetUnitId
-      : "targetUnitId" in event
-        ? event.targetUnitId
-        : "unitId" in event
-          ? event.unitId
-          : null;
-  if (unitId === null) return null;
-  const at = after.units.find((unit) => unit.id === unitId)?.at;
-  if (at === undefined) return null;
-  return {
-    at,
-    symbolId:
-      event.kind === "DEFECTION_OFFERED" ||
-      (event.kind === "DEFECTION_ENDPOINT_STATUS" &&
-        event.phase === "WAITING_FOR_REPLY")
-        ? "ui-status-defection-waiting"
-        : "ui-status-defection-armed",
-  };
+  return null;
 }

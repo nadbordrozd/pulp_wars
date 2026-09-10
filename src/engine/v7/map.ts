@@ -1,6 +1,6 @@
 import { deepFreeze } from "../model/freeze";
 import { canonicalHash } from "../replay/canonical";
-import { ORIGINAL_BASELINE_V3_TREE, RULESET_7 } from "../rules/ruleset-v7";
+import { ORIGINAL_BASELINE_V4_TREE, RULESET_7 } from "../rules/ruleset-v7";
 import {
   createInitialMapStateV6,
   generateInitialMapV6,
@@ -53,7 +53,8 @@ export function generateInitialMapV7(input: unknown): GenerateMapResultV7 {
     return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
   }
   const generated = generateInitialMapV6(toV6Setup(setup));
-  return generated as unknown as GenerateMapResultV7;
+  if (!generated.ok) return generated;
+  return { ok: true, map: adaptGeneratedMap(generated.map) };
 }
 
 export type CreateInitialMapStateResultV7 =
@@ -91,17 +92,17 @@ export function createInitialMapStateV7(
     round: 1,
     activeSeatIndex: 0,
     turnOrder: v6.state.turnOrder,
-    board: v6.state.board,
+    board: stripMountainResources(v6.state.board),
     players: v6.state.players.map((player) => ({
       id: player.id,
       seat: player.seat,
       controller: player.controller,
       color: player.color,
       faction: "ORIGINAL",
-      factionTreeId: "ORIGINAL_BASELINE_V3",
+      factionTreeId: "ORIGINAL_BASELINE_V4",
       status: player.status,
       coins: RULESET_7.startingCoins,
-      researchedTechs: ORIGINAL_BASELINE_V3_TREE.startingTechIds,
+      researchedTechs: ORIGINAL_BASELINE_V4_TREE.startingTechIds,
       explored: player.explored,
       spoilsClaimedCityIds: [],
       achievementEntitlements: [
@@ -110,7 +111,7 @@ export function createInitialMapStateV7(
       ],
     })),
     cities: v6.state.cities.map((city) => ({ ...city, blackout: null })),
-    populationContributions: v6.state.populationContributions,
+    populationContributions: [],
     units: v6.state.units.map((unit) => ({
       ...unit,
       activation: {
@@ -118,7 +119,6 @@ export function createInitialMapStateV7(
         movedPathLength: unit.activation.movedPathLength,
         attacked: unit.activation.attacked,
         attacksUsed: unit.activation.attacked ? 1 : 0,
-        pursuitPhase: "NONE",
         healed: unit.activation.healed,
         recovered: unit.activation.recovered,
         captured: unit.activation.captured,
@@ -128,7 +128,6 @@ export function createInitialMapStateV7(
       blackoutEligibleRound: null,
     })),
     treasureChests: v6.state.treasureChests,
-    defectionMarks: [],
     saboteurExposures: [],
     pendingChoices: [],
     outcome: null,
@@ -136,6 +135,40 @@ export function createInitialMapStateV7(
   if (parseGameStateV7(state) === null)
     throw new Error("Internal v7 initial-state invariant failure");
   return { ok: true, state, mapAttempt: v6.mapAttempt };
+}
+
+function adaptGeneratedMap(map: GeneratedMapV6): GeneratedMapV7 {
+  return {
+    ...map,
+    board: stripMountainResources(map.board),
+  };
+}
+
+function stripMountainResources(board: GeneratedMapV6["board"]): BoardStateV7 {
+  return {
+    width: board.width,
+    height: board.height,
+    tiles: board.tiles.map((tile) => {
+      if (tile.improvement !== null)
+        throw new Error("Generated v6 map unexpectedly contains improvements");
+      const removedMountainResource =
+        tile.resource === "ORE" || tile.resource === "STONE";
+      if (removedMountainResource && tile.terrain !== "MOUNTAIN")
+        throw new Error(
+          `Generated v6 map placed ${tile.resource} outside MOUNTAIN`,
+        );
+      const resource = removedMountainResource ? null : tile.resource;
+      return {
+        at: tile.at,
+        terrain: tile.terrain,
+        resource,
+        improvement: null,
+        road: tile.road,
+        site: tile.site,
+        territoryCityId: tile.territoryCityId,
+      };
+    }),
+  };
 }
 
 export function canonicalMapRandomHashV7(

@@ -163,6 +163,7 @@ export interface Ruleset7BrowserControllerOptions {
   readonly policySliceMilliseconds?: number;
   readonly policyReadClock?: () => number;
   readonly diagnosticNow?: () => string;
+  readonly initialSaveWarning?: string | null;
 }
 
 type SnapshotSubscriberV7 = (snapshot: Ruleset7BrowserSnapshot) => void;
@@ -231,6 +232,7 @@ export class Ruleset7BrowserController {
   #maximumSliceMilliseconds = 0;
 
   constructor(options: Ruleset7BrowserControllerOptions = {}) {
+    this.#saveWarning = options.initialSaveWarning ?? null;
     this.#readClock = options.policyReadClock ?? defaultReadClockV7;
     this.#policySliceMilliseconds = options.policySliceMilliseconds ?? 4;
     if (

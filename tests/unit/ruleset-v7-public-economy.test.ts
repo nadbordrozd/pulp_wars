@@ -39,7 +39,7 @@ describe("ruleset-7 pure public economy", () => {
       ),
       "enemy unit missing",
     ).id;
-    const conceal = (resource: "ORE" | "STONE") =>
+    const conceal = (resource: "GAME" | null) =>
       checkedV7({
         ...first.state,
         players: first.state.players.map((player) =>
@@ -54,7 +54,7 @@ describe("ruleset-7 pure public economy", () => {
           ...first.state.board,
           tiles: first.state.board.tiles.map((tile) =>
             same(tile.at, hiddenAt)
-              ? { ...tile, terrain: "MOUNTAIN" as const, resource }
+              ? { ...tile, terrain: "FOREST" as const, resource }
               : tile,
           ),
         },
@@ -64,14 +64,14 @@ describe("ruleset-7 pure public economy", () => {
                 ...unit,
                 role: "SABOTEUR" as const,
                 at: hiddenAt,
-                hp: resource === "ORE" ? 10 : 9,
+                hp: resource === "GAME" ? 10 : 9,
                 maxHp: 10,
                 blackoutEligibleRound: 1,
               }
             : unit,
         ),
       });
-    const states = [conceal("ORE"), conceal("STONE")];
+    const states = [conceal("GAME"), conceal(null)];
     const views = states.map((state) => viewForV7(state, state.humanPlayerId));
     expect(JSON.stringify(views[0])).toBe(JSON.stringify(views[1]));
     expect(
@@ -123,7 +123,7 @@ describe("ruleset-7 pure public economy", () => {
     });
   });
 
-  it("matches accepted reducer population, income, level, and capacity deltas", () => {
+  it("matches accepted reducer population, income, and level deltas", () => {
     const staged = farmPreviewState(7_281);
     const view = viewForV7(staged.state, staged.state.humanPlayerId);
     const command = { kind: "BUILD_FARM", at: staged.target } as const;
@@ -156,43 +156,6 @@ describe("ruleset-7 pure public economy", () => {
         beforeCity.permanentPopulation -
         beforeCity.economicPopulation,
     ).toBe(2);
-
-    const cityCenter = required(
-      staged.state.cities.find((city) => city.id === staged.cityId),
-      "Barracks city missing",
-    ).at;
-    const barracksAt = required(
-      staged.state.board.tiles.find(
-        (tile) =>
-          tile.territoryCityId === staged.cityId &&
-          tile.site === null &&
-          tile.resource === null &&
-          tile.improvement === null &&
-          chebyshev(tile.at, cityCenter) === 1 &&
-          !same(tile.at, staged.target) &&
-          !staged.state.treasureChests.some((chest) => same(chest, tile.at)),
-      ),
-      "Barracks tile missing",
-    ).at;
-    const barracks = previewEconomicV7(view, {
-      kind: "BUILD_BARRACKS",
-      at: barracksAt,
-    });
-    expect(barracks).toMatchObject({
-      ok: true,
-      preview: {
-        capacityDelta: 2,
-        outputTransitions: [
-          expect.objectContaining({
-            at: barracksAt,
-            improvement: "BARRACKS",
-            measure: "CAPACITY",
-            before: 0,
-            after: 2,
-          }),
-        ],
-      },
-    });
   });
 
   it("matches reducer deltas for every exact offered economic target in a public map", () => {
@@ -204,15 +167,12 @@ describe("ruleset-7 pure public economy", () => {
       "BUILD_FARM",
       "BUILD_LUMBER_CAMP",
       "BUILD_MINE",
-      "BUILD_QUARRY",
       "BUILD_WINDMILL",
       "BUILD_SAWMILL",
       "BUILD_FORGE",
-      "BUILD_STONEWORKS",
       "BUILD_WORKSHOP",
       "BUILD_GRAND_WORKS",
       "BUILD_MARKET",
-      "BUILD_BARRACKS",
       "CLEAR_FOREST",
       "REPLANT_FOREST",
       "BUILD_ROAD",
@@ -269,17 +229,6 @@ describe("ruleset-7 pure public economy", () => {
           event.kind === "CITY_LEVELED_UP" ? [event.level] : [],
         ),
       );
-      const targetTile = state.board.tiles.find((tile) =>
-        same(tile.at, command.at),
-      );
-      const infrastructureCapacityDelta =
-        command.kind === "BUILD_BARRACKS"
-          ? 2
-          : command.kind === "REDEVELOP" &&
-              targetTile?.improvement === "BARRACKS"
-            ? -2
-            : 0;
-      expect(preview.preview.capacityDelta).toBe(infrastructureCapacityDelta);
     }
   });
 
@@ -322,7 +271,7 @@ describe("ruleset-7 pure public economy", () => {
     ).toBe(Number.MAX_SAFE_INTEGER);
   });
 
-  it("never turns public unknown Mountain resources into potential Mine or Quarry sites", () => {
+  it("offers Mine on any empty owned Mountain only after Engineering", () => {
     const staged = farmPreviewState(7_282);
     const mountain = emptyOwnedTile(staged.state, staged.cityId, [
       staged.target,
@@ -335,13 +284,9 @@ describe("ruleset-7 pure public economy", () => {
               ...player,
               researchedTechs: player.researchedTechs.filter(
                 (tech) =>
-                  ![
-                    "SURVEYING",
-                    "MINING",
-                    "METALLURGY",
-                    "QUARRYING",
-                    "MASONRY",
-                  ].includes(tech),
+                  tech !== "ENGINEERING" &&
+                  tech !== "METALLURGY" &&
+                  tech !== "GRAND_WORKS",
               ),
               coins: 0,
             }
@@ -354,36 +299,24 @@ describe("ruleset-7 pure public economy", () => {
             ? {
                 ...tile,
                 terrain: "MOUNTAIN" as const,
-                resource: "ORE" as const,
+                resource: null,
               }
             : tile,
         ),
       },
     });
     const hiddenView = viewForV7(hidden, hidden.humanPlayerId);
-    expect(tileInView(hiddenView, mountain)).toMatchObject({
-      resource: "UNKNOWN_RESOURCE",
-    });
-    expect(potential(hiddenView, "BUILD_MINE").targets).toBe(0);
-    expect(potential(hiddenView, "BUILD_QUARRY").targets).toBe(0);
+    expect(tileInView(hiddenView, mountain)).toMatchObject({ resource: null });
+    expect(potential(hiddenView, "BUILD_MINE").targets).toBeGreaterThan(0);
 
     const knownView: PlayerViewV7 = {
       ...hiddenView,
       viewer: {
         ...hiddenView.viewer,
-        researchedTechs: [...hiddenView.viewer.researchedTechs, "SURVEYING"],
-      },
-      board: {
-        ...hiddenView.board,
-        tiles: hiddenView.board.tiles.map((tile) =>
-          same(tile.at, mountain) && tile.explored
-            ? { ...tile, resource: "ORE" as const }
-            : tile,
-        ),
+        researchedTechs: [...hiddenView.viewer.researchedTechs, "ENGINEERING"],
       },
     };
     expect(knownView.viewer.coins).toBe(0);
-    expect(knownView.viewer.researchedTechs).not.toContain("MINING");
     expect(potential(knownView, "BUILD_MINE").targets).toBeGreaterThan(0);
   });
 
@@ -395,7 +328,7 @@ describe("ruleset-7 pure public economy", () => {
       viewer: {
         ...baseView.viewer,
         researchedTechs: baseView.viewer.researchedTechs.filter(
-          (tech) => tech !== "GATHERING" && tech !== "SURVEYING",
+          (tech) => tech !== "GATHERING",
         ),
       },
     };
@@ -423,7 +356,7 @@ describe("ruleset-7 pure public economy", () => {
       }),
     ).toMatchObject({
       ok: true,
-      preview: { resourceRestored: "UNKNOWN_RESOURCE" },
+      preview: { resourceRestored: "FERTILE_GROUND" },
     });
 
     const mountainAt = emptyOwnedViewTile(withFarm, staged.cityId, [
@@ -441,7 +374,7 @@ describe("ruleset-7 pure public economy", () => {
       }),
     ).toMatchObject({
       ok: true,
-      preview: { resourceRestored: "UNKNOWN_RESOURCE" },
+      preview: { resourceRestored: null },
     });
 
     const forestAt = emptyOwnedViewTile(withFarm, staged.cityId, [
@@ -514,7 +447,7 @@ describe("ruleset-7 pure public economy", () => {
 
     const zeroForge = patchViewTile(positive, cells.mine, {
       improvement: null,
-      resource: "ORE",
+      resource: null,
     });
     expect(potential(zeroForge, "BUILD_GRAND_WORKS").targets).toBe(0);
 
@@ -637,13 +570,12 @@ describe("ruleset-7 pure public economy", () => {
       "first planning city missing",
     );
     const monumentAt = emptyOwnedViewTile(twoCities, firstCity.id);
-    expect(
-      scorePublicSpatialPlanV7(twoCities, {
-        kind: "BUILD_MONUMENT",
-        achievement: "ENGINEER",
-        at: monumentAt,
-      }),
-    ).toBe(-27);
+    const monumentPlan = {
+      kind: "BUILD_MONUMENT",
+      achievement: "ENGINEER",
+      at: monumentAt,
+    } as const;
+    expect(scorePublicSpatialPlanV7(twoCities, monumentPlan)).toBe(0);
 
     const expandCity = required(
       base.cities.find((city) => city.id === staged.cityId),

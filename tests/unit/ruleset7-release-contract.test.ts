@@ -8,6 +8,7 @@ import {
 import {
   REQUIRED_RELEASE_EVIDENCE_PATHS_V7,
   RELEASE_FIXTURES_V7,
+  assertRuleset7ReleaseArchiveRuntime,
   fixtureExecutionKey,
   validateCompleteNormalMatrixEvidenceV7,
   validateRuleset7ReleaseCorpus,
@@ -17,6 +18,15 @@ import {
 const HASH = "a".repeat(64);
 
 describe("Ruleset 7 release corpus contract", () => {
+  it("rejects the revision-3 runtime instead of relabeling revision-2 evidence", () => {
+    expect(() =>
+      assertRuleset7ReleaseArchiveRuntime("pulp-wars-poc-7r3"),
+    ).toThrow(/7r2 archive.*7r3/);
+    expect(() =>
+      assertRuleset7ReleaseArchiveRuntime("pulp-wars-poc-7r2"),
+    ).not.toThrow();
+  });
+
   it("requires complete unique inventories backed by successfully executed deterministic fixtures", () => {
     const corpus = validCorpus();
     expect(() => validate(corpus)).not.toThrow();

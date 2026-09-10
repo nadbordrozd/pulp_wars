@@ -25,7 +25,6 @@ const READY: UnitStateV7["activation"] = {
   movedPathLength: 0,
   attacked: false,
   attacksUsed: 0,
-  pursuitPhase: "NONE",
   healed: false,
   recovered: false,
   captured: false,
@@ -45,47 +44,40 @@ const EDGES_AND_CORNERS: readonly CoordV7[] = [
 ];
 
 describe("ruleset-7 public movement bounds", () => {
-  it.each(["MOVE", "PURSUE"] as const)(
-    "keeps every %s path on-board and acceptable at every edge and corner",
-    (mode) => {
-      for (const origin of EDGES_AND_CORNERS) {
-        const state = movementState(origin, mode);
-        const view = viewForV7(state, state.humanPlayerId);
-        const unit = view.units.find(
-          (candidate) => candidate.ownerId === view.viewer.id,
-        )!;
-        const reachable = reachablePlayerMovementPathsV7(view, unit, mode);
-        const commands = queryPlayerCommandsV7(view).filter(
-          (
-            command,
-          ): command is Extract<
-            CommandV7,
-            { readonly kind: "MOVE" | "PURSUE" }
-          > => command.kind === mode && command.unitId === unit.id,
-        );
+  it("keeps every Move path on-board and acceptable at every edge and corner", () => {
+    for (const origin of EDGES_AND_CORNERS) {
+      const state = movementState(origin);
+      const view = viewForV7(state, state.humanPlayerId);
+      const unit = view.units.find(
+        (candidate) => candidate.ownerId === view.viewer.id,
+      )!;
+      const reachable = reachablePlayerMovementPathsV7(view, unit);
+      const commands = queryPlayerCommandsV7(view).filter(
+        (command): command is Extract<CommandV7, { readonly kind: "MOVE" }> =>
+          command.kind === "MOVE" && command.unitId === unit.id,
+      );
 
-        expect(commands.map((command) => command.path)).toEqual(
-          reachable.map((path) => path.path),
-        );
-        expect(reachable.length).toBeGreaterThan(0);
+      expect(commands.map((command) => command.path)).toEqual(
+        reachable.map((path) => path.path),
+      );
+      expect(reachable.length).toBeGreaterThan(0);
+      expect(
+        reachable.every((path) =>
+          path.path.every((at) => onBoard(view.board, at)),
+        ),
+      ).toBe(true);
+      expect(reachable.map((path) => path.destination)).toEqual(
+        [...reachable]
+          .sort((left, right) => compare(left.destination, right.destination))
+          .map((path) => path.destination),
+      );
+      for (const command of commands)
         expect(
-          reachable.every((path) =>
-            path.path.every((at) => onBoard(view.board, at)),
-          ),
+          applyCommandV7(state, state.humanPlayerId, command).accepted,
+          `MOVE from ${origin.x},${origin.y}: ${JSON.stringify(command.path)}`,
         ).toBe(true);
-        expect(reachable.map((path) => path.destination)).toEqual(
-          [...reachable]
-            .sort((left, right) => compare(left.destination, right.destination))
-            .map((path) => path.destination),
-        );
-        for (const command of commands)
-          expect(
-            applyCommandV7(state, state.humanPlayerId, command).accepted,
-            `${mode} from ${origin.x},${origin.y}: ${JSON.stringify(command.path)}`,
-          ).toBe(true);
-      }
-    },
-  );
+    }
+  });
 
   it("rejects public paths whose off-board or fractional coordinates alias rows", () => {
     const aliases = [
@@ -96,13 +88,13 @@ describe("ruleset-7 public movement bounds", () => {
       { origin: { x: 10, y: 5 }, step: { x: 9, y: 56 / 11 } },
     ] as const;
     for (const { origin, step } of aliases) {
-      for (const mode of ["MOVE", "PURSUE"] as const) {
-        const state = movementState(origin, mode);
+      {
+        const state = movementState(origin);
         const view = viewForV7(state, state.humanPlayerId);
         const unit = view.units.find(
           (candidate) => candidate.ownerId === view.viewer.id,
         )!;
-        expect(validatePlayerMovementPathV7(view, unit, [step], mode)).toEqual({
+        expect(validatePlayerMovementPathV7(view, unit, [step])).toEqual({
           legal: false,
           reason: "OUT_OF_BOUNDS",
         });
@@ -114,7 +106,7 @@ describe("ruleset-7 public movement bounds", () => {
   });
 
   it("does not admit non-finite coordinates through public Coord APIs", () => {
-    const state = movementState({ x: 10, y: 5 }, "MOVE");
+    const state = movementState({ x: 10, y: 5 });
     const view = viewForV7(state, state.humanPlayerId);
     const unit = view.units.find(
       (candidate) => candidate.ownerId === view.viewer.id,
@@ -132,7 +124,7 @@ describe("ruleset-7 public movement bounds", () => {
   });
 
   it("keeps edge commands equal across hidden Saboteur positions", () => {
-    const base = movementState({ x: 10, y: 5 }, "MOVE");
+    const base = movementState({ x: 10, y: 5 });
     const human = base.players.find(
       (player) => player.id === base.humanPlayerId,
     )!;
@@ -180,11 +172,11 @@ describe("ruleset-7 public movement bounds", () => {
   });
 });
 
-function movementState(origin: CoordV7, mode: "MOVE" | "PURSUE"): GameStateV7 {
+function movementState(origin: CoordV7): GameStateV7 {
   const base = exploredAllV7(allTechsV7(initialV7(27)));
   const human = base.humanPlayerId;
   const enemy = base.players.find((player) => player.id !== human)!.id;
-  const role = mode === "PURSUE" ? "LANCER" : "SCOUT";
+  const role = "SCOUT" as const;
   const maxHp = effectiveRoleRuleV7(role).maxHp;
   return checkedV7({
     ...base,
@@ -197,14 +189,7 @@ function movementState(origin: CoordV7, mode: "MOVE" | "PURSUE"): GameStateV7 {
             at: origin,
             hp: maxHp,
             maxHp,
-            activation:
-              mode === "PURSUE"
-                ? {
-                    ...READY,
-                    attacksUsed: 1 as const,
-                    pursuitPhase: "PURSUIT_READY" as const,
-                  }
-                : READY,
+            activation: READY,
             blackoutEligibleRound: null,
           }
         : {

@@ -25,9 +25,8 @@ on screen right, tail left, rider facing down-right, and a compact readable bow
 with curve and string. Northwest light, ground contact, transparent edge
 quality, and class scale are reviewed beside standard, siege, and giant units.
 The derived `portrait-original-horse-archer` is presentation art from this
-accepted source. These new registrations do not change any runtime role mapping
-until the integration bead explicitly adopts them; every prior unit and Candy
-source remains byte-frozen.
+accepted source. Ruleset 7 revision 3 maps both assets explicitly to the live
+Horse Archer role; every prior unit and Candy source remains byte-frozen.
 
 ## Ruleset-6 active inventory
 

@@ -53,12 +53,12 @@ const report = {
 
 if (
   report.fixtureViewHash !==
-    "9826c2f0c2a3c93a461b4bbb1f31f9f1a7d3ee02047c9ef96246d0e68e7f0a77" ||
+    "d095b657a12242e56e4bf3ada5e3a0a8d1982da358a906c9bd477e0eabe6c75b" ||
   report.policyDecisionHash !==
-    "e3a9cb0f00b414c0220e01ff57b0d6cec3e5cd762f6c2cfeb83ab00d349a5e95" ||
+    "c5d38ea77c2efa7b859191f3e3449082e75f0753273308e1192535742b9d1f82" ||
   report.synchronous.decisionHash !== report.policyDecisionHash ||
   JSON.stringify(report.command) !==
-    JSON.stringify({ kind: "BUILD_LUMBER_CAMP", at: { x: 12, y: 14 } })
+    JSON.stringify({ kind: "BUILD_FORGE", at: { x: 9, y: 8 } })
 )
   throw new Error(`Normal policy parity changed: ${JSON.stringify(report)}`);
 

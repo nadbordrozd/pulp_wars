@@ -115,7 +115,7 @@ try {
   await click(connection, '[data-action="tech"]');
   await waitFor(
     connection,
-    `document.querySelectorAll('.v7-tech-card').length === 25 && document.querySelectorAll('.v7-tech-edge').length === 20`,
+    `document.querySelectorAll('.v7-tech-card').length === 21 && document.querySelectorAll('.v7-tech-edge').length === 17`,
   );
   await assertLayout(connection, "1024 Tech");
   await waitForImages(connection);
@@ -173,7 +173,7 @@ try {
   await touch(connection, '[data-action="tech"]');
   await waitFor(
     connection,
-    `document.querySelectorAll('.v7-tech-card').length === 25 && document.querySelectorAll('.v7-tech-edge').length === 20`,
+    `document.querySelectorAll('.v7-tech-card').length === 21 && document.querySelectorAll('.v7-tech-edge').length === 17`,
   );
   await viewport(connection, 600, 780, 1);
   await assertLayout(connection, "600 Tech");

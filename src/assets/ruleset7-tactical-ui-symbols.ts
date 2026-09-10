@@ -101,21 +101,13 @@ export type TacticalSymbolVisibility =
   | "OWNER_ONLY"
   | "DETECTED_VIEWER_ONLY"
   | "OWNER_OR_EXPOSURE_RECIPIENT"
-  | "DEFECTION_FULL_ONLY"
-  | "DEFECTION_FULL_OR_ENDPOINT"
   | "BLACKOUT_FULL_OR_CITY_ONLY";
 
 export interface Ruleset7TacticalUiSymbol {
   readonly id: `ui-${"action" | "status"}-${string}`;
   readonly semanticLabel: string;
   readonly semanticRole:
-    | "command"
-    | "visibility"
-    | "defection"
-    | "economy"
-    | "blackout"
-    | "capacity"
-    | "achievement";
+    "command" | "visibility" | "economy" | "blackout" | "achievement";
   readonly visibility: TacticalSymbolVisibility;
   readonly projectedSource: string;
   readonly themeTreatmentId: "RULESET7_TACTICAL_STATIC_V1";
@@ -178,39 +170,6 @@ const polygon = (
  * color-redundant and motion-free.
  */
 const RULESET7_TACTICAL_UI_SYMBOL_DEFINITIONS = [
-  {
-    id: "ui-action-pursue",
-    semanticLabel: "Pursue path available",
-    semanticRole: "command",
-    visibility: "PUBLIC_COMMAND",
-    projectedSource: "offered PURSUE command and canonical public path",
-    reducedMotion: "STATIC",
-    primitives: [
-      line(4, 17, 16, 5, 3),
-      polygon(
-        [
-          [14, 4],
-          [21, 4],
-          [20, 11],
-        ],
-        "bronze",
-      ),
-      circle(5, 18, 2.5, "slate"),
-    ],
-  },
-  {
-    id: "ui-action-end-pursuit",
-    semanticLabel: "End Pursuit",
-    semanticRole: "command",
-    visibility: "PUBLIC_COMMAND",
-    projectedSource: "offered END_PURSUIT command",
-    reducedMotion: "STATIC",
-    primitives: [
-      rect(5, 5, 14, 14, 2, "slate"),
-      line(8, 8, 16, 16, 2.8),
-      line(16, 8, 8, 16, 2.8),
-    ],
-  },
   {
     id: "ui-status-concealed",
     semanticLabel: "Concealment ability",
@@ -276,70 +235,6 @@ const RULESET7_TACTICAL_UI_SYMBOL_DEFINITIONS = [
       line(1, 12, 5, 12),
       line(19, 12, 23, 12),
       circle(12, 12, 2.5, "coral"),
-    ],
-  },
-  {
-    id: "ui-status-defection-waiting",
-    semanticLabel: "Defection waiting for reply",
-    semanticRole: "defection",
-    visibility: "DEFECTION_FULL_OR_ENDPOINT",
-    projectedSource: "projected Defection phase WAITING_FOR_REPLY",
-    reducedMotion: "STATIC",
-    primitives: [
-      circle(12, 12, 9, "slate"),
-      polygon(
-        [
-          [8, 6],
-          [16, 6],
-          [13, 12],
-          [16, 18],
-          [8, 18],
-          [11, 12],
-        ],
-        "paper",
-      ),
-    ],
-  },
-  {
-    id: "ui-status-defection-armed",
-    semanticLabel: "Defection armed for the initiator's next Start Turn",
-    semanticRole: "defection",
-    visibility: "DEFECTION_FULL_OR_ENDPOINT",
-    projectedSource: "projected Defection phase ARMED",
-    reducedMotion: "STATIC",
-    primitives: [
-      circle(12, 12, 9, "slate"),
-      polygon(
-        [
-          [10, 13],
-          [13, 6],
-          [14, 11],
-          [18, 11],
-          [11, 19],
-        ],
-        "bronze",
-      ),
-    ],
-  },
-  {
-    id: "ui-status-defection-reservation",
-    semanticLabel: "Defection reserves this home city capacity",
-    semanticRole: "defection",
-    visibility: "DEFECTION_FULL_ONLY",
-    projectedSource:
-      "FULL Defection reservedHomeCityId only; endpoint views must not render a city reservation",
-    reducedMotion: "STATIC",
-    primitives: [
-      rect(4, 9, 16, 11, 2, "slate"),
-      polygon(
-        [
-          [3, 10],
-          [12, 3],
-          [21, 10],
-        ],
-        "paper",
-      ),
-      circle(12, 15, 2.5, "bronze"),
     ],
   },
   {
@@ -415,21 +310,6 @@ const RULESET7_TACTICAL_UI_SYMBOL_DEFINITIONS = [
         ],
         "bronze",
       ),
-    ],
-  },
-  {
-    id: "ui-status-capacity-reservation",
-    semanticLabel: "City capacity reserved by an earlier Defection mark",
-    semanticRole: "capacity",
-    visibility: "OWNER_ONLY",
-    projectedSource:
-      "owner-safe ordered capacity and Defection reservation preview",
-    reducedMotion: "STATIC",
-    primitives: [
-      rect(3, 8, 18, 10, 2, "slate"),
-      rect(6, 11, 4, 4, 1, "paper"),
-      rect(14, 11, 4, 4, 1, "bronze"),
-      line(12, 6, 12, 20, 2.5),
     ],
   },
   {

@@ -69,6 +69,22 @@ interface GeneratedRecord {
 }
 
 const EXPECTED_SYMBOL_IDS = [
+  "ui-status-concealed",
+  "ui-status-detected",
+  "ui-status-exposed",
+  "ui-status-spoils",
+  "ui-status-blackout-cooldown",
+  "ui-status-blackout-pending",
+  "ui-status-blackout-active",
+  "ui-status-blackout-recovery",
+  "ui-status-achievement-progress",
+  "ui-status-achievement-entitlement-locked",
+  "ui-status-achievement-entitlement-unlocked",
+  "ui-status-achievement-entitlement-spent",
+  "ui-status-achievement-source-current-owner",
+] as const;
+
+const ARCHIVED_R2_REVIEW_SYMBOL_IDS = [
   "ui-action-pursue",
   "ui-action-end-pursuit",
   "ui-status-concealed",
@@ -312,19 +328,16 @@ describe("Ruleset 7 tactical action and status assets", () => {
     expect(
       RULESET7_TACTICAL_UI_SYMBOL_BY_ID["ui-status-exposed"].projectedSource,
     ).toContain("ANCHOR_NEXT_ACCEPTED_END_TURN");
-    expect(
-      RULESET7_TACTICAL_UI_SYMBOL_BY_ID["ui-status-defection-reservation"],
-    ).toMatchObject({ visibility: "DEFECTION_FULL_ONLY" });
-    for (const id of [
-      "ui-status-defection-waiting",
-      "ui-status-defection-armed",
-    ] as const) {
-      const symbol = RULESET7_TACTICAL_UI_SYMBOL_BY_ID[id];
-      expect(symbol.visibility).toBe("DEFECTION_FULL_OR_ENDPOINT");
-      expect(symbol.projectedSource).not.toMatch(
-        /counterpart|link|targetUnitId|reservedHomeCityId/,
-      );
-    }
+    expect(Object.keys(RULESET7_TACTICAL_UI_SYMBOL_BY_ID)).not.toEqual(
+      expect.arrayContaining([
+        "ui-action-pursue",
+        "ui-action-end-pursuit",
+        "ui-status-defection-waiting",
+        "ui-status-defection-armed",
+        "ui-status-defection-reservation",
+        "ui-status-capacity-reservation",
+      ]),
+    );
     for (const id of [
       "ui-status-blackout-pending",
       "ui-status-blackout-active",
@@ -362,7 +375,7 @@ describe("Ruleset 7 tactical action and status assets", () => {
     expect(evidence.status).toBe("COMPLETE");
     expect(evidence.generationOrder).toEqual(RULESET7_TACTICAL_UI_ACTION_IDS);
     expect(evidence.rasterInventory).toEqual(RULESET7_TACTICAL_UI_ACTION_IDS);
-    expect(evidence.codeNativeInventory).toEqual(EXPECTED_SYMBOL_IDS);
+    expect(evidence.codeNativeInventory).toEqual(ARCHIVED_R2_REVIEW_SYMBOL_IDS);
     expect(evidence.reviewCoverage.join(" ")).toContain("112x130");
     expect(evidence.reviewCoverage.join(" ")).toContain("176px");
     expect(evidence.reviewCoverage.join(" ")).toContain("DPR1/2");

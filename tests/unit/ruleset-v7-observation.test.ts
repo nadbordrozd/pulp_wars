@@ -40,7 +40,6 @@ const READY: UnitStateV7["activation"] = {
   movedPathLength: 0,
   attacked: false,
   attacksUsed: 0,
-  pursuitPhase: "NONE",
   healed: false,
   recovered: false,
   captured: false,
@@ -214,7 +213,7 @@ describe("ruleset-7 observation safety and Concealment", () => {
     const publicChest = viewForV7(rich, rich.humanPlayerId).treasureChests[0]!;
     expect(
       applyCommandV7(rich, rich.humanPlayerId, {
-        kind: "BUILD_BARRACKS",
+        kind: "BUILD_MINE",
         at: publicChest,
       }),
     ).toMatchObject({
@@ -301,7 +300,7 @@ describe("ruleset-7 observation safety and Concealment", () => {
     expect(parsePlayerEventEnvelopeV7(projected)).toMatchObject({ ok: true });
   });
 
-  it("does not reveal terrain around an occupied cell the mover never enters", () => {
+  it("does not reveal terrain beyond a newly detected Saboteur ZOC stop", () => {
     const { state: base, line } = hiddenSaboteurScenario();
     const initialExplored = base.board.tiles
       .map((tile) => tile.at)
@@ -333,7 +332,7 @@ describe("ruleset-7 observation safety and Concealment", () => {
       legal: true,
       destination: line[1],
       traversedPath: [line[1]],
-      interruption: { at: line[2], reason: "OCCUPIED" },
+      interruption: { at: line[1], reason: "ZOC" },
     });
     if (!validation.legal) return;
     const initiallyKnown = new Set(initialExplored.map(coordKey));
@@ -394,8 +393,8 @@ describe("ruleset-7 observation safety and Concealment", () => {
           same(tile.at, at)
             ? {
                 ...tile,
-                terrain: "MOUNTAIN" as const,
-                resource: "ORE" as const,
+                terrain: "GRASS" as const,
+                resource: "FERTILE_GROUND" as const,
               }
             : tile,
         ),
@@ -406,42 +405,14 @@ describe("ruleset-7 observation safety and Concealment", () => {
       playerId: before.humanPlayerId,
       cityId: city.id,
       at,
-      improvement: "MINE",
-      populationContributionRemoved: 4,
+      improvement: "FARM",
+      populationContributionRemoved: 2,
       marketIncomeRemoved: 0,
-      capacityDelta: 0,
-      resourceRestored: "ORE",
+      resourceRestored: "FERTILE_GROUND",
     };
-    const hidden = projectEventsV7(before, after, before.humanPlayerId, [
+    const revealed = projectEventsV7(before, after, before.humanPlayerId, [
       event,
     ]);
-    expect(hidden.events).toEqual([
-      { ...event, resourceRestored: "UNKNOWN_RESOURCE" },
-    ]);
-    expect(parsePlayerEventEnvelopeV7(hidden)).toMatchObject({ ok: true });
-
-    const surveyedBefore = checkedV7({
-      ...before,
-      players: before.players.map((player) =>
-        player.id === before.humanPlayerId
-          ? { ...player, researchedTechs: ["GATHERING", "SURVEYING"] }
-          : player,
-      ),
-    });
-    const surveyedAfter = checkedV7({
-      ...after,
-      players: after.players.map((player) =>
-        player.id === after.humanPlayerId
-          ? { ...player, researchedTechs: ["GATHERING", "SURVEYING"] }
-          : player,
-      ),
-    });
-    const revealed = projectEventsV7(
-      surveyedBefore,
-      surveyedAfter,
-      before.humanPlayerId,
-      [event],
-    );
     expect(revealed.events).toEqual([event]);
     expect(parsePlayerEventEnvelopeV7(revealed)).toMatchObject({ ok: true });
   });
@@ -491,66 +462,6 @@ describe("ruleset-7 observation safety and Concealment", () => {
     expect(ended.accepted).toBe(true);
     if (!ended.accepted) return;
     expect(ended.state.saboteurExposures).toEqual([]);
-  });
-
-  it("explicitly reveals a Defection source to the target side without revealing its terrain", () => {
-    const before = defectionObservationScenario();
-    const source = before.units.find((unit) => unit.role === "ENVOY")!;
-    const target = before.units.find(
-      (unit) => unit.ownerId !== source.ownerId && unit.role === "SABOTEUR",
-    )!;
-    const targetOwner = target.ownerId;
-    const markId = before.nextEntityId;
-    const after = checkedV7({
-      ...before,
-      nextEntityId: before.nextEntityId + 1,
-      commandIndex: before.commandIndex + 1,
-      defectionMarks: [
-        {
-          id: markId,
-          sourceUnitId: source.id,
-          targetUnitId: target.id,
-          initiatingPlayerId: source.ownerId,
-          recordedTargetOwnerId: targetOwner,
-          reservedHomeCityId: source.homeCityId!,
-          offeredAtCommandIndex: before.commandIndex + 1,
-          phase: "WAITING_FOR_REPLY",
-        },
-      ],
-    });
-    const view = viewForV7(after, targetOwner);
-    expect(
-      view.board.tiles[source.at.y * view.board.width + source.at.x],
-    ).toEqual({ at: source.at, explored: false });
-    expect(view.units).toContainEqual(
-      expect.objectContaining({ id: source.id, at: source.at }),
-    );
-    expect(view.defectionStatuses).toEqual([
-      expect.objectContaining({
-        visibility: "FULL",
-        sourceUnitId: source.id,
-        targetUnitId: target.id,
-      }),
-    ]);
-    const projected = projectEventsV7(before, after, targetOwner, [
-      {
-        kind: "DEFECTION_OFFERED",
-        markId,
-        sourceUnitId: source.id,
-        targetUnitId: target.id,
-        initiatingPlayerId: source.ownerId,
-        targetOwnerId: targetOwner,
-        reservedHomeCityId: source.homeCityId!,
-        offeredAtCommandIndex: before.commandIndex + 1,
-      },
-    ]);
-    expect(projected.events[0]).toEqual({
-      kind: "UNIT_REVEALED",
-      unitId: source.id,
-      at: source.at,
-      reason: "DEFECTION",
-    });
-    expect(projected.events[1]).toMatchObject({ kind: "DEFECTION_OFFERED" });
   });
 
   it("reports blind Push as unknown and never identifies a concealed blocker", () => {
@@ -865,9 +776,7 @@ function hiddenSaboteurScenario(): {
       player.id === human.id
         ? {
             ...player,
-            researchedTechs: player.researchedTechs.filter(
-              (technology) => technology !== "MANEUVER",
-            ),
+            researchedTechs: player.researchedTechs,
             explored: state.board.tiles.map((tile) => tile.at),
           }
         : player,
@@ -957,49 +866,6 @@ function exposedAttackScenario(): GameStateV7 {
           },
     ),
   });
-}
-
-function defectionObservationScenario(): GameStateV7 {
-  let state = allTechsV7(initialV7(1_903));
-  const initiator = state.players.find(
-    (player) => player.id === state.humanPlayerId,
-  )!;
-  const targetOwner = state.players.find(
-    (player) => player.id !== state.humanPlayerId,
-  )!;
-  const line = findGrassLine(state, targetOwner.id);
-  state = checkedV7({
-    ...state,
-    commandIndex: 1,
-    players: state.players.map((player) =>
-      player.id === targetOwner.id
-        ? {
-            ...player,
-            explored: player.explored.filter((at) => !same(at, line[0])),
-          }
-        : player,
-    ),
-    units: state.units.map((unit) =>
-      unit.ownerId === initiator.id
-        ? {
-            ...unit,
-            role: "ENVOY",
-            at: line[0],
-            hp: 7,
-            maxHp: 7,
-            blackoutEligibleRound: null,
-          }
-        : {
-            ...unit,
-            role: "SABOTEUR",
-            at: line[1],
-            hp: 10,
-            maxHp: 10,
-            blackoutEligibleRound: 1,
-          },
-    ),
-  });
-  return state;
 }
 
 function findGrassLine(

@@ -40,7 +40,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 save and replay foundation", () => {
   it("uses an independent v7 save key and round-trips a canonical initial save", () => {
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r2.current");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r3.current");
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const replay = createReplayV7(setup);
@@ -89,6 +89,208 @@ describe("ruleset-7 save and replay foundation", () => {
     expect(parseSaveV7(JSON.stringify(save))).toEqual({ kind: "VALID", save });
     expect(runReplayV7(replay).state).toEqual(applied.state);
   });
+
+  it("preserves exactly one remaining Horse Archer shot through save and replay", () => {
+    const created = createPlayableGameV7(setup);
+    if (!created.ok) throw new Error(created.error.code);
+    let state = created.state;
+    let replay = createReplayV7(setup);
+    const humanId = state.humanPlayerId;
+    const enemy = required(
+      state.units.find((unit) => unit.ownerId !== humanId),
+      "enemy unit missing",
+    );
+    const accept = (command: CommandV7) => {
+      const actor = required(
+        state.turnOrder[state.activeSeatIndex],
+        "active actor missing",
+      );
+      const result = applyCommandV7(state, actor, command);
+      if (!result.accepted)
+        throw new Error(`${command.kind}: ${result.error.code}`);
+      state = result.state;
+      replay = appendReplayCommandV7(replay, command, state);
+      return result;
+    };
+    const fundHuman = (minimum: number) => {
+      for (let guard = 0; guard < 100; guard += 1) {
+        const actor = state.turnOrder[state.activeSeatIndex];
+        const coins = state.players.find(
+          (player) => player.id === humanId,
+        )?.coins;
+        if (actor === humanId && coins !== undefined && coins >= minimum)
+          return;
+        accept({ kind: "END_TURN" });
+      }
+      throw new Error("Horse Archer funding guard exhausted");
+    };
+    fundHuman(5);
+    accept({ kind: "RESEARCH", tech: "SCOUTING" });
+    fundHuman(7);
+    accept({ kind: "RESEARCH", tech: "RAIDING" });
+    fundHuman(9);
+    accept({ kind: "RESEARCH", tech: "MOUNTED_ARCHERY" });
+    fundHuman(9);
+    const city = required(
+      state.cities.find((candidate) => candidate.ownerId === humanId),
+      "human city missing",
+    );
+    const cityOccupant = state.units.find(
+      (unit) => unit.at.x === city.at.x && unit.at.y === city.at.y,
+    );
+    const spotterId = required(cityOccupant?.id, "human spotter missing");
+    if (cityOccupant !== undefined) {
+      const clearCity = required(
+        queryPlayerCommandsV7(viewForV7(state, humanId)).find(
+          (command) =>
+            command.kind === "MOVE" && command.unitId === cityOccupant.id,
+        ),
+        "city-clearing move missing",
+      );
+      accept(clearCity);
+    }
+    const trained = accept({
+      kind: "TRAIN",
+      cityId: city.id,
+      role: "HORSE_ARCHER",
+    });
+    const horseArcherId = required(
+      trained.events.find((event) => event.kind === "UNIT_TRAINED")?.unitId,
+      "trained Horse Archer missing",
+    );
+    accept({ kind: "END_TURN" });
+    while (state.turnOrder[state.activeSeatIndex] !== humanId)
+      accept({ kind: "END_TURN" });
+
+    let fired = false;
+    for (let guard = 0; guard < 20; guard += 1) {
+      const horseArcher = required(
+        state.units.find((unit) => unit.id === horseArcherId),
+        "Horse Archer disappeared",
+      );
+      const attack = queryPlayerCommandsV7(viewForV7(state, humanId)).find(
+        (command) =>
+          command.kind === "ATTACK" &&
+          command.unitId === horseArcherId &&
+          command.targetUnitId === enemy.id,
+      );
+      if (attack?.kind === "ATTACK") {
+        accept(attack);
+        fired = true;
+        break;
+      }
+      if (chebyshev(horseArcher.at, enemy.at) > 2) {
+        const move = queryPlayerCommandsV7(viewForV7(state, humanId))
+          .filter(
+            (command): command is Extract<CommandV7, { kind: "MOVE" }> =>
+              command.kind === "MOVE" && command.unitId === horseArcherId,
+          )
+          .sort(
+            (left, right) =>
+              Math.abs(chebyshev(moveEndpoint(left), enemy.at) - 2) -
+                Math.abs(chebyshev(moveEndpoint(right), enemy.at) - 2) ||
+              left.path.length - right.path.length,
+          )[0];
+        if (move === undefined) throw new Error("Horse Archer route stalled");
+        accept(move);
+      }
+      const movedAttack = queryPlayerCommandsV7(viewForV7(state, humanId)).find(
+        (command) =>
+          command.kind === "ATTACK" &&
+          command.unitId === horseArcherId &&
+          command.targetUnitId === enemy.id,
+      );
+      if (movedAttack?.kind === "ATTACK") {
+        accept(movedAttack);
+        fired = true;
+        break;
+      }
+      const spotterMove = queryPlayerCommandsV7(viewForV7(state, humanId))
+        .filter(
+          (command): command is Extract<CommandV7, { kind: "MOVE" }> =>
+            command.kind === "MOVE" && command.unitId === spotterId,
+        )
+        .sort(
+          (left, right) =>
+            chebyshev(moveEndpoint(left), enemy.at) -
+              chebyshev(moveEndpoint(right), enemy.at) ||
+            left.path.length - right.path.length,
+        )[0];
+      if (spotterMove !== undefined) accept(spotterMove);
+      const spottedAttack = queryPlayerCommandsV7(
+        viewForV7(state, humanId),
+      ).find(
+        (command) =>
+          command.kind === "ATTACK" &&
+          command.unitId === horseArcherId &&
+          command.targetUnitId === enemy.id,
+      );
+      if (spottedAttack?.kind === "ATTACK") {
+        accept(spottedAttack);
+        fired = true;
+        break;
+      }
+      accept({ kind: "END_TURN" });
+      while (state.turnOrder[state.activeSeatIndex] !== humanId)
+        accept({ kind: "END_TURN" });
+    }
+
+    if (!fired) {
+      const horse = state.units.find((unit) => unit.id === horseArcherId);
+      throw new Error(
+        `Horse Archer never fired: ${JSON.stringify({ horse: horse?.at, enemy: enemy.at, distance: horse === undefined ? null : chebyshev(horse.at, enemy.at) })}`,
+      );
+    }
+
+    const afterFirst = required(
+      state.units.find((unit) => unit.id === horseArcherId),
+      "Horse Archer missing after first shot",
+    );
+    expect(afterFirst.activation).toMatchObject({
+      attacked: true,
+      attacksUsed: 1,
+      handled: false,
+    });
+    const firstSave = createSaveEnvelopeV7(
+      { state, replay },
+      "2026-09-06T12:45:00.000Z",
+    );
+    const parsedFirst = parseSaveV7(JSON.stringify(firstSave));
+    expect(parsedFirst).toEqual({ kind: "VALID", save: firstSave });
+    if (parsedFirst.kind !== "VALID") throw new Error("first save invalid");
+    expect(
+      parsedFirst.save.state.units.find((unit) => unit.id === horseArcherId)
+        ?.activation.attacksUsed,
+    ).toBe(1);
+    expect(runReplayV7(replay).state).toEqual(state);
+
+    const second = required(
+      queryPlayerCommandsV7(viewForV7(state, humanId)).find(
+        (command) =>
+          command.kind === "ATTACK" && command.unitId === horseArcherId,
+      ),
+      "second Horse Archer shot missing",
+    );
+    accept(second);
+    expect(
+      state.units.find((unit) => unit.id === horseArcherId)?.activation,
+    ).toMatchObject({ attacksUsed: 2, handled: true });
+    expect(
+      queryPlayerCommandsV7(viewForV7(state, humanId)).some(
+        (command) =>
+          command.kind === "ATTACK" && command.unitId === horseArcherId,
+      ),
+    ).toBe(false);
+    const secondSave = createSaveEnvelopeV7(
+      { state, replay },
+      "2026-09-06T12:46:00.000Z",
+    );
+    expect(parseSaveV7(JSON.stringify(secondSave))).toEqual({
+      kind: "VALID",
+      save: secondSave,
+    });
+    expect(runReplayV7(replay).state).toEqual(state);
+  }, 15_000);
 
   it("reuses only exact immutable accepted-boundary identities without changing save bytes", () => {
     const created = createPlayableGameV7(setup);
@@ -280,136 +482,6 @@ describe("ruleset-7 save and replay foundation", () => {
         savedAt,
       ),
     ).toThrow("Invalid ruleset-7 save input");
-  });
-
-  it("naturally replays an offered, armed, and resolved Defection through save", () => {
-    const created = createPlayableGameV7(setup);
-    if (!created.ok) throw new Error(created.error.code);
-    let state = created.state;
-    let replay = createReplayV7(setup);
-    const humanId = state.humanPlayerId;
-    const enemyUnit = state.units.find((unit) => unit.ownerId !== humanId);
-    if (enemyUnit === undefined) throw new Error("enemy unit missing");
-    const apply = (command: CommandV7) => {
-      const actor = state.turnOrder[state.activeSeatIndex];
-      if (actor === undefined) throw new Error("active actor missing");
-      const result = applyCommandV7(state, actor, command);
-      if (!result.accepted)
-        throw new Error(`${command.kind}: ${result.error.code}`);
-      state = result.state;
-      replay = appendReplayCommandV7(replay, command, state);
-      return result.events;
-    };
-    const commands = () => queryPlayerCommandsV7(viewForV7(state, humanId));
-    const fundHuman = (minimum: number) => {
-      for (let guard = 0; guard < 100; guard += 1) {
-        const human = state.players.find((player) => player.id === humanId);
-        if (
-          state.turnOrder[state.activeSeatIndex] === humanId &&
-          human !== undefined &&
-          human.coins >= minimum
-        )
-          return;
-        apply({ kind: "END_TURN" });
-      }
-      throw new Error("funding guard exhausted");
-    };
-    fundHuman(7);
-    apply({ kind: "RESEARCH", tech: "CRAFT" });
-    fundHuman(5);
-    apply({ kind: "RESEARCH", tech: "SURVEYING" });
-    fundHuman(7);
-    apply({ kind: "RESEARCH", tech: "QUARRYING" });
-    fundHuman(4);
-    const barracks = commands().find(
-      (command): command is Extract<CommandV7, { kind: "BUILD_BARRACKS" }> =>
-        command.kind === "BUILD_BARRACKS",
-    );
-    if (barracks === undefined) throw new Error("Barracks command missing");
-    apply(barracks);
-    fundHuman(6);
-    const fighter = state.units.find(
-      (unit) => unit.ownerId === humanId && unit.role === "FIGHTER",
-    );
-    if (fighter === undefined) throw new Error("fighter missing");
-    const fighterMove = commands().find(
-      (command): command is Extract<CommandV7, { kind: "MOVE" }> =>
-        command.kind === "MOVE" && command.unitId === fighter.id,
-    );
-    if (fighterMove === undefined) throw new Error("fighter move missing");
-    apply(fighterMove);
-    const humanCity = state.cities.find((city) => city.ownerId === humanId);
-    if (humanCity === undefined) throw new Error("human city missing");
-    apply({ kind: "TRAIN", cityId: humanCity.id, role: "ENVOY" });
-    const envoy = state.units.find(
-      (unit) => unit.ownerId === humanId && unit.role === "ENVOY",
-    );
-    if (envoy === undefined) throw new Error("Envoy missing");
-    apply({ kind: "END_TURN" });
-
-    let offered = false;
-    for (let guard = 0; guard < 80 && !offered; guard += 1) {
-      const active = state.turnOrder[state.activeSeatIndex];
-      if (active === humanId) {
-        const offer = commands().find(
-          (
-            command,
-          ): command is Extract<CommandV7, { kind: "OFFER_DEFECTION" }> =>
-            command.kind === "OFFER_DEFECTION" &&
-            command.unitId === envoy.id &&
-            command.targetUnitId === enemyUnit.id,
-        );
-        if (offer !== undefined) {
-          apply(offer);
-          offered = true;
-          break;
-        }
-        const moves = commands()
-          .filter(
-            (
-              command,
-            ): command is Extract<
-              CommandV7,
-              { readonly path: readonly CoordV7[] }
-            > => command.kind === "MOVE" && command.unitId === envoy.id,
-          )
-          .sort((left, right) => {
-            const leftAt = left.path.at(-1);
-            const rightAt = right.path.at(-1);
-            if (leftAt === undefined || rightAt === undefined) return 0;
-            return (
-              chebyshev(leftAt, enemyUnit.at) -
-                chebyshev(rightAt, enemyUnit.at) ||
-              leftAt.y - rightAt.y ||
-              leftAt.x - rightAt.x
-            );
-          });
-        const move = moves[0];
-        if (move === undefined) throw new Error("Envoy route stalled");
-        apply(move);
-      }
-      apply({ kind: "END_TURN" });
-    }
-    if (!offered) throw new Error("Defection offer guard exhausted");
-    let resolved = false;
-    for (let guard = 0; guard < 8 && !resolved; guard += 1) {
-      const events = apply({ kind: "END_TURN" });
-      resolved = events.some((event) => event.kind === "DEFECTION_RESOLVED");
-    }
-    expect(resolved).toBe(true);
-    expect(state.units.find((unit) => unit.id === enemyUnit.id)?.ownerId).toBe(
-      humanId,
-    );
-    const save = createSaveEnvelopeV7(
-      { state, replay },
-      "2026-09-07T19:00:00.000Z",
-    );
-    expect(parseSaveV7(JSON.stringify(save))).toEqual({ kind: "VALID", save });
-    expect(runReplayV7(replay)).toMatchObject({
-      acceptedCommands: replay.commands.length,
-      state,
-      stateHash: canonicalHash(state),
-    });
   });
 
   // This integration-style case rebuilds five replay checkpoints, so its
@@ -651,13 +723,15 @@ describe("ruleset-7 save and replay foundation", () => {
     let state: GameStateV7 = created.state;
     let replay: ReplayFileV7 = createReplayV7(setup);
     const humanId = state.humanPlayerId;
-    const city = state.cities.find(
-      (candidate) => candidate.ownerId === humanId,
+    const city = required(
+      state.cities.find((candidate) => candidate.ownerId === humanId),
+      "human city missing",
     );
-    if (city === undefined) throw new Error("human city missing");
     const apply = (command: CommandV7) => {
-      const actor = state.turnOrder[state.activeSeatIndex];
-      if (actor === undefined) throw new Error("active actor missing");
+      const actor = required(
+        state.turnOrder[state.activeSeatIndex],
+        "active actor missing",
+      );
       const result = applyCommandV7(state, actor, command);
       if (!result.accepted)
         throw new Error(`${command.kind}: ${result.error.code}`);
@@ -679,12 +753,31 @@ describe("ruleset-7 save and replay foundation", () => {
     apply({ kind: "RESEARCH", tech: "SCOUTING" });
     fundHuman(7);
     apply({ kind: "RESEARCH", tech: "RAIDING" });
-    fundHuman(9);
-    apply({ kind: "RESEARCH", tech: "DRILL" });
     fundHuman(5);
-    apply({ kind: "RESEARCH", tech: "SURVEYING" });
+    apply({ kind: "RESEARCH", tech: "DRILL" });
     fundHuman(7);
-    apply({ kind: "RESEARCH", tech: "QUARRYING" });
+    apply({ kind: "RESEARCH", tech: "FORTIFICATION" });
+    fundHuman(7);
+    apply({ kind: "RESEARCH", tech: "FARMING" });
+    const farmAt = required(
+      state.board.tiles.find(
+        (tile) =>
+          tile.territoryCityId === city.id &&
+          tile.terrain === "GRASS" &&
+          tile.resource === "FERTILE_GROUND" &&
+          tile.improvement === null &&
+          tile.site === null,
+      )?.at,
+      "natural farm missing",
+    );
+    fundHuman(5);
+    apply({ kind: "BUILD_FARM", at: farmAt });
+    apply({
+      kind: "CHOOSE_CITY_REWARD",
+      cityId: city.id,
+      reachedLevel: 2,
+      reward: "STOCKPILE",
+    });
 
     const openTiles = () =>
       state.board.tiles.filter(
@@ -694,24 +787,26 @@ describe("ruleset-7 save and replay foundation", () => {
           tile.terrain !== "MOUNTAIN" &&
           tile.resource === null &&
           tile.improvement === null &&
-          !state.treasureChests.some((chest) => sameCoord(chest, tile.at)) &&
-          !state.units.some((unit) => sameCoord(unit.at, tile.at)),
+          !state.treasureChests.some(
+            (chest) => chest.x === tile.at.x && chest.y === tile.at.y,
+          ) &&
+          !state.units.some(
+            (unit) => unit.at.x === tile.at.x && unit.at.y === tile.at.y,
+          ),
       );
-    fundHuman(4);
-    const barracksAt = openTiles().find(
-      (tile) => chebyshev(tile.at, city.at) === 1,
-    )?.at;
-    if (barracksAt === undefined) throw new Error("barracks tile missing");
-    apply({ kind: "BUILD_BARRACKS", at: barracksAt });
 
     const roles = ["SCOUT", "RAIDER", "GUARD"] as const;
     for (const role of roles) {
-      const cost = role === "GUARD" ? 3 : 4;
-      fundHuman(cost);
-      const occupant = state.units.find(
-        (unit) => unit.ownerId === humanId && sameCoord(unit.at, city.at),
+      fundHuman(role === "GUARD" ? 3 : 4);
+      const occupant = required(
+        state.units.find(
+          (unit) =>
+            unit.ownerId === humanId &&
+            unit.at.x === city.at.x &&
+            unit.at.y === city.at.y,
+        ),
+        "city occupant missing",
       );
-      if (occupant === undefined) throw new Error("city occupant missing");
       const destination = openTiles().find(
         (tile) => chebyshev(tile.at, city.at) === 1,
       )?.at;
@@ -725,6 +820,7 @@ describe("ruleset-7 save and replay foundation", () => {
           achievement: "MUSTER",
         });
     }
+
     const monumentAt = openTiles()[0]?.at;
     if (monumentAt === undefined) throw new Error("Monument tile missing");
     const monumentEvents = apply({
@@ -819,14 +915,10 @@ describe("ruleset-7 save and replay foundation", () => {
     apply({ kind: "RESEARCH", tech: "MILLING" });
     fundHuman(5);
     apply({ kind: "BUILD_WINDMILL", at: windmillTile.at });
-    apply({
-      kind: "CHOOSE_CITY_REWARD",
-      cityId: city.id,
-      reachedLevel: 3,
-      reward: "WALLS",
-    });
+    fundHuman(5);
+    apply({ kind: "RESEARCH", tech: "DRILL" });
     fundHuman(7);
-    apply({ kind: "RESEARCH", tech: "CRAFT" });
+    apply({ kind: "RESEARCH", tech: "ENGINEERING" });
     fundHuman(9);
     apply({ kind: "RESEARCH", tech: "GRAND_WORKS" });
     const removedEvents = apply({ kind: "REDEVELOP", at: farmTile.at });
@@ -838,9 +930,9 @@ describe("ruleset-7 save and replay foundation", () => {
     );
     const damaged = state.cities.find((candidate) => candidate.id === city.id);
     expect(damaged).toMatchObject({
-      level: 3,
+      level: 2,
       economicPopulation: 0,
-      population: -5,
+      population: -2,
     });
     fundHuman(5);
     const repairingPlayer = state.players.find(
@@ -855,13 +947,10 @@ describe("ruleset-7 save and replay foundation", () => {
     expect(
       state.cities.find((candidate) => candidate.id === city.id),
     ).toMatchObject({
-      level: 3,
-      economicPopulation: 5,
-      population: 0,
-      rewards: [
-        { reachedLevel: 2, reward: "STOCKPILE" },
-        { reachedLevel: 3, reward: "WALLS" },
-      ],
+      level: 2,
+      economicPopulation: 3,
+      population: 1,
+      rewards: [{ reachedLevel: 2, reward: "STOCKPILE" }],
     });
     expect(
       repairedEvents.some(
@@ -1044,8 +1133,6 @@ describe("ruleset-7 save and replay foundation", () => {
   });
 });
 
-const sameCoord = (left: CoordV7, right: CoordV7) =>
-  left.x === right.x && left.y === right.y;
 const chebyshev = (left: CoordV7, right: CoordV7) =>
   Math.max(Math.abs(left.x - right.x), Math.abs(left.y - right.y));
 

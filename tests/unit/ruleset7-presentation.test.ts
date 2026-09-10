@@ -148,7 +148,7 @@ describe("Ruleset 7 public presentation", () => {
     }
   });
 
-  it("renders negative city progress, offline processors, Barracks and Monument pips from public facts", () => {
+  it("renders negative city progress and processor/Monument pips from public facts", () => {
     const state = exploredAllV7(initialV7(1520));
     const view = viewForV7(state, state.humanPlayerId);
     const city = view.cities.find(
@@ -173,9 +173,9 @@ describe("Ruleset 7 public presentation", () => {
         },
         {
           at: { x: at.x + 1, y: at.y },
-          improvement: "BARRACKS" as const,
+          improvement: "FORGE" as const,
           level: 2,
-          measure: "CAPACITY" as const,
+          measure: "POPULATION" as const,
           contributingTiles: [],
         },
         {
@@ -339,28 +339,22 @@ describe("Ruleset 7 public presentation", () => {
     );
   });
 
-  it("states all seven revision-2 economic formulas with their exact numbers", () => {
+  it("states all revision-3 economic formulas with their exact numbers", () => {
     expect([
       economicFormulaV7("WINDMILL", "CONNECTED_ORTHOGONAL_CLUSTER"),
       economicFormulaV7("SAWMILL", "CONNECTED_ORTHOGONAL_CLUSTER"),
       economicFormulaV7("FORGE", "ADJACENT_MINES"),
-      economicFormulaV7("STONEWORKS", "ADJACENT_QUARRIES_AND_OPPOSITE_PAIRS"),
       economicFormulaV7("WORKSHOP", "DISTINCT_BASIC_TYPES"),
       economicFormulaV7("GRAND_WORKS", "DISTINCT_PROCESSOR_TYPES"),
       economicFormulaV7("MARKET", "DISTINCT_ECONOMIC_FAMILIES"),
     ]).toEqual([
-      expect.stringMatching(/0.*\+2.*\+1.*cap 8/),
+      expect.stringMatching(/\+1.*Farm.*cap 8.*0/),
       expect.stringMatching(/\+1.*Lumber Camp.*cap 8/),
       expect.stringMatching(/\+3.*Mine.*cap 18.*0/),
+      expect.stringMatching(/0.*\+1 plus.*distinct.*cap 4/),
+      expect.stringMatching(/0 below two.*\+4 plus.*\+2 per.*cap 10/),
       expect.stringMatching(
-        /0.*\+2 base.*\+2 per Quarry.*\+2 per complete.*cap 16/,
-      ),
-      expect.stringMatching(/0.*\+1 base.*\+1 per distinct.*2–5/),
-      expect.stringMatching(
-        /0 below two.*\+4 base.*\+2 per.*8, 10 or 12.*cap 12/,
-      ),
-      expect.stringMatching(
-        /\+1 recurring Coin.*inactive processors.*\+1.*Road.*cap 5/,
+        /\+1 recurring Coin.*inactive processors.*\+1.*Road.*cap 4/,
       ),
     ]);
   });

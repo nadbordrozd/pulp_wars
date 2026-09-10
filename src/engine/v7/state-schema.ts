@@ -15,7 +15,6 @@ import {
   type CityRewardRecordV7,
   type CityStateV7,
   type CoordV7,
-  type DefectionMarkV7,
   type GameStateV7,
   type ImprovementIdV7,
   type MatchOutcomeV7,
@@ -57,7 +56,6 @@ const STATE_KEYS = [
   "board",
   "cities",
   "commandIndex",
-  "defectionMarks",
   "humanPlayerId",
   "nextEntityId",
   "outcome",
@@ -79,30 +77,26 @@ const PREREQUISITE: Readonly<Partial<Record<TechnologyIdV7, TechnologyIdV7>>> =
   {
     FARMING: "GATHERING",
     MILLING: "FARMING",
-    CRAFT: "GATHERING",
-    GRAND_WORKS: "CRAFT",
+    MEDICINE: "GATHERING",
+    RECOVERY: "MEDICINE",
     FORESTRY: "HUNTING",
     SAWMILLING: "FORESTRY",
     MARKSMANSHIP: "HUNTING",
     FIELDCRAFT: "MARKSMANSHIP",
-    MINING: "SURVEYING",
-    METALLURGY: "MINING",
-    QUARRYING: "SURVEYING",
-    MASONRY: "QUARRYING",
     ROADS: "SCOUTING",
     COMMERCE: "ROADS",
     RAIDING: "SCOUTING",
-    MANEUVER: "RAIDING",
+    MOUNTED_ARCHERY: "RAIDING",
     FORTIFICATION: "DRILL",
     EXPLOSIVES: "FORTIFICATION",
-    MEDICINE: "DRILL",
-    RECOVERY: "MEDICINE",
+    ENGINEERING: "DRILL",
+    METALLURGY: "ENGINEERING",
+    GRAND_WORKS: "ENGINEERING",
   };
 
 const BASE_HP: Readonly<Record<UnitRoleIdV7, number>> = {
   FIGHTER: 10,
   SCOUT: 10,
-  ENVOY: 7,
   MARKSMAN: 10,
   GUARD: 15,
   RAIDER: 10,
@@ -110,7 +104,7 @@ const BASE_HP: Readonly<Record<UnitRoleIdV7, number>> = {
   CATAPULT: 10,
   SABOTEUR: 10,
   HEAVY: 20,
-  LANCER: 12,
+  HORSE_ARCHER: 10,
   BREACHER: 10,
   JUGGERNAUT: 40,
 };
@@ -122,7 +116,6 @@ const CAPTURE_ROLES = new Set<UnitRoleIdV7>([
   "GUARD",
   "RAIDER",
   "HEAVY",
-  "LANCER",
   "JUGGERNAUT",
 ]);
 
@@ -142,7 +135,6 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   const cities = parseCities(input.cities);
   const contributions = parseContributions(input.populationContributions);
   const units = parseUnits(input.units);
-  const marks = parseMarks(input.defectionMarks);
   const exposures = parseExposures(input.saboteurExposures);
   const treasureChests = parseSortedCoords(input.treasureChests);
   const choices = parseChoices(input.pendingChoices);
@@ -157,7 +149,6 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     cities === null ||
     contributions === null ||
     units === null ||
-    marks === null ||
     exposures === null ||
     treasureChests === null ||
     choices === null ||
@@ -186,16 +177,13 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
       cities,
       contributions,
       units,
-      marks,
       exposures,
       treasureChests,
       choices,
       outcome,
       humanPlayerId,
       nextEntityId: input.nextEntityId,
-      commandIndex: input.commandIndex,
       round: input.round,
-      aiMode: setup.aiMode,
     })
   )
     return null;
@@ -216,7 +204,6 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     populationContributions: contributions,
     units,
     treasureChests,
-    defectionMarks: marks,
     saboteurExposures: exposures,
     pendingChoices: choices,
     outcome,
@@ -364,7 +351,7 @@ function parsePlayer(input: unknown): PlayerStateV7 | null {
     (input.controller !== "HUMAN" && input.controller !== "AI") ||
     !isColor(input.color) ||
     input.faction !== "ORIGINAL" ||
-    input.factionTreeId !== "ORIGINAL_BASELINE_V3" ||
+    input.factionTreeId !== "ORIGINAL_BASELINE_V4" ||
     (input.status !== "ACTIVE" && input.status !== "ELIMINATED") ||
     !isNonNegativeSafeIntegerV7(input.coins)
   )
@@ -401,7 +388,7 @@ function parsePlayer(input: unknown): PlayerStateV7 | null {
     controller: input.controller,
     color: input.color,
     faction: "ORIGINAL",
-    factionTreeId: "ORIGINAL_BASELINE_V3",
+    factionTreeId: "ORIGINAL_BASELINE_V4",
     status: input.status,
     coins: input.coins,
     researchedTechs: researched,
@@ -616,9 +603,7 @@ function parseContributions(
       (candidate.category === "PERMANENT" &&
         candidate.amount !== (source.kind === "CITY_REWARD" ? 3 : 1)) ||
       (source.kind === "MONUMENT" && candidate.amount !== 3) ||
-      (source.kind === "IMPROVEMENT" &&
-        (source.improvement === "MARKET" ||
-          source.improvement === "BARRACKS")) ||
+      (source.kind === "IMPROVEMENT" && source.improvement === "MARKET") ||
       (values.at(-1)?.id ?? 0) >= candidate.id
     )
       return null;
@@ -744,15 +729,8 @@ function parseUnit(input: unknown): UnitStateV7 | null {
     (role === "SABOTEUR"
       ? !isPositiveSafeIntegerV7(input.blackoutEligibleRound)
       : input.blackoutEligibleRound !== null) ||
-    (role !== "LANCER" &&
-      (activation.pursuitPhase !== "NONE" || activation.attacksUsed > 1)) ||
-    (activation.pursuitPhase === "NONE" &&
-      activation.attacked !== activation.attacksUsed > 0) ||
-    (activation.pursuitPhase !== "NONE" &&
-      (activation.attacksUsed < 1 ||
-        activation.attacksUsed > 2 ||
-        activation.attacked ||
-        activation.handled))
+    (role !== "HORSE_ARCHER" && activation.attacksUsed > 1) ||
+    activation.attacked !== activation.attacksUsed > 0
   )
     return null;
   return {
@@ -781,18 +759,13 @@ function parseActivation(input: unknown): UnitActivationV7 | null {
       "healed",
       "moved",
       "movedPathLength",
-      "pursuitPhase",
       "recovered",
       "specialActed",
     ]) ||
     !isNonNegativeSafeIntegerV7(input.movedPathLength) ||
     (input.attacksUsed !== 0 &&
       input.attacksUsed !== 1 &&
-      input.attacksUsed !== 2 &&
-      input.attacksUsed !== 3) ||
-    (input.pursuitPhase !== "NONE" &&
-      input.pursuitPhase !== "PURSUIT_READY" &&
-      input.pursuitPhase !== "PURSUIT_MOVED") ||
+      input.attacksUsed !== 2) ||
     ![
       input.attacked,
       input.captured,
@@ -810,62 +783,12 @@ function parseActivation(input: unknown): UnitActivationV7 | null {
     movedPathLength: input.movedPathLength,
     attacked: input.attacked as boolean,
     attacksUsed: input.attacksUsed,
-    pursuitPhase: input.pursuitPhase,
     healed: input.healed as boolean,
     recovered: input.recovered as boolean,
     captured: input.captured as boolean,
     handled: input.handled as boolean,
     specialActed: input.specialActed as boolean,
   };
-}
-
-function parseMarks(input: unknown): readonly DefectionMarkV7[] | null {
-  if (!isDenseArrayV7(input)) return null;
-  const values: DefectionMarkV7[] = [];
-  for (const candidate of input) {
-    if (
-      !hasExactKeysV7(candidate, [
-        "id",
-        "initiatingPlayerId",
-        "offeredAtCommandIndex",
-        "phase",
-        "recordedTargetOwnerId",
-        "reservedHomeCityId",
-        "sourceUnitId",
-        "targetUnitId",
-      ]) ||
-      !isPositiveSafeIntegerV7(candidate.id) ||
-      !isPositiveSafeIntegerV7(candidate.offeredAtCommandIndex) ||
-      (candidate.phase !== "WAITING_FOR_REPLY" && candidate.phase !== "ARMED")
-    )
-      return null;
-    const source = parseUnitIdV7(candidate.sourceUnitId);
-    const target = parseUnitIdV7(candidate.targetUnitId);
-    const initiator = parsePlayerIdV7(candidate.initiatingPlayerId);
-    const owner = parsePlayerIdV7(candidate.recordedTargetOwnerId);
-    const home = parseCityIdV7(candidate.reservedHomeCityId);
-    if (
-      source === null ||
-      target === null ||
-      source === target ||
-      initiator === null ||
-      owner === null ||
-      home === null ||
-      (values.at(-1)?.id ?? 0) >= candidate.id
-    )
-      return null;
-    values.push({
-      id: candidate.id,
-      sourceUnitId: source,
-      targetUnitId: target,
-      initiatingPlayerId: initiator,
-      recordedTargetOwnerId: owner,
-      reservedHomeCityId: home,
-      offeredAtCommandIndex: candidate.offeredAtCommandIndex,
-      phase: candidate.phase,
-    });
-  }
-  return values;
 }
 
 function parseExposures(input: unknown): readonly SaboteurExposureV7[] | null {
@@ -997,16 +920,13 @@ interface CrossInput {
   cities: readonly CityStateV7[];
   contributions: readonly PopulationContributionV7[];
   units: readonly UnitStateV7[];
-  marks: readonly DefectionMarkV7[];
   exposures: readonly SaboteurExposureV7[];
   treasureChests: readonly CoordV7[];
   choices: readonly PendingChoiceV7[];
   outcome: MatchOutcomeV7 | null;
   humanPlayerId: PlayerStateV7["id"];
   nextEntityId: number;
-  commandIndex: number;
   round: number;
-  aiMode: "RIVAL" | "COOPERATIVE";
 }
 
 function validateCrossReferences(value: CrossInput): boolean {
@@ -1016,7 +936,6 @@ function validateCrossReferences(value: CrossInput): boolean {
     cities,
     contributions,
     units,
-    marks,
     exposures,
     treasureChests,
     choices,
@@ -1029,7 +948,6 @@ function validateCrossReferences(value: CrossInput): boolean {
     ...cities.map((item) => item.id),
     ...contributions.map((item) => item.id),
     ...units.map((item) => item.id),
-    ...marks.map((item) => item.id),
   ];
   if (
     new Set(entityIds).size !== entityIds.length ||
@@ -1158,50 +1076,6 @@ function validateCrossReferences(value: CrossInput): boolean {
     ).length;
     if (monuments > funded) return false;
   }
-  const targetMarks = new Set<number>();
-  for (const mark of marks) {
-    const source = unitById.get(mark.sourceUnitId);
-    const target = unitById.get(mark.targetUnitId);
-    const city = cityById.get(mark.reservedHomeCityId);
-    if (
-      source?.role !== "ENVOY" ||
-      source.ownerId !== mark.initiatingPlayerId ||
-      target?.ownerId !== mark.recordedTargetOwnerId ||
-      city?.ownerId !== mark.initiatingPlayerId ||
-      !areHostile(
-        players,
-        mark.initiatingPlayerId,
-        mark.recordedTargetOwnerId,
-        value.aiMode,
-      ) ||
-      mark.offeredAtCommandIndex > value.commandIndex ||
-      Math.max(
-        Math.abs(source.at.x - target.at.x),
-        Math.abs(source.at.y - target.at.y),
-      ) > 2 ||
-      targetMarks.has(mark.targetUnitId)
-    )
-      return false;
-    targetMarks.add(mark.targetUnitId);
-  }
-  for (const city of cities) {
-    const assigned = units.filter((unit) => unit.homeCityId === city.id).length;
-    const reservations = marks.filter(
-      (mark) => mark.reservedHomeCityId === city.id,
-    ).length;
-    const barracks = board.tiles.some(
-      (tile) =>
-        tile.territoryCityId === city.id && tile.improvement === "BARRACKS",
-    );
-    const fortified = playerById
-      .get(city.ownerId)
-      ?.researchedTechs.includes("FORTIFICATION");
-    const availableForReservations = Math.max(
-      0,
-      city.level + 1 + (fortified ? 1 : 0) + (barracks ? 2 : 0) - assigned,
-    );
-    if (reservations > availableForReservations) return false;
-  }
   const exposureKeys = new Set<string>();
   for (const exposure of exposures) {
     const unit = unitById.get(exposure.unitId);
@@ -1317,7 +1191,6 @@ function populationLedgerValid(
     if (
       tile.improvement !== null &&
       tile.improvement !== "MARKET" &&
-      tile.improvement !== "BARRACKS" &&
       !liveByCoord.has(key(tile.at))
     )
       return false;
@@ -1327,7 +1200,7 @@ function populationLedgerValid(
     if (
       tile.territoryCityId === null ||
       tile.improvement === null ||
-      ["FARM", "LUMBER_CAMP", "MINE", "QUARRY"].includes(tile.improvement)
+      ["FARM", "LUMBER_CAMP", "MINE"].includes(tile.improvement)
     )
       continue;
     const item = `${tile.territoryCityId}:${tile.improvement}`;
@@ -1354,27 +1227,15 @@ function hasRewardPlacement(
   units: readonly UnitStateV7[],
   city: CityStateV7,
 ): boolean {
-  const surveyed = players
+  const engineered = players
     .find((player) => player.id === city.ownerId)
-    ?.researchedTechs.includes("SURVEYING");
+    ?.researchedTechs.includes("ENGINEERING");
   return board.tiles.some(
     (tile) =>
       tile.territoryCityId === city.id &&
-      (tile.terrain !== "MOUNTAIN" || surveyed) &&
+      (tile.terrain !== "MOUNTAIN" || engineered) &&
       !units.some((unit) => unit.hp > 0 && sameCoordV7(unit.at, tile.at)),
   );
-}
-
-function areHostile(
-  players: readonly PlayerStateV7[],
-  left: PlayerStateV7["id"],
-  right: PlayerStateV7["id"],
-  aiMode: "RIVAL" | "COOPERATIVE",
-): boolean {
-  if (left === right) return false;
-  if (aiMode === "RIVAL") return true;
-  const human = players.find((player) => player.controller === "HUMAN")?.id;
-  return left === human || right === human;
 }
 
 function rewardMatchesLevel(reward: RewardIdV7, level: number): boolean {
@@ -1455,7 +1316,7 @@ function basicImprovementMatchesTerrain(
     ? terrain === "GRASS"
     : improvement === "LUMBER_CAMP"
       ? terrain === "FOREST"
-      : improvement === "MINE" || improvement === "QUARRY"
+      : improvement === "MINE"
         ? terrain === "MOUNTAIN"
         : true;
 }

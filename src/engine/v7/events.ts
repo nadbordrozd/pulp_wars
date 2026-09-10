@@ -2,7 +2,6 @@ import type { CityId, PlayerId, UnitId } from "../model/ids";
 import type {
   AchievementIdV7,
   CoordV7,
-  DefectionCancellationReasonV7,
   ImprovementIdV7,
   MatchOutcomeV7,
   RewardIdV7,
@@ -33,7 +32,8 @@ export interface CombatPreviewV7 {
   readonly noRetaliationReason: "DEFENDER_DIED" | "OUT_OF_RANGE" | null;
   readonly advances: boolean;
   readonly push: "WILL_PUSH" | "BLOCKED" | "UNKNOWN_BEHIND_FOG";
-  readonly pursuitWillOpen: boolean;
+  readonly attacksUsed: number;
+  readonly attacksRemaining: number;
 }
 
 export type DomainEventV7 =
@@ -72,7 +72,6 @@ export type DomainEventV7 =
       readonly cost: number;
       readonly populationContribution: number;
       readonly marketIncome: number;
-      readonly capacityDelta: number;
     }
   | {
       readonly kind: "ECONOMIC_BUILDING_REMOVED";
@@ -82,8 +81,7 @@ export type DomainEventV7 =
       readonly improvement: ImprovementIdV7;
       readonly populationContributionRemoved: number;
       readonly marketIncomeRemoved: number;
-      readonly capacityDelta: number;
-      readonly resourceRestored: "FERTILE_GROUND" | "ORE" | "STONE" | null;
+      readonly resourceRestored: "FERTILE_GROUND" | null;
     }
   | {
       readonly kind: "FOREST_CLEARED" | "FOREST_REPLANTED";
@@ -192,17 +190,10 @@ export type DomainEventV7 =
       readonly path: readonly CoordV7[];
     }
   | {
-      readonly kind: "UNIT_PURSUED";
-      readonly unitId: UnitId;
-      readonly path: readonly CoordV7[];
-      readonly from: CoordV7;
-      readonly to: CoordV7;
-    }
-  | {
       readonly kind: "UNIT_MOVE_INTERRUPTED";
       readonly unitId: UnitId;
       readonly at: CoordV7;
-      readonly reason: "OCCUPIED" | "SURVEYING_REQUIRED" | "ZOC";
+      readonly reason: "OCCUPIED" | "ENGINEERING_REQUIRED" | "ZOC";
     }
   | {
       readonly kind: "TILES_REVEALED";
@@ -210,55 +201,6 @@ export type DomainEventV7 =
       readonly tiles: readonly CoordV7[];
     }
   | { readonly kind: "COMBAT_RESOLVED"; readonly preview: CombatPreviewV7 }
-  | {
-      readonly kind: "PURSUIT_OPENED";
-      readonly unitId: UnitId;
-      readonly attacksUsed: 1 | 2;
-      readonly attacksRemaining: 1 | 2;
-    }
-  | {
-      readonly kind: "PURSUIT_ENDED";
-      readonly unitId: UnitId;
-      readonly attacksUsed: 1 | 2 | 3;
-      readonly reason:
-        | "NONLETHAL"
-        | "THIRD_ATTACK"
-        | "ATTACKER_DIED"
-        | "EXPLICIT_END"
-        | "STATE_CANCELLED";
-    }
-  | {
-      readonly kind: "DEFECTION_OFFERED";
-      readonly markId: number;
-      readonly sourceUnitId: UnitId;
-      readonly targetUnitId: UnitId;
-      readonly initiatingPlayerId: PlayerId;
-      readonly targetOwnerId: PlayerId;
-      readonly reservedHomeCityId: CityId;
-      readonly offeredAtCommandIndex: number;
-    }
-  | {
-      readonly kind: "DEFECTION_ARMED";
-      readonly markId: number;
-      readonly sourceUnitId: UnitId;
-      readonly targetUnitId: UnitId;
-      readonly targetOwnerId: PlayerId;
-    }
-  | {
-      readonly kind: "DEFECTION_CANCELLED";
-      readonly markId: number;
-      readonly reason: DefectionCancellationReasonV7;
-    }
-  | {
-      readonly kind: "DEFECTION_RESOLVED";
-      readonly markId: number;
-      readonly sourceUnitId: UnitId;
-      readonly targetUnitId: UnitId;
-      readonly fromPlayerId: PlayerId;
-      readonly toPlayerId: PlayerId;
-      readonly homeCityId: CityId;
-      readonly at: CoordV7;
-    }
   | {
       readonly kind: "SABOTEUR_EXPOSED";
       readonly unitId: UnitId;
@@ -298,7 +240,7 @@ export type DomainEventV7 =
       readonly cityId: CityId;
       readonly at: CoordV7;
       readonly improvement: ImprovementIdV7;
-      readonly resourceRestored: "FERTILE_GROUND" | "ORE" | "STONE" | null;
+      readonly resourceRestored: "FERTILE_GROUND" | null;
       readonly coinDelta: 1;
     }
   | {
@@ -375,11 +317,6 @@ export type PlayerPresentationEventV7 =
       readonly kind: "UNIT_CONCEALED";
       readonly unitId: UnitId;
       readonly lastSeenAt: CoordV7;
-    }
-  | {
-      readonly kind: "DEFECTION_ENDPOINT_STATUS";
-      readonly unitId: UnitId;
-      readonly phase: "WAITING_FOR_REPLY" | "ARMED";
     };
 
 export type ProjectedResourceRestorationEventV7 =
@@ -387,15 +324,13 @@ export type ProjectedResourceRestorationEventV7 =
       Extract<DomainEventV7, { kind: "ECONOMIC_BUILDING_REMOVED" }>,
       "resourceRestored"
     > & {
-      readonly resourceRestored:
-        "FERTILE_GROUND" | "ORE" | "STONE" | "UNKNOWN_RESOURCE" | null;
+      readonly resourceRestored: "FERTILE_GROUND" | "UNKNOWN_RESOURCE" | null;
     })
   | (Omit<
       Extract<DomainEventV7, { kind: "IMPROVEMENT_PILLAGED" }>,
       "resourceRestored"
     > & {
-      readonly resourceRestored:
-        "FERTILE_GROUND" | "ORE" | "STONE" | "UNKNOWN_RESOURCE" | null;
+      readonly resourceRestored: "FERTILE_GROUND" | "UNKNOWN_RESOURCE" | null;
     });
 
 export type ProjectedMonumentBuiltV7 =

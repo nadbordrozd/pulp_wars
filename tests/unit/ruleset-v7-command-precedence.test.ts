@@ -17,7 +17,6 @@ const READY: UnitStateV7["activation"] = {
   movedPathLength: 0,
   attacked: false,
   attacksUsed: 0,
-  pursuitPhase: "NONE",
   healed: false,
   recovered: false,
   captured: false,
@@ -25,62 +24,50 @@ const READY: UnitStateV7["activation"] = {
   specialActed: false,
 };
 
-type OpenPursuitPhase = Extract<
-  UnitStateV7["activation"]["pursuitPhase"],
-  "PURSUIT_READY" | "PURSUIT_MOVED"
->;
-
-describe("ruleset-7 mandatory reward and Pursuit command precedence", () => {
-  it.each(["PURSUIT_READY", "PURSUIT_MOVED"] as const)(
-    "accepts every offered reward without consuming an open %s sequence",
-    (phase) => {
-      const fixture = precedenceFixture(phase, 2);
-      const activation = required(
-        fixture.state.units.find((unit) => unit.id === fixture.lancerId),
-        "Lancer missing",
-      ).activation;
-      const offered = queryPlayerCommandsV7(fixture.state, fixture.actor);
-
-      expect(offered).toEqual([
+describe("ruleset-7 mandatory reward and Horse Archer command precedence", () => {
+  it("accepts either offered reward without consuming the remaining shot", () => {
+    const fixture = precedenceFixture(2);
+    const activation = horse(fixture.state, fixture).activation;
+    const offered = queryPlayerCommandsV7(fixture.state, fixture.actor);
+    expect(offered).toEqual([
+      {
+        kind: "CHOOSE_CITY_REWARD",
+        cityId: fixture.cityId,
+        reachedLevel: 2,
+        reward: "SURVEY",
+      },
+      {
+        kind: "CHOOSE_CITY_REWARD",
+        cityId: fixture.cityId,
+        reachedLevel: 2,
+        reward: "STOCKPILE",
+      },
+    ]);
+    for (const command of offered) {
+      const result = applyCommandV7(fixture.state, fixture.actor, command);
+      expect(result.accepted).toBe(true);
+      if (!result.accepted) continue;
+      expect(horse(result.state, fixture).activation).toEqual(activation);
+      expect(result.state.pendingChoices).toEqual([]);
+      expect(queryPlayerCommandsV7(result.state, fixture.actor)).toContainEqual(
         {
-          kind: "CHOOSE_CITY_REWARD",
-          cityId: fixture.cityId,
-          reachedLevel: 2,
-          reward: "SURVEY",
+          kind: "ATTACK",
+          unitId: fixture.horseArcherId,
+          targetUnitId: fixture.targetId,
         },
-        {
-          kind: "CHOOSE_CITY_REWARD",
-          cityId: fixture.cityId,
-          reachedLevel: 2,
-          reward: "STOCKPILE",
-        },
-      ]);
-
-      for (const command of offered) {
-        const result = applyCommandV7(fixture.state, fixture.actor, command);
-        expect(result.accepted, JSON.stringify(command)).toBe(true);
-        if (!result.accepted) continue;
-        expect(
-          result.state.units.find((unit) => unit.id === fixture.lancerId)
-            ?.activation,
-        ).toEqual(activation);
-        expect(result.state.pendingChoices).toEqual([]);
-        expectPursuitCommands(result.state, fixture, phase);
-        expect(
-          applyCommandV7(result.state, fixture.actor, {
-            kind: "WAIT",
-            unitId: fixture.otherUnitId,
-          }),
-        ).toMatchObject({
-          accepted: false,
-          error: { code: "PURSUIT_MUST_END" },
-        });
-      }
-    },
-  );
+      );
+      expect(
+        queryPlayerCommandsV7(result.state, fixture.actor).some(
+          (candidate) =>
+            candidate.kind === "WAIT" &&
+            candidate.unitId === fixture.otherUnitId,
+        ),
+      ).toBe(true);
+    }
+  });
 
   it("rejects malformed or mismatched rewards atomically and blocks all other commands", () => {
-    const fixture = precedenceFixture("PURSUIT_READY", 2);
+    const fixture = precedenceFixture(2);
     const enemyCityId = required(
       fixture.state.cities.find((city) => city.ownerId !== fixture.actor),
       "Enemy city missing",
@@ -91,10 +78,7 @@ describe("ruleset-7 mandatory reward and Pursuit command precedence", () => {
       reachedLevel: 2,
       reward: "NOT_A_REWARD",
     } as unknown as CommandV7;
-    const cases: readonly {
-      command: CommandV7;
-      code: RuleErrorCodeV7;
-    }[] = [
+    const cases: readonly { command: CommandV7; code: RuleErrorCodeV7 }[] = [
       { command: invalidReward, code: "INVALID_COMMAND" },
       {
         command: {
@@ -124,22 +108,17 @@ describe("ruleset-7 mandatory reward and Pursuit command precedence", () => {
         code: "CITY_REWARD_MISMATCH",
       },
       {
-        command: { kind: "END_PURSUIT", unitId: fixture.lancerId },
-        code: "PENDING_CHOICE",
-      },
-      {
         command: {
           kind: "ATTACK",
-          unitId: fixture.lancerId,
+          unitId: fixture.horseArcherId,
           targetUnitId: fixture.targetId,
         },
         code: "PENDING_CHOICE",
       },
       { command: { kind: "END_TURN" }, code: "PENDING_CHOICE" },
     ];
-
     for (const { command, code } of cases) {
-      const serializedBefore = JSON.stringify(fixture.state);
+      const before = JSON.stringify(fixture.state);
       const result = applyCommandV7(fixture.state, fixture.actor, command);
       expect(result).toMatchObject({
         accepted: false,
@@ -148,143 +127,64 @@ describe("ruleset-7 mandatory reward and Pursuit command precedence", () => {
         error: { code },
       });
       expect(result.state).toBe(fixture.state);
-      expect(JSON.stringify(result.state)).toBe(serializedBefore);
+      expect(JSON.stringify(result.state)).toBe(before);
     }
   });
 
-  it.each(["PURSUIT_READY", "PURSUIT_MOVED"] as const)(
-    "keeps canonical reward order blocking until the queue drains, then resumes %s",
-    (phase) => {
-      const fixture = precedenceFixture(phase, 3);
-      const activation = required(
-        fixture.state.units.find((unit) => unit.id === fixture.lancerId),
-        "Lancer missing",
-      ).activation;
-      const first = applyCommandV7(fixture.state, fixture.actor, {
+  it("keeps canonical reward order blocking until the queue drains", () => {
+    const fixture = precedenceFixture(3);
+    const activation = horse(fixture.state, fixture).activation;
+    const first = applyCommandV7(fixture.state, fixture.actor, {
+      kind: "CHOOSE_CITY_REWARD",
+      cityId: fixture.cityId,
+      reachedLevel: 2,
+      reward: "STOCKPILE",
+    });
+    if (!first.accepted) throw new Error(first.error.code);
+    expect(queryPlayerCommandsV7(first.state, fixture.actor)).toEqual([
+      {
         kind: "CHOOSE_CITY_REWARD",
         cityId: fixture.cityId,
-        reachedLevel: 2,
-        reward: "STOCKPILE",
-      });
-      expect(first.accepted).toBe(true);
-      if (!first.accepted) return;
-
-      expect(first.state.pendingChoices).toEqual([
-        {
-          kind: "CITY_REWARD",
-          cityId: fixture.cityId,
-          reachedLevel: 3,
-          candidates: ["WALLS", "MILITIA"],
-        },
-      ]);
-      expect(queryPlayerCommandsV7(first.state, fixture.actor)).toEqual([
-        {
-          kind: "CHOOSE_CITY_REWARD",
-          cityId: fixture.cityId,
-          reachedLevel: 3,
-          reward: "WALLS",
-        },
-        {
-          kind: "CHOOSE_CITY_REWARD",
-          cityId: fixture.cityId,
-          reachedLevel: 3,
-          reward: "MILITIA",
-        },
-      ]);
-      expect(
-        first.state.units.find((unit) => unit.id === fixture.lancerId)
-          ?.activation,
-      ).toEqual(activation);
-      expect(
-        applyCommandV7(first.state, fixture.actor, {
-          kind: "END_PURSUIT",
-          unitId: fixture.lancerId,
-        }),
-      ).toMatchObject({
-        accepted: false,
-        state: first.state,
-        events: [],
-        error: { code: "PENDING_CHOICE" },
-      });
-
-      const final = applyCommandV7(first.state, fixture.actor, {
+        reachedLevel: 3,
+        reward: "WALLS",
+      },
+      {
         kind: "CHOOSE_CITY_REWARD",
         cityId: fixture.cityId,
         reachedLevel: 3,
         reward: "MILITIA",
-      });
-      expect(final.accepted).toBe(true);
-      if (!final.accepted) return;
-      expect(final.state.pendingChoices).toEqual([]);
-      expect(
-        final.state.cities.find((city) => city.id === fixture.cityId)?.rewards,
-      ).toEqual([
-        { reachedLevel: 2, reward: "STOCKPILE" },
-        { reachedLevel: 3, reward: "MILITIA" },
-      ]);
-      expect(
-        final.state.units.find((unit) => unit.id === fixture.lancerId)
-          ?.activation,
-      ).toEqual(activation);
-      const militia = final.state.units.find(
-        (unit) =>
-          !first.state.units.some((candidate) => candidate.id === unit.id),
-      );
-      expect(militia).toMatchObject({
-        ownerId: fixture.actor,
-        homeCityId: fixture.cityId,
-        role: "FIGHTER",
-        activation: {
-          moved: true,
-          movedPathLength: 0,
-          attacked: true,
-          attacksUsed: 1,
-          pursuitPhase: "NONE",
-          healed: true,
-          recovered: true,
-          captured: true,
-          handled: true,
-          specialActed: true,
-        },
-      });
-      expectPursuitCommands(final.state, fixture, phase);
+      },
+    ]);
+    expect(horse(first.state, fixture).activation).toEqual(activation);
 
-      const ended = applyCommandV7(final.state, fixture.actor, {
-        kind: "END_PURSUIT",
-        unitId: fixture.lancerId,
-      });
-      expect(ended.accepted).toBe(true);
-      if (!ended.accepted) return;
-      expect(
-        ended.state.units.find((unit) => unit.id === fixture.lancerId)
-          ?.activation,
-      ).toMatchObject({ pursuitPhase: "NONE", attacked: true, handled: true });
-      expect(queryPlayerCommandsV7(ended.state, fixture.actor)).toContainEqual({
-        kind: "END_TURN",
-      });
-    },
-  );
-
-  it("retains the ordinary Pursuit lock when no reward is pending", () => {
-    const fixture = precedenceFixture("PURSUIT_READY", 2);
-    const rewarded = applyCommandV7(fixture.state, fixture.actor, {
+    const final = applyCommandV7(first.state, fixture.actor, {
       kind: "CHOOSE_CITY_REWARD",
       cityId: fixture.cityId,
-      reachedLevel: 2,
-      reward: "SURVEY",
+      reachedLevel: 3,
+      reward: "MILITIA",
     });
-    if (!rewarded.accepted) throw new Error(rewarded.error.code);
-
-    const rejected = applyCommandV7(rewarded.state, fixture.actor, {
-      kind: "END_TURN",
+    if (!final.accepted) throw new Error(final.error.code);
+    expect(final.state.pendingChoices).toEqual([]);
+    expect(horse(final.state, fixture).activation).toEqual(activation);
+    const militia = final.state.units.find(
+      (unit) =>
+        !first.state.units.some((candidate) => candidate.id === unit.id),
+    );
+    expect(militia).toMatchObject({
+      role: "FIGHTER",
+      activation: {
+        moved: true,
+        attacked: true,
+        attacksUsed: 1,
+        handled: true,
+        specialActed: true,
+      },
     });
-    expect(rejected).toMatchObject({
-      accepted: false,
-      state: rewarded.state,
-      events: [],
-      error: { code: "PURSUIT_MUST_END" },
+    expect(queryPlayerCommandsV7(final.state, fixture.actor)).toContainEqual({
+      kind: "ATTACK",
+      unitId: fixture.horseArcherId,
+      targetUnitId: fixture.targetId,
     });
-    expect(rejected.state).toBe(rewarded.state);
   });
 });
 
@@ -292,15 +192,12 @@ interface PrecedenceFixture {
   readonly state: GameStateV7;
   readonly actor: PlayerId;
   readonly cityId: GameStateV7["cities"][number]["id"];
-  readonly lancerId: UnitStateV7["id"];
+  readonly horseArcherId: UnitStateV7["id"];
   readonly targetId: UnitStateV7["id"];
   readonly otherUnitId: UnitStateV7["id"];
 }
 
-function precedenceFixture(
-  phase: OpenPursuitPhase,
-  cityLevel: 2 | 3,
-): PrecedenceFixture {
+function precedenceFixture(cityLevel: 2 | 3): PrecedenceFixture {
   const base = exploredAllV7(initialV7());
   const actor = base.humanPlayerId;
   const enemy = required(
@@ -311,7 +208,7 @@ function precedenceFixture(
     base.cities.find((candidate) => candidate.ownerId === actor),
     "Owned city missing",
   );
-  const lancerId = required(
+  const horseArcherId = required(
     base.units.find((unit) => unit.ownerId === actor),
     "Owned unit missing",
   ).id;
@@ -320,17 +217,14 @@ function precedenceFixture(
     "Enemy unit missing",
   ).id;
   const otherUnitId = base.nextEntityId as UnitStateV7["id"];
-  const lancerAt = { x: 2, y: 5 };
-  const targetAt = { x: 3, y: 5 };
+  const horseAt = { x: 2, y: 5 };
+  const targetAt = { x: 4, y: 5 };
   const otherAt = { x: 2, y: 8 };
   const permanentPopulation = cityLevel === 2 ? 2 : 5;
-  const populationTiles = base.board.tiles
+  const contributions: GameStateV7["populationContributions"] = base.board.tiles
     .filter((tile) => tile.territoryCityId === city.id)
-    .slice(0, permanentPopulation);
-  if (populationTiles.length !== permanentPopulation)
-    throw new Error("insufficient city population coordinates");
-  const contributions: GameStateV7["populationContributions"] =
-    populationTiles.map((tile, index) => ({
+    .slice(0, permanentPopulation)
+    .map((tile, index) => ({
       id: base.nextEntityId + 1 + index,
       cityId: city.id,
       category: "PERMANENT" as const,
@@ -341,14 +235,17 @@ function precedenceFixture(
         at: tile.at,
       },
     }));
-  const lancer = makeUnit(lancerId, actor, "LANCER", lancerAt, city.id, {
-    ...READY,
-    attacksUsed: 1,
-    pursuitPhase: phase,
-  });
-  const target = makeUnit(targetId, enemy, "FIGHTER", targetAt);
+  const horseArcher = makeUnit(
+    horseArcherId,
+    actor,
+    "HORSE_ARCHER",
+    horseAt,
+    city.id,
+    { ...READY, attacked: true, attacksUsed: 1 },
+  );
+  const target = makeUnit(targetId, enemy, "GUARD", targetAt);
   const other = makeUnit(otherUnitId, actor, "FIGHTER", otherAt, city.id);
-  const occupied = [lancerAt, targetAt, otherAt];
+  const occupied = [horseAt, targetAt, otherAt];
   const state = checkedV7({
     ...base,
     nextEntityId: base.nextEntityId + 1 + permanentPopulation,
@@ -377,7 +274,9 @@ function precedenceFixture(
     treasureChests: base.treasureChests.filter(
       (at) => !occupied.some((candidate) => same(candidate, at)),
     ),
-    units: [lancer, target, other].sort((left, right) => left.id - right.id),
+    units: [horseArcher, target, other].sort(
+      (left, right) => left.id - right.id,
+    ),
     board: {
       ...base.board,
       tiles: base.board.tiles.map((tile) =>
@@ -393,13 +292,20 @@ function precedenceFixture(
       ),
     },
   });
-  return { state, actor, cityId: city.id, lancerId, targetId, otherUnitId };
+  return {
+    state,
+    actor,
+    cityId: city.id,
+    horseArcherId,
+    targetId,
+    otherUnitId,
+  };
 }
 
 function makeUnit(
   id: UnitStateV7["id"],
   ownerId: PlayerId,
-  role: "FIGHTER" | "LANCER",
+  role: "FIGHTER" | "GUARD" | "HORSE_ARCHER",
   at: CoordV7,
   homeCityId: UnitStateV7["homeCityId"] = null,
   activation: UnitStateV7["activation"] = READY,
@@ -421,22 +327,11 @@ function makeUnit(
   };
 }
 
-function expectPursuitCommands(
-  state: GameStateV7,
-  fixture: PrecedenceFixture,
-  phase: OpenPursuitPhase,
-): void {
-  const commands = queryPlayerCommandsV7(state, fixture.actor);
-  expect(new Set(commands.map((command) => command.kind))).toEqual(
-    phase === "PURSUIT_READY"
-      ? new Set(["ATTACK", "PURSUE", "END_PURSUIT"])
-      : new Set(["ATTACK", "END_PURSUIT"]),
+function horse(state: GameStateV7, fixture: PrecedenceFixture): UnitStateV7 {
+  return required(
+    state.units.find((unit) => unit.id === fixture.horseArcherId),
+    "Horse Archer missing",
   );
-  expect(
-    commands.every(
-      (command) => "unitId" in command && command.unitId === fixture.lancerId,
-    ),
-  ).toBe(true);
 }
 
 function same(left: CoordV7, right: CoordV7): boolean {
