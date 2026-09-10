@@ -14,7 +14,9 @@ import {
   cityIncomeForViewerV7,
   economicFormulaV7,
   monumentSourceForViewerV7,
+  recruitmentRolePresentationV7,
   specialBoundaryNoticeV7,
+  technologyEffectGroupsV7,
 } from "../../src/render/dom/app-view-v7";
 import {
   checkedV7,
@@ -24,6 +26,65 @@ import {
 } from "../fixtures/v7-builders";
 
 describe("Ruleset 7 public presentation", () => {
+  it("presents canonical recruitment base data and exact Horse Archer limits", () => {
+    const horseArcher = recruitmentRolePresentationV7("HORSE_ARCHER");
+    expect(horseArcher.label).toBe("Horse Archer");
+    expect(horseArcher.stats).toEqual([
+      { label: "Max HP", value: "10" },
+      { label: "Attack", value: "2" },
+      { label: "Defense", value: "1" },
+      { label: "Move", value: "3" },
+      { label: "Range", value: "1–2" },
+      { label: "Sight", value: "1" },
+    ]);
+    expect(horseArcher.abilities.join(" ")).toContain(
+      "Up to 2 total attacks in this activation",
+    );
+    expect(horseArcher.abilities.join(" ")).toContain(
+      "other units and End Turn remain available",
+    );
+    expect(horseArcher.abilities.join(" ")).toContain(
+      "cannot Capture and never advances",
+    );
+
+    const marksman = recruitmentRolePresentationV7("MARKSMAN");
+    expect(marksman.restrictions).toContain(
+      "Does not advance after a ranged kill.",
+    );
+    expect(marksman.restrictions).not.toContain("Never advances after a kill.");
+  });
+
+  it("groups technology detail items from structured effect kinds", () => {
+    expect(
+      technologyEffectGroupsV7([
+        { kind: "UNIT_ROLE", role: "HORSE_ARCHER" },
+        { kind: "COMMAND", command: "BUILD_MARKET" },
+        { kind: "MARKET_CAPITAL_ROAD_BONUS", coins: 1 },
+      ]),
+    ).toEqual([
+      {
+        id: "UNITS",
+        label: "Units",
+        items: [
+          "Train Horse Archer · 9 Coins",
+          "Attack: Attack an offered hostile target at range 1–2.",
+          "Dash: May take its ordinary Move before its first Attack.",
+          "Two shots: Up to 2 total attacks in this activation. Move only before firing. After the first shot, this unit cannot move or use another self action; other units and End Turn remain available. It cannot Capture and never advances.",
+        ],
+      },
+      {
+        id: "BUILDINGS",
+        label: "Buildings",
+        items: ["Build market"],
+      },
+      {
+        id: "PASSIVE_EFFECTS",
+        label: "Passive effects",
+        items: ["Market connected to the capital adds +1 Coin"],
+      },
+    ]);
+  });
+
   it("keeps legal Attack highlighted when BASE_ONLY makes exact damage uncertain", () => {
     let state = exploredAllV7(initialV7(1517));
     const attacker = state.units.find(

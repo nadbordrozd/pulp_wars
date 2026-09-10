@@ -13,6 +13,7 @@ import type {
   PublicPopulationContributionV7,
 } from "../../src/engine/index";
 import { effectiveRoleRuleV7, UNIT_ROLE_IDS_V7 } from "../../src/engine/index";
+import { RULESET7_UNIT_ART_IDS } from "../../src/assets/ruleset7-ui-art";
 import type {
   BoardHostCallbacksV7,
   BoardHostModelV7,
@@ -204,6 +205,12 @@ describe("Ruleset 7 DOM shell", () => {
     const hunting = requiredButton('[data-action="tech-hunting"]');
     hunting.click();
     expect(document.body.textContent).toContain("Hunt game");
+    expect(
+      document.querySelectorAll(".v7-tech-detail-group > ul > li").length,
+    ).toBeGreaterThan(0);
+    expect(
+      document.querySelector('[data-effect-group="ACTIONS"] ul')?.tagName,
+    ).toBe("UL");
     const research = requiredButton('[data-action="research-hunting"]');
     research.focus();
     research.click();
@@ -224,6 +231,146 @@ describe("Ruleset 7 DOM shell", () => {
       "capital-connected friendly Road",
     );
     app.destroy();
+  });
+
+  it("opens inert train help without mutation, restores focus and scroll, then dispatches Train once", async () => {
+    const source = new Ruleset7BrowserController();
+    const launched = await source.launch(setupV7(1539));
+    if (!launched.ok) throw new Error(launched.diagnostic);
+    const initial = source.snapshot();
+    if (initial.view === null) throw new Error("public view missing");
+    const city = initial.view.cities.find(
+      (candidate) => candidate.ownerId === initial.view?.viewer.id,
+    );
+    if (city === undefined) throw new Error("owned city missing");
+    const roles = UNIT_ROLE_IDS_V7.filter(
+      (role) => effectiveRoleRuleV7(role).cost !== null,
+    );
+    const snapshot: Ruleset7BrowserSnapshot = {
+      ...initial,
+      offeredCommands: roles.map((role) => ({
+        kind: "TRAIN" as const,
+        cityId: city.id,
+        role,
+      })),
+    };
+    const dispatch = vi.fn(async (): Promise<Ruleset7DispatchResult> => ({
+      accepted: false,
+      reason: "NOT_OFFERED",
+    }));
+    const host = new CapturingBoardHost();
+    const app = new Ruleset7DomAppView(
+      document,
+      requiredRoot(),
+      fixturePort(source, snapshot, dispatch),
+      { boardHost: host, settingsStorage: null },
+    );
+    host.callbacks?.onSelection({ kind: "CITY", cityId: city.id });
+
+    expect(document.querySelectorAll(".v7-train-card")).toHaveLength(
+      roles.length,
+    );
+    expect(document.querySelectorAll(".v7-train-help")).toHaveLength(
+      roles.length,
+    );
+    for (const role of roles) {
+      const rule = effectiveRoleRuleV7(role);
+      const help = requiredButton(
+        `[data-action="train-help-${role.toLowerCase()}"]`,
+      );
+      expect(help.textContent).toBe("?");
+      expect(help.getAttribute("aria-label")).toBe(`About ${rule.label}`);
+      expect(help.parentElement?.classList.contains("v7-train-card")).toBe(
+        true,
+      );
+      expect(
+        help.parentElement?.querySelectorAll(":scope > button"),
+      ).toHaveLength(2);
+      expect(
+        help.parentElement?.querySelector(".v7-train-action button"),
+      ).toBeNull();
+    }
+
+    const beforeIndex = initial.view.commandIndex;
+    const beforeCoins = initial.view.viewer.coins;
+    const actionRow = document.querySelector<HTMLElement>(
+      '.v7-selection-dock[data-selection-kind="city"] > .v7-context-actions',
+    );
+    if (actionRow === null) throw new Error("city action row missing");
+    actionRow.scrollLeft = 123;
+    const help = requiredButton('[data-action="train-help-horse_archer"]');
+    help.focus();
+    help.click();
+    await Promise.resolve();
+    const modal = document.querySelector<HTMLElement>(".v7-recruit-help");
+    if (modal === null) throw new Error("recruit help missing");
+    expect(modal.getAttribute("aria-label")).toBe(
+      "Horse Archer recruitment information",
+    );
+    expect(modal.querySelector(".v7-identity h2")?.textContent).toBe(
+      "Horse Archer",
+    );
+    expect(
+      modal.querySelector<HTMLImageElement>(".v7-art-frame")?.dataset.assetId,
+    ).toBe(RULESET7_UNIT_ART_IDS.HORSE_ARCHER);
+    expect(modal.textContent).toContain("Max HP10");
+    expect(modal.textContent).toContain("Range1–2");
+    expect(modal.textContent).toContain(
+      "Up to 2 total attacks in this activation",
+    );
+    expect(modal.textContent).toContain(
+      "other units and End Turn remain available",
+    );
+    expect(modal.textContent).not.toContain("Needs action");
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(initial.view.commandIndex).toBe(beforeIndex);
+    expect(initial.view.viewer.coins).toBe(beforeCoins);
+    expect(document.querySelector<HTMLElement>(".v7-board-host")?.inert).toBe(
+      true,
+    );
+
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    await Promise.resolve();
+    expect(document.querySelector(".v7-recruit-help")).toBeNull();
+    expect(document.activeElement?.getAttribute("data-action")).toBe(
+      "train-help-horse_archer",
+    );
+    const restoredRow = document.querySelector<HTMLElement>(
+      '.v7-selection-dock[data-selection-kind="city"] > .v7-context-actions',
+    );
+    expect(restoredRow?.scrollLeft).toBe(123);
+
+    if (restoredRow === null) throw new Error("restored action row missing");
+    requiredButton('[data-action="train-help-horse_archer"]').click();
+    await Promise.resolve();
+    requiredButton('[data-action="close-recruit-help"]').click();
+    await Promise.resolve();
+    expect(document.querySelector(".v7-recruit-help")).toBeNull();
+    expect(document.activeElement?.getAttribute("data-action")).toBe(
+      "train-help-horse_archer",
+    );
+    const rowAfterClose = document.querySelector<HTMLElement>(
+      '.v7-selection-dock[data-selection-kind="city"] > .v7-context-actions',
+    );
+    if (rowAfterClose === null) throw new Error("closed action row missing");
+    rowAfterClose.scrollLeft = 37;
+    requiredButton('[data-action="compact-menu"]').click();
+    await Promise.resolve();
+    expect(
+      document.querySelector<HTMLElement>(
+        '.v7-selection-dock[data-selection-kind="city"] > .v7-context-actions',
+      )?.scrollLeft,
+    ).not.toBe(123);
+
+    const train = requiredButton(".v7-train-action");
+    train.click();
+    train.click();
+    await waitUntil(() => dispatch.mock.calls.length === 1);
+    expect(dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({ kind: "TRAIN", cityId: city.id }),
+    );
+    app.destroy();
+    source.destroy();
   });
 
   it("isolates modal input, traps focus and restores the opening control", async () => {

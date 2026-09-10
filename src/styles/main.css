@@ -499,6 +499,32 @@
   justify-items: center;
 }
 
+.v7-train-card {
+  position: relative;
+  display: grid;
+  flex: 0 0 176px;
+  width: 176px;
+}
+
+.v7-train-card > .v7-train-action {
+  width: 100%;
+}
+
+.v7-train-help {
+  position: absolute;
+  z-index: 2;
+  top: 0.35rem;
+  right: 0.35rem;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 999px;
+  background: var(--panel-strong);
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
 .v7-reward-action {
   display: grid;
   width: 176px;
@@ -600,6 +626,7 @@
 }
 
 .v7-overlay,
+.v7-recruit-help,
 .v7-mandatory-choice,
 .v7-results {
   position: absolute;
@@ -625,6 +652,57 @@
 
 .v7-overlay[data-screen="tech"] {
   width: min(90rem, calc(100% - 1.5rem));
+}
+
+.v7-recruit-help {
+  inset: 50% auto auto 50%;
+  width: min(42rem, calc(100% - 2rem));
+  max-height: calc(100dvh - 2rem);
+  transform: translate(-50%, -50%);
+}
+
+.v7-recruit-help > .v7-identity {
+  width: min(100%, 28rem);
+}
+
+.v7-recruit-help-context {
+  color: var(--muted);
+}
+
+.v7-recruit-stats {
+  display: grid;
+  grid-template-columns: repeat(3, max-content minmax(2rem, 1fr));
+  gap: 0.35rem 0.6rem;
+  margin: 0;
+}
+
+.v7-recruit-stats dt {
+  font-weight: 900;
+}
+
+.v7-recruit-stats dd {
+  margin: 0;
+}
+
+.v7-recruit-help-group,
+.v7-tech-detail-group {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.v7-recruit-help-group > h3,
+.v7-recruit-help-group > ul,
+.v7-tech-detail-group > h3,
+.v7-tech-detail-group > ul {
+  margin: 0;
+}
+
+.v7-recruit-help-group > ul,
+.v7-tech-detail-group > ul {
+  display: grid;
+  gap: 0.3rem;
+  padding-left: 1.35rem;
+  line-height: 1.4;
 }
 
 .v7-app-shell .close-button {
@@ -740,6 +818,21 @@
   background: var(--panel-strong);
 }
 
+.v7-tech-detail {
+  grid-template-columns: minmax(13rem, 18rem) minmax(16rem, 1fr);
+  align-items: start;
+}
+
+.v7-tech-detail > .v7-identity,
+.v7-tech-detail > p,
+.v7-tech-detail > .primary-action {
+  grid-column: 1;
+}
+
+.v7-tech-detail-group {
+  grid-column: 2;
+}
+
 .v7-live:empty,
 .v7-alert:empty {
   display: none;
@@ -831,6 +924,21 @@
   .v7-tech-graph {
     grid-template-columns: minmax(0, 1fr);
     overflow-x: visible;
+  }
+
+  .v7-tech-detail {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .v7-tech-detail > .v7-identity,
+  .v7-tech-detail > p,
+  .v7-tech-detail > .primary-action,
+  .v7-tech-detail-group {
+    grid-column: 1;
+  }
+
+  .v7-recruit-stats {
+    grid-template-columns: max-content minmax(2rem, 1fr);
   }
 
   .v7-tech-branch > h3 {

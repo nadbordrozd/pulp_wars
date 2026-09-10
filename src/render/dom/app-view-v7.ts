@@ -25,6 +25,7 @@ import {
   type PlayerViewV7,
   type PublicTechnologyNodeV7,
   type TechnologyIdV7,
+  type UnitRoleIdV7,
 } from "../../engine/index";
 import { downloadJsonFile } from "../../app/browser-download";
 import {
@@ -126,6 +127,9 @@ export class Ruleset7DomAppView {
   #selectedAchievement: "ENGINEER" | "MUSTER" | null = null;
   #selectedAbility: string | null = null;
   #selectedModifier: string | null = null;
+  #selectedRecruitHelp: UnitRoleIdV7 | null = null;
+  #cityActionScrollLeft: number | null = null;
+  #clearCityActionScrollAfterRestore = false;
   #tacticalTargetMode: TacticalTargetModeV7 | null = null;
   #modalReturnAction: string | null = null;
   #compactMenuOpen = false;
@@ -223,9 +227,14 @@ export class Ruleset7DomAppView {
     const modal = this.#root.querySelector<HTMLElement>('[aria-modal="true"]');
     if (modal !== null) {
       if (event.key === "Tab") this.#trapModalFocus(event, modal);
-      else if (event.key === "Escape" && this.#screen !== "MATCH") {
-        event.preventDefault();
-        this.#closeOverlay();
+      else if (event.key === "Escape") {
+        if (this.#selectedRecruitHelp !== null) {
+          event.preventDefault();
+          this.#closeRecruitHelp();
+        } else if (this.#screen !== "MATCH") {
+          event.preventDefault();
+          this.#closeOverlay();
+        }
       }
       return;
     }
@@ -505,6 +514,9 @@ export class Ruleset7DomAppView {
       this.#boardHost.mount(board, {
         onSelection: (selection) => {
           this.#selection = selection;
+          this.#selectedRecruitHelp = null;
+          this.#cityActionScrollLeft = null;
+          this.#clearCityActionScrollAfterRestore = false;
           this.#tacticalTargetMode = null;
           this.#selectedAchievement = null;
           this.#selectedAbility = null;
@@ -521,6 +533,9 @@ export class Ruleset7DomAppView {
     const nextChildren: HTMLElement[] = [];
     if (view.pendingChoices.length > 0) {
       this.#tacticalTargetMode = null;
+      this.#selectedRecruitHelp = null;
+      this.#cityActionScrollLeft = null;
+      this.#clearCityActionScrollAfterRestore = false;
     }
     const activeId = view.turnOrder[view.activeSeatIndex];
     const active = view.players.find((player) => player.id === activeId);
@@ -668,6 +683,13 @@ export class Ruleset7DomAppView {
       view.pendingChoices.length === 0
     )
       nextChildren.push(this.#overlay(view));
+    if (
+      this.#snapshot.phase === "ACTIVE" &&
+      this.#screen === "MATCH" &&
+      this.#selectedRecruitHelp !== null &&
+      view.pendingChoices.length === 0
+    )
+      nextChildren.push(this.#recruitHelp(this.#selectedRecruitHelp));
     if (view.pendingChoices[0] !== undefined)
       nextChildren.push(this.#reward(view));
     if (this.#snapshot.phase === "COMPLETE")
@@ -721,6 +743,21 @@ export class Ruleset7DomAppView {
           .querySelector<HTMLButtonElement>(`[data-action="${focusAction}"]`)
           ?.focus();
       });
+    if (this.#cityActionScrollLeft !== null) {
+      const scrollLeft = this.#cityActionScrollLeft;
+      const clearAfterRestore = this.#clearCityActionScrollAfterRestore;
+      queueMicrotask(() => {
+        if (this.#destroyed) return;
+        const row = main.querySelector<HTMLElement>(
+          '.v7-selection-dock[data-selection-kind="city"] > .v7-context-actions',
+        );
+        if (row !== null) row.scrollLeft = scrollLeft;
+        if (clearAfterRestore) {
+          this.#cityActionScrollLeft = null;
+          this.#clearCityActionScrollAfterRestore = false;
+        }
+      });
+    }
   }
 
   #dock(view: PlayerViewV7, selection: BoardSelectionV7): HTMLElement | null {
@@ -1152,7 +1189,26 @@ export class Ruleset7DomAppView {
       }
       action.disabled = this.#localBusy();
       action.onclick = () => void this.#dispatch(command);
-      actions.append(action);
+      if (command.kind === "TRAIN") {
+        const card = el(this.#document, "div", "v7-train-card");
+        const help = button(
+          this.#document,
+          "?",
+          `train-help-${command.role.toLowerCase()}`,
+          "v7-train-help",
+        );
+        const label = effectiveRoleRuleV7(command.role).label;
+        help.setAttribute("aria-label", `About ${label}`);
+        help.disabled = this.#localBusy();
+        help.onclick = () => {
+          this.#selectedRecruitHelp = command.role;
+          this.#cityActionScrollLeft = actions.scrollLeft;
+          this.#clearCityActionScrollAfterRestore = false;
+          this.#render();
+        };
+        card.append(action, help);
+        actions.append(card);
+      } else actions.append(action);
     }
     if (actions.childElementCount === 0)
       actions.append(
@@ -1368,23 +1424,45 @@ export class Ruleset7DomAppView {
       text(
         this.#document,
         "p",
-        node.prerequisites.length === 0
-          ? "No prerequisite"
-          : `Requires ${node.prerequisites.map(title).join(", ")}`,
-      ),
-      text(
-        this.#document,
-        "p",
         node.state === "OWNED"
           ? "Researched"
           : `${node.cost} Coins · ${node.affordable ? "Available" : node.state === "BLOCKED" ? "Locked" : "Insufficient Coins"}`,
       ),
-      text(
-        this.#document,
-        "p",
-        node.effects.map(effectDescription).join(" · "),
-      ),
     );
+    const prerequisites = el(
+      this.#document,
+      "section",
+      "v7-tech-detail-group v7-tech-prerequisites",
+    );
+    prerequisites.append(text(this.#document, "h3", "Prerequisites"));
+    const prerequisiteList = this.#document.createElement("ul");
+    if (node.prerequisites.length === 0)
+      prerequisiteList.append(text(this.#document, "li", "None"));
+    else
+      for (const prerequisite of node.prerequisites)
+        prerequisiteList.append(
+          text(
+            this.#document,
+            "li",
+            `${title(prerequisite)}${node.missingPrerequisites.includes(prerequisite) ? " · not yet researched" : " · researched"}`,
+          ),
+        );
+    prerequisites.append(prerequisiteList);
+    detail.append(prerequisites);
+    for (const group of technologyEffectGroupsV7(node.effects)) {
+      const section = el(
+        this.#document,
+        "section",
+        "v7-tech-detail-group v7-tech-effect-group",
+      );
+      section.dataset.effectGroup = group.id;
+      section.append(text(this.#document, "h3", group.label));
+      const list = this.#document.createElement("ul");
+      for (const item of group.items)
+        list.append(text(this.#document, "li", item));
+      section.append(list);
+      detail.append(section);
+    }
     const command = this.#snapshot.offeredCommands.find(
       (candidate) =>
         candidate.kind === "RESEARCH" && candidate.tech === node.id,
@@ -1404,6 +1482,64 @@ export class Ruleset7DomAppView {
       detail.append(research);
     }
     return detail;
+  }
+
+  #recruitHelp(role: UnitRoleIdV7): HTMLElement {
+    const presentation = recruitmentRolePresentationV7(role);
+    const modal = el(this.#document, "section", "v7-recruit-help");
+    modal.dataset.v7Region = "recruit-help";
+    modal.dataset.recruitRole = role;
+    modal.setAttribute("role", "dialog");
+    modal.setAttribute("aria-modal", "true");
+    modal.setAttribute(
+      "aria-label",
+      `${presentation.label} recruitment information`,
+    );
+    const close = button(
+      this.#document,
+      "Close",
+      "close-recruit-help",
+      "close-button",
+    );
+    close.onclick = () => this.#closeRecruitHelp();
+    modal.append(
+      close,
+      identity(this.#document, RULESET7_UNIT_ART_IDS[role], presentation.label),
+      text(
+        this.#document,
+        "p",
+        "Recruitment reference · canonical base values only. Live damage, activation status, modifiers, and veteran state are intentionally omitted.",
+        "v7-recruit-help-context",
+      ),
+    );
+    const stats = el(this.#document, "dl", "v7-recruit-stats");
+    for (const stat of presentation.stats)
+      stats.append(
+        text(this.#document, "dt", stat.label),
+        text(this.#document, "dd", stat.value),
+      );
+    modal.append(stats);
+    const abilities = el(this.#document, "section", "v7-recruit-help-group");
+    abilities.append(text(this.#document, "h3", "Abilities"));
+    const abilityList = this.#document.createElement("ul");
+    for (const ability of presentation.abilities)
+      abilityList.append(text(this.#document, "li", ability));
+    abilities.append(abilityList);
+    modal.append(abilities);
+    if (presentation.restrictions.length > 0) {
+      const restrictions = el(
+        this.#document,
+        "section",
+        "v7-recruit-help-group",
+      );
+      restrictions.append(text(this.#document, "h3", "Restrictions"));
+      const restrictionList = this.#document.createElement("ul");
+      for (const restriction of presentation.restrictions)
+        restrictionList.append(text(this.#document, "li", restriction));
+      restrictions.append(restrictionList);
+      modal.append(restrictions);
+    }
+    return modal;
   }
 
   #leaderboard(view: PlayerViewV7): HTMLElement {
@@ -2009,6 +2145,15 @@ export class Ruleset7DomAppView {
     });
   }
 
+  #closeRecruitHelp(): void {
+    const role = this.#selectedRecruitHelp;
+    this.#selectedRecruitHelp = null;
+    this.#pendingFocusAction =
+      role === null ? null : `train-help-${role.toLowerCase()}`;
+    this.#clearCityActionScrollAfterRestore = true;
+    this.#render();
+  }
+
   #syncModalIsolation(main: HTMLElement): void {
     const modal = main.querySelector<HTMLElement>('[aria-modal="true"]');
     for (const child of [...main.children]) {
@@ -2322,8 +2467,10 @@ function effectDescription(
   switch (effect.kind) {
     case "COMMAND":
       return title(effect.command);
-    case "UNIT_ROLE":
-      return `Train ${title(effect.role)}`;
+    case "UNIT_ROLE": {
+      const role = effectiveRoleRuleV7(effect.role);
+      return `Train ${role.label} · ${role.cost ?? 0} Coins · range ${role.minimumRange}–${role.range}`;
+    }
     case "RESOURCE_REVEAL":
       return `Reveal ${effect.resources.map(title).join(" and ")}`;
     case "ECONOMIC_FORMULA":
@@ -2356,6 +2503,158 @@ function effectDescription(
       return `First hostile capture of each city awards +${effect.coins} Coins`;
   }
 }
+
+export interface TechnologyEffectGroupV7 {
+  readonly id:
+    | "UNITS"
+    | "ACTIONS"
+    | "BUILDINGS"
+    | "VISIBILITY"
+    | "MOVEMENT_SIGHT"
+    | "PASSIVE_EFFECTS";
+  readonly label: string;
+  readonly items: readonly string[];
+}
+
+/** Keeps technology prose grouped directly by the structured unlock union. */
+export function technologyEffectGroupsV7(
+  effects: PublicTechnologyNodeV7["effects"],
+): readonly TechnologyEffectGroupV7[] {
+  const order: readonly TechnologyEffectGroupV7["id"][] = [
+    "UNITS",
+    "ACTIONS",
+    "BUILDINGS",
+    "VISIBILITY",
+    "MOVEMENT_SIGHT",
+    "PASSIVE_EFFECTS",
+  ];
+  const labels: Readonly<Record<TechnologyEffectGroupV7["id"], string>> = {
+    UNITS: "Units",
+    ACTIONS: "Actions",
+    BUILDINGS: "Buildings",
+    VISIBILITY: "Visibility",
+    MOVEMENT_SIGHT: "Movement & sight",
+    PASSIVE_EFFECTS: "Passive effects",
+  };
+  const grouped = new Map<TechnologyEffectGroupV7["id"], string[]>();
+  for (const effect of effects) {
+    const id = technologyEffectGroupIdV7(effect);
+    const descriptions =
+      effect.kind === "UNIT_ROLE"
+        ? technologyRoleDescriptionsV7(effect.role)
+        : [effectDescription(effect)];
+    grouped.set(id, [...(grouped.get(id) ?? []), ...descriptions]);
+  }
+  return order.flatMap((id) => {
+    const items = grouped.get(id);
+    return items === undefined ? [] : [{ id, label: labels[id], items }];
+  });
+}
+
+function technologyRoleDescriptionsV7(roleId: UnitRoleIdV7): readonly string[] {
+  const role = effectiveRoleRuleV7(roleId);
+  return [
+    `Train ${role.label} · ${role.cost ?? 0} Coins`,
+    ...role.abilities.map(
+      (ability) =>
+        `${title(ability)}: ${abilityDescription(ability, role.minimumRange, role.range)}`,
+    ),
+  ];
+}
+
+function technologyEffectGroupIdV7(
+  effect: PublicTechnologyNodeV7["effects"][number],
+): TechnologyEffectGroupV7["id"] {
+  switch (effect.kind) {
+    case "UNIT_ROLE":
+      return "UNITS";
+    case "COMMAND":
+      return effect.command.startsWith("BUILD_") &&
+        effect.command !== "BUILD_ROAD"
+        ? "BUILDINGS"
+        : "ACTIONS";
+    case "ECONOMIC_FORMULA":
+    case "CONNECTED_FARM_VISUALS":
+      return "BUILDINGS";
+    case "RESOURCE_REVEAL":
+      return "VISIBILITY";
+    case "FOREST_MOVEMENT_FREEDOM":
+    case "MOUNTAIN_MOVEMENT":
+    case "HIGH_GROUND_VISION":
+    case "ROLE_SIGHT":
+    case "SCOUT_DETECTION_RADIUS":
+    case "ROAD_MOVEMENT":
+      return "MOVEMENT_SIGHT";
+    case "MARKET_CAPITAL_ROAD_BONUS":
+    case "FRIENDLY_CITY_FORTIFICATION":
+    case "OWNED_CITY_CAPACITY_BONUS":
+    case "MEDIC_HEAL":
+    case "FRIENDLY_IDLE_RECOVERY":
+    case "FIRST_HOSTILE_CAPTURE_SPOILS":
+      return "PASSIVE_EFFECTS";
+  }
+}
+
+export interface RecruitmentRolePresentationV7 {
+  readonly label: string;
+  readonly stats: readonly { readonly label: string; readonly value: string }[];
+  readonly abilities: readonly string[];
+  readonly restrictions: readonly string[];
+}
+
+/** Canonical base-role information only; it deliberately has no live-unit state. */
+export function recruitmentRolePresentationV7(
+  roleId: UnitRoleIdV7,
+): RecruitmentRolePresentationV7 {
+  const role = effectiveRoleRuleV7(roleId);
+  const restrictions: string[] = [];
+  if (!role.mayUsePrimaryActionAfterMove)
+    restrictions.push("Cannot use its primary action after moving.");
+  if (!role.abilities.includes("CAPTURE")) restrictions.push("Cannot Capture.");
+  if (roleId === "CATAPULT" || roleId === "HORSE_ARCHER")
+    restrictions.push("Never advances after a kill.");
+  if (roleId === "MARKSMAN")
+    restrictions.push("Does not advance after a ranged kill.");
+  if (roleId === "SCOUT")
+    restrictions.push(
+      "Detects hostile Saboteurs within range 2. Fieldcraft removes Forest movement termination.",
+    );
+  if (roleId === "MARKSMAN")
+    restrictions.push(
+      "Fieldcraft raises Sight to 2 and removes Forest movement termination.",
+    );
+  if (roleId === "SABOTEUR")
+    restrictions.push(
+      "May Pillage without Explosives for 1 Coin; doing so is terminal and exposes the Saboteur to the affected owner and allies through that owner's next accepted End Turn.",
+    );
+  return {
+    label: role.label,
+    stats: [
+      { label: "Max HP", value: String(role.maxHp) },
+      { label: "Attack", value: formatHalfUnits(role.attack2) },
+      { label: "Defense", value: formatHalfUnits(role.defense2) },
+      { label: "Move", value: String(role.move) },
+      {
+        label: "Range",
+        value:
+          role.minimumRange === role.range
+            ? String(role.range)
+            : `${role.minimumRange}–${role.range}`,
+      },
+      { label: "Sight", value: String(role.sightRadius) },
+    ],
+    abilities: role.abilities.map(
+      (ability) =>
+        `${title(ability)}: ${abilityDescription(ability, role.minimumRange, role.range)}`,
+    ),
+    restrictions,
+  };
+}
+
+function formatHalfUnits(value2: number): string {
+  return String(value2 / 2);
+}
+
 function abilityDescription(
   ability: string,
   minimum: number,
@@ -2377,11 +2676,13 @@ function abilityDescription(
     case "BREACH":
       return "Adjacent attacks ignore the defender's terrain or city defense multiplier.";
     case "CONCEALMENT":
-      return "Hidden from hostile viewers unless legally detected or exposed. The owner marker denotes the ability, not guaranteed invisibility.";
+      return "Hidden from hostile viewers unless within range 1 of their unit or city, within range 2 of their Scout, or still exposed. The owner marker denotes the ability, not guaranteed invisibility.";
     case "BLACKOUT":
-      return "Plant Blackout in an adjacent hostile city when offered. City-only detection reveals but does not block it; hostile-unit detection blocks without identifying hidden detectors.";
+      return "Plant Blackout in an adjacent hostile city when offered. It suppresses up to 3 Coins and blocks Train and development for the affected turn. City-only detection reveals but does not block it; hostile-unit detection blocks it. The unit becomes eligible again at action round +3, while city recovery requires one complete unaffected owner turn.";
     case "DASH":
       return "May take its ordinary Move before its first Attack.";
+    case "TWO_SHOTS":
+      return "Up to 2 total attacks in this activation. Move only before firing. After the first shot, this unit cannot move or use another self action; other units and End Turn remain available. It cannot Capture and never advances.";
     default:
       return `${title(ability)} ability.`;
   }
