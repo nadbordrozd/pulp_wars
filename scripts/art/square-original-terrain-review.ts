@@ -19,6 +19,11 @@ interface Recipe {
   readonly anchor: { readonly x: number; readonly y: number };
   readonly squareFootprint: Bounds;
   readonly postprocess: string;
+  readonly styleReference?: string;
+  readonly groundReference?: string;
+  readonly reframeSource?: string;
+  readonly reframeSourceSha256?: string;
+  readonly bodyOffsetY?: number;
 }
 
 interface RecordEntry {
@@ -32,6 +37,15 @@ interface RecordEntry {
 }
 
 const root = process.cwd();
+const revision3MiningMode = process.argv.includes("--revision3-mining");
+if (revision3MiningMode) {
+  const outputIndex = process.argv.indexOf("--output");
+  const output = outputIndex < 0 ? undefined : process.argv[outputIndex + 1];
+  if (output === undefined)
+    throw new Error("--revision3-mining requires --output <directory>");
+  await createRevision3MiningReview(path.resolve(root, output));
+  process.exit(0);
+}
 const ruleset7ReadabilityMode = process.argv.includes("--ruleset7-readability");
 if (ruleset7ReadabilityMode) {
   const outputIndex = process.argv.indexOf("--output");
@@ -1181,6 +1195,243 @@ async function createRuleset7ReadabilityReview(
     "utf8",
   );
   console.log(`Ruleset 7 readability review: ${outputRoot}`);
+}
+
+async function createRevision3MiningReview(outputRoot: string): Promise<void> {
+  const manifest = JSON.parse(
+    await readFile(
+      path.join(root, "scripts/art/pixellab-manifest.json"),
+      "utf8",
+    ),
+  ) as { readonly recipes: readonly Recipe[] };
+  const generated = JSON.parse(
+    await readFile(
+      path.join(root, "scripts/art/pixellab-generated.json"),
+      "utf8",
+    ),
+  ) as { readonly records: Readonly<Record<string, RecordEntry>> };
+  const gravelId = "terrain-ruleset7-revision3-gravel";
+  const mountainIds = [1, 2, 3].map(
+    (variant) => `terrain-ruleset7-revision3-mountain-${variant}`,
+  );
+  const minedIds = [1, 2, 3].map(
+    (variant) => `terrain-ruleset7-revision3-mined-mountain-${variant}`,
+  );
+  const recipeById = new Map(
+    manifest.recipes.map((recipe) => [recipe.id, recipe] as const),
+  );
+  const reviewable = (id: string): boolean =>
+    ["ACCEPTED", "CANDIDATE"].includes(generated.records[id]?.status ?? "");
+  for (const id of [gravelId, ...mountainIds])
+    if (recipeById.get(id) === undefined || !reviewable(id))
+      throw new Error(`Reviewable Ruleset 7 revision-3 asset missing: ${id}`);
+  const reviewableMines = minedIds.filter(reviewable);
+  const fileFor = (id: string): string => {
+    const recipe = recipeById.get(id);
+    const record = generated.records[id];
+    if (recipe === undefined || record === undefined)
+      throw new Error(`Recipe or record missing: ${id}`);
+    return path.join(
+      root,
+      record.status === "CANDIDATE" && record.candidate !== undefined
+        ? record.candidate
+        : recipe.output,
+    );
+  };
+  await mkdir(outputRoot, { recursive: true });
+  const artifacts: string[] = [];
+
+  const gravel = fileFor(gravelId);
+  const gravelOverlays: OverlayOptions[] = [
+    {
+      input: label("Revision 3 gravel · native / enlarged / repeat", "", 1280),
+      left: 0,
+      top: 0,
+    },
+    { input: gravel, left: 30, top: 80 },
+    {
+      input: await sharp(gravel)
+        .resize(512, 512, { kernel: sharp.kernel.nearest })
+        .png()
+        .toBuffer(),
+      left: 330,
+      top: 80,
+    },
+  ];
+  const gravelHalf = await sharp(gravel).resize(128, 128).png().toBuffer();
+  for (let x = 0; x < 8; x += 1)
+    for (let y = 0; y < 2; y += 1)
+      gravelOverlays.push({
+        input: gravelHalf,
+        left: 128 * x,
+        top: 640 + y * 128,
+      });
+  const gravelName = "gravel-native-enlarged-repeat.png";
+  await sharp({
+    create: { width: 1280, height: 896, channels: 4, background: "#203936" },
+  })
+    .composite(gravelOverlays)
+    .png()
+    .toFile(path.join(outputRoot, gravelName));
+  artifacts.push(gravelName);
+
+  const mountainOverlays: OverlayOptions[] = [];
+  for (const [index, id] of mountainIds.entries()) {
+    const oldFile = path.join(
+      root,
+      `public/assets/pixellab/terrain-square/original-mountain-${index + 1}.png`,
+    );
+    const revisedFile = fileFor(id);
+    const top = index * 820;
+    mountainOverlays.push({
+      input: label(
+        `Mountain ${index + 1} · retained source / gravel derivation · 2×`,
+        "",
+        1660,
+      ),
+      left: 0,
+      top,
+    });
+    mountainOverlays.push({ input: oldFile, left: 30, top: top + 55 });
+    mountainOverlays.push({ input: revisedFile, left: 320, top: top + 55 });
+    for (const [column, file] of [oldFile, revisedFile].entries())
+      mountainOverlays.push({
+        input: await sharp(file)
+          .resize(512, 768, { kernel: sharp.kernel.nearest })
+          .png()
+          .toBuffer(),
+        left: 610 + column * 520,
+        top: top + 45,
+      });
+  }
+  const mountainName = "mountain-before-after-native-enlarged.png";
+  await sharp({
+    create: { width: 1660, height: 2460, channels: 4, background: "#203936" },
+  })
+    .composite(mountainOverlays)
+    .png()
+    .toFile(path.join(outputRoot, mountainName));
+  artifacts.push(mountainName);
+
+  const contextOverlays: OverlayOptions[] = [];
+  for (let x = 0; x < 6; x += 1) {
+    const id = mountainIds[x % mountainIds.length] as string;
+    contextOverlays.push({
+      input: await sharp(fileFor(id)).resize(128, 192).png().toBuffer(),
+      left: x * 128,
+      top: 0,
+    });
+    if (reviewableMines.length > 0) {
+      const minedId = reviewableMines[x % reviewableMines.length] as string;
+      contextOverlays.push({
+        input: await sharp(fileFor(minedId)).resize(128, 192).png().toBuffer(),
+        left: x * 128,
+        top: 128,
+      });
+    }
+  }
+  const contextName = "native-map-context.png";
+  await sharp({
+    create: { width: 768, height: 320, channels: 4, background: "#203936" },
+  })
+    .composite(contextOverlays)
+    .png()
+    .toFile(path.join(outputRoot, contextName));
+  artifacts.push(contextName);
+
+  if (reviewableMines.length > 0) {
+    const mineOverlays: OverlayOptions[] = [];
+    for (const [index, minedId] of reviewableMines.entries()) {
+      const top = index * 590;
+      mineOverlays.push({
+        input: label(
+          `Mountain ${index + 1} · unmined / integrated mine / enlarged`,
+          "",
+          1240,
+        ),
+        left: 0,
+        top,
+      });
+      mineOverlays.push({
+        input: fileFor(mountainIds[index] as string),
+        left: 20,
+        top: top + 65,
+      });
+      mineOverlays.push({ input: fileFor(minedId), left: 300, top: top + 65 });
+      mineOverlays.push({
+        input: await sharp(fileFor(minedId))
+          .resize(384, 576, { kernel: sharp.kernel.nearest })
+          .png()
+          .toBuffer(),
+        left: 620,
+        top: top + 10,
+      });
+    }
+    const mineName = "mined-mountain-pairs-native-enlarged.png";
+    await sharp({
+      create: {
+        width: 1240,
+        height: reviewableMines.length * 590,
+        channels: 4,
+        background: "#203936",
+      },
+    })
+      .composite(mineOverlays)
+      .png()
+      .toFile(path.join(outputRoot, mineName));
+    artifacts.push(mineName);
+  }
+
+  const reviewIds = [gravelId, ...mountainIds, ...reviewableMines];
+  const artifactEvidence = await Promise.all(
+    artifacts.map(async (name) => {
+      const bytes = await readFile(path.join(outputRoot, name));
+      const metadata = await sharp(bytes).metadata();
+      return {
+        name,
+        width: metadata.width,
+        height: metadata.height,
+        sha256: hash(bytes),
+      };
+    }),
+  );
+  await writeFile(
+    path.join(outputRoot, "review-evidence.json"),
+    await format(
+      `${JSON.stringify(
+        {
+          schemaVersion: 1,
+          generatedBy:
+            "npm run art:square-original-terrain-review -- --revision3-mining --output <unique-directory>",
+          statuses: Object.fromEntries(
+            reviewIds.map((id) => [id, generated.records[id]?.status]),
+          ),
+          restoration: Object.fromEntries(
+            mountainIds.map((id, index) => [id, minedIds[index]]),
+          ),
+          geometry: {
+            source: "256x384",
+            anchor: { x: 128, y: 256 },
+            displayScale: 0.5,
+            opaqueFootprint: { left: 0, top: 128, right: 256, bottom: 384 },
+            retainedBodyOffsetY: 40,
+            overflow: "upward only",
+          },
+          visualChecks: [
+            "quiet illustrated angular scree at native half scale and repeated seams",
+            "all three approved Mountain silhouettes retained with 40 source-pixel lowering",
+            "each mined variant, when present, integrates its entrance, braces and spoil into the corresponding silhouette",
+          ],
+          artifacts: artifactEvidence,
+        },
+        null,
+        2,
+      )}\n`,
+      { parser: "json" },
+    ),
+    "utf8",
+  );
+  console.log(`Ruleset 7 revision-3 mining review: ${outputRoot}`);
 }
 
 interface ReadabilityCdpMessage {

@@ -28,6 +28,26 @@ ground extraction fills enclosed canopy interiors before translation so flat
 green painted canopy pixels are preserved rather than replaced by new Grass.
 No accepted tree is redrawn, scaled or shifted laterally.
 
+### Ruleset-7 revision-3 Mountain-ground override
+
+Revision 3 introduces one new opaque 256 x 256 illustrated gravel source,
+`terrain-ruleset7-revision3-gravel`. It uses quiet, low-contrast angular scree
+patches over blue slate: visible at the 0.5 terrain scale, but neither tiny
+procedural noise, flat gray, a resource, nor cobblestone paving. Its full square
+and converged outer field remain seam-safe.
+
+Exactly three new 256 x 384 Original Mountain derivatives replace only the
+ground material. Each retains the corresponding approved Original Mountain
+silhouette and painted internal rock colors, source anchor `(128,256)`, opaque
+owning region `x=0..255,y=128..383`, upward-only overflow, and the established
+40-source-pixel body lowering. Border-connected old ground extraction plus
+enclosed-body preservation prevents flat painted interior rock colors from
+being stripped. The ordinal source mapping is fixed: old Mountain 1/2/3 becomes
+`terrain-ruleset7-revision3-mountain-1/2/3` respectively. These assets are
+registered only; runtime terrain selection remains unchanged until the later
+integration bead. All earlier Original, Ruleset-6, and Candy terrain files stay
+byte-frozen.
+
 ### Original square base-terrain family
 
 The accepted Original square family contains four Grass, four Forest, and

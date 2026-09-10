@@ -48,6 +48,23 @@ do not change, and removing the improvement restores the original coordinate-
 selected Forest variant. Renderer-owned improvement value squares draw in a
 final foreground pass above later-row world sprites.
 
+### Ruleset-7 revision-3 mined-Mountain override
+
+Mine presentation becomes three new combined terrain compositions rather than
+the historical low Mine icon overlaid on a separate Mountain. Each
+`terrain-ruleset7-revision3-mined-mountain-N` uses the corresponding accepted
+`terrain-ruleset7-revision3-mountain-N` as its style and silhouette reference,
+preserves the 256 x 384 `(128,256)` terrain registration and opaque `y=128..383`
+owning square, and integrates a dark entrance, timber braces, and restrained
+spoil directly into that rock mass. The fixed restoration mapping is Mountain
+1 to mined Mountain 1, Mountain 2 to mined Mountain 2, and Mountain 3 to mined
+Mountain 3.
+
+The terrain remains authoritatively `MOUNTAIN`; constructing/removing a Mine
+will later swap the whole same-cell presentation between its matched combined
+states. This asset bead does not change the live renderer or reuse/erase any old
+Mine, Original, Ruleset-6, or Candy source.
+
 ## Ruleset-6 active inventory
 
 Ruleset 6 adds one shared functional production raster for Farm, Lumber Camp,

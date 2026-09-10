@@ -9,6 +9,26 @@ unchanged. The 128 x 74 ratios below remain the acceptance record for those
 files, not a request to enlarge them for square cells; units intentionally stay
 compact relative to terrain.
 
+### Ruleset-7 revision-3 Horse Archer override
+
+Horse Archer is one individually reviewed mounted extension, not a new
+three-role family. Its new `unit-original-horse-archer` source is an untrimmed
+384 x 384 transparent canvas with source anchor `(192,288)`, uniform display
+scale `0.27`, and the retained `18` CSS-pixel downward cosmetic offset. The
+accepted alpha bounds are `x=55..329,y=16..288`, so the complete horse, rider,
+and bow silhouette measures approximately `73.98 x 73.44` CSS pixels. The
+earlier `72..82` by `60..72` meaningful-body target was composition guidance,
+not a hard full-alpha height cap.
+
+The mount is unmistakably a real southeast-facing horse: head and forequarters
+on screen right, tail left, rider facing down-right, and a compact readable bow
+with curve and string. Northwest light, ground contact, transparent edge
+quality, and class scale are reviewed beside standard, siege, and giant units.
+The derived `portrait-original-horse-archer` is presentation art from this
+accepted source. These new registrations do not change any runtime role mapping
+until the integration bead explicitly adopts them; every prior unit and Candy
+source remains byte-frozen.
+
 ## Ruleset-6 active inventory
 
 Ruleset 6 requires nine role sprites and portraits per faction. Original:

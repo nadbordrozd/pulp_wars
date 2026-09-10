@@ -456,6 +456,33 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
     "assets/pixellab/ui/action-defection.png",
   ),
   "ui-action-blackout": publicArtUrl("assets/pixellab/ui/action-blackout.png"),
+  "unit-original-horse-archer": publicArtUrl(
+    "assets/pixellab/units/original-horse-archer-v7r3.png",
+  ),
+  "portrait-original-horse-archer": publicArtUrl(
+    "assets/pixellab/ui/portrait-original-horse-archer-v7r3.png",
+  ),
+  "terrain-ruleset7-revision3-gravel": publicArtUrl(
+    "assets/pixellab/terrain-ruleset7/revision3-gravel.png",
+  ),
+  "terrain-ruleset7-revision3-mountain-1": publicArtUrl(
+    "assets/pixellab/terrain-ruleset7/revision3-mountain-1.png",
+  ),
+  "terrain-ruleset7-revision3-mountain-2": publicArtUrl(
+    "assets/pixellab/terrain-ruleset7/revision3-mountain-2.png",
+  ),
+  "terrain-ruleset7-revision3-mountain-3": publicArtUrl(
+    "assets/pixellab/terrain-ruleset7/revision3-mountain-3.png",
+  ),
+  "terrain-ruleset7-revision3-mined-mountain-1": publicArtUrl(
+    "assets/pixellab/terrain-ruleset7/revision3-mined-mountain-1.png",
+  ),
+  "terrain-ruleset7-revision3-mined-mountain-2": publicArtUrl(
+    "assets/pixellab/terrain-ruleset7/revision3-mined-mountain-2.png",
+  ),
+  "terrain-ruleset7-revision3-mined-mountain-3": publicArtUrl(
+    "assets/pixellab/terrain-ruleset7/revision3-mined-mountain-3.png",
+  ),
   "terrain-game": publicArtUrl("assets/pixellab/terrain/animal.png"),
   "building-ruleset6-mine": publicArtUrl("assets/pixellab/buildings/mine.png"),
   "building-lumber-camp": publicArtUrl(

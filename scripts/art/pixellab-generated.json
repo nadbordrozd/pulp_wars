@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "fa8fe6b22bfc3da27d3771901b9b96ea6c7f7ba054568e97b55965c77a73b00c",
+  "sourceManifestSha256": "68b024bb828dd9ae304c01c61e25ef737f0163681c0e7712264367319f356674",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -12011,6 +12011,776 @@
       },
       "outputSha256": "00027dd0144a3a445868111f6130ca7a0b5552d561b97b9feb8fb2be936658d7",
       "reviewedAt": "2026-09-10T10:00:20.239Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "unit-original-horse-archer": {
+      "id": "unit-original-horse-archer",
+      "status": "ACCEPTED",
+      "jobId": "20bc2a7f-c3a2-43e5-95d9-be3bc471827f",
+      "candidate": "art/pixellab/candidates/unit-original-horse-archer.png",
+      "candidateSha256": "b3d90908ffd828fabe702c669b489fa0ca113c7d005c114c408a76ce1259fda2",
+      "providerOutputSha256": "babd48f2ca82673109ecc21853dcf29990c5a07cfd44dda73f731a7dbd55c4dc",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 55,
+        "top": 16,
+        "right": 329,
+        "bottom": 288,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: chestnut horse, parchment-tan rider and muzzle, off-white scarf, dark-teal tack and bow, bronze fittings, charcoal-teal outline. Original Horse Archer on transparent 384 by 384, anchor 192,288. Horse HEAD is on SCREEN RIGHT, tail left; rider faces down-right. Draw an unmistakable low-wide chestnut horse: long horizontal body, equine muzzle, pointed ears, tail, four separated long legs and hooves on one line. A cute chunky rider sits in the saddle holding one large compact dark-teal recurved bow with clear curve and string across the body, no released arrow. Horse-and-rider body, not weapon padding, is 288 to 328 pixels wide and 240 to 272 high after fit. Northwest light, darker southeast planes, strong outline, flat tones. Fit x24..360,y16..288; hooves around x192,y288. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; horse facing screen left or west, head on left, boar, pig, rhino, dog, donkey, squat round mount, tiny horse, merged rider and horse, unmounted archer, hidden legs, lance, sword, flying arrow, oversized bow outside body, motion lines, ground, clipping.",
+        "prompt": "Original Horse Archer on transparent 384 by 384, anchor 192,288. Horse HEAD is on SCREEN RIGHT, tail left; rider faces down-right. Draw an unmistakable low-wide chestnut horse: long horizontal body, equine muzzle, pointed ears, tail, four separated long legs and hooves on one line. A cute chunky rider sits in the saddle holding one large compact dark-teal recurved bow with clear curve and string across the body, no released arrow. Horse-and-rider body, not weapon padding, is 288 to 328 pixels wide and 240 to 272 high after fit. Northwest light, darker southeast planes, strong outline, flat tones. Fit x24..360,y16..288; hooves around x192,y288.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; horse facing screen left or west, head on left, boar, pig, rhino, dog, donkey, squat round mount, tiny horse, merged rider and horse, unmounted archer, hidden legs, lance, sword, flying arrow, oversized bow outside body, motion lines, ground, clipping",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 110504,
+        "noBackground": true,
+        "palette": "chestnut horse, parchment-tan rider and muzzle, off-white scarf, dark-teal tack and bow, bronze fittings, charcoal-teal outline",
+        "postprocess": "unit-fit",
+        "groundContactY": 288,
+        "displayScale": 0.27,
+        "cosmeticOffsetY": 18,
+        "styleReference": {
+          "id": "unit-warrior",
+          "usageDescription": "Match the accepted Original faction tan tunic, off-white scarf, dark-teal tack, bronze accents, chunky proportions, strong outline, broad flat shading, southeast camera and playful detail budget only. Create an unmistakable actual horse and rider at the wider mounted scale; do not copy the old squat boar-like Rider mount.",
+          "sha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1"
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/unit-original-horse-archer-8b8243cb1769.png",
+          "candidateSha256": "8b8243cb1769ee0d019343140a3d565afd8e2eac5796718c0522415541bcb7b4",
+          "providerOutputSha256": "76887355fbd210025a351277fce9e7efa486111b45e760207167fa0d89002c71",
+          "jobId": "e3914d8c-af06-4809-afc3-97d129193e6a",
+          "disposition": "REJECTED",
+          "notes": "Rejected after source, 96px native and enlarged inspection: unmistakable actual horse and clean alpha, but the horse faces screen-left/west instead of southeast, the 58.5 CSS alpha width misses the 72-82 CSS mounted target, and the bow curve/string is too small at native scale.",
+          "reviewedAt": "2026-09-10T13:57:12.398Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: chestnut horse, parchment-tan rider and muzzle, off-white scarf, dark-teal tack and bow, bronze fittings, charcoal-teal outline. One isolated Original Horse Archer on transparent 384 by 384, anchor 192,288. Draw an unmistakable actual chestnut horse in southeast three-quarter downward view: long chest and hindquarters, slender neck, equine muzzle, pointed ears, tail, four separated long legs and hooves on one ground line. A cute chunky Original rider sits visibly in the saddle holding one oversized dark-teal recurved bow across the body, no released arrow. The meaningful horse-and-rider body, not weapon padding, must be 288 to 328 source pixels wide and 240 to 288 high after fit, materially broader than Lancer. Northwest light, darker southeast planes, strong outline, two-to-three flat tones. Fit x24..360,y16..288 with hoof contacts around x192,y288. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; boar, pig, rhino, dog, donkey, squat round mount, tiny horse, merged rider and horse, unmounted archer, hidden legs, lance, sword, flying arrow, weapon-only width, motion lines, ground, clipping.",
+            "prompt": "One isolated Original Horse Archer on transparent 384 by 384, anchor 192,288. Draw an unmistakable actual chestnut horse in southeast three-quarter downward view: long chest and hindquarters, slender neck, equine muzzle, pointed ears, tail, four separated long legs and hooves on one ground line. A cute chunky Original rider sits visibly in the saddle holding one oversized dark-teal recurved bow across the body, no released arrow. The meaningful horse-and-rider body, not weapon padding, must be 288 to 328 source pixels wide and 240 to 288 high after fit, materially broader than Lancer. Northwest light, darker southeast planes, strong outline, two-to-three flat tones. Fit x24..360,y16..288 with hoof contacts around x192,y288.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; boar, pig, rhino, dog, donkey, squat round mount, tiny horse, merged rider and horse, unmounted archer, hidden legs, lance, sword, flying arrow, weapon-only width, motion lines, ground, clipping",
+            "requestSize": {
+              "width": 384,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 384,
+              "height": 384
+            },
+            "seed": 110501,
+            "noBackground": true,
+            "palette": "chestnut horse, parchment-tan rider and muzzle, off-white scarf, dark-teal tack and bow, bronze fittings, charcoal-teal outline",
+            "postprocess": "unit-fit",
+            "groundContactY": 288,
+            "styleReference": {
+              "id": "unit-warrior",
+              "sha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1",
+              "usageDescription": "Match the accepted Original faction tan tunic, off-white scarf, dark-teal tack, bronze accents, chunky proportions, strong outline, broad flat shading, southeast camera and playful detail budget only. Create an unmistakable actual horse and rider at the wider mounted scale; do not copy the old squat boar-like Rider mount."
+            }
+          }
+        }
+      ],
+      "notes": "Accepted attempt 2 after source, enlarged, 0.27 native and square-terrain/class comparison review: unmistakable screen-right actual horse, down-right rider, readable compact recurved bow, clean alpha, shared +18 CSS baseline, 73.98x73.44 CSS visible alpha with no owning-square side/bottom overflow; materially broader than Lancer/Raider without hiding siege/giant hierarchy.",
+      "outputSha256": "b3d90908ffd828fabe702c669b489fa0ca113c7d005c114c408a76ce1259fda2",
+      "reviewedAt": "2026-09-10T14:08:44.111Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "portrait-original-horse-archer": {
+      "id": "portrait-original-horse-archer",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/portrait-original-horse-archer.png",
+      "candidateSha256": "87923a842317d75ee51ce0c071e26873172b599c91426e7f1fc6866aca532e70",
+      "providerOutputSha256": "b3d90908ffd828fabe702c669b489fa0ca113c7d005c114c408a76ce1259fda2",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 20,
+        "top": 21,
+        "right": 236,
+        "bottom": 235,
+        "empty": false
+      },
+      "notes": "Accepted deterministic full-mounted-silhouette portrait after source, enlarged, 64x64 nominal and exact 112x130 object-fit UI review; clean transparent padding, readable horse/rider/bow identity, and source hash provenance retained with no provider portrait request.",
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted revision-3 Original Horse Archer sprite, preserving the complete mounted silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+        "prompt": "Deterministic 256 by 256 role portrait derived from the accepted revision-3 Original Horse Archer sprite, preserving the complete mounted silhouette and palette with a 20 pixel transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 110502,
+        "noBackground": true,
+        "postprocess": "sprite-derived-portrait",
+        "styleReference": {
+          "id": "unit-original-horse-archer",
+          "sha256": "b3d90908ffd828fabe702c669b489fa0ca113c7d005c114c408a76ce1259fda2",
+          "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+        }
+      },
+      "outputSha256": "87923a842317d75ee51ce0c071e26873172b599c91426e7f1fc6866aca532e70",
+      "reviewedAt": "2026-09-10T14:10:02.243Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-ruleset7-revision3-gravel": {
+      "id": "terrain-ruleset7-revision3-gravel",
+      "status": "ACCEPTED",
+      "jobId": "53bdb32d-1d93-4f24-b949-39dceb3f052d",
+      "candidate": "art/pixellab/candidates/terrain-ruleset7-revision3-gravel.png",
+      "candidateSha256": "b4eb8208932a2a335574658c68187d87568476614c55b6b0df5b56acf54b8d36",
+      "providerOutputSha256": "d1f52e354808eeb5568e0943a28876d6296a29178308b169c3275d890d31b479",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet blue-slate gravel #718391 base, muted parchment-gray angular scree faces, deep desaturated slate shallow seams. Edge-to-edge 256 by 256 quiet illustrated gravel beneath Original Mountains. Scatter many irregular angular scree fragments and broken flat patches, mostly 16 to 32 source pixels across (8 to 16 CSS pixels at half scale), with generous blue-slate ground between them. Non-interlocking, non-rounded, varied shapes; low-contrast two-to-three flat tones, thin restrained marks, northwest light. Texture stays subordinate to crisp Mountains. Every edge and corner is uninterrupted material. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; large or rounded boulders, interlocking stones, cobblestone, paving, masonry, road, path, seams, regular repeat, blank gray, microscopic noise, stipple, sand, dirt, photo texture, busy dots, grid, border, transparency, mountain, ore, resource pile, mine, building, unit, text, UI, southeast key light.",
+        "prompt": "Edge-to-edge 256 by 256 quiet illustrated gravel beneath Original Mountains. Scatter many irregular angular scree fragments and broken flat patches, mostly 16 to 32 source pixels across (8 to 16 CSS pixels at half scale), with generous blue-slate ground between them. Non-interlocking, non-rounded, varied shapes; low-contrast two-to-three flat tones, thin restrained marks, northwest light. Texture stays subordinate to crisp Mountains. Every edge and corner is uninterrupted material.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; large or rounded boulders, interlocking stones, cobblestone, paving, masonry, road, path, seams, regular repeat, blank gray, microscopic noise, stipple, sand, dirt, photo texture, busy dots, grid, border, transparency, mountain, ore, resource pile, mine, building, unit, text, UI, southeast key light",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 110512,
+        "noBackground": false,
+        "palette": "quiet blue-slate gravel #718391 base, muted parchment-gray angular scree faces, deep desaturated slate shallow seams",
+        "postprocess": "square-gravel-ground-v7r3",
+        "squareFootprint": {
+          "left": 0,
+          "top": 0,
+          "right": 256,
+          "bottom": 256
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-ruleset7-revision3-gravel-f1d808a483bd.png",
+          "candidateSha256": "f1d808a483bd7505c6485e472cdee59c9c4ed46599d47c83a93de1c6e236e383",
+          "providerOutputSha256": "2fee49ed587de9a4ae03318d5eaf00cf83319d2602406439d4e59e3f314b663a",
+          "jobId": "0324683a-11e7-49e9-ba52-3d83444022de",
+          "disposition": "REJECTED",
+          "notes": "Rejected after native, 4x4 adjacency, and all three Mountain composite inspections: broad rounded interlocking forms read as cobblestone paving and are too large/blurred beneath the crisp Mountain bodies.",
+          "reviewedAt": "2026-09-10T14:24:02.785Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet blue-slate gravel #718391 base, muted parchment-gray northwest stone faces, deep desaturated slate shallow seams. One edge-to-edge axis-aligned 256 by 256 quiet illustrated gravel ground texture for beneath Original Mountains. Use a restrained field of broad irregular interlocking stone shapes and shallow gravel patches, with roughly eight to fourteen large softly outlined forms across the whole square. Their low-contrast flat planes must remain visible at 128 CSS pixels without reading as Ore, Stone resource, a road, a path or procedural noise. Soft upper-left northwest light and darker lower-right southeast faces, strong style consistency but very subdued outlines, two-to-three flat tones. Every edge and corner is uninterrupted gravel material. Deterministic processing preserves the broad authored texture, converges the outer 32 pixels to #718391 and forces complete opacity. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; flat featureless gray, monochrome blank field, tiny pebbles, tiny noise, stipple, sand, dirt, realistic gravel photo, busy procedural texture, identical repeated dots, cobblestone road, path, lane, radial pattern, grid, square tiles, diamond, border, raised slab, transparent corner, mountain, peak, cliff, ore, amber vein, crystal, resource pile, mine, entrance, braces, building, unit, selection, ownership, text, UI, lower-right key light.",
+            "prompt": "One edge-to-edge axis-aligned 256 by 256 quiet illustrated gravel ground texture for beneath Original Mountains. Use a restrained field of broad irregular interlocking stone shapes and shallow gravel patches, with roughly eight to fourteen large softly outlined forms across the whole square. Their low-contrast flat planes must remain visible at 128 CSS pixels without reading as Ore, Stone resource, a road, a path or procedural noise. Soft upper-left northwest light and darker lower-right southeast faces, strong style consistency but very subdued outlines, two-to-three flat tones. Every edge and corner is uninterrupted gravel material. Deterministic processing preserves the broad authored texture, converges the outer 32 pixels to #718391 and forces complete opacity.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; flat featureless gray, monochrome blank field, tiny pebbles, tiny noise, stipple, sand, dirt, realistic gravel photo, busy procedural texture, identical repeated dots, cobblestone road, path, lane, radial pattern, grid, square tiles, diamond, border, raised slab, transparent corner, mountain, peak, cliff, ore, amber vein, crystal, resource pile, mine, entrance, braces, building, unit, selection, ownership, text, UI, lower-right key light",
+            "requestSize": {
+              "width": 256,
+              "height": 256
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 256
+            },
+            "seed": 110511,
+            "noBackground": false,
+            "palette": "quiet blue-slate gravel #718391 base, muted parchment-gray northwest stone faces, deep desaturated slate shallow seams",
+            "postprocess": "square-gravel-ground-v7r3",
+            "squareFootprint": {
+              "left": 0,
+              "top": 0,
+              "right": 256,
+              "bottom": 256
+            }
+          }
+        }
+      ],
+      "outputSha256": "b4eb8208932a2a335574658c68187d87568476614c55b6b0df5b56acf54b8d36",
+      "notes": "Accepted targeted attempt 2 after source, native 128px, enlarged, and 4x4 adjacency inspection: small irregular angular scree fragments at roughly 8-16 CSS pixels, generous quiet slate field, subdued contrast, full opacity, and no cobblestone/paving language. Attempt 1 remains rejected for giant rounded interlocking stones.",
+      "reviewedAt": "2026-09-10T14:32:01.186Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-ruleset7-revision3-mountain-1": {
+      "id": "terrain-ruleset7-revision3-mountain-1",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/terrain-ruleset7-revision3-mountain-1.png",
+      "candidateSha256": "7eb691a64cd95f0fbfc7eff659c2b612e952840c3847dc463748bcfd16eb7028",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 121,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "notes": "Accepted deterministic derivation after source/native/enlarged and row-context inspection: approved Mountain 1 silhouette and internal rock colors preserved, body lowered 40 source pixels, angular gravel quiet beneath it, full opaque owning square, upward-only overflow.",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: preserve accepted Original Mountain 1 rock exactly; accepted revision-3 gravel ground. Deterministic body derivation of immutable accepted Original Mountain 1. Preserve its exact asymmetric main peak, smaller shoulder, wide foothills, rock pixels, northwest light and lateral placement. Keep the already approved 40-source-pixel body lowering and fixed anchor. Replace only the former flat slate owning-square ground with accepted revision-3 illustrated gravel. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; provider redraw, silhouette change, scale change, lateral shift, new peak, removed shoulder, rock repaint, internal-color stripping, mine, entrance, braces, spoil pile, resource, ore, building, unit, left right or bottom overflow.",
+        "prompt": "Deterministic body derivation of immutable accepted Original Mountain 1. Preserve its exact asymmetric main peak, smaller shoulder, wide foothills, rock pixels, northwest light and lateral placement. Keep the already approved 40-source-pixel body lowering and fixed anchor. Replace only the former flat slate owning-square ground with accepted revision-3 illustrated gravel.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; provider redraw, silhouette change, scale change, lateral shift, new peak, removed shoulder, rock repaint, internal-color stripping, mine, entrance, braces, spoil pile, resource, ore, building, unit, left right or bottom overflow",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 110521,
+        "noBackground": true,
+        "palette": "preserve accepted Original Mountain 1 rock exactly; accepted revision-3 gravel ground",
+        "postprocess": "square-mountain-reframe-gravel-v7r3",
+        "bodyOffsetY": 40,
+        "styleReference": {
+          "id": "terrain-square-original-mountain-1",
+          "usageDescription": "Immutable accepted Original Mountain 1 reference. Preserve the exact approved asymmetric main-peak silhouette and painted rock planes; change only the owning-square ground to the accepted revision-3 gravel.",
+          "sha256": "f06a33808ece1fff3ef05ad87d731013910189fa18639bda9c3ceceaf34fd7f5"
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        },
+        "groundReference": {
+          "id": "terrain-ruleset7-revision3-gravel",
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe.",
+          "sha256": "b4eb8208932a2a335574658c68187d87568476614c55b6b0df5b56acf54b8d36"
+        },
+        "reframeSource": {
+          "path": "art/pixellab/reframe-sources/terrain-square-original-mountain-1.png",
+          "sha256": "b1c0435641bc80bc6f2814de3e49d45aeed88c875c3c87259bb307e8e92282b2",
+          "usageDescription": "Immutable accepted PixelLab body source used by deterministic derivation; the source output and its registered runtime mapping remain unchanged."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-ruleset7-revision3-mountain-1-9ec7843834ec.png",
+          "candidateSha256": "9ec7843834ec04ce4d8f2ae4ec7bd212c9699e786043baaea45760b92d2bacb8",
+          "disposition": "REJECTED",
+          "notes": "Rejected with gravel attempt 1: Mountain silhouette/body preservation passed, but large rounded interlocking ground shapes read as paving and compete with the crisp body.",
+          "reviewedAt": "2026-09-10T14:22:34.946Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: preserve accepted Original Mountain 1 rock exactly; accepted revision-3 gravel ground. Deterministic body derivation of immutable accepted Original Mountain 1. Preserve its exact asymmetric main peak, smaller shoulder, wide foothills, rock pixels, northwest light and lateral placement. Keep the already approved 40-source-pixel body lowering and fixed anchor. Replace only the former flat slate owning-square ground with accepted revision-3 illustrated gravel. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; provider redraw, silhouette change, scale change, lateral shift, new peak, removed shoulder, rock repaint, internal-color stripping, mine, entrance, braces, spoil pile, resource, ore, building, unit, left right or bottom overflow.",
+            "prompt": "Deterministic body derivation of immutable accepted Original Mountain 1. Preserve its exact asymmetric main peak, smaller shoulder, wide foothills, rock pixels, northwest light and lateral placement. Keep the already approved 40-source-pixel body lowering and fixed anchor. Replace only the former flat slate owning-square ground with accepted revision-3 illustrated gravel.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; provider redraw, silhouette change, scale change, lateral shift, new peak, removed shoulder, rock repaint, internal-color stripping, mine, entrance, braces, spoil pile, resource, ore, building, unit, left right or bottom overflow",
+            "requestSize": {
+              "width": 256,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 384
+            },
+            "seed": 110521,
+            "noBackground": true,
+            "palette": "preserve accepted Original Mountain 1 rock exactly; accepted revision-3 gravel ground",
+            "postprocess": "square-mountain-reframe-gravel-v7r3",
+            "bodyOffsetY": 40,
+            "styleReference": {
+              "id": "terrain-square-original-mountain-1",
+              "usageDescription": "Immutable accepted Original Mountain 1 reference. Preserve the exact approved asymmetric main-peak silhouette and painted rock planes; change only the owning-square ground to the accepted revision-3 gravel.",
+              "sha256": "f06a33808ece1fff3ef05ad87d731013910189fa18639bda9c3ceceaf34fd7f5"
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 128,
+              "right": 256,
+              "bottom": 384
+            },
+            "groundReference": {
+              "id": "terrain-ruleset7-revision3-gravel",
+              "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe.",
+              "sha256": "f1d808a483bd7505c6485e472cdee59c9c4ed46599d47c83a93de1c6e236e383"
+            },
+            "reframeSource": {
+              "path": "art/pixellab/reframe-sources/terrain-square-original-mountain-1.png",
+              "sha256": "b1c0435641bc80bc6f2814de3e49d45aeed88c875c3c87259bb307e8e92282b2",
+              "usageDescription": "Immutable accepted PixelLab body source used by deterministic derivation; the source output and its registered runtime mapping remain unchanged."
+            }
+          }
+        }
+      ],
+      "reviewedAt": "2026-09-10T14:33:01.025Z",
+      "outputSha256": "7eb691a64cd95f0fbfc7eff659c2b612e952840c3847dc463748bcfd16eb7028",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-ruleset7-revision3-mountain-2": {
+      "id": "terrain-ruleset7-revision3-mountain-2",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/terrain-ruleset7-revision3-mountain-2.png",
+      "candidateSha256": "432ddce4829d270587ee220c2627462d7e53433b1bda35a79a695cfd40c91476",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 121,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "notes": "Accepted deterministic derivation after source/native/enlarged and row-context inspection: approved Mountain 2 silhouette and internal rock colors preserved, body lowered 40 source pixels, angular gravel quiet beneath it, full opaque owning square, upward-only overflow.",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: preserve accepted Original Mountain 2 rock exactly; accepted revision-3 gravel ground. Deterministic body derivation of immutable accepted Original Mountain 2. Preserve its exact taller blunt left peak, lower angular right peak, connecting shoulder, rock pixels, northwest light and lateral placement. Keep the already approved 40-source-pixel body lowering and fixed anchor. Replace only the former flat slate owning-square ground with accepted revision-3 illustrated gravel. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; provider redraw, silhouette change, scale change, lateral shift, peak change, rock repaint, internal-color stripping, mine, entrance, braces, spoil pile, resource, ore, building, unit, left right or bottom overflow.",
+        "prompt": "Deterministic body derivation of immutable accepted Original Mountain 2. Preserve its exact taller blunt left peak, lower angular right peak, connecting shoulder, rock pixels, northwest light and lateral placement. Keep the already approved 40-source-pixel body lowering and fixed anchor. Replace only the former flat slate owning-square ground with accepted revision-3 illustrated gravel.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; provider redraw, silhouette change, scale change, lateral shift, peak change, rock repaint, internal-color stripping, mine, entrance, braces, spoil pile, resource, ore, building, unit, left right or bottom overflow",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 110522,
+        "noBackground": true,
+        "palette": "preserve accepted Original Mountain 2 rock exactly; accepted revision-3 gravel ground",
+        "postprocess": "square-mountain-reframe-gravel-v7r3",
+        "bodyOffsetY": 40,
+        "styleReference": {
+          "id": "terrain-square-original-mountain-2",
+          "usageDescription": "Immutable accepted Original Mountain 2 reference. Preserve the exact approved blunt twin-peak silhouette and painted rock planes; change only the owning-square ground to the accepted revision-3 gravel.",
+          "sha256": "07ec9e3c1fb5273119e0e96bcc6f1daa28c6e7c552aef26e0b8b9b0a2ef4df1b"
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        },
+        "groundReference": {
+          "id": "terrain-ruleset7-revision3-gravel",
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe.",
+          "sha256": "b4eb8208932a2a335574658c68187d87568476614c55b6b0df5b56acf54b8d36"
+        },
+        "reframeSource": {
+          "path": "art/pixellab/reframe-sources/terrain-square-original-mountain-2.png",
+          "sha256": "6211a416eeabb65da06bebfbb6a530e50f44291cb37cd80610e38f7fa388c457",
+          "usageDescription": "Immutable accepted PixelLab body source used by deterministic derivation; the source output and its registered runtime mapping remain unchanged."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-ruleset7-revision3-mountain-2-3bcd2751b9d4.png",
+          "candidateSha256": "3bcd2751b9d4644a9f28ee2e42df192ad46788302a2f4737c259c6ccfdc716d0",
+          "disposition": "REJECTED",
+          "notes": "Rejected with gravel attempt 1: Mountain silhouette/body preservation passed, but large rounded interlocking ground shapes read as paving and compete with the crisp body.",
+          "reviewedAt": "2026-09-10T14:22:35.068Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: preserve accepted Original Mountain 2 rock exactly; accepted revision-3 gravel ground. Deterministic body derivation of immutable accepted Original Mountain 2. Preserve its exact taller blunt left peak, lower angular right peak, connecting shoulder, rock pixels, northwest light and lateral placement. Keep the already approved 40-source-pixel body lowering and fixed anchor. Replace only the former flat slate owning-square ground with accepted revision-3 illustrated gravel. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; provider redraw, silhouette change, scale change, lateral shift, peak change, rock repaint, internal-color stripping, mine, entrance, braces, spoil pile, resource, ore, building, unit, left right or bottom overflow.",
+            "prompt": "Deterministic body derivation of immutable accepted Original Mountain 2. Preserve its exact taller blunt left peak, lower angular right peak, connecting shoulder, rock pixels, northwest light and lateral placement. Keep the already approved 40-source-pixel body lowering and fixed anchor. Replace only the former flat slate owning-square ground with accepted revision-3 illustrated gravel.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; provider redraw, silhouette change, scale change, lateral shift, peak change, rock repaint, internal-color stripping, mine, entrance, braces, spoil pile, resource, ore, building, unit, left right or bottom overflow",
+            "requestSize": {
+              "width": 256,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 384
+            },
+            "seed": 110522,
+            "noBackground": true,
+            "palette": "preserve accepted Original Mountain 2 rock exactly; accepted revision-3 gravel ground",
+            "postprocess": "square-mountain-reframe-gravel-v7r3",
+            "bodyOffsetY": 40,
+            "styleReference": {
+              "id": "terrain-square-original-mountain-2",
+              "usageDescription": "Immutable accepted Original Mountain 2 reference. Preserve the exact approved blunt twin-peak silhouette and painted rock planes; change only the owning-square ground to the accepted revision-3 gravel.",
+              "sha256": "07ec9e3c1fb5273119e0e96bcc6f1daa28c6e7c552aef26e0b8b9b0a2ef4df1b"
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 128,
+              "right": 256,
+              "bottom": 384
+            },
+            "groundReference": {
+              "id": "terrain-ruleset7-revision3-gravel",
+              "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe.",
+              "sha256": "f1d808a483bd7505c6485e472cdee59c9c4ed46599d47c83a93de1c6e236e383"
+            },
+            "reframeSource": {
+              "path": "art/pixellab/reframe-sources/terrain-square-original-mountain-2.png",
+              "sha256": "6211a416eeabb65da06bebfbb6a530e50f44291cb37cd80610e38f7fa388c457",
+              "usageDescription": "Immutable accepted PixelLab body source used by deterministic derivation; the source output and its registered runtime mapping remain unchanged."
+            }
+          }
+        }
+      ],
+      "reviewedAt": "2026-09-10T14:33:04.228Z",
+      "outputSha256": "432ddce4829d270587ee220c2627462d7e53433b1bda35a79a695cfd40c91476",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-ruleset7-revision3-mountain-3": {
+      "id": "terrain-ruleset7-revision3-mountain-3",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/terrain-ruleset7-revision3-mountain-3.png",
+      "candidateSha256": "6662168f7c6896898ce37a4a5376693a53b9744ad62bc7eaa751023c400c5cf0",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "notes": "Accepted deterministic derivation after source/native/enlarged and row-context inspection: approved Mountain 3 silhouette and internal rock colors preserved, body lowered 40 source pixels, angular gravel quiet beneath the broad body, full opaque owning square, upward-only overflow.",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: preserve accepted Original Mountain 3 rock exactly; accepted revision-3 gravel ground. Deterministic body derivation of immutable accepted Original Mountain 3. Preserve its exact long shallow left ridge, flat-topped right mesa shoulder, squat foreground shelf, rock pixels, northwest light and lateral placement. Keep the already approved 40-source-pixel body lowering and fixed anchor. Replace only the former flat slate owning-square ground with accepted revision-3 illustrated gravel. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; provider redraw, silhouette change, scale change, lateral shift, tall new apex, rock repaint, internal-color stripping, mine, entrance, braces, spoil pile, resource, ore, building, unit, left right or bottom overflow.",
+        "prompt": "Deterministic body derivation of immutable accepted Original Mountain 3. Preserve its exact long shallow left ridge, flat-topped right mesa shoulder, squat foreground shelf, rock pixels, northwest light and lateral placement. Keep the already approved 40-source-pixel body lowering and fixed anchor. Replace only the former flat slate owning-square ground with accepted revision-3 illustrated gravel.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; provider redraw, silhouette change, scale change, lateral shift, tall new apex, rock repaint, internal-color stripping, mine, entrance, braces, spoil pile, resource, ore, building, unit, left right or bottom overflow",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 110523,
+        "noBackground": true,
+        "palette": "preserve accepted Original Mountain 3 rock exactly; accepted revision-3 gravel ground",
+        "postprocess": "square-mountain-reframe-gravel-v7r3",
+        "bodyOffsetY": 40,
+        "styleReference": {
+          "id": "terrain-square-original-mountain-3",
+          "usageDescription": "Immutable accepted Original Mountain 3 reference. Preserve the exact approved low ridge and flat mesa silhouette and painted rock planes; change only the owning-square ground to the accepted revision-3 gravel.",
+          "sha256": "1335cdfa2c8f334de981f00fb6c4fc434231216df5d7e7fc1fefdbbf6a6d4d3c"
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        },
+        "groundReference": {
+          "id": "terrain-ruleset7-revision3-gravel",
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe.",
+          "sha256": "b4eb8208932a2a335574658c68187d87568476614c55b6b0df5b56acf54b8d36"
+        },
+        "reframeSource": {
+          "path": "art/pixellab/reframe-sources/terrain-square-original-mountain-3.png",
+          "sha256": "ed0b45b628f764570a06b32cc16b48254307e5061c39a5ef19e552329925e31f",
+          "usageDescription": "Immutable accepted PixelLab body source used by deterministic derivation; the source output and its registered runtime mapping remain unchanged."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-ruleset7-revision3-mountain-3-ec38aa26691d.png",
+          "candidateSha256": "ec38aa26691d05770d5f906d70bf1d29400a10795b571a2b7c0de1840506f8b8",
+          "disposition": "REJECTED",
+          "notes": "Rejected with gravel attempt 1: Mountain silhouette/body preservation passed, but large rounded interlocking ground shapes read as paving, especially beneath this broad low silhouette.",
+          "reviewedAt": "2026-09-10T14:22:35.175Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: preserve accepted Original Mountain 3 rock exactly; accepted revision-3 gravel ground. Deterministic body derivation of immutable accepted Original Mountain 3. Preserve its exact long shallow left ridge, flat-topped right mesa shoulder, squat foreground shelf, rock pixels, northwest light and lateral placement. Keep the already approved 40-source-pixel body lowering and fixed anchor. Replace only the former flat slate owning-square ground with accepted revision-3 illustrated gravel. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; provider redraw, silhouette change, scale change, lateral shift, tall new apex, rock repaint, internal-color stripping, mine, entrance, braces, spoil pile, resource, ore, building, unit, left right or bottom overflow.",
+            "prompt": "Deterministic body derivation of immutable accepted Original Mountain 3. Preserve its exact long shallow left ridge, flat-topped right mesa shoulder, squat foreground shelf, rock pixels, northwest light and lateral placement. Keep the already approved 40-source-pixel body lowering and fixed anchor. Replace only the former flat slate owning-square ground with accepted revision-3 illustrated gravel.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; provider redraw, silhouette change, scale change, lateral shift, tall new apex, rock repaint, internal-color stripping, mine, entrance, braces, spoil pile, resource, ore, building, unit, left right or bottom overflow",
+            "requestSize": {
+              "width": 256,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 384
+            },
+            "seed": 110523,
+            "noBackground": true,
+            "palette": "preserve accepted Original Mountain 3 rock exactly; accepted revision-3 gravel ground",
+            "postprocess": "square-mountain-reframe-gravel-v7r3",
+            "bodyOffsetY": 40,
+            "styleReference": {
+              "id": "terrain-square-original-mountain-3",
+              "usageDescription": "Immutable accepted Original Mountain 3 reference. Preserve the exact approved low ridge and flat mesa silhouette and painted rock planes; change only the owning-square ground to the accepted revision-3 gravel.",
+              "sha256": "1335cdfa2c8f334de981f00fb6c4fc434231216df5d7e7fc1fefdbbf6a6d4d3c"
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 128,
+              "right": 256,
+              "bottom": 384
+            },
+            "groundReference": {
+              "id": "terrain-ruleset7-revision3-gravel",
+              "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe.",
+              "sha256": "f1d808a483bd7505c6485e472cdee59c9c4ed46599d47c83a93de1c6e236e383"
+            },
+            "reframeSource": {
+              "path": "art/pixellab/reframe-sources/terrain-square-original-mountain-3.png",
+              "sha256": "ed0b45b628f764570a06b32cc16b48254307e5061c39a5ef19e552329925e31f",
+              "usageDescription": "Immutable accepted PixelLab body source used by deterministic derivation; the source output and its registered runtime mapping remain unchanged."
+            }
+          }
+        }
+      ],
+      "reviewedAt": "2026-09-10T14:33:07.476Z",
+      "outputSha256": "6662168f7c6896898ce37a4a5376693a53b9744ad62bc7eaa751023c400c5cf0",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-ruleset7-revision3-mined-mountain-1": {
+      "id": "terrain-ruleset7-revision3-mined-mountain-1",
+      "status": "ACCEPTED",
+      "jobId": "e98321f0-faa4-4709-a031-7f4cd08397d5",
+      "candidate": "art/pixellab/candidates/terrain-ruleset7-revision3-mined-mountain-1.png",
+      "candidateSha256": "d90e6331854c93dbbb7736ea84add540cc1b12bc39d366d3cf1c8bab9580b1c2",
+      "providerOutputSha256": "0c8071c6ca7a82ffa8e8086cbf0c1285cfc8e88f59c000379a0da4c0cb309983",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 121,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: accepted slate and parchment Mountain 1 rock, dark recessed entrance, broad warm-bronze timber braces, two restrained slate spoil shelves, revision-3 gravel ground. Integrated mined version of referenced Mountain 1 on transparent 256 by 384, anchor 128,256. Preserve its asymmetric main peak, smaller shoulder, outer silhouette, scale and northwest-lit planes. Cut one large dark arched tunnel into the lower center-right rock face, with exactly three thick connected timber braces, one short integral hoist beam and two broad low spoil shelves. Tunnel occludes rock; braces join rock; spoil meets gravel. This is one combined Mountain-plus-Mine illustration, never a separate icon. The accepted gravel keeps x0..255,y128..383 opaque; overflow is upward only. Strong quiet outline, two-to-three flat tones. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; loose Mine icon, detached building, pasted sticker, floating door, freestanding shack, isolated tool, ore, crystal, cart, person, changed peak, new or shrunk mountain, platform, diamond, side or bottom overflow, noisy rock.",
+        "prompt": "Integrated mined version of referenced Mountain 1 on transparent 256 by 384, anchor 128,256. Preserve its asymmetric main peak, smaller shoulder, outer silhouette, scale and northwest-lit planes. Cut one large dark arched tunnel into the lower center-right rock face, with exactly three thick connected timber braces, one short integral hoist beam and two broad low spoil shelves. Tunnel occludes rock; braces join rock; spoil meets gravel. This is one combined Mountain-plus-Mine illustration, never a separate icon. The accepted gravel keeps x0..255,y128..383 opaque; overflow is upward only. Strong quiet outline, two-to-three flat tones.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; loose Mine icon, detached building, pasted sticker, floating door, freestanding shack, isolated tool, ore, crystal, cart, person, changed peak, new or shrunk mountain, platform, diamond, side or bottom overflow, noisy rock",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 110531,
+        "noBackground": true,
+        "palette": "accepted slate and parchment Mountain 1 rock, dark recessed entrance, broad warm-bronze timber braces, two restrained slate spoil shelves, revision-3 gravel ground",
+        "postprocess": "square-tall-ground-reference",
+        "styleReference": {
+          "id": "terrain-ruleset7-revision3-mountain-1",
+          "sha256": "7eb691a64cd95f0fbfc7eff659c2b612e952840c3847dc463748bcfd16eb7028",
+          "usageDescription": "Use the accepted revision-3 Mountain 1 as the exact composition and silhouette reference. Preserve its asymmetric main peak, smaller shoulder, lowered footprint, rock palette and gravel field while building one coherent entrance, braces and spoil structure into its lower rock face."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        },
+        "groundReference": {
+          "id": "terrain-ruleset7-revision3-gravel",
+          "sha256": "b4eb8208932a2a335574658c68187d87568476614c55b6b0df5b56acf54b8d36",
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+        }
+      },
+      "outputSha256": "d90e6331854c93dbbb7736ea84add540cc1b12bc39d366d3cf1c8bab9580b1c2",
+      "notes": "Accepted after source, native 0.5, enlarged, unmined-pair, and 128px vertical row-depth inspection: coherent entrance cut into matching Mountain 1, readable integral timber braces, restrained spoil structure, preserved broad silhouette, full opaque gravel square, upward-only overflow.",
+      "reviewedAt": "2026-09-10T14:38:35.928Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-ruleset7-revision3-mined-mountain-2": {
+      "id": "terrain-ruleset7-revision3-mined-mountain-2",
+      "status": "ACCEPTED",
+      "jobId": "685df1a3-ec5a-401a-bca9-f7dfc1439858",
+      "candidate": "art/pixellab/candidates/terrain-ruleset7-revision3-mined-mountain-2.png",
+      "candidateSha256": "b536a203392d042013c407b657d817c990495b98306292ef901e8aee8ef185d8",
+      "providerOutputSha256": "a54e2087f8dc8831fe034b497e60de3a7cb8446af77769f6403a01e19df5a784",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 121,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: accepted slate and parchment Mountain 2 rock, dark recessed entrance, broad warm-bronze timber braces, two restrained slate spoil shelves, revision-3 gravel ground. Integrated mined version of referenced Mountain 2 on transparent 256 by 384, anchor 128,256. Preserve its blunt left peak, angular right peak, connecting shoulder, outer silhouette, scale and northwest-lit planes. Cut one large dark arched tunnel into the lower left-center rock face, with exactly three thick connected timber braces, one short integral hoist beam and two broad low spoil shelves. Tunnel occludes rock; braces join rock; spoil meets gravel. This is one combined Mountain-plus-Mine illustration, never a separate icon. The accepted gravel keeps x0..255,y128..383 opaque; overflow is upward only. Strong quiet outline, two-to-three flat tones. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; loose Mine icon, detached building, pasted sticker, floating door, freestanding shack, isolated tool, ore, crystal, cart, person, changed peaks, new or shrunk mountain, platform, diamond, side or bottom overflow, noisy rock.",
+        "prompt": "Integrated mined version of referenced Mountain 2 on transparent 256 by 384, anchor 128,256. Preserve its blunt left peak, angular right peak, connecting shoulder, outer silhouette, scale and northwest-lit planes. Cut one large dark arched tunnel into the lower left-center rock face, with exactly three thick connected timber braces, one short integral hoist beam and two broad low spoil shelves. Tunnel occludes rock; braces join rock; spoil meets gravel. This is one combined Mountain-plus-Mine illustration, never a separate icon. The accepted gravel keeps x0..255,y128..383 opaque; overflow is upward only. Strong quiet outline, two-to-three flat tones.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; loose Mine icon, detached building, pasted sticker, floating door, freestanding shack, isolated tool, ore, crystal, cart, person, changed peaks, new or shrunk mountain, platform, diamond, side or bottom overflow, noisy rock",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 110532,
+        "noBackground": true,
+        "palette": "accepted slate and parchment Mountain 2 rock, dark recessed entrance, broad warm-bronze timber braces, two restrained slate spoil shelves, revision-3 gravel ground",
+        "postprocess": "square-tall-ground-reference",
+        "styleReference": {
+          "id": "terrain-ruleset7-revision3-mountain-2",
+          "sha256": "432ddce4829d270587ee220c2627462d7e53433b1bda35a79a695cfd40c91476",
+          "usageDescription": "Use the accepted revision-3 Mountain 2 as the exact composition and silhouette reference. Preserve its blunt twin peaks, connecting shoulder, lowered footprint, rock palette and gravel field while building one coherent entrance, braces and spoil structure into its lower rock face."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        },
+        "groundReference": {
+          "id": "terrain-ruleset7-revision3-gravel",
+          "sha256": "b4eb8208932a2a335574658c68187d87568476614c55b6b0df5b56acf54b8d36",
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+        }
+      },
+      "outputSha256": "b536a203392d042013c407b657d817c990495b98306292ef901e8aee8ef185d8",
+      "notes": "Accepted after individual source, native 0.5, enlarged, exact unmined-pair, and 128px vertical row-depth inspection: entrance is cut into matching blunt Mountain 2 face, readable timber portal is integral, angular spoil apron is coherent, ordinal silhouette remains identifiable, full opaque gravel square, upward-only overflow.",
+      "reviewedAt": "2026-09-10T14:43:49.947Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-ruleset7-revision3-mined-mountain-3": {
+      "id": "terrain-ruleset7-revision3-mined-mountain-3",
+      "status": "ACCEPTED",
+      "jobId": "a36cdbf4-c2e1-4d6a-88d0-cc1e05137c8c",
+      "candidate": "art/pixellab/candidates/terrain-ruleset7-revision3-mined-mountain-3.png",
+      "candidateSha256": "6cd1070cd5cec243a712581f343eee58352f92eec510aef210a221c7ed96e5ff",
+      "providerOutputSha256": "ed4c8d697fe1ce568aaba6447fccb005069f84b8281bde215de03794c3e77aa7",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: accepted slate and parchment Mountain 3 rock, dark recessed entrance, broad warm-bronze timber braces, two restrained slate spoil shelves, revision-3 gravel ground. Integrated mined version of referenced Mountain 3 on transparent 256 by 384, anchor 128,256. Preserve its shallow left ridge, flat right mesa, foreground shelf, low outer silhouette, scale and northwest-lit planes. Cut one large dark arched tunnel into the foreground shelf, with exactly three thick connected timber braces, one short integral hoist beam and two broad low spoil shelves. Tunnel occludes rock; braces join rock; spoil meets gravel. This is one combined Mountain-plus-Mine illustration, never a separate icon. The accepted gravel keeps x0..255,y128..383 opaque; overflow is upward only. Strong quiet outline, two-to-three flat tones. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; loose Mine icon, detached building, pasted sticker, floating door, freestanding shack, isolated tool, ore, crystal, cart, person, tall new peak, changed mesa, shrunk mountain, platform, diamond, side or bottom overflow, noisy rock.",
+        "prompt": "Integrated mined version of referenced Mountain 3 on transparent 256 by 384, anchor 128,256. Preserve its shallow left ridge, flat right mesa, foreground shelf, low outer silhouette, scale and northwest-lit planes. Cut one large dark arched tunnel into the foreground shelf, with exactly three thick connected timber braces, one short integral hoist beam and two broad low spoil shelves. Tunnel occludes rock; braces join rock; spoil meets gravel. This is one combined Mountain-plus-Mine illustration, never a separate icon. The accepted gravel keeps x0..255,y128..383 opaque; overflow is upward only. Strong quiet outline, two-to-three flat tones.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; loose Mine icon, detached building, pasted sticker, floating door, freestanding shack, isolated tool, ore, crystal, cart, person, tall new peak, changed mesa, shrunk mountain, platform, diamond, side or bottom overflow, noisy rock",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 110533,
+        "noBackground": true,
+        "palette": "accepted slate and parchment Mountain 3 rock, dark recessed entrance, broad warm-bronze timber braces, two restrained slate spoil shelves, revision-3 gravel ground",
+        "postprocess": "square-tall-ground-reference",
+        "styleReference": {
+          "id": "terrain-ruleset7-revision3-mountain-3",
+          "sha256": "6662168f7c6896898ce37a4a5376693a53b9744ad62bc7eaa751023c400c5cf0",
+          "usageDescription": "Use the accepted revision-3 Mountain 3 as the exact composition and silhouette reference. Preserve its low ridge, flat mesa shoulder, foreground shelf, lowered footprint, rock palette and gravel field while building one coherent entrance, braces and spoil structure into its lower rock face."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        },
+        "groundReference": {
+          "id": "terrain-ruleset7-revision3-gravel",
+          "sha256": "b4eb8208932a2a335574658c68187d87568476614c55b6b0df5b56acf54b8d36",
+          "usageDescription": "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe."
+        }
+      },
+      "outputSha256": "6cd1070cd5cec243a712581f343eee58352f92eec510aef210a221c7ed96e5ff",
+      "notes": "Accepted after individual source, native 0.5, enlarged, exact unmined-pair, and 128px vertical row-depth inspection: entrance and braces integrate into matching low mesa/front ridge, restrained spoil/rock structure reads coherently, ordinal silhouette remains identifiable, full opaque gravel square, upward-only overflow.",
+      "reviewedAt": "2026-09-10T14:43:52.525Z",
       "reviewChecks": {
         "source": true,
         "native": true,

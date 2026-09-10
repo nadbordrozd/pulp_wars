@@ -14,6 +14,10 @@ import sharp, { type OverlayOptions } from "sharp";
 import { assertRuleset7BuildingEconomyOrder } from "./ruleset7-building-economy-order";
 import { assertRuleset7CatapultOrder } from "./ruleset7-catapult-order";
 import { assertRuleset7OriginalUnitOrder } from "./ruleset7-original-unit-order";
+import {
+  assertRuleset7Revision3ArtOrder,
+  resolveRepairStyleReferenceHash,
+} from "./ruleset7-revision3-art-order";
 import { assertRuleset7TacticalUiOrder } from "./ruleset7-tactical-ui-order";
 import { resolveUnitFitOffset } from "./unit-fit-offset";
 
@@ -56,6 +60,10 @@ interface Recipe {
   readonly fitOffsetX?: number;
   /** Deterministic vertical translation after fitting and ground alignment. */
   readonly fitOffsetY?: number;
+  /** Nominal renderer scale recorded for art-only geometry review. */
+  readonly displayScale?: number;
+  /** Nominal renderer-only vertical offset recorded for art review. */
+  readonly cosmeticOffsetY?: number;
   /** Deterministic downward translation of a tall terrain body before ground composition. */
   readonly bodyOffsetY?: number;
   /** Immutable accepted source used when reframing an already-produced body. */
@@ -78,11 +86,13 @@ interface Recipe {
     | "lanczos3-resize"
     | "square-ground-fill"
     | "square-grass-texture-v7"
+    | "square-gravel-ground-v7r3"
     | "square-farm-fill"
     | "farm-full-rectangle"
     | "square-road-material"
     | "square-tall-ground-reference"
     | "square-mountain-ground-reference"
+    | "square-mountain-reframe-gravel-v7r3"
     | "square-tall-reframe-ground-reference";
   readonly includeFactionLanguage?: boolean;
   readonly requestNoBackground?: boolean;
@@ -105,6 +115,8 @@ interface RequestSnapshot {
   readonly groundContactY?: number;
   readonly fitOffsetX?: number;
   readonly fitOffsetY?: number;
+  readonly displayScale?: number;
+  readonly cosmeticOffsetY?: number;
   readonly bodyOffsetY?: number;
   readonly styleReference?: {
     readonly id: string;
@@ -115,6 +127,11 @@ interface RequestSnapshot {
   readonly groundReference?: {
     readonly id: string;
     readonly sha256?: string;
+    readonly usageDescription: string;
+  };
+  readonly reframeSource?: {
+    readonly path: string;
+    readonly sha256: string;
     readonly usageDescription: string;
   };
 }
@@ -246,6 +263,7 @@ async function main(): Promise<void> {
     assertRuleset7CatapultOrder(recipes, generated);
     assertRuleset7BuildingEconomyOrder(recipes, generated);
     assertRuleset7OriginalUnitOrder(recipes, generated);
+    assertRuleset7Revision3ArtOrder(recipes, generated);
     assertRuleset7TacticalUiOrder(recipes, generated);
     assertOriginalUnitOrder(recipes, generated);
     assertCandyUnitOrder(recipes, generated);
@@ -279,6 +297,7 @@ async function main(): Promise<void> {
       const candidate = path.join(CANDIDATE_ROOT, `${id}.png`);
       if (
         (recipe.postprocess === "square-mountain-ground-reference" ||
+          recipe.postprocess === "square-mountain-reframe-gravel-v7r3" ||
           recipe.postprocess === "square-tall-reframe-ground-reference") &&
         recipe.reframeSource !== undefined
       ) {
@@ -289,6 +308,8 @@ async function main(): Promise<void> {
         await applySquareGroundFill(candidate, recipe);
       else if (recipe.postprocess === "square-grass-texture-v7")
         await applySquareGrassTextureV7(candidate, recipe);
+      else if (recipe.postprocess === "square-gravel-ground-v7r3")
+        await applySquareGravelGroundV7R3(candidate, recipe);
       else if (recipe.postprocess === "square-farm-fill")
         await applySquareFarmFill(candidate, recipe);
       else if (recipe.postprocess === "farm-full-rectangle")
@@ -323,16 +344,20 @@ async function main(): Promise<void> {
       else if (
         recipe.postprocess === "square-ground-fill" ||
         recipe.postprocess === "square-grass-texture-v7" ||
+        recipe.postprocess === "square-gravel-ground-v7r3" ||
         recipe.postprocess === "square-farm-fill" ||
         recipe.postprocess === "farm-full-rectangle" ||
         recipe.postprocess === "square-road-material" ||
         recipe.postprocess === "square-tall-ground-reference" ||
         recipe.postprocess === "square-mountain-ground-reference" ||
+        recipe.postprocess === "square-mountain-reframe-gravel-v7r3" ||
         recipe.postprocess === "square-tall-reframe-ground-reference"
       )
         await assertSquareTerrainAlpha(candidate, recipe);
+      const previous = generated.records[id];
+      const rejectedAttempts = rejectedAttemptsFrom(previous);
       (generated.records as Record<string, GenerationRecord>)[id] = {
-        ...generated.records[id],
+        ...previous,
         id,
         status: "CANDIDATE",
         candidate: path.relative(ROOT, candidate).replaceAll("\\", "/"),
@@ -343,13 +368,16 @@ async function main(): Promise<void> {
         alphaBounds: inspection.alphaBounds,
         notes: recipe.postprocess?.startsWith("diamond-mask")
           ? "Deterministic supersampled diamond alpha mask applied by checked-in pipeline."
-          : "Deterministic hard-bounds normalization applied by checked-in pipeline.",
+          : recipe.postprocess === "square-mountain-reframe-gravel-v7r3"
+            ? "Deterministically derived from the immutable accepted PixelLab body source and accepted revision-3 gravel ground; no provider redraw."
+            : "Deterministic hard-bounds normalization applied by checked-in pipeline.",
         request: resolvedRepairRequestSnapshot(
           source,
           generated,
           recipe,
-          generated.records[id]?.request,
+          previous?.request,
         ),
+        ...(rejectedAttempts.length === 0 ? {} : { rejectedAttempts }),
       };
       console.log(
         `${id}: repaired candidate (${inspection.sha256.slice(0, 12)})`,
@@ -591,13 +619,23 @@ function resolvedRepairRequestSnapshot(
   previous?: RequestSnapshot,
 ): RequestSnapshot {
   const request = requestSnapshot(source, recipe);
+  const generatedStyleHash =
+    request.styleReference === undefined
+      ? undefined
+      : generated.records[request.styleReference.id]?.outputSha256;
+  const resolvedStyleHash =
+    request.styleReference === undefined
+      ? undefined
+      : resolveRepairStyleReferenceHash(
+          request.styleReference.id,
+          previous?.styleReference,
+          generatedStyleHash,
+        );
   const styleReference =
-    request.styleReference !== undefined &&
-    previous?.styleReference?.id === request.styleReference.id &&
-    previous.styleReference.sha256 !== undefined
+    request.styleReference !== undefined && resolvedStyleHash !== undefined
       ? {
           ...request.styleReference,
-          sha256: previous.styleReference.sha256,
+          sha256: resolvedStyleHash,
         }
       : request.styleReference;
   if (request.groundReference === undefined)
@@ -662,6 +700,16 @@ function validateSourceManifest(
       throw new Error(`Invalid deterministic fit offset for ${recipe.id}`);
     if (recipe.fitOffsetY !== undefined && !Number.isInteger(recipe.fitOffsetY))
       throw new Error(`Invalid deterministic fit offset for ${recipe.id}`);
+    if (
+      recipe.displayScale !== undefined &&
+      (!Number.isFinite(recipe.displayScale) || recipe.displayScale <= 0)
+    )
+      throw new Error(`Invalid display scale for ${recipe.id}`);
+    if (
+      recipe.cosmeticOffsetY !== undefined &&
+      !Number.isInteger(recipe.cosmeticOffsetY)
+    )
+      throw new Error(`Invalid cosmetic offset for ${recipe.id}`);
     if (
       recipe.bodyOffsetY !== undefined &&
       (!Number.isInteger(recipe.bodyOffsetY) || recipe.bodyOffsetY < 0)
@@ -926,6 +974,79 @@ function validateSourceManifest(
       throw new Error(
         `Ruleset 7 Forest reframe contract mismatch: ${contract.id}`,
       );
+  }
+  const revision3HorseArcher = source.recipes.find(
+    ({ id }) => id === "unit-original-horse-archer",
+  );
+  if (
+    revision3HorseArcher?.class !== "units" ||
+    revision3HorseArcher.stage !== "batch" ||
+    JSON.stringify(revision3HorseArcher.requestSize) !==
+      JSON.stringify({ width: 384, height: 384 }) ||
+    JSON.stringify(revision3HorseArcher.outputSize) !==
+      JSON.stringify({ width: 384, height: 384 }) ||
+    JSON.stringify(revision3HorseArcher.anchor) !==
+      JSON.stringify({ x: 192, y: 288 }) ||
+    revision3HorseArcher.groundContactY !== 288 ||
+    revision3HorseArcher.displayScale !== 0.27 ||
+    revision3HorseArcher.cosmeticOffsetY !== 18 ||
+    revision3HorseArcher.postprocess !== "unit-fit"
+  )
+    throw new Error("Ruleset 7 revision-3 Horse Archer geometry mismatch");
+  const revision3Portrait = source.recipes.find(
+    ({ id }) => id === "portrait-original-horse-archer",
+  );
+  if (
+    revision3Portrait?.postprocess !== "sprite-derived-portrait" ||
+    revision3Portrait.styleReference !== "unit-original-horse-archer" ||
+    JSON.stringify(revision3Portrait.outputSize) !==
+      JSON.stringify({ width: 256, height: 256 })
+  )
+    throw new Error("Ruleset 7 revision-3 Horse Archer portrait mismatch");
+  const revision3Gravel = source.recipes.find(
+    ({ id }) => id === "terrain-ruleset7-revision3-gravel",
+  );
+  if (
+    revision3Gravel?.class !== "terrain" ||
+    revision3Gravel.postprocess !== "square-gravel-ground-v7r3" ||
+    JSON.stringify(revision3Gravel.outputSize) !==
+      JSON.stringify({ width: 256, height: 256 }) ||
+    JSON.stringify(revision3Gravel.squareFootprint) !==
+      JSON.stringify({ left: 0, top: 0, right: 256, bottom: 256 })
+  )
+    throw new Error("Ruleset 7 revision-3 gravel geometry mismatch");
+  for (const variant of [1, 2, 3] as const) {
+    const mountainId = `terrain-ruleset7-revision3-mountain-${variant}`;
+    const minedId = `terrain-ruleset7-revision3-mined-mountain-${variant}`;
+    const mountain = source.recipes.find(({ id }) => id === mountainId);
+    const mined = source.recipes.find(({ id }) => id === minedId);
+    const tallGeometryValid = (recipe: Recipe | undefined): boolean =>
+      recipe?.class === "terrain" &&
+      recipe.stage === "batch" &&
+      JSON.stringify(recipe.outputSize) ===
+        JSON.stringify({ width: 256, height: 384 }) &&
+      JSON.stringify(recipe.anchor) === JSON.stringify({ x: 128, y: 256 }) &&
+      JSON.stringify(recipe.squareFootprint) ===
+        JSON.stringify({ left: 0, top: 128, right: 256, bottom: 384 });
+    if (
+      !tallGeometryValid(mountain) ||
+      mountain?.postprocess !== "square-mountain-reframe-gravel-v7r3" ||
+      mountain.styleReference !==
+        `terrain-square-original-mountain-${variant}` ||
+      mountain.groundReference !== "terrain-ruleset7-revision3-gravel" ||
+      mountain.reframeGroundReference !== "terrain-square-original-grass-1" ||
+      mountain.reframeSource === undefined ||
+      mountain.reframeSourceSha256 === undefined ||
+      mountain.bodyOffsetY !== 40
+    )
+      throw new Error(`Revision-3 Mountain derivation mismatch: ${mountainId}`);
+    if (
+      !tallGeometryValid(mined) ||
+      mined?.postprocess !== "square-tall-ground-reference" ||
+      mined.styleReference !== mountainId ||
+      mined.groundReference !== "terrain-ruleset7-revision3-gravel"
+    )
+      throw new Error(`Revision-3 mined Mountain mismatch: ${minedId}`);
   }
   const squareResources = [
     "terrain-square-original-fruit",
@@ -2364,6 +2485,12 @@ function requestSnapshot(
     ...(recipe.fitOffsetY === undefined
       ? {}
       : { fitOffsetY: recipe.fitOffsetY }),
+    ...(recipe.displayScale === undefined
+      ? {}
+      : { displayScale: recipe.displayScale }),
+    ...(recipe.cosmeticOffsetY === undefined
+      ? {}
+      : { cosmeticOffsetY: recipe.cosmeticOffsetY }),
     ...(recipe.bodyOffsetY === undefined
       ? {}
       : { bodyOffsetY: recipe.bodyOffsetY }),
@@ -2387,6 +2514,17 @@ function requestSnapshot(
             id: recipe.groundReference,
             usageDescription:
               "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe.",
+          },
+        }),
+    ...(recipe.reframeSource === undefined ||
+    recipe.reframeSourceSha256 === undefined
+      ? {}
+      : {
+          reframeSource: {
+            path: recipe.reframeSource,
+            sha256: recipe.reframeSourceSha256,
+            usageDescription:
+              "Immutable accepted PixelLab body source used by deterministic derivation; the source output and its registered runtime mapping remain unchanged.",
           },
         }),
   };
@@ -2500,7 +2638,8 @@ async function processCandidate(
   }
   if (
     recipe.postprocess === "square-ground-fill" ||
-    recipe.postprocess === "square-grass-texture-v7"
+    recipe.postprocess === "square-grass-texture-v7" ||
+    recipe.postprocess === "square-gravel-ground-v7r3"
   ) {
     const providerMetadata = await sharp(input).metadata();
     const providerWidth = providerMetadata.width ?? recipe.requestSize.width;
@@ -2520,11 +2659,19 @@ async function processCandidate(
         fit: "fill",
         kernel: sharp.kernel.lanczos3,
       })
-      .blur(recipe.postprocess === "square-ground-fill" ? 24 : 1.2)
+      .blur(
+        recipe.postprocess === "square-ground-fill"
+          ? 24
+          : recipe.postprocess === "square-gravel-ground-v7r3"
+            ? 0.8
+            : 1.2,
+      )
       .png({ compressionLevel: 9, adaptiveFiltering: false })
       .toFile(destination);
     if (recipe.postprocess === "square-ground-fill")
       await applySquareGroundFill(destination, recipe);
+    else if (recipe.postprocess === "square-gravel-ground-v7r3")
+      await applySquareGravelGroundV7R3(destination, recipe);
     else await applySquareGrassTextureV7(destination, recipe);
     await assertSquareTerrainAlpha(destination, recipe);
     return;
@@ -2617,6 +2764,7 @@ async function processCandidate(
   } else if (
     recipe.postprocess === "square-tall-ground-reference" ||
     recipe.postprocess === "square-mountain-ground-reference" ||
+    recipe.postprocess === "square-mountain-reframe-gravel-v7r3" ||
     recipe.postprocess === "square-tall-reframe-ground-reference"
   ) {
     await applySquareTallGroundReference(destination, recipe, source);
@@ -2791,6 +2939,67 @@ async function applySquareGrassTextureV7(
         data[offset + channel] = Math.round(
           baseColor * (1 - authoredWeight) +
             (data[offset + channel] ?? baseColor) * authoredWeight,
+        );
+      }
+      data[offset + 3] = 255;
+    }
+  }
+  await sharp(data, {
+    raw: { width: info.width, height: info.height, channels: 4 },
+  })
+    .png({ compressionLevel: 9, adaptiveFiltering: false })
+    .toFile(destination);
+}
+
+/**
+ * Revision 3 replaces the Mountains' flat slate field with one restrained,
+ * illustrated gravel source. Authored angular scree survives while every edge
+ * converges to one seam-safe slate color and the complete square stays opaque.
+ */
+async function applySquareGravelGroundV7R3(
+  destination: string,
+  recipe: Recipe,
+): Promise<void> {
+  if (
+    recipe.squareFootprint?.left !== 0 ||
+    recipe.squareFootprint.top !== 0 ||
+    recipe.squareFootprint.right !== recipe.outputSize.width ||
+    recipe.squareFootprint.bottom !== recipe.outputSize.height
+  )
+    throw new Error(`${recipe.id}: invalid revision-3 gravel footprint`);
+  const { data, info } = await sharp(await readFile(destination))
+    .ensureAlpha()
+    .flatten({ background: "#718391" })
+    .ensureAlpha(1)
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const base = [0x71, 0x83, 0x91] as const;
+  const transition = 32;
+  for (let y = 0; y < info.height; y += 1) {
+    for (let x = 0; x < info.width; x += 1) {
+      const edgeDistance = Math.min(
+        x,
+        y,
+        info.width - 1 - x,
+        info.height - 1 - y,
+      );
+      const normalized = Math.min(1, edgeDistance / transition);
+      const authoredWeight =
+        0.38 * normalized * normalized * (3 - 2 * normalized);
+      const light = Math.round(((x + y) / 510 - 0.5) * -4 * normalized);
+      const offset = (y * info.width + x) * 4;
+      for (let channel = 0; channel < 3; channel += 1) {
+        const baseColor = base[channel] ?? 0;
+        data[offset + channel] = Math.max(
+          0,
+          Math.min(
+            255,
+            Math.round(
+              baseColor * (1 - authoredWeight) +
+                (data[offset + channel] ?? baseColor) * authoredWeight +
+                light,
+            ),
+          ),
         );
       }
       data[offset + 3] = 255;
@@ -3018,8 +3227,11 @@ async function reframeAcceptedSquareTerrain(
       kernel: sharp.kernel.lanczos3,
     });
   const mountain = recipe.postprocess === "square-mountain-ground-reference";
+  const revision3Mountain =
+    recipe.postprocess === "square-mountain-reframe-gravel-v7r3";
+  const sourceUsesSlateMountainGround = mountain || revision3Mountain;
   const sourceGround = await (
-    mountain
+    sourceUsesSlateMountainGround
       ? sourceGroundPipeline.greyscale().tint("#718391")
       : sourceGroundPipeline
   )
@@ -3071,7 +3283,10 @@ async function reframeAcceptedSquareTerrain(
       body[offset + 3] = Math.min(sourceAlpha, bodyAlpha);
     }
   }
-  if (recipe.postprocess === "square-tall-reframe-ground-reference") {
+  if (
+    recipe.postprocess === "square-tall-reframe-ground-reference" ||
+    revision3Mountain
+  ) {
     fillEnclosedTallTerrainBody(
       body,
       accepted.data,
@@ -3687,11 +3902,13 @@ async function validateOutputs(
       );
     if (
       recipe.postprocess === "square-ground-fill" ||
+      recipe.postprocess === "square-gravel-ground-v7r3" ||
       recipe.postprocess === "square-farm-fill" ||
       recipe.postprocess === "farm-full-rectangle" ||
       recipe.postprocess === "square-road-material" ||
       recipe.postprocess === "square-tall-ground-reference" ||
-      recipe.postprocess === "square-mountain-ground-reference"
+      recipe.postprocess === "square-mountain-ground-reference" ||
+      recipe.postprocess === "square-mountain-reframe-gravel-v7r3"
     )
       await assertSquareTerrainAlpha(path.join(ROOT, recipe.output), recipe);
     if (inspection.sha256 !== record.outputSha256)
