@@ -3,6 +3,12 @@
 The headless entry point runs replay verification and complete equal-rules
 Normal-policy matches without DOM or Canvas imports.
 
+The authoritative
+[Ruleset-7 revision-4 biome-economy specification](../product/RULESET_7_REVISION_4_BIOME_ECONOMY.md)
+defines the next map identity, deterministic simulation matrix, telemetry, and
+revision-4 compatibility boundary. The revision-2 records below and
+revision-3 references remain historical where that specification conflicts.
+
 ## Ruleset-7 revision-2 historical implementation contract
 
 The commands, identifiers, inventory counts, and checked matrix below describe

@@ -1,8 +1,18 @@
 # Pulp Wars Ruleset 7
 
-**Status:** authoritative revision-3 prototype contract
+**Status:** revision-3 runtime baseline; partially superseded by the
+authoritative [revision-4 biome-economy specification](RULESET_7_REVISION_4_BIOME_ECONOMY.md)
 
-**Ruleset ID:** `pulp-wars-poc-7r3`
+**Runtime ruleset ID:** `pulp-wars-poc-7r3`
+
+Revision 4 is approved for implementation under exact ruleset ID
+`pulp-wars-poc-7r4`. Its specification supersedes this document wherever it
+defines map generation, biome/resource state, Mine/Forge economy, associated
+Normal-AI and public-view behavior, save identity/cleanup, or validation. The
+remaining revision-3 rules stay authoritative. Until that implementation
+lands, this file also describes the current runtime; revision-3 passages that
+conflict with the linked revision-4 specification are historical baseline and
+must not be copied into the implementation.
 
 **Design history:**
 [Original technology-tree redesign proposal](ORIGINAL_TECH_TREE_REDESIGN_PROPOSAL.md)

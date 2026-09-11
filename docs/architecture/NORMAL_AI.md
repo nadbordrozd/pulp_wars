@@ -1,5 +1,12 @@
 # Greedy Normal AI
 
+The authoritative
+[Ruleset-7 revision-4 biome-economy specification](../product/RULESET_7_REVISION_4_BIOME_ECONOMY.md)
+supersedes revision-3 Normal-AI economy valuation, Ore visibility, Mine/Forge
+planning, and related validation before revision-4 implementation. The
+revision-2 material below remains historical; unchanged policy rules continue
+to derive from the main Ruleset-7 contract.
+
 ## Ruleset-7 revision-2 policy (historical implementation)
 
 This section documents the historical revision-2 implementation and evidence.
