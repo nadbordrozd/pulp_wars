@@ -2750,8 +2750,12 @@ function economyAndGrowth(
 }
 function restoredResourceForImprovement(
   improvement: TileStateV7["improvement"],
-): "FERTILE_GROUND" | null {
-  return improvement === "FARM" ? "FERTILE_GROUND" : null;
+): "FERTILE_GROUND" | "ORE" | null {
+  return improvement === "FARM"
+    ? "FERTILE_GROUND"
+    : improvement === "MINE"
+      ? "ORE"
+      : null;
 }
 function populationContributionAt(
   state: GameStateV7,

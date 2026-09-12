@@ -660,7 +660,7 @@ function battle(
 ): GameStateV7 {
   const normalized =
     typeof options === "number" ? { defenderHp: options } : options;
-  const base = exploredAllV7(allTechsV7(initialV7()));
+  const base = exploredAllV7(allTechsV7(initialV7(2)));
   const human = base.humanPlayerId;
   const enemy = required(
     base.players.find((player) => player.id !== human),

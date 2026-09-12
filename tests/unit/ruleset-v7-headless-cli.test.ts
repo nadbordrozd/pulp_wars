@@ -47,7 +47,7 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
     const result = runCli(
       "match",
       "--ruleset",
-      "pulp-wars-poc-7r3",
+      "pulp-wars-poc-7r4",
       "--max-commands",
       "1",
       "--max-rounds",
@@ -56,7 +56,7 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
     expect(result).toMatchObject({
       acceptedCommands: 1,
       termination: "COMMAND_CAP",
-      metrics: { rulesetId: "pulp-wars-poc-7r3" },
+      metrics: { rulesetId: "pulp-wars-poc-7r4" },
     });
   });
 
@@ -65,7 +65,7 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
       runCli(
         "match",
         "--ruleset",
-        "pulp-wars-poc-7r3",
+        "pulp-wars-poc-7r4",
         "--factions",
         "original,candy",
         "--max-commands",
@@ -74,7 +74,7 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
     ).toThrow(/ruleset 7 factions must be original/);
     expect(() =>
       runCli("match", "--ruleset", "pulp-wars-poc-7", "--max-commands", "1"),
-    ).toThrow(/pulp-wars-poc-7r3/);
+    ).toThrow(/pulp-wars-poc-7r4/);
   }, 15_000);
 
   it("dispatches a command-zero v7 replay through canonical playable creation", () => {

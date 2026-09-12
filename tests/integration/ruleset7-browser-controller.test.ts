@@ -166,7 +166,7 @@ describe("Ruleset 7 browser controller", () => {
   it("returns an accepted human boundary to the resumable menu without changing it", async () => {
     const storage = new MemoryStorage();
     const controller = new Ruleset7BrowserController({ storage });
-    const launched = await controller.launch(setupV7(2, 1));
+    const launched = await controller.launch(setupV7(1, 1));
     if (!launched.ok) throw new Error(launched.diagnostic);
     const dispatch = controller.dispatch(
       requireCommand(controller.snapshot(), "WAIT"),
@@ -188,7 +188,7 @@ describe("Ruleset 7 browser controller", () => {
 
   it("serializes a same-tick menu request behind a pending launch", async () => {
     const controller = new Ruleset7BrowserController();
-    const launch = controller.launch(setupV7(2, 1));
+    const launch = controller.launch(setupV7(1, 1));
     const returning = controller.returnToMenu();
     expect(await launch).toMatchObject({ ok: true });
     expect(await returning).toBe(true);
@@ -210,7 +210,7 @@ describe("Ruleset 7 browser controller", () => {
       },
       createAiPolicyWork: (view) => immediateDecisionWork(view, "WAIT"),
     });
-    const launched = await controller.launch(setupV7(2, 1));
+    const launched = await controller.launch(setupV7(1, 1));
     if (!launched.ok) throw new Error(launched.diagnostic);
     await dispatchKind(controller, "END_TURN");
     const progress = controller.progressAiTurns();
@@ -250,7 +250,7 @@ describe("Ruleset 7 browser controller", () => {
       persistenceNow: () => "2026-09-08T12:00:00.000Z",
       persistenceScheduler: saves.schedule,
     });
-    const launched = await controller.launch(setupV7(2, 1));
+    const launched = await controller.launch(setupV7(1, 1));
     if (!launched.ok) throw new Error(launched.diagnostic);
     const wait = requireCommand(controller.snapshot(), "WAIT");
     expect((await controller.dispatch(wait)).accepted).toBe(true);
@@ -282,7 +282,7 @@ describe("Ruleset 7 browser controller", () => {
       aiProgressScheduler: firstScheduler.schedule,
       createAiPolicyWork: (view) => immediateDecisionWork(view, "WAIT"),
     });
-    const launched = await first.launch(setupV7(2, 1));
+    const launched = await first.launch(setupV7(1, 1));
     if (!launched.ok) throw new Error(launched.diagnostic);
     await dispatchKind(first, "END_TURN");
     const unsubscribe = first.subscribe((snapshot) => {
@@ -328,7 +328,7 @@ describe("Ruleset 7 browser controller", () => {
         queueMicrotask(resume);
       },
     });
-    const launched = await controller.launch(setupV7(2, 1));
+    const launched = await controller.launch(setupV7(1, 1));
     if (!launched.ok) throw new Error(launched.diagnostic);
     await dispatchKind(
       controller,
@@ -418,7 +418,7 @@ describe("Ruleset 7 browser controller", () => {
 
   it("keeps its event history mutable after exporting a player-safe log", async () => {
     const controller = new Ruleset7BrowserController();
-    const launched = await controller.launch(setupV7(2, 1));
+    const launched = await controller.launch(setupV7(1, 1));
     if (!launched.ok) throw new Error(launched.diagnostic);
     const first = controller.exportSafeLog();
     if (first === null) throw new Error("safe log missing");
@@ -470,7 +470,7 @@ describe("Ruleset 7 browser controller", () => {
         commandIndex: boundary.afterView.commandIndex,
       });
     });
-    const launched = await controller.launch(setupV7(2, 1));
+    const launched = await controller.launch(setupV7(1, 1));
     if (!launched.ok) throw new Error(launched.diagnostic);
     expect(
       (
@@ -502,7 +502,7 @@ describe("Ruleset 7 browser controller", () => {
       observed += 1;
     });
     controller.destroy();
-    expect(await controller.launch(setupV7(2, 1))).toMatchObject({ ok: false });
+    expect(await controller.launch(setupV7(1, 1))).toMatchObject({ ok: false });
     expect(observed).toBe(0);
   });
 });
@@ -519,7 +519,7 @@ function setupV7(seed: number, aiCount: 1 | 2 | 3): MatchSetupV7 {
     aiMode: "RIVAL",
     humanColor: "CORAL",
     factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL"),
-    mapGenerationRevision: "SPATIAL_ECONOMY",
+    mapGenerationRevision: "REGIONAL_BIOMES_V1",
   };
 }
 

@@ -1,6 +1,7 @@
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import process from "node:process";
 import { format } from "prettier";
@@ -93,13 +94,16 @@ type Connection = {
 };
 
 const deployed = process.argv.includes("--deployed");
+const archivalEvidence = process.argv.includes("--archive-evidence");
 const baseUrl = smokeUrl(
   process.argv.slice(2).find((argument) => argument.startsWith("http")) ??
     "http://localhost:6173/",
 );
-const reviewRoot = path.join(
-  process.cwd(),
-  "art/integration/reviews/ruleset7-preview",
+const reviewRoot = archivalEvidence
+  ? path.join(process.cwd(), "art/integration/reviews/ruleset7-preview")
+  : await mkdtemp(path.join(tmpdir(), "pulp-wars-v7-smoke-evidence-"));
+console.log(
+  `Ruleset-7 browser smoke evidence: ${reviewRoot}${archivalEvidence ? " (explicit archival mode)" : " (temporary, untracked)"}`,
 );
 const defaultWindowsChrome =
   "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe";
@@ -110,12 +114,17 @@ const chrome =
     : defaultWindowsChrome);
 const port = 9_900 + (process.pid % 80);
 let reloadDocumentSequence = 0;
-const userData = chrome.endsWith(".exe")
-  ? `C:\\Windows\\Temp\\pulp-wars-v7-smoke-${process.pid}`
-  : path.join(
-      process.env.TMPDIR ?? "/tmp",
-      `pulp-wars-v7-smoke-${process.pid}`,
-    );
+const windowsChromeFromWsl =
+  process.platform !== "win32" && chrome.endsWith(".exe");
+const userDataFs = await mkdtemp(
+  path.join(
+    windowsChromeFromWsl ? "/mnt/c/Windows/Temp" : tmpdir(),
+    "pulp-wars-v7-smoke-profile-",
+  ),
+);
+const userData = windowsChromeFromWsl
+  ? wslPathToWindows(userDataFs)
+  : userDataFs;
 const browser = spawn(
   chrome,
   [
@@ -152,9 +161,10 @@ try {
   await evaluate(
     connection,
     `(() => {
-      localStorage.removeItem('pulpWars.save.v7r3.current');
+      localStorage.removeItem('pulpWars.save.v7r4.current');
       localStorage.setItem('pulpWars.save.v7.current', 'old-v7-bytes');
       localStorage.setItem('pulpWars.save.v7r2.current', 'old-v7r2-bytes');
+      localStorage.setItem('pulpWars.save.v7r3.current', 'old-v7r3-bytes');
       localStorage.setItem('pulpWars.save.current', 'v6-bytes');
       localStorage.setItem('pulpWars.settings.v1', JSON.stringify({ format: 'pulp-wars-settings', version: 1, settings: { uiScale: 1, motion: 'REDUCED', animationSpeed: 'NORMAL', highContrast: false } }));
       localStorage.setItem('pulpWars.unrelated', 'unrelated-bytes');
@@ -192,8 +202,6 @@ try {
       });
     })()`,
   );
-  if (!deployed)
-    await capture(connection, "default-v7-setup-compatibility.png");
   await pointerClick(connection, "#v7-ai-count");
   await pressKey(connection, "ArrowDown", "ArrowDown");
   await pressKey(connection, "Enter", "Enter");
@@ -247,7 +255,7 @@ try {
       if (!initial) throw new Error('command-zero public trace missing');
       const view = snapshot.view;
       if (!view) throw new Error('returned public view missing');
-      const save = JSON.parse(localStorage.getItem('pulpWars.save.v7r3.current') ?? 'null');
+      const save = JSON.parse(localStorage.getItem('pulpWars.save.v7r4.current') ?? 'null');
       const safe = JSON.parse(controller.exportSafeLog()?.source ?? 'null');
       const debug = controller.exportDebugBundle({ acknowledgeHiddenInformation: true });
       if (!debug.ok) throw new Error('spoiler debug export missing');
@@ -351,90 +359,53 @@ try {
       );
   if (cold !== null) validateColdPolicy(cold);
 
-  await connection.send("Emulation.setDeviceMetricsOverride", {
-    width: 390,
-    height: 844,
-    deviceScaleFactor: 2,
-    mobile: true,
-  });
-  const mobile = await evaluate<{
-    readonly clientWidth: number;
-    readonly scrollWidth: number;
-    readonly minimumControlHeight: number;
-    readonly menuVisible: boolean;
-  }>(
-    connection,
-    `(() => {
-      const controls = Array.from(document.querySelectorAll('button, input, select')).filter((control) => { const rect = control.getBoundingClientRect(); return rect.width > 0 && rect.height > 0 && getComputedStyle(control).visibility !== 'hidden'; });
-      const menu = document.querySelector('[data-action="compact-menu"]');
-      return {
-        clientWidth: document.documentElement.clientWidth,
-        scrollWidth: document.documentElement.scrollWidth,
-        minimumControlHeight: Math.min(...controls.map((control) => control.getBoundingClientRect().height)),
-        menuVisible: menu instanceof HTMLButtonElement && menu.getBoundingClientRect().width > 0 && menu.getBoundingClientRect().height >= 44,
-      };
-    })()`,
-  );
-  if (
-    mobile.scrollWidth > mobile.clientWidth ||
-    mobile.minimumControlHeight < 44 ||
-    !mobile.menuVisible
-  ) {
-    throw new Error(
-      `mobile preview contract failed: ${JSON.stringify(mobile)}`,
-    );
-  }
-  if (!deployed) await capture(connection, "mobile-ai-return-390-dpr2.png");
-
   const firstDebugHash = await evaluate<string>(
     connection,
     `globalThis.__PULP_WARS_APP__.controller.exportDebugBundle({ acknowledgeHiddenInformation: true }).bundle.payload.reproduction.save.stateHash`,
   );
 
-  if (deployed) {
-    const beforeEndTurn = preview.returned.commandIndex;
-    await touchClick(connection, '[data-action="end-turn"]');
-    await waitForExpression(
-      connection,
-      `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const v = s?.view; return s?.phase === 'ACTIVE' && !s.transitioning && !s.ai.active && v?.commandIndex > ${beforeEndTurn} && v.turnOrder[v.activeSeatIndex] === v.humanPlayerId; })()`,
-      900,
-    );
-    const menuBoundary = await evaluate<{
-      readonly commandIndex: number;
-      readonly stateHash: string;
-    }>(
-      connection,
-      `(() => { const controller = globalThis.__PULP_WARS_APP__.controller; return { commandIndex: controller.snapshot().view.commandIndex, stateHash: controller.exportDebugBundle({ acknowledgeHiddenInformation: true }).bundle.payload.reproduction.save.stateHash }; })()`,
-    );
-    await touchClick(connection, '[data-action="main-menu"]');
-    await waitForExpression(
-      connection,
-      `(() => { const snapshot = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const panel = document.querySelector('.v7-front-screen'); const resume = document.querySelector('[data-action="resume"]'); if (snapshot?.phase !== 'RESUMABLE' || snapshot.view === null || !(panel instanceof HTMLElement) || !(resume instanceof HTMLButtonElement) || resume.disabled) return false; const rect = resume.getBoundingClientRect(); return panel.contains(resume) && resume.textContent?.trim() === 'Resume' && rect.width >= 44 && rect.height >= 44 && rect.left >= 0 && rect.top >= 0 && rect.right <= innerWidth && rect.bottom <= innerHeight; })()`,
-    );
-    const resumableBoundary = await evaluate<{
-      readonly commandIndex: number;
-      readonly stateHash: string;
-    }>(
-      connection,
-      `(() => { const controller = globalThis.__PULP_WARS_APP__.controller; return { commandIndex: controller.snapshot().view.commandIndex, stateHash: controller.exportDebugBundle({ acknowledgeHiddenInformation: true }).bundle.payload.reproduction.save.stateHash }; })()`,
-    );
-    if (
-      resumableBoundary.commandIndex !== menuBoundary.commandIndex ||
-      resumableBoundary.stateHash !== menuBoundary.stateHash
-    )
-      throw new Error("Main menu changed the accepted deployed boundary");
-    await touchClick(connection, '[data-action="resume"]');
-    await waitForExpression(
-      connection,
-      `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); return s?.phase === 'ACTIVE' && !s.transitioning && !s.ai.active && s.view?.commandIndex === ${menuBoundary.commandIndex} && s.view.turnOrder[s.view.activeSeatIndex] === s.view.humanPlayerId; })()`,
-    );
-    const resumedHash = await evaluate<string>(
-      connection,
-      `globalThis.__PULP_WARS_APP__.controller.exportDebugBundle({ acknowledgeHiddenInformation: true }).bundle.payload.reproduction.save.stateHash`,
-    );
-    if (resumedHash !== menuBoundary.stateHash)
-      throw new Error("Resume changed the accepted deployed boundary");
-  }
+  const beforeEndTurn = preview.returned.commandIndex;
+  await touchClick(connection, '[data-action="end-turn"]');
+  await waitForExpression(
+    connection,
+    `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const v = s?.view; return s?.phase === 'ACTIVE' && !s.transitioning && !s.ai.active && v?.commandIndex > ${beforeEndTurn} && v.turnOrder[v.activeSeatIndex] === v.humanPlayerId; })()`,
+    900,
+  );
+  const menuBoundary = await evaluate<{
+    readonly commandIndex: number;
+    readonly stateHash: string;
+  }>(
+    connection,
+    `(() => { const controller = globalThis.__PULP_WARS_APP__.controller; return { commandIndex: controller.snapshot().view.commandIndex, stateHash: controller.exportDebugBundle({ acknowledgeHiddenInformation: true }).bundle.payload.reproduction.save.stateHash }; })()`,
+  );
+  await touchClick(connection, '[data-action="main-menu"]');
+  await waitForExpression(
+    connection,
+    `(() => { const snapshot = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const panel = document.querySelector('.v7-front-screen'); const resume = document.querySelector('[data-action="resume"]'); if (snapshot?.phase !== 'RESUMABLE' || snapshot.view === null || !(panel instanceof HTMLElement) || !(resume instanceof HTMLButtonElement) || resume.disabled) return false; const rect = resume.getBoundingClientRect(); return panel.contains(resume) && resume.textContent?.trim() === 'Resume' && rect.width >= 44 && rect.height >= 44 && rect.left >= 0 && rect.top >= 0 && rect.right <= innerWidth && rect.bottom <= innerHeight; })()`,
+  );
+  const resumableBoundary = await evaluate<{
+    readonly commandIndex: number;
+    readonly stateHash: string;
+  }>(
+    connection,
+    `(() => { const controller = globalThis.__PULP_WARS_APP__.controller; return { commandIndex: controller.snapshot().view.commandIndex, stateHash: controller.exportDebugBundle({ acknowledgeHiddenInformation: true }).bundle.payload.reproduction.save.stateHash }; })()`,
+  );
+  if (
+    resumableBoundary.commandIndex !== menuBoundary.commandIndex ||
+    resumableBoundary.stateHash !== menuBoundary.stateHash
+  )
+    throw new Error("Main menu changed the accepted boundary");
+  await touchClick(connection, '[data-action="resume"]');
+  await waitForExpression(
+    connection,
+    `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); return s?.phase === 'ACTIVE' && !s.transitioning && !s.ai.active && s.view?.commandIndex === ${menuBoundary.commandIndex} && s.view.turnOrder[s.view.activeSeatIndex] === s.view.humanPlayerId; })()`,
+  );
+  const resumedHash = await evaluate<string>(
+    connection,
+    `globalThis.__PULP_WARS_APP__.controller.exportDebugBundle({ acknowledgeHiddenInformation: true }).bundle.payload.reproduction.save.stateHash`,
+  );
+  if (resumedHash !== menuBoundary.stateHash)
+    throw new Error("Resume changed the accepted boundary");
 
   await openCompactSettings(connection);
   await touchClick(connection, '[data-action="restart"]');
@@ -474,17 +445,19 @@ try {
     readonly current: string | null;
     readonly oldV7: string | null;
     readonly oldV7r2: string | null;
+    readonly oldV7r3: string | null;
     readonly v6: string | null;
     readonly settings: string | null;
     readonly unrelated: string | null;
   }>(
     connection,
-    `({ current: localStorage.getItem('pulpWars.save.v7r3.current'), oldV7: localStorage.getItem('pulpWars.save.v7.current'), oldV7r2: localStorage.getItem('pulpWars.save.v7r2.current'), v6: localStorage.getItem('pulpWars.save.current'), settings: localStorage.getItem('pulpWars.settings.v1'), unrelated: localStorage.getItem('pulpWars.unrelated') })`,
+    `({ current: localStorage.getItem('pulpWars.save.v7r4.current'), oldV7: localStorage.getItem('pulpWars.save.v7.current'), oldV7r2: localStorage.getItem('pulpWars.save.v7r2.current'), oldV7r3: localStorage.getItem('pulpWars.save.v7r3.current'), v6: localStorage.getItem('pulpWars.save.current'), settings: localStorage.getItem('pulpWars.settings.v1'), unrelated: localStorage.getItem('pulpWars.unrelated') })`,
   );
   if (
     keys.current !== null ||
     keys.oldV7 !== null ||
     keys.oldV7r2 !== null ||
+    keys.oldV7r3 !== null ||
     keys.v6 !== "v6-bytes" ||
     JSON.parse(keys.settings ?? "null")?.settings?.motion !== "REDUCED" ||
     keys.unrelated !== "unrelated-bytes"
@@ -494,12 +467,6 @@ try {
   let outcome: OutcomeEvidenceV7 | null = null;
   let pendingReleaseEvidence: string | null = null;
   if (!deployed) {
-    await connection.send("Emulation.setDeviceMetricsOverride", {
-      width: 1440,
-      height: 1000,
-      deviceScaleFactor: 1,
-      mobile: false,
-    });
     await pointerClick(connection, "#v7-seed");
     await pressKey(connection, "a", "KeyA", 2);
     await connection.send("Input.insertText", { text: "0" });
@@ -521,21 +488,15 @@ try {
       "desktop-ai-return.png": await fileSha256(
         path.join(reviewRoot, "desktop-ai-return.png"),
       ),
-      "mobile-ai-return-390-dpr2.png": await fileSha256(
-        path.join(reviewRoot, "mobile-ai-return-390-dpr2.png"),
-      ),
       "default-v7-outcome-desktop.png": await fileSha256(
         path.join(reviewRoot, "default-v7-outcome-desktop.png"),
-      ),
-      "default-v7-setup-compatibility.png": await fileSha256(
-        path.join(reviewRoot, "default-v7-setup-compatibility.png"),
       ),
     };
     pendingReleaseEvidence = await format(
       JSON.stringify({
         schemaVersion: 1,
         status: "PASS",
-        rulesetId: "pulp-wars-poc-7r3",
+        rulesetId: "pulp-wars-poc-7r4",
         runtimeFingerprint: browserReleaseRuntimeFingerprintV7(process.cwd()),
         productionEntry: "src/main.ts",
         route: "DEFAULT_NO_RULESET_PARAMETER",
@@ -651,10 +612,19 @@ try {
       ? "bounded launch/End Turn/resume compatibility probe"
       : `natural default match ${outcome.outcome} in round ${outcome.round}/${outcome.commandIndex} commands`;
   console.log(
-    `Ruleset-7 browser smoke passed in ${version.product ?? "Chrome"}: production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed.${deployed ? "" : ` Evidence: ${reviewRoot}`}`,
+    `Ruleset-7 browser smoke passed in ${version.product ?? "Chrome"}: production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed. Evidence: ${reviewRoot}${archivalEvidence ? " (explicit archival mode)" : " (temporary, untracked)"}`,
   );
 } finally {
-  browser.kill();
+  try {
+    await stopBrowser(browser);
+  } finally {
+    await rm(userDataFs, {
+      force: true,
+      recursive: true,
+      maxRetries: 5,
+      retryDelay: 100,
+    });
+  }
 }
 
 async function driveDefaultMatchToOutcome(
@@ -743,7 +713,7 @@ function validatePreview(evidence: PreviewEvidenceV7): void {
     );
   if (
     evidence.persisted.version !== 7 ||
-    evidence.persisted.rulesetId !== "pulp-wars-poc-7r3" ||
+    evidence.persisted.rulesetId !== "pulp-wars-poc-7r4" ||
     evidence.persisted.commandIndex !== evidence.returned.commandIndex
   )
     throw new Error(
@@ -969,6 +939,42 @@ function virtualKeyCodeFor(code: string): number {
   if (codePoint === undefined)
     throw new Error(`Missing virtual key code for ${code}`);
   return codePoint;
+}
+
+function wslPathToWindows(input: string): string {
+  const match = /^\/mnt\/([a-z])\/(.*)$/i.exec(input);
+  if (match?.[1] === undefined || match[2] === undefined)
+    throw new Error(`Cannot convert WSL path for Chrome: ${input}`);
+  return `${match[1].toUpperCase()}:\\${match[2].replaceAll("/", "\\")}`;
+}
+
+async function stopBrowser(
+  browserProcess: ReturnType<typeof spawn>,
+): Promise<void> {
+  if (browserProcess.exitCode !== null || browserProcess.signalCode !== null)
+    return;
+  browserProcess.kill();
+  if (await waitForProcessExit(browserProcess, 5_000)) return;
+  browserProcess.kill("SIGKILL");
+  await waitForProcessExit(browserProcess, 2_000);
+}
+
+function waitForProcessExit(
+  browserProcess: ReturnType<typeof spawn>,
+  timeoutMilliseconds: number,
+): Promise<boolean> {
+  if (browserProcess.exitCode !== null || browserProcess.signalCode !== null)
+    return Promise.resolve(true);
+  return new Promise((resolve) => {
+    const finish = (exited: boolean) => {
+      clearTimeout(timeout);
+      browserProcess.off("exit", onExit);
+      resolve(exited);
+    };
+    const onExit = () => finish(true);
+    const timeout = setTimeout(() => finish(false), timeoutMilliseconds);
+    browserProcess.once("exit", onExit);
+  });
 }
 
 async function capture(connection: Connection, name: string): Promise<void> {

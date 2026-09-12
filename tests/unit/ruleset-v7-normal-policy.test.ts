@@ -45,7 +45,7 @@ const READY: UnitStateV7["activation"] = {
   specialActed: false,
 };
 
-describe("ruleset-7 revision-3 Normal public policy", () => {
+describe("ruleset-7 revision-4 Normal public policy", () => {
   it("keeps authority, reducer, map generation, and PRNG out of policy imports", () => {
     const source = readFileSync("src/ai/v7.ts", "utf8");
     const imports = [...source.matchAll(/from\s+["']([^"']+)["']/g)].map(
@@ -77,7 +77,7 @@ describe("ruleset-7 revision-3 Normal public policy", () => {
     const decision = chooseNormalCommandV7(view);
     expect(queryPlayerCommandsV7(view)).toContainEqual({ kind: "END_TURN" });
     expect(decision.command).toEqual({ kind: "RESEARCH", tech: "DRILL" });
-    expect(decision.candidates[0]?.score.priority).toBe(1160);
+    expect(decision.candidates[0]?.score.priority).toBe(1060);
     expect(
       decision.candidates.some(({ command }) => command.kind === "WAIT"),
     ).toBe(false);
@@ -262,13 +262,14 @@ describe("ruleset-7 revision-3 Normal public policy", () => {
       slices += 1;
     }
     const sync = chooseNormalCommandV7(structuredClone(source));
-    expect(slices).toBeGreaterThan(5_000);
+    expect(slices).toBeGreaterThan(2_000);
     expect(sliced.command).toEqual({
-      kind: "BUILD_FORGE",
-      at: { x: 9, y: 8 },
+      kind: "ATTACK",
+      unitId: 19,
+      targetUnitId: 34,
     });
     expect(canonicalHash(sliced)).toBe(
-      "c5d38ea77c2efa7b859191f3e3449082e75f0753273308e1192535742b9d1f82",
+      "546f07462f3f476b869e0c8c73baaa56372ce891a0711f2033beb39969fd7e55",
     );
     expect(canonicalHash(sync)).toBe(canonicalHash(sliced));
     expect(sync).toEqual(sliced);

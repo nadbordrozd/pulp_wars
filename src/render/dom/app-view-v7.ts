@@ -1066,12 +1066,7 @@ export class Ruleset7DomAppView {
               ? RULESET7_RESOURCE_ART_IDS[tile.resource]
               : RULESET7_TERRAIN_ART_IDS[tile.terrain]
             : RULESET7_IMPROVEMENT_ART_IDS[tile.improvement];
-        const name =
-          tile.improvement === null
-            ? tile.resource !== null && tile.resource !== "UNKNOWN_RESOURCE"
-              ? title(tile.resource)
-              : title(tile.terrain)
-            : title(tile.improvement);
+        const name = `${title(tile.biome)} · ${title(tile.terrain)}`;
         const summary = el(this.#document, "div", "v7-selection-summary");
         summary.append(identity(this.#document, asset, name));
         const details = el(this.#document, "div", "v7-selection-details");
@@ -1082,6 +1077,10 @@ export class Ruleset7DomAppView {
             tile.road ? "Road · explored territory" : "Explored territory",
           ),
         );
+        if (tile.improvement !== null)
+          details.append(text(this.#document, "p", title(tile.improvement)));
+        else if (tile.resource !== null && tile.resource !== "UNKNOWN_RESOURCE")
+          details.append(text(this.#document, "p", title(tile.resource)));
         const value = view.improvementValues.find((entry) =>
           same(entry.at, tile.at),
         );
@@ -1171,6 +1170,32 @@ export class Ruleset7DomAppView {
             this.#document,
             "span",
             `${rule.cost ?? 0} Coins`,
+            "v7-command-economy",
+          ),
+        );
+      } else if (command.kind === "BUILD_MINE") {
+        action.setAttribute(
+          "aria-label",
+          "Build Mine · 5 Coins · +2 population",
+        );
+        action.append(
+          text(
+            this.#document,
+            "span",
+            "5 Coins · +2 population",
+            "v7-command-economy",
+          ),
+        );
+      } else if (command.kind === "BUILD_FORGE") {
+        action.setAttribute(
+          "aria-label",
+          "Build Forge · 6 Coins · +1 population per adjacent Mine (maximum 6)",
+        );
+        action.append(
+          text(
+            this.#document,
+            "span",
+            "6 Coins · +1 population per adjacent Mine (maximum 6)",
             "v7-command-economy",
           ),
         );
@@ -1429,6 +1454,14 @@ export class Ruleset7DomAppView {
           : `${node.cost} Coins · ${node.affordable ? "Available" : node.state === "BLOCKED" ? "Locked" : "Insufficient Coins"}`,
       ),
     );
+    if (node.id === "ENGINEERING")
+      detail.append(
+        text(
+          this.#document,
+          "p",
+          "Reveal Ore. Enter Mountains. Build Mines on Ore. Build Workshops. Units on Mountains gain +1 sight.",
+        ),
+      );
     const prerequisites = el(
       this.#document,
       "section",
@@ -2007,7 +2040,7 @@ export class Ruleset7DomAppView {
     if (deleted) {
       this.#selection = null;
       this.#screen = "MATCH";
-      this.#notice = "Only the Ruleset 7 revision-3 save was deleted.";
+      this.#notice = "Only the Ruleset 7 revision-4 save was deleted.";
     } else this.#error = "The Ruleset 7 save could not be deleted.";
     this.#render();
   }
@@ -2413,7 +2446,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r3",
+    rulesetId: "pulp-wars-poc-7r4",
     seed,
     width: draft.boardSize,
     height: draft.boardSize,
@@ -2425,7 +2458,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
       { length: draft.aiCount + 1 },
       () => "ORIGINAL" as const,
     ),
-    mapGenerationRevision: "SPATIAL_ECONOMY",
+    mapGenerationRevision: "REGIONAL_BIOMES_V1",
   };
 }
 export function cityIncomeForViewerV7(
@@ -2696,7 +2729,7 @@ export function economicFormulaV7(
   if (improvement === "SAWMILL" && formula === "CONNECTED_ORTHOGONAL_CLUSTER")
     return "Sawmill: +1 population per Lumber Camp in its touching orthogonal same-city cluster, cap 8";
   if (improvement === "FORGE" && formula === "ADJACENT_MINES")
-    return "Forge: +3 population per adjacent same-city Mine, cap 18; an empty Forge produces 0";
+    return "Forge: +1 population per adjacent same-city Mine, maximum 6; placement requires at least one Mine and an unsupported Forge produces 0";
   if (improvement === "WORKSHOP" && formula === "DISTINCT_BASIC_TYPES")
     return "Workshop: 0 with no adjacent Farm, Camp, or Mine; otherwise +1 plus the number of distinct adjacent types, cap 4 population";
   if (improvement === "GRAND_WORKS" && formula === "DISTINCT_PROCESSOR_TYPES")
@@ -2752,6 +2785,8 @@ function rewardLabel(reward: string, level: number): string {
 }
 function commandLabel(command: CommandV7): string {
   if (command.kind === "TRAIN") return effectiveRoleRuleV7(command.role).label;
+  if (command.kind === "BUILD_MINE") return "Build Mine";
+  if (command.kind === "BUILD_FORGE") return "Build Forge";
   return title(command.kind);
 }
 function economicPreviewLabelV7(preview: EconomicPreviewV7): string {

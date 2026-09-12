@@ -30,22 +30,22 @@ describe("ruleset-7 economy", () => {
       HUNT_GAME: { cost: 2, population: 1 },
       BUILD_FARM: { cost: 5, population: 2 },
       BUILD_LUMBER_CAMP: { cost: 3, population: 1 },
-      BUILD_MINE: { cost: 6, population: 4, resource: null },
+      BUILD_MINE: { cost: 5, population: 2, resource: "ORE" },
     });
     expect(SPATIAL_ECONOMIC_ACTIONS_V7).toMatchObject({
       BUILD_WINDMILL: { cost: 5, placementMinimum: 1 },
       BUILD_SAWMILL: { cost: 5, placementMinimum: 1 },
-      BUILD_FORGE: { cost: 6, placementMinimum: 0 },
+      BUILD_FORGE: { cost: 6, placementMinimum: 1 },
       BUILD_WORKSHOP: { cost: 4, placementMinimum: 1 },
       BUILD_GRAND_WORKS: { cost: 7, placementMinimum: 2 },
       BUILD_MARKET: { cost: 7, placementMinimum: 2 },
     });
   });
 
-  it("applies Mine to any empty owned Mountain", () => {
+  it("applies Mine to owned Ore", () => {
     const kind = "BUILD_MINE" as const;
-    const cost = 6;
-    const population = 4;
+    const cost = 5;
+    const population = 2;
     let state = exploredAllV7(allTechsV7(initialV7(101)));
     const city = state.cities.find(
       (item) => item.ownerId === state.humanPlayerId,
@@ -57,7 +57,7 @@ describe("ruleset-7 economy", () => {
     if (tile === undefined) throw new Error("tile missing");
     state = replaceTileV7(state, tile.at, {
       terrain: "MOUNTAIN",
-      resource: null,
+      resource: "ORE",
       improvement: null,
       road: false,
     });
@@ -277,7 +277,7 @@ describe("ruleset-7 economy", () => {
       [east, "MINE"],
     ]);
     expect(spatialContributionAtV7(graph, center.at, "FORGE")).toMatchObject({
-      population: 6,
+      population: 2,
       placementCount: 2,
     });
     const fullForge = graphWith(state, [
@@ -286,7 +286,7 @@ describe("ruleset-7 economy", () => {
     ]);
     expect(
       spatialContributionAtV7(fullForge, center.at, "FORGE").population,
-    ).toBe(18);
+    ).toBe(6);
   });
 
   it("retains farm/camp processors, mixed buildings, Market, roads, and forest actions", () => {
@@ -438,7 +438,7 @@ describe("ruleset-7 economy", () => {
     if (tile === undefined) throw new Error("tile missing");
     state = replaceTileV7(state, tile.at, {
       terrain: "MOUNTAIN",
-      resource: null,
+      resource: "ORE",
       improvement: null,
     });
     const built = applyCommandV7(state, state.humanPlayerId, {
@@ -479,7 +479,7 @@ describe("ruleset-7 economy", () => {
 
   it.each([
     ["BUILD_FARM", "REDEVELOP", "GRASS", "FERTILE_GROUND", "FARM"],
-    ["BUILD_MINE", "REDEVELOP", "MOUNTAIN", null, "MINE"],
+    ["BUILD_MINE", "REDEVELOP", "MOUNTAIN", "ORE", "MINE"],
     ["BUILD_LUMBER_CAMP", "REDEVELOP", "FOREST", null, "LUMBER_CAMP"],
   ] as const)(
     "restores only covered production markers after %s and full-cost rebuild",
@@ -570,7 +570,7 @@ describe("ruleset-7 economy", () => {
     const forgeValue = positiveView.improvementValues.find((value) =>
       same(value.at, staged.forgeAt),
     );
-    expect(forgeValue).toMatchObject({ level: 3, measure: "POPULATION" });
+    expect(forgeValue).toMatchObject({ level: 1, measure: "POPULATION" });
 
     const withoutMine = checkedV7({
       ...staged.state,
@@ -633,7 +633,7 @@ describe("ruleset-7 economy", () => {
       hiddenView.improvementValues.find((value) =>
         same(value.at, staged.forgeAt),
       ),
-    ).toMatchObject({ level: 3, contributingTiles: [] });
+    ).toMatchObject({ level: 1, contributingTiles: [] });
     const preview = previewEconomicV7(hiddenMine, hiddenMine.humanPlayerId, {
       kind: "BUILD_GRAND_WORKS",
       at: staged.grandWorksAt,
@@ -797,7 +797,7 @@ describe("ruleset-7 economy", () => {
     expect(parseGameStateV7(built.state)).toEqual(built.state);
   });
 
-  it("repairs the exact level-5 live18 package from floor income without repeating rewards", () => {
+  it("repairs the exact level-5 processor package from floor income without repeating rewards", () => {
     const staged = processorPackageV7(1_304, 100);
     const built = applyCommandV7(staged.state, staged.state.humanPlayerId, {
       kind: "BUILD_GRAND_WORKS",
@@ -837,22 +837,22 @@ describe("ruleset-7 economy", () => {
     expect(removalFromView).toMatchObject({
       ok: true,
       preview: {
-        populationDeltaByCity: [{ cityId: staged.cityId, delta: -15 }],
+        populationDeltaByCity: [{ cityId: staged.cityId, delta: -11 }],
         coinIncomeDeltaByCity: [{ cityId: staged.cityId, delta: -5 }],
-        resourceRestored: null,
+        resourceRestored: "ORE",
         levelsReached: [],
         outputTransitions: expect.arrayContaining([
           expect.objectContaining({
             at: staged.mineAt,
             improvement: "MINE",
-            before: 4,
+            before: 2,
             after: 0,
             change: "REMOVED",
           }),
           expect.objectContaining({
             at: staged.forgeAt,
             improvement: "FORGE",
-            before: 3,
+            before: 1,
             after: 0,
             change: "OUTAGE",
           }),
@@ -880,7 +880,7 @@ describe("ruleset-7 economy", () => {
       economicPopulation: 3,
       population: -11,
     });
-    expect(tileAt(state, staged.mineAt)?.resource).toBeNull();
+    expect(tileAt(state, staged.mineAt)?.resource).toBe("ORE");
     expect(cityIncomeV7(state, damaged)).toBe(1);
     expect(
       state.populationContributions.find((entry) =>
@@ -915,8 +915,8 @@ describe("ruleset-7 economy", () => {
     expect(repairFromView).toMatchObject({
       ok: true,
       preview: {
-        cost: 6,
-        populationDeltaByCity: [{ cityId: staged.cityId, delta: 15 }],
+        cost: 5,
+        populationDeltaByCity: [{ cityId: staged.cityId, delta: 11 }],
         coinIncomeDeltaByCity: [{ cityId: staged.cityId, delta: 5 }],
         levelsReached: [],
         outputTransitions: expect.arrayContaining([
@@ -924,14 +924,14 @@ describe("ruleset-7 economy", () => {
             at: staged.mineAt,
             improvement: "MINE",
             before: 0,
-            after: 4,
+            after: 2,
             change: "CREATED",
           }),
           expect.objectContaining({
             at: staged.forgeAt,
             improvement: "FORGE",
             before: 0,
-            after: 3,
+            after: 1,
             change: "RESUMED",
           }),
           expect.objectContaining({
@@ -954,8 +954,8 @@ describe("ruleset-7 economy", () => {
     );
     expect(restored).toMatchObject({
       level: 5,
-      economicPopulation: 18,
-      population: 4,
+      economicPopulation: 14,
+      population: 0,
     });
     expect(cityIncomeV7(repaired.state, restored)).toBe(6);
     expect(restored.rewards).toEqual(rewardsBefore);
@@ -1109,8 +1109,8 @@ function processorPackageV7(
   const contributionSpecs = [
     [windmillAt, "WINDMILL", 1],
     [farmAt, "FARM", 2],
-    [forgeAt, "FORGE", 3],
-    [mineAt, "MINE", 4],
+    [forgeAt, "FORGE", 1],
+    [mineAt, "MINE", 2],
   ] as const;
   const contributions: PopulationContributionV7[] = contributionSpecs.map(
     ([at, improvement, amount], index) => ({
@@ -1155,8 +1155,8 @@ function processorPackageV7(
             ...candidate,
             level: 4,
             permanentPopulation: 0,
-            economicPopulation: 10,
-            population: 1,
+            economicPopulation: 6,
+            population: -3,
             expanded: true,
             rewards: [
               { reachedLevel: 2, reward: "STOCKPILE" as const },
@@ -1197,12 +1197,10 @@ function rewardPackageV7(
   const cityTiles = staged.state.board.tiles.filter(
     (tile) => tile.territoryCityId === staged.cityId,
   );
-  const first = required(cityTiles[0], "first reward population tile missing");
-  const second = required(
-    cityTiles[1],
-    "second reward population tile missing",
-  );
-  const contributions: PopulationContributionV7[] = [first, second].map(
+  const populationTiles = cityTiles.slice(0, 6);
+  if (populationTiles.length !== 6)
+    throw new Error("reward population tiles missing");
+  const contributions: PopulationContributionV7[] = populationTiles.map(
     (tile, index) => ({
       id: staged.state.nextEntityId + index,
       cityId: staged.cityId,
@@ -1222,7 +1220,7 @@ function rewardPackageV7(
       nextEntityId: staged.state.nextEntityId + contributions.length,
       cities: staged.state.cities.map((city) =>
         city.id === staged.cityId
-          ? { ...city, permanentPopulation: 2, population: 3 }
+          ? { ...city, permanentPopulation: 6, population: 3 }
           : city,
       ),
       populationContributions: [

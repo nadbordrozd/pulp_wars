@@ -310,7 +310,9 @@ function projectEventPayload(
     ];
     const visible = tile?.explored === true ? tile.resource : null;
     const resourceRestored =
-      visible === "FERTILE_GROUND" || visible === "UNKNOWN_RESOURCE"
+      visible === "FERTILE_GROUND" ||
+      visible === "ORE" ||
+      visible === "UNKNOWN_RESOURCE"
         ? visible
         : null;
     return { ...event, resourceRestored };

@@ -219,7 +219,7 @@ describe("ruleset-7 observation safety and Concealment", () => {
     ).toMatchObject({
       accepted: false,
       events: [],
-      error: { code: "INVALID_TILE" },
+      error: { code: "INVALID_COMMAND" },
     });
   });
 
@@ -415,6 +415,52 @@ describe("ruleset-7 observation safety and Concealment", () => {
     ]);
     expect(revealed.events).toEqual([event]);
     expect(parsePlayerEventEnvelopeV7(revealed)).toMatchObject({ ok: true });
+
+    const oreAfter = checkedV7({
+      ...before,
+      commandIndex: before.commandIndex + 1,
+      board: {
+        ...before.board,
+        tiles: before.board.tiles.map((tile) =>
+          same(tile.at, at)
+            ? {
+                ...tile,
+                terrain: "MOUNTAIN" as const,
+                resource: "ORE" as const,
+              }
+            : tile,
+        ),
+      },
+    });
+    const oreEvent: DomainEventV7 = {
+      kind: "ECONOMIC_BUILDING_REMOVED",
+      playerId: before.humanPlayerId,
+      cityId: city.id,
+      at,
+      improvement: "MINE",
+      populationContributionRemoved: 2,
+      marketIncomeRemoved: 0,
+      resourceRestored: "ORE",
+    };
+    const hiddenOre = projectEventsV7(before, oreAfter, before.humanPlayerId, [
+      oreEvent,
+    ]);
+    expect(hiddenOre.events).toEqual([{ ...oreEvent, resourceRestored: null }]);
+    expect(parsePlayerEventEnvelopeV7(hiddenOre)).toMatchObject({ ok: true });
+
+    const engineeringBefore = allTechsV7(before);
+    const engineeringAfter = checkedV7({
+      ...oreAfter,
+      players: engineeringBefore.players,
+    });
+    const visibleOre = projectEventsV7(
+      engineeringBefore,
+      engineeringAfter,
+      before.humanPlayerId,
+      [oreEvent],
+    );
+    expect(visibleOre.events).toEqual([oreEvent]);
+    expect(parsePlayerEventEnvelopeV7(visibleOre)).toMatchObject({ ok: true });
   });
 
   it("records attack exposure, shares it, preserves it in canonical state, and clears it only at the anchor End Turn", () => {
@@ -772,12 +818,29 @@ function hiddenSaboteurScenario(): {
     )!;
   state = checkedV7({
     ...state,
+    activeSeatIndex: state.turnOrder.indexOf(human.id),
+    board: {
+      ...state.board,
+      tiles: state.board.tiles.map((tile) =>
+        line.some((at) => same(at, tile.at))
+          ? {
+              ...tile,
+              terrain: "GRASS" as const,
+              resource: null,
+              improvement: null,
+              territoryCityId: null,
+            }
+          : tile,
+      ),
+    },
     players: state.players.map((player) =>
       player.id === human.id
         ? {
             ...player,
             researchedTechs: player.researchedTechs,
-            explored: state.board.tiles.map((tile) => tile.at),
+            explored: state.board.tiles
+              .map((tile) => tile.at)
+              .filter((at) => !same(at, line[2])),
           }
         : player,
     ),
@@ -875,9 +938,9 @@ function findGrassLine(
   for (let y = 1; y < state.board.height - 1; y += 1)
     for (let x = 1; x < state.board.width - 2; x += 1) {
       const line = [
+        { x: x + 2, y: y + 2 },
+        { x: x + 1, y: y + 1 },
         { x, y },
-        { x: x + 1, y },
-        { x: x + 2, y },
       ] as const;
       if (
         line.every((at) => {

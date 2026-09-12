@@ -19,7 +19,7 @@ import {
 const OLD_V7_KEY = "pulpWars.save.v7.current";
 
 describe("Ruleset 7 browser persistence", () => {
-  it("reads, writes, and deletes only the revision-3 key", () => {
+  it("reads, writes, and deletes only the revision-4 key", () => {
     const oldV7 = "old-v7-bytes";
     const v6 = "v6-bytes";
     const storage = new MemoryStorage([
@@ -43,9 +43,9 @@ describe("Ruleset 7 browser persistence", () => {
     expect(storage.getItem(SAVE_STORAGE_KEY)).toBe(v6);
   });
 
-  it("removes exactly the two obsolete keys and preserves r3, v6, settings, and unrelated data", () => {
+  it("removes exactly the three obsolete keys and preserves r4, v6, settings, and unrelated data", () => {
     const preserved = [
-      [SAVE_STORAGE_KEY_V7, "r3"],
+      [SAVE_STORAGE_KEY_V7, "r4"],
       [SAVE_STORAGE_KEY, "v6"],
       ["pulpWars.settings.v1", "settings"],
       ["other", "unrelated"],
@@ -53,11 +53,12 @@ describe("Ruleset 7 browser persistence", () => {
     const storage = new MemoryStorage([
       ["pulpWars.save.v7.current", "r1"],
       ["pulpWars.save.v7r2.current", "r2"],
+      ["pulpWars.save.v7r3.current", "r3"],
       ...preserved,
     ]);
     expect(cleanupObsoleteRuleset7Saves(storage)).toEqual({
       removedKeys: OBSOLETE_SAVE_STORAGE_KEYS_V7,
-      removedCount: 2,
+      removedCount: 3,
       warning: null,
     });
     for (const [key, value] of preserved)
@@ -169,7 +170,7 @@ function setup(): MatchSetupV7 {
     aiMode: "RIVAL",
     humanColor: "CORAL",
     factions: ["ORIGINAL", "ORIGINAL"],
-    mapGenerationRevision: "SPATIAL_ECONOMY",
+    mapGenerationRevision: "REGIONAL_BIOMES_V1",
   };
 }
 

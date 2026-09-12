@@ -30,12 +30,12 @@ describe("ruleset-7 late public query performance", () => {
     const commands = queryPlayerCommandsV7(view);
     const elapsed = performance.now() - started;
 
-    expect(commands).toHaveLength(75);
+    expect(commands).toHaveLength(59);
     expect(canonicalHash(commands)).toBe(
-      "14d61b0aa76e888773bc96b8f956a2b8a973f7117278b073b4b404e4828e95a5",
+      "ba23a6ff57e659759e96e3bd5f0fd112fdb201ae619ab2dd2c1b369dead051b6",
     );
     expect(canonicalHash(queryAiReadyCommandsV7(view))).toBe(
-      "e5fbeec912a504c54c3bc9d7794d42dfe3576088445aa868ee2d731a71bf8da3",
+      "448516d19782425f54298a38e555736812313ed2fd45837e8dad98418a13384d",
     );
     expect(
       canonicalHash(
@@ -44,7 +44,7 @@ describe("ruleset-7 late public query performance", () => {
           result: previewEconomicV7(view, command),
         })),
       ),
-    ).toBe("7ce8e475397e40bd561f7a8defc3da91005c50b1e54970d3018511049131b55f");
+    ).toBe("72541a22582328ecd7023ba06d72fa8587837d1ed42df4806c69b7fcfdc00073");
     expect(elapsed).toBeLessThan(250);
 
     const incrementalView = structuredClone(RETAINED_VIEW);
@@ -121,10 +121,10 @@ describe("ruleset-7 late public query performance", () => {
       expect(canonicalHash(leftResult)).toBe(canonicalHash(expected));
       expect(canonicalHash(rightResult)).toBe(canonicalHash(expected));
       expect(canonicalHash(leftResult.potentials)).toBe(
-        "76079f3a0174ad4e509d0294d7bc5c85724a027c1b556a13cf058b16380c0d47",
+        "4d278cc40e2e574c233a519472c6355b5f108afbdd45e5e1c744471a55f01064",
       );
       expect(canonicalHash(leftResult.scores)).toBe(
-        "ab0e2035511d929add5f2044c35c9ad91425aacbcd00eed5b3ac45664f964aac",
+        "cce0d0d94394552a65b417279c68a7a349d4114255083321b528bfa145f1ee61",
       );
       expect(queryPublicEconomicPotentialsV7(leftView)).toBe(
         leftResult.potentials,
@@ -185,7 +185,7 @@ describe("ruleset-7 late public query performance", () => {
   it("keys movement preparation to the exact changed public view", () => {
     const original = structuredClone(RETAINED_VIEW);
     expect(canonicalHash(queryPlayerCommandsV7(original))).toBe(
-      "14d61b0aa76e888773bc96b8f956a2b8a973f7117278b073b4b404e4828e95a5",
+      "ba23a6ff57e659759e96e3bd5f0fd112fdb201ae619ab2dd2c1b369dead051b6",
     );
     const firstMove = required(
       queryPlayerCommandsV7(original).find(
@@ -209,7 +209,7 @@ describe("ruleset-7 late public query performance", () => {
       canonicalHash(queryPlayerCommandsV7(structuredClone(changed))),
     );
     expect(canonicalHash(changedCommands)).toBe(
-      "057de2a1d24b873d3c917969b59ad89207dc1d397ce0d27ac34bf62f551f4a04",
+      "f9188321e07e38dcb1a456fef83442687d33137ace794ba106633a036025cd1a",
     );
   });
 

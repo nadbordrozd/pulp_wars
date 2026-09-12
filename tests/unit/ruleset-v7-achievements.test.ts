@@ -97,7 +97,7 @@ describe("ruleset-7 achievements and Monuments", () => {
       requiredOutput: 6,
     });
     let settled = result.state;
-    for (const reward of ["EXPAND", "TREASURY"] as const) {
+    for (const reward of ["TREASURY"] as const) {
       const head = required(settled.pendingChoices[0], "reward missing");
       const choice = applyCommandV7(settled, settled.humanPlayerId, {
         kind: "CHOOSE_CITY_REWARD",
@@ -146,7 +146,6 @@ describe("ruleset-7 achievements and Monuments", () => {
         (candidate) =>
           candidate.territoryCityId === city.id &&
           candidate.site === null &&
-          candidate.improvement === null &&
           !same(candidate.at, staged.forgeAt) &&
           !occupied.has(coordKey(candidate.at)),
       )
@@ -729,30 +728,49 @@ function engineerBuildState(): { state: GameStateV7; forgeAt: CoordV7 } {
   const forge = required(
     candidates.find(
       (candidate) =>
-        candidates.filter(
+        base.board.tiles.filter(
           (other) =>
+            other.site === null &&
             !same(other.at, candidate.at) &&
-            chebyshev(other.at, candidate.at) === 1,
-        ).length >= 2,
+            chebyshev(other.at, candidate.at) === 1 &&
+            chebyshev(other.at, city.at) <= 2,
+        ).length >= 6,
     ),
     "forge tile missing",
   );
-  const mines = candidates
+  const mines = base.board.tiles
     .filter(
       (candidate) =>
+        candidate.site === null &&
         !same(candidate.at, forge.at) &&
-        chebyshev(candidate.at, forge.at) === 1,
+        chebyshev(candidate.at, forge.at) === 1 &&
+        chebyshev(candidate.at, city.at) <= 2,
     )
-    .slice(0, 2);
-  const contributions: PopulationContributionV7[] = mines.map(
+    .slice(0, 6);
+  if (mines.length !== 6) throw new Error("six Mine supports missing");
+  const liveContributions: PopulationContributionV7[] = mines.map(
     (mine, index) => ({
       id: base.nextEntityId + index,
       cityId: city.id,
       category: "LIVE",
-      amount: 4,
+      amount: 2,
       source: { kind: "IMPROVEMENT", improvement: "MINE", at: mine.at },
     }),
   );
+  const permanentContributions: PopulationContributionV7[] = [
+    {
+      id: base.nextEntityId + liveContributions.length,
+      cityId: city.id,
+      category: "PERMANENT",
+      amount: 1,
+      source: {
+        kind: "RESOURCE_ACTION",
+        action: "HARVEST_FRUIT",
+        at: forge.at,
+      },
+    },
+  ];
+  const contributions = [...liveContributions, ...permanentContributions];
   return {
     forgeAt: forge.at,
     state: checkedV7({
@@ -768,9 +786,15 @@ function engineerBuildState(): { state: GameStateV7; forgeAt: CoordV7 } {
                 terrain: "MOUNTAIN",
                 resource: null,
                 improvement: "MINE",
+                territoryCityId: city.id,
               }
             : same(candidate.at, forge.at)
-              ? { ...candidate, resource: null, improvement: null }
+              ? {
+                  ...candidate,
+                  terrain: "GRASS",
+                  resource: null,
+                  improvement: null,
+                }
               : candidate,
         ),
       },
@@ -778,12 +802,15 @@ function engineerBuildState(): { state: GameStateV7; forgeAt: CoordV7 } {
         candidate.id === city.id
           ? {
               ...candidate,
-              level: 3,
-              economicPopulation: 8,
-              population: 3,
+              level: 4,
+              permanentPopulation: 1,
+              economicPopulation: 12,
+              population: 4,
+              expanded: true,
               rewards: [
                 { reachedLevel: 2, reward: "STOCKPILE" },
                 { reachedLevel: 3, reward: "WALLS" },
+                { reachedLevel: 4, reward: "EXPAND" },
               ],
             }
           : candidate,

@@ -106,7 +106,7 @@ describe("ruleset-7 conflict economy and capacity", () => {
     );
     state = replaceTileV7(state, tile.at, {
       terrain: "MOUNTAIN",
-      resource: null,
+      resource: "ORE",
       improvement: null,
     });
     const built = applyCommandV7(state, human.id, {
@@ -114,6 +114,12 @@ describe("ruleset-7 conflict economy and capacity", () => {
       at: tile.at,
     });
     if (!built.accepted) throw new Error(built.error.code);
+    expect(built.events[0]).toMatchObject({
+      kind: "ECONOMIC_BUILDING_BUILT",
+      improvement: "MINE",
+      cost: 5,
+      populationContribution: 2,
+    });
     const pending = required(built.state.pendingChoices[0], "reward missing");
     const rewarded = applyCommandV7(built.state, human.id, {
       kind: "CHOOSE_CITY_REWARD",
@@ -143,11 +149,11 @@ describe("ruleset-7 conflict economy and capacity", () => {
     expect(pillaged.events[0]).toMatchObject({
       kind: "IMPROVEMENT_PILLAGED",
       improvement: "MINE",
-      resourceRestored: null,
+      resourceRestored: "ORE",
     });
     expect(
       pillaged.state.board.tiles.find((item) => key(item.at) === key(tile.at)),
-    ).toMatchObject({ improvement: null, resource: null });
+    ).toMatchObject({ improvement: null, resource: "ORE" });
     const reset = checkedV7({
       ...pillaged.state,
       units: pillaged.state.units.map((unit) =>

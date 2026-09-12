@@ -128,17 +128,17 @@ describe("Ruleset 7 DOM shell", () => {
     await waitUntil(
       () =>
         document.querySelector("#v7-live")?.textContent ===
-        "Only the Ruleset 7 revision-3 save was deleted.",
+        "Only the Ruleset 7 revision-4 save was deleted.",
     );
     expect(document.querySelector("#v7-live")?.textContent).toBe(
-      "Only the Ruleset 7 revision-3 save was deleted.",
+      "Only the Ruleset 7 revision-4 save was deleted.",
     );
     app.destroy();
   });
 
   it("returns a real accepted match boundary to Main menu and resumes it", async () => {
     const app = bootstrapRuleset7App(document);
-    requiredInput("v7-seed").value = "2";
+    requiredInput("v7-seed").value = "1";
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
     const wait = app.controller
@@ -206,7 +206,7 @@ describe("Ruleset 7 DOM shell", () => {
 
   it("researches only inside Tech, preserves card focus, and shows exact formulas", async () => {
     const app = bootstrapRuleset7App(document, { storage: null });
-    requiredInput("v7-seed").value = "2";
+    requiredInput("v7-seed").value = "1";
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
     expect(document.querySelector('[data-action^="research-"]')).toBeNull();
@@ -238,6 +238,10 @@ describe("Ruleset 7 DOM shell", () => {
     requiredButton('[data-action="tech-commerce"]').click();
     expect(document.body.textContent).toContain(
       "capital-connected friendly Road",
+    );
+    requiredButton('[data-action="tech-engineering"]').click();
+    expect(document.body.textContent).toContain(
+      "Reveal Ore. Enter Mountains. Build Mines on Ore. Build Workshops. Units on Mountains gain +1 sight.",
     );
     app.destroy();
   });
@@ -508,10 +512,16 @@ describe("Ruleset 7 DOM shell", () => {
     );
     const monumentAt = cells[0]?.at;
     const targetAt = cells[1]?.at;
+    const oreAt = cells[2]?.at;
+    const mineAt = cells[3]?.at;
+    const forgeAt = cells[4]?.at;
     if (
       city === undefined ||
       monumentAt === undefined ||
-      targetAt === undefined
+      targetAt === undefined ||
+      oreAt === undefined ||
+      mineAt === undefined ||
+      forgeAt === undefined
     )
       throw new Error("Monument fixture missing");
     const view: PlayerViewV7 = {
@@ -523,7 +533,35 @@ describe("Ruleset 7 DOM shell", () => {
           tile.at.x === monumentAt.x &&
           tile.at.y === monumentAt.y
             ? { ...tile, improvement: "MONUMENT" }
-            : tile,
+            : tile.explored && tile.at.x === oreAt.x && tile.at.y === oreAt.y
+              ? {
+                  ...tile,
+                  biome: "HIGHLANDS",
+                  terrain: "MOUNTAIN",
+                  resource: "ORE",
+                  improvement: null,
+                }
+              : tile.explored &&
+                  tile.at.x === mineAt.x &&
+                  tile.at.y === mineAt.y
+                ? {
+                    ...tile,
+                    biome: "HIGHLANDS",
+                    terrain: "MOUNTAIN",
+                    resource: null,
+                    improvement: "MINE",
+                  }
+                : tile.explored &&
+                    tile.at.x === targetAt.x &&
+                    tile.at.y === targetAt.y
+                  ? {
+                      ...tile,
+                      biome: "PLAINS",
+                      terrain: "MOUNTAIN",
+                      resource: null,
+                      improvement: null,
+                    }
+                  : tile,
         ),
       },
       viewer: {
@@ -583,6 +621,8 @@ describe("Ruleset 7 DOM shell", () => {
           role,
         })),
         monumentCommand,
+        { kind: "BUILD_MINE", at: oreAt },
+        { kind: "BUILD_FORGE", at: forgeAt },
       ],
     };
     const dispatch = vi.fn();
@@ -611,6 +651,36 @@ describe("Ruleset 7 DOM shell", () => {
     ).not.toBeNull();
     expect(document.body.textContent).toContain(
       "Save warning: synthetic autosave failure",
+    );
+    host.callbacks?.onSelection({ kind: "TILE", at: targetAt });
+    expect(document.querySelector(".v7-identity h2")?.textContent).toBe(
+      "Plains · Mountain",
+    );
+    expect(
+      document.querySelector(".v7-selection-details")?.textContent,
+    ).not.toContain("Ore");
+    host.callbacks?.onSelection({ kind: "TILE", at: oreAt });
+    expect(document.querySelector(".v7-identity h2")?.textContent).toBe(
+      "Highlands · Mountain",
+    );
+    expect(
+      document.querySelector(".v7-selection-details")?.textContent,
+    ).toContain("Ore");
+    expect(
+      document.querySelector(".v7-context-action")?.getAttribute("aria-label"),
+    ).toBe("Build Mine · 5 Coins · +2 population");
+    host.callbacks?.onSelection({ kind: "TILE", at: mineAt });
+    expect(document.querySelector(".v7-identity h2")?.textContent).toBe(
+      "Highlands · Mountain",
+    );
+    expect(
+      document.querySelector(".v7-selection-details")?.textContent,
+    ).toContain("Mine");
+    host.callbacks?.onSelection({ kind: "TILE", at: forgeAt });
+    expect(
+      document.querySelector(".v7-context-action")?.getAttribute("aria-label"),
+    ).toBe(
+      "Build Forge · 6 Coins · +1 population per adjacent Mine (maximum 6)",
     );
     host.callbacks?.onSelection({ kind: "CITY", cityId: city.id });
     expect(document.querySelectorAll(".v7-selection-details")).toHaveLength(1);

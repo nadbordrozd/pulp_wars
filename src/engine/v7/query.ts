@@ -986,7 +986,8 @@ export interface EconomicPreviewV7 {
   readonly coinIncomeDeltaByCity: readonly CityValueDeltaV7[];
   readonly resultingContribution: number;
   readonly outputTransitions: readonly EconomicOutputTransitionV7[];
-  readonly resourceRestored: "FERTILE_GROUND" | "UNKNOWN_RESOURCE" | null;
+  readonly resourceRestored:
+    "FERTILE_GROUND" | "ORE" | "UNKNOWN_RESOURCE" | null;
   readonly levelsReached: readonly number[];
   readonly distinctTypes: readonly ImprovementIdV7[];
   readonly distinctFamilies: readonly EconomicFamilyV7[];
@@ -1554,16 +1555,26 @@ function publicRestoredResourceV7(
   terrain: PublicEconomyGraphTileV7["terrain"],
   improvement: ImprovementIdV7 | null,
 ): EconomicPreviewV7["resourceRestored"] {
-  const restored = improvement === "FARM" ? "FERTILE_GROUND" : null;
+  const restored =
+    improvement === "FARM"
+      ? "FERTILE_GROUND"
+      : improvement === "MINE"
+        ? "ORE"
+        : null;
   return projectedResourceAfterMutationV7(view, terrain, restored);
 }
 
 function projectedResourceAfterMutationV7(
-  _view: PlayerViewV7,
+  view: PlayerViewV7,
   terrain: PublicEconomyGraphTileV7["terrain"],
-  resource: "FERTILE_GROUND" | null,
+  resource: "FERTILE_GROUND" | "ORE" | null,
 ): EconomicPreviewV7["resourceRestored"] {
   if (terrain === null) return null;
+  if (
+    resource === "ORE" &&
+    !view.viewer.researchedTechs.includes("ENGINEERING")
+  )
+    return null;
   if (terrain === "FOREST") return resource;
   return resource;
 }
@@ -2613,7 +2624,8 @@ export function previewPillageV7(
   readonly cityId: CityId;
   readonly improvement: ImprovementIdV7;
   readonly coinDelta: 1;
-  readonly resourceRestored: "FERTILE_GROUND" | "UNKNOWN_RESOURCE" | null;
+  readonly resourceRestored:
+    "FERTILE_GROUND" | "ORE" | "UNKNOWN_RESOURCE" | null;
   readonly complete: true;
 } | null {
   const result = applyCommandV7(state, viewerId, { kind: "PILLAGE", unitId });
@@ -2759,8 +2771,10 @@ function publicCaptureTarget(view: PlayerViewV7, at: CoordV7): boolean {
 
 function projectedRestoredResource(
   resource: Extract<PlayerTileViewV7, { explored: true }>["resource"],
-): "FERTILE_GROUND" | "UNKNOWN_RESOURCE" | null {
-  return resource === "FERTILE_GROUND" || resource === "UNKNOWN_RESOURCE"
+): "FERTILE_GROUND" | "ORE" | "UNKNOWN_RESOURCE" | null {
+  return resource === "FERTILE_GROUND" ||
+    resource === "ORE" ||
+    resource === "UNKNOWN_RESOURCE"
     ? resource
     : null;
 }
@@ -2834,6 +2848,11 @@ function publicTileCommandLegal(
         (item) =>
           item.territoryCityId === city.id &&
           item.improvement === "LUMBER_CAMP",
+      );
+    if (kind === "BUILD_FORGE")
+      return adjacent.some(
+        (item) =>
+          item.territoryCityId === city.id && item.improvement === "MINE",
       );
     if (kind === "BUILD_WORKSHOP")
       return (

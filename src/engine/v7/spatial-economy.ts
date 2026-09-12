@@ -102,7 +102,7 @@ function calculateSpatialContributionAtV7(
   if (center === undefined || city === undefined) return result({});
   if (improvement === "FARM") return fixed(2, at, improvement);
   if (improvement === "LUMBER_CAMP") return fixed(1, at, improvement);
-  if (improvement === "MINE") return fixed(4, at, improvement);
+  if (improvement === "MINE") return fixed(2, at, improvement);
   if (improvement === "MONUMENT") return fixed(3, at, improvement);
   if (improvement === "WINDMILL" || improvement === "SAWMILL") {
     const type = improvement === "WINDMILL" ? "FARM" : "LUMBER_CAMP";
@@ -119,7 +119,7 @@ function calculateSpatialContributionAtV7(
       (tile) => tile.territoryCityId === city.id && tile.improvement === "MINE",
     );
     return result({
-      population: Math.min(18, contributors.length * 3),
+      population: Math.min(6, contributors.length),
       contributingTiles: contributors.map((tile) => tile.at),
       distinctTypes: contributors.length === 0 ? [] : ["MINE"],
       placementCount: contributors.length,

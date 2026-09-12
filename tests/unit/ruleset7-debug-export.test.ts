@@ -85,6 +85,6 @@ function setup(): MatchSetupV7 {
     aiMode: "RIVAL",
     humanColor: "CORAL",
     factions: ["ORIGINAL", "ORIGINAL"],
-    mapGenerationRevision: "SPATIAL_ECONOMY",
+    mapGenerationRevision: "REGIONAL_BIOMES_V1",
   };
 }

@@ -305,7 +305,8 @@ function parseProjectedRestorationEvent(input: unknown): PlayerEventV7 | null {
     input === null ||
     Array.isArray(input) ||
     !("resourceRestored" in input) ||
-    input.resourceRestored !== "UNKNOWN_RESOURCE" ||
+    (input.resourceRestored !== "UNKNOWN_RESOURCE" &&
+      input.resourceRestored !== null) ||
     !("kind" in input) ||
     (input.kind !== "ECONOMIC_BUILDING_REMOVED" &&
       input.kind !== "IMPROVEMENT_PILLAGED")
@@ -769,8 +770,12 @@ function restoredResource(
 }
 function expectedRestoredResource(
   improvement: ImprovementIdV7 | null,
-): "FERTILE_GROUND" | null {
-  return improvement === "FARM" ? "FERTILE_GROUND" : null;
+): "FERTILE_GROUND" | "ORE" | null {
+  return improvement === "FARM"
+    ? "FERTILE_GROUND"
+    : improvement === "MINE"
+      ? "ORE"
+      : null;
 }
 const id = isPositiveSafeIntegerV7;
 const nn = isNonNegativeSafeIntegerV7;

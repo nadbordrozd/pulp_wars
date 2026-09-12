@@ -5,8 +5,8 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r3" as const;
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r3.current" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r4" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r4.current" as const;
 export const FACTION_IDS_V7 = Object.freeze(["ORIGINAL"] as const);
 export const FACTION_TREE_IDS_V7 = Object.freeze([
   "ORIGINAL_BASELINE_V4",
@@ -16,10 +16,16 @@ export const TERRAIN_IDS_V7 = Object.freeze([
   "FOREST",
   "MOUNTAIN",
 ] as const);
+export const BIOME_IDS_V7 = Object.freeze([
+  "PLAINS",
+  "WOODLAND",
+  "HIGHLANDS",
+] as const);
 export const RESOURCE_IDS_V7 = Object.freeze([
   "FRUIT",
   "FERTILE_GROUND",
   "GAME",
+  "ORE",
 ] as const);
 export const IMPROVEMENT_IDS_V7 = Object.freeze([
   "FARM",
@@ -183,6 +189,7 @@ export type RulesetIdV7 = typeof RULESET_7_ID;
 export type FactionIdV7 = (typeof FACTION_IDS_V7)[number];
 export type FactionTreeIdV7 = (typeof FACTION_TREE_IDS_V7)[number];
 export type TerrainIdV7 = (typeof TERRAIN_IDS_V7)[number];
+export type BiomeIdV7 = (typeof BIOME_IDS_V7)[number];
 export type ResourceIdV7 = (typeof RESOURCE_IDS_V7)[number];
 export type ImprovementIdV7 = (typeof IMPROVEMENT_IDS_V7)[number];
 export type AchievementIdV7 = (typeof ACHIEVEMENT_IDS_V7)[number];
@@ -210,7 +217,7 @@ export interface MatchSetupV7 {
   readonly aiMode: "RIVAL" | "COOPERATIVE";
   readonly humanColor: PlayerColorV7;
   readonly factions: readonly FactionIdV7[];
-  readonly mapGenerationRevision: "SPATIAL_ECONOMY";
+  readonly mapGenerationRevision: "REGIONAL_BIOMES_V1";
 }
 
 export interface RandomStateV7 {
@@ -221,6 +228,7 @@ export interface RandomStateV7 {
 
 export interface TileStateV7 {
   readonly at: CoordV7;
+  readonly biome: BiomeIdV7;
   readonly terrain: TerrainIdV7;
   readonly resource: ResourceIdV7 | null;
   readonly improvement: ImprovementIdV7 | null;

@@ -85,6 +85,7 @@ export const RULESET7_RESOURCE_ART_IDS = {
   FRUIT: "terrain-square-original-fruit",
   GAME: "terrain-square-original-animal",
   FERTILE_GROUND: "terrain-square-fertile-ground",
+  ORE: "terrain-square-ore",
 } as const satisfies Readonly<Record<ResourceIdV7, string>>;
 
 export const RULESET7_TERRAIN_ART_IDS = {

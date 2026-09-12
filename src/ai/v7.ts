@@ -637,6 +637,27 @@ function scoreCommandWithContext(
     priority = research.priority;
     strategicValue = research.strategic;
     immediateValue = -research.cost;
+    if (
+      !view.viewer.researchedTechs.includes("ENGINEERING") &&
+      researchChain(view, "ENGINEERING")[0] === command.tech
+    ) {
+      const oreProspectPoints = view.board.tiles.reduce(
+        (total, tile) =>
+          total +
+          (tile.explored &&
+          tile.terrain === "MOUNTAIN" &&
+          tile.territoryOwnerId === view.viewer.id
+            ? tile.biome === "PLAINS"
+              ? 30
+              : tile.biome === "WOODLAND"
+                ? 38
+                : 68
+            : 0),
+        0,
+      );
+      strategicValue += Math.floor(oreProspectPoints / 100);
+      objectiveValue = oreProspectPoints % 100;
+    }
   }
 
   if (command.kind === "TRAIN") {

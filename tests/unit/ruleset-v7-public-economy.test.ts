@@ -271,7 +271,7 @@ describe("ruleset-7 pure public economy", () => {
     ).toBe(Number.MAX_SAFE_INTEGER);
   });
 
-  it("offers Mine on any empty owned Mountain only after Engineering", () => {
+  it("offers Mine only for revealed Ore after Engineering", () => {
     const staged = farmPreviewState(7_282);
     const mountain = emptyOwnedTile(staged.state, staged.cityId, [
       staged.target,
@@ -299,7 +299,7 @@ describe("ruleset-7 pure public economy", () => {
             ? {
                 ...tile,
                 terrain: "MOUNTAIN" as const,
-                resource: null,
+                resource: "ORE",
               }
             : tile,
         ),
@@ -307,15 +307,20 @@ describe("ruleset-7 pure public economy", () => {
     });
     const hiddenView = viewForV7(hidden, hidden.humanPlayerId);
     expect(tileInView(hiddenView, mountain)).toMatchObject({ resource: null });
-    expect(potential(hiddenView, "BUILD_MINE").targets).toBeGreaterThan(0);
+    expect(potential(hiddenView, "BUILD_MINE").targets).toBe(0);
 
-    const knownView: PlayerViewV7 = {
-      ...hiddenView,
-      viewer: {
-        ...hiddenView.viewer,
-        researchedTechs: [...hiddenView.viewer.researchedTechs, "ENGINEERING"],
-      },
-    };
+    const knownState = checkedV7({
+      ...hidden,
+      players: hidden.players.map((player) =>
+        player.id === hidden.humanPlayerId
+          ? {
+              ...player,
+              researchedTechs: [...player.researchedTechs, "ENGINEERING"],
+            }
+          : player,
+      ),
+    });
+    const knownView = viewForV7(knownState, knownState.humanPlayerId);
     expect(knownView.viewer.coins).toBe(0);
     expect(potential(knownView, "BUILD_MINE").targets).toBeGreaterThan(0);
   });
@@ -376,6 +381,30 @@ describe("ruleset-7 pure public economy", () => {
       ok: true,
       preview: { resourceRestored: null },
     });
+
+    const mine = patchViewTile(withFarm, mountainAt, {
+      terrain: "MOUNTAIN",
+      resource: null,
+      improvement: "MINE",
+    });
+    const beforeEngineering: PlayerViewV7 = {
+      ...mine,
+      viewer: {
+        ...mine.viewer,
+        researchedTechs: mine.viewer.researchedTechs.filter(
+          (tech) => tech !== "ENGINEERING",
+        ),
+      },
+    };
+    expect(
+      previewEconomicV7(beforeEngineering, {
+        kind: "REDEVELOP",
+        at: mountainAt,
+      }),
+    ).toMatchObject({ ok: true, preview: { resourceRestored: null } });
+    expect(
+      previewEconomicV7(mine, { kind: "REDEVELOP", at: mountainAt }),
+    ).toMatchObject({ ok: true, preview: { resourceRestored: "ORE" } });
 
     const forestAt = emptyOwnedViewTile(withFarm, staged.cityId, [
       staged.target,
@@ -575,7 +604,7 @@ describe("ruleset-7 pure public economy", () => {
       achievement: "ENGINEER",
       at: monumentAt,
     } as const;
-    expect(scorePublicSpatialPlanV7(twoCities, monumentPlan)).toBe(0);
+    expect(scorePublicSpatialPlanV7(twoCities, monumentPlan)).toBe(-29);
 
     const expandCity = required(
       base.cities.find((city) => city.id === staged.cityId),

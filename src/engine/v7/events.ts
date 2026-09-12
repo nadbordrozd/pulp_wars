@@ -81,7 +81,7 @@ export type DomainEventV7 =
       readonly improvement: ImprovementIdV7;
       readonly populationContributionRemoved: number;
       readonly marketIncomeRemoved: number;
-      readonly resourceRestored: "FERTILE_GROUND" | null;
+      readonly resourceRestored: "FERTILE_GROUND" | "ORE" | null;
     }
   | {
       readonly kind: "FOREST_CLEARED" | "FOREST_REPLANTED";
@@ -240,7 +240,7 @@ export type DomainEventV7 =
       readonly cityId: CityId;
       readonly at: CoordV7;
       readonly improvement: ImprovementIdV7;
-      readonly resourceRestored: "FERTILE_GROUND" | null;
+      readonly resourceRestored: "FERTILE_GROUND" | "ORE" | null;
       readonly coinDelta: 1;
     }
   | {
@@ -324,13 +324,15 @@ export type ProjectedResourceRestorationEventV7 =
       Extract<DomainEventV7, { kind: "ECONOMIC_BUILDING_REMOVED" }>,
       "resourceRestored"
     > & {
-      readonly resourceRestored: "FERTILE_GROUND" | "UNKNOWN_RESOURCE" | null;
+      readonly resourceRestored:
+        "FERTILE_GROUND" | "ORE" | "UNKNOWN_RESOURCE" | null;
     })
   | (Omit<
       Extract<DomainEventV7, { kind: "IMPROVEMENT_PILLAGED" }>,
       "resourceRestored"
     > & {
-      readonly resourceRestored: "FERTILE_GROUND" | "UNKNOWN_RESOURCE" | null;
+      readonly resourceRestored:
+        "FERTILE_GROUND" | "ORE" | "UNKNOWN_RESOURCE" | null;
     });
 
 export type ProjectedMonumentBuiltV7 =

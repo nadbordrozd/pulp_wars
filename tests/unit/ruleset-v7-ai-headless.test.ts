@@ -53,7 +53,7 @@ const READY: UnitStateV7["activation"] = {
   specialActed: false,
 };
 
-describe("ruleset-7 revision-3 AI headless runner", () => {
+describe("ruleset-7 revision-4 AI headless runner", () => {
   it("retains the v7 safety caps and imports no presentation layer", () => {
     expect(V7_MATCH_MAX_COMMANDS_DEFAULT).toBe(30_000);
     expect(V7_MATCH_MAX_ROUNDS_DEFAULT).toBe(750);
@@ -130,7 +130,7 @@ describe("ruleset-7 revision-3 AI headless runner", () => {
       errors: [],
       stalls: [],
       metrics: {
-        rulesetId: "pulp-wars-poc-7r3",
+        rulesetId: "pulp-wars-poc-7r4",
         commandCapHits: 1,
       },
     });
@@ -144,8 +144,8 @@ describe("ruleset-7 revision-3 AI headless runner", () => {
     ]);
     expect(first.commandLog.map((entry) => entry.command.kind)).toEqual([
       "RESEARCH",
-      "HARVEST_FRUIT",
       "MOVE",
+      "END_TURN",
     ]);
     expect(
       canonicalJson({
@@ -764,8 +764,8 @@ function treasuryRewardState(blocked: boolean): {
   const contributionSpecs = [
     [windmillAt, "WINDMILL", 1],
     [farmAt, "FARM", 2],
-    [forgeAt, "FORGE", 3],
-    [mineAt, "MINE", 4],
+    [forgeAt, "FORGE", 1],
+    [mineAt, "MINE", 2],
   ] as const;
   const contributionId = base.nextEntityId;
   const stagedBoard = {
@@ -816,8 +816,8 @@ function treasuryRewardState(blocked: boolean): {
               ...candidate,
               level: 4,
               permanentPopulation: 0,
-              economicPopulation: 10,
-              population: 1,
+              economicPopulation: 6,
+              population: -3,
               expanded: true,
               rewards: [
                 { reachedLevel: 2, reward: "STOCKPILE" as const },

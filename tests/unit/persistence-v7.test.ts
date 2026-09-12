@@ -35,12 +35,12 @@ const setup: MatchSetupV7 = {
   aiMode: "RIVAL",
   humanColor: "CORAL",
   factions: ["ORIGINAL", "ORIGINAL"],
-  mapGenerationRevision: "SPATIAL_ECONOMY",
+  mapGenerationRevision: "REGIONAL_BIOMES_V1",
 };
 
 describe("ruleset-7 save and replay foundation", () => {
   it("uses an independent v7 save key and round-trips a canonical initial save", () => {
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r3.current");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r4.current");
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const replay = createReplayV7(setup);
@@ -91,10 +91,11 @@ describe("ruleset-7 save and replay foundation", () => {
   });
 
   it("preserves exactly one remaining Horse Archer shot through save and replay", () => {
-    const created = createPlayableGameV7(setup);
+    const horseSetup = { ...setup, seed: 3 };
+    const created = createPlayableGameV7(horseSetup);
     if (!created.ok) throw new Error(created.error.code);
     let state = created.state;
-    let replay = createReplayV7(setup);
+    let replay = createReplayV7(horseSetup);
     const humanId = state.humanPlayerId;
     const enemy = required(
       state.units.find((unit) => unit.ownerId !== humanId),

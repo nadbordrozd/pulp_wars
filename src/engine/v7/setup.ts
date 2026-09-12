@@ -24,7 +24,7 @@ export function parseMatchSetupV7(input: unknown): MatchSetupV7 | null {
   if (!hasExactKeysV7(input, SETUP_KEYS_V7)) return null;
   if (
     input.rulesetId !== RULESET_7_ID ||
-    input.mapGenerationRevision !== "SPATIAL_ECONOMY" ||
+    input.mapGenerationRevision !== "REGIONAL_BIOMES_V1" ||
     !isUint32V7(input.seed) ||
     !isBoardSize(input.width) ||
     input.height !== input.width ||
@@ -49,7 +49,7 @@ export function parseMatchSetupV7(input: unknown): MatchSetupV7 | null {
     aiMode: input.aiMode,
     humanColor: input.humanColor,
     factions: [...input.factions] as readonly "ORIGINAL"[],
-    mapGenerationRevision: "SPATIAL_ECONOMY",
+    mapGenerationRevision: "REGIONAL_BIOMES_V1",
   };
 }
 

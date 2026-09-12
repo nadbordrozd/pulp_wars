@@ -32,15 +32,15 @@ const setup: MatchSetupV7 = {
   aiMode: "RIVAL",
   humanColor: "CORAL",
   factions: ["ORIGINAL", "ORIGINAL"],
-  mapGenerationRevision: "SPATIAL_ECONOMY",
+  mapGenerationRevision: "REGIONAL_BIOMES_V1",
 };
 
-describe("ruleset-7 revision-3 deterministic foundation", () => {
+describe("ruleset-7 revision-4 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r3");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r4");
     expect(FACTION_IDS_V7).toEqual(["ORIGINAL"]);
     expect(FACTION_TREE_IDS_V7).toEqual(["ORIGINAL_BASELINE_V4"]);
-    expect(RESOURCE_IDS_V7).toEqual(["FRUIT", "FERTILE_GROUND", "GAME"]);
+    expect(RESOURCE_IDS_V7).toEqual(["FRUIT", "FERTILE_GROUND", "GAME", "ORE"]);
     expect(IMPROVEMENT_IDS_V7).toEqual([
       "FARM",
       "LUMBER_CAMP",
@@ -91,7 +91,7 @@ describe("ruleset-7 revision-3 deterministic foundation", () => {
       expect(Object.isFrozen(order)).toBe(true);
   });
 
-  it("accepts only exact dense all-Original revision-3 setup", () => {
+  it("accepts only exact dense all-Original revision-4 setup", () => {
     expect(parseMatchSetupV7(setup)).toEqual(setup);
     expect(
       parseMatchSetupV7({ ...setup, factions: ["ORIGINAL", "CANDY"] }),
@@ -100,6 +100,7 @@ describe("ruleset-7 revision-3 deterministic foundation", () => {
       "pulp-wars-poc-6",
       "pulp-wars-poc-7",
       "pulp-wars-poc-7r2",
+      "pulp-wars-poc-7r3",
     ])
       expect(parseMatchSetupV7({ ...setup, rulesetId })).toBeNull();
     expect(parseMatchSetupV7({ ...setup, scenario: "DEMO" })).toBeNull();

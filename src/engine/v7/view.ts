@@ -5,6 +5,7 @@ import { detectionCoversCoordV7, isUnitVisibleToPlayerV7 } from "./observation";
 import { spatialContributionAtV7 } from "./spatial-economy";
 import type {
   BoardSizeV7,
+  BiomeIdV7,
   AchievementIdV7,
   CityBlackoutV7,
   CoordV7,
@@ -37,6 +38,7 @@ export type PlayerTileViewV7 =
   | {
       readonly at: CoordV7;
       readonly explored: true;
+      readonly biome: BiomeIdV7;
       readonly terrain: TerrainIdV7;
       readonly resource: PublicResourceV7;
       readonly improvement: ImprovementIdV7 | null;
@@ -253,6 +255,7 @@ export function viewForV7(
     return {
       at: tile.at,
       explored: true,
+      biome: tile.biome,
       terrain: tile.terrain,
       resource: publicResourceV7(tile, viewer.researchedTechs),
       improvement: tile.improvement,
@@ -637,7 +640,8 @@ export function publicResourceV7(
   },
   technologies: readonly string[],
 ): PublicResourceV7 {
-  void technologies;
+  if (tile.resource === "ORE" && !technologies.includes("ENGINEERING"))
+    return null;
   return tile.resource;
 }
 

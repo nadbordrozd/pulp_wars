@@ -1,18 +1,17 @@
 # Pulp Wars Ruleset 7
 
-**Status:** revision-3 runtime baseline; partially superseded by the
+**Status:** revision-4 runtime baseline; the
 authoritative [revision-4 biome-economy specification](RULESET_7_REVISION_4_BIOME_ECONOMY.md)
+is the current map, economy, public-view, AI, and persistence contract.
 
-**Runtime ruleset ID:** `pulp-wars-poc-7r3`
+**Runtime ruleset ID:** `pulp-wars-poc-7r4`
 
-Revision 4 is approved for implementation under exact ruleset ID
+Revision 4 is implemented under exact ruleset ID
 `pulp-wars-poc-7r4`. Its specification supersedes this document wherever it
 defines map generation, biome/resource state, Mine/Forge economy, associated
 Normal-AI and public-view behavior, save identity/cleanup, or validation. The
-remaining revision-3 rules stay authoritative. Until that implementation
-lands, this file also describes the current runtime; revision-3 passages that
-conflict with the linked revision-4 specification are historical baseline and
-must not be copied into the implementation.
+remaining revision-3 rules stay authoritative. Revision-3 passages that
+conflict with the linked revision-4 specification are historical baseline.
 
 **Design history:**
 [Original technology-tree redesign proposal](ORIGINAL_TECH_TREE_REDESIGN_PROPOSAL.md)
@@ -26,7 +25,7 @@ and [Ruleset 7 design review](RULESET_7_DESIGN_REVIEW.md)
 [screen flow](../ui/SCREEN_FLOW.md), and
 [art direction](../art/ART_DIRECTION.md)
 
-Ruleset 7 revision 3 is the approved Original-faction rapid-prototype baseline.
+Ruleset 7 revision 3 was the Original-faction rapid-prototype baseline.
 It replaces revision 2's five branches with a 21-node four-branch graph,
 replaces Envoy and Lancer with Horse Archer, consolidates Mountain economy into
 one Mine path, and removes Barracks. It retains the reviewed growth/reward,
@@ -41,9 +40,10 @@ Candy.
 
 ## 1. Version, routing, compatibility, and frozen order
 
-### 1.1 Version identifiers
+### 1.1 Revision-3 historical version identifiers
 
-New v7 data uses these exact identifiers:
+Revision-3 data used these identifiers. Current runtime data uses the
+revision-4 identities in the authoritative overlay.
 
 | Boundary              | Exact value                    |
 | --------------------- | ------------------------------ |

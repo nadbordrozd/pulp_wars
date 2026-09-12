@@ -35,4 +35,19 @@ describe("Ruleset 7 browser smoke script", () => {
     );
     expect(source).not.toContain("command-1100");
   });
+
+  it("defaults evidence to a unique temp directory and remains desktop-only", () => {
+    const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
+
+    expect(source).toContain('process.argv.includes("--archive-evidence")');
+    expect(source).toContain(
+      'await mkdtemp(path.join(tmpdir(), "pulp-wars-v7-smoke-evidence-"))',
+    );
+    expect(source).toContain("temporary, untracked");
+    expect(source.match(/await capture\(/g)).toHaveLength(2);
+    expect(source).not.toContain("Emulation.setDeviceMetricsOverride");
+    expect(source).not.toContain("mobile-ai-return-390-dpr2.png");
+    expect(source).toContain("await stopBrowser(browser)");
+    expect(source).toContain("await rm(userDataFs");
+  });
 });

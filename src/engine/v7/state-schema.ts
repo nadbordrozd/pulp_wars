@@ -1,6 +1,7 @@
 import { canonicalHash, canonicalJson } from "../replay/canonical";
 import {
   ACHIEVEMENT_IDS_V7,
+  BIOME_IDS_V7,
   IMPROVEMENT_IDS_V7,
   RESOURCE_IDS_V7,
   REWARD_IDS_V7,
@@ -261,6 +262,7 @@ function parseTile(input: unknown): TileStateV7 | null {
   if (
     !hasExactKeysV7(input, [
       "at",
+      "biome",
       "improvement",
       "resource",
       "road",
@@ -268,6 +270,7 @@ function parseTile(input: unknown): TileStateV7 | null {
       "terrain",
       "territoryCityId",
     ]) ||
+    !BIOME_IDS_V7.includes(input.biome as TileStateV7["biome"]) ||
     !TERRAIN_IDS_V7.includes(input.terrain as TileStateV7["terrain"]) ||
     (input.resource !== null &&
       !RESOURCE_IDS_V7.includes(input.resource as ResourceIdV7)) ||
@@ -303,6 +306,7 @@ function parseTile(input: unknown): TileStateV7 | null {
     return null;
   return {
     at,
+    biome: input.biome as TileStateV7["biome"],
     terrain,
     resource,
     improvement,

@@ -400,7 +400,7 @@ describe("Ruleset 7 public presentation", () => {
     );
   });
 
-  it("states all revision-3 economic formulas with their exact numbers", () => {
+  it("states all revision-4 economic formulas with their exact numbers", () => {
     expect([
       economicFormulaV7("WINDMILL", "CONNECTED_ORTHOGONAL_CLUSTER"),
       economicFormulaV7("SAWMILL", "CONNECTED_ORTHOGONAL_CLUSTER"),
@@ -411,7 +411,7 @@ describe("Ruleset 7 public presentation", () => {
     ]).toEqual([
       expect.stringMatching(/\+1.*Farm.*cap 8.*0/),
       expect.stringMatching(/\+1.*Lumber Camp.*cap 8/),
-      expect.stringMatching(/\+3.*Mine.*cap 18.*0/),
+      expect.stringMatching(/\+1.*Mine.*maximum 6.*at least one Mine.*0/),
       expect.stringMatching(/0.*\+1 plus.*distinct.*cap 4/),
       expect.stringMatching(/0 below two.*\+4 plus.*\+2 per.*cap 10/),
       expect.stringMatching(

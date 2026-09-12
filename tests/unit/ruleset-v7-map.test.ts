@@ -1,19 +1,16 @@
 import { describe, expect, it } from "vitest";
 import {
   RULESET_7_ID,
-  canonicalMapRandomHashV6,
   canonicalMapRandomHashV7,
   createInitialMapStateV7,
-  generateInitialMapV6,
   generateInitialMapV7,
   parseGameStateV7,
-  toV6Setup,
   type AiCountV7,
   type BoardSizeV7,
   type MatchSetupV7,
 } from "../../src/engine/index";
 
-describe("ruleset-7 map adapter", () => {
+describe("ruleset-7 regional biome map", () => {
   it.each([
     [1, 11, 0],
     [1, 14, 0],
@@ -28,42 +25,25 @@ describe("ruleset-7 map adapter", () => {
     [2, 25, 0],
     [3, 25, 0],
   ] as const)(
-    "runs v6 then strips only Mountain ore/stone for %i AI size %i seed %i",
+    "generates deterministically for %i AI size %i seed %i",
     (aiCount, size, seed) => {
       const v7Setup = setup(aiCount, size, seed);
-      const v6 = generateInitialMapV6(toV6Setup(v7Setup));
       const v7 = generateInitialMapV7(v7Setup);
-      if (!v6.ok || !v7.ok) throw new Error("map generation failed");
-      expect(v7.map.board).toEqual({
-        ...v6.map.board,
-        tiles: v6.map.board.tiles.map((tile) => ({
-          ...tile,
-          resource:
-            tile.terrain === "MOUNTAIN" &&
-            (tile.resource === "ORE" || tile.resource === "STONE")
-              ? null
-              : tile.resource,
-        })),
-      });
-      expect(v7.map.capitalAssignments).toEqual(v6.map.capitalAssignments);
-      expect(v7.map.turnOrderSeats).toEqual(v6.map.turnOrderSeats);
-      expect(v7.map.villages).toEqual(v6.map.villages);
-      expect(v7.map.treasureChests).toEqual(v6.map.treasureChests);
-      expect(v7.map.random).toEqual(v6.map.random);
+      if (!v7.ok) throw new Error("map generation failed");
       const repeated = generateInitialMapV7(v7Setup);
       if (!repeated.ok) throw new Error("repeated map generation failed");
+      expect(v7.map).toEqual(repeated.map);
       expect(canonicalMapRandomHashV7(v7.map)).toBe(
         canonicalMapRandomHashV7(repeated.map),
       );
-      expect(canonicalMapRandomHashV6(v6.map)).toBeTypeOf("string");
     },
   );
 
-  it("creates the strict v7 production state with frozen v6 map parity", () => {
+  it("creates the strict v7 production state with serialized biomes and Ore", () => {
     const created = createInitialMapStateV7(setup(3, 16, 41));
     if (!created.ok) throw new Error(created.error.code);
     expect(parseGameStateV7(created.state)).toEqual(created.state);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r3");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r4");
     expect(
       created.state.players.every(
         (player) => player.factionTreeId === "ORIGINAL_BASELINE_V4",
@@ -76,11 +56,10 @@ describe("ruleset-7 map adapter", () => {
     ).toBe(true);
     expect(created.state.saboteurExposures).toEqual([]);
     expect(
-      created.state.board.tiles.every(
-        (tile) =>
-          tile.resource !== ("ORE" as never) &&
-          tile.resource !== ("STONE" as never),
-      ),
+      created.state.board.tiles.every((tile) => tile.biome !== undefined),
+    ).toBe(true);
+    expect(
+      created.state.board.tiles.some((tile) => tile.resource === "ORE"),
     ).toBe(true);
   });
 });
@@ -100,6 +79,6 @@ function setup(
     aiMode: "RIVAL",
     humanColor: "CORAL",
     factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const),
-    mapGenerationRevision: "SPATIAL_ECONOMY",
+    mapGenerationRevision: "REGIONAL_BIOMES_V1",
   };
 }

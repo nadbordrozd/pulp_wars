@@ -199,9 +199,9 @@ export const BASIC_ECONOMIC_ACTIONS_V7 = deepFreeze({
     command: "BUILD_MINE",
     technology: "ENGINEERING",
     terrain: "MOUNTAIN",
-    resource: null,
-    cost: 6,
-    population: 4,
+    resource: "ORE",
+    cost: 5,
+    population: 2,
     populationCategory: "LIVE",
     improvement: "MINE",
   },
@@ -243,7 +243,7 @@ export const SPATIAL_ECONOMIC_ACTIONS_V7 = deepFreeze({
     technology: "METALLURGY",
     cost: 6,
     improvement: "FORGE",
-    placementMinimum: 0,
+    placementMinimum: 1,
   },
   BUILD_WORKSHOP: {
     command: "BUILD_WORKSHOP",
@@ -485,6 +485,7 @@ export const ORIGINAL_BASELINE_V4_NODES = deepFreeze([
     2,
     ["DRILL"],
     [
+      { kind: "RESOURCE_REVEAL", resources: ["ORE"] },
       { kind: "COMMAND", command: "BUILD_MINE" },
       { kind: "COMMAND", command: "BUILD_WORKSHOP" },
       {

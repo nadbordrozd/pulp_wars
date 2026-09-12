@@ -379,7 +379,7 @@ describe("Ruleset 7 Canvas interaction", () => {
     });
     const seed = document.querySelector<HTMLInputElement>("#v7-seed");
     if (seed === null) throw new Error("seed missing");
-    seed.value = "20";
+    seed.value = "7";
     document
       .querySelector<HTMLButtonElement>('[data-action="launch"]')
       ?.click();
