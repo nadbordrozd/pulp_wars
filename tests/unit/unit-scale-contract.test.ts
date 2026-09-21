@@ -5,6 +5,8 @@ import { ACCEPTED_ART_URLS } from "../../src/assets/generated-art-manifest";
 import { describe, expect, it } from "vitest";
 import {
   BOARD_ART_GEOMETRY,
+  RULESET7_HEAVY_ART_GEOMETRY,
+  RULESET6_UNIT_ART_GEOMETRY,
   PLACEMENT_ART_GEOMETRY,
   RULESET6_UNIT_COSMETIC_OFFSET_Y,
   SQUARE_ART_GEOMETRY,
@@ -136,6 +138,33 @@ describe("unit map-scale contract", () => {
       expect(chest.height * geometry.displayScale).toBeLessThan(
         unit.height * BOARD_ART_GEOMETRY.unit.displayScale,
       );
+    }
+  });
+
+  it("keeps actual Heavy painted bounds modestly above Fighter and below Juggernaut", async () => {
+    const generated = await generatedManifest();
+    const fighter = await measure(
+      "unit-warrior",
+      generated,
+      RULESET6_UNIT_ART_GEOMETRY.standard.displayScale,
+      18,
+    );
+    const heavy = await measure(
+      "unit-original-heavy",
+      generated,
+      RULESET7_HEAVY_ART_GEOMETRY.displayScale,
+      18,
+    );
+    const juggernaut = await measure(
+      "unit-original-juggernaut",
+      generated,
+      RULESET6_UNIT_ART_GEOMETRY.giant.displayScale,
+      18,
+    );
+    for (const key of ["widthRatio", "heightRatio", "areaRatio"] as const) {
+      expect(heavy[key]).toBeGreaterThan(fighter[key]);
+      expect(heavy[key]).toBeLessThan(fighter[key] * 1.2);
+      expect(heavy[key]).toBeLessThan(juggernaut[key]);
     }
   });
 

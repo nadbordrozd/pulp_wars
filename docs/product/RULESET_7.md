@@ -896,11 +896,11 @@ restores only the Farm production marker defined in section 5.2.
 `BUILD_ROAD` requires Roads,
 costs 2, targets an explored owned non-settlement tile without Road, and may
 coexist with any resource/improvement/unit. Road components and discounts use
-orthogonal edges only; Market adjacency remains eight-way.
+all eight neighboring tiles; Market adjacency is also eight-way.
 
 A Road component is capital-connected when every tile is controlled by one
-player and at least one Road tile is orthogonally adjacent to that player's
-capital. Capture recomputes it immediately.
+player and at least one Road tile is orthogonally or diagonally adjacent to
+that player's capital. Capture recomputes it immediately.
 
 ### 5.4 Conflict economy and capacity
 
@@ -999,10 +999,10 @@ selected ordinary defense multiplier with 1x; it does not alter base Defense.
 
 Movement is eight-way; Chebyshev distance defines range, sight, adjacency, and
 ZOC. Ordinary Move receives `2 * Move` half-step points. A normal step costs 2.
-It costs 1 only for an orthogonal step whose endpoints are friendly Road or
-owned city center, with at least one Road in the friendly connected network.
-Diagonal steps are never discounted. Forest/Mountain entry ends Move even when
-discounted, except Fieldcraft Forest freedom. An unexplored step ends Move.
+It costs 1 for an orthogonal or diagonal step whose endpoints are friendly Road
+or owned city center, with at least one Road in the friendly connected network.
+Forest/Mountain entry ends Move even when discounted, except Fieldcraft Forest
+freedom. An unexplored step ends Move.
 Engineering is required for Mountain.
 
 Entering a cell adjacent to a visible or newly detected hostile unit ends Move
@@ -2135,8 +2135,13 @@ Required v7 inventory is:
   registrations and semantic labels.
 
 Every retained unit keeps its accepted source dimensions, anchor, scale,
-transparent padding, and renderer registration unchanged. Horse Archer has a
-bounded mounted-unit exception: its horse-and-rider body must be materially
+transparent padding, and renderer registration unchanged, except that Ruleset 7
+Heavy uses 1.25 times the standard display scale (with the same anchor and
+cosmetic offset) to read modestly larger than Fighter and smaller than Juggernaut.
+Roads use narrow brown code-native strokes joining all eight neighboring Road
+tiles, below improvements including Farms and Mines.
+Opaque improvement artwork may cover the Road within its own tile.
+Horse Archer has a bounded mounted-unit exception: its horse-and-rider body must be materially
 broader and readable at native gameplay zoom, rather than squeezed into the
 prior narrow mounted/standard-unit visible bounds or padded around an oversized
 weapon. The subsequent art bead records and reviews the exact mounted canvas,

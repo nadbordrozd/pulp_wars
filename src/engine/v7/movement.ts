@@ -406,7 +406,7 @@ export function movementStepCost2V7(
   to: CoordV7,
   connectedRoads = capitalConnectedRoadKeysV7(state, player.id),
 ): 1 | 2 {
-  if (!player.researchedTechs.includes("ROADS") || manhattan(from, to) !== 1)
+  if (!player.researchedTechs.includes("ROADS") || chebyshev(from, to) !== 1)
     return 2;
   const fromTile = tileAtV7(state.board, from);
   const toTile = tileAtV7(state.board, to);
@@ -566,7 +566,7 @@ function publicStepCost2(
 ): 1 | 2 {
   if (
     !view.viewer.researchedTechs.includes("ROADS") ||
-    manhattan(from, to.at) !== 1
+    chebyshev(from, to.at) !== 1
   )
     return 2;
   const fromTile = publicTileAt(view, from);
@@ -599,7 +599,7 @@ function publicCapitalConnectedRoads(view: PlayerViewV7): ReadonlySet<string> {
   const connected = new Set<string>();
   const queue: CoordV7[] = [];
   for (const capital of capitals)
-    for (const [dx, dy] of CARDINAL) {
+    for (const [dx, dy] of ROAD_NEIGHBORS) {
       const road = { x: capital.at.x + dx, y: capital.at.y + dy };
       const roadKey = key(road);
       if (roads.has(roadKey) && !connected.has(roadKey)) {
@@ -610,7 +610,7 @@ function publicCapitalConnectedRoads(view: PlayerViewV7): ReadonlySet<string> {
   for (let index = 0; index < queue.length; index += 1) {
     const current = queue[index];
     if (current === undefined) break;
-    for (const [dx, dy] of CARDINAL) {
+    for (const [dx, dy] of ROAD_NEIGHBORS) {
       const candidate = { x: current.x + dx, y: current.y + dy };
       const candidateKey = key(candidate);
       if (roads.has(candidateKey) && !connected.has(candidateKey)) {
@@ -668,9 +668,11 @@ const same = (a: CoordV7, b: CoordV7) => a.x === b.x && a.y === b.y;
 const compare = (a: CoordV7, b: CoordV7) => a.y - b.y || a.x - b.x;
 const chebyshev = (a: CoordV7, b: CoordV7) =>
   Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
-const manhattan = (a: CoordV7, b: CoordV7) =>
-  Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
-const CARDINAL = [
+const ROAD_NEIGHBORS = [
+  [-1, -1],
+  [1, -1],
+  [-1, 1],
+  [1, 1],
   [0, -1],
   [1, 0],
   [0, 1],

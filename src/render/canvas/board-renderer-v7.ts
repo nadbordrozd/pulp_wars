@@ -15,6 +15,7 @@ import { queryCombatPreviewV7 } from "../../engine/index";
 import {
   RULESET6_UNIT_ART_GEOMETRY,
   RULESET7_HORSE_ARCHER_ART_GEOMETRY,
+  RULESET7_HEAVY_ART_GEOMETRY,
   SETTLEMENT_ART_GEOMETRY,
   SQUARE_ART_GEOMETRY,
   anchoredDestinationRect,
@@ -68,6 +69,7 @@ export interface BoardRenderPlanEntryV7 {
     | "FOG"
     | "TERRAIN"
     | "ROAD"
+    | "ROAD_JOIN"
     | "RESOURCE"
     | "IMPROVEMENT"
     | "SITE"
@@ -83,6 +85,8 @@ export interface BoardRenderPlanEntryV7 {
     | "SELECTION"
     | "CURSOR";
   readonly assetId?: string;
+  readonly roadNeighbors?: readonly CoordV7[];
+  readonly roadJoins?: readonly (readonly [CoordV7, CoordV7])[];
   /** A pair Farm is cropped into one source half per authoritative cell. */
   readonly sourceCrop?: {
     readonly x: number;
@@ -132,6 +136,11 @@ export function buildBoardRenderPlanV7(
 ): BoardRenderPlanV7 {
   const entries: BoardRenderPlanEntryV7[] = [];
   const farmPresentation = farmPresentationV7(view);
+  const roadKeys = new Set(
+    view.board.tiles
+      .filter((tile) => tile.explored && tile.road)
+      .map((tile) => coordKey(tile.at)),
+  );
   for (const tile of view.board.tiles) {
     if (!tile.explored) {
       entries.push({
@@ -158,13 +167,33 @@ export function buildBoardRenderPlanV7(
       ownerId: tile.territoryOwnerId,
       ...ownerPresentation(view, tile.territoryOwnerId),
     });
+    const joins: (readonly [CoordV7, CoordV7])[] = [];
+    for (const dx of [-1, 1])
+      for (const dy of [-1, 1]) {
+        const horizontal = { x: tile.at.x + dx, y: tile.at.y };
+        const vertical = { x: tile.at.x, y: tile.at.y + dy };
+        if (
+          roadKeys.has(coordKey(horizontal)) &&
+          roadKeys.has(coordKey(vertical))
+        )
+          joins.push([horizontal, vertical]);
+      }
+    if (joins.length > 0)
+      entries.push({
+        key: `road-join:${tile.at.x},${tile.at.y}`,
+        kind: "ROAD_JOIN",
+        layer: tile.improvement === "MINE" ? 0.4 : 1.9,
+        at: tile.at,
+        roadJoins: joins,
+      });
     if (tile.road)
       entries.push({
         key: `road:${tile.at.x},${tile.at.y}`,
         kind: "ROAD",
-        layer: 2,
+        // Mine artwork includes its terrain, so it also covers its Road.
+        layer: tile.improvement === "MINE" ? 0.5 : 2,
         at: tile.at,
-        assetId: roadAssetId(view, tile.at),
+        roadNeighbors: roadNeighbors(view, tile.at),
       });
     if (tile.resource !== null && tile.resource !== "UNKNOWN_RESOURCE")
       entries.push({
@@ -182,9 +211,7 @@ export function buildBoardRenderPlanV7(
       entries.push({
         key: `improvement:${tile.at.x},${tile.at.y}`,
         kind: "IMPROVEMENT",
-        // A Farm is opaque ground treatment and must remain under a
-        // coexisting Road. Other improvement layering is unchanged.
-        layer: tile.improvement === "FARM" ? 1.5 : 4,
+        layer: 4,
         at: tile.at,
         assetId:
           farm?.assetId ?? RULESET7_IMPROVEMENT_ART_IDS[tile.improvement],
@@ -405,6 +432,10 @@ export function drawBoardV7(input: {
       context.fillStyle =
         entry.ownerColor === undefined ? "#65965b" : `${entry.ownerColor}55`;
       context.fillRect(left, top, size, size);
+    }
+    if (entry.kind === "ROAD" || entry.kind === "ROAD_JOIN") {
+      drawRoad(context, entry, x, y, camera.zoom);
+      continue;
     }
     if (entry.kind === "STATUS") {
       const pulse =
@@ -1247,6 +1278,8 @@ function geometryFor(entry: BoardRenderPlanEntryV7): SourceGeometry {
       entry.assetId === RULESET7_UNIT_ART_IDS.BREACHER
     )
       return RULESET6_UNIT_ART_GEOMETRY.siege;
+    if (entry.assetId === RULESET7_UNIT_ART_IDS.HEAVY)
+      return RULESET7_HEAVY_ART_GEOMETRY;
     if (entry.assetId === RULESET7_UNIT_ART_IDS.JUGGERNAUT)
       return RULESET6_UNIT_ART_GEOMETRY.giant;
     return RULESET6_UNIT_ART_GEOMETRY.standard;
@@ -1380,21 +1413,63 @@ function coordKey(at: CoordV7): string {
   return `${at.x},${at.y}`;
 }
 
-function roadAssetId(view: PlayerViewV7, at: CoordV7): string {
-  const bits = [
-    { dx: 0, dy: -1, bit: 8 },
-    { dx: 1, dy: 0, bit: 4 },
-    { dx: 0, dy: 1, bit: 2 },
-    { dx: -1, dy: 0, bit: 1 },
-  ].reduce((mask, candidate) => {
-    const tile = view.board.tiles.find(
-      (entry) =>
-        entry.at.x === at.x + candidate.dx &&
-        entry.at.y === at.y + candidate.dy,
-    );
-    return tile?.explored === true && tile.road ? mask | candidate.bit : mask;
-  }, 0);
-  return `terrain-square-road-mask-${bits.toString(2).padStart(4, "0")}`;
+function roadNeighbors(view: PlayerViewV7, at: CoordV7): readonly CoordV7[] {
+  return view.board.tiles.flatMap((tile) =>
+    tile.explored &&
+    tile.road &&
+    Math.max(Math.abs(tile.at.x - at.x), Math.abs(tile.at.y - at.y)) === 1
+      ? [tile.at]
+      : [],
+  );
+}
+
+/** Cell-clipped paths and corner joins keep Roads below each cell's artwork. */
+function drawRoad(
+  context: CanvasRenderingContext2D,
+  entry: BoardRenderPlanEntryV7,
+  x: number,
+  y: number,
+  zoom: number,
+): void {
+  const half = (TILE_WIDTH * zoom) / 2;
+  context.save();
+  context.beginPath();
+  context.rect(x - half, y - half, half * 2, half * 2);
+  context.clip();
+  context.lineCap = "round";
+  context.lineJoin = "round";
+  for (const [color, width] of [
+    ["#69472e", 8],
+    ["#a57a4c", 5],
+  ] as const) {
+    context.strokeStyle = color;
+    context.lineWidth = width * zoom;
+    context.beginPath();
+    for (const neighbor of entry.roadNeighbors ?? []) {
+      context.moveTo(x, y);
+      context.lineTo(
+        x + (neighbor.x - entry.at.x) * half,
+        y + (neighbor.y - entry.at.y) * half,
+      );
+    }
+    for (const [from, to] of entry.roadJoins ?? []) {
+      context.moveTo(
+        x + (from.x - entry.at.x) * half * 2,
+        y + (from.y - entry.at.y) * half * 2,
+      );
+      context.lineTo(
+        x + (to.x - entry.at.x) * half * 2,
+        y + (to.y - entry.at.y) * half * 2,
+      );
+    }
+    // An isolated Road remains visible as a short dirt patch.
+    if (entry.kind === "ROAD" && (entry.roadNeighbors?.length ?? 0) === 0) {
+      context.moveTo(x - 4 * zoom, y);
+      context.lineTo(x + 4 * zoom, y);
+    }
+    context.stroke();
+  }
+  context.restore();
 }
 
 function selectionCoord(

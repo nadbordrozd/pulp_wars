@@ -2534,7 +2534,7 @@ function effectDescription(
     case "SCOUT_DETECTION_RADIUS":
       return `Scout detects hostile Saboteurs within radius ${effect.radius}`;
     case "ROAD_MOVEMENT":
-      return "Ordinary step costs 1; orthogonally connected Road step costs ½";
+      return "Ordinary step costs 1; orthogonally or diagonally connected Road step costs ½";
     case "MARKET_CAPITAL_ROAD_BONUS":
       return `Market connected to the capital adds +${effect.coins} Coin`;
     case "FRIENDLY_CITY_FORTIFICATION":

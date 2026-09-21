@@ -82,9 +82,28 @@ describe("square territory boundary presentation", () => {
         plan,
         images: { resolve: () => null },
       });
-      const firstClip = operations.findIndex((op) => op.kind === "clip");
+      // Locate the explored-ground mask used by the first territory casing.
+      // Earlier per-cell Road clips are independent of this boundary mask.
+      const firstBoundaryStroke = operations.findIndex(
+        (op) => op.kind === "stroke" && op.args.at(-1) === "#243633",
+      );
+      expect(firstBoundaryStroke).toBeGreaterThan(0);
+      const groundClip = operations
+        .slice(0, firstBoundaryStroke)
+        .reduce(
+          (last, op, index) =>
+            op.kind === "clip" && op.args[0] !== "evenodd" ? index : last,
+          -1,
+        );
+      expect(groundClip).toBeGreaterThan(0);
+      const groundPath = operations
+        .slice(0, groundClip)
+        .reduce(
+          (last, op, index) => (op.kind === "beginPath" ? index : last),
+          -1,
+        );
       const groundRects = operations
-        .slice(0, firstClip)
+        .slice(groundPath + 1, groundClip)
         .filter((op) => op.kind === "rect");
       expect(groundRects).toHaveLength(
         view.board.tiles.filter((tile) => tile.explored).length,

@@ -188,8 +188,9 @@ overlay and may coexist with every terrain/resource/improvement.
 That edge-mask paragraph remains the Ruleset-6 contract. Ruleset 7 explicitly
 uses the building contract's accepted single/horizontal/vertical opaque Farm
 family and deterministic per-cell pair cropping instead. The cosmetic pairing
-never changes Farm economic components, and an occupied Farm remains below its
-coexisting Road while fog and input continue to operate on each tile.
+never changes Farm economic components. Ruleset 7 uses the building contract's
+eight-way brown code-native Roads beneath improvements; an opaque Farm covers
+its coexisting Road while fog and input continue to operate on each tile.
 
 Generate and inspect Fertile Ground, Stone, and the Road material as the first
 three v6 terrain samples. Review native/enlarged, all compatible terrain

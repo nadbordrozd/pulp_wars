@@ -29,8 +29,9 @@ Odd, L, T, 2 x 2, and longer components therefore resolve to pair-plus-single
 coverage without gaps or double-painting. Removal, pillage, fog, or territory
 city changes recompute the partition. Per-cell crops retain independent row
 depth, fog protection, hit testing, selection, and authoritative economy.
-Because Farm is opaque ground treatment, it draws below a coexisting Road;
-other improvement layering is unchanged.
+Farm draws above a coexisting Road, as do all Ruleset-7 improvements. Its
+opaque soil covers the Road inside that tile; neighboring segments remain
+visible.
 
 ### Ruleset-7 map-readability override
 
@@ -82,7 +83,12 @@ Workshop, Grand Works, and Market use 384 x 384 at `(192,288)`, display scale
 unit or city label. Grand Works must remain distinct from Workshop at minimum
 zoom; Market cannot look like a generic city.
 
-Roads are modular infrastructure, not one building sprite. PixelLab supplies a
+For Ruleset 7, Roads use narrow brown code-native strokes with all eight
+neighbor connections. Each tile paints its own clipped half-segments and the
+corner joins between public neighboring Roads. Roads and joins stay below
+improvements, including opaque Farms and the Mine terrain composite.
+
+For Ruleset 6, Roads are modular infrastructure. PixelLab supplies a
 quiet road material patch/edge family on the 256 x 148 ground overlay canvas;
 checked-in deterministic masks compose the 16 orthogonal N/E/S/W connection
 variants. Diagonal visual joins are forbidden because the mechanical network is

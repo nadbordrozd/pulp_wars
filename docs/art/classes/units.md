@@ -5,9 +5,22 @@
 The map now presents axis-aligned 128 x 128 cells under the
 [square-grid experiment](../SQUARE_GRID_EXPERIMENT.md). Every accepted unit
 PNG, byte hash, source canvas, anchor, display scale, and cosmetic baseline is
-unchanged. The 128 x 74 ratios below remain the acceptance record for those
+unchanged except for the Ruleset 7 Heavy display-scale override below. The
+128 x 74 ratios below remain the acceptance record for those
 files, not a request to enlarge them for square cells; units intentionally stay
 compact relative to terrain.
+
+### Ruleset-7 Heavy display-scale override
+
+Heavy uses the accepted 256 x 296 source, `(128,222)` anchor, and 18 CSS-pixel
+cosmetic offset at display scale `0.3125`. Its smaller source silhouette then
+measures about 60 x 61 CSS pixels,
+modestly above Fighter (54 x 59) and below Juggernaut (82 x 78). It must remain
+visibly smaller than Juggernaut at supported zooms. No sprite bytes, portraits,
+unit statistics, Ruleset 6 registration, or dock identity viewport change.
+The original-unit review command records historical source acceptance at
+`0.25`; current Heavy presentation is verified through the live Ruleset 7
+renderer and its focused renderer tests.
 
 ### Ruleset-7 revision-3 Horse Archer override
 

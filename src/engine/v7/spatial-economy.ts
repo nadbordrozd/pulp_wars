@@ -196,14 +196,14 @@ export function capitalConnectedRoadKeysV7(
   for (const capital of graph.cities.filter(
     (city) => city.ownerId === playerId && city.isCapital,
   ))
-    for (const [dx, dy] of CARDINAL)
+    for (const [dx, dy] of ROAD_NEIGHBORS)
       if (roadKeys.has(key({ x: capital.at.x + dx, y: capital.at.y + dy })))
         queue.push({ x: capital.at.x + dx, y: capital.at.y + dy });
   for (let queueIndex = 0; queueIndex < queue.length; queueIndex += 1) {
     const at = queue[queueIndex];
     if (at === undefined || connected.has(key(at))) continue;
     connected.add(key(at));
-    for (const [dx, dy] of CARDINAL) {
+    for (const [dx, dy] of ROAD_NEIGHBORS) {
       const next = { x: at.x + dx, y: at.y + dy };
       if (roadKeys.has(key(next)) && !connected.has(key(next)))
         queue.push(next);
@@ -352,3 +352,11 @@ const CARDINAL = [
 const key = (at: CoordV7): string => `${at.y},${at.x}`;
 const compareCoords = (left: CoordV7, right: CoordV7): number =>
   left.y - right.y || left.x - right.x;
+
+const ROAD_NEIGHBORS = [
+  ...CARDINAL,
+  [-1, -1],
+  [1, -1],
+  [-1, 1],
+  [1, 1],
+] as const;

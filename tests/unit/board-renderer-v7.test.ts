@@ -96,7 +96,7 @@ describe("Ruleset 7 board renderer", () => {
     expect(overlap.some((entry) => entry.kind === "UNIT")).toBe(true);
     expect(
       overlap.findIndex((entry) => entry.kind === "IMPROVEMENT"),
-    ).toBeLessThan(overlap.findIndex((entry) => entry.kind === "ROAD"));
+    ).toBeGreaterThan(overlap.findIndex((entry) => entry.kind === "ROAD"));
     const forestIndex = plan.entries.findIndex(
       (entry) => entry.assetId === "terrain-ruleset7-original-forest-1",
     );
@@ -407,7 +407,7 @@ describe("Ruleset 7 board renderer", () => {
     }
   });
 
-  it("derives the exact road mask from public orthogonal connectivity", () => {
+  it("derives eight road neighbors from explored public connectivity", () => {
     const state = exploredAllV7(initialV7(1518));
     const view = viewForV7(state, state.humanPlayerId);
     const center = { x: 5, y: 5 };
@@ -420,9 +420,8 @@ describe("Ruleset 7 board renderer", () => {
             ? {
                 ...tile,
                 road:
-                  (tile.at.x === 5 && tile.at.y === 5) ||
-                  (tile.at.x === 5 && tile.at.y === 4) ||
-                  (tile.at.x === 6 && tile.at.y === 5),
+                  Math.max(Math.abs(tile.at.x - 5), Math.abs(tile.at.y - 5)) <=
+                    1 || tile.at.x === 8,
               }
             : tile,
         ),
@@ -437,8 +436,174 @@ describe("Ruleset 7 board renderer", () => {
       plan.entries.find(
         (entry) =>
           entry.kind === "ROAD" && entry.at.x === 5 && entry.at.y === 5,
-      )?.assetId,
-    ).toBe("terrain-square-road-mask-1100");
+      )?.roadNeighbors,
+    ).toEqual([
+      { x: 4, y: 4 },
+      { x: 5, y: 4 },
+      { x: 6, y: 4 },
+      { x: 4, y: 5 },
+      { x: 6, y: 5 },
+      { x: 4, y: 6 },
+      { x: 5, y: 6 },
+      { x: 6, y: 6 },
+    ]);
+  });
+
+  it("fills diagonal corner joins in adjacent cells below their improvements without creating Road tiles", () => {
+    const state = exploredAllV7(initialV7(1518));
+    const base = viewForV7(state, state.humanPlayerId);
+    const view = {
+      ...base,
+      board: {
+        ...base.board,
+        tiles: base.board.tiles.map((tile) =>
+          tile.explored
+            ? {
+                ...tile,
+                road:
+                  (tile.at.x === 4 && tile.at.y === 4) ||
+                  (tile.at.x === 5 && tile.at.y === 5),
+                improvement:
+                  tile.at.x === 5 && tile.at.y === 4
+                    ? ("FARM" as const)
+                    : tile.improvement,
+              }
+            : tile,
+        ),
+      },
+    };
+    const plan = buildBoardRenderPlanV7(view, [], {
+      selection: null,
+      selectedUnitId: null,
+      selectedAchievement: null,
+    });
+    const join = plan.entries.find(
+      (entry) =>
+        entry.kind === "ROAD_JOIN" && entry.at.x === 5 && entry.at.y === 4,
+    );
+    expect(join?.roadJoins).toEqual([
+      [
+        { x: 4, y: 4 },
+        { x: 5, y: 5 },
+      ],
+    ]);
+    expect(plan.entries.filter((entry) => entry.kind === "ROAD")).toHaveLength(
+      2,
+    );
+    expect(join?.layer).toBeLessThan(
+      plan.entries.find(
+        (entry) =>
+          entry.kind === "IMPROVEMENT" && entry.at.x === 5 && entry.at.y === 4,
+      )?.layer ?? 0,
+    );
+    const fogView = {
+      ...view,
+      board: {
+        ...view.board,
+        tiles: view.board.tiles.map((tile) =>
+          (tile.at.x === 5 && tile.at.y === 4) ||
+          (tile.at.x === 4 && tile.at.y === 4)
+            ? { at: tile.at, explored: false as const }
+            : tile,
+        ),
+      },
+    };
+    const fogPlan = buildBoardRenderPlanV7(fogView, [], {
+      selection: null,
+      selectedUnitId: null,
+      selectedAchievement: null,
+    });
+    expect(
+      fogPlan.entries
+        .filter((entry) => entry.at.x === 5 && entry.at.y === 4)
+        .map((entry) => entry.kind),
+    ).toEqual(["FOG"]);
+    expect(
+      fogPlan.entries.filter((entry) => entry.kind === "ROAD_JOIN"),
+    ).toHaveLength(0);
+    expect(
+      fogPlan.entries.find((entry) => entry.kind === "ROAD")?.roadNeighbors,
+    ).toEqual([]);
+  });
+
+  it.each([0.625, 1, 1.75])(
+    "keeps Heavy modestly above Fighter and below Juggernaut at zoom %s",
+    (zoom) => {
+      const drawImage = vi.fn();
+      drawBoardV7({
+        context: drawingContext(drawImage),
+        viewport: { width: 800, height: 300 },
+        devicePixelRatio: 1,
+        camera: { offsetX: 100, offsetY: 150, zoom },
+        plan: {
+          version: 7,
+          entries: [
+            imageEntry("fighter", "UNIT", "unit-original-fighter", 0, 0),
+            imageEntry("heavy", "UNIT", "unit-original-heavy", 1, 0),
+            imageEntry("juggernaut", "UNIT", "unit-original-juggernaut", 2, 0),
+          ],
+          targets: [],
+        },
+        images: { resolve: () => ({}) as CanvasImageSource },
+      });
+      const [fighter, heavy, juggernaut] = drawImage.mock.calls;
+      expect(heavy?.[3]).toBeCloseTo(80 * zoom);
+      expect(heavy?.[4]).toBeCloseTo(92.5 * zoom);
+      expect(heavy?.[3]).toBeCloseTo(Number(fighter?.[3]) * 1.25);
+      expect(Number(heavy?.[4])).toBeLessThan(Number(juggernaut?.[4]));
+    },
+  );
+
+  it("draws narrow brown half-segments before an opaque improvement", () => {
+    const drawImage = vi.fn();
+    const lineTo = vi.fn();
+    const stroke = vi.fn();
+    const styles: Record<string, unknown> = {};
+    const context = drawingContext(
+      drawImage,
+      vi.fn(),
+      { lineTo, stroke },
+      (key, value) => {
+        styles[String(key)] = value;
+      },
+    );
+    drawBoardV7({
+      context,
+      viewport: { width: 300, height: 300 },
+      devicePixelRatio: 1,
+      camera: { offsetX: 100, offsetY: 100, zoom: 1 },
+      plan: {
+        version: 7,
+        entries: [
+          {
+            key: "road",
+            kind: "ROAD",
+            layer: 2,
+            at: { x: 0, y: 0 },
+            roadNeighbors: [
+              { x: 1, y: 1 },
+              { x: 0, y: 1 },
+            ],
+          },
+          imageEntry(
+            "farm",
+            "IMPROVEMENT",
+            "building-ruleset7-farm-single",
+            0,
+            0,
+          ),
+        ],
+        targets: [],
+      },
+      images: { resolve: () => ({}) as CanvasImageSource },
+    });
+    expect(context.lineTo).toHaveBeenCalledWith(164, 164);
+    expect(context.lineTo).toHaveBeenCalledWith(100, 164);
+    expect(styles.strokeStyle).toBe("#a57a4c");
+    expect(styles.lineWidth).toBe(5);
+    expect(
+      vi.mocked(context.stroke).mock.invocationCallOrder.at(-1),
+    ).toBeLessThan(drawImage.mock.invocationCallOrder[0] ?? 0);
   });
 
   it("emits one public contour winner per physical owner, city, or potential edge", () => {

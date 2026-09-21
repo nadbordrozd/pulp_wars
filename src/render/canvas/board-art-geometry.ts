@@ -189,6 +189,12 @@ export const RULESET6_UNIT_ART_GEOMETRY = {
   },
 } as const satisfies Readonly<Record<string, SourceGeometry>>;
 
+/** Ruleset 7 Heavy accounts for its tighter painted bounds to exceed Fighter. */
+export const RULESET7_HEAVY_ART_GEOMETRY = {
+  ...RULESET6_UNIT_ART_GEOMETRY.standard,
+  displayScale: RULESET6_UNIT_ART_GEOMETRY.standard.displayScale * 1.25,
+} as const satisfies SourceGeometry;
+
 export const RULESET7_HORSE_ARCHER_ART_GEOMETRY = {
   width: 384,
   height: 384,
