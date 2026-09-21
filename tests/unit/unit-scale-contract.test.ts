@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import sharp from "sharp";
+import { ACCEPTED_ART_URLS } from "../../src/assets/generated-art-manifest";
 import { describe, expect, it } from "vitest";
 import {
   BOARD_ART_GEOMETRY,
@@ -82,6 +83,62 @@ const RULESET6_UNIT_SOURCES = {
 } as const;
 
 describe("unit map-scale contract", () => {
+  it("keeps the enlarged treasure painted bounds inside its square and below both ordinary fighters", async () => {
+    const boundsFor = async (id: string) => {
+      const url = ACCEPTED_ART_URLS[id as keyof typeof ACCEPTED_ART_URLS];
+      if (url === undefined) throw new Error(`Missing asset ${id}`);
+      const { data, info } = await sharp(`public/${url.replace(/^\//, "")}`)
+        .ensureAlpha()
+        .raw()
+        .toBuffer({ resolveWithObject: true });
+      let left = info.width,
+        top = info.height,
+        right = -1,
+        bottom = -1;
+      for (let y = 0; y < info.height; y += 1)
+        for (let x = 0; x < info.width; x += 1) {
+          if (data[(y * info.width + x) * 4 + 3] === 0) continue;
+          left = Math.min(left, x);
+          top = Math.min(top, y);
+          right = Math.max(right, x);
+          bottom = Math.max(bottom, y);
+        }
+      return {
+        left,
+        top,
+        right: right + 1,
+        bottom: bottom + 1,
+        width: right - left + 1,
+        height: bottom - top + 1,
+      };
+    };
+    const chest = await boundsFor("building-treasure-chest");
+    const geometry = SQUARE_ART_GEOMETRY.treasure;
+    expect(chest.width * geometry.displayScale).toBeCloseTo(48.6);
+    expect(chest.height * geometry.displayScale).toBeCloseTo(51.6);
+    expect(
+      (chest.left - geometry.anchor.x) * geometry.displayScale,
+    ).toBeGreaterThanOrEqual(-64);
+    expect(
+      (chest.right - geometry.anchor.x) * geometry.displayScale,
+    ).toBeLessThanOrEqual(64);
+    expect(
+      (chest.top - geometry.anchor.y) * geometry.displayScale,
+    ).toBeGreaterThanOrEqual(-64);
+    expect(
+      (chest.bottom - geometry.anchor.y) * geometry.displayScale,
+    ).toBeLessThanOrEqual(64);
+    for (const id of ["unit-original-fighter", "unit-candy-fighter"]) {
+      const unit = await boundsFor(id);
+      expect(chest.width * geometry.displayScale).toBeLessThan(
+        unit.width * BOARD_ART_GEOMETRY.unit.displayScale,
+      );
+      expect(chest.height * geometry.displayScale).toBeLessThan(
+        unit.height * BOARD_ART_GEOMETRY.unit.displayScale,
+      );
+    }
+  });
+
   it("publishes one bounded runtime class geometry without changing anchors", () => {
     expect(UNIT_SCALE_CONTRACT.tile).toEqual({ width: 128, height: 74 });
     expect(UNIT_SCALE_CONTRACT.standard).toEqual({

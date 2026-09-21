@@ -150,7 +150,9 @@ export const SQUARE_ART_GEOMETRY = {
     width: 256,
     height: 296,
     anchor: { x: 128, y: 222 },
-    displayScale: 0.5,
+    // The painted chest occupies only 81 x 86 pixels of this source canvas.
+    // At 1x this yields 48.6 x 51.6 CSS pixels, below ordinary fighters.
+    displayScale: 0.6,
   },
   processor: {
     width: 384,

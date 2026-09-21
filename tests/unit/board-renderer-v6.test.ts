@@ -474,7 +474,7 @@ describe("ruleset-6 Canvas drawing layer", () => {
     expect(treasureCoverageV6().geometry).toEqual(SQUARE_ART_GEOMETRY.treasure);
     expect(SQUARE_ART_GEOMETRY.lumberCamp.displayScale).toBe(0.7);
     expect(SQUARE_ART_GEOMETRY.sawmill.displayScale).toBe(0.36);
-    expect(SQUARE_ART_GEOMETRY.treasure.displayScale).toBe(0.5);
+    expect(SQUARE_ART_GEOMETRY.treasure.displayScale).toBe(0.6);
     expect(256 * SQUARE_ART_GEOMETRY.lumberCamp.displayScale).toBeLessThan(
       256 * SQUARE_ART_GEOMETRY.tallTerrain.displayScale * 1.5,
     );

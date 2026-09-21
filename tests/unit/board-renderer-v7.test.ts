@@ -268,6 +268,60 @@ describe("Ruleset 7 board renderer", () => {
       expect(actual).toBeCloseTo(expected);
   });
 
+  it.each(
+    [0.625, 1, 1.75].flatMap((zoom) => [1, 2].map((dpr) => ({ zoom, dpr }))),
+  )(
+    "paints treasure at its readable size without changing depth or map targets ($zoom zoom, DPR $dpr)",
+    ({ zoom, dpr }) => {
+      const state = exploredAllV7(initialV7(1516));
+      const base = viewForV7(state, state.humanPlayerId);
+      const unit = base.units[0];
+      if (unit === undefined) throw new Error("fixture unit missing");
+      const plan = buildBoardRenderPlanV7(
+        { ...base, treasureChests: [unit.at] },
+        [],
+        {
+          selection: null,
+          selectedUnitId: null,
+          selectedAchievement: null,
+        },
+      );
+      const chest = plan.entries.find((entry) => entry.kind === "TREASURE");
+      if (chest === undefined) throw new Error("treasure entry missing");
+      expect(chest).toMatchObject({
+        at: unit.at,
+        layer: 4,
+        assetId: "building-treasure-chest",
+      });
+      expect(plan.entries.indexOf(chest)).toBeLessThan(
+        plan.entries.findIndex((entry) => entry.key === `unit:${unit.id}`),
+      );
+      expect(plan.targets).toEqual([]);
+      const drawImage = vi.fn();
+      drawBoardV7({
+        context: drawingContext(drawImage),
+        viewport: { width: 2000, height: 2000 },
+        devicePixelRatio: dpr,
+        camera: { offsetX: 100, offsetY: 150, zoom },
+        plan: { ...plan, entries: [chest] },
+        images: { resolve: () => ({}) as CanvasImageSource },
+      });
+      expect(drawImage).toHaveBeenCalledTimes(1);
+      const [, x, y, width, height] = drawImage.mock.calls[0] as [
+        unknown,
+        number,
+        number,
+        number,
+        number,
+      ];
+      expect(width).toBeCloseTo(153.6 * zoom);
+      expect(height).toBeCloseTo(177.6 * zoom);
+      expect(width / height).toBeCloseTo(256 / 296);
+      expect(x + 128 * 0.6 * zoom).toBeCloseTo(100 + unit.at.x * 128 * zoom);
+      expect(y + 222 * 0.6 * zoom).toBeCloseTo(150 + unit.at.y * 128 * zoom);
+    },
+  );
+
   it("draws single and pair Farm crops at exact ground-cell rectangles", () => {
     const drawImage = vi.fn();
     drawBoardV7({

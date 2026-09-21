@@ -289,9 +289,15 @@ body above terrain/fog and below units and interaction/status overlays. Review
 the exact source at native and nearest-neighbor enlarged scale, then at
 0.625x/1x/1.75x over representative Original and Candy terrain.
 
-Its accepted 256 x 296 source displays at `0.5` after map-scale play review,
-making the visible chest approximately 41 x 43 CSS pixels at 1x. It remains
-smaller than ordinary units and substantially smaller than Forest or Mountain.
+Its accepted 256 x 296 source displays at `0.6` after live map-scale review,
+making its 81 x 86 painted source bounds approximately 49 x 52 CSS pixels at
+1x, 20% larger in each dimension than the previous `0.5` scale. It remains
+smaller than both factions' ordinary fighters and substantially smaller than
+Forest or Mountain. Rulesets 6 and 7 use the same runtime geometry. Reproduce
+the browser evidence with `npx tsx scripts/browser-treasure-review-v7.ts
+http://localhost:6173/?ruleset=7 /tmp/pulp-wars-opi-review/current` and
+`CHROME_PATH` set to a local Chrome executable; the review measures painted
+bounds, square containment, and tile picking at 0.625x/1x/1.75x and DPR 1/2.
 
 ## Draw composition and anchor behavior
 

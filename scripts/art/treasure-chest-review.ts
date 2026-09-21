@@ -2,6 +2,8 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import sharp, { type OverlayOptions } from "sharp";
+import { format } from "prettier";
+import { SQUARE_ART_GEOMETRY } from "../../src/render/canvas/board-art-geometry";
 
 const root = process.cwd();
 const reviewRoot = path.join(root, "art/pixellab/reviews/treasure-chest");
@@ -18,6 +20,7 @@ const sourceBytes = await readFile(sourcePath);
 const source = sharp(sourceBytes);
 const metadata = await source.metadata();
 const alpha = await alphaBounds(sourceBytes);
+const geometry = SQUARE_ART_GEOMETRY.treasure;
 
 await mkdir(reviewRoot, { recursive: true });
 await writeSourceReview();
@@ -63,30 +66,53 @@ async function writeZoomReview(): Promise<void> {
     const canvas = sharp({
       create: {
         width: tileSize * 3,
-        height: tileSize + Math.round(80 * scale),
+        height: tileSize + Math.round(140 * scale),
         channels: 4,
         background: "#18212fff",
       },
     });
     const overlays: OverlayOptions[] = [];
     for (const [column, terrainPath] of terrainPaths.entries()) {
+      const terrainGeometry = terrainPath.includes("forest")
+        ? SQUARE_ART_GEOMETRY.tallTerrain
+        : SQUARE_ART_GEOMETRY.ground;
       overlays.push({
         input: await sharp(path.join(root, terrainPath))
-          .resize(tileSize, tileSize, { fit: "fill", kernel: "nearest" })
+          .resize(
+            tileSize,
+            Math.round(
+              terrainGeometry.height * terrainGeometry.displayScale * scale,
+            ),
+            { kernel: "nearest" },
+          )
           .png()
           .toBuffer(),
         left: column * tileSize,
-        top: Math.round(60 * scale),
+        top: Math.round(
+          120 * scale +
+            tileSize / 2 -
+            terrainGeometry.anchor.y * terrainGeometry.displayScale * scale,
+        ),
       });
-      const chestWidth = Math.max(1, Math.round(256 * 0.3 * scale));
-      const chestHeight = Math.max(1, Math.round(296 * 0.3 * scale));
+      const chestWidth = Math.max(
+        1,
+        Math.round(geometry.width * geometry.displayScale * scale),
+      );
+      const chestHeight = Math.max(
+        1,
+        Math.round(geometry.height * geometry.displayScale * scale),
+      );
       overlays.push({
         input: await sharp(sourceBytes)
           .resize(chestWidth, chestHeight, { kernel: "nearest" })
           .png()
           .toBuffer(),
         left: column * tileSize + Math.round((tileSize - chestWidth) / 2),
-        top: Math.round(60 * scale + tileSize - 222 * 0.3 * scale),
+        top: Math.round(
+          120 * scale +
+            tileSize / 2 -
+            geometry.anchor.y * geometry.displayScale * scale,
+        ),
       });
     }
     overlays.push({
@@ -124,17 +150,25 @@ async function writeEvidence(): Promise<void> {
     sourceSize: { width: metadata.width, height: metadata.height },
     alphaBounds: alpha,
     display: {
-      scale: 0.3,
-      anchor: { x: 128, y: 222 },
+      scale: geometry.displayScale,
+      anchor: geometry.anchor,
       zooms: [0.625, 1, 1.75],
-      renderedWidthAtOne: 77,
+      renderedWidthAtOne: geometry.width * geometry.displayScale,
+      visibleWidthAtOne: (alpha.right - alpha.left + 1) * geometry.displayScale,
+      visibleHeightAtOne:
+        (alpha.bottom - alpha.top + 1) * geometry.displayScale,
       owningTileAtOne: 128,
     },
     checks: {
       transparentBackground: metadata.hasAlpha === true,
       noLeftRightBottomOverflow:
-        alpha.left >= 0 && alpha.right < 256 && alpha.bottom <= 222,
-      substantiallySmallerThanTile: 77 < 128,
+        (alpha.left - geometry.anchor.x) * geometry.displayScale >= -64 &&
+        (alpha.right + 1 - geometry.anchor.x) * geometry.displayScale <= 64 &&
+        (alpha.bottom + 1 - geometry.anchor.y) * geometry.displayScale <= 64,
+      noTopOverflow:
+        (alpha.top - geometry.anchor.y) * geometry.displayScale >= -64,
+      substantiallySmallerThanTile:
+        (alpha.right - alpha.left + 1) * geometry.displayScale < 64,
     },
     artifacts: Object.fromEntries(
       await Promise.all(
@@ -147,7 +181,7 @@ async function writeEvidence(): Promise<void> {
   };
   await writeFile(
     path.join(reviewRoot, "review-evidence.json"),
-    `${JSON.stringify(evidence, null, 2)}\n`,
+    await format(JSON.stringify(evidence), { parser: "json" }),
   );
   await writeFile(
     path.join(reviewRoot, "README.md"),
