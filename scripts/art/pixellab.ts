@@ -19,6 +19,12 @@ import {
   resolveRepairStyleReferenceHash,
 } from "./ruleset7-revision3-art-order";
 import { assertRuleset7TacticalUiOrder } from "./ruleset7-tactical-ui-order";
+import {
+  assertRecoveryReference,
+  loadSubmissionReceipt,
+  resolveRecoveryRequest,
+  saveSubmissionReceipt,
+} from "./pixellab-recovery";
 import { resolveUnitFitOffset } from "./unit-fit-offset";
 
 type ArtClass = "units" | "terrain" | "buildings" | "ui";
@@ -214,6 +220,7 @@ const SQUARE_ROAD_MASK_MANIFEST_PATH = path.join(
   "scripts/art/square-road-masks.generated.json",
 );
 const CANDIDATE_ROOT = path.join(ROOT, "art/pixellab/candidates");
+const SUBMISSION_ROOT = path.join(ROOT, "art/pixellab/submissions");
 const QUARANTINE_ROOT = path.join(ROOT, "art/pixellab/quarantine");
 const REVIEW_ROOT = path.join(ROOT, "art/pixellab/reviews");
 const RUNTIME_PATH = path.join(ROOT, "src/assets/generated-art-manifest.ts");
@@ -540,6 +547,19 @@ async function main(): Promise<void> {
     const jobId = requiredOption("--job-id");
     const recipe = source.recipes.find((candidate) => candidate.id === id);
     if (recipe === undefined) throw new Error(`Unknown recipe ${id}`);
+    const previous = generated.records[id];
+    const submission = await loadSubmissionReceipt<RequestSnapshot>(
+      SUBMISSION_ROOT,
+      jobId,
+    );
+    const request = resolveRecoveryRequest(
+      id,
+      jobId,
+      requestSnapshot(source, recipe),
+      previous,
+      submission,
+    );
+    await verifyRecoveryProcessingReferences(source, recipe, request);
     const apiKey = process.env[source.provider.credentialEnvironmentVariable];
     if (apiKey === undefined || apiKey.length === 0)
       throw new Error(
@@ -552,25 +572,11 @@ async function main(): Promise<void> {
     const input = decodeBase64Image(encoded);
     const candidate = path.join(CANDIDATE_ROOT, `${recipe.id}.png`);
     await mkdir(path.dirname(candidate), { recursive: true });
+    await verifyRecoveryProcessingReferences(source, recipe, request);
     await processCandidate(input, recipe, candidate, source);
     const inspection = await inspectPng(candidate);
     assertTechnical(recipe, inspection);
-    const previous = generated.records[id];
     const rejectedAttempts = rejectedAttemptsFrom(previous);
-    const currentRequest = requestSnapshot(source, recipe);
-    const currentGroundSha256 =
-      currentRequest.groundReference === undefined
-        ? undefined
-        : generated.records[currentRequest.groundReference.id]?.outputSha256;
-    const currentGroundReference =
-      currentRequest.groundReference === undefined
-        ? undefined
-        : currentGroundSha256 === undefined
-          ? currentRequest.groundReference
-          : {
-              ...currentRequest.groundReference,
-              sha256: currentGroundSha256,
-            };
     (generated.records as Record<string, GenerationRecord>)[id] = {
       id,
       status: "CANDIDATE",
@@ -582,15 +588,7 @@ async function main(): Promise<void> {
       height: inspection.height,
       hasAlpha: inspection.hasAlpha,
       alphaBounds: inspection.alphaBounds,
-      request:
-        previous?.request === undefined
-          ? currentRequest
-          : currentGroundReference === undefined
-            ? previous.request
-            : {
-                ...previous.request,
-                groundReference: currentGroundReference,
-              },
+      request,
       ...(rejectedAttempts.length === 0 ? {} : { rejectedAttempts }),
     };
     await saveGenerated(generated);
@@ -610,6 +608,37 @@ async function main(): Promise<void> {
   console.log(
     "Usage: pixellab.ts credentials | snapshot | snapshot-reframe-sources --ids a,b | generate --stage sample|batch [--ids a,b] [--concurrency 3] | archive-job --id ID --job-id JOB --notes TEXT | resume-job --id ID --job-id JOB | repair --ids a,b | derive --id ID | review --id ID --accept|--reject --notes TEXT [--source-pass --native-pass --enlarged-pass --minimum-pass --composition-pass] [--skip-overview-sheets] | review-sheets | validate",
   );
+}
+
+async function verifyRecoveryProcessingReferences(
+  source: SourceManifest,
+  recipe: Recipe,
+  request: RequestSnapshot,
+): Promise<void> {
+  for (const name of ["groundReference", "styleReference"] as const) {
+    const reference = request[name];
+    // A style image already sent to the provider is historical evidence. Only
+    // reference-edge processing reads those bytes again during recovery.
+    if (
+      reference === undefined ||
+      (name === "styleReference" &&
+        recipe.postprocess !== "diamond-mask-reference-edges")
+    )
+      continue;
+    const referenceRecipe = source.recipes.find(
+      ({ id }) => id === reference.id,
+    );
+    if (referenceRecipe === undefined)
+      throw new Error(
+        `${recipe.id}: missing ${name} recipe needed for recovery`,
+      );
+    assertRecoveryReference(
+      recipe.id,
+      name,
+      reference,
+      await readFile(path.join(ROOT, referenceRecipe.output)),
+    );
+  }
 }
 
 function resolvedRepairRequestSnapshot(
@@ -2386,9 +2415,7 @@ async function generateOne(
       ...resolvedRequest,
       groundReference: {
         id: recipe.groundReference,
-        ...(groundRecord.outputSha256 === undefined
-          ? {}
-          : { sha256: groundRecord.outputSha256 }),
+        sha256: sha256(await readFile(path.join(ROOT, groundRecipe.output))),
         usageDescription:
           "Deterministically composite the accepted full-square ground beneath the provider-authored tall terrain so the exact owning footprint is opaque and seam-safe.",
       },
@@ -2415,6 +2442,12 @@ async function generateOne(
   const jobId = readStringProperty(start, "background_job_id");
   if (jobId === null)
     throw new Error("PixelLab response did not contain background_job_id");
+  await saveSubmissionReceipt(
+    SUBMISSION_ROOT,
+    recipe.id,
+    jobId,
+    resolvedRequest,
+  );
   console.log(`${recipe.id}: submitted job ${jobId}`);
   const result = await pollJob(source.provider.apiBaseUrl, apiKey, jobId);
   const encoded = findBase64Image(result);
@@ -2423,6 +2456,7 @@ async function generateOne(
   const input = decodeBase64Image(encoded);
   const candidate = path.join(CANDIDATE_ROOT, `${recipe.id}.png`);
   await mkdir(path.dirname(candidate), { recursive: true });
+  await verifyRecoveryProcessingReferences(source, recipe, resolvedRequest);
   await processCandidate(input, recipe, candidate, source);
   const inspection = await inspectPng(candidate);
   assertTechnical(recipe, inspection);

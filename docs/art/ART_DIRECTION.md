@@ -254,6 +254,19 @@ Check the class rules plus silhouette, readability, composition, palette,
 lighting, transparency, edge quality, consistency, and exact dimensions. Tile
 review also checks every adjacency and map-level repetition.
 
+After provider submission, the script saves a job-specific request receipt under
+`art/pixellab/submissions/` before polling. Receipts contain resolved reference
+hashes and request metadata, without credentials or image payloads. Keep these
+receipts with the generation evidence. Recover an interrupted job with
+`npx tsx scripts/art/pixellab.ts resume-job --id ASSET_ID --job-id JOB_ID`.
+Recovery requires a matching receipt or generation record with complete reference
+hashes and a compatible current recipe. Missing, conflicting, or unverifiable
+history is rejected before fetching the job; current images cannot establish
+which bytes were submitted earlier. A changed provider style reference retains
+its historical hash. Ground and edge-style references reused by local processing
+must match their stored hashes before recovery can proceed. An interruption before
+the receipt is saved still requires independently recorded job provenance.
+
 A successful generation request is not acceptance. Reject, adjust the recipe,
 and regenerate anything ugly, unclear, inconsistent, technically wrong, or
 outside this direction. Batch only after at least three representative assets
