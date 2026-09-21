@@ -5,6 +5,7 @@ import path from "node:path";
 export const BROWSER_RELEASE_SOURCE_PATHS_V7 = Object.freeze([
   "scripts/browser-smoke-v7.ts",
   "scripts/browser-smoke-v7-contract.ts",
+  "scripts/browser-smoke-output.ts",
   "src/main.ts",
   "src/app/browser-routing.ts",
   "src/app/v7-controller.ts",

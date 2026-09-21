@@ -1,6 +1,7 @@
+import { prepareSmokeOutput } from "./browser-smoke-output";
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { arch, cpus, loadavg, platform, release, tmpdir } from "node:os";
 import path from "node:path";
 import process from "node:process";
@@ -58,17 +59,16 @@ type Connection = {
 
 const timingMode = browserTimingModeV7(process.argv);
 const deployed = process.argv.includes("--deployed");
-const archivalEvidence = process.argv.includes("--archive-evidence");
 const baseUrl = smokeUrl(
   process.argv.slice(2).find((argument) => argument.startsWith("http")) ??
     "http://localhost:6173/",
 );
-const reviewRoot = archivalEvidence
-  ? path.join(process.cwd(), "art/integration/reviews/ruleset7-preview")
-  : await mkdtemp(path.join(tmpdir(), "pulp-wars-v7-smoke-evidence-"));
-console.log(
-  `Ruleset-7 browser smoke evidence: ${reviewRoot}${archivalEvidence ? " (explicit archival mode)" : " (temporary, untracked)"}`,
-);
+const smokeOutput = await prepareSmokeOutput({
+  args: process.argv.slice(2),
+  name: "v7",
+  archiveDirectory: "art/integration/reviews/ruleset7-preview",
+});
+const reviewRoot = smokeOutput.directory;
 const defaultWindowsChrome =
   "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe";
 const chrome =
@@ -106,7 +106,6 @@ const browser = spawn(
 );
 
 try {
-  await mkdir(reviewRoot, { recursive: true });
   const target = await waitForTarget(port, baseUrl);
   const connection = await connect(target.webSocketDebuggerUrl);
   const browserErrors: BrowserErrorV7[] = [];
@@ -598,6 +597,7 @@ try {
       pendingReleaseEvidence,
     );
   connection.close();
+  await smokeOutput.publish();
   const coldSummary =
     cold === null
       ? "deployed production bundle (no source/test imports)"
@@ -607,7 +607,7 @@ try {
       ? "bounded launch/End Turn/resume compatibility probe"
       : `natural default match ${outcome.outcome} in round ${outcome.round}/${outcome.commandIndex} commands`;
   console.log(
-    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed. Evidence: ${reviewRoot}${archivalEvidence ? " (explicit archival mode)" : " (temporary, untracked)"}`,
+    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed. Evidence: ${reviewRoot}`,
   );
 } finally {
   try {

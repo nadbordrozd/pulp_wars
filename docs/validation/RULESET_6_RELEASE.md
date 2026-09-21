@@ -82,6 +82,10 @@ must exercise every rare branch.
 
 ## Browser, accessibility, and visual evidence
 
+Current v5/v6/v7 harnesses follow the shared
+[browser evidence output contract](BROWSER_EVIDENCE_OUTPUT.md): routine runs
+capture in isolation, and deliberate archive publication checks existing work.
+
 `npm run smoke:browser` exercised the production Chrome entry, not a static
 mock. Its checked evidence covers both factions and both AI modes at 1440 x
 1000 DPR1 and true 390 x 844 DPR2. Pointer, touch, keyboard, direct one-click

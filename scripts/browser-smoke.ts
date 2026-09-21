@@ -1,6 +1,7 @@
+import { prepareSmokeOutput } from "./browser-smoke-output";
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 
@@ -37,7 +38,16 @@ const cooperativeLargeReview = process.argv.includes(
 const baseUrl =
   process.argv.slice(2).find((argument) => !argument.startsWith("--")) ??
   "http://localhost:6173";
-const reviewRoot = path.join(process.cwd(), "art/integration/reviews");
+const smokeOutput = await prepareSmokeOutput({
+  args: process.argv.slice(2),
+  name: "v5",
+  archiveDirectory: "art/integration/reviews",
+  archiveFiles: {
+    "fruit-production-evidence.json":
+      "art/feedback/reviews/fruit-production-evidence.json",
+  },
+});
+const reviewRoot = smokeOutput.directory;
 const defaultWindowsChrome =
   "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe";
 const chrome =
@@ -50,7 +60,6 @@ const userData = chrome.endsWith(".exe")
   ? `C:\\Windows\\Temp\\pulp-wars-smoke-${process.pid}`
   : path.join(process.env.TMPDIR ?? "/tmp", `pulp-wars-smoke-${process.pid}`);
 
-await mkdir(reviewRoot, { recursive: true });
 const browser = spawn(
   chrome,
   [
@@ -247,6 +256,7 @@ try {
     );
   }
   connection.close();
+  await smokeOutput.publish();
 } finally {
   browser.kill();
 }
@@ -2369,7 +2379,7 @@ async function writeFruitProductionEvidence(): Promise<void> {
     };
   });
   await writeFile(
-    "art/feedback/reviews/fruit-production-evidence.json",
+    path.join(reviewRoot, "fruit-production-evidence.json"),
     `${JSON.stringify(
       {
         schemaVersion: 1,

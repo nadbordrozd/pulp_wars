@@ -1,7 +1,7 @@
+import { prepareSmokeOutput } from "./browser-smoke-output";
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import sharp from "sharp";
@@ -73,10 +73,12 @@ const requestedBaseUrl = process.argv
   .slice(2)
   .find((argument) => !argument.startsWith("--"));
 const baseUrl = browserSmokeUrlV6(requestedBaseUrl);
-const reviewRoot = path.join(
-  process.cwd(),
-  "art/integration/reviews/ruleset6-browser-smoke",
-);
+const smokeOutput = await prepareSmokeOutput({
+  args: process.argv.slice(2),
+  name: "v6",
+  archiveDirectory: "art/integration/reviews/ruleset6-browser-smoke",
+});
+const reviewRoot = smokeOutput.directory;
 const defaultWindowsChrome =
   "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe";
 const chrome =
@@ -98,7 +100,6 @@ let coordinateActivations: BrowserSmokeCoordinateActivationV6[] = [];
 let reloadDocumentSequence = 0;
 const mountainLiveOnly = process.argv.includes("--mountain-live");
 
-await mkdir(reviewRoot, { recursive: true });
 const browser = spawn(
   chrome,
   [
@@ -222,6 +223,7 @@ try {
       `${JSON.stringify(evidence, null, 2)}\n`,
     );
     connection.close();
+    await smokeOutput.publish();
     console.log(
       `Ruleset-6 browser smoke passed in ${evidence.browser}: Original ${flows[0]?.turnReturn.stateHash}, Candy ${flows[1]?.turnReturn.stateHash}, AI-first ${aiFirstLaunch.stateHash}. Evidence: ${reviewRoot}`,
     );
@@ -313,7 +315,7 @@ async function runMountainLiveDiagnostic(
     assertMountainDrawFrame(`${faction} nominal DPR1`, nominalDpr1, 1, 1);
     liveFrames.push({ faction, label: "nominal DPR1", frame: nominalDpr1 });
     const screenshot = path.join(
-      tmpdir(),
+      reviewRoot,
       `pulp-wars-mountain-live-${faction.toLowerCase()}-1x-dpr1.png`,
     );
     await writeFile(screenshot, await captureBuffer(connection));

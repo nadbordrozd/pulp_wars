@@ -78,6 +78,10 @@ that by itself.
 
 ## Browser and reviewed visual evidence
 
+All three smoke harnesses use isolated temporary output by default. See
+[browser evidence output](BROWSER_EVIDENCE_OUTPUT.md) for explicit output paths,
+guarded archive publication, and preservation of existing local evidence.
+
 `npm run smoke:browser` opens the normal production entry with no `ruleset`
 parameter. It launches a real one-AI Original match, uses only public controller
 snapshots and actual offered DOM controls, and lets the shipped Normal AI play

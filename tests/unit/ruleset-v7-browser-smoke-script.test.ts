@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { BROWSER_RELEASE_SOURCE_PATHS_V7 } from "../../scripts/ruleset7-browser-release-fingerprint";
 import {
   browserTimingModeV7,
   collectBrowserTimingV7,
@@ -48,11 +49,13 @@ describe("Ruleset 7 browser smoke script", () => {
   it("defaults evidence to a unique temp directory and remains desktop-only", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
 
-    expect(source).toContain('process.argv.includes("--archive-evidence")');
-    expect(source).toContain(
-      'await mkdtemp(path.join(tmpdir(), "pulp-wars-v7-smoke-evidence-"))',
+    expect(source).toContain("await prepareSmokeOutput({");
+    expect(source).toContain('name: "v7"');
+    expect(source).toContain("const reviewRoot = smokeOutput.directory");
+    expect(source).toContain("await smokeOutput.publish()");
+    expect(BROWSER_RELEASE_SOURCE_PATHS_V7).toContain(
+      "scripts/browser-smoke-output.ts",
     );
-    expect(source).toContain("temporary, untracked");
     expect(source.match(/await capture\(/g)).toHaveLength(2);
     expect(source).not.toContain("Emulation.setDeviceMetricsOverride");
     expect(source).not.toContain("mobile-ai-return-390-dpr2.png");
