@@ -16,6 +16,33 @@ import {
 } from "../../scripts/ruleset-v7-late-public-view-contract";
 
 describe("Ruleset 7 browser smoke script", () => {
+  it("arms transient controls before trusted pointer launch and waits for the native select to close", () => {
+    const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
+    expect(
+      source.match(/await launchWithFastForward\(connection\)/g),
+    ).toHaveLength(2);
+    expect(source).toContain(
+      'await typeSelectValue(connection, "#v7-ai-count", "2")',
+    );
+    expect(source).toContain(
+      'await typeSelectValue(connection, "#v7-ai-count", "1")',
+    );
+    expect(source).toContain(
+      'await typeSelectValue(connection, "#v7-board-size", "11")',
+    );
+    expect(source).toContain("!select.matches(':open')");
+    expect(
+      source.indexOf("await evaluate(connection, armFastForwardExpression())"),
+    ).toBeLessThan(
+      source.indexOf(
+        "await pointerClick(connection, '[data-action=\"launch\"]')",
+      ),
+    );
+    expect(source).toContain('"Input.dispatchMouseEvent"');
+    expect(BROWSER_RELEASE_SOURCE_PATHS_V7).toContain(
+      "scripts/browser-smoke-v7-controls.ts",
+    );
+  });
   it("waits for a fresh complete document and installed controller after reload", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
 
@@ -217,6 +244,7 @@ describe("browser smoke timing acceptance", () => {
       { ...valid.returned, activePlayerId: 2 },
       { ...valid.returned, hostTicks: 0 },
       { ...valid.returned, policySlices: 0 },
+      { ...valid.returned, fastForwardObserved: false },
     ])
       expect(() => validatePreview({ ...valid, returned })).toThrow(
         "production AI boundary failed",

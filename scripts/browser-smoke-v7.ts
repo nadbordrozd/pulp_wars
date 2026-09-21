@@ -8,6 +8,10 @@ import process from "node:process";
 import { format } from "prettier";
 import { browserReleaseRuntimeFingerprintV7 } from "./ruleset7-browser-release-fingerprint";
 import {
+  armFastForwardExpression,
+  stableControlPointExpression,
+} from "./browser-smoke-v7-controls";
+import {
   browserTimingModeV7,
   collectBrowserTimingV7,
   enforceBrowserTimingV7,
@@ -165,9 +169,8 @@ try {
       });
     })()`,
   );
-  await pointerClick(connection, "#v7-ai-count");
-  await pressKey(connection, "ArrowDown", "ArrowDown");
-  await pressKey(connection, "Enter", "Enter");
+  await pressKey(connection, "Tab", "Tab");
+  await typeSelectValue(connection, "#v7-ai-count", "2");
   await pressKey(connection, "Tab", "Tab");
   const focusAfterSelect = await evaluate<{
     readonly id: string | null;
@@ -183,18 +186,13 @@ try {
     throw new Error(
       `select change replaced keyboard focus/control: ${JSON.stringify(focusAfterSelect)}`,
     );
-  await pointerClick(connection, "#v7-ai-count");
-  await pressKey(connection, "Home", "Home");
-  await pressKey(connection, "Enter", "Enter");
+  await pressKey(connection, "Tab", "Tab", 8);
+  await typeSelectValue(connection, "#v7-ai-count", "1");
+  await pressKey(connection, "Tab", "Tab");
+  await pressKey(connection, "Tab", "Tab");
+  await typeSelectValue(connection, "#v7-board-size", "11");
   await replaceSeedInput(connection, "0");
-  await pointerClick(connection, '[data-action="launch"]');
-  await waitForExpression(
-    connection,
-    `globalThis.__PULP_WARS_APP__?.controller.snapshot().ai.active === true`,
-    900,
-    10,
-  );
-  await pointerClick(connection, '[data-action="fast-forward"]');
+  await launchWithFastForward(connection);
   await waitForExpression(
     connection,
     `(() => {
@@ -463,14 +461,7 @@ try {
   let pendingReleaseEvidence: string | null = null;
   if (!deployed) {
     await replaceSeedInput(connection, "0");
-    await pointerClick(connection, '[data-action="launch"]');
-    await waitForExpression(
-      connection,
-      `globalThis.__PULP_WARS_APP__?.controller.snapshot().ai.active === true`,
-      900,
-      10,
-    );
-    await pointerClick(connection, '[data-action="fast-forward"]');
+    await launchWithFastForward(connection);
     outcome = await driveDefaultMatchToOutcome(connection);
     await waitForExpression(
       connection,
@@ -783,6 +774,69 @@ async function pointerClick(
   });
 }
 
+async function typeSelectValue(
+  connection: Connection,
+  selector: string,
+  value: string,
+): Promise<void> {
+  // macOS native popups can acknowledge ArrowDown/Enter before committing or
+  // releasing their mouse event. Trusted typeahead on the focused, closed
+  // select exercises real keyboard selection without that native popup.
+  const focused = await evaluate<boolean>(
+    connection,
+    `(() => { const select = document.querySelector(${JSON.stringify(selector)}); return select instanceof HTMLSelectElement && document.activeElement === select && !select.matches(':open'); })()`,
+  );
+  if (!focused)
+    throw new Error(`Select is not focused and closed: ${selector}`);
+  for (const digit of value) {
+    await connection.send("Input.dispatchKeyEvent", {
+      type: "keyDown",
+      key: digit,
+      code: `Digit${digit}`,
+      text: digit,
+      windowsVirtualKeyCode: digit.charCodeAt(0),
+    });
+    await connection.send("Input.dispatchKeyEvent", {
+      type: "keyUp",
+      key: digit,
+      code: `Digit${digit}`,
+      windowsVirtualKeyCode: digit.charCodeAt(0),
+    });
+  }
+  await waitForExpression(
+    connection,
+    `(() => { const select = document.querySelector(${JSON.stringify(selector)}); return select instanceof HTMLSelectElement && document.activeElement === select && !select.matches(':open') && select.value === ${JSON.stringify(value)}; })()`,
+  );
+}
+
+async function launchWithFastForward(connection: Connection): Promise<void> {
+  await evaluate(connection, armFastForwardExpression());
+  try {
+    await pointerClick(connection, '[data-action="launch"]');
+    await waitForExpression(
+      connection,
+      `(() => {
+      const evidence = globalThis.__V7_FAST_FORWARD_CONTROL__;
+      const snapshot = globalThis.__PULP_WARS_APP__?.controller.snapshot();
+      return evidence?.status === 'ERROR' || (snapshot?.phase === 'ACTIVE' && snapshot.view !== null && document.querySelector('[data-v7-setup]') === null && (evidence?.status === 'ACTIVATED' || evidence?.status === 'COMPLETED'));
+    })()`,
+      900,
+      100,
+    );
+    const evidence = await evaluate<{ status: string; detail: string | null }>(
+      connection,
+      `globalThis.__V7_FAST_FORWARD_CONTROL__`,
+    );
+    if (evidence.status === "ERROR")
+      throw new Error(`Launch/Fast Forward failed: ${evidence.detail}`);
+  } finally {
+    await evaluate(
+      connection,
+      `globalThis.__V7_FAST_FORWARD_CONTROL_CANCEL__?.()`,
+    );
+  }
+}
+
 async function touchClick(
   connection: Connection,
   selector: string,
@@ -827,10 +881,7 @@ async function elementCenter(
   connection: Connection,
   selector: string,
 ): Promise<{ readonly x: number; readonly y: number }> {
-  return evaluate(
-    connection,
-    `(() => { const node = document.querySelector(${JSON.stringify(selector)}); if (!(node instanceof HTMLElement)) throw new Error('Missing interactive element: ${selector}'); node.scrollIntoView({ block: 'center', inline: 'center' }); const rect = node.getBoundingClientRect(); if (rect.width <= 0 || rect.height <= 0) throw new Error('Interactive element has no box: ${selector}'); const point = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }; if (point.x < 0 || point.y < 0 || point.x > innerWidth || point.y > innerHeight) throw new Error('Interactive element is outside the viewport: ${selector}'); return point; })()`,
-  );
+  return evaluate(connection, stableControlPointExpression(selector), true);
 }
 
 async function replaceSeedInput(
