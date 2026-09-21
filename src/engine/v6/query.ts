@@ -240,7 +240,7 @@ export function queryPlayerCommandsV6(
         ? []
         : pending.candidates
             .filter((reward) =>
-              publicRewardCandidateMayBeLegal(view, city, reward),
+              publicRewardCandidateIsLegal(view, city, reward),
             )
             .map((reward): CommandV6 => ({
               kind: "CHOOSE_CITY_REWARD",
@@ -555,7 +555,7 @@ export function queryHealPreviewV6(
   return { medicId, targetUnitId, amount, hpAfter: target.hp + amount };
 }
 
-function publicRewardCandidateMayBeLegal(
+function publicRewardCandidateIsLegal(
   view: PlayerViewV6,
   city: CityStateV6,
   reward: RewardIdV6,
@@ -565,15 +565,9 @@ function publicRewardCandidateMayBeLegal(
     view.units.some((unit) => unit.hp > 0 && sameCoord(unit.at, at)) ||
     view.chocolateWalls.some((wall) => sameCoord(wall.at, at));
   for (const tile of view.board.tiles) {
-    const inFootprint =
-      Math.max(
-        Math.abs(tile.at.x - city.at.x),
-        Math.abs(tile.at.y - city.at.y),
-      ) <= (city.expanded ? 2 : 1);
-    if (!tile.explored) {
-      if (inFootprint) return true;
-      continue;
-    }
+    // Capture can retain unexplored outer territory. Offer a unit only when
+    // the public view guarantees a placement; unknown tiles prove nothing.
+    if (!tile.explored) continue;
     if (
       tile.territoryCityId === city.id &&
       (tile.terrain !== "MOUNTAIN" ||

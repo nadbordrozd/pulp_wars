@@ -593,6 +593,14 @@ describe("ruleset-6 Roads, redevelopment, forest, and rewards", () => {
         });
       }
       const randomBefore = state.random;
+      expect(
+        queryPlayerCommandsV6(viewForV6(state, state.humanPlayerId)),
+      ).toContainEqual({
+        kind: "CHOOSE_CITY_REWARD",
+        cityId: city.id,
+        reachedLevel: level,
+        reward,
+      });
       const result = applyCommandV6(state, state.humanPlayerId, {
         kind: "CHOOSE_CITY_REWARD",
         cityId: city.id,
@@ -1230,7 +1238,237 @@ describe("ruleset-6 Roads, redevelopment, forest, and rewards", () => {
     expect(replay.checkpoints[0]?.stateHash).toBe(canonicalHash(result.state));
     expect(result.state.random).toEqual(state.random);
   });
+
+  it("does not offer an impossible level-5 reward after capturing an expanded city with hidden outer territory", () => {
+    const initial = expandedCaptureFixture();
+    const actor = initial.humanPlayerId;
+    const captor = initial.units.find((unit) => unit.ownerId === actor);
+    if (captor === undefined) throw new Error("missing captor");
+    const city = initial.cities.find((candidate) =>
+      same(candidate.at, captor.at),
+    );
+    if (city === undefined) throw new Error("missing captured city");
+    const captureCommand = { kind: "CAPTURE", unitId: captor.id } as const;
+    const captured = applyCommandV6(initial, actor, captureCommand);
+    expect(captured.accepted).toBe(true);
+    if (!captured.accepted) return;
+    expect(ownCity(captured.state)).toMatchObject({ level: 4, expanded: true });
+    const hiddenOwned = captured.state.board.tiles.filter(
+      (tile) =>
+        tile.territoryCityId === city.id &&
+        !ownPlayer(captured.state).explored.some((at) => same(at, tile.at)),
+    );
+    expect(hiddenOwned.length).toBeGreaterThan(0);
+    const growthCommand = {
+      kind: "HARVEST_FRUIT",
+      at: { x: city.at.x + 1, y: city.at.y },
+    } as const;
+    const grown = applyCommandV6(captured.state, actor, growthCommand);
+    expect(grown.accepted).toBe(true);
+    if (!grown.accepted) return;
+    const state = grown.state;
+    expect(ownCity(state).level).toBe(5);
+    expect(state.pendingChoices).toEqual([
+      {
+        kind: "CITY_REWARD",
+        cityId: city.id,
+        reachedLevel: 5,
+        candidates: ["JUGGERNAUT", "TREASURY"],
+      },
+    ]);
+    const juggernaut = {
+      kind: "CHOOSE_CITY_REWARD",
+      cityId: city.id,
+      reachedLevel: 5,
+      reward: "JUGGERNAUT",
+    } as const;
+    const treasury = { ...juggernaut, reward: "TREASURY" } as const;
+    expectRejected(
+      applyCommandV6(state, actor, juggernaut),
+      state,
+      "NO_REWARD_UNIT_PLACEMENT",
+    );
+    expect(queryPlayerCommandsV6(viewForV6(state, actor))).toEqual([treasury]);
+
+    // Unknown terrain cannot affect offers, even when authority could place there.
+    const hiddenAt = hiddenOwned[0]?.at;
+    if (hiddenAt === undefined) throw new Error("missing hidden territory");
+    const hiddenFree = replaceTile(state, hiddenAt, {
+      terrain: "GRASS",
+      resource: null,
+    });
+    expect(viewForV6(hiddenFree, actor)).toEqual(viewForV6(state, actor));
+    expect(queryPlayerCommandsV6(viewForV6(hiddenFree, actor))).toEqual([
+      treasury,
+    ]);
+    expect(applyCommandV6(hiddenFree, actor, juggernaut).accepted).toBe(true);
+
+    const hiddenWall = checked({
+      ...hiddenFree,
+      nextEntityId: hiddenFree.nextEntityId + 1,
+      chocolateWalls: [
+        ...hiddenFree.chocolateWalls,
+        {
+          id: hiddenFree.nextEntityId as GameStateV6["chocolateWalls"][number]["id"],
+          ownerId: actor,
+          at: hiddenAt,
+          hp: 10,
+        },
+      ],
+    });
+    const hiddenUnit = checked({
+      ...hiddenFree,
+      units: hiddenFree.units.map((unit) =>
+        unit.ownerId !== actor ? { ...unit, at: hiddenAt } : unit,
+      ),
+    });
+    for (const blocked of [hiddenWall, hiddenUnit]) {
+      expect(viewForV6(blocked, actor)).toEqual(viewForV6(state, actor));
+      expect(queryPlayerCommandsV6(viewForV6(blocked, actor))).toEqual([
+        treasury,
+      ]);
+      expectRejected(
+        applyCommandV6(blocked, actor, juggernaut),
+        blocked,
+        "NO_REWARD_UNIT_PLACEMENT",
+      );
+    }
+
+    // One known empty tile guarantees success without changing authority's
+    // distance/coordinate preference, even if another valid tile is hidden.
+    const firstWall = state.chocolateWalls[0];
+    if (firstWall === undefined) throw new Error("missing placement wall");
+    const visibleFree = checked({
+      ...hiddenFree,
+      chocolateWalls: hiddenFree.chocolateWalls.filter(
+        (wall) => wall.id !== firstWall.id,
+      ),
+    });
+    expect(queryPlayerCommandsV6(viewForV6(visibleFree, actor))).toEqual([
+      juggernaut,
+      treasury,
+    ]);
+    const granted = applyCommandV6(visibleFree, actor, juggernaut);
+    expect(granted.accepted).toBe(true);
+    if (!granted.accepted) return;
+    expect(
+      granted.state.units.find((unit) => unit.id === visibleFree.nextEntityId),
+    ).toMatchObject({ role: "JUGGERNAUT", at: firstWall.at });
+
+    const replay = appendReplayCommandV6(
+      appendReplayCommandV6(
+        createReplayV6(setup),
+        captureCommand,
+        captured.state,
+      ),
+      growthCommand,
+      state,
+    );
+    const save = createSaveEnvelopeV6(
+      { state, replay },
+      "2026-09-21T12:00:00.000Z",
+    );
+    const loaded = parseSaveV6(JSON.stringify(save));
+    expect(loaded.kind).toBe("VALID");
+    if (loaded.kind !== "VALID") return;
+    expect(queryPlayerCommandsV6(viewForV6(loaded.save.state, actor))).toEqual([
+      treasury,
+    ]);
+    const resolved = applyCommandV6(state, actor, treasury);
+    expect(resolved.accepted).toBe(true);
+    if (!resolved.accepted) return;
+    expect(resolved.state.pendingChoices).toEqual([]);
+    expect(ownPlayer(resolved.state).coins).toBe(ownPlayer(state).coins + 5);
+    expect(resolved.state.random).toEqual(state.random);
+    expect(applyCommandV6(loaded.save.state, actor, treasury)).toEqual(
+      resolved,
+    );
+    expect(
+      appendReplayCommandV6(replay, treasury, resolved.state).checkpoints.at(-1)
+        ?.stateHash,
+    ).toBe(canonicalHash(resolved.state));
+  });
 });
+
+// A siege-ready level-4 city: capture must transfer its expanded territory
+// without granting the new owner the former owner's exploration.
+function expandedCaptureFixture(): GameStateV6 {
+  const state = rewardState(4, 4);
+  const city = ownCity(state);
+  const rival = state.players.find(
+    (player) => player.id !== state.humanPlayerId,
+  );
+  if (rival === undefined) throw new Error("missing rival");
+  const distance = (at: CoordV6): number =>
+    Math.max(Math.abs(at.x - city.at.x), Math.abs(at.y - city.at.y));
+  let nextEntityId = state.nextEntityId;
+  const walls = state.board.tiles
+    .filter((tile) => distance(tile.at) === 1)
+    .map((tile) => ({
+      id: nextEntityId++ as GameStateV6["chocolateWalls"][number]["id"],
+      ownerId: rival.id,
+      at: tile.at,
+      hp: 10,
+    }));
+  return checked({
+    ...state,
+    nextEntityId,
+    pendingChoices: [],
+    chocolateWalls: walls,
+    treasureChests: state.treasureChests.filter((at) => distance(at) > 2),
+    cities: state.cities.map((candidate) =>
+      candidate.id === city.id
+        ? {
+            ...candidate,
+            ownerId: rival.id,
+            expanded: true,
+            rewards: [
+              { reachedLevel: 2, reward: "STOCKPILE" },
+              { reachedLevel: 3, reward: "WALLS" },
+              { reachedLevel: 4, reward: "EXPAND" },
+            ],
+          }
+        : candidate,
+    ),
+    units: state.units.map((unit) =>
+      unit.ownerId === state.humanPlayerId
+        ? {
+            ...unit,
+            homeCityId: null,
+            at: city.at,
+            captureEligible: true,
+          }
+        : unit,
+    ),
+    players: state.players.map((player) =>
+      player.id === state.humanPlayerId
+        ? {
+            ...player,
+            researchedTechs: ["GATHERING"],
+            explored: state.board.tiles
+              .filter((tile) => distance(tile.at) <= 1)
+              .map((tile) => tile.at),
+          }
+        : player,
+    ),
+    board: {
+      ...state.board,
+      tiles: state.board.tiles.map((tile) =>
+        distance(tile.at) <= 2
+          ? {
+              ...tile,
+              territoryCityId: city.id,
+              terrain: distance(tile.at) === 2 ? "MOUNTAIN" : "GRASS",
+              resource: same(tile.at, { x: city.at.x + 1, y: city.at.y })
+                ? "FRUIT"
+                : null,
+              improvement: null,
+            }
+          : tile,
+      ),
+    },
+  });
+}
 
 function baseState(): GameStateV6 {
   const created = createInitialMapStateV6(setup);
