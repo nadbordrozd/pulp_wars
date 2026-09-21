@@ -87,6 +87,41 @@ scheduler. The same run checks keyboard/pointer/touch input, Fast Forward,
 autosave, restart, resume, delete, the separate r2/r1/v6 storage keys, explicit
 Ruleset 6 Original/Candy discovery, and unsupported-route storage isolation.
 
+Routine local runs enforce these functional checks, including cooperative AI
+yielding and a real outcome, and report callback timings separately. Every run
+writes `timing.json` to its printed evidence directory with the browser version,
+CPU/OS, load average, production callback maximum, cold-policy measurements
+(development mode only), and `PASS` or `EXCEEDED` against the unchanged 40 ms
+callback budget. Invalid or missing measurements still fail. `EXCEEDED` prints
+a warning and does not establish performance acceptance, even when all functional
+checks pass.
+
+Reference performance and release acceptance require strict mode:
+
+```bash
+npm run smoke:browser -- --performance
+npm run smoke:browser -- http://localhost:6175/pulp_wars/ --deployed --performance
+```
+
+`--archive-evidence` also always enables strict mode. Both strict modes fail if
+either measured callback maximum exceeds 40 ms; timing evidence is written before
+that failure, and release `PASS` evidence is not written. A built-bundle probe
+does not load the development-only cold-policy fixture and reports that
+measurement as absent. Ordinary functional smoke is not a replacement for these
+strict reference checks.
+
+This separation follows the recorded-machine performance budgets in
+[Client Architecture](../architecture/CLIENT_ARCHITECTURE.md#12-performance-and-size-budgets)
+and the host-dependent timing guidance in
+[Public Planning](../architecture/PUBLIC_PLANNING_V7.md). The September 2026
+investigation recorded development callbacks of 61.7/67.5 ms and a local built
+callback of 30.0 ms on the previous host. On an Intel i5-7360U Mac with Chrome
+153, later development and built observations were 43.2 ms and 121.8/79.2 ms.
+All reached the correct initial human boundary; those over-budget observations
+remain performance failures. They do not establish a development-server-only
+cause. The measured production callback also includes projection, command
+application and DOM notification, so it is not isolated policy compute time.
+
 This is automated playability evidence, not human playtesting or a claim about
 subjective balance. The Normal matrix and deterministic fixtures support
 analytical correctness and balance telemetry; neither substitutes for future
@@ -139,7 +174,7 @@ npm run art:ruleset7-catapult-review
 npm run art:ruleset7-building-economy-review
 npm run art:ruleset7-tactical-ui-review
 npm run art:ruleset7-farm-review
-npm run smoke:browser
+npm run smoke:browser -- --performance
 npm run smoke:browser:ruleset6
 npm run smoke:browser:legacy-v5
 npx tsx scripts/browser-core-ui-review-v7.ts

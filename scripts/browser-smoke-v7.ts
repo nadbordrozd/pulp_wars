@@ -1,11 +1,20 @@
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { arch, cpus, loadavg, platform, release, tmpdir } from "node:os";
 import path from "node:path";
 import process from "node:process";
 import { format } from "prettier";
 import { browserReleaseRuntimeFingerprintV7 } from "./ruleset7-browser-release-fingerprint";
+import {
+  browserTimingModeV7,
+  collectBrowserTimingV7,
+  enforceBrowserTimingV7,
+  validateColdPolicy,
+  validatePreview,
+  type ColdPolicyEvidenceV7,
+  type PreviewEvidenceV7,
+} from "./browser-smoke-v7-contract";
 import {
   RULESET7_LATE_PUBLIC_VIEW_COMMAND_INDEX,
   RULESET7_LATE_PUBLIC_VIEW_FIXTURE_URL,
@@ -30,52 +39,6 @@ interface BrowserErrorV7 {
   readonly detail: string;
 }
 
-interface PreviewEvidenceV7 {
-  readonly initial: {
-    readonly viewerId: number;
-    readonly activePlayerId: number;
-    readonly humanCoins: number;
-    readonly commandIndex: number;
-    readonly projectedViewerId: number;
-  };
-  readonly returned: {
-    readonly viewerId: number;
-    readonly activePlayerId: number;
-    readonly humanCoins: number;
-    readonly commandIndex: number;
-    readonly policySlices: number;
-    readonly maximumSliceMilliseconds: number;
-    readonly fastForwardObserved: boolean;
-    readonly hostTicks: number;
-  };
-  readonly persisted: {
-    readonly version: number;
-    readonly rulesetId: string;
-    readonly commandIndex: number;
-  };
-  readonly ordinaryBoundary: {
-    readonly controllerOwnProperties: readonly string[];
-    readonly snapshotHasStateHash: boolean;
-    readonly snapshotHasReplay: boolean;
-    readonly publicPlayersLeakPrivateState: boolean;
-  };
-  readonly exports: {
-    readonly safeClassification: string;
-    readonly safeViewerId: number;
-    readonly debugClassification: string;
-    readonly debugWarning: string;
-  };
-}
-
-interface ColdPolicyEvidenceV7 {
-  readonly commandIndex: number;
-  readonly callbacks: number;
-  readonly hostTicks: number;
-  readonly maximumCallbackMilliseconds: number;
-  readonly totalMilliseconds: number;
-  readonly decisionKind: string | null;
-}
-
 interface OutcomeEvidenceV7 {
   readonly outcome: "VICTORY" | "DEFEAT";
   readonly round: number;
@@ -93,6 +56,7 @@ type Connection = {
   readonly close: () => void;
 };
 
+const timingMode = browserTimingModeV7(process.argv);
 const deployed = process.argv.includes("--deployed");
 const archivalEvidence = process.argv.includes("--archive-evidence");
 const baseUrl = smokeUrl(
@@ -223,9 +187,7 @@ try {
   await pointerClick(connection, "#v7-ai-count");
   await pressKey(connection, "Home", "Home");
   await pressKey(connection, "Enter", "Enter");
-  await pointerClick(connection, "#v7-seed");
-  await pressKey(connection, "a", "KeyA", 2);
-  await connection.send("Input.insertText", { text: "0" });
+  await replaceSeedInput(connection, "0");
   await pointerClick(connection, '[data-action="launch"]');
   await waitForExpression(
     connection,
@@ -358,6 +320,40 @@ try {
         true,
       );
   if (cold !== null) validateColdPolicy(cold);
+  const version = (await connection.send("Browser.getVersion")) as {
+    readonly product?: string;
+  };
+  const timing = collectBrowserTimingV7(preview, cold);
+  await writeFile(
+    path.join(reviewRoot, "timing.json"),
+    await format(
+      JSON.stringify({
+        schemaVersion: 1,
+        recordedAt: new Date().toISOString(),
+        mode: timingMode,
+        browser: version.product ?? "Chrome",
+        url: baseUrl,
+        bundle: deployed ? "BUILT" : "DEVELOPMENT",
+        machine: {
+          platform: platform(),
+          release: release(),
+          architecture: arch(),
+          cpu: cpus()[0]?.model ?? "unknown",
+          logicalCpus: cpus().length,
+          loadAverage: loadavg(),
+        },
+        ...timing,
+        production: preview.returned,
+        cold,
+        note: "Callback wall times are host-dependent observations. Functional acceptance is separate; strict reference performance acceptance requires --performance or --archive-evidence.",
+      }),
+      { parser: "json" },
+    ),
+  );
+  if (timing.status === "EXCEEDED")
+    console.warn(
+      `PERFORMANCE EXCEEDED: ${timing.budgetMilliseconds}ms callback budget; production ${timing.productionMaximumMilliseconds.toFixed(1)}ms, cold ${timing.coldMaximumMilliseconds === null ? "not measured" : `${timing.coldMaximumMilliseconds.toFixed(1)}ms`}. ${timingMode === "STRICT" ? "Strict performance acceptance will fail." : "Functional checks continue; this run does not pass performance acceptance."} Evidence: ${path.join(reviewRoot, "timing.json")}`,
+    );
 
   const firstDebugHash = await evaluate<string>(
     connection,
@@ -467,9 +463,7 @@ try {
   let outcome: OutcomeEvidenceV7 | null = null;
   let pendingReleaseEvidence: string | null = null;
   if (!deployed) {
-    await pointerClick(connection, "#v7-seed");
-    await pressKey(connection, "a", "KeyA", 2);
-    await connection.send("Input.insertText", { text: "0" });
+    await replaceSeedInput(connection, "0");
     await pointerClick(connection, '[data-action="launch"]');
     await waitForExpression(
       connection,
@@ -496,6 +490,9 @@ try {
       JSON.stringify({
         schemaVersion: 1,
         status: "PASS",
+        acceptance:
+          timingMode === "STRICT" ? "FUNCTIONAL_AND_TIMING" : "FUNCTIONAL",
+        timing: { mode: timingMode, ...timing },
         rulesetId: "pulp-wars-poc-7r4",
         runtimeFingerprint: browserReleaseRuntimeFingerprintV7(process.cwd()),
         productionEntry: "src/main.ts",
@@ -594,14 +591,12 @@ try {
   await delay(200);
   if (browserErrors.length > 0)
     throw new Error(`browser emitted errors: ${JSON.stringify(browserErrors)}`);
+  enforceBrowserTimingV7(timing, timingMode);
   if (pendingReleaseEvidence !== null)
     await writeFile(
       path.join(reviewRoot, "evidence.json"),
       pendingReleaseEvidence,
     );
-  const version = (await connection.send("Browser.getVersion")) as {
-    readonly product?: string;
-  };
   connection.close();
   const coldSummary =
     cold === null
@@ -612,7 +607,7 @@ try {
       ? "bounded launch/End Turn/resume compatibility probe"
       : `natural default match ${outcome.outcome} in round ${outcome.round}/${outcome.commandIndex} commands`;
   console.log(
-    `Ruleset-7 browser smoke passed in ${version.product ?? "Chrome"}: production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed. Evidence: ${reviewRoot}${archivalEvidence ? " (explicit archival mode)" : " (temporary, untracked)"}`,
+    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed. Evidence: ${reviewRoot}${archivalEvidence ? " (explicit archival mode)" : " (temporary, untracked)"}`,
   );
 } finally {
   try {
@@ -685,71 +680,6 @@ async function fileSha256(filename: string): Promise<string> {
   return createHash("sha256")
     .update(await readFile(filename))
     .digest("hex");
-}
-
-function validatePreview(evidence: PreviewEvidenceV7): void {
-  if (
-    evidence.initial.commandIndex !== 0 ||
-    evidence.initial.viewerId !== 1 ||
-    evidence.initial.activePlayerId !== 2 ||
-    evidence.initial.humanCoins !== 5 ||
-    evidence.initial.projectedViewerId !== 1
-  )
-    throw new Error(
-      `initial boundary failed: ${JSON.stringify(evidence.initial)}`,
-    );
-  if (
-    evidence.returned.viewerId !== 1 ||
-    evidence.returned.activePlayerId !== 1 ||
-    evidence.returned.humanCoins !== 7 ||
-    evidence.returned.commandIndex < 1 ||
-    evidence.returned.policySlices < evidence.returned.commandIndex ||
-    evidence.returned.maximumSliceMilliseconds > 40 ||
-    !evidence.returned.fastForwardObserved ||
-    evidence.returned.hostTicks < 1
-  )
-    throw new Error(
-      `production AI boundary failed: ${JSON.stringify(evidence.returned)}`,
-    );
-  if (
-    evidence.persisted.version !== 7 ||
-    evidence.persisted.rulesetId !== "pulp-wars-poc-7r4" ||
-    evidence.persisted.commandIndex !== evidence.returned.commandIndex
-  )
-    throw new Error(
-      `persisted boundary failed: ${JSON.stringify(evidence.persisted)}`,
-    );
-  if (
-    evidence.ordinaryBoundary.controllerOwnProperties.length !== 0 ||
-    evidence.ordinaryBoundary.snapshotHasStateHash ||
-    evidence.ordinaryBoundary.snapshotHasReplay ||
-    evidence.ordinaryBoundary.publicPlayersLeakPrivateState
-  )
-    throw new Error(
-      `ordinary authority boundary failed: ${JSON.stringify(evidence.ordinaryBoundary)}`,
-    );
-  if (
-    evidence.exports.safeClassification !== "PLAYER_SAFE" ||
-    evidence.exports.safeViewerId !== 1 ||
-    evidence.exports.debugClassification !== "OMNISCIENT" ||
-    evidence.exports.debugWarning !== "INCLUDES_HIDDEN_MAP_AND_UNITS"
-  )
-    throw new Error(
-      `export classification failed: ${JSON.stringify(evidence.exports)}`,
-    );
-}
-
-function validateColdPolicy(evidence: ColdPolicyEvidenceV7): void {
-  if (
-    evidence.commandIndex !== RULESET7_LATE_PUBLIC_VIEW_COMMAND_INDEX ||
-    evidence.callbacks < 2 ||
-    evidence.hostTicks < 2 ||
-    evidence.maximumCallbackMilliseconds > 40 ||
-    evidence.decisionKind === null
-  )
-    throw new Error(
-      `cold late-view responsiveness failed: ${JSON.stringify(evidence)}`,
-    );
 }
 
 async function evaluate<T>(
@@ -901,6 +831,26 @@ async function elementCenter(
     connection,
     `(() => { const node = document.querySelector(${JSON.stringify(selector)}); if (!(node instanceof HTMLElement)) throw new Error('Missing interactive element: ${selector}'); node.scrollIntoView({ block: 'center', inline: 'center' }); const rect = node.getBoundingClientRect(); if (rect.width <= 0 || rect.height <= 0) throw new Error('Interactive element has no box: ${selector}'); const point = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }; if (point.x < 0 || point.y < 0 || point.x > innerWidth || point.y > innerHeight) throw new Error('Interactive element is outside the viewport: ${selector}'); return point; })()`,
   );
+}
+
+async function replaceSeedInput(
+  connection: Connection,
+  value: string,
+): Promise<void> {
+  await pointerClick(connection, "#v7-seed");
+  await connection.send("Input.dispatchKeyEvent", {
+    type: "rawKeyDown",
+    commands: ["selectAll"],
+  });
+  await connection.send("Input.insertText", { text: value });
+  const actual = await evaluate<string>(
+    connection,
+    `document.querySelector('#v7-seed')?.value`,
+  );
+  if (actual !== value)
+    throw new Error(
+      `Seed replacement failed: expected ${value}, got ${actual}`,
+    );
 }
 
 async function pressKey(
