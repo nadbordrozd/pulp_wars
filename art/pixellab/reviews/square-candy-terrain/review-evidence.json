@@ -139,6 +139,643 @@
     "simulationPrngRead": false,
     "notes": "This bead registers accepted URLs only in the generated art manifest. It does not switch terrain coverage, alter the renderer, or encode passability, resources, ownership, commands, saves, replay, AI or headless state."
   },
+  "individualLayout": {
+    "width": 1440,
+    "height": 2292,
+    "cell": {
+      "width": 360,
+      "height": 764
+    },
+    "panels": [
+      {
+        "id": "terrain-square-candy-grass-1",
+        "bounds": {
+          "left": 0,
+          "top": 0,
+          "width": 360,
+          "height": 764
+        },
+        "label": {
+          "left": 0,
+          "top": 8,
+          "width": 360,
+          "height": 52
+        },
+        "source": {
+          "bounds": {
+            "left": 8,
+            "top": 68,
+            "width": 192,
+            "height": 280
+          },
+          "image": {
+            "left": 16,
+            "top": 120,
+            "width": 176,
+            "height": 176
+          }
+        },
+        "native": {
+          "bounds": {
+            "left": 208,
+            "top": 68,
+            "width": 144,
+            "height": 208
+          },
+          "image": {
+            "left": 216,
+            "top": 108,
+            "width": 128,
+            "height": 128
+          }
+        },
+        "enlarged": {
+          "bounds": {
+            "left": 44,
+            "top": 356,
+            "width": 272,
+            "height": 400
+          },
+          "image": {
+            "left": 52,
+            "top": 428,
+            "width": 256,
+            "height": 256
+          }
+        }
+      },
+      {
+        "id": "terrain-square-candy-grass-2",
+        "bounds": {
+          "left": 360,
+          "top": 0,
+          "width": 360,
+          "height": 764
+        },
+        "label": {
+          "left": 360,
+          "top": 8,
+          "width": 360,
+          "height": 52
+        },
+        "source": {
+          "bounds": {
+            "left": 368,
+            "top": 68,
+            "width": 192,
+            "height": 280
+          },
+          "image": {
+            "left": 376,
+            "top": 120,
+            "width": 176,
+            "height": 176
+          }
+        },
+        "native": {
+          "bounds": {
+            "left": 568,
+            "top": 68,
+            "width": 144,
+            "height": 208
+          },
+          "image": {
+            "left": 576,
+            "top": 108,
+            "width": 128,
+            "height": 128
+          }
+        },
+        "enlarged": {
+          "bounds": {
+            "left": 404,
+            "top": 356,
+            "width": 272,
+            "height": 400
+          },
+          "image": {
+            "left": 412,
+            "top": 428,
+            "width": 256,
+            "height": 256
+          }
+        }
+      },
+      {
+        "id": "terrain-square-candy-grass-3",
+        "bounds": {
+          "left": 720,
+          "top": 0,
+          "width": 360,
+          "height": 764
+        },
+        "label": {
+          "left": 720,
+          "top": 8,
+          "width": 360,
+          "height": 52
+        },
+        "source": {
+          "bounds": {
+            "left": 728,
+            "top": 68,
+            "width": 192,
+            "height": 280
+          },
+          "image": {
+            "left": 736,
+            "top": 120,
+            "width": 176,
+            "height": 176
+          }
+        },
+        "native": {
+          "bounds": {
+            "left": 928,
+            "top": 68,
+            "width": 144,
+            "height": 208
+          },
+          "image": {
+            "left": 936,
+            "top": 108,
+            "width": 128,
+            "height": 128
+          }
+        },
+        "enlarged": {
+          "bounds": {
+            "left": 764,
+            "top": 356,
+            "width": 272,
+            "height": 400
+          },
+          "image": {
+            "left": 772,
+            "top": 428,
+            "width": 256,
+            "height": 256
+          }
+        }
+      },
+      {
+        "id": "terrain-square-candy-grass-4",
+        "bounds": {
+          "left": 1080,
+          "top": 0,
+          "width": 360,
+          "height": 764
+        },
+        "label": {
+          "left": 1080,
+          "top": 8,
+          "width": 360,
+          "height": 52
+        },
+        "source": {
+          "bounds": {
+            "left": 1088,
+            "top": 68,
+            "width": 192,
+            "height": 280
+          },
+          "image": {
+            "left": 1096,
+            "top": 120,
+            "width": 176,
+            "height": 176
+          }
+        },
+        "native": {
+          "bounds": {
+            "left": 1288,
+            "top": 68,
+            "width": 144,
+            "height": 208
+          },
+          "image": {
+            "left": 1296,
+            "top": 108,
+            "width": 128,
+            "height": 128
+          }
+        },
+        "enlarged": {
+          "bounds": {
+            "left": 1124,
+            "top": 356,
+            "width": 272,
+            "height": 400
+          },
+          "image": {
+            "left": 1132,
+            "top": 428,
+            "width": 256,
+            "height": 256
+          }
+        }
+      },
+      {
+        "id": "terrain-square-candy-forest-1",
+        "bounds": {
+          "left": 0,
+          "top": 764,
+          "width": 360,
+          "height": 764
+        },
+        "label": {
+          "left": 0,
+          "top": 772,
+          "width": 360,
+          "height": 52
+        },
+        "source": {
+          "bounds": {
+            "left": 8,
+            "top": 832,
+            "width": 192,
+            "height": 280
+          },
+          "image": {
+            "left": 16,
+            "top": 840,
+            "width": 176,
+            "height": 264
+          }
+        },
+        "native": {
+          "bounds": {
+            "left": 208,
+            "top": 832,
+            "width": 144,
+            "height": 208
+          },
+          "image": {
+            "left": 216,
+            "top": 840,
+            "width": 128,
+            "height": 192
+          }
+        },
+        "enlarged": {
+          "bounds": {
+            "left": 44,
+            "top": 1120,
+            "width": 272,
+            "height": 400
+          },
+          "image": {
+            "left": 52,
+            "top": 1128,
+            "width": 256,
+            "height": 384
+          }
+        }
+      },
+      {
+        "id": "terrain-square-candy-forest-2",
+        "bounds": {
+          "left": 360,
+          "top": 764,
+          "width": 360,
+          "height": 764
+        },
+        "label": {
+          "left": 360,
+          "top": 772,
+          "width": 360,
+          "height": 52
+        },
+        "source": {
+          "bounds": {
+            "left": 368,
+            "top": 832,
+            "width": 192,
+            "height": 280
+          },
+          "image": {
+            "left": 376,
+            "top": 840,
+            "width": 176,
+            "height": 264
+          }
+        },
+        "native": {
+          "bounds": {
+            "left": 568,
+            "top": 832,
+            "width": 144,
+            "height": 208
+          },
+          "image": {
+            "left": 576,
+            "top": 840,
+            "width": 128,
+            "height": 192
+          }
+        },
+        "enlarged": {
+          "bounds": {
+            "left": 404,
+            "top": 1120,
+            "width": 272,
+            "height": 400
+          },
+          "image": {
+            "left": 412,
+            "top": 1128,
+            "width": 256,
+            "height": 384
+          }
+        }
+      },
+      {
+        "id": "terrain-square-candy-forest-3",
+        "bounds": {
+          "left": 720,
+          "top": 764,
+          "width": 360,
+          "height": 764
+        },
+        "label": {
+          "left": 720,
+          "top": 772,
+          "width": 360,
+          "height": 52
+        },
+        "source": {
+          "bounds": {
+            "left": 728,
+            "top": 832,
+            "width": 192,
+            "height": 280
+          },
+          "image": {
+            "left": 736,
+            "top": 840,
+            "width": 176,
+            "height": 264
+          }
+        },
+        "native": {
+          "bounds": {
+            "left": 928,
+            "top": 832,
+            "width": 144,
+            "height": 208
+          },
+          "image": {
+            "left": 936,
+            "top": 840,
+            "width": 128,
+            "height": 192
+          }
+        },
+        "enlarged": {
+          "bounds": {
+            "left": 764,
+            "top": 1120,
+            "width": 272,
+            "height": 400
+          },
+          "image": {
+            "left": 772,
+            "top": 1128,
+            "width": 256,
+            "height": 384
+          }
+        }
+      },
+      {
+        "id": "terrain-square-candy-forest-4",
+        "bounds": {
+          "left": 1080,
+          "top": 764,
+          "width": 360,
+          "height": 764
+        },
+        "label": {
+          "left": 1080,
+          "top": 772,
+          "width": 360,
+          "height": 52
+        },
+        "source": {
+          "bounds": {
+            "left": 1088,
+            "top": 832,
+            "width": 192,
+            "height": 280
+          },
+          "image": {
+            "left": 1096,
+            "top": 840,
+            "width": 176,
+            "height": 264
+          }
+        },
+        "native": {
+          "bounds": {
+            "left": 1288,
+            "top": 832,
+            "width": 144,
+            "height": 208
+          },
+          "image": {
+            "left": 1296,
+            "top": 840,
+            "width": 128,
+            "height": 192
+          }
+        },
+        "enlarged": {
+          "bounds": {
+            "left": 1124,
+            "top": 1120,
+            "width": 272,
+            "height": 400
+          },
+          "image": {
+            "left": 1132,
+            "top": 1128,
+            "width": 256,
+            "height": 384
+          }
+        }
+      },
+      {
+        "id": "terrain-square-candy-mountain-1",
+        "bounds": {
+          "left": 0,
+          "top": 1528,
+          "width": 360,
+          "height": 764
+        },
+        "label": {
+          "left": 0,
+          "top": 1536,
+          "width": 360,
+          "height": 52
+        },
+        "source": {
+          "bounds": {
+            "left": 8,
+            "top": 1596,
+            "width": 192,
+            "height": 280
+          },
+          "image": {
+            "left": 16,
+            "top": 1604,
+            "width": 176,
+            "height": 264
+          }
+        },
+        "native": {
+          "bounds": {
+            "left": 208,
+            "top": 1596,
+            "width": 144,
+            "height": 208
+          },
+          "image": {
+            "left": 216,
+            "top": 1604,
+            "width": 128,
+            "height": 192
+          }
+        },
+        "enlarged": {
+          "bounds": {
+            "left": 44,
+            "top": 1884,
+            "width": 272,
+            "height": 400
+          },
+          "image": {
+            "left": 52,
+            "top": 1892,
+            "width": 256,
+            "height": 384
+          }
+        }
+      },
+      {
+        "id": "terrain-square-candy-mountain-2",
+        "bounds": {
+          "left": 360,
+          "top": 1528,
+          "width": 360,
+          "height": 764
+        },
+        "label": {
+          "left": 360,
+          "top": 1536,
+          "width": 360,
+          "height": 52
+        },
+        "source": {
+          "bounds": {
+            "left": 368,
+            "top": 1596,
+            "width": 192,
+            "height": 280
+          },
+          "image": {
+            "left": 376,
+            "top": 1604,
+            "width": 176,
+            "height": 264
+          }
+        },
+        "native": {
+          "bounds": {
+            "left": 568,
+            "top": 1596,
+            "width": 144,
+            "height": 208
+          },
+          "image": {
+            "left": 576,
+            "top": 1604,
+            "width": 128,
+            "height": 192
+          }
+        },
+        "enlarged": {
+          "bounds": {
+            "left": 404,
+            "top": 1884,
+            "width": 272,
+            "height": 400
+          },
+          "image": {
+            "left": 412,
+            "top": 1892,
+            "width": 256,
+            "height": 384
+          }
+        }
+      },
+      {
+        "id": "terrain-square-candy-mountain-3",
+        "bounds": {
+          "left": 720,
+          "top": 1528,
+          "width": 360,
+          "height": 764
+        },
+        "label": {
+          "left": 720,
+          "top": 1536,
+          "width": 360,
+          "height": 52
+        },
+        "source": {
+          "bounds": {
+            "left": 728,
+            "top": 1596,
+            "width": 192,
+            "height": 280
+          },
+          "image": {
+            "left": 736,
+            "top": 1604,
+            "width": 176,
+            "height": 264
+          }
+        },
+        "native": {
+          "bounds": {
+            "left": 928,
+            "top": 1596,
+            "width": 144,
+            "height": 208
+          },
+          "image": {
+            "left": 936,
+            "top": 1604,
+            "width": 128,
+            "height": 192
+          }
+        },
+        "enlarged": {
+          "bounds": {
+            "left": 764,
+            "top": 1884,
+            "width": 272,
+            "height": 400
+          },
+          "image": {
+            "left": 772,
+            "top": 1892,
+            "width": 256,
+            "height": 384
+          }
+        }
+      }
+    ]
+  },
   "measurements": [
     {
       "id": "terrain-square-candy-grass-1",
@@ -630,10 +1267,10 @@
   "artifacts": [
     {
       "path": "art/pixellab/reviews/square-candy-terrain/individual-native-enlarged.png",
-      "bytes": 408467,
-      "width": 1280,
-      "height": 1860,
-      "sha256": "9a231e011a837cbbf0c2babd6107ba204026eb44a03cde99914b751b9a4dbb37"
+      "bytes": 435261,
+      "width": 1440,
+      "height": 2292,
+      "sha256": "975c2eb05232e9376045e10948fee906fa43a025dc1089ecef7366512e0f75b5"
     },
     {
       "path": "art/pixellab/reviews/square-candy-terrain/all-11-family.png",

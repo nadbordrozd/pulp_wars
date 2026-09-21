@@ -4,6 +4,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { format } from "prettier";
 import sharp, { type OverlayOptions } from "sharp";
+import { individualTerrainLayout } from "./square-terrain-review-layout.js";
 
 interface Bounds {
   readonly left: number;
@@ -101,7 +102,7 @@ for (const id of ids) {
 }
 
 await mkdir(reviewRoot, { recursive: true });
-await createIndividualSheet();
+const individualLayout = await createIndividualSheet();
 await createFamilySheet();
 await createRepetitionSheet();
 await createAdjacencySheet();
@@ -247,6 +248,7 @@ await writeFile(
           notes:
             "This bead registers accepted URLs only in the generated art manifest. It does not switch terrain coverage, alter the renderer, or encode passability, resources, ownership, commands, saves, replay, AI or headless state.",
         },
+        individualLayout,
         measurements,
         familyDifferences,
         generationSummary: {
@@ -285,66 +287,65 @@ await writeFile(
   "utf8",
 );
 
-async function createIndividualSheet(): Promise<void> {
-  const cell = { width: 320, height: 620 };
-  const columns = 4;
-  const rows = Math.ceil(ids.length / columns);
+async function createIndividualSheet() {
+  const images = await Promise.all(
+    ids.map(async (id) => {
+      const file = resolvedFile(id);
+      const source = await sharp(file)
+        .resize({ width: 176 })
+        .png()
+        .toBuffer({ resolveWithObject: true });
+      const native = await sharp(await display(id, 1, 1))
+        .png()
+        .toBuffer({ resolveWithObject: true });
+      const enlarged = await sharp(file)
+        .resize({ width: 256, kernel: sharp.kernel.nearest })
+        .png()
+        .toBuffer({ resolveWithObject: true });
+      return { id, source, native, enlarged };
+    }),
+  );
+  const labelMetadata = await sharp(label("", "", 320)).metadata();
+  const layout = individualTerrainLayout(
+    images.map(({ id, source, native, enlarged }) => ({
+      id,
+      source: source.info,
+      native: native.info,
+      enlarged: enlarged.info,
+    })),
+    labelMetadata.height,
+  );
   const overlays: OverlayOptions[] = [];
-  for (const [index, id] of ids.entries()) {
-    const recipe = requiredRecipe(id);
-    const file = resolvedFile(id);
-    const source = await sharp(file)
-      .resize({
-        width: 176,
-        height: 264,
-        fit: "contain",
-        background: "#00000000",
-      })
-      .png()
-      .toBuffer();
-    const native = await display(id, 1, 1);
-    const enlarged = await sharp(file)
-      .resize({
-        width: 256,
-        height: 384,
-        fit: "contain",
-        background: "#00000000",
-        kernel: sharp.kernel.nearest,
-      })
-      .png()
-      .toBuffer();
-    const left = (index % columns) * cell.width;
-    const top = Math.floor(index / columns) * cell.height;
+  for (const [index, imagesForAsset] of images.entries()) {
+    const panel = layout.panels[index];
+    if (panel === undefined)
+      throw new Error("Missing individual terrain panel");
     overlays.push({
-      input: label(shortId(id), recordHash(id), cell.width),
-      left,
-      top: top + 4,
+      input: label(shortId(panel.id), recordHash(panel.id), panel.label.width),
+      left: panel.label.left,
+      top: panel.label.top,
     });
-    overlays.push({ input: checker(184, 276), left: left + 8, top: top + 54 });
-    overlays.push({ input: source, left: left + 12, top: top + 60 });
-    overlays.push({
-      input: checker(132, 196),
-      left: left + 192,
-      top: top + 54,
-    });
-    overlays.push({
-      input: native,
-      left: left + 194,
-      top: top + (recipe.outputSize.height === 256 ? 88 : 56),
-    });
-    overlays.push({
-      input: checker(272, 272),
-      left: left + 24,
-      top: top + 338,
-    });
-    overlays.push({ input: enlarged, left: left + 32, top: top + 342 });
+    for (const kind of ["source", "native", "enlarged"] as const) {
+      const { bounds, image } = panel[kind];
+      overlays.push({
+        input: checker(bounds.width, bounds.height),
+        left: bounds.left,
+        top: bounds.top,
+      });
+      overlays.push({
+        input: imagesForAsset[kind].data,
+        left: image.left,
+        top: image.top,
+      });
+    }
   }
   await canvas(
-    columns * cell.width,
-    rows * cell.height,
+    layout.width,
+    layout.height,
     overlays,
     "individual-native-enlarged.png",
   );
+  return layout;
 }
 
 async function createFamilySheet(): Promise<void> {
