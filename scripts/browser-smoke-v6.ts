@@ -1,5 +1,9 @@
 import { prepareSmokeOutput } from "./browser-smoke-output";
-import { spawn } from "node:child_process";
+import {
+  launchSmokeBrowser,
+  navigateSmokePage,
+  type SmokeConnection as Connection,
+} from "./browser-smoke-startup";
 import { createHash } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -21,20 +25,6 @@ import {
   type BrowserSmokeLayoutV6,
   type BrowserSmokeSelectionIdentityV6,
 } from "./browser-smoke-v6-contract";
-
-interface DebugTarget {
-  readonly type: string;
-  readonly url: string;
-  readonly webSocketDebuggerUrl: string;
-}
-
-interface ProtocolMessage {
-  readonly id?: number;
-  readonly method?: string;
-  readonly params?: unknown;
-  readonly result?: unknown;
-  readonly error?: { readonly message?: string };
-}
 
 interface BrowserErrorV6 {
   readonly method: string;
@@ -100,9 +90,10 @@ let coordinateActivations: BrowserSmokeCoordinateActivationV6[] = [];
 let reloadDocumentSequence = 0;
 const mountainLiveOnly = process.argv.includes("--mountain-live");
 
-const browser = spawn(
+const browser = await launchSmokeBrowser({
   chrome,
-  [
+  port,
+  args: [
     "--headless=new",
     "--disable-gpu",
     "--hide-scrollbars",
@@ -111,14 +102,11 @@ const browser = spawn(
     `--remote-debugging-port=${port}`,
     `--user-data-dir=${userData}`,
     "--window-size=1440,1000",
-    baseUrl,
   ],
-  { stdio: "ignore" },
-);
+});
 
 try {
-  const target = await waitForTarget(port, baseUrl);
-  const connection = await connect(target.webSocketDebuggerUrl);
+  const connection = browser.connection;
   const browserErrors: BrowserErrorV6[] = [];
   connection.onEvent((method, params) => {
     const detail = eventErrorDetail(method, params);
@@ -128,6 +116,7 @@ try {
   await connection.send("Runtime.enable");
   await connection.send("Log.enable");
   await setViewport(connection, RULESET6_SMOKE_VIEWPORTS.desktop);
+  await navigateSmokePage(connection, baseUrl);
   await waitForExpression(
     connection,
     `document.querySelector('[data-v6-setup]') !== null`,
@@ -229,7 +218,7 @@ try {
     );
   }
 } finally {
-  browser.kill();
+  browser.close();
 }
 
 interface MountainDrawTraceV6 {
@@ -2548,14 +2537,6 @@ async function capturePair(
   ];
 }
 
-type Connection = {
-  readonly send: (method: string, params?: object) => Promise<unknown>;
-  readonly onEvent: (
-    listener: (method: string, params: unknown) => void,
-  ) => () => void;
-  readonly close: () => void;
-};
-
 async function evaluate<T>(
   connection: Connection,
   expression: string,
@@ -2653,89 +2634,6 @@ async function reloadAndWaitForFreshDocument(
 
 function resumeScreenReadyExpressionV6(): string {
   return `(() => { const snapshot = globalThis.__PULP_WARS_APP__?.controller.snapshot(); return document.querySelector('.v6-resume-screen') !== null && snapshot?.phase === 'RESUMABLE' && !snapshot.transitioning; })()`;
-}
-
-async function waitForTarget(
-  debugPort: number,
-  expectedUrl: string,
-): Promise<DebugTarget> {
-  for (let attempt = 0; attempt < 150; attempt += 1) {
-    try {
-      const response = await fetch(`http://localhost:${debugPort}/json/list`);
-      if (response.ok) {
-        const targets = (await response.json()) as readonly DebugTarget[];
-        const target = targets.find(
-          (candidate) =>
-            candidate.type === "page" && candidate.url.startsWith(expectedUrl),
-        );
-        if (target !== undefined) return target;
-      }
-    } catch {
-      // Chrome is still starting.
-    }
-    await delay(100);
-  }
-  throw new Error("Chrome debugging target did not become ready");
-}
-
-async function connect(webSocketUrl: string): Promise<Connection> {
-  const socket = new WebSocket(webSocketUrl);
-  await new Promise<void>((resolve, reject) => {
-    socket.addEventListener("open", () => resolve(), { once: true });
-    socket.addEventListener("error", () => reject(new Error("CDP failed")), {
-      once: true,
-    });
-  });
-  let nextId = 1;
-  const pending = new Map<
-    number,
-    {
-      readonly method: string;
-      readonly resolve: (value: unknown) => void;
-      readonly reject: (error: Error) => void;
-    }
-  >();
-  const listeners = new Set<(method: string, params: unknown) => void>();
-  socket.addEventListener("message", (event) => {
-    const message = JSON.parse(String(event.data)) as ProtocolMessage;
-    if (message.id !== undefined) {
-      const request = pending.get(message.id);
-      if (request === undefined) return;
-      pending.delete(message.id);
-      if (message.error !== undefined) {
-        request.reject(
-          new Error(
-            `${request.method}: ${message.error.message ?? "CDP command failed"}`,
-          ),
-        );
-      } else {
-        request.resolve(message.result);
-      }
-      return;
-    }
-    if (message.method !== undefined) {
-      for (const listener of listeners) {
-        listener(message.method, message.params);
-      }
-    }
-  });
-  return {
-    send(method, params = {}): Promise<unknown> {
-      const id = nextId;
-      nextId += 1;
-      return new Promise((resolve, reject) => {
-        pending.set(id, { method, resolve, reject });
-        socket.send(JSON.stringify({ id, method, params }));
-      });
-    },
-    onEvent(listener): () => void {
-      listeners.add(listener);
-      return () => listeners.delete(listener);
-    },
-    close(): void {
-      socket.close();
-    },
-  };
 }
 
 function eventErrorDetail(method: string, params: unknown): string | null {

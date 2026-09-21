@@ -1,24 +1,19 @@
 import { prepareSmokeOutput } from "./browser-smoke-output";
-import { spawn } from "node:child_process";
+import {
+  launchSmokeBrowser,
+  navigateSmokePage,
+  type SmokeCommandOptions,
+  type SmokeConnection as Connection,
+} from "./browser-smoke-startup";
 import { createHash } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 
-interface DebugTarget {
-  readonly type: string;
-  readonly url: string;
-  readonly webSocketDebuggerUrl: string;
-}
-
-interface ProtocolMessage {
-  readonly id?: number;
-  readonly result?: unknown;
-  readonly error?: { readonly message?: string };
-}
-
 type PositionalCommandKind = "MOVE" | "ESCAPE_MOVE" | "ATTACK";
 type ActivationChannel = "POINTER" | "TOUCH" | "KEYBOARD" | "SEMANTIC";
+
+const LEGACY_POLICY_TIMEOUT_MS = 180_000;
 
 const captureReview = process.argv.includes("--capture-review");
 const attackReview = process.argv.includes("--attack-review");
@@ -60,26 +55,25 @@ const userData = chrome.endsWith(".exe")
   ? `C:\\Windows\\Temp\\pulp-wars-smoke-${process.pid}`
   : path.join(process.env.TMPDIR ?? "/tmp", `pulp-wars-smoke-${process.pid}`);
 
-const browser = spawn(
+const browser = await launchSmokeBrowser({
   chrome,
-  [
+  port,
+  args: [
     "--headless=new",
     "--disable-gpu",
     "--hide-scrollbars",
     `--remote-debugging-port=${port}`,
     `--user-data-dir=${userData}`,
     "--window-size=1440,1000",
-    baseUrl,
   ],
-  { stdio: "ignore" },
-);
+});
 
 try {
-  const target = await waitForTarget(port, baseUrl);
-  const connection = await connect(target.webSocketDebuggerUrl);
+  const connection = browser.connection;
   await connection.send("Page.enable");
   await connection.send("Runtime.enable");
   await desktopViewport(connection);
+  await navigateSmokePage(connection, baseUrl);
   await waitForRoute(connection, "hub");
   if (candyReview) {
     const review = await reviewCandyActions(connection);
@@ -258,7 +252,7 @@ try {
   connection.close();
   await smokeOutput.publish();
 } finally {
-  browser.kill();
+  browser.close();
 }
 
 async function reviewCandyActions(connection: Connection): Promise<{
@@ -2019,6 +2013,10 @@ async function reviewCaptureAction(connection: Connection): Promise<void> {
       throw new Error('No capture opportunity within browser review budget');
     })()`,
     true,
+    {
+      timeoutMs: LEGACY_POLICY_TIMEOUT_MS,
+      stage: "legacy reviewCaptureAction commandLimit=10000",
+    },
   );
   await assertCaptureAction(connection);
   await exerciseMapCamera(connection);
@@ -2475,7 +2473,18 @@ async function drivePolicy(
       aiProgressChecks
     };
   })()`;
-  return evaluate<MatchSummary>(connection, expression, true);
+  // This single evaluation drives a whole match, including every paced combat
+  // presentation. Keep its command budget and assertions, with a separate wall
+  // clock bound from ordinary CDP calls and startup.
+  const started = Date.now();
+  const summary = await evaluate<MatchSummary>(connection, expression, true, {
+    timeoutMs: LEGACY_POLICY_TIMEOUT_MS,
+    stage: `legacy drivePolicy commandLimit=${commandLimit}`,
+  });
+  console.log(
+    `Legacy policy: ${summary.aiCount} AI, commandLimit=${commandLimit}, commandIndex=${summary.commandIndex}, elapsed=${Date.now() - started}ms`,
+  );
+  return summary;
 }
 
 interface MatchSummary {
@@ -2691,21 +2700,21 @@ async function capture(connection: Connection, name: string): Promise<void> {
   );
 }
 
-type Connection = {
-  readonly send: (method: string, params?: object) => Promise<unknown>;
-  readonly close: () => void;
-};
-
 async function evaluate<T>(
   connection: Connection,
   expression: string,
   awaitPromise = false,
+  options?: SmokeCommandOptions,
 ): Promise<T> {
-  const response = (await connection.send("Runtime.evaluate", {
-    expression,
-    awaitPromise,
-    returnByValue: true,
-  })) as {
+  const response = (await connection.send(
+    "Runtime.evaluate",
+    {
+      expression,
+      awaitPromise,
+      returnByValue: true,
+    },
+    options,
+  )) as {
     readonly result?: { readonly value?: T };
     readonly exceptionDetails?: {
       readonly exception?: { readonly description?: string };
@@ -2733,70 +2742,6 @@ async function waitForExpression(
     await delay(100);
   }
   throw new Error(`Chrome timed out waiting for: ${expression}`);
-}
-
-async function waitForTarget(
-  debugPort: number,
-  expectedUrl: string,
-): Promise<DebugTarget> {
-  for (let attempt = 0; attempt < 100; attempt += 1) {
-    try {
-      const response = await fetch(`http://localhost:${debugPort}/json/list`);
-      if (response.ok) {
-        const targets = (await response.json()) as readonly DebugTarget[];
-        const target = targets.find(
-          (candidate) =>
-            candidate.type === "page" && candidate.url.startsWith(expectedUrl),
-        );
-        if (target !== undefined) return target;
-      }
-    } catch {
-      // Chrome is still starting.
-    }
-    await delay(100);
-  }
-  throw new Error("Chrome debugging target did not become ready");
-}
-
-async function connect(webSocketUrl: string): Promise<Connection> {
-  const socket = new WebSocket(webSocketUrl);
-  await new Promise<void>((resolve, reject) => {
-    socket.addEventListener("open", () => resolve(), { once: true });
-    socket.addEventListener("error", () => reject(new Error("CDP failed")), {
-      once: true,
-    });
-  });
-  let nextId = 1;
-  const pending = new Map<
-    number,
-    {
-      readonly resolve: (value: unknown) => void;
-      readonly reject: (error: Error) => void;
-    }
-  >();
-  socket.addEventListener("message", (event) => {
-    const message = JSON.parse(String(event.data)) as ProtocolMessage;
-    if (message.id === undefined) return;
-    const request = pending.get(message.id);
-    if (request === undefined) return;
-    pending.delete(message.id);
-    if (message.error !== undefined)
-      request.reject(new Error(message.error.message ?? "CDP command failed"));
-    else request.resolve(message.result);
-  });
-  return {
-    send(method, params = {}): Promise<unknown> {
-      const id = nextId;
-      nextId += 1;
-      return new Promise((resolve, reject) => {
-        pending.set(id, { resolve, reject });
-        socket.send(JSON.stringify({ id, method, params }));
-      });
-    },
-    close(): void {
-      socket.close();
-    },
-  };
 }
 
 function delay(milliseconds: number): Promise<void> {
