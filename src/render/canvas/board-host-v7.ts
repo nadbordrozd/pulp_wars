@@ -87,6 +87,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   #animationFrame: number | null = null;
   #animationResolve: (() => void) | null = null;
   #presentationToken = 0;
+  #cameraFollowAllowed = false;
   #ambientFrame: number | null = null;
   #readinessStartedAt = 0;
   #readinessKey: string | null = null;
@@ -244,6 +245,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   }
 
   zoom(direction: "IN" | "OUT"): void {
+    this.#cameraFollowAllowed = false;
     const factor = direction === "IN" ? 1.2 : 1 / 1.2;
     this.#camera = zoomCameraAt(
       this.#camera,
@@ -268,6 +270,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   }
 
   finishPresentations(): void {
+    this.#cameraFollowAllowed = false;
     this.#presentationToken += 1;
     if (this.#animationFrame !== null)
       this.#document.defaultView?.cancelAnimationFrame(this.#animationFrame);
@@ -296,9 +299,31 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#inspectionCycle = null;
     const model = this.#model;
     if (model === null) return;
+    const steps = corePresentationPlanV7(before, envelope, after);
+    if (
+      steps.length === 0 &&
+      before.turnOrder[before.activeSeatIndex] !== before.viewer.id
+    )
+      return;
+    this.#cameraFollowAllowed = this.#pointers.size === 0;
     const durationScale = model.animationSpeed === "FAST" ? 0.5 : 1;
     this.#presentedView = before;
     if (model.motion === "REDUCED") {
+      // Reduced motion frames the final public location once, without travel.
+      const focus = [...steps]
+        .reverse()
+        .find(
+          (step) =>
+            step.kind === "BUILD" ||
+            (step.kind === "MOVE" && step.followCamera),
+        );
+      const at =
+        focus?.kind === "BUILD"
+          ? focus.at
+          : focus?.kind === "MOVE"
+            ? focus.path.at(-1)
+            : undefined;
+      if (at !== undefined) this.#followCamera(at);
       this.#crossfade = { before, after, progress: 0 };
       await this.#animate(100 * durationScale, (progress) => {
         this.#crossfade = { before, after, progress };
@@ -310,14 +335,37 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       this.#draw();
       return;
     }
-    for (const step of corePresentationPlanV7(before, envelope, after)) {
+    for (const step of steps) {
       if (step.kind === "MOVE") {
         this.#presentedView = after;
+        const unit = before.units.find(
+          (candidate) => candidate.id === step.unitId,
+        );
+        if (
+          step.followCamera &&
+          unit !== undefined &&
+          !after.units.some((candidate) => candidate.id === unit.id)
+        )
+          this.#presentedView = { ...after, units: [...after.units, unit] };
         await this.#animatePath(
           step.unitId,
           step.path,
           step.durationMs * durationScale,
+          step.followCamera === true,
         );
+        if (token !== this.#presentationToken) return;
+        this.#animatedUnit = null;
+        this.#presentedView = after;
+      } else if (step.kind === "BUILD") {
+        this.#followCamera(step.at);
+        this.#crossfade = { before, after, progress: 0 };
+        await this.#animate(step.durationMs * durationScale, (progress) => {
+          this.#crossfade = { before, after, progress };
+          this.#draw();
+        });
+        if (token !== this.#presentationToken) return;
+        this.#crossfade = null;
+        this.#presentedView = after;
       } else if (
         step.kind === "MELEE" ||
         step.kind === "RANGED" ||
@@ -599,6 +647,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   }
 
   readonly #onPointerDown = (event: PointerEvent): void => {
+    this.#cameraFollowAllowed = false;
     const canvas = this.#canvas;
     if (canvas === null) return;
     const point = localPoint(canvas, event);
@@ -690,6 +739,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#pinch = null;
   };
   readonly #onWheel = (event: WheelEvent): void => {
+    this.#cameraFollowAllowed = false;
     event.preventDefault();
     const canvas = this.#canvas;
     if (canvas === null) return;
@@ -731,6 +781,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     };
     const delta = directions[event.key];
     if (delta === undefined) return;
+    this.#cameraFollowAllowed = false;
     event.preventDefault();
     const current = this.#focused ?? { x: 0, y: 0 };
     const multiplier = event.shiftKey ? 1 : 0;
@@ -841,9 +892,20 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     unitId: number,
     path: readonly CoordV7[],
     duration: number,
+    followCamera = false,
   ): Promise<void> {
-    if (path.length < 2) return;
+    const first = path[0];
+    if (first === undefined) return;
+    if (followCamera) {
+      this.#animatedUnit = { id: unitId, at: first };
+      this.#followCamera(first);
+      this.#draw();
+    }
     await this.#animate(duration, (progress) => {
+      if (path.length === 1) {
+        this.#draw();
+        return;
+      }
       const scaled = progress * (path.length - 1);
       const index = Math.min(path.length - 2, Math.floor(scaled));
       const from = path[index];
@@ -857,8 +919,18 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           y: from.y + (to.y - from.y) * local,
         },
       };
+      if (followCamera) this.#followCamera(this.#animatedUnit.at);
       this.#draw();
     });
+  }
+
+  #followCamera(at: CoordV7): void {
+    if (!this.#cameraFollowAllowed) return;
+    this.#camera = centerCameraOn(
+      this.#camera,
+      projectGrid(at),
+      this.#viewport,
+    );
   }
 
   async #animateLunge(

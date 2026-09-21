@@ -11,6 +11,12 @@ export type CorePresentationStepV7 =
       readonly unitId: number;
       readonly path: readonly CoordV7[];
       readonly durationMs: number;
+      readonly followCamera?: true;
+    }
+  | {
+      readonly kind: "BUILD";
+      readonly at: CoordV7;
+      readonly durationMs: 180;
     }
   | {
       readonly kind: "MELEE" | "RANGED" | "CATAPULT";
@@ -37,17 +43,61 @@ export function corePresentationPlanV7(
   after: PlayerViewV7 = before,
 ): readonly CorePresentationStepV7[] {
   const steps: CorePresentationStepV7[] = [];
+  const enemyTurn =
+    before.turnOrder[before.activeSeatIndex] !== before.viewer.id;
+  const explored = new Set(
+    [...before.board.tiles, ...after.board.tiles]
+      .filter((tile) => tile.explored)
+      .map((tile) => `${tile.at.x},${tile.at.y}`),
+  );
+  const origins = new Map(before.units.map((unit) => [unit.id, unit.at]));
   let visibilityCrossfadeAdded = false;
   for (const event of envelope.events) {
     if (event.kind === "UNIT_MOVED") {
-      const origin = before.units.find((unit) => unit.id === event.unitId)?.at;
-      if (origin !== undefined && event.path.length > 0)
+      const origin = origins.get(event.unitId);
+      if (enemyTurn) {
+        // Ordinary public moves may span fog. Saboteur moves are already
+        // segmented by projection; reveal/conceal events reset their origins.
+        // Never join visible stretches across an unobserved coordinate.
+        const path =
+          origin === undefined ? event.path : [origin, ...event.path];
+        let segment: CoordV7[] = [];
+        const flush = (): void => {
+          if (segment.length > 0)
+            steps.push({
+              kind: "MOVE",
+              unitId: event.unitId,
+              path: segment,
+              durationMs: Math.min(900, Math.max(1, segment.length - 1) * 90),
+              followCamera: true,
+            });
+          segment = [];
+        };
+        for (const at of path) {
+          if (!explored.has(`${at.x},${at.y}`)) flush();
+          else {
+            const previous = segment.at(-1);
+            if (previous === undefined || !same(previous, at)) segment.push(at);
+          }
+        }
+        flush();
+      } else if (origin !== undefined && event.path.length > 0)
         steps.push({
           kind: "MOVE",
           unitId: event.unitId,
           path: [origin, ...event.path],
           durationMs: Math.min(900, event.path.length * 90),
         });
+      const destination = event.path.at(-1);
+      if (destination !== undefined) origins.set(event.unitId, destination);
+    } else if (
+      enemyTurn &&
+      (event.kind === "ECONOMIC_BUILDING_BUILT" ||
+        event.kind === "ROAD_BUILT" ||
+        event.kind === "MONUMENT_BUILT")
+    ) {
+      if (explored.has(`${event.at.x},${event.at.y}`))
+        steps.push({ kind: "BUILD", at: event.at, durationMs: 180 });
     } else if (event.kind === "COMBAT_RESOLVED") {
       const attacker = before.units.find(
         (unit) => unit.id === event.preview.attackerId,
@@ -76,6 +126,9 @@ export function corePresentationPlanV7(
       event.kind === "UNIT_REVEALED" ||
       event.kind === "UNIT_CONCEALED"
     ) {
+      // A reveal can name the final coordinate of an ordinary move, so it is
+      // not an origin. The next public path supplies its own visible start.
+      origins.delete(event.unitId);
       if (!visibilityCrossfadeAdded) {
         steps.push({ kind: "VISIBILITY_CROSSFADE", durationMs: 180 });
         visibilityCrossfadeAdded = true;
@@ -91,6 +144,10 @@ export function corePresentationPlanV7(
     }
   }
   return steps;
+}
+
+function same(left: CoordV7, right: CoordV7): boolean {
+  return left.x === right.x && left.y === right.y;
 }
 
 function isTacticalStatusEvent(kind: string): boolean {
