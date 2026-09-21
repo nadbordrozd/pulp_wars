@@ -50,6 +50,18 @@ paths even when the current run's physical files are in temporary output. The
 v6 `--mountain-live` diagnostic uses the isolated output directory and does not
 publish archive evidence.
 
+V6 uses Chromium's
+[`--disable-partial-raster` setting](https://github.com/GoogleChrome/chrome-launcher/blob/main/docs/chrome-flags-for-tools.md#rendering--gpu)
+so rounded and dashed borders are rasterized independently of earlier partial
+invalidation regions. On Chrome 153/macOS, technology captures stayed identical
+within a browser process but varied across fresh processes despite identical
+DOM, geometry, focus, fonts, and animation state. Waiting for further frames
+did not remove the variation. Disabling partial rasterization produced identical
+captures across 16 fresh browser processes covering both factions, while a
+deliberate border-color change still changed every capture. This affects only
+the smoke browser; production CSS and captured pixels are not rewritten. Byte
+comparisons require the same Chrome version, host, viewport, and inputs.
+
 V7 archive mode retains its strict performance acceptance rules described in
 [Ruleset 7 release validation](RULESET_7_RELEASE.md). Failed runs leave diagnostic
 output in the printed capture directory and never start archive publication.
