@@ -69,3 +69,40 @@ Every accepted Original and Candy unit raster, source canvas, display scale,
 anchor, and byte hash remains unchanged. The former `128 x 74` unit occupancy
 ratios are retained only as historical acceptance measurements for those exact
 files; on a `128 x 128` cell the same units intentionally read more compactly.
+
+## Territory boundary treatment
+
+Public owner contours use faction colored dashes with a dark casing: 20 CSS
+pixels painted and 12 pixels clear per 128 px side at 1x, with 8 px outer and
+4 px inner strokes. The dash phase leaves the same gap at every corner. The
+selected city's perimeter is solid (9 px casing, 5 px faction color), while its
+potential expansion remains a thinner cream dash. All measurements follow map
+zoom; ownership does not introduce a selectable object or change territory.
+
+Strokes clip to explored ground so their wider edges cannot paint into fog.
+Where two public Road cells meet a contour, a 24 px opening preserves the road.
+Selection, cursor, reach, and action outlines retain priority above ownership.
+Perimeter construction still uses only explored public territory and resolves
+one winner per physical edge: selected city, potential expansion, then owner.
+
+The bounded browser comparison is reproducible against a running development
+server:
+
+```bash
+CHROME_PATH=/path/to/chrome-headless-shell npx tsx scripts/browser-territory-review-v7.ts --output=/tmp/pulp-wars-wly-review
+```
+
+An optional positional URL selects another development server. The review uses
+real browser Canvas and accepted assets in an explicitly synthetic public scene.
+It compares the former thin line, the accepted cased dash, and a raised fence
+candidate at minimum/default zoom, then shows the final treatment at 0.625x,
+1x, and 1.75x with ambient ownership, selected city, unit/action highlights,
+varied terrain, adjacent owners, Roads, and fog. Minimum zoom also receives a
+DPR2 view. Pixel probes verify that fog and Road crossing pixels are unchanged
+and that the visible boundary receives paint. No review rasters become game
+assets.
+
+The cased dash was selected because it remains legible against terrain and
+makes ownership distinct from the solid selected-city contour. The fence
+candidate looked more like a continuous enclosure and gave less room to Roads;
+the former uncased line was easy to lose at minimum zoom.

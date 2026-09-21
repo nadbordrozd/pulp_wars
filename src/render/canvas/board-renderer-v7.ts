@@ -375,7 +375,10 @@ export function drawBoardV7(input: {
     if (
       entry.kind === "LINK" ||
       entry.kind === "TARGET" ||
-      entry.kind === "TERRITORY_BOUNDARY"
+      entry.kind === "TERRITORY_BOUNDARY" ||
+      entry.kind === "REACH" ||
+      entry.kind === "SELECTION" ||
+      entry.kind === "CURSOR"
     )
       continue;
     const impacted =
@@ -402,37 +405,6 @@ export function drawBoardV7(input: {
       context.fillStyle =
         entry.ownerColor === undefined ? "#65965b" : `${entry.ownerColor}55`;
       context.fillRect(left, top, size, size);
-    }
-    if (
-      entry.kind === "REACH" ||
-      entry.kind === "SELECTION" ||
-      entry.kind === "CURSOR"
-    ) {
-      context.save();
-      context.lineWidth =
-        (entry.kind === "SELECTION" ? 5 : entry.kind === "CURSOR" ? 3 : 2) *
-        camera.zoom;
-      context.strokeStyle =
-        entry.kind === "SELECTION"
-          ? "#fff6b0"
-          : entry.kind === "CURSOR"
-            ? "#ffffff"
-            : "#ffd34e";
-      context.setLineDash(
-        entry.kind === "REACH"
-          ? [9 * camera.zoom, 5 * camera.zoom]
-          : entry.kind === "CURSOR"
-            ? [3 * camera.zoom, 3 * camera.zoom]
-            : [],
-      );
-      context.strokeRect(
-        left + 4 * camera.zoom,
-        top + 4 * camera.zoom,
-        size - 8 * camera.zoom,
-        size - 8 * camera.zoom,
-      );
-      context.restore();
-      continue;
     }
     if (entry.kind === "STATUS") {
       const pulse =
@@ -617,14 +589,75 @@ export function drawBoardV7(input: {
         : [],
     ),
   );
-  for (const boundary of input.plan.entries) {
-    if (boundary.kind !== "TERRITORY_BOUNDARY") continue;
+  const boundaries = input.plan.entries.filter(
+    (entry) => entry.kind === "TERRITORY_BOUNDARY",
+  );
+  if (boundaries.length > 0) {
+    // Keep wider contour strokes off unexplored ground, including their casing.
+    context.save();
+    context.beginPath();
+    for (const entry of input.plan.entries) {
+      if (entry.kind !== "TERRAIN") continue;
+      const size = TILE_WIDTH * camera.zoom;
+      context.rect(
+        camera.offsetX + entry.at.x * size - size / 2,
+        camera.offsetY + entry.at.y * size - size / 2,
+        size,
+        size,
+      );
+    }
+    context.clip();
+    const roadCells = new Set(
+      input.plan.entries
+        .filter((entry) => entry.kind === "ROAD")
+        .map((entry) => `${entry.at.x},${entry.at.y}`),
+    );
+    for (const boundary of boundaries) {
+      if (
+        boundary.edge !== undefined &&
+        targetEdgeKeys.has(edgeKey(boundary.at, boundary.edge))
+      )
+        continue;
+      drawTerritoryBoundary(context, camera, boundary, roadCells);
+    }
+    context.restore();
+  }
+  // Selection and action outlines keep visual priority over ownership.
+  for (const entry of input.plan.entries) {
+    const size = TILE_WIDTH * camera.zoom;
+    const left = camera.offsetX + entry.at.x * size - size / 2;
+    const top = camera.offsetY + entry.at.y * size - size / 2;
     if (
-      boundary.edge !== undefined &&
-      targetEdgeKeys.has(edgeKey(boundary.at, boundary.edge))
-    )
+      entry.kind === "REACH" ||
+      entry.kind === "SELECTION" ||
+      entry.kind === "CURSOR"
+    ) {
+      context.save();
+      context.lineWidth =
+        (entry.kind === "SELECTION" ? 5 : entry.kind === "CURSOR" ? 3 : 2) *
+        camera.zoom;
+      context.strokeStyle =
+        entry.kind === "SELECTION"
+          ? "#fff6b0"
+          : entry.kind === "CURSOR"
+            ? "#ffffff"
+            : "#ffd34e";
+      context.setLineDash(
+        entry.kind === "REACH"
+          ? [9 * camera.zoom, 5 * camera.zoom]
+          : entry.kind === "CURSOR"
+            ? [3 * camera.zoom, 3 * camera.zoom]
+            : [],
+      );
+      context.strokeRect(
+        left + 4 * camera.zoom,
+        top + 4 * camera.zoom,
+        size - 8 * camera.zoom,
+        size - 8 * camera.zoom,
+      );
+      context.restore();
       continue;
-    drawTerritoryBoundary(context, camera, boundary);
+    }
   }
   for (const target of input.plan.entries) {
     if (target.kind !== "TARGET") continue;
@@ -898,24 +931,47 @@ function drawTerritoryBoundary(
   context: CanvasRenderingContext2D,
   camera: CameraState,
   entry: BoardRenderPlanEntryV7,
+  roadCells: ReadonlySet<string>,
 ): void {
   if (entry.edge === undefined) return;
   context.save();
-  context.strokeStyle =
-    entry.boundaryStyle === "POTENTIAL"
-      ? "#fff6b0"
-      : (entry.ownerColor ?? "#fff6b0");
-  context.lineWidth =
-    (entry.boundaryStyle === "CITY"
-      ? 5
-      : entry.boundaryStyle === "OWNER"
-        ? 3
-        : 3) * camera.zoom;
+  const zoom = camera.zoom;
+  const potential = entry.boundaryStyle === "POTENTIAL";
+  const selected = entry.boundaryStyle === "CITY";
+  const [dx, dy] =
+    entry.edge === "NORTH"
+      ? [0, -1]
+      : entry.edge === "SOUTH"
+        ? [0, 1]
+        : entry.edge === "WEST"
+          ? [-1, 0]
+          : [1, 0];
+  if (
+    roadCells.has(`${entry.at.x},${entry.at.y}`) &&
+    roadCells.has(`${entry.at.x + dx},${entry.at.y + dy}`)
+  ) {
+    // Two public Road cells leave a small crossing through the contour.
+    const x = camera.offsetX + (entry.at.x + dx / 2) * TILE_WIDTH * zoom;
+    const y = camera.offsetY + (entry.at.y + dy / 2) * TILE_HEIGHT * zoom;
+    const size = TILE_WIDTH * zoom;
+    context.beginPath();
+    context.rect(x - size, y - size, size * 2, size * 2);
+    context.rect(x - 12 * zoom, y - 12 * zoom, 24 * zoom, 24 * zoom);
+    context.clip("evenodd");
+  }
+  context.lineCap = "butt";
   context.setLineDash(
-    entry.boundaryStyle === "POTENTIAL"
-      ? [9 * camera.zoom, 6 * camera.zoom]
-      : [],
+    potential ? [9 * zoom, 6 * zoom] : selected ? [] : [20 * zoom, 12 * zoom],
   );
+  // Four periods per square side, with gaps at corners and Road midpoints.
+  context.lineDashOffset = potential || selected ? 0 : -6 * zoom;
+  if (!potential) {
+    context.strokeStyle = "#243633";
+    context.lineWidth = (selected ? 9 : 8) * zoom;
+    strokeTileEdge(context, camera, entry.at, entry.edge);
+  }
+  context.strokeStyle = potential ? "#fff6b0" : (entry.ownerColor ?? "#fff6b0");
+  context.lineWidth = (potential ? 3 : selected ? 5 : 4) * zoom;
   strokeTileEdge(context, camera, entry.at, entry.edge);
   context.restore();
 }
