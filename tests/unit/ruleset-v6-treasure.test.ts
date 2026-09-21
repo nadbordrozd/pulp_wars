@@ -24,6 +24,7 @@ import {
   type PlayerId,
 } from "../../src/engine/index";
 import { scoreCommandV6 } from "../../src/ai/v6";
+import { createSaveEnvelopeV6, parseSaveV6 } from "../../src/persistence/v6";
 import { parseEventV6 } from "../../src/engine/v6/event-schema";
 import { buildRenderPlanV6 } from "../../src/render/canvas/render-plan-v6";
 
@@ -136,6 +137,134 @@ describe("ruleset-6 neutral treasure chests", () => {
       ).toEqual({ ok: false, field: "TREASURE_CAPTURED" });
     },
   );
+
+  it.each([
+    ["ORIGINAL", "GRASS", false],
+    ["CANDY", "GRASS", false],
+    ["ORIGINAL", "MOUNTAIN", false],
+    ["CANDY", "MOUNTAIN", false],
+    ["ORIGINAL", "GRASS", true],
+    ["ORIGINAL", "MOUNTAIN", true],
+  ] as const)(
+    "immediately reveals %s Heavy sight on %s (map edge: %s)",
+    (faction, terrain, edge) => {
+      const { state, actor, command, destination, spawn } = sightFixture(
+        faction,
+        terrain,
+        edge,
+      );
+      const result = applyCommandV6(state, actor, command);
+      if (!result.accepted) throw new Error(result.error.code);
+      const radius = terrain === "MOUNTAIN" ? 2 : 1;
+      const prior = state.players.find(
+        (player) => player.id === actor,
+      )?.explored;
+      const expected = state.board.tiles
+        .map((tile) => tile.at)
+        .filter(
+          (at) =>
+            prior?.some((known) => coordKey(known) === coordKey(at)) ||
+            distance(at, destination) <= 1 ||
+            distance(at, spawn) <= radius,
+        );
+      const newlyRevealed = expected.filter(
+        (at) => !prior?.some((known) => coordKey(known) === coordKey(at)),
+      );
+      expect(newlyRevealed.some((at) => distance(at, destination) > 1)).toBe(
+        true,
+      );
+      expect(
+        result.state.players.find((player) => player.id === actor)?.explored,
+      ).toEqual(expected);
+      expect(
+        result.state.players.filter((player) => player.id !== actor),
+      ).toEqual(state.players.filter((player) => player.id !== actor));
+      expect(
+        result.state.units.find(
+          (unit) => unit.id === unitId(state.nextEntityId),
+        ),
+      ).toMatchObject({
+        role: "HEAVY",
+        at: spawn,
+        ownerId: actor,
+      });
+      expect(result.events.map((event) => event.kind)).toEqual([
+        "UNIT_MOVED",
+        "TREASURE_CAPTURED",
+        "TILES_REVEALED",
+      ]);
+      expect(result.events.at(-1)).toEqual({
+        kind: "TILES_REVEALED",
+        playerId: actor,
+        tiles: newlyRevealed,
+      });
+      expect(result.state.random).toEqual(nextBounded(state.random, 2).random);
+      expect(result.state.commandIndex).toBe(state.commandIndex + 1);
+      expect(applyCommandV6(state, actor, command)).toEqual(result);
+      const view = viewForV6(result.state, actor);
+      expect(
+        view.board.tiles.filter((tile) => tile.explored).map((tile) => tile.at),
+      ).toEqual(expected);
+      const replay = appendReplayCommandV6(
+        createReplayV6(state.setup),
+        command,
+        result.state,
+      );
+      const save = createSaveEnvelopeV6(
+        { state: result.state, replay },
+        "2026-09-21T12:00:00.000Z",
+      );
+      expect(parseSaveV6(JSON.stringify(save))).toEqual({
+        kind: "VALID",
+        save,
+      });
+    },
+  );
+
+  it("does not emit a reveal event when the reward sight is already explored", () => {
+    const fixture = sightFixture("ORIGINAL", "MOUNTAIN", false);
+    const state = {
+      ...fixture.state,
+      players: fixture.state.players.map((player) =>
+        player.id === fixture.actor
+          ? {
+              ...player,
+              explored: fixture.state.board.tiles.map((tile) => tile.at),
+            }
+          : player,
+      ),
+    };
+    const result = applyCommandV6(state, fixture.actor, fixture.command);
+    if (!result.accepted) throw new Error(result.error.code);
+    expect(result.events.map((event) => event.kind)).toEqual([
+      "UNIT_MOVED",
+      "TREASURE_CAPTURED",
+    ]);
+  });
+
+  it("keeps coin reward exploration identical to an ordinary move", () => {
+    const fixture = sightFixture("ORIGINAL", "GRASS", false);
+    const state = {
+      ...fixture.state,
+      random: { ...fixture.state.random, state: randomSeedForReward(0) },
+    };
+    const reward = applyCommandV6(state, fixture.actor, fixture.command);
+    const ordinary = applyCommandV6(
+      { ...state, treasureChests: [] },
+      fixture.actor,
+      fixture.command,
+    );
+    if (!reward.accepted || !ordinary.accepted)
+      throw new Error("Move rejected");
+    expect(reward.state.players.map((player) => player.explored)).toEqual(
+      ordinary.state.players.map((player) => player.explored),
+    );
+    expect(
+      reward.events.filter((event) => event.kind !== "TREASURE_CAPTURED"),
+    ).toEqual(ordinary.events);
+    expect(reward.state.units).toEqual(ordinary.state.units);
+    expect(reward.state.random).toEqual(nextBounded(state.random, 2).random);
+  });
 
   it("awards exactly five Coins on the coin branch and consumes the chest once", () => {
     const fixture = movableTreasureFixture("ORIGINAL", 0);
@@ -254,21 +383,24 @@ describe("ruleset-6 neutral treasure chests", () => {
     });
   });
 
-  it("replays a generated chest capture with the same reward and state hash", () => {
-    const found = replayableCapture();
-    const result = applyCommandV6(found.state, found.actor, found.command);
-    if (!result.accepted) throw new Error(result.error.code);
-    const replay = appendReplayCommandV6(
-      createReplayV6(found.state.setup),
-      found.command,
-      result.state,
-    );
-    const replayed = runReplayV6(replay);
-    expect(replayed.state).toEqual(result.state);
-    expect(replayed.events).toContainEqual(
-      expect.objectContaining({ kind: "TREASURE_CAPTURED" }),
-    );
-  });
+  it.each([0, 1] as const)(
+    "replays a generated chest capture with reward draw %i and the same state hash",
+    (reward) => {
+      const found = replayableCapture(reward);
+      const result = applyCommandV6(found.state, found.actor, found.command);
+      if (!result.accepted) throw new Error(result.error.code);
+      const replay = appendReplayCommandV6(
+        createReplayV6(found.state.setup),
+        found.command,
+        result.state,
+      );
+      const replayed = runReplayV6(replay);
+      expect(replayed.state).toEqual(result.state);
+      expect(replayed.events).toContainEqual(
+        expect.objectContaining({ kind: "TREASURE_CAPTURED" }),
+      );
+    },
+  );
 });
 
 function movableTreasureFixture(
@@ -301,10 +433,13 @@ function movableTreasureFixture(
   return { state, actor, command: move, destination };
 }
 
-function replayableCapture(): ReturnType<typeof movableTreasureFixture> {
+function replayableCapture(
+  reward: 0 | 1,
+): ReturnType<typeof movableTreasureFixture> {
   for (let seed = 0; seed < 2_000; seed += 1) {
     const created = createPlayableGameV6(setup(11, 1, seed));
     if (!created.ok) continue;
+    if (nextBounded(created.state.random, 2).value !== reward) continue;
     const actor = created.state.turnOrder[created.state.activeSeatIndex];
     if (actor === undefined) continue;
     const chestKeys = new Set(created.state.treasureChests.map(coordKey));
@@ -382,6 +517,83 @@ function freeTile(state: GameStateV6, excluded: readonly CoordV6[]): CoordV6 {
 
 function coordKey(at: CoordV6): string {
   return `${at.x},${at.y}`;
+}
+
+function distance(left: CoordV6, right: CoordV6): number {
+  return Math.max(Math.abs(left.x - right.x), Math.abs(left.y - right.y));
+}
+
+function sightFixture(
+  faction: "ORIGINAL" | "CANDY",
+  terrain: "GRASS" | "MOUNTAIN",
+  edge: boolean,
+) {
+  const base = movableTreasureFixture(faction, 1);
+  const destination = base.state.board.tiles.find((tile) => {
+    const { x, y } = tile.at;
+    if (x < 2 || x > 8 || (edge ? y !== 1 : y < 3 || y > 7)) return false;
+    const required = [tile.at, { x: x - 1, y: y - 1 }, { x: x + 1, y: y + 1 }];
+    return base.state.board.tiles
+      .filter((candidate) =>
+        required.some((at) => coordKey(at) === coordKey(candidate.at)),
+      )
+      .every(
+        (candidate) =>
+          candidate.site === null &&
+          candidate.improvement === null &&
+          !base.state.units.some(
+            (unit) => coordKey(unit.at) === coordKey(candidate.at),
+          ),
+      );
+  })?.at;
+  if (destination === undefined) throw new Error("No sight fixture location");
+  const spawn = { x: destination.x - 1, y: destination.y - 1 };
+  const source = { x: destination.x + 1, y: destination.y + 1 };
+  const state: GameStateV6 = {
+    ...base.state,
+    treasureChests: [destination],
+    board: {
+      ...base.state.board,
+      tiles: base.state.board.tiles.map((tile) =>
+        [destination, spawn, source].some(
+          (at) => coordKey(at) === coordKey(tile.at),
+        )
+          ? {
+              ...tile,
+              terrain:
+                coordKey(tile.at) === coordKey(spawn) ? terrain : "GRASS",
+              resource: null,
+            }
+          : tile,
+      ),
+    },
+    units: base.state.units.map((unit) =>
+      unit.id === base.command.unitId
+        ? { ...unit, at: source, role: "FIGHTER" }
+        : unit,
+    ),
+    players: base.state.players.map((player) =>
+      player.id === base.actor
+        ? {
+            ...player,
+            explored: [source],
+            researchedTechs:
+              terrain === "MOUNTAIN"
+                ? ["GATHERING", "SURVEYING"]
+                : ["GATHERING"],
+          }
+        : player,
+    ),
+  };
+  if (parseGameStateV6(state) === null)
+    throw new Error("Invalid sight fixture");
+  return {
+    ...base,
+    state,
+    destination,
+    spawn,
+    command: { ...base.command, path: [destination] },
+  };
 }
 
 function compareCoords(left: CoordV6, right: CoordV6): number {

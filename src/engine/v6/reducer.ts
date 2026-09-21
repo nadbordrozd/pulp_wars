@@ -55,7 +55,10 @@ import type {
   CardinalDirectionV6,
   UnitStateV6,
 } from "./types";
-import { unitSightRadiusForTerrainV6 } from "./unit-stats";
+import {
+  effectiveUnitSightRadiusV6,
+  unitSightRadiusForTerrainV6,
+} from "./unit-stats";
 
 export type RuleErrorCodeV6 =
   | "INVALID_SETUP"
@@ -2132,7 +2135,7 @@ function applyMoveCommand(
       unit,
       validation.destination,
     );
-    const players = (treasure?.players ?? state.players).map((candidate) =>
+    let players = (treasure?.players ?? state.players).map((candidate) =>
       candidate.id === actor
         ? { ...candidate, explored: validation.explored }
         : candidate,
@@ -2152,8 +2155,22 @@ function applyMoveCommand(
           }
         : candidate,
     );
+    let revealed = validation.revealed;
     if (treasure?.spawnedUnit !== null && treasure?.spawnedUnit !== undefined) {
       units.push(treasure.spawnedUnit);
+      const staged = { ...state, players, units };
+      const sight = revealRadius(
+        staged,
+        actor,
+        treasure.spawnedUnit.at,
+        effectiveUnitSightRadiusV6(staged, treasure.spawnedUnit),
+      );
+      players = players.map((candidate) =>
+        candidate.id === actor
+          ? { ...candidate, explored: sight.explored }
+          : candidate,
+      );
+      revealed = [...revealed, ...sight.revealed].sort(compareCoords);
     }
     const commandIndex = state.commandIndex + 1;
     if (!Number.isSafeInteger(commandIndex))
@@ -2184,11 +2201,11 @@ function applyMoveCommand(
         reason: validation.interruption.reason,
       });
     }
-    if (validation.revealed.length > 0) {
+    if (revealed.length > 0) {
       events.push({
         kind: "TILES_REVEALED",
         playerId: actor,
-        tiles: validation.revealed,
+        tiles: revealed,
       });
     }
     return { accepted: true, state: deepFreeze(nextState), events };
