@@ -29,6 +29,7 @@ const baseUrl =
   process.argv.find((argument) => argument.startsWith("http")) ??
   "http://localhost:6173/?ruleset=7";
 const selectionOnly = process.argv.includes("--selection-only");
+const hudOnly = process.argv.includes("--hud-only");
 const outputArgument = process.argv.find((argument) =>
   argument.startsWith("--output="),
 );
@@ -82,6 +83,13 @@ try {
   await setValue(connection, "#v7-seed", "20");
   await click(connection, '[data-action="launch"]');
   await waitForHuman(connection);
+
+  if (hudOnly) {
+    await runHudReview(connection);
+    connection.close();
+    browser.kill();
+    process.exit(0);
+  }
 
   if (selectionOnly) {
     await runSelectionReview(connection);
@@ -389,6 +397,112 @@ try {
   );
 } finally {
   browser.kill();
+}
+
+async function runHudReview(connection: Connection): Promise<void> {
+  const evidence: unknown[] = [];
+  for (const [width, height, dpr] of [
+    [1280, 800, 1],
+    [1440, 900, 1],
+    // Desktop 200% browser zoom has half the CSS viewport and double the DPR.
+    [640, 400, 2],
+    [720, 450, 2],
+    [1280, 800, 1],
+  ] as const) {
+    await viewport(connection, width, height, dpr);
+    const canvas = await rect(connection, ".board-canvas-v7");
+    const layout = await hudEvidence(connection);
+    assert(
+      layout.controlsReachable,
+      `HUD controls clipped: ${JSON.stringify(layout)}`,
+    );
+    assert(
+      layout.mapReachable,
+      `Map below HUD is blocked: ${JSON.stringify(layout)}`,
+    );
+    await capture(connection, `hud-${width}x${height}-dpr${dpr}.png`);
+
+    await evaluate(
+      connection,
+      `document.querySelector('[data-action="settings"]').focus()`,
+    );
+    assert(
+      await evaluate<boolean>(
+        connection,
+        `document.activeElement?.dataset.action === 'settings'`,
+      ),
+      "Settings HUD control could not receive focus",
+    );
+    await click(connection, '[data-action="settings"]');
+    await waitFor(connection, `document.querySelector('.v7-overlay') !== null`);
+    const overlayLayout = await hudEvidence(connection);
+    assertSameRect(canvas, await rect(connection, ".board-canvas-v7"));
+    await capture(connection, `hud-${width}x${height}-dpr${dpr}-settings.png`);
+    await key(connection, "Escape", "Escape");
+    await waitFor(connection, `document.querySelector('.v7-overlay') === null`);
+    assert(
+      await evaluate<boolean>(
+        connection,
+        `document.activeElement?.dataset.action === 'settings'`,
+      ),
+      "Closing Settings did not return focus to its HUD control",
+    );
+    assertSameRect(canvas, await rect(connection, ".board-canvas-v7"));
+    await hudEvidence(connection);
+    evidence.push({ width, height, dpr, layout, overlayLayout, canvas });
+  }
+  await writeFile(
+    path.join(outputRoot, "hud-evidence.json"),
+    `${JSON.stringify(evidence, null, 2)}\n`,
+  );
+  console.log(`Ruleset-7 desktop HUD review passed. Evidence: ${outputRoot}`);
+}
+
+async function hudEvidence(connection: Connection): Promise<{
+  readonly top: number;
+  readonly left: number;
+  readonly right: number;
+  readonly viewportWidth: number;
+  readonly squareCorners: boolean;
+  readonly opaque: boolean;
+  readonly controlsReachable: boolean;
+  readonly mapReachable: boolean;
+}> {
+  const result = await evaluate<{
+    readonly top: number;
+    readonly left: number;
+    readonly right: number;
+    readonly viewportWidth: number;
+    readonly squareCorners: boolean;
+    readonly opaque: boolean;
+    readonly controlsReachable: boolean;
+    readonly mapReachable: boolean;
+  }>(
+    connection,
+    `(() => {
+    const hud = document.querySelector('.v7-match-hud');
+    if (!(hud instanceof HTMLElement)) throw new Error('HUD missing');
+    const bounds = hud.getBoundingClientRect();
+    const style = getComputedStyle(hud);
+    const buttons = [...hud.querySelectorAll('button')].filter(node => node.getBoundingClientRect().width > 0);
+    return {
+      top: bounds.top, left: bounds.left, right: bounds.right, viewportWidth: innerWidth,
+      squareCorners: ['borderTopLeftRadius', 'borderTopRightRadius', 'borderBottomLeftRadius', 'borderBottomRightRadius'].every(key => style[key] === '0px'),
+      opaque: style.backgroundColor === 'rgb(32, 35, 46)',
+      controlsReachable: buttons.length > 0 && buttons.every(node => { const r = node.getBoundingClientRect(); return r.width >= 44 && r.height >= 44 && r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight; }),
+      mapReachable: document.elementFromPoint(innerWidth / 2, bounds.bottom + 10)?.classList.contains('board-canvas-v7') === true,
+    };
+  })()`,
+  );
+  assert(
+    result.top === 0 &&
+      result.left === 0 &&
+      result.right === result.viewportWidth &&
+      result.squareCorners &&
+      result.opaque,
+    `HUD exposes a map strip at the viewport edges: ${JSON.stringify(result)}`,
+  );
+  return result;
 }
 
 async function runSelectionReview(connection: Connection): Promise<void> {

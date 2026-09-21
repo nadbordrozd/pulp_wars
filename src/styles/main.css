@@ -204,19 +204,17 @@
 .v7-match-hud {
   position: absolute;
   z-index: 10;
-  inset: max(0.5rem, env(safe-area-inset-top))
-    max(0.5rem, env(safe-area-inset-right)) auto
-    max(0.5rem, env(safe-area-inset-left));
+  inset: 0 0 auto;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.7rem;
   min-width: 0;
-  padding: 0.55rem;
-  border: 2px solid var(--line);
-  border-radius: 1rem;
-  background: #20232eea;
-  backdrop-filter: blur(7px);
+  padding: max(0.55rem, env(safe-area-inset-top))
+    max(0.55rem, env(safe-area-inset-right)) 0.55rem
+    max(0.55rem, env(safe-area-inset-left));
+  border-bottom: 2px solid var(--line);
+  background: #20232e;
 }
 
 .v7-hud-title {
@@ -975,10 +973,6 @@
 }
 
 @media (max-width: 599px) {
-  .v7-match-hud {
-    inset-inline: 0.25rem;
-  }
-
   .v7-app-shell[data-ui-scale="2"] .v7-match-hud {
     font-size: 1rem;
   }
