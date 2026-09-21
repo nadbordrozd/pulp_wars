@@ -1,4 +1,16 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import sharp from "sharp";
+import {
+  SELECTION_IDENTITY_FRAMES_V7,
+  selectionIdentityArtworkLayoutV7,
+} from "../../src/render/dom/selection-identity-v7";
+import {
+  RULESET7_UNIT_ART_IDS,
+  RULESET7_RESOURCE_ART_IDS,
+  RULESET7_TERRAIN_ART_IDS,
+  RULESET7_IMPROVEMENT_ART_IDS,
+} from "../../src/assets/ruleset7-ui-art";
 import {
   ECONOMIC_IMPROVEMENT_IDS,
   RESOURCE_IDS,
@@ -41,6 +53,62 @@ const UNIT_ASSET_IDS = {
     JUGGERNAUT: "unit-candy-juggernaut",
   },
 } as const;
+
+describe("ruleset-7 selected identity painted bounds", () => {
+  it("frames every actual accepted dock raster at one size without clipping or distortion", async () => {
+    const manifest = readFileSync(
+      "src/assets/generated-art-manifest.ts",
+      "utf8",
+    );
+    const urls = Object.fromEntries(
+      [...manifest.matchAll(/"([^"]+)": publicArtUrl\(\s*"([^"]+)"/g)].map(
+        (match) => [match[1], match[2]],
+      ),
+    );
+    const ids = [
+      ...Object.values(RULESET7_UNIT_ART_IDS),
+      ...Object.values(RULESET7_RESOURCE_ART_IDS),
+      ...Object.values(RULESET7_TERRAIN_ART_IDS),
+      ...Object.values(RULESET7_IMPROVEMENT_ART_IDS),
+      "building-city-1",
+      "building-city-2",
+      "building-city-3",
+    ];
+    for (const id of ids) {
+      const frame = SELECTION_IDENTITY_FRAMES_V7[id];
+      const layout = selectionIdentityArtworkLayoutV7(id);
+      if (!frame || !layout) throw new Error(`Missing identity bounds: ${id}`);
+      const { data, info } = await sharp(`public/${urls[id]}`)
+        .ensureAlpha()
+        .raw()
+        .toBuffer({ resolveWithObject: true });
+      let left = info.width,
+        top = info.height,
+        right = 0,
+        bottom = 0;
+      for (let y = 0; y < info.height; y += 1)
+        for (let x = 0; x < info.width; x += 1)
+          if ((data[(y * info.width + x) * 4 + 3] ?? 0) > 0) {
+            left = Math.min(left, x);
+            top = Math.min(top, y);
+            right = Math.max(right, x + 1);
+            bottom = Math.max(bottom, y + 1);
+          }
+      expect(frame.source, id).toEqual({
+        width: info.width,
+        height: info.height,
+      });
+      expect(frame.visibleBounds, id).toEqual({ left, top, right, bottom });
+      const scale = layout.width / info.width;
+      expect(layout.height / info.height, id).toBeCloseTo(scale);
+      expect(Math.max(right - left, bottom - top) * scale, id).toBeCloseTo(104);
+      expect(layout.left + left * scale, id).toBeGreaterThanOrEqual(4 - 1e-8);
+      expect(layout.left + right * scale, id).toBeLessThanOrEqual(108 + 1e-8);
+      expect(layout.top + top * scale, id).toBeGreaterThanOrEqual(13 - 1e-8);
+      expect(layout.top + bottom * scale, id).toBeLessThanOrEqual(117 + 1e-8);
+    }
+  });
+});
 
 const IMPROVEMENT_ASSET_IDS = {
   FARM: "building-square-farm",

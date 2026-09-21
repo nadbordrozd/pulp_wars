@@ -318,6 +318,44 @@
   min-width: 0;
 }
 
+.v7-unit-summary,
+.v7-unit-facts {
+  display: grid;
+  align-content: start;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+@media (min-width: 801px) {
+  .v7-selection-dock {
+    height: min(280px, 45dvh);
+    grid-template-rows: minmax(0, 1fr);
+    overflow: hidden;
+  }
+
+  .v7-selection-dock > .v7-selection-summary,
+  .v7-selection-dock > .v7-unit-summary,
+  .v7-selection-dock > .v7-unit-facts {
+    max-height: 100%;
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+
+  .v7-selection-dock[data-selection-kind="unit"] > .v7-unit-summary {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .v7-selection-dock[data-selection-kind="unit"] > .v7-unit-facts {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .v7-selection-dock[data-selection-kind="unit"] > .v7-context-actions {
+    grid-row: 1;
+  }
+}
+
 .v7-selection-details {
   display: grid;
   gap: 0.4rem;
@@ -352,7 +390,7 @@
 
 .v7-selection-dock[data-selection-kind="unit"] > .v7-context-actions {
   grid-column: 3;
-  grid-row: 1 / span 4;
+  grid-row: 1;
 }
 
 .v7-selection-dock[data-selection-kind="unit"] > .v7-tactical-state,
@@ -475,11 +513,18 @@
   overflow-y: hidden;
   flex-wrap: nowrap;
   justify-content: flex-start;
+  align-items: flex-start;
   padding-block: 0.25rem;
   overscroll-behavior-x: contain;
   scroll-padding-inline: 0.25rem;
   touch-action: pan-x;
   background: #20232e;
+}
+
+.v7-selection-dock > .v7-context-actions {
+  max-height: 100%;
+  position: relative;
+  bottom: auto;
 }
 
 .v7-command-economy {

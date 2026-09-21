@@ -754,6 +754,20 @@ describe("Ruleset 7 DOM shell", () => {
       kind: "UNIT",
       unitId: statsWithModifier.unitId,
     });
+    expect(
+      document.querySelector(".v7-unit-summary > .v7-identity"),
+    ).not.toBeNull();
+    expect(
+      document.querySelector(".v7-unit-facts > .v7-unit-stats"),
+    ).not.toBeNull();
+    expect(
+      document.querySelector(".v7-unit-facts > .v7-abilities"),
+    ).not.toBeNull();
+    expect(
+      document
+        .querySelector(".v7-identity-art")
+        ?.getAttribute("data-frame-mode"),
+    ).toBe("visible-alpha");
     const modifier = requiredButton(".v7-stat-modifier");
     const modifierSource = modifier.getAttribute("aria-label")?.split(":")[0];
     modifier.focus();

@@ -28,7 +28,9 @@ interface Coord {
 const baseUrl =
   process.argv.find((argument) => argument.startsWith("http")) ??
   "http://localhost:6173/?ruleset=7";
-const selectionOnly = process.argv.includes("--selection-only");
+const compactSelection = process.argv.includes("--selection-with-compact");
+const selectionOnly =
+  process.argv.includes("--selection-only") || compactSelection;
 const hudOnly = process.argv.includes("--hud-only");
 const outputArgument = process.argv.find((argument) =>
   argument.startsWith("--output="),
@@ -568,6 +570,13 @@ async function runSelectionReview(connection: Connection): Promise<void> {
   );
   await capture(connection, "selection-1920-city-actions.png");
 
+  if (!compactSelection) {
+    await runDesktopActionOverflowReview(connection);
+    await runDesktopIdentityReview(connection, moved.capital);
+    connection.close();
+    return;
+  }
+
   await viewport(connection, 390, 844, 2);
   const crowdedFixture = await evaluate<{
     readonly label: string;
@@ -681,6 +690,261 @@ async function runSelectionReview(connection: Connection): Promise<void> {
   );
 }
 
+async function runDesktopActionOverflowReview(
+  connection: Connection,
+): Promise<void> {
+  const evidence: unknown[] = [];
+  for (const [width, height, scale] of [
+    [1440, 900, "2"],
+    [1280, 720, "1"],
+  ] as const) {
+    await viewport(connection, width, height, 1);
+    await openCompactAction(connection, "settings");
+    await selectValue(connection, "#v7-ui-scale", scale);
+    await click(connection, '[data-action="close-overlay"]');
+    const measured = await evaluate<{
+      actionCount: number;
+      contentVisible: boolean;
+      helpersVisible: boolean;
+    }>(
+      connection,
+      `(() => {
+      const dock = document.querySelector('.v7-selection-dock');
+      const row = dock.querySelector(':scope > .v7-context-actions');
+      const d = dock.getBoundingClientRect(), r = row.getBoundingClientRect();
+      const actions = [...row.querySelectorAll('.v7-train-action')];
+      const within = (bounds, outer) => bounds.top >= outer.top - 1 && bounds.bottom <= outer.bottom + 1;
+      const cards = actions.map(action => {
+        const bounds = action.getBoundingClientRect();
+        const range = document.createRange(); range.selectNodeContents(action);
+        return { height: bounds.height, scrollHeight: action.scrollHeight, clientHeight: action.clientHeight, contained: within(bounds, r) && within(bounds, d) && [...range.getClientRects()].every(content => within(content, bounds)) };
+      });
+      const helpersVisible = [...row.querySelectorAll('.v7-train-help')].every(helper => { const bounds = helper.getBoundingClientRect(); return within(bounds, r) && within(bounds, d) && document.elementFromPoint(bounds.left + bounds.width / 2, bounds.top + bounds.height / 2) === helper; });
+      return { actionCount: actions.length, dockHeight: d.height, rowHeight: r.height, cards, contentVisible: cards.every(card => card.contained && card.scrollHeight <= card.clientHeight + 1), helpersVisible };
+    })()`,
+    );
+    await capture(
+      connection,
+      `selection-${width}x${height}-city-scale${scale}.png`,
+    );
+    evidence.push({ width, height, scale, measured });
+    await writeFile(
+      path.join(outputRoot, "selection-overflow-evidence.json"),
+      `${JSON.stringify(evidence, null, 2)}\n`,
+    );
+    assert(
+      measured.actionCount > 0 &&
+        measured.contentVisible &&
+        measured.helpersVisible,
+      `Desktop action clipping: ${JSON.stringify({ width, height, scale, measured })}`,
+    );
+  }
+}
+
+async function runDesktopIdentityReview(
+  connection: Connection,
+  capital: Coord,
+): Promise<void> {
+  const targets = await evaluate<readonly { name: string; at: Coord }[]>(
+    connection,
+    `(() => {
+    const view = globalThis.__PULP_WARS_APP__.controller.snapshot().view;
+    const tile = (predicate) => view.board.tiles.find(candidate => candidate.explored && predicate(candidate) && !view.units.some(unit => unit.at.x === candidate.at.x && unit.at.y === candidate.at.y) && !view.cities.some(city => city.at.x === candidate.at.x && city.at.y === candidate.at.y));
+    const game = tile(candidate => candidate.resource === 'GAME');
+    const fertile = tile(candidate => candidate.resource === 'FERTILE_GROUND');
+    const terrain = tile(candidate => candidate.resource === null && candidate.improvement === null);
+    const unit = view.units.find(candidate => candidate.ownerId === view.viewer.id);
+    if (!game || !fertile || !terrain || !unit) throw new Error('Natural identity cases missing');
+    return [{ name: 'game', at: game.at }, { name: 'fertile', at: fertile.at }, { name: 'terrain', at: terrain.at }, { name: 'unit', at: unit.at }, { name: 'city', at: ${JSON.stringify(capital)} }];
+  })()`,
+  );
+  // Observe a real city draw destination so a selection-triggered camera jump
+  // cannot pass merely because the Canvas element retains the same dimensions.
+  await evaluate(
+    connection,
+    `(() => {
+    const original = CanvasRenderingContext2D.prototype.drawImage;
+    CanvasRenderingContext2D.prototype.drawImage = function(image, ...args) {
+      if (this.canvas.classList.contains('board-canvas-v7') && image instanceof HTMLImageElement && image.src.includes('/city-1.png')) globalThis.__dockReviewCityRect = args.slice(-4);
+      return original.call(this, image, ...args);
+    };
+  })()`,
+  );
+  let cursor = capital;
+  const evidence: unknown[] = [];
+  const select = async (
+    target: { name: string; at: Coord },
+    width: number,
+  ): Promise<void> => {
+    await click(connection, '[data-action="close-dock"]');
+    await moveCursor(connection, cursor, target.at);
+    cursor = target.at;
+    await delay(150);
+    const before = await evaluate(
+      connection,
+      `({ canvas: document.querySelector('.board-canvas-v7').getBoundingClientRect().toJSON(), city: globalThis.__dockReviewCityRect })`,
+    );
+    await key(connection, "Enter", "Enter");
+    await waitFor(
+      connection,
+      `document.querySelector('.v7-selection-dock .v7-identity-art img')?.complete === true`,
+    );
+    const measurement = await desktopIdentityEvidence(connection);
+    const after = await evaluate(
+      connection,
+      `({ canvas: document.querySelector('.board-canvas-v7').getBoundingClientRect().toJSON(), city: globalThis.__dockReviewCityRect })`,
+    );
+    assert(
+      JSON.stringify(before) === JSON.stringify(after),
+      `Selection moved the map: ${JSON.stringify({ target, before, after })}`,
+    );
+    assert(
+      measurement.height === 280 &&
+        Math.abs(measurement.paintedSize - 104) < 0.1 &&
+        measurement.contained &&
+        measurement.closeReachable &&
+        measurement.helpersReachable &&
+        measurement.actionTopDelta <= 1,
+      `Identity layout failed: ${JSON.stringify({ target, measurement })}`,
+    );
+    evidence.push({ width, target, measurement, map: after });
+    await capture(connection, `identity-${width}-${target.name}.png`);
+  };
+  for (const [width, height] of [
+    [1280, 800],
+    [1440, 900],
+  ] as const) {
+    await viewport(connection, width, height, 1);
+    for (const target of targets) await select(target, width);
+  }
+  // Build a real improvement through offered commands, waiting for income as
+  // needed. No DOM or game-state fixtures replace the natural selected entity.
+  for (const step of [
+    "HUNTING",
+    "HUNT_GAME",
+    "FORESTRY",
+    "BUILD_LUMBER_CAMP",
+  ]) {
+    let dispatched = false;
+    for (let attempt = 0; attempt < 8 && !dispatched; attempt += 1) {
+      dispatched = await evaluate<boolean>(
+        connection,
+        `(async () => {
+        const controller = globalThis.__PULP_WARS_APP__.controller;
+        const snapshot = controller.snapshot();
+        const command = snapshot.offeredCommands.find(candidate => candidate.kind === ${JSON.stringify(step)} || (candidate.kind === 'RESEARCH' && candidate.tech === ${JSON.stringify(step)}));
+        const chosen = command ?? snapshot.offeredCommands.find(candidate => candidate.kind === 'END_TURN');
+        if (!chosen) throw new Error('Income progression command missing');
+        const result = await controller.dispatch(chosen);
+        if (!result.accepted) throw new Error('Natural improvement progression rejected');
+        if (chosen.kind === 'END_TURN') await controller.progressAiTurns();
+        return Boolean(command);
+      })()`,
+      );
+      await waitFor(
+        connection,
+        `(() => { const snapshot = globalThis.__PULP_WARS_APP__.controller.snapshot(); return !snapshot.ai.active && (snapshot.offeredCommands.some(command => command.kind === 'CHOOSE_CITY_REWARD') || snapshot.view.turnOrder[snapshot.view.activeSeatIndex] === snapshot.view.humanPlayerId); })()`,
+      ).catch(async (error: unknown) => {
+        await writeFile(
+          path.join(outputRoot, "progression-failure.json"),
+          JSON.stringify(
+            {
+              step,
+              snapshot: await evaluate(
+                connection,
+                `globalThis.__PULP_WARS_APP__.controller.snapshot()`,
+              ),
+            },
+            null,
+            2,
+          ),
+        );
+        throw error;
+      });
+      await evaluate(
+        connection,
+        `(async () => { const controller = globalThis.__PULP_WARS_APP__.controller; const reward = controller.snapshot().offeredCommands.find(command => command.kind === 'CHOOSE_CITY_REWARD'); if (reward) await controller.dispatch(reward); })()`,
+      );
+      await waitForHuman(connection);
+    }
+    assert(dispatched, `Could not prepare natural improvement: ${step}`);
+  }
+  const improvement = await evaluate<Coord>(
+    connection,
+    `globalThis.__PULP_WARS_APP__.controller.snapshot().view.board.tiles.find(tile => tile.explored && tile.improvement === 'LUMBER_CAMP').at`,
+  );
+  await select({ name: "improvement", at: improvement }, 1440);
+  // Expanding and keyboard-closing facts must stay inside the fixed bar.
+  const unitTarget = targets.find((target) => target.name === "unit");
+  if (unitTarget === undefined) throw new Error("Natural unit target missing");
+  await select(unitTarget, 1440);
+  const ability = await evaluate<string | null>(
+    connection,
+    `document.querySelector('.v7-ability-tag')?.dataset.action ?? null`,
+  );
+  if (ability !== null) {
+    await click(connection, `[data-action="${ability}"]`);
+    await delay(150);
+    const expanded = await desktopIdentityEvidence(connection);
+    assert(
+      expanded.height === 280 && expanded.closeReachable,
+      "Expanded unit facts resized the dock",
+    );
+    await evaluate(
+      connection,
+      `(() => { const close = document.querySelector('[data-action="close-ability"]'); close.focus(); close.scrollIntoView({ block: 'nearest' }); })()`,
+    );
+    assert(
+      await evaluate(
+        connection,
+        `document.activeElement?.getAttribute('data-action') === 'close-ability'`,
+      ),
+      "Ability Close did not receive focus",
+    );
+    await key(connection, "Enter", "Enter");
+    await waitFor(
+      connection,
+      `document.querySelector('.v7-ability-card') === null`,
+    );
+  }
+  await writeFile(
+    path.join(outputRoot, "selection-evidence.json"),
+    `${JSON.stringify({ source: "NATURAL_DESKTOP_SELECTIONS_AND_LEGAL_IMPROVEMENT", evidence }, null, 2)}\n`,
+  );
+  console.log(
+    `Ruleset-7 desktop selection review passed. Evidence: ${outputRoot}`,
+  );
+}
+
+async function desktopIdentityEvidence(connection: Connection): Promise<{
+  height: number;
+  paintedSize: number;
+  contained: boolean;
+  closeReachable: boolean;
+  helpersReachable: boolean;
+  actionTopDelta: number;
+}> {
+  return evaluate(
+    connection,
+    `(() => {
+    const dock = document.querySelector('.v7-selection-dock');
+    const image = dock.querySelector('.v7-identity-art img');
+    const viewport = image.parentElement.getBoundingClientRect();
+    const rect = image.getBoundingClientRect();
+    const canvas = document.createElement('canvas'); canvas.width = image.naturalWidth; canvas.height = image.naturalHeight;
+    const context = canvas.getContext('2d'); context.drawImage(image, 0, 0);
+    const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+    let left = canvas.width, top = canvas.height, right = 0, bottom = 0;
+    for (let y = 0; y < canvas.height; y += 1) for (let x = 0; x < canvas.width; x += 1) if (pixels[(y * canvas.width + x) * 4 + 3] > 0) { left = Math.min(left, x); top = Math.min(top, y); right = Math.max(right, x + 1); bottom = Math.max(bottom, y + 1); }
+    const scale = rect.width / canvas.width;
+    const painted = { left: rect.left + left * scale, top: rect.top + top * scale, right: rect.left + right * scale, bottom: rect.top + bottom * scale };
+    const reachable = node => { const r = node.getBoundingClientRect(); return r.width >= 44 && r.height >= 44 && r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight; };
+    const actions = [...dock.querySelectorAll('.v7-context-action, .v7-train-action')].map(node => node.getBoundingClientRect());
+    return { asset: image.dataset.assetId, height: dock.getBoundingClientRect().height, paintedSize: Math.max(painted.right-painted.left, painted.bottom-painted.top), painted, viewport: viewport.toJSON(), contained: painted.left >= viewport.left && painted.right <= viewport.right && painted.top >= viewport.top && painted.bottom <= viewport.bottom && Math.abs(rect.height / canvas.height - scale) < .001, closeReachable: reachable(dock.querySelector('[data-action="close-dock"]')), helpersReachable: [...dock.querySelectorAll('.v7-train-help')].every(reachable), actionTopDelta: actions.length ? Math.max(...actions.map(r => Math.abs(r.top - actions[0].top))) : 0 };
+  })()`,
+  );
+}
+
 async function compactMatchEvidence(connection: Connection): Promise<{
   readonly mainMenuReachable: boolean;
   readonly endTurnReachable: boolean;
@@ -763,7 +1027,7 @@ async function selectionDockEvidence(
 ): Promise<SelectionDockEvidence> {
   return evaluate(
     connection,
-    `(() => { const dock = document.querySelector('.v7-selection-dock'); const actions = dock?.querySelector(':scope > .v7-context-actions'); const close = dock?.querySelector(':scope > .close-button'); const identity = dock?.querySelector('.v7-identity'); const art = identity?.querySelector('.v7-art-frame'); const hud = document.querySelector('.v7-match-hud'); const endTurn = document.querySelector('[data-action="end-turn"]'); if (!(dock instanceof HTMLElement) || !(actions instanceof HTMLElement) || !(close instanceof HTMLElement) || !(identity instanceof HTMLElement) || !(art instanceof HTMLElement) || !(hud instanceof HTMLElement) || !(endTurn instanceof HTMLElement)) throw new Error('Selection dock evidence missing'); const d = dock.getBoundingClientRect(); const group = actions.getBoundingClientRect(); const closeRect = close.getBoundingClientRect(); const identityRect = identity.getBoundingClientRect(); const artRect = art.getBoundingClientRect(); const hudRect = hud.getBoundingClientRect(); const endTurnRect = endTurn.getBoundingClientRect(); const buttons = [...actions.querySelectorAll('button')]; const buttonRects = buttons.map((button) => button.getBoundingClientRect()); const style = getComputedStyle(actions); const dockStyle = getComputedStyle(dock); const overlaps = (left, right) => left.left < right.right && left.right > right.left && left.top < right.bottom && left.bottom > right.top; return { width: d.width, height: d.height, left: d.left, right: d.right, dockTop: d.top, dockInnerWidth: d.width - parseFloat(dockStyle.paddingLeft) - parseFloat(dockStyle.paddingRight), hudBottom: hudRect.bottom, endTurnReachable: endTurnRect.width >= 44 && endTurnRect.height >= 44 && endTurnRect.left >= 0 && endTurnRect.right <= innerWidth && endTurnRect.top >= 0 && endTurnRect.bottom <= innerHeight && !overlaps(endTurnRect, d), closeReachable: closeRect.width >= 44 && closeRect.height >= 44 && closeRect.left >= 0 && closeRect.right <= innerWidth && closeRect.top >= 0 && closeRect.bottom <= innerHeight, identityCloseOverlap: overlaps(identityRect, closeRect), actionsBesideIdentity: group.top < identityRect.bottom && group.bottom > identityRect.top, identityArtWidth: artRect.width, identityArtHeight: artRect.height, actionCount: buttons.length, actionWidth: buttonRects[0]?.width || 0, actionClientWidth: actions.clientWidth, actionScrollWidth: actions.scrollWidth, actionClientHeight: actions.clientHeight, actionScrollHeight: actions.scrollHeight, actionTopDelta: buttonRects.length === 0 ? 0 : Math.max(...buttonRects.map((rect) => Math.abs(rect.top - buttonRects[0].top))), actionRowVisible: group.width > 0 && group.height > 0 && group.top >= 0 && group.bottom <= innerHeight, flexWrap: style.flexWrap, overflowX: style.overflowX, overflowY: style.overflowY, touchAction: style.touchAction, pageClientWidth: document.documentElement.clientWidth, pageScrollWidth: document.documentElement.scrollWidth }; })()`,
+    `(() => { const dock = document.querySelector('.v7-selection-dock'); const actions = dock?.querySelector(':scope > .v7-context-actions'); const close = dock?.querySelector(':scope > .close-button'); const identity = dock?.querySelector('.v7-identity'); const art = identity?.querySelector('.v7-identity-art'); const hud = document.querySelector('.v7-match-hud'); const endTurn = document.querySelector('[data-action="end-turn"]'); if (!(dock instanceof HTMLElement) || !(actions instanceof HTMLElement) || !(close instanceof HTMLElement) || !(identity instanceof HTMLElement) || !(art instanceof HTMLElement) || !(hud instanceof HTMLElement) || !(endTurn instanceof HTMLElement)) throw new Error('Selection dock evidence missing'); const d = dock.getBoundingClientRect(); const group = actions.getBoundingClientRect(); const closeRect = close.getBoundingClientRect(); const identityRect = identity.getBoundingClientRect(); const artRect = art.getBoundingClientRect(); const hudRect = hud.getBoundingClientRect(); const endTurnRect = endTurn.getBoundingClientRect(); const buttons = [...actions.querySelectorAll('.v7-context-action, .v7-train-action')]; const buttonRects = buttons.map((button) => button.getBoundingClientRect()); const style = getComputedStyle(actions); const dockStyle = getComputedStyle(dock); const overlaps = (left, right) => left.left < right.right && left.right > right.left && left.top < right.bottom && left.bottom > right.top; return { width: d.width, height: d.height, left: d.left, right: d.right, dockTop: d.top, dockInnerWidth: d.width - parseFloat(dockStyle.paddingLeft) - parseFloat(dockStyle.paddingRight), hudBottom: hudRect.bottom, endTurnReachable: endTurnRect.width >= 44 && endTurnRect.height >= 44 && endTurnRect.left >= 0 && endTurnRect.right <= innerWidth && endTurnRect.top >= 0 && endTurnRect.bottom <= innerHeight && !overlaps(endTurnRect, d), closeReachable: closeRect.width >= 44 && closeRect.height >= 44 && closeRect.left >= 0 && closeRect.right <= innerWidth && closeRect.top >= 0 && closeRect.bottom <= innerHeight, identityCloseOverlap: overlaps(identityRect, closeRect), actionsBesideIdentity: group.top < identityRect.bottom && group.bottom > identityRect.top, identityArtWidth: artRect.width, identityArtHeight: artRect.height, actionCount: buttons.length, actionWidth: buttonRects[0]?.width || 0, actionClientWidth: actions.clientWidth, actionScrollWidth: actions.scrollWidth, actionClientHeight: actions.clientHeight, actionScrollHeight: actions.scrollHeight, actionTopDelta: buttonRects.length === 0 ? 0 : Math.max(...buttonRects.map((rect) => Math.abs(rect.top - buttonRects[0].top))), actionRowVisible: group.width > 0 && group.height > 0 && group.top >= 0 && group.bottom <= innerHeight, flexWrap: style.flexWrap, overflowX: style.overflowX, overflowY: style.overflowY, touchAction: style.touchAction, pageClientWidth: document.documentElement.clientWidth, pageScrollWidth: document.documentElement.scrollWidth }; })()`,
   );
 }
 
@@ -1051,7 +1315,8 @@ async function key(
   if (windowsVirtualKeyCode === undefined)
     throw new Error(`Unknown key ${code}`);
   await connection.send("Input.dispatchKeyEvent", {
-    type: "rawKeyDown",
+    type: keyValue === "Enter" ? "keyDown" : "rawKeyDown",
+    ...(keyValue === "Enter" ? { text: "\r" } : {}),
     key: keyValue,
     code,
     windowsVirtualKeyCode,

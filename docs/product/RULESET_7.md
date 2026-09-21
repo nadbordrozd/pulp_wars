@@ -1954,6 +1954,13 @@ and tactical action buttons share one left-aligned, nonwrapping horizontal row;
 only that row scrolls horizontally, by touch, pointer wheel, or focus-following
 keyboard navigation, without creating page-level horizontal overflow. This
 Ruleset-7 layout specializes the otherwise retained screen-flow dock contract.
+On desktop (above 800 CSS pixels), every selection uses the same outer dock
+height: 280 CSS pixels, capped at 45% of the viewport height. Summary and unit
+facts scroll inside that fixed bar; expanding an ability does not resize the
+dock or Canvas. The shared 112 × 130 identity viewport centers the accepted
+sprite's painted bounds inside a 104 × 104 square, preserving aspect ratio and
+every nontransparent pixel. This presentation scaling applies to selected
+identities; map sprites and action illustrations retain their existing scale.
 
 Every exact unambiguous contextual command executes from one button activation
 against the already-selected entity/tile. Harvest, Hunt, Build, Clear, Replant,
@@ -2157,8 +2164,10 @@ terrain remains `MOUNTAIN` in state throughout. Existing source files remain
 unchanged until the subsequent art bead records this exact mapping and passes
 its visual review.
 
-All contextual and technology raster art occupies an exact 112 x 130 CSS-pixel
-transparent `object-fit: contain` viewport with original transparent padding.
+Contextual action and technology raster art occupies an exact 112 x 130
+CSS-pixel transparent `object-fit: contain` viewport with original transparent
+padding. Selected dock identities use the painted-bounds normalization in
+section 11 instead.
 Action buttons are 176 CSS pixels wide. Standard action/status icons are
 128 x 128 source to 32 x 32 CSS; primary action icons are 192 x 192 to
 48 x 48; compact HUD icons are 96 x 96 to 24 x 24. Text, numbers, pips,

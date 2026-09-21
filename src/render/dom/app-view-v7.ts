@@ -42,7 +42,7 @@ import type {
   Ruleset7TacticalUiSymbolId,
   TacticalSymbolTheme,
 } from "../../assets/ruleset7-tactical-ui-symbols";
-import { selectionIdentityArtworkLayoutV6 } from "./selection-identity-v6";
+import { selectionIdentityArtworkLayoutV7 } from "./selection-identity-v7";
 import {
   blackoutStatusTextV7,
   blackoutTargetsV7,
@@ -781,6 +781,7 @@ export class Ruleset7DomAppView {
           this.#document,
           RULESET7_UNIT_ART_IDS[unit.role],
           `${title(unit.role)} · ${unit.hp}/${unit.maxHp} HP`,
+          true,
         ),
       );
       if (unit.role === "HORSE_ARCHER") {
@@ -972,6 +973,16 @@ export class Ruleset7DomAppView {
         dock.dataset.hasActions = "true";
       }
       dock.append(actions);
+      // Keep each desktop column independently scrollable inside the fixed dock.
+      const summary = el(this.#document, "div", "v7-unit-summary");
+      const facts = el(this.#document, "div", "v7-unit-facts");
+      for (const child of [...dock.children]) {
+        if (child === actions) continue;
+        if (child.matches(".v7-identity, .v7-readiness-label, .v7-unit-status"))
+          summary.append(child);
+        else facts.append(child);
+      }
+      dock.prepend(summary, facts);
     } else if (selection.kind === "CITY") {
       const city = view.cities.find(
         (candidate) => candidate.id === selection.cityId,
@@ -983,6 +994,7 @@ export class Ruleset7DomAppView {
           this.#document,
           `building-city-${Math.max(1, Math.min(3, city.level))}`,
           `${city.isCapital ? "Capital" : "City"} · level ${city.level}`,
+          true,
         ),
       );
       const details = el(this.#document, "div", "v7-selection-details");
@@ -1068,7 +1080,7 @@ export class Ruleset7DomAppView {
             : RULESET7_IMPROVEMENT_ART_IDS[tile.improvement];
         const name = `${title(tile.biome)} · ${title(tile.terrain)}`;
         const summary = el(this.#document, "div", "v7-selection-summary");
-        summary.append(identity(this.#document, asset, name));
+        summary.append(identity(this.#document, asset, name, true));
         const details = el(this.#document, "div", "v7-selection-details");
         details.append(
           text(
@@ -2403,22 +2415,23 @@ function identity(
   documentRoot: Document,
   assetId: string,
   label: string,
+  normalizePaintedSize = false,
 ): HTMLElement {
   const identity = el(documentRoot, "div", "v7-identity");
   const viewport = el(documentRoot, "span", "v7-identity-art");
   const image = art(documentRoot, assetId, "");
-  const bounds = V7_UI_VISIBLE_ALPHA_BOUNDS[assetId];
-  if (bounds !== undefined) {
-    const layout = selectionIdentityArtworkLayoutV6({
-      mode: "VISIBLE_ALPHA",
-      source: { width: 256, height: 384 },
-      visibleBounds: bounds,
-    });
+  const layout =
+    normalizePaintedSize ||
+    assetId === "terrain-square-original-animal" ||
+    assetId === "terrain-square-fertile-ground"
+      ? selectionIdentityArtworkLayoutV7(assetId)
+      : null;
+  if (layout !== null) {
     viewport.dataset.frameMode = "visible-alpha";
-    image.style.left = `${layout.image.left}px`;
-    image.style.top = `${layout.image.top}px`;
-    image.style.width = `${layout.image.width}px`;
-    image.style.height = `${layout.image.height}px`;
+    image.style.left = `${layout.left}px`;
+    image.style.top = `${layout.top}px`;
+    image.style.width = `${layout.width}px`;
+    image.style.height = `${layout.height}px`;
   }
   viewport.append(image);
   identity.append(viewport, text(documentRoot, "h2", label));
@@ -2824,30 +2837,6 @@ function title(value: string): string {
     .replaceAll("_", " ")
     .replace(/^./, (letter) => letter.toUpperCase());
 }
-const V7_UI_VISIBLE_ALPHA_BOUNDS: Readonly<
-  Record<
-    string,
-    {
-      readonly left: number;
-      readonly top: number;
-      readonly right: number;
-      readonly bottom: number;
-    }
-  >
-> = {
-  "terrain-square-original-animal": {
-    left: 68,
-    top: 220,
-    right: 188,
-    bottom: 324,
-  },
-  "terrain-square-fertile-ground": {
-    left: 59,
-    top: 250,
-    right: 196,
-    bottom: 324,
-  },
-};
 function value(root: HTMLElement, id: string): string {
   return (
     root.querySelector<HTMLInputElement | HTMLSelectElement>(`#${id}`)?.value ??
