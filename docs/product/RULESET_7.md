@@ -8,6 +8,10 @@ remains authoritative for map, economy, public-view, and AI changes.
 
 **Runtime ruleset ID:** `pulp-wars-poc-7r5`
 
+**Approved planned successor:**
+[revision 6 water and naval play](RULESET_7_REVISION_6_WATER_NAVAL.md). It is an
+implementation contract and does not describe the current playable runtime.
+
 Revision 5 is implemented under exact ruleset ID
 `pulp-wars-poc-7r5`. Its specification supersedes this document for
 achievements, Monument placement UI, and save identity. Revision 4 supersedes this document wherever it

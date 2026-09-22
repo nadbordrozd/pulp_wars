@@ -1,11 +1,11 @@
 # Water and naval play proposal, version 2
 
-**Status: DRAFT — unapproved product proposal.** This recommends a future
-ruleset; it does not change playable rules. [Ruleset 7](RULESET_7.md), its
-[revision 4 biome economy](RULESET_7_REVISION_4_BIOME_ECONOMY.md), and its
-[revision 5 achievements](RULESET_7_REVISION_5_ACHIEVEMENTS.md) remain
-authoritative. Names, costs, movement rates, and outputs below are illustrative
-balance targets, not approved values.
+**Status: superseded design history.** The approved
+[revision-6 water and naval contract](RULESET_7_REVISION_6_WATER_NAVAL.md) turns
+the selected direction into exact implementation requirements. This proposal
+remains as rationale only; its illustrative wording and open balance questions
+are not authoritative. The current playable runtime remains revision 5 until
+revision 6 is implemented and released.
 
 ## Purpose and current boundary
 
@@ -197,5 +197,6 @@ proposed.
    pace, range, and exposure leave room for escort and counterattack? Measure
    defended landings, failed retreats, and reinforcement after Capture.
 
-Approval should turn the chosen answers into a separate precise rules
-contract. Until then, the four-branch, land-only game remains authoritative.
+The linked revision-6 contract answers these questions and is authoritative for
+implementation. Revision 5 remains the current playable runtime until that
+implementation and its release gates pass.
