@@ -426,8 +426,8 @@ export function movementStepCost2V7(
   const toCity = ownedCity(state, player.id, to);
   return (fromRoad || fromCity) &&
     (toRoad || toCity) &&
-    ((fromRoad && connectedRoads.has(key(from))) ||
-      (toRoad && connectedRoads.has(key(to))))
+    connectedRoads.has(key(from)) &&
+    connectedRoads.has(key(to))
     ? 1
     : 2;
 }
@@ -600,8 +600,8 @@ function publicStepCost2(
   const connected = context.connectedRoads;
   return (fromRoad || fromCity) &&
     (toRoad || toCity) &&
-    ((fromRoad && connected.has(key(fromTile.at))) ||
-      (toRoad && connected.has(key(to.at))))
+    connected.has(key(fromTile.at)) &&
+    connected.has(key(to.at))
     ? 1
     : 2;
 }
@@ -614,19 +614,24 @@ function publicCapitalConnectedRoads(view: PlayerViewV7): ReadonlySet<string> {
         : [],
     ),
   );
+  for (const city of view.cities) {
+    const tile = publicTileAt(view, city.at);
+    if (
+      city.ownerId === view.viewer.id &&
+      tile?.explored === true &&
+      tile.territoryOwnerId === view.viewer.id
+    )
+      roads.set(key(city.at), city.at);
+  }
   const capitals = view.cities.filter(
     (city) => city.ownerId === view.viewer.id && city.isCapital,
   );
   const connected = new Set<string>();
   const queue: CoordV7[] = [];
   for (const capital of capitals)
-    for (const [dx, dy] of ROAD_NEIGHBORS) {
-      const road = { x: capital.at.x + dx, y: capital.at.y + dy };
-      const roadKey = key(road);
-      if (roads.has(roadKey) && !connected.has(roadKey)) {
-        connected.add(roadKey);
-        queue.push(road);
-      }
+    if (roads.has(key(capital.at))) {
+      connected.add(key(capital.at));
+      queue.push(capital.at);
     }
   for (let index = 0; index < queue.length; index += 1) {
     const current = queue[index];

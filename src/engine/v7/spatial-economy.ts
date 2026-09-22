@@ -163,11 +163,8 @@ function calculateSpatialContributionAtV7(
     contributors.some((tile) => familyFor(tile.improvement) === family),
   );
   const connected = capitalConnectedRoadKeysV7(graph, city.ownerId);
-  const capitalRoadConnected = adjacentTilesV7(graph.board, at).some(
-    (tile) =>
-      tile.road &&
-      tileOwner(graph, tile) === city.ownerId &&
-      connected.has(key(tile.at)),
+  const capitalRoadConnected = adjacentTilesV7(graph.board, at).some((tile) =>
+    connected.has(key(tile.at)),
   );
   return result({
     marketIncome: Math.min(4, families.length + (capitalRoadConnected ? 1 : 0)),
@@ -191,17 +188,21 @@ export function capitalConnectedRoadKeysV7(
       .filter((tile) => tile.road && tileOwner(graph, tile) === playerId)
       .map((tile) => key(tile.at)),
   );
-  const connected = new Set<string>();
-  const queue: CoordV7[] = [];
-  for (const capital of graph.cities.filter(
+  const capitals = graph.cities.filter(
     (city) => city.ownerId === playerId && city.isCapital,
-  ))
-    for (const [dx, dy] of ROAD_NEIGHBORS)
-      if (roadKeys.has(key({ x: capital.at.x + dx, y: capital.at.y + dy })))
-        queue.push({ x: capital.at.x + dx, y: capital.at.y + dy });
+  );
+  for (const city of graph.cities)
+    if (
+      city.ownerId === playerId &&
+      tileAtV7(graph.board, city.at) !== undefined
+    )
+      roadKeys.add(key(city.at));
+  const connected = new Set<string>();
+  const queue: CoordV7[] = capitals.map((capital) => capital.at);
   for (let queueIndex = 0; queueIndex < queue.length; queueIndex += 1) {
     const at = queue[queueIndex];
-    if (at === undefined || connected.has(key(at))) continue;
+    if (at === undefined || !roadKeys.has(key(at)) || connected.has(key(at)))
+      continue;
     connected.add(key(at));
     for (const [dx, dy] of ROAD_NEIGHBORS) {
       const next = { x: at.x + dx, y: at.y + dy };

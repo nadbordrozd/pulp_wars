@@ -93,9 +93,12 @@ unit or city label. Grand Works must remain distinct from Workshop at minimum
 zoom; Market cannot look like a generic city.
 
 For Ruleset 7, Roads use narrow brown code-native strokes with all eight
-neighbor connections. Each tile paints its own clipped half-segments and the
-corner joins between public neighboring Roads. Roads and joins stay below
-improvements, including opaque Farms and the Mine terrain composite.
+neighbor connections. Visible city centers are implicit Road nodes: adjacent
+Roads and cities meet the center under city art without an isolated city Road
+stub. Each tile paints its own clipped half-segments and the corner joins
+between public neighboring Road nodes. Roads and joins stay below cities and
+improvements, including opaque Farms and the Mine terrain composite. Fogged
+cells never supply visible connections.
 
 For Ruleset 6, Roads are modular infrastructure. PixelLab supplies a
 quiet road material patch/edge family on the 256 x 148 ground overlay canvas;

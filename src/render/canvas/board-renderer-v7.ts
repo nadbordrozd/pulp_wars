@@ -142,6 +142,17 @@ export function buildBoardRenderPlanV7(
       .filter((tile) => tile.explored && tile.road)
       .map((tile) => coordKey(tile.at)),
   );
+  const exploredKeys = new Set(
+    view.board.tiles
+      .filter((tile) => tile.explored)
+      .map((tile) => coordKey(tile.at)),
+  );
+  const cityKeys = new Set(
+    view.cities
+      .filter((city) => exploredKeys.has(coordKey(city.at)))
+      .map((city) => coordKey(city.at)),
+  );
+  for (const cityKey of cityKeys) roadKeys.add(cityKey);
   for (const tile of view.board.tiles) {
     if (!tile.explored) {
       entries.push({
@@ -187,14 +198,17 @@ export function buildBoardRenderPlanV7(
         at: tile.at,
         roadJoins: joins,
       });
-    if (tile.road)
+    const cityNode = cityKeys.has(coordKey(tile.at));
+    const neighbors =
+      tile.road || cityNode ? roadNeighbors(tile.at, roadKeys) : [];
+    if (tile.road || (cityNode && neighbors.length > 0))
       entries.push({
         key: `road:${tile.at.x},${tile.at.y}`,
         kind: "ROAD",
         // Mine artwork includes its terrain, so it also covers its Road.
         layer: tile.improvement === "MINE" ? 0.5 : 2,
         at: tile.at,
-        roadNeighbors: roadNeighbors(view, tile.at),
+        roadNeighbors: neighbors,
       });
     if (tile.resource !== null && tile.resource !== "UNKNOWN_RESOURCE")
       entries.push({
@@ -1429,14 +1443,18 @@ function coordKey(at: CoordV7): string {
   return `${at.x},${at.y}`;
 }
 
-function roadNeighbors(view: PlayerViewV7, at: CoordV7): readonly CoordV7[] {
-  return view.board.tiles.flatMap((tile) =>
-    tile.explored &&
-    tile.road &&
-    Math.max(Math.abs(tile.at.x - at.x), Math.abs(tile.at.y - at.y)) === 1
-      ? [tile.at]
-      : [],
-  );
+function roadNeighbors(
+  at: CoordV7,
+  roadKeys: ReadonlySet<string>,
+): readonly CoordV7[] {
+  const neighbors: CoordV7[] = [];
+  for (let dy = -1; dy <= 1; dy += 1)
+    for (let dx = -1; dx <= 1; dx += 1) {
+      if (dx === 0 && dy === 0) continue;
+      const candidate = { x: at.x + dx, y: at.y + dy };
+      if (roadKeys.has(coordKey(candidate))) neighbors.push(candidate);
+    }
+  return neighbors;
 }
 
 /** Cell-clipped paths and corner joins keep Roads below each cell's artwork. */

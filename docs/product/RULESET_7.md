@@ -898,9 +898,12 @@ costs 2, targets an explored owned non-settlement tile without Road, and may
 coexist with any resource/improvement/unit. Road components and discounts use
 all eight neighboring tiles; Market adjacency is also eight-way.
 
-A Road component is capital-connected when every tile is controlled by one
-player and at least one Road tile is orthogonally or diagonally adjacent to
-that player's capital. Capture recomputes it immediately.
+A city's center is an implicit Road node owned by that city, including the
+capital. It needs no Build Road action and does not create Roads on surrounding
+tiles. Friendly built Roads and owned city centers connect across all eight
+neighbors. A component is capital-connected when it contains that player's
+capital center. Capture recomputes the network and Market income immediately.
+An adjacent connected owned city center can provide the Market Road bonus.
 
 ### 5.4 Conflict economy and capacity
 
@@ -1000,7 +1003,7 @@ selected ordinary defense multiplier with 1x; it does not alter base Defense.
 Movement is eight-way; Chebyshev distance defines range, sight, adjacency, and
 ZOC. Ordinary Move receives `2 * Move` half-step points. A normal step costs 2.
 It costs 1 for an orthogonal or diagonal step whose endpoints are friendly Road
-or owned city center, with at least one Road in the friendly connected network.
+or owned city center in the capital-connected network.
 Forest/Mountain entry ends Move even when discounted, except Fieldcraft Forest
 freedom. An unexplored step ends Move.
 Engineering is required for Mountain.

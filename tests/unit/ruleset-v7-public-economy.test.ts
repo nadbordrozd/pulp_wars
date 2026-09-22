@@ -7,6 +7,7 @@ import {
   queryPlayerCommandsV7,
   queryPublicEconomicPotentialsV7,
   scorePublicSpatialPlanV7,
+  spatialContributionAtV7,
   viewForV7,
   type CommandV7,
   type CoordV7,
@@ -22,6 +23,56 @@ import {
 } from "../fixtures/v7-builders";
 
 describe("ruleset-7 pure public economy", () => {
+  it("previews a Market beside an implicit capital Road with engine parity", () => {
+    const base = richV7(allTechsV7(exploredAllV7(initialV7(7_290))));
+    const capital = required(
+      base.cities.find((city) => city.ownerId === base.humanPlayerId),
+      "capital missing",
+    );
+    const target = { x: 5, y: 4 };
+    const state = {
+      ...base,
+      cities: base.cities.map((city) =>
+        city.id === capital.id ? { ...city, at: { x: 5, y: 5 } } : city,
+      ),
+      units: [],
+      board: {
+        ...base.board,
+        tiles: base.board.tiles.map((tile) => ({
+          ...tile,
+          terrain: "GRASS" as const,
+          resource: null,
+          site:
+            tile.at.x === 5 && tile.at.y === 5 ? ("CAPITAL" as const) : null,
+          territoryCityId: capital.id,
+          road: false,
+          improvement:
+            tile.at.x === 4 && tile.at.y === 4
+              ? ("FARM" as const)
+              : tile.at.x === 6 && tile.at.y === 4
+                ? ("MINE" as const)
+                : null,
+        })),
+      },
+    };
+    const view = viewForV7(state, base.humanPlayerId);
+    const preview = previewEconomicV7(view, {
+      kind: "BUILD_MARKET",
+      at: target,
+    });
+    expect(spatialContributionAtV7(state, target, "MARKET")).toMatchObject({
+      marketIncome: 3,
+      capitalRoadConnected: true,
+    });
+    expect(preview).toMatchObject({
+      ok: true,
+      preview: {
+        capitalRoadConnected: true,
+        coinIncomeDeltaByCity: [{ cityId: capital.id, delta: 3 }],
+      },
+    });
+  });
+
   it("routes authoritative compatibility calls through the same PlayerView calculation", () => {
     const first = farmPreviewState(7_280);
     const hiddenAt = required(

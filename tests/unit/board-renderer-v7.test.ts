@@ -506,6 +506,80 @@ describe("Ruleset 7 board renderer", () => {
     ]);
   });
 
+  it("draws cardinal and diagonal Road half-segments into visible city centers", () => {
+    const state = exploredAllV7(initialV7(1520));
+    const base = viewForV7(state, state.humanPlayerId);
+    const city = base.cities[0];
+    if (city === undefined) throw new Error("city missing");
+    const center = { x: 5, y: 5 };
+    const view = {
+      ...base,
+      cities: base.cities.map((candidate) =>
+        candidate.id === city.id ? { ...candidate, at: center } : candidate,
+      ),
+      board: {
+        ...base.board,
+        tiles: base.board.tiles.map((tile) =>
+          tile.explored
+            ? {
+                ...tile,
+                road:
+                  (tile.at.x === 5 && tile.at.y === 4) ||
+                  (tile.at.x === 6 && tile.at.y === 6),
+              }
+            : tile,
+        ),
+      },
+    };
+    const plan = buildBoardRenderPlanV7(view, [], {
+      selection: null,
+      selectedUnitId: null,
+      selectedAchievement: null,
+    });
+    expect(
+      plan.entries.find((entry) => entry.key === "road:5,5")?.roadNeighbors,
+    ).toEqual([
+      { x: 5, y: 4 },
+      { x: 6, y: 6 },
+    ]);
+    expect(
+      plan.entries.find((entry) => entry.key === "road:5,4")?.roadNeighbors,
+    ).toContainEqual(center);
+    expect(
+      plan.entries.find((entry) => entry.key === "road:6,6")?.roadNeighbors,
+    ).toContainEqual(center);
+    expect(
+      plan.entries.findIndex((entry) => entry.key === "road:5,5"),
+    ).toBeLessThan(
+      plan.entries.findIndex((entry) => entry.key === `city:${city.id}`),
+    );
+
+    const hidden = {
+      ...view,
+      cities: view.cities.filter((candidate) => candidate.id !== city.id),
+      board: {
+        ...view.board,
+        tiles: view.board.tiles.map((tile) =>
+          tile.at.x === center.x && tile.at.y === center.y
+            ? { at: tile.at, explored: false as const }
+            : tile,
+        ),
+      },
+    };
+    const hiddenPlan = buildBoardRenderPlanV7(hidden, [], {
+      selection: null,
+      selectedUnitId: null,
+      selectedAchievement: null,
+    });
+    expect(
+      hiddenPlan.entries.find((entry) => entry.key === "road:5,5"),
+    ).toBeUndefined();
+    expect(
+      hiddenPlan.entries.find((entry) => entry.key === "road:5,4")
+        ?.roadNeighbors,
+    ).not.toContainEqual(center);
+  });
+
   it("fills diagonal corner joins in adjacent cells below their improvements without creating Road tiles", () => {
     const state = exploredAllV7(initialV7(1518));
     const base = viewForV7(state, state.humanPlayerId);

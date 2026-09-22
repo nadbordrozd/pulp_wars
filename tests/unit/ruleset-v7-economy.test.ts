@@ -364,7 +364,7 @@ describe("ruleset-7 economy", () => {
         center.at,
         "MARKET",
       ).marketIncome,
-    ).toBe(2);
+    ).toBe(3);
   });
 
   it("preserves Roads through free Clear Forest and paid Replant, and builds Roads for 2", () => {

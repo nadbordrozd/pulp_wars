@@ -117,6 +117,7 @@ describe("ruleset-7 public movement bounds", () => {
     )!;
     const mover = state.units.find((unit) => unit.ownerId === human.id)!;
     expect([...capitalConnectedRoadKeysV7(state, human.id)].sort()).toEqual([
+      "0,0",
       "1,1",
       "2,2",
       "2,3",
@@ -174,6 +175,166 @@ describe("ruleset-7 public movement bounds", () => {
     expect(
       validatePlayerMovementPathV7(cutView, publicMover, path),
     ).toMatchObject({ legal: false, reason: "BUDGET_EXCEEDED" });
+  });
+
+  it("routes connected Roads through owned cities and drops the bridge on capture", () => {
+    const base = movementState({ x: 0, y: 0 });
+    const capital = base.cities.find(
+      (city) => city.ownerId === base.humanPlayerId,
+    )!;
+    const other = base.cities.find(
+      (city) => city.ownerId !== base.humanPlayerId,
+    )!;
+    const state = {
+      ...base,
+      cities: base.cities.map((city) =>
+        city.id === capital.id
+          ? { ...city, at: { x: 0, y: 0 } }
+          : {
+              ...city,
+              ownerId: base.humanPlayerId,
+              at: { x: 2, y: 2 },
+              isCapital: false,
+            },
+      ),
+      board: {
+        ...base.board,
+        tiles: base.board.tiles.map((tile) => ({
+          ...tile,
+          site:
+            tile.at.x === 0 && tile.at.y === 0
+              ? ("CAPITAL" as const)
+              : tile.at.x === 2 && tile.at.y === 2
+                ? ("CITY" as const)
+                : null,
+          territoryCityId:
+            tile.at.x === 2 && tile.at.y === 2 ? other.id : capital.id,
+          road:
+            (tile.at.x === 1 && tile.at.y === 1) ||
+            (tile.at.x === 3 && tile.at.y === 3) ||
+            (tile.at.x === 4 && tile.at.y === 4),
+        })),
+      },
+    };
+    const human = state.players.find(
+      (player) => player.id === state.humanPlayerId,
+    )!;
+    const mover = state.units.find((unit) => unit.ownerId === human.id)!;
+    const path = [
+      { x: 1, y: 1 },
+      { x: 2, y: 2 },
+      { x: 3, y: 3 },
+    ];
+    expect([...capitalConnectedRoadKeysV7(state, human.id)].sort()).toEqual([
+      "0,0",
+      "1,1",
+      "2,2",
+      "3,3",
+      "4,4",
+    ]);
+    expect(
+      state.board.tiles.find((tile) => tile.at.x === 0 && tile.at.y === 1)
+        ?.road,
+    ).toBe(false);
+    expect(validateMovementPathV7(state, mover, path)).toMatchObject({
+      legal: true,
+      spentPoints2: 3,
+    });
+    const view = viewForV7(state, human.id);
+    expect(
+      queryPlayerCommandsV7(view).some(
+        (command) =>
+          command.kind === "BUILD_ROAD" &&
+          ((command.at.x === 0 && command.at.y === 0) ||
+            (command.at.x === 2 && command.at.y === 2)),
+      ),
+    ).toBe(false);
+    expect(
+      applyCommandV7(state, human.id, {
+        kind: "BUILD_ROAD",
+        at: { x: 2, y: 2 },
+      }).accepted,
+    ).toBe(false);
+    const publicMover = view.units.find((unit) => unit.id === mover.id)!;
+    expect(validatePlayerMovementPathV7(view, publicMover, path)).toMatchObject(
+      {
+        legal: true,
+        spentPoints2: 3,
+      },
+    );
+    expect(
+      spatialContributionAtV7(state, { x: 4, y: 4 }, "MARKET")
+        .capitalRoadConnected,
+    ).toBe(true);
+
+    const captured = {
+      ...state,
+      cities: state.cities.map((city) =>
+        city.id === other.id ? { ...city, ownerId: other.ownerId } : city,
+      ),
+    };
+    expect([...capitalConnectedRoadKeysV7(captured, human.id)].sort()).toEqual([
+      "0,0",
+      "1,1",
+    ]);
+    expect(
+      spatialContributionAtV7(captured, { x: 4, y: 4 }, "MARKET")
+        .capitalRoadConnected,
+    ).toBe(false);
+    expect(movementStepCost2V7(captured, human, path[1]!, path[2]!)).toBe(2);
+    const capturedView = viewForV7(captured, human.id);
+    const capturedMover = capturedView.units.find(
+      (unit) => unit.id === mover.id,
+    )!;
+    expect(
+      validatePlayerMovementPathV7(capturedView, capturedMover, path),
+    ).toMatchObject({ legal: false });
+    const onRoad = (source: typeof view) => ({
+      ...source,
+      units: source.units.map((unit) =>
+        unit.id === mover.id ? { ...unit, at: { x: 3, y: 3 } } : unit,
+      ),
+    });
+    const connectedView = onRoad(view);
+    const disconnectedView = onRoad(capturedView);
+    for (const [roadView, expectedCost] of [
+      [connectedView, 1],
+      [disconnectedView, 2],
+    ] as const)
+      expect(
+        validatePlayerMovementPathV7(
+          roadView,
+          roadView.units.find((unit) => unit.id === mover.id)!,
+          [{ x: 4, y: 4 }],
+        ),
+      ).toMatchObject({ legal: true, spentPoints2: expectedCost });
+
+    const hiddenView = {
+      ...view,
+      board: {
+        ...view.board,
+        tiles: view.board.tiles.map((tile) =>
+          tile.at.x === 2 && tile.at.y === 2
+            ? { at: tile.at, explored: false as const }
+            : tile,
+        ),
+      },
+      cities: view.cities.filter((city) => city.id !== other.id),
+    };
+    expect(
+      validatePlayerMovementPathV7(hiddenView, publicMover, path),
+    ).toMatchObject({ legal: false, reason: "UNEXPLORED_INTERMEDIATE" });
+    expect(
+      validatePlayerMovementPathV7(hiddenView, publicMover, path.slice(0, 2)),
+    ).toMatchObject({ legal: true, stopped: true });
+    const hiddenRoadView = onRoad(hiddenView);
+    expect(
+      validatePlayerMovementPathV7(
+        hiddenRoadView,
+        hiddenRoadView.units.find((unit) => unit.id === mover.id)!,
+        [{ x: 4, y: 4 }],
+      ),
+    ).toMatchObject({ legal: true, spentPoints2: 2 });
   });
 
   it("rejects public paths whose off-board or fractional coordinates alias rows", () => {
