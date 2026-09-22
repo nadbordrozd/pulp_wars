@@ -59,16 +59,14 @@ describe("Ruleset 7 tactical observation-safe UI", () => {
       blackoutStatuses: [cityOnly],
     };
     const ui = renderSelection(view, [], { kind: "CITY", cityId: city.id });
-    expect(ui.text).toContain(
-      "City-only status · source and exact suppression remain private.",
-    );
-    expect(ui.text).toContain("income suppression capped at 3 Coins");
+    expect(ui.text).toContain("StateBlackout Active");
     expect(ui.text).not.toContain("2 Coins suppressed");
     expect(ui.text).not.toContain(`source ${source.id}`);
+    expect(ui.text).not.toContain("income suppression capped at 3 Coins");
     ui.app.destroy();
   });
 
-  it("distinguishes all public Blackout phases and recovery booleans without coupling timers", () => {
+  it("shows public Blackout phases in the compact city state without recovery prose", () => {
     const fixture = blackoutPublicFixtureV7();
     const city = required(fixture.view.cities[0]);
     const cases: readonly [PublicBlackoutStatusV7, string][] = [
@@ -81,7 +79,7 @@ describe("Ruleset 7 tactical observation-safe UI", () => {
           suppressedCoins: null,
           unaffectedTurnStarted: null,
         },
-        "activates at this city's next owner Start Turn",
+        "StateBlackout Pending",
       ],
       [
         {
@@ -92,7 +90,7 @@ describe("Ruleset 7 tactical observation-safe UI", () => {
           suppressedCoins: 2,
           unaffectedTurnStarted: null,
         },
-        "2 Coins suppressed this turn (cap 3)",
+        "StateBlackout Active",
       ],
       [
         {
@@ -103,7 +101,7 @@ describe("Ruleset 7 tactical observation-safe UI", () => {
           suppressedCoins: null,
           unaffectedTurnStarted: false,
         },
-        "unaffected owner turn started: no",
+        "StateBlackout Recovery",
       ],
       [
         {
@@ -114,9 +112,10 @@ describe("Ruleset 7 tactical observation-safe UI", () => {
           suppressedCoins: null,
           unaffectedTurnStarted: true,
         },
-        "unaffected owner turn started: yes",
+        "StateBlackout Recovery",
       ],
     ];
+    let recoveryText: string | null = null;
     for (const [status, expected] of cases) {
       document.body.innerHTML = '<div id="app"></div>';
       const view: PlayerViewV7 = {
@@ -130,6 +129,12 @@ describe("Ruleset 7 tactical observation-safe UI", () => {
       };
       const ui = renderSelection(view, [], { kind: "CITY", cityId: city.id });
       expect(ui.text).toContain(expected);
+      expect(ui.text).not.toContain("2 Coins suppressed");
+      expect(ui.text).not.toContain("unaffected owner turn started");
+      if (status.phase === "RECOVERY") {
+        if (recoveryText === null) recoveryText = ui.text;
+        else expect(ui.text).toBe(recoveryText);
+      }
       ui.app.destroy();
     }
   });
