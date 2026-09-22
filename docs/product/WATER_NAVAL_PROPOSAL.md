@@ -1,176 +1,201 @@
-# Water and naval play proposal
+# Water and naval play proposal, version 2
 
-**Status: DRAFT — unapproved product proposal.** This is a recommendation for
-discussion, not a change to the playable rules. [Ruleset 7](RULESET_7.md), its
+**Status: DRAFT — unapproved product proposal.** This recommends a future
+ruleset; it does not change playable rules. [Ruleset 7](RULESET_7.md), its
 [revision 4 biome economy](RULESET_7_REVISION_4_BIOME_ECONOMY.md), and its
 [revision 5 achievements](RULESET_7_REVISION_5_ACHIEVEMENTS.md) remain
-authoritative. All names and values below are illustrative until a later design
-is approved.
+authoritative. Names, costs, movement rates, and outputs below are illustrative
+balance targets, not approved values.
 
-## Intended place in the game
+## Purpose and current boundary
 
-Water should add a second route for exploration, trade, and invasion while the
-land game stays complete. The current four research branches already cover
-growth, resource use, roads, and war; the reserved fifth branch can serve cities
-with a coast without becoming a prerequisite for inland players. A city still
-grows through live population, earns Coins at Start Turn, owns a fixed footprint
-that can expand, and assigns units against its capacity. Water uses those same
-city relationships instead of creating a separate sea economy.
+Water should offer its own growth and Coin opportunities, faster travel between
+shores, and a naval combat theater that can support a real invasion. Maps may
+have continents, archipelagos, broad deserts with sparse water, or mixtures of
+these. Crossing the sea may be necessary to reach a rival or village. Land-heavy
+maps should still play well without naval investment.
 
-The first version should have two water terrains, one resource, two water
-improvements, two naval roles, and four research nodes. Ordinary land units can
-cross water in a vulnerable embarked state; there is no separate transport unit
-or cargo stack. No city, neutral village, or capture target appears on water.
+The current game has no water terrain, naval branch, Port, or naval unit. Cities
+grow from permanent and live population, earn Coins at Start Turn, and own a
+fixed footprint that can expand at level 4. Units draw from their home city's
+capacity. Fruit is visible on explored Grass and gives a one-off population
+harvest; Game is visible on explored Forest before Hunting unlocks its use.
+Roads connect city centers to the capital and can improve Market income. A land
+unit occupies a village or city through its owner's next Start Turn before
+Capture. This proposal keeps those relationships rather than adding a separate
+shipping inventory or transport unit.
 
-## Geography and fair starts
+## Map shape and achievable openings
 
-| Terrain       | Recommended role                                                         |
-| ------------- | ------------------------------------------------------------------------ |
-| Shallow water | Coast and approach lane. Borders land; accessible with first water tech. |
-| Deep water    | Open crossing. Requires later navigation tech.                           |
+| Terrain       | Proposed role                                                      |
+| ------------- | ------------------------------------------------------------------ |
+| Shallow water | Borders land; early crossing and eligible for Ports and resources. |
+| Deep water    | Longer open crossing; requires Navigation for units to enter.      |
 
-Shallow water forms the edge of each useful water body, with deep water only in
-its interior. A land tile is coastal when it touches shallow water by the
-game's ordinary eight-way adjacency. Water may cross city footprints and can be
-claimed by initial territory or Expand. The tile belongs to the same city that
-claims it; owning water does not claim an entire connected sea. No Road or land
-building goes on water.
+Water occupies ordinary map tiles. An owned water tile belongs to one city,
+through its starting footprint or Expand; a city does not own an entire sea.
+No land building or Road occupies water. Deep water may separate landmasses,
+and a settlement may have no land route to another settlement. The generator
+should retain broad geographic variety without imposing a universal land path
+or a fixed water percentage. It should measure usable coast, land development
+sites, expansion targets, and travel distance together, so desert and island
+starts remain different but comparably viable.
 
-Keep every capital and village reachable through land under the existing land
-movement rules. Water creates shortcuts and alternative attack fronts, never a
-mandatory crossing for Conquest. Compare start positions for both land
-development and reachable coast: each player should have a plausible coastal
-city site or expansion route, but starts need not have identical shorelines.
-Protect enough usable land in each settlement ring that replacing land with
-water does not erase its agriculture, timber, or Ore opportunities. Avoid tiny
-isolated ponds and narrow water pockets that cannot support a meaningful route.
-On smaller boards, prefer a modest connected inlet over deep water that only
-serves as an impassable obstacle. Water should leave room for land armies to
-approach and defend coastal cities.
+Every start must have an achievable first expansion or attack route. A capital
+on an island needs an owned shallow tile where it can afford a Port, a legal
+landing shore toward a reachable village or rival, and enough local economy to
+fund the required research and crossing before it runs out of useful choices.
+At the illustrative one-city prices, the starting 5 Coins buy Shorecraft; the
+capital's ordinary Start Turn income can then pay for a 4-Coin Port without
+training another unit. The opening route can use shallow water with Shorecraft.
+If it requires deep water, the starting land and resources must sustain the
+additional Navigation cost and staging time before first contact. The starting
+Fighter must be able to use the first Port without another capacity unlock or
+a newly trained unit. A land-heavy start with no useful sea route need not buy
+the water branch. Avoid landlocked one-tile seas sold as naval opportunities.
+These are map acceptance goals, not
+new biome weights or a promise of identical shorelines.
 
-These are map goals, not a proposed change to the existing regional biome
-weights or a fixed share of water. Land retains its Plains, Woodland, and
-Highlands identity. A future map review should measure coast access, usable
-economic land, and capital spacing together before settling exact placement.
+## Research and coastal economy
 
-## Fifth research branch and coastal economy
+Keep a fifth research branch independent of the four current land branches.
+The existing research model is permanent and paid in Coins. The following
+nodes use the current tier price pattern illustratively; a forced sea opening
+must remain affordable from its starting economy.
 
-Research uses the existing tier costs and permanent unlock model. The proposed
-branch is independent of the four land branches; no existing land technology
-requires it.
-
-| Tier | Illustrative node | Recommended unlocks                                                              |
+| Tier | Proposed node     | Unlocks                                                                          |
 | ---: | ----------------- | -------------------------------------------------------------------------------- |
-|    1 | Shorecraft        | Enter shallow water while embarked; build Port; recruit Patrol Boat from a Port. |
-|    2 | Fisheries         | Reveal Fish on explored shallow water; build Fishery on Fish.                    |
-|    2 | Navigation        | Embarked units and naval units may enter deep water.                             |
-|    3 | Naval Engineering | Recruit Warship from a Port; ranged sea pressure. Requires Navigation.           |
+|    1 | Shorecraft        | Port, one-off Fish/Pearl harvest on shallow water, shallow passage, Patrol Boat. |
+|    2 | Navigation        | Passage through deep water and harvest of owned deep-water Pearls.               |
+|    3 | Naval Engineering | Battleship recruitment; requires Navigation.                                     |
 
-Fisheries and Navigation are separate children of Shorecraft. A player can
-develop a coast without buying open-sea passage, or buy passage before the
-extra coastal growth. This gives the first water research a useful mobility and
-defense package and leaves the expensive fighting ship for a deliberate naval
-commitment. Inland players can invest in the existing land branches instead.
+Fish and Pearls are visible on explored water from the outset, like Fruit and
+Game; research gates use, not visibility. A water tile has at most one resource
+marker. Fish appears on shallow water and gives an illustrative +1 permanent
+population for a 2-Coin harvest, once. Pearls may appear on shallow or deep
+water and give an illustrative one-time net Coin gain: pay 2 Coins to collect 4. Both resources disappear when collected and never regenerate. Fish advances a
+coastal city's level; Pearls help pay for a Port, Navigation, or a vessel.
+Harvest is an ordinary city tile action on an owned, explored eligible tile;
+finding Fish or Pearls offshore does not let a player collect from neutral sea.
+Pearls are thus a distinct economic choice rather than another population
+improvement competing for the same scarce tiles. Deep Pearls reward later
+expansion and Navigation, but an early coastal city does not depend on them.
 
-| Feature | Recommended effect                                                                                                                                 |
-| ------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Port    | One per city, on an owned shallow tile touching that city's land. Provides naval recruitment and recovery; illustrative +1 live population.        |
-| Fish    | Resource on shallow water, revealed with Fisheries. Before research, explored water gives no hint that a hidden Fish marker exists.                |
-| Fishery | Built on owned, explored Fish; covers the marker and gives illustrative +2 live population to that city. Removing it restores Fish for rebuilding. |
+A Port costs an illustrative 4 Coins, can be built on any explored, owned
+shallow-water tile touching that city's land, and gives its owning city +1 live
+population while active. There is **no per-city Port cap**. A Port is a usable
+embarkation point and a naval recruitment and recovery site. A resource marker
+on its tile remains available until harvested, and collecting it leaves the
+Port intact; the two
+uses occupy different layers. A Port can also be built after a harvest. This
+single improvement avoids forcing a Fishery and a Port to compete for a tiny
+coast. Repeated Ports still cost Coins and scarce tiles, but each adds its own
+population and another place to stage or recruit. They do not each multiply a
+trade payout.
 
-These are local city investments: they require owned water, Coins, and an
-eligible city, and their live population can be disrupted. Fish is a renewable
-**site**, not a repeated harvest payout. This parallels Farm and Mine marker
-restoration without adding a permanent one-off reward. A Fishery does not add a
-fourth Market family in the first version. Coastal cities can gain levels and
-income from their water tiles, while inland Farm, Camp, Mine, and processor
-networks keep their existing value. The illustrative population amounts should
-be tuned against lost land sites, technology cost, and city-level timing rather
-than treated as approved balance.
+For example, a city owns just three shallow tiles: Fish, Pearls, and empty
+water. It may harvest Fish for +1 permanent population and collect Pearls for
+the one-time Coin gain, then build a Port on the empty tile for +1 live
+population and embark there. Later it can add Ports on the two harvested tiles,
+reaching +3 live Port population and gaining more staging points without
+losing either resource payout. It may instead build the first Port on Fish and
+harvest Fish afterward. The city's land tiles remain available for Farms,
+Camps, Mines, and their existing supporting buildings.
 
-An intact Port is the naval recruitment and recovery point for its city. A
-recruit appears on its empty Port tile, uses one assigned capacity slot, and
-starts exhausted like other trained units. Occupying the Port tile blocks
-recruitment. A hostile vessel occupying a Port or Fishery suppresses that
-improvement's live output; occupying a Port also blocks recruitment and
-recovery until it leaves. This is a reversible blockade, with no special
-destruction rule needed in the first version. Land units and naval vessels both
-count toward their home city's ordinary unit capacity; losing or capturing a
-Port does not destroy ships or grant extra capacity.
+### What connected Ports do
 
-## Units, combat, and counterplay
+Active friendly Ports connect through an explored, continuous navigable water
+route, even when the player owns no water tiles between them. Shallow lanes
+connect with Shorecraft; deep-water segments connect only after Navigation.
+An active Port links to its city's center through that city's territory.
+Port links and existing Roads can connect a remote city to the capital. That
+city may receive the existing Market Road bonus where its Market otherwise
+qualifies. A noncapital coastal city also receives an illustrative +1 Coin at
+Start Turn when one of its active Ports has a sea link to a **different** city's
+active Port in the capital-connected network. This sea bonus is **once per
+city**, regardless of Port count or route count; several Ports in one city
+cannot earn it by linking to one another. A city connected only by Roads gets
+the existing Road benefits, not the sea bonus. Ordinary sea movement is already
+faster than land travel, so connectivity adds no extra movement multiplier.
 
-| Role               | Recommended job and constraint                                                                                                                       |
-| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Patrol Boat        | Affordable shallow-water scout and screen. Can contest enemy boats and exposed transports; weaker in a direct fight with a Warship.                  |
-| Warship            | More costly, slower ranged naval attacker. Pressures ships and coastal defenders, but needs an intact Port and cannot occupy a city.                 |
-| Embarked land unit | Its original role and HP travel in one vulnerable craft. It cannot attack or use land abilities while afloat; the passenger dies if the craft sinks. |
+An enemy vessel occupying a Port makes that Port inactive: its +1 live
+population, recruitment, recovery, embarkation, resource collection, and
+connection stop until the vessel leaves. A friendly occupant also blocks
+recruitment on that tile. Routes then use any other active Ports. A vessel
+elsewhere in the lane contests actual passage but does not silently erase a
+whole network's income; no per-tile shipping or upkeep is proposed. Port loss
+may lower live population under the existing city rules. Capture transfers
+Ports with the city's footprint. A vessel on owned water never claims that
+tile or a city.
 
-There is still at most one unit on each tile. Naval roles stay on water; land
-roles stay on land except while embarked. Neither naval role may Capture. A
-Warship's range can reach a coastal land unit, but land defenders with legal
-range may also fire onto water. Patrol Boats protect transports by occupying
-approach cells and fighting enemy boats. Warships beat a lone Patrol Boat in an
-open exchange but give up price and speed; multiple cheap boats, coastal ranged
-fire, and a landing army are distinct responses. Use normal combat, retaliation,
-terrain, and zone-of-control principles unless playtest demonstrates a need for
-a specific exception. No role-specific damage bonus or automatic shore siege
-bonus is proposed. A ship adjacent to a city does not besiege its land center.
+## Ships and an invasion that can finish
 
-Water ownership and sight follow the current exploration model. Exploring water
-reveals terrain, and ordinary enemy vessels on explored tiles remain visible as
-ordinary land units do; this proposal adds no live re-fog. Existing special
-concealment rules still apply where relevant. An enemy vessel on owned water
-does not transfer territory. Existing hostile zone-of-control movement stops
-and fog-safe contact behavior should apply to water movement where their
-ordinary conditions are met. A Port reveals no unexplored sea merely because
-it is owned.
+| Role               | Recommended job and limitation                                                                                                                                  |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Patrol Boat        | Affordable, fast screen that scouts lanes, fights other light craft, and intercepts exposed embarked units; poor in a direct exchange with a Battleship.        |
+| Battleship         | Expensive, slower range-2 gun platform with illustrative attack 5, exceeding a Heavy's attack 3.5; defeats light ships and seriously damages coastal defenders. |
+| Embarked land unit | The existing land unit in a vulnerable craft, with its owner, role, HP, home city, and capacity use preserved; it cannot attack or Capture while afloat.        |
 
-## Ordinary land-unit passage
+Each vessel uses one ordinary home-city capacity slot; there is one unit per
+tile. A Battleship can fire at ships or coastal land targets in range, but
+cannot enter land, occupy or Capture a city, or fire beyond its stated range.
+Its illustrative Move 2 and rule that it may move or fire, never both in the
+same turn, make it a commitment. A defender can respond when it enters
+bombardment range, while its firepower makes it
+worth escorting an invasion. Patrol Boats can screen approaches and threaten
+transports; opposing Battleships and legal coastal ranged attacks can answer
+one. Concentrated cheap craft can force a costly ship to trade shots instead
+of bombarding a beach. A Battleship alone cannot win Conquest: land units must
+still land, hold a city center, and Capture it under the existing wait rule.
 
-Embarkation should be a direct contextual move from a land tile to an adjacent,
-empty shallow-water tile. Shorecraft is required. The unit itself becomes an
-embarked craft; there is no separately bought boat, carrier capacity, or second
-occupant. It retains its owner, home city, capacity use, current HP, and role.
-Embarking ends its action for that turn. Its later water movement uses a common,
-modest transport pace rather than the land role's movement tricks or Roads.
-Navigation permits passage into deep water. A player can embark from any legal
-shore, including neutral or hostile land, so a destroyed Port cannot strand
-units; a Port remains valuable for naval recruitment and recovery.
+Shorecraft allows a land unit to **embark only through an active friendly
+Port**: from an adjacent land tile it enters the empty Port tile and becomes an
+embarked craft. It need not buy a separate transport or consume a second
+capacity slot. Embarking ends its action. On later turns, an embarked unit moves
+an illustrative three water tiles per turn, faster than a Fighter on ordinary
+land. A six-tile crossing takes one embark turn, two sailing turns, and one
+landing turn; an ordinary Fighter needs at least six movement turns to cover a
+six-tile land route. Navigation permits deep-water movement. An embarked unit
+has weak generic defense, cannot attack, use its land abilities, heal, or
+recover afloat, and dies if its craft sinks. Naval units may use their normal
+attack and movement allowances, subject to water terrain and ordinary occupancy
+and hostile control.
 
-While afloat, an embarked unit cannot attack, capture, pillage, heal, use role
-abilities, or recover. It can be attacked and can be lost with its craft; do not
-give a Heavy or Juggernaut its land defense while afloat. Disembarkation moves
-to an adjacent, empty legal land tile and ends that unit's action. A landing
-therefore needs a free beachhead and survives an enemy response before it can
-fight or move farther. Normal land movement, abilities, and recovery return on
-its next turn. A land unit must then occupy a city center through the existing
-capture wait; arriving by sea does not bypass the capture rule. Embarked units
-cannot occupy city centers or seize water territory.
+An embarked unit may disembark to an adjacent empty, legal land tile, including
+neutral or hostile shore, without a destination Port. Disembarking ends its
+action; it must survive the defender's response before moving or attacking
+again. A viable attack brings Patrol Boats to screen transports and a
+Battleship to clear naval defenders or soften the beach, then lands enough
+capture-capable units to hold a city. Shore defenders can occupy landing tiles,
+fire on ships within legal range, contest the approach, or counterattack a
+beachhead. These are concrete ways to stop an invasion without making an
+undefended island untouchable.
 
-Naval vessels recover only while in owned water at or next to an intact friendly
-Port and only under the normal idle/recovery timing. An embarked passenger must
-land for recovery. These limits make a long crossing an exposed commitment and
-give the defending coast time to meet it.
+After landing, a unit can re-embark **only at an active friendly Port**. A
+failed beachhead may therefore be unable to retreat by sea. Capturing a
+coastal city transfers its Ports and makes them available once cleared of
+hostile occupation; where its owned coast has no Port, the new owner may build
+one after Capture. That Port supports reinforcement, recovery, and the return
+trip, subject to Coins, capacity, and any enemy blockade. An attacker choosing
+an undeveloped shore accepts that it may have to win and develop a city before
+its landing force can leave. Recovery for naval vessels requires an intact
+friendly Port nearby and ordinary idle timing; embarked passengers must land
+first. No supply chain, automatic troop return, or special offshore Capture is
+proposed.
 
-## Decisions to resolve before approval
+## Balance questions before approval
 
-1. **Map amount and shape:** Which board sizes should include meaningful deep
-   water, and what minimum coast access preserves fair starts without flattening
-   regional variation? Test generated maps rather than fixing a percentage now.
-2. **Economic payback:** Are Port +1 and Fishery +2 live population enough to
-   repay their research, construction, and lost land sites? Compare inland and
-   coastal city level timing, not just raw resource counts.
-3. **Combat feel:** Should an embarked craft be entirely unable to retaliate, or
-   have a small generic defense? Check whether Patrol Boats can escort a landing
-   without making unescorted transport hopeless.
-4. **Landing tempo:** Is a full turn of exposure after disembark the right
-   counterplay window on small maps? Adjust only after testing defended and
-   undefended shores.
-5. **Blockade and recovery:** Does reversible occupation create enough naval
-   economic pressure, or does a later design need explicit pillage or repair?
+1. How much local economy and staging room should a compulsory shallow or deep
+   crossing require, across board sizes and geography types? Test starts that
+   must sail, can choose to sail, and have no useful sailing route.
+2. Are Fish +1 permanent population, Port 4 Coins/+1 live population, and a
+   2-to-4-Coin Pearl harvest worthwhile beside land investments without making
+   a three-Port coast disproportionately strong?
+3. Does one connected Coin per noncapital city, alongside the existing Market
+   Road bonus, reward Port networks enough when several Ports serve one city?
+4. Does the proposed Battleship overwhelm coastal defense, or do its price,
+   pace, range, and exposure leave room for escort and counterattack? Measure
+   defended landings, failed retreats, and reinforcement after Capture.
 
-Approval should turn the chosen answers into a separate precise rules contract.
-Until then, the current four-branch, land-only game remains the playable ruleset.
-Island-only maps that require sea travel and a second water resource such as
-Pearls are candidates for later iteration, outside this first recommendation.
+Approval should turn the chosen answers into a separate precise rules
+contract. Until then, the four-branch, land-only game remains authoritative.
