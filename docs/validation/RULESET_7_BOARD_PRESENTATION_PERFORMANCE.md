@@ -12,6 +12,8 @@ prints its path. It writes `evidence.json`, natural-opening and synthetic
 screenshots, and a fixed-time mixed-terrain board PNG. Use
 `--url=http://localhost:PORT/?ruleset=7` to target an isolated checkout and
 `--output=/absolute/new/directory` to choose an empty evidence directory.
+Use `--dpr=2` to request desktop device-pixel ratio 2 through Chrome device
+metrics; the default remains 1. The probe records and verifies actual DPR.
 `--skip-graphics` is for comparison with revisions that do not contain the
 glow cache; it omits the direct draw and pixel-comparison portions only. Chrome
 uses an isolated temporary profile; the probe never touches the user's browser
@@ -71,3 +73,17 @@ selection draw coalescing, resize no-ops, stale command targets, and board-first
 movement notification coalescing. Absolute timing varies with browser
 scheduling, CPU load, and device-pixel ratio; inspect the probe's host and
 browser metadata alongside the raw samples.
+
+## Desktop DPR 2 diagnostic
+
+On the Intel i5-7360U Mac with Chrome Headless Shell 153.0.8010.48, an
+isolated `--dpr=2` run reported actual DPR 2 and a 2880 × 2000 Canvas backing
+store at the 1440 × 1000 desktop viewport. With 25 measured interactions after
+five warmups, the 60-ready-unit Full and Reduced pointer-handler p95 values
+were 6.9 and 3.4 ms. Their next-rAF scheduling proxies were 38.8 and 41.9 ms
+at p95. This proxy includes scheduling delay and does not measure paint or the
+architecture's panning-frame budget. The mixed-terrain direct draw p95 was
+2.5 ms, below the 12 ms static-redraw budget. Cached and uncached fixed-time
+images had zero differing pixels; the glow cache held 3,461,064 bytes against
+its 25,165,824-byte cap. Reduced motion scheduled zero ambient callbacks.
+The single accepted Move resolved in 19.8 ms; one Move is diagnostic only.

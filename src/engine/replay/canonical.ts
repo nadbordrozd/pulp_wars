@@ -1,5 +1,3 @@
-import { utf8Bytes } from "../encoding/utf8";
-
 export type JsonPrimitive = null | boolean | number | string;
 export type JsonValue =
   JsonPrimitive | readonly JsonValue[] | { readonly [key: string]: JsonValue };
@@ -23,26 +21,48 @@ const SHA256_CONSTANTS = [
   0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
 ] as const;
 
+// The pure engine build omits DOM types, while both supported runtimes expose
+// the same native UTF-8 encoder on globalThis.
+const UTF8_ENCODER = new (
+  globalThis as typeof globalThis & {
+    readonly TextEncoder: new () => { encode(value: string): Uint8Array };
+  }
+).TextEncoder();
+
 export function canonicalJson(value: unknown): string {
   const ancestors = new Set<object>();
   return serialize(value, ancestors, "$", true);
 }
 
 export function canonicalHash(value: unknown): string {
-  return sha256Hex(utf8Bytes(canonicalJson(value)));
+  return sha256Hex(UTF8_ENCODER.encode(canonicalJson(value)));
 }
 
 export function compareUnicodeCodePoints(left: string, right: string): number {
-  const leftPoints = [...left].map((symbol) => symbol.codePointAt(0) ?? 0);
-  const rightPoints = [...right].map((symbol) => symbol.codePointAt(0) ?? 0);
-  const sharedLength = Math.min(leftPoints.length, rightPoints.length);
-  for (let index = 0; index < sharedLength; index += 1) {
-    const difference = (leftPoints[index] ?? 0) - (rightPoints[index] ?? 0);
+  let leftIndex = 0;
+  let rightIndex = 0;
+  while (leftIndex < left.length && rightIndex < right.length) {
+    const leftPoint = left.codePointAt(leftIndex) ?? 0;
+    const rightPoint = right.codePointAt(rightIndex) ?? 0;
+    const difference = leftPoint - rightPoint;
     if (difference !== 0) {
       return difference;
     }
+    leftIndex += leftPoint > 0xffff ? 2 : 1;
+    rightIndex += rightPoint > 0xffff ? 2 : 1;
   }
-  return leftPoints.length - rightPoints.length;
+  return (
+    remainingCodePoints(left, leftIndex) -
+    remainingCodePoints(right, rightIndex)
+  );
+}
+
+function remainingCodePoints(value: string, start: number): number {
+  let count = 0;
+  for (let index = start; index < value.length; count += 1) {
+    index += (value.codePointAt(index) ?? 0) > 0xffff ? 2 : 1;
+  }
+  return count;
 }
 
 function serialize(
@@ -131,23 +151,19 @@ function validateArray(value: readonly unknown[], path: string): void {
   }
 }
 
-function sha256Hex(input: readonly number[]): string {
-  const padded = [...input, 0x80];
-  while (padded.length % 64 !== 56) {
-    padded.push(0);
-  }
+function sha256Hex(input: Uint8Array): string {
+  const padded = new Uint8Array(Math.ceil((input.length + 9) / 64) * 64);
+  padded.set(input);
+  padded[input.length] = 0x80;
   const bitLength = input.length * 8;
   const high = Math.floor(bitLength / 0x1_0000_0000);
   const low = bitLength >>> 0;
-  for (const shift of [24, 16, 8, 0]) {
-    padded.push((high >>> shift) & 0xff);
-  }
-  for (const shift of [24, 16, 8, 0]) {
-    padded.push((low >>> shift) & 0xff);
-  }
+  const lengthView = new DataView(padded.buffer);
+  lengthView.setUint32(padded.length - 8, high);
+  lengthView.setUint32(padded.length - 4, low);
 
-  const hash: number[] = [...SHA256_INITIAL];
-  const words = new Array<number>(64).fill(0);
+  const hash = new Uint32Array(SHA256_INITIAL);
+  const words = new Uint32Array(64);
   for (let offset = 0; offset < padded.length; offset += 64) {
     for (let index = 0; index < 16; index += 1) {
       const wordOffset = offset + index * 4;
@@ -177,16 +193,14 @@ function sha256Hex(input: readonly number[]): string {
         0;
     }
 
-    let [a, b, c, d, e, f, g, h] = hash as [
-      number,
-      number,
-      number,
-      number,
-      number,
-      number,
-      number,
-      number,
-    ];
+    let a = hash[0] ?? 0;
+    let b = hash[1] ?? 0;
+    let c = hash[2] ?? 0;
+    let d = hash[3] ?? 0;
+    let e = hash[4] ?? 0;
+    let f = hash[5] ?? 0;
+    let g = hash[6] ?? 0;
+    let h = hash[7] ?? 0;
     for (let index = 0; index < 64; index += 1) {
       const sum1 = rotateRight(e, 6) ^ rotateRight(e, 11) ^ rotateRight(e, 25);
       const choice = (e & f) ^ (~e & g);
@@ -219,7 +233,9 @@ function sha256Hex(input: readonly number[]): string {
     hash[7] = ((hash[7] ?? 0) + h) >>> 0;
   }
 
-  return hash.map((word) => word.toString(16).padStart(8, "0")).join("");
+  return Array.from(hash, (word) => word.toString(16).padStart(8, "0")).join(
+    "",
+  );
 }
 
 function rotateRight(value: number, count: number): number {

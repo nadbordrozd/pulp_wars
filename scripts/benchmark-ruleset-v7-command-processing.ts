@@ -329,7 +329,9 @@ async function main(): Promise<void> {
   if (!applied.accepted) throw new Error("Natural Move rejected");
   const jsonTimes: number[] = [];
   const hashTimes: number[] = [];
+  const freshHashTimes: number[] = [];
   const appendTimes: number[] = [];
+  const freshAppendTimes: number[] = [];
   const saveTimes: number[] = [];
   let replayHash = "";
   for (let sample = 0; sample < SAMPLES + WARMUP; sample += 1) {
@@ -337,8 +339,14 @@ async function main(): Promise<void> {
     canonicalJson(applied.state);
     const jsonMs = performance.now() - started;
     started = performance.now();
-    canonicalHash(applied.state);
+    const stateHash = canonicalHash(applied.state);
     const hashMs = performance.now() - started;
+    const freshHashState = structuredClone(applied.state);
+    started = performance.now();
+    const freshStateHash = canonicalHash(freshHashState);
+    const freshHashMs = performance.now() - started;
+    if (freshStateHash !== stateHash)
+      throw new Error("Fresh-clone state hash changed");
     started = performance.now();
     const replay = appendReplayCommandV7(
       createReplayV7(natural.state.setup),
@@ -346,13 +354,28 @@ async function main(): Promise<void> {
       applied.state,
     );
     const appendMs = performance.now() - started;
+    const freshReplayState = structuredClone(applied.state);
+    started = performance.now();
+    const freshReplay = appendReplayCommandV7(
+      createReplayV7(natural.state.setup),
+      move,
+      freshReplayState,
+    );
+    const freshAppendMs = performance.now() - started;
+    if (
+      freshReplay.checkpoints.at(-1)?.stateHash !==
+      replay.checkpoints.at(-1)?.stateHash
+    )
+      throw new Error("Fresh-clone replay certificate changed");
     started = performance.now();
     createSaveEnvelopeV7({ state: applied.state, replay }, NOW);
     const saveMs = performance.now() - started;
     if (sample >= WARMUP) {
       jsonTimes.push(jsonMs);
       hashTimes.push(hashMs);
+      freshHashTimes.push(freshHashMs);
       appendTimes.push(appendMs);
+      freshAppendTimes.push(freshAppendMs);
       saveTimes.push(saveMs);
     }
     const currentReplayHash = canonicalHash(replay);
@@ -382,7 +405,9 @@ async function main(): Promise<void> {
       dispatch: summary(dispatch),
       canonicalJson: summary(jsonTimes),
       canonicalHash: summary(hashTimes),
+      freshStateHash: summary(freshHashTimes),
       replayAppend: summary(appendTimes),
+      freshStateReplayAppend: summary(freshAppendTimes),
       saveEnvelope: summary(saveTimes),
     },
   };
@@ -447,9 +472,17 @@ async function main(): Promise<void> {
           medianMs: output.movement.canonicalHash.medianMs,
           p95Ms: output.movement.canonicalHash.p95Ms,
         },
+        freshStateHash: {
+          medianMs: output.movement.freshStateHash.medianMs,
+          p95Ms: output.movement.freshStateHash.p95Ms,
+        },
         replayAppend: {
           medianMs: output.movement.replayAppend.medianMs,
           p95Ms: output.movement.replayAppend.p95Ms,
+        },
+        freshStateReplayAppend: {
+          medianMs: output.movement.freshStateReplayAppend.medianMs,
+          p95Ms: output.movement.freshStateReplayAppend.p95Ms,
         },
         hashes: actual,
       },

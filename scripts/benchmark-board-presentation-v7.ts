@@ -12,6 +12,12 @@ const url =
 const outputRoot =
   process.argv.find((argument) => argument.startsWith("--output="))?.slice(9) ??
   path.join(tmpdir(), `pulp-wars-board-perf-${process.pid}-${Date.now()}`);
+const requestedDpr = Number(
+  process.argv.find((argument) => argument.startsWith("--dpr="))?.slice(6) ??
+    "1",
+);
+if (requestedDpr !== 1 && requestedDpr !== 2)
+  throw new Error("--dpr must be 1 or 2");
 const chrome = process.env.CHROME_PATH;
 if (chrome === undefined)
   throw new Error("Set CHROME_PATH to a headless Chrome executable.");
@@ -157,6 +163,13 @@ function summary(capture: Capture) {
 try {
   await connection.send("Page.enable");
   await connection.send("Runtime.enable");
+  if (requestedDpr !== 1)
+    await connection.send("Emulation.setDeviceMetricsOverride", {
+      width: 1440,
+      height: 1000,
+      deviceScaleFactor: requestedDpr,
+      mobile: false,
+    });
   await connection.send("Page.addScriptToEvaluateOnNewDocument", {
     source: `globalThis.__boardPerf={events:[],calls:[],frames:[],rafWork:[],rafWorkActive:false};
 const originalRaf=window.requestAnimationFrame;
@@ -418,6 +431,7 @@ EventTarget.prototype.addEventListener=function(type,fn,options){
         loadAverage: loadavg(),
       },
       browser: browserInfo,
+      requestedDpr,
       viewport: "1440 x 1000 Chrome window; Canvas uses application CSS layout",
     },
     summary: {
@@ -464,6 +478,10 @@ EventTarget.prototype.addEventListener=function(type,fn,options){
     JSON.stringify(evidence, null, 2),
   );
   const failures: string[] = [];
+  if (browserInfo.dpr !== requestedDpr)
+    failures.push(
+      `device-pixel ratio ${browserInfo.dpr} does not match requested ${requestedDpr}`,
+    );
   for (const [label, capture] of [
     ["natural", natural],
     ["FULL", busy.FULL],
