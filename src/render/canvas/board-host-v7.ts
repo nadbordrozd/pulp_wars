@@ -25,6 +25,7 @@ import {
   type BoardImageResolverV7,
   type BoardRenderInteractionV7,
   type BoardSelectionV7,
+  type BoardRenderPlanV7,
   type MapCommandTargetV7,
 } from "./board-renderer-v7";
 import { corePresentationPlanV7 } from "./presentation-plan-v7";
@@ -33,6 +34,7 @@ import {
   archerProjectileEndpoints,
   arrowGeometry,
 } from "./combat-presentation";
+import { BoardGlowCacheV7 } from "./glow-cache-v7";
 
 export interface BoardHostModelV7 {
   readonly matchInstanceId: string | number;
@@ -70,6 +72,14 @@ export interface BoardHostV7 {
 export class CanvasBoardHostV7 implements BoardHostV7 {
   readonly #document: Document;
   readonly #images: BoardImageResolverV7;
+  readonly #glowCache: BoardGlowCacheV7;
+  readonly #planCache: {
+    view: PlayerViewV7;
+    commands: BoardHostModelV7["offeredCommands"];
+    interactionKey: string;
+    plan: BoardRenderPlanV7;
+  }[] = [];
+  #drawSerial = 0;
   #canvas: HTMLCanvasElement | null = null;
   #context: CanvasRenderingContext2D | null = null;
   #description: HTMLElement | null = null;
@@ -127,7 +137,11 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
 
   constructor(documentRoot: Document) {
     this.#document = documentRoot;
-    this.#images = createBoardImageResolverV7(documentRoot, () => this.#draw());
+    this.#glowCache = new BoardGlowCacheV7(documentRoot);
+    this.#images = createBoardImageResolverV7(documentRoot, () => {
+      this.#glowCache.clear();
+      this.#draw();
+    });
   }
 
   mount(container: HTMLElement, callbacks: BoardHostCallbacksV7): void {
@@ -239,9 +253,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
 
   activate(at: CoordV7): void {
     this.#focused = at;
+    const serial = this.#drawSerial;
     this.#activate(at);
     this.#describe();
-    this.#draw();
+    if (serial === this.#drawSerial) this.#draw();
   }
 
   zoom(direction: "IN" | "OUT"): void {
@@ -267,9 +282,11 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.finishPresentations();
     this.#detach();
     this.#model = null;
+    this.#planCache.length = 0;
+    this.#glowCache.clear();
   }
 
-  finishPresentations(): void {
+  finishPresentations(redraw = true): void {
     this.#cameraFollowAllowed = false;
     this.#presentationToken += 1;
     if (this.#animationFrame !== null)
@@ -285,7 +302,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     const resolve = this.#animationResolve;
     this.#animationResolve = null;
     resolve?.();
-    this.#draw();
+    if (redraw) this.#draw();
   }
 
   async presentBoundary(
@@ -293,7 +310,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     after: PlayerViewV7,
     envelope: PlayerEventEnvelopeV7,
   ): Promise<void> {
-    this.finishPresentations();
+    this.finishPresentations(false);
     this.#cancelAmbientFrame();
     const token = this.#presentationToken;
     this.#inspectionCycle = null;
@@ -432,13 +449,22 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             this.#camera,
           );
     const rect = container.getBoundingClientRect();
-    this.#viewport = {
+    const nextViewport = {
       width: Math.max(320, rect.width || 1024),
       height: Math.max(320, rect.height || 640),
     };
+    const dpr = this.#document.defaultView?.devicePixelRatio ?? 1;
     const canvas = this.#canvas;
+    if (
+      canvas !== null &&
+      nextViewport.width === priorViewport.width &&
+      nextViewport.height === priorViewport.height &&
+      canvas.width === Math.round(nextViewport.width * dpr) &&
+      canvas.height === Math.round(nextViewport.height * dpr)
+    )
+      return;
+    this.#viewport = nextViewport;
     if (canvas !== null) {
-      const dpr = this.#document.defaultView?.devicePixelRatio ?? 1;
       canvas.width = Math.round(this.#viewport.width * dpr);
       canvas.height = Math.round(this.#viewport.height * dpr);
       canvas.style.width = `${this.#viewport.width}px`;
@@ -446,13 +472,36 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     }
     if (priorCenter !== null)
       this.#camera = centerCameraOn(this.#camera, priorCenter, this.#viewport);
+    this.#glowCache.clear();
     this.#draw();
+  }
+
+  #planFor(
+    view: PlayerViewV7,
+    commands: BoardHostModelV7["offeredCommands"],
+  ): BoardRenderPlanV7 {
+    const model = this.#model;
+    if (model === null) throw new Error("Board plan requires a mounted model");
+    const interaction = { ...model.interaction, cursor: this.#focused };
+    const interactionKey = JSON.stringify(interaction);
+    const cached = this.#planCache.find(
+      (item) =>
+        item.view === view &&
+        item.commands === commands &&
+        item.interactionKey === interactionKey,
+    );
+    if (cached !== undefined) return cached.plan;
+    const plan = buildBoardRenderPlanV7(view, commands, interaction);
+    if (this.#planCache.length === 2) this.#planCache.shift();
+    this.#planCache.push({ view, commands, interactionKey, plan });
+    return plan;
   }
 
   #draw(): void {
     const model = this.#model;
     const context = this.#context;
     if (model === null || context === null) return;
+    this.#drawSerial += 1;
     const now = this.#now();
     const jump = this.#selectionJump;
     const renderView = (
@@ -460,10 +509,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       clear: boolean,
       sceneAlpha: number,
     ): void => {
-      const plan = buildBoardRenderPlanV7(
+      const plan = this.#planFor(
         view,
-        this.#presentedView === null ? model.offeredCommands : [],
-        { ...model.interaction, cursor: this.#focused },
+        this.#presentedView === null ? model.offeredCommands : NO_COMMANDS,
       );
       const animated = this.#animatedUnit;
       const presented =
@@ -484,6 +532,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         camera: this.#camera,
         plan: presented,
         images: this.#images,
+        glowCache: this.#glowCache,
         readinessElapsedMs: now - this.#readinessStartedAt,
         reducedMotion: model.motion === "REDUCED",
         highContrast: model.highContrast,
@@ -564,10 +613,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     if (model === null) return;
     if (this.#inspectionCycle !== null && !same(this.#inspectionCycle.at, at))
       this.#inspectionCycle = null;
-    const plan = buildBoardRenderPlanV7(model.view, model.offeredCommands, {
-      ...model.interaction,
-      cursor: this.#focused,
-    });
+    const plan = this.#planFor(model.view, model.offeredCommands);
     const target = plan.targets.find((candidate) => same(candidate.at, at));
     if (target !== undefined && model.interactive) {
       this.#callbacks?.onCommand(target);
@@ -616,10 +662,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       return;
     }
     const city = model.view.cities.find((candidate) => same(candidate.at, at));
-    const actions = buildBoardRenderPlanV7(model.view, model.offeredCommands, {
-      ...model.interaction,
-      cursor: this.#focused,
-    })
+    const actions = this.#planFor(model.view, model.offeredCommands)
       .targets.filter((target) => same(target.at, at))
       .map((target) =>
         target.semanticLabel !== undefined
@@ -727,9 +770,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       const at = pickGridTile(point, this.#camera, model.view.board);
       if (at !== null) {
         this.#focused = at;
+        const serial = this.#drawSerial;
         this.#activate(at);
         this.#describe();
-        this.#draw();
+        if (serial === this.#drawSerial) this.#draw();
       }
     }
   };
@@ -1083,6 +1127,7 @@ function pinchState(
 function same(a: CoordV7, b: CoordV7): boolean {
   return a.x === b.x && a.y === b.y;
 }
+const NO_COMMANDS: readonly BoardHostModelV7["offeredCommands"][number][] = [];
 const title = (value: string): string =>
   value
     .toLowerCase()

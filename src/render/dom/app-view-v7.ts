@@ -143,6 +143,8 @@ export class Ruleset7DomAppView {
     readonly boundary: Ruleset7AcceptedBoundary;
   }[] = [];
   #presentationTail: Promise<void> = Promise.resolve();
+  #humanDispatchPending = false;
+  #humanDispatchSettling = false;
   #motion: "FULL" | "REDUCED";
   #animationSpeed: "NORMAL" | "FAST" = "NORMAL";
   #highContrast = false;
@@ -200,6 +202,7 @@ export class Ruleset7DomAppView {
       if (this.#destroyed) return;
       const prior = this.#snapshot;
       this.#snapshot = snapshot;
+      if (this.#humanDispatchPending) return;
       if (
         prior.ai.active &&
         snapshot.ai.active &&
@@ -711,28 +714,7 @@ export class Ruleset7DomAppView {
     shell.dataset.contrast = this.#highContrast ? "high" : "standard";
     shell.dataset.uiScale = String(this.#uiScale);
     shell.style.setProperty("--ui-scale", String(this.#uiScale));
-    this.#boardHost.update({
-      matchInstanceId: this.#matchInstance,
-      view,
-      offeredCommands: this.#snapshot.offeredCommands,
-      interactive:
-        this.#screen === "MATCH" &&
-        activeId === view.humanPlayerId &&
-        !this.#snapshot.transitioning &&
-        !this.#presentationActive &&
-        view.pendingChoices.length === 0,
-      motion: this.#motion,
-      animationSpeed: this.#animationSpeed,
-      presentationPaused: this.#screen === "SETTINGS",
-      highContrast: this.#highContrast,
-      interaction: {
-        selection: this.#selection,
-        selectedUnitId:
-          this.#selection?.kind === "UNIT" ? this.#selection.unitId : null,
-        selectedAchievement: this.#selectedAchievement,
-        tacticalTargetMode: this.#tacticalTargetMode,
-      },
-    });
+    this.#boardHost.update(this.#boardModel(view));
     this.#syncModalIsolation(main);
     const focusAction = this.#pendingFocusAction;
     this.#pendingFocusAction = null;
@@ -758,6 +740,32 @@ export class Ruleset7DomAppView {
         }
       });
     }
+  }
+
+  #boardModel(view: PlayerViewV7): Parameters<BoardHostV7["update"]>[0] {
+    const activeId = view.turnOrder[view.activeSeatIndex];
+    return {
+      matchInstanceId: this.#matchInstance,
+      view,
+      offeredCommands: this.#snapshot.offeredCommands,
+      interactive:
+        this.#screen === "MATCH" &&
+        activeId === view.humanPlayerId &&
+        !this.#snapshot.transitioning &&
+        !this.#presentationActive &&
+        view.pendingChoices.length === 0,
+      motion: this.#motion,
+      animationSpeed: this.#animationSpeed,
+      presentationPaused: this.#screen === "SETTINGS",
+      highContrast: this.#highContrast,
+      interaction: {
+        selection: this.#selection,
+        selectedUnitId:
+          this.#selection?.kind === "UNIT" ? this.#selection.unitId : null,
+        selectedAchievement: this.#selectedAchievement,
+        tacticalTargetMode: this.#tacticalTargetMode,
+      },
+    };
   }
 
   #dock(view: PlayerViewV7, selection: BoardSelectionV7): HTMLElement | null {
@@ -1980,8 +1988,13 @@ export class Ruleset7DomAppView {
     const restoreAction =
       command.kind === "RESEARCH" ? `tech-${command.tech.toLowerCase()}` : null;
     this.#presentationActive = true;
-    this.#render();
-    const result = await this.#controller.dispatch(command);
+    this.#humanDispatchPending = true;
+    let result: Awaited<ReturnType<Ruleset7ControllerPortV7["dispatch"]>>;
+    try {
+      result = await this.#controller.dispatch(command);
+    } finally {
+      this.#humanDispatchPending = false;
+    }
     if (this.#destroyed) return;
     if (!result.accepted) {
       this.#presentationActive = false;
@@ -1999,12 +2012,33 @@ export class Ruleset7DomAppView {
     if (command.kind === "RESEARCH") this.#selectedTech = command.tech;
     if (command.kind === "BUILD_MONUMENT") this.#selectedAchievement = null;
     this.#pendingFocusAction = restoreAction;
-    this.#render();
+    this.#humanDispatchSettling = true;
+    const visibleMovement =
+      command.kind === "MOVE" &&
+      result.playerEvents.events.some((event) => event.kind === "UNIT_MOVED");
+    if (visibleMovement && this.#matchRoot?.isConnected) {
+      // Install the accepted public view before the slide. Rebuilding the HUD
+      // here delays its first frame on a large board.
+      this.#boardHost.update(this.#boardModel(result.afterView));
+      const dock =
+        this.#matchRoot.querySelector<HTMLElement>(".v7-selection-dock");
+      if (dock !== null) {
+        dock.replaceChildren(
+          text(this.#document, "p", "Movement", "v7-movement-status"),
+        );
+        dock.setAttribute("aria-busy", "true");
+      }
+    } else this.#render();
+    this.#drainPresentationQueue();
     await this.#presentationTail;
-    if (this.#destroyed) return;
+    if (this.#destroyed) {
+      this.#humanDispatchSettling = false;
+      return;
+    }
     this.#presentationActive = false;
     this.#pendingFocusAction = restoreAction;
     this.#render();
+    this.#humanDispatchSettling = false;
     await this.#progressAi();
     if (this.#destroyed) return;
     if (
@@ -2097,7 +2131,6 @@ export class Ruleset7DomAppView {
       return;
     }
     this.#presentationActive = true;
-    this.#render();
     this.#presentationQueue.push({
       matchInstance: this.#matchInstance,
       boundary,
@@ -2108,9 +2141,13 @@ export class Ruleset7DomAppView {
       if (latest !== undefined) {
         this.#presentationQueue = [latest];
         this.#presentationActive = true;
-        this.#render();
       }
     }
+    if (this.#humanDispatchPending) return;
+    this.#render();
+    this.#drainPresentationQueue();
+  }
+  #drainPresentationQueue(): void {
     this.#presentationTail = this.#presentationTail.then(async () => {
       while (!this.#destroyed && this.#presentationQueue.length > 0) {
         if (this.#snapshot.ai.fastForward) {
@@ -2128,7 +2165,7 @@ export class Ruleset7DomAppView {
       }
       if (this.#presentationQueue.length === 0) {
         this.#presentationActive = false;
-        this.#render();
+        if (!this.#humanDispatchSettling) this.#render();
       }
     });
   }

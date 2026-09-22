@@ -23,6 +23,7 @@ import {
   type SourceGeometry,
 } from "./board-art-geometry";
 import { drawRegisteredImageGlow } from "./board-renderer-v6";
+import type { BoardGlowCacheV7 } from "./glow-cache-v7";
 import {
   TILE_HEIGHT,
   TILE_WIDTH,
@@ -367,6 +368,7 @@ export function drawBoardV7(input: {
   readonly camera: CameraState;
   readonly plan: BoardRenderPlanV7;
   readonly images: BoardImageResolverV7;
+  readonly glowCache?: BoardGlowCacheV7;
   readonly readinessElapsedMs?: number;
   readonly reducedMotion?: boolean;
   readonly highContrast?: boolean;
@@ -419,6 +421,15 @@ export function drawBoardV7(input: {
       (impacted ? (input.impact?.shakeCssPx ?? 0) : 0) * camera.zoom;
     const y = camera.offsetY + entry.at.y * TILE_HEIGHT * camera.zoom;
     const size = TILE_WIDTH * camera.zoom;
+    // The largest accepted sprite and attached glow extend less than three
+    // cells from their owning anchor, including jump/impact displacement.
+    if (
+      x < -3 * size ||
+      x > viewport.width + 3 * size ||
+      y < -3 * size ||
+      y > viewport.height + 3 * size
+    )
+      continue;
     const left = x - size / 2;
     const top = y - size / 2;
     if (entry.kind === "FOG") {
@@ -495,12 +506,17 @@ export function drawBoardV7(input: {
             height: rect.height * scale,
           };
           alpha = readiness?.opacity ?? 1;
-          if (readiness !== null)
-            drawRegisteredImageGlow(context, image, rect, {
+          if (readiness !== null) {
+            const glow = {
               color: readiness.glow.color,
               alpha: readiness.glow.alpha,
               blur: readiness.glow.blurCssPx * camera.zoom,
-            });
+            };
+            if (input.glowCache === undefined)
+              drawRegisteredImageGlow(context, image, rect, glow);
+            else
+              input.glowCache.draw(context, image, entry.assetId, rect, glow);
+          }
         }
         context.save();
         context.globalAlpha = alpha * sceneAlpha;

@@ -32,6 +32,64 @@ beforeEach(() => {
 });
 
 describe("Ruleset 7 DOM shell", () => {
+  it("coalesces human movement notifications and installs the board before rebuilding the HUD", async () => {
+    const source = new Ruleset7BrowserController();
+    const launched = await source.launch(setupV7(1541));
+    if (!launched.ok) throw new Error(launched.diagnostic);
+    const host = new CapturingBoardHost();
+    let finishSlide: (() => void) | undefined;
+    const presentation = vi
+      .spyOn(host, "presentBoundary")
+      .mockImplementation(
+        () => new Promise<void>((resolve) => (finishSlide = resolve)),
+      );
+    const updates = vi.spyOn(host, "update");
+    const app = new Ruleset7DomAppView(document, requiredRoot(), source, {
+      boardHost: host,
+      settingsStorage: null,
+    });
+    const view = source.snapshot().view;
+    if (view === null) throw new Error("Public view missing");
+    const command = source
+      .snapshot()
+      .offeredCommands.find((candidate) => candidate.kind === "MOVE");
+    if (command === undefined || command.kind !== "MOVE")
+      throw new Error("Move command missing");
+    const unit = view.units.find(
+      (candidate) => candidate.id === command.unitId,
+    );
+    if (unit === undefined) throw new Error("Moving unit missing");
+    host.callbacks?.onSelection({ kind: "UNIT", unitId: unit.id });
+    const hud = document.querySelector(".v7-match-hud");
+    const beforeUpdates = updates.mock.calls.length;
+    const target = command.path.at(-1);
+    if (target === undefined) throw new Error("Move path missing");
+    host.callbacks?.onCommand({ at: target, family: "MOVE", command });
+    await waitUntil(() => presentation.mock.calls.length === 1);
+    expect(updates.mock.calls.length - beforeUpdates).toBe(1);
+    expect(host.model?.view.commandIndex).toBeGreaterThan(view.commandIndex);
+    expect(document.querySelector(".v7-match-hud")).toBe(hud);
+    expect(document.querySelector(".v7-selection-dock")?.textContent).toBe(
+      "Movement",
+    );
+    expect(
+      document.querySelector(".v7-selection-dock")?.getAttribute("aria-busy"),
+    ).toBe("true");
+    finishSlide?.();
+    await waitUntil(
+      () =>
+        document
+          .querySelector(".v7-selection-dock")
+          ?.getAttribute("aria-busy") === null,
+    );
+    expect(updates.mock.calls.length - beforeUpdates).toBe(2);
+    expect(
+      document.querySelector(".v7-selection-dock")?.getAttribute("aria-busy"),
+    ).toBeNull();
+    app.destroy();
+    source.destroy();
+  });
+
   it("keeps the two mandatory reward actions in one desktop row", () => {
     const css = readFileSync("src/styles/main.css", "utf8");
     expect(css).toMatch(
