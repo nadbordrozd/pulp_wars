@@ -3,7 +3,11 @@ import type { DestinationRect } from "./board-art-geometry";
 interface GlowSurface {
   readonly canvas: HTMLCanvasElement;
   readonly bytes: number;
+  readonly assetId: string;
+  readonly color: string;
 }
+
+const MAX_RECENT_PHASES_PER_SIZE = 4;
 
 /** One host-owned, bounded cache. Identical ready sprites share a silhouette. */
 export class BoardGlowCacheV7 {
@@ -73,24 +77,77 @@ export class BoardGlowCacheV7 {
     const key = `${assetId}:${sourceWidth}x${sourceHeight}:${glow.color}:${glow.alpha}:${blur}`;
     let surface = this.#surfaces.get(key);
     if (surface === undefined) {
-      const canvas = this.#document.createElement("canvas");
-      canvas.width = width;
-      canvas.height = height;
-      const buffer = canvas.getContext("2d");
-      if (buffer === null) return;
-      renderGlow(buffer, image, glow, blur, padding, sourceWidth, sourceHeight);
-      surface = { canvas, bytes };
+      // Keep a short exact-key history for each asset/color/backing size.
+      // Continuous phases repaint the oldest same-size surface after that;
+      // the global byte cap also permits reuse from another asset if needed.
+      let reusable: GlowSurface | undefined;
+      let matchingKey: string | undefined;
+      let matchingCount = 0;
+      for (const [candidateKey, candidate] of this.#surfaces) {
+        if (
+          candidate.assetId !== assetId ||
+          candidate.color !== glow.color ||
+          candidate.canvas.width !== width ||
+          candidate.canvas.height !== height
+        )
+          continue;
+        matchingKey ??= candidateKey;
+        matchingCount += 1;
+      }
+      if (
+        matchingKey !== undefined &&
+        (matchingCount >= MAX_RECENT_PHASES_PER_SIZE ||
+          this.#bytes + bytes > this.#limitBytes)
+      ) {
+        reusable = this.#surfaces.get(matchingKey);
+        this.#surfaces.delete(matchingKey);
+        if (reusable !== undefined) this.#bytes -= reusable.bytes;
+      }
+      if (reusable === undefined && this.#bytes + bytes > this.#limitBytes) {
+        for (const [candidateKey, candidate] of this.#surfaces) {
+          if (
+            candidate.canvas.width !== width ||
+            candidate.canvas.height !== height
+          )
+            continue;
+          this.#surfaces.delete(candidateKey);
+          this.#bytes -= candidate.bytes;
+          reusable = candidate;
+          break;
+        }
+      }
       while (this.#bytes + bytes > this.#limitBytes) {
         const oldestKey = this.#surfaces.keys().next().value;
         if (oldestKey === undefined) break;
         const oldest = this.#surfaces.get(oldestKey);
-        if (oldest !== undefined) {
-          this.#bytes -= oldest.bytes;
-          oldest.canvas.width = 0;
-          oldest.canvas.height = 0;
-        }
         this.#surfaces.delete(oldestKey);
+        if (oldest === undefined) continue;
+        this.#bytes -= oldest.bytes;
+        oldest.canvas.width = 0;
+        oldest.canvas.height = 0;
       }
+      const canvas = reusable?.canvas ?? this.#document.createElement("canvas");
+      if (reusable === undefined) {
+        canvas.width = width;
+        canvas.height = height;
+      }
+      const buffer = canvas.getContext("2d");
+      if (buffer === null) {
+        canvas.width = 0;
+        canvas.height = 0;
+        return;
+      }
+      renderGlow(
+        buffer,
+        image,
+        glow,
+        blur,
+        padding,
+        sourceWidth,
+        sourceHeight,
+        reusable === undefined ? null : { width, height },
+      );
+      surface = { canvas, bytes, assetId, color: glow.color };
       this.#surfaces.set(key, surface);
       this.#bytes += bytes;
     } else {
@@ -115,9 +172,12 @@ function renderGlow(
   padding: number,
   sourceWidth: number,
   sourceHeight: number,
+  clearSize: { readonly width: number; readonly height: number } | null = null,
 ): void {
   buffer.save();
   buffer.setTransform(1, 0, 0, 1, 0, 0);
+  if (clearSize !== null)
+    buffer.clearRect(0, 0, clearSize.width, clearSize.height);
   buffer.globalCompositeOperation = "source-over";
   buffer.globalAlpha = glow.alpha;
   buffer.shadowColor = glow.color;

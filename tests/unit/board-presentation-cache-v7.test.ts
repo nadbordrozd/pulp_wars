@@ -124,6 +124,134 @@ describe("Ruleset 7 presentation caches", () => {
     expect(offscreen).toHaveLength(beforeRecreate + 1);
   });
 
+  it("repaints an evicted same-size surface without retaining an extra canvas", () => {
+    const destination = document.createElement("canvas");
+    const main = context(destination);
+    const buffers = new Map<HTMLCanvasElement, ReturnType<typeof context>>();
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockImplementation(
+      function (this: HTMLCanvasElement) {
+        let result = buffers.get(this);
+        if (result === undefined) {
+          result = context(this);
+          buffers.set(this, result);
+        }
+        return result.buffer;
+      },
+    );
+    const cache = new BoardGlowCacheV7(document, 2_500);
+    const rect = { x: 10, y: 20, width: 20.1, height: 20.1 };
+    const image = {} as CanvasImageSource;
+    for (const alpha of [0.51, 0.52, 0.53]) {
+      cache.draw(main.buffer, image, "fighter", rect, {
+        color: "#fff09a",
+        alpha,
+        blur: 0,
+      });
+      expect(cache.byteLength).toBe(2_500);
+    }
+    expect(buffers.size).toBe(1);
+    const [canvas, buffer] = [...buffers][0] ?? [];
+    expect(canvas).toBeDefined();
+    expect(buffer?.clearRect).toHaveBeenCalledTimes(2);
+    cache.clear();
+    expect(canvas?.width).toBe(0);
+    expect(cache.byteLength).toBe(0);
+  });
+
+  it("chooses a matching surface beyond the oldest cache entry", () => {
+    const main = context(document.createElement("canvas"));
+    const buffers = new Map<HTMLCanvasElement, ReturnType<typeof context>>();
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockImplementation(
+      function (this: HTMLCanvasElement) {
+        let result = buffers.get(this);
+        if (result === undefined) {
+          result = context(this);
+          buffers.set(this, result);
+        }
+        return result.buffer;
+      },
+    );
+    const cache = new BoardGlowCacheV7(document, 6_000);
+    const image = {} as CanvasImageSource;
+    const glow = { color: "#fff09a", alpha: 0.51, blur: 0 };
+    const rect = { x: 10, y: 20, width: 20.1, height: 20.1 };
+    cache.draw(main.buffer, image, "fighter", { ...rect, width: 30.1 }, glow);
+    cache.draw(main.buffer, image, "fighter", rect, glow);
+    cache.draw(main.buffer, image, "fighter", rect, {
+      ...glow,
+      alpha: 0.52,
+    });
+    expect(buffers.size).toBe(2);
+    expect(cache.byteLength).toBe(6_000);
+    const wide = [...buffers].find(([canvas]) => canvas.width === 35);
+    const narrow = [...buffers].find(([canvas]) => canvas.width === 25);
+    expect(wide?.[1].clearRect).not.toHaveBeenCalled();
+    expect(narrow?.[1].clearRect).toHaveBeenCalledTimes(1);
+    cache.clear();
+    expect([...buffers.keys()].every((canvas) => canvas.width === 0)).toBe(
+      true,
+    );
+  });
+
+  it("bounds exact animation phase history before the global byte cap fills", () => {
+    const main = context(document.createElement("canvas"));
+    const buffers = new Map<HTMLCanvasElement, ReturnType<typeof context>>();
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockImplementation(
+      function (this: HTMLCanvasElement) {
+        let result = buffers.get(this);
+        if (result === undefined) {
+          result = context(this);
+          buffers.set(this, result);
+        }
+        return result.buffer;
+      },
+    );
+    const cache = new BoardGlowCacheV7(document, 20_000);
+    const rect = { x: 10, y: 20, width: 20.1, height: 20.1 };
+    for (let phase = 0; phase < 12; phase += 1)
+      cache.draw(main.buffer, {} as CanvasImageSource, "fighter", rect, {
+        color: "#fff09a",
+        alpha: 0.5 + phase / 100,
+        blur: 0,
+      });
+    expect(buffers.size).toBe(4);
+    expect(cache.byteLength).toBe(10_000);
+    expect(
+      [...buffers.values()].reduce(
+        (count, buffer) => count + buffer.clearRect.mock.calls.length,
+        0,
+      ),
+    ).toBe(8);
+    cache.draw(main.buffer, {} as CanvasImageSource, "archer", rect, {
+      color: "#fff09a",
+      alpha: 0.5,
+      blur: 0,
+    });
+    cache.draw(main.buffer, {} as CanvasImageSource, "fighter", rect, {
+      color: "#ffffff",
+      alpha: 0.5,
+      blur: 0,
+    });
+    expect(buffers.size).toBe(6);
+    expect(cache.byteLength).toBe(15_000);
+    cache.draw(main.buffer, {} as CanvasImageSource, "archer", rect, {
+      color: "#fff09a",
+      alpha: 0.5,
+      blur: 0,
+    });
+    cache.draw(main.buffer, {} as CanvasImageSource, "fighter", rect, {
+      color: "#ffffff",
+      alpha: 0.5,
+      blur: 0,
+    });
+    expect(buffers.size).toBe(6);
+    cache.clear();
+    expect(cache.byteLength).toBe(0);
+    expect([...buffers.keys()].every((canvas) => canvas.width === 0)).toBe(
+      true,
+    );
+  });
+
   it("draws once for a selection callback and ignores unchanged resize observations", () => {
     let resize: (() => void) | undefined;
     vi.stubGlobal(

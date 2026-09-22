@@ -57,9 +57,12 @@ sample. Reduced motion scheduled no ambient callbacks in either revision.
 
 The host reuses render plans for an unchanged public view, offered-command
 array, and interaction. Ready units share destination-local glow rasters keyed
-by accepted asset ID, exact source dimensions, device scale, color, blur, and opacity. The
-cache evicts least-recently-used rasters above 24 MiB and clears on resize, art
-load, and host destroy. A conservative three-cell draw margin keeps tall sprites
+by accepted asset ID, exact source dimensions, device scale, color, blur, and
+opacity. The cache keeps at most four recent exact phases per asset, color, and
+backing size. It repaints an older same-size Canvas for a new phase, and evicts
+the oldest entries when the 24 MiB global limit requires it. Every retained
+Canvas counts toward that limit; resize, art load, and host destroy clear them
+all. A conservative three-cell draw margin keeps tall sprites
 and glow visible at viewport edges. The renderer continues its original
 row-and-column draw order, boundary clipping, target outlines, and link
 exclusions. It redraws the full visible board during readiness because the
@@ -87,3 +90,47 @@ architecture's panning-frame budget. The mixed-terrain direct draw p95 was
 images had zero differing pixels; the glow cache held 3,461,064 bytes against
 its 25,165,824-byte cap. Reduced motion scheduled zero ambient callbacks.
 The single accepted Move resolved in 19.8 ms; one Move is diagnostic only.
+
+## Continuous Full-motion glow diagnosis
+
+The probe now supports `--no-glow-instrumentation` for timing runs without its
+Canvas wrapper. Instrumented runs record glow calls, newly created offscreen
+Canvases, their estimated RGBA backing bytes, and surfaces created and then
+cleared within the same observation. The allocation window includes five
+warmups and 25 timed clicks; p95 values use the 25 timed clicks. The disposal
+count can undercount total
+evictions because a surface from warmup may be evicted later. The raw 25-click
+pointer, host-update, and next-rAF samples, host load, direct-draw samples, and
+pixel comparisons are in
+[RULESET_7_GLOW_CACHE_DIAGNOSTIC.json](./RULESET_7_GLOW_CACHE_DIAGNOSTIC.json).
+The wrapper adds CPU work, so its timings are kept separate from the
+uninstrumented comparison.
+
+| Full-motion 30-click capture | New Canvases | Estimated RGBA bytes | Pointer p95 (25 timed) | Host update p95 |
+| ---------------------------- | -----------: | -------------------: | ---------------------: | --------------: |
+| DPR 2, prior exact cache     |          368 |              39.2 MB |                 4.1 ms |          2.5 ms |
+| DPR 2, bounded phase history |           49 |               5.4 MB |                 3.5 ms |          2.2 ms |
+| DPR 1, global-cap reuse only |          534 |              14.6 MB |                 3.6 ms |          2.2 ms |
+| DPR 1, bounded phase history |            8 |              0.23 MB |                 3.1 ms |          1.9 ms |
+
+The DPR 1 intermediate run showed why recycling only at the 24 MiB cap was
+insufficient: the cache accumulated 534 new surfaces without reaching the cap.
+Keeping four exact recent phases per asset/color/backing size preserves nearby
+exact-key hits and same-frame sharing, while recycling older surfaces. It does
+not round phase, alpha, blur, scale, or source dimensions. The final DPR 1 and
+DPR 2 mixed-terrain comparisons had zero differing pixels at elapsed times 0,
+167, 800, 1440, and 2879 ms. A separate cache limited to one glow surface
+created one Canvas across 800–804 ms at each DPR, proving that repainting
+occurred; all ten cached/direct comparisons had zero differing pixels and zero
+channel delta. The final direct-draw p95 values were 2.3 ms at DPR 1 and
+3.8 ms at DPR 2, still below the 12 ms static-redraw budget.
+
+The separate DPR 2 uninstrumented runs measured Full pointer p95 5.6 ms before
+and 3.1 ms after, with host-update p95 2.2 and 1.7 ms respectively. Their
+one-minute host load averages at capture start were 2.89 and 3.45 on this
+four-logical-CPU Mac. The earlier 39.2 ms pointer/37.1 ms host-update tail did
+not recur in these 25-sample runs, so these observations establish the
+allocation reduction and exact rendering, not a guaranteed tail-latency
+improvement. The browser's coarse `performance.memory` readings did not expose
+Canvas backing memory or isolate garbage-collection pauses; no GC-specific
+causal claim is made.

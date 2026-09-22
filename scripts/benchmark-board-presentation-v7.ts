@@ -18,6 +18,9 @@ const requestedDpr = Number(
 );
 if (requestedDpr !== 1 && requestedDpr !== 2)
   throw new Error("--dpr must be 1 or 2");
+const skipGraphics = process.argv.includes("--skip-graphics");
+const instrumentGlow =
+  !skipGraphics && !process.argv.includes("--no-glow-instrumentation");
 const chrome = process.env.CHROME_PATH;
 if (chrome === undefined)
   throw new Error("Set CHROME_PATH to a headless Chrome executable.");
@@ -59,6 +62,18 @@ interface Capture {
   readonly units: number;
   readonly commands: number;
   readonly readyUnits: number;
+  readonly glow: GlowObservation;
+}
+interface GlowObservation {
+  readonly calls: number;
+  readonly created: number;
+  readonly disposed: number;
+  readonly allocatedBytes: number;
+  readonly drawMs: readonly number[];
+  readonly createdSurfaceMs: readonly number[];
+  readonly noSurfaceCreatedMs: readonly number[];
+  readonly heapBefore: number;
+  readonly heapAfter: number;
 }
 
 async function evaluate<T>(expression: string): Promise<T> {
@@ -113,14 +128,14 @@ async function captureClicks(point: {
   y: number;
 }): Promise<Capture> {
   await evaluate(
-    "globalThis.__boardPerf.events=[];__boardPerf.calls=[];__boardPerf.frames=[]",
+    "globalThis.__boardPerf.events=[];__boardPerf.calls=[];__boardPerf.frames=[];__glowPerf.reset()",
   );
   for (let n = 0; n < 30; n += 1) {
     await click(point.x, point.y);
     await delay(300);
   }
   return evaluate<Capture>(
-    "({events:__boardPerf.events,calls:__boardPerf.calls,frames:__boardPerf.frames,selected:__model.interaction.selectedUnitId,units:__model.view.units.length,commands:__model.offeredCommands.length,readyUnits:__model.view.units.filter(u=>u.ownerId===__model.view.viewer.id&&!u.activation.handled&&__model.offeredCommands.some(c=>c.kind==='MOVE'&&c.unitId===u.id)).length})",
+    "({events:__boardPerf.events,calls:__boardPerf.calls,frames:__boardPerf.frames,selected:__model.interaction.selectedUnitId,units:__model.view.units.length,commands:__model.offeredCommands.length,readyUnits:__model.view.units.filter(u=>u.ownerId===__model.view.viewer.id&&!u.activation.handled&&__model.offeredCommands.some(c=>c.kind==='MOVE'&&c.unitId===u.id)).length,glow:__glowPerf.snapshot()})",
   );
 }
 function summarize(values: readonly number[]): {
@@ -157,6 +172,18 @@ function summary(capture: Capture) {
     pointerHandlerMs: summarize(afterWarmup.map((event) => event.duration)),
     nextRafProxyMs: summarize(frames.map((frame) => frame.raf)),
     hostUpdateMs: summarize(calls.map((call) => call.duration)),
+    glow: instrumentGlow
+      ? {
+          calls: capture.glow.calls,
+          created: capture.glow.created,
+          disposed: capture.glow.disposed,
+          allocatedBytes: capture.glow.allocatedBytes,
+          drawMs: summarize(capture.glow.drawMs),
+          createdSurfaceMs: summarize(capture.glow.createdSurfaceMs),
+          noSurfaceCreatedMs: summarize(capture.glow.noSurfaceCreatedMs),
+          heapDeltaBytes: capture.glow.heapAfter - capture.glow.heapBefore,
+        }
+      : null,
   };
 }
 
@@ -202,6 +229,51 @@ EventTarget.prototype.addEventListener=function(type,fn,options){
   }
   await evaluate(`(async()=>{
     const hostModule=await import(performance.getEntriesByType('resource').find(e=>e.name.includes('/src/render/canvas/board-host-v7.ts')).name);
+    ${
+      skipGraphics
+        ? ""
+        : `const glowUrls=[...new Set(['/src/render/canvas/glow-cache-v7.ts',...performance.getEntriesByType('resource').map(e=>e.name).filter(name=>name.includes('/src/render/canvas/glow-cache-v7.ts'))])];
+    const glowModules=await Promise.all(glowUrls.map(url=>import(url)));
+    globalThis.__glowModule=glowModules[0];`
+    }
+    globalThis.__glowPerf={
+      calls:0,created:0,disposed:0,allocatedBytes:0,drawMs:[],createdSurfaceMs:[],noSurfaceCreatedMs:[],
+      surfaces:new Set(),heapBefore:0,
+      reset(){this.calls=0;this.created=0;this.disposed=0;this.allocatedBytes=0;this.drawMs=[];this.createdSurfaceMs=[];this.noSurfaceCreatedMs=[];this.surfaces=new Set();this.heapBefore=performance.memory?.usedJSHeapSize??0},
+      snapshot(){return {calls:this.calls,created:this.created,disposed:this.disposed,allocatedBytes:this.allocatedBytes,drawMs:[...this.drawMs],createdSurfaceMs:[...this.createdSurfaceMs],noSurfaceCreatedMs:[...this.noSurfaceCreatedMs],heapBefore:this.heapBefore,heapAfter:performance.memory?.usedJSHeapSize??0}}
+    };
+    __glowPerf.reset();
+    ${
+      instrumentGlow
+        ? `for(const glowClass of new Set(glowModules.map(module=>module.BoardGlowCacheV7))){
+    const originalGlowDraw=glowClass.prototype.draw;
+    glowClass.prototype.draw=function(...args){
+      const created=[];
+      const originalCreate=document.createElement;
+      document.createElement=function(name,...rest){
+        const element=originalCreate.call(this,name,...rest);
+        if(name==='canvas')created.push(element);
+        return element;
+      };
+      const start=performance.now();
+      try{return originalGlowDraw.apply(this,args)}finally{
+        document.createElement=originalCreate;
+        __glowPerf.calls++;
+        const duration=performance.now()-start;
+        __glowPerf.drawMs.push(duration);
+        (created.length?__glowPerf.createdSurfaceMs:__glowPerf.noSurfaceCreatedMs).push(duration);
+        for(const canvas of created){
+          __glowPerf.created++;
+          __glowPerf.allocatedBytes+=canvas.width*canvas.height*4;
+          __glowPerf.surfaces.add(canvas);
+        }
+        for(const canvas of __glowPerf.surfaces){
+          if(canvas.width===0||canvas.height===0){__glowPerf.disposed++;__glowPerf.surfaces.delete(canvas)}
+        }
+      }
+    };}`
+        : ""
+    }
     for(const name of ['update','activate','presentBoundary']){
       const original=hostModule.CanvasBoardHostV7.prototype[name];
       hostModule.CanvasBoardHostV7.prototype[name]=function(...args){
@@ -255,7 +327,7 @@ EventTarget.prototype.addEventListener=function(type,fn,options){
   await click(movePoint.x, movePoint.y);
   await delay(1200);
   const movement = await evaluate<Capture>(
-    "({events:__boardPerf.events,calls:__boardPerf.calls,frames:__boardPerf.frames,selected:__model.interaction.selectedUnitId,units:__model.view.units.length,commands:__model.offeredCommands.length,readyUnits:0})",
+    "({events:__boardPerf.events,calls:__boardPerf.calls,frames:__boardPerf.frames,selected:__model.interaction.selectedUnitId,units:__model.view.units.length,commands:__model.offeredCommands.length,readyUnits:0,glow:__glowPerf.snapshot()})",
   );
 
   // Synthetic public-view renderer stress: 25 x 25 explored Grass and 60
@@ -315,19 +387,32 @@ EventTarget.prototype.addEventListener=function(type,fn,options){
     );
     ambient[motion] = summarize(work);
   }
-  const graphics = process.argv.includes("--skip-graphics")
+  const graphics = skipGraphics
     ? null
     : await evaluate<{
         readonly drawMs: readonly number[];
         readonly cacheBytes: number;
-        readonly changedPixels: number;
-        readonly maximumChannelDelta: number;
+        readonly phaseComparisons: readonly {
+          readonly elapsedMs: number;
+          readonly changedPixels: number;
+          readonly maximumChannelDelta: number;
+        }[];
+        readonly forcedReuse: {
+          readonly cacheLimitBytes: number;
+          readonly createdCanvases: number;
+          readonly phases: readonly {
+            readonly elapsedMs: number;
+            readonly changedPixels: number;
+            readonly maximumChannelDelta: number;
+          }[];
+        };
+        readonly glow: GlowObservation;
         readonly readyUnits: number;
         readonly loadedImages: number;
         readonly image: string;
       }>(`(async()=>{
     const renderer=await import('/src/render/canvas/board-renderer-v7.ts');
-    const glow=await import('/src/render/canvas/glow-cache-v7.ts');
+    const glow=globalThis.__glowModule;
     const geometry=await import('/src/render/canvas/geometry.ts');
     const art=await import('/src/assets/generated-art-manifest.ts');
     const view=structuredClone(__busySnapshot.view);
@@ -359,27 +444,68 @@ EventTarget.prototype.addEventListener=function(type,fn,options){
     const cache=new glow.BoardGlowCacheV7(document);
     const shared={viewport,devicePixelRatio:dpr,camera,plan,images:{resolve:id=>images.get(id)??null},reducedMotion:false,highContrast:false};
     const drawMs=[];
+    __glowPerf.reset();
     for(let n=0;n<35;n++){
       const start=performance.now();
       renderer.drawBoardV7({...shared,context:cached.getContext('2d'),glowCache:cache,readinessElapsedMs:n*16});
       if(n>=5)drawMs.push(performance.now()-start);
     }
-    renderer.drawBoardV7({...shared,context:cached.getContext('2d'),glowCache:cache,readinessElapsedMs:800});
-    renderer.drawBoardV7({...shared,context:uncached.getContext('2d'),readinessElapsedMs:800});
-    const a=cached.getContext('2d').getImageData(0,0,cached.width,cached.height).data;
-    const b=uncached.getContext('2d').getImageData(0,0,uncached.width,uncached.height).data;
-    let changedPixels=0,maximumChannelDelta=0;
-    for(let i=0;i<a.length;i+=4){
-      let changed=false;
-      for(let channel=0;channel<4;channel++){
-        const delta=Math.abs(a[i+channel]-b[i+channel]);
-        if(delta>0)changed=true;
-        maximumChannelDelta=Math.max(maximumChannelDelta,delta);
+    const glowObservation=__glowPerf.snapshot();
+    const phaseComparisons=[];
+    for(const elapsedMs of [0,167,800,1440,2879]){
+      renderer.drawBoardV7({...shared,context:cached.getContext('2d'),glowCache:cache,readinessElapsedMs:elapsedMs});
+      renderer.drawBoardV7({...shared,context:uncached.getContext('2d'),readinessElapsedMs:elapsedMs});
+      const a=cached.getContext('2d').getImageData(0,0,cached.width,cached.height).data;
+      const b=uncached.getContext('2d').getImageData(0,0,uncached.width,uncached.height).data;
+      let changedPixels=0,maximumChannelDelta=0;
+      for(let i=0;i<a.length;i+=4){
+        let changed=false;
+        for(let channel=0;channel<4;channel++){
+          const delta=Math.abs(a[i+channel]-b[i+channel]);
+          if(delta>0)changed=true;
+          maximumChannelDelta=Math.max(maximumChannelDelta,delta);
+        }
+        if(changed)changedPixels++;
       }
-      if(changed)changedPixels++;
+      phaseComparisons.push({elapsedMs,changedPixels,maximumChannelDelta});
+    }
+    const sizingCache=new glow.BoardGlowCacheV7(document);
+    renderer.drawBoardV7({...shared,context:cached.getContext('2d'),glowCache:sizingCache,readinessElapsedMs:800});
+    const cacheLimitBytes=sizingCache.byteLength;
+    sizingCache.clear();
+    if(cacheLimitBytes===0)throw Error('No glow surface for forced reuse');
+    const reuseCache=new glow.BoardGlowCacheV7(document,cacheLimitBytes);
+    const reused=make();
+    let createdCanvases=0;
+    const reusePhases=[];
+    for(const elapsedMs of [800,801,802,803,804]){
+      const originalCreate=document.createElement;
+      document.createElement=function(name,...rest){
+        const element=originalCreate.call(this,name,...rest);
+        if(name==='canvas')createdCanvases++;
+        return element;
+      };
+      try{
+        renderer.drawBoardV7({...shared,context:reused.getContext('2d'),glowCache:reuseCache,readinessElapsedMs:elapsedMs});
+      }finally{document.createElement=originalCreate}
+      renderer.drawBoardV7({...shared,context:uncached.getContext('2d'),readinessElapsedMs:elapsedMs});
+      const a=reused.getContext('2d').getImageData(0,0,reused.width,reused.height).data;
+      const b=uncached.getContext('2d').getImageData(0,0,uncached.width,uncached.height).data;
+      let changedPixels=0,maximumChannelDelta=0;
+      for(let i=0;i<a.length;i+=4){
+        let changed=false;
+        for(let channel=0;channel<4;channel++){
+          const delta=Math.abs(a[i+channel]-b[i+channel]);
+          if(delta>0)changed=true;
+          maximumChannelDelta=Math.max(maximumChannelDelta,delta);
+        }
+        if(changed)changedPixels++;
+      }
+      reusePhases.push({elapsedMs,changedPixels,maximumChannelDelta});
     }
     return {
-      drawMs,cacheBytes:cache.byteLength,changedPixels,maximumChannelDelta,
+      drawMs,cacheBytes:cache.byteLength,phaseComparisons,glow:glowObservation,
+      forcedReuse:{cacheLimitBytes,createdCanvases,phases:reusePhases},
       readyUnits:plan.entries.filter(entry=>entry.kind==='UNIT'&&entry.ready).length,
       loadedImages:images.size,image:cached.toDataURL('image/png')
     };
@@ -398,8 +524,9 @@ EventTarget.prototype.addEventListener=function(type,fn,options){
       : {
           drawMs: graphics.drawMs,
           cacheBytes: graphics.cacheBytes,
-          changedPixels: graphics.changedPixels,
-          maximumChannelDelta: graphics.maximumChannelDelta,
+          phaseComparisons: graphics.phaseComparisons,
+          forcedReuse: graphics.forcedReuse,
+          glow: graphics.glow,
           readyUnits: graphics.readyUnits,
           loadedImages: graphics.loadedImages,
         };
@@ -422,6 +549,7 @@ EventTarget.prototype.addEventListener=function(type,fn,options){
         "rAF callback timestamp minus Canvas pointerup handler start; scheduling proxy, not paint completion",
       url,
       chrome,
+      instrumentGlow,
       host: {
         platform: process.platform,
         arch: process.arch,
@@ -444,8 +572,8 @@ EventTarget.prototype.addEventListener=function(type,fn,options){
         graphics === null
           ? null
           : {
-              changedPixels: graphics.changedPixels,
-              maximumChannelDelta: graphics.maximumChannelDelta,
+              phases: graphics.phaseComparisons,
+              forcedReuse: graphics.forcedReuse,
               readyUnits: graphics.readyUnits,
               loadedImages: graphics.loadedImages,
               cacheBytes: graphics.cacheBytes,
@@ -512,8 +640,22 @@ EventTarget.prototype.addEventListener=function(type,fn,options){
   if (graphics !== null) {
     if (graphics.drawMs.length < 25)
       failures.push("fewer than 25 warmed direct graphics draws");
-    if (graphics.changedPixels !== 0 || graphics.maximumChannelDelta !== 0)
+    if (
+      graphics.phaseComparisons.some(
+        (phase) => phase.changedPixels !== 0 || phase.maximumChannelDelta !== 0,
+      )
+    )
       failures.push("fixed-time cached/uncached pixel comparison differs");
+    if (
+      graphics.forcedReuse.createdCanvases >=
+        graphics.forcedReuse.phases.length ||
+      graphics.forcedReuse.phases.some(
+        (phase) => phase.changedPixels !== 0 || phase.maximumChannelDelta !== 0,
+      )
+    )
+      failures.push(
+        "forced-reuse pixel comparison differs or no reuse occurred",
+      );
     if (
       graphics.readyUnits !== 60 ||
       graphics.loadedImages === 0 ||
