@@ -1,0 +1,30 @@
+{
+  "id": "unit-original-patrol-boat",
+  "jobId": "65ca89f5-c61e-442d-9178-771ba4a4af81",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm timber and muted bronze patrol hull, cream trim, charcoal-teal outline and southeast planes, one blank coral ownership panel. Ruleset 7 Original Patrol Boat world sprite. One compact low pointed hull facing southeast with a clearly raised bow and exactly one oversized patrol spear or small deck ballista cue. It is an agile patrol craft, visibly armed but without a giant cannon. One contiguous blank coral ownership panel covers about ten percent of visible hull. Strong smooth dark outline, broad flat fills, two-to-three shade levels, northwest light. Transparent untrimmed 384 by 384, preferred x55..329 y128..304, keel contact centered at 192,288. Isolated boat only. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; battleship, giant cannon, multiple cannons, transport packs, passenger, sail, city, port, wake, water, foam, shoreline, projectile, muzzle flash, range mark, cast shadow, selection, health, owner emblem, text, UI, pixel art, photoreal, painterly, 3D, cropped edge.",
+    "prompt": "Ruleset 7 Original Patrol Boat world sprite. One compact low pointed hull facing southeast with a clearly raised bow and exactly one oversized patrol spear or small deck ballista cue. It is an agile patrol craft, visibly armed but without a giant cannon. One contiguous blank coral ownership panel covers about ten percent of visible hull. Strong smooth dark outline, broad flat fills, two-to-three shade levels, northwest light. Transparent untrimmed 384 by 384, preferred x55..329 y128..304, keel contact centered at 192,288. Isolated boat only.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; battleship, giant cannon, multiple cannons, transport packs, passenger, sail, city, port, wake, water, foam, shoreline, projectile, muzzle flash, range mark, cast shadow, selection, health, owner emblem, text, UI, pixel art, photoreal, painterly, 3D, cropped edge",
+    "requestSize": {
+      "width": 384,
+      "height": 384
+    },
+    "outputSize": {
+      "width": 384,
+      "height": 384
+    },
+    "seed": 126632,
+    "noBackground": true,
+    "palette": "warm timber and muted bronze patrol hull, cream trim, charcoal-teal outline and southeast planes, one blank coral ownership panel",
+    "postprocess": "unit-fit",
+    "groundContactY": 288,
+    "displayScale": 0.24,
+    "styleReference": {
+      "id": "unit-shared-embarked-transport",
+      "sha256": "6faa7fbb10b8b0346210e3b823055c4079055d78ceb628a6585e0ae6cb3c820f",
+      "usageDescription": "Preserve the accepted low hull camera, outline, flat shading and naval palette; create a smaller pointed armed patrol hull with a raised bow and one oversized patrol weapon cue."
+    }
+  }
+}

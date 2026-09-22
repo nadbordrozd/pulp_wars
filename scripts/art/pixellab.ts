@@ -96,6 +96,7 @@ interface Recipe {
     | "square-farm-fill"
     | "farm-full-rectangle"
     | "square-road-material"
+    | "naval-water-fill"
     | "square-tall-ground-reference"
     | "square-mountain-ground-reference"
     | "square-mountain-reframe-gravel-v7r3"
@@ -104,6 +105,13 @@ interface Recipe {
   readonly requestNoBackground?: boolean;
   readonly styleReference?: string;
   readonly styleReferenceUsage?: string;
+  /** Exact historical provider style bytes retained when the live source later changes. */
+  readonly historicalStyleReference?: {
+    readonly id: string;
+    readonly path: string;
+    readonly sha256: string;
+    readonly usageDescription: string;
+  };
 }
 
 interface RequestSnapshot {
@@ -272,6 +280,7 @@ async function main(): Promise<void> {
     assertRuleset7OriginalUnitOrder(recipes, generated);
     assertRuleset7Revision3ArtOrder(recipes, generated);
     assertRuleset7TacticalUiOrder(recipes, generated);
+    assertRuleset7NavalOrder(recipes, generated);
     assertOriginalUnitOrder(recipes, generated);
     assertCandyUnitOrder(recipes, generated);
     assertRuleset6UiOrder(recipes, generated);
@@ -323,6 +332,10 @@ async function main(): Promise<void> {
         await applyFarmFullRectangle(candidate, recipe);
       else if (recipe.postprocess === "square-road-material")
         await applySquareRoadMaterial(candidate, recipe);
+      else if (recipe.postprocess === "naval-water-fill")
+        throw new Error(
+          `${recipe.id}: naval water processing must restart from receipt-verified provider bytes with resume-job`,
+        );
       else if (
         recipe.postprocess === "square-tall-ground-reference" ||
         recipe.postprocess === "square-mountain-ground-reference"
@@ -597,6 +610,67 @@ async function main(): Promise<void> {
     );
     return;
   }
+  if (command === "archive-historical-style-reference") {
+    const id = requiredOption("--id");
+    const jobId = requiredOption("--job-id");
+    const recipe = source.recipes.find((candidate) => candidate.id === id);
+    if (
+      recipe === undefined ||
+      recipe.historicalStyleReference === undefined ||
+      recipe.historicalStyleReference.id !== recipe.styleReference
+    )
+      throw new Error(`${id}: historical style-reference contract missing`);
+    const referenceRecipe = source.recipes.find(
+      (candidate) => candidate.id === recipe.historicalStyleReference?.id,
+    );
+    if (referenceRecipe === undefined)
+      throw new Error(`${id}: historical style-reference recipe missing`);
+    const submission = await loadSubmissionReceipt<RequestSnapshot>(
+      SUBMISSION_ROOT,
+      jobId,
+    );
+    resolveRecoveryRequest(
+      referenceRecipe.id,
+      jobId,
+      requestSnapshot(source, referenceRecipe),
+      generated.records[referenceRecipe.id],
+      submission,
+    );
+    const apiKey = process.env[source.provider.credentialEnvironmentVariable];
+    if (apiKey === undefined || apiKey.length === 0)
+      throw new Error(
+        `${source.provider.credentialEnvironmentVariable} is missing`,
+      );
+    const result = await pollJob(source.provider.apiBaseUrl, apiKey, jobId);
+    const encoded = findBase64Image(result);
+    if (encoded === null)
+      throw new Error("Completed PixelLab job contained no base64 image");
+    const input = decodeBase64Image(encoded);
+    const destination = path.join(ROOT, recipe.historicalStyleReference.path);
+    await mkdir(path.dirname(destination), { recursive: true });
+    await sharp(input)
+      .ensureAlpha()
+      .resize(
+        referenceRecipe.outputSize.width,
+        referenceRecipe.outputSize.height,
+        {
+          fit: "fill",
+          kernel: sharp.kernel.lanczos3,
+        },
+      )
+      .png({ compressionLevel: 9, adaptiveFiltering: false })
+      .toFile(destination);
+    await normalizeToHardBounds(destination, referenceRecipe, true);
+    const inspection = await inspectPng(destination);
+    if (inspection.sha256 !== recipe.historicalStyleReference.sha256)
+      throw new Error(
+        `${id}: historical style reference hash ${inspection.sha256} does not match ${recipe.historicalStyleReference.sha256}`,
+      );
+    console.log(
+      `${id}: historical style reference archived (${inspection.sha256.slice(0, 12)})`,
+    );
+    return;
+  }
   if (command === "validate") {
     await validateOutputs(source, generated);
     await syncRuntime(source, generated);
@@ -606,7 +680,7 @@ async function main(): Promise<void> {
     return;
   }
   console.log(
-    "Usage: pixellab.ts credentials | snapshot | snapshot-reframe-sources --ids a,b | generate --stage sample|batch [--ids a,b] [--concurrency 3] | archive-job --id ID --job-id JOB --notes TEXT | resume-job --id ID --job-id JOB | repair --ids a,b | derive --id ID | review --id ID --accept|--reject --notes TEXT [--source-pass --native-pass --enlarged-pass --minimum-pass --composition-pass] [--skip-overview-sheets] | review-sheets | validate",
+    "Usage: pixellab.ts credentials | snapshot | snapshot-reframe-sources --ids a,b | generate --stage sample|batch [--ids a,b] [--concurrency 3] | archive-job --id ID --job-id JOB --notes TEXT | resume-job --id ID --job-id JOB | archive-historical-style-reference --id ID --job-id JOB | repair --ids a,b | derive --id ID | review --id ID --accept|--reject --notes TEXT [--source-pass --native-pass --enlarged-pass --minimum-pass --composition-pass] [--skip-overview-sheets] | review-sheets | validate",
   );
 }
 
@@ -784,6 +858,17 @@ function validateSourceManifest(
       throw new Error(
         `Style reference usage requires a style reference for ${recipe.id}`,
       );
+    if (recipe.historicalStyleReference !== undefined) {
+      if (
+        recipe.historicalStyleReference.id !== recipe.styleReference ||
+        !recipe.historicalStyleReference.path.startsWith(
+          "art/pixellab/reframe-sources/",
+        ) ||
+        !/^[a-f0-9]{64}$/.test(recipe.historicalStyleReference.sha256) ||
+        recipe.historicalStyleReference.usageDescription.length === 0
+      )
+        throw new Error(`Invalid historical style reference for ${recipe.id}`);
+    }
   }
   for (const alias of source.aliases ?? []) {
     if (ids.has(alias.id))
@@ -1768,6 +1853,41 @@ function assertSampleGate(
     );
 }
 
+const RULESET7_NAVAL_UNIT_IDS = [
+  "unit-shared-embarked-transport",
+  "unit-original-patrol-boat",
+  "unit-original-battleship",
+] as const;
+
+function assertRuleset7NavalOrder(
+  recipes: readonly Recipe[],
+  generated: GeneratedManifest,
+): void {
+  const selected = recipes.filter((recipe) =>
+    RULESET7_NAVAL_UNIT_IDS.includes(
+      recipe.id as (typeof RULESET7_NAVAL_UNIT_IDS)[number],
+    ),
+  );
+  if (selected.length === 0) return;
+  if (recipes.length !== 1 || selected.length !== 1)
+    throw new Error(
+      "Generate each Ruleset 7 naval unit in its individual gate",
+    );
+  const selectedRecipe = selected[0];
+  if (selectedRecipe === undefined)
+    throw new Error("Ruleset 7 naval unit selection is missing");
+  const selectedIndex = RULESET7_NAVAL_UNIT_IDS.indexOf(
+    selectedRecipe.id as (typeof RULESET7_NAVAL_UNIT_IDS)[number],
+  );
+  const missingEarlier = RULESET7_NAVAL_UNIT_IDS.slice(0, selectedIndex).filter(
+    (id) => generated.records[id]?.status !== "ACCEPTED",
+  );
+  if (missingEarlier.length > 0)
+    throw new Error(
+      `Ruleset 7 naval unit gate requires acceptance first: ${missingEarlier.join(", ")}`,
+    );
+}
+
 function assertBuildingBatchOrder(
   recipes: readonly Recipe[],
   generated: GeneratedManifest,
@@ -2645,6 +2765,19 @@ async function processCandidate(
     await assertSquareTerrainAlpha(destination, recipe);
     return;
   }
+  if (recipe.postprocess === "naval-water-fill") {
+    await sharp(input)
+      .ensureAlpha()
+      .resize(recipe.outputSize.width, recipe.outputSize.height, {
+        fit: "fill",
+        kernel: sharp.kernel.lanczos3,
+      })
+      .png({ compressionLevel: 9, adaptiveFiltering: false })
+      .toFile(destination);
+    await applyNavalWaterFill(destination, recipe);
+    await assertSquareTerrainAlpha(destination, recipe);
+    return;
+  }
   if (recipe.postprocess === "square-farm-fill") {
     const providerMetadata = await sharp(input).metadata();
     const providerWidth = providerMetadata.width ?? recipe.requestSize.width;
@@ -3099,6 +3232,58 @@ async function applySquareRoadMaterial(
   await sharp(data, {
     raw: { width: info.width, height: info.height, channels: 4 },
   })
+    .png({ compressionLevel: 9, adaptiveFiltering: false })
+    .toFile(destination);
+}
+
+/** Keeps PixelLab's broad water marks while converging the outer 32 pixels to
+ * one recipe-specific edge field, so repeated same-type tiles join exactly. */
+async function applyNavalWaterFill(
+  destination: string,
+  recipe: Recipe,
+): Promise<void> {
+  if (
+    recipe.outputSize.width !== 256 ||
+    recipe.outputSize.height !== 256 ||
+    recipe.squareFootprint?.left !== 0 ||
+    recipe.squareFootprint.top !== 0 ||
+    recipe.squareFootprint.right !== 256 ||
+    recipe.squareFootprint.bottom !== 256
+  )
+    throw new Error(`${recipe.id}: invalid naval water footprint`);
+  const base = recipe.id.endsWith("-deep")
+    ? ([0x35, 0x67, 0x7d] as const)
+    : ([0x58, 0x91, 0x98] as const);
+  let provider = sharp(await readFile(destination))
+    .ensureAlpha()
+    .flatten({ background: `rgb(${base.join(",")})` })
+    .ensureAlpha(1);
+  if (recipe.id.endsWith("-deep"))
+    provider = provider
+      .resize(384, 320, {
+        fit: "fill",
+        kernel: sharp.kernel.lanczos3,
+      })
+      .extract({ left: 64, top: 32, width: 256, height: 256 });
+  const { data, info } = await provider
+    .blur(0.8)
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  for (let y = 0; y < info.height; y += 1) {
+    for (let x = 0; x < info.width; x += 1) {
+      const edge = Math.min(x, y, info.width - 1 - x, info.height - 1 - y);
+      const t = Math.min(1, edge / 32);
+      const authored = 0.3 * t * t * (3 - 2 * t);
+      const offset = (y * info.width + x) * 4;
+      for (let channel = 0; channel < 3; channel += 1)
+        data[offset + channel] = Math.round(
+          (base[channel] ?? 0) * (1 - authored) +
+            (data[offset + channel] ?? base[channel] ?? 0) * authored,
+        );
+      data[offset + 3] = 255;
+    }
+  }
+  await sharp(data, { raw: { width: 256, height: 256, channels: 4 } })
     .png({ compressionLevel: 9, adaptiveFiltering: false })
     .toFile(destination);
 }
@@ -3608,8 +3793,17 @@ async function restoreDiamondReferenceEdges(
 async function normalizeToHardBounds(
   destination: string,
   recipe: Recipe,
+  legacyNavalBottomAlignment = false,
 ): Promise<void> {
   let inspection = await inspectPng(destination);
+  const navalContactIsInteriorAnchor =
+    !legacyNavalBottomAlignment &&
+    [
+      "building-ruleset7-port",
+      "unit-shared-embarked-transport",
+      "unit-original-patrol-boat",
+      "unit-original-battleship",
+    ].includes(recipe.id);
   const targetBounds =
     recipe.postprocess === "preferred-low-marker-fit"
       ? (recipe.preferredBounds ?? recipe.hardBounds)
@@ -3619,7 +3813,7 @@ async function normalizeToHardBounds(
           ? (recipe.preferredBounds ?? recipe.hardBounds)
           : recipe.hardBounds;
   const fitBounds =
-    recipe.groundContactY === undefined
+    recipe.groundContactY === undefined || navalContactIsInteriorAnchor
       ? targetBounds
       : { ...targetBounds, bottom: recipe.groundContactY };
   const alphaWidth = inspection.alphaBounds.right - inspection.alphaBounds.left;
@@ -3672,7 +3866,7 @@ async function normalizeToHardBounds(
       shift.x,
       shift.y,
     );
-  if (recipe.groundContactY !== undefined) {
+  if (recipe.groundContactY !== undefined && !navalContactIsInteriorAnchor) {
     inspection = await inspectPng(destination);
     const groundShift = recipe.groundContactY - inspection.alphaBounds.bottom;
     const shiftedTop = inspection.alphaBounds.top + groundShift;

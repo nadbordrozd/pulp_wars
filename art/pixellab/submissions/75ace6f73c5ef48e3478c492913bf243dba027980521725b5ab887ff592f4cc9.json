@@ -1,0 +1,36 @@
+{
+  "id": "terrain-ruleset7-resource-fish",
+  "jobId": "4d178933-fbde-4ac5-af9e-d0eb5fcb6e02",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: three silver-teal fish, pale aqua highlights, charcoal-teal outline, muted navy shadows. Ruleset 7 Fish resource with a hard count of EXACTLY THREE fish total. Arrange one chunky silver-teal fish at upper center, one at lower left and one at lower right, overlapping slightly into one compact triangular group. Each fish has one obvious oval body and one tail; smooth continuous nonpixel contour, broad simple highlight, strong clean dark outline and two flat cel-shaded tones. Transparent untrimmed 256 by 384 canvas, owning square y128..383, target bounds x60..196 y176..320 and bottom contact y320. Isolated resource only. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; fourth fish, more than three fish, fish school, tiny fish, duplicated fish, bubbles, water tile, waves, foam, fishing boat, net, hook, person, food plate, currency, coin, text, price, action arrow, sparkle, shadow, ground, platform, UI, selection, pixel art, jagged pixel edge, realistic scales, painterly detail, 3D.",
+    "prompt": "Ruleset 7 Fish resource with a hard count of EXACTLY THREE fish total. Arrange one chunky silver-teal fish at upper center, one at lower left and one at lower right, overlapping slightly into one compact triangular group. Each fish has one obvious oval body and one tail; smooth continuous nonpixel contour, broad simple highlight, strong clean dark outline and two flat cel-shaded tones. Transparent untrimmed 256 by 384 canvas, owning square y128..383, target bounds x60..196 y176..320 and bottom contact y320. Isolated resource only.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; fourth fish, more than three fish, fish school, tiny fish, duplicated fish, bubbles, water tile, waves, foam, fishing boat, net, hook, person, food plate, currency, coin, text, price, action arrow, sparkle, shadow, ground, platform, UI, selection, pixel art, jagged pixel edge, realistic scales, painterly detail, 3D",
+    "requestSize": {
+      "width": 256,
+      "height": 384
+    },
+    "outputSize": {
+      "width": 256,
+      "height": 384
+    },
+    "seed": 126613,
+    "noBackground": true,
+    "palette": "three silver-teal fish, pale aqua highlights, charcoal-teal outline, muted navy shadows",
+    "postprocess": "preferred-low-marker-fit",
+    "groundContactY": 320,
+    "displayScale": 0.5,
+    "styleReference": {
+      "id": "terrain-ruleset7-original-fruit-pear",
+      "sha256": "662e1db20cfc52421ad253798d807d142cacbb5efdb9caf9babb9ca42eac6f94",
+      "usageDescription": "Match the accepted refreshed Pear resource's smooth nonpixel contour, compact exact three-form cluster, broad clean dark outline, simple highlights and minimum-zoom detail budget; replace the three fruit forms with three fish."
+    },
+    "squareFootprint": {
+      "left": 0,
+      "top": 128,
+      "right": 256,
+      "bottom": 384
+    }
+  }
+}

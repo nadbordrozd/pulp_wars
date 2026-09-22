@@ -504,6 +504,30 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   "terrain-ruleset7-original-game-fox": publicArtUrl(
     "assets/pixellab/terrain-square/ruleset7-original-game-fox.png",
   ),
+  "terrain-ruleset7-water-shallow": publicArtUrl(
+    "assets/pixellab/terrain-ruleset7/water-shallow.png",
+  ),
+  "terrain-ruleset7-water-deep": publicArtUrl(
+    "assets/pixellab/terrain-ruleset7/water-deep.png",
+  ),
+  "terrain-ruleset7-resource-fish": publicArtUrl(
+    "assets/pixellab/terrain-ruleset7/resource-fish.png",
+  ),
+  "terrain-ruleset7-resource-pearls": publicArtUrl(
+    "assets/pixellab/terrain-ruleset7/resource-pearls.png",
+  ),
+  "building-ruleset7-port": publicArtUrl(
+    "assets/pixellab/buildings-ruleset7/port.png",
+  ),
+  "unit-shared-embarked-transport": publicArtUrl(
+    "assets/pixellab/units/shared-embarked-transport.png",
+  ),
+  "unit-original-patrol-boat": publicArtUrl(
+    "assets/pixellab/units/original-patrol-boat.png",
+  ),
+  "unit-original-battleship": publicArtUrl(
+    "assets/pixellab/units/original-battleship.png",
+  ),
   "terrain-game": publicArtUrl("assets/pixellab/terrain/animal.png"),
   "building-ruleset6-mine": publicArtUrl("assets/pixellab/buildings/mine.png"),
   "building-lumber-camp": publicArtUrl(

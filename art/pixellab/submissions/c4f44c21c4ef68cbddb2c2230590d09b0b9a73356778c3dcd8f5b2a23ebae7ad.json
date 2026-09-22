@@ -1,0 +1,35 @@
+{
+  "id": "terrain-ruleset7-water-shallow",
+  "jobId": "4c493446-09da-4fe3-9bd7-ca95d673370f",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted blue-green #589198, pale desaturated aqua highlights, dark teal low-contrast troughs. Ruleset 7 Shallow Water: one exact axis-aligned 256 by 256 square of quiet muted blue-green water filling every pixel. The surface is a broad nearly uniform painted color field with only three very soft thin gently curved ripple bands distributed asymmetrically and extending beyond the canvas, like smooth hand-drawn vector strokes without their own outline. Use extremely low contrast, anti-aliased continuous curves, flat two-tone shading and restrained northwest light. No isolated central motifs. Outer 32 pixels will be deterministically converged to the shared shallow edge field. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, pixel blocks, jagged stair steps, dark outline around water marks, bean shapes, crescent objects, isolated repeated motifs, centered radial pattern, land, coast, beach, foam border, route, current arrow, grid, selection, ownership, fog, bubbles, whitecaps, tiny noise, photoreal reflection, horizon, object, fish, pearls, boat, port, text, UI, directional gradient, frame, bevel, transparent corner.",
+    "prompt": "Ruleset 7 Shallow Water: one exact axis-aligned 256 by 256 square of quiet muted blue-green water filling every pixel. The surface is a broad nearly uniform painted color field with only three very soft thin gently curved ripple bands distributed asymmetrically and extending beyond the canvas, like smooth hand-drawn vector strokes without their own outline. Use extremely low contrast, anti-aliased continuous curves, flat two-tone shading and restrained northwest light. No isolated central motifs. Outer 32 pixels will be deterministically converged to the shared shallow edge field.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, pixel blocks, jagged stair steps, dark outline around water marks, bean shapes, crescent objects, isolated repeated motifs, centered radial pattern, land, coast, beach, foam border, route, current arrow, grid, selection, ownership, fog, bubbles, whitecaps, tiny noise, photoreal reflection, horizon, object, fish, pearls, boat, port, text, UI, directional gradient, frame, bevel, transparent corner",
+    "requestSize": {
+      "width": 256,
+      "height": 256
+    },
+    "outputSize": {
+      "width": 256,
+      "height": 256
+    },
+    "seed": 126604,
+    "noBackground": false,
+    "palette": "muted blue-green #589198, pale desaturated aqua highlights, dark teal low-contrast troughs",
+    "postprocess": "naval-water-fill",
+    "displayScale": 0.5,
+    "styleReference": {
+      "id": "terrain-ruleset7-original-grass-1",
+      "sha256": "51143c23f5e61781c74861a3167557651e189b5104dcabfac1b17daaf55ea466",
+      "usageDescription": "Copy only the accepted quiet full-square material scale, restrained broad illustrated marks and northwest light; replace all turf language with shallow water."
+    },
+    "squareFootprint": {
+      "left": 0,
+      "top": 0,
+      "right": 256,
+      "bottom": 256
+    }
+  }
+}

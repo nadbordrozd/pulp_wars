@@ -1,0 +1,35 @@
+{
+  "id": "terrain-ruleset7-water-deep",
+  "jobId": "f3dfb302-96a6-4981-acf8-ae3e9271bb03",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: dark cool ocean blue #35677d, muted slate-blue highlight, deep teal trough. Ruleset 7 Deep Water: one exact axis-aligned 256 by 256 square of darker cooler ocean water. Fill every pixel. Use two or three broad long low-contrast swell bands, visibly larger and more widely spaced than Shallow Water, with flat two-to-three-tone cel shading and restrained northwest highlight. The value band and swell language must distinguish deep water in grayscale while staying quiet. Outer 32 pixels will converge to its shared deep edge field. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; shallow short ripples, land, coast, beach, foam border, route, current arrow, grid, selection, ownership, fog, bubbles, many whitecaps, tiny noise, photoreal reflection, horizon, object, fish, pearls, boat, port, text, UI, directional gradient, frame, bevel, transparent corner.",
+    "prompt": "Ruleset 7 Deep Water: one exact axis-aligned 256 by 256 square of darker cooler ocean water. Fill every pixel. Use two or three broad long low-contrast swell bands, visibly larger and more widely spaced than Shallow Water, with flat two-to-three-tone cel shading and restrained northwest highlight. The value band and swell language must distinguish deep water in grayscale while staying quiet. Outer 32 pixels will converge to its shared deep edge field.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; shallow short ripples, land, coast, beach, foam border, route, current arrow, grid, selection, ownership, fog, bubbles, many whitecaps, tiny noise, photoreal reflection, horizon, object, fish, pearls, boat, port, text, UI, directional gradient, frame, bevel, transparent corner",
+    "requestSize": {
+      "width": 256,
+      "height": 256
+    },
+    "outputSize": {
+      "width": 256,
+      "height": 256
+    },
+    "seed": 126602,
+    "noBackground": false,
+    "palette": "dark cool ocean blue #35677d, muted slate-blue highlight, deep teal trough",
+    "postprocess": "naval-water-fill",
+    "displayScale": 0.5,
+    "styleReference": {
+      "id": "terrain-ruleset7-water-shallow",
+      "sha256": "05c442359ee2d5645b1ddeb287f58586ac1d6570ad64695d0b1e78f75351b514",
+      "usageDescription": "Preserve the accepted quiet square water treatment, clean broad cel shading and restrained contrast; change to darker cooler water with visibly longer, larger swell spacing."
+    },
+    "squareFootprint": {
+      "left": 0,
+      "top": 0,
+      "right": 256,
+      "bottom": 256
+    }
+  }
+}

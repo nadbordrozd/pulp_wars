@@ -1,0 +1,30 @@
+{
+  "id": "building-ruleset7-port",
+  "jobId": "b299e3ab-41fe-4cad-8435-538cb89a00b2",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm tan timber, muted bronze crane, cream canvas roof, charcoal-teal outline and southeast planes, one blank coral pennant. Ruleset 7 shared Port improvement, southeast-facing three-quarter downward strategy view. A small L-shaped chunky timber PIER is the primary silhouette, with a visibly empty water opening in its center and lower half. Add one tiny short warehouse box at the back-left, one bold mooring post and one simple short crane arm at the back-right. No large roof or canopy spans the pier. Keep x90..294,y170..330 visually open so Fish or Pearls remains identifiable when layered over it. Include one contiguous blank coral ownership panel covering about ten percent. Smooth nonpixel contours. Transparent untrimmed 384 by 384, anchor 192,288, preferred x52..332 y82..320. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; sawmill, market stall, tent, large canopy, roof over center, city, full harbor scene, ship, boat, battleship, bridge, generic hut, logs, saw, tree, fish, pearls, coin, route, owner emblem, text, flag symbol, selection, glow, blockade, damage, shadow, water, shoreline, ground tile, platform, scenery, pixel art, jagged pixel edge, painterly, photoreal, 3D, cropped edge.",
+    "prompt": "Ruleset 7 shared Port improvement, southeast-facing three-quarter downward strategy view. A small L-shaped chunky timber PIER is the primary silhouette, with a visibly empty water opening in its center and lower half. Add one tiny short warehouse box at the back-left, one bold mooring post and one simple short crane arm at the back-right. No large roof or canopy spans the pier. Keep x90..294,y170..330 visually open so Fish or Pearls remains identifiable when layered over it. Include one contiguous blank coral ownership panel covering about ten percent. Smooth nonpixel contours. Transparent untrimmed 384 by 384, anchor 192,288, preferred x52..332 y82..320.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; sawmill, market stall, tent, large canopy, roof over center, city, full harbor scene, ship, boat, battleship, bridge, generic hut, logs, saw, tree, fish, pearls, coin, route, owner emblem, text, flag symbol, selection, glow, blockade, damage, shadow, water, shoreline, ground tile, platform, scenery, pixel art, jagged pixel edge, painterly, photoreal, 3D, cropped edge",
+    "requestSize": {
+      "width": 384,
+      "height": 384
+    },
+    "outputSize": {
+      "width": 384,
+      "height": 384
+    },
+    "seed": 126622,
+    "noBackground": true,
+    "palette": "warm tan timber, muted bronze crane, cream canvas roof, charcoal-teal outline and southeast planes, one blank coral pennant",
+    "postprocess": "compact-building-fit",
+    "groundContactY": 288,
+    "displayScale": 0.3,
+    "styleReference": {
+      "id": "building-ruleset7-resource-lumber-camp",
+      "sha256": "b0c5b545975026e06570a256218a54c5df9faca3c12a91096e687f5f012a3e71",
+      "usageDescription": "Copy only the accepted smooth nonpixel timber contour, strong clean outline, broad flat cel shading, southeast three-quarter camera and simple functional readability; create a new water-service pier without trees or logging equipment."
+    }
+  }
+}

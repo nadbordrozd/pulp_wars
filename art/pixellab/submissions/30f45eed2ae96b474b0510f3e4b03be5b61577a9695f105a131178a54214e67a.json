@@ -1,0 +1,30 @@
+{
+  "id": "building-ruleset7-port",
+  "jobId": "de31b311-e85e-45c8-927c-cdf85e587576",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm tan timber, muted bronze crane, cream canvas roof, charcoal-teal outline and southeast planes, one blank coral pennant. Ruleset 7 shared Port improvement, southeast-facing three-quarter downward strategy view. One small chunky timber pier with a clear water opening, one short cream-roof warehouse mass, one bold mooring post and one simple short crane arm. Keep the center and lower area open so a Fish or Pearls marker remains visible when layered over it. Include one contiguous blank coral ownership pennant or warehouse panel covering about ten percent of visible area. Transparent untrimmed 384 by 384, anchor and contact 192,288, preferred x52..332 y82..320. Isolated functional improvement. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; city, full harbor scene, ship, boat, battleship, bridge, generic hut, fish, pearls, coin, route, owner emblem, text, flag symbol, selection, glow, blockade, damage, shadow, water, shoreline, ground tile, platform, scenery, pixel art, painterly, photoreal, 3D, cropped edge.",
+    "prompt": "Ruleset 7 shared Port improvement, southeast-facing three-quarter downward strategy view. One small chunky timber pier with a clear water opening, one short cream-roof warehouse mass, one bold mooring post and one simple short crane arm. Keep the center and lower area open so a Fish or Pearls marker remains visible when layered over it. Include one contiguous blank coral ownership pennant or warehouse panel covering about ten percent of visible area. Transparent untrimmed 384 by 384, anchor and contact 192,288, preferred x52..332 y82..320. Isolated functional improvement.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; city, full harbor scene, ship, boat, battleship, bridge, generic hut, fish, pearls, coin, route, owner emblem, text, flag symbol, selection, glow, blockade, damage, shadow, water, shoreline, ground tile, platform, scenery, pixel art, painterly, photoreal, 3D, cropped edge",
+    "requestSize": {
+      "width": 384,
+      "height": 384
+    },
+    "outputSize": {
+      "width": 384,
+      "height": 384
+    },
+    "seed": 126621,
+    "noBackground": true,
+    "palette": "warm tan timber, muted bronze crane, cream canvas roof, charcoal-teal outline and southeast planes, one blank coral pennant",
+    "postprocess": "compact-building-fit",
+    "groundContactY": 288,
+    "displayScale": 0.3,
+    "styleReference": {
+      "id": "building-square-sawmill",
+      "sha256": "bc51ef67bba41d32d23d6ea4a2965d46f05b96fa3351bba4033c2c723df84688",
+      "usageDescription": "Copy only the accepted chunky timber construction, strong clean outline, flat cel shading, southeast three-quarter camera and simple functional readability; create a new water-service pier."
+    }
+  }
+}

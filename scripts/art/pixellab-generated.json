@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "dfe53b1159518c1da055329f0fcbd6d292bf6965f2c51235d9d6b61254725804",
+  "sourceManifestSha256": "c61d00f2ebd88d4181cd11c809b91d368cf6355b9628c242b479036a3ba74156",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -13361,6 +13361,729 @@
       "outputSha256": "ff0692f3540f9d3d6cab0fa7508e741a4f2edd2ba717b1db18d47bcb36c63be2",
       "notes": "Accepted after source, enlarged, native v7 Forest family and 0.625 zoom review: low horizontal four-legged right-facing deer with clear antlers, distinct from unit; first upright candidate rejected.",
       "reviewedAt": "2026-09-22T13:23:20.454Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "unit-shared-embarked-transport": {
+      "id": "unit-shared-embarked-transport",
+      "status": "ACCEPTED",
+      "jobId": "6b5bec9f-d6ec-4db3-9302-d330ac6d2ce1",
+      "candidate": "art/pixellab/candidates/unit-shared-embarked-transport.png",
+      "candidateSha256": "af0bd5e71cd2e8b1bbd98a269ffb5a0e8a18ebc62b009f1b08bccf3c6069d9c4",
+      "providerOutputSha256": "65b2fd47cbb0b6a5916a6bf3bf0a9b13930eb1509f41ccf7cdc69c0eed5fb994",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 62,
+        "top": 137,
+        "right": 322,
+        "bottom": 301,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: neutral warm timber hull, cream tied canvas packs, charcoal-teal outline and southeast planes, one blank coral ownership panel. Ruleset 7 shared Embarked Transport world sprite. One low wide open simple boat with southeast-facing pointed bow, slight downward camera, tied canvas packs and a clearly empty passenger space. No weapon. One contiguous blank coral ownership panel covers about ten percent of visible hull. Strong smooth charcoal-teal outline, broad flat fills, two-to-three shade levels, northwest light. Transparent untrimmed 384 by 384, preferred x62..322 y132..306, keel contact centered at 192,288. Isolated hull only. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; passenger, face, person, saboteur cue, armor, role emblem, capacity number, sail, cannon, ballista, spear, weapon, wake, water, foam, shoreline, scenery, cast shadow, selection, health, owner emblem, flag symbol, text, UI, pixel art, photoreal, painterly, 3D, cropped edge.",
+        "prompt": "Ruleset 7 shared Embarked Transport world sprite. One low wide open simple boat with southeast-facing pointed bow, slight downward camera, tied canvas packs and a clearly empty passenger space. No weapon. One contiguous blank coral ownership panel covers about ten percent of visible hull. Strong smooth charcoal-teal outline, broad flat fills, two-to-three shade levels, northwest light. Transparent untrimmed 384 by 384, preferred x62..322 y132..306, keel contact centered at 192,288. Isolated hull only.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; passenger, face, person, saboteur cue, armor, role emblem, capacity number, sail, cannon, ballista, spear, weapon, wake, water, foam, shoreline, scenery, cast shadow, selection, health, owner emblem, flag symbol, text, UI, pixel art, photoreal, painterly, 3D, cropped edge",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 126631,
+        "noBackground": true,
+        "palette": "neutral warm timber hull, cream tied canvas packs, charcoal-teal outline and southeast planes, one blank coral ownership panel",
+        "postprocess": "unit-fit",
+        "groundContactY": 288,
+        "displayScale": 0.24,
+        "styleReference": {
+          "id": "unit-original-catapult",
+          "sha256": "67e7f8cb6fc9a36b385eed9aecc2a12fb2884701cb7661d5503f8dbcf373c360",
+          "usageDescription": "Match only the accepted Original clean dark-teal outline, warm timber and metal palette, broad flat two-level shading, southeast three-quarter camera and low machinery detail budget; create an unarmed transport hull."
+        }
+      },
+      "outputSha256": "af0bd5e71cd2e8b1bbd98a269ffb5a0e8a18ebc62b009f1b08bccf3c6069d9c4",
+      "notes": "Accepted first ordered sample after receipt-byte reprocessing corrected its interior keel anchor: alpha 62,137..322,301 gives 62x39 CSS; exact 2x, native, both water types, Port/resources, owner/selection/fog and all zoom/DPR contexts remain clear.",
+      "reviewedAt": "2026-09-22T21:05:33.005Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-ruleset7-resource-fish": {
+      "id": "terrain-ruleset7-resource-fish",
+      "status": "ACCEPTED",
+      "jobId": "4d178933-fbde-4ac5-af9e-d0eb5fcb6e02",
+      "candidate": "art/pixellab/candidates/terrain-ruleset7-resource-fish.png",
+      "candidateSha256": "fc8dc00ed5e03ed3de518e1ccd66c7b1bd9805cd4353c2f7f3392f38a3851806",
+      "providerOutputSha256": "aebb9374bd4663db544e57f022aefd829ca37bd3036f48957dcc08eb9f5669b0",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 60,
+        "top": 194,
+        "right": 196,
+        "bottom": 320,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: three silver-teal fish, pale aqua highlights, charcoal-teal outline, muted navy shadows. Ruleset 7 Fish resource with a hard count of EXACTLY THREE fish total. Arrange one chunky silver-teal fish at upper center, one at lower left and one at lower right, overlapping slightly into one compact triangular group. Each fish has one obvious oval body and one tail; smooth continuous nonpixel contour, broad simple highlight, strong clean dark outline and two flat cel-shaded tones. Transparent untrimmed 256 by 384 canvas, owning square y128..383, target bounds x60..196 y176..320 and bottom contact y320. Isolated resource only. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; fourth fish, more than three fish, fish school, tiny fish, duplicated fish, bubbles, water tile, waves, foam, fishing boat, net, hook, person, food plate, currency, coin, text, price, action arrow, sparkle, shadow, ground, platform, UI, selection, pixel art, jagged pixel edge, realistic scales, painterly detail, 3D.",
+        "prompt": "Ruleset 7 Fish resource with a hard count of EXACTLY THREE fish total. Arrange one chunky silver-teal fish at upper center, one at lower left and one at lower right, overlapping slightly into one compact triangular group. Each fish has one obvious oval body and one tail; smooth continuous nonpixel contour, broad simple highlight, strong clean dark outline and two flat cel-shaded tones. Transparent untrimmed 256 by 384 canvas, owning square y128..383, target bounds x60..196 y176..320 and bottom contact y320. Isolated resource only.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; fourth fish, more than three fish, fish school, tiny fish, duplicated fish, bubbles, water tile, waves, foam, fishing boat, net, hook, person, food plate, currency, coin, text, price, action arrow, sparkle, shadow, ground, platform, UI, selection, pixel art, jagged pixel edge, realistic scales, painterly detail, 3D",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 126613,
+        "noBackground": true,
+        "palette": "three silver-teal fish, pale aqua highlights, charcoal-teal outline, muted navy shadows",
+        "postprocess": "preferred-low-marker-fit",
+        "groundContactY": 320,
+        "displayScale": 0.5,
+        "styleReference": {
+          "id": "terrain-ruleset7-original-fruit-pear",
+          "sha256": "662e1db20cfc52421ad253798d807d142cacbb5efdb9caf9babb9ca42eac6f94",
+          "usageDescription": "Match the accepted refreshed Pear resource's smooth nonpixel contour, compact exact three-form cluster, broad clean dark outline, simple highlights and minimum-zoom detail budget; replace the three fruit forms with three fish."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-ruleset7-resource-fish-7af55a08c12f.png",
+          "candidateSha256": "7af55a08c12f24fcfeee731f81e7521384ea10698096365138b7d65ab807cda2",
+          "providerOutputSha256": "d8e84fe07637b0ea404cdc1370b358faaa5ecb9479f624a3b166179340722376",
+          "jobId": "43b9ceb6-42ad-4f87-b172-fd570505edea",
+          "disposition": "REJECTED",
+          "notes": "Rejected after source and enlarged review: provider drew four fish instead of exact three, and the marks have visibly blocky jagged pixel-art edges.",
+          "reviewedAt": "2026-09-22T20:38:32.996Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: three silver-teal fish, pale aqua highlights, charcoal-teal outline, muted navy shadows. Ruleset 7 Fish resource: exactly three chunky silver-teal fish in one compact readable group near the water surface, facing varied southeast directions but forming one broad silhouette. Each has an obvious fish body and tail; use broad simple highlights, strong smooth dark outline and two flat cel-shaded tones. Transparent untrimmed 256 by 384 canvas, owning square y128..383, target bounds x60..196 y176..320 and bottom contact y320. Isolated resource only. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; more than three fish, school of tiny fish, bubbles, water tile, waves, foam, fishing boat, net, hook, person, food plate, currency, coin, text, price, action arrow, sparkle, shadow, ground, platform, UI, selection, pixel art, realistic scales, painterly detail, 3D.",
+            "prompt": "Ruleset 7 Fish resource: exactly three chunky silver-teal fish in one compact readable group near the water surface, facing varied southeast directions but forming one broad silhouette. Each has an obvious fish body and tail; use broad simple highlights, strong smooth dark outline and two flat cel-shaded tones. Transparent untrimmed 256 by 384 canvas, owning square y128..383, target bounds x60..196 y176..320 and bottom contact y320. Isolated resource only.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; more than three fish, school of tiny fish, bubbles, water tile, waves, foam, fishing boat, net, hook, person, food plate, currency, coin, text, price, action arrow, sparkle, shadow, ground, platform, UI, selection, pixel art, realistic scales, painterly detail, 3D",
+            "requestSize": {
+              "width": 256,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 384
+            },
+            "seed": 126611,
+            "noBackground": true,
+            "palette": "three silver-teal fish, pale aqua highlights, charcoal-teal outline, muted navy shadows",
+            "postprocess": "preferred-low-marker-fit",
+            "groundContactY": 320,
+            "displayScale": 0.5,
+            "styleReference": {
+              "id": "terrain-square-original-fruit",
+              "sha256": "4642843133720393490b4649274ae6a8a7999cd07e9476cdd98bd6c84adf7d76",
+              "usageDescription": "Match the accepted square resource's compact three-form cluster, broad clean dark outline, simple highlights and minimum-zoom detail budget; replace fruit with fish."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 128,
+              "right": 256,
+              "bottom": 384
+            }
+          }
+        }
+      ],
+      "outputSha256": "fc8dc00ed5e03ed3de518e1ccd66c7b1bd9805cd4353c2f7f3392f38a3851806",
+      "notes": "Accepted retry after source, enlarged and exact native review on Shallow and Deep Water with Transport and Port candidate: exactly three smooth chunky fish, compact readable silhouette, simple highlights, transparent clean bounds and no baked state.",
+      "reviewedAt": "2026-09-22T20:53:58.722Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-ruleset7-water-shallow": {
+      "id": "terrain-ruleset7-water-shallow",
+      "status": "ACCEPTED",
+      "jobId": "4df5fdbb-0db2-48ae-ae64-72e7e15b9f50",
+      "candidate": "art/pixellab/candidates/terrain-ruleset7-water-shallow.png",
+      "candidateSha256": "05c442359ee2d5645b1ddeb287f58586ac1d6570ad64695d0b1e78f75351b514",
+      "providerOutputSha256": "2a93c60708d6ebee7001518c2baa61393eccde7d210129e13bd061a994d7dd33",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted blue-green #589198, pale desaturated aqua highlights, dark teal low-contrast troughs. Square-grid terrain material: an exact 256 by 256 full square of calm shallow blue-green WATER viewed straight downward. Fill the complete canvas with continuous water. Show exactly three broad, low-contrast, gently curved horizontal ripple bands: one crossing the upper-left edge, one crossing through the middle, and one crossing the lower-right edge. The bands are part of the water surface, not separate objects. Quiet flat two-tone illustrated shading with northwest light, no focal subject and no centered pattern. Deterministic processing smooths minor quantization and converges the outer 32 pixels to the shared shallow edge field. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; character, astronaut, robot, person, flag, landscape, field, ground, moon, pixel-art scene, dark outline around ripple, bean shape, crescent object, isolated motif, centered radial pattern, land, coast, beach, foam border, route, current arrow, grid, selection, ownership, fog, bubbles, whitecaps, tiny noise, photoreal reflection, horizon, fish, pearls, boat, port, text, UI, directional gradient, frame, bevel, transparent corner.",
+        "prompt": "Square-grid terrain material: an exact 256 by 256 full square of calm shallow blue-green WATER viewed straight downward. Fill the complete canvas with continuous water. Show exactly three broad, low-contrast, gently curved horizontal ripple bands: one crossing the upper-left edge, one crossing through the middle, and one crossing the lower-right edge. The bands are part of the water surface, not separate objects. Quiet flat two-tone illustrated shading with northwest light, no focal subject and no centered pattern. Deterministic processing smooths minor quantization and converges the outer 32 pixels to the shared shallow edge field.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; character, astronaut, robot, person, flag, landscape, field, ground, moon, pixel-art scene, dark outline around ripple, bean shape, crescent object, isolated motif, centered radial pattern, land, coast, beach, foam border, route, current arrow, grid, selection, ownership, fog, bubbles, whitecaps, tiny noise, photoreal reflection, horizon, fish, pearls, boat, port, text, UI, directional gradient, frame, bevel, transparent corner",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 126606,
+        "noBackground": false,
+        "palette": "muted blue-green #589198, pale desaturated aqua highlights, dark teal low-contrast troughs",
+        "postprocess": "naval-water-fill",
+        "displayScale": 0.5,
+        "styleReference": {
+          "id": "terrain-ruleset7-original-grass-1",
+          "sha256": "51143c23f5e61781c74861a3167557651e189b5104dcabfac1b17daaf55ea466",
+          "usageDescription": "Copy only the accepted quiet full-square material scale, restrained broad illustrated marks and northwest light; replace all turf language with shallow water."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 0,
+          "right": 256,
+          "bottom": 256
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-ruleset7-water-shallow-superseded-1ec21cf15b63.png",
+          "candidateSha256": "1ec21cf15b6390703b07accaac688ce898a128e262a813133ee545a57afcc846",
+          "providerOutputSha256": "fc59dedd61c7c255cae31bb95f632c97930f53ffb1b0322cfd49127c62d66b44",
+          "jobId": "866f884a-3196-4ab0-920c-e20b54b60130",
+          "disposition": "REJECTED",
+          "notes": "Rejected attempt 1 recovered after stale concurrent manifest write: high-contrast jagged pixel-art bean marks formed an obvious centered repetition stamp.",
+          "reviewedAt": "2026-09-22T20:37:55.848Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted blue-green #589198, pale desaturated aqua highlights, dark teal low-contrast troughs. Ruleset 7 Shallow Water: one exact axis-aligned 256 by 256 square of quiet muted blue-green water. Fill every pixel. Use only four or five broad short low-contrast ripple curves with wide spacing, flat two-to-three-tone cel shading and a restrained northwest highlight. Surface stays calm and subordinate to resources and ships. Outer 32 pixels will be deterministically converged to the shared shallow edge field. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; land, coast, beach, foam border, route, current arrow, grid, selection, ownership, fog, bubbles, many whitecaps, tiny noise, photoreal reflection, horizon, object, fish, pearls, boat, port, text, UI, directional gradient, frame, bevel, transparent corner.",
+            "prompt": "Ruleset 7 Shallow Water: one exact axis-aligned 256 by 256 square of quiet muted blue-green water. Fill every pixel. Use only four or five broad short low-contrast ripple curves with wide spacing, flat two-to-three-tone cel shading and a restrained northwest highlight. Surface stays calm and subordinate to resources and ships. Outer 32 pixels will be deterministically converged to the shared shallow edge field.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; land, coast, beach, foam border, route, current arrow, grid, selection, ownership, fog, bubbles, many whitecaps, tiny noise, photoreal reflection, horizon, object, fish, pearls, boat, port, text, UI, directional gradient, frame, bevel, transparent corner",
+            "requestSize": {
+              "width": 256,
+              "height": 256
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 256
+            },
+            "seed": 126601,
+            "noBackground": false,
+            "palette": "muted blue-green #589198, pale desaturated aqua highlights, dark teal low-contrast troughs",
+            "postprocess": "naval-water-fill",
+            "displayScale": 0.5,
+            "styleReference": {
+              "id": "terrain-ruleset7-original-grass-1",
+              "sha256": "51143c23f5e61781c74861a3167557651e189b5104dcabfac1b17daaf55ea466",
+              "usageDescription": "Copy only the accepted quiet full-square material scale, restrained broad illustrated marks and northwest light; replace all turf language with shallow water."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 0,
+              "right": 256,
+              "bottom": 256
+            }
+          }
+        },
+        {
+          "candidate": "art/pixellab/quarantine/terrain-ruleset7-water-shallow-282b8a88c8ed.png",
+          "candidateSha256": "282b8a88c8ed85470e51888471cf9b1c3c28d69f886ba5dfdb4d250c51201c2d",
+          "providerOutputSha256": "843d7b474d1921e7e2086c6a8e19ead2cebe77a73e29f0d3c535957c496884ca",
+          "jobId": "4c493446-09da-4fe3-9bd7-ca95d673370f",
+          "disposition": "REJECTED",
+          "notes": "Rejected after source and enlarged review: generated an astronaut, robot, flag and field scenery rather than quiet water; severe subject and style failure.",
+          "reviewedAt": "2026-09-22T20:38:10.401Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted blue-green #589198, pale desaturated aqua highlights, dark teal low-contrast troughs. Ruleset 7 Shallow Water: one exact axis-aligned 256 by 256 square of quiet muted blue-green water filling every pixel. The surface is a broad nearly uniform painted color field with only three very soft thin gently curved ripple bands distributed asymmetrically and extending beyond the canvas, like smooth hand-drawn vector strokes without their own outline. Use extremely low contrast, anti-aliased continuous curves, flat two-tone shading and restrained northwest light. No isolated central motifs. Outer 32 pixels will be deterministically converged to the shared shallow edge field. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, pixel blocks, jagged stair steps, dark outline around water marks, bean shapes, crescent objects, isolated repeated motifs, centered radial pattern, land, coast, beach, foam border, route, current arrow, grid, selection, ownership, fog, bubbles, whitecaps, tiny noise, photoreal reflection, horizon, object, fish, pearls, boat, port, text, UI, directional gradient, frame, bevel, transparent corner.",
+            "prompt": "Ruleset 7 Shallow Water: one exact axis-aligned 256 by 256 square of quiet muted blue-green water filling every pixel. The surface is a broad nearly uniform painted color field with only three very soft thin gently curved ripple bands distributed asymmetrically and extending beyond the canvas, like smooth hand-drawn vector strokes without their own outline. Use extremely low contrast, anti-aliased continuous curves, flat two-tone shading and restrained northwest light. No isolated central motifs. Outer 32 pixels will be deterministically converged to the shared shallow edge field.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, pixel blocks, jagged stair steps, dark outline around water marks, bean shapes, crescent objects, isolated repeated motifs, centered radial pattern, land, coast, beach, foam border, route, current arrow, grid, selection, ownership, fog, bubbles, whitecaps, tiny noise, photoreal reflection, horizon, object, fish, pearls, boat, port, text, UI, directional gradient, frame, bevel, transparent corner",
+            "requestSize": {
+              "width": 256,
+              "height": 256
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 256
+            },
+            "seed": 126604,
+            "noBackground": false,
+            "palette": "muted blue-green #589198, pale desaturated aqua highlights, dark teal low-contrast troughs",
+            "postprocess": "naval-water-fill",
+            "displayScale": 0.5,
+            "styleReference": {
+              "id": "terrain-ruleset7-original-grass-1",
+              "sha256": "51143c23f5e61781c74861a3167557651e189b5104dcabfac1b17daaf55ea466",
+              "usageDescription": "Copy only the accepted quiet full-square material scale, restrained broad illustrated marks and northwest light; replace all turf language with shallow water."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 0,
+              "right": 256,
+              "bottom": 256
+            }
+          }
+        }
+      ],
+      "outputSha256": "05c442359ee2d5645b1ddeb287f58586ac1d6570ad64695d0b1e78f75351b514",
+      "notes": "Accepted attempt 3 after source, enlarged, exact 128px native, 0.625x and 8x8 repetition review: actual blue-green water with three broad short low-contrast ripple bands, opaque seam-safe outer field, no scenery or UI; two earlier provider outputs rejected.",
+      "reviewedAt": "2026-09-22T20:46:27.802Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-ruleset7-port": {
+      "id": "building-ruleset7-port",
+      "status": "ACCEPTED",
+      "jobId": "654c0582-5f05-467c-9c00-0509c8cacde0",
+      "candidate": "art/pixellab/candidates/building-ruleset7-port.png",
+      "candidateSha256": "70d2385d53f7dd466c44bacfa6f265645de7dbda1e94f9bad6732e246250aea9",
+      "providerOutputSha256": "98e702394cd3e76066293ebc8a7c02d23fe64d20d5682a123c2dee7f16a91973",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 52,
+        "top": 104,
+        "right": 332,
+        "bottom": 298,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm tan timber, muted bronze crane, cream canvas roof, charcoal-teal outline and southeast planes, one blank coral pennant. Ruleset 7 shared Port improvement, southeast-facing three-quarter downward strategy view. A small L-shaped chunky timber PIER is the primary silhouette, with a visibly empty water opening in its center and lower half. Add one tiny short warehouse box at the back-left, one bold mooring post and one simple short crane arm at the back-right. No large roof or canopy spans the pier. Keep x90..294,y170..330 visually open so Fish or Pearls remains identifiable when layered over it. Include EXACTLY ONE contiguous blank coral ownership rectangle on the warehouse side covering about ten percent; every other part is neutral timber, cream or bronze. Smooth nonpixel contours. Transparent untrimmed 384 by 384, anchor 192,288, preferred x52..332 y82..320. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; flag, pennant, banner, second coral patch, multiple ownership patches, sawmill, market stall, tent, large canopy, roof over center, city, full harbor scene, ship, boat, battleship, bridge, generic hut, logs, saw, tree, fish, pearls, coin, route, owner emblem, text, selection, glow, blockade, damage, shadow, water, shoreline, ground tile, platform, scenery, pixel art, jagged pixel edge, painterly, photoreal, 3D, cropped edge.",
+        "prompt": "Ruleset 7 shared Port improvement, southeast-facing three-quarter downward strategy view. A small L-shaped chunky timber PIER is the primary silhouette, with a visibly empty water opening in its center and lower half. Add one tiny short warehouse box at the back-left, one bold mooring post and one simple short crane arm at the back-right. No large roof or canopy spans the pier. Keep x90..294,y170..330 visually open so Fish or Pearls remains identifiable when layered over it. Include EXACTLY ONE contiguous blank coral ownership rectangle on the warehouse side covering about ten percent; every other part is neutral timber, cream or bronze. Smooth nonpixel contours. Transparent untrimmed 384 by 384, anchor 192,288, preferred x52..332 y82..320.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; flag, pennant, banner, second coral patch, multiple ownership patches, sawmill, market stall, tent, large canopy, roof over center, city, full harbor scene, ship, boat, battleship, bridge, generic hut, logs, saw, tree, fish, pearls, coin, route, owner emblem, text, selection, glow, blockade, damage, shadow, water, shoreline, ground tile, platform, scenery, pixel art, jagged pixel edge, painterly, photoreal, 3D, cropped edge",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 126623,
+        "noBackground": true,
+        "palette": "warm tan timber, muted bronze crane, cream canvas roof, charcoal-teal outline and southeast planes, one blank coral pennant",
+        "postprocess": "compact-building-fit",
+        "groundContactY": 288,
+        "displayScale": 0.3,
+        "styleReference": {
+          "id": "building-ruleset7-resource-lumber-camp",
+          "sha256": "b0c5b545975026e06570a256218a54c5df9faca3c12a91096e687f5f012a3e71",
+          "usageDescription": "Copy only the accepted smooth nonpixel timber contour, strong clean outline, broad flat cel shading, southeast three-quarter camera and simple functional readability; create a new water-service pier without trees or logging equipment."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/building-ruleset7-port-7e0508951181.png",
+          "candidateSha256": "7e050895118151e1a566ba8efb02587a0c46b29da798aa3ab9f3d5c97f4e8ff0",
+          "providerOutputSha256": "853a52502efa693811c67f9c5cb16dc6e0a532a9febb5a69c5740650d2e394d3",
+          "jobId": "de31b311-e85e-45c8-927c-cdf85e587576",
+          "disposition": "REJECTED",
+          "notes": "Rejected after source and enlarged review: candidate repeats the Sawmill canopy composition, reads as a generic market hut, lacks a clear water opening, and has excessive jagged edge noise.",
+          "reviewedAt": "2026-09-22T20:39:48.008Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm tan timber, muted bronze crane, cream canvas roof, charcoal-teal outline and southeast planes, one blank coral pennant. Ruleset 7 shared Port improvement, southeast-facing three-quarter downward strategy view. One small chunky timber pier with a clear water opening, one short cream-roof warehouse mass, one bold mooring post and one simple short crane arm. Keep the center and lower area open so a Fish or Pearls marker remains visible when layered over it. Include one contiguous blank coral ownership pennant or warehouse panel covering about ten percent of visible area. Transparent untrimmed 384 by 384, anchor and contact 192,288, preferred x52..332 y82..320. Isolated functional improvement. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; city, full harbor scene, ship, boat, battleship, bridge, generic hut, fish, pearls, coin, route, owner emblem, text, flag symbol, selection, glow, blockade, damage, shadow, water, shoreline, ground tile, platform, scenery, pixel art, painterly, photoreal, 3D, cropped edge.",
+            "prompt": "Ruleset 7 shared Port improvement, southeast-facing three-quarter downward strategy view. One small chunky timber pier with a clear water opening, one short cream-roof warehouse mass, one bold mooring post and one simple short crane arm. Keep the center and lower area open so a Fish or Pearls marker remains visible when layered over it. Include one contiguous blank coral ownership pennant or warehouse panel covering about ten percent of visible area. Transparent untrimmed 384 by 384, anchor and contact 192,288, preferred x52..332 y82..320. Isolated functional improvement.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; city, full harbor scene, ship, boat, battleship, bridge, generic hut, fish, pearls, coin, route, owner emblem, text, flag symbol, selection, glow, blockade, damage, shadow, water, shoreline, ground tile, platform, scenery, pixel art, painterly, photoreal, 3D, cropped edge",
+            "requestSize": {
+              "width": 384,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 384,
+              "height": 384
+            },
+            "seed": 126621,
+            "noBackground": true,
+            "palette": "warm tan timber, muted bronze crane, cream canvas roof, charcoal-teal outline and southeast planes, one blank coral pennant",
+            "postprocess": "compact-building-fit",
+            "groundContactY": 288,
+            "displayScale": 0.3,
+            "styleReference": {
+              "id": "building-square-sawmill",
+              "sha256": "bc51ef67bba41d32d23d6ea4a2965d46f05b96fa3351bba4033c2c723df84688",
+              "usageDescription": "Copy only the accepted chunky timber construction, strong clean outline, flat cel shading, southeast three-quarter camera and simple functional readability; create a new water-service pier."
+            }
+          }
+        },
+        {
+          "candidate": "art/pixellab/quarantine/building-ruleset7-port-9d0f4d083ae7.png",
+          "candidateSha256": "9d0f4d083ae78495b87091fcec9978c19b572e322e9d6b4373d9b5ecc028b72e",
+          "providerOutputSha256": "45472348b97d3edf1f7aa50bfef2a0687650e95a8597470cb38c63de8a059de5",
+          "jobId": "b299e3ab-41fe-4cad-8435-538cb89a00b2",
+          "disposition": "REJECTED",
+          "notes": "Rejected retry after source, enlarged and native water review: pier/opening/crane read correctly, but provider added both a coral hull panel and separate coral pennant, violating the single contiguous 8-15 percent faction-color patch contract.",
+          "reviewedAt": "2026-09-22T20:53:59.912Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm tan timber, muted bronze crane, cream canvas roof, charcoal-teal outline and southeast planes, one blank coral pennant. Ruleset 7 shared Port improvement, southeast-facing three-quarter downward strategy view. A small L-shaped chunky timber PIER is the primary silhouette, with a visibly empty water opening in its center and lower half. Add one tiny short warehouse box at the back-left, one bold mooring post and one simple short crane arm at the back-right. No large roof or canopy spans the pier. Keep x90..294,y170..330 visually open so Fish or Pearls remains identifiable when layered over it. Include one contiguous blank coral ownership panel covering about ten percent. Smooth nonpixel contours. Transparent untrimmed 384 by 384, anchor 192,288, preferred x52..332 y82..320. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; sawmill, market stall, tent, large canopy, roof over center, city, full harbor scene, ship, boat, battleship, bridge, generic hut, logs, saw, tree, fish, pearls, coin, route, owner emblem, text, flag symbol, selection, glow, blockade, damage, shadow, water, shoreline, ground tile, platform, scenery, pixel art, jagged pixel edge, painterly, photoreal, 3D, cropped edge.",
+            "prompt": "Ruleset 7 shared Port improvement, southeast-facing three-quarter downward strategy view. A small L-shaped chunky timber PIER is the primary silhouette, with a visibly empty water opening in its center and lower half. Add one tiny short warehouse box at the back-left, one bold mooring post and one simple short crane arm at the back-right. No large roof or canopy spans the pier. Keep x90..294,y170..330 visually open so Fish or Pearls remains identifiable when layered over it. Include one contiguous blank coral ownership panel covering about ten percent. Smooth nonpixel contours. Transparent untrimmed 384 by 384, anchor 192,288, preferred x52..332 y82..320.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; sawmill, market stall, tent, large canopy, roof over center, city, full harbor scene, ship, boat, battleship, bridge, generic hut, logs, saw, tree, fish, pearls, coin, route, owner emblem, text, flag symbol, selection, glow, blockade, damage, shadow, water, shoreline, ground tile, platform, scenery, pixel art, jagged pixel edge, painterly, photoreal, 3D, cropped edge",
+            "requestSize": {
+              "width": 384,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 384,
+              "height": 384
+            },
+            "seed": 126622,
+            "noBackground": true,
+            "palette": "warm tan timber, muted bronze crane, cream canvas roof, charcoal-teal outline and southeast planes, one blank coral pennant",
+            "postprocess": "compact-building-fit",
+            "groundContactY": 288,
+            "displayScale": 0.3,
+            "styleReference": {
+              "id": "building-ruleset7-resource-lumber-camp",
+              "sha256": "b0c5b545975026e06570a256218a54c5df9faca3c12a91096e687f5f012a3e71",
+              "usageDescription": "Copy only the accepted smooth nonpixel timber contour, strong clean outline, broad flat cel shading, southeast three-quarter camera and simple functional readability; create a new water-service pier without trees or logging equipment."
+            }
+          }
+        }
+      ],
+      "outputSha256": "70d2385d53f7dd466c44bacfa6f265645de7dbda1e94f9bad6732e246250aea9",
+      "notes": "Accepted retry after receipt-byte reprocessing corrected the interior contact anchor: alpha 52,104..332,298 within preferred bounds; source, exact 2x, native and anchored Fish/Pearls/Transport contexts at all zoom/DPR settings pass with clear open pier and one coral patch.",
+      "reviewedAt": "2026-09-22T21:05:31.815Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-ruleset7-water-deep": {
+      "id": "terrain-ruleset7-water-deep",
+      "status": "ACCEPTED",
+      "jobId": "f3dfb302-96a6-4981-acf8-ae3e9271bb03",
+      "candidate": "art/pixellab/candidates/terrain-ruleset7-water-deep.png",
+      "candidateSha256": "5dcb3cf07358ac0e1fdda3010094a6d372e2e877e1d77b5722f79595f1954d36",
+      "providerOutputSha256": "3e55f75f839d193543d0c5f3d4d263ead20e16960e4327e099d601a0ddc46392",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 256,
+        "bottom": 256,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: dark cool ocean blue #35677d, muted slate-blue highlight, deep teal trough. Ruleset 7 Deep Water: one exact axis-aligned 256 by 256 square of darker cooler ocean water. Fill every pixel. Use two or three broad long low-contrast swell bands, visibly larger and more widely spaced than Shallow Water, with flat two-to-three-tone cel shading and restrained northwest highlight. The value band and swell language must distinguish deep water in grayscale while staying quiet. Outer 32 pixels will converge to its shared deep edge field. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; shallow short ripples, land, coast, beach, foam border, route, current arrow, grid, selection, ownership, fog, bubbles, many whitecaps, tiny noise, photoreal reflection, horizon, object, fish, pearls, boat, port, text, UI, directional gradient, frame, bevel, transparent corner.",
+        "prompt": "Ruleset 7 Deep Water: one exact axis-aligned 256 by 256 square of darker cooler ocean water. Fill every pixel. Use two or three broad long low-contrast swell bands, visibly larger and more widely spaced than Shallow Water, with flat two-to-three-tone cel shading and restrained northwest highlight. The value band and swell language must distinguish deep water in grayscale while staying quiet. Outer 32 pixels will converge to its shared deep edge field.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; shallow short ripples, land, coast, beach, foam border, route, current arrow, grid, selection, ownership, fog, bubbles, many whitecaps, tiny noise, photoreal reflection, horizon, object, fish, pearls, boat, port, text, UI, directional gradient, frame, bevel, transparent corner",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 126602,
+        "noBackground": false,
+        "palette": "dark cool ocean blue #35677d, muted slate-blue highlight, deep teal trough",
+        "postprocess": "naval-water-fill",
+        "displayScale": 0.5,
+        "styleReference": {
+          "id": "terrain-ruleset7-water-shallow",
+          "sha256": "05c442359ee2d5645b1ddeb287f58586ac1d6570ad64695d0b1e78f75351b514",
+          "usageDescription": "Preserve the accepted quiet square water treatment, clean broad cel shading and restrained contrast; change to darker cooler water with visibly longer, larger swell spacing."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 0,
+          "right": 256,
+          "bottom": 256
+        }
+      },
+      "outputSha256": "5dcb3cf07358ac0e1fdda3010094a6d372e2e877e1d77b5722f79595f1954d36",
+      "notes": "Accepted after source, enlarged, exact native, grayscale-value and 8x8 mixed adjacency review: dark cool water retains broad provider-authored swells, deterministic receipt-byte enlargement makes the spacing materially longer/larger than Shallow, and the outer field is opaque and seam-safe.",
+      "reviewedAt": "2026-09-22T20:53:57.537Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-ruleset7-resource-pearls": {
+      "id": "terrain-ruleset7-resource-pearls",
+      "status": "ACCEPTED",
+      "jobId": "ee4ede07-f86b-47c8-ba23-c6062b4e4a4d",
+      "candidate": "art/pixellab/candidates/terrain-ruleset7-resource-pearls.png",
+      "candidateSha256": "cb02006adb3ac2e41713376626bf4676d0ea8334145e1a6230fc64a654cd659b",
+      "providerOutputSha256": "2eed82f58ab5c97318a031d62b1f3f96bd9a7a61fe6de6c3da648d77754a3d0e",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 60,
+        "top": 180,
+        "right": 196,
+        "bottom": 320,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm coral-cream shell, exactly two ivory pearls, pale aqua highlights, charcoal-teal outline. Ruleset 7 Pearls resource: one oversized open chunky shell holding exactly two large bright round pearls. The open shell supplies a wide unmistakable silhouette so the pearls never resemble Coins, population pips or foam. Strong smooth charcoal-teal outline, broad simple highlights, two flat cel-shaded tones. Transparent untrimmed 256 by 384 canvas, owning square y128..383, target bounds x60..196 y176..320 and bottom contact y320. Isolated resource only. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; single pearl, more than two pearls, loose pearl pile, coin, gold, currency, population pips, bubbles, foam, sparkle field, water tile, boat, port, text, price, action arrow, shadow, ground, platform, UI, selection, pixel art, realistic nacre, painterly detail, 3D.",
+        "prompt": "Ruleset 7 Pearls resource: one oversized open chunky shell holding exactly two large bright round pearls. The open shell supplies a wide unmistakable silhouette so the pearls never resemble Coins, population pips or foam. Strong smooth charcoal-teal outline, broad simple highlights, two flat cel-shaded tones. Transparent untrimmed 256 by 384 canvas, owning square y128..383, target bounds x60..196 y176..320 and bottom contact y320. Isolated resource only.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; single pearl, more than two pearls, loose pearl pile, coin, gold, currency, population pips, bubbles, foam, sparkle field, water tile, boat, port, text, price, action arrow, shadow, ground, platform, UI, selection, pixel art, realistic nacre, painterly detail, 3D",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 126612,
+        "noBackground": true,
+        "palette": "warm coral-cream shell, exactly two ivory pearls, pale aqua highlights, charcoal-teal outline",
+        "postprocess": "preferred-low-marker-fit",
+        "groundContactY": 320,
+        "displayScale": 0.5,
+        "styleReference": {
+          "id": "terrain-square-original-fruit",
+          "sha256": "4642843133720393490b4649274ae6a8a7999cd07e9476cdd98bd6c84adf7d76",
+          "usageDescription": "Match the accepted square resource's compact scale, broad clean dark outline, simple highlights and minimum-zoom detail budget; replace fruit with one shell and two pearls."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        }
+      },
+      "outputSha256": "cb02006adb3ac2e41713376626bf4676d0ea8334145e1a6230fc64a654cd659b",
+      "notes": "Accepted after source, enlarged, exact native and same-tile Shallow/Deep Port/Transport review at 0.625x/1x/1.75x DPR1/2: one open shell and exactly two bright pearls remain distinct from Coins, foam and population; transparent clean bounds.",
+      "reviewedAt": "2026-09-22T20:59:24.171Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "unit-original-patrol-boat": {
+      "id": "unit-original-patrol-boat",
+      "status": "ACCEPTED",
+      "jobId": "65ca89f5-c61e-442d-9178-771ba4a4af81",
+      "candidate": "art/pixellab/candidates/unit-original-patrol-boat.png",
+      "candidateSha256": "1de1783328d562cc471e0bd086d5771b8f04e96c683b3cd5289e7fa3e801b3db",
+      "providerOutputSha256": "1dace0927cef4584c23d2c363805546a053eb703e92b67377819a8151f0c6f1c",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 55,
+        "top": 128,
+        "right": 328,
+        "bottom": 304,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm timber and muted bronze patrol hull, cream trim, charcoal-teal outline and southeast planes, one blank coral ownership panel. Ruleset 7 Original Patrol Boat world sprite. One compact low pointed hull facing southeast with a clearly raised bow and exactly one oversized patrol spear or small deck ballista cue. It is an agile patrol craft, visibly armed but without a giant cannon. One contiguous blank coral ownership panel covers about ten percent of visible hull. Strong smooth dark outline, broad flat fills, two-to-three shade levels, northwest light. Transparent untrimmed 384 by 384, preferred x55..329 y128..304, keel contact centered at 192,288. Isolated boat only. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; battleship, giant cannon, multiple cannons, transport packs, passenger, sail, city, port, wake, water, foam, shoreline, projectile, muzzle flash, range mark, cast shadow, selection, health, owner emblem, text, UI, pixel art, photoreal, painterly, 3D, cropped edge.",
+        "prompt": "Ruleset 7 Original Patrol Boat world sprite. One compact low pointed hull facing southeast with a clearly raised bow and exactly one oversized patrol spear or small deck ballista cue. It is an agile patrol craft, visibly armed but without a giant cannon. One contiguous blank coral ownership panel covers about ten percent of visible hull. Strong smooth dark outline, broad flat fills, two-to-three shade levels, northwest light. Transparent untrimmed 384 by 384, preferred x55..329 y128..304, keel contact centered at 192,288. Isolated boat only.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; battleship, giant cannon, multiple cannons, transport packs, passenger, sail, city, port, wake, water, foam, shoreline, projectile, muzzle flash, range mark, cast shadow, selection, health, owner emblem, text, UI, pixel art, photoreal, painterly, 3D, cropped edge",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 126632,
+        "noBackground": true,
+        "palette": "warm timber and muted bronze patrol hull, cream trim, charcoal-teal outline and southeast planes, one blank coral ownership panel",
+        "postprocess": "unit-fit",
+        "groundContactY": 288,
+        "displayScale": 0.24,
+        "styleReference": {
+          "id": "unit-shared-embarked-transport",
+          "sha256": "6faa7fbb10b8b0346210e3b823055c4079055d78ceb628a6585e0ae6cb3c820f",
+          "usageDescription": "Preserve the accepted low hull camera, outline, flat shading and naval palette; create a smaller pointed armed patrol hull with a raised bow and one oversized patrol weapon cue."
+        }
+      },
+      "outputSha256": "1de1783328d562cc471e0bd086d5771b8f04e96c683b3cd5289e7fa3e801b3db",
+      "notes": "Accepted second ordered naval sample after source, exact 2x, native and established anchored contexts: pointed low hull, raised bow and one oversized ballista/spear read distinctly from Transport; 65.5x42.2 CSS alpha footprint, single coral ownership patch, no scenery or baked state.",
+      "reviewedAt": "2026-09-22T21:05:34.154Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "unit-original-battleship": {
+      "id": "unit-original-battleship",
+      "status": "ACCEPTED",
+      "jobId": "0e9b0905-3fae-44b3-abc5-805f64b28a40",
+      "candidate": "art/pixellab/candidates/unit-original-battleship.png",
+      "candidateSha256": "ac83193e759fdbeebab75d12f95b73fd516c315c0ae820755fe55303e6cb3792",
+      "providerOutputSha256": "480bdb201f8bccd1fa1c8c71ea22047de18acb293000d49f551fa72ca3a52705",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 30,
+        "top": 90,
+        "right": 354,
+        "bottom": 300,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: broad warm timber and muted bronze armored hull, cream trim, charcoal-teal outline and southeast planes, one blank coral ownership panel. Ruleset 7 Original Battleship world sprite. One LOW-WIDE broad heavy armored hull whose complete silhouette is at least 1.5 times wider than tall. Its pointed BOW is unmistakably at the LOWER-RIGHT / SOUTHEAST (x greater than 192), with a moderately raised stern at upper-left but no tall tower. Exactly one oversized LONG HORIZONTAL deck cannon sits low on deck and its barrel points right/down toward the southeast bow. The hull must span nearly x30..354 while staying near y82..308, visibly larger and heavier than Patrol Boat. One contiguous blank coral ownership panel covers about ten percent. Strong smooth dark outline, broad flat fills, two-to-three shade levels, northwest light. Transparent untrimmed 384 by 384, keel anchor 192,288. Isolated ship only. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; tall narrow ship, tall tower, vertical superstructure, width equal to height, bow at left, bow at lower-left, west-facing ship, cannon pointing left, small patrol boat, transport packs, passenger, multiple cannons, cannon fire, muzzle flash, projectile, sail, city, port, wake, water, foam, shoreline, range mark, cast shadow, selection, health, owner emblem, text, UI, pixel art, photoreal, painterly, 3D, cropped edge.",
+        "prompt": "Ruleset 7 Original Battleship world sprite. One LOW-WIDE broad heavy armored hull whose complete silhouette is at least 1.5 times wider than tall. Its pointed BOW is unmistakably at the LOWER-RIGHT / SOUTHEAST (x greater than 192), with a moderately raised stern at upper-left but no tall tower. Exactly one oversized LONG HORIZONTAL deck cannon sits low on deck and its barrel points right/down toward the southeast bow. The hull must span nearly x30..354 while staying near y82..308, visibly larger and heavier than Patrol Boat. One contiguous blank coral ownership panel covers about ten percent. Strong smooth dark outline, broad flat fills, two-to-three shade levels, northwest light. Transparent untrimmed 384 by 384, keel anchor 192,288. Isolated ship only.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; tall narrow ship, tall tower, vertical superstructure, width equal to height, bow at left, bow at lower-left, west-facing ship, cannon pointing left, small patrol boat, transport packs, passenger, multiple cannons, cannon fire, muzzle flash, projectile, sail, city, port, wake, water, foam, shoreline, range mark, cast shadow, selection, health, owner emblem, text, UI, pixel art, photoreal, painterly, 3D, cropped edge",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 126635,
+        "noBackground": true,
+        "palette": "broad warm timber and muted bronze armored hull, cream trim, charcoal-teal outline and southeast planes, one blank coral ownership panel",
+        "postprocess": "unit-fit",
+        "groundContactY": 288,
+        "displayScale": 0.27,
+        "styleReference": {
+          "id": "unit-original-patrol-boat",
+          "sha256": "1de1783328d562cc471e0bd086d5771b8f04e96c683b3cd5289e7fa3e801b3db",
+          "usageDescription": "Preserve the accepted naval camera, outline, flat shading, palette and southeast bow direction; create a materially larger broad armored gun platform."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/unit-original-battleship-4590e4076645.png",
+          "candidateSha256": "4590e4076645dd74a2d658a53915e63380929c276d618d9b2c09cca2656b8c64",
+          "providerOutputSha256": "64f79955987140938738c709fdff6697cb69a53ad2c641bca7840d9a49f1eab5",
+          "jobId": "aa012e2b-04c4-4056-93b0-38c8de3d028d",
+          "disposition": "REJECTED",
+          "notes": "Rejected after source and exact-direction review: broad armored cannon silhouette is clear, but bow and cannon face down-left/west instead of the required southeast/down-right direction used by Transport and Patrol Boat.",
+          "reviewedAt": "2026-09-22T21:11:33.974Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: broad warm timber and muted bronze armored hull, cream trim, charcoal-teal outline and southeast planes, one blank coral ownership panel. Ruleset 7 Original Battleship world sprite. One broad heavy armored hull facing southeast, with a taller stern and exactly one unmistakable oversized deck cannon in its resting silhouette. It must be visibly larger and heavier than the referenced Patrol Boat while remaining a clean playful board-game piece. One contiguous blank coral ownership panel covers about ten percent of visible hull. Strong smooth dark outline, broad flat fills, two-to-three shade levels, northwest light. Transparent untrimmed 384 by 384, preferred x30..354 y82..308, keel contact centered at 192,288. Isolated ship only. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; small patrol boat, transport packs, passenger, multiple cannons, cannon fire, muzzle flash, projectile, sail, city, port, wake, water, foam, shoreline, range mark, cast shadow, selection, health, owner emblem, text, UI, pixel art, photoreal, painterly, 3D, cropped edge.",
+            "prompt": "Ruleset 7 Original Battleship world sprite. One broad heavy armored hull facing southeast, with a taller stern and exactly one unmistakable oversized deck cannon in its resting silhouette. It must be visibly larger and heavier than the referenced Patrol Boat while remaining a clean playful board-game piece. One contiguous blank coral ownership panel covers about ten percent of visible hull. Strong smooth dark outline, broad flat fills, two-to-three shade levels, northwest light. Transparent untrimmed 384 by 384, preferred x30..354 y82..308, keel contact centered at 192,288. Isolated ship only.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; small patrol boat, transport packs, passenger, multiple cannons, cannon fire, muzzle flash, projectile, sail, city, port, wake, water, foam, shoreline, range mark, cast shadow, selection, health, owner emblem, text, UI, pixel art, photoreal, painterly, 3D, cropped edge",
+            "requestSize": {
+              "width": 384,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 384,
+              "height": 384
+            },
+            "seed": 126633,
+            "noBackground": true,
+            "palette": "broad warm timber and muted bronze armored hull, cream trim, charcoal-teal outline and southeast planes, one blank coral ownership panel",
+            "postprocess": "unit-fit",
+            "groundContactY": 288,
+            "displayScale": 0.27,
+            "styleReference": {
+              "id": "unit-original-patrol-boat",
+              "sha256": "1de1783328d562cc471e0bd086d5771b8f04e96c683b3cd5289e7fa3e801b3db",
+              "usageDescription": "Preserve the accepted naval camera, outline, flat shading, palette and southeast bow direction; create a materially larger broad armored gun platform."
+            }
+          }
+        },
+        {
+          "candidate": "art/pixellab/quarantine/unit-original-battleship-226342669be5.png",
+          "candidateSha256": "226342669be5178b4432c8f1ede9a1c88d2ad99c3f8e2baafea417c1376d6d7c",
+          "providerOutputSha256": "e2cdb24c4291d4e9344c7ca81107cc2d15678eeee79d2a033868a2c26419f733",
+          "jobId": "e333b7e3-f70a-4837-9466-98abd7d6cadf",
+          "disposition": "REJECTED",
+          "notes": "Rejected after source and geometry review: direction/cannon are correct, but tall narrow 251x226 source silhouette displays about 68x61 CSS, below required 82-96 CSS width and insufficiently broader than Patrol Boat; needs a lower wider armored hull.",
+          "reviewedAt": "2026-09-22T21:14:19.791Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: broad warm timber and muted bronze armored hull, cream trim, charcoal-teal outline and southeast planes, one blank coral ownership panel. Ruleset 7 Original Battleship world sprite. One broad heavy armored hull with its pointed BOW unmistakably at the LOWER-RIGHT / SOUTHEAST of the canvas (x greater than 192), and its taller stern at upper-left. Exactly one oversized deck cannon sits in the resting silhouette and its barrel also points generally right/down toward the southeast bow. It must be visibly larger and heavier than the referenced Patrol Boat while remaining a clean playful board-game piece. One contiguous blank coral ownership panel covers about ten percent. Strong smooth dark outline, broad flat fills, two-to-three shade levels, northwest light. Transparent untrimmed 384 by 384, preferred x30..354 y82..308, keel anchor 192,288. Isolated ship only. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; bow at left, bow at lower-left, west-facing ship, cannon pointing left, small patrol boat, transport packs, passenger, multiple cannons, cannon fire, muzzle flash, projectile, sail, city, port, wake, water, foam, shoreline, range mark, cast shadow, selection, health, owner emblem, text, UI, pixel art, photoreal, painterly, 3D, cropped edge.",
+            "prompt": "Ruleset 7 Original Battleship world sprite. One broad heavy armored hull with its pointed BOW unmistakably at the LOWER-RIGHT / SOUTHEAST of the canvas (x greater than 192), and its taller stern at upper-left. Exactly one oversized deck cannon sits in the resting silhouette and its barrel also points generally right/down toward the southeast bow. It must be visibly larger and heavier than the referenced Patrol Boat while remaining a clean playful board-game piece. One contiguous blank coral ownership panel covers about ten percent. Strong smooth dark outline, broad flat fills, two-to-three shade levels, northwest light. Transparent untrimmed 384 by 384, preferred x30..354 y82..308, keel anchor 192,288. Isolated ship only.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; bow at left, bow at lower-left, west-facing ship, cannon pointing left, small patrol boat, transport packs, passenger, multiple cannons, cannon fire, muzzle flash, projectile, sail, city, port, wake, water, foam, shoreline, range mark, cast shadow, selection, health, owner emblem, text, UI, pixel art, photoreal, painterly, 3D, cropped edge",
+            "requestSize": {
+              "width": 384,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 384,
+              "height": 384
+            },
+            "seed": 126634,
+            "noBackground": true,
+            "palette": "broad warm timber and muted bronze armored hull, cream trim, charcoal-teal outline and southeast planes, one blank coral ownership panel",
+            "postprocess": "unit-fit",
+            "groundContactY": 288,
+            "displayScale": 0.27,
+            "styleReference": {
+              "id": "unit-original-patrol-boat",
+              "sha256": "1de1783328d562cc471e0bd086d5771b8f04e96c683b3cd5289e7fa3e801b3db",
+              "usageDescription": "Preserve the accepted naval camera, outline, flat shading, palette and southeast bow direction; create a materially larger broad armored gun platform."
+            }
+          }
+        }
+      ],
+      "outputSha256": "ac83193e759fdbeebab75d12f95b73fd516c315c0ae820755fe55303e6cb3792",
+      "notes": "Accepted after source, exact native, 2x enlarged, 32px minimum, coexistence, dense coast, fog, selection, ownership, and mixed fleet review: low-wide 324x210 silhouette displays 87.5x56.7 CSS, points southeast, carries exactly one long cannon and one coral panel, and is clearly heavier than Patrol Boat without obscuring shared-tile Fish or Port details.",
+      "reviewedAt": "2026-09-22T21:19:14.417Z",
       "reviewChecks": {
         "source": true,
         "native": true,

@@ -1,0 +1,36 @@
+{
+  "id": "terrain-ruleset7-resource-pearls",
+  "jobId": "ee4ede07-f86b-47c8-ba23-c6062b4e4a4d",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm coral-cream shell, exactly two ivory pearls, pale aqua highlights, charcoal-teal outline. Ruleset 7 Pearls resource: one oversized open chunky shell holding exactly two large bright round pearls. The open shell supplies a wide unmistakable silhouette so the pearls never resemble Coins, population pips or foam. Strong smooth charcoal-teal outline, broad simple highlights, two flat cel-shaded tones. Transparent untrimmed 256 by 384 canvas, owning square y128..383, target bounds x60..196 y176..320 and bottom contact y320. Isolated resource only. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; single pearl, more than two pearls, loose pearl pile, coin, gold, currency, population pips, bubbles, foam, sparkle field, water tile, boat, port, text, price, action arrow, shadow, ground, platform, UI, selection, pixel art, realistic nacre, painterly detail, 3D.",
+    "prompt": "Ruleset 7 Pearls resource: one oversized open chunky shell holding exactly two large bright round pearls. The open shell supplies a wide unmistakable silhouette so the pearls never resemble Coins, population pips or foam. Strong smooth charcoal-teal outline, broad simple highlights, two flat cel-shaded tones. Transparent untrimmed 256 by 384 canvas, owning square y128..383, target bounds x60..196 y176..320 and bottom contact y320. Isolated resource only.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; single pearl, more than two pearls, loose pearl pile, coin, gold, currency, population pips, bubbles, foam, sparkle field, water tile, boat, port, text, price, action arrow, shadow, ground, platform, UI, selection, pixel art, realistic nacre, painterly detail, 3D",
+    "requestSize": {
+      "width": 256,
+      "height": 384
+    },
+    "outputSize": {
+      "width": 256,
+      "height": 384
+    },
+    "seed": 126612,
+    "noBackground": true,
+    "palette": "warm coral-cream shell, exactly two ivory pearls, pale aqua highlights, charcoal-teal outline",
+    "postprocess": "preferred-low-marker-fit",
+    "groundContactY": 320,
+    "displayScale": 0.5,
+    "styleReference": {
+      "id": "terrain-square-original-fruit",
+      "sha256": "4642843133720393490b4649274ae6a8a7999cd07e9476cdd98bd6c84adf7d76",
+      "usageDescription": "Match the accepted square resource's compact scale, broad clean dark outline, simple highlights and minimum-zoom detail budget; replace fruit with one shell and two pearls."
+    },
+    "squareFootprint": {
+      "left": 0,
+      "top": 128,
+      "right": 256,
+      "bottom": 384
+    }
+  }
+}
