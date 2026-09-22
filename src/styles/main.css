@@ -283,7 +283,7 @@
 
 .v7-selection-dock[data-selection-kind="unit"] {
   grid-template-columns:
-    minmax(13rem, 20rem) minmax(14rem, 1fr) minmax(11rem, 1fr)
+    minmax(13rem, 20rem) minmax(14rem, max-content) minmax(11rem, 1fr)
     max-content;
   width: 100%;
 }
