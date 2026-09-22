@@ -66,16 +66,16 @@ try {
   const canvasBefore = await rect(connection, ".board-canvas-v7");
   const hud = await evaluate(
     connection,
-    `(async () => { const s = globalThis.__PULP_WARS_APP__.controller.snapshot(); const m = await import('/src/render/dom/app-view-v7.ts'); const expected = s.view.cities.filter(c => c.ownerId === s.view.viewer.id).reduce((n,c) => n + (m.cityIncomeForViewerV7(s.view,c.id) ?? 0),0); const rate = document.querySelector('.v7-income-rate'); return { expected, displayed: rate?.textContent, icon: document.querySelector('.v7-coins img')?.dataset.assetId }; })()`,
+    `(async () => { const s = globalThis.__PULP_WARS_APP__.controller.snapshot(); const m = await import('/src/render/dom/app-view-v7.ts'); const expected = s.view.cities.filter(c => c.ownerId === s.view.viewer.id).reduce((n,c) => n + (m.cityIncomeForViewerV7(s.view,c.id) ?? 0),0); const coins = document.querySelector('.v7-coins'); return { expected, balance: s.view.viewer.coins, displayed: coins?.textContent, iconIds: [...(coins?.querySelectorAll('img') ?? [])].map(icon => icon.dataset.assetId), accessible: coins?.getAttribute('aria-label') }; })()`,
   );
   assert(
-    (hud as { expected: number; displayed: string; icon: string }).displayed ===
-      `+${(hud as { expected: number }).expected}/turn`,
-    `HUD projection mismatch: ${JSON.stringify(hud)}`,
-  );
-  assert(
-    (hud as { icon: string }).icon === "ui-hud-gold-coin-v7",
-    "HUD coin missing",
+    (hud as { expected: number; balance: number; displayed: string })
+      .displayed ===
+      `${(hud as { balance: number }).balance} (+${(hud as { expected: number }).expected}/turn)` &&
+      JSON.stringify((hud as { iconIds: string[] }).iconIds) ===
+        JSON.stringify(["ui-hud-gold-coin-v7"]) &&
+      (hud as { accessible: string }).accessible.includes("Coins"),
+    `HUD format or single coin icon mismatch: ${JSON.stringify(hud)}`,
   );
   await key(connection, "Enter", "Enter");
   await waitFor(
@@ -83,6 +83,31 @@ try {
     `document.querySelector('.v7-selection-dock[data-selection-kind="unit"]') !== null`,
   );
   const unit1024 = await layout(connection);
+  const unitHelpControl = await evaluate(
+    connection,
+    `(() => { const button=document.querySelector('[data-action="unit-help"]'); const glyph=button?.querySelector('.v7-unit-help-glyph'); if(!button||!glyph)throw Error('Unit help missing'); const b=button.getBoundingClientRect(),g=glyph.getBoundingClientRect(); return { hitWidth:b.width, hitHeight:b.height, visualWidth:g.width, visualHeight:g.height, centered:Math.abs((b.left+b.width/2)-(g.left+g.width/2))<=1 && Math.abs((b.top+b.height/2)-(g.top+g.height/2))<=1, label:button.getAttribute('aria-label') }; })()`,
+  );
+  assert(
+    (unitHelpControl as { hitWidth: number; hitHeight: number }).hitWidth >=
+      44 &&
+      (unitHelpControl as { hitHeight: number }).hitHeight >= 44 &&
+      (unitHelpControl as { visualWidth: number; visualHeight: number })
+        .visualWidth === 28 &&
+      (unitHelpControl as { visualHeight: number }).visualHeight === 28 &&
+      (unitHelpControl as { centered: boolean }).centered &&
+      (unitHelpControl as { label: string }).label.startsWith(
+        "About selected ",
+      ),
+    `Unit help appearance or target mismatch: ${JSON.stringify(unitHelpControl)}`,
+  );
+  const emptyActionText = "No direct action is currently offered";
+  assert(
+    !(await evaluate(
+      connection,
+      `document.body.textContent.includes('${emptyActionText}')`,
+    )),
+    "Empty-action filler visible with selected unit",
+  );
   const naturalModifier = await evaluate(
     connection,
     `(() => { const selection = document.querySelector('.v7-selection-dock[data-selection-kind="unit"]'); const modifiers = [...selection.querySelectorAll('.v7-stat-modifier')]; return modifiers.map(node => ({ value: node.textContent, explanation: node.getAttribute('aria-label') })); })()`,
@@ -159,6 +184,13 @@ try {
   );
   const city1024 = await layout(connection);
   assert(
+    !(await evaluate(
+      connection,
+      `document.body.textContent.includes('${emptyActionText}')`,
+    )),
+    "Empty-action filler visible with selected city",
+  );
+  assert(
     Math.abs(unit1024.height - city1024.height) <= 2 &&
       city1024.horizontal &&
       !city1024.pageOverflow,
@@ -200,9 +232,18 @@ try {
   );
   await viewport(connection, 1440, 900, 2);
   const city1440 = await layout(connection);
+  const hud1440 = await evaluate(
+    connection,
+    `(() => { const coins=document.querySelector('.v7-coins'); return { displayed: coins?.textContent, iconIds: [...(coins?.querySelectorAll('img') ?? [])].map(icon => icon.dataset.assetId) }; })()`,
+  );
   assert(
-    city1440.horizontal && !city1440.pageOverflow,
-    `1440 city geometry failed: ${JSON.stringify(city1440)}`,
+    city1440.horizontal &&
+      !city1440.pageOverflow &&
+      (hud1440 as { displayed: string }).displayed ===
+        (hud as { displayed: string }).displayed &&
+      JSON.stringify((hud1440 as { iconIds: string[] }).iconIds) ===
+        JSON.stringify(["ui-hud-gold-coin-v7"]),
+    `1440 city geometry or HUD failed: ${JSON.stringify({ city1440, hud1440 })}`,
   );
   await capture(connection, "compact-1440-city-dpr2.png");
   await click(connection, '[data-action="tech"]');
@@ -237,6 +278,8 @@ try {
   const evidence = {
     source: "NATURAL_SEED20_CONTROLLER_WITH_LABELED_SYNTHETIC_LAYOUT_CASES",
     hud,
+    hud1440,
+    unitHelpControl,
     naturalModifier,
     rightTooltip,
     unit1024,

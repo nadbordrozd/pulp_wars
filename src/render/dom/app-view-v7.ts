@@ -565,16 +565,20 @@ export class Ruleset7DomAppView {
       );
     const economy = el(this.#document, "p", "v7-coins");
     const rate = el(this.#document, "span", "v7-income-rate");
-    rate.append(
-      economyIcon(this.#document, "coin"),
-      `+${projectedIncome}/turn`,
-    );
+    rate.textContent = `(${projectedIncome >= 0 ? "+" : ""}${projectedIncome}/turn)`;
     rate.setAttribute(
       "aria-label",
       `Projected next-turn income ${projectedIncome} Coins`,
     );
     economy.append(
-      economyValue(this.#document, view.viewer.coins, "Coins"),
+      economyIcon(this.#document, "coin"),
+      text(
+        this.#document,
+        "span",
+        String(view.viewer.coins),
+        "v7-coin-balance",
+      ),
+      " ",
       rate,
     );
     economy.setAttribute(
@@ -816,7 +820,8 @@ export class Ruleset7DomAppView {
         ),
       );
       const identityColumn = dock.querySelector<HTMLElement>(".v7-identity");
-      const unitHelp = button(this.#document, "?", "unit-help", "v7-unit-help");
+      const unitHelp = button(this.#document, "", "unit-help", "v7-unit-help");
+      unitHelp.append(text(this.#document, "span", "?", "v7-unit-help-glyph"));
       unitHelp.setAttribute("aria-label", `About selected ${title(unit.role)}`);
       unitHelp.onclick = () => {
         this.#selectedUnitHelpId = unit.id;
@@ -981,7 +986,6 @@ export class Ruleset7DomAppView {
         unit.id,
       );
       if (actions.querySelector("button") !== null) {
-        actions.querySelector("p")?.remove();
         dock.dataset.hasActions = "true";
         dock.append(actions);
       }
@@ -1097,7 +1101,6 @@ export class Ruleset7DomAppView {
       if (city.ownerId === view.viewer.id)
         this.#appendCommandArea(
           dock,
-          details,
           (command) => command.kind === "TRAIN" && command.cityId === city.id,
         );
     } else {
@@ -1160,7 +1163,6 @@ export class Ruleset7DomAppView {
         dock.append(summary);
         this.#appendCommandArea(
           dock,
-          details,
           (command) =>
             "at" in command &&
             same(command.at, tile.at) &&
@@ -1261,16 +1263,11 @@ export class Ruleset7DomAppView {
         actions.append(card);
       } else actions.append(action);
     }
-    if (actions.childElementCount === 0)
-      actions.append(
-        text(this.#document, "p", "No direct action is currently offered."),
-      );
     return actions;
   }
 
   #appendCommandArea(
     dock: HTMLElement,
-    details: HTMLElement,
     predicate: (command: CommandV7) => boolean,
   ): void {
     const actions = this.#commandButtons(predicate);
@@ -1279,8 +1276,6 @@ export class Ruleset7DomAppView {
       dock.append(actions);
       return;
     }
-    if (dock.dataset.selectionKind === "tile")
-      details.append(...actions.childNodes);
   }
 
   #appendTacticalActions(
@@ -2930,22 +2925,6 @@ function economyIcon(
   icon.dataset.assetId =
     kind === "coin" ? "ui-hud-gold-coin-v7" : "ui-hud-population";
   return icon;
-}
-
-function economyValue(
-  documentRoot: Document,
-  amount: number,
-  unit: "Coins" | "population",
-): HTMLElement {
-  const value = el(documentRoot, "span", "v7-economy-value");
-  value.append(
-    String(amount),
-    economyIcon(documentRoot, unit === "Coins" ? "coin" : "population"),
-  );
-  const spokenUnit = text(documentRoot, "span", ` ${unit}`, "v7-sr-only");
-  value.append(spokenUnit);
-  value.setAttribute("aria-label", `${amount} ${unit}`);
-  return value;
 }
 
 function appendEconomyText(

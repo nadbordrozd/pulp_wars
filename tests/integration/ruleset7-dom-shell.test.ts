@@ -131,7 +131,9 @@ describe("Ruleset 7 DOM shell", () => {
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
     expect(document.querySelector(".v7-match-root")).not.toBeNull();
     expect(document.querySelector(".board-canvas-v7")).not.toBeNull();
-    expect(document.body.textContent).toContain("Coins");
+    expect(
+      document.querySelector(".v7-coins")?.getAttribute("aria-label"),
+    ).toContain("Coins");
     const current = app.controller.snapshot().view;
     if (current === null) throw new Error("Public view missing");
     const projectedIncome = current.cities
@@ -141,10 +143,15 @@ describe("Ruleset 7 DOM shell", () => {
         0,
       );
     expect(
-      document.querySelector(".v7-coins [data-asset-id='ui-hud-gold-coin-v7']"),
-    ).not.toBeNull();
+      document.querySelectorAll(
+        ".v7-coins [data-asset-id='ui-hud-gold-coin-v7']",
+      ),
+    ).toHaveLength(1);
+    expect(document.querySelector(".v7-coins")?.textContent).toBe(
+      `${current.viewer.coins} (+${projectedIncome}/turn)`,
+    );
     expect(document.querySelector(".v7-income-rate")?.textContent).toBe(
-      `+${projectedIncome}/turn`,
+      `(+${projectedIncome}/turn)`,
     );
     expect(document.body.textContent).not.toContain("CANDY");
 
@@ -754,6 +761,10 @@ describe("Ruleset 7 DOM shell", () => {
     expect(document.querySelector(".v7-identity h2")?.textContent).toBe(
       "Plains · Mountain",
     );
+    expect(document.querySelector(".v7-context-actions")).toBeNull();
+    expect(
+      document.querySelector(".v7-selection-dock")?.textContent,
+    ).not.toContain("No direct action is currently offered");
     expect(
       document.querySelector(".v7-selection-details")?.textContent,
     ).not.toContain("Ore");
@@ -869,6 +880,7 @@ describe("Ruleset 7 DOM shell", () => {
     expect(
       document.querySelector(".v7-selection-dock > .v7-abilities"),
     ).toBeNull();
+    expect(requiredButton('[data-action="unit-help"]').textContent).toBe("?");
     expect(
       document
         .querySelector(".v7-identity-art")
