@@ -21,6 +21,7 @@ import type {
 } from "../../src/render/canvas/board-host-v7";
 import {
   Ruleset7DomAppView,
+  cityIncomeForViewerV7,
   type Ruleset7ControllerPortV7,
 } from "../../src/render/dom/app-view-v7";
 import { createTacticalSymbolV7 } from "../../src/render/dom/tactical-symbol-v7";
@@ -32,6 +33,31 @@ beforeEach(() => {
 });
 
 describe("Ruleset 7 DOM shell", () => {
+  it("keeps signed Treasury notices paired with the current gold coin", async () => {
+    const source = new Ruleset7BrowserController();
+    const launched = await source.launch(setupV7(1541));
+    if (!launched.ok) throw new Error(launched.diagnostic);
+    const host = new CapturingBoardHost();
+    const app = new Ruleset7DomAppView(document, requiredRoot(), source, {
+      boardHost: host,
+      settingsStorage: null,
+      startupNotice: "Treasury automatically granted · +12 Coins.",
+    });
+    const icon = document.querySelector(
+      "#v7-live [data-asset-id='ui-hud-gold-coin-v7']",
+    );
+    expect(icon).not.toBeNull();
+    expect(document.querySelector("#v7-live")?.textContent).toBe(
+      "Treasury automatically granted · +12 Coins.",
+    );
+    host.callbacks?.onSelection({ kind: "TILE", at: { x: 0, y: 0 } });
+    expect(
+      document.querySelector("#v7-live [data-asset-id='ui-hud-gold-coin-v7']"),
+    ).toBe(icon);
+    app.destroy();
+    source.destroy();
+  });
+
   it("coalesces human movement notifications and installs the board before rebuilding the HUD", async () => {
     const source = new Ruleset7BrowserController();
     const launched = await source.launch(setupV7(1541));
@@ -106,6 +132,20 @@ describe("Ruleset 7 DOM shell", () => {
     expect(document.querySelector(".v7-match-root")).not.toBeNull();
     expect(document.querySelector(".board-canvas-v7")).not.toBeNull();
     expect(document.body.textContent).toContain("Coins");
+    const current = app.controller.snapshot().view;
+    if (current === null) throw new Error("Public view missing");
+    const projectedIncome = current.cities
+      .filter((city) => city.ownerId === current.viewer.id)
+      .reduce(
+        (sum, city) => sum + (cityIncomeForViewerV7(current, city.id) ?? 0),
+        0,
+      );
+    expect(
+      document.querySelector(".v7-coins [data-asset-id='ui-hud-gold-coin-v7']"),
+    ).not.toBeNull();
+    expect(document.querySelector(".v7-income-rate")?.textContent).toBe(
+      `+${projectedIncome}/turn`,
+    );
     expect(document.body.textContent).not.toContain("CANDY");
 
     requiredButton('[data-action="tech"]').click();
@@ -724,9 +764,9 @@ describe("Ruleset 7 DOM shell", () => {
     expect(
       document.querySelector(".v7-selection-details")?.textContent,
     ).toContain("Ore");
-    expect(
-      document.querySelector(".v7-context-action")?.getAttribute("aria-label"),
-    ).toBe("Build Mine · 5 Coins · +2 population");
+    expect(document.querySelector(".v7-context-action")?.textContent).toContain(
+      "Build Mine",
+    );
     host.callbacks?.onSelection({ kind: "TILE", at: mineAt });
     expect(document.querySelector(".v7-identity h2")?.textContent).toBe(
       "Highlands · Mountain",
@@ -735,19 +775,27 @@ describe("Ruleset 7 DOM shell", () => {
       document.querySelector(".v7-selection-details")?.textContent,
     ).toContain("Mine");
     host.callbacks?.onSelection({ kind: "TILE", at: forgeAt });
-    expect(
-      document.querySelector(".v7-context-action")?.getAttribute("aria-label"),
-    ).toBe(
-      "Build Forge · 6 Coins · +1 population per adjacent Mine (maximum 6)",
+    expect(document.querySelector(".v7-context-action")?.textContent).toContain(
+      "Build Forge",
     );
     host.callbacks?.onSelection({ kind: "CITY", cityId: city.id });
-    expect(document.querySelectorAll(".v7-selection-details")).toHaveLength(1);
+    expect(document.querySelectorAll(".v7-city-stats")).toHaveLength(1);
+    expect(document.querySelector(".v7-city-stats")?.textContent).toContain(
+      "Population",
+    );
+    expect(document.querySelector(".v7-city-stats")?.textContent).toContain(
+      "Capacity",
+    );
     expect(
-      document.querySelector(".v7-selection-details")?.textContent,
-    ).toContain("Population");
+      document
+        .querySelector(".v7-city-stats .v7-population-value img")
+        ?.getAttribute("data-asset-id"),
+    ).toBe("ui-hud-population");
     expect(
-      document.querySelector(".v7-selection-details")?.textContent,
-    ).toContain("Assigned units");
+      document
+        .querySelector(".v7-city-stats .v7-city-income img")
+        ?.getAttribute("data-asset-id"),
+    ).toBe("ui-hud-gold-coin-v7");
     const trainCost = document.querySelector<HTMLElement>(
       ".v7-train-action .v7-command-economy",
     );
@@ -813,14 +861,14 @@ describe("Ruleset 7 DOM shell", () => {
       unitId: statsWithModifier.unitId,
     });
     expect(
-      document.querySelector(".v7-unit-summary > .v7-identity"),
+      document.querySelector(".v7-selection-dock > .v7-identity"),
     ).not.toBeNull();
     expect(
-      document.querySelector(".v7-unit-facts > .v7-unit-stats"),
+      document.querySelector(".v7-selection-dock > .v7-unit-stats"),
     ).not.toBeNull();
     expect(
-      document.querySelector(".v7-unit-facts > .v7-abilities"),
-    ).not.toBeNull();
+      document.querySelector(".v7-selection-dock > .v7-abilities"),
+    ).toBeNull();
     expect(
       document
         .querySelector(".v7-identity-art")
@@ -834,11 +882,27 @@ describe("Ruleset 7 DOM shell", () => {
     expect(
       requiredButton(".v7-stat-modifier").getAttribute("aria-expanded"),
     ).toBe("true");
-    expect(document.querySelector('[role="tooltip"]')?.textContent).toContain(
+    expect(requiredButton(".v7-stat-modifier").dataset.tooltip).toContain(
       modifierSource,
     );
     expect(document.activeElement?.classList.contains("v7-stat-modifier")).toBe(
       true,
+    );
+    requiredButton('[data-action="unit-help"]').click();
+    expect(
+      document.querySelector('[data-v7-region="unit-help"][aria-modal="true"]'),
+    ).not.toBeNull();
+    expect(
+      document.querySelector(".v7-unit-help-dialog .v7-abilities")?.textContent
+        ?.length,
+    ).toBeGreaterThan(0);
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
+    );
+    await Promise.resolve();
+    expect(document.querySelector(".v7-unit-help-dialog")).toBeNull();
+    expect(document.activeElement?.getAttribute("data-action")).toBe(
+      "unit-help",
     );
     host.callbacks?.onSelection({ kind: "TILE", at: monumentAt });
     requiredButton('[data-action="achievements"]').click();

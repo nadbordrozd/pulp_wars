@@ -48,12 +48,28 @@ describe("Ruleset 7 Canvas interaction", () => {
     expect(host.mount).toHaveBeenCalledTimes(1);
     expect(host.container).toBe(firstContainer);
     expect(document.querySelector(".v7-selection-dock")).not.toBeNull();
-    expect(document.body.textContent).toContain("Needs action");
     expect(document.querySelectorAll(".v7-unit-stats dt")).toHaveLength(6);
-    const ability =
-      document.querySelector<HTMLButtonElement>(".v7-ability-tag");
-    ability?.click();
-    expect(document.querySelector(".v7-ability-card")).not.toBeNull();
+    document
+      .querySelector<HTMLButtonElement>('[data-action="unit-help"]')
+      ?.click();
+    const details = document.querySelector<HTMLElement>(
+      '.v7-unit-help-dialog[aria-modal="true"]',
+    );
+    expect(details).not.toBeNull();
+    expect(details?.querySelector(".v7-readiness-label")?.textContent).toBe(
+      "Needs action",
+    );
+    expect(details?.querySelector(".v7-abilities")?.textContent).toContain(
+      "Attack",
+    );
+    document
+      .querySelector<HTMLButtonElement>('[data-action="close-unit-help"]')
+      ?.click();
+    await Promise.resolve();
+    expect(document.querySelector(".v7-unit-help-dialog")).toBeNull();
+    expect(document.activeElement?.getAttribute("data-action")).toBe(
+      "unit-help",
+    );
     const wait = document.querySelector<HTMLButtonElement>(
       '[data-action="command-wait"]',
     );

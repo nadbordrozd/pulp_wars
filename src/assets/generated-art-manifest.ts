@@ -261,6 +261,9 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   ),
   "ui-faction-hero": publicArtUrl("assets/pixellab/ui/faction-hero.png"),
   "ui-hud-coin": publicArtUrl("assets/pixellab/ui/hud-coin.png"),
+  "ui-hud-gold-coin-v7": publicArtUrl(
+    "assets/pixellab/ui/hud-gold-coin-v7.png",
+  ),
   "ui-action-redevelop": publicArtUrl(
     "assets/pixellab/ui/action-redevelop.png",
   ),

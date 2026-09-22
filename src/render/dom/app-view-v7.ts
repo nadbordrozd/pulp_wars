@@ -44,7 +44,6 @@ import type {
 } from "../../assets/ruleset7-tactical-ui-symbols";
 import { selectionIdentityArtworkLayoutV7 } from "./selection-identity-v7";
 import {
-  blackoutStatusTextV7,
   blackoutTargetsV7,
   playerLabelV7,
   type TacticalTargetModeV7,
@@ -125,9 +124,10 @@ export class Ruleset7DomAppView {
   #screen: ScreenV7 = "MATCH";
   #selectedTech: TechnologyIdV7 | null = null;
   #selectedAchievement: "ENGINEER" | "MUSTER" | null = null;
-  #selectedAbility: string | null = null;
   #selectedModifier: string | null = null;
   #selectedRecruitHelp: UnitRoleIdV7 | null = null;
+  #selectedUnitHelpId: number | null = null;
+  #unitHelpModal: HTMLElement | null = null;
   #cityActionScrollLeft: number | null = null;
   #clearCityActionScrollAfterRestore = false;
   #tacticalTargetMode: TacticalTargetModeV7 | null = null;
@@ -234,6 +234,9 @@ export class Ruleset7DomAppView {
         if (this.#selectedRecruitHelp !== null) {
           event.preventDefault();
           this.#closeRecruitHelp();
+        } else if (this.#selectedUnitHelpId !== null) {
+          event.preventDefault();
+          this.#closeUnitHelp();
         } else if (this.#screen !== "MATCH") {
           event.preventDefault();
           this.#closeOverlay();
@@ -518,11 +521,11 @@ export class Ruleset7DomAppView {
         onSelection: (selection) => {
           this.#selection = selection;
           this.#selectedRecruitHelp = null;
+          this.#selectedUnitHelpId = null;
           this.#cityActionScrollLeft = null;
           this.#clearCityActionScrollAfterRestore = false;
           this.#tacticalTargetMode = null;
           this.#selectedAchievement = null;
-          this.#selectedAbility = null;
           this.#selectedModifier = null;
           this.#render();
         },
@@ -531,12 +534,17 @@ export class Ruleset7DomAppView {
     }
     const liveNode = shell.querySelector<HTMLElement>("#v7-live");
     const alertNode = shell.querySelector<HTMLElement>("#v7-alert");
-    if (liveNode !== null) liveNode.textContent = this.#notice;
+    if (liveNode !== null && liveNode.textContent !== this.#notice) {
+      liveNode.replaceChildren();
+      appendEconomyText(this.#document, liveNode, this.#notice);
+    }
     if (alertNode !== null) alertNode.textContent = this.#error;
     const nextChildren: HTMLElement[] = [];
+    this.#unitHelpModal = null;
     if (view.pendingChoices.length > 0) {
       this.#tacticalTargetMode = null;
       this.#selectedRecruitHelp = null;
+      this.#selectedUnitHelpId = null;
       this.#cityActionScrollLeft = null;
       this.#clearCityActionScrollAfterRestore = false;
     }
@@ -549,11 +557,25 @@ export class Ruleset7DomAppView {
       text(this.#document, "strong", `Player ${view.viewer.seat + 1}`),
       text(this.#document, "span", `Round ${view.round}`),
     );
-    const economy = text(
-      this.#document,
-      "p",
-      `${view.viewer.coins} Coins`,
-      "v7-coins",
+    const projectedIncome = view.cities
+      .filter((city) => city.ownerId === view.viewer.id)
+      .reduce(
+        (sum, city) => sum + (cityIncomeForViewerV7(view, city.id) ?? 0),
+        0,
+      );
+    const economy = el(this.#document, "p", "v7-coins");
+    const rate = el(this.#document, "span", "v7-income-rate");
+    rate.append(
+      economyIcon(this.#document, "coin"),
+      `+${projectedIncome}/turn`,
+    );
+    rate.setAttribute(
+      "aria-label",
+      `Projected next-turn income ${projectedIncome} Coins`,
+    );
+    economy.append(
+      economyValue(this.#document, view.viewer.coins, "Coins"),
+      rate,
     );
     economy.setAttribute(
       "aria-label",
@@ -666,6 +688,7 @@ export class Ruleset7DomAppView {
       dock.dataset.v7Region = "dock";
       nextChildren.push(dock);
     }
+    if (this.#unitHelpModal !== null) nextChildren.push(this.#unitHelpModal);
     if (this.#snapshot.ai.active) {
       const fast = button(
         this.#document,
@@ -792,7 +815,18 @@ export class Ruleset7DomAppView {
           true,
         ),
       );
-      if (unit.role === "HORSE_ARCHER") {
+      const identityColumn = dock.querySelector<HTMLElement>(".v7-identity");
+      const unitHelp = button(this.#document, "?", "unit-help", "v7-unit-help");
+      unitHelp.setAttribute("aria-label", `About selected ${title(unit.role)}`);
+      unitHelp.onclick = () => {
+        this.#selectedUnitHelpId = unit.id;
+        this.#pendingFocusAction = null;
+        this.#render();
+      };
+      identityColumn?.append(unitHelp);
+      const showUnitDetails = this.#selectedUnitHelpId === unit.id;
+      const unitDetails = el(this.#document, "div", "v7-unit-help-details");
+      if (showUnitDetails && unit.role === "HORSE_ARCHER") {
         const state = el(this.#document, "section", "v7-tactical-state");
         state.dataset.tacticalState = "horse-archer";
         const unusedShots = Math.max(0, 2 - unit.activation.attacksUsed);
@@ -816,7 +850,7 @@ export class Ruleset7DomAppView {
               : "May move before the first shot; never advances or captures.",
           ),
         );
-        dock.append(state);
+        unitDetails.append(state);
       }
       const stats = view.unitStats.find((entry) => entry.unitId === unit.id);
       if (stats !== undefined) {
@@ -834,7 +868,7 @@ export class Ruleset7DomAppView {
             const modifierId = `${unit.id}-${stat.id}-${index}`;
             const term = button(
               this.#document,
-              `+ ${formatValue(modifier.value)}`,
+              `+${formatValue(modifier.value)}`,
               `stat-${stat.id.toLowerCase()}-${index}`,
               "v7-stat-modifier",
             );
@@ -842,7 +876,7 @@ export class Ruleset7DomAppView {
               "aria-label",
               `${modifier.sourceLabel}: ${modifier.description}`,
             );
-            term.dataset.tooltip = modifier.description;
+            term.dataset.tooltip = `${modifier.sourceLabel}: ${modifier.description}`;
             term.setAttribute(
               "aria-expanded",
               String(this.#selectedModifier === modifierId),
@@ -855,14 +889,7 @@ export class Ruleset7DomAppView {
             };
             value.append(term);
             if (this.#selectedModifier === modifierId) {
-              const explanation = text(
-                this.#document,
-                "span",
-                `${modifier.sourceLabel}: ${modifier.description}`,
-                "v7-stat-modifier-detail",
-              );
-              explanation.setAttribute("role", "tooltip");
-              value.append(explanation);
+              term.setAttribute("aria-expanded", "true");
             }
           }
           if (!exact)
@@ -877,97 +904,69 @@ export class Ruleset7DomAppView {
           rows.append(text(this.#document, "dt", stat.label), value);
         }
         dock.append(rows);
-        const abilities = el(this.#document, "div", "v7-abilities");
-        for (const ability of stats.abilities) {
-          const tag = button(
-            this.#document,
-            title(ability),
-            `ability-${ability.toLowerCase()}`,
-            "v7-ability-tag",
-          );
-          tag.setAttribute(
-            "aria-expanded",
-            String(this.#selectedAbility === ability),
-          );
-          tag.onclick = () => {
-            this.#selectedAbility =
-              this.#selectedAbility === ability ? null : ability;
-            this.#render();
-          };
-          abilities.append(tag);
-        }
-        dock.append(abilities);
-        if (
-          this.#selectedAbility !== null &&
-          stats.abilities.includes(this.#selectedAbility)
-        ) {
-          const card = el(this.#document, "aside", "v7-ability-card");
-          card.append(
-            text(this.#document, "h3", title(this.#selectedAbility)),
-            text(
-              this.#document,
-              "p",
-              abilityDescription(
-                this.#selectedAbility,
-                stats.minimumRange,
-                stats.maximumRange,
+        if (showUnitDetails) {
+          const abilities = el(this.#document, "div", "v7-abilities");
+          for (const ability of stats.abilities) {
+            const entry = el(this.#document, "p", "v7-unit-ability");
+            entry.append(
+              text(this.#document, "strong", title(ability)),
+              text(
+                this.#document,
+                "span",
+                abilityDescription(
+                  ability,
+                  stats.minimumRange,
+                  stats.maximumRange,
+                ),
               ),
-            ),
-          );
-          const closeAbility = button(
-            this.#document,
-            "Close ability details",
-            "close-ability",
-            "close-button",
-          );
-          closeAbility.onclick = () => {
-            this.#selectedAbility = null;
-            this.#render();
-          };
-          card.append(closeAbility);
-          dock.append(card);
+            );
+            abilities.append(entry);
+          }
+          unitDetails.append(abilities);
         }
       }
-      dock.append(
-        text(
-          this.#document,
-          "p",
-          unit.activation.handled ? "Handled" : "Needs action",
-          "v7-readiness-label",
-        ),
-      );
-      const visibility = unit.visibility;
-      if (visibility?.concealment !== undefined)
-        dock.append(
-          this.#statusRow(
-            "ui-status-concealed",
-            "Concealment capability · legal detection may still reveal this Saboteur",
+      if (showUnitDetails) {
+        unitDetails.append(
+          text(
+            this.#document,
+            "p",
+            unit.activation.handled ? "Handled" : "Needs action",
+            "v7-readiness-label",
           ),
         );
-      if (visibility?.detection !== undefined)
-        dock.append(
-          this.#statusRow(
-            "ui-status-detected",
-            "Detected · reveal ends outside all legal detector range",
-          ),
-        );
-      for (const exposure of visibility?.exposures ?? [])
-        dock.append(
-          this.#statusRow(
-            "ui-status-exposed",
-            `Exposed by ${title(exposure.reason)} until ${playerLabelV7(view, exposure.boundary.anchorPlayerId)}'s next accepted End Turn${exposure.boundary.round.known ? ` in round ${exposure.boundary.round.value}` : " (round cannot be represented safely)"}`,
-          ),
-        );
-      if (unit.role === "SABOTEUR" && unit.ownerId === view.viewer.id) {
-        const cooldown = this.#statusRow(
-          "ui-status-blackout-cooldown",
-          unit.blackoutEligibility.known
-            ? view.round >= unit.blackoutEligibility.round
-              ? `Blackout cooldown ready · eligible round ${unit.blackoutEligibility.round}; other action and detection rules still apply`
-              : `Blackout cooldown · eligible round ${unit.blackoutEligibility.round}`
-            : "Blackout eligibility unavailable",
-        );
-        dock.append(cooldown);
+        const visibility = unit.visibility;
+        if (visibility?.concealment !== undefined)
+          unitDetails.append(
+            this.#statusRow(
+              "ui-status-concealed",
+              "Concealment capability · legal detection may still reveal this Saboteur",
+            ),
+          );
+        if (visibility?.detection !== undefined)
+          unitDetails.append(
+            this.#statusRow(
+              "ui-status-detected",
+              "Detected · reveal ends outside all legal detector range",
+            ),
+          );
+        for (const exposure of visibility?.exposures ?? [])
+          unitDetails.append(
+            this.#statusRow(
+              "ui-status-exposed",
+              `Exposed by ${title(exposure.reason)} until ${playerLabelV7(view, exposure.boundary.anchorPlayerId)}'s next accepted End Turn${exposure.boundary.round.known ? ` in round ${exposure.boundary.round.value}` : " (round cannot be represented safely)"}`,
+            ),
+          );
+        if (unit.role === "SABOTEUR" && unit.ownerId === view.viewer.id) {
+          const cooldown = this.#statusRow(
+            "ui-status-blackout-cooldown",
+            unit.blackoutEligibility.known
+              ? view.round >= unit.blackoutEligibility.round
+                ? `Blackout cooldown ready · eligible round ${unit.blackoutEligibility.round}; other action and detection rules still apply`
+                : `Blackout cooldown · eligible round ${unit.blackoutEligibility.round}`
+              : "Blackout eligibility unavailable",
+          );
+          unitDetails.append(cooldown);
+        }
       }
       const actions = this.#commandButtons(
         (command) =>
@@ -975,29 +974,50 @@ export class Ruleset7DomAppView {
           command.unitId === unit.id &&
           !NON_BUTTON_COMMANDS.has(command.kind),
       );
-      this.#appendTacticalActions(dock, actions, view, unit.id);
+      this.#appendTacticalActions(
+        showUnitDetails ? unitDetails : null,
+        actions,
+        view,
+        unit.id,
+      );
       if (actions.querySelector("button") !== null) {
         actions.querySelector("p")?.remove();
         dock.dataset.hasActions = "true";
+        dock.append(actions);
       }
-      dock.append(actions);
-      // Keep each desktop column independently scrollable inside the fixed dock.
-      const summary = el(this.#document, "div", "v7-unit-summary");
-      const facts = el(this.#document, "div", "v7-unit-facts");
-      for (const child of [...dock.children]) {
-        if (child === actions) continue;
-        if (child.matches(".v7-identity, .v7-readiness-label, .v7-unit-status"))
-          summary.append(child);
-        else facts.append(child);
+      if (this.#selectedUnitHelpId === unit.id) {
+        const modal = el(this.#document, "section", "v7-unit-help-dialog");
+        modal.setAttribute("role", "dialog");
+        modal.setAttribute("aria-modal", "true");
+        modal.setAttribute(
+          "aria-label",
+          `${title(unit.role)} unit information`,
+        );
+        modal.dataset.v7Region = "unit-help";
+        const closeHelp = button(
+          this.#document,
+          "Close",
+          "close-unit-help",
+          "close-button",
+        );
+        closeHelp.onclick = () => this.#closeUnitHelp();
+        modal.append(
+          closeHelp,
+          text(
+            this.#document,
+            "h2",
+            `${title(unit.role)} · ${unit.hp}/${unit.maxHp} HP`,
+          ),
+          unitDetails,
+        );
+        this.#unitHelpModal = modal;
       }
-      dock.prepend(summary, facts);
     } else if (selection.kind === "CITY") {
       const city = view.cities.find(
         (candidate) => candidate.id === selection.cityId,
       );
       if (city === undefined) return null;
-      const summary = el(this.#document, "div", "v7-selection-summary");
-      summary.append(
+      dock.append(
         identity(
           this.#document,
           `building-city-${Math.max(1, Math.min(3, city.level))}`,
@@ -1005,35 +1025,35 @@ export class Ruleset7DomAppView {
           true,
         ),
       );
-      const details = el(this.#document, "div", "v7-selection-details");
+      const details = el(this.#document, "dl", "v7-city-stats");
       const blackout = view.blackoutStatuses.find(
         (status) => status.cityId === city.id,
       );
-      if (blackout !== undefined) {
-        const status = this.#statusRow(
-          blackout.phase === "PENDING"
-            ? "ui-status-blackout-pending"
-            : blackout.phase === "ACTIVE"
-              ? "ui-status-blackout-active"
-              : "ui-status-blackout-recovery",
-          blackoutStatusTextV7(blackout),
+      const besieged = view.units.some(
+        (unit) =>
+          hostile(view, city.ownerId, unit.ownerId) && same(unit.at, city.at),
+      );
+      if (city.ownerId === view.viewer.id || blackout !== undefined) {
+        details.append(
+          text(this.#document, "dt", "State"),
+          text(
+            this.#document,
+            "dd",
+            besieged
+              ? "Besieged"
+              : blackout === undefined
+                ? "Ready"
+                : `Blackout ${title(blackout.phase)}`,
+          ),
         );
-        status.dataset.tacticalState = "blackout";
-        if (blackout.visibility === "CITY_ONLY")
-          status.append(
-            text(
-              this.#document,
-              "span",
-              "City-only status · source and exact suppression remain private.",
-            ),
-          );
-        details.append(status);
       }
       details.append(
+        text(this.#document, "dt", "Population"),
         text(
           this.#document,
-          "p",
-          `Population ${city.population} / ${city.level + 1}${city.population < 0 ? ` · infrastructure lost; replace ${-city.population} population before growth` : ""}`,
+          "dd",
+          `${city.population} / ${city.level + 1}`,
+          "v7-population-value",
         ),
       );
       if (city.ownerId === view.viewer.id) {
@@ -1046,27 +1066,34 @@ export class Ruleset7DomAppView {
           1 +
           (view.viewer.researchedTechs.includes("FORTIFICATION") ? 1 : 0);
         details.append(
-          text(this.#document, "p", `Assigned units ${assigned} / ${capacity}`),
+          text(this.#document, "dt", "Capacity"),
+          text(this.#document, "dd", `${assigned} / ${capacity}`),
+          text(this.#document, "dt", "Income"),
           text(
             this.#document,
-            "p",
-            city.blackout === null
-              ? `Next income ${cityIncomeForViewerV7(view, city.id) ?? "unknown"}`
-              : `Blackout ${title(city.blackout.phase)} · next income ${cityIncomeForViewerV7(view, city.id) ?? "unknown"}`,
+            "dd",
+            `+${cityIncomeForViewerV7(view, city.id) ?? 0}/turn`,
+            "v7-city-income",
           ),
         );
       } else {
         const owner = view.players.find((player) => player.id === city.ownerId);
         details.append(
+          text(this.#document, "dt", "Owner"),
           text(
             this.#document,
-            "p",
-            `${owner === undefined ? "Observed" : `Player ${owner.seat + 1}`} city · private capacity and income unavailable`,
+            "dd",
+            owner === undefined ? "Observed" : `Player ${owner.seat + 1}`,
           ),
         );
       }
-      summary.append(details);
-      dock.append(summary);
+      details
+        .querySelector<HTMLElement>(".v7-population-value")
+        ?.prepend(economyIcon(this.#document, "population"));
+      details
+        .querySelector<HTMLElement>(".v7-city-income")
+        ?.prepend(economyIcon(this.#document, "coin"));
+      dock.append(details);
       if (city.ownerId === view.viewer.id)
         this.#appendCommandArea(
           dock,
@@ -1193,36 +1220,14 @@ export class Ruleset7DomAppView {
             "v7-command-economy",
           ),
         );
-      } else if (command.kind === "BUILD_MINE") {
-        action.setAttribute(
-          "aria-label",
-          "Build Mine · 5 Coins · +2 population",
-        );
-        action.append(
-          text(
-            this.#document,
-            "span",
-            "5 Coins · +2 population",
-            "v7-command-economy",
-          ),
-        );
-      } else if (command.kind === "BUILD_FORGE") {
-        action.setAttribute(
-          "aria-label",
-          "Build Forge · 6 Coins · +1 population per adjacent Mine (maximum 6)",
-        );
-        action.append(
-          text(
-            this.#document,
-            "span",
-            "6 Coins · +1 population per adjacent Mine (maximum 6)",
-            "v7-command-economy",
-          ),
-        );
       } else {
         const view = this.#snapshot.view;
         const preview = view === null ? null : previewEconomicV7(view, command);
-        if (preview?.ok)
+        if (preview?.ok) {
+          action.setAttribute(
+            "aria-label",
+            `${commandLabel(command)} · ${economicPreviewLabelV7(preview.preview)}`,
+          );
           action.append(
             text(
               this.#document,
@@ -1231,6 +1236,7 @@ export class Ruleset7DomAppView {
               "v7-command-economy",
             ),
           );
+        }
       }
       action.disabled = this.#localBusy();
       action.onclick = () => void this.#dispatch(command);
@@ -1273,11 +1279,12 @@ export class Ruleset7DomAppView {
       dock.append(actions);
       return;
     }
-    details.append(...actions.childNodes);
+    if (dock.dataset.selectionKind === "tile")
+      details.append(...actions.childNodes);
   }
 
   #appendTacticalActions(
-    dock: HTMLElement,
+    details: HTMLElement | null,
     actions: HTMLElement,
     view: PlayerViewV7,
     unitId: number,
@@ -1289,21 +1296,23 @@ export class Ruleset7DomAppView {
     );
     const firstBlackout = blackouts[0];
     if (firstBlackout !== undefined) {
-      const explanation = el(this.#document, "section", "v7-tactical-state");
-      explanation.dataset.tacticalState = "blackout-preview";
-      explanation.append(
-        createTacticalSymbolV7(
-          this.#document,
-          "ui-status-blackout-pending",
-          this.#tacticalTheme(),
-        ),
-        text(
-          this.#document,
-          "span",
-          `Blackout becomes Active at the target city's next owner Start Turn. It denies up to 3 future Coins without predicting an exact amount and blocks that city's Train/development for the affected turn; rewards, unit actions and existing infrastructure remain available. Unit cooldown is independently eligible in round ${firstBlackout.preview.nextEligibleRound}; city recovery independently requires a complete unaffected owner turn. The planted city effect survives source death. City-center reveal alone does not block it; hostile-unit detection does.`,
-        ),
-      );
-      dock.append(explanation);
+      if (details !== null) {
+        const explanation = el(this.#document, "section", "v7-tactical-state");
+        explanation.dataset.tacticalState = "blackout-preview";
+        explanation.append(
+          createTacticalSymbolV7(
+            this.#document,
+            "ui-status-blackout-pending",
+            this.#tacticalTheme(),
+          ),
+          text(
+            this.#document,
+            "span",
+            `Blackout becomes Active at the target city's next owner Start Turn. It denies up to 3 future Coins without predicting an exact amount and blocks that city's Train/development for the affected turn; rewards, unit actions and existing infrastructure remain available. Unit cooldown is independently eligible in round ${firstBlackout.preview.nextEligibleRound}; city recovery independently requires a complete unaffected owner turn. The planted city effect survives source death. City-center reveal alone does not block it; hostile-unit detection does.`,
+          ),
+        );
+        details.append(explanation);
+      }
       const action = button(
         this.#document,
         this.#tacticalTargetMode?.kind === "BLACKOUT"
@@ -2236,6 +2245,12 @@ export class Ruleset7DomAppView {
     this.#render();
   }
 
+  #closeUnitHelp(): void {
+    this.#selectedUnitHelpId = null;
+    this.#pendingFocusAction = "unit-help";
+    this.#render();
+  }
+
   #syncModalIsolation(main: HTMLElement): void {
     const modal = main.querySelector<HTMLElement>('[aria-modal="true"]');
     for (const child of [...main.children]) {
@@ -2896,8 +2911,93 @@ function text(
   className = "",
 ): HTMLElement {
   const node = el(documentRoot, tag, className);
-  node.textContent = valueText;
+  appendEconomyText(documentRoot, node, valueText);
   return node;
+}
+
+function economyIcon(
+  documentRoot: Document,
+  kind: "coin" | "population",
+): HTMLImageElement {
+  const icon = documentRoot.createElement("img");
+  icon.className = "v7-economy-icon";
+  icon.src =
+    ACCEPTED_ART_URLS[
+      kind === "coin" ? "ui-hud-gold-coin-v7" : "ui-hud-population"
+    ] ?? "";
+  icon.alt = "";
+  icon.setAttribute("aria-hidden", "true");
+  icon.dataset.assetId =
+    kind === "coin" ? "ui-hud-gold-coin-v7" : "ui-hud-population";
+  return icon;
+}
+
+function economyValue(
+  documentRoot: Document,
+  amount: number,
+  unit: "Coins" | "population",
+): HTMLElement {
+  const value = el(documentRoot, "span", "v7-economy-value");
+  value.append(
+    String(amount),
+    economyIcon(documentRoot, unit === "Coins" ? "coin" : "population"),
+  );
+  const spokenUnit = text(documentRoot, "span", ` ${unit}`, "v7-sr-only");
+  value.append(spokenUnit);
+  value.setAttribute("aria-label", `${amount} ${unit}`);
+  return value;
+}
+
+function appendEconomyText(
+  documentRoot: Document,
+  node: HTMLElement,
+  valueText: string,
+): void {
+  if (!/\d/.test(valueText) || !/(coin|population|income)/i.test(valueText)) {
+    node.textContent = valueText;
+    return;
+  }
+  const amounts =
+    /([+-]?\d+)\s+(Coins?|(?:permanent |live )?population)\b|\b(Population|population|Income|income)(\s+)([+-]?\d+)\b/g;
+  let cursor = 0;
+  for (const match of valueText.matchAll(amounts)) {
+    const index = match.index ?? 0;
+    node.append(valueText.slice(cursor, index));
+    const amount = match[1];
+    if (amount !== undefined) {
+      const unit = match[2] ?? "";
+      const token = el(documentRoot, "span", "v7-economy-value");
+      token.append(
+        amount,
+        " ",
+        economyIcon(
+          documentRoot,
+          unit.endsWith("population") ? "population" : "coin",
+        ),
+      );
+      token.append(
+        text(
+          documentRoot,
+          "span",
+          unit,
+          unit.endsWith("population") ? "" : "v7-sr-only",
+        ),
+      );
+      node.append(token);
+    } else {
+      node.append(
+        match[3] ?? "",
+        match[4] ?? "",
+        economyIcon(
+          documentRoot,
+          /income/i.test(match[3] ?? "") ? "coin" : "population",
+        ),
+        match[5] ?? "",
+      );
+    }
+    cursor = index + match[0].length;
+  }
+  node.append(valueText.slice(cursor));
 }
 function button(
   documentRoot: Document,
@@ -2907,7 +3007,7 @@ function button(
 ): HTMLButtonElement {
   const node = documentRoot.createElement("button");
   node.type = "button";
-  node.textContent = label;
+  appendEconomyText(documentRoot, node, label);
   node.dataset.action = action;
   node.className = className;
   return node;

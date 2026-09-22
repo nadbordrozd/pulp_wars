@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "68b024bb828dd9ae304c01c61e25ef737f0163681c0e7712264367319f356674",
+  "sourceManifestSha256": "00ad9440e8941db15150596d8eeb2f66b9ebf6b62d8ffb6a6d45ff30d98f2b47",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -12781,6 +12781,93 @@
       "outputSha256": "6cd1070cd5cec243a712581f343eee58352f92eec510aef210a221c7ed96e5ff",
       "notes": "Accepted after individual source, native 0.5, enlarged, exact unmined-pair, and 128px vertical row-depth inspection: entrance and braces integrate into matching low mesa/front ridge, restrained spoil/rock structure reads coherently, ordinal silhouette remains identifiable, full opaque gravel square, upward-only overflow.",
       "reviewedAt": "2026-09-10T14:43:52.525Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-hud-gold-coin-v7": {
+      "id": "ui-hud-gold-coin-v7",
+      "status": "ACCEPTED",
+      "jobId": "3faf5e54-c853-458f-a22a-f43de05cec87",
+      "candidate": "art/pixellab/candidates/ui-hud-gold-coin-v7.png",
+      "candidateSha256": "2b69cf215244ce88b1bb0d1f702f9475f3079697a15631322a823bf20743ad25",
+      "providerOutputSha256": "198147419fd0f6f89d91df2cc3b4c6b9d75a36efd579fe48a44eed39b38e4fcc",
+      "width": 96,
+      "height": 96,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 9,
+        "top": 9,
+        "right": 87,
+        "bottom": 87,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: rich golden yellow, pale gold highlight, amber shadow, dark teal-charcoal outline. Exactly one isolated chunky GOLD coin for the current strategy-game HUD, facing front-on. The complete broad circular FACE is solid rich golden yellow, with a lighter pale-gold raised diamond embossed on top and a narrow amber side edge. Golden face must fill most of the token; dark charcoal-teal is used only for a thick outside outline and short internal engraving lines. One connected coin silhouette with one small edge notch, two-level flat cel shading, playful illustrated board-game sticker, centered about eighty-four percent occupancy with transparent safe area. Readable immediately as a bright gold coin at 24 CSS pixels and in grayscale. No other object or text. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; black or dark center, black face, dark inset field, dark inner disk, hollow coin, gold ring around black center, bronze or copper primary fill, brown-only coin, second object, separate diamond, multiple coins, stack, star, dollar sign, currency letter, number, text, logo, treasure chest, scene, panel, button, reflection object, cast shadow, realistic engraving, metallic gradient, photorealism, painterly brushwork, faux 3D, thin outline, glow, halo, blur, matte.",
+        "prompt": "Exactly one isolated chunky GOLD coin for the current strategy-game HUD, facing front-on. The complete broad circular FACE is solid rich golden yellow, with a lighter pale-gold raised diamond embossed on top and a narrow amber side edge. Golden face must fill most of the token; dark charcoal-teal is used only for a thick outside outline and short internal engraving lines. One connected coin silhouette with one small edge notch, two-level flat cel shading, playful illustrated board-game sticker, centered about eighty-four percent occupancy with transparent safe area. Readable immediately as a bright gold coin at 24 CSS pixels and in grayscale. No other object or text.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; black or dark center, black face, dark inset field, dark inner disk, hollow coin, gold ring around black center, bronze or copper primary fill, brown-only coin, second object, separate diamond, multiple coins, stack, star, dollar sign, currency letter, number, text, logo, treasure chest, scene, panel, button, reflection object, cast shadow, realistic engraving, metallic gradient, photorealism, painterly brushwork, faux 3D, thin outline, glow, halo, blur, matte",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 96,
+          "height": 96
+        },
+        "seed": 97623,
+        "noBackground": true,
+        "palette": "rich golden yellow, pale gold highlight, amber shadow, dark teal-charcoal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-hud-coin",
+          "sha256": "9704f4d96a78ab77124ff13d58a77e5982f6e36ed4faf90f4a87615741ced20e",
+          "usageDescription": "Match accepted compact HUD icon outline, flat shading, single-token silhouette, transparent safe area, and 24px readability; make the current Ruleset 7 currency unmistakably gold without changing the legacy coin."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/ui-hud-gold-coin-v7-c80701415aa1.png",
+          "candidateSha256": "c80701415aa1f690a210bba74e7a76a03039c7e0c866a64aea3151dfaade2844",
+          "providerOutputSha256": "f03671a97e43b663b72a25bf3378d2d32eb76ca059fb499f0ab9d536a62f20d8",
+          "jobId": "2d0abaae-1a32-48ee-9c97-20414631f3c4",
+          "disposition": "REJECTED",
+          "notes": "Rejected native 24px candidate: broad dark center reads as a black medallion with gold rim rather than a gold coin; revise recipe for a continuous golden face.",
+          "reviewedAt": "2026-09-22T11:17:27.614Z",
+          "request": {
+            "endpoint": "generate-ui-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: rich golden yellow, pale gold highlight, amber shadow, dark teal-charcoal outline. Exactly one isolated chunky GOLD coin for the current strategy-game HUD, facing nearly front-on. One broad connected round token in rich golden yellow with a large single raised diamond mint mark in its center, a small thick edge notch, one simple pale-gold northwest highlight and darker amber southeast plane. Strong dark teal-charcoal outline of the accepted Pulp Wars icon family, two-level flat cel shading, playful illustrated board-game sticker, centered about eighty-four percent occupancy with transparent safe area. Readable as a gold coin at 24 CSS pixels and in grayscale. No other object or text. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; bronze or copper primary fill, brown-only coin, second object, separate diamond, multiple coins, stack, star, dollar sign, currency letter, number, text, logo, treasure chest, scene, panel, button, reflection object, cast shadow, realistic engraving, metallic gradient, photorealism, painterly brushwork, faux 3D, thin outline, glow, halo, blur, matte.",
+            "prompt": "Exactly one isolated chunky GOLD coin for the current strategy-game HUD, facing nearly front-on. One broad connected round token in rich golden yellow with a large single raised diamond mint mark in its center, a small thick edge notch, one simple pale-gold northwest highlight and darker amber southeast plane. Strong dark teal-charcoal outline of the accepted Pulp Wars icon family, two-level flat cel shading, playful illustrated board-game sticker, centered about eighty-four percent occupancy with transparent safe area. Readable as a gold coin at 24 CSS pixels and in grayscale. No other object or text.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; bronze or copper primary fill, brown-only coin, second object, separate diamond, multiple coins, stack, star, dollar sign, currency letter, number, text, logo, treasure chest, scene, panel, button, reflection object, cast shadow, realistic engraving, metallic gradient, photorealism, painterly brushwork, faux 3D, thin outline, glow, halo, blur, matte",
+            "requestSize": {
+              "width": 384,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 96,
+              "height": 96
+            },
+            "seed": 97622,
+            "noBackground": true,
+            "palette": "rich golden yellow, pale gold highlight, amber shadow, dark teal-charcoal outline",
+            "postprocess": "lanczos3-resize",
+            "styleReference": {
+              "id": "ui-hud-coin",
+              "sha256": "9704f4d96a78ab77124ff13d58a77e5982f6e36ed4faf90f4a87615741ced20e",
+              "usageDescription": "Match accepted compact HUD icon outline, flat shading, single-token silhouette, transparent safe area, and 24px readability; make the current Ruleset 7 currency unmistakably gold without changing the legacy coin."
+            }
+          }
+        }
+      ],
+      "outputSha256": "2b69cf215244ce88b1bb0d1f702f9475f3079697a15631322a823bf20743ad25",
+      "notes": "Accepted revised gold-face candidate after one rejected dark-medallion attempt. PixelLab job 3faf5e54-c853-458f-a22a-f43de05cec87; transparent 96x96 alpha bounds x9..87 y9..87. Inspected source, native 24 CSS px on dark/light HUD tokens, nearest-enlarged native view, source 2x, and paired context beside approved population icon via bounded ruleset7-economy-icons review. Bright continuous gold face, strong dark outline, centered diamond, no text or halo; reads as coin at native size and stays distinct from population. No credential data.",
+      "reviewedAt": "2026-09-22T11:20:44.066Z",
       "reviewChecks": {
         "source": true,
         "native": true,

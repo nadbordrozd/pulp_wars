@@ -1,5 +1,36 @@
 # UI Asset and Visual Contract
 
+## Current Ruleset 7 compact dock and economy icons
+
+Ruleset 7 uses one full-width bottom dock layout for selected units and cities:
+the selected world sprite or city art with a short label at left, compact public
+stats next, and one left-aligned, nonwrapping action row in the remaining width.
+The dock's desktop height follows its 112 x 130 CSS-pixel selected-art viewport,
+label, and modest padding. Context action art is scaled within compact buttons
+so it cannot increase dock height. The action row scrolls horizontally inside
+the dock at 1024 and 1440 CSS pixels without widening the page. The Canvas host
+and camera geometry remain fixed as selection changes. On narrow screens the
+action row may move below identity and stats and the dock may scroll vertically.
+This current contract supersedes the historical fixed-height desktop dock and
+112 x 130 action-art growth contract below for Ruleset 7 only.
+
+Unit modifiers use the same font, size, and weight as their base stat values;
+only color distinguishes the signed bonus. A focusable or hovered bonus exposes
+a readable horizontal explanation outside the stat line. A small question-mark
+control beside the selected unit opens an accessible details dialog for abilities,
+tactical explanations, and current status. The dialog retains keyboard focus
+management and returns focus to the control when closed. Enemy public-stat
+visibility remains authoritative. City stats present signed population progress,
+unit capacity, next-turn income, and public state without verbose dock prose.
+
+Current Ruleset 7 currency values pair the new accepted gold coin icon
+`ui-hud-gold-coin-v7` with signed numeric amounts in the HUD, commands, research,
+rewards, and summaries. The HUD shows stock and the projected next-turn total
+as `+N/turn`. Population values pair the existing accepted
+`ui-hud-population` icon with signed numeric amounts. Semantic text and units
+remain available to assistive technology. The existing `ui-hud-coin` asset stays
+available to archived rulesets and historical reviews.
+
 ## Ruleset-6 active inventory
 
 Ruleset 6 replaces the Star family with Coin stock/income/spend icons and

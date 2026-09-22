@@ -26,6 +26,21 @@ as if they applied to ruleset 6.
 
 ### Economy and HUD
 
+For the current Ruleset 7 match, the top HUD presents the viewer's coin stock
+and the projected next-turn income as `+N/turn`, using the public per-city income
+calculation after population deficit, siege, and active Blackout effects. Gold
+coin and population icons accompany their signed values across current HUD,
+actions, research, rewards, stats, and summaries. Accessible names keep the
+currency and population units. The selected unit and city docks share a compact
+three-column desktop layout: selected art and short label, public stats, and a
+left-aligned horizontally scrollable action row. Unit abilities, tactical
+explanations, and current status are available from the unit's question-mark
+dialog with focus return. A city shows compact population, capacity, income,
+and public state facts. The current Ruleset 7 layout is governed by the
+[UI art contract](../art/classes/ui.md#current-ruleset-7-compact-dock-and-economy-icons);
+the taller action-art and verbose dock descriptions below remain Ruleset 6
+history where they conflict.
+
 The HUD labels the sole currency **Coins** and displays `stock (+next income)`.
 Its accessible name decomposes next income into city level, capital, Market,
 negative-population penalty, and siege. Coin icons are not recolored Star art.

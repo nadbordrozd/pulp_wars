@@ -37,6 +37,12 @@ describe("Ruleset 7 UI accepted-art registry", () => {
   });
 
   it("uses the world unit raster for training and leaves spatial actions map-only", () => {
+    expect(ACCEPTED_ART_URLS["ui-hud-gold-coin-v7"]).toContain(
+      "hud-gold-coin-v7.png",
+    );
+    expect(ACCEPTED_ART_URLS["ui-hud-population"]).toContain(
+      "hud-population.png",
+    );
     expect(
       commandArtIdV7({
         kind: "TRAIN",

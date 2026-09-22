@@ -2606,6 +2606,25 @@
       "palette": "warm bronze, parchment highlight, dark teal-charcoal outline"
     },
     {
+      "id": "ui-hud-gold-coin-v7",
+      "class": "ui",
+      "stage": "batch",
+      "endpoint": "generate-ui-v2",
+      "seed": 97623,
+      "requestSize": { "width": 384, "height": 384 },
+      "outputSize": { "width": 96, "height": 96 },
+      "transparent": true,
+      "includeFactionLanguage": false,
+      "postprocess": "lanczos3-resize",
+      "styleReference": "ui-hud-coin",
+      "styleReferenceUsage": "Match accepted compact HUD icon outline, flat shading, single-token silhouette, transparent safe area, and 24px readability; make the current Ruleset 7 currency unmistakably gold without changing the legacy coin.",
+      "prompt": "Exactly one isolated chunky GOLD coin for the current strategy-game HUD, facing front-on. The complete broad circular FACE is solid rich golden yellow, with a lighter pale-gold raised diamond embossed on top and a narrow amber side edge. Golden face must fill most of the token; dark charcoal-teal is used only for a thick outside outline and short internal engraving lines. One connected coin silhouette with one small edge notch, two-level flat cel shading, playful illustrated board-game sticker, centered about eighty-four percent occupancy with transparent safe area. Readable immediately as a bright gold coin at 24 CSS pixels and in grayscale. No other object or text.",
+      "negativePrompt": "black or dark center, black face, dark inset field, dark inner disk, hollow coin, gold ring around black center, bronze or copper primary fill, brown-only coin, second object, separate diamond, multiple coins, stack, star, dollar sign, currency letter, number, text, logo, treasure chest, scene, panel, button, reflection object, cast shadow, realistic engraving, metallic gradient, photorealism, painterly brushwork, faux 3D, thin outline, glow, halo, blur, matte",
+      "output": "public/assets/pixellab/ui/hud-gold-coin-v7.png",
+      "hardBounds": { "left": 7, "top": 7, "right": 89, "bottom": 89 },
+      "palette": "rich golden yellow, pale gold highlight, amber shadow, dark teal-charcoal outline"
+    },
+    {
       "id": "ui-action-redevelop",
       "class": "ui",
       "stage": "sample",

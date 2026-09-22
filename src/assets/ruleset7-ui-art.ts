@@ -140,7 +140,7 @@ export function rewardArtIdV7(reward: RewardIdV7): string {
       return "ui-reward-survey";
     case "STOCKPILE":
     case "TREASURY":
-      return "ui-hud-coin";
+      return "ui-hud-gold-coin-v7";
     case "WALLS":
       return "ui-reward-city-wall";
     case "MILITIA":

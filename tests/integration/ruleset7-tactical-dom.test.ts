@@ -48,8 +48,17 @@ describe("Ruleset 7 tactical DOM controls", () => {
         ),
     );
     host.callbacks?.onSelection({ kind: "UNIT", unitId: horseArcher.id });
-    expect(document.body.textContent).toContain("Two-shot activation");
-    expect(document.body.textContent).toContain(
+    requiredButton("unit-help").click();
+    const details = required(
+      document.querySelector<HTMLElement>(
+        '.v7-unit-help-dialog[aria-modal="true"]',
+      ),
+    );
+    expect(
+      details.querySelector('[data-tactical-state="horse-archer"]')
+        ?.textContent,
+    ).toContain("Two-shot activation");
+    expect(details.textContent).toContain(
       "0 attacks used · 2 unused · 2 currently legal",
     );
 
@@ -62,10 +71,20 @@ describe("Ruleset 7 tactical DOM controls", () => {
         ),
     );
     expect((await controller.dispatch(firstShot)).accepted).toBe(true);
-    expect(document.body.textContent).toContain(
-      "1 attacks used · 1 unused · 1 currently legal",
+    await waitUntil(
+      () =>
+        document
+          .querySelector(".v7-unit-help-dialog")
+          ?.textContent?.includes(
+            "1 attacks used · 1 unused · 1 currently legal",
+          ) === true,
     );
-    expect(document.body.textContent).toContain(
+    expect(
+      document.querySelector(".v7-unit-help-dialog")?.textContent,
+    ).toContain("1 attacks used · 1 unused · 1 currently legal");
+    expect(
+      document.querySelector(".v7-unit-help-dialog")?.textContent,
+    ).toContain(
       "This unit cannot move or use another action; other units remain available.",
     );
     expect(
