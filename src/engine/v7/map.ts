@@ -676,6 +676,7 @@ function createPlayers(setup: MatchSetupV7): readonly PlayerStateV7[] {
     explored: [],
     spoilsClaimedCityIds: [],
     achievementEntitlements: [
+      { achievement: "EXPLORER", unlocked: false, spent: false },
       { achievement: "ENGINEER", unlocked: false, spent: false },
       { achievement: "MUSTER", unlocked: false, spent: false },
     ],

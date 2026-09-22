@@ -167,6 +167,11 @@ export type PublicImprovementValueV7 = {
 
 export type AchievementProgressV7 =
   | {
+      readonly achievement: "EXPLORER";
+      readonly currentExploredTiles: number;
+      readonly requiredExploredTiles: 100;
+    }
+  | {
       readonly achievement: "ENGINEER";
       readonly currentMaximumOutput: number;
       readonly requiredOutput: 6;
@@ -624,6 +629,13 @@ export function achievementProgressV7(
     ),
   );
   return [
+    {
+      achievement: "EXPLORER",
+      currentExploredTiles:
+        state.players.find((player) => player.id === playerId)?.explored
+          .length ?? 0,
+      requiredExploredTiles: 100,
+    },
     { achievement: "ENGINEER", currentMaximumOutput, requiredOutput: 6 },
     {
       achievement: "MUSTER",

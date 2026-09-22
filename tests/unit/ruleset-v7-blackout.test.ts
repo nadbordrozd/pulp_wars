@@ -797,6 +797,7 @@ describe("ruleset-7 Saboteur Blackout", () => {
           ? {
               ...player,
               explored: monumentState.board.tiles.map((tile) => tile.at),
+              researchedTechs: ["GATHERING", "DRILL", "ENGINEERING"],
               achievementEntitlements: player.achievementEntitlements.map(
                 (entitlement) =>
                   entitlement.achievement === "ENGINEER"

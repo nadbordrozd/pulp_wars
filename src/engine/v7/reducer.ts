@@ -280,18 +280,20 @@ function applyResearch(
     const researchedTechs = TECHNOLOGY_IDS_V7.filter(
       (item) => player.researchedTechs.includes(item) || item === tech,
     );
-    return accepted(
-      checked({
-        ...state,
-        commandIndex,
-        players: state.players.map((item) =>
-          item.id === actor
-            ? { ...item, coins: item.coins - cost, researchedTechs }
-            : item,
-        ),
-      }),
-      [{ kind: "TECH_RESEARCHED", playerId: actor, tech, cost }],
-    );
+    const researched: GameStateV7 = {
+      ...state,
+      commandIndex,
+      players: state.players.map((item) =>
+        item.id === actor
+          ? { ...item, coins: item.coins - cost, researchedTechs }
+          : item,
+      ),
+    };
+    const achievements = evaluateAchievementsV7(researched, actor);
+    return accepted(checked(achievements.state), [
+      { kind: "TECH_RESEARCHED", playerId: actor, tech, cost },
+      ...achievements.events,
+    ]);
   } catch (cause) {
     return arithmeticFailure(original, cause);
   }
@@ -2648,12 +2650,20 @@ function evaluateAchievementsV7(
     ),
   );
   const qualifies = {
+    EXPLORER: player.explored.length >= 100,
     ENGINEER: engineer,
     MUSTER: trainableRoles.size >= 4,
   } as const;
+  const requiredTech = {
+    EXPLORER: "SCOUTING",
+    ENGINEER: "ENGINEERING",
+    MUSTER: "DRILL",
+  } as const;
   const unlocked = player.achievementEntitlements.filter(
     (entitlement) =>
-      !entitlement.unlocked && qualifies[entitlement.achievement],
+      !entitlement.unlocked &&
+      player.researchedTechs.includes(requiredTech[entitlement.achievement]) &&
+      qualifies[entitlement.achievement],
   );
   if (unlocked.length === 0) return { state, events: [] };
   const unlockedIds = new Set(unlocked.map((item) => item.achievement));

@@ -37,7 +37,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-4 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r4");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r5");
     expect(FACTION_IDS_V7).toEqual(["ORIGINAL"]);
     expect(FACTION_TREE_IDS_V7).toEqual(["ORIGINAL_BASELINE_V4"]);
     expect(RESOURCE_IDS_V7).toEqual(["FRUIT", "FERTILE_GROUND", "GAME", "ORE"]);
@@ -53,7 +53,7 @@ describe("ruleset-7 revision-4 deterministic foundation", () => {
       "MARKET",
       "MONUMENT",
     ]);
-    expect(ACHIEVEMENT_IDS_V7).toEqual(["ENGINEER", "MUSTER"]);
+    expect(ACHIEVEMENT_IDS_V7).toEqual(["EXPLORER", "ENGINEER", "MUSTER"]);
     expect(UNIT_ROLE_IDS_V7).toEqual([
       "FIGHTER",
       "SCOUT",

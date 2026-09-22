@@ -82,7 +82,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r4";
+  readonly rulesetId: "pulp-wars-poc-7r5";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -129,8 +129,14 @@ export interface HeadlessMetricsV7 {
     overcapacityStates: number;
   };
   readonly achievements: {
-    readonly progressMaximum: Record<"ENGINEER" | "MUSTER", number>;
-    readonly unlockRound: Record<"ENGINEER" | "MUSTER", number | null>;
+    readonly progressMaximum: Record<
+      "EXPLORER" | "ENGINEER" | "MUSTER",
+      number
+    >;
+    readonly unlockRound: Record<
+      "EXPLORER" | "ENGINEER" | "MUSTER",
+      number | null
+    >;
     monumentPlacements: number;
     monumentTransfers: number;
     monumentLosses: number;
@@ -585,7 +591,7 @@ export async function runAiBatchV7(
         await new Promise<void>((resolve) => setTimeout(resolve, 0));
         const result = runAiMatchInternalV7(
           {
-            rulesetId: "pulp-wars-poc-7r4",
+            rulesetId: "pulp-wars-poc-7r5",
             mapGenerationRevision: "REGIONAL_BIOMES_V1",
             seed,
             width: size,
@@ -682,7 +688,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r4",
+    rulesetId: "pulp-wars-poc-7r5",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,
@@ -733,8 +739,8 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
       overcapacityStates: 0,
     },
     achievements: {
-      progressMaximum: { ENGINEER: 0, MUSTER: 0 },
-      unlockRound: { ENGINEER: null, MUSTER: null },
+      progressMaximum: { EXPLORER: 0, ENGINEER: 0, MUSTER: 0 },
+      unlockRound: { EXPLORER: null, ENGINEER: null, MUSTER: null },
       monumentPlacements: 0,
       monumentTransfers: 0,
       monumentLosses: 0,
@@ -1117,9 +1123,11 @@ function recordSnapshotV7(
     for (const progress of view.achievementProgress)
       metrics.achievements.progressMaximum[progress.achievement] = Math.max(
         metrics.achievements.progressMaximum[progress.achievement],
-        progress.achievement === "ENGINEER"
-          ? progress.currentMaximumOutput
-          : progress.currentDistinctTrainableRoles,
+        progress.achievement === "EXPLORER"
+          ? progress.currentExploredTiles
+          : progress.achievement === "ENGINEER"
+            ? progress.currentMaximumOutput
+            : progress.currentDistinctTrainableRoles,
       );
     if (turnBoundary && player.id === activePlayerId)
       for (const unit of state.units.filter(

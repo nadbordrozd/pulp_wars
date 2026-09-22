@@ -267,7 +267,7 @@ describe("Ruleset 7 public presentation", () => {
     ).toBeUndefined();
   });
 
-  it("highlights only the selected unlocked entitlement's offered Monument tiles", () => {
+  it("does not turn offered Monument commands into map targeting", () => {
     const state = exploredAllV7(initialV7(1521));
     const view = viewForV7(state, state.humanPlayerId);
     const tile = view.board.tiles.find(
@@ -293,11 +293,9 @@ describe("Ruleset 7 public presentation", () => {
     const plan = buildBoardRenderPlanV7(view, commands, {
       selection: null,
       selectedUnitId: null,
-      selectedAchievement: "ENGINEER",
+      selectedAchievement: null,
     });
-    expect(plan.targets).toEqual([
-      expect.objectContaining({ family: "MONUMENT", command: commands[0] }),
-    ]);
+    expect(plan.targets).toEqual([]);
   });
 
   it("announces an automatic +12 Treasury without requiring a ghost choice", () => {

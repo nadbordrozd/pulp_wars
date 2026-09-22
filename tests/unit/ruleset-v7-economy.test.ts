@@ -665,6 +665,17 @@ describe("ruleset-7 economy", () => {
       "CITY_LEVELED_UP",
       "CITY_REWARD_QUEUED",
       "ACHIEVEMENT_UNLOCKED",
+      "ACHIEVEMENT_UNLOCKED",
+    ]);
+    expect(
+      built.events.flatMap((event) =>
+        event.kind === "ACHIEVEMENT_UNLOCKED"
+          ? [{ playerId: event.playerId, achievement: event.achievement }]
+          : [],
+      ),
+    ).toEqual([
+      { playerId: staged.state.humanPlayerId, achievement: "EXPLORER" },
+      { playerId: staged.state.humanPlayerId, achievement: "ENGINEER" },
     ]);
     expect(parseGameStateV7(built.state)).toEqual(built.state);
 

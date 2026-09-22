@@ -498,6 +498,7 @@ describe("ruleset-7 pure public economy", () => {
       viewer: {
         ...base.viewer,
         achievementEntitlements: [
+          { achievement: "EXPLORER", unlocked: false, spent: false },
           { achievement: "ENGINEER", unlocked: true, spent: false },
           { achievement: "MUSTER", unlocked: true, spent: false },
         ],
@@ -506,8 +507,10 @@ describe("ruleset-7 pure public economy", () => {
     const monuments = queryAiReadyCommandsV7(monumentView).filter(
       (candidate) => candidate.command.kind === "BUILD_MONUMENT",
     );
-    expect(monuments.some((candidate) => candidate.tuple[10] === 0)).toBe(true);
     expect(monuments.some((candidate) => candidate.tuple[10] === -1)).toBe(
+      true,
+    );
+    expect(monuments.some((candidate) => candidate.tuple[10] === -2)).toBe(
       true,
     );
   });
@@ -627,6 +630,7 @@ describe("ruleset-7 pure public economy", () => {
       viewer: {
         ...base.viewer,
         achievementEntitlements: [
+          { achievement: "EXPLORER", unlocked: false, spent: false },
           { achievement: "ENGINEER", unlocked: true, spent: false },
           { achievement: "MUSTER", unlocked: false, spent: false },
         ],
@@ -854,6 +858,7 @@ function twoCityEmptyEconomyView(view: PlayerViewV7): PlayerViewV7 {
     viewer: {
       ...view.viewer,
       achievementEntitlements: [
+        { achievement: "EXPLORER", unlocked: false, spent: false },
         { achievement: "ENGINEER", unlocked: true, spent: false },
         { achievement: "MUSTER", unlocked: false, spent: false },
       ],

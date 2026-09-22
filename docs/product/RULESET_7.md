@@ -1,15 +1,18 @@
 # Pulp Wars Ruleset 7
 
-**Status:** revision-4 runtime baseline; the
-authoritative [revision-4 biome-economy specification](RULESET_7_REVISION_4_BIOME_ECONOMY.md)
-is the current map, economy, public-view, AI, and persistence contract.
+**Status:** revision-5 runtime baseline. The
+[revision-5 achievement specification](RULESET_7_REVISION_5_ACHIEVEMENTS.md)
+is authoritative for achievements, Monument placement UI, and save identity.
+The [revision-4 biome-economy specification](RULESET_7_REVISION_4_BIOME_ECONOMY.md)
+remains authoritative for map, economy, public-view, and AI changes.
 
-**Runtime ruleset ID:** `pulp-wars-poc-7r4`
+**Runtime ruleset ID:** `pulp-wars-poc-7r5`
 
-Revision 4 is implemented under exact ruleset ID
-`pulp-wars-poc-7r4`. Its specification supersedes this document wherever it
+Revision 5 is implemented under exact ruleset ID
+`pulp-wars-poc-7r5`. Its specification supersedes this document for
+achievements, Monument placement UI, and save identity. Revision 4 supersedes this document wherever it
 defines map generation, biome/resource state, Mine/Forge economy, associated
-Normal-AI and public-view behavior, save identity/cleanup, or validation. The
+Normal-AI and public-view behavior, or validation. The
 remaining revision-3 rules stay authoritative. Revision-3 passages that
 conflict with the linked revision-4 specification are historical baseline.
 

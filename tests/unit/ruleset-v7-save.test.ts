@@ -7,7 +7,22 @@ import {
 import { createSaveEnvelopeV7, parseSaveV7 } from "../../src/persistence/v7";
 import { setupV7 } from "../fixtures/v7-builders";
 
-describe("ruleset-7 revision-4 save compatibility", () => {
+describe("ruleset-7 revision-5 save compatibility", () => {
+  it("round trips the current identity and rejects the preceding revision", () => {
+    const setup = setupV7(9, 1);
+    const created = createPlayableGameV7(setup);
+    if (!created.ok) throw new Error(created.error.code);
+    const save = createSaveEnvelopeV7(
+      { state: created.state, replay: createReplayV7(setup) },
+      "2026-09-22T10:00:00.000Z",
+    );
+    expect(save.rulesetId).toBe("pulp-wars-poc-7r5");
+    expect(parseSaveV7(JSON.stringify(save))).toMatchObject({ kind: "VALID" });
+    expect(
+      parseSaveV7(JSON.stringify({ ...save, rulesetId: "pulp-wars-poc-7r4" })),
+    ).toMatchObject({ kind: "INCOMPATIBLE" });
+  });
+
   it("recognizes an otherwise recognizable revision-3 envelope as incompatible", () => {
     expect(
       parseSaveV7(

@@ -26,6 +26,7 @@ import {
   type PlayerViewV7,
   type PublicTechnologyNodeV7,
   type TechnologyIdV7,
+  type AchievementIdV7,
   type UnitRoleIdV7,
 } from "../../engine/index";
 import { downloadJsonFile } from "../../app/browser-download";
@@ -124,7 +125,8 @@ export class Ruleset7DomAppView {
   #selection: BoardSelectionV7 | null = null;
   #screen: ScreenV7 = "MATCH";
   #selectedTech: TechnologyIdV7 | null = null;
-  #selectedAchievement: "ENGINEER" | "MUSTER" | null = null;
+  #achievementNotices: AchievementIdV7[] = [];
+  #achievementReturnAction: string | null = null;
   #selectedModifier: string | null = null;
   #selectedRecruitHelp: UnitRoleIdV7 | null = null;
   #selectedUnitHelpId: number | null = null;
@@ -232,7 +234,10 @@ export class Ruleset7DomAppView {
     if (modal !== null) {
       if (event.key === "Tab") this.#trapModalFocus(event, modal);
       else if (event.key === "Escape") {
-        if (this.#selectedRecruitHelp !== null) {
+        if (modal.dataset.v7Region === "achievement-notice") {
+          event.preventDefault();
+          this.#dismissAchievementNotice();
+        } else if (this.#selectedRecruitHelp !== null) {
           event.preventDefault();
           this.#closeRecruitHelp();
         } else if (this.#selectedUnitHelpId !== null) {
@@ -496,6 +501,11 @@ export class Ruleset7DomAppView {
   }
 
   #renderStableMatch(view: PlayerViewV7): void {
+    const showAchievementNotice =
+      (this.#snapshot.phase === "ACTIVE" ||
+        this.#snapshot.phase === "COMPLETE") &&
+      view.pendingChoices.length === 0 &&
+      this.#achievementNotices.length > 0;
     let shell = this.#matchShell;
     let main = this.#matchRoot;
     let board = this.#boardContainer;
@@ -526,7 +536,6 @@ export class Ruleset7DomAppView {
           this.#cityActionScrollLeft = null;
           this.#clearCityActionScrollAfterRestore = false;
           this.#tacticalTargetMode = null;
-          this.#selectedAchievement = null;
           this.#selectedModifier = null;
           this.#render();
         },
@@ -693,7 +702,12 @@ export class Ruleset7DomAppView {
       dock.dataset.v7Region = "dock";
       nextChildren.push(dock);
     }
-    if (this.#unitHelpModal !== null) nextChildren.push(this.#unitHelpModal);
+    if (
+      this.#unitHelpModal !== null &&
+      !showAchievementNotice &&
+      view.pendingChoices.length === 0
+    )
+      nextChildren.push(this.#unitHelpModal);
     if (this.#snapshot.ai.active) {
       const fast = button(
         this.#document,
@@ -711,19 +725,23 @@ export class Ruleset7DomAppView {
     if (
       this.#snapshot.phase === "ACTIVE" &&
       this.#screen !== "MATCH" &&
-      view.pendingChoices.length === 0
+      view.pendingChoices.length === 0 &&
+      !showAchievementNotice
     )
       nextChildren.push(this.#overlay(view));
     if (
       this.#snapshot.phase === "ACTIVE" &&
       this.#screen === "MATCH" &&
       this.#selectedRecruitHelp !== null &&
-      view.pendingChoices.length === 0
+      view.pendingChoices.length === 0 &&
+      !showAchievementNotice
     )
       nextChildren.push(this.#recruitHelp(this.#selectedRecruitHelp));
     if (view.pendingChoices[0] !== undefined)
       nextChildren.push(this.#reward(view));
-    if (this.#snapshot.phase === "COMPLETE")
+    else if (showAchievementNotice)
+      nextChildren.push(this.#achievementNotice());
+    if (this.#snapshot.phase === "COMPLETE" && !showAchievementNotice)
       nextChildren.push(this.#results(view));
     if (this.#snapshot.phase === "ERROR") nextChildren.push(this.#errorPanel());
     if (this.#snapshot.saveWarning !== null) {
@@ -781,6 +799,7 @@ export class Ruleset7DomAppView {
         activeId === view.humanPlayerId &&
         !this.#snapshot.transitioning &&
         !this.#presentationActive &&
+        this.#achievementNotices.length === 0 &&
         view.pendingChoices.length === 0,
       motion: this.#motion,
       animationSpeed: this.#animationSpeed,
@@ -790,7 +809,7 @@ export class Ruleset7DomAppView {
         selection: this.#selection,
         selectedUnitId:
           this.#selection?.kind === "UNIT" ? this.#selection.unitId : null,
-        selectedAchievement: this.#selectedAchievement,
+        selectedAchievement: null,
         tacticalTargetMode: this.#tacticalTargetMode,
       },
     };
@@ -1164,10 +1183,7 @@ export class Ruleset7DomAppView {
         dock.append(summary);
         this.#appendCommandArea(
           dock,
-          (command) =>
-            "at" in command &&
-            same(command.at, tile.at) &&
-            command.kind !== "BUILD_MONUMENT",
+          (command) => "at" in command && same(command.at, tile.at),
         );
       }
     }
@@ -1204,7 +1220,9 @@ export class Ruleset7DomAppView {
       const action = button(
         this.#document,
         commandLabel(command),
-        `command-${command.kind.toLowerCase()}`,
+        command.kind === "BUILD_MONUMENT"
+          ? `command-build_monument-${command.achievement.toLowerCase()}`
+          : `command-${command.kind.toLowerCase()}`,
         command.kind === "TRAIN" ? "v7-train-action" : "v7-context-action",
       );
       const artId = commandArtIdV7(command);
@@ -1220,6 +1238,19 @@ export class Ruleset7DomAppView {
             this.#document,
             "span",
             `${rule.cost ?? 0} Coins`,
+            "v7-command-economy",
+          ),
+        );
+      } else if (command.kind === "BUILD_MONUMENT") {
+        action.setAttribute(
+          "aria-label",
+          `${commandLabel(command)} · 0 Coins · population +3`,
+        );
+        action.append(
+          text(
+            this.#document,
+            "span",
+            "0 Coins · population +3",
             "v7-command-economy",
           ),
         );
@@ -1487,6 +1518,15 @@ export class Ruleset7DomAppView {
           "Reveal Ore. Enter Mountains. Build Mines on Ore. Build Workshops. Units on Mountains gain +1 sight.",
         ),
       );
+    const achievement = techAchievementV7(node.id);
+    if (achievement !== null)
+      detail.append(
+        text(
+          this.#document,
+          "p",
+          `Enables ${title(achievement)} achievement and its Monument reward: ${achievement === "EXPLORER" ? "explore 100 distinct tiles" : achievement === "ENGINEER" ? "own one live processor producing at least 6 population" : "own four distinct living trainable unit roles"}.`,
+        ),
+      );
     const prerequisites = el(
       this.#document,
       "section",
@@ -1650,7 +1690,7 @@ export class Ruleset7DomAppView {
   #achievements(view: PlayerViewV7): HTMLElement {
     const section = el(this.#document, "div", "v7-info-screen");
     section.append(text(this.#document, "h2", "Achievements"));
-    for (const achievement of ["ENGINEER", "MUSTER"] as const) {
+    for (const achievement of ["EXPLORER", "ENGINEER", "MUSTER"] as const) {
       const entitlement = view.viewer.achievementEntitlements.find(
         (entry) => entry.achievement === achievement,
       );
@@ -1659,19 +1699,25 @@ export class Ruleset7DomAppView {
       );
       const card = el(this.#document, "section", "v7-achievement");
       const current =
-        progress?.achievement === "ENGINEER"
-          ? progress.currentMaximumOutput
-          : progress?.achievement === "MUSTER"
-            ? progress.currentDistinctTrainableRoles
-            : 0;
+        progress?.achievement === "EXPLORER"
+          ? progress.currentExploredTiles
+          : progress?.achievement === "ENGINEER"
+            ? progress.currentMaximumOutput
+            : progress?.achievement === "MUSTER"
+              ? progress.currentDistinctTrainableRoles
+              : 0;
       const required =
-        progress?.achievement === "ENGINEER"
-          ? progress.requiredOutput
-          : progress?.achievement === "MUSTER"
-            ? progress.requiredDistinctTrainableRoles
-            : achievement === "ENGINEER"
-              ? 6
-              : 4;
+        progress?.achievement === "EXPLORER"
+          ? progress.requiredExploredTiles
+          : progress?.achievement === "ENGINEER"
+            ? progress.requiredOutput
+            : progress?.achievement === "MUSTER"
+              ? progress.requiredDistinctTrainableRoles
+              : achievement === "EXPLORER"
+                ? 100
+                : achievement === "ENGINEER"
+                  ? 6
+                  : 4;
       const symbols = el(this.#document, "div", "v7-achievement-symbols");
       const theme = this.#highContrast
         ? ("HIGH_CONTRAST" as const)
@@ -1698,30 +1744,18 @@ export class Ruleset7DomAppView {
         text(
           this.#document,
           "p",
-          achievement === "ENGINEER"
-            ? "Own one live processor producing at least 6 population."
-            : "Own four distinct trainable unit roles at once.",
+          achievement === "EXPLORER"
+            ? "Research Scouting and explore 100 distinct tiles."
+            : achievement === "ENGINEER"
+              ? "Research Engineering and own one live processor producing at least 6 population."
+              : "Research Drill and own four distinct trainable unit roles at once.",
         ),
         text(
           this.#document,
           "p",
-          `${current} / ${required} · ${entitlement?.spent ? "Spent" : entitlement?.unlocked ? "Unlocked" : "Locked"}`,
+          `${current} / ${required} · ${entitlement?.spent ? "Spent" : entitlement?.unlocked ? "Completed" : view.viewer.researchedTechs.includes(achievement === "EXPLORER" ? "SCOUTING" : achievement === "ENGINEER" ? "ENGINEERING" : "DRILL") ? "Available" : "Locked"}`,
         ),
       );
-      if (entitlement?.unlocked && !entitlement.spent) {
-        const place = button(
-          this.#document,
-          "Place Monument",
-          `monument-${achievement.toLowerCase()}`,
-        );
-        place.onclick = () => {
-          this.#selectedAchievement = achievement;
-          this.#screen = "MATCH";
-          this.#notice = `Choose a highlighted legal tile for the ${title(achievement)} Monument.`;
-          this.#render();
-        };
-        card.append(place);
-      }
       section.append(card);
     }
     return section;
@@ -1863,6 +1897,57 @@ export class Ruleset7DomAppView {
     return modal;
   }
 
+  #achievementNotice(): HTMLElement {
+    const achievement = this.#achievementNotices[0];
+    const modal = el(this.#document, "section", "v7-achievement-notice");
+    modal.dataset.v7Region = "achievement-notice";
+    modal.setAttribute("role", "dialog");
+    modal.setAttribute("aria-modal", "true");
+    modal.setAttribute(
+      "aria-label",
+      `${title(achievement ?? "ACHIEVEMENT")} achievement complete`,
+    );
+    if (achievement === undefined) return modal;
+    modal.append(
+      text(this.#document, "h2", `${title(achievement)} achievement complete`),
+      text(
+        this.#document,
+        "p",
+        "Monument unlocked. Select an eligible owned tile and choose Build Monument to place it.",
+      ),
+    );
+    const close = button(
+      this.#document,
+      "Continue",
+      "dismiss-achievement",
+      "primary-action",
+    );
+    close.onclick = () => this.#dismissAchievementNotice();
+    modal.append(close);
+    return modal;
+  }
+
+  #dismissAchievementNotice(): void {
+    this.#achievementNotices.shift();
+    this.#render();
+    if (
+      this.#achievementNotices.length > 0 ||
+      this.#snapshot.view?.pendingChoices.length
+    )
+      return;
+    const action = this.#achievementReturnAction;
+    this.#achievementReturnAction = null;
+    queueMicrotask(() => {
+      if (this.#destroyed) return;
+      const target =
+        action === null
+          ? null
+          : this.#root.querySelector<HTMLElement>(`[data-action="${action}"]`);
+      if (target !== null) target.focus();
+      else this.#queueBoardFocus();
+    });
+  }
+
   #results(view: PlayerViewV7): HTMLElement {
     const result = el(this.#document, "section", "v7-results");
     result.dataset.v7Region = "results";
@@ -1934,6 +2019,7 @@ export class Ruleset7DomAppView {
   }
   async #launch(setup: MatchSetupV7, replace: boolean): Promise<void> {
     this.#cancelPresentations();
+    this.#achievementNotices = [];
     this.#error = "";
     this.#tacticalTargetMode = null;
     const result = await this.#controller.launch(setup, {
@@ -1957,6 +2043,7 @@ export class Ruleset7DomAppView {
       this.#queueBoardFocus();
   }
   async #resumeMatch(): Promise<void> {
+    this.#achievementNotices = [];
     const resumed = await this.#controller.resume();
     if (this.#destroyed) return;
     if (!resumed) this.#error = "The Ruleset 7 save could not be resumed.";
@@ -1980,6 +2067,7 @@ export class Ruleset7DomAppView {
       return;
     }
     this.#cancelPresentations();
+    this.#achievementNotices = [];
     this.#selection = null;
     this.#tacticalTargetMode = null;
     this.#screen = "MATCH";
@@ -2015,7 +2103,6 @@ export class Ruleset7DomAppView {
         result.afterView.viewer.id,
       ) ?? `${commandLabel(command)} accepted.`;
     if (command.kind === "RESEARCH") this.#selectedTech = command.tech;
-    if (command.kind === "BUILD_MONUMENT") this.#selectedAchievement = null;
     this.#pendingFocusAction = restoreAction;
     this.#humanDispatchSettling = true;
     const visibleMovement =
@@ -2091,7 +2178,7 @@ export class Ruleset7DomAppView {
     if (deleted) {
       this.#selection = null;
       this.#screen = "MATCH";
-      this.#notice = "Only the Ruleset 7 revision-4 save was deleted.";
+      this.#notice = "Only the Ruleset 7 revision-5 save was deleted.";
     } else this.#error = "The Ruleset 7 save could not be deleted.";
     this.#render();
   }
@@ -2126,6 +2213,17 @@ export class Ruleset7DomAppView {
   }
   #queueBoundary(boundary: Ruleset7AcceptedBoundary): void {
     if (this.#destroyed) return;
+    if (this.#achievementNotices.length === 0)
+      this.#achievementReturnAction =
+        this.#document.activeElement instanceof HTMLElement
+          ? (this.#document.activeElement.dataset.action ?? null)
+          : null;
+    for (const event of boundary.playerEvents.events)
+      if (
+        event.kind === "ACHIEVEMENT_UNLOCKED" &&
+        event.playerId === boundary.afterView.viewer.id
+      )
+        this.#achievementNotices.push(event.achievement);
     this.#notice =
       specialBoundaryNoticeV7(
         boundary.playerEvents.events,
@@ -2436,6 +2534,16 @@ function appendTechNode(
     art(documentRoot, RULESET7_TECH_ART_IDS[layout.node.id], ""),
     text(documentRoot, "span", title(layout.node.id)),
   );
+  const achievement = techAchievementV7(layout.node.id);
+  if (achievement !== null)
+    card.append(
+      text(
+        documentRoot,
+        "span",
+        `Enables ${title(achievement)}`,
+        "v7-tech-achievement",
+      ),
+    );
   if (layout.node.state !== "OWNED")
     card.append(
       text(documentRoot, "span", `${layout.node.cost} Coins`, "v7-tech-cost"),
@@ -2508,7 +2616,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r4",
+    rulesetId: "pulp-wars-poc-7r5",
     seed,
     width: draft.boardSize,
     height: draft.boardSize,
@@ -2801,7 +2909,7 @@ export function economicFormulaV7(
 export function monumentSourceForViewerV7(
   view: PlayerViewV7,
   at: CoordV7,
-): "ENGINEER" | "MUSTER" | null {
+): AchievementIdV7 | null {
   const contribution = view.populationContributions.find(
     (candidate) =>
       candidate.source.kind === "MONUMENT" && same(candidate.source.at, at),
@@ -2838,6 +2946,12 @@ export function specialBoundaryNoticeV7(
     ? `${title(achievement.achievement)} achievement unlocked.`
     : null;
 }
+function techAchievementV7(tech: TechnologyIdV7): AchievementIdV7 | null {
+  if (tech === "SCOUTING") return "EXPLORER";
+  if (tech === "ENGINEERING") return "ENGINEER";
+  if (tech === "DRILL") return "MUSTER";
+  return null;
+}
 function rewardLabel(reward: string, level: number): string {
   if (reward === "TREASURY") return "Treasury · +12 Coins";
   if (reward === "JUGGERNAUT") return "Juggernaut · reward unit";
@@ -2847,6 +2961,8 @@ function rewardLabel(reward: string, level: number): string {
 }
 function commandLabel(command: CommandV7): string {
   if (command.kind === "TRAIN") return effectiveRoleRuleV7(command.role).label;
+  if (command.kind === "BUILD_MONUMENT")
+    return `Build Monument · ${title(command.achievement)}`;
   if (command.kind === "BUILD_MINE") return "Build Mine";
   if (command.kind === "BUILD_FORGE") return "Build Forge";
   return title(command.kind);

@@ -49,7 +49,7 @@ export type BoardSelectionV7 =
 export interface BoardRenderInteractionV7 {
   readonly selection: BoardSelectionV7 | null;
   readonly selectedUnitId: number | null;
-  readonly selectedAchievement: "ENGINEER" | "MUSTER" | null;
+  readonly selectedAchievement: null;
   readonly cursor?: CoordV7 | null;
   readonly tacticalTargetMode?: TacticalTargetModeV7 | null;
 }
@@ -319,7 +319,6 @@ export function buildBoardRenderPlanV7(
       view,
       commands,
       interaction.selectedUnitId,
-      interaction.selectedAchievement,
       interaction.tacticalTargetMode ?? null,
     ),
   );
@@ -1127,7 +1126,6 @@ function mapTargets(
   view: PlayerViewV7,
   commands: readonly CommandV7[],
   selectedUnitId: number | null,
-  selectedAchievement: "ENGINEER" | "MUSTER" | null,
   tacticalTargetMode: TacticalTargetModeV7 | null,
 ): MapCommandTargetV7[] {
   if (tacticalTargetMode?.kind === "BLACKOUT")
@@ -1144,11 +1142,6 @@ function mapTargets(
         "Blackout target. Pending until the city's next owner Start Turn; future income denial is capped at 3 Coins and exact amount is not predicted.",
     }));
   return commands.flatMap((command): readonly MapCommandTargetV7[] => {
-    if (
-      command.kind === "BUILD_MONUMENT" &&
-      command.achievement === selectedAchievement
-    )
-      return [{ at: command.at, command, family: "MONUMENT" }];
     if (selectedUnitId === null) return [];
     if (command.kind === "MOVE" && command.unitId === selectedUnitId) {
       const at = command.path.at(-1);

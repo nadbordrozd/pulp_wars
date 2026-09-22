@@ -380,6 +380,17 @@ function parsePlayer(input: unknown): PlayerStateV7 | null {
     explored === null ||
     spoils === null ||
     achievementEntitlements === null ||
+    achievementEntitlements.some(
+      (entitlement) =>
+        entitlement.unlocked &&
+        !researched.includes(
+          entitlement.achievement === "EXPLORER"
+            ? "SCOUTING"
+            : entitlement.achievement === "ENGINEER"
+              ? "ENGINEERING"
+              : "DRILL",
+        ),
+    ) ||
     researched.some((tech) => {
       const required = PREREQUISITE[tech];
       return required !== undefined && !researched.includes(required);

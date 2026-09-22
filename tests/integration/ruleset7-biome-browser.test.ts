@@ -5,8 +5,8 @@ import {
 } from "../../src/persistence/browser-v7";
 import { SAVE_STORAGE_KEY_V7 } from "../../src/engine/index";
 
-describe("ruleset-7 revision-4 browser boundary", () => {
-  it("owns r4 and removes only the three named development keys", () => {
+describe("ruleset-7 revision-5 browser boundary", () => {
+  it("owns r5 and removes only the four named development keys", () => {
     const values = new Map<string, string>([
       ...OBSOLETE_SAVE_STORAGE_KEYS_V7.map((key) => [key, "old"] as const),
       [SAVE_STORAGE_KEY_V7, "current"],
@@ -19,7 +19,7 @@ describe("ruleset-7 revision-4 browser boundary", () => {
       setItem: (key: string, value: string) => void values.set(key, value),
       removeItem: (key: string) => void values.delete(key),
     };
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r4.current");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r5.current");
     expect(cleanupObsoleteRuleset7Saves(storage).removedKeys).toEqual(
       OBSOLETE_SAVE_STORAGE_KEYS_V7,
     );
@@ -27,7 +27,7 @@ describe("ruleset-7 revision-4 browser boundary", () => {
       [
         "other",
         "pulpWars.save.current",
-        "pulpWars.save.v7r4.current",
+        "pulpWars.save.v7r5.current",
         "pulpWars.settings.v1",
       ].sort(),
     );

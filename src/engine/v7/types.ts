@@ -5,8 +5,8 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r4" as const;
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r4.current" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r5" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r5.current" as const;
 export const FACTION_IDS_V7 = Object.freeze(["ORIGINAL"] as const);
 export const FACTION_TREE_IDS_V7 = Object.freeze([
   "ORIGINAL_BASELINE_V4",
@@ -40,6 +40,7 @@ export const IMPROVEMENT_IDS_V7 = Object.freeze([
   "MONUMENT",
 ] as const);
 export const ACHIEVEMENT_IDS_V7 = Object.freeze([
+  "EXPLORER",
   "ENGINEER",
   "MUSTER",
 ] as const);

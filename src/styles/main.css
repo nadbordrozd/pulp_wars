@@ -721,6 +721,7 @@
 .v7-recruit-help,
 .v7-unit-help-dialog,
 .v7-mandatory-choice,
+.v7-achievement-notice,
 .v7-results {
   position: absolute;
   z-index: 30;
@@ -821,6 +822,7 @@
 }
 
 .v7-mandatory-choice,
+.v7-achievement-notice,
 .v7-results {
   inset: 50% auto auto 50%;
   width: min(36rem, calc(100% - 2rem));

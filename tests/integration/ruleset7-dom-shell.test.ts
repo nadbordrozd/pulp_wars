@@ -7,6 +7,7 @@ import {
   Ruleset7BrowserController,
   type Ruleset7BrowserSnapshot,
   type Ruleset7DispatchResult,
+  type Ruleset7AcceptedBoundary,
 } from "../../src/app/index";
 import type {
   PlayerViewV7,
@@ -33,6 +34,151 @@ beforeEach(() => {
 });
 
 describe("Ruleset 7 DOM shell", () => {
+  it("queues personal achievement dialogs once and lets a mandatory reward take priority", async () => {
+    const source = new Ruleset7BrowserController();
+    const launched = await source.launch(setupV7(1542));
+    if (!launched.ok) throw new Error(launched.diagnostic);
+    let snapshot = source.snapshot();
+    const view = snapshot.view;
+    if (view === null) throw new Error("public view missing");
+    const callbacks: {
+      snapshot?: (value: Ruleset7BrowserSnapshot) => void;
+      boundary?: (value: Ruleset7AcceptedBoundary) => void;
+    } = {};
+    const port: Ruleset7ControllerPortV7 = {
+      ...fixturePort(source, snapshot, source.dispatch.bind(source)),
+      snapshot: () => snapshot,
+      subscribe: (listener) => {
+        callbacks.snapshot = listener;
+        return () => {};
+      },
+      subscribeAcceptedBoundary: (listener) => {
+        callbacks.boundary = listener;
+        return () => {};
+      },
+    };
+    const host = new CapturingBoardHost();
+    const app = new Ruleset7DomAppView(document, requiredRoot(), port, {
+      boardHost: host,
+      settingsStorage: null,
+    });
+    const city = view.cities.find(
+      (candidate) => candidate.ownerId === view.viewer.id,
+    );
+    if (city === undefined) throw new Error("city missing");
+    snapshot = {
+      ...snapshot,
+      view: {
+        ...view,
+        pendingChoices: [
+          {
+            kind: "CITY_REWARD",
+            cityId: city.id,
+            reachedLevel: 2,
+            candidates: ["TREASURY"],
+          },
+        ],
+      },
+      offeredCommands: [
+        {
+          kind: "CHOOSE_CITY_REWARD",
+          cityId: city.id,
+          reachedLevel: 2,
+          reward: "TREASURY",
+        },
+      ],
+    };
+    callbacks.snapshot?.(snapshot);
+    callbacks.boundary?.({
+      actor: "HUMAN",
+      beforeView: view,
+      afterView: view,
+      playerEvents: {
+        format: "pulp-wars-player-events",
+        version: 7,
+        viewerId: view.viewer.id,
+        commandIndex: view.commandIndex + 1,
+        events: [
+          {
+            kind: "ACHIEVEMENT_UNLOCKED",
+            playerId: view.viewer.id,
+            achievement: "EXPLORER",
+          },
+          {
+            kind: "ACHIEVEMENT_UNLOCKED",
+            playerId: view.viewer.id,
+            achievement: "ENGINEER",
+          },
+        ],
+      },
+    });
+    expect(
+      document.querySelector('[data-v7-region="mandatory-reward"]'),
+    ).not.toBeNull();
+    expect(
+      document.querySelector('[data-v7-region="achievement-notice"]'),
+    ).toBeNull();
+    snapshot = {
+      ...snapshot,
+      view,
+      offeredCommands: source.snapshot().offeredCommands,
+    };
+    callbacks.snapshot?.(snapshot);
+    expect(
+      document.querySelector('[data-v7-region="achievement-notice"]')
+        ?.textContent,
+    ).toContain("Explorer achievement complete");
+    expect(host.model?.interactive).toBe(false);
+    host.callbacks?.onSelection({
+      kind: "TILE",
+      at: view.cities[0]?.at ?? { x: 0, y: 0 },
+    });
+    expect(
+      document.querySelectorAll('[data-v7-region="achievement-notice"]'),
+    ).toHaveLength(1);
+    requiredButton('[data-action="dismiss-achievement"]').click();
+    expect(
+      document.querySelector('[data-v7-region="achievement-notice"]')
+        ?.textContent,
+    ).toContain("Engineer achievement complete");
+    requiredButton('[data-action="dismiss-achievement"]').click();
+    expect(
+      document.querySelector('[data-v7-region="achievement-notice"]'),
+    ).toBeNull();
+    const completedView: PlayerViewV7 = {
+      ...view,
+      outcome: { kind: "VICTORY", winnerId: view.viewer.id },
+    };
+    snapshot = { ...snapshot, phase: "COMPLETE", view: completedView };
+    callbacks.snapshot?.(snapshot);
+    callbacks.boundary?.({
+      actor: "HUMAN",
+      beforeView: view,
+      afterView: completedView,
+      playerEvents: {
+        format: "pulp-wars-player-events",
+        version: 7,
+        viewerId: view.viewer.id,
+        commandIndex: view.commandIndex + 2,
+        events: [
+          {
+            kind: "ACHIEVEMENT_UNLOCKED",
+            playerId: view.viewer.id,
+            achievement: "MUSTER",
+          },
+        ],
+      },
+    });
+    expect(
+      document.querySelector('[data-v7-region="achievement-notice"]')
+        ?.textContent,
+    ).toContain("Muster achievement complete");
+    expect(document.querySelector('[data-v7-region="results"]')).toBeNull();
+    requiredButton('[data-action="dismiss-achievement"]').click();
+    expect(document.querySelector('[data-v7-region="results"]')).not.toBeNull();
+    app.destroy();
+    source.destroy();
+  });
   it("keeps signed Treasury notices paired with the current gold coin", async () => {
     const source = new Ruleset7BrowserController();
     const launched = await source.launch(setupV7(1541));
@@ -197,7 +343,7 @@ describe("Ruleset 7 DOM shell", () => {
       document.querySelectorAll(
         '[data-symbol-id="ui-status-achievement-progress"]',
       ),
-    ).toHaveLength(2);
+    ).toHaveLength(3);
     requiredButton('[data-action="close-overlay"]').click();
     requiredButton('[data-action="stats"]').click();
     expect(document.body.textContent).toContain("Opponent totals are limited");
@@ -233,10 +379,10 @@ describe("Ruleset 7 DOM shell", () => {
     await waitUntil(
       () =>
         document.querySelector("#v7-live")?.textContent ===
-        "Only the Ruleset 7 revision-4 save was deleted.",
+        "Only the Ruleset 7 revision-5 save was deleted.",
     );
     expect(document.querySelector("#v7-live")?.textContent).toBe(
-      "Only the Ruleset 7 revision-4 save was deleted.",
+      "Only the Ruleset 7 revision-5 save was deleted.",
     );
     app.destroy();
   });
@@ -761,7 +907,9 @@ describe("Ruleset 7 DOM shell", () => {
     expect(document.querySelector(".v7-identity h2")?.textContent).toBe(
       "Plains · Mountain",
     );
-    expect(document.querySelector(".v7-context-actions")).toBeNull();
+    expect(
+      document.querySelector(".v7-context-actions")?.textContent,
+    ).toContain("Build Monument");
     expect(
       document.querySelector(".v7-selection-dock")?.textContent,
     ).not.toContain("No direct action is currently offered");
@@ -918,18 +1066,19 @@ describe("Ruleset 7 DOM shell", () => {
     );
     host.callbacks?.onSelection({ kind: "TILE", at: monumentAt });
     requiredButton('[data-action="achievements"]').click();
-    requiredButton('[data-action="monument-engineer"]').click();
-    expect(host.model?.interaction.selectedAchievement).toBe("ENGINEER");
-    host.callbacks?.onCommand({
-      at: targetAt,
-      family: "MONUMENT",
-      command: monumentCommand,
-    });
-    host.callbacks?.onCommand({
-      at: targetAt,
-      family: "MONUMENT",
-      command: monumentCommand,
-    });
+    expect(
+      document.querySelector('[data-action="monument-engineer"]'),
+    ).toBeNull();
+    requiredButton('[data-action="close-overlay"]').click();
+    host.callbacks?.onSelection({ kind: "TILE", at: targetAt });
+    const build = requiredButton(
+      '[data-action="command-build_monument-engineer"]',
+    );
+    expect(
+      build.querySelector('[data-asset-id="building-square-monument"]'),
+    ).not.toBeNull();
+    build.click();
+    build.click();
     await waitUntil(() => dispatch.mock.calls.length === 1);
     expect(dispatch).toHaveBeenCalledWith(monumentCommand);
     resolveDispatch({ accepted: false, reason: "NOT_OFFERED" });

@@ -32,6 +32,7 @@ const compactSelection = process.argv.includes("--selection-with-compact");
 const selectionOnly =
   process.argv.includes("--selection-only") || compactSelection;
 const hudOnly = process.argv.includes("--hud-only");
+const achievementOnly = process.argv.includes("--achievement-only");
 const outputArgument = process.argv.find((argument) =>
   argument.startsWith("--output="),
 );
@@ -85,6 +86,13 @@ try {
   await setValue(connection, "#v7-seed", "20");
   await click(connection, '[data-action="launch"]');
   await waitForHuman(connection);
+
+  if (achievementOnly) {
+    await runAchievementReview(connection);
+    connection.close();
+    browser.kill();
+    process.exit(0);
+  }
 
   if (hudOnly) {
     await runHudReview(connection);
@@ -399,6 +407,120 @@ try {
   );
 } finally {
   browser.kill();
+}
+
+async function runAchievementReview(connection: Connection): Promise<void> {
+  await viewport(connection, 1280, 800, 1);
+  const setup = await evaluate<{
+    readonly target: Coord;
+    readonly viewerId: number;
+  }>(
+    connection,
+    `(async () => {
+      const { Ruleset7DomAppView } = await import('/src/render/dom/app-view-v7.ts');
+      const source = globalThis.__PULP_WARS_APP__.controller;
+      const original = source.snapshot();
+      const view = original.view;
+      if (!view || original.phase !== 'ACTIVE' || view.pendingChoices.length) throw new Error('Human public boundary missing');
+      const city = view.cities.find((candidate) => candidate.ownerId === view.viewer.id);
+      const tile = view.board.tiles.find((candidate) => candidate.explored && candidate.territoryCityId === city?.id && candidate.site === null && candidate.resource === null && candidate.improvement === null);
+      if (!tile) throw new Error('Eligible owned Monument tile missing');
+      const reviewedView = { ...view, viewer: { ...view.viewer, achievementEntitlements: view.viewer.achievementEntitlements.map((item) => item.achievement === 'EXPLORER' ? { ...item, unlocked: true, spent: false } : item) } };
+      const command = { kind: 'BUILD_MONUMENT', achievement: 'EXPLORER', at: tile.at };
+      const snapshot = { ...original, view: reviewedView, offeredCommands: [...original.offeredCommands, command] };
+      const host = { callbacks: null, model: null, mount(_container, callbacks) { this.callbacks = callbacks; }, update(model) { this.model = model; }, presentBoundary: async () => {}, finishPresentations() {}, resetInspectionCycle() {}, zoom() {}, focus() {}, destroy() {} };
+      const port = { snapshot: () => snapshot, subscribe(listener) { listener(snapshot); return () => {}; }, subscribeAcceptedBoundary(listener) { globalThis.__ACH_REVIEW_BOUNDARY__ = listener; return () => {}; }, launch: source.launch.bind(source), resume: source.resume.bind(source), returnToMenu: source.returnToMenu.bind(source), dispatch: async (candidate) => { globalThis.__ACH_REVIEW_DISPATCH__ = candidate; return { accepted: false, reason: 'NOT_OFFERED' }; }, progressAiTurns: source.progressAiTurns.bind(source), restart: source.restart.bind(source), deleteStoredSave: source.deleteStoredSave.bind(source), setFastForward: source.setFastForward.bind(source), exportSafeLog: source.exportSafeLog.bind(source), exportDebugBundle: source.exportDebugBundle.bind(source) };
+      document.querySelector('#app').style.display = 'none';
+      const root = document.createElement('div'); root.id = 'achievement-review'; document.body.append(root);
+      globalThis.__ACH_REVIEW__ = { app: new Ruleset7DomAppView(document, root, port, { boardHost: host, settingsStorage: null }), host, command, target: tile.at };
+      globalThis.__ACH_REVIEW_BOUNDARY__({ actor: 'HUMAN', beforeView: reviewedView, afterView: reviewedView, playerEvents: { format: 'pulp-wars-player-events', version: 7, viewerId: view.viewer.id, commandIndex: view.commandIndex + 1, events: [{ kind: 'ACHIEVEMENT_UNLOCKED', playerId: view.viewer.id, achievement: 'EXPLORER' }] } });
+      return { target: tile.at, viewerId: view.viewer.id };
+    })()`,
+  );
+  await waitFor(
+    connection,
+    `document.querySelector('[data-v7-region="achievement-notice"] [data-action="dismiss-achievement"]') !== null`,
+  );
+  const notice = await evaluate<{
+    readonly label: string | null;
+    readonly interactive: boolean;
+  }>(
+    connection,
+    `({ label: document.querySelector('[data-v7-region="achievement-notice"]')?.getAttribute('aria-label') ?? null, interactive: globalThis.__ACH_REVIEW__.host.model.interactive })`,
+  );
+  assert(
+    notice.label === "Explorer achievement complete" && !notice.interactive,
+    `Achievement popup failed: ${JSON.stringify(notice)}`,
+  );
+  await capture(connection, "achievement-complete-desktop.png");
+  await click(connection, '[data-action="dismiss-achievement"]');
+  await evaluate(
+    connection,
+    `globalThis.__ACH_REVIEW__.host.callbacks.onSelection({ kind: 'TILE', at: globalThis.__ACH_REVIEW__.target })`,
+  );
+  await waitFor(
+    connection,
+    `document.querySelector('[data-action="command-build_monument-explorer"]:not(:disabled)') !== null`,
+  );
+  const action = await evaluate<{
+    readonly text: string | null;
+    readonly assetId: string | null;
+  }>(
+    connection,
+    `({ text: document.querySelector('[data-action="command-build_monument-explorer"]')?.textContent ?? null, assetId: document.querySelector('[data-action="command-build_monument-explorer"] img')?.getAttribute('data-asset-id') ?? null })`,
+  );
+  assert(
+    action.text?.includes("Build Monument · Explorer") &&
+      action.assetId === "building-square-monument",
+    `Illustrated tile action failed: ${JSON.stringify(action)}`,
+  );
+  await capture(connection, "achievement-build-action-desktop.png");
+  await click(connection, '[data-action="command-build_monument-explorer"]');
+  const dispatched = await evaluate<unknown>(
+    connection,
+    `globalThis.__ACH_REVIEW_DISPATCH__`,
+  );
+  assert(
+    JSON.stringify(dispatched) ===
+      JSON.stringify({
+        kind: "BUILD_MONUMENT",
+        achievement: "EXPLORER",
+        at: setup.target,
+      }),
+    `Direct Monument dispatch failed: ${JSON.stringify(dispatched)}`,
+  );
+  await click(connection, '#achievement-review [data-action="tech"]');
+  await click(connection, '#achievement-review [data-action="tech-scouting"]');
+  const tech = await evaluate<{
+    readonly card: string | null;
+    readonly detail: string | null;
+  }>(
+    connection,
+    `({ card: document.querySelector('#achievement-review [data-action="tech-scouting"]')?.textContent ?? null, detail: document.querySelector('#achievement-review .v7-tech-detail')?.textContent ?? null })`,
+  );
+  assert(
+    tech.card?.includes("Enables Explorer") &&
+      tech.detail?.includes("explore 100 distinct tiles"),
+    `Scouting achievement detail failed: ${JSON.stringify(tech)}`,
+  );
+  await capture(connection, "achievement-scouting-tech-desktop.png");
+  const evidence = {
+    status: "PASS",
+    source: "PRODUCTION_DOM_SYNTHETIC_PUBLIC_BOUNDARY",
+    viewerId: setup.viewerId,
+    target: setup.target,
+    notice,
+    action,
+    dispatched,
+    tech,
+  };
+  await writeFile(
+    path.join(outputRoot, "achievement-evidence.json"),
+    `${JSON.stringify(evidence, null, 2)}\n`,
+  );
+  console.log(
+    `Ruleset-7 achievement Chrome review passed. Evidence: ${outputRoot}`,
+  );
 }
 
 async function runHudReview(connection: Connection): Promise<void> {
