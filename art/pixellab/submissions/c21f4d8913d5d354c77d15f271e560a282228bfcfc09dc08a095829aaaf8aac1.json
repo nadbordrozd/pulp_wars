@@ -1,0 +1,30 @@
+{
+  "id": "terrain-ruleset7-resource-fertile-ground",
+  "jobId": "d4227f1c-a453-45e6-aee7-d8b5fb4b01fa",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: broad earthy umber patch with restrained lighter brown broken areas, two clearly legible sage-green leaf shoots, charcoal-teal sketch contour. Smooth hand-drawn 2D terrain resource on transparent 400 by 600 canvas. Draw one FLAT irregular dark-brown soil patch spread horizontally into three fused asymmetric lobes with an uneven broken perimeter. It lies flush with terrain; no raised edge or side wall. Broad flat northwest-lit planes, no tiny texture. Exactly TWO legible green leaf shoots near center, each with two large leaves. Keep soil much wider than tall and neither circular nor symmetric. Isolated mark only. Final processing fits x44..212,y250..324 in 256 by 384 output. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; perfect circle or oval, pancake, raised platform, thick rim, extruded side wall, shadow, roots, stump, hole, tiny seedlings, crop rows, farm, rectangular field, fruit, flowers, road, selection ring, tile, pixel art, jagged edges, 3D.",
+    "prompt": "Smooth hand-drawn 2D terrain resource on transparent 400 by 600 canvas. Draw one FLAT irregular dark-brown soil patch spread horizontally into three fused asymmetric lobes with an uneven broken perimeter. It lies flush with terrain; no raised edge or side wall. Broad flat northwest-lit planes, no tiny texture. Exactly TWO legible green leaf shoots near center, each with two large leaves. Keep soil much wider than tall and neither circular nor symmetric. Isolated mark only. Final processing fits x44..212,y250..324 in 256 by 384 output.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; perfect circle or oval, pancake, raised platform, thick rim, extruded side wall, shadow, roots, stump, hole, tiny seedlings, crop rows, farm, rectangular field, fruit, flowers, road, selection ring, tile, pixel art, jagged edges, 3D",
+    "requestSize": {
+      "width": 400,
+      "height": 600
+    },
+    "outputSize": {
+      "width": 256,
+      "height": 384
+    },
+    "seed": 107922,
+    "noBackground": true,
+    "palette": "broad earthy umber patch with restrained lighter brown broken areas, two clearly legible sage-green leaf shoots, charcoal-teal sketch contour",
+    "postprocess": "preferred-low-marker-fit",
+    "groundContactY": 324,
+    "squareFootprint": {
+      "left": 0,
+      "top": 128,
+      "right": 256,
+      "bottom": 384
+    }
+  }
+}

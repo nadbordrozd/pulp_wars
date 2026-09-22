@@ -1,0 +1,35 @@
+{
+  "id": "terrain-ruleset7-original-fruit-plum",
+  "jobId": "b5bf068c-4b94-4ca3-9f56-dede37a6893c",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: three deep purple-violet plums, mauve northwest highlight, sage leaf, dark teal outline and southeast shadow. Clean illustrated Original Fruit resource: three large deep violet plums in one broad low triangular harvest cluster, with one short dark twig and a single chunky green leaf. Distinct round plum forms, each simple and readable at minimum zoom. Transparent untrimmed 256 by 384 canvas, smooth hand-drawn contour and flat two-level cel shading with northwest light. Match existing Original Fruit scale, source anchor 128,256 and preferred x76..180 y232..320, bottom y320. No ground. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, jagged pixel stair steps, tiny berries, apples, grapes, many small dots, more than three fruit, basket, tree, farm, candy, faces, limbs, ground, shadow, platform, text, UI, 3D, realism.",
+    "prompt": "Clean illustrated Original Fruit resource: three large deep violet plums in one broad low triangular harvest cluster, with one short dark twig and a single chunky green leaf. Distinct round plum forms, each simple and readable at minimum zoom. Transparent untrimmed 256 by 384 canvas, smooth hand-drawn contour and flat two-level cel shading with northwest light. Match existing Original Fruit scale, source anchor 128,256 and preferred x76..180 y232..320, bottom y320. No ground.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, jagged pixel stair steps, tiny berries, apples, grapes, many small dots, more than three fruit, basket, tree, farm, candy, faces, limbs, ground, shadow, platform, text, UI, 3D, realism",
+    "requestSize": {
+      "width": 256,
+      "height": 384
+    },
+    "outputSize": {
+      "width": 256,
+      "height": 384
+    },
+    "seed": 107904,
+    "noBackground": true,
+    "palette": "three deep purple-violet plums, mauve northwest highlight, sage leaf, dark teal outline and southeast shadow",
+    "postprocess": "preferred-low-marker-fit",
+    "groundContactY": 320,
+    "styleReference": {
+      "id": "terrain-square-original-fruit",
+      "sha256": "4642843133720393490b4649274ae6a8a7999cd07e9476cdd98bd6c84adf7d76",
+      "usageDescription": "Preserve the accepted Original Fruit clean contour, three-form cluster, northwest light and size; change the forms and palette to plums."
+    },
+    "squareFootprint": {
+      "left": 0,
+      "top": 128,
+      "right": 256,
+      "bottom": 384
+    }
+  }
+}

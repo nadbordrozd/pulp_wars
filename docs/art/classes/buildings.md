@@ -41,6 +41,15 @@ open cutting bench, one upright hand saw and a three-log stack, with alpha fit
 inside `x=52..332,y=54..326`. The lower-center/right stays readable for a unit.
 The Ruleset-6 Camp source and scale remain unchanged.
 
+The resource-art refresh replaces the current Ruleset-7 Camp raster with
+`building-ruleset7-resource-lumber-camp` at the same 384 x 384 `(192,288)`
+anchor and `0.36` display scale. It preserves the two-tree open bench, upright
+saw and three-log reading, lower-center unit space, `x=52..332,y=54..326`
+preferred fit, and the canopy-suppression behavior below. The earlier
+`building-ruleset7-lumber-camp` file remains archived unchanged. Forestry
+technology, Build Lumber Camp, selected improvement identity and map use the
+refreshed current art.
+
 On an authoritative Forest tile, Lumber Camp and Windmill join Sawmill in the
 same presentation-only canopy-suppression predicate: the same cell draws the
 exact v7 Original Grass ground beneath the improvement instead of its Forest

@@ -1,0 +1,30 @@
+{
+  "id": "terrain-ruleset7-resource-fertile-ground",
+  "jobId": "f1433628-5f0d-4c9e-87ef-65c72a2b7e21",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: dark umber soil, muted warm-brown northwest highlight, charcoal-teal contour, two moss-green sprouts. Clean smooth hand-drawn 2D cartoon map resource on transparent 256 by 384 canvas: one broad irregular patch of rich dark umber fertile soil, low and centered, with exactly two simple green sprouts. Smooth flowing oval contour and broad flat cel-shaded brown planes, warm northwest rim and dark southeast edge. It is untilled natural soil, not a farm field. Readable but quiet on green ground at minimum zoom. No pixel grid or tiny texture. Fit x44..212 y250..324 with bottom y324. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, pixels, jagged square edges, 8-bit, 16-bit, checkerboard, dithering, crop rows, furrows, rectangular field, fence, farm, flowers, fruit, many sprouts, road, selection ring, platform, cast shadow, tile, text, UI, 3D, realism.",
+    "prompt": "Clean smooth hand-drawn 2D cartoon map resource on transparent 256 by 384 canvas: one broad irregular patch of rich dark umber fertile soil, low and centered, with exactly two simple green sprouts. Smooth flowing oval contour and broad flat cel-shaded brown planes, warm northwest rim and dark southeast edge. It is untilled natural soil, not a farm field. Readable but quiet on green ground at minimum zoom. No pixel grid or tiny texture. Fit x44..212 y250..324 with bottom y324.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, pixels, jagged square edges, 8-bit, 16-bit, checkerboard, dithering, crop rows, furrows, rectangular field, fence, farm, flowers, fruit, many sprouts, road, selection ring, platform, cast shadow, tile, text, UI, 3D, realism",
+    "requestSize": {
+      "width": 256,
+      "height": 384
+    },
+    "outputSize": {
+      "width": 256,
+      "height": 384
+    },
+    "seed": 107902,
+    "noBackground": true,
+    "palette": "dark umber soil, muted warm-brown northwest highlight, charcoal-teal contour, two moss-green sprouts",
+    "postprocess": "preferred-low-marker-fit",
+    "groundContactY": 324,
+    "squareFootprint": {
+      "left": 0,
+      "top": 128,
+      "right": 256,
+      "bottom": 384
+    }
+  }
+}

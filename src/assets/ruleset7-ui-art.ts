@@ -1,5 +1,6 @@
 import type {
   CommandV7,
+  CoordV7,
   ImprovementIdV7,
   ResourceIdV7,
   RewardIdV7,
@@ -51,7 +52,7 @@ export const RULESET7_TECH_ART_IDS = {
   MEDICINE: "ui-tech-original-medicine",
   RECOVERY: "ui-tech-original-recovery",
   HUNTING: "terrain-square-original-animal",
-  FORESTRY: "building-square-lumber-camp",
+  FORESTRY: "building-ruleset7-resource-lumber-camp",
   SAWMILLING: "building-square-sawmill",
   MARKSMANSHIP: "ui-tech-original-marksmanship",
   FIELDCRAFT: "ui-tech-original-fieldcraft",
@@ -70,7 +71,7 @@ export const RULESET7_TECH_ART_IDS = {
 
 export const RULESET7_IMPROVEMENT_ART_IDS = {
   FARM: RULESET7_FARM_ART_IDS.SINGLE,
-  LUMBER_CAMP: "building-ruleset7-lumber-camp",
+  LUMBER_CAMP: "building-ruleset7-resource-lumber-camp",
   MINE: "terrain-ruleset7-revision3-mined-mountain-1",
   WINDMILL: "building-square-windmill",
   SAWMILL: "building-square-sawmill",
@@ -84,9 +85,34 @@ export const RULESET7_IMPROVEMENT_ART_IDS = {
 export const RULESET7_RESOURCE_ART_IDS = {
   FRUIT: "terrain-square-original-fruit",
   GAME: "terrain-square-original-animal",
-  FERTILE_GROUND: "terrain-square-fertile-ground",
+  FERTILE_GROUND: "terrain-ruleset7-resource-fertile-ground",
   ORE: "terrain-square-ore",
 } as const satisfies Readonly<Record<ResourceIdV7, string>>;
+
+/** Cosmetic map and selected-tile families. Technology and action art use canonical IDs. */
+export const RULESET7_FRUIT_MAP_ART_IDS = [
+  RULESET7_RESOURCE_ART_IDS.FRUIT,
+  "terrain-ruleset7-original-fruit-pear",
+  "terrain-ruleset7-original-fruit-plum",
+] as const;
+
+export const RULESET7_GAME_MAP_ART_IDS = [
+  RULESET7_RESOURCE_ART_IDS.GAME,
+  "terrain-ruleset7-original-game-deer",
+  "terrain-ruleset7-original-game-fox",
+] as const;
+
+export function resourceMapArtIdV7(
+  resource: ResourceIdV7,
+  at: CoordV7,
+): string {
+  const index = (at.x * 31 + at.y * 17) % 3;
+  return resource === "FRUIT"
+    ? (RULESET7_FRUIT_MAP_ART_IDS[index] ?? RULESET7_RESOURCE_ART_IDS.FRUIT)
+    : resource === "GAME"
+      ? (RULESET7_GAME_MAP_ART_IDS[index] ?? RULESET7_RESOURCE_ART_IDS.GAME)
+      : RULESET7_RESOURCE_ART_IDS[resource];
+}
 
 export const RULESET7_TERRAIN_ART_IDS = {
   GRASS: "terrain-ruleset7-original-grass-1",

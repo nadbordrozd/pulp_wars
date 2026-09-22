@@ -1,0 +1,29 @@
+{
+  "id": "building-ruleset7-resource-lumber-camp",
+  "jobId": "8f10877f-5515-4c09-a716-d4feecb7209d",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted honey-brown timber, warm parchment cut wood, slate blue hand saw, restrained sage foliage, deep charcoal-teal contour. Smooth clean 2D vector-like illustration for a strategy-game map, transparent 384 by 384. Draw a compact outdoor lumber camp as one joined composition: two sturdy trees with broad rounded leafy crowns behind a low open cutting bench, one upright hand saw leaning on the bench, three cut logs in a tidy front-right stack. Use broad continuous curved ink lines, tapered drawn strokes, smooth diagonals, large flat color planes and only 2 to 3 levels of cel shading. Southeast three-quarter view, soft northwest key light. It must look like a polished illustrated board-game sticker, not a pixel sprite. Keep a clear lower-center space for a unit. No ground, shadow or border. Source anchor 192,288, fit x52..332 y54..326, contact y326. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, pixelated, stair-step edges, jagged bitmap edges, 8-bit, 16-bit, pixel grid, blocky leaves, dither, mosaic, blurry pixels, retro sprite, tiny detail, disconnected props, more than two trees, dense forest, enclosed sawmill, circular saw, people, unit, ground, tile, platform, shadow, text, UI, photorealism, painterly, 3D.",
+    "prompt": "Smooth clean 2D vector-like illustration for a strategy-game map, transparent 384 by 384. Draw a compact outdoor lumber camp as one joined composition: two sturdy trees with broad rounded leafy crowns behind a low open cutting bench, one upright hand saw leaning on the bench, three cut logs in a tidy front-right stack. Use broad continuous curved ink lines, tapered drawn strokes, smooth diagonals, large flat color planes and only 2 to 3 levels of cel shading. Southeast three-quarter view, soft northwest key light. It must look like a polished illustrated board-game sticker, not a pixel sprite. Keep a clear lower-center space for a unit. No ground, shadow or border. Source anchor 192,288, fit x52..332 y54..326, contact y326.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, pixelated, stair-step edges, jagged bitmap edges, 8-bit, 16-bit, pixel grid, blocky leaves, dither, mosaic, blurry pixels, retro sprite, tiny detail, disconnected props, more than two trees, dense forest, enclosed sawmill, circular saw, people, unit, ground, tile, platform, shadow, text, UI, photorealism, painterly, 3D",
+    "requestSize": {
+      "width": 384,
+      "height": 384
+    },
+    "outputSize": {
+      "width": 384,
+      "height": 384
+    },
+    "seed": 107911,
+    "noBackground": true,
+    "palette": "muted honey-brown timber, warm parchment cut wood, slate blue hand saw, restrained sage foliage, deep charcoal-teal contour",
+    "postprocess": "compact-building-fit",
+    "groundContactY": 326,
+    "styleReference": {
+      "id": "building-square-monument",
+      "sha256": "7224ed8251b4bc99d289716eddc13ed240bbf63abb671100e408e5f1c5f99ce4",
+      "usageDescription": "Use only the accepted Monument smooth continuous contour, deliberate antialiasing, and broad hand-drawn cel planes; retain the requested timber-camp objects and palette."
+    }
+  }
+}

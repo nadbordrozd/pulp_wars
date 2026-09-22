@@ -7,6 +7,7 @@ import {
   RULESET7_IMPROVEMENT_ART_IDS,
   RULESET7_TERRAIN_ART_IDS,
 } from "../../src/assets/ruleset7-ui-art";
+import { SELECTION_IDENTITY_FRAMES_V7 } from "../../src/render/dom/selection-identity-v7";
 
 const GRASS_IDS = [1, 2, 3].map(
   (variant) => `terrain-ruleset7-original-grass-${variant}`,
@@ -15,6 +16,14 @@ const FOREST_IDS = [1, 2, 3, 4].map(
   (variant) => `terrain-ruleset7-original-forest-${variant}`,
 );
 const CAMP_ID = "building-ruleset7-lumber-camp";
+const REFRESH_IDS = [
+  "building-ruleset7-resource-lumber-camp",
+  "terrain-ruleset7-resource-fertile-ground",
+  "terrain-ruleset7-original-fruit-pear",
+  "terrain-ruleset7-original-fruit-plum",
+  "terrain-ruleset7-original-game-deer",
+  "terrain-ruleset7-original-game-fox",
+] as const;
 
 interface Recipe {
   readonly id: string;
@@ -67,6 +76,57 @@ async function manifests() {
 }
 
 describe("Ruleset 7 map readability art", () => {
+  it("registers six separately reviewed resource-refresh rasters without replacing legacy files", async () => {
+    const { recipes, records } = await manifests();
+    for (const id of REFRESH_IDS) {
+      const recipe = recipes.find((candidate) => candidate.id === id);
+      expect(recipe, id).toBeDefined();
+      if (recipe === undefined) continue;
+      const expectedSize = id.includes("lumber-camp")
+        ? { width: 384, height: 384 }
+        : { width: 256, height: 384 };
+      expect(recipe.requestSize).toEqual(
+        id === "terrain-ruleset7-resource-fertile-ground"
+          ? { width: 400, height: 600 }
+          : expectedSize,
+      );
+      expect(recipe.outputSize).toEqual(expectedSize);
+      expect(recipe.anchor).toEqual(
+        id.includes("lumber-camp") ? { x: 192, y: 288 } : { x: 128, y: 256 },
+      );
+      expect(records[id]?.status, id).toBe("ACCEPTED");
+      expect(records[id]?.reviewChecks, id).toEqual({
+        source: true,
+        native: true,
+        enlarged: true,
+        minimumZoom: true,
+        composition: true,
+      });
+      expect(hash(await readFile(recipe.output)), id).toBe(
+        records[id]?.outputSha256,
+      );
+      expect(ACCEPTED_ART_URLS[id], id).toBeTypeOf("string");
+      const alphaBounds = records[id]?.alphaBounds;
+      expect(SELECTION_IDENTITY_FRAMES_V7[id]?.source, id).toEqual(
+        expectedSize,
+      );
+      expect(SELECTION_IDENTITY_FRAMES_V7[id]?.visibleBounds, id).toEqual({
+        left: alphaBounds?.left,
+        top: alphaBounds?.top,
+        right: alphaBounds?.right,
+        bottom: alphaBounds?.bottom,
+      });
+    }
+    expect(recipes.find((candidate) => candidate.id === CAMP_ID)?.output).toBe(
+      "public/assets/pixellab/buildings-ruleset7/lumber-camp.png",
+    );
+    expect(
+      recipes.find(
+        (candidate) => candidate.id === "terrain-square-fertile-ground",
+      )?.output,
+    ).toBe("public/assets/pixellab/terrain-square/fertile-ground.png");
+  });
+
   it("registers exactly three v7 Grass variants, four derived Forests, and the larger Camp", async () => {
     const { recipes, records } = await manifests();
     for (const [index, id] of GRASS_IDS.entries()) {
@@ -126,7 +186,9 @@ describe("Ruleset 7 map readability art", () => {
       bottom: 326,
     });
     expect(ACCEPTED_ART_URLS[CAMP_ID]).toBeTypeOf("string");
-    expect(RULESET7_IMPROVEMENT_ART_IDS.LUMBER_CAMP).toBe(CAMP_ID);
+    expect(RULESET7_IMPROVEMENT_ART_IDS.LUMBER_CAMP).toBe(
+      "building-ruleset7-resource-lumber-camp",
+    );
     expect(RULESET7_TERRAIN_ART_IDS).toMatchObject({
       GRASS: GRASS_IDS[0],
       FOREST: FOREST_IDS[0],

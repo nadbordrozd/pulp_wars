@@ -2,6 +2,7 @@ import { ACCEPTED_ART_URLS } from "../../assets/generated-art-manifest";
 import {
   RULESET7_IMPROVEMENT_ART_IDS,
   RULESET7_RESOURCE_ART_IDS,
+  resourceMapArtIdV7,
   RULESET7_TECH_ART_IDS,
   RULESET7_TERRAIN_ART_IDS,
   RULESET7_UNIT_ART_IDS,
@@ -1113,7 +1114,7 @@ export class Ruleset7DomAppView {
         const asset =
           tile.improvement === null
             ? tile.resource !== null && tile.resource !== "UNKNOWN_RESOURCE"
-              ? RULESET7_RESOURCE_ART_IDS[tile.resource]
+              ? resourceMapArtIdV7(tile.resource, tile.at)
               : RULESET7_TERRAIN_ART_IDS[tile.terrain]
             : RULESET7_IMPROVEMENT_ART_IDS[tile.improvement];
         const name = `${title(tile.biome)} · ${title(tile.terrain)}`;
@@ -2470,7 +2471,8 @@ function identity(
   const layout =
     normalizePaintedSize ||
     assetId === "terrain-square-original-animal" ||
-    assetId === "terrain-square-fertile-ground"
+    assetId === RULESET7_IMPROVEMENT_ART_IDS.LUMBER_CAMP ||
+    assetId === RULESET7_RESOURCE_ART_IDS.FERTILE_GROUND
       ? selectionIdentityArtworkLayoutV7(assetId)
       : null;
   if (layout !== null) {

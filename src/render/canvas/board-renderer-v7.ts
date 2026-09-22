@@ -2,7 +2,7 @@ import { ACCEPTED_ART_URLS } from "../../assets/generated-art-manifest";
 import {
   RULESET7_IMPROVEMENT_ART_IDS,
   RULESET7_FARM_ART_IDS,
-  RULESET7_RESOURCE_ART_IDS,
+  resourceMapArtIdV7,
   RULESET7_UNIT_ART_IDS,
 } from "../../assets/ruleset7-ui-art";
 import type {
@@ -202,7 +202,7 @@ export function buildBoardRenderPlanV7(
         kind: "RESOURCE",
         layer: 3,
         at: tile.at,
-        assetId: RULESET7_RESOURCE_ART_IDS[tile.resource],
+        assetId: resourceMapArtIdV7(tile.resource, tile.at),
       });
     if (tile.improvement !== null && tile.improvement !== "MINE") {
       const farm =

@@ -1,0 +1,24 @@
+{
+  "id": "building-ruleset7-resource-lumber-camp",
+  "jobId": "b7c97e8e-b5b4-4442-b866-bb19de2d2d6e",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted honey-brown timber, warm parchment cut wood, slate blue hand saw, restrained sage foliage, deep charcoal-teal contour. Clean smooth hand-drawn 2D cartoon strategy-game sprite, one compact outdoor lumber camp on transparent 384 by 384 canvas. Two broad leafy trees connected visually to a single open low timber cutting bench. One large upright hand saw leaning at the bench and a neat three-log stack at right. Keep the bench readable and leave lower center open for a unit. Broad uninterrupted ink contours, rounded organic silhouettes, flat 2 to 3 shade cel planes with soft northwest lighting. Southeast three-quarter view. This must be a smooth illustrated sticker, with curves and diagonal strokes, no visible square pixels. No ground or cast shadow. Source anchor 192,288, fit x52..332 y54..326, bottom y326. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, pixels, jagged stair-step edges, 8-bit, 16-bit, Minecraft, block mosaic, checkerboard, dithering, tiny pixels, retro game sprite, separate loose trees, dense forest, enclosed sawmill, factory, circular saw, people, unit, stump forest, tiny detail, soil, tile, platform, shadow, text, UI, photorealism, 3D, painterly.",
+    "prompt": "Clean smooth hand-drawn 2D cartoon strategy-game sprite, one compact outdoor lumber camp on transparent 384 by 384 canvas. Two broad leafy trees connected visually to a single open low timber cutting bench. One large upright hand saw leaning at the bench and a neat three-log stack at right. Keep the bench readable and leave lower center open for a unit. Broad uninterrupted ink contours, rounded organic silhouettes, flat 2 to 3 shade cel planes with soft northwest lighting. Southeast three-quarter view. This must be a smooth illustrated sticker, with curves and diagonal strokes, no visible square pixels. No ground or cast shadow. Source anchor 192,288, fit x52..332 y54..326, bottom y326.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, pixels, jagged stair-step edges, 8-bit, 16-bit, Minecraft, block mosaic, checkerboard, dithering, tiny pixels, retro game sprite, separate loose trees, dense forest, enclosed sawmill, factory, circular saw, people, unit, stump forest, tiny detail, soil, tile, platform, shadow, text, UI, photorealism, 3D, painterly",
+    "requestSize": {
+      "width": 384,
+      "height": 384
+    },
+    "outputSize": {
+      "width": 384,
+      "height": 384
+    },
+    "seed": 107901,
+    "noBackground": true,
+    "palette": "muted honey-brown timber, warm parchment cut wood, slate blue hand saw, restrained sage foliage, deep charcoal-teal contour",
+    "postprocess": "compact-building-fit",
+    "groundContactY": 326
+  }
+}

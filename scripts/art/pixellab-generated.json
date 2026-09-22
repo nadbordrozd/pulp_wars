@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "00ad9440e8941db15150596d8eeb2f66b9ebf6b62d8ffb6a6d45ff30d98f2b47",
+  "sourceManifestSha256": "dfe53b1159518c1da055329f0fcbd6d292bf6965f2c51235d9d6b61254725804",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -12868,6 +12868,499 @@
       "outputSha256": "2b69cf215244ce88b1bb0d1f702f9475f3079697a15631322a823bf20743ad25",
       "notes": "Accepted revised gold-face candidate after one rejected dark-medallion attempt. PixelLab job 3faf5e54-c853-458f-a22a-f43de05cec87; transparent 96x96 alpha bounds x9..87 y9..87. Inspected source, native 24 CSS px on dark/light HUD tokens, nearest-enlarged native view, source 2x, and paired context beside approved population icon via bounded ruleset7-economy-icons review. Bright continuous gold face, strong dark outline, centered diamond, no text or halo; reads as coin at native size and stays distinct from population. No credential data.",
       "reviewedAt": "2026-09-22T11:20:44.066Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-ruleset7-resource-lumber-camp": {
+      "id": "building-ruleset7-resource-lumber-camp",
+      "status": "ACCEPTED",
+      "jobId": "8f10877f-5515-4c09-a716-d4feecb7209d",
+      "candidate": "art/pixellab/candidates/building-ruleset7-resource-lumber-camp.png",
+      "candidateSha256": "b0c5b545975026e06570a256218a54c5df9faca3c12a91096e687f5f012a3e71",
+      "providerOutputSha256": "34a5f7d0989cd5428164164648cec281c04f43909e23469712da729dad7dc5c3",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 56,
+        "top": 54,
+        "right": 328,
+        "bottom": 326,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted honey-brown timber, warm parchment cut wood, slate blue hand saw, restrained sage foliage, deep charcoal-teal contour. Smooth clean 2D vector-like illustration for a strategy-game map, transparent 384 by 384. Draw a compact outdoor lumber camp as one joined composition: two sturdy trees with broad rounded leafy crowns behind a low open cutting bench, one upright hand saw leaning on the bench, three cut logs in a tidy front-right stack. Use broad continuous curved ink lines, tapered drawn strokes, smooth diagonals, large flat color planes and only 2 to 3 levels of cel shading. Southeast three-quarter view, soft northwest key light. It must look like a polished illustrated board-game sticker, not a pixel sprite. Keep a clear lower-center space for a unit. No ground, shadow or border. Source anchor 192,288, fit x52..332 y54..326, contact y326. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, pixelated, stair-step edges, jagged bitmap edges, 8-bit, 16-bit, pixel grid, blocky leaves, dither, mosaic, blurry pixels, retro sprite, tiny detail, disconnected props, more than two trees, dense forest, enclosed sawmill, circular saw, people, unit, ground, tile, platform, shadow, text, UI, photorealism, painterly, 3D.",
+        "prompt": "Smooth clean 2D vector-like illustration for a strategy-game map, transparent 384 by 384. Draw a compact outdoor lumber camp as one joined composition: two sturdy trees with broad rounded leafy crowns behind a low open cutting bench, one upright hand saw leaning on the bench, three cut logs in a tidy front-right stack. Use broad continuous curved ink lines, tapered drawn strokes, smooth diagonals, large flat color planes and only 2 to 3 levels of cel shading. Southeast three-quarter view, soft northwest key light. It must look like a polished illustrated board-game sticker, not a pixel sprite. Keep a clear lower-center space for a unit. No ground, shadow or border. Source anchor 192,288, fit x52..332 y54..326, contact y326.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, pixelated, stair-step edges, jagged bitmap edges, 8-bit, 16-bit, pixel grid, blocky leaves, dither, mosaic, blurry pixels, retro sprite, tiny detail, disconnected props, more than two trees, dense forest, enclosed sawmill, circular saw, people, unit, ground, tile, platform, shadow, text, UI, photorealism, painterly, 3D",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 107911,
+        "noBackground": true,
+        "palette": "muted honey-brown timber, warm parchment cut wood, slate blue hand saw, restrained sage foliage, deep charcoal-teal contour",
+        "postprocess": "compact-building-fit",
+        "groundContactY": 326,
+        "styleReference": {
+          "id": "building-square-monument",
+          "sha256": "7224ed8251b4bc99d289716eddc13ed240bbf63abb671100e408e5f1c5f99ce4",
+          "usageDescription": "Use only the accepted Monument smooth continuous contour, deliberate antialiasing, and broad hand-drawn cel planes; retain the requested timber-camp objects and palette."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/building-ruleset7-resource-lumber-camp-9b6d874b063f.png",
+          "candidateSha256": "9b6d874b063faa58975651658423f0cd8697d1901ea727210c3ba87e100311b0",
+          "providerOutputSha256": "4463b1d7ef060944a1cbf8c555038a11b92bd0bdac1209d5d736172c07ca327f",
+          "jobId": "b7c97e8e-b5b4-4442-b866-bb19de2d2d6e",
+          "disposition": "REJECTED",
+          "notes": "Source and enlarged inspection: visibly stepped pixel-art canopy and outlines conflict with requested clean illustration.",
+          "reviewedAt": "2026-09-22T12:54:21.957Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: muted honey-brown timber, warm parchment cut wood, slate blue hand saw, restrained sage foliage, deep charcoal-teal contour. Clean smooth hand-drawn 2D cartoon strategy-game sprite, one compact outdoor lumber camp on transparent 384 by 384 canvas. Two broad leafy trees connected visually to a single open low timber cutting bench. One large upright hand saw leaning at the bench and a neat three-log stack at right. Keep the bench readable and leave lower center open for a unit. Broad uninterrupted ink contours, rounded organic silhouettes, flat 2 to 3 shade cel planes with soft northwest lighting. Southeast three-quarter view. This must be a smooth illustrated sticker, with curves and diagonal strokes, no visible square pixels. No ground or cast shadow. Source anchor 192,288, fit x52..332 y54..326, bottom y326. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, pixels, jagged stair-step edges, 8-bit, 16-bit, Minecraft, block mosaic, checkerboard, dithering, tiny pixels, retro game sprite, separate loose trees, dense forest, enclosed sawmill, factory, circular saw, people, unit, stump forest, tiny detail, soil, tile, platform, shadow, text, UI, photorealism, 3D, painterly.",
+            "prompt": "Clean smooth hand-drawn 2D cartoon strategy-game sprite, one compact outdoor lumber camp on transparent 384 by 384 canvas. Two broad leafy trees connected visually to a single open low timber cutting bench. One large upright hand saw leaning at the bench and a neat three-log stack at right. Keep the bench readable and leave lower center open for a unit. Broad uninterrupted ink contours, rounded organic silhouettes, flat 2 to 3 shade cel planes with soft northwest lighting. Southeast three-quarter view. This must be a smooth illustrated sticker, with curves and diagonal strokes, no visible square pixels. No ground or cast shadow. Source anchor 192,288, fit x52..332 y54..326, bottom y326.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, pixels, jagged stair-step edges, 8-bit, 16-bit, Minecraft, block mosaic, checkerboard, dithering, tiny pixels, retro game sprite, separate loose trees, dense forest, enclosed sawmill, factory, circular saw, people, unit, stump forest, tiny detail, soil, tile, platform, shadow, text, UI, photorealism, 3D, painterly",
+            "requestSize": {
+              "width": 384,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 384,
+              "height": 384
+            },
+            "seed": 107901,
+            "noBackground": true,
+            "palette": "muted honey-brown timber, warm parchment cut wood, slate blue hand saw, restrained sage foliage, deep charcoal-teal contour",
+            "postprocess": "compact-building-fit",
+            "groundContactY": 326
+          }
+        }
+      ],
+      "outputSha256": "b0c5b545975026e06570a256218a54c5df9faca3c12a91096e687f5f012a3e71",
+      "notes": "Accepted after source, 2x enlarged, native square-map and 0.625 zoom review: smooth rounded illustrated contours, two joined trees, open bench, upright saw and three-log stack; earlier stepped attempt rejected.",
+      "reviewedAt": "2026-09-22T13:01:47.264Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-ruleset7-resource-fertile-ground": {
+      "id": "terrain-ruleset7-resource-fertile-ground",
+      "status": "ACCEPTED",
+      "jobId": "d4227f1c-a453-45e6-aee7-d8b5fb4b01fa",
+      "candidate": "art/pixellab/candidates/terrain-ruleset7-resource-fertile-ground.png",
+      "candidateSha256": "3fcbee99e1624139a110969aabe82d13551b9b0b08d3cc8bb2f3d96b393c5a5f",
+      "providerOutputSha256": "b80625977e3ae1415e49d89bdfbae86a11cc92b384a768dba8b88c419876a62d",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 68,
+        "top": 250,
+        "right": 188,
+        "bottom": 324,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: broad earthy umber patch with restrained lighter brown broken areas, two clearly legible sage-green leaf shoots, charcoal-teal sketch contour. Smooth hand-drawn 2D terrain resource on transparent 400 by 600 canvas. Draw one FLAT irregular dark-brown soil patch spread horizontally into three fused asymmetric lobes with an uneven broken perimeter. It lies flush with terrain; no raised edge or side wall. Broad flat northwest-lit planes, no tiny texture. Exactly TWO legible green leaf shoots near center, each with two large leaves. Keep soil much wider than tall and neither circular nor symmetric. Isolated mark only. Final processing fits x44..212,y250..324 in 256 by 384 output. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; perfect circle or oval, pancake, raised platform, thick rim, extruded side wall, shadow, roots, stump, hole, tiny seedlings, crop rows, farm, rectangular field, fruit, flowers, road, selection ring, tile, pixel art, jagged edges, 3D.",
+        "prompt": "Smooth hand-drawn 2D terrain resource on transparent 400 by 600 canvas. Draw one FLAT irregular dark-brown soil patch spread horizontally into three fused asymmetric lobes with an uneven broken perimeter. It lies flush with terrain; no raised edge or side wall. Broad flat northwest-lit planes, no tiny texture. Exactly TWO legible green leaf shoots near center, each with two large leaves. Keep soil much wider than tall and neither circular nor symmetric. Isolated mark only. Final processing fits x44..212,y250..324 in 256 by 384 output.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; perfect circle or oval, pancake, raised platform, thick rim, extruded side wall, shadow, roots, stump, hole, tiny seedlings, crop rows, farm, rectangular field, fruit, flowers, road, selection ring, tile, pixel art, jagged edges, 3D",
+        "requestSize": {
+          "width": 400,
+          "height": 600
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 107922,
+        "noBackground": true,
+        "palette": "broad earthy umber patch with restrained lighter brown broken areas, two clearly legible sage-green leaf shoots, charcoal-teal sketch contour",
+        "postprocess": "preferred-low-marker-fit",
+        "groundContactY": 324,
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-ruleset7-resource-fertile-ground-d3f45033c56f.png",
+          "candidateSha256": "d3f45033c56f9702a989d465f6e258284e05c68451366bb4ec2d7416b180ce0d",
+          "providerOutputSha256": "89fb2efab7110194e6a354ba34c8b0be15fd640dfbf4e68bbf812cd8a48d3644",
+          "jobId": "f1433628-5f0d-4c9e-87ef-65c72a2b7e21",
+          "disposition": "REJECTED",
+          "notes": "Source inspection: tiny dark root-like shape with dangling appendages, not a broad clear soil patch; fails minimum-size/readability and composition.",
+          "reviewedAt": "2026-09-22T13:04:43.521Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: dark umber soil, muted warm-brown northwest highlight, charcoal-teal contour, two moss-green sprouts. Clean smooth hand-drawn 2D cartoon map resource on transparent 256 by 384 canvas: one broad irregular patch of rich dark umber fertile soil, low and centered, with exactly two simple green sprouts. Smooth flowing oval contour and broad flat cel-shaded brown planes, warm northwest rim and dark southeast edge. It is untilled natural soil, not a farm field. Readable but quiet on green ground at minimum zoom. No pixel grid or tiny texture. Fit x44..212 y250..324 with bottom y324. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, pixels, jagged square edges, 8-bit, 16-bit, checkerboard, dithering, crop rows, furrows, rectangular field, fence, farm, flowers, fruit, many sprouts, road, selection ring, platform, cast shadow, tile, text, UI, 3D, realism.",
+            "prompt": "Clean smooth hand-drawn 2D cartoon map resource on transparent 256 by 384 canvas: one broad irregular patch of rich dark umber fertile soil, low and centered, with exactly two simple green sprouts. Smooth flowing oval contour and broad flat cel-shaded brown planes, warm northwest rim and dark southeast edge. It is untilled natural soil, not a farm field. Readable but quiet on green ground at minimum zoom. No pixel grid or tiny texture. Fit x44..212 y250..324 with bottom y324.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, pixels, jagged square edges, 8-bit, 16-bit, checkerboard, dithering, crop rows, furrows, rectangular field, fence, farm, flowers, fruit, many sprouts, road, selection ring, platform, cast shadow, tile, text, UI, 3D, realism",
+            "requestSize": {
+              "width": 256,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 384
+            },
+            "seed": 107902,
+            "noBackground": true,
+            "palette": "dark umber soil, muted warm-brown northwest highlight, charcoal-teal contour, two moss-green sprouts",
+            "postprocess": "preferred-low-marker-fit",
+            "groundContactY": 324,
+            "squareFootprint": {
+              "left": 0,
+              "top": 128,
+              "right": 256,
+              "bottom": 384
+            }
+          }
+        },
+        {
+          "candidate": "art/pixellab/quarantine/terrain-ruleset7-resource-fertile-ground-bc3e405292a3.png",
+          "candidateSha256": "bc3e405292a3fab005a47dbd8f9d7150cf8c528c4d422d24e4b1b13b7ae507e8",
+          "providerOutputSha256": "407e2bc75251059f31d13523544942de3c21b18c2269a2e71f3386b55d386527",
+          "jobId": "578db2b4-619d-44d3-89fa-abbcad61f701",
+          "disposition": "REJECTED",
+          "notes": "Source, enlarged, native and minimum-zoom review: smooth but near-perfect raised circular disk with thick rim reads as platform/selection mark, not natural irregular Fertile Ground.",
+          "reviewedAt": "2026-09-22T13:09:05.072Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: readable warm cocoa-umber soil, brighter bronze northwest rim, two sage-green sprouts, clean dark teal-brown outline. Polished smooth 2D illustrated terrain resource on a transparent 256 by 384 canvas. Draw one WIDE, LOW horizontal oval patch of fertile brown soil occupying the full width of x44..212 and low y250..324. The visible patch is one continuous irregular but rounded earth island with a clear top surface, broad warm-brown center, simple darker side edge and bronze northwest rim. Add exactly TWO tiny separate green seedlings growing from the top near center. Emphasize a generous wide soil surface, not roots or plants. Smooth flowing continuous ink outline, large flat two-tone shading, no small pixels or texture. Center inside the owning square; bottom at y324. It represents wild fertile ground before Farm construction. No ground outside this isolated patch. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, jagged edges, pixel blocks, dither, roots, dangling roots, tentacles, tree stump, hole, crater, mound, cliff, shadow, tiny patch, narrow shape, dark unreadable soil, farm crop rows, furrows, fence, rectangular field, fruit, flowers, many plants, road, selection ring, platform, tile, text, UI, 3D, realism.",
+            "prompt": "Polished smooth 2D illustrated terrain resource on a transparent 256 by 384 canvas. Draw one WIDE, LOW horizontal oval patch of fertile brown soil occupying the full width of x44..212 and low y250..324. The visible patch is one continuous irregular but rounded earth island with a clear top surface, broad warm-brown center, simple darker side edge and bronze northwest rim. Add exactly TWO tiny separate green seedlings growing from the top near center. Emphasize a generous wide soil surface, not roots or plants. Smooth flowing continuous ink outline, large flat two-tone shading, no small pixels or texture. Center inside the owning square; bottom at y324. It represents wild fertile ground before Farm construction. No ground outside this isolated patch.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, jagged edges, pixel blocks, dither, roots, dangling roots, tentacles, tree stump, hole, crater, mound, cliff, shadow, tiny patch, narrow shape, dark unreadable soil, farm crop rows, furrows, fence, rectangular field, fruit, flowers, many plants, road, selection ring, platform, tile, text, UI, 3D, realism",
+            "requestSize": {
+              "width": 256,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 384
+            },
+            "seed": 107912,
+            "noBackground": true,
+            "palette": "readable warm cocoa-umber soil, brighter bronze northwest rim, two sage-green sprouts, clean dark teal-brown outline",
+            "postprocess": "preferred-low-marker-fit",
+            "groundContactY": 324,
+            "styleReference": {
+              "id": "building-ruleset7-farm-single",
+              "sha256": "211ff46d8e091dc11fea9ee48ac2b0b5fd9953f4506542314772cd98a5bc28ea",
+              "usageDescription": "Use only the accepted Farm smooth broad soil planes, leaf outline and flat northwest-lit shading; create one undeveloped irregular oval soil patch, never rows or a square field."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 128,
+              "right": 256,
+              "bottom": 384
+            }
+          }
+        }
+      ],
+      "outputSha256": "3fcbee99e1624139a110969aabe82d13551b9b0b08d3cc8bb2f3d96b393c5a5f",
+      "notes": "Accepted after source, 2x enlarged, native v7 Grass map, 0.625 zoom and composition review: flat asymmetric low soil patch with two readable shoots; two earlier unsuitable attempts rejected.",
+      "reviewedAt": "2026-09-22T13:13:57.853Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-ruleset7-original-fruit-pear": {
+      "id": "terrain-ruleset7-original-fruit-pear",
+      "status": "ACCEPTED",
+      "jobId": "6f5b41f0-2249-4f68-9165-946b1ce3b5ac",
+      "candidate": "art/pixellab/candidates/terrain-ruleset7-original-fruit-pear.png",
+      "candidateSha256": "662e1db20cfc52421ad253798d807d142cacbb5efdb9caf9babb9ca42eac6f94",
+      "providerOutputSha256": "40d08585c3368d662132e2d01ffc00eb2756d8504ec26c3e208690e105f35cd5",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 89,
+        "top": 232,
+        "right": 166,
+        "bottom": 320,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm golden-yellow pears, pale parchment northwest highlights, sage leaf, dark teal outline and southeast shadow. Clean illustrated Original Fruit resource: three oversized golden pears in one low triangular harvest cluster with a single broad sage leaf and one short joined twig. Transparent untrimmed 256 by 384 canvas; broad smooth cartoon shapes, dark charcoal-teal outline, flat two-tone northwest-lit shading, no visible pixels. Match the existing Original Fruit family size and anchor, but use unmistakable pear silhouettes. Fit x76..180 y232..320, bottom y320; no ground. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, jagged pixel stair steps, tiny dots, apples, berries, more than three fruit, basket, tree, farm, candy, faces, limbs, ground, shadow, platform, text, UI, 3D, realism.",
+        "prompt": "Clean illustrated Original Fruit resource: three oversized golden pears in one low triangular harvest cluster with a single broad sage leaf and one short joined twig. Transparent untrimmed 256 by 384 canvas; broad smooth cartoon shapes, dark charcoal-teal outline, flat two-tone northwest-lit shading, no visible pixels. Match the existing Original Fruit family size and anchor, but use unmistakable pear silhouettes. Fit x76..180 y232..320, bottom y320; no ground.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, jagged pixel stair steps, tiny dots, apples, berries, more than three fruit, basket, tree, farm, candy, faces, limbs, ground, shadow, platform, text, UI, 3D, realism",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 107903,
+        "noBackground": true,
+        "palette": "warm golden-yellow pears, pale parchment northwest highlights, sage leaf, dark teal outline and southeast shadow",
+        "postprocess": "preferred-low-marker-fit",
+        "groundContactY": 320,
+        "styleReference": {
+          "id": "terrain-square-original-fruit",
+          "sha256": "4642843133720393490b4649274ae6a8a7999cd07e9476cdd98bd6c84adf7d76",
+          "usageDescription": "Preserve the accepted Original Fruit clean thick outline, flat shading and broad three-form cluster; change to golden pears with distinct pear silhouettes."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        }
+      },
+      "outputSha256": "662e1db20cfc52421ad253798d807d142cacbb5efdb9caf9babb9ca42eac6f94",
+      "notes": "Accepted after source, enlarged, native v7 Grass family and 0.625 zoom review: clean three-fruit cluster, distinct color and readable silhouette, no ground or UI.",
+      "reviewedAt": "2026-09-22T13:18:19.919Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-ruleset7-original-fruit-plum": {
+      "id": "terrain-ruleset7-original-fruit-plum",
+      "status": "ACCEPTED",
+      "jobId": "b5bf068c-4b94-4ca3-9f56-dede37a6893c",
+      "candidate": "art/pixellab/candidates/terrain-ruleset7-original-fruit-plum.png",
+      "candidateSha256": "25fed4c91d78a1756c3bcd2635684cb5cb66eba8d480c753f1e22a9adc8f6f81",
+      "providerOutputSha256": "fb9130b887be8df098881f08ec8d0b096003c87894559de7b4fad38e4faf1041",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 78,
+        "top": 232,
+        "right": 177,
+        "bottom": 320,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: three deep purple-violet plums, mauve northwest highlight, sage leaf, dark teal outline and southeast shadow. Clean illustrated Original Fruit resource: three large deep violet plums in one broad low triangular harvest cluster, with one short dark twig and a single chunky green leaf. Distinct round plum forms, each simple and readable at minimum zoom. Transparent untrimmed 256 by 384 canvas, smooth hand-drawn contour and flat two-level cel shading with northwest light. Match existing Original Fruit scale, source anchor 128,256 and preferred x76..180 y232..320, bottom y320. No ground. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, jagged pixel stair steps, tiny berries, apples, grapes, many small dots, more than three fruit, basket, tree, farm, candy, faces, limbs, ground, shadow, platform, text, UI, 3D, realism.",
+        "prompt": "Clean illustrated Original Fruit resource: three large deep violet plums in one broad low triangular harvest cluster, with one short dark twig and a single chunky green leaf. Distinct round plum forms, each simple and readable at minimum zoom. Transparent untrimmed 256 by 384 canvas, smooth hand-drawn contour and flat two-level cel shading with northwest light. Match existing Original Fruit scale, source anchor 128,256 and preferred x76..180 y232..320, bottom y320. No ground.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, jagged pixel stair steps, tiny berries, apples, grapes, many small dots, more than three fruit, basket, tree, farm, candy, faces, limbs, ground, shadow, platform, text, UI, 3D, realism",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 107904,
+        "noBackground": true,
+        "palette": "three deep purple-violet plums, mauve northwest highlight, sage leaf, dark teal outline and southeast shadow",
+        "postprocess": "preferred-low-marker-fit",
+        "groundContactY": 320,
+        "styleReference": {
+          "id": "terrain-square-original-fruit",
+          "sha256": "4642843133720393490b4649274ae6a8a7999cd07e9476cdd98bd6c84adf7d76",
+          "usageDescription": "Preserve the accepted Original Fruit clean contour, three-form cluster, northwest light and size; change the forms and palette to plums."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        }
+      },
+      "outputSha256": "25fed4c91d78a1756c3bcd2635684cb5cb66eba8d480c753f1e22a9adc8f6f81",
+      "notes": "Accepted after source, enlarged, native v7 Grass family and 0.625 zoom review: clean three-fruit cluster, distinct color and readable silhouette, no ground or UI.",
+      "reviewedAt": "2026-09-22T13:18:21.075Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-ruleset7-original-game-fox": {
+      "id": "terrain-ruleset7-original-game-fox",
+      "status": "ACCEPTED",
+      "jobId": "3c90e346-8742-4ad8-9f28-5387311e98a8",
+      "candidate": "art/pixellab/candidates/terrain-ruleset7-original-game-fox.png",
+      "candidateSha256": "dbdcdfe4fc1730471c2d6f96b03b4d505d18d63c77a3e30e8c24f903b399a2e2",
+      "providerOutputSha256": "f03fc1d5334f41ddfe109068098fb7c0138512b5468019f0fa742471a5f93127",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 68,
+        "top": 256,
+        "right": 188,
+        "bottom": 324,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: rust orange body and tail, cream chest and tail tip, dark teal outline and southeast shadow. Clean illustrated Game wildlife resource: one chunky low fox with a large flowing rust-orange tail and cream tail tip, pointy ears, short legs, facing southeast. Cute wild woodland animal, not a unit or pet. Transparent untrimmed 256 by 384 canvas, isolated and centered in front of Forest canopy. Smooth bold charcoal-teal contour, flat two-level cel shading, northwest light. Match existing boar resource scale, fit x68..188 y196..324, bottom y324. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, jagged pixel edges, detailed fur, realistic anatomy, wolf, dog collar, upright person, armor, saddle, weapon, other animals, tree, grass, ground patch, shadow, tile, text, UI, 3D.",
+        "prompt": "Clean illustrated Game wildlife resource: one chunky low fox with a large flowing rust-orange tail and cream tail tip, pointy ears, short legs, facing southeast. Cute wild woodland animal, not a unit or pet. Transparent untrimmed 256 by 384 canvas, isolated and centered in front of Forest canopy. Smooth bold charcoal-teal contour, flat two-level cel shading, northwest light. Match existing boar resource scale, fit x68..188 y196..324, bottom y324.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, jagged pixel edges, detailed fur, realistic anatomy, wolf, dog collar, upright person, armor, saddle, weapon, other animals, tree, grass, ground patch, shadow, tile, text, UI, 3D",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 107906,
+        "noBackground": true,
+        "palette": "rust orange body and tail, cream chest and tail tip, dark teal outline and southeast shadow",
+        "postprocess": "preferred-low-marker-fit",
+        "groundContactY": 324,
+        "styleReference": {
+          "id": "terrain-square-original-animal",
+          "sha256": "5817682f9520679c26ac1d2bc3bb42202c2167190c0433f01569482e3116ef0f",
+          "usageDescription": "Preserve the Original Game resource scale, broad clean outline and low southeast-facing wildlife stance; make a distinct fox species."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        }
+      },
+      "outputSha256": "dbdcdfe4fc1730471c2d6f96b03b4d505d18d63c77a3e30e8c24f903b399a2e2",
+      "notes": "Accepted after source, enlarged, native v7 Forest family and 0.625 zoom review: low quadruped fox with clear ears and large tail, readable in front of canopy.",
+      "reviewedAt": "2026-09-22T13:21:19.229Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "terrain-ruleset7-original-game-deer": {
+      "id": "terrain-ruleset7-original-game-deer",
+      "status": "ACCEPTED",
+      "jobId": "694eb5c9-1651-4cee-ab9e-730b4bc21f9b",
+      "candidate": "art/pixellab/candidates/terrain-ruleset7-original-game-deer.png",
+      "candidateSha256": "ff0692f3540f9d3d6cab0fa7508e741a4f2edd2ba717b1db18d47bcb36c63be2",
+      "providerOutputSha256": "fa90de53f12dc9f7250de9a54fb722b9f3ee70786a3d139d9b8397a064aa050a",
+      "width": 256,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 74,
+        "top": 196,
+        "right": 182,
+        "bottom": 324,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm golden tan, cream chest and northwest highlights, muted moss antlers, charcoal-teal outline and southeast shadow. Clean illustrated low Game wildlife sprite: one compact FOUR-LEGGED deer in three-quarter side profile, facing down-right/southeast. Its back and horizontal torso are longer than its legs and neck; all four hooves touch one baseline. Head extends forward from a short sloping neck; show two small simple antlers and ears without increasing total height. Use warm tan body, cream chest, dark charcoal-teal smooth outline, broad flat northwest-lit cel shading. It is a natural forest deer on transparent 256 by 384, not a character. Broad low silhouette like the referenced boar, fit x68..188,y196..324, bottom y324, no ground. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; front-facing portrait, upright humanoid, standing on hind legs, tall narrow silhouette, vertical neck, long legs, giant antlers, cute mascot, human pose, weapon, clothing, saddle, detailed fur, realistic anatomy, multiple animals, tree, ground, shadow, tile, text, UI, pixel art, 3D.",
+        "prompt": "Clean illustrated low Game wildlife sprite: one compact FOUR-LEGGED deer in three-quarter side profile, facing down-right/southeast. Its back and horizontal torso are longer than its legs and neck; all four hooves touch one baseline. Head extends forward from a short sloping neck; show two small simple antlers and ears without increasing total height. Use warm tan body, cream chest, dark charcoal-teal smooth outline, broad flat northwest-lit cel shading. It is a natural forest deer on transparent 256 by 384, not a character. Broad low silhouette like the referenced boar, fit x68..188,y196..324, bottom y324, no ground.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; front-facing portrait, upright humanoid, standing on hind legs, tall narrow silhouette, vertical neck, long legs, giant antlers, cute mascot, human pose, weapon, clothing, saddle, detailed fur, realistic anatomy, multiple animals, tree, ground, shadow, tile, text, UI, pixel art, 3D",
+        "requestSize": {
+          "width": 256,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 384
+        },
+        "seed": 107915,
+        "noBackground": true,
+        "palette": "warm golden tan, cream chest and northwest highlights, muted moss antlers, charcoal-teal outline and southeast shadow",
+        "postprocess": "preferred-low-marker-fit",
+        "groundContactY": 324,
+        "styleReference": {
+          "id": "terrain-square-original-animal",
+          "sha256": "5817682f9520679c26ac1d2bc3bb42202c2167190c0433f01569482e3116ef0f",
+          "usageDescription": "Match the accepted boar low horizontal width-to-height ratio, clear four grounded legs, southeast-facing wildlife pose, outline and flat palette; replace species with small-antlered deer."
+        },
+        "squareFootprint": {
+          "left": 0,
+          "top": 128,
+          "right": 256,
+          "bottom": 384
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/terrain-ruleset7-original-game-deer-aafdd4dc19a2.png",
+          "candidateSha256": "aafdd4dc19a2d1a2b82812c898c604f7e4dd638926c4e927a452664ba187f87f",
+          "providerOutputSha256": "941d950f011071f4794fb04ae0b3bff4ff1d2979113bf2b799765482d00f514e",
+          "jobId": "ec893faf-ff36-4fff-9e0f-b737df3e861a",
+          "disposition": "REJECTED",
+          "notes": "Source, enlarged, native Forest and minzoom review: tall front-facing deer reads as an upright unit, rather than low quadruped wildlife.",
+          "reviewedAt": "2026-09-22T13:21:17.985Z",
+          "request": {
+            "endpoint": "generate-image-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm golden tan, cream chest and northwest highlights, muted moss antlers, charcoal-teal outline and southeast shadow. Clean illustrated Game wildlife resource: one cute low young forest deer with small simple antlers, compact horizontal body and four short legs, facing southeast. Warm tan coat, cream chest, broad charcoal-teal outline and flat northwest-lit cel shading. It must read as a wild deer, not a unit or mount. Transparent untrimmed 256 by 384 canvas, isolated, centered in front of Forest canopy. Smooth hand-drawn curves, no visible pixels. Fit x68..188 y196..324, bottom y324. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, jagged pixel edges, realistic fur, detailed anatomy, giant antlers, upright person, armor, saddle, pet collar, weapon, other animals, tree, grass, ground patch, shadow, tile, text, UI, 3D.",
+            "prompt": "Clean illustrated Game wildlife resource: one cute low young forest deer with small simple antlers, compact horizontal body and four short legs, facing southeast. Warm tan coat, cream chest, broad charcoal-teal outline and flat northwest-lit cel shading. It must read as a wild deer, not a unit or mount. Transparent untrimmed 256 by 384 canvas, isolated, centered in front of Forest canopy. Smooth hand-drawn curves, no visible pixels. Fit x68..188 y196..324, bottom y324.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, jagged pixel edges, realistic fur, detailed anatomy, giant antlers, upright person, armor, saddle, pet collar, weapon, other animals, tree, grass, ground patch, shadow, tile, text, UI, 3D",
+            "requestSize": {
+              "width": 256,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 256,
+              "height": 384
+            },
+            "seed": 107905,
+            "noBackground": true,
+            "palette": "warm golden tan, cream chest and northwest highlights, muted moss antlers, charcoal-teal outline and southeast shadow",
+            "postprocess": "preferred-low-marker-fit",
+            "groundContactY": 324,
+            "styleReference": {
+              "id": "terrain-square-original-animal",
+              "sha256": "5817682f9520679c26ac1d2bc3bb42202c2167190c0433f01569482e3116ef0f",
+              "usageDescription": "Preserve the Original Game resource scale, broad clean outline and low southeast-facing wildlife stance; make a distinct deer species."
+            },
+            "squareFootprint": {
+              "left": 0,
+              "top": 128,
+              "right": 256,
+              "bottom": 384
+            }
+          }
+        }
+      ],
+      "outputSha256": "ff0692f3540f9d3d6cab0fa7508e741a4f2edd2ba717b1db18d47bcb36c63be2",
+      "notes": "Accepted after source, enlarged, native v7 Forest family and 0.625 zoom review: low horizontal four-legged right-facing deer with clear antlers, distinct from unit; first upright candidate rejected.",
+      "reviewedAt": "2026-09-22T13:23:20.454Z",
       "reviewChecks": {
         "source": true,
         "native": true,

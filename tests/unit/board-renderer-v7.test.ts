@@ -10,8 +10,59 @@ import {
   type TileEdge,
 } from "../../src/render/canvas/geometry";
 import { exploredAllV7, initialV7 } from "../fixtures/v7-builders";
+import {
+  RULESET7_FRUIT_MAP_ART_IDS,
+  RULESET7_GAME_MAP_ART_IDS,
+  resourceMapArtIdV7,
+} from "../../src/assets/ruleset7-ui-art";
 
 describe("Ruleset 7 board renderer", () => {
+  it("renders all cosmetic resource variants from coordinates without changing the view", () => {
+    const state = exploredAllV7(initialV7(1516));
+    const base = viewForV7(state, state.humanPlayerId);
+    const view = {
+      ...base,
+      board: {
+        ...base.board,
+        tiles: base.board.tiles.map((tile) =>
+          tile.at.y === 0 && tile.at.x < 3
+            ? {
+                ...tile,
+                terrain: "GRASS" as const,
+                resource: "FRUIT" as const,
+                improvement: null,
+              }
+            : tile.at.y === 3 && tile.at.x < 3
+              ? {
+                  ...tile,
+                  terrain: "FOREST" as const,
+                  resource: "GAME" as const,
+                  improvement: null,
+                }
+              : tile,
+        ),
+      },
+    };
+    const before = JSON.stringify(view.board.tiles);
+    const plan = buildBoardRenderPlanV7(view, [], {
+      selection: null,
+      selectedUnitId: null,
+      selectedAchievement: null,
+    });
+    for (let x = 0; x < 3; x += 1) {
+      expect(
+        plan.entries.find((entry) => entry.key === `resource:${x},0`)?.assetId,
+      ).toBe(RULESET7_FRUIT_MAP_ART_IDS[x]);
+      expect(
+        plan.entries.find((entry) => entry.key === `resource:${x},3`)?.assetId,
+      ).toBe(RULESET7_GAME_MAP_ART_IDS[x]);
+      expect(resourceMapArtIdV7("FRUIT", { x, y: 0 })).toBe(
+        RULESET7_FRUIT_MAP_ART_IDS[x],
+      );
+    }
+    expect(JSON.stringify(view.board.tiles)).toBe(before);
+  });
+
   it("keeps square row depth, unit-over-improvement, accepted sites and map targets", () => {
     const state = exploredAllV7(initialV7(1516));
     const view = viewForV7(state, state.humanPlayerId);
@@ -108,7 +159,7 @@ describe("Ruleset 7 board renderer", () => {
     );
     const fertileIndex = plan.entries.findIndex(
       (entry) =>
-        entry.assetId === "terrain-square-fertile-ground" &&
+        entry.assetId === "terrain-ruleset7-resource-fertile-ground" &&
         entry.at.x === 0 &&
         entry.at.y === 1,
     );
@@ -235,7 +286,13 @@ describe("Ruleset 7 board renderer", () => {
       imageEntry("catapult", "UNIT", "unit-original-catapult", 1, 0),
       imageEntry("giant", "UNIT", "unit-original-juggernaut", 2, 0),
       imageEntry("processor", "IMPROVEMENT", "building-square-windmill", 3, 0),
-      imageEntry("camp", "IMPROVEMENT", "building-ruleset7-lumber-camp", 4, 0),
+      imageEntry(
+        "camp",
+        "IMPROVEMENT",
+        "building-ruleset7-resource-lumber-camp",
+        4,
+        0,
+      ),
       { ...imageEntry("city", "CITY", "building-city-2", 5, 0), value: 2 },
     ];
     const drawImage = vi.fn();

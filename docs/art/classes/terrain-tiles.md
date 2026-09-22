@@ -129,6 +129,23 @@ dedicated renderer integration bead.
 
 ### Square resources and Road material
 
+Ruleset 7 refreshes the current Fertile Ground presentation with
+`terrain-ruleset7-resource-fertile-ground` while preserving the transparent
+256 x 384 `(128,256)` resource geometry, 0.5 scale and bottom contact at
+`y=324`. It remains a broad natural soil patch with exactly two sparse sprouts,
+distinct from Farm. The earlier shared Fertile Ground raster is retained for
+legacy use.
+
+The current Original Fruit and Game families each retain their accepted first
+sprite and add two PixelLab variants. Fruit gains golden pears and violet
+plums; Game gains a low deer and fox alongside the existing boar. Each variant
+keeps the established source canvas, anchor, display scale and front-of-forest
+draw order. The map chooses a purely cosmetic variant from `(x * 31 + y * 17)
+% 3` in family order, without simulation PRNG or state. A selected tile shows
+its chosen map sprite. Technology and action icons use the canonical first
+family member. The older eight-source inventory below remains the historical
+Ruleset-6 square-resource set.
+
 The accepted square resource family contains exactly eight PixelLab source
 assets: Original and Candy Fruit, Original and Candy Game/Animal, shared Ore,
 Fertile Ground and Stone, plus one shared Road material. Resource overlays use

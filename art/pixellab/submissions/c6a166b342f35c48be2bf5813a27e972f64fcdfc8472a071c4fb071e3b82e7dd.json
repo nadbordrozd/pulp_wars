@@ -1,0 +1,35 @@
+{
+  "id": "terrain-ruleset7-original-game-fox",
+  "jobId": "3c90e346-8742-4ad8-9f28-5387311e98a8",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: rust orange body and tail, cream chest and tail tip, dark teal outline and southeast shadow. Clean illustrated Game wildlife resource: one chunky low fox with a large flowing rust-orange tail and cream tail tip, pointy ears, short legs, facing southeast. Cute wild woodland animal, not a unit or pet. Transparent untrimmed 256 by 384 canvas, isolated and centered in front of Forest canopy. Smooth bold charcoal-teal contour, flat two-level cel shading, northwest light. Match existing boar resource scale, fit x68..188 y196..324, bottom y324. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, jagged pixel edges, detailed fur, realistic anatomy, wolf, dog collar, upright person, armor, saddle, weapon, other animals, tree, grass, ground patch, shadow, tile, text, UI, 3D.",
+    "prompt": "Clean illustrated Game wildlife resource: one chunky low fox with a large flowing rust-orange tail and cream tail tip, pointy ears, short legs, facing southeast. Cute wild woodland animal, not a unit or pet. Transparent untrimmed 256 by 384 canvas, isolated and centered in front of Forest canopy. Smooth bold charcoal-teal contour, flat two-level cel shading, northwest light. Match existing boar resource scale, fit x68..188 y196..324, bottom y324.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, jagged pixel edges, detailed fur, realistic anatomy, wolf, dog collar, upright person, armor, saddle, weapon, other animals, tree, grass, ground patch, shadow, tile, text, UI, 3D",
+    "requestSize": {
+      "width": 256,
+      "height": 384
+    },
+    "outputSize": {
+      "width": 256,
+      "height": 384
+    },
+    "seed": 107906,
+    "noBackground": true,
+    "palette": "rust orange body and tail, cream chest and tail tip, dark teal outline and southeast shadow",
+    "postprocess": "preferred-low-marker-fit",
+    "groundContactY": 324,
+    "styleReference": {
+      "id": "terrain-square-original-animal",
+      "sha256": "5817682f9520679c26ac1d2bc3bb42202c2167190c0433f01569482e3116ef0f",
+      "usageDescription": "Preserve the Original Game resource scale, broad clean outline and low southeast-facing wildlife stance; make a distinct fox species."
+    },
+    "squareFootprint": {
+      "left": 0,
+      "top": 128,
+      "right": 256,
+      "bottom": 384
+    }
+  }
+}

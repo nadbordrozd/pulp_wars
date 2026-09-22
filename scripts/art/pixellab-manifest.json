@@ -4528,6 +4528,286 @@
       "anchor": { "x": 128, "y": 256 },
       "squareFootprint": { "left": 0, "top": 128, "right": 256, "bottom": 384 },
       "hardBounds": { "left": 0, "top": 0, "right": 256, "bottom": 384 }
+    },
+    {
+      "id": "building-ruleset7-resource-lumber-camp",
+      "class": "buildings",
+      "stage": "batch",
+      "endpoint": "generate-image-v2",
+      "seed": 107911,
+      "requestSize": {
+        "width": 384,
+        "height": 384
+      },
+      "outputSize": {
+        "width": 384,
+        "height": 384
+      },
+      "transparent": true,
+      "includeFactionLanguage": false,
+      "postprocess": "compact-building-fit",
+      "palette": "muted honey-brown timber, warm parchment cut wood, slate blue hand saw, restrained sage foliage, deep charcoal-teal contour",
+      "prompt": "Smooth clean 2D vector-like illustration for a strategy-game map, transparent 384 by 384. Draw a compact outdoor lumber camp as one joined composition: two sturdy trees with broad rounded leafy crowns behind a low open cutting bench, one upright hand saw leaning on the bench, three cut logs in a tidy front-right stack. Use broad continuous curved ink lines, tapered drawn strokes, smooth diagonals, large flat color planes and only 2 to 3 levels of cel shading. Southeast three-quarter view, soft northwest key light. It must look like a polished illustrated board-game sticker, not a pixel sprite. Keep a clear lower-center space for a unit. No ground, shadow or border. Source anchor 192,288, fit x52..332 y54..326, contact y326.",
+      "negativePrompt": "pixel art, pixelated, stair-step edges, jagged bitmap edges, 8-bit, 16-bit, pixel grid, blocky leaves, dither, mosaic, blurry pixels, retro sprite, tiny detail, disconnected props, more than two trees, dense forest, enclosed sawmill, circular saw, people, unit, ground, tile, platform, shadow, text, UI, photorealism, painterly, 3D",
+      "output": "public/assets/pixellab/buildings-ruleset7/resource-lumber-camp.png",
+      "anchor": {
+        "x": 192,
+        "y": 288
+      },
+      "groundContactY": 326,
+      "preferredBounds": {
+        "left": 52,
+        "top": 54,
+        "right": 332,
+        "bottom": 326
+      },
+      "fitBounds": {
+        "left": 52,
+        "top": 54,
+        "right": 332,
+        "bottom": 326
+      },
+      "hardBounds": {
+        "left": 8,
+        "top": 8,
+        "right": 376,
+        "bottom": 344
+      },
+      "styleReference": "building-square-monument",
+      "styleReferenceUsage": "Use only the accepted Monument smooth continuous contour, deliberate antialiasing, and broad hand-drawn cel planes; retain the requested timber-camp objects and palette."
+    },
+    {
+      "id": "terrain-ruleset7-resource-fertile-ground",
+      "class": "terrain",
+      "stage": "batch",
+      "endpoint": "generate-image-v2",
+      "seed": 107922,
+      "requestSize": {
+        "width": 400,
+        "height": 600
+      },
+      "outputSize": {
+        "width": 256,
+        "height": 384
+      },
+      "transparent": true,
+      "includeFactionLanguage": false,
+      "postprocess": "preferred-low-marker-fit",
+      "palette": "broad earthy umber patch with restrained lighter brown broken areas, two clearly legible sage-green leaf shoots, charcoal-teal sketch contour",
+      "prompt": "Smooth hand-drawn 2D terrain resource on transparent 400 by 600 canvas. Draw one FLAT irregular dark-brown soil patch spread horizontally into three fused asymmetric lobes with an uneven broken perimeter. It lies flush with terrain; no raised edge or side wall. Broad flat northwest-lit planes, no tiny texture. Exactly TWO legible green leaf shoots near center, each with two large leaves. Keep soil much wider than tall and neither circular nor symmetric. Isolated mark only. Final processing fits x44..212,y250..324 in 256 by 384 output.",
+      "negativePrompt": "perfect circle or oval, pancake, raised platform, thick rim, extruded side wall, shadow, roots, stump, hole, tiny seedlings, crop rows, farm, rectangular field, fruit, flowers, road, selection ring, tile, pixel art, jagged edges, 3D",
+      "output": "public/assets/pixellab/terrain-square/ruleset7-resource-fertile-ground.png",
+      "anchor": {
+        "x": 128,
+        "y": 256
+      },
+      "groundContactY": 324,
+      "squareFootprint": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384
+      },
+      "preferredBounds": {
+        "left": 44,
+        "top": 250,
+        "right": 212,
+        "bottom": 324
+      },
+      "hardBounds": {
+        "left": 32,
+        "top": 208,
+        "right": 224,
+        "bottom": 352
+      }
+    },
+    {
+      "id": "terrain-ruleset7-original-fruit-pear",
+      "class": "terrain",
+      "stage": "batch",
+      "endpoint": "generate-image-v2",
+      "seed": 107903,
+      "requestSize": {
+        "width": 256,
+        "height": 384
+      },
+      "outputSize": {
+        "width": 256,
+        "height": 384
+      },
+      "transparent": true,
+      "includeFactionLanguage": false,
+      "postprocess": "preferred-low-marker-fit",
+      "styleReference": "terrain-square-original-fruit",
+      "styleReferenceUsage": "Preserve the accepted Original Fruit clean thick outline, flat shading and broad three-form cluster; change to golden pears with distinct pear silhouettes.",
+      "palette": "warm golden-yellow pears, pale parchment northwest highlights, sage leaf, dark teal outline and southeast shadow",
+      "prompt": "Clean illustrated Original Fruit resource: three oversized golden pears in one low triangular harvest cluster with a single broad sage leaf and one short joined twig. Transparent untrimmed 256 by 384 canvas; broad smooth cartoon shapes, dark charcoal-teal outline, flat two-tone northwest-lit shading, no visible pixels. Match the existing Original Fruit family size and anchor, but use unmistakable pear silhouettes. Fit x76..180 y232..320, bottom y320; no ground.",
+      "negativePrompt": "pixel art, jagged pixel stair steps, tiny dots, apples, berries, more than three fruit, basket, tree, farm, candy, faces, limbs, ground, shadow, platform, text, UI, 3D, realism",
+      "output": "public/assets/pixellab/terrain-square/ruleset7-original-fruit-pear.png",
+      "anchor": {
+        "x": 128,
+        "y": 256
+      },
+      "groundContactY": 320,
+      "squareFootprint": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384
+      },
+      "preferredBounds": {
+        "left": 76,
+        "top": 232,
+        "right": 180,
+        "bottom": 320
+      },
+      "hardBounds": {
+        "left": 48,
+        "top": 176,
+        "right": 208,
+        "bottom": 352
+      }
+    },
+    {
+      "id": "terrain-ruleset7-original-fruit-plum",
+      "class": "terrain",
+      "stage": "batch",
+      "endpoint": "generate-image-v2",
+      "seed": 107904,
+      "requestSize": {
+        "width": 256,
+        "height": 384
+      },
+      "outputSize": {
+        "width": 256,
+        "height": 384
+      },
+      "transparent": true,
+      "includeFactionLanguage": false,
+      "postprocess": "preferred-low-marker-fit",
+      "styleReference": "terrain-square-original-fruit",
+      "styleReferenceUsage": "Preserve the accepted Original Fruit clean contour, three-form cluster, northwest light and size; change the forms and palette to plums.",
+      "palette": "three deep purple-violet plums, mauve northwest highlight, sage leaf, dark teal outline and southeast shadow",
+      "prompt": "Clean illustrated Original Fruit resource: three large deep violet plums in one broad low triangular harvest cluster, with one short dark twig and a single chunky green leaf. Distinct round plum forms, each simple and readable at minimum zoom. Transparent untrimmed 256 by 384 canvas, smooth hand-drawn contour and flat two-level cel shading with northwest light. Match existing Original Fruit scale, source anchor 128,256 and preferred x76..180 y232..320, bottom y320. No ground.",
+      "negativePrompt": "pixel art, jagged pixel stair steps, tiny berries, apples, grapes, many small dots, more than three fruit, basket, tree, farm, candy, faces, limbs, ground, shadow, platform, text, UI, 3D, realism",
+      "output": "public/assets/pixellab/terrain-square/ruleset7-original-fruit-plum.png",
+      "anchor": {
+        "x": 128,
+        "y": 256
+      },
+      "groundContactY": 320,
+      "squareFootprint": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384
+      },
+      "preferredBounds": {
+        "left": 76,
+        "top": 232,
+        "right": 180,
+        "bottom": 320
+      },
+      "hardBounds": {
+        "left": 48,
+        "top": 176,
+        "right": 208,
+        "bottom": 352
+      }
+    },
+    {
+      "id": "terrain-ruleset7-original-game-deer",
+      "class": "terrain",
+      "stage": "batch",
+      "endpoint": "generate-image-v2",
+      "seed": 107915,
+      "requestSize": {
+        "width": 256,
+        "height": 384
+      },
+      "outputSize": {
+        "width": 256,
+        "height": 384
+      },
+      "transparent": true,
+      "includeFactionLanguage": false,
+      "postprocess": "preferred-low-marker-fit",
+      "styleReference": "terrain-square-original-animal",
+      "styleReferenceUsage": "Match the accepted boar low horizontal width-to-height ratio, clear four grounded legs, southeast-facing wildlife pose, outline and flat palette; replace species with small-antlered deer.",
+      "palette": "warm golden tan, cream chest and northwest highlights, muted moss antlers, charcoal-teal outline and southeast shadow",
+      "prompt": "Clean illustrated low Game wildlife sprite: one compact FOUR-LEGGED deer in three-quarter side profile, facing down-right/southeast. Its back and horizontal torso are longer than its legs and neck; all four hooves touch one baseline. Head extends forward from a short sloping neck; show two small simple antlers and ears without increasing total height. Use warm tan body, cream chest, dark charcoal-teal smooth outline, broad flat northwest-lit cel shading. It is a natural forest deer on transparent 256 by 384, not a character. Broad low silhouette like the referenced boar, fit x68..188,y196..324, bottom y324, no ground.",
+      "negativePrompt": "front-facing portrait, upright humanoid, standing on hind legs, tall narrow silhouette, vertical neck, long legs, giant antlers, cute mascot, human pose, weapon, clothing, saddle, detailed fur, realistic anatomy, multiple animals, tree, ground, shadow, tile, text, UI, pixel art, 3D",
+      "output": "public/assets/pixellab/terrain-square/ruleset7-original-game-deer.png",
+      "anchor": {
+        "x": 128,
+        "y": 256
+      },
+      "groundContactY": 324,
+      "squareFootprint": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384
+      },
+      "preferredBounds": {
+        "left": 68,
+        "top": 196,
+        "right": 188,
+        "bottom": 324
+      },
+      "hardBounds": {
+        "left": 40,
+        "top": 160,
+        "right": 216,
+        "bottom": 352
+      }
+    },
+    {
+      "id": "terrain-ruleset7-original-game-fox",
+      "class": "terrain",
+      "stage": "batch",
+      "endpoint": "generate-image-v2",
+      "seed": 107906,
+      "requestSize": {
+        "width": 256,
+        "height": 384
+      },
+      "outputSize": {
+        "width": 256,
+        "height": 384
+      },
+      "transparent": true,
+      "includeFactionLanguage": false,
+      "postprocess": "preferred-low-marker-fit",
+      "styleReference": "terrain-square-original-animal",
+      "styleReferenceUsage": "Preserve the Original Game resource scale, broad clean outline and low southeast-facing wildlife stance; make a distinct fox species.",
+      "palette": "rust orange body and tail, cream chest and tail tip, dark teal outline and southeast shadow",
+      "prompt": "Clean illustrated Game wildlife resource: one chunky low fox with a large flowing rust-orange tail and cream tail tip, pointy ears, short legs, facing southeast. Cute wild woodland animal, not a unit or pet. Transparent untrimmed 256 by 384 canvas, isolated and centered in front of Forest canopy. Smooth bold charcoal-teal contour, flat two-level cel shading, northwest light. Match existing boar resource scale, fit x68..188 y196..324, bottom y324.",
+      "negativePrompt": "pixel art, jagged pixel edges, detailed fur, realistic anatomy, wolf, dog collar, upright person, armor, saddle, weapon, other animals, tree, grass, ground patch, shadow, tile, text, UI, 3D",
+      "output": "public/assets/pixellab/terrain-square/ruleset7-original-game-fox.png",
+      "anchor": {
+        "x": 128,
+        "y": 256
+      },
+      "groundContactY": 324,
+      "squareFootprint": {
+        "left": 0,
+        "top": 128,
+        "right": 256,
+        "bottom": 384
+      },
+      "preferredBounds": {
+        "left": 68,
+        "top": 196,
+        "right": 188,
+        "bottom": 324
+      },
+      "hardBounds": {
+        "left": 40,
+        "top": 160,
+        "right": 216,
+        "bottom": 352
+      }
     }
   ]
 }

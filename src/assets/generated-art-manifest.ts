@@ -486,6 +486,24 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   "terrain-ruleset7-revision3-mined-mountain-3": publicArtUrl(
     "assets/pixellab/terrain-ruleset7/revision3-mined-mountain-3.png",
   ),
+  "building-ruleset7-resource-lumber-camp": publicArtUrl(
+    "assets/pixellab/buildings-ruleset7/resource-lumber-camp.png",
+  ),
+  "terrain-ruleset7-resource-fertile-ground": publicArtUrl(
+    "assets/pixellab/terrain-square/ruleset7-resource-fertile-ground.png",
+  ),
+  "terrain-ruleset7-original-fruit-pear": publicArtUrl(
+    "assets/pixellab/terrain-square/ruleset7-original-fruit-pear.png",
+  ),
+  "terrain-ruleset7-original-fruit-plum": publicArtUrl(
+    "assets/pixellab/terrain-square/ruleset7-original-fruit-plum.png",
+  ),
+  "terrain-ruleset7-original-game-deer": publicArtUrl(
+    "assets/pixellab/terrain-square/ruleset7-original-game-deer.png",
+  ),
+  "terrain-ruleset7-original-game-fox": publicArtUrl(
+    "assets/pixellab/terrain-square/ruleset7-original-game-fox.png",
+  ),
   "terrain-game": publicArtUrl("assets/pixellab/terrain/animal.png"),
   "building-ruleset6-mine": publicArtUrl("assets/pixellab/buildings/mine.png"),
   "building-lumber-camp": publicArtUrl(

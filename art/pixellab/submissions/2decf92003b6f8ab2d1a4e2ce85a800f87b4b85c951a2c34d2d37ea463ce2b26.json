@@ -1,0 +1,35 @@
+{
+  "id": "terrain-ruleset7-resource-fertile-ground",
+  "jobId": "578db2b4-619d-44d3-89fa-abbcad61f701",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: readable warm cocoa-umber soil, brighter bronze northwest rim, two sage-green sprouts, clean dark teal-brown outline. Polished smooth 2D illustrated terrain resource on a transparent 256 by 384 canvas. Draw one WIDE, LOW horizontal oval patch of fertile brown soil occupying the full width of x44..212 and low y250..324. The visible patch is one continuous irregular but rounded earth island with a clear top surface, broad warm-brown center, simple darker side edge and bronze northwest rim. Add exactly TWO tiny separate green seedlings growing from the top near center. Emphasize a generous wide soil surface, not roots or plants. Smooth flowing continuous ink outline, large flat two-tone shading, no small pixels or texture. Center inside the owning square; bottom at y324. It represents wild fertile ground before Farm construction. No ground outside this isolated patch. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, jagged edges, pixel blocks, dither, roots, dangling roots, tentacles, tree stump, hole, crater, mound, cliff, shadow, tiny patch, narrow shape, dark unreadable soil, farm crop rows, furrows, fence, rectangular field, fruit, flowers, many plants, road, selection ring, platform, tile, text, UI, 3D, realism.",
+    "prompt": "Polished smooth 2D illustrated terrain resource on a transparent 256 by 384 canvas. Draw one WIDE, LOW horizontal oval patch of fertile brown soil occupying the full width of x44..212 and low y250..324. The visible patch is one continuous irregular but rounded earth island with a clear top surface, broad warm-brown center, simple darker side edge and bronze northwest rim. Add exactly TWO tiny separate green seedlings growing from the top near center. Emphasize a generous wide soil surface, not roots or plants. Smooth flowing continuous ink outline, large flat two-tone shading, no small pixels or texture. Center inside the owning square; bottom at y324. It represents wild fertile ground before Farm construction. No ground outside this isolated patch.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; pixel art, jagged edges, pixel blocks, dither, roots, dangling roots, tentacles, tree stump, hole, crater, mound, cliff, shadow, tiny patch, narrow shape, dark unreadable soil, farm crop rows, furrows, fence, rectangular field, fruit, flowers, many plants, road, selection ring, platform, tile, text, UI, 3D, realism",
+    "requestSize": {
+      "width": 256,
+      "height": 384
+    },
+    "outputSize": {
+      "width": 256,
+      "height": 384
+    },
+    "seed": 107912,
+    "noBackground": true,
+    "palette": "readable warm cocoa-umber soil, brighter bronze northwest rim, two sage-green sprouts, clean dark teal-brown outline",
+    "postprocess": "preferred-low-marker-fit",
+    "groundContactY": 324,
+    "styleReference": {
+      "id": "building-ruleset7-farm-single",
+      "sha256": "211ff46d8e091dc11fea9ee48ac2b0b5fd9953f4506542314772cd98a5bc28ea",
+      "usageDescription": "Use only the accepted Farm smooth broad soil planes, leaf outline and flat northwest-lit shading; create one undeveloped irregular oval soil patch, never rows or a square field."
+    },
+    "squareFootprint": {
+      "left": 0,
+      "top": 128,
+      "right": 256,
+      "bottom": 384
+    }
+  }
+}

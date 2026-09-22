@@ -1,0 +1,35 @@
+{
+  "id": "terrain-ruleset7-original-game-deer",
+  "jobId": "694eb5c9-1651-4cee-ab9e-730b4bc21f9b",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm golden tan, cream chest and northwest highlights, muted moss antlers, charcoal-teal outline and southeast shadow. Clean illustrated low Game wildlife sprite: one compact FOUR-LEGGED deer in three-quarter side profile, facing down-right/southeast. Its back and horizontal torso are longer than its legs and neck; all four hooves touch one baseline. Head extends forward from a short sloping neck; show two small simple antlers and ears without increasing total height. Use warm tan body, cream chest, dark charcoal-teal smooth outline, broad flat northwest-lit cel shading. It is a natural forest deer on transparent 256 by 384, not a character. Broad low silhouette like the referenced boar, fit x68..188,y196..324, bottom y324, no ground. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; front-facing portrait, upright humanoid, standing on hind legs, tall narrow silhouette, vertical neck, long legs, giant antlers, cute mascot, human pose, weapon, clothing, saddle, detailed fur, realistic anatomy, multiple animals, tree, ground, shadow, tile, text, UI, pixel art, 3D.",
+    "prompt": "Clean illustrated low Game wildlife sprite: one compact FOUR-LEGGED deer in three-quarter side profile, facing down-right/southeast. Its back and horizontal torso are longer than its legs and neck; all four hooves touch one baseline. Head extends forward from a short sloping neck; show two small simple antlers and ears without increasing total height. Use warm tan body, cream chest, dark charcoal-teal smooth outline, broad flat northwest-lit cel shading. It is a natural forest deer on transparent 256 by 384, not a character. Broad low silhouette like the referenced boar, fit x68..188,y196..324, bottom y324, no ground.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; front-facing portrait, upright humanoid, standing on hind legs, tall narrow silhouette, vertical neck, long legs, giant antlers, cute mascot, human pose, weapon, clothing, saddle, detailed fur, realistic anatomy, multiple animals, tree, ground, shadow, tile, text, UI, pixel art, 3D",
+    "requestSize": {
+      "width": 256,
+      "height": 384
+    },
+    "outputSize": {
+      "width": 256,
+      "height": 384
+    },
+    "seed": 107915,
+    "noBackground": true,
+    "palette": "warm golden tan, cream chest and northwest highlights, muted moss antlers, charcoal-teal outline and southeast shadow",
+    "postprocess": "preferred-low-marker-fit",
+    "groundContactY": 324,
+    "styleReference": {
+      "id": "terrain-square-original-animal",
+      "sha256": "5817682f9520679c26ac1d2bc3bb42202c2167190c0433f01569482e3116ef0f",
+      "usageDescription": "Match the accepted boar low horizontal width-to-height ratio, clear four grounded legs, southeast-facing wildlife pose, outline and flat palette; replace species with small-antlered deer."
+    },
+    "squareFootprint": {
+      "left": 0,
+      "top": 128,
+      "right": 256,
+      "bottom": 384
+    }
+  }
+}
