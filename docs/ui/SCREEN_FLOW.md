@@ -77,9 +77,12 @@ status envelope and remain visually distinct from the larger yellow/red/empty
 city population squares inside the labeled city badge. The render plan consumes
 only the public live-value projection and never reconstructs spatial rules.
 
-The selected-tile dock begins with a compact art-led identity using the most
+For current Ruleset 7, the selected-tile dock begins with a compact art-led identity using the most
 specific public improvement, revealed resource, or terrain artwork and its
-plain semantic name. It never displays logical coordinates. It identifies
+plain semantic name directly below the image. Road names an otherwise plain
+tile when present. The dock omits biome headings and generic explored-territory
+text; public improvement values, Road context, and exact offered actions remain
+available. It never displays logical coordinates. It identifies
 Grass/Forest/Mountain; visible Fruit, Game, Fertile Ground, Ore, or Stone; all
 eleven economic improvements; Road; Chocolate Wall; and territory. An explored
 resource hidden by technology is represented only by its public terrain in the
@@ -177,8 +180,13 @@ absent from new-match Tech, Train, Stats, and help.
 
 ### Territory and rewards
 
-City selection outlines only explored assigned territory. Before level 4 it
-also previews the centered 5 x 5 potential boundary without implying ownership.
+In the current Ruleset 7 presentation, territory contours follow actual
+ownership and city assignment wherever an edge touches explored ground. They
+remain open through fog, show no wholly hidden edges, and do not draw a
+potential 5 x 5 city expansion outline. A selected city's actual boundary stays
+prominent. The older Ruleset 6 behavior was: city selection outlines only
+explored assigned territory and, before level 4, previews the centered 5 x 5
+potential boundary without implying ownership.
 Expand preview marks neutral cells that will be claimed and retained conflicting
 city cells. Candy Candify targeting is clipped to the chosen city's current
 3 x 3/5 x 5 footprint and retains the mandatory tied-nearest city dialog.

@@ -1523,6 +1523,16 @@ type PlayerTileViewV7 =
       readonly territoryOwnerId: PlayerId | null;
     };
 
+interface PublicTerritoryBorderV7 {
+  readonly at: Coord;
+  readonly edge: "NORTH" | "EAST" | "SOUTH" | "WEST";
+  readonly ownerId: PlayerId | null;
+  readonly cityIds: readonly CityId[];
+}
+
+// PlayerBoardViewV7 additionally carries territoryBorders:
+// readonly territoryBorders: readonly PublicTerritoryBorderV7[];
+
 interface PublicCityV7 {
   readonly id: CityId;
   readonly ownerId: PlayerId;
@@ -1666,6 +1676,12 @@ Projection rules are exact:
 - Unexplored tiles contain coordinate and `explored: false` only, except the
   content-free allied-territory block. Every explored revision-3 resource is
   exact because all retained resource kinds are visible from match start.
+- `board.territoryBorders` projects each actual owner or visible-city boundary
+  once when at least one adjacent tile is explored, including board edges.
+  Equal-owner interior edges have no owner contour. A border carries only its
+  edge, owner styling ID when owners differ, and IDs of cities whose centers
+  are already visible and whose territory ends there. It exposes no hidden tile
+  terrain, resource, improvement, Road, unit, or wholly hidden edge.
 - A city appears only when its center is explored. A normal unit appears on an
   explored tile. A Saboteur appears only when section 7.2 makes it visible to
   that viewer.

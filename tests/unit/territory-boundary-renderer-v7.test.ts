@@ -6,7 +6,7 @@ import {
 import { territoryReviewFixtureV7 } from "../fixtures/ruleset7-territory-review";
 
 describe("square territory boundary presentation", () => {
-  it("uses only public explored cells, merging same-owner cells with no interior edges", () => {
+  it("uses only public border segments and never reads hidden tile fields", () => {
     const base = territoryReviewFixtureV7();
     const view = {
       ...base,
@@ -32,18 +32,16 @@ describe("square territory boundary presentation", () => {
     });
     const owned = plan.entries.filter(
       (entry) =>
-        entry.kind === "TERRITORY_BOUNDARY" &&
-        entry.at.x >= 1 &&
-        entry.at.x <= 3,
+        entry.kind === "TERRITORY_BOUNDARY" && entry.ownerId === base.viewer.id,
     );
     expect(owned).toHaveLength(12);
     for (const entry of owned) {
       expect(entry.boundaryStyle).toBe("OWNER");
       expect(
-        (entry.edge === "NORTH" && entry.at.y === 1) ||
+        (entry.edge === "SOUTH" && entry.at.y === 0) ||
           (entry.edge === "EAST" && entry.at.x === 3) ||
           (entry.edge === "SOUTH" && entry.at.y === 3) ||
-          (entry.edge === "WEST" && entry.at.x === 1),
+          (entry.edge === "EAST" && entry.at.x === 0),
       ).toBe(true);
     }
   });

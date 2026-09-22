@@ -905,8 +905,11 @@ describe("Ruleset 7 DOM shell", () => {
     );
     host.callbacks?.onSelection({ kind: "TILE", at: targetAt });
     expect(document.querySelector(".v7-identity h2")?.textContent).toBe(
-      "Plains · Mountain",
+      "Mountain",
     );
+    expect(
+      document.querySelector(".v7-selection-dock")?.textContent,
+    ).not.toContain("Explored territory");
     expect(
       document.querySelector(".v7-context-actions")?.textContent,
     ).toContain("Build Monument");
@@ -917,22 +920,12 @@ describe("Ruleset 7 DOM shell", () => {
       document.querySelector(".v7-selection-details")?.textContent,
     ).not.toContain("Ore");
     host.callbacks?.onSelection({ kind: "TILE", at: oreAt });
-    expect(document.querySelector(".v7-identity h2")?.textContent).toBe(
-      "Highlands · Mountain",
-    );
-    expect(
-      document.querySelector(".v7-selection-details")?.textContent,
-    ).toContain("Ore");
+    expect(document.querySelector(".v7-identity h2")?.textContent).toBe("Ore");
     expect(document.querySelector(".v7-context-action")?.textContent).toContain(
       "Build Mine",
     );
     host.callbacks?.onSelection({ kind: "TILE", at: mineAt });
-    expect(document.querySelector(".v7-identity h2")?.textContent).toBe(
-      "Highlands · Mountain",
-    );
-    expect(
-      document.querySelector(".v7-selection-details")?.textContent,
-    ).toContain("Mine");
+    expect(document.querySelector(".v7-identity h2")?.textContent).toBe("Mine");
     host.callbacks?.onSelection({ kind: "TILE", at: forgeAt });
     expect(document.querySelector(".v7-context-action")?.textContent).toContain(
       "Build Forge",

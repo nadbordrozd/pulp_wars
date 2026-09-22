@@ -52,6 +52,17 @@ export interface PlayerBoardViewV7 {
   readonly width: BoardSizeV7;
   readonly height: BoardSizeV7;
   readonly tiles: readonly PlayerTileViewV7[];
+  /** Real territory edges touching explored ground; no tile content is projected. */
+  readonly territoryBorders: readonly PublicTerritoryBorderV7[];
+}
+
+export interface PublicTerritoryBorderV7 {
+  readonly at: CoordV7;
+  readonly edge: "NORTH" | "EAST" | "SOUTH" | "WEST";
+  /** Present only where the owners differ. */
+  readonly ownerId: PlayerId | null;
+  /** Visible city centers whose actual territory ends on this edge. */
+  readonly cityIds: readonly CityId[];
 }
 
 export interface PublicPlayerV7 {
@@ -274,6 +285,51 @@ export function viewForV7(
       territoryOwnerId: territory?.ownerId ?? null,
     };
   });
+  const tilesByCoord = new Map(
+    state.board.tiles.map((tile) => [key(tile.at), tile] as const),
+  );
+  const territoryBorders: PublicTerritoryBorderV7[] = [];
+  const directions = [
+    { edge: "NORTH", dx: 0, dy: -1 },
+    { edge: "EAST", dx: 1, dy: 0 },
+    { edge: "SOUTH", dx: 0, dy: 1 },
+    { edge: "WEST", dx: -1, dy: 0 },
+  ] as const;
+  for (const tile of state.board.tiles) {
+    for (const { edge, dx, dy } of directions) {
+      // Interior edges are emitted once. West and north still cover board edges.
+      if (
+        (edge === "WEST" && tile.at.x > 0) ||
+        (edge === "NORTH" && tile.at.y > 0)
+      )
+        continue;
+      const neighbor = tilesByCoord.get(
+        key({ x: tile.at.x + dx, y: tile.at.y + dy }),
+      );
+      if (
+        !explored.has(key(tile.at)) &&
+        (neighbor === undefined || !explored.has(key(neighbor.at)))
+      )
+        continue;
+      const leftCity = tile.territoryCityId;
+      const rightCity = neighbor?.territoryCityId ?? null;
+      if (leftCity === rightCity) continue;
+      const leftOwner =
+        leftCity === null ? null : (citiesById.get(leftCity)?.ownerId ?? null);
+      const rightOwner =
+        rightCity === null
+          ? null
+          : (citiesById.get(rightCity)?.ownerId ?? null);
+      const ownerId =
+        leftOwner === rightOwner ? null : (leftOwner ?? rightOwner);
+      const cityIds = [leftCity, rightCity].filter(
+        (cityId): cityId is CityId =>
+          cityId !== null && visibleCityIds.has(cityId),
+      );
+      if (ownerId === null && cityIds.length === 0) continue;
+      territoryBorders.push({ at: tile.at, edge, ownerId, cityIds });
+    }
+  }
   const visibleUnits = state.units.filter((unit) =>
     isUnitVisibleToPlayerV7(state, viewerId, unit),
   );
@@ -451,7 +507,12 @@ export function viewForV7(
       },
     ),
     leaderboard,
-    board: { width: state.board.width, height: state.board.height, tiles },
+    board: {
+      width: state.board.width,
+      height: state.board.height,
+      tiles,
+      territoryBorders,
+    },
     cities: publicCities,
     populationContributions: visibleContributions,
     improvementValues,

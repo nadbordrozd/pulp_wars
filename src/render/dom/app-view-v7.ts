@@ -1136,21 +1136,16 @@ export class Ruleset7DomAppView {
               ? resourceMapArtIdV7(tile.resource, tile.at)
               : RULESET7_TERRAIN_ART_IDS[tile.terrain]
             : RULESET7_IMPROVEMENT_ART_IDS[tile.improvement];
-        const name = `${title(tile.biome)} · ${title(tile.terrain)}`;
+        const name = title(
+          tile.improvement ??
+            (tile.resource !== "UNKNOWN_RESOURCE" ? tile.resource : null) ??
+            (tile.road ? "ROAD" : tile.terrain),
+        );
         const summary = el(this.#document, "div", "v7-selection-summary");
         summary.append(identity(this.#document, asset, name, true));
         const details = el(this.#document, "div", "v7-selection-details");
-        details.append(
-          text(
-            this.#document,
-            "p",
-            tile.road ? "Road · explored territory" : "Explored territory",
-          ),
-        );
-        if (tile.improvement !== null)
-          details.append(text(this.#document, "p", title(tile.improvement)));
-        else if (tile.resource !== null && tile.resource !== "UNKNOWN_RESOURCE")
-          details.append(text(this.#document, "p", title(tile.resource)));
+        if (tile.road && name !== "Road")
+          details.append(text(this.#document, "p", "Road"));
         const value = view.improvementValues.find((entry) =>
           same(entry.at, tile.at),
         );
@@ -1278,10 +1273,11 @@ export class Ruleset7DomAppView {
         const card = el(this.#document, "div", "v7-train-card");
         const help = button(
           this.#document,
-          "?",
+          "",
           `train-help-${command.role.toLowerCase()}`,
           "v7-train-help",
         );
+        help.append(text(this.#document, "span", "?", "v7-train-help-glyph"));
         const label = effectiveRoleRuleV7(command.role).label;
         help.setAttribute("aria-label", `About ${label}`);
         help.disabled = this.#localBusy();

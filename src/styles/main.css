@@ -332,6 +332,19 @@
   grid-row: 1;
 }
 
+.v7-selection-dock[data-selection-kind="tile"] .v7-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  align-items: flex-start;
+}
+
+.v7-selection-dock[data-selection-kind="tile"] .v7-identity h2 {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.15;
+}
+
 .v7-selection-dock[data-selection-kind="tile"] > .v7-context-actions {
   grid-column: 2;
 }
@@ -602,19 +615,39 @@
   width: 100%;
 }
 
+.v7-train-card > .v7-train-action > .v7-art-frame {
+  margin-right: 2.5rem;
+}
+
 .v7-train-help {
   position: absolute;
   z-index: 2;
-  top: 0.35rem;
-  right: 0.35rem;
+  top: 0;
+  right: 0;
+  display: grid;
+  place-items: start end;
   width: 44px;
   min-width: 44px;
   height: 44px;
   padding: 0;
-  border-radius: 999px;
-  background: var(--panel-strong);
-  font-size: 1.15rem;
+  border: 0;
+  background: transparent;
   line-height: 1;
+}
+
+.v7-train-help-glyph {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--line);
+  border-radius: 50%;
+  background: var(--panel-strong);
+  font-size: 0.75rem;
+}
+
+.v7-train-help:hover:not(:disabled) .v7-train-help-glyph {
+  border-color: var(--paper);
 }
 
 .v7-reward-action {

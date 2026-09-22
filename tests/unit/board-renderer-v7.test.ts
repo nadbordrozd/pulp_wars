@@ -5,10 +5,7 @@ import {
   drawBoardV7,
   type BoardRenderPlanEntryV7,
 } from "../../src/render/canvas/board-renderer-v7";
-import {
-  territoryBoundarySegments,
-  type TileEdge,
-} from "../../src/render/canvas/geometry";
+import { type TileEdge } from "../../src/render/canvas/geometry";
 import { exploredAllV7, initialV7 } from "../fixtures/v7-builders";
 import {
   RULESET7_FRUIT_MAP_ART_IDS,
@@ -737,7 +734,7 @@ describe("Ruleset 7 board renderer", () => {
     ).toBeLessThan(drawImage.mock.invocationCallOrder[0] ?? 0);
   });
 
-  it("emits one public contour winner per physical owner, city, or potential edge", () => {
+  it("emits one real contour winner per physical edge, including explored-to-fog edges", () => {
     const state = exploredAllV7(initialV7(1519));
     const base = viewForV7(state, state.humanPlayerId);
     const city = base.cities.find(
@@ -751,17 +748,22 @@ describe("Ruleset 7 board renderer", () => {
         (tile.at.x !== city.at.x || tile.at.y !== city.at.y),
     );
     if (hidden === undefined) throw new Error("territory tile missing");
-    const view = {
-      ...base,
-      board: {
-        ...base.board,
-        tiles: base.board.tiles.map((tile) =>
-          tile.at.x === hidden.at.x && tile.at.y === hidden.at.y
-            ? ({ at: tile.at, explored: false as const } as const)
-            : tile,
+    const view = viewForV7(
+      {
+        ...state,
+        players: state.players.map((player) =>
+          player.id === state.humanPlayerId
+            ? {
+                ...player,
+                explored: player.explored.filter(
+                  (at) => at.x !== hidden.at.x || at.y !== hidden.at.y,
+                ),
+              }
+            : player,
         ),
       },
-    };
+      state.humanPlayerId,
+    );
     const ambient = buildBoardRenderPlanV7(view, [], {
       selection: null,
       selectedUnitId: null,
@@ -784,23 +786,29 @@ describe("Ruleset 7 board renderer", () => {
     );
     expect(new Set(physicalEdges).size).toBe(physicalEdges.length);
     expect(
-      boundaries.every(
-        (entry) => entry.at.x !== hidden.at.x || entry.at.y !== hidden.at.y,
-      ),
-    ).toBe(true);
-
-    const observableAssigned = view.board.tiles
-      .filter((tile) => tile.explored && tile.territoryCityId === city.id)
-      .map((tile) => tile.at);
+      view.board.tiles.find(
+        (tile) => tile.at.x === hidden.at.x && tile.at.y === hidden.at.y,
+      )?.explored,
+    ).toBe(false);
     const selected = boundaries.filter(
       (entry) => entry.boundaryStyle === "CITY",
     );
     expect(selected).toHaveLength(
-      territoryBoundarySegments(observableAssigned).length,
+      view.board.territoryBorders.filter((border) =>
+        border.cityIds.includes(city.id),
+      ).length,
     );
     expect(
-      boundaries.some((entry) => entry.boundaryStyle === "POTENTIAL"),
-    ).toBe(!city.expanded);
+      boundaries.every(
+        (entry) =>
+          entry.boundaryStyle !== "OWNER" || entry.ownerColor !== undefined,
+      ),
+    ).toBe(true);
+    expect(
+      boundaries
+        .map((entry) => entry.key)
+        .some((key) => key.includes("potential")),
+    ).toBe(false);
   });
 
   it("strokes each physical movement-target edge once", () => {

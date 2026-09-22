@@ -27,7 +27,6 @@ import type { BoardGlowCacheV7 } from "./glow-cache-v7";
 import {
   TILE_HEIGHT,
   TILE_WIDTH,
-  territoryBoundarySegments,
   type CameraState,
   type Size,
   type TileEdge,
@@ -112,7 +111,7 @@ export interface BoardRenderPlanEntryV7 {
   readonly attachmentSlot?: number;
   readonly edge?: TileEdge;
   readonly targetEdges?: readonly TileEdge[];
-  readonly boundaryStyle?: "OWNER" | "CITY" | "POTENTIAL";
+  readonly boundaryStyle?: "OWNER" | "CITY";
 }
 
 export interface BoardRenderPlanV7 {
@@ -791,57 +790,23 @@ function addTerritoryBoundaries(
     selection?.kind === "CITY"
       ? view.cities.find((city) => city.id === selection.cityId)
       : undefined;
-  const selectedTerritory =
-    selectedCity === undefined
-      ? []
-      : view.board.tiles
-          .filter(
-            (tile) => tile.explored && tile.territoryCityId === selectedCity.id,
-          )
-          .map((tile) => tile.at);
-  const selectedSegments = territoryBoundarySegments(selectedTerritory);
-  const selectedEdgeKeys = new Set(
-    selectedSegments.map((segment) => edgeKey(segment.at, segment.edge)),
-  );
-  const potentialSegments =
-    selectedCity === undefined || selectedCity.expanded
-      ? []
-      : territoryBoundarySegments(
-          view.board.tiles
-            .filter(
-              (tile) =>
-                tile.explored &&
-                Math.abs(tile.at.x - selectedCity.at.x) <= 2 &&
-                Math.abs(tile.at.y - selectedCity.at.y) <= 2,
-            )
-            .map((tile) => tile.at),
-        );
-  const potentialEdgeKeys = new Set(
-    potentialSegments.map((segment) => edgeKey(segment.at, segment.edge)),
-  );
-
-  // One physical edge has one winner: selected city, then its potential
-  // footprint, then the ambient public-owner contour.
-  const ownerTerritories = new Map<number, CoordV7[]>();
-  for (const tile of view.board.tiles) {
-    if (!tile.explored || tile.territoryOwnerId === null) continue;
-    const territory = ownerTerritories.get(tile.territoryOwnerId) ?? [];
-    territory.push(tile.at);
-    ownerTerritories.set(tile.territoryOwnerId, territory);
-  }
-  const paintedOwnerEdges = new Set<string>();
-  for (const [ownerId, territory] of ownerTerritories) {
-    const ownerColor = ownerPresentation(view, ownerId).ownerColor;
-    if (ownerColor === undefined) continue;
-    for (const segment of territoryBoundarySegments(territory)) {
-      const key = edgeKey(segment.at, segment.edge);
-      if (
-        selectedEdgeKeys.has(key) ||
-        potentialEdgeKeys.has(key) ||
-        paintedOwnerEdges.has(key)
-      )
-        continue;
-      paintedOwnerEdges.add(key);
+  for (const segment of view.board.territoryBorders) {
+    const key = edgeKey(segment.at, segment.edge);
+    if (
+      selectedCity !== undefined &&
+      segment.cityIds.includes(selectedCity.id)
+    ) {
+      entries.push({
+        key: `territory-city:${selectedCity.id}:${key}`,
+        kind: "TERRITORY_BOUNDARY",
+        layer: 8,
+        at: segment.at,
+        edge: segment.edge,
+        boundaryStyle: "CITY",
+        ownerId: selectedCity.ownerId,
+        ...ownerPresentation(view, selectedCity.ownerId),
+      });
+    } else if (segment.ownerId !== null) {
       entries.push({
         key: `territory-owner:${key}`,
         kind: "TERRITORY_BOUNDARY",
@@ -849,38 +814,10 @@ function addTerritoryBoundaries(
         at: segment.at,
         edge: segment.edge,
         boundaryStyle: "OWNER",
-        ownerColor,
+        ownerId: segment.ownerId,
+        ...ownerPresentation(view, segment.ownerId),
       });
     }
-  }
-
-  if (selectedCity === undefined) return;
-  const selectedColor = ownerPresentation(
-    view,
-    selectedCity.ownerId,
-  ).ownerColor;
-  for (const segment of selectedSegments)
-    entries.push({
-      key: `territory-city:${selectedCity.id}:${edgeKey(segment.at, segment.edge)}`,
-      kind: "TERRITORY_BOUNDARY",
-      layer: 8,
-      at: segment.at,
-      edge: segment.edge,
-      boundaryStyle: "CITY",
-      ...(selectedColor === undefined ? {} : { ownerColor: selectedColor }),
-    });
-
-  for (const segment of potentialSegments) {
-    const key = edgeKey(segment.at, segment.edge);
-    if (selectedEdgeKeys.has(key)) continue;
-    entries.push({
-      key: `territory-potential:${selectedCity.id}:${key}`,
-      kind: "TERRITORY_BOUNDARY",
-      layer: 7,
-      at: segment.at,
-      edge: segment.edge,
-      boundaryStyle: "POTENTIAL",
-    });
   }
 }
 
@@ -996,7 +933,6 @@ function drawTerritoryBoundary(
   if (entry.edge === undefined) return;
   context.save();
   const zoom = camera.zoom;
-  const potential = entry.boundaryStyle === "POTENTIAL";
   const selected = entry.boundaryStyle === "CITY";
   const [dx, dy] =
     entry.edge === "NORTH"
@@ -1020,18 +956,14 @@ function drawTerritoryBoundary(
     context.clip("evenodd");
   }
   context.lineCap = "butt";
-  context.setLineDash(
-    potential ? [9 * zoom, 6 * zoom] : selected ? [] : [20 * zoom, 12 * zoom],
-  );
+  context.setLineDash(selected ? [] : [20 * zoom, 12 * zoom]);
   // Four periods per square side, with gaps at corners and Road midpoints.
-  context.lineDashOffset = potential || selected ? 0 : -6 * zoom;
-  if (!potential) {
-    context.strokeStyle = "#243633";
-    context.lineWidth = (selected ? 9 : 8) * zoom;
-    strokeTileEdge(context, camera, entry.at, entry.edge);
-  }
-  context.strokeStyle = potential ? "#fff6b0" : (entry.ownerColor ?? "#fff6b0");
-  context.lineWidth = (potential ? 3 : selected ? 5 : 4) * zoom;
+  context.lineDashOffset = selected ? 0 : -6 * zoom;
+  context.strokeStyle = "#243633";
+  context.lineWidth = (selected ? 9 : 8) * zoom;
+  strokeTileEdge(context, camera, entry.at, entry.edge);
+  context.strokeStyle = entry.ownerColor ?? "#fff6b0";
+  context.lineWidth = (selected ? 5 : 4) * zoom;
   strokeTileEdge(context, camera, entry.at, entry.edge);
   context.restore();
 }
