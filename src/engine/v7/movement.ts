@@ -284,6 +284,8 @@ interface PublicMovementContextV7 {
   readonly capabilities: ReturnType<typeof technologyCapabilitiesV7>;
   readonly connectedRoads: ReadonlySet<string>;
   readonly ownedCityKeys: ReadonlySet<string>;
+  readonly unitsByPosition: ReadonlyMap<string, readonly PublicUnitV7[]>;
+  readonly hostileZocKeys: Map<PlayerId, ReadonlySet<string>>;
 }
 
 const PUBLIC_MOVEMENT_CONTEXTS_V7 = new WeakMap<
@@ -294,6 +296,14 @@ const PUBLIC_MOVEMENT_CONTEXTS_V7 = new WeakMap<
 function publicMovementContextV7(view: PlayerViewV7): PublicMovementContextV7 {
   const cached = PUBLIC_MOVEMENT_CONTEXTS_V7.get(view);
   if (cached !== undefined) return cached;
+  const unitsByPosition = new Map<string, PublicUnitV7[]>();
+  for (const unit of view.units) {
+    if (unit.hp <= 0) continue;
+    const position = key(unit.at);
+    const occupants = unitsByPosition.get(position);
+    if (occupants === undefined) unitsByPosition.set(position, [unit]);
+    else occupants.push(unit);
+  }
   const context: PublicMovementContextV7 = {
     capabilities: technologyCapabilitiesV7(view.viewer.researchedTechs),
     connectedRoads: publicCapitalConnectedRoads(view),
@@ -302,6 +312,8 @@ function publicMovementContextV7(view: PlayerViewV7): PublicMovementContextV7 {
         .filter((city) => city.ownerId === view.viewer.id)
         .map((city) => key(city.at)),
     ),
+    unitsByPosition,
+    hostileZocKeys: new Map(),
   };
   PUBLIC_MOVEMENT_CONTEXTS_V7.set(view, context);
   return context;
@@ -333,12 +345,9 @@ function validatePlayerMovementPathWithContextV7(
     if (tile.explored === false && tile.diplomaticBlock === "ALLIED_TERRITORY")
       return { legal: false, reason: "ALLY_TERRITORY_FORBIDDEN" };
     if (
-      view.units.some(
-        (candidate) =>
-          candidate.id !== unit.id &&
-          candidate.hp > 0 &&
-          same(candidate.at, step),
-      )
+      context.unitsByPosition
+        .get(key(step))
+        ?.some((candidate) => candidate.id !== unit.id)
     )
       return { legal: false, reason: "OCCUPIED" };
     if (
@@ -356,7 +365,7 @@ function validatePlayerMovementPathWithContextV7(
     const ignoresForest = capabilities.forestMovementFreedomRoles.includes(
       unit.role,
     );
-    const entersZoc = publicHostileZoc(view, unit.ownerId, step);
+    const entersZoc = publicHostileZoc(view, unit.ownerId, step, context);
     const terrainStops =
       tile.explored &&
       (tile.terrain === "MOUNTAIN" ||
@@ -549,14 +558,26 @@ function publicHostileZoc(
   view: PlayerViewV7,
   ownerId: PlayerId,
   at: CoordV7,
+  context: PublicMovementContextV7,
 ): boolean {
-  return view.units.some(
-    (candidate) =>
-      candidate.hp > 0 &&
-      candidate.ownerId !== ownerId &&
-      !publicAllied(view, ownerId, candidate.ownerId) &&
-      chebyshev(candidate.at, at) === 1,
-  );
+  let keys = context.hostileZocKeys.get(ownerId);
+  if (keys === undefined) {
+    const generated = new Set<string>();
+    for (const unit of view.units) {
+      if (
+        unit.hp <= 0 ||
+        unit.ownerId === ownerId ||
+        publicAllied(view, ownerId, unit.ownerId)
+      )
+        continue;
+      for (let y = unit.at.y - 1; y <= unit.at.y + 1; y += 1)
+        for (let x = unit.at.x - 1; x <= unit.at.x + 1; x += 1)
+          if (x !== unit.at.x || y !== unit.at.y) generated.add(`${y},${x}`);
+    }
+    keys = generated;
+    context.hostileZocKeys.set(ownerId, keys);
+  }
+  return keys.has(key(at));
 }
 function publicStepCost2(
   view: PlayerViewV7,

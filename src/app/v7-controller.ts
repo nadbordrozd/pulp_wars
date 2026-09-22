@@ -399,7 +399,10 @@ export class Ruleset7BrowserController {
       const actorId = match.turnOrder[match.activeSeatIndex];
       if (actorId !== match.humanPlayerId)
         return { accepted: false, reason: "NOT_HUMAN_TURN" };
-      const view = viewForV7(match, match.humanPlayerId);
+      // The serialized controller replaces this projection at every accepted
+      // boundary, load, and launch. Reuse the exact view offered to the UI.
+      const view =
+        this.#humanViewCache ?? viewForV7(match, match.humanPlayerId);
       if (!commandIsOfferedV7(view, command))
         return { accepted: false, reason: "NOT_OFFERED" };
       const result = this.#applyBoundary(actorId, command);
@@ -930,13 +933,20 @@ function replayFromSaveV7(save: SaveEnvelopeV7): ReplayFileV7 {
 
 function commandIsOfferedV7(view: PlayerViewV7, command: CommandV7): boolean {
   let encoded: string;
+  let kind: CommandV7["kind"];
   try {
+    if (command === null || typeof command !== "object") return false;
+    kind = command.kind;
     encoded = canonicalJson(command);
   } catch {
     return false;
   }
   return queryPlayerCommandsV7(view).some(
-    (candidate) => canonicalJson(candidate) === encoded,
+    (candidate) =>
+      candidate.kind === kind &&
+      (candidate === command && Object.isFrozen(candidate)
+        ? true
+        : canonicalJson(candidate) === encoded),
   );
 }
 

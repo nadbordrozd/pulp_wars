@@ -22,6 +22,30 @@ import {
 } from "../../src/persistence/index";
 
 describe("Ruleset 7 browser controller", () => {
+  it("rejects malformed and decorated runtime commands without changing the offered boundary", async () => {
+    const controller = new Ruleset7BrowserController();
+    const launched = await controller.launch(setupV7(1, 1));
+    if (!launched.ok) throw new Error(launched.diagnostic);
+    const before = controller.snapshot();
+    const move = requireCommand(before, "MOVE");
+    for (const command of [
+      null,
+      { kind: "MOVE", unitId: 1, path: [] },
+      { ...move, unexpected: true },
+    ]) {
+      expect(await controller.dispatch(command as CommandV7)).toMatchObject({
+        accepted: false,
+        reason: "NOT_OFFERED",
+      });
+    }
+    expect(controller.snapshot().view).toBe(before.view);
+    expect(await controller.dispatch(move)).toMatchObject({
+      accepted: true,
+      beforeView: before.view,
+    });
+    controller.destroy();
+  });
+
   it("installs command zero with the exact AI-first 7/5 boundary and autosave", async () => {
     const storage = new MemoryStorage();
     const controller = new Ruleset7BrowserController({
