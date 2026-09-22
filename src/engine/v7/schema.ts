@@ -22,16 +22,18 @@ export function hasExactKeysV7(
   if (!isRecordV7(input)) return false;
   const keys = Reflect.ownKeys(input);
   if (keys.some((key) => typeof key !== "string")) return false;
-  const actual = (keys as string[]).sort();
-  const required = [...expected].sort();
-  return (
-    actual.length === required.length &&
-    actual.every((key, index) => key === required[index]) &&
-    actual.every((key) => {
-      const descriptor = Object.getOwnPropertyDescriptor(input, key);
-      return descriptor?.enumerable === true && "value" in descriptor;
-    })
-  );
+  if (keys.length !== expected.length) return false;
+  // Own keys are unique, so equal lengths plus membership also rejects duplicate
+  // expected keys without sorting either list or caching a mutable key array.
+  for (const key of keys as string[]) {
+    if (!expected.includes(key)) return false;
+  }
+  for (const key of keys as string[]) {
+    const descriptor = Object.getOwnPropertyDescriptor(input, key);
+    if (descriptor?.enumerable !== true || !("value" in descriptor))
+      return false;
+  }
+  return true;
 }
 
 export function isDenseArrayV7(input: unknown): input is readonly unknown[] {

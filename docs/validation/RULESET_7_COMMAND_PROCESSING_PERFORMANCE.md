@@ -46,3 +46,21 @@ Run `CHROME_PATH=<headless-chrome> node_modules/.bin/tsx scripts/benchmark-rules
 On the Intel i5-7360U Mac and Chrome Headless Shell 153.0.8010.48, the balanced case had 104 offered commands and measured query median/p95 0.9/8.4 ms and validation-plus-reduction median/p95 7.4/15.4 ms. A 61-human-unit case had 137 offered commands and measured 2.4/15.5 ms and 6.1/17.7 ms respectively in one run. A later profiled run of that same human-heavy fixture measured 1.3/1.8 ms and 2.9/3.8 ms; one reduction sample reached 15.9 ms. The architecture's p95 budgets are 2 ms for legal-action query and 4 ms for validation plus reduction. These runs do not establish repeatable compliance with either budget under this machine's varying load.
 
 The human-heavy CPU profile's active reduction samples concentrated in exact-key schema checks (`hasExactKeysV7`, 24 samples), another schema helper (7), deep freezing (6), and movement uniqueness (4). Active query samples were spread across public unit command generation (6), movement-path validation (4), and smaller helpers. Full-state canonical hashing appeared outside the timed operations during parity checks. This is a diagnosis of the measured workload, not evidence that a new runtime change is safe or needed; the large p95 variation remains a separate performance follow-up.
+
+## Exact-key schema comparison
+
+`hasExactKeysV7` now checks the actual own-key count and each key's membership in the expected list, then checks every descriptor. Own-key uniqueness means equal counts and membership reject duplicate expected keys. This removes both per-object sorts and the expected-list copy; it retains symbol rejection, plain or null-prototype checks, enumerable data-property checks, and fresh inspection of mutable inputs on every call. Differential tests compare the previous sorted implementation across duplicate, Unicode, symbol, descriptor, prototype, and mutation cases.
+
+The checked-in command probe and Chromium reference probe were each run once before and once after the helper change on the same Intel i5-7360U Mac, Node 24.21.0, and Chrome Headless Shell 153.0.8010.48. The command probe uses five warmups and 30 measured samples; the browser probe uses ten warmups and 30 measured samples at DPR 2. Times below are milliseconds, shown as median / p95. The one-minute load average was read from each probe's evidence at completion; its increase during the after runs is another reason to treat p95 as diagnostic rather than a stable gate.
+
+| Probe and operation                                  |        Before |        After | One-minute load before / after |
+| ---------------------------------------------------- | ------------: | -----------: | -----------------------------: |
+| Command: 60-ready-unit cold query                    |   2.18 / 4.10 |  2.05 / 3.49 |                    1.35 / 2.13 |
+| Command: busy authoritative Move                     |  6.54 / 10.00 |  4.45 / 4.97 |                    1.35 / 2.13 |
+| Command: natural Move dispatch                       | 10.92 / 15.81 | 9.42 / 13.10 |                    1.35 / 2.13 |
+| Browser: balanced 16 × 16, 16 units each, cold query |     0.7 / 4.4 |    0.7 / 3.3 |                    1.24 / 1.96 |
+| Browser: balanced accepted Move reduction            |     2.8 / 6.3 |    2.2 / 5.2 |                    1.24 / 1.96 |
+| Browser: 61-human-unit cold query                    |    1.4 / 10.3 |    1.2 / 7.5 |                    1.30 / 1.80 |
+| Browser: 61-human-unit accepted Move reduction       |     2.6 / 6.2 |    1.9 / 3.2 |                    1.30 / 1.80 |
+
+All ten command/state/AI-ready/replay/save hashes in the command probe matched exactly before and after. Both browser fixtures also retained their exact state, offered-command, and accepted-result hashes across Node and Chrome. The busy authoritative Move improved by 2.09 ms at the median, and both browser Move reductions improved by 0.6–0.7 ms at the median. Cold query medians barely changed, consistent with the optimization's reducer-focused scope. Browser p95 remains above the 2 ms query budget on both fixtures and above the 4 ms reduction budget on the balanced fixture in this pair; those tails still vary with host load and require the separate residual audit.
