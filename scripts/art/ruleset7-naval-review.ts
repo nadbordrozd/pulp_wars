@@ -67,6 +67,14 @@ interface RecordEntry {
       readonly sha256?: string;
     };
   };
+  readonly rejectedAttempts?: readonly {
+    readonly request?: {
+      readonly styleReference?: {
+        readonly id?: string;
+        readonly sha256?: string;
+      };
+    };
+  }[];
 }
 
 const source = JSON.parse(
@@ -741,10 +749,15 @@ async function assertReceiptsAndOrder(): Promise<void> {
   );
   if (
     patrolReference?.id !== unitIds[0] ||
-    patrolReference.sha256 !== historical.sha256 ||
+    patrolReference.sha256 !== generated.records[unitIds[0]]?.outputSha256 ||
     historical.id !== unitIds[0] ||
     hash(await readFile(path.join(root, historical.path))) !==
       historical.sha256 ||
+    !generated.records[unitIds[1]]?.rejectedAttempts?.some(
+      (attempt) =>
+        attempt.request?.styleReference?.id === historical.id &&
+        attempt.request.styleReference.sha256 === historical.sha256,
+    ) ||
     battleshipReference?.id !== unitIds[1] ||
     battleshipReference.sha256 !== generated.records[unitIds[1]]?.outputSha256
   )
@@ -769,8 +782,9 @@ async function writeEvidence(): Promise<void> {
       portraits: unitIds,
     },
     providerStyleReferences: {
-      patrolBoat: recipes.get(unitIds[1])?.historicalStyleReference,
+      patrolBoat: generated.records[unitIds[1]]?.request?.styleReference,
       battleship: generated.records[unitIds[2]]?.request?.styleReference,
+      historicalPatrolBoat: recipes.get(unitIds[1])?.historicalStyleReference,
     },
     conditionalNavigationSymbol: "not-generated-deep-water-readable",
     checks: {
@@ -804,7 +818,7 @@ async function writeEvidence(): Promise<void> {
   );
   await writeFile(
     path.join(reviewRoot, "README.md"),
-    "# Ruleset 7 naval review\n\nChecked evidence for the eight accepted revision-6 naval sources. The sheets cover source, enlarged and native display; water seams and repetition; resource, Port and fleet composition at every supported zoom and DPR; and dense 11 × 11 and 25 × 25 art fixtures. These fixtures review art composition and do not claim runtime renderer coverage. Deep Water remains readable as the Navigation reuse source, so the conditional symbol was not generated.\n",
+    "# Ruleset 7 naval review\n\nChecked evidence for six retained revision-6 naval sources and the revision-7 Patrol Boat and Battleship replacements. The sheets cover source, enlarged and native display; water seams and repetition; resource, Port and fleet composition at every supported zoom and DPR; and dense 11 × 11 and 25 × 25 art fixtures. These fixtures review art composition and do not claim runtime renderer coverage. Deep Water remains readable as the Navigation reuse source, so the conditional symbol was not generated.\n",
   );
 }
 

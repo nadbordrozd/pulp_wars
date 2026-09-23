@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-22T21:30:18.105Z",
+  "generatedAt": "2026-09-23T14:26:40.365Z",
   "inventory": [
     {
       "id": "terrain-ruleset7-water-shallow",
@@ -70,23 +70,23 @@
     },
     {
       "id": "unit-original-patrol-boat",
-      "outputSha256": "1de1783328d562cc471e0bd086d5771b8f04e96c683b3cd5289e7fa3e801b3db",
+      "outputSha256": "25d742b3e4e736f76c4380f9365fffad6ad58fc743dbfd6f573fe36632dea3e1",
       "alphaBounds": {
-        "left": 55,
+        "left": 61,
         "top": 128,
-        "right": 328,
+        "right": 322,
         "bottom": 304,
         "empty": false
       }
     },
     {
       "id": "unit-original-battleship",
-      "outputSha256": "ac83193e759fdbeebab75d12f95b73fd516c315c0ae820755fe55303e6cb3792",
+      "outputSha256": "f71943e48f00584ba4114bd427acf2a619e91ef5fefbfa33a1c590cbb2732844",
       "alphaBounds": {
         "left": 30,
-        "top": 90,
+        "top": 91,
         "right": 354,
-        "bottom": 300,
+        "bottom": 298,
         "empty": false
       }
     }
@@ -104,14 +104,19 @@
   "providerStyleReferences": {
     "patrolBoat": {
       "id": "unit-shared-embarked-transport",
-      "path": "art/pixellab/reframe-sources/unit-shared-embarked-transport-6faa7fbb10b8.png",
-      "sha256": "6faa7fbb10b8b0346210e3b823055c4079055d78ceb628a6585e0ae6cb3c820f",
-      "usageDescription": "Exact accepted Transport bytes submitted as the Patrol Boat provider style image before interior-keel normalization enlarged the live Transport source."
+      "sha256": "af0bd5e71cd2e8b1bbd98a269ffb5a0e8a18ebc62b009f1b08bccf3c6069d9c4",
+      "usageDescription": "Copy only the accepted low hull camera, strong outline, flat cel shading, northwest light and southeast bow direction. Do not copy the Transport's timber, canvas, open passenger well or packs; create a closed steel motor patrol craft."
     },
     "battleship": {
       "id": "unit-original-patrol-boat",
-      "sha256": "1de1783328d562cc471e0bd086d5771b8f04e96c683b3cd5289e7fa3e801b3db",
-      "usageDescription": "Preserve the accepted naval camera, outline, flat shading, palette and southeast bow direction; create a materially larger broad armored gun platform."
+      "sha256": "25d742b3e4e736f76c4380f9365fffad6ad58fc743dbfd6f573fe36632dea3e1",
+      "usageDescription": "Copy only the accepted Patrol Boat's three-quarter naval camera, strong outline, flat cel shading, northwest light, steel palette and southeast bow direction. Create a materially longer, broader armored capital ship with a different silhouette, two separated heavy turrets and central superstructure."
+    },
+    "historicalPatrolBoat": {
+      "id": "unit-shared-embarked-transport",
+      "path": "art/pixellab/reframe-sources/unit-shared-embarked-transport-6faa7fbb10b8.png",
+      "sha256": "6faa7fbb10b8b0346210e3b823055c4079055d78ceb628a6585e0ae6cb3c820f",
+      "usageDescription": "Exact accepted Transport bytes submitted as the Patrol Boat provider style image before interior-keel normalization enlarged the live Transport source."
     }
   },
   "conditionalNavigationSymbol": "not-generated-deep-water-readable",
@@ -132,13 +137,13 @@
     "receiptVerified": true
   },
   "artifacts": {
-    "source-native-enlarged.png": "f3954a61f763356d88f19e92232f272ff6bc264a215f4d3e57ff8f5e4cbf529a",
+    "source-native-enlarged.png": "ef09c2b0fd946631f7b8bc30d1d239b1b3eab04404005feadedf6aa9b7bcdfb1",
     "water-seams-repetition.png": "38379d8bef68a2eb7af98e1a7651e1d6cb57c8667d35ad4dfac64ed5a15048fa",
-    "coexistence-zoom-dpr.png": "b524cf002398358fb25e38af7170a098253638f8fb0a8d7c9d60c7a19c47cfc8",
-    "dense-coast-11x11.png": "86b96080a01fc9d10a61c02ed4083608ed7a3f81e39cb37f46cd2d5b5ae4948a",
-    "mixed-fleet-25x25.png": "d8fb4e29906f9057f8d1dbb54f860974b63bbd3328607dabbafd3c164684ee00",
-    "ui-reuse-32px.png": "22d883b4db1bed983de70c9a20db9c6a41dfb40f89d8ef15b26f8aba75f0ee5f",
+    "coexistence-zoom-dpr.png": "5a50b45d88a23e9e2d5b0d746761aaf4e4acf9531fec123c4fae1bc1c732ef41",
+    "dense-coast-11x11.png": "84604fac03b83b314aa43fe5be028c2be90e04a59b740e6a6d810caf7bcbcac3",
+    "mixed-fleet-25x25.png": "c91a14cf1d4b2cec90ed55ad888911fdba5fcd7a8e0b4b07c665c023252ded0b",
+    "ui-reuse-32px.png": "75ded4ce0ef4c546aa984e15dd1a7bf7d0b9bdd8681fe8069a12447de3b6436d",
     "transport-sample-context.png": "e5bb2fca4a1c2e674397f5c8c7782bd5d6c202b2a1ee5749c55ba113fbd6ebba",
-    "source-2x-detail.png": "e5ba55d09f9ce033b953917614b3abdc2aa02e18fbdf9d88365438c5bfcd1b4c"
+    "source-2x-detail.png": "f96e086ca5067367070c8b69862f44c3f193265454f20b1416f7971990703ce5"
   }
 }

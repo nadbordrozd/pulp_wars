@@ -10,8 +10,9 @@ It also follows the active square geometry in the
 this file does not give a naval-specific value.
 
 Revision 6 requires real production raster art. Revision 7 replaces the Patrol
-Boat and Battleship sources under their existing asset IDs; the checked-in
-revision-6 sprites remain current runtime evidence until that asset bead lands.
+Boat and Battleship sources under their existing asset IDs. Those replacement
+sprites are accepted production art; revision-7 gameplay integration remains
+pending.
 A solid-color tile, CSS shape,
 emoji, borrowed image, temporary silhouette, or generic code fallback is not an
 acceptable final asset. Generation uses checked-in programmatic PixelLab

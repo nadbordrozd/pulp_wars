@@ -1,0 +1,30 @@
+{
+  "id": "unit-original-patrol-boat",
+  "jobId": "fbecf00d-a4de-4acf-a8d7-0fddeb246559",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: naval gray and desaturated blue-gray steel hull, cream wheelhouse windows, charcoal-teal outline and southeast planes, one blank coral ownership panel. Ruleset 7 Original Patrol Boat world sprite. One compact lean low-wide STEEL MOTOR PATROL CRAFT in three-quarter view, pointed bow unmistakably at lower-right / southeast and stern at upper-left. Show a closed naval hull, one small ENCLOSED WHEELHOUSE with cream windows, and exactly one LIGHT SINGLE-BARREL DECK GUN at the forward bow. Clearly wider than tall; a fast modern patrol craft smaller than a capital ship. One contiguous blank coral ownership panel covers about ten percent. Strong dark outline, broad flat fills, two-to-three shade levels, northwest light. Transparent untrimmed 384 by 384, preferred alpha x55..329 y128..304, keel contact 192,288. Isolated ship only. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; open cockpit, open passenger well, wooden dinghy, timber hull, rowboat, fishing boat, transport packs, passenger, spear, ballista, harpoon, sail, battleship, heavy turret, giant cannon, multiple heavy guns, tall tower, bow at left, west-facing ship, wake, water, foam, projectile, muzzle flash.",
+    "prompt": "Ruleset 7 Original Patrol Boat world sprite. One compact lean low-wide STEEL MOTOR PATROL CRAFT in three-quarter view, pointed bow unmistakably at lower-right / southeast and stern at upper-left. Show a closed naval hull, one small ENCLOSED WHEELHOUSE with cream windows, and exactly one LIGHT SINGLE-BARREL DECK GUN at the forward bow. Clearly wider than tall; a fast modern patrol craft smaller than a capital ship. One contiguous blank coral ownership panel covers about ten percent. Strong dark outline, broad flat fills, two-to-three shade levels, northwest light. Transparent untrimmed 384 by 384, preferred alpha x55..329 y128..304, keel contact 192,288. Isolated ship only.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; open cockpit, open passenger well, wooden dinghy, timber hull, rowboat, fishing boat, transport packs, passenger, spear, ballista, harpoon, sail, battleship, heavy turret, giant cannon, multiple heavy guns, tall tower, bow at left, west-facing ship, wake, water, foam, projectile, muzzle flash",
+    "requestSize": {
+      "width": 384,
+      "height": 384
+    },
+    "outputSize": {
+      "width": 384,
+      "height": 384
+    },
+    "seed": 126632,
+    "noBackground": true,
+    "palette": "naval gray and desaturated blue-gray steel hull, cream wheelhouse windows, charcoal-teal outline and southeast planes, one blank coral ownership panel",
+    "postprocess": "unit-fit",
+    "groundContactY": 288,
+    "displayScale": 0.24,
+    "styleReference": {
+      "id": "unit-shared-embarked-transport",
+      "sha256": "af0bd5e71cd2e8b1bbd98a269ffb5a0e8a18ebc62b009f1b08bccf3c6069d9c4",
+      "usageDescription": "Copy only the accepted low hull camera, strong outline, flat cel shading, northwest light and southeast bow direction. Do not copy the Transport's timber, canvas, open passenger well or packs; create a closed steel motor patrol craft."
+    }
+  }
+}

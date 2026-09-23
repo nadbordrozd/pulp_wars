@@ -134,8 +134,7 @@ describe("Ruleset 7 naval assets", () => {
       receiptFor("unit-original-patrol-boat")?.request.styleReference,
     ).toMatchObject({
       id: "unit-shared-embarked-transport",
-      sha256:
-        "6faa7fbb10b8b0346210e3b823055c4079055d78ceb628a6585e0ae6cb3c820f",
+      sha256: generated.records["unit-shared-embarked-transport"]?.outputSha256,
     });
     expect(
       hash(
@@ -147,6 +146,14 @@ describe("Ruleset 7 naval assets", () => {
         ),
       ),
     ).toBe("6faa7fbb10b8b0346210e3b823055c4079055d78ceb628a6585e0ae6cb3c820f");
+    expect(
+      generated.records["unit-original-patrol-boat"]?.rejectedAttempts?.some(
+        (attempt) =>
+          JSON.stringify(attempt).includes(
+            "6faa7fbb10b8b0346210e3b823055c4079055d78ceb628a6585e0ae6cb3c820f",
+          ),
+      ),
+    ).toBe(true);
     expect(
       receiptFor("unit-original-battleship")?.request.styleReference,
     ).toMatchObject({
