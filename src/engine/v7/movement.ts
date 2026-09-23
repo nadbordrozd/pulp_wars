@@ -131,7 +131,6 @@ export function validateMovementPathV7(
     const ignoresForest = capabilities.forestMovementFreedomRoles.includes(
       unit.role,
     );
-    const beforeReveal = explored;
     const sightRadius = unitSightRadiusAtV7(state, unit, tile);
     const sight = revealRadius(state, explored, step, sightRadius);
     explored = sight.explored;
@@ -143,9 +142,9 @@ export function validateMovementPathV7(
       step,
       explored,
     );
-    const newlyRevealedZoc =
+    const newlyEncounteredZoc =
       entersZoc &&
-      !inHostileZoc(state, { ...unit, at: step }, step, beforeReveal);
+      !inHostileZoc(state, { ...unit, at: step }, step, knownBeforeCommand);
     const terrainStops =
       tile.terrain === "MOUNTAIN" ||
       (tile.terrain === "FOREST" && !ignoresForest);
@@ -153,7 +152,7 @@ export function validateMovementPathV7(
     traversedPath.push(step);
     current = step;
     if (stops && index < path.length - 1) {
-      if (newlyRevealedZoc)
+      if (newlyEncounteredZoc)
         return {
           legal: true,
           destination: current,

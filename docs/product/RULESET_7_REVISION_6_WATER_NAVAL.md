@@ -1,9 +1,9 @@
 # Ruleset 7 revision 6: water and naval play
 
-**Status:** authoritative contract for the revision-6 engine core. The runtime
-identity is live as `pulp-wars-poc-7r6`; the current browser setup remains on
-Dry Land while the map chooser, purposeful naval AI, and complete naval UI
-flows are integrated in the following release bead.
+**Status:** authoritative implemented contract for the current revision-6
+engine, Normal AI, browser UI, and headless release. The runtime identity is
+`pulp-wars-poc-7r6`; new matches default to Continents and expose all five map
+types.
 
 **Ruleset ID:** `pulp-wars-poc-7r6`
 
@@ -17,8 +17,8 @@ validation rules. [Revision 5](RULESET_7_REVISION_5_ACHIEVEMENTS.md) remains
 authoritative for achievements and Monument placement. [Revision 4](RULESET_7_REVISION_4_BIOME_ECONOMY.md)
 remains authoritative for land biomes, land resources, Mine/Forge economy, and
 their unchanged AI/public rules. The [Ruleset 7 baseline](RULESET_7.md) supplies
-all other unchanged rules. This is a planned implementation contract, not a
-claim that water is present in the current playable build.
+all other unchanged rules. Water and naval play are present in the current
+playable build.
 
 ## 1. Product decisions
 
@@ -327,8 +327,12 @@ recruit, recover, embark, harvest its resource, or participate in a route.
 Leaving or removing the hostile unit reactivates it immediately. Recompute city
 economy, levels, rewards, income preview, and network facts after blockade
 begins or ends; negative live population never lowers city level or repeats a
-reward. A friendly or formal-allied occupant is not a blockade, though any
-occupant prevents recruitment.
+reward. If a foreign unit's departure or removal reactivates a Port and raises
+its city to a reward level, the population and level change immediately but
+the reward choice waits for the city owner's next active turn. The acting
+foreign player never receives or answers that choice. A friendly or
+formal-allied occupant is not a blockade, though any occupant prevents
+recruitment.
 
 Ports transfer with their city's exact footprint. A vessel never claims water
 or a city. Port cannot be Pillaged: existing Pillage requires the actor to stand

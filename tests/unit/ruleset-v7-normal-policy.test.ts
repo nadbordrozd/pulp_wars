@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { upgradeRetainedPublicViewV7 } from "../../scripts/ruleset-v7-late-public-view-contract";
 import { describe, expect, it } from "vitest";
 import {
   NormalPolicyWorkV7,
@@ -14,9 +15,12 @@ import {
   canonicalHash,
   canonicalJson,
   createInitialMapStateV7,
+  createPublicPlanningWorkV7,
   effectiveRoleRuleV7,
   queryCombatPreviewV7,
   queryPlayerCommandsV7,
+  queryPublicRedevelopmentChangesImprovementV7,
+  scorePublicSpatialPlanV7,
   viewForV7,
   type CommandV7,
   type CoordV7,
@@ -94,6 +98,67 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       ]);
       expect(candidate.tuple).toHaveLength(11);
     }
+  });
+
+  it("rejects identical redevelopment rebuilds with cold/incremental parity", () => {
+    const cycle = redevelopmentReplacementView("MINE");
+    const command = { kind: "REDEVELOP", at: cycle.target } as const;
+    expect(scorePublicSpatialPlanV7(cycle.view, command)).toBeGreaterThan(0);
+    expect(
+      queryPublicRedevelopmentChangesImprovementV7(cycle.view, command),
+    ).toBe(false);
+
+    const prepared = redevelopmentReplacementView("MINE").view;
+    const commands = queryPlayerCommandsV7(prepared);
+    const work = createPublicPlanningWorkV7(prepared, commands);
+    let progress = work.advance(1);
+    while (!progress.done) progress = work.advance(1);
+    expect(
+      queryPublicRedevelopmentChangesImprovementV7(prepared, command),
+    ).toBe(false);
+    expect(
+      chooseNormalCommandV7(prepared).candidates.some(
+        (candidate) =>
+          canonicalJson(candidate.command) === canonicalJson(command),
+      ),
+    ).toBe(false);
+
+    const replacement = redevelopmentReplacementView("SAWMILL");
+    expect(scorePublicSpatialPlanV7(replacement.view, command)).toBeGreaterThan(
+      0,
+    );
+    expect(
+      queryPublicRedevelopmentChangesImprovementV7(replacement.view, command),
+    ).toBe(true);
+    expect(
+      chooseNormalCommandV7(replacement.view).candidates.some(
+        (candidate) =>
+          canonicalJson(candidate.command) === canonicalJson(command),
+      ),
+    ).toBe(true);
+  });
+
+  it("keeps redevelopment replacement parity after another city reserves the sole Monument", () => {
+    const coldFixture = multiCityMonumentRedevelopmentView();
+    const command = { kind: "REDEVELOP", at: coldFixture.target } as const;
+    const cold = queryPublicRedevelopmentChangesImprovementV7(
+      coldFixture.view,
+      command,
+    );
+    expect(cold).toBe(false);
+
+    const preparedFixture = multiCityMonumentRedevelopmentView();
+    const commands = queryPlayerCommandsV7(preparedFixture.view);
+    expect(commands).toContainEqual(command);
+    const work = createPublicPlanningWorkV7(preparedFixture.view, commands);
+    let progress = work.advance(1);
+    while (!progress.done) progress = work.advance(1);
+    expect(
+      queryPublicRedevelopmentChangesImprovementV7(
+        preparedFixture.view,
+        command,
+      ),
+    ).toBe(cold);
   });
 
   it("is byte-identical for equal public views with different concealed authority", () => {
@@ -245,23 +310,11 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const retained = JSON.parse(
       readFileSync("tests/fixtures/ruleset-v7-late-public-view.json", "utf8"),
     ) as PlayerViewV7;
-    const source = {
-      ...retained,
-      rulesetId: "pulp-wars-poc-7r6",
-      setup: {
-        ...retained.setup,
-        rulesetId: "pulp-wars-poc-7r6",
-        mapType: "DRY_LAND",
-        mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1",
-      },
-      naval: {
-        ownedPorts: [],
-        tradeCityIds: [],
-        networkCityIds: [],
-        seaRoutes: [],
-        recoverableNavalUnitIds: [],
-      },
-    } as PlayerViewV7;
+    const source = upgradeRetainedPublicViewV7(retained);
+    expect(source.units.every((unit) => unit.form === "LAND")).toBe(true);
+    expect(
+      source.board.tiles.every((tile) => !tile.explored || tile.biome !== null),
+    ).toBe(true);
     let clock = 0;
     let clockReads = 0;
     const work = new NormalPolicyWorkV7(structuredClone(source), () => {
@@ -285,9 +338,35 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       unitId: 19,
       targetUnitId: 34,
     });
+    expect(sliced.candidates).toHaveLength(28);
     expect(canonicalHash(sliced)).toBe(
-      "4a10c89a02dc83152312097c35ef934d20e58d169188a8c5dd2f57c57f3f3cfe",
+      "12c1f6d70b02421183359d5f4a13408187d12a74ef41e4dd4f2d001468472199",
     );
+    const revision4Commands = new Set([
+      '{"kind":"ATTACK","unitId":19,"targetUnitId":34}',
+      '{"kind":"BUILD_FORGE","at":{"x":9,"y":8}}',
+      '{"kind":"BUILD_FORGE","at":{"x":7,"y":9}}',
+      '{"kind":"BUILD_FORGE","at":{"x":9,"y":9}}',
+      '{"kind":"BUILD_FORGE","at":{"x":9,"y":10}}',
+      '{"kind":"BUILD_FORGE","at":{"x":6,"y":8}}',
+      '{"kind":"HUNT_GAME","at":{"x":1,"y":5}}',
+      '{"kind":"HUNT_GAME","at":{"x":2,"y":6}}',
+      '{"kind":"TRAIN","cityId":16,"role":"HEAVY"}',
+      '{"kind":"TRAIN","cityId":3,"role":"HEAVY"}',
+      '{"kind":"RESEARCH","tech":"SHORECRAFT"}',
+      '{"kind":"RESEARCH","tech":"SCOUTING"}',
+      '{"kind":"ATTACK","unitId":19,"targetUnitId":21}',
+      '{"kind":"RECOVER","unitId":19}',
+      '{"kind":"RECOVER","unitId":20}',
+      '{"kind":"END_TURN"}',
+    ]);
+    expect(
+      canonicalHash(
+        sliced.candidates.filter((candidate) =>
+          revision4Commands.has(JSON.stringify(candidate.command)),
+        ),
+      ),
+    ).toBe("04cdcf122b2e7ab72ba56fbcf1c6ff2be70a0b693f7707cc189522d000a2dcb5");
     expect(canonicalHash(sync)).toBe(canonicalHash(sliced));
     expect(sync).toEqual(sliced);
   }, 15_000);
@@ -913,6 +992,136 @@ function ownUnit(state: GameStateV7, role: UnitRoleIdV7): UnitStateV7 {
   );
   if (unit === undefined) throw new Error(`${role} missing`);
   return unit;
+}
+
+function redevelopmentReplacementView(current: "MINE" | "SAWMILL"): {
+  readonly view: PlayerViewV7;
+  readonly target: CoordV7;
+} {
+  const state = exploredAllV7(initialV7(0));
+  const base = viewForV7(state, state.humanPlayerId);
+  const city = base.cities.find((item) => item.ownerId === base.viewer.id);
+  if (city === undefined) throw new Error("owned city missing");
+  const owned = base.board.tiles.filter(
+    (tile) =>
+      tile.explored && tile.territoryCityId === city.id && tile.site === null,
+  );
+  const target = owned[0]?.at;
+  if (target === undefined) throw new Error("redevelopment target missing");
+  return {
+    target,
+    view: {
+      ...base,
+      viewer: {
+        ...base.viewer,
+        coins: 1_000,
+        researchedTechs: ["GATHERING", "DRILL", "ENGINEERING", "GRAND_WORKS"],
+      },
+      board: {
+        ...base.board,
+        tiles: base.board.tiles.map((tile) => {
+          if (
+            !tile.explored ||
+            tile.territoryCityId !== city.id ||
+            tile.site !== null
+          )
+            return tile;
+          const selected = same(tile.at, target);
+          return {
+            ...tile,
+            biome:
+              selected && current === "SAWMILL"
+                ? ("PLAINS" as const)
+                : ("HIGHLANDS" as const),
+            terrain:
+              selected && current === "SAWMILL"
+                ? ("GRASS" as const)
+                : ("MOUNTAIN" as const),
+            resource: null,
+            improvement: selected ? current : ("MINE" as const),
+          };
+        }),
+      },
+    },
+  };
+}
+
+function multiCityMonumentRedevelopmentView(): {
+  readonly view: PlayerViewV7;
+  readonly target: CoordV7;
+} {
+  const state = exploredAllV7(initialV7(0));
+  const base = viewForV7(state, state.humanPlayerId);
+  const ownCity = base.cities.find((city) => city.ownerId === base.viewer.id);
+  const otherCity = base.cities.find((city) => city.ownerId !== base.viewer.id);
+  if (ownCity === undefined || otherCity === undefined)
+    throw new Error("two cities missing");
+  const developmentTiles = base.board.tiles.flatMap((tile) =>
+    tile.explored && tile.territoryCityId !== null && tile.site === null
+      ? [tile]
+      : [],
+  );
+  const firstOpen = developmentTiles.find(
+    (tile) => tile.territoryCityId === ownCity.id,
+  )?.at;
+  const target = developmentTiles.find(
+    (tile) => tile.territoryCityId === otherCity.id,
+  )?.at;
+  if (firstOpen === undefined || target === undefined)
+    throw new Error("two-city development tiles missing");
+  return {
+    target,
+    view: {
+      ...base,
+      viewer: {
+        ...base.viewer,
+        coins: 1_000,
+        researchedTechs: ["GATHERING", "DRILL", "ENGINEERING", "GRAND_WORKS"],
+        achievementEntitlements: base.viewer.achievementEntitlements.map(
+          (entitlement) =>
+            entitlement.achievement === "ENGINEER"
+              ? { ...entitlement, unlocked: true, spent: false }
+              : { ...entitlement, unlocked: false, spent: false },
+        ),
+      },
+      leaderboard: base.leaderboard.map((entry) =>
+        entry.isViewer ? { ...entry, cityCount: 2 } : entry,
+      ),
+      cities: base.cities.map((city) => ({
+        ...city,
+        ownerId: base.viewer.id,
+      })),
+      units: base.units.map((unit) => ({
+        ...unit,
+        ownerId: base.viewer.id,
+      })),
+      board: {
+        ...base.board,
+        tiles: base.board.tiles.map((tile) => {
+          if (!tile.explored || tile.territoryCityId === null) return tile;
+          if (tile.site !== null)
+            return { ...tile, territoryOwnerId: base.viewer.id };
+          const open = same(tile.at, firstOpen);
+          const selected = same(tile.at, target);
+          return {
+            ...tile,
+            biome:
+              open || selected ? ("PLAINS" as const) : ("HIGHLANDS" as const),
+            terrain:
+              open || selected ? ("GRASS" as const) : ("MOUNTAIN" as const),
+            resource: null,
+            improvement: open
+              ? null
+              : selected
+                ? ("MONUMENT" as const)
+                : ("MINE" as const),
+            road: true,
+            territoryOwnerId: base.viewer.id,
+          };
+        }),
+      },
+    },
+  };
 }
 
 function emptyScore() {

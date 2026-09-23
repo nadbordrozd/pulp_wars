@@ -22,6 +22,7 @@ import {
   type CoordV7,
   type EconomicPreviewV7,
   type MatchSetupV7,
+  type MapTypeV7,
   type PlayerColorV7,
   type PlayerViewV7,
   type PublicTechnologyNodeV7,
@@ -53,10 +54,18 @@ import {
 
 const BOARD_SIZES = [11, 14, 16, 20, 25] as const;
 const COLORS: readonly PlayerColorV7[] = ["CORAL", "TEAL", "GOLD", "VIOLET"];
+const MAP_TYPES: readonly MapTypeV7[] = [
+  "DRY_LAND",
+  "PANGEA",
+  "CONTINENTS",
+  "ARCHIPELAGO",
+  "LAKES",
+];
 const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   "MOVE",
   "ATTACK",
   "BLACKOUT_CITY",
+  "DISEMBARK",
   "RESEARCH",
   "CHOOSE_CITY_REWARD",
 ]);
@@ -92,6 +101,7 @@ interface DraftV7 {
   readonly boardSize: (typeof BOARD_SIZES)[number];
   readonly seedText: string;
   readonly humanColor: PlayerColorV7;
+  readonly mapType: MapTypeV7;
 }
 
 type ScreenV7 =
@@ -121,6 +131,7 @@ export class Ruleset7DomAppView {
     boardSize: 11,
     seedText: "42",
     humanColor: "CORAL",
+    mapType: "CONTINENTS",
   };
   #selection: BoardSelectionV7 | null = null;
   #screen: ScreenV7 = "MATCH";
@@ -370,6 +381,19 @@ export class Ruleset7DomAppView {
         compatibleSizes(this.#draft.aiCount).map(String),
         String(this.#draft.boardSize),
       ),
+      select(
+        this.#document,
+        "Map type",
+        "v7-map-type",
+        MAP_TYPES,
+        this.#draft.mapType,
+      ),
+      text(
+        this.#document,
+        "p",
+        mapTypeDescriptionV7(this.#draft.mapType),
+        "v7-map-type-description",
+      ),
       input(
         this.#document,
         "Seed (0–4294967295)",
@@ -411,6 +435,11 @@ export class Ruleset7DomAppView {
       const faction = form.querySelector(".v7-fixed-faction");
       if (faction !== null)
         faction.textContent = `${this.#draft.aiCount + 1} fixed Original seats · ORIGINAL_BASELINE_V4`;
+      const description = form.querySelector<HTMLElement>(
+        ".v7-map-type-description",
+      );
+      if (description !== null)
+        description.textContent = mapTypeDescriptionV7(this.#draft.mapType);
     });
     form.addEventListener("submit", (event) => {
       event.preventDefault();
@@ -438,7 +467,7 @@ export class Ruleset7DomAppView {
         "p",
         view === null
           ? "A route-owned Ruleset 7 save is ready."
-          : `Round ${view.round} · ${view.viewer.coins} Coins`,
+          : `Round ${view.round} · ${view.viewer.coins} Coins · ${title(view.setup.mapType)}`,
       ),
     );
     const actions = el(this.#document, "div", "button-row");
@@ -834,8 +863,10 @@ export class Ruleset7DomAppView {
       dock.append(
         identity(
           this.#document,
-          RULESET7_UNIT_ART_IDS[unit.role],
-          `${title(unit.role)} · ${unit.hp}/${unit.maxHp} HP`,
+          unit.form === "EMBARKED"
+            ? "unit-shared-embarked-transport"
+            : RULESET7_UNIT_ART_IDS[unit.role],
+          `${unit.form === "EMBARKED" ? "Embarked Transport" : title(unit.role)} · ${unit.hp}/${unit.maxHp} HP`,
           true,
         ),
       );
@@ -851,6 +882,15 @@ export class Ruleset7DomAppView {
       identityColumn?.append(unitHelp);
       const showUnitDetails = this.#selectedUnitHelpId === unit.id;
       const unitDetails = el(this.#document, "div", "v7-unit-help-details");
+      if (unit.form === "EMBARKED")
+        unitDetails.append(
+          text(
+            this.#document,
+            "p",
+            `${title(unit.role)} passenger · ${effectiveRoleRuleV7(unit.role).abilities.includes("CAPTURE") ? "can capture after landing and the ordinary wait" : "cannot capture"}. Landing ends this activation.`,
+            "v7-transport-passenger",
+          ),
+        );
       if (showUnitDetails && unit.role === "HORSE_ARCHER") {
         const state = el(this.#document, "section", "v7-tactical-state");
         state.dataset.tacticalState = "horse-archer";
@@ -1157,6 +1197,40 @@ export class Ruleset7DomAppView {
               `${title(value.measure)} ${value.level}${value.level === 0 ? " · offline" : ""}`,
             ),
           );
+        if (tile.improvement === "PORT") {
+          const port = view.naval.ownedPorts.find((candidate) =>
+            same(candidate.at, tile.at),
+          );
+          if (port !== undefined) {
+            details.append(
+              text(
+                this.#document,
+                "p",
+                port.status === "ACTIVE"
+                  ? "Owned active Port · Population +1"
+                  : "Owned blockaded Port · Population -1 until recovered",
+                `v7-port-state state-${port.status.toLowerCase()}`,
+              ),
+            );
+            if (view.naval.tradeCityIds.includes(port.cityId))
+              details.append(
+                text(this.#document, "p", "Sea trade +1 Coin/turn"),
+              );
+            const routes = view.naval.seaRoutes.filter(
+              (route) =>
+                route.fromCityId === port.cityId ||
+                route.toCityId === port.cityId,
+            );
+            if (routes.length > 0)
+              details.append(
+                text(
+                  this.#document,
+                  "p",
+                  `${routes.length} public sea ${routes.length === 1 ? "route" : "routes"}`,
+                ),
+              );
+          }
+        }
         const monumentSource = monumentSourceForViewerV7(view, tile.at);
         if (monumentSource !== null) {
           const source = el(this.#document, "p", "v7-monument-source");
@@ -1211,18 +1285,23 @@ export class Ruleset7DomAppView {
       },
       { passive: false },
     );
-    for (const command of this.#snapshot.offeredCommands.filter(predicate)) {
+    for (const command of this.#snapshot.offeredCommands.filter(
+      (candidate) =>
+        predicate(candidate) && !NON_BUTTON_COMMANDS.has(candidate.kind),
+    )) {
       const action = button(
         this.#document,
         commandLabel(command),
         command.kind === "BUILD_MONUMENT"
           ? `command-build_monument-${command.achievement.toLowerCase()}`
           : `command-${command.kind.toLowerCase()}`,
-        command.kind === "TRAIN" ? "v7-train-action" : "v7-context-action",
+        command.kind === "TRAIN" || command.kind === "TRAIN_NAVAL"
+          ? "v7-train-action"
+          : "v7-context-action",
       );
       const artId = commandArtIdV7(command);
       if (artId !== null) action.prepend(art(this.#document, artId, ""));
-      if (command.kind === "TRAIN") {
+      if (command.kind === "TRAIN" || command.kind === "TRAIN_NAVAL") {
         const rule = effectiveRoleRuleV7(command.role);
         action.setAttribute(
           "aria-label",
@@ -1269,7 +1348,7 @@ export class Ruleset7DomAppView {
       }
       action.disabled = this.#localBusy();
       action.onclick = () => void this.#dispatch(command);
-      if (command.kind === "TRAIN") {
+      if (command.kind === "TRAIN" || command.kind === "TRAIN_NAVAL") {
         const card = el(this.#document, "div", "v7-train-card");
         const help = button(
           this.#document,
@@ -1422,6 +1501,11 @@ export class Ruleset7DomAppView {
           "p",
           "Select map objects directly. Move and Attack use highlighted cells. Arrow keys move the map cursor; Enter activates; T opens Tech; G opens Leaderboard; E ends the turn; plus and minus zoom.",
         ),
+        text(
+          this.#document,
+          "p",
+          "Water: train a ship at an empty active Port you own. Select a land unit beside an eligible Port and choose Embark. Select its transport, then choose a highlighted landing tile. Active Ports support ship recovery; blockades remove their population and sea network until cleared.",
+        ),
       );
     overlay.prepend(close);
     return overlay;
@@ -1514,6 +1598,20 @@ export class Ruleset7DomAppView {
           "Reveal Ore. Enter Mountains. Build Mines on Ore. Build Workshops. Units on Mountains gain +1 sight.",
         ),
       );
+    const navalNotes = navalTechnologyNotesV7(node.id);
+    if (navalNotes.length > 0) {
+      const water = el(
+        this.#document,
+        "section",
+        "v7-tech-detail-group v7-tech-water-rules",
+      );
+      water.append(text(this.#document, "h3", "Water rules"));
+      const list = this.#document.createElement("ul");
+      for (const note of navalNotes)
+        list.append(text(this.#document, "li", note));
+      water.append(list);
+      detail.append(water);
+    }
     const achievement = techAchievementV7(node.id);
     if (achievement !== null)
       detail.append(
@@ -1958,7 +2056,7 @@ export class Ruleset7DomAppView {
       text(
         this.#document,
         "p",
-        `Round ${view.round} · seed ${view.setup.seed} · ${view.setup.width} × ${view.setup.height}`,
+        `Round ${view.round} · seed ${view.setup.seed} · ${view.setup.width} × ${view.setup.height} · ${title(view.setup.mapType)}`,
       ),
     );
     const restart = button(this.#document, "Play Again", "restart");
@@ -2011,6 +2109,9 @@ export class Ruleset7DomAppView {
       humanColor: COLORS.includes(value(form, "v7-color") as PlayerColorV7)
         ? (value(form, "v7-color") as PlayerColorV7)
         : "CORAL",
+      mapType: MAP_TYPES.includes(value(form, "v7-map-type") as MapTypeV7)
+        ? (value(form, "v7-map-type") as MapTypeV7)
+        : "CONTINENTS",
     };
   }
   async #launch(setup: MatchSetupV7, replace: boolean): Promise<void> {
@@ -2028,6 +2129,7 @@ export class Ruleset7DomAppView {
       return;
     }
     this.#matchInstance += 1;
+    this.#replacing = false;
     this.#selection = null;
     this.#notice = "Conquest launched at the canonical Start Turn boundary.";
     this.#render();
@@ -2606,6 +2708,17 @@ function compatibleSizes(aiCount: 1 | 2 | 3): readonly DraftV7["boardSize"][] {
   const minimum = aiCount === 1 ? 11 : aiCount === 2 ? 14 : 16;
   return BOARD_SIZES.filter((size) => size >= minimum);
 }
+function mapTypeDescriptionV7(mapType: MapTypeV7): string {
+  if (mapType === "DRY_LAND")
+    return "Dry Land: a connected land game with no water or naval actions.";
+  if (mapType === "PANGEA")
+    return "Pangea: one main continent with a surrounding navigable sea.";
+  if (mapType === "CONTINENTS")
+    return "Continents: rival powers begin across two or three major landmasses.";
+  if (mapType === "ARCHIPELAGO")
+    return "Archipelago: each capital begins on a separate island group.";
+  return "Lakes: mostly land, divided by several enclosed navigable lakes.";
+}
 function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!/^\d+$/.test(draft.seedText)) return null;
   const seed = Number(draft.seedText);
@@ -2624,7 +2737,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
       { length: draft.aiCount + 1 },
       () => "ORIGINAL" as const,
     ),
-    mapType: "DRY_LAND",
+    mapType: draft.mapType,
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1",
   };
 }
@@ -2702,6 +2815,29 @@ function effectDescription(
     case "FIRST_HOSTILE_CAPTURE_SPOILS":
       return `First hostile capture of each city awards +${effect.coins} Coins`;
   }
+}
+
+function navalTechnologyNotesV7(
+  technology: PublicTechnologyNodeV7["id"],
+): readonly string[] {
+  if (technology === "SHORECRAFT")
+    return [
+      "Harvest Fish: 2 Coins, +1 permanent population",
+      "Gather Pearls: 2 Coins, receive 4 Coins",
+      "Build Port: 4 Coins, +1 live population",
+      "Embark land units; active explored Ports connect sea trade for +1 Coin per qualifying city",
+    ];
+  if (technology === "NAVIGATION")
+    return [
+      "Ships and embarked transports may enter Deep Water",
+      "Sea routes may extend across explored deep channels",
+    ];
+  if (technology === "NAVAL_ENGINEERING")
+    return [
+      "Train Battleship at an empty active Port you own: 10 Coins",
+      "Battleship attacks at range 2 and must choose movement or fire",
+    ];
+  return [];
 }
 
 export interface TechnologyEffectGroupV7 {
@@ -2827,6 +2963,12 @@ export function recruitmentRolePresentationV7(
     restrictions.push(
       "May Pillage without Explosives for 1 Coin; doing so is terminal and exposes the Saboteur to the affected owner and allies through that owner's next accepted End Turn.",
     );
+  if (roleId === "PATROL_BOAT" || roleId === "BATTLESHIP")
+    restrictions.push(
+      "Train at an empty active Port you own; the ship uses that Port city's capacity. Cannot Capture, embark, Pillage, or Disband. Recovers only within one cell of an owned active Port.",
+    );
+  if (roleId === "BATTLESHIP")
+    restrictions.push("Must choose movement or fire during each activation.");
   return {
     label: role.label,
     stats: [
@@ -2958,6 +3100,8 @@ function rewardLabel(reward: string, level: number): string {
 }
 function commandLabel(command: CommandV7): string {
   if (command.kind === "TRAIN") return effectiveRoleRuleV7(command.role).label;
+  if (command.kind === "TRAIN_NAVAL")
+    return `Train ${effectiveRoleRuleV7(command.role).label}`;
   if (command.kind === "BUILD_MONUMENT")
     return `Build Monument · ${title(command.achievement)}`;
   if (command.kind === "BUILD_MINE") return "Build Mine";

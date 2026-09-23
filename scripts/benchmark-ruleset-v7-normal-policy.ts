@@ -2,12 +2,13 @@ import { readFileSync } from "node:fs";
 import { performance } from "node:perf_hooks";
 import { NormalPolicyWorkV7, chooseNormalCommandV7 } from "../src/ai/v7";
 import { canonicalHash, type PlayerViewV7 } from "../src/engine/index";
+import { upgradeRetainedPublicViewV7 } from "./ruleset-v7-late-public-view-contract";
 
 const source = JSON.parse(
   readFileSync("tests/fixtures/ruleset-v7-late-public-view.json", "utf8"),
 ) as PlayerViewV7;
 
-const view = structuredClone(source);
+const view = structuredClone(upgradeRetainedPublicViewV7(source));
 const constructorStarted = performance.now();
 const work = new NormalPolicyWorkV7(view);
 const constructorMs = performance.now() - constructorStarted;
@@ -29,7 +30,9 @@ while (decision === null) {
 const slicedTotalMs = performance.now() - slicedStarted;
 
 const synchronousStarted = performance.now();
-const synchronous = chooseNormalCommandV7(structuredClone(source));
+const synchronous = chooseNormalCommandV7(
+  structuredClone(upgradeRetainedPublicViewV7(source)),
+);
 const synchronousMs = performance.now() - synchronousStarted;
 const report = {
   fixtureViewHash: canonicalHash(source),

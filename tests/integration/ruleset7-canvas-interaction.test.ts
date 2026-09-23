@@ -393,6 +393,10 @@ describe("Ruleset 7 Canvas interaction", () => {
       storage: null,
       boardHost: host,
     });
+    const mapType = document.querySelector<HTMLSelectElement>("#v7-map-type");
+    if (mapType === null) throw new Error("map type missing");
+    mapType.value = "DRY_LAND";
+    mapType.dispatchEvent(new Event("change", { bubbles: true }));
     const seed = document.querySelector<HTMLInputElement>("#v7-seed");
     if (seed === null) throw new Error("seed missing");
     seed.value = "7";

@@ -409,6 +409,16 @@ describe("Ruleset 7 DOM shell", () => {
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
     expect(document.querySelector(".v7-match-root")).not.toBeNull();
     expect(app.controller.snapshot().view?.commandIndex).toBe(commandIndex);
+
+    requiredButton('[data-action="main-menu"]').click();
+    await waitUntil(() => app.controller.snapshot().phase === "RESUMABLE");
+    requiredButton('[data-action="show-replace"]').click();
+    requiredInput("v7-seed").value = "2";
+    requiredButton('[data-action="launch"]').click();
+    await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
+    requiredButton('[data-action="main-menu"]').click();
+    await waitUntil(() => app.controller.snapshot().phase === "RESUMABLE");
+    expect(requiredButton('[data-action="resume"]').textContent).toBe("Resume");
     app.destroy();
   });
 

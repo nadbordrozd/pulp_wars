@@ -10,7 +10,7 @@ import {
 import type { AiModeV6, FactionIdV6, MatchSetupV6 } from "../engine/v6/types";
 import type { ReplayFileV6 } from "../engine/v6/replay";
 import type { ReplayFileV7 } from "../engine/v7/replay";
-import type { MatchSetupV7 } from "../engine/v7/types";
+import type { MapTypeV7, MatchSetupV7 } from "../engine/v7/types";
 import { headless } from "./index";
 import {
   V6_MATCH_MAX_COMMANDS_DEFAULT,
@@ -70,7 +70,7 @@ async function runV7Match(): Promise<void> {
     aiMode: args.includes("--cooperative") ? "COOPERATIVE" : "RIVAL",
     humanColor: "CORAL",
     factions: factionsArgV7(aiCount),
-    mapType: "DRY_LAND",
+    mapType: mapTypeArg(),
   };
   const result = await headlessV7.runAiMatch(setup, {
     maxCommands: numberArg("--max-commands", V7_MATCH_MAX_COMMANDS_DEFAULT),
@@ -90,6 +90,7 @@ async function runV7Batch(): Promise<void> {
     ...(optionalNumberArg("--size") === null
       ? {}
       : { boardSize: boardSizeArg(1) }),
+    mapTypes: mapTypesArg(),
   });
   process.stdout.write(`${canonicalJson(result)}\n`);
 }
@@ -261,6 +262,42 @@ function modesArg(): readonly AiModeV6[] {
       if (value === "rival") return "RIVAL";
       if (value === "cooperative") return "COOPERATIVE";
       throw new Error("--modes values must be rival or cooperative");
+    });
+}
+
+function mapTypeArg(): MapTypeV7 {
+  const value = stringArg("--map-type", "continents")
+    .toUpperCase()
+    .replaceAll("-", "_");
+  if (
+    value === "DRY_LAND" ||
+    value === "PANGEA" ||
+    value === "CONTINENTS" ||
+    value === "ARCHIPELAGO" ||
+    value === "LAKES"
+  )
+    return value;
+  throw new Error(
+    "--map-type must be dry_land, pangea, continents, archipelago, or lakes",
+  );
+}
+
+function mapTypesArg(): readonly MapTypeV7[] {
+  return stringArg("--map-types", "continents")
+    .split(",")
+    .map((value) => {
+      const normalized = value.toUpperCase().replaceAll("-", "_");
+      if (
+        normalized === "DRY_LAND" ||
+        normalized === "PANGEA" ||
+        normalized === "CONTINENTS" ||
+        normalized === "ARCHIPELAGO" ||
+        normalized === "LAKES"
+      )
+        return normalized;
+      throw new Error(
+        "--map-types values must be dry_land, pangea, continents, archipelago, or lakes",
+      );
     });
 }
 

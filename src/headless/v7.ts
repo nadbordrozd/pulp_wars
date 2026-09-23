@@ -1,5 +1,6 @@
 import {
   NORMAL_AI_MAX_ACCEPTED_COMMANDS_PER_TURN_V7,
+  NormalPolicyWorkV7,
   NormalPolicyErrorV7,
   NormalTurnCommandCapErrorV7,
   chooseNormalCommandV7,
@@ -153,7 +154,8 @@ export interface HeadlessMetricsV7 {
     readonly captures: Record<UnitRoleIdV7, number>;
     readonly trainingCoins: Record<UnitRoleIdV7, number>;
     readonly survivors: Record<UnitRoleIdV7, number>;
-    readonly survivalPerCoin: Record<UnitRoleIdV7, number>;
+    /** Integer survivors per 1,000 training Coins. */
+    readonly survivorsPerThousandCoins: Record<UnitRoleIdV7, number>;
   };
   readonly horseArcher: {
     activations: number;
@@ -216,6 +218,17 @@ export interface AiMatchOptionsV7 {
   readonly recordCheckpointHashes?: boolean;
   readonly progressEveryCommands?: number;
   readonly onProgress?: (progress: AiMatchProgressV7) => void;
+  /** Use the same bounded Normal-policy work loop as the browser controller. */
+  readonly policySliceMilliseconds?: number;
+  readonly onPolicyWork?: (diagnostic: AiPolicyWorkDiagnosticV7) => void;
+}
+
+export interface AiPolicyWorkDiagnosticV7 {
+  readonly commandIndex: number;
+  readonly playerId: PlayerId;
+  readonly slices: number;
+  readonly wallMilliseconds: number;
+  readonly maximumSliceMilliseconds: number;
 }
 
 export interface AiMatchProgressV7 {
@@ -242,6 +255,7 @@ export interface AiBatchOptionsV7 {
   readonly seeds: readonly number[];
   readonly aiCounts: readonly AiCountV7[];
   readonly modes?: readonly MatchSetupV7["aiMode"][];
+  readonly mapTypes?: readonly MatchSetupV7["mapType"][];
   readonly boardSize?: BoardSizeV7;
   readonly maxCommands?: number;
   readonly maxRounds?: number;
@@ -251,6 +265,7 @@ export interface AiBatchEntryV7 {
   readonly seed: number;
   readonly aiCount: AiCountV7;
   readonly aiMode: MatchSetupV7["aiMode"];
+  readonly mapType: MatchSetupV7["mapType"];
   readonly outcome: MatchOutcomeV7 | null;
   readonly termination: AiMatchTerminationV7;
   readonly rounds: number;
@@ -388,6 +403,12 @@ function runAiMatchInternalV7(
   validateCap(maxCommandsPerTurn, "maxCommandsPerTurn");
   const progressEveryCommands = options.progressEveryCommands ?? 100;
   validateCap(progressEveryCommands, "progressEveryCommands");
+  if (
+    options.policySliceMilliseconds !== undefined &&
+    (!Number.isFinite(options.policySliceMilliseconds) ||
+      options.policySliceMilliseconds <= 0)
+  )
+    throw new RangeError("policySliceMilliseconds must be positive");
   if (maxCommandsPerTurn > NORMAL_AI_MAX_ACCEPTED_COMMANDS_PER_TURN_V7)
     throw new RangeError("maxCommandsPerTurn exceeds the Normal v7 limit");
   const created = createPlayableGameV7(setup);
@@ -428,7 +449,35 @@ function runAiMatchInternalV7(
       auditPublicEqualityV7(view, metrics);
     let command: CommandV7 | null;
     try {
-      const decision = chooseNormalCommandV7(view);
+      const started = performance.now();
+      let slices = 1;
+      let decision;
+      let maximumSliceMilliseconds = 0;
+      if (options.policySliceMilliseconds === undefined)
+        decision = chooseNormalCommandV7(view);
+      else {
+        const work = new NormalPolicyWorkV7(view);
+        let sliceStarted = performance.now();
+        let pending = work.runSlice(options.policySliceMilliseconds);
+        maximumSliceMilliseconds = performance.now() - sliceStarted;
+        while (pending === null) {
+          slices += 1;
+          sliceStarted = performance.now();
+          pending = work.runSlice(options.policySliceMilliseconds);
+          maximumSliceMilliseconds = Math.max(
+            maximumSliceMilliseconds,
+            performance.now() - sliceStarted,
+          );
+        }
+        decision = pending;
+      }
+      options.onPolicyWork?.({
+        commandIndex: state.commandIndex,
+        playerId: actor,
+        slices,
+        wallMilliseconds: performance.now() - started,
+        maximumSliceMilliseconds,
+      });
       command = chooseNormalTurnCommandV7(
         view,
         commandsThisTurn,
@@ -560,10 +609,13 @@ function finalizeMetricsV7(
     metrics.roles.survivors[role] = state.units.filter(
       (unit) => unit.hp > 0 && unit.role === role,
     ).length;
-    metrics.roles.survivalPerCoin[role] =
+    metrics.roles.survivorsPerThousandCoins[role] =
       metrics.roles.trainingCoins[role] === 0
         ? 0
-        : metrics.roles.survivors[role] / metrics.roles.trainingCoins[role];
+        : Math.round(
+            (metrics.roles.survivors[role] * 1_000) /
+              metrics.roles.trainingCoins[role],
+          );
   }
   metrics.commandHash = canonicalHash(commands);
   metrics.eventHash = canonicalHash(events);
@@ -580,63 +632,67 @@ export async function runAiBatchV7(
     throw new RangeError("aiCounts cannot be empty");
   const modes = options.modes ?? (["RIVAL"] as const);
   if (modes.length === 0) throw new RangeError("modes cannot be empty");
+  const mapTypes = options.mapTypes ?? (["CONTINENTS"] as const);
+  if (mapTypes.length === 0) throw new RangeError("mapTypes cannot be empty");
   const entries: AiBatchEntryV7[] = [];
-  for (const aiMode of modes)
-    for (const aiCount of options.aiCounts) {
-      const size =
-        options.boardSize ?? (aiCount === 1 ? 11 : aiCount === 2 ? 14 : 16);
-      if (size < (aiCount === 1 ? 11 : aiCount === 2 ? 14 : 16))
-        throw new RangeError("boardSize is too small for aiCount");
-      for (const seed of options.seeds) {
-        await new Promise<void>((resolve) => setTimeout(resolve, 0));
-        const result = runAiMatchInternalV7(
-          {
-            rulesetId: "pulp-wars-poc-7r6",
-            mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1",
+  for (const mapType of mapTypes)
+    for (const aiMode of modes)
+      for (const aiCount of options.aiCounts) {
+        const size =
+          options.boardSize ?? (aiCount === 1 ? 11 : aiCount === 2 ? 14 : 16);
+        if (size < (aiCount === 1 ? 11 : aiCount === 2 ? 14 : 16))
+          throw new RangeError("boardSize is too small for aiCount");
+        for (const seed of options.seeds) {
+          await new Promise<void>((resolve) => setTimeout(resolve, 0));
+          const result = runAiMatchInternalV7(
+            {
+              rulesetId: "pulp-wars-poc-7r6",
+              mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1",
+              seed,
+              width: size,
+              height: size,
+              aiCount,
+              aiDifficulty: "NORMAL",
+              aiMode,
+              humanColor: "CORAL",
+              factions: Array.from(
+                { length: aiCount + 1 },
+                () => "ORIGINAL" as const,
+              ),
+              mapType,
+            },
+            {
+              ...(options.maxCommands === undefined
+                ? {}
+                : { maxCommands: options.maxCommands }),
+              ...(options.maxRounds === undefined
+                ? {}
+                : { maxRounds: options.maxRounds }),
+            },
+            false,
+          );
+          entries.push({
             seed,
-            width: size,
-            height: size,
             aiCount,
-            aiDifficulty: "NORMAL",
             aiMode,
-            humanColor: "CORAL",
-            factions: Array.from(
-              { length: aiCount + 1 },
-              () => "ORIGINAL" as const,
-            ),
-            mapType: "DRY_LAND",
-          },
-          {
-            ...(options.maxCommands === undefined
-              ? {}
-              : { maxCommands: options.maxCommands }),
-            ...(options.maxRounds === undefined
-              ? {}
-              : { maxRounds: options.maxRounds }),
-          },
-          false,
-        );
-        entries.push({
-          seed,
-          aiCount,
-          aiMode,
-          outcome: result.outcome,
-          termination: result.termination,
-          rounds: result.rounds,
-          commands: result.acceptedCommands,
-          errors: result.errors.length,
-          stalls: result.stalls.length,
-          capFailure:
-            result.termination === "COMMAND_CAP" ||
-            result.termination === "ROUND_CAP",
-          finalHash: result.stateHash,
-          commandHash: result.metrics.commandHash,
-          eventHash: result.metrics.eventHash,
-          checkpointHash: result.metrics.checkpointHash,
-          metrics: result.metrics,
-        });
+            mapType,
+            outcome: result.outcome,
+            termination: result.termination,
+            rounds: result.rounds,
+            commands: result.acceptedCommands,
+            errors: result.errors.length,
+            stalls: result.stalls.length,
+            capFailure:
+              result.termination === "COMMAND_CAP" ||
+              result.termination === "ROUND_CAP",
+            finalHash: result.stateHash,
+            commandHash: result.metrics.commandHash,
+            eventHash: result.metrics.eventHash,
+            checkpointHash: result.metrics.checkpointHash,
+            metrics: result.metrics,
+          });
+        }
       }
-    }
   const outcomes: Record<string, number> = {};
   for (const entry of entries)
     increment(outcomes, entry.outcome?.kind ?? entry.termination);
@@ -758,7 +814,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
       captures: zeroRecord(UNIT_ROLE_IDS_V7),
       trainingCoins: zeroRecord(UNIT_ROLE_IDS_V7),
       survivors: zeroRecord(UNIT_ROLE_IDS_V7),
-      survivalPerCoin: zeroRecord(UNIT_ROLE_IDS_V7),
+      survivorsPerThousandCoins: zeroRecord(UNIT_ROLE_IDS_V7),
     },
     horseArcher: {
       activations: 0,

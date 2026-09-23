@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { performance } from "node:perf_hooks";
 import { describe, expect, it } from "vitest";
+import { upgradeRetainedPublicViewV7 } from "../../scripts/ruleset-v7-late-public-view-contract";
 import {
   canonicalHash,
   cityId,
@@ -22,17 +23,7 @@ import {
 const RETAINED_LAND_VIEW = JSON.parse(
   readFileSync("tests/fixtures/ruleset-v7-late-public-view.json", "utf8"),
 ) as PlayerViewV7;
-const RETAINED_VIEW: PlayerViewV7 = {
-  ...RETAINED_LAND_VIEW,
-  units: RETAINED_LAND_VIEW.units.map((unit) => ({ ...unit, form: "LAND" })),
-  naval: {
-    ownedPorts: [],
-    tradeCityIds: [],
-    networkCityIds: [],
-    seaRoutes: [],
-    recoverableNavalUnitIds: [],
-  },
-};
+const RETAINED_VIEW = upgradeRetainedPublicViewV7(RETAINED_LAND_VIEW);
 
 describe("ruleset-7 late public query performance", () => {
   it("preserves the retained complete ordered command surface within a bounded cold query", () => {

@@ -1,5 +1,22 @@
 # Pulp Wars Client Architecture
 
+## Ruleset-7 revision-6 current boundary
+
+The current client runs `pulp-wars-poc-7r6`. Setup exposes Dry Land, Pangea,
+Continents, Archipelago, and Lakes, with Continents selected by default. The
+controller persists the selected map type and schedules every AI turn through
+bounded `NormalPolicyWorkV7` callbacks over a retained public view.
+
+`PlayerViewV7.naval` is the only naval presentation source: owned Port status,
+trade/network city IDs, public sea routes, and recoverable vessel IDs. Canvas
+renders explored shallow/deep water, Fish, Pearls, Ports, transport/ship forms,
+route, blockade, recovery, and legal command targets from that view. Embark and
+disembark movement, visible enemy Port/ship actions, and Battleship fire use the
+ordinary presentation queue; projection removes concealed coordinates before
+the queue sees them. DOM actions dispatch only exact public commands, including
+the selected active Port for naval recruitment and selected passenger for a
+landing target.
+
 **Status:** authoritative ruleset-6 client architecture
 
 **Rules:** [Ruleset 6](../product/RULESET_6.md)

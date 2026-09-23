@@ -1,5 +1,22 @@
 # Greedy Normal AI
 
+## Revision-6 naval planning
+
+Ruleset 7 Normal builds naval objectives only from `PlayerViewV7`, public
+commands, and public previews. `NormalPolicyWorkV7` yields during land-component
+and water-route passes, so a cold 25 x 25 view remains inside the browser work
+loop. The plan reserves the next required technology, Port, fleet capacity, and
+Coins; chooses Ports and movement by public shortest-route distance; and keeps
+the established land tuple unchanged when no naval objective exists.
+
+An overseas objective or a shorter public sea route can activate Shorecraft,
+Port construction, embarkation, exploration, landing, and the ordinary capture
+wait. Known Deep Water adds Navigation. Visible afloat danger holds departure
+for a Patrol Boat escort, while a defended coast can add Naval Engineering and
+Battleship bombardment. Landed capture units continue a known objective on
+their new landmass before embarking again. Cooperative planning excludes allied
+land, water, and Ports.
+
 The authoritative
 [Ruleset-7 revision-4 biome-economy specification](../product/RULESET_7_REVISION_4_BIOME_ECONOMY.md)
 supersedes revision-3 Normal-AI economy valuation, Ore visibility, Mine/Forge

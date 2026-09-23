@@ -298,6 +298,153 @@ describe("ruleset-7 observation safety and Concealment", () => {
     expect(revealIndex).toBeGreaterThanOrEqual(0);
     expect(revealIndex).toBeLessThan(interruptionIndex);
     expect(parsePlayerEventEnvelopeV7(projected)).toMatchObject({ ok: true });
+
+    const concealedOnKnownTile = checkedV7({
+      ...state,
+      players: state.players.map((player) =>
+        player.id === state.humanPlayerId
+          ? {
+              ...player,
+              explored: [...player.explored, line[2]].sort(compareCoords),
+            }
+          : player,
+      ),
+    });
+    const concealedView = viewForV7(
+      concealedOnKnownTile,
+      concealedOnKnownTile.humanPlayerId,
+    );
+    const concealedSaboteur = state.units.find(
+      (unit) => unit.ownerId !== state.humanPlayerId,
+    )!;
+    expect(
+      concealedView.units.some((unit) => unit.id === concealedSaboteur.id),
+    ).toBe(false);
+    expect(
+      queryPlayerCommandsV7(concealedView).some(
+        (command) =>
+          command.kind === "MOVE" &&
+          command.unitId === mover.id &&
+          JSON.stringify(command.path) === JSON.stringify(line.slice(1)),
+      ),
+    ).toBe(true);
+    expect(
+      applyCommandV7(concealedOnKnownTile, concealedOnKnownTile.humanPlayerId, {
+        kind: "MOVE",
+        unitId: mover.id,
+        path: line.slice(1),
+      }),
+    ).toMatchObject({
+      accepted: true,
+      events: expect.arrayContaining([
+        {
+          kind: "UNIT_MOVE_INTERRUPTED",
+          unitId: mover.id,
+          at: line[1],
+          reason: "ZOC",
+        },
+      ]),
+    });
+  });
+
+  it("interrupts at ZOC revealed on an earlier step while keeping command-start known ZOC strict", () => {
+    const fixture = hiddenZocAfterRevealScenario();
+    const before = JSON.stringify(fixture.state);
+    const hiddenView = viewForV7(fixture.state, fixture.state.humanPlayerId);
+    const publicMover = hiddenView.units.find(
+      (unit) => unit.id === fixture.moverId,
+    )!;
+    expect(hiddenView.units.some((unit) => unit.id === fixture.hostileId)).toBe(
+      false,
+    );
+    expect(
+      queryPlayerCommandsV7(hiddenView).some(
+        (command) =>
+          command.kind === "MOVE" &&
+          command.unitId === fixture.moverId &&
+          JSON.stringify(command.path) === JSON.stringify(fixture.path),
+      ),
+    ).toBe(true);
+    expect(
+      reachablePlayerMovementPathsV7(hiddenView, publicMover).some(
+        (reachable) =>
+          JSON.stringify(reachable.path) === JSON.stringify(fixture.path),
+      ),
+    ).toBe(true);
+
+    const moved = applyCommandV7(fixture.state, fixture.state.humanPlayerId, {
+      kind: "MOVE",
+      unitId: fixture.moverId,
+      path: fixture.path,
+    });
+    expect(moved.accepted).toBe(true);
+    expect(JSON.stringify(fixture.state)).toBe(before);
+    if (!moved.accepted) return;
+    expect(
+      moved.state.units.find((unit) => unit.id === fixture.moverId),
+    ).toMatchObject({
+      at: fixture.path[1],
+      activation: { moved: true, handled: true },
+    });
+    expect(moved.events).toContainEqual({
+      kind: "UNIT_MOVED",
+      unitId: fixture.moverId,
+      path: fixture.path.slice(0, 2),
+    });
+    expect(moved.events).toContainEqual({
+      kind: "UNIT_MOVE_INTERRUPTED",
+      unitId: fixture.moverId,
+      at: fixture.path[1],
+      reason: "ZOC",
+    });
+    expect(moved.events).toContainEqual(
+      expect.objectContaining({
+        kind: "TILES_REVEALED",
+        playerId: fixture.state.humanPlayerId,
+        tiles: expect.arrayContaining([fixture.hostileAt]),
+      }),
+    );
+    expect(
+      viewForV7(moved.state, moved.state.humanPlayerId).units.some(
+        (unit) => unit.id === fixture.hostileId,
+      ),
+    ).toBe(true);
+
+    const known = checkedV7({
+      ...fixture.state,
+      players: fixture.state.players.map((player) =>
+        player.id === fixture.state.humanPlayerId
+          ? {
+              ...player,
+              explored: [...player.explored, fixture.hostileAt].sort(
+                compareCoords,
+              ),
+            }
+          : player,
+      ),
+    });
+    const knownView = viewForV7(known, known.humanPlayerId);
+    expect(knownView.units.some((unit) => unit.id === fixture.hostileId)).toBe(
+      true,
+    );
+    expect(
+      queryPlayerCommandsV7(knownView).some(
+        (command) =>
+          command.kind === "MOVE" &&
+          command.unitId === fixture.moverId &&
+          JSON.stringify(command.path) === JSON.stringify(fixture.path),
+      ),
+    ).toBe(false);
+    expect(
+      applyCommandV7(known, known.humanPlayerId, {
+        kind: "MOVE",
+        unitId: fixture.moverId,
+        path: fixture.path,
+      }),
+    ).toMatchObject({
+      accepted: false,
+      error: { code: "MOVEMENT_ILLEGAL", params: { reason: "ZOC_STOPS_MOVE" } },
+    });
   });
 
   it("does not reveal terrain beyond a newly detected Saboteur ZOC stop", () => {
@@ -859,6 +1006,126 @@ function hiddenSaboteurScenario(): {
     ),
   });
   return { state, line, alternate };
+}
+
+function hiddenZocAfterRevealScenario(): {
+  readonly state: GameStateV7;
+  readonly moverId: UnitStateV7["id"];
+  readonly hostileId: UnitStateV7["id"];
+  readonly hostileAt: CoordV7;
+  readonly path: readonly [CoordV7, CoordV7, CoordV7];
+} {
+  const base = allTechsV7(initialV7(780));
+  const mover = base.units.find((unit) => unit.ownerId === base.humanPlayerId)!;
+  const hostile = base.units.find(
+    (unit) => unit.ownerId !== base.humanPlayerId,
+  )!;
+  const contributed = new Set(
+    base.populationContributions.map((entry) => coordKey(entry.source.at)),
+  );
+  let geometry:
+    | {
+        start: CoordV7;
+        path: readonly [CoordV7, CoordV7, CoordV7];
+        hostileAt: CoordV7;
+      }
+    | undefined;
+  for (let y = 1; y < base.board.height - 2 && geometry === undefined; y += 1)
+    for (let x = 1; x < base.board.width - 3; x += 1) {
+      const start = { x, y: y + 2 };
+      const path = [
+        { x: x + 1, y: y + 2 },
+        { x: x + 2, y: y + 1 },
+        { x: x + 3, y },
+      ] as const;
+      const hostileAt = { x: x + 3, y: y + 2 };
+      const cells = [start, ...path, hostileAt];
+      if (
+        cells.every((at) => {
+          const tile = base.board.tiles[at.y * base.board.width + at.x];
+          return (
+            tile?.site === null &&
+            tile.improvement === null &&
+            !contributed.has(coordKey(at)) &&
+            !base.treasureChests.some((chest) => same(chest, at))
+          );
+        })
+      ) {
+        geometry = { start, path, hostileAt };
+        break;
+      }
+    }
+  if (geometry === undefined) throw new Error("No hidden ZOC geometry");
+  const water = new Set(
+    [geometry.start, ...geometry.path, geometry.hostileAt].map(coordKey),
+  );
+  const state = checkedV7({
+    ...base,
+    activeSeatIndex: base.turnOrder.indexOf(base.humanPlayerId),
+    board: {
+      ...base.board,
+      tiles: base.board.tiles.map((tile) =>
+        water.has(coordKey(tile.at))
+          ? {
+              ...tile,
+              biome: null,
+              terrain: "SHALLOW_WATER" as const,
+              resource: null,
+              improvement: null,
+              road: false,
+              site: null,
+            }
+          : tile,
+      ),
+    },
+    players: base.players.map((player) =>
+      player.id === base.humanPlayerId
+        ? {
+            ...player,
+            explored: [
+              ...base.cities
+                .filter((city) => city.ownerId === base.humanPlayerId)
+                .map((city) => city.at),
+              geometry.start,
+              ...geometry.path,
+            ].sort(compareCoords),
+          }
+        : player,
+    ),
+    units: base.units.map((unit) =>
+      unit.id === mover.id
+        ? {
+            ...unit,
+            role: "PATROL_BOAT" as const,
+            form: "NAVAL" as const,
+            at: geometry.start,
+            hp: 10,
+            maxHp: 10,
+            activation: READY,
+          }
+        : unit.id === hostile.id
+          ? {
+              ...unit,
+              role: "PATROL_BOAT" as const,
+              form: "NAVAL" as const,
+              at: geometry.hostileAt,
+              hp: 10,
+              maxHp: 10,
+              activation: READY,
+            }
+          : unit,
+    ),
+    treasureChests: base.treasureChests.filter(
+      (chest) => !water.has(coordKey(chest)),
+    ),
+  });
+  return {
+    state,
+    moverId: mover.id,
+    hostileId: hostile.id,
+    hostileAt: geometry.hostileAt,
+    path: geometry.path,
+  };
 }
 
 function cooperativeDetectionScenario(): GameStateV7 {

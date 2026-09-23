@@ -108,6 +108,14 @@ function tacticalBase(seed: number, aiCount: 1 | 2 | 3 = 1): GameStateV7 {
       ...player,
       coins: 10_000,
       researchedTechs: TECHNOLOGY_IDS_V7,
+      achievementEntitlements:
+        player.id === state.humanPlayerId
+          ? player.achievementEntitlements.map((entitlement) =>
+              entitlement.achievement === "EXPLORER"
+                ? { ...entitlement, unlocked: true }
+                : entitlement,
+            )
+          : player.achievementEntitlements,
       explored:
         player.id === state.humanPlayerId
           ? state.board.tiles.map((tile) => tile.at)

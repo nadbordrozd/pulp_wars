@@ -91,8 +91,26 @@ export function corePresentationPlanV7(
       const destination = event.path.at(-1);
       if (destination !== undefined) origins.set(event.unitId, destination);
     } else if (
+      event.kind === "UNIT_EMBARKED" ||
+      event.kind === "UNIT_DISEMBARKED"
+    ) {
+      const publicPath = [event.from, event.to].filter((at) =>
+        explored.has(`${at.x},${at.y}`),
+      );
+      if (publicPath.length === 2)
+        steps.push({
+          kind: "MOVE",
+          unitId: event.unitId,
+          path: publicPath,
+          durationMs: 180,
+          ...(enemyTurn ? { followCamera: true as const } : {}),
+        });
+      origins.set(event.unitId, event.to);
+    } else if (
       enemyTurn &&
       (event.kind === "ECONOMIC_BUILDING_BUILT" ||
+        event.kind === "PORT_BUILT" ||
+        event.kind === "NAVAL_UNIT_TRAINED" ||
         event.kind === "ROAD_BUILT" ||
         event.kind === "MONUMENT_BUILT")
     ) {
@@ -109,7 +127,8 @@ export function corePresentationPlanV7(
       const ranged =
         attacker.role === "MARKSMAN" ||
         attacker.role === "CATAPULT" ||
-        attacker.role === "HORSE_ARCHER";
+        attacker.role === "HORSE_ARCHER" ||
+        attacker.role === "BATTLESHIP";
       steps.push({
         kind:
           attacker.role === "CATAPULT"

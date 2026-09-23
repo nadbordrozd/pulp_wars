@@ -203,6 +203,27 @@ export const RULESET7_HORSE_ARCHER_ART_GEOMETRY = {
   offsetY: 18,
 } as const satisfies SourceGeometry;
 
+export const RULESET7_NAVAL_ART_GEOMETRY = {
+  patrolBoat: {
+    width: 384,
+    height: 384,
+    anchor: { x: 192, y: 288 },
+    displayScale: 0.24,
+  },
+  battleship: {
+    width: 384,
+    height: 384,
+    anchor: { x: 192, y: 288 },
+    displayScale: 0.27,
+  },
+  transport: {
+    width: 384,
+    height: 384,
+    anchor: { x: 192, y: 288 },
+    displayScale: 0.24,
+  },
+} as const satisfies Readonly<Record<string, SourceGeometry>>;
+
 export const RULESET6_UNIT_COSMETIC_OFFSET_Y =
   RULESET6_UNIT_ART_GEOMETRY.standard.offsetY;
 

@@ -11,15 +11,16 @@ import {
   type PublicPlanningWorkResultV7,
   type PlayerViewV7,
 } from "../src/engine/index";
+import { upgradeRetainedPublicViewV7 } from "./ruleset-v7-late-public-view-contract";
 
 const source = JSON.parse(
   readFileSync("tests/fixtures/ruleset-v7-late-public-view.json", "utf8"),
 ) as PlayerViewV7;
-const coldView = structuredClone(source);
+const coldView = structuredClone(upgradeRetainedPublicViewV7(source));
 const queryStarted = performance.now();
 const coldCommands = queryPlayerCommandsV7(coldView);
 const coldQueryMs = performance.now() - queryStarted;
-const view = structuredClone(source);
+const view = structuredClone(upgradeRetainedPublicViewV7(source));
 const commandWorkStarted = performance.now();
 const commandWork = createPublicCommandWorkV7(view);
 let commandOperations = 0;

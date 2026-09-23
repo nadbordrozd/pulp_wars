@@ -14,10 +14,10 @@ interface CliSummary {
   readonly acceptedCommands: number;
   readonly termination: string;
   readonly stateHash: string;
-  readonly metrics: { readonly rulesetId: string };
+  readonly metrics: { readonly rulesetId: string; readonly setupHash: string };
 }
 
-function runCli(...args: readonly string[]): CliSummary {
+function runCli<T = CliSummary>(...args: readonly string[]): T {
   const output = execFileSync(
     process.execPath,
     [
@@ -27,7 +27,7 @@ function runCli(...args: readonly string[]): CliSummary {
     ],
     { encoding: "utf8", timeout: 20_000 },
   );
-  return JSON.parse(output) as CliSummary;
+  return JSON.parse(output) as T;
 }
 
 describe("ruleset-7 revision-3 headless CLI dispatch", () => {
@@ -76,6 +76,46 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
       runCli("match", "--ruleset", "pulp-wars-poc-7", "--max-commands", "1"),
     ).toThrow(/pulp-wars-poc-7r6/);
   }, 15_000);
+
+  it("defaults to Continents and accepts all map types in match and batch modes", () => {
+    const common = [
+      "--ruleset",
+      "pulp-wars-poc-7r6",
+      "--max-commands",
+      "1",
+      "--max-rounds",
+      "5",
+    ] as const;
+    const defaultMatch = runCli("match", ...common);
+    const continents = runCli("match", ...common, "--map-type", "continents");
+    const dryLand = runCli("match", ...common, "--map-type", "dry-land");
+    expect(defaultMatch.metrics.setupHash).toBe(continents.metrics.setupHash);
+    expect(dryLand.metrics.setupHash).not.toBe(continents.metrics.setupHash);
+
+    const batch = runCli<{
+      readonly matches: number;
+      readonly entries: readonly { readonly mapType: string }[];
+    }>(
+      "batch",
+      ...common,
+      "--seeds",
+      "0",
+      "--ai-counts",
+      "1",
+      "--modes",
+      "rival",
+      "--map-types",
+      "dry-land,pangea,continents,archipelago,lakes",
+    );
+    expect(batch.matches).toBe(5);
+    expect(batch.entries.map((entry) => entry.mapType)).toEqual([
+      "DRY_LAND",
+      "PANGEA",
+      "CONTINENTS",
+      "ARCHIPELAGO",
+      "LAKES",
+    ]);
+  }, 30_000);
 
   it("dispatches a command-zero v7 replay through canonical playable creation", () => {
     const setup = setupV7(42);

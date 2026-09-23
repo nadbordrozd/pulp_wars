@@ -1,10 +1,10 @@
 # Pulp Wars Ruleset 7
 
-**Status:** revision-6 engine baseline. The
+**Status:** revision-6 playable baseline. The
 [revision-6 water and naval specification](RULESET_7_REVISION_6_WATER_NAVAL.md)
-is authoritative for the current engine. The live setup remains temporarily
-fixed to Dry Land while the map chooser, purposeful naval AI, and complete
-browser flows are integrated.
+is authoritative for the current engine, Normal AI, setup, naval UI, and
+release acceptance. New matches default to Continents and expose all five map
+types.
 
 **Runtime ruleset ID:** `pulp-wars-poc-7r6`
 
@@ -261,9 +261,11 @@ an omitted factions array, a scenario field, or any other extra field is
 legal for every AI count. Auto resolves only to 11/14/16.
 
 The product remains a local, client-only, one-human Conquest match against one
-to three equal-rules Normal AI seats in Rival or Cooperative mode. It has no
-server, accounts, online multiplayer, naval/air layer, score/timed victory,
-upkeep, inventories, resource stockpiles, undo, or live re-fog.
+to three equal-rules Normal AI seats in Rival or Cooperative mode. This
+revision-3 baseline originally had no naval layer; revision 6 supersedes that
+constraint with the water and naval rules linked above. It has no server,
+accounts, online multiplayer, air layer, score/timed victory, upkeep,
+inventories, resource stockpiles, undo, or live re-fog.
 
 ### 2.2 Exact map parity
 
@@ -813,10 +815,11 @@ may not be a random unit, a generic stat upgrade, or a compulsory counter absent
 from the current roster. It adds no technology and requires a separately
 versioned review before becoming gameplay.
 
-A future fifth branch is reserved for coherent water/naval content. Revision 3
-defines no water terrain, unit, technology, command, art, serialization, paid
-placeholder, or empty UI branch. The research surface renders exactly the four
-implemented branches and no fifth column or branch button.
+Revision 3 reserved a future fifth branch for coherent water/naval content and
+defined no water terrain, unit, technology, command, art, serialization, paid
+placeholder, or empty UI branch. Revision 6 supersedes that historical limit:
+the research surface now renders the implemented three-node naval branch as
+its fifth branch.
 
 ### 5.2 Resources, visibility, and basic actions
 

@@ -69,6 +69,8 @@ interface GeneratedRecord {
 }
 
 const EXPECTED_SYMBOL_IDS = [
+  "ui-status-port-active",
+  "ui-status-port-blockaded",
   "ui-status-concealed",
   "ui-status-detected",
   "ui-status-exposed",
@@ -305,6 +307,22 @@ describe("Ruleset 7 tactical action and status assets", () => {
   });
 
   it("pins exact viewer-safe visibility boundaries without hidden inference", () => {
+    expect(
+      RULESET7_TACTICAL_UI_SYMBOL_BY_ID["ui-status-port-active"],
+    ).toMatchObject({
+      semanticLabel: "Owned active Port",
+      semanticRole: "economy",
+      visibility: "OWNER_ONLY",
+      projectedSource: "PlayerViewV7 naval ownedPorts status ACTIVE",
+    });
+    expect(
+      RULESET7_TACTICAL_UI_SYMBOL_BY_ID["ui-status-port-blockaded"],
+    ).toMatchObject({
+      semanticLabel: "Owned blockaded Port",
+      semanticRole: "economy",
+      visibility: "OWNER_ONLY",
+      projectedSource: "PlayerViewV7 naval ownedPorts status BLOCKADED",
+    });
     expect(
       RULESET7_TACTICAL_UI_SYMBOL_BY_ID["ui-status-concealed"],
     ).toMatchObject({

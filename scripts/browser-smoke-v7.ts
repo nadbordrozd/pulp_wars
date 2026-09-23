@@ -273,7 +273,18 @@ try {
       const retainedLandView = await response.json();
       const view = {
         ...retainedLandView,
+        rulesetId: 'pulp-wars-poc-7r6',
+        setup: {
+          ...retainedLandView.setup,
+          rulesetId: 'pulp-wars-poc-7r6',
+          mapType: 'DRY_LAND',
+          mapGenerationRevision: 'REGIONAL_BIOMES_NAVAL_V1',
+        },
         units: retainedLandView.units.map((unit) => ({ ...unit, form: 'LAND' })),
+        board: {
+          ...retainedLandView.board,
+          tiles: retainedLandView.board.tiles.map((tile) => tile.explored ? { ...tile, biome: 'HIGHLANDS' } : tile),
+        },
         naval: {
           ownedPorts: [],
           tradeCityIds: [],

@@ -84,7 +84,7 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
       metrics.roles.captures,
       metrics.roles.trainingCoins,
       metrics.roles.survivors,
-      metrics.roles.survivalPerCoin,
+      metrics.roles.survivorsPerThousandCoins,
     ])
       expect(Object.keys(inventory)).toEqual(UNIT_ROLE_IDS_V7);
     for (const inventory of [

@@ -1,4 +1,5 @@
 import { canonicalHash, canonicalJson } from "../replay/canonical";
+import type { PlayerId } from "../model/ids";
 import {
   ACHIEVEMENT_IDS_V7,
   BIOME_IDS_V7,
@@ -188,6 +189,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
       choices,
       outcome,
       humanPlayerId,
+      activePlayerId: turnOrder[input.activeSeatIndex] as PlayerId,
       nextEntityId: input.nextEntityId,
       round: input.round,
       setup,
@@ -964,6 +966,7 @@ interface CrossInput {
   choices: readonly PendingChoiceV7[];
   outcome: MatchOutcomeV7 | null;
   humanPlayerId: PlayerStateV7["id"];
+  activePlayerId: PlayerStateV7["id"];
   nextEntityId: number;
   round: number;
   setup: MatchSetupV7;
@@ -1093,6 +1096,7 @@ function validateCrossReferences(value: CrossInput): boolean {
       return false;
   }
   const firstUnrewarded = [...cities]
+    .filter((city) => city.ownerId === value.activePlayerId)
     .sort((left, right) => left.id - right.id)
     .flatMap((city) => {
       for (let level = 2; level <= city.level; level += 1)

@@ -6,6 +6,17 @@ remain canonical. `createPublicPlanningWorkV7` is the responsive equivalent for
 callers that need all economic potentials and many spatial scores on a mature
 view.
 
+Revision-6 naval planning follows the same boundary. Public land components,
+known land objectives, prospective Port cells, and shallow/deep water distance
+fields advance as bounded `NormalPolicyWorkV7` operations. Routes exclude
+public allied territory and use public terrain, technology, unit form, Port
+status, and visible danger. Unknown water remains an optimistic frontier; no
+planner reads concealed terrain, units, resources, or authority routes.
+
+The retained revision-4 fixture is upgraded only at its read boundary: units
+receive `LAND`, explored tiles receive the conservative `HIGHLANDS` biome, and
+empty naval facts are attached. The archived fixture bytes remain unchanged.
+
 ## Why the incremental API exists
 
 The retained seed-0 Rival-3 command-1100 public view has a 16 by 16 board, 9

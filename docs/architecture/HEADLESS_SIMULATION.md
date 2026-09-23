@@ -17,7 +17,7 @@ The authoritative revision-3 headless and telemetry contract is
 [Ruleset 7](../product/RULESET_7.md#10-normal-ai-scheduling-headless-and-telemetry)
 and supersedes conflicting revision-2 details here for subsequent implementation.
 
-Ruleset 7 is selected explicitly as `pulp-wars-poc-7r2`; the v6 CLI default is
+Ruleset 7 is selected explicitly as `pulp-wars-poc-7r6`; the v6 CLI default is
 unchanged. Match creation uses the canonical playable boundary: map generation
 creates five Coins per seat, then exactly one initial `START_TURN` awards the
 first active player its two-Coin capital income, producing the initial 7/5 Coin
@@ -26,8 +26,8 @@ raw generated map.
 
 ```bash
 npm run headless -- replay path/to/v7-replay.json
-npm run headless -- match --ruleset pulp-wars-poc-7r2 --ai-count 3 --seed 0 --max-commands 30000 --max-rounds 750
-npm run headless -- batch --ruleset pulp-wars-poc-7r2 --seeds 0 --ai-counts 1,2,3 --modes rival,cooperative --max-commands 30000 --max-rounds 750
+npm run headless -- match --ruleset pulp-wars-poc-7r6 --map-type continents --ai-count 3 --seed 0 --max-commands 30000 --max-rounds 750
+npm run headless -- batch --ruleset pulp-wars-poc-7r6 --map-types dry-land,pangea,continents,archipelago,lakes --seeds 0 --ai-counts 1,2,3 --modes rival,cooperative --max-commands 30000 --max-rounds 750
 ```
 
 Only Original is registered for this revision, so an explicit faction list
@@ -43,6 +43,19 @@ Long local soaks may pass `onProgress` with a positive
 `progressEveryCommands` interval. The callback receives only immutable accepted
 command count, round, and active-player ID after each interval; it cannot alter
 policy inputs and is absent from canonical results and deterministic hashes.
+
+Revision 6 accepts one `--map-type` for a match and a comma-separated
+`--map-types` list for a batch. Continents is the match default. The naval
+playable validator runs the fixed five-map, four-shape, two-relation matrix
+twice through 20 rounds or 600 accepted commands, then exercises fixed targeted
+and natural invasion sequences. Optional `policySliceMilliseconds` uses the
+same `NormalPolicyWorkV7` loop as the browser and reports callback count, slice
+count, maximum slice time, and total decision time without changing hashes.
+
+Role efficiency telemetry stores `survivorsPerThousandCoins` as an integer:
+`round(1000 * survivors / trainingCoins)`, or zero when no Coins were spent.
+The earlier fractional `survivalPerCoin` calculation was incompatible with the
+integer-only canonical serializer and is not a compatible unit.
 
 ```ts
 runAiMatchV7(setup, {

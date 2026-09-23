@@ -313,6 +313,9 @@ function appendPublicTileCommandsV7(
     monumentCity.blackout?.phase !== "ACTIVE" &&
     publicCityDevelopmentFootprintKnown(view, monumentCity) &&
     !view.pendingChoices.some((choice) => choice.cityId === monumentCity.id) &&
+    tile.biome !== null &&
+    (tile.terrain !== "MOUNTAIN" ||
+      view.viewer.researchedTechs.includes("ENGINEERING")) &&
     !view.treasureChests.some((chest) => same(chest, tile.at)) &&
     tile.site === null &&
     tile.resource === null &&
@@ -1410,6 +1413,10 @@ const PUBLIC_ECONOMIC_PREVIEWS = new WeakMap<
 >();
 const PUBLIC_SPATIAL_SCORES = new WeakMap<PlayerViewV7, Map<string, number>>();
 const PUBLIC_SPATIAL_BASELINES = new WeakMap<PlayerViewV7, number>();
+const PUBLIC_REDEVELOPMENT_CHANGES = new WeakMap<
+  PlayerViewV7,
+  Map<string, boolean>
+>();
 const PUBLIC_ECONOMIC_POTENTIALS = new WeakMap<
   PlayerViewV7,
   readonly PublicEconomicPotentialV7[]
@@ -2100,6 +2107,44 @@ export function scorePublicSpatialPlanV7(
   return result;
 }
 
+/** Whether the public one-step spatial plan replaces an improvement with a different result. */
+export function queryPublicRedevelopmentChangesImprovementV7(
+  view: PlayerViewV7,
+  candidate: { readonly kind: "REDEVELOP"; readonly at: CoordV7 },
+): boolean {
+  const key = JSON.stringify(candidate);
+  const cached = PUBLIC_REDEVELOPMENT_CHANGES.get(view)?.get(key);
+  if (cached !== undefined) return cached;
+  if (!publicPlanningGraphExact(view)) return false;
+  const before = publicEconomyGraph(view);
+  const after = graphAfterPublicCandidateV7(view, before, candidate);
+  if (after === null) return false;
+  const replacement = enumeratePublicPlacementsIgnoringGatesV7(view, after)
+    .filter(
+      (placement) =>
+        same(placement.at, candidate.at) &&
+        publicPlacementImprovementV7(placement) !== null,
+    )
+    .map((placement) => ({
+      placement,
+      score: scorePublicPlacementV7(view, after, placement),
+    }))
+    .sort(
+      (left, right) =>
+        right.score - left.score ||
+        comparePublicPlacementV7(left.placement, right.placement),
+    )[0];
+  return redevelopmentChangesImprovementV7(
+    view,
+    before,
+    after,
+    candidate,
+    replacement?.score !== undefined && replacement.score > 0
+      ? replacement.placement
+      : undefined,
+  );
+}
+
 function publicPlanningGraphExact(view: PlayerViewV7): boolean {
   const ownedCities = view.cities.filter(
     (city) => city.ownerId === view.viewer.id,
@@ -2215,6 +2260,41 @@ function bestPublicNextPlacementTotalV7(
     }
   }
   return total;
+}
+
+function redevelopmentChangesImprovementV7(
+  view: PlayerViewV7,
+  before: PublicEconomyGraphV7,
+  after: PublicEconomyGraphV7,
+  candidate: { readonly kind: "REDEVELOP"; readonly at: CoordV7 },
+  replacement: PublicPlacementV7 | undefined,
+): boolean {
+  const current = before.board.tiles.find((tile) =>
+    same(tile.at, candidate.at),
+  )?.improvement;
+  if (current === undefined || current === null) return false;
+  if (replacement === undefined) return true;
+  const replaced = graphAfterPublicCandidateV7(view, after, {
+    kind: replacement.kind,
+    at: replacement.at,
+  } as CommandV7);
+  const next = replaced?.board.tiles.find((tile) =>
+    same(tile.at, candidate.at),
+  )?.improvement;
+  return next !== current;
+}
+
+function publicPlacementImprovementV7(
+  placement: PublicPlacementV7,
+): ImprovementIdV7 | null {
+  if (placement.kind === "BUILD_MONUMENT") return "MONUMENT";
+  return (
+    BASIC_ECONOMIC_ACTIONS_V7[placement.kind as BasicEconomicCommandKindV7]
+      ?.improvement ??
+    SPATIAL_ECONOMIC_ACTIONS_V7[placement.kind as SpatialEconomicCommandKindV7]
+      ?.improvement ??
+    null
+  );
 }
 
 function enumeratePublicPlacementsIgnoringGatesV7(
@@ -2375,6 +2455,10 @@ interface IncrementalBestSelectionV7 {
   readonly knownScores: ReadonlyMap<PublicPlacementV7, number> | null;
   readonly cities: readonly PublicEconomyGraphV7["cities"][number][];
   readonly reservedTargets: Set<string>;
+  readonly bestByTarget: Map<
+    string,
+    { readonly placement: PublicPlacementV7; readonly score: number }
+  >;
   cityIndex: number;
   placementIndex: number;
   remainingMonumentEntitlements: number;
@@ -2399,6 +2483,7 @@ function createIncrementalBestSelectionV7(
       .filter((city) => city.ownerId === view.viewer.id)
       .sort((left, right) => left.id - right.id),
     reservedTargets: new Set(),
+    bestByTarget: new Map(),
     cityIndex: 0,
     placementIndex: 0,
     remainingMonumentEntitlements: graph.remainingMonumentEntitlements,
@@ -2418,15 +2503,26 @@ function advanceIncrementalBestSelectionV7(
     const placement = placements[selection.placementIndex];
     if (placement !== undefined) {
       selection.placementIndex += 1;
+      const score =
+        selection.knownScores?.get(placement) ??
+        scorePublicPlacementV7(view, selection.graph, placement);
+      if (publicPlacementImprovementV7(placement) !== null) {
+        const targetKey = coordKeyV7(placement.at);
+        const targetBest = selection.bestByTarget.get(targetKey);
+        if (
+          targetBest === undefined ||
+          score > targetBest.score ||
+          (score === targetBest.score &&
+            comparePublicPlacementV7(placement, targetBest.placement) < 0)
+        )
+          selection.bestByTarget.set(targetKey, { placement, score });
+      }
       if (
         (placement.kind === "BUILD_MONUMENT" &&
           selection.remainingMonumentEntitlements <= 0) ||
         selection.reservedTargets.has(coordKeyV7(placement.at))
       )
         return true;
-      const score =
-        selection.knownScores?.get(placement) ??
-        scorePublicPlacementV7(view, selection.graph, placement);
       if (
         selection.best === null ||
         score > selection.best.score ||
@@ -2602,11 +2698,32 @@ class IncrementalPublicPlanningWorkV7 implements PublicPlanningWorkV7 {
       )
         return true;
       const candidate = this.candidates[this.candidateIndex];
-      if (candidate !== undefined)
+      if (candidate !== undefined) {
         this.recordCandidateScore(
           candidate,
           (this.selection?.total ?? 0) - this.baseline,
         );
+        if (candidate.kind === "REDEVELOP" && this.selection !== null) {
+          let cached = PUBLIC_REDEVELOPMENT_CHANGES.get(this.view);
+          if (cached === undefined) {
+            cached = new Map();
+            PUBLIC_REDEVELOPMENT_CHANGES.set(this.view, cached);
+          }
+          const best = this.selection.bestByTarget.get(
+            coordKeyV7(candidate.at),
+          );
+          cached.set(
+            JSON.stringify(candidate),
+            redevelopmentChangesImprovementV7(
+              this.view,
+              this.graph,
+              this.selection.graph,
+              { kind: "REDEVELOP", at: candidate.at },
+              best !== undefined && best.score > 0 ? best.placement : undefined,
+            ),
+          );
+        }
+      }
       this.selection = null;
       this.candidateIndex += 1;
       this.phase = "CANDIDATE_START";

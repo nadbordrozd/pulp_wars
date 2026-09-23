@@ -16,6 +16,7 @@ import {
   RULESET6_UNIT_ART_GEOMETRY,
   RULESET7_HORSE_ARCHER_ART_GEOMETRY,
   RULESET7_HEAVY_ART_GEOMETRY,
+  RULESET7_NAVAL_ART_GEOMETRY,
   SETTLEMENT_ART_GEOMETRY,
   SQUARE_ART_GEOMETRY,
   anchoredDestinationRect,
@@ -56,7 +57,7 @@ export interface BoardRenderInteractionV7 {
 export interface MapCommandTargetV7 {
   readonly at: CoordV7;
   readonly command: CommandV7;
-  readonly family: "MOVE" | "ATTACK" | "MONUMENT" | "BLACKOUT";
+  readonly family: "MOVE" | "ATTACK" | "MONUMENT" | "BLACKOUT" | "DISEMBARK";
   readonly previewLabel?: string;
   readonly semanticLabel?: string;
 }
@@ -81,6 +82,7 @@ export interface BoardRenderPlanEntryV7 {
     | "REACH"
     | "STATUS"
     | "LINK"
+    | "WATER_BOUNDARY"
     | "TERRITORY_BOUNDARY"
     | "SELECTION"
     | "CURSOR";
@@ -174,7 +176,11 @@ export function buildBoardRenderPlanV7(
             ? suppressesForestCanopyV7(tile.improvement)
               ? "terrain-ruleset7-original-grass-1"
               : `terrain-ruleset7-original-forest-${variant(tile.at, 4)}`
-            : `terrain-ruleset7-revision3-${tile.improvement === "MINE" ? "mined-" : ""}mountain-${variant(tile.at, 3)}`,
+            : tile.terrain === "MOUNTAIN"
+              ? `terrain-ruleset7-revision3-${tile.improvement === "MINE" ? "mined-" : ""}mountain-${variant(tile.at, 3)}`
+              : tile.terrain === "SHALLOW_WATER"
+                ? "terrain-ruleset7-water-shallow"
+                : "terrain-ruleset7-water-deep",
       ownerId: tile.territoryOwnerId,
       ...ownerPresentation(view, tile.territoryOwnerId),
     });
@@ -213,7 +219,7 @@ export function buildBoardRenderPlanV7(
       entries.push({
         key: `resource:${tile.at.x},${tile.at.y}`,
         kind: "RESOURCE",
-        layer: 3,
+        layer: tile.improvement === "PORT" ? 4 : 3,
         at: tile.at,
         assetId: resourceMapArtIdV7(tile.resource, tile.at),
       });
@@ -225,7 +231,7 @@ export function buildBoardRenderPlanV7(
       entries.push({
         key: `improvement:${tile.at.x},${tile.at.y}`,
         kind: "IMPROVEMENT",
-        layer: 4,
+        layer: tile.improvement === "PORT" ? 3 : 4,
         at: tile.at,
         assetId:
           farm?.assetId ?? RULESET7_IMPROVEMENT_ART_IDS[tile.improvement],
@@ -246,6 +252,7 @@ export function buildBoardRenderPlanV7(
         label: "Village",
       });
   }
+  addWaterBoundaries(entries, view);
   for (const city of view.cities)
     entries.push({
       key: `city:${city.id}`,
@@ -278,8 +285,14 @@ export function buildBoardRenderPlanV7(
       ...ownerPresentation(view, unit.ownerId),
       hp: unit.hp,
       maxHp: unit.maxHp,
-      assetId: RULESET7_UNIT_ART_IDS[unit.role],
-      label: title(unit.role),
+      assetId:
+        unit.form === "EMBARKED"
+          ? "unit-shared-embarked-transport"
+          : RULESET7_UNIT_ART_IDS[unit.role],
+      label:
+        unit.form === "EMBARKED"
+          ? `Embarked Transport · ${title(unit.role)} passenger`
+          : title(unit.role),
       ready:
         unit.ownerId === view.viewer.id &&
         !unit.activation.handled &&
@@ -311,6 +324,85 @@ export function buildBoardRenderPlanV7(
       pulse: attachment.pulse,
       attachmentSlot: slot,
     });
+  }
+  for (const port of view.naval.ownedPorts) {
+    const slot = attachmentSlots.get(coordKey(port.at)) ?? 0;
+    attachmentSlots.set(coordKey(port.at), slot + 1);
+    entries.push({
+      key: `naval-port:${port.at.x},${port.at.y}`,
+      kind: "STATUS",
+      layer: 6,
+      at: port.at,
+      statusId:
+        port.status === "ACTIVE"
+          ? "ui-status-port-active"
+          : "ui-status-port-blockaded",
+      label: port.status === "ACTIVE" ? "Active Port" : "Blockaded Port",
+      attachmentSlot: slot,
+    });
+  }
+  for (const route of view.naval.seaRoutes)
+    for (let index = 0; index + 1 < route.path.length; index += 1) {
+      const from = route.path[index];
+      const to = route.path[index + 1];
+      if (from === undefined || to === undefined) continue;
+      entries.push({
+        key: `sea-route:${route.fromCityId}:${route.toCityId}:${index}`,
+        kind: "LINK",
+        layer: 6,
+        at: from,
+        linkTo: to,
+        label: "SEA_ROUTE",
+      });
+    }
+  const selectedUnitId =
+    interaction.selection?.kind === "UNIT"
+      ? interaction.selection.unitId
+      : null;
+  const selectedNaval =
+    selectedUnitId !== null
+      ? view.units.find(
+          (unit) =>
+            unit.id === selectedUnitId &&
+            unit.ownerId === view.viewer.id &&
+            unit.form === "NAVAL",
+        )
+      : undefined;
+  if (selectedNaval !== undefined) {
+    const recoveryKeys = new Set<string>();
+    for (const port of view.naval.ownedPorts.filter(
+      (candidate) => candidate.status === "ACTIVE",
+    ))
+      for (const tile of view.board.tiles)
+        if (
+          tile.explored &&
+          tile.biome === null &&
+          !(
+            tile.territoryOwnerId !== null &&
+            tile.territoryOwnerId !== view.viewer.id &&
+            view.setup.aiMode === "COOPERATIVE" &&
+            tile.territoryOwnerId !== view.humanPlayerId &&
+            view.viewer.id !== view.humanPlayerId
+          ) &&
+          (tile.terrain !== "DEEP_WATER" ||
+            view.viewer.researchedTechs.includes("NAVIGATION")) &&
+          Math.max(
+            Math.abs(tile.at.x - port.at.x),
+            Math.abs(tile.at.y - port.at.y),
+          ) <= 1 &&
+          !recoveryKeys.has(coordKey(tile.at))
+        ) {
+          recoveryKeys.add(coordKey(tile.at));
+          entries.push({
+            key: `naval-recovery:${selectedNaval.id}:${tile.at.x},${tile.at.y}`,
+            kind: "REACH",
+            layer: 6,
+            at: tile.at,
+            label: view.naval.recoverableNavalUnitIds.includes(selectedNaval.id)
+              ? "Recovery available"
+              : "Port recovery radius",
+          });
+        }
   }
   addTerritoryBoundaries(entries, view, interaction.selection);
   const targets = dedupeMapTargets(
@@ -415,6 +507,7 @@ export function drawBoardV7(input: {
   for (const entry of input.plan.entries) {
     if (
       entry.kind === "LINK" ||
+      entry.kind === "WATER_BOUNDARY" ||
       entry.kind === "TARGET" ||
       entry.kind === "TERRITORY_BOUNDARY" ||
       entry.kind === "REACH" ||
@@ -681,6 +774,20 @@ export function drawBoardV7(input: {
     }
     context.restore();
   }
+  for (const boundary of input.plan.entries) {
+    if (boundary.kind !== "WATER_BOUNDARY" || boundary.edge === undefined)
+      continue;
+    context.save();
+    context.strokeStyle = boundary.label === "DEPTH" ? "#b7d8d4" : "#ecdfb7";
+    context.lineWidth = (boundary.label === "DEPTH" ? 4 : 3) * camera.zoom;
+    context.setLineDash(
+      boundary.label === "DEPTH"
+        ? [6 * camera.zoom, 4 * camera.zoom]
+        : [10 * camera.zoom, 5 * camera.zoom],
+    );
+    strokeTileEdge(context, camera, boundary.at, boundary.edge);
+    context.restore();
+  }
   // Selection and action outlines keep visual priority over ownership.
   for (const entry of input.plan.entries) {
     const size = TILE_WIDTH * camera.zoom;
@@ -718,10 +825,6 @@ export function drawBoardV7(input: {
       continue;
     }
   }
-  for (const target of input.plan.entries) {
-    if (target.kind !== "TARGET") continue;
-    drawMapTarget(context, camera, target);
-  }
   const publicLinks = input.plan.entries.filter(
     (entry) => entry.kind === "LINK" && entry.linkTo !== undefined,
   );
@@ -737,6 +840,10 @@ export function drawBoardV7(input: {
     }
     for (const link of publicLinks) drawPublicLink(context, camera, link);
     context.restore();
+  }
+  for (const target of input.plan.entries) {
+    if (target.kind !== "TARGET") continue;
+    drawMapTarget(context, camera, target);
   }
   const statusPulse = input.statusPulse;
   if (
@@ -817,6 +924,55 @@ function addTerritoryBoundaries(
         ownerId: segment.ownerId,
         ...ownerPresentation(view, segment.ownerId),
       });
+    }
+  }
+}
+
+function addWaterBoundaries(
+  entries: BoardRenderPlanEntryV7[],
+  view: PlayerViewV7,
+): void {
+  const byKey = new Map(
+    view.board.tiles.map((tile) => [coordKey(tile.at), tile] as const),
+  );
+  for (const tile of view.board.tiles) {
+    if (!tile.explored) continue;
+    for (const [dx, dy, edge, opposite] of [
+      [1, 0, "EAST", "WEST"],
+      [0, 1, "SOUTH", "NORTH"],
+    ] as const) {
+      const neighbor = byKey.get(
+        coordKey({ x: tile.at.x + dx, y: tile.at.y + dy }),
+      );
+      if (neighbor === undefined || !neighbor.explored) continue;
+      const tileWater = tile.biome === null;
+      const neighborWater = neighbor.biome === null;
+      if (tileWater !== neighborWater) {
+        const water = tileWater ? tile : neighbor;
+        entries.push({
+          key: `water-coast:${tile.at.x},${tile.at.y}:${edge}`,
+          kind: "WATER_BOUNDARY",
+          layer: 6,
+          at: water.at,
+          edge: tileWater ? edge : opposite,
+          label: "COAST",
+        });
+      } else if (
+        tileWater &&
+        tile.terrain !== neighbor.terrain &&
+        (tile.terrain === "SHALLOW_WATER" ||
+          neighbor.terrain === "SHALLOW_WATER")
+      ) {
+        const shallow = tile.terrain === "SHALLOW_WATER" ? tile : neighbor;
+        entries.push({
+          key: `water-depth:${tile.at.x},${tile.at.y}:${edge}`,
+          kind: "WATER_BOUNDARY",
+          layer: 6,
+          at: shallow.at,
+          edge: shallow === tile ? edge : opposite,
+          label: "DEPTH",
+        });
+      }
     }
   }
 }
@@ -1109,6 +1265,17 @@ function mapTargets(
         },
       ];
     }
+    if (command.kind === "DISEMBARK" && command.unitId === selectedUnitId)
+      return [
+        {
+          at: command.at,
+          command,
+          family: "DISEMBARK",
+          previewLabel: "Land transport",
+          semanticLabel:
+            "Legal landing tile. Landing ends this unit's activation; capture is available after the ordinary wait.",
+        },
+      ];
     return [];
   });
 }
@@ -1216,7 +1383,7 @@ function drawTacticalSymbolOnCanvas(
 
 function geometryFor(entry: BoardRenderPlanEntryV7): SourceGeometry {
   if (entry.kind === "TERRAIN")
-    return entry.assetId?.includes("grass")
+    return entry.assetId?.includes("grass") || entry.assetId?.includes("water")
       ? SQUARE_ART_GEOMETRY.ground
       : SQUARE_ART_GEOMETRY.tallTerrain;
   if (entry.kind === "RESOURCE") return SQUARE_ART_GEOMETRY.resource;
@@ -1226,6 +1393,12 @@ function geometryFor(entry: BoardRenderPlanEntryV7): SourceGeometry {
   if (entry.kind === "CITY")
     return SETTLEMENT_ART_GEOMETRY.cities[cityArtLevel(entry.value ?? 1)];
   if (entry.kind === "UNIT") {
+    if (entry.assetId === "unit-shared-embarked-transport")
+      return RULESET7_NAVAL_ART_GEOMETRY.transport;
+    if (entry.assetId === RULESET7_UNIT_ART_IDS.PATROL_BOAT)
+      return RULESET7_NAVAL_ART_GEOMETRY.patrolBoat;
+    if (entry.assetId === RULESET7_UNIT_ART_IDS.BATTLESHIP)
+      return RULESET7_NAVAL_ART_GEOMETRY.battleship;
     if (entry.assetId === RULESET7_UNIT_ART_IDS.HORSE_ARCHER)
       return RULESET7_HORSE_ARCHER_ART_GEOMETRY;
     if (
@@ -1250,6 +1423,8 @@ function geometryFor(entry: BoardRenderPlanEntryV7): SourceGeometry {
       return SQUARE_ART_GEOMETRY.ruleset7LumberCamp;
     if (entry.assetId === RULESET7_IMPROVEMENT_ART_IDS.SAWMILL)
       return SQUARE_ART_GEOMETRY.sawmill;
+    if (entry.assetId === RULESET7_IMPROVEMENT_ART_IDS.PORT)
+      return SQUARE_ART_GEOMETRY.processor;
     if (
       [
         "WINDMILL",

@@ -171,6 +171,49 @@ const polygon = (
  */
 const RULESET7_TACTICAL_UI_SYMBOL_DEFINITIONS = [
   {
+    id: "ui-status-port-active",
+    semanticLabel: "Owned active Port",
+    semanticRole: "economy",
+    visibility: "OWNER_ONLY",
+    projectedSource: "PlayerViewV7 naval ownedPorts status ACTIVE",
+    reducedMotion: "STATIC",
+    primitives: [
+      polygon(
+        [
+          [4, 13],
+          [20, 13],
+          [17, 19],
+          [7, 19],
+        ],
+        "bronze",
+      ),
+      line(12, 4, 12, 14),
+      line(7, 8, 17, 8),
+      circle(12, 18, 2, "paper"),
+    ],
+  },
+  {
+    id: "ui-status-port-blockaded",
+    semanticLabel: "Owned blockaded Port",
+    semanticRole: "economy",
+    visibility: "OWNER_ONLY",
+    projectedSource: "PlayerViewV7 naval ownedPorts status BLOCKADED",
+    reducedMotion: "STATIC",
+    primitives: [
+      polygon(
+        [
+          [4, 13],
+          [20, 13],
+          [17, 19],
+          [7, 19],
+        ],
+        "slate",
+      ),
+      line(12, 4, 12, 14),
+      line(5, 5, 19, 20, 3, "coral"),
+    ],
+  },
+  {
     id: "ui-status-concealed",
     semanticLabel: "Concealment ability",
     semanticRole: "visibility",

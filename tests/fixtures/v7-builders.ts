@@ -27,8 +27,8 @@ export function setupV7(seed = 71, aiCount: 1 | 2 | 3 = 1): MatchSetupV7 {
   };
 }
 
-export function initialV7(seed = 71): GameStateV7 {
-  const created = createInitialMapStateV7(setupV7(seed));
+export function initialV7(seed = 71, aiCount: 1 | 2 | 3 = 1): GameStateV7 {
+  const created = createInitialMapStateV7(setupV7(seed, aiCount));
   if (!created.ok) throw new Error(created.error.code);
   const humanTurnIndex = created.state.turnOrder.indexOf(
     created.state.humanPlayerId,

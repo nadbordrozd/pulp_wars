@@ -89,6 +89,16 @@ resource hidden by technology is represented only by its public terrain in the
 identity header. It must not use an outline, icon, text, count, or disabled
 action that identifies the resource.
 
+Revision 6 adds Shallow Water, Deep Water, Fish, Pearls, Port, Patrol Boat,
+Battleship, and embarked transport identities to this same compact dock. A Port
+shows active or blockaded status, its live population, and current trade Coin
+effect with the standard population/Coin icons. Selecting an active Port offers
+naval recruitment at that exact Port. Selecting a land unit offers Embark only
+through a public owned active Port; selecting its transport offers legal
+landing cells as map targets and names the passenger role and capture ability.
+Public sea routes, vessel recovery, selection, and blockade overlays remain
+fog-safe and do not expose an unexplored endpoint.
+
 Exact offered controls use these labels: Harvest Fruit, Hunt Game, Build Farm,
 Build Lumber Camp, Build Mine, Build Quarry, Build Windmill, Build Sawmill,
 Build Forge, Build Stoneworks, Build Workshop, Build Grand Works, Build Market,
@@ -345,17 +355,19 @@ Fields appear in this order:
    are disabled with an exact explanation. Auto shows its resolved 11/14/16
    size live and never resolves to Large or Huge; both explicit large presets
    are enabled for every AI count.
-4. **Difficulty:** read-only “Normal (Greedy POC)—same income and information
+4. **Map type:** Dry Land, Pangea, Continents (default), Archipelago, or Lakes.
+   The selected map type is retained by save/resume and shown on results.
+5. **Difficulty:** read-only “Normal (Greedy POC)—same income and information
    rules.” No implied unavailable difficulty picker.
-5. **Seed:** text field, 64-character limit, with Randomize and Copy. Empty is
+6. **Seed:** text field, 64-character limit, with Randomize and Copy. Empty is
    labeled “randomized when the match is confirmed.” After Randomize it displays
    eight hexadecimal digits.
-6. **Your color:** accessible named swatches. Used colors remain distinguishable
+7. **Your color:** accessible named swatches. Used colors remain distinguishable
    by player number and pattern/status text; color never carries meaning alone.
 
 Continue validates inline and enters the compact faction assignment. Back preserves the
-draft for the current visit. There are no map-type, water, timer, player-created
-team, ranked, human-seat, or network fields.
+draft for the current visit. There are no timer, player-created team, ranked,
+human-seat, or network fields.
 
 ## 6. Per-seat faction assignment
 
