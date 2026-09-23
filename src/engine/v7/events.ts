@@ -64,6 +64,47 @@ export type DomainEventV7 =
       readonly permanentPopulationAdded: 1;
     }
   | {
+      readonly kind: "FISH_HARVESTED";
+      readonly playerId: PlayerId;
+      readonly cityId: CityId;
+      readonly at: CoordV7;
+      readonly cost: 2;
+      readonly permanentPopulationAdded: 1;
+    }
+  | {
+      readonly kind: "PEARLS_GATHERED";
+      readonly playerId: PlayerId;
+      readonly cityId: CityId;
+      readonly at: CoordV7;
+      readonly cost: 2;
+      readonly coinsReceived: 4;
+      readonly coinDelta: 2;
+    }
+  | {
+      readonly kind: "PORT_BUILT";
+      readonly playerId: PlayerId;
+      readonly cityId: CityId;
+      readonly at: CoordV7;
+      readonly cost: 4;
+      readonly populationAdded: 1;
+    }
+  | {
+      readonly kind: "PORT_BLOCKADE_CHANGED";
+      readonly playerId: PlayerId;
+      readonly cityId: CityId;
+      readonly at: CoordV7;
+      readonly activeBefore: boolean | null;
+      readonly activeAfter: boolean | null;
+    }
+  | {
+      readonly kind: "SEA_NETWORK_CHANGED";
+      readonly playerId: PlayerId;
+      readonly networkCityIdsBefore: readonly CityId[];
+      readonly networkCityIdsAfter: readonly CityId[];
+      readonly tradeCityIdsBefore: readonly CityId[];
+      readonly tradeCityIdsAfter: readonly CityId[];
+    }
+  | {
       readonly kind: "ECONOMIC_BUILDING_BUILT";
       readonly playerId: PlayerId;
       readonly cityId: CityId;
@@ -161,6 +202,31 @@ export type DomainEventV7 =
       readonly role: UnitRoleIdV7;
       readonly cost: number;
       readonly at: CoordV7;
+    }
+  | {
+      readonly kind: "NAVAL_UNIT_TRAINED";
+      readonly playerId: PlayerId;
+      readonly cityId: CityId;
+      readonly unitId: UnitId;
+      readonly role: "PATROL_BOAT" | "BATTLESHIP";
+      readonly cost: 5 | 10;
+      readonly at: CoordV7;
+    }
+  | {
+      readonly kind: "UNIT_EMBARKED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly passengerRole: UnitRoleIdV7;
+      readonly from: CoordV7;
+      readonly to: CoordV7;
+    }
+  | {
+      readonly kind: "UNIT_DISEMBARKED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly passengerRole: UnitRoleIdV7;
+      readonly from: CoordV7;
+      readonly to: CoordV7;
     }
   | {
       readonly kind: "UNIT_REWARD_GRANTED";

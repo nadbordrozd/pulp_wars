@@ -476,6 +476,7 @@ function freshFighter(
     veteran: false,
     captureEligible: false,
     activation: readyActivation(),
+    form: "LAND",
     blackoutEligibleRound: null,
   };
 }

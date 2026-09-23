@@ -33,7 +33,7 @@ const setup: MatchSetupV7 = {
   aiMode: "RIVAL",
   humanColor: "CORAL",
   factions: ["ORIGINAL", "ORIGINAL", "ORIGINAL", "ORIGINAL"],
-  mapGenerationRevision: "REGIONAL_BIOMES_V1",
+  mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1",
 };
 const created = createInitialMapStateV7(setup);
 if (!created.ok) throw new Error(created.error.code);

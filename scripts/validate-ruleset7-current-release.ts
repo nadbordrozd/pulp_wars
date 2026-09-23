@@ -19,8 +19,8 @@ const archive = JSON.parse(
 if (archive.rulesetId !== "pulp-wars-poc-7r2")
   throw new Error("Archived revision-2 release corpus identity changed");
 if (
-  RULESET_7_ID !== "pulp-wars-poc-7r5" ||
-  SAVE_STORAGE_KEY_V7 !== "pulpWars.save.v7r5.current" ||
+  RULESET_7_ID !== "pulp-wars-poc-7r6" ||
+  SAVE_STORAGE_KEY_V7 !== "pulpWars.save.v7r6.current" ||
   parseMatchSetupV7({
     rulesetId: RULESET_7_ID,
     seed: 0,
@@ -31,7 +31,7 @@ if (
     aiMode: "RIVAL",
     humanColor: "CORAL",
     factions: ["ORIGINAL", "ORIGINAL"],
-    mapGenerationRevision: "REGIONAL_BIOMES_V1",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1",
   }) === null
 )
   throw new Error("Current revision-5 release identity is invalid");

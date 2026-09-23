@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  TECHNOLOGY_IDS_V7,
   applyCommandV7,
   cityIncomeV7,
   previewEconomicV7,
@@ -366,7 +367,11 @@ describe("ruleset-7 pure public economy", () => {
         player.id === hidden.humanPlayerId
           ? {
               ...player,
-              researchedTechs: [...player.researchedTechs, "ENGINEERING"],
+              researchedTechs: TECHNOLOGY_IDS_V7.filter(
+                (tech) =>
+                  tech === "ENGINEERING" ||
+                  player.researchedTechs.includes(tech),
+              ),
             }
           : player,
       ),
@@ -749,6 +754,7 @@ function emptyOwnedTile(
         tile.site === null &&
         tile.resource === null &&
         tile.improvement === null &&
+        !state.units.some((unit) => same(unit.at, tile.at)) &&
         !excluded.some((at) => same(at, tile.at)) &&
         !state.treasureChests.some((chest) => same(chest, tile.at)),
     ),

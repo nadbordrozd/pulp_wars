@@ -19,6 +19,7 @@ import {
   type GameStateV7,
   type ImprovementIdV7,
   type MatchOutcomeV7,
+  type MatchSetupV7,
   type PendingChoiceV7,
   type PlayerStateV7,
   type PopulationContributionSourceV7,
@@ -93,6 +94,8 @@ const PREREQUISITE: Readonly<Partial<Record<TechnologyIdV7, TechnologyIdV7>>> =
     ENGINEERING: "DRILL",
     METALLURGY: "ENGINEERING",
     GRAND_WORKS: "ENGINEERING",
+    NAVIGATION: "SHORECRAFT",
+    NAVAL_ENGINEERING: "NAVIGATION",
   };
 
 const BASE_HP: Readonly<Record<UnitRoleIdV7, number>> = {
@@ -108,6 +111,8 @@ const BASE_HP: Readonly<Record<UnitRoleIdV7, number>> = {
   HORSE_ARCHER: 10,
   BREACHER: 10,
   JUGGERNAUT: 40,
+  PATROL_BOAT: 10,
+  BATTLESHIP: 20,
 };
 
 const CAPTURE_ROLES = new Set<UnitRoleIdV7>([
@@ -185,6 +190,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
       humanPlayerId,
       nextEntityId: input.nextEntityId,
       round: input.round,
+      setup,
     })
   )
     return null;
@@ -270,7 +276,10 @@ function parseTile(input: unknown): TileStateV7 | null {
       "terrain",
       "territoryCityId",
     ]) ||
-    !BIOME_IDS_V7.includes(input.biome as TileStateV7["biome"]) ||
+    !(
+      input.biome === null ||
+      BIOME_IDS_V7.includes(input.biome as Exclude<TileStateV7["biome"], null>)
+    ) ||
     !TERRAIN_IDS_V7.includes(input.terrain as TileStateV7["terrain"]) ||
     (input.resource !== null &&
       !RESOURCE_IDS_V7.includes(input.resource as ResourceIdV7)) ||
@@ -294,9 +303,15 @@ function parseTile(input: unknown): TileStateV7 | null {
   const resource = input.resource as TileStateV7["resource"];
   const improvement = input.improvement as TileStateV7["improvement"];
   if (
-    (resource !== null && improvement !== null) ||
+    (resource !== null && improvement !== null && improvement !== "PORT") ||
+    (terrain === "SHALLOW_WATER" || terrain === "DEEP_WATER") !==
+      (input.biome === null) ||
     !resourceMatchesTerrain(resource, terrain) ||
     !basicImprovementMatchesTerrain(improvement, terrain) ||
+    (input.biome === null &&
+      (input.road ||
+        input.site !== null ||
+        (improvement !== null && improvement !== "PORT"))) ||
     (input.site !== null &&
       (terrain !== "GRASS" ||
         resource !== null ||
@@ -639,7 +654,9 @@ function parseContributionSource(
   if (
     hasExactKeysV7(input, ["action", "at", "kind"]) &&
     input.kind === "RESOURCE_ACTION" &&
-    (input.action === "HARVEST_FRUIT" || input.action === "HUNT_GAME")
+    (input.action === "HARVEST_FRUIT" ||
+      input.action === "HUNT_GAME" ||
+      input.action === "HARVEST_FISH")
   ) {
     const at = parseCoordV7(input.at);
     return at === null
@@ -714,6 +731,7 @@ function parseUnit(input: unknown): UnitStateV7 | null {
       "maxHp",
       "ownerId",
       "role",
+      "form",
       "veteran",
     ]) ||
     !UNIT_ROLE_IDS_V7.includes(input.role as UnitRoleIdV7) ||
@@ -722,7 +740,10 @@ function parseUnit(input: unknown): UnitStateV7 | null {
     input.hp > input.maxHp ||
     !isNonNegativeSafeIntegerV7(input.kills) ||
     typeof input.veteran !== "boolean" ||
-    typeof input.captureEligible !== "boolean"
+    typeof input.captureEligible !== "boolean" ||
+    (input.form !== "LAND" &&
+      input.form !== "EMBARKED" &&
+      input.form !== "NAVAL")
   )
     return null;
   const id = parseUnitIdV7(input.id);
@@ -745,7 +766,9 @@ function parseUnit(input: unknown): UnitStateV7 | null {
       ? !isPositiveSafeIntegerV7(input.blackoutEligibleRound)
       : input.blackoutEligibleRound !== null) ||
     (role !== "HORSE_ARCHER" && activation.attacksUsed > 1) ||
-    activation.attacked !== activation.attacksUsed > 0
+    activation.attacked !== activation.attacksUsed > 0 ||
+    (role === "PATROL_BOAT" || role === "BATTLESHIP") !==
+      (input.form === "NAVAL")
   )
     return null;
   return {
@@ -753,6 +776,7 @@ function parseUnit(input: unknown): UnitStateV7 | null {
     ownerId: owner,
     homeCityId: home,
     role,
+    form: input.form as UnitStateV7["form"],
     at,
     hp: input.hp,
     maxHp: input.maxHp,
@@ -942,6 +966,7 @@ interface CrossInput {
   humanPlayerId: PlayerStateV7["id"];
   nextEntityId: number;
   round: number;
+  setup: MatchSetupV7;
 }
 
 function validateCrossReferences(value: CrossInput): boolean {
@@ -1012,6 +1037,19 @@ function validateCrossReferences(value: CrossInput): boolean {
     return false;
   if (new Set(units.map((unit) => key(unit.at))).size !== units.length)
     return false;
+  for (const unit of units) {
+    const tile = tileAt(board, unit.at);
+    const owner = playerById.get(unit.ownerId);
+    if (
+      tile === undefined ||
+      owner === undefined ||
+      (unit.form === "LAND") !== (tile.biome !== null) ||
+      (unit.form !== "LAND" &&
+        tile.terrain === "DEEP_WATER" &&
+        !owner.researchedTechs.includes("NAVIGATION"))
+    )
+      return false;
+  }
   for (const city of cities) {
     const center = tileAt(board, city.at);
     if (
@@ -1075,7 +1113,17 @@ function validateCrossReferences(value: CrossInput): boolean {
     )
       return false;
   }
-  if (!populationLedgerValid(board, players, cities, contributions))
+  if (
+    !populationLedgerValid(
+      board,
+      players,
+      cities,
+      units,
+      contributions,
+      value.setup,
+      value.humanPlayerId,
+    )
+  )
     return false;
   for (const achievement of ACHIEVEMENT_IDS_V7) {
     const monuments = contributions.filter(
@@ -1119,6 +1167,7 @@ function validateCrossReferences(value: CrossInput): boolean {
     const tile = tileAt(board, chest);
     if (
       tile === undefined ||
+      tile.biome === null ||
       tile.terrain === "MOUNTAIN" ||
       tile.site !== null ||
       tile.resource !== null ||
@@ -1143,7 +1192,10 @@ function populationLedgerValid(
   board: BoardStateV7,
   players: readonly PlayerStateV7[],
   cities: readonly CityStateV7[],
+  units: readonly UnitStateV7[],
   contributions: readonly PopulationContributionV7[],
+  setup: MatchSetupV7,
+  humanPlayerId: PlayerStateV7["id"],
 ): boolean {
   const cityById = new Map(cities.map((city) => [city.id, city]));
   const liveByCoord = new Map<string, PopulationContributionV7>();
@@ -1163,7 +1215,23 @@ function populationLedgerValid(
         tile?.territoryCityId !== city.id ||
         (contribution.source.kind === "IMPROVEMENT"
           ? tile.improvement !== contribution.source.improvement ||
-            contribution.amount !== liveValue(board, cities, tile)
+            (tile.improvement === "PORT"
+              ? contribution.amount !==
+                (units.some(
+                  (unit) =>
+                    unit.hp > 0 &&
+                    unit.form !== "LAND" &&
+                    sameCoordV7(unit.at, tile.at) &&
+                    unit.ownerId !== city.ownerId &&
+                    !(
+                      setup.aiMode === "COOPERATIVE" &&
+                      unit.ownerId !== humanPlayerId &&
+                      city.ownerId !== humanPlayerId
+                    ),
+                )
+                  ? 0
+                  : 1)
+              : contribution.amount !== liveValue(board, cities, tile))
           : tile.improvement !== "MONUMENT" || contribution.amount !== 3)
       )
         return false;
@@ -1215,7 +1283,7 @@ function populationLedgerValid(
     if (
       tile.territoryCityId === null ||
       tile.improvement === null ||
-      ["FARM", "LUMBER_CAMP", "MINE"].includes(tile.improvement)
+      ["FARM", "LUMBER_CAMP", "MINE", "PORT"].includes(tile.improvement)
     )
       continue;
     const item = `${tile.territoryCityId}:${tile.improvement}`;
@@ -1232,8 +1300,10 @@ function liveValue(
 ): number {
   return tile.improvement === null
     ? 0
-    : spatialContributionAtV7({ board, cities }, tile.at, tile.improvement)
-        .population;
+    : tile.improvement === "PORT"
+      ? 1
+      : spatialContributionAtV7({ board, cities }, tile.at, tile.improvement)
+          .population;
 }
 
 function hasRewardPlacement(
@@ -1248,6 +1318,7 @@ function hasRewardPlacement(
   return board.tiles.some(
     (tile) =>
       tile.territoryCityId === city.id &&
+      tile.biome !== null &&
       (tile.terrain !== "MOUNTAIN" || engineered) &&
       !units.some((unit) => unit.hp > 0 && sameCoordV7(unit.at, tile.at)),
   );
@@ -1320,7 +1391,11 @@ function resourceMatchesTerrain(
       ? terrain === "GRASS"
       : resource === "GAME"
         ? terrain === "FOREST"
-        : terrain === "MOUNTAIN")
+        : resource === "ORE"
+          ? terrain === "MOUNTAIN"
+          : resource === "FISH"
+            ? terrain === "SHALLOW_WATER"
+            : terrain === "SHALLOW_WATER" || terrain === "DEEP_WATER")
   );
 }
 function basicImprovementMatchesTerrain(
@@ -1333,5 +1408,7 @@ function basicImprovementMatchesTerrain(
       ? terrain === "FOREST"
       : improvement === "MINE"
         ? terrain === "MOUNTAIN"
-        : true;
+        : improvement === "PORT"
+          ? terrain === "SHALLOW_WATER"
+          : true;
 }

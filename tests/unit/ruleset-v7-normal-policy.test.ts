@@ -242,9 +242,26 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
   });
 
   it("prepares the retained late public view incrementally with exact sync parity", () => {
-    const source = JSON.parse(
+    const retained = JSON.parse(
       readFileSync("tests/fixtures/ruleset-v7-late-public-view.json", "utf8"),
     ) as PlayerViewV7;
+    const source = {
+      ...retained,
+      rulesetId: "pulp-wars-poc-7r6",
+      setup: {
+        ...retained.setup,
+        rulesetId: "pulp-wars-poc-7r6",
+        mapType: "DRY_LAND",
+        mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1",
+      },
+      naval: {
+        ownedPorts: [],
+        tradeCityIds: [],
+        networkCityIds: [],
+        seaRoutes: [],
+        recoverableNavalUnitIds: [],
+      },
+    } as PlayerViewV7;
     let clock = 0;
     let clockReads = 0;
     const work = new NormalPolicyWorkV7(structuredClone(source), () => {
@@ -269,7 +286,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       targetUnitId: 34,
     });
     expect(canonicalHash(sliced)).toBe(
-      "546f07462f3f476b869e0c8c73baaa56372ce891a0711f2033beb39969fd7e55",
+      "4a10c89a02dc83152312097c35ef934d20e58d169188a8c5dd2f57c57f3f3cfe",
     );
     expect(canonicalHash(sync)).toBe(canonicalHash(sliced));
     expect(sync).toEqual(sliced);
@@ -864,6 +881,7 @@ function fixtureState(specs: readonly UnitSpec[]): GameStateV7 {
       veteran: false,
       captureEligible: false,
       activation: READY,
+      form: "LAND",
       blackoutEligibleRound: role === "SABOTEUR" ? 1 : null,
     } satisfies UnitStateV7;
   });

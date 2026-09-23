@@ -734,6 +734,7 @@ function makeUnit(
     veteran: false,
     captureEligible: false,
     activation: READY,
+    form: "LAND",
     blackoutEligibleRound: role === "SABOTEUR" ? 1 : null,
   };
 }

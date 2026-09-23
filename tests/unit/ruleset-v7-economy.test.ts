@@ -756,10 +756,45 @@ describe("ruleset-7 economy", () => {
     expect(parseGameStateV7(second.state)).toEqual(second.state);
   });
 
-  it("automatically grants Treasury 12 at every blocked level with no ghost queue", () => {
+  it("automatically grants Treasury when all land is full and only coastal water is empty", () => {
     const staged = rewardPackageV7(1_303, 100);
     const occupied = occupyCityExceptV7(staged.state, staged.cityId, []);
-    const built = applyCommandV7(occupied, occupied.humanPlayerId, {
+    const blocker = occupied.units.find((unit) => {
+      const tile = occupied.board.tiles.find((candidate) =>
+        same(candidate.at, unit.at),
+      );
+      return (
+        unit.ownerId === occupied.humanPlayerId &&
+        !same(unit.at, staged.grandWorksAt) &&
+        tile?.territoryCityId === staged.cityId &&
+        tile.site === null &&
+        tile.resource === null &&
+        tile.improvement === null &&
+        !tile.road
+      );
+    });
+    if (blocker === undefined) throw new Error("coastal blocker missing");
+    const coastal = checkedV7({
+      ...occupied,
+      units: occupied.units.filter((unit) => unit.id !== blocker.id),
+      board: {
+        ...occupied.board,
+        tiles: occupied.board.tiles.map((tile) =>
+          same(tile.at, blocker.at)
+            ? {
+                ...tile,
+                biome: null,
+                terrain: "SHALLOW_WATER" as const,
+                resource: null,
+                improvement: null,
+                road: false,
+                site: null,
+              }
+            : tile,
+        ),
+      },
+    });
+    const built = applyCommandV7(coastal, coastal.humanPlayerId, {
       kind: "BUILD_GRAND_WORKS",
       at: staged.grandWorksAt,
     });
@@ -781,7 +816,7 @@ describe("ruleset-7 economy", () => {
     ).toEqual([
       {
         kind: "CITY_REWARD_AUTOMATICALLY_GRANTED",
-        playerId: occupied.humanPlayerId,
+        playerId: coastal.humanPlayerId,
         cityId: staged.cityId,
         reachedLevel: 5,
         reward: "TREASURY",
@@ -789,7 +824,7 @@ describe("ruleset-7 economy", () => {
       },
       {
         kind: "CITY_REWARD_AUTOMATICALLY_GRANTED",
-        playerId: occupied.humanPlayerId,
+        playerId: coastal.humanPlayerId,
         cityId: staged.cityId,
         reachedLevel: 6,
         reward: "TREASURY",
@@ -802,7 +837,7 @@ describe("ruleset-7 economy", () => {
       built.events.map((event) => event.kind).lastIndexOf("CITY_LEVELED_UP"),
     );
     expect(
-      built.state.players.find((player) => player.id === occupied.humanPlayerId)
+      built.state.players.find((player) => player.id === coastal.humanPlayerId)
         ?.coins,
     ).toBe(117);
     expect(parseGameStateV7(built.state)).toEqual(built.state);
@@ -1273,6 +1308,7 @@ function occupyCityExceptV7(
         veteran: false,
         captureEligible: false,
         activation: readyActivation(),
+        form: "LAND",
         blackoutEligibleRound: null,
       });
       nextEntityId += 1;

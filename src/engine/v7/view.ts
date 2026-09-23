@@ -1,6 +1,12 @@
 import { deepFreeze } from "../model/freeze";
 import type { CityId, PlayerId, UnitId } from "../model/ids";
-import { arePlayersAlliedV7 } from "./economy";
+import {
+  arePlayersAlliedV7,
+  combinedNetworkCityIdsV7,
+  combinedNetworkRoadKeysV7,
+  isActivePortV7,
+  seaTradeCityIdsV7,
+} from "./economy";
 import { detectionCoversCoordV7, isUnitVisibleToPlayerV7 } from "./observation";
 import { spatialContributionAtV7 } from "./spatial-economy";
 import type {
@@ -38,7 +44,7 @@ export type PlayerTileViewV7 =
   | {
       readonly at: CoordV7;
       readonly explored: true;
-      readonly biome: BiomeIdV7;
+      readonly biome: BiomeIdV7 | null;
       readonly terrain: TerrainIdV7;
       readonly resource: PublicResourceV7;
       readonly improvement: ImprovementIdV7 | null;
@@ -112,6 +118,7 @@ export interface PublicUnitV7 {
   readonly ownerId: PlayerId;
   readonly homeCityId: CityId | null;
   readonly role: UnitRoleIdV7;
+  readonly form: "LAND" | "EMBARKED" | "NAVAL";
   readonly at: CoordV7;
   readonly hp: number;
   readonly maxHp: number;
@@ -236,10 +243,27 @@ export interface PlayerViewV7 {
   readonly improvementValues: readonly PublicImprovementValueV7[];
   readonly units: readonly PublicUnitV7[];
   readonly unitStats: readonly PublicUnitStatsV7[];
+  readonly naval: PublicNavalFactsV7;
   readonly treasureChests: readonly CoordV7[];
   readonly blackoutStatuses: readonly PublicBlackoutStatusV7[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
+}
+
+export interface PublicNavalFactsV7 {
+  readonly ownedPorts: readonly {
+    readonly at: CoordV7;
+    readonly cityId: CityId;
+    readonly status: "ACTIVE" | "BLOCKADED";
+  }[];
+  readonly tradeCityIds: readonly CityId[];
+  readonly networkCityIds: readonly CityId[];
+  readonly seaRoutes: readonly {
+    readonly fromCityId: CityId;
+    readonly toCityId: CityId;
+    readonly path: readonly CoordV7[];
+  }[];
+  readonly recoverableNavalUnitIds: readonly UnitId[];
 }
 
 export function viewForV7(
@@ -256,6 +280,21 @@ export function viewForV7(
   const citiesById = new Map(
     state.cities.map((city) => [city.id, city] as const),
   );
+  const ownedPorts = state.board.tiles
+    .filter(
+      (tile) =>
+        explored.has(key(tile.at)) &&
+        tile.improvement === "PORT" &&
+        state.cities.find((city) => city.id === tile.territoryCityId)
+          ?.ownerId === viewerId,
+    )
+    .map((tile) => ({
+      at: tile.at,
+      cityId: tile.territoryCityId as CityId,
+      status: isActivePortV7(state, tile.at, viewerId)
+        ? ("ACTIVE" as const)
+        : ("BLOCKADED" as const),
+    }));
   const tiles: PlayerTileViewV7[] = state.board.tiles.map((tile) => {
     const territory =
       tile.territoryCityId === null
@@ -340,6 +379,7 @@ export function viewForV7(
       ownerId: unit.ownerId,
       homeCityId: unit.ownerId === viewerId ? unit.homeCityId : null,
       role: unit.role,
+      form: unit.form,
       at: unit.at,
       hp: unit.hp,
       maxHp: unit.maxHp,
@@ -407,6 +447,15 @@ export function viewForV7(
         tile.at,
         tile.improvement,
       );
+      const marketSeaRoadBonus =
+        tile.improvement === "MARKET" &&
+        city !== undefined &&
+        !evaluation.capitalRoadConnected &&
+        neighbors8(state.board.width, state.board.height, tile.at).some((at) =>
+          combinedNetworkRoadKeysV7(state, viewerId).has(key(at)),
+        )
+          ? 1
+          : 0;
       const population = visibleContributions.find(
         (entry) =>
           entry.category === "LIVE" &&
@@ -419,7 +468,7 @@ export function viewForV7(
           improvement: tile.improvement,
           level:
             tile.improvement === "MARKET"
-              ? evaluation.marketIncome
+              ? Math.min(4, evaluation.marketIncome + marketSeaRoadBonus)
               : (population?.amount ?? 0),
           measure: tile.improvement === "MARKET" ? "COIN_INCOME" : "POPULATION",
           contributingTiles: evaluation.contributingTiles.filter((at) =>
@@ -534,6 +583,28 @@ export function viewForV7(
         ? { ...stats, statuses: [...stats.statuses, "EXPOSED"] }
         : stats;
     }),
+    naval: {
+      ownedPorts,
+      tradeCityIds: [...seaTradeCityIdsV7(state, viewerId)].sort(
+        (left, right) => left - right,
+      ),
+      networkCityIds: [...combinedNetworkCityIdsV7(state, viewerId)].sort(
+        (left, right) => left - right,
+      ),
+      seaRoutes: publicSeaRoutes(state, viewer, ownedPorts),
+      recoverableNavalUnitIds: state.units
+        .filter(
+          (unit) =>
+            unit.ownerId === viewerId &&
+            unit.form === "NAVAL" &&
+            [
+              unit.at,
+              ...neighbors8(state.board.width, state.board.height, unit.at),
+            ].some((at) => isActivePortV7(state, at, viewerId)),
+        )
+        .map((unit) => unit.id)
+        .sort((left, right) => left - right),
+    },
     treasureChests: state.treasureChests.filter((chest) =>
       explored.has(key(chest)),
     ),
@@ -547,11 +618,113 @@ export function viewForV7(
   });
 }
 
+function publicSeaRoutes(
+  state: GameStateV7,
+  viewer: PlayerStateV7,
+  ports: readonly {
+    readonly at: CoordV7;
+    readonly cityId: CityId;
+    readonly status: "ACTIVE" | "BLOCKADED";
+  }[],
+): PublicNavalFactsV7["seaRoutes"] {
+  if (!viewer.researchedTechs.includes("SHORECRAFT")) return [];
+  const explored = new Set(viewer.explored.map(key));
+  const water = new Set(
+    state.board.tiles
+      .filter(
+        (tile) =>
+          tile.biome === null &&
+          explored.has(key(tile.at)) &&
+          (tile.terrain !== "DEEP_WATER" ||
+            viewer.researchedTechs.includes("NAVIGATION")),
+      )
+      .map((tile) => key(tile.at)),
+  );
+  const best = new Map<string, PublicNavalFactsV7["seaRoutes"][number]>();
+  const active = ports.filter((port) => port.status === "ACTIVE");
+  for (const from of active) {
+    const parents = waterParents(
+      state.board.width,
+      state.board.height,
+      water,
+      from.at,
+    );
+    for (const to of active) {
+      if (from.cityId >= to.cityId) continue;
+      const path = reconstructWaterPath(parents, to.at);
+      if (path === null) continue;
+      const route = { fromCityId: from.cityId, toCityId: to.cityId, path };
+      const routeKey = `${from.cityId}:${to.cityId}`;
+      const existing = best.get(routeKey);
+      if (
+        existing === undefined ||
+        route.path.length < existing.path.length ||
+        (route.path.length === existing.path.length &&
+          comparePath(route.path, existing.path) < 0)
+      )
+        best.set(routeKey, route);
+    }
+  }
+  return [...best.values()].sort(
+    (left, right) =>
+      left.fromCityId - right.fromCityId || left.toCityId - right.toCityId,
+  );
+}
+
+function comparePath(
+  left: readonly CoordV7[],
+  right: readonly CoordV7[],
+): number {
+  for (let index = 0; index < Math.min(left.length, right.length); index += 1) {
+    const a = left[index];
+    const b = right[index];
+    if (a === undefined || b === undefined) break;
+    const order = a.y - b.y || a.x - b.x;
+    if (order !== 0) return order;
+  }
+  return left.length - right.length;
+}
+
+function waterParents(
+  width: number,
+  height: number,
+  water: ReadonlySet<string>,
+  start: CoordV7,
+): ReadonlyMap<string, CoordV7 | null> {
+  const queue = [start];
+  const prior = new Map<string, CoordV7 | null>([[key(start), null]]);
+  for (let cursor = 0; cursor < queue.length; cursor += 1) {
+    const current = queue[cursor];
+    if (current === undefined) break;
+    for (const near of neighbors8(width, height, current))
+      if (water.has(key(near)) && !prior.has(key(near))) {
+        prior.set(key(near), current);
+        queue.push(near);
+      }
+  }
+  return prior;
+}
+
+function reconstructWaterPath(
+  prior: ReadonlyMap<string, CoordV7 | null>,
+  finish: CoordV7,
+): CoordV7[] | null {
+  if (!prior.has(key(finish))) return null;
+  const path: CoordV7[] = [];
+  let step: CoordV7 | null = finish;
+  while (step !== null) {
+    path.push(step);
+    step = prior.get(key(step)) ?? null;
+  }
+  return path.reverse();
+}
+
 function publicUnitVisibilityV7(
   state: GameStateV7,
   viewerId: PlayerId,
   unit: GameStateV7["units"][number],
 ): PublicUnitVisibilityV7 | undefined {
+  if (unit.role === "SABOTEUR" && unit.form !== "LAND") return undefined;
   const concealment =
     unit.role === "SABOTEUR" && unit.ownerId === viewerId
       ? ("OWNER_CAPABILITY" as const)
@@ -756,6 +929,20 @@ function isValued(
 function countBy(values: readonly PlayerId[]): Map<PlayerId, number> {
   const result = new Map<PlayerId, number>();
   for (const value of values) result.set(value, (result.get(value) ?? 0) + 1);
+  return result;
+}
+function neighbors8(width: number, height: number, at: CoordV7): CoordV7[] {
+  const result: CoordV7[] = [];
+  for (let y = at.y - 1; y <= at.y + 1; y += 1)
+    for (let x = at.x - 1; x <= at.x + 1; x += 1)
+      if (
+        (x !== at.x || y !== at.y) &&
+        x >= 0 &&
+        y >= 0 &&
+        x < width &&
+        y < height
+      )
+        result.push({ x, y });
   return result;
 }
 const key = (at: CoordV7) => `${at.y},${at.x}`;

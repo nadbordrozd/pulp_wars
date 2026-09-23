@@ -47,6 +47,40 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "cost",
     "permanentPopulationAdded",
   ],
+  FISH_HARVESTED: [
+    "kind",
+    "playerId",
+    "cityId",
+    "at",
+    "cost",
+    "permanentPopulationAdded",
+  ],
+  PEARLS_GATHERED: [
+    "kind",
+    "playerId",
+    "cityId",
+    "at",
+    "cost",
+    "coinsReceived",
+    "coinDelta",
+  ],
+  PORT_BUILT: ["kind", "playerId", "cityId", "at", "cost", "populationAdded"],
+  PORT_BLOCKADE_CHANGED: [
+    "kind",
+    "playerId",
+    "cityId",
+    "at",
+    "activeBefore",
+    "activeAfter",
+  ],
+  SEA_NETWORK_CHANGED: [
+    "kind",
+    "playerId",
+    "networkCityIdsBefore",
+    "networkCityIdsAfter",
+    "tradeCityIdsBefore",
+    "tradeCityIdsAfter",
+  ],
   ECONOMIC_BUILDING_BUILT: [
     "kind",
     "playerId",
@@ -109,6 +143,24 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "populationAdded",
   ],
   UNIT_TRAINED: ["kind", "playerId", "cityId", "unitId", "role", "cost", "at"],
+  NAVAL_UNIT_TRAINED: [
+    "kind",
+    "playerId",
+    "cityId",
+    "unitId",
+    "role",
+    "cost",
+    "at",
+  ],
+  UNIT_EMBARKED: ["kind", "playerId", "unitId", "passengerRole", "from", "to"],
+  UNIT_DISEMBARKED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "passengerRole",
+    "from",
+    "to",
+  ],
   UNIT_REWARD_GRANTED: [
     "kind",
     "playerId",
@@ -383,8 +435,43 @@ function validPayload(
       );
     case "FRUIT_HARVESTED":
     case "GAME_HUNTED":
+    case "FISH_HARVESTED":
       return (
         playerCityAt(e) && e.cost === 2 && e.permanentPopulationAdded === 1
+      );
+    case "PEARLS_GATHERED":
+      return (
+        playerCityAt(e) &&
+        e.cost === 2 &&
+        e.coinsReceived === 4 &&
+        e.coinDelta === 2
+      );
+    case "PORT_BUILT":
+      return playerCityAt(e) && e.cost === 4 && e.populationAdded === 1;
+    case "PORT_BLOCKADE_CHANGED":
+      return (
+        playerCityAt(e) &&
+        (e.activeBefore === null || typeof e.activeBefore === "boolean") &&
+        (e.activeAfter === null || typeof e.activeAfter === "boolean") &&
+        e.activeBefore !== e.activeAfter
+      );
+    case "SEA_NETWORK_CHANGED":
+      return (
+        id(e.playerId) &&
+        [
+          e.networkCityIdsBefore,
+          e.networkCityIdsAfter,
+          e.tradeCityIdsBefore,
+          e.tradeCityIdsAfter,
+        ].every(
+          (values) =>
+            isDenseArrayV7(values) &&
+            values.every(id) &&
+            values.every(
+              (value, index) =>
+                index === 0 || Number(values[index - 1]) < Number(value),
+            ),
+        )
       );
     case "ECONOMIC_BUILDING_BUILT":
       return (
@@ -468,6 +555,24 @@ function validPayload(
         UNIT_ROLE_IDS_V7.includes(e.role as never) &&
         e.cost === trainingCost(e.role as UnitRoleIdV7) &&
         parseCoordV7(e.at) !== null
+      );
+    case "NAVAL_UNIT_TRAINED":
+      return (
+        id(e.playerId) &&
+        id(e.cityId) &&
+        id(e.unitId) &&
+        (e.role === "PATROL_BOAT" || e.role === "BATTLESHIP") &&
+        e.cost === trainingCost(e.role) &&
+        parseCoordV7(e.at) !== null
+      );
+    case "UNIT_EMBARKED":
+    case "UNIT_DISEMBARKED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        UNIT_ROLE_IDS_V7.includes(e.passengerRole as never) &&
+        parseCoordV7(e.from) !== null &&
+        parseCoordV7(e.to) !== null
       );
     case "UNIT_REWARD_GRANTED":
       return (
@@ -743,6 +848,8 @@ function improvementCost(improvement: ImprovementIdV7): number {
       return 7;
     case "MONUMENT":
       return 0;
+    case "PORT":
+      return 4;
   }
 }
 function trainingCost(role: UnitRoleIdV7): number {
@@ -759,6 +866,8 @@ function trainingCost(role: UnitRoleIdV7): number {
     HORSE_ARCHER: 9,
     BREACHER: 6,
     JUGGERNAUT: 0,
+    PATROL_BOAT: 5,
+    BATTLESHIP: 10,
   };
   return costs[role];
 }

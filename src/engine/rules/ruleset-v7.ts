@@ -19,6 +19,7 @@ export const TECHNOLOGY_BRANCH_IDS_V7 = deepFreeze([
   "WILDS",
   "MOBILITY_TRADE",
   "INDUSTRY_WARFARE",
+  "NAVAL",
 ] as const);
 export type TechnologyBranchIdV7 = (typeof TECHNOLOGY_BRANCH_IDS_V7)[number];
 
@@ -41,6 +42,9 @@ export type TechnologyUnlockedCommandV7 = Extract<
   | "REDEVELOP"
   | "PILLAGE"
   | "DISBAND"
+  | "HARVEST_FISH"
+  | "GATHER_PEARLS"
+  | "BUILD_PORT"
 >;
 
 export type TechnologyUnlockV7 =
@@ -141,6 +145,7 @@ export interface FactionTechnologyTreeV7 {
 export type BasicEconomicCommandKindV7 =
   | "HARVEST_FRUIT"
   | "HUNT_GAME"
+  | "HARVEST_FISH"
   | "BUILD_FARM"
   | "BUILD_LUMBER_CAMP"
   | "BUILD_MINE";
@@ -170,6 +175,16 @@ export const BASIC_ECONOMIC_ACTIONS_V7 = deepFreeze({
     technology: "HUNTING",
     terrain: "FOREST",
     resource: "GAME",
+    cost: 2,
+    population: 1,
+    populationCategory: "PERMANENT",
+    improvement: null,
+  },
+  HARVEST_FISH: {
+    command: "HARVEST_FISH",
+    technology: "SHORECRAFT",
+    terrain: "SHALLOW_WATER",
+    resource: "FISH",
     cost: 2,
     population: 1,
     populationCategory: "PERMANENT",
@@ -527,6 +542,26 @@ export const ORIGINAL_BASELINE_V4_NODES = deepFreeze([
       { kind: "COMMAND", command: "REDEVELOP" },
     ],
   ),
+  node(
+    "SHORECRAFT",
+    "NAVAL",
+    1,
+    [],
+    [
+      { kind: "COMMAND", command: "HARVEST_FISH" },
+      { kind: "COMMAND", command: "GATHER_PEARLS" },
+      { kind: "COMMAND", command: "BUILD_PORT" },
+      { kind: "UNIT_ROLE", role: "PATROL_BOAT" },
+    ],
+  ),
+  node("NAVIGATION", "NAVAL", 2, ["SHORECRAFT"], []),
+  node(
+    "NAVAL_ENGINEERING",
+    "NAVAL",
+    3,
+    ["NAVIGATION"],
+    [{ kind: "UNIT_ROLE", role: "BATTLESHIP" }],
+  ),
 ] as const);
 
 const role = (input: EffectiveRoleRuleV7): EffectiveRoleRuleV7 =>
@@ -713,6 +748,36 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     technology: null,
     mayUsePrimaryActionAfterMove: true,
     abilities: ["ATTACK", "CAPTURE", "PUSH"],
+  }),
+  PATROL_BOAT: role({
+    role: "PATROL_BOAT",
+    label: "Patrol Boat",
+    cost: 5,
+    maxHp: 10,
+    attack2: 4,
+    defense2: 4,
+    move: 3,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 2,
+    technology: "SHORECRAFT",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK"],
+  }),
+  BATTLESHIP: role({
+    role: "BATTLESHIP",
+    label: "Battleship",
+    cost: 10,
+    maxHp: 20,
+    attack2: 10,
+    defense2: 6,
+    move: 2,
+    range: 2,
+    minimumRange: 1,
+    sightRadius: 2,
+    technology: "NAVAL_ENGINEERING",
+    mayUsePrimaryActionAfterMove: false,
+    abilities: ["ATTACK"],
   }),
 });
 
@@ -917,7 +982,7 @@ export function assertRuleset7Registry(): void {
     ) ||
     Reflect.ownKeys(ORIGINAL_ROLE_RULES_V7).length !==
       UNIT_ROLE_IDS_V7.length ||
-    IMPROVEMENT_IDS_V7.length !== 10
+    IMPROVEMENT_IDS_V7.length !== 11
   )
     throw new Error("Ruleset-7 registry is incomplete");
 }

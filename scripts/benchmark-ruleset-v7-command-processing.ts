@@ -56,7 +56,7 @@ function setup(seed: number): MatchSetupV7 {
     aiMode: "RIVAL",
     humanColor: "CORAL",
     factions: ["ORIGINAL", "ORIGINAL", "ORIGINAL", "ORIGINAL"],
-    mapGenerationRevision: "REGIONAL_BIOMES_V1",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1",
   };
 }
 

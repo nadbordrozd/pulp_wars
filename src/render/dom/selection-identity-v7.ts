@@ -26,6 +26,7 @@ const PAINTED_BOUNDS: readonly (readonly [
   ["building-square-sawmill", 384, 384, 86, 109, 298, 316],
   ["building-square-windmill", 384, 384, 94, 38, 290, 322],
   ["building-square-workshop", 384, 384, 99, 104, 284, 316],
+  ["building-ruleset7-port", 384, 384, 52, 104, 332, 298],
   ["terrain-ruleset7-original-forest-1", 256, 384, 0, 128, 256, 384],
   ["terrain-ruleset7-original-grass-1", 256, 256, 0, 0, 256, 256],
   ["terrain-ruleset7-revision3-mined-mountain-1", 256, 384, 0, 121, 256, 384],
@@ -39,6 +40,10 @@ const PAINTED_BOUNDS: readonly (readonly [
   ["terrain-square-ore", 256, 384, 69, 224, 186, 320],
   ["terrain-square-original-animal", 256, 384, 68, 220, 188, 324],
   ["terrain-square-original-fruit", 256, 384, 76, 237, 180, 320],
+  ["terrain-ruleset7-water-shallow", 256, 256, 0, 0, 256, 256],
+  ["terrain-ruleset7-water-deep", 256, 256, 0, 0, 256, 256],
+  ["terrain-ruleset7-resource-fish", 256, 384, 60, 194, 196, 320],
+  ["terrain-ruleset7-resource-pearls", 256, 384, 60, 180, 196, 320],
   ["unit-original-breacher", 384, 384, 61, 50, 335, 288],
   ["unit-original-catapult", 384, 384, 122, 85, 361, 309],
   ["unit-original-fighter", 256, 296, 20, 18, 236, 252],
@@ -51,6 +56,9 @@ const PAINTED_BOUNDS: readonly (readonly [
   ["unit-original-raider", 256, 296, 40, 19, 217, 252],
   ["unit-original-saboteur", 256, 296, 33, 44, 201, 222],
   ["unit-original-scout", 256, 296, 51, 18, 204, 222],
+  ["unit-shared-embarked-transport", 384, 384, 62, 137, 322, 301],
+  ["unit-original-patrol-boat", 384, 384, 55, 128, 328, 304],
+  ["unit-original-battleship", 384, 384, 30, 90, 354, 300],
 ];
 
 export const SELECTION_IDENTITY_FRAMES_V7: Readonly<

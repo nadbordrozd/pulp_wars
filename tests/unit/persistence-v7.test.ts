@@ -35,12 +35,13 @@ const setup: MatchSetupV7 = {
   aiMode: "RIVAL",
   humanColor: "CORAL",
   factions: ["ORIGINAL", "ORIGINAL"],
-  mapGenerationRevision: "REGIONAL_BIOMES_V1",
+  mapType: "DRY_LAND",
+  mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1",
 };
 
 describe("ruleset-7 save and replay foundation", () => {
   it("uses an independent v7 save key and round-trips a canonical initial save", () => {
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r5.current");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r6.current");
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const replay = createReplayV7(setup);

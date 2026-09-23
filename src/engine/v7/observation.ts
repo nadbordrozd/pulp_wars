@@ -34,8 +34,10 @@ export function detectionCoversCoordV7(
     state.units.some(
       (unit) =>
         unit.hp > 0 &&
+        !(unit.form === "EMBARKED" && unit.role === "SABOTEUR") &&
         side.has(unit.ownerId) &&
-        chebyshev(unit.at, at) <= (unit.role === "SCOUT" ? 2 : 1),
+        chebyshev(unit.at, at) <=
+          (unit.form === "LAND" && unit.role === "SCOUT" ? 2 : 1),
     )
   );
 }
@@ -53,7 +55,7 @@ export function isUnitVisibleToPlayerV7(
   if (viewer === undefined) throw new RangeError("Unknown viewer");
   if (unit.ownerId === viewerId) return true;
   const explored = viewer.explored.some((at) => same(at, unit.at));
-  if (unit.role !== "SABOTEUR") return explored;
+  if (unit.form !== "LAND" || unit.role !== "SABOTEUR") return explored;
   if (arePlayersAlliedV7(state, viewerId, unit.ownerId)) return explored;
   return (
     detectionCoversCoordV7(state, viewerId, unit.at) ||

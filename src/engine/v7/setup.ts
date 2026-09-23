@@ -14,6 +14,7 @@ const SETUP_KEYS_V7 = [
   "factions",
   "height",
   "humanColor",
+  "mapType",
   "mapGenerationRevision",
   "rulesetId",
   "seed",
@@ -24,7 +25,8 @@ export function parseMatchSetupV7(input: unknown): MatchSetupV7 | null {
   if (!hasExactKeysV7(input, SETUP_KEYS_V7)) return null;
   if (
     input.rulesetId !== RULESET_7_ID ||
-    input.mapGenerationRevision !== "REGIONAL_BIOMES_V1" ||
+    input.mapGenerationRevision !== "REGIONAL_BIOMES_NAVAL_V1" ||
+    !isMapType(input.mapType) ||
     !isUint32V7(input.seed) ||
     !isBoardSize(input.width) ||
     input.height !== input.width ||
@@ -49,8 +51,19 @@ export function parseMatchSetupV7(input: unknown): MatchSetupV7 | null {
     aiMode: input.aiMode,
     humanColor: input.humanColor,
     factions: [...input.factions] as readonly "ORIGINAL"[],
-    mapGenerationRevision: "REGIONAL_BIOMES_V1",
+    mapType: input.mapType,
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1",
   };
+}
+
+function isMapType(input: unknown): input is MatchSetupV7["mapType"] {
+  return (
+    input === "DRY_LAND" ||
+    input === "PANGEA" ||
+    input === "CONTINENTS" ||
+    input === "ARCHIPELAGO" ||
+    input === "LAKES"
+  );
 }
 
 function minimumWidth(aiCount: AiCountV7): BoardSizeV7 {

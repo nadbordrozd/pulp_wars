@@ -543,7 +543,8 @@ function setupV7(seed: number, aiCount: 1 | 2 | 3): MatchSetupV7 {
     aiMode: "RIVAL",
     humanColor: "CORAL",
     factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL"),
-    mapGenerationRevision: "REGIONAL_BIOMES_V1",
+    mapType: "DRY_LAND",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1",
   };
 }
 

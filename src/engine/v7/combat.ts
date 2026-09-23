@@ -15,6 +15,7 @@ export function defenseBonusForUnitV7(
   state: GameStateV7,
   unit: UnitStateV7,
 ): DefenseBonusV7 {
+  if (unit.form !== "LAND") return NO_BONUS;
   const owner = requirePlayer(state, unit.ownerId);
   const city = state.cities.find(
     (candidate) =>
@@ -55,7 +56,11 @@ export function calculateCombatPreviewV7(
     distance === 1 &&
     attacker.activation.moved &&
     attacker.activation.movedPathLength >= 2;
-  const attack2 = attackerRule.attack2 + (chargeApplied ? 2 : 0);
+  const attack2 =
+    attacker.form === "EMBARKED"
+      ? 0
+      : attackerRule.attack2 + (chargeApplied ? 2 : 0);
+  const defense2 = defender.form === "EMBARKED" ? 2 : defenderRule.defense2;
   const breachApplied =
     attackerRule.abilities.includes("BREACH") && distance === 1;
   const bonus = breachApplied
@@ -65,9 +70,7 @@ export function calculateCombatPreviewV7(
   const attackForceNumerator = BigInt(attack2) * BigInt(attacker.hp);
   const attackForceDenominator = 2n * BigInt(attacker.maxHp);
   const defenseForceNumerator =
-    BigInt(defenderRule.defense2) *
-    BigInt(defender.hp) *
-    BigInt(bonus.numerator);
+    BigInt(defense2) * BigInt(defender.hp) * BigInt(bonus.numerator);
   const defenseForceDenominator =
     2n * BigInt(defender.maxHp) * BigInt(bonus.denominator);
   const attackOnCommon = attackForceNumerator * defenseForceDenominator;
@@ -79,13 +82,14 @@ export function calculateCombatPreviewV7(
     total * 4n,
   );
   const rawAttackerDamage = roundHalfUp(
-    defenseOnCommon * BigInt(defenderRule.defense2) * 9n,
+    defenseOnCommon * BigInt(defense2) * 9n,
     total * 4n,
   );
   const damageToDefender = Math.min(defender.hp, rawDefenderDamage);
   const defenderDies = damageToDefender >= defender.hp;
   const retaliates =
     !defenderDies &&
+    defender.form !== "EMBARKED" &&
     defenderRule.abilities.includes("ATTACK") &&
     defenderRule.attack2 > 0 &&
     distance >= defenderRule.minimumRange &&
@@ -100,6 +104,8 @@ export function calculateCombatPreviewV7(
     distance === 1 &&
     attacker.role !== "CATAPULT" &&
     attacker.role !== "HORSE_ARCHER" &&
+    attacker.form === "LAND" &&
+    defender.form === "LAND" &&
     !(attacker.role === "MARKSMAN" && distance > 1);
   const push = pushState(
     state,
@@ -112,9 +118,9 @@ export function calculateCombatPreviewV7(
     attackerId,
     targetUnitId,
     attack2,
-    defense2: defenderRule.defense2,
-    minimumRange: attackerRule.minimumRange,
-    maximumRange: attackerRule.range,
+    defense2,
+    minimumRange: attacker.form === "EMBARKED" ? 0 : attackerRule.minimumRange,
+    maximumRange: attacker.form === "EMBARKED" ? 0 : attackerRule.range,
     chargeApplied,
     breachApplied,
     defenseBonusNumerator: bonus.numerator,
@@ -148,12 +154,20 @@ export function pushedDestinationV7(
   };
   const tile = tileAtV7(state.board, destination);
   if (tile === undefined || tile.site !== null) return null;
+  const water = tile.biome === null;
+  if (
+    (defender.form === "LAND" && water) ||
+    (defender.form !== "LAND" && !water)
+  )
+    return null;
   const attackerOwner = requirePlayer(state, attacker.ownerId);
   if (!attackerOwner.explored.some((at) => same(at, destination))) return null;
   const defenderOwner = requirePlayer(state, defender.ownerId);
   if (
     (tile.terrain === "MOUNTAIN" &&
       !defenderOwner.researchedTechs.includes("ENGINEERING")) ||
+    (tile.terrain === "DEEP_WATER" &&
+      !defenderOwner.researchedTechs.includes("NAVIGATION")) ||
     state.units.some(
       (unit) =>
         unit.id !== defender.id && unit.hp > 0 && same(unit.at, destination),

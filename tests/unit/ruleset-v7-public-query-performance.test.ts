@@ -19,9 +19,20 @@ import {
   type PublicPlanningWorkResultV7,
 } from "../../src/engine/index";
 
-const RETAINED_VIEW = JSON.parse(
+const RETAINED_LAND_VIEW = JSON.parse(
   readFileSync("tests/fixtures/ruleset-v7-late-public-view.json", "utf8"),
 ) as PlayerViewV7;
+const RETAINED_VIEW: PlayerViewV7 = {
+  ...RETAINED_LAND_VIEW,
+  units: RETAINED_LAND_VIEW.units.map((unit) => ({ ...unit, form: "LAND" })),
+  naval: {
+    ownedPorts: [],
+    tradeCityIds: [],
+    networkCityIds: [],
+    seaRoutes: [],
+    recoverableNavalUnitIds: [],
+  },
+};
 
 describe("ruleset-7 late public query performance", () => {
   it("preserves the retained complete ordered command surface within a bounded cold query", () => {
@@ -30,16 +41,30 @@ describe("ruleset-7 late public query performance", () => {
     const commands = queryPlayerCommandsV7(view);
     const elapsed = performance.now() - started;
 
-    expect(commands).toHaveLength(59);
+    expect(commands).toHaveLength(60);
     expect(canonicalHash(commands)).toBe(
+      "effcff373c80a66f0f4c7ed98759050aacae60407d7d2a2449c5ba7ba12d1503",
+    );
+    expect(commands.filter(isNavalExpansionCommand)).toEqual([
+      { kind: "RESEARCH", tech: "SHORECRAFT" },
+    ]);
+    expect(canonicalHash(commands.filter(isRetainedLandCommand))).toBe(
       "ba23a6ff57e659759e96e3bd5f0fd112fdb201ae619ab2dd2c1b369dead051b6",
     );
     expect(canonicalHash(queryAiReadyCommandsV7(view))).toBe(
-      "448516d19782425f54298a38e555736812313ed2fd45837e8dad98418a13384d",
+      "57b88d88bdef0bf12f95a644eb0324f65e1197161ec4dc0a4c34bd1a4bfc4d79",
     );
     expect(
       canonicalHash(
         commands.map((command) => ({
+          command,
+          result: previewEconomicV7(view, command),
+        })),
+      ),
+    ).toBe("12a9c31b9186992bd5200c8d87cf9f673b58166a32df3b3dfa40dd2523f34312");
+    expect(
+      canonicalHash(
+        commands.filter(isRetainedLandCommand).map((command) => ({
           command,
           result: previewEconomicV7(view, command),
         })),
@@ -121,9 +146,36 @@ describe("ruleset-7 late public query performance", () => {
       expect(canonicalHash(leftResult)).toBe(canonicalHash(expected));
       expect(canonicalHash(rightResult)).toBe(canonicalHash(expected));
       expect(canonicalHash(leftResult.potentials)).toBe(
+        "b95755909c448155c4d8698ad5c7299e96777f89fa87948fbac383bdb82973af",
+      );
+      expect(
+        leftResult.potentials.find(
+          (potential) => potential.command === "HARVEST_FISH",
+        ),
+      ).toEqual({
+        command: "HARVEST_FISH",
+        targets: 0,
+        bestSpatialScore: 0,
+      });
+      expect(
+        canonicalHash(
+          leftResult.potentials.filter(
+            (potential) => potential.command !== "HARVEST_FISH",
+          ),
+        ),
+      ).toBe(
         "4d278cc40e2e574c233a519472c6355b5f108afbdd45e5e1c744471a55f01064",
       );
       expect(canonicalHash(leftResult.scores)).toBe(
+        "466cb0e95c916bd21abfea4002b39faaf69f75236bc66be383e52af73e7f7bdf",
+      );
+      expect(
+        canonicalHash(
+          leftResult.scores.filter(({ command }) =>
+            isRetainedLandCommand(command),
+          ),
+        ),
+      ).toBe(
         "cce0d0d94394552a65b417279c68a7a349d4114255083321b528bfa145f1ee61",
       );
       expect(queryPublicEconomicPotentialsV7(leftView)).toBe(
@@ -185,7 +237,7 @@ describe("ruleset-7 late public query performance", () => {
   it("keys movement preparation to the exact changed public view", () => {
     const original = structuredClone(RETAINED_VIEW);
     expect(canonicalHash(queryPlayerCommandsV7(original))).toBe(
-      "ba23a6ff57e659759e96e3bd5f0fd112fdb201ae619ab2dd2c1b369dead051b6",
+      "effcff373c80a66f0f4c7ed98759050aacae60407d7d2a2449c5ba7ba12d1503",
     );
     const firstMove = required(
       queryPlayerCommandsV7(original).find(
@@ -209,6 +261,9 @@ describe("ruleset-7 late public query performance", () => {
       canonicalHash(queryPlayerCommandsV7(structuredClone(changed))),
     );
     expect(canonicalHash(changedCommands)).toBe(
+      "6decfbc2e82aee716b991851b95a4d37a30e7762098c92feda773c04e8237378",
+    );
+    expect(canonicalHash(changedCommands.filter(isRetainedLandCommand))).toBe(
       "f9188321e07e38dcb1a456fef83442687d33137ace794ba106633a036025cd1a",
     );
   });
@@ -389,4 +444,16 @@ function drain(
 function required<T>(value: T | undefined): T {
   if (value === undefined) throw new Error("required fixture value missing");
   return value;
+}
+
+function isNavalExpansionCommand(
+  command: ReturnType<typeof queryPlayerCommandsV7>[number],
+): boolean {
+  return command.kind === "RESEARCH" && command.tech === "SHORECRAFT";
+}
+
+function isRetainedLandCommand(
+  command: ReturnType<typeof queryPlayerCommandsV7>[number],
+): boolean {
+  return !isNavalExpansionCommand(command);
 }

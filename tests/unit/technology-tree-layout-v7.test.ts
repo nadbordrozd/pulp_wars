@@ -4,7 +4,7 @@ import { technologyTreeLayoutV7 } from "../../src/render/dom/technology-tree-lay
 import { initialV7 } from "../fixtures/v7-builders";
 
 describe("Ruleset 7 technology tree layout", () => {
-  it("lays out four branches and weights Industry for its third leaf", () => {
+  it("lays out five branches and weights Industry for its third leaf", () => {
     const state = initialV7(1515);
     const tree = queryTechnologyTreeV7(viewForV7(state, state.humanPlayerId));
     const layout = technologyTreeLayoutV7(tree.nodes);
@@ -13,9 +13,10 @@ describe("Ruleset 7 technology tree layout", () => {
       "WILDS",
       "MOBILITY_TRADE",
       "INDUSTRY_WARFARE",
+      "NAVAL",
     ]);
-    expect(layout).toHaveLength(4);
-    expect(layout.every((root) => root.children.length === 2)).toBe(true);
+    expect(layout).toHaveLength(5);
+    expect(layout.map((root) => root.children.length)).toEqual([2, 2, 2, 2, 1]);
     expect(
       layout.flatMap((root) => [
         root.node.id,
@@ -24,8 +25,8 @@ describe("Ruleset 7 technology tree layout", () => {
           ...child.children.map((grandchild) => grandchild.node.id),
         ]),
       ]),
-    ).toHaveLength(21);
-    expect(layout.map((root) => root.leafCount)).toEqual([2, 2, 2, 3]);
+    ).toHaveLength(24);
+    expect(layout.map((root) => root.leafCount)).toEqual([2, 2, 2, 3, 1]);
     const industry = layout[3];
     expect(industry?.children.map((child) => child.leafCount)).toEqual([1, 2]);
     expect(

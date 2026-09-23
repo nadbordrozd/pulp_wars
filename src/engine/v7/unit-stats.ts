@@ -58,10 +58,12 @@ export function publicUnitStatsV7(
   unit: UnitStateV7,
 ): PublicUnitStatsV7 {
   const role = effectiveRoleRuleV7(unit.role);
+  const embarked = unit.form === "EMBARKED";
   const owner = state.players.find((player) => player.id === unit.ownerId);
   if (owner === undefined) throw new RangeError("INVALID_STATE");
   const promotion = unit.maxHp - role.maxHp;
   const charge =
+    !embarked &&
     role.abilities.includes("CHARGE") &&
     unit.activation.moved &&
     unit.activation.movedPathLength >= 2
@@ -70,29 +72,32 @@ export function publicUnitStatsV7(
   const defense = defenseBonusForUnitV7(state, unit);
   const defenseSource = defenseSourceAt(state, unit, defense.numerator);
   const defenseDelta = rational(
-    role.defense2 * (defense.numerator - defense.denominator),
+    (embarked ? 2 : role.defense2) * (defense.numerator - defense.denominator),
     2 * defense.denominator,
   );
   const highGround =
     tileAtV7(state.board, unit.at)?.terrain === "MOUNTAIN" &&
     technologyCapabilitiesV7(owner.researchedTechs)
       .highGroundVisionRadiusBonus === 1;
-  const sight = Math.max(
-    role.sightRadius,
-    technologyCapabilitiesV7(owner.researchedTechs).roleSightRadius[
-      unit.role
-    ] ?? 0,
-  );
+  const sight = embarked
+    ? 1
+    : Math.max(
+        role.sightRadius,
+        technologyCapabilitiesV7(owner.researchedTechs).roleSightRadius[
+          unit.role
+        ] ?? 0,
+      );
+  const labelText = embarked ? "Embarked transport" : role.label;
   return {
     unitId: unit.id,
-    minimumRange: role.minimumRange,
-    maximumRange: role.range,
+    minimumRange: embarked ? 0 : role.minimumRange,
+    maximumRange: embarked ? 0 : role.range,
     stats: [
       stat(
         "HP",
         "HP",
         unit.hp,
-        base(role.label, "maximum HP", role.maxHp),
+        base(labelText, "maximum HP", role.maxHp),
         promotion > 0
           ? [
               modifier(
@@ -108,7 +113,7 @@ export function publicUnitStatsV7(
         "ATTACK",
         "Attack",
         null,
-        base(role.label, "Attack", role.attack2, 2),
+        base(labelText, "Attack", embarked ? 0 : role.attack2, 2),
         charge > 0
           ? [
               modifier(
@@ -125,7 +130,7 @@ export function publicUnitStatsV7(
         "DEFENSE",
         "Defense",
         null,
-        base(role.label, "Defense", role.defense2, 2),
+        base(labelText, "Defense", embarked ? 2 : role.defense2, 2),
         defenseSource === null
           ? []
           : [
@@ -138,13 +143,25 @@ export function publicUnitStatsV7(
               ),
             ],
       ),
-      stat("MOVE", "Move", null, base(role.label, "Move", role.move), []),
-      stat("RANGE", "Range", null, base(role.label, "Range", role.range), []),
+      stat(
+        "MOVE",
+        "Move",
+        null,
+        base(labelText, "Move", embarked ? 3 : role.move),
+        [],
+      ),
+      stat(
+        "RANGE",
+        "Range",
+        null,
+        base(labelText, "Range", embarked ? 0 : role.range),
+        [],
+      ),
       stat(
         "SIGHT",
         "Sight",
         null,
-        base(role.label, "Sight", sight),
+        base(labelText, "Sight", sight),
         highGround
           ? [
               modifier(
@@ -157,7 +174,7 @@ export function publicUnitStatsV7(
           : [],
       ),
     ],
-    abilities: role.abilities,
+    abilities: embarked ? [] : role.abilities,
     statuses: [],
   };
 }

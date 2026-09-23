@@ -24,6 +24,8 @@ import {
 export type TileCommandKindV7 =
   | "HARVEST_FRUIT"
   | "HUNT_GAME"
+  | "HARVEST_FISH"
+  | "GATHER_PEARLS"
   | "BUILD_FARM"
   | "BUILD_LUMBER_CAMP"
   | "BUILD_MINE"
@@ -33,6 +35,7 @@ export type TileCommandKindV7 =
   | "BUILD_WORKSHOP"
   | "BUILD_GRAND_WORKS"
   | "BUILD_MARKET"
+  | "BUILD_PORT"
   | "CLEAR_FOREST"
   | "REPLANT_FOREST"
   | "BUILD_ROAD"
@@ -77,6 +80,22 @@ export type CommandV7 =
       readonly role: UnitRoleIdV7;
     }
   | {
+      readonly kind: "TRAIN_NAVAL";
+      readonly cityId: CityId;
+      readonly at: CoordV7;
+      readonly role: "PATROL_BOAT" | "BATTLESHIP";
+    }
+  | {
+      readonly kind: "EMBARK";
+      readonly unitId: UnitId;
+      readonly portAt: CoordV7;
+    }
+  | {
+      readonly kind: "DISEMBARK";
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+    }
+  | {
       readonly kind: "CHOOSE_CITY_REWARD";
       readonly cityId: CityId;
       readonly reachedLevel: number;
@@ -97,6 +116,8 @@ export type CommandParseResultV7 =
 const TILE_KINDS = new Set<CommandKindV7>([
   "HARVEST_FRUIT",
   "HUNT_GAME",
+  "HARVEST_FISH",
+  "GATHER_PEARLS",
   "BUILD_FARM",
   "BUILD_LUMBER_CAMP",
   "BUILD_MINE",
@@ -106,6 +127,7 @@ const TILE_KINDS = new Set<CommandKindV7>([
   "BUILD_WORKSHOP",
   "BUILD_GRAND_WORKS",
   "BUILD_MARKET",
+  "BUILD_PORT",
   "CLEAR_FOREST",
   "REPLANT_FOREST",
   "BUILD_ROAD",
@@ -242,6 +264,35 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
           value: { kind, cityId: city, role: candidate.role as UnitRoleIdV7 },
         };
   }
+  if (kind === "TRAIN_NAVAL") {
+    const city = hasExactKeysV7(input, ["at", "cityId", "kind", "role"])
+      ? parseCityIdV7(candidate.cityId)
+      : null;
+    const at = city === null ? null : parseCoordV7(candidate.at);
+    return city === null ||
+      at === null ||
+      (candidate.role !== "PATROL_BOAT" && candidate.role !== "BATTLESHIP")
+      ? invalid(kind)
+      : { ok: true, value: { kind, cityId: city, at, role: candidate.role } };
+  }
+  if (kind === "EMBARK") {
+    const unit = hasExactKeysV7(input, ["kind", "portAt", "unitId"])
+      ? parseUnitIdV7(candidate.unitId)
+      : null;
+    const portAt = unit === null ? null : parseCoordV7(candidate.portAt);
+    return unit === null || portAt === null
+      ? invalid(kind)
+      : { ok: true, value: { kind, unitId: unit, portAt } };
+  }
+  if (kind === "DISEMBARK") {
+    const unit = hasExactKeysV7(input, ["at", "kind", "unitId"])
+      ? parseUnitIdV7(candidate.unitId)
+      : null;
+    const at = unit === null ? null : parseCoordV7(candidate.at);
+    return unit === null || at === null
+      ? invalid(kind)
+      : { ok: true, value: { kind, unitId: unit, at } };
+  }
   if (kind === "CHOOSE_CITY_REWARD") {
     if (!hasExactKeysV7(input, ["kind", "cityId", "reachedLevel", "reward"]))
       return invalid(kind);
@@ -294,6 +345,7 @@ function parsePath(input: unknown): readonly CoordV7[] | null {
 
 function targetCoord(command: CommandV7): CoordV7 | null {
   if ("at" in command) return command.at;
+  if (command.kind === "EMBARK") return command.portAt;
   if (command.kind === "MOVE") return command.path.at(-1) ?? null;
   return null;
 }
@@ -316,7 +368,8 @@ function actorId(command: CommandV7): number {
 function referencedOrdinal(command: CommandV7): number {
   if (command.kind === "RESEARCH")
     return TECHNOLOGY_IDS_V7.indexOf(command.tech);
-  if (command.kind === "TRAIN") return UNIT_ROLE_IDS_V7.indexOf(command.role);
+  if (command.kind === "TRAIN" || command.kind === "TRAIN_NAVAL")
+    return UNIT_ROLE_IDS_V7.indexOf(command.role);
   if (command.kind === "CHOOSE_CITY_REWARD")
     return REWARD_IDS_V7.indexOf(command.reward);
   if (command.kind === "BUILD_MONUMENT")

@@ -302,22 +302,22 @@ describe("Ruleset 7 DOM shell", () => {
     expect(document.body.textContent).not.toContain("CANDY");
 
     requiredButton('[data-action="tech"]').click();
-    expect(document.querySelectorAll(".v7-tech-card")).toHaveLength(21);
-    expect(document.querySelectorAll(".v7-tech-edge")).toHaveLength(17);
+    expect(document.querySelectorAll(".v7-tech-card")).toHaveLength(24);
+    expect(document.querySelectorAll(".v7-tech-edge")).toHaveLength(19);
     expect(document.querySelectorAll(".v7-tech-children.is-unary").length).toBe(
-      7,
+      9,
     );
     const branchSelect = document.querySelector<HTMLSelectElement>(
       ".v7-tech-branch-select",
     );
     if (branchSelect === null) throw new Error("Branch selector missing");
-    expect(branchSelect.options).toHaveLength(4);
+    expect(branchSelect.options).toHaveLength(5);
     const headings = [
       ...document.querySelectorAll<HTMLElement>(".v7-tech-branch > h3"),
     ];
-    expect(headings).toHaveLength(4);
+    expect(headings).toHaveLength(5);
     expect(new Set(headings.map((heading) => heading.textContent)).size).toBe(
-      4,
+      5,
     );
     const lastBranch = document.querySelector<HTMLElement>(
       '[data-tech-branch="INDUSTRY_WARFARE"]',
@@ -379,10 +379,10 @@ describe("Ruleset 7 DOM shell", () => {
     await waitUntil(
       () =>
         document.querySelector("#v7-live")?.textContent ===
-        "Only the Ruleset 7 revision-5 save was deleted.",
+        "Only the Ruleset 7 revision-6 save was deleted.",
     );
     expect(document.querySelector("#v7-live")?.textContent).toBe(
-      "Only the Ruleset 7 revision-5 save was deleted.",
+      "Only the Ruleset 7 revision-6 save was deleted.",
     );
     app.destroy();
   });

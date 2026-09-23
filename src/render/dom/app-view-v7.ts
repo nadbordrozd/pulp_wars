@@ -2174,7 +2174,7 @@ export class Ruleset7DomAppView {
     if (deleted) {
       this.#selection = null;
       this.#screen = "MATCH";
-      this.#notice = "Only the Ruleset 7 revision-5 save was deleted.";
+      this.#notice = "Only the Ruleset 7 revision-6 save was deleted.";
     } else this.#error = "The Ruleset 7 save could not be deleted.";
     this.#render();
   }
@@ -2612,7 +2612,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r5",
+    rulesetId: "pulp-wars-poc-7r6",
     seed,
     width: draft.boardSize,
     height: draft.boardSize,
@@ -2624,7 +2624,8 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
       { length: draft.aiCount + 1 },
       () => "ORIGINAL" as const,
     ),
-    mapGenerationRevision: "REGIONAL_BIOMES_V1",
+    mapType: "DRY_LAND",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1",
   };
 }
 export function cityIncomeForViewerV7(

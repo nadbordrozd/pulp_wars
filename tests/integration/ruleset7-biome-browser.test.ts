@@ -19,7 +19,7 @@ describe("ruleset-7 revision-5 browser boundary", () => {
       setItem: (key: string, value: string) => void values.set(key, value),
       removeItem: (key: string) => void values.delete(key),
     };
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r5.current");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r6.current");
     expect(cleanupObsoleteRuleset7Saves(storage).removedKeys).toEqual(
       OBSOLETE_SAVE_STORAGE_KEYS_V7,
     );
@@ -27,7 +27,7 @@ describe("ruleset-7 revision-5 browser boundary", () => {
       [
         "other",
         "pulpWars.save.current",
-        "pulpWars.save.v7r5.current",
+        "pulpWars.save.v7r6.current",
         "pulpWars.settings.v1",
       ].sort(),
     );

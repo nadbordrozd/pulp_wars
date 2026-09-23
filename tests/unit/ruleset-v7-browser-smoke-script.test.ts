@@ -61,16 +61,25 @@ describe("Ruleset 7 browser smoke script", () => {
   });
 
   it("keeps cold-policy validation synchronized with the active late-view fixture", () => {
-    const source = readFileSync("scripts/browser-smoke-v7-contract.ts", "utf8");
+    const contractSource = readFileSync(
+      "scripts/browser-smoke-v7-contract.ts",
+      "utf8",
+    );
+    const smokeSource = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
     const fixture = JSON.parse(
       readFileSync(RULESET7_LATE_PUBLIC_VIEW_FIXTURE_PATH, "utf8"),
     ) as { readonly commandIndex?: unknown };
 
     expect(fixture.commandIndex).toBe(RULESET7_LATE_PUBLIC_VIEW_COMMAND_INDEX);
-    expect(source).toContain(
+    expect(contractSource).toContain(
       "evidence.commandIndex !== RULESET7_LATE_PUBLIC_VIEW_COMMAND_INDEX",
     );
-    expect(source).not.toContain("command-1100");
+    expect(contractSource).not.toContain("command-1100");
+    expect(smokeSource).toContain(
+      "units: retainedLandView.units.map((unit) => ({ ...unit, form: 'LAND' }))",
+    );
+    expect(smokeSource).toContain("ownedPorts: []");
+    expect(smokeSource).toContain("recoverableNavalUnitIds: []");
   });
 
   it("defaults evidence to a unique temp directory and remains desktop-only", () => {
@@ -135,7 +144,7 @@ function preview(maximumSliceMilliseconds = 20): PreviewEvidenceV7 {
       fastForwardObserved: true,
       hostTicks: 2,
     },
-    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r5", commandIndex: 3 },
+    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r6", commandIndex: 3 },
     ordinaryBoundary: {
       controllerOwnProperties: [],
       snapshotHasStateHash: false,

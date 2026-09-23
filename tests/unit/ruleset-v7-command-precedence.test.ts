@@ -323,6 +323,7 @@ function makeUnit(
     veteran: false,
     captureEligible: false,
     activation,
+    form: "LAND",
     blackoutEligibleRound: null,
   };
 }

@@ -63,8 +63,9 @@ export function validateMovementPathV7(
   const player = requirePlayer(state, unit.ownerId);
   const rule = effectiveRoleRuleV7(unit.role);
   const capabilities = technologyCapabilitiesV7(player.researchedTechs);
-  const budget2 = rule.move * 2;
+  const budget2 = (unit.form === "EMBARKED" ? 3 : rule.move) * 2;
   const connectedRoads = capitalConnectedRoadKeysV7(state, player.id);
+  const knownBeforeCommand = player.explored;
   let explored = player.explored;
   const revealed: CoordV7[] = [];
   const traversedPath: CoordV7[] = [];
@@ -79,6 +80,7 @@ export function validateMovementPathV7(
     const tile = tileAtV7(state.board, step);
     if (tile === undefined) return { legal: false, reason: "OUT_OF_BOUNDS" };
     const wasExplored = contains(explored, step);
+    const wasKnownBeforeCommand = contains(knownBeforeCommand, step);
     spentPoints2 += wasExplored
       ? movementStepCost2V7(state, player, current, step, connectedRoads)
       : 2;
@@ -94,13 +96,20 @@ export function validateMovementPathV7(
         same(candidate.at, step),
     );
     const occupied = occupant !== undefined;
+    const water =
+      tile.terrain === "SHALLOW_WATER" || tile.terrain === "DEEP_WATER";
     const engineeringRequired =
-      tile.terrain === "MOUNTAIN" && !capabilities.mountainMovement;
+      (tile.terrain === "MOUNTAIN" && !capabilities.mountainMovement) ||
+      (unit.form === "LAND" && water) ||
+      (unit.form !== "LAND" && !water) ||
+      (water &&
+        tile.terrain === "DEEP_WATER" &&
+        !player.researchedTechs.includes("NAVIGATION"));
     if (occupied || engineeringRequired) {
       const occupantVisible =
         occupant !== undefined &&
         isUnitVisibleToPlayerV7(state, player.id, occupant);
-      if (occupantVisible || (engineeringRequired && wasExplored))
+      if (occupantVisible || (engineeringRequired && wasKnownBeforeCommand))
         return {
           legal: false,
           reason: occupied ? "OCCUPIED" : "ENGINEERING_REQUIRED",
@@ -128,9 +137,15 @@ export function validateMovementPathV7(
     explored = sight.explored;
     revealed.push(...sight.revealed);
     const observationState = withUnitAtForObservationV7(state, unit.id, step);
-    const entersZoc = inHostileZoc(observationState, player.id, step, explored);
+    const entersZoc = inHostileZoc(
+      observationState,
+      { ...unit, at: step },
+      step,
+      explored,
+    );
     const newlyRevealedZoc =
-      entersZoc && !inHostileZoc(state, player.id, step, beforeReveal);
+      entersZoc &&
+      !inHostileZoc(state, { ...unit, at: step }, step, beforeReveal);
     const terrainStops =
       tile.terrain === "MOUNTAIN" ||
       (tile.terrain === "FOREST" && !ignoresForest);
@@ -285,7 +300,7 @@ interface PublicMovementContextV7 {
   readonly connectedRoads: ReadonlySet<string>;
   readonly ownedCityKeys: ReadonlySet<string>;
   readonly unitsByPosition: ReadonlyMap<string, readonly PublicUnitV7[]>;
-  readonly hostileZocKeys: Map<PlayerId, ReadonlySet<string>>;
+  readonly hostileZocKeys: Map<string, ReadonlySet<string>>;
 }
 
 const PUBLIC_MOVEMENT_CONTEXTS_V7 = new WeakMap<
@@ -328,7 +343,7 @@ function validatePlayerMovementPathWithContextV7(
   if (path.length === 0) return { legal: false, reason: "EMPTY_PATH" };
   const role = effectiveRoleRuleV7(unit.role);
   const capabilities = context.capabilities;
-  const budget2 = role.move * 2;
+  const budget2 = (unit.form === "EMBARKED" ? 3 : role.move) * 2;
   let current = unit.at;
   let spentPoints2 = 0;
   const traversedPath: CoordV7[] = [];
@@ -339,6 +354,18 @@ function validatePlayerMovementPathWithContextV7(
       return { legal: false, reason: "NOT_ADJACENT" };
     const tile = publicTileAt(view, step);
     if (tile === undefined) return { legal: false, reason: "OUT_OF_BOUNDS" };
+    if (tile.explored) {
+      const water =
+        tile.terrain === "SHALLOW_WATER" || tile.terrain === "DEEP_WATER";
+      if (
+        (unit.form === "LAND" && water) ||
+        (unit.form !== "LAND" && !water) ||
+        (water &&
+          tile.terrain === "DEEP_WATER" &&
+          !view.viewer.researchedTechs.includes("NAVIGATION"))
+      )
+        return { legal: false, reason: "ENGINEERING_REQUIRED" };
+    }
     spentPoints2 += publicStepCost2(view, current, tile, context);
     if (spentPoints2 > budget2)
       return { legal: false, reason: "BUDGET_EXCEEDED" };
@@ -365,7 +392,7 @@ function validatePlayerMovementPathWithContextV7(
     const ignoresForest = capabilities.forestMovementFreedomRoles.includes(
       unit.role,
     );
-    const entersZoc = publicHostileZoc(view, unit.ownerId, step, context);
+    const entersZoc = publicHostileZoc(view, unit, step, context);
     const terrainStops =
       tile.explored &&
       (tile.terrain === "MOUNTAIN" ||
@@ -420,6 +447,7 @@ export function movementStepCost2V7(
   const fromTile = tileAtV7(state.board, from);
   const toTile = tileAtV7(state.board, to);
   if (fromTile === undefined || toTile === undefined) return 2;
+  if (fromTile.biome === null || toTile.biome === null) return 2;
   const fromRoad = fromTile.road && tileOwner(state, fromTile) === player.id;
   const toRoad = toTile.road && tileOwner(state, toTile) === player.id;
   const fromCity = ownedCity(state, player.id, from);
@@ -437,6 +465,7 @@ export function unitSightRadiusAtV7(
   unit: UnitStateV7,
   tile = tileAtV7(state.board, unit.at),
 ): number {
+  if (unit.form === "EMBARKED") return 1;
   const player = requirePlayer(state, unit.ownerId);
   const capabilities = technologyCapabilitiesV7(player.researchedTechs);
   const base = Math.max(
@@ -499,18 +528,46 @@ function revealRadius(
 
 function inHostileZoc(
   state: GameStateV7,
-  ownerId: PlayerId,
+  target: UnitStateV7,
   at: CoordV7,
   explored: readonly CoordV7[],
 ): boolean {
   return state.units.some(
     (unit) =>
       unit.hp > 0 &&
-      arePlayersHostileV7(state, ownerId, unit.ownerId) &&
+      unit.form !== "EMBARKED" &&
+      arePlayersHostileV7(state, target.ownerId, unit.ownerId) &&
       contains(explored, unit.at) &&
       (unit.role !== "SABOTEUR" ||
-        isUnitVisibleToPlayerV7(state, ownerId, unit)) &&
-      chebyshev(unit.at, at) === 1,
+        isUnitVisibleToPlayerV7(state, target.ownerId, unit)) &&
+      chebyshev(unit.at, at) === 1 &&
+      projectsZocV7(state, unit, target, at),
+  );
+}
+
+function projectsZocV7(
+  state: GameStateV7,
+  projector: UnitStateV7,
+  target: UnitStateV7,
+  at: CoordV7,
+): boolean {
+  if (projector.form === "EMBARKED") return false;
+  const targetTile = tileAtV7(state.board, at);
+  const water = targetTile?.biome === null;
+  if (!water) return projector.form !== "NAVAL";
+  if (projector.form === "NAVAL") {
+    if (targetTile?.terrain !== "DEEP_WATER") return true;
+    return requirePlayer(state, projector.ownerId).researchedTechs.includes(
+      "NAVIGATION",
+    );
+  }
+  const rule = effectiveRoleRuleV7(projector.role);
+  return (
+    target.form !== "LAND" &&
+    isUnitVisibleToPlayerV7(state, projector.ownerId, target) &&
+    rule.abilities.includes("ATTACK") &&
+    rule.minimumRange <= 1 &&
+    rule.range >= 1
   );
 }
 
@@ -556,28 +613,53 @@ function publicAllied(
 }
 function publicHostileZoc(
   view: PlayerViewV7,
-  ownerId: PlayerId,
+  target: PublicUnitV7,
   at: CoordV7,
   context: PublicMovementContextV7,
 ): boolean {
-  let keys = context.hostileZocKeys.get(ownerId);
+  const cacheKey = `${target.ownerId}:${target.form}`;
+  let keys = context.hostileZocKeys.get(cacheKey);
   if (keys === undefined) {
     const generated = new Set<string>();
     for (const unit of view.units) {
       if (
         unit.hp <= 0 ||
-        unit.ownerId === ownerId ||
-        publicAllied(view, ownerId, unit.ownerId)
+        unit.form === "EMBARKED" ||
+        unit.ownerId === target.ownerId ||
+        publicAllied(view, target.ownerId, unit.ownerId)
       )
         continue;
       for (let y = unit.at.y - 1; y <= unit.at.y + 1; y += 1)
         for (let x = unit.at.x - 1; x <= unit.at.x + 1; x += 1)
-          if (x !== unit.at.x || y !== unit.at.y) generated.add(`${y},${x}`);
+          if (
+            (x !== unit.at.x || y !== unit.at.y) &&
+            publicProjectsZocV7(view, unit, target.form, { x, y })
+          )
+            generated.add(`${y},${x}`);
     }
     keys = generated;
-    context.hostileZocKeys.set(ownerId, keys);
+    context.hostileZocKeys.set(cacheKey, keys);
   }
   return keys.has(key(at));
+}
+
+function publicProjectsZocV7(
+  view: PlayerViewV7,
+  projector: PublicUnitV7,
+  targetForm: PublicUnitV7["form"],
+  at: CoordV7,
+): boolean {
+  const targetTile = publicTileAt(view, at);
+  if (targetTile === undefined || !targetTile.explored) return true;
+  if (targetTile.biome !== null) return projector.form !== "NAVAL";
+  if (projector.form === "NAVAL") return true;
+  const rule = effectiveRoleRuleV7(projector.role);
+  return (
+    targetForm !== "LAND" &&
+    rule.abilities.includes("ATTACK") &&
+    rule.minimumRange <= 1 &&
+    rule.range >= 1
+  );
 }
 function publicStepCost2(
   view: PlayerViewV7,

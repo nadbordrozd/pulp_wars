@@ -204,6 +204,9 @@ function eventVisible(
       return event.playerId === viewerId;
     case "TILES_REVEALED":
       return event.playerId === viewerId;
+    case "PORT_BLOCKADE_CHANGED":
+    case "SEA_NETWORK_CHANGED":
+      return event.playerId === viewerId;
     case "FRUIT_HARVESTED":
     case "GAME_HUNTED":
     case "ECONOMIC_BUILDING_BUILT":

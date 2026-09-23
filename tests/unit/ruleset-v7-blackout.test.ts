@@ -47,6 +47,8 @@ const HP: Record<UnitRoleIdV7, number> = {
   HORSE_ARCHER: 10,
   BREACHER: 15,
   JUGGERNAUT: 40,
+  PATROL_BOAT: 10,
+  BATTLESHIP: 20,
 };
 
 describe("ruleset-7 Saboteur Blackout", () => {
@@ -1223,6 +1225,7 @@ function makeUnit(
     veteran: false,
     captureEligible: false,
     activation: READY,
+    form: "LAND",
     blackoutEligibleRound: role === "SABOTEUR" ? 1 : null,
   };
 }

@@ -32,15 +32,23 @@ const setup: MatchSetupV7 = {
   aiMode: "RIVAL",
   humanColor: "CORAL",
   factions: ["ORIGINAL", "ORIGINAL"],
-  mapGenerationRevision: "REGIONAL_BIOMES_V1",
+  mapType: "DRY_LAND",
+  mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1",
 };
 
-describe("ruleset-7 revision-4 deterministic foundation", () => {
+describe("ruleset-7 revision-6 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r5");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r6");
     expect(FACTION_IDS_V7).toEqual(["ORIGINAL"]);
     expect(FACTION_TREE_IDS_V7).toEqual(["ORIGINAL_BASELINE_V4"]);
-    expect(RESOURCE_IDS_V7).toEqual(["FRUIT", "FERTILE_GROUND", "GAME", "ORE"]);
+    expect(RESOURCE_IDS_V7).toEqual([
+      "FRUIT",
+      "FERTILE_GROUND",
+      "GAME",
+      "ORE",
+      "FISH",
+      "PEARLS",
+    ]);
     expect(IMPROVEMENT_IDS_V7).toEqual([
       "FARM",
       "LUMBER_CAMP",
@@ -52,6 +60,7 @@ describe("ruleset-7 revision-4 deterministic foundation", () => {
       "GRAND_WORKS",
       "MARKET",
       "MONUMENT",
+      "PORT",
     ]);
     expect(ACHIEVEMENT_IDS_V7).toEqual(["EXPLORER", "ENGINEER", "MUSTER"]);
     expect(UNIT_ROLE_IDS_V7).toEqual([
@@ -67,10 +76,12 @@ describe("ruleset-7 revision-4 deterministic foundation", () => {
       "HORSE_ARCHER",
       "BREACHER",
       "JUGGERNAUT",
+      "PATROL_BOAT",
+      "BATTLESHIP",
     ]);
-    expect(TECHNOLOGY_IDS_V7).toHaveLength(21);
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(30);
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(44);
+    expect(TECHNOLOGY_IDS_V7).toHaveLength(24);
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(36);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(52);
     expect(PLAYER_EVENT_KIND_ORDER_V7.slice(-2)).toEqual([
       "UNIT_REVEALED",
       "UNIT_CONCEALED",

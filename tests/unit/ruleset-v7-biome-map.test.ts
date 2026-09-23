@@ -119,11 +119,11 @@ describe("ruleset-7 revision-4 regional biome map", () => {
       new Set(BIOME_IDS_V7),
     );
     expect(new Set(first.map.board.tiles.map((tile) => tile.terrain))).toEqual(
-      new Set(TERRAIN_IDS_V7),
+      new Set(TERRAIN_IDS_V7.slice(0, 3)),
     );
     expect(
       new Set(first.map.board.tiles.flatMap((tile) => tile.resource ?? [])),
-    ).toEqual(new Set(RESOURCE_IDS_V7));
+    ).toEqual(new Set(RESOURCE_IDS_V7.slice(0, 4)));
     expect(first.map.capitals).toHaveLength(4);
     expect(first.map.villages).toHaveLength(6);
     expect([...first.map.turnOrderSeats].sort()).toEqual([0, 1, 2, 3]);

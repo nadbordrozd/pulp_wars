@@ -1,8 +1,9 @@
 # Ruleset 7 revision 6: water and naval play
 
-**Status:** authoritative specification approved for implementation; the current
-runtime remains `pulp-wars-poc-7r5` until the revision-6 implementation and
-release gates pass.
+**Status:** authoritative contract for the revision-6 engine core. The runtime
+identity is live as `pulp-wars-poc-7r6`; the current browser setup remains on
+Dry Land while the map chooser, purposeful naval AI, and complete naval UI
+flows are integrated in the following release bead.
 
 **Ruleset ID:** `pulp-wars-poc-7r6`
 

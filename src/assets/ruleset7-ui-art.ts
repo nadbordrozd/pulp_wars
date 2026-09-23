@@ -22,6 +22,8 @@ export const RULESET7_UNIT_ART_IDS = {
   HORSE_ARCHER: "unit-original-horse-archer",
   BREACHER: "unit-original-breacher",
   JUGGERNAUT: "unit-original-juggernaut",
+  PATROL_BOAT: "unit-original-patrol-boat",
+  BATTLESHIP: "unit-original-battleship",
 } as const satisfies Readonly<Record<UnitRoleIdV7, string>>;
 
 export const RULESET7_PORTRAIT_ART_IDS = {
@@ -37,6 +39,8 @@ export const RULESET7_PORTRAIT_ART_IDS = {
   HORSE_ARCHER: "portrait-original-horse-archer",
   BREACHER: "portrait-original-breacher",
   JUGGERNAUT: "portrait-original-juggernaut",
+  PATROL_BOAT: "unit-original-patrol-boat",
+  BATTLESHIP: "unit-original-battleship",
 } as const satisfies Readonly<Record<UnitRoleIdV7, string>>;
 
 export const RULESET7_FARM_ART_IDS = {
@@ -67,6 +71,9 @@ export const RULESET7_TECH_ART_IDS = {
   ENGINEERING: "terrain-ruleset7-revision3-mountain-1",
   METALLURGY: "building-square-forge",
   GRAND_WORKS: "building-square-grand-works",
+  SHORECRAFT: "building-ruleset7-port",
+  NAVIGATION: "terrain-ruleset7-water-deep",
+  NAVAL_ENGINEERING: "unit-original-battleship",
 } as const satisfies Readonly<Record<TechnologyIdV7, string>>;
 
 export const RULESET7_IMPROVEMENT_ART_IDS = {
@@ -80,6 +87,7 @@ export const RULESET7_IMPROVEMENT_ART_IDS = {
   GRAND_WORKS: "building-square-grand-works",
   MARKET: "building-square-market",
   MONUMENT: "building-square-monument",
+  PORT: "building-ruleset7-port",
 } as const satisfies Readonly<Record<ImprovementIdV7, string>>;
 
 export const RULESET7_RESOURCE_ART_IDS = {
@@ -87,6 +95,8 @@ export const RULESET7_RESOURCE_ART_IDS = {
   GAME: "terrain-square-original-animal",
   FERTILE_GROUND: "terrain-ruleset7-resource-fertile-ground",
   ORE: "terrain-square-ore",
+  FISH: "terrain-ruleset7-resource-fish",
+  PEARLS: "terrain-ruleset7-resource-pearls",
 } as const satisfies Readonly<Record<ResourceIdV7, string>>;
 
 /** Cosmetic map and selected-tile families. Technology and action art use canonical IDs. */
@@ -118,6 +128,8 @@ export const RULESET7_TERRAIN_ART_IDS = {
   GRASS: "terrain-ruleset7-original-grass-1",
   FOREST: "terrain-ruleset7-original-forest-1",
   MOUNTAIN: "terrain-ruleset7-revision3-mountain-1",
+  SHALLOW_WATER: "terrain-ruleset7-water-shallow",
+  DEEP_WATER: "terrain-ruleset7-water-deep",
 } as const satisfies Readonly<Record<TerrainIdV7, string>>;
 
 const STATIC_COMMAND_ART_IDS: Readonly<
@@ -133,6 +145,8 @@ const STATIC_COMMAND_ART_IDS: Readonly<
   WAIT: "ui-action-wait",
   HARVEST_FRUIT: RULESET7_RESOURCE_ART_IDS.FRUIT,
   HUNT_GAME: RULESET7_RESOURCE_ART_IDS.GAME,
+  HARVEST_FISH: RULESET7_RESOURCE_ART_IDS.FISH,
+  GATHER_PEARLS: RULESET7_RESOURCE_ART_IDS.PEARLS,
   BUILD_FARM: RULESET7_IMPROVEMENT_ART_IDS.FARM,
   BUILD_LUMBER_CAMP: RULESET7_IMPROVEMENT_ART_IDS.LUMBER_CAMP,
   BUILD_MINE: RULESET7_IMPROVEMENT_ART_IDS.MINE,
@@ -143,6 +157,9 @@ const STATIC_COMMAND_ART_IDS: Readonly<
   BUILD_GRAND_WORKS: RULESET7_IMPROVEMENT_ART_IDS.GRAND_WORKS,
   BUILD_MARKET: RULESET7_IMPROVEMENT_ART_IDS.MARKET,
   BUILD_MONUMENT: RULESET7_IMPROVEMENT_ART_IDS.MONUMENT,
+  BUILD_PORT: RULESET7_IMPROVEMENT_ART_IDS.PORT,
+  EMBARK: "unit-shared-embarked-transport",
+  DISEMBARK: "unit-shared-embarked-transport",
   CLEAR_FOREST: "ui-action-clear-forest",
   REPLANT_FOREST: "ui-action-replant-forest",
   BUILD_ROAD: "terrain-square-road-mask-0101",
@@ -154,7 +171,8 @@ const STATIC_COMMAND_ART_IDS: Readonly<
 export function commandArtIdV7(command: CommandV7): string | null {
   if (command.kind === "MOVE" || command.kind === "ATTACK") return null;
   if (command.kind === "RESEARCH") return RULESET7_TECH_ART_IDS[command.tech];
-  if (command.kind === "TRAIN") return RULESET7_UNIT_ART_IDS[command.role];
+  if (command.kind === "TRAIN" || command.kind === "TRAIN_NAVAL")
+    return RULESET7_UNIT_ART_IDS[command.role];
   if (command.kind === "CHOOSE_CITY_REWARD")
     return rewardArtIdV7(command.reward);
   return STATIC_COMMAND_ART_IDS[command.kind] ?? null;

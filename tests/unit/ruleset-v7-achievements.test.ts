@@ -1295,6 +1295,7 @@ function makeUnit(
     veteran: false,
     captureEligible: false,
     activation: readyActivation(),
+    form: "LAND",
     blackoutEligibleRound: null,
   };
 }

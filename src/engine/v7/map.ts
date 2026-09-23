@@ -28,7 +28,7 @@ import {
 } from "./types";
 
 export const MAX_MAP_GENERATION_ATTEMPTS_V7 = 256;
-export const MAP_GENERATION_REVISION_V7 = "REGIONAL_BIOMES_V1" as const;
+export const MAP_GENERATION_REVISION_V7 = "REGIONAL_BIOMES_NAVAL_V1" as const;
 export type MapInvariantCodeV7 =
   | "TILE_LAYOUT"
   | "SETTLEMENT_COUNT"
@@ -45,12 +45,19 @@ export type MapInvariantCodeV7 =
   | "SETTLEMENT_FAMILY_MINIMUM"
   | "CAPITAL_GRASS_NEIGHBORS"
   | "CAPITALS_DISCONNECTED"
-  | "CAPITAL_SCORE";
+  | "CAPITAL_SCORE"
+  | "NAVAL_TOPOLOGY"
+  | "NAVAL_REACHABILITY"
+  | "CAPITAL_SEA_ESCAPE";
+
 export interface MapGenerationAttemptV7 {
   readonly attempt: number;
   readonly initialRandomState: number;
   readonly resourceRandomState: number;
   readonly finalRandomState: number;
+  readonly topologyDrawCount: number;
+  readonly landResourceDrawCount: number;
+  readonly waterResourceDrawCount: number;
   readonly resourceDrawCount: number;
   readonly failures: readonly MapInvariantCodeV7[];
 }
@@ -96,8 +103,12 @@ interface Candidate {
   readonly random: RandomStateV7;
   readonly resourceRandomState: number;
   readonly resourceDrawCount: number;
+  readonly topologyDrawCount: number;
+  readonly landResourceDrawCount: number;
+  readonly waterResourceDrawCount: number;
   readonly regionByKey: ReadonlyMap<string, number>;
   readonly seeds: readonly CoordV7[];
+  readonly navalPlacementFailed: boolean;
 }
 const COLORS: readonly PlayerColorV7[] = ["CORAL", "TEAL", "GOLD", "VIOLET"];
 const STANDARD: Readonly<Record<AiCountV7, number>> = { 1: 3, 2: 4, 3: 6 };
@@ -166,12 +177,22 @@ export function generateInitialMapV7(input: unknown): GenerateMapResultV7 {
       initialRandomState,
       resourceRandomState: candidate.resourceRandomState,
       finalRandomState: random.state,
+      topologyDrawCount: candidate.topologyDrawCount,
+      landResourceDrawCount: candidate.landResourceDrawCount,
+      waterResourceDrawCount: candidate.waterResourceDrawCount,
       resourceDrawCount: candidate.resourceDrawCount,
       failures,
     });
     if (failures.length === 0) {
       const treasure = placeTreasureChestsV6(
-        candidate.board as never,
+        (setup.mapType === "DRY_LAND"
+          ? candidate.board
+          : {
+              ...candidate.board,
+              tiles: candidate.board.tiles.map((tile) =>
+                tile.biome === null ? { ...tile, terrain: "MOUNTAIN" } : tile,
+              ),
+            }) as never,
         candidate.capitals,
         random,
       );
@@ -225,6 +246,15 @@ function generateCandidate(
   initial: RandomStateV7,
 ): Candidate {
   let random = initial;
+  const topologyDraws = new Map<string, number>();
+  if (setup.mapType !== "DRY_LAND")
+    for (const at of allCoords(setup.width, setup.height)) {
+      const draw = nextUint32(random);
+      random = draw.random;
+      topologyDraws.set(key(at), draw.value);
+    }
+  const navalLand =
+    setup.mapType === "DRY_LAND" ? null : topologyMaskV7(setup, topologyDraws);
   let offset = 0;
   if (setup.width === 16) {
     const draw = nextBounded(random, 3);
@@ -257,18 +287,32 @@ function generateCandidate(
   const villageShuffle = shuffle(candidates, random);
   random = villageShuffle.random;
   const villages = villageShuffle.values.slice(0, villageCount(setup));
-  const assignment = shuffle(capitals, random);
+  let assignment =
+    setup.mapType === "DRY_LAND"
+      ? shuffle(capitals, random)
+      : { values: [...capitals], random };
   random = assignment.random;
-  const turnOrder = shuffle(
-    Array.from({ length: setup.aiCount + 1 }, (_, seat) => seat),
-    random,
-  );
+  let turnOrder =
+    setup.mapType === "DRY_LAND"
+      ? shuffle(
+          Array.from({ length: setup.aiCount + 1 }, (_, seat) => seat),
+          random,
+        )
+      : {
+          values: Array.from({ length: setup.aiCount + 1 }, (_, seat) => seat),
+          random,
+        };
   random = turnOrder.random;
   const sites = new Map<string, TileStateV7["site"]>();
   for (const at of capitals) sites.set(key(at), "CAPITAL");
   for (const at of villages) sites.set(key(at), "VILLAGE");
   const coords = allCoords(setup.width, setup.height);
-  const nonSettlements = coords.filter((at) => !sites.has(key(at)));
+  const fieldSites = setup.mapType === "DRY_LAND" ? sites : new Map();
+  const nonSettlements = coords.filter(
+    (at) =>
+      !fieldSites.has(key(at)) &&
+      (navalLand === null || navalLand.has(key(at))),
+  );
   const ranked = shuffle(nonSettlements, random);
   random = ranked.random;
   const rank = new Map(ranked.values.map((at, index) => [key(at), index]));
@@ -282,15 +326,16 @@ function generateCandidate(
     random,
   );
   random = labels.random;
-  const regions = assignRegionsV7(coords, seeds);
+  const fieldCoords = navalLand === null ? coords : nonSettlements;
+  const regions = assignRegionsV7(fieldCoords, seeds);
   const biomes = new Map<string, BiomeIdV7>();
-  for (const at of coords) {
+  for (const at of fieldCoords) {
     const region = regions.get(key(at)) as number;
     biomes.set(key(at), labels.values[region] as BiomeIdV7);
   }
   const base = new Map<string, TerrainIdV7>();
-  for (const at of coords)
-    if (sites.has(key(at))) base.set(key(at), "GRASS");
+  for (const at of fieldCoords)
+    if (fieldSites.has(key(at))) base.set(key(at), "GRASS");
     else {
       const draw = nextUint32(random);
       random = draw.random;
@@ -308,11 +353,13 @@ function generateCandidate(
   );
   const resourceRandomState = random.state;
   const resources = new Map<string, ResourceIdV7 | null>();
-  for (const at of coords)
-    if (sites.has(key(at))) resources.set(key(at), null);
+  const resourceDraws = new Map<string, number>();
+  for (const at of fieldCoords)
+    if (fieldSites.has(key(at))) resources.set(key(at), null);
     else {
       const draw = nextUint32(random);
       random = draw.random;
+      resourceDraws.set(key(at), draw.value);
       resources.set(
         key(at),
         resourceForBiomeTerrainV7(
@@ -322,26 +369,106 @@ function generateCandidate(
         ),
       );
     }
-  const tiles = coords.map((at): TileStateV7 => ({
-    at,
-    biome: biomes.get(key(at)) as BiomeIdV7,
-    terrain: terrains.get(key(at)) as TerrainIdV7,
-    resource: resources.get(key(at)) ?? null,
-    improvement: null,
-    road: false,
-    site: sites.get(key(at)) ?? null,
-    territoryCityId: null,
-  }));
-  const board: BoardStateV7 = {
+  const tiles = coords.map((at): TileStateV7 =>
+    navalLand !== null && !navalLand.has(key(at))
+      ? {
+          at,
+          biome: null,
+          terrain: "DEEP_WATER",
+          resource: null,
+          improvement: null,
+          road: false,
+          site: null,
+          territoryCityId: null,
+        }
+      : {
+          at,
+          biome: biomes.get(key(at)) as BiomeIdV7,
+          terrain: terrains.get(key(at)) as TerrainIdV7,
+          resource: resources.get(key(at)) ?? null,
+          improvement: null,
+          road: false,
+          site: fieldSites.get(key(at)) ?? null,
+          territoryCityId: null,
+        },
+  );
+  let board: BoardStateV7 = {
     width: setup.width,
     height: setup.height,
     tiles,
   };
-  applySettlementFloorsV7(
-    board,
-    [...capitals, ...villages].sort(compareCoords),
-    rank,
-  );
+  let navalPlacementFailed = false;
+  if (setup.mapType === "DRY_LAND") {
+    applySettlementFloorsV7(
+      board,
+      [...capitals, ...villages].sort(compareCoords),
+      rank,
+    );
+  } else {
+    try {
+      if (navalLand === null) throw new RangeError("Missing naval mask");
+      const naval = applyNavalTopologyV7(
+        board,
+        setup,
+        capitals,
+        villages,
+        assignment.values,
+        rank,
+        navalLand,
+      );
+      board = naval.board;
+      capitals.splice(0, capitals.length, ...naval.capitals);
+      villages.splice(0, villages.length, ...naval.villages);
+      const freshWaterResources = new Map<string, ResourceIdV7 | null>();
+      for (const tile of board.tiles)
+        if (tile.biome === null) {
+          const draw = nextUint32(random);
+          random = draw.random;
+          freshWaterResources.set(
+            key(tile.at),
+            tile.terrain === "SHALLOW_WATER"
+              ? draw.value < threshold(28)
+                ? "FISH"
+                : draw.value < threshold(38)
+                  ? "PEARLS"
+                  : null
+              : draw.value < threshold(16)
+                ? "PEARLS"
+                : null,
+          );
+        }
+      board = {
+        ...board,
+        tiles: board.tiles.map((tile) =>
+          tile.biome === null
+            ? {
+                ...tile,
+                resource: freshWaterResources.get(key(tile.at)) ?? null,
+              }
+            : tile,
+        ),
+      };
+      assignment = shuffle([...naval.capitals].sort(compareCoords), random);
+      random = assignment.random;
+      turnOrder = shuffle(
+        Array.from({ length: setup.aiCount + 1 }, (_, seat) => seat),
+        random,
+      );
+      random = turnOrder.random;
+    } catch {
+      navalPlacementFailed = true;
+      const waterCount = setup.width * setup.height - (navalLand?.size ?? 0);
+      for (let index = 0; index < waterCount; index += 1)
+        random = nextUint32(random).random;
+      assignment = shuffle([...capitals].sort(compareCoords), random);
+      random = assignment.random;
+      turnOrder = shuffle(
+        Array.from({ length: setup.aiCount + 1 }, (_, seat) => seat),
+        random,
+      );
+      random = turnOrder.random;
+    }
+  }
   return {
     board,
     capitals: [...capitals].sort(compareCoords),
@@ -350,9 +477,21 @@ function generateCandidate(
     turnOrderSeats: turnOrder.values,
     random,
     resourceRandomState,
-    resourceDrawCount: nonSettlements.length,
+    topologyDrawCount:
+      setup.mapType === "DRY_LAND" ? 0 : setup.width * setup.height,
+    landResourceDrawCount: nonSettlements.length,
+    waterResourceDrawCount:
+      setup.mapType === "DRY_LAND"
+        ? 0
+        : board.tiles.filter((tile) => tile.biome === null).length,
+    resourceDrawCount:
+      nonSettlements.length +
+      (setup.mapType === "DRY_LAND"
+        ? 0
+        : board.tiles.filter((tile) => tile.biome === null).length),
     regionByKey: regions,
     seeds,
+    navalPlacementFailed,
   };
 }
 
@@ -458,6 +597,7 @@ export function applySettlementFloorsV7(
         const donor = ring
           .map((coord) => tileAt(board, coord) as TileStateV7)
           .filter((tile) => {
+            if (tile.biome === null) return false;
             const family = familyOf(tile);
             return (
               family === null || (counts[family] ?? 0) > (minimum[family] ?? 0)
@@ -484,6 +624,8 @@ function validate(
   candidate: Candidate,
   setup: MatchSetupV7,
 ): MapInvariantCodeV7[] {
+  if (setup.mapType !== "DRY_LAND")
+    return validateNavalCandidate(candidate, setup);
   const board = candidate.board;
   const failures: MapInvariantCodeV7[] = [];
   const capitals = board.tiles.filter((tile) => tile.site === "CAPITAL");
@@ -560,13 +702,13 @@ function validate(
   )
     failures.push("RESOURCE_TERRAIN");
   if (
-    RESOURCE_IDS_V7.some(
+    RESOURCE_IDS_V7.slice(0, 4).some(
       (resource) => !board.tiles.some((tile) => tile.resource === resource),
     )
   )
     failures.push("RESOURCE_GLOBAL_PRESENCE");
   if (
-    TERRAIN_IDS_V7.some(
+    TERRAIN_IDS_V7.slice(0, 3).some(
       (terrain) => !board.tiles.some((tile) => tile.terrain === terrain),
     )
   )
@@ -605,6 +747,792 @@ function validate(
   )
     failures.push("CAPITAL_SCORE");
   return [...new Set(failures)];
+}
+
+/**
+ * The already materialized seeded mask is applied after the land-only regional
+ * field and before fresh row-major water resource draws. Row-major rank is used
+ * only for deterministic settlement selection.
+ */
+function applyNavalTopologyV7(
+  original: BoardStateV7,
+  setup: MatchSetupV7,
+  oldCapitals: readonly CoordV7[],
+  oldVillages: readonly CoordV7[],
+  oldAssignments: readonly CoordV7[],
+  rank: ReadonlyMap<string, number>,
+  land: ReadonlySet<string>,
+): {
+  board: BoardStateV7;
+  capitals: CoordV7[];
+  villages: CoordV7[];
+  capitalAssignments: CoordV7[];
+} {
+  const components = componentsOfMask(setup.width, setup.height, land, true);
+  const settlementCount = oldCapitals.length + oldVillages.length;
+  const candidates = allCoords(setup.width, setup.height)
+    .filter(
+      (at) =>
+        land.has(key(at)) &&
+        at.x >= 1 &&
+        at.y >= 1 &&
+        at.x < setup.width - 1 &&
+        at.y < setup.height - 1 &&
+        neighbors8(setup.width, setup.height, at).filter((near) =>
+          land.has(key(near)),
+        ).length >= 4,
+    )
+    .sort((a, b) => {
+      const aScore = projectedCapitalScore(original, land, a);
+      const bScore = projectedCapitalScore(original, land, b);
+      return Math.abs(aScore - 9) - Math.abs(bScore - 9) || compareCoords(a, b);
+    });
+  const capitals: CoordV7[] = [];
+  const requiredComponents =
+    setup.mapType === "ARCHIPELAGO"
+      ? oldCapitals.length
+      : setup.mapType === "CONTINENTS"
+        ? Math.min(2, oldCapitals.length)
+        : 1;
+  const componentByKey = new Map<string, number>();
+  components.forEach((component, index) =>
+    component.forEach((at) => componentByKey.set(key(at), index)),
+  );
+  const majorMinimum = Math.max(
+    6,
+    Math.floor((setup.width * setup.height) / 20),
+  );
+  const majorComponentIds = new Set(
+    components
+      .map((component, index) => ({ component, index }))
+      .filter(({ component }) => component.length >= majorMinimum)
+      .map(({ index }) => index),
+  );
+  const orderedCapitalCandidates = candidates.filter((at) => {
+    const component = componentByKey.get(key(at));
+    const score = projectedCapitalScore(original, land, at);
+    return (
+      component !== undefined &&
+      majorComponentIds.has(component) &&
+      score >= 4 &&
+      score <= 17
+    );
+  });
+  const findCapitals = (start: number): boolean => {
+    if (capitals.length === oldCapitals.length) {
+      const occupied = capitals.map((at) => componentByKey.get(key(at)));
+      const scores = capitals.map((at) =>
+        projectedCapitalScore(original, land, at),
+      );
+      return (
+        new Set(occupied).size >= requiredComponents &&
+        (setup.mapType !== "ARCHIPELAGO" ||
+          new Set(occupied).size === capitals.length) &&
+        Math.max(...scores) - Math.min(...scores) <= 5
+      );
+    }
+    for (
+      let index = start;
+      index < orderedCapitalCandidates.length;
+      index += 1
+    ) {
+      const at = orderedCapitalCandidates[index] as CoordV7;
+      if (
+        capitals.every(
+          (other) => chebyshev(at, other) >= Math.floor(setup.width / 2),
+        )
+      ) {
+        capitals.push(at);
+        if (findCapitals(index + 1)) return true;
+        capitals.pop();
+      }
+    }
+    return false;
+  };
+  if (!findCapitals(0))
+    throw new RangeError("Naval topology cannot place capitals");
+  const settlements = [...capitals];
+  const orderedVillageCandidates = [...candidates].sort((a, b) => {
+    const aMissing = capitals.some(
+      (capital) =>
+        componentByKey.get(key(capital)) === componentByKey.get(key(a)),
+    );
+    const bMissing = capitals.some(
+      (capital) =>
+        componentByKey.get(key(capital)) === componentByKey.get(key(b)),
+    );
+    return Number(aMissing) - Number(bMissing) || compareCoords(a, b);
+  });
+  for (const candidate of orderedVillageCandidates) {
+    if (settlements.length >= settlementCount) break;
+    const component = componentByKey.get(key(candidate));
+    if (component === undefined || !majorComponentIds.has(component)) continue;
+    const componentCount = settlements.filter(
+      (other) => componentByKey.get(key(other)) === component,
+    ).length;
+    const componentLimit =
+      setup.mapType === "CONTINENTS"
+        ? Math.ceil((2 * settlementCount) / 3)
+        : setup.mapType === "ARCHIPELAGO"
+          ? Math.ceil(settlementCount / 2)
+          : settlementCount;
+    if (
+      componentCount < componentLimit &&
+      settlements.every((other) => chebyshev(candidate, other) >= 3)
+    )
+      settlements.push(candidate);
+  }
+  if (settlements.length !== settlementCount)
+    throw new RangeError("Naval topology cannot place settlements");
+  const sortedCapitals = [...capitals].sort(compareCoords);
+  const villages = settlements.slice(capitals.length).sort(compareCoords);
+  const oldSorted = [...oldCapitals].sort(compareCoords);
+  const capitalAssignments = oldAssignments.map((at) => {
+    const index = oldSorted.findIndex((candidate) => same(candidate, at));
+    return sortedCapitals[index] as CoordV7;
+  });
+  const siteByKey = new Map<string, TileStateV7["site"]>();
+  for (const at of sortedCapitals) siteByKey.set(key(at), "CAPITAL");
+  for (const at of villages) siteByKey.set(key(at), "VILLAGE");
+  const board: BoardStateV7 = {
+    ...original,
+    tiles: original.tiles.map((tile) => {
+      const isLand = land.has(key(tile.at));
+      const site = siteByKey.get(key(tile.at)) ?? null;
+      if (isLand)
+        return {
+          ...tile,
+          site,
+          terrain: site === null ? tile.terrain : "GRASS",
+          resource: site === null ? tile.resource : null,
+        };
+      const shallow = neighbors8(original.width, original.height, tile.at).some(
+        (at) => land.has(key(at)),
+      );
+      const terrain: TerrainIdV7 = shallow ? "SHALLOW_WATER" : "DEEP_WATER";
+      return { ...tile, biome: null, terrain, resource: null, site: null };
+    }),
+  };
+  applySettlementFloorsV7(
+    board,
+    [...sortedCapitals, ...villages].sort(compareCoords),
+    rank,
+  );
+  return { board, capitals: sortedCapitals, villages, capitalAssignments };
+}
+
+function projectedCapitalScore(
+  board: BoardStateV7,
+  land: ReadonlySet<string>,
+  at: CoordV7,
+): number {
+  return neighbors8(board.width, board.height, at).reduce((sum, near) => {
+    if (!land.has(key(near))) return sum;
+    const tile = tileAt(board, near) as TileStateV7;
+    return sum + opportunityScore(tile);
+  }, 0);
+}
+
+function topologyMaskV7(
+  setup: MatchSetupV7,
+  draws: ReadonlyMap<string, number>,
+): Set<string> {
+  const { width, height, mapType } = setup;
+  const land = new Set<string>();
+  const add = (x: number, y: number) => land.add(key({ x, y }));
+  if (mapType === "PANGEA") {
+    const wanted = Math.floor(width * height * 0.72);
+    for (const at of allCoords(width, height)
+      .sort((a, b) => {
+        const ax = (2 * a.x - width + 1) / width;
+        const ay = (2 * a.y - height + 1) / height;
+        const bx = (2 * b.x - width + 1) / width;
+        const by = (2 * b.y - height + 1) / height;
+        const aj = ((draws.get(key(a)) ?? 0) >>> 28) / 128;
+        const bj = ((draws.get(key(b)) ?? 0) >>> 28) / 128;
+        return (
+          ax * ax + ay * ay + aj - (bx * bx + by * by + bj) ||
+          compareCoords(a, b)
+        );
+      })
+      .slice(0, wanted))
+      add(at.x, at.y);
+  } else if (mapType === "CONTINENTS" || mapType === "ARCHIPELAGO") {
+    const count =
+      mapType === "ARCHIPELAGO"
+        ? setup.aiCount + 1
+        : setup.aiCount === 1
+          ? 2
+          : 3;
+    const share = mapType === "CONTINENTS" ? 0.56 : 0.4;
+    const wanted = Math.round(width * height * share);
+    const centers =
+      count === 2
+        ? [
+            { x: 1, y: Math.floor(height / 2) },
+            { x: width - 2, y: Math.floor(height / 2) },
+          ]
+        : count === 3
+          ? [
+              { x: 1, y: 1 },
+              { x: width - 2, y: 1 },
+              { x: Math.floor(width / 2), y: height - 2 },
+            ]
+          : [
+              { x: 1, y: 1 },
+              { x: width - 2, y: 1 },
+              { x: 1, y: height - 2 },
+              { x: width - 2, y: height - 2 },
+            ];
+    const weights =
+      mapType === "CONTINENTS" && count === 3
+        ? [1, 1, 2]
+        : centers.map(() => 1);
+    const totalWeight = weights.reduce((sum, value) => sum + value, 0);
+    let allocated = 0;
+    centers.forEach((center, index) => {
+      const amount =
+        index === centers.length - 1
+          ? wanted - allocated
+          : Math.floor((wanted * (weights[index] ?? 1)) / totalWeight);
+      allocated += amount;
+      const distance = (at: CoordV7): number =>
+        mapType === "CONTINENTS" && count === 3 && index === 2
+          ? Math.abs(at.y - center.y)
+          : chebyshev(at, center);
+      for (const at of allCoords(width, height)
+        .filter(
+          (candidate) =>
+            !centers.some(
+              (other, otherIndex) =>
+                otherIndex !== index &&
+                chebyshev(candidate, other) <= chebyshev(candidate, center) + 1,
+            ),
+        )
+        .sort(
+          (a, b) =>
+            distance(a) +
+              ((draws.get(key(a)) ?? 0) >>> 28) / 4 -
+              (distance(b) + ((draws.get(key(b)) ?? 0) >>> 28) / 4) ||
+            compareCoords(a, b),
+        )
+        .slice(0, amount))
+        add(at.x, at.y);
+    });
+  } else if (mapType === "LAKES") {
+    for (const at of allCoords(width, height)) add(at.x, at.y);
+    const wantedWater = Math.ceil(width * height * 0.2);
+    if (width === 11) {
+      const variant = ((draws.get("0,0") ?? 0) >>> 30) & 3;
+      for (const at of allCoords(width, height))
+        if (smallLakeCell(at, variant)) land.delete(key(at));
+      return land;
+    }
+    const centers = [
+      { x: Math.floor(width / 4), y: Math.floor(height / 4) },
+      { x: Math.floor((3 * width) / 4), y: Math.floor((3 * height) / 4) },
+    ];
+    centers.forEach((center, index) => {
+      const amount =
+        Math.floor(wantedWater / 2) + (index < wantedWater % 2 ? 1 : 0);
+      const cells = allCoords(width, height)
+        .filter(
+          (at) =>
+            at.x > 0 &&
+            at.y > 0 &&
+            at.x < width - 1 &&
+            at.y < height - 1 &&
+            !centers.some(
+              (other, otherIndex) =>
+                otherIndex !== index &&
+                chebyshev(at, other) <= chebyshev(at, center) + 1,
+            ),
+        )
+        .sort(
+          (a, b) =>
+            chebyshev(a, center) +
+              ((draws.get(key(a)) ?? 0) >>> 28) / 8 -
+              (chebyshev(b, center) + ((draws.get(key(b)) ?? 0) >>> 28) / 8) ||
+            compareCoords(a, b),
+        )
+        .slice(0, amount);
+      for (const at of cells) land.delete(key(at));
+    });
+  }
+  return land;
+}
+
+function smallLakeCell(at: CoordV7, variant: number): boolean {
+  const transformed =
+    variant === 0
+      ? at
+      : variant === 1
+        ? { x: 10 - at.x, y: at.y }
+        : variant === 2
+          ? { x: at.x, y: 10 - at.y }
+          : { x: 10 - at.x, y: 10 - at.y };
+  return (
+    (transformed.x >= 1 &&
+      transformed.x <= 4 &&
+      transformed.y >= 1 &&
+      transformed.y <= 4) ||
+    (transformed.x >= 6 &&
+      transformed.x <= 8 &&
+      transformed.y >= 6 &&
+      transformed.y <= 8)
+  );
+}
+
+function validateNavalCandidate(
+  candidate: Candidate,
+  setup: MatchSetupV7,
+): MapInvariantCodeV7[] {
+  const board = candidate.board;
+  const failures: MapInvariantCodeV7[] = [];
+  if (candidate.navalPlacementFailed) return ["SETTLEMENT_COUNT"];
+  const land = board.tiles.filter((tile) => tile.biome !== null);
+  const water = board.tiles.filter((tile) => tile.biome === null);
+  const bounds =
+    setup.mapType === "PANGEA"
+      ? [0.68, 0.76]
+      : setup.mapType === "CONTINENTS"
+        ? [0.5, 0.62]
+        : setup.mapType === "ARCHIPELAGO"
+          ? [0.34, 0.46]
+          : [0.72, 0.84];
+  if (
+    land.length < Math.ceil((bounds[0] ?? 0) * board.tiles.length) ||
+    land.length > Math.floor((bounds[1] ?? 1) * board.tiles.length)
+  )
+    failures.push("TILE_LAYOUT");
+  if (
+    water.some(
+      (tile) =>
+        tile.terrain !== "SHALLOW_WATER" && tile.terrain !== "DEEP_WATER",
+    ) ||
+    land.some(
+      (tile) =>
+        tile.terrain === "SHALLOW_WATER" || tile.terrain === "DEEP_WATER",
+    )
+  )
+    failures.push("TILE_LAYOUT");
+  if (
+    water.filter((tile) => tile.terrain === "SHALLOW_WATER").length <
+      Math.ceil(water.length * 0.4) ||
+    water.filter((tile) => tile.terrain === "DEEP_WATER").length <
+      Math.max(4, Math.floor(water.length / 10))
+  )
+    failures.push("TERRAIN_GLOBAL_PRESENCE");
+  if (
+    board.tiles.filter((tile) => tile.site === "CAPITAL").length !==
+      setup.aiCount + 1 ||
+    board.tiles.filter((tile) => tile.site === "VILLAGE").length !==
+      villageCount(setup)
+  )
+    failures.push("SETTLEMENT_COUNT");
+  if (pairTooClose([...candidate.capitals, ...candidate.villages], 3))
+    failures.push("SETTLEMENT_SPACING");
+  if (pairTooClose(candidate.capitals, Math.floor(board.width / 2)))
+    failures.push("CAPITAL_SPACING");
+  const landKeys = new Set(land.map((tile) => key(tile.at)));
+  const waterKeys = new Set(water.map((tile) => key(tile.at)));
+  const landComponents = componentsOfMask(
+    board.width,
+    board.height,
+    landKeys,
+    true,
+  );
+  const waterComponents = componentsOfMask(
+    board.width,
+    board.height,
+    waterKeys,
+    true,
+  );
+  const majorMinimum = Math.max(6, Math.floor(board.tiles.length / 20));
+  const major = landComponents.filter(
+    (component) => component.length >= majorMinimum,
+  );
+  const landComponentByKey = componentIndex(landComponents);
+  const settlementTiles = board.tiles.filter((tile) => tile.site !== null);
+  const capitalTiles = board.tiles.filter((tile) => tile.site === "CAPITAL");
+  const settlementsIn = (component: readonly CoordV7[]): number => {
+    const keys = new Set(component.map(key));
+    return settlementTiles.filter((tile) => keys.has(key(tile.at))).length;
+  };
+  const expectedMajor =
+    setup.mapType === "CONTINENTS" ? (setup.aiCount === 1 ? 2 : 3) : undefined;
+  if (
+    (setup.mapType === "PANGEA" &&
+      (major.length !== 1 ||
+        major[0] === undefined ||
+        major[0].length < Math.ceil(land.length * 0.9) ||
+        settlementsIn(major[0]) !== settlementTiles.length)) ||
+    (setup.mapType === "CONTINENTS" &&
+      (major.length !== expectedMajor ||
+        major.some((component) => settlementsIn(component) === 0) ||
+        major.some(
+          (component) =>
+            settlementsIn(component) >
+            Math.ceil((2 * settlementTiles.length) / 3),
+        ) ||
+        new Set(
+          capitalTiles.map((tile) => landComponentByKey.get(key(tile.at))),
+        ).size < 2)) ||
+    (setup.mapType === "ARCHIPELAGO" &&
+      (major.length < setup.aiCount + 1 ||
+        major.length > 2 * (setup.aiCount + 1) + 2 ||
+        major.some((component) => settlementsIn(component) === 0) ||
+        major.some(
+          (component) =>
+            settlementsIn(component) > Math.ceil(settlementTiles.length / 2),
+        ) ||
+        new Set(
+          capitalTiles.map((tile) => landComponentByKey.get(key(tile.at))),
+        ).size !== capitalTiles.length)) ||
+    (setup.mapType === "LAKES" &&
+      waterComponents.filter(
+        (component) =>
+          component.length >= 4 &&
+          component.every((at) => !isBoardEdge(board, at)),
+      ).length < 2) ||
+    (setup.mapType === "LAKES" &&
+      waterComponents
+        .filter((component) => component.every((at) => !isBoardEdge(board, at)))
+        .reduce((sum, component) => sum + component.length, 0) <
+        Math.ceil(water.length * 0.75))
+  )
+    failures.push("NAVAL_TOPOLOGY");
+  if (
+    waterComponents.some(
+      (component) =>
+        component.length === 1 ||
+        (component.some((at) => tileAt(board, at)?.terrain === "DEEP_WATER") &&
+          !component.some(
+            (at) => tileAt(board, at)?.terrain === "SHALLOW_WATER",
+          )),
+    ) ||
+    major.some(
+      (component) => landingFrontier(board, component).land.size < 2,
+    ) ||
+    major.some(
+      (component) => landingFrontier(board, component).shallow.size < 2,
+    )
+  )
+    failures.push("NAVAL_TOPOLOGY");
+  if (!settlementComponentNetworkConnected(board, landComponents))
+    failures.push("NAVAL_REACHABILITY");
+  const scores = capitalTiles.map((capital) => capitalScore(board, capital.at));
+  if (
+    scores.some((score) => score < 6 || score > 17) ||
+    Math.max(...scores) - Math.min(...scores) > 5
+  )
+    failures.push("CAPITAL_SCORE");
+  if (
+    capitalTiles.some(
+      (capital) =>
+        !capitalEconomyFair(board, capital.at) ||
+        (!hasUsefulLandExpansion(board, capital.at) &&
+          !hasCapitalSeaEscape(board, capital.at, landComponentByKey)),
+    )
+  )
+    failures.push("CAPITAL_SEA_ESCAPE");
+  return [...new Set(failures)];
+}
+
+function componentIndex(
+  components: readonly (readonly CoordV7[])[],
+): ReadonlyMap<string, number> {
+  const result = new Map<string, number>();
+  components.forEach((component, index) =>
+    component.forEach((at) => result.set(key(at), index)),
+  );
+  return result;
+}
+
+function isBoardEdge(board: BoardStateV7, at: CoordV7): boolean {
+  return (
+    at.x === 0 ||
+    at.y === 0 ||
+    at.x === board.width - 1 ||
+    at.y === board.height - 1
+  );
+}
+
+function landingFrontier(
+  board: BoardStateV7,
+  component: readonly CoordV7[],
+): { land: Set<string>; shallow: Set<string> } {
+  const land = new Set<string>();
+  const shallow = new Set<string>();
+  for (const at of component)
+    if (isLegalLandingTile(board, at))
+      for (const near of neighbors8(board.width, board.height, at))
+        if (tileAt(board, near)?.terrain === "SHALLOW_WATER") {
+          land.add(key(at));
+          shallow.add(key(near));
+        }
+  return { land, shallow };
+}
+
+function isLegalLandingTile(board: BoardStateV7, at: CoordV7): boolean {
+  const tile = tileAt(board, at);
+  return (
+    tile !== undefined &&
+    tile.biome !== null &&
+    tile.terrain !== "MOUNTAIN" &&
+    tile.site === null
+  );
+}
+
+function settlementComponentNetworkConnected(
+  board: BoardStateV7,
+  landComponents: readonly (readonly CoordV7[])[],
+): boolean {
+  const index = componentIndex(landComponents);
+  const inhabited = new Set(
+    board.tiles
+      .filter((tile) => tile.site !== null)
+      .map((tile) => index.get(key(tile.at)))
+      .filter((value): value is number => value !== undefined),
+  );
+  if (inhabited.size <= 1) return true;
+  const eligible = new Set<number>();
+  const eligiblePortKeys = new Map<number, Set<string>>();
+  for (const componentId of inhabited) {
+    const settlements = board.tiles.filter(
+      (tile) => tile.site !== null && index.get(key(tile.at)) === componentId,
+    );
+    const ports = new Set<string>();
+    for (const settlement of settlements)
+      for (const at of coordsInRadius(
+        board.width,
+        board.height,
+        settlement.at,
+        2,
+      ))
+        if (
+          tileAt(board, at)?.terrain === "SHALLOW_WATER" &&
+          neighbors8(board.width, board.height, at).some(
+            (near) => index.get(key(near)) === componentId,
+          )
+        )
+          ports.add(key(at));
+    if (ports.size > 0) {
+      eligible.add(componentId);
+      eligiblePortKeys.set(componentId, ports);
+    }
+  }
+  if (eligible.size !== inhabited.size) return false;
+  const adjacency = new Map<number, Set<number>>();
+  const waterKeys = new Set(
+    board.tiles
+      .filter((tile) => tile.biome === null)
+      .map((tile) => key(tile.at)),
+  );
+  for (const water of componentsOfMask(
+    board.width,
+    board.height,
+    waterKeys,
+    true,
+  )) {
+    const waterSet = new Set(water.map(key));
+    const touched = new Set<number>();
+    for (const componentId of inhabited)
+      if (
+        [...(eligiblePortKeys.get(componentId) ?? [])].some((port) =>
+          waterSet.has(port),
+        )
+      )
+        touched.add(componentId);
+    for (const left of touched)
+      for (const right of touched)
+        if (left !== right) {
+          const edges = adjacency.get(left) ?? new Set<number>();
+          edges.add(right);
+          adjacency.set(left, edges);
+        }
+  }
+  const first = inhabited.values().next().value as number;
+  const seen = new Set([first]);
+  const queue = [first];
+  for (let cursor = 0; cursor < queue.length; cursor += 1)
+    for (const next of adjacency.get(queue[cursor] as number) ?? [])
+      if (!seen.has(next)) {
+        seen.add(next);
+        queue.push(next);
+      }
+  return seen.size === inhabited.size;
+}
+
+function capitalEconomyFair(board: BoardStateV7, capital: CoordV7): boolean {
+  const opportunities = neighbors8(board.width, board.height, capital)
+    .map((at) => tileAt(board, at) as TileStateV7)
+    .filter((tile) => opportunityScore(tile) > 0);
+  const families = new Set(
+    opportunities.map((tile) =>
+      tile.resource === "FISH" || tile.resource === "PEARLS"
+        ? "WATER"
+        : familyOf(tile),
+    ),
+  );
+  families.delete(null);
+  return opportunities.length >= 3 && families.size >= 2;
+}
+
+function hasUsefulLandExpansion(
+  board: BoardStateV7,
+  capital: CoordV7,
+): boolean {
+  const destinations = new Set(
+    board.tiles
+      .filter((tile) => tile.site !== null && !same(tile.at, capital))
+      .map((tile) => key(tile.at)),
+  );
+  const seen = new Set([key(capital)]);
+  const queue = [{ at: capital, distance: 0 }];
+  for (let cursor = 0; cursor < queue.length; cursor += 1) {
+    const current = queue[cursor];
+    if (current === undefined) break;
+    if (current.distance > 0 && destinations.has(key(current.at))) return true;
+    if (current.distance >= board.width) continue;
+    for (const near of neighbors8(board.width, board.height, current.at)) {
+      const tile = tileAt(board, near);
+      if (
+        tile !== undefined &&
+        tile.biome !== null &&
+        tile.terrain !== "MOUNTAIN" &&
+        !seen.has(key(near))
+      ) {
+        seen.add(key(near));
+        queue.push({ at: near, distance: current.distance + 1 });
+      }
+    }
+  }
+  return false;
+}
+
+function hasCapitalSeaEscape(
+  board: BoardStateV7,
+  capital: CoordV7,
+  componentByKey: ReadonlyMap<string, number>,
+): boolean {
+  const ownComponent = componentByKey.get(key(capital));
+  const footprint = coordsInRadius(board.width, board.height, capital, 1);
+  if (footprint.filter((at) => tileAt(board, at)?.biome !== null).length < 4)
+    return false;
+  const starts = footprint.filter(
+    (at) =>
+      tileAt(board, at)?.terrain === "SHALLOW_WATER" &&
+      neighbors8(board.width, board.height, at).some(
+        (near) => componentByKey.get(key(near)) === ownComponent,
+      ),
+  );
+  if (starts.length === 0) return false;
+  const targetLandings = new Set<string>();
+  const targetComponents = new Set(
+    board.tiles
+      .filter(
+        (tile) =>
+          tile.site !== null &&
+          componentByKey.get(key(tile.at)) !== ownComponent,
+      )
+      .map((tile) => componentByKey.get(key(tile.at)))
+      .filter((value): value is number => value !== undefined),
+  );
+  for (const targetComponent of targetComponents) {
+    const componentLandings = new Set<string>();
+    const starts = board.tiles
+      .filter(
+        (tile) =>
+          tile.site !== null &&
+          componentByKey.get(key(tile.at)) === targetComponent,
+      )
+      .map((tile) => tile.at);
+    const seen = new Set(starts.map(key));
+    const queue = [...starts];
+    for (let cursor = 0; cursor < queue.length; cursor += 1) {
+      const current = queue[cursor];
+      if (current === undefined) break;
+      if (
+        isLegalLandingTile(board, current) &&
+        neighbors8(board.width, board.height, current).some(
+          (near) => tileAt(board, near)?.terrain === "SHALLOW_WATER",
+        )
+      )
+        componentLandings.add(key(current));
+      for (const near of neighbors8(board.width, board.height, current)) {
+        const tile = tileAt(board, near);
+        if (
+          componentByKey.get(key(near)) === targetComponent &&
+          tile?.terrain !== "MOUNTAIN" &&
+          !seen.has(key(near))
+        ) {
+          seen.add(key(near));
+          queue.push(near);
+        }
+      }
+    }
+    if (componentLandings.size >= 2)
+      for (const landing of componentLandings) targetLandings.add(landing);
+  }
+  if (targetLandings.size < 2) return false;
+  const seen = new Set(starts.map(key));
+  const queue = starts.map((at) => ({ at, distance: 0 }));
+  const maximum = Math.max(5, board.width - 2);
+  for (let cursor = 0; cursor < queue.length; cursor += 1) {
+    const current = queue[cursor];
+    if (current === undefined) break;
+    if (
+      neighbors8(board.width, board.height, current.at).some((near) =>
+        targetLandings.has(key(near)),
+      )
+    )
+      return true;
+    if (current.distance >= maximum) continue;
+    for (const near of neighbors8(board.width, board.height, current.at))
+      if (tileAt(board, near)?.biome === null && !seen.has(key(near))) {
+        seen.add(key(near));
+        queue.push({ at: near, distance: current.distance + 1 });
+      }
+  }
+  return false;
+}
+
+function componentsOfMask(
+  width: number,
+  height: number,
+  mask: ReadonlySet<string>,
+  wanted: boolean,
+): CoordV7[][] {
+  const remaining = new Set(
+    allCoords(width, height)
+      .filter((at) => mask.has(key(at)) === wanted)
+      .map(key),
+  );
+  const result: CoordV7[][] = [];
+  while (remaining.size > 0) {
+    const first = remaining.values().next().value as string;
+    const [y, x] = first.split(",").map(Number);
+    if (x === undefined || y === undefined)
+      throw new RangeError("Invalid component coordinate");
+    const queue: CoordV7[] = [{ x, y }];
+    const component: CoordV7[] = [];
+    remaining.delete(first);
+    while (queue.length > 0) {
+      const at = queue.shift() as CoordV7;
+      component.push(at);
+      for (const near of neighbors8(width, height, at))
+        if (remaining.delete(key(near))) queue.push(near);
+    }
+    result.push(component.sort(compareCoords));
+  }
+  return result.sort((a, b) => {
+    const left = a[0];
+    const right = b[0];
+    if (left === undefined || right === undefined)
+      throw new RangeError("Empty component");
+    return b.length - a.length || compareCoords(left, right);
+  });
 }
 
 export type CreateInitialMapStateResultV7 =
@@ -713,6 +1641,7 @@ function createEntities(
       ownerId: player.id,
       homeCityId: city.id,
       role: "FIGHTER",
+      form: "LAND",
       at,
       hp: 10,
       maxHp: 10,
@@ -919,17 +1848,20 @@ function capitalsConnected(
 function capitalScore(board: BoardStateV7, at: CoordV7): number {
   return neighbors8(board.width, board.height, at).reduce((sum, coord) => {
     const tile = tileAt(board, coord) as TileStateV7;
-    return (
-      sum +
-      (tile.resource === "FRUIT"
-        ? 1
-        : tile.resource === "FERTILE_GROUND"
-          ? 2
-          : tile.terrain === "FOREST"
-            ? 2 + Number(tile.resource === "GAME")
-            : tile.resource === "ORE"
-              ? 2
-              : 0)
-    );
+    return sum + opportunityScore(tile);
   }, 0);
+}
+
+function opportunityScore(tile: TileStateV7): number {
+  return tile.resource === "FRUIT"
+    ? 1
+    : tile.resource === "FERTILE_GROUND"
+      ? 2
+      : tile.terrain === "FOREST"
+        ? 2 + Number(tile.resource === "GAME")
+        : tile.resource === "ORE"
+          ? 2
+          : tile.resource === "FISH" || tile.resource === "PEARLS"
+            ? 1
+            : 0;
 }

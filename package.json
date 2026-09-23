@@ -71,6 +71,7 @@
     "validate:ruleset6-release:refresh": "tsx scripts/validate-ruleset6-release.ts --refresh-normal --write",
     "validate:ruleset7-release": "tsx scripts/validate-ruleset7-current-release.ts",
     "validate:ruleset7-biome": "tsx scripts/validate-ruleset7-biome.ts",
+    "validate:ruleset7-naval-maps": "tsx scripts/validate-ruleset7-naval-maps.ts",
     "validate:ruleset7-archive-r2": "tsx scripts/validate-ruleset7-release.ts",
     "test": "vitest run",
     "test:watch": "vitest",

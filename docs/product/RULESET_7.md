@@ -1,24 +1,16 @@
 # Pulp Wars Ruleset 7
 
-**Status:** revision-5 runtime baseline. The
-[revision-5 achievement specification](RULESET_7_REVISION_5_ACHIEVEMENTS.md)
-is authoritative for achievements, Monument placement UI, and save identity.
-The [revision-4 biome-economy specification](RULESET_7_REVISION_4_BIOME_ECONOMY.md)
-remains authoritative for map, economy, public-view, and AI changes.
+**Status:** revision-6 engine baseline. The
+[revision-6 water and naval specification](RULESET_7_REVISION_6_WATER_NAVAL.md)
+is authoritative for the current engine. The live setup remains temporarily
+fixed to Dry Land while the map chooser, purposeful naval AI, and complete
+browser flows are integrated.
 
-**Runtime ruleset ID:** `pulp-wars-poc-7r5`
+**Runtime ruleset ID:** `pulp-wars-poc-7r6`
 
-**Approved planned successor:**
-[revision 6 water and naval play](RULESET_7_REVISION_6_WATER_NAVAL.md). It is an
-implementation contract and does not describe the current playable runtime.
-
-Revision 5 is implemented under exact ruleset ID
-`pulp-wars-poc-7r5`. Its specification supersedes this document for
-achievements, Monument placement UI, and save identity. Revision 4 supersedes this document wherever it
-defines map generation, biome/resource state, Mine/Forge economy, associated
-Normal-AI and public-view behavior, or validation. The
-remaining revision-3 rules stay authoritative. Revision-3 passages that
-conflict with the linked revision-4 specification are historical baseline.
+The revision-5 achievement specification remains authoritative for achievement
+and Monument rules left unchanged by revision 6. The revision-4 biome economy
+specification remains the inherited land baseline. Ruleset 6 is unchanged.
 
 **Design history:**
 [Original technology-tree redesign proposal](ORIGINAL_TECH_TREE_REDESIGN_PROPOSAL.md)

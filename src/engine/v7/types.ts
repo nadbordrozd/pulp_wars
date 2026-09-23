@@ -5,8 +5,8 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r5" as const;
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r5.current" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r6" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r6.current" as const;
 export const FACTION_IDS_V7 = Object.freeze(["ORIGINAL"] as const);
 export const FACTION_TREE_IDS_V7 = Object.freeze([
   "ORIGINAL_BASELINE_V4",
@@ -15,6 +15,8 @@ export const TERRAIN_IDS_V7 = Object.freeze([
   "GRASS",
   "FOREST",
   "MOUNTAIN",
+  "SHALLOW_WATER",
+  "DEEP_WATER",
 ] as const);
 export const BIOME_IDS_V7 = Object.freeze([
   "PLAINS",
@@ -26,6 +28,8 @@ export const RESOURCE_IDS_V7 = Object.freeze([
   "FERTILE_GROUND",
   "GAME",
   "ORE",
+  "FISH",
+  "PEARLS",
 ] as const);
 export const IMPROVEMENT_IDS_V7 = Object.freeze([
   "FARM",
@@ -38,6 +42,7 @@ export const IMPROVEMENT_IDS_V7 = Object.freeze([
   "GRAND_WORKS",
   "MARKET",
   "MONUMENT",
+  "PORT",
 ] as const);
 export const ACHIEVEMENT_IDS_V7 = Object.freeze([
   "EXPLORER",
@@ -57,6 +62,8 @@ export const UNIT_ROLE_IDS_V7 = Object.freeze([
   "HORSE_ARCHER",
   "BREACHER",
   "JUGGERNAUT",
+  "PATROL_BOAT",
+  "BATTLESHIP",
 ] as const);
 export const TECHNOLOGY_IDS_V7 = Object.freeze([
   "GATHERING",
@@ -80,6 +87,9 @@ export const TECHNOLOGY_IDS_V7 = Object.freeze([
   "ENGINEERING",
   "METALLURGY",
   "GRAND_WORKS",
+  "SHORECRAFT",
+  "NAVIGATION",
+  "NAVAL_ENGINEERING",
 ] as const);
 export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "MOVE",
@@ -93,6 +103,8 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "DISBAND",
   "WAIT",
   "RESEARCH",
+  "HARVEST_FISH",
+  "GATHER_PEARLS",
   "HARVEST_FRUIT",
   "HUNT_GAME",
   "BUILD_FARM",
@@ -105,11 +117,15 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "BUILD_GRAND_WORKS",
   "BUILD_MARKET",
   "BUILD_MONUMENT",
+  "BUILD_PORT",
   "CLEAR_FOREST",
   "REPLANT_FOREST",
   "BUILD_ROAD",
   "REDEVELOP",
   "TRAIN",
+  "TRAIN_NAVAL",
+  "EMBARK",
+  "DISEMBARK",
   "CHOOSE_CITY_REWARD",
   "END_TURN",
 ] as const);
@@ -140,6 +156,11 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "INCOME_PREVIEWED",
   "TURN_ENDED",
   "TECH_RESEARCHED",
+  "FISH_HARVESTED",
+  "PEARLS_GATHERED",
+  "PORT_BUILT",
+  "PORT_BLOCKADE_CHANGED",
+  "SEA_NETWORK_CHANGED",
   "FRUIT_HARVESTED",
   "GAME_HUNTED",
   "ECONOMIC_BUILDING_BUILT",
@@ -156,6 +177,9 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "ACHIEVEMENT_UNLOCKED",
   "MONUMENT_BUILT",
   "UNIT_TRAINED",
+  "NAVAL_UNIT_TRAINED",
+  "UNIT_EMBARKED",
+  "UNIT_DISEMBARKED",
   "UNIT_REWARD_GRANTED",
   "UNIT_HEALED",
   "UNIT_PUSHED",
@@ -202,6 +226,8 @@ export type DomainEventKindV7 = (typeof DOMAIN_EVENT_KIND_ORDER_V7)[number];
 export type BoardSizeV7 = 11 | 14 | 16 | 20 | 25;
 export type AiCountV7 = 1 | 2 | 3;
 export type PlayerColorV7 = "CORAL" | "TEAL" | "GOLD" | "VIOLET";
+export type MapTypeV7 =
+  "DRY_LAND" | "PANGEA" | "CONTINENTS" | "ARCHIPELAGO" | "LAKES";
 
 export interface CoordV7 {
   readonly x: number;
@@ -218,7 +244,8 @@ export interface MatchSetupV7 {
   readonly aiMode: "RIVAL" | "COOPERATIVE";
   readonly humanColor: PlayerColorV7;
   readonly factions: readonly FactionIdV7[];
-  readonly mapGenerationRevision: "REGIONAL_BIOMES_V1";
+  readonly mapType: MapTypeV7;
+  readonly mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1";
 }
 
 export interface RandomStateV7 {
@@ -229,7 +256,7 @@ export interface RandomStateV7 {
 
 export interface TileStateV7 {
   readonly at: CoordV7;
-  readonly biome: BiomeIdV7;
+  readonly biome: BiomeIdV7 | null;
   readonly terrain: TerrainIdV7;
   readonly resource: ResourceIdV7 | null;
   readonly improvement: ImprovementIdV7 | null;
@@ -282,6 +309,7 @@ export interface UnitStateV7 {
   readonly ownerId: PlayerId;
   readonly homeCityId: CityId | null;
   readonly role: UnitRoleIdV7;
+  readonly form: "LAND" | "EMBARKED" | "NAVAL";
   readonly at: CoordV7;
   readonly hp: number;
   readonly maxHp: number;
@@ -340,6 +368,11 @@ export type PopulationContributionSourceV7 =
   | {
       readonly kind: "RESOURCE_ACTION";
       readonly action: "HARVEST_FRUIT" | "HUNT_GAME";
+      readonly at: CoordV7;
+    }
+  | {
+      readonly kind: "RESOURCE_ACTION";
+      readonly action: "HARVEST_FISH";
       readonly at: CoordV7;
     }
   | {
