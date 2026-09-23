@@ -427,9 +427,9 @@ describe("ruleset-7 Horse Archer activation", () => {
     ).toMatchObject({ accepted: false, error: { code: "UNIT_ALREADY_ACTED" } });
   });
 
-  it("retains movement budgets, Road discounts, terrain stops, and Engineering entry", () => {
+  it("retains movement budgets, Road discounts, terrain stops, and Prospecting entry", () => {
     const base = battle("SCOUT", "FIGHTER", { x: 2, y: 2 }, { x: 9, y: 9 });
-    const withoutEngineering = checkedV7({
+    const withoutProspecting = checkedV7({
       ...base,
       players: base.players.map((player) =>
         player.id === base.humanPlayerId
@@ -437,9 +437,9 @@ describe("ruleset-7 Horse Archer activation", () => {
               ...player,
               researchedTechs: player.researchedTechs.filter(
                 (tech) =>
+                  tech !== "PROSPECTING" &&
                   tech !== "ENGINEERING" &&
-                  tech !== "METALLURGY" &&
-                  tech !== "GRAND_WORKS",
+                  tech !== "METALLURGY",
               ),
             }
           : player,
@@ -451,28 +451,28 @@ describe("ruleset-7 Horse Archer activation", () => {
         ],
       ]),
     });
-    const scoutWithoutEngineering = required(
-      withoutEngineering.units[0],
+    const scoutWithoutProspecting = required(
+      withoutProspecting.units[0],
       "Scout missing",
     );
     expect(
-      validateMovementPathV7(withoutEngineering, scoutWithoutEngineering, [
+      validateMovementPathV7(withoutProspecting, scoutWithoutProspecting, [
         { x: 3, y: 2 },
       ]),
     ).toEqual({
       legal: false,
-      reason: "ENGINEERING_REQUIRED",
+      reason: "PROSPECTING_REQUIRED",
     });
-    const withEngineering = checkedV7({
-      ...withoutEngineering,
+    const withProspecting = checkedV7({
+      ...withoutProspecting,
       players: base.players,
     });
-    const scoutWithEngineering = required(
-      withEngineering.units[0],
+    const scoutWithProspecting = required(
+      withProspecting.units[0],
       "Scout missing",
     );
     expect(
-      validateMovementPathV7(withEngineering, scoutWithEngineering, [
+      validateMovementPathV7(withProspecting, scoutWithProspecting, [
         { x: 3, y: 2 },
       ]),
     ).toMatchObject({
@@ -735,7 +735,6 @@ function makeUnit(
     captureEligible: false,
     activation: READY,
     form: "LAND",
-    blackoutEligibleRound: role === "SABOTEUR" ? 1 : null,
   };
 }
 

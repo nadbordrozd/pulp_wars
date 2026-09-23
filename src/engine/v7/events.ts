@@ -24,6 +24,7 @@ export interface CombatPreviewV7 {
   readonly breachApplied: boolean;
   readonly defenseBonusNumerator: number;
   readonly defenseBonusDenominator: number;
+  readonly fortificationLevel: number;
   readonly damageToDefender: number;
   readonly damageToAttacker: number;
   readonly defenderDies: boolean;
@@ -34,6 +35,13 @@ export interface CombatPreviewV7 {
   readonly push: "WILL_PUSH" | "BLOCKED" | "UNKNOWN_BEHIND_FOG";
   readonly attacksUsed: number;
   readonly attacksRemaining: number;
+  readonly splash: readonly CombatSplashEntryV7[];
+}
+export interface CombatSplashEntryV7 {
+  readonly unitId: UnitId;
+  readonly at: CoordV7;
+  readonly damage: number;
+  readonly dies: boolean;
 }
 
 export type DomainEventV7 =
@@ -134,9 +142,16 @@ export type DomainEventV7 =
   | {
       readonly kind: "ROAD_BUILT";
       readonly playerId: PlayerId;
-      readonly cityId: CityId;
+      readonly cityId: CityId | null;
       readonly at: CoordV7;
       readonly cost: 2;
+    }
+  | {
+      readonly kind: "FIELD_DEFENSE_BUILT";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+      readonly cost: 3;
     }
   | {
       readonly kind: "CITY_ECONOMY_CHANGED";
@@ -209,7 +224,7 @@ export type DomainEventV7 =
       readonly cityId: CityId;
       readonly unitId: UnitId;
       readonly role: "PATROL_BOAT" | "BATTLESHIP";
-      readonly cost: 5 | 10;
+      readonly cost: 5 | 16;
       readonly at: CoordV7;
     }
   | {
@@ -259,7 +274,8 @@ export type DomainEventV7 =
       readonly kind: "UNIT_MOVE_INTERRUPTED";
       readonly unitId: UnitId;
       readonly at: CoordV7;
-      readonly reason: "OCCUPIED" | "ENGINEERING_REQUIRED" | "ZOC";
+      readonly reason:
+        "OCCUPIED" | "PROSPECTING_REQUIRED" | "ENGINEERING_REQUIRED" | "ZOC";
     }
   | {
       readonly kind: "TILES_REVEALED";
@@ -267,38 +283,6 @@ export type DomainEventV7 =
       readonly tiles: readonly CoordV7[];
     }
   | { readonly kind: "COMBAT_RESOLVED"; readonly preview: CombatPreviewV7 }
-  | {
-      readonly kind: "SABOTEUR_EXPOSED";
-      readonly unitId: UnitId;
-      readonly anchorPlayerId: PlayerId;
-      readonly reason: "ATTACK" | "PILLAGE" | "BLACKOUT";
-    }
-  | {
-      readonly kind: "BLACKOUT_PLANTED";
-      readonly cityId: CityId;
-      readonly sourceUnitId: UnitId;
-      readonly sourceOwnerId: PlayerId;
-      readonly targetOwnerId: PlayerId;
-      readonly actionRound: number;
-      readonly eligibleRound: number;
-    }
-  | {
-      readonly kind: "BLACKOUT_ACTIVATED";
-      readonly cityId: CityId;
-      readonly ownerId: PlayerId;
-      readonly suppressedCoins: number;
-    }
-  | {
-      readonly kind: "BLACKOUT_RECOVERY_STARTED";
-      readonly cityId: CityId;
-      readonly ownerId: PlayerId;
-      readonly reason: "AFFECTED_TURN_ENDED" | "CITY_CAPTURED";
-    }
-  | {
-      readonly kind: "BLACKOUT_RECOVERY_COMPLETED";
-      readonly cityId: CityId;
-      readonly ownerId: PlayerId;
-    }
   | {
       readonly kind: "IMPROVEMENT_PILLAGED";
       readonly playerId: PlayerId;
@@ -341,7 +325,7 @@ export type DomainEventV7 =
   | {
       readonly kind: "UNIT_DIED";
       readonly unitId: UnitId;
-      readonly cause: "ATTACK" | "RETALIATION" | "ELIMINATION";
+      readonly cause: "ATTACK" | "SPLASH" | "RETALIATION" | "ELIMINATION";
     }
   | {
       readonly kind: "CITY_CAPTURED";
@@ -419,6 +403,11 @@ export type ProjectedMonumentBuiltV7 =
       readonly populationAdded: 3;
     };
 
+export interface ProjectedCombatSplashDamageV7 {
+  readonly kind: "COMBAT_SPLASH_DAMAGE";
+  readonly splash: readonly CombatSplashEntryV7[];
+}
+
 export type PlayerEventV7 =
   | Exclude<
       DomainEventV7,
@@ -431,6 +420,7 @@ export type PlayerEventV7 =
     >
   | ProjectedResourceRestorationEventV7
   | ProjectedMonumentBuiltV7
+  | ProjectedCombatSplashDamageV7
   | PlayerPresentationEventV7;
 
 export interface PlayerEventEnvelopeV7 {

@@ -35,11 +35,7 @@ import {
 import { readinessUnitStyleV6 } from "./readiness-presentation";
 import { selectionJumpOffsetCssPx } from "./selection-jump-presentation";
 import { RULESET7_TACTICAL_UI_SYMBOL_BY_ID } from "../../assets/ruleset7-tactical-ui-symbols";
-import {
-  blackoutTargetsV7,
-  tacticalAttachmentsV7,
-  type TacticalTargetModeV7,
-} from "../tactical-presentation-v7";
+import { tacticalAttachmentsV7 } from "../tactical-presentation-v7";
 
 export type BoardSelectionV7 =
   | { readonly kind: "TILE"; readonly at: CoordV7 }
@@ -51,13 +47,12 @@ export interface BoardRenderInteractionV7 {
   readonly selectedUnitId: number | null;
   readonly selectedAchievement: null;
   readonly cursor?: CoordV7 | null;
-  readonly tacticalTargetMode?: TacticalTargetModeV7 | null;
 }
 
 export interface MapCommandTargetV7 {
   readonly at: CoordV7;
   readonly command: CommandV7;
-  readonly family: "MOVE" | "ATTACK" | "MONUMENT" | "BLACKOUT" | "DISEMBARK";
+  readonly family: "MOVE" | "ATTACK" | "MONUMENT" | "DISEMBARK";
   readonly previewLabel?: string;
   readonly semanticLabel?: string;
 }
@@ -73,6 +68,7 @@ export interface BoardRenderPlanEntryV7 {
     | "ROAD_JOIN"
     | "RESOURCE"
     | "IMPROVEMENT"
+    | "FIELD_DEFENSE"
     | "SITE"
     | "TREASURE"
     | "CITY"
@@ -251,6 +247,20 @@ export function buildBoardRenderPlanV7(
         assetId: "building-village",
         label: "Village",
       });
+    if (
+      (tile.fortificationLevel ?? 0) > 0 ||
+      (tile.fieldDefense && tile.fortificationLevel === null)
+    )
+      entries.push({
+        key: `field-defense:${tile.at.x},${tile.at.y}`,
+        kind: "FIELD_DEFENSE",
+        layer: 8,
+        at: tile.at,
+        ...(tile.fortificationLevel === null
+          ? {}
+          : { value: tile.fortificationLevel }),
+        label: "Field defense",
+      });
   }
   addWaterBoundaries(entries, view);
   for (const city of view.cities)
@@ -310,7 +320,7 @@ export function buildBoardRenderPlanV7(
       label: value.measure,
     });
   const attachmentSlots = new Map<string, number>();
-  for (const attachment of tacticalAttachmentsV7(view)) {
+  for (const attachment of tacticalAttachmentsV7()) {
     const coordKey = `${attachment.at.x},${attachment.at.y}`;
     const slot = attachmentSlots.get(coordKey) ?? 0;
     attachmentSlots.set(coordKey, slot + 1);
@@ -406,12 +416,7 @@ export function buildBoardRenderPlanV7(
   }
   addTerritoryBoundaries(entries, view, interaction.selection);
   const targets = dedupeMapTargets(
-    mapTargets(
-      view,
-      commands,
-      interaction.selectedUnitId,
-      interaction.tacticalTargetMode ?? null,
-    ),
+    mapTargets(view, commands, interaction.selectedUnitId),
   );
   const targetEdges = mapTargetEdges(targets);
   for (const target of targets)
@@ -576,6 +581,35 @@ export function drawBoardV7(input: {
         input.highContrast ?? false,
       );
       context.restore();
+      continue;
+    }
+    if (entry.kind === "FIELD_DEFENSE") {
+      const symbolSize = 22 * camera.zoom;
+      drawTacticalSymbolOnCanvas(
+        context,
+        "ui-action-field-defense",
+        x - 53 * camera.zoom,
+        y - 54 * camera.zoom,
+        symbolSize,
+        input.highContrast ?? false,
+      );
+      if ((entry.value ?? 0) > 0) {
+        context.fillStyle = input.highContrast ? "#ffffff" : "#fff8df";
+        context.strokeStyle = "#172529";
+        context.lineWidth = 3 * camera.zoom;
+        context.font = `800 ${13 * camera.zoom}px system-ui`;
+        context.textAlign = "center";
+        context.strokeText(
+          String(entry.value),
+          x - 30 * camera.zoom,
+          y - 37 * camera.zoom,
+        );
+        context.fillText(
+          String(entry.value),
+          x - 30 * camera.zoom,
+          y - 37 * camera.zoom,
+        );
+      }
       continue;
     }
     if (entry.assetId !== undefined) {
@@ -1013,7 +1047,6 @@ function mapTargetEdges(
 
 function targetPriority(family: MapCommandTargetV7["family"]): number {
   if (family === "ATTACK") return 6;
-  if (family === "BLACKOUT") return 4;
   if (family === "MONUMENT") return 2;
   return 1;
 }
@@ -1022,7 +1055,6 @@ function targetStroke(
   family: MapCommandTargetV7["family"] | undefined,
 ): string {
   if (family === "ATTACK") return "#ff655f";
-  if (family === "BLACKOUT") return "#da8fff";
   return "#64e6cf";
 }
 
@@ -1214,21 +1246,7 @@ function mapTargets(
   view: PlayerViewV7,
   commands: readonly CommandV7[],
   selectedUnitId: number | null,
-  tacticalTargetMode: TacticalTargetModeV7 | null,
 ): MapCommandTargetV7[] {
-  if (tacticalTargetMode?.kind === "BLACKOUT")
-    return blackoutTargetsV7(
-      view,
-      commands,
-      tacticalTargetMode.sourceUnitId,
-    ).map((target) => ({
-      at: target.at,
-      command: target.command,
-      family: "BLACKOUT",
-      previewLabel: "City blackout",
-      semanticLabel:
-        "Blackout target. Pending until the city's next owner Start Turn; future income denial is capped at 3 Coins and exact amount is not predicted.",
-    }));
   return commands.flatMap((command): readonly MapCommandTargetV7[] => {
     if (selectedUnitId === null) return [];
     if (command.kind === "MOVE" && command.unitId === selectedUnitId) {
@@ -1261,7 +1279,12 @@ function mapTargets(
           previewLabel:
             preview === null
               ? "Damage uncertain"
-              : `Deal ${preview.damageToDefender} · take ${preview.damageToAttacker}`,
+              : `Deal ${preview.damageToDefender} · take ${preview.damageToAttacker}${preview.splash.length > 0 ? ` · splash ${preview.splash.reduce((sum, item) => sum + item.damage, 0)} to ${preview.splash.length}` : ""}`,
+          ...(preview === null
+            ? {}
+            : {
+                semanticLabel: `Attack preview. Defender fortification level ${preview.fortificationLevel}. Primary damage ${preview.damageToDefender}.${preview.splash.length > 0 ? ` Splash affects ${preview.splash.length} adjacent hostile units for ${preview.splash.map((item) => `${item.damage}${item.dies ? " lethal" : ""}`).join(", ")}.` : ""}`,
+              }),
         },
       ];
     }
@@ -1426,14 +1449,7 @@ function geometryFor(entry: BoardRenderPlanEntryV7): SourceGeometry {
     if (entry.assetId === RULESET7_IMPROVEMENT_ART_IDS.PORT)
       return SQUARE_ART_GEOMETRY.processor;
     if (
-      [
-        "WINDMILL",
-        "FORGE",
-        "WORKSHOP",
-        "GRAND_WORKS",
-        "MARKET",
-        "MONUMENT",
-      ].some(
+      ["WINDMILL", "FORGE", "WORKSHOP", "MARKET", "MONUMENT"].some(
         (name) =>
           entry.assetId ===
           RULESET7_IMPROVEMENT_ART_IDS[

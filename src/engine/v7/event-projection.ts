@@ -1,16 +1,11 @@
 import { deepFreeze } from "../model/freeze";
 import type { PlayerId, UnitId } from "../model/ids";
-import { arePlayersAlliedV7 } from "./economy";
 import type {
   DomainEventV7,
   PlayerEventEnvelopeV7,
   PlayerEventV7,
 } from "./events";
-import {
-  detectionCoversCoordV7,
-  isUnitVisibleToPlayerV7,
-  withUnitAtForObservationV7,
-} from "./observation";
+import { detectionCoversCoordV7, isUnitVisibleToPlayerV7 } from "./observation";
 import type { CoordV7, GameStateV7, UnitStateV7 } from "./types";
 import { viewForV7 } from "./view";
 
@@ -30,49 +25,33 @@ export function projectEventsV7(
   const projected: PlayerEventV7[] = [];
 
   for (const event of events) {
-    if (event.kind === "UNIT_MOVED") {
-      const moving =
-        beforeState.units.find((unit) => unit.id === event.unitId) ??
-        afterState.units.find((unit) => unit.id === event.unitId);
-      if (moving?.role === "SABOTEUR" && moving.ownerId !== viewerId) {
-        projectSaboteurMovement(
-          beforeState,
-          afterState,
-          viewerId,
-          event,
-          moving,
-          projected,
-          revealed,
-          concealed,
-        );
-        continue;
-      }
-    }
-
     const ids = unitIds(event);
-    if (event.kind === "UNIT_MOVE_INTERRUPTED") {
-      const contacted = afterState.units.find(
-        (unit) =>
-          unit.role === "SABOTEUR" &&
-          (same(unit.at, event.at) ||
-            (event.reason === "ZOC" && chebyshev(unit.at, event.at) === 1)) &&
-          !beforeVisible.has(unit.id) &&
-          afterVisible.has(unit.id),
-      );
-      if (contacted !== undefined)
-        reveal(projected, revealed, contacted, "CONTACT");
-    }
+    if (event.kind === "UNIT_MOVE_INTERRUPTED")
+      for (const unit of afterState.units)
+        if (!beforeVisible.has(unit.id) && afterVisible.has(unit.id))
+          reveal(projected, revealed, unit, revealReason());
     for (const id of ids) {
       if (!beforeVisible.has(id) && afterVisible.has(id)) {
         const unit = afterState.units.find((candidate) => candidate.id === id);
         if (unit !== undefined)
-          reveal(
-            projected,
-            revealed,
-            unit,
-            revealReason(afterState, viewerId, unit),
-          );
+          reveal(projected, revealed, unit, revealReason());
       }
+    }
+    if (
+      event.kind === "COMBAT_RESOLVED" &&
+      ids.some((id) => !beforeVisible.has(id) && !afterVisible.has(id))
+    ) {
+      const ownedSplash = event.preview.splash.filter(
+        (entry) =>
+          beforeState.units.find((unit) => unit.id === entry.unitId)
+            ?.ownerId === viewerId,
+      );
+      if (ownedSplash.length > 0)
+        projected.push({
+          kind: "COMBAT_SPLASH_DAMAGE",
+          splash: ownedSplash,
+        });
+      continue;
     }
     const visible = eventVisible(
       beforeState,
@@ -90,12 +69,7 @@ export function projectEventsV7(
 
   for (const unit of afterState.units) {
     if (!beforeVisible.has(unit.id) && afterVisible.has(unit.id))
-      reveal(
-        projected,
-        revealed,
-        unit,
-        revealReason(afterState, viewerId, unit),
-      );
+      reveal(projected, revealed, unit, revealReason());
   }
   for (const unit of beforeState.units) {
     if (
@@ -119,67 +93,6 @@ export function projectEventsV7(
     commandIndex: afterState.commandIndex,
     events: projected,
   });
-}
-
-function projectSaboteurMovement(
-  before: GameStateV7,
-  after: GameStateV7,
-  viewerId: PlayerId,
-  event: Extract<DomainEventV7, { kind: "UNIT_MOVED" }>,
-  moving: UnitStateV7,
-  output: PlayerEventV7[],
-  revealed: Set<UnitId>,
-  concealed: Set<UnitId>,
-): void {
-  const startsVisible = isUnitVisibleToPlayerV7(before, viewerId, moving);
-  const visibilityByStep = event.path.map((at) =>
-    isUnitVisibleToPlayerV7(
-      withUnitAtForObservationV7(before, moving.id, at),
-      viewerId,
-      { ...moving, at },
-    ),
-  );
-  let currentlyVisible = startsVisible;
-  let lastSeenAt = moving.at;
-  let segmentStart = -1;
-  const flush = (endExclusive: number) => {
-    if (segmentStart < 0) return;
-    const path = event.path.slice(segmentStart, endExclusive);
-    if (path.length === 0) return;
-    output.push({ kind: "UNIT_MOVED", unitId: event.unitId, path });
-    segmentStart = -1;
-  };
-  for (let index = 0; index < event.path.length; index += 1) {
-    const at = event.path[index] as CoordV7;
-    const stepVisible = visibilityByStep[index] === true;
-    if (stepVisible) {
-      if (!currentlyVisible)
-        reveal(output, revealed, { ...moving, at }, "DETECTED");
-      if (segmentStart < 0) segmentStart = index;
-      lastSeenAt = at;
-    } else if (currentlyVisible) {
-      flush(index);
-      output.push({
-        kind: "UNIT_CONCEALED",
-        unitId: moving.id,
-        lastSeenAt,
-      });
-      concealed.add(moving.id);
-      revealed.delete(moving.id);
-    }
-    currentlyVisible = stepVisible;
-  }
-  flush(event.path.length);
-  const endsVisible = isUnitVisibleToPlayerV7(
-    after,
-    viewerId,
-    after.units.find((unit) => unit.id === moving.id) ?? moving,
-  );
-  if (currentlyVisible && !endsVisible) {
-    output.push({ kind: "UNIT_CONCEALED", unitId: moving.id, lastSeenAt });
-    concealed.add(moving.id);
-    revealed.delete(moving.id);
-  }
 }
 
 function eventVisible(
@@ -213,6 +126,7 @@ function eventVisible(
     case "FOREST_CLEARED":
     case "FOREST_REPLANTED":
     case "ROAD_BUILT":
+    case "FIELD_DEFENSE_BUILT":
       return (
         event.playerId === viewerId ||
         coordVisible(before, after, viewerId, event.at)
@@ -227,22 +141,6 @@ function eventVisible(
       return event.playerId === viewerId;
     case "TREASURE_CAPTURED":
       return event.playerId === viewerId;
-    case "SABOTEUR_EXPOSED":
-      return (
-        after.units.find((unit) => unit.id === event.unitId)?.ownerId ===
-          viewerId ||
-        event.anchorPlayerId === viewerId ||
-        arePlayersAlliedV7(after, viewerId, event.anchorPlayerId)
-      );
-    case "BLACKOUT_PLANTED":
-      return (
-        event.sourceOwnerId === viewerId || event.targetOwnerId === viewerId
-      );
-    case "BLACKOUT_ACTIVATED":
-      return fullBlackoutVisible(after, viewerId, event.cityId);
-    case "BLACKOUT_RECOVERY_STARTED":
-    case "BLACKOUT_RECOVERY_COMPLETED":
-      return cityVisible(before, after, viewerId, event.cityId);
     case "SPOILS_AWARDED":
     case "CITY_REWARD_AUTOMATICALLY_GRANTED":
     case "ACHIEVEMENT_UNLOCKED":
@@ -277,8 +175,6 @@ function unitIds(event: DomainEventV7): readonly UnitId[] {
       return [event.medicId, event.targetUnitId];
     case "UNIT_PUSHED":
       return [event.sourceUnitId, event.targetUnitId];
-    case "BLACKOUT_PLANTED":
-      return [event.sourceUnitId];
     default:
       return "unitId" in event ? [event.unitId] : [];
   }
@@ -291,8 +187,9 @@ function projectEventPayload(
   event: DomainEventV7,
 ): PlayerEventV7 {
   if (event.kind === "MONUMENT_BUILT") {
+    const cityId = event.cityId;
     const currentOwner = after.cities.find(
-      (city) => city.id === event.cityId,
+      (city) => city.id === cityId,
     )?.ownerId;
     return currentOwner === viewerId
       ? { ...event, visibility: "FULL" }
@@ -319,6 +216,18 @@ function projectEventPayload(
         ? visible
         : null;
     return { ...event, resourceRestored };
+  }
+  if (event.kind === "COMBAT_RESOLVED") {
+    const splash = event.preview.splash.filter((entry) => {
+      const unit = before.units.find(
+        (candidate) => candidate.id === entry.unitId,
+      );
+      return (
+        unit?.ownerId === viewerId ||
+        visibility(before, viewerId).has(entry.unitId)
+      );
+    });
+    event = { ...event, preview: { ...event.preview, splash } };
   }
   if (event.kind !== "COMBAT_RESOLVED" || event.preview.push !== "BLOCKED")
     return event;
@@ -385,30 +294,8 @@ function reveal(
   revealed.add(unit.id);
 }
 
-function revealReason(
-  state: GameStateV7,
-  viewerId: PlayerId,
-  unit: UnitStateV7,
-): string {
-  if (
-    state.saboteurExposures.some(
-      (entry) =>
-        entry.unitId === unit.id &&
-        (entry.anchorPlayerId === viewerId ||
-          arePlayersAlliedV7(state, viewerId, entry.anchorPlayerId)),
-    )
-  )
-    return "EXPOSURE";
+function revealReason(): string {
   return "DETECTED";
-}
-function fullBlackoutVisible(
-  state: GameStateV7,
-  viewerId: PlayerId,
-  cityId: number,
-): boolean {
-  return viewForV7(state, viewerId).blackoutStatuses.some(
-    (status) => status.cityId === cityId && status.visibility === "FULL",
-  );
 }
 function cityOwner(
   before: GameStateV7,
@@ -445,5 +332,3 @@ function coordVisible(
 }
 const same = (left: CoordV7, right: CoordV7) =>
   left.x === right.x && left.y === right.y;
-const chebyshev = (left: CoordV7, right: CoordV7) =>
-  Math.max(Math.abs(left.x - right.x), Math.abs(left.y - right.y));

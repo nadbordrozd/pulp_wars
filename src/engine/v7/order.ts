@@ -1,6 +1,5 @@
 import {
   ACHIEVEMENT_IDS_V7,
-  BLACKOUT_PHASE_ORDER_V7,
   CARDINAL_DIRECTION_ORDER_V7,
   DOMAIN_EVENT_KIND_ORDER_V7,
   FACTION_IDS_V7,
@@ -25,9 +24,6 @@ export const compareFactionIdsV7 = ordinalComparator(FACTION_IDS_V7);
 export const compareFactionTreeIdsV7 = ordinalComparator(FACTION_TREE_IDS_V7);
 export const compareCardinalDirectionsV7 = ordinalComparator(
   CARDINAL_DIRECTION_ORDER_V7,
-);
-export const compareBlackoutPhasesV7 = ordinalComparator(
-  BLACKOUT_PHASE_ORDER_V7,
 );
 export const compareDomainEventKindsV7 = ordinalComparator(
   DOMAIN_EVENT_KIND_ORDER_V7,

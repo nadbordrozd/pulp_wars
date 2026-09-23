@@ -34,9 +34,9 @@ describe("ruleset-7 naval transport", () => {
       ),
     });
     const embarked = applyCommandV7(prepared, prepared.humanPlayerId, {
-      kind: "EMBARK",
+      kind: "MOVE",
       unitId: unit.id,
-      portAt: fixture.portAt,
+      path: [fixture.portAt],
     });
     expect(embarked.accepted).toBe(true);
     if (!embarked.accepted) return;
@@ -54,6 +54,8 @@ describe("ruleset-7 naval transport", () => {
     const nextWater = embarked.state.board.tiles.find(
       (tile) =>
         tile.site === null &&
+        tile.improvement === null &&
+        (tile.at.x !== fixture.portAt.x || tile.at.y !== fixture.portAt.y) &&
         Math.max(
           Math.abs(tile.at.x - fixture.portAt.x),
           Math.abs(tile.at.y - fixture.portAt.y),
@@ -109,9 +111,15 @@ describe("ruleset-7 naval transport", () => {
           ? {
               ...candidate,
               activation: {
-                ...candidate.activation,
                 moved: false,
+                movedPathLength: 0,
+                attacked: false,
+                attacksUsed: 0,
+                healed: false,
+                recovered: false,
+                captured: false,
                 handled: false,
+                specialActed: false,
               },
             }
           : candidate,
@@ -189,9 +197,9 @@ describe("ruleset-7 naval transport", () => {
     });
     expect(
       applyCommandV7(state, state.humanPlayerId, {
-        kind: "EMBARK",
+        kind: "MOVE",
         unitId: unit.id,
-        portAt: fixture.portAt,
+        path: [fixture.portAt],
       }),
     ).toMatchObject({ accepted: false });
   });
@@ -359,8 +367,8 @@ describe("ruleset-7 naval transport", () => {
                 at: fixture.waterAt,
                 role: "BATTLESHIP" as const,
                 form: "NAVAL" as const,
-                hp: 20,
-                maxHp: 20,
+                hp: 25,
+                maxHp: 25,
               }
             : unit,
       ),

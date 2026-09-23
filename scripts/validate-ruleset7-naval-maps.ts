@@ -2,6 +2,7 @@ import { strict as assert } from "node:assert";
 import { readFileSync } from "node:fs";
 import {
   RULESET_7_ID,
+  canonicalHash,
   canonicalMapRandomHashV7,
   generateInitialMapV7,
   type CoordV7,
@@ -58,7 +59,7 @@ for (const mapType of mapTypes)
             () => "ORIGINAL" as const,
           ),
           mapType,
-          mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1" as const,
+          mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2" as const,
         };
         const first = generateInitialMapV7(setup);
         const second = generateInitialMapV7(setup);
@@ -73,7 +74,7 @@ for (const mapType of mapTypes)
         assert.deepEqual(first.map, second.map);
         if (mapType === "DRY_LAND")
           assert.equal(
-            canonicalMapRandomHashV7(first.map),
+            dryLandParityHash(first.map),
             dryParity[`${width}/${aiCount}/${seed}`],
             `DRY_LAND parity ${width}/${aiCount}/${seed}`,
           );
@@ -98,6 +99,27 @@ assert.equal(cases, 960);
 console.log(
   JSON.stringify({ cases, exactRepeats: cases, mapTypes, status: "PASS" }),
 );
+
+function dryLandParityHash(
+  map: Parameters<typeof canonicalMapRandomHashV7>[0],
+): string {
+  return canonicalHash({
+    board: {
+      ...map.board,
+      tiles: map.board.tiles.map((tile) => {
+        const { fieldDefense, ...revision6Tile } = tile;
+        assert.equal(
+          fieldDefense,
+          false,
+          `DRY_LAND parity tile ${tile.at.x},${tile.at.y} has field defense`,
+        );
+        return revision6Tile;
+      }),
+    },
+    treasureChests: map.treasureChests,
+    random: map.random,
+  });
+}
 
 function validate(
   tiles: readonly {

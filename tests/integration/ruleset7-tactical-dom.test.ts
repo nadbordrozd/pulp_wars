@@ -23,10 +23,7 @@ import {
   Ruleset7DomAppView,
   type Ruleset7ControllerPortV7,
 } from "../../src/render/dom/app-view-v7";
-import {
-  blackoutPublicFixtureV7,
-  horseArcherPublicFixtureV7,
-} from "../fixtures/ruleset7-tactical-ui";
+import { horseArcherPublicFixtureV7 } from "../fixtures/ruleset7-tactical-ui";
 
 beforeEach(() => {
   document.body.innerHTML = '<div id="app"></div>';
@@ -95,23 +92,6 @@ describe("Ruleset 7 tactical DOM controls", () => {
             command.kind === "MOVE" && command.unitId === horseArcher.id,
         ),
     ).toBe(false);
-    app.destroy();
-  });
-
-  it("dispatches a single legal Blackout city directly", async () => {
-    const fixture = blackoutPublicFixtureV7();
-    const controller = new TacticalFixtureController(fixture.state);
-    const host = new RecordingBoardHost();
-    const app = mount(controller, host);
-    const saboteur = required(
-      controller
-        .snapshot()
-        .view?.units.find((unit) => unit.role === "SABOTEUR"),
-    );
-    host.callbacks?.onSelection({ kind: "UNIT", unitId: saboteur.id });
-    requiredButton("blackout").click();
-    await waitUntil(() => controller.accepted.length === 1);
-    expect(controller.accepted[0]?.kind).toBe("BLACKOUT_CITY");
     app.destroy();
   });
 });

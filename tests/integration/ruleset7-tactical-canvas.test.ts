@@ -1,14 +1,8 @@
 // @vitest-environment jsdom
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type {
-  PlayerEventEnvelopeV7,
-  PlayerViewV7,
-} from "../../src/engine/index";
-import {
-  CanvasBoardHostV7,
-  type BoardHostModelV7,
-} from "../../src/render/canvas/board-host-v7";
+import type { PlayerViewV7 } from "../../src/engine/index";
+import { CanvasBoardHostV7 } from "../../src/render/canvas/board-host-v7";
 import {
   buildBoardRenderPlanV7,
   drawBoardV7,
@@ -119,6 +113,76 @@ describe("Ruleset 7 tactical Canvas presentation", () => {
     ).toHaveLength(1);
   });
 
+  it("renders every positive public fortification level and omits zero", () => {
+    const fixture = horseArcherPublicFixtureV7();
+    const tile = required(
+      fixture.view.board.tiles.find((candidate) => candidate.explored),
+    );
+    for (const [fieldDefense, level, present] of [
+      [false, 0, false],
+      [true, 0, false],
+      [true, null, true],
+      [false, 1, true],
+      [false, 2, true],
+      [true, 4, true],
+    ] as const) {
+      if (!tile.explored) throw new Error("explored tile missing");
+      const view: PlayerViewV7 = {
+        ...fixture.view,
+        board: {
+          ...fixture.view.board,
+          tiles: fixture.view.board.tiles.map((candidate) =>
+            candidate.explored &&
+            candidate.at.x === tile.at.x &&
+            candidate.at.y === tile.at.y
+              ? { ...candidate, fieldDefense, fortificationLevel: level }
+              : candidate,
+          ),
+        },
+      };
+      const marker = buildBoardRenderPlanV7(view, [], {
+        selection: null,
+        selectedUnitId: null,
+        selectedAchievement: null,
+      }).entries.find(
+        (entry) =>
+          entry.kind === "FIELD_DEFENSE" &&
+          entry.at.x === tile.at.x &&
+          entry.at.y === tile.at.y,
+      );
+      if (present)
+        expect(marker).toMatchObject(level === null ? {} : { value: level });
+      else expect(marker).toBeUndefined();
+    }
+  });
+
+  it("plans impact feedback for redacted splash damage", () => {
+    const fixture = horseArcherPublicFixtureV7();
+    const victim = required(fixture.view.units[0]);
+    const plan = corePresentationPlanV7(fixture.view, {
+      format: "pulp-wars-player-events",
+      version: 7,
+      viewerId: fixture.view.viewer.id,
+      commandIndex: fixture.view.commandIndex,
+      events: [
+        {
+          kind: "COMBAT_SPLASH_DAMAGE",
+          splash: [
+            { unitId: victim.id, at: victim.at, damage: 3, dies: false },
+          ],
+        },
+      ],
+    });
+    expect(plan).toContainEqual({
+      kind: "DAMAGE",
+      unitId: victim.id,
+      at: victim.at,
+      damage: 3,
+      lethal: false,
+      durationMs: 100,
+    });
+  });
+
   it("renders deduplicated two-shot targets and non-overlapping registry attachments", () => {
     const fixture = horseArcherPublicFixtureV7();
     const horseArcher = required(
@@ -184,245 +248,13 @@ describe("Ruleset 7 tactical Canvas presentation", () => {
         entry.at.x === target.at.x &&
         entry.at.y === target.at.y,
     );
-    expect(coLocated.map((entry) => entry.statusId)).toEqual(
-      expect.arrayContaining([
-        "ui-status-concealed",
-        "ui-status-detected",
-        "ui-status-exposed",
-      ]),
-    );
-    expect(
-      coLocated
-        .map((entry) => entry.attachmentSlot)
-        .sort((left, right) => (left ?? 0) - (right ?? 0)),
-    ).toEqual([0, 1, 2]);
+    expect(coLocated).toEqual([]);
     expect(new Set(targetPlan.targets.map(targetKey)).size).toBe(
       targetPlan.targets.length,
     );
     expect(targetPlan.entries.some((entry) => entry.kind === "REACH")).toBe(
       false,
     );
-  });
-
-  it("coalesces visibility fades and never reconstructs stale tactical coordinates", () => {
-    const fixture = horseArcherPublicFixtureV7();
-    const unit = required(fixture.view.units[0]);
-    const visibilityEnvelope = envelope(fixture.view, [
-      {
-        kind: "UNIT_REVEALED",
-        unitId: unit.id,
-        at: unit.at,
-        reason: "DETECTION",
-      },
-      { kind: "UNIT_CONCEALED", unitId: unit.id, lastSeenAt: unit.at },
-    ]);
-    expect(
-      corePresentationPlanV7(
-        fixture.view,
-        visibilityEnvelope,
-        fixture.view,
-      ).filter((step) => step.kind === "VISIBILITY_CROSSFADE"),
-    ).toHaveLength(1);
-
-    const disappeared: PlayerViewV7 = {
-      ...fixture.view,
-      units: fixture.view.units.filter((candidate) => candidate.id !== unit.id),
-    };
-    const statusPlan = corePresentationPlanV7(
-      fixture.view,
-      envelope(fixture.view, [
-        {
-          kind: "SABOTEUR_EXPOSED",
-          unitId: unit.id,
-          anchorPlayerId: fixture.view.viewer.id,
-          reason: "ATTACK",
-        },
-      ]),
-      disappeared,
-    );
-    expect(statusPlan).toEqual([]);
-  });
-
-  it("settles cancelled visibility/status fades without clearing a replacement or resurrecting after destroy", async () => {
-    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(null);
-    let now = 0;
-    vi.spyOn(window.performance, "now").mockImplementation(() => now);
-    let nextFrame = 1;
-    const frames = new Map<number, FrameRequestCallback>();
-    Object.defineProperty(window, "requestAnimationFrame", {
-      configurable: true,
-      value: vi.fn((callback: FrameRequestCallback) => {
-        const id = nextFrame;
-        nextFrame += 1;
-        frames.set(id, callback);
-        return id;
-      }),
-    });
-    Object.defineProperty(window, "cancelAnimationFrame", {
-      configurable: true,
-      value: vi.fn((id: number) => frames.delete(id)),
-    });
-    const fixture = horseArcherPublicFixtureV7();
-    const unit = required(fixture.view.units[0]);
-    const container = document.createElement("div");
-    Object.defineProperty(container, "getBoundingClientRect", {
-      value: () => ({ width: 800, height: 600 }),
-    });
-    document.body.append(container);
-    const host = new CanvasBoardHostV7(document);
-    host.mount(container, { onSelection: vi.fn(), onCommand: vi.fn() });
-    const model: BoardHostModelV7 = {
-      matchInstanceId: 1,
-      view: fixture.view,
-      offeredCommands: fixture.offeredCommands,
-      interaction: {
-        selection: null,
-        selectedUnitId: null,
-        selectedAchievement: null,
-      },
-      interactive: false,
-      motion: "FULL",
-      animationSpeed: "NORMAL",
-      presentationPaused: false,
-      highContrast: false,
-    };
-    host.update(model);
-    const fading = host.presentBoundary(
-      fixture.view,
-      fixture.view,
-      envelope(fixture.view, [
-        {
-          kind: "UNIT_REVEALED",
-          unitId: unit.id,
-          at: unit.at,
-          reason: "DETECTION",
-        },
-      ]),
-    );
-    expect(frames.size).toBe(1);
-    const status = host.presentBoundary(
-      fixture.view,
-      fixture.view,
-      envelope(fixture.view, [
-        {
-          kind: "SABOTEUR_EXPOSED",
-          unitId: unit.id,
-          anchorPlayerId: fixture.view.viewer.id,
-          reason: "ATTACK",
-        },
-      ]),
-    );
-    await fading;
-    await Promise.resolve();
-    expect(frames.size).toBe(1);
-    now = 1_000;
-    takeFrame(frames)(now);
-    await status;
-    expect(frames.size).toBe(0);
-
-    const restartFade = host.presentBoundary(
-      fixture.view,
-      fixture.view,
-      envelope(fixture.view, [
-        { kind: "UNIT_CONCEALED", unitId: unit.id, lastSeenAt: unit.at },
-      ]),
-    );
-    expect(frames.size).toBe(1);
-    host.update({ ...model, matchInstanceId: 2 });
-    await restartFade;
-    expect(frames.size).toBe(0);
-
-    const destroyFade = host.presentBoundary(
-      fixture.view,
-      fixture.view,
-      envelope(fixture.view, [
-        {
-          kind: "UNIT_REVEALED",
-          unitId: unit.id,
-          at: unit.at,
-          reason: "DETECTION",
-        },
-      ]),
-    );
-    expect(frames.size).toBe(1);
-    host.destroy();
-    await destroyFade;
-    expect(frames.size).toBe(0);
-  });
-
-  it("draws a transient accepted symbol for a resolved status that no longer has an attachment", async () => {
-    let now = 0;
-    vi.spyOn(window.performance, "now").mockImplementation(() => now);
-    const frames = new Map<number, FrameRequestCallback>();
-    let nextFrame = 1;
-    Object.defineProperty(window, "requestAnimationFrame", {
-      configurable: true,
-      value: vi.fn((callback: FrameRequestCallback) => {
-        const id = nextFrame++;
-        frames.set(id, callback);
-        return id;
-      }),
-    });
-    Object.defineProperty(window, "cancelAnimationFrame", {
-      configurable: true,
-      value: vi.fn((id: number) => frames.delete(id)),
-    });
-    const roundRects = vi.fn();
-    const context = new Proxy<Record<PropertyKey, unknown>>(
-      { roundRect: roundRects },
-      {
-        get: (target, key) => (key in target ? target[key] : vi.fn()),
-        set: (target, key, value) => {
-          target[key] = value;
-          return true;
-        },
-      },
-    ) as unknown as CanvasRenderingContext2D;
-    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(
-      context,
-    );
-    const fixture = horseArcherPublicFixtureV7();
-    const city = required(fixture.view.cities[0]);
-    const container = document.createElement("div");
-    Object.defineProperty(container, "getBoundingClientRect", {
-      value: () => ({ width: 800, height: 600 }),
-    });
-    document.body.append(container);
-    const host = new CanvasBoardHostV7(document);
-    host.mount(container, { onSelection: vi.fn(), onCommand: vi.fn() });
-    host.update({
-      matchInstanceId: 1,
-      view: fixture.view,
-      offeredCommands: [],
-      interaction: {
-        selection: null,
-        selectedUnitId: null,
-        selectedAchievement: null,
-      },
-      interactive: false,
-      motion: "FULL",
-      animationSpeed: "NORMAL",
-      presentationPaused: false,
-      highContrast: false,
-    });
-    roundRects.mockClear();
-    const presentation = host.presentBoundary(
-      fixture.view,
-      fixture.view,
-      envelope(fixture.view, [
-        {
-          kind: "BLACKOUT_RECOVERY_COMPLETED",
-          cityId: city.id,
-          ownerId: city.ownerId,
-        },
-      ]),
-    );
-    now = 120;
-    takeFrame(frames)(now);
-    expect(roundRects).toHaveBeenCalled();
-    host.finishPresentations();
-    await presentation;
-    host.destroy();
   });
 
   it("keeps a keyboard-moved tactical cursor inside the map band unobscured by the HUD and dock", () => {
@@ -534,33 +366,10 @@ describe("Ruleset 7 tactical Canvas presentation", () => {
   });
 });
 
-function envelope(
-  view: PlayerViewV7,
-  events: PlayerEventEnvelopeV7["events"],
-): PlayerEventEnvelopeV7 {
-  return {
-    format: "pulp-wars-player-events",
-    version: 7,
-    viewerId: view.viewer.id,
-    commandIndex: view.commandIndex,
-    events,
-  };
-}
-
 function targetKey(target: {
   readonly at: { readonly x: number; readonly y: number };
 }): string {
   return `${target.at.x},${target.at.y}`;
-}
-
-function takeFrame(
-  frames: Map<number, FrameRequestCallback>,
-): FrameRequestCallback {
-  const first = frames.entries().next().value as
-    readonly [number, FrameRequestCallback] | undefined;
-  if (first === undefined) throw new Error("Animation frame missing");
-  frames.delete(first[0]);
-  return first[1];
 }
 
 function required<T>(value: T | null | undefined): T {

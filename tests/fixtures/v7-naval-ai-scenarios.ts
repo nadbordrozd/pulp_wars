@@ -71,7 +71,6 @@ export function isolatedNavalScenarioV7(
     commandIndex: 0,
     populationContributions: [],
     treasureChests: [],
-    saboteurExposures: [],
     pendingChoices: [],
     outcome: null,
     players: source.players.map((player) => ({
@@ -93,7 +92,6 @@ export function isolatedNavalScenarioV7(
             population: 0,
             expanded: false,
             rewards: [],
-            blackout: null,
           }
         : {
             ...city,
@@ -104,7 +102,6 @@ export function isolatedNavalScenarioV7(
             population: 0,
             expanded: false,
             rewards: [],
-            blackout: null,
           },
     ),
     units: source.units.map((unit) =>
@@ -120,7 +117,6 @@ export function isolatedNavalScenarioV7(
             veteran: false,
             captureEligible: false,
             activation: READY,
-            blackoutEligibleRound: null,
           }
         : {
             ...unit,
@@ -137,7 +133,6 @@ export function isolatedNavalScenarioV7(
             veteran: false,
             captureEligible: false,
             activation: READY,
-            blackoutEligibleRound: null,
           },
     ),
     board: {
@@ -159,6 +154,7 @@ export function isolatedNavalScenarioV7(
           resource: null,
           improvement: null,
           road: false,
+          fieldDefense: false,
           site:
             tile.at.x === subjectAt.x && tile.at.y === subjectAt.y
               ? ("CAPITAL" as const)

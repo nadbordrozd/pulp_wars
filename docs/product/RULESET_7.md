@@ -1,17 +1,15 @@
 # Pulp Wars Ruleset 7
 
-**Status:** revision-6 playable baseline. The
-[revision-6 water and naval specification](RULESET_7_REVISION_6_WATER_NAVAL.md)
-is authoritative for the current engine, Normal AI, setup, naval UI, and
-release acceptance. The
+**Status:** revision-7 playable runtime. The
 [revision-7 networks and fortifications specification](RULESET_7_REVISION_7_NETWORKS_FORTIFICATIONS.md)
-is approved for implementation but is not the current runtime. New revision-6
-matches default to Continents and expose all five map types.
+is the authoritative current overlay. It inherits unchanged rules from the
+[revision-6 water and naval specification](RULESET_7_REVISION_6_WATER_NAVAL.md).
+Final release validation passed on 2026-09-23; the overlay records the evidence.
 
-**Runtime ruleset ID:** `pulp-wars-poc-7r6`
+**Runtime ruleset ID:** `pulp-wars-poc-7r7`
 
 The revision-5 achievement specification remains authoritative for achievement
-and Monument rules left unchanged by revision 6. The revision-4 biome economy
+and Monument rules left unchanged by revision 7. The revision-4 biome economy
 specification remains the inherited land baseline. Ruleset 6 is unchanged.
 
 **Design history:**

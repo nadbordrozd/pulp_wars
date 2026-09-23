@@ -86,10 +86,14 @@ describe("Ruleset 7 naval public presentation", () => {
     );
     if (landUnit === undefined) throw new Error("land unit missing");
     const embark = queryPlayerCommandsV7(portView).find(
-      (command) => command.kind === "EMBARK" && command.unitId === landUnit.id,
+      (command) =>
+        command.kind === "MOVE" &&
+        command.unitId === landUnit.id &&
+        command.path.at(-1)?.x === portFixture.portAt.x &&
+        command.path.at(-1)?.y === portFixture.portAt.y,
     );
     expect(embark).toBeDefined();
-    if (embark?.kind !== "EMBARK") return;
+    if (embark?.kind !== "MOVE") return;
     const embarked = applyCommandV7(
       portFixture.state,
       portFixture.state.humanPlayerId,
@@ -215,9 +219,13 @@ describe("Ruleset 7 naval public presentation", () => {
     );
     if (unit === undefined) throw new Error("unit missing");
     const embark = queryPlayerCommandsV7(before).find(
-      (command) => command.kind === "EMBARK" && command.unitId === unit.id,
+      (command) =>
+        command.kind === "MOVE" &&
+        command.unitId === unit.id &&
+        command.path.at(-1)?.x === fixture.portAt.x &&
+        command.path.at(-1)?.y === fixture.portAt.y,
     );
-    if (embark?.kind !== "EMBARK") throw new Error("embark missing");
+    if (embark?.kind !== "MOVE") throw new Error("embark missing");
     const result = applyCommandV7(
       fixture.state,
       fixture.state.humanPlayerId,

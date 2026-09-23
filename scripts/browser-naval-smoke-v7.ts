@@ -449,7 +449,10 @@ async function captureMountedUiEvidence(
   );
 
   await evaluate(connection, `globalThis.__NAVAL_DOM__.reset()`);
-  await delay(100);
+  await waitForExpression(
+    connection,
+    `document.querySelector('[data-action="end-turn"]') instanceof HTMLButtonElement && !document.querySelector('[data-action="end-turn"]').disabled`,
+  );
   // The fixture state remains private to the harness. Select the known unit by
   // asking the public view for its visible location.
   await evaluate(
@@ -458,29 +461,100 @@ async function captureMountedUiEvidence(
       const unit = globalThis.__NAVAL_DOM__.snapshot?.()?.view?.units?.find((candidate) => candidate.id === ${installed.landUnitId});
       if (!unit) throw new Error('fixture unit missing');
       globalThis.__NAVAL_DOM__.boardHost.activate(unit.at);
-      const embark = document.querySelector('[data-action="command-embark"]');
-      if (!(embark instanceof HTMLButtonElement)) throw new Error('Embark action missing');
-      embark.click();
+      if (document.querySelector('[data-action="command-embark"]') !== null)
+        throw new Error('obsolete standalone Embark action present');
+    })()`,
+  );
+  await waitForExpression(
+    connection,
+    `document.querySelector('.v7-selection-dock[data-selection-kind="unit"]') !== null`,
+  );
+  await evaluate(
+    connection,
+    `(() => {
+      const unit = globalThis.__NAVAL_DOM__.snapshot().view.units.find((candidate) => candidate.id === ${installed.landUnitId});
+      if (!unit) throw new Error('fixture unit missing after selection');
+      const autoembark = globalThis.__NAVAL_DOM__.snapshot().offeredCommands.find((command) => {
+        if (command.kind !== 'MOVE' || command.unitId !== unit.id) return false;
+        const destination = command.path[command.path.length - 1];
+        return destination?.x === ${installed.portAt.x} && destination?.y === ${installed.portAt.y};
+      });
+      if (!autoembark) throw new Error('Port autoembark MOVE missing');
+      globalThis.__NAVAL_DOM__.boardHost.activate(${JSON.stringify(installed.portAt)});
     })()`,
   );
   await waitForExpression(
     connection,
     `globalThis.__NAVAL_DOM__.traces.length === 1`,
   );
+  await evaluate(
+    connection,
+    `(() => {
+      const trace = globalThis.__NAVAL_DOM__.traces[0];
+      if (trace?.command?.kind !== 'MOVE' || !trace.eventKinds.includes('UNIT_EMBARKED'))
+        throw new Error('Port autoembark did not accept MOVE with UNIT_EMBARKED');
+    })()`,
+  );
+  await waitForExpression(
+    connection,
+    `document.querySelector('[data-action="end-turn"]') instanceof HTMLButtonElement && !document.querySelector('[data-action="end-turn"]').disabled`,
+  );
+  await evaluate(
+    connection,
+    `(() => {
+      for (let count = 0; count < 10; count += 1) {
+        const dismiss = document.querySelector('[data-action="dismiss-achievement"]');
+        if (!(dismiss instanceof HTMLButtonElement)) return;
+        dismiss.click();
+      }
+      throw new Error('achievement notices did not drain');
+    })()`,
+  );
+  await waitForExpression(
+    connection,
+    `document.querySelector('[data-v7-region="achievement-notice"]') === null`,
+  );
   const landingAt = await evaluate<{ readonly x: number; readonly y: number }>(
     connection,
     `globalThis.__NAVAL_DOM__.makeEmbarkedReady()`,
   );
-  await delay(100);
   await evaluate(
     connection,
     `(() => {
       globalThis.__NAVAL_DOM__.boardHost.resetInspectionCycle?.();
       globalThis.__NAVAL_DOM__.boardHost.activate(${JSON.stringify(installed.portAt)});
-      document.querySelector('[data-action="unit-help"]')?.click();
     })()`,
   );
-  await delay(200);
+  await waitForExpression(
+    connection,
+    `document.querySelector('.v7-selection-dock[data-selection-kind="unit"]')?.textContent.includes('Embarked Transport') === true`,
+  );
+  await evaluate(
+    connection,
+    `(() => {
+      for (let count = 0; count < 10; count += 1) {
+        const dismiss = document.querySelector('[data-action="dismiss-achievement"]');
+        if (!(dismiss instanceof HTMLButtonElement)) return;
+        dismiss.click();
+      }
+      throw new Error('achievement notices did not drain before transport help');
+    })()`,
+  );
+  await waitForExpression(
+    connection,
+    `document.querySelector('[data-v7-region="achievement-notice"]') === null`,
+  );
+  await delay(100);
+  const helpOpened = await evaluate<boolean>(
+    connection,
+    `(() => {
+      const help = document.querySelector('[data-action="unit-help"]');
+      if (!(help instanceof HTMLButtonElement)) throw new Error('transport help missing');
+      help.click();
+      return document.querySelector('[data-v7-region="unit-help"][aria-modal="true"]') !== null;
+    })()`,
+  );
+  if (!helpOpened) throw new Error("Transport help did not open");
   await capture(connection, "naval-transport-dock.png", directory);
   const transportDock = await evaluate<Record<string, unknown>>(
     connection,
@@ -496,6 +570,14 @@ async function captureMountedUiEvidence(
   );
   await evaluate(
     connection,
+    `document.querySelector('[data-action="close-unit-help"]')?.click()`,
+  );
+  await waitForExpression(
+    connection,
+    `document.querySelector('.v7-unit-help-dialog[aria-modal="true"]') === null`,
+  );
+  await evaluate(
+    connection,
     `globalThis.__NAVAL_DOM__.boardHost.activate(${JSON.stringify(landingAt)})`,
   );
   await waitForExpression(
@@ -504,7 +586,13 @@ async function captureMountedUiEvidence(
   );
   const actions = await evaluate<readonly Record<string, unknown>[]>(
     connection,
-    `globalThis.__NAVAL_DOM__.traces`,
+    `(() => {
+      const traces = globalThis.__NAVAL_DOM__.traces;
+      const landing = traces[1];
+      if (landing?.command?.kind !== 'DISEMBARK' || !landing.eventKinds.includes('UNIT_DISEMBARKED'))
+        throw new Error('landing action missing');
+      return traces;
+    })()`,
   );
   return {
     portDock,
@@ -528,7 +616,7 @@ async function mountVisual(
       globalThis.__PULP_WARS_APP__?.destroy();
       const aiCount = ${size} === 11 ? 1 : 3;
       const setup = {
-        rulesetId: 'pulp-wars-poc-7r6', mapGenerationRevision: 'REGIONAL_BIOMES_NAVAL_V1', seed: 42,
+        rulesetId: 'pulp-wars-poc-7r7', mapGenerationRevision: 'REGIONAL_BIOMES_NAVAL_V2', seed: 42,
         width: ${size}, height: ${size}, aiCount, aiDifficulty: 'NORMAL', aiMode: 'RIVAL',
         humanColor: 'CORAL', factions: Array.from({ length: aiCount + 1 }, () => 'ORIGINAL'), mapType: 'ARCHIPELAGO',
       };
@@ -584,10 +672,10 @@ async function mountVisual(
       const units = state.units.slice(0, aiCount + 1).map((unit, index) => ({
         id: unit.id, ownerId: unit.ownerId, homeCityId: unit.homeCityId,
         role: roles[index], form: forms[index], at: positions[index].at,
-        hp: roles[index] === 'BATTLESHIP' ? 20 : 10,
-        maxHp: roles[index] === 'BATTLESHIP' ? 20 : 10,
+        hp: roles[index] === 'BATTLESHIP' ? 25 : 10,
+        maxHp: roles[index] === 'BATTLESHIP' ? 25 : 10,
         kills: index, veteran: index === 0, captureEligible: false,
-        activation: ready, blackoutEligibility: { known: false },
+        activation: ready,
       }));
       if (units[1]) units[1] = { ...units[1], at: ownedCoast.at };
       const fullView = {
@@ -608,7 +696,7 @@ async function mountVisual(
         units,
         naval: {
           ownedPorts: [{ at: ownedCoast.at, cityId: ownCity.id, status: 'BLOCKADED' }],
-          tradeCityIds: [], networkCityIds: [ownCity.id],
+          tradeCityIds: [], networkCityIds: [ownCity.id], networkRoads: [],
           seaRoutes: [{ fromCityId: ownCity.id, toCityId: hostileCity.id, path: [ownedCoast.at, anchor.at, hostilePort.at] }],
           recoverableNavalUnitIds: [units[0].id],
         },

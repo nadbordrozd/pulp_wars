@@ -6,6 +6,7 @@ import {
   applySettlementFloorsV7,
   assignRegionsV7,
   canonicalMapRandomHashV7,
+  canonicalHash,
   cohereTerrainsV7,
   generateInitialMapV7,
   mapGenerationFailureV7,
@@ -113,8 +114,24 @@ describe("ruleset-7 revision-4 regional biome map", () => {
     );
     expect(first.map).toEqual(second.map);
     expect(canonicalMapRandomHashV7(first.map)).toBe(
-      "35b59252cbfa05ea40713b837db740e891cd220795f3d3d9e67a55ad446afae6",
+      "3d8bc500d57fa1281bea3dd6d0b2ab38fbcf597d57c99db92058ab80999bda46",
     );
+    const dryLandWithoutRevision7FieldDefense = {
+      ...first.map.board,
+      tiles: first.map.board.tiles.map((tile) => {
+        const { fieldDefense, ...withoutFieldDefense } = tile;
+        if (fieldDefense)
+          throw new Error("generated Dry Land unexpectedly has field defense");
+        return withoutFieldDefense;
+      }),
+    };
+    expect(
+      canonicalHash({
+        board: dryLandWithoutRevision7FieldDefense,
+        treasureChests: first.map.treasureChests,
+        random: first.map.random,
+      }),
+    ).toBe("35b59252cbfa05ea40713b837db740e891cd220795f3d3d9e67a55ad446afae6");
     expect(new Set(first.map.board.tiles.map((tile) => tile.biome))).toEqual(
       new Set(BIOME_IDS_V7),
     );

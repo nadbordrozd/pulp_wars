@@ -29,7 +29,7 @@ describe("ruleset-7 naval map contract", () => {
         humanColor: "CORAL" as const,
         factions: ["ORIGINAL", "ORIGINAL"] as const,
         mapType,
-        mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1" as const,
+        mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2" as const,
       };
       const first = generateInitialMapV7(setup);
       const second = generateInitialMapV7(setup);
@@ -70,7 +70,7 @@ describe("ruleset-7 naval map contract", () => {
           humanColor: "CORAL",
           factions: ["ORIGINAL", "ORIGINAL"],
           mapType,
-          mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1",
+          mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
         });
         expect(result.ok).toBe(true);
         if (result.ok)
@@ -96,7 +96,7 @@ describe("ruleset-7 naval map contract", () => {
       humanColor: "CORAL",
       factions: ["ORIGINAL", "ORIGINAL"],
       mapType: "CONTINENTS",
-      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1",
+      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     });
     expect(result.ok).toBe(true);
     if (!result.ok) return;

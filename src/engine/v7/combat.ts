@@ -1,6 +1,6 @@
 import type { PlayerId, UnitId } from "../model/ids";
 import { effectiveRoleRuleV7 } from "../rules/ruleset-v7";
-import { arePlayersAlliedV7 } from "./economy";
+import { arePlayersAlliedV7, arePlayersHostileV7 } from "./economy";
 import type { CombatPreviewV7 } from "./events";
 import { tileAtV7 } from "./spatial-economy";
 import type { CoordV7, GameStateV7, UnitStateV7 } from "./types";
@@ -16,28 +16,39 @@ export function defenseBonusForUnitV7(
   unit: UnitStateV7,
 ): DefenseBonusV7 {
   if (unit.form !== "LAND") return NO_BONUS;
-  const owner = requirePlayer(state, unit.ownerId);
-  const city = state.cities.find(
-    (candidate) =>
-      candidate.ownerId === unit.ownerId && same(candidate.at, unit.at),
-  );
-  if (
-    city?.rewards.some(
-      (record) => record.reachedLevel === 3 && record.reward === "WALLS",
-    )
-  )
-    return { numerator: 4, denominator: 1 };
-  if (
-    city !== undefined &&
-    owner.researchedTechs.includes("FORTIFICATION") &&
-    (unit.role === "FIGHTER" || unit.role === "GUARD")
-  )
-    return { numerator: 2, denominator: 1 };
-  if (city !== undefined) return { numerator: 3, denominator: 2 };
   const terrain = tileAtV7(state.board, unit.at)?.terrain;
   return terrain === "FOREST" || terrain === "MOUNTAIN"
     ? { numerator: 3, denominator: 2 }
     : NO_BONUS;
+}
+
+export function fortificationLevelForUnitV7(
+  state: GameStateV7,
+  unit: UnitStateV7,
+): number {
+  if (unit.form !== "LAND") return 0;
+  const tile = tileAtV7(state.board, unit.at);
+  if (tile === undefined || tile.territoryCityId === null) return 0;
+  const territoryCity = state.cities.find(
+    (city) => city.id === tile.territoryCityId,
+  );
+  if (territoryCity?.ownerId !== unit.ownerId) return 0;
+  const owner = requirePlayer(state, unit.ownerId);
+  const city = state.cities.find(
+    (candidate) =>
+      candidate.id === tile.territoryCityId && same(candidate.at, unit.at),
+  );
+  let level = tile.fieldDefense ? 1 : 0;
+  if (city !== undefined) {
+    if (owner.researchedTechs.includes("DRILL")) level += 1;
+    if (
+      city.rewards.some(
+        (record) => record.reachedLevel === 3 && record.reward === "WALLS",
+      )
+    )
+      level += 2;
+  }
+  return level;
 }
 
 /** Exact BigInt-backed v7 combat calculation used by resolution and queries. */
@@ -60,7 +71,11 @@ export function calculateCombatPreviewV7(
     attacker.form === "EMBARKED"
       ? 0
       : attackerRule.attack2 + (chargeApplied ? 2 : 0);
-  const defense2 = defender.form === "EMBARKED" ? 2 : defenderRule.defense2;
+  const fortificationLevel = fortificationLevelForUnitV7(state, defender);
+  const defense2 =
+    defender.form === "EMBARKED"
+      ? 2
+      : defenderRule.defense2 + fortificationLevel * 2;
   const breachApplied =
     attackerRule.abilities.includes("BREACH") && distance === 1;
   const bonus = breachApplied
@@ -114,6 +129,35 @@ export function calculateCombatPreviewV7(
     !defenderDies && distance === 1,
   );
   const nextAttacks = attacker.activation.attacksUsed + 1;
+  const splash =
+    attacker.role === "BATTLESHIP"
+      ? state.units
+          .filter(
+            (unit) =>
+              unit.hp > 0 &&
+              unit.id !== defender.id &&
+              chebyshev(unit.at, defender.at) === 1 &&
+              arePlayersHostileV7(state, attacker.ownerId, unit.ownerId),
+          )
+          .sort(
+            (left, right) =>
+              left.at.y - right.at.y ||
+              left.at.x - right.at.x ||
+              left.id - right.id,
+          )
+          .map((unit) => {
+            const damage = Math.min(
+              unit.hp,
+              Math.max(1, Math.ceil(damageToDefender / 2)),
+            );
+            return {
+              unitId: unit.id,
+              at: unit.at,
+              damage,
+              dies: damage >= unit.hp,
+            };
+          })
+      : [];
   return {
     attackerId,
     targetUnitId,
@@ -125,6 +169,7 @@ export function calculateCombatPreviewV7(
     breachApplied,
     defenseBonusNumerator: bonus.numerator,
     defenseBonusDenominator: bonus.denominator,
+    fortificationLevel,
     damageToDefender,
     damageToAttacker,
     defenderDies,
@@ -140,6 +185,7 @@ export function calculateCombatPreviewV7(
     attacksUsed: nextAttacks,
     attacksRemaining:
       attacker.role === "HORSE_ARCHER" ? Math.max(0, 2 - nextAttacks) : 0,
+    splash,
   };
 }
 
@@ -165,7 +211,7 @@ export function pushedDestinationV7(
   const defenderOwner = requirePlayer(state, defender.ownerId);
   if (
     (tile.terrain === "MOUNTAIN" &&
-      !defenderOwner.researchedTechs.includes("ENGINEERING")) ||
+      !defenderOwner.researchedTechs.includes("PROSPECTING")) ||
     (tile.terrain === "DEEP_WATER" &&
       !defenderOwner.researchedTechs.includes("NAVIGATION")) ||
     state.units.some(

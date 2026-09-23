@@ -135,26 +135,6 @@ function calculateSpatialContributionAtV7(
       placementCount: types.length,
     });
   }
-  if (improvement === "GRAND_WORKS") {
-    const contributors = friendlyAdjacent(
-      graph,
-      at,
-      city.ownerId,
-      PROCESSORS,
-    ).filter(
-      (tile) =>
-        tile.improvement !== null &&
-        spatialContributionAtV7(graph, tile.at, tile.improvement).population >
-          0,
-    );
-    const types = orderedTypes(contributors, PROCESSORS);
-    return result({
-      population: types.length < 2 ? 0 : Math.min(10, 4 + types.length * 2),
-      contributingTiles: contributors.map((tile) => tile.at),
-      distinctTypes: types,
-      placementCount: types.length,
-    });
-  }
   const contributors = friendlyAdjacent(graph, at, city.ownerId, [
     ...BASIC,
     ...PROCESSORS,
@@ -162,16 +142,12 @@ function calculateSpatialContributionAtV7(
   const families = ECONOMIC_FAMILY_ORDER_V7.filter((family) =>
     contributors.some((tile) => familyFor(tile.improvement) === family),
   );
-  const connected = capitalConnectedRoadKeysV7(graph, city.ownerId);
-  const capitalRoadConnected = adjacentTilesV7(graph.board, at).some((tile) =>
-    connected.has(key(tile.at)),
-  );
   return result({
-    marketIncome: Math.min(4, families.length + (capitalRoadConnected ? 1 : 0)),
+    marketIncome: families.length,
     contributingTiles: contributors.map((tile) => tile.at),
     distinctTypes: orderedTypes(contributors, [...BASIC, ...PROCESSORS]),
     distinctFamilies: families,
-    capitalRoadConnected,
+    capitalRoadConnected: false,
     placementCount: families.length,
   });
 }

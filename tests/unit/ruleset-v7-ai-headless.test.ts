@@ -4,7 +4,6 @@ import {
   applyCommandV7,
   canonicalJson,
   COMMAND_KIND_ORDER_V7,
-  createInitialMapStateV7,
   createPlayableGameV7,
   DOMAIN_EVENT_KIND_ORDER_V7,
   effectiveRoleRuleV7,
@@ -67,8 +66,8 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
   it("publishes complete zero-filled command, event, tech, role, and improvement inventories", () => {
     const metrics = collectAcceptedTelemetryV7(initialV7(0), [], []);
     expect(TECHNOLOGY_IDS_V7).toHaveLength(24);
-    expect(UNIT_ROLE_IDS_V7).toHaveLength(14);
-    expect(IMPROVEMENT_IDS_V7).toHaveLength(11);
+    expect(UNIT_ROLE_IDS_V7).toHaveLength(13);
+    expect(IMPROVEMENT_IDS_V7).toHaveLength(10);
     expect(Object.keys(metrics.commandsByKind)).toEqual(COMMAND_KIND_ORDER_V7);
     expect(Object.keys(metrics.eventsByKind)).toEqual(
       DOMAIN_EVENT_KIND_ORDER_V7,
@@ -130,7 +129,7 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
       errors: [],
       stalls: [],
       metrics: {
-        rulesetId: "pulp-wars-poc-7r6",
+        rulesetId: "pulp-wars-poc-7r7",
         commandCapHits: 1,
       },
     });
@@ -297,49 +296,6 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
     ).toBe(events.reduce((total, event) => total + earnedCoins(event), 0));
   });
 
-  it.each([
-    ["chosen", false],
-    ["automatic", true],
-  ] as const)("counts %s Treasury rewards as earned coins", (_, blocked) => {
-    const fixture = treasuryRewardState(blocked);
-    const transitions: AcceptedTelemetryTransitionV7[] = [];
-    const state = accept(
-      fixture.state,
-      fixture.state.humanPlayerId,
-      { kind: "BUILD_GRAND_WORKS", at: fixture.buildAt },
-      transitions,
-    );
-    if (!blocked)
-      accept(
-        state,
-        state.humanPlayerId,
-        {
-          kind: "CHOOSE_CITY_REWARD",
-          cityId: fixture.cityId,
-          reachedLevel: 5,
-          reward: "TREASURY",
-        },
-        transitions,
-      );
-    const events = transitions.flatMap((transition) => transition.events);
-    expect(events).toContainEqual(
-      blocked
-        ? expect.objectContaining({
-            kind: "CITY_REWARD_AUTOMATICALLY_GRANTED",
-            coins: 12,
-          })
-        : expect.objectContaining({
-            kind: "CITY_REWARD_CHOSEN",
-            reward: "TREASURY",
-            coinDelta: 12,
-          }),
-    );
-    expect(
-      collectAcceptedTelemetryV7(fixture.state, [], transitions).economy
-        .coinsEarned,
-    ).toBe(12);
-  });
-
   it("counts explicit and automatic recovery between Catapult volleys", () => {
     const initial = catapultVolleyState();
     const transitions: AcceptedTelemetryTransitionV7[] = [];
@@ -480,47 +436,6 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
     expect(metrics.roles.kills.HORSE_ARCHER).toBe(1);
     expect(metrics.roles.losses.FIGHTER).toBe(1);
   });
-
-  it("samples Blackout and exposure once at the actual target turn boundary", () => {
-    const initial = blackoutTelemetryState();
-    const transitions: AcceptedTelemetryTransitionV7[] = [];
-    let state = initial;
-    const source = state.units[0];
-    const target = state.cities.find(
-      (city) => city.ownerId !== source?.ownerId,
-    );
-    if (source === undefined || target === undefined)
-      throw new Error("Blackout fixture missing");
-    state = accept(
-      state,
-      source.ownerId,
-      { kind: "BLACKOUT_CITY", unitId: source.id, cityId: target.id },
-      transitions,
-    );
-    const beforeTurn = collectAcceptedTelemetryV7(initial, [], transitions);
-    expect(beforeTurn.saboteur.detectedTurns).toBe(0);
-    expect(beforeTurn.saboteur.concealedTurns).toBe(0);
-    expect(beforeTurn.economy.oneCoinFloorAwards).toBe(0);
-
-    while (activePlayer(state) !== target.ownerId)
-      state = accept(
-        state,
-        activePlayer(state),
-        { kind: "END_TURN" },
-        transitions,
-      );
-    const metrics = collectAcceptedTelemetryV7(initial, [], transitions);
-    const activated = transitions
-      .flatMap((transition) => transition.events)
-      .find((event) => event.kind === "BLACKOUT_ACTIVATED");
-    expect(activated?.kind).toBe("BLACKOUT_ACTIVATED");
-    if (activated?.kind !== "BLACKOUT_ACTIVATED") return;
-    expect(metrics.saboteur.suppressionCoins).toBe(activated.suppressedCoins);
-    expect(metrics.saboteur.actionsDenied).toBeGreaterThan(0);
-    expect(metrics.saboteur.detectedTurns).toBe(1);
-    expect(metrics.saboteur.exposedTurnsBySource.BLACKOUT).toBe(1);
-    expect(metrics.economy.oneCoinFloorAwards).toBe(0);
-  });
 });
 
 function accept(
@@ -580,47 +495,6 @@ function combatTelemetryState(): GameStateV7 {
       base,
       units.map((unit) => unit.at),
     ),
-  });
-}
-
-function blackoutTelemetryState(): GameStateV7 {
-  const setup = setupV7(7_102);
-  const created = createInitialMapStateV7(setup);
-  if (!created.ok) throw new Error(created.error.code);
-  const base = created.state;
-  const sourceOwner = activePlayer(base);
-  const targetOwner = base.turnOrder.find((id) => id !== sourceOwner);
-  const sourceCity = base.cities.find((city) => city.ownerId === sourceOwner);
-  const targetCity = base.cities.find((city) => city.ownerId === targetOwner);
-  if (
-    targetOwner === undefined ||
-    sourceCity === undefined ||
-    targetCity === undefined
-  )
-    throw new Error("Blackout owners missing");
-  const at = base.board.tiles.find(
-    (tile) =>
-      distance(tile.at, targetCity.at) === 1 &&
-      !base.cities.some((city) => same(city.at, tile.at)),
-  )?.at;
-  if (at === undefined) throw new Error("Blackout position missing");
-  const source = makeUnit(
-    base,
-    base.nextEntityId,
-    sourceOwner,
-    "SABOTEUR",
-    at,
-    10,
-  );
-  return checkedV7({
-    ...base,
-    nextEntityId: base.nextEntityId + 1,
-    players: base.players.map((player) =>
-      player.id === sourceOwner
-        ? { ...player, explored: base.board.tiles.map((tile) => tile.at) }
-        : player,
-    ),
-    units: [source],
   });
 }
 
@@ -720,133 +594,6 @@ function catapultVolleyState(): GameStateV7 {
   ]);
 }
 
-function treasuryRewardState(blocked: boolean): {
-  readonly state: GameStateV7;
-  readonly cityId: GameStateV7["cities"][number]["id"];
-  readonly buildAt: CoordV7;
-} {
-  const base = richV7(exploredAllV7(allTechsV7(initialV7(7_113))));
-  const city = base.cities.find(
-    (candidate) => candidate.ownerId === base.humanPlayerId,
-  );
-  const center = base.board.tiles.find((tile) => {
-    const positions = [
-      tile.at,
-      { x: tile.at.x, y: tile.at.y - 1 },
-      { x: tile.at.x - 1, y: tile.at.y - 1 },
-      { x: tile.at.x + 1, y: tile.at.y },
-      { x: tile.at.x + 1, y: tile.at.y - 1 },
-    ];
-    return (
-      tile.at.x > 0 &&
-      tile.at.x < base.board.width - 1 &&
-      tile.at.y > 0 &&
-      positions.every(
-        (at) =>
-          base.board.tiles.find((candidate) => same(candidate.at, at))?.site ===
-          null,
-      )
-    );
-  })?.at;
-  if (city === undefined || center === undefined)
-    throw new Error("Treasury fixture missing");
-  const windmillAt = { x: center.x, y: center.y - 1 };
-  const farmAt = { x: center.x - 1, y: center.y - 1 };
-  const forgeAt = { x: center.x + 1, y: center.y };
-  const mineAt = { x: center.x + 1, y: center.y - 1 };
-  const improvements = new Map([
-    [key(center), "GRAND_WORKS" as const],
-    [key(windmillAt), "WINDMILL" as const],
-    [key(farmAt), "FARM" as const],
-    [key(forgeAt), "FORGE" as const],
-    [key(mineAt), "MINE" as const],
-  ]);
-  const contributionSpecs = [
-    [windmillAt, "WINDMILL", 1],
-    [farmAt, "FARM", 2],
-    [forgeAt, "FORGE", 1],
-    [mineAt, "MINE", 2],
-  ] as const;
-  const contributionId = base.nextEntityId;
-  const stagedBoard = {
-    ...base.board,
-    tiles: base.board.tiles.map((tile) => {
-      const improvement = improvements.get(key(tile.at));
-      return improvement === undefined
-        ? tile
-        : {
-            ...tile,
-            site: null,
-            territoryCityId: city.id,
-            terrain:
-              improvement === "FARM"
-                ? ("GRASS" as const)
-                : improvement === "MINE"
-                  ? ("MOUNTAIN" as const)
-                  : tile.terrain,
-            resource: null,
-            improvement: improvement === "GRAND_WORKS" ? null : improvement,
-          };
-    }),
-  };
-  const territory = stagedBoard.tiles.filter(
-    (tile) => tile.territoryCityId === city.id,
-  );
-  const blockers = blocked
-    ? territory.map((tile, index) =>
-        makeUnit(
-          base,
-          contributionId + contributionSpecs.length + index,
-          base.humanPlayerId,
-          "FIGHTER",
-          tile.at,
-          10,
-        ),
-      )
-    : [];
-  return {
-    cityId: city.id,
-    buildAt: center,
-    state: checkedV7({
-      ...base,
-      nextEntityId: contributionId + contributionSpecs.length + blockers.length,
-      cities: base.cities.map((candidate) =>
-        candidate.id === city.id
-          ? {
-              ...candidate,
-              level: 4,
-              permanentPopulation: 0,
-              economicPopulation: 6,
-              population: -3,
-              expanded: true,
-              rewards: [
-                { reachedLevel: 2, reward: "STOCKPILE" as const },
-                { reachedLevel: 3, reward: "WALLS" as const },
-                { reachedLevel: 4, reward: "EXPAND" as const },
-              ],
-            }
-          : candidate,
-      ),
-      populationContributions: contributionSpecs.map(
-        ([at, improvement, amount], index) => ({
-          id: contributionId + index,
-          cityId: city.id,
-          category: "LIVE" as const,
-          amount,
-          source: {
-            kind: "IMPROVEMENT" as const,
-            improvement,
-            at,
-          },
-        }),
-      ),
-      units: blockers,
-      treasureChests: [],
-      board: stagedBoard,
-    }),
-  };
-}
-
 type TelemetryUnitSpec = readonly [
   role: UnitRoleIdV7,
   at: CoordV7,
@@ -921,7 +668,6 @@ function makeUnit(
     captureEligible: false,
     activation: READY,
     form: "LAND",
-    blackoutEligibleRound: role === "SABOTEUR" ? 1 : null,
   };
 }
 
@@ -941,14 +687,5 @@ function clearOccupiedTiles(state: GameStateV7, occupied: readonly CoordV7[]) {
   };
 }
 
-function activePlayer(state: GameStateV7): PlayerId {
-  const id = state.turnOrder[state.activeSeatIndex];
-  if (id === undefined) throw new Error("Active player missing");
-  return id;
-}
-
-const distance = (left: CoordV7, right: CoordV7) =>
-  Math.max(Math.abs(left.x - right.x), Math.abs(left.y - right.y));
 const same = (left: CoordV7, right: CoordV7) =>
   left.x === right.x && left.y === right.y;
-const key = (at: CoordV7) => `${at.y},${at.x}`;

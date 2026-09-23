@@ -343,6 +343,18 @@ describe("Ruleset 7 public presentation", () => {
       throw new Error("economy fixture missing");
     const baseIncome = cityIncomeForViewerV7(view, ownedCity.id);
     expect(baseIncome).not.toBeNull();
+    expect(
+      cityIncomeForViewerV7(
+        {
+          ...view,
+          naval: {
+            ...view.naval,
+            tradeCityIds: [...view.naval.tradeCityIds, ownedCity.id],
+          },
+        },
+        ownedCity.id,
+      ),
+    ).toBe((baseIncome ?? 0) + 1);
     const occupied = {
       ...view,
       units: view.units.map((unit) =>
@@ -404,14 +416,12 @@ describe("Ruleset 7 public presentation", () => {
       economicFormulaV7("SAWMILL", "CONNECTED_ORTHOGONAL_CLUSTER"),
       economicFormulaV7("FORGE", "ADJACENT_MINES"),
       economicFormulaV7("WORKSHOP", "DISTINCT_BASIC_TYPES"),
-      economicFormulaV7("GRAND_WORKS", "DISTINCT_PROCESSOR_TYPES"),
       economicFormulaV7("MARKET", "DISTINCT_ECONOMIC_FAMILIES"),
     ]).toEqual([
       expect.stringMatching(/\+1.*Farm.*cap 8.*0/),
       expect.stringMatching(/\+1.*Lumber Camp.*cap 8/),
       expect.stringMatching(/\+1.*Mine.*maximum 6.*at least one Mine.*0/),
       expect.stringMatching(/0.*\+1 plus.*distinct.*cap 4/),
-      expect.stringMatching(/0 below two.*\+4 plus.*\+2 per.*cap 10/),
       expect.stringMatching(
         /\+1 recurring Coin.*inactive processors.*\+1.*Road.*cap 4/,
       ),

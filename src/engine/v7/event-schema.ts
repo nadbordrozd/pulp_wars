@@ -104,6 +104,7 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   FOREST_CLEARED: ["kind", "playerId", "cityId", "at", "coinDelta"],
   FOREST_REPLANTED: ["kind", "playerId", "cityId", "at", "coinDelta"],
   ROAD_BUILT: ["kind", "playerId", "cityId", "at", "cost"],
+  FIELD_DEFENSE_BUILT: ["kind", "playerId", "unitId", "at", "cost"],
   CITY_ECONOMY_CHANGED: [
     "kind",
     "cityId",
@@ -175,19 +176,6 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   UNIT_MOVE_INTERRUPTED: ["kind", "unitId", "at", "reason"],
   TILES_REVEALED: ["kind", "playerId", "tiles"],
   COMBAT_RESOLVED: ["kind", "preview"],
-  SABOTEUR_EXPOSED: ["kind", "unitId", "anchorPlayerId", "reason"],
-  BLACKOUT_PLANTED: [
-    "kind",
-    "cityId",
-    "sourceUnitId",
-    "sourceOwnerId",
-    "targetOwnerId",
-    "actionRound",
-    "eligibleRound",
-  ],
-  BLACKOUT_ACTIVATED: ["kind", "cityId", "ownerId", "suppressedCoins"],
-  BLACKOUT_RECOVERY_STARTED: ["kind", "cityId", "ownerId", "reason"],
-  BLACKOUT_RECOVERY_COMPLETED: ["kind", "cityId", "ownerId"],
   IMPROVEMENT_PILLAGED: [
     "kind",
     "playerId",
@@ -493,7 +481,19 @@ function validPayload(
     case "FOREST_REPLANTED":
       return playerCityAt(e) && e.coinDelta === 0;
     case "ROAD_BUILT":
-      return playerCityAt(e) && e.cost === 2;
+      return (
+        id(e.playerId) &&
+        (e.cityId === null || id(e.cityId)) &&
+        parseCoordV7(e.at) !== null &&
+        e.cost === 2
+      );
+    case "FIELD_DEFENSE_BUILT":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        parseCoordV7(e.at) !== null &&
+        e.cost === 3
+      );
     case "CITY_ECONOMY_CHANGED":
       return (
         id(e.cityId) &&
@@ -600,47 +600,17 @@ function validPayload(
       return (
         id(e.unitId) &&
         parseCoordV7(e.at) !== null &&
-        ["OCCUPIED", "ENGINEERING_REQUIRED", "ZOC"].includes(e.reason as string)
+        [
+          "OCCUPIED",
+          "PROSPECTING_REQUIRED",
+          "ENGINEERING_REQUIRED",
+          "ZOC",
+        ].includes(e.reason as string)
       );
     case "TILES_REVEALED":
       return id(e.playerId) && sortedCoords(e.tiles);
     case "COMBAT_RESOLVED":
       return combat(e.preview);
-    case "SABOTEUR_EXPOSED":
-      return (
-        id(e.unitId) &&
-        id(e.anchorPlayerId) &&
-        (e.reason === "ATTACK" ||
-          e.reason === "PILLAGE" ||
-          e.reason === "BLACKOUT")
-      );
-    case "BLACKOUT_PLANTED":
-      return (
-        [
-          e.cityId,
-          e.sourceUnitId,
-          e.sourceOwnerId,
-          e.targetOwnerId,
-          e.actionRound,
-          e.eligibleRound,
-        ].every(id) &&
-        (e.eligibleRound as number) === (e.actionRound as number) + 3
-      );
-    case "BLACKOUT_ACTIVATED":
-      return (
-        id(e.cityId) &&
-        id(e.ownerId) &&
-        nn(e.suppressedCoins) &&
-        (e.suppressedCoins as number) <= 3
-      );
-    case "BLACKOUT_RECOVERY_STARTED":
-      return (
-        id(e.cityId) &&
-        id(e.ownerId) &&
-        (e.reason === "AFFECTED_TURN_ENDED" || e.reason === "CITY_CAPTURED")
-      );
-    case "BLACKOUT_RECOVERY_COMPLETED":
-      return id(e.cityId) && id(e.ownerId);
     case "IMPROVEMENT_PILLAGED":
       return (
         id(e.playerId) &&
@@ -673,7 +643,9 @@ function validPayload(
     case "UNIT_DIED":
       return (
         id(e.unitId) &&
-        ["ATTACK", "RETALIATION", "ELIMINATION"].includes(e.cause as string)
+        ["ATTACK", "SPLASH", "RETALIATION", "ELIMINATION"].includes(
+          e.cause as string,
+        )
       );
     case "CITY_CAPTURED":
       return id(e.cityId) && (e.from === null || id(e.from)) && id(e.to);
@@ -698,6 +670,7 @@ function combat(input: unknown): boolean {
       "defense2",
       "defenseBonusDenominator",
       "defenseBonusNumerator",
+      "fortificationLevel",
       "defenderDies",
       "attacksRemaining",
       "attacksUsed",
@@ -706,6 +679,7 @@ function combat(input: unknown): boolean {
       "noRetaliationReason",
       "push",
       "retaliation",
+      "splash",
       "targetUnitId",
     ])
   )
@@ -727,6 +701,8 @@ function combat(input: unknown): boolean {
       (input.attacksRemaining === 0 || input.attacksRemaining === 1)) ||
       (input.attacksUsed === 2 && input.attacksRemaining === 0)) &&
     [input.damageToAttacker, input.damageToDefender].every(nn) &&
+    nn(input.fortificationLevel) &&
+    splash(input.splash) &&
     [
       input.chargeApplied,
       input.breachApplied,
@@ -743,6 +719,35 @@ function combat(input: unknown): boolean {
         input.noRetaliationReason as string,
       ))
   );
+}
+function splash(input: unknown): boolean {
+  if (!isDenseArrayV7(input)) return false;
+  let previous: { x: number; y: number; unitId: number } | null = null;
+  const ids = new Set<number>();
+  for (const entry of input) {
+    if (
+      !hasExactKeysV7(entry, ["at", "damage", "dies", "unitId"]) ||
+      !id(entry.unitId) ||
+      !pos(entry.damage) ||
+      typeof entry.dies !== "boolean"
+    )
+      return false;
+    const at = parseCoordV7(entry.at);
+    if (at === null || ids.has(entry.unitId as number)) return false;
+    const current = { ...at, unitId: entry.unitId as number };
+    if (
+      previous !== null &&
+      (current.y < previous.y ||
+        (current.y === previous.y && current.x < previous.x) ||
+        (current.y === previous.y &&
+          current.x === previous.x &&
+          current.unitId <= previous.unitId))
+    )
+      return false;
+    ids.add(current.unitId);
+    previous = current;
+  }
+  return true;
 }
 function treasure(e: Record<string, unknown>): boolean {
   const isCoins = e.grantedReward === "COINS";
@@ -843,7 +848,6 @@ function improvementCost(improvement: ImprovementIdV7): number {
       return 6;
     case "WORKSHOP":
       return 4;
-    case "GRAND_WORKS":
     case "MARKET":
       return 7;
     case "MONUMENT":
@@ -861,13 +865,12 @@ function trainingCost(role: UnitRoleIdV7): number {
     RAIDER: 4,
     MEDIC: 4,
     CATAPULT: 8,
-    SABOTEUR: 6,
     HEAVY: 7,
     HORSE_ARCHER: 9,
     BREACHER: 6,
     JUGGERNAUT: 0,
     PATROL_BOAT: 5,
-    BATTLESHIP: 10,
+    BATTLESHIP: 16,
   };
   return costs[role];
 }

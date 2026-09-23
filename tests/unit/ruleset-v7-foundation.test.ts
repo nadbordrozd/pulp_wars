@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   ACHIEVEMENT_IDS_V7,
-  BLACKOUT_PHASE_ORDER_V7,
   COMMAND_KIND_ORDER_V7,
   DOMAIN_EVENT_KIND_ORDER_V7,
   FACTION_IDS_V7,
@@ -33,12 +32,12 @@ const setup: MatchSetupV7 = {
   humanColor: "CORAL",
   factions: ["ORIGINAL", "ORIGINAL"],
   mapType: "DRY_LAND",
-  mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1",
+  mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
 };
 
-describe("ruleset-7 revision-6 deterministic foundation", () => {
+describe("ruleset-7 revision-7 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r6");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r7");
     expect(FACTION_IDS_V7).toEqual(["ORIGINAL"]);
     expect(FACTION_TREE_IDS_V7).toEqual(["ORIGINAL_BASELINE_V4"]);
     expect(RESOURCE_IDS_V7).toEqual([
@@ -57,7 +56,6 @@ describe("ruleset-7 revision-6 deterministic foundation", () => {
       "SAWMILL",
       "FORGE",
       "WORKSHOP",
-      "GRAND_WORKS",
       "MARKET",
       "MONUMENT",
       "PORT",
@@ -71,7 +69,6 @@ describe("ruleset-7 revision-6 deterministic foundation", () => {
       "RAIDER",
       "MEDIC",
       "CATAPULT",
-      "SABOTEUR",
       "HEAVY",
       "HORSE_ARCHER",
       "BREACHER",
@@ -80,13 +77,13 @@ describe("ruleset-7 revision-6 deterministic foundation", () => {
       "BATTLESHIP",
     ]);
     expect(TECHNOLOGY_IDS_V7).toHaveLength(24);
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(36);
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(52);
-    expect(PLAYER_EVENT_KIND_ORDER_V7.slice(-2)).toEqual([
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(34);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(48);
+    expect(PLAYER_EVENT_KIND_ORDER_V7.slice(-3)).toEqual([
+      "COMBAT_SPLASH_DAMAGE",
       "UNIT_REVEALED",
       "UNIT_CONCEALED",
     ]);
-    expect(BLACKOUT_PHASE_ORDER_V7).toEqual(["PENDING", "ACTIVE", "RECOVERY"]);
     for (const order of [
       FACTION_IDS_V7,
       FACTION_TREE_IDS_V7,
@@ -123,7 +120,7 @@ describe("ruleset-7 revision-6 deterministic foundation", () => {
   it("parses retained/new commands exactly and rejects removed r2 arms", () => {
     for (const command of [
       { kind: "ATTACK", unitId: 1, targetUnitId: 2 },
-      { kind: "BLACKOUT_CITY", unitId: 1, cityId: 3 },
+      { kind: "BUILD_FIELD_DEFENSE", unitId: 1 },
       { kind: "BUILD_MINE", at: { x: 2, y: 3 } },
       { kind: "BUILD_MONUMENT", achievement: "ENGINEER", at: { x: 2, y: 3 } },
       { kind: "DISBAND", unitId: 1 },
@@ -146,7 +143,7 @@ describe("ruleset-7 revision-6 deterministic foundation", () => {
     ).toMatchObject({ ok: true });
   });
 
-  it("strictly parses canonical combat and Blackout event envelopes", () => {
+  it("strictly parses canonical current event envelopes", () => {
     expect(
       parseEventEnvelopeV7({
         format: "pulp-wars-events",
@@ -154,13 +151,11 @@ describe("ruleset-7 revision-6 deterministic foundation", () => {
         commandIndex: 4,
         events: [
           {
-            kind: "BLACKOUT_PLANTED",
-            cityId: 1,
-            sourceUnitId: 2,
-            sourceOwnerId: 1,
-            targetOwnerId: 2,
-            actionRound: 4,
-            eligibleRound: 7,
+            kind: "FIELD_DEFENSE_BUILT",
+            playerId: 1,
+            unitId: 2,
+            at: { x: 2, y: 3 },
+            cost: 3,
           },
           { kind: "SPOILS_AWARDED", playerId: 1, cityId: 4, coins: 2 },
         ],

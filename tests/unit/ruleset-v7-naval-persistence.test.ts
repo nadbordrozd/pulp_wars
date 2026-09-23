@@ -27,13 +27,13 @@ describe("ruleset-7 naval persistence schema", () => {
     expect(parsed).toEqual(fixture.state);
     expect(parseMatchSetupV7(fixture.state.setup)).toEqual(fixture.state.setup);
     expect(fixture.state.setup).toMatchObject({
-      rulesetId: "pulp-wars-poc-7r6",
+      rulesetId: "pulp-wars-poc-7r7",
       mapType: "DRY_LAND",
-      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1",
+      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     });
   });
 
-  it("strictly parses all six naval command boundaries", () => {
+  it("strictly parses the current naval command boundaries", () => {
     for (const command of [
       { kind: "HARVEST_FISH", at: { x: 1, y: 2 } },
       { kind: "GATHER_PEARLS", at: { x: 1, y: 2 } },
@@ -44,7 +44,6 @@ describe("ruleset-7 naval persistence schema", () => {
         at: { x: 1, y: 2 },
         role: "PATROL_BOAT",
       },
-      { kind: "EMBARK", unitId: 2, portAt: { x: 1, y: 2 } },
       { kind: "DISEMBARK", unitId: 2, at: { x: 1, y: 2 } },
     ])
       expect(parseCommandV7(command)).toMatchObject({ ok: true });
@@ -58,15 +57,15 @@ describe("ruleset-7 naval persistence schema", () => {
     ).toMatchObject({ ok: false });
   });
 
-  it("orders otherwise identical embark commands by Port coordinate", () => {
+  it("orders otherwise identical moves by destination coordinate", () => {
     const unitId = 9 as UnitId;
     const reverse: CommandV7[] = [
-      { kind: "EMBARK", unitId, portAt: { x: 10, y: 2 } },
-      { kind: "EMBARK", unitId, portAt: { x: 2, y: 2 } },
+      { kind: "MOVE", unitId, path: [{ x: 10, y: 2 }] },
+      { kind: "MOVE", unitId, path: [{ x: 2, y: 2 }] },
     ];
     expect(reverse.sort(compareCommandsV7)).toEqual([
-      { kind: "EMBARK", unitId, portAt: { x: 2, y: 2 } },
-      { kind: "EMBARK", unitId, portAt: { x: 10, y: 2 } },
+      { kind: "MOVE", unitId, path: [{ x: 2, y: 2 }] },
+      { kind: "MOVE", unitId, path: [{ x: 10, y: 2 }] },
     ]);
   });
 
@@ -80,7 +79,6 @@ describe("ruleset-7 naval persistence schema", () => {
       "HARVEST_FISH",
       "BUILD_PORT",
       "TRAIN_NAVAL",
-      "EMBARK",
       "DISEMBARK",
     ]);
     const accept = async (command: CommandV7): Promise<void> => {
@@ -163,7 +161,17 @@ describe("ruleset-7 naval persistence schema", () => {
     );
     if (sail === undefined) throw new Error("ship move missing");
     await accept(sail);
-    await accept({ kind: "EMBARK", unitId: passenger.id, portAt: fish.at });
+    const embarkMove = queryPlayerCommandsV7(
+      viewForV7(state, state.humanPlayerId),
+    ).find(
+      (command) =>
+        command.kind === "MOVE" &&
+        command.unitId === passenger.id &&
+        command.path.at(-1)?.x === fish.at.x &&
+        command.path.at(-1)?.y === fish.at.y,
+    );
+    if (embarkMove === undefined) throw new Error("embark move missing");
+    await accept(embarkMove);
     do await accept({ kind: "END_TURN" });
     while (state.turnOrder[state.activeSeatIndex] !== state.humanPlayerId);
     const land = queryPlayerCommandsV7(
@@ -197,16 +205,15 @@ describe("ruleset-7 naval persistence schema", () => {
     await accept({ kind: "GATHER_PEARLS", at: pearls.at });
   });
 
-  it("round-trips a deferred foreign Port reward through save and replay", () => {
+  it("round-trips a bounded AI naval match through save and replay", () => {
     const setup = { ...setupV7(0), mapType: "ARCHIPELAGO" as const };
-    const match = runAiMatchV7(setup, { maxRounds: 20, maxCommands: 600 });
+    const match = runAiMatchV7(setup, { maxRounds: 10, maxCommands: 300 });
     expect(match.errors).toEqual([]);
     expect(match.stalls).toEqual([]);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     let state = created.state;
     let replay = createReplayV7(setup);
-    let deferred = false;
     for (const record of match.commandLog) {
       const actor = state.turnOrder[state.activeSeatIndex];
       if (actor === undefined) throw new Error("active player missing");
@@ -214,23 +221,7 @@ describe("ruleset-7 naval persistence schema", () => {
       if (!applied.accepted) throw new Error(applied.error.code);
       state = applied.state;
       replay = appendReplayCommandV7(replay, record.command, state);
-      const leveled = applied.events.find(
-        (event) => event.kind === "CITY_LEVELED_UP",
-      );
-      const city =
-        leveled?.kind === "CITY_LEVELED_UP"
-          ? state.cities.find((candidate) => candidate.id === leveled.cityId)
-          : undefined;
-      if (
-        record.command.kind === "DISEMBARK" &&
-        city !== undefined &&
-        city.ownerId !== actor
-      ) {
-        deferred = true;
-        break;
-      }
     }
-    expect(deferred).toBe(true);
     expect(state.pendingChoices).toEqual([]);
     const save = createSaveEnvelopeV7(
       { state, replay },

@@ -1,5 +1,5 @@
 import { deepFreeze } from "../model/freeze";
-import { allocateCityId, allocateUnitId, playerId } from "../model/ids";
+import { allocateCityId, allocateUnitId, cityId, playerId } from "../model/ids";
 import { nextBounded, nextUint32, randomState } from "../random/random";
 import { canonicalHash } from "../replay/canonical";
 import { ORIGINAL_BASELINE_V4_TREE, RULESET_7 } from "../rules/ruleset-v7";
@@ -28,7 +28,7 @@ import {
 } from "./types";
 
 export const MAX_MAP_GENERATION_ATTEMPTS_V7 = 256;
-export const MAP_GENERATION_REVISION_V7 = "REGIONAL_BIOMES_NAVAL_V1" as const;
+export const MAP_GENERATION_REVISION_V7 = "REGIONAL_BIOMES_NAVAL_V2" as const;
 export type MapInvariantCodeV7 =
   | "TILE_LAYOUT"
   | "SETTLEMENT_COUNT"
@@ -48,6 +48,7 @@ export type MapInvariantCodeV7 =
   | "CAPITAL_SCORE"
   | "NAVAL_TOPOLOGY"
   | "NAVAL_REACHABILITY"
+  | "COASTAL_SETTLEMENT"
   | "CAPITAL_SEA_ESCAPE";
 
 export interface MapGenerationAttemptV7 {
@@ -378,6 +379,7 @@ function generateCandidate(
           resource: null,
           improvement: null,
           road: false,
+          fieldDefense: false,
           site: null,
           territoryCityId: null,
         }
@@ -388,6 +390,7 @@ function generateCandidate(
           resource: resources.get(key(at)) ?? null,
           improvement: null,
           road: false,
+          fieldDefense: false,
           site: fieldSites.get(key(at)) ?? null,
           territoryCityId: null,
         },
@@ -852,6 +855,40 @@ function applyNavalTopologyV7(
   if (!findCapitals(0))
     throw new RangeError("Naval topology cannot place capitals");
   const settlements = [...capitals];
+  const componentHasCoastalSettlement = (componentId: number): boolean =>
+    settlements.some(
+      (settlement) =>
+        componentByKey.get(key(settlement)) === componentId &&
+        neighbors8(setup.width, setup.height, settlement).some(
+          (near) => !land.has(key(near)),
+        ),
+    );
+  const requiredSettlementComponents =
+    setup.mapType === "CONTINENTS" || setup.mapType === "ARCHIPELAGO"
+      ? [...majorComponentIds].sort((a, b) => a - b)
+      : [
+          ...new Set(
+            capitals
+              .map((capital) => componentByKey.get(key(capital)))
+              .filter((value): value is number => value !== undefined),
+          ),
+        ].sort((a, b) => a - b);
+  for (const componentId of requiredSettlementComponents) {
+    if (componentHasCoastalSettlement(componentId)) continue;
+    const coastal = candidates
+      .filter(
+        (candidate) =>
+          componentByKey.get(key(candidate)) === componentId &&
+          neighbors8(setup.width, setup.height, candidate).some(
+            (near) => !land.has(key(near)),
+          ) &&
+          settlements.every((other) => chebyshev(candidate, other) >= 3),
+      )
+      .sort(compareCoords)[0];
+    if (coastal === undefined)
+      throw new RangeError("Naval topology lacks coastal settlement");
+    settlements.push(coastal);
+  }
   const orderedVillageCandidates = [...candidates].sort((a, b) => {
     const aMissing = capitals.some(
       (capital) =>
@@ -866,7 +903,11 @@ function applyNavalTopologyV7(
   for (const candidate of orderedVillageCandidates) {
     if (settlements.length >= settlementCount) break;
     const component = componentByKey.get(key(candidate));
-    if (component === undefined || !majorComponentIds.has(component)) continue;
+    if (
+      component === undefined ||
+      !requiredSettlementComponents.includes(component)
+    )
+      continue;
     const componentCount = settlements.filter(
       (other) => componentByKey.get(key(other)) === component,
     ).length;
@@ -1221,6 +1262,34 @@ function validateNavalCandidate(
     failures.push("NAVAL_TOPOLOGY");
   if (!settlementComponentNetworkConnected(board, landComponents))
     failures.push("NAVAL_REACHABILITY");
+  if (
+    [
+      ...new Set(
+        settlementTiles.map((tile) => landComponentByKey.get(key(tile.at))),
+      ),
+    ]
+      .filter((value): value is number => value !== undefined)
+      .some((componentId) => {
+        const qualifying = settlementTiles
+          .filter(
+            (tile) => landComponentByKey.get(key(tile.at)) === componentId,
+          )
+          .filter((tile) =>
+            neighbors8(board.width, board.height, tile.at).some((near) => {
+              const port = tileAt(board, near);
+              return (
+                port?.terrain === "SHALLOW_WATER" &&
+                port.improvement === null &&
+                !port.road &&
+                port.site === null
+              );
+            }),
+          )
+          .sort((left, right) => compareCoords(left.at, right.at));
+        return qualifying.length === 0;
+      })
+  )
+    failures.push("COASTAL_SETTLEMENT");
   const scores = capitalTiles.map((capital) => capitalScore(board, capital.at));
   if (
     scores.some((score) => score < 6 || score > 17) ||
@@ -1581,7 +1650,6 @@ export function createInitialMapStateV7(
     populationContributions: [],
     units: entities.units,
     treasureChests: generated.map.treasureChests,
-    saboteurExposures: [],
     pendingChoices: [],
     outcome: null,
   });
@@ -1608,6 +1676,7 @@ function createPlayers(setup: MatchSetupV7): readonly PlayerStateV7[] {
       { achievement: "ENGINEER", unlocked: false, spent: false },
       { achievement: "MUSTER", unlocked: false, spent: false },
     ],
+    originalCapitalCityId: cityId(seat * 2 + 1),
   }));
 }
 function createEntities(
@@ -1632,7 +1701,6 @@ function createEntities(
       isCapital: true,
       expanded: false,
       rewards: [],
-      blackout: null,
     });
     const unit = allocateUnitId(nextEntityId);
     nextEntityId = unit.nextEntityId;
@@ -1659,7 +1727,6 @@ function createEntities(
         handled: false,
         specialActed: false,
       },
-      blackoutEligibleRound: null,
     });
   });
   return { cities, units, nextEntityId };

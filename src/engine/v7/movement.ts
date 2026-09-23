@@ -3,12 +3,17 @@ import {
   effectiveRoleRuleV7,
   technologyCapabilitiesV7,
 } from "../rules/ruleset-v7";
-import { arePlayersAlliedV7, arePlayersHostileV7 } from "./economy";
+import {
+  arePlayersAlliedV7,
+  arePlayersHostileV7,
+  combinedNetworkRoadKeysV7,
+  isActivePortV7,
+} from "./economy";
 import {
   isUnitVisibleToPlayerV7,
   withUnitAtForObservationV7,
 } from "./observation";
-import { capitalConnectedRoadKeysV7, tileAtV7 } from "./spatial-economy";
+import { tileAtV7 } from "./spatial-economy";
 import type {
   CoordV7,
   GameStateV7,
@@ -24,6 +29,7 @@ export type MovementFailureReasonV7 =
   | "NOT_ADJACENT"
   | "OUT_OF_BOUNDS"
   | "OCCUPIED"
+  | "PROSPECTING_REQUIRED"
   | "ENGINEERING_REQUIRED"
   | "UNEXPLORED_INTERMEDIATE"
   | "MOUNTAIN_STOPS_MOVE"
@@ -42,7 +48,8 @@ export type MovementPathResultV7 =
       readonly revealed: readonly CoordV7[];
       readonly interruption: {
         readonly at: CoordV7;
-        readonly reason: "OCCUPIED" | "ENGINEERING_REQUIRED" | "ZOC";
+        readonly reason:
+          "OCCUPIED" | "PROSPECTING_REQUIRED" | "ENGINEERING_REQUIRED" | "ZOC";
       } | null;
     }
   | { readonly legal: false; readonly reason: MovementFailureReasonV7 };
@@ -64,7 +71,7 @@ export function validateMovementPathV7(
   const rule = effectiveRoleRuleV7(unit.role);
   const capabilities = technologyCapabilitiesV7(player.researchedTechs);
   const budget2 = (unit.form === "EMBARKED" ? 3 : rule.move) * 2;
-  const connectedRoads = capitalConnectedRoadKeysV7(state, player.id);
+  const connectedRoads = combinedNetworkRoadKeysV7(state, player.id);
   const knownBeforeCommand = player.explored;
   let explored = player.explored;
   const revealed: CoordV7[] = [];
@@ -98,9 +105,20 @@ export function validateMovementPathV7(
     const occupied = occupant !== undefined;
     const water =
       tile.terrain === "SHALLOW_WATER" || tile.terrain === "DEEP_WATER";
+    const autoEmbark =
+      unit.form === "LAND" &&
+      index === path.length - 1 &&
+      tile.improvement === "PORT" &&
+      tile.territoryCityId !== null &&
+      state.cities.some(
+        (city) =>
+          city.id === tile.territoryCityId && city.ownerId === unit.ownerId,
+      ) &&
+      player.researchedTechs.includes("SHORECRAFT") &&
+      isActivePortV7(state, step, unit.ownerId);
     const engineeringRequired =
       (tile.terrain === "MOUNTAIN" && !capabilities.mountainMovement) ||
-      (unit.form === "LAND" && water) ||
+      (unit.form === "LAND" && water && !autoEmbark) ||
       (unit.form !== "LAND" && !water) ||
       (water &&
         tile.terrain === "DEEP_WATER" &&
@@ -112,7 +130,11 @@ export function validateMovementPathV7(
       if (occupantVisible || (engineeringRequired && wasKnownBeforeCommand))
         return {
           legal: false,
-          reason: occupied ? "OCCUPIED" : "ENGINEERING_REQUIRED",
+          reason: occupied
+            ? "OCCUPIED"
+            : tile.terrain === "MOUNTAIN"
+              ? "PROSPECTING_REQUIRED"
+              : "ENGINEERING_REQUIRED",
         };
       return {
         legal: true,
@@ -124,7 +146,11 @@ export function validateMovementPathV7(
         revealed: unique(revealed),
         interruption: {
           at: step,
-          reason: occupied ? "OCCUPIED" : "ENGINEERING_REQUIRED",
+          reason: occupied
+            ? "OCCUPIED"
+            : tile.terrain === "MOUNTAIN"
+              ? "PROSPECTING_REQUIRED"
+              : "ENGINEERING_REQUIRED",
         },
       };
     }
@@ -320,7 +346,7 @@ function publicMovementContextV7(view: PlayerViewV7): PublicMovementContextV7 {
   }
   const context: PublicMovementContextV7 = {
     capabilities: technologyCapabilitiesV7(view.viewer.researchedTechs),
-    connectedRoads: publicCapitalConnectedRoads(view),
+    connectedRoads: new Set(view.naval.networkRoads.map(key)),
     ownedCityKeys: new Set(
       view.cities
         .filter((city) => city.ownerId === view.viewer.id)
@@ -356,8 +382,18 @@ function validatePlayerMovementPathWithContextV7(
     if (tile.explored) {
       const water =
         tile.terrain === "SHALLOW_WATER" || tile.terrain === "DEEP_WATER";
+      const autoEmbark =
+        unit.form === "LAND" &&
+        index === path.length - 1 &&
+        tile.explored &&
+        tile.improvement === "PORT" &&
+        tile.territoryOwnerId === view.viewer.id &&
+        view.viewer.researchedTechs.includes("SHORECRAFT") &&
+        view.naval.ownedPorts.some(
+          (port) => same(port.at, tile.at) && port.status === "ACTIVE",
+        );
       if (
-        (unit.form === "LAND" && water) ||
+        (unit.form === "LAND" && water && !autoEmbark) ||
         (unit.form !== "LAND" && !water) ||
         (water &&
           tile.terrain === "DEEP_WATER" &&
@@ -387,7 +423,7 @@ function validatePlayerMovementPathWithContextV7(
       tile.terrain === "MOUNTAIN" &&
       !capabilities.mountainMovement
     )
-      return { legal: false, reason: "ENGINEERING_REQUIRED" };
+      return { legal: false, reason: "PROSPECTING_REQUIRED" };
     const ignoresForest = capabilities.forestMovementFreedomRoles.includes(
       unit.role,
     );
@@ -439,7 +475,9 @@ export function movementStepCost2V7(
   player: PlayerStateV7,
   from: CoordV7,
   to: CoordV7,
-  connectedRoads = capitalConnectedRoadKeysV7(state, player.id),
+  connectedRoads = "players" in state
+    ? combinedNetworkRoadKeysV7(state as GameStateV7, player.id)
+    : new Set<string>(),
 ): 1 | 2 {
   if (!player.researchedTechs.includes("ROADS") || chebyshev(from, to) !== 1)
     return 2;
@@ -447,8 +485,11 @@ export function movementStepCost2V7(
   const toTile = tileAtV7(state.board, to);
   if (fromTile === undefined || toTile === undefined) return 2;
   if (fromTile.biome === null || toTile.biome === null) return 2;
-  const fromRoad = fromTile.road && tileOwner(state, fromTile) === player.id;
-  const toRoad = toTile.road && tileOwner(state, toTile) === player.id;
+  const fromOwner = tileOwner(state, fromTile);
+  const toOwner = tileOwner(state, toTile);
+  const fromRoad =
+    fromTile.road && (fromOwner === null || fromOwner === player.id);
+  const toRoad = toTile.road && (toOwner === null || toOwner === player.id);
   const fromCity = ownedCity(state, player.id, from);
   const toCity = ownedCity(state, player.id, to);
   return (fromRoad || fromCity) &&
@@ -537,8 +578,6 @@ function inHostileZoc(
       unit.form !== "EMBARKED" &&
       arePlayersHostileV7(state, target.ownerId, unit.ownerId) &&
       contains(explored, unit.at) &&
-      (unit.role !== "SABOTEUR" ||
-        isUnitVisibleToPlayerV7(state, target.ownerId, unit)) &&
       chebyshev(unit.at, at) === 1 &&
       projectsZocV7(state, unit, target, at),
   );
@@ -674,8 +713,12 @@ function publicStepCost2(
   const fromTile = publicTileAt(view, from);
   if (fromTile?.explored !== true || to.explored !== true) return 2;
   const fromRoad =
-    fromTile.road && fromTile.territoryOwnerId === view.viewer.id;
-  const toRoad = to.road && to.territoryOwnerId === view.viewer.id;
+    fromTile.road &&
+    (fromTile.territoryOwnerId === null ||
+      fromTile.territoryOwnerId === view.viewer.id);
+  const toRoad =
+    to.road &&
+    (to.territoryOwnerId === null || to.territoryOwnerId === view.viewer.id);
   const fromCity = context.ownedCityKeys.has(key(fromTile.at));
   const toCity = context.ownedCityKeys.has(key(to.at));
   const connected = context.connectedRoads;
@@ -687,47 +730,6 @@ function publicStepCost2(
     : 2;
 }
 
-function publicCapitalConnectedRoads(view: PlayerViewV7): ReadonlySet<string> {
-  const roads = new Map(
-    view.board.tiles.flatMap((tile) =>
-      tile.explored && tile.road && tile.territoryOwnerId === view.viewer.id
-        ? [[key(tile.at), tile.at] as const]
-        : [],
-    ),
-  );
-  for (const city of view.cities) {
-    const tile = publicTileAt(view, city.at);
-    if (
-      city.ownerId === view.viewer.id &&
-      tile?.explored === true &&
-      tile.territoryOwnerId === view.viewer.id
-    )
-      roads.set(key(city.at), city.at);
-  }
-  const capitals = view.cities.filter(
-    (city) => city.ownerId === view.viewer.id && city.isCapital,
-  );
-  const connected = new Set<string>();
-  const queue: CoordV7[] = [];
-  for (const capital of capitals)
-    if (roads.has(key(capital.at))) {
-      connected.add(key(capital.at));
-      queue.push(capital.at);
-    }
-  for (let index = 0; index < queue.length; index += 1) {
-    const current = queue[index];
-    if (current === undefined) break;
-    for (const [dx, dy] of ROAD_NEIGHBORS) {
-      const candidate = { x: current.x + dx, y: current.y + dy };
-      const candidateKey = key(candidate);
-      if (roads.has(candidateKey) && !connected.has(candidateKey)) {
-        connected.add(candidateKey);
-        queue.push(candidate);
-      }
-    }
-  }
-  return connected;
-}
 function tileOwner(
   state: Pick<GameStateV7, "cities">,
   tile: TileStateV7,
@@ -775,13 +777,3 @@ const same = (a: CoordV7, b: CoordV7) => a.x === b.x && a.y === b.y;
 const compare = (a: CoordV7, b: CoordV7) => a.y - b.y || a.x - b.x;
 const chebyshev = (a: CoordV7, b: CoordV7) =>
   Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
-const ROAD_NEIGHBORS = [
-  [-1, -1],
-  [1, -1],
-  [-1, 1],
-  [1, 1],
-  [0, -1],
-  [1, 0],
-  [0, 1],
-  [-1, 0],
-] as const;

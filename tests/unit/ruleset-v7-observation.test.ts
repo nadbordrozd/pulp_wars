@@ -2,15 +2,10 @@
 import { describe, expect, it } from "vitest";
 import {
   applyCommandV7,
-  appendReplayCommandV7,
   authorizeOmniscientArtifactV7,
   canonicalGameStateHashV7,
-  createInitialMapStateV7,
-  createPlayableGameV7,
-  createReplayV7,
   createSafeLiveLogV7,
   packageOmniscientArtifactV7,
-  parseGameStateV7,
   parsePlayerEventEnvelopeV7,
   projectEventsV7,
   queryAiReadyCommandsV7,
@@ -18,7 +13,6 @@ import {
   queryPlayerCommandsV7,
   queryPublicSelectionV7,
   reachablePlayerMovementPathsV7,
-  runReplayV7,
   TECHNOLOGY_IDS_V7,
   validateMovementPathV7,
   viewForV7,
@@ -49,7 +43,7 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 observation safety and Concealment", () => {
   it("makes observation-equivalent hidden positions byte-identical across every public input", () => {
-    const { state, line, alternate } = hiddenSaboteurScenario();
+    const { state, line, alternate } = hiddenScoutScenario();
     const viewerId = state.humanPlayerId;
     const saboteur = state.units[1]!;
     const other = checkedV7({
@@ -162,41 +156,9 @@ describe("ruleset-7 observation safety and Concealment", () => {
     });
   });
 
-  it("uses radius-one ordinary, radius-two Scout, city, and cooperative allied detection without revealing terrain", () => {
-    const { state, line } = hiddenSaboteurScenario();
-    const saboteur = state.units[1]!;
-    expect(viewForV7(state, state.humanPlayerId).units).not.toContainEqual(
-      expect.objectContaining({ id: saboteur.id }),
-    );
-    const scout = checkedV7({
-      ...state,
-      units: state.units.map((unit) =>
-        unit.ownerId === state.humanPlayerId
-          ? { ...unit, role: "SCOUT" as const }
-          : unit,
-      ),
-    });
-    expect(viewForV7(scout, scout.humanPlayerId).units).toContainEqual(
-      expect.objectContaining({ id: saboteur.id, at: line[2] }),
-    );
-
-    const cooperative = cooperativeDetectionScenario();
-    const viewer = cooperative.players[1]!;
-    const enemySaboteur = cooperative.units[0]!;
-    const view = viewForV7(cooperative, viewer.id);
-    expect(view.units).toContainEqual(
-      expect.objectContaining({ id: enemySaboteur.id }),
-    );
-    const tile =
-      view.board.tiles[
-        enemySaboteur.at.y * view.board.width + enemySaboteur.at.x
-      ];
-    expect(tile).toEqual(expect.objectContaining({ explored: false }));
-  });
-
   it("offers only authoritative-acceptable commands apart from accepted hidden contact shortening", () => {
     const states = [
-      hiddenSaboteurScenario().state,
+      hiddenScoutScenario().state,
       ...([1, 3, 19] as const).map((seed) => allTechsV7(initialV7(seed))),
     ];
     for (const state of states) {
@@ -257,7 +219,7 @@ describe("ruleset-7 observation safety and Concealment", () => {
   });
 
   it("offers optimistic paths, accepts hidden ZOC contact, consumes movement, and reveals before interruption", () => {
-    const { state, line } = hiddenSaboteurScenario();
+    const { state, line } = hiddenScoutScenario();
     const view = viewForV7(state, state.humanPlayerId);
     const mover = view.units.find((unit) => unit.ownerId === view.viewer.id)!;
     expect(
@@ -298,53 +260,6 @@ describe("ruleset-7 observation safety and Concealment", () => {
     expect(revealIndex).toBeGreaterThanOrEqual(0);
     expect(revealIndex).toBeLessThan(interruptionIndex);
     expect(parsePlayerEventEnvelopeV7(projected)).toMatchObject({ ok: true });
-
-    const concealedOnKnownTile = checkedV7({
-      ...state,
-      players: state.players.map((player) =>
-        player.id === state.humanPlayerId
-          ? {
-              ...player,
-              explored: [...player.explored, line[2]].sort(compareCoords),
-            }
-          : player,
-      ),
-    });
-    const concealedView = viewForV7(
-      concealedOnKnownTile,
-      concealedOnKnownTile.humanPlayerId,
-    );
-    const concealedSaboteur = state.units.find(
-      (unit) => unit.ownerId !== state.humanPlayerId,
-    )!;
-    expect(
-      concealedView.units.some((unit) => unit.id === concealedSaboteur.id),
-    ).toBe(false);
-    expect(
-      queryPlayerCommandsV7(concealedView).some(
-        (command) =>
-          command.kind === "MOVE" &&
-          command.unitId === mover.id &&
-          JSON.stringify(command.path) === JSON.stringify(line.slice(1)),
-      ),
-    ).toBe(true);
-    expect(
-      applyCommandV7(concealedOnKnownTile, concealedOnKnownTile.humanPlayerId, {
-        kind: "MOVE",
-        unitId: mover.id,
-        path: line.slice(1),
-      }),
-    ).toMatchObject({
-      accepted: true,
-      events: expect.arrayContaining([
-        {
-          kind: "UNIT_MOVE_INTERRUPTED",
-          unitId: mover.id,
-          at: line[1],
-          reason: "ZOC",
-        },
-      ]),
-    });
   });
 
   it("interrupts at ZOC revealed on an earlier step while keeping command-start known ZOC strict", () => {
@@ -447,8 +362,8 @@ describe("ruleset-7 observation safety and Concealment", () => {
     });
   });
 
-  it("does not reveal terrain beyond a newly detected Saboteur ZOC stop", () => {
-    const { state: base, line } = hiddenSaboteurScenario();
+  it("does not reveal terrain beyond a newly detected Scout ZOC stop", () => {
+    const { state: base, line } = hiddenScoutScenario();
     const initialExplored = base.board.tiles
       .map((tile) => tile.at)
       .filter(
@@ -496,7 +411,7 @@ describe("ruleset-7 observation safety and Concealment", () => {
   });
 
   it("omits fully hidden movement and emits only player-safe transition facts", () => {
-    const { state, alternate } = hiddenSaboteurScenario();
+    const { state, alternate } = hiddenScoutScenario();
     const saboteur = state.units[1]!;
     const after = checkedV7({
       ...state,
@@ -610,55 +525,8 @@ describe("ruleset-7 observation safety and Concealment", () => {
     expect(parsePlayerEventEnvelopeV7(visibleOre)).toMatchObject({ ok: true });
   });
 
-  it("records attack exposure, shares it, preserves it in canonical state, and clears it only at the anchor End Turn", () => {
-    const state = exposedAttackScenario();
-    const saboteur = state.units[0]!;
-    const target = state.units[1]!;
-    const attacked = applyCommandV7(state, state.humanPlayerId, {
-      kind: "ATTACK",
-      unitId: saboteur.id,
-      targetUnitId: target.id,
-    });
-    expect(attacked.accepted).toBe(true);
-    if (!attacked.accepted) return;
-    expect(attacked.state.saboteurExposures).toEqual([
-      {
-        unitId: saboteur.id,
-        anchorPlayerId: target.ownerId,
-        reason: "ATTACK",
-        clearsAtAnchorNextEndTurn: true,
-      },
-    ]);
-    expect(
-      parseGameStateV7(JSON.parse(JSON.stringify(attacked.state))),
-    ).toEqual(attacked.state);
-    const hiddenAt = farHiddenCoordinate(attacked.state, target.ownerId);
-    const displaced = checkedV7({
-      ...attacked.state,
-      units: attacked.state.units.map((unit) =>
-        unit.id === saboteur.id ? { ...unit, at: hiddenAt } : unit,
-      ),
-    });
-    expect(viewForV7(displaced, target.ownerId).units).toContainEqual(
-      expect.objectContaining({ id: saboteur.id, at: hiddenAt }),
-    );
-    expect(
-      viewForV7(displaced, target.ownerId).unitStats.find(
-        (stats) => stats.unitId === saboteur.id,
-      )?.statuses,
-    ).toContain("EXPOSED");
-    const targetSeat = displaced.turnOrder.indexOf(target.ownerId);
-    const targetTurn = checkedV7({ ...displaced, activeSeatIndex: targetSeat });
-    const ended = applyCommandV7(targetTurn, target.ownerId, {
-      kind: "END_TURN",
-    });
-    expect(ended.accepted).toBe(true);
-    if (!ended.accepted) return;
-    expect(ended.state.saboteurExposures).toEqual([]);
-  });
-
   it("reports blind Push as unknown and never identifies a concealed blocker", () => {
-    const { state: hidden, line } = hiddenSaboteurScenario();
+    const { state: hidden, line } = hiddenScoutScenario();
     const enemy = hidden.players.find(
       (player) => player.id !== hidden.humanPlayerId,
     )!;
@@ -684,14 +552,12 @@ describe("ruleset-7 observation safety and Concealment", () => {
             at: line[1],
             hp: 20,
             maxHp: 20,
-            blackoutEligibleRound: null,
           },
           {
             ...existingEnemy,
             id: blockerId,
-            role: "SABOTEUR",
+            role: "SCOUT",
             at: line[2],
-            blackoutEligibleRound: 1,
           },
         ] satisfies UnitStateV7[]
       ).sort((left, right) => left.id - right.id),
@@ -808,7 +674,7 @@ describe("ruleset-7 observation safety and Concealment", () => {
   });
 
   it("keeps raw hashes behind an explicit spoiler capability while safe logs accept only projected batches", () => {
-    const { state, alternate } = hiddenSaboteurScenario();
+    const { state, alternate } = hiddenScoutScenario();
     const movedHidden = checkedV7({
       ...state,
       units: state.units.map((unit, index) =>
@@ -845,105 +711,9 @@ describe("ruleset-7 observation safety and Concealment", () => {
       createSafeLiveLogV7(view, [{ ...batch, viewerId: state.players[1]!.id }]),
     ).toThrow(/projected batches/);
   });
-
-  it("replays a naturally researched and trained concealed Saboteur exactly", () => {
-    const setup = initialV7(1_337).setup;
-    const created = createPlayableGameV7(setup);
-    if (!created.ok) throw new Error(created.error.code);
-    let state = created.state;
-    let replay = createReplayV7(setup);
-    let trainedId: UnitStateV7["id"] | null = null;
-    let movedStarter = false;
-    const researchOrder = ["HUNTING", "MARKSMANSHIP", "FIELDCRAFT"] as const;
-    for (let guard = 0; guard < 100 && trainedId === null; guard += 1) {
-      const actor = state.turnOrder[state.activeSeatIndex]!;
-      if (actor === state.humanPlayerId) {
-        const view = viewForV7(state, actor);
-        if (!movedStarter) {
-          const starter = state.units.find((unit) => unit.ownerId === actor)!;
-          const destination = state.board.tiles.find(
-            (tile) =>
-              distance(tile.at, starter.at) === 1 &&
-              tile.terrain !== "MOUNTAIN" &&
-              view.viewer.explored.some((at) => same(at, tile.at)) &&
-              !state.units.some((unit) => same(unit.at, tile.at)),
-          );
-          if (!starter.activation.handled && destination !== undefined) {
-            ({ state, replay } = acceptForReplay(state, replay, actor, {
-              kind: "MOVE",
-              unitId: starter.id,
-              path: [destination.at],
-            }));
-            movedStarter = true;
-          }
-        }
-        const player = state.players.find(
-          (candidate) => candidate.id === actor,
-        )!;
-        const nextTech = researchOrder.find(
-          (technology) => !player.researchedTechs.includes(technology),
-        );
-        if (nextTech !== undefined) {
-          const research = queryPlayerCommandsV7(viewForV7(state, actor)).find(
-            (command) =>
-              command.kind === "RESEARCH" && command.tech === nextTech,
-          );
-          if (research !== undefined)
-            ({ state, replay } = acceptForReplay(
-              state,
-              replay,
-              actor,
-              research,
-            ));
-        } else {
-          const train = queryPlayerCommandsV7(viewForV7(state, actor)).find(
-            (command) =>
-              command.kind === "TRAIN" && command.role === "SABOTEUR",
-          );
-          if (train !== undefined) {
-            const result = applyCommandV7(state, actor, train);
-            if (!result.accepted) throw new Error(result.error.code);
-            trainedId =
-              result.events.find((event) => event.kind === "UNIT_TRAINED")
-                ?.unitId ?? null;
-            replay = appendReplayCommandV7(replay, train, result.state);
-            state = result.state;
-            break;
-          }
-        }
-      }
-      ({ state, replay } = acceptForReplay(state, replay, actor, {
-        kind: "END_TURN",
-      }));
-    }
-    expect(trainedId).not.toBeNull();
-    const replayed = runReplayV7(replay);
-    expect(replayed.stateHash).toBe(canonicalGameStateHashV7(state));
-    const opponent = state.players.find(
-      (player) => player.id !== state.humanPlayerId,
-    )!;
-    expect(viewForV7(replayed.state, opponent.id).units).not.toContainEqual(
-      expect.objectContaining({ id: trainedId }),
-    );
-  });
 });
 
-function acceptForReplay(
-  state: GameStateV7,
-  replay: ReturnType<typeof createReplayV7>,
-  actor: PlayerId,
-  command: Parameters<typeof applyCommandV7>[2],
-) {
-  const result = applyCommandV7(state, actor, command);
-  if (!result.accepted)
-    throw new Error(`${command.kind}: ${result.error.code}`);
-  return {
-    state: result.state,
-    replay: appendReplayCommandV7(replay, command, result.state),
-  };
-}
-
-function hiddenSaboteurScenario(): {
+function hiddenScoutScenario(): {
   state: GameStateV7;
   line: readonly [CoordV7, CoordV7, CoordV7];
   alternate: CoordV7;
@@ -953,6 +723,15 @@ function hiddenSaboteurScenario(): {
     (player) => player.id === state.humanPlayerId,
   )!;
   const line = findGrassLine(state, human.id);
+  const hostileAt = state.board.tiles
+    .map((tile) => tile.at)
+    .find(
+      (at) =>
+        distance(at, line[1]) === 1 &&
+        !line.some((item) => same(item, at)) &&
+        !state.cities.some((city) => same(city.at, at)) &&
+        !state.treasureChests.some((chest) => same(chest, at)),
+    )!;
   const alternate = state.board.tiles
     .map((tile) => tile.at)
     .find(
@@ -987,7 +766,12 @@ function hiddenSaboteurScenario(): {
             researchedTechs: player.researchedTechs,
             explored: state.board.tiles
               .map((tile) => tile.at)
-              .filter((at) => !same(at, line[2])),
+              .filter(
+                (at) =>
+                  !same(at, line[2]) &&
+                  !same(at, hostileAt) &&
+                  !same(at, alternate),
+              ),
           }
         : player,
     ),
@@ -996,12 +780,11 @@ function hiddenSaboteurScenario(): {
         ? { ...unit, role: "RAIDER", at: line[0], activation: READY }
         : {
             ...unit,
-            role: "SABOTEUR",
-            at: line[2],
+            role: "SCOUT",
+            at: hostileAt,
             hp: 10,
             maxHp: 10,
             activation: READY,
-            blackoutEligibleRound: 1,
           },
     ),
   });
@@ -1128,76 +911,6 @@ function hiddenZocAfterRevealScenario(): {
   };
 }
 
-function cooperativeDetectionScenario(): GameStateV7 {
-  const state = allTechsV7(initialV7WithThreePlayers());
-  const line = findGrassLine(state, state.players[1]!.id);
-  return checkedV7({
-    ...state,
-    setup: { ...state.setup, aiMode: "COOPERATIVE" },
-    units: state.units.map((unit, index) =>
-      index === 0
-        ? {
-            ...unit,
-            role: "SABOTEUR",
-            at: line[2],
-            hp: 10,
-            maxHp: 10,
-            blackoutEligibleRound: 1,
-          }
-        : index === 1
-          ? { ...unit, at: line[0] }
-          : { ...unit, at: line[1] },
-    ),
-  });
-}
-
-function initialV7WithThreePlayers(): GameStateV7 {
-  const base = initialV7(991);
-  const setup = {
-    ...base.setup,
-    seed: 991,
-    width: 14 as const,
-    height: 14 as const,
-    aiCount: 2 as const,
-    factions: ["ORIGINAL", "ORIGINAL", "ORIGINAL"] as const,
-  };
-  const created = createInitialMapStateV7(setup);
-  if (!created.ok) throw new Error(created.error.code);
-  return checkedV7({
-    ...created.state,
-    activeSeatIndex: created.state.turnOrder.indexOf(
-      created.state.humanPlayerId,
-    ),
-  });
-}
-
-function exposedAttackScenario(): GameStateV7 {
-  const { state, line } = hiddenSaboteurScenario();
-  return checkedV7({
-    ...state,
-    players: state.players.map((player) =>
-      player.id === state.humanPlayerId
-        ? { ...player, researchedTechs: TECHNOLOGY_IDS_V7 }
-        : player,
-    ),
-    units: state.units.map((unit) =>
-      unit.ownerId === state.humanPlayerId
-        ? {
-            ...unit,
-            role: "SABOTEUR",
-            at: line[0],
-            blackoutEligibleRound: 1,
-          }
-        : {
-            ...unit,
-            role: "FIGHTER",
-            at: line[1],
-            blackoutEligibleRound: null,
-          },
-    ),
-  });
-}
-
 function findGrassLine(
   state: GameStateV7,
   detectorOwnerId: PlayerId,
@@ -1226,27 +939,6 @@ function findGrassLine(
         return line;
     }
   throw new Error("No observation test line");
-}
-
-function farHiddenCoordinate(state: GameStateV7, viewerId: PlayerId): CoordV7 {
-  const viewerUnits = state.units.filter((unit) => unit.ownerId === viewerId);
-  const viewerCities = state.cities.filter((city) => city.ownerId === viewerId);
-  const occupied = new Set(
-    state.units.map((unit) => `${unit.at.y},${unit.at.x}`),
-  );
-  const at = state.board.tiles
-    .map((tile) => tile.at)
-    .find(
-      (candidate) =>
-        !occupied.has(`${candidate.y},${candidate.x}`) &&
-        viewerUnits.every(
-          (unit) =>
-            distance(unit.at, candidate) > (unit.role === "SCOUT" ? 2 : 1),
-        ) &&
-        viewerCities.every((city) => distance(city.at, candidate) > 1),
-    );
-  if (at === undefined) throw new Error("No hidden coordinate");
-  return at;
 }
 
 const distance = (left: CoordV7, right: CoordV7) =>

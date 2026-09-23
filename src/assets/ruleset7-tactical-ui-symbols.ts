@@ -171,6 +171,20 @@ const polygon = (
  */
 const RULESET7_TACTICAL_UI_SYMBOL_DEFINITIONS = [
   {
+    id: "ui-action-field-defense",
+    semanticLabel: "Build Field Defense",
+    semanticRole: "command",
+    visibility: "PUBLIC_COMMAND",
+    projectedSource: "offered BUILD_FIELD_DEFENSE command",
+    reducedMotion: "STATIC",
+    primitives: [
+      rect(3, 13, 8, 5, 1, "bronze"),
+      rect(13, 13, 8, 5, 1, "bronze"),
+      rect(8, 7, 8, 5, 1, "paper"),
+      line(3, 19, 21, 19, 2, "ink"),
+    ],
+  },
+  {
     id: "ui-status-port-active",
     semanticLabel: "Owned active Port",
     semanticRole: "economy",

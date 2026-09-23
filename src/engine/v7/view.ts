@@ -7,13 +7,12 @@ import {
   isActivePortV7,
   seaTradeCityIdsV7,
 } from "./economy";
-import { detectionCoversCoordV7, isUnitVisibleToPlayerV7 } from "./observation";
+import { isUnitVisibleToPlayerV7 } from "./observation";
 import { spatialContributionAtV7 } from "./spatial-economy";
 import type {
   BoardSizeV7,
   BiomeIdV7,
   AchievementIdV7,
-  CityBlackoutV7,
   CoordV7,
   GameStateV7,
   ImprovementIdV7,
@@ -49,6 +48,8 @@ export type PlayerTileViewV7 =
       readonly resource: PublicResourceV7;
       readonly improvement: ImprovementIdV7 | null;
       readonly road: boolean;
+      readonly fieldDefense: boolean;
+      readonly fortificationLevel: number | null;
       readonly site: "CAPITAL" | "VILLAGE" | "CITY" | null;
       readonly territoryCityId: CityId | null;
       readonly territoryOwnerId: PlayerId | null;
@@ -78,23 +79,9 @@ export interface PublicPlayerV7 {
   readonly color: PlayerColorV7;
   readonly faction: "ORIGINAL";
   readonly factionTreeId: "ORIGINAL_BASELINE_V4";
+  readonly originalCapitalCityId: CityId;
   readonly status: "ACTIVE" | "ELIMINATED";
 }
-
-export type PublicBlackoutStatusV7 =
-  | {
-      readonly visibility: "FULL";
-      readonly cityId: CityId;
-      readonly phase: CityBlackoutV7["phase"];
-      readonly sourceUnitId: UnitId | null;
-      readonly suppressedCoins: number | null;
-      readonly unaffectedTurnStarted: boolean | null;
-    }
-  | {
-      readonly visibility: "CITY_ONLY";
-      readonly cityId: CityId;
-      readonly phase: CityBlackoutV7["phase"];
-    };
 
 export interface PublicCityV7 {
   readonly id: CityId;
@@ -110,7 +97,6 @@ export interface PublicCityV7 {
     readonly reachedLevel: number;
     readonly reward: RewardIdV7;
   }[];
-  readonly blackout: PublicBlackoutStatusV7 | null;
 }
 
 export interface PublicUnitV7 {
@@ -126,34 +112,6 @@ export interface PublicUnitV7 {
   readonly veteran: boolean;
   readonly captureEligible: boolean;
   readonly activation: UnitActivationV7;
-  readonly blackoutEligibility:
-    | { readonly known: true; readonly round: number }
-    | { readonly known: false };
-  /** Present only for viewer-safe Concealment and special reveal facts. */
-  readonly visibility?: PublicUnitVisibilityV7;
-}
-
-export interface PublicUnitVisibilityV7 {
-  readonly concealment?: "OWNER_CAPABILITY";
-  readonly detection?: {
-    readonly kind: "DETECTED";
-    readonly breakCondition: "OUTSIDE_ALL_LEGAL_DETECTOR_RANGE";
-  };
-  readonly exposures?: readonly PublicSaboteurExposureV7[];
-}
-
-export interface PublicSaboteurExposureV7 {
-  readonly reason: "ATTACK" | "PILLAGE" | "BLACKOUT";
-  readonly boundary: {
-    readonly kind: "ANCHOR_NEXT_ACCEPTED_END_TURN";
-    readonly anchorPlayerId: PlayerId;
-    readonly round:
-      | { readonly known: true; readonly value: number }
-      | {
-          readonly known: false;
-          readonly reason: "SAFE_INTEGER_OVERFLOW";
-        };
-  };
 }
 
 export interface PublicLeaderboardEntryV7 {
@@ -171,13 +129,7 @@ export interface PublicLeaderboardEntryV7 {
 export type PublicImprovementValueV7 = {
   readonly at: CoordV7;
   readonly improvement:
-    | "WINDMILL"
-    | "SAWMILL"
-    | "FORGE"
-    | "WORKSHOP"
-    | "GRAND_WORKS"
-    | "MARKET"
-    | "MONUMENT";
+    "WINDMILL" | "SAWMILL" | "FORGE" | "WORKSHOP" | "MARKET" | "MONUMENT";
   readonly level: number;
   readonly measure: "POPULATION" | "COIN_INCOME";
   readonly contributingTiles: readonly CoordV7[];
@@ -245,7 +197,6 @@ export interface PlayerViewV7 {
   readonly unitStats: readonly PublicUnitStatsV7[];
   readonly naval: PublicNavalFactsV7;
   readonly treasureChests: readonly CoordV7[];
-  readonly blackoutStatuses: readonly PublicBlackoutStatusV7[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
 }
@@ -258,6 +209,7 @@ export interface PublicNavalFactsV7 {
   }[];
   readonly tradeCityIds: readonly CityId[];
   readonly networkCityIds: readonly CityId[];
+  readonly networkRoads: readonly CoordV7[];
   readonly seaRoutes: readonly {
     readonly fromCityId: CityId;
     readonly toCityId: CityId;
@@ -315,6 +267,18 @@ export function viewForV7(
       resource: publicResourceV7(tile, viewer.researchedTechs),
       improvement: tile.improvement,
       road: tile.road,
+      fieldDefense: tile.fieldDefense,
+      fortificationLevel:
+        territory !== undefined &&
+        territory !== null &&
+        (territory.ownerId === viewerId ||
+          state.units.some(
+            (unit) =>
+              same(unit.at, tile.at) &&
+              isUnitVisibleToPlayerV7(state, viewerId, unit),
+          ))
+          ? tileFortificationLevel(state, tile.at, territory)
+          : null,
       site: tile.site,
       territoryCityId:
         tile.territoryCityId === null ||
@@ -373,7 +337,6 @@ export function viewForV7(
     isUnitVisibleToPlayerV7(state, viewerId, unit),
   );
   const publicUnits = visibleUnits.map((unit): PublicUnitV7 => {
-    const visibility = publicUnitVisibilityV7(state, viewerId, unit);
     return {
       id: unit.id,
       ownerId: unit.ownerId,
@@ -387,11 +350,6 @@ export function viewForV7(
       veteran: unit.veteran,
       captureEligible: unit.captureEligible,
       activation: unit.activation,
-      blackoutEligibility:
-        unit.ownerId === viewerId && unit.blackoutEligibleRound !== null
-          ? { known: true, round: unit.blackoutEligibleRound }
-          : { known: false },
-      ...(visibility === undefined ? {} : { visibility }),
     };
   });
   const visibleContributions = state.populationContributions.flatMap(
@@ -450,7 +408,6 @@ export function viewForV7(
       const marketSeaRoadBonus =
         tile.improvement === "MARKET" &&
         city !== undefined &&
-        !evaluation.capitalRoadConnected &&
         neighbors8(state.board.width, state.board.height, tile.at).some((at) =>
           combinedNetworkRoadKeysV7(state, viewerId).has(key(at)),
         )
@@ -478,12 +435,6 @@ export function viewForV7(
       ];
     },
   );
-  const blackoutStatuses = visibleCities.flatMap(
-    (city): readonly PublicBlackoutStatusV7[] =>
-      city.blackout === null
-        ? []
-        : [publicBlackout(viewerId, city.id, city.ownerId, city.blackout)],
-  );
   const publicCities = visibleCities.map((city): PublicCityV7 => ({
     id: city.id,
     ownerId: city.ownerId,
@@ -495,10 +446,6 @@ export function viewForV7(
     isCapital: city.isCapital,
     expanded: city.expanded,
     rewards: city.rewards,
-    blackout:
-      city.blackout === null
-        ? null
-        : publicBlackout(viewerId, city.id, city.ownerId, city.blackout),
   }));
   const cityCounts = countBy(state.cities.map((city) => city.ownerId));
   const unitCounts = countBy(
@@ -566,23 +513,13 @@ export function viewForV7(
     populationContributions: visibleContributions,
     improvementValues,
     units: publicUnits,
-    unitStats: visibleUnits.map((unit) => {
-      const stats = publicUnitStatsForViewerV7(
+    unitStats: visibleUnits.map((unit) =>
+      publicUnitStatsForViewerV7(
         publicUnitStatsV7(state, unit),
         unit.role,
         explored.has(key(unit.at)),
-      );
-      const exposed = state.saboteurExposures.some(
-        (exposure) =>
-          exposure.unitId === unit.id &&
-          (unit.ownerId === viewerId ||
-            exposure.anchorPlayerId === viewerId ||
-            arePlayersAlliedV7(state, viewerId, exposure.anchorPlayerId)),
-      );
-      return exposed
-        ? { ...stats, statuses: [...stats.statuses, "EXPOSED"] }
-        : stats;
-    }),
+      ),
+    ),
     naval: {
       ownedPorts,
       tradeCityIds: [...seaTradeCityIdsV7(state, viewerId)].sort(
@@ -591,6 +528,13 @@ export function viewForV7(
       networkCityIds: [...combinedNetworkCityIdsV7(state, viewerId)].sort(
         (left, right) => left - right,
       ),
+      networkRoads: state.board.tiles
+        .filter(
+          (tile) =>
+            explored.has(key(tile.at)) &&
+            combinedNetworkRoadKeysV7(state, viewerId).has(key(tile.at)),
+        )
+        .map((tile) => tile.at),
       seaRoutes: publicSeaRoutes(state, viewer, ownedPorts),
       recoverableNavalUnitIds: state.units
         .filter(
@@ -608,7 +552,6 @@ export function viewForV7(
     treasureChests: state.treasureChests.filter((chest) =>
       explored.has(key(chest)),
     ),
-    blackoutStatuses,
     pendingChoices: state.pendingChoices.filter((choice) =>
       state.cities.some(
         (city) => city.id === choice.cityId && city.ownerId === viewerId,
@@ -648,6 +591,7 @@ function publicSeaRoutes(
       state.board.height,
       water,
       from.at,
+      5,
     );
     for (const to of active) {
       if (from.cityId >= to.cityId) continue;
@@ -690,15 +634,21 @@ function waterParents(
   height: number,
   water: ReadonlySet<string>,
   start: CoordV7,
+  maximumDistance: number,
 ): ReadonlyMap<string, CoordV7 | null> {
   const queue = [start];
+  const distance = new Map<string, number>([[key(start), 0]]);
   const prior = new Map<string, CoordV7 | null>([[key(start), null]]);
   for (let cursor = 0; cursor < queue.length; cursor += 1) {
     const current = queue[cursor];
     if (current === undefined) break;
+    const currentDistance = distance.get(key(current));
+    if (currentDistance === undefined || currentDistance >= maximumDistance)
+      continue;
     for (const near of neighbors8(width, height, current))
       if (water.has(key(near)) && !prior.has(key(near))) {
         prior.set(key(near), current);
+        distance.set(key(near), currentDistance + 1);
         queue.push(near);
       }
   }
@@ -719,76 +669,10 @@ function reconstructWaterPath(
   return path.reverse();
 }
 
-function publicUnitVisibilityV7(
-  state: GameStateV7,
-  viewerId: PlayerId,
-  unit: GameStateV7["units"][number],
-): PublicUnitVisibilityV7 | undefined {
-  if (unit.role === "SABOTEUR" && unit.form !== "LAND") return undefined;
-  const concealment =
-    unit.role === "SABOTEUR" && unit.ownerId === viewerId
-      ? ("OWNER_CAPABILITY" as const)
-      : undefined;
-  const detection =
-    unit.role === "SABOTEUR" &&
-    unit.ownerId !== viewerId &&
-    !arePlayersAlliedV7(state, viewerId, unit.ownerId) &&
-    detectionCoversCoordV7(state, viewerId, unit.at)
-      ? ({
-          kind: "DETECTED",
-          breakCondition: "OUTSIDE_ALL_LEGAL_DETECTOR_RANGE",
-        } as const)
-      : undefined;
-  const exposures = state.saboteurExposures.flatMap(
-    (exposure): readonly PublicSaboteurExposureV7[] =>
-      exposure.unitId === unit.id &&
-      (unit.ownerId === viewerId ||
-        exposure.anchorPlayerId === viewerId ||
-        arePlayersAlliedV7(state, viewerId, exposure.anchorPlayerId))
-        ? [
-            {
-              reason: exposure.reason,
-              boundary: {
-                kind: "ANCHOR_NEXT_ACCEPTED_END_TURN",
-                anchorPlayerId: exposure.anchorPlayerId,
-                round: nextExposureBoundaryRoundV7(
-                  state,
-                  exposure.anchorPlayerId,
-                ),
-              },
-            },
-          ]
-        : [],
-  );
-  if (
-    concealment === undefined &&
-    detection === undefined &&
-    exposures.length === 0
-  )
-    return undefined;
-  return {
-    ...(concealment === undefined ? {} : { concealment }),
-    ...(detection === undefined ? {} : { detection }),
-    ...(exposures.length === 0 ? {} : { exposures }),
-  };
-}
-
-function nextExposureBoundaryRoundV7(
-  state: GameStateV7,
-  anchorPlayerId: PlayerId,
-): PublicSaboteurExposureV7["boundary"]["round"] {
-  const anchorIndex = state.turnOrder.indexOf(anchorPlayerId);
-  if (anchorIndex < 0) throw new RangeError("Unknown exposure anchor");
-  const round = state.round + Number(anchorIndex < state.activeSeatIndex);
-  return Number.isSafeInteger(round)
-    ? { known: true, value: round }
-    : { known: false, reason: "SAFE_INTEGER_OVERFLOW" };
-}
-
 const HIDDEN_POSITION_MODIFIERS_V7 = new Set([
   "CITY_WALLS",
-  "FORTIFICATION",
-  "FRIENDLY_CITY",
+  "DRILL",
+  "FIELD_DEFENSE",
   "MOUNTAIN",
   "FOREST",
   "HIGH_GROUND",
@@ -845,7 +729,7 @@ export function achievementProgressV7(
     (maximum, contribution) =>
       contribution.category === "LIVE" &&
       contribution.source.kind === "IMPROVEMENT" &&
-      ["WINDMILL", "SAWMILL", "FORGE", "WORKSHOP", "GRAND_WORKS"].includes(
+      ["WINDMILL", "SAWMILL", "FORGE", "WORKSHOP"].includes(
         contribution.source.improvement,
       ) &&
       state.cities.some(
@@ -886,31 +770,9 @@ export function publicResourceV7(
   },
   technologies: readonly string[],
 ): PublicResourceV7 {
-  if (tile.resource === "ORE" && !technologies.includes("ENGINEERING"))
+  if (tile.resource === "ORE" && !technologies.includes("PROSPECTING"))
     return null;
   return tile.resource;
-}
-
-function publicBlackout(
-  viewerId: PlayerId,
-  cityId: CityId,
-  cityOwnerId: PlayerId,
-  blackout: CityBlackoutV7,
-): PublicBlackoutStatusV7 {
-  const sourceOwnerId =
-    blackout.phase === "RECOVERY" ? null : blackout.sourceOwnerId;
-  const full = viewerId === cityOwnerId || sourceOwnerId === viewerId;
-  if (!full) return { visibility: "CITY_ONLY", cityId, phase: blackout.phase };
-  return {
-    visibility: "FULL",
-    cityId,
-    phase: blackout.phase,
-    sourceUnitId: blackout.phase === "PENDING" ? blackout.sourceUnitId : null,
-    suppressedCoins:
-      blackout.phase === "ACTIVE" ? blackout.suppressedCoins : null,
-    unaffectedTurnStarted:
-      blackout.phase === "RECOVERY" ? blackout.unaffectedTurnStarted : null,
-  };
 }
 
 function isValued(
@@ -921,10 +783,26 @@ function isValued(
     "SAWMILL",
     "FORGE",
     "WORKSHOP",
-    "GRAND_WORKS",
     "MARKET",
     "MONUMENT",
   ].includes(improvement);
+}
+function tileFortificationLevel(
+  state: GameStateV7,
+  at: CoordV7,
+  territory: GameStateV7["cities"][number],
+): number {
+  const tile = state.board.tiles[at.y * state.board.width + at.x];
+  let level = tile?.fieldDefense ? 1 : 0;
+  if (same(territory.at, at)) {
+    const owner = state.players.find(
+      (player) => player.id === territory.ownerId,
+    );
+    if (owner?.researchedTechs.includes("DRILL")) level += 1;
+    if (territory.rewards.some((reward) => reward.reward === "WALLS"))
+      level += 2;
+  }
+  return level;
 }
 function countBy(values: readonly PlayerId[]): Map<PlayerId, number> {
   const result = new Map<PlayerId, number>();

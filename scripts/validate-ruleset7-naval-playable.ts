@@ -18,6 +18,10 @@ import { runAiMatchV7 } from "../src/headless/v7";
 import { isolatedNavalScenarioV7 } from "../tests/fixtures/v7-naval-ai-scenarios";
 import { battleshipBombardmentV7 } from "../tests/fixtures/v7-naval-builders";
 import { prepareSmokeOutput } from "./browser-smoke-output";
+import {
+  findCoastOscillationV7,
+  parseNavalPlayableMatrixSelectionV7,
+} from "./ruleset-v7-naval-playable-contract";
 
 const MAP_TYPES: readonly MapTypeV7[] = [
   "DRY_LAND",
@@ -47,7 +51,6 @@ const WATER_COMMANDS = new Set([
   "GATHER_PEARLS",
   "BUILD_PORT",
   "TRAIN_NAVAL",
-  "EMBARK",
   "DISEMBARK",
 ]);
 const output = await prepareSmokeOutput({
@@ -57,12 +60,22 @@ const output = await prepareSmokeOutput({
 });
 const started = performance.now();
 const matrix: Record<string, unknown>[] = [];
-const skipMatrix = process.argv.includes("--skip-matrix");
+const { skipMatrix, matrixStart, partialMatrix } =
+  parseNavalPlayableMatrixSelectionV7(process.argv.slice(2));
+let matrixIndex = 0;
+
+if (partialMatrix)
+  console.log(
+    `PARTIAL matrix validation: cases ${matrixStart + 1}-40 of 40 (${40 - matrixStart} cases)`,
+  );
 
 if (!skipMatrix)
   for (const mapType of MAP_TYPES)
     for (const [width, aiCount] of SHAPES)
       for (const aiMode of ["RIVAL", "COOPERATIVE"] as const) {
+        const caseIndex = matrixIndex;
+        matrixIndex += 1;
+        if (caseIndex < matrixStart) continue;
         const setup = matchSetup(mapType, width, aiCount, aiMode, 0);
         const first = runAiMatchV7(setup, {
           maxRounds: 20,
@@ -115,7 +128,7 @@ if (!skipMatrix)
           finalHash: first.metrics.finalHash,
         });
         console.log(
-          `matrix ${matrix.length}/40 ${label} ${first.acceptedCommands} commands`,
+          `matrix ${caseIndex + 1}/40 ${label} ${first.acceptedCommands} commands`,
         );
       }
 
@@ -242,6 +255,9 @@ const report = {
   status: "PASS",
   fixedSeed: 0,
   matrixSkipped: skipMatrix,
+  partialMatrix,
+  matrixStart,
+  matrixTotalCases: 40,
   matrixCases: matrix.length,
   exactRepeats: matrix.length,
   matrix,
@@ -280,7 +296,7 @@ function matchSetup(
 ): MatchSetupV7 {
   return {
     rulesetId: RULESET_7_ID,
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     seed,
     width,
     height: width,
@@ -300,32 +316,11 @@ function assertNoCoastOscillation(
   }[],
   label: string,
 ): void {
-  const landed = new Map<number, { meaningful: boolean; at: string }>();
-  for (const { command, events } of log) {
-    if (command.kind === "DISEMBARK")
-      landed.set(command.unitId, {
-        meaningful: false,
-        at: `${command.at.x},${command.at.y}`,
-      });
-    else if (
-      (command.kind === "ATTACK" ||
-        command.kind === "CAPTURE" ||
-        events.some((event) => event.kind === "TILES_REVEALED")) &&
-      landed.has(command.unitId)
-    )
-      landed.set(command.unitId, {
-        ...(landed.get(command.unitId) as { meaningful: boolean; at: string }),
-        meaningful: true,
-      });
-    else if (command.kind === "EMBARK") {
-      const previous = landed.get(command.unitId);
-      assert(
-        previous === undefined || previous.meaningful,
-        `${label}: repeated landing/embark oscillation for unit ${command.unitId} at ${previous?.at}`,
-      );
-      landed.delete(command.unitId);
-    }
-  }
+  const violation = findCoastOscillationV7(log);
+  assert(
+    violation === null,
+    `${label}: repeated landing/embark oscillation for unit ${violation?.unitId} at ${violation?.landingAt}`,
+  );
 }
 
 function runTargeted(
@@ -412,7 +407,10 @@ function runTargeted(
       if (command.kind === "RESEARCH" && command.tech === "NAVIGATION")
         navigation = true;
       if (command.kind === "BUILD_PORT") port = true;
-      if (command.kind === "EMBARK") {
+      if (
+        command.kind === "MOVE" &&
+        applied.events.some((event) => event.kind === "UNIT_EMBARKED")
+      ) {
         passengerId ??= command.unitId;
         if (command.unitId === passengerId) departure = true;
       }
@@ -503,7 +501,10 @@ function nonHumanInvasion(
   for (const entry of log) {
     if (entry.playerId === humanPlayerId) continue;
     const command = entry.command;
-    if (command.kind === "EMBARK")
+    if (
+      command.kind === "MOVE" &&
+      entry.events.some((event) => event.kind === "UNIT_EMBARKED")
+    )
       lifecycles.set(command.unitId, {
         ownerId: entry.playerId,
         departure: entry.index,

@@ -13,7 +13,6 @@ import {
   type BoardStateV7,
   type AchievementEntitlementV7,
   type AchievementIdV7,
-  type CityBlackoutV7,
   type CityRewardRecordV7,
   type CityStateV7,
   type CoordV7,
@@ -28,7 +27,6 @@ import {
   type RandomStateV7,
   type ResourceIdV7,
   type RewardIdV7,
-  type SaboteurExposureV7,
   type TechnologyIdV7,
   type TileStateV7,
   type UnitActivationV7,
@@ -37,6 +35,7 @@ import {
 } from "./types";
 import { parseMatchSetupV7 } from "./setup";
 import { spatialContributionAtV7 } from "./spatial-economy";
+import { combinedNetworkCityIdsV7 } from "./economy";
 import {
   compareCoordsV7,
   hasExactKeysV7,
@@ -68,7 +67,6 @@ const STATE_KEYS = [
   "random",
   "round",
   "rulesetId",
-  "saboteurExposures",
   "schemaVersion",
   "setup",
   "treasureChests",
@@ -92,9 +90,8 @@ const PREREQUISITE: Readonly<Partial<Record<TechnologyIdV7, TechnologyIdV7>>> =
     MOUNTED_ARCHERY: "RAIDING",
     FORTIFICATION: "DRILL",
     EXPLOSIVES: "FORTIFICATION",
-    ENGINEERING: "DRILL",
+    ENGINEERING: "PROSPECTING",
     METALLURGY: "ENGINEERING",
-    GRAND_WORKS: "ENGINEERING",
     NAVIGATION: "SHORECRAFT",
     NAVAL_ENGINEERING: "NAVIGATION",
   };
@@ -107,13 +104,12 @@ const BASE_HP: Readonly<Record<UnitRoleIdV7, number>> = {
   RAIDER: 10,
   MEDIC: 10,
   CATAPULT: 10,
-  SABOTEUR: 10,
   HEAVY: 20,
   HORSE_ARCHER: 10,
   BREACHER: 10,
   JUGGERNAUT: 40,
   PATROL_BOAT: 10,
-  BATTLESHIP: 20,
+  BATTLESHIP: 25,
 };
 
 const CAPTURE_ROLES = new Set<UnitRoleIdV7>([
@@ -142,7 +138,6 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   const cities = parseCities(input.cities);
   const contributions = parseContributions(input.populationContributions);
   const units = parseUnits(input.units);
-  const exposures = parseExposures(input.saboteurExposures);
   const treasureChests = parseSortedCoords(input.treasureChests);
   const choices = parseChoices(input.pendingChoices);
   const outcome = parseOutcome(input.outcome);
@@ -156,7 +151,6 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     cities === null ||
     contributions === null ||
     units === null ||
-    exposures === null ||
     treasureChests === null ||
     choices === null ||
     outcome === undefined ||
@@ -184,7 +178,6 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
       cities,
       contributions,
       units,
-      exposures,
       treasureChests,
       choices,
       outcome,
@@ -213,7 +206,6 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     populationContributions: contributions,
     units,
     treasureChests,
-    saboteurExposures: exposures,
     pendingChoices: choices,
     outcome,
   };
@@ -272,6 +264,7 @@ function parseTile(input: unknown): TileStateV7 | null {
       "at",
       "biome",
       "improvement",
+      "fieldDefense",
       "resource",
       "road",
       "site",
@@ -288,6 +281,7 @@ function parseTile(input: unknown): TileStateV7 | null {
     (input.improvement !== null &&
       !IMPROVEMENT_IDS_V7.includes(input.improvement as ImprovementIdV7)) ||
     typeof input.road !== "boolean" ||
+    typeof input.fieldDefense !== "boolean" ||
     (input.site !== null &&
       input.site !== "CAPITAL" &&
       input.site !== "VILLAGE" &&
@@ -312,6 +306,7 @@ function parseTile(input: unknown): TileStateV7 | null {
     !basicImprovementMatchesTerrain(improvement, terrain) ||
     (input.biome === null &&
       (input.road ||
+        input.fieldDefense ||
         input.site !== null ||
         (improvement !== null && improvement !== "PORT"))) ||
     (input.site !== null &&
@@ -328,6 +323,7 @@ function parseTile(input: unknown): TileStateV7 | null {
     resource,
     improvement,
     road: input.road,
+    fieldDefense: input.fieldDefense,
     site: input.site as TileStateV7["site"],
     territoryCityId: territory,
   };
@@ -363,6 +359,7 @@ function parsePlayer(input: unknown): PlayerStateV7 | null {
       "faction",
       "factionTreeId",
       "id",
+      "originalCapitalCityId",
       "researchedTechs",
       "seat",
       "spoilsClaimedCityIds",
@@ -378,6 +375,7 @@ function parsePlayer(input: unknown): PlayerStateV7 | null {
   )
     return null;
   const id = parsePlayerIdV7(input.id);
+  const originalCapitalCityId = parseCityIdV7(input.originalCapitalCityId);
   const researched = parseOrderedStringsV7(
     input.researchedTechs,
     TECHNOLOGY_IDS_V7,
@@ -392,6 +390,7 @@ function parsePlayer(input: unknown): PlayerStateV7 | null {
   );
   if (
     id === null ||
+    originalCapitalCityId === null ||
     researched === null ||
     researched[0] !== "GATHERING" ||
     explored === null ||
@@ -427,6 +426,7 @@ function parsePlayer(input: unknown): PlayerStateV7 | null {
     explored,
     spoilsClaimedCityIds: spoils,
     achievementEntitlements,
+    originalCapitalCityId,
   };
 }
 
@@ -470,7 +470,6 @@ function parseCity(input: unknown): CityStateV7 | null {
   if (
     !hasExactKeysV7(input, [
       "at",
-      "blackout",
       "economicPopulation",
       "expanded",
       "id",
@@ -493,14 +492,12 @@ function parseCity(input: unknown): CityStateV7 | null {
   const owner = parsePlayerIdV7(input.ownerId);
   const at = parseCoordV7(input.at);
   const rewards = parseRewards(input.rewards);
-  const blackout = parseBlackout(input.blackout);
   const spent = growthSpent(input.level);
   if (
     id === null ||
     owner === null ||
     at === null ||
     rewards === null ||
-    blackout === undefined ||
     spent === null ||
     input.population !==
       input.permanentPopulation + input.economicPopulation - spent ||
@@ -518,7 +515,6 @@ function parseCity(input: unknown): CityStateV7 | null {
     isCapital: input.isCapital,
     expanded: input.expanded,
     rewards,
-    blackout,
   };
 }
 
@@ -545,65 +541,6 @@ function parseRewards(input: unknown): readonly CityRewardRecordV7[] | null {
     prior = candidate.reachedLevel;
   }
   return values;
-}
-
-function parseBlackout(input: unknown): CityBlackoutV7 | null | undefined {
-  if (input === null) return null;
-  if (
-    hasExactKeysV7(input, [
-      "phase",
-      "plantedRound",
-      "sourceOwnerId",
-      "sourceUnitId",
-    ]) &&
-    input.phase === "PENDING"
-  ) {
-    const unit = parseUnitIdV7(input.sourceUnitId);
-    const owner = parsePlayerIdV7(input.sourceOwnerId);
-    return unit !== null &&
-      owner !== null &&
-      isPositiveSafeIntegerV7(input.plantedRound)
-      ? {
-          phase: "PENDING",
-          sourceUnitId: unit,
-          sourceOwnerId: owner,
-          plantedRound: input.plantedRound,
-        }
-      : undefined;
-  }
-  if (
-    hasExactKeysV7(input, ["phase", "sourceOwnerId", "suppressedCoins"]) &&
-    input.phase === "ACTIVE"
-  ) {
-    const owner = parsePlayerIdV7(input.sourceOwnerId);
-    return owner !== null &&
-      isNonNegativeSafeIntegerV7(input.suppressedCoins) &&
-      input.suppressedCoins <= 3
-      ? {
-          phase: "ACTIVE",
-          sourceOwnerId: owner,
-          suppressedCoins: input.suppressedCoins,
-        }
-      : undefined;
-  }
-  if (
-    hasExactKeysV7(input, [
-      "phase",
-      "recoveryOwnerId",
-      "unaffectedTurnStarted",
-    ]) &&
-    input.phase === "RECOVERY"
-  ) {
-    const owner = parsePlayerIdV7(input.recoveryOwnerId);
-    return owner !== null && typeof input.unaffectedTurnStarted === "boolean"
-      ? {
-          phase: "RECOVERY",
-          recoveryOwnerId: owner,
-          unaffectedTurnStarted: input.unaffectedTurnStarted,
-        }
-      : undefined;
-  }
-  return undefined;
 }
 
 function parseContributions(
@@ -724,7 +661,6 @@ function parseUnit(input: unknown): UnitStateV7 | null {
     !hasExactKeysV7(input, [
       "activation",
       "at",
-      "blackoutEligibleRound",
       "captureEligible",
       "homeCityId",
       "hp",
@@ -764,9 +700,6 @@ function parseUnit(input: unknown): UnitStateV7 | null {
     input.maxHp !== BASE_HP[role] + (input.veteran ? 5 : 0) ||
     (input.veteran && input.kills < 3) ||
     (input.captureEligible && !CAPTURE_ROLES.has(role)) ||
-    (role === "SABOTEUR"
-      ? !isPositiveSafeIntegerV7(input.blackoutEligibleRound)
-      : input.blackoutEligibleRound !== null) ||
     (role !== "HORSE_ARCHER" && activation.attacksUsed > 1) ||
     activation.attacked !== activation.attacksUsed > 0 ||
     (role === "PATROL_BOAT" || role === "BATTLESHIP") !==
@@ -786,7 +719,6 @@ function parseUnit(input: unknown): UnitStateV7 | null {
     veteran: input.veteran,
     captureEligible: input.captureEligible,
     activation,
-    blackoutEligibleRound: input.blackoutEligibleRound as number | null,
   };
 }
 
@@ -830,45 +762,6 @@ function parseActivation(input: unknown): UnitActivationV7 | null {
     handled: input.handled as boolean,
     specialActed: input.specialActed as boolean,
   };
-}
-
-function parseExposures(input: unknown): readonly SaboteurExposureV7[] | null {
-  if (!isDenseArrayV7(input)) return null;
-  const values: SaboteurExposureV7[] = [];
-  let previousKey: readonly [number, number] | null = null;
-  for (const candidate of input) {
-    if (
-      !hasExactKeysV7(candidate, [
-        "anchorPlayerId",
-        "clearsAtAnchorNextEndTurn",
-        "reason",
-        "unitId",
-      ]) ||
-      candidate.clearsAtAnchorNextEndTurn !== true ||
-      (candidate.reason !== "ATTACK" &&
-        candidate.reason !== "PILLAGE" &&
-        candidate.reason !== "BLACKOUT")
-    )
-      return null;
-    const unit = parseUnitIdV7(candidate.unitId);
-    const anchor = parsePlayerIdV7(candidate.anchorPlayerId);
-    if (unit === null || anchor === null) return null;
-    const currentKey = [unit, anchor] as const;
-    if (
-      previousKey !== null &&
-      (currentKey[0] < previousKey[0] ||
-        (currentKey[0] === previousKey[0] && currentKey[1] <= previousKey[1]))
-    )
-      return null;
-    values.push({
-      unitId: unit,
-      anchorPlayerId: anchor,
-      reason: candidate.reason,
-      clearsAtAnchorNextEndTurn: true,
-    });
-    previousKey = currentKey;
-  }
-  return values;
 }
 
 function parseChoices(input: unknown): readonly PendingChoiceV7[] | null {
@@ -961,7 +854,6 @@ interface CrossInput {
   cities: readonly CityStateV7[];
   contributions: readonly PopulationContributionV7[];
   units: readonly UnitStateV7[];
-  exposures: readonly SaboteurExposureV7[];
   treasureChests: readonly CoordV7[];
   choices: readonly PendingChoiceV7[];
   outcome: MatchOutcomeV7 | null;
@@ -979,14 +871,12 @@ function validateCrossReferences(value: CrossInput): boolean {
     cities,
     contributions,
     units,
-    exposures,
     treasureChests,
     choices,
     outcome,
   } = value;
   const playerById = new Map(players.map((player) => [player.id, player]));
   const cityById = new Map(cities.map((city) => [city.id, city]));
-  const unitById = new Map(units.map((unit) => [unit.id, unit]));
   const entityIds = [
     ...cities.map((item) => item.id),
     ...contributions.map((item) => item.id),
@@ -1068,25 +958,6 @@ function validateCrossReferences(value: CrossInput): boolean {
         city.rewards.some((reward) => reward.reward === "EXPAND")
     )
       return false;
-    if (
-      city.blackout?.phase === "RECOVERY" &&
-      city.blackout.recoveryOwnerId !== city.ownerId
-    )
-      return false;
-    if (city.blackout?.phase === "PENDING") {
-      if (
-        !playerById.has(city.blackout.sourceOwnerId) ||
-        city.blackout.plantedRound > value.round ||
-        city.blackout.sourceUnitId >= value.nextEntityId
-      )
-        return false;
-      const source = unitById.get(city.blackout.sourceUnitId);
-      if (source !== undefined && source.role !== "SABOTEUR") return false;
-    } else if (
-      city.blackout?.phase === "ACTIVE" &&
-      !playerById.has(city.blackout.sourceOwnerId)
-    )
-      return false;
   }
   for (const player of players) {
     if (
@@ -1094,7 +965,19 @@ function validateCrossReferences(value: CrossInput): boolean {
       !cities.some((city) => city.ownerId === player.id)
     )
       return false;
+    const originalCapital = cityById.get(player.originalCapitalCityId);
+    if (
+      originalCapital === undefined ||
+      !originalCapital.isCapital ||
+      player.originalCapitalCityId !== player.seat * 2 + 1
+    )
+      return false;
   }
+  if (
+    new Set(players.map((player) => player.originalCapitalCityId)).size !==
+    players.length
+  )
+    return false;
   const firstUnrewarded = [...cities]
     .filter((city) => city.ownerId === value.activePlayerId)
     .sort((left, right) => left.id - right.id)
@@ -1143,19 +1026,6 @@ function validateCrossReferences(value: CrossInput): boolean {
     ).length;
     if (monuments > funded) return false;
   }
-  const exposureKeys = new Set<string>();
-  for (const exposure of exposures) {
-    const unit = unitById.get(exposure.unitId);
-    const anchor = playerById.get(exposure.anchorPlayerId);
-    const exposureKey = `${exposure.unitId}:${exposure.anchorPlayerId}`;
-    if (
-      unit?.role !== "SABOTEUR" ||
-      anchor?.status !== "ACTIVE" ||
-      exposureKeys.has(exposureKey)
-    )
-      return false;
-    exposureKeys.add(exposureKey);
-  }
   if (
     choices.some((choice) => {
       const city = cityById.get(choice.cityId);
@@ -1202,6 +1072,13 @@ function populationLedgerValid(
   humanPlayerId: PlayerStateV7["id"],
 ): boolean {
   const cityById = new Map(cities.map((city) => [city.id, city]));
+  const graphState = { board, cities, players, units, setup, humanPlayerId };
+  const networksByOwner = new Map(
+    players.map(
+      (player) =>
+        [player.id, combinedNetworkCityIdsV7(graphState, player.id)] as const,
+    ),
+  );
   const liveByCoord = new Map<string, PopulationContributionV7>();
   const permanent = new Set<string>();
   for (const contribution of contributions) {
@@ -1263,9 +1140,28 @@ function populationLedgerValid(
     const permanentTotal = entries
       .filter((entry) => entry.category === "PERMANENT")
       .reduce((sum, entry) => sum + entry.amount, 0);
-    const liveTotal = entries
+    let liveTotal = entries
       .filter((entry) => entry.category === "LIVE")
       .reduce((sum, entry) => sum + entry.amount, 0);
+    const owner = players.find((player) => player.id === city.ownerId);
+    if (owner?.researchedTechs.includes("ROADS")) {
+      const capital = cities.find(
+        (candidate) =>
+          candidate.id === owner.originalCapitalCityId &&
+          candidate.ownerId === owner.id,
+      );
+      if (capital !== undefined) {
+        const connected = networksByOwner.get(owner.id) ?? new Set();
+        if (city.id === capital.id)
+          liveTotal += cities.filter(
+            (candidate) =>
+              candidate.ownerId === owner.id &&
+              candidate.id !== capital.id &&
+              connected.has(candidate.id),
+          ).length;
+        else if (connected.has(city.id)) liveTotal += 1;
+      }
+    }
     if (
       !Number.isSafeInteger(permanentTotal) ||
       !Number.isSafeInteger(liveTotal) ||

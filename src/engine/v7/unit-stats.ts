@@ -2,7 +2,7 @@ import {
   effectiveRoleRuleV7,
   technologyCapabilitiesV7,
 } from "../rules/ruleset-v7";
-import { defenseBonusForUnitV7 } from "./combat";
+import { defenseBonusForUnitV7, fortificationLevelForUnitV7 } from "./combat";
 import { tileAtV7 } from "./spatial-economy";
 import type { GameStateV7, UnitStateV7 } from "./types";
 
@@ -19,8 +19,8 @@ export type UnitStatModifierSourceV7 =
   | "PROMOTION"
   | "CHARGE"
   | "CITY_WALLS"
-  | "FORTIFICATION"
-  | "FRIENDLY_CITY"
+  | "DRILL"
+  | "FIELD_DEFENSE"
   | "MOUNTAIN"
   | "FOREST"
   | "HIGH_GROUND";
@@ -70,9 +70,16 @@ export function publicUnitStatsV7(
       ? 2
       : 0;
   const defense = defenseBonusForUnitV7(state, unit);
-  const defenseSource = defenseSourceAt(state, unit, defense.numerator);
+  const fortificationModifiers = fortificationTerms(state, unit);
+  const fortifiedDefense2 =
+    (embarked ? 2 : role.defense2) +
+    fortificationModifiers.reduce(
+      (sum, term) => sum + term.value.numerator * 2,
+      0,
+    );
+  const terrainSource = defenseSourceAt(state, unit, defense.numerator);
   const defenseDelta = rational(
-    (embarked ? 2 : role.defense2) * (defense.numerator - defense.denominator),
+    fortifiedDefense2 * (defense.numerator - defense.denominator),
     2 * defense.denominator,
   );
   const highGround =
@@ -131,17 +138,20 @@ export function publicUnitStatsV7(
         "Defense",
         null,
         base(labelText, "Defense", embarked ? 2 : role.defense2, 2),
-        defenseSource === null
-          ? []
-          : [
-              modifier(
-                defenseDelta.numerator,
-                defenseSource,
-                label(defenseSource),
-                `${label(defenseSource)} supplies the greatest active defense multiplier.`,
-                defenseDelta.denominator,
-              ),
-            ],
+        [
+          ...fortificationModifiers,
+          ...(terrainSource === null
+            ? []
+            : [
+                modifier(
+                  defenseDelta.numerator,
+                  terrainSource,
+                  label(terrainSource),
+                  `${label(terrainSource)} multiplies Defense by 1.5.`,
+                  defenseDelta.denominator,
+                ),
+              ]),
+        ],
       ),
       stat(
         "MOVE",
@@ -168,7 +178,7 @@ export function publicUnitStatsV7(
                 1,
                 "HIGH_GROUND",
                 "High ground",
-                "Engineering adds 1 Sight while standing on a Mountain.",
+                "Prospecting adds 1 Sight while standing on a Mountain.",
               ),
             ]
           : [],
@@ -185,30 +195,52 @@ function defenseSourceAt(
   numerator: number,
 ): UnitStatModifierSourceV7 | null {
   if (numerator === 1) return null;
-  const owner = state.players.find((player) => player.id === unit.ownerId);
-  const city = state.cities.find(
-    (candidate) =>
-      candidate.ownerId === unit.ownerId && same(candidate.at, unit.at),
-  );
-  if (
-    city?.rewards.some(
-      (reward) => reward.reachedLevel === 3 && reward.reward === "WALLS",
-    )
-  )
-    return "CITY_WALLS";
-  if (
-    city !== undefined &&
-    owner?.researchedTechs.includes("FORTIFICATION") &&
-    (unit.role === "FIGHTER" || unit.role === "GUARD")
-  )
-    return "FORTIFICATION";
-  if (city !== undefined) return "FRIENDLY_CITY";
   const terrain = tileAtV7(state.board, unit.at)?.terrain;
   return terrain === "MOUNTAIN"
     ? "MOUNTAIN"
     : terrain === "FOREST"
       ? "FOREST"
       : null;
+}
+function fortificationTerms(
+  state: GameStateV7,
+  unit: UnitStateV7,
+): readonly PublicUnitStatTermV7[] {
+  if (fortificationLevelForUnitV7(state, unit) === 0) return [];
+  const tile = tileAtV7(state.board, unit.at);
+  const city = state.cities.find(
+    (candidate) =>
+      candidate.ownerId === unit.ownerId && same(candidate.at, unit.at),
+  );
+  const owner = state.players.find((player) => player.id === unit.ownerId);
+  const terms: PublicUnitStatTermV7[] = [];
+  if (city !== undefined && owner?.researchedTechs.includes("DRILL"))
+    terms.push(
+      modifier(
+        1,
+        "DRILL",
+        "Drill",
+        "Drill adds 1 Defense on an owned city center.",
+      ),
+    );
+  if (
+    city?.rewards.some(
+      (reward) => reward.reachedLevel === 3 && reward.reward === "WALLS",
+    )
+  )
+    terms.push(
+      modifier(2, "CITY_WALLS", "City Walls", "City Walls add 2 Defense."),
+    );
+  if (tile?.fieldDefense)
+    terms.push(
+      modifier(
+        1,
+        "FIELD_DEFENSE",
+        "Field defense",
+        "Field defense adds 1 Defense.",
+      ),
+    );
+  return terms;
 }
 function stat(
   id: UnitStatIdV7,

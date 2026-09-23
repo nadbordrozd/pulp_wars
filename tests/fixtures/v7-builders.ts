@@ -23,7 +23,7 @@ export function setupV7(seed = 71, aiCount: 1 | 2 | 3 = 1): MatchSetupV7 {
     humanColor: "CORAL",
     factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL"),
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
   };
 }
 

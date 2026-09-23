@@ -477,7 +477,6 @@ function freshFighter(
     captureEligible: false,
     activation: readyActivation(),
     form: "LAND",
-    blackoutEligibleRound: null,
   };
 }
 function readyActivation(): UnitStateV7["activation"] {

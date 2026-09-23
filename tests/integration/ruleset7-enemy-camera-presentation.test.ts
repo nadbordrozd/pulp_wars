@@ -18,13 +18,9 @@ afterEach(() => vi.restoreAllMocks());
 
 describe("Enemy action camera presentation through public observations", () => {
   it.each(["FULL", "REDUCED"] as const)(
-    "keeps hidden moves, cloaked moves and hidden builds stationary with no animation delay in %s motion",
+    "keeps hidden moves and hidden builds stationary with no animation delay in %s motion",
     async (motion) => {
-      for (const scenario of [
-        "hidden-move",
-        "cloaked-move",
-        "hidden-build",
-      ] as const) {
+      for (const scenario of ["hidden-move", "hidden-build"] as const) {
         const fixture = enemyCameraFixtureV7(scenario);
         const rig = hostRig(fixture, motion);
         const camera = rig.camera();

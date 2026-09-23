@@ -72,31 +72,6 @@ export function horseArcherPublicFixtureV7(): TacticalPublicFixtureV7 {
   return project(state);
 }
 
-export function blackoutPublicFixtureV7(): TacticalPublicFixtureV7 {
-  const base = tacticalBase(1703);
-  const own = required(
-    base.units.find((unit) => unit.ownerId === base.humanPlayerId),
-  );
-  const city = required(
-    base.cities.find((candidate) => candidate.ownerId !== base.humanPlayerId),
-  );
-  const state = checkedV7({
-    ...base,
-    units: [
-      {
-        ...own,
-        role: "SABOTEUR" as const,
-        at: { x: city.at.x - 1, y: city.at.y },
-        hp: 10,
-        maxHp: 10,
-        activation: READY,
-        blackoutEligibleRound: 1,
-      },
-    ],
-  });
-  return project(state);
-}
-
 function tacticalBase(seed: number, aiCount: 1 | 2 | 3 = 1): GameStateV7 {
   const created = createInitialMapStateV7(setupV7(seed, aiCount));
   if (!created.ok) throw new Error(created.error.code);

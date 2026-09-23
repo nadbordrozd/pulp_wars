@@ -62,8 +62,8 @@ describe("ruleset-7 pure public economy", () => {
       at: target,
     });
     expect(spatialContributionAtV7(state, target, "MARKET")).toMatchObject({
-      marketIncome: 3,
-      capitalRoadConnected: true,
+      marketIncome: 2,
+      capitalRoadConnected: false,
     });
     expect(preview).toMatchObject({
       ok: true,
@@ -114,11 +114,10 @@ describe("ruleset-7 pure public economy", () => {
           unit.id === hiddenUnitId
             ? {
                 ...unit,
-                role: "SABOTEUR" as const,
+                role: "SCOUT" as const,
                 at: hiddenAt,
                 hp: resource === "GAME" ? 10 : 9,
                 maxHp: 10,
-                blackoutEligibleRound: 1,
               }
             : unit,
         ),
@@ -223,7 +222,6 @@ describe("ruleset-7 pure public economy", () => {
       "BUILD_SAWMILL",
       "BUILD_FORGE",
       "BUILD_WORKSHOP",
-      "BUILD_GRAND_WORKS",
       "BUILD_MARKET",
       "CLEAR_FOREST",
       "REPLANT_FOREST",
@@ -284,6 +282,130 @@ describe("ruleset-7 pure public economy", () => {
     }
   });
 
+  it("keeps hidden Ore and empty Mountains equivalent until Prospecting", () => {
+    const staged = farmPreviewState(7_294);
+    const basicTechs = new Set(["GATHERING", "FARMING", "MILLING"]);
+    const beforeFarm = checkedV7({
+      ...staged.state,
+      players: staged.state.players.map((player) =>
+        player.id === staged.state.humanPlayerId
+          ? {
+              ...player,
+              researchedTechs: TECHNOLOGY_IDS_V7.filter((technology) =>
+                basicTechs.has(technology),
+              ),
+            }
+          : player,
+      ),
+    });
+    const farmResult = applyCommandV7(beforeFarm, beforeFarm.humanPlayerId, {
+      kind: "BUILD_FARM",
+      at: staged.target,
+    });
+    if (!farmResult.accepted) throw new Error("farm setup rejected");
+    let withFarm = farmResult.state;
+    const reward = queryPlayerCommandsV7(
+      viewForV7(withFarm, withFarm.humanPlayerId),
+    ).find((command) => command.kind === "CHOOSE_CITY_REWARD");
+    if (reward !== undefined) {
+      const rewardResult = applyCommandV7(
+        withFarm,
+        withFarm.humanPlayerId,
+        reward,
+      );
+      if (!rewardResult.accepted) throw new Error("reward setup rejected");
+      withFarm = rewardResult.state;
+    }
+    const target = required(
+      withFarm.board.tiles.find(
+        (tile) =>
+          tile.territoryCityId === staged.cityId &&
+          Math.max(
+            Math.abs(tile.at.x - staged.target.x),
+            Math.abs(tile.at.y - staged.target.y),
+          ) === 1 &&
+          tile.site === null &&
+          tile.improvement === null &&
+          !withFarm.units.some((unit) => same(unit.at, tile.at)),
+      ),
+      "windmill target missing",
+    ).at;
+    const mountain = (resource: "ORE" | null, prospecting: boolean) =>
+      checkedV7({
+        ...withFarm,
+        treasureChests: withFarm.treasureChests.filter(
+          (chest) => !same(chest, target),
+        ),
+        players: withFarm.players.map((player) =>
+          player.id === withFarm.humanPlayerId
+            ? {
+                ...player,
+                researchedTechs: TECHNOLOGY_IDS_V7.filter(
+                  (technology) =>
+                    basicTechs.has(technology) ||
+                    (prospecting && technology === "PROSPECTING"),
+                ),
+              }
+            : player,
+        ),
+        board: {
+          ...withFarm.board,
+          tiles: withFarm.board.tiles.map((tile) =>
+            same(tile.at, target)
+              ? {
+                  ...tile,
+                  biome: "HIGHLANDS" as const,
+                  terrain: "MOUNTAIN" as const,
+                  resource,
+                }
+              : tile,
+          ),
+        },
+      });
+    const hiddenOre = mountain("ORE", false);
+    const hiddenEmpty = mountain(null, false);
+    const command = { kind: "BUILD_WINDMILL", at: target } as const;
+    const hiddenViews = [hiddenOre, hiddenEmpty].map((state) =>
+      viewForV7(state, state.humanPlayerId),
+    );
+    expect(JSON.stringify(hiddenViews[0])).toBe(JSON.stringify(hiddenViews[1]));
+    for (let index = 0; index < hiddenViews.length; index += 1) {
+      const view = required(hiddenViews[index], "hidden view missing");
+      expect(queryPlayerCommandsV7(view)).not.toContainEqual(command);
+      expect(previewEconomicV7(view, command)).toEqual({
+        ok: false,
+        error: "NOT_OFFERED",
+      });
+      expect(
+        applyCommandV7(
+          required([hiddenOre, hiddenEmpty][index], "hidden state missing"),
+          hiddenOre.humanPlayerId,
+          command,
+        ),
+      ).toMatchObject({
+        accepted: false,
+        error: { code: "TECH_REQUIRED", params: { tech: "PROSPECTING" } },
+      });
+    }
+
+    const revealedEmpty = mountain(null, true);
+    const revealedView = viewForV7(revealedEmpty, revealedEmpty.humanPlayerId);
+    expect(queryPlayerCommandsV7(revealedView)).toContainEqual(command);
+    expect(previewEconomicV7(revealedView, command).ok).toBe(true);
+    expect(
+      applyCommandV7(revealedEmpty, revealedEmpty.humanPlayerId, command)
+        .accepted,
+    ).toBe(true);
+
+    const revealedOre = mountain("ORE", true);
+    expect(
+      queryPlayerCommandsV7(viewForV7(revealedOre, revealedOre.humanPlayerId)),
+    ).not.toContainEqual(command);
+    expect(
+      applyCommandV7(revealedOre, revealedOre.humanPlayerId, command),
+    ).toMatchObject({ accepted: false, error: { code: "INVALID_TILE" } });
+  });
+
   it("rejects Clear Forest coin overflow and accepts the last safe value", () => {
     const base = richV7(allTechsV7(exploredAllV7(initialV7(7_289))));
     const command = queryPlayerCommandsV7(
@@ -323,7 +445,7 @@ describe("ruleset-7 pure public economy", () => {
     ).toBe(Number.MAX_SAFE_INTEGER);
   });
 
-  it("offers Mine only for revealed Ore after Engineering", () => {
+  it("offers Mine only for Ore revealed by Prospecting and unlocked by Engineering", () => {
     const staged = farmPreviewState(7_282);
     const mountain = emptyOwnedTile(staged.state, staged.cityId, [
       staged.target,
@@ -336,9 +458,9 @@ describe("ruleset-7 pure public economy", () => {
               ...player,
               researchedTechs: player.researchedTechs.filter(
                 (tech) =>
+                  tech !== "PROSPECTING" &&
                   tech !== "ENGINEERING" &&
-                  tech !== "METALLURGY" &&
-                  tech !== "GRAND_WORKS",
+                  tech !== "METALLURGY",
               ),
               coins: 0,
             }
@@ -369,6 +491,7 @@ describe("ruleset-7 pure public economy", () => {
               ...player,
               researchedTechs: TECHNOLOGY_IDS_V7.filter(
                 (tech) =>
+                  tech === "PROSPECTING" ||
                   tech === "ENGINEERING" ||
                   player.researchedTechs.includes(tech),
               ),
@@ -443,17 +566,17 @@ describe("ruleset-7 pure public economy", () => {
       resource: null,
       improvement: "MINE",
     });
-    const beforeEngineering: PlayerViewV7 = {
+    const beforeProspecting: PlayerViewV7 = {
       ...mine,
       viewer: {
         ...mine.viewer,
         researchedTechs: mine.viewer.researchedTechs.filter(
-          (tech) => tech !== "ENGINEERING",
+          (tech) => tech !== "PROSPECTING",
         ),
       },
     };
     expect(
-      previewEconomicV7(beforeEngineering, {
+      previewEconomicV7(beforeProspecting, {
         kind: "REDEVELOP",
         at: mountainAt,
       }),
@@ -518,31 +641,6 @@ describe("ruleset-7 pure public economy", () => {
     expect(monuments.some((candidate) => candidate.tuple[10] === -2)).toBe(
       true,
     );
-  });
-
-  it("requires two positive processor types and an actually legal Grand Works site", () => {
-    const staged = farmPreviewState(7_286);
-    const base = viewForV7(staged.state, staged.state.humanPlayerId);
-    const cells = processorPlanCells(base, staged.cityId);
-    const positive = patchViewTiles(base, [
-      { at: cells.target, resource: null, improvement: null },
-      { at: cells.windmill, resource: null, improvement: "WINDMILL" },
-      { at: cells.farm, resource: null, improvement: "FARM" },
-      { at: cells.forge, resource: null, improvement: "FORGE" },
-      { at: cells.mine, resource: null, improvement: "MINE" },
-    ]);
-    expect(potential(positive, "BUILD_GRAND_WORKS").targets).toBeGreaterThan(0);
-
-    const zeroForge = patchViewTile(positive, cells.mine, {
-      improvement: null,
-      resource: null,
-    });
-    expect(potential(zeroForge, "BUILD_GRAND_WORKS").targets).toBe(0);
-
-    const duplicate = patchViewTile(positive, cells.target, {
-      improvement: "GRAND_WORKS",
-    });
-    expect(potential(duplicate, "BUILD_GRAND_WORKS").targets).toBe(0);
   });
 
   it("uses an exposed exact Market output with partially hidden contributors at the floor", () => {
@@ -817,43 +915,6 @@ function patchViewTiles(
     (result, patch) => patchViewTile(result, patch.at, patch),
     view,
   );
-}
-
-function processorPlanCells(view: PlayerViewV7, cityId: number) {
-  const cells = view.board.tiles.filter(
-    (
-      tile,
-    ): tile is Extract<
-      PlayerViewV7["board"]["tiles"][number],
-      { explored: true }
-    > => tile.explored && tile.territoryCityId === cityId && tile.site === null,
-  );
-  for (const target of cells)
-    for (const windmill of cells)
-      for (const farm of cells)
-        for (const forge of cells)
-          for (const mine of cells) {
-            const values = [target, windmill, farm, forge, mine];
-            if (
-              new Set(values.map((tile) => `${tile.at.y},${tile.at.x}`)).size <
-              5
-            )
-              continue;
-            if (
-              chebyshev(target.at, windmill.at) === 1 &&
-              chebyshev(target.at, forge.at) === 1 &&
-              chebyshev(windmill.at, farm.at) === 1 &&
-              chebyshev(forge.at, mine.at) === 1
-            )
-              return {
-                target: target.at,
-                windmill: windmill.at,
-                farm: farm.at,
-                forge: forge.at,
-                mine: mine.at,
-              };
-          }
-  throw new Error("processor plan cells missing");
 }
 
 function twoCityEmptyEconomyView(view: PlayerViewV7): PlayerViewV7 {

@@ -22,7 +22,6 @@ import {
   queryPublicRedevelopmentChangesImprovementV7,
   scorePublicSpatialPlanV7,
   viewForV7,
-  type CommandV7,
   type CoordV7,
   type GameStateV7,
   type PlayerViewV7,
@@ -295,7 +294,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const publishedDefense = view.unitStats
       .find((entry) => entry.unitId === target.id)
       ?.stats.find((stat) => stat.id === "DEFENSE");
-    expect(publishedDefense?.total).toEqual({ numerator: 4, denominator: 1 });
+    expect(publishedDefense?.total).toEqual({ numerator: 3, denominator: 1 });
     expect(scoreCommandV7(view, command).immediateValue).toBe(
       10 * (first.damageToDefender + second.damageToDefender) -
         8 * (first.damageToAttacker + second.damageToAttacker) +
@@ -340,7 +339,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     });
     expect(sliced.candidates).toHaveLength(28);
     expect(canonicalHash(sliced)).toBe(
-      "12c1f6d70b02421183359d5f4a13408187d12a74ef41e4dd4f2d001468472199",
+      "96c6d9316bf9617a4d0a7757973ff8ef384b6a188f3afb42ee766fd607f936f2",
     );
     const revision4Commands = new Set([
       '{"kind":"ATTACK","unitId":19,"targetUnitId":34}',
@@ -366,7 +365,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
           revision4Commands.has(JSON.stringify(candidate.command)),
         ),
       ),
-    ).toBe("04cdcf122b2e7ab72ba56fbcf1c6ff2be70a0b693f7707cc189522d000a2dcb5");
+    ).toBe("da4a7c3e02d8fc99d1ee29909a52902a72c1d0c6a646e1349daa992b5b310311");
     expect(canonicalHash(sync)).toBe(canonicalHash(sliced));
     expect(sync).toEqual(sliced);
   }, 15_000);
@@ -501,49 +500,6 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     ).safetyValue;
     expect(danger).toBeLessThan(0);
     expect(protectedScore).toBeGreaterThan(danger);
-  });
-
-  it("lets visible Saboteur risk change contextual training selection", () => {
-    const base = exploredAllV7(allTechsV7(initialV7(13)));
-    const city = base.cities.find(
-      (item) => item.ownerId === base.humanPlayerId,
-    );
-    const enemy = base.players.find((item) => item.id !== base.humanPlayerId);
-    if (city === undefined || enemy === undefined)
-      throw new Error("Fixture missing");
-    const saboteurAt = {
-      x: city.at.x + 4 < base.board.width ? city.at.x + 4 : city.at.x - 4,
-      y: city.at.y,
-    };
-    const concealed = fixtureState([["SABOTEUR", saboteurAt, false, 10]]);
-    const saboteur = concealed.units.find((unit) => unit.role === "SABOTEUR");
-    if (saboteur === undefined) throw new Error("Saboteur missing");
-    const state = checkedV7({
-      ...concealed,
-      saboteurExposures: [
-        {
-          unitId: saboteur.id,
-          anchorPlayerId: concealed.humanPlayerId,
-          reason: "ATTACK",
-          clearsAtAnchorNextEndTurn: true,
-        },
-      ],
-    });
-    const trainedRoles = (candidateState: GameStateV7) =>
-      chooseNormalCommandV7(
-        viewForV7(candidateState, candidateState.humanPlayerId),
-      )
-        .candidates.filter(
-          (
-            candidate,
-          ): candidate is typeof candidate & {
-            command: Extract<CommandV7, { kind: "TRAIN" }>;
-          } => candidate.command.kind === "TRAIN",
-        )
-        .filter((candidate) => candidate.command.cityId === city.id)
-        .map((candidate) => candidate.command.role);
-    expect(trainedRoles(state)).toEqual(["SCOUT"]);
-    expect(trainedRoles(concealed)).not.toEqual(["SCOUT"]);
   });
 
   it("sums each injured Catapult preview and public minimum healing", () => {
@@ -961,7 +917,6 @@ function fixtureState(specs: readonly UnitSpec[]): GameStateV7 {
       captureEligible: false,
       activation: READY,
       form: "LAND",
-      blackoutEligibleRound: role === "SABOTEUR" ? 1 : null,
     } satisfies UnitStateV7;
   });
   const occupied = new Set(units.map((unit) => key(unit.at)));
@@ -1015,7 +970,7 @@ function redevelopmentReplacementView(current: "MINE" | "SAWMILL"): {
       viewer: {
         ...base.viewer,
         coins: 1_000,
-        researchedTechs: ["GATHERING", "DRILL", "ENGINEERING", "GRAND_WORKS"],
+        researchedTechs: ["GATHERING", "DRILL", "ENGINEERING", "PROSPECTING"],
       },
       board: {
         ...base.board,
@@ -1076,7 +1031,7 @@ function multiCityMonumentRedevelopmentView(): {
       viewer: {
         ...base.viewer,
         coins: 1_000,
-        researchedTechs: ["GATHERING", "DRILL", "ENGINEERING", "GRAND_WORKS"],
+        researchedTechs: ["GATHERING", "DRILL", "ENGINEERING", "PROSPECTING"],
         achievementEntitlements: base.viewer.achievementEntitlements.map(
           (entitlement) =>
             entitlement.achievement === "ENGINEER"

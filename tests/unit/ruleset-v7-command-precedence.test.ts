@@ -324,7 +324,6 @@ function makeUnit(
     captureEligible: false,
     activation,
     form: "LAND",
-    blackoutEligibleRound: null,
   };
 }
 

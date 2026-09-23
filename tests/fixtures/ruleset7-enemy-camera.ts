@@ -17,7 +17,6 @@ export type EnemyCameraScenarioV7 =
   | "mixed-move"
   | "entering-move"
   | "leaving-move"
-  | "cloaked-move"
   | "visible-build"
   | "hidden-build";
 
@@ -32,7 +31,6 @@ export function enemyCameraFixtureV7(scenario: EnemyCameraScenarioV7): {
   const base = horseArcherPublicFixtureV7().state;
   const enemy = base.units.find((unit) => unit.ownerId !== base.humanPlayerId);
   if (enemy === undefined) throw new Error("Camera fixture enemy missing");
-  const cloaked = scenario === "cloaked-move";
   let state = checkedV7({
     ...base,
     activeSeatIndex: base.turnOrder.indexOf(enemy.ownerId),
@@ -40,10 +38,9 @@ export function enemyCameraFixtureV7(scenario: EnemyCameraScenarioV7): {
       {
         ...enemy,
         at: { x: 4, y: 4 },
-        role: cloaked ? "SABOTEUR" : "HORSE_ARCHER",
+        role: "HORSE_ARCHER",
         hp: 10,
         maxHp: 10,
-        blackoutEligibleRound: cloaked ? 1 : null,
       },
     ],
     players: base.players.map((player) => ({
@@ -54,16 +51,11 @@ export function enemyCameraFixtureV7(scenario: EnemyCameraScenarioV7): {
   let command: CommandV7 = {
     kind: "MOVE",
     unitId: enemy.id,
-    path: cloaked
-      ? [
-          { x: 5, y: 4 },
-          { x: 6, y: 4 },
-        ]
-      : [
-          { x: 5, y: 4 },
-          { x: 6, y: 4 },
-          { x: 7, y: 4 },
-        ],
+    path: [
+      { x: 5, y: 4 },
+      { x: 6, y: 4 },
+      { x: 7, y: 4 },
+    ],
   };
   if (scenario.endsWith("build")) {
     const build = queryPlayerCommandsV7(viewForV7(state, enemy.ownerId)).find(

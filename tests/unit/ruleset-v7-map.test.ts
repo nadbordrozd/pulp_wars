@@ -43,7 +43,7 @@ describe("ruleset-7 regional biome map", () => {
     const created = createInitialMapStateV7(setup(3, 16, 41));
     if (!created.ok) throw new Error(created.error.code);
     expect(parseGameStateV7(created.state)).toEqual(created.state);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r6");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r7");
     expect(
       created.state.players.every(
         (player) => player.factionTreeId === "ORIGINAL_BASELINE_V4",
@@ -54,7 +54,11 @@ describe("ruleset-7 regional biome map", () => {
         (player) => player.spoilsClaimedCityIds.length === 0,
       ),
     ).toBe(true);
-    expect(created.state.saboteurExposures).toEqual([]);
+    expect(
+      created.state.players.every(
+        (player) => player.originalCapitalCityId === player.seat * 2 + 1,
+      ),
+    ).toBe(true);
     expect(
       created.state.board.tiles.every((tile) => tile.biome !== undefined),
     ).toBe(true);
@@ -80,6 +84,6 @@ function setup(
     humanColor: "CORAL",
     factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const),
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
   };
 }

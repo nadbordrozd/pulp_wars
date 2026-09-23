@@ -4,7 +4,7 @@ import type { CoordV7, GameStateV7, UnitStateV7 } from "./types";
 
 /**
  * The players whose pieces and cities contribute detector coverage to a
- * viewer. Cooperative AI allies share Saboteur detection, but not fog.
+ * viewer. Cooperative AI allies share detector geometry, but not fog.
  */
 export function detectionSidePlayerIdsV7(
   state: GameStateV7,
@@ -34,7 +34,6 @@ export function detectionCoversCoordV7(
     state.units.some(
       (unit) =>
         unit.hp > 0 &&
-        !(unit.form === "EMBARKED" && unit.role === "SABOTEUR") &&
         side.has(unit.ownerId) &&
         chebyshev(unit.at, at) <=
           (unit.form === "LAND" && unit.role === "SCOUT" ? 2 : 1),
@@ -55,17 +54,7 @@ export function isUnitVisibleToPlayerV7(
   if (viewer === undefined) throw new RangeError("Unknown viewer");
   if (unit.ownerId === viewerId) return true;
   const explored = viewer.explored.some((at) => same(at, unit.at));
-  if (unit.form !== "LAND" || unit.role !== "SABOTEUR") return explored;
-  if (arePlayersAlliedV7(state, viewerId, unit.ownerId)) return explored;
-  return (
-    detectionCoversCoordV7(state, viewerId, unit.at) ||
-    state.saboteurExposures.some(
-      (exposure) =>
-        exposure.unitId === unit.id &&
-        (exposure.anchorPlayerId === viewerId ||
-          arePlayersAlliedV7(state, viewerId, exposure.anchorPlayerId)),
-    )
-  );
+  return explored;
 }
 
 export function visibleUnitIdsV7(

@@ -16,6 +16,23 @@ import {
 } from "../../scripts/ruleset-v7-late-public-view-contract";
 
 describe("Ruleset 7 browser smoke script", () => {
+  it("drives naval autoembark through a Port MOVE and keeps landing coverage", () => {
+    const source = readFileSync("scripts/browser-naval-smoke-v7.ts", "utf8");
+
+    expect(source).not.toContain(
+      "const embark = document.querySelector('[data-action=\"command-embark\"]')",
+    );
+    expect(source).toContain("obsolete standalone Embark action present");
+    expect(source).toContain("Port autoembark MOVE missing");
+    expect(source).toContain(
+      "boardHost.activate(${JSON.stringify(installed.portAt)})",
+    );
+    expect(source).toContain("trace?.command?.kind !== 'MOVE'");
+    expect(source).toContain("trace.eventKinds.includes('UNIT_EMBARKED')");
+    expect(source).toContain("landing?.command?.kind !== 'DISEMBARK'");
+    expect(source).toContain("landing.eventKinds.includes('UNIT_DISEMBARKED')");
+  });
+
   it("arms transient controls before trusted pointer launch and waits for the native select to close", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
     expect(
@@ -76,10 +93,11 @@ describe("Ruleset 7 browser smoke script", () => {
     );
     expect(contractSource).not.toContain("command-1100");
     expect(smokeSource).toContain(
-      "units: retainedLandView.units.map((unit) => ({ ...unit, form: 'LAND' }))",
+      "upgradeRetainedPublicViewV7(retainedLandView)",
     );
-    expect(smokeSource).toContain("ownedPorts: []");
-    expect(smokeSource).toContain("recoverableNavalUnitIds: []");
+    expect(smokeSource).toContain(
+      "import('/scripts/ruleset-v7-late-public-view-contract.ts')",
+    );
   });
 
   it("defaults evidence to a unique temp directory and remains desktop-only", () => {
@@ -144,7 +162,7 @@ function preview(maximumSliceMilliseconds = 20): PreviewEvidenceV7 {
       fastForwardObserved: true,
       hostTicks: 2,
     },
-    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r6", commandIndex: 3 },
+    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r7", commandIndex: 3 },
     ordinaryBoundary: {
       controllerOwnProperties: [],
       snapshotHasStateHash: false,

@@ -21,12 +21,12 @@ describe("ruleset-7 naval combat", () => {
       mayUsePrimaryActionAfterMove: true,
     });
     expect(effectiveRoleRuleV7("BATTLESHIP")).toMatchObject({
-      cost: 10,
-      maxHp: 20,
-      attack2: 10,
-      defense2: 6,
+      cost: 16,
+      maxHp: 25,
+      attack2: 12,
+      defense2: 8,
       move: 2,
-      range: 2,
+      range: 3,
       mayUsePrimaryActionAfterMove: false,
     });
   });
@@ -65,8 +65,8 @@ describe("ruleset-7 naval combat", () => {
               at: fixture.portAt,
               role: "BATTLESHIP" as const,
               form: "NAVAL" as const,
-              hp: 20,
-              maxHp: 20,
+              hp: 25,
+              maxHp: 25,
             }
           : unit.id === defender.id
             ? {
@@ -138,7 +138,7 @@ describe("ruleset-7 naval combat", () => {
           ? {
               ...unit,
               at: fixture.portAt,
-              role: "SABOTEUR" as const,
+              role: "FIGHTER" as const,
               form: "EMBARKED" as const,
             }
           : unit.id === attacker.id
@@ -407,8 +407,8 @@ describe("ruleset-7 naval combat", () => {
                 at: fixture.portAt,
                 role,
                 form: "NAVAL" as const,
-                hp: role === "BATTLESHIP" ? 20 : 10,
-                maxHp: role === "BATTLESHIP" ? 20 : 10,
+                hp: role === "BATTLESHIP" ? 25 : 10,
+                maxHp: role === "BATTLESHIP" ? 25 : 10,
               }
             : unit.id === defender.id
               ? {

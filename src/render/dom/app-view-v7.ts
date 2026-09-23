@@ -41,16 +41,8 @@ import type { BoardSelectionV7 } from "../canvas/board-renderer-v7";
 import type { MapCommandTargetV7 } from "../canvas/board-renderer-v7";
 import { technologyTreeLayoutV7 } from "./technology-tree-layout-v7";
 import { createTacticalSymbolV7 } from "./tactical-symbol-v7";
-import type {
-  Ruleset7TacticalUiSymbolId,
-  TacticalSymbolTheme,
-} from "../../assets/ruleset7-tactical-ui-symbols";
+import type { TacticalSymbolTheme } from "../../assets/ruleset7-tactical-ui-symbols";
 import { selectionIdentityArtworkLayoutV7 } from "./selection-identity-v7";
-import {
-  blackoutTargetsV7,
-  playerLabelV7,
-  type TacticalTargetModeV7,
-} from "../tactical-presentation-v7";
 
 const BOARD_SIZES = [11, 14, 16, 20, 25] as const;
 const COLORS: readonly PlayerColorV7[] = ["CORAL", "TEAL", "GOLD", "VIOLET"];
@@ -64,7 +56,6 @@ const MAP_TYPES: readonly MapTypeV7[] = [
 const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   "MOVE",
   "ATTACK",
-  "BLACKOUT_CITY",
   "DISEMBARK",
   "RESEARCH",
   "CHOOSE_CITY_REWARD",
@@ -144,7 +135,6 @@ export class Ruleset7DomAppView {
   #unitHelpModal: HTMLElement | null = null;
   #cityActionScrollLeft: number | null = null;
   #clearCityActionScrollAfterRestore = false;
-  #tacticalTargetMode: TacticalTargetModeV7 | null = null;
   #modalReturnAction: string | null = null;
   #compactMenuOpen = false;
   #notice = "";
@@ -269,10 +259,7 @@ export class Ruleset7DomAppView {
     if (event.key === "Escape") {
       event.preventDefault();
       this.#boardHost.resetInspectionCycle?.();
-      if (this.#tacticalTargetMode !== null) {
-        this.#tacticalTargetMode = null;
-        this.#notice = "Tactical targeting cancelled.";
-      } else if (this.#screen !== "MATCH") this.#screen = "MATCH";
+      if (this.#screen !== "MATCH") this.#screen = "MATCH";
       else this.#selection = null;
       this.#render();
       this.#queueBoardFocus();
@@ -564,7 +551,6 @@ export class Ruleset7DomAppView {
           this.#selectedUnitHelpId = null;
           this.#cityActionScrollLeft = null;
           this.#clearCityActionScrollAfterRestore = false;
-          this.#tacticalTargetMode = null;
           this.#selectedModifier = null;
           this.#render();
         },
@@ -581,7 +567,6 @@ export class Ruleset7DomAppView {
     const nextChildren: HTMLElement[] = [];
     this.#unitHelpModal = null;
     if (view.pendingChoices.length > 0) {
-      this.#tacticalTargetMode = null;
       this.#selectedRecruitHelp = null;
       this.#selectedUnitHelpId = null;
       this.#cityActionScrollLeft = null;
@@ -839,7 +824,6 @@ export class Ruleset7DomAppView {
         selectedUnitId:
           this.#selection?.kind === "UNIT" ? this.#selection.unitId : null,
         selectedAchievement: null,
-        tacticalTargetMode: this.#tacticalTargetMode,
       },
     };
   }
@@ -999,51 +983,12 @@ export class Ruleset7DomAppView {
             "v7-readiness-label",
           ),
         );
-        const visibility = unit.visibility;
-        if (visibility?.concealment !== undefined)
-          unitDetails.append(
-            this.#statusRow(
-              "ui-status-concealed",
-              "Concealment capability · legal detection may still reveal this Saboteur",
-            ),
-          );
-        if (visibility?.detection !== undefined)
-          unitDetails.append(
-            this.#statusRow(
-              "ui-status-detected",
-              "Detected · reveal ends outside all legal detector range",
-            ),
-          );
-        for (const exposure of visibility?.exposures ?? [])
-          unitDetails.append(
-            this.#statusRow(
-              "ui-status-exposed",
-              `Exposed by ${title(exposure.reason)} until ${playerLabelV7(view, exposure.boundary.anchorPlayerId)}'s next accepted End Turn${exposure.boundary.round.known ? ` in round ${exposure.boundary.round.value}` : " (round cannot be represented safely)"}`,
-            ),
-          );
-        if (unit.role === "SABOTEUR" && unit.ownerId === view.viewer.id) {
-          const cooldown = this.#statusRow(
-            "ui-status-blackout-cooldown",
-            unit.blackoutEligibility.known
-              ? view.round >= unit.blackoutEligibility.round
-                ? `Blackout cooldown ready · eligible round ${unit.blackoutEligibility.round}; other action and detection rules still apply`
-                : `Blackout cooldown · eligible round ${unit.blackoutEligibility.round}`
-              : "Blackout eligibility unavailable",
-          );
-          unitDetails.append(cooldown);
-        }
       }
       const actions = this.#commandButtons(
         (command) =>
           "unitId" in command &&
           command.unitId === unit.id &&
           !NON_BUTTON_COMMANDS.has(command.kind),
-      );
-      this.#appendTacticalActions(
-        showUnitDetails ? unitDetails : null,
-        actions,
-        view,
-        unit.id,
       );
       if (actions.querySelector("button") !== null) {
         dock.dataset.hasActions = "true";
@@ -1090,25 +1035,14 @@ export class Ruleset7DomAppView {
         ),
       );
       const details = el(this.#document, "dl", "v7-city-stats");
-      const blackout = view.blackoutStatuses.find(
-        (status) => status.cityId === city.id,
-      );
       const besieged = view.units.some(
         (unit) =>
           hostile(view, city.ownerId, unit.ownerId) && same(unit.at, city.at),
       );
-      if (city.ownerId === view.viewer.id || blackout !== undefined) {
+      if (city.ownerId === view.viewer.id) {
         details.append(
           text(this.#document, "dt", "State"),
-          text(
-            this.#document,
-            "dd",
-            besieged
-              ? "Besieged"
-              : blackout === undefined
-                ? "Ready"
-                : `Blackout ${title(blackout.phase)}`,
-          ),
+          text(this.#document, "dd", besieged ? "Besieged" : "Ready"),
         );
       }
       details.append(
@@ -1301,6 +1235,14 @@ export class Ruleset7DomAppView {
       );
       const artId = commandArtIdV7(command);
       if (artId !== null) action.prepend(art(this.#document, artId, ""));
+      if (command.kind === "BUILD_FIELD_DEFENSE")
+        action.prepend(
+          createTacticalSymbolV7(
+            this.#document,
+            "ui-action-field-defense",
+            this.#tacticalTheme(),
+          ),
+        );
       if (command.kind === "TRAIN" || command.kind === "TRAIN_NAVAL") {
         const rule = effectiveRoleRuleV7(command.role);
         action.setAttribute(
@@ -1325,6 +1267,26 @@ export class Ruleset7DomAppView {
             this.#document,
             "span",
             "0 Coins · population +3",
+            "v7-command-economy",
+          ),
+        );
+      } else if (command.kind === "BUILD_FIELD_DEFENSE") {
+        const view = this.#snapshot.view;
+        const unit = view?.units.find((item) => item.id === command.unitId);
+        const tile = view?.board.tiles.find(
+          (item) => unit !== undefined && same(item.at, unit.at),
+        );
+        const resultingLevel =
+          tile?.explored === true ? (tile.fortificationLevel ?? 0) + 1 : 1;
+        action.setAttribute(
+          "aria-label",
+          `Build Field Defense for 3 Coins · fortification level ${resultingLevel}`,
+        );
+        action.append(
+          text(
+            this.#document,
+            "span",
+            `3 Coins · level ${resultingLevel}`,
             "v7-command-economy",
           ),
         );
@@ -1385,86 +1347,11 @@ export class Ruleset7DomAppView {
     }
   }
 
-  #appendTacticalActions(
-    details: HTMLElement | null,
-    actions: HTMLElement,
-    view: PlayerViewV7,
-    unitId: number,
-  ): void {
-    const blackouts = blackoutTargetsV7(
-      view,
-      this.#snapshot.offeredCommands,
-      unitId,
-    );
-    const firstBlackout = blackouts[0];
-    if (firstBlackout !== undefined) {
-      if (details !== null) {
-        const explanation = el(this.#document, "section", "v7-tactical-state");
-        explanation.dataset.tacticalState = "blackout-preview";
-        explanation.append(
-          createTacticalSymbolV7(
-            this.#document,
-            "ui-status-blackout-pending",
-            this.#tacticalTheme(),
-          ),
-          text(
-            this.#document,
-            "span",
-            `Blackout becomes Active at the target city's next owner Start Turn. It denies up to 3 future Coins without predicting an exact amount and blocks that city's Train/development for the affected turn; rewards, unit actions and existing infrastructure remain available. Unit cooldown is independently eligible in round ${firstBlackout.preview.nextEligibleRound}; city recovery independently requires a complete unaffected owner turn. The planted city effect survives source death. City-center reveal alone does not block it; hostile-unit detection does.`,
-          ),
-        );
-        details.append(explanation);
-      }
-      const action = button(
-        this.#document,
-        this.#tacticalTargetMode?.kind === "BLACKOUT"
-          ? "Cancel Blackout targeting"
-          : "Blackout",
-        "blackout",
-        "v7-context-action v7-tactical-action",
-      );
-      const artId = commandArtIdV7(firstBlackout.command);
-      if (artId !== null) action.prepend(art(this.#document, artId, ""));
-      action.disabled = this.#localBusy();
-      action.setAttribute(
-        "aria-pressed",
-        String(this.#tacticalTargetMode?.kind === "BLACKOUT"),
-      );
-      action.onclick = () => {
-        if (blackouts.length === 1) {
-          void this.#dispatch(firstBlackout.command);
-          return;
-        }
-        this.#tacticalTargetMode =
-          this.#tacticalTargetMode?.kind === "BLACKOUT"
-            ? null
-            : { kind: "BLACKOUT", sourceUnitId: unitId };
-        this.#notice =
-          this.#tacticalTargetMode === null
-            ? "Blackout targeting cancelled."
-            : `Choose one of ${blackouts.length} highlighted adjacent cities. City-center reveal alone does not block Blackout; hostile-unit detection does.`;
-        this.#render();
-        this.#queueBoardFocus();
-      };
-      actions.append(action);
-    }
-  }
-
   async #handleMapCommand(target: MapCommandTargetV7): Promise<void> {
     const view = this.#snapshot.view;
     if (view === null) return;
     const command = target.command;
-    if (target.family === "BLACKOUT") this.#tacticalTargetMode = null;
     await this.#dispatch(command);
-  }
-
-  #statusRow(id: Ruleset7TacticalUiSymbolId, label: string): HTMLElement {
-    const row = el(this.#document, "p", "v7-unit-status v7-tactical-status");
-    row.append(
-      createTacticalSymbolV7(this.#document, id, this.#tacticalTheme()),
-      text(this.#document, "span", label),
-    );
-    return row;
   }
 
   #tacticalTheme(): TacticalSymbolTheme {
@@ -1504,7 +1391,7 @@ export class Ruleset7DomAppView {
         text(
           this.#document,
           "p",
-          "Water: train a ship at an empty active Port you own. Select a land unit beside an eligible Port and choose Embark. Select its transport, then choose a highlighted landing tile. Active Ports support ship recovery; blockades remove their population and sea network until cleared.",
+          "Water: train a ship at an empty active Port you own. A land unit that ends a Move on an eligible friendly Port automatically embarks and ends its activation. Select its transport, then choose a highlighted landing tile. Active Ports support ship recovery; blockades remove their population and sea network until cleared.",
         ),
       );
     overlay.prepend(close);
@@ -1533,11 +1420,17 @@ export class Ruleset7DomAppView {
         "--v7-tech-branch-span",
         String(branch.leafCount),
       );
-      const branchId = `v7-tech-branch-${branch.node.branch.toLowerCase()}`;
+      const laneId = `${branch.node.branch}:${branch.node.id}`;
+      const branchId = `v7-tech-branch-${branch.node.branch.toLowerCase()}-${branch.node.id.toLowerCase()}`;
       column.id = branchId;
       column.dataset.techBranch = branch.node.branch;
+      column.dataset.techLane = laneId;
       column.tabIndex = -1;
-      const heading = text(this.#document, "h3", title(branch.node.branch));
+      const heading = text(
+        this.#document,
+        "h3",
+        `${title(branch.node.branch)} · ${title(branch.node.id)} lane`,
+      );
       heading.id = `${branchId}-heading`;
       column.setAttribute("aria-labelledby", heading.id);
       column.append(heading);
@@ -1558,14 +1451,14 @@ export class Ruleset7DomAppView {
         this.#selectedTech,
       );
       const option = this.#document.createElement("option");
-      option.value = branch.node.branch;
-      option.textContent = title(branch.node.branch);
+      option.value = laneId;
+      option.textContent = `${title(branch.node.branch)} · ${title(branch.node.id)}`;
       branchSelect.append(option);
       graph.append(column);
     }
     branchSelect.onchange = () => {
       const column = graph.querySelector<HTMLElement>(
-        `[data-tech-branch="${branchSelect.value}"]`,
+        `[data-tech-lane="${branchSelect.value}"]`,
       );
       column?.scrollIntoView?.({ block: "start" });
     };
@@ -1590,12 +1483,12 @@ export class Ruleset7DomAppView {
           : `${node.cost} Coins · ${node.affordable ? "Available" : node.state === "BLOCKED" ? "Locked" : "Insufficient Coins"}`,
       ),
     );
-    if (node.id === "ENGINEERING")
+    if (node.id === "PROSPECTING")
       detail.append(
         text(
           this.#document,
           "p",
-          "Reveal Ore. Enter Mountains. Build Mines on Ore. Build Workshops. Units on Mountains gain +1 sight.",
+          "Reveal Ore. Enter Mountains and construct resource-free spatial improvements and Monuments there. Units on Mountains gain +1 sight.",
         ),
       );
     const navalNotes = navalTechnologyNotesV7(node.id);
@@ -2118,7 +2011,6 @@ export class Ruleset7DomAppView {
     this.#cancelPresentations();
     this.#achievementNotices = [];
     this.#error = "";
-    this.#tacticalTargetMode = null;
     const result = await this.#controller.launch(setup, {
       replaceStoredMatch: replace,
     });
@@ -2167,7 +2059,6 @@ export class Ruleset7DomAppView {
     this.#cancelPresentations();
     this.#achievementNotices = [];
     this.#selection = null;
-    this.#tacticalTargetMode = null;
     this.#screen = "MATCH";
     this.#compactMenuOpen = false;
     this.#notice =
@@ -2194,7 +2085,6 @@ export class Ruleset7DomAppView {
       return;
     }
     this.#error = "";
-    this.#tacticalTargetMode = null;
     this.#notice =
       specialBoundaryNoticeV7(
         result.playerEvents.events,
@@ -2725,7 +2615,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r6",
+    rulesetId: "pulp-wars-poc-7r7",
     seed,
     width: draft.boardSize,
     height: draft.boardSize,
@@ -2738,7 +2628,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
       () => "ORIGINAL" as const,
     ),
     mapType: draft.mapType,
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
   };
 }
 export function cityIncomeForViewerV7(
@@ -2761,14 +2651,15 @@ export function cityIncomeForViewerV7(
     1,
     city.level +
       (city.isCapital ? 1 : 0) +
+      (view.naval.tradeCityIds.includes(city.id) ? 1 : 0) +
       market +
       Math.min(0, city.population),
   );
-  return city.blackout?.phase === "ACTIVE" ? Math.max(0, before - 3) : before;
+  return before;
 }
 function incomeDescription(view: PlayerViewV7): string {
   const cities = view.cities.filter((city) => city.ownerId === view.viewer.id);
-  return `Next income ${cities.reduce((sum, city) => sum + (cityIncomeForViewerV7(view, city.id) ?? 0), 0)} from ${cities.length} cities, including capital, Market, population deficit, siege and Blackout effects.`;
+  return `Next income ${cities.reduce((sum, city) => sum + (cityIncomeForViewerV7(view, city.id) ?? 0), 0)} from ${cities.length} cities, including capital, Port trade, Market, population deficit, and siege effects.`;
 }
 function tileCity(view: PlayerViewV7, at: CoordV7): number | null {
   const tile = view.board.tiles.find((entry) => same(entry.at, at));
@@ -2798,14 +2689,12 @@ function effectDescription(
       return "+1 sight while on a Mountain";
     case "ROLE_SIGHT":
       return `${title(effect.role)} sight radius becomes ${effect.radius}`;
-    case "SCOUT_DETECTION_RADIUS":
-      return `Scout detects hostile Saboteurs within radius ${effect.radius}`;
     case "ROAD_MOVEMENT":
       return "Ordinary step costs 1; orthogonally or diagonally connected Road step costs ½";
     case "MARKET_CAPITAL_ROAD_BONUS":
       return `Market connected to the capital adds +${effect.coins} Coin`;
-    case "FRIENDLY_CITY_FORTIFICATION":
-      return "Fighter and Guard receive ×2 defense in an owned unwalled city";
+    case "OWNED_CITY_FORTIFICATION_LEVEL":
+      return `Owned city centers provide fortification level ${effect.level}`;
     case "OWNED_CITY_CAPACITY_BONUS":
       return `Every owned city gains +${effect.capacity} capacity`;
     case "MEDIC_HEAL":
@@ -2825,7 +2714,8 @@ function navalTechnologyNotesV7(
       "Harvest Fish: 2 Coins, +1 permanent population",
       "Gather Pearls: 2 Coins, receive 4 Coins",
       "Build Port: 4 Coins, +1 live population",
-      "Embark land units; active explored Ports connect sea trade for +1 Coin per qualifying city",
+      "Move a land unit normally so its final step enters a friendly active Port",
+      "Active explored Ports connect across at most 5 water steps for +1 Coin per qualifying city",
     ];
   if (technology === "NAVIGATION")
     return [
@@ -2834,8 +2724,13 @@ function navalTechnologyNotesV7(
     ];
   if (technology === "NAVAL_ENGINEERING")
     return [
-      "Train Battleship at an empty active Port you own: 10 Coins",
-      "Battleship attacks at range 2 and must choose movement or fire",
+      "Train Battleship at an empty active Port you own: 16 Coins",
+      "Battleship attacks at range 1–3, splashes half primary damage onto adjacent hostiles, and must choose movement or fire",
+    ];
+  if (technology === "ROADS")
+    return [
+      "Build Roads on owned or neutral land",
+      "Every connected owned city and the original capital grant each other +1 live population; links may continue through active Ports",
     ];
   return [];
 }
@@ -2918,11 +2813,10 @@ function technologyEffectGroupIdV7(
     case "MOUNTAIN_MOVEMENT":
     case "HIGH_GROUND_VISION":
     case "ROLE_SIGHT":
-    case "SCOUT_DETECTION_RADIUS":
     case "ROAD_MOVEMENT":
       return "MOVEMENT_SIGHT";
     case "MARKET_CAPITAL_ROAD_BONUS":
-    case "FRIENDLY_CITY_FORTIFICATION":
+    case "OWNED_CITY_FORTIFICATION_LEVEL":
     case "OWNED_CITY_CAPACITY_BONUS":
     case "MEDIC_HEAL":
     case "FRIENDLY_IDLE_RECOVERY":
@@ -2952,23 +2846,19 @@ export function recruitmentRolePresentationV7(
   if (roleId === "MARKSMAN")
     restrictions.push("Does not advance after a ranged kill.");
   if (roleId === "SCOUT")
-    restrictions.push(
-      "Detects hostile Saboteurs within range 2. Fieldcraft removes Forest movement termination.",
-    );
+    restrictions.push("Fieldcraft removes Forest movement termination.");
   if (roleId === "MARKSMAN")
     restrictions.push(
       "Fieldcraft raises Sight to 2 and removes Forest movement termination.",
-    );
-  if (roleId === "SABOTEUR")
-    restrictions.push(
-      "May Pillage without Explosives for 1 Coin; doing so is terminal and exposes the Saboteur to the affected owner and allies through that owner's next accepted End Turn.",
     );
   if (roleId === "PATROL_BOAT" || roleId === "BATTLESHIP")
     restrictions.push(
       "Train at an empty active Port you own; the ship uses that Port city's capacity. Cannot Capture, embark, Pillage, or Disband. Recovers only within one cell of an owned active Port.",
     );
   if (roleId === "BATTLESHIP")
-    restrictions.push("Must choose movement or fire during each activation.");
+    restrictions.push(
+      "Must choose movement or fire during each activation. Range 1–3 fire splashes half the primary damage, rounded up, onto adjacent hostile units.",
+    );
   return {
     label: role.label,
     stats: [
@@ -3016,11 +2906,7 @@ function abilityDescription(
     case "PUSH":
       return "A surviving adjacent defender is pushed one cell directly away when the public destination is legal.";
     case "BREACH":
-      return "Adjacent attacks ignore the defender's terrain or city defense multiplier.";
-    case "CONCEALMENT":
-      return "Hidden from hostile viewers unless within range 1 of their unit or city, within range 2 of their Scout, or still exposed. The owner marker denotes the ability, not guaranteed invisibility.";
-    case "BLACKOUT":
-      return "Plant Blackout in an adjacent hostile city when offered. It suppresses up to 3 Coins and blocks Train and development for the affected turn. City-only detection reveals but does not block it; hostile-unit detection blocks it. The unit becomes eligible again at action round +3, while city recovery requires one complete unaffected owner turn.";
+      return "Adjacent attacks ignore terrain cover; flat fortification from field defenses, Drill, and Walls still applies.";
     case "DASH":
       return "May take its ordinary Move before its first Attack.";
     case "TWO_SHOTS":
@@ -3041,9 +2927,7 @@ export function economicFormulaV7(
     return "Forge: +1 population per adjacent same-city Mine, maximum 6; placement requires at least one Mine and an unsupported Forge produces 0";
   if (improvement === "WORKSHOP" && formula === "DISTINCT_BASIC_TYPES")
     return "Workshop: 0 with no adjacent Farm, Camp, or Mine; otherwise +1 plus the number of distinct adjacent types, cap 4 population";
-  if (improvement === "GRAND_WORKS" && formula === "DISTINCT_PROCESSOR_TYPES")
-    return "Grand Works: 0 below two adjacent positive-output processor types; otherwise +4 plus +2 per qualifying type, cap 10 population";
-  return "Market: +1 recurring Coin per adjacent Agriculture, Timber, or Metal family, including inactive processors, plus +1 for an adjacent capital-connected friendly Road; cap 4";
+  return "Market: +1 recurring Coin per adjacent Agriculture, Timber, or Metal family, including inactive processors, plus +1 for an adjacent usable capital-connected owned or neutral Road; cap 4";
 }
 export function monumentSourceForViewerV7(
   view: PlayerViewV7,

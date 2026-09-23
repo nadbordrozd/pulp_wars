@@ -33,7 +33,6 @@ export type TileCommandKindV7 =
   | "BUILD_SAWMILL"
   | "BUILD_FORGE"
   | "BUILD_WORKSHOP"
-  | "BUILD_GRAND_WORKS"
   | "BUILD_MARKET"
   | "BUILD_PORT"
   | "CLEAR_FOREST"
@@ -53,18 +52,19 @@ export type CommandV7 =
       readonly targetUnitId: UnitId;
     }
   | {
-      readonly kind: "BLACKOUT_CITY";
-      readonly unitId: UnitId;
-      readonly cityId: CityId;
-    }
-  | {
       readonly kind: "HEAL_ADJACENT";
       readonly unitId: UnitId;
       readonly targetUnitId: UnitId;
     }
   | {
       readonly kind:
-        "RECOVER" | "CAPTURE" | "PROMOTE" | "PILLAGE" | "DISBAND" | "WAIT";
+        | "RECOVER"
+        | "CAPTURE"
+        | "PROMOTE"
+        | "PILLAGE"
+        | "DISBAND"
+        | "WAIT"
+        | "BUILD_FIELD_DEFENSE";
       readonly unitId: UnitId;
     }
   | { readonly kind: "RESEARCH"; readonly tech: TechnologyIdV7 }
@@ -84,11 +84,6 @@ export type CommandV7 =
       readonly cityId: CityId;
       readonly at: CoordV7;
       readonly role: "PATROL_BOAT" | "BATTLESHIP";
-    }
-  | {
-      readonly kind: "EMBARK";
-      readonly unitId: UnitId;
-      readonly portAt: CoordV7;
     }
   | {
       readonly kind: "DISEMBARK";
@@ -125,7 +120,6 @@ const TILE_KINDS = new Set<CommandKindV7>([
   "BUILD_SAWMILL",
   "BUILD_FORGE",
   "BUILD_WORKSHOP",
-  "BUILD_GRAND_WORKS",
   "BUILD_MARKET",
   "BUILD_PORT",
   "CLEAR_FOREST",
@@ -140,6 +134,7 @@ const UNIT_ONLY_KINDS = new Set<CommandKindV7>([
   "PILLAGE",
   "DISBAND",
   "WAIT",
+  "BUILD_FIELD_DEFENSE",
 ]);
 
 export function parseCommandEnvelopeV7(
@@ -229,15 +224,6 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
       ? invalid(kind)
       : { ok: true, value: { kind, unitId: unit, targetUnitId: target } };
   }
-  if (kind === "BLACKOUT_CITY") {
-    if (!hasExactKeysV7(input, ["kind", "unitId", "cityId"]))
-      return invalid(kind);
-    const unit = parseUnitIdV7(candidate.unitId);
-    const city = parseCityIdV7(candidate.cityId);
-    return unit === null || city === null
-      ? invalid(kind)
-      : { ok: true, value: { kind, unitId: unit, cityId: city } };
-  }
   if (UNIT_ONLY_KINDS.has(kind)) {
     const unit = hasExactKeysV7(input, ["kind", "unitId"])
       ? parseUnitIdV7(candidate.unitId)
@@ -274,15 +260,6 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
       (candidate.role !== "PATROL_BOAT" && candidate.role !== "BATTLESHIP")
       ? invalid(kind)
       : { ok: true, value: { kind, cityId: city, at, role: candidate.role } };
-  }
-  if (kind === "EMBARK") {
-    const unit = hasExactKeysV7(input, ["kind", "portAt", "unitId"])
-      ? parseUnitIdV7(candidate.unitId)
-      : null;
-    const portAt = unit === null ? null : parseCoordV7(candidate.portAt);
-    return unit === null || portAt === null
-      ? invalid(kind)
-      : { ok: true, value: { kind, unitId: unit, portAt } };
   }
   if (kind === "DISEMBARK") {
     const unit = hasExactKeysV7(input, ["at", "kind", "unitId"])
@@ -345,7 +322,6 @@ function parsePath(input: unknown): readonly CoordV7[] | null {
 
 function targetCoord(command: CommandV7): CoordV7 | null {
   if ("at" in command) return command.at;
-  if (command.kind === "EMBARK") return command.portAt;
   if (command.kind === "MOVE") return command.path.at(-1) ?? null;
   return null;
 }
@@ -376,7 +352,6 @@ function referencedOrdinal(command: CommandV7): number {
     return ACHIEVEMENT_IDS_V7.indexOf(command.achievement);
   if (command.kind === "ATTACK" || command.kind === "HEAL_ADJACENT")
     return command.targetUnitId;
-  if (command.kind === "BLACKOUT_CITY") return command.cityId;
   return 0;
 }
 

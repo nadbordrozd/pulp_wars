@@ -21,7 +21,6 @@ import {
 } from "../engine/v7/economy";
 import type { DomainEventV7 } from "../engine/v7/events";
 import {
-  previewBlackoutV7,
   previewEconomicV7,
   previewMonumentV7,
   queryCombatPreviewV7,
@@ -83,7 +82,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r6";
+  readonly rulesetId: "pulp-wars-poc-7r7";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -170,20 +169,6 @@ export interface HeadlessMetricsV7 {
     attemptedCaptureViolations: number;
     advanceViolations: number;
     readonly shotsPerActivation: Record<string, number>;
-  };
-  readonly saboteur: {
-    concealedTurns: number;
-    detectedTurns: number;
-    readonly exposedTurnsBySource: Record<
-      "ATTACK" | "PILLAGE" | "BLACKOUT",
-      number
-    >;
-    blackoutsBlocked: number;
-    suppressionCoins: number;
-    actionsDenied: number;
-    recoveryTurns: number;
-    cooldownObservations: number;
-    postExposureSurvivals: number;
   };
   readonly catapult: {
     readonly shotRanges: Record<"2" | "3", number>;
@@ -646,8 +631,8 @@ export async function runAiBatchV7(
           await new Promise<void>((resolve) => setTimeout(resolve, 0));
           const result = runAiMatchInternalV7(
             {
-              rulesetId: "pulp-wars-poc-7r6",
-              mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1",
+              rulesetId: "pulp-wars-poc-7r7",
+              mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
               seed,
               width: size,
               height: size,
@@ -723,7 +708,6 @@ interface TelemetryStateV7 {
   readonly catapultShotTargets: Set<UnitId>;
   readonly healingSinceCatapultShot: Map<UnitId, number>;
   readonly catapultSetupUnits: Set<UnitId>;
-  readonly exposedSaboteurs: Set<UnitId>;
   readonly restoredSites: Set<string>;
 }
 
@@ -735,7 +719,6 @@ function createTelemetryState(state: GameStateV7): TelemetryStateV7 {
     catapultShotTargets: new Set(),
     healingSinceCatapultShot: new Map(),
     catapultSetupUnits: new Set(),
-    exposedSaboteurs: new Set(),
     restoredSites: new Set(),
   };
 }
@@ -745,7 +728,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r6",
+    rulesetId: "pulp-wars-poc-7r7",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,
@@ -829,17 +812,6 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
       attemptedCaptureViolations: 0,
       advanceViolations: 0,
       shotsPerActivation: {},
-    },
-    saboteur: {
-      concealedTurns: 0,
-      detectedTurns: 0,
-      exposedTurnsBySource: { ATTACK: 0, PILLAGE: 0, BLACKOUT: 0 },
-      blackoutsBlocked: 0,
-      suppressionCoins: 0,
-      actionsDenied: 0,
-      recoveryTurns: 0,
-      cooldownObservations: 0,
-      postExposureSurvivals: 0,
     },
     catapult: {
       shotRanges: { "2": 0, "3": 0 },
@@ -935,16 +907,6 @@ function recordCommandAndEventsV7(
     for (const unit of before.units)
       if (unit.ownerId === actorId)
         telemetry.catapultSetupUnits.delete(unit.id);
-    for (const exposure of before.saboteurExposures)
-      if (
-        !after.saboteurExposures.some(
-          (item) =>
-            item.unitId === exposure.unitId &&
-            item.anchorPlayerId === exposure.anchorPlayerId,
-        ) &&
-        after.units.some((unit) => unit.id === exposure.unitId && unit.hp > 0)
-      )
-        metrics.saboteur.postExposureSurvivals += 1;
   }
   recordContributionTransitions(before, after, metrics, telemetry);
 }
@@ -983,12 +945,7 @@ function recordEventsV7(
       metrics.economy.coinsEarned += event.totalCoins;
       metrics.economy.oneCoinFloorAwards += event.cities.filter((income) => {
         const city = after.cities.find((item) => item.id === income.cityId);
-        if (
-          city === undefined ||
-          city.blackout?.phase === "ACTIVE" ||
-          cityIsBesieged(after, city.id)
-        )
-          return false;
+        if (city === undefined || cityIsBesieged(after, city.id)) return false;
         const market = after.board.tiles
           .filter(
             (tile) =>
@@ -1123,17 +1080,6 @@ function recordEventsV7(
         telemetry.horseArcherInterleaved.delete(event.unitId);
       }
     }
-    if (event.kind === "SABOTEUR_EXPOSED")
-      telemetry.exposedSaboteurs.add(event.unitId);
-    if (event.kind === "BLACKOUT_ACTIVATED") {
-      metrics.saboteur.suppressionCoins += event.suppressedCoins;
-      metrics.saboteur.actionsDenied += blackoutDeniedCommands(
-        after,
-        event.cityId,
-      );
-    }
-    if (event.kind === "BLACKOUT_RECOVERY_COMPLETED")
-      metrics.saboteur.recoveryTurns += 1;
     if (
       event.kind === "UNIT_HEALED" &&
       telemetry.catapultShotTargets.has(event.targetUnitId)
@@ -1186,15 +1132,6 @@ function recordSnapshotV7(
             ? progress.currentMaximumOutput
             : progress.currentDistinctTrainableRoles,
       );
-    if (turnBoundary && player.id === activePlayerId)
-      for (const unit of state.units.filter(
-        (candidate) =>
-          candidate.role === "SABOTEUR" && candidate.ownerId !== player.id,
-      )) {
-        if (view.units.some((visible) => visible.id === unit.id))
-          metrics.saboteur.detectedTurns += 1;
-        else metrics.saboteur.concealedTurns += 1;
-      }
   }
   if (turnBoundary) {
     for (const city of state.cities.filter(
@@ -1206,36 +1143,6 @@ function recordSnapshotV7(
         metrics.capacity.overcapacityStates += 1;
       if (cityIsBesieged(state, city.id))
         metrics.catapult.siegeTurnBoundaries += 1;
-    }
-    for (const exposure of state.saboteurExposures)
-      if (
-        exposure.anchorPlayerId === activePlayerId ||
-        arePlayersAlliedV7(state, activePlayerId, exposure.anchorPlayerId)
-      )
-        metrics.saboteur.exposedTurnsBySource[exposure.reason] += 1;
-    for (const unit of state.units.filter(
-      (candidate) =>
-        candidate.role === "SABOTEUR" && candidate.ownerId === activePlayerId,
-    )) {
-      if (
-        unit.blackoutEligibleRound !== null &&
-        unit.blackoutEligibleRound > state.round
-      )
-        metrics.saboteur.cooldownObservations += 1;
-      const adjacentHostileCity = state.cities.some(
-        (city) =>
-          city.ownerId !== unit.ownerId &&
-          !arePlayersAlliedV7(state, city.ownerId, unit.ownerId) &&
-          chebyshev(city.at, unit.at) === 1,
-      );
-      if (adjacentHostileCity) {
-        const view = viewForV7(state, unit.ownerId);
-        const offered = queryPlayerCommandsV7(view).some(
-          (command) =>
-            command.kind === "BLACKOUT_CITY" && command.unitId === unit.id,
-        );
-        if (!offered) metrics.saboteur.blackoutsBlocked += 1;
-      }
     }
     for (const tile of state.board.tiles) {
       if (tile.improvement === null) continue;
@@ -1337,11 +1244,6 @@ function auditPublicEqualityV7(
         queryCombatPreviewV7(view, command.unitId, command.targetUnitId),
         queryCombatPreviewV7(equal, command.unitId, command.targetUnitId),
       );
-    if (command.kind === "BLACKOUT_CITY")
-      previews.push(
-        previewBlackoutV7(view, command),
-        previewBlackoutV7(equal, command),
-      );
     if (command.kind === "BUILD_MONUMENT")
       previews.push(
         previewMonumentV7(view, command),
@@ -1391,15 +1293,6 @@ function auditRelationshipCommandV7(
     )
   )
     metrics.relationships.alliedHostileActions += 1;
-  if (
-    command.kind === "BLACKOUT_CITY" &&
-    arePlayersAlliedV7(
-      state,
-      actor,
-      state.cities.find((city) => city.id === command.cityId)?.ownerId ?? actor,
-    )
-  )
-    metrics.relationships.alliedHostileActions += 1;
   if (command.kind === "MOVE")
     for (const at of command.path) {
       const tile = state.board.tiles.find((item) => same(item.at, at));
@@ -1425,27 +1318,6 @@ function recordMonumentOwnershipChange(
   ).length;
   if (count > 0 && beforeOwner !== afterOwner)
     metrics.achievements.monumentTransfers += count;
-}
-
-/** Counterfactual public command instances suppressed at Blackout activation. */
-function blackoutDeniedCommands(state: GameStateV7, cityId: number): number {
-  const city = state.cities.find((item) => item.id === cityId);
-  if (city === undefined || city.blackout?.phase !== "ACTIVE") return 0;
-  const withoutBlackout: GameStateV7 = {
-    ...state,
-    cities: state.cities.map((item) =>
-      item.id === cityId ? { ...item, blackout: null } : item,
-    ),
-  };
-  const view = viewForV7(withoutBlackout, city.ownerId);
-  return queryPlayerCommandsV7(view).filter((command) => {
-    if (command.kind === "TRAIN") return command.cityId === cityId;
-    if (!("at" in command)) return false;
-    const tile = withoutBlackout.board.tiles.find((item) =>
-      same(item.at, command.at),
-    );
-    return tile?.territoryCityId === cityId;
-  }).length;
 }
 
 function cityIsBesieged(state: GameStateV7, cityId: number): boolean {

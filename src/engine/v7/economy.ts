@@ -163,21 +163,20 @@ export function isCityBesiegedV7(
 }
 
 export function marketIncomeForCityV7(
-  state: Pick<GameStateV7, "board" | "cities">,
+  state: NetworkStateV7,
   city: CityStateV7,
 ): number {
   let total = 0;
   for (const tile of state.board.tiles)
     if (tile.territoryCityId === city.id && tile.improvement === "MARKET") {
       const evaluation = spatialContributionAtV7(state, tile.at, "MARKET");
-      const combinedRoadBonus =
-        !evaluation.capitalRoadConnected &&
-        "players" in state &&
-        neighbors8(state.board.width, state.board.height, tile.at).some((at) =>
-          combinedNetworkRoadKeysV7(state as GameStateV7, city.ownerId).has(
-            coordKey(at),
-          ),
-        );
+      const combinedRoadBonus = neighbors8(
+        state.board.width,
+        state.board.height,
+        tile.at,
+      ).some((at) =>
+        combinedNetworkRoadKeysV7(state, city.ownerId).has(coordKey(at)),
+      );
       total += Math.min(
         4,
         evaluation.marketIncome + (combinedRoadBonus ? 1 : 0),
@@ -194,6 +193,39 @@ export function recomputeLiveEconomyV7(
     Partial<Pick<GameStateV7, "units">>,
   contributions: readonly PopulationContributionV7[],
 ): LiveEconomyResultV7 {
+  const graphState: GameStateV7 = {
+    ...beforeState,
+    board: finalGraph.board,
+    cities: finalGraph.cities,
+    units: finalGraph.units ?? beforeState.units,
+  };
+  const networkPopulationByCity = new Map<CityId, number>();
+  for (const player of graphState.players) {
+    if (!player.researchedTechs.includes("ROADS")) continue;
+    const capital = graphState.cities.find(
+      (city) =>
+        city.id === player.originalCapitalCityId && city.ownerId === player.id,
+    );
+    if (capital === undefined) continue;
+    const connected = combinedNetworkCityIdsV7(graphState, player.id);
+    for (const city of graphState.cities
+      .filter(
+        (candidate) =>
+          candidate.ownerId === player.id &&
+          candidate.id !== capital.id &&
+          connected.has(candidate.id),
+      )
+      .sort((left, right) => left.id - right.id)) {
+      networkPopulationByCity.set(
+        city.id,
+        (networkPopulationByCity.get(city.id) ?? 0) + 1,
+      );
+      networkPopulationByCity.set(
+        capital.id,
+        (networkPopulationByCity.get(capital.id) ?? 0) + 1,
+      );
+    }
+  }
   const populationContributions = contributions.map((contribution) => {
     if (contribution.category === "PERMANENT") return contribution;
     const tile =
@@ -244,15 +276,10 @@ export function recomputeLiveEconomyV7(
   });
   const changes: CityEconomyChangeV7[] = [];
   const cities: CityStateV7[] = [];
-  const afterStateForMarkets: GameStateV7 = {
-    ...beforeState,
-    board: finalGraph.board,
-    cities: finalGraph.cities,
-    units: finalGraph.units ?? beforeState.units,
-  };
+  const afterStateForMarkets = graphState;
   for (const city of [...finalGraph.cities].sort((a, b) => a.id - b.id)) {
     let permanent = 0;
-    let live = 0;
+    let live = networkPopulationByCity.get(city.id) ?? 0;
     for (const contribution of populationContributions)
       if (contribution.cityId === city.id) {
         if (contribution.category === "PERMANENT")
@@ -293,32 +320,33 @@ export function cityIncomeV7(state: GameStateV7, city: CityStateV7): number {
     city.level +
     (city.isCapital ? 1 : 0) +
     (seaTradeCityIdsV7(state, city.ownerId).has(city.id) ? 1 : 0);
-  const preBlackout = Math.max(
+  const result = Math.max(
     1,
     base + marketIncomeForCityV7(state, city) + Math.min(0, city.population),
   );
-  const suppression =
-    city.blackout?.phase === "ACTIVE" ? Math.min(3, preBlackout) : 0;
-  const result = preBlackout - suppression;
   if (!Number.isSafeInteger(result)) throw new RangeError("INTEGER_OVERFLOW");
   return result;
 }
 
-const SEA_TRADE_CACHE = new WeakMap<
+type NetworkStateV7 = Pick<
   GameStateV7,
+  "board" | "cities" | "players" | "units" | "setup" | "humanPlayerId"
+>;
+const SEA_TRADE_CACHE = new WeakMap<
+  object,
   Map<PlayerId, ReadonlySet<CityId>>
 >();
 const COMBINED_NETWORK_CACHE = new WeakMap<
-  GameStateV7,
+  object,
   Map<PlayerId, ReadonlySet<CityId>>
 >();
 const COMBINED_ROAD_CACHE = new WeakMap<
-  GameStateV7,
+  object,
   Map<PlayerId, ReadonlySet<string>>
 >();
 
 export function combinedNetworkCityIdsV7(
-  state: GameStateV7,
+  state: NetworkStateV7,
   playerId: PlayerId,
 ): ReadonlySet<CityId> {
   seaTradeCityIdsV7(state, playerId);
@@ -326,16 +354,16 @@ export function combinedNetworkCityIdsV7(
 }
 
 export function combinedNetworkRoadKeysV7(
-  state: GameStateV7,
+  state: NetworkStateV7,
   playerId: PlayerId,
 ): ReadonlySet<string> {
   seaTradeCityIdsV7(state, playerId);
   return COMBINED_ROAD_CACHE.get(state)?.get(playerId) ?? new Set<string>();
 }
 
-/** Owner-private combined Road/Port graph. One ocean flood is shared by every port. */
+/** Owner-private capital-rooted Road/Port graph with bounded sea edges. */
 export function seaTradeCityIdsV7(
-  state: GameStateV7,
+  state: NetworkStateV7,
   playerId: PlayerId,
 ): ReadonlySet<CityId> {
   let byOwner = SEA_TRADE_CACHE.get(state);
@@ -346,7 +374,7 @@ export function seaTradeCityIdsV7(
   const prior = byOwner.get(playerId);
   if (prior !== undefined) return prior;
   const player = state.players.find((candidate) => candidate.id === playerId);
-  if (player === undefined || !player.researchedTechs.includes("SHORECRAFT")) {
+  if (player === undefined) {
     const empty = new Set<CityId>();
     byOwner.set(playerId, empty);
     let combinedByOwner = COMBINED_NETWORK_CACHE.get(state);
@@ -375,52 +403,57 @@ export function seaTradeCityIdsV7(
       )
       .map((tile) => coordKey(tile.at)),
   );
-  const ports = state.board.tiles.filter(
-    (tile) =>
-      tile.improvement === "PORT" &&
-      water.has(coordKey(tile.at)) &&
-      isActivePortV7(state, tile.at, playerId),
-  );
+  const ports = player.researchedTechs.includes("SHORECRAFT")
+    ? state.board.tiles.filter(
+        (tile) =>
+          tile.improvement === "PORT" &&
+          water.has(coordKey(tile.at)) &&
+          isActivePortV7(state, tile.at, playerId),
+      )
+    : [];
   const seaEdges = new Map<CityId, Set<CityId>>();
   const graphEdges = new Map<CityId, Set<CityId>>();
-  const unseen = new Set(water);
-  while (unseen.size > 0) {
-    const first = unseen.values().next().value as string;
-    const [y, x] = first.split(",").map(Number);
-    if (x === undefined || y === undefined)
-      throw new RangeError("INVALID_STATE");
-    const queue = [{ x, y }];
-    const component = new Set<string>();
-    unseen.delete(first);
+  const portIndexesByKey = new Map<string, number[]>();
+  ports.forEach((port, index) => {
+    const indexes = portIndexesByKey.get(coordKey(port.at)) ?? [];
+    indexes.push(index);
+    portIndexesByKey.set(coordKey(port.at), indexes);
+  });
+  for (let leftIndex = 0; leftIndex < ports.length; leftIndex += 1) {
+    const left = ports[leftIndex];
+    if (left?.territoryCityId === null || left === undefined) continue;
+    const seen = new Set([coordKey(left.at)]);
+    const queue = [{ at: left.at, distance: 0 }];
     for (let index = 0; index < queue.length; index += 1) {
-      const at = queue[index];
-      if (at === undefined) throw new RangeError("INVALID_STATE");
-      component.add(coordKey(at));
-      for (let dy = -1; dy <= 1; dy += 1)
-        for (let dx = -1; dx <= 1; dx += 1) {
-          if (dx === 0 && dy === 0) continue;
-          const near = { x: at.x + dx, y: at.y + dy };
-          if (unseen.delete(coordKey(near))) queue.push(near);
+      const current = queue[index];
+      if (current === undefined || current.distance >= 5) continue;
+      for (const near of neighbors8(
+        state.board.width,
+        state.board.height,
+        current.at,
+      )) {
+        const nearKey = coordKey(near);
+        if (!water.has(nearKey) || seen.has(nearKey)) continue;
+        seen.add(nearKey);
+        queue.push({ at: near, distance: current.distance + 1 });
+        for (const rightIndex of portIndexesByKey.get(nearKey) ?? []) {
+          if (rightIndex <= leftIndex) continue;
+          const right = ports[rightIndex];
+          if (right?.territoryCityId === null || right === undefined) continue;
+          for (const [from, to] of [
+            [left.territoryCityId, right.territoryCityId],
+            [right.territoryCityId, left.territoryCityId],
+          ] as const) {
+            const sea = seaEdges.get(from) ?? new Set<CityId>();
+            if (from !== to) sea.add(to);
+            seaEdges.set(from, sea);
+            const combined = graphEdges.get(from) ?? new Set<CityId>();
+            combined.add(to);
+            graphEdges.set(from, combined);
+          }
         }
+      }
     }
-    const cityIds = [
-      ...new Set(
-        ports
-          .filter((port) => component.has(coordKey(port.at)))
-          .map((port) => port.territoryCityId)
-          .filter((id): id is CityId => id !== null),
-      ),
-    ];
-    for (const left of cityIds)
-      for (const right of cityIds)
-        if (left !== right) {
-          const edges = seaEdges.get(left) ?? new Set<CityId>();
-          edges.add(right);
-          seaEdges.set(left, edges);
-          const combined = graphEdges.get(left) ?? new Set<CityId>();
-          combined.add(right);
-          graphEdges.set(left, combined);
-        }
   }
   const ownedCityAt = new Map(
     state.cities
@@ -432,15 +465,17 @@ export function seaTradeCityIdsV7(
       .filter(
         (tile) =>
           tile.road &&
-          tile.territoryCityId !== null &&
-          state.cities.some(
-            (city) =>
-              city.id === tile.territoryCityId && city.ownerId === playerId,
-          ),
+          player.researchedTechs.includes("ROADS") &&
+          (tile.territoryCityId === null ||
+            state.cities.some(
+              (city) =>
+                city.id === tile.territoryCityId && city.ownerId === playerId,
+            )),
       )
       .map((tile) => coordKey(tile.at)),
   );
-  for (const key of ownedCityAt.keys()) roadKeys.add(key);
+  if (player.researchedTechs.includes("ROADS"))
+    for (const key of ownedCityAt.keys()) roadKeys.add(key);
   const roadLeft = new Set(roadKeys);
   const roadComponents: {
     readonly keys: ReadonlySet<string>;
@@ -477,9 +512,11 @@ export function seaTradeCityIdsV7(
         }
     roadComponents.push({ keys: componentKeys, cityIds });
   }
-  const capitals = state.cities
-    .filter((city) => city.ownerId === playerId && city.isCapital)
-    .map((city) => city.id);
+  const originalCapital = state.cities.find(
+    (city) =>
+      city.id === player.originalCapitalCityId && city.ownerId === playerId,
+  );
+  const capitals = originalCapital === undefined ? [] : [originalCapital.id];
   const connected = new Set<CityId>(capitals);
   const queue = [...capitals];
   for (let index = 0; index < queue.length; index += 1) {

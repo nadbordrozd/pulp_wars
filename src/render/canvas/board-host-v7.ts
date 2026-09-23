@@ -428,6 +428,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         });
         if (token !== this.#presentationToken) return;
         this.#statusPulse = null;
+      } else if (step.kind === "DAMAGE") {
+        this.#presentedView = after;
+        await this.#animateImpact(step.at, step.durationMs * durationScale);
+        if (token !== this.#presentationToken) return;
       }
       if (token !== this.#presentationToken) return;
     }

@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
+  findCoastOscillationV7,
+  parseNavalPlayableMatrixSelectionV7,
+} from "../../scripts/ruleset-v7-naval-playable-contract";
+import {
   NormalPolicyWorkV7,
   chooseNormalCommandV7,
   chooseNormalTurnCommandV7,
@@ -14,6 +18,7 @@ import {
   applyCommandV7,
   playerId,
   queryPlayerCommandsV7,
+  unitId,
   viewForV7,
   type PlayerViewV7,
   type GameStateV7,
@@ -29,6 +34,71 @@ import {
 import { battleshipBombardmentV7 } from "../fixtures/v7-naval-builders";
 
 describe("Ruleset 7 deterministic public naval Normal policy", () => {
+  it("counts landing-command reveal as progress but detects a true coast cycle", () => {
+    const passengerId = unitId(39);
+    const landing = {
+      command: {
+        kind: "DISEMBARK",
+        unitId: passengerId,
+        at: { x: 0, y: 6 },
+      },
+      events: [{ kind: "UNIT_DISEMBARKED" }, { kind: "TILES_REVEALED" }],
+    } as const;
+    const inland = {
+      command: {
+        kind: "MOVE",
+        unitId: passengerId,
+        path: [{ x: 0, y: 5 }],
+      },
+      events: [{ kind: "UNIT_MOVED" }],
+    } as const;
+    const reembark = {
+      command: {
+        kind: "MOVE",
+        unitId: passengerId,
+        path: [{ x: 2, y: 3 }],
+      },
+      events: [{ kind: "UNIT_MOVED" }, { kind: "UNIT_EMBARKED" }],
+    } as const;
+    expect(findCoastOscillationV7([landing, inland, reembark])).toBeNull();
+    expect(
+      findCoastOscillationV7([
+        { ...landing, events: [{ kind: "UNIT_DISEMBARKED" }] },
+        inland,
+        reembark,
+      ]),
+    ).toEqual({ unitId: 39, landingAt: "0,6" });
+  });
+
+  it("parses bounded partial naval matrix selection without claiming a full run", () => {
+    expect(parseNavalPlayableMatrixSelectionV7([])).toEqual({
+      skipMatrix: false,
+      matrixStart: 0,
+      partialMatrix: false,
+    });
+    expect(
+      parseNavalPlayableMatrixSelectionV7([
+        "--output=/tmp/evidence",
+        "--matrix-start=37",
+      ]),
+    ).toEqual({ skipMatrix: false, matrixStart: 37, partialMatrix: true });
+    expect(parseNavalPlayableMatrixSelectionV7(["--skip-matrix"])).toEqual({
+      skipMatrix: true,
+      matrixStart: 0,
+      partialMatrix: false,
+    });
+    expect(() =>
+      parseNavalPlayableMatrixSelectionV7([
+        "--skip-matrix",
+        "--matrix-start=37",
+      ]),
+    ).toThrow(/incompatible/);
+    for (const value of ["", "-1", "40", "1.5", "9007199254740992"])
+      expect(() =>
+        parseNavalPlayableMatrixSelectionV7([`--matrix-start=${value}`]),
+      ).toThrow(/safe integer from 0 to 39/);
+  });
+
   it("researches Shorecraft, reserves one exact Port, and embarks through that Port", () => {
     const researchView = navalPolicyView([]);
     expect(chooseNormalCommandV7(researchView).command).toEqual({
@@ -55,10 +125,72 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
     );
     if (own === undefined) throw new Error("owned capture unit missing");
     expect(chooseNormalCommandV7(embarkView).command).toEqual({
-      kind: "EMBARK",
+      kind: "MOVE",
       unitId: own.id,
-      portAt: { x: 2, y: 1 },
+      path: [{ x: 2, y: 1 }],
     });
+  });
+
+  it("lands beside an occupied coastal objective on the nearest legal tile", () => {
+    const { view, transportId } = occupiedCoastalObjectiveView();
+    const disembarks = queryPlayerCommandsV7(view).filter(
+      (command) => command.kind === "DISEMBARK",
+    );
+    expect(disembarks).not.toContainEqual({
+      kind: "DISEMBARK",
+      unitId: transportId,
+      at: { x: 7, y: 4 },
+    });
+    expect(disembarks).toContainEqual({
+      kind: "DISEMBARK",
+      unitId: transportId,
+      at: { x: 7, y: 5 },
+    });
+
+    const decision = chooseNormalCommandV7(view);
+    expect(
+      decision.candidates.filter(
+        (candidate) => candidate.command.kind === "DISEMBARK",
+      ),
+    ).toMatchObject([
+      {
+        command: {
+          kind: "DISEMBARK",
+          unitId: transportId,
+          at: { x: 7, y: 5 },
+        },
+        score: { priority: 1335 },
+      },
+    ]);
+    expect(decision.command).toEqual({
+      kind: "DISEMBARK",
+      unitId: transportId,
+      at: { x: 7, y: 5 },
+    });
+  });
+
+  it("keeps a targetless transport aboard beside its owned-city frontier", () => {
+    const view = targetlessOwnedCoastView();
+    const transport = view.units.find(
+      (unit) => unit.ownerId === view.viewer.id && unit.form === "EMBARKED",
+    );
+    if (transport === undefined) throw new Error("transport missing");
+    const offeredLanding = queryPlayerCommandsV7(view).find(
+      (command) =>
+        command.kind === "DISEMBARK" && command.unitId === transport.id,
+    );
+    expect(offeredLanding).toBeDefined();
+    if (offeredLanding === undefined) throw new Error("landing missing");
+    expect(scoreCommandV7(view, offeredLanding).priority).toBe(1335);
+
+    const decision = chooseNormalCommandV7(view);
+    expect(
+      decision.candidates.some(
+        (candidate) =>
+          candidate.command.kind === "DISEMBARK" &&
+          candidate.command.unitId === transport.id,
+      ),
+    ).toBe(false);
   });
 
   it("plans before Shorecraft through Fish and Pearl Port surfaces", () => {
@@ -240,7 +372,8 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
         throw new Error(`${command.kind}:${applied.error.code}`);
       if (actor === fixture.subjectId) {
         if (command.kind === "BUILD_PORT") port = true;
-        if (command.kind === "EMBARK") departure = true;
+        if (applied.events.some((event) => event.kind === "UNIT_EMBARKED"))
+          departure = true;
         if (
           command.kind === "MOVE" &&
           passenger?.form === "EMBARKED" &&
@@ -371,12 +504,29 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
     };
     expect(
       queryPlayerCommandsV7(noObjective).some(
-        (command) => command.kind === "EMBARK",
+        (command) =>
+          command.kind === "MOVE" &&
+          noObjective.board.tiles.some(
+            (tile) =>
+              tile.explored &&
+              tile.improvement === "PORT" &&
+              command.path.at(-1)?.x === tile.at.x &&
+              command.path.at(-1)?.y === tile.at.y,
+          ),
       ),
     ).toBe(true);
     expect(
       chooseNormalCommandV7(noObjective).candidates.some(
-        (candidate) => candidate.command.kind === "EMBARK",
+        (candidate) =>
+          candidate.command.kind === "MOVE" &&
+          noObjective.board.tiles.some(
+            (tile) =>
+              tile.explored &&
+              tile.improvement === "PORT" &&
+              candidate.command.kind === "MOVE" &&
+              candidate.command.path.at(-1)?.x === tile.at.x &&
+              candidate.command.path.at(-1)?.y === tile.at.y,
+          ),
       ),
     ).toBe(false);
   });
@@ -616,7 +766,9 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
     if (!applied.accepted) throw new Error(JSON.stringify(applied));
     expect(applied).toMatchObject({
       accepted: true,
-      events: [expect.objectContaining({ kind: "COMBAT_RESOLVED" })],
+      events: expect.arrayContaining([
+        expect.objectContaining({ kind: "COMBAT_RESOLVED" }),
+      ]),
     });
   });
 
@@ -632,7 +784,6 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
       "GATHER_PEARLS",
       "BUILD_PORT",
       "TRAIN_NAVAL",
-      "EMBARK",
       "DISEMBARK",
     ])
       expect(result.metrics.commandsByKind[kind]).toBe(0);
@@ -711,9 +862,12 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
           if (command.kind === "RESEARCH" && command.tech === "NAVIGATION")
             navigation = true;
           if (command.kind === "BUILD_PORT") port = true;
-          if (command.kind === "EMBARK") {
-            passengerId ??= command.unitId;
-            if (command.unitId === passengerId) departure = true;
+          const embarked = applied.events.find(
+            (event) => event.kind === "UNIT_EMBARKED",
+          );
+          if (embarked?.kind === "UNIT_EMBARKED") {
+            passengerId ??= embarked.unitId;
+            if (embarked.unitId === passengerId) departure = true;
           }
           if (
             command.kind === "MOVE" &&
@@ -853,6 +1007,8 @@ function navalPolicyView(
               ? ("PORT" as const)
               : null,
           road: false,
+          fieldDefense: false,
+          fortificationLevel: 0,
           site:
             tile.at.x === ownAt.x && tile.at.y === ownAt.y
               ? ("CAPITAL" as const)
@@ -874,10 +1030,88 @@ function navalPolicyView(
         : [],
       tradeCityIds: [],
       networkCityIds: [ownCity.id],
+      networkRoads: [],
       seaRoutes: [],
       recoverableNavalUnitIds: [],
     },
     treasureChests: [],
+  };
+}
+
+function occupiedCoastalObjectiveView(): {
+  readonly view: PlayerViewV7;
+  readonly transportId: number;
+} {
+  const source = navalPolicyView(["SHORECRAFT", "NAVIGATION"], true);
+  const transport = source.units.find(
+    (unit) => unit.ownerId === source.viewer.id,
+  );
+  const hostile = source.units.find(
+    (unit) => unit.ownerId !== source.viewer.id,
+  );
+  const hostileCity = source.cities.find(
+    (city) => city.ownerId !== source.viewer.id,
+  );
+  if (
+    transport === undefined ||
+    hostile === undefined ||
+    hostileCity === undefined
+  )
+    throw new Error("occupied coastal objective pieces missing");
+  let view = projectPublicUnitForPolicyV7(source, transport.id, {
+    form: "EMBARKED",
+    at: { x: 6, y: 5 },
+  });
+  view = projectPublicUnitForPolicyV7(view, hostile.id, {
+    form: "LAND",
+    at: { x: 7, y: 4 },
+  });
+  return {
+    transportId: transport.id,
+    view: {
+      ...view,
+      viewer: { ...view.viewer, coins: 0 },
+      cities: view.cities.map((city) =>
+        city.id === hostileCity.id ? { ...city, at: { x: 7, y: 4 } } : city,
+      ),
+      board: {
+        ...view.board,
+        tiles: view.board.tiles.map((tile) => {
+          if (!tile.explored || tile.at.x < 7) return tile;
+          return {
+            ...tile,
+            biome: "PLAINS" as const,
+            terrain: "GRASS" as const,
+            resource: null,
+            improvement: null,
+            road: false,
+            fieldDefense: false,
+            fortificationLevel: 0,
+            site:
+              tile.at.x === 7 && tile.at.y === 4 ? ("CAPITAL" as const) : null,
+            territoryCityId: hostileCity.id,
+            territoryOwnerId: hostileCity.ownerId,
+          };
+        }),
+      },
+    },
+  };
+}
+
+function targetlessOwnedCoastView(): PlayerViewV7 {
+  const source = ownedWaterCorridorView();
+  return {
+    ...source,
+    cities: source.cities.filter((city) => city.ownerId === source.viewer.id),
+    units: source.units.filter((unit) => unit.ownerId === source.viewer.id),
+    board: {
+      ...source.board,
+      tiles: source.board.tiles.map((tile) =>
+        tile.at.x === 2 && tile.at.y === 2
+          ? { at: tile.at, explored: false as const }
+          : tile,
+      ),
+    },
   };
 }
 
@@ -1033,6 +1267,8 @@ function alternatePortBarrierView(): PlayerViewV7 {
           resource: null,
           improvement: null,
           road: false,
+          fieldDefense: false,
+          fortificationLevel: 0,
           site:
             tile.at.x === 1 && tile.at.y === 1
               ? ("CAPITAL" as const)
@@ -1060,6 +1296,7 @@ function alternatePortBarrierView(): PlayerViewV7 {
       ownedPorts: [],
       tradeCityIds: [],
       networkCityIds: [originalOwnCity.id],
+      networkRoads: [],
       seaRoutes: [],
       recoverableNavalUnitIds: [],
     },

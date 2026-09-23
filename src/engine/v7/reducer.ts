@@ -18,7 +18,6 @@ import {
   arePlayersAlliedV7,
   arePlayersHostileV7,
   assignedUnitCountV7,
-  cityIncomeV7,
   cityUnitCapacityV7,
   economyEventsV7,
   growthEventsV7,
@@ -70,7 +69,6 @@ export type RuleErrorCodeV7 =
   | "REDEVELOP_INVALID_TARGET"
   | "TERRITORY_NOT_OWNED"
   | "CITY_BESIEGED"
-  | "CITY_BLACKED_OUT"
   | "CITY_REWARD_PENDING"
   | "CITY_BUILDING_LIMIT"
   | "PLACEMENT_REQUIREMENT_UNMET"
@@ -95,9 +93,6 @@ export type RuleErrorCodeV7 =
   | "TARGET_ALLIED"
   | "TARGET_NOT_FOUND"
   | "TARGET_OUT_OF_RANGE"
-  | "BLACKOUT_PROTECTED"
-  | "BLACKOUT_COOLDOWN"
-  | "SABOTEUR_DETECTED"
   | "ATTACK_NOT_LEGAL"
   | "MOVEMENT_ILLEGAL"
   | "INVALID_PATH"
@@ -192,7 +187,11 @@ export function applyCommandV7(
 
 function navalFactsMayChangeV7(command: CommandV7): boolean {
   if (command.kind === "RESEARCH")
-    return command.tech === "SHORECRAFT" || command.tech === "NAVIGATION";
+    return (
+      command.tech === "ROADS" ||
+      command.tech === "SHORECRAFT" ||
+      command.tech === "NAVIGATION"
+    );
   if (command.kind === "CHOOSE_CITY_REWARD") return command.reward === "EXPAND";
   return [
     "ATTACK",
@@ -264,8 +263,6 @@ function applyCommandCoreV7(
     return applyPearls(stateInput, state, actor, command.at);
   if (command.kind === "BUILD_PORT")
     return applyPort(stateInput, state, actor, command.at);
-  if (command.kind === "EMBARK")
-    return applyEmbark(stateInput, state, actor, command);
   if (command.kind === "DISEMBARK")
     return applyDisembark(stateInput, state, actor, command);
   if (command.kind === "CHOOSE_CITY_REWARD")
@@ -288,8 +285,8 @@ function applyCommandCoreV7(
     return applyPillage(stateInput, state, actor, command.unitId);
   if (command.kind === "DISBAND")
     return applyDisband(stateInput, state, actor, command.unitId);
-  if (command.kind === "BLACKOUT_CITY")
-    return applyBlackout(stateInput, state, actor, command);
+  if (command.kind === "BUILD_FIELD_DEFENSE")
+    return applyFieldDefense(stateInput, state, actor, command.unitId);
   if (command.kind === "END_TURN")
     return applyEndTurn(stateInput, state, actor);
   return rejected(stateInput, "INVALID_COMMAND");
@@ -406,9 +403,22 @@ function applyResearch(
           : item,
       ),
     };
-    const achievements = evaluateAchievementsV7(researched, actor);
+    const recalculation = recomputeLiveEconomyV7(
+      researched,
+      researched,
+      researched.populationContributions,
+    );
+    const staged: GameStateV7 = {
+      ...researched,
+      cities: recalculation.cities,
+      populationContributions: recalculation.populationContributions,
+    };
+    const settlement = settleCityRewardsV7(staged, actor);
+    const achievements = evaluateAchievementsV7(settlement.state, actor);
     return accepted(checked(achievements.state), [
       { kind: "TECH_RESEARCHED", playerId: actor, tech, cost },
+      ...economyAndGrowth(recalculation.changes),
+      ...settlement.events,
       ...achievements.events,
     ]);
   } catch (cause) {
@@ -548,6 +558,11 @@ function applySpatial(
   if (!player.researchedTechs.includes(rule.technology))
     return rejected(original, "TECH_REQUIRED", { tech: rule.technology });
   if (
+    tile.terrain === "MOUNTAIN" &&
+    !player.researchedTechs.includes("PROSPECTING")
+  )
+    return rejected(original, "TECH_REQUIRED", { tech: "PROSPECTING" });
+  if (
     state.treasureChests.some((chest) => same(chest, command.at)) ||
     tile.site !== null ||
     tile.resource !== null ||
@@ -558,8 +573,6 @@ function applySpatial(
   if (city === undefined || city.ownerId !== actor)
     return rejected(original, "TERRITORY_NOT_OWNED");
   if (isCityBesiegedV7(state, city)) return rejected(original, "CITY_BESIEGED");
-  if (city.blackout?.phase === "ACTIVE")
-    return rejected(original, "CITY_BLACKED_OUT");
   if (hasCityChoice(state, city.id))
     return rejected(original, "CITY_REWARD_PENDING");
   if (
@@ -661,8 +674,6 @@ function applyMonument(
   if (city === undefined || city.ownerId !== actor)
     return rejected(original, "TERRITORY_NOT_OWNED");
   if (isCityBesiegedV7(state, city)) return rejected(original, "CITY_BESIEGED");
-  if (city.blackout?.phase === "ACTIVE")
-    return rejected(original, "CITY_BLACKED_OUT");
   if (hasCityChoice(state, city.id))
     return rejected(original, "CITY_REWARD_PENDING");
   if (
@@ -675,6 +686,11 @@ function applyMonument(
     return rejected(original, "CITY_BUILDING_LIMIT", {
       improvement: "MONUMENT",
     });
+  if (
+    tile.terrain === "MOUNTAIN" &&
+    !player.researchedTechs.includes("PROSPECTING")
+  )
+    return rejected(original, "TECH_REQUIRED", { tech: "PROSPECTING" });
   if (
     tile.biome === null ||
     tile.site !== null ||
@@ -774,7 +790,7 @@ function applyInfrastructure(
         ? "FIELDCRAFT"
         : command.kind === "BUILD_ROAD"
           ? "ROADS"
-          : "GRAND_WORKS";
+          : "ENGINEERING";
   if (!player.researchedTechs.includes(tech))
     return rejected(original, "TECH_REQUIRED", { tech });
   const forestValid =
@@ -790,7 +806,14 @@ function applyInfrastructure(
     return rejected(original, "FOREST_ACTION_INVALID_TILE", {
       action: command.kind,
     });
-  if (command.kind === "BUILD_ROAD" && (tile.site !== null || tile.road))
+  if (
+    command.kind === "BUILD_ROAD" &&
+    (tile.biome === null ||
+      tile.site !== null ||
+      tile.road ||
+      (tile.terrain === "MOUNTAIN" &&
+        !player.researchedTechs.includes("PROSPECTING")))
+  )
     return rejected(original, "INVALID_TILE", { action: command.kind });
   if (command.kind === "REDEVELOP" && tile.improvement === null)
     return rejected(original, "REDEVELOP_INVALID_TARGET");
@@ -801,12 +824,14 @@ function applyInfrastructure(
   )
     return rejected(original, "REDEVELOP_INVALID_TARGET");
   const city = state.cities.find((item) => item.id === tile.territoryCityId);
-  if (city === undefined || city.ownerId !== actor)
+  const neutralRoad = command.kind === "BUILD_ROAD" && city === undefined;
+  if (!neutralRoad && (city === undefined || city.ownerId !== actor))
     return rejected(original, "TERRITORY_NOT_OWNED");
-  if (isCityBesiegedV7(state, city)) return rejected(original, "CITY_BESIEGED");
-  if (city.blackout?.phase === "ACTIVE")
-    return rejected(original, "CITY_BLACKED_OUT");
-  if (hasCityChoice(state, city.id))
+  if (city !== undefined && city.ownerId !== actor)
+    return rejected(original, "TERRITORY_NOT_OWNED");
+  if (city !== undefined && isCityBesiegedV7(state, city))
+    return rejected(original, "CITY_BESIEGED");
+  if (city !== undefined && hasCityChoice(state, city.id))
     return rejected(original, "CITY_REWARD_PENDING");
   const cost =
     command.kind === "BUILD_ROAD"
@@ -829,7 +854,9 @@ function applyInfrastructure(
     )
       return rejected(original, "INVALID_STATE");
     const marketRemoved =
-      removed === "MARKET" ? marketIncomeForCityV7(state, city) : 0;
+      removed === "MARKET" && city !== undefined
+        ? marketIncomeForCityV7(state, city)
+        : 0;
     const resourceRestored = restoredResourceForImprovement(removed);
     const board = replaceTile(state, command.at, {
       ...tile,
@@ -879,7 +906,7 @@ function applyInfrastructure(
         ? {
             kind: "ROAD_BUILT",
             playerId: actor,
-            cityId: city.id,
+            cityId: city?.id ?? null,
             at: command.at,
             cost: 2,
           }
@@ -887,7 +914,7 @@ function applyInfrastructure(
           ? {
               kind: "FOREST_CLEARED",
               playerId: actor,
-              cityId: city.id,
+              cityId: requireValue(city).id,
               at: command.at,
               coinDelta: 1,
             }
@@ -895,14 +922,14 @@ function applyInfrastructure(
             ? {
                 kind: "FOREST_REPLANTED",
                 playerId: actor,
-                cityId: city.id,
+                cityId: requireValue(city).id,
                 at: command.at,
                 coinDelta: 0,
               }
             : {
                 kind: "ECONOMIC_BUILDING_REMOVED",
                 playerId: actor,
-                cityId: city.id,
+                cityId: requireValue(city).id,
                 at: command.at,
                 improvement: requireValue(removed),
                 populationContributionRemoved: removedContribution?.amount ?? 0,
@@ -945,8 +972,6 @@ function applyPearls(
   if (tile.improvement === "PORT" && !isActivePortV7(state, at, actor))
     return rejected(original, "INVALID_TILE", { action: "GATHER_PEARLS" });
   if (isCityBesiegedV7(state, city)) return rejected(original, "CITY_BESIEGED");
-  if (city.blackout?.phase === "ACTIVE")
-    return rejected(original, "CITY_BLACKED_OUT");
   if (hasCityChoice(state, city.id))
     return rejected(original, "CITY_REWARD_PENDING");
   if (player.coins < 2)
@@ -1009,8 +1034,6 @@ function applyPort(
   )
     return rejected(original, "INVALID_TILE", { action: "BUILD_PORT" });
   if (isCityBesiegedV7(state, city)) return rejected(original, "CITY_BESIEGED");
-  if (city.blackout?.phase === "ACTIVE")
-    return rejected(original, "CITY_BLACKED_OUT");
   if (hasCityChoice(state, city.id))
     return rejected(original, "CITY_REWARD_PENDING");
   if (player.coins < 4)
@@ -1078,8 +1101,6 @@ function applyTrainNaval(
   if (state.units.some((unit) => unit.hp > 0 && same(unit.at, command.at)))
     return rejected(original, "CITY_SPAWN_OCCUPIED", { cityId: city.id });
   if (isCityBesiegedV7(state, city)) return rejected(original, "CITY_BESIEGED");
-  if (city.blackout?.phase === "ACTIVE")
-    return rejected(original, "CITY_BLACKED_OUT");
   if (hasCityChoice(state, city.id))
     return rejected(original, "CITY_REWARD_PENDING");
   if (
@@ -1106,7 +1127,6 @@ function applyTrainNaval(
       veteran: false,
       captureEligible: false,
       activation: exhaustedActivation(command.role),
-      blackoutEligibleRound: null,
     };
     return accepted(
       checked({
@@ -1123,7 +1143,7 @@ function applyTrainNaval(
           cityId: city.id,
           unitId: trained.id,
           role: command.role,
-          cost: rule.cost as 5 | 10,
+          cost: rule.cost as 5 | 16,
           at: command.at,
         },
       ],
@@ -1131,63 +1151,6 @@ function applyTrainNaval(
   } catch (cause) {
     return arithmeticFailure(original, cause);
   }
-}
-
-function applyEmbark(
-  original: GameStateV7,
-  state: GameStateV7,
-  actor: PlayerId,
-  command: Extract<CommandV7, { kind: "EMBARK" }>,
-): ApplyCommandResultV7 {
-  const unit = state.units.find((candidate) => candidate.id === command.unitId);
-  if (unit === undefined) return rejected(original, "UNIT_NOT_FOUND");
-  if (unit.ownerId !== actor) return rejected(original, "UNIT_NOT_OWNED");
-  const player = requirePlayer(state, actor);
-  if (!player.researchedTechs.includes("SHORECRAFT"))
-    return rejected(original, "TECH_REQUIRED", { tech: "SHORECRAFT" });
-  if (
-    unit.form !== "LAND" ||
-    unit.role === "PATROL_BOAT" ||
-    unit.role === "BATTLESHIP" ||
-    chebyshev(unit.at, command.portAt) !== 1 ||
-    primaryUsed(unit) ||
-    unit.activation.handled ||
-    unit.activation.attacksUsed > 0 ||
-    unit.activation.moved ||
-    !isActivePortV7(state, command.portAt, actor) ||
-    state.units.some(
-      (candidate) => candidate.hp > 0 && same(candidate.at, command.portAt),
-    )
-  )
-    return rejected(original, "MOVEMENT_ILLEGAL");
-  if (state.commandIndex >= Number.MAX_SAFE_INTEGER)
-    return rejected(original, "INTEGER_OVERFLOW");
-  const from = unit.at;
-  const next = checked({
-    ...state,
-    commandIndex: nextSafe(state.commandIndex),
-    units: state.units.map((candidate) =>
-      candidate.id === unit.id
-        ? {
-            ...candidate,
-            at: command.portAt,
-            form: "EMBARKED" as const,
-            captureEligible: false,
-            activation: { ...candidate.activation, moved: true, handled: true },
-          }
-        : candidate,
-    ),
-  });
-  return accepted(next, [
-    {
-      kind: "UNIT_EMBARKED",
-      playerId: actor,
-      unitId: unit.id,
-      passengerRole: unit.role,
-      from,
-      to: command.portAt,
-    },
-  ]);
 }
 
 function applyDisembark(
@@ -1318,8 +1281,6 @@ function applyTrain(
   if (city.ownerId !== actor) return rejected(original, "CITY_NOT_OWNED");
   if (isCityBesiegedV7(state, city))
     return rejected(original, "CITY_BESIEGED", { cityId: city.id });
-  if (city.blackout?.phase === "ACTIVE")
-    return rejected(original, "CITY_BLACKED_OUT", { cityId: city.id });
   if (hasCityChoice(state, city.id))
     return rejected(original, "CITY_REWARD_PENDING", { cityId: city.id });
   const player = requirePlayer(state, actor);
@@ -1354,7 +1315,6 @@ function applyTrain(
       veteran: false,
       captureEligible: false,
       activation: exhaustedActivation(command.role),
-      blackoutEligibleRound: command.role === "SABOTEUR" ? 1 : null,
     };
     const staged = {
       ...state,
@@ -1543,7 +1503,6 @@ function applyReward(
         veteran: false,
         captureEligible: false,
         activation: exhaustedActivation(unitRole),
-        blackoutEligibleRound: null,
       };
       units = [...units, created];
       events.push({
@@ -1601,6 +1560,18 @@ function applyMove(
     return rejected(original, "MOVEMENT_ILLEGAL", {
       reason: validation.reason,
     });
+  const destinationTile = tileAtV7(state.board, validation.destination);
+  const autoEmbarks =
+    unit.form === "LAND" &&
+    validation.interruption === null &&
+    validation.traversedPath.length === command.path.length &&
+    destinationTile?.improvement === "PORT" &&
+    destinationTile.territoryCityId !== null &&
+    state.cities.some(
+      (city) =>
+        city.id === destinationTile.territoryCityId && city.ownerId === actor,
+    ) &&
+    isActivePortV7(state, validation.destination, actor);
   try {
     const treasure = resolveTreasure(
       state,
@@ -1615,13 +1586,19 @@ function applyMove(
         ? {
             ...candidate,
             at: validation.destination,
+            form: autoEmbarks ? ("EMBARKED" as const) : candidate.form,
             captureEligible: false,
-            activation: {
-              ...candidate.activation,
-              moved: true,
-              movedPathLength: validation.traversedPath.length,
-              handled: unit.form === "EMBARKED" ? false : true,
-            },
+            activation: autoEmbarks
+              ? {
+                  ...exhaustedActivation(candidate.role),
+                  movedPathLength: validation.traversedPath.length,
+                }
+              : {
+                  ...candidate.activation,
+                  moved: true,
+                  movedPathLength: validation.traversedPath.length,
+                  handled: unit.form === "EMBARKED" ? false : true,
+                },
           }
         : candidate,
     );
@@ -1645,6 +1622,15 @@ function applyMove(
         kind: "UNIT_MOVED",
         unitId: unit.id,
         path: validation.traversedPath,
+      });
+    if (autoEmbarks)
+      events.push({
+        kind: "UNIT_EMBARKED",
+        playerId: actor,
+        unitId: unit.id,
+        passengerRole: unit.role,
+        from: validation.traversedPath.at(-2) ?? unit.at,
+        to: validation.destination,
       });
     if (treasure !== null) events.push(treasure.event);
     if (validation.interruption !== null)
@@ -1731,7 +1717,6 @@ function resolveTreasure(
       veteran: false,
       captureEligible: false,
       activation: exhaustedActivation("HEAVY"),
-      blackoutEligibleRound: null,
     };
     return {
       players: state.players,
@@ -1889,13 +1874,16 @@ function applyAttack(
       isExplored(requirePlayer(state, actor), defender.at) &&
       destinationTile !== undefined &&
       (destinationTile.terrain !== "MOUNTAIN" ||
-        requirePlayer(state, actor).researchedTechs.includes("ENGINEERING"));
+        requirePlayer(state, actor).researchedTechs.includes("PROSPECTING"));
     const preview =
       canAdvance === calculated.advances
         ? calculated
         : { ...calculated, advances: canAdvance };
     const attacksUsed = attacker.activation.attacksUsed + 1;
-    const attackerKills = attacker.kills + (preview.defenderDies ? 1 : 0);
+    const attackerKills =
+      attacker.kills +
+      (preview.defenderDies ? 1 : 0) +
+      preview.splash.filter((entry) => entry.dies).length;
     const defenderKills = defender.kills + (preview.attackerDies ? 1 : 0);
     if (
       attacksUsed > (attacker.role === "HORSE_ARCHER" ? 2 : 1) ||
@@ -1932,18 +1920,30 @@ function applyAttack(
       captureEligible:
         pushDestination === null ? defender.captureEligible : false,
     };
+    const splashDamage = new Map(
+      preview.splash.map((entry) => [entry.unitId, entry.damage] as const),
+    );
     const units = state.units
       .map((unit) =>
         unit.id === attacker.id
           ? attackerAfter
           : unit.id === defender.id
             ? defenderAfter
-            : unit,
+            : splashDamage.has(unit.id)
+              ? { ...unit, hp: unit.hp - (splashDamage.get(unit.id) ?? 0) }
+              : unit,
       )
       .filter((unit) => unit.hp > 0);
     const events: DomainEventV7[] = [{ kind: "COMBAT_RESOLVED", preview }];
     if (preview.defenderDies)
       events.push({ kind: "UNIT_DIED", unitId: defender.id, cause: "ATTACK" });
+    for (const splash of preview.splash)
+      if (splash.dies)
+        events.push({
+          kind: "UNIT_DIED",
+          unitId: splash.unitId,
+          cause: "SPLASH",
+        });
     if (preview.attackerDies)
       events.push({
         kind: "UNIT_DIED",
@@ -1998,37 +1998,6 @@ function applyAttack(
           tiles: reveal.revealed,
         });
     }
-    let exposures = state.saboteurExposures.filter((exposure) =>
-      units.some((living) => living.id === exposure.unitId),
-    );
-    if (
-      attacker.role === "SABOTEUR" &&
-      units.some((living) => living.id === attacker.id)
-    ) {
-      exposures = [
-        ...exposures.filter(
-          (entry) =>
-            entry.unitId !== attacker.id ||
-            entry.anchorPlayerId !== defender.ownerId,
-        ),
-        {
-          unitId: attacker.id,
-          anchorPlayerId: defender.ownerId,
-          reason: "ATTACK" as const,
-          clearsAtAnchorNextEndTurn: true as const,
-        },
-      ].sort(
-        (left, right) =>
-          left.unitId - right.unitId ||
-          left.anchorPlayerId - right.anchorPlayerId,
-      );
-      events.push({
-        kind: "SABOTEUR_EXPOSED",
-        unitId: attacker.id,
-        anchorPlayerId: defender.ownerId,
-        reason: "ATTACK",
-      });
-    }
     const economy = recomputeLiveEconomyV7(
       state,
       { board: state.board, cities: state.cities, units },
@@ -2043,7 +2012,6 @@ function applyAttack(
         cities: economy.cities,
         units,
         populationContributions: economy.populationContributions,
-        saboteurExposures: exposures,
       },
       actor,
     );
@@ -2241,10 +2209,7 @@ function applyPillage(
   if (primaryUsed(unit))
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
   const player = requirePlayer(state, actor);
-  if (
-    unit.role !== "SABOTEUR" &&
-    !player.researchedTechs.includes("EXPLOSIVES")
-  )
+  if (!player.researchedTechs.includes("EXPLOSIVES"))
     return rejected(original, "TECH_REQUIRED", { tech: "EXPLOSIVES" });
   const tile = tileAtV7(state.board, unit.at);
   const city = state.cities.find((item) => item.id === tile?.territoryCityId);
@@ -2294,18 +2259,6 @@ function applyPillage(
           }
         : item,
     );
-    const exposure =
-      unit.role === "SABOTEUR"
-        ? exposeSaboteurV7(
-            state.saboteurExposures,
-            unit.id,
-            city.ownerId,
-            "PILLAGE",
-          )
-        : {
-            exposures: state.saboteurExposures,
-            event: null,
-          };
     const staged: GameStateV7 = {
       ...state,
       commandIndex: nextSafe(state.commandIndex),
@@ -2316,7 +2269,6 @@ function applyPillage(
       cities: recalc.cities,
       populationContributions: recalc.populationContributions,
       units,
-      saboteurExposures: exposure.exposures,
     };
     const settlement = settleCityRewardsV7(staged, actor);
     const achievements = evaluateAchievementsV7(settlement.state, actor);
@@ -2332,7 +2284,6 @@ function applyPillage(
         resourceRestored,
         coinDelta: 1,
       },
-      ...(exposure.event === null ? [] : [exposure.event]),
       ...economyAndGrowth(recalc.changes),
       ...settlement.events,
       ...achievements.events,
@@ -2342,100 +2293,71 @@ function applyPillage(
   }
 }
 
-function applyBlackout(
+function applyFieldDefense(
   original: GameStateV7,
   state: GameStateV7,
   actor: PlayerId,
-  command: Extract<CommandV7, { kind: "BLACKOUT_CITY" }>,
+  unitId: UnitStateV7["id"],
 ): ApplyCommandResultV7 {
-  const actorCheck = validateUnitActor(state, actor, command.unitId);
+  const actorCheck = validateUnitActor(state, actor, unitId);
   if (!actorCheck.ok)
     return rejected(original, actorCheck.code, actorCheck.params);
-  const source = actorCheck.unit;
-  if (source.form !== "LAND" || source.role !== "SABOTEUR")
-    return rejected(original, "UNIT_ROLE_INVALID", { role: source.role });
-  if (
-    primaryUsed(source) ||
-    (source.activation.moved &&
-      !effectiveRoleRuleV7(source.role).mayUsePrimaryActionAfterMove)
-  )
-    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: source.id });
+  const unit = actorCheck.unit;
   const player = requirePlayer(state, actor);
-  const city = state.cities.find(
-    (candidate) =>
-      candidate.id === command.cityId && isExplored(player, candidate.at),
+  const tile = tileAtV7(state.board, unit.at);
+  const territory = state.cities.find(
+    (city) => city.id === tile?.territoryCityId,
   );
-  if (city === undefined)
-    return rejected(original, "CITY_NOT_FOUND", { cityId: command.cityId });
-  if (city.ownerId === actor || arePlayersAlliedV7(state, actor, city.ownerId))
-    return rejected(original, "TARGET_ALLIED");
-  if (chebyshev(source.at, city.at) !== 1)
-    return rejected(original, "TARGET_OUT_OF_RANGE");
-  if (city.blackout !== null)
-    return rejected(original, "BLACKOUT_PROTECTED", { cityId: city.id });
+  if (!player.researchedTechs.includes("FORTIFICATION"))
+    return rejected(original, "TECH_REQUIRED", { tech: "FORTIFICATION" });
   if (
-    source.blackoutEligibleRound === null ||
-    state.round < source.blackoutEligibleRound
+    unit.form !== "LAND" ||
+    (unit.role !== "FIGHTER" && unit.role !== "GUARD") ||
+    tile === undefined ||
+    tile.biome === null ||
+    territory?.ownerId !== actor ||
+    !isExplored(player, unit.at) ||
+    tile.fieldDefense
   )
-    return rejected(original, "BLACKOUT_COOLDOWN", {
-      eligibleRound: source.blackoutEligibleRound,
+    return rejected(original, "INVALID_TILE", {
+      action: "BUILD_FIELD_DEFENSE",
     });
-  const detector = hostileUnitDetectorV7(state, source);
-  if (detector !== undefined)
-    return rejected(original, "SABOTEUR_DETECTED", { unitId: source.id });
+  if (
+    primaryUsed(unit) ||
+    (unit.activation.moved &&
+      !effectiveRoleRuleV7(unit.role).mayUsePrimaryActionAfterMove)
+  )
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
+  if (player.coins < 3)
+    return rejected(original, "INSUFFICIENT_COINS", { cost: 3 });
   try {
-    const eligibleRound = nextSafeBy(state.round, 3);
-    const exposure = exposeSaboteurV7(
-      state.saboteurExposures,
-      source.id,
-      city.ownerId,
-      "BLACKOUT",
-    );
-    return accepted(
-      checked({
-        ...state,
-        commandIndex: nextSafe(state.commandIndex),
-        cities: state.cities.map((candidate) =>
-          candidate.id === city.id
-            ? {
-                ...candidate,
-                blackout: {
-                  phase: "PENDING",
-                  sourceUnitId: source.id,
-                  sourceOwnerId: actor,
-                  plantedRound: state.round,
-                },
-              }
-            : candidate,
-        ),
-        units: state.units.map((unit) =>
-          unit.id === source.id
-            ? {
-                ...unit,
-                blackoutEligibleRound: eligibleRound,
-                activation: {
-                  ...unit.activation,
-                  handled: true,
-                  specialActed: true,
-                },
-              }
-            : unit,
-        ),
-        saboteurExposures: exposure.exposures,
-      }),
-      [
-        {
-          kind: "BLACKOUT_PLANTED",
-          cityId: city.id,
-          sourceUnitId: source.id,
-          sourceOwnerId: actor,
-          targetOwnerId: city.ownerId,
-          actionRound: state.round,
-          eligibleRound,
-        },
-        exposure.event,
-      ],
-    );
+    const next = checked({
+      ...state,
+      commandIndex: nextSafe(state.commandIndex),
+      board: replaceTile(state, unit.at, { ...tile, fieldDefense: true }),
+      players: debit(state.players, actor, 3),
+      units: state.units.map((candidate) =>
+        candidate.id === unit.id
+          ? {
+              ...candidate,
+              activation: {
+                ...candidate.activation,
+                specialActed: true,
+                handled: true,
+              },
+            }
+          : candidate,
+      ),
+    });
+    return accepted(next, [
+      {
+        kind: "FIELD_DEFENSE_BUILT",
+        playerId: actor,
+        unitId,
+        at: unit.at,
+        cost: 3,
+      },
+    ]);
   } catch (cause) {
     return arithmeticFailure(original, cause);
   }
@@ -2472,9 +2394,6 @@ function applyDisband(
     const afterRemoval = {
       ...state,
       units,
-      saboteurExposures: state.saboteurExposures.filter(
-        (item) => item.unitId !== unitId,
-      ),
     };
     const next = checked({
       ...afterRemoval,
@@ -2564,7 +2483,6 @@ function applyCapture(
         isCapital: false,
         expanded: false,
         rewards: [],
-        blackout: null,
       };
       cities = [...state.cities, captured].sort((a, b) => a.id - b.id);
       board = {
@@ -2581,14 +2499,6 @@ function applyCapture(
       captured = {
         ...hostile,
         ownerId: actor,
-        blackout:
-          hostile.blackout === null
-            ? null
-            : {
-                phase: "RECOVERY",
-                recoveryOwnerId: actor,
-                unaffectedTurnStarted: false,
-              },
       };
       cities = state.cities.map((item) =>
         item.id === captured.id ? captured : item,
@@ -2628,13 +2538,6 @@ function applyCapture(
         to: actor,
       },
     ];
-    if (hostile?.blackout !== null && hostile?.blackout !== undefined)
-      events.push({
-        kind: "BLACKOUT_RECOVERY_STARTED",
-        cityId: captured.id,
-        ownerId: actor,
-        reason: "CITY_CAPTURED",
-      });
     if (spoils)
       events.push({
         kind: "SPOILS_AWARDED",
@@ -2742,12 +2645,6 @@ function applyCapture(
         units,
         populationContributions: contributions,
         pendingChoices: choices,
-        saboteurExposures: state.saboteurExposures.filter(
-          (entry) =>
-            units.some((item) => item.id === entry.unitId) &&
-            players.find((item) => item.id === entry.anchorPlayerId)?.status ===
-              "ACTIVE",
-        ),
         outcome,
       }),
       events,
@@ -2765,8 +2662,7 @@ function applyEndTurn(
   try {
     const current = requirePlayer(state, actor);
     const recovery = recoverIdleUnits(state, current);
-    const endedBlackouts = endTurnBlackoutsV7(recovery.state, actor);
-    const preview = playerIncomeV7(endedBlackouts.state, actor);
+    const preview = playerIncomeV7(recovery.state, actor);
     const nextIndex = nextActiveSeat(state);
     if (nextIndex === null) return rejected(original, "INVALID_STATE");
     const nextPlayer = state.players.find(
@@ -2775,22 +2671,15 @@ function applyEndTurn(
     if (nextPlayer === undefined) return rejected(original, "INVALID_STATE");
     const round =
       nextIndex <= state.activeSeatIndex ? nextSafe(state.round) : state.round;
-    const advanced = startRecoveryTurnsV7(
-      resetTurnUnits(
-        {
-          ...endedBlackouts.state,
-          activeSeatIndex: nextIndex,
-          round,
-          saboteurExposures: endedBlackouts.state.saboteurExposures.filter(
-            (exposure) => exposure.anchorPlayerId !== actor,
-          ),
-        },
-        nextPlayer.id,
-      ),
+    const advanced = resetTurnUnits(
+      {
+        ...recovery.state,
+        activeSeatIndex: nextIndex,
+        round,
+      },
       nextPlayer.id,
     );
-    const activated = activatePendingBlackoutsV7(advanced, nextPlayer.id);
-    const started = startTurnEconomyV7(activated.state, nextPlayer, false);
+    const started = startTurnEconomyV7(advanced, nextPlayer, false);
     const turnStarted = started.events[0];
     if (turnStarted === undefined) throw new RangeError("INVALID_STATE");
     const settlement = settleCityRewardsV7(started.state, nextPlayer.id);
@@ -2805,7 +2694,6 @@ function applyEndTurn(
       }),
       [
         ...recovery.events,
-        ...endedBlackouts.events,
         {
           kind: "INCOME_PREVIEWED",
           playerId: actor,
@@ -2814,7 +2702,6 @@ function applyEndTurn(
         },
         { kind: "TURN_ENDED", playerId: actor },
         turnStarted,
-        ...activated.events,
         ...started.events.slice(1),
         ...settlement.events,
         ...achievements.events,
@@ -2823,118 +2710,6 @@ function applyEndTurn(
   } catch (cause) {
     return arithmeticFailure(original, cause);
   }
-}
-
-function startRecoveryTurnsV7(
-  state: GameStateV7,
-  playerId: PlayerId,
-): GameStateV7 {
-  return {
-    ...state,
-    cities: state.cities.map((city) =>
-      city.ownerId === playerId &&
-      city.blackout?.phase === "RECOVERY" &&
-      !city.blackout.unaffectedTurnStarted
-        ? {
-            ...city,
-            blackout: { ...city.blackout, unaffectedTurnStarted: true },
-          }
-        : city,
-    ),
-  };
-}
-
-function activatePendingBlackoutsV7(
-  state: GameStateV7,
-  playerId: PlayerId,
-): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
-  const activations = [...state.cities]
-    .filter(
-      (city) => city.ownerId === playerId && city.blackout?.phase === "PENDING",
-    )
-    .sort((left, right) => left.id - right.id)
-    .map((city) => ({
-      city,
-      sourceOwnerId:
-        city.blackout?.phase === "PENDING"
-          ? city.blackout.sourceOwnerId
-          : playerId,
-      suppressedCoins: Math.min(3, cityIncomeV7(state, city)),
-    }));
-  const byCityId = new Map(activations.map((item) => [item.city.id, item]));
-  return {
-    state: {
-      ...state,
-      cities: state.cities.map((city) => {
-        const activation = byCityId.get(city.id);
-        return activation === undefined
-          ? city
-          : {
-              ...city,
-              blackout: {
-                phase: "ACTIVE",
-                sourceOwnerId: activation.sourceOwnerId,
-                suppressedCoins: activation.suppressedCoins,
-              },
-            };
-      }),
-    },
-    events: activations.map((activation): DomainEventV7 => ({
-      kind: "BLACKOUT_ACTIVATED",
-      cityId: activation.city.id,
-      ownerId: playerId,
-      suppressedCoins: activation.suppressedCoins,
-    })),
-  };
-}
-
-function endTurnBlackoutsV7(
-  state: GameStateV7,
-  playerId: PlayerId,
-): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
-  const transitions = [...state.cities]
-    .filter(
-      (city) =>
-        city.ownerId === playerId &&
-        (city.blackout?.phase === "ACTIVE" ||
-          (city.blackout?.phase === "RECOVERY" &&
-            city.blackout.unaffectedTurnStarted)),
-    )
-    .sort((left, right) => left.id - right.id);
-  const transitionIds = new Set(transitions.map((city) => city.id));
-  return {
-    state: {
-      ...state,
-      cities: state.cities.map((city) =>
-        !transitionIds.has(city.id)
-          ? city
-          : city.blackout?.phase === "ACTIVE"
-            ? {
-                ...city,
-                blackout: {
-                  phase: "RECOVERY",
-                  recoveryOwnerId: playerId,
-                  unaffectedTurnStarted: false,
-                },
-              }
-            : { ...city, blackout: null },
-      ),
-    },
-    events: transitions.map((city): DomainEventV7 =>
-      city.blackout?.phase === "ACTIVE"
-        ? {
-            kind: "BLACKOUT_RECOVERY_STARTED",
-            cityId: city.id,
-            ownerId: playerId,
-            reason: "AFFECTED_TURN_ENDED",
-          }
-        : {
-            kind: "BLACKOUT_RECOVERY_COMPLETED",
-            cityId: city.id,
-            ownerId: playerId,
-          },
-    ),
-  };
 }
 
 function validateTileContext(
@@ -2962,8 +2737,6 @@ function validateTileContext(
     return { ok: false, code: "TERRITORY_NOT_OWNED", params: {} };
   if (isCityBesiegedV7(state, city))
     return { ok: false, code: "CITY_BESIEGED", params: {} };
-  if (city.blackout?.phase === "ACTIVE")
-    return { ok: false, code: "CITY_BLACKED_OUT", params: {} };
   if (hasCityChoice(state, city.id))
     return { ok: false, code: "CITY_REWARD_PENDING", params: {} };
   return { ok: true, player, tile, city };
@@ -3240,7 +3013,7 @@ function evaluateAchievementsV7(
       contribution.category === "LIVE" &&
       contribution.amount >= 6 &&
       contribution.source.kind === "IMPROVEMENT" &&
-      ["WINDMILL", "SAWMILL", "FORGE", "WORKSHOP", "GRAND_WORKS"].includes(
+      ["WINDMILL", "SAWMILL", "FORGE", "WORKSHOP"].includes(
         contribution.source.improvement,
       ) &&
       state.cities.some(
@@ -3384,50 +3157,6 @@ function populationContributionAt(
       same(item.source.at, at),
   );
 }
-function hostileUnitDetectorV7(
-  state: GameStateV7,
-  saboteur: UnitStateV7,
-): UnitStateV7 | undefined {
-  return [...state.units]
-    .filter(
-      (unit) =>
-        unit.hp > 0 &&
-        !(unit.form === "EMBARKED" && unit.role === "SABOTEUR") &&
-        arePlayersHostileV7(state, saboteur.ownerId, unit.ownerId) &&
-        chebyshev(unit.at, saboteur.at) <=
-          (unit.form === "LAND" && unit.role === "SCOUT" ? 2 : 1),
-    )
-    .sort((left, right) => left.id - right.id)[0];
-}
-function exposeSaboteurV7(
-  exposures: GameStateV7["saboteurExposures"],
-  unitId: UnitStateV7["id"],
-  anchorPlayerId: PlayerId,
-  reason: GameStateV7["saboteurExposures"][number]["reason"],
-): {
-  readonly exposures: GameStateV7["saboteurExposures"];
-  readonly event: Extract<DomainEventV7, { kind: "SABOTEUR_EXPOSED" }>;
-} {
-  return {
-    exposures: [
-      ...exposures.filter(
-        (entry) =>
-          entry.unitId !== unitId || entry.anchorPlayerId !== anchorPlayerId,
-      ),
-      {
-        unitId,
-        anchorPlayerId,
-        reason,
-        clearsAtAnchorNextEndTurn: true as const,
-      },
-    ].sort(
-      (left, right) =>
-        left.unitId - right.unitId ||
-        left.anchorPlayerId - right.anchorPlayerId,
-    ),
-    event: { kind: "SABOTEUR_EXPOSED", unitId, anchorPlayerId, reason },
-  };
-}
 function exhaustedActivation(
   role: UnitStateV7["role"],
 ): UnitStateV7["activation"] {
@@ -3481,8 +3210,9 @@ function requirePlayer(state: GameStateV7, actor: PlayerId): PlayerStateV7 {
   if (player === undefined) throw new RangeError("INVALID_STATE");
   return player;
 }
-function requireValue<T>(value: T | null): T {
-  if (value === null) throw new RangeError("INVALID_STATE");
+function requireValue<T>(value: T | null | undefined): T {
+  if (value === null || value === undefined)
+    throw new RangeError("INVALID_STATE");
   return value;
 }
 function isExplored(player: PlayerStateV7, at: CoordV7): boolean {

@@ -9,7 +9,7 @@ import {
 import { withPortV7 } from "../fixtures/v7-naval-builders";
 
 describe("ruleset-7 naval public commands", () => {
-  it("offers exact Port recruitment and embark commands without a native naval TRAIN", () => {
+  it("offers exact Port recruitment and an autoembarking move without a native naval TRAIN", () => {
     const fixture = withPortV7(9401);
     const city = fixture.state.cities.find(
       (candidate) => candidate.ownerId === fixture.state.humanPlayerId,
@@ -28,11 +28,13 @@ describe("ruleset-7 naval public commands", () => {
       at: fixture.portAt,
       role: "PATROL_BOAT",
     });
-    expect(commands).toContainEqual({
-      kind: "EMBARK",
-      unitId: unit.id,
-      portAt: fixture.portAt,
-    });
+    expect(commands).toContainEqual(
+      expect.objectContaining({
+        kind: "MOVE",
+        unitId: unit.id,
+        path: expect.arrayContaining([fixture.portAt]),
+      }),
+    );
     expect(commands).not.toContainEqual({
       kind: "TRAIN",
       cityId: city.id,
@@ -74,57 +76,6 @@ describe("ruleset-7 naval public commands", () => {
     expect(JSON.stringify(view)).not.toContain("PATROL_BOAT");
   });
 
-  it("projects an embarked Saboteur as an ordinary visible transport", () => {
-    const fixture = withPortV7(9403);
-    const hostile = fixture.state.units.find(
-      (unit) => unit.ownerId !== fixture.state.humanPlayerId,
-    );
-    if (hostile === undefined) throw new Error("hostile missing");
-    const far = fixture.state.board.tiles.find(
-      (tile) =>
-        tile.site === null &&
-        Math.max(
-          Math.abs(tile.at.x - fixture.portAt.x),
-          Math.abs(tile.at.y - fixture.portAt.y),
-        ) >= 4,
-    );
-    if (far === undefined) throw new Error("far tile missing");
-    const state = {
-      ...fixture.state,
-      board: {
-        ...fixture.state.board,
-        tiles: fixture.state.board.tiles.map((tile) =>
-          tile.at.x === far.at.x && tile.at.y === far.at.y
-            ? {
-                ...tile,
-                biome: null,
-                terrain: "SHALLOW_WATER" as const,
-                resource: null,
-                improvement: null,
-              }
-            : tile,
-        ),
-      },
-      units: fixture.state.units.map((unit) =>
-        unit.id === hostile.id
-          ? {
-              ...unit,
-              at: far.at,
-              role: "SABOTEUR" as const,
-              form: "EMBARKED" as const,
-            }
-          : unit,
-      ),
-    } as typeof fixture.state;
-    const view = viewForV7(state, state.humanPlayerId);
-    const transport = view.units.find((unit) => unit.id === hostile.id);
-    expect(transport).toMatchObject({
-      form: "EMBARKED",
-      role: "SABOTEUR",
-    });
-    expect(transport).not.toHaveProperty("visibility");
-  });
-
   it("omits form-disabled and stale naval commands that the reducer rejects", () => {
     const fixture = withPortV7(9404);
     const own = fixture.state.units.find(
@@ -144,6 +95,7 @@ describe("ruleset-7 naval public commands", () => {
               activation: {
                 ...unit.activation,
                 handled: true,
+                attacked: true,
                 attacksUsed: 1 as const,
               },
             }
@@ -155,14 +107,18 @@ describe("ruleset-7 naval public commands", () => {
     );
     expect(
       staleCommands.some(
-        (command) => command.kind === "EMBARK" && command.unitId === own.id,
+        (command) =>
+          command.kind === "MOVE" &&
+          command.unitId === own.id &&
+          command.path.at(-1)?.x === fixture.portAt.x &&
+          command.path.at(-1)?.y === fixture.portAt.y,
       ),
     ).toBe(false);
     expect(
       applyCommandV7(staleLand, staleLand.humanPlayerId, {
-        kind: "EMBARK",
+        kind: "MOVE",
         unitId: own.id,
-        portAt: fixture.portAt,
+        path: [fixture.portAt],
       }).accepted,
     ).toBe(false);
 
@@ -173,7 +129,7 @@ describe("ruleset-7 naval public commands", () => {
           ? {
               ...unit,
               at: fixture.portAt,
-              role: "SABOTEUR" as const,
+              role: "FIGHTER" as const,
               form: "EMBARKED" as const,
               kills: 3,
               veteran: false,
@@ -190,13 +146,9 @@ describe("ruleset-7 naval public commands", () => {
         (command) =>
           "unitId" in command &&
           command.unitId === own.id &&
-          [
-            "PROMOTE",
-            "PILLAGE",
-            "DISBAND",
-            "BLACKOUT_CITY",
-            "HEAL_ADJACENT",
-          ].includes(command.kind),
+          ["PROMOTE", "PILLAGE", "DISBAND", "HEAL_ADJACENT"].includes(
+            command.kind,
+          ),
       ),
     ).toBe(false);
 

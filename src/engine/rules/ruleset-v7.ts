@@ -34,7 +34,7 @@ export type TechnologyUnlockedCommandV7 = Extract<
   | "BUILD_SAWMILL"
   | "BUILD_FORGE"
   | "BUILD_WORKSHOP"
-  | "BUILD_GRAND_WORKS"
+  | "BUILD_FIELD_DEFENSE"
   | "BUILD_MARKET"
   | "CLEAR_FOREST"
   | "REPLANT_FOREST"
@@ -61,7 +61,6 @@ export type TechnologyUnlockV7 =
         | "CONNECTED_ORTHOGONAL_CLUSTER"
         | "ADJACENT_MINES"
         | "DISTINCT_BASIC_TYPES"
-        | "DISTINCT_PROCESSOR_TYPES"
         | "DISTINCT_ECONOMIC_FAMILIES";
     }
   | { readonly kind: "CONNECTED_FARM_VISUALS" }
@@ -77,21 +76,12 @@ export type TechnologyUnlockV7 =
       readonly radius: 2;
     }
   | {
-      readonly kind: "SCOUT_DETECTION_RADIUS";
-      readonly radius: 2;
-    }
-  | {
       readonly kind: "ROAD_MOVEMENT";
       readonly ordinaryStepCost2: 2;
       readonly connectedOrthogonalStepCost2: 1;
     }
   | { readonly kind: "MARKET_CAPITAL_ROAD_BONUS"; readonly coins: 1 }
-  | {
-      readonly kind: "FRIENDLY_CITY_FORTIFICATION";
-      readonly roles: readonly UnitRoleIdV7[];
-      readonly defenseNumerator: 2;
-      readonly defenseDenominator: 1;
-    }
+  | { readonly kind: "OWNED_CITY_FORTIFICATION_LEVEL"; readonly level: 1 }
   | { readonly kind: "OWNED_CITY_CAPACITY_BONUS"; readonly capacity: 1 }
   | { readonly kind: "MEDIC_HEAL"; readonly amount: 4 | 6 }
   | { readonly kind: "FRIENDLY_IDLE_RECOVERY"; readonly amount: 6 }
@@ -108,11 +98,9 @@ export interface TechnologyNodeV7 {
 
 export type UnitRoleAbilityV7 =
   | "ATTACK"
-  | "BLACKOUT"
   | "BREACH"
   | "CAPTURE"
   | "CHARGE"
-  | "CONCEALMENT"
   | "DASH"
   | "HEAL_ADJACENT"
   | "PUSH"
@@ -229,7 +217,6 @@ export type SpatialEconomicCommandKindV7 =
   | "BUILD_SAWMILL"
   | "BUILD_FORGE"
   | "BUILD_WORKSHOP"
-  | "BUILD_GRAND_WORKS"
   | "BUILD_MARKET";
 export interface SpatialEconomicActionRuleV7 {
   readonly command: SpatialEconomicCommandKindV7;
@@ -266,13 +253,6 @@ export const SPATIAL_ECONOMIC_ACTIONS_V7 = deepFreeze({
     cost: 4,
     improvement: "WORKSHOP",
     placementMinimum: 1,
-  },
-  BUILD_GRAND_WORKS: {
-    command: "BUILD_GRAND_WORKS",
-    technology: "GRAND_WORKS",
-    cost: 7,
-    improvement: "GRAND_WORKS",
-    placementMinimum: 2,
   },
   BUILD_MARKET: {
     command: "BUILD_MARKET",
@@ -400,7 +380,6 @@ export const ORIGINAL_BASELINE_V4_NODES = deepFreeze([
     ["MARKSMANSHIP"],
     [
       { kind: "COMMAND", command: "REPLANT_FOREST" },
-      { kind: "UNIT_ROLE", role: "SABOTEUR" },
       { kind: "FOREST_MOVEMENT_FREEDOM", roles: ["SCOUT", "MARKSMAN"] },
       { kind: "ROLE_SIGHT", role: "MARKSMAN", radius: 2 },
     ],
@@ -413,7 +392,6 @@ export const ORIGINAL_BASELINE_V4_NODES = deepFreeze([
     [
       { kind: "UNIT_ROLE", role: "SCOUT" },
       { kind: "ROLE_SIGHT", role: "SCOUT", radius: 2 },
-      { kind: "SCOUT_DETECTION_RADIUS", radius: 2 },
     ],
   ),
   node(
@@ -467,6 +445,7 @@ export const ORIGINAL_BASELINE_V4_NODES = deepFreeze([
     [
       { kind: "UNIT_ROLE", role: "GUARD" },
       { kind: "FIRST_HOSTILE_CAPTURE_SPOILS", coins: 2 },
+      { kind: "OWNED_CITY_FORTIFICATION_LEVEL", level: 1 },
     ],
   ),
   node(
@@ -475,12 +454,7 @@ export const ORIGINAL_BASELINE_V4_NODES = deepFreeze([
     2,
     ["DRILL"],
     [
-      {
-        kind: "FRIENDLY_CITY_FORTIFICATION",
-        roles: ["FIGHTER", "GUARD"],
-        defenseNumerator: 2,
-        defenseDenominator: 1,
-      },
+      { kind: "COMMAND", command: "BUILD_FIELD_DEFENSE" },
       { kind: "OWNED_CITY_CAPACITY_BONUS", capacity: 1 },
     ],
   ),
@@ -495,21 +469,30 @@ export const ORIGINAL_BASELINE_V4_NODES = deepFreeze([
     ],
   ),
   node(
+    "PROSPECTING",
+    "INDUSTRY_WARFARE",
+    1,
+    [],
+    [
+      { kind: "RESOURCE_REVEAL", resources: ["ORE"] },
+      { kind: "MOUNTAIN_MOVEMENT" },
+      { kind: "HIGH_GROUND_VISION", radiusBonus: 1 },
+    ],
+  ),
+  node(
     "ENGINEERING",
     "INDUSTRY_WARFARE",
     2,
-    ["DRILL"],
+    ["PROSPECTING"],
     [
-      { kind: "RESOURCE_REVEAL", resources: ["ORE"] },
       { kind: "COMMAND", command: "BUILD_MINE" },
       { kind: "COMMAND", command: "BUILD_WORKSHOP" },
+      { kind: "COMMAND", command: "REDEVELOP" },
       {
         kind: "ECONOMIC_FORMULA",
         improvement: "WORKSHOP",
         formula: "DISTINCT_BASIC_TYPES",
       },
-      { kind: "MOUNTAIN_MOVEMENT" },
-      { kind: "HIGH_GROUND_VISION", radiusBonus: 1 },
     ],
   ),
   node(
@@ -525,21 +508,6 @@ export const ORIGINAL_BASELINE_V4_NODES = deepFreeze([
         formula: "ADJACENT_MINES",
       },
       { kind: "UNIT_ROLE", role: "HEAVY" },
-    ],
-  ),
-  node(
-    "GRAND_WORKS",
-    "INDUSTRY_WARFARE",
-    3,
-    ["ENGINEERING"],
-    [
-      { kind: "COMMAND", command: "BUILD_GRAND_WORKS" },
-      {
-        kind: "ECONOMIC_FORMULA",
-        improvement: "GRAND_WORKS",
-        formula: "DISTINCT_PROCESSOR_TYPES",
-      },
-      { kind: "COMMAND", command: "REDEVELOP" },
     ],
   ),
   node(
@@ -674,21 +642,6 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: false,
     abilities: ["ATTACK"],
   }),
-  SABOTEUR: role({
-    role: "SABOTEUR",
-    label: "Saboteur",
-    cost: 6,
-    maxHp: 10,
-    attack2: 4,
-    defense2: 2,
-    move: 2,
-    range: 1,
-    minimumRange: 1,
-    sightRadius: 1,
-    technology: "FIELDCRAFT",
-    mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "BLACKOUT", "CONCEALMENT"],
-  }),
   HEAVY: role({
     role: "HEAVY",
     label: "Heavy",
@@ -767,14 +720,14 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
   BATTLESHIP: role({
     role: "BATTLESHIP",
     label: "Battleship",
-    cost: 10,
-    maxHp: 20,
-    attack2: 10,
-    defense2: 6,
+    cost: 16,
+    maxHp: 25,
+    attack2: 12,
+    defense2: 8,
     move: 2,
-    range: 2,
+    range: 3,
     minimumRange: 1,
-    sightRadius: 2,
+    sightRadius: 3,
     technology: "NAVAL_ENGINEERING",
     mayUsePrimaryActionAfterMove: false,
     abilities: ["ATTACK"],
@@ -839,17 +792,12 @@ export interface TechnologyCapabilitiesV7 {
   readonly mountainMovement: boolean;
   readonly highGroundVisionRadiusBonus: 0 | 1;
   readonly roleSightRadius: Readonly<Partial<Record<UnitRoleIdV7, number>>>;
-  readonly scoutDetectionRadius: 0 | 2;
   readonly roadMovement: {
     readonly ordinaryStepCost2: 2;
     readonly connectedOrthogonalStepCost2: 1;
   } | null;
   readonly marketCapitalRoadBonusCoins: 0 | 1;
-  readonly friendlyCityFortification: {
-    readonly roles: readonly UnitRoleIdV7[];
-    readonly defenseNumerator: 2;
-    readonly defenseDenominator: 1;
-  } | null;
+  readonly ownedCityFortificationLevel: 0 | 1;
   readonly ownedCityCapacityBonus: 0 | 1;
   readonly medicHealAmount: 0 | 4 | 6;
   readonly friendlyIdleRecoveryAmount: 0 | 6;
@@ -874,10 +822,8 @@ export function technologyCapabilitiesV7(
   let mountainMovement = false;
   let highGroundVisionRadiusBonus: 0 | 1 = 0;
   let roadMovement: TechnologyCapabilitiesV7["roadMovement"] = null;
-  let scoutDetectionRadius: 0 | 2 = 0;
   let marketCapitalRoadBonusCoins: 0 | 1 = 0;
-  let friendlyCityFortification: TechnologyCapabilitiesV7["friendlyCityFortification"] =
-    null;
+  let ownedCityFortificationLevel: 0 | 1 = 0;
   let ownedCityCapacityBonus: 0 | 1 = 0;
   let medicHealAmount: 0 | 4 | 6 = 0;
   let friendlyIdleRecoveryAmount: 0 | 6 = 0;
@@ -911,9 +857,6 @@ export function technologyCapabilitiesV7(
       case "ROLE_SIGHT":
         sights[unlock.role] = unlock.radius;
         break;
-      case "SCOUT_DETECTION_RADIUS":
-        scoutDetectionRadius = 2;
-        break;
       case "ROAD_MOVEMENT":
         roadMovement = {
           ordinaryStepCost2: 2,
@@ -923,12 +866,8 @@ export function technologyCapabilitiesV7(
       case "MARKET_CAPITAL_ROAD_BONUS":
         marketCapitalRoadBonusCoins = 1;
         break;
-      case "FRIENDLY_CITY_FORTIFICATION":
-        friendlyCityFortification = {
-          roles: unlock.roles,
-          defenseNumerator: 2,
-          defenseDenominator: 1,
-        };
+      case "OWNED_CITY_FORTIFICATION_LEVEL":
+        ownedCityFortificationLevel = 1;
         break;
       case "OWNED_CITY_CAPACITY_BONUS":
         ownedCityCapacityBonus = 1;
@@ -963,10 +902,9 @@ export function technologyCapabilitiesV7(
     mountainMovement,
     highGroundVisionRadiusBonus,
     roleSightRadius: sights,
-    scoutDetectionRadius,
     roadMovement,
     marketCapitalRoadBonusCoins,
-    friendlyCityFortification,
+    ownedCityFortificationLevel,
     ownedCityCapacityBonus,
     medicHealAmount,
     friendlyIdleRecoveryAmount,
@@ -982,7 +920,7 @@ export function assertRuleset7Registry(): void {
     ) ||
     Reflect.ownKeys(ORIGINAL_ROLE_RULES_V7).length !==
       UNIT_ROLE_IDS_V7.length ||
-    IMPROVEMENT_IDS_V7.length !== 11
+    IMPROVEMENT_IDS_V7.length !== 10
   )
     throw new Error("Ruleset-7 registry is incomplete");
 }

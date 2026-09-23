@@ -69,6 +69,7 @@ interface GeneratedRecord {
 }
 
 const EXPECTED_SYMBOL_IDS = [
+  "ui-action-field-defense",
   "ui-status-port-active",
   "ui-status-port-blockaded",
   "ui-status-concealed",

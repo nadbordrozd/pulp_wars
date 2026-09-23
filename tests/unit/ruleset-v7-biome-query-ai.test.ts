@@ -4,16 +4,19 @@ import { publicResourceV7, viewForV7 } from "../../src/engine/index";
 import { checkedV7, initialV7 } from "../fixtures/v7-builders";
 
 describe("ruleset-7 revision-4 public Ore and Normal prospecting", () => {
-  it("does not leak Ore before Engineering and reveals it afterward", () => {
+  it("does not leak Ore before Prospecting and reveals it afterward", () => {
     const tile = { terrain: "MOUNTAIN" as const, resource: "ORE" as const };
     expect(publicResourceV7(tile, ["GATHERING"])).toBeNull();
-    expect(publicResourceV7(tile, ["GATHERING", "ENGINEERING"])).toBe("ORE");
+    expect(publicResourceV7(tile, ["GATHERING", "PROSPECTING"])).toBe("ORE");
   });
 
   it("values only public owned Mountain biome priors", () => {
     const state = initialV7(0);
     const view = viewForV7(state, state.humanPlayerId);
-    const score = scoreCommandV7(view, { kind: "RESEARCH", tech: "DRILL" });
+    const score = scoreCommandV7(view, {
+      kind: "RESEARCH",
+      tech: "PROSPECTING",
+    });
     const points = view.board.tiles.reduce(
       (sum, tile) =>
         sum +
@@ -42,7 +45,7 @@ describe("ruleset-7 revision-4 public Ore and Normal prospecting", () => {
         ),
       },
     };
-    const command = { kind: "RESEARCH", tech: "DRILL" } as const;
+    const command = { kind: "RESEARCH", tech: "PROSPECTING" } as const;
     const baseline = scoreCommandV7(hidden, command);
     const tileIndexes = hidden.board.tiles.flatMap((tile, index) =>
       tile.explored ? [index] : [],
@@ -126,8 +129,10 @@ describe("ruleset-7 revision-4 public Ore and Normal prospecting", () => {
       resource: null,
     });
     expect(
-      scoreCommandV7(oreView, { kind: "RESEARCH", tech: "DRILL" }),
-    ).toEqual(scoreCommandV7(emptyView, { kind: "RESEARCH", tech: "DRILL" }));
+      scoreCommandV7(oreView, { kind: "RESEARCH", tech: "PROSPECTING" }),
+    ).toEqual(
+      scoreCommandV7(emptyView, { kind: "RESEARCH", tech: "PROSPECTING" }),
+    );
     expect(chooseNormalCommandV7(oreView)).toEqual(
       chooseNormalCommandV7(emptyView),
     );
@@ -137,7 +142,7 @@ describe("ruleset-7 revision-4 public Ore and Normal prospecting", () => {
         player.id === base.humanPlayerId
           ? {
               ...player,
-              researchedTechs: ["GATHERING", "DRILL", "ENGINEERING"],
+              researchedTechs: ["GATHERING", "DRILL", "PROSPECTING"],
             }
           : player,
       ),

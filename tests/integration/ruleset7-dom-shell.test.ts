@@ -303,30 +303,30 @@ describe("Ruleset 7 DOM shell", () => {
 
     requiredButton('[data-action="tech"]').click();
     expect(document.querySelectorAll(".v7-tech-card")).toHaveLength(24);
-    expect(document.querySelectorAll(".v7-tech-edge")).toHaveLength(19);
+    expect(document.querySelectorAll(".v7-tech-edge")).toHaveLength(18);
     expect(document.querySelectorAll(".v7-tech-children.is-unary").length).toBe(
-      9,
+      12,
     );
     const branchSelect = document.querySelector<HTMLSelectElement>(
       ".v7-tech-branch-select",
     );
     if (branchSelect === null) throw new Error("Branch selector missing");
-    expect(branchSelect.options).toHaveLength(5);
+    expect(branchSelect.options).toHaveLength(6);
     const headings = [
       ...document.querySelectorAll<HTMLElement>(".v7-tech-branch > h3"),
     ];
-    expect(headings).toHaveLength(5);
+    expect(headings).toHaveLength(6);
     expect(new Set(headings.map((heading) => heading.textContent)).size).toBe(
-      5,
+      6,
     );
     const lastBranch = document.querySelector<HTMLElement>(
-      '[data-tech-branch="INDUSTRY_WARFARE"]',
+      '[data-tech-lane="INDUSTRY_WARFARE:PROSPECTING"]',
     );
     if (lastBranch === null) throw new Error("Technology branch missing");
     const scrollIntoView = vi.fn();
     lastBranch.scrollIntoView = scrollIntoView;
     branchSelect.focus();
-    branchSelect.value = "INDUSTRY_WARFARE";
+    branchSelect.value = "INDUSTRY_WARFARE:PROSPECTING";
     branchSelect.dispatchEvent(new Event("change", { bubbles: true }));
     expect(scrollIntoView).toHaveBeenCalledWith({ block: "start" });
     expect(document.activeElement).toBe(branchSelect);
@@ -498,11 +498,11 @@ describe("Ruleset 7 DOM shell", () => {
     ).not.toContain("Coins");
     requiredButton('[data-action="tech-commerce"]').click();
     expect(document.body.textContent).toContain(
-      "capital-connected friendly Road",
+      "capital-connected owned or neutral Road",
     );
-    requiredButton('[data-action="tech-engineering"]').click();
+    requiredButton('[data-action="tech-prospecting"]').click();
     expect(document.body.textContent).toContain(
-      "Reveal Ore. Enter Mountains. Build Mines on Ore. Build Workshops. Units on Mountains gain +1 sight.",
+      "Reveal Ore. Enter Mountains and construct resource-free spatial improvements and Monuments there. Units on Mountains gain +1 sight.",
     );
     app.destroy();
   });
@@ -859,6 +859,29 @@ describe("Ruleset 7 DOM shell", () => {
           },
         },
       ],
+      unitStats: initial.view.unitStats.map((entry, index) =>
+        index === 0
+          ? {
+              ...entry,
+              stats: entry.stats.map((stat) =>
+                stat.id === "DEFENSE"
+                  ? {
+                      ...stat,
+                      modifiers: [
+                        {
+                          value: { numerator: 1, denominator: 1 },
+                          source: "DRILL" as const,
+                          sourceLabel: "Drill",
+                          description:
+                            "Drill adds 1 Defense on an owned city center.",
+                        },
+                      ],
+                    }
+                  : stat,
+              ),
+            }
+          : entry,
+      ),
     };
     const monumentCommand = {
       kind: "BUILD_MONUMENT" as const,

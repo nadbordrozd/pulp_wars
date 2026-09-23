@@ -2,10 +2,11 @@
 import { describe, expect, it } from "vitest";
 import {
   applyCommandV7,
+  combinedNetworkRoadKeysV7,
   movementStepCost2V7,
   validateMovementPathV7,
   capitalConnectedRoadKeysV7,
-  spatialContributionAtV7,
+  marketIncomeForCityV7,
   effectiveRoleRuleV7,
   queryPlayerCommandsV7,
   queryPublicSelectionV7,
@@ -151,10 +152,19 @@ describe("ruleset-7 public movement bounds", () => {
         { x: 2, y: 2 },
       ),
     ).toBe(2);
-    expect(
-      spatialContributionAtV7(state, { x: 3, y: 3 }, "MARKET")
-        .capitalRoadConnected,
-    ).toBe(true);
+    expect(combinedNetworkRoadKeysV7(state, human.id).has("2,3")).toBe(true);
+    const marketState = {
+      ...state,
+      board: {
+        ...state.board,
+        tiles: state.board.tiles.map((tile) =>
+          tile.at.x === 3 && tile.at.y === 3
+            ? { ...tile, improvement: "MARKET" as const }
+            : tile,
+        ),
+      },
+    };
+    expect(marketIncomeForCityV7(marketState, city)).toBeGreaterThan(0);
     const cut = {
       ...state,
       board: {
@@ -164,10 +174,19 @@ describe("ruleset-7 public movement bounds", () => {
         ),
       },
     };
-    expect(
-      spatialContributionAtV7(cut, { x: 3, y: 3 }, "MARKET")
-        .capitalRoadConnected,
-    ).toBe(false);
+    expect(combinedNetworkRoadKeysV7(cut, human.id).has("2,3")).toBe(false);
+    const cutMarketState = {
+      ...marketState,
+      board: {
+        ...marketState.board,
+        tiles: marketState.board.tiles.map((tile) =>
+          tile.at.x === 1 && tile.at.y === 1 ? { ...tile, road: false } : tile,
+        ),
+      },
+    };
+    expect(marketIncomeForCityV7(marketState, city)).toBe(
+      marketIncomeForCityV7(cutMarketState, city) + 1,
+    );
     expect(
       movementStepCost2V7(cut, human, { x: 2, y: 2 }, { x: 3, y: 2 }),
     ).toBe(2);
@@ -262,10 +281,19 @@ describe("ruleset-7 public movement bounds", () => {
         spentPoints2: 3,
       },
     );
-    expect(
-      spatialContributionAtV7(state, { x: 4, y: 4 }, "MARKET")
-        .capitalRoadConnected,
-    ).toBe(true);
+    expect(combinedNetworkRoadKeysV7(state, human.id).has("4,4")).toBe(true);
+    const marketState = {
+      ...state,
+      board: {
+        ...state.board,
+        tiles: state.board.tiles.map((tile) =>
+          tile.at.x === 4 && tile.at.y === 4
+            ? { ...tile, improvement: "MARKET" as const }
+            : tile,
+        ),
+      },
+    };
+    const connectedMarketIncome = marketIncomeForCityV7(marketState, capital);
 
     const captured = {
       ...state,
@@ -277,10 +305,18 @@ describe("ruleset-7 public movement bounds", () => {
       "0,0",
       "1,1",
     ]);
-    expect(
-      spatialContributionAtV7(captured, { x: 4, y: 4 }, "MARKET")
-        .capitalRoadConnected,
-    ).toBe(false);
+    expect(combinedNetworkRoadKeysV7(captured, human.id).has("4,4")).toBe(
+      false,
+    );
+    const capturedMarketState = {
+      ...marketState,
+      cities: marketState.cities.map((city) =>
+        city.id === other.id ? { ...city, ownerId: other.ownerId } : city,
+      ),
+    };
+    expect(connectedMarketIncome).toBe(
+      marketIncomeForCityV7(capturedMarketState, capital) + 1,
+    );
     expect(movementStepCost2V7(captured, human, path[1]!, path[2]!)).toBe(2);
     const capturedView = viewForV7(captured, human.id);
     const capturedMover = capturedView.units.find(
@@ -320,6 +356,12 @@ describe("ruleset-7 public movement bounds", () => {
         ),
       },
       cities: view.cities.filter((city) => city.id !== other.id),
+      naval: {
+        ...view.naval,
+        networkRoads: view.naval.networkRoads.filter(
+          (at) => (at.x === 0 && at.y === 0) || (at.x === 1 && at.y === 1),
+        ),
+      },
     };
     expect(
       validatePlayerMovementPathV7(hiddenView, publicMover, path),
@@ -381,7 +423,7 @@ describe("ruleset-7 public movement bounds", () => {
     }
   });
 
-  it("keeps edge commands equal across hidden Saboteur positions", () => {
+  it("keeps edge commands equal across hidden enemy Scout positions", () => {
     const base = movementState({ x: 10, y: 5 });
     const human = base.players.find(
       (player) => player.id === base.humanPlayerId,
@@ -398,19 +440,34 @@ describe("ruleset-7 public movement bounds", () => {
       )
       .slice(0, 2);
     expect(hiddenCoords).toHaveLength(2);
+    const foggedBase = checkedV7({
+      ...base,
+      players: base.players.map((player) =>
+        player.id === human.id
+          ? {
+              ...player,
+              explored: player.explored.filter(
+                (explored) =>
+                  !hiddenCoords.some(
+                    (at) => at.x === explored.x && at.y === explored.y,
+                  ),
+              ),
+            }
+          : player,
+      ),
+    });
     const states = hiddenCoords.map((at) =>
       checkedV7({
-        ...base,
-        units: base.units.map((unit) =>
+        ...foggedBase,
+        units: foggedBase.units.map((unit) =>
           unit.ownerId === human.id
             ? unit
             : {
                 ...unit,
-                role: "SABOTEUR" as const,
+                role: "SCOUT" as const,
                 at,
                 hp: 10,
                 maxHp: 10,
-                blackoutEligibleRound: 1,
               },
         ),
       }),
@@ -448,7 +505,6 @@ function movementState(origin: CoordV7): GameStateV7 {
             hp: maxHp,
             maxHp,
             activation: READY,
-            blackoutEligibleRound: null,
           }
         : {
             ...unit,
@@ -458,7 +514,6 @@ function movementState(origin: CoordV7): GameStateV7 {
             hp: 10,
             maxHp: 10,
             activation: READY,
-            blackoutEligibleRound: null,
           },
     ),
     board: {

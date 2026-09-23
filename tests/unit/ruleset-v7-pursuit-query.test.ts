@@ -60,7 +60,9 @@ describe("ruleset-7 Horse Archer public queries", () => {
     expect(own.filter((command) => command.kind === "ATTACK")).toHaveLength(2);
     expect(own.some((command) => command.kind === "MOVE")).toBe(false);
     expect(own.some((command) => command.kind === "RECOVER")).toBe(false);
-    expect(own.some((command) => command.kind === "BLACKOUT_CITY")).toBe(false);
+    expect(own.some((command) => command.kind === "BUILD_FIELD_DEFENSE")).toBe(
+      false,
+    );
   });
 
   it("reports no remaining attack after the second shot", () => {

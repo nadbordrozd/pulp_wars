@@ -7,6 +7,8 @@ import {
   previewMonumentV7,
   projectEventsV7,
   queryPlayerCommandsV7,
+  queryPublicEconomicPotentialsV7,
+  scorePublicSpatialPlanV7,
   unitId,
   viewForV7,
   type CoordV7,
@@ -150,7 +152,12 @@ describe("ruleset-7 achievements and Monuments", () => {
         player.id === forgeState.humanPlayerId
           ? {
               ...player,
-              researchedTechs: ["GATHERING", "SCOUTING", "DRILL"],
+              researchedTechs: [
+                "GATHERING",
+                "SCOUTING",
+                "DRILL",
+                "PROSPECTING",
+              ],
               achievementEntitlements: player.achievementEntitlements.map(
                 (item) =>
                   item.achievement === "ENGINEER"
@@ -716,34 +723,108 @@ describe("ruleset-7 achievements and Monuments", () => {
     ).toBe(true);
   });
 
-  it("offers and previews a Monument on an empty Mountain", () => {
+  it("keeps Monument sites on hidden Ore and empty Mountains equivalent until Prospecting", () => {
     const base = levelTwoWithoutPopulation(
-      unlockEntitlement(exploredAllV7(initialV7(707)), "ENGINEER"),
+      unlockEntitlement(exploredAllV7(initialV7(707)), "MUSTER"),
     );
     const city = required(
       base.cities.find((candidate) => candidate.ownerId === base.humanPlayerId),
       "human city missing",
     );
     const at = emptyOwnedTile(base, city.id);
-    const mountain = checkedV7({
-      ...base,
-      board: {
-        ...base.board,
-        tiles: base.board.tiles.map((candidate) =>
-          same(candidate.at, at)
-            ? { ...candidate, terrain: "MOUNTAIN", resource: null }
-            : candidate,
+    const mountain = (resource: "ORE" | null, prospecting: boolean) =>
+      checkedV7({
+        ...base,
+        players: base.players.map((player) =>
+          player.id === base.humanPlayerId
+            ? {
+                ...player,
+                researchedTechs: TECHNOLOGY_IDS_V7.filter(
+                  (technology) =>
+                    player.researchedTechs.includes(technology) ||
+                    (prospecting && technology === "PROSPECTING"),
+                ),
+              }
+            : player,
         ),
-      },
-    });
-    const view = viewForV7(mountain, mountain.humanPlayerId);
+        board: {
+          ...base.board,
+          tiles: base.board.tiles.map((candidate) =>
+            same(candidate.at, at)
+              ? { ...candidate, terrain: "MOUNTAIN", resource }
+              : candidate,
+          ),
+        },
+      });
     const command = {
       kind: "BUILD_MONUMENT",
-      achievement: "ENGINEER",
+      achievement: "MUSTER",
       at,
     } as const;
-    expect(queryPlayerCommandsV7(view)).toContainEqual(command);
-    expect(previewMonumentV7(view, command)).toMatchObject({ ok: true });
+    const hiddenStates = [mountain("ORE", false), mountain(null, false)];
+    const hiddenViews = hiddenStates.map((state) =>
+      viewForV7(state, state.humanPlayerId),
+    );
+    const hiddenOreView = required(hiddenViews[0], "hidden Ore view missing");
+    const hiddenEmptyView = required(
+      hiddenViews[1],
+      "hidden empty view missing",
+    );
+    expect(JSON.stringify(hiddenOreView)).toBe(JSON.stringify(hiddenEmptyView));
+    expect(queryPublicEconomicPotentialsV7(hiddenOreView)).toEqual(
+      queryPublicEconomicPotentialsV7(hiddenEmptyView),
+    );
+    for (let index = 0; index < hiddenStates.length; index += 1) {
+      const state = required(hiddenStates[index], "hidden state missing");
+      const view = required(hiddenViews[index], "hidden view missing");
+      expect(queryPlayerCommandsV7(view)).not.toContainEqual(command);
+      expect(previewMonumentV7(view, command)).toEqual({
+        ok: false,
+        error: "NOT_OFFERED",
+      });
+      expect(scorePublicSpatialPlanV7(view, command)).toBe(0);
+      expect(applyCommandV7(state, state.humanPlayerId, command)).toMatchObject(
+        {
+          accepted: false,
+          error: { code: "TECH_REQUIRED", params: { tech: "PROSPECTING" } },
+        },
+      );
+    }
+
+    const revealedEmpty = mountain(null, true);
+    const revealedEmptyView = viewForV7(
+      revealedEmpty,
+      revealedEmpty.humanPlayerId,
+    );
+    expect(queryPlayerCommandsV7(revealedEmptyView)).toContainEqual(command);
+    expect(previewMonumentV7(revealedEmptyView, command)).toMatchObject({
+      ok: true,
+    });
+    expect(
+      applyCommandV7(revealedEmpty, revealedEmpty.humanPlayerId, command)
+        .accepted,
+    ).toBe(true);
+
+    const revealedOre = mountain("ORE", true);
+    const revealedOreView = viewForV7(revealedOre, revealedOre.humanPlayerId);
+    expect(queryPlayerCommandsV7(revealedOreView)).not.toContainEqual(command);
+    expect(previewMonumentV7(revealedOreView, command)).toEqual({
+      ok: false,
+      error: "NOT_OFFERED",
+    });
+    const potential = (view: typeof revealedEmptyView) =>
+      required(
+        queryPublicEconomicPotentialsV7(view).find(
+          (entry) => entry.command === "BUILD_MONUMENT",
+        ),
+        "Monument potential missing",
+      );
+    expect(potential(revealedEmptyView).targets).toBe(
+      potential(revealedOreView).targets + 1,
+    );
+    expect(
+      applyCommandV7(revealedOre, revealedOre.humanPlayerId, command),
+    ).toMatchObject({ accepted: false, error: { code: "INVALID_TILE" } });
   });
 
   it("does not offer or preview a Monument on a visible treasure chest", () => {
@@ -1220,6 +1301,7 @@ function unlockEntitlement(
               (tech) =>
                 player.researchedTechs.includes(tech) ||
                 tech === "DRILL" ||
+                (achievement === "ENGINEER" && tech === "PROSPECTING") ||
                 (achievement === "ENGINEER" && tech === "ENGINEERING"),
             ),
             achievementEntitlements: player.achievementEntitlements.map(
@@ -1296,7 +1378,6 @@ function makeUnit(
     captureEligible: false,
     activation: readyActivation(),
     form: "LAND",
-    blackoutEligibleRound: null,
   };
 }
 

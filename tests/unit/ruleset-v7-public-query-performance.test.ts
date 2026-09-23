@@ -32,18 +32,18 @@ describe("ruleset-7 late public query performance", () => {
     const commands = queryPlayerCommandsV7(view);
     const elapsed = performance.now() - started;
 
-    expect(commands).toHaveLength(60);
+    expect(commands).toHaveLength(67);
     expect(canonicalHash(commands)).toBe(
-      "effcff373c80a66f0f4c7ed98759050aacae60407d7d2a2449c5ba7ba12d1503",
+      "19cec22393419b429208dcb44d473e7efac4e98f8411adff65d4fa078b5a4f0c",
     );
     expect(commands.filter(isNavalExpansionCommand)).toEqual([
       { kind: "RESEARCH", tech: "SHORECRAFT" },
     ]);
     expect(canonicalHash(commands.filter(isRetainedLandCommand))).toBe(
-      "ba23a6ff57e659759e96e3bd5f0fd112fdb201ae619ab2dd2c1b369dead051b6",
+      "dd6c8c51f344ad82d4af74c711d832633430c86cea0e1c1ff10e2d1127aea2fe",
     );
     expect(canonicalHash(queryAiReadyCommandsV7(view))).toBe(
-      "57b88d88bdef0bf12f95a644eb0324f65e1197161ec4dc0a4c34bd1a4bfc4d79",
+      "15a48be96f5fd643fe78658c60ff6a2f4e8f814f47e8e58439eeae174e168642",
     );
     expect(
       canonicalHash(
@@ -52,7 +52,7 @@ describe("ruleset-7 late public query performance", () => {
           result: previewEconomicV7(view, command),
         })),
       ),
-    ).toBe("12a9c31b9186992bd5200c8d87cf9f673b58166a32df3b3dfa40dd2523f34312");
+    ).toBe("04e6cc980d8a0c9d45b362ebeb965879180df361051ffb61e876c03ab371cb85");
     expect(
       canonicalHash(
         commands.filter(isRetainedLandCommand).map((command) => ({
@@ -60,7 +60,7 @@ describe("ruleset-7 late public query performance", () => {
           result: previewEconomicV7(view, command),
         })),
       ),
-    ).toBe("72541a22582328ecd7023ba06d72fa8587837d1ed42df4806c69b7fcfdc00073");
+    ).toBe("bf164e81d7016f1a5460ebfbddec7e637c017c34eaf1bd7ea2843a77dcaebafb");
     expect(elapsed).toBeLessThan(250);
 
     const incrementalView = structuredClone(RETAINED_VIEW);
@@ -137,7 +137,7 @@ describe("ruleset-7 late public query performance", () => {
       expect(canonicalHash(leftResult)).toBe(canonicalHash(expected));
       expect(canonicalHash(rightResult)).toBe(canonicalHash(expected));
       expect(canonicalHash(leftResult.potentials)).toBe(
-        "b95755909c448155c4d8698ad5c7299e96777f89fa87948fbac383bdb82973af",
+        "47577f5151d8689e4daf9601796a847cf18a92d318fb2559b3d6f73a7e4fad62",
       );
       expect(
         leftResult.potentials.find(
@@ -155,10 +155,10 @@ describe("ruleset-7 late public query performance", () => {
           ),
         ),
       ).toBe(
-        "4d278cc40e2e574c233a519472c6355b5f108afbdd45e5e1c744471a55f01064",
+        "c9e77b4d46b2725afeffeec03d70d6699655a8ce6def19953c6644ba57430467",
       );
       expect(canonicalHash(leftResult.scores)).toBe(
-        "466cb0e95c916bd21abfea4002b39faaf69f75236bc66be383e52af73e7f7bdf",
+        "c5303e12084ada78dde6681bb26efd494e477819233e06ab9f8d3edddffcfdd4",
       );
       expect(
         canonicalHash(
@@ -167,7 +167,7 @@ describe("ruleset-7 late public query performance", () => {
           ),
         ),
       ).toBe(
-        "cce0d0d94394552a65b417279c68a7a349d4114255083321b528bfa145f1ee61",
+        "c09f302cb314595aea7a581f549f862474e9d561365f71a15ab1061a6f200dfc",
       );
       expect(queryPublicEconomicPotentialsV7(leftView)).toBe(
         leftResult.potentials,
@@ -228,7 +228,7 @@ describe("ruleset-7 late public query performance", () => {
   it("keys movement preparation to the exact changed public view", () => {
     const original = structuredClone(RETAINED_VIEW);
     expect(canonicalHash(queryPlayerCommandsV7(original))).toBe(
-      "effcff373c80a66f0f4c7ed98759050aacae60407d7d2a2449c5ba7ba12d1503",
+      "19cec22393419b429208dcb44d473e7efac4e98f8411adff65d4fa078b5a4f0c",
     );
     const firstMove = required(
       queryPlayerCommandsV7(original).find(
@@ -252,10 +252,10 @@ describe("ruleset-7 late public query performance", () => {
       canonicalHash(queryPlayerCommandsV7(structuredClone(changed))),
     );
     expect(canonicalHash(changedCommands)).toBe(
-      "6decfbc2e82aee716b991851b95a4d37a30e7762098c92feda773c04e8237378",
+      "a7aa70fb3a3d37592a9d3bf7acf6cac0a16f037ee276c65757c6efc781e3cb89",
     );
     expect(canonicalHash(changedCommands.filter(isRetainedLandCommand))).toBe(
-      "f9188321e07e38dcb1a456fef83442687d33137ace794ba106633a036025cd1a",
+      "369dc16a1cd0427282cef07868161c7e81b3612aead953371cd9f2aed70e9b66",
     );
   });
 
@@ -267,7 +267,6 @@ describe("ruleset-7 late public query performance", () => {
       "SAWMILL",
       "FORGE",
       "WORKSHOP",
-      "GRAND_WORKS",
       "MARKET",
     ] as const;
     for (const improvement of kinds) {
@@ -276,9 +275,6 @@ describe("ruleset-7 late public query performance", () => {
         spatialContributionAtV7(placed, target, improvement),
       );
     }
-    expect(
-      spatialContributionAtV7(graph, target, "GRAND_WORKS").placementCount,
-    ).toBe(1);
     expect(spatialContributionAtV7(graph, target, "FORGE").population).toBe(0);
     expect(
       spatialContributionAtV7(graph, target, "WORKSHOP").distinctTypes,
@@ -333,7 +329,7 @@ describe("ruleset-7 late public query performance", () => {
     expect(
       spatialContributionAtV7(roadConnected, marketAt, "MARKET")
         .capitalRoadConnected,
-    ).toBe(true);
+    ).toBe(false);
     expect(
       spatialContributionAtV7(disconnected, marketAt, "MARKET")
         .capitalRoadConnected,

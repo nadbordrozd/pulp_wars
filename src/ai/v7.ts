@@ -9,7 +9,6 @@ import type { CombatPreviewV7 } from "../engine/v7/events";
 import {
   createPublicCommandWorkV7,
   createPublicPlanningWorkV7,
-  previewBlackoutV7,
   previewEconomicV7,
   previewMonumentV7,
   queryAiReadyCommandsV7,
@@ -137,7 +136,6 @@ const THREATENED_ROLE_ORDER = [
   "RAIDER",
   "BREACHER",
   "CATAPULT",
-  "SABOTEUR",
   "HORSE_ARCHER",
 ] as const satisfies readonly UnitRoleIdV7[];
 
@@ -151,7 +149,6 @@ const GENERAL_ROLE_ORDER = [
   "BREACHER",
   "CATAPULT",
   "HORSE_ARCHER",
-  "SABOTEUR",
   "FIGHTER",
 ] as const satisfies readonly UnitRoleIdV7[];
 
@@ -418,6 +415,7 @@ function mandatoryWorkDeltaV7(view: PlayerViewV7, command: CommandV7): number {
     const preview = previewMonumentV7(view, command);
     return preview.ok ? preview.preview.levelsReached.length : 0;
   }
+
   if (command.kind === "CAPTURE") {
     const actor = view.units.find((unit) => unit.id === command.unitId);
     const city = actor === undefined ? undefined : cityAt(view, actor.at);
@@ -651,6 +649,11 @@ function* navalPlanWorkV7(
       return tile?.explored === true && tile.biome === null;
     }),
   );
+  const legalDisembarkKeys = new Set(
+    commands.flatMap((command) =>
+      command.kind === "DISEMBARK" ? [coordKey(command.at)] : [],
+    ),
+  );
   const closestCoastDistance = nearestRouteDistance(
     coastalTargetLand,
     targetLandDistances,
@@ -662,6 +665,27 @@ function* navalPlanWorkV7(
           (at) =>
             targetLandDistances.get(coordKey(at)) === closestCoastDistance,
         );
+  const legalTargetLand = coastalTargetLand.filter((at) => {
+    const routeDistance = targetLandDistances.get(coordKey(at));
+    return (
+      legalDisembarkKeys.has(coordKey(at)) &&
+      routeDistance !== undefined &&
+      closestCoastDistance !== null &&
+      routeDistance <= closestCoastDistance + 1
+    );
+  });
+  const closestLegalLandingDistance = nearestRouteDistance(
+    legalTargetLand,
+    targetLandDistances,
+  );
+  const legalLandingLand =
+    closestLegalLandingDistance === null
+      ? []
+      : legalTargetLand.filter(
+          (at) =>
+            targetLandDistances.get(coordKey(at)) ===
+            closestLegalLandingDistance,
+        );
   const landingLand =
     target === null
       ? land
@@ -670,11 +694,14 @@ function* navalPlanWorkV7(
             return (
               id !== undefined &&
               !captureComponents.has(id) &&
-              objectiveComponents.has(id)
+              objectiveComponents.has(id) &&
+              !ownedCityComponents.has(id)
             );
           })
           .map((tile) => tile.at)
-      : targetLand;
+      : legalLandingLand.length > 0
+        ? legalLandingLand
+        : targetLand;
   const landing = landingLand
     .filter((landAt) =>
       neighbors8V7(view, landAt).some((at) => {
@@ -1091,7 +1118,7 @@ function publicMovementTilePossible(
     return (
       tile.biome !== null &&
       (tile.terrain !== "MOUNTAIN" ||
-        publicOwnerHasEngineering(view, unit.ownerId))
+        publicOwnerHasProspecting(view, unit.ownerId))
     );
   return tile.biome === null;
 }
@@ -1101,16 +1128,14 @@ function isPolicyCandidate(
   command: CommandV7,
 ): boolean {
   if (command.kind === "WAIT") return false;
-  if (command.kind === "EMBARK" && !context.naval.active) return false;
+  const autoembark = isAutoembarkMoveV7(context.view, command);
+  if (autoembark && !context.naval.active) return false;
   if (command.kind === "DISEMBARK" && context.naval.active)
     return context.naval.landing.some((at) => same(at, command.at));
-  if (
-    command.kind === "EMBARK" &&
-    context.naval.retainLandedUnitIds.has(command.unitId)
-  )
+  if (autoembark && context.naval.retainLandedUnitIds.has(command.unitId))
     return false;
   if (
-    command.kind === "EMBARK" &&
+    autoembark &&
     context.naval.visibleNavalDanger &&
     !context.view.units.some(
       (unit) =>
@@ -1198,6 +1223,27 @@ function isPolicyCandidate(
   )
     return false;
   return true;
+}
+
+function isAutoembarkMoveV7(
+  view: PlayerViewV7,
+  command: CommandV7,
+): command is Extract<CommandV7, { kind: "MOVE" }> {
+  if (command.kind !== "MOVE") return false;
+  const unit = view.units.find((candidate) => candidate.id === command.unitId);
+  const destination = command.path.at(-1);
+  if (unit?.form !== "LAND" || destination === undefined) return false;
+  const tile = view.board.tiles.find(
+    (candidate) => candidate.explored && same(candidate.at, destination),
+  );
+  return (
+    tile?.explored === true &&
+    tile.improvement === "PORT" &&
+    tile.territoryOwnerId === view.viewer.id &&
+    view.naval.ownedPorts.some(
+      (port) => port.status === "ACTIVE" && same(port.at, destination),
+    )
+  );
 }
 
 function scoreCommandWithContext(
@@ -1303,6 +1349,20 @@ function scoreCommandWithContext(
     }
   }
 
+  if (command.kind === "BUILD_FIELD_DEFENSE" && actor !== undefined) {
+    const city = cityAt(view, actor.at);
+    const danger = visibleImmediateDamage(view, actor, actor.at, context);
+    const useful =
+      danger > 0 || (city !== undefined && threatenedCity(context, city.id));
+    priority = useful
+      ? city !== undefined && threatenedCity(context, city.id)
+        ? 1265
+        : 845
+      : -1;
+    immediateValue = -3;
+    strategicValue = useful ? 12 + danger : 0;
+  }
+
   if (command.kind === "CHOOSE_CITY_REWARD") {
     priority = 1300;
     immediateValue =
@@ -1327,8 +1387,8 @@ function scoreCommandWithContext(
     strategicValue = research.strategic;
     immediateValue = -research.cost;
     if (
-      !view.viewer.researchedTechs.includes("ENGINEERING") &&
-      researchChain(view, "ENGINEERING")[0] === command.tech
+      !view.viewer.researchedTechs.includes("PROSPECTING") &&
+      command.tech === "PROSPECTING"
     ) {
       const oreProspectPoints = view.board.tiles.reduce(
         (total, tile) =>
@@ -1380,22 +1440,6 @@ function scoreCommandWithContext(
       command.role === "PATROL_BOAT"
         ? 25 + Number(context.naval.visibleNavalDanger) * 25
         : 35;
-  }
-
-  if (command.kind === "EMBARK" && actor !== undefined) {
-    priority = context.naval.active ? 1300 : 800;
-    strategicValue = effectiveRoleRuleV7(actor.role).abilities.includes(
-      "CAPTURE",
-    )
-      ? 50
-      : 5;
-    objectiveValue =
-      context.naval.target === null
-        ? 0
-        : -(
-            context.naval.waterDistanceByKey.get(coordKey(command.portAt)) ??
-            Number.MAX_SAFE_INTEGER
-          );
   }
 
   if (command.kind === "DISEMBARK" && actor !== undefined) {
@@ -1511,6 +1555,7 @@ function scoreCommandWithContext(
   }
 
   if (command.kind === "MOVE" && actor !== undefined) {
+    const autoembark = isAutoembarkMoveV7(view, command);
     const chest = view.treasureChests.some((at) => same(at, resultAt));
     const picket = scoutPicketValue(view, actor, resultAt);
     const screen = screenValue(view, actor, resultAt);
@@ -1545,6 +1590,14 @@ function scoreCommandWithContext(
         }
       }
     }
+    if (autoembark) {
+      priority = Math.max(priority, 1300);
+      strategicValue += effectiveRoleRuleV7(actor.role).abilities.includes(
+        "CAPTURE",
+      )
+        ? 50
+        : 5;
+    }
     if (
       actor.role === "HORSE_ARCHER" &&
       actor.form === "LAND" &&
@@ -1576,26 +1629,6 @@ function scoreCommandWithContext(
       // owner's private trade network is deliberately not predicted.
       strategicValue += 18;
       priority = Math.max(priority, 850);
-    }
-  }
-
-  if (command.kind === "BLACKOUT_CITY") {
-    const preview = previewBlackoutV7(view, command);
-    if (preview.ok && !preview.preview.unitDetectionBlocks) {
-      const city = view.cities.find((item) => item.id === command.cityId);
-      const source = view.units.find((item) => item.id === command.unitId);
-      const suppression =
-        city === undefined ? 0 : attributableCityIncome(view, city);
-      // Enemy Coins/research are private, so no development or Train command is
-      // attributable from the actor's view. Only current public city income is.
-      const deniedActions = 0;
-      const exposureRisk =
-        source === undefined
-          ? 0
-          : visibleImmediateDamage(view, source, source.at, context);
-      strategicValue =
-        Math.min(3, suppression) * 12 + deniedActions - exposureRisk;
-      priority = strategicValue > 0 ? 1195 : -1;
     }
   }
 
@@ -1903,7 +1936,11 @@ function combatImmediateValue(preview: CombatPreviewV7): number {
     20 * Number(preview.defenderDies) -
     16 * Number(preview.attackerDies) +
     10 * preview.damageToDefender -
-    8 * preview.damageToAttacker
+    8 * preview.damageToAttacker +
+    preview.splash.reduce(
+      (value, splash) => value + 10 * splash.damage + 20 * Number(splash.dies),
+      0,
+    )
   );
 }
 
@@ -1931,6 +1968,16 @@ function combatStrategicValue(
   );
   if (attacker === undefined || target === undefined) return 0;
   let value = targetStrategicValue(context.view, target.id);
+  for (const splash of preview.splash) {
+    const splashTarget = context.view.units.find(
+      (unit) => unit.id === splash.unitId,
+    );
+    if (splashTarget === undefined) continue;
+    const retained = targetStrategicValue(context.view, splash.unitId);
+    value += splash.dies
+      ? retained
+      : Math.floor((retained * splash.damage) / splashTarget.hp);
+  }
   if (
     preview.push === "WILL_PUSH" &&
     cityAt(context.view, target.at)?.ownerId === context.view.viewer.id
@@ -2309,11 +2356,6 @@ function trainingStrategicValue(
   command: Extract<CommandV7, { kind: "TRAIN" }>,
 ): number {
   let value = effectiveRoleRuleV7(command.role).maxHp;
-  if (
-    command.role === "SCOUT" &&
-    visibleSaboteurRisk(context.view, command.cityId)
-  )
-    value += 25;
   if (command.role === "GUARD" && threatenedCity(context, command.cityId))
     value += 20;
   if (
@@ -2420,18 +2462,9 @@ function scoutPicketValue(
         attributableCityIncome(view, right) -
         attributableCityIncome(view, left),
     )[0];
-  const visibleSaboteur = view.units.some(
-    (unit) =>
-      isHostile(view, unit.ownerId) &&
-      unit.role === "SABOTEUR" &&
-      distance(unit.at, at) <= 2,
-  );
-  return (
-    (visibleSaboteur ? 12 : 0) +
-    (valuable !== undefined && distance(at, valuable.at) <= 2
-      ? attributableCityIncome(view, valuable)
-      : 0)
-  );
+  return valuable !== undefined && distance(at, valuable.at) <= 2
+    ? attributableCityIncome(view, valuable)
+    : 0;
 }
 
 function screenValue(
@@ -2512,12 +2545,23 @@ export function publicProjectedDamageForPolicyV7(
   const bonus = breach
     ? { numerator: 1, denominator: 1 }
     : projectedDefenseBonus(view, defender, defenderAt);
+  const defenderTile = view.board.tiles.find(
+    (tile) => tile.explored && same(tile.at, defenderAt),
+  );
+  const fortificationLevel =
+    defender.form === "LAND" &&
+    defenderTile?.explored === true &&
+    defenderTile.territoryOwnerId === defender.ownerId
+      ? (defenderTile.fortificationLevel ?? 0)
+      : 0;
+  const defense2 =
+    defender.form === "EMBARKED"
+      ? 2
+      : defenseRule.defense2 + fortificationLevel * 2;
   const attackForceNumerator = BigInt(attack2) * BigInt(attacker.hp);
   const attackForceDenominator = 2n * BigInt(attacker.maxHp);
   const defenseForceNumerator =
-    BigInt(defender.form === "EMBARKED" ? 2 : defenseRule.defense2) *
-    BigInt(defender.hp) *
-    BigInt(bonus.numerator);
+    BigInt(defense2) * BigInt(defender.hp) * BigInt(bonus.numerator);
   const defenseForceDenominator =
     2n * BigInt(defender.maxHp) * BigInt(bonus.denominator);
   const attackOnCommon = attackForceNumerator * defenseForceDenominator;
@@ -2570,23 +2614,6 @@ function projectedDefenseBonus(
   at: CoordV7,
 ): { readonly numerator: number; readonly denominator: number } {
   if (unit.form !== "LAND") return { numerator: 1, denominator: 1 };
-  const city = view.cities.find(
-    (candidate) => candidate.ownerId === unit.ownerId && same(candidate.at, at),
-  );
-  if (
-    city?.rewards.some(
-      (reward) => reward.reachedLevel === 3 && reward.reward === "WALLS",
-    )
-  )
-    return { numerator: 4, denominator: 1 };
-  if (
-    city !== undefined &&
-    unit.ownerId === view.viewer.id &&
-    view.viewer.researchedTechs.includes("FORTIFICATION") &&
-    (unit.role === "FIGHTER" || unit.role === "GUARD")
-  )
-    return { numerator: 2, denominator: 1 };
-  if (city !== undefined) return { numerator: 3, denominator: 2 };
   const tile = view.board.tiles.find((candidate) => same(candidate.at, at));
   return tile?.explored === true &&
     (tile.terrain === "FOREST" || tile.terrain === "MOUNTAIN")
@@ -2657,19 +2684,6 @@ function attributableCityIncome(
   );
 }
 
-function visibleSaboteurRisk(view: PlayerViewV7, cityId: CityId): boolean {
-  const city = view.cities.find((item) => item.id === cityId);
-  return (
-    city !== undefined &&
-    view.units.some(
-      (unit) =>
-        unit.role === "SABOTEUR" &&
-        isHostile(view, unit.ownerId) &&
-        distance(unit.at, city.at) <= 4,
-    )
-  );
-}
-
 function hasDurableScreen(view: PlayerViewV7, cityId: CityId): boolean {
   const city = view.cities.find((item) => item.id === cityId);
   return (
@@ -2714,12 +2728,12 @@ function targetStrategicValue(view: PlayerViewV7, unitId: UnitId): number {
     : (rule.cost ?? 0) * 4 + unit.hp;
 }
 
-function publicOwnerHasEngineering(
+function publicOwnerHasProspecting(
   view: PlayerViewV7,
   ownerId: PlayerId,
 ): boolean {
   if (ownerId === view.viewer.id)
-    return view.viewer.researchedTechs.includes("ENGINEERING");
+    return view.viewer.researchedTechs.includes("PROSPECTING");
   // A visible unit standing on Mountain proves the public movement capability;
   // otherwise opponent research remains unknown and is never assumed.
   return view.units.some(
@@ -2791,6 +2805,16 @@ function projectPublicUnits(
       if (!changed.has(unit.id)) return [stats];
       const role = effectiveRoleRuleV7(unit.role);
       const embarked = unit.form === "EMBARKED";
+      const tile = view.board.tiles.find(
+        (candidate) => candidate.explored && same(candidate.at, unit.at),
+      );
+      const fortificationLevel =
+        !embarked &&
+        unit.form === "LAND" &&
+        tile?.explored === true &&
+        tile.territoryOwnerId === unit.ownerId
+          ? (tile.fortificationLevel ?? 0)
+          : 0;
       const defense = embarked
         ? { numerator: 1, denominator: 1 }
         : projectedDefenseBonus(view, unit, unit.at);
@@ -2842,7 +2866,8 @@ function projectPublicUnits(
                 : stat.id === "DEFENSE"
                   ? statValue(
                       stat,
-                      (embarked ? 2 : role.defense2) * defense.numerator,
+                      (embarked ? 2 : role.defense2 + fortificationLevel * 2) *
+                        defense.numerator,
                       2 * defense.denominator,
                       embarked ? 2 : role.defense2,
                       2,

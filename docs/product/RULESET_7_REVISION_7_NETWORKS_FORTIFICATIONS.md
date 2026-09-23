@@ -1,8 +1,7 @@
 # Ruleset 7 revision 7: networks and fortifications
 
-**Status:** authoritative specification approved for implementation. The
-current playable runtime remains revision 6 until the revision-7 implementation
-and release gates land.
+**Status:** implemented and release validated on 2026-09-23 as the current
+playable Ruleset 7 runtime.
 
 **Ruleset ID:** `pulp-wars-poc-7r7`
 
@@ -88,12 +87,13 @@ roots.
 |    1 | `DRILL`         | —             | Guard; first-hostile-city Capture spoils; +1 fortification on every owned city center |
 |    2 | `FORTIFICATION` | Drill         | Fighter/Guard field defense; +1 capacity for every owned city                         |
 |    3 | `EXPLOSIVES`    | Fortification | Breacher; Pillage                                                                     |
-|    1 | `PROSPECTING`   | —             | reveal Ore; Mountain movement; +1 Sight while on Mountain                             |
+|    1 | `PROSPECTING`   | —             | reveal Ore; Mountain movement and construction; +1 Sight while on Mountain            |
 |    2 | `ENGINEERING`   | Prospecting   | Mine; Workshop; Redevelop                                                             |
 |    3 | `METALLURGY`    | Engineering   | Forge; Heavy                                                                          |
 
-Mountain passage, Ore visibility, and high-ground Sight therefore derive from
-Prospecting everywhere: authoritative movement, public pathing, setup
+Mountain passage, Ore visibility, resource-free spatial improvement and
+Monument construction, and high-ground Sight therefore derive from Prospecting
+everywhere: authoritative movement, public pathing and previews, setup
 placement, reward placement, query reasons, AI, and stat explanations.
 Engineering retains the revision-4 Mine and Workshop rules and now owns
 Redevelop. Metallurgy is otherwise unchanged.
@@ -236,14 +236,20 @@ One `COMBAT_RESOLVED` event contains the primary preview and splash entries in
 applicable, splash casualties in that same order, and the Battleship last when
 retaliation killed it. Derived Port/network, economy/growth/reward,
 achievement, elimination, and match-end events follow after all casualties are
-removed. Splash emits no extra combat event.
+removed. Authority emits no extra combat event: its one combat record is that
+`COMBAT_RESOLVED` event.
 
 Projection includes a splash entry or casualty only for a viewer entitled to
 observe that unit at the impact snapshot; an affected unit's owner is always
 entitled. Omitted entries do not leave counts, anonymous damage, death markers,
 sound, text, or animation. Splash reveals no tile and never makes a hidden unit
 targetable. Preview uses the same viewer-safe filtering, so attacking a visible
-primary target cannot probe adjacent fog.
+primary target cannot probe adjacent fog. When the viewer owns an affected
+splash unit but cannot observe the attacker or primary target, player-event
+projection replaces the hidden `COMBAT_RESOLVED` event with
+`COMBAT_SPLASH_DAMAGE { splash }`. That redacted presentation event contains
+only the viewer-owned splash entries and reveals no hidden attacker, primary
+target, impact coordinate, or other casualty.
 
 ## 7. Unified fortification
 
@@ -332,3 +338,16 @@ second broad corpus for these rules. The release evidence must prove
 determinism, save/resume at the new command boundaries, Normal-AI legality, no
 hidden-state query access, playable invasion on the established map matrix,
 and no regression on `DRY_LAND` beyond the approved identity and rules changes.
+
+Release validation passed on 2026-09-23. The full check passed 151 files and
+1,566 tests. A subsequent focused run also passed the final coast-oscillation
+detector and partial matrix regressions. Map validation passed 960 repeated
+setups. Naval playability passed 40 exact-repeat matrix cases: the first 37 in
+the original run and the final 3 through the explicit resume boundary after a
+detector-only correction; runtime behavior was unchanged. Eight targeted naval
+scenarios also passed exact repeats. The natural Continents and Archipelago
+runs each proved a same-unit invasion lifecycle and reached their 2,000-command
+caps in rounds 55 and 54 respectively; these command-capped runs do not claim
+match victories. Current, naval, and legacy browser checks passed, along with
+art validation, the frozen Ruleset-6 release checks, and the dependency audit
+with zero vulnerabilities.

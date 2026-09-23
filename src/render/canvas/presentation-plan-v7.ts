@@ -34,6 +34,14 @@ export type CorePresentationStepV7 =
       readonly at: CoordV7;
       readonly symbolId: Ruleset7TacticalUiSymbolId;
       readonly durationMs: 240;
+    }
+  | {
+      readonly kind: "DAMAGE";
+      readonly unitId: number;
+      readonly at: CoordV7;
+      readonly damage: number;
+      readonly lethal: boolean;
+      readonly durationMs: 100;
     };
 
 /** Builds animation instructions exclusively from captured public views/events. */
@@ -56,8 +64,8 @@ export function corePresentationPlanV7(
     if (event.kind === "UNIT_MOVED") {
       const origin = origins.get(event.unitId);
       if (enemyTurn) {
-        // Ordinary public moves may span fog. Saboteur moves are already
-        // segmented by projection; reveal/conceal events reset their origins.
+        // Ordinary public moves may span fog; reveal/conceal events reset
+        // their origins.
         // Never join visible stretches across an unobserved coordinate.
         const path =
           origin === undefined ? event.path : [origin, ...event.path];
@@ -112,6 +120,7 @@ export function corePresentationPlanV7(
         event.kind === "PORT_BUILT" ||
         event.kind === "NAVAL_UNIT_TRAINED" ||
         event.kind === "ROAD_BUILT" ||
+        event.kind === "FIELD_DEFENSE_BUILT" ||
         event.kind === "MONUMENT_BUILT")
     ) {
       if (explored.has(`${event.at.x},${event.at.y}`))
@@ -141,6 +150,31 @@ export function corePresentationPlanV7(
         to: defender.at,
         durationMs: ranged ? 280 : 230,
       });
+      for (const splash of event.preview.splash) {
+        const victim = before.units.find((unit) => unit.id === splash.unitId);
+        if (victim !== undefined)
+          steps.push({
+            kind: "DAMAGE",
+            unitId: splash.unitId,
+            at: victim.at,
+            damage: splash.damage,
+            lethal: splash.dies,
+            durationMs: 100,
+          });
+      }
+    } else if (event.kind === "COMBAT_SPLASH_DAMAGE") {
+      for (const splash of event.splash) {
+        const victim = before.units.find((unit) => unit.id === splash.unitId);
+        if (victim !== undefined)
+          steps.push({
+            kind: "DAMAGE",
+            unitId: splash.unitId,
+            at: victim.at,
+            damage: splash.damage,
+            lethal: splash.dies,
+            durationMs: 100,
+          });
+      }
     } else if (
       event.kind === "UNIT_REVEALED" ||
       event.kind === "UNIT_CONCEALED"
@@ -152,14 +186,6 @@ export function corePresentationPlanV7(
         steps.push({ kind: "VISIBILITY_CROSSFADE", durationMs: 180 });
         visibilityCrossfadeAdded = true;
       }
-    } else if (isTacticalStatusEvent(event.kind)) {
-      const presentation = tacticalStatusPresentation(after, event);
-      if (presentation !== null)
-        steps.push({
-          kind: "TACTICAL_STATUS",
-          ...presentation,
-          durationMs: 240,
-        });
     }
   }
   return steps;
@@ -167,35 +193,4 @@ export function corePresentationPlanV7(
 
 function same(left: CoordV7, right: CoordV7): boolean {
   return left.x === right.x && left.y === right.y;
-}
-
-function isTacticalStatusEvent(kind: string): boolean {
-  return kind.startsWith("BLACKOUT_") || kind === "SABOTEUR_EXPOSED";
-}
-
-function tacticalStatusPresentation(
-  after: PlayerViewV7,
-  event: PlayerEventEnvelopeV7["events"][number],
-): {
-  readonly at: CoordV7;
-  readonly symbolId: Ruleset7TacticalUiSymbolId;
-} | null {
-  if (event.kind.startsWith("BLACKOUT_") && "cityId" in event) {
-    const at = after.cities.find((city) => city.id === event.cityId)?.at;
-    if (at === undefined) return null;
-    return {
-      at,
-      symbolId:
-        event.kind === "BLACKOUT_PLANTED"
-          ? "ui-status-blackout-pending"
-          : event.kind === "BLACKOUT_ACTIVATED"
-            ? "ui-status-blackout-active"
-            : "ui-status-blackout-recovery",
-    };
-  }
-  if (event.kind === "SABOTEUR_EXPOSED") {
-    const at = after.units.find((unit) => unit.id === event.unitId)?.at;
-    return at === undefined ? null : { at, symbolId: "ui-status-exposed" };
-  }
-  return null;
 }

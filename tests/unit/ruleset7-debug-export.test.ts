@@ -86,6 +86,6 @@ function setup(): MatchSetupV7 {
     humanColor: "CORAL",
     factions: ["ORIGINAL", "ORIGINAL"],
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
   };
 }

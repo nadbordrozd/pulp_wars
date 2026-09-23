@@ -57,8 +57,8 @@ const PAINTED_BOUNDS: readonly (readonly [
   ["unit-original-saboteur", 256, 296, 33, 44, 201, 222],
   ["unit-original-scout", 256, 296, 51, 18, 204, 222],
   ["unit-shared-embarked-transport", 384, 384, 62, 137, 322, 301],
-  ["unit-original-patrol-boat", 384, 384, 55, 128, 328, 304],
-  ["unit-original-battleship", 384, 384, 30, 90, 354, 300],
+  ["unit-original-patrol-boat", 384, 384, 61, 128, 322, 304],
+  ["unit-original-battleship", 384, 384, 30, 91, 354, 298],
 ];
 
 export const SELECTION_IDENTITY_FRAMES_V7: Readonly<

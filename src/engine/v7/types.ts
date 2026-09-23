@@ -5,8 +5,8 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r6" as const;
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r6.current" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r7" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r7.current" as const;
 export const FACTION_IDS_V7 = Object.freeze(["ORIGINAL"] as const);
 export const FACTION_TREE_IDS_V7 = Object.freeze([
   "ORIGINAL_BASELINE_V4",
@@ -39,7 +39,6 @@ export const IMPROVEMENT_IDS_V7 = Object.freeze([
   "SAWMILL",
   "FORGE",
   "WORKSHOP",
-  "GRAND_WORKS",
   "MARKET",
   "MONUMENT",
   "PORT",
@@ -57,7 +56,6 @@ export const UNIT_ROLE_IDS_V7 = Object.freeze([
   "RAIDER",
   "MEDIC",
   "CATAPULT",
-  "SABOTEUR",
   "HEAVY",
   "HORSE_ARCHER",
   "BREACHER",
@@ -84,9 +82,9 @@ export const TECHNOLOGY_IDS_V7 = Object.freeze([
   "DRILL",
   "FORTIFICATION",
   "EXPLOSIVES",
+  "PROSPECTING",
   "ENGINEERING",
   "METALLURGY",
-  "GRAND_WORKS",
   "SHORECRAFT",
   "NAVIGATION",
   "NAVAL_ENGINEERING",
@@ -94,7 +92,6 @@ export const TECHNOLOGY_IDS_V7 = Object.freeze([
 export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "MOVE",
   "ATTACK",
-  "BLACKOUT_CITY",
   "HEAL_ADJACENT",
   "RECOVER",
   "CAPTURE",
@@ -114,7 +111,6 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "BUILD_SAWMILL",
   "BUILD_FORGE",
   "BUILD_WORKSHOP",
-  "BUILD_GRAND_WORKS",
   "BUILD_MARKET",
   "BUILD_MONUMENT",
   "BUILD_PORT",
@@ -124,7 +120,7 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "REDEVELOP",
   "TRAIN",
   "TRAIN_NAVAL",
-  "EMBARK",
+  "BUILD_FIELD_DEFENSE",
   "DISEMBARK",
   "CHOOSE_CITY_REWARD",
   "END_TURN",
@@ -145,11 +141,6 @@ export const CARDINAL_DIRECTION_ORDER_V7 = Object.freeze([
   "SOUTH",
   "WEST",
 ] as const);
-export const BLACKOUT_PHASE_ORDER_V7 = Object.freeze([
-  "PENDING",
-  "ACTIVE",
-  "RECOVERY",
-] as const);
 export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "TURN_STARTED",
   "INCOME_AWARDED",
@@ -168,6 +159,7 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "FOREST_CLEARED",
   "FOREST_REPLANTED",
   "ROAD_BUILT",
+  "FIELD_DEFENSE_BUILT",
   "CITY_ECONOMY_CHANGED",
   "CITY_LEVELED_UP",
   "CITY_REWARD_QUEUED",
@@ -187,11 +179,6 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "UNIT_MOVE_INTERRUPTED",
   "TILES_REVEALED",
   "COMBAT_RESOLVED",
-  "SABOTEUR_EXPOSED",
-  "BLACKOUT_PLANTED",
-  "BLACKOUT_ACTIVATED",
-  "BLACKOUT_RECOVERY_STARTED",
-  "BLACKOUT_RECOVERY_COMPLETED",
   "IMPROVEMENT_PILLAGED",
   "UNIT_DISBANDED",
   "SPOILS_AWARDED",
@@ -206,6 +193,7 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
 ] as const);
 export const PLAYER_EVENT_KIND_ORDER_V7 = Object.freeze([
   ...DOMAIN_EVENT_KIND_ORDER_V7,
+  "COMBAT_SPLASH_DAMAGE",
   "UNIT_REVEALED",
   "UNIT_CONCEALED",
 ] as const);
@@ -245,7 +233,7 @@ export interface MatchSetupV7 {
   readonly humanColor: PlayerColorV7;
   readonly factions: readonly FactionIdV7[];
   readonly mapType: MapTypeV7;
-  readonly mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1";
+  readonly mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2";
 }
 
 export interface RandomStateV7 {
@@ -261,6 +249,7 @@ export interface TileStateV7 {
   readonly resource: ResourceIdV7 | null;
   readonly improvement: ImprovementIdV7 | null;
   readonly road: boolean;
+  readonly fieldDefense: boolean;
   readonly site: "CAPITAL" | "VILLAGE" | "CITY" | null;
   readonly territoryCityId: CityId | null;
 }
@@ -284,6 +273,7 @@ export interface PlayerStateV7 {
   readonly explored: readonly CoordV7[];
   readonly spoilsClaimedCityIds: readonly CityId[];
   readonly achievementEntitlements: readonly AchievementEntitlementV7[];
+  readonly originalCapitalCityId: CityId;
 }
 
 export interface AchievementEntitlementV7 {
@@ -317,26 +307,7 @@ export interface UnitStateV7 {
   readonly veteran: boolean;
   readonly captureEligible: boolean;
   readonly activation: UnitActivationV7;
-  readonly blackoutEligibleRound: number | null;
 }
-
-export type CityBlackoutV7 =
-  | {
-      readonly phase: "PENDING";
-      readonly sourceUnitId: UnitId;
-      readonly sourceOwnerId: PlayerId;
-      readonly plantedRound: number;
-    }
-  | {
-      readonly phase: "ACTIVE";
-      readonly sourceOwnerId: PlayerId;
-      readonly suppressedCoins: number;
-    }
-  | {
-      readonly phase: "RECOVERY";
-      readonly recoveryOwnerId: PlayerId;
-      readonly unaffectedTurnStarted: boolean;
-    };
 
 export interface CityRewardRecordV7 {
   readonly reachedLevel: number;
@@ -354,14 +325,6 @@ export interface CityStateV7 {
   readonly isCapital: boolean;
   readonly expanded: boolean;
   readonly rewards: readonly CityRewardRecordV7[];
-  readonly blackout: CityBlackoutV7 | null;
-}
-
-export interface SaboteurExposureV7 {
-  readonly unitId: UnitId;
-  readonly anchorPlayerId: PlayerId;
-  readonly reason: "ATTACK" | "PILLAGE" | "BLACKOUT";
-  readonly clearsAtAnchorNextEndTurn: true;
 }
 
 export type PopulationContributionSourceV7 =
@@ -433,7 +396,6 @@ export interface GameStateV7 {
   readonly populationContributions: readonly PopulationContributionV7[];
   readonly units: readonly UnitStateV7[];
   readonly treasureChests: readonly CoordV7[];
-  readonly saboteurExposures: readonly SaboteurExposureV7[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
 }

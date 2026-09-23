@@ -36,12 +36,12 @@ const setup: MatchSetupV7 = {
   humanColor: "CORAL",
   factions: ["ORIGINAL", "ORIGINAL"],
   mapType: "DRY_LAND",
-  mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V1",
+  mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
 };
 
 describe("ruleset-7 save and replay foundation", () => {
   it("uses an independent v7 save key and round-trips a canonical initial save", () => {
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r6.current");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r7.current");
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const replay = createReplayV7(setup);
@@ -488,237 +488,6 @@ describe("ruleset-7 save and replay foundation", () => {
 
   // This integration-style case rebuilds five replay checkpoints, so its
   // timeout is intentionally local rather than changing the global budget.
-  it("naturally saves and replays every Blackout and recovery phase", () => {
-    const created = createPlayableGameV7(setup);
-    if (!created.ok) throw new Error(created.error.code);
-    let state = created.state;
-    let replay = createReplayV7(setup);
-    const humanId = state.humanPlayerId;
-    const seatCount = state.turnOrder.length;
-    const targetCity = state.cities.find((city) => city.ownerId !== humanId);
-    if (targetCity === undefined) throw new Error("target city missing");
-    const accept = (command: CommandV7) => {
-      const actor = state.turnOrder[state.activeSeatIndex];
-      if (actor === undefined) throw new Error("active actor missing");
-      const result = applyCommandV7(state, actor, command);
-      if (!result.accepted)
-        throw new Error(`${command.kind}: ${result.error.code}`);
-      state = result.state;
-      replay = appendReplayCommandV7(replay, command, state);
-      return result.events;
-    };
-    const checkpoint = (phase: "PENDING" | "ACTIVE" | "RECOVERY" | null) => {
-      expect(
-        state.cities.find((city) => city.id === targetCity.id)?.blackout
-          ?.phase ?? null,
-      ).toBe(phase);
-      const save = createSaveEnvelopeV7(
-        { state, replay },
-        `2026-09-07T20:00:0${phase === null ? 4 : phase.length % 4}.000Z`,
-      );
-      const parsed = parseSaveV7(JSON.stringify(save));
-      expect(parsed).toEqual({
-        kind: "VALID",
-        save,
-      });
-      if (phase === "PENDING") {
-        if (parsed.kind !== "VALID") throw new Error(parsed.diagnostic);
-        const beforeVisibility = required(
-          viewForV7(state, targetCity.ownerId).units.find(
-            (unit) => unit.id === trainedId,
-          )?.visibility,
-          "live exposure visibility missing",
-        );
-        expect(beforeVisibility.exposures).toEqual([
-          expect.objectContaining({
-            reason: "BLACKOUT",
-            boundary: expect.objectContaining({
-              kind: "ANCHOR_NEXT_ACCEPTED_END_TURN",
-              anchorPlayerId: targetCity.ownerId,
-            }),
-          }),
-        ]);
-        expect(
-          viewForV7(parsed.save.state, targetCity.ownerId).units.find(
-            (unit) => unit.id === trainedId,
-          )?.visibility,
-        ).toEqual(beforeVisibility);
-      }
-      expect(runReplayV7(replay)).toMatchObject({
-        acceptedCommands: replay.commands.length,
-        state,
-        stateHash: canonicalHash(state),
-      });
-    };
-
-    let trainedId: number | null = null;
-    let starterMoved = false;
-    const researchOrder = ["HUNTING", "MARKSMANSHIP", "FIELDCRAFT"] as const;
-    for (let guard = 0; guard < 100 && trainedId === null; guard += 1) {
-      const actor = required(
-        state.turnOrder[state.activeSeatIndex],
-        "active actor missing",
-      );
-      if (actor === humanId) {
-        const commands = queryPlayerCommandsV7(viewForV7(state, actor));
-        if (!starterMoved) {
-          const starter = required(
-            state.units.find((unit) => unit.ownerId === actor),
-            "starter unit missing",
-          );
-          const move = commands.find(
-            (command) =>
-              command.kind === "MOVE" && command.unitId === starter.id,
-          );
-          if (move?.kind === "MOVE") {
-            accept(move);
-            starterMoved = true;
-          }
-        }
-        const player = required(
-          state.players.find((candidate) => candidate.id === actor),
-          "active player missing",
-        );
-        const nextTech = researchOrder.find(
-          (technology) => !player.researchedTechs.includes(technology),
-        );
-        if (nextTech !== undefined) {
-          const research = queryPlayerCommandsV7(viewForV7(state, actor)).find(
-            (command) =>
-              command.kind === "RESEARCH" && command.tech === nextTech,
-          );
-          if (research?.kind === "RESEARCH") accept(research);
-        } else {
-          const train = queryPlayerCommandsV7(viewForV7(state, actor)).find(
-            (command) =>
-              command.kind === "TRAIN" && command.role === "SABOTEUR",
-          );
-          if (train?.kind === "TRAIN") {
-            const events = accept(train);
-            trainedId =
-              events.find((event) => event.kind === "UNIT_TRAINED")?.unitId ??
-              null;
-          }
-        }
-      }
-      if (trainedId === null) accept({ kind: "END_TURN" });
-    }
-    if (trainedId === null)
-      throw new Error("Saboteur training guard exhausted");
-    accept({ kind: "END_TURN" });
-
-    let planted = false;
-    for (let guard = 0; guard < 160 && !planted; guard += 1) {
-      const actor = required(
-        state.turnOrder[state.activeSeatIndex],
-        "active actor missing",
-      );
-      const saboteur = state.units.find((unit) => unit.id === trainedId);
-      if (saboteur === undefined) throw new Error("Saboteur disappeared");
-      if (actor === humanId) {
-        if (chebyshev(saboteur.at, targetCity.at) !== 1) {
-          const move = queryPlayerCommandsV7(viewForV7(state, humanId))
-            .filter(
-              (
-                command,
-              ): command is Extract<
-                CommandV7,
-                { readonly path: readonly CoordV7[] }
-              > => command.kind === "MOVE" && command.unitId === saboteur.id,
-            )
-            .sort(
-              (left, right) =>
-                chebyshev(moveEndpoint(left), targetCity.at) -
-                  chebyshev(moveEndpoint(right), targetCity.at) ||
-                left.path.length - right.path.length,
-            )[0];
-          if (move === undefined) throw new Error("Saboteur route stalled");
-          accept(move);
-        }
-        const current = required(
-          state.units.find((unit) => unit.id === trainedId),
-          "trained Saboteur missing",
-        );
-        if (chebyshev(current.at, targetCity.at) === 1) {
-          const result = applyCommandV7(state, humanId, {
-            kind: "BLACKOUT_CITY",
-            unitId: current.id,
-            cityId: targetCity.id,
-          });
-          if (result.accepted) {
-            state = result.state;
-            replay = appendReplayCommandV7(
-              replay,
-              {
-                kind: "BLACKOUT_CITY",
-                unitId: current.id,
-                cityId: targetCity.id,
-              },
-              state,
-            );
-            planted = true;
-            break;
-          }
-          if (result.error.code !== "SABOTEUR_DETECTED")
-            throw new Error(`BLACKOUT_CITY: ${result.error.code}`);
-        }
-      } else {
-        const enemy = state.units.find((unit) => unit.ownerId === actor);
-        if (enemy !== undefined) {
-          const moves = queryPlayerCommandsV7(viewForV7(state, actor))
-            .filter(
-              (
-                command,
-              ): command is Extract<
-                CommandV7,
-                { readonly path: readonly CoordV7[] }
-              > => command.kind === "MOVE" && command.unitId === enemy.id,
-            )
-            .sort(
-              (left, right) =>
-                chebyshev(moveEndpoint(right), targetCity.at) -
-                  chebyshev(moveEndpoint(left), targetCity.at) ||
-                chebyshev(moveEndpoint(right), saboteur.at) -
-                  chebyshev(moveEndpoint(left), saboteur.at),
-            );
-          const move = moves[0];
-          if (move !== undefined) accept(move);
-        }
-      }
-      accept({ kind: "END_TURN" });
-    }
-    if (!planted) throw new Error("Blackout planting guard exhausted");
-    checkpoint("PENDING");
-
-    const blackoutPhase = () =>
-      state.cities.find((city) => city.id === targetCity.id)?.blackout?.phase ??
-      null;
-    for (
-      let guard = 0;
-      guard < seatCount && blackoutPhase() !== "ACTIVE";
-      guard += 1
-    )
-      accept({ kind: "END_TURN" });
-    if (blackoutPhase() !== "ACTIVE")
-      throw new Error("Blackout activation seat window exhausted");
-    checkpoint("ACTIVE");
-    accept({ kind: "END_TURN" });
-    checkpoint("RECOVERY");
-    const recoveryTurnStarted = () => {
-      const blackout = state.cities.find(
-        (city) => city.id === targetCity.id,
-      )?.blackout;
-      return blackout?.phase === "RECOVERY" && blackout.unaffectedTurnStarted;
-    };
-    for (let guard = 0; guard < seatCount && !recoveryTurnStarted(); guard += 1)
-      accept({ kind: "END_TURN" });
-    if (!recoveryTurnStarted())
-      throw new Error("Blackout recovery seat window exhausted");
-    checkpoint("RECOVERY");
-    accept({ kind: "END_TURN" });
-    checkpoint(null);
-  }, 15_000);
-
   it("naturally replays Muster unlock and its command-bearing Monument placement", () => {
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
@@ -919,10 +688,10 @@ describe("ruleset-7 save and replay foundation", () => {
     apply({ kind: "BUILD_WINDMILL", at: windmillTile.at });
     fundHuman(5);
     apply({ kind: "RESEARCH", tech: "DRILL" });
+    fundHuman(5);
+    apply({ kind: "RESEARCH", tech: "PROSPECTING" });
     fundHuman(7);
     apply({ kind: "RESEARCH", tech: "ENGINEERING" });
-    fundHuman(9);
-    apply({ kind: "RESEARCH", tech: "GRAND_WORKS" });
     const removedEvents = apply({ kind: "REDEVELOP", at: farmTile.at });
     expect(removedEvents).toContainEqual(
       expect.objectContaining({

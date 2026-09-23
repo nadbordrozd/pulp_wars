@@ -25,7 +25,6 @@ import { calculateCombatPreviewV7 } from "./combat";
 import type { CombatPreviewV7, DomainEventV7 } from "./events";
 import { reachablePlayerMovementPathsV7 } from "./movement";
 import {
-  isCapitalConnectedRoadV7,
   spatialContributionAtV7,
   type EconomyGraphV7,
   type EconomicFamilyV7,
@@ -139,29 +138,6 @@ const TILE_KINDS = [
   "BUILD_ROAD",
   "REDEVELOP",
 ] as const;
-const BLACKOUT_BLOCKED_COMMANDS_V7: readonly CommandV7["kind"][] = [
-  "HARVEST_FRUIT",
-  "HUNT_GAME",
-  "HARVEST_FISH",
-  "GATHER_PEARLS",
-  "BUILD_FARM",
-  "BUILD_LUMBER_CAMP",
-  "BUILD_MINE",
-  "BUILD_WINDMILL",
-  "BUILD_SAWMILL",
-  "BUILD_FORGE",
-  "BUILD_WORKSHOP",
-  "BUILD_GRAND_WORKS",
-  "BUILD_MARKET",
-  "BUILD_MONUMENT",
-  "BUILD_PORT",
-  "CLEAR_FOREST",
-  "REPLANT_FOREST",
-  "BUILD_ROAD",
-  "REDEVELOP",
-  "TRAIN",
-  "TRAIN_NAVAL",
-];
 const COMMAND_CACHE = new WeakMap<PlayerViewV7, readonly CommandV7[]>();
 
 /** PlayerView-only enumeration for the implemented v7 slice. */
@@ -310,12 +286,11 @@ function appendPublicTileCommandsV7(
   if (
     monumentCity?.ownerId === view.viewer.id &&
     !publicCityBesieged(view, monumentCity.at) &&
-    monumentCity.blackout?.phase !== "ACTIVE" &&
     publicCityDevelopmentFootprintKnown(view, monumentCity) &&
     !view.pendingChoices.some((choice) => choice.cityId === monumentCity.id) &&
     tile.biome !== null &&
     (tile.terrain !== "MOUNTAIN" ||
-      view.viewer.researchedTechs.includes("ENGINEERING")) &&
+      view.viewer.researchedTechs.includes("PROSPECTING")) &&
     !view.treasureChests.some((chest) => same(chest, tile.at)) &&
     tile.site === null &&
     tile.resource === null &&
@@ -344,7 +319,7 @@ function appendPublicCityCommandsV7(
   const assigned = view.units.filter(
     (unit) => unit.ownerId === player.id && unit.homeCityId === city.id,
   ).length;
-  if (assigned >= capacity || city.blackout?.phase === "ACTIVE") return;
+  if (assigned >= capacity) return;
   for (const role of UNIT_ROLE_IDS_V7) {
     const rule = effectiveRoleRuleV7(role);
     if (
@@ -389,22 +364,6 @@ function appendPublicUnitCommandsV7(
 ): void {
   const player = view.viewer;
   if (unit.ownerId !== player.id) return;
-  if (
-    unit.form === "LAND" &&
-    !unit.activation.moved &&
-    !unit.activation.handled &&
-    unit.activation.attacksUsed === 0 &&
-    !primaryUsedForQuery(unit) &&
-    player.researchedTechs.includes("SHORECRAFT")
-  )
-    for (const tile of adjacentPublicTiles(view, unit.at))
-      if (
-        tile.explored &&
-        tile.improvement === "PORT" &&
-        tile.territoryOwnerId === player.id &&
-        !view.units.some((candidate) => same(candidate.at, tile.at))
-      )
-        candidates.push({ kind: "EMBARK", unitId: unit.id, portAt: tile.at });
   if (unit.form === "EMBARKED" && !unit.activation.handled)
     for (const tile of adjacentPublicTiles(view, unit.at))
       if (
@@ -412,7 +371,7 @@ function appendPublicUnitCommandsV7(
         tile.biome !== null &&
         !(
           tile.terrain === "MOUNTAIN" &&
-          !player.researchedTechs.includes("ENGINEERING")
+          !player.researchedTechs.includes("PROSPECTING")
         ) &&
         (tile.territoryOwnerId === null ||
           tile.territoryOwnerId === player.id ||
@@ -466,28 +425,6 @@ function appendPublicUnitCommandsV7(
       });
   }
   if (
-    primaryReady &&
-    unit.form === "LAND" &&
-    unit.role === "SABOTEUR" &&
-    unit.blackoutEligibility.known &&
-    view.round >= unit.blackoutEligibility.round &&
-    Number.isSafeInteger(view.round + 3)
-  ) {
-    const detection = publicBlackoutDetectionV7(view, unit);
-    if (detection.clearanceKnown && detection.sources.length === 0)
-      for (const city of view.cities)
-        if (
-          publicHostile(view, player.id, city.ownerId) &&
-          chebyshev(unit.at, city.at) === 1 &&
-          city.blackout === null
-        )
-          candidates.push({
-            kind: "BLACKOUT_CITY",
-            unitId: unit.id,
-            cityId: city.id,
-          });
-  }
-  if (
     !unit.activation.moved &&
     !primaryUsedForQuery(unit) &&
     unit.hp < unit.maxHp &&
@@ -510,8 +447,7 @@ function appendPublicUnitCommandsV7(
     candidates.push({ kind: "PROMOTE", unitId: unit.id });
   const tile = tileAtView(view, unit.at);
   if (
-    (unit.role === "SABOTEUR" ||
-      player.researchedTechs.includes("EXPLOSIVES")) &&
+    player.researchedTechs.includes("EXPLOSIVES") &&
     unit.form === "LAND" &&
     primaryReady &&
     tile?.explored === true &&
@@ -527,6 +463,18 @@ function appendPublicUnitCommandsV7(
     unit.role !== "JUGGERNAUT"
   )
     candidates.push({ kind: "DISBAND", unitId: unit.id });
+  if (
+    primaryReady &&
+    unit.form === "LAND" &&
+    (unit.role === "FIGHTER" || unit.role === "GUARD") &&
+    player.researchedTechs.includes("FORTIFICATION") &&
+    tile?.explored === true &&
+    tile.biome !== null &&
+    tile.territoryOwnerId === player.id &&
+    !tile.fieldDefense &&
+    player.coins >= 3
+  )
+    candidates.push({ kind: "BUILD_FIELD_DEFENSE", unitId: unit.id });
   if (!unit.activation.handled)
     candidates.push({ kind: "WAIT", unitId: unit.id });
 }
@@ -547,147 +495,6 @@ function publicActiveOwnedPort(
         publicHostile(view, ownerId, unit.ownerId),
     )
   );
-}
-
-export interface BlackoutDetectorV7 {
-  readonly unitId: UnitId;
-  readonly ownerId: PlayerId;
-  readonly role: UnitRoleIdV7;
-  readonly at: CoordV7;
-  readonly detectionRadius: 1 | 2;
-}
-
-export interface BlackoutPreviewV7 {
-  readonly sourceUnitId: UnitId;
-  readonly target: {
-    readonly cityId: CityId;
-    readonly ownerId: PlayerId;
-    readonly at: CoordV7;
-  };
-  readonly detectingSources: readonly BlackoutDetectorV7[];
-  readonly unitDetectionBlocks: boolean;
-  readonly cityDetectionBlocks: false;
-  readonly actionRound: number;
-  readonly nextEligibleRound: number;
-  readonly incomeDenial: {
-    readonly suppressionCap: 3;
-    readonly exactFutureSuppressedCoins: null;
-    readonly resolvesAt: "TARGET_OWNER_NEXT_START_TURN";
-  };
-  readonly blockedCommandKinds: readonly CommandV7["kind"][];
-  readonly mandatoryRewardsRemainAvailable: true;
-  readonly unitActionsRemainAvailable: true;
-  readonly existingInfrastructureRemainsEffective: true;
-  readonly exposureBoundary: {
-    readonly kind: "TARGET_OWNER_NEXT_END_TURN";
-    readonly playerId: PlayerId;
-    readonly earliestRound: number;
-  };
-  readonly unaffectedRecoveryTurn: {
-    readonly kind: "TARGET_CITY_CURRENT_OWNER_FULL_TURN";
-    readonly earliestRound: number;
-  };
-  readonly prospective: true;
-}
-
-export type BlackoutPreviewResultV7 =
-  | { readonly ok: true; readonly preview: BlackoutPreviewV7 }
-  | {
-      readonly ok: false;
-      readonly error: "NOT_PREVIEWABLE" | "DETECTION_UNKNOWN";
-    };
-
-export function previewBlackoutV7(
-  view: PlayerViewV7,
-  command: Extract<CommandV7, { kind: "BLACKOUT_CITY" }>,
-): BlackoutPreviewResultV7;
-export function previewBlackoutV7(
-  state: GameStateV7,
-  viewerId: PlayerId,
-  command: Extract<CommandV7, { kind: "BLACKOUT_CITY" }>,
-): BlackoutPreviewResultV7;
-export function previewBlackoutV7(
-  input: GameStateV7 | PlayerViewV7,
-  viewerOrCommand: PlayerId | Extract<CommandV7, { kind: "BLACKOUT_CITY" }>,
-  maybeCommand?: Extract<CommandV7, { kind: "BLACKOUT_CITY" }>,
-): BlackoutPreviewResultV7 {
-  const view =
-    maybeCommand === undefined
-      ? (input as PlayerViewV7)
-      : asView(input, viewerOrCommand as PlayerId);
-  const command =
-    maybeCommand ??
-    (viewerOrCommand as Extract<CommandV7, { kind: "BLACKOUT_CITY" }>);
-  if (!publicCommandOfferingAllowedV7(view))
-    return { ok: false, error: "NOT_PREVIEWABLE" };
-  const source = view.units.find(
-    (unit) => unit.id === command.unitId && unit.ownerId === view.viewer.id,
-  );
-  const city = view.cities.find((candidate) => candidate.id === command.cityId);
-  const active =
-    view.outcome === null &&
-    view.viewer.status === "ACTIVE" &&
-    view.turnOrder[view.activeSeatIndex] === view.viewer.id &&
-    view.pendingChoices.length === 0;
-  if (
-    !active ||
-    source?.role !== "SABOTEUR" ||
-    primaryUsedForQuery(source) ||
-    (source.activation.moved &&
-      !effectiveRoleRuleV7(source.role).mayUsePrimaryActionAfterMove) ||
-    !source.blackoutEligibility.known ||
-    view.round < source.blackoutEligibility.round ||
-    city === undefined ||
-    !publicHostile(view, view.viewer.id, city.ownerId) ||
-    chebyshev(source.at, city.at) !== 1 ||
-    city.blackout !== null
-  )
-    return { ok: false, error: "NOT_PREVIEWABLE" };
-  const detection = publicBlackoutDetectionV7(view, source);
-  if (!detection.clearanceKnown && detection.sources.length === 0)
-    return { ok: false, error: "DETECTION_UNKNOWN" };
-  const sourceTurnIndex = view.turnOrder.indexOf(view.viewer.id);
-  const targetTurnIndex = view.turnOrder.indexOf(city.ownerId);
-  if (sourceTurnIndex < 0 || targetTurnIndex < 0)
-    return { ok: false, error: "NOT_PREVIEWABLE" };
-  const affectedRound = view.round + Number(targetTurnIndex <= sourceTurnIndex);
-  if (
-    !Number.isSafeInteger(view.round + 3) ||
-    !Number.isSafeInteger(affectedRound) ||
-    !Number.isSafeInteger(affectedRound + 1)
-  )
-    return { ok: false, error: "NOT_PREVIEWABLE" };
-  return {
-    ok: true,
-    preview: {
-      sourceUnitId: source.id,
-      target: { cityId: city.id, ownerId: city.ownerId, at: city.at },
-      detectingSources: detection.sources,
-      unitDetectionBlocks: detection.sources.length > 0,
-      cityDetectionBlocks: false,
-      actionRound: view.round,
-      nextEligibleRound: view.round + 3,
-      incomeDenial: {
-        suppressionCap: 3,
-        exactFutureSuppressedCoins: null,
-        resolvesAt: "TARGET_OWNER_NEXT_START_TURN",
-      },
-      blockedCommandKinds: BLACKOUT_BLOCKED_COMMANDS_V7,
-      mandatoryRewardsRemainAvailable: true,
-      unitActionsRemainAvailable: true,
-      existingInfrastructureRemainsEffective: true,
-      exposureBoundary: {
-        kind: "TARGET_OWNER_NEXT_END_TURN",
-        playerId: city.ownerId,
-        earliestRound: affectedRound,
-      },
-      unaffectedRecoveryTurn: {
-        kind: "TARGET_CITY_CURRENT_OWNER_FULL_TURN",
-        earliestRound: affectedRound + 1,
-      },
-      prospective: true,
-    },
-  };
 }
 
 export interface MonumentPreviewV7 {
@@ -824,7 +631,7 @@ function publicRewardPlacementStatus(
       tile.territoryCityId === cityId &&
       tile.biome !== null &&
       (tile.terrain !== "MOUNTAIN" ||
-        view.viewer.researchedTechs.includes("ENGINEERING")),
+        view.viewer.researchedTechs.includes("PROSPECTING")),
   );
   let hasConcealableCell = false;
   for (const tile of candidates) {
@@ -838,7 +645,6 @@ function publicRewardPlacementStatus(
       view.units.some(
         (unit) =>
           unit.ownerId === view.viewer.id &&
-          !(unit.form === "EMBARKED" && unit.role === "SABOTEUR") &&
           chebyshev(unit.at, tile.at) <=
             (unit.form === "LAND" && unit.role === "SCOUT" ? 2 : 1),
       );
@@ -1074,7 +880,7 @@ export interface CityValueDeltaV7 {
 export interface EconomicPreviewV7 {
   readonly at: CoordV7;
   readonly cost: number;
-  readonly ownerCityId: CityId;
+  readonly ownerCityId: CityId | null;
   readonly populationDeltaByCity: readonly CityValueDeltaV7[];
   readonly coinIncomeDeltaByCity: readonly CityValueDeltaV7[];
   readonly resultingContribution: number;
@@ -1149,12 +955,21 @@ function calculatePublicEconomicPreviewV7(
   if (!offered || !publicEconomicPreviewExact(view, command))
     return { ok: false, error: "NOT_OFFERED" };
   const tile = tileAtView(view, command.at);
-  if (tile?.explored !== true || tile.territoryCityId === null)
+  const neutralRoad =
+    command.kind === "BUILD_ROAD" &&
+    tile?.explored === true &&
+    tile.territoryCityId === null &&
+    tile.territoryOwnerId === null;
+  if (
+    tile?.explored !== true ||
+    (tile.territoryCityId === null && !neutralRoad)
+  )
     return { ok: false, error: "NOT_OFFERED" };
   const city = view.cities.find(
     (candidate) => candidate.id === tile.territoryCityId,
   );
-  if (city === undefined) return { ok: false, error: "NOT_OFFERED" };
+  if (city === undefined && !neutralRoad)
+    return { ok: false, error: "NOT_OFFERED" };
   const beforeGraph = publicEconomyGraph(view);
   const basic =
     BASIC_ECONOMIC_ACTIONS_V7[command.kind as BasicEconomicCommandKindV7];
@@ -1192,7 +1007,7 @@ function calculatePublicEconomicPreviewV7(
       .filter((value) => value.ownerId === view.viewer.id)
       .sort((left, right) => left.id - right.id)) {
       const permanentDelta =
-        candidate.id === city.id && basic?.populationCategory === "PERMANENT"
+        candidate.id === city?.id && basic?.populationCategory === "PERMANENT"
           ? basic.population
           : 0;
       const liveDelta = changesLiveGraph
@@ -1273,10 +1088,12 @@ function calculatePublicEconomicPreviewV7(
           (basic !== undefined ? [command.at] : []),
         oppositePairAxes: evaluation?.oppositePairAxes ?? [],
         capitalRoadConnected:
-          evaluation?.capitalRoadConnected ??
-          (command.kind === "BUILD_ROAD"
-            ? isCapitalConnectedRoadV7(afterGraph, command.at, view.viewer.id)
-            : false),
+          (improvement === "MARKET" || command.kind === "BUILD_ROAD") &&
+          publicGraphNeighborCoordsV7(afterGraph, command.at).some((at) =>
+            publicGraphNavalConnectivityV7(afterGraph).roadKeys.has(
+              coordKeyV7(at),
+            ),
+          ),
         buildingLimitReached: false,
         complete: true,
       },
@@ -1291,11 +1108,22 @@ function publicEconomicPreviewExact(
   command: Extract<CommandV7, { at: CoordV7 }>,
 ): boolean {
   const tile = tileAtView(view, command.at);
-  if (tile?.explored !== true || tile.territoryCityId === null) return false;
+  const neutralRoad =
+    command.kind === "BUILD_ROAD" &&
+    tile?.explored === true &&
+    tile.territoryCityId === null &&
+    tile.territoryOwnerId === null;
+  if (
+    tile?.explored !== true ||
+    (tile.territoryCityId === null && !neutralRoad)
+  )
+    return false;
+  if (neutralRoad && !view.board.tiles.every((candidate) => candidate.explored))
+    return false;
   const city = view.cities.find(
     (candidate) => candidate.id === tile.territoryCityId,
   );
-  if (city === undefined) return false;
+  if (city === undefined && !neutralRoad) return false;
   // A changed improvement can propagate through connected same-city basics,
   // processors, and adjacent same-owner buildings across city borders. Every
   // tile in every owned city footprint must therefore be public before a
@@ -1348,6 +1176,7 @@ function economicCommandCanAddPopulation(kind: CommandV7["kind"]): boolean {
     kind === "BUILD_LUMBER_CAMP" ||
     kind === "BUILD_MINE" ||
     kind === "BUILD_PORT" ||
+    kind === "BUILD_ROAD" ||
     (kind in SPATIAL_ECONOMIC_ACTIONS_V7 && kind !== "BUILD_MARKET")
   );
 }
@@ -1400,6 +1229,7 @@ type PublicEconomyGraphV7 = {
   };
   readonly cities: PlayerViewV7["cities"];
   readonly ownerId: PlayerId;
+  readonly originalCapitalCityId: CityId;
   readonly researchedTechs: PlayerViewV7["viewer"]["researchedTechs"];
   readonly activePortKeys: ReadonlySet<string>;
   readonly resolvedPendingCityIds: ReadonlySet<CityId>;
@@ -1427,10 +1257,6 @@ const PUBLIC_GRAPH_TOTALS = new WeakMap<
     PlayerId,
     { readonly population: number; readonly recurringCoins: number }
   >
->();
-const PUBLIC_GRAPH_HAS_GRAND_WORKS_SITE = new WeakMap<
-  PublicEconomyGraphV7,
-  Map<PlayerId, boolean>
 >();
 const PUBLIC_GRAPH_NAVAL_CONNECTIVITY = new WeakMap<
   PublicEconomyGraphV7,
@@ -1476,6 +1302,7 @@ function publicEconomyGraph(view: PlayerViewV7): PublicEconomyGraphV7 {
     },
     cities: view.cities,
     ownerId: view.viewer.id,
+    originalCapitalCityId: view.viewer.originalCapitalCityId,
     researchedTechs: view.viewer.researchedTechs,
     activePortKeys: new Set(
       view.naval.ownedPorts
@@ -1581,7 +1408,7 @@ function liveTotalForCityV7(
   graph: PublicEconomyGraphV7,
   cityId: CityId,
 ): number {
-  return graph.board.tiles
+  const improvementPopulation = graph.board.tiles
     .filter(
       (tile) => tile.territoryCityId === cityId && tile.improvement !== null,
     )
@@ -1599,6 +1426,17 @@ function liveTotalForCityV7(
         throw new RangeError("INTEGER_OVERFLOW");
       return value;
     }, 0);
+  const network = publicGraphNavalConnectivityV7(graph).network;
+  const networkPopulation = !graph.researchedTechs.includes("ROADS")
+    ? 0
+    : cityId === graph.originalCapitalCityId
+      ? Math.max(0, network.size - 1)
+      : network.has(cityId)
+        ? 1
+        : 0;
+  const total = improvementPopulation + networkPopulation;
+  if (!Number.isSafeInteger(total)) throw new RangeError("INTEGER_OVERFLOW");
+  return total;
 }
 
 function marketForCityV7(graph: PublicEconomyGraphV7, cityId: CityId): number {
@@ -1610,13 +1448,11 @@ function marketForCityV7(graph: PublicEconomyGraphV7, cityId: CityId): number {
     )
     .reduce((total, tile) => {
       const evaluation = spatialContributionAtV7(graph, tile.at, "MARKET");
-      const seaRoadBonus =
-        !evaluation.capitalRoadConnected &&
-        publicGraphNeighborCoordsV7(graph, tile.at).some((at) =>
-          connectedRoads.has(coordKeyV7(at)),
-        )
-          ? 1
-          : 0;
+      const seaRoadBonus = publicGraphNeighborCoordsV7(graph, tile.at).some(
+        (at) => connectedRoads.has(coordKeyV7(at)),
+      )
+        ? 1
+        : 0;
       const value = total + Math.min(4, evaluation.marketIncome + seaRoadBonus);
       if (!Number.isSafeInteger(value))
         throw new RangeError("INTEGER_OVERFLOW");
@@ -1631,15 +1467,6 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
 } {
   const cached = PUBLIC_GRAPH_NAVAL_CONNECTIVITY.get(graph);
   if (cached !== undefined) return cached;
-  if (!graph.researchedTechs.includes("SHORECRAFT")) {
-    const empty = {
-      network: new Set<CityId>(),
-      trade: new Set<CityId>(),
-      roadKeys: new Set<string>(),
-    };
-    PUBLIC_GRAPH_NAVAL_CONNECTIVITY.set(graph, empty);
-    return empty;
-  }
   const ownedCities = graph.cities.filter(
     (city) => city.ownerId === graph.ownerId,
   );
@@ -1656,14 +1483,16 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
       )
       .map((tile) => coordKeyV7(tile.at)),
   );
-  const ports = graph.board.tiles.filter(
-    (tile) =>
-      tile.improvement === "PORT" &&
-      tile.territoryCityId !== null &&
-      ownedIds.has(tile.territoryCityId) &&
-      graph.activePortKeys.has(coordKeyV7(tile.at)) &&
-      legalWater.has(coordKeyV7(tile.at)),
-  );
+  const ports = graph.researchedTechs.includes("SHORECRAFT")
+    ? graph.board.tiles.filter(
+        (tile) =>
+          tile.improvement === "PORT" &&
+          tile.territoryCityId !== null &&
+          ownedIds.has(tile.territoryCityId) &&
+          graph.activePortKeys.has(coordKeyV7(tile.at)) &&
+          legalWater.has(coordKeyV7(tile.at)),
+      )
+    : [];
   const seaEdges = new Map<CityId, Set<CityId>>();
   const edges = new Map<CityId, Set<CityId>>();
   const connect = (
@@ -1675,21 +1504,34 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
     values.add(right);
     target.set(left, values);
   };
-  for (const component of publicGraphComponentsV7(graph, legalWater)) {
-    const cityIds = [
-      ...new Set(
-        ports
-          .filter((port) => component.has(coordKeyV7(port.at)))
-          .map((port) => port.territoryCityId)
-          .filter((id): id is CityId => id !== null),
-      ),
-    ];
-    for (const left of cityIds)
-      for (const right of cityIds)
-        if (left !== right) {
-          connect(seaEdges, left, right);
-          connect(edges, left, right);
+  const portsByCoordinate = new Map(
+    ports.map((port) => [coordKeyV7(port.at), port] as const),
+  );
+  for (const from of ports) {
+    const fromCityId = from.territoryCityId;
+    if (fromCityId === null) continue;
+    const queue = [from.at];
+    const distance = new Map<string, number>([[coordKeyV7(from.at), 0]]);
+    for (let cursor = 0; cursor < queue.length; cursor += 1) {
+      const current = queue[cursor];
+      if (current === undefined) break;
+      const currentDistance = distance.get(coordKeyV7(current));
+      if (currentDistance === undefined) continue;
+      const destination = portsByCoordinate.get(coordKeyV7(current));
+      const destinationCityId = destination?.territoryCityId ?? null;
+      if (destinationCityId !== null && destinationCityId !== fromCityId) {
+        connect(seaEdges, fromCityId, destinationCityId);
+        connect(edges, fromCityId, destinationCityId);
+      }
+      if (currentDistance >= 5) continue;
+      for (const near of publicGraphNeighborCoordsV7(graph, current)) {
+        const nearKey = coordKeyV7(near);
+        if (legalWater.has(nearKey) && !distance.has(nearKey)) {
+          distance.set(nearKey, currentDistance + 1);
+          queue.push(near);
         }
+      }
+    }
   }
   const cityAt = new Map(
     ownedCities.map((city) => [coordKeyV7(city.at), city.id] as const),
@@ -1699,12 +1541,13 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
       .filter(
         (tile) =>
           tile.road &&
-          tile.territoryCityId !== null &&
-          ownedIds.has(tile.territoryCityId),
+          graph.researchedTechs.includes("ROADS") &&
+          (tile.territoryCityId === null || ownedIds.has(tile.territoryCityId)),
       )
       .map((tile) => coordKeyV7(tile.at)),
   );
-  for (const at of cityAt.keys()) roads.add(at);
+  if (graph.researchedTechs.includes("ROADS"))
+    for (const at of cityAt.keys()) roads.add(at);
   const roadComponents: {
     readonly keys: ReadonlySet<string>;
     readonly cityIds: readonly CityId[];
@@ -1718,11 +1561,12 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
         if (left !== right) connect(edges, left, right);
     roadComponents.push({ keys: component, cityIds });
   }
-  const capitals = ownedCities
-    .filter((city) => city.isCapital)
-    .map((city) => city.id);
-  const network = new Set<CityId>(capitals);
-  const queue = [...capitals];
+  const originalCapital = ownedCities.find(
+    (city) => city.id === graph.originalCapitalCityId,
+  );
+  const roots = originalCapital === undefined ? [] : [originalCapital.id];
+  const network = new Set<CityId>(roots);
+  const queue = [...roots];
   for (let index = 0; index < queue.length; index += 1) {
     const cityId = queue[index];
     if (cityId === undefined) break;
@@ -1735,7 +1579,7 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
   const trade = new Set(
     [...network].filter(
       (cityId) =>
-        !capitals.includes(cityId) && (seaEdges.get(cityId)?.size ?? 0) > 0,
+        !roots.includes(cityId) && (seaEdges.get(cityId)?.size ?? 0) > 0,
     ),
   );
   const roadKeys = new Set<string>();
@@ -1845,7 +1689,7 @@ function publicCityIncomeV7(
   trade = view.naval.tradeCityIds.includes(city.id),
 ): number {
   if (publicCityBesieged(view, city.at)) return 0;
-  const preBlackout = Math.max(
+  const result = Math.max(
     1,
     city.level +
       (city.isCapital ? 1 : 0) +
@@ -1853,9 +1697,6 @@ function publicCityIncomeV7(
       market +
       Math.min(0, city.population),
   );
-  const result =
-    preBlackout -
-    (city.blackout?.phase === "ACTIVE" ? Math.min(3, preBlackout) : 0);
   if (!Number.isSafeInteger(result)) throw new RangeError("INTEGER_OVERFLOW");
   return result;
 }
@@ -1923,7 +1764,7 @@ function projectedResourceAfterMutationV7(
   if (terrain === null) return null;
   if (
     resource === "ORE" &&
-    !view.viewer.researchedTechs.includes("ENGINEERING")
+    !view.viewer.researchedTechs.includes("PROSPECTING")
   )
     return null;
   if (terrain === "FOREST") return resource;
@@ -2205,7 +2046,16 @@ function graphAfterPublicCandidateV7(
       },
     };
   }
-  if (candidate.kind === "BUILD_MONUMENT")
+  if (candidate.kind === "BUILD_MONUMENT") {
+    const tile = graph.board.tiles.find((value) =>
+      same(value.at, candidate.at),
+    );
+    if (
+      tile?.explored !== true ||
+      (tile.terrain === "MOUNTAIN" &&
+        !view.viewer.researchedTechs.includes("PROSPECTING"))
+    )
+      return null;
     return {
       ...replacePublicGraphTileV7(graph, candidate.at, {
         improvement: "MONUMENT",
@@ -2215,6 +2065,7 @@ function graphAfterPublicCandidateV7(
         graph.remainingMonumentEntitlements - 1,
       ),
     };
+  }
   if (!("at" in candidate)) return null;
   return graphAfterTileCommandV7(view, graph, candidate);
 }
@@ -2353,6 +2204,29 @@ function appendPublicPlacementsForTileV7(
   } = enumeration;
   const beforeLength = placements.length;
   if (
+    tile.explored &&
+    tile.territoryOwnerId === null &&
+    tile.territoryCityId === null &&
+    tile.terrain !== null &&
+    tile.site === null &&
+    !tile.road
+  ) {
+    const capitalId = view.viewer.originalCapitalCityId;
+    const placement = {
+      cityId: capitalId,
+      at: tile.at,
+      kind: "BUILD_ROAD",
+    } as const;
+    placements.push(placement);
+    let capitalPlacements = enumeration.placementsByCity.get(capitalId);
+    if (capitalPlacements === undefined) {
+      capitalPlacements = [];
+      enumeration.placementsByCity.set(capitalId, capitalPlacements);
+    }
+    capitalPlacements.push(placement);
+    return;
+  }
+  if (
     !tile.explored ||
     tile.territoryOwnerId !== view.viewer.id ||
     tile.territoryCityId === null ||
@@ -2378,6 +2252,8 @@ function appendPublicPlacementsForTileV7(
     ) as SpatialEconomicCommandKindV7[]) {
       const rule = SPATIAL_ECONOMIC_ACTIONS_V7[kind];
       if (
+        (tile.terrain === "MOUNTAIN" &&
+          !view.viewer.researchedTechs.includes("PROSPECTING")) ||
         tile.site !== null ||
         tile.resource !== null ||
         tile.improvement !== null ||
@@ -2393,6 +2269,8 @@ function appendPublicPlacementsForTileV7(
     }
     if (
       entitlementsAvailable &&
+      (tile.terrain !== "MOUNTAIN" ||
+        view.viewer.researchedTechs.includes("PROSPECTING")) &&
       tile.site === null &&
       tile.resource === null &&
       tile.improvement === null &&
@@ -2803,10 +2681,6 @@ function scorePublicPlacementV7(
     improvement === null
       ? null
       : spatialContributionAtV7(after, placement.at, improvement);
-  const createsGrandWorks =
-    isProcessorImprovementV7(improvement) &&
-    !hasLegalGrandWorksSiteV7(view, graph, view.viewer.id) &&
-    createsGrandWorksSiteNearV7(view, after, view.viewer.id, placement.at);
   return (
     8 * populationDelta +
     18 * recurringCoinDelta +
@@ -2817,7 +2691,6 @@ function scorePublicPlacementV7(
         evaluation?.distinctFamilies.length ?? 0,
       ) +
     4 * (evaluation?.oppositePairAxes.length ?? 0) +
-    (createsGrandWorks ? 6 : 0) +
     (placement.kind === "BUILD_ROAD" && recurringCoinDelta > 0 ? 4 : 0)
   );
 }
@@ -2845,14 +2718,19 @@ function publicGraphTotalsV7(
       tile.territoryCityId !== null &&
       ownedCityIds.has(tile.territoryCityId)
     ) {
-      population += spatialContributionAtV7(
-        graph,
-        tile.at,
-        tile.improvement,
-      ).population;
+      population +=
+        tile.improvement === "PORT"
+          ? Number(graph.activePortKeys.has(coordKeyV7(tile.at)))
+          : spatialContributionAtV7(graph, tile.at, tile.improvement)
+              .population;
       if (!Number.isSafeInteger(population))
         throw new RangeError("INTEGER_OVERFLOW");
     }
+  const networkSize = publicGraphNavalConnectivityV7(graph).network.size;
+  if (graph.researchedTechs.includes("ROADS"))
+    population += 2 * Math.max(0, networkSize - 1);
+  if (!Number.isSafeInteger(population))
+    throw new RangeError("INTEGER_OVERFLOW");
   let recurringCoins = 0;
   for (const city of graph.cities)
     if (city.ownerId === ownerId) {
@@ -2870,7 +2748,6 @@ const GRAPH_DEPENDENT_IMPROVEMENTS_V7: ReadonlySet<ImprovementIdV7> = new Set([
   "SAWMILL",
   "FORGE",
   "WORKSHOP",
-  "GRAND_WORKS",
   "MARKET",
 ]);
 
@@ -2881,6 +2758,14 @@ function publicGraphTotalsAfterSingleTileChangeV7(
   ownerId: PlayerId,
   changedAt: CoordV7,
 ): { readonly population: number; readonly recurringCoins: number } {
+  const beforeConnectivity = publicGraphNavalConnectivityV7(before);
+  const afterConnectivity = publicGraphNavalConnectivityV7(after);
+  if (
+    !sameSet(beforeConnectivity.network, afterConnectivity.network) ||
+    !sameSet(beforeConnectivity.trade, afterConnectivity.trade) ||
+    !sameSet(beforeConnectivity.roadKeys, afterConnectivity.roadKeys)
+  )
+    return publicGraphTotalsV7(after, ownerId);
   const totals = publicGraphTotalsV7(before, ownerId);
   const affectedKeys = new Set([coordKeyV7(changedAt)]);
   for (const graph of [before, after])
@@ -2930,78 +2815,30 @@ function publicTileGraphOutputV7(
     tile.improvement,
   );
   return {
-    population: contribution.population,
-    recurringCoins: contribution.marketIncome,
+    population:
+      tile.improvement === "PORT"
+        ? Number(graph.activePortKeys.has(coordKeyV7(tile.at)))
+        : contribution.population,
+    recurringCoins:
+      tile.improvement === "MARKET"
+        ? Math.min(
+            4,
+            contribution.marketIncome +
+              Number(
+                publicGraphNeighborCoordsV7(graph, tile.at).some((at) =>
+                  publicGraphNavalConnectivityV7(graph).roadKeys.has(
+                    coordKeyV7(at),
+                  ),
+                ),
+              ),
+          )
+        : contribution.marketIncome,
   };
 }
 
-function isProcessorImprovementV7(
-  improvement: ImprovementIdV7 | null,
-): improvement is "WINDMILL" | "SAWMILL" | "FORGE" {
+function sameSet<T>(left: ReadonlySet<T>, right: ReadonlySet<T>): boolean {
   return (
-    improvement === "WINDMILL" ||
-    improvement === "SAWMILL" ||
-    improvement === "FORGE"
-  );
-}
-
-function createsGrandWorksSiteNearV7(
-  view: PlayerViewV7,
-  graph: PublicEconomyGraphV7,
-  ownerId: PlayerId,
-  placedAt: CoordV7,
-): boolean {
-  return graph.board.tiles.some(
-    (tile) =>
-      chebyshev(tile.at, placedAt) === 1 &&
-      isLegalGrandWorksSiteV7(view, graph, ownerId, tile),
-  );
-}
-
-function hasLegalGrandWorksSiteV7(
-  view: PlayerViewV7,
-  graph: PublicEconomyGraphV7,
-  ownerId: PlayerId,
-): boolean {
-  let byOwner = PUBLIC_GRAPH_HAS_GRAND_WORKS_SITE.get(graph);
-  if (byOwner === undefined) {
-    byOwner = new Map();
-    PUBLIC_GRAPH_HAS_GRAND_WORKS_SITE.set(graph, byOwner);
-  }
-  const cached = byOwner.get(ownerId);
-  if (cached !== undefined) return cached;
-  const result = graph.board.tiles.some((tile) =>
-    isLegalGrandWorksSiteV7(view, graph, ownerId, tile),
-  );
-  byOwner.set(ownerId, result);
-  return result;
-}
-
-function isLegalGrandWorksSiteV7(
-  view: PlayerViewV7,
-  graph: PublicEconomyGraphV7,
-  ownerId: PlayerId,
-  tile: PublicEconomyGraphTileV7,
-): boolean {
-  if (
-    !tile.explored ||
-    tile.site !== null ||
-    tile.resource !== null ||
-    tile.improvement !== null ||
-    tile.territoryCityId === null ||
-    !publicCityAllowsDevelopmentV7(view, graph, tile.territoryCityId) ||
-    view.treasureChests.some((chest) => same(chest, tile.at)) ||
-    graph.board.tiles.some(
-      (candidate) =>
-        candidate.territoryCityId === tile.territoryCityId &&
-        candidate.improvement === "GRAND_WORKS",
-    ) ||
-    graph.cities.find((city) => city.id === tile.territoryCityId)?.ownerId !==
-      ownerId
-  )
-    return false;
-  return (
-    spatialContributionAtV7(graph, tile.at, "GRAND_WORKS").placementCount >= 2
+    left.size === right.size && [...left].every((value) => right.has(value))
   );
 }
 
@@ -3014,7 +2851,6 @@ function publicCityAllowsDevelopmentV7(
   return (
     city?.ownerId === view.viewer.id &&
     !publicCityBesieged(view, city.at) &&
-    city.blackout?.phase !== "ACTIVE" &&
     (!view.pendingChoices.some((choice) => choice.cityId === city.id) ||
       graph.resolvedPendingCityIds.has(city.id))
   );
@@ -3269,13 +3105,27 @@ function publicTileCommandLegal(
   const city = view.cities.find(
     (candidate) => candidate.id === tile.territoryCityId,
   );
+  const neutralRoad =
+    kind === "BUILD_ROAD" &&
+    tile.territoryCityId === null &&
+    tile.territoryOwnerId === null;
   if (
-    city?.ownerId !== view.viewer.id ||
-    publicCityBesieged(view, city.at) ||
-    city.blackout?.phase === "ACTIVE" ||
-    view.pendingChoices.some((choice) => choice.cityId === city.id)
+    (!neutralRoad && city?.ownerId !== view.viewer.id) ||
+    (city !== undefined && publicCityBesieged(view, city.at)) ||
+    (city !== undefined &&
+      view.pendingChoices.some((choice) => choice.cityId === city.id))
   )
     return false;
+  if (neutralRoad)
+    return (
+      view.viewer.coins >= 2 &&
+      tile.biome !== null &&
+      tile.site === null &&
+      !tile.road &&
+      (tile.terrain !== "MOUNTAIN" ||
+        view.viewer.researchedTechs.includes("PROSPECTING"))
+    );
+  if (city === undefined) return false;
   const basic =
     BASIC_ECONOMIC_ACTIONS_V7[kind as keyof typeof BASIC_ECONOMIC_ACTIONS_V7];
   if (basic !== undefined)
@@ -3324,6 +3174,8 @@ function publicTileCommandLegal(
       view.viewer.coins < spatial.cost ||
       view.treasureChests.some((chest) => same(chest, tile.at)) ||
       tile.site !== null ||
+      (tile.terrain === "MOUNTAIN" &&
+        !view.viewer.researchedTechs.includes("PROSPECTING")) ||
       tile.resource !== null ||
       tile.improvement !== null ||
       cityHasImprovement(view, city.id, spatial.improvement)
@@ -3361,24 +3213,6 @@ function publicTileCommandLegal(
           ),
         ).length >= 1
       );
-    if (kind === "BUILD_GRAND_WORKS")
-      return (
-        distinct(
-          adjacent.flatMap((item) =>
-            item.territoryOwnerId === view.viewer.id &&
-            item.improvement !== null &&
-            ["WINDMILL", "SAWMILL", "FORGE"].includes(item.improvement) &&
-            view.improvementValues.some(
-              (value) =>
-                same(value.at, item.at) &&
-                value.measure === "POPULATION" &&
-                value.level > 0,
-            )
-              ? [item.improvement]
-              : [],
-          ),
-        ).length >= 2
-      );
     if (kind === "BUILD_MARKET")
       return (
         distinct(
@@ -3407,7 +3241,14 @@ function publicTileCommandLegal(
       tile.improvement === null
     );
   if (kind === "BUILD_ROAD")
-    return view.viewer.coins >= 2 && tile.site === null && !tile.road;
+    return (
+      view.viewer.coins >= 2 &&
+      tile.biome !== null &&
+      tile.site === null &&
+      !tile.road &&
+      (tile.terrain !== "MOUNTAIN" ||
+        view.viewer.researchedTechs.includes("PROSPECTING"))
+    );
   return (
     kind === "REDEVELOP" &&
     tile.improvement !== null &&
@@ -3492,8 +3333,21 @@ function publicCombatPreview(
   if (attack === undefined || defense === undefined) return null;
   if (defense.visibility === "BASE_ONLY") return null;
   const attack2 = rationalToHalfUnits(attack.total);
-  const defense2 = target.form === "EMBARKED" ? 2 : defenderRule.defense2;
-  const bonus = ratio(defense.total, defense.base.value);
+  const targetTile = tileAtView(view, target.at);
+  if (targetTile?.explored !== true) return null;
+  const fortificationLevel =
+    target.form === "LAND" && targetTile.territoryOwnerId === target.ownerId
+      ? (targetTile.fortificationLevel ?? 0)
+      : 0;
+  const defense2 =
+    target.form === "EMBARKED"
+      ? 2
+      : defenderRule.defense2 + fortificationLevel * 2;
+  const bonus =
+    target.form === "LAND" &&
+    (targetTile.terrain === "FOREST" || targetTile.terrain === "MOUNTAIN")
+      ? { numerator: 3, denominator: 2 }
+      : { numerator: 1, denominator: 1 };
   const breachApplied =
     attackerRule.abilities.includes("BREACH") && distance === 1;
   const applied = breachApplied ? { numerator: 1, denominator: 1 } : bonus;
@@ -3551,6 +3405,7 @@ function publicCombatPreview(
     breachApplied,
     defenseBonusNumerator: applied.numerator,
     defenseBonusDenominator: applied.denominator,
+    fortificationLevel,
     damageToDefender,
     damageToAttacker,
     defenderDies,
@@ -3571,6 +3426,35 @@ function publicCombatPreview(
     attacksUsed: nextAttacks,
     attacksRemaining:
       attacker.role === "HORSE_ARCHER" ? Math.max(0, 2 - nextAttacks) : 0,
+    splash:
+      attacker.role === "BATTLESHIP"
+        ? view.units
+            .filter(
+              (unit) =>
+                unit.hp > 0 &&
+                unit.id !== target.id &&
+                chebyshev(unit.at, target.at) === 1 &&
+                publicHostile(view, attacker.ownerId, unit.ownerId),
+            )
+            .sort(
+              (left, right) =>
+                left.at.y - right.at.y ||
+                left.at.x - right.at.x ||
+                left.id - right.id,
+            )
+            .map((unit) => {
+              const damage = Math.min(
+                unit.hp,
+                Math.max(1, Math.ceil(damageToDefender / 2)),
+              );
+              return {
+                unitId: unit.id,
+                at: unit.at,
+                damage,
+                dies: damage >= unit.hp,
+              };
+            })
+        : [],
   };
 }
 
@@ -3582,7 +3466,7 @@ function publicAdvanceDestinationLegal(
   return (
     tile?.explored === true &&
     (tile.terrain !== "MOUNTAIN" ||
-      view.viewer.researchedTechs.includes("ENGINEERING"))
+      view.viewer.researchedTechs.includes("PROSPECTING"))
   );
 }
 
@@ -3624,7 +3508,7 @@ function publicPushState(
     return "UNKNOWN_BEHIND_FOG";
   if (
     tile.terrain === "MOUNTAIN" &&
-    !view.viewer.researchedTechs.includes("ENGINEERING")
+    !view.viewer.researchedTechs.includes("PROSPECTING")
   )
     return "BLOCKED";
   if (tile.terrain === "DEEP_WATER") {
@@ -3642,41 +3526,10 @@ function publicDetectionCovers(view: PlayerViewV7, at: CoordV7): boolean {
     view.units.some(
       (unit) =>
         unit.ownerId === view.viewer.id &&
-        !(unit.form === "EMBARKED" && unit.role === "SABOTEUR") &&
         chebyshev(unit.at, at) <=
           (unit.form === "LAND" && unit.role === "SCOUT" ? 2 : 1),
     )
   );
-}
-
-function publicBlackoutDetectionV7(
-  view: PlayerViewV7,
-  source: PlayerViewV7["units"][number],
-): {
-  readonly clearanceKnown: boolean;
-  readonly sources: readonly BlackoutDetectorV7[];
-} {
-  const sources = view.units
-    .filter(
-      (unit) =>
-        unit.id !== source.id &&
-        !(unit.form === "EMBARKED" && unit.role === "SABOTEUR") &&
-        publicHostile(view, source.ownerId, unit.ownerId) &&
-        chebyshev(source.at, unit.at) <=
-          (unit.form === "LAND" && unit.role === "SCOUT" ? 2 : 1),
-    )
-    .map((unit): BlackoutDetectorV7 => ({
-      unitId: unit.id,
-      ownerId: unit.ownerId,
-      role: unit.role,
-      at: unit.at,
-      detectionRadius: unit.form === "LAND" && unit.role === "SCOUT" ? 2 : 1,
-    }))
-    .sort((left, right) => left.unitId - right.unitId);
-  const clearanceKnown = view.board.tiles
-    .filter((tile) => chebyshev(source.at, tile.at) <= 2)
-    .every((tile) => tile.explored);
-  return { clearanceKnown, sources };
 }
 
 function publicAllied(
@@ -3700,23 +3553,7 @@ function rationalToHalfUnits(value: {
   if (!Number.isInteger(result)) throw new RangeError("Non-half-unit stat");
   return result;
 }
-function ratio(
-  total: { numerator: number; denominator: number },
-  base: { numerator: number; denominator: number },
-) {
-  return reduceRational(
-    total.numerator * base.denominator,
-    total.denominator * base.numerator,
-  );
-}
-function reduceRational(numerator: number, denominator: number) {
-  const divisor = gcdPublic(Math.abs(numerator), Math.abs(denominator));
-  return { numerator: numerator / divisor, denominator: denominator / divisor };
-}
-function gcdPublic(left: number, right: number): number {
-  while (right !== 0) [left, right] = [right, left % right];
-  return left || 1;
-}
+
 function roundHalfUpPublic(numerator: bigint, denominator: bigint): number {
   return Number((2n * numerator + denominator) / (2n * denominator));
 }

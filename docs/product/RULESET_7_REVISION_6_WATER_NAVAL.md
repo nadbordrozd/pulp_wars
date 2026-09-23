@@ -1,9 +1,9 @@
 # Ruleset 7 revision 6: water and naval play
 
-**Status:** authoritative implemented contract for the current revision-6
-engine, Normal AI, browser UI, and headless release. The runtime identity is
-`pulp-wars-poc-7r6`; new matches default to Continents and expose all five map
-types.
+**Status:** authoritative implemented revision-6 contract inherited by the
+current [revision-7 overlay](RULESET_7_REVISION_7_NETWORKS_FORTIFICATIONS.md).
+Its historical runtime identity is `pulp-wars-poc-7r6`; current matches use the
+revision-7 identity, default to Continents, and expose all five map types.
 
 **Ruleset ID:** `pulp-wars-poc-7r6`
 
@@ -17,8 +17,8 @@ validation rules. [Revision 5](RULESET_7_REVISION_5_ACHIEVEMENTS.md) remains
 authoritative for achievements and Monument placement. [Revision 4](RULESET_7_REVISION_4_BIOME_ECONOMY.md)
 remains authoritative for land biomes, land resources, Mine/Forge economy, and
 their unchanged AI/public rules. The [Ruleset 7 baseline](RULESET_7.md) supplies
-all other unchanged rules. Water and naval play are present in the current
-playable build.
+all other unchanged rules. Water and naval play remain present in the current
+revision-7 playable build where the revision-7 overlay does not replace them.
 
 ## 1. Product decisions
 

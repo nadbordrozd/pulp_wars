@@ -157,8 +157,8 @@ export function battleshipBombardmentV7(
             role: "BATTLESHIP" as const,
             form: "NAVAL" as const,
             at: waterAt,
-            hp: 20,
-            maxHp: 20,
+            hp: 25,
+            maxHp: 25,
           }
         : unit.id === defender.id
           ? {
