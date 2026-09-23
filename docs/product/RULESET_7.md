@@ -3,8 +3,10 @@
 **Status:** revision-6 playable baseline. The
 [revision-6 water and naval specification](RULESET_7_REVISION_6_WATER_NAVAL.md)
 is authoritative for the current engine, Normal AI, setup, naval UI, and
-release acceptance. New matches default to Continents and expose all five map
-types.
+release acceptance. The
+[revision-7 networks and fortifications specification](RULESET_7_REVISION_7_NETWORKS_FORTIFICATIONS.md)
+is approved for implementation but is not the current runtime. New revision-6
+matches default to Continents and expose all five map types.
 
 **Runtime ruleset ID:** `pulp-wars-poc-7r6`
 

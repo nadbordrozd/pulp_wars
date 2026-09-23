@@ -1,13 +1,18 @@
 # Naval Asset Contract
 
 This contract specializes [Pulp Wars Art Direction](../ART_DIRECTION.md) for
-the approved [Ruleset 7 revision-6 water and naval expansion](../../product/RULESET_7_REVISION_6_WATER_NAVAL.md).
+the implemented [Ruleset 7 revision-6 water and naval expansion](../../product/RULESET_7_REVISION_6_WATER_NAVAL.md)
+and the approved
+[revision-7 networks and fortifications overlay](../../product/RULESET_7_REVISION_7_NETWORKS_FORTIFICATIONS.md).
 It also follows the active square geometry in the
 [terrain](terrain-tiles.md), [building](buildings.md), [unit](units.md), and
 [UI](ui.md) class contracts. Those shared contracts remain authoritative where
 this file does not give a naval-specific value.
 
-Revision 6 requires real production raster art. A solid-color tile, CSS shape,
+Revision 6 requires real production raster art. Revision 7 replaces the Patrol
+Boat and Battleship sources under their existing asset IDs; the checked-in
+revision-6 sprites remain current runtime evidence until that asset bead lands.
+A solid-color tile, CSS shape,
 emoji, borrowed image, temporary silhouette, or generic code fallback is not an
 acceptable final asset. Generation uses checked-in programmatic PixelLab
 scripts and manifests only. Do not generate assets from this document until the
@@ -153,11 +158,11 @@ scenery. They use the same northwest key light, dark southeast planes, strong
 charcoal-teal outline, flat fills, and two-to-three shade levels as accepted
 Original units. Hull shape and equipment carry role identity at gameplay scale.
 
-| Asset              | Preferred alpha bounds | Hard alpha bounds      | Target visible size at 1x | Required silhouette                                                                                       |
-| ------------------ | ---------------------- | ---------------------- | ------------------------- | --------------------------------------------------------------------------------------------------------- |
-| Patrol Boat        | `x=55..329,y=128..304` | `x=32..352,y=96..328`  | 66–78 x 38–50 CSS px      | small pointed hull, raised bow, one oversized patrol spear/ballista cue; no giant cannon                  |
-| Battleship         | `x=30..354,y=82..308`  | `x=16..368,y=54..330`  | 82–96 x 50–64 CSS px      | broad armored hull, one unmistakable oversized deck cannon, taller stern; visibly larger than Patrol Boat |
-| Embarked Transport | `x=62..322,y=132..306` | `x=40..344,y=104..328` | 58–72 x 36–48 CSS px      | open simple transport hull, tied packs and empty passenger space; no role-specific weapon                 |
+| Asset              | Preferred alpha bounds | Hard alpha bounds      | Target visible size at 1x | Required silhouette                                                                                             |
+| ------------------ | ---------------------- | ---------------------- | ------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Patrol Boat        | `x=55..329,y=128..304` | `x=32..352,y=96..328`  | 66–78 x 38–50 CSS px      | lean small naval-gray motor patrol hull, enclosed wheelhouse, pointed bow, and one light deck gun               |
+| Battleship         | `x=30..354,y=82..308`  | `x=16..368,y=54..330`  | 82–96 x 50–64 CSS px      | long broad armored naval-gray hull, distinct fore and aft heavy multi-barrel turrets, central bridge and funnel |
+| Embarked Transport | `x=62..322,y=132..306` | `x=40..344,y=104..328` | 58–72 x 36–48 CSS px      | open simple transport hull, tied packs and empty passenger space; no role-specific weapon                       |
 
 The keel/contact midpoint is within 10 source pixels horizontally and 8
 vertically of `(192,288)`. Patrol Boat and Transport display at 0.24;
@@ -171,36 +176,45 @@ opaque bounds.
 Each source has a contiguous 8–15% faction-color patch. The shared transport
 uses neutral timber/canvas and the patch as ownership; it deliberately carries
 no passenger face, Saboteur cue, Heavy armor, faction emblem, or capacity mark.
-The passenger's accessible identity is supplied by UI text. Patrol Boat and
-Battleship follow Original practical timber/metal language without establishing
-a new faction. A future faction may replace their art only through its own
+The passenger's accessible identity is supplied by UI text. Revision 7
+supersedes the practical timber hull direction for Patrol Boat and Battleship:
+both are chunky stylized steel warships with broad flat/cel-shaded planes, not
+open wooden boats. Patrol Boat must read as the much smaller, faster motor craft
+with a light single gun; it has no ballista, spear, sail, open dinghy hull, or
+heavy turret. Battleship must read as a real armored capital ship with two
+separate heavy turrets, one forward and one aft, each visibly multi-barrel; it
+has no lone cannon, open boat interior, mast-driven silhouette, or timber hull.
+The central superstructure stays low enough that both turrets read at native
+scale. This warship language does not change the shared transport or establish
+a new faction. A future faction may replace these sources only through its own
 registered role mapping.
 
 Do not bake wakes, water, shoreline, foam, cannon fire, projectile, range,
 damage, veteran mark, health, owner flag emblem, selection, shadow, ZOC,
 recovery, blockade, cargo count, or text into any unit. Wakes, cannon shot,
 impact, movement path, landing target, recovery radius, and state marks are
-code-native effects. The Battleship cannon is part of its resting silhouette;
+code-native effects. The Battleship turrets are part of its resting silhouette;
 muzzle flash and projectile are not.
 
-### Three-sample gate
+### Revision-7 replacement gate
 
-The naval unit sample gate is exactly three individual requests in this order:
+The revision-7 asset bead reuses the accepted Embarked Transport unchanged and
+regenerates two subjects one at a time in this order:
 
-1. `unit-shared-embarked-transport` establishes the low neutral hull, resource
-   coexistence, and Port overlap;
-2. `unit-original-patrol-boat` establishes the ordinary armed naval scale;
-3. `unit-original-battleship` establishes the larger gun-platform exception.
+1. `unit-original-patrol-boat` establishes the small motor-warship language and
+   ordinary armed naval scale;
+2. `unit-original-battleship` establishes the larger armored, multi-turret
+   capital-ship exception.
 
-Submit, receive, and review each one before submitting the next. Passing one
-does not permit the remaining two to be requested as a batch. Every sample is
+Submit, receive, and review Patrol Boat before requesting Battleship. They are
+not a batch. Each candidate is
 inspected at source, enlarged, native display, 0.625x/1x/1.75x, DPR 1/2, on both
 water types, all owner colors, over Port/Fish/Pearls, beside every other naval
 piece and representative land units, selected/damaged/veteran/handled, in all
 eight adjacent directions, and at a dense landing. Reject and regenerate before
 continuing when silhouette, scale, camera, anchor, palette, edge quality,
-transparency, overlap, or role reading fails. These three accepted samples are
-the production unit inventory; there is no later naval-unit batch in revision 6.
+transparency, overlap, or role reading fails. Review the unchanged transport
+beside both replacements, but do not request or regenerate it.
 
 ## 6. PixelLab records and checked review
 
@@ -230,9 +244,11 @@ foam/sparkles, cinematic lighting, gradients, and cropped or trimmed edges.
 The asset package adds `npm run art:ruleset7-naval-review`. Its checked-in
 review manifest and deterministic contact sheets verify exact inventory and
 hashes; dimensions/anchors/scales/bounds; native and enlarged samples; water
-seams/repetition/borders; resource/Port coexistence; the ordered one-by-one
-three-unit gate and receipts; map hierarchy; fog/selection/ownership; UI reuse;
-supported zoom/DPR; and an 11 x 11 dense coast plus 25 x 25 mixed fleet. It
+seams/repetition/borders; resource/Port coexistence; retained historical
+revision-6 three-unit provenance and receipts; revision-7 sequential
+Patrol Boat/Battleship replacement evidence with the unchanged Transport
+comparison; map hierarchy; fog/selection/ownership; UI reuse; supported
+zoom/DPR; and an 11 x 11 dense coast plus 25 x 25 mixed fleet. It
 fails on missing production bytes, placeholders, unregistered aliases,
 credential material, stale evidence, or a conditional Navigation symbol without
 its recorded failed-reuse evidence.
