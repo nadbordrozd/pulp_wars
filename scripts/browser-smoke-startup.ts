@@ -278,3 +278,85 @@ export async function navigateSmokePage(
     unsubscribe();
   }
 }
+
+/** Wait for the replacement main-frame document, not only Page.reload's acknowledgement. */
+export async function reloadSmokePage(
+  connection: SmokeConnection,
+  timeoutMs = 30_000,
+): Promise<void> {
+  const deadline = Date.now() + timeoutMs;
+  const commandOptions = (stage: string): SmokeCommandOptions => ({
+    timeoutMs: Math.max(1, deadline - Date.now()),
+    stage,
+  });
+  await connection.send(
+    "Page.setLifecycleEventsEnabled",
+    { enabled: true },
+    commandOptions("enable reload lifecycle events"),
+  );
+  const current = (await connection.send(
+    "Page.getFrameTree",
+    {},
+    commandOptions("inspect document before reload"),
+  )) as {
+    readonly frameTree?: {
+      readonly frame?: { readonly id?: string; readonly loaderId?: string };
+    };
+  };
+  const frameId = current.frameTree?.frame?.id;
+  const previousLoaderId = current.frameTree?.frame?.loaderId;
+  if (!frameId || !previousLoaderId) {
+    throw new Error(
+      `Chrome reload could not identify the current main-frame document: ${JSON.stringify(current)}`,
+    );
+  }
+
+  const navigatedLoaders = new Set<string>();
+  const loadedLoaders = new Set<string>();
+  const unsubscribe = connection.onEvent((method, params) => {
+    if (method === "Page.frameNavigated") {
+      const event = params as {
+        readonly frame?: { readonly id?: string; readonly loaderId?: string };
+      };
+      const frame = event.frame;
+      if (
+        frame?.id === frameId &&
+        frame.loaderId &&
+        frame.loaderId !== previousLoaderId
+      )
+        navigatedLoaders.add(frame.loaderId);
+      return;
+    }
+    if (method !== "Page.lifecycleEvent") return;
+    const event = params as {
+      readonly name?: string;
+      readonly frameId?: string;
+      readonly loaderId?: string;
+    };
+    if (
+      event.name === "load" &&
+      event.frameId === frameId &&
+      event.loaderId &&
+      event.loaderId !== previousLoaderId
+    )
+      loadedLoaders.add(event.loaderId);
+  });
+  try {
+    await connection.send(
+      "Page.reload",
+      { ignoreCache: true },
+      commandOptions("reload document"),
+    );
+    while (
+      ![...navigatedLoaders].some((loaderId) => loadedLoaders.has(loaderId))
+    ) {
+      if (Date.now() >= deadline)
+        throw new Error(
+          `Chrome reload load timed out after ${timeoutMs}ms; frame=${frameId}; previousLoader=${previousLoaderId}`,
+        );
+      await delay(25);
+    }
+  } finally {
+    unsubscribe();
+  }
+}

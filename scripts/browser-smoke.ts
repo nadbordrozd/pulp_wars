@@ -2,6 +2,7 @@ import { prepareSmokeOutput } from "./browser-smoke-output";
 import {
   launchSmokeBrowser,
   navigateSmokePage,
+  reloadSmokePage,
   type SmokeCommandOptions,
   type SmokeConnection as Connection,
 } from "./browser-smoke-startup";
@@ -178,7 +179,7 @@ try {
       await assertKeyboardAndSemantics(connection);
 
       const boundary = await drivePolicy(connection, 15);
-      await connection.send("Page.reload", { ignoreCache: true });
+      await reloadSmokePage(connection);
       await waitForRoute(connection, "hub");
       // Inspect the loaded save while still on Hub. Resume intentionally starts
       // paced AI immediately when the saved boundary belongs to an AI seat.
@@ -921,7 +922,7 @@ async function reviewDemoMatch(
     `JSON.parse(localStorage.getItem('pulpWars.save.current') ?? '{}').commandIndex === 1 && JSON.parse(localStorage.getItem('pulpWars.save.current') ?? '{}').stateHash === ${JSON.stringify(boundaryHash)}`,
   );
 
-  await connection.send("Page.reload", { ignoreCache: true });
+  await reloadSmokePage(connection);
   await waitForRoute(connection, "hub");
   await clickButton(connection, "Resume Conquest");
   await waitForRoute(connection, "match");
@@ -1454,7 +1455,7 @@ async function reviewHugeMap(connection: Connection): Promise<void> {
   await capture(connection, "huge-interaction-desktop.png");
 
   const boundary = await drivePolicy(connection, 2);
-  await connection.send("Page.reload", { ignoreCache: true });
+  await reloadSmokePage(connection);
   await waitForRoute(connection, "hub");
   await clickButton(connection, "Resume Conquest");
   await waitForRoute(connection, "match");
@@ -1595,7 +1596,7 @@ async function reviewCooperativeLarge(
       `Cooperative Large browser policy did not reach a live save boundary: ${JSON.stringify(boundary)}`,
     );
   }
-  await connection.send("Page.reload", { ignoreCache: true });
+  await reloadSmokePage(connection);
   await waitForRoute(connection, "hub");
   const loaded = await matchSummary(connection);
   if (

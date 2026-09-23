@@ -4,6 +4,7 @@ import {
   connectSmokeTarget,
   launchSmokeBrowser,
   navigateSmokePage,
+  reloadSmokePage,
   type SmokeConnection,
 } from "../../scripts/browser-smoke-startup";
 
@@ -32,6 +33,12 @@ function navigationHarness() {
     load(frameId: string, loaderId: string) {
       for (const listener of listeners)
         listener("Page.lifecycleEvent", { name: "load", frameId, loaderId });
+    },
+    navigate(frameId: string, loaderId: string) {
+      for (const listener of listeners)
+        listener("Page.frameNavigated", {
+          frame: { id: frameId, loaderId },
+        });
     },
   };
 }
@@ -106,6 +113,102 @@ describe("smoke document startup", () => {
     ).rejects.toThrow("net::ERR_CONNECTION_REFUSED");
     expect(
       harness.send.mock.calls.filter(([method]) => method === "Page.navigate"),
+    ).toHaveLength(1);
+  });
+
+  it("waits for the newly navigated main-frame loader after reload", async () => {
+    vi.useFakeTimers();
+    const harness = navigationHarness();
+    harness.send.mockImplementation(async (method) => {
+      if (method === "Page.getFrameTree")
+        return {
+          frameTree: { frame: { id: "main", loaderId: "current" } },
+        };
+      if (method === "Page.reload") {
+        harness.load("main", "current");
+        harness.navigate("main", "");
+        harness.load("main", "");
+        harness.navigate("child", "replacement");
+        harness.load("child", "replacement");
+        harness.load("main", "unrelated");
+      }
+      return {};
+    });
+    let ready = false;
+    const reload = reloadSmokePage(harness.connection).then(() => {
+      ready = true;
+    });
+    await vi.advanceTimersByTimeAsync(100);
+    expect(ready).toBe(false);
+    harness.navigate("main", "replacement");
+    await vi.advanceTimersByTimeAsync(25);
+    expect(ready).toBe(false);
+    harness.load("main", "replacement");
+    await vi.advanceTimersByTimeAsync(25);
+    await reload;
+    expect(harness.listeners.size).toBe(0);
+    expect(harness.send.mock.calls.map(([method]) => method)).toEqual([
+      "Page.setLifecycleEventsEnabled",
+      "Page.getFrameTree",
+      "Page.reload",
+    ]);
+    expect(harness.send.mock.calls.at(-1)?.[1]).toEqual({ ignoreCache: true });
+  });
+
+  it("accepts matching reload lifecycle events before Page.reload responds", async () => {
+    const harness = navigationHarness();
+    harness.send.mockImplementation(async (method) => {
+      if (method === "Page.getFrameTree")
+        return {
+          frameTree: { frame: { id: "main", loaderId: "current" } },
+        };
+      if (method === "Page.reload") {
+        harness.navigate("main", "replacement");
+        harness.load("main", "replacement");
+      }
+      return {};
+    });
+    await reloadSmokePage(harness.connection);
+    expect(harness.listeners.size).toBe(0);
+  });
+
+  it("bounds a reload whose replacement document never loads", async () => {
+    vi.useFakeTimers();
+    const harness = navigationHarness();
+    harness.send.mockImplementation(async (method) => {
+      if (method === "Page.getFrameTree")
+        return {
+          frameTree: { frame: { id: "main", loaderId: "current" } },
+        };
+      if (method === "Page.reload") harness.navigate("main", "replacement");
+      return {};
+    });
+    const failure = expect(
+      reloadSmokePage(harness.connection, 100),
+    ).rejects.toThrow(
+      "Chrome reload load timed out after 100ms; frame=main; previousLoader=current",
+    );
+    await vi.advanceTimersByTimeAsync(100);
+    await failure;
+    expect(harness.listeners.size).toBe(0);
+  });
+
+  it("propagates Page.reload failures and removes its lifecycle listener", async () => {
+    const harness = navigationHarness();
+    harness.send.mockImplementation(async (method) => {
+      if (method === "Page.getFrameTree")
+        return {
+          frameTree: { frame: { id: "main", loaderId: "current" } },
+        };
+      if (method === "Page.reload") throw new Error("reload protocol failure");
+      return {};
+    });
+    await expect(reloadSmokePage(harness.connection)).rejects.toThrow(
+      "reload protocol failure",
+    );
+    expect(harness.listeners.size).toBe(0);
+    expect(
+      harness.send.mock.calls.filter(([method]) => method === "Page.reload"),
     ).toHaveLength(1);
   });
 
