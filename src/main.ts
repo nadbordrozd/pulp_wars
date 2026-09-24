@@ -1,5 +1,6 @@
 import { selectBrowserRulesetRoute } from "./app/browser-routing";
 import "./styles/main.css";
+import "./styles/v7.css";
 
 const location = new URL(globalThis.location.href);
 const route = selectBrowserRulesetRoute(location.search, import.meta.env.DEV);

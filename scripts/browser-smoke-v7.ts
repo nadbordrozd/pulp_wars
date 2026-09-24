@@ -377,7 +377,7 @@ try {
     connection,
     `(() => { const controller = globalThis.__PULP_WARS_APP__.controller; return { commandIndex: controller.snapshot().view.commandIndex, stateHash: controller.exportDebugBundle({ acknowledgeHiddenInformation: true }).bundle.payload.reproduction.save.stateHash }; })()`,
   );
-  await touchClick(connection, '[data-action="main-menu"]');
+  await openCompactMenuItem(connection, "main-menu");
   await waitForExpression(
     connection,
     `(() => { const snapshot = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const panel = document.querySelector('.v7-front-screen'); const resume = document.querySelector('[data-action="resume"]'); if (snapshot?.phase !== 'RESUMABLE' || snapshot.view === null || !(panel instanceof HTMLElement) || !(resume instanceof HTMLButtonElement) || resume.disabled) return false; const rect = resume.getBoundingClientRect(); return panel.contains(resume) && resume.textContent?.trim() === 'Resume' && rect.width >= 44 && rect.height >= 44 && rect.left >= 0 && rect.top >= 0 && rect.right <= innerWidth && rect.bottom <= innerHeight; })()`,
@@ -867,28 +867,36 @@ async function touchClick(
 }
 
 async function openCompactSettings(connection: Connection): Promise<void> {
-  const settingsVisible = await evaluate<boolean>(
+  await openCompactMenuItem(connection, "settings");
+  await waitForExpression(
+    connection,
+    `document.querySelector('#v7-motion') !== null`,
+  );
+}
+
+async function openCompactMenuItem(
+  connection: Connection,
+  action: string,
+): Promise<void> {
+  const selector = `[data-action="${action}"]`;
+  const itemVisible = await evaluate<boolean>(
     connection,
     `(() => {
-      const node = document.querySelector('[data-action="settings"]');
+      const node = document.querySelector(${JSON.stringify(selector)});
       if (!(node instanceof HTMLButtonElement)) return false;
       const rect = node.getBoundingClientRect();
       const style = getComputedStyle(node);
       return rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden';
     })()`,
   );
-  if (!settingsVisible) {
+  if (!itemVisible) {
     await touchClick(connection, '[data-action="compact-menu"]');
     await waitForExpression(
       connection,
       `document.querySelector('[data-action="compact-menu"]')?.getAttribute('aria-expanded') === 'true'`,
     );
   }
-  await touchClick(connection, '[data-action="settings"]');
-  await waitForExpression(
-    connection,
-    `document.querySelector('#v7-motion') !== null`,
-  );
+  await touchClick(connection, selector);
 }
 
 async function elementCenter(

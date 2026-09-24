@@ -43,6 +43,7 @@ import { technologyTreeLayoutV7 } from "./technology-tree-layout-v7";
 import { createTacticalSymbolV7 } from "./tactical-symbol-v7";
 import type { TacticalSymbolTheme } from "../../assets/ruleset7-tactical-ui-symbols";
 import { selectionIdentityArtworkLayoutV7 } from "./selection-identity-v7";
+import { uiIconV7, type UiIconIdV7 } from "./ui-icons-v7";
 
 const BOARD_SIZES = [11, 14, 16, 20, 25] as const;
 const COLORS: readonly PlayerColorV7[] = ["CORAL", "TEAL", "GOLD", "VIOLET"];
@@ -53,6 +54,26 @@ const MAP_TYPES: readonly MapTypeV7[] = [
   "ARCHIPELAGO",
   "LAKES",
 ];
+const AI_MODE_LABELS: Readonly<Record<string, string>> = {
+  RIVAL: "Free-for-all",
+  COOPERATIVE: "AIs allied",
+};
+const MAP_TYPE_LABELS: Readonly<Record<string, string>> = {
+  DRY_LAND: "Dry land",
+  PANGEA: "Pangea",
+  CONTINENTS: "Continents",
+  ARCHIPELAGO: "Archipelago",
+  LAKES: "Lakes",
+};
+const BOARD_SIZE_LABELS: Readonly<Record<string, string>> = Object.fromEntries(
+  BOARD_SIZES.map((size) => [String(size), `${size} × ${size}`]),
+);
+const COLOR_LABELS: Readonly<Record<string, string>> = {
+  CORAL: "Coral",
+  TEAL: "Teal",
+  GOLD: "Gold",
+  VIOLET: "Violet",
+};
 const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   "MOVE",
   "ATTACK",
@@ -96,13 +117,7 @@ interface DraftV7 {
 }
 
 type ScreenV7 =
-  | "MATCH"
-  | "TECH"
-  | "LEADERBOARD"
-  | "STATS"
-  | "ACHIEVEMENTS"
-  | "SETTINGS"
-  | "HELP";
+  "MATCH" | "TECH" | "LEADERBOARD" | "ACHIEVEMENTS" | "SETTINGS" | "HELP";
 
 /** DOM/Canvas composition whose only gameplay inputs are public snapshots and offered commands. */
 export class Ruleset7DomAppView {
@@ -139,6 +154,12 @@ export class Ruleset7DomAppView {
   #compactMenuOpen = false;
   #notice = "";
   #error = "";
+  #toast: {
+    readonly id: number;
+    readonly text: string;
+    readonly kind: "info" | "error";
+  } | null = null;
+  #toastSequence = 0;
   #replacing = false;
   #matchInstance = 0;
   #presentationActive = false;
@@ -327,85 +348,68 @@ export class Ruleset7DomAppView {
 
   #brand(): HTMLElement {
     const header = el(this.#document, "header", "v7-brand");
-    header.append(
-      text(this.#document, "p", "Pulp Wars · Ruleset 7", "eyebrow"),
-      text(this.#document, "h1", "Conquest"),
-    );
+    header.append(text(this.#document, "h1", "Pulp Wars"));
     return header;
   }
 
   #setup(replace: boolean): HTMLElement {
     const main = el(this.#document, "main", "v7-front-screen");
     main.dataset.v7Setup = "true";
-    main.append(
-      this.#brand(),
-      text(
-        this.#document,
-        "p",
-        "Original-only local conquest. Every action uses the Ruleset 7 public browser boundary.",
-      ),
-    );
+    main.append(this.#brand());
     const form = el(this.#document, "form", "v7-setup-form");
     form.append(
       select(
         this.#document,
-        "AI opponents",
+        "Opponents",
         "v7-ai-count",
         ["1", "2", "3"],
         String(this.#draft.aiCount),
       ),
       select(
         this.#document,
-        "AI relationship",
+        "Mode",
         "v7-ai-mode",
         ["RIVAL", "COOPERATIVE"],
         this.#draft.aiMode,
+        AI_MODE_LABELS,
       ),
       select(
         this.#document,
-        "Board size",
+        "Size",
         "v7-board-size",
         compatibleSizes(this.#draft.aiCount).map(String),
         String(this.#draft.boardSize),
+        BOARD_SIZE_LABELS,
       ),
       select(
         this.#document,
-        "Map type",
+        "Map",
         "v7-map-type",
         MAP_TYPES,
         this.#draft.mapType,
+        MAP_TYPE_LABELS,
       ),
+      select(
+        this.#document,
+        "Color",
+        "v7-color",
+        COLORS,
+        this.#draft.humanColor,
+        COLOR_LABELS,
+      ),
+      input(this.#document, "Seed", "v7-seed", this.#draft.seedText),
       text(
         this.#document,
         "p",
         mapTypeDescriptionV7(this.#draft.mapType),
         "v7-map-type-description",
       ),
-      input(
-        this.#document,
-        "Seed (0–4294967295)",
-        "v7-seed",
-        this.#draft.seedText,
-      ),
-      select(
-        this.#document,
-        "Your color",
-        "v7-color",
-        COLORS,
-        this.#draft.humanColor,
-      ),
-      text(
-        this.#document,
-        "p",
-        `${this.#draft.aiCount + 1} fixed Original seats · ORIGINAL_BASELINE_V4`,
-        "v7-fixed-faction",
-      ),
     );
     const launch = button(
       this.#document,
-      replace ? "Replace this Ruleset 7 save" : "Start conquest",
+      replace ? "Start new game" : "Play",
       "launch",
-      "primary-action",
+      "primary-action v7-launch",
     );
     launch.type = "submit";
     form.append(launch);
@@ -418,10 +422,8 @@ export class Ruleset7DomAppView {
           size,
           compatibleSizes(this.#draft.aiCount).map(String),
           String(this.#draft.boardSize),
+          BOARD_SIZE_LABELS,
         );
-      const faction = form.querySelector(".v7-fixed-faction");
-      if (faction !== null)
-        faction.textContent = `${this.#draft.aiCount + 1} fixed Original seats · ORIGINAL_BASELINE_V4`;
       const description = form.querySelector<HTMLElement>(
         ".v7-map-type-description",
       );
@@ -433,7 +435,7 @@ export class Ruleset7DomAppView {
       this.#readDraft(form);
       const setup = setupFrom(this.#draft);
       if (setup === null) {
-        this.#error = "Enter a whole-number seed from 0 to 4294967295.";
+        this.#error = "Seed must be a whole number (0–4294967295).";
         this.#render();
         return;
       }
@@ -448,19 +450,20 @@ export class Ruleset7DomAppView {
     const view = this.#snapshot.view;
     main.append(
       this.#brand(),
-      text(this.#document, "h2", "Continue conquest"),
+      text(this.#document, "h2", "Continue"),
       text(
         this.#document,
         "p",
         view === null
-          ? "A route-owned Ruleset 7 save is ready."
-          : `Round ${view.round} · ${view.viewer.coins} Coins · ${title(view.setup.mapType)}`,
+          ? "A saved game is waiting."
+          : `Turn ${view.round} · ${view.viewer.coins} coins · ${MAP_TYPE_LABELS[view.setup.mapType] ?? title(view.setup.mapType)}`,
+        "v7-resume-summary",
       ),
     );
     const actions = el(this.#document, "div", "button-row");
     const resume = button(this.#document, "Resume", "resume", "primary-action");
     resume.onclick = () => void this.#resumeMatch();
-    const replace = button(this.#document, "Replace", "show-replace");
+    const replace = button(this.#document, "New game", "show-replace");
     replace.onclick = () => {
       this.#replacing = true;
       this.#render();
@@ -481,17 +484,27 @@ export class Ruleset7DomAppView {
     const main = el(this.#document, "main", "v7-front-screen");
     main.append(
       this.#brand(),
-      text(this.#document, "h2", "Preserved Ruleset 7 save"),
+      text(this.#document, "h2", "Save can't be loaded"),
       text(
         this.#document,
         "p",
-        this.#snapshot.recovery?.diagnostic ??
-          "This route-owned save cannot be loaded.",
+        "This saved game can't be opened by this version.",
+        "v7-recovery-summary",
       ),
     );
+    const diagnostic = this.#snapshot.recovery?.diagnostic;
+    if (diagnostic !== undefined) {
+      const details = this.#document.createElement("details");
+      details.className = "v7-recovery-details";
+      details.append(
+        text(this.#document, "summary", "Details"),
+        text(this.#document, "p", diagnostic),
+      );
+      main.append(details);
+    }
     const remove = button(
       this.#document,
-      "Delete preserved v7 save",
+      "Delete save",
       "delete-save",
       "destructive",
     );
@@ -512,7 +525,7 @@ export class Ruleset7DomAppView {
     link.className = "v7-compatibility-link";
     link.dataset.route = "ruleset-6";
     link.href = `?${params.toString()}`;
-    link.textContent = "Play frozen Ruleset 6 · Original or Candy";
+    link.textContent = "Classic rules (Ruleset 6)";
     return link;
   }
 
@@ -574,22 +587,19 @@ export class Ruleset7DomAppView {
     }
     const activeId = view.turnOrder[view.activeSeatIndex];
     const active = view.players.find((player) => player.id === activeId);
+    const humanTurn = active?.controller === "HUMAN";
     const hud = el(this.#document, "header", "v7-match-hud");
     hud.dataset.v7Region = "hud";
-    const titleBlock = el(this.#document, "div", "v7-hud-title");
-    titleBlock.append(
-      text(this.#document, "strong", `Player ${view.viewer.seat + 1}`),
-      text(this.#document, "span", `Round ${view.round}`),
-    );
     const projectedIncome = view.cities
       .filter((city) => city.ownerId === view.viewer.id)
       .reduce(
         (sum, city) => sum + (cityIncomeForViewerV7(view, city.id) ?? 0),
         0,
       );
+    const stats = el(this.#document, "div", "v7-hud-stats");
     const economy = el(this.#document, "p", "v7-coins");
     const rate = el(this.#document, "span", "v7-income-rate");
-    rate.textContent = `(${projectedIncome >= 0 ? "+" : ""}${projectedIncome}/turn)`;
+    rate.textContent = `${projectedIncome >= 0 ? "+" : ""}${projectedIncome}`;
     rate.setAttribute(
       "aria-label",
       `Projected next-turn income ${projectedIncome} Coins`,
@@ -602,114 +612,136 @@ export class Ruleset7DomAppView {
         String(view.viewer.coins),
         "v7-coin-balance",
       ),
-      " ",
       rate,
     );
     economy.setAttribute(
       "aria-label",
       `${view.viewer.coins} Coins. ${incomeDescription(view)}`,
     );
+    economy.title = `Coins (+${projectedIncome} next turn)`;
+    const round = text(
+      this.#document,
+      "p",
+      `Turn ${view.round}`,
+      "v7-hud-round",
+    );
     const status = text(
       this.#document,
       "p",
       this.#snapshot.phase === "COMPLETE"
-        ? "Match complete"
-        : active?.controller === "HUMAN"
+        ? "Game over"
+        : humanTurn
           ? "Your turn"
-          : `Player ${(active?.seat ?? 0) + 1} is thinking…`,
+          : `${playerName(active?.seat ?? 0)} is playing…`,
       "v7-turn-status",
     );
     status.dataset.v7AiProgress = "true";
+    status.dataset.turn =
+      this.#snapshot.phase === "COMPLETE"
+        ? "done"
+        : humanTurn
+          ? "human"
+          : "other";
+    stats.append(economy, round, status);
     const nav = el(this.#document, "nav", "v7-hud-nav");
+    nav.setAttribute("aria-label", "Game");
     nav.dataset.compactMenu = this.#compactMenuOpen ? "open" : "closed";
-    if (this.#snapshot.phase === "ACTIVE") {
-      const mainMenu = button(
-        this.#document,
-        "Main menu",
-        "main-menu",
-        "hud-button v7-main-menu-action",
-      );
-      mainMenu.onclick = () => void this.#returnToMenu();
-      nav.append(mainMenu);
-    }
-    for (const [label, screen, action] of [
-      ["Tech", "TECH", "tech"],
-      ["Leaderboard", "LEADERBOARD", "leaderboard"],
-      ["Stats", "STATS", "stats"],
-      ["Achievements", "ACHIEVEMENTS", "achievements"],
-      ["Help", "HELP", "help"],
-      ["Settings", "SETTINGS", "settings"],
-    ] as const) {
-      const secondary = action !== "tech" && action !== "leaderboard";
-      const item = button(
-        this.#document,
-        label,
-        action,
-        secondary ? "hud-button v7-secondary-nav-action" : "hud-button",
-      );
-      item.onclick = () => {
-        this.#compactMenuOpen = false;
-        this.#open(screen, action);
-      };
-      item.disabled = view.pendingChoices.length > 0;
-      nav.append(item);
-    }
-    const compactMenu = button(
+    const blocked = view.pendingChoices.length > 0;
+    const tech = iconButton(this.#document, "tech", "Tech", "tech", true);
+    tech.classList.add("v7-hud-tech");
+    tech.onclick = () => {
+      this.#compactMenuOpen = false;
+      this.#open("TECH", "tech");
+    };
+    tech.disabled = blocked;
+    const compactMenu = iconButton(
       this.#document,
+      "menu",
       "Menu",
       "compact-menu",
-      "hud-button v7-compact-menu-toggle",
     );
+    compactMenu.classList.add("v7-compact-menu-toggle");
     compactMenu.setAttribute("aria-expanded", String(this.#compactMenuOpen));
+    compactMenu.setAttribute("aria-controls", "v7-hud-menu");
     compactMenu.onclick = () => {
       this.#compactMenuOpen = !this.#compactMenuOpen;
       this.#pendingFocusAction = "compact-menu";
       this.#render();
     };
-    nav.append(compactMenu);
-    const zoomIn = button(
-      this.#document,
-      "+",
-      "zoom-in",
-      "hud-button v7-secondary-nav-action",
-    );
-    zoomIn.setAttribute("aria-label", "Zoom in");
-    zoomIn.onclick = () => this.#boardHost.zoom("IN");
-    const zoomOut = button(
-      this.#document,
-      "−",
-      "zoom-out",
-      "hud-button v7-secondary-nav-action",
-    );
-    zoomOut.setAttribute("aria-label", "Zoom out");
-    zoomOut.onclick = () => this.#boardHost.zoom("OUT");
-    nav.append(zoomOut, zoomIn);
-    hud.append(titleBlock, economy, status, nav);
+    nav.append(tech, compactMenu);
+    if (this.#compactMenuOpen) {
+      const menu = el(this.#document, "div", "v7-hud-menu");
+      menu.id = "v7-hud-menu";
+      for (const [label, screen, action] of [
+        ["Leaderboard", "LEADERBOARD", "leaderboard"],
+        ["Achievements", "ACHIEVEMENTS", "achievements"],
+        ["Help", "HELP", "help"],
+        ["Settings", "SETTINGS", "settings"],
+      ] as const) {
+        const item = button(this.#document, label, action, "v7-menu-item");
+        item.onclick = () => {
+          this.#compactMenuOpen = false;
+          this.#open(screen, "compact-menu");
+        };
+        item.disabled = blocked;
+        menu.append(item);
+      }
+      if (this.#snapshot.phase === "ACTIVE") {
+        const mainMenu = button(
+          this.#document,
+          "Save & quit",
+          "main-menu",
+          "v7-menu-item v7-main-menu-action",
+        );
+        mainMenu.onclick = () => void this.#returnToMenu();
+        menu.append(mainMenu);
+      }
+      nav.append(menu);
+    }
+    hud.append(stats, nav);
     const endTurn = this.#snapshot.offeredCommands.find(
       (candidate) => candidate.kind === "END_TURN",
     );
     if (endTurn !== undefined) {
       const end = button(
         this.#document,
-        "End Turn",
+        "End turn",
         "end-turn",
         "v7-hud-end-turn",
       );
       end.onclick = () => void this.#dispatch(endTurn);
-      end.disabled = this.#localBusy() || view.pendingChoices.length > 0;
+      end.disabled = this.#localBusy() || blocked;
       nav.append(end);
     }
     nextChildren.push(hud);
-    const message = this.#error || this.#notice;
-    if (message)
-      hud.append(
-        text(
-          this.#document,
-          "p",
-          message,
-          this.#error ? "v7-hud-message v7-hud-error" : "v7-hud-message",
-        ),
+    const zoom = el(this.#document, "div", "v7-zoom-controls");
+    zoom.dataset.v7Region = "zoom";
+    const zoomIn = iconButton(this.#document, "zoom-in", "Zoom in", "zoom-in");
+    zoomIn.onclick = () => this.#boardHost.zoom("IN");
+    const zoomOut = iconButton(
+      this.#document,
+      "zoom-out",
+      "Zoom out",
+      "zoom-out",
+    );
+    zoomOut.onclick = () => this.#boardHost.zoom("OUT");
+    zoom.append(zoomIn, zoomOut);
+    nextChildren.push(zoom);
+    const toastMessage =
+      this.#error !== ""
+        ? { id: -1, text: this.#error, kind: "error" as const }
+        : this.#toast;
+    if (toastMessage !== null) {
+      const toast = text(
+        this.#document,
+        "p",
+        toastMessage.text,
+        toastMessage.kind === "error" ? "v7-toast v7-toast-error" : "v7-toast",
       );
+      toast.dataset.v7Region = "toast";
+      toast.dataset.toastId = String(toastMessage.id);
+      nextChildren.push(toast);
+    }
     const dock =
       this.#selection === null ? null : this.#dock(view, this.#selection);
     if (dock !== null) {
@@ -723,12 +755,16 @@ export class Ruleset7DomAppView {
     )
       nextChildren.push(this.#unitHelpModal);
     if (this.#snapshot.ai.active) {
-      const fast = button(
+      const fast = iconButton(
         this.#document,
-        this.#snapshot.ai.fastForward ? "Fast Forward enabled" : "Fast Forward",
+        "skip",
+        "Skip",
         "fast-forward",
-        "v7-fast-forward",
+        true,
       );
+      fast.classList.add("v7-fast-forward");
+      fast.setAttribute("aria-label", "Fast forward opponent turns");
+      if (this.#snapshot.ai.fastForward) fast.classList.add("is-active");
       fast.onclick = () => {
         this.#cancelPresentations();
         this.#controller.setFastForward(true);
@@ -833,7 +869,8 @@ export class Ruleset7DomAppView {
     dock.dataset.selectionKind = selection.kind.toLowerCase();
     dock.dataset.hasActions = "false";
     dock.setAttribute("aria-label", "Selected map object");
-    const close = button(this.#document, "Close", "close-dock", "close-button");
+    const close = iconButton(this.#document, "close", "Close", "close-dock");
+    close.classList.add("close-button");
     close.onclick = () => {
       this.#selection = null;
       this.#render();
@@ -844,59 +881,63 @@ export class Ruleset7DomAppView {
         (candidate) => candidate.id === selection.unitId,
       );
       if (unit === undefined) return null;
+      const roleLabel = effectiveRoleRuleV7(unit.role).label;
       dock.append(
         identity(
           this.#document,
           unit.form === "EMBARKED"
             ? "unit-shared-embarked-transport"
             : RULESET7_UNIT_ART_IDS[unit.role],
-          `${unit.form === "EMBARKED" ? "Embarked Transport" : title(unit.role)} · ${unit.hp}/${unit.maxHp} HP`,
+          unit.form === "EMBARKED" ? `${roleLabel} (at sea)` : roleLabel,
           true,
         ),
       );
+      if (unit.ownerId !== view.viewer.id) {
+        const owner = view.players.find((player) => player.id === unit.ownerId);
+        if (owner !== undefined)
+          dock
+            .querySelector(".v7-identity")
+            ?.append(
+              text(
+                this.#document,
+                "span",
+                playerName(owner.seat),
+                "v7-identity-owner",
+              ),
+            );
+      }
       const identityColumn = dock.querySelector<HTMLElement>(".v7-identity");
       const unitHelp = button(this.#document, "", "unit-help", "v7-unit-help");
       unitHelp.append(text(this.#document, "span", "?", "v7-unit-help-glyph"));
-      unitHelp.setAttribute("aria-label", `About selected ${title(unit.role)}`);
+      unitHelp.setAttribute("aria-label", `About ${roleLabel}`);
+      unitHelp.title = `About ${roleLabel}`;
       unitHelp.onclick = () => {
         this.#selectedUnitHelpId = unit.id;
         this.#pendingFocusAction = null;
         this.#render();
       };
       identityColumn?.append(unitHelp);
-      const showUnitDetails = this.#selectedUnitHelpId === unit.id;
       const unitDetails = el(this.#document, "div", "v7-unit-help-details");
       if (unit.form === "EMBARKED")
         unitDetails.append(
           text(
             this.#document,
             "p",
-            `${title(unit.role)} passenger · ${effectiveRoleRuleV7(unit.role).abilities.includes("CAPTURE") ? "can capture after landing and the ordinary wait" : "cannot capture"}. Landing ends this activation.`,
+            effectiveRoleRuleV7(unit.role).abilities.includes("CAPTURE")
+              ? "Carrying troops. Pick a highlighted shore tile to land."
+              : "Carrying troops that can't capture. Pick a highlighted shore tile to land.",
             "v7-transport-passenger",
           ),
         );
-      if (showUnitDetails && unit.role === "HORSE_ARCHER") {
+      if (unit.role === "HORSE_ARCHER") {
+        const unusedShots = Math.max(0, 2 - unit.activation.attacksUsed);
         const state = el(this.#document, "section", "v7-tactical-state");
         state.dataset.tacticalState = "horse-archer";
-        const unusedShots = Math.max(0, 2 - unit.activation.attacksUsed);
-        const legalShots = this.#snapshot.offeredCommands.some(
-          (command) => command.kind === "ATTACK" && command.unitId === unit.id,
-        )
-          ? unusedShots
-          : 0;
         state.append(
-          text(this.#document, "strong", "Two-shot activation"),
           text(
             this.#document,
-            "span",
-            `${unit.activation.attacksUsed} attacks used · ${unusedShots} unused · ${legalShots} currently legal`,
-          ),
-          text(
-            this.#document,
-            "span",
-            unit.activation.attacksUsed === 1
-              ? "Second shot remains available from this cell. This unit cannot move or use another action; other units remain available."
-              : "May move before the first shot; never advances or captures.",
+            "strong",
+            `${unusedShots} ${unusedShots === 1 ? "shot" : "shots"} left`,
           ),
         );
         unitDetails.append(state);
@@ -908,7 +949,16 @@ export class Ruleset7DomAppView {
           const exact = stat.visibility !== "BASE_ONLY";
           const value = el(this.#document, "dd", "v7-stat-value");
           value.append(
-            text(this.#document, "span", formatValue(stat.base.value)),
+            text(
+              this.#document,
+              "span",
+              stat.id === "HP"
+                ? `${unit.hp}/${unit.maxHp}`
+                : stat.id === "RANGE" &&
+                    stats.minimumRange !== stats.maximumRange
+                  ? `${stats.minimumRange}–${stats.maximumRange}`
+                  : formatValue(stat.base.value),
+            ),
           );
           for (const [index, modifier] of (exact
             ? stat.modifiers
@@ -925,7 +975,7 @@ export class Ruleset7DomAppView {
               "aria-label",
               `${modifier.sourceLabel}: ${modifier.description}`,
             );
-            term.dataset.tooltip = `${modifier.sourceLabel}: ${modifier.description}`;
+            term.dataset.tooltip = modifier.sourceLabel;
             term.setAttribute(
               "aria-expanded",
               String(this.#selectedModifier === modifierId),
@@ -937,53 +987,41 @@ export class Ruleset7DomAppView {
               this.#render();
             };
             value.append(term);
-            if (this.#selectedModifier === modifierId) {
-              term.setAttribute("aria-expanded", "true");
-            }
           }
           if (!exact)
-            value.append(
-              text(
-                this.#document,
-                "span",
-                "+ ? · position bonus unknown",
-                "v7-stat-unknown",
-              ),
-            );
-          rows.append(text(this.#document, "dt", stat.label), value);
+            value.append(text(this.#document, "span", "+?", "v7-stat-unknown"));
+          const term = el(this.#document, "dt", "v7-stat-term");
+          term.title = stat.label;
+          term.append(
+            uiIconV7(this.#document, STAT_ICONS[stat.id] ?? "info"),
+            text(this.#document, "span", stat.label, "v7-sr-only"),
+          );
+          const row = el(this.#document, "div", "v7-stat");
+          row.dataset.stat = stat.id.toLowerCase();
+          row.title = stat.label;
+          row.append(term, value);
+          rows.append(row);
         }
         dock.append(rows);
-        if (showUnitDetails) {
-          const abilities = el(this.#document, "div", "v7-abilities");
-          for (const ability of stats.abilities) {
-            const entry = el(this.#document, "p", "v7-unit-ability");
-            entry.append(
-              text(this.#document, "strong", title(ability)),
-              text(
-                this.#document,
-                "span",
-                abilityDescription(
-                  ability,
-                  stats.minimumRange,
-                  stats.maximumRange,
-                ),
-              ),
-            );
-            abilities.append(entry);
-          }
-          unitDetails.append(abilities);
+        const abilities = el(this.#document, "div", "v7-abilities");
+        for (const ability of stats.abilities) {
+          const description = abilityDescription(
+            ability,
+            stats.minimumRange,
+            stats.maximumRange,
+          );
+          if (description === null) continue;
+          const entry = el(this.#document, "p", "v7-unit-ability");
+          entry.append(
+            text(this.#document, "strong", abilityName(ability)),
+            text(this.#document, "span", description),
+          );
+          abilities.append(entry);
         }
+        if (abilities.childElementCount > 0) unitDetails.append(abilities);
       }
-      if (showUnitDetails) {
-        unitDetails.append(
-          text(
-            this.#document,
-            "p",
-            unit.activation.handled ? "Handled" : "Needs action",
-            "v7-readiness-label",
-          ),
-        );
-      }
+      if (unit.activation.handled && unit.ownerId === view.viewer.id)
+        dock.dataset.handled = "true";
       const actions = this.#commandButtons(
         (command) =>
           "unitId" in command &&
@@ -998,27 +1036,35 @@ export class Ruleset7DomAppView {
         const modal = el(this.#document, "section", "v7-unit-help-dialog");
         modal.setAttribute("role", "dialog");
         modal.setAttribute("aria-modal", "true");
-        modal.setAttribute(
-          "aria-label",
-          `${title(unit.role)} unit information`,
-        );
+        modal.setAttribute("aria-label", `${roleLabel} unit information`);
         modal.dataset.v7Region = "unit-help";
-        const closeHelp = button(
+        const closeHelp = iconButton(
           this.#document,
+          "close",
           "Close",
           "close-unit-help",
-          "close-button",
         );
+        closeHelp.classList.add("close-button");
         closeHelp.onclick = () => this.#closeUnitHelp();
-        modal.append(
-          closeHelp,
-          text(
+        const header = el(this.#document, "div", "v7-dialog-header");
+        header.append(
+          art(
             this.#document,
-            "h2",
-            `${title(unit.role)} · ${unit.hp}/${unit.maxHp} HP`,
+            unit.form === "EMBARKED"
+              ? "unit-shared-embarked-transport"
+              : RULESET7_UNIT_ART_IDS[unit.role],
+            "",
           ),
-          unitDetails,
+          text(this.#document, "h2", roleLabel),
         );
+        const statCopy = dock.querySelector(".v7-unit-stats")?.cloneNode(true);
+        modal.append(closeHelp, header);
+        if (statCopy instanceof HTMLElement) {
+          for (const node of statCopy.querySelectorAll("button"))
+            node.replaceWith(text(this.#document, "span", node.textContent));
+          modal.append(statCopy);
+        }
+        modal.append(unitDetails);
         this.#unitHelpModal = modal;
       }
     } else if (selection.kind === "CITY") {
@@ -1026,35 +1072,55 @@ export class Ruleset7DomAppView {
         (candidate) => candidate.id === selection.cityId,
       );
       if (city === undefined) return null;
+      const owned = city.ownerId === view.viewer.id;
       dock.append(
         identity(
           this.#document,
           `building-city-${Math.max(1, Math.min(3, city.level))}`,
-          `${city.isCapital ? "Capital" : "City"} · level ${city.level}`,
+          city.isCapital ? "Capital" : "City",
           true,
         ),
       );
+      const owner = view.players.find((player) => player.id === city.ownerId);
+      if (!owned && owner !== undefined)
+        dock
+          .querySelector(".v7-identity")
+          ?.append(
+            text(
+              this.#document,
+              "span",
+              playerName(owner.seat),
+              "v7-identity-owner",
+            ),
+          );
       const details = el(this.#document, "dl", "v7-city-stats");
       const besieged = view.units.some(
         (unit) =>
           hostile(view, city.ownerId, unit.ownerId) && same(unit.at, city.at),
       );
-      if (city.ownerId === view.viewer.id) {
-        details.append(
-          text(this.#document, "dt", "State"),
-          text(this.#document, "dd", besieged ? "Besieged" : "Ready"),
-        );
-      }
-      details.append(
-        text(this.#document, "dt", "Population"),
+      const level = el(this.#document, "div", "v7-city-stat");
+      level.dataset.stat = "level";
+      level.append(
+        text(this.#document, "dt", "Level"),
+        text(this.#document, "dd", String(city.level)),
+      );
+      const growth = el(this.#document, "div", "v7-city-stat");
+      growth.dataset.stat = "population";
+      growth.title = "Population until the next level";
+      const growthValue = el(this.#document, "dd", "v7-population-value");
+      growthValue.append(
+        economyIcon(this.#document, "population"),
+        populationMeter(this.#document, city.population, city.level + 1),
         text(
           this.#document,
-          "dd",
-          `${city.population} / ${city.level + 1}`,
-          "v7-population-value",
+          "span",
+          `${city.population}/${city.level + 1}`,
+          "v7-population-count",
         ),
       );
-      if (city.ownerId === view.viewer.id) {
+      growth.append(text(this.#document, "dt", "Population"), growthValue);
+      details.append(level, growth);
+      if (owned) {
         const assigned = view.units.filter(
           (unit) =>
             unit.ownerId === view.viewer.id && unit.homeCityId === city.id,
@@ -1063,40 +1129,54 @@ export class Ruleset7DomAppView {
           city.level +
           1 +
           (view.viewer.researchedTechs.includes("ENGINEERING") ? 1 : 0);
-        details.append(
-          text(this.#document, "dt", "Capacity"),
-          text(this.#document, "dd", `${assigned} / ${capacity}`),
-          text(this.#document, "dt", "Income"),
-          text(
-            this.#document,
-            "dd",
-            `+${cityIncomeForViewerV7(view, city.id) ?? 0}/turn`,
-            "v7-city-income",
-          ),
+        const units = el(this.#document, "div", "v7-city-stat");
+        units.dataset.stat = "units";
+        units.title = "Units supported by this city";
+        const unitsValue = el(this.#document, "dd", "v7-city-units");
+        unitsValue.append(
+          uiIconV7(this.#document, "units"),
+          `${assigned}/${capacity}`,
         );
-      } else {
-        const owner = view.players.find((player) => player.id === city.ownerId);
-        details.append(
-          text(this.#document, "dt", "Owner"),
-          text(
-            this.#document,
-            "dd",
-            owner === undefined ? "Observed" : `Player ${owner.seat + 1}`,
-          ),
+        units.append(text(this.#document, "dt", "Units"), unitsValue);
+        const income = el(this.#document, "div", "v7-city-stat");
+        income.dataset.stat = "income";
+        income.title = "Coins per turn";
+        const incomeValue = el(this.#document, "dd", "v7-city-income");
+        incomeValue.append(
+          economyIcon(this.#document, "coin"),
+          `+${cityIncomeForViewerV7(view, city.id) ?? 0}`,
         );
+        income.append(text(this.#document, "dt", "Income"), incomeValue);
+        details.append(units, income);
       }
-      details
-        .querySelector<HTMLElement>(".v7-population-value")
-        ?.prepend(economyIcon(this.#document, "population"));
-      details
-        .querySelector<HTMLElement>(".v7-city-income")
-        ?.prepend(economyIcon(this.#document, "coin"));
+      if (besieged) {
+        const siege = el(this.#document, "div", "v7-city-stat is-warning");
+        siege.dataset.stat = "siege";
+        siege.append(
+          text(this.#document, "dt", "Status"),
+          text(this.#document, "dd", "Besieged"),
+        );
+        details.append(siege);
+      }
       dock.append(details);
-      if (city.ownerId === view.viewer.id)
+      if (owned) {
         this.#appendCommandArea(
           dock,
           (command) => command.kind === "TRAIN" && command.cityId === city.id,
         );
+        const occupied = view.units.some(
+          (unit) => unit.ownerId === view.viewer.id && same(unit.at, city.at),
+        );
+        if (dock.dataset.hasActions === "false" && occupied)
+          dock.append(
+            text(
+              this.#document,
+              "p",
+              "Move the unit out of the city to train here.",
+              "v7-dock-hint",
+            ),
+          );
+      }
     } else {
       const tile = view.board.tiles.find((candidate) =>
         same(candidate.at, selection.at),
@@ -1119,18 +1199,31 @@ export class Ruleset7DomAppView {
         summary.append(identity(this.#document, asset, name, true));
         const details = el(this.#document, "div", "v7-selection-details");
         if (tile.road && name !== "Road")
-          details.append(text(this.#document, "p", "Road"));
+          details.append(text(this.#document, "p", "Road", "v7-chip"));
         const value = view.improvementValues.find((entry) =>
           same(entry.at, tile.at),
         );
-        if (value !== undefined)
-          details.append(
-            text(
-              this.#document,
-              "p",
-              `${title(value.measure)} ${value.level}${value.level === 0 ? " · offline" : ""}`,
-            ),
+        if (value !== undefined) {
+          const chip = el(
+            this.#document,
+            "p",
+            value.level === 0 ? "v7-chip is-idle" : "v7-chip",
           );
+          chip.title =
+            value.measure === "COIN_INCOME" ? "Coins per turn" : "Population";
+          chip.append(
+            economyIcon(
+              this.#document,
+              value.measure === "COIN_INCOME" ? "coin" : "population",
+            ),
+            `+${value.level}`,
+          );
+          chip.setAttribute(
+            "aria-label",
+            `${value.measure === "COIN_INCOME" ? "Income" : "Population"} +${value.level}${value.level === 0 ? ", idle" : ""}`,
+          );
+          details.append(chip);
+        }
         if (tile.improvement === "PORT") {
           const port = view.naval.ownedPorts.find((candidate) =>
             same(candidate.at, tile.at),
@@ -1140,49 +1233,32 @@ export class Ruleset7DomAppView {
               text(
                 this.#document,
                 "p",
-                port.status === "ACTIVE"
-                  ? "Owned active Port · Population +1"
-                  : "Owned blockaded Port · Population -1 until recovered",
-                `v7-port-state state-${port.status.toLowerCase()}`,
+                port.status === "ACTIVE" ? "Active" : "Blockaded",
+                `v7-chip v7-port-state state-${port.status.toLowerCase()}`,
               ),
             );
-            if (view.naval.tradeCityIds.includes(port.cityId))
-              details.append(
-                text(this.#document, "p", "Sea trade +1 Coin/turn"),
-              );
-            const routes = view.naval.seaRoutes.filter(
-              (route) =>
-                route.fromCityId === port.cityId ||
-                route.toCityId === port.cityId,
-            );
-            if (routes.length > 0)
-              details.append(
-                text(
-                  this.#document,
-                  "p",
-                  `${routes.length} public sea ${routes.length === 1 ? "route" : "routes"}`,
-                ),
-              );
+            if (view.naval.tradeCityIds.includes(port.cityId)) {
+              const trade = el(this.#document, "p", "v7-chip");
+              trade.title = "Sea trade";
+              trade.append(economyIcon(this.#document, "coin"), "+1 trade");
+              details.append(trade);
+            }
           }
         }
         const monumentSource = monumentSourceForViewerV7(view, tile.at);
         if (monumentSource !== null) {
-          const source = el(this.#document, "p", "v7-monument-source");
+          const source = el(this.#document, "p", "v7-monument-source v7-chip");
           source.append(
             createTacticalSymbolV7(
               this.#document,
               "ui-status-achievement-source-current-owner",
               this.#highContrast ? "HIGH_CONTRAST" : "DARK",
             ),
-            text(
-              this.#document,
-              "span",
-              `${title(monumentSource)} Monument · source visible to the current city owner`,
-            ),
+            text(this.#document, "span", `${title(monumentSource)} monument`),
           );
           details.append(source);
         }
-        summary.append(details);
+        if (details.childElementCount > 0) summary.append(details);
         dock.append(summary);
         this.#appendCommandArea(
           dock,
@@ -1225,7 +1301,7 @@ export class Ruleset7DomAppView {
     )) {
       const action = button(
         this.#document,
-        commandLabel(command),
+        "",
         command.kind === "BUILD_MONUMENT"
           ? `command-build_monument-${command.achievement.toLowerCase()}`
           : `command-${command.kind.toLowerCase()}`,
@@ -1233,6 +1309,10 @@ export class Ruleset7DomAppView {
           ? "v7-train-action"
           : "v7-context-action",
       );
+      action.append(
+        text(this.#document, "span", commandLabel(command), "v7-action-label"),
+      );
+      action.title = commandLabel(command);
       const artId = commandArtIdV7(command);
       if (artId !== null) action.prepend(art(this.#document, artId, ""));
       if (command.kind === "BUILD_FIELD_DEFENSE")
@@ -1249,27 +1329,13 @@ export class Ruleset7DomAppView {
           "aria-label",
           `Train ${rule.label} for ${rule.cost ?? 0} Coins`,
         );
-        action.append(
-          text(
-            this.#document,
-            "span",
-            `${rule.cost ?? 0} Coins`,
-            "v7-command-economy",
-          ),
-        );
+        action.append(economyChips(this.#document, { cost: rule.cost ?? 0 }));
       } else if (command.kind === "BUILD_MONUMENT") {
         action.setAttribute(
           "aria-label",
-          `${commandLabel(command)} · 0 Coins · population +3`,
+          `${commandLabel(command)} · free · population +3`,
         );
-        action.append(
-          text(
-            this.#document,
-            "span",
-            "0 Coins · population +3",
-            "v7-command-economy",
-          ),
-        );
+        action.append(economyChips(this.#document, { population: 3 }));
       } else if (command.kind === "BUILD_FIELD_DEFENSE") {
         const view = this.#snapshot.view;
         const unit = view?.units.find((item) => item.id === command.unitId);
@@ -1282,14 +1348,7 @@ export class Ruleset7DomAppView {
           "aria-label",
           `Build Field Defense for 3 Coins · fortification level ${resultingLevel}`,
         );
-        action.append(
-          text(
-            this.#document,
-            "span",
-            `3 Coins · level ${resultingLevel}`,
-            "v7-command-economy",
-          ),
-        );
+        action.append(economyChips(this.#document, { cost: 3 }));
       } else {
         const view = this.#snapshot.view;
         const preview = view === null ? null : previewEconomicV7(view, command);
@@ -1299,12 +1358,17 @@ export class Ruleset7DomAppView {
             `${commandLabel(command)} · ${economicPreviewLabelV7(preview.preview)}`,
           );
           action.append(
-            text(
-              this.#document,
-              "span",
-              economicPreviewLabelV7(preview.preview),
-              "v7-command-economy",
-            ),
+            economyChips(this.#document, {
+              cost: preview.preview.cost,
+              population: preview.preview.populationDeltaByCity.reduce(
+                (total, change) => total + change.delta,
+                0,
+              ),
+              income: preview.preview.coinIncomeDeltaByCity.reduce(
+                (total, change) => total + change.delta,
+                0,
+              ),
+            }),
           );
         }
       }
@@ -1364,43 +1428,72 @@ export class Ruleset7DomAppView {
     overlay.dataset.v7Region = `overlay-${this.#screen.toLowerCase()}`;
     overlay.setAttribute("role", "dialog");
     overlay.setAttribute("aria-modal", "true");
-    const close = button(
-      this.#document,
-      "Close",
-      "close-overlay",
-      "close-button",
-    );
+    const close = iconButton(this.#document, "close", "Close", "close-overlay");
+    close.classList.add("close-button");
     close.onclick = () => {
       this.#closeOverlay();
     };
     if (this.#screen === "TECH") overlay.append(this.#technology(view));
     else if (this.#screen === "LEADERBOARD")
       overlay.append(this.#leaderboard(view));
-    else if (this.#screen === "STATS") overlay.append(this.#stats(view));
     else if (this.#screen === "ACHIEVEMENTS")
       overlay.append(this.#achievements(view));
     else if (this.#screen === "SETTINGS") overlay.append(this.#settings());
-    else
-      overlay.append(
-        text(this.#document, "h2", "Help & controls"),
-        text(
-          this.#document,
-          "p",
-          "Select map objects directly. Move and Attack use highlighted cells. Arrow keys move the map cursor; Enter activates; T opens Tech; G opens Leaderboard; E ends the turn; plus and minus zoom.",
-        ),
-        text(
-          this.#document,
-          "p",
-          "Water: train a ship at an empty active Port you own. A land unit that ends a Move on an eligible friendly Port automatically embarks and ends its activation. Select its transport, then choose a highlighted landing tile. Active Ports support ship recovery; blockades remove their population and sea network until cleared.",
-        ),
-      );
+    else overlay.append(this.#help());
     overlay.prepend(close);
     return overlay;
   }
 
+  #help(): HTMLElement {
+    const section = el(this.#document, "div", "v7-info-screen v7-help");
+    const tips = this.#document.createElement("ul");
+    tips.className = "v7-help-tips";
+    for (const tip of [
+      "Select a unit, then a highlighted tile to move or attack.",
+      "Select your city to train units.",
+      "Select a tile in your land to harvest or build.",
+      "Spend coins on technology to unlock more.",
+      "Capture every enemy city to win.",
+      "Move a land unit onto your port to put it to sea.",
+    ])
+      tips.append(text(this.#document, "li", tip));
+    const keys = el(this.#document, "dl", "v7-help-keys");
+    for (const [key, action] of [
+      ["Arrows", "Move cursor"],
+      ["Enter", "Select"],
+      ["Esc", "Deselect"],
+      ["E", "End turn"],
+      ["T", "Technology"],
+      ["G", "Leaderboard"],
+      ["+ / −", "Zoom"],
+    ] as const) {
+      const row = el(this.#document, "div", "v7-help-key");
+      row.append(
+        text(this.#document, "dt", key),
+        text(this.#document, "dd", action),
+      );
+      keys.append(row);
+    }
+    section.append(
+      text(this.#document, "h2", "How to play"),
+      tips,
+      text(this.#document, "h3", "Keyboard"),
+      keys,
+    );
+    return section;
+  }
+
   #technology(view: PlayerViewV7): HTMLElement {
     const section = el(this.#document, "div", "v7-tech-screen");
-    section.append(text(this.#document, "h2", "Technology"));
+    const header = el(this.#document, "div", "v7-screen-header");
+    const coins = el(this.#document, "p", "v7-coins v7-tech-coins");
+    coins.append(
+      economyIcon(this.#document, "coin"),
+      text(this.#document, "span", String(view.viewer.coins)),
+    );
+    coins.setAttribute("aria-label", `${view.viewer.coins} Coins`);
+    header.append(text(this.#document, "h2", "Technology"), coins);
+    section.append(header);
     const tree = queryTechnologyTreeV7(view);
     const layout = technologyTreeLayoutV7(tree.nodes);
     const branches = el(this.#document, "nav", "v7-tech-branch-selector");
@@ -1426,11 +1519,9 @@ export class Ruleset7DomAppView {
       column.dataset.techBranch = branch.node.branch;
       column.dataset.techLane = laneId;
       column.tabIndex = -1;
-      const heading = text(
-        this.#document,
-        "h3",
-        `${title(branch.node.branch)} · ${title(branch.node.id)} lane`,
-      );
+      const branchName =
+        TECH_BRANCH_LABELS[branch.node.branch] ?? title(branch.node.branch);
+      const heading = text(this.#document, "h3", branchName);
       heading.id = `${branchId}-heading`;
       column.setAttribute("aria-labelledby", heading.id);
       column.append(heading);
@@ -1440,19 +1531,27 @@ export class Ruleset7DomAppView {
         branch,
         (node) => {
           this.#selectedTech = node.id;
-          this.#pendingFocusAction = `tech-${node.id.toLowerCase()}`;
+          this.#pendingFocusAction = `research-${node.id.toLowerCase()}`;
           this.#render();
-          queueMicrotask(() =>
-            this.#root
-              .querySelector<HTMLElement>(".v7-tech-detail")
-              ?.scrollIntoView?.({ block: "nearest" }),
-          );
+          queueMicrotask(() => {
+            const detail =
+              this.#root.querySelector<HTMLElement>(".v7-tech-detail");
+            if (detail === null) return;
+            detail.scrollIntoView?.({ block: "nearest" });
+            if (this.#document.activeElement?.closest(".v7-tech-detail"))
+              return;
+            detail
+              .querySelector<HTMLElement>(
+                '[data-action^="research-"], [data-action="close-tech-detail"]',
+              )
+              ?.focus();
+          });
         },
         this.#selectedTech,
       );
       const option = this.#document.createElement("option");
       option.value = laneId;
-      option.textContent = `${title(branch.node.branch)} · ${title(branch.node.id)}`;
+      option.textContent = branchName;
       branchSelect.append(option);
       graph.append(column);
     }
@@ -1464,90 +1563,71 @@ export class Ruleset7DomAppView {
     };
     branches.append(branchSelect);
     section.append(branches, graph);
-    const selected =
-      tree.nodes.find((node) => node.id === this.#selectedTech) ??
-      tree.nodes[0];
+    const selected = tree.nodes.find((node) => node.id === this.#selectedTech);
     if (selected !== undefined) section.append(this.#techDetail(selected));
     return section;
   }
 
   #techDetail(node: PublicTechnologyNodeV7): HTMLElement {
     const detail = el(this.#document, "aside", "v7-tech-detail");
-    detail.append(
-      identity(this.#document, RULESET7_TECH_ART_IDS[node.id], title(node.id)),
-      text(
-        this.#document,
-        "p",
-        node.state === "OWNED"
-          ? "Researched"
-          : `${node.cost} Coins · ${node.affordable ? "Available" : node.state === "BLOCKED" ? "Locked" : "Insufficient Coins"}`,
-      ),
-    );
-    if (node.id === "PROSPECTING")
-      detail.append(
-        text(
-          this.#document,
-          "p",
-          "Reveal Ore. Enter Mountains and construct resource-free spatial improvements and Monuments there. Units on Mountains gain +1 sight.",
-        ),
-      );
-    const navalNotes = navalTechnologyNotesV7(node.id);
-    if (navalNotes.length > 0) {
-      const water = el(
-        this.#document,
-        "section",
-        "v7-tech-detail-group v7-tech-water-rules",
-      );
-      water.append(text(this.#document, "h3", "Water rules"));
-      const list = this.#document.createElement("ul");
-      for (const note of navalNotes)
-        list.append(text(this.#document, "li", note));
-      water.append(list);
-      detail.append(water);
-    }
-    const achievement = techAchievementV7(node.id);
-    if (achievement !== null)
-      detail.append(
-        text(
-          this.#document,
-          "p",
-          `Enables ${title(achievement)} achievement and its Monument reward: ${achievement === "EXPLORER" ? "explore 100 distinct tiles" : achievement === "ENGINEER" ? "own one live processor producing at least 6 population" : "own four distinct living trainable unit roles"}.`,
-        ),
-      );
-    const prerequisites = el(
+    detail.dataset.techState = node.state.toLowerCase();
+    detail.setAttribute("aria-label", `${title(node.id)} details`);
+    const close = iconButton(
       this.#document,
-      "section",
-      "v7-tech-detail-group v7-tech-prerequisites",
+      "close",
+      "Close",
+      "close-tech-detail",
     );
-    prerequisites.append(text(this.#document, "h3", "Prerequisites"));
-    const prerequisiteList = this.#document.createElement("ul");
-    if (node.prerequisites.length === 0)
-      prerequisiteList.append(text(this.#document, "li", "None"));
-    else
-      for (const prerequisite of node.prerequisites)
-        prerequisiteList.append(
-          text(
-            this.#document,
-            "li",
-            `${title(prerequisite)}${node.missingPrerequisites.includes(prerequisite) ? " · not yet researched" : " · researched"}`,
-          ),
-        );
-    prerequisites.append(prerequisiteList);
-    detail.append(prerequisites);
-    for (const group of technologyEffectGroupsV7(node.effects)) {
-      const section = el(
-        this.#document,
-        "section",
-        "v7-tech-detail-group v7-tech-effect-group",
+    close.classList.add("close-button");
+    close.onclick = () => {
+      const id = node.id;
+      this.#selectedTech = null;
+      this.#pendingFocusAction = `tech-${id.toLowerCase()}`;
+      this.#render();
+    };
+    const status =
+      node.state === "OWNED"
+        ? text(this.#document, "p", "Researched", "v7-tech-status is-owned")
+        : node.missingPrerequisites.length > 0
+          ? text(
+              this.#document,
+              "p",
+              `Requires ${node.missingPrerequisites.map(title).join(", ")}`,
+              "v7-tech-status is-locked",
+            )
+          : node.affordable
+            ? null
+            : text(
+                this.#document,
+                "p",
+                `Need ${node.cost} Coins`,
+                "v7-tech-status is-short",
+              );
+    detail.append(
+      close,
+      identity(this.#document, RULESET7_TECH_ART_IDS[node.id], title(node.id)),
+    );
+    if (status !== null) detail.append(status);
+    const unlocks = this.#document.createElement("ul");
+    unlocks.className = "v7-tech-unlocks";
+    for (const group of technologyEffectGroupsV7(node.effects))
+      for (const item of group.items) {
+        const entry = text(this.#document, "li", item);
+        entry.dataset.effectGroup = group.id;
+        unlocks.append(entry);
+      }
+    for (const note of navalTechnologyNotesV7(node.id))
+      unlocks.append(text(this.#document, "li", note));
+    const achievement = techAchievementV7(node.id);
+    if (achievement !== null) {
+      const entry = el(this.#document, "li", "v7-tech-achievement-note");
+      entry.append(
+        uiIconV7(this.#document, "trophy"),
+        `${title(achievement)} achievement`,
       );
-      section.dataset.effectGroup = group.id;
-      section.append(text(this.#document, "h3", group.label));
-      const list = this.#document.createElement("ul");
-      for (const item of group.items)
-        list.append(text(this.#document, "li", item));
-      section.append(list);
-      detail.append(section);
+      unlocks.append(entry);
     }
+    if (unlocks.childElementCount > 0) detail.append(unlocks);
     const command = this.#snapshot.offeredCommands.find(
       (candidate) =>
         candidate.kind === "RESEARCH" && candidate.tech === node.id,
@@ -1555,9 +1635,17 @@ export class Ruleset7DomAppView {
     if (command !== undefined) {
       const research = button(
         this.#document,
-        "Research",
+        "",
         `research-${node.id.toLowerCase()}`,
-        "primary-action",
+        "primary-action v7-research-action",
+      );
+      research.append(
+        text(this.#document, "span", "Research"),
+        economyChips(this.#document, { cost: node.cost }),
+      );
+      research.setAttribute(
+        "aria-label",
+        `Research ${title(node.id)} for ${node.cost} Coins`,
       );
       research.onclick = () => {
         this.#pendingFocusAction = `tech-${node.id.toLowerCase()}`;
@@ -1571,58 +1659,50 @@ export class Ruleset7DomAppView {
 
   #recruitHelp(role: UnitRoleIdV7): HTMLElement {
     const presentation = recruitmentRolePresentationV7(role);
+    const rule = effectiveRoleRuleV7(role);
     const modal = el(this.#document, "section", "v7-recruit-help");
     modal.dataset.v7Region = "recruit-help";
     modal.dataset.recruitRole = role;
     modal.setAttribute("role", "dialog");
     modal.setAttribute("aria-modal", "true");
-    modal.setAttribute(
-      "aria-label",
-      `${presentation.label} recruitment information`,
-    );
-    const close = button(
+    modal.setAttribute("aria-label", `${presentation.label} information`);
+    const close = iconButton(
       this.#document,
+      "close",
       "Close",
       "close-recruit-help",
-      "close-button",
     );
+    close.classList.add("close-button");
     close.onclick = () => this.#closeRecruitHelp();
-    modal.append(
-      close,
-      identity(this.#document, RULESET7_UNIT_ART_IDS[role], presentation.label),
-      text(
-        this.#document,
-        "p",
-        "Recruitment reference · canonical base values only. Live damage, activation status, modifiers, and veteran state are intentionally omitted.",
-        "v7-recruit-help-context",
-      ),
+    const header = el(this.#document, "div", "v7-dialog-header");
+    header.append(
+      art(this.#document, RULESET7_UNIT_ART_IDS[role], ""),
+      text(this.#document, "h2", presentation.label),
+      economyChips(this.#document, { cost: rule.cost ?? 0 }),
     );
-    const stats = el(this.#document, "dl", "v7-recruit-stats");
-    for (const stat of presentation.stats)
-      stats.append(
-        text(this.#document, "dt", stat.label),
-        text(this.#document, "dd", stat.value),
+    modal.append(close, header);
+    const stats = el(this.#document, "dl", "v7-recruit-stats v7-unit-stats");
+    for (const stat of presentation.stats) {
+      const row = el(this.#document, "div", "v7-stat");
+      row.title = stat.label;
+      const term = el(this.#document, "dt", "v7-stat-term");
+      term.append(
+        uiIconV7(
+          this.#document,
+          STAT_ICONS[stat.label.toUpperCase()] ?? "info",
+        ),
+        text(this.#document, "span", stat.label, "v7-sr-only"),
       );
+      row.append(term, text(this.#document, "dd", stat.value));
+      stats.append(row);
+    }
     modal.append(stats);
-    const abilities = el(this.#document, "section", "v7-recruit-help-group");
-    abilities.append(text(this.#document, "h3", "Abilities"));
-    const abilityList = this.#document.createElement("ul");
-    for (const ability of presentation.abilities)
-      abilityList.append(text(this.#document, "li", ability));
-    abilities.append(abilityList);
-    modal.append(abilities);
-    if (presentation.restrictions.length > 0) {
-      const restrictions = el(
-        this.#document,
-        "section",
-        "v7-recruit-help-group",
-      );
-      restrictions.append(text(this.#document, "h3", "Restrictions"));
-      const restrictionList = this.#document.createElement("ul");
-      for (const restriction of presentation.restrictions)
-        restrictionList.append(text(this.#document, "li", restriction));
-      restrictions.append(restrictionList);
-      modal.append(restrictions);
+    const notes = [...presentation.abilities, ...presentation.restrictions];
+    if (notes.length > 0) {
+      const list = this.#document.createElement("ul");
+      list.className = "v7-recruit-help-notes";
+      for (const note of notes) list.append(text(this.#document, "li", note));
+      modal.append(list);
     }
     return modal;
   }
@@ -1634,43 +1714,44 @@ export class Ruleset7DomAppView {
       text(
         this.#document,
         "p",
-        "Capture all hostile cities before losing your last city.",
+        "Capture every enemy city to win.",
+        "v7-screen-lede",
       ),
     );
     const list = this.#document.createElement("ol");
-    for (const entry of view.leaderboard)
-      list.append(
-        text(
-          this.#document,
-          "li",
-          `Player ${entry.seat + 1}${entry.isViewer ? " (you)" : ""} · ${entry.cityCount} cities · ${entry.livingUnitCount} units · ${title(entry.status)}`,
-        ),
+    list.className = "v7-leaderboard";
+    for (const entry of view.leaderboard) {
+      const row = el(this.#document, "li", "v7-leaderboard-row");
+      row.dataset.color = entry.color.toLowerCase();
+      row.dataset.status = entry.status.toLowerCase();
+      if (entry.isViewer) row.dataset.viewer = "true";
+      const name = el(this.#document, "span", "v7-leaderboard-name");
+      name.append(
+        el(this.#document, "span", "v7-player-swatch"),
+        entry.isViewer
+          ? `${playerName(entry.seat)} (you)`
+          : playerName(entry.seat),
       );
+      const cities = el(this.#document, "span", "v7-leaderboard-stat");
+      cities.title = "Cities";
+      cities.append(
+        art(this.#document, "building-city-1", ""),
+        String(entry.cityCount),
+        text(this.#document, "span", " cities", "v7-sr-only"),
+      );
+      const units = el(this.#document, "span", "v7-leaderboard-stat");
+      units.title = "Units";
+      units.append(
+        uiIconV7(this.#document, "units"),
+        String(entry.livingUnitCount),
+        text(this.#document, "span", " units", "v7-sr-only"),
+      );
+      row.append(name, cities, units);
+      if (entry.status === "ELIMINATED")
+        row.append(text(this.#document, "span", "Out", "v7-chip is-idle"));
+      list.append(row);
+    }
     section.append(list);
-    return section;
-  }
-
-  #stats(view: PlayerViewV7): HTMLElement {
-    const section = el(this.#document, "div", "v7-info-screen");
-    const ownedCities = view.cities.filter(
-      (city) => city.ownerId === view.viewer.id,
-    );
-    const ownedUnits = view.units.filter(
-      (unit) => unit.ownerId === view.viewer.id,
-    );
-    section.append(
-      text(this.#document, "h2", "Stats"),
-      text(
-        this.#document,
-        "p",
-        `Round ${view.round} · ${view.viewer.coins} Coins · ${ownedCities.length} cities · ${ownedUnits.length} units · ${view.viewer.researchedTechs.length} technologies`,
-      ),
-      text(
-        this.#document,
-        "p",
-        "Opponent totals are limited to the public leaderboard; private economy and technology remain undisclosed.",
-      ),
-    );
     return section;
   }
 
@@ -1705,16 +1786,26 @@ export class Ruleset7DomAppView {
                 : achievement === "ENGINEER"
                   ? 6
                   : 4;
-      const symbols = el(this.#document, "div", "v7-achievement-symbols");
+      const tech =
+        achievement === "EXPLORER"
+          ? "SCOUTING"
+          : achievement === "ENGINEER"
+            ? "ENGINEERING"
+            : "PROSPECTING";
+      const researched = view.viewer.researchedTechs.includes(tech);
+      const state = entitlement?.spent
+        ? "spent"
+        : entitlement?.unlocked
+          ? "complete"
+          : researched
+            ? "available"
+            : "locked";
+      card.dataset.state = state;
       const theme = this.#highContrast
         ? ("HIGH_CONTRAST" as const)
         : ("DARK" as const);
+      const symbols = el(this.#document, "div", "v7-achievement-symbols");
       symbols.append(
-        createTacticalSymbolV7(
-          this.#document,
-          "ui-status-achievement-progress",
-          theme,
-        ),
         createTacticalSymbolV7(
           this.#document,
           entitlement?.spent
@@ -1725,6 +1816,14 @@ export class Ruleset7DomAppView {
           theme,
         ),
       );
+      const meter = el(this.#document, "div", "v7-achievement-meter");
+      const fill = el(this.#document, "span", "v7-achievement-fill");
+      fill.style.width = `${Math.min(100, Math.round((current / Math.max(1, required)) * 100))}%`;
+      meter.append(fill);
+      meter.setAttribute("role", "progressbar");
+      meter.setAttribute("aria-valuemin", "0");
+      meter.setAttribute("aria-valuemax", String(required));
+      meter.setAttribute("aria-valuenow", String(Math.min(current, required)));
       card.append(
         symbols,
         text(this.#document, "h3", title(achievement)),
@@ -1732,15 +1831,24 @@ export class Ruleset7DomAppView {
           this.#document,
           "p",
           achievement === "EXPLORER"
-            ? "Research Scouting and explore 100 distinct tiles."
+            ? "Explore 100 tiles."
             : achievement === "ENGINEER"
-              ? "Research Engineering and own one live processor producing at least 6 population."
-              : "Research Prospecting and own four distinct trainable unit roles at once.",
+              ? "Get one building to 6 population."
+              : "Field 4 different unit types.",
+          "v7-achievement-goal",
         ),
+        meter,
         text(
           this.#document,
           "p",
-          `${current} / ${required} · ${entitlement?.spent ? "Spent" : entitlement?.unlocked ? "Completed" : view.viewer.researchedTechs.includes(achievement === "EXPLORER" ? "SCOUTING" : achievement === "ENGINEER" ? "ENGINEERING" : "PROSPECTING") ? "Available" : "Locked"}`,
+          state === "spent"
+            ? "Monument built"
+            : state === "complete"
+              ? "Done! Build your monument."
+              : state === "available"
+                ? `${current} / ${required}`
+                : `Needs ${title(tech)}`,
+          "v7-achievement-status",
         ),
       );
       section.append(card);
@@ -1749,14 +1857,16 @@ export class Ruleset7DomAppView {
   }
 
   #settings(): HTMLElement {
-    const section = el(this.#document, "div", "v7-info-screen");
+    const section = el(this.#document, "div", "v7-info-screen v7-settings");
     section.append(text(this.#document, "h2", "Settings"));
+    const display = el(this.#document, "div", "v7-settings-grid");
     const motion = select(
       this.#document,
       "Motion",
       "v7-motion",
       ["FULL", "REDUCED"],
       this.#motion,
+      { FULL: "Full", REDUCED: "Reduced" },
     );
     motion.querySelector("select")?.addEventListener("change", (event) => {
       this.#motion =
@@ -1772,6 +1882,7 @@ export class Ruleset7DomAppView {
       "v7-animation-speed",
       ["NORMAL", "FAST"],
       this.#animationSpeed,
+      { NORMAL: "Normal", FAST: "Fast" },
     );
     speed.querySelector("select")?.addEventListener("change", (event) => {
       this.#animationSpeed =
@@ -1784,10 +1895,11 @@ export class Ruleset7DomAppView {
     });
     const scale = select(
       this.#document,
-      "UI scale",
+      "UI size",
       "v7-ui-scale",
       ["1", "1.25", "1.5", "2"],
       String(this.#uiScale),
+      { "1": "100%", "1.25": "125%", "1.5": "150%", "2": "200%" },
     );
     scale.querySelector("select")?.addEventListener("change", (event) => {
       const value = Number((event.currentTarget as HTMLSelectElement).value);
@@ -1798,8 +1910,9 @@ export class Ruleset7DomAppView {
     });
     const contrast = button(
       this.#document,
-      this.#highContrast ? "High contrast on" : "High contrast off",
+      this.#highContrast ? "High contrast: on" : "High contrast: off",
       "high-contrast",
+      "v7-toggle",
     );
     contrast.setAttribute("aria-pressed", String(this.#highContrast));
     contrast.onclick = () => {
@@ -1807,24 +1920,25 @@ export class Ruleset7DomAppView {
       this.#persistSettings();
       this.#render();
     };
-    const restart = button(this.#document, "Restart Same Match", "restart");
+    display.append(motion, speed, scale, contrast);
+    const game = el(this.#document, "div", "button-row");
+    const restart = button(this.#document, "Restart game", "restart");
     restart.onclick = () => void this.#restart();
     const remove = button(
       this.#document,
-      "Delete Save",
+      "Delete save",
       "delete-save",
       "destructive",
     );
     remove.onclick = () => void this.#deleteSave();
-    const safe = button(
-      this.#document,
-      "Export player-safe log",
-      "export-safe-log",
-    );
+    game.append(restart, remove);
+    const developer = this.#document.createElement("details");
+    developer.className = "v7-developer-tools";
+    const safe = button(this.#document, "Export game log", "export-safe-log");
     safe.onclick = () => this.#exportSafeLog();
     const debug = button(
       this.#document,
-      "Export debug bundle (includes hidden map and units)",
+      "Export debug bundle (reveals hidden map and units)",
       "export-debug-with-spoilers",
       "destructive",
     );
@@ -1833,16 +1947,13 @@ export class Ruleset7DomAppView {
       "Export debug bundle (includes hidden map and units; spoilers)",
     );
     debug.onclick = () => this.#exportDebug();
-    section.append(
-      motion,
-      speed,
-      scale,
-      contrast,
-      restart,
-      remove,
-      safe,
-      debug,
+    const developerActions = el(this.#document, "div", "button-row");
+    developerActions.append(safe, debug);
+    developer.append(
+      text(this.#document, "summary", "Developer tools"),
+      developerActions,
     );
+    section.append(display, game, developer);
     return section;
   }
 
@@ -1853,11 +1964,14 @@ export class Ruleset7DomAppView {
     modal.setAttribute("role", "alertdialog");
     modal.setAttribute("aria-modal", "true");
     if (choice === undefined) return modal;
+    const city = view.cities.find((entry) => entry.id === choice.cityId);
     modal.append(
+      text(this.#document, "h2", `Level ${choice.reachedLevel}!`),
       text(
         this.#document,
-        "h2",
-        `Choose reward · level ${choice.reachedLevel}`,
+        "p",
+        `${city?.isCapital ? "Your capital" : "A city"} grew. Pick a reward.`,
+        "v7-screen-lede",
       ),
     );
     for (const reward of choice.candidates) {
@@ -1869,13 +1983,19 @@ export class Ruleset7DomAppView {
           candidate.reward === reward,
       );
       if (command === undefined) continue;
+      const [name, detail] = rewardLabel(reward);
       const action = button(
         this.#document,
-        rewardLabel(reward, choice.reachedLevel),
+        "",
         `reward-${reward.toLowerCase()}`,
         "v7-reward-action",
       );
-      action.prepend(art(this.#document, rewardArtIdV7(reward), ""));
+      action.append(
+        art(this.#document, rewardArtIdV7(reward), ""),
+        text(this.#document, "strong", name),
+        text(this.#document, "span", detail, "v7-reward-detail"),
+      );
+      action.setAttribute("aria-label", `${name}: ${detail}`);
       action.disabled = this.#localBusy();
       action.onclick = () => void this.#dispatch(command);
       modal.append(action);
@@ -1895,12 +2015,16 @@ export class Ruleset7DomAppView {
       `${title(achievement ?? "ACHIEVEMENT")} achievement complete`,
     );
     if (achievement === undefined) return modal;
+    const badge = el(this.#document, "div", "v7-achievement-badge");
+    badge.append(uiIconV7(this.#document, "trophy"));
     modal.append(
+      badge,
       text(this.#document, "h2", `${title(achievement)} achievement complete`),
       text(
         this.#document,
         "p",
-        "Monument unlocked. Select an eligible owned tile and choose Build Monument to place it.",
+        "You can now build a monument on one of your tiles.",
+        "v7-screen-lede",
       ),
     );
     const close = button(
@@ -1938,6 +2062,8 @@ export class Ruleset7DomAppView {
   #results(view: PlayerViewV7): HTMLElement {
     const result = el(this.#document, "section", "v7-results");
     result.dataset.v7Region = "results";
+    result.dataset.outcome =
+      view.outcome?.kind === "VICTORY" ? "victory" : "defeat";
     result.setAttribute("role", "dialog");
     result.setAttribute("aria-modal", "true");
     result.append(
@@ -1949,12 +2075,20 @@ export class Ruleset7DomAppView {
       text(
         this.#document,
         "p",
-        `Round ${view.round} · seed ${view.setup.seed} · ${view.setup.width} × ${view.setup.height} · ${title(view.setup.mapType)}`,
+        `Turn ${view.round} · ${MAP_TYPE_LABELS[view.setup.mapType] ?? title(view.setup.mapType)} ${view.setup.width} × ${view.setup.height}`,
+        "v7-screen-lede",
       ),
     );
-    const restart = button(this.#document, "Play Again", "restart");
+    const actions = el(this.#document, "div", "button-row");
+    const restart = button(
+      this.#document,
+      "Play again",
+      "restart",
+      "primary-action",
+    );
     restart.onclick = () => void this.#restart();
-    result.append(restart, this.#ruleset6Link());
+    actions.append(restart);
+    result.append(actions, this.#ruleset6Link());
     return result;
   }
 
@@ -1964,19 +2098,31 @@ export class Ruleset7DomAppView {
     panel.setAttribute("role", "dialog");
     panel.setAttribute("aria-modal", "true");
     panel.append(
-      text(this.#document, "h2", "Match paused"),
+      text(this.#document, "h2", "Game paused"),
       text(
         this.#document,
         "p",
-        this.#snapshot.diagnostic ?? "The match stopped safely.",
+        "Something went wrong. Your game is saved.",
+        "v7-screen-lede",
       ),
     );
+    const diagnostic = this.#snapshot.diagnostic;
+    if (diagnostic !== null && diagnostic !== undefined) {
+      const details = this.#document.createElement("details");
+      details.className = "v7-recovery-details";
+      details.append(
+        text(this.#document, "summary", "Details"),
+        text(this.#document, "p", diagnostic),
+      );
+      panel.append(details);
+    }
     return panel;
   }
 
   #open(screen: ScreenV7, returnAction: string | null = null): void {
     if (this.#snapshot.view?.pendingChoices.length) return;
     this.#modalReturnAction = returnAction;
+    if (screen === "TECH") this.#selectedTech = null;
     this.#screen = screen;
     this.#render();
     queueMicrotask(() => {
@@ -2023,7 +2169,7 @@ export class Ruleset7DomAppView {
     this.#matchInstance += 1;
     this.#replacing = false;
     this.#selection = null;
-    this.#notice = "Conquest launched at the canonical Start Turn boundary.";
+    this.#notice = "Game started.";
     this.#render();
     await this.#progressAi();
     if (
@@ -2036,10 +2182,10 @@ export class Ruleset7DomAppView {
     this.#achievementNotices = [];
     const resumed = await this.#controller.resume();
     if (this.#destroyed) return;
-    if (!resumed) this.#error = "The Ruleset 7 save could not be resumed.";
+    if (!resumed) this.#error = "The saved game couldn't be loaded.";
     else {
       this.#matchInstance += 1;
-      this.#notice = "Ruleset 7 save resumed at its last accepted command.";
+      this.#notice = "Game resumed.";
     }
     this.#render();
     await this.#progressAi();
@@ -2051,7 +2197,7 @@ export class Ruleset7DomAppView {
     if (!returned) {
       this.#error =
         this.#controller.snapshot().saveWarning ??
-        "Main menu is unavailable until the current accepted boundary is saved. Retry Main menu.";
+        "Couldn't save the game. Try again.";
       this.#render();
       await this.#progressAi();
       return;
@@ -2061,8 +2207,7 @@ export class Ruleset7DomAppView {
     this.#selection = null;
     this.#screen = "MATCH";
     this.#compactMenuOpen = false;
-    this.#notice =
-      "Match saved at its last accepted command. Resume when ready.";
+    this.#notice = "Game saved.";
     this.#render();
   }
   async #dispatch(command: CommandV7): Promise<void> {
@@ -2080,17 +2225,18 @@ export class Ruleset7DomAppView {
     if (this.#destroyed) return;
     if (!result.accepted) {
       this.#presentationActive = false;
-      this.#error = `Action rejected: ${result.reason}${result.error === undefined ? "" : ` (${result.error.code})`}.`;
+      this.#error = `Can't do that right now (${result.error?.code ?? result.reason}).`;
       this.#render();
       return;
     }
     this.#error = "";
-    this.#notice =
-      specialBoundaryNoticeV7(
-        result.playerEvents.events,
-        result.afterView.viewer.id,
-      ) ?? `${commandLabel(command)} accepted.`;
-    if (command.kind === "RESEARCH") this.#selectedTech = command.tech;
+    const special = specialBoundaryNoticeV7(
+      result.playerEvents.events,
+      result.afterView.viewer.id,
+    );
+    if (special !== null) this.#showToast(special);
+    this.#notice = special ?? `${commandLabel(command)}.`;
+    if (command.kind === "RESEARCH") this.#selectedTech = null;
     this.#pendingFocusAction = restoreAction;
     this.#humanDispatchSettling = true;
     const visibleMovement =
@@ -2140,8 +2286,7 @@ export class Ruleset7DomAppView {
     const result = await this.#controller.progressAiTurns();
     if (this.#destroyed) return;
     if (!result.ok && !result.cancelled) this.#error = result.diagnostic;
-    else if (result.ok)
-      this.#notice = `AI completed ${result.acceptedCommands} accepted actions.`;
+    else if (result.ok) this.#notice = "Your turn.";
     this.#render();
   }
   async #restart(): Promise<void> {
@@ -2153,8 +2298,7 @@ export class Ruleset7DomAppView {
       this.#matchInstance += 1;
       this.#selection = null;
       this.#screen = "MATCH";
-      this.#notice =
-        "Ruleset 7 match restarted from the identical setup and seed.";
+      this.#notice = "Game restarted.";
     }
     this.#render();
     await this.#progressAi();
@@ -2166,15 +2310,15 @@ export class Ruleset7DomAppView {
     if (deleted) {
       this.#selection = null;
       this.#screen = "MATCH";
-      this.#notice = "Only the Ruleset 7 revision-6 save was deleted.";
-    } else this.#error = "The Ruleset 7 save could not be deleted.";
+      this.#notice = "Save deleted.";
+    } else this.#error = "The save couldn't be deleted.";
     this.#render();
   }
   #exportSafeLog(): void {
     const result = this.#controller.exportSafeLog();
     if (result === null) return;
     this.#downloadSafeLog(result.source, result.filename);
-    this.#notice = "Player-safe projected log downloaded.";
+    this.#notice = "Game log downloaded.";
     this.#render();
   }
   #exportDebug(): void {
@@ -2183,22 +2327,31 @@ export class Ruleset7DomAppView {
     });
     if (!result.ok) return;
     this.#downloadDebugBundle(result.source, result.filename);
-    this.#notice =
-      "Spoiler-labelled omniscient debug bundle downloaded locally.";
+    this.#notice = "Debug bundle downloaded (contains spoilers).";
     this.#render();
   }
   #patchAiProgress(): void {
     const progress = this.#root.querySelector<HTMLElement>(
       "[data-v7-ai-progress]",
     );
-    if (progress !== null)
-      progress.textContent = `AI thinking · ${this.#snapshot.ai.policySlices} scheduled slices`;
+    if (progress !== null) progress.textContent = this.#aiStatusText();
     const fast = this.#root.querySelector<HTMLButtonElement>(
       '[data-action="fast-forward"]',
     );
     if (fast !== null && this.#snapshot.ai.fastForward)
-      fast.textContent = "Fast Forward enabled";
+      fast.classList.add("is-active");
   }
+  #aiStatusText(): string {
+    const view = this.#snapshot.view;
+    const active =
+      view === null
+        ? undefined
+        : view.players.find(
+            (player) => player.id === view.turnOrder[view.activeSeatIndex],
+          );
+    return `${playerName(active?.seat ?? 0)} is playing…`;
+  }
+
   #queueBoundary(boundary: Ruleset7AcceptedBoundary): void {
     if (this.#destroyed) return;
     if (this.#achievementNotices.length === 0)
@@ -2212,11 +2365,14 @@ export class Ruleset7DomAppView {
         event.playerId === boundary.afterView.viewer.id
       )
         this.#achievementNotices.push(event.achievement);
-    this.#notice =
-      specialBoundaryNoticeV7(
-        boundary.playerEvents.events,
-        boundary.afterView.viewer.id,
-      ) ?? this.#notice;
+    const special = specialBoundaryNoticeV7(
+      boundary.playerEvents.events,
+      boundary.afterView.viewer.id,
+    );
+    if (special !== null) {
+      this.#notice = special;
+      this.#showToast(special);
+    }
     if (this.#snapshot.ai.fastForward) {
       this.#presentationQueue = [];
       return;
@@ -2363,6 +2519,19 @@ export class Ruleset7DomAppView {
     });
   }
 
+  #showToast(message: string): void {
+    this.#toastSequence += 1;
+    const id = this.#toastSequence;
+    this.#toast = { id, text: message, kind: "info" };
+    this.#document.defaultView?.setTimeout(() => {
+      if (this.#destroyed || this.#toast?.id !== id) return;
+      this.#toast = null;
+      this.#root
+        .querySelector<HTMLElement>(`[data-toast-id="${id}"]`)
+        ?.remove();
+    }, 3200);
+  }
+
   #localBusy(): boolean {
     return (
       this.#presentationActive ||
@@ -2391,6 +2560,8 @@ function reconcileMatchChildren(
     );
     const preservesStaticControls =
       key === "region:hud" ||
+      key === "region:zoom" ||
+      key === "region:toast" ||
       key === "region:overlay-settings" ||
       key === "action:fast-forward";
     const resolved =
@@ -2518,25 +2689,31 @@ function appendTechNode(
     `v7-tech-card state-${layout.node.state.toLowerCase()}`,
   );
   card.dataset.selected = String(layout.node.id === selected);
+  const artFrame = el(documentRoot, "span", "v7-tech-art");
+  artFrame.append(art(documentRoot, RULESET7_TECH_ART_IDS[layout.node.id], ""));
   card.append(
-    art(documentRoot, RULESET7_TECH_ART_IDS[layout.node.id], ""),
-    text(documentRoot, "span", title(layout.node.id)),
+    artFrame,
+    text(documentRoot, "span", title(layout.node.id), "v7-tech-name"),
   );
   const achievement = techAchievementV7(layout.node.id);
-  if (achievement !== null)
-    card.append(
-      text(
-        documentRoot,
-        "span",
-        `Enables ${title(achievement)}`,
-        "v7-tech-achievement",
-      ),
+  if (achievement !== null) {
+    const badge = el(documentRoot, "span", "v7-tech-achievement");
+    badge.title = `${title(achievement)} achievement`;
+    badge.append(uiIconV7(documentRoot, "trophy"));
+    card.append(badge);
+  }
+  if (layout.node.state !== "OWNED") {
+    const cost = el(documentRoot, "span", "v7-tech-cost");
+    cost.append(String(layout.node.cost), economyIcon(documentRoot, "coin"));
+    card.append(cost);
+    card.setAttribute(
+      "aria-label",
+      `${title(layout.node.id)}, ${layout.node.cost} Coins${layout.node.state === "BLOCKED" ? ", locked" : ""}`,
     );
-  if (layout.node.state !== "OWNED")
-    card.append(
-      text(documentRoot, "span", `${layout.node.cost} Coins`, "v7-tech-cost"),
-    );
-  else card.append(text(documentRoot, "span", "✓", "v7-tech-check"));
+  } else {
+    card.append(text(documentRoot, "span", "✓", "v7-tech-check"));
+    card.setAttribute("aria-label", `${title(layout.node.id)}, researched`);
+  }
   card.onclick = () => choose(layout.node);
   node.append(card);
   if (layout.children.length > 0) {
@@ -2599,15 +2776,11 @@ function compatibleSizes(aiCount: 1 | 2 | 3): readonly DraftV7["boardSize"][] {
   return BOARD_SIZES.filter((size) => size >= minimum);
 }
 function mapTypeDescriptionV7(mapType: MapTypeV7): string {
-  if (mapType === "DRY_LAND")
-    return "Dry Land: a connected land game with no water or naval actions.";
-  if (mapType === "PANGEA")
-    return "Pangea: one main continent with a surrounding navigable sea.";
-  if (mapType === "CONTINENTS")
-    return "Continents: rival powers begin across two or three major landmasses.";
-  if (mapType === "ARCHIPELAGO")
-    return "Archipelago: each capital begins on a separate island group.";
-  return "Lakes: mostly land, divided by several enclosed navigable lakes.";
+  if (mapType === "DRY_LAND") return "All land, no sea.";
+  if (mapType === "PANGEA") return "One big continent ringed by sea.";
+  if (mapType === "CONTINENTS") return "Two or three large landmasses.";
+  if (mapType === "ARCHIPELAGO") return "Everyone starts on their own island.";
+  return "Mostly land, broken up by lakes.";
 }
 function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!/^\d+$/.test(draft.seedText)) return null;
@@ -2671,38 +2844,36 @@ function effectDescription(
   switch (effect.kind) {
     case "COMMAND":
       return title(effect.command);
-    case "UNIT_ROLE": {
-      const role = effectiveRoleRuleV7(effect.role);
-      return `Train ${role.label} · ${role.cost ?? 0} Coins · range ${role.minimumRange}–${role.range}`;
-    }
+    case "UNIT_ROLE":
+      return effectiveRoleRuleV7(effect.role).label;
     case "RESOURCE_REVEAL":
-      return `Reveal ${effect.resources.map(title).join(" and ")}`;
+      return `Reveals ${effect.resources.map(title).join(" and ")}`;
     case "ECONOMIC_FORMULA":
       return economicFormulaV7(effect.improvement, effect.formula);
     case "CONNECTED_FARM_VISUALS":
-      return "Orthogonally connected Farms share one field visual; each Farm remains +2 population.";
+      return "Neighboring farms join into one field";
     case "FOREST_MOVEMENT_FREEDOM":
-      return `${effect.roles.map(title).join(", ")} enter Forest at ordinary cost`;
+      return `${effect.roles.map((role) => effectiveRoleRuleV7(role).label).join(" and ")} move freely through forest`;
     case "MOUNTAIN_MOVEMENT":
-      return "Units may enter Mountains";
+      return "Units can climb mountains";
     case "HIGH_GROUND_VISION":
-      return "+1 sight while on a Mountain";
+      return "+1 sight on mountains";
     case "ROLE_SIGHT":
-      return `${title(effect.role)} sight radius becomes ${effect.radius}`;
+      return `${effectiveRoleRuleV7(effect.role).label} sight ${effect.radius}`;
     case "ROAD_MOVEMENT":
-      return "Ordinary step costs 1; orthogonally or diagonally connected Road step costs ½";
+      return "Roads double movement";
     case "MARKET_CAPITAL_ROAD_BONUS":
-      return `Market connected to the capital adds +${effect.coins} Coin`;
+      return `Markets on roads to the capital +${effect.coins} coin`;
     case "OWNED_CITY_FORTIFICATION_LEVEL":
-      return `Owned city centers provide fortification level ${effect.level}`;
+      return "Cities get fortified";
     case "OWNED_CITY_CAPACITY_BONUS":
-      return `Every owned city gains +${effect.capacity} capacity`;
+      return `Cities support +${effect.capacity} unit`;
     case "MEDIC_HEAL":
-      return `Medic heals ${effect.amount} HP`;
+      return `Medics heal ${effect.amount}`;
     case "FRIENDLY_IDLE_RECOVERY":
-      return `Idle friendly recovery becomes ${effect.amount} HP`;
+      return `Resting units heal ${effect.amount}`;
     case "FIRST_HOSTILE_CAPTURE_SPOILS":
-      return `First hostile capture of each city awards +${effect.coins} Coins`;
+      return `+${effect.coins} Coins for each city you capture`;
   }
 }
 
@@ -2710,28 +2881,11 @@ function navalTechnologyNotesV7(
   technology: PublicTechnologyNodeV7["id"],
 ): readonly string[] {
   if (technology === "SHORECRAFT")
-    return [
-      "Harvest Fish: 2 Coins, +1 permanent population",
-      "Gather Pearls: 2 Coins, receive 4 Coins",
-      "Build Port: 4 Coins, +1 live population",
-      "Move a land unit normally so its final step enters a friendly active Port",
-      "Active explored Ports connect across at most 5 water steps for +1 Coin per qualifying city",
-    ];
-  if (technology === "NAVIGATION")
-    return [
-      "Ships and embarked transports may enter Deep Water",
-      "Sea routes may extend across explored deep channels",
-    ];
+    return ["Board ships at your ports", "Ports link cities by sea"];
+  if (technology === "NAVIGATION") return ["Ships can sail deep water"];
   if (technology === "NAVAL_ENGINEERING")
-    return [
-      "Train Battleship at an empty active Port you own: 16 Coins",
-      "Battleship attacks at range 1–3, splashes half primary damage onto adjacent hostiles, and must choose movement or fire",
-    ];
-  if (technology === "ROADS")
-    return [
-      "Build Roads on owned or neutral land",
-      "Every connected owned city and the original capital grant each other +1 live population; links may continue through active Ports",
-    ];
+    return ["Battleship: long-range splash damage"];
+  if (technology === "ROADS") return ["Connected cities grow faster"];
   return [];
 }
 
@@ -2783,14 +2937,7 @@ export function technologyEffectGroupsV7(
 }
 
 function technologyRoleDescriptionsV7(roleId: UnitRoleIdV7): readonly string[] {
-  const role = effectiveRoleRuleV7(roleId);
-  return [
-    `Train ${role.label} · ${role.cost ?? 0} Coins`,
-    ...role.abilities.map(
-      (ability) =>
-        `${title(ability)}: ${abilityDescription(ability, role.minimumRange, role.range)}`,
-    ),
-  ];
+  return [`Train ${effectiveRoleRuleV7(roleId).label}`];
 }
 
 function technologyEffectGroupIdV7(
@@ -2838,31 +2985,21 @@ export function recruitmentRolePresentationV7(
 ): RecruitmentRolePresentationV7 {
   const role = effectiveRoleRuleV7(roleId);
   const restrictions: string[] = [];
-  if (!role.mayUsePrimaryActionAfterMove)
-    restrictions.push("Cannot use its primary action after moving.");
-  if (!role.abilities.includes("CAPTURE")) restrictions.push("Cannot Capture.");
-  if (roleId === "CATAPULT" || roleId === "HORSE_ARCHER")
-    restrictions.push("Never advances after a kill.");
-  if (roleId === "MARKSMAN")
-    restrictions.push("Does not advance after a ranged kill.");
-  if (roleId === "SCOUT")
-    restrictions.push("Fieldcraft removes Forest movement termination.");
-  if (roleId === "MARKSMAN")
-    restrictions.push(
-      "Fieldcraft raises Sight to 2 and removes Forest movement termination.",
-    );
-  if (roleId === "PATROL_BOAT" || roleId === "BATTLESHIP")
-    restrictions.push(
-      "Train at an empty active Port you own; the ship uses that Port city's capacity. Cannot Capture, embark, Pillage, or Disband. Recovers only within one cell of an owned active Port.",
-    );
+  const ship = roleId === "PATROL_BOAT" || roleId === "BATTLESHIP";
+  if (!role.mayUsePrimaryActionAfterMove && role.minimumRange <= 1 && !ship)
+    restrictions.push("Can't attack after moving.");
+  if (!role.abilities.includes("CAPTURE") && !ship)
+    restrictions.push("Can't capture.");
+  if (ship) restrictions.push("Built at ports. Heals only near your ports.");
   if (roleId === "BATTLESHIP")
     restrictions.push(
-      "Must choose movement or fire during each activation. Range 1–3 fire splashes half the primary damage, rounded up, onto adjacent hostile units.",
+      "Shots splash onto nearby enemies.",
+      "Moves or fires each turn, not both.",
     );
   return {
     label: role.label,
     stats: [
-      { label: "Max HP", value: String(role.maxHp) },
+      { label: "HP", value: String(role.maxHp) },
       { label: "Attack", value: formatHalfUnits(role.attack2) },
       { label: "Defense", value: formatHalfUnits(role.defense2) },
       { label: "Move", value: String(role.move) },
@@ -2875,10 +3012,16 @@ export function recruitmentRolePresentationV7(
       },
       { label: "Sight", value: String(role.sightRadius) },
     ],
-    abilities: role.abilities.map(
-      (ability) =>
-        `${title(ability)}: ${abilityDescription(ability, role.minimumRange, role.range)}`,
-    ),
+    abilities: role.abilities.flatMap((ability) => {
+      const description = abilityDescription(
+        ability,
+        role.minimumRange,
+        role.range,
+      );
+      return description === null
+        ? []
+        : [`${abilityName(ability)}: ${description}`];
+    }),
     restrictions,
   };
 }
@@ -2891,28 +3034,28 @@ function abilityDescription(
   ability: string,
   minimum: number,
   maximum: number,
-): string {
+): string | null {
   switch (ability) {
     case "ATTACK":
       return minimum > 1
-        ? `Attack from range ${minimum}–${maximum}. This role cannot attack nearer than ${minimum} and cannot move and fire.`
-        : `Attack an offered hostile target at range ${minimum}–${maximum}.`;
+        ? `Fires at range ${minimum}–${maximum}. Can't hit adjacent units or move and fire.`
+        : null;
     case "CAPTURE":
-      return "Remain on a neutral village or hostile city until your next Start Turn, then Capture when offered.";
+      return "Can take villages and enemy cities.";
     case "CHARGE":
-      return "An ordinary move of at least two cells adds 1 Attack for this activation.";
+      return "+1 attack after moving 2 or more tiles.";
     case "HEAL_ADJACENT":
-      return "Heal an adjacent damaged friendly unit by the current Medicine or Recovery amount.";
+      return "Heals a hurt ally next to it.";
     case "PUSH":
-      return "A surviving adjacent defender is pushed one cell directly away when the public destination is legal.";
+      return "Knocks surviving targets back a tile.";
     case "BREACH":
-      return "Adjacent attacks ignore terrain cover; flat fortification from field defenses, city fortification, and Walls still applies.";
+      return "Ignores terrain defense when attacking up close.";
     case "DASH":
-      return "May take its ordinary Move before its first Attack.";
+      return "Can move before attacking.";
     case "TWO_SHOTS":
-      return "Up to 2 total attacks in this activation. Move only before firing. After the first shot, this unit cannot move or use another self action; other units and End Turn remain available. It cannot Capture and never advances.";
+      return "Shoots twice a turn. Move before the first shot.";
     default:
-      return `${title(ability)} ability.`;
+      return null;
   }
 }
 export function economicFormulaV7(
@@ -2923,14 +3066,14 @@ export function economicFormulaV7(
     improvement === "WINDMILL" &&
     formula === "ADJACENT_FRIENDLY_CONTRIBUTORS"
   )
-    return "Windmill: +1 population per adjacent same-owner Farm, including other cities, cap 8; unsupported produces 0";
+    return "Windmill: +1 per adjacent farm";
   if (improvement === "SAWMILL" && formula === "ADJACENT_FRIENDLY_CONTRIBUTORS")
-    return "Sawmill: +1 population per adjacent same-owner Lumber Camp, including other cities, cap 8";
+    return "Sawmill: +1 per adjacent lumber camp";
   if (improvement === "FORGE" && formula === "ADJACENT_FRIENDLY_CONTRIBUTORS")
-    return "Forge: +1 population per adjacent same-owner Mine, including other cities, maximum 6; placement requires at least one Mine and an unsupported Forge produces 0";
+    return "Forge: +1 per adjacent mine";
   if (improvement === "WORKSHOP" && formula === "DISTINCT_BASIC_TYPES")
-    return "Workshop: 0 with no adjacent Farm, Camp, or Mine; otherwise +1 plus the number of distinct adjacent types, cap 4 population";
-  return "Market: +1 recurring Coin per adjacent Agriculture, Timber, or Metal family, including inactive processors, plus +1 for an adjacent usable capital-connected owned or neutral Road; cap 4";
+    return "Workshop: grows with varied neighbors";
+  return "Market: coins from nearby industry";
 }
 export function monumentSourceForViewerV7(
   view: PlayerViewV7,
@@ -2963,13 +3106,13 @@ export function specialBoundaryNoticeV7(
       event.playerId === viewerId,
   );
   if (treasury?.kind === "CITY_REWARD_AUTOMATICALLY_GRANTED")
-    return `Treasury automatically granted · +${treasury.coins} Coins.`;
+    return `Treasury: +${treasury.coins} Coins`;
   const achievement = events.find(
     (event) =>
       event.kind === "ACHIEVEMENT_UNLOCKED" && event.playerId === viewerId,
   );
   return achievement?.kind === "ACHIEVEMENT_UNLOCKED"
-    ? `${title(achievement.achievement)} achievement unlocked.`
+    ? `${title(achievement.achievement)} achievement unlocked`
     : null;
 }
 function techAchievementV7(tech: TechnologyIdV7): AchievementIdV7 | null {
@@ -2978,22 +3121,50 @@ function techAchievementV7(tech: TechnologyIdV7): AchievementIdV7 | null {
   if (tech === "PROSPECTING") return "MUSTER";
   return null;
 }
-function rewardLabel(reward: string, level: number): string {
-  if (reward === "TREASURY") return "Treasury · +12 Coins";
-  if (reward === "JUGGERNAUT") return "Juggernaut · reward unit";
-  if (reward === "STOCKPILE") return "Stockpile · +4 Coins";
-  if (reward === "BOOM") return "Boom · +3 permanent population";
-  return `${title(reward)} · level ${level} reward`;
+function rewardLabel(reward: string): readonly [string, string] {
+  if (reward === "SURVEY") return ["Survey", "Reveal the area"];
+  if (reward === "STOCKPILE") return ["Stockpile", "+4 Coins"];
+  if (reward === "WALLS") return ["Walls", "Stronger city defense"];
+  if (reward === "MILITIA") return ["Militia", "A free Fighter"];
+  if (reward === "EXPAND") return ["Expand", "Bigger borders"];
+  if (reward === "BOOM") return ["Boom", "+3 population"];
+  if (reward === "JUGGERNAUT") return ["Juggernaut", "A giant unit"];
+  if (reward === "TREASURY") return ["Treasury", "+12 Coins"];
+  return [title(reward), ""];
 }
+
+const TECH_BRANCH_LABELS: Readonly<Record<string, string>> = {
+  SETTLEMENT: "Settlement",
+  WILDS: "Wilds",
+  MOBILITY_TRADE: "Travel & trade",
+  INDUSTRY_WARFARE: "Industry",
+  NAVAL: "Sea",
+};
+const COMMAND_LABELS: Partial<Record<CommandV7["kind"], string>> = {
+  HARVEST_FRUIT: "Harvest",
+  HUNT_GAME: "Hunt",
+  HARVEST_FISH: "Fish",
+  GATHER_PEARLS: "Pearls",
+  BUILD_FARM: "Farm",
+  BUILD_LUMBER_CAMP: "Lumber camp",
+  BUILD_MINE: "Mine",
+  BUILD_WINDMILL: "Windmill",
+  BUILD_SAWMILL: "Sawmill",
+  BUILD_FORGE: "Forge",
+  BUILD_WORKSHOP: "Workshop",
+  BUILD_MARKET: "Market",
+  BUILD_PORT: "Port",
+  CLEAR_FOREST: "Clear forest",
+  REPLANT_FOREST: "Plant forest",
+  BUILD_ROAD: "Road",
+  REDEVELOP: "Redevelop",
+  BUILD_FIELD_DEFENSE: "Fortify",
+};
 function commandLabel(command: CommandV7): string {
-  if (command.kind === "TRAIN") return effectiveRoleRuleV7(command.role).label;
-  if (command.kind === "TRAIN_NAVAL")
-    return `Train ${effectiveRoleRuleV7(command.role).label}`;
-  if (command.kind === "BUILD_MONUMENT")
-    return `Build Monument · ${title(command.achievement)}`;
-  if (command.kind === "BUILD_MINE") return "Build Mine";
-  if (command.kind === "BUILD_FORGE") return "Build Forge";
-  return title(command.kind);
+  if (command.kind === "TRAIN" || command.kind === "TRAIN_NAVAL")
+    return effectiveRoleRuleV7(command.role).label;
+  if (command.kind === "BUILD_MONUMENT") return "Monument";
+  return COMMAND_LABELS[command.kind] ?? title(command.kind);
 }
 function economicPreviewLabelV7(preview: EconomicPreviewV7): string {
   const population = preview.populationDeltaByCity.reduce(
@@ -3157,12 +3328,13 @@ function select(
   id: string,
   values: readonly string[],
   selected: string,
+  labels: Readonly<Record<string, string>> = {},
 ): HTMLLabelElement {
   const label = documentRoot.createElement("label");
   label.textContent = labelText;
   const field = documentRoot.createElement("select");
   field.id = id;
-  replaceOptions(documentRoot, field, values, selected);
+  replaceOptions(documentRoot, field, values, selected, labels);
   label.append(field);
   return label;
 }
@@ -3171,12 +3343,13 @@ function replaceOptions(
   field: HTMLSelectElement,
   values: readonly string[],
   selected: string,
+  labels: Readonly<Record<string, string>> = {},
 ): void {
   field.replaceChildren(
     ...values.map((entry) => {
       const option = documentRoot.createElement("option");
       option.value = entry;
-      option.textContent = entry;
+      option.textContent = labels[entry] ?? entry;
       option.selected = entry === selected;
       return option;
     }),
@@ -3196,4 +3369,93 @@ function input(
   field.value = initial;
   label.append(field);
   return label;
+}
+
+function iconButton(
+  documentRoot: Document,
+  icon: UiIconIdV7,
+  label: string,
+  action: string,
+  showLabel = false,
+): HTMLButtonElement {
+  const node = documentRoot.createElement("button");
+  node.type = "button";
+  node.dataset.action = action;
+  node.className = showLabel ? "v7-icon-button has-label" : "v7-icon-button";
+  node.append(uiIconV7(documentRoot, icon));
+  if (showLabel) node.append(text(documentRoot, "span", label));
+  else node.setAttribute("aria-label", label);
+  node.title = label;
+  return node;
+}
+
+function playerName(seat: number): string {
+  return `Player ${seat + 1}`;
+}
+
+const STAT_ICONS: Readonly<Record<string, UiIconIdV7>> = {
+  HP: "hp",
+  ATTACK: "attack",
+  DEFENSE: "defense",
+  MOVE: "move",
+  RANGE: "range",
+  SIGHT: "sight",
+};
+
+function economyChips(
+  documentRoot: Document,
+  values: {
+    readonly cost?: number;
+    readonly population?: number;
+    readonly income?: number;
+  },
+): HTMLElement {
+  const chips = el(documentRoot, "span", "v7-command-economy");
+  const chip = (
+    kind: "coin" | "population",
+    value: string,
+    className: string,
+  ): void => {
+    const node = el(documentRoot, "span", `v7-economy-chip ${className}`);
+    node.append(value, economyIcon(documentRoot, kind));
+    chips.append(node);
+  };
+  if (values.cost !== undefined)
+    chip("coin", values.cost === 0 ? "Free" : String(values.cost), "is-cost");
+  if (values.population !== undefined && values.population !== 0)
+    chip(
+      "population",
+      `${values.population > 0 ? "+" : ""}${values.population}`,
+      values.population > 0 ? "is-gain" : "is-loss",
+    );
+  if (values.income !== undefined && values.income !== 0)
+    chip(
+      "coin",
+      `${values.income > 0 ? "+" : ""}${values.income}/t`,
+      values.income > 0 ? "is-gain" : "is-loss",
+    );
+  return chips;
+}
+
+function populationMeter(
+  documentRoot: Document,
+  population: number,
+  slots: number,
+): HTMLElement {
+  const meter = el(documentRoot, "span", "v7-population-meter");
+  meter.setAttribute("aria-hidden", "true");
+  for (let index = 0; index < Math.max(1, slots); index += 1) {
+    const pip = el(documentRoot, "span", "v7-population-pip");
+    if (population > 0 && index < population) pip.dataset.state = "filled";
+    else if (population < 0 && index < -population)
+      pip.dataset.state = "deficit";
+    meter.append(pip);
+  }
+  return meter;
+}
+
+function abilityName(ability: string): string {
+  if (ability === "HEAL_ADJACENT") return "Heal";
+  if (ability === "TWO_SHOTS") return "Double shot";
+  return title(ability);
 }

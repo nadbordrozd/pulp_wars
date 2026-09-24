@@ -1,5 +1,38 @@
 # UI Asset and Visual Contract
 
+## Current Ruleset 7 simplified interface (2026-09-24)
+
+This section supersedes the compact dock and HUD wording below wherever they
+conflict. The direction follows the user's request for a Polytopia-like
+interface: few words, visual actions, and explanations only behind an explicit
+tap.
+
+- **Board-first chrome.** The HUD floats over the map on a light gradient. At
+  left: a coin pill (`stock` plus a green `+income`) and a `Turn N` pill.
+  At right: a Tech button, a menu button, and a gold `End turn` button. The menu
+  holds Leaderboard, Achievements, Help, Settings, and Save & quit. Zoom
+  buttons float at the right edge on wide screens.
+- **No permanent status line.** Routine confirmations such as a move go only to
+  the screen-reader live region. A short toast appears briefly for notable
+  events such as a Treasury grant. Errors stay visible as a toast until the next
+  action.
+- **Floating selection panel.** The dock is a rounded panel sized to its
+  content, centered at the bottom. The selected art is scaled from the existing
+  112 x 130 identity viewport. Unit stats are small icon pills (HP, attack,
+  defense, move, range, sight) with accessible text labels. City facts are pills
+  for level, a population pip meter, units/capacity, and income. Tile facts are
+  pills.
+- **Icon-first actions.** Each action tile shows art, a short name (for example
+  `Farm`, `Harvest`, `Fortify`), and cost/effect chips that use the coin and
+  population icons instead of prose.
+- **Explanations on demand.** The unit `?` dialog and the training `?` dialog
+  show stats as icons plus one short line per notable ability or restriction.
+  Tech detail opens as a sheet over the tree with a short unlock list and a
+  Research button that shows the cost.
+- **Interface glyphs.** Monochrome SVG glyphs in `src/render/dom/ui-icons-v7.ts`
+  are interface chrome, not game art. They must never stand in for unit,
+  terrain, building, coin, or population artwork, which stays PixelLab-made.
+
 ## Current Ruleset 7 compact dock and economy icons
 
 Ruleset 7 uses one full-width bottom dock layout for selected units and cities:

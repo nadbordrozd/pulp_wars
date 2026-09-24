@@ -54,9 +54,9 @@ describe("Ruleset 7 tactical DOM controls", () => {
     expect(
       details.querySelector('[data-tactical-state="horse-archer"]')
         ?.textContent,
-    ).toContain("Two-shot activation");
+    ).toBe("2 shots left");
     expect(details.textContent).toContain(
-      "0 attacks used · 2 unused · 2 currently legal",
+      "Shoots twice a turn. Move before the first shot.",
     );
 
     const firstShot = required(
@@ -72,18 +72,12 @@ describe("Ruleset 7 tactical DOM controls", () => {
       () =>
         document
           .querySelector(".v7-unit-help-dialog")
-          ?.textContent?.includes(
-            "1 attacks used · 1 unused · 1 currently legal",
-          ) === true,
+          ?.textContent?.includes("1 shot left") === true,
     );
     expect(
-      document.querySelector(".v7-unit-help-dialog")?.textContent,
-    ).toContain("1 attacks used · 1 unused · 1 currently legal");
-    expect(
-      document.querySelector(".v7-unit-help-dialog")?.textContent,
-    ).toContain(
-      "This unit cannot move or use another action; other units remain available.",
-    );
+      document.querySelector('[data-tactical-state="horse-archer"]')
+        ?.textContent,
+    ).toBe("1 shot left");
     expect(
       controller
         .snapshot()

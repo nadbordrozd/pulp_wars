@@ -56,12 +56,8 @@ describe("Ruleset 7 Canvas interaction", () => {
       '.v7-unit-help-dialog[aria-modal="true"]',
     );
     expect(details).not.toBeNull();
-    expect(details?.querySelector(".v7-readiness-label")?.textContent).toBe(
-      "Needs action",
-    );
-    expect(details?.querySelector(".v7-abilities")?.textContent).toContain(
-      "Attack",
-    );
+    expect(details?.querySelectorAll(".v7-unit-stats dt")).toHaveLength(6);
+    expect(details?.textContent).not.toContain("Needs action");
     document
       .querySelector<HTMLButtonElement>('[data-action="close-unit-help"]')
       ?.click();

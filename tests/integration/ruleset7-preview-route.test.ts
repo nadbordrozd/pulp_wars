@@ -58,12 +58,12 @@ describe("Ruleset 7 application route", () => {
       downloadDebugBundle: debugDownload,
       diagnosticNow: () => "2026-09-08T12:34:56.789Z",
     });
-    expect(document.body.textContent).toContain("Original-only local conquest");
+    expect(document.querySelector("h1")?.textContent).toBe("Pulp Wars");
     expect(document.body.textContent).not.toContain("CANDY");
     const frozenSix = document.querySelector<HTMLAnchorElement>(
       '[data-route="ruleset-6"]',
     );
-    expect(frozenSix?.textContent).toContain("Original or Candy");
+    expect(frozenSix?.textContent).toContain("Ruleset 6");
     expect(frozenSix?.getAttribute("href")).toBe("?ruleset=6");
 
     const count = requiredSelect("v7-ai-count");
@@ -74,7 +74,7 @@ describe("Ruleset 7 application route", () => {
     expect(document.activeElement).toBe(count);
     expect(requiredButton('[data-action="launch"]')).toBe(launch);
     expect(selectValues("v7-board-size")).toEqual(["16", "20", "25"]);
-    expect(document.body.textContent).toContain("4 fixed Original seats");
+    expect(document.body.textContent).not.toContain("fixed Original seats");
 
     count.value = "1";
     count.dispatchEvent(new Event("change", { bubbles: true }));
@@ -88,18 +88,20 @@ describe("Ruleset 7 application route", () => {
       seed: 2,
       factions: ["ORIGINAL", "ORIGINAL"],
     });
-    expect(document.body.textContent).toContain(
-      "canonical Start Turn boundary",
+    expect(document.querySelector("#v7-live")?.textContent).toBe(
+      "Game started.",
     );
+    expect(document.querySelector(".v7-toast")).toBeNull();
 
+    requiredButton('[data-action="compact-menu"]').click();
     requiredButton('[data-action="settings"]').click();
     requiredButton('[data-action="export-safe-log"]').click();
     expect(safeDownload).toHaveBeenCalledOnce();
     expect(JSON.parse(safeDownload.mock.calls[0]?.[0] ?? "{}")).toMatchObject({
       log: { classification: "PLAYER_SAFE" },
     });
-    expect(document.querySelector("#v7-live")?.textContent).toContain(
-      "Player-safe",
+    expect(document.querySelector("#v7-live")?.textContent).toBe(
+      "Game log downloaded.",
     );
     requiredButton('[data-action="export-debug-with-spoilers"]').click();
     expect(debugDownload).toHaveBeenCalledOnce();
@@ -136,10 +138,11 @@ describe("Ruleset 7 application route", () => {
     fast.click();
     expect(document.activeElement).toBe(fast);
     expect(requiredButton('[data-action="fast-forward"]')).toBe(fast);
-    expect(fast.textContent).toContain("enabled");
+    expect(fast.classList.contains("is-active")).toBe(true);
 
-    const settings = requiredButton('[data-action="settings"]');
+    const settings = requiredButton('[data-action="compact-menu"]');
     settings.click();
+    requiredButton('[data-action="settings"]').click();
     await Promise.resolve();
     const restart = requiredButton('[data-action="restart"]');
     restart.focus();
@@ -147,7 +150,7 @@ describe("Ruleset 7 application route", () => {
     scheduler.runNext();
     await Promise.resolve();
     expect(requiredButton('[data-action="restart"]')).toBe(restart);
-    expect(requiredButton('[data-action="settings"]')).toBe(settings);
+    expect(requiredButton('[data-action="compact-menu"]')).toBe(settings);
     expect(document.activeElement).toBe(restart);
     const priorIndex = app.controller.snapshot().view?.commandIndex ?? 0;
     scheduler.runNext();
@@ -155,7 +158,7 @@ describe("Ruleset 7 application route", () => {
       () => (app.controller.snapshot().view?.commandIndex ?? 0) > priorIndex,
     );
     expect(requiredButton('[data-action="restart"]')).toBe(restart);
-    expect(requiredButton('[data-action="settings"]')).toBe(settings);
+    expect(requiredButton('[data-action="compact-menu"]')).toBe(settings);
     expect(document.activeElement).toBe(restart);
     restart.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
     restart.click();
@@ -207,7 +210,7 @@ describe("Ruleset 7 application route", () => {
     count.value = "2";
     count.dispatchEvent(new Event("change", { bubbles: true }));
     expect(document.querySelector("[data-v7-setup]")).not.toBeNull();
-    expect(document.body.textContent).toContain("Replace this Ruleset 7 save");
+    expect(document.body.textContent).toContain("Start new game");
     resumed.destroy();
 
     window.localStorage.clear();
@@ -228,7 +231,7 @@ describe("Ruleset 7 application route", () => {
     scheduler.runNext();
     await waitUntil(() => errored.controller.snapshot().phase === "ERROR");
     await Promise.resolve();
-    expect(document.body.textContent).toContain("Match paused");
+    expect(document.body.textContent).toContain("Game paused");
     expect(document.body.textContent).toContain(
       "synthetic public policy failure",
     );

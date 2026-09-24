@@ -368,7 +368,7 @@ describe("Ruleset 7 naval public presentation", () => {
     );
     expect(
       recruitmentRolePresentationV7("BATTLESHIP").restrictions.join(" "),
-    ).toContain("choose movement or fire");
+    ).toContain("Moves or fires each turn, not both.");
   });
 
   it("shows deduplicated recovery only for an owned vessel on legal non-allied water", () => {

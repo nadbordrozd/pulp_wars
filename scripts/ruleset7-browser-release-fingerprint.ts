@@ -17,7 +17,9 @@ export const BROWSER_RELEASE_SOURCE_PATHS_V7 = Object.freeze([
   "src/persistence/v7.ts",
   "src/render/canvas/board-renderer-v7.ts",
   "src/render/dom/app-view-v7.ts",
+  "src/render/dom/ui-icons-v7.ts",
   "src/styles/main.css",
+  "src/styles/v7.css",
 ] as const);
 
 export function browserReleaseRuntimeFingerprintV7(root: string): string {

@@ -91,28 +91,24 @@ describe("Ruleset 7 public presentation", () => {
     const horseArcher = recruitmentRolePresentationV7("HORSE_ARCHER");
     expect(horseArcher.label).toBe("Horse Archer");
     expect(horseArcher.stats).toEqual([
-      { label: "Max HP", value: "10" },
+      { label: "HP", value: "10" },
       { label: "Attack", value: "2" },
       { label: "Defense", value: "1" },
       { label: "Move", value: "3" },
       { label: "Range", value: "1–2" },
       { label: "Sight", value: "1" },
     ]);
-    expect(horseArcher.abilities.join(" ")).toContain(
-      "Up to 2 total attacks in this activation",
-    );
-    expect(horseArcher.abilities.join(" ")).toContain(
-      "other units and End Turn remain available",
-    );
-    expect(horseArcher.abilities.join(" ")).toContain(
-      "cannot Capture and never advances",
-    );
+    expect(horseArcher.abilities).toEqual([
+      "Dash: Can move before attacking.",
+      "Double shot: Shoots twice a turn. Move before the first shot.",
+    ]);
+    expect(horseArcher.restrictions).toEqual(["Can't capture."]);
 
-    const marksman = recruitmentRolePresentationV7("MARKSMAN");
-    expect(marksman.restrictions).toContain(
-      "Does not advance after a ranged kill.",
-    );
-    expect(marksman.restrictions).not.toContain("Never advances after a kill.");
+    const catapult = recruitmentRolePresentationV7("CATAPULT");
+    expect(catapult.abilities.join(" ")).toContain("range 2–3");
+    const battleship = recruitmentRolePresentationV7("BATTLESHIP");
+    expect(battleship.restrictions).not.toContain("Can't capture.");
+    expect(battleship.restrictions).not.toContain("Can't attack after moving.");
   });
 
   it("groups technology detail items from structured effect kinds", () => {
@@ -126,12 +122,7 @@ describe("Ruleset 7 public presentation", () => {
       {
         id: "UNITS",
         label: "Units",
-        items: [
-          "Train Horse Archer · 9 Coins",
-          "Attack: Attack an offered hostile target at range 1–2.",
-          "Dash: May take its ordinary Move before its first Attack.",
-          "Two shots: Up to 2 total attacks in this activation. Move only before firing. After the first shot, this unit cannot move or use another self action; other units and End Turn remain available. It cannot Capture and never advances.",
-        ],
+        items: ["Train Horse Archer"],
       },
       {
         id: "BUILDINGS",
@@ -141,7 +132,7 @@ describe("Ruleset 7 public presentation", () => {
       {
         id: "PASSIVE_EFFECTS",
         label: "Passive effects",
-        items: ["Market connected to the capital adds +1 Coin"],
+        items: ["Markets on roads to the capital +1 coin"],
       },
     ]);
   });
@@ -380,7 +371,7 @@ describe("Ruleset 7 public presentation", () => {
         ],
         view.viewer.id,
       ),
-    ).toBe("Treasury automatically granted · +12 Coins.");
+    ).toBe("Treasury: +12 Coins");
     expect(view.pendingChoices).toEqual([]);
   });
 
@@ -479,13 +470,11 @@ describe("Ruleset 7 public presentation", () => {
       economicFormulaV7("WORKSHOP", "DISTINCT_BASIC_TYPES"),
       economicFormulaV7("MARKET", "DISTINCT_ECONOMIC_FAMILIES"),
     ]).toEqual([
-      expect.stringMatching(/\+1.*Farm.*cap 8.*0/),
-      expect.stringMatching(/\+1.*Lumber Camp.*cap 8/),
-      expect.stringMatching(/\+1.*Mine.*maximum 6.*at least one Mine.*0/),
-      expect.stringMatching(/0.*\+1 plus.*distinct.*cap 4/),
-      expect.stringMatching(
-        /\+1 recurring Coin.*inactive processors.*\+1.*Road.*cap 4/,
-      ),
+      "Windmill: +1 per adjacent farm",
+      "Sawmill: +1 per adjacent lumber camp",
+      "Forge: +1 per adjacent mine",
+      "Workshop: grows with varied neighbors",
+      "Market: coins from nearby industry",
     ]);
   });
 

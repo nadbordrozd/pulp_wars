@@ -263,7 +263,7 @@ describe("Ruleset 7 DOM shell", () => {
   });
 
   it("keeps the two mandatory reward actions in one desktop row", () => {
-    const css = readFileSync("src/styles/main.css", "utf8");
+    const css = readFileSync("src/styles/v7.css", "utf8");
     expect(css).toMatch(
       /@media \(min-width: 801px\) \{[\s\S]*?\.v7-mandatory-choice\[data-v7-region="mandatory-reward"\] \{[\s\S]*?grid-template-columns: repeat\(2, 176px\);[\s\S]*?\.v7-mandatory-choice\[data-v7-region="mandatory-reward"\] > h2 \{[\s\S]*?grid-column: 1 \/ -1;/,
     );
@@ -271,7 +271,8 @@ describe("Ruleset 7 DOM shell", () => {
 
   it("launches the complete board-first shell with semantic public overlays", async () => {
     const app = bootstrapRuleset7App(document, { storage: null });
-    expect(document.body.textContent).toContain("Original-only local conquest");
+    expect(document.querySelector("h1")?.textContent).toBe("Pulp Wars");
+    expect(document.body.textContent).not.toContain("ORIGINAL_BASELINE");
     requiredInput("v7-seed").value = "2";
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
@@ -294,11 +295,15 @@ describe("Ruleset 7 DOM shell", () => {
       ),
     ).toHaveLength(1);
     expect(document.querySelector(".v7-coins")?.textContent).toBe(
-      `${current.viewer.coins} (+${projectedIncome}/turn)`,
+      `${current.viewer.coins}+${projectedIncome}`,
     );
     expect(document.querySelector(".v7-income-rate")?.textContent).toBe(
-      `(+${projectedIncome}/turn)`,
+      `+${projectedIncome}`,
     );
+    expect(document.querySelector(".v7-hud-round")?.textContent).toBe(
+      `Turn ${current.round}`,
+    );
+    expect(document.querySelector(".v7-hud-message")).toBeNull();
     expect(document.body.textContent).not.toContain("CANDY");
 
     requiredButton('[data-action="tech"]').click();
@@ -336,17 +341,18 @@ describe("Ruleset 7 DOM shell", () => {
     expect(document.body.textContent).toContain("Technology");
     requiredButton('[data-action="close-overlay"]').click();
 
-    requiredButton('[data-action="achievements"]').click();
+    expect(document.querySelector('[data-action="achievements"]')).toBeNull();
+    openMenuItem("achievements");
     expect(document.body.textContent).toContain("Engineer");
     expect(document.body.textContent).toContain("Muster");
-    expect(
-      document.querySelectorAll(
-        '[data-symbol-id="ui-status-achievement-progress"]',
-      ),
-    ).toHaveLength(3);
+    expect(document.querySelectorAll(".v7-achievement")).toHaveLength(3);
+    expect(document.querySelectorAll(".v7-achievement-meter")).toHaveLength(3);
     requiredButton('[data-action="close-overlay"]').click();
-    requiredButton('[data-action="stats"]').click();
-    expect(document.body.textContent).toContain("Opponent totals are limited");
+    openMenuItem("leaderboard");
+    expect(document.querySelectorAll(".v7-leaderboard-row")).toHaveLength(
+      current.leaderboard.length,
+    );
+    expect(document.body.textContent).toContain("(you)");
     expect(document.body.textContent).not.toContain("Opponent Coins");
     app.destroy();
   });
@@ -365,24 +371,22 @@ describe("Ruleset 7 DOM shell", () => {
     const app = bootstrapRuleset7App(document, { storage: null });
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
-    requiredButton('[data-action="settings"]').click();
-    expect(requiredButton('[data-action="restart"]').textContent).toContain(
-      "Restart Same Match",
+    openMenuItem("settings");
+    expect(requiredButton('[data-action="restart"]').textContent).toBe(
+      "Restart game",
     );
-    expect(requiredButton('[data-action="delete-save"]').textContent).toContain(
-      "Delete Save",
+    expect(requiredButton('[data-action="delete-save"]').textContent).toBe(
+      "Delete save",
     );
     expect(
       requiredButton('[data-action="export-debug-with-spoilers"]').ariaLabel,
     ).toContain("hidden map and units");
     requiredButton('[data-action="delete-save"]').click();
     await waitUntil(
-      () =>
-        document.querySelector("#v7-live")?.textContent ===
-        "Only the Ruleset 7 revision-6 save was deleted.",
+      () => document.querySelector("#v7-live")?.textContent === "Save deleted.",
     );
     expect(document.querySelector("#v7-live")?.textContent).toBe(
-      "Only the Ruleset 7 revision-6 save was deleted.",
+      "Save deleted.",
     );
     app.destroy();
   });
@@ -399,7 +403,7 @@ describe("Ruleset 7 DOM shell", () => {
     expect((await app.controller.dispatch(wait)).accepted).toBe(true);
     const commandIndex = app.controller.snapshot().view?.commandIndex;
 
-    requiredButton('[data-action="main-menu"]').click();
+    openMenuItem("main-menu");
     await waitUntil(() => app.controller.snapshot().phase === "RESUMABLE");
     expect(document.querySelector(".v7-match-root")).toBeNull();
     expect(requiredButton('[data-action="resume"]').textContent).toBe("Resume");
@@ -410,13 +414,13 @@ describe("Ruleset 7 DOM shell", () => {
     expect(document.querySelector(".v7-match-root")).not.toBeNull();
     expect(app.controller.snapshot().view?.commandIndex).toBe(commandIndex);
 
-    requiredButton('[data-action="main-menu"]').click();
+    openMenuItem("main-menu");
     await waitUntil(() => app.controller.snapshot().phase === "RESUMABLE");
     requiredButton('[data-action="show-replace"]').click();
     requiredInput("v7-seed").value = "2";
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
-    requiredButton('[data-action="main-menu"]').click();
+    openMenuItem("main-menu");
     await waitUntil(() => app.controller.snapshot().phase === "RESUMABLE");
     expect(requiredButton('[data-action="resume"]').textContent).toBe("Resume");
     app.destroy();
@@ -458,9 +462,9 @@ describe("Ruleset 7 DOM shell", () => {
       { boardHost: new CapturingBoardHost(), settingsStorage: null },
     );
     expect(document.querySelector(".v7-turn-status")?.textContent).toBe(
-      "Match complete",
+      "Game over",
     );
-    expect(document.body.textContent).not.toContain("is thinking");
+    expect(document.body.textContent).not.toContain("is playing");
     app.destroy();
     source.destroy();
   });
@@ -476,11 +480,13 @@ describe("Ruleset 7 DOM shell", () => {
     hunting.click();
     expect(document.body.textContent).toContain("Hunt game");
     expect(
-      document.querySelectorAll(".v7-tech-detail-group > ul > li").length,
+      document.querySelectorAll(".v7-tech-unlocks > li").length,
     ).toBeGreaterThan(0);
     expect(
-      document.querySelector('[data-effect-group="ACTIONS"] ul')?.tagName,
-    ).toBe("UL");
+      document.querySelector(
+        '.v7-tech-unlocks > li[data-effect-group="ACTIONS"]',
+      )?.textContent,
+    ).toBe("Hunt game");
     const research = requiredButton('[data-action="research-hunting"]');
     research.focus();
     research.click();
@@ -497,12 +503,19 @@ describe("Ruleset 7 DOM shell", () => {
       requiredButton('[data-action="tech-hunting"]').textContent,
     ).not.toContain("Coins");
     requiredButton('[data-action="tech-commerce"]').click();
-    expect(document.body.textContent).toContain(
-      "capital-connected owned or neutral Road",
+    expect(document.querySelector(".v7-tech-detail")?.textContent).toContain(
+      "Market: coins from nearby industry",
     );
     requiredButton('[data-action="tech-prospecting"]').click();
-    expect(document.body.textContent).toContain(
-      "Reveal Ore. Enter Mountains and construct resource-free spatial improvements and Monuments there. Units on Mountains gain +1 sight.",
+    const prospecting = document.querySelector(".v7-tech-detail")?.textContent;
+    expect(prospecting).toContain("Reveals Ore");
+    expect(prospecting).toContain("Units can climb mountains");
+    expect(prospecting).toContain("+1 sight on mountains");
+    requiredButton('[data-action="close-tech-detail"]').click();
+    await Promise.resolve();
+    expect(document.querySelector(".v7-tech-detail")).toBeNull();
+    expect(document.activeElement?.getAttribute("data-action")).toBe(
+      "tech-prospecting",
     );
     app.destroy();
   });
@@ -578,23 +591,19 @@ describe("Ruleset 7 DOM shell", () => {
     await Promise.resolve();
     const modal = document.querySelector<HTMLElement>(".v7-recruit-help");
     if (modal === null) throw new Error("recruit help missing");
-    expect(modal.getAttribute("aria-label")).toBe(
-      "Horse Archer recruitment information",
-    );
-    expect(modal.querySelector(".v7-identity h2")?.textContent).toBe(
+    expect(modal.getAttribute("aria-label")).toBe("Horse Archer information");
+    expect(modal.querySelector(".v7-dialog-header h2")?.textContent).toBe(
       "Horse Archer",
     );
     expect(
       modal.querySelector<HTMLImageElement>(".v7-art-frame")?.dataset.assetId,
     ).toBe(RULESET7_UNIT_ART_IDS.HORSE_ARCHER);
-    expect(modal.textContent).toContain("Max HP10");
+    expect(modal.textContent).toContain("HP10");
     expect(modal.textContent).toContain("Range1–2");
     expect(modal.textContent).toContain(
-      "Up to 2 total attacks in this activation",
+      "Shoots twice a turn. Move before the first shot.",
     );
-    expect(modal.textContent).toContain(
-      "other units and End Turn remain available",
-    );
+    expect(modal.textContent).toContain("Can't capture.");
     expect(modal.textContent).not.toContain("Needs action");
     expect(dispatch).not.toHaveBeenCalled();
     expect(initial.view.commandIndex).toBe(beforeIndex);
@@ -693,12 +702,12 @@ describe("Ruleset 7 DOM shell", () => {
         "aria-expanded",
       ),
     ).toBe("true");
-    requiredButton('[data-action="settings"]').click();
+    openMenuItem("settings");
     expect(requiredSelect("v7-motion")).not.toBeNull();
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
     await Promise.resolve();
     expect(document.activeElement?.getAttribute("data-action")).toBe(
-      "settings",
+      "compact-menu",
     );
     app.destroy();
   });
@@ -707,7 +716,7 @@ describe("Ruleset 7 DOM shell", () => {
     const first = bootstrapRuleset7App(document, { storage: null });
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => first.controller.snapshot().phase === "ACTIVE");
-    requiredButton('[data-action="settings"]').click();
+    openMenuItem("settings");
     changeSelect("v7-motion", "REDUCED");
     changeSelect("v7-animation-speed", "FAST");
     changeSelect("v7-ui-scale", "1.5");
@@ -721,7 +730,7 @@ describe("Ruleset 7 DOM shell", () => {
     const second = bootstrapRuleset7App(document, { storage: null });
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => second.controller.snapshot().phase === "ACTIVE");
-    requiredButton('[data-action="settings"]').click();
+    openMenuItem("settings");
     expect(requiredSelect("v7-motion").value).toBe("REDUCED");
     expect(requiredSelect("v7-animation-speed").value).toBe("FAST");
     expect(requiredSelect("v7-ui-scale").value).toBe("1.5");
@@ -748,7 +757,7 @@ describe("Ruleset 7 DOM shell", () => {
     });
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
-    requiredButton('[data-action="settings"]').click();
+    openMenuItem("settings");
     expect(requiredSelect("v7-motion").value).toBe("FULL");
     expect(requiredSelect("v7-animation-speed").value).toBe("NORMAL");
     expect(requiredSelect("v7-ui-scale").value).toBe("1");
@@ -925,9 +934,7 @@ describe("Ruleset 7 DOM shell", () => {
       { boardHost: host, settingsStorage: null },
     );
     host.callbacks?.onSelection({ kind: "TILE", at: monumentAt });
-    expect(document.body.textContent).toContain(
-      "Engineer Monument · source visible to the current city owner",
-    );
+    expect(document.body.textContent).toContain("Engineer monument");
     expect(
       document.querySelector(
         '[data-symbol-id="ui-status-achievement-source-current-owner"]',
@@ -945,23 +952,23 @@ describe("Ruleset 7 DOM shell", () => {
     ).not.toContain("Explored territory");
     expect(
       document.querySelector(".v7-context-actions")?.textContent,
-    ).toContain("Build Monument");
+    ).toContain("Monument");
     expect(
       document.querySelector(".v7-selection-dock")?.textContent,
     ).not.toContain("No direct action is currently offered");
     expect(
-      document.querySelector(".v7-selection-details")?.textContent,
+      document.querySelector(".v7-selection-dock")?.textContent,
     ).not.toContain("Ore");
     host.callbacks?.onSelection({ kind: "TILE", at: oreAt });
     expect(document.querySelector(".v7-identity h2")?.textContent).toBe("Ore");
     expect(document.querySelector(".v7-context-action")?.textContent).toContain(
-      "Build Mine",
+      "Mine",
     );
     host.callbacks?.onSelection({ kind: "TILE", at: mineAt });
     expect(document.querySelector(".v7-identity h2")?.textContent).toBe("Mine");
     host.callbacks?.onSelection({ kind: "TILE", at: forgeAt });
     expect(document.querySelector(".v7-context-action")?.textContent).toContain(
-      "Build Forge",
+      "Forge",
     );
     host.callbacks?.onSelection({ kind: "CITY", cityId: city.id });
     expect(document.querySelectorAll(".v7-city-stats")).toHaveLength(1);
@@ -969,7 +976,7 @@ describe("Ruleset 7 DOM shell", () => {
       "Population",
     );
     expect(document.querySelector(".v7-city-stats")?.textContent).toContain(
-      "Capacity",
+      "Units",
     );
     expect(
       document
@@ -984,7 +991,10 @@ describe("Ruleset 7 DOM shell", () => {
     const trainCost = document.querySelector<HTMLElement>(
       ".v7-train-action .v7-command-economy",
     );
-    expect(trainCost?.textContent).toMatch(/^\d+ Coins$/);
+    expect(trainCost?.textContent).toMatch(/^\d+$/);
+    expect(trainCost?.querySelector("img")?.getAttribute("data-asset-id")).toBe(
+      "ui-hud-gold-coin-v7",
+    );
     expect(document.querySelectorAll(".v7-train-action")).toHaveLength(
       trainableRoles.length,
     );
@@ -1091,7 +1101,7 @@ describe("Ruleset 7 DOM shell", () => {
       "unit-help",
     );
     host.callbacks?.onSelection({ kind: "TILE", at: monumentAt });
-    requiredButton('[data-action="achievements"]').click();
+    openMenuItem("achievements");
     expect(
       document.querySelector('[data-action="monument-engineer"]'),
     ).toBeNull();
@@ -1215,6 +1225,12 @@ function requiredRoot(): HTMLElement {
   const root = document.querySelector<HTMLElement>("#app");
   if (root === null) throw new Error("Missing #app");
   return root;
+}
+
+function openMenuItem(action: string): void {
+  if (document.querySelector(`[data-action="${action}"]`) === null)
+    requiredButton('[data-action="compact-menu"]').click();
+  requiredButton(`[data-action="${action}"]`).click();
 }
 
 function requiredButton(selector: string): HTMLButtonElement {

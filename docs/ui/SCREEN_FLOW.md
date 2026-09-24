@@ -13,6 +13,15 @@ faction choice, a board-first match, compact economic HUD, contextual actions,
 full technology view, turn handoff, and decisive end screen—without copying
 proprietary art, text, layout coordinates, or code.
 
+## Current Ruleset 7 simplified interface overlay
+
+The [simplified interface contract](../art/classes/ui.md#current-ruleset-7-simplified-interface-2026-09-24)
+governs current Ruleset 7 HUD, dock, dialog, and copy presentation. Player-facing
+text is short and plain. Rules are discovered through play and the `?` and
+tech-detail views, not spelled out in the HUD or dock. Where later sections
+require specific verbose labels, formula prose, or `+N/turn` wording for
+Ruleset 7, this overlay wins. Ruleset 6 and legacy routes are unchanged.
+
 ## Current Ruleset 7 revision 8 overlay
 
 This overlay applies only to the current Ruleset 7 route. The Ruleset 6
