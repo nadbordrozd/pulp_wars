@@ -3,7 +3,7 @@ import {
   technologyCapabilitiesV7,
 } from "../rules/ruleset-v7";
 import { defenseBonusForUnitV7, fortificationLevelForUnitV7 } from "./combat";
-import { tileAtV7 } from "./spatial-economy";
+import { spatialContributionAtV7, tileAtV7 } from "./spatial-economy";
 import type { GameStateV7, UnitStateV7 } from "./types";
 
 export const UNIT_STAT_IDS_V7 = Object.freeze([
@@ -18,6 +18,7 @@ export type UnitStatIdV7 = (typeof UNIT_STAT_IDS_V7)[number];
 export type UnitStatModifierSourceV7 =
   | "PROMOTION"
   | "CHARGE"
+  | "INSPIRED"
   | "CITY_WALLS"
   | "CITY_FORTIFICATION"
   | "FIELD_DEFENSE"
@@ -64,9 +65,15 @@ export function publicUnitStatsV7(
   const promotion = unit.maxHp - role.maxHp;
   const charge =
     !embarked &&
+    owner.researchedTechs.includes("RAIDING") &&
     role.abilities.includes("CHARGE") &&
     unit.activation.moved &&
-    unit.activation.movedPathLength >= 2
+    unit.activation.movedPathLength >= 2 &&
+    unit.activation.attacksUsed === 0
+      ? 2
+      : 0;
+  const inspired =
+    !embarked && unit.activation.inspired && unit.activation.attacksUsed === 0
       ? 2
       : 0;
   const defense = defenseBonusForUnitV7(state, unit);
@@ -94,6 +101,20 @@ export function publicUnitStatsV7(
           unit.role
         ] ?? 0,
       );
+  const tile = tileAtV7(state.board, unit.at);
+  const territoryCity = state.cities.find(
+    (city) =>
+      city.id === tile?.territoryCityId && city.ownerId === unit.ownerId,
+  );
+  const supplied =
+    unit.form === "LAND" &&
+    territoryCity !== undefined &&
+    state.board.tiles.some(
+      (candidate) =>
+        candidate.territoryCityId === territoryCity.id &&
+        candidate.improvement === "WINDMILL" &&
+        spatialContributionAtV7(state, candidate.at, "WINDMILL").population > 0,
+    );
   const labelText = embarked ? "Embarked transport" : role.label;
   return {
     unitId: unit.id,
@@ -121,17 +142,30 @@ export function publicUnitStatsV7(
         "Attack",
         null,
         base(labelText, "Attack", embarked ? 0 : role.attack2, 2),
-        charge > 0
-          ? [
-              modifier(
-                charge,
-                "CHARGE",
-                "Charge",
-                "Charge adds 1 Attack after an ordinary move of at least two cells.",
-                2,
-              ),
-            ]
-          : [],
+        [
+          ...(charge > 0
+            ? [
+                modifier(
+                  charge,
+                  "CHARGE",
+                  "Charge",
+                  "Charge adds 1 Attack after an ordinary move of at least two cells.",
+                  2,
+                ),
+              ]
+            : []),
+          ...(inspired > 0
+            ? [
+                modifier(
+                  inspired,
+                  "INSPIRED",
+                  "Inspired",
+                  "Captain Rally adds 1 Attack to the next attack this turn.",
+                  2,
+                ),
+              ]
+            : []),
+        ],
       ),
       stat(
         "DEFENSE",
@@ -178,14 +212,21 @@ export function publicUnitStatsV7(
                 1,
                 "HIGH_GROUND",
                 "High ground",
-                "Prospecting adds 1 Sight while standing on a Mountain.",
+                "Engineering adds 1 Sight while standing on a Mountain.",
               ),
             ]
           : [],
       ),
     ],
     abilities: embarked ? [] : role.abilities,
-    statuses: [],
+    statuses: [
+      ...(supplied ? ["Supplied: recover 6 HP"] : []),
+      ...(unit.activation.inspired && unit.activation.attacksUsed === 0
+        ? ["Inspired: +1 next Attack"]
+        : []),
+      ...(unit.activation.tendedThisTurn ? ["Tended this turn"] : []),
+      ...(unit.activation.overrunActive ? ["Overrun: attack again"] : []),
+    ],
   };
 }
 
@@ -212,17 +253,7 @@ function fortificationTerms(
     (candidate) =>
       candidate.ownerId === unit.ownerId && same(candidate.at, unit.at),
   );
-  const owner = state.players.find((player) => player.id === unit.ownerId);
   const terms: PublicUnitStatTermV7[] = [];
-  if (city !== undefined && owner?.researchedTechs.includes("PROSPECTING"))
-    terms.push(
-      modifier(
-        1,
-        "CITY_FORTIFICATION",
-        "City fortification",
-        "Prospecting adds 1 Defense on an owned city center.",
-      ),
-    );
   if (
     city?.rewards.some(
       (reward) => reward.reachedLevel === 3 && reward.reward === "WALLS",

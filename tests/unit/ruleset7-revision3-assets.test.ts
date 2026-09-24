@@ -15,6 +15,10 @@ import {
 } from "../../scripts/art/ruleset7-revision3-art-order";
 import { ACCEPTED_ART_URLS } from "../../src/assets/generated-art-manifest";
 import {
+  RULESET7_REVISION9_PORTRAIT_ART_IDS,
+  RULESET7_REVISION9_UNIT_ART_IDS,
+} from "../../src/assets/ruleset7-revision9-art";
+import {
   RULESET7_IMPROVEMENT_ART_IDS,
   RULESET7_PORTRAIT_ART_IDS,
   RULESET7_TERRAIN_ART_IDS,
@@ -387,7 +391,7 @@ describe("Ruleset 7 revision-3 art assets", () => {
     }
   });
 
-  it("accepts and registers every new asset in the live revision-3 mappings", async () => {
+  it("preserves revision-3 assets while registering current live mappings", async () => {
     const { recipes, records } = await manifests();
     const ids = [
       RULESET7_REVISION3_HORSE_ARCHER_ID,
@@ -408,10 +412,16 @@ describe("Ruleset 7 revision-3 art assets", () => {
         records[id]?.outputSha256,
       );
     }
-    expect(RULESET7_UNIT_ART_IDS.HORSE_ARCHER).toBe(
+    expect(RULESET7_UNIT_ART_IDS.KNIGHT).toBe(
+      RULESET7_REVISION9_UNIT_ART_IDS.KNIGHT,
+    );
+    expect(RULESET7_UNIT_ART_IDS.KNIGHT).not.toBe(
       RULESET7_REVISION3_HORSE_ARCHER_ID,
     );
-    expect(RULESET7_PORTRAIT_ART_IDS.HORSE_ARCHER).toBe(
+    expect(RULESET7_PORTRAIT_ART_IDS.KNIGHT).toBe(
+      RULESET7_REVISION9_PORTRAIT_ART_IDS.KNIGHT,
+    );
+    expect(RULESET7_PORTRAIT_ART_IDS.KNIGHT).not.toBe(
       RULESET7_REVISION3_HORSE_ARCHER_PORTRAIT_ID,
     );
     expect(RULESET7_TERRAIN_ART_IDS.MOUNTAIN).toBe(

@@ -33,7 +33,7 @@ describe("ruleset-7 economy", () => {
       BUILD_SAWMILL: { cost: 5, placementMinimum: 1 },
       BUILD_FORGE: { cost: 6, placementMinimum: 1 },
       BUILD_WORKSHOP: { cost: 4, placementMinimum: 1 },
-      BUILD_MARKET: { cost: 7, placementMinimum: 2 },
+      BUILD_MARKET: { cost: 6, placementMinimum: 1 },
     });
   });
 
@@ -350,7 +350,109 @@ describe("ruleset-7 economy", () => {
         center.at,
         "MARKET",
       ).marketIncome,
+    ).toBe(3);
+  });
+
+  it("gives Markets a base coin plus distinct adjacent families and keeps Workshop contributors in-city", () => {
+    const base = allTechsV7(initialV7(10_409));
+    const owner = base.humanPlayerId;
+    const city = base.cities.find((candidate) => candidate.ownerId === owner);
+    const otherCity = base.cities.find(
+      (candidate) => candidate.id !== city?.id,
+    );
+    if (city === undefined || otherCity === undefined)
+      throw new Error("two owned cities missing");
+    const center = required(
+      base.board.tiles.find(
+        (tile) => tile.territoryCityId === city.id && tile.site === null,
+      ),
+      "center missing",
+    );
+    const around = neighbors(center.at).slice(0, 4);
+    if (around.length < 4) throw new Error("neighbors missing");
+    const first = required(around[0], "first neighbor missing");
+    const second = required(around[1], "second neighbor missing");
+    const improvements = ["FARM", "LUMBER_CAMP", "MINE"] as const;
+    for (let count = 0; count <= improvements.length; count += 1) {
+      const graph = graphWith(base, [
+        [center.at, "MARKET"],
+        ...improvements
+          .slice(0, count)
+          .map(
+            (improvement, index) =>
+              [
+                required(around[index], "family neighbor missing"),
+                improvement,
+              ] as const,
+          ),
+      ]);
+      expect(
+        spatialContributionAtV7(graph, center.at, "MARKET").marketIncome,
+      ).toBe(1 + Math.min(count, 3));
+    }
+    const sharedFamily = graphWith(base, [
+      [center.at, "MARKET"],
+      [first, "MARKET"],
+      [second, "FARM"],
+    ]);
+    expect(
+      spatialContributionAtV7(sharedFamily, center.at, "MARKET").marketIncome,
     ).toBe(2);
+    expect(
+      spatialContributionAtV7(sharedFamily, first, "MARKET").marketIncome,
+    ).toBe(2);
+    const crossCity = graphWith(base, [
+      [center.at, "WORKSHOP"],
+      [first, "FARM"],
+      [second, "MINE"],
+    ]);
+    const reassigned = {
+      ...crossCity,
+      board: {
+        ...crossCity.board,
+        tiles: crossCity.board.tiles.map((tile) =>
+          same(tile.at, second)
+            ? { ...tile, territoryCityId: otherCity.id }
+            : tile,
+        ),
+      },
+    };
+    expect(
+      spatialContributionAtV7(crossCity, center.at, "WORKSHOP").population,
+    ).toBe(3);
+    expect(
+      spatialContributionAtV7(reassigned, center.at, "WORKSHOP"),
+    ).toMatchObject({
+      population: 2,
+      distinctTypes: ["FARM"],
+    });
+    const captured = {
+      ...reassigned,
+      cities: reassigned.cities.map((candidate) =>
+        candidate.id === otherCity.id
+          ? {
+              ...candidate,
+              ownerId: required(
+                base.players.find((player) => player.id !== owner),
+                "enemy missing",
+              ).id,
+            }
+          : candidate,
+      ),
+    };
+    expect(
+      spatialContributionAtV7(captured, center.at, "WORKSHOP").population,
+    ).toBe(2);
+    expect(spatialContributionAtV7(captured, center.at, "PORT")).toMatchObject({
+      marketIncome: 0,
+      population: 0,
+    });
+    expect(
+      spatialContributionAtV7(captured, center.at, "SHIPYARD"),
+    ).toMatchObject({
+      marketIncome: 0,
+      population: 0,
+    });
   });
 
   it("preserves Roads through free Clear Forest and paid Replant, and builds Roads for 2", () => {

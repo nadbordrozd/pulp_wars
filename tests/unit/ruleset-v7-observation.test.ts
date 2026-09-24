@@ -35,7 +35,9 @@ const READY: UnitStateV7["activation"] = {
   movedPathLength: 0,
   attacked: false,
   attacksUsed: 0,
-  healed: false,
+  tendedThisTurn: false,
+  inspired: false,
+  overrunActive: false,
   recovered: false,
   captured: false,
   handled: false,
@@ -208,36 +210,6 @@ describe("ruleset-7 observation safety and Concealment", () => {
     });
     expect(guessed.state).toBe(state);
     expect(unknown.state).toBe(state);
-
-    const healerState = checkedV7({
-      ...state,
-      units: state.units.map((unit) =>
-        unit.ownerId === viewerId
-          ? { ...unit, role: "MEDIC" as const, activation: READY }
-          : unit,
-      ),
-    });
-    const healer = healerState.units.find((unit) => unit.ownerId === viewerId)!;
-    const guessedHeal = applyCommandV7(healerState, viewerId, {
-      kind: "HEAL_ADJACENT",
-      unitId: healer.id,
-      targetUnitId: saboteur.id,
-    });
-    const unknownHeal = applyCommandV7(healerState, viewerId, {
-      kind: "HEAL_ADJACENT",
-      unitId: healer.id,
-      targetUnitId: 999_999 as UnitStateV7["id"],
-    });
-    expect(guessedHeal).toMatchObject({
-      accepted: false,
-      events: [],
-      error: { code: "HEAL_TARGET_NOT_FOUND" },
-    });
-    expect(unknownHeal).toMatchObject({
-      accepted: false,
-      events: [],
-      error: { code: "HEAL_TARGET_NOT_FOUND" },
-    });
   });
 
   it("offers only authoritative-acceptable commands apart from accepted hidden contact shortening", () => {
@@ -485,11 +457,11 @@ describe("ruleset-7 observation safety and Concealment", () => {
     const expectedRevealed = state.board.tiles
       .map((tile) => tile.at)
       .filter(
-        (at) => distance(at, line[1]) <= 1 && !initiallyKnown.has(coordKey(at)),
+        (at) => distance(at, line[1]) <= 2 && !initiallyKnown.has(coordKey(at)),
       )
       .sort(compareCoords);
     expect(validation.revealed).toEqual(expectedRevealed);
-    expect(validation.revealed.every((at) => distance(at, line[1]) <= 1)).toBe(
+    expect(validation.revealed.every((at) => distance(at, line[1]) <= 2)).toBe(
       true,
     );
   });
@@ -625,22 +597,22 @@ describe("ruleset-7 observation safety and Concealment", () => {
         [
           {
             ...hidden.units[0]!,
-            role: "HEAVY",
+            role: "JUGGERNAUT",
             at: line[0],
-            hp: 20,
-            maxHp: 20,
+            hp: 40,
+            maxHp: 40,
           },
           {
             ...existingEnemy,
-            role: "HEAVY",
+            role: "GUARD",
             at: line[1],
-            hp: 20,
-            maxHp: 20,
+            hp: 15,
+            maxHp: 15,
           },
           {
             ...existingEnemy,
             id: blockerId,
-            role: "SCOUT",
+            role: "RAIDER",
             at: line[2],
           },
         ] satisfies UnitStateV7[]
@@ -650,7 +622,7 @@ describe("ruleset-7 observation safety and Concealment", () => {
       (unit) => unit.ownerId === state.humanPlayerId,
     )!;
     const defender = state.units.find(
-      (unit) => unit.ownerId === enemy.id && unit.role === "HEAVY",
+      (unit) => unit.ownerId === enemy.id && unit.role === "GUARD",
     )!;
     const view = viewForV7(state, state.humanPlayerId);
     expect(view.units.some((unit) => unit.id === blockerId)).toBe(false);
@@ -692,18 +664,18 @@ describe("ruleset-7 observation safety and Concealment", () => {
         unit.ownerId === base.humanPlayerId
           ? {
               ...unit,
-              role: "HEAVY" as const,
+              role: "JUGGERNAUT" as const,
               at: attackerAt,
-              hp: 20,
-              maxHp: 20,
+              hp: 40,
+              maxHp: 40,
               activation: READY,
             }
           : {
               ...unit,
-              role: "HEAVY" as const,
+              role: "GUARD" as const,
               at: defenderAt,
-              hp: 20,
-              maxHp: 20,
+              hp: 15,
+              maxHp: 15,
               activation: READY,
             },
       ),
@@ -795,6 +767,43 @@ describe("ruleset-7 observation safety and Concealment", () => {
       createSafeLiveLogV7(view, [{ ...batch, viewerId: state.players[1]!.id }]),
     ).toThrow(/projected batches/);
   });
+
+  it("keeps enemy Tend state and result arrays owner-private", () => {
+    const before = exploredAllV7(initialV7(7_901));
+    const enemy = before.units.find(
+      (unit) => unit.ownerId !== before.humanPlayerId,
+    )!;
+    const after = checkedV7({
+      ...before,
+      units: before.units.map((unit) =>
+        unit.id === enemy.id
+          ? {
+              ...unit,
+              hp: unit.hp - 1,
+              activation: { ...unit.activation, tendedThisTurn: true },
+            }
+          : unit,
+      ),
+    });
+    expect(
+      viewForV7(after, enemy.ownerId).units.find((unit) => unit.id === enemy.id)
+        ?.activation.tendedThisTurn,
+    ).toBe(true);
+    expect(
+      viewForV7(after, before.humanPlayerId).units.find(
+        (unit) => unit.id === enemy.id,
+      )?.activation.tendedThisTurn,
+    ).toBe(false);
+    expect(
+      projectEventsV7(before, after, before.humanPlayerId, [
+        {
+          kind: "WOUNDED_TENDED",
+          captainId: enemy.id,
+          results: [{ unitId: enemy.id, amount: 1, hpAfter: enemy.hp - 1 }],
+        },
+      ]).events,
+    ).toEqual([]);
+  });
 });
 
 function hiddenScoutScenario(): {
@@ -864,7 +873,7 @@ function hiddenScoutScenario(): {
         ? { ...unit, role: "RAIDER", at: line[0], activation: READY }
         : {
             ...unit,
-            role: "SCOUT",
+            role: "RAIDER",
             at: hostileAt,
             hp: 10,
             maxHp: 10,

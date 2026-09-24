@@ -17,8 +17,8 @@ import {
 export const TECHNOLOGY_BRANCH_IDS_V7 = deepFreeze([
   "SETTLEMENT",
   "WILDS",
-  "MOBILITY_TRADE",
-  "INDUSTRY_WARFARE",
+  "MOBILITY",
+  "INDUSTRY",
   "NAVAL",
 ] as const);
 export type TechnologyBranchIdV7 = (typeof TECHNOLOGY_BRANCH_IDS_V7)[number];
@@ -45,6 +45,10 @@ export type TechnologyUnlockedCommandV7 = Extract<
   | "HARVEST_FISH"
   | "GATHER_PEARLS"
   | "BUILD_PORT"
+  | "BUILD_SHIPYARD"
+  | "CULTIVATE_FOREST"
+  | "BLAST_MOUNTAIN"
+  | "LAND_GRANT"
 >;
 
 export type TechnologyUnlockV7 =
@@ -79,11 +83,20 @@ export type TechnologyUnlockV7 =
       readonly ordinaryStepCost2: 2;
       readonly connectedOrthogonalStepCost2: 1;
     }
-  | { readonly kind: "MARKET_CAPITAL_ROAD_BONUS"; readonly coins: 1 }
-  | { readonly kind: "OWNED_CITY_FORTIFICATION_LEVEL"; readonly level: 1 }
   | { readonly kind: "OWNED_CITY_CAPACITY_BONUS"; readonly capacity: 1 }
-  | { readonly kind: "MEDIC_HEAL"; readonly amount: 4 | 6 }
-  | { readonly kind: "FRIENDLY_IDLE_RECOVERY"; readonly amount: 6 }
+  | { readonly kind: "SUPPLY_RECOVERY"; readonly amount: 6 }
+  | { readonly kind: "ARMS_INDUSTRY_DISCOUNT"; readonly coins: 1 }
+  | { readonly kind: "LAND_TRADE_INCOME"; readonly coins: 1 }
+  | { readonly kind: "SEA_TRADE_INCOME"; readonly coins: 1 }
+  | { readonly kind: "CAPTAIN_SUPPORT" }
+  | { readonly kind: "OVERRUN" }
+  | {
+      readonly kind: "CHARGE_BONUS";
+      readonly attack: 1;
+      readonly minimumMove: 2;
+    }
+  | { readonly kind: "MELEE_FIELD_DEMOLITION" }
+  | { readonly kind: "NAVAL_TRAINING_DISCOUNT"; readonly coins: 2 }
   | { readonly kind: "FIRST_HOSTILE_CAPTURE_SPOILS"; readonly coins: 2 };
 
 export interface TechnologyNodeV7 {
@@ -97,17 +110,27 @@ export interface TechnologyNodeV7 {
 
 export type UnitRoleAbilityV7 =
   | "ATTACK"
-  | "BREACH"
   | "CAPTURE"
   | "CHARGE"
-  | "DASH"
-  | "HEAL_ADJACENT"
-  | "PUSH"
-  | "TWO_SHOTS";
+  | "RALLY"
+  | "TEND_WOUNDED"
+  | "OVERRUN"
+  | "PUSH";
 
 export interface EffectiveRoleRuleV7 {
   readonly role: UnitRoleIdV7;
   readonly label: string;
+  readonly tacticalRole:
+    | "LINE"
+    | "SKIRMISHER"
+    | "RANGED"
+    | "DEFENDER"
+    | "SUPPORT"
+    | "SIEGE"
+    | "BREAKTHROUGH"
+    | "MYTHIC"
+    | "NAVAL_SCREEN"
+    | "NAVAL_CAPITAL";
   readonly cost: number | null;
   readonly maxHp: number;
   readonly attack2: number;
@@ -122,7 +145,7 @@ export interface EffectiveRoleRuleV7 {
 }
 
 export interface FactionTechnologyTreeV7 {
-  readonly id: "ORIGINAL_BASELINE_V4";
+  readonly id: "ORIGINAL_BASELINE_V5";
   readonly faction: "ORIGINAL";
   readonly startingTechIds: readonly ["GATHERING"];
   readonly nodes: readonly TechnologyNodeV7[];
@@ -255,10 +278,10 @@ export const SPATIAL_ECONOMIC_ACTIONS_V7 = deepFreeze({
   },
   BUILD_MARKET: {
     command: "BUILD_MARKET",
-    technology: "COMMERCE",
-    cost: 7,
+    technology: "ADMINISTRATION",
+    cost: 6,
     improvement: "MARKET",
-    placementMinimum: 2,
+    placementMinimum: 1,
   },
 } satisfies Readonly<
   Record<SpatialEconomicCommandKindV7, SpatialEconomicActionRuleV7>
@@ -283,7 +306,7 @@ function node(
   });
 }
 
-export const ORIGINAL_BASELINE_V4_NODES = deepFreeze([
+export const ORIGINAL_BASELINE_V5_NODES = deepFreeze([
   node(
     "GATHERING",
     "SETTLEMENT",
@@ -316,27 +339,29 @@ export const ORIGINAL_BASELINE_V4_NODES = deepFreeze([
         improvement: "WINDMILL",
         formula: "ADJACENT_FRIENDLY_CONTRIBUTORS",
       },
+      { kind: "SUPPLY_RECOVERY", amount: 6 },
     ],
   ),
   node(
-    "MEDICINE",
+    "ADMINISTRATION",
     "SETTLEMENT",
     2,
     ["GATHERING"],
     [
-      { kind: "UNIT_ROLE", role: "MEDIC" },
-      { kind: "MEDIC_HEAL", amount: 4 },
+      { kind: "UNIT_ROLE", role: "CAPTAIN" },
+      { kind: "CAPTAIN_SUPPORT" },
+      { kind: "COMMAND", command: "BUILD_MARKET" },
+      { kind: "COMMAND", command: "DISBAND" },
     ],
   ),
   node(
-    "RECOVERY",
+    "PLANNING",
     "SETTLEMENT",
     3,
-    ["MEDICINE"],
+    ["ADMINISTRATION"],
     [
-      { kind: "MEDIC_HEAL", amount: 6 },
-      { kind: "FRIENDLY_IDLE_RECOVERY", amount: 6 },
-      { kind: "COMMAND", command: "DISBAND" },
+      { kind: "OWNED_CITY_CAPACITY_BONUS", capacity: 1 },
+      { kind: "COMMAND", command: "LAND_GRANT" },
     ],
   ),
   node("HUNTING", "WILDS", 1, [], [{ kind: "COMMAND", command: "HUNT_GAME" }]),
@@ -379,23 +404,23 @@ export const ORIGINAL_BASELINE_V4_NODES = deepFreeze([
     ["MARKSMANSHIP"],
     [
       { kind: "COMMAND", command: "REPLANT_FOREST" },
-      { kind: "FOREST_MOVEMENT_FREEDOM", roles: ["SCOUT", "MARKSMAN"] },
+      { kind: "FOREST_MOVEMENT_FREEDOM", roles: ["RAIDER", "MARKSMAN"] },
       { kind: "ROLE_SIGHT", role: "MARKSMAN", radius: 2 },
     ],
   ),
   node(
     "SCOUTING",
-    "MOBILITY_TRADE",
+    "MOBILITY",
     1,
     [],
     [
-      { kind: "UNIT_ROLE", role: "SCOUT" },
-      { kind: "ROLE_SIGHT", role: "SCOUT", radius: 2 },
+      { kind: "UNIT_ROLE", role: "RAIDER" },
+      { kind: "ROLE_SIGHT", role: "RAIDER", radius: 2 },
     ],
   ),
   node(
     "ROADS",
-    "MOBILITY_TRADE",
+    "MOBILITY",
     2,
     ["SCOUTING"],
     [
@@ -409,58 +434,54 @@ export const ORIGINAL_BASELINE_V4_NODES = deepFreeze([
   ),
   node(
     "COMMERCE",
-    "MOBILITY_TRADE",
+    "MOBILITY",
     3,
     ["ROADS"],
-    [
-      { kind: "COMMAND", command: "BUILD_MARKET" },
-      {
-        kind: "ECONOMIC_FORMULA",
-        improvement: "MARKET",
-        formula: "DISTINCT_ECONOMIC_FAMILIES",
-      },
-      { kind: "MARKET_CAPITAL_ROAD_BONUS", coins: 1 },
-    ],
+    [{ kind: "LAND_TRADE_INCOME", coins: 1 }],
   ),
   node(
     "RAIDING",
-    "MOBILITY_TRADE",
+    "MOBILITY",
     2,
     ["SCOUTING"],
-    [{ kind: "UNIT_ROLE", role: "RAIDER" }],
+    [
+      { kind: "COMMAND", command: "PILLAGE" },
+      { kind: "CHARGE_BONUS", attack: 1, minimumMove: 2 },
+    ],
   ),
   node(
-    "MOUNTED_ARCHERY",
-    "MOBILITY_TRADE",
+    "CHIVALRY",
+    "MOBILITY",
     3,
     ["RAIDING"],
-    [{ kind: "UNIT_ROLE", role: "HORSE_ARCHER" }],
+    [
+      { kind: "UNIT_ROLE", role: "KNIGHT" },
+      { kind: "OVERRUN" },
+      { kind: "COMMAND", command: "CULTIVATE_FOREST" },
+    ],
   ),
   node(
-    "PROSPECTING",
-    "INDUSTRY_WARFARE",
+    "DRILL",
+    "INDUSTRY",
     1,
     [],
     [
-      { kind: "RESOURCE_REVEAL", resources: ["ORE"] },
-      { kind: "MOUNTAIN_MOVEMENT" },
-      { kind: "HIGH_GROUND_VISION", radiusBonus: 1 },
       { kind: "UNIT_ROLE", role: "GUARD" },
       { kind: "FIRST_HOSTILE_CAPTURE_SPOILS", coins: 2 },
-      { kind: "OWNED_CITY_FORTIFICATION_LEVEL", level: 1 },
     ],
   ),
   node(
     "ENGINEERING",
-    "INDUSTRY_WARFARE",
+    "INDUSTRY",
     2,
-    ["PROSPECTING"],
+    ["DRILL"],
     [
+      { kind: "RESOURCE_REVEAL", resources: ["ORE"] },
+      { kind: "MOUNTAIN_MOVEMENT" },
+      { kind: "HIGH_GROUND_VISION", radiusBonus: 1 },
       { kind: "COMMAND", command: "BUILD_MINE" },
       { kind: "COMMAND", command: "BUILD_WORKSHOP" },
       { kind: "COMMAND", command: "REDEVELOP" },
-      { kind: "COMMAND", command: "BUILD_FIELD_DEFENSE" },
-      { kind: "OWNED_CITY_CAPACITY_BONUS", capacity: 1 },
       {
         kind: "ECONOMIC_FORMULA",
         improvement: "WORKSHOP",
@@ -470,7 +491,7 @@ export const ORIGINAL_BASELINE_V4_NODES = deepFreeze([
   ),
   node(
     "METALLURGY",
-    "INDUSTRY_WARFARE",
+    "INDUSTRY",
     3,
     ["ENGINEERING"],
     [
@@ -480,9 +501,25 @@ export const ORIGINAL_BASELINE_V4_NODES = deepFreeze([
         improvement: "FORGE",
         formula: "ADJACENT_FRIENDLY_CONTRIBUTORS",
       },
-      { kind: "UNIT_ROLE", role: "HEAVY" },
-      { kind: "UNIT_ROLE", role: "BREACHER" },
+      { kind: "ARMS_INDUSTRY_DISCOUNT", coins: 1 },
+    ],
+  ),
+  node(
+    "FORTIFICATION",
+    "INDUSTRY",
+    2,
+    ["DRILL"],
+    [{ kind: "COMMAND", command: "BUILD_FIELD_DEFENSE" }],
+  ),
+  node(
+    "EXPLOSIVES",
+    "INDUSTRY",
+    3,
+    ["FORTIFICATION"],
+    [
       { kind: "COMMAND", command: "PILLAGE" },
+      { kind: "COMMAND", command: "BLAST_MOUNTAIN" },
+      { kind: "MELEE_FIELD_DEMOLITION" },
     ],
   ),
   node(
@@ -492,18 +529,30 @@ export const ORIGINAL_BASELINE_V4_NODES = deepFreeze([
     [],
     [
       { kind: "COMMAND", command: "HARVEST_FISH" },
-      { kind: "COMMAND", command: "GATHER_PEARLS" },
       { kind: "COMMAND", command: "BUILD_PORT" },
       { kind: "UNIT_ROLE", role: "PATROL_BOAT" },
     ],
   ),
-  node("NAVIGATION", "NAVAL", 2, ["SHORECRAFT"], []),
+  node(
+    "NAVIGATION",
+    "NAVAL",
+    2,
+    ["SHORECRAFT"],
+    [
+      { kind: "COMMAND", command: "GATHER_PEARLS" },
+      { kind: "SEA_TRADE_INCOME", coins: 1 },
+    ],
+  ),
   node(
     "NAVAL_ENGINEERING",
     "NAVAL",
     3,
     ["NAVIGATION"],
-    [{ kind: "UNIT_ROLE", role: "BATTLESHIP" }],
+    [
+      { kind: "UNIT_ROLE", role: "BATTLESHIP" },
+      { kind: "COMMAND", command: "BUILD_SHIPYARD" },
+      { kind: "NAVAL_TRAINING_DISCOUNT", coins: 2 },
+    ],
   ),
 ] as const);
 
@@ -515,6 +564,7 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
   FIGHTER: role({
     role: "FIGHTER",
     label: "Fighter",
+    tacticalRole: "LINE",
     cost: 2,
     maxHp: 10,
     attack2: 4,
@@ -527,12 +577,13 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: true,
     abilities: ["ATTACK", "CAPTURE"],
   }),
-  SCOUT: role({
-    role: "SCOUT",
-    label: "Scout",
+  RAIDER: role({
+    role: "RAIDER",
+    label: "Raider",
+    tacticalRole: "SKIRMISHER",
     cost: 4,
     maxHp: 10,
-    attack2: 3,
+    attack2: 4,
     defense2: 2,
     move: 2,
     range: 1,
@@ -540,11 +591,12 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     sightRadius: 2,
     technology: "SCOUTING",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE"],
+    abilities: ["ATTACK", "CAPTURE", "CHARGE"],
   }),
   MARKSMAN: role({
     role: "MARKSMAN",
     label: "Marksman",
+    tacticalRole: "RANGED",
     cost: 3,
     maxHp: 10,
     attack2: 4,
@@ -560,6 +612,7 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
   GUARD: role({
     role: "GUARD",
     label: "Guard",
+    tacticalRole: "DEFENDER",
     cost: 3,
     maxHp: 15,
     attack2: 3,
@@ -568,43 +621,30 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     range: 1,
     minimumRange: 1,
     sightRadius: 1,
-    technology: "PROSPECTING",
+    technology: "DRILL",
     mayUsePrimaryActionAfterMove: false,
     abilities: ["ATTACK", "CAPTURE"],
   }),
-  RAIDER: role({
-    role: "RAIDER",
-    label: "Raider",
-    cost: 4,
+  CAPTAIN: role({
+    role: "CAPTAIN",
+    label: "Captain",
+    tacticalRole: "SUPPORT",
+    cost: 5,
     maxHp: 10,
-    attack2: 4,
+    attack2: 2,
     defense2: 2,
-    move: 2,
-    range: 1,
-    minimumRange: 1,
-    sightRadius: 1,
-    technology: "RAIDING",
-    mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "CHARGE"],
-  }),
-  MEDIC: role({
-    role: "MEDIC",
-    label: "Medic",
-    cost: 4,
-    maxHp: 10,
-    attack2: 1,
-    defense2: 3,
     move: 1,
     range: 1,
     minimumRange: 1,
     sightRadius: 1,
-    technology: "MEDICINE",
+    technology: "ADMINISTRATION",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "HEAL_ADJACENT"],
+    abilities: ["ATTACK", "RALLY", "TEND_WOUNDED"],
   }),
   CATAPULT: role({
     role: "CATAPULT",
     label: "Catapult",
+    tacticalRole: "SIEGE",
     cost: 8,
     maxHp: 10,
     attack2: 7,
@@ -617,54 +657,26 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: false,
     abilities: ["ATTACK"],
   }),
-  HEAVY: role({
-    role: "HEAVY",
-    label: "Heavy",
-    cost: 7,
-    maxHp: 20,
-    attack2: 7,
-    defense2: 7,
-    move: 1,
-    range: 1,
-    minimumRange: 1,
-    sightRadius: 1,
-    technology: "METALLURGY",
-    mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "PUSH"],
-  }),
-  HORSE_ARCHER: role({
-    role: "HORSE_ARCHER",
-    label: "Horse Archer",
+  KNIGHT: role({
+    role: "KNIGHT",
+    label: "Knight",
+    tacticalRole: "BREAKTHROUGH",
     cost: 9,
     maxHp: 10,
-    attack2: 4,
+    attack2: 6,
     defense2: 2,
     move: 3,
-    range: 2,
-    minimumRange: 1,
-    sightRadius: 1,
-    technology: "MOUNTED_ARCHERY",
-    mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "DASH", "TWO_SHOTS"],
-  }),
-  BREACHER: role({
-    role: "BREACHER",
-    label: "Breacher",
-    cost: 6,
-    maxHp: 10,
-    attack2: 8,
-    defense2: 2,
-    move: 1,
     range: 1,
     minimumRange: 1,
     sightRadius: 1,
-    technology: "METALLURGY",
-    mayUsePrimaryActionAfterMove: false,
-    abilities: ["ATTACK", "BREACH"],
+    technology: "CHIVALRY",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "OVERRUN"],
   }),
   JUGGERNAUT: role({
     role: "JUGGERNAUT",
     label: "Juggernaut",
+    tacticalRole: "MYTHIC",
     cost: null,
     maxHp: 40,
     attack2: 8,
@@ -680,6 +692,7 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
   PATROL_BOAT: role({
     role: "PATROL_BOAT",
     label: "Patrol Boat",
+    tacticalRole: "NAVAL_SCREEN",
     cost: 5,
     maxHp: 10,
     attack2: 4,
@@ -695,6 +708,7 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
   BATTLESHIP: role({
     role: "BATTLESHIP",
     label: "Battleship",
+    tacticalRole: "NAVAL_CAPITAL",
     cost: 16,
     maxHp: 25,
     attack2: 12,
@@ -709,19 +723,19 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
   }),
 });
 
-export const ORIGINAL_BASELINE_V4_TREE: FactionTechnologyTreeV7 = deepFreeze({
-  id: "ORIGINAL_BASELINE_V4",
+export const ORIGINAL_BASELINE_V5_TREE: FactionTechnologyTreeV7 = deepFreeze({
+  id: "ORIGINAL_BASELINE_V5",
   faction: "ORIGINAL",
   startingTechIds: ["GATHERING"],
-  nodes: ORIGINAL_BASELINE_V4_NODES,
+  nodes: ORIGINAL_BASELINE_V5_NODES,
   roleRules: ORIGINAL_ROLE_RULES_V7,
 });
 export const RULESET_7 = deepFreeze({
   id: RULESET_7_ID,
   version: 7 as const,
   startingCoins: 5 as const,
-  technologies: ORIGINAL_BASELINE_V4_NODES,
-  tree: ORIGINAL_BASELINE_V4_TREE,
+  technologies: ORIGINAL_BASELINE_V5_NODES,
+  tree: ORIGINAL_BASELINE_V5_TREE,
 });
 
 export function technologyResearchCostV7(
@@ -746,14 +760,14 @@ export function effectiveRoleRuleV7(roleId: UnitRoleIdV7): EffectiveRoleRuleV7 {
   return ORIGINAL_ROLE_RULES_V7[roleId];
 }
 export function requireTechnologyNodeV7(id: TechnologyIdV7): TechnologyNodeV7 {
-  const result = ORIGINAL_BASELINE_V4_NODES.find((item) => item.id === id);
+  const result = ORIGINAL_BASELINE_V5_NODES.find((item) => item.id === id);
   if (result === undefined)
     throw new RangeError(`Unknown v7 technology: ${id}`);
   return result;
 }
 
 export interface TechnologyCapabilitiesV7 {
-  readonly treeId: "ORIGINAL_BASELINE_V4";
+  readonly treeId: "ORIGINAL_BASELINE_V5";
   readonly resourceReveals: readonly ResourceIdV7[];
   readonly commands: readonly TechnologyUnlockedCommandV7[];
   readonly trainableRoles: readonly UnitRoleIdV7[];
@@ -771,11 +785,11 @@ export interface TechnologyCapabilitiesV7 {
     readonly ordinaryStepCost2: 2;
     readonly connectedOrthogonalStepCost2: 1;
   } | null;
-  readonly marketCapitalRoadBonusCoins: 0 | 1;
-  readonly ownedCityFortificationLevel: 0 | 1;
   readonly ownedCityCapacityBonus: 0 | 1;
-  readonly medicHealAmount: 0 | 4 | 6;
-  readonly friendlyIdleRecoveryAmount: 0 | 6;
+  readonly supplyRecoveryAmount: 0 | 6;
+  readonly armsIndustryDiscountCoins: 0 | 1;
+  readonly landTradeIncomeCoins: 0 | 1;
+  readonly seaTradeIncomeCoins: 0 | 1;
   readonly hostileCaptureSpoilsCoins: 0 | 2;
 }
 
@@ -783,7 +797,7 @@ export function technologyCapabilitiesV7(
   researchedTechs: readonly TechnologyIdV7[],
 ): TechnologyCapabilitiesV7 {
   const known = new Set(researchedTechs);
-  const unlocks = ORIGINAL_BASELINE_V4_NODES.filter((node) =>
+  const unlocks = ORIGINAL_BASELINE_V5_NODES.filter((node) =>
     known.has(node.id),
   ).flatMap((node) => node.unlocks);
   const resources = new Set<ResourceIdV7>();
@@ -797,11 +811,11 @@ export function technologyCapabilitiesV7(
   let mountainMovement = false;
   let highGroundVisionRadiusBonus: 0 | 1 = 0;
   let roadMovement: TechnologyCapabilitiesV7["roadMovement"] = null;
-  let marketCapitalRoadBonusCoins: 0 | 1 = 0;
-  let ownedCityFortificationLevel: 0 | 1 = 0;
   let ownedCityCapacityBonus: 0 | 1 = 0;
-  let medicHealAmount: 0 | 4 | 6 = 0;
-  let friendlyIdleRecoveryAmount: 0 | 6 = 0;
+  let supplyRecoveryAmount: 0 | 6 = 0;
+  let armsIndustryDiscountCoins: 0 | 1 = 0;
+  let landTradeIncomeCoins: 0 | 1 = 0;
+  let seaTradeIncomeCoins: 0 | 1 = 0;
   let hostileCaptureSpoilsCoins: 0 | 2 = 0;
   for (const unlock of unlocks)
     switch (unlock.kind) {
@@ -838,27 +852,33 @@ export function technologyCapabilitiesV7(
           connectedOrthogonalStepCost2: 1,
         };
         break;
-      case "MARKET_CAPITAL_ROAD_BONUS":
-        marketCapitalRoadBonusCoins = 1;
-        break;
-      case "OWNED_CITY_FORTIFICATION_LEVEL":
-        ownedCityFortificationLevel = 1;
-        break;
       case "OWNED_CITY_CAPACITY_BONUS":
         ownedCityCapacityBonus = 1;
         break;
-      case "MEDIC_HEAL":
-        medicHealAmount = unlock.amount;
+      case "SUPPLY_RECOVERY":
+        supplyRecoveryAmount = 6;
         break;
-      case "FRIENDLY_IDLE_RECOVERY":
-        friendlyIdleRecoveryAmount = 6;
+      case "ARMS_INDUSTRY_DISCOUNT":
+        armsIndustryDiscountCoins = 1;
+        break;
+      case "LAND_TRADE_INCOME":
+        landTradeIncomeCoins = 1;
+        break;
+      case "SEA_TRADE_INCOME":
+        seaTradeIncomeCoins = 1;
         break;
       case "FIRST_HOSTILE_CAPTURE_SPOILS":
         hostileCaptureSpoilsCoins = 2;
         break;
+      case "CAPTAIN_SUPPORT":
+      case "OVERRUN":
+      case "CHARGE_BONUS":
+      case "MELEE_FIELD_DEMOLITION":
+      case "NAVAL_TRAINING_DISCOUNT":
+        break;
     }
   return deepFreeze({
-    treeId: "ORIGINAL_BASELINE_V4",
+    treeId: "ORIGINAL_BASELINE_V5",
     resourceReveals: RESOURCE_IDS_V7.filter((item) => resources.has(item)),
     commands: COMMAND_KIND_ORDER_V7.filter((item) =>
       commands.has(item as TechnologyUnlockedCommandV7),
@@ -878,24 +898,24 @@ export function technologyCapabilitiesV7(
     highGroundVisionRadiusBonus,
     roleSightRadius: sights,
     roadMovement,
-    marketCapitalRoadBonusCoins,
-    ownedCityFortificationLevel,
     ownedCityCapacityBonus,
-    medicHealAmount,
-    friendlyIdleRecoveryAmount,
+    supplyRecoveryAmount,
+    armsIndustryDiscountCoins,
+    landTradeIncomeCoins,
+    seaTradeIncomeCoins,
     hostileCaptureSpoilsCoins,
   });
 }
 
 export function assertRuleset7Registry(): void {
   if (
-    ORIGINAL_BASELINE_V4_NODES.length !== TECHNOLOGY_IDS_V7.length ||
-    !ORIGINAL_BASELINE_V4_NODES.every(
+    ORIGINAL_BASELINE_V5_NODES.length !== TECHNOLOGY_IDS_V7.length ||
+    !ORIGINAL_BASELINE_V5_NODES.every(
       (node, index) => node.id === TECHNOLOGY_IDS_V7[index],
     ) ||
     Reflect.ownKeys(ORIGINAL_ROLE_RULES_V7).length !==
       UNIT_ROLE_IDS_V7.length ||
-    IMPROVEMENT_IDS_V7.length !== 10
+    IMPROVEMENT_IDS_V7.length !== 11
   )
     throw new Error("Ruleset-7 registry is incomplete");
 }

@@ -565,6 +565,31 @@
   font-weight: 700;
 }
 
+.v7-tactical-role {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.v7-unit-status-cues {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.25rem;
+  align-items: center;
+  max-width: 7.5rem;
+}
+
+.v7-unit-status-cues .v7-chip {
+  padding: 0.16rem 0.4rem;
+  font-size: 0.65rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 .v7-identity-art {
   position: relative;
   display: grid;

@@ -62,7 +62,7 @@ describe("ruleset-7 pure public economy", () => {
       at: target,
     });
     expect(spatialContributionAtV7(state, target, "MARKET")).toMatchObject({
-      marketIncome: 2,
+      marketIncome: 3,
       capitalRoadConnected: false,
     });
     expect(preview).toMatchObject({
@@ -114,7 +114,7 @@ describe("ruleset-7 pure public economy", () => {
           unit.id === hiddenUnitId
             ? {
                 ...unit,
-                role: "SCOUT" as const,
+                role: "RAIDER" as const,
                 at: hiddenAt,
                 hp: resource === "GAME" ? 10 : 9,
                 maxHp: 10,
@@ -282,9 +282,9 @@ describe("ruleset-7 pure public economy", () => {
     }
   });
 
-  it("keeps hidden Ore and empty Mountains equivalent until Prospecting", () => {
+  it("keeps hidden Ore and empty Mountains equivalent until Engineering", () => {
     const staged = farmPreviewState(7_294);
-    const basicTechs = new Set(["GATHERING", "FARMING", "MILLING"]);
+    const basicTechs = new Set(["GATHERING", "FARMING", "MILLING", "DRILL"]);
     const beforeFarm = checkedV7({
       ...staged.state,
       players: staged.state.players.map((player) =>
@@ -343,7 +343,7 @@ describe("ruleset-7 pure public economy", () => {
                 researchedTechs: TECHNOLOGY_IDS_V7.filter(
                   (technology) =>
                     basicTechs.has(technology) ||
-                    (prospecting && technology === "PROSPECTING"),
+                    (prospecting && technology === "ENGINEERING"),
                 ),
               }
             : player,
@@ -384,7 +384,7 @@ describe("ruleset-7 pure public economy", () => {
         ),
       ).toMatchObject({
         accepted: false,
-        error: { code: "TECH_REQUIRED", params: { tech: "PROSPECTING" } },
+        error: { code: "TECH_REQUIRED", params: { tech: "ENGINEERING" } },
       });
     }
 
@@ -445,7 +445,7 @@ describe("ruleset-7 pure public economy", () => {
     ).toBe(Number.MAX_SAFE_INTEGER);
   });
 
-  it("offers Mine only for Ore revealed by Prospecting and unlocked by Engineering", () => {
+  it("offers Mine only for Ore revealed and unlocked by Engineering", () => {
     const staged = farmPreviewState(7_282);
     const mountain = emptyOwnedTile(staged.state, staged.cityId, [
       staged.target,
@@ -457,10 +457,7 @@ describe("ruleset-7 pure public economy", () => {
           ? {
               ...player,
               researchedTechs: player.researchedTechs.filter(
-                (tech) =>
-                  tech !== "PROSPECTING" &&
-                  tech !== "ENGINEERING" &&
-                  tech !== "METALLURGY",
+                (tech) => tech !== "ENGINEERING" && tech !== "METALLURGY",
               ),
               coins: 0,
             }
@@ -491,7 +488,6 @@ describe("ruleset-7 pure public economy", () => {
               ...player,
               researchedTechs: TECHNOLOGY_IDS_V7.filter(
                 (tech) =>
-                  tech === "PROSPECTING" ||
                   tech === "ENGINEERING" ||
                   player.researchedTechs.includes(tech),
               ),
@@ -571,7 +567,7 @@ describe("ruleset-7 pure public economy", () => {
       viewer: {
         ...mine.viewer,
         researchedTechs: mine.viewer.researchedTechs.filter(
-          (tech) => tech !== "PROSPECTING",
+          (tech) => tech !== "ENGINEERING",
         ),
       },
     };
@@ -580,7 +576,7 @@ describe("ruleset-7 pure public economy", () => {
         kind: "REDEVELOP",
         at: mountainAt,
       }),
-    ).toMatchObject({ ok: true, preview: { resourceRestored: null } });
+    ).toEqual({ ok: false, error: "NOT_OFFERED" });
     expect(
       previewEconomicV7(mine, { kind: "REDEVELOP", at: mountainAt }),
     ).toMatchObject({ ok: true, preview: { resourceRestored: "ORE" } });
@@ -678,7 +674,7 @@ describe("ruleset-7 pure public economy", () => {
               rewards: [
                 { reachedLevel: 2, reward: "STOCKPILE" },
                 { reachedLevel: 3, reward: "WALLS" },
-                { reachedLevel: 4, reward: "EXPAND" },
+                { reachedLevel: 4, reward: "TREASURY_8" },
                 { reachedLevel: 5, reward: "TREASURY" },
                 { reachedLevel: 6, reward: "TREASURY" },
               ],
@@ -789,7 +785,7 @@ describe("ruleset-7 pure public economy", () => {
           kind: "CITY_REWARD",
           cityId: staged.cityId,
           reachedLevel: 4,
-          candidates: ["EXPAND", "BOOM"],
+          candidates: ["TREASURY_8", "BOOM"],
         },
       ],
     };
@@ -797,7 +793,7 @@ describe("ruleset-7 pure public economy", () => {
       kind: "CHOOSE_CITY_REWARD",
       cityId: staged.cityId,
       reachedLevel: 4,
-      reward: "EXPAND",
+      reward: "TREASURY_8",
     };
     expect(scorePublicSpatialPlanV7(expandView, expand)).toBeGreaterThan(0);
   });

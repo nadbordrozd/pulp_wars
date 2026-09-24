@@ -5,6 +5,7 @@ import {
   combinedNetworkCityIdsV7,
   combinedNetworkRoadKeysV7,
   isActivePortV7,
+  landTradeCityIdsV7,
   seaTradeCityIdsV7,
 } from "./economy";
 import { isUnitVisibleToPlayerV7 } from "./observation";
@@ -80,7 +81,7 @@ export interface PublicPlayerV7 {
   readonly controller: "HUMAN" | "AI";
   readonly color: PlayerColorV7;
   readonly faction: "ORIGINAL";
-  readonly factionTreeId: "ORIGINAL_BASELINE_V4";
+  readonly factionTreeId: "ORIGINAL_BASELINE_V5";
   readonly originalCapitalCityId: CityId;
   readonly status: "ACTIVE" | "ELIMINATED";
 }
@@ -95,6 +96,7 @@ export interface PublicCityV7 {
   readonly population: number;
   readonly isCapital: boolean;
   readonly expanded: boolean;
+  readonly landGrantUsed: boolean;
   readonly rewards: readonly {
     readonly reachedLevel: number;
     readonly reward: RewardIdV7;
@@ -131,7 +133,13 @@ export interface PublicLeaderboardEntryV7 {
 export type PublicImprovementValueV7 = {
   readonly at: CoordV7;
   readonly improvement:
-    "WINDMILL" | "SAWMILL" | "FORGE" | "WORKSHOP" | "MARKET" | "MONUMENT";
+    | "WINDMILL"
+    | "SAWMILL"
+    | "FORGE"
+    | "WORKSHOP"
+    | "MARKET"
+    | "MONUMENT"
+    | "SHIPYARD";
   readonly level: number;
   readonly measure: "POPULATION" | "COIN_INCOME";
   readonly contributingTiles: readonly CoordV7[];
@@ -210,6 +218,8 @@ export interface PublicNavalFactsV7 {
     readonly status: "ACTIVE" | "BLOCKADED";
   }[];
   readonly tradeCityIds: readonly CityId[];
+  readonly landTradeCityIds: readonly CityId[];
+  readonly seaTradeCityIds: readonly CityId[];
   readonly networkCityIds: readonly CityId[];
   readonly networkRoads: readonly CoordV7[];
   readonly seaRoutes: readonly {
@@ -238,7 +248,7 @@ export function viewForV7(
     .filter(
       (tile) =>
         explored.has(key(tile.at)) &&
-        tile.improvement === "PORT" &&
+        (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
         state.cities.find((city) => city.id === tile.territoryCityId)
           ?.ownerId === viewerId,
     )
@@ -366,7 +376,10 @@ export function viewForV7(
       kills: unit.kills,
       veteran: unit.veteran,
       captureEligible: unit.captureEligible,
-      activation: unit.activation,
+      activation:
+        unit.ownerId === viewerId
+          ? unit.activation
+          : { ...unit.activation, tendedThisTurn: false },
     };
   });
   const visibleContributions = state.populationContributions.flatMap(
@@ -422,14 +435,6 @@ export function viewForV7(
         tile.at,
         tile.improvement,
       );
-      const marketSeaRoadBonus =
-        tile.improvement === "MARKET" &&
-        city !== undefined &&
-        neighbors8(state.board.width, state.board.height, tile.at).some((at) =>
-          combinedNetworkRoadKeysV7(state, viewerId).has(key(at)),
-        )
-          ? 1
-          : 0;
       const population = visibleContributions.find(
         (entry) =>
           entry.category === "LIVE" &&
@@ -442,7 +447,7 @@ export function viewForV7(
           improvement: tile.improvement,
           level:
             tile.improvement === "MARKET"
-              ? Math.min(4, evaluation.marketIncome + marketSeaRoadBonus)
+              ? Math.min(4, evaluation.marketIncome)
               : (population?.amount ?? 0),
           measure: tile.improvement === "MARKET" ? "COIN_INCOME" : "POPULATION",
           contributingTiles: evaluation.contributingTiles.filter((at) =>
@@ -462,6 +467,7 @@ export function viewForV7(
     population: city.population,
     isCapital: city.isCapital,
     expanded: city.expanded,
+    landGrantUsed: city.landGrantUsed,
     rewards: city.rewards,
   }));
   const cityCounts = countBy(state.cities.map((city) => city.ownerId));
@@ -533,13 +539,19 @@ export function viewForV7(
     unitStats: visibleUnits.map((unit) =>
       publicUnitStatsForViewerV7(
         publicUnitStatsV7(state, unit),
-        unit.role,
+        unit.ownerId === viewerId,
         explored.has(key(unit.at)),
       ),
     ),
     naval: {
       ownedPorts,
       tradeCityIds: [...seaTradeCityIdsV7(state, viewerId)].sort(
+        (left, right) => left - right,
+      ),
+      landTradeCityIds: [...landTradeCityIdsV7(state, viewerId)].sort(
+        (left, right) => left - right,
+      ),
+      seaTradeCityIds: [...seaTradeCityIdsV7(state, viewerId)].sort(
         (left, right) => left - right,
       ),
       networkCityIds: [...combinedNetworkCityIdsV7(state, viewerId)].sort(
@@ -697,12 +709,16 @@ const HIDDEN_POSITION_MODIFIERS_V7 = new Set([
 
 function publicUnitStatsForViewerV7(
   stats: PublicUnitStatsV7,
-  _role: UnitRoleIdV7,
+  isOwner: boolean,
   positionExplored: boolean,
 ): PublicUnitStatsV7 {
-  if (positionExplored) return stats;
+  const statuses = isOwner
+    ? stats.statuses
+    : stats.statuses.filter((status) => status.startsWith("Inspired:"));
+  if (positionExplored) return { ...stats, statuses };
   return {
     ...stats,
+    statuses,
     stats: stats.stats.map((entry) => {
       const positionCanModify = entry.id === "SIGHT" || entry.id === "DEFENSE";
       if (!positionCanModify) return entry;
@@ -787,7 +803,7 @@ export function publicResourceV7(
   },
   technologies: readonly string[],
 ): PublicResourceV7 {
-  if (tile.resource === "ORE" && !technologies.includes("PROSPECTING"))
+  if (tile.resource === "ORE" && !technologies.includes("ENGINEERING"))
     return null;
   return tile.resource;
 }
@@ -802,6 +818,7 @@ function isValued(
     "WORKSHOP",
     "MARKET",
     "MONUMENT",
+    "SHIPYARD",
   ].includes(improvement);
 }
 function tileFortificationLevel(
@@ -812,10 +829,6 @@ function tileFortificationLevel(
   const tile = state.board.tiles[at.y * state.board.width + at.x];
   let level = tile?.fieldDefense ? 1 : 0;
   if (same(territory.at, at)) {
-    const owner = state.players.find(
-      (player) => player.id === territory.ownerId,
-    );
-    if (owner?.researchedTechs.includes("PROSPECTING")) level += 1;
     if (territory.rewards.some((reward) => reward.reward === "WALLS"))
       level += 2;
   }

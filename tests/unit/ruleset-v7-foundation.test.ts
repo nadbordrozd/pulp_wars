@@ -37,9 +37,9 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r8");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r9");
     expect(FACTION_IDS_V7).toEqual(["ORIGINAL"]);
-    expect(FACTION_TREE_IDS_V7).toEqual(["ORIGINAL_BASELINE_V4"]);
+    expect(FACTION_TREE_IDS_V7).toEqual(["ORIGINAL_BASELINE_V5"]);
     expect(RESOURCE_IDS_V7).toEqual([
       "FRUIT",
       "FERTILE_GROUND",
@@ -59,26 +59,24 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
       "MARKET",
       "MONUMENT",
       "PORT",
+      "SHIPYARD",
     ]);
     expect(ACHIEVEMENT_IDS_V7).toEqual(["EXPLORER", "ENGINEER", "MUSTER"]);
     expect(UNIT_ROLE_IDS_V7).toEqual([
       "FIGHTER",
-      "SCOUT",
+      "RAIDER",
       "MARKSMAN",
       "GUARD",
-      "RAIDER",
-      "MEDIC",
+      "CAPTAIN",
       "CATAPULT",
-      "HEAVY",
-      "HORSE_ARCHER",
-      "BREACHER",
+      "KNIGHT",
       "JUGGERNAUT",
       "PATROL_BOAT",
       "BATTLESHIP",
     ]);
-    expect(TECHNOLOGY_IDS_V7).toHaveLength(21);
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(34);
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(48);
+    expect(TECHNOLOGY_IDS_V7).toHaveLength(23);
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(39);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(54);
     expect(PLAYER_EVENT_KIND_ORDER_V7.slice(-3)).toEqual([
       "COMBAT_SPLASH_DAMAGE",
       "UNIT_REVEALED",

@@ -146,7 +146,7 @@ describe("ruleset-7 naval public commands", () => {
         (command) =>
           "unitId" in command &&
           command.unitId === own.id &&
-          ["PROMOTE", "PILLAGE", "DISBAND", "HEAL_ADJACENT"].includes(
+          ["PROMOTE", "PILLAGE", "DISBAND", "TEND_WOUNDED"].includes(
             command.kind,
           ),
       ),

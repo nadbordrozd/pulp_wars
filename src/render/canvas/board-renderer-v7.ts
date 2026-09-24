@@ -14,8 +14,7 @@ import type {
 import { queryCombatPreviewV7 } from "../../engine/index";
 import {
   RULESET6_UNIT_ART_GEOMETRY,
-  RULESET7_HORSE_ARCHER_ART_GEOMETRY,
-  RULESET7_HEAVY_ART_GEOMETRY,
+  RULESET7_KNIGHT_ART_GEOMETRY,
   RULESET7_NAVAL_ART_GEOMETRY,
   SETTLEMENT_ART_GEOMETRY,
   SQUARE_ART_GEOMETRY,
@@ -1458,17 +1457,12 @@ function geometryFor(entry: BoardRenderPlanEntryV7): SourceGeometry {
       return RULESET7_NAVAL_ART_GEOMETRY.patrolBoat;
     if (entry.assetId === RULESET7_UNIT_ART_IDS.BATTLESHIP)
       return RULESET7_NAVAL_ART_GEOMETRY.battleship;
-    if (entry.assetId === RULESET7_UNIT_ART_IDS.HORSE_ARCHER)
-      return RULESET7_HORSE_ARCHER_ART_GEOMETRY;
-    if (
-      entry.assetId === RULESET7_UNIT_ART_IDS.CATAPULT ||
-      entry.assetId === RULESET7_UNIT_ART_IDS.BREACHER
-    )
+    if (entry.assetId === RULESET7_UNIT_ART_IDS.CATAPULT)
       return RULESET6_UNIT_ART_GEOMETRY.siege;
-    if (entry.assetId === RULESET7_UNIT_ART_IDS.HEAVY)
-      return RULESET7_HEAVY_ART_GEOMETRY;
     if (entry.assetId === RULESET7_UNIT_ART_IDS.JUGGERNAUT)
       return RULESET6_UNIT_ART_GEOMETRY.giant;
+    if (entry.assetId === RULESET7_UNIT_ART_IDS.KNIGHT)
+      return RULESET7_KNIGHT_ART_GEOMETRY;
     return RULESET6_UNIT_ART_GEOMETRY.standard;
   }
   if (entry.kind === "IMPROVEMENT") {
@@ -1483,6 +1477,8 @@ function geometryFor(entry: BoardRenderPlanEntryV7): SourceGeometry {
     if (entry.assetId === RULESET7_IMPROVEMENT_ART_IDS.SAWMILL)
       return SQUARE_ART_GEOMETRY.sawmill;
     if (entry.assetId === RULESET7_IMPROVEMENT_ART_IDS.PORT)
+      return SQUARE_ART_GEOMETRY.processor;
+    if (entry.assetId === RULESET7_IMPROVEMENT_ART_IDS.SHIPYARD)
       return SQUARE_ART_GEOMETRY.processor;
     if (
       ["WINDMILL", "FORGE", "WORKSHOP", "MARKET", "MONUMENT"].some(

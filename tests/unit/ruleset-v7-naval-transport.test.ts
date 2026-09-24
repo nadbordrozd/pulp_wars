@@ -115,7 +115,9 @@ describe("ruleset-7 naval transport", () => {
                 movedPathLength: 0,
                 attacked: false,
                 attacksUsed: 0,
-                healed: false,
+                tendedThisTurn: false,
+                inspired: false,
+                overrunActive: false,
                 recovered: false,
                 captured: false,
                 handled: false,
@@ -173,7 +175,7 @@ describe("ruleset-7 naval transport", () => {
     ).toMatchObject({ accepted: true });
   });
 
-  it("rejects embark after a Horse Archer shot", () => {
+  it("rejects embark after a Knight Overrun shot", () => {
     const fixture = withPortV7(9302);
     const unit = fixture.state.units.find(
       (candidate) => candidate.ownerId === fixture.state.humanPlayerId,
@@ -185,7 +187,7 @@ describe("ruleset-7 naval transport", () => {
         candidate.id === unit.id
           ? {
               ...candidate,
-              role: "HORSE_ARCHER" as const,
+              role: "KNIGHT" as const,
               activation: {
                 ...candidate.activation,
                 attacked: true,
@@ -401,7 +403,7 @@ describe("ruleset-7 naval transport", () => {
     });
   });
 
-  it.each(["COINS", "HEAVY"] as const)(
+  it.each(["COINS", "KNIGHT"] as const)(
     "resolves a %s treasure reward when an embarked passenger lands",
     (reward) => {
       const fixture = blockedForeignPortV7(reward === "COINS" ? 9333 : 9334);
@@ -468,13 +470,15 @@ describe("ruleset-7 naval transport", () => {
         const spawned = landed.state.units.find(
           (unit) =>
             unit.ownerId === fixture.actorId &&
-            unit.role === "HEAVY" &&
+            unit.role === "KNIGHT" &&
             unit.id !== fixture.blockerId,
         );
         expect(spawned?.activation).toMatchObject({
           moved: true,
           attacked: true,
-          healed: true,
+          tendedThisTurn: false,
+          inspired: false,
+          overrunActive: false,
           recovered: true,
           captured: true,
           handled: true,

@@ -2,7 +2,7 @@ import { deepFreeze } from "../model/freeze";
 import { allocateCityId, allocateUnitId, cityId, playerId } from "../model/ids";
 import { nextBounded, nextUint32, randomState } from "../random/random";
 import { canonicalHash } from "../replay/canonical";
-import { ORIGINAL_BASELINE_V4_TREE, RULESET_7 } from "../rules/ruleset-v7";
+import { ORIGINAL_BASELINE_V5_TREE, RULESET_7 } from "../rules/ruleset-v7";
 import { placeTreasureChestsV6 } from "../v6/map";
 import { parseMatchSetupV7 } from "./setup";
 import { parseGameStateV7 } from "./state-schema";
@@ -1665,10 +1665,10 @@ function createPlayers(setup: MatchSetupV7): readonly PlayerStateV7[] {
     controller: seat === 0 ? "HUMAN" : "AI",
     color: seat === 0 ? setup.humanColor : (colors[seat - 1] as PlayerColorV7),
     faction: "ORIGINAL",
-    factionTreeId: "ORIGINAL_BASELINE_V4",
+    factionTreeId: "ORIGINAL_BASELINE_V5",
     status: "ACTIVE",
     coins: RULESET_7.startingCoins,
-    researchedTechs: ORIGINAL_BASELINE_V4_TREE.startingTechIds,
+    researchedTechs: ORIGINAL_BASELINE_V5_TREE.startingTechIds,
     explored: [],
     spoilsClaimedCityIds: [],
     achievementEntitlements: [
@@ -1700,6 +1700,7 @@ function createEntities(
       population: 0,
       isCapital: true,
       expanded: false,
+      landGrantUsed: false,
       rewards: [],
     });
     const unit = allocateUnitId(nextEntityId);
@@ -1721,7 +1722,9 @@ function createEntities(
         movedPathLength: 0,
         attacked: false,
         attacksUsed: 0,
-        healed: false,
+        tendedThisTurn: false,
+        inspired: false,
+        overrunActive: false,
         recovered: false,
         captured: false,
         handled: false,

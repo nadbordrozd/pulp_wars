@@ -21,6 +21,8 @@ export interface CombatPreviewV7 {
   readonly minimumRange: number;
   readonly maximumRange: number;
   readonly chargeApplied: boolean;
+  readonly inspiredApplied: boolean;
+  readonly inspiredConsumed: boolean;
   readonly breachApplied: boolean;
   readonly defenseBonusNumerator: number;
   readonly defenseBonusDenominator: number;
@@ -35,6 +37,8 @@ export interface CombatPreviewV7 {
   readonly push: "WILL_PUSH" | "BLOCKED" | "UNKNOWN_BEHIND_FOG";
   readonly attacksUsed: number;
   readonly attacksRemaining: number;
+  readonly overrunAdvance: boolean;
+  readonly overrunContinues: boolean;
   readonly splash: readonly CombatSplashEntryV7[];
 }
 export interface CombatSplashEntryV7 {
@@ -97,6 +101,15 @@ export type DomainEventV7 =
       readonly populationAdded: 1;
     }
   | {
+      readonly kind: "SHIPYARD_BUILT";
+      readonly playerId: PlayerId;
+      readonly cityId: CityId;
+      readonly at: CoordV7;
+      readonly cost: 5;
+      readonly populationAdded: 1;
+      readonly livePopulationTotal: 2;
+    }
+  | {
       readonly kind: "PORT_BLOCKADE_CHANGED";
       readonly playerId: PlayerId;
       readonly cityId: CityId;
@@ -140,6 +153,17 @@ export type DomainEventV7 =
       readonly coinDelta: number;
     }
   | {
+      readonly kind: "FOREST_CULTIVATED" | "MOUNTAIN_BLASTED";
+      readonly playerId: PlayerId;
+      readonly cityId: CityId;
+      readonly at: CoordV7;
+      readonly cost: number;
+      readonly terrainBefore: "FOREST" | "MOUNTAIN";
+      readonly terrainAfter: "GRASS";
+      readonly resourceBefore: null;
+      readonly resourceAfter: "FERTILE_GROUND" | null;
+    }
+  | {
       readonly kind: "ROAD_BUILT";
       readonly playerId: PlayerId;
       readonly cityId: CityId | null;
@@ -152,6 +176,18 @@ export type DomainEventV7 =
       readonly unitId: UnitId;
       readonly at: CoordV7;
       readonly cost: 3;
+    }
+  | {
+      readonly kind: "FIELD_DEFENSE_DESTROYED";
+      readonly at: CoordV7;
+      readonly reason: "CATAPULT" | "INSPIRED" | "EXPLOSIVES" | "OCCUPATION";
+    }
+  | {
+      readonly kind: "LAND_GRANTED";
+      readonly playerId: PlayerId;
+      readonly cityId: CityId;
+      readonly cost: 6;
+      readonly tiles: readonly CoordV7[];
     }
   | {
       readonly kind: "CITY_ECONOMY_CHANGED";
@@ -224,8 +260,10 @@ export type DomainEventV7 =
       readonly cityId: CityId;
       readonly unitId: UnitId;
       readonly role: "PATROL_BOAT" | "BATTLESHIP";
-      readonly cost: 5 | 16;
+      readonly cost: number;
       readonly at: CoordV7;
+      readonly dock: "PORT" | "SHIPYARD";
+      readonly discountSource: "SHIPYARD" | null;
     }
   | {
       readonly kind: "UNIT_EMBARKED";
@@ -252,11 +290,18 @@ export type DomainEventV7 =
       readonly role: UnitRoleIdV7;
     }
   | {
-      readonly kind: "UNIT_HEALED";
-      readonly medicId: UnitId;
-      readonly targetUnitId: UnitId;
-      readonly amount: number;
-      readonly hpAfter: number;
+      readonly kind: "UNITS_RALLIED";
+      readonly captainId: UnitId;
+      readonly unitIds: readonly UnitId[];
+    }
+  | {
+      readonly kind: "WOUNDED_TENDED";
+      readonly captainId: UnitId;
+      readonly results: readonly {
+        readonly unitId: UnitId;
+        readonly amount: number;
+        readonly hpAfter: number;
+      }[];
     }
   | {
       readonly kind: "UNIT_PUSHED";
@@ -274,8 +319,7 @@ export type DomainEventV7 =
       readonly kind: "UNIT_MOVE_INTERRUPTED";
       readonly unitId: UnitId;
       readonly at: CoordV7;
-      readonly reason:
-        "OCCUPIED" | "PROSPECTING_REQUIRED" | "ENGINEERING_REQUIRED" | "ZOC";
+      readonly reason: "OCCUPIED" | "ENGINEERING_REQUIRED" | "ZOC";
     }
   | {
       readonly kind: "TILES_REVEALED";
@@ -338,10 +382,10 @@ export type DomainEventV7 =
       readonly playerId: PlayerId;
       readonly unitId: UnitId;
       readonly at: CoordV7;
-      readonly requestedReward: "COINS" | "HEAVY";
-      readonly grantedReward: "COINS" | "HEAVY";
+      readonly requestedReward: "COINS" | "KNIGHT";
+      readonly grantedReward: "COINS" | "KNIGHT";
       readonly coinDelta: 0 | 5;
-      readonly heavyFallback: boolean;
+      readonly knightFallback: boolean;
       readonly spawnedUnitId: UnitId | null;
       readonly spawnedAt: CoordV7 | null;
       readonly homeCityId: CityId | null;

@@ -4,7 +4,7 @@ import { nextBounded } from "../random/random";
 import type { JsonValue } from "../replay/canonical";
 import {
   BASIC_ECONOMIC_ACTIONS_V7,
-  ORIGINAL_BASELINE_V4_TREE,
+  ORIGINAL_BASELINE_V5_TREE,
   SPATIAL_ECONOMIC_ACTIONS_V7,
   effectiveRoleRuleV7,
   technologyCapabilitiesV7,
@@ -192,7 +192,7 @@ function navalFactsMayChangeV7(command: CommandV7): boolean {
       command.tech === "SHORECRAFT" ||
       command.tech === "NAVIGATION"
     );
-  if (command.kind === "CHOOSE_CITY_REWARD") return command.reward === "EXPAND";
+  if (command.kind === "LAND_GRANT") return true;
   return [
     "ATTACK",
     "BUILD_PORT",
@@ -245,9 +245,14 @@ function applyCommandCoreV7(
       command as Extract<CommandV7, { at: CoordV7 }>,
     );
   if (
-    ["CLEAR_FOREST", "REPLANT_FOREST", "BUILD_ROAD", "REDEVELOP"].includes(
-      command.kind,
-    )
+    [
+      "CLEAR_FOREST",
+      "REPLANT_FOREST",
+      "CULTIVATE_FOREST",
+      "BLAST_MOUNTAIN",
+      "BUILD_ROAD",
+      "REDEVELOP",
+    ].includes(command.kind)
   )
     return applyInfrastructure(
       stateInput,
@@ -263,6 +268,8 @@ function applyCommandCoreV7(
     return applyPearls(stateInput, state, actor, command.at);
   if (command.kind === "BUILD_PORT")
     return applyPort(stateInput, state, actor, command.at);
+  if (command.kind === "BUILD_SHIPYARD")
+    return applyShipyard(stateInput, state, actor, command.at);
   if (command.kind === "DISEMBARK")
     return applyDisembark(stateInput, state, actor, command);
   if (command.kind === "CHOOSE_CITY_REWARD")
@@ -271,8 +278,10 @@ function applyCommandCoreV7(
     return applyMove(stateInput, state, actor, command);
   if (command.kind === "ATTACK")
     return applyAttack(stateInput, state, actor, command);
-  if (command.kind === "HEAL_ADJACENT")
-    return applyHeal(stateInput, state, actor, command);
+  if (command.kind === "RALLY")
+    return applyRally(stateInput, state, actor, command.unitId);
+  if (command.kind === "TEND_WOUNDED")
+    return applyTendWounded(stateInput, state, actor, command.unitId);
   if (command.kind === "RECOVER")
     return applyRecover(stateInput, state, actor, command.unitId);
   if (command.kind === "PROMOTE")
@@ -287,6 +296,8 @@ function applyCommandCoreV7(
     return applyDisband(stateInput, state, actor, command.unitId);
   if (command.kind === "BUILD_FIELD_DEFENSE")
     return applyFieldDefense(stateInput, state, actor, command.unitId);
+  if (command.kind === "LAND_GRANT")
+    return applyLandGrant(stateInput, state, actor, command.cityId);
   if (command.kind === "END_TURN")
     return applyEndTurn(stateInput, state, actor);
   return rejected(stateInput, "INVALID_COMMAND");
@@ -300,7 +311,8 @@ function navalTransitionEventsV7(
   const portCoords = new Map<string, CoordV7>();
   for (const state of [before, after])
     for (const tile of state.board.tiles)
-      if (tile.improvement === "PORT") portCoords.set(key(tile.at), tile.at);
+      if (tile.improvement === "PORT" || tile.improvement === "SHIPYARD")
+        portCoords.set(key(tile.at), tile.at);
   for (const at of [...portCoords.values()].sort(compareCoords)) {
     const beforeTile = tileAtV7(before.board, at);
     const afterTile = tileAtV7(after.board, at);
@@ -311,11 +323,15 @@ function navalTransitionEventsV7(
       (city) => city.id === afterTile?.territoryCityId,
     );
     const activeBefore =
-      beforeTile?.improvement === "PORT" && beforeCity !== undefined
+      (beforeTile?.improvement === "PORT" ||
+        beforeTile?.improvement === "SHIPYARD") &&
+      beforeCity !== undefined
         ? isActivePortV7(before, at, beforeCity.ownerId)
         : null;
     const activeAfter =
-      afterTile?.improvement === "PORT" && afterCity !== undefined
+      (afterTile?.improvement === "PORT" ||
+        afterTile?.improvement === "SHIPYARD") &&
+      afterCity !== undefined
         ? isActivePortV7(after, at, afterCity.ownerId)
         : null;
     if (activeBefore !== activeAfter) {
@@ -371,8 +387,10 @@ function applyResearch(
   tech: (typeof TECHNOLOGY_IDS_V7)[number],
 ): ApplyCommandResultV7 {
   const player = requirePlayer(state, actor);
-  const node = ORIGINAL_BASELINE_V4_TREE.nodes.find((item) => item.id === tech);
+  const node = ORIGINAL_BASELINE_V5_TREE.nodes.find((item) => item.id === tech);
   if (node === undefined) return rejected(original, "TECH_NOT_FOUND", { tech });
+  if (state.setup.mapType === "DRY_LAND" && node.branch === "NAVAL")
+    return rejected(original, "TECH_REQUIRED", { tech, reason: "DRY_LAND" });
   if (player.researchedTechs.includes(tech))
     return rejected(original, "TECH_ALREADY_RESEARCHED", { tech });
   const missing = node.prerequisites.find(
@@ -446,7 +464,9 @@ function applyBasic(
       tile.terrain === rule.terrain &&
       tile.resource === rule.resource &&
       (kind === "HARVEST_FISH"
-        ? tile.improvement === null || tile.improvement === "PORT"
+        ? tile.improvement === null ||
+          tile.improvement === "PORT" ||
+          tile.improvement === "SHIPYARD"
         : tile.improvement === null),
   );
   if (!validation.ok)
@@ -454,12 +474,13 @@ function applyBasic(
   const { player, tile, city } = validation;
   if (
     kind === "HARVEST_FISH" &&
-    tile.improvement === "PORT" &&
+    (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
     !isActivePortV7(state, command.at, actor)
   )
     return rejected(original, "INVALID_TILE", { action: kind });
-  if (player.coins < rule.cost)
-    return rejected(original, "INSUFFICIENT_COINS", { cost: rule.cost });
+  const cost = rule.cost;
+  if (player.coins < cost)
+    return rejected(original, "INSUFFICIENT_COINS", { cost });
   try {
     const contribution: PopulationContributionV7 = {
       id: state.nextEntityId,
@@ -494,7 +515,7 @@ function applyBasic(
       nextEntityId: nextSafe(state.nextEntityId),
       commandIndex: nextSafe(state.commandIndex),
       board,
-      players: debit(state.players, actor, rule.cost),
+      players: debit(state.players, actor, cost),
       cities: recalculation.cities,
       populationContributions: recalculation.populationContributions,
     };
@@ -552,16 +573,17 @@ function applySpatial(
     return rejected(original, "TILE_UNEXPLORED");
   if (
     tile.biome === null &&
-    (command.kind !== "REDEVELOP" || tile.improvement !== "PORT")
+    (command.kind !== "REDEVELOP" ||
+      (tile.improvement !== "PORT" && tile.improvement !== "SHIPYARD"))
   )
     return rejected(original, "INVALID_TILE", { action: command.kind });
   if (!player.researchedTechs.includes(rule.technology))
     return rejected(original, "TECH_REQUIRED", { tech: rule.technology });
   if (
     tile.terrain === "MOUNTAIN" &&
-    !player.researchedTechs.includes("PROSPECTING")
+    !player.researchedTechs.includes("ENGINEERING")
   )
-    return rejected(original, "TECH_REQUIRED", { tech: "PROSPECTING" });
+    return rejected(original, "TECH_REQUIRED", { tech: "ENGINEERING" });
   if (
     state.treasureChests.some((chest) => same(chest, command.at)) ||
     tile.site !== null ||
@@ -688,9 +710,9 @@ function applyMonument(
     });
   if (
     tile.terrain === "MOUNTAIN" &&
-    !player.researchedTechs.includes("PROSPECTING")
+    !player.researchedTechs.includes("ENGINEERING")
   )
-    return rejected(original, "TECH_REQUIRED", { tech: "PROSPECTING" });
+    return rejected(original, "TECH_REQUIRED", { tech: "ENGINEERING" });
   if (
     tile.biome === null ||
     tile.site !== null ||
@@ -788,9 +810,13 @@ function applyInfrastructure(
       ? "FORESTRY"
       : command.kind === "REPLANT_FOREST"
         ? "FIELDCRAFT"
-        : command.kind === "BUILD_ROAD"
-          ? "ROADS"
-          : "ENGINEERING";
+        : command.kind === "CULTIVATE_FOREST"
+          ? "CHIVALRY"
+          : command.kind === "BLAST_MOUNTAIN"
+            ? "EXPLOSIVES"
+            : command.kind === "BUILD_ROAD"
+              ? "ROADS"
+              : "ENGINEERING";
   if (!player.researchedTechs.includes(tech))
     return rejected(original, "TECH_REQUIRED", { tech });
   const forestValid =
@@ -798,9 +824,12 @@ function applyInfrastructure(
     tile.resource === null &&
     tile.improvement === null &&
     ((command.kind === "CLEAR_FOREST" && tile.terrain === "FOREST") ||
-      (command.kind === "REPLANT_FOREST" && tile.terrain === "GRASS"));
+      (command.kind === "REPLANT_FOREST" && tile.terrain === "GRASS") ||
+      (command.kind === "CULTIVATE_FOREST" && tile.terrain === "FOREST"));
   if (
-    (command.kind === "CLEAR_FOREST" || command.kind === "REPLANT_FOREST") &&
+    ["CLEAR_FOREST", "REPLANT_FOREST", "CULTIVATE_FOREST"].includes(
+      command.kind,
+    ) &&
     !forestValid
   )
     return rejected(original, "FOREST_ACTION_INVALID_TILE", {
@@ -812,17 +841,26 @@ function applyInfrastructure(
       tile.site !== null ||
       tile.road ||
       (tile.terrain === "MOUNTAIN" &&
-        !player.researchedTechs.includes("PROSPECTING")))
+        !player.researchedTechs.includes("ENGINEERING")))
   )
     return rejected(original, "INVALID_TILE", { action: command.kind });
   if (command.kind === "REDEVELOP" && tile.improvement === null)
     return rejected(original, "REDEVELOP_INVALID_TARGET");
   if (
     command.kind === "REDEVELOP" &&
-    tile.improvement === "PORT" &&
+    (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
     state.units.some((unit) => unit.hp > 0 && same(unit.at, tile.at))
   )
     return rejected(original, "REDEVELOP_INVALID_TARGET");
+  if (
+    command.kind === "BLAST_MOUNTAIN" &&
+    (tile.terrain !== "MOUNTAIN" ||
+      tile.site !== null ||
+      tile.resource !== null ||
+      tile.improvement !== null ||
+      tile.fieldDefense)
+  )
+    return rejected(original, "INVALID_TILE", { action: command.kind });
   const city = state.cities.find((item) => item.id === tile.territoryCityId);
   const neutralRoad = command.kind === "BUILD_ROAD" && city === undefined;
   if (!neutralRoad && (city === undefined || city.ownerId !== actor))
@@ -838,7 +876,11 @@ function applyInfrastructure(
       ? 2
       : command.kind === "REPLANT_FOREST"
         ? 4
-        : 0;
+        : command.kind === "CULTIVATE_FOREST"
+          ? 4
+          : command.kind === "BLAST_MOUNTAIN"
+            ? 3
+            : 0;
   if (player.coins < cost)
     return rejected(original, "INSUFFICIENT_COINS", { cost });
   try {
@@ -865,15 +907,20 @@ function applyInfrastructure(
           ? "GRASS"
           : command.kind === "REPLANT_FOREST"
             ? "FOREST"
-            : tile.terrain,
+            : command.kind === "CULTIVATE_FOREST" ||
+                command.kind === "BLAST_MOUNTAIN"
+              ? "GRASS"
+              : tile.terrain,
       road: command.kind === "BUILD_ROAD" ? true : tile.road,
       improvement: command.kind === "REDEVELOP" ? null : tile.improvement,
       resource:
         command.kind === "REDEVELOP"
-          ? removed === "PORT"
+          ? removed === "PORT" || removed === "SHIPYARD"
             ? tile.resource
             : resourceRestored
-          : tile.resource,
+          : command.kind === "CULTIVATE_FOREST"
+            ? "FERTILE_GROUND"
+            : tile.resource,
     });
     const contributions =
       removedContribution === undefined
@@ -926,16 +973,37 @@ function applyInfrastructure(
                 at: command.at,
                 coinDelta: 0,
               }
-            : {
-                kind: "ECONOMIC_BUILDING_REMOVED",
-                playerId: actor,
-                cityId: requireValue(city).id,
-                at: command.at,
-                improvement: requireValue(removed),
-                populationContributionRemoved: removedContribution?.amount ?? 0,
-                marketIncomeRemoved: marketRemoved,
-                resourceRestored,
-              };
+            : command.kind === "CULTIVATE_FOREST" ||
+                command.kind === "BLAST_MOUNTAIN"
+              ? {
+                  kind:
+                    command.kind === "CULTIVATE_FOREST"
+                      ? "FOREST_CULTIVATED"
+                      : "MOUNTAIN_BLASTED",
+                  playerId: actor,
+                  cityId: requireValue(city).id,
+                  at: command.at,
+                  cost,
+                  terrainBefore:
+                    command.kind === "CULTIVATE_FOREST" ? "FOREST" : "MOUNTAIN",
+                  terrainAfter: "GRASS",
+                  resourceBefore: null,
+                  resourceAfter:
+                    command.kind === "CULTIVATE_FOREST"
+                      ? "FERTILE_GROUND"
+                      : null,
+                }
+              : {
+                  kind: "ECONOMIC_BUILDING_REMOVED",
+                  playerId: actor,
+                  cityId: requireValue(city).id,
+                  at: command.at,
+                  improvement: requireValue(removed),
+                  populationContributionRemoved:
+                    removedContribution?.amount ?? 0,
+                  marketIncomeRemoved: marketRemoved,
+                  resourceRestored,
+                };
     return accepted(next, [
       fact,
       ...economyAndGrowth(recalculation.changes),
@@ -961,7 +1029,7 @@ function applyPearls(
     (candidate) => candidate.id === tile.territoryCityId,
   );
   if (city?.ownerId !== actor) return rejected(original, "TERRITORY_NOT_OWNED");
-  const tech = tile.terrain === "DEEP_WATER" ? "NAVIGATION" : "SHORECRAFT";
+  const tech = "NAVIGATION";
   if (!player.researchedTechs.includes(tech))
     return rejected(original, "TECH_REQUIRED", { tech });
   if (
@@ -969,7 +1037,10 @@ function applyPearls(
     (tile.terrain !== "SHALLOW_WATER" && tile.terrain !== "DEEP_WATER")
   )
     return rejected(original, "INVALID_TILE", { action: "GATHER_PEARLS" });
-  if (tile.improvement === "PORT" && !isActivePortV7(state, at, actor))
+  if (
+    (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
+    !isActivePortV7(state, at, actor)
+  )
     return rejected(original, "INVALID_TILE", { action: "GATHER_PEARLS" });
   if (isCityBesiegedV7(state, city)) return rejected(original, "CITY_BESIEGED");
   if (hasCityChoice(state, city.id))
@@ -1079,6 +1150,79 @@ function applyPort(
   }
 }
 
+function applyShipyard(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  at: CoordV7,
+): ApplyCommandResultV7 {
+  const player = requirePlayer(state, actor);
+  const tile = tileAtV7(state.board, at);
+  if (tile === undefined) return rejected(original, "TILE_NOT_FOUND");
+  if (!isExplored(player, at)) return rejected(original, "TILE_UNEXPLORED");
+  if (!player.researchedTechs.includes("NAVAL_ENGINEERING"))
+    return rejected(original, "TECH_REQUIRED", { tech: "NAVAL_ENGINEERING" });
+  const city = state.cities.find(
+    (candidate) => candidate.id === tile.territoryCityId,
+  );
+  if (city?.ownerId !== actor) return rejected(original, "TERRITORY_NOT_OWNED");
+  if (tile.improvement !== "PORT" || !isActivePortV7(state, at, actor))
+    return rejected(original, "INVALID_TILE", { action: "BUILD_SHIPYARD" });
+  if (
+    state.board.tiles.some(
+      (candidate) =>
+        candidate.territoryCityId === city.id &&
+        candidate.improvement === "SHIPYARD",
+    )
+  )
+    return rejected(original, "CITY_BUILDING_LIMIT");
+  if (isCityBesiegedV7(state, city)) return rejected(original, "CITY_BESIEGED");
+  if (hasCityChoice(state, city.id))
+    return rejected(original, "CITY_REWARD_PENDING");
+  if (player.coins < 5)
+    return rejected(original, "INSUFFICIENT_COINS", { cost: 5 });
+  try {
+    const board = replaceTile(state, at, { ...tile, improvement: "SHIPYARD" });
+    const contributions = state.populationContributions.map((entry) =>
+      entry.source.kind === "IMPROVEMENT" && same(entry.source.at, at)
+        ? {
+            ...entry,
+            source: { ...entry.source, improvement: "SHIPYARD" as const },
+          }
+        : entry,
+    );
+    const recalculation = recomputeLiveEconomyV7(
+      state,
+      { board, cities: state.cities },
+      contributions,
+    );
+    const staged: GameStateV7 = {
+      ...state,
+      board,
+      cities: recalculation.cities,
+      populationContributions: recalculation.populationContributions,
+      players: debit(state.players, actor, 5),
+      commandIndex: nextSafe(state.commandIndex),
+    };
+    const settlement = settleCityRewardsV7(staged, actor);
+    return accepted(checked(settlement.state), [
+      {
+        kind: "SHIPYARD_BUILT",
+        playerId: actor,
+        cityId: city.id,
+        at,
+        cost: 5,
+        populationAdded: 1,
+        livePopulationTotal: 2,
+      },
+      ...economyAndGrowth(recalculation.changes),
+      ...settlement.events,
+    ]);
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
+}
+
 function applyTrainNaval(
   original: GameStateV7,
   state: GameStateV7,
@@ -1110,8 +1254,12 @@ function applyTrainNaval(
     return rejected(original, "TECH_REQUIRED", { tech: rule.technology });
   if (assignedUnitCountV7(state, city.id) >= cityUnitCapacityV7(state, city))
     return rejected(original, "CITY_CAPACITY_FULL", { cityId: city.id });
-  if (rule.cost === null || player.coins < rule.cost)
-    return rejected(original, "INSUFFICIENT_COINS", { cost: rule.cost ?? 0 });
+  const cost =
+    rule.cost === null
+      ? null
+      : Math.max(1, rule.cost - (tile?.improvement === "SHIPYARD" ? 2 : 0));
+  if (cost === null || player.coins < cost)
+    return rejected(original, "INSUFFICIENT_COINS", { cost: cost ?? 0 });
   try {
     const allocation = allocateUnitId(state.nextEntityId);
     const trained: UnitStateV7 = {
@@ -1126,14 +1274,14 @@ function applyTrainNaval(
       kills: 0,
       veteran: false,
       captureEligible: false,
-      activation: exhaustedActivation(command.role),
+      activation: exhaustedActivation(),
     };
     return accepted(
       checked({
         ...state,
         nextEntityId: allocation.nextEntityId,
         commandIndex: nextSafe(state.commandIndex),
-        players: debit(state.players, actor, rule.cost),
+        players: debit(state.players, actor, cost),
         units: [...state.units, trained],
       }),
       [
@@ -1143,8 +1291,10 @@ function applyTrainNaval(
           cityId: city.id,
           unitId: trained.id,
           role: command.role,
-          cost: rule.cost as 5 | 16,
+          cost,
           at: command.at,
+          dock: tile.improvement === "SHIPYARD" ? "SHIPYARD" : "PORT",
+          discountSource: tile.improvement === "SHIPYARD" ? "SHIPYARD" : null,
         },
       ],
     );
@@ -1174,7 +1324,7 @@ function applyDisembark(
     tile === undefined ||
     tile.biome === null ||
     (tile.terrain === "MOUNTAIN" &&
-      !player.researchedTechs.includes("PROSPECTING")) ||
+      !player.researchedTechs.includes("ENGINEERING")) ||
     (territoryOwner !== undefined &&
       territoryOwner !== actor &&
       arePlayersAlliedV7(state, actor, territoryOwner)) ||
@@ -1224,13 +1374,22 @@ function applyDisembark(
       players = setExplored(players, actor, spawnedSight.explored);
       treasure.extraRevealed.push(...spawnedSight.revealed);
     }
+    const occupiesHostileDefense =
+      tile.fieldDefense &&
+      territoryOwner !== undefined &&
+      territoryOwner !== actor &&
+      arePlayersHostileV7(state, actor, territoryOwner);
+    const board = occupiesHostileDefense
+      ? replaceTile(state, command.at, { ...tile, fieldDefense: false })
+      : state.board;
     const economy = recomputeLiveEconomyV7(
       state,
-      { board: state.board, cities: state.cities, units: movedUnits },
+      { board, cities: state.cities, units: movedUnits },
       state.populationContributions,
     );
     const staged: GameStateV7 = {
       ...state,
+      board,
       commandIndex: nextSafe(state.commandIndex),
       players,
       units: movedUnits,
@@ -1255,6 +1414,15 @@ function applyDisembark(
         from,
         to: command.at,
       },
+      ...(occupiesHostileDefense
+        ? ([
+            {
+              kind: "FIELD_DEFENSE_DESTROYED",
+              at: command.at,
+              reason: "OCCUPATION",
+            },
+          ] as const)
+        : []),
       ...(treasure === null ? [] : [treasure.event]),
       ...economyAndGrowth(economy.changes),
       ...settlement.events,
@@ -1298,8 +1466,15 @@ function applyTrain(
     return rejected(original, "CITY_SPAWN_OCCUPIED", { cityId: city.id });
   if (assignedUnitCountV7(state, city.id) >= cityUnitCapacityV7(state, city))
     return rejected(original, "CITY_CAPACITY_FULL", { cityId: city.id });
-  if (player.coins < rule.cost)
-    return rejected(original, "INSUFFICIENT_COINS", { cost: rule.cost });
+  const forgeActive = state.board.tiles.some(
+    (tile) =>
+      tile.territoryCityId === city.id &&
+      tile.improvement === "FORGE" &&
+      spatialContributionAtV7(state, tile.at, "FORGE").population > 0,
+  );
+  const cost = Math.max(1, rule.cost - (forgeActive ? 1 : 0));
+  if (player.coins < cost)
+    return rejected(original, "INSUFFICIENT_COINS", { cost });
   try {
     const allocation = allocateUnitId(state.nextEntityId);
     const trained: UnitStateV7 = {
@@ -1314,13 +1489,13 @@ function applyTrain(
       kills: 0,
       veteran: false,
       captureEligible: false,
-      activation: exhaustedActivation(command.role),
+      activation: exhaustedActivation(),
     };
     const staged = {
       ...state,
       nextEntityId: allocation.nextEntityId,
       commandIndex: nextSafe(state.commandIndex),
-      players: debit(state.players, actor, rule.cost),
+      players: debit(state.players, actor, cost),
       units: [...state.units, trained],
     };
     const achievements = evaluateAchievementsV7(staged, actor);
@@ -1331,9 +1506,101 @@ function applyTrain(
         cityId: city.id,
         unitId: trained.id,
         role: trained.role,
-        cost: rule.cost,
+        cost,
         at: trained.at,
       },
+      ...achievements.events,
+    ]);
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
+}
+
+function applyLandGrant(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  cityId: CityStateV7["id"],
+): ApplyCommandResultV7 {
+  const city = state.cities.find((candidate) => candidate.id === cityId);
+  if (city === undefined) return rejected(original, "CITY_NOT_FOUND");
+  if (city.ownerId !== actor) return rejected(original, "CITY_NOT_OWNED");
+  const player = requirePlayer(state, actor);
+  if (!player.researchedTechs.includes("PLANNING"))
+    return rejected(original, "TECH_REQUIRED", { tech: "PLANNING" });
+  if (city.level < 3 || city.landGrantUsed)
+    return rejected(original, "INVALID_TILE", { action: "LAND_GRANT" });
+  if (isCityBesiegedV7(state, city)) return rejected(original, "CITY_BESIEGED");
+  if (hasCityChoice(state, city.id))
+    return rejected(original, "CITY_REWARD_PENDING");
+  if (player.coins < 6)
+    return rejected(original, "INSUFFICIENT_COINS", { cost: 6 });
+  const claimed = state.board.tiles
+    .filter(
+      (tile) =>
+        tile.territoryCityId === null &&
+        Math.abs(tile.at.x - city.at.x) <= 2 &&
+        Math.abs(tile.at.y - city.at.y) <= 2,
+    )
+    .map((tile) => tile.at)
+    .sort(compareCoords);
+  if (claimed.length === 0)
+    return rejected(original, "INVALID_TILE", { action: "LAND_GRANT" });
+  try {
+    const claimKeys = new Set(claimed.map(key));
+    const board = {
+      ...state.board,
+      tiles: state.board.tiles.map((tile) =>
+        claimKeys.has(key(tile.at))
+          ? { ...tile, territoryCityId: city.id }
+          : tile,
+      ),
+    };
+    const known = new Set(player.explored.map(key));
+    const revealed = claimed.filter((at) => !known.has(key(at)));
+    const cities = state.cities.map((candidate) =>
+      candidate.id === city.id
+        ? { ...candidate, landGrantUsed: true }
+        : candidate,
+    );
+    const recalculation = recomputeLiveEconomyV7(
+      state,
+      { board, cities },
+      state.populationContributions,
+    );
+    const staged: GameStateV7 = {
+      ...state,
+      board,
+      cities: recalculation.cities,
+      populationContributions: recalculation.populationContributions,
+      players: setExplored(
+        debit(state.players, actor, 6),
+        actor,
+        [...player.explored, ...revealed].sort(compareCoords),
+      ),
+      commandIndex: nextSafe(state.commandIndex),
+    };
+    const settlement = settleCityRewardsV7(staged, actor);
+    const achievements = evaluateAchievementsV7(settlement.state, actor);
+    return accepted(checked(achievements.state), [
+      {
+        kind: "LAND_GRANTED",
+        playerId: actor,
+        cityId: city.id,
+        cost: 6,
+        tiles: claimed,
+      },
+      ...(revealed.length > 0
+        ? [
+            {
+              kind: "TILES_REVEALED" as const,
+              playerId: actor,
+              tiles: revealed,
+            },
+          ]
+        : []),
+      ...economyAndGrowth(recalculation.changes),
+      ...settlement.events,
       ...achievements.events,
     ]);
   } catch (cause) {
@@ -1375,7 +1642,7 @@ function applyReward(
   try {
     let nextEntityId = state.nextEntityId;
     let players = state.players;
-    let board = state.board;
+    const board = state.board;
     let cities: readonly CityStateV7[] = state.cities;
     let units = state.units;
     let contributions = state.populationContributions;
@@ -1392,12 +1659,14 @@ function applyReward(
             ? 4
             : command.reward === "TREASURY"
               ? 12
-              : 0,
+              : command.reward === "TREASURY_8"
+                ? 8
+                : 0,
       },
     ];
     const rewarded = {
       ...city,
-      expanded: city.expanded || command.reward === "EXPAND",
+      expanded: city.expanded,
       rewards: [
         ...city.rewards,
         { reachedLevel: command.reachedLevel, reward: command.reward },
@@ -1415,52 +1684,21 @@ function applyReward(
         });
     } else if (
       command.reward === "STOCKPILE" ||
-      command.reward === "TREASURY"
+      command.reward === "TREASURY" ||
+      command.reward === "TREASURY_8"
     ) {
-      const amount = command.reward === "STOCKPILE" ? 4 : 12;
+      const amount =
+        command.reward === "STOCKPILE"
+          ? 4
+          : command.reward === "TREASURY_8"
+            ? 8
+            : 12;
       const coins = requirePlayer(state, actor).coins + amount;
       if (!Number.isSafeInteger(coins))
         throw new RangeError("INTEGER_OVERFLOW");
       players = players.map((item) =>
         item.id === actor ? { ...item, coins } : item,
       );
-    } else if (command.reward === "EXPAND") {
-      const claimed: CoordV7[] = [];
-      board = {
-        ...board,
-        tiles: board.tiles.map((tile) => {
-          if (
-            tile.territoryCityId === null &&
-            chebyshev(tile.at, city.at) <= 2
-          ) {
-            claimed.push(tile.at);
-            return { ...tile, territoryCityId: city.id };
-          }
-          return tile;
-        }),
-      };
-      claimed.sort(compareCoords);
-      const known = new Set(requirePlayer(state, actor).explored.map(key));
-      const revealed = claimed.filter((at) => !known.has(key(at)));
-      players = setExplored(
-        players,
-        actor,
-        [...requirePlayer(state, actor).explored, ...revealed].sort(
-          compareCoords,
-        ),
-      );
-      events.push({
-        kind: "CITY_TERRITORY_EXPANDED",
-        playerId: actor,
-        cityId: city.id,
-        tiles: claimed,
-      });
-      if (revealed.length)
-        events.push({
-          kind: "TILES_REVEALED",
-          playerId: actor,
-          tiles: revealed,
-        });
     } else if (command.reward === "BOOM") {
       contributions = [
         ...contributions,
@@ -1502,7 +1740,7 @@ function applyReward(
         kills: 0,
         veteran: false,
         captureEligible: false,
-        activation: exhaustedActivation(unitRole),
+        activation: exhaustedActivation(),
       };
       units = [...units, created];
       events.push({
@@ -1565,7 +1803,8 @@ function applyMove(
     unit.form === "LAND" &&
     validation.interruption === null &&
     validation.traversedPath.length === command.path.length &&
-    destinationTile?.improvement === "PORT" &&
+    (destinationTile?.improvement === "PORT" ||
+      destinationTile?.improvement === "SHIPYARD") &&
     destinationTile.territoryCityId !== null &&
     state.cities.some(
       (city) =>
@@ -1590,7 +1829,7 @@ function applyMove(
             captureEligible: false,
             activation: autoEmbarks
               ? {
-                  ...exhaustedActivation(candidate.role),
+                  ...exhaustedActivation(),
                   movedPathLength: validation.traversedPath.length,
                 }
               : {
@@ -1617,6 +1856,30 @@ function applyMove(
       treasure.extraRevealed.push(...sight.revealed);
     }
     const events: DomainEventV7[] = [];
+    const occupiesHostileDefense =
+      unit.form === "LAND" &&
+      !autoEmbarks &&
+      destinationTile?.fieldDefense === true &&
+      destinationTile.territoryCityId !== null &&
+      state.cities.some(
+        (city) =>
+          city.id === destinationTile.territoryCityId &&
+          city.ownerId !== actor &&
+          arePlayersHostileV7(state, actor, city.ownerId),
+      );
+    const board =
+      occupiesHostileDefense && destinationTile !== undefined
+        ? replaceTile(state, validation.destination, {
+            ...destinationTile,
+            fieldDefense: false,
+          })
+        : state.board;
+    if (occupiesHostileDefense)
+      events.push({
+        kind: "FIELD_DEFENSE_DESTROYED",
+        at: validation.destination,
+        reason: "OCCUPATION",
+      });
     if (validation.traversedPath.length > 0)
       events.push({
         kind: "UNIT_MOVED",
@@ -1648,6 +1911,7 @@ function applyMove(
       events.push({ kind: "TILES_REVEALED", playerId: actor, tiles: revealed });
     let staged: GameStateV7 = {
       ...state,
+      board,
       commandIndex: nextSafe(state.commandIndex),
       players,
       units,
@@ -1696,19 +1960,19 @@ function resolveTreasure(
 ): TreasureResolutionV7 | null {
   if (!state.treasureChests.some((chest) => same(chest, at))) return null;
   const draw = nextBounded(state.random, 2);
-  const requestedReward = draw.value === 0 ? "COINS" : "HEAVY";
+  const requestedReward = draw.value === 0 ? "COINS" : "KNIGHT";
   const placement =
-    requestedReward === "HEAVY"
-      ? treasureHeavyPlacement(state, actor, mover, at)
+    requestedReward === "KNIGHT"
+      ? treasureKnightPlacement(state, actor, mover, at)
       : null;
   if (placement !== null) {
     const allocation = allocateUnitId(state.nextEntityId);
-    const rule = effectiveRoleRuleV7("HEAVY");
+    const rule = effectiveRoleRuleV7("KNIGHT");
     const spawnedUnit: UnitStateV7 = {
       id: allocation.id,
       ownerId: actor,
       homeCityId: placement.homeCityId,
-      role: "HEAVY",
+      role: "KNIGHT",
       form: "LAND",
       at: placement.at,
       hp: rule.maxHp,
@@ -1716,7 +1980,7 @@ function resolveTreasure(
       kills: 0,
       veteran: false,
       captureEligible: false,
-      activation: exhaustedActivation("HEAVY"),
+      activation: exhaustedActivation(),
     };
     return {
       players: state.players,
@@ -1731,9 +1995,9 @@ function resolveTreasure(
         unitId: mover.id,
         at,
         requestedReward,
-        grantedReward: "HEAVY",
+        grantedReward: "KNIGHT",
         coinDelta: 0,
-        heavyFallback: false,
+        knightFallback: false,
         spawnedUnitId: spawnedUnit.id,
         spawnedAt: spawnedUnit.at,
         homeCityId: spawnedUnit.homeCityId,
@@ -1760,7 +2024,7 @@ function resolveTreasure(
       requestedReward,
       grantedReward: "COINS",
       coinDelta: 5,
-      heavyFallback: requestedReward === "HEAVY",
+      knightFallback: requestedReward === "KNIGHT",
       spawnedUnitId: null,
       spawnedAt: null,
       homeCityId: null,
@@ -1768,7 +2032,7 @@ function resolveTreasure(
   };
 }
 
-function treasureHeavyPlacement(
+function treasureKnightPlacement(
   state: GameStateV7,
   actor: PlayerId,
   mover: UnitStateV7,
@@ -1794,7 +2058,7 @@ function treasureHeavyPlacement(
         tile.biome === null ||
         tile.site !== null ||
         (tile.terrain === "MOUNTAIN" &&
-          !player.researchedTechs.includes("PROSPECTING")) ||
+          !player.researchedTechs.includes("ENGINEERING")) ||
         state.units.some((unit) => unit.hp > 0 && same(unit.at, candidate)) ||
         state.treasureChests.some((chest) => same(chest, candidate))
       )
@@ -1825,17 +2089,10 @@ function applyAttack(
   if (attacker.form === "EMBARKED")
     return rejected(original, "ATTACK_NOT_LEGAL", { reason: "EMBARKED" });
   const rule = effectiveRoleRuleV7(attacker.role);
-  const horseArcherSecondShot =
-    attacker.role === "HORSE_ARCHER" &&
-    attacker.activation.attacksUsed === 1 &&
-    !attacker.activation.healed &&
-    !attacker.activation.recovered &&
-    !attacker.activation.captured &&
-    !attacker.activation.specialActed;
   if (
-    (!horseArcherSecondShot && primaryUsed(attacker)) ||
-    attacker.activation.attacksUsed >=
-      (attacker.role === "HORSE_ARCHER" ? 2 : 1) ||
+    (!attacker.activation.overrunActive && primaryUsed(attacker)) ||
+    (!attacker.activation.overrunActive &&
+      attacker.activation.attacksUsed >= 1) ||
     (attacker.activation.moved &&
       !rule.mayUsePrimaryActionAfterMove &&
       attacker.activation.attacksUsed === 0)
@@ -1874,7 +2131,7 @@ function applyAttack(
       isExplored(requirePlayer(state, actor), defender.at) &&
       destinationTile !== undefined &&
       (destinationTile.terrain !== "MOUNTAIN" ||
-        requirePlayer(state, actor).researchedTechs.includes("PROSPECTING"));
+        requirePlayer(state, actor).researchedTechs.includes("ENGINEERING"));
     const preview =
       canAdvance === calculated.advances
         ? calculated
@@ -1886,7 +2143,7 @@ function applyAttack(
       preview.splash.filter((entry) => entry.dies).length;
     const defenderKills = defender.kills + (preview.attackerDies ? 1 : 0);
     if (
-      attacksUsed > (attacker.role === "HORSE_ARCHER" ? 2 : 1) ||
+      !Number.isSafeInteger(attacksUsed) ||
       !Number.isSafeInteger(attackerKills) ||
       !Number.isSafeInteger(defenderKills)
     )
@@ -1895,11 +2152,7 @@ function applyAttack(
       preview.push === "WILL_PUSH"
         ? pushedDestinationV7(state, attacker, defender)
         : null;
-    const hasSecondShot =
-      attacker.role === "HORSE_ARCHER" &&
-      attacksUsed === 1 &&
-      !preview.attackerDies;
-    const attackerAfter: UnitStateV7 = {
+    let attackerAfter: UnitStateV7 = {
       ...attacker,
       at: preview.advances ? defender.at : attacker.at,
       hp: attacker.hp - preview.damageToAttacker,
@@ -1908,8 +2161,10 @@ function applyAttack(
       activation: {
         ...attacker.activation,
         attacked: true,
-        attacksUsed: attacksUsed as 1 | 2,
-        handled: !hasSecondShot,
+        attacksUsed,
+        inspired: false,
+        overrunActive: false,
+        handled: true,
       },
     };
     const defenderAfter: UnitStateV7 = {
@@ -1923,7 +2178,7 @@ function applyAttack(
     const splashDamage = new Map(
       preview.splash.map((entry) => [entry.unitId, entry.damage] as const),
     );
-    const units = state.units
+    let units = state.units
       .map((unit) =>
         unit.id === attacker.id
           ? attackerAfter
@@ -1934,7 +2189,88 @@ function applyAttack(
               : unit,
       )
       .filter((unit) => unit.hp > 0);
-    const events: DomainEventV7[] = [{ kind: "COMBAT_RESOLVED", preview }];
+    const defenseReason = destinationTile?.fieldDefense
+      ? attacker.role === "CATAPULT"
+        ? "CATAPULT"
+        : preview.inspiredApplied && distance === 1 && !preview.attackerDies
+          ? "INSPIRED"
+          : distance === 1 &&
+              !preview.attackerDies &&
+              attacker.form === "LAND" &&
+              requirePlayer(state, actor).researchedTechs.includes("EXPLOSIVES")
+            ? "EXPLOSIVES"
+            : preview.advances
+              ? "OCCUPATION"
+              : null
+      : null;
+    const board =
+      defenseReason === null || destinationTile === undefined
+        ? state.board
+        : replaceTile(state, defender.at, {
+            ...destinationTile,
+            fieldDefense: false,
+          });
+    const advanceReveal = preview.advances
+      ? revealRadius(
+          { ...state, board, units } as GameStateV7,
+          actor,
+          defender.at,
+          unitSightRadiusAtV7(
+            { ...state, board, units } as GameStateV7,
+            attackerAfter,
+          ),
+        )
+      : null;
+    const visiblePlayers =
+      advanceReveal === null
+        ? state.players
+        : setExplored(state.players, actor, advanceReveal.explored);
+    const visibleState = {
+      ...state,
+      board,
+      players: visiblePlayers,
+      units,
+    } as GameStateV7;
+    const overrunContinues =
+      attacker.role === "KNIGHT" &&
+      preview.advances &&
+      !preview.attackerDies &&
+      units.some(
+        (candidate) =>
+          candidate.id !== attacker.id &&
+          candidate.hp > 0 &&
+          arePlayersHostileV7(state, actor, candidate.ownerId) &&
+          chebyshev(defender.at, candidate.at) === 1 &&
+          isUnitVisibleToPlayerV7(visibleState, actor, candidate),
+      );
+    if (overrunContinues) {
+      attackerAfter = {
+        ...attackerAfter,
+        activation: {
+          ...attackerAfter.activation,
+          overrunActive: true,
+          handled: false,
+        },
+      };
+      units = units.map((unit) =>
+        unit.id === attackerAfter.id ? attackerAfter : unit,
+      );
+    }
+    const finalPreview = {
+      ...preview,
+      attacksRemaining: overrunContinues ? 1 : 0,
+      overrunAdvance: attacker.role === "KNIGHT" && preview.advances,
+      overrunContinues,
+    };
+    const events: DomainEventV7[] = [
+      { kind: "COMBAT_RESOLVED", preview: finalPreview },
+    ];
+    if (defenseReason !== null)
+      events.push({
+        kind: "FIELD_DEFENSE_DESTROYED",
+        at: defender.at,
+        reason: defenseReason,
+      });
     if (preview.defenderDies)
       events.push({ kind: "UNIT_DIED", unitId: defender.id, cause: "ATTACK" });
     for (const splash of preview.splash)
@@ -1964,29 +2300,22 @@ function applyAttack(
         from: defender.at,
         to: pushDestination,
       });
-    let players = state.players;
+    let players = visiblePlayers;
     if (preview.advances) {
-      const reveal = revealRadius(
-        { ...state, units } as GameStateV7,
-        actor,
-        defender.at,
-        unitSightRadiusAtV7({ ...state, units } as GameStateV7, attackerAfter),
-      );
-      players = setExplored(players, actor, reveal.explored);
-      if (reveal.revealed.length)
+      if (advanceReveal !== null && advanceReveal.revealed.length)
         events.push({
           kind: "TILES_REVEALED",
           playerId: actor,
-          tiles: reveal.revealed,
+          tiles: advanceReveal.revealed,
         });
     }
     if (pushDestination !== null) {
       const reveal = revealRadius(
-        { ...state, players, units } as GameStateV7,
+        { ...state, board, players, units } as GameStateV7,
         defender.ownerId,
         pushDestination,
         unitSightRadiusAtV7(
-          { ...state, players, units } as GameStateV7,
+          { ...state, board, players, units } as GameStateV7,
           defenderAfter,
         ),
       );
@@ -2000,13 +2329,14 @@ function applyAttack(
     }
     const economy = recomputeLiveEconomyV7(
       state,
-      { board: state.board, cities: state.cities, units },
+      { board, cities: state.cities, units },
       state.populationContributions,
     );
     events.push(...economyAndGrowth(economy.changes));
     const settlement = settleCityRewardsV7(
       {
         ...state,
+        board,
         commandIndex: nextSafe(state.commandIndex),
         players,
         cities: economy.cities,
@@ -2024,64 +2354,144 @@ function applyAttack(
   }
 }
 
-function applyHeal(
+function supportCaptain(
   original: GameStateV7,
   state: GameStateV7,
   actor: PlayerId,
-  command: Extract<CommandV7, { kind: "HEAL_ADJACENT" }>,
-): ApplyCommandResultV7 {
-  const actorCheck = validateUnitActor(state, actor, command.unitId);
+  unitId: UnitStateV7["id"],
+  ability: "RALLY" | "TEND_WOUNDED",
+): { readonly captain: UnitStateV7 } | ApplyCommandResultV7 {
+  const actorCheck = validateUnitActor(state, actor, unitId);
   if (!actorCheck.ok)
     return rejected(original, actorCheck.code, actorCheck.params);
-  const medic = actorCheck.unit;
-  const rule = effectiveRoleRuleV7(medic.role);
-  if (medic.form !== "LAND" || !rule.abilities.includes("HEAL_ADJACENT"))
-    return rejected(original, "UNIT_ROLE_INVALID", { role: medic.role });
+  const captain = actorCheck.unit;
+  const rule = effectiveRoleRuleV7(captain.role);
+  if (captain.form !== "LAND" || !rule.abilities.includes(ability))
+    return rejected(original, "UNIT_ROLE_INVALID", { role: captain.role });
   if (
-    primaryUsed(medic) ||
-    (medic.activation.moved && !rule.mayUsePrimaryActionAfterMove)
+    primaryUsed(captain) ||
+    (captain.activation.moved && !rule.mayUsePrimaryActionAfterMove)
   )
-    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: medic.id });
-  const target = state.units.find(
-    (unit) => unit.id === command.targetUnitId && unit.hp > 0,
-  );
-  if (target === undefined || !isUnitVisibleToPlayerV7(state, actor, target))
-    return rejected(original, "HEAL_TARGET_NOT_FOUND");
-  if (target.ownerId !== actor)
-    return rejected(original, "HEAL_TARGET_NOT_OWNED");
-  if (target.form !== "LAND")
-    return rejected(original, "HEAL_TARGET_NOT_FOUND");
-  if (target.id === medic.id || chebyshev(medic.at, target.at) !== 1)
-    return rejected(original, "HEAL_TARGET_NOT_ADJACENT");
-  if (target.hp >= target.maxHp) return rejected(original, "HEAL_TARGET_FULL");
-  if (state.commandIndex >= Number.MAX_SAFE_INTEGER)
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
+  return { captain };
+}
+
+function applyRally(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  unitId: UnitStateV7["id"],
+): ApplyCommandResultV7 {
+  if (state.commandIndex === Number.MAX_SAFE_INTEGER)
     return rejected(original, "INTEGER_OVERFLOW");
-  const amount = Math.min(
-    requirePlayer(state, actor).researchedTechs.includes("RECOVERY") ? 6 : 4,
-    target.maxHp - target.hp,
+  const result = supportCaptain(original, state, actor, unitId, "RALLY");
+  if ("accepted" in result) return result;
+  const targets = state.units
+    .filter((unit) => {
+      const tactical = effectiveRoleRuleV7(unit.role).tacticalRole;
+      return (
+        unit.hp > 0 &&
+        unit.ownerId === actor &&
+        unit.form === "LAND" &&
+        unit.id !== result.captain.id &&
+        !unit.activation.inspired &&
+        tactical !== "SUPPORT" &&
+        tactical !== "SIEGE" &&
+        chebyshev(result.captain.at, unit.at) === 1
+      );
+    })
+    .sort((a, b) => a.id - b.id);
+  if (targets.length === 0) return rejected(original, "HEAL_TARGET_NOT_FOUND");
+  const ids = new Set(targets.map((unit) => unit.id));
+  return accepted(
+    checked({
+      ...state,
+      commandIndex: nextSafe(state.commandIndex),
+      units: state.units.map((unit) =>
+        unit.id === result.captain.id
+          ? {
+              ...unit,
+              activation: {
+                ...unit.activation,
+                specialActed: true,
+                handled: true,
+              },
+            }
+          : ids.has(unit.id)
+            ? { ...unit, activation: { ...unit.activation, inspired: true } }
+            : unit,
+      ),
+    }),
+    [
+      {
+        kind: "UNITS_RALLIED",
+        captainId: result.captain.id,
+        unitIds: targets.map((unit) => unit.id),
+      },
+    ],
+  );
+}
+
+function applyTendWounded(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  unitId: UnitStateV7["id"],
+): ApplyCommandResultV7 {
+  if (state.commandIndex === Number.MAX_SAFE_INTEGER)
+    return rejected(original, "INTEGER_OVERFLOW");
+  const result = supportCaptain(original, state, actor, unitId, "TEND_WOUNDED");
+  if ("accepted" in result) return result;
+  const targets = state.units
+    .filter(
+      (unit) =>
+        unit.hp > 0 &&
+        unit.ownerId === actor &&
+        unit.form === "LAND" &&
+        unit.id !== result.captain.id &&
+        unit.hp < unit.maxHp &&
+        !unit.activation.tendedThisTurn &&
+        chebyshev(result.captain.at, unit.at) === 1,
+    )
+    .sort((a, b) => a.id - b.id);
+  if (targets.length === 0) return rejected(original, "HEAL_TARGET_NOT_FOUND");
+  const amounts = new Map(
+    targets.map(
+      (unit) => [unit.id, Math.min(2, unit.maxHp - unit.hp)] as const,
+    ),
   );
   return accepted(
     checked({
       ...state,
       commandIndex: nextSafe(state.commandIndex),
       units: state.units.map((unit) =>
-        unit.id === medic.id
+        unit.id === result.captain.id
           ? {
               ...unit,
-              activation: { ...unit.activation, healed: true, handled: true },
+              activation: {
+                ...unit.activation,
+                specialActed: true,
+                handled: true,
+              },
             }
-          : unit.id === target.id
-            ? { ...unit, hp: unit.hp + amount }
+          : amounts.has(unit.id)
+            ? {
+                ...unit,
+                hp: unit.hp + (amounts.get(unit.id) ?? 0),
+                activation: { ...unit.activation, tendedThisTurn: true },
+              }
             : unit,
       ),
     }),
     [
       {
-        kind: "UNIT_HEALED",
-        medicId: medic.id,
-        targetUnitId: target.id,
-        amount,
-        hpAfter: target.hp + amount,
+        kind: "WOUNDED_TENDED",
+        captainId: result.captain.id,
+        results: targets.map((unit) => ({
+          unitId: unit.id,
+          amount: amounts.get(unit.id) ?? 0,
+          hpAfter: unit.hp + (amounts.get(unit.id) ?? 0),
+        })),
       },
     ],
   );
@@ -2145,6 +2555,8 @@ function applyPromote(
   if (!actorCheck.ok)
     return rejected(original, actorCheck.code, actorCheck.params);
   const unit = actorCheck.unit;
+  if (unit.activation.overrunActive)
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
   if (unit.form === "EMBARKED" || unit.veteran || unit.kills < 3)
     return rejected(original, "PROMOTION_NOT_ELIGIBLE", { unitId });
   const maxHp = unit.maxHp + 5;
@@ -2177,6 +2589,8 @@ function applyWait(
   const actorCheck = validateUnitActor(state, actor, unitId);
   if (!actorCheck.ok)
     return rejected(original, actorCheck.code, actorCheck.params);
+  if (actorCheck.unit.activation.overrunActive)
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
   if (actorCheck.unit.activation.handled)
     return rejected(original, "UNIT_ALREADY_HANDLED", { unitId });
   if (state.commandIndex >= Number.MAX_SAFE_INTEGER)
@@ -2187,7 +2601,14 @@ function applyWait(
       commandIndex: nextSafe(state.commandIndex),
       units: state.units.map((unit) =>
         unit.id === unitId
-          ? { ...unit, activation: { ...unit.activation, handled: true } }
+          ? {
+              ...unit,
+              activation: {
+                ...unit.activation,
+                overrunActive: false,
+                handled: true,
+              },
+            }
           : unit,
       ),
     }),
@@ -2205,12 +2626,18 @@ function applyPillage(
   if (!actorCheck.ok)
     return rejected(original, actorCheck.code, actorCheck.params);
   const { unit } = actorCheck;
-  if (unit.form !== "LAND") return rejected(original, "PILLAGE_INVALID_TARGET");
+  if (unit.form !== "LAND" || unit.role === "JUGGERNAUT")
+    return rejected(original, "PILLAGE_INVALID_TARGET");
   if (primaryUsed(unit))
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
   const player = requirePlayer(state, actor);
-  if (!player.researchedTechs.includes("METALLURGY"))
-    return rejected(original, "TECH_REQUIRED", { tech: "METALLURGY" });
+  const hasTechnology =
+    player.researchedTechs.includes("EXPLOSIVES") ||
+    (unit.role === "RAIDER" && player.researchedTechs.includes("RAIDING"));
+  if (!hasTechnology)
+    return rejected(original, "TECH_REQUIRED", {
+      tech: unit.role === "RAIDER" ? "RAIDING" : "EXPLOSIVES",
+    });
   const tile = tileAtV7(state.board, unit.at);
   const city = state.cities.find((item) => item.id === tile?.territoryCityId);
   if (
@@ -2308,8 +2735,8 @@ function applyFieldDefense(
   const territory = state.cities.find(
     (city) => city.id === tile?.territoryCityId,
   );
-  if (!player.researchedTechs.includes("ENGINEERING"))
-    return rejected(original, "TECH_REQUIRED", { tech: "ENGINEERING" });
+  if (!player.researchedTechs.includes("FORTIFICATION"))
+    return rejected(original, "TECH_REQUIRED", { tech: "FORTIFICATION" });
   if (
     unit.form !== "LAND" ||
     (unit.role !== "FIGHTER" && unit.role !== "GUARD") ||
@@ -2377,8 +2804,8 @@ function applyDisband(
       role: actorCheck.unit.role,
     });
   const player = requirePlayer(state, actor);
-  if (!player.researchedTechs.includes("RECOVERY"))
-    return rejected(original, "TECH_REQUIRED", { tech: "RECOVERY" });
+  if (!player.researchedTechs.includes("ADMINISTRATION"))
+    return rejected(original, "TECH_REQUIRED", { tech: "ADMINISTRATION" });
   const rule = effectiveRoleRuleV7(actorCheck.unit.role);
   if (rule.cost === null)
     return rejected(original, "UNIT_ROLE_INVALID", {
@@ -2452,14 +2879,13 @@ function applyCapture(
     ) ||
     unit.activation.moved ||
     primaryUsed(unit) ||
-    !unit.captureEligible ||
-    unit.role === "HORSE_ARCHER"
+    !unit.captureEligible
   )
     return rejected(original, "CAPTURE_NOT_ELIGIBLE", { reason: "NOT_READY" });
   const player = requirePlayer(state, actor);
   const spoils =
     hostile !== undefined &&
-    player.researchedTechs.includes("PROSPECTING") &&
+    player.researchedTechs.includes("DRILL") &&
     !player.spoilsClaimedCityIds.includes(hostile.id);
   if (spoils && !Number.isSafeInteger(player.coins + 2))
     return rejected(original, "INTEGER_OVERFLOW");
@@ -2482,6 +2908,7 @@ function applyCapture(
         population: 0,
         isCapital: false,
         expanded: false,
+        landGrantUsed: false,
         rewards: [],
       };
       cities = [...state.cities, captured].sort((a, b) => a.id - b.id);
@@ -2662,7 +3089,23 @@ function applyEndTurn(
   try {
     const current = requirePlayer(state, actor);
     const recovery = recoverIdleUnits(state, current);
-    const preview = playerIncomeV7(recovery.state, actor);
+    const expired: GameStateV7 = {
+      ...recovery.state,
+      units: recovery.state.units.map((unit) =>
+        unit.ownerId === actor
+          ? {
+              ...unit,
+              activation: {
+                ...unit.activation,
+                inspired: false,
+                overrunActive: false,
+                handled: true,
+              },
+            }
+          : unit,
+      ),
+    };
+    const preview = playerIncomeV7(expired, actor);
     const nextIndex = nextActiveSeat(state);
     if (nextIndex === null) return rejected(original, "INVALID_STATE");
     const nextPlayer = state.players.find(
@@ -2673,7 +3116,7 @@ function applyEndTurn(
       nextIndex <= state.activeSeatIndex ? nextSafe(state.round) : state.round;
     const advanced = resetTurnUnits(
       {
-        ...recovery.state,
+        ...expired,
         activeSeatIndex: nextIndex,
         round,
       },
@@ -2759,7 +3202,6 @@ function validateUnitActor(
 function primaryUsed(unit: UnitStateV7): boolean {
   return (
     unit.activation.attacked ||
-    unit.activation.healed ||
     unit.activation.recovered ||
     unit.activation.captured ||
     unit.activation.specialActed
@@ -2770,7 +3212,6 @@ function recoverIdleUnits(
   state: GameStateV7,
   player: PlayerStateV7,
 ): { state: GameStateV7; events: readonly DomainEventV7[] } {
-  const recovery6 = player.researchedTechs.includes("RECOVERY");
   const items = state.units
     .filter(
       (unit) =>
@@ -2788,7 +3229,7 @@ function recoverIdleUnits(
     .sort((a, b) => a.id - b.id)
     .map((unit) => {
       const amount = Math.min(
-        recoveryAmount(state, unit, recovery6),
+        recoveryAmount(state, unit),
         unit.maxHp - unit.hp,
       );
       return { unitId: unit.id, amount };
@@ -2812,18 +3253,26 @@ function recoverIdleUnits(
   };
 }
 
-function recoveryAmount(
-  state: GameStateV7,
-  unit: UnitStateV7,
-  recoveryKnown = requirePlayer(state, unit.ownerId).researchedTechs.includes(
-    "RECOVERY",
-  ),
-): number {
-  if (unit.form === "NAVAL") return recoveryKnown ? 6 : 4;
+function recoveryAmount(state: GameStateV7, unit: UnitStateV7): number {
+  if (unit.form === "NAVAL")
+    return [unit.at, ...adjacentCoords(state, unit.at)].some((at) =>
+      isActivePortV7(state, at, unit.ownerId),
+    )
+      ? 4
+      : 0;
+  if (unit.form === "EMBARKED") return 0;
   const tile = tileAtV7(state.board, unit.at);
   const city = state.cities.find((item) => item.id === tile?.territoryCityId);
   const friendly = city?.ownerId === unit.ownerId;
-  return friendly && recoveryKnown ? 6 : friendly ? 4 : 2;
+  const supplied =
+    friendly &&
+    state.board.tiles.some(
+      (candidate) =>
+        candidate.territoryCityId === city.id &&
+        candidate.improvement === "WINDMILL" &&
+        spatialContributionAtV7(state, candidate.at, "WINDMILL").population > 0,
+    );
+  return supplied ? 6 : friendly ? 4 : 2;
 }
 
 function adjacentCoords(
@@ -2886,7 +3335,9 @@ function resetTurnUnits(state: GameStateV7, playerId: PlayerId): GameStateV7 {
           movedPathLength: 0,
           attacked: false,
           attacksUsed: 0,
-          healed: false,
+          tendedThisTurn: false,
+          inspired: false,
+          overrunActive: false,
           recovered: false,
           captured: false,
           handled: false,
@@ -2916,7 +3367,7 @@ function rewardPlacement(
           tile.territoryCityId === city.id &&
           tile.biome !== null &&
           (tile.terrain !== "MOUNTAIN" ||
-            player.researchedTechs.includes("PROSPECTING")) &&
+            player.researchedTechs.includes("ENGINEERING")) &&
           !state.units.some((unit) => unit.hp > 0 && same(unit.at, tile.at)),
       )
       .sort(
@@ -3037,7 +3488,7 @@ function evaluateAchievementsV7(
   const requiredTech = {
     EXPLORER: "SCOUTING",
     ENGINEER: "ENGINEERING",
-    MUSTER: "PROSPECTING",
+    MUSTER: "DRILL",
   } as const;
   const unlocked = player.achievementEntitlements.filter(
     (entitlement) =>
@@ -3157,15 +3608,15 @@ function populationContributionAt(
       same(item.source.at, at),
   );
 }
-function exhaustedActivation(
-  role: UnitStateV7["role"],
-): UnitStateV7["activation"] {
+function exhaustedActivation(): UnitStateV7["activation"] {
   return {
     moved: true,
     movedPathLength: 0,
     attacked: true,
-    attacksUsed: role === "HORSE_ARCHER" ? 2 : 1,
-    healed: true,
+    attacksUsed: 1,
+    tendedThisTurn: false,
+    inspired: false,
+    overrunActive: false,
     recovered: true,
     captured: true,
     handled: true,

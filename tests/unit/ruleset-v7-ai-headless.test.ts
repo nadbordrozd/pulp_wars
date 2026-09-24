@@ -45,7 +45,9 @@ const READY: UnitStateV7["activation"] = {
   movedPathLength: 0,
   attacked: false,
   attacksUsed: 0,
-  healed: false,
+  tendedThisTurn: false,
+  inspired: false,
+  overrunActive: false,
   recovered: false,
   captured: false,
   handled: false,
@@ -65,9 +67,9 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
 
   it("publishes complete zero-filled command, event, tech, role, and improvement inventories", () => {
     const metrics = collectAcceptedTelemetryV7(initialV7(0), [], []);
-    expect(TECHNOLOGY_IDS_V7).toHaveLength(21);
-    expect(UNIT_ROLE_IDS_V7).toHaveLength(13);
-    expect(IMPROVEMENT_IDS_V7).toHaveLength(10);
+    expect(TECHNOLOGY_IDS_V7).toHaveLength(23);
+    expect(UNIT_ROLE_IDS_V7).toHaveLength(10);
+    expect(IMPROVEMENT_IDS_V7).toHaveLength(11);
     expect(Object.keys(metrics.commandsByKind)).toEqual(COMMAND_KIND_ORDER_V7);
     expect(Object.keys(metrics.eventsByKind)).toEqual(
       DOMAIN_EVENT_KIND_ORDER_V7,
@@ -129,7 +131,7 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
       errors: [],
       stalls: [],
       metrics: {
-        rulesetId: "pulp-wars-poc-7r8",
+        rulesetId: "pulp-wars-poc-7r9",
         commandCapHits: 1,
       },
     });
@@ -367,13 +369,11 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
     ).toBe(recoveries.reduce((total, event) => total + event.amount, 0));
   });
 
-  it("counts both Horse Archer shots and attributes retaliation to defender role", () => {
+  it("records Knight Overrun chain attacks and defender-role retaliation", () => {
     const initial = combatTelemetryState();
     const transitions: AcceptedTelemetryTransitionV7[] = [];
     let state = initial;
-    const horseArcher = state.units.find(
-      (unit) => unit.role === "HORSE_ARCHER",
-    );
+    const knightOverrun = state.units.find((unit) => unit.role === "KNIGHT");
     const victims = state.units.filter(
       (unit) => unit.ownerId !== state.humanPlayerId && unit.role === "FIGHTER",
     );
@@ -382,7 +382,7 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
     );
     const guard = state.units.find((unit) => unit.role === "GUARD");
     if (
-      horseArcher === undefined ||
+      knightOverrun === undefined ||
       victims.length !== 2 ||
       fighter === undefined ||
       guard === undefined
@@ -393,7 +393,7 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
       state.humanPlayerId,
       {
         kind: "ATTACK",
-        unitId: horseArcher.id,
+        unitId: knightOverrun.id,
         targetUnitId: victims[0]?.id as UnitStateV7["id"],
       },
       transitions,
@@ -403,7 +403,7 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
       state.humanPlayerId,
       {
         kind: "ATTACK",
-        unitId: horseArcher.id,
+        unitId: knightOverrun.id,
         targetUnitId: victims[1]?.id as UnitStateV7["id"],
       },
       transitions,
@@ -423,17 +423,19 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
       transitions,
     );
     const metrics = collectAcceptedTelemetryV7(initial, [], transitions);
-    expect(metrics.horseArcher).toMatchObject({
-      activations: 1,
-      shots: 2,
-      firstShots: 1,
-      secondShots: 1,
-      splitFireChoices: 1,
-      advanceViolations: 0,
-      shotsPerActivation: { "2": 1 },
+    expect(metrics.knightOverrun).toMatchObject({
+      chainsStarted: 1,
+      attacks: 2,
+      continuations: 1,
+      advances: 1,
+      completedChains: 1,
+      longestChain: 2,
+      continuationWithoutAdvanceViolations: 0,
+      chainAccountingViolations: 0,
+      attacksPerChain: { "2": 1 },
     });
     expect(metrics.roles.damage.GUARD).toBe(preview.damageToAttacker);
-    expect(metrics.roles.kills.HORSE_ARCHER).toBe(1);
+    expect(metrics.roles.kills.KNIGHT).toBe(1);
     expect(metrics.roles.losses.FIGHTER).toBe(1);
   });
 });
@@ -477,7 +479,7 @@ function combatTelemetryState(): GameStateV7 {
   const enemy = base.players.find((player) => player.id !== base.humanPlayerId);
   if (enemy === undefined) throw new Error("Enemy missing");
   const specs = [
-    ["HORSE_ARCHER", { x: 2, y: 5 }, base.humanPlayerId, 10],
+    ["KNIGHT", { x: 2, y: 5 }, base.humanPlayerId, 10],
     ["FIGHTER", { x: 3, y: 5 }, enemy.id, 1],
     ["FIGHTER", { x: 4, y: 5 }, enemy.id, 10],
     ["FIGHTER", { x: 5, y: 5 }, base.humanPlayerId, 10],

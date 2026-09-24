@@ -23,40 +23,36 @@ import {
   Ruleset7DomAppView,
   type Ruleset7ControllerPortV7,
 } from "../../src/render/dom/app-view-v7";
-import { horseArcherPublicFixtureV7 } from "../fixtures/ruleset7-tactical-ui";
+import { knightOverrunPublicFixtureV7 } from "../fixtures/ruleset7-tactical-ui";
 
 beforeEach(() => {
   document.body.innerHTML = '<div id="app"></div>';
 });
 
 describe("Ruleset 7 tactical DOM controls", () => {
-  it("distinguishes unused from legal Horse Archer shots and explains the first-shot lock", async () => {
-    const fixture = horseArcherPublicFixtureV7();
+  it("shows Overrun only after an advancing kill and locks movement during the chain", async () => {
+    const fixture = knightOverrunPublicFixtureV7();
     const controller = new TacticalFixtureController(fixture.state);
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
-    const horseArcher = required(
+    const knightOverrun = required(
       controller
         .snapshot()
         .view?.units.find(
           (unit) =>
-            unit.ownerId === unitOwner(controller) &&
-            unit.role === "HORSE_ARCHER",
+            unit.ownerId === unitOwner(controller) && unit.role === "KNIGHT",
         ),
     );
-    host.callbacks?.onSelection({ kind: "UNIT", unitId: horseArcher.id });
+    host.callbacks?.onSelection({ kind: "UNIT", unitId: knightOverrun.id });
     requiredButton("unit-help").click();
     const details = required(
       document.querySelector<HTMLElement>(
         '.v7-unit-help-dialog[aria-modal="true"]',
       ),
     );
-    expect(
-      details.querySelector('[data-tactical-state="horse-archer"]')
-        ?.textContent,
-    ).toBe("2 shots left");
+    expect(details.querySelector('[data-tactical-state="overrun"]')).toBeNull();
     expect(details.textContent).toContain(
-      "Shoots twice a turn. Move before the first shot.",
+      "After a kill, advances and can attack another adjacent enemy.",
     );
 
     const firstShot = required(
@@ -64,7 +60,7 @@ describe("Ruleset 7 tactical DOM controls", () => {
         .snapshot()
         .offeredCommands.find(
           (command) =>
-            command.kind === "ATTACK" && command.unitId === horseArcher.id,
+            command.kind === "ATTACK" && command.unitId === knightOverrun.id,
         ),
     );
     expect((await controller.dispatch(firstShot)).accepted).toBe(true);
@@ -72,18 +68,22 @@ describe("Ruleset 7 tactical DOM controls", () => {
       () =>
         document
           .querySelector(".v7-unit-help-dialog")
-          ?.textContent?.includes("1 shot left") === true,
+          ?.textContent?.includes("Overrun: attack again") === true,
     );
     expect(
-      document.querySelector('[data-tactical-state="horse-archer"]')
-        ?.textContent,
-    ).toBe("1 shot left");
+      document.querySelector('[data-tactical-state="overrun"]')?.textContent,
+    ).toBe("Overrun: attack again");
+    expect(
+      document.querySelector(
+        '.v7-unit-status-cues [data-unit-status="overrun"]',
+      )?.textContent,
+    ).toBe("Overrun");
     expect(
       controller
         .snapshot()
         .offeredCommands.some(
           (command) =>
-            command.kind === "MOVE" && command.unitId === horseArcher.id,
+            command.kind === "MOVE" && command.unitId === knightOverrun.id,
         ),
     ).toBe(false);
     app.destroy();

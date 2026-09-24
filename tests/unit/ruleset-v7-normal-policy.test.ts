@@ -14,6 +14,7 @@ import {
   applyCommandV7,
   canonicalHash,
   canonicalJson,
+  cityId,
   createInitialMapStateV7,
   createPublicPlanningWorkV7,
   effectiveRoleRuleV7,
@@ -21,6 +22,7 @@ import {
   queryPlayerCommandsV7,
   queryPublicRedevelopmentChangesImprovementV7,
   scorePublicSpatialPlanV7,
+  unitId,
   viewForV7,
   type CoordV7,
   type GameStateV7,
@@ -41,7 +43,9 @@ const READY: UnitStateV7["activation"] = {
   movedPathLength: 0,
   attacked: false,
   attacksUsed: 0,
-  healed: false,
+  tendedThisTurn: false,
+  inspired: false,
+  overrunActive: false,
   recovered: false,
   captured: false,
   handled: false,
@@ -79,7 +83,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const view = viewForV7(state, state.humanPlayerId);
     const decision = chooseNormalCommandV7(view);
     expect(queryPlayerCommandsV7(view)).toContainEqual({ kind: "END_TURN" });
-    expect(decision.command).toEqual({ kind: "RESEARCH", tech: "PROSPECTING" });
+    expect(decision.command).toEqual({ kind: "RESEARCH", tech: "DRILL" });
     expect(decision.candidates[0]?.score.priority).toBe(1060);
     expect(
       decision.candidates.some(({ command }) => command.kind === "WAIT"),
@@ -144,7 +148,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       coldFixture.view,
       command,
     );
-    expect(cold).toBe(false);
+    expect(cold).toBe(true);
 
     const preparedFixture = multiCityMonumentRedevelopmentView();
     const commands = queryPlayerCommandsV7(preparedFixture.view);
@@ -193,17 +197,17 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     );
   });
 
-  it("scores both stationary Horse Archer shots with standalone parity", () => {
-    const state = horseArcherLine();
+  it("scores bounded Knight Overrun follow-up with standalone parity", () => {
+    const state = knightOverrunLine();
     const view = viewForV7(state, state.humanPlayerId);
     const decision = chooseNormalCommandV7(view);
     const attack = decision.candidates.find(
       (candidate) => candidate.command.kind === "ATTACK",
     );
-    if (attack === undefined) throw new Error("Horse Archer attack missing");
+    if (attack === undefined) throw new Error("Knight Overrun attack missing");
     expect(scoreCommandV7(view, attack.command)).toEqual(attack.score);
     if (attack.command.kind !== "ATTACK")
-      throw new Error("Horse Archer attack malformed");
+      throw new Error("Knight Overrun attack malformed");
     const preview = queryCombatPreviewV7(
       view,
       attack.command.unitId,
@@ -216,33 +220,33 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     );
   });
 
-  it("values two-shot attacks from a legal post-Move firing coordinate", () => {
-    const state = horseArcherMoveLine();
+  it("values a legal post-Move Knight Overrun setup", () => {
+    const state = knightOverrunMoveLine();
     const view = viewForV7(state, state.humanPlayerId);
-    const horseArcher = ownUnit(state, "HORSE_ARCHER");
+    const knightOverrun = ownUnit(state, "KNIGHT");
     const move = required(
       queryPlayerCommandsV7(view).find(
         (command) =>
           command.kind === "MOVE" &&
-          command.unitId === horseArcher.id &&
+          command.unitId === knightOverrun.id &&
           same(command.path.at(-1) ?? { x: -1, y: -1 }, { x: 3, y: 5 }),
       ),
-      "Horse Archer firing-position Move missing",
+      "Knight Overrun firing-position Move missing",
     );
     const decision = chooseNormalCommandV7(view);
     const candidate = required(
       decision.candidates.find(
         (entry) => canonicalJson(entry.command) === canonicalJson(move),
       ),
-      "Horse Archer Move score missing",
+      "Knight Overrun Move score missing",
     );
     expect(scoreCommandV7(view, move)).toEqual(candidate.score);
     expect(candidate.score.immediateValue).toBeGreaterThan(0);
     expect(candidate.score.safetyValue).toBeLessThanOrEqual(0);
   });
 
-  it("yields inside a dense Horse Archer search without changing the frozen result", async () => {
-    const state = denseHorseArcher();
+  it("yields inside a dense Knight Overrun search without changing the frozen result", async () => {
+    const state = denseKnightOverrun();
     const view = viewForV7(state, state.humanPlayerId);
     const sync = chooseNormalCommandV7(view);
     let clock = 0;
@@ -263,17 +267,17 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     expect(work.runSlice(8)).toBeNull();
   });
 
-  it("preserves a fortified hostile defender's published stats for the second shot", () => {
-    const state = fortifiedHorseArcherTarget();
+  it("preserves a fortified hostile defender's stats for the next Overrun attack", () => {
+    const state = fortifiedKnightOverrunTarget();
     const view = viewForV7(state, state.humanPlayerId);
-    const horseArcher = ownUnit(state, "HORSE_ARCHER");
+    const knightOverrun = ownUnit(state, "KNIGHT");
     const target = state.units.find(
       (unit) => unit.ownerId !== state.humanPlayerId && unit.role === "FIGHTER",
     );
     if (target === undefined) throw new Error("Fortified target missing");
     const command = {
       kind: "ATTACK" as const,
-      unitId: horseArcher.id,
+      unitId: knightOverrun.id,
       targetUnitId: target.id,
     };
     const first = queryCombatPreviewV7(
@@ -285,16 +289,22 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const applied = applyCommandV7(state, state.humanPlayerId, command);
     if (!applied.accepted) throw new Error(applied.error.code);
     const afterFirst = viewForV7(applied.state, state.humanPlayerId);
+    const continuation = queryPlayerCommandsV7(afterFirst).find(
+      (candidate) =>
+        candidate.kind === "ATTACK" && candidate.unitId === command.unitId,
+    );
+    if (continuation?.kind !== "ATTACK")
+      throw new Error("Second attack command missing");
     const second = queryCombatPreviewV7(
       afterFirst,
-      command.unitId,
-      command.targetUnitId,
+      continuation.unitId,
+      continuation.targetUnitId,
     );
     if (second === null) throw new Error("Second attack preview missing");
     const publishedDefense = view.unitStats
       .find((entry) => entry.unitId === target.id)
       ?.stats.find((stat) => stat.id === "DEFENSE");
-    expect(publishedDefense?.total).toEqual({ numerator: 3, denominator: 1 });
+    expect(publishedDefense?.total).toEqual({ numerator: 2, denominator: 1 });
     expect(scoreCommandV7(view, command).immediateValue).toBe(
       10 * (first.damageToDefender + second.damageToDefender) -
         8 * (first.damageToAttacker + second.damageToAttacker) +
@@ -313,12 +323,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     expect(source.viewer.researchedTechs).toEqual([
       "GATHERING",
       "HUNTING",
-      "PROSPECTING",
+      "DRILL",
       "ENGINEERING",
       "METALLURGY",
     ]);
-    for (const removed of ["DRILL", "FORTIFICATION", "EXPLOSIVES"])
-      expect(source.viewer.researchedTechs).not.toContain(removed);
     expect(source.units.every((unit) => unit.form === "LAND")).toBe(true);
     expect(
       source.board.tiles.every((tile) => !tile.explored || tile.biome !== null),
@@ -348,7 +356,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     });
     expect(sliced.candidates).toHaveLength(29);
     expect(canonicalHash(sliced)).toBe(
-      "a296d2c042c65f8d1e4d9b4934ad10e533dbeb5b9d45c0cef8de96f24d8cee4e",
+      "c4403d9960618d18fe1d1bb8c2ff85c92acf6da1e58c74c3042f0329c61ff006",
     );
     const revision4Commands = new Set([
       '{"kind":"ATTACK","unitId":19,"targetUnitId":34}',
@@ -359,8 +367,8 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       '{"kind":"BUILD_FORGE","at":{"x":6,"y":8}}',
       '{"kind":"HUNT_GAME","at":{"x":1,"y":5}}',
       '{"kind":"HUNT_GAME","at":{"x":2,"y":6}}',
-      '{"kind":"TRAIN","cityId":16,"role":"HEAVY"}',
-      '{"kind":"TRAIN","cityId":3,"role":"HEAVY"}',
+      '{"kind":"TRAIN","cityId":16,"role":"KNIGHT"}',
+      '{"kind":"TRAIN","cityId":3,"role":"KNIGHT"}',
       '{"kind":"RESEARCH","tech":"SHORECRAFT"}',
       '{"kind":"RESEARCH","tech":"SCOUTING"}',
       '{"kind":"ATTACK","unitId":19,"targetUnitId":21}',
@@ -374,10 +382,101 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
           revision4Commands.has(JSON.stringify(candidate.command)),
         ),
       ),
-    ).toBe("7561a6b7a42bc8740b079d5078d0a20f9fbe16c03832322a1276df21cee1e92c");
+    ).toBe("be72a67c954521323a03ec6d8fdec83d997327d4fba2227d69b251cc1a81d169");
     expect(canonicalHash(sync)).toBe(canonicalHash(sliced));
     expect(sync).toEqual(sliced);
   }, 15_000);
+
+  it("adapts the retained fixture to exact revision-9 public facts without mutation", () => {
+    const retained = JSON.parse(
+      readFileSync("tests/fixtures/ruleset-v7-late-public-view.json", "utf8"),
+    ) as PlayerViewV7;
+    const retainedBytes = canonicalJson(retained);
+    const source = upgradeRetainedPublicViewV7(retained);
+
+    expect(canonicalJson(retained)).toBe(retainedBytes);
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r9");
+    expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
+    expect(
+      source.players.every(
+        (player) => player.factionTreeId === "ORIGINAL_BASELINE_V5",
+      ),
+    ).toBe(true);
+    expect(source.viewer.researchedTechs).toEqual([
+      "GATHERING",
+      "HUNTING",
+      "DRILL",
+      "ENGINEERING",
+      "METALLURGY",
+    ]);
+    expect([...new Set(source.units.map((unit) => unit.role))].sort()).toEqual([
+      "FIGHTER",
+      "GUARD",
+    ]);
+    expect(
+      source.units.every(
+        (unit) =>
+          unit.form === "LAND" &&
+          canonicalJson(Object.keys(unit.activation).sort()) ===
+            canonicalJson(
+              [
+                "attacked",
+                "attacksUsed",
+                "captured",
+                "handled",
+                "inspired",
+                "moved",
+                "movedPathLength",
+                "overrunActive",
+                "recovered",
+                "specialActed",
+                "tendedThisTurn",
+              ].sort(),
+            ),
+      ),
+    ).toBe(true);
+    const expandedCity = source.cities.find((city) => city.id === cityId(3));
+    expect(expandedCity).toMatchObject({
+      expanded: false,
+      landGrantUsed: true,
+      rewards: expect.arrayContaining([
+        { reachedLevel: 4, reward: "TREASURY_8" },
+      ]),
+    });
+    expect(
+      source.cities
+        .filter((city) => city.id !== cityId(3))
+        .every((city) => !city.expanded && !city.landGrantUsed),
+    ).toBe(true);
+    expect(source.cities.every((city) => !("blackout" in city))).toBe(true);
+
+    const fortificationAt = (x: number, y: number) => {
+      const tile = source.board.tiles.find(
+        (candidate) => candidate.at.x === x && candidate.at.y === y,
+      );
+      return tile?.explored ? tile.fortificationLevel : undefined;
+    };
+    expect(fortificationAt(8, 8)).toBe(2);
+    expect(fortificationAt(8, 5)).toBe(0);
+    const retainedCityDefense = source.unitStats
+      .find((entry) => entry.unitId === unitId(14))
+      ?.stats.find((stat) => stat.id === "DEFENSE");
+    expect(retainedCityDefense?.modifiers).toEqual([]);
+    expect(retainedCityDefense?.total).toEqual({
+      numerator: 2,
+      denominator: 1,
+    });
+    expect(
+      source.unitStats
+        .flatMap((entry) => entry.stats)
+        .flatMap((stat) => stat.modifiers)
+        .some((modifier) =>
+          ["FRIENDLY_CITY", "CITY_FORTIFICATION"].includes(
+            String(modifier.source),
+          ),
+        ),
+    ).toBe(false);
+  });
 
   it("reprojects public Charge, Forest, and city stats like accepted movement", () => {
     let state = fixtureState([
@@ -555,7 +654,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     expect(healthyValue.score).toBeGreaterThan(injuredValue.score);
   });
 
-  it("values Prospecting Spoils on the first capture of each specific hostile city", () => {
+  it("values Drill Spoils on the first capture of each specific hostile city", () => {
     const base = exploredAllV7(allTechsV7(initialV7(13)));
     const hostile = base.cities.find(
       (city) => city.ownerId !== base.humanPlayerId,
@@ -748,7 +847,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const state = initialV7(0);
     const view = viewForV7(state, state.humanPlayerId);
     const decision = chooseNormalCommandV7(view);
-    expect(decision.command).toEqual({ kind: "RESEARCH", tech: "PROSPECTING" });
+    expect(decision.command).toEqual({ kind: "RESEARCH", tech: "DRILL" });
     expect(chooseNormalTurnCommandV7(view, 127, 128, decision)).toEqual({
       kind: "END_TURN",
     });
@@ -806,7 +905,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
           kind: "CITY_REWARD" as const,
           cityId: city.id,
           reachedLevel: 4,
-          candidates: ["EXPAND" as const, "BOOM" as const],
+          candidates: ["TREASURY_8" as const, "BOOM" as const],
         },
       ],
     };
@@ -833,34 +932,35 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       kind: "CHOOSE_CITY_REWARD",
       cityId: city.id,
       reachedLevel: 4,
-      reward: "EXPAND",
+      reward: "TREASURY_8",
     });
   });
 });
 
-function horseArcherLine(): GameStateV7 {
+function knightOverrunLine(): GameStateV7 {
   return fixtureState([
-    ["HORSE_ARCHER", { x: 3, y: 5 }, true, 10],
-    ["SCOUT", { x: 4, y: 4 }, true, 10],
-    ["SCOUT", { x: 5, y: 5 }, false, 10],
+    ["KNIGHT", { x: 3, y: 5 }, true, 10],
+    ["RAIDER", { x: 4, y: 4 }, true, 10],
+    ["FIGHTER", { x: 4, y: 5 }, false, 1],
+    ["RAIDER", { x: 5, y: 5 }, false, 10],
   ]);
 }
 
-function horseArcherMoveLine(): GameStateV7 {
+function knightOverrunMoveLine(): GameStateV7 {
   return fixtureState([
-    ["HORSE_ARCHER", { x: 1, y: 5 }, true, 10],
-    ["SCOUT", { x: 4, y: 5 }, true, 10],
+    ["KNIGHT", { x: 1, y: 5 }, true, 10],
+    ["RAIDER", { x: 2, y: 4 }, true, 10],
+    ["FIGHTER", { x: 4, y: 5 }, false, 1],
     ["GUARD", { x: 5, y: 4 }, false, 15],
-    ["FIGHTER", { x: 5, y: 6 }, false, 10],
   ]);
 }
 
-function denseHorseArcher(): GameStateV7 {
+function denseKnightOverrun(): GameStateV7 {
   const specs: UnitSpec[] = [
-    ["HORSE_ARCHER", { x: 5, y: 5 }, true, 10],
-    ["SCOUT", { x: 5, y: 2 }, true, 10],
-    ["SCOUT", { x: 8, y: 5 }, true, 10],
-    ["SCOUT", { x: 5, y: 8 }, true, 10],
+    ["KNIGHT", { x: 5, y: 5 }, true, 10],
+    ["RAIDER", { x: 5, y: 2 }, true, 10],
+    ["RAIDER", { x: 8, y: 5 }, true, 10],
+    ["RAIDER", { x: 5, y: 8 }, true, 10],
   ];
   for (const at of [
     { x: 3, y: 3 },
@@ -878,22 +978,22 @@ function denseHorseArcher(): GameStateV7 {
   return fixtureState(specs);
 }
 
-function fortifiedHorseArcherTarget(): GameStateV7 {
+function fortifiedKnightOverrunTarget(): GameStateV7 {
   const base = exploredAllV7(allTechsV7(initialV7(13)));
   const city = base.cities.find((item) => item.ownerId !== base.humanPlayerId);
   if (city === undefined) throw new Error("Hostile city missing");
-  const horseArcherAt =
-    city.at.x >= 2
-      ? { x: city.at.x - 2, y: city.at.y }
-      : { x: city.at.x + 2, y: city.at.y };
+  const knightOverrunAt =
+    city.at.x >= 1
+      ? { x: city.at.x - 1, y: city.at.y }
+      : { x: city.at.x + 1, y: city.at.y };
   const scoutAt =
     city.at.y > 0
       ? { x: city.at.x, y: city.at.y - 1 }
       : { x: city.at.x, y: city.at.y + 1 };
   return fixtureState([
-    ["HORSE_ARCHER", horseArcherAt, true, 10],
-    ["SCOUT", scoutAt, true, 10],
-    ["FIGHTER", city.at, false, 10],
+    ["KNIGHT", knightOverrunAt, true, 10],
+    ["RAIDER", scoutAt, false, 10],
+    ["FIGHTER", city.at, false, 1],
   ]);
 }
 
@@ -979,7 +1079,7 @@ function redevelopmentReplacementView(current: "MINE" | "SAWMILL"): {
       viewer: {
         ...base.viewer,
         coins: 1_000,
-        researchedTechs: ["GATHERING", "PROSPECTING", "ENGINEERING"],
+        researchedTechs: ["GATHERING", "ENGINEERING", "ENGINEERING"],
       },
       board: {
         ...base.board,
@@ -1040,7 +1140,7 @@ function multiCityMonumentRedevelopmentView(): {
       viewer: {
         ...base.viewer,
         coins: 1_000,
-        researchedTechs: ["GATHERING", "PROSPECTING", "ENGINEERING"],
+        researchedTechs: ["GATHERING", "ENGINEERING", "ENGINEERING"],
         achievementEntitlements: base.viewer.achievementEntitlements.map(
           (entitlement) =>
             entitlement.achievement === "ENGINEER"

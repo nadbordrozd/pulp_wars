@@ -145,6 +145,9 @@ function eventVisible(
     case "ECONOMIC_BUILDING_BUILT":
     case "FOREST_CLEARED":
     case "FOREST_REPLANTED":
+    case "FOREST_CULTIVATED":
+    case "MOUNTAIN_BLASTED":
+    case "SHIPYARD_BUILT":
     case "ROAD_BUILT":
     case "FIELD_DEFENSE_BUILT":
       return (
@@ -156,6 +159,13 @@ function eventVisible(
     case "UNIT_DISBANDED":
     case "UNIT_WAITED":
       return event.playerId === viewerId;
+    case "WOUNDED_TENDED":
+      return (
+        before.units.find((unit) => unit.id === event.captainId)?.ownerId ===
+          viewerId ||
+        after.units.find((unit) => unit.id === event.captainId)?.ownerId ===
+          viewerId
+      );
     case "UNIT_TRAINED":
     case "UNIT_REWARD_GRANTED":
       return event.playerId === viewerId;
@@ -172,7 +182,10 @@ function eventVisible(
     case "ECONOMIC_BUILDING_REMOVED":
       return cityOwner(before, after, event.cityId) === viewerId;
     case "CITY_TERRITORY_EXPANDED":
+    case "LAND_GRANTED":
       return event.playerId === viewerId;
+    case "FIELD_DEFENSE_DESTROYED":
+      return coordVisible(before, after, viewerId, event.at);
     case "PLAYER_ELIMINATED":
     case "MATCH_ENDED":
     case "CITY_CAPTURED":
@@ -191,8 +204,10 @@ function unitIds(event: DomainEventV7): readonly UnitId[] {
   switch (event.kind) {
     case "COMBAT_RESOLVED":
       return [event.preview.attackerId, event.preview.targetUnitId];
-    case "UNIT_HEALED":
-      return [event.medicId, event.targetUnitId];
+    case "UNITS_RALLIED":
+      return [event.captainId, ...event.unitIds];
+    case "WOUNDED_TENDED":
+      return [event.captainId, ...event.results.map((result) => result.unitId)];
     case "UNIT_PUSHED":
       return [event.sourceUnitId, event.targetUnitId];
     default:
@@ -262,7 +277,7 @@ function projectEventPayload(
     defender === undefined ||
     attacker.ownerId !== viewerId ||
     event.preview.defenderDies ||
-    !["HEAVY", "JUGGERNAUT"].includes(attacker.role)
+    attacker.role !== "JUGGERNAUT"
   )
     return event;
   const behind = {

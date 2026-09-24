@@ -22,23 +22,24 @@ tech-detail views, not spelled out in the HUD or dock. Where later sections
 require specific verbose labels, formula prose, or `+N/turn` wording for
 Ruleset 7, this overlay wins. Ruleset 6 and legacy routes are unchanged.
 
-## Current Ruleset 7 revision 8 overlay
+## Current Ruleset 7 revision 9 overlay
 
 This overlay applies only to the current Ruleset 7 route. The Ruleset 6
 sections below remain authoritative for the unchanged Ruleset 6 route.
 
-- The current Original tree uses one visible Industry & Warfare chain:
-  `Prospecting -> Engineering -> Metallurgy`. Its detail sheets list every
-  merged unlock. Prospecting includes Ore, Mountain access and sight, Guard,
-  Spoils, and city fortification; Engineering includes Mine, Workshop,
-  Redevelop, field defense, and capacity; Metallurgy includes Forge, Heavy,
-  Breacher, and Pillage.
-- Current Windmill, Sawmill, and Forge previews use spokes to the matching
-  same-owner contributors on the eight immediately adjacent tiles. A
-  contributor assigned to another owned city may support several processors;
-  distant connected contributors do not appear.
-- A current economic action summarizes all affected cities in its passive
-  public preview, including a city count when more than one city changes.
+- The current Original tree has five visible branches and 23 technologies.
+  Dry Land keeps all three Naval cards visible in a disabled state; their
+  detail says `Unavailable on Dry Land maps` and offers no research action.
+- Unit docks show a short tactical role and compact Inspired, Tended, and
+  Overrun cues. Rally, Tend wounded, Land grant, Cultivate, Blast, and
+  Shipyard use icon-first contextual actions; their explanations remain in the
+  `?` or technology detail.
+- Training buttons show the actual offered cost after an active same-city Forge
+  or selected active Shipyard discount. Shipyard tiles show preserved visible
+  resources, blockade state, and the active `Ships −2` benefit.
+- Windmill, Sawmill, and Forge use adjacent same-owner contributors. Workshop
+  requires a same-city basic improvement. Market shows its 1-Coin base plus
+  adjacent family income without requiring a Road.
 
 ## 0. Ruleset-6 replacement contract
 

@@ -8,7 +8,7 @@ import {
   type PlayerEventEnvelopeV7,
   type PlayerViewV7,
 } from "../../src/engine/index";
-import { horseArcherPublicFixtureV7 } from "./ruleset7-tactical-ui";
+import { knightOverrunPublicFixtureV7 } from "./ruleset7-tactical-ui";
 import { checkedV7 } from "./v7-builders";
 
 export type EnemyCameraScenarioV7 =
@@ -28,7 +28,7 @@ export function enemyCameraFixtureV7(scenario: EnemyCameraScenarioV7): {
   readonly events: PlayerEventEnvelopeV7;
   readonly at: CoordV7;
 } {
-  const base = horseArcherPublicFixtureV7().state;
+  const base = knightOverrunPublicFixtureV7().state;
   const enemy = base.units.find((unit) => unit.ownerId !== base.humanPlayerId);
   if (enemy === undefined) throw new Error("Camera fixture enemy missing");
   let state = checkedV7({
@@ -38,7 +38,7 @@ export function enemyCameraFixtureV7(scenario: EnemyCameraScenarioV7): {
       {
         ...enemy,
         at: { x: 4, y: 4 },
-        role: "HORSE_ARCHER",
+        role: "KNIGHT",
         hp: 10,
         maxHp: 10,
       },

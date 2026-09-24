@@ -45,12 +45,14 @@ const PAINTED_BOUNDS: readonly (readonly [
   ["terrain-ruleset7-resource-fish", 256, 384, 60, 194, 196, 320],
   ["terrain-ruleset7-resource-pearls", 256, 384, 60, 180, 196, 320],
   ["unit-original-breacher", 384, 384, 61, 50, 335, 288],
+  ["unit-original-captain", 256, 296, 44, 20, 212, 222],
   ["unit-original-catapult", 384, 384, 122, 85, 361, 309],
   ["unit-original-fighter", 256, 296, 20, 18, 236, 252],
   ["unit-original-guard", 256, 296, 16, 19, 240, 237],
   ["unit-original-heavy", 256, 296, 32, 26, 224, 222],
   ["unit-original-horse-archer", 384, 384, 55, 16, 329, 288],
   ["unit-original-juggernaut", 384, 448, 29, 24, 355, 336],
+  ["unit-original-knight", 384, 384, 39, 16, 344, 288],
   ["unit-original-marksman", 256, 296, 45, 25, 206, 252],
   ["unit-original-medic", 256, 296, 40, 24, 216, 222],
   ["unit-original-raider", 256, 296, 40, 19, 217, 252],
@@ -59,6 +61,7 @@ const PAINTED_BOUNDS: readonly (readonly [
   ["unit-shared-embarked-transport", 384, 384, 62, 137, 322, 301],
   ["unit-original-patrol-boat", 384, 384, 61, 128, 322, 304],
   ["unit-original-battleship", 384, 384, 30, 91, 354, 298],
+  ["building-ruleset7-shipyard", 384, 384, 40, 61, 344, 323],
 ];
 
 export const SELECTION_IDENTITY_FRAMES_V7: Readonly<

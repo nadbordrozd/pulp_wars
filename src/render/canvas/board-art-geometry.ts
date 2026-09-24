@@ -195,7 +195,7 @@ export const RULESET7_HEAVY_ART_GEOMETRY = {
   displayScale: RULESET6_UNIT_ART_GEOMETRY.standard.displayScale * 1.25,
 } as const satisfies SourceGeometry;
 
-export const RULESET7_HORSE_ARCHER_ART_GEOMETRY = {
+export const RULESET7_KNIGHT_ART_GEOMETRY = {
   width: 384,
   height: 384,
   anchor: { x: 192, y: 288 },

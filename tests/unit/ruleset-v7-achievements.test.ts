@@ -152,7 +152,7 @@ describe("ruleset-7 achievements and Monuments", () => {
         player.id === forgeState.humanPlayerId
           ? {
               ...player,
-              researchedTechs: ["GATHERING", "SCOUTING", "PROSPECTING"],
+              researchedTechs: ["GATHERING", "SCOUTING", "DRILL"],
               achievementEntitlements: player.achievementEntitlements.map(
                 (item) =>
                   item.achievement === "ENGINEER"
@@ -217,7 +217,7 @@ describe("ruleset-7 achievements and Monuments", () => {
     const musterResearch = applyCommandV7(
       musterLocked,
       musterLocked.humanPlayerId,
-      { kind: "RESEARCH", tech: "PROSPECTING" },
+      { kind: "RESEARCH", tech: "DRILL" },
     );
     if (!musterResearch.accepted) throw new Error(musterResearch.error.code);
     expect(
@@ -381,7 +381,7 @@ describe("ruleset-7 achievements and Monuments", () => {
           !occupied.has(coordKey(candidate.at)),
       )
       .slice(0, 3);
-    const roles = ["SCOUT", "GUARD", "RAIDER"] as const;
+    const roles = ["RAIDER", "GUARD", "MARKSMAN"] as const;
     const additions = roles.map((role, index) =>
       makeUnit(
         staged.state.nextEntityId + index,
@@ -718,7 +718,7 @@ describe("ruleset-7 achievements and Monuments", () => {
     ).toBe(true);
   });
 
-  it("keeps Monument sites on hidden Ore and empty Mountains equivalent until Prospecting", () => {
+  it("keeps Monument sites on hidden Ore and empty Mountains equivalent until Engineering", () => {
     const base = levelTwoWithoutPopulation(
       unlockEntitlement(exploredAllV7(initialV7(707)), "EXPLORER"),
     );
@@ -737,7 +737,8 @@ describe("ruleset-7 achievements and Monuments", () => {
                 researchedTechs: TECHNOLOGY_IDS_V7.filter(
                   (technology) =>
                     player.researchedTechs.includes(technology) ||
-                    (prospecting && technology === "PROSPECTING"),
+                    (prospecting &&
+                      (technology === "DRILL" || technology === "ENGINEERING")),
                 ),
               }
             : player,
@@ -781,7 +782,7 @@ describe("ruleset-7 achievements and Monuments", () => {
       expect(applyCommandV7(state, state.humanPlayerId, command)).toMatchObject(
         {
           accepted: false,
-          error: { code: "TECH_REQUIRED", params: { tech: "PROSPECTING" } },
+          error: { code: "TECH_REQUIRED", params: { tech: "ENGINEERING" } },
         },
       );
     }
@@ -1112,11 +1113,11 @@ function engineerBuildState(): { state: GameStateV7; forgeAt: CoordV7 } {
               permanentPopulation: 1,
               economicPopulation: 12,
               population: 4,
-              expanded: true,
+              expanded: false,
               rewards: [
                 { reachedLevel: 2, reward: "STOCKPILE" },
                 { reachedLevel: 3, reward: "WALLS" },
-                { reachedLevel: 4, reward: "EXPAND" },
+                { reachedLevel: 4, reward: "TREASURY_8" },
               ],
             }
           : candidate,
@@ -1153,7 +1154,7 @@ function musterTrainingState(): GameStateV7 {
         base.nextEntityId,
         base.humanPlayerId,
         city.id,
-        "SCOUT",
+        "RAIDER",
         scoutAt,
       ),
       homeCityId: null,
@@ -1296,9 +1297,9 @@ function unlockEntitlement(
               (tech) =>
                 player.researchedTechs.includes(tech) ||
                 (achievement === "EXPLORER" && tech === "SCOUTING") ||
-                (achievement === "MUSTER" && tech === "PROSPECTING") ||
-                (achievement === "ENGINEER" && tech === "PROSPECTING") ||
-                (achievement === "ENGINEER" && tech === "ENGINEERING"),
+                (achievement === "MUSTER" && tech === "DRILL") ||
+                (achievement === "ENGINEER" &&
+                  (tech === "DRILL" || tech === "ENGINEERING")),
             ),
             achievementEntitlements: player.achievementEntitlements.map(
               (item) =>
@@ -1383,7 +1384,9 @@ function readyActivation(): UnitStateV7["activation"] {
     movedPathLength: 0,
     attacked: false,
     attacksUsed: 0,
-    healed: false,
+    tendedThisTurn: false,
+    inspired: false,
+    overrunActive: false,
     recovered: false,
     captured: false,
     handled: false,

@@ -189,9 +189,9 @@ describe("ruleset-7 conflict economy and capacity", () => {
     ).at;
     const heavy = {
       ...freshFighter(state.nextEntityId, human.id, city.id, at),
-      role: "HEAVY" as const,
-      hp: 20,
-      maxHp: 20,
+      role: "KNIGHT" as const,
+      hp: 10,
+      maxHp: 10,
     };
     state = checkedV7({
       ...state,
@@ -199,7 +199,7 @@ describe("ruleset-7 conflict economy and capacity", () => {
       units: [...state.units, heavy],
     });
     expect(previewDisbandV7(state, human.id, heavy.id)).toMatchObject({
-      refund: 3,
+      refund: 4,
       homeCityId: city.id,
     });
     const beforeCoins = human.coins;
@@ -213,10 +213,10 @@ describe("ruleset-7 conflict economy and capacity", () => {
       kind: "UNIT_DISBANDED",
       playerId: human.id,
       unitId: heavy.id,
-      role: "HEAVY",
-      coinDelta: 3,
+      role: "KNIGHT",
+      coinDelta: 4,
     });
-    expect(result.state.players[0]?.coins).toBe(beforeCoins + 3);
+    expect(result.state.players[0]?.coins).toBe(beforeCoins + 4);
     const juggernaut = {
       ...heavy,
       id: unitId(result.state.nextEntityId),
@@ -485,7 +485,9 @@ function readyActivation(): UnitStateV7["activation"] {
     movedPathLength: 0,
     attacked: false,
     attacksUsed: 0,
-    healed: false,
+    tendedThisTurn: false,
+    inspired: false,
+    overrunActive: false,
     recovered: false,
     captured: false,
     handled: false,

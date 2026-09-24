@@ -35,8 +35,11 @@ export type TileCommandKindV7 =
   | "BUILD_WORKSHOP"
   | "BUILD_MARKET"
   | "BUILD_PORT"
+  | "BUILD_SHIPYARD"
   | "CLEAR_FOREST"
   | "REPLANT_FOREST"
+  | "CULTIVATE_FOREST"
+  | "BLAST_MOUNTAIN"
   | "BUILD_ROAD"
   | "REDEVELOP";
 
@@ -52,9 +55,8 @@ export type CommandV7 =
       readonly targetUnitId: UnitId;
     }
   | {
-      readonly kind: "HEAL_ADJACENT";
+      readonly kind: "RALLY" | "TEND_WOUNDED";
       readonly unitId: UnitId;
-      readonly targetUnitId: UnitId;
     }
   | {
       readonly kind:
@@ -67,6 +69,7 @@ export type CommandV7 =
         | "BUILD_FIELD_DEFENSE";
       readonly unitId: UnitId;
     }
+  | { readonly kind: "LAND_GRANT"; readonly cityId: CityId }
   | { readonly kind: "RESEARCH"; readonly tech: TechnologyIdV7 }
   | { readonly kind: TileCommandKindV7; readonly at: CoordV7 }
   | {
@@ -122,8 +125,11 @@ const TILE_KINDS = new Set<CommandKindV7>([
   "BUILD_WORKSHOP",
   "BUILD_MARKET",
   "BUILD_PORT",
+  "BUILD_SHIPYARD",
   "CLEAR_FOREST",
   "REPLANT_FOREST",
+  "CULTIVATE_FOREST",
+  "BLAST_MOUNTAIN",
   "BUILD_ROAD",
   "REDEVELOP",
 ]);
@@ -215,7 +221,7 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
       ? invalid(kind)
       : { ok: true, value: { kind, unitId: id, path } };
   }
-  if (kind === "ATTACK" || kind === "HEAL_ADJACENT") {
+  if (kind === "ATTACK") {
     if (!hasExactKeysV7(input, ["kind", "unitId", "targetUnitId"]))
       return invalid(kind);
     const unit = parseUnitIdV7(candidate.unitId);
@@ -223,6 +229,22 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
     return unit === null || target === null
       ? invalid(kind)
       : { ok: true, value: { kind, unitId: unit, targetUnitId: target } };
+  }
+  if (kind === "RALLY" || kind === "TEND_WOUNDED") {
+    const unit = hasExactKeysV7(input, ["kind", "unitId"])
+      ? parseUnitIdV7(candidate.unitId)
+      : null;
+    return unit === null
+      ? invalid(kind)
+      : { ok: true, value: { kind, unitId: unit } };
+  }
+  if (kind === "LAND_GRANT") {
+    const cityId = hasExactKeysV7(input, ["cityId", "kind"])
+      ? parseCityIdV7(candidate.cityId)
+      : null;
+    return cityId === null
+      ? invalid(kind)
+      : { ok: true, value: { kind, cityId } };
   }
   if (UNIT_ONLY_KINDS.has(kind)) {
     const unit = hasExactKeysV7(input, ["kind", "unitId"])
@@ -350,8 +372,7 @@ function referencedOrdinal(command: CommandV7): number {
     return REWARD_IDS_V7.indexOf(command.reward);
   if (command.kind === "BUILD_MONUMENT")
     return ACHIEVEMENT_IDS_V7.indexOf(command.achievement);
-  if (command.kind === "ATTACK" || command.kind === "HEAL_ADJACENT")
-    return command.targetUnitId;
+  if (command.kind === "ATTACK") return command.targetUnitId;
   return 0;
 }
 

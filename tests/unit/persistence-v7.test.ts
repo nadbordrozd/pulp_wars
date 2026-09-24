@@ -41,7 +41,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 save and replay foundation", () => {
   it("uses an independent v7 save key and round-trips a canonical initial save", () => {
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r8.current");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r9.current");
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const replay = createReplayV7(setup);
@@ -91,7 +91,7 @@ describe("ruleset-7 save and replay foundation", () => {
     expect(runReplayV7(replay).state).toEqual(applied.state);
   });
 
-  it("preserves exactly one remaining Horse Archer shot through save and replay", () => {
+  it("preserves a Knight exhausted when no legal Overrun continuation exists", () => {
     const horseSetup = { ...setup, seed: 3 };
     const created = createPlayableGameV7(horseSetup);
     if (!created.ok) throw new Error(created.error.code);
@@ -124,14 +124,14 @@ describe("ruleset-7 save and replay foundation", () => {
           return;
         accept({ kind: "END_TURN" });
       }
-      throw new Error("Horse Archer funding guard exhausted");
+      throw new Error("Knight Overrun funding guard exhausted");
     };
     fundHuman(5);
     accept({ kind: "RESEARCH", tech: "SCOUTING" });
     fundHuman(7);
     accept({ kind: "RESEARCH", tech: "RAIDING" });
     fundHuman(9);
-    accept({ kind: "RESEARCH", tech: "MOUNTED_ARCHERY" });
+    accept({ kind: "RESEARCH", tech: "CHIVALRY" });
     fundHuman(9);
     const city = required(
       state.cities.find((candidate) => candidate.ownerId === humanId),
@@ -154,11 +154,11 @@ describe("ruleset-7 save and replay foundation", () => {
     const trained = accept({
       kind: "TRAIN",
       cityId: city.id,
-      role: "HORSE_ARCHER",
+      role: "KNIGHT",
     });
-    const horseArcherId = required(
+    const knightOverrunId = required(
       trained.events.find((event) => event.kind === "UNIT_TRAINED")?.unitId,
-      "trained Horse Archer missing",
+      "trained Knight Overrun missing",
     );
     accept({ kind: "END_TURN" });
     while (state.turnOrder[state.activeSeatIndex] !== humanId)
@@ -166,14 +166,14 @@ describe("ruleset-7 save and replay foundation", () => {
 
     let fired = false;
     for (let guard = 0; guard < 20; guard += 1) {
-      const horseArcher = required(
-        state.units.find((unit) => unit.id === horseArcherId),
-        "Horse Archer disappeared",
+      const knightOverrun = required(
+        state.units.find((unit) => unit.id === knightOverrunId),
+        "Knight Overrun disappeared",
       );
       const attack = queryPlayerCommandsV7(viewForV7(state, humanId)).find(
         (command) =>
           command.kind === "ATTACK" &&
-          command.unitId === horseArcherId &&
+          command.unitId === knightOverrunId &&
           command.targetUnitId === enemy.id,
       );
       if (attack?.kind === "ATTACK") {
@@ -181,25 +181,25 @@ describe("ruleset-7 save and replay foundation", () => {
         fired = true;
         break;
       }
-      if (chebyshev(horseArcher.at, enemy.at) > 2) {
+      if (chebyshev(knightOverrun.at, enemy.at) > 1) {
         const move = queryPlayerCommandsV7(viewForV7(state, humanId))
           .filter(
             (command): command is Extract<CommandV7, { kind: "MOVE" }> =>
-              command.kind === "MOVE" && command.unitId === horseArcherId,
+              command.kind === "MOVE" && command.unitId === knightOverrunId,
           )
           .sort(
             (left, right) =>
-              Math.abs(chebyshev(moveEndpoint(left), enemy.at) - 2) -
-                Math.abs(chebyshev(moveEndpoint(right), enemy.at) - 2) ||
+              Math.abs(chebyshev(moveEndpoint(left), enemy.at) - 1) -
+                Math.abs(chebyshev(moveEndpoint(right), enemy.at) - 1) ||
               left.path.length - right.path.length,
           )[0];
-        if (move === undefined) throw new Error("Horse Archer route stalled");
+        if (move === undefined) throw new Error("Knight Overrun route stalled");
         accept(move);
       }
       const movedAttack = queryPlayerCommandsV7(viewForV7(state, humanId)).find(
         (command) =>
           command.kind === "ATTACK" &&
-          command.unitId === horseArcherId &&
+          command.unitId === knightOverrunId &&
           command.targetUnitId === enemy.id,
       );
       if (movedAttack?.kind === "ATTACK") {
@@ -224,7 +224,7 @@ describe("ruleset-7 save and replay foundation", () => {
       ).find(
         (command) =>
           command.kind === "ATTACK" &&
-          command.unitId === horseArcherId &&
+          command.unitId === knightOverrunId &&
           command.targetUnitId === enemy.id,
       );
       if (spottedAttack?.kind === "ATTACK") {
@@ -238,20 +238,21 @@ describe("ruleset-7 save and replay foundation", () => {
     }
 
     if (!fired) {
-      const horse = state.units.find((unit) => unit.id === horseArcherId);
+      const horse = state.units.find((unit) => unit.id === knightOverrunId);
       throw new Error(
-        `Horse Archer never fired: ${JSON.stringify({ horse: horse?.at, enemy: enemy.at, distance: horse === undefined ? null : chebyshev(horse.at, enemy.at) })}`,
+        `Knight Overrun never fired: ${JSON.stringify({ horse: horse?.at, enemy: enemy.at, distance: horse === undefined ? null : chebyshev(horse.at, enemy.at) })}`,
       );
     }
 
     const afterFirst = required(
-      state.units.find((unit) => unit.id === horseArcherId),
-      "Horse Archer missing after first shot",
+      state.units.find((unit) => unit.id === knightOverrunId),
+      "Knight Overrun missing after first attack",
     );
     expect(afterFirst.activation).toMatchObject({
       attacked: true,
       attacksUsed: 1,
-      handled: false,
+      handled: true,
+      overrunActive: false,
     });
     const firstSave = createSaveEnvelopeV7(
       { state, replay },
@@ -261,37 +262,17 @@ describe("ruleset-7 save and replay foundation", () => {
     expect(parsedFirst).toEqual({ kind: "VALID", save: firstSave });
     if (parsedFirst.kind !== "VALID") throw new Error("first save invalid");
     expect(
-      parsedFirst.save.state.units.find((unit) => unit.id === horseArcherId)
+      parsedFirst.save.state.units.find((unit) => unit.id === knightOverrunId)
         ?.activation.attacksUsed,
     ).toBe(1);
     expect(runReplayV7(replay).state).toEqual(state);
 
-    const second = required(
-      queryPlayerCommandsV7(viewForV7(state, humanId)).find(
-        (command) =>
-          command.kind === "ATTACK" && command.unitId === horseArcherId,
-      ),
-      "second Horse Archer shot missing",
-    );
-    accept(second);
-    expect(
-      state.units.find((unit) => unit.id === horseArcherId)?.activation,
-    ).toMatchObject({ attacksUsed: 2, handled: true });
     expect(
       queryPlayerCommandsV7(viewForV7(state, humanId)).some(
         (command) =>
-          command.kind === "ATTACK" && command.unitId === horseArcherId,
+          command.kind === "ATTACK" && command.unitId === knightOverrunId,
       ),
     ).toBe(false);
-    const secondSave = createSaveEnvelopeV7(
-      { state, replay },
-      "2026-09-06T12:46:00.000Z",
-    );
-    expect(parseSaveV7(JSON.stringify(secondSave))).toEqual({
-      kind: "VALID",
-      save: secondSave,
-    });
-    expect(runReplayV7(replay).state).toEqual(state);
   }, 15_000);
 
   it("reuses only exact immutable accepted-boundary identities without changing save bytes", () => {
@@ -525,11 +506,15 @@ describe("ruleset-7 save and replay foundation", () => {
     fundHuman(7);
     apply({ kind: "RESEARCH", tech: "RAIDING" });
     fundHuman(5);
-    apply({ kind: "RESEARCH", tech: "PROSPECTING" });
+    apply({ kind: "RESEARCH", tech: "DRILL" });
     fundHuman(7);
     apply({ kind: "RESEARCH", tech: "ENGINEERING" });
     fundHuman(7);
     apply({ kind: "RESEARCH", tech: "FARMING" });
+    fundHuman(7);
+    apply({ kind: "RESEARCH", tech: "ADMINISTRATION" });
+    fundHuman(9);
+    apply({ kind: "RESEARCH", tech: "PLANNING" });
     const farmAt = required(
       state.board.tiles.find(
         (tile) =>
@@ -566,9 +551,9 @@ describe("ruleset-7 save and replay foundation", () => {
           ),
       );
 
-    const roles = ["SCOUT", "RAIDER", "GUARD"] as const;
+    const roles = ["RAIDER", "CAPTAIN", "GUARD"] as const;
     for (const role of roles) {
-      fundHuman(role === "GUARD" ? 3 : 4);
+      fundHuman(role === "RAIDER" ? 4 : role === "CAPTAIN" ? 5 : 3);
       const occupant = required(
         state.units.find(
           (unit) =>
@@ -687,7 +672,7 @@ describe("ruleset-7 save and replay foundation", () => {
     fundHuman(5);
     apply({ kind: "BUILD_WINDMILL", at: windmillTile.at });
     fundHuman(5);
-    apply({ kind: "RESEARCH", tech: "PROSPECTING" });
+    apply({ kind: "RESEARCH", tech: "DRILL" });
     fundHuman(7);
     apply({ kind: "RESEARCH", tech: "ENGINEERING" });
     const removedEvents = apply({ kind: "REDEVELOP", at: farmTile.at });

@@ -17,15 +17,17 @@ const READY: UnitStateV7["activation"] = {
   movedPathLength: 0,
   attacked: false,
   attacksUsed: 0,
-  healed: false,
+  tendedThisTurn: false,
+  inspired: false,
+  overrunActive: false,
   recovered: false,
   captured: false,
   handled: false,
   specialActed: false,
 };
 
-describe("ruleset-7 mandatory reward and Horse Archer command precedence", () => {
-  it("accepts either offered reward without consuming the remaining shot", () => {
+describe("ruleset-7 mandatory reward and Knight Overrun command precedence", () => {
+  it("accepts either offered reward without consuming the Overrun continuation", () => {
     const fixture = precedenceFixture(2);
     const activation = horse(fixture.state, fixture).activation;
     const offered = queryPlayerCommandsV7(fixture.state, fixture.actor);
@@ -52,7 +54,7 @@ describe("ruleset-7 mandatory reward and Horse Archer command precedence", () =>
       expect(queryPlayerCommandsV7(result.state, fixture.actor)).toContainEqual(
         {
           kind: "ATTACK",
-          unitId: fixture.horseArcherId,
+          unitId: fixture.knightOverrunId,
           targetUnitId: fixture.targetId,
         },
       );
@@ -110,7 +112,7 @@ describe("ruleset-7 mandatory reward and Horse Archer command precedence", () =>
       {
         command: {
           kind: "ATTACK",
-          unitId: fixture.horseArcherId,
+          unitId: fixture.knightOverrunId,
           targetUnitId: fixture.targetId,
         },
         code: "PENDING_CHOICE",
@@ -182,7 +184,7 @@ describe("ruleset-7 mandatory reward and Horse Archer command precedence", () =>
     });
     expect(queryPlayerCommandsV7(final.state, fixture.actor)).toContainEqual({
       kind: "ATTACK",
-      unitId: fixture.horseArcherId,
+      unitId: fixture.knightOverrunId,
       targetUnitId: fixture.targetId,
     });
   });
@@ -192,7 +194,7 @@ interface PrecedenceFixture {
   readonly state: GameStateV7;
   readonly actor: PlayerId;
   readonly cityId: GameStateV7["cities"][number]["id"];
-  readonly horseArcherId: UnitStateV7["id"];
+  readonly knightOverrunId: UnitStateV7["id"];
   readonly targetId: UnitStateV7["id"];
   readonly otherUnitId: UnitStateV7["id"];
 }
@@ -208,7 +210,7 @@ function precedenceFixture(cityLevel: 2 | 3): PrecedenceFixture {
     base.cities.find((candidate) => candidate.ownerId === actor),
     "Owned city missing",
   );
-  const horseArcherId = required(
+  const knightOverrunId = required(
     base.units.find((unit) => unit.ownerId === actor),
     "Owned unit missing",
   ).id;
@@ -218,7 +220,7 @@ function precedenceFixture(cityLevel: 2 | 3): PrecedenceFixture {
   ).id;
   const otherUnitId = base.nextEntityId as UnitStateV7["id"];
   const horseAt = { x: 2, y: 5 };
-  const targetAt = { x: 4, y: 5 };
+  const targetAt = { x: 3, y: 5 };
   const otherAt = { x: 2, y: 8 };
   const permanentPopulation = cityLevel === 2 ? 2 : 5;
   const contributions: GameStateV7["populationContributions"] = base.board.tiles
@@ -235,13 +237,18 @@ function precedenceFixture(cityLevel: 2 | 3): PrecedenceFixture {
         at: tile.at,
       },
     }));
-  const horseArcher = makeUnit(
-    horseArcherId,
+  const knightOverrun = makeUnit(
+    knightOverrunId,
     actor,
-    "HORSE_ARCHER",
+    "KNIGHT",
     horseAt,
     city.id,
-    { ...READY, attacked: true, attacksUsed: 1 },
+    {
+      ...READY,
+      attacked: true,
+      attacksUsed: 1,
+      overrunActive: true,
+    },
   );
   const target = makeUnit(targetId, enemy, "GUARD", targetAt);
   const other = makeUnit(otherUnitId, actor, "FIGHTER", otherAt, city.id);
@@ -274,7 +281,7 @@ function precedenceFixture(cityLevel: 2 | 3): PrecedenceFixture {
     treasureChests: base.treasureChests.filter(
       (at) => !occupied.some((candidate) => same(candidate, at)),
     ),
-    units: [horseArcher, target, other].sort(
+    units: [knightOverrun, target, other].sort(
       (left, right) => left.id - right.id,
     ),
     board: {
@@ -296,7 +303,7 @@ function precedenceFixture(cityLevel: 2 | 3): PrecedenceFixture {
     state,
     actor,
     cityId: city.id,
-    horseArcherId,
+    knightOverrunId,
     targetId,
     otherUnitId,
   };
@@ -305,7 +312,7 @@ function precedenceFixture(cityLevel: 2 | 3): PrecedenceFixture {
 function makeUnit(
   id: UnitStateV7["id"],
   ownerId: PlayerId,
-  role: "FIGHTER" | "GUARD" | "HORSE_ARCHER",
+  role: "FIGHTER" | "GUARD" | "KNIGHT",
   at: CoordV7,
   homeCityId: UnitStateV7["homeCityId"] = null,
   activation: UnitStateV7["activation"] = READY,
@@ -329,8 +336,8 @@ function makeUnit(
 
 function horse(state: GameStateV7, fixture: PrecedenceFixture): UnitStateV7 {
   return required(
-    state.units.find((unit) => unit.id === fixture.horseArcherId),
-    "Horse Archer missing",
+    state.units.find((unit) => unit.id === fixture.knightOverrunId),
+    "Knight Overrun missing",
   );
 }
 

@@ -5,6 +5,7 @@ import {
   effectiveRoleRuleV7,
   movementStepCost2V7,
   nextBounded,
+  parseGameStateV7,
   queryCombatPreviewV7,
   queryPlayerCommandsV7,
   queryUnitStatsV7,
@@ -28,38 +29,35 @@ const READY: UnitStateV7["activation"] = {
   movedPathLength: 0,
   attacked: false,
   attacksUsed: 0,
-  healed: false,
+  tendedThisTurn: false,
+  inspired: false,
+  overrunActive: false,
   recovered: false,
   captured: false,
   handled: false,
   specialActed: false,
 };
 
-describe("ruleset-7 Horse Archer activation", () => {
+describe("ruleset-7 Knight Overrun activation", () => {
   it("uses the exact role values and has no Capture ability", () => {
-    expect(effectiveRoleRuleV7("HORSE_ARCHER")).toMatchObject({
+    expect(effectiveRoleRuleV7("KNIGHT")).toMatchObject({
       cost: 9,
       maxHp: 10,
-      attack2: 4,
+      attack2: 6,
       defense2: 2,
       move: 3,
-      range: 2,
+      range: 1,
       minimumRange: 1,
       sightRadius: 1,
-      technology: "MOUNTED_ARCHERY",
+      technology: "CHIVALRY",
       mayUsePrimaryActionAfterMove: true,
-      abilities: ["ATTACK", "DASH", "TWO_SHOTS"],
+      abilities: ["ATTACK", "OVERRUN"],
     });
   });
 
-  it("keeps the first nonlethal shot open and makes the second shot terminal", () => {
-    const state = battle(
-      "HORSE_ARCHER",
-      "GUARD",
-      { x: 2, y: 2 },
-      { x: 4, y: 2 },
-    );
-    const archer = required(state.units[0], "Horse Archer missing");
+  it("ends a nonlethal attack without opening Overrun", () => {
+    const state = battle("KNIGHT", "GUARD", { x: 2, y: 2 }, { x: 3, y: 2 });
+    const archer = required(state.units[0], "Knight Overrun missing");
     const guard = required(state.units[1], "Guard missing");
     const first = applyCommandV7(state, state.humanPlayerId, {
       kind: "ATTACK",
@@ -73,8 +71,9 @@ describe("ruleset-7 Horse Archer activation", () => {
     ).toMatchObject({
       preview: {
         attacksUsed: 1,
-        attacksRemaining: 1,
+        attacksRemaining: 0,
         advances: false,
+        overrunContinues: false,
       },
     });
     expect(
@@ -82,28 +81,24 @@ describe("ruleset-7 Horse Archer activation", () => {
     ).toMatchObject({
       attacked: true,
       attacksUsed: 1,
-      handled: false,
+      handled: true,
     });
     const second = applyCommandV7(first.state, state.humanPlayerId, {
       kind: "ATTACK",
       unitId: archer.id,
       targetUnitId: guard.id,
     });
-    expect(second.accepted).toBe(true);
-    if (!second.accepted) return;
-    expect(
-      second.state.units.find((unit) => unit.id === archer.id)?.activation,
-    ).toMatchObject({
-      attacksUsed: 2,
-      handled: true,
+    expect(second).toMatchObject({
+      accepted: false,
+      error: { code: "UNIT_ALREADY_ACTED" },
     });
   });
 
-  it("allows unit switching and advisory Wait between guaranteed shots", () => {
-    let state = battle("HORSE_ARCHER", "GUARD", { x: 2, y: 2 }, { x: 4, y: 2 });
+  it("allows unit switching while rejecting Wait on the active Knight", () => {
+    let state = overrunBattle();
     const archer = required(
       state.units.find((unit) => unit.ownerId === state.humanPlayerId),
-      "Horse Archer missing",
+      "Knight Overrun missing",
     );
     state = checkedV7({
       ...state,
@@ -122,7 +117,10 @@ describe("ruleset-7 Horse Archer activation", () => {
       ].sort((left, right) => left.id - right.id),
     });
     const target = required(
-      state.units.find((unit) => unit.ownerId !== state.humanPlayerId),
+      state.units.find(
+        (unit) =>
+          unit.ownerId !== state.humanPlayerId && same(unit.at, { x: 3, y: 2 }),
+      ),
       "target missing",
     );
     const first = applyCommandV7(state, state.humanPlayerId, {
@@ -140,37 +138,44 @@ describe("ruleset-7 Horse Archer activation", () => {
       kind: "WAIT",
       unitId: archer.id,
     });
-    if (!waited.accepted) throw new Error(waited.error.code);
-    expect(
-      waited.state.units.find((unit) => unit.id === archer.id)?.activation,
-    ).toMatchObject({
-      attacksUsed: 1,
-      handled: true,
+    expect(waited).toMatchObject({
+      accepted: false,
+      state: first.state,
+      events: [],
+      error: { code: "UNIT_ALREADY_ACTED" },
     });
     expect(
-      queryPlayerCommandsV7(waited.state, state.humanPlayerId),
-    ).toContainEqual({
-      kind: "ATTACK",
-      unitId: archer.id,
-      targetUnitId: target.id,
-    });
+      queryPlayerCommandsV7(first.state, state.humanPlayerId).some(
+        (command) => command.kind === "ATTACK" && command.unitId === archer.id,
+      ),
+    ).toBe(true);
   });
 
-  it("locks movement and other actions after the first shot", () => {
-    const state = battle(
-      "HORSE_ARCHER",
-      "GUARD",
-      { x: 2, y: 2 },
-      { x: 4, y: 2 },
+  it("locks movement and other actions after the first Overrun attack", () => {
+    const state = overrunBattle();
+    const archer = required(state.units[0], "Knight Overrun missing");
+    const target = required(
+      state.units.find(
+        (unit) =>
+          unit.ownerId !== state.humanPlayerId && same(unit.at, { x: 3, y: 2 }),
+      ),
+      "target missing",
     );
-    const archer = required(state.units[0], "Horse Archer missing");
-    const target = required(state.units[1], "target missing");
     const first = applyCommandV7(state, state.humanPlayerId, {
       kind: "ATTACK",
       unitId: archer.id,
       targetUnitId: target.id,
     });
     if (!first.accepted) throw new Error(first.error.code);
+    expect(first.events[0]).toMatchObject({
+      kind: "COMBAT_RESOLVED",
+      preview: {
+        defenderDies: true,
+        advances: true,
+        overrunAdvance: true,
+        overrunContinues: true,
+      },
+    });
     const ownCommands = queryPlayerCommandsV7(
       first.state,
       state.humanPlayerId,
@@ -188,9 +193,124 @@ describe("ruleset-7 Horse Archer activation", () => {
     );
   });
 
-  it("never advances after an adjacent kill while Marksman still advances", () => {
+  it("continues beyond two attacks while other units act without refreshing Inspired", () => {
+    const base = battle("KNIGHT", "FIGHTER", { x: 2, y: 2 }, { x: 3, y: 2 }, 1);
+    const knight = required(base.units[0], "Knight missing");
+    const firstEnemy = required(base.units[1], "first target missing");
+    const enemyId = firstEnemy.ownerId;
+    const captainOne = makeUnit(
+      base,
+      unitId(base.nextEntityId),
+      base.humanPlayerId,
+      "CAPTAIN",
+      { x: 2, y: 3 },
+    );
+    const captainTwo = makeUnit(
+      base,
+      unitId(base.nextEntityId + 1),
+      base.humanPlayerId,
+      "CAPTAIN",
+      { x: 3, y: 3 },
+    );
+    const secondEnemy = makeUnit(
+      base,
+      unitId(base.nextEntityId + 2),
+      enemyId,
+      "FIGHTER",
+      { x: 4, y: 2 },
+      1,
+    );
+    const thirdEnemy = makeUnit(
+      base,
+      unitId(base.nextEntityId + 3),
+      enemyId,
+      "FIGHTER",
+      { x: 5, y: 2 },
+      1,
+    );
+    const state = checkedV7({
+      ...base,
+      nextEntityId: base.nextEntityId + 4,
+      units: [
+        knight,
+        { ...firstEnemy, hp: 1 },
+        captainOne,
+        captainTwo,
+        secondEnemy,
+        thirdEnemy,
+      ].sort((left, right) => left.id - right.id),
+      board: patchTiles(base, [
+        [
+          { x: 2, y: 3 },
+          { terrain: "GRASS", site: null },
+        ],
+        [
+          { x: 3, y: 3 },
+          { terrain: "GRASS", site: null },
+        ],
+        [
+          { x: 4, y: 2 },
+          { terrain: "GRASS", site: null },
+        ],
+        [
+          { x: 5, y: 2 },
+          { terrain: "GRASS", site: null },
+        ],
+      ]),
+    });
+    const firstRally = applyCommandV7(state, state.humanPlayerId, {
+      kind: "RALLY",
+      unitId: captainOne.id,
+    });
+    if (!firstRally.accepted) throw new Error(firstRally.error.code);
+    const first = applyCommandV7(firstRally.state, state.humanPlayerId, {
+      kind: "ATTACK",
+      unitId: knight.id,
+      targetUnitId: firstEnemy.id,
+    });
+    if (!first.accepted) throw new Error(first.error.code);
+    expect(parseGameStateV7(first.state)).toEqual(first.state);
+    expect(
+      first.events.find((event) => event.kind === "COMBAT_RESOLVED"),
+    ).toMatchObject({ preview: { inspiredApplied: true } });
+    expect(
+      queryPlayerCommandsV7(first.state, state.humanPlayerId),
+    ).toContainEqual({ kind: "RALLY", unitId: captainTwo.id });
+    const secondRally = applyCommandV7(first.state, state.humanPlayerId, {
+      kind: "RALLY",
+      unitId: captainTwo.id,
+    });
+    if (!secondRally.accepted) throw new Error(secondRally.error.code);
+    const second = applyCommandV7(secondRally.state, state.humanPlayerId, {
+      kind: "ATTACK",
+      unitId: knight.id,
+      targetUnitId: secondEnemy.id,
+    });
+    if (!second.accepted) throw new Error(second.error.code);
+    expect(
+      second.events.find((event) => event.kind === "COMBAT_RESOLVED"),
+    ).toMatchObject({ preview: { inspiredApplied: false } });
+    const third = applyCommandV7(second.state, state.humanPlayerId, {
+      kind: "ATTACK",
+      unitId: knight.id,
+      targetUnitId: thirdEnemy.id,
+    });
+    if (!third.accepted) throw new Error(third.error.code);
+    expect(
+      third.state.units.find((unit) => unit.id === knight.id),
+    ).toMatchObject({
+      at: { x: 5, y: 2 },
+      activation: {
+        attacksUsed: 3,
+        overrunActive: false,
+        inspired: false,
+      },
+    });
+  });
+
+  it("advances Knight and Marksman after an adjacent kill", () => {
     for (const [role, expectedAdvance] of [
-      ["HORSE_ARCHER", false],
+      ["KNIGHT", true],
       ["MARKSMAN", true],
     ] as const) {
       const state = battle(role, "FIGHTER", { x: 2, y: 2 }, { x: 3, y: 2 }, 1);
@@ -217,11 +337,11 @@ describe("ruleset-7 Horse Archer activation", () => {
     }
   });
 
-  it("preserves usage through promotion and resets only at next Start Turn", () => {
-    let state = battle("HORSE_ARCHER", "GUARD", { x: 2, y: 2 }, { x: 4, y: 2 });
+  it("defers promotion until Overrun ends and resets attacks at next Start Turn", () => {
+    let state = overrunBattle();
     const archer = required(
       state.units.find((unit) => unit.ownerId === state.humanPlayerId),
-      "Horse Archer missing",
+      "Knight Overrun missing",
     );
     state = checkedV7({
       ...state,
@@ -230,7 +350,10 @@ describe("ruleset-7 Horse Archer activation", () => {
       ),
     });
     const target = required(
-      state.units.find((unit) => unit.ownerId !== state.humanPlayerId),
+      state.units.find(
+        (unit) =>
+          unit.ownerId !== state.humanPlayerId && same(unit.at, { x: 3, y: 2 }),
+      ),
       "target missing",
     );
     const first = applyCommandV7(state, state.humanPlayerId, {
@@ -239,7 +362,27 @@ describe("ruleset-7 Horse Archer activation", () => {
       targetUnitId: target.id,
     });
     if (!first.accepted) throw new Error(first.error.code);
-    const promoted = applyCommandV7(first.state, state.humanPlayerId, {
+    const blockedPromotion = applyCommandV7(first.state, state.humanPlayerId, {
+      kind: "PROMOTE",
+      unitId: archer.id,
+    });
+    expect(blockedPromotion).toMatchObject({
+      accepted: false,
+      state: first.state,
+      events: [],
+      error: { code: "UNIT_ALREADY_ACTED" },
+    });
+    const continuationTarget = required(
+      first.state.units.find((unit) => unit.ownerId !== state.humanPlayerId),
+      "continuation target missing",
+    );
+    const continued = applyCommandV7(first.state, state.humanPlayerId, {
+      kind: "ATTACK",
+      unitId: archer.id,
+      targetUnitId: continuationTarget.id,
+    });
+    if (!continued.accepted) throw new Error(continued.error.code);
+    const promoted = applyCommandV7(continued.state, state.humanPlayerId, {
       kind: "PROMOTE",
       unitId: archer.id,
     });
@@ -247,7 +390,7 @@ describe("ruleset-7 Horse Archer activation", () => {
     expect(
       promoted.state.units.find((unit) => unit.id === archer.id)?.activation
         .attacksUsed,
-    ).toBe(1);
+    ).toBe(2);
     const humanEnded = applyCommandV7(promoted.state, state.humanPlayerId, {
       kind: "END_TURN",
     });
@@ -269,7 +412,7 @@ describe("ruleset-7 Horse Archer activation", () => {
     });
   });
 
-  it("trains newborn Horse Archers fully exhausted", () => {
+  it("trains newborn Knight Overruns fully exhausted", () => {
     const base = richV7(allTechsV7(initialV7()), 100);
     const city = required(
       base.cities.find((candidate) => candidate.ownerId === base.humanPlayerId),
@@ -282,27 +425,22 @@ describe("ruleset-7 Horse Archer activation", () => {
     const trained = applyCommandV7(state, state.humanPlayerId, {
       kind: "TRAIN",
       cityId: city.id,
-      role: "HORSE_ARCHER",
+      role: "KNIGHT",
     });
     if (!trained.accepted) throw new Error(trained.error.code);
     expect(
       trained.state.units.find((unit) => unit.ownerId === state.humanPlayerId)
         ?.activation,
     ).toMatchObject({
-      attacksUsed: 2,
+      attacksUsed: 1,
       attacked: true,
       handled: true,
     });
   });
 
   it("offers attacks after Dash from the final coordinate", () => {
-    const state = battle(
-      "HORSE_ARCHER",
-      "FIGHTER",
-      { x: 1, y: 2 },
-      { x: 5, y: 2 },
-    );
-    const archer = required(state.units[0], "Horse Archer missing");
+    const state = battle("KNIGHT", "FIGHTER", { x: 1, y: 2 }, { x: 4, y: 2 });
+    const archer = required(state.units[0], "Knight Overrun missing");
     const target = required(state.units[1], "target missing");
     const move = queryPlayerCommandsV7(state, state.humanPlayerId).find(
       (command) =>
@@ -325,7 +463,7 @@ describe("ruleset-7 Horse Archer activation", () => {
     ).not.toBeNull();
   });
 
-  it("retains Catapult range, Charge, Breach, Push, and ordinary action locks", () => {
+  it("retains Catapult range, first-attack Charge, terrain defense, and ordinary action locks", () => {
     const catapult = battle(
       "CATAPULT",
       "FIGHTER",
@@ -378,7 +516,7 @@ describe("ruleset-7 Horse Archer activation", () => {
       chargeApplied: true,
     });
     const breach = battle(
-      "BREACHER",
+      "GUARD",
       "GUARD",
       { x: 2, y: 2 },
       { x: 3, y: 2 },
@@ -391,11 +529,11 @@ describe("ruleset-7 Horse Archer activation", () => {
     expect(
       calculateCombatPreviewV7(breach, breacher.id, breachTarget.id),
     ).toMatchObject({
-      breachApplied: true,
-      defenseBonusNumerator: 1,
-      defenseBonusDenominator: 1,
+      breachApplied: false,
+      defenseBonusNumerator: 3,
+      defenseBonusDenominator: 2,
     });
-    const push = battle("HEAVY", "GUARD", { x: 2, y: 2 }, { x: 3, y: 2 });
+    const push = battle("KNIGHT", "GUARD", { x: 2, y: 2 }, { x: 3, y: 2 });
     const heavy = required(push.units[0], "Heavy missing");
     const pushTarget = required(push.units[1], "target missing");
     const pushed = applyCommandV7(push, push.humanPlayerId, {
@@ -403,10 +541,11 @@ describe("ruleset-7 Horse Archer activation", () => {
       unitId: heavy.id,
       targetUnitId: pushTarget.id,
     });
+    expect(pushed.accepted).toBe(true);
     expect(
       pushed.accepted &&
         pushed.events.some((event) => event.kind === "UNIT_PUSHED"),
-    ).toBe(true);
+    ).toBe(false);
     const movedGuard = battle(
       "GUARD",
       "FIGHTER",
@@ -427,8 +566,8 @@ describe("ruleset-7 Horse Archer activation", () => {
     ).toMatchObject({ accepted: false, error: { code: "UNIT_ALREADY_ACTED" } });
   });
 
-  it("retains movement budgets, Road discounts, terrain stops, and Prospecting entry", () => {
-    const base = battle("SCOUT", "FIGHTER", { x: 2, y: 2 }, { x: 9, y: 9 });
+  it("retains movement budgets, Road discounts, terrain stops, and Engineering entry", () => {
+    const base = battle("RAIDER", "FIGHTER", { x: 2, y: 2 }, { x: 9, y: 9 });
     const withoutProspecting = checkedV7({
       ...base,
       players: base.players.map((player) =>
@@ -436,10 +575,7 @@ describe("ruleset-7 Horse Archer activation", () => {
           ? {
               ...player,
               researchedTechs: player.researchedTechs.filter(
-                (tech) =>
-                  tech !== "PROSPECTING" &&
-                  tech !== "ENGINEERING" &&
-                  tech !== "METALLURGY",
+                (tech) => tech !== "ENGINEERING" && tech !== "METALLURGY",
               ),
             }
           : player,
@@ -461,7 +597,7 @@ describe("ruleset-7 Horse Archer activation", () => {
       ]),
     ).toEqual({
       legal: false,
-      reason: "PROSPECTING_REQUIRED",
+      reason: "ENGINEERING_REQUIRED",
     });
     const withProspecting = checkedV7({
       ...withoutProspecting,
@@ -500,15 +636,10 @@ describe("ruleset-7 Horse Archer activation", () => {
         y: 8,
       }),
     ).toBe(1);
-    const horse = battle(
-      "HORSE_ARCHER",
-      "FIGHTER",
-      { x: 2, y: 4 },
-      { x: 9, y: 9 },
-    );
-    const horseArcher = required(horse.units[0], "Horse Archer missing");
+    const horse = battle("KNIGHT", "FIGHTER", { x: 2, y: 4 }, { x: 9, y: 9 });
+    const knightOverrun = required(horse.units[0], "Knight Overrun missing");
     expect(
-      validateMovementPathV7(horse, horseArcher, [
+      validateMovementPathV7(horse, knightOverrun, [
         { x: 3, y: 4 },
         { x: 4, y: 4 },
         { x: 5, y: 4 },
@@ -519,7 +650,7 @@ describe("ruleset-7 Horse Archer activation", () => {
     });
   });
 
-  it("retains one-draw treasure rewards, Heavy placement, and spawned sight", () => {
+  it("retains one-draw treasure rewards, Knight placement, and spawned sight", () => {
     let seed = 0;
     while (
       nextBounded({ algorithm: "MULBERRY32", version: 1, state: seed }, 2)
@@ -552,13 +683,15 @@ describe("ruleset-7 Horse Archer activation", () => {
     });
     if (!result.accepted) throw new Error(result.error.code);
     expect(result.state.random).toEqual(expectedRandom);
-    expect(result.state.units.some((unit) => unit.role === "HEAVY")).toBe(true);
+    expect(result.state.units.some((unit) => unit.role === "KNIGHT")).toBe(
+      true,
+    );
     expect(result.events).toContainEqual(
       expect.objectContaining({
         kind: "TREASURE_CAPTURED",
-        requestedReward: "HEAVY",
-        grantedReward: "HEAVY",
-        heavyFallback: false,
+        requestedReward: "KNIGHT",
+        grantedReward: "KNIGHT",
+        knightFallback: false,
       }),
     );
     expect(
@@ -567,8 +700,389 @@ describe("ruleset-7 Horse Archer activation", () => {
     ).toContainEqual({ x: 0, y: 0 });
   });
 
-  it("retains Heal, Recover, Wait, Promote, stat attribution, and idle recovery", () => {
-    let state = battle("MEDIC", "FIGHTER", { x: 2, y: 2 }, { x: 9, y: 9 });
+  it("enforces Captain support eligibility, nonstacking, consumption, and lifecycle", () => {
+    const base = battle("CAPTAIN", "FIGHTER", { x: 2, y: 2 }, { x: 4, y: 2 });
+    const captainOne = required(base.units[0], "first Captain missing");
+    const enemy = required(base.units[1], "enemy missing");
+    const target = {
+      ...makeUnit(
+        base,
+        unitId(base.nextEntityId),
+        base.humanPlayerId,
+        "FIGHTER",
+        { x: 3, y: 2 },
+        15,
+      ),
+      veteran: true,
+      kills: 3,
+      maxHp: 15,
+    };
+    const captainTwo = makeUnit(
+      base,
+      unitId(base.nextEntityId + 1),
+      base.humanPlayerId,
+      "CAPTAIN",
+      { x: 2, y: 3 },
+    );
+    const siege = makeUnit(
+      base,
+      unitId(base.nextEntityId + 2),
+      base.humanPlayerId,
+      "CATAPULT",
+      { x: 3, y: 3 },
+    );
+    const naval = {
+      ...makeUnit(
+        base,
+        unitId(base.nextEntityId + 3),
+        base.humanPlayerId,
+        "PATROL_BOAT",
+        { x: 1, y: 2 },
+        5,
+      ),
+      form: "NAVAL" as const,
+    };
+    const state = checkedV7({
+      ...base,
+      nextEntityId: base.nextEntityId + 4,
+      treasureChests: base.treasureChests.filter(
+        (at) =>
+          ![
+            captainOne.at,
+            enemy.at,
+            target.at,
+            captainTwo.at,
+            siege.at,
+            naval.at,
+          ].some((occupied) => same(occupied, at)),
+      ),
+      units: [captainOne, enemy, target, captainTwo, siege, naval].sort(
+        (left, right) => left.id - right.id,
+      ),
+      board: patchTiles(base, [
+        [target.at, { biome: "PLAINS", terrain: "GRASS", site: null }],
+        [captainTwo.at, { biome: "PLAINS", terrain: "GRASS", site: null }],
+        [siege.at, { biome: "PLAINS", terrain: "GRASS", site: null }],
+        [
+          naval.at,
+          {
+            biome: null,
+            terrain: "SHALLOW_WATER",
+            resource: null,
+            improvement: null,
+            site: null,
+            road: false,
+            fieldDefense: false,
+            territoryCityId: null,
+          },
+        ],
+      ]),
+    });
+
+    const rallied = applyCommandV7(state, state.humanPlayerId, {
+      kind: "RALLY",
+      unitId: captainOne.id,
+    });
+    if (!rallied.accepted) throw new Error(rallied.error.code);
+    expect(
+      rallied.state.units.find((unit) => unit.id === target.id)?.activation
+        .inspired,
+    ).toBe(true);
+    for (const excluded of [captainOne, captainTwo, siege, naval])
+      expect(
+        rallied.state.units.find((unit) => unit.id === excluded.id)?.activation
+          .inspired,
+      ).toBe(false);
+    const stacked = applyCommandV7(rallied.state, state.humanPlayerId, {
+      kind: "RALLY",
+      unitId: captainTwo.id,
+    });
+    expect(stacked).toMatchObject({ accepted: false, events: [] });
+    expect(stacked.state).toBe(rallied.state);
+    const guessed = applyCommandV7(rallied.state, state.humanPlayerId, {
+      kind: "ATTACK",
+      unitId: target.id,
+      targetUnitId: unitId(999_999),
+    });
+    expect(guessed).toMatchObject({ accepted: false, events: [] });
+    expect(guessed.state).toBe(rallied.state);
+    const attacked = applyCommandV7(rallied.state, state.humanPlayerId, {
+      kind: "ATTACK",
+      unitId: target.id,
+      targetUnitId: enemy.id,
+    });
+    if (!attacked.accepted) throw new Error(attacked.error.code);
+    expect(
+      attacked.events.find((event) => event.kind === "COMBAT_RESOLVED"),
+    ).toMatchObject({ preview: { inspiredApplied: true } });
+    expect(
+      attacked.state.units.find((unit) => unit.id === target.id)?.activation
+        .inspired,
+    ).toBe(false);
+    const rallyExpired = applyCommandV7(rallied.state, state.humanPlayerId, {
+      kind: "END_TURN",
+    });
+    if (!rallyExpired.accepted) throw new Error(rallyExpired.error.code);
+    expect(
+      rallyExpired.state.units.find((unit) => unit.id === target.id)?.activation
+        .inspired,
+    ).toBe(false);
+
+    const woundedState = checkedV7({
+      ...state,
+      units: state.units.map((unit) =>
+        unit.id === target.id ? { ...unit, hp: 2 } : unit,
+      ),
+    });
+    const tended = applyCommandV7(woundedState, state.humanPlayerId, {
+      kind: "TEND_WOUNDED",
+      unitId: captainOne.id,
+    });
+    if (!tended.accepted) throw new Error(tended.error.code);
+    expect(
+      tended.events.find((event) => event.kind === "WOUNDED_TENDED"),
+    ).toMatchObject({
+      results: [{ unitId: target.id, amount: 2, hpAfter: 4 }],
+    });
+    expect(
+      queryPlayerCommandsV7(tended.state, state.humanPlayerId),
+    ).not.toContainEqual({ kind: "TEND_WOUNDED", unitId: captainTwo.id });
+    const retended = applyCommandV7(tended.state, state.humanPlayerId, {
+      kind: "TEND_WOUNDED",
+      unitId: captainTwo.id,
+    });
+    expect(retended).toMatchObject({ accepted: false, events: [] });
+    const receiverActed = applyCommandV7(tended.state, state.humanPlayerId, {
+      kind: "WAIT",
+      unitId: target.id,
+    });
+    expect(receiverActed.accepted).toBe(true);
+    const receiverIdled = applyCommandV7(tended.state, state.humanPlayerId, {
+      kind: "END_TURN",
+    });
+    if (!receiverIdled.accepted) throw new Error(receiverIdled.error.code);
+    expect(
+      receiverIdled.events.some(
+        (event) =>
+          event.kind === "UNIT_RECOVERED" && event.unitId === target.id,
+      ),
+    ).toBe(true);
+    expect(
+      receiverIdled.state.units.find((unit) => unit.id === target.id)?.hp,
+    ).toBeGreaterThan(4);
+    const enemyEnded = applyCommandV7(
+      receiverIdled.state,
+      required(
+        receiverIdled.state.turnOrder[receiverIdled.state.activeSeatIndex],
+        "enemy turn missing",
+      ),
+      { kind: "END_TURN" },
+    );
+    if (!enemyEnded.accepted) throw new Error(enemyEnded.error.code);
+    expect(
+      enemyEnded.state.units.find((unit) => unit.id === target.id)?.activation
+        .tendedThisTurn,
+    ).toBe(false);
+  });
+
+  it("applies explicit and idle recovery at 6, 4, and 2 by live Windmill supply", () => {
+    const base = battle("FIGHTER", "FIGHTER", { x: 2, y: 2 }, { x: 9, y: 9 });
+    const actor = base.humanPlayerId;
+    const city = required(
+      base.cities.find((candidate) => candidate.ownerId === actor),
+      "supply city missing",
+    );
+    const windmillTile = required(
+      base.board.tiles.find(
+        (tile) =>
+          tile.territoryCityId === city.id &&
+          tile.site === null &&
+          tile.improvement === null &&
+          base.board.tiles.some(
+            (candidate) =>
+              candidate.territoryCityId === city.id &&
+              candidate.site === null &&
+              candidate.improvement === null &&
+              !same(candidate.at, tile.at) &&
+              Math.max(
+                Math.abs(candidate.at.x - tile.at.x),
+                Math.abs(candidate.at.y - tile.at.y),
+              ) === 1,
+          ),
+      ),
+      "Windmill tile missing",
+    );
+    const farmTile = required(
+      base.board.tiles.find(
+        (tile) =>
+          tile.territoryCityId === city.id &&
+          tile.site === null &&
+          tile.improvement === null &&
+          !same(tile.at, windmillTile.at) &&
+          Math.max(
+            Math.abs(tile.at.x - windmillTile.at.x),
+            Math.abs(tile.at.y - windmillTile.at.y),
+          ) === 1,
+      ),
+      "Farm tile missing",
+    );
+    const recovering = required(
+      base.units.find((unit) => unit.ownerId === actor),
+      "recovering unit missing",
+    );
+    const supplied = checkedV7({
+      ...base,
+      nextEntityId: base.nextEntityId + 2,
+      treasureChests: base.treasureChests.filter(
+        (at) =>
+          !same(at, city.at) &&
+          !same(at, windmillTile.at) &&
+          !same(at, farmTile.at),
+      ),
+      units: base.units.map((unit) =>
+        unit.id === recovering.id
+          ? { ...unit, at: city.at, hp: 1, activation: READY }
+          : unit,
+      ),
+      board: patchTiles(base, [
+        [
+          windmillTile.at,
+          {
+            biome: "PLAINS",
+            terrain: "GRASS",
+            resource: null,
+            improvement: "WINDMILL",
+            site: null,
+          },
+        ],
+        [
+          farmTile.at,
+          {
+            biome: "PLAINS",
+            terrain: "GRASS",
+            resource: null,
+            improvement: "FARM",
+            site: null,
+          },
+        ],
+      ]),
+      cities: base.cities.map((candidate) =>
+        candidate.id === city.id
+          ? {
+              ...candidate,
+              level: 2,
+              economicPopulation: 3,
+              population: 1,
+              rewards: [{ reachedLevel: 2, reward: "STOCKPILE" as const }],
+            }
+          : candidate,
+      ),
+      populationContributions: [
+        {
+          id: base.nextEntityId,
+          cityId: city.id,
+          category: "LIVE",
+          amount: 1,
+          source: {
+            kind: "IMPROVEMENT",
+            improvement: "WINDMILL",
+            at: windmillTile.at,
+          },
+        },
+        {
+          id: base.nextEntityId + 1,
+          cityId: city.id,
+          category: "LIVE",
+          amount: 2,
+          source: {
+            kind: "IMPROVEMENT",
+            improvement: "FARM",
+            at: farmTile.at,
+          },
+        },
+      ],
+    });
+    const unsupplied = checkedV7({
+      ...supplied,
+      board: patchTiles(supplied, [[farmTile.at, { improvement: null }]]),
+      cities: supplied.cities.map((candidate) =>
+        candidate.id === city.id
+          ? { ...candidate, economicPopulation: 0, population: -2 }
+          : candidate,
+      ),
+      populationContributions: [
+        {
+          id: base.nextEntityId,
+          cityId: city.id,
+          category: "LIVE",
+          amount: 0,
+          source: {
+            kind: "IMPROVEMENT",
+            improvement: "WINDMILL",
+            at: windmillTile.at,
+          },
+        },
+      ],
+    });
+    const neutralAt = required(
+      unsupplied.board.tiles.find(
+        (tile) =>
+          tile.territoryCityId === null &&
+          tile.biome !== null &&
+          tile.site === null &&
+          !unsupplied.units.some(
+            (unit) => unit.id !== recovering.id && same(unit.at, tile.at),
+          ),
+      )?.at,
+      "neutral recovery tile missing",
+    );
+    const neutral = checkedV7({
+      ...unsupplied,
+      treasureChests: unsupplied.treasureChests.filter(
+        (at) => !same(at, neutralAt),
+      ),
+      units: unsupplied.units.map((unit) =>
+        unit.id === recovering.id
+          ? { ...unit, at: neutralAt, hp: 1, activation: READY }
+          : unit,
+      ),
+    });
+
+    for (const [source, amount] of [
+      [supplied, 6],
+      [unsupplied, 4],
+      [neutral, 2],
+    ] as const) {
+      const explicit = applyCommandV7(source, actor, {
+        kind: "RECOVER",
+        unitId: recovering.id,
+      });
+      if (!explicit.accepted) throw new Error(explicit.error.code);
+      expect(
+        explicit.state.units.find((unit) => unit.id === recovering.id)?.hp,
+      ).toBe(1 + amount);
+      expect(explicit.events).toContainEqual({
+        kind: "UNIT_RECOVERED",
+        unitId: recovering.id,
+        amount,
+        automatic: false,
+      });
+      const idle = applyCommandV7(source, actor, { kind: "END_TURN" });
+      if (!idle.accepted) throw new Error(idle.error.code);
+      expect(
+        idle.state.units.find((unit) => unit.id === recovering.id)?.hp,
+      ).toBe(1 + amount);
+      expect(idle.events).toContainEqual({
+        kind: "UNIT_RECOVERED",
+        unitId: recovering.id,
+        amount,
+        automatic: true,
+      });
+    }
+  });
+
+  it("retains Tend, Recover, Wait, Promote, stat attribution, and idle recovery", () => {
+    let state = battle("CAPTAIN", "FIGHTER", { x: 2, y: 2 }, { x: 9, y: 9 });
     const target = makeUnit(
       state,
       unitId(state.nextEntityId),
@@ -582,16 +1096,35 @@ describe("ruleset-7 Horse Archer activation", () => {
       nextEntityId: state.nextEntityId + 1,
       units: [...state.units, target].sort((a, b) => a.id - b.id),
     });
-    const medic = required(state.units[0], "Medic missing");
-    const healed = applyCommandV7(state, state.humanPlayerId, {
-      kind: "HEAL_ADJACENT",
-      unitId: medic.id,
-      targetUnitId: target.id,
+    const captain = required(state.units[0], "Captain missing");
+    const tended = applyCommandV7(state, state.humanPlayerId, {
+      kind: "TEND_WOUNDED",
+      unitId: captain.id,
     });
     expect(
-      healed.accepted &&
-        healed.state.units.find((unit) => unit.id === target.id)?.hp,
-    ).toBe(9);
+      tended.accepted &&
+        tended.state.units.find((unit) => unit.id === target.id)?.hp,
+    ).toBe(5);
+    expect(
+      tended.accepted &&
+        tended.state.units.find((unit) => unit.id === target.id)?.activation,
+    ).toMatchObject({ tendedThisTurn: true, handled: false });
+    for (const kind of ["RALLY", "TEND_WOUNDED"] as const) {
+      const overflow = checkedV7({
+        ...state,
+        commandIndex: Number.MAX_SAFE_INTEGER,
+      });
+      const result = applyCommandV7(overflow, overflow.humanPlayerId, {
+        kind,
+        unitId: captain.id,
+      });
+      expect(result).toMatchObject({
+        accepted: false,
+        events: [],
+        error: { code: "INTEGER_OVERFLOW" },
+      });
+      expect(result.state).toBe(overflow);
+    }
     const promotable = checkedV7({
       ...state,
       units: state.units.map((unit) =>
@@ -611,19 +1144,18 @@ describe("ruleset-7 Horse Archer activation", () => {
         queryUnitStatsV7(promoted.state, target.id)?.stats[0]?.modifiers[0]
           ?.source,
       ).toBe("PROMOTION");
-    const waited = applyCommandV7(state, state.humanPlayerId, {
-      kind: "WAIT",
-      unitId: target.id,
-    });
-    if (!waited.accepted) throw new Error(waited.error.code);
-    const recovered = applyCommandV7(waited.state, state.humanPlayerId, {
-      kind: "RECOVER",
-      unitId: target.id,
-    });
+    const recovered = applyCommandV7(
+      tended.accepted ? tended.state : state,
+      state.humanPlayerId,
+      {
+        kind: "RECOVER",
+        unitId: target.id,
+      },
+    );
     expect(
       recovered.accepted &&
         recovered.state.units.find((unit) => unit.id === target.id)?.hp,
-    ).toBe(5);
+    ).toBe(7);
     const idleBase = allTechsV7(initialV7());
     const idleUnit = required(
       idleBase.units.find((unit) => unit.ownerId === idleBase.humanPlayerId),
@@ -641,9 +1173,28 @@ describe("ruleset-7 Horse Archer activation", () => {
     expect(
       ended.accepted &&
         ended.state.units.find((unit) => unit.id === idleUnit.id)?.hp,
-    ).toBe(10);
+    ).toBe(8);
   });
 });
+
+function overrunBattle(): GameStateV7 {
+  const base = battle("KNIGHT", "FIGHTER", { x: 2, y: 2 }, { x: 3, y: 2 }, 1);
+  const enemy = required(
+    base.units.find((unit) => unit.ownerId !== base.humanPlayerId),
+    "enemy missing",
+  );
+  return checkedV7({
+    ...base,
+    nextEntityId: base.nextEntityId + 1,
+    units: [
+      ...base.units,
+      makeUnit(base, unitId(base.nextEntityId), enemy.ownerId, "GUARD", {
+        x: 4,
+        y: 2,
+      }),
+    ].sort((left, right) => left.id - right.id),
+  });
+}
 
 function battle(
   attackerRole: UnitRoleIdV7,

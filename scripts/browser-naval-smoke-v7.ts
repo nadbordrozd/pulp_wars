@@ -1,4 +1,4 @@
-import { spawn } from "node:child_process";
+import { spawn, type ChildProcess } from "node:child_process";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -53,6 +53,8 @@ const browser = spawn(
   { stdio: "ignore" },
 );
 
+let primaryFailure: unknown;
+let cleanupFailure: unknown;
 try {
   const target = await waitForTarget(port, baseUrl.origin);
   const connection = await connect(target.webSocketDebuggerUrl);
@@ -86,11 +88,41 @@ try {
           alert: document.querySelector('#v7-alert')?.textContent,
         }));
       };
+      const visibleEnabledButton = (selector) => {
+        const target = document.querySelector(selector);
+        if (!(target instanceof HTMLButtonElement) || target.disabled) return null;
+        const bounds = target.getBoundingClientRect();
+        const style = getComputedStyle(target);
+        return bounds.width > 0 && bounds.height > 0 && style.display !== 'none' && style.visibility !== 'hidden'
+          ? target
+          : null;
+      };
       const click = (selector) => {
         const target = document.querySelector(selector);
         if (!(target instanceof HTMLButtonElement))
           throw new Error('button missing: ' + selector);
         target.click();
+      };
+      const clickVisibleEnabled = (selector) => {
+        const target = visibleEnabledButton(selector);
+        if (target === null)
+          throw new Error('visible enabled button missing: ' + selector);
+        target.click();
+      };
+      const openCompactMenuItem = async (action) => {
+        const selector = '[data-action="' + action + '"]';
+        if (visibleEnabledButton(selector) === null) {
+          await waitFor(
+            () => visibleEnabledButton('[data-action="compact-menu"]') !== null,
+            'compact menu trigger',
+          );
+          clickVisibleEnabled('[data-action="compact-menu"]');
+          await waitFor(
+            () => document.querySelector('[data-action="compact-menu"]')?.getAttribute('aria-expanded') === 'true' && visibleEnabledButton(selector) !== null,
+            'compact menu item ' + action,
+          );
+        }
+        clickVisibleEnabled(selector);
       };
       for (const [index, mapType] of mapTypes.entries()) {
         if (index > 0) {
@@ -108,7 +140,7 @@ try {
           'launch ' + mapType,
         );
         launched.push(mapType);
-        click('[data-action="main-menu"]');
+        await openCompactMenuItem('main-menu');
         await waitFor(
           () => controller.snapshot().phase === 'RESUMABLE' && document.querySelector('[data-action="show-replace"]') !== null,
           'main menu ' + mapType,
@@ -223,9 +255,59 @@ try {
     JSON.stringify({ status: "PASS", directory: output.directory, functional }),
   );
   connection.close();
+} catch (error) {
+  primaryFailure = error;
 } finally {
+  try {
+    await stopBrowser(browser);
+    await rm(profile, {
+      recursive: true,
+      force: true,
+      maxRetries: 6,
+      retryDelay: 100,
+    });
+  } catch (error) {
+    cleanupFailure = error;
+  }
+}
+if (primaryFailure !== undefined) {
+  if (cleanupFailure !== undefined)
+    console.error(
+      `Naval browser cleanup also failed: ${errorMessage(cleanupFailure)}`,
+    );
+  throw primaryFailure;
+}
+if (cleanupFailure !== undefined) throw cleanupFailure;
+
+async function stopBrowser(browser: ChildProcess): Promise<void> {
+  if (browser.exitCode !== null || browser.signalCode !== null) return;
   browser.kill();
-  await rm(profile, { recursive: true, force: true });
+  if (await waitForBrowserExit(browser, 2_000)) return;
+  browser.kill("SIGKILL");
+  if (!(await waitForBrowserExit(browser, 2_000)))
+    throw new Error("Chrome did not exit after SIGKILL");
+}
+
+async function waitForBrowserExit(
+  browser: ChildProcess,
+  timeoutMilliseconds: number,
+): Promise<boolean> {
+  if (browser.exitCode !== null || browser.signalCode !== null) return true;
+  return new Promise((resolve) => {
+    const timeout = setTimeout(() => {
+      browser.off("exit", exited);
+      resolve(browser.exitCode !== null || browser.signalCode !== null);
+    }, timeoutMilliseconds);
+    const exited = (): void => {
+      clearTimeout(timeout);
+      resolve(true);
+    };
+    browser.once("exit", exited);
+  });
+}
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
 }
 
 async function captureMountedUiEvidence(
@@ -304,7 +386,7 @@ async function captureMountedUiEvidence(
       if (!(root instanceof HTMLElement)) throw new Error('app root missing');
       const boardHost = new CanvasBoardHostV7(document);
       const view = new Ruleset7DomAppView(document, root, controller, { boardHost, settingsStorage: null });
-      const readyActivation = { moved: false, movedPathLength: 0, attacked: false, attacksUsed: 0, healed: false, recovered: false, captured: false, handled: false, specialActed: false };
+      const readyActivation = { moved: false, movedPathLength: 0, attacked: false, attacksUsed: 0, tendedThisTurn: false, inspired: false, overrunActive: false, recovered: false, captured: false, handled: false, specialActed: false };
       globalThis.__NAVAL_DOM__ = {
         boardHost, traces, snapshot,
         replaceState(next) { state = next; emit(); },
@@ -527,7 +609,17 @@ async function captureMountedUiEvidence(
   );
   await waitForExpression(
     connection,
-    `document.querySelector('.v7-selection-dock[data-selection-kind="unit"]')?.textContent.includes('Embarked Transport') === true`,
+    `(() => {
+      const unit = globalThis.__NAVAL_DOM__.snapshot().view.units.find((candidate) => candidate.id === ${installed.landUnitId});
+      const dock = document.querySelector('.v7-selection-dock[data-selection-kind="unit"]');
+      const identity = dock?.querySelector('.v7-identity h2');
+      const art = dock?.querySelector('[data-asset-id="unit-shared-embarked-transport"]');
+      if (unit?.form !== 'EMBARKED' || unit.role !== 'FIGHTER') return false;
+      if (!(dock instanceof HTMLElement) || !(identity instanceof HTMLElement) || !(art instanceof HTMLImageElement)) return false;
+      const bounds = dock.getBoundingClientRect();
+      const style = getComputedStyle(dock);
+      return identity.textContent === 'Fighter (at sea)' && art.complete && art.naturalWidth > 0 && bounds.width > 0 && bounds.height > 0 && style.display !== 'none' && style.visibility !== 'hidden';
+    })()`,
   );
   await evaluate(
     connection,
@@ -550,8 +642,14 @@ async function captureMountedUiEvidence(
     `(() => {
       const help = document.querySelector('[data-action="unit-help"]');
       if (!(help instanceof HTMLButtonElement)) throw new Error('transport help missing');
+      if (help.getAttribute('aria-label') !== 'About Fighter')
+        throw new Error('transport passenger identity missing');
       help.click();
-      return document.querySelector('[data-v7-region="unit-help"][aria-modal="true"]') !== null;
+      const dialog = document.querySelector('[data-v7-region="unit-help"][aria-modal="true"]');
+      if (!(dialog instanceof HTMLElement)) return false;
+      const bounds = dialog.getBoundingClientRect();
+      const style = getComputedStyle(dialog);
+      return bounds.width > 0 && bounds.height > 0 && style.display !== 'none' && style.visibility !== 'hidden';
     })()`,
   );
   if (!helpOpened) throw new Error("Transport help did not open");
@@ -560,11 +658,30 @@ async function captureMountedUiEvidence(
     connection,
     `(() => {
       const dock = document.querySelector('.v7-selection-dock');
-      if (!(dock instanceof HTMLElement) || !dock.textContent.includes('Embarked Transport'))
+      const unit = globalThis.__NAVAL_DOM__.snapshot().view.units.find((candidate) => candidate.id === ${installed.landUnitId});
+      const identity = dock?.querySelector('.v7-identity h2');
+      const dockArt = dock?.querySelector('[data-asset-id="unit-shared-embarked-transport"]');
+      const dialog = document.querySelector('[data-v7-region="unit-help"][aria-modal="true"]');
+      const helpArt = dialog?.querySelector('[data-asset-id="unit-shared-embarked-transport"]');
+      const passenger = dialog?.querySelector('.v7-transport-passenger');
+      if (!(dock instanceof HTMLElement) || !(dialog instanceof HTMLElement))
         throw new Error('transport dock missing');
+      if (unit?.form !== 'EMBARKED' || unit.role !== 'FIGHTER')
+        throw new Error('transport public passenger identity missing');
+      if (identity?.textContent !== 'Fighter (at sea)')
+        throw new Error('transport compact identity missing');
+      if (!(dockArt instanceof HTMLImageElement) || !(helpArt instanceof HTMLImageElement) || !dockArt.complete || dockArt.naturalWidth <= 0 || !helpArt.complete || helpArt.naturalWidth <= 0)
+        throw new Error('accepted transport art missing');
+      if (passenger?.textContent !== 'Carrying troops. Pick a highlighted shore tile to land.')
+        throw new Error('transport passenger help missing');
       return {
         text: dock.textContent,
-        passenger: dock.querySelector('.v7-transport-passenger')?.textContent,
+        form: unit.form,
+        role: unit.role,
+        identity: identity.textContent,
+        assetId: dockArt.dataset.assetId,
+        passenger: passenger.textContent,
+        helpLabel: dialog.getAttribute('aria-label'),
       };
     })()`,
   );
@@ -616,7 +733,7 @@ async function mountVisual(
       globalThis.__PULP_WARS_APP__?.destroy();
       const aiCount = ${size} === 11 ? 1 : 3;
       const setup = {
-        rulesetId: 'pulp-wars-poc-7r8', mapGenerationRevision: 'REGIONAL_BIOMES_NAVAL_V2', seed: 42,
+        rulesetId: 'pulp-wars-poc-7r9', mapGenerationRevision: 'REGIONAL_BIOMES_NAVAL_V2', seed: 42,
         width: ${size}, height: ${size}, aiCount, aiDifficulty: 'NORMAL', aiMode: 'RIVAL',
         humanColor: 'CORAL', factions: Array.from({ length: aiCount + 1 }, () => 'ORIGINAL'), mapType: 'ARCHIPELAGO',
       };
@@ -665,7 +782,7 @@ async function mountVisual(
       if (cluster.length < aiCount + 2) throw new Error('visual fleet cluster missing');
       const ownedCoast = cluster[1];
       const hostilePort = cluster[2];
-      const ready = { moved: false, movedPathLength: 0, attacked: false, attacksUsed: 0, healed: false, recovered: false, captured: false, handled: false, specialActed: false };
+      const ready = { moved: false, movedPathLength: 0, attacked: false, attacksUsed: 0, tendedThisTurn: false, inspired: false, overrunActive: false, recovered: false, captured: false, handled: false, specialActed: false };
       const roles = ['BATTLESHIP', 'PATROL_BOAT', 'FIGHTER', 'PATROL_BOAT'];
       const forms = ['NAVAL', 'NAVAL', 'EMBARKED', 'NAVAL'];
       const positions = [anchor, ownedCoast, cluster[3], cluster[4] ?? hostilePort];

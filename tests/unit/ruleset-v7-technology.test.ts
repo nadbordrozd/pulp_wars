@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
-  ORIGINAL_BASELINE_V4_NODES,
-  ORIGINAL_BASELINE_V4_TREE,
+  ORIGINAL_BASELINE_V5_NODES,
+  ORIGINAL_BASELINE_V5_TREE,
   ORIGINAL_ROLE_RULES_V7,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
@@ -21,32 +21,32 @@ import {
 import { checkedV7, initialV7, richV7, setupV7 } from "../fixtures/v7-builders";
 
 describe("ruleset-7 technology", () => {
-  it("registers the exact ordered 21-node five-branch graph and start", () => {
+  it("registers the exact ordered 23-node five-branch graph and start", () => {
     assertRuleset7Registry();
-    expect(ORIGINAL_BASELINE_V4_NODES.map((node) => node.id)).toEqual(
+    expect(ORIGINAL_BASELINE_V5_NODES.map((node) => node.id)).toEqual(
       TECHNOLOGY_IDS_V7,
     );
-    expect(ORIGINAL_BASELINE_V4_TREE).toMatchObject({
-      id: "ORIGINAL_BASELINE_V4",
+    expect(ORIGINAL_BASELINE_V5_TREE).toMatchObject({
+      id: "ORIGINAL_BASELINE_V5",
       faction: "ORIGINAL",
       startingTechIds: ["GATHERING"],
     });
-    expect(ORIGINAL_BASELINE_V4_NODES.map((node) => node.branch)).toEqual([
+    expect(ORIGINAL_BASELINE_V5_NODES.map((node) => node.branch)).toEqual([
       ...Array(5).fill("SETTLEMENT"),
       ...Array(5).fill("WILDS"),
-      ...Array(5).fill("MOBILITY_TRADE"),
-      ...Array(3).fill("INDUSTRY_WARFARE"),
+      ...Array(5).fill("MOBILITY"),
+      ...Array(5).fill("INDUSTRY"),
       ...Array(3).fill("NAVAL"),
     ]);
     expect(
-      ORIGINAL_BASELINE_V4_NODES.filter((node) => node.tier === 1),
+      ORIGINAL_BASELINE_V5_NODES.filter((node) => node.tier === 1),
     ).toHaveLength(5);
     expect(
-      ORIGINAL_BASELINE_V4_NODES.filter((node) => node.tier === 2),
-    ).toHaveLength(8);
+      ORIGINAL_BASELINE_V5_NODES.filter((node) => node.tier === 2),
+    ).toHaveLength(9);
     expect(
-      ORIGINAL_BASELINE_V4_NODES.filter((node) => node.tier === 3),
-    ).toHaveLength(8);
+      ORIGINAL_BASELINE_V5_NODES.filter((node) => node.tier === 3),
+    ).toHaveLength(9);
     expect(
       initialV7().players.every(
         (player) =>
@@ -54,7 +54,7 @@ describe("ruleset-7 technology", () => {
           player.researchedTechs[0] === "GATHERING",
       ),
     ).toBe(true);
-    expect(Object.isFrozen(ORIGINAL_BASELINE_V4_NODES)).toBe(true);
+    expect(Object.isFrozen(ORIGINAL_BASELINE_V5_NODES)).toBe(true);
   });
 
   it("uses the exact city-scaled formula without unsafe arithmetic", () => {
@@ -88,15 +88,12 @@ describe("ruleset-7 technology", () => {
       }),
     ).toEqual([
       ["FIGHTER", 2, 10, 4, 4, 1, 1, 1, null, true],
-      ["SCOUT", 4, 10, 3, 2, 2, 1, 1, "SCOUTING", true],
+      ["RAIDER", 4, 10, 4, 2, 2, 1, 1, "SCOUTING", true],
       ["MARKSMAN", 3, 10, 4, 2, 1, 2, 1, "MARKSMANSHIP", true],
-      ["GUARD", 3, 15, 3, 6, 1, 1, 1, "PROSPECTING", false],
-      ["RAIDER", 4, 10, 4, 2, 2, 1, 1, "RAIDING", true],
-      ["MEDIC", 4, 10, 1, 3, 1, 1, 1, "MEDICINE", true],
+      ["GUARD", 3, 15, 3, 6, 1, 1, 1, "DRILL", false],
+      ["CAPTAIN", 5, 10, 2, 2, 1, 1, 1, "ADMINISTRATION", true],
       ["CATAPULT", 8, 10, 7, 1, 1, 3, 2, "SAWMILLING", false],
-      ["HEAVY", 7, 20, 7, 7, 1, 1, 1, "METALLURGY", true],
-      ["HORSE_ARCHER", 9, 10, 4, 2, 3, 2, 1, "MOUNTED_ARCHERY", true],
-      ["BREACHER", 6, 10, 8, 2, 1, 1, 1, "METALLURGY", false],
+      ["KNIGHT", 9, 10, 6, 2, 3, 1, 1, "CHIVALRY", true],
       ["JUGGERNAUT", null, 40, 8, 8, 1, 1, 1, null, true],
       ["PATROL_BOAT", 5, 10, 4, 4, 3, 1, 1, "SHORECRAFT", true],
       ["BATTLESHIP", 16, 25, 12, 8, 2, 3, 1, "NAVAL_ENGINEERING", false],
@@ -104,8 +101,14 @@ describe("ruleset-7 technology", () => {
     expect(Object.isFrozen(ORIGINAL_ROLE_RULES_V7)).toBe(true);
   });
 
-  it("researches the entire graph for 148 coins without PRNG use", () => {
-    let state = richV7(initialV7(), 1_000);
+  it("researches the entire graph for 164 coins without PRNG use", () => {
+    let state = richV7(
+      checkedV7({
+        ...initialV7(),
+        setup: { ...initialV7().setup, mapType: "CONTINENTS" },
+      }),
+      1_000,
+    );
     const random = state.random;
     for (const tech of TECHNOLOGY_IDS_V7.slice(1)) {
       const result = applyCommandV7(state, state.humanPlayerId, {
@@ -119,13 +122,15 @@ describe("ruleset-7 technology", () => {
         playerId: state.humanPlayerId,
         tech,
       });
-      expect(result.events.slice(1).map((event) => event.kind)).toEqual([]);
+      expect(result.events.slice(1).map((event) => event.kind)).toEqual(
+        tech === "ROADS" ? ["SEA_NETWORK_CHANGED"] : [],
+      );
       expect(result.events.every((event) => parseEventV7(event).ok)).toBe(true);
       expect(result.state.random).toEqual(random);
       state = result.state;
     }
     expect(state.players[0]).toMatchObject({
-      coins: 852,
+      coins: 836,
       researchedTechs: TECHNOLOGY_IDS_V7,
     });
   });
@@ -152,11 +157,10 @@ describe("ruleset-7 technology", () => {
       ),
     ).toEqual([
       { kind: "RESEARCH", tech: "FARMING" },
-      { kind: "RESEARCH", tech: "MEDICINE" },
+      { kind: "RESEARCH", tech: "ADMINISTRATION" },
       { kind: "RESEARCH", tech: "HUNTING" },
       { kind: "RESEARCH", tech: "SCOUTING" },
-      { kind: "RESEARCH", tech: "PROSPECTING" },
-      { kind: "RESEARCH", tech: "SHORECRAFT" },
+      { kind: "RESEARCH", tech: "DRILL" },
     ]);
     const fullyKnown = checkedV7({
       ...state,
@@ -171,18 +175,28 @@ describe("ruleset-7 technology", () => {
       state.humanPlayerId,
     );
     expect(capabilities).toMatchObject({
-      treeId: "ORIGINAL_BASELINE_V4",
+      treeId: "ORIGINAL_BASELINE_V5",
       hostileCaptureSpoilsCoins: 2,
-      medicHealAmount: 6,
-      friendlyIdleRecoveryAmount: 6,
+      supplyRecoveryAmount: 6,
+      armsIndustryDiscountCoins: 1,
+      landTradeIncomeCoins: 1,
+      seaTradeIncomeCoins: 1,
       mountainMovement: true,
       ownedCityCapacityBonus: 1,
     });
-    expect(capabilities.ownedCityFortificationLevel).toBe(1);
     expect(
-      tree.nodes.find((node) => node.id === "ENGINEERING")?.effects,
+      tree.nodes.find((node) => node.id === "PLANNING")?.effects,
     ).toContainEqual({ kind: "OWNED_CITY_CAPACITY_BONUS", capacity: 1 });
-    expect(capabilities.trainableRoles).toHaveLength(12);
+    expect(
+      tree.nodes.find((node) => node.id === "RAIDING")?.effects,
+    ).toContainEqual({ kind: "CHARGE_BONUS", attack: 1, minimumMove: 2 });
+    expect(
+      tree.nodes.find((node) => node.id === "EXPLOSIVES")?.effects,
+    ).toContainEqual({ kind: "MELEE_FIELD_DEMOLITION" });
+    expect(
+      tree.nodes.find((node) => node.id === "NAVAL_ENGINEERING")?.effects,
+    ).toContainEqual({ kind: "NAVAL_TRAINING_DISCOUNT", coins: 2 });
+    expect(capabilities.trainableRoles).toHaveLength(9);
     expect(capabilities.commands).toEqual(
       expect.arrayContaining(["BUILD_MINE", "PILLAGE", "DISBAND"]),
     );

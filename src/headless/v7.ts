@@ -9,7 +9,7 @@ import {
 import type { PlayerId, UnitId } from "../engine/model/ids";
 import { canonicalHash, canonicalJson } from "../engine/replay/canonical";
 import {
-  ORIGINAL_BASELINE_V4_TREE,
+  ORIGINAL_BASELINE_V5_TREE,
   TECHNOLOGY_BRANCH_IDS_V7,
   effectiveRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
@@ -82,7 +82,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r8";
+  readonly rulesetId: "pulp-wars-poc-7r9";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -156,19 +156,21 @@ export interface HeadlessMetricsV7 {
     /** Integer survivors per 1,000 training Coins. */
     readonly survivorsPerThousandCoins: Record<UnitRoleIdV7, number>;
   };
-  readonly horseArcher: {
-    activations: number;
-    shots: number;
-    firstShots: number;
-    secondShots: number;
-    splitFireChoices: number;
+  readonly knightOverrun: {
+    chainsStarted: number;
+    attacks: number;
+    continuations: number;
+    advances: number;
+    completedChains: number;
+    longestChain: number;
     retaliations: number;
     survivals: number;
-    postFirstShotCommandInterleaving: number;
+    postAttackCommandInterleaving: number;
     attemptedMovementViolations: number;
     attemptedCaptureViolations: number;
-    advanceViolations: number;
-    readonly shotsPerActivation: Record<string, number>;
+    continuationWithoutAdvanceViolations: number;
+    chainAccountingViolations: number;
+    readonly attacksPerChain: Record<string, number>;
   };
   readonly catapult: {
     readonly shotRanges: Record<"2" | "3", number>;
@@ -631,7 +633,7 @@ export async function runAiBatchV7(
           await new Promise<void>((resolve) => setTimeout(resolve, 0));
           const result = runAiMatchInternalV7(
             {
-              rulesetId: "pulp-wars-poc-7r8",
+              rulesetId: "pulp-wars-poc-7r9",
               mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
               seed,
               width: size,
@@ -703,8 +705,8 @@ interface TelemetryStateV7 {
     string,
     { readonly improvement: ImprovementIdV7; readonly value: number }
   >;
-  readonly horseArcherFirstTargets: Map<UnitId, UnitId>;
-  readonly horseArcherInterleaved: Set<UnitId>;
+  readonly knightOverrunChains: Map<UnitId, { attacks: number }>;
+  readonly knightOverrunInterleaved: Set<UnitId>;
   readonly catapultShotTargets: Set<UnitId>;
   readonly healingSinceCatapultShot: Map<UnitId, number>;
   readonly catapultSetupUnits: Set<UnitId>;
@@ -714,8 +716,8 @@ interface TelemetryStateV7 {
 function createTelemetryState(state: GameStateV7): TelemetryStateV7 {
   return {
     contributionByTile: currentContributions(state),
-    horseArcherFirstTargets: new Map(),
-    horseArcherInterleaved: new Set(),
+    knightOverrunChains: new Map(),
+    knightOverrunInterleaved: new Set(),
     catapultShotTargets: new Set(),
     healingSinceCatapultShot: new Map(),
     catapultSetupUnits: new Set(),
@@ -728,7 +730,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r8",
+    rulesetId: "pulp-wars-poc-7r9",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,
@@ -799,19 +801,21 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
       survivors: zeroRecord(UNIT_ROLE_IDS_V7),
       survivorsPerThousandCoins: zeroRecord(UNIT_ROLE_IDS_V7),
     },
-    horseArcher: {
-      activations: 0,
-      shots: 0,
-      firstShots: 0,
-      secondShots: 0,
-      splitFireChoices: 0,
+    knightOverrun: {
+      chainsStarted: 0,
+      attacks: 0,
+      continuations: 0,
+      advances: 0,
+      completedChains: 0,
+      longestChain: 0,
       retaliations: 0,
       survivals: 0,
-      postFirstShotCommandInterleaving: 0,
+      postAttackCommandInterleaving: 0,
       attemptedMovementViolations: 0,
       attemptedCaptureViolations: 0,
-      advanceViolations: 0,
-      shotsPerActivation: {},
+      continuationWithoutAdvanceViolations: 0,
+      chainAccountingViolations: 0,
+      attacksPerChain: {},
     },
     catapult: {
       shotRanges: { "2": 0, "3": 0 },
@@ -850,17 +854,13 @@ function recordCommandAndEventsV7(
     "unitId" in command
       ? before.units.find((unit) => unit.id === command.unitId)
       : undefined;
-  for (const unitId of telemetry.horseArcherFirstTargets.keys())
+  for (const unitId of telemetry.knightOverrunChains.keys())
     if (
-      !telemetry.horseArcherInterleaved.has(unitId) &&
-      !(
-        command.kind === "ATTACK" &&
-        command.unitId === unitId &&
-        actorUnit?.activation.attacksUsed === 1
-      )
+      !telemetry.knightOverrunInterleaved.has(unitId) &&
+      !(command.kind === "ATTACK" && command.unitId === unitId)
     ) {
-      telemetry.horseArcherInterleaved.add(unitId);
-      metrics.horseArcher.postFirstShotCommandInterleaving += 1;
+      telemetry.knightOverrunInterleaved.add(unitId);
+      metrics.knightOverrun.postAttackCommandInterleaving += 1;
     }
   if (actorUnit !== undefined) metrics.roles.actions[actorUnit.role] += 1;
   recordCommandCost(before, actorId, command, metrics);
@@ -891,12 +891,12 @@ function recordCommandAndEventsV7(
     metrics.roles.captures[actorUnit.role] += 1;
   recordEventsV7(before, after, events, metrics, telemetry);
   if (command.kind === "END_TURN") {
-    for (const [unitId] of telemetry.horseArcherFirstTargets) {
+    for (const [unitId, chain] of telemetry.knightOverrunChains) {
       const unit = before.units.find((candidate) => candidate.id === unitId);
       if (unit?.ownerId !== actorId) continue;
-      increment(metrics.horseArcher.shotsPerActivation, "1");
-      telemetry.horseArcherFirstTargets.delete(unitId);
-      telemetry.horseArcherInterleaved.delete(unitId);
+      finishKnightOverrunChain(metrics, chain.attacks);
+      telemetry.knightOverrunChains.delete(unitId);
+      telemetry.knightOverrunInterleaved.delete(unitId);
     }
     metrics.catapult.setupTurns += [...telemetry.catapultSetupUnits].filter(
       (unitId) =>
@@ -925,11 +925,18 @@ function recordCommandCost(
   }
   if (command.kind === "RESEARCH")
     metrics.economy.coinsSpent += queryResearchCost(view, command.tech);
-  if (command.kind === "TRAIN") {
-    const cost = effectiveRoleRuleV7(command.role).cost ?? 0;
-    metrics.economy.coinsSpent += cost;
-    metrics.roles.trainingCoins[command.role] += cost;
-  }
+}
+
+function finishKnightOverrunChain(
+  metrics: HeadlessMetricsV7,
+  attacks: number,
+): void {
+  metrics.knightOverrun.completedChains += 1;
+  metrics.knightOverrun.longestChain = Math.max(
+    metrics.knightOverrun.longestChain,
+    attacks,
+  );
+  increment(metrics.knightOverrun.attacksPerChain, String(attacks));
 }
 
 function recordEventsV7(
@@ -1027,7 +1034,11 @@ function recordEventsV7(
       metrics.rewards[event.reward] += 1;
       metrics.economy.coinsEarned += event.coins;
     }
-    if (event.kind === "UNIT_TRAINED") metrics.roles.trained[event.role] += 1;
+    if (event.kind === "UNIT_TRAINED" || event.kind === "NAVAL_UNIT_TRAINED") {
+      metrics.roles.trained[event.role] += 1;
+      metrics.economy.coinsSpent += event.cost;
+      metrics.roles.trainingCoins[event.role] += event.cost;
+    }
     if (event.kind === "COMBAT_RESOLVED") {
       const preview = event.preview;
       const attacker = before.units.find(
@@ -1036,27 +1047,35 @@ function recordEventsV7(
       if (attacker !== undefined) {
         metrics.roles.damage[attacker.role] += preview.damageToDefender;
         if (preview.defenderDies) metrics.roles.kills[attacker.role] += 1;
-        if (attacker.role === "HORSE_ARCHER") {
-          metrics.horseArcher.shots += 1;
-          metrics.horseArcher.retaliations += Number(preview.retaliation);
-          metrics.horseArcher.survivals += Number(!preview.attackerDies);
-          metrics.horseArcher.advanceViolations += Number(preview.advances);
-          if (preview.attacksUsed === 1) {
-            metrics.horseArcher.activations += 1;
-            metrics.horseArcher.firstShots += 1;
-            telemetry.horseArcherFirstTargets.set(
-              attacker.id,
-              preview.targetUnitId,
-            );
-          } else {
-            metrics.horseArcher.secondShots += 1;
-            metrics.horseArcher.splitFireChoices += Number(
-              telemetry.horseArcherFirstTargets.get(attacker.id) !==
-                preview.targetUnitId,
-            );
-            increment(metrics.horseArcher.shotsPerActivation, "2");
-            telemetry.horseArcherFirstTargets.delete(attacker.id);
-            telemetry.horseArcherInterleaved.delete(attacker.id);
+        if (attacker.role === "KNIGHT") {
+          metrics.knightOverrun.attacks += 1;
+          metrics.knightOverrun.retaliations += Number(preview.retaliation);
+          metrics.knightOverrun.survivals += Number(!preview.attackerDies);
+          metrics.knightOverrun.advances += Number(preview.overrunAdvance);
+          metrics.knightOverrun.continuations += Number(
+            preview.overrunContinues,
+          );
+          metrics.knightOverrun.continuationWithoutAdvanceViolations += Number(
+            preview.overrunContinues && !preview.overrunAdvance,
+          );
+          let chain = telemetry.knightOverrunChains.get(attacker.id);
+          if (chain === undefined) {
+            metrics.knightOverrun.chainsStarted += 1;
+            chain = { attacks: 0 };
+            telemetry.knightOverrunChains.set(attacker.id, chain);
+          }
+          metrics.knightOverrun.chainAccountingViolations += Number(
+            preview.attacksUsed !== chain.attacks + 1,
+          );
+          chain.attacks += 1;
+          metrics.knightOverrun.longestChain = Math.max(
+            metrics.knightOverrun.longestChain,
+            chain.attacks,
+          );
+          if (!preview.overrunContinues || preview.attackerDies) {
+            finishKnightOverrunChain(metrics, chain.attacks);
+            telemetry.knightOverrunChains.delete(attacker.id);
+            telemetry.knightOverrunInterleaved.delete(attacker.id);
           }
         }
       }
@@ -1074,21 +1093,21 @@ function recordEventsV7(
       telemetry.catapultShotTargets.delete(event.unitId);
       telemetry.healingSinceCatapultShot.delete(event.unitId);
       telemetry.catapultSetupUnits.delete(event.unitId);
-      if (telemetry.horseArcherFirstTargets.has(event.unitId)) {
-        increment(metrics.horseArcher.shotsPerActivation, "1");
-        telemetry.horseArcherFirstTargets.delete(event.unitId);
-        telemetry.horseArcherInterleaved.delete(event.unitId);
+      const chain = telemetry.knightOverrunChains.get(event.unitId);
+      if (chain !== undefined) {
+        finishKnightOverrunChain(metrics, chain.attacks);
+        telemetry.knightOverrunChains.delete(event.unitId);
+        telemetry.knightOverrunInterleaved.delete(event.unitId);
       }
     }
-    if (
-      event.kind === "UNIT_HEALED" &&
-      telemetry.catapultShotTargets.has(event.targetUnitId)
-    )
-      telemetry.healingSinceCatapultShot.set(
-        event.targetUnitId,
-        (telemetry.healingSinceCatapultShot.get(event.targetUnitId) ?? 0) +
-          event.amount,
-      );
+    if (event.kind === "WOUNDED_TENDED")
+      for (const result of event.results)
+        if (telemetry.catapultShotTargets.has(result.unitId))
+          telemetry.healingSinceCatapultShot.set(
+            result.unitId,
+            (telemetry.healingSinceCatapultShot.get(result.unitId) ?? 0) +
+              result.amount,
+          );
     if (
       event.kind === "UNIT_RECOVERED" &&
       telemetry.catapultShotTargets.has(event.unitId)
@@ -1277,12 +1296,12 @@ function auditRelationshipCommandV7(
       : undefined;
   if (
     command.kind === "MOVE" &&
-    actorUnit?.role === "HORSE_ARCHER" &&
+    actorUnit?.role === "KNIGHT" &&
     actorUnit.activation.attacksUsed > 0
   )
-    metrics.horseArcher.attemptedMovementViolations += 1;
-  if (command.kind === "CAPTURE" && actorUnit?.role === "HORSE_ARCHER")
-    metrics.horseArcher.attemptedCaptureViolations += 1;
+    metrics.knightOverrun.attemptedMovementViolations += 1;
+  if (command.kind === "CAPTURE" && actorUnit?.role === "KNIGHT")
+    metrics.knightOverrun.attemptedCaptureViolations += 1;
   if (
     command.kind === "ATTACK" &&
     arePlayersAlliedV7(
@@ -1336,7 +1355,7 @@ function cityIsBesieged(state: GameStateV7, cityId: number): boolean {
 
 function technologyBranch(tech: TechnologyIdV7): string {
   return (
-    ORIGINAL_BASELINE_V4_TREE.nodes.find((node) => node.id === tech)?.branch ??
+    ORIGINAL_BASELINE_V5_TREE.nodes.find((node) => node.id === tech)?.branch ??
     "SETTLEMENT"
   );
 }
@@ -1345,7 +1364,7 @@ function queryResearchCost(view: PlayerViewV7, tech: TechnologyIdV7): number {
   const cities = view.cities.filter(
     (city) => city.ownerId === view.viewer.id,
   ).length;
-  const tier = ORIGINAL_BASELINE_V4_TREE.nodes.find(
+  const tier = ORIGINAL_BASELINE_V5_TREE.nodes.find(
     (node) => node.id === tech,
   )?.tier;
   if (tier === undefined) throw new RangeError("Unknown technology");

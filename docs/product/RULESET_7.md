@@ -1,15 +1,16 @@
 # Pulp Wars Ruleset 7
 
-**Status:** revision-8 playable runtime. The
-[revision-8 merged industry and shared adjacency specification](RULESET_7_REVISION_8_INDUSTRY_ADJACENCY.md)
-is the authoritative current overlay. It inherits unchanged rules from the
+**Status:** revision-9 playable runtime. The
+[revision-9 Human technology specification](RULESET_7_REVISION_9_HUMAN_TECHNOLOGY.md)
+is the authoritative current overlay. It inherits retained industry rules from
+[revision 8](RULESET_7_REVISION_8_INDUSTRY_ADJACENCY.md) and unchanged rules from the
 [revision-7 networks and fortifications specification](RULESET_7_REVISION_7_NETWORKS_FORTIFICATIONS.md),
 which inherits the revision-6 water and naval specification.
 
-**Runtime ruleset ID:** `pulp-wars-poc-7r8`
+**Runtime ruleset ID:** `pulp-wars-poc-7r9`
 
 The revision-5 achievement specification remains authoritative for achievement
-and Monument rules left unchanged by revision 8. The revision-4 biome economy
+and Monument rules left unchanged by revision 9. The revision-4 biome economy
 specification remains the inherited land baseline. Ruleset 6 is unchanged.
 
 **Design history:**
@@ -21,7 +22,8 @@ and [Ruleset 7 design review](RULESET_7_DESIGN_REVIEW.md)
 **Related contracts:** [client architecture](../architecture/CLIENT_ARCHITECTURE.md),
 [headless simulation](../architecture/HEADLESS_SIMULATION.md),
 [Normal AI](../architecture/NORMAL_AI.md),
-[screen flow](../ui/SCREEN_FLOW.md), and
+[screen flow](../ui/SCREEN_FLOW.md),
+[revision-9 runtime review](../validation/RULESET_7_REVISION_9_REVIEW.md), and
 [art direction](../art/ART_DIRECTION.md)
 
 Ruleset 7 revision 3 was the Original-faction rapid-prototype baseline.
@@ -42,7 +44,7 @@ Candy.
 ### 1.1 Revision-3 historical version identifiers
 
 Revision-3 data used these identifiers. Current runtime data uses the
-revision-4 identities in the authoritative overlay.
+revision-9 identities in the authoritative overlay.
 
 | Boundary              | Exact value                    |
 | --------------------- | ------------------------------ |
@@ -1874,14 +1876,12 @@ research-chain, and siege assumptions must be recalibrated for revision 3's
 actual outputs and opportunity costs rather than copied from v6 or older v7
 development contract. V7 adds these deterministic requirements:
 
-- Horse Archer planning scores both guaranteed shots from the stationary
-  post-Move firing coordinate. It evaluates exact preview damage, retaliation,
-  target cost, survival, and the opportunity to split shots across two targets;
-  it never assumes a kill. After the first shot, candidate reconstruction may
-  choose another unit or End Turn, but must preserve the Horse Archer's legal
-  second Attack for later consideration. Threat scoring includes Move 3 plus
-  range 2, ordinary ZOC termination, no advance, no Capture, and no movement
-  after firing; it adds no role-ID anti-Horse-Archer score.
+- Knight planning uses public combat previews and a bounded two-Attack
+  lookahead to value advance and visible follow-up targets. Candidate
+  reconstruction may choose another unit before resuming the same unbounded
+  Overrun chain. It consumes Inspired on the first accepted Attack, never
+  assumes a kill or hidden follow-up target, and continues any legal chain
+  until no visible target remains or the turn ends.
 - Reward choice compares the actual 12-Coin Treasury alternative with
   Juggernaut's 40 HP, one-slot concentration, Push, placement, and current
   army/economic need; 12 is not a hidden Juggernaut training cost.
@@ -2005,11 +2005,11 @@ restrictions. The dialog has no Train action, Coin mutation, or command
 dispatch. Escape and Close return focus to the originating help control.
 
 Move and Attack remain highlighted on the map and are never duplicated as
-destination/target buttons. After a Horse Archer's first shot, its legal second
-targets remain ordinary Attack highlights whenever that unit is selected. The
-dock shows two read-only shot indicators (used and remaining) and creates no
-sequence dialog, end-sequence button, home-city choice, administrative submenu,
-or global command lock.
+destination/target buttons. During a Knight's active Overrun chain, its legal
+visible targets remain ordinary Attack highlights whenever that unit is
+selected. The dock shows a compact Overrun cue and creates no sequence dialog,
+end-sequence button, home-city choice, administrative submenu, or global
+command lock.
 
 Blackout highlights eligible adjacent cities only when more than one exists;
 with exactly one, **Blackout** dispatches immediately. No command preview opens
@@ -2286,10 +2286,11 @@ Revision-3 prototype evidence must prove:
 - all level facts before sequential no-placement automatic-grant/first-queue
   facts, no ghost queue for automatic Treasury, atomic preflight only through
   the next modal boundary, and each later reward choice as its own transaction;
-- Horse Archer's two guaranteed total attacks across nonlethal/lethal results,
-  retaliation death, target changes, acting with another unit, Wait, End Turn,
-  promotion, save/resume, and replay; no movement after the first shot, Capture,
-  advance, ZOC immunity, reset, special command/event/phase, or global lock;
+- Knight's unbounded Overrun chain across lethal results, advance and newly
+  visible legal targets, retaliation death, target changes, another unit acting,
+  active-Knight locks, End Turn, save/resume, and replay; Inspired applies only
+  to the first accepted Attack in the chain and no hidden target leaks through
+  public previews or AI;
 - Concealment observation equivalence across view, paths/ZOC, guessed IDs,
   Push/displacement, commands, previews, stats, selections, AI tuples, canonical-
   to-player event projection, animations/logs, reconnect, leaderboard, safe log,

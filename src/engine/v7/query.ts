@@ -1,7 +1,7 @@
 import type { CityId, PlayerId, UnitId } from "../model/ids";
 import {
   BASIC_ECONOMIC_ACTIONS_V7,
-  ORIGINAL_BASELINE_V4_TREE,
+  ORIGINAL_BASELINE_V5_TREE,
   SPATIAL_ECONOMIC_ACTIONS_V7,
   TECHNOLOGY_BRANCH_IDS_V7,
   effectiveRoleRuleV7,
@@ -48,7 +48,8 @@ import {
 import { publicUnitStatsV7, type PublicUnitStatsV7 } from "./unit-stats";
 import { viewForV7, type PlayerTileViewV7, type PlayerViewV7 } from "./view";
 
-export type PublicTechnologyStateV7 = "OWNED" | "AVAILABLE" | "BLOCKED";
+export type PublicTechnologyStateV7 =
+  "OWNED" | "AVAILABLE" | "BLOCKED" | "DISABLED";
 export interface PublicTechnologyNodeV7 {
   readonly id: TechnologyIdV7;
   readonly branch: TechnologyBranchIdV7;
@@ -62,7 +63,7 @@ export interface PublicTechnologyNodeV7 {
   readonly unlockedRoleRules: readonly EffectiveRoleRuleV7[];
 }
 export interface PublicTechnologyTreeV7 {
-  readonly id: "ORIGINAL_BASELINE_V4";
+  readonly id: "ORIGINAL_BASELINE_V5";
   readonly faction: "ORIGINAL";
   readonly ownedCityCount: number;
   readonly branches: typeof TECHNOLOGY_BRANCH_IDS_V7;
@@ -82,19 +83,24 @@ export function queryTechnologyTreeV7(
   if (ownedCityCount < 1) throw new RangeError("Technology requires a city");
   const owned = new Set(player.researchedTechs);
   return {
-    id: "ORIGINAL_BASELINE_V4",
+    id: "ORIGINAL_BASELINE_V5",
     faction: "ORIGINAL",
     ownedCityCount,
     branches: TECHNOLOGY_BRANCH_IDS_V7,
-    nodes: ORIGINAL_BASELINE_V4_TREE.nodes.map((node) => {
+    nodes: ORIGINAL_BASELINE_V5_TREE.nodes.map((node) => {
       const missingPrerequisites = node.prerequisites.filter(
         (tech) => !owned.has(tech),
       );
-      const nodeState: PublicTechnologyStateV7 = owned.has(node.id)
-        ? "OWNED"
-        : missingPrerequisites.length === 0
-          ? "AVAILABLE"
-          : "BLOCKED";
+      const nodeState: PublicTechnologyStateV7 =
+        view.setup.mapType === "DRY_LAND" &&
+        node.branch === "NAVAL" &&
+        !owned.has(node.id)
+          ? "DISABLED"
+          : owned.has(node.id)
+            ? "OWNED"
+            : missingPrerequisites.length === 0
+              ? "AVAILABLE"
+              : "BLOCKED";
       const cost = technologyResearchCostV7(node.tier, ownedCityCount);
       return {
         id: node.id,
@@ -109,7 +115,7 @@ export function queryTechnologyTreeV7(
         unlockedRoleRules: node.unlockedRoles.map(effectiveRoleRuleV7),
       };
     }),
-    roleBindings: ORIGINAL_BASELINE_V4_TREE.roleRules,
+    roleBindings: ORIGINAL_BASELINE_V5_TREE.roleRules,
   };
 }
 
@@ -133,8 +139,11 @@ const TILE_KINDS = [
   ...SPATIAL_KINDS,
   "GATHER_PEARLS",
   "BUILD_PORT",
+  "BUILD_SHIPYARD",
   "CLEAR_FOREST",
   "REPLANT_FOREST",
+  "CULTIVATE_FOREST",
+  "BLAST_MOUNTAIN",
   "BUILD_ROAD",
   "REDEVELOP",
 ] as const;
@@ -290,7 +299,7 @@ function appendPublicTileCommandsV7(
     !view.pendingChoices.some((choice) => choice.cityId === monumentCity.id) &&
     tile.biome !== null &&
     (tile.terrain !== "MOUNTAIN" ||
-      view.viewer.researchedTechs.includes("PROSPECTING")) &&
+      view.viewer.researchedTechs.includes("ENGINEERING")) &&
     !view.treasureChests.some((chest) => same(chest, tile.at)) &&
     tile.site === null &&
     tile.resource === null &&
@@ -315,11 +324,35 @@ function appendPublicCityCommandsV7(
   if (city.ownerId !== player.id || publicCityBesieged(view, city.at)) return;
   const centerOccupied = view.units.some((unit) => same(unit.at, city.at));
   const capacity =
-    city.level + 1 + (player.researchedTechs.includes("ENGINEERING") ? 1 : 0);
+    city.level + 1 + (player.researchedTechs.includes("PLANNING") ? 1 : 0);
   const assigned = view.units.filter(
     (unit) => unit.ownerId === player.id && unit.homeCityId === city.id,
   ).length;
+  if (
+    player.researchedTechs.includes("PLANNING") &&
+    city.level >= 3 &&
+    !city.landGrantUsed &&
+    player.coins >= 6 &&
+    !view.pendingChoices.some((choice) => choice.cityId === city.id) &&
+    view.board.tiles.some(
+      (tile) =>
+        Math.abs(tile.at.x - city.at.x) <= 2 &&
+        Math.abs(tile.at.y - city.at.y) <= 2 &&
+        tile.explored &&
+        tile.territoryCityId === null,
+    )
+  )
+    candidates.push({ kind: "LAND_GRANT", cityId: city.id });
   if (assigned >= capacity) return;
+  const forgeDiscount = view.improvementValues.some(
+    (value) =>
+      value.improvement === "FORGE" &&
+      value.level > 0 &&
+      (() => {
+        const tile = tileAtView(view, value.at);
+        return tile?.explored === true && tile.territoryCityId === city.id;
+      })(),
+  );
   for (const role of UNIT_ROLE_IDS_V7) {
     const rule = effectiveRoleRuleV7(role);
     if (
@@ -327,7 +360,7 @@ function appendPublicCityCommandsV7(
       role !== "PATROL_BOAT" &&
       role !== "BATTLESHIP" &&
       rule.cost !== null &&
-      rule.cost <= player.coins &&
+      rule.cost - (forgeDiscount ? 1 : 0) <= player.coins &&
       (rule.technology === null ||
         player.researchedTechs.includes(rule.technology))
     )
@@ -337,7 +370,6 @@ function appendPublicCityCommandsV7(
     const rule = effectiveRoleRuleV7(role);
     if (
       rule.cost !== null &&
-      rule.cost <= player.coins &&
       (rule.technology === null ||
         player.researchedTechs.includes(rule.technology))
     )
@@ -346,7 +378,8 @@ function appendPublicCityCommandsV7(
           publicActiveOwnedPort(view, port, player.id) &&
           port.explored &&
           port.territoryCityId === city.id &&
-          !view.units.some((unit) => same(unit.at, port.at))
+          !view.units.some((unit) => same(unit.at, port.at)) &&
+          rule.cost - (port.improvement === "SHIPYARD" ? 2 : 0) <= player.coins
         )
           candidates.push({
             kind: "TRAIN_NAVAL",
@@ -364,14 +397,15 @@ function appendPublicUnitCommandsV7(
 ): void {
   const player = view.viewer;
   if (unit.ownerId !== player.id) return;
-  if (unit.form === "EMBARKED" && !unit.activation.handled)
+  const overrun = unit.activation.overrunActive;
+  if (!overrun && unit.form === "EMBARKED" && !unit.activation.handled)
     for (const tile of adjacentPublicTiles(view, unit.at))
       if (
         tile.explored &&
         tile.biome !== null &&
         !(
           tile.terrain === "MOUNTAIN" &&
-          !player.researchedTechs.includes("PROSPECTING")
+          !player.researchedTechs.includes("ENGINEERING")
         ) &&
         (tile.territoryOwnerId === null ||
           tile.territoryOwnerId === player.id ||
@@ -379,7 +413,7 @@ function appendPublicUnitCommandsV7(
         !view.units.some((candidate) => same(candidate.at, tile.at))
       )
         candidates.push({ kind: "DISEMBARK", unitId: unit.id, at: tile.at });
-  if (!unit.activation.moved && !primaryUsedForQuery(unit))
+  if (!overrun && !unit.activation.moved && !primaryUsedForQuery(unit))
     for (const reachable of reachablePlayerMovementPathsV7(view, unit))
       candidates.push({ kind: "MOVE", unitId: unit.id, path: reachable.path });
   const rule = effectiveRoleRuleV7(unit.role);
@@ -387,13 +421,7 @@ function appendPublicUnitCommandsV7(
     !primaryUsedForQuery(unit) &&
     (!unit.activation.moved || rule.mayUsePrimaryActionAfterMove);
   const attackReady =
-    (unit.form !== "EMBARKED" && primaryReady) ||
-    (unit.role === "HORSE_ARCHER" &&
-      unit.activation.attacksUsed === 1 &&
-      !unit.activation.healed &&
-      !unit.activation.recovered &&
-      !unit.activation.captured &&
-      !unit.activation.specialActed);
+    unit.form !== "EMBARKED" && (primaryReady || unit.activation.overrunActive);
   for (const target of view.units) {
     const distance = chebyshev(unit.at, target.at);
     if (
@@ -408,22 +436,43 @@ function appendPublicUnitCommandsV7(
         unitId: unit.id,
         targetUnitId: target.id,
       });
-    if (
-      primaryReady &&
-      unit.form === "LAND" &&
-      rule.abilities.includes("HEAL_ADJACENT") &&
-      target.ownerId === player.id &&
-      target.form === "LAND" &&
-      target.id !== unit.id &&
-      target.hp < target.maxHp &&
-      distance === 1
-    )
-      candidates.push({
-        kind: "HEAL_ADJACENT",
-        unitId: unit.id,
-        targetUnitId: target.id,
-      });
   }
+  if (
+    !overrun &&
+    primaryReady &&
+    unit.form === "LAND" &&
+    rule.abilities.includes("RALLY") &&
+    view.units.some((target) => {
+      const targetRole = effectiveRoleRuleV7(target.role).tacticalRole;
+      return (
+        target.ownerId === player.id &&
+        target.form === "LAND" &&
+        target.id !== unit.id &&
+        !target.activation.inspired &&
+        targetRole !== "SUPPORT" &&
+        targetRole !== "SIEGE" &&
+        chebyshev(unit.at, target.at) === 1
+      );
+    })
+  )
+    candidates.push({ kind: "RALLY", unitId: unit.id });
+  if (
+    !overrun &&
+    primaryReady &&
+    unit.form === "LAND" &&
+    rule.abilities.includes("TEND_WOUNDED") &&
+    view.units.some(
+      (target) =>
+        target.ownerId === player.id &&
+        target.form === "LAND" &&
+        target.id !== unit.id &&
+        target.hp < target.maxHp &&
+        !target.activation.tendedThisTurn &&
+        chebyshev(unit.at, target.at) === 1,
+    )
+  )
+    candidates.push({ kind: "TEND_WOUNDED", unitId: unit.id });
+  if (overrun) return;
   if (
     !unit.activation.moved &&
     !primaryUsedForQuery(unit) &&
@@ -447,9 +496,11 @@ function appendPublicUnitCommandsV7(
     candidates.push({ kind: "PROMOTE", unitId: unit.id });
   const tile = tileAtView(view, unit.at);
   if (
-    player.researchedTechs.includes("METALLURGY") &&
+    ((unit.role === "RAIDER" && player.researchedTechs.includes("RAIDING")) ||
+      player.researchedTechs.includes("EXPLOSIVES")) &&
     unit.form === "LAND" &&
-    primaryReady &&
+    unit.role !== "JUGGERNAUT" &&
+    !primaryUsedForQuery(unit) &&
     tile?.explored === true &&
     tile.improvement !== null &&
     tile.territoryOwnerId !== null &&
@@ -457,8 +508,8 @@ function appendPublicUnitCommandsV7(
   )
     candidates.push({ kind: "PILLAGE", unitId: unit.id });
   if (
-    player.researchedTechs.includes("RECOVERY") &&
-    primaryReady &&
+    player.researchedTechs.includes("ADMINISTRATION") &&
+    !primaryUsedForQuery(unit) &&
     unit.form === "LAND" &&
     unit.role !== "JUGGERNAUT"
   )
@@ -467,7 +518,7 @@ function appendPublicUnitCommandsV7(
     primaryReady &&
     unit.form === "LAND" &&
     (unit.role === "FIGHTER" || unit.role === "GUARD") &&
-    player.researchedTechs.includes("ENGINEERING") &&
+    player.researchedTechs.includes("FORTIFICATION") &&
     tile?.explored === true &&
     tile.biome !== null &&
     tile.territoryOwnerId === player.id &&
@@ -486,7 +537,7 @@ function publicActiveOwnedPort(
 ): boolean {
   return (
     tile.explored &&
-    tile.improvement === "PORT" &&
+    (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
     tile.territoryOwnerId === ownerId &&
     !view.units.some(
       (unit) =>
@@ -631,7 +682,7 @@ function publicRewardPlacementStatus(
       tile.territoryCityId === cityId &&
       tile.biome !== null &&
       (tile.terrain !== "MOUNTAIN" ||
-        view.viewer.researchedTechs.includes("PROSPECTING")),
+        view.viewer.researchedTechs.includes("ENGINEERING")),
   );
   let hasConcealableCell = false;
   for (const tile of candidates) {
@@ -646,7 +697,7 @@ function publicRewardPlacementStatus(
         (unit) =>
           unit.ownerId === view.viewer.id &&
           chebyshev(unit.at, tile.at) <=
-            (unit.form === "LAND" && unit.role === "SCOUT" ? 2 : 1),
+            (unit.form === "LAND" && unit.role === "RAIDER" ? 2 : 1),
       );
     if (detected) return "AVAILABLE";
     hasConcealableCell = true;
@@ -866,7 +917,6 @@ export function queryThreatenedTilesV7(
 function primaryUsedForQuery(unit: Pick<UnitStateV7, "activation">): boolean {
   return (
     unit.activation.attacked ||
-    unit.activation.healed ||
     unit.activation.recovered ||
     unit.activation.captured ||
     unit.activation.specialActed
@@ -978,7 +1028,9 @@ function calculatePublicEconomicPreviewV7(
   const improvement =
     command.kind === "BUILD_PORT"
       ? ("PORT" as const)
-      : (basic?.improvement ?? spatial?.improvement ?? null);
+      : command.kind === "BUILD_SHIPYARD"
+        ? ("SHIPYARD" as const)
+        : (basic?.improvement ?? spatial?.improvement ?? null);
   const cost =
     basic?.cost ??
     spatial?.cost ??
@@ -986,15 +1038,21 @@ function calculatePublicEconomicPreviewV7(
       ? 2
       : command.kind === "BUILD_PORT"
         ? 4
-        : command.kind === "BUILD_ROAD"
-          ? 2
-          : command.kind === "REPLANT_FOREST"
-            ? 4
-            : 0);
+        : command.kind === "BUILD_SHIPYARD"
+          ? 5
+          : command.kind === "BUILD_ROAD"
+            ? 2
+            : command.kind === "REPLANT_FOREST"
+              ? 4
+              : command.kind === "CULTIVATE_FOREST"
+                ? 4
+                : command.kind === "BLAST_MOUNTAIN"
+                  ? 3
+                  : 0);
   const afterGraph = graphAfterTileCommandV7(view, beforeGraph, command, tile);
   if (afterGraph === null) return { ok: false, error: "NOT_OFFERED" };
   const evaluation =
-    improvement !== null && improvement !== "PORT"
+    improvement !== null && improvement !== "PORT" && improvement !== "SHIPYARD"
       ? spatialContributionAtV7(afterGraph, command.at, improvement)
       : null;
   try {
@@ -1025,13 +1083,31 @@ function calculatePublicEconomicPreviewV7(
             view,
             growth.city,
             marketForCityV7(afterGraph, candidate.id),
-            publicGraphNavalConnectivityV7(afterGraph).trade.has(candidate.id),
+            Number(
+              publicGraphNavalConnectivityV7(afterGraph).landTrade.has(
+                candidate.id,
+              ),
+            ) +
+              Number(
+                publicGraphNavalConnectivityV7(afterGraph).seaTrade.has(
+                  candidate.id,
+                ),
+              ),
           ) -
           publicCityIncomeV7(
             view,
             candidate,
             marketForCityV7(beforeGraph, candidate.id),
-            publicGraphNavalConnectivityV7(beforeGraph).trade.has(candidate.id),
+            Number(
+              publicGraphNavalConnectivityV7(beforeGraph).landTrade.has(
+                candidate.id,
+              ),
+            ) +
+              Number(
+                publicGraphNavalConnectivityV7(beforeGraph).seaTrade.has(
+                  candidate.id,
+                ),
+              ),
           )
         : exactIncomeDeltaWithUnchangedMarketV7(view, candidate, growth.city);
       if (incomeDelta === null) throw new RangeError("PUBLIC_GRAPH_AMBIGUOUS");
@@ -1176,6 +1252,7 @@ function economicCommandCanAddPopulation(kind: CommandV7["kind"]): boolean {
     kind === "BUILD_LUMBER_CAMP" ||
     kind === "BUILD_MINE" ||
     kind === "BUILD_PORT" ||
+    kind === "BUILD_SHIPYARD" ||
     kind === "BUILD_ROAD" ||
     (kind in SPATIAL_ECONOMIC_ACTIONS_V7 && kind !== "BUILD_MARKET")
   );
@@ -1206,8 +1283,12 @@ function economicCommandChangesLiveGraphV7(kind: CommandV7["kind"]): boolean {
     kind === "BUILD_FARM" ||
     kind === "BUILD_LUMBER_CAMP" ||
     kind === "BUILD_MINE" ||
+    kind === "BUILD_PORT" ||
+    kind === "BUILD_SHIPYARD" ||
     kind === "BUILD_ROAD" ||
     kind === "REDEVELOP" ||
+    kind === "CULTIVATE_FOREST" ||
+    kind === "BLAST_MOUNTAIN" ||
     kind in SPATIAL_ECONOMIC_ACTIONS_V7
   );
 }
@@ -1262,7 +1343,8 @@ const PUBLIC_GRAPH_NAVAL_CONNECTIVITY = new WeakMap<
   PublicEconomyGraphV7,
   {
     readonly network: ReadonlySet<CityId>;
-    readonly trade: ReadonlySet<CityId>;
+    readonly landTrade: ReadonlySet<CityId>;
+    readonly seaTrade: ReadonlySet<CityId>;
     readonly roadKeys: ReadonlySet<string>;
   }
 >();
@@ -1349,8 +1431,9 @@ function graphAfterTileCommandV7(
     return replacePublicGraphTileV7(graph, command.at, {
       resource: projectedResourceAfterMutationV7(view, tile.terrain, null),
       improvement:
-        command.kind === "HARVEST_FISH" && tile.improvement === "PORT"
-          ? "PORT"
+        command.kind === "HARVEST_FISH" &&
+        (tile.improvement === "PORT" || tile.improvement === "SHIPYARD")
+          ? tile.improvement
           : basic.improvement,
     });
   if (command.kind === "GATHER_PEARLS")
@@ -1372,6 +1455,10 @@ function graphAfterTileCommandV7(
         : new Set([...graph.activePortKeys, coordKeyV7(command.at)]),
     };
   }
+  if (command.kind === "BUILD_SHIPYARD")
+    return replacePublicGraphTileV7(graph, command.at, {
+      improvement: "SHIPYARD",
+    });
   if (spatial !== undefined)
     return replacePublicGraphTileV7(graph, command.at, {
       improvement: spatial.improvement,
@@ -1386,17 +1473,28 @@ function graphAfterTileCommandV7(
       terrain: "FOREST",
       resource: projectedResourceAfterMutationV7(view, "FOREST", null),
     });
+  if (command.kind === "CULTIVATE_FOREST")
+    return replacePublicGraphTileV7(graph, command.at, {
+      terrain: "GRASS",
+      resource: "FERTILE_GROUND",
+    });
+  if (command.kind === "BLAST_MOUNTAIN")
+    return replacePublicGraphTileV7(graph, command.at, {
+      terrain: "GRASS",
+      resource: null,
+    });
   if (command.kind === "BUILD_ROAD")
     return replacePublicGraphTileV7(graph, command.at, { road: true });
   if (command.kind === "REDEVELOP") {
     const next = replacePublicGraphTileV7(graph, command.at, {
       improvement: null,
       resource:
-        tile.improvement === "PORT"
+        tile.improvement === "PORT" || tile.improvement === "SHIPYARD"
           ? tile.resource
           : publicRestoredResourceV7(view, tile.terrain, tile.improvement),
     });
-    if (tile.improvement !== "PORT") return next;
+    if (tile.improvement !== "PORT" && tile.improvement !== "SHIPYARD")
+      return next;
     const activePortKeys = new Set(graph.activePortKeys);
     activePortKeys.delete(coordKeyV7(command.at));
     return { ...next, activePortKeys };
@@ -1417,30 +1515,23 @@ function liveTotalForCityV7(
       if (improvement === null) return total;
       const value =
         total +
-        (improvement === "PORT"
+        (improvement === "PORT" || improvement === "SHIPYARD"
           ? graph.activePortKeys.has(coordKeyV7(tile.at))
-            ? 1
+            ? improvement === "SHIPYARD"
+              ? 2
+              : 1
             : 0
           : spatialContributionAtV7(graph, tile.at, improvement).population);
       if (!Number.isSafeInteger(value))
         throw new RangeError("INTEGER_OVERFLOW");
       return value;
     }, 0);
-  const network = publicGraphNavalConnectivityV7(graph).network;
-  const networkPopulation = !graph.researchedTechs.includes("ROADS")
-    ? 0
-    : cityId === graph.originalCapitalCityId
-      ? Math.max(0, network.size - 1)
-      : network.has(cityId)
-        ? 1
-        : 0;
-  const total = improvementPopulation + networkPopulation;
+  const total = improvementPopulation;
   if (!Number.isSafeInteger(total)) throw new RangeError("INTEGER_OVERFLOW");
   return total;
 }
 
 function marketForCityV7(graph: PublicEconomyGraphV7, cityId: CityId): number {
-  const connectedRoads = publicGraphNavalConnectivityV7(graph).roadKeys;
   return graph.board.tiles
     .filter(
       (tile) =>
@@ -1448,12 +1539,7 @@ function marketForCityV7(graph: PublicEconomyGraphV7, cityId: CityId): number {
     )
     .reduce((total, tile) => {
       const evaluation = spatialContributionAtV7(graph, tile.at, "MARKET");
-      const seaRoadBonus = publicGraphNeighborCoordsV7(graph, tile.at).some(
-        (at) => connectedRoads.has(coordKeyV7(at)),
-      )
-        ? 1
-        : 0;
-      const value = total + Math.min(4, evaluation.marketIncome + seaRoadBonus);
+      const value = total + Math.min(4, evaluation.marketIncome);
       if (!Number.isSafeInteger(value))
         throw new RangeError("INTEGER_OVERFLOW");
       return value;
@@ -1462,7 +1548,8 @@ function marketForCityV7(graph: PublicEconomyGraphV7, cityId: CityId): number {
 
 function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
   readonly network: ReadonlySet<CityId>;
-  readonly trade: ReadonlySet<CityId>;
+  readonly landTrade: ReadonlySet<CityId>;
+  readonly seaTrade: ReadonlySet<CityId>;
   readonly roadKeys: ReadonlySet<string>;
 } {
   const cached = PUBLIC_GRAPH_NAVAL_CONNECTIVITY.get(graph);
@@ -1483,10 +1570,10 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
       )
       .map((tile) => coordKeyV7(tile.at)),
   );
-  const ports = graph.researchedTechs.includes("SHORECRAFT")
+  const ports = graph.researchedTechs.includes("NAVIGATION")
     ? graph.board.tiles.filter(
         (tile) =>
-          tile.improvement === "PORT" &&
+          (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
           tile.territoryCityId !== null &&
           ownedIds.has(tile.territoryCityId) &&
           graph.activePortKeys.has(coordKeyV7(tile.at)) &&
@@ -1521,7 +1608,6 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
       const destinationCityId = destination?.territoryCityId ?? null;
       if (destinationCityId !== null && destinationCityId !== fromCityId) {
         connect(seaEdges, fromCityId, destinationCityId);
-        connect(edges, fromCityId, destinationCityId);
       }
       if (currentDistance >= 5) continue;
       for (const near of publicGraphNeighborCoordsV7(graph, current)) {
@@ -1576,17 +1662,22 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
         queue.push(next);
       }
   }
-  const trade = new Set(
-    [...network].filter(
-      (cityId) =>
-        !roots.includes(cityId) && (seaEdges.get(cityId)?.size ?? 0) > 0,
-    ),
+  const landTrade = graph.researchedTechs.includes("COMMERCE")
+    ? new Set([...network].filter((cityId) => !roots.includes(cityId)))
+    : new Set<CityId>();
+  const seaTrade = new Set(
+    ownedCities
+      .map((city) => city.id)
+      .filter(
+        (cityId) =>
+          !roots.includes(cityId) && (seaEdges.get(cityId)?.size ?? 0) > 0,
+      ),
   );
   const roadKeys = new Set<string>();
   for (const component of roadComponents)
     if (component.cityIds.some((cityId) => network.has(cityId)))
       for (const at of component.keys) roadKeys.add(at);
-  const result = { network, trade, roadKeys };
+  const result = { network, landTrade, seaTrade, roadKeys };
   PUBLIC_GRAPH_NAVAL_CONNECTIVITY.set(graph, result);
   return result;
 }
@@ -1686,14 +1777,15 @@ function publicCityIncomeV7(
   view: PlayerViewV7,
   city: PlayerViewV7["cities"][number],
   market: number,
-  trade = view.naval.tradeCityIds.includes(city.id),
+  tradeBonuses = Number(view.naval.landTradeCityIds.includes(city.id)) +
+    Number(view.naval.seaTradeCityIds.includes(city.id)),
 ): number {
   if (publicCityBesieged(view, city.at)) return 0;
   const result = Math.max(
     1,
     city.level +
       (city.isCapital ? 1 : 0) +
-      (trade ? 1 : 0) +
+      tradeBonuses +
       market +
       Math.min(0, city.population),
   );
@@ -1764,7 +1856,7 @@ function projectedResourceAfterMutationV7(
   if (terrain === null) return null;
   if (
     resource === "ORE" &&
-    !view.viewer.researchedTechs.includes("PROSPECTING")
+    !view.viewer.researchedTechs.includes("ENGINEERING")
   )
     return null;
   if (terrain === "FOREST") return resource;
@@ -2021,30 +2113,7 @@ function graphAfterPublicCandidateV7(
     if (city === undefined) return null;
     const resolvedPendingCityIds = new Set(graph.resolvedPendingCityIds);
     resolvedPendingCityIds.add(city.id);
-    if (candidate.reward !== "EXPAND")
-      return { ...graph, resolvedPendingCityIds };
-    return {
-      ...graph,
-      cities: graph.cities.map((value) =>
-        value.id === city.id ? { ...value, expanded: true } : value,
-      ),
-      resolvedPendingCityIds,
-      board: {
-        ...graph.board,
-        tiles: graph.board.tiles.map((tile) =>
-          tile.explored &&
-          tile.territoryCityId === null &&
-          tile.territoryOwnerId === null &&
-          chebyshev(tile.at, city.at) <= 2
-            ? {
-                ...tile,
-                territoryCityId: city.id,
-                territoryOwnerId: view.viewer.id,
-              }
-            : tile,
-        ),
-      },
-    };
+    return { ...graph, resolvedPendingCityIds };
   }
   if (candidate.kind === "BUILD_MONUMENT") {
     const tile = graph.board.tiles.find((value) =>
@@ -2053,7 +2122,7 @@ function graphAfterPublicCandidateV7(
     if (
       tile?.explored !== true ||
       (tile.terrain === "MOUNTAIN" &&
-        !view.viewer.researchedTechs.includes("PROSPECTING"))
+        !view.viewer.researchedTechs.includes("ENGINEERING"))
     )
       return null;
     return {
@@ -2253,7 +2322,7 @@ function appendPublicPlacementsForTileV7(
       const rule = SPATIAL_ECONOMIC_ACTIONS_V7[kind];
       if (
         (tile.terrain === "MOUNTAIN" &&
-          !view.viewer.researchedTechs.includes("PROSPECTING")) ||
+          !view.viewer.researchedTechs.includes("ENGINEERING")) ||
         tile.site !== null ||
         tile.resource !== null ||
         tile.improvement !== null ||
@@ -2270,7 +2339,7 @@ function appendPublicPlacementsForTileV7(
     if (
       entitlementsAvailable &&
       (tile.terrain !== "MOUNTAIN" ||
-        view.viewer.researchedTechs.includes("PROSPECTING")) &&
+        view.viewer.researchedTechs.includes("ENGINEERING")) &&
       tile.site === null &&
       tile.resource === null &&
       tile.improvement === null &&
@@ -2719,16 +2788,14 @@ function publicGraphTotalsV7(
       ownedCityIds.has(tile.territoryCityId)
     ) {
       population +=
-        tile.improvement === "PORT"
-          ? Number(graph.activePortKeys.has(coordKeyV7(tile.at)))
+        tile.improvement === "PORT" || tile.improvement === "SHIPYARD"
+          ? Number(graph.activePortKeys.has(coordKeyV7(tile.at))) *
+            (tile.improvement === "SHIPYARD" ? 2 : 1)
           : spatialContributionAtV7(graph, tile.at, tile.improvement)
               .population;
       if (!Number.isSafeInteger(population))
         throw new RangeError("INTEGER_OVERFLOW");
     }
-  const networkSize = publicGraphNavalConnectivityV7(graph).network.size;
-  if (graph.researchedTechs.includes("ROADS"))
-    population += 2 * Math.max(0, networkSize - 1);
   if (!Number.isSafeInteger(population))
     throw new RangeError("INTEGER_OVERFLOW");
   let recurringCoins = 0;
@@ -2762,7 +2829,8 @@ function publicGraphTotalsAfterSingleTileChangeV7(
   const afterConnectivity = publicGraphNavalConnectivityV7(after);
   if (
     !sameSet(beforeConnectivity.network, afterConnectivity.network) ||
-    !sameSet(beforeConnectivity.trade, afterConnectivity.trade) ||
+    !sameSet(beforeConnectivity.landTrade, afterConnectivity.landTrade) ||
+    !sameSet(beforeConnectivity.seaTrade, afterConnectivity.seaTrade) ||
     !sameSet(beforeConnectivity.roadKeys, afterConnectivity.roadKeys)
   )
     return publicGraphTotalsV7(after, ownerId);
@@ -2816,22 +2884,13 @@ function publicTileGraphOutputV7(
   );
   return {
     population:
-      tile.improvement === "PORT"
-        ? Number(graph.activePortKeys.has(coordKeyV7(tile.at)))
+      tile.improvement === "PORT" || tile.improvement === "SHIPYARD"
+        ? Number(graph.activePortKeys.has(coordKeyV7(tile.at))) *
+          (tile.improvement === "SHIPYARD" ? 2 : 1)
         : contribution.population,
     recurringCoins:
       tile.improvement === "MARKET"
-        ? Math.min(
-            4,
-            contribution.marketIncome +
-              Number(
-                publicGraphNeighborCoordsV7(graph, tile.at).some((at) =>
-                  publicGraphNavalConnectivityV7(graph).roadKeys.has(
-                    coordKeyV7(at),
-                  ),
-                ),
-              ),
-          )
+        ? Math.min(4, contribution.marketIncome)
         : contribution.marketIncome,
   };
 }
@@ -3098,8 +3157,11 @@ function publicTileCommandLegal(
   if (!unlocked.has(kind)) return false;
   if (
     tile.biome === null &&
-    !["HARVEST_FISH", "GATHER_PEARLS", "BUILD_PORT"].includes(kind) &&
-    (kind !== "REDEVELOP" || tile.improvement !== "PORT")
+    !["HARVEST_FISH", "GATHER_PEARLS", "BUILD_PORT", "BUILD_SHIPYARD"].includes(
+      kind,
+    ) &&
+    (kind !== "REDEVELOP" ||
+      (tile.improvement !== "PORT" && tile.improvement !== "SHIPYARD"))
   )
     return false;
   const city = view.cities.find(
@@ -3123,7 +3185,7 @@ function publicTileCommandLegal(
       tile.site === null &&
       !tile.road &&
       (tile.terrain !== "MOUNTAIN" ||
-        view.viewer.researchedTechs.includes("PROSPECTING"))
+        view.viewer.researchedTechs.includes("ENGINEERING"))
     );
   if (city === undefined) return false;
   const basic =
@@ -3137,7 +3199,7 @@ function publicTileCommandLegal(
       tile.resource === basic.resource &&
       (kind === "HARVEST_FISH"
         ? tile.improvement === null ||
-          (tile.improvement === "PORT" &&
+          ((tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
             publicActiveOwnedPort(view, tile, view.viewer.id))
         : tile.improvement === null)
     );
@@ -3148,7 +3210,7 @@ function publicTileCommandLegal(
       (tile.terrain === "SHALLOW_WATER" || tile.terrain === "DEEP_WATER") &&
       (tile.terrain !== "DEEP_WATER" ||
         view.viewer.researchedTechs.includes("NAVIGATION")) &&
-      (tile.improvement !== "PORT" ||
+      ((tile.improvement !== "PORT" && tile.improvement !== "SHIPYARD") ||
         publicActiveOwnedPort(view, tile, view.viewer.id))
     );
   if (kind === "BUILD_PORT")
@@ -3165,6 +3227,14 @@ function publicTileCommandLegal(
           near.territoryCityId === city.id,
       )
     );
+  if (kind === "BUILD_SHIPYARD")
+    return (
+      view.viewer.coins >= 5 &&
+      view.viewer.researchedTechs.includes("NAVAL_ENGINEERING") &&
+      tile.improvement === "PORT" &&
+      publicActiveOwnedPort(view, tile, view.viewer.id) &&
+      !cityHasImprovement(view, city.id, "SHIPYARD")
+    );
   const spatial =
     SPATIAL_ECONOMIC_ACTIONS_V7[
       kind as keyof typeof SPATIAL_ECONOMIC_ACTIONS_V7
@@ -3175,7 +3245,7 @@ function publicTileCommandLegal(
       view.treasureChests.some((chest) => same(chest, tile.at)) ||
       tile.site !== null ||
       (tile.terrain === "MOUNTAIN" &&
-        !view.viewer.researchedTechs.includes("PROSPECTING")) ||
+        !view.viewer.researchedTechs.includes("ENGINEERING")) ||
       tile.resource !== null ||
       tile.improvement !== null ||
       cityHasImprovement(view, city.id, spatial.improvement)
@@ -3207,7 +3277,7 @@ function publicTileCommandLegal(
       return (
         distinct(
           adjacent.flatMap((item) =>
-            item.territoryOwnerId === view.viewer.id &&
+            item.territoryCityId === city.id &&
             item.improvement !== null &&
             ["FARM", "LUMBER_CAMP", "MINE"].includes(item.improvement)
               ? [item.improvement]
@@ -3223,7 +3293,7 @@ function publicTileCommandLegal(
             const family = improvementFamily(item.improvement);
             return family === null ? [] : [family];
           }),
-        ).length >= 2
+        ).length >= 1
       );
     return true;
   }
@@ -3242,6 +3312,24 @@ function publicTileCommandLegal(
       tile.resource === null &&
       tile.improvement === null
     );
+  if (kind === "CULTIVATE_FOREST")
+    return (
+      view.viewer.coins >= 4 &&
+      tile.site === null &&
+      tile.terrain === "FOREST" &&
+      tile.resource === null &&
+      tile.improvement === null
+    );
+  if (kind === "BLAST_MOUNTAIN")
+    return (
+      view.viewer.coins >= 3 &&
+      view.viewer.researchedTechs.includes("ENGINEERING") &&
+      tile.site === null &&
+      tile.terrain === "MOUNTAIN" &&
+      tile.resource === null &&
+      tile.improvement === null &&
+      !tile.fieldDefense
+    );
   if (kind === "BUILD_ROAD")
     return (
       view.viewer.coins >= 2 &&
@@ -3249,12 +3337,12 @@ function publicTileCommandLegal(
       tile.site === null &&
       !tile.road &&
       (tile.terrain !== "MOUNTAIN" ||
-        view.viewer.researchedTechs.includes("PROSPECTING"))
+        view.viewer.researchedTechs.includes("ENGINEERING"))
     );
   return (
     kind === "REDEVELOP" &&
     tile.improvement !== null &&
-    (tile.improvement !== "PORT" ||
+    ((tile.improvement !== "PORT" && tile.improvement !== "SHIPYARD") ||
       !view.units.some((unit) => same(unit.at, tile.at)))
   );
 }
@@ -3305,19 +3393,13 @@ function publicCombatPreview(
   const defenderRule = effectiveRoleRuleV7(target.role);
   const distance = chebyshev(attacker.at, target.at);
   const attackReady =
-    !primaryUsedForQuery(attacker) ||
-    (attacker.role === "HORSE_ARCHER" &&
-      attacker.activation.attacksUsed === 1 &&
-      !attacker.activation.healed &&
-      !attacker.activation.recovered &&
-      !attacker.activation.captured &&
-      !attacker.activation.specialActed);
+    !primaryUsedForQuery(attacker) || attacker.activation.overrunActive;
   if (
     attacker.form === "EMBARKED" ||
     !attackerRule.abilities.includes("ATTACK") ||
     !attackReady ||
-    attacker.activation.attacksUsed >=
-      (attacker.role === "HORSE_ARCHER" ? 2 : 1) ||
+    (!attacker.activation.overrunActive &&
+      attacker.activation.attacksUsed >= 1) ||
     (attacker.activation.moved && !attackerRule.mayUsePrimaryActionAfterMove) ||
     distance < attackerRule.minimumRange ||
     distance > attackerRule.range
@@ -3350,9 +3432,8 @@ function publicCombatPreview(
     (targetTile.terrain === "FOREST" || targetTile.terrain === "MOUNTAIN")
       ? { numerator: 3, denominator: 2 }
       : { numerator: 1, denominator: 1 };
-  const breachApplied =
-    attackerRule.abilities.includes("BREACH") && distance === 1;
-  const applied = breachApplied ? { numerator: 1, denominator: 1 } : bonus;
+  const breachApplied = false;
+  const applied = bonus;
   const attackForceNumerator = BigInt(attack2) * BigInt(attacker.hp);
   const attackForceDenominator = 2n * BigInt(attacker.maxHp);
   const defenseForceNumerator =
@@ -3390,12 +3471,22 @@ function publicCombatPreview(
     !attackerDies &&
     distance === 1 &&
     attacker.role !== "CATAPULT" &&
-    attacker.role !== "HORSE_ARCHER" &&
     attacker.form === "LAND" &&
     target.form === "LAND" &&
     !(attacker.role === "MARKSMAN" && distance > 1) &&
     publicAdvanceDestinationLegal(view, target.at);
   const nextAttacks = attacker.activation.attacksUsed + 1;
+  const overrunContinues =
+    attacker.role === "KNIGHT" &&
+    advances &&
+    view.units.some(
+      (unit) =>
+        unit.id !== attacker.id &&
+        unit.id !== target.id &&
+        unit.hp > 0 &&
+        publicHostile(view, attacker.ownerId, unit.ownerId) &&
+        chebyshev(target.at, unit.at) === 1,
+    );
   return {
     attackerId,
     targetUnitId,
@@ -3403,7 +3494,15 @@ function publicCombatPreview(
     defense2,
     minimumRange: attackerRule.minimumRange,
     maximumRange: attackerRule.range,
-    chargeApplied: attack2 > attackerRule.attack2,
+    chargeApplied:
+      attacker.role === "RAIDER" &&
+      view.viewer.researchedTechs.includes("RAIDING") &&
+      attacker.activation.moved &&
+      attacker.activation.movedPathLength >= 2 &&
+      attacker.activation.attacksUsed === 0,
+    inspiredApplied:
+      attacker.activation.inspired && attacker.activation.attacksUsed === 0,
+    inspiredConsumed: attacker.activation.inspired,
     breachApplied,
     defenseBonusNumerator: applied.numerator,
     defenseBonusDenominator: applied.denominator,
@@ -3426,8 +3525,9 @@ function publicCombatPreview(
       !defenderDies && distance === 1,
     ),
     attacksUsed: nextAttacks,
-    attacksRemaining:
-      attacker.role === "HORSE_ARCHER" ? Math.max(0, 2 - nextAttacks) : 0,
+    attacksRemaining: overrunContinues ? 1 : 0,
+    overrunAdvance: attacker.role === "KNIGHT" && advances,
+    overrunContinues,
     splash:
       attacker.role === "BATTLESHIP"
         ? view.units
@@ -3468,7 +3568,7 @@ function publicAdvanceDestinationLegal(
   return (
     tile?.explored === true &&
     (tile.terrain !== "MOUNTAIN" ||
-      view.viewer.researchedTechs.includes("PROSPECTING"))
+      view.viewer.researchedTechs.includes("ENGINEERING"))
   );
 }
 
@@ -3510,7 +3610,7 @@ function publicPushState(
     return "UNKNOWN_BEHIND_FOG";
   if (
     tile.terrain === "MOUNTAIN" &&
-    !view.viewer.researchedTechs.includes("PROSPECTING")
+    !view.viewer.researchedTechs.includes("ENGINEERING")
   )
     return "BLOCKED";
   if (tile.terrain === "DEEP_WATER") {
@@ -3529,7 +3629,7 @@ function publicDetectionCovers(view: PlayerViewV7, at: CoordV7): boolean {
       (unit) =>
         unit.ownerId === view.viewer.id &&
         chebyshev(unit.at, at) <=
-          (unit.form === "LAND" && unit.role === "SCOUT" ? 2 : 1),
+          (unit.form === "LAND" && unit.role === "RAIDER" ? 2 : 1),
     )
   );
 }

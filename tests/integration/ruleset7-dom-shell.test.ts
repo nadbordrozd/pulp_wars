@@ -307,8 +307,8 @@ describe("Ruleset 7 DOM shell", () => {
     expect(document.body.textContent).not.toContain("CANDY");
 
     requiredButton('[data-action="tech"]').click();
-    expect(document.querySelectorAll(".v7-tech-card")).toHaveLength(21);
-    expect(document.querySelectorAll(".v7-tech-edge")).toHaveLength(16);
+    expect(document.querySelectorAll(".v7-tech-card")).toHaveLength(23);
+    expect(document.querySelectorAll(".v7-tech-edge")).toHaveLength(18);
     expect(document.querySelectorAll(".v7-tech-children.is-unary").length).toBe(
       10,
     );
@@ -325,13 +325,13 @@ describe("Ruleset 7 DOM shell", () => {
       5,
     );
     const lastBranch = document.querySelector<HTMLElement>(
-      '[data-tech-lane="INDUSTRY_WARFARE:PROSPECTING"]',
+      '[data-tech-lane="INDUSTRY:DRILL"]',
     );
     if (lastBranch === null) throw new Error("Technology branch missing");
     const scrollIntoView = vi.fn();
     lastBranch.scrollIntoView = scrollIntoView;
     branchSelect.focus();
-    branchSelect.value = "INDUSTRY_WARFARE:PROSPECTING";
+    branchSelect.value = "INDUSTRY:DRILL";
     branchSelect.dispatchEvent(new Event("change", { bubbles: true }));
     expect(scrollIntoView).toHaveBeenCalledWith({ block: "start" });
     expect(document.activeElement).toBe(branchSelect);
@@ -504,9 +504,9 @@ describe("Ruleset 7 DOM shell", () => {
     ).not.toContain("Coins");
     requiredButton('[data-action="tech-commerce"]').click();
     expect(document.querySelector(".v7-tech-detail")?.textContent).toContain(
-      "Market: coins from nearby industry",
+      "Road-linked cities: +1 Coin",
     );
-    requiredButton('[data-action="tech-prospecting"]').click();
+    requiredButton('[data-action="tech-engineering"]').click();
     const prospecting = document.querySelector(".v7-tech-detail")?.textContent;
     expect(prospecting).toContain("Reveals Ore");
     expect(prospecting).toContain("Units can climb mountains");
@@ -515,7 +515,7 @@ describe("Ruleset 7 DOM shell", () => {
     await Promise.resolve();
     expect(document.querySelector(".v7-tech-detail")).toBeNull();
     expect(document.activeElement?.getAttribute("data-action")).toBe(
-      "tech-prospecting",
+      "tech-engineering",
     );
     app.destroy();
   });
@@ -585,23 +585,23 @@ describe("Ruleset 7 DOM shell", () => {
     );
     if (actionRow === null) throw new Error("city action row missing");
     actionRow.scrollLeft = 123;
-    const help = requiredButton('[data-action="train-help-horse_archer"]');
+    const help = requiredButton('[data-action="train-help-knight"]');
     help.focus();
     help.click();
     await Promise.resolve();
     const modal = document.querySelector<HTMLElement>(".v7-recruit-help");
     if (modal === null) throw new Error("recruit help missing");
-    expect(modal.getAttribute("aria-label")).toBe("Horse Archer information");
+    expect(modal.getAttribute("aria-label")).toBe("Knight information");
     expect(modal.querySelector(".v7-dialog-header h2")?.textContent).toBe(
-      "Horse Archer",
+      "Knight",
     );
     expect(
       modal.querySelector<HTMLImageElement>(".v7-art-frame")?.dataset.assetId,
-    ).toBe(RULESET7_UNIT_ART_IDS.HORSE_ARCHER);
+    ).toBe(RULESET7_UNIT_ART_IDS.KNIGHT);
     expect(modal.textContent).toContain("HP10");
-    expect(modal.textContent).toContain("Range1–2");
+    expect(modal.textContent).toContain("Range1");
     expect(modal.textContent).toContain(
-      "Shoots twice a turn. Move before the first shot.",
+      "After a kill, advances and can attack another adjacent enemy.",
     );
     expect(modal.textContent).toContain("Can't capture.");
     expect(modal.textContent).not.toContain("Needs action");
@@ -616,7 +616,7 @@ describe("Ruleset 7 DOM shell", () => {
     await Promise.resolve();
     expect(document.querySelector(".v7-recruit-help")).toBeNull();
     expect(document.activeElement?.getAttribute("data-action")).toBe(
-      "train-help-horse_archer",
+      "train-help-knight",
     );
     const restoredRow = document.querySelector<HTMLElement>(
       '.v7-selection-dock[data-selection-kind="city"] > .v7-context-actions',
@@ -624,13 +624,13 @@ describe("Ruleset 7 DOM shell", () => {
     expect(restoredRow?.scrollLeft).toBe(123);
 
     if (restoredRow === null) throw new Error("restored action row missing");
-    requiredButton('[data-action="train-help-horse_archer"]').click();
+    requiredButton('[data-action="train-help-knight"]').click();
     await Promise.resolve();
     requiredButton('[data-action="close-recruit-help"]').click();
     await Promise.resolve();
     expect(document.querySelector(".v7-recruit-help")).toBeNull();
     expect(document.activeElement?.getAttribute("data-action")).toBe(
-      "train-help-horse_archer",
+      "train-help-knight",
     );
     const rowAfterClose = document.querySelector<HTMLElement>(
       '.v7-selection-dock[data-selection-kind="city"] > .v7-context-actions',

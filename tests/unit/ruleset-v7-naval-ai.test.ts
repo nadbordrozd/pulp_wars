@@ -169,6 +169,48 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
     });
   });
 
+  it("holds extra transports while a visible capture unit claims the target and restores landing afterward", () => {
+    const { view, transportId } = occupiedCoastalObjectiveView();
+    const visibleHostile = view.units.find(
+      (unit) => unit.ownerId !== view.viewer.id,
+    );
+    if (visibleHostile === undefined)
+      throw new Error("claimant source missing");
+    const claimed = projectPublicUnitForPolicyV7(view, visibleHostile.id, {
+      ownerId: view.viewer.id,
+      role: "FIGHTER",
+      form: "LAND",
+      at: { x: 7, y: 4 },
+      activation: {
+        ...visibleHostile.activation,
+        moved: true,
+        handled: true,
+      },
+    });
+    expect(
+      chooseNormalCommandV7(claimed).candidates.some(
+        (candidate) =>
+          candidate.command.kind === "DISEMBARK" &&
+          candidate.command.unitId === transportId,
+      ),
+    ).toBe(false);
+
+    const released = {
+      ...claimed,
+      units: claimed.units.filter((unit) => unit.id !== visibleHostile.id),
+      unitStats: claimed.unitStats.filter(
+        (stats) => stats.unitId !== visibleHostile.id,
+      ),
+    };
+    expect(
+      chooseNormalCommandV7(released).candidates.some(
+        (candidate) =>
+          candidate.command.kind === "DISEMBARK" &&
+          candidate.command.unitId === transportId,
+      ),
+    ).toBe(true);
+  });
+
   it("keeps a targetless transport aboard beside its owned-city frontier", () => {
     const view = targetlessOwnedCoastView();
     const transport = view.units.find(
@@ -579,12 +621,12 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
     ).toBe(false);
   });
 
-  it("scores an embarked Horse Archer with transport movement facts", () => {
+  it("scores an embarked Knight Overrun with transport movement facts", () => {
     const source = navalPolicyView(["SHORECRAFT"], true);
     const own = source.units.find((unit) => unit.ownerId === source.viewer.id);
     if (own === undefined) throw new Error("owned unit missing");
     const horse = projectPublicUnitForPolicyV7(source, own.id, {
-      role: "HORSE_ARCHER",
+      role: "KNIGHT",
       form: "EMBARKED",
       at: { x: 2, y: 1 },
     });
@@ -789,6 +831,33 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
       expect(result.metrics.commandsByKind[kind]).toBe(0);
   });
 
+  it("avoids redundant landing and reboarding on the cooperative seed-0 Continents map", () => {
+    const result = runAiMatchV7(
+      {
+        ...setupV7(0, 3),
+        aiMode: "COOPERATIVE",
+        mapType: "CONTINENTS",
+      },
+      { maxRounds: 20, maxCommands: 600 },
+    );
+    expect(result.errors).toEqual([]);
+    expect(result.stalls).toEqual([]);
+    expect(findCoastOscillationV7(result.commandLog)).toBeNull();
+
+    const landingIndexByUnit = new Map<number, number>();
+    for (const [index, entry] of result.commandLog.entries())
+      if (entry.command.kind === "DISEMBARK")
+        landingIndexByUnit.set(entry.command.unitId, index);
+    expect(
+      result.commandLog.some(
+        (entry, index) =>
+          entry.command.kind === "CAPTURE" &&
+          (landingIndexByUnit.get(entry.command.unitId) ?? Infinity) < index &&
+          entry.events.some((event) => event.kind === "CITY_CAPTURED"),
+      ),
+    ).toBe(true);
+  }, 30_000);
+
   it.each([
     ["PANGEA", 9400, false, "ISOLATED"],
     ["PANGEA", 9401, false, "SEA_SHORTCUT"],
@@ -809,8 +878,8 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
       );
       let state = fixture.state;
       let commandsThisTurn = 0;
-      let passengerId: number | null = null;
-      let landingRound: number | null = null;
+      const departedUnitIds = new Set<number>();
+      const landedRounds = new Map<number, number>();
       let shorecraft = false;
       let navigation = false;
       let port = false;
@@ -866,8 +935,8 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
             (event) => event.kind === "UNIT_EMBARKED",
           );
           if (embarked?.kind === "UNIT_EMBARKED") {
-            passengerId ??= embarked.unitId;
-            if (embarked.unitId === passengerId) departure = true;
+            departedUnitIds.add(embarked.unitId);
+            departure = true;
           }
           if (
             command.kind === "MOVE" &&
@@ -891,16 +960,20 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
             )
               patrolEscort = true;
           }
-          if (command.kind === "DISEMBARK" && command.unitId === passengerId) {
+          if (
+            command.kind === "DISEMBARK" &&
+            departedUnitIds.has(command.unitId)
+          ) {
             landing = true;
-            landingRound = beforeRound;
+            landedRounds.set(command.unitId, beforeRound);
           }
           if (
             command.kind === "CAPTURE" &&
-            command.unitId === passengerId &&
             applied.events.some((event) => event.kind === "CITY_CAPTURED")
           )
-            captureWait = landingRound !== null && beforeRound > landingRound;
+            captureWait ||=
+              landedRounds.has(command.unitId) &&
+              beforeRound > (landedRounds.get(command.unitId) ?? beforeRound);
         }
         state = applied.state;
         commandsThisTurn =
@@ -1029,6 +1102,8 @@ function navalPolicyView(
         ? [{ at: portAt, cityId: ownCity.id, status: "ACTIVE" as const }]
         : [],
       tradeCityIds: [],
+      landTradeCityIds: [],
+      seaTradeCityIds: [],
       networkCityIds: [ownCity.id],
       networkRoads: [],
       seaRoutes: [],
@@ -1238,7 +1313,7 @@ function alternatePortBarrierView(): PlayerViewV7 {
     viewer: { ...source.viewer, id: viewerId },
     cities: source.cities.map((city) =>
       city.id === originalOwnCity.id
-        ? { ...city, ownerId: viewerId, at: { x: 1, y: 1 }, expanded: true }
+        ? { ...city, ownerId: viewerId, at: { x: 1, y: 1 }, expanded: false }
         : city.id === originalHostileCity.id
           ? { ...city, ownerId: humanId, at: { x: 9, y: 9 } }
           : city,
@@ -1295,6 +1370,8 @@ function alternatePortBarrierView(): PlayerViewV7 {
     naval: {
       ownedPorts: [],
       tradeCityIds: [],
+      landTradeCityIds: [],
+      seaTradeCityIds: [],
       networkCityIds: [originalOwnCity.id],
       networkRoads: [],
       seaRoutes: [],

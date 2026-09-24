@@ -36,7 +36,7 @@ export function detectionCoversCoordV7(
         unit.hp > 0 &&
         side.has(unit.ownerId) &&
         chebyshev(unit.at, at) <=
-          (unit.form === "LAND" && unit.role === "SCOUT" ? 2 : 1),
+          (unit.form === "LAND" && unit.role === "RAIDER" ? 2 : 1),
     )
   );
 }

@@ -5,11 +5,11 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r8" as const;
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r8.current" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r9" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r9.current" as const;
 export const FACTION_IDS_V7 = Object.freeze(["ORIGINAL"] as const);
 export const FACTION_TREE_IDS_V7 = Object.freeze([
-  "ORIGINAL_BASELINE_V4",
+  "ORIGINAL_BASELINE_V5",
 ] as const);
 export const TERRAIN_IDS_V7 = Object.freeze([
   "GRASS",
@@ -42,6 +42,7 @@ export const IMPROVEMENT_IDS_V7 = Object.freeze([
   "MARKET",
   "MONUMENT",
   "PORT",
+  "SHIPYARD",
 ] as const);
 export const ACHIEVEMENT_IDS_V7 = Object.freeze([
   "EXPLORER",
@@ -50,15 +51,12 @@ export const ACHIEVEMENT_IDS_V7 = Object.freeze([
 ] as const);
 export const UNIT_ROLE_IDS_V7 = Object.freeze([
   "FIGHTER",
-  "SCOUT",
+  "RAIDER",
   "MARKSMAN",
   "GUARD",
-  "RAIDER",
-  "MEDIC",
+  "CAPTAIN",
   "CATAPULT",
-  "HEAVY",
-  "HORSE_ARCHER",
-  "BREACHER",
+  "KNIGHT",
   "JUGGERNAUT",
   "PATROL_BOAT",
   "BATTLESHIP",
@@ -67,8 +65,8 @@ export const TECHNOLOGY_IDS_V7 = Object.freeze([
   "GATHERING",
   "FARMING",
   "MILLING",
-  "MEDICINE",
-  "RECOVERY",
+  "ADMINISTRATION",
+  "PLANNING",
   "HUNTING",
   "FORESTRY",
   "SAWMILLING",
@@ -78,10 +76,12 @@ export const TECHNOLOGY_IDS_V7 = Object.freeze([
   "ROADS",
   "COMMERCE",
   "RAIDING",
-  "MOUNTED_ARCHERY",
-  "PROSPECTING",
+  "CHIVALRY",
+  "DRILL",
   "ENGINEERING",
   "METALLURGY",
+  "FORTIFICATION",
+  "EXPLOSIVES",
   "SHORECRAFT",
   "NAVIGATION",
   "NAVAL_ENGINEERING",
@@ -89,7 +89,8 @@ export const TECHNOLOGY_IDS_V7 = Object.freeze([
 export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "MOVE",
   "ATTACK",
-  "HEAL_ADJACENT",
+  "RALLY",
+  "TEND_WOUNDED",
   "RECOVER",
   "CAPTURE",
   "PROMOTE",
@@ -111,10 +112,14 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "BUILD_MARKET",
   "BUILD_MONUMENT",
   "BUILD_PORT",
+  "BUILD_SHIPYARD",
   "CLEAR_FOREST",
   "REPLANT_FOREST",
+  "CULTIVATE_FOREST",
+  "BLAST_MOUNTAIN",
   "BUILD_ROAD",
   "REDEVELOP",
+  "LAND_GRANT",
   "TRAIN",
   "TRAIN_NAVAL",
   "BUILD_FIELD_DEFENSE",
@@ -127,8 +132,8 @@ export const REWARD_IDS_V7 = Object.freeze([
   "STOCKPILE",
   "WALLS",
   "MILITIA",
-  "EXPAND",
   "BOOM",
+  "TREASURY_8",
   "JUGGERNAUT",
   "TREASURY",
 ] as const);
@@ -147,6 +152,7 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "FISH_HARVESTED",
   "PEARLS_GATHERED",
   "PORT_BUILT",
+  "SHIPYARD_BUILT",
   "PORT_BLOCKADE_CHANGED",
   "SEA_NETWORK_CHANGED",
   "FRUIT_HARVESTED",
@@ -155,8 +161,12 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "ECONOMIC_BUILDING_REMOVED",
   "FOREST_CLEARED",
   "FOREST_REPLANTED",
+  "FOREST_CULTIVATED",
+  "MOUNTAIN_BLASTED",
   "ROAD_BUILT",
   "FIELD_DEFENSE_BUILT",
+  "FIELD_DEFENSE_DESTROYED",
+  "LAND_GRANTED",
   "CITY_ECONOMY_CHANGED",
   "CITY_LEVELED_UP",
   "CITY_REWARD_QUEUED",
@@ -170,7 +180,8 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "UNIT_EMBARKED",
   "UNIT_DISEMBARKED",
   "UNIT_REWARD_GRANTED",
-  "UNIT_HEALED",
+  "UNITS_RALLIED",
+  "WOUNDED_TENDED",
   "UNIT_PUSHED",
   "UNIT_MOVED",
   "UNIT_MOVE_INTERRUPTED",
@@ -263,7 +274,7 @@ export interface PlayerStateV7 {
   readonly controller: "HUMAN" | "AI";
   readonly color: PlayerColorV7;
   readonly faction: "ORIGINAL";
-  readonly factionTreeId: "ORIGINAL_BASELINE_V4";
+  readonly factionTreeId: "ORIGINAL_BASELINE_V5";
   readonly status: "ACTIVE" | "ELIMINATED";
   readonly coins: number;
   readonly researchedTechs: readonly TechnologyIdV7[];
@@ -283,8 +294,10 @@ export interface UnitActivationV7 {
   readonly moved: boolean;
   readonly movedPathLength: number;
   readonly attacked: boolean;
-  readonly attacksUsed: 0 | 1 | 2;
-  readonly healed: boolean;
+  readonly attacksUsed: number;
+  readonly tendedThisTurn: boolean;
+  readonly inspired: boolean;
+  readonly overrunActive: boolean;
   readonly recovered: boolean;
   readonly captured: boolean;
   readonly handled: boolean;
@@ -321,6 +334,7 @@ export interface CityStateV7 {
   readonly population: number;
   readonly isCapital: boolean;
   readonly expanded: boolean;
+  readonly landGrantUsed: boolean;
   readonly rewards: readonly CityRewardRecordV7[];
 }
 

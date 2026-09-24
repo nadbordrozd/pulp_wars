@@ -332,8 +332,8 @@ function runTargeted(
   const fixture = isolatedNavalScenarioV7(mapType, seed, deepLane, geometry);
   let state = fixture.state;
   let commandsThisTurn = 0;
-  let passengerId: number | null = null;
-  let landingRound: number | null = null;
+  const departedUnitIds = new Set<number>();
+  const landedRounds = new Map<number, number>();
   let slices = 0;
   let callbacks = 0;
   let maximumSlices = 0;
@@ -411,8 +411,8 @@ function runTargeted(
         command.kind === "MOVE" &&
         applied.events.some((event) => event.kind === "UNIT_EMBARKED")
       ) {
-        passengerId ??= command.unitId;
-        if (command.unitId === passengerId) departure = true;
+        departedUnitIds.add(command.unitId);
+        departure = true;
       }
       if (
         command.kind === "MOVE" &&
@@ -436,16 +436,17 @@ function runTargeted(
         )
           patrolEscort = true;
       }
-      if (command.kind === "DISEMBARK" && command.unitId === passengerId) {
+      if (command.kind === "DISEMBARK" && departedUnitIds.has(command.unitId)) {
         landing = true;
-        landingRound = beforeRound;
+        landedRounds.set(command.unitId, beforeRound);
       }
       if (
         command.kind === "CAPTURE" &&
-        command.unitId === passengerId &&
         applied.events.some((event) => event.kind === "CITY_CAPTURED")
       )
-        captureWait = landingRound !== null && beforeRound > landingRound;
+        captureWait ||=
+          landedRounds.has(command.unitId) &&
+          beforeRound > (landedRounds.get(command.unitId) ?? beforeRound);
     }
     state = applied.state;
     commandsThisTurn = command.kind === "END_TURN" ? 0 : commandsThisTurn + 1;

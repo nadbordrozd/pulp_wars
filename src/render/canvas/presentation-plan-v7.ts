@@ -136,7 +136,6 @@ export function corePresentationPlanV7(
       const ranged =
         attacker.role === "MARKSMAN" ||
         attacker.role === "CATAPULT" ||
-        attacker.role === "HORSE_ARCHER" ||
         attacker.role === "BATTLESHIP";
       steps.push({
         kind:

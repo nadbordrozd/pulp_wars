@@ -65,6 +65,15 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "coinDelta",
   ],
   PORT_BUILT: ["kind", "playerId", "cityId", "at", "cost", "populationAdded"],
+  SHIPYARD_BUILT: [
+    "kind",
+    "playerId",
+    "cityId",
+    "at",
+    "cost",
+    "populationAdded",
+    "livePopulationTotal",
+  ],
   PORT_BLOCKADE_CHANGED: [
     "kind",
     "playerId",
@@ -103,8 +112,32 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   ],
   FOREST_CLEARED: ["kind", "playerId", "cityId", "at", "coinDelta"],
   FOREST_REPLANTED: ["kind", "playerId", "cityId", "at", "coinDelta"],
+  FOREST_CULTIVATED: [
+    "kind",
+    "playerId",
+    "cityId",
+    "at",
+    "cost",
+    "terrainBefore",
+    "terrainAfter",
+    "resourceBefore",
+    "resourceAfter",
+  ],
+  MOUNTAIN_BLASTED: [
+    "kind",
+    "playerId",
+    "cityId",
+    "at",
+    "cost",
+    "terrainBefore",
+    "terrainAfter",
+    "resourceBefore",
+    "resourceAfter",
+  ],
   ROAD_BUILT: ["kind", "playerId", "cityId", "at", "cost"],
   FIELD_DEFENSE_BUILT: ["kind", "playerId", "unitId", "at", "cost"],
+  FIELD_DEFENSE_DESTROYED: ["kind", "at", "reason"],
+  LAND_GRANTED: ["kind", "playerId", "cityId", "cost", "tiles"],
   CITY_ECONOMY_CHANGED: [
     "kind",
     "cityId",
@@ -152,6 +185,8 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "role",
     "cost",
     "at",
+    "dock",
+    "discountSource",
   ],
   UNIT_EMBARKED: ["kind", "playerId", "unitId", "passengerRole", "from", "to"],
   UNIT_DISEMBARKED: [
@@ -170,7 +205,8 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "unitId",
     "role",
   ],
-  UNIT_HEALED: ["kind", "medicId", "targetUnitId", "amount", "hpAfter"],
+  UNITS_RALLIED: ["kind", "captainId", "unitIds"],
+  WOUNDED_TENDED: ["kind", "captainId", "results"],
   UNIT_PUSHED: ["kind", "sourceUnitId", "targetUnitId", "from", "to"],
   UNIT_MOVED: ["kind", "unitId", "path"],
   UNIT_MOVE_INTERRUPTED: ["kind", "unitId", "at", "reason"],
@@ -201,7 +237,7 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "requestedReward",
     "grantedReward",
     "coinDelta",
-    "heavyFallback",
+    "knightFallback",
     "spawnedUnitId",
     "spawnedAt",
     "homeCityId",
@@ -436,6 +472,13 @@ function validPayload(
       );
     case "PORT_BUILT":
       return playerCityAt(e) && e.cost === 4 && e.populationAdded === 1;
+    case "SHIPYARD_BUILT":
+      return (
+        playerCityAt(e) &&
+        e.cost === 5 &&
+        e.populationAdded === 1 &&
+        e.livePopulationTotal === 2
+      );
     case "PORT_BLOCKADE_CHANGED":
       return (
         playerCityAt(e) &&
@@ -480,6 +523,24 @@ function validPayload(
       return playerCityAt(e) && e.coinDelta === 1;
     case "FOREST_REPLANTED":
       return playerCityAt(e) && e.coinDelta === 0;
+    case "FOREST_CULTIVATED":
+      return (
+        playerCityAt(e) &&
+        e.cost === 4 &&
+        e.terrainBefore === "FOREST" &&
+        e.terrainAfter === "GRASS" &&
+        e.resourceBefore === null &&
+        e.resourceAfter === "FERTILE_GROUND"
+      );
+    case "MOUNTAIN_BLASTED":
+      return (
+        playerCityAt(e) &&
+        e.cost === 3 &&
+        e.terrainBefore === "MOUNTAIN" &&
+        e.terrainAfter === "GRASS" &&
+        e.resourceBefore === null &&
+        e.resourceAfter === null
+      );
     case "ROAD_BUILT":
       return (
         id(e.playerId) &&
@@ -493,6 +554,22 @@ function validPayload(
         id(e.unitId) &&
         parseCoordV7(e.at) !== null &&
         e.cost === 3
+      );
+    case "FIELD_DEFENSE_DESTROYED":
+      return (
+        parseCoordV7(e.at) !== null &&
+        ["CATAPULT", "INSPIRED", "EXPLOSIVES", "OCCUPATION"].includes(
+          e.reason as string,
+        )
+      );
+    case "LAND_GRANTED":
+      return (
+        id(e.playerId) &&
+        id(e.cityId) &&
+        e.cost === 6 &&
+        Array.isArray(e.tiles) &&
+        e.tiles.length > 0 &&
+        sortedCoords(e.tiles)
       );
     case "CITY_ECONOMY_CHANGED":
       return (
@@ -522,7 +599,13 @@ function validPayload(
         REWARD_IDS_V7.includes(e.reward as never) &&
         rewardMatches(e.reward as RewardIdV7, e.reachedLevel as number) &&
         e.coinDelta ===
-          (e.reward === "STOCKPILE" ? 4 : e.reward === "TREASURY" ? 12 : 0)
+          (e.reward === "STOCKPILE"
+            ? 4
+            : e.reward === "TREASURY"
+              ? 12
+              : e.reward === "TREASURY_8"
+                ? 8
+                : 0)
       );
     case "CITY_REWARD_AUTOMATICALLY_GRANTED":
       return (
@@ -553,7 +636,8 @@ function validPayload(
         id(e.cityId) &&
         id(e.unitId) &&
         UNIT_ROLE_IDS_V7.includes(e.role as never) &&
-        e.cost === trainingCost(e.role as UnitRoleIdV7) &&
+        (e.cost === trainingCost(e.role as UnitRoleIdV7) ||
+          e.cost === Math.max(1, trainingCost(e.role as UnitRoleIdV7) - 1)) &&
         parseCoordV7(e.at) !== null
       );
     case "NAVAL_UNIT_TRAINED":
@@ -562,7 +646,12 @@ function validPayload(
         id(e.cityId) &&
         id(e.unitId) &&
         (e.role === "PATROL_BOAT" || e.role === "BATTLESHIP") &&
-        e.cost === trainingCost(e.role) &&
+        (e.cost === trainingCost(e.role) ||
+          e.cost === Math.max(1, trainingCost(e.role) - 2)) &&
+        (e.dock === "PORT" || e.dock === "SHIPYARD") &&
+        e.discountSource === (e.dock === "SHIPYARD" ? "SHIPYARD" : null) &&
+        e.cost ===
+          Math.max(1, trainingCost(e.role) - (e.dock === "SHIPYARD" ? 2 : 0)) &&
         parseCoordV7(e.at) !== null
       );
     case "UNIT_EMBARKED":
@@ -583,10 +672,10 @@ function validPayload(
         ((e.reachedLevel === 3 && e.role === "FIGHTER") ||
           ((e.reachedLevel as number) >= 5 && e.role === "JUGGERNAUT"))
       );
-    case "UNIT_HEALED":
-      return (
-        id(e.medicId) && id(e.targetUnitId) && pos(e.amount) && pos(e.hpAfter)
-      );
+    case "UNITS_RALLIED":
+      return id(e.captainId) && orderedIds(e.unitIds);
+    case "WOUNDED_TENDED":
+      return id(e.captainId) && tendResults(e.results);
     case "UNIT_PUSHED":
       return (
         id(e.sourceUnitId) &&
@@ -600,12 +689,7 @@ function validPayload(
       return (
         id(e.unitId) &&
         parseCoordV7(e.at) !== null &&
-        [
-          "OCCUPIED",
-          "PROSPECTING_REQUIRED",
-          "ENGINEERING_REQUIRED",
-          "ZOC",
-        ].includes(e.reason as string)
+        ["OCCUPIED", "ENGINEERING_REQUIRED", "ZOC"].includes(e.reason as string)
       );
     case "TILES_REVEALED":
       return id(e.playerId) && sortedCoords(e.tiles);
@@ -665,6 +749,8 @@ function combat(input: unknown): boolean {
       "attackerId",
       "breachApplied",
       "chargeApplied",
+      "inspiredApplied",
+      "inspiredConsumed",
       "damageToAttacker",
       "damageToDefender",
       "defense2",
@@ -677,6 +763,8 @@ function combat(input: unknown): boolean {
       "maximumRange",
       "minimumRange",
       "noRetaliationReason",
+      "overrunAdvance",
+      "overrunContinues",
       "push",
       "retaliation",
       "splash",
@@ -695,21 +783,28 @@ function combat(input: unknown): boolean {
       input.minimumRange,
       input.maximumRange,
     ].every(pos) &&
-    (input.attacksUsed === 1 || input.attacksUsed === 2) &&
+    isPositiveSafeIntegerV7(input.attacksUsed) &&
     (input.attacksRemaining === 0 || input.attacksRemaining === 1) &&
-    ((input.attacksUsed === 1 &&
-      (input.attacksRemaining === 0 || input.attacksRemaining === 1)) ||
-      (input.attacksUsed === 2 && input.attacksRemaining === 0)) &&
+    input.overrunContinues === (input.attacksRemaining === 1) &&
+    (!input.overrunContinues ||
+      (input.overrunAdvance === true &&
+        input.advances === true &&
+        input.defenderDies === true &&
+        input.attackerDies === false)) &&
     [input.damageToAttacker, input.damageToDefender].every(nn) &&
     nn(input.fortificationLevel) &&
     splash(input.splash) &&
     [
       input.chargeApplied,
+      input.inspiredApplied,
+      input.inspiredConsumed,
       input.breachApplied,
       input.defenderDies,
       input.attackerDies,
       input.retaliation,
       input.advances,
+      input.overrunAdvance,
+      input.overrunContinues,
     ].every((item) => typeof item === "boolean") &&
     ["WILL_PUSH", "BLOCKED", "UNKNOWN_BEHIND_FOG"].includes(
       input.push as string,
@@ -755,10 +850,10 @@ function treasure(e: Record<string, unknown>): boolean {
     id(e.playerId) &&
     id(e.unitId) &&
     parseCoordV7(e.at) !== null &&
-    (e.requestedReward === "COINS" || e.requestedReward === "HEAVY") &&
-    (isCoins || e.grantedReward === "HEAVY") &&
-    typeof e.heavyFallback === "boolean" &&
-    e.heavyFallback === (e.requestedReward === "HEAVY" && isCoins) &&
+    (e.requestedReward === "COINS" || e.requestedReward === "KNIGHT") &&
+    (isCoins || e.grantedReward === "KNIGHT") &&
+    typeof e.knightFallback === "boolean" &&
+    e.knightFallback === (e.requestedReward === "KNIGHT" && isCoins) &&
     e.coinDelta === (isCoins ? 5 : 0) &&
     (isCoins
       ? e.spawnedUnitId === null &&
@@ -815,6 +910,30 @@ function sortedCoords(input: unknown): boolean {
     return true;
   });
 }
+function orderedIds(input: unknown): boolean {
+  if (!isDenseArrayV7(input) || input.length === 0) return false;
+  return input.every(
+    (value, index) =>
+      id(value) && (index === 0 || Number(input[index - 1]) < Number(value)),
+  );
+}
+function tendResults(input: unknown): boolean {
+  if (!isDenseArrayV7(input) || input.length === 0) return false;
+  let prior = 0;
+  for (const result of input) {
+    if (
+      !hasExactKeysV7(result, ["amount", "hpAfter", "unitId"]) ||
+      !id(result.unitId) ||
+      !pos(result.amount) ||
+      Number(result.amount) > 2 ||
+      !pos(result.hpAfter) ||
+      Number(result.unitId) <= prior
+    )
+      return false;
+    prior = Number(result.unitId);
+  }
+  return true;
+}
 function rewards(input: unknown, level: number): boolean {
   return (
     isDenseArrayV7(input) &&
@@ -832,7 +951,7 @@ function rewardMatches(reward: RewardIdV7, level: number): boolean {
     : level === 3
       ? reward === "WALLS" || reward === "MILITIA"
       : level === 4
-        ? reward === "EXPAND" || reward === "BOOM"
+        ? reward === "BOOM" || reward === "TREASURY_8"
         : level >= 5 && (reward === "JUGGERNAUT" || reward === "TREASURY");
 }
 function improvementCost(improvement: ImprovementIdV7): number {
@@ -844,30 +963,30 @@ function improvementCost(improvement: ImprovementIdV7): number {
     case "LUMBER_CAMP":
       return 3;
     case "MINE":
+      return 5;
     case "FORGE":
       return 6;
     case "WORKSHOP":
       return 4;
     case "MARKET":
-      return 7;
+      return 6;
     case "MONUMENT":
       return 0;
     case "PORT":
       return 4;
+    case "SHIPYARD":
+      return 5;
   }
 }
 function trainingCost(role: UnitRoleIdV7): number {
   const costs: Readonly<Record<UnitRoleIdV7, number>> = {
     FIGHTER: 2,
-    SCOUT: 4,
+    RAIDER: 4,
     MARKSMAN: 3,
     GUARD: 3,
-    RAIDER: 4,
-    MEDIC: 4,
+    CAPTAIN: 5,
     CATAPULT: 8,
-    HEAVY: 7,
-    HORSE_ARCHER: 9,
-    BREACHER: 6,
+    KNIGHT: 9,
     JUGGERNAUT: 0,
     PATROL_BOAT: 5,
     BATTLESHIP: 16,

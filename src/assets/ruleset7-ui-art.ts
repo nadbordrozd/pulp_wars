@@ -8,18 +8,21 @@ import type {
   TerrainIdV7,
   UnitRoleIdV7,
 } from "../engine/index";
+import {
+  RULESET7_REVISION9_ACTION_ART_IDS,
+  RULESET7_REVISION9_IMPROVEMENT_ART_IDS,
+  RULESET7_REVISION9_PORTRAIT_ART_IDS,
+  RULESET7_REVISION9_UNIT_ART_IDS,
+} from "./ruleset7-revision9-art";
 
 export const RULESET7_UNIT_ART_IDS = {
   FIGHTER: "unit-original-fighter",
-  SCOUT: "unit-original-scout",
+  RAIDER: "unit-original-raider",
   MARKSMAN: "unit-original-marksman",
   GUARD: "unit-original-guard",
-  RAIDER: "unit-original-raider",
-  MEDIC: "unit-original-medic",
+  CAPTAIN: RULESET7_REVISION9_UNIT_ART_IDS.CAPTAIN,
   CATAPULT: "unit-original-catapult",
-  HEAVY: "unit-original-heavy",
-  HORSE_ARCHER: "unit-original-horse-archer",
-  BREACHER: "unit-original-breacher",
+  KNIGHT: RULESET7_REVISION9_UNIT_ART_IDS.KNIGHT,
   JUGGERNAUT: "unit-original-juggernaut",
   PATROL_BOAT: "unit-original-patrol-boat",
   BATTLESHIP: "unit-original-battleship",
@@ -27,15 +30,12 @@ export const RULESET7_UNIT_ART_IDS = {
 
 export const RULESET7_PORTRAIT_ART_IDS = {
   FIGHTER: "portrait-original-fighter",
-  SCOUT: "portrait-original-scout",
+  RAIDER: "portrait-original-raider",
   MARKSMAN: "portrait-original-marksman",
   GUARD: "portrait-original-guard",
-  RAIDER: "portrait-original-raider",
-  MEDIC: "portrait-original-medic",
+  CAPTAIN: RULESET7_REVISION9_PORTRAIT_ART_IDS.CAPTAIN,
   CATAPULT: "portrait-original-catapult",
-  HEAVY: "portrait-original-heavy",
-  HORSE_ARCHER: "portrait-original-horse-archer",
-  BREACHER: "portrait-original-breacher",
+  KNIGHT: RULESET7_REVISION9_PORTRAIT_ART_IDS.KNIGHT,
   JUGGERNAUT: "portrait-original-juggernaut",
   PATROL_BOAT: "unit-original-patrol-boat",
   BATTLESHIP: "unit-original-battleship",
@@ -51,8 +51,8 @@ export const RULESET7_TECH_ART_IDS = {
   GATHERING: "terrain-square-original-fruit",
   FARMING: RULESET7_FARM_ART_IDS.SINGLE,
   MILLING: "building-square-windmill",
-  MEDICINE: "ui-tech-original-medicine",
-  RECOVERY: "ui-tech-original-recovery",
+  ADMINISTRATION: RULESET7_REVISION9_UNIT_ART_IDS.CAPTAIN,
+  PLANNING: "ui-reward-expand",
   HUNTING: "terrain-square-original-animal",
   FORESTRY: "building-ruleset7-resource-lumber-camp",
   SAWMILLING: "building-square-sawmill",
@@ -62,10 +62,12 @@ export const RULESET7_TECH_ART_IDS = {
   ROADS: "terrain-square-road-mask-0101",
   COMMERCE: "building-square-market",
   RAIDING: "ui-tech-original-raiding",
-  MOUNTED_ARCHERY: "unit-original-horse-archer",
-  PROSPECTING: "terrain-square-ore",
+  CHIVALRY: RULESET7_REVISION9_UNIT_ART_IDS.KNIGHT,
+  DRILL: "unit-original-guard",
   ENGINEERING: "terrain-ruleset7-revision3-mountain-1",
   METALLURGY: "building-square-forge",
+  FORTIFICATION: "ui-tech-fortification",
+  EXPLOSIVES: RULESET7_REVISION9_ACTION_ART_IDS.BLAST_MOUNTAIN,
   SHORECRAFT: "building-ruleset7-port",
   NAVIGATION: "terrain-ruleset7-water-deep",
   NAVAL_ENGINEERING: "unit-original-battleship",
@@ -82,6 +84,7 @@ export const RULESET7_IMPROVEMENT_ART_IDS = {
   MARKET: "building-square-market",
   MONUMENT: "building-square-monument",
   PORT: "building-ruleset7-port",
+  SHIPYARD: RULESET7_REVISION9_IMPROVEMENT_ART_IDS.SHIPYARD,
 } as const satisfies Readonly<Record<ImprovementIdV7, string>>;
 
 export const RULESET7_RESOURCE_ART_IDS = {
@@ -129,7 +132,8 @@ export const RULESET7_TERRAIN_ART_IDS = {
 const STATIC_COMMAND_ART_IDS: Readonly<
   Partial<Record<CommandV7["kind"], string>>
 > = {
-  HEAL_ADJACENT: "ui-action-heal",
+  RALLY: RULESET7_REVISION9_ACTION_ART_IDS.RALLY,
+  TEND_WOUNDED: "ui-action-heal",
   RECOVER: "ui-action-recover",
   CAPTURE: "building-village",
   PROMOTE: "ui-action-promote",
@@ -150,11 +154,15 @@ const STATIC_COMMAND_ART_IDS: Readonly<
   BUILD_MARKET: RULESET7_IMPROVEMENT_ART_IDS.MARKET,
   BUILD_MONUMENT: RULESET7_IMPROVEMENT_ART_IDS.MONUMENT,
   BUILD_PORT: RULESET7_IMPROVEMENT_ART_IDS.PORT,
+  BUILD_SHIPYARD: RULESET7_IMPROVEMENT_ART_IDS.SHIPYARD,
   DISEMBARK: "unit-shared-embarked-transport",
   CLEAR_FOREST: "ui-action-clear-forest",
   REPLANT_FOREST: "ui-action-replant-forest",
+  CULTIVATE_FOREST: RULESET7_REVISION9_ACTION_ART_IDS.CULTIVATE_FOREST,
+  BLAST_MOUNTAIN: RULESET7_REVISION9_ACTION_ART_IDS.BLAST_MOUNTAIN,
   BUILD_ROAD: "terrain-square-road-mask-0101",
   REDEVELOP: "ui-action-redevelop",
+  LAND_GRANT: "ui-reward-expand",
   END_TURN: "ui-action-end-turn",
 };
 
@@ -175,13 +183,12 @@ export function rewardArtIdV7(reward: RewardIdV7): string {
       return "ui-reward-survey";
     case "STOCKPILE":
     case "TREASURY":
+    case "TREASURY_8":
       return "ui-hud-gold-coin-v7";
     case "WALLS":
       return "ui-reward-city-wall";
     case "MILITIA":
       return RULESET7_PORTRAIT_ART_IDS.FIGHTER;
-    case "EXPAND":
-      return "ui-reward-expand";
     case "BOOM":
       return "ui-hud-population";
     case "JUGGERNAUT":

@@ -29,7 +29,6 @@ export type MovementFailureReasonV7 =
   | "NOT_ADJACENT"
   | "OUT_OF_BOUNDS"
   | "OCCUPIED"
-  | "PROSPECTING_REQUIRED"
   | "ENGINEERING_REQUIRED"
   | "UNEXPLORED_INTERMEDIATE"
   | "MOUNTAIN_STOPS_MOVE"
@@ -48,8 +47,7 @@ export type MovementPathResultV7 =
       readonly revealed: readonly CoordV7[];
       readonly interruption: {
         readonly at: CoordV7;
-        readonly reason:
-          "OCCUPIED" | "PROSPECTING_REQUIRED" | "ENGINEERING_REQUIRED" | "ZOC";
+        readonly reason: "OCCUPIED" | "ENGINEERING_REQUIRED" | "ZOC";
       } | null;
     }
   | { readonly legal: false; readonly reason: MovementFailureReasonV7 };
@@ -108,7 +106,7 @@ export function validateMovementPathV7(
     const autoEmbark =
       unit.form === "LAND" &&
       index === path.length - 1 &&
-      tile.improvement === "PORT" &&
+      (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
       tile.territoryCityId !== null &&
       state.cities.some(
         (city) =>
@@ -133,7 +131,7 @@ export function validateMovementPathV7(
           reason: occupied
             ? "OCCUPIED"
             : tile.terrain === "MOUNTAIN"
-              ? "PROSPECTING_REQUIRED"
+              ? "ENGINEERING_REQUIRED"
               : "ENGINEERING_REQUIRED",
         };
       return {
@@ -149,7 +147,7 @@ export function validateMovementPathV7(
           reason: occupied
             ? "OCCUPIED"
             : tile.terrain === "MOUNTAIN"
-              ? "PROSPECTING_REQUIRED"
+              ? "ENGINEERING_REQUIRED"
               : "ENGINEERING_REQUIRED",
         },
       };
@@ -386,7 +384,7 @@ function validatePlayerMovementPathWithContextV7(
         unit.form === "LAND" &&
         index === path.length - 1 &&
         tile.explored &&
-        tile.improvement === "PORT" &&
+        (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
         tile.territoryOwnerId === view.viewer.id &&
         view.viewer.researchedTechs.includes("SHORECRAFT") &&
         view.naval.ownedPorts.some(
@@ -423,7 +421,7 @@ function validatePlayerMovementPathWithContextV7(
       tile.terrain === "MOUNTAIN" &&
       !capabilities.mountainMovement
     )
-      return { legal: false, reason: "PROSPECTING_REQUIRED" };
+      return { legal: false, reason: "ENGINEERING_REQUIRED" };
     const ignoresForest = capabilities.forestMovementFreedomRoles.includes(
       unit.role,
     );

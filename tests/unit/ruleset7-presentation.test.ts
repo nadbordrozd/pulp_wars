@@ -87,22 +87,21 @@ describe("Ruleset 7 public presentation", () => {
     ).toEqual([]);
   });
 
-  it("presents canonical recruitment base data and exact Horse Archer limits", () => {
-    const horseArcher = recruitmentRolePresentationV7("HORSE_ARCHER");
-    expect(horseArcher.label).toBe("Horse Archer");
-    expect(horseArcher.stats).toEqual([
+  it("presents canonical recruitment base data and exact Knight Overrun limits", () => {
+    const knightOverrun = recruitmentRolePresentationV7("KNIGHT");
+    expect(knightOverrun.label).toBe("Knight");
+    expect(knightOverrun.stats).toEqual([
       { label: "HP", value: "10" },
-      { label: "Attack", value: "2" },
+      { label: "Attack", value: "3" },
       { label: "Defense", value: "1" },
       { label: "Move", value: "3" },
-      { label: "Range", value: "1–2" },
+      { label: "Range", value: "1" },
       { label: "Sight", value: "1" },
     ]);
-    expect(horseArcher.abilities).toEqual([
-      "Dash: Can move before attacking.",
-      "Double shot: Shoots twice a turn. Move before the first shot.",
+    expect(knightOverrun.abilities).toEqual([
+      "Overrun: After a kill, advances and can attack another adjacent enemy.",
     ]);
-    expect(horseArcher.restrictions).toEqual(["Can't capture."]);
+    expect(knightOverrun.restrictions).toEqual(["Can't capture."]);
 
     const catapult = recruitmentRolePresentationV7("CATAPULT");
     expect(catapult.abilities.join(" ")).toContain("range 2–3");
@@ -114,15 +113,15 @@ describe("Ruleset 7 public presentation", () => {
   it("groups technology detail items from structured effect kinds", () => {
     expect(
       technologyEffectGroupsV7([
-        { kind: "UNIT_ROLE", role: "HORSE_ARCHER" },
+        { kind: "UNIT_ROLE", role: "KNIGHT" },
         { kind: "COMMAND", command: "BUILD_MARKET" },
-        { kind: "MARKET_CAPITAL_ROAD_BONUS", coins: 1 },
+        { kind: "ARMS_INDUSTRY_DISCOUNT", coins: 1 },
       ]),
     ).toEqual([
       {
         id: "UNITS",
         label: "Units",
-        items: ["Train Horse Archer"],
+        items: ["Train Knight"],
       },
       {
         id: "BUILDINGS",
@@ -132,7 +131,7 @@ describe("Ruleset 7 public presentation", () => {
       {
         id: "PASSIVE_EFFECTS",
         label: "Passive effects",
-        items: ["Markets on roads to the capital +1 coin"],
+        items: ["Forge training discount: 1 Coin"],
       },
     ]);
   });
@@ -401,7 +400,7 @@ describe("Ruleset 7 public presentation", () => {
           ...view,
           naval: {
             ...view.naval,
-            tradeCityIds: [...view.naval.tradeCityIds, ownedCity.id],
+            seaTradeCityIds: [...view.naval.seaTradeCityIds, ownedCity.id],
           },
         },
         ownedCity.id,

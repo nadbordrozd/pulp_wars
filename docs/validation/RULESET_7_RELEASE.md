@@ -8,6 +8,11 @@ refreshed as revision-3 evidence. Runtime candidate
 `origin/main`, deployed successfully to GitHub Pages, and verified through the
 actual production URL.
 
+The current revision-9 runtime has a separate focused review contract and
+evidence description in
+[RULESET_7_REVISION_9_REVIEW.md](RULESET_7_REVISION_9_REVIEW.md). This frozen
+revision-2 record and corpus remain unchanged.
+
 For that revision-2 release, Ruleset 7 was the normal browser default and the
 supported Original-faction game. Exact `?ruleset=7` selected the same contract.
 Frozen Ruleset 6 remains a

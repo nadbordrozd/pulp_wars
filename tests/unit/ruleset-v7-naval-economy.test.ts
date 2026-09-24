@@ -8,6 +8,7 @@ import {
   previewEconomicV7,
   projectEventsV7,
   queryPlayerCommandsV7,
+  recomputeLiveEconomyV7,
   seaTradeCityIdsV7,
   TECHNOLOGY_IDS_V7,
   viewForV7,
@@ -17,6 +18,114 @@ import { checkedV7 } from "../fixtures/v7-builders";
 import { coastalV7, withPortV7 } from "../fixtures/v7-naval-builders";
 
 describe("ruleset-7 naval economy", () => {
+  it("upgrades an occupied Port and applies only an active Shipyard discount", () => {
+    const fixture = withPortV7(9100);
+    const actor = fixture.state.humanPlayerId;
+    const passenger = fixture.state.units.find(
+      (unit) => unit.ownerId === actor,
+    );
+    if (passenger === undefined) throw new Error("passenger missing");
+    let state = checkedV7({
+      ...fixture.state,
+      players: fixture.state.players.map((player) =>
+        player.id === actor
+          ? { ...player, coins: 100, researchedTechs: TECHNOLOGY_IDS_V7 }
+          : player,
+      ),
+      units: fixture.state.units
+        .filter((unit) => unit.ownerId !== actor || unit.id === passenger.id)
+        .map((unit) =>
+          unit.id === passenger.id
+            ? { ...unit, at: fixture.portAt, form: "EMBARKED" as const }
+            : unit,
+        ),
+    });
+    const build = {
+      kind: "BUILD_SHIPYARD" as const,
+      at: fixture.portAt,
+    };
+    expect(queryPlayerCommandsV7(viewForV7(state, actor))).toContainEqual(
+      build,
+    );
+    const built = applyCommandV7(state, actor, build);
+    if (!built.accepted) throw new Error(built.error.code);
+    expect(
+      built.state.units.find((unit) => unit.id === passenger.id),
+    ).toMatchObject({ at: fixture.portAt, form: "EMBARKED" });
+    expect(built.events).toContainEqual(
+      expect.objectContaining({
+        kind: "SHIPYARD_BUILT",
+        populationAdded: 1,
+        livePopulationTotal: 2,
+      }),
+    );
+    state = checkedV7({
+      ...built.state,
+      units: built.state.units.filter((unit) => unit.id !== passenger.id),
+    });
+    while (state.pendingChoices[0] !== undefined) {
+      const choice = state.pendingChoices[0];
+      const settled = applyCommandV7(state, actor, {
+        kind: "CHOOSE_CITY_REWARD",
+        cityId: choice.cityId,
+        reachedLevel: choice.reachedLevel,
+        reward: required(choice.candidates[0]),
+      });
+      if (!settled.accepted) throw new Error(settled.error.code);
+      state = settled.state;
+    }
+    const train = queryPlayerCommandsV7(viewForV7(state, actor)).find(
+      (command) =>
+        command.kind === "TRAIN_NAVAL" &&
+        command.role === "PATROL_BOAT" &&
+        command.at.x === fixture.portAt.x &&
+        command.at.y === fixture.portAt.y,
+    );
+    if (train?.kind !== "TRAIN_NAVAL")
+      throw new Error("discounted training offer missing");
+    const trained = applyCommandV7(state, actor, train);
+    if (!trained.accepted) throw new Error(trained.error.code);
+    expect(trained.events).toContainEqual(
+      expect.objectContaining({
+        kind: "NAVAL_UNIT_TRAINED",
+        cost: 3,
+        dock: "SHIPYARD",
+        discountSource: "SHIPYARD",
+      }),
+    );
+
+    const hostile = fixture.state.units.find((unit) => unit.ownerId !== actor);
+    if (hostile === undefined) throw new Error("hostile ship source missing");
+    const blockadedCandidate = {
+      ...state,
+      units: [
+        {
+          ...hostile,
+          role: "PATROL_BOAT" as const,
+          form: "NAVAL" as const,
+          at: fixture.portAt,
+          hp: 10,
+          maxHp: 10,
+        },
+      ],
+    };
+    const blockadedEconomy = recomputeLiveEconomyV7(
+      state,
+      blockadedCandidate,
+      state.populationContributions,
+    );
+    const blockaded = checkedV7({
+      ...blockadedCandidate,
+      cities: blockadedEconomy.cities,
+      populationContributions: blockadedEconomy.populationContributions,
+    });
+    expect(
+      queryPlayerCommandsV7(viewForV7(blockaded, actor)).some(
+        (command) => command.kind === "TRAIN_NAVAL",
+      ),
+    ).toBe(false);
+  });
+
   it("gathers Pearls for exact net +2 and fails overflow atomically", () => {
     const fixture = coastalV7(9101);
     const tile = fixture.state.board.tiles.find(
@@ -232,7 +341,7 @@ describe("ruleset-7 naval economy", () => {
     }
   });
 
-  it("combines capital Roads with Ports and ignores mid-lane occupation", () => {
+  it("keeps capital Roads separate from Ports and ignores mid-lane occupation", () => {
     const fixture = coastalV7(9103);
     const capital = fixture.state.cities.find(
       (city) => city.ownerId === fixture.state.humanPlayerId,
@@ -329,13 +438,13 @@ describe("ruleset-7 naval economy", () => {
     ).toEqual([cityBId, cityCId]);
     expect(
       combinedNetworkCityIdsV7(base, base.humanPlayerId).has(cityDId),
-    ).toBe(true);
+    ).toBe(false);
     expect(
       cityIncomeV7(
         base,
         base.cities.find((city) => city.id === cityBId) ?? cityB,
       ),
-    ).toBe(2);
+    ).toBe(3);
     expect(
       cityIncomeV7(
         base,
@@ -474,3 +583,8 @@ describe("ruleset-7 naval economy", () => {
     ).toBe(false);
   });
 });
+
+function required<T>(value: T | undefined): T {
+  if (value === undefined) throw new Error("required value missing");
+  return value;
+}

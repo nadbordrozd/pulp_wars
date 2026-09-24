@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { projectPublicUnitForPolicyV7, scoreCommandV7 } from "../../src/ai/v7";
+import {
+  chooseNormalCommandV7,
+  projectPublicUnitForPolicyV7,
+  scoreCommandV7,
+} from "../../src/ai/v7";
 import {
   IMPROVEMENT_IDS_V7,
   RULESET_7_ID,
@@ -13,12 +17,14 @@ import {
   createInitialMapStateV7,
   effectiveRoleRuleV7,
   parseCommandV7,
+  parseEventV7,
   parseGameStateV7,
   projectEventsV7,
   previewEconomicV7,
   queryCombatPreviewV7,
   queryPlayerCommandsV7,
   recomputeLiveEconomyV7,
+  seaTradeCityIdsV7,
   unitId,
   viewForV7,
   validateMovementPathV7,
@@ -46,7 +52,9 @@ const READY: UnitStateV7["activation"] = {
   movedPathLength: 0,
   attacked: false,
   attacksUsed: 0,
-  healed: false,
+  tendedThisTurn: false,
+  inspired: false,
+  overrunActive: false,
   recovered: false,
   captured: false,
   handled: false,
@@ -55,9 +63,9 @@ const READY: UnitStateV7["activation"] = {
 
 describe("Ruleset 7 revision 7 networks and fortifications", () => {
   it("freezes the revision identity and removes the retired systems", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r8");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r9");
     expect(setupV7().mapGenerationRevision).toBe("REGIONAL_BIOMES_NAVAL_V2");
-    expect(TECHNOLOGY_IDS_V7).toContain("PROSPECTING");
+    expect(TECHNOLOGY_IDS_V7).toContain("ENGINEERING");
     expect(TECHNOLOGY_IDS_V7).not.toContain("GRAND_WORKS");
     expect(UNIT_ROLE_IDS_V7).not.toContain("SABOTEUR");
     expect(IMPROVEMENT_IDS_V7).not.toContain("GRAND_WORKS");
@@ -214,7 +222,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
         player.id === defender.ownerId
           ? {
               ...player,
-              researchedTechs: ["PROSPECTING"],
+              researchedTechs: ["ENGINEERING"],
               explored: base.board.tiles.map((tile) => tile.at),
             }
           : { ...player, explored: base.board.tiles.map((tile) => tile.at) },
@@ -255,8 +263,8 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     };
     const preview = calculateCombatPreviewV7(state, attacker.id, defender.id);
     expect(preview).toMatchObject({
-      fortificationLevel: 4,
-      defense2: effectiveRoleRuleV7("FIGHTER").defense2 + 8,
+      fortificationLevel: 3,
+      defense2: effectiveRoleRuleV7("FIGHTER").defense2 + 6,
       defenseBonusNumerator: 3,
       defenseBonusDenominator: 2,
     });
@@ -276,7 +284,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     expect(
       queryCombatPreviewV7(friendlyView, attacker.id, defender.id)
         ?.fortificationLevel,
-    ).toBe(4);
+    ).toBe(3);
     const capturedView = viewForV7(captured, attacker.ownerId);
     expect(
       queryCombatPreviewV7(capturedView, attacker.id, defender.id)
@@ -290,6 +298,112 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
         .find((entry) => entry.unitId === defender.id)
         ?.stats.find((stat) => stat.id === "DEFENSE")?.total,
     ).toEqual({ numerator: 3, denominator: 1 });
+  });
+
+  it("destroys hostile Field Defense through all four public command paths", () => {
+    for (const scenario of [
+      { reason: "OCCUPATION" as const, role: "FIGHTER" as const },
+      { reason: "CATAPULT" as const, role: "CATAPULT" as const },
+      { reason: "INSPIRED" as const, role: "FIGHTER" as const },
+      { reason: "EXPLOSIVES" as const, role: "FIGHTER" as const },
+    ]) {
+      const base = exploredAllV7(allTechsV7(initialV7(47)));
+      const actor = base.humanPlayerId;
+      const enemy = required(
+        base.players.find((player) => player.id !== actor),
+      ).id;
+      const actorUnit = required(
+        base.units.find((candidate) => candidate.ownerId === actor),
+      );
+      const enemyUnit = required(
+        base.units.find((candidate) => candidate.ownerId === enemy),
+      );
+      const enemyCity = required(
+        base.cities.find((candidate) => candidate.ownerId === enemy),
+      );
+      const targetAt = { x: 3, y: 2 };
+      const attackerAt =
+        scenario.reason === "CATAPULT" ? { x: 1, y: 2 } : { x: 2, y: 2 };
+      const attacker = {
+        ...unit(
+          actorUnit.id,
+          actor,
+          actorUnit.homeCityId,
+          scenario.role,
+          attackerAt,
+        ),
+        activation: {
+          ...READY,
+          inspired: scenario.reason === "INSPIRED",
+        },
+        ...(scenario.reason === "INSPIRED" || scenario.reason === "EXPLOSIVES"
+          ? { veteran: true, kills: 3, hp: 15, maxHp: 15 }
+          : {}),
+      };
+      const defender = unit(
+        enemyUnit.id,
+        enemy,
+        enemyUnit.homeCityId,
+        "GUARD",
+        targetAt,
+      );
+      const state = checkedV7({
+        ...base,
+        treasureChests: base.treasureChests.filter(
+          (at) => !same(at, attackerAt) && !same(at, targetAt),
+        ),
+        units:
+          scenario.reason === "OCCUPATION"
+            ? [attacker]
+            : [attacker, defender].sort((left, right) => left.id - right.id),
+        board: {
+          ...base.board,
+          tiles: base.board.tiles.map((tile) =>
+            same(tile.at, targetAt)
+              ? {
+                  ...tile,
+                  biome: "PLAINS",
+                  terrain: "GRASS",
+                  resource: null,
+                  improvement: null,
+                  road: false,
+                  fieldDefense: true,
+                  site: null,
+                  territoryCityId: enemyCity.id,
+                }
+              : same(tile.at, attackerAt)
+                ? {
+                    ...tile,
+                    biome: "PLAINS",
+                    terrain: "GRASS",
+                    resource: null,
+                    improvement: null,
+                    site: null,
+                  }
+                : tile,
+          ),
+        },
+      });
+      const command =
+        scenario.reason === "OCCUPATION"
+          ? ({ kind: "MOVE", unitId: attacker.id, path: [targetAt] } as const)
+          : ({
+              kind: "ATTACK",
+              unitId: attacker.id,
+              targetUnitId: defender.id,
+            } as const);
+      expect(queryPlayerCommandsV7(viewForV7(state, actor))).toContainEqual(
+        command,
+      );
+      const result = applyCommandV7(state, actor, command);
+      if (!result.accepted) throw new Error(result.error.code);
+      expect(result.events).toContainEqual({
+        kind: "FIELD_DEFENSE_DESTROYED",
+        at: targetAt,
+        reason: scenario.reason,
+      });
+      expect(tileAt(result.state, targetAt)?.fieldDefense).toBe(false);
+    }
   });
 
   it("applies deterministic Battleship splash and gives a hidden victim owner redacted damage", () => {
@@ -389,7 +503,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     expect(projected.events[0]).not.toHaveProperty("targetUnitId");
   });
 
-  it("roots Market roads at the owner's original capital across neutral Roads", () => {
+  it("roots land Roads at the owner's original capital without changing Market output", () => {
     const base = initialV7(67, 2);
     const owner = base.humanPlayerId;
     const original = required(
@@ -469,11 +583,11 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     expect(
       connectedEconomy.cities.find((city) => city.id === original.id)
         ?.economicPopulation,
-    ).toBe(original.economicPopulation + 1);
+    ).toBe(original.economicPopulation);
     expect(
       connectedEconomy.cities.find((city) => city.id === foreign.id)
         ?.economicPopulation,
-    ).toBe(foreign.economicPopulation + 1);
+    ).toBe(foreign.economicPopulation);
     const connectedIncome = cityIncomeV7(
       connected,
       required(connected.cities.find((city) => city.id === foreign.id)),
@@ -490,7 +604,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
         lostCapital,
         required(lostCapital.cities.find((city) => city.id === foreign.id)),
       ),
-    ).toBe(connectedIncome - 1);
+    ).toBe(connectedIncome);
     const recaptured: GameStateV7 = {
       ...lostCapital,
       cities: lostCapital.cities.map((city) =>
@@ -530,7 +644,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     expect(
       reconnectedEconomy.cities.find((city) => city.id === foreign.id)
         ?.economicPopulation,
-    ).toBe(foreign.economicPopulation + 1);
+    ).toBe(foreign.economicPopulation);
     expect(
       reconnectedEconomy.cities.find((city) => city.id === foreign.id)?.rewards,
     ).toEqual(foreign.rewards);
@@ -584,20 +698,29 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     const cities = base.cities.slice(0, 3);
     if (cities.length !== 3) throw new Error("three cities missing");
     const chained = portGraph(base, owner, cities, [1, 6, 11]);
-    expect(combinedNetworkCityIdsV7(chained, owner)).toEqual(
-      new Set(cities.map((city) => city.id)),
-    );
-    const chainedEconomy = recomputeLiveEconomyV7(chained, chained, []);
     const originalCapitalId = required(
       chained.players.find((player) => player.id === owner),
     ).originalCapitalCityId;
+    expect(seaTradeCityIdsV7(chained, owner)).toEqual(
+      new Set(
+        cities
+          .filter((city) => city.id !== originalCapitalId)
+          .map((city) => city.id),
+      ),
+    );
+    expect(combinedNetworkCityIdsV7(chained, owner)).toEqual(
+      new Set(
+        cities
+          .filter((city) => city.id === originalCapitalId)
+          .map((city) => city.id),
+      ),
+    );
+    const chainedEconomy = recomputeLiveEconomyV7(chained, chained, []);
     expect(
       chainedEconomy.cities
         .filter((city) => cities.some((candidate) => candidate.id === city.id))
         .map((city) => [city.id, city.economicPopulation]),
-    ).toEqual(
-      cities.map((city) => [city.id, city.id === originalCapitalId ? 2 : 1]),
-    );
+    ).toEqual(cities.map((city) => [city.id, 0]));
     const shorecraftOnly = {
       ...chained,
       players: chained.players.map((player) =>
@@ -606,9 +729,8 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
           : player,
       ),
     };
-    expect(combinedNetworkCityIdsV7(shorecraftOnly, owner)).toEqual(
-      new Set(cities.map((city) => city.id)),
-    );
+    expect(seaTradeCityIdsV7(shorecraftOnly, owner)).toEqual(new Set());
+    expect(combinedNetworkCityIdsV7(shorecraftOnly, owner)).toEqual(new Set());
     expect(
       recomputeLiveEconomyV7(shorecraftOnly, shorecraftOnly, [])
         .cities.filter((city) =>
@@ -618,7 +740,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     ).toEqual([0, 0, 0]);
 
     const tooFar = portGraph(base, owner, cities, [1, 6, 12]);
-    expect(combinedNetworkCityIdsV7(tooFar, owner)).not.toContain(
+    expect(seaTradeCityIdsV7(tooFar, owner)).not.toContain(
       required(cities[2]).id,
     );
 
@@ -639,8 +761,8 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
         ),
       },
     };
-    expect(combinedNetworkCityIdsV7(blocked, owner)).toEqual(
-      new Set([required(cities[0]).id]),
+    expect(seaTradeCityIdsV7(blocked, owner)).toEqual(
+      new Set([required(cities[1]).id, required(cities[2]).id]),
     );
 
     const dense = densePortGraph(base, owner, cities);
@@ -652,7 +774,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
       expect(combinedNetworkCityIdsV7(dense, owner)).toBe(first);
   });
 
-  it("keeps public road speed exact across a Port-linked road component", () => {
+  it("keeps public road speed exact when sea trade does not join land Roads", () => {
     const base = initialV7(72, 2);
     const owner = base.humanPlayerId;
     const player = required(base.players.find((item) => item.id === owner));
@@ -699,16 +821,21 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
       required(state.units[0]),
       [destination],
     );
-    expect(combinedNetworkCityIdsV7(state, owner)).toContain(remote.id);
-    expect(combinedNetworkRoadKeysV7(state, owner)).toContain(key(remote.at));
-    expect(combinedNetworkRoadKeysV7(state, owner)).toContain(key(destination));
+    expect(seaTradeCityIdsV7(state, owner)).toContain(remote.id);
+    expect(combinedNetworkCityIdsV7(state, owner)).not.toContain(remote.id);
+    expect(combinedNetworkRoadKeysV7(state, owner)).not.toContain(
+      key(remote.at),
+    );
+    expect(combinedNetworkRoadKeysV7(state, owner)).not.toContain(
+      key(destination),
+    );
     const view = viewForV7(state, owner);
     const publicResult = validatePlayerMovementPathV7(
       view,
       required(view.units.find((candidate) => candidate.id === mover.id)),
       [destination],
     );
-    expect(authoritative).toMatchObject({ legal: true, spentPoints2: 1 });
+    expect(authoritative).toMatchObject({ legal: true, spentPoints2: 2 });
     expect(publicResult).toEqual(authoritative);
   });
 
@@ -767,10 +894,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
       preview: {
         ownerCityId: null,
         cost: 2,
-        populationDeltaByCity: [
-          expect.objectContaining({ delta: 1 }),
-          expect.objectContaining({ delta: 1 }),
-        ],
+        populationDeltaByCity: [],
       },
     });
     const applied = applyCommandV7(base, owner, command);
@@ -824,7 +948,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
       ...fixture.state,
       units: fixture.state.units.map((unit) =>
         unit.id === unitState.id
-          ? { ...unit, at: start, role: "SCOUT" as const, activation: READY }
+          ? { ...unit, at: start, role: "RAIDER" as const, activation: READY }
           : unit,
       ),
     });
@@ -888,7 +1012,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     ).toBe(false);
   });
 
-  it("recomputes reciprocal network population when Roads research activates an existing route", () => {
+  it("activates the existing land Road graph without obsolete population growth", () => {
     const state = researchRoadsState();
     const owner = state.humanPlayerId;
     const ownedBefore = state.cities.filter((city) => city.ownerId === owner);
@@ -904,18 +1028,17 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
       result.state.cities
         .filter((city) => city.ownerId === owner)
         .map((city) => city.economicPopulation),
-    ).toEqual([1, 1]);
+    ).toEqual([0, 0]);
     expect(result.events).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ kind: "TECH_RESEARCHED", tech: "ROADS" }),
-        expect.objectContaining({ kind: "CITY_ECONOMY_CHANGED" }),
         expect.objectContaining({ kind: "SEA_NETWORK_CHANGED" }),
       ]),
     );
     expect(parseGameStateV7(result.state)).toEqual(result.state);
   });
 
-  it("keeps Metallurgy required for ordinary Pillage and checks action state first", () => {
+  it("keeps Explosives required for ordinary Pillage and checks action state first", () => {
     const state = exploredAllV7(initialV7(79));
     const actor = state.humanPlayerId;
     const sourceBase = required(
@@ -970,6 +1093,384 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     expect(
       applyCommandV7(acted, actor, { kind: "PILLAGE", unitId: sourceBase.id }),
     ).toMatchObject({ accepted: false, error: { code: "UNIT_ALREADY_ACTED" } });
+    const movedGuard = checkedV7({
+      ...ready,
+      players: ready.players.map((player) =>
+        player.id === actor
+          ? {
+              ...player,
+              researchedTechs: [
+                "GATHERING",
+                "DRILL",
+                "FORTIFICATION",
+                "EXPLOSIVES",
+              ],
+            }
+          : player,
+      ),
+      units: ready.units.map((candidate) => ({
+        ...candidate,
+        role: "GUARD" as const,
+        maxHp: 15,
+        hp: 15,
+        activation: {
+          ...candidate.activation,
+          moved: true,
+          movedPathLength: 1,
+        },
+      })),
+    });
+    const pillage = { kind: "PILLAGE" as const, unitId: sourceBase.id };
+    expect(queryPlayerCommandsV7(viewForV7(movedGuard, actor))).toContainEqual(
+      pillage,
+    );
+    expect(applyCommandV7(movedGuard, actor, pillage)).toMatchObject({
+      accepted: true,
+      events: expect.arrayContaining([
+        expect.objectContaining({ kind: "IMPROVEMENT_PILLAGED" }),
+      ]),
+    });
+  });
+
+  it("applies the active same-city Forge discount to offered land training", () => {
+    const base = exploredAllV7(allTechsV7(initialV7(81)));
+    const actor = base.humanPlayerId;
+    const city = required(
+      base.cities.find((candidate) => candidate.ownerId === actor),
+    );
+    const forgeTile = required(
+      base.board.tiles.find(
+        (tile) =>
+          tile.territoryCityId === city.id &&
+          tile.site === null &&
+          tile.improvement === null &&
+          neighbors(tile.at).some(
+            (at) =>
+              tileAt(base, at)?.territoryCityId === city.id &&
+              tileAt(base, at)?.improvement === null,
+          ),
+      ),
+    );
+    const mineAt = required(
+      neighbors(forgeTile.at).find(
+        (at) =>
+          tileAt(base, at)?.territoryCityId === city.id &&
+          tileAt(base, at)?.improvement === null,
+      ),
+    );
+    const forgeContributions: PopulationContributionV7[] = [
+      {
+        id: base.nextEntityId,
+        cityId: city.id,
+        category: "LIVE",
+        amount: 1,
+        source: { kind: "IMPROVEMENT", improvement: "MINE", at: mineAt },
+      },
+      {
+        id: base.nextEntityId + 1,
+        cityId: city.id,
+        category: "LIVE",
+        amount: 1,
+        source: {
+          kind: "IMPROVEMENT",
+          improvement: "FORGE",
+          at: forgeTile.at,
+        },
+      },
+    ];
+    const candidate: GameStateV7 = {
+      ...base,
+      nextEntityId: base.nextEntityId + forgeContributions.length,
+      players: base.players.map((player) =>
+        player.id === actor ? { ...player, coins: 100 } : player,
+      ),
+      units: base.units.filter((unitState) => unitState.ownerId !== actor),
+      board: {
+        ...base.board,
+        tiles: base.board.tiles.map((tile) =>
+          same(tile.at, forgeTile.at)
+            ? {
+                ...tile,
+                biome: "HIGHLANDS" as const,
+                terrain: "MOUNTAIN" as const,
+                resource: null,
+                improvement: "FORGE" as const,
+                site: null,
+              }
+            : same(tile.at, mineAt)
+              ? {
+                  ...tile,
+                  biome: "HIGHLANDS" as const,
+                  terrain: "MOUNTAIN" as const,
+                  resource: null,
+                  improvement: "MINE" as const,
+                  site: null,
+                }
+              : tile,
+        ),
+      },
+      populationContributions: [
+        ...base.populationContributions,
+        ...forgeContributions,
+      ],
+    };
+    const economy = recomputeLiveEconomyV7(
+      base,
+      candidate,
+      candidate.populationContributions,
+    );
+    const state = checkedV7({
+      ...candidate,
+      cities: economy.cities.map((candidateCity) =>
+        candidateCity.id === city.id
+          ? {
+              ...candidateCity,
+              level: 2,
+              population:
+                candidateCity.permanentPopulation +
+                candidateCity.economicPopulation -
+                2,
+              rewards: [{ reachedLevel: 2, reward: "STOCKPILE" as const }],
+            }
+          : candidateCity,
+      ),
+      populationContributions: economy.populationContributions,
+    });
+    const command = {
+      kind: "TRAIN" as const,
+      cityId: city.id,
+      role: "FIGHTER" as const,
+    };
+    expect(queryPlayerCommandsV7(viewForV7(state, actor))).toContainEqual(
+      command,
+    );
+    const discounted = applyCommandV7(state, actor, command);
+    if (!discounted.accepted) throw new Error(discounted.error.code);
+    expect(discounted.events).toContainEqual(
+      expect.objectContaining({ kind: "UNIT_TRAINED", cost: 1 }),
+    );
+
+    const inactive = checkedV7({
+      ...base,
+      players: base.players.map((player) =>
+        player.id === actor ? { ...player, coins: 100 } : player,
+      ),
+      units: base.units.filter((unitState) => unitState.ownerId !== actor),
+    });
+    const fullPrice = applyCommandV7(inactive, actor, command);
+    if (!fullPrice.accepted) throw new Error(fullPrice.error.code);
+    expect(fullPrice.events).toContainEqual(
+      expect.objectContaining({ kind: "UNIT_TRAINED", cost: 2 }),
+    );
+  });
+
+  it("preserves roads and Field Defense while Cultivate and Blast emit exact transitions", () => {
+    const base = richV7(exploredAllV7(allTechsV7(initialV7(85))), 100);
+    const actor = base.humanPlayerId;
+    const city = required(
+      base.cities.find((candidate) => candidate.ownerId === actor),
+    );
+    const [forest, mountain] = base.board.tiles.filter(
+      (tile) => tile.territoryCityId === city.id && tile.site === null,
+    );
+    if (forest === undefined || mountain === undefined)
+      throw new Error("terrain action tiles missing");
+    const state = checkedV7({
+      ...base,
+      treasureChests: base.treasureChests.filter(
+        (at) => !same(at, forest.at) && !same(at, mountain.at),
+      ),
+      units: base.units.filter(
+        (candidate) =>
+          !same(candidate.at, forest.at) && !same(candidate.at, mountain.at),
+      ),
+      board: {
+        ...base.board,
+        tiles: base.board.tiles.map((tile) =>
+          same(tile.at, forest.at)
+            ? {
+                ...tile,
+                biome: "WOODLAND",
+                terrain: "FOREST",
+                resource: null,
+                improvement: null,
+                road: true,
+                fieldDefense: true,
+              }
+            : same(tile.at, mountain.at)
+              ? {
+                  ...tile,
+                  biome: "HIGHLANDS",
+                  terrain: "MOUNTAIN",
+                  resource: null,
+                  improvement: null,
+                  road: true,
+                  fieldDefense: false,
+                }
+              : tile,
+        ),
+      },
+    });
+    const cultivate = { kind: "CULTIVATE_FOREST" as const, at: forest.at };
+    const blast = { kind: "BLAST_MOUNTAIN" as const, at: mountain.at };
+    const offered = queryPlayerCommandsV7(viewForV7(state, actor));
+    expect(offered).toEqual(expect.arrayContaining([cultivate, blast]));
+    const cultivated = applyCommandV7(state, actor, cultivate);
+    if (!cultivated.accepted) throw new Error(cultivated.error.code);
+    expect(cultivated.events).toContainEqual({
+      kind: "FOREST_CULTIVATED",
+      playerId: actor,
+      cityId: city.id,
+      at: forest.at,
+      cost: 4,
+      terrainBefore: "FOREST",
+      terrainAfter: "GRASS",
+      resourceBefore: null,
+      resourceAfter: "FERTILE_GROUND",
+    });
+    expect(tileAt(cultivated.state, forest.at)).toMatchObject({
+      terrain: "GRASS",
+      resource: "FERTILE_GROUND",
+      road: true,
+      fieldDefense: true,
+    });
+    const blasted = applyCommandV7(cultivated.state, actor, blast);
+    if (!blasted.accepted) throw new Error(blasted.error.code);
+    expect(blasted.events).toContainEqual({
+      kind: "MOUNTAIN_BLASTED",
+      playerId: actor,
+      cityId: city.id,
+      at: mountain.at,
+      cost: 3,
+      terrainBefore: "MOUNTAIN",
+      terrainAfter: "GRASS",
+      resourceBefore: null,
+      resourceAfter: null,
+    });
+    expect(tileAt(blasted.state, mountain.at)).toMatchObject({
+      terrain: "GRASS",
+      road: true,
+      fieldDefense: false,
+    });
+    for (const invalid of [
+      {
+        ...state,
+        board: {
+          ...state.board,
+          tiles: state.board.tiles.map((tile) =>
+            same(tile.at, forest.at)
+              ? { ...tile, resource: "GAME" as const }
+              : tile,
+          ),
+        },
+      },
+      {
+        ...state,
+        board: {
+          ...state.board,
+          tiles: state.board.tiles.map((tile) =>
+            same(tile.at, mountain.at) ? { ...tile, fieldDefense: true } : tile,
+          ),
+        },
+      },
+    ] as const) {
+      const command =
+        tileAt(invalid, forest.at)?.resource === "GAME" ? cultivate : blast;
+      const rejected = applyCommandV7(invalid, actor, command);
+      expect(rejected).toMatchObject({ accepted: false, events: [] });
+      expect(rejected.state).toBe(invalid);
+    }
+  });
+
+  it("does not expose hidden Ore through Blast offers or normal AI", () => {
+    const base = richV7(exploredAllV7(initialV7(87)), 100);
+    const actor = base.humanPlayerId;
+    const city = required(
+      base.cities.find((candidate) => candidate.ownerId === actor),
+    );
+    const [bareAt, oreAt] = base.board.tiles
+      .filter((tile) => tile.territoryCityId === city.id && tile.site === null)
+      .slice(0, 2)
+      .map((tile) => tile.at);
+    if (bareAt === undefined || oreAt === undefined)
+      throw new Error("mountains missing");
+    const beforeEngineering = checkedV7({
+      ...base,
+      players: base.players.map((player) =>
+        player.id === actor
+          ? {
+              ...player,
+              researchedTechs: [
+                "GATHERING",
+                "DRILL",
+                "FORTIFICATION",
+                "EXPLOSIVES",
+              ],
+            }
+          : player,
+      ),
+      treasureChests: base.treasureChests.filter(
+        (at) => !same(at, bareAt) && !same(at, oreAt),
+      ),
+      units: base.units.filter(
+        (unitState) =>
+          !same(unitState.at, bareAt) && !same(unitState.at, oreAt),
+      ),
+      board: {
+        ...base.board,
+        tiles: base.board.tiles.map((tile) =>
+          same(tile.at, bareAt) || same(tile.at, oreAt)
+            ? {
+                ...tile,
+                biome: "HIGHLANDS",
+                terrain: "MOUNTAIN",
+                resource: same(tile.at, oreAt) ? "ORE" : null,
+                improvement: null,
+                road: false,
+                fieldDefense: false,
+              }
+            : tile,
+        ),
+      },
+    });
+    const hiddenView = viewForV7(beforeEngineering, actor);
+    expect(
+      hiddenView.board.tiles
+        .filter(
+          (tile) =>
+            tile.explored && (same(tile.at, bareAt) || same(tile.at, oreAt)),
+        )
+        .map((tile) => (tile.explored ? tile.resource : "hidden")),
+    ).toEqual([null, null]);
+    expect(
+      queryPlayerCommandsV7(hiddenView).some(
+        (command) => command.kind === "BLAST_MOUNTAIN",
+      ),
+    ).toBe(false);
+    expect(chooseNormalCommandV7(hiddenView).command?.kind).not.toBe(
+      "BLAST_MOUNTAIN",
+    );
+
+    const afterEngineering = checkedV7({
+      ...beforeEngineering,
+      players: beforeEngineering.players.map((player) =>
+        player.id === actor
+          ? {
+              ...player,
+              researchedTechs: [
+                "GATHERING",
+                "DRILL",
+                "ENGINEERING",
+                "FORTIFICATION",
+                "EXPLOSIVES",
+              ],
+            }
+          : player,
+      ),
+    });
+    const offered = queryPlayerCommandsV7(viewForV7(afterEngineering, actor));
+    expect(offered).toContainEqual({ kind: "BLAST_MOUNTAIN", at: bareAt });
+    expect(offered).not.toContainEqual({ kind: "BLAST_MOUNTAIN", at: oreAt });
   });
 
   it("queues multi-level rewards one at a time and grants sequential Juggernauts", () => {
@@ -1095,6 +1596,89 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
       ),
     ).toBe(false);
   });
+
+  it("offers and applies a non-empty Land Grant independently of recruitment capacity", () => {
+    const fixture = rewardSawmillState(97);
+    const city = required(
+      fixture.state.cities.find((candidate) => candidate.id === fixture.cityId),
+    );
+    const positions = fixture.state.board.tiles
+      .filter((tile) => tile.territoryCityId === city.id && tile.biome !== null)
+      .slice(0, 6);
+    expect(positions).toHaveLength(6);
+    const full = checkedV7({
+      ...fixture.state,
+      nextEntityId: fixture.state.nextEntityId + positions.length,
+      units: positions.map((tile, index) =>
+        unit(
+          unitId(fixture.state.nextEntityId + index),
+          fixture.state.humanPlayerId,
+          city.id,
+          "FIGHTER",
+          tile.at,
+        ),
+      ),
+    });
+    const command = { kind: "LAND_GRANT" as const, cityId: city.id };
+    expect(
+      queryPlayerCommandsV7(viewForV7(full, full.humanPlayerId)),
+    ).toContainEqual(command);
+    const result = applyCommandV7(full, full.humanPlayerId, command);
+    if (!result.accepted) throw new Error(result.error.code);
+    const event = required(
+      result.events.find((candidate) => candidate.kind === "LAND_GRANTED"),
+    );
+    expect(event.kind === "LAND_GRANTED" && event.tiles.length).toBeGreaterThan(
+      0,
+    );
+    expect(
+      result.state.cities.find((candidate) => candidate.id === city.id)
+        ?.landGrantUsed,
+    ).toBe(true);
+    const rival = required(
+      result.state.players.find((player) => player.id !== full.humanPlayerId),
+    );
+    const rivalCity = required(
+      result.state.cities.find((candidate) => candidate.ownerId === rival.id),
+    );
+    const captured = checkedV7({
+      ...result.state,
+      units: [],
+      cities: result.state.cities.map((candidate) =>
+        candidate.id === city.id
+          ? { ...candidate, ownerId: rival.id }
+          : candidate.id === rivalCity.id
+            ? { ...candidate, ownerId: full.humanPlayerId }
+            : candidate,
+      ),
+    });
+    const recaptured = checkedV7({
+      ...captured,
+      cities: captured.cities.map((candidate) =>
+        candidate.id === city.id
+          ? { ...candidate, ownerId: full.humanPlayerId }
+          : candidate.id === rivalCity.id
+            ? { ...candidate, ownerId: rival.id }
+            : candidate,
+      ),
+    });
+    expect(
+      recaptured.cities.find((candidate) => candidate.id === city.id)
+        ?.landGrantUsed,
+    ).toBe(true);
+    expect(
+      applyCommandV7(recaptured, full.humanPlayerId, command),
+    ).toMatchObject({ accepted: false, events: [] });
+    expect(
+      parseEventV7({
+        kind: "LAND_GRANTED",
+        playerId: fixture.state.humanPlayerId,
+        cityId: city.id,
+        cost: 6,
+        tiles: [],
+      }),
+    ).toMatchObject({ ok: false });
+  });
 });
 
 function rewardSawmillState(seed: number): {
@@ -1178,11 +1762,11 @@ function rewardSawmillState(seed: number): {
               permanentPopulation: 5,
               economicPopulation: 8,
               population: 4,
-              expanded: true,
+              expanded: false,
               rewards: [
                 { reachedLevel: 2, reward: "STOCKPILE" as const },
                 { reachedLevel: 3, reward: "WALLS" as const },
-                { reachedLevel: 4, reward: "EXPAND" as const },
+                { reachedLevel: 4, reward: "TREASURY_8" as const },
               ],
             }
           : candidate,

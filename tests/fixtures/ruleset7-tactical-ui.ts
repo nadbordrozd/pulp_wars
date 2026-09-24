@@ -16,7 +16,9 @@ const READY: UnitStateV7["activation"] = {
   movedPathLength: 0,
   attacked: false,
   attacksUsed: 0,
-  healed: false,
+  tendedThisTurn: false,
+  inspired: false,
+  overrunActive: false,
   recovered: false,
   captured: false,
   handled: false,
@@ -30,7 +32,7 @@ export interface TacticalPublicFixtureV7 {
   readonly offeredCommands: readonly CommandV7[];
 }
 
-export function horseArcherPublicFixtureV7(): TacticalPublicFixtureV7 {
+export function knightOverrunPublicFixtureV7(): TacticalPublicFixtureV7 {
   const base = tacticalBase(1701);
   const own = required(
     base.units.find((unit) => unit.ownerId === base.humanPlayerId),
@@ -44,7 +46,7 @@ export function horseArcherPublicFixtureV7(): TacticalPublicFixtureV7 {
     units: [
       {
         ...own,
-        role: "HORSE_ARCHER" as const,
+        role: "KNIGHT" as const,
         at: { x: 4, y: 4 },
         hp: 10,
         maxHp: 10,
@@ -52,19 +54,19 @@ export function horseArcherPublicFixtureV7(): TacticalPublicFixtureV7 {
       },
       {
         ...rival,
-        role: "GUARD" as const,
-        at: { x: 6, y: 4 },
-        hp: 15,
-        maxHp: 15,
+        role: "FIGHTER" as const,
+        at: { x: 5, y: 4 },
+        hp: 1,
+        maxHp: 10,
         activation: READY,
       },
       {
         ...rival,
         id: unitId(base.nextEntityId),
-        role: "FIGHTER" as const,
-        at: { x: 4, y: 6 },
-        hp: 10,
-        maxHp: 10,
+        role: "GUARD" as const,
+        at: { x: 6, y: 4 },
+        hp: 15,
+        maxHp: 15,
         activation: READY,
       },
     ].sort((left, right) => left.id - right.id),

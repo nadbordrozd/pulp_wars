@@ -33,14 +33,12 @@ export function fortificationLevelForUnitV7(
     (city) => city.id === tile.territoryCityId,
   );
   if (territoryCity?.ownerId !== unit.ownerId) return 0;
-  const owner = requirePlayer(state, unit.ownerId);
   const city = state.cities.find(
     (candidate) =>
       candidate.id === tile.territoryCityId && same(candidate.at, unit.at),
   );
   let level = tile.fieldDefense ? 1 : 0;
   if (city !== undefined) {
-    if (owner.researchedTechs.includes("PROSPECTING")) level += 1;
     if (
       city.rewards.some(
         (record) => record.reachedLevel === 3 && record.reward === "WALLS",
@@ -63,24 +61,30 @@ export function calculateCombatPreviewV7(
   const defenderRule = effectiveRoleRuleV7(defender.role);
   const distance = chebyshev(attacker.at, defender.at);
   const chargeApplied =
+    requirePlayer(state, attacker.ownerId).researchedTechs.includes(
+      "RAIDING",
+    ) &&
     attackerRule.abilities.includes("CHARGE") &&
     distance === 1 &&
     attacker.activation.moved &&
-    attacker.activation.movedPathLength >= 2;
+    attacker.activation.movedPathLength >= 2 &&
+    attacker.activation.attacksUsed === 0;
+  const inspiredApplied =
+    attacker.activation.inspired && attacker.activation.attacksUsed === 0;
+  const inspiredConsumed = attacker.activation.inspired;
   const attack2 =
     attacker.form === "EMBARKED"
       ? 0
-      : attackerRule.attack2 + (chargeApplied ? 2 : 0);
+      : attackerRule.attack2 +
+        (chargeApplied ? 2 : 0) +
+        (inspiredApplied ? 2 : 0);
   const fortificationLevel = fortificationLevelForUnitV7(state, defender);
   const defense2 =
     defender.form === "EMBARKED"
       ? 2
       : defenderRule.defense2 + fortificationLevel * 2;
-  const breachApplied =
-    attackerRule.abilities.includes("BREACH") && distance === 1;
-  const bonus = breachApplied
-    ? NO_BONUS
-    : defenseBonusForUnitV7(state, defender);
+  const breachApplied = false;
+  const bonus = defenseBonusForUnitV7(state, defender);
 
   const attackForceNumerator = BigInt(attack2) * BigInt(attacker.hp);
   const attackForceDenominator = 2n * BigInt(attacker.maxHp);
@@ -118,7 +122,6 @@ export function calculateCombatPreviewV7(
     !attackerDies &&
     distance === 1 &&
     attacker.role !== "CATAPULT" &&
-    attacker.role !== "HORSE_ARCHER" &&
     attacker.form === "LAND" &&
     defender.form === "LAND" &&
     !(attacker.role === "MARKSMAN" && distance > 1);
@@ -166,6 +169,8 @@ export function calculateCombatPreviewV7(
     minimumRange: attacker.form === "EMBARKED" ? 0 : attackerRule.minimumRange,
     maximumRange: attacker.form === "EMBARKED" ? 0 : attackerRule.range,
     chargeApplied,
+    inspiredApplied,
+    inspiredConsumed,
     breachApplied,
     defenseBonusNumerator: bonus.numerator,
     defenseBonusDenominator: bonus.denominator,
@@ -183,8 +188,9 @@ export function calculateCombatPreviewV7(
     advances,
     push,
     attacksUsed: nextAttacks,
-    attacksRemaining:
-      attacker.role === "HORSE_ARCHER" ? Math.max(0, 2 - nextAttacks) : 0,
+    attacksRemaining: 0,
+    overrunAdvance: attacker.role === "KNIGHT" && advances,
+    overrunContinues: false,
     splash,
   };
 }
@@ -211,7 +217,7 @@ export function pushedDestinationV7(
   const defenderOwner = requirePlayer(state, defender.ownerId);
   if (
     (tile.terrain === "MOUNTAIN" &&
-      !defenderOwner.researchedTechs.includes("PROSPECTING")) ||
+      !defenderOwner.researchedTechs.includes("ENGINEERING")) ||
     (tile.terrain === "DEEP_WATER" &&
       !defenderOwner.researchedTechs.includes("NAVIGATION")) ||
     state.units.some(

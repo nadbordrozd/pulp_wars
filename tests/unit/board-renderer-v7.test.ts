@@ -283,14 +283,15 @@ describe("Ruleset 7 board renderer", () => {
       imageEntry("catapult", "UNIT", "unit-original-catapult", 1, 0),
       imageEntry("giant", "UNIT", "unit-original-juggernaut", 2, 0),
       imageEntry("processor", "IMPROVEMENT", "building-square-windmill", 3, 0),
+      imageEntry("shipyard", "IMPROVEMENT", "building-ruleset7-shipyard", 4, 0),
       imageEntry(
         "camp",
         "IMPROVEMENT",
         "building-ruleset7-resource-lumber-camp",
-        4,
+        5,
         0,
       ),
-      { ...imageEntry("city", "CITY", "building-city-2", 5, 0), value: 2 },
+      { ...imageEntry("city", "CITY", "building-city-2", 6, 0), value: 2 },
     ];
     const drawImage = vi.fn();
     const context = drawingContext(drawImage);
@@ -312,6 +313,7 @@ describe("Ruleset 7 board renderer", () => {
               [64, 74],
               [92.16, 92.16],
               [96, 112],
+              [115.2, 115.2],
               [115.2, 115.2],
               [138.24, 138.24],
               [115.2, 115.2],
@@ -655,7 +657,7 @@ describe("Ruleset 7 board renderer", () => {
   });
 
   it.each([0.625, 1, 1.75])(
-    "keeps Heavy modestly above Fighter and below Juggernaut at zoom %s",
+    "uses the accepted mounted Knight scale below Juggernaut at zoom %s",
     (zoom) => {
       const drawImage = vi.fn();
       drawBoardV7({
@@ -667,18 +669,18 @@ describe("Ruleset 7 board renderer", () => {
           version: 7,
           entries: [
             imageEntry("fighter", "UNIT", "unit-original-fighter", 0, 0),
-            imageEntry("heavy", "UNIT", "unit-original-heavy", 1, 0),
+            imageEntry("knight", "UNIT", "unit-original-knight", 1, 0),
             imageEntry("juggernaut", "UNIT", "unit-original-juggernaut", 2, 0),
           ],
           targets: [],
         },
         images: { resolve: () => ({}) as CanvasImageSource },
       });
-      const [fighter, heavy, juggernaut] = drawImage.mock.calls;
-      expect(heavy?.[3]).toBeCloseTo(80 * zoom);
-      expect(heavy?.[4]).toBeCloseTo(92.5 * zoom);
-      expect(heavy?.[3]).toBeCloseTo(Number(fighter?.[3]) * 1.25);
-      expect(Number(heavy?.[4])).toBeLessThan(Number(juggernaut?.[4]));
+      const [fighter, knight, juggernaut] = drawImage.mock.calls;
+      expect(knight?.[3]).toBeCloseTo(103.68 * zoom);
+      expect(knight?.[4]).toBeCloseTo(103.68 * zoom);
+      expect(Number(knight?.[3])).toBeGreaterThan(Number(fighter?.[3]));
+      expect(Number(knight?.[4])).toBeLessThan(Number(juggernaut?.[4]));
     },
   );
 

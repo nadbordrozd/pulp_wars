@@ -605,6 +605,8 @@ This does not stack or deal bonus damage.
 - converts Mountain to Grass;
 - preserves Road;
 - grants no Coins or population.
+- requires Engineering visibility before it is publicly offered, so hidden Ore
+  cannot be distinguished or destroyed through command probing;
 
 This gives Explosives a simple peaceful terrain-development use.
 
@@ -713,7 +715,7 @@ When a Catapult attacks a land unit standing on Field Defense:
 2. after combat, destroy the Field Defense regardless of whether the defender survives;
 3. the Catapult does not need Explosives.
 
-Thus the first shot softens the prepared position; follow-up attacks face an unprepared tile.
+Thus the first attack softens the prepared position; follow-up attacks face an unprepared tile.
 
 ## 9.2 Captain-assisted assault
 

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { scoreCommandV7 } from "../../src/ai/v7";
 import { cityId, playerId } from "../../src/engine/model/ids";
 import {
-  ORIGINAL_BASELINE_V4_NODES,
+  ORIGINAL_BASELINE_V5_NODES,
   RULESET_7_ID,
   SAVE_STORAGE_KEY_V7,
   TECHNOLOGY_IDS_V7,
@@ -27,30 +27,35 @@ import {
   initialV7,
 } from "../fixtures/v7-builders";
 
-describe("Ruleset 7 revision 8 Industry and shared adjacency", () => {
-  it("uses the r8 identity and one three-tier Industry/Warfare lane", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r8");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r8.current");
-    expect(TECHNOLOGY_IDS_V7).not.toContain("DRILL");
-    expect(TECHNOLOGY_IDS_V7).not.toContain("FORTIFICATION");
-    expect(TECHNOLOGY_IDS_V7).not.toContain("EXPLOSIVES");
-    const lane = ORIGINAL_BASELINE_V4_NODES.filter(
-      (node) => node.branch === "INDUSTRY_WARFARE",
+describe("Ruleset 7 revision 9 Industry and shared adjacency", () => {
+  it("uses the r9 identity and the two exact Industry branches", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r9");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r9.current");
+    expect(TECHNOLOGY_IDS_V7).toEqual(
+      expect.arrayContaining([
+        "DRILL",
+        "ENGINEERING",
+        "METALLURGY",
+        "FORTIFICATION",
+        "EXPLOSIVES",
+      ]),
+    );
+    const lane = ORIGINAL_BASELINE_V5_NODES.filter(
+      (node) => node.branch === "INDUSTRY",
     );
     expect(
       lane.map((node) => [node.id, node.tier, node.prerequisites]),
     ).toEqual([
-      ["PROSPECTING", 1, []],
-      ["ENGINEERING", 2, ["PROSPECTING"]],
+      ["DRILL", 1, []],
+      ["ENGINEERING", 2, ["DRILL"]],
       ["METALLURGY", 3, ["ENGINEERING"]],
+      ["FORTIFICATION", 2, ["DRILL"]],
+      ["EXPLOSIVES", 3, ["FORTIFICATION"]],
     ]);
     expect(lane[0]?.unlocks).toEqual(
       expect.arrayContaining([
-        { kind: "RESOURCE_REVEAL", resources: ["ORE"] },
-        { kind: "MOUNTAIN_MOVEMENT" },
         { kind: "UNIT_ROLE", role: "GUARD" },
         { kind: "FIRST_HOSTILE_CAPTURE_SPOILS", coins: 2 },
-        { kind: "OWNED_CITY_FORTIFICATION_LEVEL", level: 1 },
       ]),
     );
     expect(lane[1]?.unlocks).toEqual(
@@ -58,21 +63,29 @@ describe("Ruleset 7 revision 8 Industry and shared adjacency", () => {
         { kind: "COMMAND", command: "BUILD_MINE" },
         { kind: "COMMAND", command: "BUILD_WORKSHOP" },
         { kind: "COMMAND", command: "REDEVELOP" },
-        { kind: "COMMAND", command: "BUILD_FIELD_DEFENSE" },
-        { kind: "OWNED_CITY_CAPACITY_BONUS", capacity: 1 },
+        { kind: "RESOURCE_REVEAL", resources: ["ORE"] },
+        { kind: "MOUNTAIN_MOVEMENT" },
       ]),
     );
     expect(lane[2]?.unlocks).toEqual(
       expect.arrayContaining([
         { kind: "COMMAND", command: "BUILD_FORGE" },
-        { kind: "UNIT_ROLE", role: "HEAVY" },
-        { kind: "UNIT_ROLE", role: "BREACHER" },
+        { kind: "ARMS_INDUSTRY_DISCOUNT", coins: 1 },
+      ]),
+    );
+    expect(lane[3]?.unlocks).toContainEqual({
+      kind: "COMMAND",
+      command: "BUILD_FIELD_DEFENSE",
+    });
+    expect(lane[4]?.unlocks).toEqual(
+      expect.arrayContaining([
         { kind: "COMMAND", command: "PILLAGE" },
+        { kind: "COMMAND", command: "BLAST_MOUNTAIN" },
       ]),
     );
   });
 
-  it("lets Prospecting alone reveal Ore and enter Mountains", () => {
+  it("lets Engineering reveal Ore and enter Mountains", () => {
     const base = exploredAllV7(initialV7(8_807));
     const unit = base.units.find(
       (candidate) => candidate.ownerId === base.humanPlayerId,
@@ -92,7 +105,10 @@ describe("Ruleset 7 revision 8 Industry and shared adjacency", () => {
       ...base,
       players: base.players.map((player) =>
         player.id === base.humanPlayerId
-          ? { ...player, researchedTechs: ["GATHERING", "PROSPECTING"] }
+          ? {
+              ...player,
+              researchedTechs: ["GATHERING", "DRILL", "ENGINEERING"],
+            }
           : player,
       ),
       board: {
@@ -389,7 +405,9 @@ function sharedCampState(): {
               movedPathLength: 0,
               attacked: false,
               attacksUsed: 0,
-              healed: false,
+              tendedThisTurn: false,
+              inspired: false,
+              overrunActive: false,
               recovered: false,
               captured: false,
               handled: false,

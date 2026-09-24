@@ -27,7 +27,7 @@ describe("ruleset-7 naval persistence schema", () => {
     expect(parsed).toEqual(fixture.state);
     expect(parseMatchSetupV7(fixture.state.setup)).toEqual(fixture.state.setup);
     expect(fixture.state.setup).toMatchObject({
-      rulesetId: "pulp-wars-poc-7r8",
+      rulesetId: "pulp-wars-poc-7r9",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     });
@@ -191,6 +191,23 @@ describe("ruleset-7 naval persistence schema", () => {
     while (state.turnOrder[state.activeSeatIndex] !== state.humanPlayerId)
       await accept({ kind: "END_TURN" });
     await accept({ kind: "RESEARCH", tech: "SHORECRAFT" });
+    while (
+      (state.players.find((player) => player.id === state.humanPlayerId)
+        ?.coins ?? 0) < 7
+    ) {
+      await accept({ kind: "END_TURN" });
+      while (state.turnOrder[state.activeSeatIndex] !== state.humanPlayerId)
+        await accept({ kind: "END_TURN" });
+    }
+    await accept({ kind: "RESEARCH", tech: "NAVIGATION" });
+    while (
+      (state.players.find((player) => player.id === state.humanPlayerId)
+        ?.coins ?? 0) < 2
+    ) {
+      await accept({ kind: "END_TURN" });
+      while (state.turnOrder[state.activeSeatIndex] !== state.humanPlayerId)
+        await accept({ kind: "END_TURN" });
+    }
     const pearls = state.board.tiles.find(
       (tile) =>
         tile.resource === "PEARLS" &&

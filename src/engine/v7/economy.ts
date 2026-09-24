@@ -18,7 +18,11 @@ export function isActivePortV7(
   ownerId: PlayerId,
 ): boolean {
   const tile = state.board.tiles[at.y * state.board.width + at.x];
-  if (tile?.at.x !== at.x || tile.at.y !== at.y || tile.improvement !== "PORT")
+  if (
+    tile?.at.x !== at.x ||
+    tile.at.y !== at.y ||
+    (tile.improvement !== "PORT" && tile.improvement !== "SHIPYARD")
+  )
     return false;
   const city = state.cities.find(
     (candidate) => candidate.id === tile.territoryCityId,
@@ -68,7 +72,7 @@ export function cityUnitCapacityV7(
 ): number {
   const fortified = state.players
     .find((player) => player.id === city.ownerId)
-    ?.researchedTechs.includes("ENGINEERING");
+    ?.researchedTechs.includes("PLANNING");
   const result = city.level + 1 + (fortified ? 1 : 0);
   if (!Number.isSafeInteger(result)) throw new RangeError("INTEGER_OVERFLOW");
   return result;
@@ -87,7 +91,7 @@ export function rewardCandidatesForLevelV7(
 ): readonly [RewardIdV7, RewardIdV7] {
   if (level === 2) return ["SURVEY", "STOCKPILE"];
   if (level === 3) return ["WALLS", "MILITIA"];
-  if (level === 4) return ["EXPAND", "BOOM"];
+  if (level === 4) return ["BOOM", "TREASURY_8"];
   if (level >= 5) return ["JUGGERNAUT", "TREASURY"];
   throw new RangeError("INVALID_REWARD_LEVEL");
 }
@@ -170,17 +174,7 @@ export function marketIncomeForCityV7(
   for (const tile of state.board.tiles)
     if (tile.territoryCityId === city.id && tile.improvement === "MARKET") {
       const evaluation = spatialContributionAtV7(state, tile.at, "MARKET");
-      const combinedRoadBonus = neighbors8(
-        state.board.width,
-        state.board.height,
-        tile.at,
-      ).some((at) =>
-        combinedNetworkRoadKeysV7(state, city.ownerId).has(coordKey(at)),
-      );
-      total += Math.min(
-        4,
-        evaluation.marketIncome + (combinedRoadBonus ? 1 : 0),
-      );
+      total += Math.min(4, evaluation.marketIncome);
       if (!Number.isSafeInteger(total))
         throw new RangeError("INTEGER_OVERFLOW");
     }
@@ -199,33 +193,6 @@ export function recomputeLiveEconomyV7(
     cities: finalGraph.cities,
     units: finalGraph.units ?? beforeState.units,
   };
-  const networkPopulationByCity = new Map<CityId, number>();
-  for (const player of graphState.players) {
-    if (!player.researchedTechs.includes("ROADS")) continue;
-    const capital = graphState.cities.find(
-      (city) =>
-        city.id === player.originalCapitalCityId && city.ownerId === player.id,
-    );
-    if (capital === undefined) continue;
-    const connected = combinedNetworkCityIdsV7(graphState, player.id);
-    for (const city of graphState.cities
-      .filter(
-        (candidate) =>
-          candidate.ownerId === player.id &&
-          candidate.id !== capital.id &&
-          connected.has(candidate.id),
-      )
-      .sort((left, right) => left.id - right.id)) {
-      networkPopulationByCity.set(
-        city.id,
-        (networkPopulationByCity.get(city.id) ?? 0) + 1,
-      );
-      networkPopulationByCity.set(
-        capital.id,
-        (networkPopulationByCity.get(capital.id) ?? 0) + 1,
-      );
-    }
-  }
   const populationContributions = contributions.map((contribution) => {
     if (contribution.category === "PERMANENT") return contribution;
     const tile =
@@ -257,7 +224,7 @@ export function recomputeLiveEconomyV7(
       ...contribution,
       cityId: tile.territoryCityId,
       amount:
-        tile.improvement === "PORT"
+        tile.improvement === "PORT" || tile.improvement === "SHIPYARD"
           ? isActivePortV7(
               {
                 ...beforeState,
@@ -268,7 +235,9 @@ export function recomputeLiveEconomyV7(
               tile.at,
               city.ownerId,
             )
-            ? 1
+            ? tile.improvement === "SHIPYARD"
+              ? 2
+              : 1
             : 0
           : spatialContributionAtV7(finalGraph, tile.at, tile.improvement)
               .population,
@@ -279,7 +248,7 @@ export function recomputeLiveEconomyV7(
   const afterStateForMarkets = graphState;
   for (const city of [...finalGraph.cities].sort((a, b) => a.id - b.id)) {
     let permanent = 0;
-    let live = networkPopulationByCity.get(city.id) ?? 0;
+    let live = 0;
     for (const contribution of populationContributions)
       if (contribution.cityId === city.id) {
         if (contribution.category === "PERMANENT")
@@ -319,7 +288,8 @@ export function cityIncomeV7(state: GameStateV7, city: CityStateV7): number {
   const base =
     city.level +
     (city.isCapital ? 1 : 0) +
-    (seaTradeCityIdsV7(state, city.ownerId).has(city.id) ? 1 : 0);
+    (seaTradeCityIdsV7(state, city.ownerId).has(city.id) ? 1 : 0) +
+    (landTradeCityIdsV7(state, city.ownerId).has(city.id) ? 1 : 0);
   const result = Math.max(
     1,
     base + marketIncomeForCityV7(state, city) + Math.min(0, city.population),
@@ -353,6 +323,21 @@ export function combinedNetworkCityIdsV7(
   return COMBINED_NETWORK_CACHE.get(state)?.get(playerId) ?? new Set<CityId>();
 }
 
+/** Commerce-only capital-rooted land Road graph. */
+export function landTradeCityIdsV7(
+  state: NetworkStateV7,
+  playerId: PlayerId,
+): ReadonlySet<CityId> {
+  seaTradeCityIdsV7(state, playerId);
+  const player = state.players.find((candidate) => candidate.id === playerId);
+  if (!player?.researchedTechs.includes("COMMERCE")) return new Set();
+  const connected =
+    COMBINED_NETWORK_CACHE.get(state)?.get(playerId) ?? new Set();
+  return new Set(
+    [...connected].filter((cityId) => cityId !== player.originalCapitalCityId),
+  );
+}
+
 export function combinedNetworkRoadKeysV7(
   state: NetworkStateV7,
   playerId: PlayerId,
@@ -361,7 +346,7 @@ export function combinedNetworkRoadKeysV7(
   return COMBINED_ROAD_CACHE.get(state)?.get(playerId) ?? new Set<string>();
 }
 
-/** Owner-private capital-rooted Road/Port graph with bounded sea edges. */
+/** Owner-private Navigation Port/Shipyard graph with bounded sea edges. */
 export function seaTradeCityIdsV7(
   state: NetworkStateV7,
   playerId: PlayerId,
@@ -403,16 +388,15 @@ export function seaTradeCityIdsV7(
       )
       .map((tile) => coordKey(tile.at)),
   );
-  const ports = player.researchedTechs.includes("SHORECRAFT")
+  const ports = player.researchedTechs.includes("NAVIGATION")
     ? state.board.tiles.filter(
         (tile) =>
-          tile.improvement === "PORT" &&
+          (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
           water.has(coordKey(tile.at)) &&
           isActivePortV7(state, tile.at, playerId),
       )
     : [];
   const seaEdges = new Map<CityId, Set<CityId>>();
-  const graphEdges = new Map<CityId, Set<CityId>>();
   const portIndexesByKey = new Map<string, number[]>();
   ports.forEach((port, index) => {
     const indexes = portIndexesByKey.get(coordKey(port.at)) ?? [];
@@ -447,9 +431,6 @@ export function seaTradeCityIdsV7(
             const sea = seaEdges.get(from) ?? new Set<CityId>();
             if (from !== to) sea.add(to);
             seaEdges.set(from, sea);
-            const combined = graphEdges.get(from) ?? new Set<CityId>();
-            combined.add(to);
-            graphEdges.set(from, combined);
           }
         }
       }
@@ -503,35 +484,25 @@ export function seaTradeCityIdsV7(
           if (roadLeft.delete(coordKey(near))) roadQueue.push(near);
         }
     }
-    for (const left of cityIds)
-      for (const right of cityIds)
-        if (left !== right) {
-          const edges = graphEdges.get(left) ?? new Set<CityId>();
-          edges.add(right);
-          graphEdges.set(left, edges);
-        }
     roadComponents.push({ keys: componentKeys, cityIds });
   }
   const originalCapital = state.cities.find(
     (city) =>
       city.id === player.originalCapitalCityId && city.ownerId === playerId,
   );
-  const capitals = originalCapital === undefined ? [] : [originalCapital.id];
-  const connected = new Set<CityId>(capitals);
-  const queue = [...capitals];
-  for (let index = 0; index < queue.length; index += 1) {
-    const cityId = queue[index];
-    if (cityId === undefined) throw new RangeError("INVALID_STATE");
-    for (const next of graphEdges.get(cityId) ?? [])
-      if (!connected.has(next)) {
-        connected.add(next);
-        queue.push(next);
-      }
-  }
+  const connected = new Set<CityId>();
+  if (originalCapital !== undefined)
+    for (const component of roadComponents)
+      if (component.cityIds.has(originalCapital.id))
+        for (const cityId of component.cityIds) connected.add(cityId);
   const eligible = new Set<CityId>();
-  for (const cityId of connected)
-    if (!capitals.includes(cityId) && (seaEdges.get(cityId)?.size ?? 0) > 0)
-      eligible.add(cityId);
+  for (const city of state.cities)
+    if (
+      city.ownerId === playerId &&
+      city.id !== player.originalCapitalCityId &&
+      (seaEdges.get(city.id)?.size ?? 0) > 0
+    )
+      eligible.add(city.id);
   let combinedByOwner = COMBINED_NETWORK_CACHE.get(state);
   if (combinedByOwner === undefined) {
     combinedByOwner = new Map();
@@ -637,7 +608,9 @@ export function startTurnEconomyV7(
                 movedPathLength: 0,
                 attacked: false,
                 attacksUsed: 0 as const,
-                healed: false,
+                tendedThisTurn: false,
+                inspired: false,
+                overrunActive: false,
                 recovered: false,
                 captured: false,
                 handled: false,

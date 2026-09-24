@@ -331,6 +331,11 @@ The tactical-role field is required faction-independent UI/design metadata.
 It has no generic combat multiplier, eligibility shortcut, or hidden damage
 class. Runtime mechanics continue to bind explicitly to unit/ability data.
 
+The inherited Treasure draw remains one deterministic 50/50 draw between 5
+Coins and a roster unit. Revision 9 replaces the removed Heavy reward with a
+Knight while preserving placement, capacity exhaustion, the 5-Coin fallback,
+and PRNG consumption exactly.
+
 ### 6.2 Knight Overrun
 
 Each Attack remains a separate accepted command. A Knight begins an Overrun
@@ -405,11 +410,17 @@ Generic Explosives Pillage retains the current hostile-improvement-under-actor,
 1-Coin, terminal, Road-excluded behavior for the seven normal trainable land
 roles. Raider has the Raiding exception. It never targets Field Defense,
 terrain, resources, city centers, or Walls.
+Like Disband, Pillage may follow an ordinary Move when the unit has not used a
+primary action; Guard and Catapult post-Move attack restrictions do not block
+this generic terminal action.
 
 `BLAST_MOUNTAIN { at }` costs 3 and targets an explored owned Mountain with no
 site, resource, improvement, or Field Defense in a non-besieged city without a
 pending reward. It changes Mountain to Grass, preserves Road and territory,
-and grants no Coin or population.
+and grants no Coin or population. Explosives authorizes the action, but its
+public offer remains suppressed until Engineering reveals whether a Mountain
+contains Ore. After Engineering, only resource-free Mountains are offered;
+hidden Ore cannot be probed through command availability.
 
 ## 8. Roads, trade, Naval, and Shipyard
 

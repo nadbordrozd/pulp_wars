@@ -67,9 +67,7 @@ describe("Ruleset 7 UI accepted-art registry", () => {
         targetUnitId: 2 as UnitId,
       }),
     ).toBeNull();
-    expect(RULESET7_UNIT_ART_IDS.HORSE_ARCHER).toBe(
-      "unit-original-horse-archer",
-    );
+    expect(RULESET7_UNIT_ART_IDS.KNIGHT).toBe("unit-original-knight");
   });
 
   it("uses the v7 single Farm for technology, action, and identity", () => {

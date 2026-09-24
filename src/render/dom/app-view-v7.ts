@@ -881,7 +881,8 @@ export class Ruleset7DomAppView {
         (candidate) => candidate.id === selection.unitId,
       );
       if (unit === undefined) return null;
-      const roleLabel = effectiveRoleRuleV7(unit.role).label;
+      const roleRule = effectiveRoleRuleV7(unit.role);
+      const roleLabel = roleRule.label;
       dock.append(
         identity(
           this.#document,
@@ -907,6 +908,14 @@ export class Ruleset7DomAppView {
             );
       }
       const identityColumn = dock.querySelector<HTMLElement>(".v7-identity");
+      identityColumn?.append(
+        text(
+          this.#document,
+          "span",
+          title(roleRule.tacticalRole),
+          "v7-tactical-role",
+        ),
+      );
       const unitHelp = button(this.#document, "", "unit-help", "v7-unit-help");
       unitHelp.append(text(this.#document, "span", "?", "v7-unit-help-glyph"));
       unitHelp.setAttribute("aria-label", `About ${roleLabel}`);
@@ -929,21 +938,33 @@ export class Ruleset7DomAppView {
             "v7-transport-passenger",
           ),
         );
-      if (unit.role === "HORSE_ARCHER") {
-        const unusedShots = Math.max(0, 2 - unit.activation.attacksUsed);
+      if (unit.role === "KNIGHT" && unit.activation.overrunActive) {
         const state = el(this.#document, "section", "v7-tactical-state");
-        state.dataset.tacticalState = "horse-archer";
-        state.append(
-          text(
-            this.#document,
-            "strong",
-            `${unusedShots} ${unusedShots === 1 ? "shot" : "shots"} left`,
-          ),
-        );
+        state.dataset.tacticalState = "overrun";
+        state.append(text(this.#document, "strong", "Overrun: attack again"));
         unitDetails.append(state);
       }
       const stats = view.unitStats.find((entry) => entry.unitId === unit.id);
       if (stats !== undefined) {
+        if (stats.statuses.length > 0) {
+          const cues = el(this.#document, "div", "v7-unit-status-cues");
+          const statuses = el(this.#document, "div", "v7-unit-statuses");
+          for (const status of stats.statuses) {
+            const short = status.startsWith("Tended")
+              ? "Tended"
+              : (status.split(":", 1)[0] ?? status);
+            const statusId = short.toLowerCase().replaceAll(" ", "-");
+            const cue = text(this.#document, "span", short, "v7-chip");
+            cue.dataset.unitStatus = statusId;
+            cue.setAttribute("aria-label", `${short} status`);
+            cues.append(cue);
+            const chip = text(this.#document, "span", status, "v7-chip");
+            chip.dataset.unitStatus = statusId;
+            statuses.append(chip);
+          }
+          identityColumn?.append(cues);
+          unitDetails.append(statuses);
+        }
         const rows = el(this.#document, "dl", "v7-unit-stats");
         for (const stat of stats.stats) {
           const exact = stat.visibility !== "BASE_ONLY";
@@ -1128,7 +1149,7 @@ export class Ruleset7DomAppView {
         const capacity =
           city.level +
           1 +
-          (view.viewer.researchedTechs.includes("ENGINEERING") ? 1 : 0);
+          (view.viewer.researchedTechs.includes("PLANNING") ? 1 : 0);
         const units = el(this.#document, "div", "v7-city-stat");
         units.dataset.stat = "units";
         units.title = "Units supported by this city";
@@ -1148,6 +1169,41 @@ export class Ruleset7DomAppView {
         );
         income.append(text(this.#document, "dt", "Income"), incomeValue);
         details.append(units, income);
+        for (const [kind, active] of [
+          ["land", view.naval.landTradeCityIds.includes(city.id)],
+          ["sea", view.naval.seaTradeCityIds.includes(city.id)],
+        ] as const)
+          if (active) {
+            const trade = el(this.#document, "div", "v7-city-stat");
+            trade.dataset.stat = `${kind}-trade`;
+            trade.title = `${title(kind)} trade income`;
+            const value = el(this.#document, "dd", "v7-city-income");
+            value.append(economyIcon(this.#document, "coin"), "+1");
+            trade.append(
+              text(this.#document, "dt", `${title(kind)} trade`),
+              value,
+            );
+            details.append(trade);
+          }
+        if (
+          view.improvementValues.some(
+            (value) =>
+              value.improvement === "FORGE" &&
+              value.level > 0 &&
+              tileCity(view, value.at) === city.id,
+          )
+        ) {
+          const discount = text(
+            this.#document,
+            "p",
+            "Land units −1",
+            "v7-chip",
+          );
+          discount.dataset.discount = "forge";
+          discount.title =
+            "Active Forge discounts land-unit training by 1 Coin";
+          details.append(discount);
+        }
       }
       if (besieged) {
         const siege = el(this.#document, "div", "v7-city-stat is-warning");
@@ -1162,7 +1218,9 @@ export class Ruleset7DomAppView {
       if (owned) {
         this.#appendCommandArea(
           dock,
-          (command) => command.kind === "TRAIN" && command.cityId === city.id,
+          (command) =>
+            (command.kind === "TRAIN" || command.kind === "LAND_GRANT") &&
+            command.cityId === city.id,
         );
         const occupied = view.units.some(
           (unit) => unit.ownerId === view.viewer.id && same(unit.at, city.at),
@@ -1200,6 +1258,20 @@ export class Ruleset7DomAppView {
         const details = el(this.#document, "div", "v7-selection-details");
         if (tile.road && name !== "Road")
           details.append(text(this.#document, "p", "Road", "v7-chip"));
+        if (
+          tile.improvement !== null &&
+          tile.resource !== null &&
+          tile.resource !== "UNKNOWN_RESOURCE"
+        ) {
+          const resource = text(
+            this.#document,
+            "p",
+            title(tile.resource),
+            "v7-chip",
+          );
+          resource.dataset.underlyingResource = tile.resource.toLowerCase();
+          details.append(resource);
+        }
         const value = view.improvementValues.find((entry) =>
           same(entry.at, tile.at),
         );
@@ -1224,7 +1296,7 @@ export class Ruleset7DomAppView {
           );
           details.append(chip);
         }
-        if (tile.improvement === "PORT") {
+        if (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") {
           const port = view.naval.ownedPorts.find((candidate) =>
             same(candidate.at, tile.at),
           );
@@ -1237,12 +1309,19 @@ export class Ruleset7DomAppView {
                 `v7-chip v7-port-state state-${port.status.toLowerCase()}`,
               ),
             );
-            if (view.naval.tradeCityIds.includes(port.cityId)) {
+            if (view.naval.seaTradeCityIds.includes(port.cityId)) {
               const trade = el(this.#document, "p", "v7-chip");
               trade.title = "Sea trade";
               trade.append(economyIcon(this.#document, "coin"), "+1 trade");
               details.append(trade);
             }
+          }
+          if (tile.improvement === "SHIPYARD" && port?.status === "ACTIVE") {
+            const discount = text(this.#document, "p", "Ships −2", "v7-chip");
+            discount.dataset.discount = "shipyard";
+            discount.title =
+              "This Shipyard discounts naval-unit training here by 2 Coins";
+            details.append(discount);
           }
         }
         const monumentSource = monumentSourceForViewerV7(view, tile.at);
@@ -1325,11 +1404,16 @@ export class Ruleset7DomAppView {
         );
       if (command.kind === "TRAIN" || command.kind === "TRAIN_NAVAL") {
         const rule = effectiveRoleRuleV7(command.role);
+        const view = this.#snapshot.view;
+        const cost =
+          view === null
+            ? (rule.cost ?? 0)
+            : trainingCostForViewV7(view, command);
         action.setAttribute(
           "aria-label",
-          `Train ${rule.label} for ${rule.cost ?? 0} Coins`,
+          `Train ${rule.label} for ${cost} Coins`,
         );
-        action.append(economyChips(this.#document, { cost: rule.cost ?? 0 }));
+        action.append(economyChips(this.#document, { cost }));
       } else if (command.kind === "BUILD_MONUMENT") {
         action.setAttribute(
           "aria-label",
@@ -1588,21 +1672,28 @@ export class Ruleset7DomAppView {
     const status =
       node.state === "OWNED"
         ? text(this.#document, "p", "Researched", "v7-tech-status is-owned")
-        : node.missingPrerequisites.length > 0
+        : node.state === "DISABLED"
           ? text(
               this.#document,
               "p",
-              `Requires ${node.missingPrerequisites.map(title).join(", ")}`,
+              "Unavailable on Dry Land maps",
               "v7-tech-status is-locked",
             )
-          : node.affordable
-            ? null
-            : text(
+          : node.missingPrerequisites.length > 0
+            ? text(
                 this.#document,
                 "p",
-                `Need ${node.cost} Coins`,
-                "v7-tech-status is-short",
-              );
+                `Requires ${node.missingPrerequisites.map(title).join(", ")}`,
+                "v7-tech-status is-locked",
+              )
+            : node.affordable
+              ? null
+              : text(
+                  this.#document,
+                  "p",
+                  `Need ${node.cost} Coins`,
+                  "v7-tech-status is-short",
+                );
     detail.append(
       close,
       identity(this.#document, RULESET7_TECH_ART_IDS[node.id], title(node.id)),
@@ -1681,6 +1772,9 @@ export class Ruleset7DomAppView {
       economyChips(this.#document, { cost: rule.cost ?? 0 }),
     );
     modal.append(close, header);
+    modal.append(
+      text(this.#document, "p", title(rule.tacticalRole), "v7-tactical-role"),
+    );
     const stats = el(this.#document, "dl", "v7-recruit-stats v7-unit-stats");
     for (const stat of presentation.stats) {
       const row = el(this.#document, "div", "v7-stat");
@@ -1791,7 +1885,7 @@ export class Ruleset7DomAppView {
           ? "SCOUTING"
           : achievement === "ENGINEER"
             ? "ENGINEERING"
-            : "PROSPECTING";
+            : "DRILL";
       const researched = view.viewer.researchedTechs.includes(tech);
       const state = entitlement?.spent
         ? "spent"
@@ -2710,6 +2804,13 @@ function appendTechNode(
       "aria-label",
       `${title(layout.node.id)}, ${layout.node.cost} Coins${layout.node.state === "BLOCKED" ? ", locked" : ""}`,
     );
+    if (layout.node.state === "DISABLED") {
+      card.setAttribute("aria-disabled", "true");
+      card.setAttribute(
+        "aria-label",
+        `${title(layout.node.id)}, unavailable on Dry Land maps`,
+      );
+    }
   } else {
     card.append(text(documentRoot, "span", "✓", "v7-tech-check"));
     card.setAttribute("aria-label", `${title(layout.node.id)}, researched`);
@@ -2788,7 +2889,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r8",
+    rulesetId: "pulp-wars-poc-7r9",
     seed,
     width: draft.boardSize,
     height: draft.boardSize,
@@ -2824,15 +2925,47 @@ export function cityIncomeForViewerV7(
     1,
     city.level +
       (city.isCapital ? 1 : 0) +
-      (view.naval.tradeCityIds.includes(city.id) ? 1 : 0) +
+      Number(view.naval.landTradeCityIds.includes(city.id)) +
+      Number(view.naval.seaTradeCityIds.includes(city.id)) +
       market +
       Math.min(0, city.population),
   );
   return before;
 }
+function trainingCostForViewV7(
+  view: PlayerViewV7,
+  command: Extract<CommandV7, { kind: "TRAIN" | "TRAIN_NAVAL" }>,
+): number {
+  const base = effectiveRoleRuleV7(command.role).cost ?? 0;
+  if (command.kind === "TRAIN_NAVAL") {
+    const tile = view.board.tiles.find((candidate) =>
+      same(candidate.at, command.at),
+    );
+    const shipyardActive = view.naval.ownedPorts.some(
+      (port) => same(port.at, command.at) && port.status === "ACTIVE",
+    );
+    return Math.max(
+      1,
+      base -
+        (tile?.explored === true &&
+        tile.improvement === "SHIPYARD" &&
+        shipyardActive
+          ? 2
+          : 0),
+    );
+  }
+  const forge = view.improvementValues.some((value) => {
+    if (value.improvement !== "FORGE" || value.level <= 0) return false;
+    const tile = view.board.tiles.find((candidate) =>
+      same(candidate.at, value.at),
+    );
+    return tile?.explored === true && tile.territoryCityId === command.cityId;
+  });
+  return Math.max(1, base - (forge ? 1 : 0));
+}
 function incomeDescription(view: PlayerViewV7): string {
   const cities = view.cities.filter((city) => city.ownerId === view.viewer.id);
-  return `Next income ${cities.reduce((sum, city) => sum + (cityIncomeForViewerV7(view, city.id) ?? 0), 0)} from ${cities.length} cities, including capital, Port trade, Market, population deficit, and siege effects.`;
+  return `Next income ${cities.reduce((sum, city) => sum + (cityIncomeForViewerV7(view, city.id) ?? 0), 0)} from ${cities.length} cities, including capital, land trade, sea trade, Market, population deficit, and siege effects.`;
 }
 function tileCity(view: PlayerViewV7, at: CoordV7): number | null {
   const tile = view.board.tiles.find((entry) => same(entry.at, at));
@@ -2862,16 +2995,26 @@ function effectDescription(
       return `${effectiveRoleRuleV7(effect.role).label} sight ${effect.radius}`;
     case "ROAD_MOVEMENT":
       return "Roads double movement";
-    case "MARKET_CAPITAL_ROAD_BONUS":
-      return `Markets on roads to the capital +${effect.coins} coin`;
-    case "OWNED_CITY_FORTIFICATION_LEVEL":
-      return "Cities get fortified";
     case "OWNED_CITY_CAPACITY_BONUS":
       return `Cities support +${effect.capacity} unit`;
-    case "MEDIC_HEAL":
-      return `Medics heal ${effect.amount}`;
-    case "FRIENDLY_IDLE_RECOVERY":
-      return `Resting units heal ${effect.amount}`;
+    case "SUPPLY_RECOVERY":
+      return `Friendly supply heals ${effect.amount}`;
+    case "ARMS_INDUSTRY_DISCOUNT":
+      return `Forge training discount: ${effect.coins} Coin`;
+    case "LAND_TRADE_INCOME":
+      return `Road-linked cities: +${effect.coins} Coin`;
+    case "SEA_TRADE_INCOME":
+      return `Sea-linked cities: +${effect.coins} Coin`;
+    case "CAPTAIN_SUPPORT":
+      return "Captains Rally or Tend nearby troops";
+    case "OVERRUN":
+      return "Knights advance after a kill and may attack again";
+    case "CHARGE_BONUS":
+      return `Raiders gain +${effect.attack} Attack after moving ${effect.minimumMove}+ cells`;
+    case "MELEE_FIELD_DEMOLITION":
+      return "Surviving melee attacks destroy Field Defense";
+    case "NAVAL_TRAINING_DISCOUNT":
+      return `Shipyards discount naval training by ${effect.coins} Coins`;
     case "FIRST_HOSTILE_CAPTURE_SPOILS":
       return `+${effect.coins} Coins for each city you capture`;
   }
@@ -2880,12 +3023,14 @@ function effectDescription(
 function navalTechnologyNotesV7(
   technology: PublicTechnologyNodeV7["id"],
 ): readonly string[] {
-  if (technology === "SHORECRAFT")
-    return ["Board ships at your ports", "Ports link cities by sea"];
-  if (technology === "NAVIGATION") return ["Ships can sail deep water"];
+  if (technology === "SHORECRAFT") return ["Board ships at active Ports"];
+  if (technology === "NAVIGATION")
+    return ["Ships can sail deep water", "Active Ports link sea trade"];
   if (technology === "NAVAL_ENGINEERING")
     return ["Battleship: long-range splash damage"];
-  if (technology === "ROADS") return ["Connected cities grow faster"];
+  if (technology === "EXPLOSIVES")
+    return ["Engineering identifies resource-free mountains safe to Blast"];
+  if (technology === "ROADS") return ["Roads double connected movement"];
   return [];
 }
 
@@ -2962,11 +3107,16 @@ function technologyEffectGroupIdV7(
     case "ROLE_SIGHT":
     case "ROAD_MOVEMENT":
       return "MOVEMENT_SIGHT";
-    case "MARKET_CAPITAL_ROAD_BONUS":
-    case "OWNED_CITY_FORTIFICATION_LEVEL":
     case "OWNED_CITY_CAPACITY_BONUS":
-    case "MEDIC_HEAL":
-    case "FRIENDLY_IDLE_RECOVERY":
+    case "SUPPLY_RECOVERY":
+    case "ARMS_INDUSTRY_DISCOUNT":
+    case "LAND_TRADE_INCOME":
+    case "SEA_TRADE_INCOME":
+    case "CAPTAIN_SUPPORT":
+    case "OVERRUN":
+    case "CHARGE_BONUS":
+    case "MELEE_FIELD_DEMOLITION":
+    case "NAVAL_TRAINING_DISCOUNT":
     case "FIRST_HOSTILE_CAPTURE_SPOILS":
       return "PASSIVE_EFFECTS";
   }
@@ -3043,17 +3193,15 @@ function abilityDescription(
     case "CAPTURE":
       return "Can take villages and enemy cities.";
     case "CHARGE":
-      return "+1 attack after moving 2 or more tiles.";
-    case "HEAL_ADJACENT":
-      return "Heals a hurt ally next to it.";
+      return "With Raiding, +1 Attack on the first Attack after moving 2+ cells.";
+    case "RALLY":
+      return "Inspires adjacent friendly land troops except Captains and Catapults.";
+    case "TEND_WOUNDED":
+      return "Heals nearby wounded troops by 2.";
+    case "OVERRUN":
+      return "After a kill, advances and can attack another adjacent enemy.";
     case "PUSH":
       return "Knocks surviving targets back a tile.";
-    case "BREACH":
-      return "Ignores terrain defense when attacking up close.";
-    case "DASH":
-      return "Can move before attacking.";
-    case "TWO_SHOTS":
-      return "Shoots twice a turn. Move before the first shot.";
     default:
       return null;
   }
@@ -3118,7 +3266,7 @@ export function specialBoundaryNoticeV7(
 function techAchievementV7(tech: TechnologyIdV7): AchievementIdV7 | null {
   if (tech === "SCOUTING") return "EXPLORER";
   if (tech === "ENGINEERING") return "ENGINEER";
-  if (tech === "PROSPECTING") return "MUSTER";
+  if (tech === "DRILL") return "MUSTER";
   return null;
 }
 function rewardLabel(reward: string): readonly [string, string] {
@@ -3126,8 +3274,8 @@ function rewardLabel(reward: string): readonly [string, string] {
   if (reward === "STOCKPILE") return ["Stockpile", "+4 Coins"];
   if (reward === "WALLS") return ["Walls", "Stronger city defense"];
   if (reward === "MILITIA") return ["Militia", "A free Fighter"];
-  if (reward === "EXPAND") return ["Expand", "Bigger borders"];
   if (reward === "BOOM") return ["Boom", "+3 population"];
+  if (reward === "TREASURY_8") return ["Treasury", "+8 Coins"];
   if (reward === "JUGGERNAUT") return ["Juggernaut", "A giant unit"];
   if (reward === "TREASURY") return ["Treasury", "+12 Coins"];
   return [title(reward), ""];
@@ -3136,9 +3284,9 @@ function rewardLabel(reward: string): readonly [string, string] {
 const TECH_BRANCH_LABELS: Readonly<Record<string, string>> = {
   SETTLEMENT: "Settlement",
   WILDS: "Wilds",
-  MOBILITY_TRADE: "Travel & trade",
-  INDUSTRY_WARFARE: "Industry",
-  NAVAL: "Sea",
+  MOBILITY: "Mobility",
+  INDUSTRY: "Industry",
+  NAVAL: "Naval",
 };
 const COMMAND_LABELS: Partial<Record<CommandV7["kind"], string>> = {
   HARVEST_FRUIT: "Harvest",
@@ -3154,10 +3302,14 @@ const COMMAND_LABELS: Partial<Record<CommandV7["kind"], string>> = {
   BUILD_WORKSHOP: "Workshop",
   BUILD_MARKET: "Market",
   BUILD_PORT: "Port",
+  BUILD_SHIPYARD: "Shipyard",
   CLEAR_FOREST: "Clear forest",
   REPLANT_FOREST: "Plant forest",
+  CULTIVATE_FOREST: "Cultivate",
+  BLAST_MOUNTAIN: "Blast",
   BUILD_ROAD: "Road",
   REDEVELOP: "Redevelop",
+  LAND_GRANT: "Land grant",
   BUILD_FIELD_DEFENSE: "Fortify",
 };
 function commandLabel(command: CommandV7): string {
@@ -3455,7 +3607,6 @@ function populationMeter(
 }
 
 function abilityName(ability: string): string {
-  if (ability === "HEAL_ADJACENT") return "Heal";
-  if (ability === "TWO_SHOTS") return "Double shot";
+  if (ability === "TEND_WOUNDED") return "Tend";
   return title(ability);
 }

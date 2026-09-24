@@ -184,7 +184,7 @@ describe("ruleset-7 naval combat", () => {
     });
   });
 
-  it("recovers ships by 4 or 6 only at an owned active Port and rejects Medic Heal afloat", () => {
+  it("recovers ships by 4 only at an owned active Port and rejects Captain Tend afloat", () => {
     const fixture = withPortV7(9204);
     const unit = fixture.state.units.find(
       (candidate) => candidate.ownerId === fixture.state.humanPlayerId,
@@ -197,7 +197,7 @@ describe("ruleset-7 naval combat", () => {
           ? {
               ...player,
               researchedTechs: player.researchedTechs.filter(
-                (tech) => tech !== "RECOVERY",
+                (tech) => tech !== "MILLING",
               ),
             }
           : player,
@@ -295,7 +295,7 @@ describe("ruleset-7 naval combat", () => {
     });
     expect(six).toMatchObject({
       accepted: true,
-      events: [{ kind: "UNIT_RECOVERED", amount: 6 }],
+      events: [{ kind: "UNIT_RECOVERED", amount: 4 }],
     });
 
     const farWater = fixture.state.board.tiles.find(
@@ -343,7 +343,7 @@ describe("ruleset-7 naval combat", () => {
       ...fixture.state,
       units: fixture.state.units.map((candidate) =>
         candidate.id === unit.id
-          ? { ...candidate, role: "MEDIC" as const }
+          ? { ...candidate, role: "CAPTAIN" as const }
           : candidate.id === second.id
             ? {
                 ...candidate,
@@ -359,9 +359,8 @@ describe("ruleset-7 naval combat", () => {
     } as typeof fixture.state;
     expect(
       applyCommandV7(medicState, medicState.humanPlayerId, {
-        kind: "HEAL_ADJACENT",
+        kind: "TEND_WOUNDED",
         unitId: unit.id,
-        targetUnitId: second.id,
       }),
     ).toMatchObject({
       accepted: false,

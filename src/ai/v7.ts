@@ -1,6 +1,6 @@
 import type { CityId, PlayerId, UnitId } from "../engine/model/ids";
 import {
-  ORIGINAL_BASELINE_V4_TREE,
+  ORIGINAL_BASELINE_V5_TREE,
   effectiveRoleRuleV7,
   technologyCapabilitiesV7,
 } from "../engine/rules/ruleset-v7";
@@ -129,26 +129,20 @@ type AiReadyItemV7 = ReturnType<typeof queryAiReadyCommandsV7>[number];
 const THREATENED_ROLE_ORDER = [
   "GUARD",
   "FIGHTER",
-  "MEDIC",
-  "HEAVY",
+  "CAPTAIN",
+  "KNIGHT",
   "MARKSMAN",
-  "SCOUT",
   "RAIDER",
-  "BREACHER",
   "CATAPULT",
-  "HORSE_ARCHER",
 ] as const satisfies readonly UnitRoleIdV7[];
 
 const GENERAL_ROLE_ORDER = [
-  "SCOUT",
   "RAIDER",
   "MARKSMAN",
   "GUARD",
-  "MEDIC",
-  "HEAVY",
-  "BREACHER",
+  "CAPTAIN",
   "CATAPULT",
-  "HORSE_ARCHER",
+  "KNIGHT",
   "FIGHTER",
 ] as const satisfies readonly UnitRoleIdV7[];
 
@@ -487,7 +481,7 @@ function* navalPlanWorkV7(
           publicPlayersAllied(view, view.viewer.id, tile.territoryOwnerId)
         ) &&
         (tile.terrain !== "MOUNTAIN" ||
-          view.viewer.researchedTechs.includes("PROSPECTING")),
+          view.viewer.researchedTechs.includes("ENGINEERING")),
     )
     .sort((left, right) => left.at.y - right.at.y || left.at.x - right.at.x);
   const unassigned = new Set(land.map((tile) => coordKey(tile.at)));
@@ -514,6 +508,12 @@ function* navalPlanWorkV7(
     (unit) =>
       unit.ownerId === view.viewer.id &&
       unit.form === "LAND" &&
+      effectiveRoleRuleV7(unit.role).abilities.includes("CAPTURE"),
+  );
+  const visibleObjectiveClaimants = view.units.filter(
+    (unit) =>
+      unit.form === "LAND" &&
+      publicPlayersAllied(view, view.viewer.id, unit.ownerId) &&
       effectiveRoleRuleV7(unit.role).abilities.includes("CAPTURE"),
   );
   const captureComponents = new Set(
@@ -615,6 +615,9 @@ function* navalPlanWorkV7(
     (unit) => unit.ownerId === view.viewer.id && unit.form === "EMBARKED",
   );
   const target = overseas[0]?.at ?? reachable[0]?.at ?? null;
+  const targetHasCaptureUnit =
+    target !== null &&
+    visibleObjectiveClaimants.some((unit) => same(unit.at, target));
   const starts = [
     ...view.naval.ownedPorts
       .filter((port) => port.status === "ACTIVE")
@@ -686,8 +689,9 @@ function* navalPlanWorkV7(
             targetLandDistances.get(coordKey(at)) ===
             closestLegalLandingDistance,
         );
-  const landingLand =
-    target === null
+  const landingLand = targetHasCaptureUnit
+    ? []
+    : target === null
       ? land
           .filter((tile) => {
             const id = componentByKey.get(coordKey(tile.at));
@@ -1118,7 +1122,7 @@ function publicMovementTilePossible(
     return (
       tile.biome !== null &&
       (tile.terrain !== "MOUNTAIN" ||
-        publicOwnerHasProspecting(view, unit.ownerId))
+        publicOwnerHasEngineering(view, unit.ownerId))
     );
   return tile.biome === null;
 }
@@ -1250,7 +1254,7 @@ function scoreCommandWithContext(
   context: PolicyContextV7,
   command: CommandV7,
   readyTuple: readonly number[],
-  precomputedHorseArcher?: HorseArcherSequenceValue,
+  precomputedKnightOverrun?: KnightOverrunSequenceValue,
 ): AiScoreV7 {
   const view = context.view;
   const actor = unitForCommand(view, command);
@@ -1387,8 +1391,8 @@ function scoreCommandWithContext(
     strategicValue = research.strategic;
     immediateValue = -research.cost;
     if (
-      !view.viewer.researchedTechs.includes("PROSPECTING") &&
-      command.tech === "PROSPECTING"
+      !view.viewer.researchedTechs.includes("ENGINEERING") &&
+      command.tech === "ENGINEERING"
     ) {
       const oreProspectPoints = view.board.tiles.reduce(
         (total, tile) =>
@@ -1421,21 +1425,19 @@ function scoreCommandWithContext(
   }
 
   if (command.kind === "TRAIN") {
-    const rule = effectiveRoleRuleV7(command.role);
     priority = threatenedCity(context, command.cityId) ? 1260 : 1080;
-    immediateValue = -(rule.cost ?? 0);
+    immediateValue = -trainingCostV7(view, command);
     strategicValue = trainingStrategicValue(context, command);
   }
 
   if (command.kind === "TRAIN_NAVAL") {
-    const rule = effectiveRoleRuleV7(command.role);
     priority =
       command.role === "PATROL_BOAT" && context.naval.visibleNavalDanger
         ? 1290
         : command.role === "BATTLESHIP" && context.naval.target !== null
           ? 1215
           : 1090;
-    immediateValue = -(rule.cost ?? 0);
+    immediateValue = -trainingCostV7(view, command);
     strategicValue =
       command.role === "PATROL_BOAT"
         ? 25 + Number(context.naval.visibleNavalDanger) * 25
@@ -1453,6 +1455,23 @@ function scoreCommandWithContext(
       context.naval.target === null
         ? publicRevealGain(view, actor, command.at)
         : 100 - distance(command.at, context.naval.target);
+  }
+
+  if (command.kind === "LAND_GRANT") {
+    const city = view.cities.find((item) => item.id === command.cityId);
+    const neutral =
+      city === undefined
+        ? 0
+        : view.board.tiles.filter(
+            (tile) =>
+              tile.explored &&
+              tile.territoryCityId === null &&
+              Math.abs(tile.at.x - city.at.x) <= 2 &&
+              Math.abs(tile.at.y - city.at.y) <= 2,
+          ).length;
+    priority = neutral >= 4 ? 1170 : 720;
+    immediateValue = -6;
+    strategicValue = neutral * 3;
   }
 
   if (command.kind === "ATTACK") {
@@ -1491,13 +1510,13 @@ function scoreCommandWithContext(
         strategicValue += 35;
       }
       if (
-        actor?.role === "HORSE_ARCHER" &&
+        actor?.role === "KNIGHT" &&
         actor.form === "LAND" &&
         actor.activation.attacksUsed === 0
       ) {
         const sequence =
-          precomputedHorseArcher ??
-          bestHorseArcherSequence(context, view, command);
+          precomputedKnightOverrun ??
+          bestKnightOverrunSequence(context, view, command);
         immediateValue = sequence.immediate;
         strategicValue = sequence.strategic;
         safetyValue = sequence.safety;
@@ -1506,20 +1525,42 @@ function scoreCommandWithContext(
     }
   }
 
-  if (command.kind === "HEAL_ADJACENT") {
-    const target = view.units.find((item) => item.id === command.targetUnitId);
-    if (target !== undefined) {
-      const amount = Math.min(
-        view.viewer.researchedTechs.includes("RECOVERY") ? 6 : 4,
-        target.maxHp - target.hp,
-      );
-      immediateValue = 8 * amount;
-      priority = context.threats.some(
+  if (command.kind === "TEND_WOUNDED" && actor !== undefined) {
+    const targets = view.units.filter(
+      (unit) =>
+        unit.ownerId === view.viewer.id &&
+        unit.id !== actor.id &&
+        unit.form === "LAND" &&
+        unit.hp < unit.maxHp &&
+        !unit.activation.tendedThisTurn &&
+        distance(unit.at, actor.at) === 1,
+    );
+    immediateValue = sum(
+      targets.map((target) => Math.min(2, target.maxHp - target.hp) * 8),
+    );
+    priority = targets.some((target) =>
+      context.threats.some(
         (item) => item.cityId === cityAt(view, target.at)?.id,
-      )
-        ? 1270
-        : 500;
-    }
+      ),
+    )
+      ? 1270
+      : 650;
+  }
+
+  if (command.kind === "RALLY" && actor !== undefined) {
+    const targets = view.units.filter(
+      (unit) =>
+        unit.ownerId === view.viewer.id &&
+        unit.id !== actor.id &&
+        unit.form === "LAND" &&
+        !unit.activation.inspired &&
+        !["SUPPORT", "SIEGE"].includes(
+          effectiveRoleRuleV7(unit.role).tacticalRole,
+        ) &&
+        distance(unit.at, actor.at) === 1,
+    );
+    strategicValue = targets.length * 12;
+    priority = targets.length >= 2 ? 1220 : 720;
   }
 
   if (command.kind === "RECOVER") {
@@ -1543,14 +1584,11 @@ function scoreCommandWithContext(
     if (
       !neutral &&
       city !== undefined &&
-      view.viewer.researchedTechs.includes("PROSPECTING") &&
+      view.viewer.researchedTechs.includes("DRILL") &&
       !view.viewer.spoilsClaimedCityIds.includes(city.id)
     )
       immediateValue += 2;
-    if (
-      city !== undefined &&
-      view.viewer.researchedTechs.includes("ENGINEERING")
-    )
+    if (city !== undefined && view.viewer.researchedTechs.includes("DRILL"))
       strategicValue += 6;
   }
 
@@ -1599,17 +1637,17 @@ function scoreCommandWithContext(
         : 5;
     }
     if (
-      actor.role === "HORSE_ARCHER" &&
+      actor.role === "KNIGHT" &&
       actor.form === "LAND" &&
-      precomputedHorseArcher !== undefined
+      precomputedKnightOverrun !== undefined
     ) {
-      immediateValue += precomputedHorseArcher.immediate;
-      strategicValue += precomputedHorseArcher.strategic;
-      safetyValue = precomputedHorseArcher.safety;
-      objectiveValue += precomputedHorseArcher.spacing;
+      immediateValue += precomputedKnightOverrun.immediate;
+      strategicValue += precomputedKnightOverrun.strategic;
+      safetyValue = precomputedKnightOverrun.safety;
+      objectiveValue += precomputedKnightOverrun.spacing;
       priority = Math.max(
         priority,
-        precomputedHorseArcher.strategic > 0 ? 1175 : 905,
+        precomputedKnightOverrun.strategic > 0 ? 1175 : 905,
       );
     }
     const destinationTile =
@@ -1655,8 +1693,8 @@ function scoreCommandWithContext(
     resultAt === null ||
     command.kind === "ATTACK" ||
     (command.kind === "MOVE" &&
-      actor.role === "HORSE_ARCHER" &&
-      precomputedHorseArcher !== undefined)
+      actor.role === "KNIGHT" &&
+      precomputedKnightOverrun !== undefined)
       ? 0
       : -visibleImmediateDamage(view, actor, resultAt, context);
   const tie = readyTuple.slice(-5) as [number, number, number, number, number];
@@ -1694,26 +1732,26 @@ function* scoreCommandSteps(
   readyTuple: readonly number[],
 ): Generator<void, AiScoreV7> {
   const actor = unitForCommand(context.view, command);
-  const horseArcher =
+  const knightOverrun =
     command.kind === "ATTACK" &&
-    actor?.role === "HORSE_ARCHER" &&
+    actor?.role === "KNIGHT" &&
     actor.form === "LAND" &&
     actor.activation.attacksUsed === 0
-      ? yield* bestHorseArcherSequenceSteps(context, context.view, command)
+      ? yield* bestKnightOverrunSequenceSteps(context, context.view, command)
       : command.kind === "MOVE" &&
-          actor?.role === "HORSE_ARCHER" &&
+          actor?.role === "KNIGHT" &&
           actor.form === "LAND" &&
           actor.activation.attacksUsed === 0
-        ? yield* bestHorseArcherMoveSequenceSteps(
+        ? yield* bestKnightOverrunMoveSequenceSteps(
             context,
             context.view,
             command,
           )
         : undefined;
-  return scoreCommandWithContext(context, command, readyTuple, horseArcher);
+  return scoreCommandWithContext(context, command, readyTuple, knightOverrun);
 }
 
-interface HorseArcherSequenceValue {
+interface KnightOverrunSequenceValue {
   readonly immediate: number;
   readonly strategic: number;
   readonly safety: number;
@@ -1724,20 +1762,20 @@ type AttackCommandV7 = Extract<CommandV7, { kind: "ATTACK" }>;
 type MoveCommandV7 = Extract<CommandV7, { kind: "MOVE" }>;
 type DisbandCommandV7 = { readonly kind: "DISBAND"; readonly unitId: UnitId };
 
-/** Bounded public two-shot valuation from the Horse Archer's fixed coordinate. */
-function bestHorseArcherSequence(
+/** Bounded two-attack public lookahead with projected Overrun advances. */
+function bestKnightOverrunSequence(
   context: PolicyContextV7,
   view: PlayerViewV7,
   first: AttackCommandV7,
-): HorseArcherSequenceValue {
-  return drain(bestHorseArcherSequenceSteps(context, view, first));
+): KnightOverrunSequenceValue {
+  return drain(bestKnightOverrunSequenceSteps(context, view, first));
 }
 
-function* bestHorseArcherMoveSequenceSteps(
+function* bestKnightOverrunMoveSequenceSteps(
   context: PolicyContextV7,
   view: PlayerViewV7,
   move: MoveCommandV7,
-): Generator<void, HorseArcherSequenceValue | undefined> {
+): Generator<void, KnightOverrunSequenceValue | undefined> {
   const actor = view.units.find((unit) => unit.id === move.unitId);
   const at = move.path.at(-1);
   if (actor === undefined || at === undefined) return undefined;
@@ -1749,10 +1787,10 @@ function* bestHorseArcherMoveSequenceSteps(
       movedPathLength: move.path.length,
     },
   });
-  const attacks = yield* publicHorseArcherAttacksSteps(moved, actor.id);
-  let best: HorseArcherSequenceValue | undefined;
+  const attacks = yield* publicKnightOverrunAttacksSteps(moved, actor.id);
+  let best: KnightOverrunSequenceValue | undefined;
   for (const attack of attacks) {
-    const candidate = yield* bestHorseArcherSequenceSteps(
+    const candidate = yield* bestKnightOverrunSequenceSteps(
       context,
       moved,
       attack,
@@ -1760,8 +1798,8 @@ function* bestHorseArcherMoveSequenceSteps(
     if (
       best === undefined ||
       compareNumericTuple(
-        horseArcherValueTuple(candidate),
-        horseArcherValueTuple(best),
+        knightOverrunValueTuple(candidate),
+        knightOverrunValueTuple(best),
       ) > 0
     )
       best = candidate;
@@ -1769,25 +1807,25 @@ function* bestHorseArcherMoveSequenceSteps(
   return best;
 }
 
-function* bestHorseArcherSequenceSteps(
+function* bestKnightOverrunSequenceSteps(
   context: PolicyContextV7,
   view: PlayerViewV7,
   first: AttackCommandV7,
-): Generator<void, HorseArcherSequenceValue> {
+): Generator<void, KnightOverrunSequenceValue> {
   const actor = view.units.find((item) => item.id === first.unitId);
   const target = view.units.find((item) => item.id === first.targetUnitId);
   yield;
   const preview = queryCombatPreviewV7(view, first.unitId, first.targetUnitId);
   if (actor === undefined || target === undefined || preview === null)
     return { immediate: -10_000, strategic: 0, safety: -10_000, spacing: 0 };
-  const afterFirst = projectHorseArcherAttack(view, actor, target, preview);
-  const base: HorseArcherSequenceValue = {
+  const afterFirst = projectKnightOverrunAttack(view, actor, target, preview);
+  const base: KnightOverrunSequenceValue = {
     immediate: combatImmediateValue(preview),
     strategic: combatTargetStrategicValue(view, target, preview),
-    ...horseArcherLeafValue(afterFirst, actor.id, context),
+    ...knightOverrunLeafValue(afterFirst, actor.id, context),
   };
   if (preview.attackerDies || preview.attacksRemaining === 0) return base;
-  const secondAttacks = yield* publicHorseArcherAttacksSteps(
+  const secondAttacks = yield* publicKnightOverrunAttacksSteps(
     afterFirst,
     actor.id,
   );
@@ -1809,23 +1847,23 @@ function* bestHorseArcherSequenceSteps(
       secondPreview === null
     )
       continue;
-    const afterSecond = projectHorseArcherAttack(
+    const afterSecond = projectKnightOverrunAttack(
       afterFirst,
       secondActor,
       secondTarget,
       secondPreview,
     );
-    const candidate: HorseArcherSequenceValue = {
+    const candidate: KnightOverrunSequenceValue = {
       immediate: base.immediate + combatImmediateValue(secondPreview),
       strategic:
         base.strategic +
         combatTargetStrategicValue(afterFirst, secondTarget, secondPreview),
-      ...horseArcherLeafValue(afterSecond, actor.id, context),
+      ...knightOverrunLeafValue(afterSecond, actor.id, context),
     };
     if (
       compareNumericTuple(
-        horseArcherValueTuple(candidate),
-        horseArcherValueTuple(best),
+        knightOverrunValueTuple(candidate),
+        knightOverrunValueTuple(best),
       ) > 0
     )
       best = candidate;
@@ -1833,7 +1871,7 @@ function* bestHorseArcherSequenceSteps(
   return best;
 }
 
-function* publicHorseArcherAttacksSteps(
+function* publicKnightOverrunAttacksSteps(
   view: PlayerViewV7,
   unitId: UnitId,
 ): Generator<void, readonly AttackCommandV7[]> {
@@ -1852,17 +1890,17 @@ function* publicHorseArcherAttacksSteps(
   return result;
 }
 
-function horseArcherValueTuple(
-  value: HorseArcherSequenceValue,
+function knightOverrunValueTuple(
+  value: KnightOverrunSequenceValue,
 ): readonly number[] {
   return [value.strategic, value.immediate, value.safety, value.spacing];
 }
 
-function horseArcherLeafValue(
+function knightOverrunLeafValue(
   view: PlayerViewV7,
   unitId: UnitId,
   threatContext: PolicyContextV7,
-): Pick<HorseArcherSequenceValue, "safety" | "spacing"> {
+): Pick<KnightOverrunSequenceValue, "safety" | "spacing"> {
   const actor = view.units.find((unit) => unit.id === unitId);
   if (actor === undefined) return { safety: -10_000, spacing: 0 };
   const hostiles = view.units.filter((unit) => isHostile(view, unit.ownerId));
@@ -1875,13 +1913,13 @@ function horseArcherLeafValue(
   };
 }
 
-function projectHorseArcherAttack(
+function projectKnightOverrunAttack(
   view: PlayerViewV7,
   actor: PublicUnitV7,
   target: PublicUnitV7,
   preview: CombatPreviewV7,
 ): PlayerViewV7 {
-  const nextAttacks = preview.attacksUsed as 1 | 2;
+  const nextAttacks = preview.attacksUsed;
   const units = view.units.flatMap((unit): readonly PublicUnitV7[] => {
     if (unit.id === target.id)
       return preview.defenderDies
@@ -1892,43 +1930,20 @@ function projectHorseArcherAttack(
     return [
       {
         ...unit,
+        at: preview.advances ? target.at : unit.at,
         hp: unit.hp - preview.damageToAttacker,
         activation: {
           ...unit.activation,
           attacked: true,
           attacksUsed: nextAttacks,
-          handled: preview.attacksRemaining === 0,
+          inspired: false,
+          overrunActive: preview.overrunContinues,
+          handled: !preview.overrunContinues,
         },
       },
     ];
   });
-  return projectPublicUnitVitals(view, units, [actor.id, target.id]);
-}
-
-function projectPublicUnitVitals(
-  view: PlayerViewV7,
-  units: readonly PublicUnitV7[],
-  changedUnitIds: readonly UnitId[],
-): PlayerViewV7 {
-  const byId = new Map(units.map((unit) => [unit.id, unit] as const));
-  const changed = new Set(changedUnitIds);
-  return {
-    ...view,
-    units,
-    unitStats: view.unitStats.flatMap((stats) => {
-      const unit = byId.get(stats.unitId);
-      if (unit === undefined) return [];
-      if (!changed.has(unit.id)) return [stats];
-      return [
-        {
-          ...stats,
-          stats: stats.stats.map((stat) =>
-            stat.id === "HP" ? { ...stat, current: unit.hp } : stat,
-          ),
-        },
-      ];
-    }),
-  };
+  return projectPublicUnits(view, units, [actor.id, target.id]);
 }
 
 function combatImmediateValue(preview: CombatPreviewV7): number {
@@ -1987,7 +2002,7 @@ function combatStrategicValue(
     const medicHealing = context.view.units.some(
       (item) =>
         item.ownerId === target.ownerId &&
-        item.role === "MEDIC" &&
+        item.role === "CAPTAIN" &&
         distance(item.at, target.at) === 1,
     )
       ? 4
@@ -2114,7 +2129,7 @@ function shortestResearchChainForCommand(
   view: PlayerViewV7,
   command: string,
 ): readonly TechnologyIdV7[] {
-  const target = ORIGINAL_BASELINE_V4_TREE.nodes.find((node) =>
+  const target = ORIGINAL_BASELINE_V5_TREE.nodes.find((node) =>
     node.unlocks.some(
       (unlock) => unlock.kind === "COMMAND" && unlock.command === command,
     ),
@@ -2138,7 +2153,7 @@ function researchChain(
   const result: TechnologyIdV7[] = [];
   const visit = (tech: TechnologyIdV7): void => {
     if (owned.has(tech) || result.includes(tech)) return;
-    const node = ORIGINAL_BASELINE_V4_TREE.nodes.find(
+    const node = ORIGINAL_BASELINE_V5_TREE.nodes.find(
       (item) => item.id === tech,
     );
     for (const prerequisite of node?.prerequisites ?? []) visit(prerequisite);
@@ -2330,8 +2345,8 @@ function preferredReward(
               tile.territoryOwnerId === null &&
               distance(tile.at, city.at) <= 2,
           ).length;
-    return offered.includes("EXPAND") && neutral >= 4
-      ? "EXPAND"
+    return offered.includes("TREASURY_8") && neutral >= 4
+      ? "TREASURY_8"
       : offered.includes("BOOM")
         ? "BOOM"
         : (offered[0] ?? command.reward);
@@ -2438,9 +2453,20 @@ function publicRevealGain(
       ? 1
       : actor.form === "NAVAL"
         ? effectiveRoleRuleV7(actor.role).sightRadius
-        : actor.role === "SCOUT"
-          ? 2
-          : 1;
+        : Math.max(
+            effectiveRoleRuleV7(actor.role).sightRadius,
+            technologyCapabilitiesV7(view.viewer.researchedTechs)
+              .roleSightRadius[actor.role] ?? 0,
+          ) +
+          Number(
+            view.viewer.researchedTechs.includes("ENGINEERING") &&
+              view.board.tiles.some(
+                (tile) =>
+                  tile.explored &&
+                  same(tile.at, at) &&
+                  tile.terrain === "MOUNTAIN",
+              ),
+          );
   return view.board.tiles.filter(
     (tile) =>
       !tile.explored &&
@@ -2454,7 +2480,7 @@ function scoutPicketValue(
   actor: PublicUnitV7,
   at: CoordV7 | null,
 ): number {
-  if (actor.role !== "SCOUT" || at === null) return 0;
+  if (actor.role !== "RAIDER" || at === null) return 0;
   const valuable = view.cities
     .filter((city) => city.ownerId === view.viewer.id)
     .sort(
@@ -2510,7 +2536,6 @@ function visibleImmediateDamage(
     if (!directlyThreatened && !reachableThreat) continue;
     total += publicProjectedDamageForPolicyV7(view, hostile, actor, at, {
       maximumCharge: !directlyThreatened,
-      breach: facts.abilities.includes("BREACH"),
     });
   }
   return total;
@@ -2523,7 +2548,6 @@ export function publicProjectedDamageForPolicyV7(
   defenderAt: CoordV7,
   options: {
     readonly maximumCharge?: boolean;
-    readonly breach?: boolean;
   } = {},
 ): number {
   const attackRule = effectiveRoleRuleV7(attacker.role);
@@ -2537,14 +2561,7 @@ export function publicProjectedDamageForPolicyV7(
       ? Math.max(publishedAttack2, attackRule.attack2 + 2)
       : publishedAttack2;
   if (!Number.isInteger(attack2)) return 0;
-  const breach =
-    options.breach === true ||
-    (attacker.form === "LAND" &&
-      attackFacts.abilities.includes("BREACH") &&
-      distance(attacker.at, defenderAt) === 1);
-  const bonus = breach
-    ? { numerator: 1, denominator: 1 }
-    : projectedDefenseBonus(view, defender, defenderAt);
+  const bonus = projectedDefenseBonus(view, defender, defenderAt);
   const defenderTile = view.board.tiles.find(
     (tile) => tile.explored && same(tile.at, defenderAt),
   );
@@ -2728,12 +2745,12 @@ function targetStrategicValue(view: PlayerViewV7, unitId: UnitId): number {
     : (rule.cost ?? 0) * 4 + unit.hp;
 }
 
-function publicOwnerHasProspecting(
+function publicOwnerHasEngineering(
   view: PlayerViewV7,
   ownerId: PlayerId,
 ): boolean {
   if (ownerId === view.viewer.id)
-    return view.viewer.researchedTechs.includes("PROSPECTING");
+    return view.viewer.researchedTechs.includes("ENGINEERING");
   // A visible unit standing on Mountain proves the public movement capability;
   // otherwise opponent research remains unknown and is never assumed.
   return view.units.some(
@@ -2765,13 +2782,36 @@ function freeCapacity(view: PlayerViewV7, cityId: CityId | null): number {
   );
   if (city === undefined) return 0;
   const capacity =
-    city.level +
-    1 +
-    Number(view.viewer.researchedTechs.includes("ENGINEERING"));
+    city.level + 1 + Number(view.viewer.researchedTechs.includes("PLANNING"));
   const assigned = view.units.filter(
     (unit) => unit.ownerId === view.viewer.id && unit.homeCityId === cityId,
   ).length;
   return capacity - assigned;
+}
+
+function trainingCostV7(
+  view: PlayerViewV7,
+  command: Extract<CommandV7, { kind: "TRAIN" | "TRAIN_NAVAL" }>,
+): number {
+  const base = effectiveRoleRuleV7(command.role).cost ?? 0;
+  if (command.kind === "TRAIN_NAVAL") {
+    const tile = view.board.tiles.find(
+      (candidate) => candidate.explored && same(candidate.at, command.at),
+    );
+    return Math.max(
+      1,
+      base -
+        (tile?.explored === true && tile.improvement === "SHIPYARD" ? 2 : 0),
+    );
+  }
+  const forge = view.improvementValues.some((value) => {
+    if (value.improvement !== "FORGE" || value.level <= 0) return false;
+    const tile = view.board.tiles.find(
+      (candidate) => candidate.explored && same(candidate.at, value.at),
+    );
+    return tile?.explored === true && tile.territoryCityId === command.cityId;
+  });
+  return Math.max(1, base - (forge ? 1 : 0));
 }
 
 /** Reprojects public-only unit facts after a hypothetical policy move. */
@@ -2820,9 +2860,17 @@ function projectPublicUnits(
         : projectedDefenseBonus(view, unit, unit.at);
       const charge2 =
         !embarked &&
+        view.viewer.researchedTechs.includes("RAIDING") &&
         role.abilities.includes("CHARGE") &&
         unit.activation.moved &&
-        unit.activation.movedPathLength >= 2
+        unit.activation.movedPathLength >= 2 &&
+        unit.activation.attacksUsed === 0
+          ? 2
+          : 0;
+      const inspired2 =
+        !embarked &&
+        unit.activation.inspired &&
+        unit.activation.attacksUsed === 0
           ? 2
           : 0;
       const sight = embarked
@@ -2858,7 +2906,7 @@ function projectPublicUnits(
               : stat.id === "ATTACK"
                 ? statValue(
                     stat,
-                    embarked ? 0 : role.attack2 + charge2,
+                    embarked ? 0 : role.attack2 + charge2 + inspired2,
                     2,
                     embarked ? 0 : role.attack2,
                     2,

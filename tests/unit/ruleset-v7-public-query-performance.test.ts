@@ -32,38 +32,36 @@ describe("ruleset-7 late public query performance", () => {
     const commands = queryPlayerCommandsV7(view);
     const elapsed = performance.now() - started;
 
-    expect(commands).toHaveLength(76);
+    expect(commands).toHaveLength(64);
     expect(canonicalHash(commands)).toBe(
-      "80e8dd25e43a7a6cda5ebded73675123bc2f2842dbcb4b07a7f9a9d2182c3ec0",
+      "0b13410860e1df0d398369ce7fb307a2689edfa9dbf5305ab6fe1dfee8abd93b",
     );
     expect(
       commands.flatMap((command) =>
         command.kind === "BUILD_FIELD_DEFENSE" ? [command.unitId] : [],
       ),
-    ).toEqual([31, 32, 33]);
+    ).toEqual([]);
     expect(
       commands.flatMap((command) =>
         command.kind === "TRAIN" && command.cityId === cityId(9)
           ? [command.role]
           : [],
       ),
-    ).toEqual(["FIGHTER", "GUARD", "HEAVY", "BREACHER"]);
+    ).toEqual([]);
     expect(
       commands.flatMap((command) =>
-        command.kind === "TRAIN" && command.role === "BREACHER"
+        command.kind === "TRAIN" && command.role === "GUARD"
           ? [command.cityId]
           : [],
       ),
-    ).toEqual([cityId(3), cityId(9), cityId(16)]);
-    expect(commands.filter(isRevision8MergedUnlockCommand)).toHaveLength(9);
-    expect(commands.filter(isNavalExpansionCommand)).toEqual([
-      { kind: "RESEARCH", tech: "SHORECRAFT" },
-    ]);
+    ).toEqual([cityId(3), cityId(16)]);
+    expect(commands.filter(isRevision8MergedUnlockCommand)).toHaveLength(2);
+    expect(commands.filter(isNavalExpansionCommand)).toEqual([]);
     expect(canonicalHash(commands.filter(isRetainedLandCommand))).toBe(
-      "9c4720a9819d396bb9c66490e49b8070fea5ca6b9702ecbb01c5cc53ea31b0c7",
+      "0b13410860e1df0d398369ce7fb307a2689edfa9dbf5305ab6fe1dfee8abd93b",
     );
     expect(canonicalHash(queryAiReadyCommandsV7(view))).toBe(
-      "27d9d49d9b60717d7b4f367afe353df480fcbc70cd4a08c0176bca16fd98223d",
+      "c4dfc93b78903c1c012e9d7607fea2faa8e4c40edfed9b35f698bf5fcbe7f827",
     );
     expect(
       canonicalHash(
@@ -72,7 +70,7 @@ describe("ruleset-7 late public query performance", () => {
           result: previewEconomicV7(view, command),
         })),
       ),
-    ).toBe("7683b41e37d40306f4ca8c848a612ac5ab57e69d89d3bfcb1b0bab21c7e536b9");
+    ).toBe("e0c2e1e4db9dcd54b40854c3620d36a6ca7ba58f8d5193fcc313809c15283059");
     expect(
       canonicalHash(
         commands.filter(isRetainedLandCommand).map((command) => ({
@@ -80,7 +78,7 @@ describe("ruleset-7 late public query performance", () => {
           result: previewEconomicV7(view, command),
         })),
       ),
-    ).toBe("a3393e56a3cbb11a026368b7fa9dc19ee9c08ac57f2aa9eb98eff0f2df4fb183");
+    ).toBe("e0c2e1e4db9dcd54b40854c3620d36a6ca7ba58f8d5193fcc313809c15283059");
     expect(elapsed).toBeLessThan(250);
 
     const incrementalView = structuredClone(RETAINED_VIEW);
@@ -157,7 +155,7 @@ describe("ruleset-7 late public query performance", () => {
       expect(canonicalHash(leftResult)).toBe(canonicalHash(expected));
       expect(canonicalHash(rightResult)).toBe(canonicalHash(expected));
       expect(canonicalHash(leftResult.potentials)).toBe(
-        "47577f5151d8689e4daf9601796a847cf18a92d318fb2559b3d6f73a7e4fad62",
+        "6285861dd661a0602060b37c81953173582695945c57f668d5106e5fe2898cc5",
       );
       expect(
         leftResult.potentials.find(
@@ -175,15 +173,15 @@ describe("ruleset-7 late public query performance", () => {
           ),
         ),
       ).toBe(
-        "c9e77b4d46b2725afeffeec03d70d6699655a8ce6def19953c6644ba57430467",
+        "46e69d22f7561de4a04018da1efd36af083d79750c5846a3eb973d1b5c0ee6ee",
       );
       expect(canonicalHash(leftResult.scores)).toBe(
-        "c95320c980edc7bde7ba91cb71c68127723ddfe491540fe0113f28dc0d1b40a8",
+        "2b1f25e8cc9fd3210637bd8febac444bfe3578ef2863999ac49a35a988c06185",
       );
       const revision8Scores = leftResult.scores.filter(({ command }) =>
         isRevision8MergedUnlockCommand(command),
       );
-      expect(revision8Scores).toHaveLength(9);
+      expect(revision8Scores).toHaveLength(2);
       expect(revision8Scores.every(({ score }) => score === 0)).toBe(true);
       expect(
         canonicalHash(
@@ -192,7 +190,7 @@ describe("ruleset-7 late public query performance", () => {
           ),
         ),
       ).toBe(
-        "be14cac3f2bf5d280f4766a35989a5e359a515e30575eba80f16ed89c3446bca",
+        "2b1f25e8cc9fd3210637bd8febac444bfe3578ef2863999ac49a35a988c06185",
       );
       expect(queryPublicEconomicPotentialsV7(leftView)).toBe(
         leftResult.potentials,
@@ -253,7 +251,7 @@ describe("ruleset-7 late public query performance", () => {
   it("keys movement preparation to the exact changed public view", () => {
     const original = structuredClone(RETAINED_VIEW);
     expect(canonicalHash(queryPlayerCommandsV7(original))).toBe(
-      "80e8dd25e43a7a6cda5ebded73675123bc2f2842dbcb4b07a7f9a9d2182c3ec0",
+      "0b13410860e1df0d398369ce7fb307a2689edfa9dbf5305ab6fe1dfee8abd93b",
     );
     const firstMove = required(
       queryPlayerCommandsV7(original).find(
@@ -277,10 +275,10 @@ describe("ruleset-7 late public query performance", () => {
       canonicalHash(queryPlayerCommandsV7(structuredClone(changed))),
     );
     expect(canonicalHash(changedCommands)).toBe(
-      "b1b1d4fbccf2d208b70592489aac3558331ffed138395e7c8fac978388c95b47",
+      "02c84a8f890fc5c6b2c45c43320fe3e78aa9b47cc7cc2b187e7c0af54195cafc",
     );
     expect(canonicalHash(changedCommands.filter(isRetainedLandCommand))).toBe(
-      "a83c4c714194335ca49fc679c6029a953c5380f27ae7b04bfa24b03e64f3f816",
+      "02c84a8f890fc5c6b2c45c43320fe3e78aa9b47cc7cc2b187e7c0af54195cafc",
     );
   });
 
@@ -306,7 +304,7 @@ describe("ruleset-7 late public query performance", () => {
     });
     expect(
       spatialContributionAtV7(graph, target, "WORKSHOP").distinctTypes,
-    ).toEqual(["FARM", "MINE"]);
+    ).toEqual(["FARM"]);
   });
 
   it("invalidates spatial graph indexes across road and ownership changes", () => {
@@ -324,7 +322,7 @@ describe("ruleset-7 late public query performance", () => {
       marketAt,
       "WORKSHOP",
     );
-    expect(workshopBefore.distinctTypes).toEqual(["FARM", "MINE"]);
+    expect(workshopBefore.distinctTypes).toEqual(["FARM"]);
     expect(workshopAfter.distinctTypes).toEqual(["FARM"]);
     expect(workshopAfter).toEqual(
       spatialContributionAtV7(
@@ -335,7 +333,7 @@ describe("ruleset-7 late public query performance", () => {
     );
     expect(
       spatialContributionAtV7(graph, marketAt, "WORKSHOP").distinctTypes,
-    ).toEqual(["FARM", "MINE"]);
+    ).toEqual(["FARM"]);
 
     const roadConnected = withImprovement(graph, marketAt, "MARKET");
     const disconnected = {
@@ -479,6 +477,6 @@ function isRevision8MergedUnlockCommand(
   if (command.kind === "BUILD_FIELD_DEFENSE") return true;
   return (
     command.kind === "TRAIN" &&
-    (command.cityId === cityId(9) || command.role === "BREACHER")
+    (command.cityId === cityId(9) || command.role === "GUARD")
   );
 }

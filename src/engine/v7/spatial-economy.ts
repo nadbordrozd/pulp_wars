@@ -123,7 +123,13 @@ function calculateSpatialContributionAtV7(
     });
   }
   if (improvement === "WORKSHOP") {
-    const contributors = friendlyAdjacent(graph, at, city.ownerId, BASIC);
+    const contributors = friendlyAdjacent(
+      graph,
+      at,
+      city.ownerId,
+      BASIC,
+      city.id,
+    );
     const types = orderedTypes(contributors, BASIC);
     return result({
       population: types.length === 0 ? 0 : 1 + types.length,
@@ -132,21 +138,24 @@ function calculateSpatialContributionAtV7(
       placementCount: types.length,
     });
   }
-  const contributors = friendlyAdjacent(graph, at, city.ownerId, [
-    ...BASIC,
-    ...PROCESSORS,
-  ]);
-  const families = ECONOMIC_FAMILY_ORDER_V7.filter((family) =>
-    contributors.some((tile) => familyFor(tile.improvement) === family),
-  );
-  return result({
-    marketIncome: families.length,
-    contributingTiles: contributors.map((tile) => tile.at),
-    distinctTypes: orderedTypes(contributors, [...BASIC, ...PROCESSORS]),
-    distinctFamilies: families,
-    capitalRoadConnected: false,
-    placementCount: families.length,
-  });
+  if (improvement === "MARKET") {
+    const contributors = friendlyAdjacent(graph, at, city.ownerId, [
+      ...BASIC,
+      ...PROCESSORS,
+    ]);
+    const families = ECONOMIC_FAMILY_ORDER_V7.filter((family) =>
+      contributors.some((tile) => familyFor(tile.improvement) === family),
+    );
+    return result({
+      marketIncome: 1 + families.length,
+      contributingTiles: contributors.map((tile) => tile.at),
+      distinctTypes: orderedTypes(contributors, [...BASIC, ...PROCESSORS]),
+      distinctFamilies: families,
+      capitalRoadConnected: false,
+      placementCount: families.length,
+    });
+  }
+  return result({});
 }
 
 export function capitalConnectedRoadKeysV7(
@@ -200,12 +209,15 @@ function friendlyAdjacent<T extends ImprovementIdV7>(
   at: CoordV7,
   ownerId: PlayerId,
   allowed: readonly T[],
+  territoryCityId?: CityId,
 ): readonly EconomyGraphTileV7[] {
   return adjacentTilesV7(graph.board, at).filter(
     (tile) =>
       tile.improvement !== null &&
       allowed.includes(tile.improvement as T) &&
-      tileOwner(graph, tile) === ownerId,
+      tileOwner(graph, tile) === ownerId &&
+      (territoryCityId === undefined ||
+        tile.territoryCityId === territoryCityId),
   );
 }
 function orderedTypes<T extends ImprovementIdV7>(

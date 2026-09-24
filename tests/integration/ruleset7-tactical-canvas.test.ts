@@ -8,7 +8,7 @@ import {
   drawBoardV7,
 } from "../../src/render/canvas/board-renderer-v7";
 import { corePresentationPlanV7 } from "../../src/render/canvas/presentation-plan-v7";
-import { horseArcherPublicFixtureV7 } from "../fixtures/ruleset7-tactical-ui";
+import { knightOverrunPublicFixtureV7 } from "../fixtures/ruleset7-tactical-ui";
 
 beforeEach(() => {
   document.body.innerHTML = "";
@@ -114,7 +114,7 @@ describe("Ruleset 7 tactical Canvas presentation", () => {
   });
 
   it("renders every positive public fortification level and omits zero", () => {
-    const fixture = horseArcherPublicFixtureV7();
+    const fixture = knightOverrunPublicFixtureV7();
     const tile = required(
       fixture.view.board.tiles.find((candidate) => candidate.explored),
     );
@@ -157,7 +157,7 @@ describe("Ruleset 7 tactical Canvas presentation", () => {
   });
 
   it("plans impact feedback for redacted splash damage", () => {
-    const fixture = horseArcherPublicFixtureV7();
+    const fixture = knightOverrunPublicFixtureV7();
     const victim = required(fixture.view.units[0]);
     const plan = corePresentationPlanV7(fixture.view, {
       format: "pulp-wars-player-events",
@@ -184,16 +184,15 @@ describe("Ruleset 7 tactical Canvas presentation", () => {
   });
 
   it("renders deduplicated two-shot targets and non-overlapping registry attachments", () => {
-    const fixture = horseArcherPublicFixtureV7();
-    const horseArcher = required(
+    const fixture = knightOverrunPublicFixtureV7();
+    const knightOverrun = required(
       fixture.view.units.find(
         (unit) =>
-          unit.ownerId === fixture.view.viewer.id &&
-          unit.role === "HORSE_ARCHER",
+          unit.ownerId === fixture.view.viewer.id && unit.role === "KNIGHT",
       ),
     );
     const target = required(
-      fixture.view.units.find((unit) => unit.ownerId !== horseArcher.ownerId),
+      fixture.view.units.find((unit) => unit.ownerId !== knightOverrun.ownerId),
     );
     const fullView: PlayerViewV7 = {
       ...fixture.view,
@@ -226,14 +225,14 @@ describe("Ruleset 7 tactical Canvas presentation", () => {
       fixture.view,
       fixture.offeredCommands,
       {
-        selection: { kind: "UNIT", unitId: horseArcher.id },
-        selectedUnitId: horseArcher.id,
+        selection: { kind: "UNIT", unitId: knightOverrun.id },
+        selectedUnitId: knightOverrun.id,
         selectedAchievement: null,
       },
     );
     expect(
       targetPlan.targets.filter((entry) => entry.family === "ATTACK"),
-    ).toHaveLength(2);
+    ).toHaveLength(1);
     const plan = buildBoardRenderPlanV7(fullView, [], {
       selection: null,
       selectedUnitId: null,
@@ -282,7 +281,7 @@ describe("Ruleset 7 tactical Canvas presentation", () => {
     vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(
       context,
     );
-    const fixture = horseArcherPublicFixtureV7();
+    const fixture = knightOverrunPublicFixtureV7();
     const shell = document.createElement("section");
     shell.className = "v7-app-shell";
     const hud = document.createElement("header");

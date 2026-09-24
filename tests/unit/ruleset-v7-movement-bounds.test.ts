@@ -30,7 +30,9 @@ const READY: UnitStateV7["activation"] = {
   movedPathLength: 0,
   attacked: false,
   attacksUsed: 0,
-  healed: false,
+  tendedThisTurn: false,
+  inspired: false,
+  overrunActive: false,
   recovered: false,
   captured: false,
   handled: false,
@@ -164,7 +166,7 @@ describe("ruleset-7 public movement bounds", () => {
         ),
       },
     };
-    expect(marketIncomeForCityV7(marketState, city)).toBeGreaterThan(0);
+    expect(marketIncomeForCityV7(marketState, city)).toBe(1);
     const cut = {
       ...state,
       board: {
@@ -185,7 +187,7 @@ describe("ruleset-7 public movement bounds", () => {
       },
     };
     expect(marketIncomeForCityV7(marketState, city)).toBe(
-      marketIncomeForCityV7(cutMarketState, city) + 1,
+      marketIncomeForCityV7(cutMarketState, city),
     );
     expect(
       movementStepCost2V7(cut, human, { x: 2, y: 2 }, { x: 3, y: 2 }),
@@ -315,7 +317,7 @@ describe("ruleset-7 public movement bounds", () => {
       ),
     };
     expect(connectedMarketIncome).toBe(
-      marketIncomeForCityV7(capturedMarketState, capital) + 1,
+      marketIncomeForCityV7(capturedMarketState, capital),
     );
     expect(movementStepCost2V7(captured, human, path[1]!, path[2]!)).toBe(2);
     const capturedView = viewForV7(captured, human.id);
@@ -464,7 +466,7 @@ describe("ruleset-7 public movement bounds", () => {
             ? unit
             : {
                 ...unit,
-                role: "SCOUT" as const,
+                role: "RAIDER" as const,
                 at,
                 hp: 10,
                 maxHp: 10,
@@ -491,7 +493,7 @@ function movementState(origin: CoordV7): GameStateV7 {
   const base = exploredAllV7(allTechsV7(initialV7(27)));
   const human = base.humanPlayerId;
   const enemy = base.players.find((player) => player.id !== human)!.id;
-  const role = "SCOUT" as const;
+  const role = "RAIDER" as const;
   const maxHp = effectiveRoleRuleV7(role).maxHp;
   return checkedV7({
     ...base,
