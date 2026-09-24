@@ -1,5 +1,31 @@
 # Building and Settlement Asset Contract
 
+## Ruleset-7 revision-9 Shipyard
+
+The approved
+[revision-9 contract](../../product/RULESET_7_REVISION_9_HUMAN_TECHNOLOGY.md)
+adds exactly one building source: `building-ruleset7-shipyard`. It is an
+individual production gate, not an alias of the current Port and not approved
+for generation until the asset implementation bead begins.
+
+The untrimmed transparent source is 384 x 384 with anchor `(192,288)`, display
+scale 0.30, preferred bounds `x=40..344,y=58..326`, and hard bounds
+`x=20..364,y=36..340`. It reads as the existing Port upgraded with one larger
+crane, a compact drydock frame, and a more capable service shed. It must still
+read as a water improvement rather than a city, ship, bridge, or full harbor
+scene. Preserve an open central/lower water and resource window so Fish or
+Pearls remains identifiable and a colocated ship remains the primary unit.
+
+Ownership color, active/blockaded state, +2 live population, network state,
+recovery, the selected-dock discount, cost, and training availability are
+code-native. Do not bake a ship, resource, route, Coin, number, owner emblem,
+selection, damage, smoke, text, or shadow into the source. Review it at source,
+enlarged, 0.625x/1x/1.75x, DPR1/2, on both water types, all owner colors, every
+resource/occupant/blockade state, every coast adjacency, fog/selection, dense
+Ports, and beside the accepted Port and all naval pieces. Its accepted world
+source is also the Build Shipyard, Shipyard identity, and Naval Engineering
+card art.
+
 ## Active square-grid override
 
 The active presentation follows the

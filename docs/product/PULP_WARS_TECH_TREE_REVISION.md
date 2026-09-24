@@ -1,6 +1,7 @@
 # Pulp Wars — Revised Human Technology Tree
 
-**Status:** design draft for implementation
+**Status:** approved design input. The exact implementation authority is
+[Ruleset 7 revision 9: Human technology redesign](RULESET_7_REVISION_9_HUMAN_TECHNOLOGY.md).
 
 **Baseline:** current Ruleset 7 revision 8 (`pulp-wars-poc-7r8`)
 

@@ -1,5 +1,35 @@
 # UI Asset and Visual Contract
 
+## Ruleset-7 revision-9 action and status inventory
+
+The approved
+[revision-9 contract](../../product/RULESET_7_REVISION_9_HUMAN_TECHNOLOGY.md)
+adds exactly three PixelLab UI sources, all transparent 192 x 192 action icons
+scaled within the current compact icon action tiles. They must not increase the
+dock height:
+
+| Exact asset ID                    | Required reading                                                                                 |
+| --------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `ui-action-rally-v7r9`            | one bold command pennant or horn burst; no text, portrait, or baked Inspired state               |
+| `ui-action-cultivate-forest-v7r9` | one clear Forest-to-furrow/Fertile transformation, distinct from Clear Forest and Replant Forest |
+| `ui-action-blast-mountain-v7r9`   | one playful Mountain-clearing blast, distinct from combat damage and Pillage                     |
+
+After the established representative UI sample has passed, these three form one
+bounded coherent action family. Review them at native and enlarged size, in the
+compact action row at all supported viewport/zoom/DPR states, on light/dark and
+high-contrast panels, in grayscale and color-vision simulations, and beside
+every existing terrain action. They contain no text, Coin/population number,
+focus, disabled state, or animation frame.
+
+Tend Wounded reuses `ui-action-heal`; Land Grant/Planning reuses
+`ui-reward-expand`; Disband, Redevelop, Fortification, and Pillage retain their
+subject-matching accepted art. Build/selection/technology for Shipyard and
+training/identity/technology for Captain and Knight reuse their accepted world
+sources or deterministic portraits as specified by their class contracts.
+Supply, Inspired, tended-this-turn, Overrun, Charge, Field Defense destruction,
+land/sea trade, and dynamic city/dock discounts are code-native accessible
+status, effect, or number treatments and authorize no raster.
+
 ## Current Ruleset 7 simplified interface (2026-09-24)
 
 This section supersedes the compact dock and HUD wording below wherever they

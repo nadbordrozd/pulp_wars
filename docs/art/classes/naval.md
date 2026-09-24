@@ -1,5 +1,17 @@
 # Naval Asset Contract
 
+## Ruleset-7 revision-9 overlay
+
+The approved
+[revision-9 Human technology contract](../../product/RULESET_7_REVISION_9_HUMAN_TECHNOLOGY.md)
+retains every accepted water, resource, Port, transport, Patrol Boat, and
+Battleship source unchanged. It adds only the Shipyard source specified in the
+[building contract](buildings.md#ruleset-7-revision-9-shipyard). Port is not a
+suitable final Shipyard alias. All active/blockaded state, separate sea-trade
+qualification, recovery, population, and dock discount presentation remains
+code-native. No additional ship, transport, wake, route, trade, blockade,
+recovery, or discount raster is approved for revision 9.
+
 This contract specializes [Pulp Wars Art Direction](../ART_DIRECTION.md) for
 the implemented [Ruleset 7 revision-6 water and naval expansion](../../product/RULESET_7_REVISION_6_WATER_NAVAL.md)
 and the implemented current

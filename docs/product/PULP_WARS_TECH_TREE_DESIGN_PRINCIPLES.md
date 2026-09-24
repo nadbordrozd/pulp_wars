@@ -1,5 +1,8 @@
 # Pulp Wars — Technology Tree and Faction Design Principles
 
+**Status:** approved product direction for
+[Ruleset 7 revision 9](RULESET_7_REVISION_9_HUMAN_TECHNOLOGY.md).
+
 **Companion to:** [Pulp Wars — Revised Human Technology Tree](PULP_WARS_TECH_TREE_REVISION.md)
 
 ## 1. Product direction

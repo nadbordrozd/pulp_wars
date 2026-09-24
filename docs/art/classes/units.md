@@ -1,5 +1,34 @@
 # Unit Asset Contract
 
+## Ruleset-7 revision-9 Human roles
+
+The approved
+[revision-9 contract](../../product/RULESET_7_REVISION_9_HUMAN_TECHNOLOGY.md)
+adds exactly two Original production unit sources. Do not generate them until
+the asset implementation bead begins.
+
+| Exact asset ID          |    Canvas |      Anchor | Display scale | Required silhouette                                                                                                                  |
+| ----------------------- | --------: | ----------: | ------------: | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `unit-original-captain` | 256 x 296 | `(128,222)` |          0.25 | compact Human officer/support with one oversized command pennant or horn; distinct from Fighter, archived Medic, Marksman, and Guard |
+| `unit-original-knight`  | 384 x 384 | `(192,288)` |          0.27 | armored southeast-facing horse and unmistakable melee lance or sword; no bow; distinct from Raider and archived Horse Archer         |
+
+Captain uses the standard-unit alpha, contact, occupancy, faction-color, and
+18-CSS-pixel cosmetic-offset contract below. Knight uses the accepted mounted
+Horse Archer canvas/anchor/scale envelope, but requires a new melee silhouette;
+the Horse Archer raster is not a suitable alias. Both remain materially smaller
+than Forest and Mountain and contain no Rally, healing, Inspired, Overrun,
+selection, status, text, or ground effect.
+
+Generate and inspect Captain first as an individual standard-role extension,
+then Knight as an individual mounted exception. Each receives source,
+enlarged, 0.625x/1x/1.75x, DPR1/2, all-owner, all-terrain, occupied-city,
+dense-formation, selection/status, front/rear adjacency, and minimum-zoom
+review beside every retained Human role. Derive
+`portrait-original-captain` and `portrait-original-knight` deterministically
+from the accepted world sources; portraits are not extra PixelLab requests.
+Removed Human role sources remain frozen historical assets and are not mapped
+to revision 9.
+
 ## Active square-grid override
 
 The map now presents axis-aligned 128 x 128 cells under the
