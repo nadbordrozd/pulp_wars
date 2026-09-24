@@ -68,6 +68,13 @@ export function territoryReviewFixtureV7(): PlayerViewV7 {
         at: tile.at,
         edge,
         ownerId: owner ?? neighborOwner,
+        sharedOwnerIds:
+          known.has(`${x},${y}`) &&
+          known.has(`${x + dx},${y + dy}`) &&
+          owner !== null &&
+          neighborOwner !== null
+            ? [owner, neighborOwner]
+            : null,
         cityIds:
           owner === base.viewer.id || neighborOwner === base.viewer.id
             ? [city.id]

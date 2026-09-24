@@ -17,12 +17,16 @@ describe("Ruleset 7 public territory borders", () => {
       ["1,0", ownCity.id],
       ["2,0", ownCity.id],
       ["3,0", rivalCity.id],
+      ["2,1", ownCity.id],
+      ["3,1", rivalCity.id],
       ["5,5", ownCity.id],
     ]);
     const explored = [
       { x: 0, y: 0 },
       { x: 2, y: 0 },
       { x: 4, y: 0 },
+      { x: 2, y: 1 },
+      { x: 3, y: 1 },
       ownCity.at,
     ];
     const state = {
@@ -50,9 +54,17 @@ describe("Ruleset 7 public territory borders", () => {
     expect(at(0, 0, "EAST")).toBeUndefined(); // Same city continues under fog.
     expect(at(2, 0, "EAST")).toMatchObject({
       ownerId: ownCity.ownerId,
+      sharedOwnerIds: null,
       cityIds: [ownCity.id],
     });
-    expect(at(3, 0, "EAST")?.ownerId).toBe(rivalCity.ownerId);
+    expect(at(3, 0, "EAST")).toMatchObject({
+      ownerId: rivalCity.ownerId,
+      sharedOwnerIds: null,
+    });
+    expect(at(2, 1, "EAST")).toMatchObject({
+      ownerId: ownCity.ownerId,
+      sharedOwnerIds: [ownCity.ownerId, rivalCity.ownerId],
+    });
     expect(at(5, 5, "EAST")).toBeUndefined(); // Both sides hidden.
     const physical = edges.map((border) =>
       border.edge === "EAST"

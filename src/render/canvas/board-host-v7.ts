@@ -317,11 +317,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     const model = this.#model;
     if (model === null) return;
     const steps = corePresentationPlanV7(before, envelope, after);
-    if (
-      steps.length === 0 &&
-      before.turnOrder[before.activeSeatIndex] !== before.viewer.id
-    )
-      return;
+    if (steps.length === 0) return;
     this.#cameraFollowAllowed = this.#pointers.size === 0;
     const durationScale = model.animationSpeed === "FAST" ? 0.5 : 1;
     this.#presentedView = before;

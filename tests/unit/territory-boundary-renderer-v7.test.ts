@@ -44,7 +44,133 @@ describe("square territory boundary presentation", () => {
           (entry.edge === "EAST" && entry.at.x === 0),
       ).toBe(true);
     }
+    const shared = owned.filter(
+      (entry) => entry.counterpartOwnerColor !== undefined,
+    );
+    expect(shared.length).toBeGreaterThan(0);
+    expect(shared.every((entry) => entry.ownerColor === "#f06762")).toBe(true);
+    expect(
+      shared.every((entry) => entry.counterpartOwnerColor === "#28b7a4"),
+    ).toBe(true);
+
+    const city = base.cities[0];
+    if (city === undefined) throw new Error("Review city missing");
+    const selected = buildBoardRenderPlanV7(base, [], {
+      selection: { kind: "CITY", cityId: city.id },
+      selectedUnitId: null,
+      selectedAchievement: null,
+    }).entries.filter(
+      (entry) =>
+        entry.kind === "TERRITORY_BOUNDARY" &&
+        entry.boundaryStyle === "CITY" &&
+        entry.counterpartOwnerColor !== undefined,
+    );
+    expect(selected.length).toBeGreaterThan(0);
+    expect(selected.every((entry) => entry.ownerColor === "#f06762")).toBe(
+      true,
+    );
+    expect(
+      selected.every((entry) => entry.counterpartOwnerColor === "#28b7a4"),
+    ).toBe(true);
   });
+
+  it.each(["OWNER", "CITY"] as const)(
+    "interleaves both public owner colors on a shared %s edge",
+    (boundaryStyle) => {
+      const strokes: { style: string; dash: number[]; offset: number }[] = [];
+      const target: Record<PropertyKey, unknown> = {
+        strokeStyle: "",
+        lineDashOffset: 0,
+        dash: [] as number[],
+      };
+      target.setLineDash = vi.fn((dash: number[]) => {
+        target.dash = dash;
+      });
+      target.stroke = vi.fn(() =>
+        strokes.push({
+          style: String(target.strokeStyle),
+          dash: [...(target.dash as number[])],
+          offset: Number(target.lineDashOffset),
+        }),
+      );
+      const context = new Proxy(target, {
+        get: (object, key) => (key in object ? object[key] : vi.fn()),
+        set: (object, key, value) => {
+          object[key] = value;
+          return true;
+        },
+      }) as unknown as CanvasRenderingContext2D;
+      drawBoardV7({
+        context,
+        viewport: { width: 300, height: 300 },
+        devicePixelRatio: 1,
+        camera: { zoom: 1, offsetX: 100, offsetY: 100 },
+        plan: {
+          version: 7,
+          targets: [],
+          entries: [
+            {
+              key: "terrain",
+              kind: "TERRAIN",
+              layer: 0,
+              at: { x: 1, y: 1 },
+              assetId: "terrain-square-grass-1",
+            },
+            {
+              key: "shared",
+              kind: "TERRITORY_BOUNDARY",
+              layer: 7,
+              at: { x: 1, y: 1 },
+              edge: "EAST",
+              boundaryStyle,
+              ownerColor: "#f06762",
+              counterpartOwnerColor: "#28b7a4",
+            },
+          ],
+        },
+        images: { resolve: () => null },
+      });
+      expect(strokes.slice(-3)).toEqual([
+        { style: "#243633", dash: [12, 4], offset: -6 },
+        { style: "#f06762", dash: [12, 20], offset: -6 },
+        { style: "#28b7a4", dash: [12, 20], offset: -22 },
+      ]);
+      strokes.length = 0;
+      drawBoardV7({
+        context,
+        viewport: { width: 300, height: 300 },
+        devicePixelRatio: 1,
+        camera: { zoom: 1, offsetX: 100, offsetY: 100 },
+        plan: {
+          version: 7,
+          targets: [],
+          entries: [
+            {
+              key: "terrain",
+              kind: "TERRAIN",
+              layer: 0,
+              at: { x: 1, y: 1 },
+              assetId: "terrain-square-grass-1",
+            },
+            {
+              key: "single-owner",
+              kind: "TERRITORY_BOUNDARY",
+              layer: 7,
+              at: { x: 1, y: 1 },
+              edge: "EAST",
+              boundaryStyle: "OWNER",
+              ownerColor: "#f06762",
+            },
+          ],
+        },
+        images: { resolve: () => null },
+      });
+      expect(strokes.slice(-2)).toEqual([
+        { style: "#243633", dash: [20, 12], offset: -6 },
+        { style: "#f06762", dash: [20, 12], offset: -6 },
+      ]);
+    },
+  );
 
   it.each([0.625, 1, 1.75])(
     "clips to explored ground and opens public Road crossings at %sx",

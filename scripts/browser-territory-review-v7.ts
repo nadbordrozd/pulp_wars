@@ -25,6 +25,7 @@ const outputRoot = path.resolve(
   process.argv.find((arg) => arg.startsWith("--output="))?.slice(9) ??
     "/tmp/pulp-wars-wly-review",
 );
+const focused = process.argv.includes("--focused");
 const chrome = process.env.CHROME_PATH;
 if (!chrome) throw new Error("Set CHROME_PATH to the review headless browser");
 const port = 10600 + (process.pid % 100);
@@ -106,11 +107,11 @@ try {
     };
     globalThis.__TERRITORY_REVIEW__ = {
       draw: (comparison, zoom, mode, dpr = 1) => {
-        root.innerHTML = '<h1 style="font:700 23px/1.2 system-ui;max-width:none;width:auto;margin:0 0 6px">Territory boundaries · ' + (comparison ? 'candidate comparison' : 'selected dashed treatment') + '</h1><p style="margin:0 0 12px">Synthetic public presentation fixture · actual drawBoardV7 Canvas + accepted art · ' + mode + ' · ' + zoom + '× zoom · DPR ' + dpr + '</p><section style="display:flex;gap:14px"></section>';
+        root.innerHTML = '<h1 style="font:700 23px/1.2 system-ui;max-width:none;width:auto;margin:0 0 6px">Territory boundaries · ' + (comparison ? 'candidate comparison' : 'public owner treatment') + '</h1><p style="margin:0 0 12px">Synthetic public presentation fixture · actual drawBoardV7 Canvas + accepted art · ' + mode + ' · ' + zoom + '× zoom · DPR ' + dpr + '</p><section style="display:flex;gap:14px"></section>';
         const variants = comparison ? ['current','dashed','fence'] : ['final'];
         const width = comparison ? 617 : 1400, height = comparison ? 920 : 864;
         for (const variant of variants) {
-          const article = document.createElement('article'); article.innerHTML = '<h2 style="font-size:18px;margin:0 0 8px">' + ({current:'Current · 3 px continuous',dashed:'Thicker dash · dark casing',fence:'Subtle raised edge · short posts',final:'Final · visible ownership / solid selected city / dashed potential'}[variant]) + '</h2><canvas style="display:block;width:' + width + 'px;height:' + height + 'px"></canvas>';
+          const article = document.createElement('article'); article.innerHTML = '<h2 style="font-size:18px;margin:0 0 8px">' + ({current:'Current · 3 px continuous',dashed:'Thicker dash · dark casing',fence:'Subtle raised edge · short posts',final:'Final · alternating shared owners / selected city emphasis'}[variant]) + '</h2><canvas style="display:block;width:' + width + 'px;height:' + height + 'px"></canvas>';
           root.querySelector('section').append(article);
           const canvas = article.querySelector('canvas'); canvas.width=width*dpr; canvas.height=height*dpr;
           const context=canvas.getContext('2d'); const plan=plans[mode];
@@ -138,16 +139,94 @@ try {
     };
   })()`,
   );
+  await evaluate(
+    connection,
+    `(async () => {
+      const { exploredAllV7, initialV7, checkedV7 } = await import('/tests/fixtures/v7-builders.ts');
+      const { withPortV7 } = await import('/tests/fixtures/v7-naval-builders.ts');
+      const { applyCommandV7, projectEventsV7, queryPlayerCommandsV7, viewForV7 } = await import('/src/engine/index.ts');
+      const { CanvasBoardHostV7 } = await import('/src/render/canvas/board-host-v7.ts');
+      const { fitCamera, centerCameraOn, projectGrid, worldToScreen } = await import('/src/render/canvas/geometry.ts');
+      let state = exploredAllV7(initialV7(1532));
+      const city = state.cities.find(candidate => candidate.ownerId === state.humanPlayerId);
+      const unit = state.units.find(candidate => candidate.ownerId === state.humanPlayerId);
+      const same = (left, right) => left.x === right.x && left.y === right.y;
+      if (!city || !unit) throw new Error('Recruitment fixture missing');
+      const empty = state.board.tiles.find(tile => tile.territoryCityId === city.id && tile.site === null && !same(tile.at, city.at) && !state.units.some(candidate => same(candidate.at, tile.at)) && !state.treasureChests.some(chest => same(chest, tile.at)));
+      if (!empty) throw new Error('Recruitment empty tile missing');
+      state = checkedV7({ ...state, players: state.players.map(player => player.id === state.humanPlayerId ? { ...player, coins: 100 } : player), units: state.units.map(candidate => candidate.id === unit.id ? { ...candidate, at: empty.at } : candidate) });
+      const before = viewForV7(state, state.humanPlayerId);
+      const train = queryPlayerCommandsV7(before).find(command => command.kind === 'TRAIN' && command.cityId === city.id);
+      if (!train) throw new Error('Recruitment command missing');
+      const recruited = applyCommandV7(state, state.humanPlayerId, train);
+      if (!recruited.accepted) throw new Error('Recruitment rejected: ' + recruited.error.code);
+      const portFixture = withPortV7(9001);
+      const navalBefore = viewForV7(portFixture.state, portFixture.state.humanPlayerId);
+      const navalTrain = queryPlayerCommandsV7(navalBefore).find(command => command.kind === 'TRAIN_NAVAL' && command.role === 'PATROL_BOAT' && same(command.at, portFixture.portAt));
+      if (!navalTrain) throw new Error('Naval recruitment command missing');
+      const navalRecruited = applyCommandV7(portFixture.state, portFixture.state.humanPlayerId, navalTrain);
+      if (!navalRecruited.accepted) throw new Error('Naval recruitment rejected: ' + navalRecruited.error.code);
+      const scenarios = {
+        land: { label: 'Fighter', state, before, train, recruited },
+        naval: { label: 'Patrol Boat', state: portFixture.state, before: navalBefore, train: navalTrain, recruited: navalRecruited },
+      };
+      const root = document.querySelector('#app');
+      globalThis.__RECRUIT_REVIEW__ = async (scenario, motion, dpr) => {
+        globalThis.__ACTIVE_RECRUIT_HOST__?.destroy();
+        const fixture = scenarios[scenario];
+        const { state: source, before, train, recruited, label } = fixture;
+        const after = viewForV7(recruited.state, source.humanPlayerId);
+        const envelope = projectEventsV7(source, recruited.state, source.humanPlayerId, recruited.events);
+        const focusCity = before.cities.find(candidate => candidate.ownerId === before.viewer.id && candidate.isCapital) ?? before.cities[0];
+        root.innerHTML = '<h1 style="font:700 23px/1.2 system-ui;margin:0 0 6px">Recruitment redraw stability · ' + scenario + ' · ' + motion + '</h1><p style="margin:0 0 12px">Actual CanvasBoardHostV7 · legal ' + label + ' recruitment · terrain probe sampled before, during, and after the accepted boundary · DPR ' + dpr + '</p><div data-recruit-host style="width:1400px;height:864px"></div>';
+        const container = root.querySelector('[data-recruit-host]');
+        const host = new CanvasBoardHostV7(document);
+        globalThis.__ACTIVE_RECRUIT_HOST__ = host;
+        host.mount(container, { onSelection() {}, onCommand() {} });
+        const model = view => ({ matchInstanceId: 'recruit-review-' + scenario + '-' + motion, view, offeredCommands: [], interactive: false, motion, animationSpeed: 'NORMAL', presentationPaused: false, highContrast: false, interaction: { selection: null, selectedUnitId: null, selectedAchievement: null } });
+        host.update(model(before));
+        await new Promise(resolve => setTimeout(resolve, 500));
+        const canvas = container.querySelector('canvas');
+        const context = canvas.getContext('2d');
+        const viewport = { width: 1400, height: 864 };
+        const capital = focusCity.at;
+        const camera = centerCameraOn(fitCamera(before.board, viewport), projectGrid(capital), viewport);
+        const probe = before.board.tiles.map(tile => ({ tile, point: worldToScreen(projectGrid(tile.at), camera) })).find(({ tile, point }) => tile.explored && tile.resource === null && tile.improvement === null && tile.site === null && !before.units.some(candidate => same(candidate.at, tile.at)) && !before.treasureChests.some(chest => same(chest, tile.at)) && Math.max(Math.abs(tile.at.x - capital.x), Math.abs(tile.at.y - capital.y)) >= 2 && point.x >= 20 && point.x <= viewport.width - 20 && point.y >= 20 && point.y <= viewport.height - 20);
+        if (!probe) throw new Error('Visible steady terrain probe tile missing');
+        const sampleTile = probe.tile;
+        const point = probe.point;
+        const sample = () => [...context.getImageData(Math.round(point.x * dpr) - 4 * dpr, Math.round(point.y * dpr) - 4 * dpr, 9 * dpr, 9 * dpr).data];
+        const differentChannels = (left, right) => left.reduce((count, value, index) => count + (value === right[index] ? 0 : 1), 0);
+        const baseline = sample();
+        host.update(model(after));
+        const installed = sample();
+        const nativeRequest = window.requestAnimationFrame;
+        let presentationFrameRequests = 0;
+        window.requestAnimationFrame = callback => { presentationFrameRequests += 1; return nativeRequest.call(window, callback); };
+        const presentation = host.presentBoundary(before, after, envelope);
+        const samples = [sample()];
+        for (const delay of [16, 50, 100, 180]) { await new Promise(resolve => setTimeout(resolve, delay)); samples.push(sample()); }
+        await presentation;
+        window.requestAnimationFrame = nativeRequest;
+        const terrainChanges = [differentChannels(baseline, installed), ...samples.map(candidate => differentChannels(installed, candidate))];
+        if (presentationFrameRequests !== 0 || terrainChanges.some(count => count !== 0)) throw new Error('Recruitment redraw instability: frames=' + presentationFrameRequests + ' changes=' + terrainChanges.join(','));
+        const result = { scenario, motion, dpr, command: train.kind, projectedKinds: envelope.events.map(event => event.kind), presentationFrameRequests, terrainProbe: { at: sampleTile.at, cssPoint: point, sampleCssSize: 9, differentChannels: terrainChanges }, unitCount: { before: before.units.length, after: after.units.length } };
+        return result;
+      };
+    })()`,
+  );
   const evidence: unknown[] = [];
-  for (const mode of ["ambient", "city", "unit"]) {
-    for (const zoom of [0.625, 1]) {
-      evidence.push(
-        await evaluate(
-          connection,
-          `__TERRITORY_REVIEW__.draw(true,${zoom},${JSON.stringify(mode)})`,
-        ),
-      );
-      await capture(connection, `comparison-${mode}-${zoom}.png`);
+  if (!focused) {
+    for (const mode of ["ambient", "city", "unit"]) {
+      for (const zoom of [0.625, 1]) {
+        evidence.push(
+          await evaluate(
+            connection,
+            `__TERRITORY_REVIEW__.draw(true,${zoom},${JSON.stringify(mode)})`,
+          ),
+        );
+        await capture(connection, `comparison-${mode}-${zoom}.png`);
+      }
     }
   }
   await connection.send("Emulation.setDeviceMetricsOverride", {
@@ -156,8 +235,8 @@ try {
     deviceScaleFactor: 1,
     mobile: false,
   });
-  for (const mode of ["ambient", "city", "unit"]) {
-    for (const zoom of [0.625, 1, 1.75]) {
+  for (const mode of focused ? ["city"] : ["ambient", "city", "unit"]) {
+    for (const zoom of focused ? [1] : [0.625, 1, 1.75]) {
       evidence.push(
         await evaluate(
           connection,
@@ -176,17 +255,42 @@ try {
   evidence.push(
     await evaluate(
       connection,
-      `__TERRITORY_REVIEW__.draw(false,0.625,'city',2)`,
+      `__TERRITORY_REVIEW__.draw(false,${focused ? 1 : 0.625},'city',2)`,
     ),
   );
-  await capture(connection, "final-city-0.625-dpr2.png");
+  await capture(
+    connection,
+    focused ? "border-city-dpr2.png" : "final-city-0.625-dpr2.png",
+  );
   const pixelProbes = await evaluate(
     connection,
     "__TERRITORY_REVIEW__.pixelProbes()",
   );
+  const recruitmentEvidence: unknown[] = [];
+  for (const dpr of [1, 2]) {
+    await connection.send("Emulation.setDeviceMetricsOverride", {
+      width: 1440,
+      height: 1000,
+      deviceScaleFactor: dpr,
+      mobile: false,
+    });
+    for (const scenario of ["land", "naval"])
+      for (const motion of ["FULL", "REDUCED"]) {
+        recruitmentEvidence.push(
+          await evaluate(
+            connection,
+            `__RECRUIT_REVIEW__(${JSON.stringify(scenario)},${JSON.stringify(motion)},${dpr})`,
+          ),
+        );
+        await capture(
+          connection,
+          `recruit-${scenario}-${motion.toLowerCase()}-dpr${dpr}.png`,
+        );
+      }
+  }
   await writeFile(
     path.join(outputRoot, "evidence.json"),
-    `${JSON.stringify({ fixture: "SYNTHETIC_PUBLIC_PRESENTATION_ONLY", renderer: "drawBoardV7, real browser Canvas with accepted art", evidence, pixelProbes }, null, 2)}\n`,
+    `${JSON.stringify({ fixture: "SYNTHETIC_PUBLIC_PRESENTATION_ONLY plus legal recruitment boundary", renderer: "drawBoardV7 and CanvasBoardHostV7 in real browser with accepted art", evidence, pixelProbes, recruitmentEvidence }, null, 2)}\n`,
   );
   connection.close();
   console.log(`Territory browser review passed: ${outputRoot}`);

@@ -102,6 +102,7 @@ export interface BoardRenderPlanEntryV7 {
   readonly population?: number;
   readonly ready?: boolean;
   readonly ownerColor?: string;
+  readonly counterpartOwnerColor?: string;
   readonly ownerSeat?: number;
   readonly statusId?: string;
   readonly pulse?: boolean;
@@ -933,10 +934,18 @@ function addTerritoryBoundaries(
       : undefined;
   for (const segment of view.board.territoryBorders) {
     const key = edgeKey(segment.at, segment.edge);
+    const sharedOwnerIds = segment.sharedOwnerIds;
     if (
       selectedCity !== undefined &&
       segment.cityIds.includes(selectedCity.id)
     ) {
+      const counterpartOwnerId = sharedOwnerIds?.find(
+        (ownerId) => ownerId !== selectedCity.ownerId,
+      );
+      const counterpartOwnerColor =
+        counterpartOwnerId === undefined
+          ? undefined
+          : ownerPresentation(view, counterpartOwnerId).ownerColor;
       entries.push({
         key: `territory-city:${selectedCity.id}:${key}`,
         kind: "TERRITORY_BOUNDARY",
@@ -946,8 +955,19 @@ function addTerritoryBoundaries(
         boundaryStyle: "CITY",
         ownerId: selectedCity.ownerId,
         ...ownerPresentation(view, selectedCity.ownerId),
+        ...(counterpartOwnerColor === undefined
+          ? {}
+          : { counterpartOwnerColor }),
       });
     } else if (segment.ownerId !== null) {
+      const [ownerId, counterpartOwnerId] = sharedOwnerIds ?? [
+        segment.ownerId,
+        undefined,
+      ];
+      const counterpartOwnerColor =
+        counterpartOwnerId === undefined
+          ? undefined
+          : ownerPresentation(view, counterpartOwnerId).ownerColor;
       entries.push({
         key: `territory-owner:${key}`,
         kind: "TERRITORY_BOUNDARY",
@@ -955,8 +975,11 @@ function addTerritoryBoundaries(
         at: segment.at,
         edge: segment.edge,
         boundaryStyle: "OWNER",
-        ownerId: segment.ownerId,
-        ...ownerPresentation(view, segment.ownerId),
+        ownerId,
+        ...ownerPresentation(view, ownerId),
+        ...(counterpartOwnerColor === undefined
+          ? {}
+          : { counterpartOwnerColor }),
       });
     }
   }
@@ -1144,15 +1167,28 @@ function drawTerritoryBoundary(
     context.clip("evenodd");
   }
   context.lineCap = "butt";
-  context.setLineDash(selected ? [] : [20 * zoom, 12 * zoom]);
+  const shared = entry.counterpartOwnerColor !== undefined;
+  context.setLineDash(
+    selected && !shared
+      ? []
+      : shared
+        ? [12 * zoom, 4 * zoom]
+        : [20 * zoom, 12 * zoom],
+  );
   // Four periods per square side, with gaps at corners and Road midpoints.
-  context.lineDashOffset = selected ? 0 : -6 * zoom;
+  context.lineDashOffset = selected && !shared ? 0 : -6 * zoom;
   context.strokeStyle = "#243633";
   context.lineWidth = (selected ? 9 : 8) * zoom;
   strokeTileEdge(context, camera, entry.at, entry.edge);
   context.strokeStyle = entry.ownerColor ?? "#fff6b0";
   context.lineWidth = (selected ? 5 : 4) * zoom;
+  if (shared) context.setLineDash([12 * zoom, 20 * zoom]);
   strokeTileEdge(context, camera, entry.at, entry.edge);
+  if (entry.counterpartOwnerColor !== undefined) {
+    context.strokeStyle = entry.counterpartOwnerColor;
+    context.lineDashOffset = -22 * zoom;
+    strokeTileEdge(context, camera, entry.at, entry.edge);
+  }
   context.restore();
 }
 

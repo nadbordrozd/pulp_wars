@@ -48,6 +48,32 @@ describe("Ruleset 7 naval public presentation", () => {
       at: portFixture.portAt,
       role: "PATROL_BOAT",
     });
+    if (train?.kind !== "TRAIN_NAVAL") throw new Error("naval train missing");
+    const recruited = applyCommandV7(
+      portFixture.state,
+      portFixture.state.humanPlayerId,
+      train,
+    );
+    if (!recruited.accepted) throw new Error(recruited.error.code);
+    const recruitmentEnvelope = projectEventsV7(
+      portFixture.state,
+      recruited.state,
+      portFixture.state.humanPlayerId,
+      recruited.events,
+    );
+    expect(recruitmentEnvelope.events).toContainEqual(
+      expect.objectContaining({ kind: "NAVAL_UNIT_TRAINED" }),
+    );
+    expect(recruitmentEnvelope.events).not.toContainEqual(
+      expect.objectContaining({ kind: "UNIT_REVEALED" }),
+    );
+    expect(
+      corePresentationPlanV7(
+        portView,
+        recruitmentEnvelope,
+        viewForV7(recruited.state, portFixture.state.humanPlayerId),
+      ),
+    ).toEqual([]);
     const portPlan = buildBoardRenderPlanV7(
       portView,
       train === undefined ? [] : [train],

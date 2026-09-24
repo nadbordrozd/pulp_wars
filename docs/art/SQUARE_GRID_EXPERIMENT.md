@@ -75,9 +75,12 @@ files; on a `128 x 128` cell the same units intentionally read more compactly.
 Public owner contours use faction colored dashes with a dark casing: 20 CSS
 pixels painted and 12 pixels clear per 128 px side at 1x, with 8 px outer and
 4 px inner strokes. The dash phase leaves the same gap at every corner. The
-selected city's perimeter is solid (9 px casing, 5 px faction color), while its
-potential expansion remains a thinner cream dash. All measurements follow map
-zoom; ownership does not introduce a selectable object or change territory.
+selected city's perimeter is solid (9 px casing, 5 px faction color). A shared
+border between two publicly known, differently owned tiles alternates 12 px
+dashes of both faction colors with 4 px gaps over the casing, including along a
+selected-city perimeter. A counterpart behind fog is never inferred. All
+measurements follow map zoom; ownership does not introduce a selectable object
+or change territory.
 
 Strokes clip to explored ground so their wider edges cannot paint into fog.
 Where two public Road cells meet a contour, a 24 px opening preserves the road.
@@ -89,10 +92,15 @@ The bounded browser comparison is reproducible against a running development
 server:
 
 ```bash
-CHROME_PATH=/path/to/chrome-headless-shell npx tsx scripts/browser-territory-review-v7.ts --output=/tmp/pulp-wars-wly-review
+review_dir=$(mktemp -d /tmp/pulp-wars-territory-review.XXXXXX)
+CHROME_PATH=/path/to/chrome-headless-shell npx tsx scripts/browser-territory-review-v7.ts --focused --output="$review_dir"
 ```
 
-An optional positional URL selects another development server. The review uses
+`--focused` captures the selected-city border plus land/naval recruitment in
+Full and Reduced motion at desktop DPR 1 and DPR 2. It records sampled terrain
+pixels throughout each accepted recruitment boundary. Omitting `--focused`
+retains the wider territory comparison matrix. An optional positional URL
+selects another development server. The review uses
 real browser Canvas and accepted assets in an explicitly synthetic public scene.
 It compares the former thin line, the accepted cased dash, and a raised fence
 candidate at minimum/default zoom, then shows the final treatment at 0.625x,

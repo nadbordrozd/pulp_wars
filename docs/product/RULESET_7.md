@@ -1526,6 +1526,7 @@ interface PublicTerritoryBorderV7 {
   readonly at: Coord;
   readonly edge: "NORTH" | "EAST" | "SOUTH" | "WEST";
   readonly ownerId: PlayerId | null;
+  readonly sharedOwnerIds: readonly [PlayerId, PlayerId] | null;
   readonly cityIds: readonly CityId[];
 }
 
@@ -1678,9 +1679,11 @@ Projection rules are exact:
 - `board.territoryBorders` projects each actual owner or visible-city boundary
   once when at least one adjacent tile is explored, including board edges.
   Equal-owner interior edges have no owner contour. A border carries only its
-  edge, owner styling ID when owners differ, and IDs of cities whose centers
-  are already visible and whose territory ends there. It exposes no hidden tile
-  terrain, resource, improvement, Road, unit, or wholly hidden edge.
+  edge, one owner styling ID when owners differ, both owner styling IDs only
+  when both adjacent tiles are explored and differently owned, and IDs of
+  cities whose centers are already visible and whose territory ends there. It
+  exposes no hidden tile terrain, resource, improvement, Road, unit, or wholly
+  hidden edge.
 - A city appears only when its center is explored. A normal unit appears on an
   explored tile. A Saboteur appears only when section 7.2 makes it visible to
   that viewer.
@@ -1803,6 +1806,10 @@ Projection may omit an event, redact fields, or add the presentation facts
 `UNIT_REVEALED { unitId, at, reason }` and
 `UNIT_CONCEALED { unitId, lastSeenAt }`. It obeys these rules:
 
+- A unit created by a visible `UNIT_TRAINED`, `NAVAL_UNIT_TRAINED`, or
+  `UNIT_REWARD_GRANTED` fact appears directly in the resulting public view. It
+  was not concealed before that boundary, so projection does not add a
+  `UNIT_REVEALED` transition for it.
 - An unseen Saboteur's movement, selection, status, attack candidacy, ZOC, and
   location-bearing events are omitted.
 - If an enemy Saboteur becomes detectable partway through movement, the

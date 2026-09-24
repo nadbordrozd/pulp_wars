@@ -26,6 +26,67 @@ import {
 } from "../fixtures/v7-builders";
 
 describe("Ruleset 7 public presentation", () => {
+  it("installs local recruitment directly without a whole-board presentation step", () => {
+    let state = exploredAllV7(initialV7(1_516));
+    const city = state.cities.find(
+      (candidate) => candidate.ownerId === state.humanPlayerId,
+    );
+    const unit = state.units.find(
+      (candidate) => candidate.ownerId === state.humanPlayerId,
+    );
+    if (city === undefined || unit === undefined)
+      throw new Error("recruitment fixture missing");
+    const empty = state.board.tiles.find(
+      (tile) =>
+        tile.territoryCityId === city.id &&
+        tile.site === null &&
+        (tile.at.x !== city.at.x || tile.at.y !== city.at.y) &&
+        !state.units.some(
+          (candidate) =>
+            candidate.at.x === tile.at.x && candidate.at.y === tile.at.y,
+        ) &&
+        !state.treasureChests.some(
+          (chest) => chest.x === tile.at.x && chest.y === tile.at.y,
+        ),
+    );
+    if (empty === undefined) throw new Error("empty territory tile missing");
+    state = checkedV7({
+      ...state,
+      players: state.players.map((player) =>
+        player.id === state.humanPlayerId ? { ...player, coins: 100 } : player,
+      ),
+      units: state.units.map((candidate) =>
+        candidate.id === unit.id ? { ...candidate, at: empty.at } : candidate,
+      ),
+    });
+    const before = viewForV7(state, state.humanPlayerId);
+    const train = queryPlayerCommandsV7(before).find(
+      (command) => command.kind === "TRAIN" && command.cityId === city.id,
+    );
+    if (train?.kind !== "TRAIN") throw new Error("train command missing");
+    const result = applyCommandV7(state, state.humanPlayerId, train);
+    if (!result.accepted) throw new Error(result.error.code);
+    const envelope = projectEventsV7(
+      state,
+      result.state,
+      state.humanPlayerId,
+      result.events,
+    );
+    expect(envelope.events).toContainEqual(
+      expect.objectContaining({ kind: "UNIT_TRAINED" }),
+    );
+    expect(envelope.events).not.toContainEqual(
+      expect.objectContaining({ kind: "UNIT_REVEALED" }),
+    );
+    expect(
+      corePresentationPlanV7(
+        before,
+        envelope,
+        viewForV7(result.state, state.humanPlayerId),
+      ),
+    ).toEqual([]);
+  });
+
   it("presents canonical recruitment base data and exact Horse Archer limits", () => {
     const horseArcher = recruitmentRolePresentationV7("HORSE_ARCHER");
     expect(horseArcher.label).toBe("Horse Archer");

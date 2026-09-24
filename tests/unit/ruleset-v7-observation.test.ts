@@ -14,6 +14,7 @@ import {
   queryPublicSelectionV7,
   reachablePlayerMovementPathsV7,
   TECHNOLOGY_IDS_V7,
+  unitId,
   validateMovementPathV7,
   viewForV7,
   type CoordV7,
@@ -42,6 +43,89 @@ const READY: UnitStateV7["activation"] = {
 };
 
 describe("ruleset-7 observation safety and Concealment", () => {
+  it("projects a newly trained unit through its visible fact without a reveal transition", () => {
+    let before = exploredAllV7(initialV7(1_299));
+    const city = before.cities.find(
+      (candidate) => candidate.ownerId === before.humanPlayerId,
+    )!;
+    const existing = before.units.find(
+      (candidate) => candidate.ownerId === before.humanPlayerId,
+    )!;
+    const empty = before.board.tiles.find(
+      (tile) =>
+        tile.territoryCityId === city.id &&
+        tile.site === null &&
+        !same(tile.at, city.at) &&
+        !before.units.some((unit) => same(unit.at, tile.at)) &&
+        !before.treasureChests.some((chest) => same(chest, tile.at)),
+    )!;
+    before = checkedV7({
+      ...before,
+      units: before.units.map((unit) =>
+        unit.id === existing.id ? { ...unit, at: empty.at } : unit,
+      ),
+    });
+    const trained: UnitStateV7 = {
+      ...existing,
+      id: unitId(before.nextEntityId),
+      at: city.at,
+      activation: { ...existing.activation, handled: true },
+    };
+    const after = checkedV7({
+      ...before,
+      nextEntityId: before.nextEntityId + 1,
+      commandIndex: before.commandIndex + 1,
+      units: [...before.units, trained],
+    });
+    const trainedFact: DomainEventV7 = {
+      kind: "UNIT_TRAINED",
+      playerId: before.humanPlayerId,
+      cityId: city.id,
+      unitId: trained.id,
+      role: trained.role,
+      cost: 2,
+      at: city.at,
+    };
+    const projected = projectEventsV7(before, after, before.humanPlayerId, [
+      trainedFact,
+    ]);
+    expect(projected.events).toEqual([trainedFact]);
+    expect(
+      projected.events.some((event) => event.kind === "UNIT_REVEALED"),
+    ).toBe(false);
+    expect(parsePlayerEventEnvelopeV7(projected)).toMatchObject({ ok: true });
+
+    const observer = before.players.find(
+      (player) => player.id !== before.humanPlayerId,
+    )!;
+    const observerBefore = checkedV7({
+      ...before,
+      players: before.players.map((player) =>
+        player.id === observer.id
+          ? { ...player, explored: before.board.tiles.map((tile) => tile.at) }
+          : player,
+      ),
+    });
+    const observerAfter = checkedV7({
+      ...after,
+      players: observerBefore.players,
+    });
+    const observerProjection = projectEventsV7(
+      observerBefore,
+      observerAfter,
+      observer.id,
+      [trainedFact],
+    );
+    expect(observerProjection.events).toEqual([
+      {
+        kind: "UNIT_REVEALED",
+        unitId: trained.id,
+        at: trained.at,
+        reason: "DETECTED",
+      },
+    ]);
+  });
+
   it("makes observation-equivalent hidden positions byte-identical across every public input", () => {
     const { state, line, alternate } = hiddenScoutScenario();
     const viewerId = state.humanPlayerId;

@@ -20,6 +20,27 @@ export function projectEventsV7(
   viewForV7(afterState, viewerId);
   const beforeVisible = visibility(beforeState, viewerId);
   const afterVisible = visibility(afterState, viewerId);
+  const beforeUnitIds = new Set(beforeState.units.map((unit) => unit.id));
+  const visiblyCreatedUnitIds = new Set<UnitId>();
+  for (const event of events)
+    if (
+      (event.kind === "UNIT_TRAINED" ||
+        event.kind === "NAVAL_UNIT_TRAINED" ||
+        event.kind === "UNIT_REWARD_GRANTED") &&
+      eventVisible(
+        beforeState,
+        afterState,
+        viewerId,
+        event,
+        beforeVisible,
+        afterVisible,
+      )
+    )
+      visiblyCreatedUnitIds.add(event.unitId);
+  const needsReveal = (unitId: UnitId): boolean =>
+    !beforeVisible.has(unitId) &&
+    afterVisible.has(unitId) &&
+    (beforeUnitIds.has(unitId) || !visiblyCreatedUnitIds.has(unitId));
   const revealed = new Set<UnitId>();
   const concealed = new Set<UnitId>();
   const projected: PlayerEventV7[] = [];
@@ -28,10 +49,10 @@ export function projectEventsV7(
     const ids = unitIds(event);
     if (event.kind === "UNIT_MOVE_INTERRUPTED")
       for (const unit of afterState.units)
-        if (!beforeVisible.has(unit.id) && afterVisible.has(unit.id))
+        if (needsReveal(unit.id))
           reveal(projected, revealed, unit, revealReason());
     for (const id of ids) {
-      if (!beforeVisible.has(id) && afterVisible.has(id)) {
+      if (needsReveal(id)) {
         const unit = afterState.units.find((candidate) => candidate.id === id);
         if (unit !== undefined)
           reveal(projected, revealed, unit, revealReason());
@@ -68,8 +89,7 @@ export function projectEventsV7(
   }
 
   for (const unit of afterState.units) {
-    if (!beforeVisible.has(unit.id) && afterVisible.has(unit.id))
-      reveal(projected, revealed, unit, revealReason());
+    if (needsReveal(unit.id)) reveal(projected, revealed, unit, revealReason());
   }
   for (const unit of beforeState.units) {
     if (

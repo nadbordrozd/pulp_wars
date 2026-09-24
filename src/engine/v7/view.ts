@@ -68,6 +68,8 @@ export interface PublicTerritoryBorderV7 {
   readonly edge: "NORTH" | "EAST" | "SOUTH" | "WEST";
   /** Present only where the owners differ. */
   readonly ownerId: PlayerId | null;
+  /** Both owners only when both adjacent territory tiles are explored. */
+  readonly sharedOwnerIds: readonly [PlayerId, PlayerId] | null;
   /** Visible city centers whose actual territory ends on this edge. */
   readonly cityIds: readonly CityId[];
 }
@@ -325,12 +327,27 @@ export function viewForV7(
           : (citiesById.get(rightCity)?.ownerId ?? null);
       const ownerId =
         leftOwner === rightOwner ? null : (leftOwner ?? rightOwner);
+      const sharedOwnerIds =
+        neighbor !== undefined &&
+        explored.has(key(tile.at)) &&
+        explored.has(key(neighbor.at)) &&
+        leftOwner !== null &&
+        rightOwner !== null &&
+        leftOwner !== rightOwner
+          ? ([leftOwner, rightOwner] as const)
+          : null;
       const cityIds = [leftCity, rightCity].filter(
         (cityId): cityId is CityId =>
           cityId !== null && visibleCityIds.has(cityId),
       );
       if (ownerId === null && cityIds.length === 0) continue;
-      territoryBorders.push({ at: tile.at, edge, ownerId, cityIds });
+      territoryBorders.push({
+        at: tile.at,
+        edge,
+        ownerId,
+        sharedOwnerIds,
+        cityIds,
+      });
     }
   }
   const visibleUnits = state.units.filter((unit) =>

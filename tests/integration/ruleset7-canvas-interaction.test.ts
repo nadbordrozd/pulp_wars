@@ -615,6 +615,78 @@ describe("Ruleset 7 Canvas interaction", () => {
     host.destroy();
   });
 
+  it.each(["FULL", "REDUCED"] as const)(
+    "renders local recruitment directly with no whole-board frame in %s motion",
+    async (motion) => {
+      const frames = new Map<number, FrameRequestCallback>();
+      Object.defineProperty(window, "requestAnimationFrame", {
+        configurable: true,
+        value: vi.fn((callback: FrameRequestCallback) => {
+          const id = frames.size + 1;
+          frames.set(id, callback);
+          return id;
+        }),
+      });
+      Object.defineProperty(window, "cancelAnimationFrame", {
+        configurable: true,
+        value: vi.fn((id: number) => frames.delete(id)),
+      });
+      const sceneAlphas: number[] = [];
+      const target: Record<PropertyKey, unknown> = { globalAlpha: 1 };
+      const context = new Proxy(target, {
+        get: (object, key) => (key in object ? object[key] : vi.fn()),
+        set: (object, key, value) => {
+          object[key] = value;
+          if (key === "globalAlpha" && typeof value === "number")
+            sceneAlphas.push(value);
+          return true;
+        },
+      }) as unknown as CanvasRenderingContext2D;
+      vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(
+        context,
+      );
+      const container = document.createElement("div");
+      Object.defineProperty(container, "getBoundingClientRect", {
+        value: () => ({
+          width: 800,
+          height: 600,
+          left: 0,
+          top: 0,
+          right: 800,
+          bottom: 600,
+        }),
+      });
+      document.body.append(container);
+      const boundary = recruitmentBoundary();
+      const host = new CanvasBoardHostV7(document);
+      host.mount(container, { onSelection: vi.fn(), onCommand: vi.fn() });
+      host.update({
+        matchInstanceId: 1,
+        view: boundary.after,
+        offeredCommands: [],
+        interactive: false,
+        motion,
+        animationSpeed: "NORMAL",
+        presentationPaused: false,
+        highContrast: false,
+        interaction: {
+          selection: null,
+          selectedUnitId: null,
+          selectedAchievement: null,
+        },
+      });
+      sceneAlphas.length = 0;
+      await host.presentBoundary(
+        boundary.before,
+        boundary.after,
+        boundary.envelope,
+      );
+      expect(frames.size).toBe(0);
+      expect(sceneAlphas.some((alpha) => alpha > 0 && alpha < 1)).toBe(false);
+      host.destroy();
+    },
+  );
+
   it("keeps pre-impact HP visible until a ranged projectile lands", async () => {
     let now = 0;
     vi.spyOn(window.performance, "now").mockImplementation(() => now);
@@ -796,6 +868,57 @@ function sameCoord(
   right: { readonly x: number; readonly y: number },
 ): boolean {
   return left.x === right.x && left.y === right.y;
+}
+
+function recruitmentBoundary(): {
+  readonly before: PlayerViewV7;
+  readonly after: PlayerViewV7;
+  readonly envelope: PlayerEventEnvelopeV7;
+} {
+  let state = exploredAllV7(initialV7(1_532));
+  const city = state.cities.find(
+    (candidate) => candidate.ownerId === state.humanPlayerId,
+  );
+  const unit = state.units.find(
+    (candidate) => candidate.ownerId === state.humanPlayerId,
+  );
+  if (city === undefined || unit === undefined)
+    throw new Error("recruitment fixture missing");
+  const empty = state.board.tiles.find(
+    (tile) =>
+      tile.territoryCityId === city.id &&
+      tile.site === null &&
+      !sameCoord(tile.at, city.at) &&
+      !state.units.some((candidate) => sameCoord(candidate.at, tile.at)) &&
+      !state.treasureChests.some((chest) => sameCoord(chest, tile.at)),
+  );
+  if (empty === undefined) throw new Error("empty territory tile missing");
+  state = checkedV7({
+    ...state,
+    players: state.players.map((player) =>
+      player.id === state.humanPlayerId ? { ...player, coins: 100 } : player,
+    ),
+    units: state.units.map((candidate) =>
+      candidate.id === unit.id ? { ...candidate, at: empty.at } : candidate,
+    ),
+  });
+  const before = viewForV7(state, state.humanPlayerId);
+  const train = queryPlayerCommandsV7(before).find(
+    (command) => command.kind === "TRAIN" && command.cityId === city.id,
+  );
+  if (train?.kind !== "TRAIN") throw new Error("train command missing");
+  const result = applyCommandV7(state, state.humanPlayerId, train);
+  if (!result.accepted) throw new Error(result.error.code);
+  return {
+    before,
+    after: viewForV7(result.state, state.humanPlayerId),
+    envelope: projectEventsV7(
+      state,
+      result.state,
+      state.humanPlayerId,
+      result.events,
+    ),
+  };
 }
 
 class RecordingBoardHost implements BoardHostV7 {
