@@ -1,0 +1,28 @@
+{
+  "id": "ui-action-cultivate-forest-v7r9",
+  "jobId": "a620746d-da9e-4cdd-8ff0-a9b5fb6bc0c0",
+  "request": {
+    "endpoint": "generate-ui-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf-green tree crown, warm cultivated soil, parchment furrow highlights, muted bronze hoe, charcoal-teal outline. Exactly one Cultivate Forest action icon: one chunky intact three-lobed Forest tree on the upper-left transforms through one broad curved arrow into exactly three bold parallel cultivated furrows on the lower-right. The tree and furrows are equally readable, one connected centered transformation silhouette with eight percent transparent safe area, readable at 32 CSS pixels and in grayscale. Northwest highlight, darker southeast planes, strong charcoal-teal outline and flat two-level cel shading. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; axe, saw, stump, felled tree, wood chips, sapling, trowel, replant, clear forest, full landscape, farm building, person, knight, coin, population, number, text, letters, panel, button, focus, disabled state, owner color, tiny leaves, thin furrows, gradient, cast shadow.",
+    "prompt": "Exactly one Cultivate Forest action icon: one chunky intact three-lobed Forest tree on the upper-left transforms through one broad curved arrow into exactly three bold parallel cultivated furrows on the lower-right. The tree and furrows are equally readable, one connected centered transformation silhouette with eight percent transparent safe area, readable at 32 CSS pixels and in grayscale. Northwest highlight, darker southeast planes, strong charcoal-teal outline and flat two-level cel shading.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; axe, saw, stump, felled tree, wood chips, sapling, trowel, replant, clear forest, full landscape, farm building, person, knight, coin, population, number, text, letters, panel, button, focus, disabled state, owner color, tiny leaves, thin furrows, gradient, cast shadow",
+    "requestSize": {
+      "width": 384,
+      "height": 384
+    },
+    "outputSize": {
+      "width": 192,
+      "height": 192
+    },
+    "seed": 129907,
+    "noBackground": true,
+    "palette": "quiet leaf-green tree crown, warm cultivated soil, parchment furrow highlights, muted bronze hoe, charcoal-teal outline",
+    "postprocess": "lanczos3-resize",
+    "styleReference": {
+      "id": "ui-action-replant-forest",
+      "sha256": "caef4fa32f2196353b271fbd55f2991ccfccca7864c2e1d5f99ca6cf48c11977",
+      "usageDescription": "Match the accepted terrain-action family's centered safe area, strong outline, broad flat shading and small-size readability. Show a distinct forest-to-cultivated-furrow transformation rather than planting or clearing."
+    }
+  }
+}

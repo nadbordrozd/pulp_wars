@@ -1,0 +1,28 @@
+{
+  "id": "ui-action-blast-mountain-v7r9",
+  "jobId": "6a60429a-d545-4fcd-8b70-358f1d0e3357",
+  "request": {
+    "endpoint": "generate-ui-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: slate-blue rounded mountain, warm bronze charge, restrained coral and parchment blast cloud, charcoal-teal outline. Exactly one Blast Mountain action icon: one broad rounded slate-blue mountain peak visibly splitting into exactly two large halves around one playful warm-bronze starburst charge, with one small parchment dust puff. One compact centered terrain-clearing silhouette with eight percent transparent safe area, readable at 32 CSS pixels and in grayscale. Strong charcoal-teal outline, northwest highlight, darker southeast planes and flat two-level cel shading. Toy-like and non-gory. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; person, unit, enemy, blood, injury, combat hit, sword, cannon, projectile, mushroom cloud, realistic explosion, fire scene, pillaged building, mallet, loot, coin, ore, road, city, text, letters, numbers, panel, button, focus, disabled state, ownership, tiny rubble, thin cracks, glow, gradient, cast shadow.",
+    "prompt": "Exactly one Blast Mountain action icon: one broad rounded slate-blue mountain peak visibly splitting into exactly two large halves around one playful warm-bronze starburst charge, with one small parchment dust puff. One compact centered terrain-clearing silhouette with eight percent transparent safe area, readable at 32 CSS pixels and in grayscale. Strong charcoal-teal outline, northwest highlight, darker southeast planes and flat two-level cel shading. Toy-like and non-gory.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; person, unit, enemy, blood, injury, combat hit, sword, cannon, projectile, mushroom cloud, realistic explosion, fire scene, pillaged building, mallet, loot, coin, ore, road, city, text, letters, numbers, panel, button, focus, disabled state, ownership, tiny rubble, thin cracks, glow, gradient, cast shadow",
+    "requestSize": {
+      "width": 384,
+      "height": 384
+    },
+    "outputSize": {
+      "width": 192,
+      "height": 192
+    },
+    "seed": 129908,
+    "noBackground": true,
+    "palette": "slate-blue rounded mountain, warm bronze charge, restrained coral and parchment blast cloud, charcoal-teal outline",
+    "postprocess": "lanczos3-resize",
+    "styleReference": {
+      "id": "ui-action-pillage",
+      "sha256": "34c33e31dc1694e9e7147bcb0d2f7c99f3501788a71091bdc4d64ce255773336",
+      "usageDescription": "Match the accepted destructive-action family's centered transparent safe area, heavy charcoal-teal outline, northwest light, broad flat shading and small-size visual weight. Create terrain clearing rather than combat damage."
+    }
+  }
+}

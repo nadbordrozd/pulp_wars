@@ -1,0 +1,31 @@
+{
+  "id": "unit-original-knight",
+  "jobId": "7cd066c3-c012-4e6d-901f-0dbb201c94e2",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: chestnut, parchment, off-white, slate blue, dark teal, bronze. One Original Knight on transparent 384 by 384, anchor 192,288. Horse HEAD screen right, tail left; armored rider faces down-right. Unmistakable low-wide real chestnut horse: long body, equine muzzle, ears, tail, four separated legs and hooves on one line. Chunky rider holds one enormous BROAD MELEE LANCE diagonally toward screen right; thick blunt toy-like lance and slate shoulder plate read at minimum zoom. No bow, quiver or projectile. Northwest light, strong outline, flat tones. Fit x24..360,y16..288. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; bow, arrow, quiver, ranged weapon, horse facing left, boar, pig, rhino, dog, donkey, tiny horse, hidden legs, thin spear, jousting scene, charge or overrun effect, motion lines, ground, clipping.",
+    "prompt": "One Original Knight on transparent 384 by 384, anchor 192,288. Horse HEAD screen right, tail left; armored rider faces down-right. Unmistakable low-wide real chestnut horse: long body, equine muzzle, ears, tail, four separated legs and hooves on one line. Chunky rider holds one enormous BROAD MELEE LANCE diagonally toward screen right; thick blunt toy-like lance and slate shoulder plate read at minimum zoom. No bow, quiver or projectile. Northwest light, strong outline, flat tones. Fit x24..360,y16..288.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; bow, arrow, quiver, ranged weapon, horse facing left, boar, pig, rhino, dog, donkey, tiny horse, hidden legs, thin spear, jousting scene, charge or overrun effect, motion lines, ground, clipping",
+    "requestSize": {
+      "width": 384,
+      "height": 384
+    },
+    "outputSize": {
+      "width": 384,
+      "height": 384
+    },
+    "seed": 129903,
+    "noBackground": true,
+    "palette": "chestnut, parchment, off-white, slate blue, dark teal, bronze",
+    "postprocess": "unit-fit",
+    "groundContactY": 288,
+    "displayScale": 0.27,
+    "cosmeticOffsetY": 18,
+    "styleReference": {
+      "id": "unit-original-horse-archer",
+      "sha256": "b3d90908ffd828fabe702c669b489fa0ca113c7d005c114c408a76ce1259fda2",
+      "usageDescription": "Match the accepted mounted source's real southeast-facing horse, low-wide composition, Original faction palette, strong outline, broad flat shading and source geometry only. Replace the archer and bow with an unmistakable armored melee Knight and broad lance."
+    }
+  }
+}

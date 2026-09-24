@@ -1,0 +1,28 @@
+{
+  "id": "ui-action-rally-v7r9",
+  "jobId": "bcd9039f-76d4-4cb8-be6f-748b04f8f8c8",
+  "request": {
+    "endpoint": "generate-ui-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: dark-teal command pennant, warm bronze short staff, restrained parchment burst, charcoal-teal outline. Exactly one Rally action icon: one enormous dark-teal swallowtail COMMAND PENNANT on one short warm-bronze staff, with exactly three broad parchment command rays behind it. One compact connected bold silhouette centered with eight percent transparent safe area, readable at 32 CSS pixels, in grayscale, and without text. Northwest highlight, darker southeast planes, strong charcoal-teal outline and flat two-level cel shading. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; person, captain portrait, face, unit, national flag, emblem, symbol, letters, numbers, inspired status, multiple flags, trumpet, musical notes, explosion, combat damage, ground, scene, panel, button, focus, disabled state, owner color, thin lines, tiny detail, glow, gradient, cast shadow.",
+    "prompt": "Exactly one Rally action icon: one enormous dark-teal swallowtail COMMAND PENNANT on one short warm-bronze staff, with exactly three broad parchment command rays behind it. One compact connected bold silhouette centered with eight percent transparent safe area, readable at 32 CSS pixels, in grayscale, and without text. Northwest highlight, darker southeast planes, strong charcoal-teal outline and flat two-level cel shading.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; person, captain portrait, face, unit, national flag, emblem, symbol, letters, numbers, inspired status, multiple flags, trumpet, musical notes, explosion, combat damage, ground, scene, panel, button, focus, disabled state, owner color, thin lines, tiny detail, glow, gradient, cast shadow",
+    "requestSize": {
+      "width": 384,
+      "height": 384
+    },
+    "outputSize": {
+      "width": 192,
+      "height": 192
+    },
+    "seed": 129906,
+    "noBackground": true,
+    "palette": "dark-teal command pennant, warm bronze short staff, restrained parchment burst, charcoal-teal outline",
+    "postprocess": "lanczos3-resize",
+    "styleReference": {
+      "id": "ui-action-redevelop",
+      "sha256": "ef289cf3b0712229a92aeec1769a15dddf6765983ced244043f5def001ed3d46",
+      "usageDescription": "Match the accepted action family's centered transparent safe area, heavy charcoal-teal outline, northwest light, flat two-level shading and 32-pixel readability. Create a distinct command symbol."
+    }
+  }
+}

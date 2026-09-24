@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "inventory": [
+    {
+      "id": "unit-original-captain",
+      "output": "public/assets/pixellab/units/original-captain-v7r9.png",
+      "outputSha256": "fb521ed596568b23530c588c3c07cf128d64bcc7c585d7232174627df2608504",
+      "alphaBounds": {
+        "left": 44,
+        "top": 20,
+        "right": 212,
+        "bottom": 222,
+        "empty": false
+      }
+    },
+    {
+      "id": "unit-original-knight",
+      "output": "public/assets/pixellab/units/original-knight-v7r9.png",
+      "outputSha256": "27a051d1adeea4de6ad6abf2126ca6487e33b3d685342f416ef85e90fe4b8373",
+      "alphaBounds": {
+        "left": 39,
+        "top": 16,
+        "right": 344,
+        "bottom": 288,
+        "empty": false
+      }
+    },
+    {
+      "id": "building-ruleset7-shipyard",
+      "output": "public/assets/pixellab/buildings-ruleset7/shipyard-v7r9.png",
+      "outputSha256": "3c882512919a9f69fd578617de66a7729ff9eda1c509c775bfeaa2f610a80f8c",
+      "alphaBounds": {
+        "left": 40,
+        "top": 61,
+        "right": 344,
+        "bottom": 323,
+        "empty": false
+      }
+    },
+    {
+      "id": "ui-action-rally-v7r9",
+      "output": "public/assets/pixellab/ui/action-rally-v7r9.png",
+      "outputSha256": "eedc8ffb1478b3b3ac3273f8e654675e6a0418455a8887636bacaa3438cc1e8c",
+      "alphaBounds": {
+        "left": 21,
+        "top": 15,
+        "right": 171,
+        "bottom": 177,
+        "empty": false
+      }
+    },
+    {
+      "id": "ui-action-cultivate-forest-v7r9",
+      "output": "public/assets/pixellab/ui/action-cultivate-forest-v7r9.png",
+      "outputSha256": "299a38a8c6731436e096a469410ac7759ff5c8a8cf67dd6f241c1c4f4c25e349",
+      "alphaBounds": {
+        "left": 16,
+        "top": 15,
+        "right": 176,
+        "bottom": 177,
+        "empty": false
+      }
+    },
+    {
+      "id": "ui-action-blast-mountain-v7r9",
+      "output": "public/assets/pixellab/ui/action-blast-mountain-v7r9.png",
+      "outputSha256": "55c8aed2470ea71a5ff42f76ce38e67e8c955a89a9e07b392fb12d2163877960",
+      "alphaBounds": {
+        "left": 15,
+        "top": 39,
+        "right": 177,
+        "bottom": 152,
+        "empty": false
+      }
+    },
+    {
+      "id": "portrait-original-captain",
+      "output": "public/assets/pixellab/ui/portrait-original-captain-v7r9.png",
+      "outputSha256": "0186989e0d71b0a4e836507916b5ad2c72cd02edc6ace46cf538ef137282c344",
+      "alphaBounds": {
+        "left": 38,
+        "top": 20,
+        "right": 218,
+        "bottom": 236,
+        "empty": false
+      }
+    },
+    {
+      "id": "portrait-original-knight",
+      "output": "public/assets/pixellab/ui/portrait-original-knight-v7r9.png",
+      "outputSha256": "5fadd86ca5f25bcf4860cad1456dc216001ca3812ed668cc3409c51874a06c1d",
+      "alphaBounds": {
+        "left": 20,
+        "top": 31,
+        "right": 236,
+        "bottom": 224,
+        "empty": false
+      }
+    }
+  ],
+  "checks": {
+    "exactSixPixelLabSources": true,
+    "deterministicCaptainKnightPortraits": true,
+    "sourceNativeEnlarged": true,
+    "unitZoomOwnerTerrainRetainedRoleContext": true,
+    "shipyardWaterResourceOccupantPortContext": true,
+    "actionSizesPanelsGrayscale": true,
+    "portraitIdentityAndTechnologySizes": true,
+    "cssGeometryOnlyNoRasterDprClaim": true,
+    "isolatedOutputSupported": true
+  },
+  "artifacts": {
+    "source-native-enlarged.png": "f7fca05337fa02686edec572068187b34da7640f8d5e073e6c1023973290f4e2",
+    "unit-gameplay-context.png": "2c755dc5dc2cd491e59880767295a51bbb0a61fe1c2d057649b52d96b7de50ab",
+    "shipyard-resource-occupant-context.png": "f8a4b0341d71f3a3b2ab4582a27e7ed1d98b48c5d3cd4b55b698828425a2b236",
+    "action-portrait-ui-context.png": "cbd8224e98380c7c5e30fea98f3784787320c777e20540f0a9432832b798b22f"
+  }
+}

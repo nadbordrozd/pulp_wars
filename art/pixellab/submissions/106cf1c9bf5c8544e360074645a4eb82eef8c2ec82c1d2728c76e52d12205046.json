@@ -1,0 +1,28 @@
+{
+  "id": "ui-action-cultivate-forest-v7r9",
+  "jobId": "202168db-bb4f-419c-b134-14d16e6f1dae",
+  "request": {
+    "endpoint": "generate-ui-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf-green tree crown, warm cultivated soil, parchment furrow highlights, muted bronze hoe, charcoal-teal outline. One isolated transparent symbol only: one chunky intact three-lobed tree at upper-left, exactly ONE broad bronze arrow pointing only downward-right, and exactly three bold soil furrows at lower-right. No second arrow and no enclosure. Tree and furrows are equally large in one centered composition with eight percent empty safe area, readable at 32 pixels and in grayscale. Strong charcoal outline, northwest light, flat shading. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; title, label, caption, word, text, letters, frame, border, panel, card, button, menu, interface, second arrow, opposing arrow, circular arrows, recycle loop, reversible cycle, axe, saw, stump, sapling, trowel, full landscape, farm building, person, coin, number, tiny leaves, thin furrows, gradient, cast shadow.",
+    "prompt": "One isolated transparent symbol only: one chunky intact three-lobed tree at upper-left, exactly ONE broad bronze arrow pointing only downward-right, and exactly three bold soil furrows at lower-right. No second arrow and no enclosure. Tree and furrows are equally large in one centered composition with eight percent empty safe area, readable at 32 pixels and in grayscale. Strong charcoal outline, northwest light, flat shading.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; title, label, caption, word, text, letters, frame, border, panel, card, button, menu, interface, second arrow, opposing arrow, circular arrows, recycle loop, reversible cycle, axe, saw, stump, sapling, trowel, full landscape, farm building, person, coin, number, tiny leaves, thin furrows, gradient, cast shadow",
+    "requestSize": {
+      "width": 384,
+      "height": 384
+    },
+    "outputSize": {
+      "width": 192,
+      "height": 192
+    },
+    "seed": 129911,
+    "noBackground": true,
+    "palette": "quiet leaf-green tree crown, warm cultivated soil, parchment furrow highlights, muted bronze hoe, charcoal-teal outline",
+    "postprocess": "lanczos3-resize",
+    "styleReference": {
+      "id": "ui-action-replant-forest",
+      "sha256": "caef4fa32f2196353b271fbd55f2991ccfccca7864c2e1d5f99ca6cf48c11977",
+      "usageDescription": "Match the accepted terrain-action family's centered safe area, strong outline, broad flat shading and small-size readability. Show a distinct forest-to-cultivated-furrow transformation rather than planting or clearing."
+    }
+  }
+}

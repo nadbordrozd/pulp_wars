@@ -1,0 +1,30 @@
+{
+  "id": "building-ruleset7-shipyard",
+  "jobId": "407dddf9-812a-4472-b95a-a2e5d504efdd",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm tan timber, muted bronze crane and drydock braces, cream service-shed roof, charcoal-teal outline and southeast planes, one blank coral ownership rectangle. Exactly one Ruleset 7 shared Shipyard water improvement, southeast-facing three-quarter downward strategy view on a transparent untrimmed 384 by 384 canvas, anchor 192,288. A visibly upgraded L-shaped timber Port with one LARGE tall bronze crane at the back-left, one compact U-shaped DRYDOCK frame along the side, and one small capable cream-roof service shed at the back-right. Preserve a clearly OPEN central and lower water window x118..266,y198..326 so Fish or Pearls stays identifiable and a colocated ship remains primary. Include exactly one contiguous blank coral ownership rectangle on the shed side covering about eight percent. Chunky functional silhouette; preferred alpha x40..344,y58..326. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; city, village, castle, full harbor scene, ship, boat, vessel, fish, pearls, route, water, shoreline, bridge, giant warehouse, roof over center, closed central basin, multiple cranes, crane clutter, flag, pennant, emblem, text, coin, number, population, recovery, discount, active state, blockade, smoke, damage, selection, cast shadow, ground tile, scenery, pixel art, painterly, photoreal, 3D, cropped edge.",
+    "prompt": "Exactly one Ruleset 7 shared Shipyard water improvement, southeast-facing three-quarter downward strategy view on a transparent untrimmed 384 by 384 canvas, anchor 192,288. A visibly upgraded L-shaped timber Port with one LARGE tall bronze crane at the back-left, one compact U-shaped DRYDOCK frame along the side, and one small capable cream-roof service shed at the back-right. Preserve a clearly OPEN central and lower water window x118..266,y198..326 so Fish or Pearls stays identifiable and a colocated ship remains primary. Include exactly one contiguous blank coral ownership rectangle on the shed side covering about eight percent. Chunky functional silhouette; preferred alpha x40..344,y58..326.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; city, village, castle, full harbor scene, ship, boat, vessel, fish, pearls, route, water, shoreline, bridge, giant warehouse, roof over center, closed central basin, multiple cranes, crane clutter, flag, pennant, emblem, text, coin, number, population, recovery, discount, active state, blockade, smoke, damage, selection, cast shadow, ground tile, scenery, pixel art, painterly, photoreal, 3D, cropped edge",
+    "requestSize": {
+      "width": 384,
+      "height": 384
+    },
+    "outputSize": {
+      "width": 384,
+      "height": 384
+    },
+    "seed": 129905,
+    "noBackground": true,
+    "palette": "warm tan timber, muted bronze crane and drydock braces, cream service-shed roof, charcoal-teal outline and southeast planes, one blank coral ownership rectangle",
+    "postprocess": "compact-building-fit",
+    "groundContactY": 288,
+    "displayScale": 0.3,
+    "styleReference": {
+      "id": "building-ruleset7-port",
+      "sha256": "70d2385d53f7dd466c44bacfa6f265645de7dbda1e94f9bad6732e246250aea9",
+      "usageDescription": "Match the accepted Port's smooth nonpixel timber contour, strong clean outline, broad flat cel shading, southeast three-quarter camera, blank ownership patch and open-water composition. Upgrade the function with a clearly larger crane, compact drydock frame and service shed."
+    }
+  }
+}

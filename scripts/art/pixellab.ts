@@ -18,6 +18,7 @@ import {
   assertRuleset7Revision3ArtOrder,
   resolveRepairStyleReferenceHash,
 } from "./ruleset7-revision3-art-order";
+import { assertRuleset7Revision9ArtOrder } from "./ruleset7-revision9-art-order";
 import { assertRuleset7TacticalUiOrder } from "./ruleset7-tactical-ui-order";
 import {
   assertRecoveryReference,
@@ -279,6 +280,7 @@ async function main(): Promise<void> {
     assertRuleset7BuildingEconomyOrder(recipes, generated);
     assertRuleset7OriginalUnitOrder(recipes, generated);
     assertRuleset7Revision3ArtOrder(recipes, generated);
+    assertRuleset7Revision9ArtOrder(recipes, generated);
     assertRuleset7TacticalUiOrder(recipes, generated);
     assertRuleset7NavalOrder(recipes, generated);
     assertOriginalUnitOrder(recipes, generated);
@@ -3803,6 +3805,7 @@ async function normalizeToHardBounds(
       "unit-shared-embarked-transport",
       "unit-original-patrol-boat",
       "unit-original-battleship",
+      "building-ruleset7-shipyard",
     ].includes(recipe.id);
   const targetBounds =
     recipe.postprocess === "preferred-low-marker-fit"

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceManifestSha256": "6276dc026c8351c4d95c607fb449a490c0fdf0d7338e39b7a58bafb24588d360",
+  "sourceManifestSha256": "bfcfc857706b9a341099a689277b90293f51b1da9356953c4396d584d9741909",
   "records": {
     "unit-warrior": {
       "id": "unit-warrior",
@@ -14156,6 +14156,562 @@
       "outputSha256": "f71943e48f00584ba4114bd427acf2a619e91ef5fefbfa33a1c590cbb2732844",
       "notes": "Accepted revision-7 Battleship after source/original inspection, exact enlarged inspection, native 0.27 scale and 0.625x/1x/1.75x comparisons, and fleet composition review: long broad armored steel capital ship, distinct fore and aft twin-barrel heavy turrets, compact bridge and separate funnel, southeast bow, one coral ownership panel; 87.5x55.9 CSS alpha footprint is within target and materially larger than Patrol Boat.",
       "reviewedAt": "2026-09-23T14:18:22.963Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "unit-original-captain": {
+      "id": "unit-original-captain",
+      "status": "ACCEPTED",
+      "jobId": "7131b7b6-caeb-4072-b00d-90bf45811b01",
+      "candidate": "art/pixellab/candidates/unit-original-captain.png",
+      "candidateSha256": "fb521ed596568b23530c588c3c07cf128d64bcc7c585d7232174627df2608504",
+      "providerOutputSha256": "6650a8d58deb8e7cb5b113aed228796ccea1e818fa082656f141b78530e90b66",
+      "width": 256,
+      "height": 296,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 44,
+        "top": 20,
+        "right": 212,
+        "bottom": 222,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: parchment tan, off-white, bronze, dark teal, charcoal outline. One isolated full-body Original Captain on transparent 256 by 296, southeast three-quarter view. Cute chunky officer, large visible head, short broad body, both feet at anchor 128,222. One OVERSIZED dark-teal COMMAND PENNANT on a short bronze staff held high outside the body is the primary silhouette; broad blank swallowtail, no emblem or text. Free hand gives a bold command gesture. Parchment padded coat and off-white scarf. Distinct from Fighter, Medic, Marksman and Guard. Fit alpha x44..212,y18..222. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; tiny or national flag, emblem, medic tool, bow, shield, giant sword, mount, scenery, rally or healing effect, inspired aura, hidden feet.",
+        "prompt": "One isolated full-body Original Captain on transparent 256 by 296, southeast three-quarter view. Cute chunky officer, large visible head, short broad body, both feet at anchor 128,222. One OVERSIZED dark-teal COMMAND PENNANT on a short bronze staff held high outside the body is the primary silhouette; broad blank swallowtail, no emblem or text. Free hand gives a bold command gesture. Parchment padded coat and off-white scarf. Distinct from Fighter, Medic, Marksman and Guard. Fit alpha x44..212,y18..222.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; tiny or national flag, emblem, medic tool, bow, shield, giant sword, mount, scenery, rally or healing effect, inspired aura, hidden feet",
+        "requestSize": {
+          "width": 256,
+          "height": 296
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 296
+        },
+        "seed": 129901,
+        "noBackground": true,
+        "palette": "parchment tan, off-white, bronze, dark teal, charcoal outline",
+        "postprocess": "unit-fit",
+        "groundContactY": 222,
+        "displayScale": 0.25,
+        "cosmeticOffsetY": 18,
+        "styleReference": {
+          "id": "unit-warrior",
+          "sha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1",
+          "usageDescription": "Match the accepted Original faction palette, rounded proportions, outline thickness, flat shading, southeast camera and playful detail budget only. Create a distinct compact Human officer and support silhouette."
+        }
+      },
+      "outputSha256": "fb521ed596568b23530c588c3c07cf128d64bcc7c585d7232174627df2608504",
+      "notes": "Accepted first candidate: oversized blank command pennant and pointing gesture read distinctly at native 64x74 and enlarged scale; compact Original officer silhouette, correct contact, clean alpha, restrained detail and no baked status/effect.",
+      "reviewedAt": "2026-09-24T17:40:37.987Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "portrait-original-captain": {
+      "id": "portrait-original-captain",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/portrait-original-captain.png",
+      "candidateSha256": "0186989e0d71b0a4e836507916b5ad2c72cd02edc6ace46cf538ef137282c344",
+      "providerOutputSha256": "fb521ed596568b23530c588c3c07cf128d64bcc7c585d7232174627df2608504",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 38,
+        "top": 20,
+        "right": 218,
+        "bottom": 236,
+        "empty": false
+      },
+      "notes": "Deterministic framed derivative preserves the accepted Captain pennant, command gesture, palette and clean transparent safe area at compact portrait sizes.",
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted revision-9 Original Captain sprite, preserving the complete silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+        "prompt": "Deterministic 256 by 256 role portrait derived from the accepted revision-9 Original Captain sprite, preserving the complete silhouette and palette with a 20 pixel transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 129902,
+        "noBackground": true,
+        "postprocess": "sprite-derived-portrait",
+        "styleReference": {
+          "id": "unit-original-captain",
+          "sha256": "fb521ed596568b23530c588c3c07cf128d64bcc7c585d7232174627df2608504",
+          "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+        }
+      },
+      "outputSha256": "0186989e0d71b0a4e836507916b5ad2c72cd02edc6ace46cf538ef137282c344",
+      "reviewedAt": "2026-09-24T17:40:54.371Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "unit-original-knight": {
+      "id": "unit-original-knight",
+      "status": "ACCEPTED",
+      "jobId": "7cd066c3-c012-4e6d-901f-0dbb201c94e2",
+      "candidate": "art/pixellab/candidates/unit-original-knight.png",
+      "candidateSha256": "27a051d1adeea4de6ad6abf2126ca6487e33b3d685342f416ef85e90fe4b8373",
+      "providerOutputSha256": "5739a03244aaa8cbef94fcf50be724623d2cacbe78f44da503b8d462f3c0b5d4",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 39,
+        "top": 16,
+        "right": 344,
+        "bottom": 288,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: chestnut, parchment, off-white, slate blue, dark teal, bronze. One Original Knight on transparent 384 by 384, anchor 192,288. Horse HEAD screen right, tail left; armored rider faces down-right. Unmistakable low-wide real chestnut horse: long body, equine muzzle, ears, tail, four separated legs and hooves on one line. Chunky rider holds one enormous BROAD MELEE LANCE diagonally toward screen right; thick blunt toy-like lance and slate shoulder plate read at minimum zoom. No bow, quiver or projectile. Northwest light, strong outline, flat tones. Fit x24..360,y16..288. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; bow, arrow, quiver, ranged weapon, horse facing left, boar, pig, rhino, dog, donkey, tiny horse, hidden legs, thin spear, jousting scene, charge or overrun effect, motion lines, ground, clipping.",
+        "prompt": "One Original Knight on transparent 384 by 384, anchor 192,288. Horse HEAD screen right, tail left; armored rider faces down-right. Unmistakable low-wide real chestnut horse: long body, equine muzzle, ears, tail, four separated legs and hooves on one line. Chunky rider holds one enormous BROAD MELEE LANCE diagonally toward screen right; thick blunt toy-like lance and slate shoulder plate read at minimum zoom. No bow, quiver or projectile. Northwest light, strong outline, flat tones. Fit x24..360,y16..288.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; bow, arrow, quiver, ranged weapon, horse facing left, boar, pig, rhino, dog, donkey, tiny horse, hidden legs, thin spear, jousting scene, charge or overrun effect, motion lines, ground, clipping",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 129903,
+        "noBackground": true,
+        "palette": "chestnut, parchment, off-white, slate blue, dark teal, bronze",
+        "postprocess": "unit-fit",
+        "groundContactY": 288,
+        "displayScale": 0.27,
+        "cosmeticOffsetY": 18,
+        "styleReference": {
+          "id": "unit-original-horse-archer",
+          "sha256": "b3d90908ffd828fabe702c669b489fa0ca113c7d005c114c408a76ce1259fda2",
+          "usageDescription": "Match the accepted mounted source's real southeast-facing horse, low-wide composition, Original faction palette, strong outline, broad flat shading and source geometry only. Replace the archer and bow with an unmistakable armored melee Knight and broad lance."
+        }
+      },
+      "outputSha256": "27a051d1adeea4de6ad6abf2126ca6487e33b3d685342f416ef85e90fe4b8373",
+      "notes": "Accepted first candidate: real southeast-facing horse, four readable legs and contact line, oversized broad melee lance, clear Original armor and no ranged cue; source and 0.27 gameplay scale remain readable beside standard units.",
+      "reviewedAt": "2026-09-24T17:43:19.654Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "portrait-original-knight": {
+      "id": "portrait-original-knight",
+      "status": "ACCEPTED",
+      "candidate": "art/pixellab/candidates/portrait-original-knight.png",
+      "candidateSha256": "5fadd86ca5f25bcf4860cad1456dc216001ca3812ed668cc3409c51874a06c1d",
+      "providerOutputSha256": "27a051d1adeea4de6ad6abf2126ca6487e33b3d685342f416ef85e90fe4b8373",
+      "width": 256,
+      "height": 256,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 20,
+        "top": 31,
+        "right": 236,
+        "bottom": 224,
+        "empty": false
+      },
+      "notes": "Deterministic framed derivative preserves the accepted Knight horse, melee lance, armor palette and transparent safe area at compact portrait sizes.",
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf green, charcoal teal ink, parchment tan, warm bronze, off-white, slate blue; renderer supplies coral, teal, gold, or violet ownership color. Deterministic 256 by 256 role portrait derived from the accepted revision-9 Original Knight sprite, preserving the complete mounted silhouette and palette with a 20 pixel transparent safe area. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only..",
+        "prompt": "Deterministic 256 by 256 role portrait derived from the accepted revision-9 Original Knight sprite, preserving the complete mounted silhouette and palette with a 20 pixel transparent safe area.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; No newly generated content; deterministic accepted-sprite fit only.",
+        "requestSize": {
+          "width": 256,
+          "height": 256
+        },
+        "outputSize": {
+          "width": 256,
+          "height": 256
+        },
+        "seed": 129904,
+        "noBackground": true,
+        "postprocess": "sprite-derived-portrait",
+        "styleReference": {
+          "id": "unit-original-knight",
+          "sha256": "27a051d1adeea4de6ad6abf2126ca6487e33b3d685342f416ef85e90fe4b8373",
+          "usageDescription": "Deterministic full-silhouette fit into the 256x256 portrait safe area; no provider request."
+        }
+      },
+      "outputSha256": "5fadd86ca5f25bcf4860cad1456dc216001ca3812ed668cc3409c51874a06c1d",
+      "reviewedAt": "2026-09-24T17:43:22.269Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "building-ruleset7-shipyard": {
+      "id": "building-ruleset7-shipyard",
+      "status": "ACCEPTED",
+      "jobId": "407dddf9-812a-4472-b95a-a2e5d504efdd",
+      "candidate": "art/pixellab/candidates/building-ruleset7-shipyard.png",
+      "candidateSha256": "3c882512919a9f69fd578617de66a7729ff9eda1c509c775bfeaa2f610a80f8c",
+      "providerOutputSha256": "7268e4f1db312b205a1a5d80d3b0a229c1c8a9fd9a58a82b8af7058ffe3669d5",
+      "width": 384,
+      "height": 384,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 40,
+        "top": 61,
+        "right": 344,
+        "bottom": 323,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm tan timber, muted bronze crane and drydock braces, cream service-shed roof, charcoal-teal outline and southeast planes, one blank coral ownership rectangle. Exactly one Ruleset 7 shared Shipyard water improvement, southeast-facing three-quarter downward strategy view on a transparent untrimmed 384 by 384 canvas, anchor 192,288. A visibly upgraded L-shaped timber Port with one LARGE tall bronze crane at the back-left, one compact U-shaped DRYDOCK frame along the side, and one small capable cream-roof service shed at the back-right. Preserve a clearly OPEN central and lower water window x118..266,y198..326 so Fish or Pearls stays identifiable and a colocated ship remains primary. Include exactly one contiguous blank coral ownership rectangle on the shed side covering about eight percent. Chunky functional silhouette; preferred alpha x40..344,y58..326. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; city, village, castle, full harbor scene, ship, boat, vessel, fish, pearls, route, water, shoreline, bridge, giant warehouse, roof over center, closed central basin, multiple cranes, crane clutter, flag, pennant, emblem, text, coin, number, population, recovery, discount, active state, blockade, smoke, damage, selection, cast shadow, ground tile, scenery, pixel art, painterly, photoreal, 3D, cropped edge.",
+        "prompt": "Exactly one Ruleset 7 shared Shipyard water improvement, southeast-facing three-quarter downward strategy view on a transparent untrimmed 384 by 384 canvas, anchor 192,288. A visibly upgraded L-shaped timber Port with one LARGE tall bronze crane at the back-left, one compact U-shaped DRYDOCK frame along the side, and one small capable cream-roof service shed at the back-right. Preserve a clearly OPEN central and lower water window x118..266,y198..326 so Fish or Pearls stays identifiable and a colocated ship remains primary. Include exactly one contiguous blank coral ownership rectangle on the shed side covering about eight percent. Chunky functional silhouette; preferred alpha x40..344,y58..326.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; city, village, castle, full harbor scene, ship, boat, vessel, fish, pearls, route, water, shoreline, bridge, giant warehouse, roof over center, closed central basin, multiple cranes, crane clutter, flag, pennant, emblem, text, coin, number, population, recovery, discount, active state, blockade, smoke, damage, selection, cast shadow, ground tile, scenery, pixel art, painterly, photoreal, 3D, cropped edge",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 384,
+          "height": 384
+        },
+        "seed": 129905,
+        "noBackground": true,
+        "palette": "warm tan timber, muted bronze crane and drydock braces, cream service-shed roof, charcoal-teal outline and southeast planes, one blank coral ownership rectangle",
+        "postprocess": "compact-building-fit",
+        "groundContactY": 288,
+        "displayScale": 0.3,
+        "styleReference": {
+          "id": "building-ruleset7-port",
+          "sha256": "70d2385d53f7dd466c44bacfa6f265645de7dbda1e94f9bad6732e246250aea9",
+          "usageDescription": "Match the accepted Port's smooth nonpixel timber contour, strong clean outline, broad flat cel shading, southeast three-quarter camera, blank ownership patch and open-water composition. Upgrade the function with a clearly larger crane, compact drydock frame and service shed."
+        }
+      },
+      "outputSha256": "3c882512919a9f69fd578617de66a7729ff9eda1c509c775bfeaa2f610a80f8c",
+      "notes": "Accepted first candidate: larger crane, U-shaped drydock frame and service shed read clearly at source and 0.30 water context; open central/lower resource window, clean alpha and strong distinction from Port, ship and city.",
+      "reviewedAt": "2026-09-24T17:46:41.980Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-action-rally-v7r9": {
+      "id": "ui-action-rally-v7r9",
+      "status": "ACCEPTED",
+      "jobId": "3d402ba1-e69d-4609-92ee-69fa0a9e2e55",
+      "candidate": "art/pixellab/candidates/ui-action-rally-v7r9.png",
+      "candidateSha256": "eedc8ffb1478b3b3ac3273f8e654675e6a0418455a8887636bacaa3438cc1e8c",
+      "providerOutputSha256": "1048b596271b9821946ee5c8003b705367286f89ec007efff9ed3fb8c1630c48",
+      "width": 192,
+      "height": 192,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 21,
+        "top": 15,
+        "right": 171,
+        "bottom": 177,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: dark-teal command pennant, warm bronze short staff, restrained parchment burst, charcoal-teal outline. One isolated Rally icon only: one huge blank dark-teal swallowtail PENNANT on one short diagonal bronze staff, plus exactly three broad parchment rays behind the cloth. No other objects. Compact connected silhouette centered on transparency with eight percent safe area, readable at 32 pixels and in grayscale. Strong charcoal outline, northwest highlight, flat two-level shading. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; board, map, strategy table, frame, border, card, panel, cannon, chest, book, chart, scene, person, portrait, unit, national flag, emblem, symbol, text, letters, numbers, multiple flags, trumpet, musical notes, explosion, status badge, button, thin lines, tiny detail, glow, gradient, cast shadow.",
+        "prompt": "One isolated Rally icon only: one huge blank dark-teal swallowtail PENNANT on one short diagonal bronze staff, plus exactly three broad parchment rays behind the cloth. No other objects. Compact connected silhouette centered on transparency with eight percent safe area, readable at 32 pixels and in grayscale. Strong charcoal outline, northwest highlight, flat two-level shading.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; board, map, strategy table, frame, border, card, panel, cannon, chest, book, chart, scene, person, portrait, unit, national flag, emblem, symbol, text, letters, numbers, multiple flags, trumpet, musical notes, explosion, status badge, button, thin lines, tiny detail, glow, gradient, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 192,
+          "height": 192
+        },
+        "seed": 129909,
+        "noBackground": true,
+        "palette": "dark-teal command pennant, warm bronze short staff, restrained parchment burst, charcoal-teal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-action-disband",
+          "sha256": "e6d7bc99de393c63a1c7e9aa51169fef87ec52f7841f1b0d43cdaf94d9d57548",
+          "usageDescription": "Match only the accepted action icon's isolated transparent composition, heavy charcoal-teal outline, northwest light, flat two-level shading and 32-pixel readability. Replace every object with one blank pennant and three broad rays."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/ui-action-rally-v7r9-687cf927106a.png",
+          "candidateSha256": "687cf927106a95e151be259dd9fd4b16b8879e1771b07fd556d39560cd13fa03",
+          "providerOutputSha256": "5a87e11a25144bb7ca2699421a9e047f1492f61ad874c4b743d3b2e7783a6199",
+          "jobId": "bcd9039f-76d4-4cb8-be6f-748b04f8f8c8",
+          "disposition": "REJECTED",
+          "notes": "Rejected first attempt: ornate framed strategy board with pseudo-text, map, cannon and chest; missing the required isolated pennant-and-rays action silhouette.",
+          "reviewedAt": "2026-09-24T17:50:57.173Z",
+          "request": {
+            "endpoint": "generate-ui-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: dark-teal command pennant, warm bronze short staff, restrained parchment burst, charcoal-teal outline. Exactly one Rally action icon: one enormous dark-teal swallowtail COMMAND PENNANT on one short warm-bronze staff, with exactly three broad parchment command rays behind it. One compact connected bold silhouette centered with eight percent transparent safe area, readable at 32 CSS pixels, in grayscale, and without text. Northwest highlight, darker southeast planes, strong charcoal-teal outline and flat two-level cel shading. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; person, captain portrait, face, unit, national flag, emblem, symbol, letters, numbers, inspired status, multiple flags, trumpet, musical notes, explosion, combat damage, ground, scene, panel, button, focus, disabled state, owner color, thin lines, tiny detail, glow, gradient, cast shadow.",
+            "prompt": "Exactly one Rally action icon: one enormous dark-teal swallowtail COMMAND PENNANT on one short warm-bronze staff, with exactly three broad parchment command rays behind it. One compact connected bold silhouette centered with eight percent transparent safe area, readable at 32 CSS pixels, in grayscale, and without text. Northwest highlight, darker southeast planes, strong charcoal-teal outline and flat two-level cel shading.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; person, captain portrait, face, unit, national flag, emblem, symbol, letters, numbers, inspired status, multiple flags, trumpet, musical notes, explosion, combat damage, ground, scene, panel, button, focus, disabled state, owner color, thin lines, tiny detail, glow, gradient, cast shadow",
+            "requestSize": {
+              "width": 384,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 192,
+              "height": 192
+            },
+            "seed": 129906,
+            "noBackground": true,
+            "palette": "dark-teal command pennant, warm bronze short staff, restrained parchment burst, charcoal-teal outline",
+            "postprocess": "lanczos3-resize",
+            "styleReference": {
+              "id": "ui-action-redevelop",
+              "sha256": "ef289cf3b0712229a92aeec1769a15dddf6765983ced244043f5def001ed3d46",
+              "usageDescription": "Match the accepted action family's centered transparent safe area, heavy charcoal-teal outline, northwest light, flat two-level shading and 32-pixel readability. Create a distinct command symbol."
+            }
+          }
+        }
+      ],
+      "outputSha256": "eedc8ffb1478b3b3ac3273f8e654675e6a0418455a8887636bacaa3438cc1e8c",
+      "notes": "Accepted second candidate after quarantining the framed-board attempt: one blank swallowtail pennant and broad command rays form a clean isolated silhouette readable at 24-64px, in grayscale, and without baked status.",
+      "reviewedAt": "2026-09-24T17:54:12.318Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-action-blast-mountain-v7r9": {
+      "id": "ui-action-blast-mountain-v7r9",
+      "status": "ACCEPTED",
+      "jobId": "6a60429a-d545-4fcd-8b70-358f1d0e3357",
+      "candidate": "art/pixellab/candidates/ui-action-blast-mountain-v7r9.png",
+      "candidateSha256": "55c8aed2470ea71a5ff42f76ce38e67e8c955a89a9e07b392fb12d2163877960",
+      "providerOutputSha256": "a8be25f848dcca09a789312d0232e032e830dd384139ed7c15ab5e95ddf8d277",
+      "width": 192,
+      "height": 192,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 15,
+        "top": 39,
+        "right": 177,
+        "bottom": 152,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-ui-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: slate-blue rounded mountain, warm bronze charge, restrained coral and parchment blast cloud, charcoal-teal outline. Exactly one Blast Mountain action icon: one broad rounded slate-blue mountain peak visibly splitting into exactly two large halves around one playful warm-bronze starburst charge, with one small parchment dust puff. One compact centered terrain-clearing silhouette with eight percent transparent safe area, readable at 32 CSS pixels and in grayscale. Strong charcoal-teal outline, northwest highlight, darker southeast planes and flat two-level cel shading. Toy-like and non-gory. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; person, unit, enemy, blood, injury, combat hit, sword, cannon, projectile, mushroom cloud, realistic explosion, fire scene, pillaged building, mallet, loot, coin, ore, road, city, text, letters, numbers, panel, button, focus, disabled state, ownership, tiny rubble, thin cracks, glow, gradient, cast shadow.",
+        "prompt": "Exactly one Blast Mountain action icon: one broad rounded slate-blue mountain peak visibly splitting into exactly two large halves around one playful warm-bronze starburst charge, with one small parchment dust puff. One compact centered terrain-clearing silhouette with eight percent transparent safe area, readable at 32 CSS pixels and in grayscale. Strong charcoal-teal outline, northwest highlight, darker southeast planes and flat two-level cel shading. Toy-like and non-gory.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; person, unit, enemy, blood, injury, combat hit, sword, cannon, projectile, mushroom cloud, realistic explosion, fire scene, pillaged building, mallet, loot, coin, ore, road, city, text, letters, numbers, panel, button, focus, disabled state, ownership, tiny rubble, thin cracks, glow, gradient, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 192,
+          "height": 192
+        },
+        "seed": 129908,
+        "noBackground": true,
+        "palette": "slate-blue rounded mountain, warm bronze charge, restrained coral and parchment blast cloud, charcoal-teal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-action-pillage",
+          "sha256": "34c33e31dc1694e9e7147bcb0d2f7c99f3501788a71091bdc4d64ce255773336",
+          "usageDescription": "Match the accepted destructive-action family's centered transparent safe area, heavy charcoal-teal outline, northwest light, broad flat shading and small-size visual weight. Create terrain clearing rather than combat damage."
+        }
+      },
+      "outputSha256": "55c8aed2470ea71a5ff42f76ce38e67e8c955a89a9e07b392fb12d2163877960",
+      "notes": "Accepted first candidate: one rounded Mountain split by a playful centered blast with two restrained dust puffs; terrain clearing reads at 24-64px without unit, combat target, gore, text or baked state.",
+      "reviewedAt": "2026-09-24T17:50:59.601Z",
+      "reviewChecks": {
+        "source": true,
+        "native": true,
+        "enlarged": true,
+        "minimumZoom": true,
+        "composition": true
+      }
+    },
+    "ui-action-cultivate-forest-v7r9": {
+      "id": "ui-action-cultivate-forest-v7r9",
+      "status": "ACCEPTED",
+      "jobId": "536e5004-05b6-4211-b38e-c4f33912aad0",
+      "candidate": "art/pixellab/candidates/ui-action-cultivate-forest-v7r9.png",
+      "candidateSha256": "299a38a8c6731436e096a469410ac7759ff5c8a8cf67dd6f241c1c4f4c25e349",
+      "providerOutputSha256": "a7bb1e12cb09792493857464af92bbd69f2c9dd10df89b0de607c81be43dd53d",
+      "width": 192,
+      "height": 192,
+      "hasAlpha": true,
+      "alphaBounds": {
+        "left": 16,
+        "top": 15,
+        "right": 176,
+        "bottom": 177,
+        "empty": false
+      },
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf-green tree crown, warm cultivated soil, parchment furrow highlights, muted bronze hoe, charcoal-teal outline. Isolated transparent game-art symbol with exactly three separate parts: one full mature chunky three-lobed tree at upper-left; exactly ONE broad bronze arrow pointing only downward-right; exactly three bold parallel soil furrows at lower-right. Keep visible empty space between all three parts. No second arrow and no enclosure. Center within eight percent empty safe area. Strong charcoal outline, northwest light, flat two-level shading, readable at 32 pixels and in grayscale. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; title, label, caption, word, text, letters, frame, border, panel, card, button, menu, interface, second arrow, opposing arrow, circular arrows, recycle loop, reversible cycle, axe, saw, stump, sapling, trowel, full landscape, farm building, person, coin, number, tiny leaves, thin furrows, gradient, cast shadow.",
+        "prompt": "Isolated transparent game-art symbol with exactly three separate parts: one full mature chunky three-lobed tree at upper-left; exactly ONE broad bronze arrow pointing only downward-right; exactly three bold parallel soil furrows at lower-right. Keep visible empty space between all three parts. No second arrow and no enclosure. Center within eight percent empty safe area. Strong charcoal outline, northwest light, flat two-level shading, readable at 32 pixels and in grayscale.",
+        "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; title, label, caption, word, text, letters, frame, border, panel, card, button, menu, interface, second arrow, opposing arrow, circular arrows, recycle loop, reversible cycle, axe, saw, stump, sapling, trowel, full landscape, farm building, person, coin, number, tiny leaves, thin furrows, gradient, cast shadow",
+        "requestSize": {
+          "width": 384,
+          "height": 384
+        },
+        "outputSize": {
+          "width": 192,
+          "height": 192
+        },
+        "seed": 129912,
+        "noBackground": true,
+        "palette": "quiet leaf-green tree crown, warm cultivated soil, parchment furrow highlights, muted bronze hoe, charcoal-teal outline",
+        "postprocess": "lanczos3-resize",
+        "styleReference": {
+          "id": "ui-action-replant-forest",
+          "sha256": "caef4fa32f2196353b271fbd55f2991ccfccca7864c2e1d5f99ca6cf48c11977",
+          "usageDescription": "Match only the accepted Replant symbol's chunky tree shape, strong charcoal outline, broad flat shading, transparent isolation and small-size visual weight. Do not copy a panel or planting gesture."
+        }
+      },
+      "rejectedAttempts": [
+        {
+          "candidate": "art/pixellab/quarantine/ui-action-cultivate-forest-v7r9-f4e864677912.png",
+          "candidateSha256": "f4e864677912bb5444613c69177e3855d8b98487feb97b06e5a6ce1fe8455a02",
+          "providerOutputSha256": "cd23e11e115abb7062eb13c90c70a9c0130ae7dd7f89ccec979c056eaba3a76a",
+          "jobId": "a620746d-da9e-4cdd-8ff0-a9b5fb6bc0c0",
+          "disposition": "REJECTED",
+          "notes": "Rejected first attempt: two opposing arrows form a recycle loop and imply a reversible state rather than one unambiguous Forest-to-furrow transformation.",
+          "reviewedAt": "2026-09-24T17:50:58.424Z",
+          "request": {
+            "endpoint": "generate-ui-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf-green tree crown, warm cultivated soil, parchment furrow highlights, muted bronze hoe, charcoal-teal outline. Exactly one Cultivate Forest action icon: one chunky intact three-lobed Forest tree on the upper-left transforms through one broad curved arrow into exactly three bold parallel cultivated furrows on the lower-right. The tree and furrows are equally readable, one connected centered transformation silhouette with eight percent transparent safe area, readable at 32 CSS pixels and in grayscale. Northwest highlight, darker southeast planes, strong charcoal-teal outline and flat two-level cel shading. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; axe, saw, stump, felled tree, wood chips, sapling, trowel, replant, clear forest, full landscape, farm building, person, knight, coin, population, number, text, letters, panel, button, focus, disabled state, owner color, tiny leaves, thin furrows, gradient, cast shadow.",
+            "prompt": "Exactly one Cultivate Forest action icon: one chunky intact three-lobed Forest tree on the upper-left transforms through one broad curved arrow into exactly three bold parallel cultivated furrows on the lower-right. The tree and furrows are equally readable, one connected centered transformation silhouette with eight percent transparent safe area, readable at 32 CSS pixels and in grayscale. Northwest highlight, darker southeast planes, strong charcoal-teal outline and flat two-level cel shading.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; axe, saw, stump, felled tree, wood chips, sapling, trowel, replant, clear forest, full landscape, farm building, person, knight, coin, population, number, text, letters, panel, button, focus, disabled state, owner color, tiny leaves, thin furrows, gradient, cast shadow",
+            "requestSize": {
+              "width": 384,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 192,
+              "height": 192
+            },
+            "seed": 129907,
+            "noBackground": true,
+            "palette": "quiet leaf-green tree crown, warm cultivated soil, parchment furrow highlights, muted bronze hoe, charcoal-teal outline",
+            "postprocess": "lanczos3-resize",
+            "styleReference": {
+              "id": "ui-action-replant-forest",
+              "sha256": "caef4fa32f2196353b271fbd55f2991ccfccca7864c2e1d5f99ca6cf48c11977",
+              "usageDescription": "Match the accepted terrain-action family's centered safe area, strong outline, broad flat shading and small-size readability. Show a distinct forest-to-cultivated-furrow transformation rather than planting or clearing."
+            }
+          }
+        },
+        {
+          "candidate": "art/pixellab/quarantine/ui-action-cultivate-forest-v7r9-5ff8eb225e13.png",
+          "candidateSha256": "5ff8eb225e13300b2e5f115d293eb8317a671f4ced1882e330480871f2db6466",
+          "providerOutputSha256": "d02ed43947cf7f6813c772d1c362db97d487baddb892fa66801a9396c17a9ce0",
+          "jobId": "5fbf4198-f950-4dc3-9edd-1ed89565378b",
+          "disposition": "REJECTED",
+          "notes": "Rejected second attempt: correct tree-to-furrows subject was enclosed in a labeled UI panel with pseudo-text rather than delivered as one isolated transparent action symbol.",
+          "reviewedAt": "2026-09-24T17:54:13.482Z",
+          "request": {
+            "endpoint": "generate-ui-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf-green tree crown, warm cultivated soil, parchment furrow highlights, muted bronze hoe, charcoal-teal outline. One isolated Cultivate Forest icon: one chunky intact three-lobed Forest tree at upper-left, exactly ONE broad bronze arrow pointing only downward-right, and exactly three bold cultivated furrows at lower-right. No second arrow. Tree and furrows are equally readable in one centered composition with eight percent transparent safe area, at 32 pixels and in grayscale. Strong charcoal outline, northwest light, flat shading. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; second arrow, opposing arrow, circular arrows, recycle loop, reversible cycle, axe, saw, stump, felled tree, sapling, trowel, replant, clear forest, full landscape, farm building, person, knight, coin, population, number, text, letters, panel, button, tiny leaves, thin furrows, gradient, cast shadow.",
+            "prompt": "One isolated Cultivate Forest icon: one chunky intact three-lobed Forest tree at upper-left, exactly ONE broad bronze arrow pointing only downward-right, and exactly three bold cultivated furrows at lower-right. No second arrow. Tree and furrows are equally readable in one centered composition with eight percent transparent safe area, at 32 pixels and in grayscale. Strong charcoal outline, northwest light, flat shading.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; second arrow, opposing arrow, circular arrows, recycle loop, reversible cycle, axe, saw, stump, felled tree, sapling, trowel, replant, clear forest, full landscape, farm building, person, knight, coin, population, number, text, letters, panel, button, tiny leaves, thin furrows, gradient, cast shadow",
+            "requestSize": {
+              "width": 384,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 192,
+              "height": 192
+            },
+            "seed": 129910,
+            "noBackground": true,
+            "palette": "quiet leaf-green tree crown, warm cultivated soil, parchment furrow highlights, muted bronze hoe, charcoal-teal outline",
+            "postprocess": "lanczos3-resize",
+            "styleReference": {
+              "id": "ui-action-replant-forest",
+              "sha256": "caef4fa32f2196353b271fbd55f2991ccfccca7864c2e1d5f99ca6cf48c11977",
+              "usageDescription": "Match the accepted terrain-action family's centered safe area, strong outline, broad flat shading and small-size readability. Show a distinct forest-to-cultivated-furrow transformation rather than planting or clearing."
+            }
+          }
+        },
+        {
+          "candidate": "art/pixellab/quarantine/ui-action-cultivate-forest-v7r9-d8fb87b2c655.png",
+          "candidateSha256": "d8fb87b2c655456772a5655bfb83bf7e65ff492924b6af2bed1aa5e52ad1bb1b",
+          "providerOutputSha256": "54e17f1da986ca666e5758b31ac9fbcc40a80e9815ba85c15dafc206baa47434",
+          "jobId": "202168db-bb4f-419c-b134-14d16e6f1dae",
+          "disposition": "REJECTED",
+          "notes": "Rejected third attempt: ornate gold frame and red panel persisted, the required single directional arrow disappeared, and the sapling-over-furrows symbol could read as ordinary planting.",
+          "reviewedAt": "2026-09-24T17:59:04.428Z",
+          "request": {
+            "endpoint": "generate-ui-v2",
+            "model": "generate-image-v2",
+            "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: quiet leaf-green tree crown, warm cultivated soil, parchment furrow highlights, muted bronze hoe, charcoal-teal outline. One isolated transparent symbol only: one chunky intact three-lobed tree at upper-left, exactly ONE broad bronze arrow pointing only downward-right, and exactly three bold soil furrows at lower-right. No second arrow and no enclosure. Tree and furrows are equally large in one centered composition with eight percent empty safe area, readable at 32 pixels and in grayscale. Strong charcoal outline, northwest light, flat shading. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; title, label, caption, word, text, letters, frame, border, panel, card, button, menu, interface, second arrow, opposing arrow, circular arrows, recycle loop, reversible cycle, axe, saw, stump, sapling, trowel, full landscape, farm building, person, coin, number, tiny leaves, thin furrows, gradient, cast shadow.",
+            "prompt": "One isolated transparent symbol only: one chunky intact three-lobed tree at upper-left, exactly ONE broad bronze arrow pointing only downward-right, and exactly three bold soil furrows at lower-right. No second arrow and no enclosure. Tree and furrows are equally large in one centered composition with eight percent empty safe area, readable at 32 pixels and in grayscale. Strong charcoal outline, northwest light, flat shading.",
+            "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; title, label, caption, word, text, letters, frame, border, panel, card, button, menu, interface, second arrow, opposing arrow, circular arrows, recycle loop, reversible cycle, axe, saw, stump, sapling, trowel, full landscape, farm building, person, coin, number, tiny leaves, thin furrows, gradient, cast shadow",
+            "requestSize": {
+              "width": 384,
+              "height": 384
+            },
+            "outputSize": {
+              "width": 192,
+              "height": 192
+            },
+            "seed": 129911,
+            "noBackground": true,
+            "palette": "quiet leaf-green tree crown, warm cultivated soil, parchment furrow highlights, muted bronze hoe, charcoal-teal outline",
+            "postprocess": "lanczos3-resize",
+            "styleReference": {
+              "id": "ui-action-replant-forest",
+              "sha256": "caef4fa32f2196353b271fbd55f2991ccfccca7864c2e1d5f99ca6cf48c11977",
+              "usageDescription": "Match the accepted terrain-action family's centered safe area, strong outline, broad flat shading and small-size readability. Show a distinct forest-to-cultivated-furrow transformation rather than planting or clearing."
+            }
+          }
+        }
+      ],
+      "outputSha256": "299a38a8c6731436e096a469410ac7759ff5c8a8cf67dd6f241c1c4f4c25e349",
+      "notes": "Accepted fourth candidate after three quarantined iterations: mature tree, exactly one down-right arrow and three broad furrows form a clean transparent transformation symbol distinct from Clear and Replant at 24-64px and in grayscale.",
+      "reviewedAt": "2026-09-24T18:03:24.743Z",
       "reviewChecks": {
         "source": true,
         "native": true,

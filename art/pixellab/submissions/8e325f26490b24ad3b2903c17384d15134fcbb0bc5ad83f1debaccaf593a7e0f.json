@@ -1,0 +1,31 @@
+{
+  "id": "unit-original-captain",
+  "jobId": "7131b7b6-caeb-4072-b00d-90bf45811b01",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: parchment tan, off-white, bronze, dark teal, charcoal outline. One isolated full-body Original Captain on transparent 256 by 296, southeast three-quarter view. Cute chunky officer, large visible head, short broad body, both feet at anchor 128,222. One OVERSIZED dark-teal COMMAND PENNANT on a short bronze staff held high outside the body is the primary silhouette; broad blank swallowtail, no emblem or text. Free hand gives a bold command gesture. Parchment padded coat and off-white scarf. Distinct from Fighter, Medic, Marksman and Guard. Fit alpha x44..212,y18..222. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; tiny or national flag, emblem, medic tool, bow, shield, giant sword, mount, scenery, rally or healing effect, inspired aura, hidden feet.",
+    "prompt": "One isolated full-body Original Captain on transparent 256 by 296, southeast three-quarter view. Cute chunky officer, large visible head, short broad body, both feet at anchor 128,222. One OVERSIZED dark-teal COMMAND PENNANT on a short bronze staff held high outside the body is the primary silhouette; broad blank swallowtail, no emblem or text. Free hand gives a bold command gesture. Parchment padded coat and off-white scarf. Distinct from Fighter, Medic, Marksman and Guard. Fit alpha x44..212,y18..222.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; tiny or national flag, emblem, medic tool, bow, shield, giant sword, mount, scenery, rally or healing effect, inspired aura, hidden feet",
+    "requestSize": {
+      "width": 256,
+      "height": 296
+    },
+    "outputSize": {
+      "width": 256,
+      "height": 296
+    },
+    "seed": 129901,
+    "noBackground": true,
+    "palette": "parchment tan, off-white, bronze, dark teal, charcoal outline",
+    "postprocess": "unit-fit",
+    "groundContactY": 222,
+    "displayScale": 0.25,
+    "cosmeticOffsetY": 18,
+    "styleReference": {
+      "id": "unit-warrior",
+      "sha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1",
+      "usageDescription": "Match the accepted Original faction palette, rounded proportions, outline thickness, flat shading, southeast camera and playful detail budget only. Create a distinct compact Human officer and support silhouette."
+    }
+  }
+}

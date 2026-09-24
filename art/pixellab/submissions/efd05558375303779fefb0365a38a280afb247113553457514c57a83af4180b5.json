@@ -1,0 +1,28 @@
+{
+  "id": "ui-action-rally-v7r9",
+  "jobId": "3d402ba1-e69d-4609-92ee-69fa0a9e2e55",
+  "request": {
+    "endpoint": "generate-ui-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: dark-teal command pennant, warm bronze short staff, restrained parchment burst, charcoal-teal outline. One isolated Rally icon only: one huge blank dark-teal swallowtail PENNANT on one short diagonal bronze staff, plus exactly three broad parchment rays behind the cloth. No other objects. Compact connected silhouette centered on transparency with eight percent safe area, readable at 32 pixels and in grayscale. Strong charcoal outline, northwest highlight, flat two-level shading. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; board, map, strategy table, frame, border, card, panel, cannon, chest, book, chart, scene, person, portrait, unit, national flag, emblem, symbol, text, letters, numbers, multiple flags, trumpet, musical notes, explosion, status badge, button, thin lines, tiny detail, glow, gradient, cast shadow.",
+    "prompt": "One isolated Rally icon only: one huge blank dark-teal swallowtail PENNANT on one short diagonal bronze staff, plus exactly three broad parchment rays behind the cloth. No other objects. Compact connected silhouette centered on transparency with eight percent safe area, readable at 32 pixels and in grayscale. Strong charcoal outline, northwest highlight, flat two-level shading.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; board, map, strategy table, frame, border, card, panel, cannon, chest, book, chart, scene, person, portrait, unit, national flag, emblem, symbol, text, letters, numbers, multiple flags, trumpet, musical notes, explosion, status badge, button, thin lines, tiny detail, glow, gradient, cast shadow",
+    "requestSize": {
+      "width": 384,
+      "height": 384
+    },
+    "outputSize": {
+      "width": 192,
+      "height": 192
+    },
+    "seed": 129909,
+    "noBackground": true,
+    "palette": "dark-teal command pennant, warm bronze short staff, restrained parchment burst, charcoal-teal outline",
+    "postprocess": "lanczos3-resize",
+    "styleReference": {
+      "id": "ui-action-disband",
+      "sha256": "e6d7bc99de393c63a1c7e9aa51169fef87ec52f7841f1b0d43cdaf94d9d57548",
+      "usageDescription": "Match only the accepted action icon's isolated transparent composition, heavy charcoal-teal outline, northwest light, flat two-level shading and 32-pixel readability. Replace every object with one blank pennant and three broad rays."
+    }
+  }
+}
