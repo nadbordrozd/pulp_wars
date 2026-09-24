@@ -152,12 +152,7 @@ describe("ruleset-7 achievements and Monuments", () => {
         player.id === forgeState.humanPlayerId
           ? {
               ...player,
-              researchedTechs: [
-                "GATHERING",
-                "SCOUTING",
-                "DRILL",
-                "PROSPECTING",
-              ],
+              researchedTechs: ["GATHERING", "SCOUTING", "PROSPECTING"],
               achievementEntitlements: player.achievementEntitlements.map(
                 (item) =>
                   item.achievement === "ENGINEER"
@@ -222,7 +217,7 @@ describe("ruleset-7 achievements and Monuments", () => {
     const musterResearch = applyCommandV7(
       musterLocked,
       musterLocked.humanPlayerId,
-      { kind: "RESEARCH", tech: "DRILL" },
+      { kind: "RESEARCH", tech: "PROSPECTING" },
     );
     if (!musterResearch.accepted) throw new Error(musterResearch.error.code);
     expect(
@@ -725,7 +720,7 @@ describe("ruleset-7 achievements and Monuments", () => {
 
   it("keeps Monument sites on hidden Ore and empty Mountains equivalent until Prospecting", () => {
     const base = levelTwoWithoutPopulation(
-      unlockEntitlement(exploredAllV7(initialV7(707)), "MUSTER"),
+      unlockEntitlement(exploredAllV7(initialV7(707)), "EXPLORER"),
     );
     const city = required(
       base.cities.find((candidate) => candidate.ownerId === base.humanPlayerId),
@@ -758,7 +753,7 @@ describe("ruleset-7 achievements and Monuments", () => {
       });
     const command = {
       kind: "BUILD_MONUMENT",
-      achievement: "MUSTER",
+      achievement: "EXPLORER",
       at,
     } as const;
     const hiddenStates = [mountain("ORE", false), mountain(null, false)];
@@ -1289,7 +1284,7 @@ function capturedMonumentState(): {
 
 function unlockEntitlement(
   state: GameStateV7,
-  achievement: "ENGINEER" | "MUSTER",
+  achievement: "EXPLORER" | "ENGINEER" | "MUSTER",
 ): GameStateV7 {
   return checkedV7({
     ...state,
@@ -1300,7 +1295,8 @@ function unlockEntitlement(
             researchedTechs: TECHNOLOGY_IDS_V7.filter(
               (tech) =>
                 player.researchedTechs.includes(tech) ||
-                tech === "DRILL" ||
+                (achievement === "EXPLORER" && tech === "SCOUTING") ||
+                (achievement === "MUSTER" && tech === "PROSPECTING") ||
                 (achievement === "ENGINEER" && tech === "PROSPECTING") ||
                 (achievement === "ENGINEER" && tech === "ENGINEERING"),
             ),

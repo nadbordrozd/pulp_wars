@@ -19,7 +19,7 @@ export type UnitStatModifierSourceV7 =
   | "PROMOTION"
   | "CHARGE"
   | "CITY_WALLS"
-  | "DRILL"
+  | "CITY_FORTIFICATION"
   | "FIELD_DEFENSE"
   | "MOUNTAIN"
   | "FOREST"
@@ -214,13 +214,13 @@ function fortificationTerms(
   );
   const owner = state.players.find((player) => player.id === unit.ownerId);
   const terms: PublicUnitStatTermV7[] = [];
-  if (city !== undefined && owner?.researchedTechs.includes("DRILL"))
+  if (city !== undefined && owner?.researchedTechs.includes("PROSPECTING"))
     terms.push(
       modifier(
         1,
-        "DRILL",
-        "Drill",
-        "Drill adds 1 Defense on an owned city center.",
+        "CITY_FORTIFICATION",
+        "City fortification",
+        "Prospecting adds 1 Defense on an owned city center.",
       ),
     );
   if (

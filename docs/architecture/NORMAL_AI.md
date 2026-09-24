@@ -1,5 +1,21 @@
 # Greedy Normal AI
 
+## Revision-8 merged industry and processor adjacency
+
+The current Ruleset 7 policy uses the single
+`PROSPECTING -> ENGINEERING -> METALLURGY` Industry & Warfare chain.
+Prospecting valuation includes Ore, Mountain access, Guard, Spoils, and city
+fortification; Engineering includes Mine/Workshop development, field defense,
+Redevelop, and capacity; Metallurgy includes Forge, Heavy, Breacher, and
+Pillage. Removed Drill, Fortification, and Explosives IDs are never proposed.
+
+Windmill, Sawmill, and Forge placement and development scores use only the
+eight immediately adjacent matching contributors owned by the same player.
+Contributors assigned to another owned city count and may support several
+processors; connected distant improvements and foreign contributors do not.
+The score consumes the exact public multi-city preview, so a basic improvement
+is valued for every affected processor city without inferring fogged tiles.
+
 ## Revision-6 naval planning
 
 Ruleset 7 Normal builds naval objectives only from `PlayerViewV7`, public
@@ -62,7 +78,7 @@ Road/Market connection, and Monument opportunity cost. An ordinary income
 floor is valued as one Coin only when the public city is neither besieged nor
 in active Blackout. Treasury is worth its actual 12 Coins; Juggernaut is a
 40-HP one-slot unit with public Push and placement consequences, not a
-fictitious purchase price. Drill Spoils is valued on the first hostile capture
+fictitious purchase price. Prospecting Spoils is valued on the first hostile capture
 of each specific city.
 
 Combat uses only published roles, stats, positions, activation and previews.

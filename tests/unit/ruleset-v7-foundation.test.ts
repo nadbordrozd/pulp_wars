@@ -35,9 +35,9 @@ const setup: MatchSetupV7 = {
   mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
 };
 
-describe("ruleset-7 revision-7 deterministic foundation", () => {
+describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r7");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r8");
     expect(FACTION_IDS_V7).toEqual(["ORIGINAL"]);
     expect(FACTION_TREE_IDS_V7).toEqual(["ORIGINAL_BASELINE_V4"]);
     expect(RESOURCE_IDS_V7).toEqual([
@@ -76,7 +76,7 @@ describe("ruleset-7 revision-7 deterministic foundation", () => {
       "PATROL_BOAT",
       "BATTLESHIP",
     ]);
-    expect(TECHNOLOGY_IDS_V7).toHaveLength(24);
+    expect(TECHNOLOGY_IDS_V7).toHaveLength(21);
     expect(COMMAND_KIND_ORDER_V7).toHaveLength(34);
     expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(48);
     expect(PLAYER_EVENT_KIND_ORDER_V7.slice(-3)).toEqual([

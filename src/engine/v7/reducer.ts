@@ -1174,7 +1174,7 @@ function applyDisembark(
     tile === undefined ||
     tile.biome === null ||
     (tile.terrain === "MOUNTAIN" &&
-      !player.researchedTechs.includes("ENGINEERING")) ||
+      !player.researchedTechs.includes("PROSPECTING")) ||
     (territoryOwner !== undefined &&
       territoryOwner !== actor &&
       arePlayersAlliedV7(state, actor, territoryOwner)) ||
@@ -1794,7 +1794,7 @@ function treasureHeavyPlacement(
         tile.biome === null ||
         tile.site !== null ||
         (tile.terrain === "MOUNTAIN" &&
-          !player.researchedTechs.includes("ENGINEERING")) ||
+          !player.researchedTechs.includes("PROSPECTING")) ||
         state.units.some((unit) => unit.hp > 0 && same(unit.at, candidate)) ||
         state.treasureChests.some((chest) => same(chest, candidate))
       )
@@ -2209,8 +2209,8 @@ function applyPillage(
   if (primaryUsed(unit))
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
   const player = requirePlayer(state, actor);
-  if (!player.researchedTechs.includes("EXPLOSIVES"))
-    return rejected(original, "TECH_REQUIRED", { tech: "EXPLOSIVES" });
+  if (!player.researchedTechs.includes("METALLURGY"))
+    return rejected(original, "TECH_REQUIRED", { tech: "METALLURGY" });
   const tile = tileAtV7(state.board, unit.at);
   const city = state.cities.find((item) => item.id === tile?.territoryCityId);
   if (
@@ -2308,8 +2308,8 @@ function applyFieldDefense(
   const territory = state.cities.find(
     (city) => city.id === tile?.territoryCityId,
   );
-  if (!player.researchedTechs.includes("FORTIFICATION"))
-    return rejected(original, "TECH_REQUIRED", { tech: "FORTIFICATION" });
+  if (!player.researchedTechs.includes("ENGINEERING"))
+    return rejected(original, "TECH_REQUIRED", { tech: "ENGINEERING" });
   if (
     unit.form !== "LAND" ||
     (unit.role !== "FIGHTER" && unit.role !== "GUARD") ||
@@ -2459,7 +2459,7 @@ function applyCapture(
   const player = requirePlayer(state, actor);
   const spoils =
     hostile !== undefined &&
-    player.researchedTechs.includes("DRILL") &&
+    player.researchedTechs.includes("PROSPECTING") &&
     !player.spoilsClaimedCityIds.includes(hostile.id);
   if (spoils && !Number.isSafeInteger(player.coins + 2))
     return rejected(original, "INTEGER_OVERFLOW");
@@ -2916,7 +2916,7 @@ function rewardPlacement(
           tile.territoryCityId === city.id &&
           tile.biome !== null &&
           (tile.terrain !== "MOUNTAIN" ||
-            player.researchedTechs.includes("ENGINEERING")) &&
+            player.researchedTechs.includes("PROSPECTING")) &&
           !state.units.some((unit) => unit.hp > 0 && same(unit.at, tile.at)),
       )
       .sort(
@@ -3037,7 +3037,7 @@ function evaluateAchievementsV7(
   const requiredTech = {
     EXPLORER: "SCOUTING",
     ENGINEER: "ENGINEERING",
-    MUSTER: "DRILL",
+    MUSTER: "PROSPECTING",
   } as const;
   const unlocked = player.achievementEntitlements.filter(
     (entitlement) =>

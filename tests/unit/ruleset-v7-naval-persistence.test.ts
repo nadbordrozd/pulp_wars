@@ -27,7 +27,7 @@ describe("ruleset-7 naval persistence schema", () => {
     expect(parsed).toEqual(fixture.state);
     expect(parseMatchSetupV7(fixture.state.setup)).toEqual(fixture.state.setup);
     expect(fixture.state.setup).toMatchObject({
-      rulesetId: "pulp-wars-poc-7r7",
+      rulesetId: "pulp-wars-poc-7r8",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     });

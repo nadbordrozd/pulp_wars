@@ -82,7 +82,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r7";
+  readonly rulesetId: "pulp-wars-poc-7r8";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -631,7 +631,7 @@ export async function runAiBatchV7(
           await new Promise<void>((resolve) => setTimeout(resolve, 0));
           const result = runAiMatchInternalV7(
             {
-              rulesetId: "pulp-wars-poc-7r7",
+              rulesetId: "pulp-wars-poc-7r8",
               mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
               seed,
               width: size,
@@ -728,7 +728,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r7",
+    rulesetId: "pulp-wars-poc-7r8",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,
@@ -971,7 +971,7 @@ function recordEventsV7(
       metrics.research.firstRound[event.tech] ??= after.round;
       const branch = technologyBranch(event.tech);
       increment(metrics.research.byBranch, branch);
-      if (event.tech === "FORTIFICATION")
+      if (event.tech === "ENGINEERING")
         metrics.capacity.fortificationAdoptions += 1;
     }
     if (event.kind === "FRUIT_HARVESTED")

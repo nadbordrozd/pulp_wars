@@ -41,7 +41,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 save and replay foundation", () => {
   it("uses an independent v7 save key and round-trips a canonical initial save", () => {
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r7.current");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r8.current");
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const replay = createReplayV7(setup);
@@ -525,9 +525,9 @@ describe("ruleset-7 save and replay foundation", () => {
     fundHuman(7);
     apply({ kind: "RESEARCH", tech: "RAIDING" });
     fundHuman(5);
-    apply({ kind: "RESEARCH", tech: "DRILL" });
+    apply({ kind: "RESEARCH", tech: "PROSPECTING" });
     fundHuman(7);
-    apply({ kind: "RESEARCH", tech: "FORTIFICATION" });
+    apply({ kind: "RESEARCH", tech: "ENGINEERING" });
     fundHuman(7);
     apply({ kind: "RESEARCH", tech: "FARMING" });
     const farmAt = required(
@@ -686,8 +686,6 @@ describe("ruleset-7 save and replay foundation", () => {
     apply({ kind: "RESEARCH", tech: "MILLING" });
     fundHuman(5);
     apply({ kind: "BUILD_WINDMILL", at: windmillTile.at });
-    fundHuman(5);
-    apply({ kind: "RESEARCH", tech: "DRILL" });
     fundHuman(5);
     apply({ kind: "RESEARCH", tech: "PROSPECTING" });
     fundHuman(7);

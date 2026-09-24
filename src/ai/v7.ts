@@ -487,7 +487,7 @@ function* navalPlanWorkV7(
           publicPlayersAllied(view, view.viewer.id, tile.territoryOwnerId)
         ) &&
         (tile.terrain !== "MOUNTAIN" ||
-          view.viewer.researchedTechs.includes("ENGINEERING")),
+          view.viewer.researchedTechs.includes("PROSPECTING")),
     )
     .sort((left, right) => left.at.y - right.at.y || left.at.x - right.at.x);
   const unassigned = new Set(land.map((tile) => coordKey(tile.at)));
@@ -1543,13 +1543,13 @@ function scoreCommandWithContext(
     if (
       !neutral &&
       city !== undefined &&
-      view.viewer.researchedTechs.includes("DRILL") &&
+      view.viewer.researchedTechs.includes("PROSPECTING") &&
       !view.viewer.spoilsClaimedCityIds.includes(city.id)
     )
       immediateValue += 2;
     if (
       city !== undefined &&
-      view.viewer.researchedTechs.includes("FORTIFICATION")
+      view.viewer.researchedTechs.includes("ENGINEERING")
     )
       strategicValue += 6;
   }
@@ -2094,7 +2094,7 @@ function researchValue(
       cost: node.cost,
     };
   const fortification =
-    tech === "FORTIFICATION"
+    tech === "ENGINEERING"
       ? (context.view.leaderboard.find((item) => item.isViewer)?.cityCount ?? 0)
       : 0;
   return { priority: 1040, strategic: fortification, cost: node.cost };
@@ -2767,7 +2767,7 @@ function freeCapacity(view: PlayerViewV7, cityId: CityId | null): number {
   const capacity =
     city.level +
     1 +
-    Number(view.viewer.researchedTechs.includes("FORTIFICATION"));
+    Number(view.viewer.researchedTechs.includes("ENGINEERING"));
   const assigned = view.units.filter(
     (unit) => unit.ownerId === view.viewer.id && unit.homeCityId === cityId,
   ).length;

@@ -7,7 +7,7 @@ import {
 import { createSaveEnvelopeV7, parseSaveV7 } from "../../src/persistence/v7";
 import { setupV7 } from "../fixtures/v7-builders";
 
-describe("ruleset-7 revision-5 save compatibility", () => {
+describe("ruleset-7 revision-8 save compatibility", () => {
   it("round trips the current identity and rejects the preceding revision", () => {
     const setup = setupV7(9, 1);
     const created = createPlayableGameV7(setup);
@@ -16,10 +16,10 @@ describe("ruleset-7 revision-5 save compatibility", () => {
       { state: created.state, replay: createReplayV7(setup) },
       "2026-09-22T10:00:00.000Z",
     );
-    expect(save.rulesetId).toBe("pulp-wars-poc-7r7");
+    expect(save.rulesetId).toBe("pulp-wars-poc-7r8");
     expect(parseSaveV7(JSON.stringify(save))).toMatchObject({ kind: "VALID" });
     expect(
-      parseSaveV7(JSON.stringify({ ...save, rulesetId: "pulp-wars-poc-7r4" })),
+      parseSaveV7(JSON.stringify({ ...save, rulesetId: "pulp-wars-poc-7r7" })),
     ).toMatchObject({ kind: "INCOMPATIBLE" });
   });
 
@@ -65,6 +65,12 @@ describe("ruleset-7 revision-5 save compatibility", () => {
     });
 
     const replay = createReplayV7(setup);
+    expect(
+      parseReplayFileV7({
+        ...replay,
+        setup: { ...replay.setup, rulesetId: "pulp-wars-poc-7r7" },
+      }),
+    ).toMatchObject({ kind: "INCOMPATIBLE_REPLAY" });
     expect(
       parseReplayFileV7({
         ...replay,

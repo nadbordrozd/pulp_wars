@@ -79,7 +79,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const view = viewForV7(state, state.humanPlayerId);
     const decision = chooseNormalCommandV7(view);
     expect(queryPlayerCommandsV7(view)).toContainEqual({ kind: "END_TURN" });
-    expect(decision.command).toEqual({ kind: "RESEARCH", tech: "DRILL" });
+    expect(decision.command).toEqual({ kind: "RESEARCH", tech: "PROSPECTING" });
     expect(decision.candidates[0]?.score.priority).toBe(1060);
     expect(
       decision.candidates.some(({ command }) => command.kind === "WAIT"),
@@ -310,6 +310,15 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       readFileSync("tests/fixtures/ruleset-v7-late-public-view.json", "utf8"),
     ) as PlayerViewV7;
     const source = upgradeRetainedPublicViewV7(retained);
+    expect(source.viewer.researchedTechs).toEqual([
+      "GATHERING",
+      "HUNTING",
+      "PROSPECTING",
+      "ENGINEERING",
+      "METALLURGY",
+    ]);
+    for (const removed of ["DRILL", "FORTIFICATION", "EXPLOSIVES"])
+      expect(source.viewer.researchedTechs).not.toContain(removed);
     expect(source.units.every((unit) => unit.form === "LAND")).toBe(true);
     expect(
       source.board.tiles.every((tile) => !tile.explored || tile.biome !== null),
@@ -337,9 +346,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       unitId: 19,
       targetUnitId: 34,
     });
-    expect(sliced.candidates).toHaveLength(28);
+    expect(sliced.candidates).toHaveLength(29);
     expect(canonicalHash(sliced)).toBe(
-      "96c6d9316bf9617a4d0a7757973ff8ef384b6a188f3afb42ee766fd607f936f2",
+      "a296d2c042c65f8d1e4d9b4934ad10e533dbeb5b9d45c0cef8de96f24d8cee4e",
     );
     const revision4Commands = new Set([
       '{"kind":"ATTACK","unitId":19,"targetUnitId":34}',
@@ -365,7 +374,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
           revision4Commands.has(JSON.stringify(candidate.command)),
         ),
       ),
-    ).toBe("da4a7c3e02d8fc99d1ee29909a52902a72c1d0c6a646e1349daa992b5b310311");
+    ).toBe("7561a6b7a42bc8740b079d5078d0a20f9fbe16c03832322a1276df21cee1e92c");
     expect(canonicalHash(sync)).toBe(canonicalHash(sliced));
     expect(sync).toEqual(sliced);
   }, 15_000);
@@ -546,7 +555,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     expect(healthyValue.score).toBeGreaterThan(injuredValue.score);
   });
 
-  it("values Drill Spoils on the first capture of each specific hostile city", () => {
+  it("values Prospecting Spoils on the first capture of each specific hostile city", () => {
     const base = exploredAllV7(allTechsV7(initialV7(13)));
     const hostile = base.cities.find(
       (city) => city.ownerId !== base.humanPlayerId,
@@ -739,7 +748,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const state = initialV7(0);
     const view = viewForV7(state, state.humanPlayerId);
     const decision = chooseNormalCommandV7(view);
-    expect(decision.command).toEqual({ kind: "RESEARCH", tech: "DRILL" });
+    expect(decision.command).toEqual({ kind: "RESEARCH", tech: "PROSPECTING" });
     expect(chooseNormalTurnCommandV7(view, 127, 128, decision)).toEqual({
       kind: "END_TURN",
     });
@@ -970,7 +979,7 @@ function redevelopmentReplacementView(current: "MINE" | "SAWMILL"): {
       viewer: {
         ...base.viewer,
         coins: 1_000,
-        researchedTechs: ["GATHERING", "DRILL", "ENGINEERING", "PROSPECTING"],
+        researchedTechs: ["GATHERING", "PROSPECTING", "ENGINEERING"],
       },
       board: {
         ...base.board,
@@ -1031,7 +1040,7 @@ function multiCityMonumentRedevelopmentView(): {
       viewer: {
         ...base.viewer,
         coins: 1_000,
-        researchedTechs: ["GATHERING", "DRILL", "ENGINEERING", "PROSPECTING"],
+        researchedTechs: ["GATHERING", "PROSPECTING", "ENGINEERING"],
         achievementEntitlements: base.viewer.achievementEntitlements.map(
           (entitlement) =>
             entitlement.achievement === "ENGINEER"

@@ -64,7 +64,7 @@ describe("ruleset-7 revision-4 Ore economy", () => {
     ).toBe(Math.min(6, adjacent.length));
   });
 
-  it("never offers Forge without an adjacent same-city Mine", () => {
+  it("never offers Forge without an adjacent same-owner Mine", () => {
     const base = allTechsV7(exploredAllV7(initialV7(0)));
     const humanSeat = base.turnOrder.indexOf(base.humanPlayerId);
     const state = checkedV7({

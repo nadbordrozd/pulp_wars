@@ -128,13 +128,14 @@ try {
   await evaluate(
     connection,
     `(() => {
-      localStorage.removeItem('pulpWars.save.v7r7.current');
+      localStorage.removeItem('pulpWars.save.v7r8.current');
       localStorage.setItem('pulpWars.save.v7.current', 'old-v7-bytes');
       localStorage.setItem('pulpWars.save.v7r2.current', 'old-v7r2-bytes');
       localStorage.setItem('pulpWars.save.v7r3.current', 'old-v7r3-bytes');
       localStorage.setItem('pulpWars.save.v7r4.current', 'old-v7r4-bytes');
       localStorage.setItem('pulpWars.save.v7r5.current', 'old-v7r5-bytes');
       localStorage.setItem('pulpWars.save.v7r6.current', 'old-v7r6-bytes');
+      localStorage.setItem('pulpWars.save.v7r7.current', 'old-v7r7-bytes');
       localStorage.setItem('pulpWars.save.current', 'v6-bytes');
       localStorage.setItem('pulpWars.settings.v1', JSON.stringify({ format: 'pulp-wars-settings', version: 1, settings: { uiScale: 1, motion: 'REDUCED', animationSpeed: 'NORMAL', highContrast: false } }));
       localStorage.setItem('pulpWars.unrelated', 'unrelated-bytes');
@@ -217,7 +218,7 @@ try {
       if (!initial) throw new Error('command-zero public trace missing');
       const view = snapshot.view;
       if (!view) throw new Error('returned public view missing');
-      const save = JSON.parse(localStorage.getItem('pulpWars.save.v7r7.current') ?? 'null');
+      const save = JSON.parse(localStorage.getItem('pulpWars.save.v7r8.current') ?? 'null');
       const safe = JSON.parse(controller.exportSafeLog()?.source ?? 'null');
       const debug = controller.exportDebugBundle({ acknowledgeHiddenInformation: true });
       if (!debug.ok) throw new Error('spoiler debug export missing');
@@ -447,12 +448,13 @@ try {
     readonly oldV7r4: string | null;
     readonly oldV7r5: string | null;
     readonly oldV7r6: string | null;
+    readonly oldV7r7: string | null;
     readonly v6: string | null;
     readonly settings: string | null;
     readonly unrelated: string | null;
   }>(
     connection,
-    `({ current: localStorage.getItem('pulpWars.save.v7r7.current'), oldV7: localStorage.getItem('pulpWars.save.v7.current'), oldV7r2: localStorage.getItem('pulpWars.save.v7r2.current'), oldV7r3: localStorage.getItem('pulpWars.save.v7r3.current'), oldV7r4: localStorage.getItem('pulpWars.save.v7r4.current'), oldV7r5: localStorage.getItem('pulpWars.save.v7r5.current'), oldV7r6: localStorage.getItem('pulpWars.save.v7r6.current'), v6: localStorage.getItem('pulpWars.save.current'), settings: localStorage.getItem('pulpWars.settings.v1'), unrelated: localStorage.getItem('pulpWars.unrelated') })`,
+    `({ current: localStorage.getItem('pulpWars.save.v7r8.current'), oldV7: localStorage.getItem('pulpWars.save.v7.current'), oldV7r2: localStorage.getItem('pulpWars.save.v7r2.current'), oldV7r3: localStorage.getItem('pulpWars.save.v7r3.current'), oldV7r4: localStorage.getItem('pulpWars.save.v7r4.current'), oldV7r5: localStorage.getItem('pulpWars.save.v7r5.current'), oldV7r6: localStorage.getItem('pulpWars.save.v7r6.current'), oldV7r7: localStorage.getItem('pulpWars.save.v7r7.current'), v6: localStorage.getItem('pulpWars.save.current'), settings: localStorage.getItem('pulpWars.settings.v1'), unrelated: localStorage.getItem('pulpWars.unrelated') })`,
   );
   if (
     keys.current !== null ||
@@ -462,6 +464,7 @@ try {
     keys.oldV7r4 !== null ||
     keys.oldV7r5 !== null ||
     keys.oldV7r6 !== null ||
+    keys.oldV7r7 !== null ||
     keys.v6 !== "v6-bytes" ||
     JSON.parse(keys.settings ?? "null")?.settings?.motion !== "REDUCED" ||
     keys.unrelated !== "unrelated-bytes"
@@ -494,7 +497,7 @@ try {
         acceptance:
           timingMode === "STRICT" ? "FUNCTIONAL_AND_TIMING" : "FUNCTIONAL",
         timing: { mode: timingMode, ...timing },
-        rulesetId: "pulp-wars-poc-7r7",
+        rulesetId: "pulp-wars-poc-7r8",
         runtimeFingerprint: browserReleaseRuntimeFingerprintV7(process.cwd()),
         productionEntry: "src/main.ts",
         route: "DEFAULT_NO_RULESET_PARAMETER",

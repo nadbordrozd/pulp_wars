@@ -142,7 +142,7 @@ describe("ruleset-7 revision-4 public Ore and Normal prospecting", () => {
         player.id === base.humanPlayerId
           ? {
               ...player,
-              researchedTechs: ["GATHERING", "DRILL", "PROSPECTING"],
+              researchedTechs: ["GATHERING", "PROSPECTING"],
             }
           : player,
       ),

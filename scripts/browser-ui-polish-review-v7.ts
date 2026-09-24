@@ -33,6 +33,9 @@ const selectionOnly =
   process.argv.includes("--selection-only") || compactSelection;
 const hudOnly = process.argv.includes("--hud-only");
 const achievementOnly = process.argv.includes("--achievement-only");
+const revision8IndustryOnly = process.argv.includes(
+  "--revision8-industry-only",
+);
 const outputArgument = process.argv.find((argument) =>
   argument.startsWith("--output="),
 );
@@ -86,6 +89,13 @@ try {
   await setValue(connection, "#v7-seed", "20");
   await click(connection, '[data-action="launch"]');
   await waitForHuman(connection);
+
+  if (revision8IndustryOnly) {
+    await runRevision8IndustryReview(connection);
+    connection.close();
+    browser.kill();
+    process.exit(0);
+  }
 
   if (achievementOnly) {
     await runAchievementReview(connection);
@@ -407,6 +417,189 @@ try {
   );
 } finally {
   browser.kill();
+}
+
+async function runRevision8IndustryReview(
+  connection: Connection,
+): Promise<void> {
+  await viewport(connection, 1440, 900, 1);
+  await click(connection, '[data-action="tech"]');
+  await waitFor(
+    connection,
+    `document.querySelector('[data-tech-branch="INDUSTRY_WARFARE"]') !== null`,
+  );
+  const industryLane = await evaluate<readonly string[]>(
+    connection,
+    `[...document.querySelectorAll('[data-tech-branch="INDUSTRY_WARFARE"] .v7-tech-card')].map((card) => card.dataset.action)`,
+  );
+  assert(
+    JSON.stringify(industryLane) ===
+      JSON.stringify([
+        "tech-prospecting",
+        "tech-engineering",
+        "tech-metallurgy",
+      ]),
+    `Industry/Warfare lane mismatch: ${JSON.stringify(industryLane)}`,
+  );
+  await capture(connection, "revision8-technology-tree-overview-desktop.png");
+  const expectedUnlocks: Readonly<Record<string, readonly string[]>> = {
+    prospecting: [
+      "Reveal Ore",
+      "Train Guard",
+      "Units may enter Mountains",
+      "First hostile capture",
+      "fortification level 1",
+    ],
+    engineering: [
+      "Build mine",
+      "Build workshop",
+      "Redevelop",
+      "Build field defense",
+      "gains +1 capacity",
+    ],
+    metallurgy: ["Build forge", "Train Heavy", "Train Breacher", "Pillage"],
+  };
+  const technologyDetails: Record<string, string> = {};
+  for (const id of ["prospecting", "engineering", "metallurgy"] as const) {
+    await click(connection, `[data-action="tech-${id}"]`);
+    await waitFor(
+      connection,
+      `document.querySelector('[data-action="tech-${id}"]')?.dataset.selected === 'true'`,
+    );
+    const detail = await evaluate<string>(
+      connection,
+      `document.querySelector('.v7-tech-detail')?.textContent ?? ''`,
+    );
+    for (const unlock of expectedUnlocks[id])
+      assert(
+        detail.includes(unlock),
+        `${id} detail omitted ${unlock}: ${detail}`,
+      );
+    const geometry = await evaluate<{
+      readonly pageWidth: number;
+      readonly viewportWidth: number;
+      readonly detailClientWidth: number;
+      readonly detailScrollWidth: number;
+    }>(
+      connection,
+      `(() => { const detail=document.querySelector('.v7-tech-detail'); if(!detail)throw Error('Tech detail absent'); return { pageWidth:document.documentElement.scrollWidth, viewportWidth:innerWidth, detailClientWidth:detail.clientWidth, detailScrollWidth:detail.scrollWidth }; })()`,
+    );
+    assert(
+      geometry.pageWidth <= geometry.viewportWidth &&
+        geometry.detailScrollWidth <= geometry.detailClientWidth,
+      `${id} detail overflows horizontally: ${JSON.stringify(geometry)}`,
+    );
+    technologyDetails[id] = detail;
+    await capture(connection, `revision8-${id}-technology-desktop.png`);
+  }
+  await click(connection, '[data-action="close-overlay"]');
+
+  const economy = await evaluate<{
+    readonly actionText: string;
+    readonly ariaLabel: string | null;
+    readonly banner: string;
+    readonly geometry: {
+      readonly actionBottom: number;
+      readonly dockBottom: number;
+      readonly viewportBottom: number;
+    };
+    readonly populationDeltaByCity: readonly {
+      readonly cityId: number;
+      readonly delta: number;
+    }[];
+  }>(
+    connection,
+    `(async () => {
+      const { Ruleset7DomAppView } = await import('/src/render/dom/app-view-v7.ts');
+      const { allTechsV7, exploredAllV7, initialV7 } = await import('/tests/fixtures/v7-builders.ts');
+      const { previewEconomicV7, viewForV7 } = await import('/src/engine/index.ts');
+      const state = allTechsV7(exploredAllV7(initialV7(8808)));
+      const raw = viewForV7(state, state.humanPlayerId);
+      const first = raw.cities[0], second = raw.cities[1];
+      if (!first || !second) throw new Error('Two-city economy fixture missing');
+      const target = { x: 5, y: 5 }, left = { x: 4, y: 5 }, right = { x: 6, y: 5 };
+      const same = (a, b) => a.x === b.x && a.y === b.y;
+      const view = {
+        ...raw,
+        viewer: { ...raw.viewer, coins: 1000 },
+        leaderboard: raw.leaderboard.map((entry) => entry.isViewer ? { ...entry, cityCount: 2 } : { ...entry, cityCount: 0 }),
+        cities: raw.cities.map((city) => city.id === first.id || city.id === second.id ? { ...city, ownerId: raw.viewer.id } : city),
+        units: [],
+        treasureChests: [],
+        board: {
+          ...raw.board,
+          tiles: raw.board.tiles.map((tile) => {
+            const ownership = tile.territoryCityId === first.id || tile.territoryCityId === second.id ? { territoryOwnerId: raw.viewer.id } : {};
+            if (same(tile.at, target)) return { ...tile, ...ownership, explored: true, biome: 'WOODLAND', terrain: 'FOREST', resource: null, improvement: null, site: null, territoryCityId: first.id, territoryOwnerId: raw.viewer.id };
+            if (same(tile.at, left)) return { ...tile, ...ownership, explored: true, biome: 'WOODLAND', terrain: 'GRASS', resource: null, improvement: 'SAWMILL', site: null, territoryCityId: first.id, territoryOwnerId: raw.viewer.id };
+            if (same(tile.at, right)) return { ...tile, ...ownership, explored: true, biome: 'WOODLAND', terrain: 'GRASS', resource: null, improvement: 'SAWMILL', site: null, territoryCityId: second.id, territoryOwnerId: raw.viewer.id };
+            return { ...tile, ...ownership, explored: true };
+          }),
+        },
+      };
+      const command = { kind: 'BUILD_LUMBER_CAMP', at: target };
+      const preview = previewEconomicV7(view, command);
+      if (!preview.ok) throw new Error('Cross-city public preview unavailable: ' + preview.reason);
+      const deltas = preview.preview.populationDeltaByCity.filter((change) => change.delta !== 0);
+      if (deltas.length !== 2 || deltas.reduce((sum, change) => sum + change.delta, 0) !== 3) throw new Error('Cross-city public deltas mismatch: ' + JSON.stringify(deltas));
+      const source = globalThis.__PULP_WARS_APP__.controller;
+      const original = source.snapshot();
+      const snapshot = { ...original, phase: 'ACTIVE', view, offeredCommands: [command] };
+      const host = { callbacks: null, model: null, mount(_container, callbacks) { this.callbacks = callbacks; }, update(model) { this.model = model; }, presentBoundary: async () => {}, finishPresentations() {}, resetInspectionCycle() {}, zoom() {}, focus() {}, destroy() {} };
+      const port = { snapshot: () => snapshot, subscribe(listener) { listener(snapshot); return () => {}; }, subscribeAcceptedBoundary() { return () => {}; }, launch: source.launch.bind(source), resume: source.resume.bind(source), returnToMenu: source.returnToMenu.bind(source), dispatch: async () => ({ accepted: false, reason: 'REVIEW_ONLY' }), progressAiTurns: source.progressAiTurns.bind(source), restart: source.restart.bind(source), deleteStoredSave: source.deleteStoredSave.bind(source), setFastForward: source.setFastForward.bind(source), exportSafeLog: source.exportSafeLog.bind(source), exportDebugBundle: source.exportDebugBundle.bind(source) };
+      document.querySelector('#app').style.display = 'none';
+      const root = document.createElement('div'); root.id = 'revision8-industry-review'; document.body.append(root);
+      const app = new Ruleset7DomAppView(document, root, port, { boardHost: host, settingsStorage: null });
+      host.callbacks.onSelection({ kind: 'TILE', at: target });
+      const banner = document.createElement('p'); banner.className = 'revision8-review-banner'; banner.textContent = 'Revision 8 public preview · one Lumber Camp supports Sawmills in two neighboring cities'; banner.style.cssText = 'position:fixed;z-index:100;inset:0 auto auto 0;margin:0;padding:0.2rem;background:#171722'; root.prepend(banner);
+      const button = root.querySelector('[data-action="command-build_lumber_camp"]');
+      if (!button) throw new Error('Lumber Camp action missing from review fixture');
+      const actionBounds = button.getBoundingClientRect(), dockBounds = root.querySelector('.v7-selection-dock').getBoundingClientRect();
+      globalThis.__REVISION8_INDUSTRY_REVIEW__ = { app, host };
+      return { actionText: button.textContent ?? '', ariaLabel: button.getAttribute('aria-label'), banner: banner.textContent ?? '', geometry: { actionBottom: actionBounds.bottom, dockBottom: dockBounds.bottom, viewportBottom: innerHeight }, populationDeltaByCity: deltas };
+    })()`,
+  );
+  assert(
+    economy.actionText.includes("population +3 across 2 cities") &&
+      economy.ariaLabel?.includes("population +3 across 2 cities") === true &&
+      economy.geometry.actionBottom <= economy.geometry.dockBottom &&
+      economy.geometry.actionBottom <= economy.geometry.viewportBottom,
+    `Cross-city preview label mismatch: ${JSON.stringify(economy)}`,
+  );
+  await waitFor(
+    connection,
+    `document.querySelector('#revision8-industry-review [data-action="command-build_lumber_camp"]') !== null`,
+  );
+  await captureElement(
+    connection,
+    "#revision8-industry-review .v7-selection-dock",
+    "revision8-cross-city-economy-preview-desktop.png",
+  );
+  await writeFile(
+    path.join(outputRoot, "revision8-industry-evidence.json"),
+    `${JSON.stringify(
+      {
+        status: "PASS",
+        source: "PRODUCTION_DOM_SYNTHETIC_PUBLIC_BOUNDARY",
+        viewport: { width: 1440, height: 900, deviceScaleFactor: 1 },
+        industryLane,
+        technologyDetails,
+        economy,
+        screenshots: [
+          "revision8-technology-tree-overview-desktop.png",
+          "revision8-prospecting-technology-desktop.png",
+          "revision8-engineering-technology-desktop.png",
+          "revision8-metallurgy-technology-desktop.png",
+          "revision8-cross-city-economy-preview-desktop.png",
+        ],
+      },
+      null,
+      2,
+    )}\n`,
+  );
+  console.log(
+    `Ruleset-7 revision-8 Industry Chrome review passed. Evidence: ${outputRoot}`,
+  );
 }
 
 async function runAchievementReview(connection: Connection): Promise<void> {
@@ -1461,6 +1654,40 @@ async function capture(connection: Connection, name: string): Promise<void> {
   })) as { readonly data?: string };
   if (response.data === undefined)
     throw new Error("Chrome returned no screenshot");
+  await writeFile(
+    path.join(outputRoot, name),
+    Buffer.from(response.data, "base64"),
+  );
+}
+
+async function captureElement(
+  connection: Connection,
+  selector: string,
+  name: string,
+): Promise<void> {
+  await assertImagesDecoded(connection, `${selector} img`, 0, true);
+  const bounds = await evaluate<{
+    readonly left: number;
+    readonly top: number;
+    readonly width: number;
+    readonly height: number;
+  }>(
+    connection,
+    `(() => { const node=document.querySelector(${JSON.stringify(selector)}); if(!node)throw Error('Capture target missing'); const bounds=node.getBoundingClientRect(); return { left:bounds.left, top:bounds.top, width:bounds.width, height:bounds.height }; })()`,
+  );
+  const response = (await connection.send("Page.captureScreenshot", {
+    format: "png",
+    captureBeyondViewport: false,
+    clip: {
+      x: bounds.left,
+      y: bounds.top,
+      width: bounds.width,
+      height: bounds.height,
+      scale: 1,
+    },
+  })) as { readonly data?: string };
+  if (response.data === undefined)
+    throw new Error("Chrome returned no element screenshot");
   await writeFile(
     path.join(outputRoot, name),
     Buffer.from(response.data, "base64"),

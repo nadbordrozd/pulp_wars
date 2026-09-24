@@ -68,7 +68,7 @@ export function cityUnitCapacityV7(
 ): number {
   const fortified = state.players
     .find((player) => player.id === city.ownerId)
-    ?.researchedTechs.includes("FORTIFICATION");
+    ?.researchedTechs.includes("ENGINEERING");
   const result = city.level + 1 + (fortified ? 1 : 0);
   if (!Number.isSafeInteger(result)) throw new RangeError("INTEGER_OVERFLOW");
   return result;

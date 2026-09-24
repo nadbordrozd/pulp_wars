@@ -139,9 +139,15 @@ export function parseReplayFileV7(input: unknown): ReplayParseResultV7 {
   if (
     hasFormatVersion(input, "pulp-wars-replay") &&
     input.version === 7 &&
-    ["pulp-wars-poc-7", "pulp-wars-poc-7r2", "pulp-wars-poc-7r3"].some(
-      (rulesetId) => hasRulesetSetup(input, rulesetId),
-    )
+    [
+      "pulp-wars-poc-7",
+      "pulp-wars-poc-7r2",
+      "pulp-wars-poc-7r3",
+      "pulp-wars-poc-7r4",
+      "pulp-wars-poc-7r5",
+      "pulp-wars-poc-7r6",
+      "pulp-wars-poc-7r7",
+    ].some((rulesetId) => hasRulesetSetup(input, rulesetId))
   )
     return { kind: "INCOMPATIBLE_REPLAY" };
   if (

@@ -38,6 +38,7 @@ export const OBSOLETE_SAVE_STORAGE_KEYS_V7 = Object.freeze([
   "pulpWars.save.v7r4.current",
   "pulpWars.save.v7r5.current",
   "pulpWars.save.v7r6.current",
+  "pulpWars.save.v7r7.current",
 ] as const);
 
 export interface ObsoleteSaveCleanupResultV7 {
@@ -80,7 +81,7 @@ export function cleanupObsoleteRuleset7Saves(
   };
 }
 
-/** Browser-only revision-7 repository. It owns exactly the v7r7 save key. */
+/** Browser-only revision-8 repository. It owns exactly the v7r8 save key. */
 export class BrowserPersistenceV7 {
   readonly #storage: StorageAdapter;
   readonly #now: () => string;

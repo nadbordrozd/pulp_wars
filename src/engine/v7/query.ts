@@ -315,7 +315,7 @@ function appendPublicCityCommandsV7(
   if (city.ownerId !== player.id || publicCityBesieged(view, city.at)) return;
   const centerOccupied = view.units.some((unit) => same(unit.at, city.at));
   const capacity =
-    city.level + 1 + (player.researchedTechs.includes("FORTIFICATION") ? 1 : 0);
+    city.level + 1 + (player.researchedTechs.includes("ENGINEERING") ? 1 : 0);
   const assigned = view.units.filter(
     (unit) => unit.ownerId === player.id && unit.homeCityId === city.id,
   ).length;
@@ -447,7 +447,7 @@ function appendPublicUnitCommandsV7(
     candidates.push({ kind: "PROMOTE", unitId: unit.id });
   const tile = tileAtView(view, unit.at);
   if (
-    player.researchedTechs.includes("EXPLOSIVES") &&
+    player.researchedTechs.includes("METALLURGY") &&
     unit.form === "LAND" &&
     primaryReady &&
     tile?.explored === true &&
@@ -467,7 +467,7 @@ function appendPublicUnitCommandsV7(
     primaryReady &&
     unit.form === "LAND" &&
     (unit.role === "FIGHTER" || unit.role === "GUARD") &&
-    player.researchedTechs.includes("FORTIFICATION") &&
+    player.researchedTechs.includes("ENGINEERING") &&
     tile?.explored === true &&
     tile.biome !== null &&
     tile.territoryOwnerId === player.id &&
@@ -1124,8 +1124,8 @@ function publicEconomicPreviewExact(
     (candidate) => candidate.id === tile.territoryCityId,
   );
   if (city === undefined && !neutralRoad) return false;
-  // A changed improvement can propagate through connected same-city basics,
-  // processors, and adjacent same-owner buildings across city borders. Every
+  // A changed improvement can affect adjacent same-owner processors and other
+  // adjacent same-owner buildings across city borders. Every
   // tile in every owned city footprint must therefore be public before a
   // canonical reducer result can be reported as an exact public preview.
   const changesImprovementGraph =
@@ -3188,18 +3188,20 @@ function publicTileCommandLegal(
     if (kind === "BUILD_WINDMILL")
       return adjacent.some(
         (item) =>
-          item.territoryCityId === city.id && item.improvement === "FARM",
+          item.territoryOwnerId === view.viewer.id &&
+          item.improvement === "FARM",
       );
     if (kind === "BUILD_SAWMILL")
       return adjacent.some(
         (item) =>
-          item.territoryCityId === city.id &&
+          item.territoryOwnerId === view.viewer.id &&
           item.improvement === "LUMBER_CAMP",
       );
     if (kind === "BUILD_FORGE")
       return adjacent.some(
         (item) =>
-          item.territoryCityId === city.id && item.improvement === "MINE",
+          item.territoryOwnerId === view.viewer.id &&
+          item.improvement === "MINE",
       );
     if (kind === "BUILD_WORKSHOP")
       return (

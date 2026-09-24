@@ -65,7 +65,7 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
 
   it("publishes complete zero-filled command, event, tech, role, and improvement inventories", () => {
     const metrics = collectAcceptedTelemetryV7(initialV7(0), [], []);
-    expect(TECHNOLOGY_IDS_V7).toHaveLength(24);
+    expect(TECHNOLOGY_IDS_V7).toHaveLength(21);
     expect(UNIT_ROLE_IDS_V7).toHaveLength(13);
     expect(IMPROVEMENT_IDS_V7).toHaveLength(10);
     expect(Object.keys(metrics.commandsByKind)).toEqual(COMMAND_KIND_ORDER_V7);
@@ -129,7 +129,7 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
       errors: [],
       stalls: [],
       metrics: {
-        rulesetId: "pulp-wars-poc-7r7",
+        rulesetId: "pulp-wars-poc-7r8",
         commandCapHits: 1,
       },
     });

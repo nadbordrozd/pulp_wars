@@ -40,7 +40,7 @@ export function fortificationLevelForUnitV7(
   );
   let level = tile.fieldDefense ? 1 : 0;
   if (city !== undefined) {
-    if (owner.researchedTechs.includes("DRILL")) level += 1;
+    if (owner.researchedTechs.includes("PROSPECTING")) level += 1;
     if (
       city.rewards.some(
         (record) => record.reachedLevel === 3 && record.reward === "WALLS",

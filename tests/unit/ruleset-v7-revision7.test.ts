@@ -55,7 +55,7 @@ const READY: UnitStateV7["activation"] = {
 
 describe("Ruleset 7 revision 7 networks and fortifications", () => {
   it("freezes the revision identity and removes the retired systems", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r7");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r8");
     expect(setupV7().mapGenerationRevision).toBe("REGIONAL_BIOMES_NAVAL_V2");
     expect(TECHNOLOGY_IDS_V7).toContain("PROSPECTING");
     expect(TECHNOLOGY_IDS_V7).not.toContain("GRAND_WORKS");
@@ -195,7 +195,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     ).toBeGreaterThan(0);
   });
 
-  it("adds field, Drill, and Walls defense before terrain and only for the owner", () => {
+  it("adds field, city, and Walls defense before terrain and only for the owner", () => {
     const base = initialV7(43);
     const defender = required(
       base.units.find((unit) => unit.ownerId !== base.humanPlayerId),
@@ -214,7 +214,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
         player.id === defender.ownerId
           ? {
               ...player,
-              researchedTechs: ["DRILL"],
+              researchedTechs: ["PROSPECTING"],
               explored: base.board.tiles.map((tile) => tile.at),
             }
           : { ...player, explored: base.board.tiles.map((tile) => tile.at) },
@@ -915,7 +915,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     expect(parseGameStateV7(result.state)).toEqual(result.state);
   });
 
-  it("keeps Explosives required for ordinary Pillage and checks action state first", () => {
+  it("keeps Metallurgy required for ordinary Pillage and checks action state first", () => {
     const state = exploredAllV7(initialV7(79));
     const actor = state.humanPlayerId;
     const sourceBase = required(

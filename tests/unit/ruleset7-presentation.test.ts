@@ -473,9 +473,9 @@ describe("Ruleset 7 public presentation", () => {
 
   it("states all revision-4 economic formulas with their exact numbers", () => {
     expect([
-      economicFormulaV7("WINDMILL", "CONNECTED_ORTHOGONAL_CLUSTER"),
-      economicFormulaV7("SAWMILL", "CONNECTED_ORTHOGONAL_CLUSTER"),
-      economicFormulaV7("FORGE", "ADJACENT_MINES"),
+      economicFormulaV7("WINDMILL", "ADJACENT_FRIENDLY_CONTRIBUTORS"),
+      economicFormulaV7("SAWMILL", "ADJACENT_FRIENDLY_CONTRIBUTORS"),
+      economicFormulaV7("FORGE", "ADJACENT_FRIENDLY_CONTRIBUTORS"),
       economicFormulaV7("WORKSHOP", "DISTINCT_BASIC_TYPES"),
       economicFormulaV7("MARKET", "DISTINCT_ECONOMIC_FAMILIES"),
     ]).toEqual([

@@ -13,6 +13,24 @@ faction choice, a board-first match, compact economic HUD, contextual actions,
 full technology view, turn handoff, and decisive end screen—without copying
 proprietary art, text, layout coordinates, or code.
 
+## Current Ruleset 7 revision 8 overlay
+
+This overlay applies only to the current Ruleset 7 route. The Ruleset 6
+sections below remain authoritative for the unchanged Ruleset 6 route.
+
+- The current Original tree uses one visible Industry & Warfare chain:
+  `Prospecting -> Engineering -> Metallurgy`. Its detail sheets list every
+  merged unlock. Prospecting includes Ore, Mountain access and sight, Guard,
+  Spoils, and city fortification; Engineering includes Mine, Workshop,
+  Redevelop, field defense, and capacity; Metallurgy includes Forge, Heavy,
+  Breacher, and Pillage.
+- Current Windmill, Sawmill, and Forge previews use spokes to the matching
+  same-owner contributors on the eight immediately adjacent tiles. A
+  contributor assigned to another owned city may support several processors;
+  distant connected contributors do not appear.
+- A current economic action summarizes all affected cities in its passive
+  public preview, including a city count when more than one city changes.
+
 ## 0. Ruleset-6 replacement contract
 
 The responsive navigation, fixed Canvas host, map-first selection, non-modal

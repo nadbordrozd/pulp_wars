@@ -51,7 +51,6 @@ export interface EconomyGraphV7 {
 interface EconomyGraphIndexV7 {
   readonly cityById: ReadonlyMap<CityId, EconomyGraphCityV7>;
   readonly roadKeysByOwner: Map<PlayerId, ReadonlySet<string>>;
-  readonly connectedComponents: Map<string, readonly CoordV7[]>;
   readonly contributions: Map<string, SpatialContributionV7>;
 }
 
@@ -66,7 +65,6 @@ function economyGraphIndexV7(graph: EconomyGraphV7): EconomyGraphIndexV7 {
   const index: EconomyGraphIndexV7 = {
     cityById: new Map(graph.cities.map((city) => [city.id, city])),
     roadKeysByOwner: new Map(),
-    connectedComponents: new Map(),
     contributions: new Map(),
   };
   ECONOMY_GRAPH_INDEXES_V7.set(graph, index);
@@ -104,24 +102,23 @@ function calculateSpatialContributionAtV7(
   if (improvement === "LUMBER_CAMP") return fixed(1, at, improvement);
   if (improvement === "MINE") return fixed(2, at, improvement);
   if (improvement === "MONUMENT") return fixed(3, at, improvement);
-  if (improvement === "WINDMILL" || improvement === "SAWMILL") {
-    const type = improvement === "WINDMILL" ? "FARM" : "LUMBER_CAMP";
-    const contributors = connectedSameCityComponent(graph, at, city.id, type);
+  if (
+    improvement === "WINDMILL" ||
+    improvement === "SAWMILL" ||
+    improvement === "FORGE"
+  ) {
+    const type =
+      improvement === "WINDMILL"
+        ? "FARM"
+        : improvement === "SAWMILL"
+          ? "LUMBER_CAMP"
+          : "MINE";
+    const contributors = friendlyAdjacent(graph, at, city.ownerId, [type]);
+    const cap = improvement === "FORGE" ? 6 : 8;
     return result({
-      population: Math.min(8, contributors.length),
-      contributingTiles: contributors,
-      distinctTypes: contributors.length === 0 ? [] : [type],
-      placementCount: contributors.length,
-    });
-  }
-  if (improvement === "FORGE") {
-    const contributors = adjacentTilesV7(graph.board, at).filter(
-      (tile) => tile.territoryCityId === city.id && tile.improvement === "MINE",
-    );
-    return result({
-      population: Math.min(6, contributors.length),
+      population: Math.min(cap, contributors.length),
       contributingTiles: contributors.map((tile) => tile.at),
-      distinctTypes: contributors.length === 0 ? [] : ["MINE"],
+      distinctTypes: contributors.length === 0 ? [] : [type],
       placementCount: contributors.length,
     });
   }
@@ -196,39 +193,6 @@ export function isCapitalConnectedRoadV7(
   playerId: PlayerId,
 ): boolean {
   return capitalConnectedRoadKeysV7(graph, playerId).has(key(at));
-}
-
-function connectedSameCityComponent(
-  graph: EconomyGraphV7,
-  center: CoordV7,
-  cityId: CityId,
-  improvement: "FARM" | "LUMBER_CAMP",
-): readonly CoordV7[] {
-  const cacheKey = `${cityId}:${improvement}:${key(center)}`;
-  const index = economyGraphIndexV7(graph);
-  const cached = index.connectedComponents.get(cacheKey);
-  if (cached !== undefined) return cached;
-  const queue = adjacentTilesV7(graph.board, center)
-    .filter(
-      (tile) =>
-        tile.territoryCityId === cityId && tile.improvement === improvement,
-    )
-    .map((tile) => tile.at);
-  const seen = new Set<string>();
-  const result: CoordV7[] = [];
-  for (let queueIndex = 0; queueIndex < queue.length; queueIndex += 1) {
-    const at = queue[queueIndex];
-    if (at === undefined || seen.has(key(at))) continue;
-    const tile = tileAtV7(graph.board, at);
-    if (tile?.territoryCityId !== cityId || tile.improvement !== improvement)
-      continue;
-    seen.add(key(at));
-    result.push(at);
-    queue.push(...CARDINAL.map(([dx, dy]) => ({ x: at.x + dx, y: at.y + dy })));
-  }
-  const sorted = result.sort(compareCoords);
-  index.connectedComponents.set(cacheKey, sorted);
-  return sorted;
 }
 
 function friendlyAdjacent<T extends ImprovementIdV7>(

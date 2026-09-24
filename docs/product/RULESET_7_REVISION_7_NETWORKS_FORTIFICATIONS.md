@@ -1,7 +1,7 @@
 # Ruleset 7 revision 7: networks and fortifications
 
-**Status:** implemented and release validated on 2026-09-23 as the current
-playable Ruleset 7 runtime.
+**Status:** implemented and release validated on 2026-09-23; now inherited by
+the current [revision-8 overlay](RULESET_7_REVISION_8_INDUSTRY_ADJACENCY.md).
 
 **Ruleset ID:** `pulp-wars-poc-7r7`
 

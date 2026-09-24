@@ -688,7 +688,7 @@ function reconstructWaterPath(
 
 const HIDDEN_POSITION_MODIFIERS_V7 = new Set([
   "CITY_WALLS",
-  "DRILL",
+  "CITY_FORTIFICATION",
   "FIELD_DEFENSE",
   "MOUNTAIN",
   "FOREST",
@@ -815,7 +815,7 @@ function tileFortificationLevel(
     const owner = state.players.find(
       (player) => player.id === territory.ownerId,
     );
-    if (owner?.researchedTechs.includes("DRILL")) level += 1;
+    if (owner?.researchedTechs.includes("PROSPECTING")) level += 1;
     if (territory.rewards.some((reward) => reward.reward === "WALLS"))
       level += 2;
   }

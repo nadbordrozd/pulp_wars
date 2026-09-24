@@ -254,7 +254,7 @@ describe("ruleset-7 economy", () => {
     expect(JSON.stringify(preview)).not.toContain(JSON.stringify(hiddenFarm));
   });
 
-  it("calculates capped Forge output from same-city adjacent Mines", () => {
+  it("calculates capped Forge output from same-owner adjacent Mines", () => {
     const state = allTechsV7(initialV7(103));
     const city = state.cities.find(
       (item) => item.ownerId === state.humanPlayerId,

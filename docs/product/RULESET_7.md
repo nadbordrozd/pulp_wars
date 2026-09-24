@@ -1,15 +1,15 @@
 # Pulp Wars Ruleset 7
 
-**Status:** revision-7 playable runtime. The
-[revision-7 networks and fortifications specification](RULESET_7_REVISION_7_NETWORKS_FORTIFICATIONS.md)
+**Status:** revision-8 playable runtime. The
+[revision-8 merged industry and shared adjacency specification](RULESET_7_REVISION_8_INDUSTRY_ADJACENCY.md)
 is the authoritative current overlay. It inherits unchanged rules from the
-[revision-6 water and naval specification](RULESET_7_REVISION_6_WATER_NAVAL.md).
-Final release validation passed on 2026-09-23; the overlay records the evidence.
+[revision-7 networks and fortifications specification](RULESET_7_REVISION_7_NETWORKS_FORTIFICATIONS.md),
+which inherits the revision-6 water and naval specification.
 
-**Runtime ruleset ID:** `pulp-wars-poc-7r7`
+**Runtime ruleset ID:** `pulp-wars-poc-7r8`
 
 The revision-5 achievement specification remains authoritative for achievement
-and Monument rules left unchanged by revision 7. The revision-4 biome economy
+and Monument rules left unchanged by revision 8. The revision-4 biome economy
 specification remains the inherited land baseline. Ruleset 6 is unchanged.
 
 **Design history:**

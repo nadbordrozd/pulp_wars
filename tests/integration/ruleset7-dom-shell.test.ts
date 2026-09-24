@@ -302,22 +302,22 @@ describe("Ruleset 7 DOM shell", () => {
     expect(document.body.textContent).not.toContain("CANDY");
 
     requiredButton('[data-action="tech"]').click();
-    expect(document.querySelectorAll(".v7-tech-card")).toHaveLength(24);
-    expect(document.querySelectorAll(".v7-tech-edge")).toHaveLength(18);
+    expect(document.querySelectorAll(".v7-tech-card")).toHaveLength(21);
+    expect(document.querySelectorAll(".v7-tech-edge")).toHaveLength(16);
     expect(document.querySelectorAll(".v7-tech-children.is-unary").length).toBe(
-      12,
+      10,
     );
     const branchSelect = document.querySelector<HTMLSelectElement>(
       ".v7-tech-branch-select",
     );
     if (branchSelect === null) throw new Error("Branch selector missing");
-    expect(branchSelect.options).toHaveLength(6);
+    expect(branchSelect.options).toHaveLength(5);
     const headings = [
       ...document.querySelectorAll<HTMLElement>(".v7-tech-branch > h3"),
     ];
-    expect(headings).toHaveLength(6);
+    expect(headings).toHaveLength(5);
     expect(new Set(headings.map((heading) => heading.textContent)).size).toBe(
-      6,
+      5,
     );
     const lastBranch = document.querySelector<HTMLElement>(
       '[data-tech-lane="INDUSTRY_WARFARE:PROSPECTING"]',
@@ -870,10 +870,10 @@ describe("Ruleset 7 DOM shell", () => {
                       modifiers: [
                         {
                           value: { numerator: 1, denominator: 1 },
-                          source: "DRILL" as const,
-                          sourceLabel: "Drill",
+                          source: "CITY_FORTIFICATION" as const,
+                          sourceLabel: "City fortification",
                           description:
-                            "Drill adds 1 Defense on an owned city center.",
+                            "Prospecting adds 1 Defense on an owned city center.",
                         },
                       ],
                     }

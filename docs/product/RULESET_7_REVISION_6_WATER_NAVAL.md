@@ -1,9 +1,9 @@
 # Ruleset 7 revision 6: water and naval play
 
 **Status:** authoritative implemented revision-6 contract inherited by the
-current [revision-7 overlay](RULESET_7_REVISION_7_NETWORKS_FORTIFICATIONS.md).
+current [revision-8 overlay](RULESET_7_REVISION_8_INDUSTRY_ADJACENCY.md).
 Its historical runtime identity is `pulp-wars-poc-7r6`; current matches use the
-revision-7 identity, default to Continents, and expose all five map types.
+revision-8 identity, default to Continents, and expose all five map types.
 
 **Ruleset ID:** `pulp-wars-poc-7r6`
 

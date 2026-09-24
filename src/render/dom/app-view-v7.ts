@@ -1062,7 +1062,7 @@ export class Ruleset7DomAppView {
         const capacity =
           city.level +
           1 +
-          (view.viewer.researchedTechs.includes("FORTIFICATION") ? 1 : 0);
+          (view.viewer.researchedTechs.includes("ENGINEERING") ? 1 : 0);
         details.append(
           text(this.#document, "dt", "Capacity"),
           text(this.#document, "dd", `${assigned} / ${capacity}`),
@@ -1735,12 +1735,12 @@ export class Ruleset7DomAppView {
             ? "Research Scouting and explore 100 distinct tiles."
             : achievement === "ENGINEER"
               ? "Research Engineering and own one live processor producing at least 6 population."
-              : "Research Drill and own four distinct trainable unit roles at once.",
+              : "Research Prospecting and own four distinct trainable unit roles at once.",
         ),
         text(
           this.#document,
           "p",
-          `${current} / ${required} · ${entitlement?.spent ? "Spent" : entitlement?.unlocked ? "Completed" : view.viewer.researchedTechs.includes(achievement === "EXPLORER" ? "SCOUTING" : achievement === "ENGINEER" ? "ENGINEERING" : "DRILL") ? "Available" : "Locked"}`,
+          `${current} / ${required} · ${entitlement?.spent ? "Spent" : entitlement?.unlocked ? "Completed" : view.viewer.researchedTechs.includes(achievement === "EXPLORER" ? "SCOUTING" : achievement === "ENGINEER" ? "ENGINEERING" : "PROSPECTING") ? "Available" : "Locked"}`,
         ),
       );
       section.append(card);
@@ -2615,7 +2615,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r7",
+    rulesetId: "pulp-wars-poc-7r8",
     seed,
     width: draft.boardSize,
     height: draft.boardSize,
@@ -2906,7 +2906,7 @@ function abilityDescription(
     case "PUSH":
       return "A surviving adjacent defender is pushed one cell directly away when the public destination is legal.";
     case "BREACH":
-      return "Adjacent attacks ignore terrain cover; flat fortification from field defenses, Drill, and Walls still applies.";
+      return "Adjacent attacks ignore terrain cover; flat fortification from field defenses, city fortification, and Walls still applies.";
     case "DASH":
       return "May take its ordinary Move before its first Attack.";
     case "TWO_SHOTS":
@@ -2919,12 +2919,15 @@ export function economicFormulaV7(
   improvement: string,
   formula: string,
 ): string {
-  if (improvement === "WINDMILL" && formula === "CONNECTED_ORTHOGONAL_CLUSTER")
-    return "Windmill: +1 population per Farm in its touching orthogonal same-city cluster, cap 8; unsupported produces 0";
-  if (improvement === "SAWMILL" && formula === "CONNECTED_ORTHOGONAL_CLUSTER")
-    return "Sawmill: +1 population per Lumber Camp in its touching orthogonal same-city cluster, cap 8";
-  if (improvement === "FORGE" && formula === "ADJACENT_MINES")
-    return "Forge: +1 population per adjacent same-city Mine, maximum 6; placement requires at least one Mine and an unsupported Forge produces 0";
+  if (
+    improvement === "WINDMILL" &&
+    formula === "ADJACENT_FRIENDLY_CONTRIBUTORS"
+  )
+    return "Windmill: +1 population per adjacent same-owner Farm, including other cities, cap 8; unsupported produces 0";
+  if (improvement === "SAWMILL" && formula === "ADJACENT_FRIENDLY_CONTRIBUTORS")
+    return "Sawmill: +1 population per adjacent same-owner Lumber Camp, including other cities, cap 8";
+  if (improvement === "FORGE" && formula === "ADJACENT_FRIENDLY_CONTRIBUTORS")
+    return "Forge: +1 population per adjacent same-owner Mine, including other cities, maximum 6; placement requires at least one Mine and an unsupported Forge produces 0";
   if (improvement === "WORKSHOP" && formula === "DISTINCT_BASIC_TYPES")
     return "Workshop: 0 with no adjacent Farm, Camp, or Mine; otherwise +1 plus the number of distinct adjacent types, cap 4 population";
   return "Market: +1 recurring Coin per adjacent Agriculture, Timber, or Metal family, including inactive processors, plus +1 for an adjacent usable capital-connected owned or neutral Road; cap 4";
@@ -2972,7 +2975,7 @@ export function specialBoundaryNoticeV7(
 function techAchievementV7(tech: TechnologyIdV7): AchievementIdV7 | null {
   if (tech === "SCOUTING") return "EXPLORER";
   if (tech === "ENGINEERING") return "ENGINEER";
-  if (tech === "DRILL") return "MUSTER";
+  if (tech === "PROSPECTING") return "MUSTER";
   return null;
 }
 function rewardLabel(reward: string, level: number): string {
@@ -3001,11 +3004,14 @@ function economicPreviewLabelV7(preview: EconomicPreviewV7): string {
     (total, change) => total + change.delta,
     0,
   );
+  const changedPopulationCities = preview.populationDeltaByCity.filter(
+    (change) => change.delta !== 0,
+  ).length;
   const details = [
     `${preview.cost} Coins`,
     population === 0
       ? null
-      : `population ${population > 0 ? "+" : ""}${population}`,
+      : `population ${population > 0 ? "+" : ""}${population}${changedPopulationCities > 1 ? ` across ${changedPopulationCities} cities` : ""}`,
     income === 0 ? null : `income ${income > 0 ? "+" : ""}${income}`,
   ].filter((detail): detail is string => detail !== null);
   return details.join(" · ");

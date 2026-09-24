@@ -32,18 +32,38 @@ describe("ruleset-7 late public query performance", () => {
     const commands = queryPlayerCommandsV7(view);
     const elapsed = performance.now() - started;
 
-    expect(commands).toHaveLength(67);
+    expect(commands).toHaveLength(76);
     expect(canonicalHash(commands)).toBe(
-      "19cec22393419b429208dcb44d473e7efac4e98f8411adff65d4fa078b5a4f0c",
+      "80e8dd25e43a7a6cda5ebded73675123bc2f2842dbcb4b07a7f9a9d2182c3ec0",
     );
+    expect(
+      commands.flatMap((command) =>
+        command.kind === "BUILD_FIELD_DEFENSE" ? [command.unitId] : [],
+      ),
+    ).toEqual([31, 32, 33]);
+    expect(
+      commands.flatMap((command) =>
+        command.kind === "TRAIN" && command.cityId === cityId(9)
+          ? [command.role]
+          : [],
+      ),
+    ).toEqual(["FIGHTER", "GUARD", "HEAVY", "BREACHER"]);
+    expect(
+      commands.flatMap((command) =>
+        command.kind === "TRAIN" && command.role === "BREACHER"
+          ? [command.cityId]
+          : [],
+      ),
+    ).toEqual([cityId(3), cityId(9), cityId(16)]);
+    expect(commands.filter(isRevision8MergedUnlockCommand)).toHaveLength(9);
     expect(commands.filter(isNavalExpansionCommand)).toEqual([
       { kind: "RESEARCH", tech: "SHORECRAFT" },
     ]);
     expect(canonicalHash(commands.filter(isRetainedLandCommand))).toBe(
-      "dd6c8c51f344ad82d4af74c711d832633430c86cea0e1c1ff10e2d1127aea2fe",
+      "9c4720a9819d396bb9c66490e49b8070fea5ca6b9702ecbb01c5cc53ea31b0c7",
     );
     expect(canonicalHash(queryAiReadyCommandsV7(view))).toBe(
-      "15a48be96f5fd643fe78658c60ff6a2f4e8f814f47e8e58439eeae174e168642",
+      "27d9d49d9b60717d7b4f367afe353df480fcbc70cd4a08c0176bca16fd98223d",
     );
     expect(
       canonicalHash(
@@ -52,7 +72,7 @@ describe("ruleset-7 late public query performance", () => {
           result: previewEconomicV7(view, command),
         })),
       ),
-    ).toBe("04e6cc980d8a0c9d45b362ebeb965879180df361051ffb61e876c03ab371cb85");
+    ).toBe("7683b41e37d40306f4ca8c848a612ac5ab57e69d89d3bfcb1b0bab21c7e536b9");
     expect(
       canonicalHash(
         commands.filter(isRetainedLandCommand).map((command) => ({
@@ -60,7 +80,7 @@ describe("ruleset-7 late public query performance", () => {
           result: previewEconomicV7(view, command),
         })),
       ),
-    ).toBe("bf164e81d7016f1a5460ebfbddec7e637c017c34eaf1bd7ea2843a77dcaebafb");
+    ).toBe("a3393e56a3cbb11a026368b7fa9dc19ee9c08ac57f2aa9eb98eff0f2df4fb183");
     expect(elapsed).toBeLessThan(250);
 
     const incrementalView = structuredClone(RETAINED_VIEW);
@@ -158,8 +178,13 @@ describe("ruleset-7 late public query performance", () => {
         "c9e77b4d46b2725afeffeec03d70d6699655a8ce6def19953c6644ba57430467",
       );
       expect(canonicalHash(leftResult.scores)).toBe(
-        "c5303e12084ada78dde6681bb26efd494e477819233e06ab9f8d3edddffcfdd4",
+        "c95320c980edc7bde7ba91cb71c68127723ddfe491540fe0113f28dc0d1b40a8",
       );
+      const revision8Scores = leftResult.scores.filter(({ command }) =>
+        isRevision8MergedUnlockCommand(command),
+      );
+      expect(revision8Scores).toHaveLength(9);
+      expect(revision8Scores.every(({ score }) => score === 0)).toBe(true);
       expect(
         canonicalHash(
           leftResult.scores.filter(({ command }) =>
@@ -167,7 +192,7 @@ describe("ruleset-7 late public query performance", () => {
           ),
         ),
       ).toBe(
-        "c09f302cb314595aea7a581f549f862474e9d561365f71a15ab1061a6f200dfc",
+        "be14cac3f2bf5d280f4766a35989a5e359a515e30575eba80f16ed89c3446bca",
       );
       expect(queryPublicEconomicPotentialsV7(leftView)).toBe(
         leftResult.potentials,
@@ -228,7 +253,7 @@ describe("ruleset-7 late public query performance", () => {
   it("keys movement preparation to the exact changed public view", () => {
     const original = structuredClone(RETAINED_VIEW);
     expect(canonicalHash(queryPlayerCommandsV7(original))).toBe(
-      "19cec22393419b429208dcb44d473e7efac4e98f8411adff65d4fa078b5a4f0c",
+      "80e8dd25e43a7a6cda5ebded73675123bc2f2842dbcb4b07a7f9a9d2182c3ec0",
     );
     const firstMove = required(
       queryPlayerCommandsV7(original).find(
@@ -252,10 +277,10 @@ describe("ruleset-7 late public query performance", () => {
       canonicalHash(queryPlayerCommandsV7(structuredClone(changed))),
     );
     expect(canonicalHash(changedCommands)).toBe(
-      "a7aa70fb3a3d37592a9d3bf7acf6cac0a16f037ee276c65757c6efc781e3cb89",
+      "b1b1d4fbccf2d208b70592489aac3558331ffed138395e7c8fac978388c95b47",
     );
     expect(canonicalHash(changedCommands.filter(isRetainedLandCommand))).toBe(
-      "369dc16a1cd0427282cef07868161c7e81b3612aead953371cd9f2aed70e9b66",
+      "a83c4c714194335ca49fc679c6029a953c5380f27ae7b04bfa24b03e64f3f816",
     );
   });
 
@@ -275,7 +300,10 @@ describe("ruleset-7 late public query performance", () => {
         spatialContributionAtV7(placed, target, improvement),
       );
     }
-    expect(spatialContributionAtV7(graph, target, "FORGE").population).toBe(0);
+    expect(spatialContributionAtV7(graph, target, "FORGE")).toMatchObject({
+      population: 1,
+      contributingTiles: [{ x: 1, y: 3 }],
+    });
     expect(
       spatialContributionAtV7(graph, target, "WORKSHOP").distinctTypes,
     ).toEqual(["FARM", "MINE"]);
@@ -443,4 +471,14 @@ function isRetainedLandCommand(
   command: ReturnType<typeof queryPlayerCommandsV7>[number],
 ): boolean {
   return !isNavalExpansionCommand(command);
+}
+
+function isRevision8MergedUnlockCommand(
+  command: ReturnType<typeof queryPlayerCommandsV7>[number],
+): boolean {
+  if (command.kind === "BUILD_FIELD_DEFENSE") return true;
+  return (
+    command.kind === "TRAIN" &&
+    (command.cityId === cityId(9) || command.role === "BREACHER")
+  );
 }

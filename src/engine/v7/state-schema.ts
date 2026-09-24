@@ -88,8 +88,6 @@ const PREREQUISITE: Readonly<Partial<Record<TechnologyIdV7, TechnologyIdV7>>> =
     COMMERCE: "ROADS",
     RAIDING: "SCOUTING",
     MOUNTED_ARCHERY: "RAIDING",
-    FORTIFICATION: "DRILL",
-    EXPLOSIVES: "FORTIFICATION",
     ENGINEERING: "PROSPECTING",
     METALLURGY: "ENGINEERING",
     NAVIGATION: "SHORECRAFT",
@@ -404,7 +402,7 @@ function parsePlayer(input: unknown): PlayerStateV7 | null {
             ? "SCOUTING"
             : entitlement.achievement === "ENGINEER"
               ? "ENGINEERING"
-              : "DRILL",
+              : "PROSPECTING",
         ),
     ) ||
     researched.some((tech) => {
@@ -1212,14 +1210,14 @@ function hasRewardPlacement(
   units: readonly UnitStateV7[],
   city: CityStateV7,
 ): boolean {
-  const engineered = players
+  const prospecting = players
     .find((player) => player.id === city.ownerId)
-    ?.researchedTechs.includes("ENGINEERING");
+    ?.researchedTechs.includes("PROSPECTING");
   return board.tiles.some(
     (tile) =>
       tile.territoryCityId === city.id &&
       tile.biome !== null &&
-      (tile.terrain !== "MOUNTAIN" || engineered) &&
+      (tile.terrain !== "MOUNTAIN" || prospecting) &&
       !units.some((unit) => unit.hp > 0 && sameCoordV7(unit.at, tile.at)),
   );
 }

@@ -6,6 +6,14 @@ remain canonical. `createPublicPlanningWorkV7` is the responsive equivalent for
 callers that need all economic potentials and many spatial scores on a mature
 view.
 
+Revision 8 keeps that boundary while changing processor reach. Windmill,
+Sawmill, and Forge inspect the eight neighboring public tiles and accept
+matching contributors assigned to any city owned by the viewer. A one-tile
+mutation can change processor output in several owned cities, so exact previews
+and placement scores aggregate every affected city. When any owned footprint
+needed to prove that result is incomplete, the public preview remains
+conservative rather than consulting authority state.
+
 Revision-6 naval planning follows the same boundary. Public land components,
 known land objectives, prospective Port cells, and shallow/deep water distance
 fields advance as bounded `NormalPolicyWorkV7` operations. Routes exclude

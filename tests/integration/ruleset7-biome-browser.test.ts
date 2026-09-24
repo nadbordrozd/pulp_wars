@@ -6,7 +6,7 @@ import {
 import { SAVE_STORAGE_KEY_V7 } from "../../src/engine/index";
 
 describe("ruleset-7 current browser boundary", () => {
-  it("owns r7 and removes only the six named development keys", () => {
+  it("owns r8 and removes only the seven named development keys", () => {
     const values = new Map<string, string>([
       ...OBSOLETE_SAVE_STORAGE_KEYS_V7.map((key) => [key, "old"] as const),
       [SAVE_STORAGE_KEY_V7, "current"],
@@ -19,7 +19,7 @@ describe("ruleset-7 current browser boundary", () => {
       setItem: (key: string, value: string) => void values.set(key, value),
       removeItem: (key: string) => void values.delete(key),
     };
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r7.current");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r8.current");
     expect(cleanupObsoleteRuleset7Saves(storage).removedKeys).toEqual(
       OBSOLETE_SAVE_STORAGE_KEYS_V7,
     );
@@ -27,9 +27,10 @@ describe("ruleset-7 current browser boundary", () => {
       [
         "other",
         "pulpWars.save.current",
-        "pulpWars.save.v7r7.current",
+        SAVE_STORAGE_KEY_V7,
         "pulpWars.settings.v1",
       ].sort(),
     );
+    expect(values.get(SAVE_STORAGE_KEY_V7)).toBe("current");
   });
 });

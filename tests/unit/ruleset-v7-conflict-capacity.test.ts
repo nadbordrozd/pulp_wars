@@ -17,7 +17,7 @@ import {
 } from "../fixtures/v7-builders";
 
 describe("ruleset-7 conflict economy and capacity", () => {
-  it("gives every owned city exactly one Fortification capacity", () => {
+  it("gives every owned city exactly one Engineering capacity", () => {
     const state = allTechsV7(initialV7());
     const city = state.cities.find(
       (candidate) => candidate.ownerId === state.humanPlayerId,

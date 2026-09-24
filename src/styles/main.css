@@ -976,6 +976,15 @@
 
 .v7-tech-detail-group {
   grid-column: 2;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.v7-tech-detail-group > ul,
+.v7-tech-detail-group li {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .v7-live:empty,

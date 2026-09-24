@@ -58,8 +58,7 @@ export type TechnologyUnlockV7 =
       readonly kind: "ECONOMIC_FORMULA";
       readonly improvement: ImprovementIdV7;
       readonly formula:
-        | "CONNECTED_ORTHOGONAL_CLUSTER"
-        | "ADJACENT_MINES"
+        | "ADJACENT_FRIENDLY_CONTRIBUTORS"
         | "DISTINCT_BASIC_TYPES"
         | "DISTINCT_ECONOMIC_FAMILIES";
     }
@@ -315,7 +314,7 @@ export const ORIGINAL_BASELINE_V4_NODES = deepFreeze([
       {
         kind: "ECONOMIC_FORMULA",
         improvement: "WINDMILL",
-        formula: "CONNECTED_ORTHOGONAL_CLUSTER",
+        formula: "ADJACENT_FRIENDLY_CONTRIBUTORS",
       },
     ],
   ),
@@ -361,7 +360,7 @@ export const ORIGINAL_BASELINE_V4_NODES = deepFreeze([
       {
         kind: "ECONOMIC_FORMULA",
         improvement: "SAWMILL",
-        formula: "CONNECTED_ORTHOGONAL_CLUSTER",
+        formula: "ADJACENT_FRIENDLY_CONTRIBUTORS",
       },
       { kind: "UNIT_ROLE", role: "CATAPULT" },
     ],
@@ -438,37 +437,6 @@ export const ORIGINAL_BASELINE_V4_NODES = deepFreeze([
     [{ kind: "UNIT_ROLE", role: "HORSE_ARCHER" }],
   ),
   node(
-    "DRILL",
-    "INDUSTRY_WARFARE",
-    1,
-    [],
-    [
-      { kind: "UNIT_ROLE", role: "GUARD" },
-      { kind: "FIRST_HOSTILE_CAPTURE_SPOILS", coins: 2 },
-      { kind: "OWNED_CITY_FORTIFICATION_LEVEL", level: 1 },
-    ],
-  ),
-  node(
-    "FORTIFICATION",
-    "INDUSTRY_WARFARE",
-    2,
-    ["DRILL"],
-    [
-      { kind: "COMMAND", command: "BUILD_FIELD_DEFENSE" },
-      { kind: "OWNED_CITY_CAPACITY_BONUS", capacity: 1 },
-    ],
-  ),
-  node(
-    "EXPLOSIVES",
-    "INDUSTRY_WARFARE",
-    3,
-    ["FORTIFICATION"],
-    [
-      { kind: "UNIT_ROLE", role: "BREACHER" },
-      { kind: "COMMAND", command: "PILLAGE" },
-    ],
-  ),
-  node(
     "PROSPECTING",
     "INDUSTRY_WARFARE",
     1,
@@ -477,6 +445,9 @@ export const ORIGINAL_BASELINE_V4_NODES = deepFreeze([
       { kind: "RESOURCE_REVEAL", resources: ["ORE"] },
       { kind: "MOUNTAIN_MOVEMENT" },
       { kind: "HIGH_GROUND_VISION", radiusBonus: 1 },
+      { kind: "UNIT_ROLE", role: "GUARD" },
+      { kind: "FIRST_HOSTILE_CAPTURE_SPOILS", coins: 2 },
+      { kind: "OWNED_CITY_FORTIFICATION_LEVEL", level: 1 },
     ],
   ),
   node(
@@ -488,6 +459,8 @@ export const ORIGINAL_BASELINE_V4_NODES = deepFreeze([
       { kind: "COMMAND", command: "BUILD_MINE" },
       { kind: "COMMAND", command: "BUILD_WORKSHOP" },
       { kind: "COMMAND", command: "REDEVELOP" },
+      { kind: "COMMAND", command: "BUILD_FIELD_DEFENSE" },
+      { kind: "OWNED_CITY_CAPACITY_BONUS", capacity: 1 },
       {
         kind: "ECONOMIC_FORMULA",
         improvement: "WORKSHOP",
@@ -505,9 +478,11 @@ export const ORIGINAL_BASELINE_V4_NODES = deepFreeze([
       {
         kind: "ECONOMIC_FORMULA",
         improvement: "FORGE",
-        formula: "ADJACENT_MINES",
+        formula: "ADJACENT_FRIENDLY_CONTRIBUTORS",
       },
       { kind: "UNIT_ROLE", role: "HEAVY" },
+      { kind: "UNIT_ROLE", role: "BREACHER" },
+      { kind: "COMMAND", command: "PILLAGE" },
     ],
   ),
   node(
@@ -593,7 +568,7 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     range: 1,
     minimumRange: 1,
     sightRadius: 1,
-    technology: "DRILL",
+    technology: "PROSPECTING",
     mayUsePrimaryActionAfterMove: false,
     abilities: ["ATTACK", "CAPTURE"],
   }),
@@ -683,7 +658,7 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     range: 1,
     minimumRange: 1,
     sightRadius: 1,
-    technology: "EXPLOSIVES",
+    technology: "METALLURGY",
     mayUsePrimaryActionAfterMove: false,
     abilities: ["ATTACK", "BREACH"],
   }),
