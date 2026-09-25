@@ -11,6 +11,16 @@ export interface SupportFeedbackV7 {
   readonly progress: number;
 }
 
+export interface WindmillHealingFeedbackV7 {
+  readonly phase: "SOURCES" | "RECIPIENTS";
+  readonly sources: readonly CoordV7[];
+  readonly recipients: readonly {
+    readonly unitId: number;
+    readonly at: CoordV7;
+  }[];
+  readonly progress: number;
+}
+
 /** Draws the short support cue on its own overlay, without repainting the board. */
 export function drawSupportFeedbackV7(
   context: CanvasRenderingContext2D,
@@ -27,6 +37,56 @@ export function drawSupportFeedbackV7(
     if (feedback.effect === "RALLY")
       drawRally(context, center, camera.zoom, progress, fade, actor);
     else drawTend(context, center, camera.zoom, progress, fade, actor);
+  }
+}
+
+/** Draws a fixed-duration source-to-recipient Windmill cue on the effects canvas. */
+export function drawWindmillHealingFeedbackV7(
+  context: CanvasRenderingContext2D,
+  camera: CameraState,
+  feedback: WindmillHealingFeedbackV7,
+  reducedMotion: boolean,
+): void {
+  const progress = reducedMotion ? 0.5 : feedback.progress;
+  const fade = reducedMotion ? 0.82 : Math.sin(Math.PI * progress);
+  const targets =
+    feedback.phase === "SOURCES"
+      ? feedback.sources
+      : feedback.recipients.map((recipient) => recipient.at);
+  for (const at of targets) {
+    const center = worldToScreen(projectGrid(at), camera);
+    const radius =
+      (feedback.phase === "SOURCES" ? 30 : 24) * camera.zoom +
+      (reducedMotion ? 0 : progress * 10 * camera.zoom);
+    context.save();
+    context.globalAlpha = fade;
+    context.strokeStyle = feedback.phase === "SOURCES" ? "#ffe17a" : "#67e5ca";
+    context.lineWidth = Math.max(2, 3 * camera.zoom);
+    context.beginPath();
+    context.arc(center.x, center.y - 5 * camera.zoom, radius, 0, Math.PI * 2);
+    context.stroke();
+    if (feedback.phase === "SOURCES") {
+      const rotation = reducedMotion ? 0 : progress * Math.PI * 1.5;
+      for (let arm = 0; arm < 4; arm += 1) {
+        const angle = rotation + arm * (Math.PI / 2);
+        context.beginPath();
+        context.moveTo(center.x, center.y - 5 * camera.zoom);
+        context.lineTo(
+          center.x + Math.cos(angle) * radius * 0.72,
+          center.y - 5 * camera.zoom + Math.sin(angle) * radius * 0.72,
+        );
+        context.stroke();
+      }
+    } else {
+      const arm = 7 * camera.zoom;
+      context.beginPath();
+      context.moveTo(center.x - arm, center.y - 5 * camera.zoom);
+      context.lineTo(center.x + arm, center.y - 5 * camera.zoom);
+      context.moveTo(center.x, center.y - 5 * camera.zoom - arm);
+      context.lineTo(center.x, center.y - 5 * camera.zoom + arm);
+      context.stroke();
+    }
+    context.restore();
   }
 }
 

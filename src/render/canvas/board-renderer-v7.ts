@@ -2,6 +2,7 @@ import { ACCEPTED_ART_URLS } from "../../assets/generated-art-manifest";
 import {
   RULESET7_IMPROVEMENT_ART_IDS,
   RULESET7_FARM_ART_IDS,
+  RULESET7_RESOURCE_ART_IDS,
   resourceMapArtIdV7,
   RULESET7_UNIT_ART_IDS,
 } from "../../assets/ruleset7-ui-art";
@@ -16,6 +17,7 @@ import {
   RULESET6_UNIT_ART_GEOMETRY,
   RULESET7_CAPTAIN_ART_GEOMETRY,
   RULESET7_KNIGHT_ART_GEOMETRY,
+  RULESET7_LOGISTICS_ART_GEOMETRY,
   RULESET7_NAVAL_ART_GEOMETRY,
   SETTLEMENT_ART_GEOMETRY,
   SQUARE_ART_GEOMETRY,
@@ -1733,7 +1735,10 @@ function geometryFor(entry: BoardRenderPlanEntryV7): SourceGeometry {
     return entry.assetId?.includes("grass") || entry.assetId?.includes("water")
       ? SQUARE_ART_GEOMETRY.ground
       : SQUARE_ART_GEOMETRY.tallTerrain;
-  if (entry.kind === "RESOURCE") return SQUARE_ART_GEOMETRY.resource;
+  if (entry.kind === "RESOURCE")
+    return entry.assetId === RULESET7_RESOURCE_ART_IDS.FISH
+      ? RULESET7_LOGISTICS_ART_GEOMETRY.fish
+      : SQUARE_ART_GEOMETRY.resource;
   if (entry.kind === "ROAD") return SQUARE_ART_GEOMETRY.ground;
   if (entry.kind === "TREASURE") return SQUARE_ART_GEOMETRY.treasure;
   if (entry.kind === "SITE") return SETTLEMENT_ART_GEOMETRY.village;
@@ -1768,7 +1773,7 @@ function geometryFor(entry: BoardRenderPlanEntryV7): SourceGeometry {
     if (entry.assetId === RULESET7_IMPROVEMENT_ART_IDS.SAWMILL)
       return SQUARE_ART_GEOMETRY.sawmill;
     if (entry.assetId === RULESET7_IMPROVEMENT_ART_IDS.PORT)
-      return SQUARE_ART_GEOMETRY.processor;
+      return RULESET7_LOGISTICS_ART_GEOMETRY.port;
     if (entry.assetId === RULESET7_IMPROVEMENT_ART_IDS.SHIPYARD)
       return SQUARE_ART_GEOMETRY.processor;
     if (

@@ -3,6 +3,7 @@ import {
   TECHNOLOGY_IDS_V7,
   applyCommandV7,
   cityIncomeV7,
+  marketIncomeForCityV7,
   previewEconomicV7,
   queryAiReadyCommandsV7,
   queryPlayerCommandsV7,
@@ -30,48 +31,103 @@ describe("ruleset-7 pure public economy", () => {
       base.cities.find((city) => city.ownerId === base.humanPlayerId),
       "capital missing",
     );
-    const target = { x: 5, y: 4 };
-    const state = {
+    const target = { x: 2, y: 7 };
+    const contributors = [
+      { at: { x: 1, y: 7 }, improvement: "FARM" as const, amount: 2 },
+      {
+        at: { x: 1, y: 8 },
+        improvement: "LUMBER_CAMP" as const,
+        amount: 1,
+      },
+      { at: { x: 3, y: 7 }, improvement: "MINE" as const, amount: 2 },
+    ];
+    const state = checkedV7({
       ...base,
       cities: base.cities.map((city) =>
-        city.id === capital.id ? { ...city, at: { x: 5, y: 5 } } : city,
+        city.id === capital.id
+          ? {
+              ...city,
+              level: 3,
+              economicPopulation: 5,
+              population: 0,
+              rewards: [
+                { reachedLevel: 2, reward: "SURVEY" as const },
+                { reachedLevel: 3, reward: "WALLS" as const },
+              ],
+            }
+          : city,
       ),
-      units: [],
+      nextEntityId: (base.nextEntityId +
+        contributors.length) as GameStateV7["nextEntityId"],
+      populationContributions: contributors.map((contributor, index) => ({
+        id: (base.nextEntityId + index) as GameStateV7["nextEntityId"],
+        cityId: capital.id,
+        category: "LIVE" as const,
+        amount: contributor.amount,
+        source: {
+          kind: "IMPROVEMENT" as const,
+          improvement: contributor.improvement,
+          at: contributor.at,
+        },
+      })),
       board: {
         ...base.board,
-        tiles: base.board.tiles.map((tile) => ({
-          ...tile,
-          terrain: "GRASS" as const,
-          resource: null,
-          site:
-            tile.at.x === 5 && tile.at.y === 5 ? ("CAPITAL" as const) : null,
-          territoryCityId: capital.id,
-          road: false,
-          improvement:
-            tile.at.x === 4 && tile.at.y === 4
-              ? ("FARM" as const)
-              : tile.at.x === 6 && tile.at.y === 4
-                ? ("MINE" as const)
-                : null,
-        })),
+        tiles: base.board.tiles.map((tile) => {
+          const contributor = contributors.find((item) =>
+            same(item.at, tile.at),
+          );
+          if (contributor !== undefined)
+            return {
+              ...tile,
+              terrain:
+                contributor.improvement === "MINE"
+                  ? ("MOUNTAIN" as const)
+                  : contributor.improvement === "LUMBER_CAMP"
+                    ? ("FOREST" as const)
+                    : ("GRASS" as const),
+              resource: null,
+              improvement: contributor.improvement,
+            };
+          return same(tile.at, target)
+            ? {
+                ...tile,
+                terrain: "GRASS" as const,
+                resource: null,
+                improvement: null,
+              }
+            : tile;
+        }),
       },
-    };
+    });
     const view = viewForV7(state, base.humanPlayerId);
     const preview = previewEconomicV7(view, {
       kind: "BUILD_MARKET",
       at: target,
     });
     expect(spatialContributionAtV7(state, target, "MARKET")).toMatchObject({
-      marketIncome: 3,
+      marketIncome: 4,
       capitalRoadConnected: false,
     });
     expect(preview).toMatchObject({
       ok: true,
       preview: {
         capitalRoadConnected: true,
-        coinIncomeDeltaByCity: [{ cityId: capital.id, delta: 3 }],
+        coinIncomeDeltaByCity: [{ cityId: capital.id, delta: 8 }],
       },
     });
+    const result = applyCommandV7(state, base.humanPlayerId, {
+      kind: "BUILD_MARKET",
+      at: target,
+    });
+    if (!result.accepted) throw new Error(JSON.stringify(result.error));
+    expect(result.accepted).toBe(true);
+    expect(
+      result.events.find((event) => event.kind === "ECONOMIC_BUILDING_BUILT"),
+    ).toMatchObject({
+      improvement: "MARKET",
+      marketIncome: 8,
+    });
+    expect(marketIncomeForCityV7(result.state, capital)).toBe(8);
   });
 
   it("routes authoritative compatibility calls through the same PlayerView calculation", () => {
@@ -282,9 +338,9 @@ describe("ruleset-7 pure public economy", () => {
     }
   });
 
-  it("keeps hidden Ore and empty Mountains equivalent until Engineering", () => {
+  it("keeps hidden Ore and empty Mountains equivalent until Drill", () => {
     const staged = farmPreviewState(7_294);
-    const basicTechs = new Set(["GATHERING", "FARMING", "MILLING", "DRILL"]);
+    const basicTechs = new Set(["GATHERING", "FARMING", "MILLING"]);
     const beforeFarm = checkedV7({
       ...staged.state,
       players: staged.state.players.map((player) =>
@@ -330,7 +386,10 @@ describe("ruleset-7 pure public economy", () => {
       ),
       "windmill target missing",
     ).at;
-    const mountain = (resource: "ORE" | null, prospecting: boolean) =>
+    const mountain = (
+      resource: "ORE" | null,
+      technologyStage: "PRE_DRILL" | "DRILL" | "ENGINEERING" | "EXPLOSIVES",
+    ) =>
       checkedV7({
         ...withFarm,
         treasureChests: withFarm.treasureChests.filter(
@@ -341,9 +400,13 @@ describe("ruleset-7 pure public economy", () => {
             ? {
                 ...player,
                 researchedTechs: TECHNOLOGY_IDS_V7.filter(
-                  (technology) =>
-                    basicTechs.has(technology) ||
-                    (prospecting && technology === "ENGINEERING"),
+                  (tech) =>
+                    basicTechs.has(tech) ||
+                    (technologyStage !== "PRE_DRILL" && tech === "DRILL") ||
+                    (technologyStage === "ENGINEERING" &&
+                      tech === "ENGINEERING") ||
+                    (technologyStage === "EXPLOSIVES" &&
+                      (tech === "FORTIFICATION" || tech === "EXPLOSIVES")),
                 ),
               }
             : player,
@@ -362,47 +425,103 @@ describe("ruleset-7 pure public economy", () => {
           ),
         },
       });
-    const hiddenOre = mountain("ORE", false);
-    const hiddenEmpty = mountain(null, false);
+    const hiddenOre = mountain("ORE", "PRE_DRILL");
+    const hiddenEmpty = mountain(null, "PRE_DRILL");
     const command = { kind: "BUILD_WINDMILL", at: target } as const;
     const hiddenViews = [hiddenOre, hiddenEmpty].map((state) =>
       viewForV7(state, state.humanPlayerId),
     );
     expect(JSON.stringify(hiddenViews[0])).toBe(JSON.stringify(hiddenViews[1]));
-    for (let index = 0; index < hiddenViews.length; index += 1) {
-      const view = required(hiddenViews[index], "hidden view missing");
+    for (const state of [hiddenOre, hiddenEmpty]) {
+      const view = viewForV7(state, state.humanPlayerId);
       expect(queryPlayerCommandsV7(view)).not.toContainEqual(command);
       expect(previewEconomicV7(view, command)).toEqual({
         ok: false,
         error: "NOT_OFFERED",
       });
-      expect(
-        applyCommandV7(
-          required([hiddenOre, hiddenEmpty][index], "hidden state missing"),
-          hiddenOre.humanPlayerId,
-          command,
-        ),
-      ).toMatchObject({
-        accepted: false,
-        error: { code: "TECH_REQUIRED", params: { tech: "ENGINEERING" } },
-      });
+      expect(applyCommandV7(state, state.humanPlayerId, command)).toMatchObject(
+        {
+          accepted: false,
+          error: { code: "TECH_REQUIRED", params: { tech: "ENGINEERING" } },
+        },
+      );
     }
 
-    const revealedEmpty = mountain(null, true);
-    const revealedView = viewForV7(revealedEmpty, revealedEmpty.humanPlayerId);
-    expect(queryPlayerCommandsV7(revealedView)).toContainEqual(command);
-    expect(previewEconomicV7(revealedView, command).ok).toBe(true);
+    const drillEmpty = mountain(null, "DRILL");
+    const drillOre = mountain("ORE", "DRILL");
     expect(
-      applyCommandV7(revealedEmpty, revealedEmpty.humanPlayerId, command)
+      tileInView(viewForV7(drillEmpty, drillEmpty.humanPlayerId), target),
+    ).toMatchObject({ resource: null });
+    expect(
+      tileInView(viewForV7(drillOre, drillOre.humanPlayerId), target),
+    ).toMatchObject({ resource: "ORE" });
+    for (const state of [drillEmpty, drillOre]) {
+      expect(
+        queryPlayerCommandsV7(viewForV7(state, state.humanPlayerId)),
+      ).not.toContainEqual(command);
+      expect(applyCommandV7(state, state.humanPlayerId, command)).toMatchObject(
+        {
+          accepted: false,
+          error: { code: "TECH_REQUIRED", params: { tech: "ENGINEERING" } },
+        },
+      );
+    }
+
+    const engineeringEmpty = mountain(null, "ENGINEERING");
+    expect(
+      queryPlayerCommandsV7(
+        viewForV7(engineeringEmpty, engineeringEmpty.humanPlayerId),
+      ),
+    ).toContainEqual(command);
+    expect(
+      applyCommandV7(engineeringEmpty, engineeringEmpty.humanPlayerId, command)
         .accepted,
     ).toBe(true);
-
-    const revealedOre = mountain("ORE", true);
+    const engineeringOre = mountain("ORE", "ENGINEERING");
     expect(
-      queryPlayerCommandsV7(viewForV7(revealedOre, revealedOre.humanPlayerId)),
+      queryPlayerCommandsV7(
+        viewForV7(engineeringOre, engineeringOre.humanPlayerId),
+      ),
     ).not.toContainEqual(command);
     expect(
-      applyCommandV7(revealedOre, revealedOre.humanPlayerId, command),
+      applyCommandV7(engineeringOre, engineeringOre.humanPlayerId, command),
+    ).toMatchObject({ accepted: false, error: { code: "INVALID_TILE" } });
+
+    const blast = { kind: "BLAST_MOUNTAIN", at: target } as const;
+    const explosivesEmpty = mountain(null, "EXPLOSIVES");
+    const explosivesView = viewForV7(
+      explosivesEmpty,
+      explosivesEmpty.humanPlayerId,
+    );
+    expect(explosivesView.viewer.researchedTechs).not.toContain("ENGINEERING");
+    expect(queryPlayerCommandsV7(explosivesView)).toContainEqual(blast);
+    expect(previewEconomicV7(explosivesView, blast)).toMatchObject({
+      ok: true,
+      preview: { cost: 3 },
+    });
+    const blasted = applyCommandV7(
+      explosivesEmpty,
+      explosivesEmpty.humanPlayerId,
+      blast,
+    );
+    expect(blasted.accepted).toBe(true);
+    if (!blasted.accepted) return;
+    expect(
+      blasted.state.board.tiles.find((tile) => same(tile.at, target)),
+    ).toMatchObject({ terrain: "GRASS", resource: null });
+
+    const explosivesOre = mountain("ORE", "EXPLOSIVES");
+    const explosivesOreView = viewForV7(
+      explosivesOre,
+      explosivesOre.humanPlayerId,
+    );
+    expect(queryPlayerCommandsV7(explosivesOreView)).not.toContainEqual(blast);
+    expect(previewEconomicV7(explosivesOreView, blast)).toEqual({
+      ok: false,
+      error: "NOT_OFFERED",
+    });
+    expect(
+      applyCommandV7(explosivesOre, explosivesOre.humanPlayerId, blast),
     ).toMatchObject({ accepted: false, error: { code: "INVALID_TILE" } });
   });
 
@@ -445,7 +564,7 @@ describe("ruleset-7 pure public economy", () => {
     ).toBe(Number.MAX_SAFE_INTEGER);
   });
 
-  it("offers Mine only for Ore revealed and unlocked by Engineering", () => {
+  it("offers Mine only for Ore revealed by Drill and unlocked by Engineering", () => {
     const staged = farmPreviewState(7_282);
     const mountain = emptyOwnedTile(staged.state, staged.cityId, [
       staged.target,
@@ -457,7 +576,12 @@ describe("ruleset-7 pure public economy", () => {
           ? {
               ...player,
               researchedTechs: player.researchedTechs.filter(
-                (tech) => tech !== "ENGINEERING" && tech !== "METALLURGY",
+                (tech) =>
+                  tech !== "DRILL" &&
+                  tech !== "ENGINEERING" &&
+                  tech !== "METALLURGY" &&
+                  tech !== "FORTIFICATION" &&
+                  tech !== "EXPLOSIVES",
               ),
               coins: 0,
             }
@@ -488,6 +612,7 @@ describe("ruleset-7 pure public economy", () => {
               ...player,
               researchedTechs: TECHNOLOGY_IDS_V7.filter(
                 (tech) =>
+                  tech === "DRILL" ||
                   tech === "ENGINEERING" ||
                   player.researchedTechs.includes(tech),
               ),

@@ -4,6 +4,13 @@ import path from "node:path";
 import { format } from "prettier";
 import sharp, { type OverlayOptions } from "sharp";
 import { RULESET7_LOGISTICS_SOURCE_IDS } from "./ruleset7-logistics-art-order";
+import { RULESET7_LOGISTICS_ART_IDS } from "../../src/assets/ruleset7-logistics-art";
+import {
+  RULESET7_IMPROVEMENT_ART_IDS,
+  RULESET7_RESOURCE_ART_IDS,
+  RULESET7_TECH_ART_IDS,
+  commandArtIdV7,
+} from "../../src/assets/ruleset7-ui-art";
 
 interface Bounds {
   readonly left: number;
@@ -455,6 +462,32 @@ async function writeEvidence(metrics: {
   readonly fish: AlphaMeasurement;
   readonly productionPngCount: number;
 }): Promise<void> {
+  const currentRuntimeMappings = {
+    mapPort: RULESET7_IMPROVEMENT_ART_IDS.PORT,
+    mapFish: RULESET7_RESOURCE_ART_IDS.FISH,
+    dockPort: RULESET7_IMPROVEMENT_ART_IDS.PORT,
+    dockFish: RULESET7_RESOURCE_ART_IDS.FISH,
+    shorecraft: RULESET7_TECH_ART_IDS.SHORECRAFT,
+    buildPort: commandArtIdV7({ kind: "BUILD_PORT", at: { x: 0, y: 0 } }),
+    harvestFish: commandArtIdV7({
+      kind: "HARVEST_FISH",
+      at: { x: 0, y: 0 },
+    }),
+  };
+  assert(
+    [
+      currentRuntimeMappings.mapPort,
+      currentRuntimeMappings.dockPort,
+      currentRuntimeMappings.shorecraft,
+      currentRuntimeMappings.buildPort,
+    ].every((id) => id === RULESET7_LOGISTICS_ART_IDS.PORT) &&
+      [
+        currentRuntimeMappings.mapFish,
+        currentRuntimeMappings.dockFish,
+        currentRuntimeMappings.harvestFish,
+      ].every((id) => id === RULESET7_LOGISTICS_ART_IDS.FISH),
+    "Revision-11 Port and Fish must be bound throughout the current runtime",
+  );
   const artifacts = Object.fromEntries(
     await Promise.all(
       artifactNames.map(async (name) => [
@@ -471,7 +504,8 @@ async function writeEvidence(metrics: {
       exactNewSources: RULESET7_LOGISTICS_SOURCE_IDS,
       retainedProductionPngs: metrics.productionPngCount - 2,
       totalProductionPngs: metrics.productionPngCount,
-      liveRuntimeMappingsChanged: false,
+      liveRuntimeMappingsChanged: true,
+      currentRuntimeMappings,
     },
     port: {
       revision10: {

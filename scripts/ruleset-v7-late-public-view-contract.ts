@@ -73,10 +73,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r10",
+    rulesetId: "pulp-wars-poc-7r11",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r10",
+      rulesetId: "pulp-wars-poc-7r11",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     },
@@ -97,6 +97,9 @@ export function upgradeRetainedPublicViewV7(
       isCapital: city.isCapital,
       expanded: false,
       landGrantUsed: city.expanded,
+      ...(city.ownerId === retained.viewer.id
+        ? { cityActionAvailable: true }
+        : {}),
       rewards: city.rewards.map((reward) => ({
         ...reward,
         reward:

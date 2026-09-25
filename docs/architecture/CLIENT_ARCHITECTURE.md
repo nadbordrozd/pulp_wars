@@ -1,13 +1,22 @@
 # Pulp Wars Client Architecture
 
-## Ruleset-7 revision-10 current boundary
+## Ruleset-7 revision-11 current boundary
 
-The current client runs `pulp-wars-poc-7r10`. Its exact current rules are the
-[revision-10 playtest corrections](../product/RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md)
-over the revision-9 Human technology contract. Setup exposes Dry Land, Pangea,
+The current client runs `pulp-wars-poc-7r11`. Runtime sections 1–6 of the
+[revision-11 city logistics contract](../product/RULESET_7_REVISION_11_CITY_LOGISTICS_AI.md)
+overlay the revision-10 playtest corrections and revision-9 Human technology
+contract. Its Normal-AI sections 7–8 remain pending. Setup exposes Dry Land, Pangea,
 Continents, Archipelago, and Lakes, with Continents selected by default. The
 controller persists the selected map type and schedules every AI turn through
 bounded `NormalPolicyWorkV7` callbacks over a retained public view.
+
+The public city projection exposes `cityActionAvailable` only to the owner.
+Start Turn projects ordered Windmill healing events, and Canvas coalesces their
+visible sources and recipients on the existing effects canvas. Roads-derived
+population, Commerce-doubled Market income, Drill-visible Ore, and the Raiding
+Pillage assignment flow through public queries and previews. The current Port
+and Fish map, dock, action, and technology presentation uses the accepted
+revision-11 source IDs and manifest geometry.
 
 `PlayerViewV7.naval` is the only naval presentation source: owned Port status,
 trade/network city IDs, public sea routes, and recoverable vessel IDs. Canvas

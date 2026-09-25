@@ -1,10 +1,11 @@
 # Ruleset 7 revision 11: City logistics and tactical AI
 
-**Status:** approved planned contract; not implemented in the current runtime.
+**Status:** sections 1–6 implemented in the current runtime; sections 7–8
+remain the approved next AI implementation scope.
 
-**Planned ruleset ID:** `pulp-wars-poc-7r11`
+**Ruleset ID:** `pulp-wars-poc-7r11`
 
-**Current executable runtime:** `pulp-wars-poc-7r10`
+**Current executable runtime:** `pulp-wars-poc-7r11`
 
 **Scope:** this document is a narrow overlay over the implemented
 [revision-10 playtest corrections](RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md)
@@ -44,9 +45,11 @@ unrelated storage.
 
 Numeric version 7 remains sufficient because exact ruleset identity also
 dispatches every state, setup, command envelope, event log, save, replay, and
-release artifact. Until the implementation and release work changes the
-executable identity, revision 10 remains the honest current behavior and this
-document must not be presented in the game as live rules.
+release artifact. The runtime implements the identity, logistics rules,
+presentation, and Port/Fish integration in sections 1–6. The bounded Normal-AI
+policy and evaluation work in sections 7–8 remains pending; the current policy
+has only the schema and legality adaptations needed to operate honestly on the
+revision-11 runtime.
 
 ## 2. One city action per owner turn
 
@@ -235,9 +238,8 @@ The relevant technology rows become:
 Drill reveals Ore on explored Mountain tiles. Engineering remains required to
 enter Mountain with land units, receive +1 Mountain Sight, build Mine or
 Workshop, and Redevelop. Building a Mine still covers Ore; Pillage or
-Redevelop restores it. Public views continue to emit `UNKNOWN_RESOURCE` until
-the viewer owns Drill, and equal hidden-resource views remain
-decision-identical.
+Redevelop restores it. Public views continue to mask Ore until the viewer owns
+Drill, keeping ore-bearing and empty hidden Mountains indistinguishable.
 
 Blast Mountain still rejects every Mountain containing Ore. Because
 Explosives already descends from Drill through Fortification, its public offer
@@ -592,3 +594,14 @@ Implementation evidence must cover these bounded groups:
 Revision-11 release evidence adds focused engine, presentation, asset, AI,
 headless, save/replay, and browser checks to the inherited release profile. It
 must not refresh frozen historical corpora to imply revision-11 behavior.
+The current isolated visual checks are:
+
+```bash
+npm run art:ruleset7-logistics-review -- --output <isolated-art-output>
+npm run review:ruleset7-logistics -- --output <isolated-browser-output>
+```
+
+The first validates the accepted sources, geometry, and current runtime
+bindings without rewriting checked historical review evidence. The second
+records actual accepted city-action and Start Turn healing transitions in a
+desktop browser, including the current Port and Fish presentation.

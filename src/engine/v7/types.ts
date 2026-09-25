@@ -5,8 +5,8 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r10" as const;
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r10.current" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r11" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r11.current" as const;
 export const FACTION_IDS_V7 = Object.freeze(["ORIGINAL"] as const);
 export const FACTION_TREE_IDS_V7 = Object.freeze([
   "ORIGINAL_BASELINE_V5",
@@ -145,6 +145,7 @@ export const CARDINAL_DIRECTION_ORDER_V7 = Object.freeze([
 ] as const);
 export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "TURN_STARTED",
+  "WINDMILL_HEALING_RESOLVED",
   "INCOME_AWARDED",
   "INCOME_PREVIEWED",
   "TURN_ENDED",
@@ -336,6 +337,7 @@ export interface CityStateV7 {
   readonly isCapital: boolean;
   readonly expanded: boolean;
   readonly landGrantUsed: boolean;
+  readonly cityActionAvailable: boolean;
   readonly rewards: readonly CityRewardRecordV7[];
 }
 

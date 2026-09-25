@@ -166,7 +166,7 @@ describe("ruleset-7 public movement bounds", () => {
         ),
       },
     };
-    expect(marketIncomeForCityV7(marketState, city)).toBe(1);
+    expect(marketIncomeForCityV7(marketState, city)).toBe(2);
     const cut = {
       ...state,
       board: {

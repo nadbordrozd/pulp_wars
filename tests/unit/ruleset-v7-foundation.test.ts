@@ -37,7 +37,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r10");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r11");
     expect(FACTION_IDS_V7).toEqual(["ORIGINAL"]);
     expect(FACTION_TREE_IDS_V7).toEqual(["ORIGINAL_BASELINE_V5"]);
     expect(RESOURCE_IDS_V7).toEqual([
@@ -76,7 +76,12 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     ]);
     expect(TECHNOLOGY_IDS_V7).toHaveLength(23);
     expect(COMMAND_KIND_ORDER_V7).toHaveLength(39);
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(55);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(56);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7.slice(0, 3)).toEqual([
+      "TURN_STARTED",
+      "WINDMILL_HEALING_RESOLVED",
+      "INCOME_AWARDED",
+    ]);
     expect(PLAYER_EVENT_KIND_ORDER_V7.slice(-3)).toEqual([
       "COMBAT_SPLASH_DAMAGE",
       "UNIT_REVEALED",

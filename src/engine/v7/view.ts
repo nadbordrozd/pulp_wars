@@ -97,6 +97,8 @@ export interface PublicCityV7 {
   readonly isCapital: boolean;
   readonly expanded: boolean;
   readonly landGrantUsed: boolean;
+  /** Owner-private shared TRAIN/TRAIN_NAVAL/LAND_GRANT availability. */
+  readonly cityActionAvailable?: boolean;
   readonly rewards: readonly {
     readonly reachedLevel: number;
     readonly reward: RewardIdV7;
@@ -447,7 +449,8 @@ export function viewForV7(
           improvement: tile.improvement,
           level:
             tile.improvement === "MARKET"
-              ? Math.min(4, evaluation.marketIncome)
+              ? Math.min(4, evaluation.marketIncome) *
+                (viewer.researchedTechs.includes("COMMERCE") ? 2 : 1)
               : (population?.amount ?? 0),
           measure: tile.improvement === "MARKET" ? "COIN_INCOME" : "POPULATION",
           contributingTiles: evaluation.contributingTiles.filter((at) =>
@@ -468,6 +471,9 @@ export function viewForV7(
     isCapital: city.isCapital,
     expanded: city.expanded,
     landGrantUsed: city.landGrantUsed,
+    ...(city.ownerId === viewerId
+      ? { cityActionAvailable: city.cityActionAvailable }
+      : {}),
     rewards: city.rewards,
   }));
   const cityCounts = countBy(state.cities.map((city) => city.ownerId));
@@ -803,8 +809,7 @@ export function publicResourceV7(
   },
   technologies: readonly string[],
 ): PublicResourceV7 {
-  if (tile.resource === "ORE" && !technologies.includes("ENGINEERING"))
-    return null;
+  if (tile.resource === "ORE" && !technologies.includes("DRILL")) return null;
   return tile.resource;
 }
 

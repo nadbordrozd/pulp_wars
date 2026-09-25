@@ -96,7 +96,7 @@ describe("Ruleset 7 naval public presentation", () => {
       expect.objectContaining({
         kind: "IMPROVEMENT",
         at: portFixture.portAt,
-        assetId: "building-ruleset7-port",
+        assetId: "building-ruleset7-port-v7r11",
       }),
     );
     expect(portPlan.entries).toContainEqual(

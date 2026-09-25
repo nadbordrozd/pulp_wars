@@ -9,6 +9,7 @@ import {
   queryCombatPreviewV7,
   queryPlayerCommandsV7,
   queryUnitStatsV7,
+  startTurnEconomyV7,
   unitId,
   validateMovementPathV7,
   type CoordV7,
@@ -885,7 +886,7 @@ describe("ruleset-7 Knight Overrun activation", () => {
     ).toBe(false);
   });
 
-  it("applies explicit and idle recovery at 6, 4, and 2 by live Windmill supply", () => {
+  it("keeps 4/2 recovery independent from zero-output Windmill Start Turn healing", () => {
     const base = battle("FIGHTER", "FIGHTER", { x: 2, y: 2 }, { x: 9, y: 9 });
     const actor = base.humanPlayerId;
     const city = required(
@@ -930,7 +931,7 @@ describe("ruleset-7 Knight Overrun activation", () => {
       base.units.find((unit) => unit.ownerId === actor),
       "recovering unit missing",
     );
-    const supplied = checkedV7({
+    const productiveWindmill = checkedV7({
       ...base,
       nextEntityId: base.nextEntityId + 2,
       treasureChests: base.treasureChests.filter(
@@ -1002,10 +1003,12 @@ describe("ruleset-7 Knight Overrun activation", () => {
         },
       ],
     });
-    const unsupplied = checkedV7({
-      ...supplied,
-      board: patchTiles(supplied, [[farmTile.at, { improvement: null }]]),
-      cities: supplied.cities.map((candidate) =>
+    const zeroOutputWindmill = checkedV7({
+      ...productiveWindmill,
+      board: patchTiles(productiveWindmill, [
+        [farmTile.at, { improvement: null }],
+      ]),
+      cities: productiveWindmill.cities.map((candidate) =>
         candidate.id === city.id
           ? { ...candidate, economicPopulation: 0, population: -2 }
           : candidate,
@@ -1025,23 +1028,23 @@ describe("ruleset-7 Knight Overrun activation", () => {
       ],
     });
     const neutralAt = required(
-      unsupplied.board.tiles.find(
+      zeroOutputWindmill.board.tiles.find(
         (tile) =>
           tile.territoryCityId === null &&
           tile.biome !== null &&
           tile.site === null &&
-          !unsupplied.units.some(
+          !zeroOutputWindmill.units.some(
             (unit) => unit.id !== recovering.id && same(unit.at, tile.at),
           ),
       )?.at,
       "neutral recovery tile missing",
     );
     const neutral = checkedV7({
-      ...unsupplied,
-      treasureChests: unsupplied.treasureChests.filter(
+      ...zeroOutputWindmill,
+      treasureChests: zeroOutputWindmill.treasureChests.filter(
         (at) => !same(at, neutralAt),
       ),
-      units: unsupplied.units.map((unit) =>
+      units: zeroOutputWindmill.units.map((unit) =>
         unit.id === recovering.id
           ? { ...unit, at: neutralAt, hp: 1, activation: READY }
           : unit,
@@ -1049,8 +1052,8 @@ describe("ruleset-7 Knight Overrun activation", () => {
     });
 
     for (const [source, amount] of [
-      [supplied, 6],
-      [unsupplied, 4],
+      [productiveWindmill, 4],
+      [zeroOutputWindmill, 4],
       [neutral, 2],
     ] as const) {
       const explicit = applyCommandV7(source, actor, {
@@ -1079,6 +1082,35 @@ describe("ruleset-7 Knight Overrun activation", () => {
         automatic: true,
       });
     }
+
+    const adjacentToZeroOutputWindmill = checkedV7({
+      ...zeroOutputWindmill,
+      units: zeroOutputWindmill.units.map((unit) =>
+        unit.id === recovering.id
+          ? { ...unit, at: farmTile.at, hp: 1, activation: READY }
+          : unit,
+      ),
+    });
+    const started = startTurnEconomyV7(
+      adjacentToZeroOutputWindmill,
+      required(
+        adjacentToZeroOutputWindmill.players.find(
+          (player) => player.id === actor,
+        ),
+        "healing owner missing",
+      ),
+      false,
+    );
+    expect(
+      started.state.units.find((unit) => unit.id === recovering.id)?.hp,
+    ).toBe(7);
+    expect(started.events).toContainEqual({
+      kind: "WINDMILL_HEALING_RESOLVED",
+      playerId: actor,
+      cityId: city.id,
+      at: windmillTile.at,
+      results: [{ unitId: recovering.id, amount: 6, hpAfter: 7 }],
+    });
   });
 
   it("retains Tend, Recover, Wait, Promote, stat attribution, and idle recovery", () => {

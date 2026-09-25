@@ -55,6 +55,17 @@ export type DomainEventV7 =
       readonly coins: number;
     }
   | {
+      readonly kind: "WINDMILL_HEALING_RESOLVED";
+      readonly playerId: PlayerId;
+      readonly cityId: CityId;
+      readonly at: CoordV7;
+      readonly results: readonly {
+        readonly unitId: UnitId;
+        readonly amount: number;
+        readonly hpAfter: number;
+      }[];
+    }
+  | {
       readonly kind: "INCOME_AWARDED" | "INCOME_PREVIEWED";
       readonly playerId: PlayerId;
       readonly totalCoins: number;

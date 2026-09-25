@@ -230,6 +230,21 @@ export const RULESET7_NAVAL_ART_GEOMETRY = {
   },
 } as const satisfies Readonly<Record<string, SourceGeometry>>;
 
+export const RULESET7_LOGISTICS_ART_GEOMETRY = {
+  port: {
+    width: 384,
+    height: 384,
+    anchor: { x: 192, y: 288 },
+    displayScale: 0.3,
+  },
+  fish: {
+    width: 256,
+    height: 384,
+    anchor: { x: 128, y: 256 },
+    displayScale: 0.5,
+  },
+} as const satisfies Readonly<Record<string, SourceGeometry>>;
+
 export const RULESET6_UNIT_COSMETIC_OFFSET_Y =
   RULESET6_UNIT_ART_GEOMETRY.standard.offsetY;
 

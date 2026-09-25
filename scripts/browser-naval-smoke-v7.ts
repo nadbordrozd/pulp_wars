@@ -733,7 +733,7 @@ async function mountVisual(
       globalThis.__PULP_WARS_APP__?.destroy();
       const aiCount = ${size} === 11 ? 1 : 3;
       const setup = {
-        rulesetId: 'pulp-wars-poc-7r10', mapGenerationRevision: 'REGIONAL_BIOMES_NAVAL_V2', seed: 42,
+        rulesetId: 'pulp-wars-poc-7r11', mapGenerationRevision: 'REGIONAL_BIOMES_NAVAL_V2', seed: 42,
         width: ${size}, height: ${size}, aiCount, aiDifficulty: 'NORMAL', aiMode: 'RIVAL',
         humanColor: 'CORAL', factions: Array.from({ length: aiCount + 1 }, () => 'ORIGINAL'), mapType: 'ARCHIPELAGO',
       };

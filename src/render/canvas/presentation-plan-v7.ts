@@ -46,6 +46,16 @@ export type CorePresentationStepV7 =
       readonly durationMs: 320;
     }
   | {
+      readonly kind: "WINDMILL_HEALING";
+      readonly sources: readonly CoordV7[];
+      readonly recipients: readonly {
+        readonly unitId: number;
+        readonly at: CoordV7;
+      }[];
+      readonly sourceDurationMs: 180;
+      readonly recipientDurationMs: 260;
+    }
+  | {
       readonly kind: "DAMAGE";
       readonly unitId: number;
       readonly at: CoordV7;
@@ -69,9 +79,38 @@ export function corePresentationPlanV7(
       .map((tile) => `${tile.at.x},${tile.at.y}`),
   );
   const origins = new Map(before.units.map((unit) => [unit.id, unit.at]));
+  const healingEvents = envelope.events.filter(
+    (event) => event.kind === "WINDMILL_HEALING_RESOLVED",
+  );
+  const healingSources = healingEvents.map((event) => event.at);
+  const healingRecipientIds = new Set(
+    healingEvents.flatMap((event) =>
+      event.results.map((result) => result.unitId),
+    ),
+  );
+  const healingRecipients = [...healingRecipientIds].flatMap((unitId) => {
+    const unit = after.units.find((candidate) => candidate.id === unitId);
+    return unit === undefined ? [] : [{ unitId, at: unit.at }];
+  });
+  let healingAdded = false;
   let visibilityCrossfadeAdded = false;
   for (const event of envelope.events) {
-    if (event.kind === "UNIT_MOVED") {
+    if (event.kind === "WINDMILL_HEALING_RESOLVED") {
+      if (
+        !healingAdded &&
+        healingSources.length > 0 &&
+        healingRecipients.length > 0
+      ) {
+        steps.push({
+          kind: "WINDMILL_HEALING",
+          sources: healingSources,
+          recipients: healingRecipients,
+          sourceDurationMs: 180,
+          recipientDurationMs: 260,
+        });
+        healingAdded = true;
+      }
+    } else if (event.kind === "UNIT_MOVED") {
       const origin = origins.get(event.unitId);
       if (enemyTurn) {
         // Ordinary public moves may span fog; reveal/conceal events reset

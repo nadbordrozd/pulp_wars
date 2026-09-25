@@ -12,7 +12,11 @@ import { RULESET7_LOGISTICS_ART_IDS } from "../../src/assets/ruleset7-logistics-
 import {
   RULESET7_IMPROVEMENT_ART_IDS,
   RULESET7_RESOURCE_ART_IDS,
+  RULESET7_TECH_ART_IDS,
+  commandArtIdV7,
 } from "../../src/assets/ruleset7-ui-art";
+import { RULESET7_LOGISTICS_ART_GEOMETRY } from "../../src/render/canvas/board-art-geometry";
+import { SELECTION_IDENTITY_FRAMES_V7 } from "../../src/render/dom/selection-identity-v7";
 
 interface Bounds {
   readonly left: number;
@@ -105,7 +109,7 @@ describe("Ruleset 7 revision-11 logistics art", () => {
     ).toThrow("unrelated generation families");
   });
 
-  it("records exactly the approved source geometry and keeps runtime mappings deferred", async () => {
+  it("records the approved geometry and wires every current runtime mapping", async () => {
     const { recipes } = await manifests();
     expect(
       recipes.filter(({ id }) => id.endsWith("v7r11")).map(({ id }) => id),
@@ -137,10 +141,47 @@ describe("Ruleset 7 revision-11 logistics art", () => {
       preferredBounds: { left: 48, top: 180, right: 208, bottom: 320 },
       hardBounds: { left: 40, top: 148, right: 216, bottom: 336 },
     });
-    expect(RULESET7_IMPROVEMENT_ART_IDS.PORT).toBe("building-ruleset7-port");
-    expect(RULESET7_RESOURCE_ART_IDS.FISH).toBe(
-      "terrain-ruleset7-resource-fish",
+    expect(RULESET7_IMPROVEMENT_ART_IDS.PORT).toBe(
+      RULESET7_LOGISTICS_ART_IDS.PORT,
     );
+    expect(RULESET7_RESOURCE_ART_IDS.FISH).toBe(
+      RULESET7_LOGISTICS_ART_IDS.FISH,
+    );
+    expect(RULESET7_TECH_ART_IDS.SHORECRAFT).toBe(
+      RULESET7_LOGISTICS_ART_IDS.PORT,
+    );
+    expect(commandArtIdV7({ kind: "BUILD_PORT", at: { x: 0, y: 0 } })).toBe(
+      RULESET7_LOGISTICS_ART_IDS.PORT,
+    );
+    expect(commandArtIdV7({ kind: "HARVEST_FISH", at: { x: 0, y: 0 } })).toBe(
+      RULESET7_LOGISTICS_ART_IDS.FISH,
+    );
+    expect(RULESET7_LOGISTICS_ART_GEOMETRY).toEqual({
+      port: {
+        width: 384,
+        height: 384,
+        anchor: { x: 192, y: 288 },
+        displayScale: 0.3,
+      },
+      fish: {
+        width: 256,
+        height: 384,
+        anchor: { x: 128, y: 256 },
+        displayScale: 0.5,
+      },
+    });
+    expect(
+      SELECTION_IDENTITY_FRAMES_V7[RULESET7_LOGISTICS_ART_IDS.PORT],
+    ).toMatchObject({
+      source: { width: 384, height: 384 },
+      visibleBounds: { left: 39, top: 44, right: 345, bottom: 288 },
+    });
+    expect(
+      SELECTION_IDENTITY_FRAMES_V7[RULESET7_LOGISTICS_ART_IDS.FISH],
+    ).toMatchObject({
+      source: { width: 256, height: 384 },
+      visibleBounds: { left: 48, top: 204, right: 208, bottom: 320 },
+    });
   });
 
   it("locks accepted outputs, every submission receipt, and the static source registry", async () => {

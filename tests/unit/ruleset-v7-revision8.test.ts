@@ -27,10 +27,10 @@ import {
   initialV7,
 } from "../fixtures/v7-builders";
 
-describe("Ruleset 7 revision 9 Industry and shared adjacency", () => {
-  it("uses the r9 identity and the two exact Industry branches", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r10");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r10.current");
+describe("Ruleset 7 inherited Industry and shared adjacency", () => {
+  it("uses the current identity and the two exact Industry branches", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r11");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r11.current");
     expect(TECHNOLOGY_IDS_V7).toEqual(
       expect.arrayContaining([
         "DRILL",
@@ -54,6 +54,7 @@ describe("Ruleset 7 revision 9 Industry and shared adjacency", () => {
     ]);
     expect(lane[0]?.unlocks).toEqual(
       expect.arrayContaining([
+        { kind: "RESOURCE_REVEAL", resources: ["ORE"] },
         { kind: "UNIT_ROLE", role: "GUARD" },
         { kind: "FIRST_HOSTILE_CAPTURE_SPOILS", coins: 2 },
       ]),
@@ -63,7 +64,6 @@ describe("Ruleset 7 revision 9 Industry and shared adjacency", () => {
         { kind: "COMMAND", command: "BUILD_MINE" },
         { kind: "COMMAND", command: "BUILD_WORKSHOP" },
         { kind: "COMMAND", command: "REDEVELOP" },
-        { kind: "RESOURCE_REVEAL", resources: ["ORE"] },
         { kind: "MOUNTAIN_MOVEMENT" },
       ]),
     );
@@ -78,14 +78,18 @@ describe("Ruleset 7 revision 9 Industry and shared adjacency", () => {
       command: "BUILD_FIELD_DEFENSE",
     });
     expect(lane[4]?.unlocks).toEqual(
-      expect.arrayContaining([
-        { kind: "COMMAND", command: "PILLAGE" },
-        { kind: "COMMAND", command: "BLAST_MOUNTAIN" },
-      ]),
+      expect.arrayContaining([{ kind: "COMMAND", command: "BLAST_MOUNTAIN" }]),
     );
+    const raiding = ORIGINAL_BASELINE_V5_NODES.find(
+      (node) => node.id === "RAIDING",
+    );
+    expect(raiding?.unlocks).toContainEqual({
+      kind: "COMMAND",
+      command: "PILLAGE",
+    });
   });
 
-  it("lets Engineering reveal Ore and enter Mountains", () => {
+  it("lets Drill reveal Ore while Engineering allows Mountain movement", () => {
     const base = exploredAllV7(initialV7(8_807));
     const unit = base.units.find(
       (candidate) => candidate.ownerId === base.humanPlayerId,

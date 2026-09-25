@@ -19,6 +19,7 @@ import {
   RULESET7_PLAYTEST_TECH_ART_IDS,
   RULESET7_PLAYTEST_UNIT_ART_IDS,
 } from "./ruleset7-playtest-art";
+import { RULESET7_LOGISTICS_ART_IDS } from "./ruleset7-logistics-art";
 
 export const RULESET7_UNIT_ART_IDS = {
   FIGHTER: "unit-original-fighter",
@@ -73,7 +74,7 @@ export const RULESET7_TECH_ART_IDS = {
   METALLURGY: "building-square-forge",
   FORTIFICATION: "ui-tech-fortification",
   EXPLOSIVES: RULESET7_REVISION9_ACTION_ART_IDS.BLAST_MOUNTAIN,
-  SHORECRAFT: "building-ruleset7-port",
+  SHORECRAFT: RULESET7_LOGISTICS_ART_IDS.PORT,
   NAVIGATION: "terrain-ruleset7-water-deep",
   NAVAL_ENGINEERING: "unit-original-battleship",
 } as const satisfies Readonly<Record<TechnologyIdV7, string>>;
@@ -88,7 +89,7 @@ export const RULESET7_IMPROVEMENT_ART_IDS = {
   WORKSHOP: "building-square-workshop",
   MARKET: "building-square-market",
   MONUMENT: "building-square-monument",
-  PORT: "building-ruleset7-port",
+  PORT: RULESET7_LOGISTICS_ART_IDS.PORT,
   SHIPYARD: RULESET7_REVISION9_IMPROVEMENT_ART_IDS.SHIPYARD,
 } as const satisfies Readonly<Record<ImprovementIdV7, string>>;
 
@@ -97,7 +98,7 @@ export const RULESET7_RESOURCE_ART_IDS = {
   GAME: "terrain-square-original-animal",
   FERTILE_GROUND: "terrain-ruleset7-resource-fertile-ground",
   ORE: "terrain-square-ore",
-  FISH: "terrain-ruleset7-resource-fish",
+  FISH: RULESET7_LOGISTICS_ART_IDS.FISH,
   PEARLS: "terrain-ruleset7-resource-pearls",
 } as const satisfies Readonly<Record<ResourceIdV7, string>>;
 

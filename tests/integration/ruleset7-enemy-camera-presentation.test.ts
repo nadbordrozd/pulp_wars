@@ -255,9 +255,10 @@ function hostRig(
   vi.spyOn(window, "cancelAnimationFrame").mockImplementation((id) => {
     frames.delete(id);
   });
-  vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(
-    {} as CanvasRenderingContext2D,
-  );
+  vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue({
+    clearRect: vi.fn(),
+    setTransform: vi.fn(),
+  } as unknown as CanvasRenderingContext2D);
   vi.spyOn(renderer, "drawBoardV7").mockImplementation((input) => {
     camera = input.camera;
   });

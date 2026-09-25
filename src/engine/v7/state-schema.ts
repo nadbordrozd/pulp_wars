@@ -35,6 +35,7 @@ import {
 } from "./types";
 import { parseMatchSetupV7 } from "./setup";
 import { spatialContributionAtV7 } from "./spatial-economy";
+import { roadPopulationForCityV7 } from "./economy";
 import {
   compareCoordsV7,
   hasExactKeysV7,
@@ -469,6 +470,7 @@ function parseCity(input: unknown): CityStateV7 | null {
   if (
     !hasExactKeysV7(input, [
       "at",
+      "cityActionAvailable",
       "economicPopulation",
       "expanded",
       "landGrantUsed",
@@ -486,7 +488,8 @@ function parseCity(input: unknown): CityStateV7 | null {
     !isSafeIntegerV7(input.population) ||
     typeof input.isCapital !== "boolean" ||
     typeof input.expanded !== "boolean" ||
-    typeof input.landGrantUsed !== "boolean"
+    typeof input.landGrantUsed !== "boolean" ||
+    typeof input.cityActionAvailable !== "boolean"
   )
     return null;
   const id = parseCityIdV7(input.id);
@@ -516,6 +519,7 @@ function parseCity(input: unknown): CityStateV7 | null {
     isCapital: input.isCapital,
     expanded: input.expanded,
     landGrantUsed: input.landGrantUsed,
+    cityActionAvailable: input.cityActionAvailable,
     rewards,
   };
 }
@@ -1076,6 +1080,7 @@ function populationLedgerValid(
   setup: MatchSetupV7,
   humanPlayerId: PlayerStateV7["id"],
 ): boolean {
+  const roadGraph = { board, cities, players, units, setup, humanPlayerId };
   const cityById = new Map(cities.map((city) => [city.id, city]));
   const liveByCoord = new Map<string, PopulationContributionV7>();
   const permanent = new Set<string>();
@@ -1140,9 +1145,11 @@ function populationLedgerValid(
     const permanentTotal = entries
       .filter((entry) => entry.category === "PERMANENT")
       .reduce((sum, entry) => sum + entry.amount, 0);
-    const liveTotal = entries
+    const storedLiveTotal = entries
       .filter((entry) => entry.category === "LIVE")
       .reduce((sum, entry) => sum + entry.amount, 0);
+    const liveTotal =
+      storedLiveTotal + roadPopulationForCityV7(roadGraph, city);
     if (
       !Number.isSafeInteger(permanentTotal) ||
       !Number.isSafeInteger(liveTotal) ||

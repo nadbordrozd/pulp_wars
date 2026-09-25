@@ -170,11 +170,14 @@ export function marketIncomeForCityV7(
   state: NetworkStateV7,
   city: CityStateV7,
 ): number {
+  const commerce = state.players
+    .find((player) => player.id === city.ownerId)
+    ?.researchedTechs.includes("COMMERCE");
   let total = 0;
   for (const tile of state.board.tiles)
     if (tile.territoryCityId === city.id && tile.improvement === "MARKET") {
       const evaluation = spatialContributionAtV7(state, tile.at, "MARKET");
-      total += Math.min(4, evaluation.marketIncome);
+      total += Math.min(4, evaluation.marketIncome) * (commerce ? 2 : 1);
       if (!Number.isSafeInteger(total))
         throw new RangeError("INTEGER_OVERFLOW");
     }
@@ -257,6 +260,8 @@ export function recomputeLiveEconomyV7(
         if (!Number.isSafeInteger(permanent) || !Number.isSafeInteger(live))
           throw new RangeError("INTEGER_OVERFLOW");
       }
+    live += roadPopulationForCityV7(graphState, city);
+    if (!Number.isSafeInteger(live)) throw new RangeError("INTEGER_OVERFLOW");
     const growth = resolveCityGrowthV7(city, permanent, live);
     cities.push(growth.city);
     const before = beforeState.cities.find((item) => item.id === city.id);
@@ -323,7 +328,34 @@ export function combinedNetworkCityIdsV7(
   return COMBINED_NETWORK_CACHE.get(state)?.get(playerId) ?? new Set<CityId>();
 }
 
-/** Commerce-only capital-rooted land Road graph. */
+/** Roads-only capital-rooted land graph, independent from land-trade income. */
+export function landConnectedCityIdsV7(
+  state: NetworkStateV7,
+  playerId: PlayerId,
+): ReadonlySet<CityId> {
+  seaTradeCityIdsV7(state, playerId);
+  return COMBINED_NETWORK_CACHE.get(state)?.get(playerId) ?? new Set<CityId>();
+}
+
+export function roadPopulationForCityV7(
+  state: NetworkStateV7,
+  city: Pick<CityStateV7, "id" | "ownerId">,
+): number {
+  const player = state.players.find(
+    (candidate) => candidate.id === city.ownerId,
+  );
+  if (player === undefined) return 0;
+  const connected = landConnectedCityIdsV7(state, city.ownerId);
+  if (!connected.has(player.originalCapitalCityId)) return 0;
+  const connectedOtherCities = [...connected].filter(
+    (cityId) => cityId !== player.originalCapitalCityId,
+  );
+  return city.id === player.originalCapitalCityId
+    ? connectedOtherCities.length
+    : Number(connectedOtherCities.includes(city.id));
+}
+
+/** Commerce-only income recipients from the Roads land graph. */
 export function landTradeCityIdsV7(
   state: NetworkStateV7,
   playerId: PlayerId,
@@ -331,8 +363,7 @@ export function landTradeCityIdsV7(
   seaTradeCityIdsV7(state, playerId);
   const player = state.players.find((candidate) => candidate.id === playerId);
   if (!player?.researchedTechs.includes("COMMERCE")) return new Set();
-  const connected =
-    COMBINED_NETWORK_CACHE.get(state)?.get(playerId) ?? new Set();
+  const connected = landConnectedCityIdsV7(state, playerId);
   return new Set(
     [...connected].filter((cityId) => cityId !== player.originalCapitalCityId),
   );
@@ -589,39 +620,49 @@ export function startTurnEconomyV7(
   player: PlayerStateV7,
   resetActivation = true,
 ): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
-  const income = playerIncomeV7(state, player.id);
+  const reset: GameStateV7 = {
+    ...state,
+    cities: state.cities.map((city) =>
+      city.ownerId === player.id
+        ? { ...city, cityActionAvailable: true }
+        : city,
+    ),
+    units: state.units.map((unit) =>
+      resetActivation && unit.ownerId === player.id && unit.hp > 0
+        ? {
+            ...unit,
+            captureEligible: unitOccupiesCapturableSiteV7(state, unit),
+            activation: {
+              moved: false,
+              movedPathLength: 0,
+              attacked: false,
+              attacksUsed: 0 as const,
+              tendedThisTurn: false,
+              inspired: false,
+              overrunActive: false,
+              recovered: false,
+              captured: false,
+              handled: false,
+              specialActed: false,
+            },
+          }
+        : unit,
+    ),
+  };
+  const healing = resolveWindmillHealingV7(reset, player.id);
+  const income = playerIncomeV7(healing.state, player.id);
   const coins = player.coins + income.totalCoins;
   if (!Number.isSafeInteger(coins)) throw new RangeError("INTEGER_OVERFLOW");
   return {
     state: {
-      ...state,
-      players: state.players.map((item) =>
+      ...healing.state,
+      players: healing.state.players.map((item) =>
         item.id === player.id ? { ...item, coins } : item,
-      ),
-      units: state.units.map((unit) =>
-        resetActivation && unit.ownerId === player.id && unit.hp > 0
-          ? {
-              ...unit,
-              captureEligible: unitOccupiesCapturableSiteV7(state, unit),
-              activation: {
-                moved: false,
-                movedPathLength: 0,
-                attacked: false,
-                attacksUsed: 0 as const,
-                tendedThisTurn: false,
-                inspired: false,
-                overrunActive: false,
-                recovered: false,
-                captured: false,
-                handled: false,
-                specialActed: false,
-              },
-            }
-          : unit,
       ),
     },
     events: [
       { kind: "TURN_STARTED", playerId: player.id, coins },
+      ...healing.events,
       {
         kind: "INCOME_AWARDED",
         playerId: player.id,
@@ -629,6 +670,76 @@ export function startTurnEconomyV7(
         cities: income.cities,
       },
     ],
+  };
+}
+
+function resolveWindmillHealingV7(
+  state: GameStateV7,
+  playerId: PlayerId,
+): {
+  readonly state: GameStateV7;
+  readonly events: readonly Extract<
+    DomainEventV7,
+    { readonly kind: "WINDMILL_HEALING_RESOLVED" }
+  >[];
+} {
+  const sources = state.board.tiles
+    .flatMap((tile) => {
+      if (tile.improvement !== "WINDMILL" || tile.territoryCityId === null)
+        return [];
+      const city = state.cities.find(
+        (candidate) =>
+          candidate.id === tile.territoryCityId &&
+          candidate.ownerId === playerId,
+      );
+      return city === undefined ? [] : [{ at: tile.at, cityId: city.id }];
+    })
+    .sort((left, right) => left.at.y - right.at.y || left.at.x - right.at.x);
+  const assigned = new Set<number>();
+  const events: Extract<
+    DomainEventV7,
+    { readonly kind: "WINDMILL_HEALING_RESOLVED" }
+  >[] = [];
+  const amounts = new Map<number, number>();
+  for (const source of sources) {
+    const results = state.units
+      .filter(
+        (unit) =>
+          unit.ownerId === playerId &&
+          unit.hp > 0 &&
+          unit.hp < unit.maxHp &&
+          !assigned.has(unit.id) &&
+          Math.max(
+            Math.abs(unit.at.x - source.at.x),
+            Math.abs(unit.at.y - source.at.y),
+          ) === 1,
+      )
+      .sort((left, right) => left.id - right.id)
+      .map((unit) => {
+        const amount = Math.min(6, unit.maxHp - unit.hp);
+        assigned.add(unit.id);
+        amounts.set(unit.id, amount);
+        return { unitId: unit.id, amount, hpAfter: unit.hp + amount };
+      });
+    if (results.length > 0)
+      events.push({
+        kind: "WINDMILL_HEALING_RESOLVED",
+        playerId,
+        cityId: source.cityId,
+        at: source.at,
+        results,
+      });
+  }
+  if (amounts.size === 0) return { state, events };
+  return {
+    state: {
+      ...state,
+      units: state.units.map((unit) => {
+        const amount = amounts.get(unit.id);
+        return amount === undefined ? unit : { ...unit, hp: unit.hp + amount };
+      }),
+    },
+    events,
   };
 }
 

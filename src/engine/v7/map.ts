@@ -1701,6 +1701,7 @@ function createEntities(
       isCapital: true,
       expanded: false,
       landGrantUsed: false,
+      cityActionAvailable: false,
       rewards: [],
     });
     const unit = allocateUnitId(nextEntityId);

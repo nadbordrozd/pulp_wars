@@ -84,7 +84,9 @@ export type TechnologyUnlockV7 =
       readonly connectedOrthogonalStepCost2: 1;
     }
   | { readonly kind: "OWNED_CITY_CAPACITY_BONUS"; readonly capacity: 1 }
-  | { readonly kind: "SUPPLY_RECOVERY"; readonly amount: 6 }
+  | { readonly kind: "ADJACENT_START_TURN_HEALING"; readonly amount: 6 }
+  | { readonly kind: "LAND_ROAD_POPULATION"; readonly amount: 1 }
+  | { readonly kind: "MARKET_INCOME_MULTIPLIER"; readonly multiplier: 2 }
   | { readonly kind: "ARMS_INDUSTRY_DISCOUNT"; readonly coins: 1 }
   | { readonly kind: "LAND_TRADE_INCOME"; readonly coins: 1 }
   | { readonly kind: "SEA_TRADE_INCOME"; readonly coins: 1 }
@@ -339,7 +341,7 @@ export const ORIGINAL_BASELINE_V5_NODES = deepFreeze([
         improvement: "WINDMILL",
         formula: "ADJACENT_FRIENDLY_CONTRIBUTORS",
       },
-      { kind: "SUPPLY_RECOVERY", amount: 6 },
+      { kind: "ADJACENT_START_TURN_HEALING", amount: 6 },
     ],
   ),
   node(
@@ -430,6 +432,7 @@ export const ORIGINAL_BASELINE_V5_NODES = deepFreeze([
         ordinaryStepCost2: 2,
         connectedOrthogonalStepCost2: 1,
       },
+      { kind: "LAND_ROAD_POPULATION", amount: 1 },
     ],
   ),
   node(
@@ -437,7 +440,10 @@ export const ORIGINAL_BASELINE_V5_NODES = deepFreeze([
     "MOBILITY",
     3,
     ["ROADS"],
-    [{ kind: "LAND_TRADE_INCOME", coins: 1 }],
+    [
+      { kind: "LAND_TRADE_INCOME", coins: 1 },
+      { kind: "MARKET_INCOME_MULTIPLIER", multiplier: 2 },
+    ],
   ),
   node(
     "RAIDING",
@@ -466,6 +472,7 @@ export const ORIGINAL_BASELINE_V5_NODES = deepFreeze([
     1,
     [],
     [
+      { kind: "RESOURCE_REVEAL", resources: ["ORE"] },
       { kind: "UNIT_ROLE", role: "GUARD" },
       { kind: "FIRST_HOSTILE_CAPTURE_SPOILS", coins: 2 },
     ],
@@ -476,7 +483,6 @@ export const ORIGINAL_BASELINE_V5_NODES = deepFreeze([
     2,
     ["DRILL"],
     [
-      { kind: "RESOURCE_REVEAL", resources: ["ORE"] },
       { kind: "MOUNTAIN_MOVEMENT" },
       { kind: "HIGH_GROUND_VISION", radiusBonus: 1 },
       { kind: "COMMAND", command: "BUILD_MINE" },
@@ -517,7 +523,6 @@ export const ORIGINAL_BASELINE_V5_NODES = deepFreeze([
     3,
     ["FORTIFICATION"],
     [
-      { kind: "COMMAND", command: "PILLAGE" },
       { kind: "COMMAND", command: "BLAST_MOUNTAIN" },
       { kind: "MELEE_FIELD_DEMOLITION" },
     ],
@@ -786,7 +791,9 @@ export interface TechnologyCapabilitiesV7 {
     readonly connectedOrthogonalStepCost2: 1;
   } | null;
   readonly ownedCityCapacityBonus: 0 | 1;
-  readonly supplyRecoveryAmount: 0 | 6;
+  readonly adjacentStartTurnHealingAmount: 0 | 6;
+  readonly landRoadPopulationAmount: 0 | 1;
+  readonly marketIncomeMultiplier: 1 | 2;
   readonly armsIndustryDiscountCoins: 0 | 1;
   readonly landTradeIncomeCoins: 0 | 1;
   readonly seaTradeIncomeCoins: 0 | 1;
@@ -812,7 +819,9 @@ export function technologyCapabilitiesV7(
   let highGroundVisionRadiusBonus: 0 | 1 = 0;
   let roadMovement: TechnologyCapabilitiesV7["roadMovement"] = null;
   let ownedCityCapacityBonus: 0 | 1 = 0;
-  let supplyRecoveryAmount: 0 | 6 = 0;
+  let adjacentStartTurnHealingAmount: 0 | 6 = 0;
+  let landRoadPopulationAmount: 0 | 1 = 0;
+  let marketIncomeMultiplier: 1 | 2 = 1;
   let armsIndustryDiscountCoins: 0 | 1 = 0;
   let landTradeIncomeCoins: 0 | 1 = 0;
   let seaTradeIncomeCoins: 0 | 1 = 0;
@@ -855,8 +864,14 @@ export function technologyCapabilitiesV7(
       case "OWNED_CITY_CAPACITY_BONUS":
         ownedCityCapacityBonus = 1;
         break;
-      case "SUPPLY_RECOVERY":
-        supplyRecoveryAmount = 6;
+      case "ADJACENT_START_TURN_HEALING":
+        adjacentStartTurnHealingAmount = 6;
+        break;
+      case "LAND_ROAD_POPULATION":
+        landRoadPopulationAmount = 1;
+        break;
+      case "MARKET_INCOME_MULTIPLIER":
+        marketIncomeMultiplier = 2;
         break;
       case "ARMS_INDUSTRY_DISCOUNT":
         armsIndustryDiscountCoins = 1;
@@ -899,7 +914,9 @@ export function technologyCapabilitiesV7(
     roleSightRadius: sights,
     roadMovement,
     ownedCityCapacityBonus,
-    supplyRecoveryAmount,
+    adjacentStartTurnHealingAmount,
+    landRoadPopulationAmount,
+    marketIncomeMultiplier,
     armsIndustryDiscountCoins,
     landTradeIncomeCoins,
     seaTradeIncomeCoins,

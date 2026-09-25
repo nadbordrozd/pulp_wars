@@ -26,6 +26,84 @@ import {
 } from "../fixtures/v7-builders";
 
 describe("Ruleset 7 public presentation", () => {
+  it("coalesces visible Windmill healing into one fixed 180 + 260 ms cue", () => {
+    const state = exploredAllV7(initialV7(1_500));
+    const before = viewForV7(state, state.humanPlayerId);
+    const recipient = before.units.find(
+      (unit) => unit.ownerId === before.viewer.id,
+    );
+    const city = before.cities.find(
+      (candidate) => candidate.ownerId === before.viewer.id,
+    );
+    if (recipient === undefined || city === undefined)
+      throw new Error("healing presentation fixture missing");
+    const after = {
+      ...before,
+      units: before.units.map((unit) =>
+        unit.id === recipient.id ? { ...unit, hp: unit.maxHp } : unit,
+      ),
+    };
+    expect(
+      corePresentationPlanV7(
+        before,
+        {
+          format: "pulp-wars-player-events",
+          version: 7,
+          viewerId: before.viewer.id,
+          commandIndex: before.commandIndex,
+          events: [
+            {
+              kind: "WINDMILL_HEALING_RESOLVED",
+              playerId: before.viewer.id,
+              cityId: city.id,
+              at: { x: 1, y: 1 },
+              results: [
+                { unitId: recipient.id, amount: 2, hpAfter: recipient.maxHp },
+              ],
+            },
+            {
+              kind: "WINDMILL_HEALING_RESOLVED",
+              playerId: before.viewer.id,
+              cityId: city.id,
+              at: { x: 2, y: 1 },
+              results: [
+                { unitId: recipient.id, amount: 2, hpAfter: recipient.maxHp },
+              ],
+            },
+          ],
+        },
+        after,
+      ),
+    ).toEqual([
+      {
+        kind: "WINDMILL_HEALING",
+        sources: [
+          { x: 1, y: 1 },
+          { x: 2, y: 1 },
+        ],
+        recipients: [{ unitId: recipient.id, at: recipient.at }],
+        sourceDurationMs: 180,
+        recipientDurationMs: 260,
+      },
+    ]);
+    expect(
+      specialBoundaryNoticeV7(
+        [
+          {
+            kind: "WINDMILL_HEALING_RESOLVED",
+            playerId: before.viewer.id,
+            cityId: city.id,
+            at: { x: 1, y: 1 },
+            results: [
+              { unitId: recipient.id, amount: 2, hpAfter: recipient.maxHp },
+            ],
+          },
+        ],
+        before.viewer.id,
+      ),
+    ).toBe(`Windmill (1, 1) healed unit ${recipient.id} +2 HP`);
+  });
+
   it("installs local recruitment directly without a whole-board presentation step", () => {
     let state = exploredAllV7(initialV7(1_516));
     const city = state.cities.find(
@@ -525,7 +603,7 @@ describe("Ruleset 7 public presentation", () => {
       economicFormulaV7("WORKSHOP", "DISTINCT_BASIC_TYPES"),
       economicFormulaV7("MARKET", "DISTINCT_ECONOMIC_FAMILIES"),
     ]).toEqual([
-      "Windmill: +1 per adjacent farm",
+      "Windmill: +1 per adjacent farm; heals adjacent owner units for 6 HP at Start Turn",
       "Sawmill: +1 per adjacent lumber camp",
       "Forge: +1 per adjacent mine",
       "Workshop: grows with varied neighbors",

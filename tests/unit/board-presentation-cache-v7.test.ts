@@ -419,4 +419,116 @@ describe("Ruleset 7 presentation caches", () => {
     expect(commandTargets).toEqual([first, second]);
     host.destroy();
   });
+
+  it.each(["FULL", "REDUCED"] as const)(
+    "draws Windmill phases on the effects canvas without per-frame board paints in %s motion",
+    async (motion) => {
+      vi.stubGlobal(
+        "ResizeObserver",
+        class {
+          observe() {}
+          disconnect() {}
+        },
+      );
+      let frameId = 0;
+      let frameTime = 0;
+      vi.spyOn(window.performance, "now").mockImplementation(() => frameTime);
+      vi.spyOn(window, "requestAnimationFrame").mockImplementation(
+        (callback) => {
+          const id = ++frameId;
+          frameTime += motion === "FULL" ? 45 : 1_000;
+          const now = frameTime;
+          queueMicrotask(() => callback(now));
+          return id;
+        },
+      );
+      vi.spyOn(window, "cancelAnimationFrame").mockImplementation(() => {});
+      const container = document.createElement("div");
+      container.getBoundingClientRect = () =>
+        ({
+          width: 800,
+          height: 600,
+          left: 0,
+          top: 0,
+          right: 800,
+          bottom: 600,
+        }) as DOMRect;
+      document.body.append(container);
+      const main = context(document.createElement("canvas"));
+      const effects = context(document.createElement("canvas"));
+      vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockImplementation(
+        function (this: HTMLCanvasElement) {
+          return this.classList.contains("board-effects-canvas-v7")
+            ? effects.buffer
+            : main.buffer;
+        },
+      );
+      const state = exploredAllV7(initialV7(1_561));
+      const before = viewForV7(state, state.humanPlayerId);
+      const recipient = before.units.find(
+        (unit) => unit.ownerId === before.viewer.id,
+      );
+      const city = before.cities.find(
+        (candidate) => candidate.ownerId === before.viewer.id,
+      );
+      if (recipient === undefined || city === undefined)
+        throw new Error("Windmill canvas fixture missing");
+      const after = {
+        ...before,
+        units: before.units.map((unit) =>
+          unit.id === recipient.id ? { ...unit, hp: unit.maxHp } : unit,
+        ),
+      };
+      const host = new CanvasBoardHostV7(document);
+      host.mount(container, { onSelection: vi.fn(), onCommand: vi.fn() });
+      host.update({
+        matchInstanceId: 1,
+        view: after,
+        offeredCommands: [],
+        interaction: {
+          selection: null,
+          selectedUnitId: null,
+          selectedAchievement: null,
+        },
+        interactive: false,
+        motion,
+        animationSpeed: "NORMAL",
+        presentationPaused: false,
+        highContrast: false,
+      });
+      const boardBefore = main.clearRect.mock.calls.length;
+      const effectsBefore = effects.clearRect.mock.calls.length;
+      await host.presentBoundary(before, after, {
+        format: "pulp-wars-player-events",
+        version: 7,
+        viewerId: before.viewer.id,
+        commandIndex: before.commandIndex,
+        events: [
+          {
+            kind: "WINDMILL_HEALING_RESOLVED",
+            playerId: before.viewer.id,
+            cityId: city.id,
+            at: city.at,
+            results: [
+              {
+                unitId: recipient.id,
+                amount: 1,
+                hpAfter: recipient.maxHp,
+              },
+            ],
+          },
+        ],
+      });
+      expect(main.clearRect.mock.calls.length - boardBefore).toBe(2);
+      expect(
+        effects.clearRect.mock.calls.length - effectsBefore,
+      ).toBeGreaterThan(2);
+      if (motion === "FULL") expect(frameId).toBeGreaterThanOrEqual(10);
+      const effectsCanvas = container.querySelector(".board-effects-canvas-v7");
+      expect((effectsCanvas as HTMLCanvasElement).dataset.healingPhase).toBe(
+        undefined,
+      );
+      host.destroy();
+    },
+  );
 });

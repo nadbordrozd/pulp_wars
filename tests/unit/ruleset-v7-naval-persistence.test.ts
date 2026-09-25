@@ -27,7 +27,7 @@ describe("ruleset-7 naval persistence schema", () => {
     expect(parsed).toEqual(fixture.state);
     expect(parseMatchSetupV7(fixture.state.setup)).toEqual(fixture.state.setup);
     expect(fixture.state.setup).toMatchObject({
-      rulesetId: "pulp-wars-poc-7r10",
+      rulesetId: "pulp-wars-poc-7r11",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     });
@@ -94,9 +94,22 @@ describe("ruleset-7 naval persistence schema", () => {
         { state, replay },
         "2026-09-23T00:00:00.000Z",
       );
-      expect(parseSaveV7(JSON.stringify(save))).toMatchObject({
+      const parsedSave = parseSaveV7(JSON.stringify(save));
+      expect(parsedSave).toMatchObject({
         kind: "VALID",
       });
+      if (command.kind === "TRAIN_NAVAL") {
+        const trainedCity = state.cities.find(
+          (city) => city.id === command.cityId,
+        );
+        expect(trainedCity?.cityActionAvailable).toBe(false);
+        if (parsedSave.kind === "VALID")
+          expect(
+            parsedSave.save.state.cities.find(
+              (city) => city.id === command.cityId,
+            )?.cityActionAvailable,
+          ).toBe(false);
+      }
       expect(runReplayV7(replay).state).toEqual(state);
       expect((await headlessV7.run(replay)).state).toEqual(state);
     };

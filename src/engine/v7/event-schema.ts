@@ -27,6 +27,7 @@ import {
 
 const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   TURN_STARTED: ["kind", "playerId", "coins"],
+  WINDMILL_HEALING_RESOLVED: ["kind", "playerId", "cityId", "at", "results"],
   INCOME_AWARDED: ["kind", "playerId", "totalCoins", "cities"],
   INCOME_PREVIEWED: ["kind", "playerId", "totalCoins", "cities"],
   TURN_ENDED: ["kind", "playerId"],
@@ -454,6 +455,13 @@ function validPayload(
   switch (kind) {
     case "TURN_STARTED":
       return id(e.playerId) && nn(e.coins);
+    case "WINDMILL_HEALING_RESOLVED":
+      return (
+        id(e.playerId) &&
+        id(e.cityId) &&
+        parseCoordV7(e.at) !== null &&
+        healingResults(e.results)
+      );
     case "INCOME_AWARDED":
     case "INCOME_PREVIEWED":
       return id(e.playerId) && nn(e.totalCoins) && income(e.cities);
@@ -945,6 +953,23 @@ function tendResults(input: unknown): boolean {
       !id(result.unitId) ||
       !pos(result.amount) ||
       Number(result.amount) > 2 ||
+      !pos(result.hpAfter) ||
+      Number(result.unitId) <= prior
+    )
+      return false;
+    prior = Number(result.unitId);
+  }
+  return true;
+}
+function healingResults(input: unknown): boolean {
+  if (!isDenseArrayV7(input) || input.length === 0) return false;
+  let prior = 0;
+  for (const result of input) {
+    if (
+      !hasExactKeysV7(result, ["amount", "hpAfter", "unitId"]) ||
+      !id(result.unitId) ||
+      !pos(result.amount) ||
+      Number(result.amount) > 6 ||
       !pos(result.hpAfter) ||
       Number(result.unitId) <= prior
     )

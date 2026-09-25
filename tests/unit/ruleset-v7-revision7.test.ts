@@ -63,7 +63,7 @@ const READY: UnitStateV7["activation"] = {
 
 describe("Ruleset 7 revision 7 networks and fortifications", () => {
   it("freezes the revision identity and removes the retired systems", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r10");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r11");
     expect(setupV7().mapGenerationRevision).toBe("REGIONAL_BIOMES_NAVAL_V2");
     expect(TECHNOLOGY_IDS_V7).toContain("ENGINEERING");
     expect(TECHNOLOGY_IDS_V7).not.toContain("GRAND_WORKS");
@@ -503,7 +503,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     expect(projected.events[0]).not.toHaveProperty("targetUnitId");
   });
 
-  it("roots land Roads at the owner's original capital without changing Market output", () => {
+  it("roots land Roads at the owner's original capital and applies current Road population", () => {
     const base = initialV7(67, 2);
     const owner = base.humanPlayerId;
     const original = required(
@@ -583,11 +583,11 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     expect(
       connectedEconomy.cities.find((city) => city.id === original.id)
         ?.economicPopulation,
-    ).toBe(original.economicPopulation);
+    ).toBe(original.economicPopulation + 1);
     expect(
       connectedEconomy.cities.find((city) => city.id === foreign.id)
         ?.economicPopulation,
-    ).toBe(foreign.economicPopulation);
+    ).toBe(foreign.economicPopulation + 1);
     const connectedIncome = cityIncomeV7(
       connected,
       required(connected.cities.find((city) => city.id === foreign.id)),
@@ -644,7 +644,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     expect(
       reconnectedEconomy.cities.find((city) => city.id === foreign.id)
         ?.economicPopulation,
-    ).toBe(foreign.economicPopulation);
+    ).toBe(foreign.economicPopulation + 1);
     expect(
       reconnectedEconomy.cities.find((city) => city.id === foreign.id)?.rewards,
     ).toEqual(foreign.rewards);
@@ -894,7 +894,9 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
       preview: {
         ownerCityId: null,
         cost: 2,
-        populationDeltaByCity: [],
+        populationDeltaByCity: base.cities
+          .filter((city) => city.ownerId === owner)
+          .map((city) => ({ cityId: city.id, delta: 1 })),
       },
     });
     const applied = applyCommandV7(base, owner, command);
@@ -1012,7 +1014,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     ).toBe(false);
   });
 
-  it("activates the existing land Road graph without obsolete population growth", () => {
+  it("activates the existing land Road graph with current connected-city population", () => {
     const state = researchRoadsState();
     const owner = state.humanPlayerId;
     const ownedBefore = state.cities.filter((city) => city.ownerId === owner);
@@ -1028,7 +1030,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
       result.state.cities
         .filter((city) => city.ownerId === owner)
         .map((city) => city.economicPopulation),
-    ).toEqual([0, 0]);
+    ).toEqual([1, 1]);
     expect(result.events).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ kind: "TECH_RESEARCHED", tech: "ROADS" }),
@@ -1038,7 +1040,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     expect(parseGameStateV7(result.state)).toEqual(result.state);
   });
 
-  it("keeps Explosives required for ordinary Pillage and checks action state first", () => {
+  it("keeps Raiding required for ordinary Pillage and checks action state first", () => {
     const state = exploredAllV7(initialV7(79));
     const actor = state.humanPlayerId;
     const sourceBase = required(
@@ -1101,9 +1103,10 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
               ...player,
               researchedTechs: [
                 "GATHERING",
+                "HUNTING",
+                "SCOUTING",
+                "RAIDING",
                 "DRILL",
-                "FORTIFICATION",
-                "EXPLOSIVES",
               ],
             }
           : player,
@@ -1382,7 +1385,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     }
   });
 
-  it("does not expose hidden Ore through Blast offers or normal AI", () => {
+  it("keeps pre-Drill Ore private and Blasts only revealed empty Mountains", () => {
     const base = richV7(exploredAllV7(initialV7(87)), 100);
     const actor = base.humanPlayerId;
     const city = required(
@@ -1394,18 +1397,13 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
       .map((tile) => tile.at);
     if (bareAt === undefined || oreAt === undefined)
       throw new Error("mountains missing");
-    const beforeEngineering = checkedV7({
+    const beforeDrill = checkedV7({
       ...base,
       players: base.players.map((player) =>
         player.id === actor
           ? {
               ...player,
-              researchedTechs: [
-                "GATHERING",
-                "DRILL",
-                "FORTIFICATION",
-                "EXPLOSIVES",
-              ],
+              researchedTechs: ["GATHERING"],
             }
           : player,
       ),
@@ -1433,7 +1431,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
         ),
       },
     });
-    const hiddenView = viewForV7(beforeEngineering, actor);
+    const hiddenView = viewForV7(beforeDrill, actor);
     expect(
       hiddenView.board.tiles
         .filter(
@@ -1451,16 +1449,15 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
       "BLAST_MOUNTAIN",
     );
 
-    const afterEngineering = checkedV7({
-      ...beforeEngineering,
-      players: beforeEngineering.players.map((player) =>
+    const afterDrill = checkedV7({
+      ...beforeDrill,
+      players: beforeDrill.players.map((player) =>
         player.id === actor
           ? {
               ...player,
               researchedTechs: [
                 "GATHERING",
                 "DRILL",
-                "ENGINEERING",
                 "FORTIFICATION",
                 "EXPLOSIVES",
               ],
@@ -1468,7 +1465,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
           : player,
       ),
     });
-    const offered = queryPlayerCommandsV7(viewForV7(afterEngineering, actor));
+    const offered = queryPlayerCommandsV7(viewForV7(afterDrill, actor));
     expect(offered).toContainEqual({ kind: "BLAST_MOUNTAIN", at: bareAt });
     expect(offered).not.toContainEqual({ kind: "BLAST_MOUNTAIN", at: oreAt });
   });

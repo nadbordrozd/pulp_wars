@@ -37,7 +37,9 @@ import {
 import { BoardGlowCacheV7 } from "./glow-cache-v7";
 import {
   drawSupportFeedbackV7,
+  drawWindmillHealingFeedbackV7,
   type SupportFeedbackV7,
+  type WindmillHealingFeedbackV7,
 } from "./support-presentation-v7";
 
 export interface BoardHostModelV7 {
@@ -129,6 +131,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     readonly statusId: string;
   } | null = null;
   #supportFeedback: SupportFeedbackV7 | null = null;
+  #windmillHealingFeedback: WindmillHealingFeedbackV7 | null = null;
   #crossfade: {
     readonly before: PlayerViewV7;
     readonly after: PlayerViewV7;
@@ -311,6 +314,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#impact = null;
     this.#statusPulse = null;
     this.#supportFeedback = null;
+    this.#windmillHealingFeedback = null;
     this.#drawSupportOverlay();
     this.#crossfade = null;
     this.#selectionJump = null;
@@ -353,7 +357,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             : undefined;
       if (at !== undefined) this.#followCamera(at);
       const supportSteps = steps.filter((step) => step.kind === "SUPPORT");
-      if (supportSteps.length > 0) {
+      const windmillSteps = steps.filter(
+        (step) => step.kind === "WINDMILL_HEALING",
+      );
+      if (supportSteps.length > 0 || windmillSteps.length > 0) {
         this.#presentedView = after;
         this.#draw();
         for (const step of supportSteps) {
@@ -370,7 +377,22 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           this.#supportFeedback = null;
           this.#drawSupportOverlay();
         }
-        if (supportSteps.length === steps.length) {
+        for (const step of windmillSteps) {
+          for (const phase of ["SOURCES", "RECIPIENTS"] as const) {
+            this.#windmillHealingFeedback = {
+              phase,
+              sources: step.sources,
+              recipients: step.recipients,
+              progress: 0.5,
+            };
+            this.#drawSupportOverlay();
+            await this.#animate(100 * durationScale, () => undefined);
+            if (token !== this.#presentationToken) return;
+          }
+          this.#windmillHealingFeedback = null;
+          this.#drawSupportOverlay();
+        }
+        if (supportSteps.length + windmillSteps.length === steps.length) {
           this.#presentedView = null;
           this.#draw();
           return;
@@ -477,6 +499,27 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         });
         if (token !== this.#presentationToken) return;
         this.#supportFeedback = null;
+        this.#drawSupportOverlay();
+      } else if (step.kind === "WINDMILL_HEALING") {
+        this.#presentedView = after;
+        this.#draw();
+        for (const phase of ["SOURCES", "RECIPIENTS"] as const) {
+          const duration =
+            phase === "SOURCES"
+              ? step.sourceDurationMs
+              : step.recipientDurationMs;
+          await this.#animate(duration * durationScale, (progress) => {
+            this.#windmillHealingFeedback = {
+              phase,
+              sources: step.sources,
+              recipients: step.recipients,
+              progress,
+            };
+            this.#drawSupportOverlay();
+          });
+          if (token !== this.#presentationToken) return;
+        }
+        this.#windmillHealingFeedback = null;
         this.#drawSupportOverlay();
       } else if (step.kind === "DAMAGE") {
         this.#presentedView = after;
@@ -678,21 +721,49 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     context.setTransform(dpr, 0, 0, dpr, 0, 0);
     context.clearRect(0, 0, this.#viewport.width, this.#viewport.height);
     const feedback = this.#supportFeedback;
-    if (feedback === null) {
+    const windmill = this.#windmillHealingFeedback;
+    if (feedback === null && windmill === null) {
       delete canvas.dataset.supportEffect;
       delete canvas.dataset.supportRecipients;
       delete canvas.dataset.supportProgress;
+      delete canvas.dataset.healingPhase;
+      delete canvas.dataset.healingSources;
+      delete canvas.dataset.healingRecipients;
+      delete canvas.dataset.healingProgress;
       return;
     }
-    canvas.dataset.supportEffect = feedback.effect;
-    canvas.dataset.supportRecipients = String(feedback.recipients.length);
-    canvas.dataset.supportProgress = feedback.progress.toFixed(3);
-    drawSupportFeedbackV7(
-      context,
-      this.#camera,
-      feedback,
-      this.#model?.motion === "REDUCED",
-    );
+    if (feedback !== null) {
+      canvas.dataset.supportEffect = feedback.effect;
+      canvas.dataset.supportRecipients = String(feedback.recipients.length);
+      canvas.dataset.supportProgress = feedback.progress.toFixed(3);
+      drawSupportFeedbackV7(
+        context,
+        this.#camera,
+        feedback,
+        this.#model?.motion === "REDUCED",
+      );
+    } else {
+      delete canvas.dataset.supportEffect;
+      delete canvas.dataset.supportRecipients;
+      delete canvas.dataset.supportProgress;
+    }
+    if (windmill !== null) {
+      canvas.dataset.healingPhase = windmill.phase;
+      canvas.dataset.healingSources = String(windmill.sources.length);
+      canvas.dataset.healingRecipients = String(windmill.recipients.length);
+      canvas.dataset.healingProgress = windmill.progress.toFixed(3);
+      drawWindmillHealingFeedbackV7(
+        context,
+        this.#camera,
+        windmill,
+        this.#model?.motion === "REDUCED",
+      );
+    } else {
+      delete canvas.dataset.healingPhase;
+      delete canvas.dataset.healingSources;
+      delete canvas.dataset.healingRecipients;
+      delete canvas.dataset.healingProgress;
+    }
   }
 
   #activate(at: CoordV7): void {

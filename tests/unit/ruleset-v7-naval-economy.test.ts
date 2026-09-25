@@ -451,12 +451,12 @@ describe("ruleset-7 naval economy", () => {
         base.cities.find((city) => city.id === cityCId) ?? cityC,
       ),
     ).toBe(2);
-    expect(marketIncomeForCityV7(base, cityD)).toBe(1);
+    expect(marketIncomeForCityV7(base, cityD)).toBe(2);
     expect(
       viewForV7(base, base.humanPlayerId).improvementValues.find(
         (value) => value.improvement === "MARKET",
       ),
-    ).toMatchObject({ level: 1, measure: "COIN_INCOME" });
+    ).toMatchObject({ level: 2, measure: "COIN_INCOME" });
 
     const transitOccupied = {
       ...base,

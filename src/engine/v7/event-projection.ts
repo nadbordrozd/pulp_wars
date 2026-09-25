@@ -46,6 +46,16 @@ export function projectEventsV7(
   const projected: PlayerEventV7[] = [];
 
   for (const event of events) {
+    if (event.kind === "WINDMILL_HEALING_RESOLVED") {
+      if (event.playerId === viewerId) projected.push(event);
+      else if (coordVisible(afterState, afterState, viewerId, event.at)) {
+        const results = event.results.filter((result) =>
+          afterVisible.has(result.unitId),
+        );
+        if (results.length > 0) projected.push({ ...event, results });
+      }
+      continue;
+    }
     const ids = unitIds(event);
     if (event.kind === "UNIT_MOVE_INTERRUPTED")
       for (const unit of afterState.units)
@@ -166,6 +176,8 @@ function eventVisible(
         after.units.find((unit) => unit.id === event.captainId)?.ownerId ===
           viewerId
       );
+    case "WINDMILL_HEALING_RESOLVED":
+      return event.playerId === viewerId;
     case "UNIT_TRAINED":
     case "UNIT_REWARD_GRANTED":
       return event.playerId === viewerId;
@@ -215,6 +227,8 @@ function unitIds(event: DomainEventV7): readonly UnitId[] {
       return [event.captainId, ...event.unitIds];
     case "WOUNDED_TENDED":
       return [event.captainId, ...event.results.map((result) => result.unitId)];
+    case "WINDMILL_HEALING_RESOLVED":
+      return event.results.map((result) => result.unitId);
     case "UNIT_PUSHED":
       return [event.sourceUnitId, event.targetUnitId];
     case "UNIT_SPAWN_DISPLACED":

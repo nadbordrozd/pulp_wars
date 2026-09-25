@@ -3,11 +3,11 @@ import { chooseNormalCommandV7, scoreCommandV7 } from "../../src/ai/v7";
 import { publicResourceV7, viewForV7 } from "../../src/engine/index";
 import { checkedV7, initialV7 } from "../fixtures/v7-builders";
 
-describe("ruleset-7 public Ore and Normal Engineering policy", () => {
-  it("does not leak Ore before Engineering and reveals it afterward", () => {
+describe("ruleset-7 public Ore and Normal Industry policy", () => {
+  it("does not leak Ore before Drill and reveals it afterward", () => {
     const tile = { terrain: "MOUNTAIN" as const, resource: "ORE" as const };
     expect(publicResourceV7(tile, ["GATHERING"])).toBeNull();
-    expect(publicResourceV7(tile, ["GATHERING", "ENGINEERING"])).toBe("ORE");
+    expect(publicResourceV7(tile, ["GATHERING", "DRILL"])).toBe("ORE");
   });
 
   it("values only public owned Mountain biome priors", () => {

@@ -3,7 +3,7 @@ import {
   technologyCapabilitiesV7,
 } from "../rules/ruleset-v7";
 import { defenseBonusForUnitV7, fortificationLevelForUnitV7 } from "./combat";
-import { spatialContributionAtV7, tileAtV7 } from "./spatial-economy";
+import { tileAtV7 } from "./spatial-economy";
 import type { GameStateV7, UnitStateV7 } from "./types";
 
 export const UNIT_STAT_IDS_V7 = Object.freeze([
@@ -101,20 +101,6 @@ export function publicUnitStatsV7(
           unit.role
         ] ?? 0,
       );
-  const tile = tileAtV7(state.board, unit.at);
-  const territoryCity = state.cities.find(
-    (city) =>
-      city.id === tile?.territoryCityId && city.ownerId === unit.ownerId,
-  );
-  const supplied =
-    unit.form === "LAND" &&
-    territoryCity !== undefined &&
-    state.board.tiles.some(
-      (candidate) =>
-        candidate.territoryCityId === territoryCity.id &&
-        candidate.improvement === "WINDMILL" &&
-        spatialContributionAtV7(state, candidate.at, "WINDMILL").population > 0,
-    );
   const labelText = embarked ? "Embarked transport" : role.label;
   return {
     unitId: unit.id,
@@ -220,7 +206,6 @@ export function publicUnitStatsV7(
     ],
     abilities: embarked ? [] : role.abilities,
     statuses: [
-      ...(supplied ? ["Supplied: recover 6 HP"] : []),
       ...(unit.activation.inspired && unit.activation.attacksUsed === 0
         ? ["Inspired: +1 next Attack"]
         : []),

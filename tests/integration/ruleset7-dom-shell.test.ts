@@ -506,11 +506,14 @@ describe("Ruleset 7 DOM shell", () => {
     expect(document.querySelector(".v7-tech-detail")?.textContent).toContain(
       "Road-linked cities: +1 Coin",
     );
+    requiredButton('[data-action="tech-drill"]').click();
+    expect(document.querySelector(".v7-tech-detail")?.textContent).toContain(
+      "Reveals Ore",
+    );
     requiredButton('[data-action="tech-engineering"]').click();
-    const prospecting = document.querySelector(".v7-tech-detail")?.textContent;
-    expect(prospecting).toContain("Reveals Ore");
-    expect(prospecting).toContain("Units can climb mountains");
-    expect(prospecting).toContain("+1 sight on mountains");
+    const engineering = document.querySelector(".v7-tech-detail")?.textContent;
+    expect(engineering).toContain("Units can climb mountains");
+    expect(engineering).toContain("+1 sight on mountains");
     requiredButton('[data-action="close-tech-detail"]').click();
     await Promise.resolve();
     expect(document.querySelector(".v7-tech-detail")).toBeNull();
@@ -978,6 +981,9 @@ describe("Ruleset 7 DOM shell", () => {
     expect(document.querySelector(".v7-city-stats")?.textContent).toContain(
       "Units",
     );
+    expect(
+      document.querySelector('[data-stat="city-action"]')?.textContent,
+    ).toContain("City actionReady");
     expect(
       document
         .querySelector(".v7-city-stats .v7-population-value img")

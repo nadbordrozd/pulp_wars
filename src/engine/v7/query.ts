@@ -322,6 +322,7 @@ function appendPublicCityCommandsV7(
 ): void {
   const player = view.viewer;
   if (city.ownerId !== player.id || publicCityBesieged(view, city.at)) return;
+  if (city.cityActionAvailable !== true) return;
   const centerBlocked = view.units.some(
     (unit) => unit.ownerId !== player.id && same(unit.at, city.at),
   );
@@ -498,8 +499,7 @@ function appendPublicUnitCommandsV7(
     candidates.push({ kind: "PROMOTE", unitId: unit.id });
   const tile = tileAtView(view, unit.at);
   if (
-    ((unit.role === "RAIDER" && player.researchedTechs.includes("RAIDING")) ||
-      player.researchedTechs.includes("EXPLOSIVES")) &&
+    player.researchedTechs.includes("RAIDING") &&
     unit.form === "LAND" &&
     unit.role !== "JUGGERNAUT" &&
     !primaryUsedForQuery(unit) &&
@@ -1407,7 +1407,15 @@ function liveTotalForCityV7(
         throw new RangeError("INTEGER_OVERFLOW");
       return value;
     }, 0);
-  const total = improvementPopulation;
+  const connectivity = publicGraphNavalConnectivityV7(graph);
+  const connectedOtherCities = [...connectivity.network].filter(
+    (candidate) => candidate !== graph.originalCapitalCityId,
+  );
+  const roadPopulation =
+    cityId === graph.originalCapitalCityId
+      ? connectedOtherCities.length
+      : Number(connectedOtherCities.includes(cityId));
+  const total = improvementPopulation + roadPopulation;
   if (!Number.isSafeInteger(total)) throw new RangeError("INTEGER_OVERFLOW");
   return total;
 }
@@ -1420,7 +1428,10 @@ function marketForCityV7(graph: PublicEconomyGraphV7, cityId: CityId): number {
     )
     .reduce((total, tile) => {
       const evaluation = spatialContributionAtV7(graph, tile.at, "MARKET");
-      const value = total + Math.min(4, evaluation.marketIncome);
+      const value =
+        total +
+        Math.min(4, evaluation.marketIncome) *
+          (graph.researchedTechs.includes("COMMERCE") ? 2 : 1);
       if (!Number.isSafeInteger(value))
         throw new RangeError("INTEGER_OVERFLOW");
       return value;
@@ -1688,7 +1699,7 @@ function exactIncomeDeltaWithUnchangedMarketV7(
       publicCityIncomeV7(view, before, knownMarket)
     );
   const possible = new Set<number>();
-  for (let market = 0; market <= 5; market += 1)
+  for (let market = 0; market <= 8; market += 1)
     possible.add(
       publicCityIncomeV7(view, after, market) -
         publicCityIncomeV7(view, before, market),
@@ -1735,10 +1746,7 @@ function projectedResourceAfterMutationV7(
   resource: "FERTILE_GROUND" | "ORE" | null,
 ): EconomicPreviewV7["resourceRestored"] {
   if (terrain === null) return null;
-  if (
-    resource === "ORE" &&
-    !view.viewer.researchedTechs.includes("ENGINEERING")
-  )
+  if (resource === "ORE" && !view.viewer.researchedTechs.includes("DRILL"))
     return null;
   if (terrain === "FOREST") return resource;
   return resource;
@@ -1770,7 +1778,8 @@ function economicOutputTransitionsV7(
           : ("POPULATION" as const),
       value:
         tile.improvement === "MARKET"
-          ? evaluation.marketIncome
+          ? Math.min(4, evaluation.marketIncome) *
+            (graph.researchedTechs.includes("COMMERCE") ? 2 : 1)
           : evaluation.population,
     };
   };
@@ -2771,7 +2780,8 @@ function publicTileGraphOutputV7(
         : contribution.population,
     recurringCoins:
       tile.improvement === "MARKET"
-        ? Math.min(4, contribution.marketIncome)
+        ? Math.min(4, contribution.marketIncome) *
+          (graph.researchedTechs.includes("COMMERCE") ? 2 : 1)
         : contribution.marketIncome,
   };
 }
@@ -3204,7 +3214,6 @@ function publicTileCommandLegal(
   if (kind === "BLAST_MOUNTAIN")
     return (
       view.viewer.coins >= 3 &&
-      view.viewer.researchedTechs.includes("ENGINEERING") &&
       tile.site === null &&
       tile.terrain === "MOUNTAIN" &&
       tile.resource === null &&

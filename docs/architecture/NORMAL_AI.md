@@ -1,5 +1,21 @@
 # Greedy Normal AI
 
+## Revision-11 runtime baseline; tactical policy pending
+
+The production policy currently consumes the legal revision-11 public schema
+and commands under `pulp-wars-poc-7r11`, including the shared city-action flag,
+Road population, Commerce Market values, Drill Ore visibility, Raiding-only
+Pillage, and Windmill healing events. This is the minimally adapted baseline
+required by
+[Ruleset 7 revision 11](../product/RULESET_7_REVISION_11_CITY_LOGISTICS_AI.md#82-controlled-same-rules-comparison).
+The bounded tactical policy, Road-corridor planning, scenarios, and comparative
+evaluation in that contract's sections 7–8 remain pending. No revision-11
+heuristic tuning is implemented yet.
+
+The older merged-industry policy notes below are retained implementation
+history and do not override the current Human technology graph or the pending
+revision-11 AI contract.
+
 ## Revision-8 merged industry and processor adjacency
 
 The current Ruleset 7 policy uses the single

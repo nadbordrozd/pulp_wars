@@ -34,7 +34,15 @@ export function initialV7(seed = 71, aiCount: 1 | 2 | 3 = 1): GameStateV7 {
     created.state.humanPlayerId,
   );
   if (humanTurnIndex < 0) throw new Error("Human turn missing");
-  return checkedV7({ ...created.state, activeSeatIndex: humanTurnIndex });
+  return checkedV7({
+    ...created.state,
+    activeSeatIndex: humanTurnIndex,
+    cities: created.state.cities.map((city) =>
+      city.ownerId === created.state.humanPlayerId
+        ? { ...city, cityActionAvailable: true }
+        : city,
+    ),
+  });
 }
 
 export function checkedV7(state: GameStateV7): GameStateV7 {

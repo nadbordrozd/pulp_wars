@@ -1,15 +1,26 @@
 # Pulp Wars Ruleset 7
 
-**Status:** revision-10 playable runtime. The
+**Status:** revision-11 playable runtime. The runtime rules in sections 1–6 of
+the [revision-11 city logistics contract](RULESET_7_REVISION_11_CITY_LOGISTICS_AI.md)
+are the authoritative current overlay. Its Normal-AI sections 7–8 remain
+pending. Revision 11 builds on the
 [revision-10 playtest corrections](RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md)
-are the authoritative current overlay over the
+and the
 [revision-9 Human technology specification](RULESET_7_REVISION_9_HUMAN_TECHNOLOGY.md).
 They inherit retained industry rules from
 [revision 8](RULESET_7_REVISION_8_INDUSTRY_ADJACENCY.md) and unchanged rules from the
 [revision-7 networks and fortifications specification](RULESET_7_REVISION_7_NETWORKS_FORTIFICATIONS.md),
 which inherits the revision-6 water and naval specification.
 
-**Runtime ruleset ID:** `pulp-wars-poc-7r10`
+**Runtime ruleset ID:** `pulp-wars-poc-7r11`
+
+The current runtime stores one owner-private action flag per city for land
+training, naval training, or Land Grant; resolves adjacent Windmill healing at
+Start Turn; derives reversible capital-connected population from Roads;
+doubles Market income with Commerce; reveals Ore with Drill; and assigns
+Pillage only to Raiding. Current Port and Fish presentation uses the two
+accepted revision-11 sources. Connected cities grow with Roads; Commerce earns
+trade and doubles Markets.
 
 The revision-5 achievement specification remains authoritative for achievement
 and Monument rules left unchanged by revision 10. The revision-4 biome economy

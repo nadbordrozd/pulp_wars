@@ -1171,7 +1171,21 @@ export class Ruleset7DomAppView {
           `+${cityIncomeForViewerV7(view, city.id) ?? 0}`,
         );
         income.append(text(this.#document, "dt", "Income"), incomeValue);
-        details.append(units, income);
+        const cityAction = el(this.#document, "div", "v7-city-stat");
+        cityAction.dataset.stat = "city-action";
+        cityAction.title =
+          "One shared city action covers land training, naval training, or Land Grant and resets at Start Turn";
+        cityAction.append(
+          text(this.#document, "dt", "City action"),
+          text(
+            this.#document,
+            "dd",
+            city.cityActionAvailable === true
+              ? "Ready"
+              : "Spent · resets next turn",
+          ),
+        );
+        details.append(units, income, cityAction);
         for (const [kind, active] of [
           ["land", view.naval.landTradeCityIds.includes(city.id)],
           ["sea", view.naval.seaTradeCityIds.includes(city.id)],
@@ -1313,6 +1327,25 @@ export class Ruleset7DomAppView {
             discount.title =
               "This Shipyard discounts naval-unit training here by 2 Coins";
             details.append(discount);
+          }
+          const portCity =
+            port === undefined
+              ? undefined
+              : view.cities.find((city) => city.id === port.cityId);
+          if (
+            portCity?.ownerId === view.viewer.id &&
+            portCity.cityActionAvailable === false
+          ) {
+            const spent = text(
+              this.#document,
+              "p",
+              "City action spent · resets next turn",
+              "v7-chip is-warning",
+            );
+            spent.dataset.disabledReason = "city-action-spent";
+            spent.title =
+              "Land training, naval training, and Land Grant share one city action";
+            details.append(spent);
           }
         }
         const monumentSource = monumentSourceForViewerV7(view, tile.at);
@@ -2902,7 +2935,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r10",
+    rulesetId: "pulp-wars-poc-7r11",
     seed,
     width: draft.boardSize,
     height: draft.boardSize,
@@ -2978,7 +3011,7 @@ function trainingCostForViewV7(
 }
 function incomeDescription(view: PlayerViewV7): string {
   const cities = view.cities.filter((city) => city.ownerId === view.viewer.id);
-  return `Next income ${cities.reduce((sum, city) => sum + (cityIncomeForViewerV7(view, city.id) ?? 0), 0)} from ${cities.length} cities, including capital, land trade, sea trade, Market, population deficit, and siege effects.`;
+  return `Next income ${cities.reduce((sum, city) => sum + (cityIncomeForViewerV7(view, city.id) ?? 0), 0)} from ${cities.length} cities, including capital, land trade, sea trade, Market, population deficit, and siege effects. Connected cities grow with Roads; Commerce earns trade and doubles Markets.`;
 }
 function tileCity(view: PlayerViewV7, at: CoordV7): number | null {
   const tile = view.board.tiles.find((entry) => same(entry.at, at));
@@ -3012,12 +3045,16 @@ function effectDescription(
       return "Road edges cost half a movement point";
     case "OWNED_CITY_CAPACITY_BONUS":
       return `Cities support +${effect.capacity} unit`;
-    case "SUPPLY_RECOVERY":
-      return `Friendly supply heals ${effect.amount}`;
+    case "ADJACENT_START_TURN_HEALING":
+      return `Windmills heal adjacent units for ${effect.amount} HP at Start Turn`;
     case "ARMS_INDUSTRY_DISCOUNT":
       return `Forge training discount: ${effect.coins} Coin`;
     case "LAND_TRADE_INCOME":
       return `Road-linked cities: +${effect.coins} Coin`;
+    case "LAND_ROAD_POPULATION":
+      return `Road-linked cities: +${effect.amount} live population`;
+    case "MARKET_INCOME_MULTIPLIER":
+      return `Markets earn ${effect.multiplier}× income`;
     case "SEA_TRADE_INCOME":
       return `Sea-linked cities: +${effect.coins} Coin`;
     case "CAPTAIN_SUPPORT":
@@ -3044,9 +3081,14 @@ function navalTechnologyNotesV7(
   if (technology === "NAVAL_ENGINEERING")
     return ["Battleship: long-range splash damage"];
   if (technology === "EXPLOSIVES")
-    return ["Engineering identifies resource-free mountains safe to Blast"];
+    return ["Drill identifies resource-free mountains safe to Blast"];
   if (technology === "ROADS")
-    return ["Usable Road and owned-city edges cost half movement"];
+    return [
+      "Usable Road and owned-city edges cost half movement",
+      "Connected owned cities and the original capital each gain population",
+    ];
+  if (technology === "COMMERCE")
+    return ["Connected cities earn trade", "Market income is doubled"];
   return [];
 }
 
@@ -3124,9 +3166,11 @@ function technologyEffectGroupIdV7(
     case "ROAD_MOVEMENT":
       return "MOVEMENT_SIGHT";
     case "OWNED_CITY_CAPACITY_BONUS":
-    case "SUPPLY_RECOVERY":
+    case "ADJACENT_START_TURN_HEALING":
     case "ARMS_INDUSTRY_DISCOUNT":
     case "LAND_TRADE_INCOME":
+    case "LAND_ROAD_POPULATION":
+    case "MARKET_INCOME_MULTIPLIER":
     case "SEA_TRADE_INCOME":
     case "CAPTAIN_SUPPORT":
     case "OVERRUN":
@@ -3230,7 +3274,7 @@ export function economicFormulaV7(
     improvement === "WINDMILL" &&
     formula === "ADJACENT_FRIENDLY_CONTRIBUTORS"
   )
-    return "Windmill: +1 per adjacent farm";
+    return "Windmill: +1 per adjacent farm; heals adjacent owner units for 6 HP at Start Turn";
   if (improvement === "SAWMILL" && formula === "ADJACENT_FRIENDLY_CONTRIBUTORS")
     return "Sawmill: +1 per adjacent lumber camp";
   if (improvement === "FORGE" && formula === "ADJACENT_FRIENDLY_CONTRIBUTORS")
@@ -3264,6 +3308,18 @@ export function specialBoundaryNoticeV7(
   events: Ruleset7AcceptedBoundary["playerEvents"]["events"],
   viewerId: number,
 ): string | null {
+  const healing = events.filter(
+    (event) => event.kind === "WINDMILL_HEALING_RESOLVED",
+  );
+  if (healing.length > 0)
+    return healing
+      .map(
+        (event) =>
+          `Windmill (${event.at.x}, ${event.at.y}) healed ${event.results
+            .map((result) => `unit ${result.unitId} +${result.amount} HP`)
+            .join(", ")}`,
+      )
+      .join(" · ");
   const treasury = events.find(
     (event) =>
       event.kind === "CITY_REWARD_AUTOMATICALLY_GRANTED" &&

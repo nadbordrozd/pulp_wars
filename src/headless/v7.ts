@@ -18,6 +18,7 @@ import {
   arePlayersAlliedV7,
   assignedUnitCountV7,
   cityUnitCapacityV7,
+  marketIncomeForCityV7,
 } from "../engine/v7/economy";
 import type { DomainEventV7 } from "../engine/v7/events";
 import {
@@ -82,7 +83,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r10";
+  readonly rulesetId: "pulp-wars-poc-7r11";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -633,7 +634,7 @@ export async function runAiBatchV7(
           await new Promise<void>((resolve) => setTimeout(resolve, 0));
           const result = runAiMatchInternalV7(
             {
-              rulesetId: "pulp-wars-poc-7r10",
+              rulesetId: "pulp-wars-poc-7r11",
               mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
               seed,
               width: size,
@@ -730,7 +731,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r10",
+    rulesetId: "pulp-wars-poc-7r11",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,
@@ -953,17 +954,7 @@ function recordEventsV7(
       metrics.economy.oneCoinFloorAwards += event.cities.filter((income) => {
         const city = after.cities.find((item) => item.id === income.cityId);
         if (city === undefined || cityIsBesieged(after, city.id)) return false;
-        const market = after.board.tiles
-          .filter(
-            (tile) =>
-              tile.territoryCityId === city.id && tile.improvement === "MARKET",
-          )
-          .reduce(
-            (total, tile) =>
-              total +
-              spatialContributionAtV7(after, tile.at, "MARKET").marketIncome,
-            0,
-          );
+        const market = marketIncomeForCityV7(after, city);
         return (
           city.level +
             Number(city.isCapital) +
@@ -1113,6 +1104,14 @@ function recordEventsV7(
             (telemetry.healingSinceCatapultShot.get(result.unitId) ?? 0) +
               result.amount,
           );
+    if (event.kind === "WINDMILL_HEALING_RESOLVED")
+      for (const result of event.results)
+        if (telemetry.catapultShotTargets.has(result.unitId))
+          telemetry.healingSinceCatapultShot.set(
+            result.unitId,
+            (telemetry.healingSinceCatapultShot.get(result.unitId) ?? 0) +
+              result.amount,
+          );
     if (
       event.kind === "UNIT_RECOVERED" &&
       telemetry.catapultShotTargets.has(event.unitId)
@@ -1171,8 +1170,16 @@ function recordSnapshotV7(
     for (const tile of state.board.tiles) {
       if (tile.improvement === null) continue;
       const value = spatialContributionAtV7(state, tile.at, tile.improvement);
+      const city = state.cities.find(
+        (candidate) => candidate.id === tile.territoryCityId,
+      );
+      const commerce = state.players
+        .find((player) => player.id === city?.ownerId)
+        ?.researchedTechs.includes("COMMERCE");
       const output =
-        tile.improvement === "MARKET" ? value.marketIncome : value.population;
+        tile.improvement === "MARKET"
+          ? Math.min(4, value.marketIncome) * (commerce ? 2 : 1)
+          : value.population;
       increment(
         metrics.improvements.liveOutputHistogram[tile.improvement],
         String(output),
@@ -1236,11 +1243,17 @@ function currentContributions(state: GameStateV7) {
       tile.at,
       tile.improvement,
     );
+    const city = state.cities.find(
+      (candidate) => candidate.id === tile.territoryCityId,
+    );
+    const commerce = state.players
+      .find((player) => player.id === city?.ownerId)
+      ?.researchedTechs.includes("COMMERCE");
     result.set(coordKey(tile.at), {
       improvement: tile.improvement,
       value:
         tile.improvement === "MARKET"
-          ? contribution.marketIncome
+          ? Math.min(4, contribution.marketIncome) * (commerce ? 2 : 1)
           : contribution.population,
     });
   }

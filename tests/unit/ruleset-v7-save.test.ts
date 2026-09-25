@@ -16,7 +16,7 @@ describe("ruleset-7 revision-8 save compatibility", () => {
       { state: created.state, replay: createReplayV7(setup) },
       "2026-09-22T10:00:00.000Z",
     );
-    expect(save.rulesetId).toBe("pulp-wars-poc-7r10");
+    expect(save.rulesetId).toBe("pulp-wars-poc-7r11");
     expect(parseSaveV7(JSON.stringify(save))).toMatchObject({ kind: "VALID" });
     expect(
       parseSaveV7(JSON.stringify({ ...save, rulesetId: "pulp-wars-poc-7r7" })),

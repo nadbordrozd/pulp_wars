@@ -177,7 +177,9 @@ describe("ruleset-7 technology", () => {
     expect(capabilities).toMatchObject({
       treeId: "ORIGINAL_BASELINE_V5",
       hostileCaptureSpoilsCoins: 2,
-      supplyRecoveryAmount: 6,
+      adjacentStartTurnHealingAmount: 6,
+      landRoadPopulationAmount: 1,
+      marketIncomeMultiplier: 2,
       armsIndustryDiscountCoins: 1,
       landTradeIncomeCoins: 1,
       seaTradeIncomeCoins: 1,
