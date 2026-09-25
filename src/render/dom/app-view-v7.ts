@@ -42,7 +42,10 @@ import type { MapCommandTargetV7 } from "../canvas/board-renderer-v7";
 import { technologyTreeLayoutV7 } from "./technology-tree-layout-v7";
 import { createTacticalSymbolV7 } from "./tactical-symbol-v7";
 import type { TacticalSymbolTheme } from "../../assets/ruleset7-tactical-ui-symbols";
-import { selectionIdentityArtworkLayoutV7 } from "./selection-identity-v7";
+import {
+  selectionIdentityArtworkLayoutV7,
+  technologyArtworkLayoutV7,
+} from "./selection-identity-v7";
 import { uiIconV7, type UiIconIdV7 } from "./ui-icons-v7";
 
 const BOARD_SIZES = [11, 14, 16, 20, 25] as const;
@@ -1380,6 +1383,14 @@ export class Ruleset7DomAppView {
         text(this.#document, "span", commandLabel(command), "v7-action-label"),
       );
       action.title = commandLabel(command);
+      if (command.kind === "CULTIVATE_FOREST") {
+        action.title =
+          "Clear for farming · Removes Forest and creates Fertile Ground";
+        action.setAttribute(
+          "aria-description",
+          "Removes Forest and creates Fertile Ground.",
+        );
+      }
       const artId = commandArtIdV7(command);
       if (artId !== null) action.prepend(art(this.#document, artId, ""));
       if (command.kind === "BUILD_FIELD_DEFENSE")
@@ -1421,6 +1432,9 @@ export class Ruleset7DomAppView {
           `Build Field Defense for 3 Coins · fortification level ${resultingLevel}`,
         );
         action.append(economyChips(this.#document, { cost: 3 }));
+      } else if (command.kind === "LAND_GRANT") {
+        action.setAttribute("aria-label", "Land grant for 6 Coins");
+        action.append(economyChips(this.#document, { cost: 6 }));
       } else {
         const view = this.#snapshot.view;
         const preview = view === null ? null : previewEconomicV7(view, command);
@@ -2772,7 +2786,17 @@ function appendTechNode(
   );
   card.dataset.selected = String(layout.node.id === selected);
   const artFrame = el(documentRoot, "span", "v7-tech-art");
-  artFrame.append(art(documentRoot, RULESET7_TECH_ART_IDS[layout.node.id], ""));
+  const assetId = RULESET7_TECH_ART_IDS[layout.node.id];
+  const image = art(documentRoot, assetId, "");
+  const artworkLayout = technologyArtworkLayoutV7(assetId);
+  if (artworkLayout !== null) {
+    artFrame.dataset.frameMode = "visible-alpha";
+    image.style.left = `${artworkLayout.image.left}px`;
+    image.style.top = `${artworkLayout.image.top}px`;
+    image.style.width = `${artworkLayout.image.width}px`;
+    image.style.height = `${artworkLayout.image.height}px`;
+  }
+  artFrame.append(image);
   card.append(
     artFrame,
     text(documentRoot, "span", title(layout.node.id), "v7-tech-name"),
@@ -2832,6 +2856,7 @@ function identity(
   const image = art(documentRoot, assetId, "");
   const layout =
     normalizePaintedSize ||
+    assetId === "terrain-square-original-fruit" ||
     assetId === "terrain-square-original-animal" ||
     assetId === RULESET7_IMPROVEMENT_ART_IDS.LUMBER_CAMP ||
     assetId === RULESET7_RESOURCE_ART_IDS.FERTILE_GROUND
@@ -2964,7 +2989,9 @@ function effectDescription(
 ): string {
   switch (effect.kind) {
     case "COMMAND":
-      return title(effect.command);
+      return effect.command === "CULTIVATE_FOREST"
+        ? "Clear for farming: removes Forest and creates Fertile Ground"
+        : title(effect.command);
     case "UNIT_ROLE":
       return effectiveRoleRuleV7(effect.role).label;
     case "RESOURCE_REVEAL":
@@ -3294,7 +3321,7 @@ const COMMAND_LABELS: Partial<Record<CommandV7["kind"], string>> = {
   BUILD_SHIPYARD: "Shipyard",
   CLEAR_FOREST: "Clear forest",
   REPLANT_FOREST: "Plant forest",
-  CULTIVATE_FOREST: "Cultivate",
+  CULTIVATE_FOREST: "Clear for farming",
   BLAST_MOUNTAIN: "Blast",
   BUILD_ROAD: "Road",
   REDEVELOP: "Redevelop",

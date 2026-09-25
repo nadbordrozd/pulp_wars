@@ -134,6 +134,62 @@ describe("Ruleset 7 public presentation", () => {
         items: ["Forge training discount: 1 Coin"],
       },
     ]);
+    expect(
+      technologyEffectGroupsV7([
+        { kind: "COMMAND", command: "CULTIVATE_FOREST" },
+      ]),
+    ).toEqual([
+      {
+        id: "ACTIONS",
+        label: "Actions",
+        items: ["Clear for farming: removes Forest and creates Fertile Ground"],
+      },
+    ]);
+  });
+
+  it("plans distinct support feedback only for public actors and affected recipients", () => {
+    const state = exploredAllV7(initialV7(1_517));
+    const view = viewForV7(state, state.humanPlayerId);
+    const [actor, recipient] = view.units;
+    if (actor === undefined || recipient === undefined)
+      throw new Error("support presentation units missing");
+    const envelope = {
+      format: "pulp-wars-player-events" as const,
+      version: 7 as const,
+      viewerId: view.viewer.id,
+      commandIndex: view.commandIndex,
+      events: [
+        {
+          kind: "UNITS_RALLIED" as const,
+          captainId: actor.id,
+          unitIds: [recipient.id, 9_999 as typeof recipient.id],
+        },
+        {
+          kind: "WOUNDED_TENDED" as const,
+          captainId: actor.id,
+          results: [
+            { unitId: recipient.id, amount: 2, hpAfter: recipient.hp },
+            { unitId: 9_998 as typeof recipient.id, amount: 2, hpAfter: 4 },
+          ],
+        },
+      ],
+    };
+    expect(corePresentationPlanV7(view, envelope, view)).toEqual([
+      {
+        kind: "SUPPORT",
+        effect: "RALLY",
+        actor: { unitId: actor.id, at: actor.at },
+        recipients: [{ unitId: recipient.id, at: recipient.at }],
+        durationMs: 320,
+      },
+      {
+        kind: "SUPPORT",
+        effect: "TEND",
+        actor: { unitId: actor.id, at: actor.at },
+        recipients: [{ unitId: recipient.id, at: recipient.at }],
+        durationMs: 320,
+      },
+    ]);
   });
 
   it("keeps legal Attack highlighted when BASE_ONLY makes exact damage uncertain", () => {

@@ -30,6 +30,47 @@ beforeEach(() => {
 });
 
 describe("Ruleset 7 tactical DOM controls", () => {
+  it("shows Land grant cost and the player-facing Clear for farming result", () => {
+    const fixture = knightOverrunPublicFixtureV7();
+    const view = fixture.view;
+    const city = required(
+      view.cities.find((candidate) => candidate.ownerId === view.viewer.id),
+    );
+    const tile = required(
+      view.board.tiles.find(
+        (candidate) =>
+          candidate.explored && candidate.territoryCityId === city.id,
+      ),
+    );
+    const controller = new TacticalFixtureController(fixture.state, [
+      { kind: "LAND_GRANT", cityId: city.id },
+      { kind: "CULTIVATE_FOREST", at: tile.at },
+    ]);
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    host.callbacks?.onSelection({ kind: "CITY", cityId: city.id });
+    const grant = requiredButton("command-land_grant");
+    expect(grant.disabled).toBe(false);
+    expect(grant.getAttribute("aria-label")).toBe("Land grant for 6 Coins");
+    expect(grant.querySelector(".v7-economy-chip.is-cost")?.textContent).toBe(
+      "6",
+    );
+
+    host.callbacks?.onSelection({ kind: "TILE", at: tile.at });
+    const cultivate = requiredButton("command-cultivate_forest");
+    expect(cultivate.querySelector(".v7-action-label")?.textContent).toBe(
+      "Clear for farming",
+    );
+    expect(cultivate.title).toContain(
+      "Removes Forest and creates Fertile Ground",
+    );
+    expect(cultivate.getAttribute("aria-description")).toBe(
+      "Removes Forest and creates Fertile Ground.",
+    );
+    expect(document.body.textContent).not.toContain("Cultivate");
+    app.destroy();
+  });
+
   it("shows Overrun only after an advancing kill and locks movement during the chain", async () => {
     const fixture = knightOverrunPublicFixtureV7();
     const controller = new TacticalFixtureController(fixture.state);
@@ -101,9 +142,13 @@ class TacticalFixtureController implements Ruleset7ControllerPortV7 {
   #state: GameStateV7;
   #snapshot: Ruleset7BrowserSnapshot;
 
-  constructor(state: GameStateV7) {
+  constructor(state: GameStateV7, offeredCommands?: readonly CommandV7[]) {
     this.#state = state;
-    this.#snapshot = snapshotOf(state);
+    const snapshot = snapshotOf(state);
+    this.#snapshot =
+      offeredCommands === undefined
+        ? snapshot
+        : { ...snapshot, offeredCommands: [...offeredCommands] };
   }
   snapshot(): Ruleset7BrowserSnapshot {
     return this.#snapshot;

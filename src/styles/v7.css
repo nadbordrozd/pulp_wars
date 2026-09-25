@@ -170,11 +170,17 @@
 }
 
 .v7-board-host,
-.board-canvas-v7 {
+.board-canvas-v7,
+.board-effects-canvas-v7 {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+}
+
+.board-effects-canvas-v7 {
+  z-index: 2;
+  pointer-events: none;
 }
 
 /* ---------- HUD ---------- */
@@ -1499,15 +1505,23 @@
 }
 
 .v7-tech-art {
+  position: relative;
   display: grid;
   place-items: center;
   width: 4.5rem;
   height: 4.5rem;
+  overflow: hidden;
 }
 
 .v7-tech-art .v7-art-frame {
   width: 4.5rem;
   height: 4.5rem;
+}
+
+.v7-tech-art[data-frame-mode="visible-alpha"] .v7-art-frame {
+  position: absolute;
+  max-width: none;
+  max-height: none;
 }
 
 .v7-tech-name {

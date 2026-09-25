@@ -203,6 +203,12 @@ export const RULESET7_KNIGHT_ART_GEOMETRY = {
   offsetY: 18,
 } as const satisfies SourceGeometry;
 
+/** Revision 10 keeps the standard anchor while presenting the broader officer body. */
+export const RULESET7_CAPTAIN_ART_GEOMETRY = {
+  ...RULESET6_UNIT_ART_GEOMETRY.standard,
+  displayScale: 0.275,
+} as const satisfies SourceGeometry;
+
 export const RULESET7_NAVAL_ART_GEOMETRY = {
   patrolBoat: {
     width: 384,

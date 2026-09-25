@@ -35,6 +35,10 @@ import {
   arrowGeometry,
 } from "./combat-presentation";
 import { BoardGlowCacheV7 } from "./glow-cache-v7";
+import {
+  drawSupportFeedbackV7,
+  type SupportFeedbackV7,
+} from "./support-presentation-v7";
 
 export interface BoardHostModelV7 {
   readonly matchInstanceId: string | number;
@@ -82,6 +86,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   #drawSerial = 0;
   #canvas: HTMLCanvasElement | null = null;
   #context: CanvasRenderingContext2D | null = null;
+  #effectsCanvas: HTMLCanvasElement | null = null;
+  #effectsContext: CanvasRenderingContext2D | null = null;
   #description: HTMLElement | null = null;
   #callbacks: BoardHostCallbacksV7 | null = null;
   #model: BoardHostModelV7 | null = null;
@@ -122,6 +128,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     readonly progress: number;
     readonly statusId: string;
   } | null = null;
+  #supportFeedback: SupportFeedbackV7 | null = null;
   #crossfade: {
     readonly before: PlayerViewV7;
     readonly after: PlayerViewV7;
@@ -148,6 +155,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#detach();
     this.#callbacks = callbacks;
     const canvas = this.#document.createElement("canvas");
+    const effectsCanvas = this.#document.createElement("canvas");
     const description = this.#document.createElement("p");
     description.id = `ruleset7-map-cursor-${nextDescriptionIdV7++}`;
     description.className = "sr-only";
@@ -162,19 +170,24 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     );
     canvas.setAttribute("aria-describedby", description.id);
     canvas.style.touchAction = "none";
+    effectsCanvas.className = "board-effects-canvas-v7";
+    effectsCanvas.setAttribute("aria-hidden", "true");
     canvas.addEventListener("pointerdown", this.#onPointerDown);
     canvas.addEventListener("pointermove", this.#onPointerMove);
     canvas.addEventListener("pointerup", this.#onPointerUp);
     canvas.addEventListener("pointercancel", this.#onPointerCancel);
     canvas.addEventListener("wheel", this.#onWheel, { passive: false });
     canvas.addEventListener("keydown", this.#onKeyDown);
-    container.replaceChildren(canvas, description);
+    container.replaceChildren(canvas, description, effectsCanvas);
     this.#canvas = canvas;
+    this.#effectsCanvas = effectsCanvas;
     this.#description = description;
     try {
       this.#context = canvas.getContext("2d");
+      this.#effectsContext = effectsCanvas.getContext("2d");
     } catch {
       this.#context = null;
+      this.#effectsContext = null;
     }
     if (typeof ResizeObserver !== "undefined") {
       this.#resizeObserver = new ResizeObserver(() => this.#resize(container));
@@ -297,6 +310,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#projectile = null;
     this.#impact = null;
     this.#statusPulse = null;
+    this.#supportFeedback = null;
+    this.#drawSupportOverlay();
     this.#crossfade = null;
     this.#selectionJump = null;
     const resolve = this.#animationResolve;
@@ -337,6 +352,30 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             ? focus.path.at(-1)
             : undefined;
       if (at !== undefined) this.#followCamera(at);
+      const supportSteps = steps.filter((step) => step.kind === "SUPPORT");
+      if (supportSteps.length > 0) {
+        this.#presentedView = after;
+        this.#draw();
+        for (const step of supportSteps) {
+          await this.#animate(100 * durationScale, () => {
+            this.#supportFeedback = {
+              effect: step.effect,
+              actor: step.actor,
+              recipients: step.recipients,
+              progress: 0.5,
+            };
+            this.#drawSupportOverlay();
+          });
+          if (token !== this.#presentationToken) return;
+          this.#supportFeedback = null;
+          this.#drawSupportOverlay();
+        }
+        if (supportSteps.length === steps.length) {
+          this.#presentedView = null;
+          this.#draw();
+          return;
+        }
+      }
       this.#crossfade = { before, after, progress: 0 };
       await this.#animate(100 * durationScale, (progress) => {
         this.#crossfade = { before, after, progress };
@@ -424,6 +463,21 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         });
         if (token !== this.#presentationToken) return;
         this.#statusPulse = null;
+      } else if (step.kind === "SUPPORT") {
+        this.#presentedView = after;
+        this.#draw();
+        await this.#animate(step.durationMs * durationScale, (progress) => {
+          this.#supportFeedback = {
+            effect: step.effect,
+            actor: step.actor,
+            recipients: step.recipients,
+            progress,
+          };
+          this.#drawSupportOverlay();
+        });
+        if (token !== this.#presentationToken) return;
+        this.#supportFeedback = null;
+        this.#drawSupportOverlay();
       } else if (step.kind === "DAMAGE") {
         this.#presentedView = after;
         await this.#animateImpact(step.at, step.durationMs * durationScale);
@@ -455,6 +509,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     };
     const dpr = this.#document.defaultView?.devicePixelRatio ?? 1;
     const canvas = this.#canvas;
+    const effectsCanvas = this.#effectsCanvas;
     if (
       canvas !== null &&
       nextViewport.width === priorViewport.width &&
@@ -469,6 +524,12 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       canvas.height = Math.round(this.#viewport.height * dpr);
       canvas.style.width = `${this.#viewport.width}px`;
       canvas.style.height = `${this.#viewport.height}px`;
+    }
+    if (effectsCanvas !== null) {
+      effectsCanvas.width = Math.round(this.#viewport.width * dpr);
+      effectsCanvas.height = Math.round(this.#viewport.height * dpr);
+      effectsCanvas.style.width = `${this.#viewport.width}px`;
+      effectsCanvas.style.height = `${this.#viewport.height}px`;
     }
     if (priorCenter !== null)
       this.#camera = centerCameraOn(this.#camera, priorCenter, this.#viewport);
@@ -606,6 +667,32 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       }
       context.restore();
     }
+    this.#drawSupportOverlay();
+  }
+
+  #drawSupportOverlay(): void {
+    const context = this.#effectsContext;
+    const canvas = this.#effectsCanvas;
+    if (context === null || canvas === null) return;
+    const dpr = this.#document.defaultView?.devicePixelRatio ?? 1;
+    context.setTransform(dpr, 0, 0, dpr, 0, 0);
+    context.clearRect(0, 0, this.#viewport.width, this.#viewport.height);
+    const feedback = this.#supportFeedback;
+    if (feedback === null) {
+      delete canvas.dataset.supportEffect;
+      delete canvas.dataset.supportRecipients;
+      delete canvas.dataset.supportProgress;
+      return;
+    }
+    canvas.dataset.supportEffect = feedback.effect;
+    canvas.dataset.supportRecipients = String(feedback.recipients.length);
+    canvas.dataset.supportProgress = feedback.progress.toFixed(3);
+    drawSupportFeedbackV7(
+      context,
+      this.#camera,
+      feedback,
+      this.#model?.motion === "REDUCED",
+    );
   }
 
   #activate(at: CoordV7): void {
@@ -923,6 +1010,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     }
     this.#canvas = null;
     this.#context = null;
+    this.#effectsCanvas = null;
+    this.#effectsContext = null;
     this.#description = null;
     this.#callbacks = null;
     this.#pointers.clear();

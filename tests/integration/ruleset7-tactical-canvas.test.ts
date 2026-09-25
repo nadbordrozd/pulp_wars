@@ -5,6 +5,7 @@ import type { PlayerViewV7 } from "../../src/engine/index";
 import { CanvasBoardHostV7 } from "../../src/render/canvas/board-host-v7";
 import {
   buildBoardRenderPlanV7,
+  createBoardImageResolverV7,
   drawBoardV7,
 } from "../../src/render/canvas/board-renderer-v7";
 import { corePresentationPlanV7 } from "../../src/render/canvas/presentation-plan-v7";
@@ -15,6 +16,108 @@ beforeEach(() => {
 });
 
 describe("Ruleset 7 tactical Canvas presentation", () => {
+  it("retries tall-terrain isolation after late ground load and keeps unrelated image loads out of its cache", () => {
+    const images: HTMLImageElement[] = [];
+    const canvases: HTMLCanvasElement[] = [];
+    const createElement = document.createElement.bind(document);
+    const documentRoot = {
+      createElement(tag: string) {
+        const element = createElement(tag);
+        if (element instanceof HTMLImageElement) images.push(element);
+        if (element instanceof HTMLCanvasElement) canvases.push(element);
+        return element;
+      },
+    } as Document;
+    const getContext = vi
+      .spyOn(HTMLCanvasElement.prototype, "getContext")
+      .mockImplementation(function (this: HTMLCanvasElement) {
+        return {
+          clearRect: vi.fn(),
+          drawImage: vi.fn(),
+          getImageData: vi.fn(() => ({
+            data: new Uint8ClampedArray(this.width * this.height * 4),
+          })),
+          putImageData: vi.fn(),
+        } as unknown as CanvasRenderingContext2D;
+      });
+    try {
+      const redraw = vi.fn();
+      const resolver = createBoardImageResolverV7(documentRoot, redraw);
+      expect(
+        resolver.resolveRaisedTerrain?.("terrain-ruleset7-original-forest-1"),
+      ).toBeNull();
+      expect(images).toHaveLength(2);
+      images[0]?.dispatchEvent(new Event("load"));
+      expect(
+        resolver.resolveRaisedTerrain?.("terrain-ruleset7-original-forest-1"),
+      ).toBeNull();
+      images[1]?.dispatchEvent(new Event("load"));
+      const raised = resolver.resolveRaisedTerrain?.(
+        "terrain-ruleset7-original-forest-1",
+      );
+      expect(raised).toBeInstanceOf(HTMLCanvasElement);
+      expect(canvases).toHaveLength(2);
+      expect(
+        resolver.resolveRaisedTerrain?.("terrain-ruleset7-original-forest-1"),
+      ).toBe(raised);
+      expect(canvases).toHaveLength(2);
+
+      expect(resolver.resolve("unit-original-fighter")).toBeNull();
+      images.at(-1)?.dispatchEvent(new Event("load"));
+      expect(
+        resolver.resolveRaisedTerrain?.("terrain-ruleset7-original-forest-1"),
+      ).toBe(raised);
+      expect(canvases).toHaveLength(2);
+      expect(redraw).toHaveBeenCalledTimes(3);
+    } finally {
+      getContext.mockRestore();
+    }
+  });
+
+  it("retries rather than caching a missing pixel context fallback", () => {
+    const images: HTMLImageElement[] = [];
+    const createElement = document.createElement.bind(document);
+    const documentRoot = {
+      createElement(tag: string) {
+        const element = createElement(tag);
+        if (element instanceof HTMLImageElement) images.push(element);
+        return element;
+      },
+    } as Document;
+    let contextAvailable = false;
+    const getContext = vi
+      .spyOn(HTMLCanvasElement.prototype, "getContext")
+      .mockImplementation(function (this: HTMLCanvasElement) {
+        if (!contextAvailable) return null;
+        return {
+          clearRect: vi.fn(),
+          drawImage: vi.fn(),
+          getImageData: vi.fn(() => ({
+            data: new Uint8ClampedArray(this.width * this.height * 4),
+          })),
+          putImageData: vi.fn(),
+        } as unknown as CanvasRenderingContext2D;
+      });
+    try {
+      const resolver = createBoardImageResolverV7(documentRoot, vi.fn());
+      resolver.resolveRaisedTerrain?.("terrain-ruleset7-revision3-mountain-1");
+      for (const image of images) image.dispatchEvent(new Event("load"));
+      expect(
+        resolver.resolveRaisedTerrain?.(
+          "terrain-ruleset7-revision3-mountain-1",
+        ),
+      ).toBeNull();
+      contextAvailable = true;
+      expect(
+        resolver.resolveRaisedTerrain?.(
+          "terrain-ruleset7-revision3-mountain-1",
+        ),
+      ).toBeInstanceOf(HTMLCanvasElement);
+    } finally {
+      getContext.mockRestore();
+    }
+  });
+
   it("composites public links after every terrain tile and back under endpoint foreground", () => {
     const operations: string[] = [];
     const state: Record<PropertyKey, unknown> = {};
@@ -182,6 +285,113 @@ describe("Ruleset 7 tactical Canvas presentation", () => {
       durationMs: 100,
     });
   });
+
+  it.each(["FULL", "REDUCED"] as const)(
+    "draws %s Rally on a separate cancellable overlay without per-frame board redraws",
+    async (motion) => {
+      const fixture = knightOverrunPublicFixtureV7();
+      const [actor, recipient] = fixture.view.units;
+      if (actor === undefined || recipient === undefined)
+        throw new Error("support units missing");
+      const mainSetTransform = vi.fn();
+      const overlayArc = vi.fn();
+      const context = (overlay: boolean) =>
+        new Proxy<Record<PropertyKey, unknown>>(
+          {},
+          {
+            get: (target, key) => {
+              if (key === "setTransform")
+                return overlay ? vi.fn() : mainSetTransform;
+              if (key === "arc") return overlay ? overlayArc : vi.fn();
+              return key in target ? target[key] : vi.fn();
+            },
+            set: (target, key, value) => {
+              target[key] = value;
+              return true;
+            },
+          },
+        ) as unknown as CanvasRenderingContext2D;
+      const mainContext = context(false);
+      const overlayContext = context(true);
+      const getContext = vi
+        .spyOn(HTMLCanvasElement.prototype, "getContext")
+        .mockImplementation(function (this: HTMLCanvasElement) {
+          return this.classList.contains("board-effects-canvas-v7")
+            ? overlayContext
+            : mainContext;
+        });
+      const frames: FrameRequestCallback[] = [];
+      const requestFrame = vi
+        .spyOn(window, "requestAnimationFrame")
+        .mockImplementation((callback) => {
+          frames.push(callback);
+          return 17;
+        });
+      const cancelFrame = vi
+        .spyOn(window, "cancelAnimationFrame")
+        .mockImplementation(() => {});
+      const container = document.createElement("div");
+      Object.defineProperty(container, "getBoundingClientRect", {
+        value: () => ({ width: 800, height: 600 }),
+      });
+      document.body.append(container);
+      const host = new CanvasBoardHostV7(document);
+      try {
+        host.mount(container, { onSelection: vi.fn(), onCommand: vi.fn() });
+        host.update({
+          matchInstanceId: 1,
+          view: fixture.view,
+          offeredCommands: fixture.offeredCommands,
+          interaction: {
+            selection: null,
+            selectedUnitId: null,
+            selectedAchievement: null,
+          },
+          interactive: true,
+          motion,
+          animationSpeed: "NORMAL",
+          presentationPaused: false,
+          highContrast: false,
+        });
+        mainSetTransform.mockClear();
+        const pending = host.presentBoundary(fixture.view, fixture.view, {
+          format: "pulp-wars-player-events",
+          version: 7,
+          viewerId: fixture.view.viewer.id,
+          commandIndex: fixture.view.commandIndex,
+          events: [
+            {
+              kind: "UNITS_RALLIED",
+              captainId: actor.id,
+              unitIds: [recipient.id],
+            },
+          ],
+        });
+        const boardDrawsBeforeFrame = mainSetTransform.mock.calls.length;
+        const callback = frames.at(-1);
+        if (callback === undefined) throw new Error("support frame missing");
+        callback(performance.now() + (motion === "REDUCED" ? 50 : 160));
+        const overlay = required(
+          container.querySelector<HTMLCanvasElement>(
+            ".board-effects-canvas-v7",
+          ),
+        );
+        expect(overlay.dataset.supportEffect).toBe("RALLY");
+        expect(overlay.dataset.supportRecipients).toBe("1");
+        expect(overlayArc).toHaveBeenCalled();
+        expect(mainSetTransform).toHaveBeenCalledTimes(boardDrawsBeforeFrame);
+        host.finishPresentations();
+        await pending;
+        expect(overlay.dataset.supportEffect).toBeUndefined();
+        expect(cancelFrame).toHaveBeenCalledWith(17);
+      } finally {
+        host.destroy();
+        getContext.mockRestore();
+        requestFrame.mockRestore();
+        cancelFrame.mockRestore();
+      }
+    },
+  );
 
   it("renders deduplicated two-shot targets and non-overlapping registry attachments", () => {
     const fixture = knightOverrunPublicFixtureV7();

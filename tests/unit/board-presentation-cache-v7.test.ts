@@ -278,8 +278,13 @@ describe("Ruleset 7 presentation caches", () => {
     document.body.append(container);
     const canvas = document.createElement("canvas");
     const drawn = context(canvas);
-    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(
-      drawn.buffer,
+    const effects = context(document.createElement("canvas"));
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockImplementation(
+      function (this: HTMLCanvasElement) {
+        return this.classList.contains("board-effects-canvas-v7")
+          ? effects.buffer
+          : drawn.buffer;
+      },
     );
     const state = exploredAllV7(initialV7(1560));
     const view = viewForV7(state, state.humanPlayerId);
@@ -322,11 +327,14 @@ describe("Ruleset 7 presentation caches", () => {
     host.activate(unit.at);
     expect(drawn.clearRect.mock.calls.length - beforeSelection).toBe(1);
     const beforeResize = drawn.clearRect.mock.calls.length;
+    const effectsBeforeResize = effects.clearRect.mock.calls.length;
     resize?.();
     expect(drawn.clearRect.mock.calls.length).toBe(beforeResize);
+    expect(effects.clearRect.mock.calls.length).toBe(effectsBeforeResize);
     width = 900;
     resize?.();
     expect(drawn.clearRect.mock.calls.length).toBe(beforeResize + 1);
+    expect(effects.clearRect.mock.calls.length).toBe(effectsBeforeResize + 1);
     expect(container.querySelector("canvas")?.width).toBe(900);
 
     const opponent = view.units.find(

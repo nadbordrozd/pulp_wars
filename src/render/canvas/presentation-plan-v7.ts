@@ -36,6 +36,16 @@ export type CorePresentationStepV7 =
       readonly durationMs: 240;
     }
   | {
+      readonly kind: "SUPPORT";
+      readonly effect: "RALLY" | "TEND";
+      readonly actor: { readonly unitId: number; readonly at: CoordV7 };
+      readonly recipients: readonly {
+        readonly unitId: number;
+        readonly at: CoordV7;
+      }[];
+      readonly durationMs: 320;
+    }
+  | {
       readonly kind: "DAMAGE";
       readonly unitId: number;
       readonly at: CoordV7;
@@ -174,6 +184,33 @@ export function corePresentationPlanV7(
             durationMs: 100,
           });
       }
+    } else if (
+      event.kind === "UNITS_RALLIED" ||
+      event.kind === "WOUNDED_TENDED"
+    ) {
+      const publicUnits = new Map(
+        [...before.units, ...after.units].map(
+          (unit) => [unit.id, unit] as const,
+        ),
+      );
+      const actor = publicUnits.get(event.captainId);
+      if (actor === undefined) continue;
+      const recipientIds =
+        event.kind === "UNITS_RALLIED"
+          ? event.unitIds
+          : event.results.map((result) => result.unitId);
+      const recipients = recipientIds.flatMap((unitId) => {
+        const unit = publicUnits.get(unitId);
+        return unit === undefined ? [] : [{ unitId, at: unit.at }];
+      });
+      if (recipients.length > 0)
+        steps.push({
+          kind: "SUPPORT",
+          effect: event.kind === "UNITS_RALLIED" ? "RALLY" : "TEND",
+          actor: { unitId: actor.id, at: actor.at },
+          recipients,
+          durationMs: 320,
+        });
     } else if (
       event.kind === "UNIT_REVEALED" ||
       event.kind === "UNIT_CONCEALED"

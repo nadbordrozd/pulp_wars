@@ -280,18 +280,19 @@ describe("Ruleset 7 board renderer", () => {
   it("uses calibrated accepted aspect ratios for units, processors and cities", () => {
     const entries: BoardRenderPlanEntryV7[] = [
       imageEntry("standard", "UNIT", "unit-original-fighter", 0, 0),
-      imageEntry("catapult", "UNIT", "unit-original-catapult", 1, 0),
-      imageEntry("giant", "UNIT", "unit-original-juggernaut", 2, 0),
-      imageEntry("processor", "IMPROVEMENT", "building-square-windmill", 3, 0),
-      imageEntry("shipyard", "IMPROVEMENT", "building-ruleset7-shipyard", 4, 0),
+      imageEntry("captain", "UNIT", "unit-original-captain-v7r10", 1, 0),
+      imageEntry("catapult", "UNIT", "unit-original-catapult", 2, 0),
+      imageEntry("giant", "UNIT", "unit-original-juggernaut", 3, 0),
+      imageEntry("processor", "IMPROVEMENT", "building-square-windmill", 4, 0),
+      imageEntry("shipyard", "IMPROVEMENT", "building-ruleset7-shipyard", 5, 0),
       imageEntry(
         "camp",
         "IMPROVEMENT",
         "building-ruleset7-resource-lumber-camp",
-        5,
+        6,
         0,
       ),
-      { ...imageEntry("city", "CITY", "building-city-2", 6, 0), value: 2 },
+      { ...imageEntry("city", "CITY", "building-city-2", 7, 0), value: 2 },
     ];
     const drawImage = vi.fn();
     const context = drawingContext(drawImage);
@@ -311,6 +312,7 @@ describe("Ruleset 7 board renderer", () => {
             value as number,
             [
               [64, 74],
+              [70.4, 81.4],
               [92.16, 92.16],
               [96, 112],
               [115.2, 115.2],
@@ -734,6 +736,113 @@ describe("Ruleset 7 board renderer", () => {
     expect(
       vi.mocked(context.stroke).mock.invocationCallOrder.at(-1),
     ).toBeLessThan(drawImage.mock.invocationCallOrder[0] ?? 0);
+  });
+
+  it("stages all Roads and diagonal joins above ground and below raised terrain and objects", () => {
+    const operations: string[] = [];
+    const state: Record<PropertyKey, unknown> = {};
+    const context = new Proxy(state, {
+      get: (target, key) => {
+        if (key === "drawImage")
+          return (image: { readonly id?: string }) =>
+            operations.push(image.id ?? "unknown-image");
+        if (key === "stroke")
+          return () => {
+            if (target.strokeStyle === "#a57a4c") operations.push("road");
+          };
+        return key in target ? target[key] : vi.fn();
+      },
+      set: (target, key, value) => {
+        target[key] = value;
+        return true;
+      },
+    }) as unknown as CanvasRenderingContext2D;
+    const entries: BoardRenderPlanEntryV7[] = [
+      imageEntry(
+        "forest",
+        "TERRAIN",
+        "terrain-ruleset7-original-forest-2",
+        1,
+        1,
+      ),
+      {
+        key: "join",
+        kind: "ROAD_JOIN",
+        layer: 2,
+        at: { x: 1, y: 0 },
+        roadJoins: [
+          [
+            { x: 0, y: 0 },
+            { x: 1, y: 1 },
+          ],
+        ],
+      },
+      {
+        key: "road",
+        kind: "ROAD",
+        layer: 2,
+        at: { x: 1, y: 1 },
+        roadNeighbors: [{ x: 1, y: 0 }],
+      },
+      imageEntry("fruit", "RESOURCE", "terrain-square-original-fruit", 1, 1),
+      imageEntry("mine", "IMPROVEMENT", "building-square-mine", 1, 1),
+      imageEntry("unit", "UNIT", "unit-original-fighter", 1, 1),
+    ];
+    drawBoardV7({
+      context,
+      viewport: { width: 500, height: 500 },
+      devicePixelRatio: 1,
+      camera: { offsetX: 100, offsetY: 100, zoom: 1 },
+      plan: { version: 7, entries, targets: [] },
+      images: {
+        resolve: (id) => ({ id }) as unknown as CanvasImageSource,
+        resolveTerrainGround: () =>
+          ({ id: "forest-ground" }) as unknown as CanvasImageSource,
+        resolveRaisedTerrain: () =>
+          ({ id: "forest-raised" }) as unknown as CanvasImageSource,
+      },
+    });
+    const firstRoad = operations.indexOf("road");
+    const lastRoad = operations.lastIndexOf("road");
+    expect(firstRoad).toBeGreaterThan(operations.indexOf("forest-ground"));
+    expect(lastRoad).toBeLessThan(operations.indexOf("forest-raised"));
+    expect(lastRoad).toBeLessThan(
+      operations.indexOf("terrain-square-original-fruit"),
+    );
+    expect(lastRoad).toBeLessThan(operations.indexOf("building-square-mine"));
+    expect(lastRoad).toBeLessThan(operations.indexOf("unit-original-fighter"));
+  });
+
+  it("keeps the tall overflow anchor when pixel isolation is unavailable", () => {
+    const drawImage = vi.fn();
+    drawBoardV7({
+      context: drawingContext(drawImage),
+      viewport: { width: 300, height: 300 },
+      devicePixelRatio: 1,
+      camera: { offsetX: 100, offsetY: 100, zoom: 1 },
+      plan: {
+        version: 7,
+        targets: [],
+        entries: [
+          imageEntry(
+            "forest",
+            "TERRAIN",
+            "terrain-ruleset7-original-forest-1",
+            0,
+            0,
+          ),
+        ],
+      },
+      images: {
+        resolve: () => ({}) as CanvasImageSource,
+        resolveTerrainGround: () => null,
+        resolveRaisedTerrain: () => null,
+      },
+    });
+    expect(drawImage).toHaveBeenCalledTimes(1);
+    expect(drawImage.mock.calls[0]?.slice(1)).toEqual([
+      0, 0, 256, 128, 36, -28, 128, 64,
+    ]);
   });
 
   it("emits one real contour winner per physical edge, including explored-to-fog edges", () => {

@@ -14,6 +14,7 @@ import type {
 import { queryCombatPreviewV7 } from "../../engine/index";
 import {
   RULESET6_UNIT_ART_GEOMETRY,
+  RULESET7_CAPTAIN_ART_GEOMETRY,
   RULESET7_KNIGHT_ART_GEOMETRY,
   RULESET7_NAVAL_ART_GEOMETRY,
   SETTLEMENT_ART_GEOMETRY,
@@ -468,6 +469,10 @@ export function suppressesForestCanopyV7(
 
 export interface BoardImageResolverV7 {
   resolve(assetId: string): CanvasImageSource | null;
+  /** Registered square ground used beneath a tall terrain body. */
+  resolveTerrainGround?(assetId: string): CanvasImageSource | null;
+  /** Cached body-only raster for tall terrain; null while either source loads. */
+  resolveRaisedTerrain?(assetId: string): CanvasImageSource | null;
 }
 
 export function drawBoardV7(input: {
@@ -509,263 +514,314 @@ export function drawBoardV7(input: {
   }
   context.save();
   context.globalAlpha = sceneAlpha;
-  for (const entry of input.plan.entries) {
-    if (
-      entry.kind === "LINK" ||
-      entry.kind === "WATER_BOUNDARY" ||
-      entry.kind === "TARGET" ||
-      entry.kind === "TERRITORY_BOUNDARY" ||
-      entry.kind === "REACH" ||
-      entry.kind === "SELECTION" ||
-      entry.kind === "CURSOR"
-    )
-      continue;
-    const impacted =
-      input.impact !== null &&
-      input.impact !== undefined &&
-      (entry.kind === "UNIT" || entry.kind === "CITY") &&
-      same(entry.at, input.impact.at);
-    const x =
-      camera.offsetX +
-      entry.at.x * TILE_WIDTH * camera.zoom +
-      (impacted ? (input.impact?.shakeCssPx ?? 0) : 0) * camera.zoom;
-    const y = camera.offsetY + entry.at.y * TILE_HEIGHT * camera.zoom;
-    const size = TILE_WIDTH * camera.zoom;
-    // The largest accepted sprite and attached glow extend less than three
-    // cells from their owning anchor, including jump/impact displacement.
-    if (
-      x < -3 * size ||
-      x > viewport.width + 3 * size ||
-      y < -3 * size ||
-      y > viewport.height + 3 * size
-    )
-      continue;
-    const left = x - size / 2;
-    const top = y - size / 2;
-    if (entry.kind === "FOG") {
-      context.fillStyle = "#1c2a2e";
-      context.fillRect(left, top, size, size);
-      context.strokeStyle = "#33464b";
-      context.strokeRect(left, top, size, size);
-      continue;
-    }
-    if (entry.kind === "TERRAIN") {
-      context.fillStyle =
-        entry.ownerColor === undefined ? "#65965b" : `${entry.ownerColor}55`;
-      context.fillRect(left, top, size, size);
-    }
-    if (entry.kind === "ROAD" || entry.kind === "ROAD_JOIN") {
-      drawRoad(context, entry, x, y, camera.zoom);
-      continue;
-    }
-    if (entry.kind === "STATUS") {
-      const pulse =
-        input.statusPulse !== null &&
-        input.statusPulse !== undefined &&
-        same(entry.at, input.statusPulse.at) &&
-        entry.statusId === input.statusPulse.statusId &&
-        !(input.reducedMotion ?? false)
-          ? 1 + 0.22 * Math.sin(input.statusPulse.progress * Math.PI)
-          : 1;
-      const symbolSize = 22 * camera.zoom * pulse;
-      const slot = entry.attachmentSlot ?? 0;
-      const statusX = x + (30 - slot * 24) * camera.zoom;
-      const statusY = y - 39 * camera.zoom;
-      context.save();
-      drawTacticalSymbolOnCanvas(
-        context,
-        entry.statusId,
-        statusX - symbolSize / 2,
-        statusY - symbolSize / 2,
-        symbolSize,
-        input.highContrast ?? false,
-      );
-      context.restore();
-      continue;
-    }
-    if (entry.kind === "FIELD_DEFENSE") {
-      const symbolSize = 22 * camera.zoom;
-      drawTacticalSymbolOnCanvas(
-        context,
-        "ui-action-field-defense",
-        x - 53 * camera.zoom,
-        y - 54 * camera.zoom,
-        symbolSize,
-        input.highContrast ?? false,
-      );
-      if ((entry.value ?? 0) > 0) {
-        context.fillStyle = input.highContrast ? "#ffffff" : "#fff8df";
-        context.strokeStyle = "#172529";
-        context.lineWidth = 3 * camera.zoom;
-        context.font = `800 ${13 * camera.zoom}px system-ui`;
-        context.textAlign = "center";
-        context.strokeText(
-          String(entry.value),
-          x - 30 * camera.zoom,
-          y - 37 * camera.zoom,
-        );
-        context.fillText(
-          String(entry.value),
-          x - 30 * camera.zoom,
-          y - 37 * camera.zoom,
-        );
+  for (const pass of ["FOG", "GROUND", "ROAD", "FOREGROUND"] as const)
+    for (const entry of input.plan.entries) {
+      if (
+        entry.kind === "LINK" ||
+        entry.kind === "WATER_BOUNDARY" ||
+        entry.kind === "TARGET" ||
+        entry.kind === "TERRITORY_BOUNDARY" ||
+        entry.kind === "REACH" ||
+        entry.kind === "SELECTION" ||
+        entry.kind === "CURSOR"
+      )
+        continue;
+      if (
+        (pass === "FOG" && entry.kind !== "FOG") ||
+        (pass === "GROUND" && entry.kind !== "TERRAIN") ||
+        (pass === "ROAD" &&
+          entry.kind !== "ROAD" &&
+          entry.kind !== "ROAD_JOIN") ||
+        (pass === "FOREGROUND" &&
+          (entry.kind === "FOG" ||
+            entry.kind === "ROAD" ||
+            entry.kind === "ROAD_JOIN" ||
+            (entry.kind === "TERRAIN" && !isTallTerrainEntry(entry))))
+      )
+        continue;
+      const impacted =
+        input.impact !== null &&
+        input.impact !== undefined &&
+        (entry.kind === "UNIT" || entry.kind === "CITY") &&
+        same(entry.at, input.impact.at);
+      const x =
+        camera.offsetX +
+        entry.at.x * TILE_WIDTH * camera.zoom +
+        (impacted ? (input.impact?.shakeCssPx ?? 0) : 0) * camera.zoom;
+      const y = camera.offsetY + entry.at.y * TILE_HEIGHT * camera.zoom;
+      const size = TILE_WIDTH * camera.zoom;
+      // The largest accepted sprite and attached glow extend less than three
+      // cells from their owning anchor, including jump/impact displacement.
+      if (
+        x < -3 * size ||
+        x > viewport.width + 3 * size ||
+        y < -3 * size ||
+        y > viewport.height + 3 * size
+      )
+        continue;
+      const left = x - size / 2;
+      const top = y - size / 2;
+      if (entry.kind === "FOG") {
+        context.fillStyle = "#1c2a2e";
+        context.fillRect(left, top, size, size);
+        context.strokeStyle = "#33464b";
+        context.strokeRect(left, top, size, size);
+        continue;
       }
-      continue;
-    }
-    if (entry.assetId !== undefined) {
-      const image = input.images.resolve(entry.assetId);
-      if (image !== null) {
-        let rect = anchoredDestinationRect(
-          { x, y },
-          camera.zoom,
-          geometryFor(entry),
-        );
-        let alpha = 1;
-        if (entry.kind === "UNIT") {
-          const readiness = entry.ready
-            ? readinessUnitStyleV6(
-                input.readinessElapsedMs ?? 0,
-                input.reducedMotion ?? false,
-                input.highContrast ?? false,
-              )
-            : null;
-          const scale = readiness?.scale ?? 1;
-          const jump =
-            input.selectionJump?.unitId === Number(entry.key.slice(5))
-              ? selectionJumpOffsetCssPx(
-                  input.selectionJump.elapsedMs,
-                  input.selectionJump.speed,
-                  input.reducedMotion ?? false,
-                ) * camera.zoom
-              : 0;
-          rect = {
-            x: rect.x - (rect.width * (scale - 1)) / 2,
-            y: rect.y - rect.height * (scale - 1) + jump,
-            width: rect.width * scale,
-            height: rect.height * scale,
-          };
-          alpha = readiness?.opacity ?? 1;
-          if (readiness !== null) {
-            const glow = {
-              color: readiness.glow.color,
-              alpha: readiness.glow.alpha,
-              blur: readiness.glow.blurCssPx * camera.zoom,
-            };
-            if (input.glowCache === undefined)
-              drawRegisteredImageGlow(context, image, rect, glow);
-            else
-              input.glowCache.draw(context, image, entry.assetId, rect, glow);
-          }
-        }
-        context.save();
-        context.globalAlpha = alpha * sceneAlpha;
-        if (entry.sourceCrop === undefined)
-          context.drawImage(image, rect.x, rect.y, rect.width, rect.height);
-        else
-          context.drawImage(
-            image,
-            entry.sourceCrop.x,
-            entry.sourceCrop.y,
-            entry.sourceCrop.width,
-            entry.sourceCrop.height,
-            rect.x,
-            rect.y,
-            rect.width,
-            rect.height,
+      if (entry.kind === "TERRAIN") {
+        if (pass === "GROUND") {
+          context.fillStyle =
+            entry.ownerColor === undefined
+              ? "#65965b"
+              : `${entry.ownerColor}55`;
+          context.fillRect(left, top, size, size);
+          if (isTallTerrainEntry(entry))
+            drawSquareTerrainGround(
+              context,
+              input.images.resolveTerrainGround?.(entry.assetId ?? "") ?? null,
+              { x, y, zoom: camera.zoom, sceneAlpha },
+            );
+          else
+            drawEntryImage(context, input.images.resolve(entry.assetId ?? ""), {
+              x,
+              y,
+              zoom: camera.zoom,
+              entry,
+              sceneAlpha,
+            });
+        } else {
+          const raised = input.images.resolveRaisedTerrain?.(
+            entry.assetId ?? "",
           );
-        context.restore();
+          if (raised !== null && raised !== undefined)
+            drawEntryImage(context, raised, {
+              x,
+              y,
+              zoom: camera.zoom,
+              entry,
+              sceneAlpha,
+            });
+          else
+            drawTallTerrainOverflowFallback(
+              context,
+              input.images.resolve(entry.assetId ?? ""),
+              { x, y, zoom: camera.zoom, sceneAlpha },
+            );
+        }
+        continue;
       }
-    }
-    if (
-      (entry.kind === "UNIT" || entry.kind === "CITY") &&
-      entry.ownerColor !== undefined
-    ) {
-      context.fillStyle = entry.ownerColor;
-      context.strokeStyle = "#171722";
-      context.lineWidth = 2 * camera.zoom;
-      context.fillRect(
-        x - 31 * camera.zoom,
-        y + 13 * camera.zoom,
-        18 * camera.zoom,
-        18 * camera.zoom,
-      );
-      context.strokeRect(
-        x - 31 * camera.zoom,
-        y + 13 * camera.zoom,
-        18 * camera.zoom,
-        18 * camera.zoom,
-      );
-      context.fillStyle = "#171722";
-      context.font = `${800} ${11 * camera.zoom}px system-ui`;
-      context.textAlign = "center";
-      context.fillText(
-        String((entry.ownerSeat ?? 0) + 1),
-        x - 22 * camera.zoom,
-        y + 27 * camera.zoom,
-      );
-    }
-    if (entry.kind === "CITY") {
-      const width = Math.max(1, (entry.value ?? 1) + 1);
-      const positive = Math.max(0, Math.min(width, entry.population ?? 0));
-      const negative = Math.max(0, Math.min(width, -(entry.population ?? 0)));
-      for (let index = 0; index < width; index += 1) {
-        context.fillStyle =
-          index < positive
-            ? "#ffd34e"
-            : index < negative
-              ? "#ff6b68"
-              : "#fff8df";
-        context.strokeStyle = "#19282a";
-        context.lineWidth = camera.zoom;
+      if (entry.kind === "ROAD" || entry.kind === "ROAD_JOIN") {
+        drawRoad(context, entry, x, y, camera.zoom);
+        continue;
+      }
+      if (entry.kind === "STATUS") {
+        const pulse =
+          input.statusPulse !== null &&
+          input.statusPulse !== undefined &&
+          same(entry.at, input.statusPulse.at) &&
+          entry.statusId === input.statusPulse.statusId &&
+          !(input.reducedMotion ?? false)
+            ? 1 + 0.22 * Math.sin(input.statusPulse.progress * Math.PI)
+            : 1;
+        const symbolSize = 22 * camera.zoom * pulse;
+        const slot = entry.attachmentSlot ?? 0;
+        const statusX = x + (30 - slot * 24) * camera.zoom;
+        const statusY = y - 39 * camera.zoom;
+        context.save();
+        drawTacticalSymbolOnCanvas(
+          context,
+          entry.statusId,
+          statusX - symbolSize / 2,
+          statusY - symbolSize / 2,
+          symbolSize,
+          input.highContrast ?? false,
+        );
+        context.restore();
+        continue;
+      }
+      if (entry.kind === "FIELD_DEFENSE") {
+        const symbolSize = 22 * camera.zoom;
+        drawTacticalSymbolOnCanvas(
+          context,
+          "ui-action-field-defense",
+          x - 53 * camera.zoom,
+          y - 54 * camera.zoom,
+          symbolSize,
+          input.highContrast ?? false,
+        );
+        if ((entry.value ?? 0) > 0) {
+          context.fillStyle = input.highContrast ? "#ffffff" : "#fff8df";
+          context.strokeStyle = "#172529";
+          context.lineWidth = 3 * camera.zoom;
+          context.font = `800 ${13 * camera.zoom}px system-ui`;
+          context.textAlign = "center";
+          context.strokeText(
+            String(entry.value),
+            x - 30 * camera.zoom,
+            y - 37 * camera.zoom,
+          );
+          context.fillText(
+            String(entry.value),
+            x - 30 * camera.zoom,
+            y - 37 * camera.zoom,
+          );
+        }
+        continue;
+      }
+      if (entry.assetId !== undefined) {
+        const image = input.images.resolve(entry.assetId);
+        if (image !== null) {
+          let rect = anchoredDestinationRect(
+            { x, y },
+            camera.zoom,
+            geometryFor(entry),
+          );
+          let alpha = 1;
+          if (entry.kind === "UNIT") {
+            const readiness = entry.ready
+              ? readinessUnitStyleV6(
+                  input.readinessElapsedMs ?? 0,
+                  input.reducedMotion ?? false,
+                  input.highContrast ?? false,
+                )
+              : null;
+            const scale = readiness?.scale ?? 1;
+            const jump =
+              input.selectionJump?.unitId === Number(entry.key.slice(5))
+                ? selectionJumpOffsetCssPx(
+                    input.selectionJump.elapsedMs,
+                    input.selectionJump.speed,
+                    input.reducedMotion ?? false,
+                  ) * camera.zoom
+                : 0;
+            rect = {
+              x: rect.x - (rect.width * (scale - 1)) / 2,
+              y: rect.y - rect.height * (scale - 1) + jump,
+              width: rect.width * scale,
+              height: rect.height * scale,
+            };
+            alpha = readiness?.opacity ?? 1;
+            if (readiness !== null) {
+              const glow = {
+                color: readiness.glow.color,
+                alpha: readiness.glow.alpha,
+                blur: readiness.glow.blurCssPx * camera.zoom,
+              };
+              if (input.glowCache === undefined)
+                drawRegisteredImageGlow(context, image, rect, glow);
+              else
+                input.glowCache.draw(context, image, entry.assetId, rect, glow);
+            }
+          }
+          context.save();
+          context.globalAlpha = alpha * sceneAlpha;
+          if (entry.sourceCrop === undefined)
+            context.drawImage(image, rect.x, rect.y, rect.width, rect.height);
+          else
+            context.drawImage(
+              image,
+              entry.sourceCrop.x,
+              entry.sourceCrop.y,
+              entry.sourceCrop.width,
+              entry.sourceCrop.height,
+              rect.x,
+              rect.y,
+              rect.width,
+              rect.height,
+            );
+          context.restore();
+        }
+      }
+      if (
+        (entry.kind === "UNIT" || entry.kind === "CITY") &&
+        entry.ownerColor !== undefined
+      ) {
+        context.fillStyle = entry.ownerColor;
+        context.strokeStyle = "#171722";
+        context.lineWidth = 2 * camera.zoom;
         context.fillRect(
-          x - (width * 5 * camera.zoom) / 2 + index * 5 * camera.zoom,
-          y + 34 * camera.zoom,
-          4 * camera.zoom,
-          4 * camera.zoom,
+          x - 31 * camera.zoom,
+          y + 13 * camera.zoom,
+          18 * camera.zoom,
+          18 * camera.zoom,
         );
         context.strokeRect(
-          x - (width * 5 * camera.zoom) / 2 + index * 5 * camera.zoom,
-          y + 34 * camera.zoom,
-          4 * camera.zoom,
-          4 * camera.zoom,
+          x - 31 * camera.zoom,
+          y + 13 * camera.zoom,
+          18 * camera.zoom,
+          18 * camera.zoom,
+        );
+        context.fillStyle = "#171722";
+        context.font = `${800} ${11 * camera.zoom}px system-ui`;
+        context.textAlign = "center";
+        context.fillText(
+          String((entry.ownerSeat ?? 0) + 1),
+          x - 22 * camera.zoom,
+          y + 27 * camera.zoom,
         );
       }
-    }
-    if (
-      entry.kind === "UNIT" &&
-      entry.hp !== undefined &&
-      entry.maxHp !== undefined
-    ) {
-      context.fillStyle = "#101718";
-      context.fillRect(
-        x - 25 * camera.zoom,
-        y + 25 * camera.zoom,
-        50 * camera.zoom,
-        7 * camera.zoom,
-      );
-      context.fillStyle = "#65d889";
-      context.fillRect(
-        x - 24 * camera.zoom,
-        y + 26 * camera.zoom,
-        48 * (entry.hp / entry.maxHp) * camera.zoom,
-        5 * camera.zoom,
-      );
-    }
-    if (entry.kind === "VALUE") {
-      const count = Math.max(0, Math.min(24, entry.value ?? 0));
-      context.fillStyle = entry.label === "CAPACITY" ? "#71cfef" : "#8ce5b2";
-      for (let index = 0; index < count; index += 1) {
-        const column = index % 8;
-        const row = Math.floor(index / 8);
+      if (entry.kind === "CITY") {
+        const width = Math.max(1, (entry.value ?? 1) + 1);
+        const positive = Math.max(0, Math.min(width, entry.population ?? 0));
+        const negative = Math.max(0, Math.min(width, -(entry.population ?? 0)));
+        for (let index = 0; index < width; index += 1) {
+          context.fillStyle =
+            index < positive
+              ? "#ffd34e"
+              : index < negative
+                ? "#ff6b68"
+                : "#fff8df";
+          context.strokeStyle = "#19282a";
+          context.lineWidth = camera.zoom;
+          context.fillRect(
+            x - (width * 5 * camera.zoom) / 2 + index * 5 * camera.zoom,
+            y + 34 * camera.zoom,
+            4 * camera.zoom,
+            4 * camera.zoom,
+          );
+          context.strokeRect(
+            x - (width * 5 * camera.zoom) / 2 + index * 5 * camera.zoom,
+            y + 34 * camera.zoom,
+            4 * camera.zoom,
+            4 * camera.zoom,
+          );
+        }
+      }
+      if (
+        entry.kind === "UNIT" &&
+        entry.hp !== undefined &&
+        entry.maxHp !== undefined
+      ) {
+        context.fillStyle = "#101718";
         context.fillRect(
-          x - 30 * camera.zoom + column * 8 * camera.zoom,
-          y + (38 + row * 8) * camera.zoom,
-          6 * camera.zoom,
-          6 * camera.zoom,
+          x - 25 * camera.zoom,
+          y + 25 * camera.zoom,
+          50 * camera.zoom,
+          7 * camera.zoom,
+        );
+        context.fillStyle = "#65d889";
+        context.fillRect(
+          x - 24 * camera.zoom,
+          y + 26 * camera.zoom,
+          48 * (entry.hp / entry.maxHp) * camera.zoom,
+          5 * camera.zoom,
         );
       }
+      if (entry.kind === "VALUE") {
+        const count = Math.max(0, Math.min(24, entry.value ?? 0));
+        context.fillStyle = entry.label === "CAPACITY" ? "#71cfef" : "#8ce5b2";
+        for (let index = 0; index < count; index += 1) {
+          const column = index % 8;
+          const row = Math.floor(index / 8);
+          context.fillRect(
+            x - 30 * camera.zoom + column * 8 * camera.zoom,
+            y + (38 + row * 8) * camera.zoom,
+            6 * camera.zoom,
+            6 * camera.zoom,
+          );
+        }
+      }
     }
-  }
   const targetEdgeKeys = new Set(
     input.plan.entries.flatMap((entry) =>
       entry.kind === "TARGET"
@@ -1256,25 +1312,175 @@ export function createBoardImageResolverV7(
   redraw: () => void,
 ): BoardImageResolverV7 {
   const cache = new Map<string, { image: HTMLImageElement; ready: boolean }>();
+  const raisedCache = new Map<
+    string,
+    {
+      readonly source: CanvasImageSource;
+      readonly ground: CanvasImageSource;
+      readonly image: CanvasImageSource;
+    }
+  >();
+  const resolve = (assetId: string): CanvasImageSource | null => {
+    const source = ACCEPTED_ART_URLS[assetId];
+    if (source === undefined) return null;
+    let record = cache.get(assetId);
+    if (record === undefined) {
+      const image = documentRoot.createElement("img");
+      record = { image, ready: false };
+      cache.set(assetId, record);
+      image.addEventListener("load", () => {
+        const current = cache.get(assetId);
+        if (current !== undefined) current.ready = true;
+        redraw();
+      });
+      image.src = source;
+    }
+    return record.ready ? record.image : null;
+  };
   return {
-    resolve(assetId) {
-      const source = ACCEPTED_ART_URLS[assetId];
-      if (source === undefined) return null;
-      let record = cache.get(assetId);
-      if (record === undefined) {
-        const image = documentRoot.createElement("img");
-        record = { image, ready: false };
-        cache.set(assetId, record);
-        image.addEventListener("load", () => {
-          const current = cache.get(assetId);
-          if (current !== undefined) current.ready = true;
-          redraw();
-        });
-        image.src = source;
-      }
-      return record.ready ? record.image : null;
+    resolve,
+    resolveTerrainGround(assetId) {
+      const groundId = tallTerrainGroundArtId(assetId);
+      return groundId === null ? null : resolve(groundId);
+    },
+    resolveRaisedTerrain(assetId) {
+      const groundId = tallTerrainGroundArtId(assetId);
+      if (groundId === null) return null;
+      const source = resolve(assetId);
+      const ground = resolve(groundId);
+      if (source === null || ground === null) return null;
+      const cached = raisedCache.get(assetId);
+      if (cached?.source === source && cached.ground === ground)
+        return cached.image;
+      const image = isolateTallTerrainForegroundV7(
+        documentRoot,
+        source,
+        ground,
+      );
+      // A missing/tainted 2D context is retryable; never cache that fallback.
+      if (image === null) return null;
+      raisedCache.set(assetId, { source, ground, image });
+      return image;
     },
   };
+}
+
+function tallTerrainGroundArtId(assetId: string): string | null {
+  if (assetId.startsWith("terrain-ruleset7-original-forest-"))
+    return "terrain-ruleset7-original-grass-1";
+  if (assetId.includes("mountain")) return "terrain-ruleset7-revision3-gravel";
+  return null;
+}
+
+/**
+ * Reuses the checked-in tall-terrain derivation: pixels that differ from the
+ * accepted owning-square ground form the raised body, while enclosed flat
+ * body colors are restored after border flood fill. The result is cached by
+ * the resolver and never read back per frame.
+ */
+function isolateTallTerrainForegroundV7(
+  documentRoot: Document,
+  source: CanvasImageSource,
+  ground: CanvasImageSource,
+): CanvasImageSource | null {
+  const width = 256;
+  const height = 384;
+  const footprintTop = 128;
+  try {
+    const output = documentRoot.createElement("canvas");
+    output.width = width;
+    output.height = height;
+    const context = output.getContext("2d", { willReadFrequently: true });
+    const groundCanvas = documentRoot.createElement("canvas");
+    groundCanvas.width = width;
+    groundCanvas.height = height - footprintTop;
+    const groundContext = groundCanvas.getContext("2d", {
+      willReadFrequently: true,
+    });
+    if (context === null || groundContext === null) return null;
+    context.clearRect(0, 0, width, height);
+    context.drawImage(source, 0, 0, width, height);
+    groundContext.drawImage(ground, 0, 0, width, height - footprintTop);
+    const body = context.getImageData(0, 0, width, height);
+    const groundPixels = groundContext.getImageData(
+      0,
+      0,
+      width,
+      height - footprintTop,
+    ).data;
+    const originalAlpha = new Uint8Array(width * height);
+    for (let y = 0; y < height; y += 1)
+      for (let x = 0; x < width; x += 1) {
+        const pixel = y * width + x;
+        const offset = pixel * 4;
+        const sourceAlpha = body.data[offset + 3] ?? 0;
+        originalAlpha[pixel] = sourceAlpha;
+        if (y < footprintTop) continue;
+        const groundOffset = ((y - footprintTop) * width + x) * 4;
+        const difference = Math.max(
+          Math.abs(
+            (body.data[offset] ?? 0) - (groundPixels[groundOffset] ?? 0),
+          ),
+          Math.abs(
+            (body.data[offset + 1] ?? 0) -
+              (groundPixels[groundOffset + 1] ?? 0),
+          ),
+          Math.abs(
+            (body.data[offset + 2] ?? 0) -
+              (groundPixels[groundOffset + 2] ?? 0),
+          ),
+        );
+        // The accepted composite already contains the exact antialiased edge
+        // color. A binary mask restores that pixel verbatim above Roads and
+        // exactly reconstructs the source above its registered square ground.
+        body.data[offset + 3] = difference === 0 ? 0 : sourceAlpha;
+      }
+    fillEnclosedTallTerrainBodyV7(body.data, originalAlpha, width, height);
+    context.putImageData(body, 0, 0);
+    return output;
+  } catch {
+    return null;
+  }
+}
+
+function fillEnclosedTallTerrainBodyV7(
+  body: Uint8ClampedArray,
+  originalAlpha: Uint8Array,
+  width: number,
+  height: number,
+): void {
+  const reachable = new Uint8Array(width * height);
+  const queue = new Int32Array(width * height);
+  let head = 0;
+  let tail = 0;
+  const enqueue = (x: number, y: number): void => {
+    const pixel = y * width + x;
+    if (reachable[pixel] !== 0 || (body[pixel * 4 + 3] ?? 0) !== 0) return;
+    reachable[pixel] = 1;
+    queue[tail] = pixel;
+    tail += 1;
+  };
+  for (let x = 0; x < width; x += 1) {
+    enqueue(x, 0);
+    enqueue(x, height - 1);
+  }
+  for (let y = 1; y < height - 1; y += 1) {
+    enqueue(0, y);
+    enqueue(width - 1, y);
+  }
+  while (head < tail) {
+    const pixel = queue[head] ?? 0;
+    head += 1;
+    const x = pixel % width;
+    const y = Math.floor(pixel / width);
+    if (x > 0) enqueue(x - 1, y);
+    if (x + 1 < width) enqueue(x + 1, y);
+    if (y > 0) enqueue(x, y - 1);
+    if (y + 1 < height) enqueue(x, y + 1);
+  }
+  for (let pixel = 0; pixel < width * height; pixel += 1)
+    if (reachable[pixel] === 0 && (originalAlpha[pixel] ?? 0) > 0)
+      body[pixel * 4 + 3] = originalAlpha[pixel] ?? 0;
 }
 
 function mapTargets(
@@ -1439,6 +1645,89 @@ function drawTacticalSymbolOnCanvas(
   context.restore();
 }
 
+function isTallTerrainEntry(entry: BoardRenderPlanEntryV7): boolean {
+  return (
+    entry.kind === "TERRAIN" &&
+    entry.assetId !== undefined &&
+    tallTerrainGroundArtId(entry.assetId) !== null
+  );
+}
+
+function drawEntryImage(
+  context: CanvasRenderingContext2D,
+  image: CanvasImageSource | null,
+  input: {
+    readonly x: number;
+    readonly y: number;
+    readonly zoom: number;
+    readonly entry: BoardRenderPlanEntryV7;
+    readonly sceneAlpha: number;
+  },
+): void {
+  if (image === null) return;
+  const rect = anchoredDestinationRect(
+    { x: input.x, y: input.y },
+    input.zoom,
+    geometryFor(input.entry),
+  );
+  context.save();
+  context.globalAlpha = input.sceneAlpha;
+  context.drawImage(image, rect.x, rect.y, rect.width, rect.height);
+  context.restore();
+}
+
+function drawSquareTerrainGround(
+  context: CanvasRenderingContext2D,
+  image: CanvasImageSource | null,
+  input: {
+    readonly x: number;
+    readonly y: number;
+    readonly zoom: number;
+    readonly sceneAlpha: number;
+  },
+): void {
+  if (image === null) return;
+  const size = 128 * input.zoom;
+  context.save();
+  context.globalAlpha = input.sceneAlpha;
+  context.drawImage(image, input.x - size / 2, input.y - size / 2, size, size);
+  context.restore();
+}
+
+/**
+ * If browser pixel readback is unavailable, preserve raised overflow without
+ * repainting the opaque owning-square floor over Roads. The next successful
+ * resolver call retries the complete cached body isolation.
+ */
+function drawTallTerrainOverflowFallback(
+  context: CanvasRenderingContext2D,
+  image: CanvasImageSource | null,
+  input: {
+    readonly x: number;
+    readonly y: number;
+    readonly zoom: number;
+    readonly sceneAlpha: number;
+  },
+): void {
+  if (image === null) return;
+  const width = 256 * 0.5 * input.zoom;
+  const overflowHeight = 128 * 0.5 * input.zoom;
+  context.save();
+  context.globalAlpha = input.sceneAlpha;
+  context.drawImage(
+    image,
+    0,
+    0,
+    256,
+    128,
+    input.x - width / 2,
+    input.y - 2 * overflowHeight,
+    width,
+    overflowHeight,
+  );
+  context.restore();
+}
+
 function geometryFor(entry: BoardRenderPlanEntryV7): SourceGeometry {
   if (entry.kind === "TERRAIN")
     return entry.assetId?.includes("grass") || entry.assetId?.includes("water")
@@ -1463,6 +1752,8 @@ function geometryFor(entry: BoardRenderPlanEntryV7): SourceGeometry {
       return RULESET6_UNIT_ART_GEOMETRY.giant;
     if (entry.assetId === RULESET7_UNIT_ART_IDS.KNIGHT)
       return RULESET7_KNIGHT_ART_GEOMETRY;
+    if (entry.assetId === RULESET7_UNIT_ART_IDS.CAPTAIN)
+      return RULESET7_CAPTAIN_ART_GEOMETRY;
     return RULESET6_UNIT_ART_GEOMETRY.standard;
   }
   if (entry.kind === "IMPROVEMENT") {

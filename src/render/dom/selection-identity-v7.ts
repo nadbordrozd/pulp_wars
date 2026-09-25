@@ -46,6 +46,8 @@ const PAINTED_BOUNDS: readonly (readonly [
   ["terrain-ruleset7-resource-pearls", 256, 384, 60, 180, 196, 320],
   ["unit-original-breacher", 384, 384, 61, 50, 335, 288],
   ["unit-original-captain", 256, 296, 44, 20, 212, 222],
+  ["unit-original-captain-v7r10", 256, 296, 28, 9, 228, 222],
+  ["portrait-original-captain-v7r10", 256, 256, 26, 20, 229, 236],
   ["unit-original-catapult", 384, 384, 122, 85, 361, 309],
   ["unit-original-fighter", 256, 296, 20, 18, 236, 252],
   ["unit-original-guard", 256, 296, 16, 19, 240, 237],
@@ -82,4 +84,21 @@ export function selectionIdentityArtworkLayoutV7(assetId: string) {
     { width: 112, height: 112, visibleInset: 4 },
   );
   return { ...layout.image, top: layout.image.top + 9 };
+}
+
+const NORMALIZED_TECH_ART = new Set([
+  "terrain-square-original-fruit",
+  "terrain-square-original-animal",
+  "portrait-original-captain-v7r10",
+]);
+
+/** Fill the existing 72px technology viewport from accepted visible-alpha bounds. */
+export function technologyArtworkLayoutV7(assetId: string) {
+  if (!NORMALIZED_TECH_ART.has(assetId)) return null;
+  const frame = SELECTION_IDENTITY_FRAMES_V7[assetId];
+  if (frame === undefined) return null;
+  return selectionIdentityArtworkLayoutV6(
+    { ...frame, mode: "VISIBLE_ALPHA" },
+    { width: 72, height: 72, visibleInset: 5 },
+  );
 }

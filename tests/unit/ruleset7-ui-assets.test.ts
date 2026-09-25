@@ -20,6 +20,7 @@ import {
   type UnitId,
   UNIT_ROLE_IDS_V7,
 } from "../../src/engine/index";
+import { technologyArtworkLayoutV7 } from "../../src/render/dom/selection-identity-v7";
 
 describe("Ruleset 7 UI accepted-art registry", () => {
   it("has explicit resolvable entries for every role, technology and improvement", () => {
@@ -68,6 +69,15 @@ describe("Ruleset 7 UI accepted-art registry", () => {
       }),
     ).toBeNull();
     expect(RULESET7_UNIT_ART_IDS.KNIGHT).toBe("unit-original-knight");
+    expect(RULESET7_UNIT_ART_IDS.CAPTAIN).toBe("unit-original-captain-v7r10");
+    expect(RULESET7_PORTRAIT_ART_IDS.CAPTAIN).toBe(
+      "portrait-original-captain-v7r10",
+    );
+    expect(RULESET7_TECH_ART_IDS.ADMINISTRATION).toBe(
+      RULESET7_PORTRAIT_ART_IDS.CAPTAIN,
+    );
+    expect(RULESET7_TECH_ART_IDS.SCOUTING).toBe("portrait-original-raider");
+    expect(RULESET7_TECH_ART_IDS.RAIDING).toBe("ui-action-pillage");
   });
 
   it("uses the v7 single Farm for technology, action, and identity", () => {
@@ -105,5 +115,20 @@ describe("Ruleset 7 UI accepted-art registry", () => {
     expect(commandArtIdV7({ kind: "HUNT_GAME", at: { x: 2, y: 0 } })).toBe(
       RULESET7_RESOURCE_ART_IDS.GAME,
     );
+  });
+
+  it("normalizes Gathering, Hunting, and Captain art inside the existing technology viewport", () => {
+    for (const assetId of [
+      RULESET7_TECH_ART_IDS.GATHERING,
+      RULESET7_TECH_ART_IDS.HUNTING,
+      RULESET7_TECH_ART_IDS.ADMINISTRATION,
+    ]) {
+      const layout = technologyArtworkLayoutV7(assetId);
+      expect(layout, assetId).not.toBeNull();
+      expect(layout?.visible?.right ?? 0).toBeLessThanOrEqual(72);
+      expect(layout?.visible?.bottom ?? 0).toBeLessThanOrEqual(72);
+      expect(layout?.visible?.left ?? 0).toBeGreaterThanOrEqual(0);
+      expect(layout?.visible?.top ?? 0).toBeGreaterThanOrEqual(0);
+    }
   });
 });
