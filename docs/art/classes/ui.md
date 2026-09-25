@@ -30,6 +30,17 @@ Supply, Inspired, tended-this-turn, Overrun, Charge, Field Defense destruction,
 land/sea trade, and dynamic city/dock discounts are code-native accessible
 status, effect, or number treatments and authorize no raster.
 
+## Ruleset-7 revision-10 mobility technology reuse
+
+The current Scouting node recruits Raider, so its art reuses the accepted
+`portrait-original-raider` rather than the retired Scout identity. Raiding
+unlocks the Charge/Pillage upgrade and reuses the accepted
+`ui-action-pillage`, whose broad mallet-and-broken-timber silhouette accurately
+communicates the destructive capability at technology-card size. The review
+must show both at 64 CSS pixels and in the exact 112 x 130 technology viewport,
+on light, dark, and grayscale surfaces. These are explicit art registrations;
+live technology-tree mapping belongs to the integration task.
+
 ## Current Ruleset 7 simplified interface (2026-09-24)
 
 This section supersedes the compact dock and HUD wording below wherever they

@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "inventory": [
+    {
+      "id": "unit-original-captain-v7r10",
+      "output": "public/assets/pixellab/units/original-captain-v7r10.png",
+      "outputSha256": "79583ece5196daae38652a3a3551bd4b1f14ce1c3295c67f99f1bf550d19e109",
+      "alphaBounds": {
+        "left": 28,
+        "top": 9,
+        "right": 228,
+        "bottom": 222,
+        "empty": false
+      }
+    },
+    {
+      "id": "portrait-original-captain-v7r10",
+      "output": "public/assets/pixellab/ui/portrait-original-captain-v7r10.png",
+      "outputSha256": "4c601b32a38936780c7a0b2952f7ebd33bac100e50c177ab2ce88614c6866b6f",
+      "alphaBounds": {
+        "left": 26,
+        "top": 20,
+        "right": 229,
+        "bottom": 236,
+        "empty": false
+      }
+    },
+    {
+      "id": "unit-warrior",
+      "output": "public/assets/pixellab/units/warrior.png",
+      "outputSha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1",
+      "alphaBounds": {
+        "left": 20,
+        "top": 18,
+        "right": 236,
+        "bottom": 252,
+        "empty": false
+      }
+    },
+    {
+      "id": "unit-defender",
+      "output": "public/assets/pixellab/units/defender.png",
+      "outputSha256": "930c31f9aa1bf5dacf0318484b31ac63504365482ae01a84a6a269d94de65e11",
+      "alphaBounds": {
+        "left": 16,
+        "top": 19,
+        "right": 240,
+        "bottom": 237,
+        "empty": false
+      }
+    },
+    {
+      "id": "unit-original-captain",
+      "output": "public/assets/pixellab/units/original-captain-v7r9.png",
+      "outputSha256": "fb521ed596568b23530c588c3c07cf128d64bcc7c585d7232174627df2608504",
+      "alphaBounds": {
+        "left": 44,
+        "top": 20,
+        "right": 212,
+        "bottom": 222,
+        "empty": false
+      }
+    },
+    {
+      "id": "portrait-original-raider",
+      "output": "public/assets/pixellab/ui/portrait-original-raider.png",
+      "outputSha256": "c57de68c42e6331cfc4645c852e71bbc7a48da980677f6f6aa99fff0f7d38b74",
+      "alphaBounds": {
+        "left": 46,
+        "top": 20,
+        "right": 210,
+        "bottom": 236,
+        "empty": false
+      }
+    },
+    {
+      "id": "ui-action-pillage",
+      "output": "public/assets/pixellab/ui/action-pillage.png",
+      "outputSha256": "34c33e31dc1694e9e7147bcb0d2f7c99f3501788a71091bdc4d64ce255773336",
+      "alphaBounds": {
+        "left": 15,
+        "top": 10,
+        "right": 113,
+        "bottom": 115,
+        "empty": false
+      }
+    }
+  ],
+  "measuredHints": {
+    "captainCanvas": { "width": 256, "height": 296 },
+    "captainAnchor": { "x": 128, "y": 222 },
+    "captainDisplayScale": 0.275,
+    "captainCosmeticOffsetY": 18,
+    "captainAlphaBounds": {
+      "left": 28,
+      "top": 9,
+      "right": 228,
+      "bottom": 222,
+      "empty": false
+    },
+    "captainVisibleCss": { "width": 55, "height": 58.58 },
+    "comparisonFighterVisibleCss": { "width": 54, "height": 58.5 }
+  },
+  "reuse": {
+    "scouting": "portrait-original-raider",
+    "raiding": "ui-action-pillage"
+  },
+  "checks": {
+    "revision9CaptainBytePreserved": true,
+    "captainSourceNativeEnlarged": true,
+    "captainMinimumNativeMaximumMapZoom": true,
+    "captainFighterGuardDenseComparison": true,
+    "scoutingRaiderTechnologyContext": true,
+    "raidingPillageTechnologyContext": true,
+    "captainDockContext": true,
+    "exactTechnologyAndDockViewport": true,
+    "isolatedOutputSupported": true,
+    "runtimeMappingDeferred": true
+  },
+  "artifacts": {
+    "source-native-enlarged.png": "50281dc5b131df9909901132fca183ef911e1043cd8cda1f93b8b3ffefd9d37a",
+    "captain-map-context.png": "7c298453030e1645b3f203f02dfe5ca36641ff3a5c54a8820453584c7d4cb833",
+    "technology-dock-context.png": "2034ef0de537f407c6834b9a5ab584e6162b45f1d772417f62d6427b3151b691"
+  }
+}

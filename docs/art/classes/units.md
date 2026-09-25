@@ -29,6 +29,24 @@ from the accepted world sources; portraits are not extra PixelLab requests.
 Removed Human role sources remain frozen historical assets and are not mapped
 to revision 9.
 
+## Ruleset-7 revision-10 Captain readability override
+
+Playtest review found the accepted revision-9 Captain too small and dependent
+on its tall pennant for visual bounds. Preserve that historical source and
+portrait byte-for-byte. The additive `unit-original-captain-v7r10` source uses
+the same transparent 256 x 296 canvas, `(128,222)` anchor, ground contact, and
+18-CSS-pixel cosmetic offset at display scale `0.275`. Its accepted alpha
+bounds are `x=28..228,y=9..222`, producing a `55 x 58.58` CSS-pixel visible
+silhouette alongside the approximately `54 x 59` Fighter.
+
+The revision-10 silhouette must read as an officer from its substantial body:
+oversized bicorne, broad epaulettes, diagonal sash, long split-tail coat, and
+wide planted stance. A short command horn may support that reading below the
+shoulders. A flag, pennant, banner, or tall staff must not create the measured
+envelope. `portrait-original-captain-v7r10` is derived deterministically from
+the accepted world source. Runtime mapping remains a separate integration
+decision.
+
 ## Active square-grid override
 
 The map now presents axis-aligned 128 x 128 cells under the

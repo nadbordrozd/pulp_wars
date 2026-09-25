@@ -1,0 +1,31 @@
+{
+  "id": "unit-original-captain-v7r10",
+  "jobId": "b7c8767a-53b8-4ace-9c01-3d065adce711",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Unnamed neutral POC test faction: rounded tan padded tunics, large off-white scarves, simple bronze diamond badges, dark teal leather equipment, broad friendly shapes; no pirate, robot, undead, cowboy, ninja, dinosaur, alien, national, historical, or religious motif. Palette: parchment officer coat, dark teal bicorne and shoulder boards, off-white sash, warm bronze horn and trim, charcoal outline. One isolated full-body Original Captain on transparent 256 by 296, southeast three-quarter view. Substantial cute chunky officer: large head, short broad torso, wide planted stance and both feet at y222. The BODY clearly shows one huge dark-teal bicorne hat, broad dark-teal epaulettes, a wide off-white diagonal sash, and a long parchment officer coat with two large flared tails. Shoulder-to-coat silhouette at least 150 pixels wide. One short oversized bronze command horn hangs below shoulder height as a secondary cue. Broad simple color blocks, strong outline, northwest light. No flag. Fit alpha x28..228,y8..222. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; flag, pennant, banner, tall staff, weapon, shield, bow, medic tool, mount, tiny or narrow body, hidden coat, hidden epaulettes, plain Fighter tunic, realistic uniform, insignia, medals, tiny trim, scenery, effect, hidden feet.",
+    "prompt": "One isolated full-body Original Captain on transparent 256 by 296, southeast three-quarter view. Substantial cute chunky officer: large head, short broad torso, wide planted stance and both feet at y222. The BODY clearly shows one huge dark-teal bicorne hat, broad dark-teal epaulettes, a wide off-white diagonal sash, and a long parchment officer coat with two large flared tails. Shoulder-to-coat silhouette at least 150 pixels wide. One short oversized bronze command horn hangs below shoulder height as a secondary cue. Broad simple color blocks, strong outline, northwest light. No flag. Fit alpha x28..228,y8..222.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; flag, pennant, banner, tall staff, weapon, shield, bow, medic tool, mount, tiny or narrow body, hidden coat, hidden epaulettes, plain Fighter tunic, realistic uniform, insignia, medals, tiny trim, scenery, effect, hidden feet",
+    "requestSize": {
+      "width": 256,
+      "height": 296
+    },
+    "outputSize": {
+      "width": 256,
+      "height": 296
+    },
+    "seed": 130001,
+    "noBackground": true,
+    "palette": "parchment officer coat, dark teal bicorne and shoulder boards, off-white sash, warm bronze horn and trim, charcoal outline",
+    "postprocess": "unit-fit",
+    "groundContactY": 222,
+    "displayScale": 0.275,
+    "cosmeticOffsetY": 18,
+    "styleReference": {
+      "id": "unit-warrior",
+      "sha256": "d606459210df2297706816957f4c62f3dea01f2324ba32641dc9fbbf3e9590a1",
+      "usageDescription": "Match the accepted Original palette, chunky proportions, thick outline, flat shading and southeast camera. Create a substantial officer identifiable from the uniform and body, without a tall prop."
+    }
+  }
+}
