@@ -1,5 +1,31 @@
 # Naval Asset Contract
 
+## Ruleset-7 revision-11 Port and Fish overlay
+
+The approved
+[revision-11 logistics contract](../../product/RULESET_7_REVISION_11_CITY_LOGISTICS_AI.md#6-revision-11-port-and-fish-art)
+adds exactly two versioned PixelLab sources:
+
+| Exact asset ID                         | Subject      | Canvas       | Anchor      | Scale |
+| -------------------------------------- | ------------ | ------------ | ----------- | ----: |
+| `building-ruleset7-port-v7r11`         | working Port | 384 x 384 px | `(192,288)` |  0.30 |
+| `terrain-ruleset7-resource-fish-v7r11` | Fish shoal   | 256 x 384 px | `(128,256)` |  0.50 |
+
+Fish is one coherent shoal of six separately readable silver-teal fish in a
+loose staggered diagonal. Each fish has a disconnected body-and-tail
+silhouette, similar heading, broad highlight, and strong outline. The accepted
+bounds are `x=48..208,y=204..320`, inside the inherited
+`x=40..216,y=148..336` hard bounds. It remains readable on both water values
+at 0.625x and under a Port or Shipyard while a later-drawn naval occupant keeps
+its primary silhouette.
+
+The revision-10 Port and Fish remain historical, and all water, Pearls,
+Shipyard, ships, transport, icons, portraits, and effects remain unchanged.
+Shorecraft, Build Port, Port identity, Harvest Fish, and their framed UI reuse
+derive from the two new world sources after runtime integration; they authorize
+no additional generation request. This asset package records the sources and
+static IDs without changing current runtime mappings.
+
 ## Ruleset-7 revision-9 overlay
 
 The approved

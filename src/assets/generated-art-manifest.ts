@@ -558,6 +558,12 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   "portrait-original-captain-v7r10": publicArtUrl(
     "assets/pixellab/ui/portrait-original-captain-v7r10.png",
   ),
+  "building-ruleset7-port-v7r11": publicArtUrl(
+    "assets/pixellab/buildings-ruleset7/port-v7r11.png",
+  ),
+  "terrain-ruleset7-resource-fish-v7r11": publicArtUrl(
+    "assets/pixellab/terrain-ruleset7/resource-fish-v7r11.png",
+  ),
   "terrain-game": publicArtUrl("assets/pixellab/terrain/animal.png"),
   "building-ruleset6-mine": publicArtUrl("assets/pixellab/buildings/mine.png"),
   "building-lumber-camp": publicArtUrl(

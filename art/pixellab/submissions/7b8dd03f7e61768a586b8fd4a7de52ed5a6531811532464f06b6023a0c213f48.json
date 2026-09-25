@@ -1,0 +1,30 @@
+{
+  "id": "building-ruleset7-port-v7r11",
+  "jobId": "c0a0268d-bba3-4639-8459-ea5c9e126ae3",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm tan timber piers, pale stone quay, cream warehouse roof, bold bronze cargo and mooring gear, charcoal-teal outline, one blank coral ownership panel. Revision-11 WORKING HARBOR, southeast three-quarter view. A broad stone-and-timber public quay spans the back edge; two thick separated working piers project southeast around a LARGE basin. A compact wide warehouse anchors the back-left. One bold cargo group of large crates and barrels, thick mooring posts and coiled rope fills the back quay. The entire center/lower x80..304,y168..330 basin is EMPTY TRANSPARENCY: draw no water or floor there. Low, wide, substantial one-tile silhouette. Exactly one connected blank coral warehouse panel covers 8-15 percent. Transparent untrimmed 384 square; target x12..372,y44..336; anchor 192,288. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; blue basin, water plane, water, opaque floor, ground, tiny U dock, narrow U outline, single narrow pier, thin rails, miniature hut, full city, coastline, bridge, industrial shipyard, drydock, large crane, tall hoist, ship, boat, fish, pearls, route, coin, number, emblem, flag, state overlay, selection, blockade, damage, smoke, text, terrain square, cast shadow, roof or cargo over basin, clutter, pixel art, jagged edge, photoreal, painterly, faux 3D, cropped edge.",
+    "prompt": "Revision-11 WORKING HARBOR, southeast three-quarter view. A broad stone-and-timber public quay spans the back edge; two thick separated working piers project southeast around a LARGE basin. A compact wide warehouse anchors the back-left. One bold cargo group of large crates and barrels, thick mooring posts and coiled rope fills the back quay. The entire center/lower x80..304,y168..330 basin is EMPTY TRANSPARENCY: draw no water or floor there. Low, wide, substantial one-tile silhouette. Exactly one connected blank coral warehouse panel covers 8-15 percent. Transparent untrimmed 384 square; target x12..372,y44..336; anchor 192,288.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; blue basin, water plane, water, opaque floor, ground, tiny U dock, narrow U outline, single narrow pier, thin rails, miniature hut, full city, coastline, bridge, industrial shipyard, drydock, large crane, tall hoist, ship, boat, fish, pearls, route, coin, number, emblem, flag, state overlay, selection, blockade, damage, smoke, text, terrain square, cast shadow, roof or cargo over basin, clutter, pixel art, jagged edge, photoreal, painterly, faux 3D, cropped edge",
+    "requestSize": {
+      "width": 384,
+      "height": 384
+    },
+    "outputSize": {
+      "width": 384,
+      "height": 384
+    },
+    "seed": 131121,
+    "noBackground": true,
+    "palette": "warm tan timber piers, pale stone quay, cream warehouse roof, bold bronze cargo and mooring gear, charcoal-teal outline, one blank coral ownership panel",
+    "postprocess": "compact-building-fit",
+    "groundContactY": 288,
+    "displayScale": 0.3,
+    "styleReference": {
+      "id": "building-ruleset7-shipyard",
+      "sha256": "3c882512919a9f69fd578617de66a7729ff9eda1c509c775bfeaa2f610a80f8c",
+      "usageDescription": "Copy only the accepted transparent harbor edge quality, timber-and-stone palette, dark outline, broad flat cel shading and southeast camera. Exclude its industrial crane, drydock frame, tall silhouette and exact layout."
+    }
+  }
+}

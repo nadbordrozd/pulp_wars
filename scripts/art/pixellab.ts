@@ -19,6 +19,7 @@ import {
   resolveRepairStyleReferenceHash,
 } from "./ruleset7-revision3-art-order";
 import { assertRuleset7Revision9ArtOrder } from "./ruleset7-revision9-art-order";
+import { assertRuleset7LogisticsArtOrder } from "./ruleset7-logistics-art-order";
 import { assertRuleset7PlaytestArtOrder } from "./ruleset7-playtest-art-order";
 import { assertRuleset7TacticalUiOrder } from "./ruleset7-tactical-ui-order";
 import {
@@ -282,6 +283,7 @@ async function main(): Promise<void> {
     assertRuleset7OriginalUnitOrder(recipes, generated);
     assertRuleset7Revision3ArtOrder(recipes, generated);
     assertRuleset7Revision9ArtOrder(recipes, generated);
+    assertRuleset7LogisticsArtOrder(recipes, generated);
     assertRuleset7PlaytestArtOrder(recipes, generated);
     assertRuleset7TacticalUiOrder(recipes, generated);
     assertRuleset7NavalOrder(recipes, generated);

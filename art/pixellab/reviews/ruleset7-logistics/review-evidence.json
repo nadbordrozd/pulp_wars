@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "inventory": {
+    "exactNewSources": [
+      "building-ruleset7-port-v7r11",
+      "terrain-ruleset7-resource-fish-v7r11"
+    ],
+    "retainedProductionPngs": 258,
+    "totalProductionPngs": 260,
+    "liveRuntimeMappingsChanged": false
+  },
+  "port": {
+    "revision10": {
+      "alphaBounds": { "left": 52, "top": 104, "right": 332, "bottom": 298 },
+      "alphaWeightedArea": 29305.5176,
+      "displayedWeightedAreaAtScale030": 2637.4966
+    },
+    "revision11": {
+      "alphaBounds": { "left": 39, "top": 44, "right": 345, "bottom": 288 },
+      "alphaWeightedArea": 36992.2863,
+      "displayedWeightedAreaAtScale030": 3329.3058,
+      "growthRatio": 1.2623,
+      "dockingWindowTransparentRatio": 0.6738
+    }
+  },
+  "fish": {
+    "alphaBounds": { "left": 48, "top": 204, "right": 208, "bottom": 320 },
+    "disconnectedSilhouettes": 6,
+    "silhouetteAreas": [823, 826, 829, 832, 835, 839]
+  },
+  "drawOrder": [
+    "water",
+    "Port or Shipyard",
+    "resource",
+    "unit",
+    "code-native status"
+  ],
+  "contexts": {
+    "zoom": [0.625, 1, 1.75],
+    "dpr": [1, 2],
+    "water": ["Shallow", "Deep"],
+    "owners": ["coral", "teal", "gold", "violet"],
+    "states": ["base", "selected", "blockaded", "fog"],
+    "coastAdjacencies": 8,
+    "portCounts": [1, 2, 3, 4, 5],
+    "denseMaps": ["11x11", "25x25"],
+    "resourceComparisons": [
+      "Fish revision 10",
+      "Pearls",
+      "Fruit",
+      "Game",
+      "Ore",
+      "Fertile Ground"
+    ],
+    "navalOccupants": [
+      "unit-shared-embarked-transport",
+      "unit-original-patrol-boat",
+      "unit-original-battleship"
+    ],
+    "shipyardComparison": "building-ruleset7-shipyard"
+  },
+  "artifacts": {
+    "source-native-enlarged.png": "71a22dc856b172fa01b7a8fad57b045036ceb72787a9e8d185a61d574c3e09a2",
+    "water-zoom-dpr-context.png": "8c4152d0d5e663e21af9fd26e6afe7079b26fcf0f4811b2f0d0ecb1f96243572",
+    "coexistence-draw-order.png": "1a14e0d6c85b9963d70fbde004aefed506e5e9bbf7d2833b1802d30b70a6db46",
+    "owner-state-coast-context.png": "f9514f66ab9f1d1ed5f41af3ca93aceddb31ab808f5295751b5dbe7160f25267",
+    "dense-coast-port-count-context.png": "2aebea2eb3d04a51a9205b4569b43055e57b58006f2729fb568372e8b39aa479"
+  }
+}

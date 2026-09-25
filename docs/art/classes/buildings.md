@@ -1,5 +1,25 @@
 # Building and Settlement Asset Contract
 
+## Ruleset-7 revision-11 Port overlay
+
+The approved
+[revision-11 logistics contract](../../product/RULESET_7_REVISION_11_CITY_LOGISTICS_AI.md#6-revision-11-port-and-fish-art)
+adds `building-ruleset7-port-v7r11` as one versioned 384 x 384 transparent
+source at anchor `(192,288)` and display scale 0.30. It replaces the earlier
+small-dock direction with a substantial tile-bounded working harbor: a broad
+back quay, compact warehouse, cargo and mooring gear, and two thick piers
+around an open docking basin. Its hard bounds are `x=12..372,y=36..340`, its
+visible span is at least 300 x 210 source pixels, and its alpha-weighted area
+at display scale is at least 25% above the accepted revision-10 Port.
+
+The central/lower `x=80..304,y=168..330` window stays visibly open so a
+resource and naval occupant retain their primary silhouettes in the shared
+water → Port → resource → unit draw order. Shipyard remains the taller, more
+industrial upgrade with the large crane and drydock frame. This asset package
+registers the versioned source and review geometry only; the revision-11
+integration package changes the live Port, Shorecraft, Build Port, and framed
+UI mappings.
+
 ## Ruleset-7 revision-9 Shipyard
 
 The approved

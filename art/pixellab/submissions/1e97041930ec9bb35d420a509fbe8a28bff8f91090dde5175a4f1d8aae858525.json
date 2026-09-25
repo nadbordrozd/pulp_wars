@@ -1,0 +1,30 @@
+{
+  "id": "building-ruleset7-port-v7r11",
+  "jobId": "9b30ae25-4f60-43a0-aacd-fe1d8ca05310",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: warm tan timber piers, pale stone quay, cream warehouse roof, bold bronze cargo and mooring gear, charcoal-teal outline, one blank coral ownership panel. Revision-11 working Port, isolated in southeast three-quarter board-game view. Two BROAD timber-and-stone piers form a large readable docking basin open through the center and lower area. A compact low warehouse anchors the back edge. One bold cargo group of large crates and barrels plus thick mooring posts and rope communicates harbor trade. Low wide substantial public quay, clearly larger than a tiny U dock but still one tile. Exactly one connected blank coral warehouse panel covers 8-15 percent. Preserve a visibly empty x80..304,y168..330 basin for resources and ships. Transparent untrimmed 384 square; target x24..360,y62..328; anchor 192,288. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; tiny U-shaped dock, single narrow pier, full city, scenic coastline, bridge, industrial shipyard, drydock, towering crane, large hoist, ship, boat, fish, pearls, route, coin, number, owner emblem, flag symbol, trade state, selection, blockade, damage, smoke, text, terrain square, water, cast shadow, roof over basin, cargo in basin, clutter, radial composition, pixel art, jagged edge, photoreal, painterly, faux 3D, cropped edge.",
+    "prompt": "Revision-11 working Port, isolated in southeast three-quarter board-game view. Two BROAD timber-and-stone piers form a large readable docking basin open through the center and lower area. A compact low warehouse anchors the back edge. One bold cargo group of large crates and barrels plus thick mooring posts and rope communicates harbor trade. Low wide substantial public quay, clearly larger than a tiny U dock but still one tile. Exactly one connected blank coral warehouse panel covers 8-15 percent. Preserve a visibly empty x80..304,y168..330 basin for resources and ships. Transparent untrimmed 384 square; target x24..360,y62..328; anchor 192,288.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; tiny U-shaped dock, single narrow pier, full city, scenic coastline, bridge, industrial shipyard, drydock, towering crane, large hoist, ship, boat, fish, pearls, route, coin, number, owner emblem, flag symbol, trade state, selection, blockade, damage, smoke, text, terrain square, water, cast shadow, roof over basin, cargo in basin, clutter, radial composition, pixel art, jagged edge, photoreal, painterly, faux 3D, cropped edge",
+    "requestSize": {
+      "width": 384,
+      "height": 384
+    },
+    "outputSize": {
+      "width": 384,
+      "height": 384
+    },
+    "seed": 131101,
+    "noBackground": true,
+    "palette": "warm tan timber piers, pale stone quay, cream warehouse roof, bold bronze cargo and mooring gear, charcoal-teal outline, one blank coral ownership panel",
+    "postprocess": "compact-building-fit",
+    "groundContactY": 288,
+    "displayScale": 0.3,
+    "styleReference": {
+      "id": "building-ruleset7-port",
+      "sha256": "70d2385d53f7dd466c44bacfa6f265645de7dbda1e94f9bad6732e246250aea9",
+      "usageDescription": "Retain the accepted Port's warm timber-and-stone palette, clean nonpixel contour, dark outline, flat cel shading and southeast camera, while replacing its small U-shaped pier with a substantially broader working harbor composition."
+    }
+  }
+}

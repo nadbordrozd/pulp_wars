@@ -1,0 +1,36 @@
+{
+  "id": "terrain-ruleset7-resource-fish-v7r11",
+  "jobId": "9cc36317-2738-4dcf-afaf-7f39715055c2",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "description": "Original Pulp Wars chunky clean 2D strategy-game illustration, playful board-game sticker, strong dark colored outline, mostly flat colors, two-level cel shading, minimal texture, simple highlight, intentionally drawn rather than rendered, charming silly adventurous tone. Palette: five to seven silver-teal fish, pale aqua broad highlights, charcoal-teal outline, muted navy southeast planes. Revision-11 Fish resource: exactly SIX small separately readable silver-teal fish swimming southeast in one loose staggered diagonal shoal. Similar headings, varied spacing, one coherent formation. Every fish has one clear oval body and tail; transparent gaps visibly separate every neighboring silhouette; no fish dominates. Strong smooth dark outline, broad pale highlight and two flat cel shades for minimum-zoom contrast. Transparent untrimmed 256 by 384; owning square y128..383; target x48..208,y180..320; bottom contact near y320. Must not include: pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; three fish, fewer than five fish, more than seven fish, one large fish, dominant fish, radial clump, overlapping blob, circular school, fish skeleton, dead fish, caught fish, bubbles, foam, waves, water tile, boat, hook, net, sparkle, action arrow, text, price, terrain, port, shadow, UI, pixel art, jagged edge, realistic scales, painterly detail, faux 3D, cropped edge.",
+    "prompt": "Revision-11 Fish resource: exactly SIX small separately readable silver-teal fish swimming southeast in one loose staggered diagonal shoal. Similar headings, varied spacing, one coherent formation. Every fish has one clear oval body and tail; transparent gaps visibly separate every neighboring silhouette; no fish dominates. Strong smooth dark outline, broad pale highlight and two flat cel shades for minimum-zoom contrast. Transparent untrimmed 256 by 384; owning square y128..383; target x48..208,y180..320; bottom contact near y320.",
+    "negativePrompt": "pixel-art grid, detailed pixel art, photorealism, painterly brushwork, realistic anatomy, realistic lighting, faux 3D, low-poly 3D, gradients, complex ambient light, tiny texture, intricate costume, scenery, text, letters, numbers, logo, UI frame, selection ring, health bar, cast shadow, ground plane, matte, halo, cropped silhouette, blur, gore; three fish, fewer than five fish, more than seven fish, one large fish, dominant fish, radial clump, overlapping blob, circular school, fish skeleton, dead fish, caught fish, bubbles, foam, waves, water tile, boat, hook, net, sparkle, action arrow, text, price, terrain, port, shadow, UI, pixel art, jagged edge, realistic scales, painterly detail, faux 3D, cropped edge",
+    "requestSize": {
+      "width": 256,
+      "height": 384
+    },
+    "outputSize": {
+      "width": 256,
+      "height": 384
+    },
+    "seed": 131102,
+    "noBackground": true,
+    "palette": "five to seven silver-teal fish, pale aqua broad highlights, charcoal-teal outline, muted navy southeast planes",
+    "postprocess": "preferred-low-marker-fit",
+    "groundContactY": 320,
+    "displayScale": 0.5,
+    "styleReference": {
+      "id": "terrain-ruleset7-resource-fish",
+      "sha256": "fc8dc00ed5e03ed3de518e1ccd66c7b1bd9805cd4353c2f7f3392f38a3851806",
+      "usageDescription": "Retain the accepted Fish source's silver-teal palette, clean broad outline, flat highlights and water readability while replacing the radial three-fish clump with a coherent separated shoal."
+    },
+    "squareFootprint": {
+      "left": 0,
+      "top": 128,
+      "right": 256,
+      "bottom": 384
+    }
+  }
+}
