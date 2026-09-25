@@ -3006,7 +3006,7 @@ function publicCityDevelopmentFootprintKnown(
   view: PlayerViewV7,
   city: PlayerViewV7["cities"][number],
 ): boolean {
-  const radius = city.expanded ? 2 : 1;
+  const radius = city.expanded || city.landGrantUsed ? 2 : 1;
   return view.board.tiles.every(
     (tile) => chebyshev(tile.at, city.at) > radius || tile.explored,
   );
@@ -3135,6 +3135,7 @@ function publicTileCommandLegal(
       view.viewer.researchedTechs.includes("NAVAL_ENGINEERING") &&
       tile.improvement === "PORT" &&
       publicActiveOwnedPort(view, tile, view.viewer.id) &&
+      publicCityDevelopmentFootprintKnown(view, city) &&
       !cityHasImprovement(view, city.id, "SHIPYARD")
     );
   const spatial =
@@ -3144,6 +3145,7 @@ function publicTileCommandLegal(
   if (spatial !== undefined) {
     if (
       view.viewer.coins < spatial.cost ||
+      !publicCityDevelopmentFootprintKnown(view, city) ||
       view.treasureChests.some((chest) => same(chest, tile.at)) ||
       tile.site !== null ||
       (tile.terrain === "MOUNTAIN" &&

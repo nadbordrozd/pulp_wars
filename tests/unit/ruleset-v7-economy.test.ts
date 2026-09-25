@@ -156,7 +156,7 @@ describe("ruleset-7 economy", () => {
     });
   });
 
-  it("withholds connected-support coordinates hidden inside an owned footprint", () => {
+  it("withholds a city-limited offer and support coordinates hidden inside its footprint", () => {
     const base = exploredAllV7(allTechsV7(initialV7(4_244)));
     const city = required(
       base.cities.find((candidate) => candidate.ownerId === base.humanPlayerId),
@@ -248,7 +248,7 @@ describe("ruleset-7 economy", () => {
     });
     const command = { kind: "BUILD_WINDMILL", at: target } as const;
     const view = viewForV7(state, state.humanPlayerId);
-    expect(queryPlayerCommandsV7(view)).toContainEqual(command);
+    expect(queryPlayerCommandsV7(view)).not.toContainEqual(command);
     const preview = previewEconomicV7(state, state.humanPlayerId, command);
     expect(preview).toEqual({ ok: false, error: "NOT_OFFERED" });
     expect(JSON.stringify(preview)).not.toContain(JSON.stringify(hiddenFarm));
