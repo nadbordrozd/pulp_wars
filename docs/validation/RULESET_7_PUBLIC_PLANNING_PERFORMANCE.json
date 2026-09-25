@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "frozenBaseline": {
+    "ref": "2a3c029f92a63ea33c7164b05ad0a91d134c1e7b",
+    "querySha256": "5ec37076bf45e1f4e1546d6a52b0ae8aa62d97cd65fa81d70de94d0f09069163",
+    "method": "Same script and fixtures run from a detached pre-optimization worktree."
+  },
+  "runtime": "v24.21.0",
+  "timing": "Diagnostic only; elapsed time never affects planning decisions.",
+  "views": [
+    {
+      "id": "retained-command-1100",
+      "facts": {
+        "viewHash": "157f932b21ba21b07e02064825c5068b0e9664a7965357e46c773ee94db6f0a5",
+        "board": "11x11",
+        "cities": 5,
+        "units": 8,
+        "commands": 66
+      },
+      "frozen": {
+        "commandHash": "335e1d932643d374f14fd14ca833beff38963367a5f740a61f4713bd4db78a5e",
+        "potentialHash": "6285861dd661a0602060b37c81953173582695945c57f668d5106e5fe2898cc5",
+        "scoreHash": "2b66f6213316ace82e1e1499ae87487735d4b40903d66f13a7d373dcf3b001ea",
+        "operations": 4100
+      },
+      "preOptimization": {
+        "runtime": "v24.21.0",
+        "totalMs": 132.292,
+        "advanceMs": {
+          "p50": 0.018,
+          "p95": 0.052,
+          "p99": 0.364,
+          "maximum": 3.882
+        }
+      },
+      "optimized": {
+        "budget": 1,
+        "commandCount": 66,
+        "commandHash": "335e1d932643d374f14fd14ca833beff38963367a5f740a61f4713bd4db78a5e",
+        "potentialHash": "6285861dd661a0602060b37c81953173582695945c57f668d5106e5fe2898cc5",
+        "scoreHash": "2b66f6213316ace82e1e1499ae87487735d4b40903d66f13a7d373dcf3b001ea",
+        "operations": 4100,
+        "calls": 4101,
+        "totalMs": 48.95,
+        "advanceMs": {
+          "p50": 0.004,
+          "p95": 0.02,
+          "p99": 0.116,
+          "maximum": 2.682
+        }
+      },
+      "durationRatio": 0.37
+    },
+    {
+      "id": "legal-25x25",
+      "facts": {
+        "viewHash": "213a55e5a88f09e0b91186e654ff72c15c73214d94e7faa59856cf15f479cd40",
+        "board": "25x25",
+        "cities": 5,
+        "units": 10,
+        "commands": 374
+      },
+      "frozen": {
+        "commandHash": "ad7abe7a2139d245ad51fbaa65091d1c1fa0a78c99fb5368344f832f5b930ba5",
+        "potentialHash": "53d15c2ae100af836f81ae17e500c7856321001ecbc12b7d3b4fb645bd710d7a",
+        "scoreHash": "c9b06b2126570e0165d6fb4f9fa3641e76534ae2b54b4f0a460b6c85499e2838",
+        "operations": 400754
+      },
+      "preOptimization": {
+        "runtime": "v24.21.0",
+        "totalMs": 18821.613,
+        "advanceMs": {
+          "p50": 0.001,
+          "p95": 0.11,
+          "p99": 0.181,
+          "maximum": 10.01
+        }
+      },
+      "optimized": {
+        "budget": 1,
+        "commandCount": 374,
+        "commandHash": "ad7abe7a2139d245ad51fbaa65091d1c1fa0a78c99fb5368344f832f5b930ba5",
+        "potentialHash": "53d15c2ae100af836f81ae17e500c7856321001ecbc12b7d3b4fb645bd710d7a",
+        "scoreHash": "c9b06b2126570e0165d6fb4f9fa3641e76534ae2b54b4f0a460b6c85499e2838",
+        "operations": 400754,
+        "calls": 400755,
+        "totalMs": 1838.899,
+        "advanceMs": {
+          "p50": 0.001,
+          "p95": 0.019,
+          "p99": 0.03,
+          "maximum": 7.314
+        }
+      },
+      "durationRatio": 0.098
+    },
+    {
+      "id": "captured-command-300",
+      "facts": {
+        "viewHash": "d09eaac69ae3e3cf586dd29f9dfa64105273b515af3fa2f8524a66af4b78f68f",
+        "board": "14x14",
+        "cities": 4,
+        "units": 12,
+        "commands": 292
+      },
+      "frozen": {
+        "commandHash": "53c225c8e425f892ab32e45dabb67577f62ff5b61bd6349d67f581bdb72fb20f",
+        "potentialHash": "07346205b9d1015c1ca855d8b226c74a4f6e2f7f4836d4294bcffe1ca97c0d74",
+        "scoreHash": "27df76e4efcf05cb60e053ad10bad5e5db618e9666054c700e2b31a7ea22ef18",
+        "operations": 66220
+      },
+      "preOptimization": {
+        "runtime": "v24.21.0",
+        "totalMs": 2982.629,
+        "advanceMs": {
+          "p50": 0.002,
+          "p95": 0.097,
+          "p99": 0.159,
+          "maximum": 5.828
+        }
+      },
+      "optimized": {
+        "budget": 1,
+        "commandCount": 292,
+        "commandHash": "53c225c8e425f892ab32e45dabb67577f62ff5b61bd6349d67f581bdb72fb20f",
+        "potentialHash": "07346205b9d1015c1ca855d8b226c74a4f6e2f7f4836d4294bcffe1ca97c0d74",
+        "scoreHash": "27df76e4efcf05cb60e053ad10bad5e5db618e9666054c700e2b31a7ea22ef18",
+        "operations": 66220,
+        "calls": 66221,
+        "totalMs": 347.704,
+        "advanceMs": {
+          "p50": 0.002,
+          "p95": 0.017,
+          "p99": 0.028,
+          "maximum": 2.925
+        }
+      },
+      "durationRatio": 0.117
+    },
+    {
+      "id": "captured-command-425",
+      "facts": {
+        "viewHash": "4d7a6656707be8ff02b1b2033a677e7a9913569219fa69ca920ce3315232e016",
+        "board": "14x14",
+        "cities": 5,
+        "units": 26,
+        "commands": 400
+      },
+      "frozen": {
+        "commandHash": "93d731039193eee98b0438066993c0cd2aa4dd16094b65849815441aaf2793e2",
+        "potentialHash": "f043c5127eaf99d581993a41f9417120dccfe650221e1ccce56c5c265322d190",
+        "scoreHash": "596efa85f310c02cbfcf60373061ceafa423a7ab90f405430767d15eb4b3aeb7",
+        "operations": 94418
+      },
+      "preOptimization": {
+        "runtime": "v24.21.0",
+        "totalMs": 4711.614,
+        "advanceMs": {
+          "p50": 0.067,
+          "p95": 0.101,
+          "p99": 0.167,
+          "maximum": 13.234
+        }
+      },
+      "optimized": {
+        "budget": 1,
+        "commandCount": 400,
+        "commandHash": "93d731039193eee98b0438066993c0cd2aa4dd16094b65849815441aaf2793e2",
+        "potentialHash": "f043c5127eaf99d581993a41f9417120dccfe650221e1ccce56c5c265322d190",
+        "scoreHash": "596efa85f310c02cbfcf60373061ceafa423a7ab90f405430767d15eb4b3aeb7",
+        "operations": 94418,
+        "calls": 94419,
+        "totalMs": 566.626,
+        "advanceMs": {
+          "p50": 0.002,
+          "p95": 0.017,
+          "p99": 0.029,
+          "maximum": 2.887
+        }
+      },
+      "durationRatio": 0.12
+    }
+  ]
+}

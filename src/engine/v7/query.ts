@@ -1196,6 +1196,8 @@ type PublicEconomyGraphV7 = {
   readonly activePortKeys: ReadonlySet<string>;
   readonly resolvedPendingCityIds: ReadonlySet<CityId>;
   readonly remainingMonumentEntitlements: number;
+  /** Exact predecessor when this graph mutation cannot alter trade connectivity. */
+  readonly connectivitySource?: PublicEconomyGraphV7 | undefined;
 };
 
 const PUBLIC_ECONOMY_GRAPHS = new WeakMap<PlayerViewV7, PublicEconomyGraphV7>();
@@ -1286,14 +1288,20 @@ function replacePublicGraphTileV7(
   at: CoordV7,
   replacement: Partial<PublicEconomyGraphTileV7>,
 ): PublicEconomyGraphV7 {
+  // Parsed boards, and therefore PlayerView boards, are canonical row-major
+  // arrays; spatial-economy and the rest of the engine share this invariant.
+  const index = at.y * graph.board.width + at.x;
+  const current = graph.board.tiles[index];
+  if (current === undefined || !same(current.at, at)) return graph;
+  const tiles = graph.board.tiles.slice();
+  tiles[index] = { ...current, ...replacement, at: current.at };
   return {
     ...graph,
     board: {
       ...graph.board,
-      tiles: graph.board.tiles.map((tile) =>
-        same(tile.at, at) ? { ...tile, ...replacement, at: tile.at } : tile,
-      ),
+      tiles,
     },
+    connectivitySource: graph,
   };
 }
 
@@ -1334,6 +1342,7 @@ function graphAfterTileCommandV7(
       activePortKeys: blockaded
         ? graph.activePortKeys
         : new Set([...graph.activePortKeys, coordKeyV7(command.at)]),
+      connectivitySource: blockaded ? graph : undefined,
     };
   }
   if (command.kind === "BUILD_SHIPYARD")
@@ -1365,7 +1374,10 @@ function graphAfterTileCommandV7(
       resource: null,
     });
   if (command.kind === "BUILD_ROAD")
-    return replacePublicGraphTileV7(graph, command.at, { road: true });
+    return {
+      ...replacePublicGraphTileV7(graph, command.at, { road: true }),
+      connectivitySource: undefined,
+    };
   if (command.kind === "REDEVELOP") {
     const next = replacePublicGraphTileV7(graph, command.at, {
       improvement: null,
@@ -1378,7 +1390,7 @@ function graphAfterTileCommandV7(
       return next;
     const activePortKeys = new Set(graph.activePortKeys);
     activePortKeys.delete(coordKeyV7(command.at));
-    return { ...next, activePortKeys };
+    return { ...next, activePortKeys, connectivitySource: undefined };
   }
   return null;
 }
@@ -1446,6 +1458,11 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
 } {
   const cached = PUBLIC_GRAPH_NAVAL_CONNECTIVITY.get(graph);
   if (cached !== undefined) return cached;
+  if (graph.connectivitySource !== undefined) {
+    const inherited = publicGraphNavalConnectivityV7(graph.connectivitySource);
+    PUBLIC_GRAPH_NAVAL_CONNECTIVITY.set(graph, inherited);
+    return inherited;
+  }
   const ownedCities = graph.cities.filter(
     (city) => city.ownerId === graph.ownerId,
   );
@@ -2715,24 +2732,24 @@ function publicGraphTotalsAfterSingleTileChangeV7(
   ownerId: PlayerId,
   changedAt: CoordV7,
 ): { readonly population: number; readonly recurringCoins: number } {
-  const beforeConnectivity = publicGraphNavalConnectivityV7(before);
-  const afterConnectivity = publicGraphNavalConnectivityV7(after);
-  if (
-    !sameSet(beforeConnectivity.network, afterConnectivity.network) ||
-    !sameSet(beforeConnectivity.landTrade, afterConnectivity.landTrade) ||
-    !sameSet(beforeConnectivity.seaTrade, afterConnectivity.seaTrade) ||
-    !sameSet(beforeConnectivity.roadKeys, afterConnectivity.roadKeys)
-  )
-    return publicGraphTotalsV7(after, ownerId);
   const totals = publicGraphTotalsV7(before, ownerId);
+  // These totals contain only improvement population and Market income, not
+  // road population or trade sets. Every graph-dependent improvement reads
+  // only its eight neighbors, so a one-tile mutation has no distant outputs.
   const affectedKeys = new Set([coordKeyV7(changedAt)]);
-  for (const graph of [before, after])
-    for (const tile of graph.board.tiles)
-      if (
-        tile.improvement !== null &&
-        GRAPH_DEPENDENT_IMPROVEMENTS_V7.has(tile.improvement)
-      )
-        affectedKeys.add(coordKeyV7(tile.at));
+  for (let y = changedAt.y - 1; y <= changedAt.y + 1; y += 1)
+    for (let x = changedAt.x - 1; x <= changedAt.x + 1; x += 1)
+      for (const graph of [before, after]) {
+        const tile = graph.board.tiles[y * graph.board.width + x];
+        if (
+          tile !== undefined &&
+          tile.at.x === x &&
+          tile.at.y === y &&
+          tile.improvement !== null &&
+          GRAPH_DEPENDENT_IMPROVEMENTS_V7.has(tile.improvement)
+        )
+          affectedKeys.add(coordKeyV7(tile.at));
+      }
   let population = totals.population;
   let recurringCoins = totals.recurringCoins;
   for (const tileKey of affectedKeys) {
@@ -2784,12 +2801,6 @@ function publicTileGraphOutputV7(
           (graph.researchedTechs.includes("COMMERCE") ? 2 : 1)
         : contribution.marketIncome,
   };
-}
-
-function sameSet<T>(left: ReadonlySet<T>, right: ReadonlySet<T>): boolean {
-  return (
-    left.size === right.size && [...left].every((value) => right.has(value))
-  );
 }
 
 function publicCityAllowsDevelopmentV7(
