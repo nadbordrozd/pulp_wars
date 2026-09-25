@@ -1,11 +1,12 @@
-# Ruleset 7 revision 9 runtime review
+# Ruleset 7 revision 9 retained-feature runtime review
 
-**Runtime:** `pulp-wars-poc-7r9`
+**Executable runtime:** current `pulp-wars-poc-7r10`
 
-This focused review exercises revision-9 behavior through public player views,
-the shipped DOM, the production Canvas host, and reducer-backed dispatch. It is
-an integration review for the current runtime, not a replacement for the full
-release profile or frozen historical corpora.
+This focused harness retains coverage of revision-9 behavior through public
+player views, the shipped DOM, the production Canvas host, and reducer-backed
+dispatch, and requires the exact current runtime identity. Historical
+revision-9 evidence remains frozen. This review is not a replacement for the
+full release profile or frozen historical corpora.
 
 Run against the local game server:
 

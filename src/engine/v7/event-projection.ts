@@ -169,6 +169,13 @@ function eventVisible(
     case "UNIT_TRAINED":
     case "UNIT_REWARD_GRANTED":
       return event.playerId === viewerId;
+    case "UNIT_SPAWN_DISPLACED":
+      return (
+        event.playerId === viewerId ||
+        (coordVisible(before, after, viewerId, event.from) &&
+          (event.to === null ||
+            coordVisible(before, after, viewerId, event.to)))
+      );
     case "TREASURE_CAPTURED":
       return event.playerId === viewerId;
     case "SPOILS_AWARDED":
@@ -210,6 +217,8 @@ function unitIds(event: DomainEventV7): readonly UnitId[] {
       return [event.captainId, ...event.results.map((result) => result.unitId)];
     case "UNIT_PUSHED":
       return [event.sourceUnitId, event.targetUnitId];
+    case "UNIT_SPAWN_DISPLACED":
+      return [event.spawnedUnitId, event.displacedUnitId];
     default:
       return "unitId" in event ? [event.unitId] : [];
   }

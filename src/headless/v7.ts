@@ -82,7 +82,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r9";
+  readonly rulesetId: "pulp-wars-poc-7r10";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -633,7 +633,7 @@ export async function runAiBatchV7(
           await new Promise<void>((resolve) => setTimeout(resolve, 0));
           const result = runAiMatchInternalV7(
             {
-              rulesetId: "pulp-wars-poc-7r9",
+              rulesetId: "pulp-wars-poc-7r10",
               mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
               seed,
               width: size,
@@ -730,7 +730,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r9",
+    rulesetId: "pulp-wars-poc-7r10",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,
@@ -1087,17 +1087,22 @@ function recordEventsV7(
         if (preview.attackerDies) metrics.roles.kills[defender.role] += 1;
       }
     }
-    if (event.kind === "UNIT_DIED") {
-      const unit = before.units.find((item) => item.id === event.unitId);
+    if (
+      event.kind === "UNIT_DIED" ||
+      (event.kind === "UNIT_SPAWN_DISPLACED" && event.to === null)
+    ) {
+      const removedUnitId =
+        event.kind === "UNIT_DIED" ? event.unitId : event.displacedUnitId;
+      const unit = before.units.find((item) => item.id === removedUnitId);
       if (unit !== undefined) metrics.roles.losses[unit.role] += 1;
-      telemetry.catapultShotTargets.delete(event.unitId);
-      telemetry.healingSinceCatapultShot.delete(event.unitId);
-      telemetry.catapultSetupUnits.delete(event.unitId);
-      const chain = telemetry.knightOverrunChains.get(event.unitId);
+      telemetry.catapultShotTargets.delete(removedUnitId);
+      telemetry.healingSinceCatapultShot.delete(removedUnitId);
+      telemetry.catapultSetupUnits.delete(removedUnitId);
+      const chain = telemetry.knightOverrunChains.get(removedUnitId);
       if (chain !== undefined) {
         finishKnightOverrunChain(metrics, chain.attacks);
-        telemetry.knightOverrunChains.delete(event.unitId);
-        telemetry.knightOverrunInterleaved.delete(event.unitId);
+        telemetry.knightOverrunChains.delete(removedUnitId);
+        telemetry.knightOverrunInterleaved.delete(removedUnitId);
       }
     }
     if (event.kind === "WOUNDED_TENDED")

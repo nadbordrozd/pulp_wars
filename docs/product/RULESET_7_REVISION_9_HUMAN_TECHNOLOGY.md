@@ -1,8 +1,9 @@
 # Ruleset 7 revision 9: Human technology redesign
 
-**Status:** approved normative implementation contract. Ruleset 7 revision 8
-remains the current playable runtime until the revision-9 runtime package is
-implemented and release validated.
+**Status:** implemented historical revision-9 contract, superseded as the
+current runtime by the
+[revision-10 playtest corrections](RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md).
+Its unchanged rules remain normative through the revision-10 overlay.
 
 **Ruleset ID:** `pulp-wars-poc-7r9`
 

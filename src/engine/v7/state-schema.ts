@@ -1001,9 +1001,7 @@ function validateCrossReferences(value: CrossInput): boolean {
     if (
       choice === undefined ||
       choice.cityId !== firstUnrewarded.city.id ||
-      choice.reachedLevel !== firstUnrewarded.level ||
-      (firstUnrewarded.level >= 5 &&
-        !hasRewardPlacement(board, players, units, firstUnrewarded.city))
+      choice.reachedLevel !== firstUnrewarded.level
     )
       return false;
   }
@@ -1189,24 +1187,6 @@ function liveValue(
         : 1
       : spatialContributionAtV7({ board, cities }, tile.at, tile.improvement)
           .population;
-}
-
-function hasRewardPlacement(
-  board: BoardStateV7,
-  players: readonly PlayerStateV7[],
-  units: readonly UnitStateV7[],
-  city: CityStateV7,
-): boolean {
-  const prospecting = players
-    .find((player) => player.id === city.ownerId)
-    ?.researchedTechs.includes("ENGINEERING");
-  return board.tiles.some(
-    (tile) =>
-      tile.territoryCityId === city.id &&
-      tile.biome !== null &&
-      (tile.terrain !== "MOUNTAIN" || prospecting) &&
-      !units.some((unit) => unit.hp > 0 && sameCoordV7(unit.at, tile.at)),
-  );
 }
 
 function rewardMatchesLevel(reward: RewardIdV7, level: number): boolean {

@@ -1,16 +1,18 @@
 # Pulp Wars Ruleset 7
 
-**Status:** revision-9 playable runtime. The
-[revision-9 Human technology specification](RULESET_7_REVISION_9_HUMAN_TECHNOLOGY.md)
-is the authoritative current overlay. It inherits retained industry rules from
+**Status:** revision-10 playable runtime. The
+[revision-10 playtest corrections](RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md)
+are the authoritative current overlay over the
+[revision-9 Human technology specification](RULESET_7_REVISION_9_HUMAN_TECHNOLOGY.md).
+They inherit retained industry rules from
 [revision 8](RULESET_7_REVISION_8_INDUSTRY_ADJACENCY.md) and unchanged rules from the
 [revision-7 networks and fortifications specification](RULESET_7_REVISION_7_NETWORKS_FORTIFICATIONS.md),
 which inherits the revision-6 water and naval specification.
 
-**Runtime ruleset ID:** `pulp-wars-poc-7r9`
+**Runtime ruleset ID:** `pulp-wars-poc-7r10`
 
 The revision-5 achievement specification remains authoritative for achievement
-and Monument rules left unchanged by revision 9. The revision-4 biome economy
+and Monument rules left unchanged by revision 10. The revision-4 biome economy
 specification remains the inherited land baseline. Ruleset 6 is unchanged.
 
 **Design history:**
@@ -23,7 +25,7 @@ and [Ruleset 7 design review](RULESET_7_DESIGN_REVIEW.md)
 [headless simulation](../architecture/HEADLESS_SIMULATION.md),
 [Normal AI](../architecture/NORMAL_AI.md),
 [screen flow](../ui/SCREEN_FLOW.md),
-[revision-9 runtime review](../validation/RULESET_7_REVISION_9_REVIEW.md), and
+[revision-9 retained-feature review](../validation/RULESET_7_REVISION_9_REVIEW.md), and
 [art direction](../art/ART_DIRECTION.md)
 
 Ruleset 7 revision 3 was the Original-faction rapid-prototype baseline.

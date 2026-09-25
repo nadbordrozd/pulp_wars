@@ -19,8 +19,8 @@ const archive = JSON.parse(
 if (archive.rulesetId !== "pulp-wars-poc-7r2")
   throw new Error("Archived revision-2 release corpus identity changed");
 if (
-  RULESET_7_ID !== "pulp-wars-poc-7r9" ||
-  SAVE_STORAGE_KEY_V7 !== "pulpWars.save.v7r9.current" ||
+  RULESET_7_ID !== "pulp-wars-poc-7r10" ||
+  SAVE_STORAGE_KEY_V7 !== "pulpWars.save.v7r10.current" ||
   parseMatchSetupV7({
     rulesetId: RULESET_7_ID,
     seed: 0,
@@ -35,7 +35,7 @@ if (
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
   }) === null
 )
-  throw new Error("Current revision-9 release identity is invalid");
+  throw new Error("Current revision-10 release identity is invalid");
 
 const vitest = path.join(root, "node_modules/vitest/vitest.mjs");
 const result = spawnSync(
@@ -54,6 +54,7 @@ const result = spawnSync(
     "tests/unit/ruleset-v7-economy.test.ts",
     "tests/unit/ruleset-v7-naval-economy.test.ts",
     "tests/unit/ruleset-v7-observation.test.ts",
+    "tests/unit/ruleset-v7-playtest-r10.test.ts",
     "tests/unit/ruleset-v7-save.test.ts",
     "tests/unit/persistence-v7.test.ts",
     "tests/integration/ruleset7-biome-browser.test.ts",
@@ -63,7 +64,7 @@ const result = spawnSync(
   { cwd: root, stdio: "inherit" },
 );
 if (result.status !== 0)
-  throw new Error("Current revision-9 release contract tests failed");
+  throw new Error("Current revision-10 release contract tests failed");
 process.stdout.write(
-  "ruleset-7 current release PASS: revision-9 support, roster, economy, naval, privacy, persistence, UI, and identity contracts; archived revision-2 corpus preserved\n",
+  "ruleset-7 current release PASS: revision-10 rules, roster, economy, naval, privacy, persistence, UI, and identity contracts; archived revision-2 corpus preserved\n",
 );

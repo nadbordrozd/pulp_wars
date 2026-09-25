@@ -1,8 +1,10 @@
 # Pulp Wars Client Architecture
 
-## Ruleset-7 revision-6 current boundary
+## Ruleset-7 revision-10 current boundary
 
-The current client runs `pulp-wars-poc-7r6`. Setup exposes Dry Land, Pangea,
+The current client runs `pulp-wars-poc-7r10`. Its exact current rules are the
+[revision-10 playtest corrections](../product/RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md)
+over the revision-9 Human technology contract. Setup exposes Dry Land, Pangea,
 Continents, Archipelago, and Lakes, with Continents selected by default. The
 controller persists the selected map type and schedules every AI turn through
 bounded `NormalPolicyWorkV7` callbacks over a retained public view.
@@ -17,7 +19,8 @@ the queue sees them. DOM actions dispatch only exact public commands, including
 the selected active Port for naval recruitment and selected passenger for a
 landing target.
 
-**Status:** authoritative ruleset-6 client architecture
+**Status:** frozen Ruleset-6 compatibility architecture below the current
+Ruleset-7 boundary
 
 **Rules:** [Ruleset 6](../product/RULESET_6.md)
 

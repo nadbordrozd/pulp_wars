@@ -1222,18 +1222,6 @@ export class Ruleset7DomAppView {
             (command.kind === "TRAIN" || command.kind === "LAND_GRANT") &&
             command.cityId === city.id,
         );
-        const occupied = view.units.some(
-          (unit) => unit.ownerId === view.viewer.id && same(unit.at, city.at),
-        );
-        if (dock.dataset.hasActions === "false" && occupied)
-          dock.append(
-            text(
-              this.#document,
-              "p",
-              "Move the unit out of the city to train here.",
-              "v7-dock-hint",
-            ),
-          );
       }
     } else {
       const tile = view.board.tiles.find((candidate) =>
@@ -2889,7 +2877,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r9",
+    rulesetId: "pulp-wars-poc-7r10",
     seed,
     width: draft.boardSize,
     height: draft.boardSize,
@@ -2994,7 +2982,7 @@ function effectDescription(
     case "ROLE_SIGHT":
       return `${effectiveRoleRuleV7(effect.role).label} sight ${effect.radius}`;
     case "ROAD_MOVEMENT":
-      return "Roads double movement";
+      return "Road edges cost half a movement point";
     case "OWNED_CITY_CAPACITY_BONUS":
       return `Cities support +${effect.capacity} unit`;
     case "SUPPLY_RECOVERY":
@@ -3030,7 +3018,8 @@ function navalTechnologyNotesV7(
     return ["Battleship: long-range splash damage"];
   if (technology === "EXPLOSIVES")
     return ["Engineering identifies resource-free mountains safe to Blast"];
-  if (technology === "ROADS") return ["Roads double connected movement"];
+  if (technology === "ROADS")
+    return ["Usable Road and owned-city edges cost half movement"];
   return [];
 }
 

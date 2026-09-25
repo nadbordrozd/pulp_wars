@@ -63,7 +63,7 @@ const READY: UnitStateV7["activation"] = {
 
 describe("Ruleset 7 revision 7 networks and fortifications", () => {
   it("freezes the revision identity and removes the retired systems", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r9");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r10");
     expect(setupV7().mapGenerationRevision).toBe("REGIONAL_BIOMES_NAVAL_V2");
     expect(TECHNOLOGY_IDS_V7).toContain("ENGINEERING");
     expect(TECHNOLOGY_IDS_V7).not.toContain("GRAND_WORKS");
@@ -774,7 +774,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
       expect(combinedNetworkCityIdsV7(dense, owner)).toBe(first);
   });
 
-  it("keeps public road speed exact when sea trade does not join land Roads", () => {
+  it("keeps public road speed exact and independent from land and sea trade", () => {
     const base = initialV7(72, 2);
     const owner = base.humanPlayerId;
     const player = required(base.players.find((item) => item.id === owner));
@@ -835,7 +835,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
       required(view.units.find((candidate) => candidate.id === mover.id)),
       [destination],
     );
-    expect(authoritative).toMatchObject({ legal: true, spentPoints2: 2 });
+    expect(authoritative).toMatchObject({ legal: true, spentPoints2: 1 });
     expect(publicResult).toEqual(authoritative);
   });
 
@@ -1515,7 +1515,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     expect(new Set(juggernauts.map((unit) => key(unit.at))).size).toBe(2);
   });
 
-  it("automatically chooses Treasury when no land reward placement remains", () => {
+  it("keeps Juggernaut available and removes the center occupant when no adjacent land remains", () => {
     const fixture = rewardSawmillState(93);
     const cityTiles = fixture.state.board.tiles.filter(
       (tile) => tile.territoryCityId === fixture.cityId && tile.biome !== null,
@@ -1539,15 +1539,31 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
       at: fixture.at,
     });
     if (!built.accepted) throw new Error(built.error.code);
-    expect(built.state.pendingChoices).toEqual([]);
-    expect(
-      built.events.filter(
-        (event) => event.kind === "CITY_REWARD_AUTOMATICALLY_GRANTED",
-      ),
-    ).toEqual([
-      expect.objectContaining({ reachedLevel: 5, reward: "TREASURY" }),
-      expect.objectContaining({ reachedLevel: 6, reward: "TREASURY" }),
+    expect(built.state.pendingChoices).toEqual([
+      expect.objectContaining({ reachedLevel: 5 }),
     ]);
+    const chosen = applyCommandV7(built.state, built.state.humanPlayerId, {
+      kind: "CHOOSE_CITY_REWARD",
+      cityId: fixture.cityId,
+      reachedLevel: 5,
+      reward: "JUGGERNAUT",
+    });
+    if (!chosen.accepted) throw new Error(chosen.error.code);
+    expect(chosen.events).toContainEqual(
+      expect.objectContaining({ kind: "UNIT_SPAWN_DISPLACED", to: null }),
+    );
+    expect(
+      chosen.state.units.find(
+        (unit) =>
+          unit.role === "JUGGERNAUT" &&
+          same(
+            unit.at,
+            required(
+              chosen.state.cities.find((city) => city.id === fixture.cityId),
+            ).at,
+          ),
+      ),
+    ).toBeDefined();
   });
 
   it("repairs lost live population without repeating earned rewards", () => {

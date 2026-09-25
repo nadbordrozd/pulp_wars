@@ -43,7 +43,7 @@ describe("ruleset-7 regional biome map", () => {
     const created = createInitialMapStateV7(setup(3, 16, 41));
     if (!created.ok) throw new Error(created.error.code);
     expect(parseGameStateV7(created.state)).toEqual(created.state);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r9");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r10");
     expect(
       created.state.players.every(
         (player) => player.factionTreeId === "ORIGINAL_BASELINE_V5",

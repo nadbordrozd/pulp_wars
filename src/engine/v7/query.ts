@@ -322,7 +322,9 @@ function appendPublicCityCommandsV7(
 ): void {
   const player = view.viewer;
   if (city.ownerId !== player.id || publicCityBesieged(view, city.at)) return;
-  const centerOccupied = view.units.some((unit) => same(unit.at, city.at));
+  const centerBlocked = view.units.some(
+    (unit) => unit.ownerId !== player.id && same(unit.at, city.at),
+  );
   const capacity =
     city.level + 1 + (player.researchedTechs.includes("PLANNING") ? 1 : 0);
   const assigned = view.units.filter(
@@ -356,7 +358,7 @@ function appendPublicCityCommandsV7(
   for (const role of UNIT_ROLE_IDS_V7) {
     const rule = effectiveRoleRuleV7(role);
     if (
-      !centerOccupied &&
+      !centerBlocked &&
       role !== "PATROL_BOAT" &&
       role !== "BATTLESHIP" &&
       rule.cost !== null &&
@@ -515,7 +517,8 @@ function appendPublicUnitCommandsV7(
   )
     candidates.push({ kind: "DISBAND", unitId: unit.id });
   if (
-    primaryReady &&
+    !unit.activation.moved &&
+    !primaryUsedForQuery(unit) &&
     unit.form === "LAND" &&
     (unit.role === "FIGHTER" || unit.role === "GUARD") &&
     player.researchedTechs.includes("FORTIFICATION") &&
@@ -617,21 +620,6 @@ export function previewMonumentV7(
     { kind: "CITY_REWARD_AUTOMATICALLY_GRANTED" | "CITY_REWARD_QUEUED" }
   >[] = [];
   for (const reachedLevel of levelsReached) {
-    if (reachedLevel >= 5) {
-      const placement = publicRewardPlacementStatus(view, city.id);
-      if (placement === "UNKNOWN") return { ok: false, error: "NOT_OFFERED" };
-      if (placement === "NONE") {
-        rewardWork.push({
-          kind: "CITY_REWARD_AUTOMATICALLY_GRANTED",
-          playerId: view.viewer.id,
-          cityId: city.id,
-          reachedLevel,
-          reward: "TREASURY",
-          coins: 12,
-        });
-        continue;
-      }
-    }
     rewardWork.push({
       kind: "CITY_REWARD_QUEUED",
       cityId: city.id,
@@ -640,12 +628,6 @@ export function previewMonumentV7(
     });
     break;
   }
-  const automaticCoins =
-    rewardWork.filter(
-      (event) => event.kind === "CITY_REWARD_AUTOMATICALLY_GRANTED",
-    ).length * 12;
-  if (!Number.isSafeInteger(view.viewer.coins + automaticCoins))
-    return { ok: false, error: "NOT_OFFERED" };
   return {
     ok: true,
     preview: {
@@ -668,49 +650,6 @@ function growthSpentForPreview(level: number): number {
   const result = (level * (level + 1)) / 2 - 1;
   if (!Number.isSafeInteger(result)) throw new RangeError("INTEGER_OVERFLOW");
   return result;
-}
-
-function publicRewardPlacementStatus(
-  view: PlayerViewV7,
-  cityId: CityId,
-): "AVAILABLE" | "NONE" | "UNKNOWN" {
-  const city = view.cities.find((candidate) => candidate.id === cityId);
-  if (city === undefined) return "UNKNOWN";
-  const candidates = view.board.tiles.filter(
-    (tile): tile is Extract<PlayerTileViewV7, { explored: true }> =>
-      tile.explored &&
-      tile.territoryCityId === cityId &&
-      tile.biome !== null &&
-      (tile.terrain !== "MOUNTAIN" ||
-        view.viewer.researchedTechs.includes("ENGINEERING")),
-  );
-  let hasConcealableCell = false;
-  for (const tile of candidates) {
-    if (view.units.some((unit) => unit.hp > 0 && same(unit.at, tile.at)))
-      continue;
-    const detected =
-      view.cities.some(
-        (city) =>
-          city.ownerId === view.viewer.id && chebyshev(city.at, tile.at) <= 1,
-      ) ||
-      view.units.some(
-        (unit) =>
-          unit.ownerId === view.viewer.id &&
-          chebyshev(unit.at, tile.at) <=
-            (unit.form === "LAND" && unit.role === "RAIDER" ? 2 : 1),
-      );
-    if (detected) return "AVAILABLE";
-    hasConcealableCell = true;
-  }
-  if (
-    view.board.tiles.some(
-      (tile) =>
-        !tile.explored &&
-        chebyshev(tile.at, city.at) <= (city.expanded ? 2 : 1),
-    )
-  )
-    return "UNKNOWN";
-  return hasConcealableCell ? "UNKNOWN" : "NONE";
 }
 
 /** Observation-safe exact preview for an offered attack. */
@@ -1059,7 +998,6 @@ function calculatePublicEconomicPreviewV7(
     const populationDeltaByCity: CityValueDeltaV7[] = [];
     const coinIncomeDeltaByCity: CityValueDeltaV7[] = [];
     const levelsReached: number[] = [];
-    const reachedLevelsByCity = new Map<CityId, readonly number[]>();
     const changesLiveGraph = economicCommandChangesLiveGraphV7(command.kind);
     for (const candidate of view.cities
       .filter((value) => value.ownerId === view.viewer.id)
@@ -1119,18 +1057,10 @@ function calculatePublicEconomicPreviewV7(
           delta: incomeDelta,
         });
       levelsReached.push(...growth.reachedLevels);
-      reachedLevelsByCity.set(candidate.id, growth.reachedLevels);
     }
-    const automaticRewardCoins = publicAutomaticRewardCoinsV7(
-      view,
-      reachedLevelsByCity,
-    );
     const immediateCoins = command.kind === "CLEAR_FOREST" ? 1 : 0;
     const coinsAfterAutomaticRewards =
-      BigInt(view.viewer.coins) -
-      BigInt(cost) +
-      BigInt(immediateCoins) +
-      BigInt(automaticRewardCoins);
+      BigInt(view.viewer.coins) - BigInt(cost) + BigInt(immediateCoins);
     if (coinsAfterAutomaticRewards > BigInt(Number.MAX_SAFE_INTEGER))
       throw new RangeError("INTEGER_OVERFLOW");
     return {
@@ -1226,56 +1156,7 @@ function publicEconomicPreviewExact(
   )
     return false;
 
-  // Reward placement is absent from this preview, so hidden occupancy matters
-  // only when automatic Treasury work could make canonical acceptance overflow.
-  // Eighteen population per board tile is a conservative upper bound on newly
-  // crossed reward levels for one economic mutation.
-  const maximumAutomaticRewardCoins = view.board.tiles.length * 18 * 12;
-  if (
-    economicCommandCanAddPopulation(command.kind) &&
-    view.viewer.coins > Number.MAX_SAFE_INTEGER - maximumAutomaticRewardCoins &&
-    view.cities.some(
-      (candidate) =>
-        candidate.ownerId === view.viewer.id &&
-        publicRewardPlacementStatus(view, candidate.id) === "UNKNOWN",
-    )
-  )
-    return false;
   return true;
-}
-
-function economicCommandCanAddPopulation(kind: CommandV7["kind"]): boolean {
-  return (
-    kind === "HARVEST_FRUIT" ||
-    kind === "HUNT_GAME" ||
-    kind === "BUILD_FARM" ||
-    kind === "BUILD_LUMBER_CAMP" ||
-    kind === "BUILD_MINE" ||
-    kind === "BUILD_PORT" ||
-    kind === "BUILD_SHIPYARD" ||
-    kind === "BUILD_ROAD" ||
-    (kind in SPATIAL_ECONOMIC_ACTIONS_V7 && kind !== "BUILD_MARKET")
-  );
-}
-
-function publicAutomaticRewardCoinsV7(
-  view: PlayerViewV7,
-  reachedLevelsByCity: ReadonlyMap<CityId, readonly number[]>,
-): number {
-  let coins = 0;
-  for (const city of [...view.cities]
-    .filter((candidate) => candidate.ownerId === view.viewer.id)
-    .sort((left, right) => left.id - right.id)) {
-    for (const level of reachedLevelsByCity.get(city.id) ?? []) {
-      if (level < 5) return coins;
-      const placement = publicRewardPlacementStatus(view, city.id);
-      if (placement !== "NONE") return coins;
-      coins += 12;
-      if (!Number.isSafeInteger(coins))
-        throw new RangeError("INTEGER_OVERFLOW");
-    }
-  }
-  return coins;
 }
 
 function economicCommandChangesLiveGraphV7(kind: CommandV7["kind"]): boolean {

@@ -8,10 +8,13 @@ refreshed as revision-3 evidence. Runtime candidate
 `origin/main`, deployed successfully to GitHub Pages, and verified through the
 actual production URL.
 
-The current revision-9 runtime has a separate focused review contract and
-evidence description in
-[RULESET_7_REVISION_9_REVIEW.md](RULESET_7_REVISION_9_REVIEW.md). This frozen
-revision-2 record and corpus remain unchanged.
+Revision-9 retained features have a separate focused review harness and
+historical evidence description in
+[RULESET_7_REVISION_9_REVIEW.md](RULESET_7_REVISION_9_REVIEW.md). The harness
+requires the exact current runtime identity; archived evidence remains frozen.
+The current revision-10 identity and rule corrections are defined by the
+[revision-10 product overlay](../product/RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md).
+This frozen revision-2 record and corpus remain unchanged.
 
 For that revision-2 release, Ruleset 7 was the normal browser default and the
 supported Original-faction game. Exact `?ruleset=7` selected the same contract.

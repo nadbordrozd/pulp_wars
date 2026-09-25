@@ -18,6 +18,7 @@ import {
   createInitialMapStateV7,
   createPublicPlanningWorkV7,
   effectiveRoleRuleV7,
+  previewEconomicV7,
   queryCombatPreviewV7,
   queryPlayerCommandsV7,
   queryPublicRedevelopmentChangesImprovementV7,
@@ -78,13 +79,29 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     ).toBe(false);
   });
 
-  it("classifies public commands deterministically and chooses marginal research", () => {
+  it("classifies public commands deterministically and chooses occupied-center training", () => {
     const state = initialV7(0);
     const view = viewForV7(state, state.humanPlayerId);
     const decision = chooseNormalCommandV7(view);
     expect(queryPlayerCommandsV7(view)).toContainEqual({ kind: "END_TURN" });
-    expect(decision.command).toEqual({ kind: "RESEARCH", tech: "DRILL" });
-    expect(decision.candidates[0]?.score.priority).toBe(1060);
+    expect(
+      view.units.some(
+        (unit) =>
+          unit.ownerId === view.viewer.id &&
+          view.cities.some(
+            (city) =>
+              city.ownerId === view.viewer.id &&
+              city.at.x === unit.at.x &&
+              city.at.y === unit.at.y,
+          ),
+      ),
+    ).toBe(true);
+    expect(decision.command).toEqual({
+      kind: "TRAIN",
+      cityId: cityId(1),
+      role: "FIGHTER",
+    });
+    expect(decision.candidates[0]?.score.priority).toBe(1080);
     expect(
       decision.candidates.some(({ command }) => command.kind === "WAIT"),
     ).toBe(false);
@@ -354,9 +371,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       unitId: 19,
       targetUnitId: 34,
     });
-    expect(sliced.candidates).toHaveLength(29);
+    expect(sliced.candidates).toHaveLength(30);
     expect(canonicalHash(sliced)).toBe(
-      "c4403d9960618d18fe1d1bb8c2ff85c92acf6da1e58c74c3042f0329c61ff006",
+      "9daaebfd4d31b752798da5e61e63aa311136a4a72ea6c498fd13691a1e347403",
     );
     const revision4Commands = new Set([
       '{"kind":"ATTACK","unitId":19,"targetUnitId":34}',
@@ -395,7 +412,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r9");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r10");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(
@@ -844,11 +861,44 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
   });
 
   it("finishes early when a candidate would exceed prospective mandatory work", () => {
-    const state = initialV7(0);
-    const view = viewForV7(state, state.humanPlayerId);
+    const state = initialV7(1);
+    const base = viewForV7(state, state.humanPlayerId);
+    const city = required(
+      base.cities.find((candidate) => candidate.ownerId === base.viewer.id),
+      "Owned city missing",
+    );
+    const view = {
+      ...base,
+      cities: base.cities.map((candidate) =>
+        candidate.id === city.id
+          ? { ...candidate, permanentPopulation: 1, population: 1 }
+          : candidate,
+      ),
+    };
     const decision = chooseNormalCommandV7(view);
-    expect(decision.command).toEqual({ kind: "RESEARCH", tech: "DRILL" });
-    expect(chooseNormalTurnCommandV7(view, 127, 128, decision)).toEqual({
+    const harvest = required(
+      decision.candidates.find(
+        (candidate) => candidate.command.kind === "HARVEST_FRUIT",
+      ),
+      "Harvest candidate missing",
+    );
+    const harvestEnd = required(
+      decision.candidates.find(
+        (candidate) => candidate.command.kind === "END_TURN",
+      ),
+      "End candidate missing",
+    );
+    expect(previewEconomicV7(view, harvest.command)).toMatchObject({
+      ok: true,
+      preview: { levelsReached: [2] },
+    });
+    expect(
+      chooseNormalTurnCommandV7(view, 126, 128, {
+        ...decision,
+        command: harvest.command,
+        candidates: [harvest, harvestEnd],
+      }),
+    ).toEqual({
       kind: "END_TURN",
     });
 

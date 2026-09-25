@@ -86,7 +86,7 @@ describe("ruleset-7 public movement bounds", () => {
     }
   });
 
-  it("shares eight-way capital Roads and discounts between public and authoritative movement", () => {
+  it("shares eight-way Roads independently of capital connectivity between public and authoritative movement", () => {
     const base = movementState({ x: 0, y: 0 });
     const city = base.cities.find(
       (candidate) => candidate.ownerId === base.humanPlayerId,
@@ -142,7 +142,7 @@ describe("ruleset-7 public movement bounds", () => {
     ).toBe(3);
     expect(
       movementStepCost2V7(state, human, { x: 5, y: 2 }, { x: 6, y: 3 }),
-    ).toBe(2);
+    ).toBe(1);
     expect(
       movementStepCost2V7(state, human, { x: 1, y: 1 }, { x: 3, y: 2 }),
     ).toBe(2);
@@ -191,7 +191,7 @@ describe("ruleset-7 public movement bounds", () => {
     );
     expect(
       movementStepCost2V7(cut, human, { x: 2, y: 2 }, { x: 3, y: 2 }),
-    ).toBe(2);
+    ).toBe(1);
     const cutView = viewForV7(cut, human.id);
     expect(
       validatePlayerMovementPathV7(cutView, publicMover, path),
@@ -335,17 +335,14 @@ describe("ruleset-7 public movement bounds", () => {
     });
     const connectedView = onRoad(view);
     const disconnectedView = onRoad(capturedView);
-    for (const [roadView, expectedCost] of [
-      [connectedView, 1],
-      [disconnectedView, 2],
-    ] as const)
+    for (const roadView of [connectedView, disconnectedView] as const)
       expect(
         validatePlayerMovementPathV7(
           roadView,
           roadView.units.find((unit) => unit.id === mover.id)!,
           [{ x: 4, y: 4 }],
         ),
-      ).toMatchObject({ legal: true, spentPoints2: expectedCost });
+      ).toMatchObject({ legal: true, spentPoints2: 1 });
 
     const hiddenView = {
       ...view,
@@ -378,7 +375,7 @@ describe("ruleset-7 public movement bounds", () => {
         hiddenRoadView.units.find((unit) => unit.id === mover.id)!,
         [{ x: 4, y: 4 }],
       ),
-    ).toMatchObject({ legal: true, spentPoints2: 2 });
+    ).toMatchObject({ legal: true, spentPoints2: 1 });
   });
 
   it("rejects public paths whose off-board or fractional coordinates alias rows", () => {

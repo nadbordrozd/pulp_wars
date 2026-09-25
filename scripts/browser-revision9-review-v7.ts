@@ -3,6 +3,7 @@ import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import process from "node:process";
+import { RULESET_7_ID } from "../src/engine/index";
 
 interface Target {
   readonly webSocketDebuggerUrl: string;
@@ -214,7 +215,7 @@ try {
     event?: unknown;
   };
   assert(
-    evidence.rulesetId === "pulp-wars-poc-7r9" &&
+    evidence.rulesetId === RULESET_7_ID &&
       terrain.assetId === "ui-action-cultivate-forest-v7r9" &&
       terrain.blastOffered === true,
     `terrain evidence failed: ${JSON.stringify(evidence)}`,

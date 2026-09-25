@@ -290,6 +290,15 @@ export type DomainEventV7 =
       readonly role: UnitRoleIdV7;
     }
   | {
+      readonly kind: "UNIT_SPAWN_DISPLACED";
+      readonly playerId: PlayerId;
+      readonly cityId: CityId;
+      readonly spawnedUnitId: UnitId;
+      readonly displacedUnitId: UnitId;
+      readonly from: CoordV7;
+      readonly to: CoordV7 | null;
+    }
+  | {
       readonly kind: "UNITS_RALLIED";
       readonly captainId: UnitId;
       readonly unitIds: readonly UnitId[];

@@ -6,7 +6,6 @@ import {
 import {
   arePlayersAlliedV7,
   arePlayersHostileV7,
-  combinedNetworkRoadKeysV7,
   isActivePortV7,
 } from "./economy";
 import {
@@ -69,7 +68,6 @@ export function validateMovementPathV7(
   const rule = effectiveRoleRuleV7(unit.role);
   const capabilities = technologyCapabilitiesV7(player.researchedTechs);
   const budget2 = (unit.form === "EMBARKED" ? 3 : rule.move) * 2;
-  const connectedRoads = combinedNetworkRoadKeysV7(state, player.id);
   const knownBeforeCommand = player.explored;
   let explored = player.explored;
   const revealed: CoordV7[] = [];
@@ -87,7 +85,7 @@ export function validateMovementPathV7(
     const wasExplored = contains(explored, step);
     const wasKnownBeforeCommand = contains(knownBeforeCommand, step);
     spentPoints2 += wasExplored
-      ? movementStepCost2V7(state, player, current, step, connectedRoads)
+      ? movementStepCost2V7(state, player, current, step)
       : 2;
     if (spentPoints2 > budget2)
       return { legal: false, reason: "BUDGET_EXCEEDED" };
@@ -170,8 +168,9 @@ export function validateMovementPathV7(
       entersZoc &&
       !inHostileZoc(state, { ...unit, at: step }, step, knownBeforeCommand);
     const terrainStops =
-      tile.terrain === "MOUNTAIN" ||
-      (tile.terrain === "FOREST" && !ignoresForest);
+      !isUsableRoadEdgeV7(state, player, current, step) &&
+      (tile.terrain === "MOUNTAIN" ||
+        (tile.terrain === "FOREST" && !ignoresForest));
     const stops = !wasExplored || terrainStops || entersZoc;
     traversedPath.push(step);
     current = step;
@@ -320,7 +319,6 @@ export function validatePlayerMovementPathV7(
 
 interface PublicMovementContextV7 {
   readonly capabilities: ReturnType<typeof technologyCapabilitiesV7>;
-  readonly connectedRoads: ReadonlySet<string>;
   readonly ownedCityKeys: ReadonlySet<string>;
   readonly unitsByPosition: ReadonlyMap<string, readonly PublicUnitV7[]>;
   readonly hostileZocKeys: Map<string, ReadonlySet<string>>;
@@ -344,7 +342,6 @@ function publicMovementContextV7(view: PlayerViewV7): PublicMovementContextV7 {
   }
   const context: PublicMovementContextV7 = {
     capabilities: technologyCapabilitiesV7(view.viewer.researchedTechs),
-    connectedRoads: new Set(view.naval.networkRoads.map(key)),
     ownedCityKeys: new Set(
       view.cities
         .filter((city) => city.ownerId === view.viewer.id)
@@ -428,6 +425,7 @@ function validatePlayerMovementPathWithContextV7(
     const entersZoc = publicHostileZoc(view, unit, step, context);
     const terrainStops =
       tile.explored &&
+      !isUsablePublicRoadEdgeV7(view, current, tile, context) &&
       (tile.terrain === "MOUNTAIN" ||
         (tile.terrain === "FOREST" && !ignoresForest));
     const stops = !tile.explored || terrainStops || entersZoc;
@@ -473,9 +471,6 @@ export function movementStepCost2V7(
   player: PlayerStateV7,
   from: CoordV7,
   to: CoordV7,
-  connectedRoads = "players" in state
-    ? combinedNetworkRoadKeysV7(state as GameStateV7, player.id)
-    : new Set<string>(),
 ): 1 | 2 {
   if (!player.researchedTechs.includes("ROADS") || chebyshev(from, to) !== 1)
     return 2;
@@ -490,12 +485,25 @@ export function movementStepCost2V7(
   const toRoad = toTile.road && (toOwner === null || toOwner === player.id);
   const fromCity = ownedCity(state, player.id, from);
   const toCity = ownedCity(state, player.id, to);
-  return (fromRoad || fromCity) &&
-    (toRoad || toCity) &&
-    connectedRoads.has(key(from)) &&
-    connectedRoads.has(key(to))
-    ? 1
-    : 2;
+  return (fromRoad || fromCity) && (toRoad || toCity) ? 1 : 2;
+}
+
+function isUsableRoadEdgeV7(
+  state: Pick<GameStateV7, "board" | "cities">,
+  player: PlayerStateV7,
+  from: CoordV7,
+  to: CoordV7,
+): boolean {
+  return movementStepCost2V7(state, player, from, to) === 1;
+}
+
+function isUsablePublicRoadEdgeV7(
+  view: PlayerViewV7,
+  from: CoordV7,
+  to: PlayerTileViewV7,
+  context: PublicMovementContextV7,
+): boolean {
+  return publicStepCost2(view, from, to, context) === 1;
 }
 
 export function unitSightRadiusAtV7(
@@ -719,13 +727,7 @@ function publicStepCost2(
     (to.territoryOwnerId === null || to.territoryOwnerId === view.viewer.id);
   const fromCity = context.ownedCityKeys.has(key(fromTile.at));
   const toCity = context.ownedCityKeys.has(key(to.at));
-  const connected = context.connectedRoads;
-  return (fromRoad || fromCity) &&
-    (toRoad || toCity) &&
-    connected.has(key(fromTile.at)) &&
-    connected.has(key(to.at))
-    ? 1
-    : 2;
+  return (fromRoad || fromCity) && (toRoad || toCity) ? 1 : 2;
 }
 
 function tileOwner(

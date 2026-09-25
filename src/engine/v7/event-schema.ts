@@ -205,6 +205,15 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "unitId",
     "role",
   ],
+  UNIT_SPAWN_DISPLACED: [
+    "kind",
+    "playerId",
+    "cityId",
+    "spawnedUnitId",
+    "displacedUnitId",
+    "from",
+    "to",
+  ],
   UNITS_RALLIED: ["kind", "captainId", "unitIds"],
   WOUNDED_TENDED: ["kind", "captainId", "results"],
   UNIT_PUSHED: ["kind", "sourceUnitId", "targetUnitId", "from", "to"],
@@ -671,6 +680,16 @@ function validPayload(
         id(e.unitId) &&
         ((e.reachedLevel === 3 && e.role === "FIGHTER") ||
           ((e.reachedLevel as number) >= 5 && e.role === "JUGGERNAUT"))
+      );
+    case "UNIT_SPAWN_DISPLACED":
+      return (
+        id(e.playerId) &&
+        id(e.cityId) &&
+        id(e.spawnedUnitId) &&
+        id(e.displacedUnitId) &&
+        e.spawnedUnitId !== e.displacedUnitId &&
+        parseCoordV7(e.from) !== null &&
+        (e.to === null || parseCoordV7(e.to) !== null)
       );
     case "UNITS_RALLIED":
       return id(e.captainId) && orderedIds(e.unitIds);

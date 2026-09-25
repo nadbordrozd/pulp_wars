@@ -1070,12 +1070,9 @@ export function publicThreatenedTilesForPolicyV7(
         );
         const roadStep =
           unit.form === "LAND" &&
-          priorTile?.explored === true &&
-          tile.explored === true &&
-          priorTile.road &&
-          tile.road &&
-          priorTile.territoryOwnerId === unit.ownerId &&
-          tile.territoryOwnerId === unit.ownerId;
+          priorTile !== undefined &&
+          publicRoadNodeForOwner(view, priorTile, unit.ownerId) &&
+          publicRoadNodeForOwner(view, tile, unit.ownerId);
         const spent2 = current.spent2 + (roadStep ? 1 : 2);
         if (spent2 > facts.move * 2) continue;
         const key = coordKey(tile.at);
@@ -1085,6 +1082,7 @@ export function publicThreatenedTilesForPolicyV7(
         const terrainStop =
           unit.form === "LAND" &&
           tile.explored &&
+          !roadStep &&
           (tile.terrain === "FOREST" || tile.terrain === "MOUNTAIN");
         const hostileZoc = view.units.some(
           (occupant) =>
@@ -1104,6 +1102,21 @@ export function publicThreatenedTilesForPolicyV7(
       }),
     );
   return [...new Map(direct.map((at) => [coordKey(at), at])).values()];
+}
+
+function publicRoadNodeForOwner(
+  view: PlayerViewV7,
+  tile: PlayerViewV7["board"]["tiles"][number],
+  ownerId: PlayerId,
+): boolean {
+  if (!tile.explored || tile.biome === null) return false;
+  const road =
+    tile.road &&
+    (tile.territoryOwnerId === null || tile.territoryOwnerId === ownerId);
+  const city = view.cities.some(
+    (candidate) => candidate.ownerId === ownerId && same(candidate.at, tile.at),
+  );
+  return road || city;
 }
 
 function publicMovementTilePossible(

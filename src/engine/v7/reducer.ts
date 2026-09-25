@@ -1462,8 +1462,6 @@ function applyTrain(
     !player.researchedTechs.includes(rule.technology)
   )
     return rejected(original, "TECH_REQUIRED", { tech: rule.technology });
-  if (state.units.some((unit) => unit.hp > 0 && same(unit.at, city.at)))
-    return rejected(original, "CITY_SPAWN_OCCUPIED", { cityId: city.id });
   if (assignedUnitCountV7(state, city.id) >= cityUnitCapacityV7(state, city))
     return rejected(original, "CITY_CAPACITY_FULL", { cityId: city.id });
   const forgeActive = state.board.tiles.some(
@@ -1475,6 +1473,11 @@ function applyTrain(
   const cost = Math.max(1, rule.cost - (forgeActive ? 1 : 0));
   if (player.coins < cost)
     return rejected(original, "INSUFFICIENT_COINS", { cost });
+  if (
+    state.nextEntityId >= Number.MAX_SAFE_INTEGER ||
+    state.commandIndex >= Number.MAX_SAFE_INTEGER
+  )
+    return rejected(original, "INTEGER_OVERFLOW");
   try {
     const allocation = allocateUnitId(state.nextEntityId);
     const trained: UnitStateV7 = {
@@ -1491,12 +1494,13 @@ function applyTrain(
       captureEligible: false,
       activation: exhaustedActivation(),
     };
+    const spawn = resolveCityCenterSpawnV7(state, actor, city, trained);
     const staged = {
       ...state,
       nextEntityId: allocation.nextEntityId,
       commandIndex: nextSafe(state.commandIndex),
-      players: debit(state.players, actor, cost),
-      units: [...state.units, trained],
+      players: debit(spawn.players, actor, cost),
+      units: spawn.units,
     };
     const achievements = evaluateAchievementsV7(staged, actor);
     return accepted(checked(achievements.state), [
@@ -1509,6 +1513,7 @@ function applyTrain(
         cost,
         at: trained.at,
       },
+      ...spawn.events,
       ...achievements.events,
     ]);
   } catch (cause) {
@@ -1636,9 +1641,6 @@ function applyReward(
       : command.reward === "JUGGERNAUT"
         ? "JUGGERNAUT"
         : null;
-  const placement = unitRole === null ? null : rewardPlacement(state, city);
-  if (unitRole !== null && placement === null)
-    return rejected(original, "NO_REWARD_UNIT_PLACEMENT");
   try {
     let nextEntityId = state.nextEntityId;
     let players = state.players;
@@ -1724,7 +1726,7 @@ function applyReward(
       cities = recalc.cities;
       contributions = recalc.populationContributions;
       events.push(...economyAndGrowth(recalc.changes));
-    } else if (unitRole !== null && placement !== null) {
+    } else if (unitRole !== null) {
       const allocation = allocateUnitId(nextEntityId);
       nextEntityId = allocation.nextEntityId;
       const rule = effectiveRoleRuleV7(unitRole);
@@ -1734,7 +1736,7 @@ function applyReward(
         homeCityId: city.id,
         role: unitRole,
         form: "LAND",
-        at: placement,
+        at: city.at,
         hp: rule.maxHp,
         maxHp: rule.maxHp,
         kills: 0,
@@ -1742,7 +1744,14 @@ function applyReward(
         captureEligible: false,
         activation: exhaustedActivation(),
       };
-      units = [...units, created];
+      const spawn = resolveCityCenterSpawnV7(
+        { ...state, players, cities, units },
+        actor,
+        city,
+        created,
+      );
+      players = spawn.players;
+      units = spawn.units;
       events.push({
         kind: "UNIT_REWARD_GRANTED",
         playerId: actor,
@@ -1751,6 +1760,7 @@ function applyReward(
         unitId: created.id,
         role: unitRole,
       });
+      events.push(...spawn.events);
     }
     const settlement = settleCityRewardsV7(
       {
@@ -2749,11 +2759,7 @@ function applyFieldDefense(
     return rejected(original, "INVALID_TILE", {
       action: "BUILD_FIELD_DEFENSE",
     });
-  if (
-    primaryUsed(unit) ||
-    (unit.activation.moved &&
-      !effectiveRoleRuleV7(unit.role).mayUsePrimaryActionAfterMove)
-  )
+  if (primaryUsed(unit) || unit.activation.moved)
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
   if (player.coins < 3)
     return rejected(original, "INSUFFICIENT_COINS", { cost: 3 });
@@ -3355,28 +3361,6 @@ function exactUnknownResearchTech(command: unknown): string | null {
     ? command.tech
     : null;
 }
-function rewardPlacement(
-  state: GameStateV7,
-  city: CityStateV7,
-): CoordV7 | null {
-  const player = requirePlayer(state, city.ownerId);
-  return (
-    state.board.tiles
-      .filter(
-        (tile) =>
-          tile.territoryCityId === city.id &&
-          tile.biome !== null &&
-          (tile.terrain !== "MOUNTAIN" ||
-            player.researchedTechs.includes("ENGINEERING")) &&
-          !state.units.some((unit) => unit.hp > 0 && same(unit.at, tile.at)),
-      )
-      .sort(
-        (a, b) =>
-          chebyshev(a.at, city.at) - chebyshev(b.at, city.at) ||
-          compareCoords(a.at, b.at),
-      )[0]?.at ?? null
-  );
-}
 function settleCityRewardsV7(
   state: GameStateV7,
   ownerId: PlayerId,
@@ -3385,8 +3369,8 @@ function settleCityRewardsV7(
   readonly events: readonly DomainEventV7[];
 } {
   if (state.pendingChoices.length > 0) return { state, events: [] };
-  let players = state.players;
-  let cities = state.cities;
+  const players = state.players;
+  const cities = state.cities;
   const events: DomainEventV7[] = [];
   for (const current of [...cities]
     .filter((city) => city.ownerId === ownerId)
@@ -3403,37 +3387,6 @@ function settleCityRewardsV7(
       const candidates = rewardCandidatesForLevelV7(reachedLevel);
       const owner = players.find((player) => player.id === city.ownerId);
       if (owner?.status !== "ACTIVE") throw new RangeError("INVALID_STATE");
-      if (
-        reachedLevel >= 5 &&
-        rewardPlacement({ ...state, players, cities }, city) === null
-      ) {
-        const coins = owner.coins + 12;
-        if (!Number.isSafeInteger(coins))
-          throw new RangeError("INTEGER_OVERFLOW");
-        players = players.map((player) =>
-          player.id === owner.id ? { ...player, coins } : player,
-        );
-        cities = cities.map((candidate) =>
-          candidate.id === city.id
-            ? {
-                ...candidate,
-                rewards: [
-                  ...candidate.rewards,
-                  { reachedLevel, reward: "TREASURY" as const },
-                ],
-              }
-            : candidate,
-        );
-        events.push({
-          kind: "CITY_REWARD_AUTOMATICALLY_GRANTED",
-          playerId: owner.id,
-          cityId: city.id,
-          reachedLevel,
-          reward: "TREASURY",
-          coins: 12,
-        });
-        continue;
-      }
       const pendingChoices: readonly PendingChoiceV7[] = [
         { kind: "CITY_REWARD", cityId: city.id, reachedLevel, candidates },
       ];
@@ -3452,6 +3405,91 @@ function settleCityRewardsV7(
     }
   }
   return { state: { ...state, players, cities, pendingChoices: [] }, events };
+}
+
+function resolveCityCenterSpawnV7(
+  state: GameStateV7,
+  actor: PlayerId,
+  city: CityStateV7,
+  spawned: UnitStateV7,
+): {
+  readonly players: readonly PlayerStateV7[];
+  readonly units: readonly UnitStateV7[];
+  readonly events: readonly DomainEventV7[];
+} {
+  const occupant = state.units.find(
+    (unit) => unit.hp > 0 && same(unit.at, city.at),
+  );
+  const occupantPlayer = requirePlayer(state, occupant?.ownerId ?? actor);
+  const destination =
+    occupant === undefined
+      ? null
+      : (adjacentCoords(state, city.at).find((at) => {
+          const tile = tileAtV7(state.board, at);
+          if (tile === undefined || tile.biome === null) return false;
+          if (state.treasureChests.some((chest) => same(chest, at)))
+            return false;
+          if (
+            tile.terrain === "MOUNTAIN" &&
+            !occupantPlayer.researchedTechs.includes("ENGINEERING")
+          )
+            return false;
+          const territoryOwner = state.cities.find(
+            (candidate) => candidate.id === tile.territoryCityId,
+          )?.ownerId;
+          if (
+            territoryOwner !== undefined &&
+            territoryOwner !== occupant.ownerId &&
+            arePlayersAlliedV7(state, occupant.ownerId, territoryOwner)
+          )
+            return false;
+          return !state.units.some((unit) => unit.hp > 0 && same(unit.at, at));
+        }) ?? null);
+  const displaced =
+    occupant === undefined || destination === null
+      ? null
+      : { ...occupant, at: destination, captureEligible: false };
+  let units = state.units
+    .filter((unit) => unit.id !== occupant?.id || displaced !== null)
+    .map((unit) => (unit.id === displaced?.id ? displaced : unit));
+  units = [...units, spawned];
+  let players = state.players;
+  const events: DomainEventV7[] = [];
+  if (occupant !== undefined)
+    events.push({
+      kind: "UNIT_SPAWN_DISPLACED",
+      playerId: actor,
+      cityId: city.id,
+      spawnedUnitId: spawned.id,
+      displacedUnitId: occupant.id,
+      from: city.at,
+      to: destination,
+    });
+  const revealedByPlayer = new Map<PlayerId, CoordV7[]>();
+  for (const unit of [spawned, ...(displaced === null ? [] : [displaced])]) {
+    const visibleState = { ...state, players, units } as GameStateV7;
+    const reveal = revealRadius(
+      visibleState,
+      unit.ownerId,
+      unit.at,
+      unitSightRadiusAtV7(visibleState, unit),
+    );
+    players = setExplored(players, unit.ownerId, reveal.explored);
+    if (reveal.revealed.length > 0)
+      revealedByPlayer.set(unit.ownerId, [
+        ...(revealedByPlayer.get(unit.ownerId) ?? []),
+        ...reveal.revealed,
+      ]);
+  }
+  for (const [playerId, revealed] of [...revealedByPlayer].sort(
+    ([left], [right]) => left - right,
+  ))
+    events.push({
+      kind: "TILES_REVEALED",
+      playerId,
+      tiles: uniqueCoords(revealed),
+    });
+  return { players, units, events };
 }
 function evaluateAchievementsV7(
   state: GameStateV7,
