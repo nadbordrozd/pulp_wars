@@ -2987,6 +2987,16 @@ function applyCapture(
     );
     let choices = state.pendingChoices;
     let contributions = state.populationContributions;
+    const eliminatesFormerOwner =
+      formerOwner !== null &&
+      !cities.some((item) => item.ownerId === formerOwner);
+    const eliminatedUnits = eliminatesFormerOwner
+      ? units
+          .filter((item) => item.ownerId === formerOwner)
+          .sort((a, b) => a.id - b.id)
+      : [];
+    if (eliminatesFormerOwner)
+      units = units.filter((item) => item.ownerId !== formerOwner);
     const events: DomainEventV7[] = [
       {
         kind: "CITY_CAPTURED",
@@ -3054,14 +3064,7 @@ function applyCapture(
     );
     players = achievements.state.players;
     events.push(...achievements.events);
-    if (
-      formerOwner !== null &&
-      !cities.some((item) => item.ownerId === formerOwner)
-    ) {
-      const removed = units
-        .filter((item) => item.ownerId === formerOwner)
-        .sort((a, b) => a.id - b.id);
-      units = units.filter((item) => item.ownerId !== formerOwner);
+    if (eliminatesFormerOwner) {
       players = players.map((item) =>
         item.id === formerOwner ? { ...item, status: "ELIMINATED" } : item,
       );
@@ -3069,7 +3072,7 @@ function applyCapture(
         cities.some((item) => item.id === choice.cityId),
       );
       events.push(
-        ...removed.map((item): DomainEventV7 => ({
+        ...eliminatedUnits.map((item): DomainEventV7 => ({
           kind: "UNIT_DIED",
           unitId: item.id,
           cause: "ELIMINATION",
