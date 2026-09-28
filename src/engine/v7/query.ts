@@ -6,6 +6,8 @@ import {
   TECHNOLOGY_BRANCH_IDS_V7,
   effectiveRoleRuleV7,
   technologyCapabilitiesV7,
+  isResourceRevealedV7,
+  playerTechnologyResearchCostV7,
   technologyResearchCostV7,
   type BasicEconomicCommandKindV7,
   type EffectiveRoleRuleV7,
@@ -102,7 +104,16 @@ export function queryTechnologyTreeV7(
             : missingPrerequisites.length === 0
               ? "AVAILABLE"
               : "BLOCKED";
-      const cost = technologyResearchCostV7(node.tier, ownedCityCount);
+      // The free opener applies only to researchable offers; a Dry Land
+      // Naval node keeps its ordinary cost.
+      const cost =
+        nodeState === "DISABLED"
+          ? technologyResearchCostV7(node.tier, ownedCityCount)
+          : playerTechnologyResearchCostV7(
+              node.tier,
+              ownedCityCount,
+              player.researchedTechs.length,
+            );
       return {
         id: node.id,
         branch: node.branch,
@@ -415,7 +426,10 @@ function appendPublicUnitCommandsV7(
         !view.units.some((candidate) => same(candidate.at, tile.at))
       )
         candidates.push({ kind: "DISEMBARK", unitId: unit.id, at: tile.at });
-  if (!overrun && !unit.activation.moved && !primaryUsedForQuery(unit))
+  if (
+    unit.activation.escapeAvailable ||
+    (!overrun && !unit.activation.moved && !primaryUsedForQuery(unit))
+  )
     for (const reachable of reachablePlayerMovementPathsV7(view, unit))
       candidates.push({ kind: "MOVE", unitId: unit.id, path: reachable.path });
   const rule = effectiveRoleRuleV7(unit.role);
@@ -1565,7 +1579,11 @@ function graphAfterTileCommandV7(
   if (command.kind === "CULTIVATE_FOREST")
     return replacePublicGraphTileV7(graph, command.at, {
       terrain: "GRASS",
-      resource: "FERTILE_GROUND",
+      resource: projectedResourceAfterMutationV7(
+        view,
+        "GRASS",
+        "FERTILE_GROUND",
+      ),
     });
   if (command.kind === "BLAST_MOUNTAIN")
     return replacePublicGraphTileV7(graph, command.at, {
@@ -1962,7 +1980,10 @@ function projectedResourceAfterMutationV7(
   resource: "FERTILE_GROUND" | "ORE" | null,
 ): EconomicPreviewV7["resourceRestored"] {
   if (terrain === null) return null;
-  if (resource === "ORE" && !view.viewer.researchedTechs.includes("DRILL"))
+  if (
+    resource !== null &&
+    !isResourceRevealedV7(resource, view.viewer.researchedTechs)
+  )
     return null;
   if (terrain === "FOREST") return resource;
   return resource;
@@ -4079,6 +4100,10 @@ function publicCombatPreview(
     attacksRemaining: overrunContinues ? 1 : 0,
     overrunAdvance: attacker.role === "KNIGHT" && advances,
     overrunContinues,
+    escapeAvailable:
+      attacker.form === "LAND" &&
+      attackerRule.abilities.includes("ESCAPE") &&
+      !attackerDies,
     splash:
       attacker.role === "BATTLESHIP"
         ? view.units

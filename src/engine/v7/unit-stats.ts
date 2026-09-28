@@ -211,6 +211,7 @@ export function publicUnitStatsV7(
         : []),
       ...(unit.activation.tendedThisTurn ? ["Tended this turn"] : []),
       ...(unit.activation.overrunActive ? ["Overrun: attack again"] : []),
+      ...(unit.activation.escapeAvailable ? ["Escape: may move again"] : []),
     ],
   };
 }

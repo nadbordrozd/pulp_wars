@@ -386,7 +386,7 @@ async function captureMountedUiEvidence(
       if (!(root instanceof HTMLElement)) throw new Error('app root missing');
       const boardHost = new CanvasBoardHostV7(document);
       const view = new Ruleset7DomAppView(document, root, controller, { boardHost, settingsStorage: null });
-      const readyActivation = { moved: false, movedPathLength: 0, attacked: false, attacksUsed: 0, tendedThisTurn: false, inspired: false, overrunActive: false, recovered: false, captured: false, handled: false, specialActed: false };
+      const readyActivation = { moved: false, movedPathLength: 0, attacked: false, attacksUsed: 0, tendedThisTurn: false, inspired: false, overrunActive: false, escapeAvailable: false, recovered: false, captured: false, handled: false, specialActed: false };
       globalThis.__NAVAL_DOM__ = {
         boardHost, traces, snapshot,
         replaceState(next) { state = next; emit(); },
@@ -733,7 +733,7 @@ async function mountVisual(
       globalThis.__PULP_WARS_APP__?.destroy();
       const aiCount = ${size} === 11 ? 1 : 3;
       const setup = {
-        rulesetId: 'pulp-wars-poc-7r11', mapGenerationRevision: 'REGIONAL_BIOMES_NAVAL_V2', seed: 42,
+        rulesetId: 'pulp-wars-poc-7r12', mapGenerationRevision: 'REGIONAL_BIOMES_NAVAL_V2', seed: 42,
         width: ${size}, height: ${size}, aiCount, aiDifficulty: 'NORMAL', aiMode: 'RIVAL',
         humanColor: 'CORAL', factions: Array.from({ length: aiCount + 1 }, () => 'ORIGINAL'), mapType: 'ARCHIPELAGO',
       };
@@ -782,7 +782,7 @@ async function mountVisual(
       if (cluster.length < aiCount + 2) throw new Error('visual fleet cluster missing');
       const ownedCoast = cluster[1];
       const hostilePort = cluster[2];
-      const ready = { moved: false, movedPathLength: 0, attacked: false, attacksUsed: 0, tendedThisTurn: false, inspired: false, overrunActive: false, recovered: false, captured: false, handled: false, specialActed: false };
+      const ready = { moved: false, movedPathLength: 0, attacked: false, attacksUsed: 0, tendedThisTurn: false, inspired: false, overrunActive: false, escapeAvailable: false, recovered: false, captured: false, handled: false, specialActed: false };
       const roles = ['BATTLESHIP', 'PATROL_BOAT', 'FIGHTER', 'PATROL_BOAT'];
       const forms = ['NAVAL', 'NAVAL', 'EMBARKED', 'NAVAL'];
       const positions = [anchor, ownedCoast, cluster[3], cluster[4] ?? hostilePort];

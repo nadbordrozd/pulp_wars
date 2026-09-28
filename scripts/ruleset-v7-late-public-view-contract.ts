@@ -64,6 +64,7 @@ export function upgradeRetainedPublicViewV7(
         tendedThisTurn: false,
         inspired: false,
         overrunActive: false,
+        escapeAvailable: false,
         recovered: unit.activation.recovered,
         captured: unit.activation.captured,
         handled: unit.activation.handled,
@@ -73,10 +74,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r11",
+    rulesetId: "pulp-wars-poc-7r12",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r11",
+      rulesetId: "pulp-wars-poc-7r12",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     },

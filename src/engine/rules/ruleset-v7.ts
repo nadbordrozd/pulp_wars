@@ -117,6 +117,7 @@ export type UnitRoleAbilityV7 =
   | "RALLY"
   | "TEND_WOUNDED"
   | "OVERRUN"
+  | "ESCAPE"
   | "PUSH";
 
 export interface EffectiveRoleRuleV7 {
@@ -149,7 +150,7 @@ export interface EffectiveRoleRuleV7 {
 export interface FactionTechnologyTreeV7 {
   readonly id: "ORIGINAL_BASELINE_V5";
   readonly faction: "ORIGINAL";
-  readonly startingTechIds: readonly ["GATHERING"];
+  readonly startingTechIds: readonly [];
   readonly nodes: readonly TechnologyNodeV7[];
   readonly roleRules: Readonly<Record<UnitRoleIdV7, EffectiveRoleRuleV7>>;
 }
@@ -315,7 +316,7 @@ export const ORIGINAL_BASELINE_V5_NODES = deepFreeze([
     1,
     [],
     [
-      { kind: "RESOURCE_REVEAL", resources: ["FRUIT", "FERTILE_GROUND"] },
+      { kind: "RESOURCE_REVEAL", resources: ["FERTILE_GROUND"] },
       { kind: "COMMAND", command: "HARVEST_FRUIT" },
     ],
   ),
@@ -596,7 +597,7 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     sightRadius: 2,
     technology: "SCOUTING",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "CHARGE"],
+    abilities: ["ATTACK", "CAPTURE", "CHARGE", "ESCAPE"],
   }),
   MARKSMAN: role({
     role: "MARKSMAN",
@@ -731,7 +732,7 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
 export const ORIGINAL_BASELINE_V5_TREE: FactionTechnologyTreeV7 = deepFreeze({
   id: "ORIGINAL_BASELINE_V5",
   faction: "ORIGINAL",
-  startingTechIds: ["GATHERING"],
+  startingTechIds: [],
   nodes: ORIGINAL_BASELINE_V5_NODES,
   roleRules: ORIGINAL_ROLE_RULES_V7,
 });
@@ -759,6 +760,33 @@ export function technologyResearchCostV7(
   if (value > BigInt(Number.MAX_SAFE_INTEGER))
     throw new RangeError("INTEGER_OVERFLOW");
   return Number(value);
+}
+
+/**
+ * Revision 12 free opening research: while a player has researched no
+ * technology, any offered tier-1 technology costs 0 Coins. Afterward the
+ * ordinary tier formula applies.
+ */
+export function playerTechnologyResearchCostV7(
+  tier: 1 | 2 | 3,
+  ownedCityCount: number,
+  researchedTechCount: number,
+): number {
+  const ordinary = technologyResearchCostV7(tier, ownedCityCount);
+  return tier === 1 && researchedTechCount === 0 ? 0 : ordinary;
+}
+
+/** Resources masked in public observation until the listed technology. */
+export const RESOURCE_REVEAL_TECHNOLOGY_V7: Readonly<
+  Partial<Record<ResourceIdV7, TechnologyIdV7>>
+> = deepFreeze({ FERTILE_GROUND: "GATHERING", ORE: "DRILL" });
+
+export function isResourceRevealedV7(
+  resource: ResourceIdV7,
+  researchedTechs: readonly string[],
+): boolean {
+  const required = RESOURCE_REVEAL_TECHNOLOGY_V7[resource];
+  return required === undefined || researchedTechs.includes(required);
 }
 
 export function effectiveRoleRuleV7(roleId: UnitRoleIdV7): EffectiveRoleRuleV7 {

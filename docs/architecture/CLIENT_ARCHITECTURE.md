@@ -1,9 +1,14 @@
 # Pulp Wars Client Architecture
 
-## Ruleset-7 revision-11 current boundary
+## Ruleset-7 revision-12 current boundary
 
-The current client runs `pulp-wars-poc-7r11`, whose rules are described by
-[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md). Runtime sections
+The current client runs `pulp-wars-poc-7r12`, whose rules are described by
+[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md). Revision 12 adds
+no overlay document: the free opening technology, Fertile Ground mask, and
+Raider Escape are specified there. A Raider with `escapeAvailable` stays
+selected after its attack, the board highlights its offered escape Moves with
+the ordinary move affordance, and the unit card shows "Escape: may move
+again". Free research shows as "Free" in the technology tree. Runtime sections
 1–6 of the [revision-11 city logistics contract](../product/RULESET_7_REVISION_11_CITY_LOGISTICS_AI.md)
 overlay the revision-10 playtest corrections and revision-9 Human technology
 contract. Its Normal-AI sections 7–8 remain pending. Setup exposes Dry Land, Pangea,

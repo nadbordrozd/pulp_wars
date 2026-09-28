@@ -41,6 +41,17 @@ sections below remain authoritative for the unchanged Ruleset 6 route.
   requires a same-city basic improvement. Market shows its 1-Coin base plus
   adjacent family income without requiring a Road.
 
+## Current Ruleset 7 revision 12 overlay
+
+- No technology is researched at match start. While the player has researched
+  nothing, every offered tier-1 card shows `Free` instead of a Coin price, its
+  detail says the first technology is free, and its research action reads
+  "Research … for free". A Dry Land Naval card keeps its ordinary price.
+- A Raider that survives an attack stays selected; its offered escape Moves use
+  the ordinary move highlight, and the unit card shows the tactical cue
+  `Escape: may move again` plus an Escape status chip. The Raider `?` detail
+  explains Escape. No new raster art is used.
+
 ## 0. Ruleset-6 replacement contract
 
 The responsive navigation, fixed Canvas host, map-first selection, non-modal

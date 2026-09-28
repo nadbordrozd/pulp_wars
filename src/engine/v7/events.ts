@@ -39,6 +39,8 @@ export interface CombatPreviewV7 {
   readonly attacksRemaining: number;
   readonly overrunAdvance: boolean;
   readonly overrunContinues: boolean;
+  /** Revision 12: a surviving Raider may make one ordinary escape Move. */
+  readonly escapeAvailable: boolean;
   readonly splash: readonly CombatSplashEntryV7[];
 }
 export interface CombatSplashEntryV7 {

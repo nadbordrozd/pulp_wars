@@ -33,6 +33,7 @@ const READY: UnitStateV7["activation"] = {
   tendedThisTurn: false,
   inspired: false,
   overrunActive: false,
+  escapeAvailable: false,
   recovered: false,
   captured: false,
   handled: false,
@@ -304,6 +305,7 @@ describe("ruleset-7 Knight Overrun activation", () => {
       activation: {
         attacksUsed: 3,
         overrunActive: false,
+        escapeAvailable: false,
         inspired: false,
       },
     });
@@ -961,7 +963,7 @@ describe("ruleset-7 Knight Overrun activation", () => {
           {
             biome: "PLAINS",
             terrain: "GRASS",
-            resource: null,
+            resource: "FERTILE_GROUND",
             improvement: "FARM",
             site: null,
           },

@@ -5,8 +5,8 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r11" as const;
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r11.current" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r12" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r12.current" as const;
 export const FACTION_IDS_V7 = Object.freeze(["ORIGINAL"] as const);
 export const FACTION_TREE_IDS_V7 = Object.freeze([
   "ORIGINAL_BASELINE_V5",
@@ -300,6 +300,8 @@ export interface UnitActivationV7 {
   readonly tendedThisTurn: boolean;
   readonly inspired: boolean;
   readonly overrunActive: boolean;
+  /** Revision 12 Raider Escape: one ordinary Move remains after an Attack. */
+  readonly escapeAvailable: boolean;
   readonly recovered: boolean;
   readonly captured: boolean;
   readonly handled: boolean;

@@ -23,7 +23,11 @@ import {
   Ruleset7DomAppView,
   type Ruleset7ControllerPortV7,
 } from "../../src/render/dom/app-view-v7";
-import { knightOverrunPublicFixtureV7 } from "../fixtures/ruleset7-tactical-ui";
+import {
+  knightOverrunPublicFixtureV7,
+  raiderEscapePublicFixtureV7,
+} from "../fixtures/ruleset7-tactical-ui";
+import { checkedV7 } from "../fixtures/v7-builders";
 
 beforeEach(() => {
   document.body.innerHTML = '<div id="app"></div>';
@@ -127,6 +131,115 @@ describe("Ruleset 7 tactical DOM controls", () => {
             command.kind === "MOVE" && command.unitId === knightOverrun.id,
         ),
     ).toBe(false);
+    app.destroy();
+  });
+});
+
+describe("Ruleset 7 revision-12 DOM controls", () => {
+  it("keeps an attacking Raider selected with escape Moves and explains Escape", async () => {
+    const fixture = raiderEscapePublicFixtureV7();
+    const controller = new TacticalFixtureController(fixture.state);
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    const raider = required(
+      controller
+        .snapshot()
+        .view?.units.find(
+          (unit) =>
+            unit.ownerId === unitOwner(controller) && unit.role === "RAIDER",
+        ),
+    );
+    host.callbacks?.onSelection({ kind: "UNIT", unitId: raider.id });
+    requiredButton("unit-help").click();
+    expect(document.body.textContent).toContain(
+      "EscapeMay move again after attacking",
+    );
+    const attack = required(
+      controller
+        .snapshot()
+        .offeredCommands.find(
+          (command) =>
+            command.kind === "ATTACK" && command.unitId === raider.id,
+        ),
+    );
+    expect((await controller.dispatch(attack)).accepted).toBe(true);
+    await waitUntil(
+      () => document.querySelector('[data-tactical-state="escape"]') !== null,
+    );
+    expect(
+      document.querySelector('[data-tactical-state="escape"]')?.textContent,
+    ).toBe("Escape: may move again");
+    expect(
+      document.querySelector('.v7-unit-status-cues [data-unit-status="escape"]')
+        ?.textContent,
+    ).toBe("Escape");
+    const model = required(host.lastModel);
+    expect(model.interaction.selectedUnitId).toBe(raider.id);
+    const escapeMoves = model.offeredCommands.filter(
+      (command) => command.kind === "MOVE" && command.unitId === raider.id,
+    );
+    expect(escapeMoves.length).toBeGreaterThan(0);
+    expect(
+      model.offeredCommands.some(
+        (command) => command.kind === "ATTACK" && command.unitId === raider.id,
+      ),
+    ).toBe(false);
+    const escape = required(escapeMoves[0]);
+    expect((await controller.dispatch(escape)).accepted).toBe(true);
+    await waitUntil(
+      () => document.querySelector('[data-tactical-state="escape"]') === null,
+    );
+    expect(
+      controller
+        .snapshot()
+        .offeredCommands.some(
+          (command) => "unitId" in command && command.unitId === raider.id,
+        ),
+    ).toBe(false);
+    app.destroy();
+  });
+
+  it("shows every offered tier-1 opener as Free until the first research", async () => {
+    const fixture = raiderEscapePublicFixtureV7();
+    const state = checkedV7({
+      ...fixture.state,
+      players: fixture.state.players.map((player) => ({
+        ...player,
+        coins: 0,
+        researchedTechs: [],
+        achievementEntitlements: player.achievementEntitlements.map(
+          (entitlement) => ({ ...entitlement, unlocked: false }),
+        ),
+      })),
+    });
+    const controller = new TacticalFixtureController(state);
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    requiredButton("tech").click();
+    const free = [
+      ...document.querySelectorAll<HTMLElement>(
+        '.v7-tech-cost[data-free="true"]',
+      ),
+    ];
+    expect(free).toHaveLength(4);
+    expect(free.every((node) => node.textContent === "Free")).toBe(true);
+    const gathering = required(
+      document.querySelector<HTMLElement>('[data-action="tech-gathering"]'),
+    );
+    expect(gathering.getAttribute("aria-label")).toContain("free");
+    gathering.click();
+    expect(
+      requiredButton("research-gathering").getAttribute("aria-label"),
+    ).toBe("Research Gathering for free");
+    requiredButton("research-gathering").click();
+    await waitUntil(
+      () =>
+        document.querySelectorAll('.v7-tech-cost[data-free="true"]').length ===
+        0,
+    );
+    expect(controller.accepted).toEqual([
+      { kind: "RESEARCH", tech: "GATHERING" },
+    ]);
     app.destroy();
   });
 });

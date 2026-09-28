@@ -38,6 +38,8 @@ describe("ruleset-7 public Ore and Normal Industry policy", () => {
     const base = viewForV7(initialV7(0), initialV7(0).humanPlayerId);
     const hidden: ReturnType<typeof viewForV7> = {
       ...base,
+      // Past the revision-12 free opener, so ordinary valuation applies.
+      viewer: { ...base.viewer, researchedTechs: ["GATHERING"] },
       board: {
         ...base.board,
         tiles: base.board.tiles.map((tile) =>

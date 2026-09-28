@@ -24,6 +24,7 @@ const READY = {
   tendedThisTurn: false,
   inspired: false,
   overrunActive: false,
+  escapeAvailable: false,
   recovered: false,
   captured: false,
   handled: false,

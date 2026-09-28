@@ -358,6 +358,11 @@ export function parsePlayerEventEnvelopeV7(
       (candidate as Record<string, unknown>).kind === "MONUMENT_BUILT"
     )
       return bad("MONUMENT_BUILT");
+    const projectedCultivation = parseProjectedCultivationEvent(candidate);
+    if (projectedCultivation !== null) {
+      events.push(projectedCultivation);
+      continue;
+    }
     const projectedRestoration = parseProjectedRestorationEvent(candidate);
     if (projectedRestoration !== null) {
       events.push(projectedRestoration);
@@ -383,6 +388,22 @@ export function parsePlayerEventEnvelopeV7(
       events,
     },
   };
+}
+
+/** A viewer without Gathering sees cultivated Fertile Ground masked. */
+function parseProjectedCultivationEvent(input: unknown): PlayerEventV7 | null {
+  if (
+    typeof input !== "object" ||
+    input === null ||
+    Array.isArray(input) ||
+    !("kind" in input) ||
+    input.kind !== "FOREST_CULTIVATED" ||
+    !("resourceAfter" in input) ||
+    input.resourceAfter !== null
+  )
+    return null;
+  const canonical = parseEventV7({ ...input, resourceAfter: "FERTILE_GROUND" });
+  return canonical.ok ? (input as PlayerEventV7) : null;
 }
 
 function parseProjectedRestorationEvent(input: unknown): PlayerEventV7 | null {
@@ -792,6 +813,7 @@ function combat(input: unknown): boolean {
       "noRetaliationReason",
       "overrunAdvance",
       "overrunContinues",
+      "escapeAvailable",
       "push",
       "retaliation",
       "splash",
@@ -832,7 +854,10 @@ function combat(input: unknown): boolean {
       input.advances,
       input.overrunAdvance,
       input.overrunContinues,
+      input.escapeAvailable,
     ].every((item) => typeof item === "boolean") &&
+    (input.escapeAvailable !== true || input.attackerDies === false) &&
+    !(input.escapeAvailable === true && input.overrunContinues === true) &&
     ["WILL_PUSH", "BLOCKED", "UNKNOWN_BEHIND_FOG"].includes(
       input.push as string,
     ) &&
@@ -1041,7 +1066,16 @@ function restoredResource(
   value: unknown,
   improvement: ImprovementIdV7,
 ): boolean {
-  return value === expectedRestoredResource(improvement);
+  // Revision 12: removal re-exposes the kept resource. Farm and Mine always
+  // hide theirs; other buildings and Monuments may hide masked Fertile Ground.
+  return (
+    value === expectedRestoredResource(improvement) ||
+    (value === "FERTILE_GROUND" &&
+      improvement !== "MINE" &&
+      improvement !== "LUMBER_CAMP" &&
+      improvement !== "PORT" &&
+      improvement !== "SHIPYARD")
+  );
 }
 function expectedRestoredResource(
   improvement: ImprovementIdV7 | null,

@@ -20,6 +20,7 @@ const READY: UnitStateV7["activation"] = {
   tendedThisTurn: false,
   inspired: false,
   overrunActive: false,
+  escapeAvailable: false,
   recovered: false,
   captured: false,
   handled: false,
@@ -248,6 +249,7 @@ function precedenceFixture(cityLevel: 2 | 3): PrecedenceFixture {
       attacked: true,
       attacksUsed: 1,
       overrunActive: true,
+      escapeAvailable: false,
     },
   );
   const target = makeUnit(targetId, enemy, "GUARD", targetAt);

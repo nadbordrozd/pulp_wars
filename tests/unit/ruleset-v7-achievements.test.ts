@@ -1091,7 +1091,7 @@ function engineerBuildState(): { state: GameStateV7; forgeAt: CoordV7 } {
             ? {
                 ...candidate,
                 terrain: "MOUNTAIN",
-                resource: null,
+                resource: "ORE",
                 improvement: "MINE",
                 territoryCityId: city.id,
               }
@@ -1387,6 +1387,7 @@ function readyActivation(): UnitStateV7["activation"] {
     tendedThisTurn: false,
     inspired: false,
     overrunActive: false,
+    escapeAvailable: false,
     recovered: false,
     captured: false,
     handled: false,

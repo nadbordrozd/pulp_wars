@@ -8,7 +8,8 @@ import {
   SPATIAL_ECONOMIC_ACTIONS_V7,
   effectiveRoleRuleV7,
   technologyCapabilitiesV7,
-  technologyResearchCostV7,
+  isResourceRevealedV7,
+  playerTechnologyResearchCostV7,
   type BasicEconomicCommandKindV7,
   type SpatialEconomicCommandKindV7,
 } from "../rules/ruleset-v7";
@@ -436,7 +437,11 @@ function applyResearch(
     const cityCount = state.cities.filter(
       (city) => city.ownerId === actor,
     ).length;
-    const cost = technologyResearchCostV7(node.tier, cityCount);
+    const cost = playerTechnologyResearchCostV7(
+      node.tier,
+      cityCount,
+      player.researchedTechs.length,
+    );
     if (player.coins < cost)
       return rejected(original, "INSUFFICIENT_COINS", { cost });
     const commandIndex = nextSafe(state.commandIndex);
@@ -531,9 +536,10 @@ function applyBasic(
               at: command.at,
             },
     };
+    // Harvests consume their resource; Farm and Mine keep it underneath.
     const board = replaceTile(state, command.at, {
       ...tile,
-      resource: null,
+      resource: rule.improvement === null ? null : tile.resource,
       improvement: rule.improvement ?? tile.improvement,
     });
     const recalculation = recomputeLiveEconomyV7(
@@ -618,7 +624,7 @@ function applySpatial(
   if (
     state.treasureChests.some((chest) => same(chest, command.at)) ||
     tile.site !== null ||
-    tile.resource !== null ||
+    observedResourceV7(player, tile) !== null ||
     tile.improvement !== null
   )
     return rejected(original, "INVALID_TILE", { action: kind });
@@ -753,7 +759,7 @@ function applyMonument(
   if (
     tile.biome === null ||
     tile.site !== null ||
-    tile.resource !== null ||
+    observedResourceV7(player, tile) !== null ||
     tile.improvement !== null ||
     state.treasureChests.some((chest) => same(chest, command.at))
   )
@@ -858,7 +864,7 @@ function applyInfrastructure(
     return rejected(original, "TECH_REQUIRED", { tech });
   const forestValid =
     tile.site === null &&
-    tile.resource === null &&
+    observedResourceV7(player, tile) === null &&
     tile.improvement === null &&
     ((command.kind === "CLEAR_FOREST" && tile.terrain === "FOREST") ||
       (command.kind === "REPLANT_FOREST" && tile.terrain === "GRASS") ||
@@ -936,7 +942,8 @@ function applyInfrastructure(
       removed === "MARKET" && city !== undefined
         ? marketIncomeForCityV7(state, city)
         : 0;
-    const resourceRestored = restoredResourceForImprovement(removed);
+    const resourceRestored =
+      removed === null ? null : reexposedResourceV7(tile.resource, removed);
     const board = replaceTile(state, command.at, {
       ...tile,
       terrain:
@@ -950,14 +957,17 @@ function applyInfrastructure(
               : tile.terrain,
       road: command.kind === "BUILD_ROAD" ? true : tile.road,
       improvement: command.kind === "REDEVELOP" ? null : tile.improvement,
+      // Redevelop leaves the kept resource in place. Replant is a terrain
+      // transform, not an improvement: it drops masked Fertile Ground that
+      // cannot exist on Forest (visible resources block it).
       resource:
         command.kind === "REDEVELOP"
-          ? removed === "PORT" || removed === "SHIPYARD"
-            ? tile.resource
-            : resourceRestored
+          ? tile.resource
           : command.kind === "CULTIVATE_FOREST"
             ? "FERTILE_GROUND"
-            : tile.resource,
+            : command.kind === "REPLANT_FOREST"
+              ? null
+              : tile.resource,
     });
     const contributions =
       removedContribution === undefined
@@ -1859,7 +1869,8 @@ function applyMove(
   if (!actorCheck.ok)
     return rejected(original, actorCheck.code, actorCheck.params);
   const { unit } = actorCheck;
-  if (unit.activation.moved || primaryUsed(unit)) {
+  const escaping = unit.activation.escapeAvailable;
+  if (!escaping && (unit.activation.moved || primaryUsed(unit))) {
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId: unit.id });
   }
   const validation = validateMovementPathV7(state, unit, command.path);
@@ -1901,12 +1912,21 @@ function applyMove(
                   ...exhaustedActivation(),
                   movedPathLength: validation.traversedPath.length,
                 }
-              : {
-                  ...candidate.activation,
-                  moved: true,
-                  movedPathLength: validation.traversedPath.length,
-                  handled: unit.form === "EMBARKED" ? false : true,
-                },
+              : escaping
+                ? {
+                    // Escape uses a fresh full Move budget but never grants or
+                    // refreshes Charge: the pre-attack path length is kept.
+                    ...candidate.activation,
+                    moved: true,
+                    escapeAvailable: false,
+                    handled: true,
+                  }
+                : {
+                    ...candidate.activation,
+                    moved: true,
+                    movedPathLength: validation.traversedPath.length,
+                    handled: unit.form === "EMBARKED" ? false : true,
+                  },
           }
         : candidate,
     );
@@ -2233,7 +2253,8 @@ function applyAttack(
         attacksUsed,
         inspired: false,
         overrunActive: false,
-        handled: true,
+        escapeAvailable: preview.escapeAvailable,
+        handled: !preview.escapeAvailable,
       },
     };
     const defenderAfter: UnitStateV7 = {
@@ -2675,6 +2696,7 @@ function applyWait(
               activation: {
                 ...unit.activation,
                 overrunActive: false,
+                escapeAvailable: false,
                 handled: true,
               },
             }
@@ -2719,10 +2741,9 @@ function applyPillage(
         : populationContributionAt(state, tile.at);
     if (improvement !== "MARKET" && contribution === undefined)
       return rejected(original, "INVALID_STATE");
-    const resourceRestored = restoredResourceForImprovement(improvement);
+    const resourceRestored = reexposedResourceV7(tile.resource, improvement);
     const board = replaceTile(state, tile.at, {
       ...tile,
-      resource: resourceRestored,
       improvement: null,
     });
     const contributions =
@@ -3164,6 +3185,7 @@ function applyEndTurn(
                 ...unit.activation,
                 inspired: false,
                 overrunActive: false,
+                escapeAvailable: false,
                 handled: true,
               },
             }
@@ -3395,6 +3417,7 @@ function resetTurnUnits(state: GameStateV7, playerId: PlayerId): GameStateV7 {
           tendedThisTurn: false,
           inspired: false,
           overrunActive: false,
+          escapeAvailable: false,
           recovered: false,
           captured: false,
           handled: false,
@@ -3678,15 +3701,6 @@ function economyAndGrowth(
 ): readonly DomainEventV7[] {
   return [...economyEventsV7(changes), ...growthEventsV7(changes)];
 }
-function restoredResourceForImprovement(
-  improvement: TileStateV7["improvement"],
-): "FERTILE_GROUND" | "ORE" | null {
-  return improvement === "FARM"
-    ? "FERTILE_GROUND"
-    : improvement === "MINE"
-      ? "ORE"
-      : null;
-}
 function populationContributionAt(
   state: GameStateV7,
   at: CoordV7,
@@ -3697,6 +3711,33 @@ function populationContributionAt(
       same(item.source.at, at),
   );
 }
+/**
+ * Revision 12 masks Fertile Ground until Gathering. Placement gates consider
+ * only resources the actor can observe, so the public command query stays
+ * exact without revealing a masked resource. An improvement placed over a
+ * masked resource keeps it underneath; only the Replant Forest terrain
+ * transform drops it.
+ */
+function observedResourceV7(
+  player: PlayerStateV7,
+  tile: TileStateV7,
+): TileStateV7["resource"] {
+  return tile.resource !== null &&
+    isResourceRevealedV7(tile.resource, player.researchedTechs)
+    ? tile.resource
+    : null;
+}
+/**
+ * The resource an improvement hid and its removal re-exposes. Port and
+ * Shipyard never hide their Fish or Pearls, so they re-expose nothing.
+ */
+function reexposedResourceV7(
+  resource: TileStateV7["resource"],
+  improvement: NonNullable<TileStateV7["improvement"]>,
+): "FERTILE_GROUND" | "ORE" | null {
+  if (improvement === "PORT" || improvement === "SHIPYARD") return null;
+  return resource === "FERTILE_GROUND" || resource === "ORE" ? resource : null;
+}
 function exhaustedActivation(): UnitStateV7["activation"] {
   return {
     moved: true,
@@ -3706,6 +3747,7 @@ function exhaustedActivation(): UnitStateV7["activation"] {
     tendedThisTurn: false,
     inspired: false,
     overrunActive: false,
+    escapeAvailable: false,
     recovered: true,
     captured: true,
     handled: true,

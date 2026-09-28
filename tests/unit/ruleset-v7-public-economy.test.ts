@@ -85,7 +85,12 @@ describe("ruleset-7 pure public economy", () => {
                   : contributor.improvement === "LUMBER_CAMP"
                     ? ("FOREST" as const)
                     : ("GRASS" as const),
-              resource: null,
+              resource:
+                contributor.improvement === "MINE"
+                  ? ("ORE" as const)
+                  : contributor.improvement === "FARM"
+                    ? ("FERTILE_GROUND" as const)
+                    : null,
               improvement: contributor.improvement,
             };
           return same(tile.at, target)
@@ -654,11 +659,31 @@ describe("ruleset-7 pure public economy", () => {
       ),
       populationContributions: [],
     };
+    // Revision 12: Fertile Ground stays masked until the viewer has Gathering.
     expect(
       previewEconomicV7(withFarm, {
         kind: "REDEVELOP",
         at: staged.target,
       }),
+    ).toMatchObject({
+      ok: true,
+      preview: { resourceRestored: null },
+    });
+    expect(
+      previewEconomicV7(
+        {
+          ...withFarm,
+          viewer: {
+            ...withFarm.viewer,
+            researchedTechs: TECHNOLOGY_IDS_V7.filter(
+              (tech) =>
+                tech === "GATHERING" ||
+                withFarm.viewer.researchedTechs.includes(tech),
+            ),
+          },
+        },
+        { kind: "REDEVELOP", at: staged.target },
+      ),
     ).toMatchObject({
       ok: true,
       preview: { resourceRestored: "FERTILE_GROUND" },

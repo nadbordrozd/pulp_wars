@@ -37,7 +37,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r11");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r12");
     expect(FACTION_IDS_V7).toEqual(["ORIGINAL"]);
     expect(FACTION_TREE_IDS_V7).toEqual(["ORIGINAL_BASELINE_V5"]);
     expect(RESOURCE_IDS_V7).toEqual([

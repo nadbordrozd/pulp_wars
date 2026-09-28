@@ -38,6 +38,7 @@ const READY: UnitStateV7["activation"] = {
   tendedThisTurn: false,
   inspired: false,
   overrunActive: false,
+  escapeAvailable: false,
   recovered: false,
   captured: false,
   handled: false,
@@ -490,7 +491,16 @@ describe("ruleset-7 observation safety and Concealment", () => {
   });
 
   it("projects restored production markers from the viewer's after-state knowledge", () => {
-    const before = initialV7(1_306);
+    const initial = initialV7(1_306);
+    // Revision 12: the viewer needs Gathering to see restored Fertile Ground.
+    const before = checkedV7({
+      ...initial,
+      players: initial.players.map((player) =>
+        player.id === initial.humanPlayerId
+          ? { ...player, researchedTechs: ["GATHERING"] }
+          : player,
+      ),
+    });
     const city = before.cities.find(
       (candidate) => candidate.ownerId === before.humanPlayerId,
     )!;

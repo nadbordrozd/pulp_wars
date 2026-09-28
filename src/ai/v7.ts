@@ -35,6 +35,10 @@ import {
   type EconomyGraphV7,
 } from "../engine/v7/spatial-economy";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
+import {
+  normalOpeningResearchPendingV7,
+  normalOpeningTechnologyV7,
+} from "./v7-opening";
 
 export const NORMAL_AI_MAX_ACCEPTED_COMMANDS_PER_TURN_V7 = 128;
 
@@ -3017,7 +3021,11 @@ function scoreCommandWithContext(
     }
   }
 
-  if (command.kind === "RESEARCH") {
+  if (command.kind === "RESEARCH" && normalOpeningResearchPendingV7(view)) {
+    // Revision 12: the first tier-1 research is free; choose it from the
+    // capital surroundings before any other work this turn.
+    priority = command.tech === normalOpeningTechnologyV7(view) ? 1305 : -1;
+  } else if (command.kind === "RESEARCH") {
     const research = researchValue(context, command.tech);
     priority = research.priority;
     strategicValue = research.strategic;
@@ -3162,6 +3170,7 @@ function scoreCommandWithContext(
         priority = Math.max(priority, 1260);
         strategicValue += 35;
       }
+      if (preview.escapeAvailable) strategicValue += 4;
       if (
         actor?.role === "KNIGHT" &&
         actor.form === "LAND" &&
@@ -3312,6 +3321,14 @@ function scoreCommandWithContext(
       )
         priority = Math.max(priority, 735);
     }
+    if (actor.activation.escapeAvailable) {
+      const retreat = raiderEscapeRetreatValueV7(context, actor, resultAt);
+      if (retreat === null) priority = -1;
+      else if (retreat > 0) {
+        priority = Math.max(priority, 1195);
+        strategicValue += retreat;
+      }
+    }
     if (autoembark) {
       priority = Math.max(priority, 1300);
       strategicValue += effectiveRoleRuleV7(actor.role).abilities.includes(
@@ -3387,6 +3404,32 @@ function scoreCommandWithContext(
     objectiveValue,
     deterministicTieBreak: tie,
   };
+}
+
+/**
+ * Revision 12 Raider Escape. While the Raider stands where visible enemies can
+ * hurt it, only an escape Move to a strictly safer visible tile is considered,
+ * preferring friendly territory and Forest/Mountain cover. Returns null to
+ * reject the Move, 0 when ordinary Move scoring applies (no visible danger).
+ */
+function raiderEscapeRetreatValueV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  resultAt: CoordV7 | null,
+): number | null {
+  if (resultAt === null) return null;
+  const view = context.view;
+  const dangerHere = visibleImmediateDamage(view, actor, actor.at, context);
+  if (dangerHere <= 0) return 0;
+  const dangerThere = visibleImmediateDamage(view, actor, resultAt, context);
+  if (dangerThere >= dangerHere) return null;
+  const tile = findPublicTileV7(view, resultAt);
+  const friendly =
+    tile?.explored === true && tile.territoryOwnerId === view.viewer.id;
+  const cover =
+    tile?.explored === true &&
+    (tile.terrain === "FOREST" || tile.terrain === "MOUNTAIN");
+  return 10 * (dangerHere - dangerThere) + (friendly ? 4 : 0) + (cover ? 2 : 0);
 }
 
 function captureEndsMatchV7(

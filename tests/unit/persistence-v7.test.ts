@@ -41,7 +41,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 save and replay foundation", () => {
   it("uses an independent v7 save key and round-trips a canonical initial save", () => {
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r11.current");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r12.current");
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const replay = createReplayV7(setup);
@@ -253,6 +253,7 @@ describe("ruleset-7 save and replay foundation", () => {
       attacksUsed: 1,
       handled: true,
       overrunActive: false,
+      escapeAvailable: false,
     });
     const firstSave = createSaveEnvelopeV7(
       { state, replay },
@@ -509,6 +510,8 @@ describe("ruleset-7 save and replay foundation", () => {
     apply({ kind: "RESEARCH", tech: "DRILL" });
     fundHuman(7);
     apply({ kind: "RESEARCH", tech: "ENGINEERING" });
+    fundHuman(5);
+    apply({ kind: "RESEARCH", tech: "GATHERING" });
     fundHuman(7);
     apply({ kind: "RESEARCH", tech: "FARMING" });
     fundHuman(7);
@@ -657,6 +660,8 @@ describe("ruleset-7 save and replay foundation", () => {
       throw new Error("funding guard exhausted");
     };
 
+    fundHuman(0);
+    apply({ kind: "RESEARCH", tech: "GATHERING" });
     fundHuman(7);
     apply({ kind: "RESEARCH", tech: "FARMING" });
     fundHuman(5);

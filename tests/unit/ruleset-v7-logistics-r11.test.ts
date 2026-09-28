@@ -89,7 +89,11 @@ describe("Ruleset 7 revision 11 city logistics", () => {
         ...prepared.board,
         tiles: prepared.board.tiles.map((tile) =>
           growthTiles.some((growth) => same(growth.at, tile.at))
-            ? { ...tile, improvement: "FARM" as const, resource: null }
+            ? {
+                ...tile,
+                improvement: "FARM" as const,
+                resource: "FERTILE_GROUND" as const,
+              }
             : tile,
         ),
       },
@@ -1153,8 +1157,8 @@ describe("Ruleset 7 revision 11 city logistics", () => {
   });
 
   it("publishes the exact revision-11 identity", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r11");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r11.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r12");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r12.current");
   });
 });
 

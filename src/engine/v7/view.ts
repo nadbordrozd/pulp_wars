@@ -8,6 +8,7 @@ import {
   landTradeCityIdsV7,
   seaTradeCityIdsV7,
 } from "./economy";
+import { isResourceRevealedV7 } from "../rules/ruleset-v7";
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import { spatialContributionAtV7 } from "./spatial-economy";
 import type {
@@ -806,10 +807,24 @@ export function publicResourceV7(
   tile: {
     readonly terrain: TerrainIdV7;
     readonly resource: ResourceIdV7 | null;
+    readonly improvement?: ImprovementIdV7 | null;
   },
   technologies: readonly string[],
 ): PublicResourceV7 {
-  if (tile.resource === "ORE" && !technologies.includes("DRILL")) return null;
+  if (
+    tile.resource !== null &&
+    !isResourceRevealedV7(tile.resource, technologies)
+  )
+    return null;
+  // Revision 12: a resource kept under an improvement is hidden while the
+  // improvement stands. Ports and Shipyards still share visible Fish/Pearls.
+  const improvement = tile.improvement ?? null;
+  if (
+    improvement !== null &&
+    improvement !== "PORT" &&
+    improvement !== "SHIPYARD"
+  )
+    return null;
   return tile.resource;
 }
 

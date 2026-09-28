@@ -947,6 +947,12 @@ export class Ruleset7DomAppView {
         state.append(text(this.#document, "strong", "Overrun: attack again"));
         unitDetails.append(state);
       }
+      if (unit.activation.escapeAvailable) {
+        const state = el(this.#document, "section", "v7-tactical-state");
+        state.dataset.tacticalState = "escape";
+        state.append(text(this.#document, "strong", "Escape: may move again"));
+        unitDetails.append(state);
+      }
       const stats = view.unitStats.find((entry) => entry.unitId === unit.id);
       if (stats !== undefined) {
         if (stats.statuses.length > 0) {
@@ -1571,7 +1577,9 @@ export class Ruleset7DomAppView {
       "Select a unit, then a highlighted tile to move or attack.",
       "Select your city to train units.",
       "Select a tile in your land to harvest or build.",
-      "Spend coins on technology to unlock more.",
+      "Spend coins on technology to unlock more. Your first technology is free.",
+      "Fruit is visible from the start; Gathering reveals Fertile Ground.",
+      "A Raider that survives an attack may move again (Escape).",
       "Capture every enemy city to win.",
       "Move a land unit onto your port to put it to sea.",
     ])
@@ -1734,6 +1742,15 @@ export class Ruleset7DomAppView {
       identity(this.#document, RULESET7_TECH_ART_IDS[node.id], title(node.id)),
     );
     if (status !== null) detail.append(status);
+    if (node.state === "AVAILABLE" && node.cost === 0)
+      detail.append(
+        text(
+          this.#document,
+          "p",
+          "Free: your first technology costs nothing",
+          "v7-tech-status is-free",
+        ),
+      );
     const unlocks = this.#document.createElement("ul");
     unlocks.className = "v7-tech-unlocks";
     for (const group of technologyEffectGroupsV7(node.effects))
@@ -1771,7 +1788,9 @@ export class Ruleset7DomAppView {
       );
       research.setAttribute(
         "aria-label",
-        `Research ${title(node.id)} for ${node.cost} Coins`,
+        node.cost === 0
+          ? `Research ${title(node.id)} for free`
+          : `Research ${title(node.id)} for ${node.cost} Coins`,
       );
       research.onclick = () => {
         this.#pendingFocusAction = `tech-${node.id.toLowerCase()}`;
@@ -2843,11 +2862,16 @@ function appendTechNode(
   }
   if (layout.node.state !== "OWNED") {
     const cost = el(documentRoot, "span", "v7-tech-cost");
-    cost.append(String(layout.node.cost), economyIcon(documentRoot, "coin"));
+    const free = layout.node.cost === 0;
+    if (free) cost.dataset.free = "true";
+    cost.append(
+      free ? "Free" : String(layout.node.cost),
+      economyIcon(documentRoot, "coin"),
+    );
     card.append(cost);
     card.setAttribute(
       "aria-label",
-      `${title(layout.node.id)}, ${layout.node.cost} Coins${layout.node.state === "BLOCKED" ? ", locked" : ""}`,
+      `${title(layout.node.id)}, ${free ? "free" : `${layout.node.cost} Coins`}${layout.node.state === "BLOCKED" ? ", locked" : ""}`,
     );
     if (layout.node.state === "DISABLED") {
       card.setAttribute("aria-disabled", "true");
@@ -2935,7 +2959,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r11",
+    rulesetId: "pulp-wars-poc-7r12",
     seed,
     width: draft.boardSize,
     height: draft.boardSize,
@@ -3260,6 +3284,8 @@ function abilityDescription(
       return "Heals nearby wounded troops by 2.";
     case "OVERRUN":
       return "After a kill, advances and can attack another adjacent enemy.";
+    case "ESCAPE":
+      return "May move again after attacking: a fresh full Move if it survives, then it is done for the turn.";
     case "PUSH":
       return "Knocks surviving targets back a tile.";
     default:

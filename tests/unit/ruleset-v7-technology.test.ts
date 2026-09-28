@@ -38,7 +38,7 @@ describe("ruleset-7 technology", () => {
     expect(ORIGINAL_BASELINE_V5_TREE).toMatchObject({
       id: "ORIGINAL_BASELINE_V5",
       faction: "ORIGINAL",
-      startingTechIds: ["GATHERING"],
+      startingTechIds: [],
     });
     expect(ORIGINAL_BASELINE_V5_NODES.map((node) => node.branch)).toEqual([
       ...Array(5).fill("SETTLEMENT"),
@@ -58,9 +58,7 @@ describe("ruleset-7 technology", () => {
     ).toHaveLength(9);
     expect(
       initialV7().players.every(
-        (player) =>
-          player.researchedTechs.length === 1 &&
-          player.researchedTechs[0] === "GATHERING",
+        (player) => player.researchedTechs.length === 0,
       ),
     ).toBe(true);
     expect(Object.isFrozen(ORIGINAL_BASELINE_V5_NODES)).toBe(true);
@@ -119,7 +117,7 @@ describe("ruleset-7 technology", () => {
       1_000,
     );
     const random = state.random;
-    for (const tech of TECHNOLOGY_IDS_V7.slice(1)) {
+    for (const tech of TECHNOLOGY_IDS_V7) {
       const result = applyCommandV7(state, state.humanPlayerId, {
         kind: "RESEARCH",
         tech,
@@ -130,6 +128,7 @@ describe("ruleset-7 technology", () => {
         kind: "TECH_RESEARCHED",
         playerId: state.humanPlayerId,
         tech,
+        ...(tech === "GATHERING" ? { cost: 0 } : {}),
       });
       expect(result.events.slice(1).map((event) => event.kind)).toEqual(
         tech === "ROADS" ? ["SEA_NETWORK_CHANGED"] : [],
@@ -145,7 +144,18 @@ describe("ruleset-7 technology", () => {
   });
 
   it("publishes available tree state and typed dual-use capabilities", () => {
-    const state = richV7(initialV7(), 20);
+    const initial = initialV7();
+    const state = richV7(
+      checkedV7({
+        ...initial,
+        players: initial.players.map((player) =>
+          player.id === initial.humanPlayerId
+            ? { ...player, researchedTechs: ["GATHERING"] }
+            : player,
+        ),
+      }),
+      20,
+    );
     const tree = queryTechnologyTreeV7(state, state.humanPlayerId);
     expect(tree.nodes.find((node) => node.id === "GATHERING")).toMatchObject({
       state: "OWNED",

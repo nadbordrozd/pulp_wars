@@ -294,10 +294,7 @@ function parseTile(input: unknown): TileStateV7 | null {
   const resource = input.resource as TileStateV7["resource"];
   const improvement = input.improvement as TileStateV7["improvement"];
   if (
-    (resource !== null &&
-      improvement !== null &&
-      improvement !== "PORT" &&
-      improvement !== "SHIPYARD") ||
+    !resourceUnderImprovementAllowed(resource, improvement) ||
     (terrain === "SHALLOW_WATER" || terrain === "DEEP_WATER") !==
       (input.biome === null) ||
     !resourceMatchesTerrain(resource, terrain) ||
@@ -392,7 +389,6 @@ function parsePlayer(input: unknown): PlayerStateV7 | null {
     id === null ||
     originalCapitalCityId === null ||
     researched === null ||
-    researched[0] !== "GATHERING" ||
     explored === null ||
     spoils === null ||
     achievementEntitlements === null ||
@@ -709,6 +705,11 @@ function parseUnit(input: unknown): UnitStateV7 | null {
     (role !== "KNIGHT" && activation.attacksUsed > 1) ||
     (activation.overrunActive &&
       (role !== "KNIGHT" || !activation.attacked || activation.handled)) ||
+    (activation.escapeAvailable &&
+      (role !== "RAIDER" ||
+        input.form !== "LAND" ||
+        !activation.attacked ||
+        activation.handled)) ||
     activation.attacked !== activation.attacksUsed > 0 ||
     (role === "PATROL_BOAT" || role === "BATTLESHIP") !==
       (input.form === "NAVAL")
@@ -736,6 +737,7 @@ function parseActivation(input: unknown): UnitActivationV7 | null {
       "attacked",
       "attacksUsed",
       "captured",
+      "escapeAvailable",
       "handled",
       "inspired",
       "moved",
@@ -757,6 +759,7 @@ function parseActivation(input: unknown): UnitActivationV7 | null {
       input.specialActed,
       input.tendedThisTurn,
       input.overrunActive,
+      input.escapeAvailable,
     ].every((value) => typeof value === "boolean") ||
     (!input.moved && input.movedPathLength !== 0)
   )
@@ -769,6 +772,7 @@ function parseActivation(input: unknown): UnitActivationV7 | null {
     tendedThisTurn: input.tendedThisTurn as boolean,
     inspired: input.inspired as boolean,
     overrunActive: input.overrunActive as boolean,
+    escapeAvailable: input.escapeAvailable as boolean,
     recovered: input.recovered as boolean,
     captured: input.captured as boolean,
     handled: input.handled as boolean,
@@ -1252,6 +1256,33 @@ function isColor(input: unknown): input is PlayerStateV7["color"] {
     input === "GOLD" ||
     input === "VIOLET"
   );
+}
+/**
+ * Revision 12: an improvement never removes the resource beneath it. A Farm
+ * always stands on Fertile Ground and a Mine on Ore; a Port or Shipyard may
+ * share Fish or Pearls; a Lumber Camp only stands on bare Forest (Game is
+ * always visible and blocks it); any other building or Monument may stand on
+ * masked Fertile Ground placed before its owner had Gathering.
+ */
+function resourceUnderImprovementAllowed(
+  resource: TileStateV7["resource"],
+  improvement: TileStateV7["improvement"],
+): boolean {
+  switch (improvement) {
+    case null:
+      return true;
+    case "FARM":
+      return resource === "FERTILE_GROUND";
+    case "MINE":
+      return resource === "ORE";
+    case "PORT":
+    case "SHIPYARD":
+      return resource === null || resource === "FISH" || resource === "PEARLS";
+    case "LUMBER_CAMP":
+      return resource === null;
+    default:
+      return resource === null || resource === "FERTILE_GROUND";
+  }
 }
 function resourceMatchesTerrain(
   resource: TileStateV7["resource"],

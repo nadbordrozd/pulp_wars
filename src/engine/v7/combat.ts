@@ -191,6 +191,10 @@ export function calculateCombatPreviewV7(
     attacksRemaining: 0,
     overrunAdvance: attacker.role === "KNIGHT" && advances,
     overrunContinues: false,
+    escapeAvailable:
+      attacker.form === "LAND" &&
+      attackerRule.abilities.includes("ESCAPE") &&
+      !attackerDies,
     splash,
   };
 }

@@ -55,6 +55,7 @@ const READY: UnitStateV7["activation"] = {
   tendedThisTurn: false,
   inspired: false,
   overrunActive: false,
+  escapeAvailable: false,
   recovered: false,
   captured: false,
   handled: false,
@@ -63,7 +64,7 @@ const READY: UnitStateV7["activation"] = {
 
 describe("Ruleset 7 revision 7 networks and fortifications", () => {
   it("freezes the revision identity and removes the retired systems", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r11");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r12");
     expect(setupV7().mapGenerationRevision).toBe("REGIONAL_BIOMES_NAVAL_V2");
     expect(TECHNOLOGY_IDS_V7).toContain("ENGINEERING");
     expect(TECHNOLOGY_IDS_V7).not.toContain("GRAND_WORKS");
@@ -1205,7 +1206,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
                   ...tile,
                   biome: "HIGHLANDS" as const,
                   terrain: "MOUNTAIN" as const,
-                  resource: null,
+                  resource: "ORE",
                   improvement: "MINE" as const,
                   site: null,
                 }

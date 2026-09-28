@@ -48,6 +48,7 @@ const READY: UnitStateV7["activation"] = {
   tendedThisTurn: false,
   inspired: false,
   overrunActive: false,
+  escapeAvailable: false,
   recovered: false,
   captured: false,
   handled: false,
@@ -131,7 +132,7 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
       errors: [],
       stalls: [],
       metrics: {
-        rulesetId: "pulp-wars-poc-7r11",
+        rulesetId: "pulp-wars-poc-7r12",
         commandCapHits: 1,
       },
     });
@@ -143,10 +144,11 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
         activePlayerId: initialActivePlayerId,
       },
     ]);
+    // Revision 12: the free opening research comes first.
     expect(first.commandLog.map((entry) => entry.command.kind)).toEqual([
       "RESEARCH",
+      "RESEARCH",
       "MOVE",
-      "END_TURN",
     ]);
     expect(
       canonicalJson({

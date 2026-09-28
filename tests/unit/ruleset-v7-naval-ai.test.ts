@@ -100,7 +100,7 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
   });
 
   it("researches Shorecraft, reserves one exact Port, and embarks through that Port", () => {
-    const researchView = navalPolicyView([]);
+    const researchView = navalPolicyView(["GATHERING"]);
     expect(chooseNormalCommandV7(researchView).command).toEqual({
       kind: "RESEARCH",
       tech: "SHORECRAFT",
@@ -358,7 +358,7 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
   });
 
   it("prepares naval analysis through bounded work slices with exact sync parity", () => {
-    const view = navalPolicyView([]);
+    const view = navalPolicyView(["GATHERING"]);
     const sync = chooseNormalCommandV7(structuredClone(view));
     let clock = 0;
     const work = new NormalPolicyWorkV7(
@@ -574,7 +574,7 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
   });
 
   it("keeps spare land capacity from spending reserved Shorecraft Coins", () => {
-    const source = navalPolicyView([]);
+    const source = navalPolicyView(["GATHERING"]);
     const own = source.units.find((unit) => unit.ownerId === source.viewer.id);
     if (own === undefined) throw new Error("owned unit missing");
     const moved = projectPublicUnitForPolicyV7(source, own.id, {
@@ -838,7 +838,9 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
         aiMode: "COOPERATIVE",
         mapType: "CONTINENTS",
       },
-      { maxRounds: 20, maxCommands: 600 },
+      // Revision 12's free opener shifts the natural timeline: the first
+      // landed capture happens after round 25 (accepted command 760).
+      { maxRounds: 30, maxCommands: 800 },
     );
     expect(result.errors).toEqual([]);
     expect(result.stalls).toEqual([]);
@@ -856,7 +858,7 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
           entry.events.some((event) => event.kind === "CITY_CAPTURED"),
       ),
     ).toBe(true);
-  }, 30_000);
+  }, 60_000);
 
   it.each([
     ["PANGEA", 9400, false, "ISOLATED"],

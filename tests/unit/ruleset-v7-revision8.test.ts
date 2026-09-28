@@ -29,8 +29,8 @@ import {
 
 describe("Ruleset 7 inherited Industry and shared adjacency", () => {
   it("uses the current identity and the two exact Industry branches", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r11");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r11.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r12");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r12.current");
     expect(TECHNOLOGY_IDS_V7).toEqual(
       expect.arrayContaining([
         "DRILL",
@@ -412,6 +412,7 @@ function sharedCampState(): {
               tendedThisTurn: false,
               inspired: false,
               overrunActive: false,
+              escapeAvailable: false,
               recovered: false,
               captured: false,
               handled: false,

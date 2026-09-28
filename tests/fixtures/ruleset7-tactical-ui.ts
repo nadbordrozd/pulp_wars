@@ -19,6 +19,7 @@ const READY: UnitStateV7["activation"] = {
   tendedThisTurn: false,
   inspired: false,
   overrunActive: false,
+  escapeAvailable: false,
   recovered: false,
   captured: false,
   handled: false,
@@ -65,6 +66,39 @@ export function knightOverrunPublicFixtureV7(): TacticalPublicFixtureV7 {
         id: unitId(base.nextEntityId),
         role: "GUARD" as const,
         at: { x: 6, y: 4 },
+        hp: 15,
+        maxHp: 15,
+        activation: READY,
+      },
+    ].sort((left, right) => left.id - right.id),
+  });
+  return project(state);
+}
+
+/** Revision 12: a ready Raider beside a full-HP Guard it cannot kill. */
+export function raiderEscapePublicFixtureV7(): TacticalPublicFixtureV7 {
+  const base = tacticalBase(1701);
+  const own = required(
+    base.units.find((unit) => unit.ownerId === base.humanPlayerId),
+  );
+  const rival = required(
+    base.units.find((unit) => unit.ownerId !== base.humanPlayerId),
+  );
+  const state = checkedV7({
+    ...base,
+    units: [
+      {
+        ...own,
+        role: "RAIDER" as const,
+        at: { x: 4, y: 4 },
+        hp: 10,
+        maxHp: 10,
+        activation: READY,
+      },
+      {
+        ...rival,
+        role: "GUARD" as const,
+        at: { x: 5, y: 4 },
         hp: 15,
         maxHp: 15,
         activation: READY,

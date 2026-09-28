@@ -147,7 +147,7 @@ try {
           if (same(tile.at, layerCoords[0]) || same(tile.at, layerCoords[1])) return { ...tile, biome: 'WOODLAND', terrain: 'FOREST', resource: null, improvement: null, road: true, site: null };
           if (same(tile.at, layerCoords[2])) return { ...tile, biome: 'PLAINS', terrain: 'GRASS', resource: 'FRUIT', improvement: null, road: true, site: null };
           if (same(tile.at, layerCoords[3])) return { ...tile, biome: 'HIGHLANDS', terrain: 'MOUNTAIN', resource: 'ORE', improvement: 'MINE', road: true, site: null };
-          if (same(tile.at, layerCoords[4])) return { ...tile, biome: 'PLAINS', terrain: 'GRASS', resource: null, improvement: 'FARM', road: true, site: null };
+          if (same(tile.at, layerCoords[4])) return { ...tile, biome: 'PLAINS', terrain: 'GRASS', resource: 'FERTILE_GROUND', improvement: 'FARM', road: true, site: null };
           if (same(tile.at, layerCoords[5])) return { ...tile, biome: 'PLAINS', terrain: 'GRASS', resource: null, improvement: null, road: true, site: null };
           if (same(tile.at, city.at)) return { ...tile, road: true };
           return tile;

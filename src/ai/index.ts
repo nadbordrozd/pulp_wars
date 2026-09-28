@@ -19,6 +19,7 @@ import {
 
 export * from "./v6";
 export * from "./v7";
+export * from "./v7-opening";
 
 export const NORMAL_AI_MAX_ACCEPTED_COMMANDS_PER_TURN = 128;
 

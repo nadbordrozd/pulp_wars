@@ -1,9 +1,14 @@
 # Greedy Normal AI
 
-## Revision-11 bounded tactical policy
+## Revision-11 bounded tactical policy (current under revision 12)
 
-The production policy consumes only the legal revision-11 public schema,
-commands, and previews under `pulp-wars-poc-7r11`. It does not read an
+The production policy consumes only the legal public schema, commands, and
+previews under `pulp-wars-poc-7r12`. Revision 12 adds a free opening research
+choice (`src/ai/v7-opening.ts`: a deterministic score of the explored tiles
+within Chebyshev 2 of the original capital, researched first on the opening
+turn) and Raider Escape handling (an escape Move is used only toward a
+strictly safer visible tile while visible enemies threaten the Raider); see
+[current rules §16](../product/RULESET_7_CURRENT.md#16-normal-ai-summary). It does not read an
 opponent's private research, economy, unexplored terrain, or authoritative
 state. Enemy threat reach resets the enemy's activation for its next turn;
 friendly replacements and screens use their current activation. Known terrain,

@@ -400,6 +400,12 @@ describe("Ruleset 7 Canvas interaction", () => {
       .querySelector<HTMLButtonElement>('[data-action="launch"]')
       ?.click();
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
+    // Revision 12: Harvest Fruit needs the (free) Gathering opener.
+    const gathered = await app.controller.dispatch({
+      kind: "RESEARCH",
+      tech: "GATHERING",
+    });
+    if (!gathered.accepted) throw new Error("Gathering rejected");
     for (let index = 0; index < 2; index += 1) {
       const harvest = app.controller
         .snapshot()
@@ -412,7 +418,7 @@ describe("Ruleset 7 Canvas interaction", () => {
         )
         ?.click();
       await waitUntil(
-        () => app.controller.snapshot().view?.commandIndex === index + 1,
+        () => app.controller.snapshot().view?.commandIndex === index + 2,
       );
     }
     const modal = document.querySelector<HTMLElement>(

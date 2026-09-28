@@ -357,6 +357,11 @@ describe("Ruleset 7 browser controller", () => {
     await dispatchKind(
       controller,
       "RESEARCH",
+      (command) => command.kind === "RESEARCH" && command.tech === "GATHERING",
+    );
+    await dispatchKind(
+      controller,
+      "RESEARCH",
       (command) => command.kind === "RESEARCH" && command.tech === "FARMING",
     );
     for (let round = 0; round < 4; round += 1) {

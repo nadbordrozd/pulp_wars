@@ -51,6 +51,7 @@ const READY: UnitStateV7["activation"] = {
   tendedThisTurn: false,
   inspired: false,
   overrunActive: false,
+  escapeAvailable: false,
   recovered: false,
   captured: false,
   handled: false,
@@ -73,6 +74,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       "../engine/v7/types",
       "../engine/v7/spatial-economy",
       "../engine/v7/view",
+      "./v7-opening",
     ]);
     expect(source).not.toMatch(
       /\bGameStateV7\b|applyCommandV7|createPlayableGameV7|estimateCombatV7/,
@@ -85,7 +87,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
   });
 
   it("classifies public commands deterministically and chooses empty-center training", () => {
-    const source = initialV7(0);
+    const source = pastFreeOpenerV7(initialV7(0));
     const city = required(
       source.cities.find(
         (candidate) => candidate.ownerId === source.humanPlayerId,
@@ -731,7 +733,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r11");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r12");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(
@@ -764,6 +766,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
                 "moved",
                 "movedPathLength",
                 "overrunActive",
+                "escapeAvailable",
                 "recovered",
                 "specialActed",
                 "tendedThisTurn",
@@ -1231,7 +1234,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
   });
 
   it("finishes early when a candidate would exceed prospective mandatory work", () => {
-    const state = initialV7(1);
+    const state = pastFreeOpenerV7(initialV7(1));
     const base = viewForV7(state, state.humanPlayerId);
     const city = required(
       base.cities.find((candidate) => candidate.ownerId === base.viewer.id),
@@ -1762,6 +1765,18 @@ function emptyScore() {
     objectiveValue: 0,
     deterministicTieBreak: [0, 0, 0, 0, 0] as const,
   };
+}
+
+/** Revision 12: give the human Gathering so the free opener is already spent. */
+function pastFreeOpenerV7(state: GameStateV7): GameStateV7 {
+  return checkedV7({
+    ...state,
+    players: state.players.map((player) =>
+      player.id === state.humanPlayerId
+        ? { ...player, researchedTechs: ["GATHERING"] }
+        : player,
+    ),
+  });
 }
 
 function required<T>(value: T | undefined, message: string): T {

@@ -5,6 +5,7 @@ import type {
   PlayerEventEnvelopeV7,
   PlayerEventV7,
 } from "./events";
+import { isResourceRevealedV7 } from "../rules/ruleset-v7";
 import { detectionCoversCoordV7, isUnitVisibleToPlayerV7 } from "./observation";
 import type { CoordV7, GameStateV7, UnitStateV7 } from "./types";
 import { viewForV7 } from "./view";
@@ -258,6 +259,13 @@ function projectEventPayload(
           at: event.at,
           populationAdded: 3,
         };
+  }
+  if (event.kind === "FOREST_CULTIVATED") {
+    const viewer = after.players.find((player) => player.id === viewerId);
+    return viewer !== undefined &&
+      isResourceRevealedV7("FERTILE_GROUND", viewer.researchedTechs)
+      ? event
+      : { ...event, resourceAfter: null };
   }
   if (
     event.kind === "ECONOMIC_BUILDING_REMOVED" ||

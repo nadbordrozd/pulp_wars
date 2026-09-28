@@ -1612,7 +1612,8 @@ function windmillState(
               ...tile,
               terrain:
                 tile.terrain === "MOUNTAIN" ? tile.terrain : ("GRASS" as const),
-              resource: null,
+              // Revision 12: a Farm keeps its Fertile Ground underneath.
+              resource: tile.improvement === null ? null : tile.resource,
               site: same(tile.at, actorAt) ? null : tile.site,
             },
       ),
@@ -1801,7 +1802,11 @@ function sharedCityActionState(seed: number): GameStateV7 {
       ...preparedState.board,
       tiles: preparedState.board.tiles.map((tile) =>
         growthTiles.some((growth) => same(growth.at, tile.at))
-          ? { ...tile, improvement: "FARM" as const, resource: null }
+          ? {
+              ...tile,
+              improvement: "FARM" as const,
+              resource: "FERTILE_GROUND" as const,
+            }
           : tile,
       ),
     },

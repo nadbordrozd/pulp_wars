@@ -215,7 +215,7 @@ describe("ruleset-7 economy", () => {
               ? {
                   ...tile,
                   terrain: "GRASS" as const,
-                  resource: null,
+                  resource: "FERTILE_GROUND",
                   improvement: "FARM" as const,
                 }
               : tile,

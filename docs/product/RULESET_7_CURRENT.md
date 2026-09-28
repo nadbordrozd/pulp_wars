@@ -1,9 +1,11 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r11`, including the later correction that an occupied city
-center blocks land training. Every number below was checked against the
-engine code at the time of writing.
+`pulp-wars-poc-7r12` (revision 12: free opening technology, Fruit visible
+from the start, Fertile Ground revealed by Gathering, resources kept under
+improvements, Normal AI opening research, and Raider Escape). Revision 12 has
+no separate overlay document; this document is its contract. Every number
+below was checked against the engine code at the time of writing.
 
 **Supersedes for current play:** [Ruleset 7 baseline](RULESET_7.md) and its
 overlays, revisions [4](RULESET_7_REVISION_4_BIOME_ECONOMY.md),
@@ -41,17 +43,17 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                       |
 | ------------------------------------------ | ----------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r11`                |
+| Ruleset                                    | `pulp-wars-poc-7r12`                |
 | Game-state schema                          | `7`                                 |
 | Command/event/save/replay numeric versions | `7`                                 |
-| Browser autosave                           | `pulpWars.save.v7r11.current`       |
+| Browser autosave                           | `pulpWars.save.v7r12.current`       |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V2`          |
 | Faction/tree                               | `ORIGINAL` / `ORIGINAL_BASELINE_V5` |
 
 - The exact ruleset ID dispatches every state, setup, save, and replay; earlier
   Ruleset 7 identities are rejected, never migrated.
 - The current browser route deletes only the known obsolete Ruleset 7 autosave
-  keys (through `pulpWars.save.v7r10.current`) and preserves the Ruleset 6
+  keys (through `pulpWars.save.v7r11.current`) and preserves the Ruleset 6
   save, settings, and unrelated storage.
 - The normal browser entry and `?ruleset=7` launch Ruleset 7; exact
   `?ruleset=6` launches Ruleset 6; any other value is an unsupported-ruleset
@@ -151,9 +153,9 @@ terrain and resource from these exact tables.
 
 ## 3. Players, turns, and victory
 
-- Every seat starts with 5 Coins, `GATHERING`, a level-1 capital, one full-HP
-  Fighter homed there, three locked achievement entitlements, and every cell
-  within radius 2 of its capital explored.
+- Every seat starts with 5 Coins, no technology, a level-1 capital, one
+  full-HP Fighter homed there, three locked achievement entitlements, and every
+  cell within radius 2 of its capital explored.
 - Turn order is a seeded shuffle; `round` starts at 1 and increments after the
   last seat in turn order.
 - **Relationships:** in Rival mode every pair of players is hostile. In
@@ -316,15 +318,23 @@ tier 3 = 9 + 3 * (C - 1)
 ```
 
 `C` is the researcher's currently owned city count. Research is permanent,
-costs Coins only, and needs the one listed prerequisite. `GATHERING` starts
+costs Coins only, and needs the one listed prerequisite. No technology starts
 known. On `DRY_LAND` the three Naval technologies are visible but cannot be
-researched.
+researched, so Shorecraft is never offered there.
+
+**Free opening technology:** while a player has researched zero
+technologies, researching any offered tier-1 technology (Gathering, Hunting,
+Scouting, Drill, or Shorecraft where offered) costs 0 Coins. It is not forced
+or modal and can be used on any turn; the `TECH_RESEARCHED` event records the
+actual cost (0), and the public technology tree and research offers show the
+cost as 0 ("Free") while the player is eligible. After the first research the
+ordinary formula applies to every technology.
 
 ### 6.2 Technology tree
 
 | Branch     | Tier | ID                  | Requires       | Exact unlocks                                                                      |
 | ---------- | ---: | ------------------- | -------------- | ---------------------------------------------------------------------------------- |
-| Settlement |    1 | `GATHERING`         | starts known   | reveal Fruit and Fertile Ground; Harvest Fruit                                     |
+| Settlement |    1 | `GATHERING`         | —              | reveal Fertile Ground; Harvest Fruit                                               |
 | Settlement |    2 | `FARMING`           | Gathering      | Farm; connected-Farm visuals                                                       |
 | Settlement |    3 | `MILLING`           | Farming        | Windmill; Windmill Start Turn healing (6 HP)                                       |
 | Settlement |    2 | `ADMINISTRATION`    | Gathering      | Captain (Rally, Tend Wounded); Market; Disband                                     |
@@ -352,8 +362,8 @@ researched.
 
 | Resource       | Terrain       | Visible on explored tiles | Used by                     |
 | -------------- | ------------- | ------------------------- | --------------------------- |
-| Fruit          | Grass         | with Gathering (always)   | Harvest Fruit               |
-| Fertile Ground | Grass         | with Gathering (always)   | Farm                        |
+| Fruit          | Grass         | always                    | Harvest Fruit (Gathering)   |
+| Fertile Ground | Grass         | only with Gathering       | Farm                        |
 | Game           | Forest        | always                    | Hunt Game                   |
 | Ore            | Mountain      | only with Drill           | Mine; blocks Blast Mountain |
 | Fish           | Shallow Water | always                    | Harvest Fish                |
@@ -361,10 +371,30 @@ researched.
 
 - A tile has at most one resource. Harvested Fruit, Game, Fish, and Pearls
   never regenerate.
-- A Farm covers Fertile Ground and a Mine covers Ore; removing either
-  improvement restores its resource. No other removal restores a resource.
+- **Resources stay under improvements.** Placing an improvement never
+  removes the resource beneath it: the resource stays on the tile, hidden in
+  every public view, preview, and Normal AI input while the improvement
+  stands, and it is visible and usable again once the improvement is removed
+  (Redevelop or Pillage). A Farm always stands on Fertile Ground and a Mine on
+  Ore. Ports and Shipyards are the exception: their Fish or Pearls stay visible
+  and harvestable. Harvests (Fruit, Game, Fish, Pearls) are not improvements
+  and consume their resource. An improved tile never offers a resource action
+  for the resource it hides.
 - Without Drill, an explored Mountain shows no resource marker, so hidden Ore
-  is indistinguishable from an empty Mountain.
+  is indistinguishable from an empty Mountain. Likewise, without Gathering an
+  explored Grass tile shows no Fertile Ground marker; the mask applies to the
+  public view, previews, projected events (a cultivated tile reports no
+  resource), and Normal AI input.
+- Placement gates for buildings, Monuments, and Replant Forest consider only
+  resources the actor can observe, so a player without Gathering may place a
+  Sawmill, Workshop, Forge, or Monument on Grass that hides Fertile Ground. The
+  Fertile Ground stays under it and is exposed (to viewers with Gathering)
+  when the improvement is removed; the removal event reports it as restored.
+- **Terrain-transform exception:** terrain transforms are not improvements.
+  Replant Forest on Grass that hides Fertile Ground turns the tile into Forest
+  and removes the Fertile Ground, which cannot exist on Forest. Clear Forest,
+  Cultivate Forest, and Blast Mountain cannot meet a hidden resource (Forest
+  resources are always visible and Blast requires Explosives, hence Drill).
 
 ## 8. Economic actions and buildings
 
@@ -401,7 +431,7 @@ require Engineering. Roads always coexist.
 | Market   | Administration |    6 | one/city | at least one adjacent economic family                             | Coins, not population ([section 9.4](#94-market))                         |
 | Monument | achievement    |    0 | one/city | an unspent achievement entitlement                                | +3                                                                        |
 
-- Buildings target a land tile with no site, resource, improvement, or
+- Buildings target a land tile with no site, visible resource, improvement, or
   treasure.
 - Processor contributors may belong to any city of the same owner, and one
   contributor may support several processors. Workshop counts only its own
@@ -418,7 +448,7 @@ require Engineering. Roads always coexist.
 | Cultivate Forest    | Chivalry      | owned Forest with no site, resource, or improvement                                  |    4 | becomes Grass + Fertile Ground                     |
 | Blast Mountain      | Explosives    | owned Mountain with no site, resource (including Ore), improvement, or Field Defense |    3 | becomes Grass                                      |
 | Build Road          | Roads         | owned or neutral land without site or Road                                           |    2 | adds Road ([section 9](#9-roads-trade-and-market)) |
-| Redevelop           | Engineering   | any owned improvement                                                                |    0 | removes it with no refund                          |
+| Redevelop           | Engineering   | any owned improvement                                                                |    0 | removes it with no refund; re-exposes its resource |
 | Build Field Defense | Fortification | see [section 12.3](#123-field-defense)                                               |    3 | adds Field Defense                                 |
 
 - Terrain changes preserve Road, Field Defense, and territory.
@@ -515,18 +545,18 @@ market income = min(4, 1 + distinct adjacent families) * (Commerce ? 2 : 1)
 
 Attack and Defense are shown in whole units (the code stores half-units).
 
-| Unit        | Tech              | Cost |  HP | Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Abilities           |
-| ----------- | ----------------- | ---: | --: | -----: | ------: | ---: | ----: | ----: | ----------------- | ------- | ------------------- |
-| Fighter     | start             |    2 |  10 |      2 |       2 |    1 |     1 |     1 | yes               | yes     | Field Defense       |
-| Raider      | Scouting          |    4 |  10 |      2 |       1 |    2 |     1 |     2 | yes               | yes     | Charge (Raiding)    |
-| Marksman    | Marksmanship      |    3 |  10 |      2 |       1 |    1 |   1–2 |    1¹ | yes               | yes     | —                   |
-| Guard       | Drill             |    3 |  15 |    1.5 |       3 |    1 |     1 |     1 | no                | yes     | Field Defense       |
-| Captain     | Administration    |    5 |  10 |      1 |       1 |    1 |     1 |     1 | yes               | no      | Rally; Tend Wounded |
-| Catapult    | Sawmilling        |    8 |  10 |    3.5 |     0.5 |    1 |   2–3 |     1 | no                | no      | —                   |
-| Knight      | Chivalry          |    9 |  10 |      3 |       1 |    3 |     1 |     1 | yes               | no      | Overrun             |
-| Juggernaut  | reward only       |    — |  40 |      4 |       4 |    1 |     1 |     1 | yes               | yes     | Push                |
-| Patrol Boat | Shorecraft        |    5 |  10 |      2 |       2 |    3 |     1 |     2 | yes               | no      | naval               |
-| Battleship  | Naval Engineering |   16 |  25 |      6 |       4 |    2 |   1–3 |     3 | no                | no      | naval; splash       |
+| Unit        | Tech              | Cost |  HP | Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                |
+| ----------- | ----------------- | ---: | --: | -----: | ------: | ---: | ----: | ----: | ----------------- | ------- | ------------------------ |
+| Fighter     | start             |    2 |  10 |      2 |       2 |    1 |     1 |     1 | yes               | yes     | Field Defense            |
+| Raider      | Scouting          |    4 |  10 |      2 |       1 |    2 |     1 |     2 | yes               | yes     | Charge (Raiding); Escape |
+| Marksman    | Marksmanship      |    3 |  10 |      2 |       1 |    1 |   1–2 |    1¹ | yes               | yes     | —                        |
+| Guard       | Drill             |    3 |  15 |    1.5 |       3 |    1 |     1 |     1 | no                | yes     | Field Defense            |
+| Captain     | Administration    |    5 |  10 |      1 |       1 |    1 |     1 |     1 | yes               | no      | Rally; Tend Wounded      |
+| Catapult    | Sawmilling        |    8 |  10 |    3.5 |     0.5 |    1 |   2–3 |     1 | no                | no      | —                        |
+| Knight      | Chivalry          |    9 |  10 |      3 |       1 |    3 |     1 |     1 | yes               | no      | Overrun                  |
+| Juggernaut  | reward only       |    — |  40 |      4 |       4 |    1 |     1 |     1 | yes               | yes     | Push                     |
+| Patrol Boat | Shorecraft        |    5 |  10 |      2 |       2 |    3 |     1 |     2 | yes               | no      | naval                    |
+| Battleship  | Naval Engineering |   16 |  25 |      6 |       4 |    2 |   1–3 |     3 | no                | no      | naval; splash            |
 
 ¹ Marksman Sight becomes 2 with Fieldcraft.
 
@@ -564,9 +594,25 @@ Attack and Defense are shown in whole units (the code stores half-units).
 - Primary actions are Attack, Recover, Capture, and specials (Rally, Tend,
   Field Defense, Pillage). Guard, Catapult, and Battleship cannot attack after
   moving.
-- `WAIT` only marks the unit handled.
+- `WAIT` only marks the unit handled (it also declines an available Escape).
+- **Escape** (Raider, innate): after an accepted Attack that the Raider
+  survives, including after a melee kill with its ordinary advance, the Raider
+  may make exactly one more ordinary `MOVE` this turn with a fresh full Move 2
+  budget, whether or not it moved before attacking. Terrain, Forest/Mountain
+  stops, Road half-steps, ZOC, occupancy, fog reveal, treasure, and automatic
+  embarkation apply as for any Move. After the escape Move the Raider is
+  handled: no further Attack, Capture, Pillage, Recover, Disband, Fortify, or
+  other primary action. The player may decline (Wait, End Turn, or simply
+  select another unit). Escape is never granted after a non-Attack action and
+  never grants or refreshes Charge or Inspired. The canonical activation flag
+  `escapeAvailable` is hashed, saved, and replayed; the combat preview and
+  `COMBAT_RESOLVED` event carry `escapeAvailable`, every observer of the
+  visible Raider sees the activation flag, the owner's unit status reads
+  "Escape: may move again", and the public command query offers the escape
+  Moves.
 - **Pillage** (Raiding): an own land-form non-Juggernaut unit standing on an
-  improvement in hostile territory destroys it for +1 Coin. It may follow a
+  improvement in hostile territory destroys it for +1 Coin, re-exposing any
+  resource it hid. It may follow a
   Move but no primary action and is terminal. Roads, Field Defense, terrain,
   resources, city centers, and Walls cannot be pillaged.
 
@@ -632,6 +678,8 @@ units on the tile receive none. There is no other city-center defense bonus.
   away if the cell is on the board, explored by the attacker, empty, not a
   settlement, the same land/water kind as the target, enterable by the target's
   owner, and not in territory allied to the target.
+- **Escape:** a surviving Raider may make one more ordinary Move
+  ([section 12.2](#122-activation)).
 - **Overrun:** after a Knight kills and advances, if a visible hostile unit is
   adjacent to its new cell it may Attack again, with no other action allowed.
   This repeats without a cap until a non-kill, death, or no target.
@@ -683,7 +731,8 @@ units on the tile receive none. There is no other city-center defense bonus.
 - A unit is visible to another player exactly when it stands on a cell that
   player has explored. Allies do not share exploration.
 - Unexplored cells expose only their coordinates. Ore stays hidden without
-  Drill.
+  Drill and Fertile Ground stays hidden without Gathering; Fruit, Game, Fish,
+  and Pearls are visible on every explored tile.
 - Owner-private facts (city action flags, trade graphs, research, Coins, and
   achievement progress) are never shown to opponents.
 - The browser UI and Normal AI read only the player's public view, public
@@ -703,6 +752,21 @@ units on the tile receive none. There is no other city-center defense bonus.
 - It avoids attacks predicted to lose the unit without a city-saving or
   capture-enabling reason, keeps a sole city defender unless replaced, and
   spreads units across objectives.
+- **Opening research:** on its first turn Normal researches its free tier-1
+  technology before other work, chosen deterministically from its own public
+  view of explored tiles within Chebyshev 2 of its original capital: Gathering
+  scores 4 per Fruit plus one per three open Grass; Hunting 4 per Game plus one
+  per three Forest; Drill 2 per Mountain plus 3 per visible hostile unit within
+  4 and 2 per visible hostile city within 5; Shorecraft (only when offered and
+  the capital's territory has Shallow Water) 4 per Fish plus one per two
+  Shallow Water; Scouting `max(0, 10 - 2 * (Fruit + Game + counted Fish))`.
+  The highest score wins; ties follow technology order
+  (`src/ai/v7-opening.ts`).
+- **Raider Escape:** a Raider attack earns a small bonus for its retreat
+  option. After the attack, if visible enemies can reach the Raider, Normal
+  only uses an escape Move to a strictly safer visible tile (less projected
+  visible damage), preferring own territory and Forest/Mountain cover;
+  otherwise ordinary Move scoring applies.
 - One city action is compared across land training, every dock, and Land
   Grant. Roads are built only along one corridor of at most eight missing tiles
   from the original capital to a chosen city.
@@ -715,18 +779,19 @@ units on the tile receive none. There is no other city-center defense bonus.
 
 ## 17. Revision history
 
-| Revision | Ruleset ID           | Main changes                                                                                                                   | Source                                                        |
-| -------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------- |
-| 3        | `pulp-wars-poc-7r3`  | Original-faction baseline: four land branches, growth rewards, achievements, combat kernel                                     | [RULESET_7.md](RULESET_7.md)                                  |
-| 4        | `pulp-wars-poc-7r4`  | Regional biomes; Ore returns; Mine 5/+2; Forge +1 per Mine                                                                     | [revision 4](RULESET_7_REVISION_4_BIOME_ECONOMY.md)           |
-| 5        | `pulp-wars-poc-7r5`  | Explorer achievement; Monument placement flow                                                                                  | [revision 5](RULESET_7_REVISION_5_ACHIEVEMENTS.md)            |
-| 6        | `pulp-wars-poc-7r6`  | Map types, water, Fish, Pearls, Ports, Naval branch, transport, Patrol Boat, Battleship                                        | [revision 6](RULESET_7_REVISION_6_WATER_NAVAL.md)             |
-| 7        | `pulp-wars-poc-7r7`  | Neutral Roads, automatic embark, Battleship splash, flat fortification levels, Field Defense; removed Saboteur                 | [revision 7](RULESET_7_REVISION_7_NETWORKS_FORTIFICATIONS.md) |
-| 8        | `pulp-wars-poc-7r8`  | Adjacent shared processor contributors                                                                                         | [revision 8](RULESET_7_REVISION_8_INDUSTRY_ADJACENCY.md)      |
-| 9        | `pulp-wars-poc-7r9`  | 23-node Human tree, Captain, Knight, Overrun, Land Grant, Shipyard, Market move, separate land/sea trade                       | [revision 9](RULESET_7_REVISION_9_HUMAN_TECHNOLOGY.md)        |
-| 10       | `pulp-wars-poc-7r10` | Road movement without capital connection; city-center spawning; full-turn Fortify                                              | [revision 10](RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md)  |
-| 10 (fix) | `pulp-wars-poc-7r11` | An occupied center blocks land training; displacement applies only to reward units                                             | [revision 10](RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md)  |
-| 11       | `pulp-wars-poc-7r11` | One city action per turn; Windmill healing; Road population; Commerce ×2 Market; Ore on Drill; Pillage on Raiding; tactical AI | [revision 11](RULESET_7_REVISION_11_CITY_LOGISTICS_AI.md)     |
+| Revision | Ruleset ID           | Main changes                                                                                                                                                       | Source                                                        |
+| -------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------- |
+| 3        | `pulp-wars-poc-7r3`  | Original-faction baseline: four land branches, growth rewards, achievements, combat kernel                                                                         | [RULESET_7.md](RULESET_7.md)                                  |
+| 4        | `pulp-wars-poc-7r4`  | Regional biomes; Ore returns; Mine 5/+2; Forge +1 per Mine                                                                                                         | [revision 4](RULESET_7_REVISION_4_BIOME_ECONOMY.md)           |
+| 5        | `pulp-wars-poc-7r5`  | Explorer achievement; Monument placement flow                                                                                                                      | [revision 5](RULESET_7_REVISION_5_ACHIEVEMENTS.md)            |
+| 6        | `pulp-wars-poc-7r6`  | Map types, water, Fish, Pearls, Ports, Naval branch, transport, Patrol Boat, Battleship                                                                            | [revision 6](RULESET_7_REVISION_6_WATER_NAVAL.md)             |
+| 7        | `pulp-wars-poc-7r7`  | Neutral Roads, automatic embark, Battleship splash, flat fortification levels, Field Defense; removed Saboteur                                                     | [revision 7](RULESET_7_REVISION_7_NETWORKS_FORTIFICATIONS.md) |
+| 8        | `pulp-wars-poc-7r8`  | Adjacent shared processor contributors                                                                                                                             | [revision 8](RULESET_7_REVISION_8_INDUSTRY_ADJACENCY.md)      |
+| 9        | `pulp-wars-poc-7r9`  | 23-node Human tree, Captain, Knight, Overrun, Land Grant, Shipyard, Market move, separate land/sea trade                                                           | [revision 9](RULESET_7_REVISION_9_HUMAN_TECHNOLOGY.md)        |
+| 10       | `pulp-wars-poc-7r10` | Road movement without capital connection; city-center spawning; full-turn Fortify                                                                                  | [revision 10](RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md)  |
+| 10 (fix) | `pulp-wars-poc-7r11` | An occupied center blocks land training; displacement applies only to reward units                                                                                 | [revision 10](RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md)  |
+| 11       | `pulp-wars-poc-7r11` | One city action per turn; Windmill healing; Road population; Commerce ×2 Market; Ore on Drill; Pillage on Raiding; tactical AI                                     | [revision 11](RULESET_7_REVISION_11_CITY_LOGISTICS_AI.md)     |
+| 12       | `pulp-wars-poc-7r12` | No starting technology; free first tier-1 research; Fruit always visible, Fertile Ground on Gathering; resources kept under improvements; AI opener; Raider Escape | this document                                                 |
 
 ## 18. Known discrepancies
 

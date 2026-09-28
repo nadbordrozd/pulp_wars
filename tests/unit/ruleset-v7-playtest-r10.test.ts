@@ -36,6 +36,7 @@ const READY: UnitStateV7["activation"] = {
   tendedThisTurn: false,
   inspired: false,
   overrunActive: false,
+  escapeAvailable: false,
   recovered: false,
   captured: false,
   handled: false,
@@ -44,8 +45,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("Ruleset 7 revision 10 playtest corrections", () => {
   it("uses the exact current identity while retaining numeric schema 7", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r11");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r11.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r12");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r12.current");
     expect(initialV7().schemaVersion).toBe(7);
   });
 
@@ -1000,7 +1001,7 @@ function occupiedRewardState(
               ...tile,
               biome: "PLAINS" as const,
               terrain: "GRASS" as const,
-              resource: null,
+              resource: "FERTILE_GROUND",
               improvement: "FARM" as const,
             }
           : tile,
