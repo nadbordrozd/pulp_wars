@@ -26,6 +26,7 @@ import type { CombatPreviewV7, DomainEventV7 } from "./events";
 import { reachablePlayerMovementPathsV7 } from "./movement";
 import {
   spatialContributionAtV7,
+  spatialPlacementCountV7,
   type EconomyGraphV7,
   type EconomicFamilyV7,
   type OppositePairAxisV7,
@@ -1985,6 +1986,332 @@ export function queryPublicRedevelopmentChangesImprovementV7(
   );
 }
 
+export interface PublicRedevelopmentChangePossibilityV7 {
+  readonly candidate: {
+    readonly kind: "REDEVELOP";
+    readonly at: CoordV7;
+  };
+  /**
+   * False is a proof that the existing exact redevelopment query is false.
+   * True is conservative and means the exact planner must decide.
+   */
+  readonly mayChangeImprovement: boolean;
+}
+
+export interface PublicRedevelopmentPossibilityWorkProgressV7 {
+  readonly done: boolean;
+  readonly operations: number;
+  readonly result: readonly PublicRedevelopmentChangePossibilityV7[] | null;
+}
+
+export interface PublicRedevelopmentPossibilityWorkV7 {
+  /** Exact maximum number of bounded work units this instance can consume. */
+  readonly operationCeiling: number;
+  advance(maxOperations: number): PublicRedevelopmentPossibilityWorkProgressV7;
+}
+
+/**
+ * Creates a public-only, resumable necessary-condition filter for Redevelop.
+ * One operation consumes at most one public record or one candidate; candidate
+ * evaluation checks a fixed number of placement kinds and adjacent cells.
+ */
+export function createPublicRedevelopmentPossibilityWorkV7(
+  view: PlayerViewV7,
+  candidates: readonly {
+    readonly kind: "REDEVELOP";
+    readonly at: CoordV7;
+  }[],
+): PublicRedevelopmentPossibilityWorkV7 {
+  return new IncrementalPublicRedevelopmentPossibilityWorkV7(view, candidates);
+}
+
+class IncrementalPublicRedevelopmentPossibilityWorkV7 implements PublicRedevelopmentPossibilityWorkV7 {
+  readonly operationCeiling: number;
+  private phase:
+    | "TILES"
+    | "UNITS"
+    | "CHOICES"
+    | "TREASURES"
+    | "ENTITLEMENTS"
+    | "LEADERBOARD"
+    | "CITIES"
+    | "CANDIDATES"
+    | "DONE" = "TILES";
+  private index = 0;
+  private graph: PublicEconomyGraphV7 | null = null;
+  private readonly graphTiles: PublicEconomyGraphTileV7[] = [];
+  private readonly unexploredKeys = new Set<string>();
+  private readonly hostileUnitKeys = new Set<string>();
+  private readonly pendingCityIds = new Set<CityId>();
+  private readonly treasureKeys = new Set<string>();
+  private readonly cityImprovementKeys = new Set<string>();
+  private readonly developmentAllowedCityIds = new Set<CityId>();
+  private readonly cityById = new Map<
+    CityId,
+    PublicEconomyGraphV7["cities"][number]
+  >();
+  private remainingMonumentEntitlements = 0;
+  private publicOwnedCityCount: number | null = null;
+  private ownedCityCount = 0;
+  private footprintExact = true;
+  private readonly values: PublicRedevelopmentChangePossibilityV7[] = [];
+  private completed: readonly PublicRedevelopmentChangePossibilityV7[] | null =
+    null;
+
+  constructor(
+    private readonly view: PlayerViewV7,
+    private readonly candidates: readonly {
+      readonly kind: "REDEVELOP";
+      readonly at: CoordV7;
+    }[],
+  ) {
+    this.operationCeiling =
+      view.board.tiles.length +
+      view.units.length +
+      view.pendingChoices.length +
+      view.treasureChests.length +
+      view.viewer.achievementEntitlements.length +
+      view.leaderboard.length +
+      view.cities.length +
+      candidates.length;
+  }
+
+  advance(maxOperations: number): PublicRedevelopmentPossibilityWorkProgressV7 {
+    if (!Number.isSafeInteger(maxOperations) || maxOperations <= 0)
+      throw new RangeError("maxOperations must be a positive safe integer");
+    let operations = 0;
+    while (operations < maxOperations && this.phase !== "DONE") {
+      if (this.advanceOne()) operations += 1;
+    }
+    return {
+      done: this.phase === "DONE",
+      operations,
+      result: this.completed,
+    };
+  }
+
+  private advanceOne(): boolean {
+    if (this.phase === "TILES") {
+      const tile = this.view.board.tiles[this.index];
+      if (tile === undefined) {
+        this.phase = "UNITS";
+        this.index = 0;
+        return false;
+      }
+      const graphTile: PublicEconomyGraphTileV7 = tile.explored
+        ? {
+            at: tile.at,
+            explored: true,
+            terrain: tile.terrain,
+            resource: tile.resource,
+            improvement: tile.improvement,
+            road: tile.road,
+            site: tile.site,
+            territoryCityId: tile.territoryCityId,
+            territoryOwnerId: tile.territoryOwnerId,
+          }
+        : {
+            at: tile.at,
+            explored: false,
+            terrain: null,
+            resource: null,
+            improvement: null,
+            road: false,
+            site: null,
+            territoryCityId: null,
+            territoryOwnerId: null,
+          };
+      this.graphTiles.push(graphTile);
+      if (!tile.explored) this.unexploredKeys.add(coordKeyV7(tile.at));
+      if (graphTile.territoryCityId !== null && graphTile.improvement !== null)
+        this.cityImprovementKeys.add(
+          `${graphTile.territoryCityId}:${graphTile.improvement}`,
+        );
+      this.index += 1;
+      return true;
+    }
+    if (this.phase === "UNITS") {
+      const unit = this.view.units[this.index];
+      if (unit === undefined) {
+        this.phase = "CHOICES";
+        this.index = 0;
+        return false;
+      }
+      if (
+        unit.hp > 0 &&
+        publicHostile(this.view, this.view.viewer.id, unit.ownerId)
+      )
+        this.hostileUnitKeys.add(coordKeyV7(unit.at));
+      this.index += 1;
+      return true;
+    }
+    if (this.phase === "CHOICES") {
+      const choice = this.view.pendingChoices[this.index];
+      if (choice === undefined) {
+        this.phase = "TREASURES";
+        this.index = 0;
+        return false;
+      }
+      this.pendingCityIds.add(choice.cityId);
+      this.index += 1;
+      return true;
+    }
+    if (this.phase === "TREASURES") {
+      const treasure = this.view.treasureChests[this.index];
+      if (treasure === undefined) {
+        this.phase = "ENTITLEMENTS";
+        this.index = 0;
+        return false;
+      }
+      this.treasureKeys.add(coordKeyV7(treasure));
+      this.index += 1;
+      return true;
+    }
+    if (this.phase === "ENTITLEMENTS") {
+      const entitlement = this.view.viewer.achievementEntitlements[this.index];
+      if (entitlement === undefined) {
+        this.phase = "LEADERBOARD";
+        this.index = 0;
+        return false;
+      }
+      if (entitlement.unlocked && !entitlement.spent)
+        this.remainingMonumentEntitlements += 1;
+      this.index += 1;
+      return true;
+    }
+    if (this.phase === "LEADERBOARD") {
+      const entry = this.view.leaderboard[this.index];
+      if (entry === undefined) {
+        this.phase = "CITIES";
+        this.index = 0;
+        return false;
+      }
+      if (entry.isViewer) this.publicOwnedCityCount = entry.cityCount;
+      this.index += 1;
+      return true;
+    }
+    if (this.phase === "CITIES") {
+      const city = this.view.cities[this.index];
+      if (city === undefined) {
+        this.graph = {
+          board: {
+            width: this.view.board.width,
+            height: this.view.board.height,
+            tiles: this.graphTiles,
+          },
+          cities: this.view.cities,
+          ownerId: this.view.viewer.id,
+          originalCapitalCityId: this.view.viewer.originalCapitalCityId,
+          researchedTechs: this.view.viewer.researchedTechs,
+          activePortKeys: new Set(),
+          resolvedPendingCityIds: new Set(),
+          remainingMonumentEntitlements: this.remainingMonumentEntitlements,
+        };
+        this.phase = "CANDIDATES";
+        this.index = 0;
+        return false;
+      }
+      this.cityById.set(city.id, city);
+      if (city.ownerId === this.view.viewer.id) {
+        this.ownedCityCount += 1;
+        const radius = city.expanded || city.landGrantUsed ? 2 : 1;
+        for (let y = city.at.y - radius; y <= city.at.y + radius; y += 1)
+          for (let x = city.at.x - radius; x <= city.at.x + radius; x += 1)
+            if (
+              x >= 0 &&
+              y >= 0 &&
+              x < this.view.board.width &&
+              y < this.view.board.height &&
+              this.unexploredKeys.has(coordKeyV7({ x, y }))
+            )
+              this.footprintExact = false;
+        if (
+          !this.hostileUnitKeys.has(coordKeyV7(city.at)) &&
+          !this.pendingCityIds.has(city.id)
+        )
+          this.developmentAllowedCityIds.add(city.id);
+      }
+      this.index += 1;
+      return true;
+    }
+    if (this.phase === "CANDIDATES") {
+      const candidate = this.candidates[this.index];
+      if (candidate === undefined) {
+        this.completed = this.values;
+        this.phase = "DONE";
+        return false;
+      }
+      this.values.push({
+        candidate,
+        mayChangeImprovement: this.mayChangeImprovement(candidate),
+      });
+      this.index += 1;
+      return true;
+    }
+    return false;
+  }
+
+  private mayChangeImprovement(candidate: {
+    readonly kind: "REDEVELOP";
+    readonly at: CoordV7;
+  }): boolean {
+    const graph = this.graph;
+    if (
+      graph === null ||
+      !this.footprintExact ||
+      this.publicOwnedCityCount !== this.ownedCityCount
+    )
+      return true;
+    const index = candidate.at.y * graph.board.width + candidate.at.x;
+    const tile = graph.board.tiles[index];
+    if (
+      tile === undefined ||
+      !same(tile.at, candidate.at) ||
+      !tile.explored ||
+      (tile.improvement !== "FARM" &&
+        tile.improvement !== "LUMBER_CAMP" &&
+        tile.improvement !== "MINE")
+    )
+      return true;
+    const current = tile.improvement;
+    const afterTile: PublicEconomyGraphTileV7 = {
+      ...tile,
+      improvement: null,
+      resource: publicRestoredResourceV7(
+        this.view,
+        tile.terrain,
+        tile.improvement,
+      ),
+    };
+    const enumeration: PublicPlacementEnumerationV7 = {
+      view: this.view,
+      graph,
+      placements: [],
+      placementsByCity: new Map(),
+      entitlementsAvailable: this.remainingMonumentEntitlements > 0,
+      treasureKeys: this.treasureKeys,
+      cityImprovementKeys: this.cityImprovementKeys,
+      developmentAllowedCityIds: this.developmentAllowedCityIds,
+      cityById: this.cityById,
+    };
+    appendPublicPlacementsForTileV7(enumeration, afterTile);
+    const replacements = enumeration.placements
+      .map(publicPlacementImprovementV7)
+      .filter((improvement) => improvement !== null);
+    // A valid same-basic rebuild has a strictly positive exact placement
+    // score: Farm/Mine restore two fixed population and Camp restores one,
+    // while every affected adjacent processor or Market term is monotone and
+    // the score has no cost term. If no same rebuild exists, the exact query's
+    // undefined-replacement edge returns true, so this proof must also do so.
+    // Placement adjacency excludes its center, making the original graph's
+    // neighbors equivalent to the graph after removing this target.
+    return (
+      !replacements.includes(current) ||
+      replacements.some((improvement) => improvement !== current)
+    );
+  }
+}
+
 function publicPlanningGraphExact(view: PlayerViewV7): boolean {
   const ownedCities = view.cities.filter(
     (city) => city.ownerId === view.viewer.id,
@@ -2143,6 +2470,11 @@ interface PublicPlacementEnumerationV7 {
   readonly entitlementsAvailable: boolean;
   readonly treasureKeys: ReadonlySet<string>;
   readonly cityImprovementKeys: ReadonlySet<string>;
+  readonly developmentAllowedCityIds?: ReadonlySet<CityId>;
+  readonly cityById: ReadonlyMap<
+    CityId,
+    PublicEconomyGraphV7["cities"][number]
+  >;
 }
 
 function createPublicPlacementEnumerationV7(
@@ -2163,6 +2495,7 @@ function createPublicPlacementEnumerationV7(
           : [`${tile.territoryCityId}:${tile.improvement}`],
       ),
     ),
+    cityById: new Map(graph.cities.map((city) => [city.id, city] as const)),
   };
 }
 
@@ -2177,6 +2510,7 @@ function appendPublicPlacementsForTileV7(
     entitlementsAvailable,
     treasureKeys,
     cityImprovementKeys,
+    developmentAllowedCityIds,
   } = enumeration;
   const beforeLength = placements.length;
   if (
@@ -2206,7 +2540,10 @@ function appendPublicPlacementsForTileV7(
     !tile.explored ||
     tile.territoryOwnerId !== view.viewer.id ||
     tile.territoryCityId === null ||
-    !publicCityAllowsDevelopmentV7(view, graph, tile.territoryCityId)
+    !(
+      developmentAllowedCityIds?.has(tile.territoryCityId) ??
+      publicCityAllowsDevelopmentV7(view, graph, tile.territoryCityId)
+    )
   )
     return;
   {
@@ -2238,8 +2575,12 @@ function appendPublicPlacementsForTileV7(
       )
         continue;
       if (
-        spatialContributionAtV7(graph, tile.at, rule.improvement)
-          .placementCount >= rule.placementMinimum
+        spatialPlacementCountV7(
+          graph,
+          tile.at,
+          rule.improvement,
+          enumeration.cityById,
+        ) >= rule.placementMinimum
       )
         placements.push({ cityId: tile.territoryCityId, at: tile.at, kind });
     }

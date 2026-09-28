@@ -39,6 +39,13 @@ export interface EconomyGraphCityV7 {
   readonly at: CoordV7;
   readonly isCapital: boolean;
 }
+
+interface SpatialPlacementSupportV7 {
+  readonly contributingTiles: readonly EconomyGraphTileV7[];
+  readonly distinctTypes: readonly ImprovementIdV7[];
+  readonly distinctFamilies: readonly EconomicFamilyV7[];
+  readonly placementCount: number;
+}
 export interface EconomyGraphV7 {
   readonly board: {
     readonly width: number;
@@ -107,20 +114,112 @@ function calculateSpatialContributionAtV7(
     improvement === "SAWMILL" ||
     improvement === "FORGE"
   ) {
+    const support = spatialPlacementSupportV7(
+      graph,
+      at,
+      improvement,
+      economyGraphIndexV7(graph).cityById,
+    );
+    const cap = improvement === "FORGE" ? 6 : 8;
+    return result({
+      population: Math.min(cap, support.placementCount),
+      contributingTiles: support.contributingTiles.map((tile) => tile.at),
+      distinctTypes: support.distinctTypes,
+      placementCount: support.placementCount,
+    });
+  }
+  if (improvement === "WORKSHOP") {
+    const support = spatialPlacementSupportV7(
+      graph,
+      at,
+      improvement,
+      economyGraphIndexV7(graph).cityById,
+    );
+    return result({
+      population:
+        support.distinctTypes.length === 0
+          ? 0
+          : 1 + support.distinctTypes.length,
+      contributingTiles: support.contributingTiles.map((tile) => tile.at),
+      distinctTypes: support.distinctTypes,
+      placementCount: support.placementCount,
+    });
+  }
+  if (improvement === "MARKET") {
+    const support = spatialPlacementSupportV7(
+      graph,
+      at,
+      improvement,
+      economyGraphIndexV7(graph).cityById,
+    );
+    return result({
+      marketIncome: 1 + support.distinctFamilies.length,
+      contributingTiles: support.contributingTiles.map((tile) => tile.at),
+      distinctTypes: support.distinctTypes,
+      distinctFamilies: support.distinctFamilies,
+      capitalRoadConnected: false,
+      placementCount: support.placementCount,
+    });
+  }
+  return result({});
+}
+
+/**
+ * Shared bounded placement minimum for spatial buildings. The supplied city
+ * index makes the work proportional only to the fixed eight-cell neighborhood.
+ */
+export function spatialPlacementCountV7(
+  graph: EconomyGraphV7,
+  at: CoordV7,
+  improvement: ImprovementIdV7,
+  cityById: ReadonlyMap<CityId, EconomyGraphCityV7>,
+): number {
+  return spatialPlacementSupportV7(graph, at, improvement, cityById)
+    .placementCount;
+}
+
+function spatialPlacementSupportV7(
+  graph: EconomyGraphV7,
+  at: CoordV7,
+  improvement: ImprovementIdV7,
+  cityById: ReadonlyMap<CityId, EconomyGraphCityV7>,
+): SpatialPlacementSupportV7 {
+  const center = tileAtV7(graph.board, at);
+  const city =
+    center?.territoryCityId === null || center?.territoryCityId === undefined
+      ? undefined
+      : cityById.get(center.territoryCityId);
+  if (center === undefined || city === undefined)
+    return {
+      contributingTiles: [],
+      distinctTypes: [],
+      distinctFamilies: [],
+      placementCount: 0,
+    };
+  if (
+    improvement === "WINDMILL" ||
+    improvement === "SAWMILL" ||
+    improvement === "FORGE"
+  ) {
     const type =
       improvement === "WINDMILL"
         ? "FARM"
         : improvement === "SAWMILL"
           ? "LUMBER_CAMP"
           : "MINE";
-    const contributors = friendlyAdjacent(graph, at, city.ownerId, [type]);
-    const cap = improvement === "FORGE" ? 6 : 8;
-    return result({
-      population: Math.min(cap, contributors.length),
-      contributingTiles: contributors.map((tile) => tile.at),
+    const contributors = friendlyAdjacent(
+      graph,
+      at,
+      city.ownerId,
+      [type],
+      cityById,
+    );
+    return {
+      contributingTiles: contributors,
       distinctTypes: contributors.length === 0 ? [] : [type],
+      distinctFamilies: [],
       placementCount: contributors.length,
-    });
+    };
   }
   if (improvement === "WORKSHOP") {
     const contributors = friendlyAdjacent(
@@ -128,34 +227,41 @@ function calculateSpatialContributionAtV7(
       at,
       city.ownerId,
       BASIC,
+      cityById,
       city.id,
     );
     const types = orderedTypes(contributors, BASIC);
-    return result({
-      population: types.length === 0 ? 0 : 1 + types.length,
-      contributingTiles: contributors.map((tile) => tile.at),
+    return {
+      contributingTiles: contributors,
       distinctTypes: types,
+      distinctFamilies: [],
       placementCount: types.length,
-    });
+    };
   }
   if (improvement === "MARKET") {
-    const contributors = friendlyAdjacent(graph, at, city.ownerId, [
-      ...BASIC,
-      ...PROCESSORS,
-    ]);
+    const contributors = friendlyAdjacent(
+      graph,
+      at,
+      city.ownerId,
+      [...BASIC, ...PROCESSORS],
+      cityById,
+    );
     const families = ECONOMIC_FAMILY_ORDER_V7.filter((family) =>
       contributors.some((tile) => familyFor(tile.improvement) === family),
     );
-    return result({
-      marketIncome: 1 + families.length,
-      contributingTiles: contributors.map((tile) => tile.at),
+    return {
+      contributingTiles: contributors,
       distinctTypes: orderedTypes(contributors, [...BASIC, ...PROCESSORS]),
       distinctFamilies: families,
-      capitalRoadConnected: false,
       placementCount: families.length,
-    });
+    };
   }
-  return result({});
+  return {
+    contributingTiles: [],
+    distinctTypes: [],
+    distinctFamilies: [],
+    placementCount: 0,
+  };
 }
 
 export function capitalConnectedRoadKeysV7(
@@ -167,7 +273,9 @@ export function capitalConnectedRoadKeysV7(
   if (cached !== undefined) return cached;
   const roadKeys = new Set(
     graph.board.tiles
-      .filter((tile) => tile.road && tileOwner(graph, tile) === playerId)
+      .filter(
+        (tile) => tile.road && tileOwner(tile, index.cityById) === playerId,
+      )
       .map((tile) => key(tile.at)),
   );
   const capitals = graph.cities.filter(
@@ -209,13 +317,14 @@ function friendlyAdjacent<T extends ImprovementIdV7>(
   at: CoordV7,
   ownerId: PlayerId,
   allowed: readonly T[],
+  cityById: ReadonlyMap<CityId, EconomyGraphCityV7>,
   territoryCityId?: CityId,
 ): readonly EconomyGraphTileV7[] {
   return adjacentTilesV7(graph.board, at).filter(
     (tile) =>
       tile.improvement !== null &&
       allowed.includes(tile.improvement as T) &&
-      tileOwner(graph, tile) === ownerId &&
+      tileOwner(tile, cityById) === ownerId &&
       (territoryCityId === undefined ||
         tile.territoryCityId === territoryCityId),
   );
@@ -235,13 +344,12 @@ function familyFor(value: ImprovementIdV7 | null): EconomicFamilyV7 | null {
   return null;
 }
 function tileOwner(
-  graph: EconomyGraphV7,
   tile: EconomyGraphTileV7,
+  cityById: ReadonlyMap<CityId, EconomyGraphCityV7>,
 ): PlayerId | null {
   return tile.territoryCityId === null
     ? null
-    : (economyGraphIndexV7(graph).cityById.get(tile.territoryCityId)?.ownerId ??
-        null);
+    : (cityById.get(tile.territoryCityId)?.ownerId ?? null);
 }
 type EconomyBoardV7<T extends EconomyGraphTileV7 = EconomyGraphTileV7> = {
   readonly width: number;
