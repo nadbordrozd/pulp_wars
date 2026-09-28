@@ -1,6 +1,9 @@
 # Ruleset 7 revision 9 retained-feature runtime review
 
-**Executable runtime:** current `pulp-wars-poc-7r10`
+**Executable runtime:** the current Ruleset 7 identity (`RULESET_7_ID`,
+currently `pulp-wars-poc-7r12`; see
+[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md)). The harness was
+introduced under `pulp-wars-poc-7r10`.
 
 This focused harness retains coverage of revision-9 behavior through public
 player views, the shipped DOM, the production Canvas host, and reducer-backed

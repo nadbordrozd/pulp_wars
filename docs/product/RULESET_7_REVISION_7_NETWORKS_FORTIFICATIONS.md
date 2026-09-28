@@ -5,8 +5,9 @@
 > [Ruleset 7: current rules](RULESET_7_CURRENT.md); where the two differ, that
 > document wins.
 
-**Status:** implemented and release validated on 2026-09-23; now inherited by
-the current [revision-8 overlay](RULESET_7_REVISION_8_INDUSTRY_ADJACENCY.md).
+**Status:** implemented and release validated on 2026-09-23; inherited by the
+[revision-8 overlay](RULESET_7_REVISION_8_INDUSTRY_ADJACENCY.md) and later
+revisions. The current runtime is described by [Ruleset 7: current rules](RULESET_7_CURRENT.md).
 
 **Ruleset ID:** `pulp-wars-poc-7r7`
 

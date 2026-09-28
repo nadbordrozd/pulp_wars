@@ -5,7 +5,9 @@
 > [Ruleset 7: current rules](RULESET_7_CURRENT.md); where the two differ, that
 > document wins.
 
-**Status:** implemented as the current playable Ruleset 7 runtime.
+**Status:** implemented historical revision-8 overlay; its runtime has been
+superseded (the current runtime is described by
+[Ruleset 7: current rules](RULESET_7_CURRENT.md)).
 
 **Ruleset ID:** `pulp-wars-poc-7r8`
 

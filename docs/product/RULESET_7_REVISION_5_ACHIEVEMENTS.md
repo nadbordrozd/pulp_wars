@@ -5,7 +5,7 @@
 > [Ruleset 7: current rules](RULESET_7_CURRENT.md); where the two differ, that
 > document wins.
 
-**Status:** authoritative overlay for the current `pulp-wars-poc-7r5` runtime. This document supersedes earlier Ruleset 7 achievement, Monument placement UI, and save identity rules. The [revision 4 biome and economy contract](RULESET_7_REVISION_4_BIOME_ECONOMY.md) remains authoritative for all other changed domains; the [baseline](RULESET_7.md) supplies unchanged rules.
+**Status:** historical overlay for the `pulp-wars-poc-7r5` runtime (the current runtime is described by [Ruleset 7: current rules](RULESET_7_CURRENT.md)). This document supersedes earlier Ruleset 7 achievement, Monument placement UI, and save identity rules. The [revision 4 biome and economy contract](RULESET_7_REVISION_4_BIOME_ECONOMY.md) remains authoritative for all other changed domains; the [baseline](RULESET_7.md) supplies unchanged rules.
 
 ## Research and milestones
 

@@ -5,10 +5,10 @@
 > [Ruleset 7: current rules](RULESET_7_CURRENT.md); where the two differ, that
 > document wins.
 
-**Status:** implemented historical revision-9 contract, superseded as the
-current runtime by the
-[revision-10 playtest corrections](RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md).
-Its unchanged rules remain normative through the revision-10 overlay.
+**Status:** implemented historical revision-9 contract, superseded by the
+[revision-10 playtest corrections](RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md)
+and later revisions. The current runtime is described by
+[Ruleset 7: current rules](RULESET_7_CURRENT.md).
 
 **Ruleset ID:** `pulp-wars-poc-7r9`
 

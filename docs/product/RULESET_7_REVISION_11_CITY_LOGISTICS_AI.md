@@ -5,11 +5,13 @@
 > [Ruleset 7: current rules](RULESET_7_CURRENT.md); where the two differ, that
 > document wins.
 
-**Status:** sections 1–8 are implemented and accepted in the current runtime.
+**Status:** sections 1–8 were implemented and accepted in
+`pulp-wars-poc-7r11`; that runtime has been superseded by revision 12
+([Ruleset 7: current rules](RULESET_7_CURRENT.md)).
 
 **Ruleset ID:** `pulp-wars-poc-7r11`
 
-**Current executable runtime:** `pulp-wars-poc-7r11`
+**Executable runtime at acceptance:** `pulp-wars-poc-7r11`
 
 **Scope:** this document is a narrow overlay over the implemented
 [revision-10 playtest corrections](RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md)

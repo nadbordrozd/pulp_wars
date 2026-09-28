@@ -4,8 +4,8 @@
 [revision-6 water and naval contract](RULESET_7_REVISION_6_WATER_NAVAL.md) turns
 the selected direction into exact implementation requirements. This proposal
 remains as rationale only; its illustrative wording and open balance questions
-are not authoritative. The current playable runtime remains revision 5 until
-revision 6 is implemented and released.
+are not authoritative. Revision 6 has since been implemented; the current
+runtime is described by [Ruleset 7: current rules](RULESET_7_CURRENT.md).
 
 ## Purpose and current boundary
 
@@ -198,5 +198,5 @@ proposed.
    defended landings, failed retreats, and reinforcement after Capture.
 
 The linked revision-6 contract answers these questions and is authoritative for
-implementation. Revision 5 remains the current playable runtime until that
-implementation and its release gates pass.
+implementation. That implementation has since shipped; the current runtime is
+described by [Ruleset 7: current rules](RULESET_7_CURRENT.md).

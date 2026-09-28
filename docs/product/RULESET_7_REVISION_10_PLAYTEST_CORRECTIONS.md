@@ -5,7 +5,9 @@
 > [Ruleset 7: current rules](RULESET_7_CURRENT.md); where the two differ, that
 > document wins.
 
-**Status:** authoritative current runtime overlay.
+**Status:** implemented historical revision-10 overlay, superseded as the
+current runtime by revision 11 and then revision 12
+([Ruleset 7: current rules](RULESET_7_CURRENT.md)).
 
 **Ruleset ID:** `pulp-wars-poc-7r10`
 

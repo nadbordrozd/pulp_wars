@@ -18,9 +18,12 @@ overlays, revisions [4](RULESET_7_REVISION_4_BIOME_ECONOMY.md),
 [11](RULESET_7_REVISION_11_CITY_LOGISTICS_AI.md). Those documents remain as
 design history, exact schema/ordering detail, and acceptance provenance. When
 one of them disagrees with this document, this document describes the current
-rules. Unresolved conflicts between documents and code are listed in
-[Known discrepancies](#18-known-discrepancies) instead of being silently
-resolved.
+rules. In particular, the [baseline](RULESET_7.md) still states revision-3
+values and roles that later overlays replaced without editing it (for example
+Walls, Mine, and Market numbers, Medic, Scout, Heavy, Horse Archer, Breacher,
+Saboteur, and Grand Works); the values here are current. Where a document and
+the code disagreed, the code's behavior is the rule and is stated below;
+[Known discrepancies](#18-known-discrepancies) is empty as of revision 12.
 
 **Source of truth in code:** `src/engine/rules/ruleset-v7.ts` (technology,
 roles, action costs), `src/engine/v7/` (reducer, economy, spatial economy,
@@ -80,14 +83,22 @@ A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
 
 ### 2.2 Settlements and treasures
 
-| Board width | Neutral villages for 1/2/3 AI | Treasure chests |
-| ----------: | ----------------------------- | --------------: |
-|  11, 14, 16 | 3 / 4 / 6                     |               2 |
-|          20 | 13 / 12 / 11                  |               4 |
-|          25 | 20 / 19 / 18                  |               5 |
+| Board width | Legal AI counts | Neutral villages for 1/2/3 AI | Total settlements for 1/2/3 AI | Treasure chests |
+| ----------: | --------------- | ----------------------------- | ------------------------------ | --------------: |
+|          11 | 1               | 3 / — / —                     | 5 / — / —                      |               2 |
+|          14 | 1–2             | 3 / 4 / —                     | 5 / 7 / —                      |               2 |
+|          16 | 1–3             | 3 / 4 / 6                     | 5 / 7 / 10                     |               2 |
+|          20 | 1–3             | 13 / 12 / 11                  | 15 / 15 / 15                   |               4 |
+|          25 | 1–3             | 20 / 19 / 18                  | 22 / 22 / 22                   |               5 |
 
-- Every seat has one capital; total settlements are capitals plus villages
-  (for example 15 on every width-20 board and 22 on every width-25 board).
+- Every seat has one capital; total settlements are capitals plus villages.
+- On widths 11, 14, and 16 the village count follows the AI count, not the
+  width: an explicit 16 x 16 board with one AI has 5 settlements, and an
+  explicit 14 x 14 board with one AI also has 5. Auto size (11/14/16 for
+  1/2/3 AI) therefore gives 5, 7, or 10 settlements. On widths 20 and 25 the
+  total is fixed at 15 and 22.
+- The chest count is a maximum: if fewer candidate cells exist, fewer chests
+  are placed.
 - Settlements are Grass land cells at least two cells from an edge and at least
   Chebyshev distance 3 apart; capitals are at least `floor(width / 2)` apart.
 - Every settlement's eight-cell ring has at least three economic opportunities
@@ -216,7 +227,11 @@ if besieged: 0
 else max(1, level + capital + seaTrade + landTrade + market + min(0, population))
 ```
 
-- `capital` is 1 for a city founded as a capital, under any owner.
+- `capital` is 1 for a city founded as a capital, under any owner. The bonus
+  travels with the city: a captured capital pays its +1 to its new owner (and
+  to every later owner), and the former owner loses it. This is separate from
+  the _original capital_ that roots Road population and trade
+  ([section 9](#9-roads-trade-and-market)).
 - `seaTrade` and `landTrade` are each 0 or 1 ([section 9](#9-roads-trade-and-market)).
 - `market` is the city's Market income ([section 9.4](#94-market)).
 
@@ -474,6 +489,10 @@ require Engineering. Roads always coexist.
 - A Road step also ignores the Forest and Mountain movement stop; Mountain
   entry still needs Engineering.
 - Movement edges need no connection to the capital.
+- The engine's Road-movement capability field is named
+  `connectedOrthogonalStepCost2` for historical reasons; the half cost applies
+  to orthogonal and diagonal steps and needs no capital connection, as stated
+  above.
 
 ### 9.3 Road population and land trade
 
@@ -503,9 +522,13 @@ market income = min(4, 1 + distinct adjacent families) * (Commerce ? 2 : 1)
 
 ### 9.5 Sea trade
 
-- With Navigation, each owned city other than the original capital earns +1
-  Coin at Start Turn when one of its active Ports or Shipyards connects to an
-  active Port or Shipyard of a different owned city.
+- With Navigation, each owned city other than the player's own original
+  capital earns +1 Coin at Start Turn when one of its active Ports or
+  Shipyards connects to an active Port or Shipyard of a different owned city.
+  A captured foreign capital counts as an ordinary city and can earn sea
+  trade. The original capital earns none itself but can be the partner city,
+  and, unlike land trade, sea trade does not require the player to still own
+  its original capital.
 - Two docks connect when a path of at most five eight-way steps through water
   the owner has explored (Deep Water included) joins them.
 - Mid-route units do not break a connection; a blockaded endpoint does.
@@ -525,7 +548,9 @@ market income = min(4, 1 + distinct adjacent families) * (Commerce ? 2 : 1)
 - **Windmill healing:** at the owner's Start Turn, each Windmill in the
   owner's territory heals damaged own units (any form) on its eight
   neighbors. A unit next to several Windmills heals once, assigned to the first
-  Windmill in `(y, x)` order. Output does not matter.
+  Windmill in `(y, x)` order. Output does not matter, and healing needs no
+  technology, so a captured Windmill heals its new owner's units even without
+  Milling.
 - **Wait** does not prevent idle recovery; moving or any primary action does.
 - **Captain:** may Move, then use one primary action: Attack, Rally, or Tend
   Wounded.
@@ -690,8 +715,12 @@ units on the tile receive none. There is no other city-center defense bonus.
   Defense tile, it is destroyed for the first applicable reason: a Catapult
   attacked; a surviving Inspired unit attacked at range 1; a surviving land
   attacker whose owner has Explosives attacked at range 1; or the attacker
-  advanced into the cell. A hostile land unit entering the empty tile by Move
-  or disembarkation also destroys it.
+  advanced into the cell. These attack reasons apply whoever owns the tile:
+  neutral, the defender's, a third player's, or the attacker's own territory
+  (for example, killing an enemy that stands on your own Field Defense and
+  advancing onto it destroys that Field Defense). Separately, a land unit
+  entering the empty tile by Move or disembarkation destroys it only when the
+  tile's territory belongs to a player hostile to the mover.
 - Kills are counted for promotion, including retaliation and splash kills.
 
 ## 14. Naval rules
@@ -793,54 +822,16 @@ units on the tile receive none. There is no other city-center defense bonus.
 | 11       | `pulp-wars-poc-7r11` | One city action per turn; Windmill healing; Road population; Commerce ×2 Market; Ore on Drill; Pillage on Raiding; tactical AI                                     | [revision 11](RULESET_7_REVISION_11_CITY_LOGISTICS_AI.md)     |
 | 12       | `pulp-wars-poc-7r12` | No starting technology; free first tier-1 research; Fruit always visible, Fertile Ground on Gathering; resources kept under improvements; AI opener; Raider Escape | this document                                                 |
 
+**Documentation parity (2026-09-28, no ruleset or identity change):** where
+older documents disagreed with the code, the code's behavior was adopted as
+the rule and is now stated in the ordinary sections: Field Defense
+destruction by attack regardless of tile owner
+([section 13.4](#134-after-combat)); sea trade for a captured foreign capital
+([section 9.5](#95-sea-trade)); the capital +1 income following a captured
+capital to its new owner ([section 4.3](#43-income)); settlement counts on
+widths 11–16 following the AI count ([section 2.2](#22-settlements-and-treasures));
+and Windmill healing without Milling ([section 10](#10-recovery-and-support)).
+
 ## 18. Known discrepancies
 
-These conflicts were found while consolidating the rules. This document
-describes the code's behavior where noted; each item still needs an explicit
-decision.
-
-1. **Field Defense destroyed by a friendly combat advance.**
-   [Revision 9 §7](RULESET_7_REVISION_9_HUMAN_TECHNOLOGY.md#7-field-and-city-defense)
-   limits the `OCCUPATION` reason to a _hostile_ land unit entering the tile,
-   and Move/Disembark check hostility (`src/engine/v7/reducer.ts`
-   `applyMove`/`applyDisembark`). The attack path
-   (`src/engine/v7/reducer.ts:2261`) destroys Field Defense on the defender's
-   tile whenever the attacker advances, including into the attacker's own
-   territory. The Catapult, Inspired, and Explosives reasons likewise ignore
-   who owns the tile; revision 9 does not restrict those.
-2. **Sea trade for a captured foreign capital.**
-   [Revision 9 §8.2](RULESET_7_REVISION_9_HUMAN_TECHNOLOGY.md#82-sea-trade)
-   says "each owned non-capital city". The code excludes only the player's
-   original capital (`src/engine/v7/economy.ts:572`), so a captured foreign
-   capital can earn sea trade. Revision 11 states this explicitly only for land
-   trade.
-3. **Capital income bonus after capture.** Income adds 1 for `isCapital`
-   (`src/engine/v7/economy.ts:296`), and capture keeps that flag
-   (`src/engine/v7/reducer.ts:2987`), so a captured capital pays the +1 to its
-   new owner. No document states whether the capital bonus follows the city.
-4. **Settlement counts by width.**
-   [Revision 6 §3.3](RULESET_7_REVISION_6_WATER_NAVAL.md#33-settlements-starts-and-no-stranding-rule)
-   says totals are "5, 7, 10, 15, and 22 on widths 11, 14, 16, 20, and 25".
-   The code (`src/engine/v7/map.ts:1767`) chooses villages by AI count on
-   widths 11–16 (3/4/6), so, for example, an explicit 16 x 16 board with one AI
-   has 5 settlements, not 10.
-5. **Revision-11 AI status.** [RULESET_7.md](RULESET_7.md) (status header) and
-   [client architecture](../architecture/CLIENT_ARCHITECTURE.md) say the
-   revision-11 Normal-AI sections 7–8 "remain pending";
-   [revision 11](RULESET_7_REVISION_11_CITY_LOGISTICS_AI.md) says they are
-   implemented and accepted, and `src/ai/v7.ts` implements them.
-6. **Road-movement capability naming.** The `ROAD_MOVEMENT` unlock in
-   `src/engine/rules/ruleset-v7.ts:84` names its half cost
-   `connectedOrthogonalStepCost2`, but runtime movement
-   (`src/engine/v7/movement.ts` `movementStepCost2V7`) applies it to orthogonal
-   and diagonal steps and needs no capital connection, as revision 10 requires.
-   The name is misleading, but the behavior matches revision 10.
-7. **Superseded baseline statements.** [RULESET_7.md](RULESET_7.md) still
-   states revision-3 values that later overlays replaced without editing it. For
-   example: Walls 4x defense and Fortification capacity (§4.1, §5.4); Mine 6
-   Coins / +4 population and Market 7 Coins with a Road bonus (§5.2–5.3);
-   automatic Treasury when a Juggernaut cannot be placed, and reward units
-   placed away from an occupied center (§4.1); Medic, Scout, Heavy, Horse
-   Archer, Breacher, Saboteur, and Grand Works. The code follows the overlays,
-   and this document describes the current values. The baseline is kept as
-   history.
+None: as of revision 12 (`pulp-wars-poc-7r12`) this document matches the code.

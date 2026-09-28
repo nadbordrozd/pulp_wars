@@ -5,7 +5,8 @@
 > [Ruleset 7: current rules](RULESET_7_CURRENT.md); where the two differ, that
 > document wins.
 
-**Status:** authoritative specification approved for implementation
+**Status:** implemented historical specification (the current runtime is
+described by [Ruleset 7: current rules](RULESET_7_CURRENT.md))
 
 **Ruleset ID:** `pulp-wars-poc-7r4`
 

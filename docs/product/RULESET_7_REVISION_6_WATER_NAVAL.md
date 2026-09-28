@@ -5,10 +5,11 @@
 > [Ruleset 7: current rules](RULESET_7_CURRENT.md); where the two differ, that
 > document wins.
 
-**Status:** authoritative implemented revision-6 contract inherited by the
-current [revision-8 overlay](RULESET_7_REVISION_8_INDUSTRY_ADJACENCY.md).
-Its historical runtime identity is `pulp-wars-poc-7r6`; current matches use the
-revision-8 identity, default to Continents, and expose all five map types.
+**Status:** implemented historical revision-6 contract, inherited by the
+[revision-8 overlay](RULESET_7_REVISION_8_INDUSTRY_ADJACENCY.md) and later
+revisions. Its historical runtime identity is `pulp-wars-poc-7r6`; current
+matches use the identity in [Ruleset 7: current rules](RULESET_7_CURRENT.md), default to Continents, and expose all five
+map types.
 
 **Ruleset ID:** `pulp-wars-poc-7r6`
 

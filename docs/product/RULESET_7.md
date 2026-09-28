@@ -5,10 +5,12 @@
 > [Ruleset 7: current rules](RULESET_7_CURRENT.md); where the two differ, that
 > document wins.
 
-**Status:** revision-11 playable runtime. The runtime rules in sections 1–6 of
-the [revision-11 city logistics contract](RULESET_7_REVISION_11_CITY_LOGISTICS_AI.md)
-are the authoritative current overlay. Its Normal-AI sections 7–8 remain
-pending. Revision 11 builds on the
+**Status:** historical baseline. The current runtime is revision 12
+(`pulp-wars-poc-7r12`), described by
+[Ruleset 7: current rules](RULESET_7_CURRENT.md). The status notes below
+describe the revision-11 runtime as it was when this header was last edited;
+the [revision-11 city logistics contract](RULESET_7_REVISION_11_CITY_LOGISTICS_AI.md),
+including its Normal-AI sections 7–8, is implemented. Revision 11 builds on the
 [revision-10 playtest corrections](RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md)
 and the
 [revision-9 Human technology specification](RULESET_7_REVISION_9_HUMAN_TECHNOLOGY.md).
@@ -17,9 +19,10 @@ They inherit retained industry rules from
 [revision-7 networks and fortifications specification](RULESET_7_REVISION_7_NETWORKS_FORTIFICATIONS.md),
 which inherits the revision-6 water and naval specification.
 
-**Runtime ruleset ID:** `pulp-wars-poc-7r11`
+**Runtime ruleset ID at that edit:** `pulp-wars-poc-7r11` (current:
+`pulp-wars-poc-7r12`)
 
-The current runtime stores one owner-private action flag per city for land
+The revision-11 runtime stores one owner-private action flag per city for land
 training, naval training, or Land Grant; resolves adjacent Windmill healing at
 Start Turn; derives reversible capital-connected population from Roads;
 doubles Market income with Commerce; reveals Ore with Drill; and assigns

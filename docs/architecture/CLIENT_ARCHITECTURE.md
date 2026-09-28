@@ -8,10 +8,10 @@ no overlay document: the free opening technology, Fertile Ground mask, and
 Raider Escape are specified there. A Raider with `escapeAvailable` stays
 selected after its attack, the board highlights its offered escape Moves with
 the ordinary move affordance, and the unit card shows "Escape: may move
-again". Free research shows as "Free" in the technology tree. Runtime sections
-1–6 of the [revision-11 city logistics contract](../product/RULESET_7_REVISION_11_CITY_LOGISTICS_AI.md)
-overlay the revision-10 playtest corrections and revision-9 Human technology
-contract. Its Normal-AI sections 7–8 remain pending. Setup exposes Dry Land, Pangea,
+again". Free research shows as "Free" in the technology tree. The earlier
+[revision-11 city logistics contract](../product/RULESET_7_REVISION_11_CITY_LOGISTICS_AI.md),
+including its Normal-AI sections 7–8, and the revision-10 and revision-9
+overlays are implemented and remain as history. Setup exposes Dry Land, Pangea,
 Continents, Archipelago, and Lakes, with Continents selected by default. The
 controller persists the selected map type and schedules every AI turn through
 bounded `NormalPolicyWorkV7` callbacks over a retained public view.

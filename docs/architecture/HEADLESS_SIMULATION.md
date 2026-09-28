@@ -4,11 +4,14 @@ The headless entry point runs replay verification and complete equal-rules
 Normal-policy matches without DOM or Canvas imports.
 
 Current Ruleset 7 rules, including map generation, are described by
-[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md). The
+[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md). The headless CLI
+accepts only the current Ruleset 7 identity, `--ruleset pulp-wars-poc-7r12`
+(plus `pulp-wars-poc-6` and `pulp-wars-poc-5`). The
 [Ruleset-7 revision-4 biome-economy specification](../product/RULESET_7_REVISION_4_BIOME_ECONOMY.md)
-defines the next map identity, deterministic simulation matrix, telemetry, and
-revision-4 compatibility boundary. The revision-2 records below and
-revision-3 references remain historical where that specification conflicts.
+is historical: it introduced the simulation matrix, telemetry, and revision-4
+compatibility boundary. The revision-2 records below (including their
+`pulp-wars-poc-7r6` command examples, which the current CLI rejects) and
+revision-3 references remain historical.
 
 ## Ruleset-7 revision-2 historical implementation contract
 
