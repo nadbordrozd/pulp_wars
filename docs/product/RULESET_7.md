@@ -1,5 +1,10 @@
 # Pulp Wars Ruleset 7
 
+> **Historical document.** This file is kept for design history and
+> provenance. The authoritative description of the current Ruleset 7 rules is
+> [Ruleset 7: current rules](RULESET_7_CURRENT.md); where the two differ, that
+> document wins.
+
 **Status:** revision-11 playable runtime. The runtime rules in sections 1–6 of
 the [revision-11 city logistics contract](RULESET_7_REVISION_11_CITY_LOGISTICS_AI.md)
 are the authoritative current overlay. Its Normal-AI sections 7–8 remain

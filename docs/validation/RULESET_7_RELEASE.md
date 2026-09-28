@@ -12,8 +12,8 @@ Revision-9 retained features have a separate focused review harness and
 historical evidence description in
 [RULESET_7_REVISION_9_REVIEW.md](RULESET_7_REVISION_9_REVIEW.md). The harness
 requires the exact current runtime identity; archived evidence remains frozen.
-The current revision-10 identity and rule corrections are defined by the
-[revision-10 product overlay](../product/RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md).
+The current runtime identity and rules are described by
+[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md).
 This frozen revision-2 record and corpus remain unchanged.
 
 For that revision-2 release, Ruleset 7 was the normal browser default and the

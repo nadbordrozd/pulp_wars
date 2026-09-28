@@ -1,5 +1,10 @@
 # Ruleset 7 revision 11: City logistics and tactical AI
 
+> **Historical document.** This file is kept for design history and
+> provenance. The authoritative description of the current Ruleset 7 rules is
+> [Ruleset 7: current rules](RULESET_7_CURRENT.md); where the two differ, that
+> document wins.
+
 **Status:** sections 1–8 are implemented and accepted in the current runtime.
 
 **Ruleset ID:** `pulp-wars-poc-7r11`

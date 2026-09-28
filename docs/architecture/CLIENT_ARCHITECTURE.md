@@ -2,8 +2,9 @@
 
 ## Ruleset-7 revision-11 current boundary
 
-The current client runs `pulp-wars-poc-7r11`. Runtime sections 1–6 of the
-[revision-11 city logistics contract](../product/RULESET_7_REVISION_11_CITY_LOGISTICS_AI.md)
+The current client runs `pulp-wars-poc-7r11`, whose rules are described by
+[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md). Runtime sections
+1–6 of the [revision-11 city logistics contract](../product/RULESET_7_REVISION_11_CITY_LOGISTICS_AI.md)
 overlay the revision-10 playtest corrections and revision-9 Human technology
 contract. Its Normal-AI sections 7–8 remain pending. Setup exposes Dry Land, Pangea,
 Continents, Archipelago, and Lakes, with Continents selected by default. The

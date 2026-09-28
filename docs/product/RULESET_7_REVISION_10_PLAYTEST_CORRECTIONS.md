@@ -1,5 +1,10 @@
 # Ruleset 7 revision 10: Playtest corrections
 
+> **Historical document.** This file is kept for design history and
+> provenance. The authoritative description of the current Ruleset 7 rules is
+> [Ruleset 7: current rules](RULESET_7_CURRENT.md); where the two differ, that
+> document wins.
+
 **Status:** authoritative current runtime overlay.
 
 **Ruleset ID:** `pulp-wars-poc-7r10`

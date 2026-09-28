@@ -1,5 +1,10 @@
 # Ruleset 7 revision 9: Human technology redesign
 
+> **Historical document.** This file is kept for design history and
+> provenance. The authoritative description of the current Ruleset 7 rules is
+> [Ruleset 7: current rules](RULESET_7_CURRENT.md); where the two differ, that
+> document wins.
+
 **Status:** implemented historical revision-9 contract, superseded as the
 current runtime by the
 [revision-10 playtest corrections](RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md).

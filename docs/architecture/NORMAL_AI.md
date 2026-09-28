@@ -84,8 +84,9 @@ evidence, caps, and limitations are documented in
 [Ruleset 7 tactical AI validation](../validation/RULESET_7_TACTICAL_AI.md).
 
 The older merged-industry policy notes below are retained implementation
-history and do not override the current Human technology graph or the
-revision-11 AI contract.
+history and do not override the
+[current Human technology graph](../product/RULESET_7_CURRENT.md#62-technology-tree)
+or the revision-11 AI contract.
 
 ## Revision-8 merged industry and processor adjacency
 

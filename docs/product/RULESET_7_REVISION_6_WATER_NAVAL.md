@@ -1,5 +1,10 @@
 # Ruleset 7 revision 6: water and naval play
 
+> **Historical document.** This file is kept for design history and
+> provenance. The authoritative description of the current Ruleset 7 rules is
+> [Ruleset 7: current rules](RULESET_7_CURRENT.md); where the two differ, that
+> document wins.
+
 **Status:** authoritative implemented revision-6 contract inherited by the
 current [revision-8 overlay](RULESET_7_REVISION_8_INDUSTRY_ADJACENCY.md).
 Its historical runtime identity is `pulp-wars-poc-7r6`; current matches use the

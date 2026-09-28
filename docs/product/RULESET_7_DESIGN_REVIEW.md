@@ -1,5 +1,10 @@
 # Ruleset 7 Design Review
 
+> **Historical document.** This file is kept for design history and
+> provenance. The authoritative description of the current Ruleset 7 rules is
+> [Ruleset 7: current rules](RULESET_7_CURRENT.md); where the two differ, that
+> document wins.
+
 **Historical status:** this review records revision 2. The authoritative
 [Ruleset 7 revision-3 prototype](RULESET_7.md) supersedes its gameplay
 decisions; the evidence and rejected alternatives below remain unchanged for
