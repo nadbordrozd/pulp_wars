@@ -1,4 +1,5 @@
 import type { CityId, PlayerId } from "../model/ids";
+import { hasAcceptedStateCertificateV7 } from "./accepted-state-certificate";
 import type { DomainEventV7 } from "./events";
 import { spatialContributionAtV7 } from "./spatial-economy";
 import type {
@@ -319,6 +320,50 @@ const COMBINED_ROAD_CACHE = new WeakMap<
   object,
   Map<PlayerId, ReadonlySet<string>>
 >();
+const NETWORK_CACHE_SIGNATURE = new WeakMap<
+  object,
+  Map<PlayerId, string | null>
+>();
+
+const SEA_ROUTE_GEOMETRY_CACHE_LIMIT = 16;
+interface SeaRouteGeometryV7 {
+  readonly reachablePortIndexes: readonly (readonly number[])[];
+}
+const SEA_ROUTE_GEOMETRY_CACHE = new Map<string, SeaRouteGeometryV7>();
+let seaRouteGeometryHits = 0;
+let seaRouteGeometryMisses = 0;
+let seaRouteGeometryBuilds = 0;
+let seaRouteGeometrySkipped = 0;
+
+export interface SeaRouteGeometryCacheDiagnosticsV7 {
+  readonly capacity: number;
+  readonly entries: number;
+  readonly hits: number;
+  readonly misses: number;
+  readonly builds: number;
+  readonly skipped: number;
+}
+
+/** Deterministic counters used by the checked-in geometry benchmark. */
+export function seaRouteGeometryCacheDiagnosticsV7(): SeaRouteGeometryCacheDiagnosticsV7 {
+  return {
+    capacity: SEA_ROUTE_GEOMETRY_CACHE_LIMIT,
+    entries: SEA_ROUTE_GEOMETRY_CACHE.size,
+    hits: seaRouteGeometryHits,
+    misses: seaRouteGeometryMisses,
+    builds: seaRouteGeometryBuilds,
+    skipped: seaRouteGeometrySkipped,
+  };
+}
+
+/** Clears only derived geometry and its counters, never authoritative state. */
+export function resetSeaRouteGeometryCacheV7(): void {
+  SEA_ROUTE_GEOMETRY_CACHE.clear();
+  seaRouteGeometryHits = 0;
+  seaRouteGeometryMisses = 0;
+  seaRouteGeometryBuilds = 0;
+  seaRouteGeometrySkipped = 0;
+}
 
 export function combinedNetworkCityIdsV7(
   state: NetworkStateV7,
@@ -382,13 +427,20 @@ export function seaTradeCityIdsV7(
   state: NetworkStateV7,
   playerId: PlayerId,
 ): ReadonlySet<CityId> {
+  const signature = hasAcceptedStateCertificateV7(state as GameStateV7)
+    ? null
+    : networkFactsSignatureV7(state, playerId);
   let byOwner = SEA_TRADE_CACHE.get(state);
   if (byOwner === undefined) {
     byOwner = new Map();
     SEA_TRADE_CACHE.set(state, byOwner);
   }
   const prior = byOwner.get(playerId);
-  if (prior !== undefined) return prior;
+  if (
+    prior !== undefined &&
+    NETWORK_CACHE_SIGNATURE.get(state)?.get(playerId) === signature
+  )
+    return prior;
   const player = state.players.find((candidate) => candidate.id === playerId);
   if (player === undefined) {
     const empty = new Set<CityId>();
@@ -405,64 +457,51 @@ export function seaTradeCityIdsV7(
       COMBINED_ROAD_CACHE.set(state, roadsByOwner);
     }
     roadsByOwner.set(playerId, new Set());
+    setNetworkCacheSignatureV7(state, playerId, signature);
     return empty;
   }
   const explored = new Set(player.explored.map(coordKey));
-  const water = new Set(
-    state.board.tiles
-      .filter(
-        (tile) =>
-          tile.biome === null &&
-          explored.has(coordKey(tile.at)) &&
-          (tile.terrain !== "DEEP_WATER" ||
-            player.researchedTechs.includes("NAVIGATION")),
-      )
-      .map((tile) => coordKey(tile.at)),
-  );
-  const ports = player.researchedTechs.includes("NAVIGATION")
+  const navigation = player.researchedTechs.includes("NAVIGATION");
+  const portCandidates = navigation
     ? state.board.tiles.filter(
         (tile) =>
           (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
-          water.has(coordKey(tile.at)) &&
-          isActivePortV7(state, tile.at, playerId),
+          tile.biome === null &&
+          explored.has(coordKey(tile.at)) &&
+          (tile.terrain !== "DEEP_WATER" || navigation),
       )
     : [];
   const seaEdges = new Map<CityId, Set<CityId>>();
-  const portIndexesByKey = new Map<string, number[]>();
-  ports.forEach((port, index) => {
-    const indexes = portIndexesByKey.get(coordKey(port.at)) ?? [];
-    indexes.push(index);
-    portIndexesByKey.set(coordKey(port.at), indexes);
-  });
-  for (let leftIndex = 0; leftIndex < ports.length; leftIndex += 1) {
-    const left = ports[leftIndex];
-    if (left?.territoryCityId === null || left === undefined) continue;
-    const seen = new Set([coordKey(left.at)]);
-    const queue = [{ at: left.at, distance: 0 }];
-    for (let index = 0; index < queue.length; index += 1) {
-      const current = queue[index];
-      if (current === undefined || current.distance >= 5) continue;
-      for (const near of neighbors8(
-        state.board.width,
-        state.board.height,
-        current.at,
-      )) {
-        const nearKey = coordKey(near);
-        if (!water.has(nearKey) || seen.has(nearKey)) continue;
-        seen.add(nearKey);
-        queue.push({ at: near, distance: current.distance + 1 });
-        for (const rightIndex of portIndexesByKey.get(nearKey) ?? []) {
-          if (rightIndex <= leftIndex) continue;
-          const right = ports[rightIndex];
-          if (right?.territoryCityId === null || right === undefined) continue;
-          for (const [from, to] of [
-            [left.territoryCityId, right.territoryCityId],
-            [right.territoryCityId, left.territoryCityId],
-          ] as const) {
-            const sea = seaEdges.get(from) ?? new Set<CityId>();
-            if (from !== to) sea.add(to);
-            seaEdges.set(from, sea);
-          }
+  const geometry = seaRouteGeometryV7(
+    state,
+    explored,
+    navigation,
+    portCandidates,
+  );
+  if (geometry !== null) {
+    const active = new Set<number>();
+    portCandidates.forEach((port, index) => {
+      if (isActivePortV7(state, port.at, playerId)) active.add(index);
+    });
+    for (
+      let leftIndex = 0;
+      leftIndex < geometry.reachablePortIndexes.length;
+      leftIndex += 1
+    ) {
+      if (!active.has(leftIndex)) continue;
+      const left = portCandidates[leftIndex];
+      if (left?.territoryCityId === null || left === undefined) continue;
+      for (const rightIndex of geometry.reachablePortIndexes[leftIndex] ?? []) {
+        if (!active.has(rightIndex)) continue;
+        const right = portCandidates[rightIndex];
+        if (right?.territoryCityId === null || right === undefined) continue;
+        for (const [from, to] of [
+          [left.territoryCityId, right.territoryCityId],
+          [right.territoryCityId, left.territoryCityId],
+        ] as const) {
+          const sea = seaEdges.get(from) ?? new Set<CityId>();
+          if (from !== to) sea.add(to);
+          seaEdges.set(from, sea);
         }
       }
     }
@@ -551,7 +590,110 @@ export function seaTradeCityIdsV7(
   }
   roadsByOwner.set(playerId, connectedRoadKeys);
   byOwner.set(playerId, eligible);
+  setNetworkCacheSignatureV7(state, playerId, signature);
   return eligible;
+}
+
+function setNetworkCacheSignatureV7(
+  state: NetworkStateV7,
+  playerId: PlayerId,
+  signature: string | null,
+): void {
+  let byOwner = NETWORK_CACHE_SIGNATURE.get(state);
+  if (byOwner === undefined) {
+    byOwner = new Map();
+    NETWORK_CACHE_SIGNATURE.set(state, byOwner);
+  }
+  byOwner.set(playerId, signature);
+}
+
+function networkFactsSignatureV7(
+  state: NetworkStateV7,
+  playerId: PlayerId,
+): string {
+  const player = state.players.find((candidate) => candidate.id === playerId);
+  const tiles = state.board.tiles
+    .map(
+      (tile) =>
+        `${coordKey(tile.at)}:${tile.biome ?? "~"}:${tile.terrain}:${tile.improvement ?? "~"}:${Number(tile.road)}:${tile.territoryCityId ?? "~"}`,
+    )
+    .join(";");
+  const cities = state.cities
+    .map((city) => `${city.id}:${city.ownerId}:${coordKey(city.at)}`)
+    .join(";");
+  const units = state.units
+    .map(
+      (unit) => `${unit.ownerId}:${coordKey(unit.at)}:${unit.hp}:${unit.form}`,
+    )
+    .join(";");
+  return `${state.board.width}x${state.board.height}|${state.setup.aiMode}:${state.humanPlayerId}|${player?.originalCapitalCityId ?? "~"}|${player?.researchedTechs.join(",") ?? "~"}|${player?.explored.map(coordKey).join(";") ?? "~"}|${tiles}|${cities}|${units}`;
+}
+
+function seaRouteGeometryV7(
+  state: NetworkStateV7,
+  explored: ReadonlySet<string>,
+  navigation: boolean,
+  ports: readonly GameStateV7["board"]["tiles"][number][],
+): SeaRouteGeometryV7 | null {
+  if (!navigation || ports.length < 2) {
+    seaRouteGeometrySkipped += 1;
+    return null;
+  }
+  const water = new Set<string>();
+  for (const tile of state.board.tiles)
+    if (
+      tile.biome === null &&
+      explored.has(coordKey(tile.at)) &&
+      (tile.terrain !== "DEEP_WATER" || navigation)
+    )
+      water.add(coordKey(tile.at));
+  const key = `${state.board.width}x${state.board.height}|n:${Number(navigation)}|w:${[...water].join(";")}|p:${ports.map((port) => coordKey(port.at)).join(";")}`;
+  const cached = SEA_ROUTE_GEOMETRY_CACHE.get(key);
+  if (cached !== undefined) {
+    SEA_ROUTE_GEOMETRY_CACHE.delete(key);
+    SEA_ROUTE_GEOMETRY_CACHE.set(key, cached);
+    seaRouteGeometryHits += 1;
+    return cached;
+  }
+  seaRouteGeometryMisses += 1;
+  seaRouteGeometryBuilds += 1;
+  const portIndexesByKey = new Map<string, number[]>();
+  ports.forEach((port, index) => {
+    const indexes = portIndexesByKey.get(coordKey(port.at)) ?? [];
+    indexes.push(index);
+    portIndexesByKey.set(coordKey(port.at), indexes);
+  });
+  const reachablePortIndexes: number[][] = ports.map(() => []);
+  for (let leftIndex = 0; leftIndex < ports.length; leftIndex += 1) {
+    const left = ports[leftIndex];
+    if (left === undefined) continue;
+    const seen = new Set([coordKey(left.at)]);
+    const queue = [{ at: left.at, distance: 0 }];
+    for (let index = 0; index < queue.length; index += 1) {
+      const current = queue[index];
+      if (current === undefined || current.distance >= 5) continue;
+      for (const near of neighbors8(
+        state.board.width,
+        state.board.height,
+        current.at,
+      )) {
+        const nearKey = coordKey(near);
+        if (!water.has(nearKey) || seen.has(nearKey)) continue;
+        seen.add(nearKey);
+        queue.push({ at: near, distance: current.distance + 1 });
+        for (const rightIndex of portIndexesByKey.get(nearKey) ?? [])
+          if (rightIndex > leftIndex)
+            reachablePortIndexes[leftIndex]?.push(rightIndex);
+      }
+    }
+  }
+  const geometry = { reachablePortIndexes };
+  SEA_ROUTE_GEOMETRY_CACHE.set(key, geometry);
+  if (SEA_ROUTE_GEOMETRY_CACHE.size > SEA_ROUTE_GEOMETRY_CACHE_LIMIT) {
+    const oldest = SEA_ROUTE_GEOMETRY_CACHE.keys().next().value;
+    if (oldest !== undefined) SEA_ROUTE_GEOMETRY_CACHE.delete(oldest);
+  }
+  return geometry;
 }
 
 function coordKey(at: { readonly x: number; readonly y: number }): string {

@@ -13,6 +13,10 @@ import {
   type SpatialEconomicCommandKindV7,
 } from "../rules/ruleset-v7";
 import { hasExactKeysV7 } from "./schema";
+import {
+  hasAcceptedStateCertificateV7,
+  registerAcceptedStateCertificateV7,
+} from "./accepted-state-certificate";
 import { parseCommandV7, type CommandV7 } from "./commands";
 import {
   arePlayersAlliedV7,
@@ -132,7 +136,30 @@ export type CreatePlayableGameResultV7 =
 
 const BASIC_KINDS = new Set<string>(Object.keys(BASIC_ECONOMIC_ACTIONS_V7));
 const SPATIAL_KINDS = new Set<string>(Object.keys(SPATIAL_ECONOMIC_ACTIONS_V7));
-const acceptedStateCertificatesV7 = new WeakSet<object>();
+let strictInputValidationCountV7 = 0;
+let certifiedInputReuseCountV7 = 0;
+let checkedOutputValidationCountV7 = 0;
+
+export interface ReducerValidationDiagnosticsV7 {
+  readonly strictInputs: number;
+  readonly certifiedInputs: number;
+  readonly checkedOutputs: number;
+}
+
+/** Deterministic counters for the command-processing benchmark. */
+export function reducerValidationDiagnosticsV7(): ReducerValidationDiagnosticsV7 {
+  return {
+    strictInputs: strictInputValidationCountV7,
+    certifiedInputs: certifiedInputReuseCountV7,
+    checkedOutputs: checkedOutputValidationCountV7,
+  };
+}
+
+export function resetReducerValidationDiagnosticsV7(): void {
+  strictInputValidationCountV7 = 0;
+  certifiedInputReuseCountV7 = 0;
+  checkedOutputValidationCountV7 = 0;
+}
 
 /**
  * Reports only states returned by this reducer at a completed accepted
@@ -140,7 +167,7 @@ const acceptedStateCertificatesV7 = new WeakSet<object>();
  * caller, so parsed external values continue through the strict parser.
  */
 export function isAcceptedStateCertificateV7(state: GameStateV7): boolean {
-  return acceptedStateCertificatesV7.has(state);
+  return hasAcceptedStateCertificateV7(state);
 }
 
 export function createPlayableGameV7(
@@ -210,7 +237,10 @@ function applyCommandCoreV7(
   actor: PlayerId,
   input: CommandV7,
 ): ApplyCommandResultV7 {
-  const state = parseGameStateV7(stateInput);
+  const certified = hasAcceptedStateCertificateV7(stateInput);
+  if (certified) certifiedInputReuseCountV7 += 1;
+  else strictInputValidationCountV7 += 1;
+  const state = certified ? stateInput : parseGameStateV7(stateInput);
   if (state === null) return rejected(stateInput, "INVALID_STATE");
   const unknown = exactUnknownResearchTech(input);
   if (unknown !== null) {
@@ -3727,6 +3757,7 @@ function isExplored(player: PlayerStateV7, at: CoordV7): boolean {
   return player.explored.some((item) => same(item, at));
 }
 function checked(state: GameStateV7): GameStateV7 {
+  checkedOutputValidationCountV7 += 1;
   const result = parseGameStateV7(state);
   if (result === null) throw new RangeError("INVALID_STATE");
   return result;
@@ -3746,7 +3777,7 @@ function accepted(
   events: readonly DomainEventV7[],
 ): ApplyCommandResultV7 {
   const frozen = deepFreeze(state);
-  acceptedStateCertificatesV7.add(frozen);
+  registerAcceptedStateCertificateV7(frozen);
   return { accepted: true, state: frozen, events };
 }
 function rejected(
