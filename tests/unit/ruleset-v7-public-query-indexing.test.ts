@@ -46,7 +46,9 @@ describe("ruleset-7 exact public query indexing", () => {
     );
 
     const planned = drain(measured.view, commands, 113);
-    expect(planned.operations).toBe(66_220);
+    expect(planned.operations).toBe(
+      66_220 + publicPlanningFactScanOperations(measured.view),
+    );
     expect(canonicalHash(planned.result)).toBe(
       "b78f740fb03edfc245efedbe4c2e5b9d1e3ee7dada87368bfebe6773dbb61d70",
     );
@@ -80,8 +82,15 @@ describe("ruleset-7 exact public query indexing", () => {
       }
     }
 
-    expect(leftOperations).toBe(4_100);
-    expect(rightOperations).toBe(4_100);
+    // The larger right-hand slices finish the shared-fact scan and cold work
+    // first. The still-scanning left work then reuses that completed result.
+    expect(leftOperations).toBe(
+      publicPlanningFactScanOperations(leftView) +
+        queryPlayerCommandsV7(leftView).length,
+    );
+    expect(rightOperations).toBe(
+      4_100 + publicPlanningFactScanOperations(rightView),
+    );
     expect(canonicalHash(leftResult)).toBe(
       "7b6cacc305a8204edcf6c7a890873dd770b74e1d69815324dd7dd8467841530f",
     );
@@ -188,6 +197,10 @@ function measuredView(source: PlayerViewV7): {
     },
     reads: () => ({ tileReads, unitReads }),
   };
+}
+
+function publicPlanningFactScanOperations(view: PlayerViewV7): number {
+  return view.board.tiles.length + view.cities.length + view.units.length + 1;
 }
 
 function alliedCityViews(): {

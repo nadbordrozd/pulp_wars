@@ -16,11 +16,20 @@ import {
   queryTechnologyCapabilitiesV7,
   queryTechnologyTreeV7,
   runReplayV7,
+  technologyCapabilitiesV7,
   technologyResearchCostV7,
 } from "../../src/engine/index";
 import { checkedV7, initialV7, richV7, setupV7 } from "../fixtures/v7-builders";
 
 describe("ruleset-7 technology", () => {
+  it("reuses the exact immutable capability table for equal technology sets", () => {
+    const forward = technologyCapabilitiesV7(TECHNOLOGY_IDS_V7);
+    const reverse = technologyCapabilitiesV7([...TECHNOLOGY_IDS_V7].reverse());
+    expect(reverse).toBe(forward);
+    expect(Object.isFrozen(forward)).toBe(true);
+    expect(canonicalHash(reverse)).toBe(canonicalHash(forward));
+  });
+
   it("registers the exact ordered 23-node five-branch graph and start", () => {
     assertRuleset7Registry();
     expect(ORIGINAL_BASELINE_V5_NODES.map((node) => node.id)).toEqual(

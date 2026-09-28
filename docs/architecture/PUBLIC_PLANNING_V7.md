@@ -107,11 +107,28 @@ same exact calculation synchronously. A completed work object primes those
 synchronous view-identity caches with byte-identical results for downstream
 consumers.
 
-The work object owns its mutable progress. Engine caches use `WeakMap` keys for
-the exact immutable `PlayerViewV7` or economy-graph object, so their lifetime is
-bounded by that input. When a command produces a new view, discard unfinished
-work and create new work from the new view; do not reuse work or results across
-view identities.
+The work object owns its mutable progress. Exact-view caches still use
+`WeakMap` keys. Revision 11 also keeps at most 24 completed stable-fact entries
+across reconstructed public views. Its collision-free structural key contains
+the explored economy graph (fog, terrain, resources, improvements, Roads,
+sites, and territory), the city growth/ownership/capital fields consumed by
+planning, researched technology, monument entitlements, pending rewards,
+treasures, public city-count exactness, active/blockaded Ports, hostile city
+occupation, and hostile naval coordinates used by prospective Port scoring.
+The key has no authoritative or concealed input. A separate preview key adds
+Coins, complete public city records including `cityActionAvailable`, published
+improvement values, and current land/sea trade lists. A preview is reused only
+after the current view independently offers the same tile command.
+
+Stable-fact validation and result reconstruction are incremental. Each scanned
+tile, city, or unit and each reconstructed candidate consumes one reported
+operation. A hit therefore reports the physical work it performs while
+skipping placement enumeration and reservation scoring; it never reports the
+skipped calculations as completed work. A missing relevant command score falls
+back to cold planning. Results are rebuilt around current command objects, and
+stored previews are privately cloned, so retained entries cannot carry old
+unit context or caller mutations into a new view. When a command produces a new
+view, discard unfinished work and create new work from that view as before.
 
 City query facts use the same exact-view boundary. Siege status is evaluated
 lazily for each queried city coordinate and development visibility is evaluated

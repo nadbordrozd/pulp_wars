@@ -803,6 +803,13 @@ export interface TechnologyCapabilitiesV7 {
 export function technologyCapabilitiesV7(
   researchedTechs: readonly TechnologyIdV7[],
 ): TechnologyCapabilitiesV7 {
+  const cacheKey = JSON.stringify([...researchedTechs].sort());
+  const cached = TECHNOLOGY_CAPABILITIES_CACHE_V7.get(cacheKey);
+  if (cached !== undefined) {
+    TECHNOLOGY_CAPABILITIES_CACHE_V7.delete(cacheKey);
+    TECHNOLOGY_CAPABILITIES_CACHE_V7.set(cacheKey, cached);
+    return cached;
+  }
   const known = new Set(researchedTechs);
   const unlocks = ORIGINAL_BASELINE_V5_NODES.filter((node) =>
     known.has(node.id),
@@ -892,7 +899,7 @@ export function technologyCapabilitiesV7(
       case "NAVAL_TRAINING_DISCOUNT":
         break;
     }
-  return deepFreeze({
+  const result: TechnologyCapabilitiesV7 = deepFreeze({
     treeId: "ORIGINAL_BASELINE_V5",
     resourceReveals: RESOURCE_IDS_V7.filter((item) => resources.has(item)),
     commands: COMMAND_KIND_ORDER_V7.filter((item) =>
@@ -922,7 +929,19 @@ export function technologyCapabilitiesV7(
     seaTradeIncomeCoins,
     hostileCaptureSpoilsCoins,
   });
+  TECHNOLOGY_CAPABILITIES_CACHE_V7.set(cacheKey, result);
+  if (TECHNOLOGY_CAPABILITIES_CACHE_V7.size > 32) {
+    const oldest = TECHNOLOGY_CAPABILITIES_CACHE_V7.keys().next().value;
+    if (oldest !== undefined) TECHNOLOGY_CAPABILITIES_CACHE_V7.delete(oldest);
+  }
+  return result;
 }
+
+/** Bounded exact memo of immutable technology-only capability tables. */
+const TECHNOLOGY_CAPABILITIES_CACHE_V7 = new Map<
+  string,
+  TechnologyCapabilitiesV7
+>();
 
 export function assertRuleset7Registry(): void {
   if (

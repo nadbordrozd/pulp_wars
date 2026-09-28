@@ -66,7 +66,9 @@ describe("ruleset-7 exact public-planning performance", () => {
       const firstCommands = queryPlayerCommandsV7(firstView);
       expect(canonicalHash(firstCommands)).toBe(fixture.commandHash);
       const first = drain(firstView, firstCommands, 1);
-      expect(first.operations).toBe(fixture.operations);
+      expect(first.operations).toBe(
+        fixture.operations + publicPlanningFactScanOperations(firstView),
+      );
       expect(canonicalHash(first.result)).toBe(fixture.resultHash);
       expect(queryPublicEconomicPotentialsV7(firstView)).toBe(
         first.result.potentials,
@@ -75,7 +77,9 @@ describe("ruleset-7 exact public-planning performance", () => {
       const secondView = structuredClone(fixture.view());
       const secondCommands = queryPlayerCommandsV7(secondView);
       const second = drain(secondView, secondCommands, 113);
-      expect(second.operations).toBe(fixture.operations);
+      expect(second.operations).toBe(
+        publicPlanningFactScanOperations(secondView) + secondCommands.length,
+      );
       expect(canonicalHash(second.result)).toBe(fixture.resultHash);
       expect(second.result).toEqual(first.result);
     });
@@ -110,7 +114,9 @@ describe("ruleset-7 exact public-planning performance", () => {
       "22b168f691bbe028fcb8b0745b7f7c85e16d1bc96a9afed132e0609b8f11442d",
     );
     const result = drain(view, commands, 7);
-    expect(result.operations).toBe(28_481);
+    expect(result.operations).toBe(
+      28_481 + publicPlanningFactScanOperations(view),
+    );
     expect(canonicalHash(result.result)).toBe(
       "4871a834eafe750832f35ba4913a140f73f77912d14be8d43e572fdf9d442040",
     );
@@ -154,7 +160,9 @@ describe("ruleset-7 exact public-planning performance", () => {
       "9d589b3c890a51104785862038c712492890a53456da5cdb47b8d2a7a6019ae5",
     );
     const after = drain(afterView, afterCommands, 1);
-    expect(after.operations).toBe(28_470);
+    expect(after.operations).toBe(
+      28_470 + publicPlanningFactScanOperations(afterView),
+    );
     expect(canonicalHash(after.result)).toBe(
       "a14d0c353cee300fe3617257d35d416f60541ac2b15816ac79daaec233cd4aa3",
     );
@@ -177,4 +185,8 @@ function drain(
     if (progress.result !== null)
       return { operations, result: progress.result };
   }
+}
+
+function publicPlanningFactScanOperations(view: PlayerViewV7): number {
+  return view.board.tiles.length + view.cities.length + view.units.length + 1;
 }

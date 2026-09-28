@@ -79,3 +79,50 @@ Eleven warmed Node 24 runs at budget 113 measured median query time falling
 from 1.973 ms to 1.199 ms and median query-plus-planning time from 33.205 ms to
 30.136 ms. Timings remain diagnostic; exact hashes and operation counts are the
 acceptance boundary.
+
+## Revision 11 stable-fact reuse
+
+Later Revision 11 policy work reconstructs a fresh public view after every
+accepted command, although its economic graph commonly stays unchanged. The
+planner now scans an exact public dependency key incrementally and retains 24
+completed entries. On a hit it rebuilds the ordered result from the current
+commands one candidate per operation. Cold operation counts therefore add one
+operation per public tile, city, and unit plus one key-finalization operation;
+warm counts are that scan plus one operation per current candidate. These are
+physical-work counters: skipped placement and reservation calculations are not
+added to a hit. The retained command-1100 fixture is 4,235 cold operations and
+201 warm operations, with unchanged result hash
+`7b6cacc305a8204edcf6c7a890873dd770b74e1d69815324dd7dd8467841530f`.
+
+The planning key maps directly to the reads of the reused computations:
+
+- economy-graph and spatial reads use explored state, terrain, resources,
+  improvements, Roads, sites, territory assignment, dimensions, technology,
+  original capital, city ownership/coordinates/growth/expansion and
+  `isCapital`;
+- exactness and placement gates use public city count, fog, pending city
+  rewards, treasures, and remaining monument entitlements;
+- income and connectivity use owned Port status plus land/sea graph facts;
+- siege and prospective Port scoring use hostile occupation of owned city
+  centers and hostile non-land coordinates;
+- economic-preview reuse has a separate key adding Coins, complete public city
+  records (including `cityActionAvailable`), improvement values, and published
+  trade lists, and still checks that the current view offers the command.
+
+Technology capability tables are separately memoized by the exact sorted
+technology array. The 32-entry table contains only deeply frozen rules output.
+Planning results are reconstructed with current command objects, preview values
+are privately cloned, and both retained maps evict their oldest entry.
+
+The captured round-165, command-9192 Rival-0 state was run for the same next 100
+commands with the frozen draft AI on both the published `b645fa0` engine and
+this change. Three alternating pairs on Node 24 began at load averages
+3.86/4.10/8.99 and ended at 5.24/4.42/8.83. Baseline totals were 7,104, 8,823,
+and 8,681 ms; changed totals were 6,691, 6,830, and 5,936 ms. The paired total
+savings were 5.8%, 22.6%, and 31.6% (median 22.6%). Median policy time fell from
+5,031 to 3,156 ms. Every sample chose the same ordered command-kind counts and
+ended at state hash
+`0af93dbda805f885ff0190a0258c4100172e515186e7701d0e52c267b1b95e26`.
+These elapsed times are diagnostic because host load varied; the exact output,
+bounded cache, invalidation, interleaving, and operation-accounting tests are
+the acceptance evidence.

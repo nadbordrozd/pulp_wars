@@ -925,9 +925,50 @@ export function previewEconomicV7(
   const cacheKey = JSON.stringify(command);
   const cached = cachedForView.get(cacheKey);
   if (cached !== undefined) return cached;
+  if (
+    "at" in command &&
+    TILE_KINDS.includes(command.kind as never) &&
+    queryPlayerCommandsV7(view).some(
+      (candidate) =>
+        candidate.kind === command.kind &&
+        "at" in candidate &&
+        same(candidate.at, command.at),
+    )
+  ) {
+    const reuseKey = publicEconomicPreviewFactKeyV7(view);
+    const reused = PUBLIC_ECONOMIC_PREVIEW_REUSE.get(reuseKey)?.get(cacheKey);
+    if (reused !== undefined) {
+      const result = cloneEconomicPreviewResultV7(reused);
+      cachedForView.set(cacheKey, result);
+      return result;
+    }
+  }
   const result = calculatePublicEconomicPreviewV7(view, command);
   cachedForView.set(cacheKey, result);
+  if (result.ok) {
+    const reuseKey = publicEconomicPreviewFactKeyV7(view);
+    let byCommand = PUBLIC_ECONOMIC_PREVIEW_REUSE.get(reuseKey);
+    if (byCommand === undefined) {
+      byCommand = new Map();
+      PUBLIC_ECONOMIC_PREVIEW_REUSE.set(reuseKey, byCommand);
+      if (PUBLIC_ECONOMIC_PREVIEW_REUSE.size > PUBLIC_PLANNING_REUSE_LIMIT) {
+        const oldest = PUBLIC_ECONOMIC_PREVIEW_REUSE.keys().next().value;
+        if (oldest !== undefined) PUBLIC_ECONOMIC_PREVIEW_REUSE.delete(oldest);
+      }
+    }
+    byCommand.set(cacheKey, cloneEconomicPreviewResultV7(result));
+    if (byCommand.size > 64) {
+      const oldest = byCommand.keys().next().value;
+      if (oldest !== undefined) byCommand.delete(oldest);
+    }
+  }
   return result;
+}
+
+function cloneEconomicPreviewResultV7(
+  value: EconomicPreviewResultV7,
+): EconomicPreviewResultV7 {
+  return JSON.parse(JSON.stringify(value)) as EconomicPreviewResultV7;
 }
 
 function calculatePublicEconomicPreviewV7(
@@ -1216,6 +1257,19 @@ const PUBLIC_ECONOMIC_POTENTIALS = new WeakMap<
   PlayerViewV7,
   readonly PublicEconomicPotentialV7[]
 >();
+const PUBLIC_PLANNING_FACT_KEYS = new WeakMap<PlayerViewV7, string>();
+const PUBLIC_ECONOMIC_PREVIEW_FACT_KEYS = new WeakMap<PlayerViewV7, string>();
+const PUBLIC_PLANNING_REUSE_LIMIT = 24;
+interface PublicPlanningReuseEntryV7 {
+  readonly potentials: readonly PublicEconomicPotentialV7[];
+  readonly scores: ReadonlyMap<string, number>;
+  readonly redevelopmentChanges: ReadonlyMap<string, boolean>;
+}
+const PUBLIC_PLANNING_REUSE = new Map<string, PublicPlanningReuseEntryV7>();
+const PUBLIC_ECONOMIC_PREVIEW_REUSE = new Map<
+  string,
+  Map<string, EconomicPreviewResultV7>
+>();
 const PUBLIC_CITY_BESIEGED = new WeakMap<PlayerViewV7, Map<string, boolean>>();
 const PUBLIC_CITY_DEVELOPMENT_FOOTPRINT_KNOWN = new WeakMap<
   PlayerViewV7,
@@ -1237,6 +1291,147 @@ const PUBLIC_GRAPH_NAVAL_CONNECTIVITY = new WeakMap<
     readonly roadKeys: ReadonlySet<string>;
   }
 >();
+
+/**
+ * Collision-free structural key for every public fact read by economic graph,
+ * placement, spatial-score, and preview calculations. Dynamic unit details
+ * are deliberately reduced to the two facts those calculations observe:
+ * hostile city occupation and hostile naval occupation. No authority state is
+ * available at this boundary.
+ */
+function publicPlanningFactKeyV7(view: PlayerViewV7): string {
+  const existing = PUBLIC_PLANNING_FACT_KEYS.get(view);
+  if (existing !== undefined) return existing;
+  const work = createPublicPlanningFactKeyWorkV7(view);
+  for (;;) {
+    const progress = work.next();
+    if (progress.done) return progress.value;
+  }
+}
+
+function* createPublicPlanningFactKeyWorkV7(
+  view: PlayerViewV7,
+): Generator<void, string> {
+  const tiles: unknown[] = [];
+  for (const tile of view.board.tiles) {
+    // Concealed tile fields are deliberately discarded at the public boundary.
+    tiles.push(
+      tile.explored
+        ? {
+            at: tile.at,
+            explored: true,
+            terrain: tile.terrain,
+            resource: tile.resource,
+            improvement: tile.improvement,
+            road: tile.road,
+            site: tile.site,
+            territoryCityId: tile.territoryCityId,
+            territoryOwnerId: tile.territoryOwnerId,
+          }
+        : { at: tile.at, explored: false },
+    );
+    yield;
+  }
+  const cities: unknown[] = [];
+  const ownedCityKeys = new Set<string>();
+  for (const city of view.cities) {
+    cities.push({
+      id: city.id,
+      ownerId: city.ownerId,
+      at: city.at,
+      level: city.level,
+      permanentPopulation: city.permanentPopulation,
+      economicPopulation: city.economicPopulation,
+      population: city.population,
+      expanded: city.expanded,
+      landGrantUsed: city.landGrantUsed,
+      isCapital: city.isCapital,
+    });
+    if (city.ownerId === view.viewer.id) ownedCityKeys.add(coordKeyV7(city.at));
+    yield;
+  }
+  const besiegingUnits: unknown[] = [];
+  const hostileNavalUnits: unknown[] = [];
+  for (const unit of view.units) {
+    if (
+      unit.hp > 0 &&
+      publicHostile(view, view.viewer.id, unit.ownerId) &&
+      ownedCityKeys.has(coordKeyV7(unit.at))
+    )
+      besiegingUnits.push([unit.ownerId, unit.at.x, unit.at.y]);
+    if (
+      unit.form !== "LAND" &&
+      publicHostile(view, view.viewer.id, unit.ownerId)
+    )
+      hostileNavalUnits.push([unit.ownerId, unit.form, unit.at.x, unit.at.y]);
+    yield;
+  }
+  const key = JSON.stringify({
+    setupAiMode: view.setup.aiMode,
+    humanPlayerId: view.humanPlayerId,
+    board: {
+      width: view.board.width,
+      height: view.board.height,
+      tiles,
+    },
+    cities,
+    viewer: {
+      id: view.viewer.id,
+      originalCapitalCityId: view.viewer.originalCapitalCityId,
+      researchedTechs: view.viewer.researchedTechs,
+      achievementEntitlements: view.viewer.achievementEntitlements,
+    },
+    pendingChoices: view.pendingChoices,
+    treasureChests: view.treasureChests,
+    viewerCityCount: view.leaderboard.find((entry) => entry.isViewer)
+      ?.cityCount,
+    naval: {
+      ownedPorts: view.naval.ownedPorts,
+    },
+    besiegingUnits,
+    hostileNavalUnits,
+  });
+  PUBLIC_PLANNING_FACT_KEYS.set(view, key);
+  return key;
+}
+
+function publicEconomicPreviewFactKeyV7(view: PlayerViewV7): string {
+  const cached = PUBLIC_ECONOMIC_PREVIEW_FACT_KEYS.get(view);
+  if (cached !== undefined) return cached;
+  const key = JSON.stringify({
+    planning: publicPlanningFactKeyV7(view),
+    coins: view.viewer.coins,
+    cities: view.cities,
+    improvementValues: view.improvementValues,
+    landTradeCityIds: view.naval.landTradeCityIds,
+    seaTradeCityIds: view.naval.seaTradeCityIds,
+  });
+  PUBLIC_ECONOMIC_PREVIEW_FACT_KEYS.set(view, key);
+  return key;
+}
+
+function planningReuseEntryV7(
+  key: string,
+): PublicPlanningReuseEntryV7 | undefined {
+  const entry = PUBLIC_PLANNING_REUSE.get(key);
+  if (entry !== undefined) {
+    PUBLIC_PLANNING_REUSE.delete(key);
+    PUBLIC_PLANNING_REUSE.set(key, entry);
+  }
+  return entry;
+}
+
+function retainPlanningReuseEntryV7(
+  key: string,
+  entry: PublicPlanningReuseEntryV7,
+): void {
+  PUBLIC_PLANNING_REUSE.delete(key);
+  PUBLIC_PLANNING_REUSE.set(key, entry);
+  if (PUBLIC_PLANNING_REUSE.size > PUBLIC_PLANNING_REUSE_LIMIT) {
+    const oldest = PUBLIC_PLANNING_REUSE.keys().next().value;
+    if (oldest !== undefined) PUBLIC_PLANNING_REUSE.delete(oldest);
+  }
+}
 
 function publicEconomyGraph(view: PlayerViewV7): PublicEconomyGraphV7 {
   const cached = PUBLIC_ECONOMY_GRAPHS.get(view);
@@ -2760,16 +2955,21 @@ function comparePublicPlacementV7(
 
 class IncrementalPublicPlanningWorkV7 implements PublicPlanningWorkV7 {
   private readonly graph: PublicEconomyGraphV7;
+  private readonly factKeyWork: Generator<void, string>;
+  private factKey: string | null = null;
+  private reuseEntry: PublicPlanningReuseEntryV7 | null = null;
   private readonly candidates: readonly CommandV7[];
   private readonly exact: boolean;
   private phase:
+    | "REUSE_FACT_SCAN"
+    | "REUSE_RECONSTRUCTION"
     | "BASE_ENUMERATION"
     | "BASE_SCORING"
     | "BASE_SELECTION"
     | "CANDIDATE_START"
     | "CANDIDATE_ENUMERATION"
     | "CANDIDATE_SELECTION"
-    | "DONE" = "BASE_ENUMERATION";
+    | "DONE" = "REUSE_FACT_SCAN";
   private enumeration: PublicPlacementEnumerationV7;
   private tileIndex = 0;
   private placementIndex = 0;
@@ -2790,11 +2990,11 @@ class IncrementalPublicPlanningWorkV7 implements PublicPlanningWorkV7 {
   ) {
     this.candidates = [...candidates];
     this.graph = publicEconomyGraph(view);
+    this.factKeyWork = createPublicPlanningFactKeyWorkV7(view);
     this.exact = publicPlanningGraphExact(view);
     this.enumeration = createPublicPlacementEnumerationV7(view, this.graph);
     for (const kind of ECONOMIC_POTENTIAL_KINDS_V7)
       this.potentialStats.set(kind, { targets: 0, bestSpatialScore: 0 });
-    if (!this.exact) this.phase = "CANDIDATE_START";
   }
 
   advance(maxOperations: number): PublicPlanningWorkProgressV7 {
@@ -2812,6 +3012,42 @@ class IncrementalPublicPlanningWorkV7 implements PublicPlanningWorkV7 {
   }
 
   private advanceOne(): boolean {
+    if (this.phase === "REUSE_FACT_SCAN") {
+      const progress = this.factKeyWork.next();
+      if (!progress.done) return true;
+      this.factKey = progress.value;
+      this.reuseEntry = planningReuseEntryV7(progress.value) ?? null;
+      this.phase =
+        this.reuseEntry === null
+          ? this.exact
+            ? "BASE_ENUMERATION"
+            : "CANDIDATE_START"
+          : "REUSE_RECONSTRUCTION";
+      return true;
+    }
+    if (this.phase === "REUSE_RECONSTRUCTION") {
+      const candidate = this.candidates[this.candidateIndex];
+      if (candidate === undefined) {
+        this.finishReuse();
+        return false;
+      }
+      const cacheKey = JSON.stringify(candidate);
+      const reusedScore = this.reuseEntry?.scores.get(cacheKey);
+      if (
+        reusedScore === undefined &&
+        publicPlanningCandidateMayAffectGraphV7(candidate)
+      ) {
+        this.reuseEntry = null;
+        this.scores.length = 0;
+        this.candidateIndex = 0;
+        PUBLIC_SPATIAL_SCORES.delete(this.view);
+        this.phase = this.exact ? "BASE_ENUMERATION" : "CANDIDATE_START";
+        return true;
+      }
+      this.recordCandidateScore(candidate, reusedScore ?? 0);
+      this.candidateIndex += 1;
+      return true;
+    }
     if (this.phase === "BASE_ENUMERATION") {
       const tile = this.graph.board.tiles[this.tileIndex];
       if (tile !== undefined) {
@@ -2952,8 +3188,50 @@ class IncrementalPublicPlanningWorkV7 implements PublicPlanningWorkV7 {
     }));
     PUBLIC_ECONOMIC_POTENTIALS.set(this.view, potentials);
     this.completed = { potentials, scores: this.scores };
+    if (this.factKey === null)
+      throw new RangeError("Public planning fact scan did not complete");
+    retainPlanningReuseEntryV7(this.factKey, {
+      potentials: potentials.map((potential) => ({ ...potential })),
+      scores: new Map(
+        this.scores.map(({ command, score }) => [
+          JSON.stringify(command),
+          score,
+        ]),
+      ),
+      redevelopmentChanges: new Map(
+        PUBLIC_REDEVELOPMENT_CHANGES.get(this.view) ?? [],
+      ),
+    });
     this.phase = "DONE";
   }
+
+  private finishReuse(): void {
+    const reused = this.reuseEntry;
+    if (reused === null)
+      throw new RangeError("Public planning reuse entry was lost");
+    const potentials = reused.potentials.map((potential) => ({ ...potential }));
+    PUBLIC_ECONOMIC_POTENTIALS.set(this.view, potentials);
+    PUBLIC_REDEVELOPMENT_CHANGES.set(
+      this.view,
+      new Map(reused.redevelopmentChanges),
+    );
+    this.completed = { potentials, scores: this.scores };
+    this.phase = "DONE";
+  }
+}
+
+function publicPlanningCandidateMayAffectGraphV7(
+  candidate: CommandV7,
+): boolean {
+  return (
+    candidate.kind === "CHOOSE_CITY_REWARD" ||
+    candidate.kind === "GATHER_PEARLS" ||
+    candidate.kind === "BUILD_PORT" ||
+    candidate.kind === "BUILD_SHIPYARD" ||
+    candidate.kind === "CULTIVATE_FOREST" ||
+    candidate.kind === "BLAST_MOUNTAIN" ||
+    ECONOMIC_POTENTIAL_KINDS_V7.includes(candidate.kind as never)
+  );
 }
 
 function scorePublicPlacementV7(
