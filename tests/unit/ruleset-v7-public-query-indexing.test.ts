@@ -89,10 +89,10 @@ describe("ruleset-7 exact public query indexing", () => {
         queryPlayerCommandsV7(leftView).length,
     );
     expect(rightOperations).toBe(
-      4_100 + publicPlanningFactScanOperations(rightView),
+      4_098 + publicPlanningFactScanOperations(rightView),
     );
     expect(canonicalHash(leftResult)).toBe(
-      "7b6cacc305a8204edcf6c7a890873dd770b74e1d69815324dd7dd8467841530f",
+      "f18e578cba84a5fe93980ae6c0fdc9e4a531ec4354dcc44987c170476464bca3",
     );
     expect(rightResult).toEqual(leftResult);
   });

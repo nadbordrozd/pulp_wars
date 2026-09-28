@@ -84,23 +84,43 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     ).toBe(false);
   });
 
-  it("classifies public commands deterministically and chooses occupied-center training", () => {
-    const state = initialV7(0);
+  it("classifies public commands deterministically and chooses empty-center training", () => {
+    const source = initialV7(0);
+    const city = required(
+      source.cities.find(
+        (candidate) => candidate.ownerId === source.humanPlayerId,
+      ),
+      "training city missing",
+    );
+    const resident = required(
+      source.units.find((unit) => unit.ownerId === source.humanPlayerId),
+      "training resident missing",
+    );
+    const destination = required(
+      source.board.tiles.find(
+        (tile) =>
+          tile.territoryCityId === city.id &&
+          tile.site === null &&
+          !source.units.some(
+            (unit) => unit.at.x === tile.at.x && unit.at.y === tile.at.y,
+          ),
+      ),
+      "training destination missing",
+    );
+    const state = checkedV7({
+      ...source,
+      units: source.units.map((unit) =>
+        unit.id === resident.id ? { ...unit, at: destination.at } : unit,
+      ),
+    });
     const view = viewForV7(state, state.humanPlayerId);
     const decision = chooseNormalCommandV7(view);
     expect(queryPlayerCommandsV7(view)).toContainEqual({ kind: "END_TURN" });
     expect(
       view.units.some(
-        (unit) =>
-          unit.ownerId === view.viewer.id &&
-          view.cities.some(
-            (city) =>
-              city.ownerId === view.viewer.id &&
-              city.at.x === unit.at.x &&
-              city.at.y === unit.at.y,
-          ),
+        (unit) => unit.at.x === city.at.x && unit.at.y === city.at.y,
       ),
-    ).toBe(true);
+    ).toBe(false);
     expect(decision.command).toEqual({
       kind: "TRAIN",
       cityId: cityId(1),
@@ -239,7 +259,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const basic = usefulBasicRedevelopmentState();
     const basicView = viewForV7(basic.state, basic.state.humanPlayerId);
     expect(canonicalHash(chooseNormalCommandV7(basicView))).toBe(
-      "fc5d17e61c4ebd22401cb824c7cda53d22e92acf0250f6f1f14a0084f91a49d9",
+      "7b8d235c149ad378959d951ab0737651e1a85b50b28593386debacd3b17eabe3",
     );
     const basicCommands = queryPlayerCommandsV7(basicView);
     const basicWork = new NormalPolicyWorkV7(structuredClone(basicView));
@@ -670,9 +690,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       unitId: 19,
       targetUnitId: 34,
     });
-    expect(sliced.candidates).toHaveLength(29);
+    expect(sliced.candidates).toHaveLength(28);
     expect(canonicalHash(sliced)).toBe(
-      "3d6122d5a713797d07790b9c0524e3c71fc1ff3fd5607b09cdd76d68387cf379",
+      "8936ff96987a899bb2e8a462fc026461796a6a3cac50b87054b656cc11d11156",
     );
     const revision4Commands = new Set([
       '{"kind":"ATTACK","unitId":19,"targetUnitId":34}',

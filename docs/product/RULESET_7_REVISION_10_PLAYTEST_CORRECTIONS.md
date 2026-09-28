@@ -43,16 +43,22 @@ movement and the trade-income network are separate graphs.
 
 Training and the Militia and Juggernaut city rewards create their unit on the
 city center. Militia continues to create a Fighter. Normal training retains its
-existing cost, technology, capacity, and besieged-city checks.
+existing cost, technology, capacity, and besieged-city checks. A later current-
+runtime correction supersedes revision 10 for occupied-center training: a
+living unit stationed on the city center prevents land training. The command is
+not offered and a direct attempt rejects atomically with
+`CITY_SPAWN_OCCUPIED`. Once the center is empty, ordinary training may proceed.
 
-If a living unit occupies the center, move that unit to the first legal free
-adjacent land cell in canonical `y`, then `x`, order. The destination must be
-terrain-accessible to the displaced unit, must not contain another unit or a
-treasure, and must respect allied-territory restrictions. This displacement
-does not chain, embark the unit, reset its activation, change its home city, or
-place it remotely. It clears immediate capture eligibility. If no adjacent
-destination exists, remove the old occupant without a refund or combat kill
-credit; the requested trained or reward unit still appears on the center.
+The displacement rules in the remainder of this section now apply only to the
+automatic Militia and Juggernaut city rewards. If a living unit occupies the
+center, move that unit to the first legal free adjacent land cell in canonical
+`y`, then `x`, order. The destination must be terrain-accessible to the
+displaced unit, must not contain another unit or a treasure, and must respect
+allied-territory restrictions. This displacement does not chain, embark the
+unit, reset its activation, change its home city, or place it remotely. It
+clears immediate capture eligibility. If no adjacent destination exists,
+remove the old occupant without a refund or combat kill credit; the reward unit
+still appears on the center.
 
 The displacement has its own strict event. Public projection reveals that
 event only to the spawning player or to an observer who can see the relevant

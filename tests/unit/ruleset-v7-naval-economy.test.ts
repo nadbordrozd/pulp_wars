@@ -18,6 +18,61 @@ import { checkedV7 } from "../fixtures/v7-builders";
 import { coastalV7, withPortV7 } from "../fixtures/v7-naval-builders";
 
 describe("ruleset-7 naval economy", () => {
+  it("keeps naval training keyed to the selected dock while the land center is occupied", () => {
+    const fixture = withPortV7(9_099);
+    const actor = fixture.state.humanPlayerId;
+    const city = required(
+      fixture.state.cities.find((candidate) => candidate.ownerId === actor),
+    );
+    const centerUnit = required(
+      fixture.state.units.find(
+        (unit) =>
+          unit.ownerId === actor &&
+          unit.at.x === city.at.x &&
+          unit.at.y === city.at.y,
+      ),
+    );
+    const state = checkedV7({
+      ...fixture.state,
+      players: fixture.state.players.map((player) =>
+        player.id === actor
+          ? { ...player, coins: 100, researchedTechs: TECHNOLOGY_IDS_V7 }
+          : player,
+      ),
+    });
+    const naval = {
+      kind: "TRAIN_NAVAL" as const,
+      cityId: city.id,
+      at: fixture.portAt,
+      role: "PATROL_BOAT" as const,
+    };
+    expect(queryPlayerCommandsV7(viewForV7(state, actor))).toContainEqual(
+      naval,
+    );
+    expect(applyCommandV7(state, actor, naval)).toMatchObject({
+      accepted: true,
+      events: [expect.objectContaining({ kind: "NAVAL_UNIT_TRAINED" })],
+    });
+
+    const occupiedDock = checkedV7({
+      ...state,
+      units: state.units.map((unit) =>
+        unit.id === centerUnit.id
+          ? { ...unit, at: fixture.portAt, form: "EMBARKED" as const }
+          : unit,
+      ),
+    });
+    expect(
+      queryPlayerCommandsV7(viewForV7(occupiedDock, actor)),
+    ).not.toContainEqual(naval);
+    expect(applyCommandV7(occupiedDock, actor, naval)).toMatchObject({
+      accepted: false,
+      error: { code: "CITY_SPAWN_OCCUPIED" },
+      state: occupiedDock,
+      events: [],
+    });
+  });
+
   it("upgrades an occupied Port and applies only an active Shipyard discount", () => {
     const fixture = withPortV7(9100);
     const actor = fixture.state.humanPlayerId;

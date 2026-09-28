@@ -35,10 +35,10 @@ describe("ruleset-7 exact public-planning performance", () => {
       id: "retained-command-1100",
       view: () => retained,
       commandHash:
-        "335e1d932643d374f14fd14ca833beff38963367a5f740a61f4713bd4db78a5e",
+        "0b13410860e1df0d398369ce7fb307a2689edfa9dbf5305ab6fe1dfee8abd93b",
       resultHash:
-        "7b6cacc305a8204edcf6c7a890873dd770b74e1d69815324dd7dd8467841530f",
-      operations: 4_100,
+        "f18e578cba84a5fe93980ae6c0fdc9e4a531ec4354dcc44987c170476464bca3",
+      operations: 4_098,
     },
     {
       id: "captured-command-300",
@@ -53,10 +53,10 @@ describe("ruleset-7 exact public-planning performance", () => {
       id: "captured-command-425",
       view: () => captured(425),
       commandHash:
-        "93d731039193eee98b0438066993c0cd2aa4dd16094b65849815441aaf2793e2",
+        "4cdd217f92eb085b3365e9a3f7795cc32a8fcfbe52e2809327b66f5598326c86",
       resultHash:
-        "d10ebd7e702901fd301f360a3aaa2edc23b198fc10ffa6e9abce5bbbd87322bb",
-      operations: 94_418,
+        "209b33269c98db4bc8897a452355327a51f393fb4fbe3b36d57f2b6b27bbb82a",
+      operations: 94_408,
     },
   ] as const;
 
@@ -111,14 +111,14 @@ describe("ruleset-7 exact public-planning performance", () => {
     );
     expect(commands.some((command) => command.kind === "REDEVELOP")).toBe(true);
     expect(canonicalHash(commands)).toBe(
-      "22b168f691bbe028fcb8b0745b7f7c85e16d1bc96a9afed132e0609b8f11442d",
+      "4b94d92b0296ea857cc0f5046008b531aa21e7aa0f8d7eb3830c381bee021725",
     );
     const result = drain(view, commands, 7);
     expect(result.operations).toBe(
-      28_481 + publicPlanningFactScanOperations(view),
+      28_474 + publicPlanningFactScanOperations(view),
     );
     expect(canonicalHash(result.result)).toBe(
-      "4871a834eafe750832f35ba4913a140f73f77912d14be8d43e572fdf9d442040",
+      "09abc6aa7680f29f60834686313a69ca747986342568d5f6a7797d9759f23841",
     );
   });
 
@@ -146,10 +146,10 @@ describe("ruleset-7 exact public-planning performance", () => {
     if (buildPort?.kind !== "BUILD_PORT")
       throw new Error("Port command missing");
     expect(canonicalHash(beforeCommands)).toBe(
-      "ff9972e8f77b5471030c12017e6802c65328bc1abc83e017d18156dfd51651fa",
+      "6be10102571a924f4c879e23627695334f6aa275f42e471e30d5e19ca465635a",
     );
     expect(canonicalHash(drain(beforeView, beforeCommands, 17).result)).toBe(
-      "298181ca4cd8bbf931917c93f516812c89d25be22237bf2c6f334172ddda334b",
+      "44a039254f15c4c849ed4f682d8d9f7c6b7269ccba31b4868fbb97ad053939ca",
     );
 
     const built = applyCommandV7(state, actor, buildPort);
@@ -157,14 +157,14 @@ describe("ruleset-7 exact public-planning performance", () => {
     const afterView = viewForV7(built.state, actor);
     const afterCommands = queryPlayerCommandsV7(afterView);
     expect(canonicalHash(afterCommands)).toBe(
-      "9d589b3c890a51104785862038c712492890a53456da5cdb47b8d2a7a6019ae5",
+      "1334069fd90c1c2a3d8fc86d7a943bff079c9fe46faf7b031090354ba11d10d0",
     );
     const after = drain(afterView, afterCommands, 1);
     expect(after.operations).toBe(
-      28_470 + publicPlanningFactScanOperations(afterView),
+      28_463 + publicPlanningFactScanOperations(afterView),
     );
     expect(canonicalHash(after.result)).toBe(
-      "a14d0c353cee300fe3617257d35d416f60541ac2b15816ac79daaec233cd4aa3",
+      "58cc250e5c97fd8506decc2f91427da30055c31b55d418049d3b30518fc33e9b",
     );
   });
 });

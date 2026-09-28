@@ -20,7 +20,10 @@ Start Turn; derives reversible capital-connected population from Roads;
 doubles Market income with Commerce; reveals Ore with Drill; and assigns
 Pillage only to Raiding. Current Port and Fish presentation uses the two
 accepted revision-11 sources. Connected cities grow with Roads; Commerce earns
-trade and doubles Markets.
+trade and doubles Markets. Land training additionally requires an empty city
+center. Automatic Militia and Juggernaut rewards still displace or remove an
+occupant under the revision-10 reward-spawn rules, and naval training still
+checks only its selected dock for occupancy.
 
 The revision-5 achievement specification remains authoritative for achievement
 and Monument rules left unchanged by revision 10. The revision-4 biome economy

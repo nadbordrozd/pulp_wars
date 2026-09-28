@@ -1508,6 +1508,8 @@ function applyTrain(
     !player.researchedTechs.includes(rule.technology)
   )
     return rejected(original, "TECH_REQUIRED", { tech: rule.technology });
+  if (state.units.some((unit) => unit.hp > 0 && same(unit.at, city.at)))
+    return rejected(original, "CITY_SPAWN_OCCUPIED", { cityId: city.id });
   if (assignedUnitCountV7(state, city.id) >= cityUnitCapacityV7(state, city))
     return rejected(original, "CITY_CAPACITY_FULL", { cityId: city.id });
   const forgeActive = state.board.tiles.some(

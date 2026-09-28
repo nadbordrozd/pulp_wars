@@ -523,6 +523,43 @@ describe("Ruleset 7 DOM shell", () => {
     app.destroy();
   });
 
+  it("omits recruitment controls while a unit is stationed in the selected city", async () => {
+    const source = new Ruleset7BrowserController();
+    const launched = await source.launch(setupV7(1538));
+    if (!launched.ok) throw new Error(launched.diagnostic);
+    const snapshot = source.snapshot();
+    if (snapshot.view === null) throw new Error("public view missing");
+    const city = snapshot.view.cities.find(
+      (candidate) => candidate.ownerId === snapshot.view?.viewer.id,
+    );
+    if (city === undefined) throw new Error("owned city missing");
+    expect(
+      snapshot.view.units.some(
+        (unit) => unit.at.x === city.at.x && unit.at.y === city.at.y,
+      ),
+    ).toBe(true);
+    expect(
+      snapshot.offeredCommands.some(
+        (command) => command.kind === "TRAIN" && command.cityId === city.id,
+      ),
+    ).toBe(false);
+
+    const occupiedHost = new CapturingBoardHost();
+    const app = new Ruleset7DomAppView(document, requiredRoot(), source, {
+      boardHost: occupiedHost,
+      settingsStorage: null,
+    });
+    occupiedHost.callbacks?.onSelection({ kind: "CITY", cityId: city.id });
+    const dock = document.querySelector<HTMLElement>(
+      '.v7-selection-dock[data-selection-kind="city"]',
+    );
+    expect(dock).not.toBeNull();
+    expect(dock?.querySelector(".v7-train-action")).toBeNull();
+    expect(dock?.querySelector('[data-action="command-train"]')).toBeNull();
+    app.destroy();
+    source.destroy();
+  });
+
   it("opens inert train help without mutation, restores focus and scroll, then dispatches Train once", async () => {
     const source = new Ruleset7BrowserController();
     const launched = await source.launch(setupV7(1539));

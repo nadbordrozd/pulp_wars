@@ -10,6 +10,7 @@ import {
   projectEventsV7,
   queryPlayerCommandsV7,
   reachablePlayerMovementPathsV7,
+  resolveCityGrowthV7,
   unitId,
   validateMovementPathV7,
   validatePlayerMovementPathV7,
@@ -338,7 +339,84 @@ describe("Ruleset 7 revision 10 playtest corrections", () => {
     expect(threats(state)).toContainEqual({ x: 8, y: 5 });
   });
 
-  it("trains at the occupied center and pushes the prior unit in y/x order without resetting it", () => {
+  it("omits and atomically rejects occupied training, then trains with sight after the center clears", () => {
+    const fixture = occupiedTrainingState(10_006);
+    const command = {
+      kind: "TRAIN" as const,
+      cityId: fixture.cityId,
+      role: "FIGHTER" as const,
+    };
+    expect(
+      queryPlayerCommandsV7(viewForV7(fixture.state, fixture.actor)),
+    ).not.toContainEqual(command);
+    const rejected = applyCommandV7(fixture.state, fixture.actor, command);
+    expect(rejected).toMatchObject({
+      accepted: false,
+      error: {
+        code: "CITY_SPAWN_OCCUPIED",
+        params: { cityId: fixture.cityId },
+      },
+      events: [],
+    });
+    expect(rejected.state).toBe(fixture.state);
+
+    const [destination, sightCell] = canonicalNeighbors(
+      fixture.state,
+      fixture.cityAt,
+    );
+    if (destination === undefined || sightCell === undefined)
+      throw new Error("center-clearing cells missing");
+    const cleared = checkedV7({
+      ...fixture.state,
+      players: fixture.state.players.map((player) =>
+        player.id === fixture.actor
+          ? { ...player, explored: [fixture.cityAt] }
+          : player,
+      ),
+      units: fixture.state.units.map((unit) =>
+        unit.id === fixture.occupantId ? { ...unit, at: destination } : unit,
+      ),
+    });
+    expect(
+      queryPlayerCommandsV7(viewForV7(cleared, fixture.actor)),
+    ).toContainEqual(command);
+    const trained = applyCommandV7(cleared, fixture.actor, command);
+    if (!trained.accepted) throw new Error(trained.error.code);
+    expect(trained.events).not.toContainEqual(
+      expect.objectContaining({ kind: "UNIT_SPAWN_DISPLACED" }),
+    );
+    expect(trained.events).toContainEqual(
+      expect.objectContaining({ kind: "TILES_REVEALED" }),
+    );
+    expect(
+      trained.state.players.find((player) => player.id === fixture.actor)
+        ?.explored,
+    ).toContainEqual(sightCell);
+  });
+
+  it("omits and atomically rejects land training under allied occupation", () => {
+    const fixture = alliedOccupiedTrainingState(10_008);
+    const command = {
+      kind: "TRAIN" as const,
+      cityId: fixture.cityId,
+      role: "FIGHTER" as const,
+    };
+    expect(
+      queryPlayerCommandsV7(viewForV7(fixture.state, fixture.actor)),
+    ).not.toContainEqual(command);
+    const rejected = applyCommandV7(fixture.state, fixture.actor, command);
+    expect(rejected).toMatchObject({
+      accepted: false,
+      error: {
+        code: "CITY_SPAWN_OCCUPIED",
+        params: { cityId: fixture.cityId },
+      },
+      events: [],
+    });
+    expect(rejected.state).toBe(fixture.state);
+  });
+
+  it("keeps Militia reward displacement in y/x order without resetting the occupant", () => {
     const fixture = occupiedTrainingState(10_007);
     const [mountain, expected] = canonicalNeighbors(
       fixture.state,
@@ -371,15 +449,15 @@ describe("Ruleset 7 revision 10 playtest corrections", () => {
         ),
       },
     });
-    const command = {
-      kind: "TRAIN" as const,
-      cityId: fixture.cityId,
-      role: "FIGHTER" as const,
-    };
+    const reward = occupiedRewardState({ ...fixture, state }, "MILITIA", [
+      mountain,
+      expected,
+    ]);
+    const { command, state: rewardState } = reward;
     expect(
-      queryPlayerCommandsV7(viewForV7(state, fixture.actor)),
+      queryPlayerCommandsV7(viewForV7(rewardState, fixture.actor)),
     ).toContainEqual(command);
-    const result = applyCommandV7(state, fixture.actor, command);
+    const result = applyCommandV7(rewardState, fixture.actor, command);
     if (!result.accepted) throw new Error(result.error.code);
     const displaced = required(
       result.state.units.find((unit) => unit.id === fixture.occupantId),
@@ -412,22 +490,23 @@ describe("Ruleset 7 revision 10 playtest corrections", () => {
       true,
     );
     expect(
-      projectEventsV7(state, result.state, fixture.actor, result.events).events,
+      projectEventsV7(rewardState, result.state, fixture.actor, result.events)
+        .events,
     ).toContainEqual(displacement);
     const observer = required(
-      state.players.find(
+      rewardState.players.find(
         (player) =>
           player.id !== fixture.actor && player.status !== "ELIMINATED",
       ),
       "observer missing",
     );
     expect(
-      viewForV7(state, observer.id).units.some(
+      viewForV7(rewardState, observer.id).units.some(
         (unit) => unit.id === fixture.occupantId,
       ),
     ).toBe(false);
     const observerEvents = projectEventsV7(
-      state,
+      rewardState,
       result.state,
       observer.id,
       result.events,
@@ -440,7 +519,7 @@ describe("Ruleset 7 revision 10 playtest corrections", () => {
     );
   });
 
-  it("uses a Mountain push destination with Engineering and reveals its sight bonus", () => {
+  it("keeps Militia reward Mountain displacement and its sight bonus", () => {
     const fixture = occupiedTrainingState(10_009);
     const destination = required(
       canonicalNeighbors(fixture.state, fixture.cityAt)[0],
@@ -467,11 +546,10 @@ describe("Ruleset 7 revision 10 playtest corrections", () => {
         ),
       },
     });
-    const result = applyCommandV7(state, fixture.actor, {
-      kind: "TRAIN",
-      cityId: fixture.cityId,
-      role: "FIGHTER",
-    });
+    const reward = occupiedRewardState({ ...fixture, state }, "MILITIA", [
+      destination,
+    ]);
+    const result = applyCommandV7(reward.state, fixture.actor, reward.command);
     if (!result.accepted) throw new Error(result.error.code);
     expect(
       result.state.units.find((unit) => unit.id === fixture.occupantId)?.at,
@@ -490,19 +568,20 @@ describe("Ruleset 7 revision 10 playtest corrections", () => {
       "displaced-only sight tile missing",
     );
     expect(
-      state.players.find((candidate) => candidate.id === fixture.actor)
+      reward.state.players.find((candidate) => candidate.id === fixture.actor)
         ?.explored,
     ).not.toContainEqual(displacedOnlySight);
     expect(player.explored).toContainEqual(displacedOnlySight);
   });
 
-  it("removes the center occupant without death or refund when every adjacent cell is blocked", () => {
+  it("keeps Juggernaut reward removal when every adjacent cell is blocked", () => {
     const fixture = occupiedTrainingState(10_011);
-    let nextId = fixture.state.nextEntityId;
-    const blockers = canonicalNeighbors(fixture.state, fixture.cityAt).map(
+    const reward = occupiedRewardState(fixture, "JUGGERNAUT");
+    let nextId = reward.state.nextEntityId;
+    const blockers = canonicalNeighbors(reward.state, fixture.cityAt).map(
       (at) => ({
         ...required(
-          fixture.state.units.find((unit) => unit.id === fixture.occupantId),
+          reward.state.units.find((unit) => unit.id === fixture.occupantId),
           "occupant missing",
         ),
         id: unitId(nextId++),
@@ -512,19 +591,15 @@ describe("Ruleset 7 revision 10 playtest corrections", () => {
       }),
     );
     const state = checkedV7({
-      ...fixture.state,
+      ...reward.state,
       nextEntityId: nextId,
-      units: [...fixture.state.units, ...blockers].sort((a, b) => a.id - b.id),
+      units: [...reward.state.units, ...blockers].sort((a, b) => a.id - b.id),
     });
     const beforeCoins = required(
       state.players.find((player) => player.id === fixture.actor),
       "actor missing",
     ).coins;
-    const result = applyCommandV7(state, fixture.actor, {
-      kind: "TRAIN",
-      cityId: fixture.cityId,
-      role: "FIGHTER",
-    });
+    const result = applyCommandV7(state, fixture.actor, reward.command);
     if (!result.accepted) throw new Error(result.error.code);
     expect(
       result.state.units.some((unit) => unit.id === fixture.occupantId),
@@ -540,7 +615,7 @@ describe("Ruleset 7 revision 10 playtest corrections", () => {
         result.state.players.find((player) => player.id === fixture.actor),
         "actor missing",
       ).coins,
-    ).toBeLessThan(beforeCoins);
+    ).toBe(beforeCoins);
     const metrics = collectAcceptedTelemetryV7(
       state,
       [],
@@ -549,11 +624,7 @@ describe("Ruleset 7 revision 10 playtest corrections", () => {
           before: state,
           after: result.state,
           actorId: fixture.actor,
-          command: {
-            kind: "TRAIN",
-            cityId: fixture.cityId,
-            role: "FIGHTER",
-          },
+          command: reward.command,
           events: result.events,
         },
       ],
@@ -562,7 +633,7 @@ describe("Ruleset 7 revision 10 playtest corrections", () => {
     expect(metrics.roles.kills.FIGHTER).toBe(0);
   });
 
-  it("rolls back allocation and command-index overflow before displacement", () => {
+  it("rejects occupied training before allocation and command-index overflow", () => {
     const fixture = occupiedTrainingState(10_013);
     for (const state of [
       checkedV7({ ...fixture.state, nextEntityId: Number.MAX_SAFE_INTEGER }),
@@ -575,7 +646,10 @@ describe("Ruleset 7 revision 10 playtest corrections", () => {
       });
       expect(result).toMatchObject({
         accepted: false,
-        error: { code: "INTEGER_OVERFLOW" },
+        error: {
+          code: "CITY_SPAWN_OCCUPIED",
+          params: { cityId: fixture.cityId },
+        },
         events: [],
       });
       expect(result.state).toBe(state);
@@ -585,7 +659,7 @@ describe("Ruleset 7 revision 10 playtest corrections", () => {
     }
   });
 
-  it("keeps besieged, capacity, and cost precedence for occupied-center training", () => {
+  it("keeps hostile siege precedence and otherwise rejects occupancy before capacity or cost", () => {
     const fixture = occupiedTrainingState(10_014);
     const command = {
       kind: "TRAIN" as const,
@@ -644,7 +718,7 @@ describe("Ruleset 7 revision 10 playtest corrections", () => {
     });
     expect(applyCommandV7(atCapacity, fixture.actor, command)).toMatchObject({
       accepted: false,
-      error: { code: "CITY_CAPACITY_FULL" },
+      error: { code: "CITY_SPAWN_OCCUPIED" },
     });
 
     const withoutCoins = checkedV7({
@@ -656,7 +730,7 @@ describe("Ruleset 7 revision 10 playtest corrections", () => {
     });
     expect(applyCommandV7(withoutCoins, fixture.actor, command)).toMatchObject({
       accepted: false,
-      error: { code: "INSUFFICIENT_COINS" },
+      error: { code: "CITY_SPAWN_OCCUPIED" },
     });
   });
 
@@ -856,6 +930,168 @@ function occupiedTrainingState(seed: number): {
             : tile,
         ),
       },
+    }),
+  };
+}
+
+function occupiedRewardState(
+  fixture: ReturnType<typeof occupiedTrainingState>,
+  reward: "MILITIA" | "JUGGERNAUT",
+  excludedGrowth: readonly CoordV7[] = [],
+): {
+  readonly state: GameStateV7;
+  readonly command: {
+    readonly kind: "CHOOSE_CITY_REWARD";
+    readonly cityId: CityId;
+    readonly reachedLevel: 3 | 5;
+    readonly reward: "MILITIA" | "JUGGERNAUT";
+  };
+} {
+  const city = required(
+    fixture.state.cities.find((candidate) => candidate.id === fixture.cityId),
+    "reward city missing",
+  );
+  const reachedLevel = reward === "MILITIA" ? 3 : 5;
+  const addedPopulation = reward === "MILITIA" ? 6 : 14;
+  const farmCount = addedPopulation / 2;
+  const growthTiles = fixture.state.board.tiles
+    .filter(
+      (tile) =>
+        tile.territoryCityId === city.id &&
+        tile.site === null &&
+        tile.improvement === null &&
+        !same(tile.at, city.at) &&
+        !excludedGrowth.some((at) => same(at, tile.at)),
+    )
+    .slice(0, farmCount);
+  if (growthTiles.length !== farmCount)
+    throw new Error("reward growth tiles missing");
+  const economicPopulation = city.economicPopulation + addedPopulation;
+  const grown = resolveCityGrowthV7(
+    city,
+    city.permanentPopulation,
+    economicPopulation,
+  ).city;
+  const previousRewards =
+    reward === "MILITIA"
+      ? [{ reachedLevel: 2, reward: "SURVEY" as const }]
+      : [
+          { reachedLevel: 2, reward: "SURVEY" as const },
+          { reachedLevel: 3, reward: "WALLS" as const },
+          { reachedLevel: 4, reward: "TREASURY_8" as const },
+        ];
+  const candidates =
+    reward === "MILITIA"
+      ? (["WALLS", "MILITIA"] as const)
+      : (["JUGGERNAUT", "TREASURY"] as const);
+  const state = checkedV7({
+    ...fixture.state,
+    nextEntityId: fixture.state.nextEntityId + growthTiles.length,
+    cities: fixture.state.cities.map((candidate) =>
+      candidate.id === city.id
+        ? { ...grown, economicPopulation, rewards: previousRewards }
+        : candidate,
+    ),
+    board: {
+      ...fixture.state.board,
+      tiles: fixture.state.board.tiles.map((tile) =>
+        growthTiles.some((growth) => same(growth.at, tile.at))
+          ? {
+              ...tile,
+              biome: "PLAINS" as const,
+              terrain: "GRASS" as const,
+              resource: null,
+              improvement: "FARM" as const,
+            }
+          : tile,
+      ),
+    },
+    populationContributions: [
+      ...fixture.state.populationContributions,
+      ...growthTiles.map((tile, index) => ({
+        id: fixture.state.nextEntityId + index,
+        cityId: city.id,
+        category: "LIVE" as const,
+        amount: 2,
+        source: {
+          kind: "IMPROVEMENT" as const,
+          improvement: "FARM" as const,
+          at: tile.at,
+        },
+      })),
+    ],
+    pendingChoices: [
+      {
+        kind: "CITY_REWARD" as const,
+        cityId: city.id,
+        reachedLevel,
+        candidates,
+      },
+    ],
+  });
+  return {
+    state,
+    command: {
+      kind: "CHOOSE_CITY_REWARD",
+      cityId: city.id,
+      reachedLevel,
+      reward,
+    },
+  };
+}
+
+function alliedOccupiedTrainingState(seed: number): {
+  readonly state: GameStateV7;
+  readonly actor: PlayerId;
+  readonly cityId: CityId;
+} {
+  const base = initialV7(seed, 3);
+  const alliedPlayers = base.players.filter(
+    (player) => player.id !== base.humanPlayerId,
+  );
+  const actor = required(alliedPlayers[0], "allied actor missing");
+  const ally = required(alliedPlayers[1], "allied occupant owner missing");
+  const city = required(
+    base.cities.find((candidate) => candidate.ownerId === actor.id),
+    "allied actor city missing",
+  );
+  const actorUnit = required(
+    base.units.find((unit) => unit.ownerId === actor.id),
+    "allied actor unit missing",
+  );
+  const alliedUnit = required(
+    base.units.find((unit) => unit.ownerId === ally.id),
+    "allied occupant missing",
+  );
+  return {
+    actor: actor.id,
+    cityId: city.id,
+    state: checkedV7({
+      ...base,
+      setup: { ...base.setup, aiMode: "COOPERATIVE" as const },
+      activeSeatIndex: base.turnOrder.indexOf(actor.id),
+      players: base.players.map((player) =>
+        player.id === actor.id
+          ? {
+              ...player,
+              coins: 100,
+              researchedTechs: ["GATHERING" as const],
+              explored: base.board.tiles.map((tile) => tile.at),
+            }
+          : player,
+      ),
+      cities: base.cities.map((candidate) =>
+        candidate.id === city.id
+          ? { ...candidate, cityActionAvailable: true }
+          : candidate,
+      ),
+      units: base.units.map((unit) =>
+        unit.id === actorUnit.id
+          ? { ...unit, at: alliedUnit.at }
+          : unit.id === alliedUnit.id
+            ? { ...unit, at: city.at }
+            : unit,
+      ),
     }),
   };
 }

@@ -6,7 +6,15 @@ commit `2a3c029f92a63ea33c7164b05ad0a91d134c1e7b`. The pre-optimization
 `src/engine/v7/query.ts` SHA-256 is
 `5ec37076bf45e1f4e1546d6a52b0ae8aa62d97cd65fa81d70de94d0f09069163`.
 
-Run the Node 24 benchmark with:
+The benchmark script's frozen assertions and the checked
+`RULESET_7_PUBLIC_PLANNING_PERFORMANCE.json` are historical evidence from
+before occupied city centers blocked land recruitment. Reproduce them from
+commit `db60a2d7ce0e6f26323266969c8b6c55e5576fa2`, using the command below in
+that checkout. The current checkout intentionally has different command and
+planning hashes; its expectations are covered by the current public-query and
+public-planning unit suites rather than by regenerating this historical file.
+
+Run the historical Node 24 benchmark with:
 
 ```text
 npx tsx scripts/benchmark-ruleset7-public-planning.ts --output /tmp/pulp-wars-public-planning.json

@@ -324,9 +324,7 @@ function appendPublicCityCommandsV7(
   const player = view.viewer;
   if (city.ownerId !== player.id || publicCityBesieged(view, city.at)) return;
   if (city.cityActionAvailable !== true) return;
-  const centerBlocked = view.units.some(
-    (unit) => unit.ownerId !== player.id && same(unit.at, city.at),
-  );
+  const centerBlocked = view.units.some((unit) => same(unit.at, city.at));
   const capacity =
     city.level + 1 + (player.researchedTechs.includes("PLANNING") ? 1 : 0);
   const assigned = view.units.filter(

@@ -13,8 +13,8 @@ and the unchanged rules in the
 It changes city action cadence, Windmill healing, land-Road population,
 Commerce, Ore visibility, Pillage's technology assignment, two naval art
 sources, and Normal-AI evaluation. Every unmentioned revision-10 and
-revision-9 rule remains in force, including revision-10 Road movement and
-city-center spawning/displacement.
+revision-9 rule remains in force, including revision-10 Road movement and the
+city-reward center spawning/displacement rules as corrected below.
 
 The choices below are narrow applications of the approved
 [technology-tree principles](PULP_WARS_TECH_TREE_DESIGN_PRINCIPLES.md): Roads
@@ -89,9 +89,15 @@ unused action between owners.
 `cityActionAvailable` participates in strict state/save/replay parsing and
 hashing. The owner sees it on each owned city in `PlayerViewV7`, city selection,
 and accessible city status. Opponents receive no private availability field or
-command omission that reveals it through fog. Accepted training keeps
-revision-10 center displacement and removal semantics. Naval training keeps
-its selected-dock occupancy, activity, cost, and spawning rules.
+command omission that reveals it through fog. Land training requires an empty
+city center. Any living unit stationed there, whether owned or allied, removes
+all land-training offers for that city; a direct `TRAIN` rejects atomically
+with `CITY_SPAWN_OCCUPIED`. Hostile center occupation retains the existing
+besieged-city behavior. Moving the occupant away makes training available again
+subject to all other gates. Automatic Militia and Juggernaut rewards retain
+revision-10 center displacement, removal, and resulting sight semantics. Naval
+training remains independent of land-center occupancy and keeps its selected-
+dock occupancy, activity, cost, and spawning rules.
 
 ## 3. Windmill Start Turn healing
 
