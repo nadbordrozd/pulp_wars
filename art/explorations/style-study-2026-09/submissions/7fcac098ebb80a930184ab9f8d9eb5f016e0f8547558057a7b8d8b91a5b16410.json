@@ -1,0 +1,27 @@
+{
+  "id": "flat-shaded-fighter-z0625-dpr2-a",
+  "jobId": "sync-66ed168f-ffa3-4877-a997-8388b4a4de26",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "style": "flat-shaded",
+    "subject": "fighter",
+    "target": "z0625-dpr2",
+    "description": "Style: flat-shaded cartoon game sprite, flat colour fills with no gradients, single dark outline, low detail, simple graphic shapes, clean readable silhouette. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; gradients, dithering, texture, high detail.",
+    "prompt": "Style: flat-shaded cartoon game sprite, flat colour fills with no gradients, single dark outline, low detail, simple graphic shapes, clean readable silhouette. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; gradients, dithering, texture, high detail",
+    "requestSize": {
+      "width": 80,
+      "height": 92
+    },
+    "seed": 7424,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "shading": "flat shading",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    }
+  }
+}

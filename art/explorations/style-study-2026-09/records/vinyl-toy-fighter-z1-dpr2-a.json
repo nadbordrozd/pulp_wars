@@ -1,0 +1,36 @@
+{
+  "id": "vinyl-toy-fighter-z1-dpr2-a",
+  "jobId": "2d286001-5f98-4d37-9a7c-be3873a7b610",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "style": "vinyl-toy",
+    "subject": "fighter",
+    "target": "z1-dpr2",
+    "description": "Style: soft vinyl designer-toy chibi figure, very rounded pill-like shapes, oversized head, smooth glossy plastic with soft rounded shading and a bright rim highlight, saturated candy colours, cute, thin darker colour outline. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; pixel art, hard edges, sharp angles, gritty texture, realistic proportions.",
+    "prompt": "Style: soft vinyl designer-toy chibi figure, very rounded pill-like shapes, oversized head, smooth glossy plastic with soft rounded shading and a bright rim highlight, saturated candy colours, cute, thin darker colour outline. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; pixel art, hard edges, sharp angles, gritty texture, realistic proportions",
+    "requestSize": {
+      "width": 128,
+      "height": 148
+    },
+    "seed": 7322,
+    "noBackground": true
+  },
+  "submittedAt": "2026-09-28T22:41:53.006Z",
+  "candidateCount": 4,
+  "candidateSize": {
+    "width": 128,
+    "height": 148
+  },
+  "rawSheet": "art/explorations/style-study-2026-09/raw/vinyl-toy-fighter-z1-dpr2-a.png",
+  "rawSheetSha256": "b01487798f6e05ac9f971e2beb6bb6dc360ed2f04625e890c01c1a8d3417dc06",
+  "completedAt": "2026-09-28T22:42:56.375Z",
+  "usageUsd": 0.125,
+  "review": {
+    "status": "REJECTED",
+    "candidate": null,
+    "note": "Still pixel art at 128x148; no glossy toy look.",
+    "reviewedAt": "2026-09-28T23:18:27.901Z"
+  }
+}

@@ -55,6 +55,7 @@
     "art:square-road-masks": "tsx scripts/art/square-road-masks.ts",
     "art:square-terrain-family-candidate-review": "tsx scripts/art/square-terrain-family-candidate-review.ts",
     "art:rendering-review": "tsx scripts/art/rendering-review.ts",
+    "art:style-exploration-review": "tsx scripts/art/style-exploration-review.ts",
     "art:validate": "tsx scripts/art/pixellab.ts validate",
     "diagnose:mountain-live": "tsx scripts/browser-smoke-v6.ts --mountain-live",
     "smoke:browser": "tsx scripts/browser-smoke-v7.ts",

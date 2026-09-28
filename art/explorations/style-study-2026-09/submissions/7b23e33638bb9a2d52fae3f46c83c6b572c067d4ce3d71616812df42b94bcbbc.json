@@ -1,0 +1,26 @@
+{
+  "id": "chunky-16bit-fighter-z1-dpr1-pixen-probe",
+  "jobId": "sync-2e5bcb98-7066-43ce-b4bd-ff82c3a97982",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "style": "chunky-16bit",
+    "subject": "fighter",
+    "target": "z1-dpr1",
+    "description": "Style: chunky 16-bit retro console pixel art sprite, thick one-pixel near-black outline around the whole silhouette, limited palette of about 16 colours, flat colours with one shadow tone, big simple shapes, very low detail, crisp hard pixels, no anti-aliasing. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; anti-aliasing, gradients, soft shading, high detail, thin lines.",
+    "prompt": "Style: chunky 16-bit retro console pixel art sprite, thick one-pixel near-black outline around the whole silhouette, limited palette of about 16 colours, flat colours with one shadow tone, big simple shapes, very low detail, crisp hard pixels, no anti-aliasing. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; anti-aliasing, gradients, soft shading, high detail, thin lines",
+    "requestSize": {
+      "width": 64,
+      "height": 76
+    },
+    "seed": 7311,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    }
+  }
+}

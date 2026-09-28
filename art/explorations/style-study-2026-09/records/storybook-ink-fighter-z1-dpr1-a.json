@@ -1,0 +1,36 @@
+{
+  "id": "storybook-ink-fighter-z1-dpr1-a",
+  "jobId": "38b0a312-9b1b-4371-a0a4-e23d6a18b10c",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "style": "storybook-ink",
+    "subject": "fighter",
+    "target": "z1-dpr1",
+    "description": "Style: hand-drawn storybook illustration, bold black brush-ink outlines and a few woodcut-style hatch lines, simple flat watercolour wash fills on white-free transparent background, warm limited palette, charming picture-book look. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; pixel art, vector gloss, 3D render, paper background, dense hatching.",
+    "prompt": "Style: hand-drawn storybook illustration, bold black brush-ink outlines and a few woodcut-style hatch lines, simple flat watercolour wash fills on white-free transparent background, warm limited palette, charming picture-book look. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; pixel art, vector gloss, 3D render, paper background, dense hatching",
+    "requestSize": {
+      "width": 64,
+      "height": 74
+    },
+    "seed": 7306,
+    "noBackground": true
+  },
+  "submittedAt": "unknown (rebuilt from submission receipt)",
+  "candidateCount": 16,
+  "candidateSize": {
+    "width": 64,
+    "height": 74
+  },
+  "rawSheet": "art/explorations/style-study-2026-09/raw/storybook-ink-fighter-z1-dpr1-a.png",
+  "rawSheetSha256": "e4ba3ebf1ada79272814f68af2690526743804eb5daac0bbfbe59fa5c3b53c1f",
+  "completedAt": "2026-09-28T22:34:24.744Z",
+  "usageUsd": 0.125,
+  "review": {
+    "status": "REJECTED",
+    "candidate": null,
+    "note": "No ink linework or wash; ordinary pixel art with random heraldry.",
+    "reviewedAt": "2026-09-28T23:18:30.825Z"
+  }
+}

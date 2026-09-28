@@ -1,0 +1,42 @@
+{
+  "id": "bold-chibi-fighter-z1-dpr2-b",
+  "jobId": "sync-e2697205-4a78-4c42-8f33-18847ee5d14a",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "style": "bold-chibi",
+    "subject": "fighter",
+    "target": "z1-dpr2",
+    "description": "Style: bold chunky chibi game sprite, oversized head and oversized weapon, thick single-colour dark outline, flat colours with one shadow tone, low detail, big simple shapes that fill the canvas. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; thin outline, tiny details, gradients, noise.",
+    "prompt": "Style: bold chunky chibi game sprite, oversized head and oversized weapon, thick single-colour dark outline, flat colours with one shadow tone, low detail, big simple shapes that fill the canvas. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; thin outline, tiny details, gradients, noise",
+    "requestSize": {
+      "width": 128,
+      "height": 148
+    },
+    "seed": 7417,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    }
+  },
+  "submittedAt": "2026-09-28T23:05:13.029Z",
+  "candidateCount": 1,
+  "candidateSize": {
+    "width": 128,
+    "height": 148
+  },
+  "rawSheet": "art/explorations/style-study-2026-09/raw/bold-chibi-fighter-z1-dpr2-b.png",
+  "rawSheetSha256": "d7538187148a69b5fed99a8e8d039dbdd852eba9f6551dc8188a58a9ec93356b",
+  "completedAt": "2026-09-28T23:05:13.055Z",
+  "usageUsd": 0.008495679007636175,
+  "review": {
+    "status": "REJECTED",
+    "candidate": null,
+    "note": "Alternative seed; closed great-helm design departs from the open-face zoom-1 design.",
+    "reviewedAt": "2026-09-28T23:29:16.302Z"
+  }
+}

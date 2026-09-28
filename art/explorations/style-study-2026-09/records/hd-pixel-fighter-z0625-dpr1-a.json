@@ -1,0 +1,43 @@
+{
+  "id": "hd-pixel-fighter-z0625-dpr1-a",
+  "jobId": "e371cc93-b01c-4f42-a606-132915e40796",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "style": "hd-pixel",
+    "subject": "fighter",
+    "target": "z0625-dpr1",
+    "description": "Style: crisp modern high-colour pixel art in the manner of polished indie tactics games, selective coloured outline (darker shade of each fill instead of pure black), rich palette with hue-shifted shading and small highlights, clean readable clusters, medium detail, hard pixels. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; pure black outline everywhere, blurry pixels, noise, dithering mush.",
+    "prompt": "Style: crisp modern high-colour pixel art in the manner of polished indie tactics games, selective coloured outline (darker shade of each fill instead of pure black), rich palette with hue-shifted shading and small highlights, clean readable clusters, medium detail, hard pixels. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; pure black outline everywhere, blurry pixels, noise, dithering mush",
+    "requestSize": {
+      "width": 40,
+      "height": 46
+    },
+    "seed": 7343,
+    "noBackground": true,
+    "subjectReference": {
+      "id": "hd-pixel-fighter-z1-dpr1-a",
+      "usageDescription": "The same unit design drawn at another display size: keep its costume, colours, proportions and pose, redrawn natively and legibly at the requested pixel size.",
+      "sha256": "869baeee0471485032e22e422b002929d02dbc8363b8b906d235fa51e94efbc2"
+    }
+  },
+  "submittedAt": "2026-09-28T22:52:05.497Z",
+  "candidateCount": 16,
+  "candidateSize": {
+    "width": 40,
+    "height": 46
+  },
+  "rawSheet": "art/explorations/style-study-2026-09/raw/hd-pixel-fighter-z0625-dpr1-a.png",
+  "rawSheetSha256": "d1843c4333e311f6863b9e3d853a7406cd43511a922359cdf7d4cbab494ae346",
+  "completedAt": "2026-09-28T22:55:33.147Z",
+  "usageUsd": 0.095,
+  "output": "art/explorations/style-study-2026-09/accepted/hd-pixel/fighter-z0625-dpr1.png",
+  "outputSha256": "ea083362294d9388297268c25e9cd3e713ae5d5431bec75d062b45b815503005",
+  "review": {
+    "status": "ACCEPTED",
+    "candidate": 0,
+    "note": "Raised sword and shield remain separate shapes at 40x46; helmet crest and red torso visible.",
+    "reviewedAt": "2026-09-28T22:59:01.714Z"
+  }
+}

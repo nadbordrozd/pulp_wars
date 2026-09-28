@@ -1,0 +1,45 @@
+{
+  "id": "flat-shaded-city-z0625-dpr2-a",
+  "jobId": "sync-7ca04ce1-1c8e-4b50-9268-710f2937d45c",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "style": "flat-shaded",
+    "subject": "city",
+    "target": "z0625-dpr2",
+    "description": "Style: flat-shaded cartoon game sprite, flat colour fills with no gradients, single dark outline, low detail, simple graphic shapes, clean readable silhouette. Subject: one small fantasy town as a single strategy-game map piece: a compact cluster of four chunky cottages with bright red roofs huddled around one tall round stone keep tower with a big red banner flag on top, short stone ring wall in front, compact footprint, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; gradients, dithering, texture, high detail.",
+    "prompt": "Style: flat-shaded cartoon game sprite, flat colour fills with no gradients, single dark outline, low detail, simple graphic shapes, clean readable silhouette. Subject: one small fantasy town as a single strategy-game map piece: a compact cluster of four chunky cottages with bright red roofs huddled around one tall round stone keep tower with a big red banner flag on top, short stone ring wall in front, compact footprint, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; gradients, dithering, texture, high detail",
+    "requestSize": {
+      "width": 160,
+      "height": 160
+    },
+    "seed": 7427,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "shading": "flat shading",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    }
+  },
+  "submittedAt": "2026-09-28T23:06:42.122Z",
+  "candidateCount": 1,
+  "candidateSize": {
+    "width": 160,
+    "height": 160
+  },
+  "rawSheet": "art/explorations/style-study-2026-09/raw/flat-shaded-city-z0625-dpr2-a.png",
+  "rawSheetSha256": "eed2754df0982ab7f8a53e431dd50912c0ecfec92936a44be1b8568f0cfa2e19",
+  "completedAt": "2026-09-28T23:06:42.152Z",
+  "usageUsd": 0.007213956329557631,
+  "output": "art/explorations/style-study-2026-09/accepted/flat-shaded/city-z0625-dpr2.png",
+  "outputSha256": "eed2754df0982ab7f8a53e431dd50912c0ecfec92936a44be1b8568f0cfa2e19",
+  "review": {
+    "status": "ACCEPTED",
+    "candidate": 0,
+    "note": "Grey keep, flag, three red-roofed houses on a grass slab; readable.",
+    "reviewedAt": "2026-09-28T23:18:25.059Z"
+  }
+}

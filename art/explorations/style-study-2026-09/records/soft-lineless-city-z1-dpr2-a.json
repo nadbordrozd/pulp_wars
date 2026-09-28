@@ -1,0 +1,42 @@
+{
+  "id": "soft-lineless-city-z1-dpr2-a",
+  "jobId": "sync-526adf5b-ab30-49a5-a269-6997085a7881",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "style": "soft-lineless",
+    "subject": "city",
+    "target": "z1-dpr2",
+    "description": "Style: soft rounded toy-like game sprite without outlines, shapes separated by colour and light only, smooth soft shading, cute rounded proportions, low detail. Subject: one small fantasy town as a single strategy-game map piece: a compact cluster of four chunky cottages with bright red roofs huddled around one tall round stone keep tower with a big red banner flag on top, short stone ring wall in front, compact footprint, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; black outline, hard ink lines, noise, high detail.",
+    "prompt": "Style: soft rounded toy-like game sprite without outlines, shapes separated by colour and light only, smooth soft shading, cute rounded proportions, low detail. Subject: one small fantasy town as a single strategy-game map piece: a compact cluster of four chunky cottages with bright red roofs huddled around one tall round stone keep tower with a big red banner flag on top, short stone ring wall in front, compact footprint, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; black outline, hard ink lines, noise, high detail",
+    "requestSize": {
+      "width": 256,
+      "height": 256
+    },
+    "seed": 7444,
+    "noBackground": true,
+    "options": {
+      "outline": "lineless",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    }
+  },
+  "submittedAt": "2026-09-28T23:09:06.567Z",
+  "candidateCount": 1,
+  "candidateSize": {
+    "width": 256,
+    "height": 256
+  },
+  "rawSheet": "art/explorations/style-study-2026-09/raw/soft-lineless-city-z1-dpr2-a.png",
+  "rawSheetSha256": "8ad209e4ccbbc1aad8c3271b72992442448511f7b91a786628a27aec8b65f61b",
+  "completedAt": "2026-09-28T23:09:06.603Z",
+  "usageUsd": 0.00792436162630717,
+  "review": {
+    "status": "REJECTED",
+    "candidate": null,
+    "note": "Style dropped: Pixen lineless kept dark outlines, so the output is indistinguishable from bold-chibi.",
+    "reviewedAt": "2026-09-28T23:29:21.477Z"
+  }
+}

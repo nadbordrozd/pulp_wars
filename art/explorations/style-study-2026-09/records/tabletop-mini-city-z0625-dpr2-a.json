@@ -1,0 +1,43 @@
+{
+  "id": "tabletop-mini-city-z0625-dpr2-a",
+  "jobId": "d17e082c-a2d7-43d8-b329-18faae7efd2f",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "style": "tabletop-mini",
+    "subject": "city",
+    "target": "z0625-dpr2",
+    "description": "Style: a painted tabletop wargame miniature photographed as a game piece, the subject stands on a small round dark-green painted base, painted plastic look with soft studio highlights, slightly glossy, chunky toy proportions, crisp edge. Subject: one small fantasy town as a single strategy-game map piece: a compact cluster of four chunky cottages with bright red roofs huddled around one tall round stone keep tower with a big red banner flag on top, short stone ring wall in front, compact footprint, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. The whole town stands on one small round dark-green painted base like a board-game building piece. Must not include: ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; pixel art, flat vector, sketch, hand, table surface, dice.",
+    "prompt": "Style: a painted tabletop wargame miniature photographed as a game piece, the subject stands on a small round dark-green painted base, painted plastic look with soft studio highlights, slightly glossy, chunky toy proportions, crisp edge. Subject: one small fantasy town as a single strategy-game map piece: a compact cluster of four chunky cottages with bright red roofs huddled around one tall round stone keep tower with a big red banner flag on top, short stone ring wall in front, compact footprint, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. The whole town stands on one small round dark-green painted base like a board-game building piece.",
+    "negativePrompt": "ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; pixel art, flat vector, sketch, hand, table surface, dice",
+    "requestSize": {
+      "width": 160,
+      "height": 160
+    },
+    "seed": 7502,
+    "noBackground": true,
+    "subjectReference": {
+      "id": "tabletop-mini-city-z1-dpr1-b",
+      "usageDescription": "The same unit design drawn at another display size: keep its costume, colours, proportions and pose, redrawn natively and legibly at the requested pixel size.",
+      "sha256": "07758a74c847a7087be259fbaea36fd6f2efb9f012dcaae6cbac5bedf82b1ed3"
+    }
+  },
+  "submittedAt": "2026-09-28T23:12:57.137Z",
+  "candidateCount": 4,
+  "candidateSize": {
+    "width": 160,
+    "height": 160
+  },
+  "rawSheet": "art/explorations/style-study-2026-09/raw/tabletop-mini-city-z0625-dpr2-a.png",
+  "rawSheetSha256": "b351b9d6170430b0d0f780c3510159087ab6d24b9c7125469016931676610938",
+  "completedAt": "2026-09-28T23:14:03.923Z",
+  "usageUsd": 0.125,
+  "output": "art/explorations/style-study-2026-09/accepted/tabletop-mini/city-z0625-dpr2.png",
+  "outputSha256": "f76837267f70ae267d717157a3f7de9e07c876a265f9d5e43199639f183ff568",
+  "review": {
+    "status": "ACCEPTED",
+    "candidate": 0,
+    "note": "Matches the zoom-1 design; ring wall on the base, strong red roofs.",
+    "reviewedAt": "2026-09-28T23:18:09.603Z"
+  }
+}

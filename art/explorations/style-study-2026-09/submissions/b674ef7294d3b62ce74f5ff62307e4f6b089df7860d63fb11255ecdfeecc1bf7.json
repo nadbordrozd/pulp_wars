@@ -1,0 +1,25 @@
+{
+  "id": "tabletop-mini-city-z1-dpr2-a",
+  "jobId": "c8fd19f1-e0de-44cf-9119-4e050ec4a506",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "style": "tabletop-mini",
+    "subject": "city",
+    "target": "z1-dpr2",
+    "description": "Style: a painted tabletop wargame miniature photographed as a game piece, the subject stands on a small round dark-green painted base, painted plastic look with soft studio highlights, slightly glossy, chunky toy proportions, crisp edge. Subject: one small fantasy town as a single strategy-game map piece: a compact cluster of four chunky cottages with bright red roofs huddled around one tall round stone keep tower with a big red banner flag on top, short stone ring wall in front, compact footprint, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. The whole town stands on one small round dark-green painted base like a board-game building piece. Must not include: ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; pixel art, flat vector, sketch, hand, table surface, dice.",
+    "prompt": "Style: a painted tabletop wargame miniature photographed as a game piece, the subject stands on a small round dark-green painted base, painted plastic look with soft studio highlights, slightly glossy, chunky toy proportions, crisp edge. Subject: one small fantasy town as a single strategy-game map piece: a compact cluster of four chunky cottages with bright red roofs huddled around one tall round stone keep tower with a big red banner flag on top, short stone ring wall in front, compact footprint, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. The whole town stands on one small round dark-green painted base like a board-game building piece.",
+    "negativePrompt": "ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; pixel art, flat vector, sketch, hand, table surface, dice",
+    "requestSize": {
+      "width": 256,
+      "height": 256
+    },
+    "seed": 7503,
+    "noBackground": true,
+    "subjectReference": {
+      "id": "tabletop-mini-city-z1-dpr1-b",
+      "usageDescription": "The same unit design drawn at another display size: keep its costume, colours, proportions and pose, redrawn natively and legibly at the requested pixel size.",
+      "sha256": "07758a74c847a7087be259fbaea36fd6f2efb9f012dcaae6cbac5bedf82b1ed3"
+    }
+  }
+}

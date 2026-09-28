@@ -1,0 +1,43 @@
+{
+  "id": "hd-pixel-fighter-z0625-dpr2-a",
+  "jobId": "69b838c2-24ef-4e60-8fc1-fff42e2d5aaa",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "style": "hd-pixel",
+    "subject": "fighter",
+    "target": "z0625-dpr2",
+    "description": "Style: crisp modern high-colour pixel art in the manner of polished indie tactics games, selective coloured outline (darker shade of each fill instead of pure black), rich palette with hue-shifted shading and small highlights, clean readable clusters, medium detail, hard pixels. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; pure black outline everywhere, blurry pixels, noise, dithering mush.",
+    "prompt": "Style: crisp modern high-colour pixel art in the manner of polished indie tactics games, selective coloured outline (darker shade of each fill instead of pure black), rich palette with hue-shifted shading and small highlights, clean readable clusters, medium detail, hard pixels. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; pure black outline everywhere, blurry pixels, noise, dithering mush",
+    "requestSize": {
+      "width": 80,
+      "height": 92
+    },
+    "seed": 7344,
+    "noBackground": true,
+    "subjectReference": {
+      "id": "hd-pixel-fighter-z1-dpr1-a",
+      "usageDescription": "The same unit design drawn at another display size: keep its costume, colours, proportions and pose, redrawn natively and legibly at the requested pixel size.",
+      "sha256": "869baeee0471485032e22e422b002929d02dbc8363b8b906d235fa51e94efbc2"
+    }
+  },
+  "submittedAt": "2026-09-28T22:52:06.496Z",
+  "candidateCount": 4,
+  "candidateSize": {
+    "width": 80,
+    "height": 92
+  },
+  "rawSheet": "art/explorations/style-study-2026-09/raw/hd-pixel-fighter-z0625-dpr2-a.png",
+  "rawSheetSha256": "a3bf89a7271541c572578317e370b242c47382a6be8d44306fb06f6c24a8eee0",
+  "completedAt": "2026-09-28T22:53:09.842Z",
+  "usageUsd": 0.095,
+  "output": "art/explorations/style-study-2026-09/accepted/hd-pixel/fighter-z0625-dpr2.png",
+  "outputSha256": "5be624ea52d51a4fee0199692342edbf16f7ed9bd49a2d1814941ba15d941894",
+  "review": {
+    "status": "ACCEPTED",
+    "candidate": 0,
+    "note": "Raised sword and shield, full body, same design as zoom 1.",
+    "reviewedAt": "2026-09-28T22:59:00.992Z"
+  }
+}

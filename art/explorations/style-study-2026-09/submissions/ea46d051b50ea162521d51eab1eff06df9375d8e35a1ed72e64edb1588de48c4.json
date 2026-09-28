@@ -1,0 +1,25 @@
+{
+  "id": "counter-token-fighter-z1-dpr2-b",
+  "jobId": "2c782500-44f7-4758-9c76-1d9ab0f6be8c",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "style": "counter-token",
+    "subject": "fighter",
+    "target": "z1-dpr2",
+    "description": "Style: chunky board-game counter token: the subject is shown as a bold emblem standing inside one round token disc, the disc has a thick bright red rim, dark outline, flat bold colours, very low detail, reads like a tabletop wargame counter seen from slightly above. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. The token is a perfect circle fully inside the image with a small margin, sitting at the bottom of the image. Must not include: ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; square card, text on the token, multiple tokens, thin rim.",
+    "prompt": "Style: chunky board-game counter token: the subject is shown as a bold emblem standing inside one round token disc, the disc has a thick bright red rim, dark outline, flat bold colours, very low detail, reads like a tabletop wargame counter seen from slightly above. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. The token is a perfect circle fully inside the image with a small margin, sitting at the bottom of the image.",
+    "negativePrompt": "ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; square card, text on the token, multiple tokens, thin rim",
+    "requestSize": {
+      "width": 128,
+      "height": 148
+    },
+    "seed": 7522,
+    "noBackground": true,
+    "subjectReference": {
+      "id": "counter-token-fighter-z1-dpr1-a",
+      "usageDescription": "The same unit design drawn at another display size: keep its costume, colours, proportions and pose, redrawn natively and legibly at the requested pixel size.",
+      "sha256": "1f58f19f1530d929a235fe3f9f27c6ff764e1d208b57bb636e501451865887e5"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "id": "bold-chibi-city-z1-dpr1-a",
+  "jobId": "sync-b95a1720-538f-47dd-8088-2db02d747980",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "style": "bold-chibi",
+    "subject": "city",
+    "target": "z1-dpr1",
+    "description": "Style: bold chunky chibi game sprite, oversized head and oversized weapon, thick single-colour dark outline, flat colours with one shadow tone, low detail, big simple shapes that fill the canvas. Subject: one small fantasy town as a single strategy-game map piece: a compact cluster of four chunky cottages with bright red roofs huddled around one tall round stone keep tower with a big red banner flag on top, short stone ring wall in front, compact footprint, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; thin outline, tiny details, gradients, noise.",
+    "prompt": "Style: bold chunky chibi game sprite, oversized head and oversized weapon, thick single-colour dark outline, flat colours with one shadow tone, low detail, big simple shapes that fill the canvas. Subject: one small fantasy town as a single strategy-game map piece: a compact cluster of four chunky cottages with bright red roofs huddled around one tall round stone keep tower with a big red banner flag on top, short stone ring wall in front, compact footprint, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; thin outline, tiny details, gradients, noise",
+    "requestSize": {
+      "width": 128,
+      "height": 128
+    },
+    "seed": 7413,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    }
+  }
+}

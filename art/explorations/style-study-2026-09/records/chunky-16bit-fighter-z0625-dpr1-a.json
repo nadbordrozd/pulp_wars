@@ -1,0 +1,42 @@
+{
+  "id": "chunky-16bit-fighter-z0625-dpr1-a",
+  "jobId": "59761119-ea15-4b08-b5af-b4f9b3b286cf",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "style": "chunky-16bit",
+    "subject": "fighter",
+    "target": "z0625-dpr1",
+    "description": "Style: chunky 16-bit retro console pixel art sprite, thick one-pixel near-black outline around the whole silhouette, limited palette of about 16 colours, flat colours with one shadow tone, big simple shapes, very low detail, crisp hard pixels, no anti-aliasing. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; anti-aliasing, gradients, soft shading, high detail, thin lines.",
+    "prompt": "Style: chunky 16-bit retro console pixel art sprite, thick one-pixel near-black outline around the whole silhouette, limited palette of about 16 colours, flat colours with one shadow tone, big simple shapes, very low detail, crisp hard pixels, no anti-aliasing. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; anti-aliasing, gradients, soft shading, high detail, thin lines",
+    "requestSize": {
+      "width": 40,
+      "height": 46
+    },
+    "seed": 7331,
+    "noBackground": true,
+    "subjectReference": {
+      "id": "chunky-16bit-fighter-z1-dpr1-a",
+      "usageDescription": "The same unit design drawn at another display size: keep its costume, colours, proportions and pose, redrawn natively and legibly at the requested pixel size.",
+      "sha256": "5052a0815282c386e289ef7a5fb9af64206219afdbfc5ab85ba6f9a40dda9255"
+    }
+  },
+  "submittedAt": "2026-09-28T22:46:13.464Z",
+  "candidateCount": 16,
+  "candidateSize": {
+    "width": 40,
+    "height": 46
+  },
+  "rawSheet": "art/explorations/style-study-2026-09/raw/chunky-16bit-fighter-z0625-dpr1-a.png",
+  "rawSheetSha256": "ed0007008602bc639dfc0949ebd27f2957895e3a30872bb416f0d065e89b24e5",
+  "completedAt": "2026-09-28T22:51:30.966Z",
+  "output": "art/explorations/style-study-2026-09/accepted/chunky-16bit/fighter-z0625-dpr1.png",
+  "outputSha256": "eaa3f7b6949ad5870285b8da5b875a486187898d35d84d352325530c17aef5bd",
+  "review": {
+    "status": "ACCEPTED",
+    "candidate": 1,
+    "note": "Full body, sword and round shield both visible, same grey helmet, red crest and red tunic as the zoom-1 design; several siblings were cropped or lost the sword.",
+    "reviewedAt": "2026-09-28T22:52:02.159Z"
+  }
+}

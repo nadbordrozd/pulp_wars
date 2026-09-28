@@ -1,0 +1,38 @@
+{
+  "id": "hd-pixel-fighter-z1-dpr1-a",
+  "jobId": "2926aef2-db01-4a7a-a5f2-9bcb571926b2",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "style": "hd-pixel",
+    "subject": "fighter",
+    "target": "z1-dpr1",
+    "description": "Style: crisp modern high-colour pixel art in the manner of polished indie tactics games, selective coloured outline (darker shade of each fill instead of pure black), rich palette with hue-shifted shading and small highlights, clean readable clusters, medium detail, hard pixels. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; pure black outline everywhere, blurry pixels, noise, dithering mush.",
+    "prompt": "Style: crisp modern high-colour pixel art in the manner of polished indie tactics games, selective coloured outline (darker shade of each fill instead of pure black), rich palette with hue-shifted shading and small highlights, clean readable clusters, medium detail, hard pixels. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; pure black outline everywhere, blurry pixels, noise, dithering mush",
+    "requestSize": {
+      "width": 64,
+      "height": 74
+    },
+    "seed": 7302,
+    "noBackground": true
+  },
+  "submittedAt": "unknown (rebuilt from submission receipt)",
+  "candidateCount": 16,
+  "candidateSize": {
+    "width": 64,
+    "height": 74
+  },
+  "rawSheet": "art/explorations/style-study-2026-09/raw/hd-pixel-fighter-z1-dpr1-a.png",
+  "rawSheetSha256": "a56662dccf94d28f715d48965a5733047ea80d92996ec23b87f2eb66db9d5811",
+  "completedAt": "2026-09-28T22:33:59.893Z",
+  "usageUsd": 0.125,
+  "output": "art/explorations/style-study-2026-09/accepted/hd-pixel/fighter-z1-dpr1.png",
+  "outputSha256": "869baeee0471485032e22e422b002929d02dbc8363b8b906d235fa51e94efbc2",
+  "review": {
+    "status": "ACCEPTED",
+    "candidate": 0,
+    "note": "Selective outline, raised sword gives a distinct silhouette, large red torso and crest; faces the viewer rather than south-east.",
+    "reviewedAt": "2026-09-28T22:46:04.018Z"
+  }
+}

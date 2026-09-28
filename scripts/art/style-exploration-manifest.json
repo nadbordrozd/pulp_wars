@@ -1,0 +1,1346 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Nonproduction art-style exploration for bead pulp_wars-73l.2. Not read by art:validate, the asset registry or the runtime.",
+  "provider": {
+    "name": "PixelLab",
+    "apiBaseUrl": "https://api.pixellab.ai/v2",
+    "credentialEnvironmentVariable": "PIXELLAB_API_KEY",
+    "documentation": "https://api.pixellab.ai/v2/openapi.json"
+  },
+  "camera": "Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped.",
+  "ownerColor": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+  "subjects": {
+    "fighter": "Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette.",
+    "city": "Subject: one small fantasy town as a single strategy-game map piece: a compact cluster of four chunky cottages with bright red roofs huddled around one tall round stone keep tower with a big red banner flag on top, short stone ring wall in front, compact footprint, strong readable silhouette."
+  },
+  "sharedNegativePrompt": "ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism",
+  "targets": [
+    {
+      "id": "z0625-dpr1",
+      "subject": "fighter",
+      "size": {
+        "width": 40,
+        "height": 46
+      },
+      "view": "zoom 0.625 at DPR 1 (fit camera on standard boards): 64x74 CSS canvas x 0.625 = 40x46.25 device px, rounded to 40x46"
+    },
+    {
+      "id": "z1-dpr1",
+      "subject": "fighter",
+      "size": {
+        "width": 64,
+        "height": 74
+      },
+      "view": "zoom 1 at DPR 1: standard unit canvas 256x296 source x 0.25 display scale = 64x74 CSS = device px"
+    },
+    {
+      "id": "z0625-dpr2",
+      "subject": "fighter",
+      "size": {
+        "width": 80,
+        "height": 92
+      },
+      "view": "zoom 0.625 at DPR 2: 40x46.25 CSS x 2 = 80x92.5 device px, rounded to 80x92"
+    },
+    {
+      "id": "z1-dpr2",
+      "subject": "fighter",
+      "size": {
+        "width": 128,
+        "height": 148
+      },
+      "view": "zoom 1 at DPR 2: 64x74 CSS x 2 = 128x148 device px"
+    },
+    {
+      "id": "z0625-dpr1",
+      "subject": "city",
+      "size": {
+        "width": 80,
+        "height": 80
+      },
+      "view": "zoom 0.625 at DPR 1: one 128 CSS px tile x 0.625 = 80x80 device px"
+    },
+    {
+      "id": "z1-dpr1",
+      "subject": "city",
+      "size": {
+        "width": 128,
+        "height": 128
+      },
+      "view": "zoom 1 at DPR 1: one 128x128 CSS px tile = device px"
+    },
+    {
+      "id": "z0625-dpr2",
+      "subject": "city",
+      "size": {
+        "width": 160,
+        "height": 160
+      },
+      "view": "zoom 0.625 at DPR 2: 80x80 CSS x 2 = 160x160 device px"
+    },
+    {
+      "id": "z1-dpr2",
+      "subject": "city",
+      "size": {
+        "width": 256,
+        "height": 256
+      },
+      "view": "zoom 1 at DPR 2: 128x128 CSS x 2 = 256x256 device px"
+    }
+  ],
+  "styles": [
+    {
+      "id": "chunky-16bit",
+      "label": "Chunky 16-bit pixel art",
+      "endpoint": "generate-image-v2",
+      "stylePrompt": "Style: chunky 16-bit retro console pixel art sprite, thick one-pixel near-black outline around the whole silhouette, limited palette of about 16 colours, flat colours with one shadow tone, big simple shapes, very low detail, crisp hard pixels, no anti-aliasing.",
+      "negativePrompt": "anti-aliasing, gradients, soft shading, high detail, thin lines"
+    },
+    {
+      "id": "hd-pixel",
+      "label": "Crisp modern HD pixel art",
+      "endpoint": "generate-image-v2",
+      "stylePrompt": "Style: crisp modern high-colour pixel art in the manner of polished indie tactics games, selective coloured outline (darker shade of each fill instead of pure black), rich palette with hue-shifted shading and small highlights, clean readable clusters, medium detail, hard pixels.",
+      "negativePrompt": "pure black outline everywhere, blurry pixels, noise, dithering mush"
+    },
+    {
+      "id": "flat-cartoon",
+      "label": "Flat cartoon / vector sticker",
+      "endpoint": "generate-image-v2",
+      "stylePrompt": "Style: clean flat vector cartoon illustration like a mobile strategy game sticker, thick smooth dark outline, bright flat fills with one hard cel-shade tone, smooth anti-aliased curved edges, no texture, no pixel stair-steps, bold and simple.",
+      "negativePrompt": "pixel art, visible pixel grid, dithering, texture, painterly brushwork, gradients"
+    },
+    {
+      "id": "tabletop-mini",
+      "label": "Tabletop miniature / board-game piece",
+      "endpoint": "generate-image-v2",
+      "stylePrompt": "Style: a painted tabletop wargame miniature photographed as a game piece, the subject stands on a small round dark-green painted base, painted plastic look with soft studio highlights, slightly glossy, chunky toy proportions, crisp edge.",
+      "negativePrompt": "pixel art, flat vector, sketch, hand, table surface, dice"
+    },
+    {
+      "id": "vinyl-toy",
+      "label": "Soft vinyl-toy chibi",
+      "endpoint": "generate-image-v2",
+      "stylePrompt": "Style: soft vinyl designer-toy chibi figure, very rounded pill-like shapes, oversized head, smooth glossy plastic with soft rounded shading and a bright rim highlight, saturated candy colours, cute, thin darker colour outline.",
+      "negativePrompt": "pixel art, hard edges, sharp angles, gritty texture, realistic proportions"
+    },
+    {
+      "id": "storybook-ink",
+      "label": "Woodcut / ink storybook",
+      "endpoint": "generate-image-v2",
+      "stylePrompt": "Style: hand-drawn storybook illustration, bold black brush-ink outlines and a few woodcut-style hatch lines, simple flat watercolour wash fills on white-free transparent background, warm limited palette, charming picture-book look.",
+      "negativePrompt": "pixel art, vector gloss, 3D render, paper background, dense hatching"
+    },
+    {
+      "id": "die-cut-sticker",
+      "label": "Die-cut sticker",
+      "endpoint": "generate-image-v2",
+      "stylePrompt": "Style: cute die-cut sticker, the whole silhouette is surrounded by a thick solid white sticker border, inside it a bold dark outline, bright flat colours with one simple shadow tone, very low detail, big simple readable shapes.",
+      "negativePrompt": "missing white border, thin outline, gradients, texture, high detail"
+    },
+    {
+      "id": "bold-chibi",
+      "label": "Bold chibi pixel (Pixen)",
+      "endpoint": "create-image-pixen",
+      "stylePrompt": "Style: bold chunky chibi game sprite, oversized head and oversized weapon, thick single-colour dark outline, flat colours with one shadow tone, low detail, big simple shapes that fill the canvas.",
+      "negativePrompt": "thin outline, tiny details, gradients, noise",
+      "options": {
+        "outline": "single color black outline",
+        "detail": "low detail",
+        "view": "low top-down",
+        "direction": "south-east"
+      }
+    },
+    {
+      "id": "flat-shaded",
+      "label": "Flat-shaded cartoon pixel (Pixflux)",
+      "endpoint": "create-image-pixflux",
+      "stylePrompt": "Style: flat-shaded cartoon game sprite, flat colour fills with no gradients, single dark outline, low detail, simple graphic shapes, clean readable silhouette.",
+      "negativePrompt": "gradients, dithering, texture, high detail",
+      "options": {
+        "outline": "single color black outline",
+        "shading": "flat shading",
+        "detail": "low detail",
+        "view": "low top-down",
+        "direction": "south-east"
+      }
+    },
+    {
+      "id": "soft-lineless",
+      "label": "Soft lineless pixel (Pixen)",
+      "endpoint": "create-image-pixen",
+      "stylePrompt": "Style: soft rounded toy-like game sprite without outlines, shapes separated by colour and light only, smooth soft shading, cute rounded proportions, low detail.",
+      "negativePrompt": "black outline, hard ink lines, noise, high detail",
+      "options": {
+        "outline": "lineless",
+        "detail": "low detail",
+        "view": "low top-down",
+        "direction": "south-east"
+      }
+    },
+    {
+      "id": "counter-token",
+      "label": "Board-game counter token",
+      "endpoint": "generate-image-v2",
+      "stylePrompt": "Style: chunky board-game counter token: the subject is shown as a bold emblem standing inside one round token disc, the disc has a thick bright red rim, dark outline, flat bold colours, very low detail, reads like a tabletop wargame counter seen from slightly above.",
+      "negativePrompt": "square card, text on the token, multiple tokens, thin rim"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "chunky-16bit-fighter-z1-dpr1-a",
+      "style": "chunky-16bit",
+      "subject": "fighter",
+      "target": "z1-dpr1",
+      "requestSize": {
+        "width": 64,
+        "height": 74
+      },
+      "seed": 7301
+    },
+    {
+      "id": "hd-pixel-fighter-z1-dpr1-a",
+      "style": "hd-pixel",
+      "subject": "fighter",
+      "target": "z1-dpr1",
+      "requestSize": {
+        "width": 64,
+        "height": 74
+      },
+      "seed": 7302
+    },
+    {
+      "id": "flat-cartoon-fighter-z1-dpr1-a",
+      "style": "flat-cartoon",
+      "subject": "fighter",
+      "target": "z1-dpr1",
+      "requestSize": {
+        "width": 64,
+        "height": 74
+      },
+      "seed": 7303
+    },
+    {
+      "id": "tabletop-mini-fighter-z1-dpr1-a",
+      "style": "tabletop-mini",
+      "subject": "fighter",
+      "target": "z1-dpr1",
+      "requestSize": {
+        "width": 64,
+        "height": 74
+      },
+      "seed": 7304
+    },
+    {
+      "id": "vinyl-toy-fighter-z1-dpr1-a",
+      "style": "vinyl-toy",
+      "subject": "fighter",
+      "target": "z1-dpr1",
+      "requestSize": {
+        "width": 64,
+        "height": 74
+      },
+      "seed": 7305
+    },
+    {
+      "id": "storybook-ink-fighter-z1-dpr1-a",
+      "style": "storybook-ink",
+      "subject": "fighter",
+      "target": "z1-dpr1",
+      "requestSize": {
+        "width": 64,
+        "height": 74
+      },
+      "seed": 7306
+    },
+    {
+      "id": "chunky-16bit-fighter-z1-dpr1-pixen-probe",
+      "style": "chunky-16bit",
+      "subject": "fighter",
+      "target": "z1-dpr1",
+      "requestSize": {
+        "width": 64,
+        "height": 76
+      },
+      "seed": 7311,
+      "endpoint": "create-image-pixen",
+      "options": {
+        "outline": "single color black outline",
+        "detail": "low detail",
+        "view": "low top-down",
+        "direction": "south-east"
+      },
+      "notes": "Endpoint probe: Pixen outline/detail/view/direction controls. Pixen needs multiples of 4, so 64x76 is the nearest legal size (+2 px height, transparent rows)."
+    },
+    {
+      "id": "flat-cartoon-fighter-z1-dpr1-pixflux-probe",
+      "style": "flat-cartoon",
+      "subject": "fighter",
+      "target": "z1-dpr1",
+      "requestSize": {
+        "width": 64,
+        "height": 74
+      },
+      "seed": 7313,
+      "endpoint": "create-image-pixflux",
+      "options": {
+        "outline": "single color black outline",
+        "shading": "flat shading",
+        "detail": "low detail",
+        "view": "low top-down",
+        "direction": "south-east"
+      },
+      "notes": "Endpoint probe: Pixflux flat-shading control for the flat cartoon look."
+    },
+    {
+      "id": "vinyl-toy-fighter-z1-dpr1-pixen-probe",
+      "style": "vinyl-toy",
+      "subject": "fighter",
+      "target": "z1-dpr1",
+      "requestSize": {
+        "width": 64,
+        "height": 76
+      },
+      "seed": 7315,
+      "endpoint": "create-image-pixen",
+      "options": {
+        "outline": "lineless",
+        "detail": "low detail",
+        "view": "low top-down",
+        "direction": "south-east"
+      },
+      "notes": "Endpoint probe: Pixen lineless for a soft toy look."
+    },
+    {
+      "id": "storybook-ink-fighter-z1-dpr1-pixflux-probe",
+      "style": "storybook-ink",
+      "subject": "fighter",
+      "target": "z1-dpr1",
+      "requestSize": {
+        "width": 64,
+        "height": 74
+      },
+      "seed": 7316,
+      "endpoint": "create-image-pixflux",
+      "options": {
+        "outline": "single color black outline",
+        "shading": "basic shading",
+        "detail": "medium detail",
+        "view": "low top-down",
+        "direction": "south-east"
+      },
+      "notes": "Endpoint probe: Pixflux for the ink storybook look."
+    },
+    {
+      "id": "die-cut-sticker-fighter-z1-dpr1-a",
+      "style": "die-cut-sticker",
+      "subject": "fighter",
+      "target": "z1-dpr1",
+      "requestSize": {
+        "width": 64,
+        "height": 74
+      },
+      "seed": 7317
+    },
+    {
+      "id": "flat-cartoon-fighter-z1-dpr2-a",
+      "style": "flat-cartoon",
+      "subject": "fighter",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 128,
+        "height": 148
+      },
+      "seed": 7321,
+      "notes": "Probe: does a larger native canvas let PixelLab leave pixel art for this style?"
+    },
+    {
+      "id": "vinyl-toy-fighter-z1-dpr2-a",
+      "style": "vinyl-toy",
+      "subject": "fighter",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 128,
+        "height": 148
+      },
+      "seed": 7322,
+      "notes": "Probe: does a larger native canvas let PixelLab leave pixel art for this style?"
+    },
+    {
+      "id": "storybook-ink-fighter-z1-dpr2-a",
+      "style": "storybook-ink",
+      "subject": "fighter",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 128,
+        "height": 148
+      },
+      "seed": 7323,
+      "notes": "Probe: does a larger native canvas let PixelLab leave pixel art for this style?"
+    },
+    {
+      "id": "die-cut-sticker-fighter-z1-dpr2-a",
+      "style": "die-cut-sticker",
+      "subject": "fighter",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 128,
+        "height": 148
+      },
+      "seed": 7324,
+      "notes": "Probe: does a larger native canvas let PixelLab leave pixel art for this style?"
+    },
+    {
+      "id": "chunky-16bit-fighter-z0625-dpr1-a",
+      "style": "chunky-16bit",
+      "subject": "fighter",
+      "target": "z0625-dpr1",
+      "requestSize": {
+        "width": 40,
+        "height": 46
+      },
+      "seed": 7331,
+      "subjectReference": "chunky-16bit-fighter-z1-dpr1-a",
+      "notes": "Native zoom-0.625 redraw guided by the accepted zoom-1 design as a subject reference (reference_images), not a downscale."
+    },
+    {
+      "id": "chunky-16bit-fighter-z0625-dpr2-a",
+      "style": "chunky-16bit",
+      "subject": "fighter",
+      "target": "z0625-dpr2",
+      "requestSize": {
+        "width": 80,
+        "height": 92
+      },
+      "seed": 7341,
+      "subjectReference": "chunky-16bit-fighter-z1-dpr1-a"
+    },
+    {
+      "id": "chunky-16bit-fighter-z1-dpr2-a",
+      "style": "chunky-16bit",
+      "subject": "fighter",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 128,
+        "height": 148
+      },
+      "seed": 7342,
+      "subjectReference": "chunky-16bit-fighter-z1-dpr1-a"
+    },
+    {
+      "id": "hd-pixel-fighter-z0625-dpr1-a",
+      "style": "hd-pixel",
+      "subject": "fighter",
+      "target": "z0625-dpr1",
+      "requestSize": {
+        "width": 40,
+        "height": 46
+      },
+      "seed": 7343,
+      "subjectReference": "hd-pixel-fighter-z1-dpr1-a"
+    },
+    {
+      "id": "hd-pixel-fighter-z0625-dpr2-a",
+      "style": "hd-pixel",
+      "subject": "fighter",
+      "target": "z0625-dpr2",
+      "requestSize": {
+        "width": 80,
+        "height": 92
+      },
+      "seed": 7344,
+      "subjectReference": "hd-pixel-fighter-z1-dpr1-a"
+    },
+    {
+      "id": "hd-pixel-fighter-z1-dpr2-a",
+      "style": "hd-pixel",
+      "subject": "fighter",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 128,
+        "height": 148
+      },
+      "seed": 7345,
+      "subjectReference": "hd-pixel-fighter-z1-dpr1-a"
+    },
+    {
+      "id": "tabletop-mini-fighter-z0625-dpr1-a",
+      "style": "tabletop-mini",
+      "subject": "fighter",
+      "target": "z0625-dpr1",
+      "requestSize": {
+        "width": 40,
+        "height": 46
+      },
+      "seed": 7346,
+      "subjectReference": "tabletop-mini-fighter-z1-dpr1-a"
+    },
+    {
+      "id": "tabletop-mini-fighter-z0625-dpr2-a",
+      "style": "tabletop-mini",
+      "subject": "fighter",
+      "target": "z0625-dpr2",
+      "requestSize": {
+        "width": 80,
+        "height": 92
+      },
+      "seed": 7347,
+      "subjectReference": "tabletop-mini-fighter-z1-dpr1-a"
+    },
+    {
+      "id": "tabletop-mini-fighter-z1-dpr2-a",
+      "style": "tabletop-mini",
+      "subject": "fighter",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 128,
+        "height": 148
+      },
+      "seed": 7348,
+      "subjectReference": "tabletop-mini-fighter-z1-dpr1-a"
+    },
+    {
+      "id": "chunky-16bit-city-z1-dpr1-a",
+      "style": "chunky-16bit",
+      "subject": "city",
+      "target": "z1-dpr1",
+      "requestSize": {
+        "width": 128,
+        "height": 128
+      },
+      "seed": 7351
+    },
+    {
+      "id": "hd-pixel-city-z1-dpr1-a",
+      "style": "hd-pixel",
+      "subject": "city",
+      "target": "z1-dpr1",
+      "requestSize": {
+        "width": 128,
+        "height": 128
+      },
+      "seed": 7352
+    },
+    {
+      "id": "tabletop-mini-city-z1-dpr1-a",
+      "style": "tabletop-mini",
+      "subject": "city",
+      "target": "z1-dpr1",
+      "requestSize": {
+        "width": 128,
+        "height": 128
+      },
+      "seed": 7353,
+      "promptAddendum": "The town stands on a small square dark-green painted base like a board-game building piece."
+    },
+    {
+      "id": "tabletop-mini-city-z1-dpr1-b",
+      "style": "tabletop-mini",
+      "subject": "city",
+      "target": "z1-dpr1",
+      "requestSize": {
+        "width": 128,
+        "height": 128
+      },
+      "seed": 7361,
+      "promptAddendum": "The whole town stands on one small round dark-green painted base like a board-game building piece; a single object centered in the image."
+    },
+    {
+      "id": "tabletop-mini-fighter-z1-dpr2-b",
+      "style": "tabletop-mini",
+      "subject": "fighter",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 128,
+        "height": 148
+      },
+      "seed": 7362,
+      "subjectReference": "tabletop-mini-fighter-z1-dpr1-a",
+      "promptAddendum": "The figure and its base fill the full height of the image."
+    },
+    {
+      "id": "chunky-16bit-city-z0625-dpr1-a",
+      "style": "chunky-16bit",
+      "subject": "city",
+      "target": "z0625-dpr1",
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "seed": 7400,
+      "subjectReference": "chunky-16bit-city-z1-dpr1-a"
+    },
+    {
+      "id": "chunky-16bit-city-z0625-dpr2-a",
+      "style": "chunky-16bit",
+      "subject": "city",
+      "target": "z0625-dpr2",
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "seed": 7401,
+      "subjectReference": "chunky-16bit-city-z1-dpr1-a"
+    },
+    {
+      "id": "chunky-16bit-city-z1-dpr2-a",
+      "style": "chunky-16bit",
+      "subject": "city",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 256,
+        "height": 256
+      },
+      "seed": 7402,
+      "subjectReference": "chunky-16bit-city-z1-dpr1-a"
+    },
+    {
+      "id": "hd-pixel-city-z0625-dpr1-a",
+      "style": "hd-pixel",
+      "subject": "city",
+      "target": "z0625-dpr1",
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "seed": 7403,
+      "subjectReference": "hd-pixel-city-z1-dpr1-a"
+    },
+    {
+      "id": "hd-pixel-city-z0625-dpr2-a",
+      "style": "hd-pixel",
+      "subject": "city",
+      "target": "z0625-dpr2",
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "seed": 7404,
+      "subjectReference": "hd-pixel-city-z1-dpr1-a"
+    },
+    {
+      "id": "hd-pixel-city-z1-dpr2-a",
+      "style": "hd-pixel",
+      "subject": "city",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 256,
+        "height": 256
+      },
+      "seed": 7405,
+      "subjectReference": "hd-pixel-city-z1-dpr1-a"
+    },
+    {
+      "id": "bold-chibi-fighter-z0625-dpr1-a",
+      "style": "bold-chibi",
+      "subject": "fighter",
+      "target": "z0625-dpr1",
+      "requestSize": {
+        "width": 40,
+        "height": 48
+      },
+      "seed": 7406,
+      "notes": "Pixen needs multiples of 4: 40x48 is the nearest legal size to 40x46."
+    },
+    {
+      "id": "bold-chibi-fighter-z1-dpr1-a",
+      "style": "bold-chibi",
+      "subject": "fighter",
+      "target": "z1-dpr1",
+      "requestSize": {
+        "width": 64,
+        "height": 76
+      },
+      "seed": 7407,
+      "notes": "Pixen needs multiples of 4: 64x76 is the nearest legal size to 64x74."
+    },
+    {
+      "id": "bold-chibi-fighter-z0625-dpr2-a",
+      "style": "bold-chibi",
+      "subject": "fighter",
+      "target": "z0625-dpr2",
+      "requestSize": {
+        "width": 80,
+        "height": 92
+      },
+      "seed": 7408
+    },
+    {
+      "id": "bold-chibi-fighter-z1-dpr2-a",
+      "style": "bold-chibi",
+      "subject": "fighter",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 128,
+        "height": 148
+      },
+      "seed": 7409
+    },
+    {
+      "id": "bold-chibi-city-z0625-dpr1-a",
+      "style": "bold-chibi",
+      "subject": "city",
+      "target": "z0625-dpr1",
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "seed": 7410
+    },
+    {
+      "id": "bold-chibi-city-z0625-dpr2-a",
+      "style": "bold-chibi",
+      "subject": "city",
+      "target": "z0625-dpr2",
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "seed": 7411
+    },
+    {
+      "id": "bold-chibi-city-z1-dpr2-a",
+      "style": "bold-chibi",
+      "subject": "city",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 256,
+        "height": 256
+      },
+      "seed": 7412
+    },
+    {
+      "id": "bold-chibi-city-z1-dpr1-a",
+      "style": "bold-chibi",
+      "subject": "city",
+      "target": "z1-dpr1",
+      "requestSize": {
+        "width": 128,
+        "height": 128
+      },
+      "seed": 7413
+    },
+    {
+      "id": "bold-chibi-fighter-z0625-dpr1-b",
+      "style": "bold-chibi",
+      "subject": "fighter",
+      "target": "z0625-dpr1",
+      "requestSize": {
+        "width": 40,
+        "height": 48
+      },
+      "seed": 7414,
+      "notes": "Pixen needs multiples of 4: 40x48 is the nearest legal size to 40x46."
+    },
+    {
+      "id": "bold-chibi-fighter-z1-dpr1-b",
+      "style": "bold-chibi",
+      "subject": "fighter",
+      "target": "z1-dpr1",
+      "requestSize": {
+        "width": 64,
+        "height": 76
+      },
+      "seed": 7415,
+      "notes": "Pixen needs multiples of 4: 64x76 is the nearest legal size to 64x74."
+    },
+    {
+      "id": "bold-chibi-fighter-z0625-dpr2-b",
+      "style": "bold-chibi",
+      "subject": "fighter",
+      "target": "z0625-dpr2",
+      "requestSize": {
+        "width": 80,
+        "height": 92
+      },
+      "seed": 7416
+    },
+    {
+      "id": "bold-chibi-fighter-z1-dpr2-b",
+      "style": "bold-chibi",
+      "subject": "fighter",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 128,
+        "height": 148
+      },
+      "seed": 7417
+    },
+    {
+      "id": "bold-chibi-city-z0625-dpr1-b",
+      "style": "bold-chibi",
+      "subject": "city",
+      "target": "z0625-dpr1",
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "seed": 7418
+    },
+    {
+      "id": "bold-chibi-city-z0625-dpr2-b",
+      "style": "bold-chibi",
+      "subject": "city",
+      "target": "z0625-dpr2",
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "seed": 7419
+    },
+    {
+      "id": "bold-chibi-city-z1-dpr2-b",
+      "style": "bold-chibi",
+      "subject": "city",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 256,
+        "height": 256
+      },
+      "seed": 7420
+    },
+    {
+      "id": "bold-chibi-city-z1-dpr1-b",
+      "style": "bold-chibi",
+      "subject": "city",
+      "target": "z1-dpr1",
+      "requestSize": {
+        "width": 128,
+        "height": 128
+      },
+      "seed": 7421
+    },
+    {
+      "id": "flat-shaded-fighter-z0625-dpr1-a",
+      "style": "flat-shaded",
+      "subject": "fighter",
+      "target": "z0625-dpr1",
+      "requestSize": {
+        "width": 40,
+        "height": 46
+      },
+      "seed": 7422
+    },
+    {
+      "id": "flat-shaded-fighter-z1-dpr1-a",
+      "style": "flat-shaded",
+      "subject": "fighter",
+      "target": "z1-dpr1",
+      "requestSize": {
+        "width": 64,
+        "height": 74
+      },
+      "seed": 7423
+    },
+    {
+      "id": "flat-shaded-fighter-z0625-dpr2-a",
+      "style": "flat-shaded",
+      "subject": "fighter",
+      "target": "z0625-dpr2",
+      "requestSize": {
+        "width": 80,
+        "height": 92
+      },
+      "seed": 7424
+    },
+    {
+      "id": "flat-shaded-fighter-z1-dpr2-a",
+      "style": "flat-shaded",
+      "subject": "fighter",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 128,
+        "height": 148
+      },
+      "seed": 7425
+    },
+    {
+      "id": "flat-shaded-city-z0625-dpr1-a",
+      "style": "flat-shaded",
+      "subject": "city",
+      "target": "z0625-dpr1",
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "seed": 7426
+    },
+    {
+      "id": "flat-shaded-city-z0625-dpr2-a",
+      "style": "flat-shaded",
+      "subject": "city",
+      "target": "z0625-dpr2",
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "seed": 7427
+    },
+    {
+      "id": "flat-shaded-city-z1-dpr2-a",
+      "style": "flat-shaded",
+      "subject": "city",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 256,
+        "height": 256
+      },
+      "seed": 7428
+    },
+    {
+      "id": "flat-shaded-city-z1-dpr1-a",
+      "style": "flat-shaded",
+      "subject": "city",
+      "target": "z1-dpr1",
+      "requestSize": {
+        "width": 128,
+        "height": 128
+      },
+      "seed": 7429
+    },
+    {
+      "id": "flat-shaded-fighter-z0625-dpr1-b",
+      "style": "flat-shaded",
+      "subject": "fighter",
+      "target": "z0625-dpr1",
+      "requestSize": {
+        "width": 40,
+        "height": 46
+      },
+      "seed": 7430
+    },
+    {
+      "id": "flat-shaded-fighter-z1-dpr1-b",
+      "style": "flat-shaded",
+      "subject": "fighter",
+      "target": "z1-dpr1",
+      "requestSize": {
+        "width": 64,
+        "height": 74
+      },
+      "seed": 7431
+    },
+    {
+      "id": "flat-shaded-fighter-z0625-dpr2-b",
+      "style": "flat-shaded",
+      "subject": "fighter",
+      "target": "z0625-dpr2",
+      "requestSize": {
+        "width": 80,
+        "height": 92
+      },
+      "seed": 7432
+    },
+    {
+      "id": "flat-shaded-fighter-z1-dpr2-b",
+      "style": "flat-shaded",
+      "subject": "fighter",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 128,
+        "height": 148
+      },
+      "seed": 7433
+    },
+    {
+      "id": "flat-shaded-city-z0625-dpr1-b",
+      "style": "flat-shaded",
+      "subject": "city",
+      "target": "z0625-dpr1",
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "seed": 7434
+    },
+    {
+      "id": "flat-shaded-city-z0625-dpr2-b",
+      "style": "flat-shaded",
+      "subject": "city",
+      "target": "z0625-dpr2",
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "seed": 7435
+    },
+    {
+      "id": "flat-shaded-city-z1-dpr2-b",
+      "style": "flat-shaded",
+      "subject": "city",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 256,
+        "height": 256
+      },
+      "seed": 7436
+    },
+    {
+      "id": "flat-shaded-city-z1-dpr1-b",
+      "style": "flat-shaded",
+      "subject": "city",
+      "target": "z1-dpr1",
+      "requestSize": {
+        "width": 128,
+        "height": 128
+      },
+      "seed": 7437
+    },
+    {
+      "id": "soft-lineless-fighter-z0625-dpr1-a",
+      "style": "soft-lineless",
+      "subject": "fighter",
+      "target": "z0625-dpr1",
+      "requestSize": {
+        "width": 40,
+        "height": 48
+      },
+      "seed": 7438
+    },
+    {
+      "id": "soft-lineless-fighter-z1-dpr1-a",
+      "style": "soft-lineless",
+      "subject": "fighter",
+      "target": "z1-dpr1",
+      "requestSize": {
+        "width": 64,
+        "height": 76
+      },
+      "seed": 7439
+    },
+    {
+      "id": "soft-lineless-fighter-z0625-dpr2-a",
+      "style": "soft-lineless",
+      "subject": "fighter",
+      "target": "z0625-dpr2",
+      "requestSize": {
+        "width": 80,
+        "height": 92
+      },
+      "seed": 7440
+    },
+    {
+      "id": "soft-lineless-fighter-z1-dpr2-a",
+      "style": "soft-lineless",
+      "subject": "fighter",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 128,
+        "height": 148
+      },
+      "seed": 7441
+    },
+    {
+      "id": "soft-lineless-city-z0625-dpr1-a",
+      "style": "soft-lineless",
+      "subject": "city",
+      "target": "z0625-dpr1",
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "seed": 7442
+    },
+    {
+      "id": "soft-lineless-city-z0625-dpr2-a",
+      "style": "soft-lineless",
+      "subject": "city",
+      "target": "z0625-dpr2",
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "seed": 7443
+    },
+    {
+      "id": "soft-lineless-city-z1-dpr2-a",
+      "style": "soft-lineless",
+      "subject": "city",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 256,
+        "height": 256
+      },
+      "seed": 7444
+    },
+    {
+      "id": "soft-lineless-city-z1-dpr1-a",
+      "style": "soft-lineless",
+      "subject": "city",
+      "target": "z1-dpr1",
+      "requestSize": {
+        "width": 128,
+        "height": 128
+      },
+      "seed": 7445
+    },
+    {
+      "id": "tabletop-mini-city-z0625-dpr1-a",
+      "style": "tabletop-mini",
+      "subject": "city",
+      "target": "z0625-dpr1",
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "seed": 7501,
+      "subjectReference": "tabletop-mini-city-z1-dpr1-b",
+      "promptAddendum": "The whole town stands on one small round dark-green painted base like a board-game building piece."
+    },
+    {
+      "id": "tabletop-mini-city-z0625-dpr2-a",
+      "style": "tabletop-mini",
+      "subject": "city",
+      "target": "z0625-dpr2",
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "seed": 7502,
+      "subjectReference": "tabletop-mini-city-z1-dpr1-b",
+      "promptAddendum": "The whole town stands on one small round dark-green painted base like a board-game building piece."
+    },
+    {
+      "id": "tabletop-mini-city-z1-dpr2-a",
+      "style": "tabletop-mini",
+      "subject": "city",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 256,
+        "height": 256
+      },
+      "seed": 7503,
+      "subjectReference": "tabletop-mini-city-z1-dpr1-b",
+      "promptAddendum": "The whole town stands on one small round dark-green painted base like a board-game building piece."
+    },
+    {
+      "id": "bold-chibi-city-z0625-dpr1-c",
+      "style": "bold-chibi",
+      "subject": "city",
+      "target": "z0625-dpr1",
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "seed": 7504,
+      "promptAddendum": "The town fills almost the whole image edge to edge; no ground slab, grass square or base under it."
+    },
+    {
+      "id": "flat-shaded-city-z0625-dpr1-c",
+      "style": "flat-shaded",
+      "subject": "city",
+      "target": "z0625-dpr1",
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "seed": 7505,
+      "promptAddendum": "The town fills almost the whole image edge to edge; no ground slab, grass square or base under it."
+    },
+    {
+      "id": "flat-shaded-city-z1-dpr2-a-nobg",
+      "style": "flat-shaded",
+      "subject": "city",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 256,
+        "height": 256
+      },
+      "seed": 7506,
+      "endpoint": "remove-background",
+      "sourceCandidate": {
+        "recipe": "flat-shaded-city-z1-dpr2-a",
+        "candidate": 0
+      },
+      "notes": "Pixflux only returns transparency up to 200x200; PixelLab remove-background cleans the opaque 256x256 output."
+    },
+    {
+      "id": "counter-token-fighter-z1-dpr1-a",
+      "style": "counter-token",
+      "subject": "fighter",
+      "target": "z1-dpr1",
+      "requestSize": {
+        "width": 64,
+        "height": 74
+      },
+      "seed": 7507
+    },
+    {
+      "id": "counter-token-city-z1-dpr1-a",
+      "style": "counter-token",
+      "subject": "city",
+      "target": "z1-dpr1",
+      "requestSize": {
+        "width": 128,
+        "height": 128
+      },
+      "seed": 7508
+    },
+    {
+      "id": "tabletop-mini-city-z1-dpr2-b",
+      "style": "tabletop-mini",
+      "subject": "city",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 256,
+        "height": 256
+      },
+      "seed": 7511,
+      "subjectReference": "tabletop-mini-city-z1-dpr1-b",
+      "promptAddendum": "The whole town stands on one round dark-green painted base like a board-game building piece; the base and town fill the full width of the image."
+    },
+    {
+      "id": "bold-chibi-city-z0625-dpr1-d",
+      "style": "bold-chibi",
+      "subject": "city",
+      "target": "z0625-dpr1",
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "seed": 7512,
+      "promptAddendum": "One single isolated town, centered and large, filling most of the image."
+    },
+    {
+      "id": "counter-token-fighter-z0625-dpr1-a",
+      "style": "counter-token",
+      "subject": "fighter",
+      "target": "z0625-dpr1",
+      "requestSize": {
+        "width": 40,
+        "height": 46
+      },
+      "seed": 7513,
+      "subjectReference": "counter-token-fighter-z1-dpr1-a"
+    },
+    {
+      "id": "counter-token-fighter-z0625-dpr2-a",
+      "style": "counter-token",
+      "subject": "fighter",
+      "target": "z0625-dpr2",
+      "requestSize": {
+        "width": 80,
+        "height": 92
+      },
+      "seed": 7514,
+      "subjectReference": "counter-token-fighter-z1-dpr1-a"
+    },
+    {
+      "id": "counter-token-fighter-z1-dpr2-a",
+      "style": "counter-token",
+      "subject": "fighter",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 128,
+        "height": 148
+      },
+      "seed": 7515,
+      "subjectReference": "counter-token-fighter-z1-dpr1-a"
+    },
+    {
+      "id": "counter-token-city-z0625-dpr1-a",
+      "style": "counter-token",
+      "subject": "city",
+      "target": "z0625-dpr1",
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "seed": 7516,
+      "subjectReference": "counter-token-city-z1-dpr1-a"
+    },
+    {
+      "id": "counter-token-city-z0625-dpr2-a",
+      "style": "counter-token",
+      "subject": "city",
+      "target": "z0625-dpr2",
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "seed": 7517,
+      "subjectReference": "counter-token-city-z1-dpr1-a"
+    },
+    {
+      "id": "counter-token-city-z1-dpr2-a",
+      "style": "counter-token",
+      "subject": "city",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 256,
+        "height": 256
+      },
+      "seed": 7518,
+      "subjectReference": "counter-token-city-z1-dpr1-a"
+    },
+    {
+      "id": "tabletop-mini-city-z1-dpr2-c",
+      "style": "tabletop-mini",
+      "subject": "city",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 256,
+        "height": 256
+      },
+      "seed": 7521,
+      "subjectReference": "tabletop-mini-city-z1-dpr1-b",
+      "promptAddendum": "The town is large and fills most of the image; its round dark-green base is only a thin rim just under the walls."
+    },
+    {
+      "id": "counter-token-fighter-z1-dpr2-b",
+      "style": "counter-token",
+      "subject": "fighter",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 128,
+        "height": 148
+      },
+      "seed": 7522,
+      "subjectReference": "counter-token-fighter-z1-dpr1-a",
+      "promptAddendum": "The token is a perfect circle fully inside the image with a small margin, sitting at the bottom of the image."
+    },
+    {
+      "id": "counter-token-city-z1-dpr2-b",
+      "style": "counter-token",
+      "subject": "city",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 256,
+        "height": 256
+      },
+      "seed": 7523,
+      "subjectReference": "counter-token-city-z1-dpr1-a",
+      "promptAddendum": "One round red token plinth filling most of the image with the town on it; no extra rings."
+    },
+    {
+      "id": "counter-token-fighter-z1-dpr2-b-nobg",
+      "style": "counter-token",
+      "subject": "fighter",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 128,
+        "height": 148
+      },
+      "seed": 7531,
+      "endpoint": "remove-background",
+      "sourceCandidate": {
+        "recipe": "counter-token-fighter-z1-dpr2-b",
+        "candidate": 0
+      },
+      "notes": "generate-image-v2 left an opaque white backdrop; PixelLab remove-background cleans candidate 0."
+    },
+    {
+      "id": "counter-token-city-z1-dpr2-c",
+      "style": "counter-token",
+      "subject": "city",
+      "target": "z1-dpr2",
+      "requestSize": {
+        "width": 256,
+        "height": 256
+      },
+      "seed": 7532,
+      "subjectReference": "counter-token-city-z1-dpr1-a",
+      "promptAddendum": "The red token plinth is wide and fills almost the full width of the image, and the town on it is large."
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "id": "chunky-16bit-city-z0625-dpr1-a",
+  "jobId": "d0b3717f-544c-4412-871c-93c1f8ba89b9",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "style": "chunky-16bit",
+    "subject": "city",
+    "target": "z0625-dpr1",
+    "description": "Style: chunky 16-bit retro console pixel art sprite, thick one-pixel near-black outline around the whole silhouette, limited palette of about 16 colours, flat colours with one shadow tone, big simple shapes, very low detail, crisp hard pixels, no anti-aliasing. Subject: one small fantasy town as a single strategy-game map piece: a compact cluster of four chunky cottages with bright red roofs huddled around one tall round stone keep tower with a big red banner flag on top, short stone ring wall in front, compact footprint, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; anti-aliasing, gradients, soft shading, high detail, thin lines.",
+    "prompt": "Style: chunky 16-bit retro console pixel art sprite, thick one-pixel near-black outline around the whole silhouette, limited palette of about 16 colours, flat colours with one shadow tone, big simple shapes, very low detail, crisp hard pixels, no anti-aliasing. Subject: one small fantasy town as a single strategy-game map piece: a compact cluster of four chunky cottages with bright red roofs huddled around one tall round stone keep tower with a big red banner flag on top, short stone ring wall in front, compact footprint, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; anti-aliasing, gradients, soft shading, high detail, thin lines",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 7400,
+    "noBackground": true,
+    "subjectReference": {
+      "id": "chunky-16bit-city-z1-dpr1-a",
+      "usageDescription": "The same unit design drawn at another display size: keep its costume, colours, proportions and pose, redrawn natively and legibly at the requested pixel size.",
+      "sha256": "e45d37a35128895e7f3df2001db024a643f089b657659c0708225460480bb53b"
+    }
+  },
+  "submittedAt": "2026-09-28T22:59:28.914Z",
+  "candidateCount": 16,
+  "candidateSize": {
+    "width": 80,
+    "height": 80
+  },
+  "rawSheet": "art/explorations/style-study-2026-09/raw/chunky-16bit-city-z0625-dpr1-a.png",
+  "rawSheetSha256": "6a35c88aebeb1057c506221c76f044ebe4e24cf65037a63a6072d63481628dc3",
+  "completedAt": "2026-09-28T23:01:55.250Z",
+  "usageUsd": 0.125,
+  "output": "art/explorations/style-study-2026-09/accepted/chunky-16bit/city-z0625-dpr1.png",
+  "outputSha256": "a7dfdfe28737de26088feee1fc711ff50e2a4f0c7bdb99a930f2c358f661bad0",
+  "review": {
+    "status": "ACCEPTED",
+    "candidate": 0,
+    "note": "Same keep, flag, ring wall and red roofs as the zoom-1 design; fills the 80 px tile.",
+    "reviewedAt": "2026-09-28T23:11:43.145Z"
+  }
+}

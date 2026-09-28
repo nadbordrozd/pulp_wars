@@ -1,0 +1,43 @@
+{
+  "id": "tabletop-mini-fighter-z1-dpr2-b",
+  "jobId": "6c5f282a-3dbe-4021-a3cb-6d63337b2268",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "style": "tabletop-mini",
+    "subject": "fighter",
+    "target": "z1-dpr2",
+    "description": "Style: a painted tabletop wargame miniature photographed as a game piece, the subject stands on a small round dark-green painted base, painted plastic look with soft studio highlights, slightly glossy, chunky toy proportions, crisp edge. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. The figure and its base fill the full height of the image. Must not include: ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; pixel art, flat vector, sketch, hand, table surface, dice.",
+    "prompt": "Style: a painted tabletop wargame miniature photographed as a game piece, the subject stands on a small round dark-green painted base, painted plastic look with soft studio highlights, slightly glossy, chunky toy proportions, crisp edge. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. The figure and its base fill the full height of the image.",
+    "negativePrompt": "ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; pixel art, flat vector, sketch, hand, table surface, dice",
+    "requestSize": {
+      "width": 128,
+      "height": 148
+    },
+    "seed": 7362,
+    "noBackground": true,
+    "subjectReference": {
+      "id": "tabletop-mini-fighter-z1-dpr1-a",
+      "usageDescription": "The same unit design drawn at another display size: keep its costume, colours, proportions and pose, redrawn natively and legibly at the requested pixel size.",
+      "sha256": "8e170622a77e1dedb7a8e6399c5cc1e74b13143c508735f7be1df5f559f896bb"
+    }
+  },
+  "submittedAt": "2026-09-28T22:59:28.939Z",
+  "candidateCount": 4,
+  "candidateSize": {
+    "width": 128,
+    "height": 148
+  },
+  "rawSheet": "art/explorations/style-study-2026-09/raw/tabletop-mini-fighter-z1-dpr2-b.png",
+  "rawSheetSha256": "c2bb3fbe8a5f9229e0f31f93f18530d49824ecaf9df2b6e7f6cb82fe801131d9",
+  "completedAt": "2026-09-28T23:01:34.697Z",
+  "usageUsd": 0.125,
+  "output": "art/explorations/style-study-2026-09/accepted/tabletop-mini/fighter-z1-dpr2.png",
+  "outputSha256": "840c2941e9eda469f133515f685f59c916ac48d357b5e462c1778b1ef9984d47",
+  "review": {
+    "status": "ACCEPTED",
+    "candidate": 0,
+    "note": "Figure and base now fill the canvas; matches the zoom-1 design.",
+    "reviewedAt": "2026-09-28T23:11:48.201Z"
+  }
+}

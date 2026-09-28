@@ -1,0 +1,36 @@
+{
+  "id": "die-cut-sticker-fighter-z1-dpr1-a",
+  "jobId": "97791f89-0e80-433b-b5e5-d3e84614c61a",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "style": "die-cut-sticker",
+    "subject": "fighter",
+    "target": "z1-dpr1",
+    "description": "Style: cute die-cut sticker, the whole silhouette is surrounded by a thick solid white sticker border, inside it a bold dark outline, bright flat colours with one simple shadow tone, very low detail, big simple readable shapes. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; missing white border, thin outline, gradients, texture, high detail.",
+    "prompt": "Style: cute die-cut sticker, the whole silhouette is surrounded by a thick solid white sticker border, inside it a bold dark outline, bright flat colours with one simple shadow tone, very low detail, big simple readable shapes. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; missing white border, thin outline, gradients, texture, high detail",
+    "requestSize": {
+      "width": 64,
+      "height": 74
+    },
+    "seed": 7317,
+    "noBackground": true
+  },
+  "submittedAt": "2026-09-28T22:38:34.559Z",
+  "candidateCount": 16,
+  "candidateSize": {
+    "width": 64,
+    "height": 74
+  },
+  "rawSheet": "art/explorations/style-study-2026-09/raw/die-cut-sticker-fighter-z1-dpr1-a.png",
+  "rawSheetSha256": "2d572c24a962c2ac0d92e6f5271caaf33fd978f6dd2a39d586ecb98bbe69ddec",
+  "completedAt": "2026-09-28T22:41:11.918Z",
+  "usageUsd": 0.125,
+  "review": {
+    "status": "REJECTED",
+    "candidate": null,
+    "note": "The white die-cut border was ignored on all 16 candidates.",
+    "reviewedAt": "2026-09-28T23:18:33.013Z"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "id": "hd-pixel-city-z1-dpr2-a",
+  "jobId": "7b64096c-2d11-45ea-99ec-4dd1d3647abc",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "style": "hd-pixel",
+    "subject": "city",
+    "target": "z1-dpr2",
+    "description": "Style: crisp modern high-colour pixel art in the manner of polished indie tactics games, selective coloured outline (darker shade of each fill instead of pure black), rich palette with hue-shifted shading and small highlights, clean readable clusters, medium detail, hard pixels. Subject: one small fantasy town as a single strategy-game map piece: a compact cluster of four chunky cottages with bright red roofs huddled around one tall round stone keep tower with a big red banner flag on top, short stone ring wall in front, compact footprint, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; pure black outline everywhere, blurry pixels, noise, dithering mush.",
+    "prompt": "Style: crisp modern high-colour pixel art in the manner of polished indie tactics games, selective coloured outline (darker shade of each fill instead of pure black), rich palette with hue-shifted shading and small highlights, clean readable clusters, medium detail, hard pixels. Subject: one small fantasy town as a single strategy-game map piece: a compact cluster of four chunky cottages with bright red roofs huddled around one tall round stone keep tower with a big red banner flag on top, short stone ring wall in front, compact footprint, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; pure black outline everywhere, blurry pixels, noise, dithering mush",
+    "requestSize": {
+      "width": 256,
+      "height": 256
+    },
+    "seed": 7405,
+    "noBackground": true,
+    "subjectReference": {
+      "id": "hd-pixel-city-z1-dpr1-a",
+      "usageDescription": "The same unit design drawn at another display size: keep its costume, colours, proportions and pose, redrawn natively and legibly at the requested pixel size.",
+      "sha256": "e4f30a1cffc3494037c681307308e678a32e3b1cc53a3e9a9fb18488dbaa49a3"
+    }
+  },
+  "submittedAt": "2026-09-28T23:01:56.992Z",
+  "candidateCount": 1,
+  "candidateSize": {
+    "width": 256,
+    "height": 256
+  },
+  "rawSheet": "art/explorations/style-study-2026-09/raw/hd-pixel-city-z1-dpr2-a.png",
+  "rawSheetSha256": "d32af426fe09478c7833d2500d20740305bc7f67728fd30c882dac304f6f4d4c",
+  "completedAt": "2026-09-28T23:02:59.416Z",
+  "usageUsd": 0.095,
+  "output": "art/explorations/style-study-2026-09/accepted/hd-pixel/city-z1-dpr2.png",
+  "outputSha256": "d32af426fe09478c7833d2500d20740305bc7f67728fd30c882dac304f6f4d4c",
+  "review": {
+    "status": "ACCEPTED",
+    "candidate": 0,
+    "note": "Single provider candidate; same layout but stone drifted from sandstone to blue-grey, a visible cross-resolution consistency slip.",
+    "reviewedAt": "2026-09-28T23:11:46.756Z"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "id": "counter-token-city-z1-dpr1-a",
+  "jobId": "8cccd390-da10-4794-915d-6734af6979e8",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "style": "counter-token",
+    "subject": "city",
+    "target": "z1-dpr1",
+    "description": "Style: chunky board-game counter token: the subject is shown as a bold emblem standing inside one round token disc, the disc has a thick bright red rim, dark outline, flat bold colours, very low detail, reads like a tabletop wargame counter seen from slightly above. Subject: one small fantasy town as a single strategy-game map piece: a compact cluster of four chunky cottages with bright red roofs huddled around one tall round stone keep tower with a big red banner flag on top, short stone ring wall in front, compact footprint, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; square card, text on the token, multiple tokens, thin rim.",
+    "prompt": "Style: chunky board-game counter token: the subject is shown as a bold emblem standing inside one round token disc, the disc has a thick bright red rim, dark outline, flat bold colours, very low detail, reads like a tabletop wargame counter seen from slightly above. Subject: one small fantasy town as a single strategy-game map piece: a compact cluster of four chunky cottages with bright red roofs huddled around one tall round stone keep tower with a big red banner flag on top, short stone ring wall in front, compact footprint, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; square card, text on the token, multiple tokens, thin rim",
+    "requestSize": {
+      "width": 128,
+      "height": 128
+    },
+    "seed": 7508,
+    "noBackground": true
+  }
+}

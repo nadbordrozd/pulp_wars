@@ -1,0 +1,42 @@
+{
+  "id": "soft-lineless-fighter-z1-dpr1-a",
+  "jobId": "sync-03af2f88-754a-4d64-bce4-cdbb111c877f",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "style": "soft-lineless",
+    "subject": "fighter",
+    "target": "z1-dpr1",
+    "description": "Style: soft rounded toy-like game sprite without outlines, shapes separated by colour and light only, smooth soft shading, cute rounded proportions, low detail. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; black outline, hard ink lines, noise, high detail.",
+    "prompt": "Style: soft rounded toy-like game sprite without outlines, shapes separated by colour and light only, smooth soft shading, cute rounded proportions, low detail. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; black outline, hard ink lines, noise, high detail",
+    "requestSize": {
+      "width": 64,
+      "height": 76
+    },
+    "seed": 7439,
+    "noBackground": true,
+    "options": {
+      "outline": "lineless",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    }
+  },
+  "submittedAt": "2026-09-28T23:08:09.445Z",
+  "candidateCount": 1,
+  "candidateSize": {
+    "width": 64,
+    "height": 76
+  },
+  "rawSheet": "art/explorations/style-study-2026-09/raw/soft-lineless-fighter-z1-dpr1-a.png",
+  "rawSheetSha256": "81bfc6312b035f953c22f513fa34acefd303f2137ad2d8598f7d784d6e6d6d3e",
+  "completedAt": "2026-09-28T23:08:09.477Z",
+  "usageUsd": 0.008642888095643786,
+  "review": {
+    "status": "REJECTED",
+    "candidate": null,
+    "note": "Pixen ignored lineless: dark outlines remain and the result is indistinguishable from bold-chibi; red fringe on the crest.",
+    "reviewedAt": "2026-09-28T23:18:25.768Z"
+  }
+}

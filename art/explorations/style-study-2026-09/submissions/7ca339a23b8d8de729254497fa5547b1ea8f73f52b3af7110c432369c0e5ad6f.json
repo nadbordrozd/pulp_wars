@@ -1,0 +1,20 @@
+{
+  "id": "flat-cartoon-fighter-z1-dpr2-a",
+  "jobId": "8c8c1eb5-6ebe-4314-806c-531a8ebfb295",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "style": "flat-cartoon",
+    "subject": "fighter",
+    "target": "z1-dpr2",
+    "description": "Style: clean flat vector cartoon illustration like a mobile strategy game sticker, thick smooth dark outline, bright flat fills with one hard cel-shade tone, smooth anti-aliased curved edges, no texture, no pixel stair-steps, bold and simple. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; pixel art, visible pixel grid, dithering, texture, painterly brushwork, gradients.",
+    "prompt": "Style: clean flat vector cartoon illustration like a mobile strategy game sticker, thick smooth dark outline, bright flat fills with one hard cel-shade tone, smooth anti-aliased curved edges, no texture, no pixel stair-steps, bold and simple. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; pixel art, visible pixel grid, dithering, texture, painterly brushwork, gradients",
+    "requestSize": {
+      "width": 128,
+      "height": 148
+    },
+    "seed": 7321,
+    "noBackground": true
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "id": "flat-shaded-fighter-z1-dpr2-a",
+  "jobId": "sync-6e7f4501-bc9a-4452-9267-c9bcedd08e05",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "style": "flat-shaded",
+    "subject": "fighter",
+    "target": "z1-dpr2",
+    "description": "Style: flat-shaded cartoon game sprite, flat colour fills with no gradients, single dark outline, low detail, simple graphic shapes, clean readable silhouette. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; gradients, dithering, texture, high detail.",
+    "prompt": "Style: flat-shaded cartoon game sprite, flat colour fills with no gradients, single dark outline, low detail, simple graphic shapes, clean readable silhouette. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; gradients, dithering, texture, high detail",
+    "requestSize": {
+      "width": 128,
+      "height": 148
+    },
+    "seed": 7425,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "shading": "flat shading",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    }
+  },
+  "submittedAt": "2026-09-28T23:06:35.854Z",
+  "candidateCount": 1,
+  "candidateSize": {
+    "width": 128,
+    "height": 148
+  },
+  "rawSheet": "art/explorations/style-study-2026-09/raw/flat-shaded-fighter-z1-dpr2-a.png",
+  "rawSheetSha256": "85f0f7562324ffe013b6ba6426804f4dc19bed52e6df4571d7ca878089ee5d28",
+  "completedAt": "2026-09-28T23:06:35.879Z",
+  "usageUsd": 0.007820736275778877,
+  "output": "art/explorations/style-study-2026-09/accepted/flat-shaded/fighter-z1-dpr2.png",
+  "outputSha256": "85f0f7562324ffe013b6ba6426804f4dc19bed52e6df4571d7ca878089ee5d28",
+  "review": {
+    "status": "ACCEPTED",
+    "candidate": 0,
+    "note": "Round cute face, sword and tall shield; the alternative seed drew an off-model bearded dwarf.",
+    "reviewedAt": "2026-09-28T23:18:23.615Z"
+  }
+}

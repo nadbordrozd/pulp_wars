@@ -1,0 +1,42 @@
+{
+  "id": "bold-chibi-city-z0625-dpr2-a",
+  "jobId": "sync-a84fe96f-84df-4f84-b4c9-5a3f2bc46a51",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "style": "bold-chibi",
+    "subject": "city",
+    "target": "z0625-dpr2",
+    "description": "Style: bold chunky chibi game sprite, oversized head and oversized weapon, thick single-colour dark outline, flat colours with one shadow tone, low detail, big simple shapes that fill the canvas. Subject: one small fantasy town as a single strategy-game map piece: a compact cluster of four chunky cottages with bright red roofs huddled around one tall round stone keep tower with a big red banner flag on top, short stone ring wall in front, compact footprint, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; thin outline, tiny details, gradients, noise.",
+    "prompt": "Style: bold chunky chibi game sprite, oversized head and oversized weapon, thick single-colour dark outline, flat colours with one shadow tone, low detail, big simple shapes that fill the canvas. Subject: one small fantasy town as a single strategy-game map piece: a compact cluster of four chunky cottages with bright red roofs huddled around one tall round stone keep tower with a big red banner flag on top, short stone ring wall in front, compact footprint, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; thin outline, tiny details, gradients, noise",
+    "requestSize": {
+      "width": 160,
+      "height": 160
+    },
+    "seed": 7411,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    }
+  },
+  "submittedAt": "2026-09-28T23:04:20.886Z",
+  "candidateCount": 1,
+  "candidateSize": {
+    "width": 160,
+    "height": 160
+  },
+  "rawSheet": "art/explorations/style-study-2026-09/raw/bold-chibi-city-z0625-dpr2-a.png",
+  "rawSheetSha256": "11db85f7d61b9ff8bbb1d4db68f747ca34cb950569097d45a78bd7b9b7f1cd56",
+  "completedAt": "2026-09-28T23:04:20.923Z",
+  "usageUsd": 0.010159436994128758,
+  "review": {
+    "status": "REJECTED",
+    "candidate": null,
+    "note": "Alternative seed; the other seed was chosen for this cell (closer to the other sizes or larger on the tile).",
+    "reviewedAt": "2026-09-28T23:29:06.850Z"
+  }
+}

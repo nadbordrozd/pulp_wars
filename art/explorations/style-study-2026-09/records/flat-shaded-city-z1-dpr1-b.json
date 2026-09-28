@@ -1,0 +1,43 @@
+{
+  "id": "flat-shaded-city-z1-dpr1-b",
+  "jobId": "sync-e76d1bf8-1be3-4862-b455-43fb521924f1",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "style": "flat-shaded",
+    "subject": "city",
+    "target": "z1-dpr1",
+    "description": "Style: flat-shaded cartoon game sprite, flat colour fills with no gradients, single dark outline, low detail, simple graphic shapes, clean readable silhouette. Subject: one small fantasy town as a single strategy-game map piece: a compact cluster of four chunky cottages with bright red roofs huddled around one tall round stone keep tower with a big red banner flag on top, short stone ring wall in front, compact footprint, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; gradients, dithering, texture, high detail.",
+    "prompt": "Style: flat-shaded cartoon game sprite, flat colour fills with no gradients, single dark outline, low detail, simple graphic shapes, clean readable silhouette. Subject: one small fantasy town as a single strategy-game map piece: a compact cluster of four chunky cottages with bright red roofs huddled around one tall round stone keep tower with a big red banner flag on top, short stone ring wall in front, compact footprint, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; gradients, dithering, texture, high detail",
+    "requestSize": {
+      "width": 128,
+      "height": 128
+    },
+    "seed": 7437,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "shading": "flat shading",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    }
+  },
+  "submittedAt": "2026-09-28T23:07:58.652Z",
+  "candidateCount": 1,
+  "candidateSize": {
+    "width": 128,
+    "height": 128
+  },
+  "rawSheet": "art/explorations/style-study-2026-09/raw/flat-shaded-city-z1-dpr1-b.png",
+  "rawSheetSha256": "f2321fda75c9a390c57e6e9df6c1b22fab2585d4984198389ecf89775085fba4",
+  "completedAt": "2026-09-28T23:07:58.676Z",
+  "usageUsd": 0.007951000981860691,
+  "review": {
+    "status": "REJECTED",
+    "candidate": null,
+    "note": "Alternative seed; the other seed was chosen for this cell (closer to the other sizes or larger on the tile).",
+    "reviewedAt": "2026-09-28T23:29:15.596Z"
+  }
+}

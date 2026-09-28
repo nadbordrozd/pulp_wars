@@ -1,0 +1,43 @@
+{
+  "id": "counter-token-fighter-z0625-dpr2-a",
+  "jobId": "3a2ca902-0163-4bd3-b1f6-8f6fc900f894",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "style": "counter-token",
+    "subject": "fighter",
+    "target": "z0625-dpr2",
+    "description": "Style: chunky board-game counter token: the subject is shown as a bold emblem standing inside one round token disc, the disc has a thick bright red rim, dark outline, flat bold colours, very low detail, reads like a tabletop wargame counter seen from slightly above. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; square card, text on the token, multiple tokens, thin rim.",
+    "prompt": "Style: chunky board-game counter token: the subject is shown as a bold emblem standing inside one round token disc, the disc has a thick bright red rim, dark outline, flat bold colours, very low detail, reads like a tabletop wargame counter seen from slightly above. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "ground tile, grass, terrain, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; square card, text on the token, multiple tokens, thin rim",
+    "requestSize": {
+      "width": 80,
+      "height": 92
+    },
+    "seed": 7514,
+    "noBackground": true,
+    "subjectReference": {
+      "id": "counter-token-fighter-z1-dpr1-a",
+      "usageDescription": "The same unit design drawn at another display size: keep its costume, colours, proportions and pose, redrawn natively and legibly at the requested pixel size.",
+      "sha256": "1f58f19f1530d929a235fe3f9f27c6ff764e1d208b57bb636e501451865887e5"
+    }
+  },
+  "submittedAt": "2026-09-28T23:18:54.468Z",
+  "candidateCount": 4,
+  "candidateSize": {
+    "width": 80,
+    "height": 92
+  },
+  "rawSheet": "art/explorations/style-study-2026-09/raw/counter-token-fighter-z0625-dpr2-a.png",
+  "rawSheetSha256": "dcaa7a2369d7d86dbb3cf8f1b3b0f0ae8626928a6653767839011f3f5aee9373",
+  "completedAt": "2026-09-28T23:21:06.136Z",
+  "usageUsd": 0.095,
+  "output": "art/explorations/style-study-2026-09/accepted/counter-token/fighter-z0625-dpr2.png",
+  "outputSha256": "b18c52419ffbcf4ebf5624db9984a3b8e89fc6fbfb3fa8e5dd896855a34ff929",
+  "review": {
+    "status": "ACCEPTED",
+    "candidate": 0,
+    "note": "Raised sword and shield inside the red rim; full ring.",
+    "reviewedAt": "2026-09-28T23:24:40.818Z"
+  }
+}
