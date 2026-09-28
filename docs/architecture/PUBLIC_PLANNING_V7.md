@@ -112,3 +112,13 @@ the exact immutable `PlayerViewV7` or economy-graph object, so their lifetime is
 bounded by that input. When a command produces a new view, discard unfinished
 work and create new work from the new view; do not reuse work or results across
 view identities.
+
+City query facts use the same exact-view boundary. Siege status is evaluated
+lazily for each queried city coordinate and development visibility is evaluated
+over the city's bounded radius-one or radius-two footprint, then each result is
+memoized only for that immutable view. The footprint lookup relies on the
+canonical dense, row-major `PlayerViewV7` board; an expected in-bounds cell that
+is absent is treated as unknown. There is no eager whole-view indexing inside a
+work operation. A byte-equal reconstructed view receives independent facts, so
+fog, diplomacy, units, pending choices, expansion, and Land Grant state cannot
+leak between view identities.

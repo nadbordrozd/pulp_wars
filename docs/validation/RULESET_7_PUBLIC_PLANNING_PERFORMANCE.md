@@ -54,3 +54,28 @@ mutations retain independent connectivity computation. Tests freeze the
 pre-optimization result hashes across budget-one and varied slicing, fresh
 byte-equal views, late Road-heavy positions, and cold Port, Shipyard, and
 redevelopment transitions.
+
+## Revision 11 city-query facts
+
+The later Revision 11 query pass preserves those outputs and operation counts
+while reusing immutable public siege and city-footprint facts. Numeric array
+reads provide a deterministic measure of the repeated scans removed from cold
+command enumeration:
+
+| Public view           | Tile reads before | Tile reads after | Unit reads before | Unit reads after |
+| --------------------- | ----------------: | ---------------: | ----------------: | ---------------: |
+| Retained command 1100 |            25,978 |            8,243 |             2,913 |              169 |
+| Captured command 300  |            47,215 |            4,915 |             6,757 |              277 |
+| Captured command 5524 |            36,319 |            3,832 |            10,627 |              346 |
+
+The command-5524 evidence is the captured 16 by 16 Rival-3 view with public
+view hash
+`a8aa4850a31e1fe7c127bd8930b8621f51a5b32e8d4e14a5864c979953687e10`.
+Its 95-command hash remains
+`84491be995a7564a8743a9c26a20d533b2fa649b34fa150c205712c01e7e4b13`;
+its 16,582-operation planning result remains
+`c1b0bd4b222d6ee155ae44a693ca7bd975dffa8d5876439172b5226a48651ba8`.
+Eleven warmed Node 24 runs at budget 113 measured median query time falling
+from 1.973 ms to 1.199 ms and median query-plus-planning time from 33.205 ms to
+30.136 ms. Timings remain diagnostic; exact hashes and operation counts are the
+acceptance boundary.

@@ -1216,6 +1216,11 @@ const PUBLIC_ECONOMIC_POTENTIALS = new WeakMap<
   PlayerViewV7,
   readonly PublicEconomicPotentialV7[]
 >();
+const PUBLIC_CITY_BESIEGED = new WeakMap<PlayerViewV7, Map<string, boolean>>();
+const PUBLIC_CITY_DEVELOPMENT_FOOTPRINT_KNOWN = new WeakMap<
+  PlayerViewV7,
+  Map<CityId, boolean>
+>();
 const PUBLIC_GRAPH_TOTALS = new WeakMap<
   PublicEconomyGraphV7,
   Map<
@@ -3335,22 +3340,48 @@ function publicHostile(
 }
 
 function publicCityBesieged(view: PlayerViewV7, at: CoordV7): boolean {
-  return view.units.some(
+  let byCity = PUBLIC_CITY_BESIEGED.get(view);
+  if (byCity === undefined) {
+    byCity = new Map();
+    PUBLIC_CITY_BESIEGED.set(view, byCity);
+  }
+  const cityKey = coordKeyV7(at);
+  const cached = byCity.get(cityKey);
+  if (cached !== undefined) return cached;
+  const besieged = view.units.some(
     (unit) =>
       unit.hp > 0 &&
       publicHostile(view, view.viewer.id, unit.ownerId) &&
       same(unit.at, at),
   );
+  byCity.set(cityKey, besieged);
+  return besieged;
 }
 
 function publicCityDevelopmentFootprintKnown(
   view: PlayerViewV7,
   city: PlayerViewV7["cities"][number],
 ): boolean {
+  let byCity = PUBLIC_CITY_DEVELOPMENT_FOOTPRINT_KNOWN.get(view);
+  if (byCity === undefined) {
+    byCity = new Map();
+    PUBLIC_CITY_DEVELOPMENT_FOOTPRINT_KNOWN.set(view, byCity);
+  }
+  const cached = byCity.get(city.id);
+  if (cached !== undefined) return cached;
   const radius = city.expanded || city.landGrantUsed ? 2 : 1;
-  return view.board.tiles.every(
-    (tile) => chebyshev(tile.at, city.at) > radius || tile.explored,
-  );
+  let known = true;
+  for (let y = city.at.y - radius; y <= city.at.y + radius && known; y += 1)
+    for (let x = city.at.x - radius; x <= city.at.x + radius; x += 1) {
+      if (x < 0 || y < 0 || x >= view.board.width || y >= view.board.height)
+        continue;
+      if (tileAtView(view, { x, y })?.explored !== true) {
+        known = false;
+        break;
+      }
+    }
+  byCity.set(city.id, known);
+  return known;
 }
 
 function publicCaptureTarget(view: PlayerViewV7, at: CoordV7): boolean {
