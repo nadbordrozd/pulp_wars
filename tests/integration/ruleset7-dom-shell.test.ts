@@ -1026,6 +1026,15 @@ describe("Ruleset 7 DOM shell", () => {
         .querySelector(".v7-city-stats .v7-population-value img")
         ?.getAttribute("data-asset-id"),
     ).toBe("ui-hud-population");
+    const populationPips = [
+      ...document.querySelectorAll<HTMLElement>(".v7-population-pip"),
+    ];
+    expect(populationPips).toHaveLength(Math.max(1, city.level + 1));
+    expect(populationPips.map((pip) => pip.dataset.state ?? "empty")).toEqual(
+      Array.from({ length: Math.max(1, city.level + 1) }, (_, index) =>
+        city.population > 0 && index < city.population ? "filled" : "empty",
+      ),
+    );
     expect(
       document
         .querySelector(".v7-city-stats .v7-city-income img")

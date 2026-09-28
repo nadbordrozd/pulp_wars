@@ -72,6 +72,7 @@ const EXPECTED_SYMBOL_IDS = [
   "ui-action-field-defense",
   "ui-status-port-active",
   "ui-status-port-blockaded",
+  "ui-status-inspired",
   "ui-status-concealed",
   "ui-status-detected",
   "ui-status-exposed",
@@ -324,6 +325,16 @@ describe("Ruleset 7 tactical action and status assets", () => {
       visibility: "OWNER_ONLY",
       projectedSource: "PlayerViewV7 naval ownedPorts status BLOCKADED",
     });
+    expect(
+      RULESET7_TACTICAL_UI_SYMBOL_BY_ID["ui-status-inspired"],
+    ).toMatchObject({
+      semanticLabel: "Inspired by Captain Rally for the next attack",
+      semanticRole: "combat",
+      visibility: "PUBLIC_STATUS",
+    });
+    expect(
+      RULESET7_TACTICAL_UI_SYMBOL_BY_ID["ui-status-inspired"].projectedSource,
+    ).toContain("PublicUnitStatsV7 ATTACK modifier source INSPIRED");
     expect(
       RULESET7_TACTICAL_UI_SYMBOL_BY_ID["ui-status-concealed"],
     ).toMatchObject({

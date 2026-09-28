@@ -98,6 +98,7 @@ export type TacticalSymbolPrimitive =
 
 export type TacticalSymbolVisibility =
   | "PUBLIC_COMMAND"
+  | "PUBLIC_STATUS"
   | "OWNER_ONLY"
   | "DETECTED_VIEWER_ONLY"
   | "OWNER_OR_EXPOSURE_RECIPIENT"
@@ -107,7 +108,12 @@ export interface Ruleset7TacticalUiSymbol {
   readonly id: `ui-${"action" | "status"}-${string}`;
   readonly semanticLabel: string;
   readonly semanticRole:
-    "command" | "visibility" | "economy" | "blackout" | "achievement";
+    | "command"
+    | "visibility"
+    | "economy"
+    | "combat"
+    | "blackout"
+    | "achievement";
   readonly visibility: TacticalSymbolVisibility;
   readonly projectedSource: string;
   readonly themeTreatmentId: "RULESET7_TACTICAL_STATIC_V1";
@@ -225,6 +231,33 @@ const RULESET7_TACTICAL_UI_SYMBOL_DEFINITIONS = [
       ),
       line(12, 4, 12, 14),
       line(5, 5, 19, 20, 3, "coral"),
+    ],
+  },
+  {
+    id: "ui-status-inspired",
+    semanticLabel: "Inspired by Captain Rally for the next attack",
+    semanticRole: "combat",
+    visibility: "PUBLIC_STATUS",
+    projectedSource:
+      "PublicUnitStatsV7 ATTACK modifier source INSPIRED for a non-embarked unit on an explored PlayerViewV7 tile",
+    reducedMotion: "STATIC",
+    primitives: [
+      circle(12, 12, 9, "slate"),
+      polygon(
+        [
+          [12, 4],
+          [14, 9],
+          [20, 9],
+          [15, 13],
+          [17, 19],
+          [12, 15],
+          [7, 19],
+          [9, 13],
+          [4, 9],
+          [10, 9],
+        ],
+        "paper",
+      ),
     ],
   },
   {

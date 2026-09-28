@@ -323,7 +323,7 @@ export function buildBoardRenderPlanV7(
       label: value.measure,
     });
   const attachmentSlots = new Map<string, number>();
-  for (const attachment of tacticalAttachmentsV7()) {
+  for (const attachment of tacticalAttachmentsV7(view)) {
     const coordKey = `${attachment.at.x},${attachment.at.y}`;
     const slot = attachmentSlots.get(coordKey) ?? 0;
     attachmentSlots.set(coordKey, slot + 1);
@@ -465,8 +465,36 @@ export function suppressesForestCanopyV7(
   return (
     improvement === "LUMBER_CAMP" ||
     improvement === "WINDMILL" ||
-    improvement === "SAWMILL"
+    improvement === "SAWMILL" ||
+    improvement === "FORGE"
   );
+}
+
+const POPULATION_PIP_COLORS_V7 = {
+  filled: "#b8f4d0",
+  empty: "#132c2b",
+  deficit: "#ff6b68",
+  outline: "#f8f2df",
+} as const;
+
+type PopulationPipStateV7 = keyof Pick<
+  typeof POPULATION_PIP_COLORS_V7,
+  "filled" | "empty" | "deficit"
+>;
+
+function drawPopulationPipV7(
+  context: CanvasRenderingContext2D,
+  left: number,
+  top: number,
+  size: number,
+  state: PopulationPipStateV7,
+  zoom: number,
+): void {
+  context.fillStyle = POPULATION_PIP_COLORS_V7[state];
+  context.strokeStyle = POPULATION_PIP_COLORS_V7.outline;
+  context.lineWidth = Math.max(1, zoom);
+  context.fillRect(left, top, size, size);
+  context.strokeRect(left, top, size, size);
 }
 
 export interface BoardImageResolverV7 {
@@ -766,26 +794,20 @@ export function drawBoardV7(input: {
         const width = Math.max(1, (entry.value ?? 1) + 1);
         const positive = Math.max(0, Math.min(width, entry.population ?? 0));
         const negative = Math.max(0, Math.min(width, -(entry.population ?? 0)));
+        const pipSize = 7 * camera.zoom;
+        const pipStep = 9 * camera.zoom;
         for (let index = 0; index < width; index += 1) {
-          context.fillStyle =
+          drawPopulationPipV7(
+            context,
+            x - (width * pipStep - 2 * camera.zoom) / 2 + index * pipStep,
+            y + 34 * camera.zoom,
+            pipSize,
             index < positive
-              ? "#ffd34e"
+              ? "filled"
               : index < negative
-                ? "#ff6b68"
-                : "#fff8df";
-          context.strokeStyle = "#19282a";
-          context.lineWidth = camera.zoom;
-          context.fillRect(
-            x - (width * 5 * camera.zoom) / 2 + index * 5 * camera.zoom,
-            y + 34 * camera.zoom,
-            4 * camera.zoom,
-            4 * camera.zoom,
-          );
-          context.strokeRect(
-            x - (width * 5 * camera.zoom) / 2 + index * 5 * camera.zoom,
-            y + 34 * camera.zoom,
-            4 * camera.zoom,
-            4 * camera.zoom,
+                ? "deficit"
+                : "empty",
+            camera.zoom,
           );
         }
       }
@@ -811,16 +833,24 @@ export function drawBoardV7(input: {
       }
       if (entry.kind === "VALUE") {
         const count = Math.max(0, Math.min(24, entry.value ?? 0));
-        context.fillStyle = entry.label === "CAPACITY" ? "#71cfef" : "#8ce5b2";
-        for (let index = 0; index < count; index += 1) {
+        const population = entry.label === "POPULATION";
+        const displayedCount = population ? Math.max(1, count) : count;
+        context.fillStyle = entry.label === "CAPACITY" ? "#71cfef" : "#5fc2e8";
+        for (let index = 0; index < displayedCount; index += 1) {
           const column = index % 8;
           const row = Math.floor(index / 8);
-          context.fillRect(
-            x - 30 * camera.zoom + column * 8 * camera.zoom,
-            y + (38 + row * 8) * camera.zoom,
-            6 * camera.zoom,
-            6 * camera.zoom,
-          );
+          const left = x - 34 * camera.zoom + column * 9 * camera.zoom;
+          const top = y + (36 + row * 9) * camera.zoom;
+          if (population)
+            drawPopulationPipV7(
+              context,
+              left,
+              top,
+              7 * camera.zoom,
+              index < count ? "filled" : "empty",
+              camera.zoom,
+            );
+          else context.fillRect(left, top, 7 * camera.zoom, 7 * camera.zoom);
         }
       }
     }

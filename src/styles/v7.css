@@ -809,23 +809,23 @@
 
 .v7-population-meter {
   display: inline-flex;
-  gap: 2px;
+  gap: 3px;
 }
 
 .v7-population-pip {
-  width: 9px;
-  height: 12px;
-  border: 1px solid rgb(255 255 255 / 45%);
+  width: 11px;
+  height: 11px;
+  border: 1px solid #f8f2df;
   border-radius: 2px;
+  background: #132c2b;
+  box-shadow: 0 0 0 1px rgb(10 21 21 / 70%);
 }
 
 .v7-population-pip[data-state="filled"] {
-  border-color: #ffd66b;
-  background: #ffd66b;
+  background: #b8f4d0;
 }
 
 .v7-population-pip[data-state="deficit"] {
-  border-color: var(--v7-loss);
   background: var(--v7-loss);
 }
 

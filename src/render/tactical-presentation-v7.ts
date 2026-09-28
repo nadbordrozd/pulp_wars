@@ -15,6 +15,38 @@ export function playerLabelV7(view: PlayerViewV7, playerId: number): string {
   return player === undefined ? "Unknown player" : `Player ${player.seat + 1}`;
 }
 
-export function tacticalAttachmentsV7(): readonly TacticalAttachmentV7[] {
-  return [];
+export function tacticalAttachmentsV7(
+  view: PlayerViewV7,
+): readonly TacticalAttachmentV7[] {
+  const exploredCoords = new Set(
+    view.board.tiles
+      .filter((tile) => tile.explored)
+      .map((tile) => `${tile.at.x},${tile.at.y}`),
+  );
+  const inspiredUnitIds = new Set(
+    view.unitStats
+      .filter((stats) =>
+        stats.stats.some(
+          (stat) =>
+            stat.id === "ATTACK" &&
+            stat.modifiers.some((modifier) => modifier.source === "INSPIRED"),
+        ),
+      )
+      .map((stats) => stats.unitId),
+  );
+  return view.units.flatMap((unit): readonly TacticalAttachmentV7[] =>
+    unit.form !== "EMBARKED" &&
+    exploredCoords.has(`${unit.at.x},${unit.at.y}`) &&
+    inspiredUnitIds.has(unit.id)
+      ? [
+          {
+            key: `inspired:${unit.id}`,
+            at: unit.at,
+            symbolId: "ui-status-inspired",
+            label: "Inspired by Captain Rally: +1 next Attack",
+            pulse: false,
+          },
+        ]
+      : [],
+  );
 }

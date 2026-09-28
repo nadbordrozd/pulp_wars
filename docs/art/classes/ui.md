@@ -105,6 +105,17 @@ as `+N/turn`. Population values pair the existing accepted
 remain available to assistive technology. The existing `ui-hud-coin` asset stays
 available to archived rulesets and historical reviews.
 
+Ruleset 7 population pips use one code-native language on the map and in the
+city dock: mint-filled squares are current population, dark squares are empty,
+and coral squares are deficits; every state has a light outline. Processor
+population uses the same square treatment, including one empty square for zero
+output, while Coin income and unit capacity retain their separate semantics.
+An active Captain Rally appears as a small static star attached to the affected
+visible unit and as the existing accessible `Inspired` selected-unit status.
+It is derived only from the public effective Attack modifier and disappears
+when consumed, expired, embarked, unexplored, or otherwise absent from the
+public view.
+
 ## Ruleset-6 active inventory
 
 Ruleset 6 replaces the Star family with Coin stock/income/spend icons and

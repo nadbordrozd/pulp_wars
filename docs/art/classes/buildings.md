@@ -96,13 +96,13 @@ preferred fit, and the canopy-suppression behavior below. The earlier
 technology, Build Lumber Camp, selected improvement identity and map use the
 refreshed current art.
 
-On an authoritative Forest tile, Lumber Camp and Windmill join Sawmill in the
-same presentation-only canopy-suppression predicate: the same cell draws the
-exact v7 Original Grass ground beneath the improvement instead of its Forest
-body. The terrain remains `FOREST`; adjacent canopies, rules, picking and state
-do not change, and removing the improvement restores the original coordinate-
-selected Forest variant. Renderer-owned improvement value squares draw in a
-final foreground pass above later-row world sprites.
+On an authoritative Forest tile, Lumber Camp, Windmill, Sawmill, and Forge use
+the same presentation-only canopy-suppression predicate: the same cell draws
+the exact v7 Original Grass ground beneath the improvement instead of its
+Forest body. The terrain remains `FOREST`; adjacent canopies, rules, picking
+and state do not change, and removing the improvement restores the original
+coordinate-selected Forest variant. Renderer-owned improvement value squares
+draw in a final foreground pass above later-row world sprites.
 
 ### Ruleset-7 revision-3 mined-Mountain override
 

@@ -169,10 +169,16 @@ describe("Ruleset 7 board renderer", () => {
     expect(plan.targets.every((target) => target.at !== undefined)).toBe(true);
   });
 
-  it("suppresses only the same-cell Forest canopy for Camp, Windmill, and Sawmill and restores it after removal", () => {
+  it("suppresses only the same-cell Forest canopy for Camp, Windmill, Sawmill, and Forge and restores it after removal", () => {
     const state = exploredAllV7(initialV7(1517));
     const base = viewForV7(state, state.humanPlayerId);
-    const improvements = ["LUMBER_CAMP", "WINDMILL", "SAWMILL", null] as const;
+    const improvements = [
+      "LUMBER_CAMP",
+      "WINDMILL",
+      "SAWMILL",
+      "FORGE",
+      null,
+    ] as const;
     const view = {
       ...base,
       board: {
@@ -198,7 +204,7 @@ describe("Ruleset 7 board renderer", () => {
       selectedUnitId: null,
       selectedAchievement: null,
     });
-    for (let x = 0; x < 3; x += 1)
+    for (let x = 0; x < 4; x += 1)
       expect(
         plan.entries.find(
           (entry) =>
@@ -208,12 +214,12 @@ describe("Ruleset 7 board renderer", () => {
     expect(
       plan.entries.find(
         (entry) =>
-          entry.kind === "TERRAIN" && entry.at.x === 3 && entry.at.y === 0,
+          entry.kind === "TERRAIN" && entry.at.x === 4 && entry.at.y === 0,
       )?.assetId,
     ).toMatch(/^terrain-ruleset7-original-forest-/);
     expect(
       view.board.tiles
-        .filter((tile) => tile.explored && tile.at.y === 0 && tile.at.x < 4)
+        .filter((tile) => tile.explored && tile.at.y === 0 && tile.at.x < 5)
         .every((tile) => tile.explored && tile.terrain === "FOREST"),
     ).toBe(true);
     const removedView = {
@@ -221,7 +227,7 @@ describe("Ruleset 7 board renderer", () => {
       board: {
         ...view.board,
         tiles: view.board.tiles.map((tile) =>
-          tile.explored && tile.at.x === 0 && tile.at.y === 0
+          tile.explored && tile.at.x === 3 && tile.at.y === 0
             ? { ...tile, improvement: null }
             : tile,
         ),
@@ -235,14 +241,135 @@ describe("Ruleset 7 board renderer", () => {
     expect(
       restoredPlan.entries.find(
         (entry) =>
-          entry.kind === "TERRAIN" && entry.at.x === 0 && entry.at.y === 0,
+          entry.kind === "TERRAIN" && entry.at.x === 3 && entry.at.y === 0,
       )?.assetId,
-    ).toBe("terrain-ruleset7-original-forest-1");
+    ).toMatch(/^terrain-ruleset7-original-forest-/);
     expect(
       removedView.board.tiles.find(
-        (tile) => tile.at.x === 0 && tile.at.y === 0,
+        (tile) => tile.at.x === 3 && tile.at.y === 0,
       ),
     ).toMatchObject({ explored: true, terrain: "FOREST", improvement: null });
+  });
+
+  it("adds an Inspired marker only for visible units whose public Rally status remains active", () => {
+    const state = exploredAllV7(initialV7(1519));
+    const base = viewForV7(state, state.humanPlayerId);
+    const unit = base.units[0];
+    if (unit === undefined) throw new Error("unit missing");
+    const inspired = {
+      ...base,
+      unitStats: base.unitStats.map((stats) =>
+        stats.unitId === unit.id
+          ? {
+              ...stats,
+              statuses: ["Inspired: +1 next Attack"],
+              stats: stats.stats.map((stat) =>
+                stat.id === "ATTACK"
+                  ? {
+                      ...stat,
+                      modifiers: [
+                        ...stat.modifiers,
+                        {
+                          value: { numerator: 2, denominator: 2 },
+                          source: "INSPIRED" as const,
+                          sourceLabel: "Inspired",
+                          description:
+                            "Captain Rally adds 1 Attack to the next attack this turn.",
+                        },
+                      ],
+                    }
+                  : stat,
+              ),
+            }
+          : stats,
+      ),
+    };
+    const plan = buildBoardRenderPlanV7(inspired, [], {
+      selection: null,
+      selectedUnitId: null,
+      selectedAchievement: null,
+    });
+    expect(plan.entries).toContainEqual(
+      expect.objectContaining({
+        key: `inspired:${unit.id}`,
+        kind: "STATUS",
+        at: unit.at,
+        statusId: "ui-status-inspired",
+        label: "Inspired by Captain Rally: +1 next Attack",
+      }),
+    );
+
+    const consumed = {
+      ...inspired,
+      unitStats: inspired.unitStats.map((stats) =>
+        stats.unitId === unit.id
+          ? {
+              ...stats,
+              statuses: [],
+              stats: stats.stats.map((stat) => ({
+                ...stat,
+                modifiers: stat.modifiers.filter(
+                  (modifier) => modifier.source !== "INSPIRED",
+                ),
+              })),
+            }
+          : stats,
+      ),
+    };
+    expect(
+      buildBoardRenderPlanV7(consumed, [], {
+        selection: null,
+        selectedUnitId: null,
+        selectedAchievement: null,
+      }).entries.some((entry) => entry.key === `inspired:${unit.id}`),
+    ).toBe(false);
+
+    const embarked = {
+      ...inspired,
+      units: inspired.units.map((candidate) =>
+        candidate.id === unit.id
+          ? { ...candidate, form: "EMBARKED" as const }
+          : candidate,
+      ),
+    };
+    expect(
+      buildBoardRenderPlanV7(embarked, [], {
+        selection: null,
+        selectedUnitId: null,
+        selectedAchievement: null,
+      }).entries.some((entry) => entry.key === `inspired:${unit.id}`),
+    ).toBe(false);
+
+    const unexplored = {
+      ...inspired,
+      board: {
+        ...inspired.board,
+        tiles: inspired.board.tiles.map((tile) =>
+          tile.at.x === unit.at.x && tile.at.y === unit.at.y
+            ? { at: tile.at, explored: false as const }
+            : tile,
+        ),
+      },
+    };
+    expect(
+      buildBoardRenderPlanV7(unexplored, [], {
+        selection: null,
+        selectedUnitId: null,
+        selectedAchievement: null,
+      }).entries.some((entry) => entry.key === `inspired:${unit.id}`),
+    ).toBe(false);
+
+    const hidden = {
+      ...inspired,
+      units: inspired.units.filter((candidate) => candidate.id !== unit.id),
+    };
+    expect(
+      buildBoardRenderPlanV7(hidden, [], {
+        selection: null,
+        selectedUnitId: null,
+        selectedAchievement: null,
+      }).entries.some((entry) => entry.key === `inspired:${unit.id}`),
+    ).toBe(false);
   });
 
   it("sorts improvement value squares after every lower-row world sprite", () => {
@@ -1040,10 +1167,96 @@ describe("Ruleset 7 board renderer", () => {
       images: { resolve: () => null },
     });
     const pips = fillRect.mock.calls.filter(
-      (call) => call[2] === 6 && call[3] === 6,
+      (call) => call[2] === 7 && call[3] === 7,
     );
     expect(pips).toHaveLength(9);
     expect(pips[8]?.[1]).toBeGreaterThan(pips[7]?.[1] as number);
+  });
+
+  it("uses shared high-contrast population squares while keeping income distinct", () => {
+    let fillStyle = "";
+    const populationFills: string[] = [];
+    const fillRect = vi.fn((..._args: unknown[]) => {
+      void _args;
+      populationFills.push(fillStyle);
+    });
+    const strokeRect = vi.fn();
+    const context = drawingContext(
+      vi.fn(),
+      fillRect,
+      { strokeRect },
+      (key, value) => {
+        if (key === "fillStyle" && typeof value === "string") fillStyle = value;
+      },
+    );
+    drawBoardV7({
+      context,
+      viewport: { width: 500, height: 300 },
+      devicePixelRatio: 1,
+      camera: { offsetX: 100, offsetY: 100, zoom: 1 },
+      plan: {
+        version: 7,
+        targets: [],
+        entries: [
+          {
+            key: "city",
+            kind: "CITY",
+            layer: 4,
+            at: { x: 0, y: 0 },
+            value: 2,
+            population: 1,
+          },
+          {
+            key: "forge",
+            kind: "VALUE",
+            layer: 6,
+            at: { x: 1, y: 0 },
+            value: 2,
+            label: "POPULATION",
+          },
+          {
+            key: "empty-forge",
+            kind: "VALUE",
+            layer: 6,
+            at: { x: 2, y: 0 },
+            value: 0,
+            label: "POPULATION",
+          },
+          {
+            key: "market",
+            kind: "VALUE",
+            layer: 6,
+            at: { x: 3, y: 0 },
+            value: 1,
+            label: "COIN_INCOME",
+          },
+          {
+            key: "deficit-city",
+            kind: "CITY",
+            layer: 4,
+            at: { x: 4, y: 0 },
+            value: 1,
+            population: -1,
+          },
+        ],
+      },
+      images: { resolve: () => null },
+    });
+    expect(populationFills.slice(1)).toEqual([
+      "#b8f4d0",
+      "#132c2b",
+      "#132c2b",
+      "#b8f4d0",
+      "#b8f4d0",
+      "#132c2b",
+      "#5fc2e8",
+      "#ff6b68",
+      "#132c2b",
+    ]);
+    expect(strokeRect).toHaveBeenCalledTimes(8);
+    expect(
+      fillRect.mock.calls.filter((call) => call[2] === 7 && call[3] === 7),
+    ).toHaveLength(9);
   });
 
   it("uses sprite-attached readiness rhythm only for units with offered Move", () => {
