@@ -1,0 +1,391 @@
+{
+  "schemaVersion": 1,
+  "baseline": {
+    "ref": "2a3c029f92a63ea33c7164b05ad0a91d134c1e7b",
+    "sha256": "37c5cebe79cc30939a8a7ce15ab0b83cfac6a6a220add8f57f85f6a2e1d72e73",
+    "adapter": "pinned policy source + current revision-11 engine modules"
+  },
+  "timing": "Diagnostic only; elapsed time never affects policy decisions.",
+  "views": [
+    {
+      "id": "retained-command-1100",
+      "viewHash": "157f932b21ba21b07e02064825c5068b0e9664a7965357e46c773ee94db6f0a5",
+      "facts": {
+        "board": "11x11",
+        "units": 8,
+        "cities": 5,
+        "visibleHostiles": 2
+      },
+      "baseline": {
+        "command": {
+          "kind": "ATTACK",
+          "unitId": 19,
+          "targetUnitId": 34
+        },
+        "decisionHash": "9daaebfd4d31b752798da5e61e63aa311136a4a72ea6c498fd13691a1e347403",
+        "candidateCount": 30,
+        "coldTiming": {
+          "totalMs": 49.977,
+          "decisionHash": "9daaebfd4d31b752798da5e61e63aa311136a4a72ea6c498fd13691a1e347403",
+          "note": "One decision in a fresh process before stable-fact cache reuse."
+        },
+        "legacyLoopIterationsAtSyntheticBudgetOne": 4441,
+        "loopCountNote": "Synthetic-clock outer policy-loop iterations; not equivalent to revised declared path-expansion work units.",
+        "timing": {
+          "samples": 3,
+          "totalMs": 15.923,
+          "p50Ms": 5.473,
+          "p95Ms": 5.714,
+          "maximumMs": 5.714,
+          "decisionHashes": [
+            "9daaebfd4d31b752798da5e61e63aa311136a4a72ea6c498fd13691a1e347403",
+            "9daaebfd4d31b752798da5e61e63aa311136a4a72ea6c498fd13691a1e347403",
+            "9daaebfd4d31b752798da5e61e63aa311136a4a72ea6c498fd13691a1e347403"
+          ]
+        },
+        "slicedTiming": {
+          "budgetMs": 8,
+          "slices": 1,
+          "totalMs": 3.329,
+          "p50Ms": 3.299,
+          "p95Ms": 3.299,
+          "maximumMs": 3.299,
+          "decisionHash": "9daaebfd4d31b752798da5e61e63aa311136a4a72ea6c498fd13691a1e347403"
+        }
+      },
+      "revised": {
+        "command": {
+          "kind": "ATTACK",
+          "unitId": 19,
+          "targetUnitId": 34
+        },
+        "decisionHash": "3d6122d5a713797d07790b9c0524e3c71fc1ff3fd5607b09cdd76d68387cf379",
+        "candidateCount": 29,
+        "workUnits": 3639,
+        "slicesAtBudgetOne": 3639,
+        "work": {
+          "workUnits": 3639,
+          "phase": "SCORING",
+          "actualCandidateCount": 66,
+          "plannedCandidateCount": 59,
+          "provenImpossibleRedevelopmentCount": 6,
+          "redevelopmentPossibilityOperations": 145,
+          "candidatePreparationOperations": 141,
+          "sharedCityContextOperations": 630,
+          "policyLookupPreparationOperations": 88,
+          "threatLookupPreparationOperations": 14,
+          "acceptedCandidateCount": 29,
+          "workUnitsByPhase": {
+            "COMMAND_PREPARATION": 135,
+            "POLICY_LOOKUP_CONTEXT": 88,
+            "NAVAL_CONTEXT": 1,
+            "THREAT_LOOKUP_CONTEXT": 14,
+            "CONTEXT": 13,
+            "TACTICAL_CONTEXT": 10,
+            "SHARED_CITY_CONTEXT": 630,
+            "REDEVELOPMENT_CANDIDATES": 67,
+            "REDEVELOPMENT_CONTEXT": 146,
+            "REDEVELOPMENT_RESULTS": 7,
+            "PLANNING_CANDIDATES": 67,
+            "PLANNING_PREPARATION": 2394,
+            "SCORING": 67
+          },
+          "pathWork": {
+            "navalPathExpansions": 0,
+            "threatPathExpansions": 3,
+            "replacementPathValidations": 0,
+            "roadPathExpansions": 3
+          },
+          "bounds": {
+            "boardCells": 121,
+            "units": 8,
+            "objectives": 5,
+            "candidateCeiling": 6580,
+            "maximumMissingRoads": 8,
+            "navalPathExpansionCeiling": 726,
+            "threatPathExpansionCeiling": 242,
+            "replacementPathValidationCeiling": 50955520,
+            "roadPathExpansionCeiling": 2904,
+            "redevelopmentPossibilityOperationCeiling": 6719,
+            "candidatePreparationOperationCeiling": 19743,
+            "sharedCityContextOperationCeiling": 270443,
+            "policyLookupPreparationOperationCeiling": 6602,
+            "threatLookupPreparationOperationCeiling": 14,
+            "declaredMaximumWorkUnits": 1991977
+          }
+        },
+        "coldTiming": {
+          "totalMs": 43.552,
+          "decisionHash": "3d6122d5a713797d07790b9c0524e3c71fc1ff3fd5607b09cdd76d68387cf379",
+          "note": "One budget-one decision in a fresh process before stable-fact cache reuse."
+        },
+        "warmBudgetOne": {
+          "totalMs": 7.156,
+          "decisionHash": "3d6122d5a713797d07790b9c0524e3c71fc1ff3fd5607b09cdd76d68387cf379",
+          "workUnits": 1440,
+          "work": {
+            "workUnits": 1440,
+            "phase": "SCORING",
+            "actualCandidateCount": 66,
+            "plannedCandidateCount": 59,
+            "provenImpossibleRedevelopmentCount": 6,
+            "redevelopmentPossibilityOperations": 145,
+            "candidatePreparationOperations": 141,
+            "sharedCityContextOperations": 630,
+            "policyLookupPreparationOperations": 88,
+            "threatLookupPreparationOperations": 14,
+            "acceptedCandidateCount": 29,
+            "workUnitsByPhase": {
+              "COMMAND_PREPARATION": 135,
+              "POLICY_LOOKUP_CONTEXT": 88,
+              "NAVAL_CONTEXT": 1,
+              "THREAT_LOOKUP_CONTEXT": 14,
+              "CONTEXT": 13,
+              "TACTICAL_CONTEXT": 10,
+              "SHARED_CITY_CONTEXT": 630,
+              "REDEVELOPMENT_CANDIDATES": 67,
+              "REDEVELOPMENT_CONTEXT": 146,
+              "REDEVELOPMENT_RESULTS": 7,
+              "PLANNING_CANDIDATES": 67,
+              "PLANNING_PREPARATION": 195,
+              "SCORING": 67
+            },
+            "pathWork": {
+              "navalPathExpansions": 0,
+              "threatPathExpansions": 3,
+              "replacementPathValidations": 0,
+              "roadPathExpansions": 3
+            },
+            "bounds": {
+              "boardCells": 121,
+              "units": 8,
+              "objectives": 5,
+              "candidateCeiling": 6580,
+              "maximumMissingRoads": 8,
+              "navalPathExpansionCeiling": 726,
+              "threatPathExpansionCeiling": 242,
+              "replacementPathValidationCeiling": 50955520,
+              "roadPathExpansionCeiling": 2904,
+              "redevelopmentPossibilityOperationCeiling": 6719,
+              "candidatePreparationOperationCeiling": 19743,
+              "sharedCityContextOperationCeiling": 270443,
+              "policyLookupPreparationOperationCeiling": 6602,
+              "threatLookupPreparationOperationCeiling": 14,
+              "declaredMaximumWorkUnits": 1991977
+            }
+          },
+          "note": "Immediate equal-view reconstruction after the cold decision in the same process."
+        },
+        "timing": {
+          "samples": 3,
+          "totalMs": 15.083,
+          "p50Ms": 5.329,
+          "p95Ms": 5.547,
+          "maximumMs": 5.547,
+          "decisionHashes": [
+            "3d6122d5a713797d07790b9c0524e3c71fc1ff3fd5607b09cdd76d68387cf379",
+            "3d6122d5a713797d07790b9c0524e3c71fc1ff3fd5607b09cdd76d68387cf379",
+            "3d6122d5a713797d07790b9c0524e3c71fc1ff3fd5607b09cdd76d68387cf379"
+          ]
+        },
+        "slicedTiming": {
+          "budgetMs": 8,
+          "slices": 1,
+          "totalMs": 3.49,
+          "p50Ms": 3.465,
+          "p95Ms": 3.465,
+          "maximumMs": 3.465,
+          "decisionHash": "3d6122d5a713797d07790b9c0524e3c71fc1ff3fd5607b09cdd76d68387cf379"
+        }
+      },
+      "durationRatio": 0.947
+    },
+    {
+      "id": "legal-25x25",
+      "viewHash": "213a55e5a88f09e0b91186e654ff72c15c73214d94e7faa59856cf15f479cd40",
+      "facts": {
+        "board": "25x25",
+        "units": 10,
+        "cities": 5,
+        "visibleHostiles": 5
+      },
+      "baseline": {
+        "command": {
+          "kind": "BUILD_FIELD_DEFENSE",
+          "unitId": 6
+        },
+        "decisionHash": "a1b965c4f8a199a6a74807c01b1428086132b8522e8e60482536a38ae6901016",
+        "candidateCount": 43,
+        "coldTiming": {
+          "totalMs": 1598.548,
+          "decisionHash": "a1b965c4f8a199a6a74807c01b1428086132b8522e8e60482536a38ae6901016",
+          "note": "One decision in a fresh process before stable-fact cache reuse."
+        },
+        "legacyLoopIterationsAtSyntheticBudgetOne": 403340,
+        "loopCountNote": "Synthetic-clock outer policy-loop iterations; not equivalent to revised declared path-expansion work units.",
+        "timing": {
+          "samples": 3,
+          "totalMs": 2077.016,
+          "p50Ms": 756.117,
+          "p95Ms": 830.506,
+          "maximumMs": 830.506,
+          "decisionHashes": [
+            "a1b965c4f8a199a6a74807c01b1428086132b8522e8e60482536a38ae6901016",
+            "a1b965c4f8a199a6a74807c01b1428086132b8522e8e60482536a38ae6901016",
+            "a1b965c4f8a199a6a74807c01b1428086132b8522e8e60482536a38ae6901016"
+          ]
+        },
+        "slicedTiming": {
+          "budgetMs": 8,
+          "slices": 70,
+          "totalMs": 754.664,
+          "p50Ms": 8.932,
+          "p95Ms": 12.711,
+          "maximumMs": 109.927,
+          "decisionHash": "a1b965c4f8a199a6a74807c01b1428086132b8522e8e60482536a38ae6901016"
+        }
+      },
+      "revised": {
+        "command": {
+          "kind": "BUILD_FIELD_DEFENSE",
+          "unitId": 6
+        },
+        "decisionHash": "8803e36c663a2601f1610b75799403c42d452255a9d8422b3314e4a7c4d4ef99",
+        "candidateCount": 28,
+        "workUnits": 35621,
+        "slicesAtBudgetOne": 35621,
+        "work": {
+          "workUnits": 35621,
+          "phase": "SCORING",
+          "actualCandidateCount": 374,
+          "plannedCandidateCount": 69,
+          "provenImpossibleRedevelopmentCount": 0,
+          "redevelopmentPossibilityOperations": 0,
+          "candidatePreparationOperations": 750,
+          "sharedCityContextOperations": 1671,
+          "policyLookupPreparationOperations": 400,
+          "threatLookupPreparationOperations": 16,
+          "acceptedCandidateCount": 28,
+          "workUnitsByPhase": {
+            "COMMAND_PREPARATION": 641,
+            "POLICY_LOOKUP_CONTEXT": 400,
+            "NAVAL_CONTEXT": 923,
+            "THREAT_LOOKUP_CONTEXT": 16,
+            "CONTEXT": 55,
+            "TACTICAL_CONTEXT": 274,
+            "SHARED_CITY_CONTEXT": 1671,
+            "REDEVELOPMENT_CANDIDATES": 375,
+            "PLANNING_CANDIDATES": 375,
+            "PLANNING_PREPARATION": 30516,
+            "SCORING": 375
+          },
+          "pathWork": {
+            "navalPathExpansions": 922,
+            "threatPathExpansions": 18,
+            "replacementPathValidations": 80,
+            "roadPathExpansions": 84
+          },
+          "bounds": {
+            "boardCells": 625,
+            "units": 10,
+            "objectives": 22,
+            "candidateCeiling": 37788,
+            "maximumMissingRoads": 8,
+            "navalPathExpansionCeiling": 3750,
+            "threatPathExpansionCeiling": 3125,
+            "replacementPathValidationCeiling": 1889400000,
+            "roadPathExpansionCeiling": 5000,
+            "redevelopmentPossibilityOperationCeiling": 38440,
+            "candidatePreparationOperationCeiling": 113367,
+            "sharedCityContextOperationCeiling": 946622,
+            "policyLookupPreparationOperationCeiling": 37814,
+            "threatLookupPreparationOperationCeiling": 16,
+            "declaredMaximumWorkUnits": 13251203
+          }
+        },
+        "coldTiming": {
+          "totalMs": 481.321,
+          "decisionHash": "8803e36c663a2601f1610b75799403c42d452255a9d8422b3314e4a7c4d4ef99",
+          "note": "One budget-one decision in a fresh process before stable-fact cache reuse."
+        },
+        "warmBudgetOne": {
+          "totalMs": 19.352,
+          "decisionHash": "8803e36c663a2601f1610b75799403c42d452255a9d8422b3314e4a7c4d4ef99",
+          "workUnits": 5816,
+          "work": {
+            "workUnits": 5816,
+            "phase": "SCORING",
+            "actualCandidateCount": 374,
+            "plannedCandidateCount": 69,
+            "provenImpossibleRedevelopmentCount": 0,
+            "redevelopmentPossibilityOperations": 0,
+            "candidatePreparationOperations": 750,
+            "sharedCityContextOperations": 1671,
+            "policyLookupPreparationOperations": 400,
+            "threatLookupPreparationOperations": 16,
+            "acceptedCandidateCount": 28,
+            "workUnitsByPhase": {
+              "COMMAND_PREPARATION": 641,
+              "POLICY_LOOKUP_CONTEXT": 400,
+              "NAVAL_CONTEXT": 923,
+              "THREAT_LOOKUP_CONTEXT": 16,
+              "CONTEXT": 55,
+              "TACTICAL_CONTEXT": 274,
+              "SHARED_CITY_CONTEXT": 1671,
+              "REDEVELOPMENT_CANDIDATES": 375,
+              "PLANNING_CANDIDATES": 375,
+              "PLANNING_PREPARATION": 711,
+              "SCORING": 375
+            },
+            "pathWork": {
+              "navalPathExpansions": 922,
+              "threatPathExpansions": 18,
+              "replacementPathValidations": 80,
+              "roadPathExpansions": 84
+            },
+            "bounds": {
+              "boardCells": 625,
+              "units": 10,
+              "objectives": 22,
+              "candidateCeiling": 37788,
+              "maximumMissingRoads": 8,
+              "navalPathExpansionCeiling": 3750,
+              "threatPathExpansionCeiling": 3125,
+              "replacementPathValidationCeiling": 1889400000,
+              "roadPathExpansionCeiling": 5000,
+              "redevelopmentPossibilityOperationCeiling": 38440,
+              "candidatePreparationOperationCeiling": 113367,
+              "sharedCityContextOperationCeiling": 946622,
+              "policyLookupPreparationOperationCeiling": 37814,
+              "threatLookupPreparationOperationCeiling": 16,
+              "declaredMaximumWorkUnits": 13251203
+            }
+          },
+          "note": "Immediate equal-view reconstruction after the cold decision in the same process."
+        },
+        "timing": {
+          "samples": 3,
+          "totalMs": 49.721,
+          "p50Ms": 15.902,
+          "p95Ms": 18.033,
+          "maximumMs": 18.033,
+          "decisionHashes": [
+            "8803e36c663a2601f1610b75799403c42d452255a9d8422b3314e4a7c4d4ef99",
+            "8803e36c663a2601f1610b75799403c42d452255a9d8422b3314e4a7c4d4ef99",
+            "8803e36c663a2601f1610b75799403c42d452255a9d8422b3314e4a7c4d4ef99"
+          ]
+        },
+        "slicedTiming": {
+          "budgetMs": 8,
+          "slices": 2,
+          "totalMs": 13.3,
+          "p50Ms": 5.16,
+          "p95Ms": 8.054,
+          "maximumMs": 8.054,
+          "decisionHash": "8803e36c663a2601f1610b75799403c42d452255a9d8422b3314e4a7c4d4ef99"
+        }
+      },
+      "durationRatio": 0.024
+    }
+  ]
+}

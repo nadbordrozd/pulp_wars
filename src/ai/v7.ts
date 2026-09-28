@@ -6,9 +6,11 @@ import {
 } from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
 import type { CombatPreviewV7 } from "../engine/v7/events";
+import { validatePlayerMovementPathV7 } from "../engine/v7/movement";
 import {
   createPublicCommandWorkV7,
   createPublicPlanningWorkV7,
+  createPublicRedevelopmentPossibilityWorkV7,
   previewEconomicV7,
   previewMonumentV7,
   queryAiReadyCommandsV7,
@@ -35,6 +37,17 @@ import {
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
 
 export const NORMAL_AI_MAX_ACCEPTED_COMMANDS_PER_TURN_V7 = 128;
+
+const PRESERVED_REDEVELOPMENT_IMPROVEMENTS_V7 = new Set<ImprovementIdV7>([
+  "WINDMILL",
+  "SAWMILL",
+  "FORGE",
+  "WORKSHOP",
+  "MARKET",
+  "MONUMENT",
+  "PORT",
+  "SHIPYARD",
+]);
 
 export type NormalPolicyErrorCodeV7 =
   "MISSING_FACTION_REGISTRATION" | "MISSING_ROLE_MAPPING" | "NO_PUBLIC_COMMAND";
@@ -90,6 +103,113 @@ interface PolicyContextV7 {
   readonly threats: ThreatV7[];
   readonly threatenedTiles: ReadonlyMap<UnitId, ReadonlySet<string>>;
   naval: NavalPlanV7;
+  tactical: TacticalPlanV7;
+  redevelopmentMayChangeImprovement: Map<string, boolean>;
+  sharedCityContextPrepared: boolean;
+  preferredSharedCityActionByCity: Map<CityId, CommandV7 | null>;
+  durableScreenByCity: Map<CityId, boolean>;
+  readonly lookup: PolicyLookupV7;
+  readonly threatLookup: PublicThreatLookupV7;
+}
+
+interface PublicCombatFactsV7 {
+  readonly attack2: number;
+  readonly move: number;
+  readonly minimumRange: number;
+  readonly maximumRange: number;
+  readonly abilities: readonly string[];
+}
+
+interface PolicyLookupV7 {
+  readonly unitsById: Map<UnitId, PublicUnitV7>;
+  readonly citiesById: Map<CityId, PlayerViewV7["cities"][number]>;
+  readonly citiesByKey: Map<string, PlayerViewV7["cities"][number]>;
+  readonly unitStatsById: Map<UnitId, PlayerViewV7["unitStats"][number]>;
+  readonly moveDestinationsByUnit: Map<UnitId, CoordV7[]>;
+  readonly moveDestinationKeysByUnit: Map<UnitId, Set<string>>;
+  readonly emptyMoveUnitIds: Set<UnitId>;
+  readonly combatFactsByUnitId: Map<
+    UnitId,
+    { readonly unit: PublicUnitV7; readonly facts: PublicCombatFactsV7 }
+  >;
+  readonly revealGainByRadiusAndKey: Map<string, number>;
+  readonly visibleHostiles: PublicUnitV7[];
+}
+
+interface PublicThreatLookupV7 {
+  readonly occupantsByKey: Map<string, PublicUnitV7[]>;
+  readonly cityOwnersByKey: Map<string, PlayerId[]>;
+  readonly engineeringOwnerIds: Set<PlayerId>;
+}
+
+interface RoadCorridorV7 {
+  readonly targetCityId: CityId;
+  readonly missingRoadKeys: readonly string[];
+  readonly populationBenefit: 2;
+  readonly commerceIncomeBenefit: 0 | 1;
+  readonly movementShortening: number;
+  readonly benefit: number;
+}
+
+interface TacticalPlanV7 {
+  readonly objectiveByUnitId: ReadonlyMap<UnitId, CoordV7>;
+  readonly roadCorridor: RoadCorridorV7 | null;
+  readonly defenderReplacementActionKeys: ReadonlySet<string>;
+}
+
+const NO_TACTICAL_PLAN_V7: TacticalPlanV7 = Object.freeze({
+  objectiveByUnitId: new Map<UnitId, CoordV7>(),
+  roadCorridor: null,
+  defenderReplacementActionKeys: new Set<string>(),
+});
+
+export interface NormalPolicyWorkBoundsV7 {
+  readonly boardCells: number;
+  readonly units: number;
+  readonly objectives: number;
+  readonly candidateCeiling: number;
+  readonly maximumMissingRoads: 8;
+  readonly navalPathExpansionCeiling: number;
+  readonly threatPathExpansionCeiling: number;
+  readonly replacementPathValidationCeiling: number;
+  readonly roadPathExpansionCeiling: number;
+  readonly redevelopmentPossibilityOperationCeiling: number;
+  readonly candidatePreparationOperationCeiling: number;
+  readonly sharedCityContextOperationCeiling: number;
+  readonly policyLookupPreparationOperationCeiling: number;
+  readonly threatLookupPreparationOperationCeiling: number;
+  readonly declaredMaximumWorkUnits: number;
+}
+
+export interface NormalPolicyPathDiagnosticsV7 {
+  readonly navalPathExpansions: number;
+  readonly threatPathExpansions: number;
+  readonly replacementPathValidations: number;
+  readonly roadPathExpansions: number;
+}
+
+export interface NormalPolicyWorkDiagnosticV7 {
+  readonly workUnits: number;
+  readonly phase: string;
+  readonly actualCandidateCount: number;
+  readonly plannedCandidateCount: number;
+  readonly provenImpossibleRedevelopmentCount: number;
+  readonly redevelopmentPossibilityOperations: number;
+  readonly candidatePreparationOperations: number;
+  readonly sharedCityContextOperations: number;
+  readonly policyLookupPreparationOperations: number;
+  readonly threatLookupPreparationOperations: number;
+  readonly acceptedCandidateCount: number;
+  readonly workUnitsByPhase: Readonly<Record<string, number>>;
+  readonly pathWork: NormalPolicyPathDiagnosticsV7;
+  readonly bounds: NormalPolicyWorkBoundsV7;
+}
+
+interface MutablePolicyPathDiagnosticsV7 {
+  navalPathExpansions: number;
+  threatPathExpansions: number;
+  replacementPathValidations: number;
+  roadPathExpansions: number;
 }
 
 interface NavalPlanV7 {
@@ -125,6 +245,10 @@ const NO_NAVAL_PLAN_V7: NavalPlanV7 = Object.freeze({
 });
 
 type AiReadyItemV7 = ReturnType<typeof queryAiReadyCommandsV7>[number];
+type SharedCityCommandV7 =
+  | Extract<CommandV7, { kind: "TRAIN" }>
+  | Extract<CommandV7, { kind: "TRAIN_NAVAL" }>
+  | Extract<CommandV7, { kind: "LAND_GRANT" }>;
 
 const THREATENED_ROLE_ORDER = [
   "GUARD",
@@ -203,8 +327,16 @@ export class NormalPolicyWorkV7 {
     null;
   private phase:
     | "COMMAND_PREPARATION"
+    | "POLICY_LOOKUP_CONTEXT"
     | "PLANNING_PREPARATION"
     | "NAVAL_CONTEXT"
+    | "THREAT_LOOKUP_CONTEXT"
+    | "TACTICAL_CONTEXT"
+    | "SHARED_CITY_CONTEXT"
+    | "REDEVELOPMENT_CANDIDATES"
+    | "REDEVELOPMENT_CONTEXT"
+    | "REDEVELOPMENT_RESULTS"
+    | "PLANNING_CANDIDATES"
     | "CONTEXT"
     | "SCORING" = "COMMAND_PREPARATION";
   private ready: ReturnType<typeof queryAiReadyCommandsV7> | null = null;
@@ -212,10 +344,47 @@ export class NormalPolicyWorkV7 {
   private visibleHostiles: readonly PublicUnitV7[] = [];
   private readonly scored: ScoredAiCandidateV7[] = [];
   private contextCursor = 0;
+  private plannedCandidateCount = 0;
+  private provenImpossibleRedevelopmentCount = 0;
+  private redevelopmentPossibilityOperations = 0;
+  private candidatePreparationOperations = 0;
+  private sharedCityContextOperations = 0;
+  private policyLookupPreparationOperations = 0;
+  private threatLookupPreparationOperations = 0;
+  private preparationCursor = 0;
+  private readonly redevelopmentCandidates: {
+    readonly kind: "REDEVELOP";
+    readonly at: CoordV7;
+  }[] = [];
+  private redevelopmentResults: readonly {
+    readonly candidate: {
+      readonly kind: "REDEVELOP";
+      readonly at: CoordV7;
+    };
+    readonly mayChangeImprovement: boolean;
+  }[] = [];
+  private readonly planningCandidates: CommandV7[] = [];
   private cursor = 0;
   private activeScore: Generator<void, AiScoreV7> | null = null;
   private activeItem: AiReadyItemV7 | null = null;
   private navalWork: Generator<void, NavalPlanV7> | null = null;
+  private tacticalWork: Generator<void, TacticalPlanV7> | null = null;
+  private sharedCityWork: Generator<void, void> | null = null;
+  private policyLookupWork: Generator<void, void> | null = null;
+  private threatLookupWork: Generator<void, void> | null = null;
+  private redevelopmentWork: ReturnType<
+    typeof createPublicRedevelopmentPossibilityWorkV7
+  > | null = null;
+  private threatWork: Generator<void, void> | null = null;
+  private workUnits = 0;
+  private readonly bounds: NormalPolicyWorkBoundsV7;
+  private readonly workUnitsByPhase: Record<string, number> = {};
+  private readonly pathWork: MutablePolicyPathDiagnosticsV7 = {
+    navalPathExpansions: 0,
+    threatPathExpansions: 0,
+    replacementPathValidations: 0,
+    roadPathExpansions: 0,
+  };
 
   constructor(
     readonly view: PlayerViewV7,
@@ -223,6 +392,116 @@ export class NormalPolicyWorkV7 {
   ) {
     validatePolicyRegistration(view);
     this.commandWork = createPublicCommandWorkV7(view);
+    const objectives = publicObjectivesV7(view).length;
+    const cells = view.board.width * view.board.height;
+    const ownedCities = view.cities.filter(
+      (city) => city.ownerId === view.viewer.id,
+    ).length;
+    const hostileUnits = view.units.filter((unit) =>
+      isHostile(view, unit.ownerId),
+    ).length;
+    // Public command generation is bounded by per-unit destinations/actions,
+    // per-cell economy commands, and shared city actions (including all docks).
+    const candidates = Math.max(
+      1,
+      view.units.length * (cells * 4 + 24) + cells * 20 + ownedCities * 24,
+    );
+    const redevelopmentPossibilityOperationCeiling =
+      cells +
+      view.units.length +
+      view.pendingChoices.length +
+      view.treasureChests.length +
+      view.viewer.achievementEntitlements.length +
+      view.leaderboard.length +
+      view.cities.length +
+      candidates;
+    const candidatePreparationOperationCeiling = candidates * 3 + 3;
+    const sharedCityContextOperationCeiling =
+      candidates +
+      view.units.length +
+      view.cities.length +
+      view.board.tiles.length +
+      view.improvementValues.length +
+      hostileUnits * Math.max(1, ownedCities) +
+      ownedCities *
+        (cells + view.units.length * (candidates + 1) + candidates * 2 + 1);
+    const policyLookupPreparationOperationCeiling =
+      view.cities.length +
+      view.units.length +
+      view.unitStats.length +
+      candidates +
+      1;
+    const threatLookupPreparationOperationCeiling =
+      view.cities.length + view.units.length + 1;
+    this.bounds = {
+      boardCells: cells,
+      units: view.units.length,
+      objectives,
+      candidateCeiling: candidates,
+      maximumMissingRoads: 8,
+      navalPathExpansionCeiling: cells * 6,
+      threatPathExpansionCeiling: hostileUnits * cells,
+      replacementPathValidationCeiling:
+        candidates * Math.max(1, view.units.length) * cells * 8,
+      roadPathExpansionCeiling: Math.max(1, ownedCities - 1) * cells * 8,
+      redevelopmentPossibilityOperationCeiling,
+      candidatePreparationOperationCeiling,
+      sharedCityContextOperationCeiling,
+      policyLookupPreparationOperationCeiling,
+      threatLookupPreparationOperationCeiling,
+      declaredMaximumWorkUnits:
+        64 +
+        redevelopmentPossibilityOperationCeiling +
+        candidatePreparationOperationCeiling +
+        sharedCityContextOperationCeiling +
+        policyLookupPreparationOperationCeiling +
+        threatLookupPreparationOperationCeiling +
+        candidates * Math.max(64, view.units.length * 32) +
+        view.units.length * Math.max(1, objectives) +
+        view.units.length * cells * 2 +
+        cells * 16,
+    };
+  }
+
+  /** Advance by an exact deterministic operation budget; budget one does one unit. */
+  advanceWork(maxWorkUnits: number): NormalAiDecisionV7 | null {
+    if (!Number.isSafeInteger(maxWorkUnits) || maxWorkUnits <= 0)
+      throw new RangeError("maxWorkUnits must be a positive safe integer");
+    for (let index = 0; index < maxWorkUnits; index += 1) {
+      const phase = this.phase;
+      const result = this.advanceOneWorkUnit();
+      this.workUnits += 1;
+      this.workUnitsByPhase[phase] = (this.workUnitsByPhase[phase] ?? 0) + 1;
+      if (this.workUnits > this.bounds.declaredMaximumWorkUnits)
+        throw new NormalPolicyErrorV7(
+          "NO_PUBLIC_COMMAND",
+          `Policy exceeded declared work ceiling ${this.bounds.declaredMaximumWorkUnits}`,
+        );
+      this.assertPathWorkBounds();
+      if (result !== null) return result;
+    }
+    return null;
+  }
+
+  diagnostic(): NormalPolicyWorkDiagnosticV7 {
+    return {
+      workUnits: this.workUnits,
+      phase: this.phase,
+      actualCandidateCount: this.ready?.length ?? 0,
+      plannedCandidateCount: this.plannedCandidateCount,
+      provenImpossibleRedevelopmentCount:
+        this.provenImpossibleRedevelopmentCount,
+      redevelopmentPossibilityOperations:
+        this.redevelopmentPossibilityOperations,
+      candidatePreparationOperations: this.candidatePreparationOperations,
+      sharedCityContextOperations: this.sharedCityContextOperations,
+      policyLookupPreparationOperations: this.policyLookupPreparationOperations,
+      threatLookupPreparationOperations: this.threatLookupPreparationOperations,
+      acceptedCandidateCount: this.scored.length,
+      workUnitsByPhase: { ...this.workUnitsByPhase },
+      pathWork: { ...this.pathWork },
+      bounds: this.bounds,
+    };
   }
 
   runSlice(maxMilliseconds = 8): NormalAiDecisionV7 | null {
@@ -230,84 +509,291 @@ export class NormalPolicyWorkV7 {
       throw new RangeError("maxMilliseconds must be positive");
     const started = this.readClock();
     do {
-      if (this.phase === "COMMAND_PREPARATION") {
-        const progress = this.commandWork.advance(1);
-        if (!progress.done || progress.commands === null) continue;
-        this.planningWork = createPublicPlanningWorkV7(
-          this.view,
-          progress.commands,
-        );
-        this.phase = "PLANNING_PREPARATION";
-        continue;
-      }
-      if (this.phase === "PLANNING_PREPARATION") {
-        const progress = this.planningWork?.advance(1);
-        if (progress?.done === true && progress.result !== null)
-          this.prepareScoringContext();
-        continue;
-      }
-      const context = this.context;
-      const ready = this.ready;
-      if (context === null || ready === null)
-        throw new NormalPolicyErrorV7(
-          "NO_PUBLIC_COMMAND",
-          "Policy preparation lost its public context",
-        );
-      if (this.phase === "NAVAL_CONTEXT") {
-        const step = this.navalWork?.next();
-        if (step?.done === true) {
-          context.naval = step.value;
-          this.phase = "CONTEXT";
-        }
-        continue;
-      }
-      const hostile = this.visibleHostiles[this.contextCursor];
-      if (this.phase === "CONTEXT" && hostile !== undefined) {
-        addHostileThreats(context, hostile);
-        this.contextCursor += 1;
-        continue;
-      }
-      this.phase = "SCORING";
-      if (this.activeScore === null) {
-        const item = ready[this.cursor];
-        if (item === undefined) return this.finish();
-        this.cursor += 1;
-        if (!isPolicyCandidate(context, item.command)) continue;
-        this.activeItem = item;
-        this.activeScore = scoreCommandSteps(context, item.command, item.tuple);
-      }
-      const step = this.activeScore.next();
-      if (!step.done) continue;
-      const item = this.activeItem;
-      if (item === null)
-        throw new NormalPolicyErrorV7(
-          "NO_PUBLIC_COMMAND",
-          "Policy work lost its candidate",
-        );
-      const score = step.value;
-      if (score.priority >= 0)
-        this.scored.push({
-          command: item.command,
-          score,
-          tuple: scoreTuple(score),
-        });
-      this.activeScore = null;
-      this.activeItem = null;
+      const result = this.advanceWork(1);
+      if (result !== null) return result;
     } while (this.readClock() - started < maxMilliseconds);
     return null;
   }
 
-  private prepareScoringContext(): void {
+  private advanceOneWorkUnit(): NormalAiDecisionV7 | null {
+    if (this.phase === "COMMAND_PREPARATION") {
+      const progress = this.commandWork.advance(1);
+      if (!progress.done || progress.commands === null) return null;
+      this.prepareContext();
+      return null;
+    }
+    if (this.phase === "PLANNING_PREPARATION") {
+      const progress = this.planningWork?.advance(1);
+      if (progress?.done === true && progress.result !== null)
+        this.phase = "SCORING";
+      return null;
+    }
+    const context = this.context;
+    const ready = this.ready;
+    if (context === null || ready === null)
+      throw new NormalPolicyErrorV7(
+        "NO_PUBLIC_COMMAND",
+        "Policy preparation lost its public context",
+      );
+    if (this.phase === "POLICY_LOOKUP_CONTEXT") {
+      const step = this.policyLookupWork?.next();
+      if (step === undefined)
+        throw new NormalPolicyErrorV7(
+          "NO_PUBLIC_COMMAND",
+          "Policy lost its public lookup preparation work",
+        );
+      this.policyLookupPreparationOperations += 1;
+      if (
+        this.policyLookupPreparationOperations >
+        this.bounds.policyLookupPreparationOperationCeiling
+      )
+        throw new NormalPolicyErrorV7(
+          "NO_PUBLIC_COMMAND",
+          `Policy exceeded declared public lookup preparation ceiling ${this.bounds.policyLookupPreparationOperationCeiling}`,
+        );
+      if (step.done) {
+        this.visibleHostiles = context.lookup.visibleHostiles;
+        this.navalWork = navalPlanWorkV7(
+          this.view,
+          context.commands,
+          this.pathWork,
+        );
+        this.phase = "NAVAL_CONTEXT";
+      }
+      return null;
+    }
+    if (this.phase === "REDEVELOPMENT_CANDIDATES") {
+      this.chargeCandidatePreparation();
+      const command = context.commands[this.preparationCursor];
+      if (command === undefined) {
+        this.preparationCursor = 0;
+        if (this.redevelopmentCandidates.length === 0) {
+          this.phase = "PLANNING_CANDIDATES";
+          return null;
+        }
+        this.redevelopmentWork = createPublicRedevelopmentPossibilityWorkV7(
+          this.view,
+          this.redevelopmentCandidates,
+        );
+        if (
+          this.redevelopmentWork.operationCeiling >
+          this.bounds.redevelopmentPossibilityOperationCeiling
+        )
+          throw new NormalPolicyErrorV7(
+            "NO_PUBLIC_COMMAND",
+            `Redevelopment possibility work declared ${this.redevelopmentWork.operationCeiling} operations above policy ceiling ${this.bounds.redevelopmentPossibilityOperationCeiling}`,
+          );
+        this.phase = "REDEVELOPMENT_CONTEXT";
+        return null;
+      }
+      this.preparationCursor += 1;
+      if (
+        command.kind === "REDEVELOP" &&
+        !preservesEstablishedImprovementV7(this.view, command.at)
+      )
+        this.redevelopmentCandidates.push({
+          kind: "REDEVELOP",
+          at: command.at,
+        });
+      return null;
+    }
+    if (this.phase === "REDEVELOPMENT_CONTEXT") {
+      const progress = this.redevelopmentWork?.advance(1);
+      if (progress === undefined)
+        throw new NormalPolicyErrorV7(
+          "NO_PUBLIC_COMMAND",
+          "Policy lost its redevelopment possibility work",
+        );
+      this.redevelopmentPossibilityOperations += progress.operations;
+      if (
+        this.redevelopmentPossibilityOperations >
+        this.bounds.redevelopmentPossibilityOperationCeiling
+      )
+        throw new NormalPolicyErrorV7(
+          "NO_PUBLIC_COMMAND",
+          `Policy exceeded declared redevelopment possibility ceiling ${this.bounds.redevelopmentPossibilityOperationCeiling}`,
+        );
+      if (progress.done) {
+        if (progress.result === null)
+          throw new NormalPolicyErrorV7(
+            "NO_PUBLIC_COMMAND",
+            "Redevelopment possibility work finished without a result",
+          );
+        this.redevelopmentResults = progress.result;
+        this.preparationCursor = 0;
+        this.phase = "REDEVELOPMENT_RESULTS";
+      }
+      return null;
+    }
+    if (this.phase === "REDEVELOPMENT_RESULTS") {
+      this.chargeCandidatePreparation();
+      const result = this.redevelopmentResults[this.preparationCursor];
+      if (result === undefined) {
+        this.preparationCursor = 0;
+        this.phase = "PLANNING_CANDIDATES";
+        return null;
+      }
+      this.preparationCursor += 1;
+      context.redevelopmentMayChangeImprovement.set(
+        coordKey(result.candidate.at),
+        result.mayChangeImprovement,
+      );
+      if (!result.mayChangeImprovement)
+        this.provenImpossibleRedevelopmentCount += 1;
+      return null;
+    }
+    if (this.phase === "PLANNING_CANDIDATES") {
+      this.chargeCandidatePreparation();
+      const command = context.commands[this.preparationCursor];
+      if (command === undefined) {
+        this.plannedCandidateCount = this.planningCandidates.length;
+        this.planningWork = createPublicPlanningWorkV7(
+          this.view,
+          this.planningCandidates,
+        );
+        this.phase = "PLANNING_PREPARATION";
+        return null;
+      }
+      this.preparationCursor += 1;
+      if (isPlanningCandidateV7(context, command))
+        this.planningCandidates.push(command);
+      return null;
+    }
+    if (this.phase === "NAVAL_CONTEXT") {
+      const step = this.navalWork?.next();
+      if (step?.done === true) {
+        context.naval = step.value;
+        this.threatLookupWork = publicThreatLookupWorkV7(
+          context.view,
+          context.threatLookup,
+        );
+        this.phase = "THREAT_LOOKUP_CONTEXT";
+      }
+      return null;
+    }
+    if (this.phase === "THREAT_LOOKUP_CONTEXT") {
+      const step = this.threatLookupWork?.next();
+      if (step === undefined)
+        throw new NormalPolicyErrorV7(
+          "NO_PUBLIC_COMMAND",
+          "Policy lost its public threat lookup work",
+        );
+      this.threatLookupPreparationOperations += 1;
+      if (
+        this.threatLookupPreparationOperations >
+        this.bounds.threatLookupPreparationOperationCeiling
+      )
+        throw new NormalPolicyErrorV7(
+          "NO_PUBLIC_COMMAND",
+          `Policy exceeded declared threat lookup preparation ceiling ${this.bounds.threatLookupPreparationOperationCeiling}`,
+        );
+      if (step.done) this.phase = "CONTEXT";
+      return null;
+    }
+    if (this.phase === "TACTICAL_CONTEXT") {
+      const step = this.tacticalWork?.next();
+      if (step?.done === true) {
+        context.tactical = step.value;
+        this.sharedCityWork = sharedCityContextWorkV7(context);
+        this.phase = "SHARED_CITY_CONTEXT";
+      }
+      return null;
+    }
+    if (this.phase === "SHARED_CITY_CONTEXT") {
+      const step = this.sharedCityWork?.next();
+      if (step === undefined)
+        throw new NormalPolicyErrorV7(
+          "NO_PUBLIC_COMMAND",
+          "Policy lost its shared-city context work",
+        );
+      this.sharedCityContextOperations += 1;
+      if (
+        this.sharedCityContextOperations >
+        this.bounds.sharedCityContextOperationCeiling
+      )
+        throw new NormalPolicyErrorV7(
+          "NO_PUBLIC_COMMAND",
+          `Policy exceeded declared shared-city context ceiling ${this.bounds.sharedCityContextOperationCeiling}`,
+        );
+      if (step.done) {
+        this.preparationCursor = 0;
+        this.phase = "REDEVELOPMENT_CANDIDATES";
+      }
+      return null;
+    }
+    const hostile = this.visibleHostiles[this.contextCursor];
+    if (this.phase === "CONTEXT" && hostile !== undefined) {
+      this.threatWork ??= addHostileThreatsWorkV7(
+        context,
+        hostile,
+        this.pathWork,
+      );
+      const step = this.threatWork.next();
+      if (step.done) {
+        this.threatWork = null;
+        this.contextCursor += 1;
+      }
+      return null;
+    }
+    if (this.phase === "CONTEXT") {
+      this.tacticalWork = tacticalPlanWorkV7(context, this.pathWork);
+      this.phase = "TACTICAL_CONTEXT";
+      return null;
+    }
+    this.phase = "SCORING";
+    if (this.activeScore === null) {
+      const item = ready[this.cursor];
+      if (item === undefined) return this.finish();
+      this.cursor += 1;
+      if (!isPolicyCandidate(context, item.command)) return null;
+      this.activeItem = item;
+      this.activeScore = scoreCommandSteps(context, item.command, item.tuple);
+    }
+    const step = this.activeScore.next();
+    if (!step.done) return null;
+    const item = this.activeItem;
+    if (item === null)
+      throw new NormalPolicyErrorV7(
+        "NO_PUBLIC_COMMAND",
+        "Policy work lost its candidate",
+      );
+    const score = step.value;
+    if (score.priority >= 0)
+      this.scored.push({
+        command: item.command,
+        score,
+        tuple: scoreTuple(score),
+      });
+    this.activeScore = null;
+    this.activeItem = null;
+    return null;
+  }
+
+  private prepareContext(): void {
     this.ready = queryAiReadyCommandsV7(this.view);
+    if (this.ready.length > this.bounds.candidateCeiling)
+      throw new NormalPolicyErrorV7(
+        "NO_PUBLIC_COMMAND",
+        `Policy generated ${this.ready.length} candidates above declared ceiling ${this.bounds.candidateCeiling}`,
+      );
     this.context = bareContext(
       this.view,
       this.ready.map((item) => item.command),
     );
-    this.visibleHostiles = this.view.units.filter((unit) =>
-      isHostile(this.view, unit.ownerId),
-    );
-    this.navalWork = navalPlanWorkV7(this.view, this.context.commands);
-    this.phase = "NAVAL_CONTEXT";
+    this.policyLookupWork = policyLookupWorkV7(this.context);
+    this.phase = "POLICY_LOOKUP_CONTEXT";
+  }
+
+  private chargeCandidatePreparation(): void {
+    this.candidatePreparationOperations += 1;
+    if (
+      this.candidatePreparationOperations >
+      this.bounds.candidatePreparationOperationCeiling
+    )
+      throw new NormalPolicyErrorV7(
+        "NO_PUBLIC_COMMAND",
+        `Policy exceeded declared candidate preparation ceiling ${this.bounds.candidatePreparationOperationCeiling}`,
+      );
   }
 
   private finish(): NormalAiDecisionV7 {
@@ -324,6 +810,37 @@ export class NormalPolicyWorkV7 {
       command: this.scored[0]?.command ?? null,
       prngDraws: 0,
     };
+  }
+
+  private assertPathWorkBounds(): void {
+    const checks = [
+      [
+        this.pathWork.navalPathExpansions,
+        this.bounds.navalPathExpansionCeiling,
+        "naval path expansions",
+      ],
+      [
+        this.pathWork.threatPathExpansions,
+        this.bounds.threatPathExpansionCeiling,
+        "threat path expansions",
+      ],
+      [
+        this.pathWork.replacementPathValidations,
+        this.bounds.replacementPathValidationCeiling,
+        "replacement path validations",
+      ],
+      [
+        this.pathWork.roadPathExpansions,
+        this.bounds.roadPathExpansionCeiling,
+        "road path expansions",
+      ],
+    ] as const;
+    for (const [actual, ceiling, label] of checks)
+      if (actual > ceiling)
+        throw new NormalPolicyErrorV7(
+          "NO_PUBLIC_COMMAND",
+          `Policy exceeded declared ${label} ceiling ${ceiling}`,
+        );
   }
 }
 
@@ -440,9 +957,14 @@ function makeContext(
   commands: readonly CommandV7[],
 ): PolicyContextV7 {
   const context = bareContext(view, commands);
+  drain(policyLookupWorkV7(context));
   context.naval = drain(navalPlanWorkV7(view, commands));
+  drain(publicThreatLookupWorkV7(view, context.threatLookup));
   for (const unit of view.units)
-    if (isHostile(view, unit.ownerId)) addHostileThreats(context, unit);
+    if (isHostile(view, unit.ownerId))
+      drain(addHostileThreatsWorkV7(context, unit));
+  context.tactical = drain(tacticalPlanWorkV7(context));
+  drain(sharedCityContextWorkV7(context));
   return context;
 }
 
@@ -458,13 +980,430 @@ function bareContext(
     threats,
     threatenedTiles,
     naval: NO_NAVAL_PLAN_V7,
+    tactical: NO_TACTICAL_PLAN_V7,
+    redevelopmentMayChangeImprovement: new Map(),
+    sharedCityContextPrepared: false,
+    preferredSharedCityActionByCity: new Map(),
+    durableScreenByCity: new Map(),
+    lookup: {
+      unitsById: new Map(),
+      citiesById: new Map(),
+      citiesByKey: new Map(),
+      unitStatsById: new Map(),
+      moveDestinationsByUnit: new Map(),
+      moveDestinationKeysByUnit: new Map(),
+      emptyMoveUnitIds: new Set(),
+      combatFactsByUnitId: new Map(),
+      revealGainByRadiusAndKey: new Map(),
+      visibleHostiles: [],
+    },
+    threatLookup: {
+      occupantsByKey: new Map(),
+      cityOwnersByKey: new Map(),
+      engineeringOwnerIds: new Set(
+        view.viewer.researchedTechs.includes("ENGINEERING")
+          ? [view.viewer.id]
+          : [],
+      ),
+    },
   };
+}
+
+function* policyLookupWorkV7(context: PolicyContextV7): Generator<void, void> {
+  const { view, lookup } = context;
+  for (const city of view.cities) {
+    lookup.citiesById.set(city.id, city);
+    lookup.citiesByKey.set(coordKey(city.at), city);
+    yield;
+  }
+  for (const unit of view.units) {
+    lookup.unitsById.set(unit.id, unit);
+    if (isHostile(view, unit.ownerId)) lookup.visibleHostiles.push(unit);
+    yield;
+  }
+  for (const stats of view.unitStats) {
+    lookup.unitStatsById.set(stats.unitId, stats);
+    yield;
+  }
+  for (const command of context.commands) {
+    if (command.kind === "MOVE") {
+      const actualDestination = command.path.at(-1);
+      if (actualDestination !== undefined) {
+        const destinations =
+          lookup.moveDestinationsByUnit.get(command.unitId) ?? [];
+        destinations.push(actualDestination);
+        lookup.moveDestinationsByUnit.set(command.unitId, destinations);
+        const keys =
+          lookup.moveDestinationKeysByUnit.get(command.unitId) ?? new Set();
+        keys.add(coordKey(actualDestination));
+        lookup.moveDestinationKeysByUnit.set(command.unitId, keys);
+      } else lookup.emptyMoveUnitIds.add(command.unitId);
+    }
+    yield;
+  }
+}
+
+function publicObjectivesV7(view: PlayerViewV7): readonly CoordV7[] {
+  return [
+    ...view.cities
+      .filter((city) => isHostile(view, city.ownerId))
+      .map((city) => city.at),
+    ...view.cities
+      .filter((city) => city.ownerId === view.viewer.id)
+      .map((city) => city.at),
+    ...view.board.tiles
+      .filter(
+        (tile) =>
+          tile.explored &&
+          tile.site === "VILLAGE" &&
+          tile.territoryOwnerId === null,
+      )
+      .map((tile) => tile.at),
+  ];
+}
+
+/** Public, bounded unit/objective comparisons and one canonical Road corridor. */
+function* tacticalPlanWorkV7(
+  context: PolicyContextV7,
+  pathWork?: MutablePolicyPathDiagnosticsV7,
+): Generator<void, TacticalPlanV7> {
+  const { view, commands } = context;
+  const objectives = publicObjectivesV7(view).filter(
+    (at) =>
+      !view.cities.some(
+        (city) =>
+          city.ownerId === view.viewer.id &&
+          same(city.at, at) &&
+          !threatenedCity(context, city.id),
+      ),
+  );
+  const objectiveByUnitId = new Map<UnitId, CoordV7>();
+  const reservations = new Map<string, number>();
+  for (const unit of view.units.filter(
+    (item) => item.ownerId === view.viewer.id,
+  )) {
+    let best: { at: CoordV7; score: number; key: string } | null = null;
+    for (const objective of objectives) {
+      const key = coordKey(objective);
+      const hostileCity = view.cities.some(
+        (city) => isHostile(view, city.ownerId) && same(city.at, objective),
+      );
+      const ownedThreatened = view.cities.some(
+        (city) =>
+          city.ownerId === view.viewer.id &&
+          threatenedCity(context, city.id) &&
+          same(city.at, objective),
+      );
+      const role = effectiveRoleRuleV7(unit.role).tacticalRole;
+      const moveDestinationKeys =
+        context.lookup.moveDestinationKeysByUnit.get(unit.id) ?? new Set();
+      const approachCells = neighbors8V7(view, objective).filter((at) =>
+        moveDestinationKeys.has(coordKey(at)),
+      ).length;
+      const score =
+        Number(hostileCity) * 30 +
+        Number(ownedThreatened && role === "DEFENDER") * 28 +
+        Number(hostileCity && ["SKIRMISHER", "BREAKTHROUGH"].includes(role)) *
+          8 +
+        approachCells * 3 -
+        distance(unit.at, objective) * 4 -
+        (reservations.get(key) ?? 0) * 12;
+      if (
+        best === null ||
+        score > best.score ||
+        (score === best.score && key < best.key)
+      )
+        best = { at: objective, score, key };
+      yield;
+    }
+    if (best !== null) {
+      objectiveByUnitId.set(unit.id, best.at);
+      reservations.set(best.key, (reservations.get(best.key) ?? 0) + 1);
+    }
+  }
+  const defenderReplacementActionKeys = new Set<string>();
+  for (const command of commands) {
+    if (command.kind !== "MOVE" && command.kind !== "ATTACK") continue;
+    const actor = context.lookup.unitsById.get(command.unitId);
+    const city =
+      actor === undefined ? undefined : cityAt(view, actor.at, context.lookup);
+    if (
+      actor === undefined ||
+      city === undefined ||
+      city.ownerId !== view.viewer.id ||
+      !threatenedCity(context, city.id)
+    )
+      continue;
+    let projectedUnits: readonly PublicUnitV7[];
+    if (command.kind === "MOVE") {
+      const destination = command.path.at(-1);
+      if (destination === undefined) continue;
+      projectedUnits = view.units.map((unit) =>
+        unit.id === actor.id ? { ...unit, at: destination } : unit,
+      );
+    } else {
+      const preview = queryCombatPreviewV7(
+        view,
+        command.unitId,
+        command.targetUnitId,
+      );
+      if (preview === null || (!preview.attackerDies && !preview.advances))
+        continue;
+      const target = context.lookup.unitsById.get(command.targetUnitId);
+      projectedUnits = view.units.flatMap((unit) =>
+        unit.id === command.targetUnitId && preview.defenderDies
+          ? []
+          : unit.id !== actor.id
+            ? [unit]
+            : preview.attackerDies
+              ? []
+              : [
+                  {
+                    ...unit,
+                    at: target?.at ?? unit.at,
+                    hp: Math.max(1, unit.hp - preview.damageToAttacker),
+                    activation: {
+                      ...unit.activation,
+                      attacked: true,
+                      attacksUsed: preview.attacksUsed,
+                    },
+                  },
+                ],
+      );
+    }
+    const projected: PlayerViewV7 = {
+      ...view,
+      units: projectedUnits,
+      unitStats: view.unitStats.filter((stats) =>
+        projectedUnits.some((unit) => unit.id === stats.unitId),
+      ),
+    };
+    if (yield* hasReplacementPathWorkV7(projected, city.at, actor.id, pathWork))
+      defenderReplacementActionKeys.add(policyCommandKeyV7(command));
+    yield;
+  }
+  const roadCorridor = yield* roadCorridorWorkV7(view, commands, pathWork);
+  return {
+    objectiveByUnitId,
+    roadCorridor,
+    defenderReplacementActionKeys,
+  };
+}
+
+function* hasReplacementPathWorkV7(
+  view: PlayerViewV7,
+  target: CoordV7,
+  excluded: UnitId,
+  pathWork?: MutablePolicyPathDiagnosticsV7,
+): Generator<void, boolean> {
+  for (const unit of view.units) {
+    if (
+      unit.id === excluded ||
+      unit.ownerId !== view.viewer.id ||
+      unit.form !== "LAND" ||
+      unit.activation.moved ||
+      unit.activation.attacked ||
+      unit.activation.recovered ||
+      unit.activation.captured ||
+      unit.activation.specialActed ||
+      unit.hp * 2 < unit.maxHp ||
+      effectiveRoleRuleV7(unit.role).defense2 < 4
+    )
+      continue;
+    const queue: CoordV7[][] = [[]];
+    const best = new Map([[coordKey(unit.at), 0]]);
+    for (let cursor = 0; cursor < queue.length; cursor += 1) {
+      const path = queue[cursor];
+      if (path === undefined) break;
+      const current = path.at(-1) ?? unit.at;
+      for (const next of neighbors8V7(view, current)) {
+        const candidate = [...path, next];
+        const validation = validatePlayerMovementPathV7(view, unit, candidate);
+        if (pathWork !== undefined) pathWork.replacementPathValidations += 1;
+        yield;
+        if (
+          !validation.legal ||
+          validation.traversedPath.length !== candidate.length
+        )
+          continue;
+        const key = coordKey(next);
+        if (
+          (best.get(key) ?? Number.POSITIVE_INFINITY) <= validation.spentPoints2
+        )
+          continue;
+        if (same(next, target)) return true;
+        best.set(key, validation.spentPoints2);
+        if (!validation.stopped) queue.push(candidate);
+      }
+    }
+  }
+  return false;
+}
+
+function tileAtPublicV7(
+  view: PlayerViewV7,
+  at: CoordV7,
+): PlayerViewV7["board"]["tiles"][number] {
+  const tile = findPublicTileV7(view, at);
+  if (tile === undefined)
+    throw new Error(`Public tile missing at ${coordKey(at)}`);
+  return tile;
+}
+
+function findPublicTileV7(
+  view: PlayerViewV7,
+  at: CoordV7,
+): PlayerViewV7["board"]["tiles"][number] | undefined {
+  // Parsed Ruleset 7 boards, and therefore production PlayerViews, are
+  // complete canonical row-major arrays. Keep the search fallback so focused
+  // synthetic public views retain the previous lookup and error behavior.
+  const indexed = view.board.tiles[at.y * view.board.width + at.x];
+  if (indexed !== undefined && same(indexed.at, at)) return indexed;
+  return view.board.tiles.find((candidate) => same(candidate.at, at));
+}
+
+function* publicThreatLookupWorkV7(
+  view: PlayerViewV7,
+  lookup: PublicThreatLookupV7,
+): Generator<void, void> {
+  for (const city of view.cities) {
+    const owners = lookup.cityOwnersByKey.get(coordKey(city.at)) ?? [];
+    owners.push(city.ownerId);
+    lookup.cityOwnersByKey.set(coordKey(city.at), owners);
+    yield;
+  }
+  for (const unit of view.units) {
+    const occupants = lookup.occupantsByKey.get(coordKey(unit.at)) ?? [];
+    occupants.push(unit);
+    lookup.occupantsByKey.set(coordKey(unit.at), occupants);
+    if (unit.ownerId !== view.viewer.id) {
+      const tile = findPublicTileV7(view, unit.at);
+      if (tile?.explored === true && tile.terrain === "MOUNTAIN")
+        lookup.engineeringOwnerIds.add(unit.ownerId);
+    }
+    yield;
+  }
+}
+
+function* roadCorridorWorkV7(
+  view: PlayerViewV7,
+  commands: readonly CommandV7[],
+  pathWork?: MutablePolicyPathDiagnosticsV7,
+): Generator<void, RoadCorridorV7 | null> {
+  const capital = view.cities.find(
+    (city) =>
+      city.ownerId === view.viewer.id &&
+      city.id === view.viewer.originalCapitalCityId,
+  );
+  if (capital === undefined) return null;
+  const roadCommandKeys = new Set(
+    commands.flatMap((command) =>
+      command.kind === "BUILD_ROAD" ? [coordKey(command.at)] : [],
+    ),
+  );
+  const eligible = new Map(
+    view.board.tiles.flatMap((tile) =>
+      tile.explored &&
+      tile.biome !== null &&
+      (tile.territoryOwnerId === null ||
+        tile.territoryOwnerId === view.viewer.id) &&
+      (tile.terrain !== "MOUNTAIN" ||
+        view.viewer.researchedTechs.includes("ENGINEERING"))
+        ? [[coordKey(tile.at), tile] as const]
+        : [],
+    ),
+  );
+  const cityKeys = new Set(
+    view.cities
+      .filter((city) => city.ownerId === view.viewer.id)
+      .map((city) => coordKey(city.at)),
+  );
+  const targets = view.cities
+    .filter((city) => city.ownerId === view.viewer.id && city.id !== capital.id)
+    .sort((left, right) => left.id - right.id);
+  let selected: RoadCorridorV7 | null = null;
+  for (const target of targets) {
+    type Node = { at: CoordV7; missing: readonly string[]; steps: number };
+    const queue: Node[] = [{ at: capital.at, missing: [], steps: 0 }];
+    const best = new Map<string, number>([[coordKey(capital.at), 0]]);
+    let found: Node | null = null;
+    while (queue.length > 0) {
+      queue.sort(
+        (left, right) =>
+          left.missing.length - right.missing.length ||
+          left.steps - right.steps ||
+          left.at.y - right.at.y ||
+          left.at.x - right.at.x,
+      );
+      const current = queue.shift();
+      if (current === undefined) break;
+      if (pathWork !== undefined) pathWork.roadPathExpansions += 1;
+      const currentCost = current.missing.length * 1_000 + current.steps;
+      if ((best.get(coordKey(current.at)) ?? currentCost) < currentCost)
+        continue;
+      if (same(current.at, target.at)) {
+        found = current;
+        break;
+      }
+      for (const next of neighbors8V7(view, current.at)) {
+        const key = coordKey(next);
+        const tile = eligible.get(key);
+        if (tile === undefined) continue;
+        const existing = tile.road || cityKeys.has(key);
+        if (!existing && !roadCommandKeys.has(key)) continue;
+        const missing = existing ? current.missing : [...current.missing, key];
+        if (missing.length > 8) continue;
+        const cost = missing.length * 1_000 + current.steps + 1;
+        if ((best.get(key) ?? Number.POSITIVE_INFINITY) <= cost) continue;
+        best.set(key, cost);
+        queue.push({ at: next, missing, steps: current.steps + 1 });
+      }
+      yield;
+    }
+    if (found === null || found.missing.length === 0) continue;
+    const direct = distance(capital.at, target.at);
+    // An unroaded direct route costs two half-points per step; the completed
+    // corridor costs one. This conservative saving decreases as detours grow.
+    const movementShortening = Math.max(0, direct * 2 - found.steps);
+    // A new original-capital land connection contributes one live Population
+    // at each endpoint. Commerce also publishes one recurring land-trade Coin
+    // for the non-capital city; published Market income remains in city value.
+    const populationBenefit = 2 as const;
+    const commerceIncomeBenefit = Number(
+      view.viewer.researchedTechs.includes("COMMERCE"),
+    ) as 0 | 1;
+    const benefit =
+      populationBenefit * 4 +
+      commerceIncomeBenefit * 6 +
+      attributableCityIncome(view, target) * 3 +
+      movementShortening;
+    const candidate = {
+      targetCityId: target.id,
+      missingRoadKeys: found.missing,
+      populationBenefit,
+      commerceIncomeBenefit,
+      movementShortening,
+      benefit,
+    };
+    if (
+      selected === null ||
+      candidate.benefit > selected.benefit ||
+      (candidate.benefit === selected.benefit &&
+        candidate.missingRoadKeys.length < selected.missingRoadKeys.length) ||
+      (candidate.benefit === selected.benefit &&
+        candidate.missingRoadKeys.length === selected.missingRoadKeys.length &&
+        candidate.targetCityId < selected.targetCityId)
+    )
+      selected = candidate;
+  }
+  return selected;
 }
 
 /** One bounded public-board pass per policy decision, advanced through work slices. */
 function* navalPlanWorkV7(
   view: PlayerViewV7,
   commands: readonly CommandV7[],
+  pathWork?: MutablePolicyPathDiagnosticsV7,
 ): Generator<void, NavalPlanV7> {
   if (view.setup.mapType === "DRY_LAND") return NO_NAVAL_PLAN_V7;
   const tilesByKey = new Map(
@@ -494,6 +1433,7 @@ function* navalPlanWorkV7(
     for (let index = 0; index < queue.length; index += 1) {
       const at = queue[index];
       if (at === undefined) break;
+      if (pathWork !== undefined) pathWork.navalPathExpansions += 1;
       componentByKey.set(coordKey(at), component);
       for (const neighbor of neighbors8V7(view, at)) {
         const key = coordKey(neighbor);
@@ -645,6 +1585,7 @@ function* navalPlanWorkV7(
     view,
     new Set(targetComponentLand.map(coordKey)),
     target === null ? [] : [target],
+    pathWork,
   );
   const coastalTargetLand = targetComponentLand.filter((landAt) =>
     neighbors8V7(view, landAt).some((at) => {
@@ -737,11 +1678,13 @@ function* navalPlanWorkV7(
     view,
     routeGoals,
     false,
+    pathWork,
   );
   const prospectiveWaterDistanceByKey = yield* publicWaterRouteDistancesV7(
     view,
     routeGoals,
     true,
+    pathWork,
   );
   const shallowDistance = nearestRouteDistance(starts, shallowDistances);
   const anyWaterDistance = nearestRouteDistance(
@@ -753,6 +1696,7 @@ function* navalPlanWorkV7(
     new Set(land.map((tile) => coordKey(tile.at))),
     captureUnits.map((unit) => unit.at),
     target === null ? [] : [target],
+    pathWork,
   );
   const seaAdvantageous =
     target !== null &&
@@ -809,6 +1753,7 @@ function* navalPlanWorkV7(
           view,
           fleetGoals,
           view.viewer.researchedTechs.includes("NAVIGATION"),
+          pathWork,
         );
   const active =
     (overseas.length > 0 && reachable.length === 0) ||
@@ -904,6 +1849,7 @@ function* publicWaterRouteDistancesV7(
   view: PlayerViewV7,
   targets: readonly CoordV7[],
   allowDeep: boolean,
+  pathWork?: MutablePolicyPathDiagnosticsV7,
 ): Generator<void, ReadonlyMap<string, number>> {
   if (targets.length === 0) return new Map();
   const water = new Set(
@@ -928,6 +1874,7 @@ function* publicWaterRouteDistancesV7(
   for (let index = 0; index < queue.length; index += 1) {
     const item = queue[index];
     if (item === undefined) break;
+    if (pathWork !== undefined) pathWork.navalPathExpansions += 1;
     for (const next of neighbors8V7(view, item.at)) {
       const key = coordKey(next);
       if (!water.has(key) || distances.has(key)) continue;
@@ -953,6 +1900,7 @@ function* publicRouteDistancesV7(
   view: PlayerViewV7,
   passable: ReadonlySet<string>,
   targets: readonly CoordV7[],
+  pathWork?: MutablePolicyPathDiagnosticsV7,
 ): Generator<void, ReadonlyMap<string, number>> {
   const distances = new Map<string, number>();
   const queue = targets
@@ -962,6 +1910,7 @@ function* publicRouteDistancesV7(
   for (let index = 0; index < queue.length; index += 1) {
     const item = queue[index];
     if (item === undefined) break;
+    if (pathWork !== undefined) pathWork.navalPathExpansions += 1;
     for (const next of neighbors8V7(view, item.at)) {
       const key = coordKey(next);
       if (!passable.has(key) || distances.has(key)) continue;
@@ -978,6 +1927,7 @@ function* publicLandRouteDistanceV7(
   land: ReadonlySet<string>,
   starts: readonly CoordV7[],
   targets: readonly CoordV7[],
+  pathWork?: MutablePolicyPathDiagnosticsV7,
 ): Generator<void, number | null> {
   if (starts.length === 0 || targets.length === 0) return null;
   const targetKeys = new Set(targets.map(coordKey));
@@ -989,6 +1939,7 @@ function* publicLandRouteDistanceV7(
   for (let index = 0; index < queue.length; index += 1) {
     const item = queue[index];
     if (item === undefined) break;
+    if (pathWork !== undefined) pathWork.navalPathExpansions += 1;
     if (targetKeys.has(coordKey(item.at))) return item.steps;
     for (const next of neighbors8V7(view, item.at)) {
       const key = coordKey(next);
@@ -1016,10 +1967,20 @@ function neighbors8V7(view: PlayerViewV7, at: CoordV7): readonly CoordV7[] {
   return result;
 }
 
-function addHostileThreats(context: PolicyContextV7, unit: PublicUnitV7): void {
+function* addHostileThreatsWorkV7(
+  context: PolicyContextV7,
+  unit: PublicUnitV7,
+  pathWork?: MutablePolicyPathDiagnosticsV7,
+): Generator<void, void> {
   const view = context.view;
   const tiles = new Set(
-    publicThreatenedTilesForPolicyV7(view, unit).map(coordKey),
+    (yield* publicThreatenedTilesWorkV7(
+      view,
+      unit,
+      context.threatLookup,
+      pathWork,
+      context.lookup,
+    )).map(coordKey),
   );
   (context.threatenedTiles as Map<UnitId, ReadonlySet<string>>).set(
     unit.id,
@@ -1028,17 +1989,24 @@ function addHostileThreats(context: PolicyContextV7, unit: PublicUnitV7): void {
   for (const city of view.cities.filter(
     (candidate) => candidate.ownerId === view.viewer.id,
   )) {
-    if (!tiles.has(coordKey(city.at))) continue;
+    const imminentCapture =
+      unit.form === "LAND" &&
+      unit.captureEligible &&
+      effectiveRoleRuleV7(unit.role).abilities.includes("CAPTURE") &&
+      same(unit.at, city.at);
+    if (!tiles.has(coordKey(city.at)) && !imminentCapture) continue;
     context.threats.push({
       cityId: city.id,
       unitId: unit.id,
-      severity: same(unit.at, city.at)
-        ? 3
-        : distance(unit.at, city.at) <=
-            publicCombatFacts(view, unit).maximumRange
-          ? 2
-          : 1,
+      severity:
+        imminentCapture || same(unit.at, city.at)
+          ? 3
+          : distance(unit.at, city.at) <=
+              publicCombatFacts(view, unit, context.lookup).maximumRange
+            ? 2
+            : 1,
     });
+    yield;
   }
 }
 
@@ -1046,75 +2014,169 @@ export function publicThreatenedTilesForPolicyV7(
   view: PlayerViewV7,
   unit: PublicUnitV7,
 ): readonly CoordV7[] {
+  const lookup: PublicThreatLookupV7 = {
+    occupantsByKey: new Map(),
+    cityOwnersByKey: new Map(),
+    engineeringOwnerIds: new Set(
+      view.viewer.researchedTechs.includes("ENGINEERING")
+        ? [view.viewer.id]
+        : [],
+    ),
+  };
+  drain(publicThreatLookupWorkV7(view, lookup));
+  return drain(publicThreatenedTilesWorkV7(view, unit, lookup));
+}
+
+export function inspectNormalTacticalFactsV7(view: PlayerViewV7): {
+  readonly threats: readonly ThreatV7[];
+  readonly objectiveByUnitId: readonly {
+    readonly unitId: UnitId;
+    readonly at: CoordV7;
+  }[];
+  readonly roadCorridor: RoadCorridorV7 | null;
+  readonly defenderReplacementActionKeys: readonly string[];
+} {
+  const context = makeContext(
+    view,
+    queryAiReadyCommandsV7(view).map((item) => item.command),
+  );
+  return {
+    threats: context.threats,
+    objectiveByUnitId: [...context.tactical.objectiveByUnitId].map(
+      ([unitId, at]) => ({ unitId, at }),
+    ),
+    roadCorridor: context.tactical.roadCorridor,
+    defenderReplacementActionKeys: [
+      ...context.tactical.defenderReplacementActionKeys,
+    ],
+  };
+}
+
+function* publicThreatenedTilesWorkV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+  lookup: PublicThreatLookupV7,
+  pathWork?: MutablePolicyPathDiagnosticsV7,
+  policyLookup?: PolicyLookupV7,
+): Generator<void, readonly CoordV7[]> {
   const rule = effectiveRoleRuleV7(unit.role);
-  const facts = publicCombatFacts(view, unit);
+  const facts = publicCombatFacts(view, unit, policyLookup);
   if (!facts.abilities.includes("ATTACK") || facts.attack2 <= 0) return [];
-  const origins: CoordV7[] = [unit.at];
+  const origins = new Map([[coordKey(unit.at), unit.at]]);
   if (unit.form !== "EMBARKED" && rule.mayUsePrimaryActionAfterMove) {
     const queue = [{ at: unit.at, spent2: 0 }];
     const best = new Map([[coordKey(unit.at), 0]]);
+    const settled = new Set<string>();
     while (queue.length > 0) {
+      queue.sort(
+        (left, right) =>
+          left.spent2 - right.spent2 ||
+          left.at.y - right.at.y ||
+          left.at.x - right.at.x,
+      );
       const current = queue.shift();
       if (current === undefined) break;
-      for (const tile of view.board.tiles) {
-        if (distance(tile.at, current.at) !== 1) continue;
-        if (!publicMovementTilePossible(view, unit, tile)) continue;
+      const currentKey = coordKey(current.at);
+      if (settled.has(currentKey) || best.get(currentKey) !== current.spent2)
+        continue;
+      settled.add(currentKey);
+      if (pathWork !== undefined) pathWork.threatPathExpansions += 1;
+      const priorTile = findPublicTileV7(view, current.at);
+      const priorRoadNode =
+        priorTile !== undefined &&
+        publicRoadNodeForOwner(priorTile, unit.ownerId, lookup);
+      for (const next of neighbors8V7(view, current.at)) {
+        const tile = tileAtPublicV7(view, next);
+        if (!publicMovementTilePossible(view, unit, tile, lookup)) continue;
         if (
-          view.units.some(
+          (lookup.occupantsByKey.get(coordKey(tile.at)) ?? []).some(
             (occupant) => occupant.id !== unit.id && same(occupant.at, tile.at),
           )
         )
           continue;
-        const priorTile = view.board.tiles.find((item) =>
-          same(item.at, current.at),
-        );
         const roadStep =
           unit.form === "LAND" &&
-          priorTile !== undefined &&
-          publicRoadNodeForOwner(view, priorTile, unit.ownerId) &&
-          publicRoadNodeForOwner(view, tile, unit.ownerId);
+          priorRoadNode &&
+          publicRoadNodeForOwner(tile, unit.ownerId, lookup);
         const spent2 = current.spent2 + (roadStep ? 1 : 2);
         if (spent2 > facts.move * 2) continue;
         const key = coordKey(tile.at);
         if ((best.get(key) ?? Number.POSITIVE_INFINITY) <= spent2) continue;
         best.set(key, spent2);
-        origins.push(tile.at);
+        origins.set(key, tile.at);
         const terrainStop =
           unit.form === "LAND" &&
           tile.explored &&
           !roadStep &&
           (tile.terrain === "FOREST" || tile.terrain === "MOUNTAIN");
-        const hostileZoc = view.units.some(
-          (occupant) =>
-            occupant.ownerId === view.viewer.id &&
-            distance(occupant.at, tile.at) === 1,
+        const hostileZoc = neighbors8V7(view, tile.at).some((adjacent) =>
+          (lookup.occupantsByKey.get(coordKey(adjacent)) ?? []).some(
+            (occupant) =>
+              occupant.id !== unit.id &&
+              occupant.hp > 0 &&
+              occupant.form !== "EMBARKED" &&
+              occupant.ownerId !== unit.ownerId &&
+              !publicPlayersAllied(view, unit.ownerId, occupant.ownerId) &&
+              publicProjectsZocForThreatV7(occupant, unit, tile),
+          ),
         );
         if (!terrainStop && !hostileZoc) queue.push({ at: tile.at, spent2 });
       }
+      yield;
     }
   }
-  const direct = view.board.tiles
-    .map((tile) => tile.at)
-    .filter((at) =>
-      origins.some((origin) => {
+  const direct: CoordV7[] = [];
+  for (const origin of origins.values()) {
+    for (
+      let y = origin.y - facts.maximumRange;
+      y <= origin.y + facts.maximumRange;
+      y += 1
+    )
+      for (
+        let x = origin.x - facts.maximumRange;
+        x <= origin.x + facts.maximumRange;
+        x += 1
+      ) {
+        if (x < 0 || y < 0 || x >= view.board.width || y >= view.board.height)
+          continue;
+        const at = { x, y };
         const range = distance(origin, at);
-        return range >= facts.minimumRange && range <= facts.maximumRange;
-      }),
-    );
+        if (range >= facts.minimumRange && range <= facts.maximumRange)
+          direct.push(at);
+      }
+    yield;
+  }
   return [...new Map(direct.map((at) => [coordKey(at), at])).values()];
 }
 
+function publicProjectsZocForThreatV7(
+  projector: PublicUnitV7,
+  target: PublicUnitV7,
+  tile: PlayerViewV7["board"]["tiles"][number],
+): boolean {
+  if (!tile.explored) return true;
+  if (tile.biome !== null) return projector.form !== "NAVAL";
+  if (projector.form === "NAVAL") return true;
+  const rule = effectiveRoleRuleV7(projector.role);
+  return (
+    target.form !== "LAND" &&
+    rule.abilities.includes("ATTACK") &&
+    rule.minimumRange <= 1 &&
+    rule.range >= 1
+  );
+}
+
 function publicRoadNodeForOwner(
-  view: PlayerViewV7,
   tile: PlayerViewV7["board"]["tiles"][number],
   ownerId: PlayerId,
+  lookup: PublicThreatLookupV7,
 ): boolean {
   if (!tile.explored || tile.biome === null) return false;
   const road =
     tile.road &&
     (tile.territoryOwnerId === null || tile.territoryOwnerId === ownerId);
-  const city = view.cities.some(
-    (candidate) => candidate.ownerId === ownerId && same(candidate.at, tile.at),
+  const city = (lookup.cityOwnersByKey.get(coordKey(tile.at)) ?? []).includes(
+    ownerId,
   );
   return road || city;
 }
@@ -1123,8 +2185,9 @@ function publicMovementTilePossible(
   view: PlayerViewV7,
   unit: PublicUnitV7,
   tile: PlayerViewV7["board"]["tiles"][number],
+  lookup: PublicThreatLookupV7,
 ): boolean {
-  if (!tile.explored) return tile.diplomaticBlock !== "ALLIED_TERRITORY";
+  if (!tile.explored) return false;
   if (
     tile.territoryOwnerId !== null &&
     tile.territoryOwnerId !== unit.ownerId &&
@@ -1135,7 +2198,7 @@ function publicMovementTilePossible(
     return (
       tile.biome !== null &&
       (tile.terrain !== "MOUNTAIN" ||
-        publicOwnerHasEngineering(view, unit.ownerId))
+        lookup.engineeringOwnerIds.has(unit.ownerId))
     );
   return tile.biome === null;
 }
@@ -1145,7 +2208,36 @@ function isPolicyCandidate(
   command: CommandV7,
 ): boolean {
   if (command.kind === "WAIT") return false;
-  const autoembark = isAutoembarkMoveV7(context.view, command);
+  if (command.kind === "BUILD_ROAD") {
+    const corridor = context.tactical.roadCorridor;
+    return (
+      corridor !== null && corridor.missingRoadKeys[0] === coordKey(command.at)
+    );
+  }
+  if (
+    (command.kind === "MOVE" || command.kind === "ATTACK") &&
+    leavesSoleThreatenedDefender(context, command) &&
+    !defenderActionException(context, command)
+  )
+    return false;
+  if (command.kind === "MOVE") {
+    const actor = context.lookup.unitsById.get(command.unitId);
+    const objective = context.tactical.objectiveByUnitId.get(command.unitId);
+    const to = command.path.at(-1);
+    if (
+      actor !== undefined &&
+      objective !== undefined &&
+      to !== undefined &&
+      effectiveRoleRuleV7(actor.role).tacticalRole === "SIEGE" &&
+      distance(to, objective) >= 2 &&
+      distance(to, objective) <= 3 &&
+      !hasReachableScreenAtV7(context, actor, to)
+    )
+      return false;
+  }
+  if (command.kind === "ATTACK" && isLowValueAttackV7(context, command))
+    return false;
+  const autoembark = isAutoembarkMoveV7(context, command);
   if (autoembark && !context.naval.active) return false;
   if (command.kind === "DISEMBARK" && context.naval.active)
     return context.naval.landing.some((at) => same(at, command.at));
@@ -1180,45 +2272,26 @@ function isPolicyCandidate(
     )
       return false;
   }
-  if (command.kind === "TRAIN") {
-    const spendsReserve =
-      context.naval.active &&
-      context.view.viewer.coins -
-        (effectiveRoleRuleV7(command.role).cost ?? 0) <
-        context.naval.reserveCoins;
-    if (
-      context.naval.active &&
-      !threatenedCity(context, command.cityId) &&
-      freeCapacity(context.view, command.cityId) <= 1 &&
-      context.view.units.some(
-        (unit) =>
-          unit.ownerId === context.view.viewer.id &&
-          unit.form === "LAND" &&
-          effectiveRoleRuleV7(unit.role).abilities.includes("CAPTURE"),
-      )
-    )
-      return false;
-    if (spendsReserve && !threatenedCity(context, command.cityId)) return false;
-    return preferredTrainingRole(context, command.cityId) === command.role;
-  }
-  if (command.kind === "TRAIN_NAVAL") {
-    const spendsReserve =
-      context.naval.active &&
-      context.view.viewer.coins -
-        (effectiveRoleRuleV7(command.role).cost ?? 0) <
-        context.naval.reserveCoins;
-    if (
-      spendsReserve &&
-      !(context.naval.visibleNavalDanger && command.role === "PATROL_BOAT")
-    )
-      return false;
-    return (
-      preferredNavalTrainingRoleV7(context, command.cityId) === command.role
-    );
-  }
+  if (
+    command.kind === "TRAIN" ||
+    command.kind === "TRAIN_NAVAL" ||
+    command.kind === "LAND_GRANT"
+  )
+    return preferredSharedCityActionV7(context, command.cityId) === command;
   if (command.kind === "CHOOSE_CITY_REWARD")
     return preferredReward(context, command) === command.reward;
-  if (command.kind === "REDEVELOP")
+  if (command.kind === "REDEVELOP") {
+    // Public economic planning intentionally values placements without current
+    // technology, Coin, or offer gates. Preserve established one-per-city
+    // buildings rather than demolishing one for a speculative replacement and
+    // rebuilding the same legal fallback. Ports retain their direct upgrade.
+    if (preservesEstablishedImprovementV7(context.view, command.at))
+      return false;
+    if (
+      context.redevelopmentMayChangeImprovement.get(coordKey(command.at)) ===
+      false
+    )
+      return false;
     return (
       scorePublicSpatialPlanV7(context.view, command) > 0 &&
       queryPublicRedevelopmentChangesImprovementV7(context.view, {
@@ -1226,8 +2299,9 @@ function isPolicyCandidate(
         at: command.at,
       })
     );
+  }
   if (command.kind === "DISBAND")
-    return usefulDisband(context.view, command as DisbandCommandV7);
+    return usefulDisband(context, command as DisbandCommandV7);
   const economic = previewEconomicV7(context.view, command);
   if (
     context.naval.active &&
@@ -1242,17 +2316,552 @@ function isPolicyCandidate(
   return true;
 }
 
-function isAutoembarkMoveV7(
+/**
+ * Limit expensive public spatial planning to commands which can reach policy
+ * scoring. These two exclusions are unconditional once the public tactical
+ * corridor is known; the original ready list remains the scoring substrate.
+ */
+function isPlanningCandidateV7(
+  context: PolicyContextV7,
+  command: CommandV7,
+): boolean {
+  const nextRoadKey = context.tactical.roadCorridor?.missingRoadKeys[0] ?? null;
+  if (command.kind === "BUILD_ROAD")
+    return nextRoadKey !== null && coordKey(command.at) === nextRoadKey;
+  if (command.kind === "REDEVELOP")
+    return (
+      !preservesEstablishedImprovementV7(context.view, command.at) &&
+      context.redevelopmentMayChangeImprovement.get(coordKey(command.at)) !==
+        false
+    );
+  return true;
+}
+
+function preservesEstablishedImprovementV7(
   view: PlayerViewV7,
+  at: CoordV7,
+): boolean {
+  const tile = tileAtPublicV7(view, at);
+  const current = tile.explored ? tile.improvement : null;
+  return (
+    current !== null && PRESERVED_REDEVELOPMENT_IMPROVEMENTS_V7.has(current)
+  );
+}
+
+function isLowValueAttackV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+): boolean {
+  const preview = queryCombatPreviewV7(
+    context.view,
+    command.unitId,
+    command.targetUnitId,
+  );
+  const actor = context.lookup.unitsById.get(command.unitId);
+  if (preview === null || actor === undefined) return true;
+  const harmful =
+    (!preview.defenderDies && preview.attackerDies) ||
+    (!preview.defenderDies && combatImmediateValue(preview) <= 0);
+  if (!harmful) return false;
+  if (attackPurposeExceptionV7(context, command, preview)) return false;
+  return true;
+}
+
+function attackPurposeExceptionV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+  preview: CombatPreviewV7,
+): boolean {
+  const facts = attackPurposeFactsV7(context, command, preview);
+  return facts.savesCity || facts.opensLethalFollowUp || facts.higherResult;
+}
+
+export interface AttackPurposeFactsV7 {
+  readonly savesCity: boolean;
+  readonly opensLethalFollowUp: boolean;
+  readonly higherResult: boolean;
+}
+
+function attackPurposeFactsV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+  preview: CombatPreviewV7,
+): AttackPurposeFactsV7 {
+  const target = context.lookup.unitsById.get(command.targetUnitId);
+  if (target === undefined)
+    return {
+      savesCity: false,
+      opensLethalFollowUp: false,
+      higherResult: false,
+    };
+  const savesCity = context.threats.some((threat) => {
+    if (threat.unitId !== target.id) return false;
+    const city = context.lookup.citiesById.get(threat.cityId);
+    const defender =
+      city === undefined
+        ? undefined
+        : context.threatLookup.occupantsByKey
+            .get(coordKey(city.at))
+            ?.find((unit) => unit.ownerId === context.view.viewer.id);
+    if (city === undefined || defender === undefined) return false;
+    const before = publicProjectedDamageWithLookupV7(
+      context.view,
+      target,
+      defender,
+      city.at,
+      { maximumCharge: true },
+      context.lookup,
+    );
+    const wounded = {
+      ...target,
+      hp: Math.max(1, target.hp - preview.damageToDefender),
+    };
+    const after = publicProjectedDamageForPolicyV7(
+      projectPublicUnitForPolicyV7(context.view, target.id, wounded),
+      wounded,
+      defender,
+      city.at,
+      { maximumCharge: true },
+    );
+    return before >= defender.hp && after < defender.hp;
+  });
+  const opensLethalFollowUp = hasLethalAttackFollowUpV7(
+    context,
+    command,
+    preview,
+  );
+  const actor = context.lookup.unitsById.get(command.unitId);
+  const realizedTargetLoss = Math.floor(
+    (targetStrategicValue(context.view, target.id, context.lookup) *
+      Math.min(target.hp, preview.damageToDefender)) /
+      target.hp,
+  );
+  const higherResult =
+    actor !== undefined &&
+    realizedTargetLoss > retainedUnitValue(actor) &&
+    preview.damageToDefender > preview.damageToAttacker;
+  return { savesCity, opensLethalFollowUp, higherResult };
+}
+
+export function inspectNormalAttackPurposeV7(
+  view: PlayerViewV7,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+): AttackPurposeFactsV7 {
+  const commands = queryAiReadyCommandsV7(view).map((item) => item.command);
+  const context = makeContext(view, commands);
+  const preview = queryCombatPreviewV7(
+    view,
+    command.unitId,
+    command.targetUnitId,
+  );
+  return preview === null
+    ? {
+        savesCity: false,
+        opensLethalFollowUp: false,
+        higherResult: false,
+      }
+    : attackPurposeFactsV7(context, command, preview);
+}
+
+function hasLethalAttackFollowUpV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+  preview: CombatPreviewV7,
+): boolean {
+  if (preview.defenderDies || preview.damageToDefender <= 0) return false;
+  const target = context.lookup.unitsById.get(command.targetUnitId);
+  if (target === undefined || target.hp <= preview.damageToDefender)
+    return false;
+  const projected = projectPublicUnitForPolicyV7(context.view, target.id, {
+    hp: target.hp - preview.damageToDefender,
+  });
+  return context.commands.some((candidate) => {
+    if (
+      candidate.kind !== "ATTACK" ||
+      candidate.unitId === command.unitId ||
+      candidate.targetUnitId !== command.targetUnitId
+    )
+      return false;
+    return (
+      queryCombatPreviewV7(projected, candidate.unitId, candidate.targetUnitId)
+        ?.defenderDies === true
+    );
+  });
+}
+
+function* sharedCityContextWorkV7(
+  context: PolicyContextV7,
+): Generator<void, void> {
+  if (context.sharedCityContextPrepared) return;
+  const { view } = context;
+  const sharedByCity = new Map<CityId, SharedCityCommandV7[]>();
+  const landByCity = new Map<CityId, Extract<CommandV7, { kind: "TRAIN" }>[]>();
+  const navalByCity = new Map<
+    CityId,
+    Extract<CommandV7, { kind: "TRAIN_NAVAL" }>[]
+  >();
+  for (const command of context.commands) {
+    if (
+      command.kind === "TRAIN" ||
+      command.kind === "TRAIN_NAVAL" ||
+      command.kind === "LAND_GRANT"
+    ) {
+      const shared = sharedByCity.get(command.cityId) ?? [];
+      shared.push(command);
+      sharedByCity.set(command.cityId, shared);
+      if (command.kind === "TRAIN") {
+        const land = landByCity.get(command.cityId) ?? [];
+        land.push(command);
+        landByCity.set(command.cityId, land);
+      } else if (command.kind === "TRAIN_NAVAL") {
+        const naval = navalByCity.get(command.cityId) ?? [];
+        naval.push(command);
+        navalByCity.set(command.cityId, naval);
+      }
+    }
+    yield;
+  }
+  if (sharedByCity.size === 0) {
+    context.sharedCityContextPrepared = true;
+    return;
+  }
+
+  const citiesById = new Map<CityId, PlayerViewV7["cities"][number]>();
+  const cityIdByKey = new Map<string, CityId>();
+  for (const city of view.cities) {
+    citiesById.set(city.id, city);
+    cityIdByKey.set(coordKey(city.at), city.id);
+    yield;
+  }
+  const improvementByKey = new Map<string, ImprovementIdV7 | null>();
+  const territoryCityByKey = new Map<string, CityId | null>();
+  for (const tile of view.board.tiles) {
+    if (tile.explored) {
+      improvementByKey.set(coordKey(tile.at), tile.improvement);
+      territoryCityByKey.set(coordKey(tile.at), tile.territoryCityId);
+    }
+    yield;
+  }
+  const forgeCities = new Set<CityId>();
+  for (const value of view.improvementValues) {
+    if (value.improvement === "FORGE" && value.level > 0) {
+      const cityId = territoryCityByKey.get(coordKey(value.at));
+      if (cityId !== undefined && cityId !== null) forgeCities.add(cityId);
+    }
+    yield;
+  }
+
+  const ownedRoleCounts = new Map<UnitRoleIdV7, number>();
+  const assignedByCity = new Map<CityId, number>();
+  const ownedAt = new Set<string>();
+  const centerGuardByCity = new Map<CityId, PublicUnitV7>();
+  let hasLandCaptureUnit = false;
+  let patrolBoats = 0;
+  let battleships = 0;
+  let transports = 0;
+  let defendedLanding = false;
+  for (const unit of view.units) {
+    if (unit.ownerId === view.viewer.id) {
+      ownedRoleCounts.set(unit.role, (ownedRoleCounts.get(unit.role) ?? 0) + 1);
+      ownedAt.add(coordKey(unit.at));
+      if (unit.homeCityId !== null)
+        assignedByCity.set(
+          unit.homeCityId,
+          (assignedByCity.get(unit.homeCityId) ?? 0) + 1,
+        );
+      if (
+        unit.form === "LAND" &&
+        effectiveRoleRuleV7(unit.role).abilities.includes("CAPTURE")
+      )
+        hasLandCaptureUnit = true;
+      if (unit.role === "PATROL_BOAT") patrolBoats += 1;
+      if (unit.role === "BATTLESHIP") battleships += 1;
+      if (unit.form === "EMBARKED") transports += 1;
+      const cityId = cityIdByKey.get(coordKey(unit.at));
+      if (
+        cityId !== undefined &&
+        !centerGuardByCity.has(cityId) &&
+        unit.role === "GUARD" &&
+        unit.hp * 4 >= unit.maxHp * 3
+      )
+        centerGuardByCity.set(cityId, unit);
+    } else if (
+      context.naval.target !== null &&
+      isHostile(view, unit.ownerId) &&
+      unit.form === "LAND" &&
+      distance(unit.at, context.naval.target) <= 2
+    )
+      defendedLanding = true;
+    yield;
+  }
+  const threatenedCityIds = new Set<CityId>();
+  for (const threat of context.threats) {
+    threatenedCityIds.add(threat.cityId);
+    yield;
+  }
+
+  for (const [cityId, shared] of sharedByCity) {
+    const city = citiesById.get(cityId);
+    let neutral = 0;
+    for (const tile of view.board.tiles) {
+      if (
+        city !== undefined &&
+        tile.explored &&
+        tile.territoryCityId === null &&
+        distance(tile.at, city.at) <= 2
+      )
+        neutral += 1;
+      yield;
+    }
+
+    let durableScreen = false;
+    for (const unit of view.units) {
+      if (
+        !durableScreen &&
+        city !== undefined &&
+        unit.ownerId === view.viewer.id &&
+        unit.form === "LAND" &&
+        unit.hp * 2 >= unit.maxHp &&
+        effectiveRoleRuleV7(unit.role).defense2 >= 4
+      ) {
+        if (distance(unit.at, city.at) <= 1) durableScreen = true;
+        else
+          for (const destination of context.lookup.moveDestinationsByUnit.get(
+            unit.id,
+          ) ?? []) {
+            if (distance(destination, city.at) <= 1) durableScreen = true;
+            yield;
+            if (durableScreen) break;
+          }
+      }
+      yield;
+    }
+    context.durableScreenByCity.set(cityId, durableScreen);
+
+    const threatened = threatenedCityIds.has(cityId);
+    const landOrder = threatened ? THREATENED_ROLE_ORDER : GENERAL_ROLE_ORDER;
+    let preferredLand: Extract<CommandV7, { kind: "TRAIN" }> | null = null;
+    let preferredLandValue = Number.NEGATIVE_INFINITY;
+    for (const command of landByCity.get(cityId) ?? []) {
+      const count = ownedRoleCounts.get(command.role) ?? 0;
+      const value =
+        effectiveRoleRuleV7(command.role).maxHp +
+        Number(command.role === "GUARD" && threatened) * 20 +
+        Number(command.role === "CATAPULT" && durableScreen) * 12 +
+        20 * Number(count === 0) -
+        2 * (effectiveRoleRuleV7(command.role).cost ?? 0) -
+        8 * count;
+      const order = landOrder as readonly UnitRoleIdV7[];
+      if (
+        preferredLand === null ||
+        value > preferredLandValue ||
+        (value === preferredLandValue &&
+          order.indexOf(command.role) < order.indexOf(preferredLand.role))
+      ) {
+        preferredLand = command;
+        preferredLandValue = value;
+      }
+      yield;
+    }
+    const naval = navalByCity.get(cityId) ?? [];
+    let firstNaval: "PATROL_BOAT" | "BATTLESHIP" | null = null;
+    let offersPatrol = false;
+    let offersBattleship = false;
+    for (const command of naval) {
+      firstNaval ??= command.role;
+      if (command.role === "PATROL_BOAT") offersPatrol = true;
+      if (command.role === "BATTLESHIP") offersBattleship = true;
+      yield;
+    }
+    const preferredNaval =
+      context.naval.visibleNavalDanger && patrolBoats === 0
+        ? offersPatrol
+          ? "PATROL_BOAT"
+          : firstNaval
+        : defendedLanding && offersBattleship && battleships === 0
+          ? "BATTLESHIP"
+          : transports > 0 && patrolBoats < transports && offersPatrol
+            ? "PATROL_BOAT"
+            : null;
+    const centerGuard = centerGuardByCity.get(cityId);
+    const free =
+      city === undefined
+        ? 0
+        : city.level +
+          1 +
+          Number(view.viewer.researchedTechs.includes("PLANNING")) -
+          (assignedByCity.get(cityId) ?? 0);
+    const needsCenterDefender =
+      city !== undefined && threatened && !ownedAt.has(coordKey(city.at));
+    let best: SharedCityCommandV7 | null = null;
+    let bestUtility = Number.NEGATIVE_INFINITY;
+    let bestTie: readonly number[] = [];
+    for (const command of shared) {
+      const cost = sharedTrainingCostV7(command, forgeCities, improvementByKey);
+      const worsens =
+        command.kind === "TRAIN" &&
+        threatened &&
+        centerGuard !== undefined &&
+        (effectiveRoleRuleV7(command.role).defense2 <
+          effectiveRoleRuleV7(centerGuard.role).defense2 ||
+          effectiveRoleRuleV7(command.role).maxHp < centerGuard.hp);
+      const spendsReserve =
+        command.kind !== "LAND_GRANT" &&
+        context.naval.active &&
+        view.viewer.coins - cost < context.naval.reserveCoins;
+      const eligible =
+        command.kind === "LAND_GRANT" ||
+        (command.kind === "TRAIN"
+          ? !(
+              context.naval.active &&
+              !threatened &&
+              free <= 1 &&
+              hasLandCaptureUnit
+            ) &&
+            (!spendsReserve || threatened) &&
+            !worsens
+          : !spendsReserve ||
+            (context.naval.visibleNavalDanger &&
+              command.role === "PATROL_BOAT"));
+      if (eligible) {
+        const utility =
+          command.kind === "LAND_GRANT"
+            ? neutral * 7 - 18
+            : command.kind === "TRAIN"
+              ? (effectiveRoleRuleV7(command.role).maxHp +
+                  Number(command.role === "GUARD" && threatened) * 20 +
+                  Number(command.role === "CATAPULT" && durableScreen) * 12) *
+                  3 -
+                cost * 4 +
+                Number(preferredLand?.role === command.role) * 18
+              : (command.role === "PATROL_BOAT" ? 32 : 38) -
+                cost * 4 +
+                Number(preferredNaval === command.role) * 125 -
+                Number(needsCenterDefender) * 100;
+        const tie = fallbackTie(view, command, city?.at);
+        if (
+          best === null ||
+          utility > bestUtility ||
+          (utility === bestUtility && compareNumericTuple(tie, bestTie) > 0)
+        ) {
+          best = command;
+          bestUtility = utility;
+          bestTie = tie;
+        }
+      }
+      yield;
+    }
+    context.preferredSharedCityActionByCity.set(cityId, best);
+    yield;
+  }
+  context.sharedCityContextPrepared = true;
+}
+
+function sharedTrainingCostV7(
+  command: SharedCityCommandV7,
+  forgeCities: ReadonlySet<CityId>,
+  improvementByKey: ReadonlyMap<string, ImprovementIdV7 | null>,
+): number {
+  if (command.kind === "LAND_GRANT") return 0;
+  const base = effectiveRoleRuleV7(command.role).cost ?? 0;
+  return command.kind === "TRAIN_NAVAL"
+    ? Math.max(
+        1,
+        base -
+          Number(improvementByKey.get(coordKey(command.at)) === "SHIPYARD") * 2,
+      )
+    : Math.max(1, base - Number(forgeCities.has(command.cityId)));
+}
+
+function preferredSharedCityActionV7(
+  context: PolicyContextV7,
+  cityId: CityId,
+): CommandV7 | null {
+  if (!context.sharedCityContextPrepared)
+    drain(sharedCityContextWorkV7(context));
+  return context.preferredSharedCityActionByCity.get(cityId) ?? null;
+}
+
+function leavesSoleThreatenedDefender(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "MOVE" | "ATTACK" }>,
+): boolean {
+  const actor = context.lookup.unitsById.get(command.unitId);
+  const city =
+    actor === undefined
+      ? undefined
+      : cityAt(context.view, actor.at, context.lookup);
+  if (
+    actor === undefined ||
+    city === undefined ||
+    city.ownerId !== context.view.viewer.id ||
+    !threatenedCity(context, city.id)
+  )
+    return false;
+  if (command.kind === "ATTACK") {
+    const preview = queryCombatPreviewV7(
+      context.view,
+      command.unitId,
+      command.targetUnitId,
+    );
+    if (preview === null || (!preview.attackerDies && !preview.advances))
+      return false;
+  }
+  return !context.tactical.defenderReplacementActionKeys.has(
+    policyCommandKeyV7(command),
+  );
+}
+
+function policyCommandKeyV7(command: CommandV7): string {
+  return JSON.stringify(command);
+}
+
+function defenderActionException(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "MOVE" | "ATTACK" }>,
+): boolean {
+  if (command.kind === "MOVE") return false;
+  const preview = queryCombatPreviewV7(
+    context.view,
+    command.unitId,
+    command.targetUnitId,
+  );
+  if (preview === null) return false;
+  const actor = context.lookup.unitsById.get(command.unitId);
+  const defendedCity =
+    actor === undefined
+      ? undefined
+      : cityAt(context.view, actor.at, context.lookup);
+  if (
+    defendedCity === undefined ||
+    defendedCity.ownerId !== context.view.viewer.id
+  )
+    return false;
+  return (
+    preview.defenderDies &&
+    context.threats.some(
+      (threat) =>
+        threat.cityId === defendedCity.id &&
+        threat.unitId === command.targetUnitId,
+    ) &&
+    !context.threats.some(
+      (threat) =>
+        threat.cityId === defendedCity.id &&
+        threat.unitId !== command.targetUnitId,
+    )
+  );
+}
+
+function isAutoembarkMoveV7(
+  context: PolicyContextV7,
   command: CommandV7,
 ): command is Extract<CommandV7, { kind: "MOVE" }> {
   if (command.kind !== "MOVE") return false;
-  const unit = view.units.find((candidate) => candidate.id === command.unitId);
+  const { view } = context;
+  const unit = context.lookup.unitsById.get(command.unitId);
   const destination = command.path.at(-1);
   if (unit?.form !== "LAND" || destination === undefined) return false;
-  const tile = view.board.tiles.find(
-    (candidate) => candidate.explored && same(candidate.at, destination),
-  );
+  const tile = findPublicTileV7(view, destination);
   return (
     tile?.explored === true &&
     tile.improvement === "PORT" &&
@@ -1270,7 +2879,7 @@ function scoreCommandWithContext(
   precomputedKnightOverrun?: KnightOverrunSequenceValue,
 ): AiScoreV7 {
   const view = context.view;
-  const actor = unitForCommand(view, command);
+  const actor = unitForCommand(view, command, context.lookup);
   const resultAt =
     command.kind === "MOVE"
       ? (command.path.at(-1) ?? actor?.at ?? null)
@@ -1330,9 +2939,7 @@ function scoreCommandWithContext(
       view.naval.ownedPorts.every((port) => port.status !== "ACTIVE")
     ) {
       priority = 1285;
-      const cityId = view.board.tiles.find(
-        (tile) => tile.explored && same(tile.at, command.at),
-      );
+      const cityId = findPublicTileV7(view, command.at);
       strategicValue =
         10_000 -
         100 *
@@ -1345,6 +2952,18 @@ function scoreCommandWithContext(
       immediateValue += 4;
     } else if (context.naval.active && command.kind === "HARVEST_FISH") {
       priority = Math.max(priority, 1170);
+    }
+    if (command.kind === "BUILD_ROAD") {
+      const corridor = context.tactical.roadCorridor;
+      if (
+        corridor !== null &&
+        corridor.missingRoadKeys[0] === coordKey(command.at)
+      ) {
+        priority = Math.max(priority, 1110);
+        strategicValue +=
+          corridor.benefit * 4 - corridor.missingRoadKeys.length * 2;
+        objectiveValue += 8 - corridor.missingRoadKeys.length;
+      }
     }
   }
 
@@ -1367,7 +2986,7 @@ function scoreCommandWithContext(
   }
 
   if (command.kind === "BUILD_FIELD_DEFENSE" && actor !== undefined) {
-    const city = cityAt(view, actor.at);
+    const city = cityAt(view, actor.at, context.lookup);
     const danger = visibleImmediateDamage(view, actor, actor.at, context);
     const useful =
       danger > 0 || (city !== undefined && threatenedCity(context, city.id));
@@ -1466,12 +3085,12 @@ function scoreCommandWithContext(
       : 10;
     objectiveValue =
       context.naval.target === null
-        ? publicRevealGain(view, actor, command.at)
+        ? publicRevealGain(view, actor, command.at, context.lookup)
         : 100 - distance(command.at, context.naval.target);
   }
 
   if (command.kind === "LAND_GRANT") {
-    const city = view.cities.find((item) => item.id === command.cityId);
+    const city = context.lookup.citiesById.get(command.cityId);
     const neutral =
       city === undefined
         ? 0
@@ -1506,9 +3125,30 @@ function scoreCommandWithContext(
           ? 1240
           : 900;
       strategicValue += combatStrategicValue(context, command, preview);
-      const targetUnit = view.units.find(
-        (unit) => unit.id === command.targetUnitId,
-      );
+      const targetUnit = context.lookup.unitsById.get(command.targetUnitId);
+      const targetCity =
+        targetUnit === undefined
+          ? undefined
+          : context.lookup.citiesByKey.get(coordKey(targetUnit.at));
+      const clearsHostileCity =
+        preview.defenderDies &&
+        targetUnit !== undefined &&
+        targetCity !== undefined &&
+        isHostile(view, targetCity.ownerId);
+      if (clearsHostileCity) {
+        priority = Math.max(priority, 1350);
+        strategicValue += 50;
+      }
+      const opensCaptureFollowUp =
+        !preview.defenderDies &&
+        targetUnit !== undefined &&
+        targetCity !== undefined &&
+        isHostile(view, targetCity.ownerId) &&
+        hasLethalAttackFollowUpV7(context, command, preview);
+      if (opensCaptureFollowUp) {
+        priority = Math.max(priority, preview.attackerDies ? 1346 : 1345);
+        strategicValue += 45;
+      }
       if (targetUnit?.form === "EMBARKED") {
         priority = Math.max(priority, 1275);
         strategicValue += 40;
@@ -1553,7 +3193,7 @@ function scoreCommandWithContext(
     );
     priority = targets.some((target) =>
       context.threats.some(
-        (item) => item.cityId === cityAt(view, target.at)?.id,
+        (item) => item.cityId === cityAt(view, target.at, context.lookup)?.id,
       ),
     )
       ? 1270
@@ -1573,13 +3213,14 @@ function scoreCommandWithContext(
         distance(unit.at, actor.at) === 1,
     );
     strategicValue = targets.length * 12;
-    priority = targets.length >= 2 ? 1220 : 720;
+    priority = targets.length >= 2 ? 1235 : 720;
   }
 
   if (command.kind === "RECOVER") {
     priority = (actor?.hp ?? 0) * 2 < (actor?.maxHp ?? 0) ? 400 : 300;
     immediateValue =
       actor === undefined ? 0 : Math.min(2, actor.maxHp - actor.hp) * 8;
+    if (actor !== undefined && actor.hp * 2 < actor.maxHp) priority = 930;
   }
 
   if (command.kind === "PROMOTE") {
@@ -1588,7 +3229,8 @@ function scoreCommandWithContext(
   }
 
   if (command.kind === "CAPTURE") {
-    const city = actor === undefined ? undefined : cityAt(view, actor.at);
+    const city =
+      actor === undefined ? undefined : cityAt(view, actor.at, context.lookup);
     const neutral = city === undefined;
     const finalHostileCity =
       city !== undefined && captureEndsMatchV7(view, city.ownerId);
@@ -1606,7 +3248,7 @@ function scoreCommandWithContext(
   }
 
   if (command.kind === "MOVE" && actor !== undefined) {
-    const autoembark = isAutoembarkMoveV7(view, command);
+    const autoembark = isAutoembarkMoveV7(context, command);
     const chest = view.treasureChests.some((at) => same(at, resultAt));
     const picket = scoutPicketValue(view, actor, resultAt);
     const screen = screenValue(view, actor, resultAt);
@@ -1617,8 +3259,12 @@ function scoreCommandWithContext(
     } else if (movesOntoThreatenedCity(context, resultAt)) {
       priority = 1250;
     } else {
-      objectiveValue = movementObjectiveValue(view, actor.at, resultAt);
-      const reveal = publicRevealGain(view, actor, resultAt);
+      objectiveValue = tacticalMovementObjectiveValueV7(
+        context,
+        actor,
+        resultAt,
+      );
+      const reveal = publicRevealGain(view, actor, resultAt, context.lookup);
       priority = objectiveValue > 0 ? 700 : reveal > 0 ? 600 : -1;
       strategicValue = picket + screen;
       if (strategicValue > 0) priority = Math.max(priority, 710);
@@ -1640,6 +3286,31 @@ function scoreCommandWithContext(
           );
         }
       }
+      const windmillGain = windmillStagingGainV7(view, actor, resultAt);
+      if (windmillGain > 0) {
+        priority = Math.max(priority, actor.hp * 2 < actor.maxHp ? 940 : 715);
+        strategicValue += windmillGain;
+      }
+      const destinationCity =
+        resultAt === null ? undefined : cityAt(view, resultAt, context.lookup);
+      if (
+        destinationCity !== undefined &&
+        isHostile(view, destinationCity.ownerId) &&
+        effectiveRoleRuleV7(actor.role).abilities.includes("CAPTURE")
+      ) {
+        priority = Math.max(priority, 1290);
+        strategicValue += 30;
+      }
+      const assigned = context.tactical.objectiveByUnitId.get(actor.id);
+      if (
+        assigned !== undefined &&
+        effectiveRoleRuleV7(actor.role).tacticalRole === "SIEGE" &&
+        resultAt !== null &&
+        distance(resultAt, assigned) >= 2 &&
+        distance(resultAt, assigned) <= 3 &&
+        hasReachableScreenAtV7(context, actor, resultAt)
+      )
+        priority = Math.max(priority, 735);
     }
     if (autoembark) {
       priority = Math.max(priority, 1300);
@@ -1664,11 +3335,7 @@ function scoreCommandWithContext(
       );
     }
     const destinationTile =
-      resultAt === null
-        ? undefined
-        : view.board.tiles.find(
-            (tile) => tile.explored && same(tile.at, resultAt),
-          );
+      resultAt === null ? undefined : findPublicTileV7(view, resultAt);
     if (
       actor.form === "NAVAL" &&
       destinationTile?.explored === true &&
@@ -1684,7 +3351,7 @@ function scoreCommandWithContext(
   }
 
   if (command.kind === "PILLAGE" && actor !== undefined) {
-    const live = visibleImprovementValueAt(view, actor.at);
+    const live = visibleImprovementValueAt(view, actor.at, context.lookup);
     const survival = visibleImmediateDamage(view, actor, actor.at, context);
     strategicValue = 12 * (live ?? 0) + 1 - survival;
     immediateValue = 1 + 5 * (live ?? 0);
@@ -1744,7 +3411,7 @@ function* scoreCommandSteps(
   command: CommandV7,
   readyTuple: readonly number[],
 ): Generator<void, AiScoreV7> {
-  const actor = unitForCommand(context.view, command);
+  const actor = unitForCommand(context.view, command, context.lookup);
   const knightOverrun =
     command.kind === "ATTACK" &&
     actor?.role === "KNIGHT" &&
@@ -1988,27 +3655,26 @@ function combatStrategicValue(
   command: Extract<CommandV7, { kind: "ATTACK" }>,
   preview: CombatPreviewV7,
 ): number {
-  const attacker = context.view.units.find(
-    (item) => item.id === command.unitId,
-  );
-  const target = context.view.units.find(
-    (item) => item.id === command.targetUnitId,
-  );
+  const attacker = context.lookup.unitsById.get(command.unitId);
+  const target = context.lookup.unitsById.get(command.targetUnitId);
   if (attacker === undefined || target === undefined) return 0;
-  let value = targetStrategicValue(context.view, target.id);
+  let value = targetStrategicValue(context.view, target.id, context.lookup);
   for (const splash of preview.splash) {
-    const splashTarget = context.view.units.find(
-      (unit) => unit.id === splash.unitId,
-    );
+    const splashTarget = context.lookup.unitsById.get(splash.unitId);
     if (splashTarget === undefined) continue;
-    const retained = targetStrategicValue(context.view, splash.unitId);
+    const retained = targetStrategicValue(
+      context.view,
+      splash.unitId,
+      context.lookup,
+    );
     value += splash.dies
       ? retained
       : Math.floor((retained * splash.damage) / splashTarget.hp);
   }
   if (
     preview.push === "WILL_PUSH" &&
-    cityAt(context.view, target.at)?.ownerId === context.view.viewer.id
+    cityAt(context.view, target.at, context.lookup)?.ownerId ===
+      context.view.viewer.id
   )
     value += 10;
   if (attacker.role === "CATAPULT") {
@@ -2020,9 +3686,7 @@ function combatStrategicValue(
     )
       ? 4
       : 0;
-    const tile = context.view.board.tiles.find((item) =>
-      same(item.at, target.at),
-    );
+    const tile = findPublicTileV7(context.view, target.at);
     const idleRecovery =
       tile?.explored === true && tile.territoryOwnerId === target.ownerId
         ? 4
@@ -2176,82 +3840,6 @@ function researchChain(
   return result;
 }
 
-function preferredTrainingRole(
-  context: PolicyContextV7,
-  cityId: CityId,
-): UnitRoleIdV7 | null {
-  const available = context.commands.filter(
-    (command): command is Extract<CommandV7, { kind: "TRAIN" }> =>
-      command.kind === "TRAIN" && command.cityId === cityId,
-  );
-  const order = threatenedCity(context, cityId)
-    ? THREATENED_ROLE_ORDER
-    : GENERAL_ROLE_ORDER;
-  return (
-    available.slice().sort((left, right) => {
-      const count = (role: UnitRoleIdV7) =>
-        context.view.units.filter(
-          (unit) =>
-            unit.ownerId === context.view.viewer.id && unit.role === role,
-        ).length;
-      const value = (command: typeof left) =>
-        trainingStrategicValue(context, command) +
-        20 * Number(count(command.role) === 0) -
-        2 * (effectiveRoleRuleV7(command.role).cost ?? 0) -
-        8 * count(command.role);
-      const frozenOrder = order as readonly UnitRoleIdV7[];
-      return (
-        value(right) - value(left) ||
-        frozenOrder.indexOf(left.role) - frozenOrder.indexOf(right.role)
-      );
-    })[0]?.role ?? null
-  );
-}
-
-function preferredNavalTrainingRoleV7(
-  context: PolicyContextV7,
-  cityId: CityId,
-): "PATROL_BOAT" | "BATTLESHIP" | null {
-  const available = context.commands.filter(
-    (command): command is Extract<CommandV7, { kind: "TRAIN_NAVAL" }> =>
-      command.kind === "TRAIN_NAVAL" && command.cityId === cityId,
-  );
-  if (available.length === 0) return null;
-  const owned = (role: "PATROL_BOAT" | "BATTLESHIP") =>
-    context.view.units.filter(
-      (unit) => unit.ownerId === context.view.viewer.id && unit.role === role,
-    ).length;
-  if (context.naval.visibleNavalDanger && owned("PATROL_BOAT") === 0)
-    return available.some((command) => command.role === "PATROL_BOAT")
-      ? "PATROL_BOAT"
-      : (available[0]?.role ?? null);
-  const defendedLanding =
-    context.naval.target !== null &&
-    context.view.units.some(
-      (unit) =>
-        isHostile(context.view, unit.ownerId) &&
-        unit.form === "LAND" &&
-        distance(unit.at, context.naval.target as CoordV7) <= 2,
-    );
-  if (
-    defendedLanding &&
-    available.some((command) => command.role === "BATTLESHIP") &&
-    owned("BATTLESHIP") === 0
-  )
-    return "BATTLESHIP";
-  const transports = context.view.units.filter(
-    (unit) =>
-      unit.ownerId === context.view.viewer.id && unit.form === "EMBARKED",
-  ).length;
-  if (
-    transports > 0 &&
-    owned("PATROL_BOAT") < transports &&
-    available.some((command) => command.role === "PATROL_BOAT")
-  )
-    return "PATROL_BOAT";
-  return null;
-}
-
 function reservedPortCommandV7(
   context: PolicyContextV7,
 ): { readonly kind: "BUILD_PORT"; readonly at: CoordV7 } | null {
@@ -2348,7 +3936,7 @@ function preferredReward(
         ? "WALLS"
         : (offered[0] ?? command.reward);
   if (command.reachedLevel === 4) {
-    const city = context.view.cities.find((item) => item.id === command.cityId);
+    const city = context.lookup.citiesById.get(command.cityId);
     const neutral =
       city === undefined
         ? 0
@@ -2386,10 +3974,7 @@ function trainingStrategicValue(
   let value = effectiveRoleRuleV7(command.role).maxHp;
   if (command.role === "GUARD" && threatenedCity(context, command.cityId))
     value += 20;
-  if (
-    command.role === "CATAPULT" &&
-    hasDurableScreen(context.view, command.cityId)
-  )
+  if (command.role === "CATAPULT" && hasDurableScreen(context, command.cityId))
     value += 12;
   return value;
 }
@@ -2421,6 +4006,58 @@ function movementObjectiveValue(
     return nearestDistance(from, unknown) - nearestDistance(to, unknown);
   }
   return nearestDistance(from, objectives) - nearestDistance(to, objectives);
+}
+
+function tacticalMovementObjectiveValueV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7 | null,
+): number {
+  if (to === null) return 0;
+  const assigned = context.tactical.objectiveByUnitId.get(actor.id);
+  if (assigned === undefined)
+    return movementObjectiveValue(context.view, actor.at, to);
+  let value = distance(actor.at, assigned) - distance(to, assigned);
+  const role = effectiveRoleRuleV7(actor.role).tacticalRole;
+  if (role === "SIEGE") {
+    const range = distance(to, assigned);
+    if (range >= 2 && range <= 3 && hasReachableScreenAtV7(context, actor, to))
+      value += 8;
+    if (range < 2) value -= 12;
+  } else if (role === "DEFENDER") {
+    if (
+      context.view.cities.some(
+        (city) =>
+          city.ownerId === context.view.viewer.id &&
+          threatenedCity(context, city.id) &&
+          same(city.at, to),
+      )
+    )
+      value += 12;
+  } else if (["SKIRMISHER", "BREAKTHROUGH"].includes(role)) {
+    const approaches = neighbors8V7(context.view, assigned);
+    if (approaches.some((at) => same(at, to))) value += 5;
+  }
+  return value;
+}
+
+function windmillStagingGainV7(
+  view: PlayerViewV7,
+  actor: PublicUnitV7,
+  to: CoordV7 | null,
+): number {
+  if (to === null || actor.hp >= actor.maxHp) return 0;
+  const ownedWindmills = view.board.tiles.filter(
+    (tile) =>
+      tile.explored &&
+      tile.improvement === "WINDMILL" &&
+      tile.territoryOwnerId === view.viewer.id,
+  );
+  const before = ownedWindmills.some(
+    (tile) => distance(tile.at, actor.at) === 1,
+  );
+  const after = ownedWindmills.some((tile) => distance(tile.at, to) === 1);
+  return after && !before ? Math.min(6, actor.maxHp - actor.hp) * 4 : 0;
 }
 
 function navalMovementObjectiveValueV7(
@@ -2459,8 +4096,10 @@ function publicRevealGain(
   view: PlayerViewV7,
   actor: PublicUnitV7,
   at: CoordV7 | null,
+  lookup?: PolicyLookupV7,
 ): number {
   if (at === null) return 0;
+  const destinationTile = findPublicTileV7(view, at);
   const radius =
     actor.form === "EMBARKED"
       ? 1
@@ -2473,19 +4112,20 @@ function publicRevealGain(
           ) +
           Number(
             view.viewer.researchedTechs.includes("ENGINEERING") &&
-              view.board.tiles.some(
-                (tile) =>
-                  tile.explored &&
-                  same(tile.at, at) &&
-                  tile.terrain === "MOUNTAIN",
-              ),
+              destinationTile?.explored === true &&
+              destinationTile.terrain === "MOUNTAIN",
           );
-  return view.board.tiles.filter(
+  const cacheKey = `${radius}:${coordKey(at)}`;
+  const cached = lookup?.revealGainByRadiusAndKey.get(cacheKey);
+  if (cached !== undefined) return cached;
+  const result = view.board.tiles.filter(
     (tile) =>
       !tile.explored &&
       !("diplomaticBlock" in tile) &&
       distance(tile.at, at) <= radius,
   ).length;
+  lookup?.revealGainByRadiusAndKey.set(cacheKey, result);
+  return result;
 }
 
 function scoutPicketValue(
@@ -2534,12 +4174,16 @@ function visibleImmediateDamage(
   actor: PublicUnitV7,
   at: CoordV7,
   context?: PolicyContextV7,
+  lookup: PolicyLookupV7 | undefined = context?.lookup,
 ): number {
   let total = 0;
-  for (const hostile of view.units.filter((unit) =>
-    isHostile(view, unit.ownerId),
-  )) {
-    const facts = publicCombatFacts(view, hostile);
+  const effectiveLookup =
+    context === undefined || context.view === view ? lookup : undefined;
+  const hostiles =
+    effectiveLookup?.visibleHostiles ??
+    view.units.filter((unit) => isHostile(view, unit.ownerId));
+  for (const hostile of hostiles) {
+    const facts = publicCombatFacts(view, hostile, effectiveLookup);
     if (!facts.abilities.includes("ATTACK") || facts.attack2 <= 0) continue;
     const d = distance(hostile.at, at);
     const directlyThreatened =
@@ -2547,9 +4191,14 @@ function visibleImmediateDamage(
     const reachableThreat =
       context?.threatenedTiles.get(hostile.id)?.has(coordKey(at)) ?? false;
     if (!directlyThreatened && !reachableThreat) continue;
-    total += publicProjectedDamageForPolicyV7(view, hostile, actor, at, {
-      maximumCharge: !directlyThreatened,
-    });
+    total += publicProjectedDamageWithLookupV7(
+      view,
+      hostile,
+      actor,
+      at,
+      { maximumCharge: !directlyThreatened },
+      effectiveLookup,
+    );
   }
   return total;
 }
@@ -2563,9 +4212,28 @@ export function publicProjectedDamageForPolicyV7(
     readonly maximumCharge?: boolean;
   } = {},
 ): number {
+  return publicProjectedDamageWithLookupV7(
+    view,
+    attacker,
+    defender,
+    defenderAt,
+    options,
+  );
+}
+
+function publicProjectedDamageWithLookupV7(
+  view: PlayerViewV7,
+  attacker: PublicUnitV7,
+  defender: PublicUnitV7,
+  defenderAt: CoordV7,
+  options: {
+    readonly maximumCharge?: boolean;
+  },
+  lookup?: PolicyLookupV7,
+): number {
   const attackRule = effectiveRoleRuleV7(attacker.role);
   const defenseRule = effectiveRoleRuleV7(defender.role);
-  const attackFacts = publicCombatFacts(view, attacker);
+  const attackFacts = publicCombatFacts(view, attacker, lookup);
   const publishedAttack2 = attackFacts.attack2;
   const attack2 =
     options.maximumCharge &&
@@ -2575,9 +4243,7 @@ export function publicProjectedDamageForPolicyV7(
       : publishedAttack2;
   if (!Number.isInteger(attack2)) return 0;
   const bonus = projectedDefenseBonus(view, defender, defenderAt);
-  const defenderTile = view.board.tiles.find(
-    (tile) => tile.explored && same(tile.at, defenderAt),
-  );
+  const defenderTile = findPublicTileV7(view, defenderAt);
   const fortificationLevel =
     defender.form === "LAND" &&
     defenderTile?.explored === true &&
@@ -2610,20 +4276,20 @@ export function publicProjectedDamageForPolicyV7(
 function publicCombatFacts(
   view: PlayerViewV7,
   unit: PublicUnitV7,
-): {
-  readonly attack2: number;
-  readonly move: number;
-  readonly minimumRange: number;
-  readonly maximumRange: number;
-  readonly abilities: readonly string[];
-} {
-  const published = view.unitStats.find((item) => item.unitId === unit.id);
+  lookup?: PolicyLookupV7,
+): PublicCombatFactsV7 {
+  const cached = lookup?.combatFactsByUnitId.get(unit.id);
+  if (cached?.unit === unit) return cached.facts;
+  const actual = lookup?.unitsById.get(unit.id) === unit;
+  const published = actual
+    ? lookup?.unitStatsById.get(unit.id)
+    : view.unitStats.find((item) => item.unitId === unit.id);
   const role = effectiveRoleRuleV7(unit.role);
   const total = (id: "ATTACK" | "MOVE"): number | null => {
     const value = published?.stats.find((item) => item.id === id)?.total;
     return value === undefined ? null : value.numerator / value.denominator;
   };
-  return {
+  const facts: PublicCombatFactsV7 = {
     attack2:
       unit.form === "EMBARKED" ? 0 : (total("ATTACK") ?? role.attack2 / 2) * 2,
     move: unit.form === "EMBARKED" ? 3 : (total("MOVE") ?? role.move),
@@ -2636,6 +4302,8 @@ function publicCombatFacts(
     abilities:
       unit.form === "EMBARKED" ? [] : (published?.abilities ?? role.abilities),
   };
+  if (actual) lookup?.combatFactsByUnitId.set(unit.id, { unit, facts });
+  return facts;
 }
 
 function projectedDefenseBonus(
@@ -2644,7 +4312,7 @@ function projectedDefenseBonus(
   at: CoordV7,
 ): { readonly numerator: number; readonly denominator: number } {
   if (unit.form !== "LAND") return { numerator: 1, denominator: 1 };
-  const tile = view.board.tiles.find((candidate) => same(candidate.at, at));
+  const tile = findPublicTileV7(view, at);
   return tile?.explored === true &&
     (tile.terrain === "FOREST" || tile.terrain === "MOUNTAIN")
     ? { numerator: 3, denominator: 2 }
@@ -2654,8 +4322,9 @@ function projectedDefenseBonus(
 function visibleImprovementValueAt(
   view: PlayerViewV7,
   at: CoordV7,
+  lookup?: PolicyLookupV7,
 ): number | null {
-  const tile = view.board.tiles.find((item) => same(item.at, at));
+  const tile = findPublicTileV7(view, at);
   if (tile?.explored !== true || tile.improvement === null) return null;
   const published = view.improvementValues.find((item) => same(item.at, at));
   if (published !== undefined) return published.level;
@@ -2670,7 +4339,10 @@ function visibleImprovementValueAt(
   const city =
     tile.territoryCityId === null
       ? undefined
-      : view.cities.find((item) => item.id === tile.territoryCityId);
+      : (lookup?.citiesById.get(tile.territoryCityId) ??
+        (lookup === undefined
+          ? view.cities.find((item) => item.id === tile.territoryCityId)
+          : undefined));
   if (city === undefined || !cityFootprintFullyExplored(view, city))
     return null;
   const graph: EconomyGraphV7 = {
@@ -2714,25 +4386,66 @@ function attributableCityIncome(
   );
 }
 
-function hasDurableScreen(view: PlayerViewV7, cityId: CityId): boolean {
-  const city = view.cities.find((item) => item.id === cityId);
+function hasDurableScreen(context: PolicyContextV7, cityId: CityId): boolean {
+  if (context.durableScreenByCity.has(cityId))
+    return context.durableScreenByCity.get(cityId) ?? false;
+  const city = context.lookup.citiesById.get(cityId);
   return (
     city !== undefined &&
-    view.units.some(
+    context.view.units.some(
       (unit) =>
-        unit.ownerId === view.viewer.id &&
+        unit.ownerId === context.view.viewer.id &&
+        unit.form === "LAND" &&
         unit.hp * 2 >= unit.maxHp &&
         effectiveRoleRuleV7(unit.role).defense2 >= 4 &&
-        distance(unit.at, city.at) <= 2,
+        (distance(unit.at, city.at) <= 1 ||
+          (context.lookup.moveDestinationsByUnit.get(unit.id) ?? []).some(
+            (destination) => distance(destination, city.at) <= 1,
+          )),
     )
   );
 }
 
-function usefulDisband(view: PlayerViewV7, command: DisbandCommandV7): boolean {
-  const unit = view.units.find((item) => item.id === command.unitId);
+function hasReachableScreenAtV7(
+  context: PolicyContextV7,
+  siege: PublicUnitV7,
+  at: CoordV7,
+): boolean {
+  return context.view.units.some((unit) => {
+    if (
+      unit.id === siege.id ||
+      unit.ownerId !== context.view.viewer.id ||
+      unit.form !== "LAND" ||
+      unit.hp * 2 < unit.maxHp ||
+      effectiveRoleRuleV7(unit.role).defense2 < 4
+    )
+      return false;
+    if (distance(unit.at, at) === 1 && !unit.activation.handled) return true;
+    return (
+      (context.lookup.moveDestinationsByUnit.get(unit.id) ?? []).some(
+        (destination) => distance(destination, at) === 1,
+      ) ||
+      (context.lookup.emptyMoveUnitIds.has(unit.id) &&
+        distance(unit.at, at) === 1)
+    );
+  });
+}
+
+function usefulDisband(
+  context: PolicyContextV7,
+  command: DisbandCommandV7,
+): boolean {
+  const { view } = context;
+  const unit = context.lookup.unitsById.get(command.unitId);
   if (unit === undefined) return false;
   const refund = Math.floor((effectiveRoleRuleV7(unit.role).cost ?? 0) / 2);
-  const danger = visibleImmediateDamage(view, unit, unit.at);
+  const danger = visibleImmediateDamage(
+    view,
+    unit,
+    unit.at,
+    undefined,
+    context.lookup,
+  );
   return (
     refund + (freeCapacity(view, unit.homeCityId) <= 0 ? 3 : 0) >
     retainedUnitValue(unit) - danger
@@ -2746,8 +4459,16 @@ function retainedUnitValue(unit: PublicUnitV7): number {
     : (rule.cost ?? 0) * 4 + unit.hp + unit.kills * 2;
 }
 
-function targetStrategicValue(view: PlayerViewV7, unitId: UnitId): number {
-  const unit = view.units.find((item) => item.id === unitId);
+function targetStrategicValue(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  lookup?: PolicyLookupV7,
+): number {
+  const unit =
+    lookup?.unitsById.get(unitId) ??
+    (lookup === undefined
+      ? view.units.find((item) => item.id === unitId)
+      : undefined);
   if (unit === undefined) return 0;
   const rule = effectiveRoleRuleV7(unit.role);
   return unit.role === "JUGGERNAUT"
@@ -2758,31 +4479,11 @@ function targetStrategicValue(view: PlayerViewV7, unitId: UnitId): number {
     : (rule.cost ?? 0) * 4 + unit.hp;
 }
 
-function publicOwnerHasEngineering(
-  view: PlayerViewV7,
-  ownerId: PlayerId,
-): boolean {
-  if (ownerId === view.viewer.id)
-    return view.viewer.researchedTechs.includes("ENGINEERING");
-  // A visible unit standing on Mountain proves the public movement capability;
-  // otherwise opponent research remains unknown and is never assumed.
-  return view.units.some(
-    (unit) =>
-      unit.ownerId === ownerId &&
-      view.board.tiles.some(
-        (tile) =>
-          tile.explored &&
-          tile.terrain === "MOUNTAIN" &&
-          same(tile.at, unit.at),
-      ),
-  );
-}
-
 function cityFootprintFullyExplored(
   view: PlayerViewV7,
   city: PlayerViewV7["cities"][number],
 ): boolean {
-  const radius = city.expanded ? 2 : 1;
+  const radius = city.expanded || city.landGrantUsed ? 2 : 1;
   return view.board.tiles.every(
     (tile) => distance(tile.at, city.at) > radius || tile.explored,
   );
@@ -2964,9 +4665,12 @@ function rational(
 function unitForCommand(
   view: PlayerViewV7,
   command: CommandV7,
+  lookup?: PolicyLookupV7,
 ): PublicUnitV7 | undefined {
   return "unitId" in command
-    ? view.units.find((unit) => unit.id === command.unitId)
+    ? lookup === undefined
+      ? view.units.find((unit) => unit.id === command.unitId)
+      : lookup.unitsById.get(command.unitId)
     : undefined;
 }
 
@@ -2981,13 +4685,11 @@ function movesOntoThreatenedCity(
   return (
     at !== null &&
     context.threats.some((threat) => {
-      const city = context.view.cities.find(
-        (item) => item.id === threat.cityId,
-      );
+      const city = context.lookup.citiesById.get(threat.cityId);
       return (
         city !== undefined &&
         same(city.at, at) &&
-        !context.view.units.some(
+        !(context.threatLookup.occupantsByKey.get(coordKey(at)) ?? []).some(
           (unit) =>
             unit.ownerId === context.view.viewer.id && same(unit.at, at),
         )
@@ -2996,8 +4698,10 @@ function movesOntoThreatenedCity(
   );
 }
 
-function cityAt(view: PlayerViewV7, at: CoordV7) {
-  return view.cities.find((city) => same(city.at, at));
+function cityAt(view: PlayerViewV7, at: CoordV7, lookup?: PolicyLookupV7) {
+  return lookup === undefined
+    ? view.cities.find((city) => same(city.at, at))
+    : lookup.citiesByKey.get(coordKey(at));
 }
 
 function unlocksAffordableProductiveAction(view: PlayerViewV7): boolean {
@@ -3031,6 +4735,7 @@ function validatePolicyRegistration(view: PlayerViewV7): void {
 function fallbackTie(
   view: PlayerViewV7,
   command: CommandV7,
+  resolvedCityAt?: CoordV7,
 ): readonly number[] {
   const target =
     "at" in command
@@ -3041,7 +4746,8 @@ function fallbackTie(
           ? (view.units.find((unit) => unit.id === command.targetUnitId)
               ?.at ?? { x: -1, y: -1 })
           : "cityId" in command
-            ? (view.cities.find((city) => city.id === command.cityId)?.at ?? {
+            ? (resolvedCityAt ??
+              view.cities.find((city) => city.id === command.cityId)?.at ?? {
                 x: -1,
                 y: -1,
               })

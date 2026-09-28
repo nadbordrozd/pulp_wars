@@ -1,19 +1,90 @@
 # Greedy Normal AI
 
-## Revision-11 runtime baseline; tactical policy pending
+## Revision-11 bounded tactical policy
 
-The production policy currently consumes the legal revision-11 public schema
-and commands under `pulp-wars-poc-7r11`, including the shared city-action flag,
-Road population, Commerce Market values, Drill Ore visibility, Raiding-only
-Pillage, and Windmill healing events. This is the minimally adapted baseline
-required by
-[Ruleset 7 revision 11](../product/RULESET_7_REVISION_11_CITY_LOGISTICS_AI.md#82-controlled-same-rules-comparison).
-The bounded tactical policy, Road-corridor planning, scenarios, and comparative
-evaluation in that contract's sections 7–8 remain pending. No revision-11
-heuristic tuning is implemented yet.
+The production policy consumes only the legal revision-11 public schema,
+commands, and previews under `pulp-wars-poc-7r11`. It does not read an
+opponent's private research, economy, unexplored terrain, or authoritative
+state. Enemy threat reach resets the enemy's activation for its next turn;
+friendly replacements and screens use their current activation. Known terrain,
+occupancy, range, minimum range, move-then-primary limits, ZOC projection,
+unit form, and capture timing determine whether a city is actually threatened.
+
+The tactical context reserves distinct useful city approaches, keeps a sole
+effective defender on a threatened center unless a current legal replacement
+can take over, and rejects harmful attacks unless the public projection proves
+a city save, a lethal follow-up/capture line, or greater realized target loss
+than the sacrificed unit. Catapults require a reachable land-form screen;
+Guards prefer defense; Knights and Raiders value flanks and capture openings;
+Captains compare Rally and Tend; wounded units compare recovery and owned
+Windmill staging. Shared land training, every assigned naval dock, and Land
+Grant compete as one city action after reserve, capacity, and displacement
+eligibility are applied. Existing Ports and Shipyards are not torn down for a
+coastal rebuild; Shipyard uses its direct upgrade command.
+
+Normal also preserves established Windmills, Sawmills, Forges, Workshops,
+Markets, and Monuments. Public one-step planning intentionally ignores current
+technology, Coin, and offer gates, so it cannot safely justify demolishing a
+one-per-city building for an immediate replacement. The policy may still
+Redevelop a Farm, Lumber Camp, or Mine when the public plan identifies a useful
+different result. This policy limitation does not change Redevelop legality:
+Normal does not relocate established one-per-city buildings.
+
+Road planning selects one public original-capital-to-city corridor with at most
+eight missing Roads and builds the next tile from the connected side. Target
+utility includes the two live-Population endpoints, the public Commerce land
+trade Coin when researched, published city/Market income, and a conservative
+movement-shortening proxy: twice the unroaded direct distance minus completed
+corridor length, floored at zero. This proxy decreases for detours; it is not an
+exact marginal travel-time simulation. A disconnected or scattered Road is not
+a productive candidate.
+
+`NormalPolicyWorkV7.advanceWork(n)` exposes exact deterministic work units.
+Budget one advances one command/planning operation, path expansion,
+unit/objective comparison, or candidate score step. `runSlice(milliseconds)`
+retains the browser wall-time yield API, but elapsed time never enters scores,
+ordering, or ties. After public command generation, the work object prepares
+an exact per-decision lookup context, then naval, hostile-threat, and tactical
+facts before spatial planning. The lookup context indexes public cities,
+units, stats, and actual MOVE destinations and memoizes combat facts and reveal
+checks only for that immutable view. Projected views and transformed unit
+objects fall back to their own public data. Its record-by-record preparation is
+charged to the same deterministic work budget. The policy omits
+only commands that those facts prove the policy will reject unconditionally:
+Roads outside the next canonical corridor tile and Redevelopment of the
+established buildings listed above. Base economic potentials are still fully
+prepared, every potentially scored command is planned, and scoring retains the
+original ready-command order. Diagnostics publish offered and planned
+candidate counts, total-work, phase-work,
+naval/threat/Road path expansion, and replacement-path validation counts with
+finite ceilings derived from public cells, units, objectives, candidates, and
+the eight-Road limit. Construction and final sorting are bounded setup/finish
+overhead outside the score and never depend on elapsed time.
+
+The validation harness separately keeps a one-entry public metric cache. It
+reuses a post-command view and threat set only when the next metric request has
+the identical frozen state object and actor. This avoids duplicate validation
+work without changing production policy work, commands, or metric definitions.
+
+Public planning additionally reuses at most 24 completed stable-fact entries
+across reconstructed equal views. Its collision-free public key covers every
+planning dependency, and hits still scan current facts and reconstruct current
+candidate objects incrementally. Diagnostics therefore report physical work:
+a warm equal-view decision can use fewer operations than its cold counterpart
+while returning the same potentials, scores, ordered tuple, and command. The
+cache boundary and exact key are documented in
+[Ruleset 7 public planning work](PUBLIC_PLANNING_V7.md).
+
+The same-rules validation baseline remains commit
+`2a3c029f92a63ea33c7164b05ad0a91d134c1e7b`, whose `src/ai/v7.ts` SHA-256 is
+`37c5cebe79cc30939a8a7ce15ab0b83cfac6a6a220add8f57f85f6a2e1d72e73`.
+The validation loader reconstructs that source only for tests and benchmarks;
+historical policy code is not shipped in production. Current commands,
+evidence, caps, and limitations are documented in
+[Ruleset 7 tactical AI validation](../validation/RULESET_7_TACTICAL_AI.md).
 
 The older merged-industry policy notes below are retained implementation
-history and do not override the current Human technology graph or the pending
+history and do not override the current Human technology graph or the
 revision-11 AI contract.
 
 ## Revision-8 merged industry and processor adjacency
@@ -136,8 +207,10 @@ work is a structured failure; Normal never retries using hidden authority.
 `NormalPolicyWorkV7` persists command preparation, public economic/spatial
 planning, visible-hostile context, and candidate scoring for one exact view.
 Command and planning preparation each advance with an operation budget of one;
-ready tuples are created only after command preparation, and synchronous
-potential/plan consumers run only after planning has primed their exact caches.
+ready tuples are created after command preparation. Public naval, threat, and
+tactical context identifies the unconditional Road/Redevelop exclusions above;
+the remaining public plan is then drained before any synchronous potential or
+spatial-score consumer can read its exact caches.
 A globally Pursuit-locked command set skips economy planning because its public
 commands are exclusively Attack, Pursue, and End Pursuit and no candidate path
 consumes an economic potential or spatial score. The complete three-attack tree

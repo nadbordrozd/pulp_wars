@@ -6,8 +6,10 @@ import {
   chooseNormalCommandV7,
   chooseNormalCommandYieldingV7,
   chooseNormalTurnCommandV7,
+  inspectNormalTacticalFactsV7,
   normalTurnClosureSlotsV7,
   projectPublicUnitForPolicyV7,
+  publicThreatenedTilesForPolicyV7,
   scoreCommandV7,
 } from "../../src/ai/v7";
 import {
@@ -26,6 +28,7 @@ import {
   unitId,
   viewForV7,
   type CoordV7,
+  type CommandV7,
   type GameStateV7,
   type PlayerViewV7,
   type UnitRoleIdV7,
@@ -36,6 +39,7 @@ import {
   checkedV7,
   exploredAllV7,
   initialV7,
+  richV7,
   setupV7,
 } from "../fixtures/v7-builders";
 
@@ -64,6 +68,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       "../engine/rules/ruleset-v7",
       "../engine/v7/commands",
       "../engine/v7/events",
+      "../engine/v7/movement",
       "../engine/v7/query",
       "../engine/v7/types",
       "../engine/v7/spatial-economy",
@@ -143,20 +148,263 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       ),
     ).toBe(false);
 
-    const replacement = redevelopmentReplacementView("SAWMILL");
-    expect(scorePublicSpatialPlanV7(replacement.view, command)).toBeGreaterThan(
+    const speculative = redevelopmentReplacementView("SAWMILL");
+    expect(scorePublicSpatialPlanV7(speculative.view, command)).toBeGreaterThan(
       0,
     );
     expect(
-      queryPublicRedevelopmentChangesImprovementV7(replacement.view, command),
+      queryPublicRedevelopmentChangesImprovementV7(speculative.view, command),
     ).toBe(true);
     expect(
-      chooseNormalCommandV7(replacement.view).candidates.some(
+      chooseNormalCommandV7(speculative.view).candidates.some(
         (candidate) =>
           canonicalJson(candidate.command) === canonicalJson(command),
       ),
-    ).toBe(true);
+    ).toBe(false);
   });
+
+  it("preserves an established Workshop when the planned replacement is unavailable, while retaining a useful basic redevelopment", () => {
+    const workshop = redevelopmentWorkshopChurnState();
+    const workshopView = viewForV7(
+      workshop.state,
+      workshop.state.humanPlayerId,
+    );
+    const demolishWorkshop = {
+      kind: "REDEVELOP" as const,
+      at: workshop.target,
+    };
+    expect(queryPlayerCommandsV7(workshopView)).toContainEqual(
+      demolishWorkshop,
+    );
+    expect(
+      scorePublicSpatialPlanV7(workshopView, demolishWorkshop),
+    ).toBeGreaterThan(0);
+    expect(
+      queryPublicRedevelopmentChangesImprovementV7(
+        workshopView,
+        demolishWorkshop,
+      ),
+    ).toBe(true);
+
+    const cold = chooseNormalCommandV7(workshopView);
+    expect(cold.candidates).not.toContainEqual(
+      expect.objectContaining({ command: demolishWorkshop }),
+    );
+    const incremental = new NormalPolicyWorkV7(structuredClone(workshopView));
+    let sliced = incremental.advanceWork(1);
+    while (sliced === null) sliced = incremental.advanceWork(1);
+    expect(sliced).toEqual(cold);
+
+    const removedWorkshop = applyCommandV7(
+      workshop.state,
+      workshop.state.humanPlayerId,
+      demolishWorkshop,
+    );
+    expect(removedWorkshop.accepted).toBe(true);
+    if (!removedWorkshop.accepted) return;
+    const fallbackCommands = queryPlayerCommandsV7(
+      viewForV7(removedWorkshop.state, removedWorkshop.state.humanPlayerId),
+    ).filter(
+      (candidate) => "at" in candidate && same(candidate.at, workshop.target),
+    );
+    expect(fallbackCommands).toContainEqual({
+      kind: "BUILD_WORKSHOP",
+      at: workshop.target,
+    });
+    expect(fallbackCommands).not.toContainEqual({
+      kind: "BUILD_FORGE",
+      at: workshop.target,
+    });
+    const rebuiltWorkshop = applyCommandV7(
+      removedWorkshop.state,
+      removedWorkshop.state.humanPlayerId,
+      { kind: "BUILD_WORKSHOP", at: workshop.target },
+    );
+    expect(rebuiltWorkshop.accepted).toBe(true);
+    if (!rebuiltWorkshop.accepted) return;
+    expect(
+      rebuiltWorkshop.state.board.tiles.find((tile) =>
+        same(tile.at, workshop.target),
+      )?.improvement,
+    ).toBe("WORKSHOP");
+    expect(
+      chooseNormalCommandV7(
+        viewForV7(rebuiltWorkshop.state, rebuiltWorkshop.state.humanPlayerId),
+      ).candidates.some(
+        ({ command: candidate }) =>
+          canonicalJson(candidate) === canonicalJson(demolishWorkshop),
+      ),
+    ).toBe(false);
+
+    const basic = usefulBasicRedevelopmentState();
+    const basicView = viewForV7(basic.state, basic.state.humanPlayerId);
+    expect(canonicalHash(chooseNormalCommandV7(basicView))).toBe(
+      "fc5d17e61c4ebd22401cb824c7cda53d22e92acf0250f6f1f14a0084f91a49d9",
+    );
+    const basicCommands = queryPlayerCommandsV7(basicView);
+    const basicWork = new NormalPolicyWorkV7(structuredClone(basicView));
+    let basicDecision = basicWork.advanceWork(1);
+    while (basicDecision === null) basicDecision = basicWork.advanceWork(1);
+    const nextRoad =
+      inspectNormalTacticalFactsV7(basicView).roadCorridor
+        ?.missingRoadKeys[0] ?? null;
+    const excludedRoads = basicCommands.filter(
+      (candidate) =>
+        candidate.kind === "BUILD_ROAD" &&
+        `${candidate.at.y},${candidate.at.x}` !== nextRoad,
+    ).length;
+    const excludedPreserved = basicCommands.filter((candidate) => {
+      if (candidate.kind !== "REDEVELOP") return false;
+      const tile = basicView.board.tiles.find(
+        (tile) => tile.at.x === candidate.at.x && tile.at.y === candidate.at.y,
+      );
+      const improvement = tile?.explored === true ? tile.improvement : null;
+      return [
+        "WINDMILL",
+        "SAWMILL",
+        "FORGE",
+        "WORKSHOP",
+        "MARKET",
+        "MONUMENT",
+        "PORT",
+        "SHIPYARD",
+      ].includes(improvement ?? "");
+    }).length;
+    expect(basicWork.diagnostic().plannedCandidateCount).toBe(
+      basicCommands.length - excludedRoads - excludedPreserved,
+    );
+    const demolishCamp = { kind: "REDEVELOP" as const, at: basic.target };
+    expect(
+      chooseNormalCommandV7(basicView).candidates.some(
+        ({ command: candidate }) =>
+          canonicalJson(candidate) === canonicalJson(demolishCamp),
+      ),
+    ).toBe(true);
+    const removedCamp = applyCommandV7(
+      basic.state,
+      basic.state.humanPlayerId,
+      demolishCamp,
+    );
+    expect(removedCamp.accepted).toBe(true);
+    if (!removedCamp.accepted) return;
+    expect(
+      queryPlayerCommandsV7(
+        viewForV7(removedCamp.state, removedCamp.state.humanPlayerId),
+      ),
+    ).toContainEqual({ kind: "BUILD_SAWMILL", at: basic.target });
+    const upgraded = applyCommandV7(
+      removedCamp.state,
+      removedCamp.state.humanPlayerId,
+      { kind: "BUILD_SAWMILL", at: basic.target },
+    );
+    expect(upgraded.accepted).toBe(true);
+    if (!upgraded.accepted) return;
+    expect(
+      upgraded.state.board.tiles.find((tile) => same(tile.at, basic.target))
+        ?.improvement,
+    ).toBe("SAWMILL");
+  });
+
+  it("does not value a processor through a fogged Land Grant ring and keeps equal-view policy parity", () => {
+    const state = exploredAllV7(allTechsV7(initialV7(7_711)));
+    const base = viewForV7(state, state.humanPlayerId);
+    const city = base.cities.find(
+      (candidate) => candidate.ownerId !== base.viewer.id,
+    );
+    const actor = base.units.find((unit) => unit.ownerId === base.viewer.id);
+    if (city === undefined || actor === undefined)
+      throw new Error("Land Grant Pillage fixture missing");
+    const target = { x: city.at.x + 1, y: city.at.y };
+    const support = { x: city.at.x + 1, y: city.at.y + 1 };
+    const hiddenAt = { x: city.at.x + 2, y: city.at.y + 2 };
+    const complete: PlayerViewV7 = {
+      ...base,
+      cities: base.cities.map((candidate) =>
+        candidate.id === city.id
+          ? { ...candidate, expanded: false, landGrantUsed: true }
+          : candidate,
+      ),
+      board: {
+        ...base.board,
+        tiles: base.board.tiles.map((tile) => {
+          if (
+            Math.max(
+              Math.abs(tile.at.x - city.at.x),
+              Math.abs(tile.at.y - city.at.y),
+            ) > 2 ||
+            !tile.explored
+          )
+            return tile;
+          const common = {
+            ...tile,
+            biome: "PLAINS" as const,
+            terrain: "GRASS" as const,
+            resource: null,
+            improvement: null,
+            road: false,
+            site: same(tile.at, city.at) ? tile.site : null,
+            territoryCityId: city.id,
+            territoryOwnerId: city.ownerId,
+          };
+          if (same(tile.at, target))
+            return { ...common, improvement: "SAWMILL" as const };
+          if (same(tile.at, support))
+            return {
+              ...common,
+              terrain: "FOREST" as const,
+              improvement: "LUMBER_CAMP" as const,
+            };
+          return common;
+        }),
+      },
+      units: base.units
+        .filter((unit) => !same(unit.at, target) || unit.id === actor.id)
+        .map((unit) =>
+          unit.id === actor.id
+            ? { ...unit, at: target, form: "LAND" as const, activation: READY }
+            : unit,
+        ),
+      improvementValues: [],
+      populationContributions: [],
+    };
+    const hidden: PlayerViewV7 = {
+      ...complete,
+      board: {
+        ...complete.board,
+        tiles: complete.board.tiles.map((tile) =>
+          same(tile.at, hiddenAt) ? { at: tile.at, explored: false } : tile,
+        ),
+      },
+    };
+    const command = { kind: "PILLAGE" as const, unitId: actor.id };
+    expect(queryPlayerCommandsV7(hidden)).toContainEqual(command);
+    expect(scoreCommandV7(hidden, command).immediateValue).toBe(1);
+    expect(scoreCommandV7(complete, command).immediateValue).toBeGreaterThan(1);
+
+    const equalView = JSON.parse(canonicalJson(hidden)) as typeof hidden;
+    expect(canonicalHash(equalView)).toBe(canonicalHash(hidden));
+    expect(chooseNormalCommandV7(equalView)).toEqual(
+      chooseNormalCommandV7(hidden),
+    );
+  });
+
+  it.each(["PORT", "SHIPYARD"] as const)(
+    "preserves an existing %s instead of entering a coastal teardown/rebuild loop",
+    (improvement) => {
+      const fixture = navalRedevelopmentView(improvement);
+      const command = { kind: "REDEVELOP", at: fixture.target } as const;
+      expect(queryPlayerCommandsV7(fixture.view)).toContainEqual(command);
+      expect(
+        chooseNormalCommandV7(fixture.view).candidates.some(
+          (candidate) =>
+            canonicalJson(candidate.command) === canonicalJson(command),
+        ),
+      ).toBe(false);
+      expect(
+        chooseNormalCommandV7(structuredClone(fixture.view)).command,
+      ).toEqual(chooseNormalCommandV7(fixture.view).command);
+    },
+  );
 
   it("keeps redevelopment replacement parity after another city reserves the sole Monument", () => {
     const coldFixture = multiCityMonumentRedevelopmentView();
@@ -332,6 +580,57 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     );
   });
 
+  it("uses transformed public stats for a retained hostile identity in projected Knight scoring", () => {
+    const state = fixtureState([
+      ["KNIGHT", { x: 3, y: 5 }, true, 10],
+      ["RAIDER", { x: 4, y: 4 }, true, 10],
+      ["FIGHTER", { x: 4, y: 5 }, false, 1],
+      ["FIGHTER", { x: 5, y: 5 }, false, 1],
+      ["CATAPULT", { x: 7, y: 5 }, false, 10],
+    ]);
+    const view = viewForV7(state, state.humanPlayerId);
+    const knight = ownUnit(state, "KNIGHT");
+    const firstTarget = view.units.find(
+      (unit) =>
+        unit.ownerId !== view.viewer.id && same(unit.at, { x: 4, y: 5 }),
+    );
+    const retainedHostile = view.units.find(
+      (unit) => unit.ownerId !== view.viewer.id && unit.role === "CATAPULT",
+    );
+    if (firstTarget === undefined || retainedHostile === undefined)
+      throw new Error("Projected Knight cache fixture missing");
+    const command = {
+      kind: "ATTACK" as const,
+      unitId: knight.id,
+      targetUnitId: firstTarget.id,
+    };
+    const baseScore = scoreCommandV7(view, command);
+    const weakened: PlayerViewV7 = {
+      ...view,
+      unitStats: view.unitStats.map((entry) =>
+        entry.unitId !== retainedHostile.id
+          ? entry
+          : {
+              ...entry,
+              stats: entry.stats.map((stat) =>
+                stat.id !== "ATTACK"
+                  ? stat
+                  : {
+                      ...stat,
+                      total: { numerator: 1, denominator: 2 },
+                    },
+              ),
+            },
+      ),
+    };
+    expect(weakened.units.find((unit) => unit.id === retainedHostile.id)).toBe(
+      retainedHostile,
+    );
+    const weakenedScore = scoreCommandV7(weakened, command);
+    expect(weakenedScore.safetyValue).toBeGreaterThan(baseScore.safetyValue);
+    expect(weakenedScore.immediateValue).toBe(baseScore.immediateValue);
+  });
+
   it("prepares the retained late public view incrementally with exact sync parity", () => {
     const retained = JSON.parse(
       readFileSync("tests/fixtures/ruleset-v7-late-public-view.json", "utf8"),
@@ -371,9 +670,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       unitId: 19,
       targetUnitId: 34,
     });
-    expect(sliced.candidates).toHaveLength(30);
+    expect(sliced.candidates).toHaveLength(29);
     expect(canonicalHash(sliced)).toBe(
-      "9daaebfd4d31b752798da5e61e63aa311136a4a72ea6c498fd13691a1e347403",
+      "3d6122d5a713797d07790b9c0524e3c71fc1ff3fd5607b09cdd76d68387cf379",
     );
     const revision4Commands = new Set([
       '{"kind":"ATTACK","unitId":19,"targetUnitId":34}',
@@ -399,7 +698,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
           revision4Commands.has(JSON.stringify(candidate.command)),
         ),
       ),
-    ).toBe("be72a67c954521323a03ec6d8fdec83d997327d4fba2227d69b251cc1a81d169");
+    ).toBe("73d039490b3dde9e4313af9798da41d3e47584142f1cc82aca7353bf5a8f73b3");
     expect(canonicalHash(sync)).toBe(canonicalHash(sliced));
     expect(sync).toEqual(sliced);
   }, 15_000);
@@ -625,6 +924,57 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     ).safetyValue;
     expect(danger).toBeLessThan(0);
     expect(protectedScore).toBeGreaterThan(danger);
+  });
+
+  it("keeps DISBAND eligibility on direct damage rather than cached next-turn reach", () => {
+    const ownAt = { x: 5, y: 5 };
+    const reachable = fixtureState([
+      ["FIGHTER", ownAt, true, 10],
+      ["FIGHTER", { x: 3, y: 5 }, false, 10],
+      ["FIGHTER", { x: 7, y: 5 }, false, 10],
+      ["FIGHTER", { x: 5, y: 3 }, false, 10],
+      ["FIGHTER", { x: 5, y: 7 }, false, 10],
+      ["FIGHTER", { x: 3, y: 3 }, false, 10],
+    ]);
+    const reachableView = viewForV7(reachable, reachable.humanPlayerId);
+    const actor = ownUnit(reachable, "FIGHTER");
+    const disband = { kind: "DISBAND" as const, unitId: actor.id };
+    expect(queryPlayerCommandsV7(reachableView)).toContainEqual(disband);
+    expect(
+      reachableView.units
+        .filter((unit) => unit.ownerId !== reachableView.viewer.id)
+        .filter((unit) =>
+          publicThreatenedTilesForPolicyV7(reachableView, unit).some((at) =>
+            same(at, ownAt),
+          ),
+        ).length,
+    ).toBeGreaterThanOrEqual(4);
+    expect(
+      chooseNormalCommandV7(reachableView).candidates.some(
+        ({ command }) => canonicalJson(command) === canonicalJson(disband),
+      ),
+    ).toBe(false);
+
+    const direct = fixtureState([
+      ["FIGHTER", ownAt, true, 10],
+      ["FIGHTER", { x: 4, y: 4 }, false, 10],
+      ["FIGHTER", { x: 4, y: 5 }, false, 10],
+      ["FIGHTER", { x: 4, y: 6 }, false, 10],
+      ["FIGHTER", { x: 5, y: 4 }, false, 10],
+      ["FIGHTER", { x: 5, y: 6 }, false, 10],
+    ]);
+    const directView = viewForV7(direct, direct.humanPlayerId);
+    const directActor = ownUnit(direct, "FIGHTER");
+    const directDisband = {
+      kind: "DISBAND" as const,
+      unitId: directActor.id,
+    };
+    expect(
+      chooseNormalCommandV7(directView).candidates.some(
+        ({ command }) =>
+          canonicalJson(command) === canonicalJson(directDisband),
+      ),
+    ).toBe(true);
   });
 
   it("sums each injured Catapult preview and public minimum healing", () => {
@@ -1155,6 +1505,150 @@ function redevelopmentReplacementView(current: "MINE" | "SAWMILL"): {
             improvement: selected ? current : ("MINE" as const),
           };
         }),
+      },
+    },
+  };
+}
+
+function redevelopmentWorkshopChurnState(): {
+  readonly state: GameStateV7;
+  readonly target: CoordV7;
+} {
+  let state = richFixture(1);
+  for (let index = 0; index < 2; index += 1) {
+    const mine = requiredFixtureTileCommand(state, "BUILD_MINE");
+    state = settleFixtureChoices(applyFixtureCommand(state, mine));
+  }
+  const workshop = requiredFixtureTileCommand(state, "BUILD_WORKSHOP");
+  state = settleFixtureChoices(applyFixtureCommand(state, workshop));
+  state = checkedV7({
+    ...state,
+    players: state.players.map((player) =>
+      player.id === state.humanPlayerId
+        ? {
+            ...player,
+            researchedTechs: player.researchedTechs.filter((technology) =>
+              ["GATHERING", "DRILL", "ENGINEERING"].includes(technology),
+            ),
+            achievementEntitlements: player.achievementEntitlements.map(
+              (entitlement) => ({
+                ...entitlement,
+                unlocked: false,
+                spent: false,
+              }),
+            ),
+          }
+        : player,
+    ),
+  });
+  return { state, target: workshop.at };
+}
+
+function usefulBasicRedevelopmentState(): {
+  readonly state: GameStateV7;
+  readonly target: CoordV7;
+} {
+  let state = richFixture(4);
+  const first = requiredFixtureTileCommand(state, "BUILD_LUMBER_CAMP");
+  state = settleFixtureChoices(applyFixtureCommand(state, first));
+  const second = queryPlayerCommandsV7(
+    viewForV7(state, state.humanPlayerId),
+  ).find(
+    (command) =>
+      command.kind === "BUILD_LUMBER_CAMP" &&
+      Math.max(
+        Math.abs(command.at.x - first.at.x),
+        Math.abs(command.at.y - first.at.y),
+      ) === 1,
+  );
+  if (second === undefined || !("at" in second))
+    throw new Error("Adjacent Lumber Camp missing");
+  state = settleFixtureChoices(applyFixtureCommand(state, second));
+  return { state, target: first.at };
+}
+
+function richFixture(seed: number): GameStateV7 {
+  return richV7(allTechsV7(exploredAllV7(initialV7(seed))), 1_000);
+}
+
+function requiredFixtureTileCommand(
+  state: GameStateV7,
+  kind: "BUILD_MINE" | "BUILD_WORKSHOP" | "BUILD_LUMBER_CAMP",
+): Extract<CommandV7, { readonly at: CoordV7 }> {
+  const command = queryPlayerCommandsV7(
+    viewForV7(state, state.humanPlayerId),
+  ).find((candidate) => candidate.kind === kind);
+  if (command === undefined || !("at" in command))
+    throw new Error(`${kind} fixture command missing`);
+  return command;
+}
+
+function requiredFixtureChoice(
+  state: GameStateV7,
+): Extract<CommandV7, { kind: "CHOOSE_CITY_REWARD" }> {
+  return required(
+    queryPlayerCommandsV7(viewForV7(state, state.humanPlayerId)).find(
+      (
+        command,
+      ): command is Extract<CommandV7, { kind: "CHOOSE_CITY_REWARD" }> =>
+        command.kind === "CHOOSE_CITY_REWARD",
+    ),
+    "City reward fixture command missing",
+  );
+}
+
+function applyFixtureCommand(
+  state: GameStateV7,
+  command: CommandV7,
+): GameStateV7 {
+  const result = applyCommandV7(state, state.humanPlayerId, command);
+  if (!result.accepted) throw new Error(result.error.code);
+  return result.state;
+}
+
+function settleFixtureChoices(source: GameStateV7): GameStateV7 {
+  let state = source;
+  while (state.pendingChoices.length > 0) {
+    const choice = requiredFixtureChoice(state);
+    state = applyFixtureCommand(state, choice);
+  }
+  return state;
+}
+
+function navalRedevelopmentView(improvement: "PORT" | "SHIPYARD"): {
+  readonly view: PlayerViewV7;
+  readonly target: CoordV7;
+} {
+  const state = exploredAllV7(allTechsV7(initialV7(17)));
+  const base = viewForV7(state, state.humanPlayerId);
+  const city = base.cities.find((item) => item.ownerId === base.viewer.id);
+  const target = base.board.tiles.find(
+    (tile) =>
+      tile.explored &&
+      tile.territoryCityId === city?.id &&
+      tile.site === null &&
+      (tile.at.x !== city?.at.x || tile.at.y !== city.at.y),
+  )?.at;
+  if (city === undefined || target === undefined)
+    throw new Error("naval redevelopment target missing");
+  return {
+    target,
+    view: {
+      ...base,
+      viewer: { ...base.viewer, coins: 1_000 },
+      board: {
+        ...base.board,
+        tiles: base.board.tiles.map((tile) =>
+          tile.at.x === target.x && tile.at.y === target.y
+            ? {
+                ...tile,
+                biome: null,
+                terrain: "SHALLOW_WATER" as const,
+                resource: null,
+                improvement,
+              }
+            : tile,
+        ),
       },
     },
   };

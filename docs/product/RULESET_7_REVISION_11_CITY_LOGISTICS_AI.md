@@ -1,7 +1,6 @@
 # Ruleset 7 revision 11: City logistics and tactical AI
 
-**Status:** sections 1–6 implemented in the current runtime; sections 7–8
-remain the approved next AI implementation scope.
+**Status:** sections 1–8 are implemented and accepted in the current runtime.
 
 **Ruleset ID:** `pulp-wars-poc-7r11`
 
@@ -46,10 +45,10 @@ unrelated storage.
 Numeric version 7 remains sufficient because exact ruleset identity also
 dispatches every state, setup, command envelope, event log, save, replay, and
 release artifact. The runtime implements the identity, logistics rules,
-presentation, and Port/Fish integration in sections 1–6. The bounded Normal-AI
-policy and evaluation work in sections 7–8 remains pending; the current policy
-has only the schema and legality adaptations needed to operate honestly on the
-revision-11 runtime.
+presentation, Port/Fish integration, and bounded Normal-AI policy in sections
+1–7. Section 8's frozen comparison and natural-game corpus passed its stated
+acceptance gates. That bounded result is evidence for these maps, seeds, and
+caps rather than a claim of universal playing strength.
 
 ## 2. One city action per owner turn
 
@@ -400,6 +399,11 @@ for a strictly more valuable visible tactical result. The exception must be a
 computed public fact in the candidate explanation, not a role or coordinate
 special case.
 
+The current revision-11 combat command set never reports `breachApplied` in a
+public preview. The Field Defense exception is therefore a reserved policy
+branch and is currently unreachable; it is not implementation or acceptance
+evidence until a future published command can produce that public fact.
+
 Keep the sole effective defender on an actually threatened city unless another
 unit can legally replace its defensive function this turn or moving produces
 one of the city-saving/capture exceptions above. Before training, project
@@ -453,8 +457,10 @@ never enters scoring or tie-breaks.
 For every validation view, cold synchronous selection, every tested sliced
 budget (including one), save/resume reconstruction, and browser scheduling must
 produce the same ordered candidate tuples and selected command. Two byte-equal
-public views produce byte-equal work and commands. Authority states that
-project to the same public view also produce the same work and commands.
+public views produce byte-equal results and commands. Authority states that
+project to the same public view also produce the same results and commands.
+Physical work counters may be lower after an exact stable-fact cache hit; cold
+and warm counts must both remain bounded and be reported separately.
 
 Before heuristic tuning, the retained command-1100 policy benchmark and a
 worst-case legal 25 x 25 revision-11 view freeze baseline total work units,
@@ -463,6 +469,12 @@ finite per-pass work-unit ceilings from the public cell, unit, objective,
 candidate, and eight-missing-Road limits; tests fail if a pass exceeds its
 declared ceiling. Cold/sliced equality, the 128-command cap, and those work-unit
 bounds are deterministic gates.
+
+The implemented scheduler also prepares public city, unit, stat, and actual
+MOVE-destination lookups incrementally. Per-decision combat and reveal caches
+are valid only for the exact immutable public view and matching unit objects;
+projected or transformed views recompute from their own public facts. This is
+an exact lookup optimization, not another source of tactical knowledge.
 
 Run the same benchmark views against baseline and revised policies under the
 same reference-machine conditions and report total duration plus p50, p95, and
