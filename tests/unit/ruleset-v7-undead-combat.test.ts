@@ -23,6 +23,7 @@ import {
   projectEventsV7,
   queryCombatPreviewV7,
   queryPlayerCommandsV7,
+  resolveCityGrowthV7,
   runReplayV7,
   unitId,
   type CombatPreviewV7,
@@ -893,6 +894,177 @@ describe("ruleset-7 revision-13 Infect and Lifesteal: events, fog, and persisten
       ).toMatchObject(NEUTRAL_UNDEAD_FIELDS);
     }
   });
+});
+
+// Seat-1 capital on the seed-2 two-seat board, and a territory tile beside it.
+const SEAT1_CAPITAL = { x: 2, y: 8 } as const;
+const SEAT1_TERRITORY = { x: 3, y: 7 } as const;
+
+describe("ruleset-7 public combat preview against fortified defenders", () => {
+  // Sections 13.2-13.3: retaliation uses the same fortified Defense as the
+  // defender's own force; the public preview must equal resolution exactly,
+  // including the Infect and Lifesteal fields derived from retaliation.
+  for (const scenario of [
+    {
+      name: "a Human Guard in its walled capital on Field Defense",
+      factions: ["ORIGINAL", "ORIGINAL"],
+      role: "GUARD",
+      defenderAt: SEAT1_CAPITAL,
+      attackerAt: { x: 3, y: 8 },
+      walls: true,
+      fieldDefense: true,
+      fortificationLevel: 3,
+    },
+    {
+      name: "a Human Guard on a Field Defense tile of its territory",
+      factions: ["ORIGINAL", "ORIGINAL"],
+      role: "GUARD",
+      defenderAt: SEAT1_TERRITORY,
+      attackerAt: { x: 4, y: 7 },
+      walls: false,
+      fieldDefense: true,
+      fortificationLevel: 1,
+    },
+    {
+      name: "a Zombie in its walled capital on Field Defense",
+      factions: ["ORIGINAL", "UNDEAD"],
+      role: "GUARD",
+      defenderAt: SEAT1_CAPITAL,
+      attackerAt: { x: 3, y: 8 },
+      walls: true,
+      fieldDefense: true,
+      fortificationLevel: 3,
+    },
+    {
+      name: "a Vampire in its walled capital",
+      factions: ["ORIGINAL", "UNDEAD"],
+      role: "KNIGHT",
+      defenderAt: SEAT1_CAPITAL,
+      attackerAt: { x: 3, y: 8 },
+      walls: true,
+      fieldDefense: false,
+      fortificationLevel: 2,
+    },
+  ] as const) {
+    it(`matches resolution for ${scenario.name}`, () => {
+      const open = arena(scenario.factions, [
+        { seat: 0, role: "FIGHTER", at: scenario.attackerAt },
+        { seat: 1, role: scenario.role, at: scenario.defenderAt, hp: 9 },
+      ]);
+      const fortified = fortify(open, scenario);
+      const attacker = unitAt(fortified, scenario.attackerAt);
+      const defender = unitAt(fortified, scenario.defenderAt);
+      let discriminating = 0;
+      for (let hp = 1; hp <= attacker.maxHp; hp += 1) {
+        const state = withUnit(fortified, attacker.id, { hp });
+        const resolved = combatPreview(
+          attack(state, scenario.attackerAt, scenario.defenderAt).events,
+        );
+        expect(resolved).toMatchObject({
+          fortificationLevel: scenario.fortificationLevel,
+          retaliation: true,
+        });
+        expectPublicPreviewMatches(state, attacker.id, defender.id, resolved);
+        // Fortification changes retaliation for at least one attacker HP.
+        const unfortified = calculateCombatPreviewV7(
+          withUnit(open, attacker.id, { hp }),
+          attacker.id,
+          defender.id,
+        );
+        if (unfortified.damageToAttacker !== resolved.damageToAttacker)
+          discriminating += 1;
+        if (scenario.role === "GUARD" && scenario.factions[1] === "UNDEAD")
+          expect(resolved.attackerInfected).toBe(resolved.attackerDies);
+        if (scenario.role === "KNIGHT")
+          expect(resolved.defenderHeal).toBe(
+            Math.min(
+              resolved.damageToAttacker,
+              defender.maxHp - (defender.hp - resolved.damageToDefender),
+            ),
+          );
+      }
+      expect(discriminating).toBeGreaterThan(0);
+    });
+  }
+
+  function fortify(
+    state: GameStateV7,
+    scenario: {
+      readonly defenderAt: CoordV7;
+      readonly walls: boolean;
+      readonly fieldDefense: boolean;
+    },
+  ): GameStateV7 {
+    const walled = scenario.walls ? walledCapital(state) : state;
+    return scenario.fieldDefense
+      ? withTile(walled, scenario.defenderAt, { fieldDefense: true })
+      : walled;
+  }
+
+  /** The seat-1 capital grown to level 3 by three Farms, holding Walls. */
+  function walledCapital(state: GameStateV7): GameStateV7 {
+    const capital = cityAt(state, SEAT1_CAPITAL);
+    const farms = state.board.tiles
+      .filter(
+        (tile) =>
+          tile.territoryCityId === capital.id &&
+          tile.site === null &&
+          !state.units.some((unit) => same(unit.at, tile.at)),
+      )
+      .slice(0, 3);
+    if (farms.length !== 3) throw new Error("farm tiles missing");
+    const economicPopulation = capital.economicPopulation + 2 * farms.length;
+    const grown = resolveCityGrowthV7(
+      capital,
+      capital.permanentPopulation,
+      economicPopulation,
+    ).city;
+    expect(grown.level).toBe(3);
+    return checkedV7({
+      ...state,
+      nextEntityId: state.nextEntityId + farms.length,
+      cities: state.cities.map((city) =>
+        city.id === capital.id
+          ? {
+              ...grown,
+              economicPopulation,
+              rewards: [
+                { reachedLevel: 2, reward: "SURVEY" as const },
+                { reachedLevel: 3, reward: "WALLS" as const },
+              ],
+            }
+          : city,
+      ),
+      board: {
+        ...state.board,
+        tiles: state.board.tiles.map((tile) =>
+          farms.some((farm) => same(farm.at, tile.at))
+            ? {
+                ...tile,
+                biome: "PLAINS" as const,
+                terrain: "GRASS" as const,
+                resource: "FERTILE_GROUND" as const,
+                improvement: "FARM" as const,
+              }
+            : tile,
+        ),
+      },
+      populationContributions: [
+        ...state.populationContributions,
+        ...farms.map((tile, index) => ({
+          id: state.nextEntityId + index,
+          cityId: capital.id,
+          category: "LIVE" as const,
+          amount: 2,
+          source: {
+            kind: "IMPROVEMENT" as const,
+            improvement: "FARM" as const,
+            at: tile.at,
+          },
+        })),
+      ],
+    });
+  }
 });
 
 interface Piece {

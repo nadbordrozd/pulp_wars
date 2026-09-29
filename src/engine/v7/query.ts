@@ -4230,13 +4230,12 @@ function publicCombatPreview(
     defenderRule.attack2 > 0 &&
     distance >= defenderRule.minimumRange &&
     distance <= defenderRule.range;
+  // Section 13.2: retaliation uses the same fortified Defense as the
+  // defender's force, exactly as canonical resolution does.
   const damageToAttacker = retaliation
     ? Math.min(
         attacker.hp,
-        roundHalfUpPublic(
-          defenseOnCommon * BigInt(defenderRule.defense2) * 9n,
-          total * 4n,
-        ),
+        roundHalfUpPublic(defenseOnCommon * BigInt(defense2) * 9n, total * 4n),
       )
     : 0;
   const attackerDies = damageToAttacker >= attacker.hp;
