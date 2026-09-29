@@ -9,6 +9,7 @@
  *       --no-plate-pass --camera-pass [--asset VARIANT]
  *   npm run art:chibi -- reject --batch N --id RECIPE --notes TEXT
  *   npm run art:chibi -- registry --batch N
+ *   npm run art:chibi -- bodies --batch N      (tall-terrain body layers)
  *   npm run art:chibi -- dry-run --batch 0
  *
  * Every command except `registry` and `dry-run` also takes
@@ -41,6 +42,7 @@ import {
   registryEntry,
   rejectRecipe,
   generateRecipe,
+  writeTallTerrainBodies,
   type PipelineContext,
 } from "./chibi/pipeline";
 
@@ -191,6 +193,12 @@ async function main(): Promise<void> {
     await rejectRecipe(context, required("--id"), required("--notes"));
     return;
   }
+  if (command === "bodies") {
+    const context = await runContext(false);
+    for (const file of await writeTallTerrainBodies(context))
+      console.log(`wrote ${file}`);
+    return;
+  }
   if (command === "registry") {
     const batch = required("--batch");
     if (option("--exploration") !== undefined)
@@ -205,7 +213,7 @@ async function main(): Promise<void> {
     return;
   }
   console.log(
-    "Usage: chibi-pipeline.ts plan|prompts --batch N [--id R] | generate --batch N --ids a,b | accept --batch N --id R --candidate K --notes TEXT --native-pass --enlarged-pass --owners-pass --no-plate-pass --camera-pass | reject --batch N --id R --notes TEXT | registry --batch N | dry-run --batch 0; --exploration art/explorations/<run> replaces --batch N except for registry and dry-run",
+    "Usage: chibi-pipeline.ts plan|prompts --batch N [--id R] | generate --batch N --ids a,b | accept --batch N --id R --candidate K --notes TEXT --native-pass --enlarged-pass --owners-pass --no-plate-pass --camera-pass | reject --batch N --id R --notes TEXT | registry --batch N | bodies --batch N | dry-run --batch 0; --exploration art/explorations/<run> replaces --batch N except for registry and dry-run",
   );
 }
 

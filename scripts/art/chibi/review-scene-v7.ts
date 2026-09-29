@@ -9,8 +9,9 @@
  * Nothing here is part of the game build. Two layouts:
  *
  * - SHOWCASE (9 x 7): every map subject (resources, improvements and Farm
- *   pairs, Mines, Ports, Roads with corner joins, Field Defense and a
- *   fortified tile, Treasure) for two owners, split by column.
+ *   pairs, Mines, Ports, Roads with corner joins and under Forest, Mine and
+ *   Mountain bodies, Field Defense and a fortified tile, Treasure) for two
+ *   owners, split by column.
  * - ROSTER (9 x 5): built from a batch's unit and improvement subjects that
  *   the showcase lacks (batch 4 onwards): land pieces for the viewer and a
  *   rival, then water pieces (docks on Shallow Water, ships on Shallow Water
@@ -98,7 +99,8 @@ const SHOWCASE: Layout = [
     { terrain: G, resource: "FERTILE_GROUND", improvement: "FARM" },
     { terrain: G, road: true },
     { terrain: G, improvement: "MONUMENT" },
-    { terrain: F },
+    // Roads pass under Forest, Mine and Mountain bodies (pulp_wars-yyy).
+    { terrain: F, road: true },
     { terrain: F, improvement: "LUMBER_CAMP", road: true },
     { terrain: M, resource: "ORE", improvement: "MINE", road: true },
     { terrain: M, road: true },

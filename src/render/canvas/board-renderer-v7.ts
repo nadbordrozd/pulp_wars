@@ -805,10 +805,30 @@ export function drawBoardV7(input: {
   const deferredChibiOverlays: (() => void)[] = [];
   // CHIBI draws every road casing before any road fill, so a corner join
   // and its cell's road read as one path instead of crossing outlines.
+  // A Road (or a corner join) on tall terrain passes under the tree or rock
+  // body: those cells draw their ground tile in the ground pass and the
+  // body's owning cell in TALL_BODY, after every Road and before any piece,
+  // so neighbouring pieces keep overlapping the cell as before.
   const passes =
     chibiArt === undefined
       ? (["FOG", "GROUND", "ROAD", "FOREGROUND"] as const)
-      : (["FOG", "GROUND", "ROAD_CASING", "ROAD", "FOREGROUND"] as const);
+      : ([
+          "FOG",
+          "GROUND",
+          "ROAD_CASING",
+          "ROAD",
+          "TALL_BODY",
+          "FOREGROUND",
+        ] as const);
+  const roadCells = new Set(
+    chibiArt === undefined
+      ? []
+      : input.plan.entries
+          .filter(
+            (entry) => entry.kind === "ROAD" || entry.kind === "ROAD_JOIN",
+          )
+          .map((entry) => coordKey(entry.at)),
+  );
   for (const pass of passes)
     for (const entry of input.plan.entries) {
       if (
@@ -829,6 +849,8 @@ export function drawBoardV7(input: {
         ((pass === "ROAD" || pass === "ROAD_CASING") &&
           entry.kind !== "ROAD" &&
           entry.kind !== "ROAD_JOIN") ||
+        (pass === "TALL_BODY" &&
+          (entry.kind !== "TERRAIN" || !roadCells.has(coordKey(entry.at)))) ||
         (pass === "FOREGROUND" &&
           (entry.kind === "FOG" ||
             entry.kind === "ROAD" ||
@@ -867,6 +889,23 @@ export function drawBoardV7(input: {
       }
       if (entry.kind === "TERRAIN") {
         const chibi = resolveChibi(entry);
+        // Tall terrain under a Road: ground now, the body after Roads.
+        const layers =
+          chibi?.kind === "READY" && roadCells.has(coordKey(entry.at))
+            ? chibi.layers
+            : undefined;
+        if (pass === "TALL_BODY") {
+          if (chibi?.kind === "READY" && layers !== undefined)
+            drawChibiTerrainV7(context, chibi, {
+              centre: { x, y },
+              camera,
+              devicePixelRatio,
+              sceneAlpha,
+              part: "CELL",
+              image: layers.body,
+            });
+          continue;
+        }
         if (chibi !== null && chibi.kind !== "MISSING") {
           if (pass === "GROUND") {
             context.fillStyle =
@@ -881,7 +920,11 @@ export function drawBoardV7(input: {
               camera,
               devicePixelRatio,
               sceneAlpha,
-              part: pass === "GROUND" ? "CELL" : "OVERFLOW",
+              ...(pass !== "GROUND"
+                ? { part: "OVERFLOW" }
+                : layers === undefined
+                  ? { part: "CELL" }
+                  : { part: "GROUND", image: layers.ground }),
             });
           continue;
         }
@@ -2353,7 +2396,10 @@ function drawEntryImage(
 /**
  * Draws a chibi terrain raster in two row-ordered parts: the owning 80 x 80
  * cell during the ground pass (below Roads) and any upward overflow during
- * the foreground pass, after every entry of the rows behind it.
+ * the foreground pass, after every entry of the rows behind it. Tall
+ * terrain under a Road draws its ground tile (GROUND) into the owning cell
+ * instead, and the body's owning cell (CELL of the body `image`) after
+ * Roads.
  */
 function drawChibiTerrainV7(
   context: CanvasRenderingContext2D,
@@ -2363,7 +2409,9 @@ function drawChibiTerrainV7(
     readonly camera: CameraState;
     readonly devicePixelRatio: number;
     readonly sceneAlpha: number;
-    readonly part: "CELL" | "OVERFLOW";
+    readonly part: "CELL" | "OVERFLOW" | "GROUND";
+    /** A layer drawn in place of the master (density 1). */
+    readonly image?: CanvasImageSource;
   },
 ): void {
   const { asset } = chibi;
@@ -2375,21 +2423,23 @@ function drawChibiTerrainV7(
   );
   const scale = chibiMasterScale(input.camera);
   const up = chibiOverflowV7(asset).up;
-  const rows = input.part === "CELL" ? asset.height - up : up;
+  const rows = input.part === "OVERFLOW" ? up : asset.height - up;
   if (rows <= 0) return;
+  // The ground tile is only the owning cell, so it is read from its top.
   const sourceTop = input.part === "CELL" ? up : 0;
-  const density = chibi.density;
+  const destinationTop = input.part === "OVERFLOW" ? 0 : up;
+  const density = input.image === undefined ? chibi.density : 1;
   context.save();
   context.globalAlpha = input.sceneAlpha;
   context.imageSmoothingEnabled = chibi.smoothing;
   context.drawImage(
-    chibi.image,
+    input.image ?? chibi.image,
     0,
     sourceTop * density,
     asset.width * density,
     rows * density,
     rect.x,
-    rect.y + sourceTop * scale,
+    rect.y + destinationTop * scale,
     rect.width,
     rows * scale,
   );

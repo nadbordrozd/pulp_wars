@@ -17,7 +17,7 @@ batch's subjects, canvases and anchors.
 | `scripts/art/chibi/records/batch-N.json`                                     | Generation and review records (written by the pipeline)                                                            |
 | `art/pixellab/submissions/`                                                  | Credential-free receipts, one flat JSON per job, as for all production art                                         |
 | `art/pixellab/chibi-raw/batch-N/`                                            | Every returned candidate, lossless                                                                                 |
-| `public/assets/chibi/<class>/<asset>.png` and `.mask.png`                    | Accepted DPR 1 masters and owner masks                                                                             |
+| `public/assets/chibi/<class>/<asset>.png`, `.mask.png`, `.body.png`          | Accepted DPR 1 masters, owner masks and tall-terrain body layers                                                   |
 | `art/pixellab/reviews/chibi-batch-N/`                                        | Review evidence                                                                                                    |
 
 ## Prompt layers
@@ -78,6 +78,17 @@ equal its master canvas. Pixen sizes must be multiples of 4.
 
 Pixen draws trees and rocks on an isometric slab just as it does cities, so
 tall terrain may use the same ground-removal edit before the composite.
+
+**Tall-terrain layers.** Accepting tall terrain also writes the body layer
+`<asset>.body.png` beside the master: the accepted candidate's exact bytes.
+The runtime draws a Road between the ground tile and the body (bead
+`pulp_wars-yyy`), so `registry` emits `layers: { bodyUrl, groundUrl }` for
+these assets. `art:validate` requires the body of every accepted
+ground-composite asset, checks that its bytes match the recorded candidate
+hash and the ground's bytes the recorded ground, and that the body
+composited over the ground reproduces the master pixel for pixel.
+`npm run art:chibi -- bodies --batch N` rewrites a batch's body layers from
+its records (it backfilled batches 1 and 3).
 
 ### Building on earlier batches
 

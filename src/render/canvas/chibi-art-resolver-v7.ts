@@ -25,7 +25,19 @@ export type ChibiResolutionV7 =
       readonly smoothing: boolean;
       /** Stable per asset, density and owner; used by effect caches. */
       readonly cacheKey: string;
+      /**
+       * Tall terrain with checked-in layers, once both are loaded: the 80 x
+       * 80 ground tile and the transparent body (master size, density 1),
+       * so a Road can be drawn between them. Absent while they load, if one
+       * fails, or for a density variant; the master is drawn whole instead.
+       */
+      readonly layers?: ChibiTallTerrainImagesV7;
     };
+
+export interface ChibiTallTerrainImagesV7 {
+  readonly ground: CanvasImageSource;
+  readonly body: CanvasImageSource;
+}
 
 /**
  * Owner colour for a masked CHIBI piece drawn without an owner, such as an
@@ -206,7 +218,14 @@ export function createChibiArtResolverV7(input: {
           : CHIBI_UNOWNED_OWNER_COLOUR_V7);
       const owner =
         ownerColor === undefined ? null : parseHexColourV7(ownerColor);
-      if (asset.ownerMaskUrl === undefined || owner === null)
+      if (asset.ownerMaskUrl === undefined || owner === null) {
+        const layers =
+          asset.layers === undefined || choice.density !== 1
+            ? undefined
+            : {
+                ground: raster(asset.layers.groundUrl),
+                body: raster(asset.layers.bodyUrl),
+              };
         return {
           kind: "READY",
           asset,
@@ -214,7 +233,16 @@ export function createChibiArtResolverV7(input: {
           density: choice.density,
           smoothing: choice.smoothing,
           cacheKey: baseKey,
+          ...(layers?.ground.state === "READY" && layers.body.state === "READY"
+            ? {
+                layers: {
+                  ground: layers.ground.image,
+                  body: layers.body.image,
+                },
+              }
+            : {}),
         };
+      }
       const cacheKey = `${baseKey}#${ownerColor ?? ""}`;
       const cached = recoloured.get(cacheKey);
       if (cached !== undefined)

@@ -41,6 +41,10 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     width: 80,
     height: 104,
     url: chibiArtUrl("assets/chibi/terrain/chibi-forest-1.png"),
+    layers: {
+      bodyUrl: chibiArtUrl("assets/chibi/terrain/chibi-forest-1.body.png"),
+      groundUrl: chibiArtUrl("assets/chibi/terrain/chibi-grass-1.png"),
+    },
   },
   {
     id: "chibi-forest-2",
@@ -49,6 +53,10 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     width: 80,
     height: 104,
     url: chibiArtUrl("assets/chibi/terrain/chibi-forest-2.png"),
+    layers: {
+      bodyUrl: chibiArtUrl("assets/chibi/terrain/chibi-forest-2.body.png"),
+      groundUrl: chibiArtUrl("assets/chibi/terrain/chibi-grass-1.png"),
+    },
   },
   {
     id: "chibi-mountain-1",
@@ -57,6 +65,10 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     width: 80,
     height: 104,
     url: chibiArtUrl("assets/chibi/terrain/chibi-mountain-1.png"),
+    layers: {
+      bodyUrl: chibiArtUrl("assets/chibi/terrain/chibi-mountain-1.body.png"),
+      groundUrl: chibiArtUrl("assets/chibi/terrain/chibi-grass-1.png"),
+    },
   },
   {
     id: "chibi-mountain-3",
@@ -65,6 +77,10 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     width: 80,
     height: 104,
     url: chibiArtUrl("assets/chibi/terrain/chibi-mountain-3.png"),
+    layers: {
+      bodyUrl: chibiArtUrl("assets/chibi/terrain/chibi-mountain-3.body.png"),
+      groundUrl: chibiArtUrl("assets/chibi/terrain/chibi-grass-1.png"),
+    },
   },
   {
     id: "chibi-shallow-water-1",
@@ -310,6 +326,12 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     width: 80,
     height: 104,
     url: chibiArtUrl("assets/chibi/terrain/chibi-mined-mountain-1.png"),
+    layers: {
+      bodyUrl: chibiArtUrl(
+        "assets/chibi/terrain/chibi-mined-mountain-1.body.png",
+      ),
+      groundUrl: chibiArtUrl("assets/chibi/terrain/chibi-grass-1.png"),
+    },
   },
   {
     id: "chibi-mined-mountain-2",
@@ -318,6 +340,12 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     width: 80,
     height: 104,
     url: chibiArtUrl("assets/chibi/terrain/chibi-mined-mountain-2.png"),
+    layers: {
+      bodyUrl: chibiArtUrl(
+        "assets/chibi/terrain/chibi-mined-mountain-2.body.png",
+      ),
+      groundUrl: chibiArtUrl("assets/chibi/terrain/chibi-grass-1.png"),
+    },
   },
   // Batch 4 (pulp_wars-67q.9): the six processors with a masked red-roof or
   // red-cloth owner area, and the ships. Undead naval units reuse the ships.

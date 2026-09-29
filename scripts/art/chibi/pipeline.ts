@@ -948,7 +948,7 @@ const CLASS_DIRECTORY: Readonly<Record<string, string>> = {
 export function masterPaths(
   layout: PipelineLayout,
   asset: ChibiAssetSpec,
-): { readonly master: string; readonly mask: string } {
+): { readonly master: string; readonly mask: string; readonly body: string } {
   const directory = path.join(
     layout.masters,
     CLASS_DIRECTORY[asset.assetClass] ?? "misc",
@@ -956,7 +956,58 @@ export function masterPaths(
   return {
     master: path.join(directory, `${asset.id}.png`),
     mask: path.join(directory, `${asset.id}.mask.png`),
+    body: path.join(directory, `${asset.id}.body.png`),
   };
+}
+
+/**
+ * The two layers of a ground-composite (tall terrain) master, as paths
+ * relative to the repository root: the body is the accepted candidate
+ * itself, saved beside the master as `<id>.body.png`, and the ground is the
+ * accepted ground tile, which is terrain and so lives in the same directory.
+ * The runtime draws ground, then Roads, then the body (pulp_wars-yyy).
+ */
+export function tallTerrainLayerPaths(
+  record: Pick<AssetRecord, "master" | "derivation">,
+): { readonly body: string; readonly ground: string } | null {
+  const ground = record.derivation.ground;
+  if (record.derivation.kind !== "ground-composite" || ground === undefined)
+    return null;
+  return {
+    body: record.master.path.replace(/\.png$/, ".body.png"),
+    ground: path.posix.join(
+      path.posix.dirname(record.master.path),
+      `${ground.asset}.png`,
+    ),
+  };
+}
+
+/**
+ * Writes the body layer of every accepted ground-composite asset of a batch
+ * from its recorded candidate (raw sheet crop, checked against the record's
+ * candidate hash). Accepting tall terrain writes it too; this backfills
+ * assets accepted before body layers existed. Returns the written paths.
+ */
+export async function writeTallTerrainBodies(
+  context: PipelineContext,
+): Promise<string[]> {
+  const records = await loadRecords(context.layout, context.manifest.batch);
+  const written: string[] = [];
+  for (const record of Object.values(records.assets)) {
+    const layers = tallTerrainLayerPaths(record);
+    if (record.status !== "ACCEPTED" || layers === null) continue;
+    const recipe = records.recipes[record.recipe];
+    if (recipe === undefined)
+      throw new Error(`${record.id}: recipe ${record.recipe} has no record`);
+    const bytes = await candidateBytes(context, recipe, record.candidate);
+    if (sha256(bytes) !== record.candidateSha256)
+      throw new Error(`${record.id}: candidate differs from the record`);
+    const file = path.join(context.root, layers.body);
+    await mkdir(path.dirname(file), { recursive: true });
+    await writeFile(file, bytes);
+    written.push(layers.body);
+  }
+  return written;
 }
 
 /**
@@ -1140,6 +1191,10 @@ export async function acceptRecipe(
   const files = masterPaths(context.layout, asset);
   await mkdir(path.dirname(files.master), { recursive: true });
   await writeFile(files.master, masterBytes);
+  // Tall terrain keeps its body (the candidate) beside the master, so the
+  // runtime can draw a Road between the ground and the body.
+  if (derivation.kind === "ground-composite")
+    await writeFile(files.body, candidatePng);
   let mask: MaskRecord | undefined;
   if (assetOwned(asset)) {
     const resolved = await resolveOwnerMask(context.root, asset, raster);
@@ -1268,6 +1323,47 @@ export async function verifyAssetRecord(
       );
   } else if (record.mask !== undefined)
     problems.push(`${label}: unowned asset has a mask`);
+  if (record.status === "ACCEPTED")
+    problems.push(...(await tallTerrainLayerProblems(root, record, master)));
+  return problems;
+}
+
+/**
+ * A ground-composite master needs its body layer: the recorded candidate's
+ * exact bytes, which composited over the recorded ground tile reproduce the
+ * master pixel for pixel.
+ */
+async function tallTerrainLayerProblems(
+  root: string,
+  record: AssetRecord,
+  master: RgbaRaster,
+): Promise<string[]> {
+  const layers = tallTerrainLayerPaths(record);
+  if (layers === null) return [];
+  const label = `asset ${record.id}`;
+  const bodyFile = path.join(root, layers.body);
+  const groundFile = path.join(root, layers.ground);
+  if (!(await exists(bodyFile)))
+    return [
+      `${label}: body layer ${layers.body} is missing (npm run art:chibi -- bodies --batch N)`,
+    ];
+  if (!(await exists(groundFile)))
+    return [`${label}: ground layer ${layers.ground} is missing`];
+  const bodyBytes = await readFile(bodyFile);
+  const groundBytes = await readFile(groundFile);
+  const problems: string[] = [];
+  if (sha256(bodyBytes) !== record.candidateSha256)
+    problems.push(`${label}: body layer is not the accepted candidate`);
+  if (sha256(groundBytes) !== record.derivation.ground?.sha256)
+    problems.push(`${label}: ground layer differs from the recorded ground`);
+  const body = await readRaster(bodyBytes);
+  if (body.width !== master.width || body.height !== master.height)
+    problems.push(`${label}: body layer is not the master's size`);
+  else if (
+    pixelSha256(groundComposite(body, await readRaster(groundBytes))) !==
+    pixelSha256(master)
+  )
+    problems.push(`${label}: body over ground does not reproduce the master`);
   return problems;
 }
 
@@ -1370,6 +1466,7 @@ export function registryEntry(
 ): string {
   const url = (file: string): string =>
     `chibiArtUrl(${JSON.stringify(posix(path.relative(CHIBI_PATHS.publicRoot, file)))})`;
+  const layers = tallTerrainLayerPaths(record);
   const fields = [
     `id: ${JSON.stringify(asset.id)}`,
     `subject: ${JSON.stringify(asset.subject)}`,
@@ -1383,6 +1480,11 @@ export function registryEntry(
     ...(record.mask === undefined
       ? []
       : [`ownerMaskUrl: ${url(record.mask.path)}`]),
+    ...(layers === null
+      ? []
+      : [
+          `layers: { bodyUrl: ${url(layers.body)}, groundUrl: ${url(layers.ground)} }`,
+        ]),
   ];
   return `  { ${fields.join(", ")} },`;
 }

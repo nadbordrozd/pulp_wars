@@ -165,10 +165,16 @@ batch replaces them: `unit-original-scout`, `-medic`, `-breacher`, `-heavy`,
    steel crossbar, thick outline) in the cell's top-left corner above the
    HP bar strip (`CHIBI_OVERLAY_FRAME_V7.fieldDefense`); a city's
    fortification level is written on it, and it is drawn with the deferred
-   piece overlays so no tall piece hides it. Known gap: CHIBI tall terrain
-   draws its whole owning cell in the ground pass, so a Road on a Forest,
-   Mountain or Mine is drawn across the tree or rock body (legacy draws the
-   body over the Road); fixing it needs a body-only chibi raster.
+   piece overlays so no tall piece hides it. Roads under tall terrain
+   (bead `pulp_wars-yyy`): a Road or corner join on a Forest, Mountain or
+   Mine passes under the tree or rock body, as in legacy. Each tall-terrain
+   master is registered with its two pipeline layers (`layers`: the
+   transparent body `<id>.body.png`, which is the accepted candidate, and
+   the `chibi-grass-1` ground). Such a cell draws the ground tile in the
+   ground pass, then Roads, then the body's owning cell before any piece,
+   and keeps the master's upward overflow in the foreground pass. Cells
+   without a Road, and any cell whose layers are still loading, draw the
+   whole master as before.
 2. **Farm pairs.** Legacy Farms join into horizontal and vertical two-tile
    fields. Chibi has one `IMPROVEMENT:FARM` subject and no pair logic, so a
    chibi Farm is a single-tile building unless the runtime gains pair

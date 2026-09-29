@@ -112,6 +112,21 @@ export interface ChibiArtAssetV7 {
    * with alpha >= 128 marks an owner-colour pixel; everything else is kept.
    */
   readonly ownerMaskUrl?: string;
+  /**
+   * TALL_TERRAIN only: the two layers the master was composited from (the
+   * pipeline's ground composite), so a Road can pass between them. The body
+   * has the master's size and anchor and is transparent where the master
+   * shows ground; the ground is the 80 x 80 tile under the owning cell.
+   * Master = body over ground, pixel for pixel (checked by art:validate).
+   */
+  readonly layers?: ChibiTallTerrainLayersV7;
+}
+
+export interface ChibiTallTerrainLayersV7 {
+  /** Public URL of the transparent body PNG (master size). */
+  readonly bodyUrl: string;
+  /** Public URL of the accepted 80 x 80 ground tile under the body. */
+  readonly groundUrl: string;
 }
 
 export interface ChibiClassGeometryV7 {
@@ -273,6 +288,8 @@ export function chibiAssetProblemsV7(asset: ChibiArtAssetV7): string[] {
     asset.ownerMaskUrl === undefined
   )
     problems.push(`${label}: owned subjects need a checked-in owner mask`);
+  if (asset.layers !== undefined && asset.assetClass !== "TALL_TERRAIN")
+    problems.push(`${label}: only tall terrain has ground and body layers`);
   return problems;
 }
 

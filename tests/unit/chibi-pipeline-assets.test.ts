@@ -39,7 +39,10 @@ import {
   productionFactionProblems,
   productionLayout,
   readRaster,
+  pixelSha256,
   registryEntry,
+  sha256,
+  tallTerrainLayerPaths,
   validateChibiProduction,
 } from "../../scripts/art/chibi/pipeline";
 import {
@@ -969,5 +972,64 @@ describe("chibi runtime registry", () => {
           ),
         ).toBe(true);
     }
+  });
+
+  it("registers the body and ground layers of every tall-terrain master (pulp_wars-yyy)", async () => {
+    const records = new Map<string, Parameters<typeof registryEntry>[1]>();
+    for (const batch of ["1", "3"]) {
+      const loaded = await loadRecords(productionLayout(ROOT, batch), batch);
+      for (const record of Object.values(loaded.assets))
+        if (record.status === "ACCEPTED") records.set(record.id, record);
+    }
+    const tallAssets = CHIBI_ART_ASSETS_V7.filter(
+      (asset) => asset.assetClass === "TALL_TERRAIN",
+    );
+    expect(tallAssets.map((asset) => asset.id).sort()).toEqual([
+      "chibi-forest-1",
+      "chibi-forest-2",
+      "chibi-mined-mountain-1",
+      "chibi-mined-mountain-2",
+      "chibi-mountain-1",
+      "chibi-mountain-3",
+    ]);
+    for (const asset of tallAssets) {
+      const record = records.get(asset.id);
+      if (record === undefined) throw new Error(`${asset.id} has no record`);
+      const layers = tallTerrainLayerPaths(record);
+      if (layers === null) throw new Error(`${asset.id} is not a composite`);
+      const url = (file: string) => file.replace(/^public\//, "");
+      expect(asset.layers?.bodyUrl.endsWith(url(layers.body)), asset.id).toBe(
+        true,
+      );
+      expect(
+        asset.layers?.groundUrl.endsWith(url(layers.ground)),
+        asset.id,
+      ).toBe(true);
+      const bodyBytes = await readFile(layers.body);
+      expect(sha256(bodyBytes), asset.id).toBe(record.candidateSha256);
+      const body = await readRaster(bodyBytes);
+      const ground = await readRaster(await readFile(layers.ground));
+      expect({ width: body.width, height: body.height }).toEqual({
+        width: asset.width,
+        height: asset.height,
+      });
+      expect(pixelSha256(groundComposite(body, ground)), asset.id).toBe(
+        record.master.pixelSha256,
+      );
+      // The body is only the trees or rocks: transparent over most ground.
+      let transparent = 0;
+      for (let index = 3; index < body.data.length; index += 4)
+        if (body.data[index] === 0) transparent += 1;
+      expect(transparent / (body.width * body.height)).toBeGreaterThan(0.4);
+    }
+    const forestRecord = records.get("chibi-forest-1");
+    const forestSpec = (await loadBatchManifest(ROOT, "1")).assets.find(
+      (asset) => asset.id === "chibi-forest-1",
+    );
+    if (forestRecord === undefined || forestSpec === undefined)
+      throw new Error("forest lost");
+    expect(registryEntry(forestSpec, forestRecord)).toContain(
+      `layers: { bodyUrl: chibiArtUrl("assets/chibi/terrain/chibi-forest-1.body.png"), groundUrl: chibiArtUrl("assets/chibi/terrain/chibi-grass-1.png") }`,
+    );
   });
 });
