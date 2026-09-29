@@ -1,0 +1,24 @@
+{
+  "id": "bold-chibi-grass-b",
+  "jobId": "sync-fd30cd3d-4002-487b-9107-b3cd7ea5d79c",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "style": "bold-chibi",
+    "subject": "grass",
+    "target": "tile80-dpr1",
+    "description": "Style: bold chunky cartoon game terrain tile, flat colours with one shadow tone, low detail, big simple shapes, a few chunky grass tufts with dark edges. Subject: one seamless tileable square grass terrain texture for a strategy-game map: an even bright fresh green meadow filling the entire image edge to edge, a few small grass tufts scattered evenly, no single focal object. The left edge continues into the right edge and the top edge continues into the bottom edge, so copies placed side by side join without any visible seam. Straight top-down view of flat ground, the texture fills the whole square canvas, no perspective, no horizon. Must not include: border, frame, outline around the square, vignette, dark corners, light spot, lighting gradient, path, road, water, rocks, flowers, trees, buildings, characters, text, perspective, horizon, red; thin outline, tiny details, gradients, noise.",
+    "prompt": "Style: bold chunky cartoon game terrain tile, flat colours with one shadow tone, low detail, big simple shapes, a few chunky grass tufts with dark edges. Subject: one seamless tileable square grass terrain texture for a strategy-game map: an even bright fresh green meadow filling the entire image edge to edge, a few small grass tufts scattered evenly, no single focal object. The left edge continues into the right edge and the top edge continues into the bottom edge, so copies placed side by side join without any visible seam. Straight top-down view of flat ground, the texture fills the whole square canvas, no perspective, no horizon.",
+    "negativePrompt": "border, frame, outline around the square, vignette, dark corners, light spot, lighting gradient, path, road, water, rocks, flowers, trees, buildings, characters, text, perspective, horizon, red; thin outline, tiny details, gradients, noise",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 30518,
+    "noBackground": false,
+    "options": {
+      "detail": "low detail",
+      "view": "high top-down"
+    }
+  }
+}

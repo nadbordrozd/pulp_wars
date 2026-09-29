@@ -1,0 +1,42 @@
+{
+  "id": "bold-chibi-city-b",
+  "jobId": "sync-759bc31c-7fa2-44de-bd47-6f492b67d758",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "style": "bold-chibi",
+    "subject": "city",
+    "target": "tile80-dpr1",
+    "description": "Style: bold chunky chibi game sprite, oversized chunky shapes, thick single-colour dark outline, flat colours with one shadow tone, low detail, big simple shapes that fill the canvas. Subject: one small fantasy town as a single strategy-game map piece: a compact cluster of four chunky cottages with bright red roofs huddled around one tall round stone keep tower with a big red banner flag on top, short stone ring wall in front, compact footprint, strong readable silhouette. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the stone wall is the lowest thing in the image. The town fills most of the image. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, terrain, soil, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; thin outline, tiny details, gradients, noise.",
+    "prompt": "Style: bold chunky chibi game sprite, oversized chunky shapes, thick single-colour dark outline, flat colours with one shadow tone, low detail, big simple shapes that fill the canvas. Subject: one small fantasy town as a single strategy-game map piece: a compact cluster of four chunky cottages with bright red roofs huddled around one tall round stone keep tower with a big red banner flag on top, short stone ring wall in front, compact footprint, strong readable silhouette. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the stone wall is the lowest thing in the image. The town fills most of the image. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, terrain, soil, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; thin outline, tiny details, gradients, noise",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 30516,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    }
+  },
+  "submittedAt": "2026-09-29T08:53:31.566Z",
+  "candidateCount": 1,
+  "candidateSize": {
+    "width": 72,
+    "height": 72
+  },
+  "rawSheet": "art/explorations/tile80-study-2026-09/raw/bold-chibi-city-b.png",
+  "rawSheetSha256": "47b6c6313314ed46bf19921c0e583a0447448b7af86414312b5353e66ed7358a",
+  "completedAt": "2026-09-29T08:53:31.587Z",
+  "usageUsd": 0.008800561136669584,
+  "review": {
+    "status": "REJECTED",
+    "candidate": null,
+    "note": "Pedestal: stone block; also magenta roofs off the owner red.",
+    "reviewedAt": "2026-09-29T09:16:14.864Z"
+  }
+}

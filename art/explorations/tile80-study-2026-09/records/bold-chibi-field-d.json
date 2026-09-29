@@ -1,0 +1,40 @@
+{
+  "id": "bold-chibi-field-d",
+  "jobId": "sync-4f46a2f6-0e97-4a57-a316-4881701d006a",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "style": "bold-chibi",
+    "subject": "field",
+    "target": "tile80-dpr1",
+    "description": "Style: bold cartoon game terrain, flat colours with one shadow tone, low detail, chunky simple grass tufts with dark edges. Subject: a wide flat meadow of short lawn grass seen from directly above, one even fresh green base colour with small darker grass tufts scattered evenly and sparsely all over, the same everywhere, nothing else. Straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Bright saturated fresh spring green, only tiny grass tufts, no bushes, no dirt, no bare soil. Must not include: border, frame, hedge, bushes, vignette, dark corners, light spot, lighting gradient, path, road, water, rocks, stones, flowers, trees, buildings, characters, people, text, perspective, horizon, red; thin outline, tiny details, gradients, noise.",
+    "prompt": "Style: bold cartoon game terrain, flat colours with one shadow tone, low detail, chunky simple grass tufts with dark edges. Subject: a wide flat meadow of short lawn grass seen from directly above, one even fresh green base colour with small darker grass tufts scattered evenly and sparsely all over, the same everywhere, nothing else. Straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Bright saturated fresh spring green, only tiny grass tufts, no bushes, no dirt, no bare soil.",
+    "negativePrompt": "border, frame, hedge, bushes, vignette, dark corners, light spot, lighting gradient, path, road, water, rocks, stones, flowers, trees, buildings, characters, people, text, perspective, horizon, red; thin outline, tiny details, gradients, noise",
+    "requestSize": {
+      "width": 160,
+      "height": 160
+    },
+    "seed": 30540,
+    "noBackground": false,
+    "options": {
+      "detail": "low detail",
+      "view": "high top-down"
+    }
+  },
+  "submittedAt": "2026-09-29T09:11:49.796Z",
+  "candidateCount": 1,
+  "candidateSize": {
+    "width": 160,
+    "height": 160
+  },
+  "rawSheet": "art/explorations/tile80-study-2026-09/raw/bold-chibi-field-d.png",
+  "rawSheetSha256": "eab94f794ff5c04e7128bab951537934939cecd347a903e4a7d7ec09e381216e",
+  "completedAt": "2026-09-29T09:11:49.827Z",
+  "usageUsd": 0.00815393943256802,
+  "review": {
+    "status": "REJECTED",
+    "candidate": null,
+    "note": "Isometric scene with trees, cliffs, water and a fence, not a ground texture.",
+    "reviewedAt": "2026-09-29T09:16:22.996Z"
+  }
+}

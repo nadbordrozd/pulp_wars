@@ -1,0 +1,43 @@
+{
+  "id": "flat-shaded-city-c",
+  "jobId": "sync-e398cda8-3506-4faf-b614-d6922453ce6d",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "style": "flat-shaded",
+    "subject": "city",
+    "target": "tile80-dpr1",
+    "description": "Style: flat-shaded cartoon game sprite, flat colour fills with no gradients, single dark outline, low detail, simple graphic shapes, clean readable silhouette. Subject: one small fantasy town as a single strategy-game map piece: a compact cluster of four chunky cottages with bright red roofs huddled around one tall round stone keep tower with a big red banner flag on top, short stone ring wall in front, compact footprint, strong readable silhouette. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the stone wall is the lowest thing in the image. The town fills most of the image. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Cut-out sprite: only the houses, wall and tower are drawn, with transparent pixels directly below the wall; no green, no soil, no slab and no platform anywhere. Must not include: pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, terrain, soil, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; gradients, dithering, texture, high detail.",
+    "prompt": "Style: flat-shaded cartoon game sprite, flat colour fills with no gradients, single dark outline, low detail, simple graphic shapes, clean readable silhouette. Subject: one small fantasy town as a single strategy-game map piece: a compact cluster of four chunky cottages with bright red roofs huddled around one tall round stone keep tower with a big red banner flag on top, short stone ring wall in front, compact footprint, strong readable silhouette. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the stone wall is the lowest thing in the image. The town fills most of the image. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Cut-out sprite: only the houses, wall and tower are drawn, with transparent pixels directly below the wall; no green, no soil, no slab and no platform anywhere.",
+    "negativePrompt": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, terrain, soil, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; gradients, dithering, texture, high detail",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 30521,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "shading": "flat shading",
+      "detail": "low detail",
+      "view": "high top-down",
+      "direction": "south-east"
+    }
+  },
+  "submittedAt": "2026-09-29T08:57:00.455Z",
+  "candidateCount": 1,
+  "candidateSize": {
+    "width": 72,
+    "height": 72
+  },
+  "rawSheet": "art/explorations/tile80-study-2026-09/raw/flat-shaded-city-c.png",
+  "rawSheetSha256": "5f415b6acc968573b7584953882344975aae938bd21c0931a8a705571a07b1c7",
+  "completedAt": "2026-09-29T08:57:00.490Z",
+  "usageUsd": 0.00729588007926941,
+  "review": {
+    "status": "REJECTED",
+    "candidate": null,
+    "note": "Pedestal: sand and grass plate despite high top-down view and cut-out wording.",
+    "reviewedAt": "2026-09-29T09:16:02.491Z"
+  }
+}

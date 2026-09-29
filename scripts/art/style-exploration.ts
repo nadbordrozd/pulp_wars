@@ -15,6 +15,10 @@
  *   inspect <recipe-id> <output.png> [k]   write a k-times nearest-neighbour
  *                                          contact sheet for visual review
  *
+ * A leading `--manifest <path>` selects a sibling study manifest (for example
+ * scripts/art/tile80-study-manifest.json, bead pulp_wars-305). Its optional
+ * `studyRoot` keeps that study's records, receipts and outputs separate.
+ *
  * The API key is read from PIXELLAB_API_KEY only and is never printed,
  * logged or stored. Receipts store the resolved request snapshot, never the
  * authenticated payload.
@@ -31,24 +35,44 @@ import {
 } from "./pixellab-recovery";
 
 const ROOT = process.cwd();
-const MANIFEST = path.join(ROOT, "scripts/art/style-exploration-manifest.json");
-const STUDY_ROOT = path.join(ROOT, "art/explorations/style-study-2026-09");
+let MANIFEST = path.join(ROOT, "scripts/art/style-exploration-manifest.json");
+let STUDY_ROOT = path.join(ROOT, "art/explorations/style-study-2026-09");
 /** One file per recipe so concurrent submissions never clobber each other. */
-const RECORDS = path.join(STUDY_ROOT, "records");
+let RECORDS = path.join(STUDY_ROOT, "records");
 /**
  * Study receipts stay beside the study, outside the production receipt
  * directory that the production asset tests enumerate as flat files.
  */
-const SUBMISSION_ROOT = path.join(STUDY_ROOT, "submissions");
+let SUBMISSION_ROOT = path.join(STUDY_ROOT, "submissions");
 const POLL_INTERVAL_MS = 5_000;
 const MAX_POLL_MS = 12 * 60_000;
 
-type Subject = "fighter" | "city";
+type Subject = string;
+
+/**
+ * A subject is either a plain prompt (transparent sprite with the shared
+ * camera, owner colour and negative prompt) or a spec that overrides them,
+ * for example an opaque terrain tile with no owner colour.
+ */
+interface SubjectSpec {
+  readonly prompt: string;
+  /** Replaces the shared camera sentence. */
+  readonly camera?: string;
+  /** Defaults to true: append the shared owner-colour sentence. */
+  readonly ownerColor?: boolean;
+  /** Replaces the shared negative prompt. */
+  readonly negativePrompt?: string;
+  /** Defaults to true. */
+  readonly noBackground?: boolean;
+  /** Merged over the style options; null removes a style option. */
+  readonly options?: Readonly<Record<string, string | null>>;
+}
 type Endpoint =
   | "generate-image-v2"
   | "create-image-pixen"
   | "create-image-pixflux"
-  | "remove-background";
+  | "remove-background"
+  | "edit-image-pixen";
 type ReviewStatus = "ACCEPTED" | "REJECTED";
 
 interface Size {
@@ -64,6 +88,8 @@ interface Style {
   readonly negativePrompt: string;
   /** Extra endpoint options (Pixen outline/detail/view/direction). */
   readonly options?: Readonly<Record<string, string>>;
+  /** Replaces stylePrompt for one subject (for example a terrain tile). */
+  readonly subjectStylePrompts?: Readonly<Record<string, string>>;
 }
 
 interface Target {
@@ -94,8 +120,18 @@ interface Recipe {
   readonly notes?: string;
   /** Endpoint probe override; defaults to the style endpoint. */
   readonly endpoint?: Endpoint;
-  /** Endpoint options merged over the style options. */
-  readonly options?: Readonly<Record<string, string>>;
+  /** edit-image-pixen only: the whole edit description sent to PixelLab. */
+  readonly editInstruction?: string;
+  /** Output subject name for an accepted candidate; defaults to subject. */
+  readonly acceptAs?: string;
+  /**
+   * Opaque terrain only: on acceptance, cut the window of this size whose
+   * wrap-around seams (right edge against left, bottom against top) differ
+   * least. A pure crop: no pixel is resampled or repainted.
+   */
+  readonly seamlessCrop?: Size;
+  /** Endpoint options merged over the style options; null removes one. */
+  readonly options?: Readonly<Record<string, string | null>>;
 }
 
 interface Manifest {
@@ -106,7 +142,9 @@ interface Manifest {
   };
   readonly camera: string;
   readonly ownerColor: string;
-  readonly subjects: Readonly<Record<Subject, string>>;
+  readonly subjects: Readonly<Record<Subject, string | SubjectSpec>>;
+  /** Repository-relative output folder; defaults to the 2026-09 study. */
+  readonly studyRoot?: string;
   readonly sharedNegativePrompt: string;
   readonly targets: readonly Target[];
   readonly styles: readonly Style[];
@@ -124,8 +162,9 @@ interface RequestSnapshot {
   readonly negativePrompt: string;
   readonly requestSize: Size;
   readonly seed: number;
-  readonly noBackground: true;
+  readonly noBackground: boolean;
   readonly options?: Readonly<Record<string, string>>;
+  readonly editInstruction?: string;
   readonly styleReference?: Reference;
   readonly subjectReference?: Reference;
   readonly sourceCandidate?: {
@@ -160,6 +199,15 @@ interface GenerationRecord {
   };
   readonly output?: string;
   readonly outputSha256?: string;
+  /** Present when the output is a seamless crop of the candidate. */
+  readonly crop?: {
+    readonly left: number;
+    readonly top: number;
+    readonly width: number;
+    readonly height: number;
+    /** Mean absolute RGB difference across both wrap seams, 0–255. */
+    readonly seamCost: number;
+  };
 }
 
 interface Records {
@@ -175,7 +223,13 @@ function relative(file: string): string {
 }
 
 async function loadManifest(): Promise<Manifest> {
-  return JSON.parse(await readFile(MANIFEST, "utf8")) as Manifest;
+  const manifest = JSON.parse(await readFile(MANIFEST, "utf8")) as Manifest;
+  if (manifest.studyRoot !== undefined) {
+    STUDY_ROOT = path.join(ROOT, manifest.studyRoot);
+    RECORDS = path.join(STUDY_ROOT, "records");
+    SUBMISSION_ROOT = path.join(STUDY_ROOT, "submissions");
+  }
+  return manifest;
 }
 
 async function loadRecords(): Promise<Records> {
@@ -230,16 +284,32 @@ function requestSnapshot(manifest: Manifest, recipe: Recipe): RequestSnapshot {
     throw new Error(
       `${recipe.id}: no ${recipe.subject} target ${recipe.target}`,
     );
+  const declared = manifest.subjects[recipe.subject];
+  if (declared === undefined)
+    throw new Error(`${recipe.id}: unknown subject ${recipe.subject}`);
+  const subject: SubjectSpec =
+    typeof declared === "string" ? { prompt: declared } : declared;
   const prompt = [
-    style.stylePrompt,
-    manifest.subjects[recipe.subject],
-    manifest.camera,
-    manifest.ownerColor,
+    style.subjectStylePrompts?.[recipe.subject] ?? style.stylePrompt,
+    subject.prompt,
+    subject.camera ?? manifest.camera,
+    subject.ownerColor === false ? "" : manifest.ownerColor,
     recipe.promptAddendum ?? "",
   ]
     .filter(Boolean)
     .join(" ");
-  const negativePrompt = `${manifest.sharedNegativePrompt}; ${style.negativePrompt}`;
+  const negativePrompt = `${subject.negativePrompt ?? manifest.sharedNegativePrompt}; ${style.negativePrompt}`;
+  const hasOptions =
+    style.options !== undefined ||
+    subject.options !== undefined ||
+    recipe.options !== undefined;
+  const options = Object.fromEntries(
+    Object.entries({
+      ...style.options,
+      ...subject.options,
+      ...recipe.options,
+    }).filter((entry): entry is [string, string] => entry[1] !== null),
+  );
   return {
     endpoint: recipe.endpoint ?? style.endpoint,
     model: recipe.endpoint ?? style.endpoint,
@@ -253,10 +323,11 @@ function requestSnapshot(manifest: Manifest, recipe: Recipe): RequestSnapshot {
     negativePrompt,
     requestSize: recipe.requestSize,
     seed: recipe.seed,
-    noBackground: true,
-    ...(style.options === undefined && recipe.options === undefined
+    noBackground: subject.noBackground ?? true,
+    ...(hasOptions ? { options } : {}),
+    ...(recipe.editInstruction === undefined
       ? {}
-      : { options: { ...style.options, ...recipe.options } }),
+      : { editInstruction: recipe.editInstruction }),
     ...(recipe.styleReference === undefined
       ? {}
       : {
@@ -360,6 +431,23 @@ function requestBody(resolved: ResolvedRequest): Record<string, unknown> {
       background_removal_task: "remove_complex_background",
       text: request.prompt.slice(0, 500),
       seed: request.seed,
+    };
+  }
+  if (request.endpoint === "edit-image-pixen") {
+    if (
+      resolved.sourceImage === undefined ||
+      request.editInstruction === undefined
+    )
+      throw new Error("edit-image-pixen needs a source and an editInstruction");
+    return {
+      image: {
+        base64: `data:image/png;base64,${resolved.sourceImage.toString("base64")}`,
+      },
+      description: request.editInstruction.slice(0, 500),
+      width: request.requestSize.width,
+      height: request.requestSize.height,
+      seed: request.seed,
+      no_background: request.noBackground,
     };
   }
   const body: Record<string, unknown> = {
@@ -653,6 +741,45 @@ async function candidateImage(
     .toBuffer();
 }
 
+/** Exhaustive search for the crop whose wrap-around seams match best. */
+async function bestSeamlessWindow(
+  bytes: Buffer,
+  size: Size,
+): Promise<NonNullable<GenerationRecord["crop"]>> {
+  const { data, info } = await sharp(bytes)
+    .removeAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const { width: w, height: h } = size;
+  if (w > info.width || h > info.height)
+    throw new Error("seamlessCrop is larger than the candidate");
+  const at = (x: number, y: number, c: number): number =>
+    data[(y * info.width + x) * info.channels + c] ?? 0;
+  const diff = (ax: number, ay: number, bx: number, by: number): number =>
+    Math.abs(at(ax, ay, 0) - at(bx, by, 0)) +
+    Math.abs(at(ax, ay, 1) - at(bx, by, 1)) +
+    Math.abs(at(ax, ay, 2) - at(bx, by, 2));
+  let best = { left: 0, top: 0, cost: Number.POSITIVE_INFINITY };
+  for (let top = 0; top + h <= info.height; top += 1)
+    for (let left = 0; left + w <= info.width; left += 1) {
+      let cost = 0;
+      // Tiled, the right column touches the left column and the bottom row
+      // touches the top row: sum the colour step across both seams.
+      for (let y = top; y < top + h; y += 1)
+        cost += diff(left + w - 1, y, left, y);
+      for (let x = left; x < left + w; x += 1)
+        cost += diff(x, top + h - 1, x, top);
+      if (cost < best.cost) best = { left, top, cost };
+    }
+  return {
+    left: best.left,
+    top: best.top,
+    width: w,
+    height: h,
+    seamCost: Number((best.cost / (3 * (w + h))).toFixed(3)),
+  };
+}
+
 async function select(
   id: string,
   candidate: string,
@@ -668,19 +795,39 @@ async function select(
   const index = candidate === "-" ? null : Number.parseInt(candidate, 10);
   if (status === "ACCEPTED" && index === null)
     throw new Error("An accepted verdict must name a candidate");
-  let output: Pick<GenerationRecord, "output" | "outputSha256"> = {};
+  let output: Pick<GenerationRecord, "output" | "outputSha256" | "crop"> = {};
   const superseded: string[] = [];
   if (status === "ACCEPTED" && index !== null) {
-    const bytes = await candidateImage(record, index);
+    const recipe = (await loadManifest()).recipes.find(
+      (candidate) => candidate.id === id,
+    );
+    let bytes = await candidateImage(record, index);
+    let crop: GenerationRecord["crop"];
+    if (recipe?.seamlessCrop !== undefined) {
+      crop = await bestSeamlessWindow(bytes, recipe.seamlessCrop);
+      bytes = await sharp(bytes)
+        .extract({
+          left: crop.left,
+          top: crop.top,
+          width: crop.width,
+          height: crop.height,
+        })
+        .png({ compressionLevel: 9 })
+        .toBuffer();
+    }
     const file = path.join(
       STUDY_ROOT,
       "accepted",
       record.request.style,
-      `${record.request.subject}-${record.request.target}.png`,
+      `${recipe?.acceptAs ?? record.request.subject}-${record.request.target}.png`,
     );
     await mkdir(path.dirname(file), { recursive: true });
     await writeFile(file, bytes);
-    output = { output: relative(file), outputSha256: sha256(bytes) };
+    output = {
+      output: relative(file),
+      outputSha256: sha256(bytes),
+      ...(crop === undefined ? {} : { crop }),
+    };
     for (const other of Object.values(records.records)) {
       if (
         other.id !== id &&
@@ -766,14 +913,21 @@ async function plan(): Promise<void> {
 function withoutOutput(record: GenerationRecord): GenerationRecord {
   return Object.fromEntries(
     Object.entries(record).filter(
-      ([key]) => key !== "output" && key !== "outputSha256",
+      ([key]) => key !== "output" && key !== "outputSha256" && key !== "crop",
     ),
   ) as unknown as GenerationRecord;
 }
 
 async function main(): Promise<void> {
-  const [command, first = "", second = "", third = "", ...rest] =
-    process.argv.slice(2);
+  let args = process.argv.slice(2);
+  if (args[0] === "--manifest") {
+    if (!args[1]) throw new Error("--manifest needs a path");
+    MANIFEST = path.resolve(ROOT, args[1]);
+    args = args.slice(2);
+  }
+  // Resolve the study root before any command touches records.
+  await loadManifest();
+  const [command, first = "", second = "", third = "", ...rest] = args;
   if (command === "plan") return plan();
   if (command === "generate" && first)
     return generate([first, second, third, ...rest].filter(Boolean));

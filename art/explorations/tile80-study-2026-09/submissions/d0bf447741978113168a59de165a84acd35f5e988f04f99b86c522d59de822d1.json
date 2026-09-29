@@ -1,0 +1,25 @@
+{
+  "id": "flat-shaded-grass-a",
+  "jobId": "sync-101b6328-1c8d-4851-9e4c-32cb13b16a84",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "style": "flat-shaded",
+    "subject": "grass",
+    "target": "tile80-dpr1",
+    "description": "Style: flat-shaded cartoon game terrain tile, flat colour fills with no gradients, two or three greens only, low detail, simple graphic shapes. Subject: one seamless tileable square grass terrain texture for a strategy-game map: an even bright fresh green meadow filling the entire image edge to edge, a few small grass tufts scattered evenly, no single focal object. The left edge continues into the right edge and the top edge continues into the bottom edge, so copies placed side by side join without any visible seam. Straight top-down view of flat ground, the texture fills the whole square canvas, no perspective, no horizon. Must not include: border, frame, outline around the square, vignette, dark corners, light spot, lighting gradient, path, road, water, rocks, flowers, trees, buildings, characters, text, perspective, horizon, red; gradients, dithering, texture, high detail.",
+    "prompt": "Style: flat-shaded cartoon game terrain tile, flat colour fills with no gradients, two or three greens only, low detail, simple graphic shapes. Subject: one seamless tileable square grass terrain texture for a strategy-game map: an even bright fresh green meadow filling the entire image edge to edge, a few small grass tufts scattered evenly, no single focal object. The left edge continues into the right edge and the top edge continues into the bottom edge, so copies placed side by side join without any visible seam. Straight top-down view of flat ground, the texture fills the whole square canvas, no perspective, no horizon.",
+    "negativePrompt": "border, frame, outline around the square, vignette, dark corners, light spot, lighting gradient, path, road, water, rocks, flowers, trees, buildings, characters, text, perspective, horizon, red; gradients, dithering, texture, high detail",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 30507,
+    "noBackground": false,
+    "options": {
+      "shading": "flat shading",
+      "detail": "low detail",
+      "view": "high top-down"
+    }
+  }
+}

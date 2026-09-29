@@ -1,0 +1,43 @@
+{
+  "id": "flat-shaded-marksman-b",
+  "jobId": "sync-0d02c35b-bba2-4393-9b65-6ad9ef6fb314",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "style": "flat-shaded",
+    "subject": "marksman",
+    "target": "tile80-dpr1",
+    "description": "Style: flat-shaded cartoon game sprite, flat colour fills with no gradients, single dark outline, low detail, simple graphic shapes, clean readable silhouette. Subject: one chunky cute marksman unit (a basic archer) for a playful turn-based strategy game, big head and short sturdy body, bright red pointed hood, big tall wooden longbow held upright in the left hand with the string visible, quiver of arrows on the back, bright red tunic covering the torso, brown boots, both feet visible, no shield, no sword, no helmet, standing ready pose, strong readable silhouette clearly different from a sword fighter. The boots are the lowest thing in the image. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, terrain, soil, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; gradients, dithering, texture, high detail.",
+    "prompt": "Style: flat-shaded cartoon game sprite, flat colour fills with no gradients, single dark outline, low detail, simple graphic shapes, clean readable silhouette. Subject: one chunky cute marksman unit (a basic archer) for a playful turn-based strategy game, big head and short sturdy body, bright red pointed hood, big tall wooden longbow held upright in the left hand with the string visible, quiver of arrows on the back, bright red tunic covering the torso, brown boots, both feet visible, no shield, no sword, no helmet, standing ready pose, strong readable silhouette clearly different from a sword fighter. The boots are the lowest thing in the image. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, terrain, soil, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; gradients, dithering, texture, high detail",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 30504,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "shading": "flat shading",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    }
+  },
+  "submittedAt": "2026-09-29T08:47:27.018Z",
+  "candidateCount": 1,
+  "candidateSize": {
+    "width": 56,
+    "height": 80
+  },
+  "rawSheet": "art/explorations/tile80-study-2026-09/raw/flat-shaded-marksman-b.png",
+  "rawSheetSha256": "82aca0902fbb99e17a4c02122cf5ea0b1d84a835e4aabc99f6c9a7d82760ff52",
+  "completedAt": "2026-09-29T08:47:27.030Z",
+  "usageUsd": 0.006517267836464776,
+  "review": {
+    "status": "REJECTED",
+    "candidate": null,
+    "note": "Bow is a thin straight stick; weak archer silhouette.",
+    "reviewedAt": "2026-09-29T09:15:58.674Z"
+  }
+}

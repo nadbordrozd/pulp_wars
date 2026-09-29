@@ -1,0 +1,40 @@
+{
+  "id": "bold-chibi-field-a",
+  "jobId": "sync-8315c82e-efbe-44f1-a39a-990183170200",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "style": "bold-chibi",
+    "subject": "field",
+    "target": "tile80-dpr1",
+    "description": "Style: bold cartoon game terrain, flat colours with one shadow tone, low detail, chunky simple grass tufts with dark edges. Subject: a wide flat meadow of short lawn grass seen from directly above, one even fresh green base colour with small darker grass tufts scattered evenly and sparsely all over, the same everywhere, nothing else. Straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Must not include: border, frame, hedge, bushes, vignette, dark corners, light spot, lighting gradient, path, road, water, rocks, stones, flowers, trees, buildings, characters, people, text, perspective, horizon, red; thin outline, tiny details, gradients, noise.",
+    "prompt": "Style: bold cartoon game terrain, flat colours with one shadow tone, low detail, chunky simple grass tufts with dark edges. Subject: a wide flat meadow of short lawn grass seen from directly above, one even fresh green base colour with small darker grass tufts scattered evenly and sparsely all over, the same everywhere, nothing else. Straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient.",
+    "negativePrompt": "border, frame, hedge, bushes, vignette, dark corners, light spot, lighting gradient, path, road, water, rocks, stones, flowers, trees, buildings, characters, people, text, perspective, horizon, red; thin outline, tiny details, gradients, noise",
+    "requestSize": {
+      "width": 160,
+      "height": 160
+    },
+    "seed": 30533,
+    "noBackground": false,
+    "options": {
+      "detail": "low detail",
+      "view": "high top-down"
+    }
+  },
+  "submittedAt": "2026-09-29T09:06:18.774Z",
+  "candidateCount": 1,
+  "candidateSize": {
+    "width": 160,
+    "height": 160
+  },
+  "rawSheet": "art/explorations/tile80-study-2026-09/raw/bold-chibi-field-a.png",
+  "rawSheetSha256": "88f51dce2c3158c4d993d25d659dd746610d15662bdd29de778b8c0e41b9d073",
+  "completedAt": "2026-09-29T09:06:18.827Z",
+  "usageUsd": 0.010252242141299779,
+  "review": {
+    "status": "REJECTED",
+    "candidate": null,
+    "note": "Framed tile with a dark hedge border, dirt band and a dark patch; not a clean lawn.",
+    "reviewedAt": "2026-09-29T09:16:38.928Z"
+  }
+}

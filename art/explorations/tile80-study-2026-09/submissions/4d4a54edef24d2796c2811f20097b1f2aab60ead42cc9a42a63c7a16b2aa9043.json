@@ -1,0 +1,33 @@
+{
+  "id": "flat-shaded-city-h",
+  "jobId": "0ddce739-af30-4fbc-9a09-9cb45472f1e5",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "style": "flat-shaded",
+    "subject": "city-cutout",
+    "target": "tile80-dpr1",
+    "description": "Style: flat-shaded cartoon game sprite, flat colour fills with no gradients, single dark outline, low detail, simple graphic shapes, clean readable silhouette. Subject: a small cluster of chunky medieval buildings for a strategy game: one tall round grey stone tower with a big red banner flag on top, and three small cottages with bright red roofs pressed tightly around the foot of the tower, one short stretch of stone wall in front. The buildings stand directly on the empty transparent background: the bottom edges of their own walls are the lowest pixels, with nothing under them. Big and filling most of the image. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: text, letters, numbers, UI, frame, people, crowd, cropped subject, blur, low-poly 3D, photorealism; gradients, dithering, texture, high detail.",
+    "prompt": "Style: flat-shaded cartoon game sprite, flat colour fills with no gradients, single dark outline, low detail, simple graphic shapes, clean readable silhouette. Subject: a small cluster of chunky medieval buildings for a strategy game: one tall round grey stone tower with a big red banner flag on top, and three small cottages with bright red roofs pressed tightly around the foot of the tower, one short stretch of stone wall in front. The buildings stand directly on the empty transparent background: the bottom edges of their own walls are the lowest pixels, with nothing under them. Big and filling most of the image. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "text, letters, numbers, UI, frame, people, crowd, cropped subject, blur, low-poly 3D, photorealism; gradients, dithering, texture, high detail",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 30542,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "shading": "flat shading",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "editInstruction": "Remove all ground: erase the grass plate, soil slab, round disc or platform under the town, so the houses, wall and tower stand directly on a transparent background with nothing at all under them. Keep the buildings, red roofs, red flag, grey stone, outline and art style exactly the same.",
+    "sourceCandidate": {
+      "recipe": "flat-shaded-city-e",
+      "candidate": 0,
+      "sha256": "a24dc6855e844c298396510ec379ecbe3cdd4c3f16c62f79eb6fcb6ef4fd842b"
+    }
+  }
+}

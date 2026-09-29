@@ -1,0 +1,41 @@
+{
+  "id": "flat-shaded-lawn-b",
+  "jobId": "sync-d099d5c0-a809-48f6-b22c-77f3f179bd47",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "style": "flat-shaded",
+    "subject": "lawn",
+    "target": "tile80-dpr1",
+    "description": "Style: flat-shaded cartoon game sprite, flat colour fills with no gradients, single dark outline, low detail, simple graphic shapes, clean readable silhouette. Subject: a close-up patch of short flat lawn grass seen from directly above, one even bright fresh green base colour with small darker grass tufts scattered evenly and sparsely everywhere. The lawn is cropped out of a much larger field: it continues past all four edges of the image, so there is no border, no frame, no edge decoration and no object in the middle. Straight top-down view of flat ground filling the whole canvas, no perspective, no horizon, no lighting gradient. Must not include: border, frame, hedge, bushes, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, water, rocks, stones, flowers, trees, buildings, characters, text, perspective, horizon, red, tile edge, square island; gradients, dithering, texture, high detail.",
+    "prompt": "Style: flat-shaded cartoon game sprite, flat colour fills with no gradients, single dark outline, low detail, simple graphic shapes, clean readable silhouette. Subject: a close-up patch of short flat lawn grass seen from directly above, one even bright fresh green base colour with small darker grass tufts scattered evenly and sparsely everywhere. The lawn is cropped out of a much larger field: it continues past all four edges of the image, so there is no border, no frame, no edge decoration and no object in the middle. Straight top-down view of flat ground filling the whole canvas, no perspective, no horizon, no lighting gradient.",
+    "negativePrompt": "border, frame, hedge, bushes, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, water, rocks, stones, flowers, trees, buildings, characters, text, perspective, horizon, red, tile edge, square island; gradients, dithering, texture, high detail",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 30528,
+    "noBackground": false,
+    "options": {
+      "shading": "flat shading",
+      "detail": "low detail",
+      "view": "high top-down"
+    }
+  },
+  "submittedAt": "2026-09-29T09:01:24.016Z",
+  "candidateCount": 1,
+  "candidateSize": {
+    "width": 80,
+    "height": 80
+  },
+  "rawSheet": "art/explorations/tile80-study-2026-09/raw/flat-shaded-lawn-b.png",
+  "rawSheetSha256": "fa7795b341ec1197f2f3de24a4f25d2488b562ecbdbd7c747a365d8e54153496",
+  "completedAt": "2026-09-29T09:01:24.046Z",
+  "usageUsd": 0.00724632904264662,
+  "review": {
+    "status": "REJECTED",
+    "candidate": null,
+    "note": "Radial vignette; 3x3 repeat shows circles.",
+    "reviewedAt": "2026-09-29T09:16:09.544Z"
+  }
+}

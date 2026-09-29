@@ -1,0 +1,45 @@
+{
+  "id": "flat-shaded-marksman-c",
+  "jobId": "sync-91427d09-efd9-4bba-b87f-a9254f1c8864",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "style": "flat-shaded",
+    "subject": "marksman",
+    "target": "tile80-dpr1",
+    "description": "Style: flat-shaded cartoon game sprite, flat colour fills with no gradients, single dark outline, low detail, simple graphic shapes, clean readable silhouette. Subject: one chunky cute marksman unit (a basic archer) for a playful turn-based strategy game, big head and short sturdy body, bright red pointed hood, big tall wooden longbow held upright in the left hand with the string visible, quiver of arrows on the back, bright red tunic covering the torso, brown boots, both feet visible, no shield, no sword, no helmet, standing ready pose, strong readable silhouette clearly different from a sword fighter. The boots are the lowest thing in the image. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. The bow is a big clearly curved wooden longbow as tall as the whole unit, held out to the side at arm's length so its curved shape and string stand apart from the body. Must not include: pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, terrain, soil, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; gradients, dithering, texture, high detail.",
+    "prompt": "Style: flat-shaded cartoon game sprite, flat colour fills with no gradients, single dark outline, low detail, simple graphic shapes, clean readable silhouette. Subject: one chunky cute marksman unit (a basic archer) for a playful turn-based strategy game, big head and short sturdy body, bright red pointed hood, big tall wooden longbow held upright in the left hand with the string visible, quiver of arrows on the back, bright red tunic covering the torso, brown boots, both feet visible, no shield, no sword, no helmet, standing ready pose, strong readable silhouette clearly different from a sword fighter. The boots are the lowest thing in the image. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. The bow is a big clearly curved wooden longbow as tall as the whole unit, held out to the side at arm's length so its curved shape and string stand apart from the body.",
+    "negativePrompt": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, terrain, soil, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; gradients, dithering, texture, high detail",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 30525,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "shading": "flat shading",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    }
+  },
+  "submittedAt": "2026-09-29T09:00:07.526Z",
+  "candidateCount": 1,
+  "candidateSize": {
+    "width": 56,
+    "height": 80
+  },
+  "rawSheet": "art/explorations/tile80-study-2026-09/raw/flat-shaded-marksman-c.png",
+  "rawSheetSha256": "c85ee8b440853215b316a9e26367aae61b0431752ac335e67b90ab43c4145416",
+  "completedAt": "2026-09-29T09:00:07.550Z",
+  "usageUsd": 0.008058999591403538,
+  "output": "art/explorations/tile80-study-2026-09/accepted/flat-shaded/marksman-tile80-dpr1.png",
+  "outputSha256": "c85ee8b440853215b316a9e26367aae61b0431752ac335e67b90ab43c4145416",
+  "review": {
+    "status": "ACCEPTED",
+    "candidate": 0,
+    "note": "Clear curved longbow held out with string, quiver on back, red hood and tunic, no shield, no base.",
+    "reviewedAt": "2026-09-29T09:15:59.495Z"
+  }
+}

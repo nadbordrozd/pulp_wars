@@ -1,0 +1,104 @@
+{
+  "bead": "pulp_wars-305",
+  "tileCssPx": 80,
+  "note": "DPR 1 masters; demo enlargements are integer nearest-neighbour. Owner B remaps the red mask (hue <= 14 or >= 340, saturation >= 0.5, value >= 0.3) to hue 178.",
+  "styles": {
+    "flat-shaded": {
+      "city": {
+        "file": "art/explorations/tile80-study-2026-09/accepted/flat-shaded/city-tile80-dpr1.png",
+        "sha256": "088f4bc0d87a5f91f6e3e3983ee349306cbe4bc53092729f2fe896cbaa5d9277",
+        "ownerMaskShare": 0.283,
+        "width": 72,
+        "height": 72
+      },
+      "fighter": {
+        "file": "art/explorations/tile80-study-2026-09/accepted/flat-shaded/fighter-tile80-dpr1.png",
+        "sha256": "57ec76c76c17e3817e8b58e9fd272f55e36aaa5ebacb011ae05768a35d579450",
+        "ownerMaskShare": 0.314,
+        "width": 56,
+        "height": 80
+      },
+      "marksman": {
+        "file": "art/explorations/tile80-study-2026-09/accepted/flat-shaded/marksman-tile80-dpr1.png",
+        "sha256": "c85ee8b440853215b316a9e26367aae61b0431752ac335e67b90ab43c4145416",
+        "ownerMaskShare": 0.375,
+        "width": 56,
+        "height": 80
+      },
+      "grass": {
+        "file": "art/explorations/tile80-study-2026-09/accepted/flat-shaded/grass-tile80-dpr1.png",
+        "sha256": "27af8694e135f39c7f102d403baae29098be93e6a1376e3d57f5a5dc1b1ab36a",
+        "ownerMaskShare": 0,
+        "width": 80,
+        "height": 80
+      }
+    },
+    "bold-chibi": {
+      "city": {
+        "file": "art/explorations/tile80-study-2026-09/accepted/bold-chibi/city-tile80-dpr1.png",
+        "sha256": "66b526198400b53d9b00069fbb9ae03c425a81d39fe909a393aa09922d07449e",
+        "ownerMaskShare": 0.255,
+        "width": 72,
+        "height": 72
+      },
+      "fighter": {
+        "file": "art/explorations/tile80-study-2026-09/accepted/bold-chibi/fighter-tile80-dpr1.png",
+        "sha256": "0ea481abc9bcd6d405062ee3be8ff0926828ab8e30378042d9373dce26821c01",
+        "ownerMaskShare": 0.215,
+        "width": 56,
+        "height": 80
+      },
+      "marksman": {
+        "file": "art/explorations/tile80-study-2026-09/accepted/bold-chibi/marksman-tile80-dpr1.png",
+        "sha256": "afba072c12d1e12fcbced19b696576bdf61da9c44c8a22acbbcd8a1d3cd64dc1",
+        "ownerMaskShare": 0.522,
+        "width": 56,
+        "height": 80
+      },
+      "grass": {
+        "file": "art/explorations/tile80-study-2026-09/accepted/bold-chibi/grass-tile80-dpr1.png",
+        "sha256": "8d030ba9b07889b119436f11e2ae62d64477169d6a0a07148372dced88cb2b45",
+        "ownerMaskShare": 0,
+        "width": 80,
+        "height": 80
+      }
+    }
+  },
+  "demo": [
+    {
+      "file": "art/explorations/tile80-study-2026-09/demo/sprites-flat-shaded.png",
+      "width": 1480,
+      "height": 1920
+    },
+    {
+      "file": "art/explorations/tile80-study-2026-09/demo/phone-flat-shaded.png",
+      "width": 1170,
+      "height": 2532
+    },
+    {
+      "file": "art/explorations/tile80-study-2026-09/demo/desktop-flat-shaded.png",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "art/explorations/tile80-study-2026-09/demo/sprites-bold-chibi.png",
+      "width": 1480,
+      "height": 1920
+    },
+    {
+      "file": "art/explorations/tile80-study-2026-09/demo/phone-bold-chibi.png",
+      "width": 1170,
+      "height": 2532
+    },
+    {
+      "file": "art/explorations/tile80-study-2026-09/demo/desktop-bold-chibi.png",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "art/explorations/tile80-study-2026-09/demo/phone-compare.png",
+      "width": 2340,
+      "height": 2532
+    }
+  ]
+}

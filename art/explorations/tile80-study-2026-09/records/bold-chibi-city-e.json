@@ -1,0 +1,42 @@
+{
+  "id": "bold-chibi-city-e",
+  "jobId": "sync-f6dfb740-c89d-4d4b-b9f4-669dde6ed0e0",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "style": "bold-chibi",
+    "subject": "city-cutout",
+    "target": "tile80-dpr1",
+    "description": "Style: bold chunky chibi game sprite, oversized chunky shapes, thick single-colour dark outline, flat colours with one shadow tone, low detail, big simple shapes that fill the canvas. Subject: a small cluster of chunky medieval buildings for a strategy game: one tall round grey stone tower with a big red banner flag on top, and three small cottages with bright red roofs pressed tightly around the foot of the tower, one short stretch of stone wall in front. The buildings stand directly on the empty transparent background: the bottom edges of their own walls are the lowest pixels, with nothing under them. Big and filling most of the image. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: text, letters, numbers, UI, frame, people, crowd, cropped subject, blur, low-poly 3D, photorealism; thin outline, tiny details, gradients, noise.",
+    "prompt": "Style: bold chunky chibi game sprite, oversized chunky shapes, thick single-colour dark outline, flat colours with one shadow tone, low detail, big simple shapes that fill the canvas. Subject: a small cluster of chunky medieval buildings for a strategy game: one tall round grey stone tower with a big red banner flag on top, and three small cottages with bright red roofs pressed tightly around the foot of the tower, one short stretch of stone wall in front. The buildings stand directly on the empty transparent background: the bottom edges of their own walls are the lowest pixels, with nothing under them. Big and filling most of the image. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "text, letters, numbers, UI, frame, people, crowd, cropped subject, blur, low-poly 3D, photorealism; thin outline, tiny details, gradients, noise",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 30537,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    }
+  },
+  "submittedAt": "2026-09-29T09:08:29.524Z",
+  "candidateCount": 1,
+  "candidateSize": {
+    "width": 72,
+    "height": 72
+  },
+  "rawSheet": "art/explorations/tile80-study-2026-09/raw/bold-chibi-city-e.png",
+  "rawSheetSha256": "17225727cfd1bec49a54d0277a8883cb2832f4af5f8f021790677db74941e6ca",
+  "completedAt": "2026-09-29T09:08:29.551Z",
+  "usageUsd": 0.0086115513642629,
+  "review": {
+    "status": "REJECTED",
+    "candidate": null,
+    "note": "Grass and soil patches under the houses read as a slab (no plate words in the prompt).",
+    "reviewedAt": "2026-09-29T09:16:17.083Z"
+  }
+}

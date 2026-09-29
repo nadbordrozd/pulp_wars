@@ -1,0 +1,50 @@
+{
+  "id": "flat-shaded-field-a",
+  "jobId": "sync-e7dc4a7f-c60c-4550-90d7-936004a9df3a",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "style": "flat-shaded",
+    "subject": "field",
+    "target": "tile80-dpr1",
+    "description": "Style: flat-shaded cartoon game terrain, flat colour fills with no gradients, two or three greens only, low detail, simple graphic shapes. Subject: a wide flat meadow of short lawn grass seen from directly above, one even fresh green base colour with small darker grass tufts scattered evenly and sparsely all over, the same everywhere, nothing else. Straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Must not include: border, frame, hedge, bushes, vignette, dark corners, light spot, lighting gradient, path, road, water, rocks, stones, flowers, trees, buildings, characters, people, text, perspective, horizon, red; gradients, dithering, texture, high detail.",
+    "prompt": "Style: flat-shaded cartoon game terrain, flat colour fills with no gradients, two or three greens only, low detail, simple graphic shapes. Subject: a wide flat meadow of short lawn grass seen from directly above, one even fresh green base colour with small darker grass tufts scattered evenly and sparsely all over, the same everywhere, nothing else. Straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient.",
+    "negativePrompt": "border, frame, hedge, bushes, vignette, dark corners, light spot, lighting gradient, path, road, water, rocks, stones, flowers, trees, buildings, characters, people, text, perspective, horizon, red; gradients, dithering, texture, high detail",
+    "requestSize": {
+      "width": 160,
+      "height": 160
+    },
+    "seed": 30531,
+    "noBackground": false,
+    "options": {
+      "shading": "flat shading",
+      "detail": "low detail",
+      "view": "high top-down"
+    }
+  },
+  "submittedAt": "2026-09-29T09:05:02.169Z",
+  "candidateCount": 1,
+  "candidateSize": {
+    "width": 160,
+    "height": 160
+  },
+  "rawSheet": "art/explorations/tile80-study-2026-09/raw/flat-shaded-field-a.png",
+  "rawSheetSha256": "c0b4027afe579e33071f3beec41e7f96d6106f11b80e003a604386c44d11e722",
+  "completedAt": "2026-09-29T09:05:02.205Z",
+  "usageUsd": 0.006361490699979994,
+  "review": {
+    "status": "ACCEPTED",
+    "candidate": 0,
+    "note": "Flat lime lawn with evenly scattered tufts; 80x80 seamless crop, 3x3 repeat shows no seam.",
+    "reviewedAt": "2026-09-29T09:16:31.733Z"
+  },
+  "output": "art/explorations/tile80-study-2026-09/accepted/flat-shaded/grass-tile80-dpr1.png",
+  "outputSha256": "27af8694e135f39c7f102d403baae29098be93e6a1376e3d57f5a5dc1b1ab36a",
+  "crop": {
+    "left": 33,
+    "top": 39,
+    "width": 80,
+    "height": 80,
+    "seamCost": 1.438
+  }
+}

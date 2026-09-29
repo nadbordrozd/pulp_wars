@@ -1,0 +1,24 @@
+{
+  "id": "bold-chibi-field-c",
+  "jobId": "sync-ff707a31-ec72-44ec-99b0-6c32fef19682",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "style": "bold-chibi",
+    "subject": "field",
+    "target": "tile80-dpr1",
+    "description": "Style: bold cartoon game terrain, flat colours with one shadow tone, low detail, chunky simple grass tufts with dark edges. Subject: a wide flat meadow of short lawn grass seen from directly above, one even fresh green base colour with small darker grass tufts scattered evenly and sparsely all over, the same everywhere, nothing else. Straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Bright saturated fresh spring green, only tiny grass tufts, no bushes, no dirt, no bare soil. Must not include: border, frame, hedge, bushes, vignette, dark corners, light spot, lighting gradient, path, road, water, rocks, stones, flowers, trees, buildings, characters, people, text, perspective, horizon, red; thin outline, tiny details, gradients, noise.",
+    "prompt": "Style: bold cartoon game terrain, flat colours with one shadow tone, low detail, chunky simple grass tufts with dark edges. Subject: a wide flat meadow of short lawn grass seen from directly above, one even fresh green base colour with small darker grass tufts scattered evenly and sparsely all over, the same everywhere, nothing else. Straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Bright saturated fresh spring green, only tiny grass tufts, no bushes, no dirt, no bare soil.",
+    "negativePrompt": "border, frame, hedge, bushes, vignette, dark corners, light spot, lighting gradient, path, road, water, rocks, stones, flowers, trees, buildings, characters, people, text, perspective, horizon, red; thin outline, tiny details, gradients, noise",
+    "requestSize": {
+      "width": 160,
+      "height": 160
+    },
+    "seed": 30539,
+    "noBackground": false,
+    "options": {
+      "detail": "low detail",
+      "view": "high top-down"
+    }
+  }
+}

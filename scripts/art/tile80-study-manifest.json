@@ -1,0 +1,721 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Nonproduction tile-80 style test for bead pulp_wars-305: city, Fighter, Marksman and grass in Flat-shaded (Pixflux) and Bold chibi (Pixen) at an 80 CSS px base tile, generated natively at DPR 1. Not read by art:validate, the asset registry or the runtime.",
+  "studyRoot": "art/explorations/tile80-study-2026-09",
+  "provider": {
+    "name": "PixelLab",
+    "apiBaseUrl": "https://api.pixellab.ai/v2",
+    "credentialEnvironmentVariable": "PIXELLAB_API_KEY",
+    "documentation": "https://api.pixellab.ai/v2/openapi.json"
+  },
+  "camera": "Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it.",
+  "ownerColor": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+  "subjects": {
+    "fighter": "Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. The boots are the lowest thing in the image.",
+    "marksman": "Subject: one chunky cute marksman unit (a basic archer) for a playful turn-based strategy game, big head and short sturdy body, bright red pointed hood, big tall wooden longbow held upright in the left hand with the string visible, quiver of arrows on the back, bright red tunic covering the torso, brown boots, both feet visible, no shield, no sword, no helmet, standing ready pose, strong readable silhouette clearly different from a sword fighter. The boots are the lowest thing in the image.",
+    "city": {
+      "prompt": "Subject: one small fantasy town as a single strategy-game map piece: a compact cluster of four chunky cottages with bright red roofs huddled around one tall round stone keep tower with a big red banner flag on top, short stone ring wall in front, compact footprint, strong readable silhouette. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the stone wall is the lowest thing in the image. The town fills most of the image."
+    },
+    "grass": {
+      "prompt": "Subject: one seamless tileable square grass terrain texture for a strategy-game map: an even bright fresh green meadow filling the entire image edge to edge, a few small grass tufts scattered evenly, no single focal object. The left edge continues into the right edge and the top edge continues into the bottom edge, so copies placed side by side join without any visible seam.",
+      "camera": "Straight top-down view of flat ground, the texture fills the whole square canvas, no perspective, no horizon.",
+      "ownerColor": false,
+      "negativePrompt": "border, frame, outline around the square, vignette, dark corners, light spot, lighting gradient, path, road, water, rocks, flowers, trees, buildings, characters, text, perspective, horizon, red",
+      "noBackground": false,
+      "options": {
+        "view": "high top-down",
+        "direction": null,
+        "outline": null
+      }
+    },
+    "lawn": {
+      "prompt": "Subject: a close-up patch of short flat lawn grass seen from directly above, one even bright fresh green base colour with small darker grass tufts scattered evenly and sparsely everywhere. The lawn is cropped out of a much larger field: it continues past all four edges of the image, so there is no border, no frame, no edge decoration and no object in the middle.",
+      "camera": "Straight top-down view of flat ground filling the whole canvas, no perspective, no horizon, no lighting gradient.",
+      "ownerColor": false,
+      "negativePrompt": "border, frame, hedge, bushes, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, water, rocks, stones, flowers, trees, buildings, characters, text, perspective, horizon, red, tile edge, square island",
+      "noBackground": false,
+      "options": {
+        "view": "high top-down",
+        "direction": null,
+        "outline": null
+      }
+    },
+    "field": {
+      "prompt": "Subject: a wide flat meadow of short lawn grass seen from directly above, one even fresh green base colour with small darker grass tufts scattered evenly and sparsely all over, the same everywhere, nothing else.",
+      "camera": "Straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient.",
+      "ownerColor": false,
+      "negativePrompt": "border, frame, hedge, bushes, vignette, dark corners, light spot, lighting gradient, path, road, water, rocks, stones, flowers, trees, buildings, characters, people, text, perspective, horizon, red",
+      "noBackground": false,
+      "options": {
+        "view": "high top-down",
+        "direction": null,
+        "outline": null
+      }
+    },
+    "city-cutout": {
+      "prompt": "Subject: a small cluster of chunky medieval buildings for a strategy game: one tall round grey stone tower with a big red banner flag on top, and three small cottages with bright red roofs pressed tightly around the foot of the tower, one short stretch of stone wall in front. The buildings stand directly on the empty transparent background: the bottom edges of their own walls are the lowest pixels, with nothing under them. Big and filling most of the image.",
+      "negativePrompt": "text, letters, numbers, UI, frame, people, crowd, cropped subject, blur, low-poly 3D, photorealism"
+    }
+  },
+  "sharedNegativePrompt": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, terrain, soil, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism",
+  "targets": [
+    {
+      "id": "tile80-dpr1",
+      "subject": "fighter",
+      "size": {
+        "width": 56,
+        "height": 80
+      },
+      "view": "80 CSS px tile at zoom 1, DPR 1: unit canvas 56x80 = 70% of tile width and 100% of tile height; x2/x3 nearest for DPR 2/3"
+    },
+    {
+      "id": "tile80-dpr1",
+      "subject": "marksman",
+      "size": {
+        "width": 56,
+        "height": 80
+      },
+      "view": "80 CSS px tile at zoom 1, DPR 1: unit canvas 56x80 = 70% of tile width and 100% of tile height; x2/x3 nearest for DPR 2/3"
+    },
+    {
+      "id": "tile80-dpr1",
+      "subject": "city",
+      "size": {
+        "width": 72,
+        "height": 72
+      },
+      "view": "80 CSS px tile at zoom 1, DPR 1: city canvas 72x72 = 90% of the tile, centred with a 4 px margin; x2/x3 nearest for DPR 2/3"
+    },
+    {
+      "id": "tile80-dpr1",
+      "subject": "grass",
+      "size": {
+        "width": 80,
+        "height": 80
+      },
+      "view": "80 CSS px tile at zoom 1, DPR 1: opaque 80x80 terrain tile; x2/x3 nearest for DPR 2/3"
+    },
+    {
+      "id": "tile80-dpr1",
+      "subject": "lawn",
+      "size": {
+        "width": 80,
+        "height": 80
+      },
+      "view": "80 CSS px tile at zoom 1, DPR 1: opaque 80x80 terrain tile (lawn prompt without the word tile, which produced framed tiles); x2/x3 nearest for DPR 2/3"
+    },
+    {
+      "id": "tile80-dpr1",
+      "subject": "field",
+      "size": {
+        "width": 80,
+        "height": 80
+      },
+      "view": "80 CSS px tile at zoom 1, DPR 1: a 160x160 opaque meadow is generated and the 80x80 window with the best wrap-around seams is cropped (pure crop, no resampling); x2/x3 nearest for DPR 2/3"
+    },
+    {
+      "id": "tile80-dpr1",
+      "subject": "city-cutout",
+      "size": {
+        "width": 72,
+        "height": 72
+      },
+      "view": "80 CSS px tile at zoom 1, DPR 1: city canvas 72x72 = 90% of the tile, centred with a 4 px margin; x2/x3 nearest for DPR 2/3"
+    }
+  ],
+  "styles": [
+    {
+      "id": "flat-shaded",
+      "label": "Flat-shaded cartoon pixel (Pixflux)",
+      "endpoint": "create-image-pixflux",
+      "stylePrompt": "Style: flat-shaded cartoon game sprite, flat colour fills with no gradients, single dark outline, low detail, simple graphic shapes, clean readable silhouette.",
+      "subjectStylePrompts": {
+        "grass": "Style: flat-shaded cartoon game terrain tile, flat colour fills with no gradients, two or three greens only, low detail, simple graphic shapes.",
+        "field": "Style: flat-shaded cartoon game terrain, flat colour fills with no gradients, two or three greens only, low detail, simple graphic shapes."
+      },
+      "negativePrompt": "gradients, dithering, texture, high detail",
+      "options": {
+        "outline": "single color black outline",
+        "shading": "flat shading",
+        "detail": "low detail",
+        "view": "low top-down",
+        "direction": "south-east"
+      }
+    },
+    {
+      "id": "bold-chibi",
+      "label": "Bold chibi pixel (Pixen)",
+      "endpoint": "create-image-pixen",
+      "stylePrompt": "Style: bold chunky chibi game sprite, oversized head and oversized weapon, thick single-colour dark outline, flat colours with one shadow tone, low detail, big simple shapes that fill the canvas.",
+      "subjectStylePrompts": {
+        "city": "Style: bold chunky chibi game sprite, oversized chunky shapes, thick single-colour dark outline, flat colours with one shadow tone, low detail, big simple shapes that fill the canvas.",
+        "grass": "Style: bold chunky cartoon game terrain tile, flat colours with one shadow tone, low detail, big simple shapes, a few chunky grass tufts with dark edges.",
+        "field": "Style: bold cartoon game terrain, flat colours with one shadow tone, low detail, chunky simple grass tufts with dark edges.",
+        "city-cutout": "Style: bold chunky chibi game sprite, oversized chunky shapes, thick single-colour dark outline, flat colours with one shadow tone, low detail, big simple shapes that fill the canvas."
+      },
+      "negativePrompt": "thin outline, tiny details, gradients, noise",
+      "options": {
+        "outline": "single color black outline",
+        "detail": "low detail",
+        "view": "low top-down",
+        "direction": "south-east"
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "flat-shaded-fighter-a",
+      "style": "flat-shaded",
+      "subject": "fighter",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "seed": 30501
+    },
+    {
+      "id": "flat-shaded-fighter-b",
+      "style": "flat-shaded",
+      "subject": "fighter",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "seed": 30502
+    },
+    {
+      "id": "flat-shaded-marksman-a",
+      "style": "flat-shaded",
+      "subject": "marksman",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "seed": 30503
+    },
+    {
+      "id": "flat-shaded-marksman-b",
+      "style": "flat-shaded",
+      "subject": "marksman",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "seed": 30504
+    },
+    {
+      "id": "flat-shaded-city-a",
+      "style": "flat-shaded",
+      "subject": "city",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "seed": 30505
+    },
+    {
+      "id": "flat-shaded-city-b",
+      "style": "flat-shaded",
+      "subject": "city",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "seed": 30506
+    },
+    {
+      "id": "flat-shaded-grass-a",
+      "style": "flat-shaded",
+      "subject": "grass",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "seed": 30507
+    },
+    {
+      "id": "flat-shaded-grass-b",
+      "style": "flat-shaded",
+      "subject": "grass",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "seed": 30508
+    },
+    {
+      "id": "bold-chibi-fighter-a",
+      "style": "bold-chibi",
+      "subject": "fighter",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "seed": 30511
+    },
+    {
+      "id": "bold-chibi-fighter-b",
+      "style": "bold-chibi",
+      "subject": "fighter",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "seed": 30512
+    },
+    {
+      "id": "bold-chibi-marksman-a",
+      "style": "bold-chibi",
+      "subject": "marksman",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "seed": 30513
+    },
+    {
+      "id": "bold-chibi-marksman-b",
+      "style": "bold-chibi",
+      "subject": "marksman",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "seed": 30514
+    },
+    {
+      "id": "bold-chibi-city-a",
+      "style": "bold-chibi",
+      "subject": "city",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "seed": 30515
+    },
+    {
+      "id": "bold-chibi-city-b",
+      "style": "bold-chibi",
+      "subject": "city",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "seed": 30516
+    },
+    {
+      "id": "bold-chibi-grass-a",
+      "style": "bold-chibi",
+      "subject": "grass",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "seed": 30517
+    },
+    {
+      "id": "bold-chibi-grass-b",
+      "style": "bold-chibi",
+      "subject": "grass",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "seed": 30518
+    },
+    {
+      "id": "flat-shaded-city-c",
+      "style": "flat-shaded",
+      "subject": "city",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "seed": 30521,
+      "promptAddendum": "Cut-out sprite: only the houses, wall and tower are drawn, with transparent pixels directly below the wall; no green, no soil, no slab and no platform anywhere.",
+      "options": {
+        "view": "high top-down"
+      },
+      "notes": "Retry: a and b sat on grass plates."
+    },
+    {
+      "id": "flat-shaded-city-d",
+      "style": "flat-shaded",
+      "subject": "city",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "seed": 30522,
+      "promptAddendum": "Cut-out sprite: only the houses, wall and tower are drawn, with transparent pixels directly below the wall; no green, no soil, no slab and no platform anywhere.",
+      "options": {
+        "view": "side"
+      },
+      "notes": "Retry: a and b sat on grass plates."
+    },
+    {
+      "id": "bold-chibi-city-c",
+      "style": "bold-chibi",
+      "subject": "city",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "seed": 30523,
+      "promptAddendum": "Cut-out sprite: only the houses, wall and tower are drawn, with transparent pixels directly below the wall; no green, no soil, no slab and no platform anywhere.",
+      "options": {
+        "view": "high top-down"
+      },
+      "notes": "Retry: a sat on a round disc, b on a stone block."
+    },
+    {
+      "id": "bold-chibi-city-d",
+      "style": "bold-chibi",
+      "subject": "city",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "seed": 30524,
+      "promptAddendum": "Cut-out sprite: only the houses, wall and tower are drawn, with transparent pixels directly below the wall; no green, no soil, no slab and no platform anywhere.",
+      "options": {
+        "view": "side"
+      },
+      "notes": "Retry: a sat on a round disc, b on a stone block."
+    },
+    {
+      "id": "flat-shaded-marksman-c",
+      "style": "flat-shaded",
+      "subject": "marksman",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "seed": 30525,
+      "promptAddendum": "The bow is a big clearly curved wooden longbow as tall as the whole unit, held out to the side at arm's length so its curved shape and string stand apart from the body.",
+      "notes": "Retry: a and b had a thin stick-like bow."
+    },
+    {
+      "id": "flat-shaded-marksman-d",
+      "style": "flat-shaded",
+      "subject": "marksman",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "seed": 30526,
+      "promptAddendum": "The bow is a big clearly curved wooden longbow as tall as the whole unit, held out to the side at arm's length so its curved shape and string stand apart from the body.",
+      "notes": "Retry: a and b had a thin stick-like bow."
+    },
+    {
+      "id": "flat-shaded-lawn-a",
+      "style": "flat-shaded",
+      "subject": "lawn",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "seed": 30527,
+      "notes": "Retry: grass a and b were framed island tiles."
+    },
+    {
+      "id": "flat-shaded-lawn-b",
+      "style": "flat-shaded",
+      "subject": "lawn",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "seed": 30528,
+      "notes": "Retry: grass a and b were framed island tiles."
+    },
+    {
+      "id": "bold-chibi-lawn-a",
+      "style": "bold-chibi",
+      "subject": "lawn",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "seed": 30529,
+      "notes": "Retry: grass a and b were framed island tiles."
+    },
+    {
+      "id": "bold-chibi-lawn-b",
+      "style": "bold-chibi",
+      "subject": "lawn",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "seed": 30530,
+      "notes": "Retry: grass a and b were framed island tiles."
+    },
+    {
+      "id": "flat-shaded-field-a",
+      "style": "flat-shaded",
+      "subject": "field",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "seed": 30531,
+      "acceptAs": "grass",
+      "seamlessCrop": {
+        "width": 80,
+        "height": 80
+      },
+      "notes": "Retry: text-to-image 80x80 tiles came back framed; crop a seamless 80x80 window from a 160x160 meadow."
+    },
+    {
+      "id": "flat-shaded-field-b",
+      "style": "flat-shaded",
+      "subject": "field",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "seed": 30532,
+      "acceptAs": "grass",
+      "seamlessCrop": {
+        "width": 80,
+        "height": 80
+      },
+      "notes": "Retry: text-to-image 80x80 tiles came back framed; crop a seamless 80x80 window from a 160x160 meadow."
+    },
+    {
+      "id": "bold-chibi-field-a",
+      "style": "bold-chibi",
+      "subject": "field",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "seed": 30533,
+      "acceptAs": "grass",
+      "seamlessCrop": {
+        "width": 80,
+        "height": 80
+      },
+      "notes": "Retry: text-to-image 80x80 tiles came back framed; crop a seamless 80x80 window from a 160x160 meadow."
+    },
+    {
+      "id": "bold-chibi-field-b",
+      "style": "bold-chibi",
+      "subject": "field",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "seed": 30534,
+      "acceptAs": "grass",
+      "seamlessCrop": {
+        "width": 80,
+        "height": 80
+      },
+      "notes": "Retry: text-to-image 80x80 tiles came back framed; crop a seamless 80x80 window from a 160x160 meadow."
+    },
+    {
+      "id": "flat-shaded-city-e",
+      "style": "flat-shaded",
+      "subject": "city-cutout",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "seed": 30535,
+      "acceptAs": "city",
+      "options": {
+        "negative_description": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, soil, grass, ground tile"
+      },
+      "notes": "Plate exclusions only in Pixflux's negative_description field, not in the description, to test whether naming a plate primes one."
+    },
+    {
+      "id": "flat-shaded-city-f",
+      "style": "flat-shaded",
+      "subject": "city-cutout",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "seed": 30536,
+      "acceptAs": "city",
+      "promptAddendum": "No pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, soil, grass, ground tile under the buildings.",
+      "options": {
+        "negative_description": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, soil, grass, ground tile"
+      },
+      "notes": "Plate exclusions in both the description and negative_description."
+    },
+    {
+      "id": "bold-chibi-city-e",
+      "style": "bold-chibi",
+      "subject": "city-cutout",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "seed": 30537,
+      "acceptAs": "city",
+      "notes": "No plate words anywhere (Pixen has no negative field), to test whether naming a plate primes one."
+    },
+    {
+      "id": "bold-chibi-city-f",
+      "style": "bold-chibi",
+      "subject": "city-cutout",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "seed": 30538,
+      "acceptAs": "city",
+      "promptAddendum": "No pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, soil, grass, ground tile under the buildings.",
+      "notes": "Plate exclusions in the description."
+    },
+    {
+      "id": "bold-chibi-field-c",
+      "style": "bold-chibi",
+      "subject": "field",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "seed": 30539,
+      "acceptAs": "grass",
+      "seamlessCrop": {
+        "width": 80,
+        "height": 80
+      },
+      "promptAddendum": "Bright saturated fresh spring green, only tiny grass tufts, no bushes, no dirt, no bare soil.",
+      "notes": "Retry: field-b was dull olive with repeated bushes and a dirt patch."
+    },
+    {
+      "id": "bold-chibi-field-d",
+      "style": "bold-chibi",
+      "subject": "field",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "seed": 30540,
+      "acceptAs": "grass",
+      "seamlessCrop": {
+        "width": 80,
+        "height": 80
+      },
+      "promptAddendum": "Bright saturated fresh spring green, only tiny grass tufts, no bushes, no dirt, no bare soil.",
+      "notes": "Retry: field-b was dull olive with repeated bushes and a dirt patch."
+    },
+    {
+      "id": "flat-shaded-city-g",
+      "style": "flat-shaded",
+      "subject": "city-cutout",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "seed": 30541,
+      "endpoint": "edit-image-pixen",
+      "acceptAs": "city",
+      "sourceCandidate": {
+        "recipe": "flat-shaded-city-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass plate, soil slab, round disc or platform under the town, so the houses, wall and tower stand directly on a transparent background with nothing at all under them. Keep the buildings, red roofs, red flag, grey stone, outline and art style exactly the same.",
+      "notes": "Pixen edit to remove the ground plate from flat-shaded-city-a; every text-to-image city came back on a plate, slab or disc."
+    },
+    {
+      "id": "flat-shaded-city-h",
+      "style": "flat-shaded",
+      "subject": "city-cutout",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "seed": 30542,
+      "endpoint": "edit-image-pixen",
+      "acceptAs": "city",
+      "sourceCandidate": {
+        "recipe": "flat-shaded-city-e",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass plate, soil slab, round disc or platform under the town, so the houses, wall and tower stand directly on a transparent background with nothing at all under them. Keep the buildings, red roofs, red flag, grey stone, outline and art style exactly the same.",
+      "notes": "Pixen edit to remove the ground plate from flat-shaded-city-e; every text-to-image city came back on a plate, slab or disc."
+    },
+    {
+      "id": "bold-chibi-city-g",
+      "style": "bold-chibi",
+      "subject": "city-cutout",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "seed": 30543,
+      "endpoint": "edit-image-pixen",
+      "acceptAs": "city",
+      "sourceCandidate": {
+        "recipe": "bold-chibi-city-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass plate, soil slab, round disc or platform under the town, so the houses, wall and tower stand directly on a transparent background with nothing at all under them. Keep the buildings, red roofs, red flag, grey stone, outline and art style exactly the same.",
+      "notes": "Pixen edit to remove the ground plate from bold-chibi-city-a; every text-to-image city came back on a plate, slab or disc."
+    },
+    {
+      "id": "bold-chibi-city-h",
+      "style": "bold-chibi",
+      "subject": "city-cutout",
+      "target": "tile80-dpr1",
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "seed": 30544,
+      "endpoint": "edit-image-pixen",
+      "acceptAs": "city",
+      "sourceCandidate": {
+        "recipe": "bold-chibi-city-e",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass plate, soil slab, round disc or platform under the town, so the houses, wall and tower stand directly on a transparent background with nothing at all under them. Keep the buildings, red roofs, red flag, grey stone, outline and art style exactly the same.",
+      "notes": "Pixen edit to remove the ground plate from bold-chibi-city-e; every text-to-image city came back on a plate, slab or disc."
+    }
+  ]
+}

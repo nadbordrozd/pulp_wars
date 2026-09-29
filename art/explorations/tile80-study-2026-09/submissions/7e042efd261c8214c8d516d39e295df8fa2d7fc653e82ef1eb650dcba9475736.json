@@ -1,0 +1,24 @@
+{
+  "id": "bold-chibi-lawn-b",
+  "jobId": "sync-2c04acbf-0765-418e-870d-edd0415c35ca",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "style": "bold-chibi",
+    "subject": "lawn",
+    "target": "tile80-dpr1",
+    "description": "Style: bold chunky chibi game sprite, oversized head and oversized weapon, thick single-colour dark outline, flat colours with one shadow tone, low detail, big simple shapes that fill the canvas. Subject: a close-up patch of short flat lawn grass seen from directly above, one even bright fresh green base colour with small darker grass tufts scattered evenly and sparsely everywhere. The lawn is cropped out of a much larger field: it continues past all four edges of the image, so there is no border, no frame, no edge decoration and no object in the middle. Straight top-down view of flat ground filling the whole canvas, no perspective, no horizon, no lighting gradient. Must not include: border, frame, hedge, bushes, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, water, rocks, stones, flowers, trees, buildings, characters, text, perspective, horizon, red, tile edge, square island; thin outline, tiny details, gradients, noise.",
+    "prompt": "Style: bold chunky chibi game sprite, oversized head and oversized weapon, thick single-colour dark outline, flat colours with one shadow tone, low detail, big simple shapes that fill the canvas. Subject: a close-up patch of short flat lawn grass seen from directly above, one even bright fresh green base colour with small darker grass tufts scattered evenly and sparsely everywhere. The lawn is cropped out of a much larger field: it continues past all four edges of the image, so there is no border, no frame, no edge decoration and no object in the middle. Straight top-down view of flat ground filling the whole canvas, no perspective, no horizon, no lighting gradient.",
+    "negativePrompt": "border, frame, hedge, bushes, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, water, rocks, stones, flowers, trees, buildings, characters, text, perspective, horizon, red, tile edge, square island; thin outline, tiny details, gradients, noise",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 30530,
+    "noBackground": false,
+    "options": {
+      "detail": "low detail",
+      "view": "high top-down"
+    }
+  }
+}

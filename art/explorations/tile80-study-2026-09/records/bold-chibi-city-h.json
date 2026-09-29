@@ -1,0 +1,47 @@
+{
+  "id": "bold-chibi-city-h",
+  "jobId": "a014d07d-5558-4e72-86ae-b99666fcac4e",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "style": "bold-chibi",
+    "subject": "city-cutout",
+    "target": "tile80-dpr1",
+    "description": "Style: bold chunky chibi game sprite, oversized chunky shapes, thick single-colour dark outline, flat colours with one shadow tone, low detail, big simple shapes that fill the canvas. Subject: a small cluster of chunky medieval buildings for a strategy game: one tall round grey stone tower with a big red banner flag on top, and three small cottages with bright red roofs pressed tightly around the foot of the tower, one short stretch of stone wall in front. The buildings stand directly on the empty transparent background: the bottom edges of their own walls are the lowest pixels, with nothing under them. Big and filling most of the image. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: text, letters, numbers, UI, frame, people, crowd, cropped subject, blur, low-poly 3D, photorealism; thin outline, tiny details, gradients, noise.",
+    "prompt": "Style: bold chunky chibi game sprite, oversized chunky shapes, thick single-colour dark outline, flat colours with one shadow tone, low detail, big simple shapes that fill the canvas. Subject: a small cluster of chunky medieval buildings for a strategy game: one tall round grey stone tower with a big red banner flag on top, and three small cottages with bright red roofs pressed tightly around the foot of the tower, one short stretch of stone wall in front. The buildings stand directly on the empty transparent background: the bottom edges of their own walls are the lowest pixels, with nothing under them. Big and filling most of the image. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "text, letters, numbers, UI, frame, people, crowd, cropped subject, blur, low-poly 3D, photorealism; thin outline, tiny details, gradients, noise",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 30544,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "editInstruction": "Remove all ground: erase the grass plate, soil slab, round disc or platform under the town, so the houses, wall and tower stand directly on a transparent background with nothing at all under them. Keep the buildings, red roofs, red flag, grey stone, outline and art style exactly the same.",
+    "sourceCandidate": {
+      "recipe": "bold-chibi-city-e",
+      "candidate": 0,
+      "sha256": "17225727cfd1bec49a54d0277a8883cb2832f4af5f8f021790677db74941e6ca"
+    }
+  },
+  "submittedAt": "2026-09-29T09:14:12.077Z",
+  "candidateCount": 2,
+  "candidateSize": {
+    "width": 72,
+    "height": 72
+  },
+  "rawSheet": "art/explorations/tile80-study-2026-09/raw/bold-chibi-city-h.png",
+  "rawSheetSha256": "9a5b1b5b99ce699fc2a71b2f4109b53888c06eb86a82a146e217b0990a5f7661",
+  "completedAt": "2026-09-29T09:15:08.833Z",
+  "review": {
+    "status": "REJECTED",
+    "candidate": null,
+    "note": "Plate removed and usable, but the broken wall reads as ruins; g is stronger.",
+    "reviewedAt": "2026-09-29T09:16:19.317Z"
+  }
+}

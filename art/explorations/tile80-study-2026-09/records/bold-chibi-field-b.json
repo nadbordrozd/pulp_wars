@@ -1,0 +1,40 @@
+{
+  "id": "bold-chibi-field-b",
+  "jobId": "sync-fbfb1126-5b2b-47af-86de-f2bccb139634",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "style": "bold-chibi",
+    "subject": "field",
+    "target": "tile80-dpr1",
+    "description": "Style: bold cartoon game terrain, flat colours with one shadow tone, low detail, chunky simple grass tufts with dark edges. Subject: a wide flat meadow of short lawn grass seen from directly above, one even fresh green base colour with small darker grass tufts scattered evenly and sparsely all over, the same everywhere, nothing else. Straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Must not include: border, frame, hedge, bushes, vignette, dark corners, light spot, lighting gradient, path, road, water, rocks, stones, flowers, trees, buildings, characters, people, text, perspective, horizon, red; thin outline, tiny details, gradients, noise.",
+    "prompt": "Style: bold cartoon game terrain, flat colours with one shadow tone, low detail, chunky simple grass tufts with dark edges. Subject: a wide flat meadow of short lawn grass seen from directly above, one even fresh green base colour with small darker grass tufts scattered evenly and sparsely all over, the same everywhere, nothing else. Straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient.",
+    "negativePrompt": "border, frame, hedge, bushes, vignette, dark corners, light spot, lighting gradient, path, road, water, rocks, stones, flowers, trees, buildings, characters, people, text, perspective, horizon, red; thin outline, tiny details, gradients, noise",
+    "requestSize": {
+      "width": 160,
+      "height": 160
+    },
+    "seed": 30534,
+    "noBackground": false,
+    "options": {
+      "detail": "low detail",
+      "view": "high top-down"
+    }
+  },
+  "submittedAt": "2026-09-29T09:07:18.836Z",
+  "candidateCount": 1,
+  "candidateSize": {
+    "width": 160,
+    "height": 160
+  },
+  "rawSheet": "art/explorations/tile80-study-2026-09/raw/bold-chibi-field-b.png",
+  "rawSheetSha256": "346a2572037e735910a7de0239d6327670bfff9d5183b77cd315e6a3ce37fdfa",
+  "completedAt": "2026-09-29T09:07:18.875Z",
+  "usageUsd": 0.010760495397779677,
+  "review": {
+    "status": "REJECTED",
+    "candidate": null,
+    "note": "Seamless crop works, but dull olive with a repeated bush and dirt patch that stands out in a 3x3 repeat.",
+    "reviewedAt": "2026-09-29T09:16:33.246Z"
+  }
+}

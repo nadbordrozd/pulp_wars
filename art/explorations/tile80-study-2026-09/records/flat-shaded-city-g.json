@@ -1,0 +1,48 @@
+{
+  "id": "flat-shaded-city-g",
+  "jobId": "f1b906be-2042-4b22-b811-39c645231fd1",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "style": "flat-shaded",
+    "subject": "city-cutout",
+    "target": "tile80-dpr1",
+    "description": "Style: flat-shaded cartoon game sprite, flat colour fills with no gradients, single dark outline, low detail, simple graphic shapes, clean readable silhouette. Subject: a small cluster of chunky medieval buildings for a strategy game: one tall round grey stone tower with a big red banner flag on top, and three small cottages with bright red roofs pressed tightly around the foot of the tower, one short stretch of stone wall in front. The buildings stand directly on the empty transparent background: the bottom edges of their own walls are the lowest pixels, with nothing under them. Big and filling most of the image. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: text, letters, numbers, UI, frame, people, crowd, cropped subject, blur, low-poly 3D, photorealism; gradients, dithering, texture, high detail.",
+    "prompt": "Style: flat-shaded cartoon game sprite, flat colour fills with no gradients, single dark outline, low detail, simple graphic shapes, clean readable silhouette. Subject: a small cluster of chunky medieval buildings for a strategy game: one tall round grey stone tower with a big red banner flag on top, and three small cottages with bright red roofs pressed tightly around the foot of the tower, one short stretch of stone wall in front. The buildings stand directly on the empty transparent background: the bottom edges of their own walls are the lowest pixels, with nothing under them. Big and filling most of the image. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "text, letters, numbers, UI, frame, people, crowd, cropped subject, blur, low-poly 3D, photorealism; gradients, dithering, texture, high detail",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 30541,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "shading": "flat shading",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "editInstruction": "Remove all ground: erase the grass plate, soil slab, round disc or platform under the town, so the houses, wall and tower stand directly on a transparent background with nothing at all under them. Keep the buildings, red roofs, red flag, grey stone, outline and art style exactly the same.",
+    "sourceCandidate": {
+      "recipe": "flat-shaded-city-a",
+      "candidate": 0,
+      "sha256": "0af689e34ec492943f413a9ad6bd236005678e63ed6f5a23409aa7f95e8f9aeb"
+    }
+  },
+  "submittedAt": "2026-09-29T09:11:50.042Z",
+  "candidateCount": 2,
+  "candidateSize": {
+    "width": 72,
+    "height": 72
+  },
+  "rawSheet": "art/explorations/tile80-study-2026-09/raw/flat-shaded-city-g.png",
+  "rawSheetSha256": "5e6be84c5c64059641db433ad356d1e25278e4221134c6c2afc49060f2794080",
+  "completedAt": "2026-09-29T09:12:22.373Z",
+  "review": {
+    "status": "REJECTED",
+    "candidate": null,
+    "note": "Plate removed, but a fringe of green grass pixels remains along the wall feet; h is cleaner.",
+    "reviewedAt": "2026-09-29T09:16:05.709Z"
+  }
+}

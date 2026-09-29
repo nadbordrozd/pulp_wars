@@ -1,0 +1,41 @@
+{
+  "id": "flat-shaded-grass-a",
+  "jobId": "sync-101b6328-1c8d-4851-9e4c-32cb13b16a84",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "style": "flat-shaded",
+    "subject": "grass",
+    "target": "tile80-dpr1",
+    "description": "Style: flat-shaded cartoon game terrain tile, flat colour fills with no gradients, two or three greens only, low detail, simple graphic shapes. Subject: one seamless tileable square grass terrain texture for a strategy-game map: an even bright fresh green meadow filling the entire image edge to edge, a few small grass tufts scattered evenly, no single focal object. The left edge continues into the right edge and the top edge continues into the bottom edge, so copies placed side by side join without any visible seam. Straight top-down view of flat ground, the texture fills the whole square canvas, no perspective, no horizon. Must not include: border, frame, outline around the square, vignette, dark corners, light spot, lighting gradient, path, road, water, rocks, flowers, trees, buildings, characters, text, perspective, horizon, red; gradients, dithering, texture, high detail.",
+    "prompt": "Style: flat-shaded cartoon game terrain tile, flat colour fills with no gradients, two or three greens only, low detail, simple graphic shapes. Subject: one seamless tileable square grass terrain texture for a strategy-game map: an even bright fresh green meadow filling the entire image edge to edge, a few small grass tufts scattered evenly, no single focal object. The left edge continues into the right edge and the top edge continues into the bottom edge, so copies placed side by side join without any visible seam. Straight top-down view of flat ground, the texture fills the whole square canvas, no perspective, no horizon.",
+    "negativePrompt": "border, frame, outline around the square, vignette, dark corners, light spot, lighting gradient, path, road, water, rocks, flowers, trees, buildings, characters, text, perspective, horizon, red; gradients, dithering, texture, high detail",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 30507,
+    "noBackground": false,
+    "options": {
+      "shading": "flat shading",
+      "detail": "low detail",
+      "view": "high top-down"
+    }
+  },
+  "submittedAt": "2026-09-29T08:48:36.983Z",
+  "candidateCount": 1,
+  "candidateSize": {
+    "width": 80,
+    "height": 80
+  },
+  "rawSheet": "art/explorations/tile80-study-2026-09/raw/flat-shaded-grass-a.png",
+  "rawSheetSha256": "ad32526e3b00e3611092803c669b5f3a433badadd9d5f4f663b76f5f2be896da",
+  "completedAt": "2026-09-29T08:48:36.995Z",
+  "usageUsd": 0.006568860239452786,
+  "review": {
+    "status": "REJECTED",
+    "candidate": null,
+    "note": "Framed island tile with a dark border and hedge corners; 3x3 repeat shows a grid.",
+    "reviewedAt": "2026-09-29T09:16:07.235Z"
+  }
+}

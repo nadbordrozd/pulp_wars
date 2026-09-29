@@ -1,0 +1,45 @@
+{
+  "id": "flat-shaded-fighter-b",
+  "jobId": "sync-d73049f9-bb6f-44a4-9304-97e4d9354005",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "style": "flat-shaded",
+    "subject": "fighter",
+    "target": "tile80-dpr1",
+    "description": "Style: flat-shaded cartoon game sprite, flat colour fills with no gradients, single dark outline, low detail, simple graphic shapes, clean readable silhouette. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. The boots are the lowest thing in the image. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere. Must not include: pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, terrain, soil, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; gradients, dithering, texture, high detail.",
+    "prompt": "Style: flat-shaded cartoon game sprite, flat colour fills with no gradients, single dark outline, low detail, simple graphic shapes, clean readable silhouette. Subject: one chunky cute fighter unit (a basic sword warrior) for a playful turn-based strategy game, big head and short sturdy body, simple rounded steel helmet with a red crest, oversized short sword held up in the right hand, round wooden shield on the left arm, bright red tunic covering the torso, brown boots, both feet visible, standing ready pose, strong readable silhouette. The boots are the lowest thing in the image. Consistent strategy-game camera: three-quarter view looking slightly down, subject faces down-right (south-east), whole subject visible and centered on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance; no other red anywhere.",
+    "negativePrompt": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, terrain, soil, scenery, background, cast shadow on the ground, text, letters, numbers, UI, health bar, selection ring, frame, multiple units, crowd, cropped subject, blur, low-poly 3D, faceted polygons, photorealism; gradients, dithering, texture, high detail",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 30502,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "shading": "flat shading",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    }
+  },
+  "submittedAt": "2026-09-29T08:46:37.386Z",
+  "candidateCount": 1,
+  "candidateSize": {
+    "width": 56,
+    "height": 80
+  },
+  "rawSheet": "art/explorations/tile80-study-2026-09/raw/flat-shaded-fighter-b.png",
+  "rawSheetSha256": "57ec76c76c17e3817e8b58e9fd272f55e36aaa5ebacb011ae05768a35d579450",
+  "completedAt": "2026-09-29T08:46:37.396Z",
+  "usageUsd": 0.0068978551493750675,
+  "output": "art/explorations/tile80-study-2026-09/accepted/flat-shaded/fighter-tile80-dpr1.png",
+  "outputSha256": "57ec76c76c17e3817e8b58e9fd272f55e36aaa5ebacb011ae05768a35d579450",
+  "review": {
+    "status": "ACCEPTED",
+    "candidate": 0,
+    "note": "Clean flat-shaded Fighter: crested helmet, clear sword and round shield, red tunic, no base.",
+    "reviewedAt": "2026-09-29T09:15:57.189Z"
+  }
+}
