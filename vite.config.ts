@@ -1,4 +1,4 @@
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 
 const GITHUB_PAGES_BASE = "/pulp_wars/";
 
@@ -19,5 +19,7 @@ export default defineConfig(({ command }) => ({
   test: {
     environment: "node",
     include: ["tests/**/*.test.ts"],
+    // `.claude/**` holds agent git worktrees (other checkouts of this repo).
+    exclude: [...configDefaults.exclude, ".claude/**"],
   },
 }));
