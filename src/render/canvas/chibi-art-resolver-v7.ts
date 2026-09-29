@@ -26,6 +26,13 @@ export type ChibiResolutionV7 =
       readonly cacheKey: string;
     };
 
+/**
+ * Owner colour for a masked CHIBI piece drawn without an owner, such as an
+ * improvement on a tile outside every city's territory: a neutral warm
+ * stone grey, distinct from the four player colours.
+ */
+export const CHIBI_UNOWNED_OWNER_COLOUR_V7 = "#9c968a";
+
 export interface ChibiArtRequestV7 {
   readonly subject: ArtSubjectV7;
   readonly at: Point;
@@ -159,10 +166,15 @@ export function createChibiArtResolverV7(input: {
       if (source.state === "FAILED") return { kind: "MISSING" };
       if (source.state === "LOADING") return { kind: "LOADING" };
       const baseKey = `chibi:${asset.id}@${choice.density}`;
+      // A masked piece without an owner (an improvement on a tile no city
+      // owns) is recoloured to a neutral stone, never drawn in the raw key.
+      const ownerColor =
+        request.ownerColor ??
+        (asset.ownerMaskUrl === undefined
+          ? undefined
+          : CHIBI_UNOWNED_OWNER_COLOUR_V7);
       const owner =
-        request.ownerColor === undefined
-          ? null
-          : parseHexColourV7(request.ownerColor);
+        ownerColor === undefined ? null : parseHexColourV7(ownerColor);
       if (asset.ownerMaskUrl === undefined || owner === null)
         return {
           kind: "READY",
@@ -172,7 +184,7 @@ export function createChibiArtResolverV7(input: {
           smoothing: choice.smoothing,
           cacheKey: baseKey,
         };
-      const cacheKey = `${baseKey}#${request.ownerColor ?? ""}`;
+      const cacheKey = `${baseKey}#${ownerColor ?? ""}`;
       const cached = recoloured.get(cacheKey);
       if (cached !== undefined)
         return {

@@ -1,0 +1,36 @@
+{
+  "id": "workshop-a-edit-2",
+  "jobId": "c8da5ff1-2dd2-435d-ab13-a3b2038ff3f9",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "4",
+    "asset": "chibi-workshop",
+    "subject": "IMPROVEMENT:WORKSHOP",
+    "faction": "ORIGINAL",
+    "recipeClass": "building",
+    "requestSize": {
+      "width": 80,
+      "height": 88
+    },
+    "seed": 69403,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the green grass and grey stone slab under the house, so the walls and the workbench stand directly on a transparent background with nothing at all under them. Keep the steep red tile roof, the big light steel-grey cogwheel on the gable, the timber-framed walls, the workbench, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the green grass and grey stone slab under the house, so the walls and the workbench stand directly on a transparent background with nothing at all under them. Keep the steep red tile roof, the big light steel-grey cogwheel on the gable, the timber-framed walls, the workbench, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the green grass and grey stone slab under the house, so the walls and the workbench stand directly on a transparent background with nothing at all under them. Keep the steep red tile roof, the big light steel-grey cogwheel on the gable, the timber-framed walls, the workbench, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the green grass and grey stone slab under the house, so the walls and the workbench stand directly on a transparent background with nothing at all under them. Keep the steep red tile roof, the big light steel-grey cogwheel on the gable, the timber-framed walls, the workbench, outline and art style exactly the same.",
+    "source": {
+      "recipe": "workshop-a",
+      "candidate": 0,
+      "sha256": "863d426976bf670b830dbe4340c131a4c771e7481c27503be95b5f4bf5f39cbe"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "windmill-a-edit",
+  "jobId": "1634852f-ad7a-4e07-87d5-dc8c19027fb0",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "4",
+    "asset": "chibi-windmill",
+    "subject": "IMPROVEMENT:WINDMILL",
+    "faction": "ORIGINAL",
+    "recipeClass": "building",
+    "requestSize": {
+      "width": 80,
+      "height": 88
+    },
+    "seed": 69102,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the brown rim and base ring at the bottom of the tower, so the beige cobblestone wall ends at the black outline and nothing is drawn under the tower. Make the brown ring under the roof, the brown sail hub and the door pale straw-yellow birch wood. Keep the red cone roof, the four red cloth sails, the cream tower, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Remove the brown rim and base ring at the bottom of the tower, so the beige cobblestone wall ends at the black outline and nothing is drawn under the tower. Make the brown ring under the roof, the brown sail hub and the door pale straw-yellow birch wood. Keep the red cone roof, the four red cloth sails, the cream tower, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Remove the brown rim and base ring at the bottom of the tower, so the beige cobblestone wall ends at the black outline and nothing is drawn under the tower. Make the brown ring under the roof, the brown sail hub and the door pale straw-yellow birch wood. Keep the red cone roof, the four red cloth sails, the cream tower, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Remove the brown rim and base ring at the bottom of the tower, so the beige cobblestone wall ends at the black outline and nothing is drawn under the tower. Make the brown ring under the roof, the brown sail hub and the door pale straw-yellow birch wood. Keep the red cone roof, the four red cloth sails, the cream tower, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "windmill-a",
+      "candidate": 0,
+      "sha256": "4707962165ddf7a11c01dafe1e452a017000bf2002acd48159e6c8bf09fdc29f"
+    }
+  }
+}

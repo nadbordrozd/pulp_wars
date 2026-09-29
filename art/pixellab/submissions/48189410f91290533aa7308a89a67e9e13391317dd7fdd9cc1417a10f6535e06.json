@@ -1,0 +1,36 @@
+{
+  "id": "forge-a-edit",
+  "jobId": "bdc5f385-11ac-4ef8-bb24-4b0ed26cf132",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "4",
+    "asset": "chibi-forge",
+    "subject": "IMPROVEMENT:FORGE",
+    "faction": "ORIGINAL",
+    "recipeClass": "building",
+    "requestSize": {
+      "width": 80,
+      "height": 88
+    },
+    "seed": 69302,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the yellow stone base slab and its rim under the smithy and the anvil, so it stands directly on a transparent background with nothing at all under it. Keep the red roof, grey chimney and smoke, stone walls, arch with the fire, anvil, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the yellow stone base slab and its rim under the smithy and the anvil, so it stands directly on a transparent background with nothing at all under it. Keep the red roof, grey chimney and smoke, stone walls, arch with the fire, anvil, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the yellow stone base slab and its rim under the smithy and the anvil, so it stands directly on a transparent background with nothing at all under it. Keep the red roof, grey chimney and smoke, stone walls, arch with the fire, anvil, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the yellow stone base slab and its rim under the smithy and the anvil, so it stands directly on a transparent background with nothing at all under it. Keep the red roof, grey chimney and smoke, stone walls, arch with the fire, anvil, outline and art style exactly the same.",
+    "source": {
+      "recipe": "forge-a",
+      "candidate": 0,
+      "sha256": "227218a539787abb894fa38d9195fce66164c70c7be50b91cf00a9bc05f9cc63"
+    }
+  }
+}

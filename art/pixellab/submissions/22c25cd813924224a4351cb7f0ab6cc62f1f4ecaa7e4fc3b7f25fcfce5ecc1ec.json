@@ -1,0 +1,36 @@
+{
+  "id": "patrol-boat-a-edit",
+  "jobId": "602bea79-7bcf-4a3b-9828-bca40f37c344",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "4",
+    "asset": "chibi-patrol-boat",
+    "subject": "UNIT:PATROL_BOAT",
+    "faction": "ORIGINAL",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 69702,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Repaint the whole wooden hull, deck, rail posts and mast in pale straw-yellow birch wood with a slightly darker straw-yellow shade, with no brown or orange anywhere. Keep the big red sail, the red pennant, the light steel bands, the boat shape, outline and art style exactly the same, on a transparent background with nothing under the hull."
+      }
+    ],
+    "prompt": "Repaint the whole wooden hull, deck, rail posts and mast in pale straw-yellow birch wood with a slightly darker straw-yellow shade, with no brown or orange anywhere. Keep the big red sail, the red pennant, the light steel bands, the boat shape, outline and art style exactly the same, on a transparent background with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Repaint the whole wooden hull, deck, rail posts and mast in pale straw-yellow birch wood with a slightly darker straw-yellow shade, with no brown or orange anywhere. Keep the big red sail, the red pennant, the light steel bands, the boat shape, outline and art style exactly the same, on a transparent background with nothing under the hull.",
+    "editInstruction": "Repaint the whole wooden hull, deck, rail posts and mast in pale straw-yellow birch wood with a slightly darker straw-yellow shade, with no brown or orange anywhere. Keep the big red sail, the red pennant, the light steel bands, the boat shape, outline and art style exactly the same, on a transparent background with nothing under the hull.",
+    "source": {
+      "recipe": "patrol-boat-a",
+      "candidate": 0,
+      "sha256": "dc035e7cdaaf20eac1d085b2e6b4ae41338484cfc5ea2de0c1e0f67e33dc5e75"
+    }
+  }
+}

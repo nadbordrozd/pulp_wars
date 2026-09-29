@@ -1,9 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
+import { CHIBI_ART_ASSETS_V7 } from "../../src/assets/chibi-art-manifest";
 import {
   buildChibiArtRegistryV7,
   type ChibiArtAssetV7,
 } from "../../src/assets/chibi-art-v7";
 import {
+  CHIBI_UNOWNED_OWNER_COLOUR_V7,
   createChibiArtResolverV7,
   type ChibiRasterEnvironmentV7,
 } from "../../src/render/canvas/chibi-art-resolver-v7";
@@ -232,5 +234,84 @@ describe("CHIBI art resolver", () => {
     resolver.resolve(request);
     settleAll();
     expect(resolver.resolve(request).kind).toBe("MISSING");
+  });
+
+  it("recolours a masked improvement without an owner to neutral stone, never the raw key", () => {
+    const { env, surfaces, settleAll } = environment();
+    const windmill: ChibiArtAssetV7 = {
+      ...fighter,
+      id: "chibi-test-windmill",
+      subject: "IMPROVEMENT:WINDMILL",
+      assetClass: "BUILDING",
+    };
+    const resolver = createChibiArtResolverV7({
+      environment: env,
+      redraw: vi.fn(),
+      registry: buildChibiArtRegistryV7([windmill]).registry,
+    });
+    const request = {
+      subject: "IMPROVEMENT:WINDMILL" as const,
+      at: { x: 0, y: 0 },
+      deviceScale: 1,
+    };
+    resolver.resolve(request);
+    settleAll();
+    resolver.resolve(request);
+    settleAll();
+    const unowned = resolver.resolve(request);
+    if (unowned.kind !== "READY") throw new Error("windmill not ready");
+    expect(unowned.cacheKey).toBe(
+      `chibi:chibi-test-windmill@1#${CHIBI_UNOWNED_OWNER_COLOUR_V7}`,
+    );
+    const stone = parseHexColourV7(CHIBI_UNOWNED_OWNER_COLOUR_V7);
+    expect([...(surfaces[0]?.pixels.slice(0, 3) ?? [])]).toEqual([
+      stone?.r,
+      stone?.g,
+      stone?.b,
+    ]);
+    // The unmasked pixel keeps its own colour.
+    expect([...(surfaces[0]?.pixels.slice(4, 7) ?? [])]).toEqual([150, 40, 30]);
+  });
+
+  it("draws every registered masked building of every batch in neutral stone on an unowned tile", () => {
+    const buildings = CHIBI_ART_ASSETS_V7.filter(
+      (asset) =>
+        asset.subject.startsWith("IMPROVEMENT:") &&
+        asset.ownerMaskUrl !== undefined,
+    );
+    // Batch 3 (reviewed mask overrides) and batch 4 (auto masks).
+    expect(buildings.map((asset) => asset.subject)).toEqual(
+      expect.arrayContaining([
+        "IMPROVEMENT:FARM",
+        "IMPROVEMENT:PORT",
+        "IMPROVEMENT:MONUMENT",
+        "IMPROVEMENT:WINDMILL",
+        "IMPROVEMENT:SHIPYARD",
+      ]),
+    );
+    const env: ChibiRasterEnvironmentV7 = {
+      loadImage: (_url, settle) => {
+        settle(true);
+        return {} as CanvasImageSource;
+      },
+      readPixels: (_image, width, height) =>
+        new Uint8ClampedArray(width * height * 4),
+      createSurface: () => ({}) as CanvasImageSource,
+    };
+    const resolver = createChibiArtResolverV7({
+      environment: env,
+      redraw: vi.fn(),
+      registry: buildChibiArtRegistryV7(buildings).registry,
+    });
+    for (const asset of buildings) {
+      const unowned = resolver.resolve({
+        subject: asset.subject,
+        at: { x: 0, y: 0 },
+        deviceScale: 1,
+      });
+      expect(unowned.kind === "READY" ? unowned.cacheKey : unowned.kind).toBe(
+        `chibi:${asset.id}@1#${CHIBI_UNOWNED_OWNER_COLOUR_V7}`,
+      );
+    }
   });
 });

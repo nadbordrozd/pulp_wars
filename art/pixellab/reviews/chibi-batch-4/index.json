@@ -1,0 +1,565 @@
+{
+  "batch": "4",
+  "bead": "pulp_wars-67q.9",
+  "title": "Chibi batch 4: Windmill, Sawmill, Forge, Workshop, Market, Shipyard, Patrol Boat, Battleship, embarked transport",
+  "dryRun": false,
+  "faction": "ORIGINAL",
+  "tileCssPx": 80,
+  "owners": {
+    "A": "#f06762",
+    "B": "#28b7a4"
+  },
+  "maskThresholds": {
+    "alphaMin": 128,
+    "owner": {
+      "hue": {
+        "from": 340,
+        "to": 5
+      },
+      "saturationMin": 0.65,
+      "valueMin": 0.3
+    },
+    "redBrown": {
+      "hue": {
+        "from": 5.0001,
+        "to": 15
+      },
+      "saturationMin": 0.45,
+      "valueMin": 0.3
+    },
+    "keyLike": {
+      "hue": {
+        "from": 335,
+        "to": 5
+      },
+      "saturationMin": 0.5,
+      "valueMin": 0.2
+    },
+    "minComponentPixels": 3,
+    "embeddedNeighbourMin": 5,
+    "redBrownMaterialMaxShare": 0.03,
+    "coverage": {
+      "min": 0.15,
+      "targetMin": 0.2,
+      "targetMax": 0.4,
+      "max": 0.55
+    }
+  },
+  "note": "DPR 1 masters; every enlargement is integer nearest-neighbour. Owner colours use the runtime mask recolour.",
+  "assets": [
+    {
+      "id": "chibi-windmill",
+      "subject": "IMPROVEMENT:WINDMILL",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "windmill-a-edit",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-windmill.png",
+        "sha256": "3f0059222128dd5ae4265e318e79c415b2461ff0580528739594824043383a3e",
+        "pixelSha256": "fd6394bad79d256050da879f8d59d07082588687c85b1c181641744b982f2d67",
+        "width": 80,
+        "height": 88
+      },
+      "anchor": {
+        "x": 40,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 16,
+        "groundShare": 0.0643,
+        "footprintWidthShare": 0.7101,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/buildings/chibi-windmill.mask.png",
+        "source": "AUTO",
+        "coverage": 0.2233,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-sawmill",
+      "subject": "IMPROVEMENT:SAWMILL",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "sawmill-b-edit",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-sawmill.png",
+        "sha256": "adde2867032beb2b5881a09598359dba2dc234d76410cde622aced95160ae742",
+        "pixelSha256": "dd41bd5876bf1f9b8f9bf3fad1bd2b81e80c4c801bb78a15e53d1b46ccd71073",
+        "width": 80,
+        "height": 88
+      },
+      "anchor": {
+        "x": 40,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 13,
+        "groundShare": 0.1395,
+        "footprintWidthShare": 0.4286,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/buildings/chibi-sawmill.mask.png",
+        "source": "AUTO",
+        "coverage": 0.3443,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-forge",
+      "subject": "IMPROVEMENT:FORGE",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "forge-a-edit",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-forge.png",
+        "sha256": "0c95687662e9ef45eaa98964cdb08125be144eb60693bc43bc0eff5b478f70f1",
+        "pixelSha256": "02a4094de04fd124c43905dba3732e9981689e1c84c35d4af6b173814bfd0cb0",
+        "width": 80,
+        "height": 88
+      },
+      "anchor": {
+        "x": 40,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 14,
+        "groundShare": 0.2632,
+        "footprintWidthShare": 0.9038,
+        "suspect": true
+      },
+      "mask": {
+        "path": "public/assets/chibi/buildings/chibi-forge.mask.png",
+        "source": "AUTO",
+        "coverage": 0.2158,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-workshop",
+      "subject": "IMPROVEMENT:WORKSHOP",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "workshop-a-edit-2",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-workshop.png",
+        "sha256": "07722906b475e033ffd492cf66ad07c0ad6e970425a2b4abe6af24235e769872",
+        "pixelSha256": "64bd266b9f69f9bb71fd997689efcf4dac8973fa50113a70bb5fd94a928b0f10",
+        "width": 80,
+        "height": 88
+      },
+      "anchor": {
+        "x": 40,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 15,
+        "groundShare": 0.3005,
+        "footprintWidthShare": 0.8462,
+        "suspect": true
+      },
+      "mask": {
+        "path": "public/assets/chibi/buildings/chibi-workshop.mask.png",
+        "source": "AUTO",
+        "coverage": 0.3043,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-market",
+      "subject": "IMPROVEMENT:MARKET",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "market-c-edit-2",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-market.png",
+        "sha256": "0fe40291ed21d0e08f36ab44e11c96752897a7de972171d0d50f89e301747798",
+        "pixelSha256": "e16541b6d8996b7e91d64489208f95d54f2e68501f51d990cd9689dea5fcae2c",
+        "width": 80,
+        "height": 88
+      },
+      "anchor": {
+        "x": 40,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 15,
+        "groundShare": 0.4231,
+        "footprintWidthShare": 0.9394,
+        "suspect": true
+      },
+      "mask": {
+        "path": "public/assets/chibi/buildings/chibi-market.mask.png",
+        "source": "AUTO",
+        "coverage": 0.313,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-shipyard",
+      "subject": "IMPROVEMENT:SHIPYARD",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "shipyard-c-edit-2",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-shipyard.png",
+        "sha256": "c3433c558d6893b91ab2615245562c8d96d68a23cca23976472286c572bfc3ea",
+        "pixelSha256": "2573fdef19142e429c27e676a583b8c5a9cfec27295b600d312509343ff4130b",
+        "width": 80,
+        "height": 88
+      },
+      "anchor": {
+        "x": 40,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 15,
+        "groundShare": 0.3203,
+        "footprintWidthShare": 0.9286,
+        "suspect": true
+      },
+      "mask": {
+        "path": "public/assets/chibi/buildings/chibi-shipyard.mask.png",
+        "source": "AUTO",
+        "coverage": 0.2245,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-patrol-boat",
+      "subject": "UNIT:PATROL_BOAT",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "patrol-boat-a-edit",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-patrol-boat.png",
+        "sha256": "d712c28b91c8ef3e04b9ae6c0f05ae77f27b5f76ae6f7817868a852d92546bd1",
+        "pixelSha256": "d42a02ef5479104b93dece32ed05088e1bb35f974d4a5091d8f788ba02c04493",
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 36,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 15,
+        "groundShare": 0.2593,
+        "footprintWidthShare": 0.8214,
+        "suspect": true
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-patrol-boat.mask.png",
+        "source": "AUTO",
+        "coverage": 0.3549,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-battleship",
+      "subject": "UNIT:BATTLESHIP",
+      "assetClass": "GIANT_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "battleship-d-edit",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-battleship.png",
+        "sha256": "5e25304bde0efd61f1b26773999c39ba85df48ad2e128994a7b1bc7bbc13f5f3",
+        "pixelSha256": "ff65fa580171b0a606b491e936fae890c40c7fc83739f1ba2a3e846c430f7e0d",
+        "width": 88,
+        "height": 96
+      },
+      "anchor": {
+        "x": 44,
+        "y": 56
+      },
+      "overflow": {
+        "left": 4,
+        "right": 4,
+        "up": 16,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 16,
+        "groundShare": 0.2063,
+        "footprintWidthShare": 0.7714,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-battleship.mask.png",
+        "source": "AUTO",
+        "coverage": 0.3169,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-embarked-transport",
+      "subject": "UNIT:EMBARKED_TRANSPORT",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "embarked-transport-a-edit",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-embarked-transport.png",
+        "sha256": "578a6fc04765643c75b3948088f8a803f4d00d06c0faab0e6a8896e7e55297bb",
+        "pixelSha256": "7884783204ea5150f7faf31524432270b7c081b23fc5b4b66577ff7724c60a3d",
+        "width": 72,
+        "height": 72
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 10,
+        "groundShare": 0.2606,
+        "footprintWidthShare": 0.85,
+        "suspect": true
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-embarked-transport.mask.png",
+        "source": "AUTO",
+        "coverage": 0.2166,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    }
+  ],
+  "images": [
+    {
+      "file": "art/pixellab/reviews/chibi-batch-4/sheet-1x.png",
+      "width": 1042,
+      "height": 1268,
+      "sha256": "02f39c9956af7935189300082b45316f8f6400d22e3248b45b108629cdf4691b"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-4/sheet-x4.png",
+      "width": 2370,
+      "height": 4292,
+      "sha256": "311cd051586a1062ced8d70c2796c7630fbb83db0686d87a3e0812ca2ef4d71f"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-4/phone-mock.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "7295905e5fcd3d5795cfd78dd2f5df47db0b14ef7ee11739a026d2d69aaaf676"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-4/desktop-mock.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "f565062534a3391e608ae619056aaee5a707456ae1808d685d6453999167e3a3"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-4/ingame-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "a3532181c49828a5094966a693349be374565cca124536fa772ef69a7ab0b62b"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-4/ingame-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "cc4d5c3ceb7951c347530d810d751c9bb915b1d86cacaf3ea10a0073ada55399"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-4/ingame-scene-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "19277683939042a21fa882649299287a073ce94b0e752338c315935fe28c3bee"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-4/ingame-scene-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "2d7cf120847f2cb7b5fcd3716afd1596fe69aef4fdeab12ed3e6eed06f6f4d58"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-4/ingame-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "5fdbbb3a329b3ab2c020ba7d513495c4b7eb01710d0dd494e8c730fc98f8aaae"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-4/ingame-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "a980e6b89a285cc2ae3526e98769d5a55d987bb3d7fcd914ec129f8c4706cc0f"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-4/ingame-scene-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "9efe422aeb6e10ecb939498ac82f6360a4a781d8e80dbdd1c6abef97e9565d5c"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-4/ingame-scene-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "ee20fc04f39395968beca56c68886632c44b2ecc520986b82ea88551551e35ac"
+    }
+  ],
+  "captures": {
+    "note": "Captured from the running game with ?art=chibi; subjects without a registered chibi raster still draw their legacy art.",
+    "shots": [
+      {
+        "file": "art/pixellab/reviews/chibi-batch-4/ingame-desktop-zoom-1.png",
+        "viewport": "1440x900 CSS at DPR 1",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-4/ingame-desktop-zoom-0.75.png",
+        "viewport": "1440x900 CSS at DPR 1",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-4/ingame-scene-desktop-zoom-1.png",
+        "viewport": "1440x900 CSS at DPR 1 (synthetic roster)",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-4/ingame-scene-desktop-zoom-0.75.png",
+        "viewport": "1440x900 CSS at DPR 1 (synthetic roster)",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-4/ingame-phone-zoom-1.png",
+        "viewport": "390x844 CSS at DPR 3",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-4/ingame-phone-zoom-0.75.png",
+        "viewport": "390x844 CSS at DPR 3",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-4/ingame-scene-phone-zoom-1.png",
+        "viewport": "390x844 CSS at DPR 3 (synthetic roster)",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-4/ingame-scene-phone-zoom-0.75.png",
+        "viewport": "390x844 CSS at DPR 3 (synthetic roster)",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      }
+    ]
+  },
+  "phoneLinks": "art/pixellab/reviews/chibi-batch-4/phone-links.md"
+}

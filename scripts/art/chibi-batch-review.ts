@@ -16,12 +16,20 @@
  *   desktop-mock.png       exact 1440x900 DPR 1 screenshot, sprites 1:1
  *   ingame-*.png           the real game with ?art=chibi at zoom 1 and 0.75,
  *                          desktop 1440x900 DPR 1 and phone 390x844 DPR 3
- *   ingame-scene-*.png     batch 3 onwards: the synthetic showcase from
- *                          scripts/art/chibi/review-scene-v7.ts (every map
- *                          subject, Roads and Field Defense, two owners)
- *                          drawn by the real board host at zoom 1 and 0.75
+ *   ingame-scene-*.png     production batches from 3 on: a synthetic scene
+ *                          from scripts/art/chibi/review-scene-v7.ts drawn by
+ *                          the real board host at zoom 1 and 0.75 on desktop
+ *                          and phone. Batches whose subjects are all in the
+ *                          map showcase (every resource and batch-3
+ *                          improvement, Roads, Field Defense) get the
+ *                          showcase; others get a roster of their unit and
+ *                          improvement subjects for the viewer and an Undead
+ *                          rival, ships on water, with Fighters for scale
  *   phone-links.md         raw GitHub URLs for review on a phone
  *   index.json             sizes, hashes, anchors, mask coverage and QA
+ *
+ * A batch without terrain of its own is reviewed on the accepted terrain of
+ * the earlier production batches; water subjects stand on Shallow Water.
  *
  * --dry-run first runs the fixture dry run of the batch (no PixelLab calls)
  * and reviews its outputs; otherwise the batch's accepted production records
@@ -1037,9 +1045,11 @@ async function waitForServer(url: string): Promise<void> {
 }
 
 /**
- * The synthetic showcase (scripts/art/chibi/review-scene-v7.ts) drawn by the
- * real board host over the running game, at zoom 1 and 0.75: every map
- * subject, Farm pairs, Mines, Ports, Roads and Field Defense for two owners,
+ * The synthetic scene (scripts/art/chibi/review-scene-v7.ts) drawn by the
+ * real board host over the running game, at zoom 1 and 0.75. Batches whose
+ * subjects are all in the map showcase get it (every map subject, Farm
+ * pairs, Mines, Ports, Roads and Field Defense for two owners); others get a
+ * roster of their unit and improvement subjects (chibiReviewSceneLayoutV7),
  * which a fresh game's start area never shows.
  */
 async function captureScene(
@@ -1051,10 +1061,11 @@ async function captureScene(
     readonly height: number;
     readonly dpr: number;
   },
+  subjects: readonly string[],
 ): Promise<CaptureEvidence[]> {
-  await evaluate(
+  const kind = await evaluate<string>(
     connection,
-    `(async () => { const scene = await import('/scripts/art/chibi/review-scene-v7.ts'); const shown = scene.showChibiReviewSceneV7(globalThis.__PULP_WARS_APP__.controller.snapshot().view); globalThis.__CHIBI_REVIEW_SCENE__ = shown; return true; })()`,
+    `(async () => { const scene = await import('/scripts/art/chibi/review-scene-v7.ts'); const shown = scene.showChibiReviewSceneV7(globalThis.__PULP_WARS_APP__.controller.snapshot().view, ${JSON.stringify(subjects)}); globalThis.__CHIBI_REVIEW_SCENE__ = shown; return shown.kind; })()`,
   );
   const evidence: CaptureEvidence[] = [];
   for (const step of ["1", "0.75"] as const) {
@@ -1093,7 +1104,7 @@ async function captureScene(
     await writeFile(file, Buffer.from(shot.data, "base64"));
     evidence.push({
       file: posix(file),
-      viewport: `${viewport.width}x${viewport.height} CSS at DPR ${viewport.dpr} (synthetic showcase)`,
+      viewport: `${viewport.width}x${viewport.height} CSS at DPR ${viewport.dpr} (synthetic ${kind === "ROSTER" ? "roster" : "showcase"})`,
       zoomStep,
       tileCssPx: await evaluate<string | null>(
         connection,
@@ -1112,7 +1123,7 @@ async function captureScene(
 async function captureInGame(
   directory: string,
   baseUrl: string,
-  scene: boolean,
+  sceneSubjects: readonly string[] | null,
 ): Promise<CaptureEvidence[]> {
   const chrome = process.env.CHROME_PATH;
   if (chrome === undefined || chrome === "")
@@ -1251,8 +1262,15 @@ async function captureInGame(
           ...dataset,
         });
       }
-      if (scene)
-        evidence.push(...(await captureScene(connection, directory, viewport)));
+      if (sceneSubjects !== null)
+        evidence.push(
+          ...(await captureScene(
+            connection,
+            directory,
+            viewport,
+            sceneSubjects,
+          )),
+        );
     }
     connection.close();
   } finally {
@@ -1367,9 +1385,21 @@ async function main(): Promise<void> {
       captures = await captureInGame(
         directory,
         given ?? `http://localhost:${port}/`,
-        // Batch 3 onwards places resources and improvements a fresh game
-        // never shows; production batches add the synthetic showcase.
-        !dryRun && Number(batch) >= 3,
+        // Batch 3 onwards places pieces a fresh game never shows: production
+        // batches add the synthetic scene of their map subjects.
+        dryRun || Number(batch) < 3
+          ? null
+          : [
+              ...new Set(
+                assets
+                  .filter(
+                    (asset) =>
+                      asset.record.status === "ACCEPTED" &&
+                      asset.spec.assetClass !== "TERRAIN",
+                  )
+                  .map((asset) => asset.spec.subject),
+              ),
+            ],
       );
     } finally {
       if (server !== undefined) stopDevServer(server);

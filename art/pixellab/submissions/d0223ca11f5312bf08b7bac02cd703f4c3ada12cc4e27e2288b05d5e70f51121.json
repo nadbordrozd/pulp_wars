@@ -1,0 +1,36 @@
+{
+  "id": "market-b-edit",
+  "jobId": "1b8995e1-95c6-4e89-b9ff-3690c8d174c7",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "4",
+    "asset": "chibi-market",
+    "subject": "IMPROVEMENT:MARKET",
+    "faction": "ORIGINAL",
+    "recipeClass": "building",
+    "requestSize": {
+      "width": 80,
+      "height": 88
+    },
+    "seed": 69503,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the wooden floor deck and its legs under the stall, so the stall posts, crates and barrel stand directly on a transparent background with nothing under them. Repaint all orange and brown wood in pale straw-yellow birch. Keep the red and cream striped awning, the yellow and green goods, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove the wooden floor deck and its legs under the stall, so the stall posts, crates and barrel stand directly on a transparent background with nothing under them. Repaint all orange and brown wood in pale straw-yellow birch. Keep the red and cream striped awning, the yellow and green goods, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove the wooden floor deck and its legs under the stall, so the stall posts, crates and barrel stand directly on a transparent background with nothing under them. Repaint all orange and brown wood in pale straw-yellow birch. Keep the red and cream striped awning, the yellow and green goods, outline and art style exactly the same.",
+    "editInstruction": "Remove the wooden floor deck and its legs under the stall, so the stall posts, crates and barrel stand directly on a transparent background with nothing under them. Repaint all orange and brown wood in pale straw-yellow birch. Keep the red and cream striped awning, the yellow and green goods, outline and art style exactly the same.",
+    "source": {
+      "recipe": "market-b",
+      "candidate": 0,
+      "sha256": "b2729a3047f3e4cd58c96f15a89197172e66eb642634aabaaf593c4ed3d928a5"
+    }
+  }
+}

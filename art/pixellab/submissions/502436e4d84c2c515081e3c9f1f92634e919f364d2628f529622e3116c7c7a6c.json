@@ -1,0 +1,36 @@
+{
+  "id": "embarked-transport-a-edit",
+  "jobId": "b4a46b9b-e238-49bf-b635-eea15731a421",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "4",
+    "asset": "chibi-embarked-transport",
+    "subject": "UNIT:EMBARKED_TRANSPORT",
+    "faction": "ORIGINAL",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 69902,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Repaint the tan and orange wooden hull, oars and pole in pale straw-yellow birch wood with a slightly darker straw-yellow shade, like a pale birch boat. Keep the big red tarp over the cargo, the pale ropes, the red pennant, the steel bands, the boat shape, outline and art style exactly the same, on a transparent background with nothing under the hull."
+      }
+    ],
+    "prompt": "Repaint the tan and orange wooden hull, oars and pole in pale straw-yellow birch wood with a slightly darker straw-yellow shade, like a pale birch boat. Keep the big red tarp over the cargo, the pale ropes, the red pennant, the steel bands, the boat shape, outline and art style exactly the same, on a transparent background with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Repaint the tan and orange wooden hull, oars and pole in pale straw-yellow birch wood with a slightly darker straw-yellow shade, like a pale birch boat. Keep the big red tarp over the cargo, the pale ropes, the red pennant, the steel bands, the boat shape, outline and art style exactly the same, on a transparent background with nothing under the hull.",
+    "editInstruction": "Repaint the tan and orange wooden hull, oars and pole in pale straw-yellow birch wood with a slightly darker straw-yellow shade, like a pale birch boat. Keep the big red tarp over the cargo, the pale ropes, the red pennant, the steel bands, the boat shape, outline and art style exactly the same, on a transparent background with nothing under the hull.",
+    "source": {
+      "recipe": "embarked-transport-a",
+      "candidate": 0,
+      "sha256": "57b7b0fc9d9c2312d8e2b5a1e28ded38ab28ac8ce3e9fc9fc4cdc1eefbd17ae3"
+    }
+  }
+}

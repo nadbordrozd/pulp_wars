@@ -1,0 +1,36 @@
+{
+  "id": "battleship-a-edit",
+  "jobId": "904da9f6-a85b-4eea-af07-3a8157e46218",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "4",
+    "asset": "chibi-battleship",
+    "subject": "UNIT:BATTLESHIP",
+    "faction": "ORIGINAL",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 69802,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the red cloth hanging below the hull, so the bottom of the wooden hull is the lowest thing in the image and nothing is drawn under it. Repaint the brown hull planks in pale straw-yellow birch wood with a slightly darker straw-yellow shade. Keep the two big red sails, the red pennant, the grey crenellated castles, the oars, the ship shape, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Remove the red cloth hanging below the hull, so the bottom of the wooden hull is the lowest thing in the image and nothing is drawn under it. Repaint the brown hull planks in pale straw-yellow birch wood with a slightly darker straw-yellow shade. Keep the two big red sails, the red pennant, the grey crenellated castles, the oars, the ship shape, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Remove the red cloth hanging below the hull, so the bottom of the wooden hull is the lowest thing in the image and nothing is drawn under it. Repaint the brown hull planks in pale straw-yellow birch wood with a slightly darker straw-yellow shade. Keep the two big red sails, the red pennant, the grey crenellated castles, the oars, the ship shape, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Remove the red cloth hanging below the hull, so the bottom of the wooden hull is the lowest thing in the image and nothing is drawn under it. Repaint the brown hull planks in pale straw-yellow birch wood with a slightly darker straw-yellow shade. Keep the two big red sails, the red pennant, the grey crenellated castles, the oars, the ship shape, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "battleship-a",
+      "candidate": 0,
+      "sha256": "ccdbd33bda22ed6bc839436aa5d8798afec31879e3feda3f6119d6faaab369b6"
+    }
+  }
+}

@@ -1,0 +1,573 @@
+{
+  "schemaVersion": 1,
+  "batch": "4",
+  "title": "Chibi batch 4: Windmill, Sawmill, Forge, Workshop, Market, Shipyard, Patrol Boat, Battleship, embarked transport",
+  "bead": "pulp_wars-67q.9",
+  "faction": "ORIGINAL",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-windmill",
+      "subject": "IMPROVEMENT:WINDMILL",
+      "assetClass": "BUILDING",
+      "recipeClass": "building",
+      "canvas": {
+        "width": 80,
+        "height": 88
+      },
+      "ownerColour": true
+    },
+    {
+      "id": "chibi-sawmill",
+      "subject": "IMPROVEMENT:SAWMILL",
+      "assetClass": "BUILDING",
+      "recipeClass": "building",
+      "canvas": {
+        "width": 80,
+        "height": 88
+      },
+      "ownerColour": true
+    },
+    {
+      "id": "chibi-forge",
+      "subject": "IMPROVEMENT:FORGE",
+      "assetClass": "BUILDING",
+      "recipeClass": "building",
+      "canvas": {
+        "width": 80,
+        "height": 88
+      },
+      "ownerColour": true
+    },
+    {
+      "id": "chibi-workshop",
+      "subject": "IMPROVEMENT:WORKSHOP",
+      "assetClass": "BUILDING",
+      "recipeClass": "building",
+      "canvas": {
+        "width": 80,
+        "height": 88
+      },
+      "ownerColour": true
+    },
+    {
+      "id": "chibi-market",
+      "subject": "IMPROVEMENT:MARKET",
+      "assetClass": "BUILDING",
+      "recipeClass": "building",
+      "canvas": {
+        "width": 80,
+        "height": 88
+      },
+      "ownerColour": true
+    },
+    {
+      "id": "chibi-shipyard",
+      "subject": "IMPROVEMENT:SHIPYARD",
+      "assetClass": "BUILDING",
+      "recipeClass": "building",
+      "canvas": {
+        "width": 80,
+        "height": 88
+      },
+      "ownerColour": true
+    },
+    {
+      "id": "chibi-patrol-boat",
+      "subject": "UNIT:PATROL_BOAT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      }
+    },
+    {
+      "id": "chibi-battleship",
+      "subject": "UNIT:BATTLESHIP",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 88,
+        "height": 96
+      }
+    },
+    {
+      "id": "chibi-embarked-transport",
+      "subject": "UNIT:EMBARKED_TRANSPORT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "windmill-a",
+      "asset": "chibi-windmill",
+      "endpoint": "create-image-pixen",
+      "seed": 69101,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "negativeAddendum": "soldier, person, character, archer, miller, brown wood, dark brown wood, red-brown, orange roof"
+    },
+    {
+      "id": "market-a",
+      "asset": "chibi-market",
+      "endpoint": "create-image-pixen",
+      "seed": 69501,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "negativeAddendum": "soldier, person, character, archer, merchant, shopkeeper, red apples, tomatoes, brown wood, dark brown wood, red-brown, orange cloth"
+    },
+    {
+      "id": "patrol-boat-a",
+      "asset": "chibi-patrol-boat",
+      "endpoint": "create-image-pixen",
+      "seed": 69701,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "negativeAddendum": "cannon, gun, oars, sailor, person, character, brown wood, dark brown hull, red-brown, orange wood, steamship, modern boat"
+    },
+    {
+      "id": "sawmill-a",
+      "asset": "chibi-sawmill",
+      "endpoint": "create-image-pixen",
+      "seed": 69201,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "negativeAddendum": "soldier, person, character, archer, lumberjack, brown wood, dark brown logs, brown bark, red-brown, orange wood, water wheel",
+      "promptAddendum": "It stands directly on the transparent background: no floor, no deck, no platform, no base and no ground under it. All wood is pale straw-yellow birch, never brown or orange."
+    },
+    {
+      "id": "forge-a",
+      "asset": "chibi-forge",
+      "endpoint": "create-image-pixen",
+      "seed": 69301,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "negativeAddendum": "soldier, person, character, archer, blacksmith, red fire, orange fire, lava, red glow, brown wood, dark brown wood, red-brown, brick",
+      "promptAddendum": "It stands directly on the transparent background: no floor, no deck, no platform, no base and no ground under it. All wood is pale straw-yellow birch, never brown or orange."
+    },
+    {
+      "id": "workshop-a",
+      "asset": "chibi-workshop",
+      "endpoint": "create-image-pixen",
+      "seed": 69401,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "negativeAddendum": "soldier, person, character, archer, craftsman, brown wood, dark brown wood, red-brown, orange wood, windmill",
+      "promptAddendum": "It stands directly on the transparent background: no floor, no deck, no platform, no base and no ground under it. All wood is pale straw-yellow birch, never brown or orange."
+    },
+    {
+      "id": "shipyard-a",
+      "asset": "chibi-shipyard",
+      "endpoint": "create-image-pixen",
+      "seed": 69601,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "negativeAddendum": "soldier, person, character, archer, shipwright, water, sea, waves, pier, jetty, brown wood, dark brown wood, red-brown, orange wood",
+      "promptAddendum": "It stands directly on the transparent background: no floor, no deck, no platform, no base and no ground under it. All wood is pale straw-yellow birch, never brown or orange."
+    },
+    {
+      "id": "battleship-a",
+      "asset": "chibi-battleship",
+      "endpoint": "create-image-pixen",
+      "seed": 69801,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "negativeAddendum": "cannon, gun, gunport, oars, sailor, person, character, brown wood, dark brown hull, red-brown, orange wood, steamship, modern warship, grey steel hull",
+      "promptAddendum": "The whole hull, deck, masts and oars are pale straw-yellow birch wood with a slightly darker straw-yellow shade, never brown or orange."
+    },
+    {
+      "id": "embarked-transport-a",
+      "asset": "chibi-embarked-transport",
+      "endpoint": "create-image-pixen",
+      "seed": 69901,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "negativeAddendum": "mast, sail, cannon, gun, sailor, person, character, soldier, brown wood, dark brown hull, red-brown, orange wood, barrels",
+      "promptAddendum": "The whole hull, deck, masts and oars are pale straw-yellow birch wood with a slightly darker straw-yellow shade, never brown or orange."
+    },
+    {
+      "id": "windmill-a-edit",
+      "asset": "chibi-windmill",
+      "endpoint": "edit-image-pixen",
+      "seed": 69102,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "source": {
+        "recipe": "windmill-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the brown rim and base ring at the bottom of the tower, so the beige cobblestone wall ends at the black outline and nothing is drawn under the tower. Make the brown ring under the roof, the brown sail hub and the door pale straw-yellow birch wood. Keep the red cone roof, the four red cloth sails, the cream tower, outline and art style exactly the same, on a transparent background.",
+      "notes": "windmill-a has the right silhouette (red cloth sails in a big X, red cone roof, cream tower) and passes mask QA, but stands on a brown rim that reads as a base, and the roof ring and hub are brown."
+    },
+    {
+      "id": "patrol-boat-a-edit",
+      "asset": "chibi-patrol-boat",
+      "endpoint": "edit-image-pixen",
+      "seed": 69702,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "patrol-boat-a",
+        "candidate": 0
+      },
+      "editInstruction": "Repaint the whole wooden hull, deck, rail posts and mast in pale straw-yellow birch wood with a slightly darker straw-yellow shade, with no brown or orange anywhere. Keep the big red sail, the red pennant, the light steel bands, the boat shape, outline and art style exactly the same, on a transparent background with nothing under the hull.",
+      "notes": "patrol-boat-a has the right silhouette (single mast, big square red sail, pennant) but a brown and orange hull: RED_BROWN_MATERIAL 6%."
+    },
+    {
+      "id": "market-b",
+      "asset": "chibi-market",
+      "endpoint": "create-image-pixen",
+      "seed": 69502,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "promptAddendum": "The stall posts stand directly on the transparent background: no floor, no deck, no platform and no ground under them. All wood is pale straw-yellow birch, never brown or orange; the goods are yellow and green.",
+      "negativeAddendum": "soldier, person, character, archer, merchant, shopkeeper, red apples, tomatoes, brown wood, dark brown wood, red-brown, orange cloth, orange wood, wooden floor, deck, house, walls",
+      "notes": "market-a is a house with an awning on a brown wooden platform; RED_BROWN_MATERIAL 28%."
+    },
+    {
+      "id": "market-b-edit",
+      "asset": "chibi-market",
+      "endpoint": "edit-image-pixen",
+      "seed": 69503,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "source": {
+        "recipe": "market-b",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the wooden floor deck and its legs under the stall, so the stall posts, crates and barrel stand directly on a transparent background with nothing under them. Repaint all orange and brown wood in pale straw-yellow birch. Keep the red and cream striped awning, the yellow and green goods, outline and art style exactly the same.",
+      "notes": "market-b has the right silhouette (open stall under a big red and cream striped awning, crates of goods, barrel) and passes mask QA, but stands on an orange wooden deck with red legs, which is a plate."
+    },
+    {
+      "id": "forge-a-edit",
+      "asset": "chibi-forge",
+      "endpoint": "edit-image-pixen",
+      "seed": 69302,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "source": {
+        "recipe": "forge-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the yellow stone base slab and its rim under the smithy and the anvil, so it stands directly on a transparent background with nothing at all under it. Keep the red roof, grey chimney and smoke, stone walls, arch with the fire, anvil, outline and art style exactly the same.",
+      "notes": "forge-a has the right silhouette (red-roofed stone smithy, tall grey chimney with smoke, anvil at the arch) but stands on a yellow stone slab."
+    },
+    {
+      "id": "workshop-a-edit",
+      "asset": "chibi-workshop",
+      "endpoint": "edit-image-pixen",
+      "seed": 69402,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "source": {
+        "recipe": "workshop-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass and stone slab under the house, so the walls stand directly on a transparent background with nothing at all under them. Repaint the dark red dashes on the roof ridge and on the steel cogwheel in the same bright red as the roof or in steel grey. Keep the red roof, the big steel cogwheel, the timber-framed walls, workbench, outline and art style exactly the same.",
+      "notes": "workshop-a has the right silhouette (timber-framed house, steep red roof, huge steel cogwheel on the gable) but stands on a grass and stone slab, and the roof ridge carries dark red dashes outside the mask."
+    },
+    {
+      "id": "battleship-a-edit",
+      "asset": "chibi-battleship",
+      "endpoint": "edit-image-pixen",
+      "seed": 69802,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "recipe": "battleship-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the red cloth hanging below the hull, so the bottom of the wooden hull is the lowest thing in the image and nothing is drawn under it. Repaint the brown hull planks in pale straw-yellow birch wood with a slightly darker straw-yellow shade. Keep the two big red sails, the red pennant, the grey crenellated castles, the oars, the ship shape, outline and art style exactly the same, on a transparent background.",
+      "notes": "battleship-a has the right silhouette (big two-mast carrack, two big red sails, steel castle rails) but a red cloth hangs below the hull and the hull is brown."
+    },
+    {
+      "id": "embarked-transport-a-edit",
+      "asset": "chibi-embarked-transport",
+      "endpoint": "edit-image-pixen",
+      "seed": 69902,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "recipe": "embarked-transport-a",
+        "candidate": 0
+      },
+      "editInstruction": "Repaint the tan and orange wooden hull, oars and pole in pale straw-yellow birch wood with a slightly darker straw-yellow shade, like a pale birch boat. Keep the big red tarp over the cargo, the pale ropes, the red pennant, the steel bands, the boat shape, outline and art style exactly the same, on a transparent background with nothing under the hull.",
+      "notes": "embarked-transport-a has the right silhouette (low mastless rowing barge, big red tarp over cargo, pennant, oars) but a tan and orange hull that does not match the pale birch Patrol Boat."
+    },
+    {
+      "id": "market-c",
+      "asset": "chibi-market",
+      "endpoint": "create-image-pixen",
+      "seed": 69503,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "promptAddendum": "Instead of a stall, the market is one big round market tent (a pavilion) of wide bright red and cream vertical cloth stripes with a pointed top and a small red pennant, open at the front, with pale crates of yellow pears and green cabbages and a round pale barrel standing on the transparent background in front of it. It stands directly on the transparent background: no floor, no deck, no platform, no base and no ground under it. All wood is pale straw-yellow birch, never brown or orange. The building is drawn big and fills most of the image.",
+      "negativeAddendum": "soldier, person, character, archer, merchant, shopkeeper, red apples, tomatoes, brown wood, dark brown wood, red-brown, orange cloth, orange wood, wooden floor, deck, house, walls, carpet, rug",
+      "notes": "market-a and market-b stand on wooden decks (plates) that an edit could not remove."
+    },
+    {
+      "id": "sawmill-b",
+      "asset": "chibi-sawmill",
+      "endpoint": "create-image-pixen",
+      "seed": 69202,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "promptAddendum": "Instead of a house, the sawmill is a big pale birch log lying on a long low sawing bench under a simple open lean-to roof of bright red tiles on four pale posts, with a huge round light steel circular saw blade with sharp jagged triangular teeth cutting into the log, and a neat stack of pale logs beside it; no walls. It stands directly on the transparent background: no floor, no deck, no platform, no base and no ground under it. All wood is pale straw-yellow birch, never brown or orange. The building is drawn big and fills most of the image.",
+      "negativeAddendum": "soldier, person, character, archer, lumberjack, brown wood, dark brown logs, brown bark, red-brown, orange wood, water wheel, cogwheel, gear, house, walls, floor, deck",
+      "notes": "sawmill-a is a house on a deck with red legs, and its saw blade reads as a cogwheel like the Workshop."
+    },
+    {
+      "id": "shipyard-b",
+      "asset": "chibi-shipyard",
+      "endpoint": "create-image-pixen",
+      "seed": 69602,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "promptAddendum": "The shipyard is a building, not a ship: one big open boathouse shed with a wide steep bright red tile roof and a tall open arched front showing the pale curved wooden ribs of an unfinished boat inside, and a tall pale wooden crane with a rope and hook beside the shed. It stands directly on the transparent background: no floor, no deck, no platform, no base and no ground under it. All wood is pale straw-yellow birch, never brown or orange. The building is drawn big and fills most of the image.",
+      "negativeAddendum": "soldier, person, character, archer, shipwright, water, sea, waves, pier, jetty, brown wood, dark brown wood, red-brown, orange wood, finished ship, sails, mast",
+      "notes": "shipyard-a reads as a ship (a big hull holding a small red-roofed hut), with 9 percent owner area."
+    },
+    {
+      "id": "market-c-edit",
+      "asset": "chibi-market",
+      "endpoint": "edit-image-pixen",
+      "seed": 69504,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "source": {
+        "recipe": "market-c",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the brown dirt ground and the wooden floor under the tent, so the tent posts, crates and barrel stand directly on a transparent background with nothing at all under them. Repaint the brown crates, barrel and posts in pale straw-yellow birch wood. Keep the red and cream striped tent, the red pennant, the yellow and green goods, outline and art style exactly the same.",
+      "notes": "market-c has the right silhouette (a round red and cream striped market pavilion with a pennant, goods under it) but stands on brown dirt ground: RED_BROWN_MATERIAL 4.3 percent."
+    },
+    {
+      "id": "sawmill-b-edit",
+      "asset": "chibi-sawmill",
+      "endpoint": "edit-image-pixen",
+      "seed": 69203,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "source": {
+        "recipe": "sawmill-b",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the brown wooden deck and the round wheels under the shed, so the posts, the saw blade and the logs stand directly on a transparent background with nothing at all under them. Repaint any brown wood in pale straw-yellow birch. Keep the red tile roof, the big steel circular saw blade with its teeth, the stack of pale logs, outline and art style exactly the same.",
+      "notes": "sawmill-b has the right silhouette (open shed with a red tile roof, big toothed circular saw blade, stack of pale logs) but stands on a brown wooden deck on wheels: RED_BROWN_MATERIAL 4.2 percent."
+    },
+    {
+      "id": "workshop-a-edit-2",
+      "asset": "chibi-workshop",
+      "endpoint": "edit-image-pixen",
+      "seed": 69403,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "source": {
+        "recipe": "workshop-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the green grass and grey stone slab under the house, so the walls and the workbench stand directly on a transparent background with nothing at all under them. Keep the steep red tile roof, the big light steel-grey cogwheel on the gable, the timber-framed walls, the workbench, outline and art style exactly the same.",
+      "notes": "workshop-a-edit repainted the cogwheel red; this retry only removes the slab."
+    },
+    {
+      "id": "shipyard-c",
+      "asset": "chibi-shipyard",
+      "endpoint": "create-image-pixen",
+      "seed": 69603,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "promptAddendum": "The shipyard is a building, not a ship. Its big wide steep bright red tile roof covers the top half of the image, over an open front of pale birch posts that shows the pale curved ribs of an unfinished boat inside; a tall pale birch crane with a rope and a steel hook stands at one side. It stands directly on the transparent background: no floor, no deck, no platform, no base and no ground under it. All wood is pale straw-yellow birch, never brown or orange. The building is drawn big and fills most of the image.",
+      "negativeAddendum": "soldier, person, character, archer, shipwright, water, sea, waves, pier, jetty, brown wood, dark brown wood, red-brown, orange wood, finished ship, sails, mast, grass, dirt",
+      "notes": "shipyard-a read as a ship and shipyard-b is busy, on a grass and dirt slab, with brown timber and 10 percent owner area; this asks for a much bigger red roof."
+    },
+    {
+      "id": "market-c-edit-2",
+      "asset": "chibi-market",
+      "endpoint": "edit-image-pixen",
+      "seed": 69505,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "source": {
+        "recipe": "market-c-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Paint every red stripe of the tent one flat solid bright red with a slightly darker red shade, with no orange, brown or dark red speckles in the red or along the seams. Repaint the orange and brown crates and barrel in pale straw-yellow birch wood. Keep the tent shape, the cream stripes, the red pennant, the yellow and green goods, outline and art style exactly the same, on a transparent background with nothing under it.",
+      "notes": "market-c-edit removed the ground but the red stripes carry orange and dark red speckles (MASK_EMBEDDED_IN_RED_BROWN) and the crates are orange-brown (RED_BROWN_MATERIAL 3.4 percent)."
+    },
+    {
+      "id": "shipyard-c-edit",
+      "asset": "chibi-shipyard",
+      "endpoint": "edit-image-pixen",
+      "seed": 69604,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "source": {
+        "recipe": "shipyard-c",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the green grass slab and the brown dirt under the boathouse, the boat and the crane, so they stand directly on a transparent background with nothing at all under them. Repaint the brown boat hull and brown timbers in pale straw-yellow birch wood. Keep the red tile roofs, the cream walls, the pale crane with its rope and steel hook, outline and art style exactly the same.",
+      "notes": "shipyard-c has the right parts (red-roofed boathouse, pale crane with a hook, an unfinished boat hull) but stands on a grass and dirt slab and the hull is brown."
+    },
+    {
+      "id": "shipyard-c-edit-2",
+      "asset": "chibi-shipyard",
+      "endpoint": "edit-image-pixen",
+      "seed": 69605,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "source": {
+        "recipe": "shipyard-c-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Repaint the dark brown timber beams, window frames, roof ridge and stilts of the boathouse in pale straw-yellow birch wood with a slightly darker straw-yellow shade, so no brown is left. Keep the red tile roofs, the cream walls, the pale crane with its rope and steel hook, the pale boat hull, outline and art style exactly the same, on a transparent background with nothing under it.",
+      "notes": "shipyard-c-edit has no ground and passes mask QA, but the boathouse timber frame and stilts are dark brown."
+    },
+    {
+      "id": "battleship-a-edit-2",
+      "asset": "chibi-battleship",
+      "endpoint": "edit-image-pixen",
+      "seed": 69803,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "recipe": "battleship-a-edit",
+        "candidate": 1
+      },
+      "editInstruction": "Make the whole ship slightly smaller and move it to the right, so the stern and the oars end about 14 pixels from the left edge of the image and the left edge stays empty and transparent. Keep the two big red sails, the red pennant, the grey crenellated castles, the oars, the pale straw-yellow hull, outline and art style exactly the same, with nothing under the hull.",
+      "notes": "battleship-a-edit is accepted art, but its stern and oars reach 8 px from the left edge and cross the CHIBI HP bar and seat badge strip (the overlay-clearance test)."
+    },
+    {
+      "id": "battleship-b",
+      "asset": "chibi-battleship",
+      "endpoint": "create-image-pixen",
+      "seed": 69804,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "promptAddendum": "The ship is drawn a little smaller than the image and centred, with empty transparent space at the left and right edges. The whole hull, deck, masts and oars are pale straw-yellow birch wood with a slightly darker straw-yellow shade, never brown or orange. Nothing hangs below the hull.",
+      "negativeAddendum": "cannon, gun, gunport, sailor, person, character, brown wood, dark brown hull, red-brown, orange wood, steamship, modern warship, grey steel hull, red keel, red cloth under the hull",
+      "notes": "A fresh carrack with side margins, in case the edit cannot move battleship-a-edit clear of the HP bar strip."
+    },
+    {
+      "id": "battleship-b-edit",
+      "asset": "chibi-battleship",
+      "endpoint": "edit-image-pixen",
+      "seed": 69805,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "recipe": "battleship-b",
+        "candidate": 0
+      },
+      "editInstruction": "Paint both big sails and the pennant one flat solid bright red with a slightly darker red shade, with no orange, no pink and no speckled dithering. Repaint any brown or orange wood in pale straw-yellow birch. Keep the ship shape and size, the grey crenellated castles, the oars, the empty space at the left and right edges, outline and art style exactly the same, with nothing under the hull.",
+      "notes": "battleship-b clears the HP bar strip (opaque from x 16) but its sails are speckled coral and orange, so the mask catches only part of them: RED_BROWN_MATERIAL 4.7 percent."
+    },
+    {
+      "id": "battleship-c",
+      "asset": "chibi-battleship",
+      "endpoint": "create-image-pixen",
+      "seed": 69806,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "promptAddendum": "The ship is big and tall: its two very tall masts and big square sails reach the top of the image, and its deep chunky hull is short from bow to stern, centred with about 14 pixels of empty transparent space at the left and right edges. Both sails and the pennant are one flat solid bright red. The whole hull, deck, masts and oars are pale straw-yellow birch wood with a slightly darker straw-yellow shade, never brown or orange. Nothing hangs below the hull.",
+      "negativeAddendum": "cannon, gun, gunport, sailor, person, character, brown wood, dark brown hull, red-brown, orange wood, orange sails, pink sails, steamship, modern warship, grey steel hull, red keel, red cloth under the hull, long low galley",
+      "notes": "battleship-b-edit clears the HP bar strip but is no bigger than the Patrol Boat (57 x 74 against 56 x 73); this asks for a taller ship inside the same side margins."
+    },
+    {
+      "id": "battleship-d",
+      "asset": "chibi-battleship",
+      "endpoint": "create-image-pixen",
+      "seed": 69807,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "promptAddendum": "The ship is big and tall: its two very tall masts and big square sails reach the top of the image, and its deep chunky hull is short from bow to stern, centred with about 14 pixels of empty transparent space at the left and right edges. Both sails and the pennant are one flat solid bright red. The whole hull, deck, masts and oars are pale straw-yellow birch wood with a slightly darker straw-yellow shade, never brown or orange. Nothing hangs below the hull.",
+      "negativeAddendum": "cannon, gun, gunport, sailor, person, character, brown wood, dark brown hull, red-brown, orange wood, orange sails, pink sails, steamship, modern warship, grey steel hull, red keel, red cloth under the hull, long low galley",
+      "notes": "battleship-b-edit clears the HP bar strip but is no bigger than the Patrol Boat (57 x 74 against 56 x 73); this asks for a taller ship inside the same side margins."
+    },
+    {
+      "id": "battleship-d-edit",
+      "asset": "chibi-battleship",
+      "endpoint": "edit-image-pixen",
+      "seed": 69808,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "recipe": "battleship-d",
+        "candidate": 0
+      },
+      "editInstruction": "Paint every sail and both pennants one flat solid bright red with a slightly darker red shade, with no dark red or brown lines along the sail edges and seams. Repaint the brown lower hull in pale straw-yellow birch wood with a slightly darker straw-yellow shade. Keep the ship shape and size, the grey stone tower and crenellated rails, the empty space at the left and right edges, outline and art style exactly the same, with nothing under the hull.",
+      "notes": "battleship-d is the right size (70 x 79, clearly bigger than the Patrol Boat) and clears the HP bar strip, but dark red lines along its sail edges stay outside the mask and its lower hull is brown."
+    }
+  ]
+}

@@ -65,6 +65,12 @@ All sizes are CSS pixels at zoom 1, which is the normal play view.
 | Building or improvement         | up to 80 x 88            | Bottom-centred; upward overflow up to 8 px                                                                            |
 | Resource                        | about 40 x 40 to 48 x 48 | Centred; visibly smaller and calmer than a unit                                                                       |
 
+Ships use the unit classes (decided in bead `pulp_wars-67q.9`): the Patrol
+Boat and the embarked transport are large units (72 x 88 and 72 x 72, since
+the mastless barge is low), and the Battleship is a giant (88 x 96). They are
+bottom-centred like every unit, with no water plate: the water tile is under
+them.
+
 Rules for resolution:
 
 - **Generate at the display size. Never downscale a big render.** Every
@@ -94,6 +100,11 @@ Rules for resolution:
 - The pipeline extracts a **checked-in owner-mask PNG** per asset with strict
   thresholds. A mask-QA step rejects bleed onto non-owner materials, and a
   hand-corrected mask may be checked in as an override.
+- Owned buildings (the batch-4 processors and the Shipyard) carry their owner
+  area on red tile roofs or red cloth (sails, awnings) with a checked-in
+  mask, like units and cities. The runtime recolours them with the territory
+  owner's colour; a masked building on a tile no city owns is recoloured to a
+  neutral stone grey, never shown in the raw key.
 - The runtime recolours through the mask, never by matching hues at runtime.
   Nothing has a baked-in owner colour; the sprite review found ships with a
   fixed coral stripe.

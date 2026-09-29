@@ -1,0 +1,36 @@
+{
+  "id": "shipyard-c-edit",
+  "jobId": "336a6e03-915b-4474-b0a4-96f599058680",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "4",
+    "asset": "chibi-shipyard",
+    "subject": "IMPROVEMENT:SHIPYARD",
+    "faction": "ORIGINAL",
+    "recipeClass": "building",
+    "requestSize": {
+      "width": 80,
+      "height": 88
+    },
+    "seed": 69604,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the green grass slab and the brown dirt under the boathouse, the boat and the crane, so they stand directly on a transparent background with nothing at all under them. Repaint the brown boat hull and brown timbers in pale straw-yellow birch wood. Keep the red tile roofs, the cream walls, the pale crane with its rope and steel hook, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the green grass slab and the brown dirt under the boathouse, the boat and the crane, so they stand directly on a transparent background with nothing at all under them. Repaint the brown boat hull and brown timbers in pale straw-yellow birch wood. Keep the red tile roofs, the cream walls, the pale crane with its rope and steel hook, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the green grass slab and the brown dirt under the boathouse, the boat and the crane, so they stand directly on a transparent background with nothing at all under them. Repaint the brown boat hull and brown timbers in pale straw-yellow birch wood. Keep the red tile roofs, the cream walls, the pale crane with its rope and steel hook, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the green grass slab and the brown dirt under the boathouse, the boat and the crane, so they stand directly on a transparent background with nothing at all under them. Repaint the brown boat hull and brown timbers in pale straw-yellow birch wood. Keep the red tile roofs, the cream walls, the pale crane with its rope and steel hook, outline and art style exactly the same.",
+    "source": {
+      "recipe": "shipyard-c",
+      "candidate": 0,
+      "sha256": "1d0803470b8310dea62b864cb5f6b7ec8ceec9dc737cd5791b3ccbbcae221f80"
+    }
+  }
+}

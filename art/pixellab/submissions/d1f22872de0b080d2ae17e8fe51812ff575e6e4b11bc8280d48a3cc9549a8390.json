@@ -1,0 +1,36 @@
+{
+  "id": "sawmill-b-edit",
+  "jobId": "83b0318d-7829-40a0-b73d-04e032a29f40",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "4",
+    "asset": "chibi-sawmill",
+    "subject": "IMPROVEMENT:SAWMILL",
+    "faction": "ORIGINAL",
+    "recipeClass": "building",
+    "requestSize": {
+      "width": 80,
+      "height": 88
+    },
+    "seed": 69203,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the brown wooden deck and the round wheels under the shed, so the posts, the saw blade and the logs stand directly on a transparent background with nothing at all under them. Repaint any brown wood in pale straw-yellow birch. Keep the red tile roof, the big steel circular saw blade with its teeth, the stack of pale logs, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the brown wooden deck and the round wheels under the shed, so the posts, the saw blade and the logs stand directly on a transparent background with nothing at all under them. Repaint any brown wood in pale straw-yellow birch. Keep the red tile roof, the big steel circular saw blade with its teeth, the stack of pale logs, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the brown wooden deck and the round wheels under the shed, so the posts, the saw blade and the logs stand directly on a transparent background with nothing at all under them. Repaint any brown wood in pale straw-yellow birch. Keep the red tile roof, the big steel circular saw blade with its teeth, the stack of pale logs, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the brown wooden deck and the round wheels under the shed, so the posts, the saw blade and the logs stand directly on a transparent background with nothing at all under them. Repaint any brown wood in pale straw-yellow birch. Keep the red tile roof, the big steel circular saw blade with its teeth, the stack of pale logs, outline and art style exactly the same.",
+    "source": {
+      "recipe": "sawmill-b",
+      "candidate": 0,
+      "sha256": "7fa86a4ca6ccafa64d8a9f19d2edd44984b0ef0666838c86332709b267e1f029"
+    }
+  }
+}

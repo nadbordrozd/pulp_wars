@@ -1,0 +1,36 @@
+{
+  "id": "market-c-edit",
+  "jobId": "9748c849-3d08-4460-9749-25eee083eaec",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "4",
+    "asset": "chibi-market",
+    "subject": "IMPROVEMENT:MARKET",
+    "faction": "ORIGINAL",
+    "recipeClass": "building",
+    "requestSize": {
+      "width": 80,
+      "height": 88
+    },
+    "seed": 69504,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the brown dirt ground and the wooden floor under the tent, so the tent posts, crates and barrel stand directly on a transparent background with nothing at all under them. Repaint the brown crates, barrel and posts in pale straw-yellow birch wood. Keep the red and cream striped tent, the red pennant, the yellow and green goods, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the brown dirt ground and the wooden floor under the tent, so the tent posts, crates and barrel stand directly on a transparent background with nothing at all under them. Repaint the brown crates, barrel and posts in pale straw-yellow birch wood. Keep the red and cream striped tent, the red pennant, the yellow and green goods, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the brown dirt ground and the wooden floor under the tent, so the tent posts, crates and barrel stand directly on a transparent background with nothing at all under them. Repaint the brown crates, barrel and posts in pale straw-yellow birch wood. Keep the red and cream striped tent, the red pennant, the yellow and green goods, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the brown dirt ground and the wooden floor under the tent, so the tent posts, crates and barrel stand directly on a transparent background with nothing at all under them. Repaint the brown crates, barrel and posts in pale straw-yellow birch wood. Keep the red and cream striped tent, the red pennant, the yellow and green goods, outline and art style exactly the same.",
+    "source": {
+      "recipe": "market-c",
+      "candidate": 0,
+      "sha256": "abd91e48f7d02dd6fdb4f04b14c8db7cb9fb0ba14fc7c6a33216e35a584dec41"
+    }
+  }
+}

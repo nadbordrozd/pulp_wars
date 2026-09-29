@@ -66,6 +66,7 @@ the Human-era owner text they were generated with.
 | Recipe class   | Endpoint                                       | Master                                                                                                 |
 | -------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | `unit`         | `create-image-pixen`, south-east, low detail   | the candidate, generated at the master size                                                            |
+| `ship`         | as `unit`, then optional edit                  | as `unit`; a boat class text (no water, waves or plate under the hull) for ships and the embarked form |
 | `settlement`   | Pixen, then optional `edit-image-pixen`        | the candidate; the edit removes a plate ("Remove all ground …")                                        |
 | `building`     | Pixen, then optional edit                      | as settlement                                                                                          |
 | `resource`     | Pixen, then optional edit                      | as settlement                                                                                          |
@@ -168,6 +169,16 @@ resource and improvement, Farm pairs, Mines, Ports with Fish, Roads with
 corner joins, Field Defense and a fortification level, Treasure, two
 owners) and draws it with the real board host, since a fresh game's start
 area shows almost none of them.
+
+When a batch has unit or improvement subjects the showcase does not draw
+(batch 4's processors, Shipyard, ships and embarked form), the same module
+builds a 9 x 5 roster instead: the batch's land pieces for the viewer and a
+rival, a Fighter per owner beside the capital for scale, then its water
+pieces (docks on Shallow Water, the viewer's ships on Shallow Water and the
+rival's on Deep Water). The roster's rival is drawn as Undead, so the skull
+badge and the HP bar and seat badge are checked on every unit class. The
+captures keep the `ingame-scene-*` names; `index.json` labels each as a
+showcase or a roster.
 
 ## Dry run
 

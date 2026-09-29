@@ -1,0 +1,36 @@
+{
+  "id": "market-c-edit-2",
+  "jobId": "6c8cf90d-cfe6-410b-909b-996668c0e512",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "4",
+    "asset": "chibi-market",
+    "subject": "IMPROVEMENT:MARKET",
+    "faction": "ORIGINAL",
+    "recipeClass": "building",
+    "requestSize": {
+      "width": 80,
+      "height": 88
+    },
+    "seed": 69505,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Paint every red stripe of the tent one flat solid bright red with a slightly darker red shade, with no orange, brown or dark red speckles in the red or along the seams. Repaint the orange and brown crates and barrel in pale straw-yellow birch wood. Keep the tent shape, the cream stripes, the red pennant, the yellow and green goods, outline and art style exactly the same, on a transparent background with nothing under it."
+      }
+    ],
+    "prompt": "Paint every red stripe of the tent one flat solid bright red with a slightly darker red shade, with no orange, brown or dark red speckles in the red or along the seams. Repaint the orange and brown crates and barrel in pale straw-yellow birch wood. Keep the tent shape, the cream stripes, the red pennant, the yellow and green goods, outline and art style exactly the same, on a transparent background with nothing under it.",
+    "negativePrompt": "",
+    "description": "Paint every red stripe of the tent one flat solid bright red with a slightly darker red shade, with no orange, brown or dark red speckles in the red or along the seams. Repaint the orange and brown crates and barrel in pale straw-yellow birch wood. Keep the tent shape, the cream stripes, the red pennant, the yellow and green goods, outline and art style exactly the same, on a transparent background with nothing under it.",
+    "editInstruction": "Paint every red stripe of the tent one flat solid bright red with a slightly darker red shade, with no orange, brown or dark red speckles in the red or along the seams. Repaint the orange and brown crates and barrel in pale straw-yellow birch wood. Keep the tent shape, the cream stripes, the red pennant, the yellow and green goods, outline and art style exactly the same, on a transparent background with nothing under it.",
+    "source": {
+      "recipe": "market-c-edit",
+      "candidate": 0,
+      "sha256": "f41d85b97628bbd5154e00228b9dcf92adfd6805dd5169e0d8c3ccbd42f2ac9d"
+    }
+  }
+}

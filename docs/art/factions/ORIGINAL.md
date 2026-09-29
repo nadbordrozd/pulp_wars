@@ -103,6 +103,13 @@ This guides the subject lines; it is not sent to PixelLab.
 | Juggernaut       | giant armoured brute with steel pauldrons, a huge warhammer and a red tabard to the knees, no shield       |
 | Patrol Boat      | small single-mast sailing boat with an owner-colour sail                                                   |
 | Battleship       | larger two-mast warship, a medieval galleon or carrack                                                     |
+| Embarked form    | low mastless rowing barge with oars and cargo under a big red tarp, a small pennant                        |
+| Windmill         | cream tower with a red cone roof and four big red cloth sails in an X (batch 4)                            |
+| Sawmill          | open lean-to under a red tile roof with a big toothed steel saw blade and a log stack (batch 4)            |
+| Forge            | squat smithy with a red roof, a tall grey chimney with smoke and a big anvil (batch 4)                     |
+| Workshop         | tall timber-framed house with a steep red roof and a huge steel cogwheel on the gable (batch 4)            |
+| Market           | round red-and-cream striped market pavilion with a pennant over crates of goods (batch 4)                  |
+| Shipyard         | boathouse on stilts with red roofs, a tall pale crane and an unfinished boat hull (batch 4)                |
 | Village          | two or three small round cottages with straw thatch and a pale fence; no owner colour                      |
 | City 1–3         | red-roofed cottages round a beige tower or keep with a banner; walls and corner towers grow with the level |
 

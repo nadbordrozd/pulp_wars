@@ -1,0 +1,36 @@
+{
+  "id": "battleship-b-edit",
+  "jobId": "3ff3c8c1-4000-43f7-a539-d2bbf1fddf10",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "4",
+    "asset": "chibi-battleship",
+    "subject": "UNIT:BATTLESHIP",
+    "faction": "ORIGINAL",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 69805,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Paint both big sails and the pennant one flat solid bright red with a slightly darker red shade, with no orange, no pink and no speckled dithering. Repaint any brown or orange wood in pale straw-yellow birch. Keep the ship shape and size, the grey crenellated castles, the oars, the empty space at the left and right edges, outline and art style exactly the same, with nothing under the hull."
+      }
+    ],
+    "prompt": "Paint both big sails and the pennant one flat solid bright red with a slightly darker red shade, with no orange, no pink and no speckled dithering. Repaint any brown or orange wood in pale straw-yellow birch. Keep the ship shape and size, the grey crenellated castles, the oars, the empty space at the left and right edges, outline and art style exactly the same, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Paint both big sails and the pennant one flat solid bright red with a slightly darker red shade, with no orange, no pink and no speckled dithering. Repaint any brown or orange wood in pale straw-yellow birch. Keep the ship shape and size, the grey crenellated castles, the oars, the empty space at the left and right edges, outline and art style exactly the same, with nothing under the hull.",
+    "editInstruction": "Paint both big sails and the pennant one flat solid bright red with a slightly darker red shade, with no orange, no pink and no speckled dithering. Repaint any brown or orange wood in pale straw-yellow birch. Keep the ship shape and size, the grey crenellated castles, the oars, the empty space at the left and right edges, outline and art style exactly the same, with nothing under the hull.",
+    "source": {
+      "recipe": "battleship-b",
+      "candidate": 0,
+      "sha256": "e7ffb46e0462c32f97b2b9aed49d8dbcfe3031f9a66a3a5200747fd8c560176d"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "battleship-a-edit-2",
+  "jobId": "208f3da8-64c9-4576-bd48-872f0bc2d6d9",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "4",
+    "asset": "chibi-battleship",
+    "subject": "UNIT:BATTLESHIP",
+    "faction": "ORIGINAL",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 69803,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the whole ship slightly smaller and move it to the right, so the stern and the oars end about 14 pixels from the left edge of the image and the left edge stays empty and transparent. Keep the two big red sails, the red pennant, the grey crenellated castles, the oars, the pale straw-yellow hull, outline and art style exactly the same, with nothing under the hull."
+      }
+    ],
+    "prompt": "Make the whole ship slightly smaller and move it to the right, so the stern and the oars end about 14 pixels from the left edge of the image and the left edge stays empty and transparent. Keep the two big red sails, the red pennant, the grey crenellated castles, the oars, the pale straw-yellow hull, outline and art style exactly the same, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Make the whole ship slightly smaller and move it to the right, so the stern and the oars end about 14 pixels from the left edge of the image and the left edge stays empty and transparent. Keep the two big red sails, the red pennant, the grey crenellated castles, the oars, the pale straw-yellow hull, outline and art style exactly the same, with nothing under the hull.",
+    "editInstruction": "Make the whole ship slightly smaller and move it to the right, so the stern and the oars end about 14 pixels from the left edge of the image and the left edge stays empty and transparent. Keep the two big red sails, the red pennant, the grey crenellated castles, the oars, the pale straw-yellow hull, outline and art style exactly the same, with nothing under the hull.",
+    "source": {
+      "recipe": "battleship-a-edit",
+      "candidate": 1,
+      "sha256": "a93e3ee026890093f934226a9080d9f94b75c3d48f6b46b97a4637f005456e41"
+    }
+  }
+}

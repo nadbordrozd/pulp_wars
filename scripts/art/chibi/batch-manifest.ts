@@ -24,7 +24,13 @@ export interface Size {
 }
 
 export type ChibiRecipeClass =
-  "unit" | "settlement" | "building" | "resource" | "terrain" | "tall-terrain";
+  | "unit"
+  | "ship"
+  | "settlement"
+  | "building"
+  | "resource"
+  | "terrain"
+  | "tall-terrain";
 
 export type ChibiEndpoint =
   "create-image-pixen" | "create-image-pixflux" | "edit-image-pixen";
@@ -81,6 +87,19 @@ export const CHIBI_CLASS_RECIPES: Readonly<
     generators: ["create-image-pixen"],
     // A reviewed edit may enlarge the owner area or fix a detail (a red
     // mouth) while keeping the accepted design.
+    editPass: true,
+    noBackground: true,
+    derivation: "as-is",
+    options: { "create-image-pixen": PIECE_OPTIONS },
+  },
+  // Naval units and the embarked transport (batch 4): the unit sizes and
+  // Pixen options, but a boat class text instead of the figure's "standing
+  // ready pose, both feet visible", and no water drawn under the hull.
+  ship: {
+    camera: "three-quarter",
+    factionLayer: true,
+    assetClasses: ["LARGE_UNIT", "GIANT_UNIT"],
+    generators: ["create-image-pixen"],
     editPass: true,
     noBackground: true,
     derivation: "as-is",

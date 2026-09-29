@@ -1,0 +1,36 @@
+{
+  "id": "battleship-d-edit",
+  "jobId": "fc40720c-8b1d-4ac3-b045-a759645f9c24",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "4",
+    "asset": "chibi-battleship",
+    "subject": "UNIT:BATTLESHIP",
+    "faction": "ORIGINAL",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 69808,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Paint every sail and both pennants one flat solid bright red with a slightly darker red shade, with no dark red or brown lines along the sail edges and seams. Repaint the brown lower hull in pale straw-yellow birch wood with a slightly darker straw-yellow shade. Keep the ship shape and size, the grey stone tower and crenellated rails, the empty space at the left and right edges, outline and art style exactly the same, with nothing under the hull."
+      }
+    ],
+    "prompt": "Paint every sail and both pennants one flat solid bright red with a slightly darker red shade, with no dark red or brown lines along the sail edges and seams. Repaint the brown lower hull in pale straw-yellow birch wood with a slightly darker straw-yellow shade. Keep the ship shape and size, the grey stone tower and crenellated rails, the empty space at the left and right edges, outline and art style exactly the same, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Paint every sail and both pennants one flat solid bright red with a slightly darker red shade, with no dark red or brown lines along the sail edges and seams. Repaint the brown lower hull in pale straw-yellow birch wood with a slightly darker straw-yellow shade. Keep the ship shape and size, the grey stone tower and crenellated rails, the empty space at the left and right edges, outline and art style exactly the same, with nothing under the hull.",
+    "editInstruction": "Paint every sail and both pennants one flat solid bright red with a slightly darker red shade, with no dark red or brown lines along the sail edges and seams. Repaint the brown lower hull in pale straw-yellow birch wood with a slightly darker straw-yellow shade. Keep the ship shape and size, the grey stone tower and crenellated rails, the empty space at the left and right edges, outline and art style exactly the same, with nothing under the hull.",
+    "source": {
+      "recipe": "battleship-d",
+      "candidate": 0,
+      "sha256": "19a1ff7053529e65090d767a3770514332d9bf6832a173d6bcc54a8514762ff3"
+    }
+  }
+}

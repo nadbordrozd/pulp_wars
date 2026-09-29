@@ -57,7 +57,7 @@ row is one art subject in `chibi-art-v7.ts`.
 | `UNIT:JUGGERNAUT`             | `unit-original-juggernaut`                                              | 2     | GIANT_UNIT    | 88 x 104      | default | 4 / 24             | required | Largest unit.                                                                                              |
 | `UNIT:PATROL_BOAT`            | `unit-original-patrol-boat`                                             | 4     | LARGE_UNIT    | 72 x 88       | default | 0 / 8              | required | Owner-colour sail through the mask; no baked coral. Class choice: flag 6.                                  |
 | `UNIT:BATTLESHIP`             | `unit-original-battleship`                                              | 4     | GIANT_UNIT    | 88 x 96       | default | 4 / 16             | required | Two-mast warship. Class choice: flag 6.                                                                    |
-| `UNIT:EMBARKED_TRANSPORT`     | `unit-shared-embarked-transport`                                        | 4     | LARGE_UNIT    | 72 x 88       | default | 0 / 8              | required | One sprite for every embarked role today.                                                                  |
+| `UNIT:EMBARKED_TRANSPORT`     | `unit-shared-embarked-transport`                                        | 4     | LARGE_UNIT    | 72 x 72       | default | 0 / 0              | required | One sprite for every embarked role today. A low mastless barge, so 72 x 72 (batch 4).                      |
 | `RESOURCE:FRUIT`              | `terrain-square-original-fruit`, `…-fruit-pear`, `…-fruit-plum` (3)     | 3     | RESOURCE      | 48 x 48       | default | 0 / 0              | no       | 3 cosmetic variants chosen by the same coordinate hash.                                                    |
 | `RESOURCE:GAME`               | `terrain-square-original-animal`, `…-game-deer`, `…-game-fox` (3)       | 3     | RESOURCE      | 48 x 48       | default | 0 / 0              | no       | 3 variants.                                                                                                |
 | `RESOURCE:FERTILE_GROUND`     | `terrain-ruleset7-resource-fertile-ground`                              | 3     | RESOURCE      | 48 x 48       | default | 0 / 0              | no       | Grain tuft.                                                                                                |
@@ -196,6 +196,13 @@ batch replaces them: `unit-original-scout`, `-medic`, `-breacher`, `-heavy`,
 6. **Ships have no class in the direction.** The size table has no row for
    boats. This inventory proposes LARGE_UNIT for the Patrol Boat and
    embarked form and GIANT_UNIT for the Battleship; confirm in batch 4.
+   **Batch 4 decision:** as proposed. The Patrol Boat is 72 x 88 and the
+   Battleship 88 x 96; the embarked transport, a low mastless barge, is a
+   72 x 72 LARGE_UNIT (no upward overflow). Ships use their own `ship`
+   recipe class (a boat class text with no water, waves or plate) and are
+   recorded in the [direction, section 3](CHIBI_ART_DIRECTION.md#3-geometry-and-resolution).
+   Undead naval units have the same role ids and reuse these sprites with
+   the Undead skull badge.
 7. **Shorelines.** Water boundaries are drawn in code over the terrain. With
    chibi water they may need restyling; no batch owns them.
 8. **Owner colour on improvements.** The direction says owned buildings
@@ -208,6 +215,13 @@ batch replaces them: `unit-original-scout`, `-medic`, `-breacher`, `-heavy`,
    features with no owner colour. Deep crimson roof shading falls just
    outside the automatic extraction band, so the Farm, Port and Monument
    use keyLike-band overrides (no QA waiver).
+   **Batch 4 decision:** the same rule for the six batch-4 buildings: red
+   tile roofs, the Windmill's red cloth sails and the Market's red striped
+   cloth, with strict auto masks (22–34%, no overrides). For every owned
+   building of both batches the runtime recolours the mask with the
+   territory owner's colour, or with a neutral stone grey
+   (`CHIBI_UNOWNED_OWNER_COLOUR_V7`) when the tile has no owner, so the raw
+   key never shows.
 9. **The DOM ignores the art set.** `?art=chibi` switches only the canvas.
    Selection docks, technology cards, action buttons and rewards keep
    legacy art, including legacy map sprites of chibi subjects. Batch 5 (or
