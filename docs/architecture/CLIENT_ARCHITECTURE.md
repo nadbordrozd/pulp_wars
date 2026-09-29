@@ -1069,13 +1069,24 @@ state hash.
 
 ### Ruleset 7 art sets
 
-Ruleset 7 has two presentation-only art sets. LEGACY is the default and draws
-exactly as described above. CHIBI is opt-in for the
-[chibi migration](../art/CHIBI_MIGRATION_PLAN.md): `?art=chibi` selects it and
-`?art=legacy` returns to LEGACY. The choice is stored under its own
-`pulpWars.ruleset7.artSet.v1` key, so the shared exact-schema settings
-envelope is unchanged. Ruleset 6, rules, commands, saves, replay and hashes
-never see the art set.
+Ruleset 7 has two presentation-only art sets. CHIBI, from the
+[chibi migration](../art/CHIBI_MIGRATION_PLAN.md), is the default. LEGACY
+draws exactly as described above and remains an opt-out until its retirement
+(`pulp_wars-67q.13`). The app resolves the art set once at bootstrap
+(`src/app/art-set-v7.ts`):
+
+- `?art=legacy` or `?art=chibi` selects that art set and stores it under its
+  own `pulpWars.ruleset7.artSet.v1` key, so the shared exact-schema settings
+  envelope is unchanged.
+- Without a valid parameter, a stored choice applies, so a player who chose
+  LEGACY keeps it.
+- Otherwise, including unreadable storage or a corrupt stored value, the app
+  uses CHIBI and stores nothing.
+
+Views and board hosts constructed directly without an art set, as tests and
+review harnesses do, still fall back to LEGACY until the legacy path is
+retired. Ruleset 6, rules, commands, saves, replay and hashes never see the
+art set.
 
 CHIBI follows [chibi direction](../art/CHIBI_ART_DIRECTION.md) sections 3–4:
 

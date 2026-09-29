@@ -1,7 +1,10 @@
 # Chibi art migration plan
 
-**Status:** planned on 2026-09-29, and no work has started. The next agent
-executes this plan. The Beads IDs below are the source of truth for
+**Status:** all five batches are approved and on `main`, and CHIBI is the
+default Ruleset 7 art set (`pulp_wars-67q.14`). `?art=legacy` still selects
+and persists the legacy art as an opt-out, and a stored choice is respected.
+Retiring the legacy Ruleset 7 art path and folding the art docs remain in
+`pulp_wars-67q.13`. The Beads IDs below are the source of truth for
 progress; this document records the plan in git, so it survives a move to a
 new machine.
 
@@ -23,7 +26,8 @@ will be named by the user.
 67q.2 pipeline, masks, inventory, review    ─┴─> 67q.3 batch 1 -> 67q.4 USER REVIEW
     -> 67q.5 batch 2 -> 67q.6 USER REVIEW -> 67q.7 batch 3 -> 67q.8 USER REVIEW
     -> 67q.9 batch 4 -> 67q.10 USER REVIEW -> 67q.11 batch 5 -> 67q.12 USER REVIEW
-    -> 67q.13 cutover (chibi becomes the default)
+    -> 67q.14 chibi becomes the default (?art=legacy opt-out)
+    -> 67q.13 legacy Ruleset 7 art retired
 
 tt3.1 faction-layer dry run  (after 67q.2 and batch-1 approval 67q.4;
                               runs in parallel with batches 2–5)
@@ -40,7 +44,8 @@ tt3.1 faction-layer dry run  (after 67q.2 and batch-1 approval 67q.4;
 | `pulp_wars-67q.9`  | Batch 4: Windmill, Sawmill, Forge, Workshop, Market, Shipyard, ships, embarked form, leftovers  | same                              |
 | `pulp_wars-67q.11` | Batch 5: portraits, tech/action/reward/achievement icons, HUD symbols, leftovers                | same                              |
 | `.4/.6/.8/.10/.12` | User review gates, one per batch                                                                | explicit user approval            |
-| `pulp_wars-67q.13` | Cutover: chibi becomes the default, legacy Ruleset 7 art retired, art docs folded               | `cross-cutting/release`           |
+| `pulp_wars-67q.14` | Chibi becomes the default; `?art=legacy` stays a persisted opt-out                              | `ui/presentation` + browser smoke |
+| `pulp_wars-67q.13` | Cutover: legacy Ruleset 7 art retired, art docs folded                                          | `cross-cutting/release`           |
 | `pulp_wars-tt3`    | Epic: faction art layer                                                                         | —                                 |
 | `pulp_wars-tt3.1`  | Dry run of the faction fragment with a throwaway test faction                                   | `asset-only`                      |
 
@@ -50,8 +55,9 @@ the final gates.
 ## Why this shape
 
 - **The runtime and pipeline come first.** They let every batch be seen in
-  the real game behind `?art=chibi` while the default stays on the legacy
-  art, so `main` is releasable throughout.
+  the real game behind `?art=chibi` while the default stayed on the legacy
+  art, so `main` was releasable throughout. Chibi became the default only
+  after every batch was approved.
 - **Batch 1 sets the look:** terrain, cities and the two units the user
   already approved. That settles grass, city scale and the owner mask before
   the bulk of the work.

@@ -7,6 +7,9 @@ import type { StorageAdapter } from "../persistence/index";
  */
 export const ART_SET_STORAGE_KEY_V7 = "pulpWars.ruleset7.artSet.v1";
 
+/** The art set used when neither the URL nor a stored choice selects one. */
+export const DEFAULT_ART_SET_V7: ArtSetV7 = "CHIBI";
+
 /** `?art=chibi` or `?art=legacy`; anything else, or a repeated value, is ignored. */
 export function artSetFromSearchV7(search: string): ArtSetV7 | null {
   const values = new URLSearchParams(search).getAll("art");
@@ -21,8 +24,9 @@ export function parseStoredArtSetV7(value: string | null): ArtSetV7 | null {
 
 /**
  * The URL parameter selects and persists the art set; otherwise the stored
- * choice applies. LEGACY is the default, and restricted storage never
- * prevents the app from mounting.
+ * choice applies. CHIBI is the default (LEGACY stays available through
+ * `?art=legacy` until its retirement), and restricted storage never prevents
+ * the app from mounting.
  */
 export function resolveArtSetV7(
   search: string,
@@ -40,9 +44,9 @@ export function resolveArtSetV7(
   try {
     return (
       parseStoredArtSetV7(storage?.getItem(ART_SET_STORAGE_KEY_V7) ?? null) ??
-      "LEGACY"
+      DEFAULT_ART_SET_V7
     );
   } catch {
-    return "LEGACY";
+    return DEFAULT_ART_SET_V7;
   }
 }

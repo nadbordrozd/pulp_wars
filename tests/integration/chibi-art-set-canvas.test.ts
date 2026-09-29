@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { bootstrapRuleset7App } from "../../src/app/index";
 import {
   ART_SET_STORAGE_KEY_V7,
+  DEFAULT_ART_SET_V7,
   artSetFromSearchV7,
   resolveArtSetV7,
 } from "../../src/app/art-set-v7";
@@ -45,7 +46,7 @@ function memoryStorage(): StorageAdapter & {
 }
 
 describe("Ruleset 7 art-set switch", () => {
-  it("selects CHIBI with ?art=chibi, persists it, and keeps LEGACY the default", () => {
+  it("defaults to CHIBI, persists ?art=legacy and ?art=chibi, and respects a stored choice", () => {
     expect(artSetFromSearchV7("")).toBeNull();
     expect(artSetFromSearchV7("?art=chibi")).toBe("CHIBI");
     expect(artSetFromSearchV7("?ruleset=7&art=CHIBI")).toBe("CHIBI");
@@ -53,17 +54,29 @@ describe("Ruleset 7 art-set switch", () => {
     expect(artSetFromSearchV7("?art=neon")).toBeNull();
     expect(artSetFromSearchV7("?art=chibi&art=legacy")).toBeNull();
 
+    expect(DEFAULT_ART_SET_V7).toBe("CHIBI");
     const storage = memoryStorage();
-    expect(resolveArtSetV7("", storage)).toBe("LEGACY");
+    // No parameter and no stored choice: the CHIBI default, not persisted.
+    expect(resolveArtSetV7("", storage)).toBe("CHIBI");
+    expect(resolveArtSetV7("?art=neon", storage)).toBe("CHIBI");
     expect(storage.values.size).toBe(0);
+    // ?art=legacy selects and persists the opt-out, which is then respected.
+    expect(resolveArtSetV7("?art=legacy", storage)).toBe("LEGACY");
+    expect(storage.values.get(ART_SET_STORAGE_KEY_V7)).toBe("LEGACY");
+    expect(resolveArtSetV7("", storage)).toBe("LEGACY");
+    expect(resolveArtSetV7("?art=neon", storage)).toBe("LEGACY");
+    expect(resolveArtSetV7("?art=chibi&art=legacy", storage)).toBe("LEGACY");
+    // ?art=chibi selects and persists CHIBI.
     expect(resolveArtSetV7("?art=chibi", storage)).toBe("CHIBI");
     expect(storage.values.get(ART_SET_STORAGE_KEY_V7)).toBe("CHIBI");
     expect(resolveArtSetV7("", storage)).toBe("CHIBI");
-    expect(resolveArtSetV7("?art=neon", storage)).toBe("CHIBI");
-    expect(resolveArtSetV7("?art=legacy", storage)).toBe("LEGACY");
-    expect(resolveArtSetV7("", storage)).toBe("LEGACY");
+    // A previously stored explicit LEGACY choice survives the default change.
+    const earlier = memoryStorage();
+    earlier.setItem(ART_SET_STORAGE_KEY_V7, "LEGACY");
+    expect(resolveArtSetV7("", earlier)).toBe("LEGACY");
+    expect(earlier.values.get(ART_SET_STORAGE_KEY_V7)).toBe("LEGACY");
     storage.setItem(ART_SET_STORAGE_KEY_V7, "corrupt");
-    expect(resolveArtSetV7("", storage)).toBe("LEGACY");
+    expect(resolveArtSetV7("", storage)).toBe("CHIBI");
     const denied: StorageAdapter = {
       getItem: () => {
         throw new Error("denied");
@@ -76,63 +89,55 @@ describe("Ruleset 7 art-set switch", () => {
       },
     };
     expect(resolveArtSetV7("?art=chibi", denied)).toBe("CHIBI");
-    expect(resolveArtSetV7("", denied)).toBe("LEGACY");
-    expect(resolveArtSetV7("", null)).toBe("LEGACY");
+    expect(resolveArtSetV7("?art=legacy", denied)).toBe("LEGACY");
+    expect(resolveArtSetV7("", denied)).toBe("CHIBI");
+    expect(resolveArtSetV7("", null)).toBe("CHIBI");
   });
 
-  it("boots the production view on the URL art set and hands it to the board host", async () => {
+  it("boots the production view on the resolved art set and hands it to the board host", async () => {
     vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(null);
-    window.history.replaceState(null, "", "/?art=chibi");
     const settings = memoryStorage();
-    const app = bootstrapRuleset7App(document, {
-      storage: null,
-      settingsStorage: settings,
-    });
-    document
-      .querySelector<HTMLButtonElement>('[data-action="launch"]')
-      ?.click();
-    await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
-    const canvas = document.querySelector<HTMLCanvasElement>(
-      "canvas.board-canvas-v7",
-    );
-    expect(canvas?.dataset.artSet).toBe("CHIBI");
-    expect(["0.75", "1"]).toContain(canvas?.dataset.zoomStep);
-    expect(Number(canvas?.dataset.tileCssPx)).toBe(
-      80 * Number(canvas?.dataset.zoomStep),
-    );
+    const boot = async (search: string): Promise<DOMStringMap | undefined> => {
+      document.body.innerHTML = '<div id="app"></div>';
+      window.history.replaceState(null, "", `/${search}`);
+      const app = bootstrapRuleset7App(document, {
+        storage: null,
+        settingsStorage: settings,
+      });
+      document
+        .querySelector<HTMLButtonElement>('[data-action="launch"]')
+        ?.click();
+      await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
+      const dataset = document.querySelector<HTMLCanvasElement>(
+        "canvas.board-canvas-v7",
+      )?.dataset;
+      const snapshot = dataset === undefined ? undefined : { ...dataset };
+      app.destroy();
+      return snapshot;
+    };
+
+    // Fresh storage, no parameter: the CHIBI default on the 80 px cell.
+    const fresh = await boot("");
+    expect(fresh?.artSet).toBe("CHIBI");
+    expect(["0.75", "1"]).toContain(fresh?.zoomStep);
+    expect(Number(fresh?.tileCssPx)).toBe(80 * Number(fresh?.zoomStep));
+    expect(settings.values.has(ART_SET_STORAGE_KEY_V7)).toBe(false);
+
+    // ?art=legacy selects and persists the LEGACY opt-out.
+    const legacy = await boot("?art=legacy");
+    expect(legacy?.artSet).toBe("LEGACY");
+    expect(legacy?.zoomStep).toBeUndefined();
+    expect(settings.values.get(ART_SET_STORAGE_KEY_V7)).toBe("LEGACY");
+    // The stored choice is respected without the parameter.
+    expect((await boot(""))?.artSet).toBe("LEGACY");
+
+    // ?art=chibi selects and persists CHIBI again.
+    expect((await boot("?art=chibi"))?.artSet).toBe("CHIBI");
     expect(settings.values.get(ART_SET_STORAGE_KEY_V7)).toBe("CHIBI");
+    expect((await boot(""))?.artSet).toBe("CHIBI");
     // The shared settings envelope is untouched by the art-set preference.
     expect(settings.values.has("pulpWars.settings.v1")).toBe(false);
-    app.destroy();
-
-    document.body.innerHTML = '<div id="app"></div>';
     window.history.replaceState(null, "", "/");
-    const resumed = bootstrapRuleset7App(document, {
-      storage: null,
-      settingsStorage: settings,
-    });
-    document
-      .querySelector<HTMLButtonElement>('[data-action="launch"]')
-      ?.click();
-    await waitUntil(() => resumed.controller.snapshot().phase === "ACTIVE");
-    expect(
-      document.querySelector<HTMLCanvasElement>("canvas.board-canvas-v7")
-        ?.dataset.artSet,
-    ).toBe("CHIBI");
-    resumed.destroy();
-
-    document.body.innerHTML = '<div id="app"></div>';
-    const legacy = bootstrapRuleset7App(document, { storage: null });
-    document
-      .querySelector<HTMLButtonElement>('[data-action="launch"]')
-      ?.click();
-    await waitUntil(() => legacy.controller.snapshot().phase === "ACTIVE");
-    const legacyCanvas = document.querySelector<HTMLCanvasElement>(
-      "canvas.board-canvas-v7",
-    );
-    expect(legacyCanvas?.dataset.artSet).toBe("LEGACY");
-    expect(legacyCanvas?.dataset.zoomStep).toBeUndefined();
-    legacy.destroy();
   });
 });
 

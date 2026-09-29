@@ -629,7 +629,7 @@ try {
       ? "bounded launch/End Turn/resume compatibility probe"
       : `natural default match ${outcome.outcome} in round ${outcome.round}/${outcome.commandIndex} commands`;
   console.log(
-    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed; ?art=chibi ${chibi}; ?undead=1 ${undead}. Evidence: ${reviewRoot}`,
+    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed; art sets ${chibi}; ?undead=1 ${undead}. Evidence: ${reviewRoot}`,
   );
 } finally {
   try {
@@ -645,13 +645,18 @@ try {
 }
 
 /**
- * Opt-in CHIBI art set: ?art=chibi boots Ruleset 7 on the 80 px cell with
- * discrete zoom steps, paints the board (legacy art at chibi geometry until
- * batches register chibi rasters), and persists the choice until ?art=legacy.
+ * Default CHIBI art set: with fresh storage and no `art` parameter Ruleset 7
+ * boots on the 80 px CHIBI cell with discrete zoom steps and paints accepted
+ * chibi rasters without persisting a choice. `?art=legacy` selects and
+ * persists the LEGACY opt-out, which a later parameterless load respects;
+ * `?art=chibi` persists CHIBI again, and the probe then resets storage to the
+ * default so later probes start fresh.
  */
 async function probeChibiArtSet(connection: Connection): Promise<string> {
   const launchSelector = '[data-action="launch"]';
   const canvasSelector = "canvas.board-canvas-v7";
+  const artKey = "pulpWars.ruleset7.artSet.v1";
+  const saveKey = "pulpWars.save.v7r13.current";
   const artUrl = (value: string | null): string => {
     const url = new URL(baseUrl);
     if (value === null) url.searchParams.delete("art");
@@ -669,16 +674,21 @@ async function probeChibiArtSet(connection: Connection): Promise<string> {
       `globalThis.__V7_CHIBI_PRIOR_DOCUMENT__ !== true && document.readyState === 'complete' && Boolean(${readiness})`,
     );
   };
+  const freshSetup = `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`;
   const activeWithArt = (artSet: string): string =>
     `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); return s?.phase === 'ACTIVE' && !s.transitioning && document.querySelector(${JSON.stringify(canvasSelector)})?.dataset.artSet === ${JSON.stringify(artSet)}; })()`;
+  const storedArt = (): Promise<string | null> =>
+    evaluate<string | null>(
+      connection,
+      `localStorage.getItem(${JSON.stringify(artKey)})`,
+    );
+
+  // Fresh storage and no parameter: the CHIBI default, not persisted.
   await evaluate(
     connection,
-    `localStorage.removeItem('pulpWars.save.v7r13.current')`,
+    `localStorage.removeItem(${JSON.stringify(saveKey)}); localStorage.removeItem(${JSON.stringify(artKey)})`,
   );
-  await navigateFresh(
-    artUrl("chibi"),
-    `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`,
-  );
+  await navigateFresh(artUrl(null), freshSetup);
   await pointerClick(connection, launchSelector);
   await waitForExpression(connection, activeWithArt("CHIBI"), 900);
   // Wait until accepted art has loaded and painted beyond the flat fills.
@@ -690,6 +700,7 @@ async function probeChibiArtSet(connection: Connection): Promise<string> {
     readonly before: { readonly step?: string; readonly tile?: string };
     readonly after: { readonly step?: string; readonly tile?: string };
     readonly stored: string | null;
+    readonly chibiDomArt: number;
   }>(
     connection,
     `(() => {
@@ -699,7 +710,7 @@ async function probeChibiArtSet(connection: Connection): Promise<string> {
       canvas.focus();
       canvas.dispatchEvent(new KeyboardEvent('keydown', { key: '+', bubbles: true }));
       const after = read();
-      return { before, after, stored: localStorage.getItem('pulpWars.ruleset7.artSet.v1') };
+      return { before, after, stored: localStorage.getItem(${JSON.stringify(artKey)}), chibiDomArt: document.querySelectorAll('[data-art-set="chibi"]').length };
     })()`,
   );
   const next: Readonly<Record<string, string>> = {
@@ -712,27 +723,55 @@ async function probeChibiArtSet(connection: Connection): Promise<string> {
     Number(evidence.before.tile) !== 80 * Number(beforeStep) ||
     evidence.after.step !== next[beforeStep] ||
     Number(evidence.after.tile) !== 80 * Number(evidence.after.step) ||
-    evidence.stored !== "CHIBI"
+    evidence.stored !== null ||
+    evidence.chibiDomArt === 0
   )
-    throw new Error(`?art=chibi geometry failed: ${JSON.stringify(evidence)}`);
+    throw new Error(
+      `default CHIBI art set failed: ${JSON.stringify(evidence)}`,
+    );
 
-  // Without the parameter, the persisted choice still applies.
+  // ?art=legacy selects and persists the LEGACY opt-out on the legacy cell.
+  await evaluate(
+    connection,
+    `localStorage.removeItem(${JSON.stringify(saveKey)})`,
+  );
+  await navigateFresh(artUrl("legacy"), freshSetup);
+  await pointerClick(connection, launchSelector);
+  await waitForExpression(connection, activeWithArt("LEGACY"), 900);
+  const legacy = await evaluate<{
+    readonly step?: string;
+    readonly stored: string | null;
+  }>(
+    connection,
+    `({ step: document.querySelector(${JSON.stringify(canvasSelector)}).dataset.zoomStep, stored: localStorage.getItem(${JSON.stringify(artKey)}) })`,
+  );
+  if (legacy.step !== undefined || legacy.stored !== "LEGACY")
+    throw new Error(`?art=legacy opt-out failed: ${JSON.stringify(legacy)}`);
+
+  // Without the parameter, the persisted LEGACY choice still applies.
   await navigateFresh(
     artUrl(null),
     `globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'RESUMABLE'`,
   );
   await touchClick(connection, '[data-action="resume"]');
-  await waitForExpression(connection, activeWithArt("CHIBI"), 900);
+  await waitForExpression(connection, activeWithArt("LEGACY"), 900);
 
+  // ?art=chibi persists CHIBI again; then reset storage to the default.
   await evaluate(
     connection,
-    `localStorage.removeItem('pulpWars.save.v7r13.current')`,
+    `localStorage.removeItem(${JSON.stringify(saveKey)})`,
   );
   await navigateFresh(
-    artUrl("legacy"),
-    `document.querySelector('[data-v7-setup]') !== null && localStorage.getItem('pulpWars.ruleset7.artSet.v1') === 'LEGACY'`,
+    artUrl("chibi"),
+    `${freshSetup} && localStorage.getItem(${JSON.stringify(artKey)}) === 'CHIBI'`,
   );
-  return `zoom ${beforeStep}->${evidence.after.step} at ${evidence.after.tile}px cells, persisted and reset`;
+  await evaluate(
+    connection,
+    `localStorage.removeItem(${JSON.stringify(artKey)})`,
+  );
+  if ((await storedArt()) !== null)
+    throw new Error("art-set reset failed to clear the stored choice");
+  return `default CHIBI zoom ${beforeStep}->${evidence.after.step} at ${evidence.after.tile}px cells with ${evidence.chibiDomArt} chibi DOM images, ?art=legacy persisted and resumed, ?art=chibi persisted, reset`;
 }
 
 /**

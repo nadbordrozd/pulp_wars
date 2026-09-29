@@ -61,6 +61,27 @@ describe("Ruleset 7 browser smoke script", () => {
       "scripts/browser-smoke-v7-controls.ts",
     );
   });
+  it("probes the CHIBI default, the persisted ?art=legacy opt-out and a reset", () => {
+    const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
+    const probe = source.slice(
+      source.indexOf("async function probeChibiArtSet("),
+      source.indexOf("async function probeUndeadFlag("),
+    );
+
+    expect(probe).toContain("await navigateFresh(artUrl(null), freshSetup)");
+    expect(probe).toContain('activeWithArt("CHIBI")');
+    expect(probe).toContain("80 * Number(beforeStep)");
+    expect(probe).toContain("evidence.stored !== null");
+    expect(probe).toContain(
+      'await navigateFresh(artUrl("legacy"), freshSetup)',
+    );
+    expect(probe).toContain('legacy.stored !== "LEGACY"');
+    expect(probe).toContain('activeWithArt("LEGACY")');
+    expect(probe).toContain('artUrl("chibi")');
+    expect(
+      probe.lastIndexOf("localStorage.removeItem(${JSON.stringify(artKey)})"),
+    ).toBeGreaterThan(probe.indexOf('artUrl("chibi")'));
+  });
   it("waits for a fresh complete document and installed controller after reload", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
 
