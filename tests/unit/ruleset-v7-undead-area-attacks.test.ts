@@ -751,8 +751,9 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
     let commandsThisTurn = 0;
     let turnPlayer = activePlayer(state);
     let wails = 0;
-    // Normal AI never Wails yet (pulp_wars-vkq.9): this scripted driver
-    // trains Banshees, walks them toward visible enemies, and Wails.
+    // This scripted driver trains Banshees, walks them toward visible
+    // enemies, and Wails deterministically; Normal AI Wails are counted too
+    // (pulp_wars-vkq.9).
     while (wails < 2 && state.outcome === null && state.round <= 60) {
       const actor = activePlayer(state);
       if (actor !== turnPlayer) {
@@ -785,8 +786,10 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
   }, 60_000);
 
   it("round-trips Lich splash from ordinary Normal AI play", () => {
-    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 2), {
-      maxRounds: 30,
+    // Seed 3 fields a Lich that splashes within 45 rounds of Normal play
+    // (pulp_wars-vkq.9 changed Undead play, so the seed-2 game did not).
+    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 3), {
+      maxRounds: 45,
     });
     expect(match.errors).toEqual([]);
     const created = createPlayableGameV7(match.state.setup);

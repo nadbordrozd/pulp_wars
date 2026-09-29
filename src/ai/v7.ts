@@ -40,6 +40,31 @@ import {
   normalOpeningResearchPendingV7,
   normalOpeningTechnologyV7,
 } from "./v7-opening";
+import {
+  DEVOUR_MINIMUM_HEAL_V7,
+  RAISE_DEAD_SKELETON_VALUE_V7,
+  devourHealV7,
+  hasLivingHostileSeatV7,
+  hostileNecromancersNearV7,
+  inOwnTerritoryForPolicyV7,
+  isBansheeV7,
+  isGhoulV7,
+  isGraveAtV7,
+  isLivingOwnerV7,
+  isNecromancerV7,
+  isPrimaryUnusedV7,
+  isLichV7,
+  isZombieV7,
+  offeredWailSummaryV7,
+  ownNecromancersNearV7,
+  projectedWailSummaryV7,
+  publicDeathLeavesGraveV7,
+  publicIdleRecoveryV7,
+  raisableGravesAtV7,
+  raiseDeadCountV7,
+  undeadMatchForPolicyV7,
+  wailPriorityV7,
+} from "./v7-undead";
 
 export const NORMAL_AI_MAX_ACCEPTED_COMMANDS_PER_TURN_V7 = 128;
 
@@ -104,6 +129,8 @@ interface ThreatV7 {
 
 interface PolicyContextV7 {
   readonly view: PlayerViewV7;
+  /** Revision 13: a seat is Undead; all Undead heuristics are gated on it. */
+  readonly undead: boolean;
   readonly commands: readonly CommandV7[];
   readonly threats: ThreatV7[];
   readonly threatenedTiles: ReadonlyMap<UnitId, ReadonlySet<string>>;
@@ -981,6 +1008,7 @@ function bareContext(
   const threats: ThreatV7[] = [];
   return {
     view,
+    undead: undeadMatchForPolicyV7(view),
     commands,
     threats,
     threatenedTiles,
@@ -2067,7 +2095,13 @@ function* publicThreatenedTilesWorkV7(
 ): Generator<void, readonly CoordV7[]> {
   const rule = unitRoleRuleV7(view, unit);
   const facts = publicCombatFacts(view, unit, policyLookup);
-  if (!facts.abilities.includes("ATTACK") || facts.attack2 <= 0) return [];
+  // Revision 13: a hostile Banshee's Wail threatens a living viewer within
+  // Chebyshev 2 of every tile it can reach (it may Wail after moving).
+  const wail = publicWailThreatV7(view, unit);
+  if (!wail && (!facts.abilities.includes("ATTACK") || facts.attack2 <= 0))
+    return [];
+  const minimumRange = wail ? 1 : facts.minimumRange;
+  const maximumRange = wail ? WAIL_THREAT_RADIUS_V7 : facts.maximumRange;
   const origins = new Map([[coordKey(unit.at), unit.at]]);
   if (unit.form !== "EMBARKED" && rule.mayUsePrimaryActionAfterMove) {
     const queue = [{ at: unit.at, spent2: 0 }];
@@ -2133,26 +2167,33 @@ function* publicThreatenedTilesWorkV7(
   }
   const direct: CoordV7[] = [];
   for (const origin of origins.values()) {
-    for (
-      let y = origin.y - facts.maximumRange;
-      y <= origin.y + facts.maximumRange;
-      y += 1
-    )
+    for (let y = origin.y - maximumRange; y <= origin.y + maximumRange; y += 1)
       for (
-        let x = origin.x - facts.maximumRange;
-        x <= origin.x + facts.maximumRange;
+        let x = origin.x - maximumRange;
+        x <= origin.x + maximumRange;
         x += 1
       ) {
         if (x < 0 || y < 0 || x >= view.board.width || y >= view.board.height)
           continue;
         const at = { x, y };
         const range = distance(origin, at);
-        if (range >= facts.minimumRange && range <= facts.maximumRange)
-          direct.push(at);
+        if (range >= minimumRange && range <= maximumRange) direct.push(at);
       }
     yield;
   }
   return [...new Map(direct.map((at) => [coordKey(at), at])).values()];
+}
+
+const WAIL_THREAT_RADIUS_V7 = 2;
+
+/** A visible hostile land Banshee threatens a living viewer (section 6.6). */
+function publicWailThreatV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
+  return (
+    unit.form === "LAND" &&
+    unit.ownerId !== view.viewer.id &&
+    isBansheeV7(view, unit) &&
+    isLivingOwnerV7(view, view.viewer.id)
+  );
 }
 
 function publicProjectsZocForThreatV7(
@@ -2366,6 +2407,7 @@ function isLowValueAttackV7(
   );
   const actor = context.lookup.unitsById.get(command.unitId);
   if (preview === null || actor === undefined) return true;
+  if (context.undead && feedsZombieV7(context, command, preview)) return true;
   const harmful =
     (!preview.defenderDies && preview.attackerDies) ||
     (!preview.defenderDies && combatImmediateValue(preview) <= 0);
@@ -2373,6 +2415,113 @@ function isLowValueAttackV7(
   if (attackPurposeExceptionV7(context, command, preview)) return false;
   return true;
 }
+
+/**
+ * Revision 13 Infect: an attack whose retaliation kills and infects the
+ * attacker feeds the enemy a Zombie. Only a proven city save or a lethal
+ * follow-up this turn excuses it (the sacrifice value exception does not).
+ */
+function feedsZombieV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+  preview: CombatPreviewV7,
+): boolean {
+  if (!preview.attackerInfected) return false;
+  const facts = attackPurposeFactsV7(context, command, preview);
+  return !facts.savesCity && !facts.opensLethalFollowUp;
+}
+
+/**
+ * Revision 13 Infect exposure: a melee chip on a Zombie that leaves the
+ * attacker where the wounded Zombie kills (and infects) it next turn. It is
+ * penalized rather than forbidden, so sieges can still grind a Zombie down.
+ */
+function zombieChipExposureV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  target: PublicUnitV7,
+  preview: CombatPreviewV7,
+): boolean {
+  if (
+    preview.defenderDies ||
+    preview.attackerDies ||
+    actor.form !== "LAND" ||
+    distance(actor.at, target.at) !== 1 ||
+    !isZombieV7(context.view, target)
+  )
+    return false;
+  const zombie = { ...target, hp: target.hp - preview.damageToDefender };
+  const wounded = {
+    ...actor,
+    hp: Math.min(
+      actor.maxHp,
+      actor.hp - preview.damageToAttacker + preview.attackerHeal,
+    ),
+  };
+  return (
+    publicProjectedDamageWithLookupV7(
+      context.view,
+      zombie,
+      wounded,
+      actor.at,
+      {},
+      context.lookup,
+    ) >= wounded.hp
+  );
+}
+
+/**
+ * Revision 13 attack adjustments, applied only in a match with an Undead
+ * seat: Infect risings, ranged fire at Zombies, and Graves that feed a
+ * Necromancer (own: good; hostile: bad unless an advance occupies the Grave).
+ */
+function undeadAttackValueV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+  actor: PublicUnitV7,
+  preview: CombatPreviewV7,
+): number {
+  const view = context.view;
+  const target = context.lookup.unitsById.get(command.targetUnitId);
+  if (target === undefined) return 0;
+  let value = 0;
+  if (preview.defenderInfected) value += INFECT_RISING_VALUE_V7;
+  if (preview.attackerInfected) value -= INFECT_RISING_VALUE_V7;
+  if (isZombieV7(view, target) && distance(actor.at, target.at) >= 2)
+    value += 6;
+  if (zombieChipExposureV7(context, actor, target, preview))
+    value -= INFECT_RISING_VALUE_V7;
+  const undeadViewer = view.viewer.faction === "UNDEAD";
+  if (
+    preview.defenderDies &&
+    !preview.defenderInfected &&
+    !preview.advances &&
+    publicDeathLeavesGraveV7(view, target)
+  ) {
+    if (undeadViewer && ownNecromancersNearV7(view, target.at).length > 0)
+      value += 6;
+    if (
+      hostileNecromancersNearV7(view, target.at, (owner) =>
+        isHostile(view, owner),
+      ).some((unit) => unit.id !== target.id)
+    )
+      value -= 6;
+  }
+  if (undeadViewer)
+    for (const splash of preview.splash) {
+      const unit = context.lookup.unitsById.get(splash.unitId);
+      if (
+        splash.dies &&
+        unit !== undefined &&
+        publicDeathLeavesGraveV7(view, unit)
+      )
+        value += 4;
+    }
+  return value;
+}
+
+/** A 10-HP Zombie rising: Zombie cost 3 x 4 + 10 HP. */
+const INFECT_RISING_VALUE_V7 = 22;
 
 function attackPurposeExceptionV7(
   context: PolicyContextV7,
@@ -2601,6 +2750,10 @@ function* sharedCityContextWorkV7(
       defendedLanding = true;
     yield;
   }
+  const undeadTraining =
+    view.viewer.faction === "UNDEAD" ? undeadTrainingAdjustmentsV7(view) : null;
+  const trainingAdjustment = (role: UnitRoleIdV7): number =>
+    undeadTraining?.get(role) ?? 0;
   const threatenedCityIds = new Set<CityId>();
   for (const threat of context.threats) {
     threatenedCityIds.add(threat.cityId);
@@ -2657,7 +2810,8 @@ function* sharedCityContextWorkV7(
         Number(command.role === "CATAPULT" && durableScreen) * 12 +
         20 * Number(count === 0) -
         2 * (effectiveRoleRuleV7(command.role, view.viewer.faction).cost ?? 0) -
-        8 * count;
+        8 * count +
+        trainingAdjustment(command.role);
       const order = landOrder as readonly UnitRoleIdV7[];
       if (
         preferredLand === null ||
@@ -2743,7 +2897,8 @@ function* sharedCityContextWorkV7(
             : command.kind === "TRAIN"
               ? (effectiveRoleRuleV7(command.role, view.viewer.faction).maxHp +
                   Number(command.role === "GUARD" && threatened) * 20 +
-                  Number(command.role === "CATAPULT" && durableScreen) * 12) *
+                  Number(command.role === "CATAPULT" && durableScreen) * 12 +
+                  trainingAdjustment(command.role)) *
                   3 -
                 cost * 4 +
                 Number(preferredLand?.role === command.role) * 18
@@ -2768,6 +2923,24 @@ function* sharedCityContextWorkV7(
     yield;
   }
   context.sharedCityContextPrepared = true;
+}
+
+/**
+ * Revision 13 Undead training values: a Banshee's Wail only matters against
+ * a living seat, a Necromancer gains value from visible Graves to raise, and
+ * a Lich's splash adds to its Catapult value.
+ */
+function undeadTrainingAdjustmentsV7(
+  view: PlayerViewV7,
+): ReadonlyMap<UnitRoleIdV7, number> {
+  const adjustments = new Map<UnitRoleIdV7, number>();
+  adjustments.set(
+    "MARKSMAN",
+    hasLivingHostileSeatV7(view, (owner) => isHostile(view, owner)) ? 8 : -30,
+  );
+  adjustments.set("CAPTAIN", 4 * Math.min(3, view.graves.length));
+  adjustments.set("CATAPULT", 4);
+  return adjustments;
 }
 
 function sharedTrainingCostV7(
@@ -3192,6 +3365,8 @@ function scoreCommandWithContext(
         safetyValue = sequence.safety;
         objectiveValue = sequence.spacing;
       }
+      if (context.undead && actor !== undefined)
+        strategicValue += undeadAttackValueV7(context, command, actor, preview);
     }
   }
 
@@ -3231,6 +3406,46 @@ function scoreCommandWithContext(
     );
     strategicValue = targets.length * 12;
     priority = targets.length >= 2 ? 1235 : 720;
+    if (view.viewer.faction === "UNDEAD") {
+      const frenzy = undeadFrenzyValueV7(context, actor);
+      strategicValue = frenzy.strategic;
+      priority = frenzy.priority;
+    }
+  }
+
+  if (command.kind === "RAISE_DEAD" && actor !== undefined) {
+    // Revision 13: each eligible Grave rises as a free 5-HP Skeleton.
+    const risen = raiseDeadCountV7(view, actor.id);
+    priority = risen > 0 ? 1237 : -1;
+    strategicValue = risen * RAISE_DEAD_SKELETON_VALUE_V7;
+    immediateValue = risen * 5;
+  }
+
+  if (command.kind === "DEVOUR" && actor !== undefined) {
+    const devour = undeadDevourValueV7(context, actor);
+    priority = devour.priority;
+    strategicValue = devour.strategic;
+    immediateValue = devour.heal * 8;
+  }
+
+  if (command.kind === "WAIL" && actor !== undefined) {
+    const wail = offeredWailSummaryV7(view, actor.id, (unit) =>
+      targetStrategicValue(view, unit.id, context.lookup),
+    );
+    priority = wailPriorityV7(wail);
+    immediateValue = wail.value;
+    strategicValue = wail.kills * 10 + wail.graves * 4;
+    if (
+      context.threats.some((threat) =>
+        view.units.some(
+          (unit) =>
+            unit.id === threat.unitId &&
+            distance(unit.at, actor.at) <= WAIL_THREAT_RADIUS_V7 &&
+            isLivingOwnerV7(view, unit.ownerId),
+        ),
+      )
+    )
+      strategicValue += 10;
   }
 
   if (command.kind === "RECOVER") {
@@ -3373,6 +3588,12 @@ function scoreCommandWithContext(
       strategicValue += 18;
       priority = Math.max(priority, 850);
     }
+    if (context.undead && resultAt !== null) {
+      const undead = undeadMoveValueV7(context, actor, resultAt, priority);
+      priority = undead.priority;
+      strategicValue += undead.strategic;
+      objectiveValue += undead.objective;
+    }
   }
 
   if (command.kind === "PILLAGE" && actor !== undefined) {
@@ -3410,6 +3631,210 @@ function scoreCommandWithContext(
     objectiveValue,
     deterministicTieBreak: tie,
   };
+}
+
+/**
+ * Revision 13 Frenzy (the Undead Rally): only adjacent attack-capable units
+ * that can still attack a visible enemy this turn benefit; a Frenzy with no
+ * such unit is not worth the Necromancer's action.
+ */
+function undeadFrenzyValueV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+): { readonly priority: number; readonly strategic: number } {
+  const view = context.view;
+  let eligible = 0;
+  let useful = 0;
+  for (const unit of view.units) {
+    if (
+      unit.ownerId !== view.viewer.id ||
+      unit.id === actor.id ||
+      unit.form !== "LAND" ||
+      unit.activation.inspired ||
+      unit.activation.attacked ||
+      unit.activation.handled ||
+      distance(unit.at, actor.at) !== 1
+    )
+      continue;
+    const rule = unitRoleRuleV7(view, unit);
+    if (
+      !rule.abilities.includes("ATTACK") ||
+      rule.tacticalRole === "SUPPORT" ||
+      rule.tacticalRole === "SIEGE"
+    )
+      continue;
+    eligible += 1;
+    const reach =
+      rule.range +
+      (!unit.activation.moved && rule.mayUsePrimaryActionAfterMove
+        ? rule.move
+        : 0);
+    if (
+      context.lookup.visibleHostiles.some(
+        (hostile) => distance(hostile.at, unit.at) <= reach,
+      )
+    )
+      useful += 1;
+  }
+  return {
+    priority: useful >= 2 ? 1235 : useful === 1 ? 1190 : -1,
+    strategic: useful * 12 + (eligible - useful) * 2,
+  };
+}
+
+/**
+ * Revision 13 Devour: heal a wounded Ghoul, or deny a Grave that a hostile
+ * Necromancer could raise. A small heal leaves the Grave to an own
+ * Necromancer nearby.
+ */
+function undeadDevourValueV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+): {
+  readonly priority: number;
+  readonly strategic: number;
+  readonly heal: number;
+} {
+  const view = context.view;
+  const heal = devourHealV7(view, actor.id);
+  if (heal === null) return { priority: -1, strategic: 0, heal: 0 };
+  const deny =
+    hostileNecromancersNearV7(view, actor.at, (owner) => isHostile(view, owner))
+      .length > 0;
+  const ownNecromancer = ownNecromancersNearV7(view, actor.at).length > 0;
+  const strategic = heal * 8 + (deny ? 20 : 0);
+  if (heal >= DEVOUR_MINIMUM_HEAL_V7 || deny)
+    return { priority: 1176, strategic, heal };
+  if (heal > 0 && !ownNecromancer) return { priority: 640, strategic, heal };
+  return { priority: -1, strategic, heal };
+}
+
+/**
+ * Revision 13 movement: Grave denial for every seat; for an Undead viewer,
+ * Necromancer Grave approach and protection, Ghoul Devour approach, Banshee
+ * Wail positioning, and Restless retreat to own territory.
+ */
+function undeadMoveValueV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+  basePriority: number,
+): {
+  readonly priority: number;
+  readonly strategic: number;
+  readonly objective: number;
+} {
+  const view = context.view;
+  let priority = basePriority;
+  let strategic = 0;
+  let objective = 0;
+  const hostile = (owner: PlayerId) => isHostile(view, owner);
+  let dangerThere: number | null = null;
+  const danger = (): number =>
+    (dangerThere ??= visibleImmediateDamage(view, actor, to, context));
+  // Standing on a Grave keeps it from a hostile Necromancer (occupied Graves
+  // never rise); this is cheap Grave denial for any faction.
+  if (
+    actor.form === "LAND" &&
+    isGraveAtV7(view, to) &&
+    hostileNecromancersNearV7(view, to, hostile, 2).length > 0
+  )
+    strategic += 4;
+  if (view.viewer.faction !== "UNDEAD" || actor.form !== "LAND")
+    return { priority, strategic, objective };
+  const primaryReady = isPrimaryUnusedV7(actor);
+
+  // A Ghoul already on a Grave Devours in place instead of moving.
+  if (
+    isGhoulV7(view, actor) &&
+    primaryReady &&
+    isGraveAtV7(view, to) &&
+    !isGraveAtV7(view, actor.at)
+  ) {
+    const heal = actor.maxHp - actor.hp;
+    const deny = hostileNecromancersNearV7(view, to, hostile).length > 0;
+    if ((heal >= DEVOUR_MINIMUM_HEAL_V7 || deny) && danger() < actor.maxHp) {
+      priority = Math.max(priority, 1177);
+      strategic += heal * 4 + (deny ? 20 : 0);
+    }
+  }
+
+  if (isBansheeV7(view, actor) && primaryReady) {
+    const unitValue = (unit: PublicUnitV7) =>
+      targetStrategicValue(view, unit.id, context.lookup);
+    const there = projectedWailSummaryV7(view, actor, to, unitValue);
+    const band = wailPriorityV7(there);
+    if (band >= 0) {
+      const here = projectedWailSummaryV7(view, actor, actor.at, unitValue);
+      if (
+        there.value > here.value &&
+        (band > 905 ? danger() < actor.hp : danger() * 2 < actor.hp)
+      ) {
+        priority = Math.max(priority, band + 1);
+        strategic += there.value - here.value;
+      }
+    }
+  }
+
+  // Restless: a unit at half HP or less recovers only in its own territory.
+  if (
+    actor.hp * 2 <= actor.maxHp &&
+    !inOwnTerritoryForPolicyV7(view, view.viewer.id, actor.at)
+  ) {
+    if (inOwnTerritoryForPolicyV7(view, view.viewer.id, to)) {
+      priority = Math.max(priority, 935);
+      strategic += actor.maxHp - actor.hp;
+    } else {
+      const ownCities = view.cities
+        .filter((city) => city.ownerId === view.viewer.id)
+        .map((city) => city.at);
+      const progress =
+        ownCities.length === 0
+          ? 0
+          : nearestDistance(actor.at, ownCities) -
+            nearestDistance(to, ownCities);
+      if (progress > 0) {
+        priority = Math.max(priority, 720);
+        objective += 2 * progress;
+      }
+    }
+  }
+
+  if (isNecromancerV7(view, actor)) {
+    if (primaryReady) {
+      const here = raisableGravesAtV7(view, actor.at, actor.id).length;
+      const there = raisableGravesAtV7(view, to, actor.id).length;
+      if (
+        there > here &&
+        (there >= 2 ? danger() < actor.hp : danger() * 2 < actor.hp)
+      ) {
+        priority = Math.max(priority, there >= 2 ? 1238 : 1160);
+        strategic += there * RAISE_DEAD_SKELETON_VALUE_V7;
+      } else if (here === 0 && there === 0 && danger() * 2 < actor.hp) {
+        // Drift toward the nearest open Grave cluster behind the front.
+        const open = view.graves.filter(
+          (grave) =>
+            !view.units.some(
+              (unit) => unit.id !== actor.id && same(unit.at, grave),
+            ),
+        );
+        const before = nearestDistance(actor.at, open);
+        const progress = before <= 6 ? before - nearestDistance(to, open) : 0;
+        if (progress > 0) {
+          priority = Math.max(priority, 700);
+          objective += 3 * progress;
+        }
+      }
+    }
+    // Protection: never walk the Necromancer into lethal visible danger
+    // unless that is strictly safer than staying.
+    if (
+      danger() >= actor.hp &&
+      danger() >= visibleImmediateDamage(view, actor, actor.at, context)
+    )
+      priority = -1;
+  }
+  return { priority, strategic, objective };
 }
 
 /**
@@ -3684,7 +4109,11 @@ function combatImmediateValue(preview: CombatPreviewV7): number {
     preview.splash.reduce(
       (value, splash) => value + 10 * splash.damage + 20 * Number(splash.dies),
       0,
-    )
+    ) +
+    // Revision 13 Lifesteal (always 0 outside Undead matches): a heal offsets
+    // damage taken; an enemy Vampire's retaliation heal offsets damage dealt.
+    8 * preview.attackerHeal -
+    10 * preview.defenderHeal
   );
 }
 
@@ -3736,8 +4165,9 @@ function combatStrategicValue(
       ? 4
       : 0;
     const tile = findPublicTileV7(context.view, target.at);
-    const idleRecovery =
-      tile?.explored === true && tile.territoryOwnerId === target.ownerId
+    const idleRecovery = context.undead
+      ? publicIdleRecoveryV7(context.view, target.ownerId, target.at)
+      : tile?.explored === true && tile.territoryOwnerId === target.ownerId
         ? 4
         : 2;
     const shots = context.view.units.flatMap((item) => {
@@ -3791,9 +4221,17 @@ function researchValue(
       strategic: bestEconomic.benefit - bestEconomic.totalCost,
       cost: node.cost,
     };
+  // Revision 13: an Undead seat never researches toward a Banshee while no
+  // hostile seat is living (Wail cannot target Undead units).
+  const uselessBanshee =
+    context.view.viewer.faction === "UNDEAD" &&
+    !hasLivingHostileSeatV7(context.view, (owner) =>
+      isHostile(context.view, owner),
+    );
   const missingRoles = UNIT_ROLE_IDS_V7.filter(
     (role) =>
       role !== "JUGGERNAUT" &&
+      !(uselessBanshee && role === "MARKSMAN") &&
       !context.view.units.some(
         (unit) => unit.ownerId === context.view.viewer.id && unit.role === role,
       ),
@@ -4237,16 +4675,36 @@ function visibleImmediateDamage(
   const hostiles =
     effectiveLookup?.visibleHostiles ??
     view.units.filter((unit) => isHostile(view, unit.ownerId));
+  // Revision 13 (Undead matches only): Wail, Lich splash, and Infect.
+  const undead = context?.undead ?? undeadMatchForPolicyV7(view);
   for (const hostile of hostiles) {
     const facts = publicCombatFacts(view, hostile, effectiveLookup);
-    if (!facts.abilities.includes("ATTACK") || facts.attack2 <= 0) continue;
+    const wail =
+      undead &&
+      hostile.form === "LAND" &&
+      isBansheeV7(view, hostile) &&
+      isLivingOwnerV7(view, actor.ownerId);
+    if (!wail && (!facts.abilities.includes("ATTACK") || facts.attack2 <= 0))
+      continue;
     const d = distance(hostile.at, at);
-    const directlyThreatened =
-      d >= facts.minimumRange && d <= facts.maximumRange;
+    const minimumRange = wail ? 1 : facts.minimumRange;
+    const maximumRange = wail ? WAIL_THREAT_RADIUS_V7 : facts.maximumRange;
+    const directlyThreatened = d >= minimumRange && d <= maximumRange;
     const reachableThreat =
       context?.threatenedTiles.get(hostile.id)?.has(coordKey(at)) ?? false;
-    if (!directlyThreatened && !reachableThreat) continue;
-    total += publicProjectedDamageWithLookupV7(
+    if (!directlyThreatened && !reachableThreat) {
+      if (undead && isLichV7(view, hostile))
+        total += publicSplashDangerV7(
+          view,
+          hostile,
+          actor,
+          at,
+          facts,
+          effectiveLookup,
+        );
+      continue;
+    }
+    const damage = publicProjectedDamageWithLookupV7(
       view,
       hostile,
       actor,
@@ -4254,8 +4712,50 @@ function visibleImmediateDamage(
       { maximumCharge: !directlyThreatened },
       effectiveLookup,
     );
+    total += damage;
+    // A lethal Zombie hit converts the victim into a hostile Zombie.
+    if (
+      undead &&
+      !wail &&
+      actor.form === "LAND" &&
+      damage >= actor.hp &&
+      isZombieV7(view, hostile)
+    )
+      total += actor.hp;
   }
   return total;
+}
+
+/**
+ * Revision 13 Lich splash threat: a Lich hitting a visible friendly unit
+ * next to `at` splashes `max(1, ceil(damage / 2))` onto the actor.
+ */
+function publicSplashDangerV7(
+  view: PlayerViewV7,
+  hostile: PublicUnitV7,
+  actor: PublicUnitV7,
+  at: CoordV7,
+  facts: PublicCombatFactsV7,
+  lookup?: PolicyLookupV7,
+): number {
+  const primary = view.units.some(
+    (unit) =>
+      unit.id !== actor.id &&
+      unit.ownerId === actor.ownerId &&
+      distance(unit.at, at) === 1 &&
+      distance(unit.at, hostile.at) >= facts.minimumRange &&
+      distance(unit.at, hostile.at) <= facts.maximumRange,
+  );
+  if (!primary) return 0;
+  const damage = publicProjectedDamageWithLookupV7(
+    view,
+    hostile,
+    actor,
+    at,
+    {},
+    lookup,
+  );
+  return Math.min(actor.hp, Math.max(1, Math.ceil(damage / 2)));
 }
 
 export function publicProjectedDamageForPolicyV7(
@@ -4526,13 +5026,21 @@ function targetStrategicValue(
       : undefined);
   if (unit === undefined) return 0;
   const rule = unitRoleRuleV7(view, unit);
+  // Revision 13: a Necromancer is a priority target; each Grave it could
+  // raise now is a Skeleton the enemy would gain.
+  const necromancer = rule.abilities.includes("RAISE_DEAD")
+    ? NECROMANCER_TARGET_BONUS_V7 +
+      4 * Math.min(3, raisableGravesAtV7(view, unit.at, unit.id).length)
+    : 0;
   return unit.role === "JUGGERNAUT"
     ? 40 +
         rule.attack2 +
         rule.defense2 +
         (rule.abilities.includes("PUSH") ? 8 : 0)
-    : (rule.cost ?? 0) * 4 + unit.hp;
+    : (rule.cost ?? 0) * 4 + unit.hp + necromancer;
 }
+
+const NECROMANCER_TARGET_BONUS_V7 = 12;
 
 function cityFootprintFullyExplored(
   view: PlayerViewV7,

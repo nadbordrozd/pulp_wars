@@ -627,12 +627,25 @@ describe("ruleset-7 revision-13 Graves: state, events, and persistence", () => {
 
   it("round-trips Graves through replay, checkpoints, save, and state hashes", () => {
     const setup = setupWith(["UNDEAD", "UNDEAD"], 2);
-    const match = runAiMatchV7(setup, { maxRounds: 20 });
+    // Thirty rounds include a Raise Dead (pulp_wars-vkq.9).
+    const match = runAiMatchV7(setup, { maxRounds: 30 });
     expect(match.errors).toEqual([]);
     expect(match.state.graves.length).toBeGreaterThan(0);
-    // Graves are only created (removal arrives with Raise Dead and Devour).
+    // Normal AI raises and devours Graves (pulp_wars-vkq.9): every created
+    // Grave is still on the board unless a Raise Dead or Devour removed it.
+    const removed = match.events.reduce(
+      (total, event) =>
+        total +
+        (event.kind === "DEAD_RAISED"
+          ? event.results.length
+          : event.kind === "GRAVE_DEVOURED"
+            ? 1
+            : 0),
+      0,
+    );
+    expect(removed).toBeGreaterThan(0);
     expect(match.metrics.eventsByKind.GRAVE_CREATED).toBe(
-      match.state.graves.length,
+      match.state.graves.length + removed,
     );
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
@@ -670,7 +683,7 @@ describe("ruleset-7 revision-13 Graves: state, events, and persistence", () => {
     };
     tampered.state.graves = tampered.state.graves.slice(1);
     expect(parseSaveV7(JSON.stringify(tampered)).kind).not.toBe("VALID");
-  });
+  }, 60_000);
 });
 
 describe("ruleset-7 revision-13 Graves: public view and projection", () => {

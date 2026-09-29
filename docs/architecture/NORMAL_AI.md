@@ -4,8 +4,8 @@
 
 The production policy consumes only the legal public schema, commands, and
 previews under `pulp-wars-poc-7r13`. Role facts resolve through the owner's
-faction registration, so Undead seats play without errors, but the policy has
-no Undead-specific tactics yet. Revision 12 adds a free opening research
+faction registration; the revision-13 Undead tactics are summarized below.
+Revision 12 adds a free opening research
 choice (`src/ai/v7-opening.ts`: a deterministic score of the explored tiles
 within Chebyshev 2 of the original capital, researched first on the opening
 turn) and Raider Escape handling (an escape Move is used only toward a
@@ -94,6 +94,69 @@ The older merged-industry policy notes below are retained implementation
 history and do not override the
 [current Human technology graph](../product/RULESET_7_CURRENT.md#62-technology-tree)
 or the revision-11 AI contract.
+
+## Revision-13 Undead play (`pulp_wars-vkq.9`)
+
+Every Undead heuristic lives behind one gate: the match has an Undead seat
+(`src/ai/v7-undead.ts`, `undeadMatchForPolicyV7`). An all-Human match never
+evaluates any of it, and the new combat-preview fields (Lifesteal heal,
+Infect flags) are always 0/false there, so all-Human decisions and pinned
+decision hashes are unchanged. The helpers read only the public view, public
+commands, and the public previews (`previewRaiseDeadV7`, `previewDevourV7`,
+`previewWailV7`, `queryCombatPreviewV7`, and the view-only
+`publicWailTargetsV7` for a hypothetical Banshee position). They add no PRNG
+use, no elapsed-time input, and no work units: each is a bounded scan of the
+view inside an existing scoring step.
+
+As Undead:
+
+- **Raise Dead** (priority 1237) when the preview lists Graves, valued 14
+  per Skeleton. A Necromancer with a free action moves beside more open
+  Graves than it has now (1238 for two or more, 1160 for one) only while its
+  visible danger stays below its HP (half its HP for one Grave), otherwise
+  drifts toward open Graves within 6 tiles. It never moves into lethal
+  visible danger unless that is strictly safer than staying.
+- **Frenzy** is scored only from adjacent attack-capable, non-support,
+  non-siege units that have not attacked and can reach a visible enemy this
+  turn (1235 for two or more, 1190 for one, never for none).
+- **Devour** (1176) heals a Ghoul missing at least 3 HP or denies a Grave
+  within 3 tiles of a hostile Necromancer; a smaller heal (640) is skipped
+  when an own Necromancer is within 3 tiles (the Grave is worth raising). A
+  wounded Ghoul moves onto an open Grave to Devour when it would survive.
+- **Wail** sums the exact preview: 10 per damage, 20 per kill, 4 per Grave
+  created, plus realized target value. Kills score 1250, two or more targets
+  or at least 4 damage 1245, a chip 905, and a zero-damage Wail never. A
+  Banshee moves first when a reachable tile's projected Wail is strictly
+  better and its visible danger is below its HP (half its HP for a chip).
+- **Lich** targets use the existing splash-inclusive combat values plus 4
+  per splash kill that leaves a Grave; its idle-recovery estimate for Undead
+  targets respects Restless. Any kill that leaves an unoccupied Grave within
+  3 tiles of an own Necromancer gains 6.
+- **Lifesteal and Infect**: combat immediate value adds 8 per HP healed and
+  subtracts 10 per HP an enemy Vampire heals; an Infect rising is worth 22
+  (a 10-HP Zombie) to the killer's side.
+- **Restless**: a unit at half HP or less outside own territory scores 935 for a
+  move into own territory, otherwise 720 plus progress toward its nearest own
+  city. Recover is never planned outside own territory (the engine does not
+  offer it).
+- **Training**: Banshee +8 while a living hostile seat is active, −30
+  otherwise (and no research toward it); Necromancer +4 per visible Grave (at
+  most 3); Lich +4. The opening research keeps the revision-12 scorer for
+  both factions.
+
+Against Undead (any seat in such a match):
+
+- an attack whose retaliation kills and infects the attacker is rejected
+  unless it proves a city save or a lethal follow-up; a melee chip that
+  leaves the attacker inside the wounded Zombie's lethal reach costs 22, and
+  ranged fire at a Zombie gains 6;
+- a Necromancer's target value gains 12 plus 4 per Grave it could raise now
+  (at most 3); a kill that leaves an unoccupied Grave beside a hostile
+  Necromancer costs 6, and standing on a Grave within 2 of one gains 4;
+- threat evaluation includes a hostile Banshee's Wail radius 2 from every
+  reachable tile (for a living viewer), Lich splash onto a unit next to a
+  friendly unit the Lich can target, and a lethal Zombie hit counting the
+  victim's HP again (the rising).
 
 ## Revision-8 merged industry and processor adjacency
 

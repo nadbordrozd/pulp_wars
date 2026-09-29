@@ -68,6 +68,41 @@ transformed objects use their own public facts. Focused countervariants keep
 DISBAND on direct visible damage rather than cached next-turn reach and verify
 transformed public combat stats in projected Knight scoring.
 
+## Revision-13 Undead scenarios
+
+`tests/unit/ruleset-v7-undead-ai.test.ts` adds the Undead semantic scenarios
+(`pulp_wars-vkq.9`) on strictly parsed seed-2 arenas, each with a
+countervariant where it matters:
+
+1. Raise Dead of every adjacent Grave; occupied Graves are never offered;
+2. a Necromancer moves beside a Grave cluster, then raises it; it never
+   walks into lethal visible danger;
+3. Devour heals a wounded Ghoul and denies a Grave near a hostile
+   Necromancer; a full-HP Ghoul with no hostile Necromancer does not Devour;
+4. Wail with a kill in radius; a Banshee moves to a better Wail first; no
+   Wail against Undead-only units;
+5. Lich target choice by visible splash;
+6. Vampire Lifesteal in the attack value and a Zombie kill valuing the
+   Infect rising;
+7. Frenzy only when adjacent attackers can reach a visible enemy;
+8. Restless retreat of a wounded unit into own territory (no Recover
+   outside it);
+9. a Human refusing a melee attack that feeds a Zombie while its ranged
+   unit shoots the Zombie;
+10. Necromancer target priority, higher beside raisable Graves;
+11. Wail radius counted as threat only for a living viewer; and
+12. identical cold, synchronous, and budget-one decisions on an Undead view,
+    plus headless Undead-vs-Human and Undead-vs-Undead matches on several
+    seeds and map types that reach an outcome without errors or stalls and
+    use Raise Dead, Devour, Wail, and Frenzy.
+
+The frozen benchmark below compares the pinned revision-11 policy with the
+current one on two fixed all-Human public views; it is a performance and
+decision-parity artifact, not a scenario suite, and its pinned baseline has
+no Undead tactics to compare. Undead coverage therefore lives in the
+semantic scenarios above, and the frozen benchmark is unchanged: all-Human
+decisions are unaffected by the Undead gate.
+
 ## Frozen benchmark
 
 Generate the checked benchmark with:

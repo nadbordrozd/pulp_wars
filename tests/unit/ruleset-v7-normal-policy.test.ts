@@ -79,6 +79,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       "../engine/v7/spatial-economy",
       "../engine/v7/view",
       "./v7-opening",
+      "./v7-undead",
     ]);
     expect(source).not.toMatch(
       /\bGameStateV7\b|applyCommandV7|createPlayableGameV7|estimateCombatV7/,
