@@ -87,6 +87,30 @@ export function projectEventsV7(
           reveal(projected, revealed, unit, revealReason());
       }
     }
+    if (event.kind === "WAIL_RESOLVED") {
+      // Revision 13 section 6.6, following the Battleship splash precedent:
+      // a viewer who sees the Banshee gets the results it owns or could see
+      // before; otherwise only its own entries as COMBAT_SPLASH_DAMAGE.
+      const owned = (entry: { readonly unitId: UnitId }) =>
+        beforeState.units.find((unit) => unit.id === entry.unitId)?.ownerId ===
+        viewerId;
+      if (beforeVisible.has(event.unitId) || afterVisible.has(event.unitId))
+        projected.push({
+          ...event,
+          results: event.results.filter(
+            (entry) => owned(entry) || beforeVisible.has(entry.unitId),
+          ),
+        });
+      else {
+        const ownedResults = event.results.filter(owned);
+        if (ownedResults.length > 0)
+          projected.push({
+            kind: "COMBAT_SPLASH_DAMAGE",
+            splash: ownedResults,
+          });
+      }
+      continue;
+    }
     if (
       event.kind === "COMBAT_RESOLVED" &&
       ids.some((id) => !beforeVisible.has(id) && !afterVisible.has(id))

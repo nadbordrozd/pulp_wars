@@ -53,6 +53,7 @@ import { createInitialMapStateV7 } from "./map";
 import { unitSightRadiusAtV7, validateMovementPathV7 } from "./movement";
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import { parseGameStateV7 } from "./state-schema";
+import { wailResultEntriesV7, wailTargetsV7 } from "./wail";
 import { spatialContributionAtV7, tileAtV7 } from "./spatial-economy";
 import {
   TECHNOLOGY_IDS_V7,
@@ -121,7 +122,8 @@ export type RuleErrorCodeV7 =
   | "DEVOUR_NOT_LEGAL"
   | "PROMOTION_NOT_ELIGIBLE"
   | "UNIT_ALREADY_HANDLED"
-  | "PILLAGE_INVALID_TARGET";
+  | "PILLAGE_INVALID_TARGET"
+  | "WAIL_NOT_LEGAL";
 export interface RuleErrorV7 {
   readonly code: RuleErrorCodeV7;
   readonly params: Readonly<Record<string, JsonValue>>;
@@ -242,6 +244,7 @@ function navalFactsMayChangeV7(command: CommandV7): boolean {
     "DISEMBARK",
     "MOVE",
     "REDEVELOP",
+    "WAIL",
   ].includes(command.kind);
 }
 
@@ -344,6 +347,8 @@ function applyCommandCoreV7(
     return applyDisband(stateInput, state, actor, command.unitId);
   if (command.kind === "BUILD_FIELD_DEFENSE")
     return applyFieldDefense(stateInput, state, actor, command.unitId);
+  if (command.kind === "WAIL")
+    return applyWail(stateInput, state, actor, command.unitId);
   if (command.kind === "LAND_GRANT")
     return applyLandGrant(stateInput, state, actor, command.cityId);
   if (command.kind === "END_TURN")
@@ -3563,6 +3568,102 @@ function validateTileContext(
   if (hasCityChoice(state, city.id))
     return { ok: false, code: "CITY_REWARD_PENDING", params: {} };
   return { ok: true, player, tile, city };
+}
+
+/**
+ * Revision 13 section 6.6: a Banshee primary action that damages every
+ * visible hostile living unit within Chebyshev 2 simultaneously, with no
+ * retaliation, advance, Push, Infect, or Field Defense destruction.
+ */
+function applyWail(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  unitId: UnitStateV7["id"],
+): ApplyCommandResultV7 {
+  if (state.commandIndex === Number.MAX_SAFE_INTEGER)
+    return rejected(original, "INTEGER_OVERFLOW");
+  const actorCheck = validateUnitActor(state, actor, unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  const banshee = actorCheck.unit;
+  const rule = unitRoleRuleV7(state, banshee);
+  if (banshee.form !== "LAND" || !rule.abilities.includes("WAIL"))
+    return rejected(original, "UNIT_ROLE_INVALID", { role: banshee.role });
+  if (
+    primaryUsed(banshee) ||
+    (banshee.activation.moved && !rule.mayUsePrimaryActionAfterMove)
+  )
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
+  try {
+    const targets = wailTargetsV7(state, banshee);
+    if (targets.length === 0)
+      return rejected(original, "WAIL_NOT_LEGAL", { reason: "NO_TARGET" });
+    const kills = banshee.kills + targets.filter((entry) => entry.dies).length;
+    if (!Number.isSafeInteger(kills)) throw new RangeError("INTEGER_OVERFLOW");
+    const damage = new Map(
+      targets.map((entry) => [entry.unitId, entry.damage] as const),
+    );
+    const units = state.units
+      .map((unit) =>
+        unit.id === banshee.id
+          ? {
+              ...unit,
+              kills,
+              activation: {
+                ...unit.activation,
+                specialActed: true,
+                handled: true,
+              },
+            }
+          : damage.has(unit.id)
+            ? { ...unit, hp: unit.hp - (damage.get(unit.id) ?? 0) }
+            : unit,
+      )
+      .filter((unit) => unit.hp > 0);
+    const events: DomainEventV7[] = [
+      {
+        kind: "WAIL_RESOLVED",
+        playerId: actor,
+        unitId: banshee.id,
+        at: { x: banshee.at.x, y: banshee.at.y },
+        results: wailResultEntriesV7(targets),
+      },
+    ];
+    let graves = state.graves;
+    for (const entry of targets)
+      if (entry.dies)
+        graves = recordCombatDeathV7(
+          state,
+          graves,
+          requireValue(state.units.find((unit) => unit.id === entry.unitId)),
+          "WAIL",
+          events,
+        );
+    const economy = recomputeLiveEconomyV7(
+      state,
+      { board: state.board, cities: state.cities, units },
+      state.populationContributions,
+    );
+    events.push(...economyAndGrowth(economy.changes));
+    const settlement = settleCityRewardsV7(
+      {
+        ...state,
+        commandIndex: nextSafe(state.commandIndex),
+        cities: economy.cities,
+        units,
+        graves,
+        populationContributions: economy.populationContributions,
+      },
+      actor,
+    );
+    events.push(...settlement.events);
+    const achievements = evaluateAchievementsV7(settlement.state, actor);
+    events.push(...achievements.events);
+    return accepted(checked(achievements.state), events);
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
 }
 
 function validateUnitActor(

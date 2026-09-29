@@ -385,6 +385,17 @@ export type DomainEventV7 =
     }
   | { readonly kind: "COMBAT_RESOLVED"; readonly preview: CombatPreviewV7 }
   | {
+      /**
+       * Revision 13 Wail: every target in (y, x, id) order with its damage,
+       * which may be 0. Deaths follow as `UNIT_DIED` cause `WAIL`.
+       */
+      readonly kind: "WAIL_RESOLVED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+      readonly results: readonly CombatSplashEntryV7[];
+    }
+  | {
       readonly kind: "IMPROVEMENT_PILLAGED";
       readonly playerId: PlayerId;
       readonly unitId: UnitId;
@@ -426,7 +437,8 @@ export type DomainEventV7 =
   | {
       readonly kind: "UNIT_DIED";
       readonly unitId: UnitId;
-      readonly cause: "ATTACK" | "SPLASH" | "RETALIATION" | "ELIMINATION";
+      readonly cause:
+        "ATTACK" | "SPLASH" | "RETALIATION" | "ELIMINATION" | "WAIL";
     }
   | {
       /** Revision 13: a Zombie's land-form victim rose as a Zombie. */

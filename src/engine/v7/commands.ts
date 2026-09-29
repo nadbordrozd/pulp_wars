@@ -71,7 +71,8 @@ export type CommandV7 =
         | "PILLAGE"
         | "DISBAND"
         | "WAIT"
-        | "BUILD_FIELD_DEFENSE";
+        | "BUILD_FIELD_DEFENSE"
+        | "WAIL";
       readonly unitId: UnitId;
     }
   | { readonly kind: "LAND_GRANT"; readonly cityId: CityId }
@@ -148,6 +149,7 @@ const UNIT_ONLY_KINDS = new Set<CommandKindV7>([
   "DISBAND",
   "WAIT",
   "BUILD_FIELD_DEFENSE",
+  "WAIL",
 ]);
 
 export function parseCommandEnvelopeV7(

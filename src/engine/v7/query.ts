@@ -56,6 +56,12 @@ import {
 } from "./types";
 import { publicUnitStatsV7, type PublicUnitStatsV7 } from "./unit-stats";
 import { viewForV7, type PlayerTileViewV7, type PlayerViewV7 } from "./view";
+import {
+  WAIL_RADIUS_V7,
+  publicWailLeavesGraveV7,
+  publicWailTargetsV7,
+  type WailPreviewV7,
+} from "./wail";
 
 export type PublicTechnologyStateV7 =
   "OWNED" | "AVAILABLE" | "BLOCKED" | "DISABLED";
@@ -463,6 +469,15 @@ function appendPublicUnitCommandsV7(
         targetUnitId: target.id,
       });
   }
+  // Revision 13 Wail: offered exactly when at least one visible target exists.
+  if (
+    !overrun &&
+    primaryReady &&
+    unit.form === "LAND" &&
+    rule.abilities.includes("WAIL") &&
+    publicWailTargetsV7(view, unit).length > 0
+  )
+    candidates.push({ kind: "WAIL", unitId: unit.id });
   if (
     !overrun &&
     primaryReady &&
@@ -694,6 +709,57 @@ function growthSpentForPreview(level: number): number {
   const result = (level * (level + 1)) / 2 - 1;
   if (!Number.isSafeInteger(result)) throw new RangeError("INTEGER_OVERFLOW");
   return result;
+}
+
+/**
+ * Observation-safe exact preview for an offered Wail (revision 13 section
+ * 6.6). Every Wail target is visible to its actor, so the preview equals the
+ * resolution and cannot name a hidden unit.
+ */
+export function previewWailV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): WailPreviewV7 | null;
+export function previewWailV7(
+  state: GameStateV7,
+  viewerId: PlayerId,
+  unitId: UnitId,
+): WailPreviewV7 | null;
+export function previewWailV7(
+  input: GameStateV7 | PlayerViewV7,
+  viewerOrUnit: PlayerId | UnitId,
+  maybeUnit?: UnitId,
+): WailPreviewV7 | null {
+  const view =
+    maybeUnit === undefined
+      ? (input as PlayerViewV7)
+      : asView(input, viewerOrUnit as PlayerId);
+  const unitId = maybeUnit ?? (viewerOrUnit as UnitId);
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) => command.kind === "WAIL" && command.unitId === unitId,
+    )
+  )
+    return null;
+  const banshee = view.units.find((unit) => unit.id === unitId);
+  if (banshee === undefined) return null;
+  return {
+    unitId,
+    at: banshee.at,
+    attack2: unitRoleRuleV7(view, banshee).attack2,
+    targets: publicWailTargetsV7(view, banshee).map((target) => {
+      const unit = view.units.find(
+        (candidate) => candidate.id === target.unitId,
+      );
+      return {
+        ...target,
+        leavesGrave:
+          target.dies &&
+          unit !== undefined &&
+          publicWailLeavesGraveV7(view, unit),
+      };
+    }),
+  };
 }
 
 /** Observation-safe exact preview for an offered attack. */
@@ -959,7 +1025,11 @@ export function queryThreatenedTilesV7(
   );
   if (unit === undefined) return [];
   const rule = unitRoleRuleV7(view, unit);
-  if (!rule.abilities.includes("ATTACK")) return [];
+  // Revision 13: a Banshee threatens Chebyshev 1-2 around each reachable tile.
+  const wail = rule.abilities.includes("WAIL");
+  if (!rule.abilities.includes("ATTACK") && !wail) return [];
+  const minimumRange = wail ? 1 : rule.minimumRange;
+  const maximumRange = wail ? WAIL_RADIUS_V7 : rule.range;
   const origins = [
     unit.at,
     ...reachablePlayerMovementPathsV7(view, unit).map(
@@ -974,7 +1044,7 @@ export function queryThreatenedTilesV7(
           Math.abs(origin.x - at.x),
           Math.abs(origin.y - at.y),
         );
-        return distance >= rule.minimumRange && distance <= rule.range;
+        return distance >= minimumRange && distance <= maximumRange;
       }),
     );
   return [

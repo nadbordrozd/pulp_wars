@@ -1128,7 +1128,7 @@ describe("ruleset-7 role rules resolve through the owner's faction", () => {
     }
   });
 
-  it("gives the Lich Catapult range, no attack after moving, and its own Attack", () => {
+  it("gives the Lich Catapult range, no attack after moving, its own Attack, and splash", () => {
     const state = arena(
       ["UNDEAD", "ORIGINAL"],
       [
@@ -1152,7 +1152,9 @@ describe("ruleset-7 role rules resolve through the owner's faction", () => {
       minimumRange: 2,
       maximumRange: 3,
       advances: false,
-      splash: [],
+      // Revision 13 section 6.7: the Guard next to the primary target is
+      // splashed for max(1, ceil(primary damage / 2)).
+      splash: [{ unitId: near.id, at: near.at, damage: 3, dies: false }],
     });
     expect(
       applyCommandV7(state, state.humanPlayerId, {

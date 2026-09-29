@@ -922,12 +922,14 @@ export const UNDEAD_ROLE_RULES_V7: Readonly<
 });
 
 /**
- * Lich splash is delivered with the Lich splash rules; until then the Lich
- * keeps Catapult parity. The Zombie never advances after a kill.
+ * The Zombie never advances after a kill. The Lich keeps Catapult parity and
+ * adds the Battleship splash rule (revision 13 section 6.7). The `SPLASH`
+ * capability is this engine mechanic rather than a declared role ability, so
+ * Human public role abilities stay exactly as in revision 12.
  */
 export const UNDEAD_ROLE_MECHANICS_V7 = mechanics({
   GUARD: { advancesAfterKill: false },
-  CATAPULT: { advancesAfterKill: false },
+  CATAPULT: { advancesAfterKill: false, splash: true },
   BATTLESHIP: { splash: true },
 });
 

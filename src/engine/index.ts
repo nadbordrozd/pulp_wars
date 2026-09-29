@@ -69,3 +69,4 @@ export * from "./v7/state-schema";
 export * from "./v7/types";
 export * from "./v7/unit-stats";
 export * from "./v7/view";
+export * from "./v7/wail";

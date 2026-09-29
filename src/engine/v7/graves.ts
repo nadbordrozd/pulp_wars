@@ -7,9 +7,8 @@ import type { CoordV7, GameStateV7, UnitStateV7 } from "./types";
 
 /**
  * Revision 13 combat death causes that may leave a Grave (section 5.1).
- * Wail deaths join this list with the Wail command.
  */
-export type GraveDeathCauseV7 = "ATTACK" | "RETALIATION" | "SPLASH";
+export type GraveDeathCauseV7 = "ATTACK" | "RETALIATION" | "SPLASH" | "WAIL";
 
 /** The canonical state a Grave decision reads. */
 export type GraveContextV7 = Pick<

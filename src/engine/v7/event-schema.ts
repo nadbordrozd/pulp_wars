@@ -226,6 +226,7 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   UNIT_MOVE_INTERRUPTED: ["kind", "unitId", "at", "reason"],
   TILES_REVEALED: ["kind", "playerId", "tiles"],
   COMBAT_RESOLVED: ["kind", "preview"],
+  WAIL_RESOLVED: ["kind", "playerId", "unitId", "at", "results"],
   IMPROVEMENT_PILLAGED: [
     "kind",
     "playerId",
@@ -392,6 +393,11 @@ export function parsePlayerEventEnvelopeV7(
       events.push(presentation);
       continue;
     }
+    const splashDamage = parseProjectedSplashDamage(candidate);
+    if (splashDamage !== null) {
+      events.push(splashDamage);
+      continue;
+    }
     const canonical = parseEventV7(candidate);
     if (!canonical.ok) return canonical;
     if (canonical.value.kind === "MONUMENT_BUILT") return bad("MONUMENT_BUILT");
@@ -458,6 +464,20 @@ function parseProjectedDeadRaised(input: unknown): PlayerEventV7 | null {
     id(input.unitId) &&
     isDenseArrayV7(input.results) &&
     input.results.length === 0
+    ? (input as unknown as PlayerEventV7)
+    : null;
+}
+
+/**
+ * Hidden-source splash or Wail damage to the viewer's own units (Battleship
+ * and Lich splash, revision 13 Wail). Wail entries may carry 0 damage.
+ */
+function parseProjectedSplashDamage(input: unknown): PlayerEventV7 | null {
+  return hasExactKeysV7(input, ["kind", "splash"]) &&
+    input.kind === "COMBAT_SPLASH_DAMAGE" &&
+    isDenseArrayV7(input.splash) &&
+    input.splash.length > 0 &&
+    splashEntries(input.splash, true)
     ? (input as unknown as PlayerEventV7)
     : null;
 }
@@ -794,6 +814,13 @@ function validPayload(
       return id(e.playerId) && sortedCoords(e.tiles);
     case "COMBAT_RESOLVED":
       return combat(e.preview);
+    case "WAIL_RESOLVED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        parseCoordV7(e.at) !== null &&
+        splashEntries(e.results, true)
+      );
     case "IMPROVEMENT_PILLAGED":
       return (
         id(e.playerId) &&
@@ -828,7 +855,7 @@ function validPayload(
     case "UNIT_DIED":
       return (
         id(e.unitId) &&
-        ["ATTACK", "SPLASH", "RETALIATION", "ELIMINATION"].includes(
+        ["ATTACK", "SPLASH", "RETALIATION", "ELIMINATION", "WAIL"].includes(
           e.cause as string,
         )
       );
@@ -947,6 +974,13 @@ function combat(input: unknown): boolean {
   );
 }
 function splash(input: unknown): boolean {
+  return splashEntries(input, false);
+}
+/**
+ * Splash-shaped entries sorted by (y, x, unitId) with unique units. Wail
+ * results may carry 0 damage; a death always needs positive damage.
+ */
+function splashEntries(input: unknown, zeroDamage: boolean): boolean {
   if (!isDenseArrayV7(input)) return false;
   let previous: { x: number; y: number; unitId: number } | null = null;
   const ids = new Set<number>();
@@ -954,8 +988,9 @@ function splash(input: unknown): boolean {
     if (
       !hasExactKeysV7(entry, ["at", "damage", "dies", "unitId"]) ||
       !id(entry.unitId) ||
-      !pos(entry.damage) ||
-      typeof entry.dies !== "boolean"
+      !(zeroDamage ? nn(entry.damage) : pos(entry.damage)) ||
+      typeof entry.dies !== "boolean" ||
+      (entry.dies && entry.damage === 0)
     )
       return false;
     const at = parseCoordV7(entry.at);
