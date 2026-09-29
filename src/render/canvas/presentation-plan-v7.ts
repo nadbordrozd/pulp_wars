@@ -37,8 +37,9 @@ export type CorePresentationStepV7 =
     }
   | {
       readonly kind: "SUPPORT";
-      readonly effect: "RALLY" | "TEND";
-      readonly actor: { readonly unitId: number; readonly at: CoordV7 };
+      /** RALLY/TEND, plus the revision-13 Undead cues. */
+      readonly effect: SupportEffectV7;
+      readonly actor: { readonly unitId: number | null; readonly at: CoordV7 };
       readonly recipients: readonly {
         readonly unitId: number;
         readonly at: CoordV7;
@@ -63,6 +64,9 @@ export type CorePresentationStepV7 =
       readonly lethal: boolean;
       readonly durationMs: 100;
     };
+
+export type SupportEffectV7 =
+  "RALLY" | "TEND" | "RAISE" | "DEVOUR" | "WAIL" | "INFECT" | "GRAVE";
 
 /** Builds animation instructions exclusively from captured public views/events. */
 export function corePresentationPlanV7(
@@ -94,6 +98,13 @@ export function corePresentationPlanV7(
   });
   let healingAdded = false;
   let visibilityCrossfadeAdded = false;
+  let gravesAdded = false;
+  const graves = envelope.events.flatMap((event) =>
+    event.kind === "GRAVE_CREATED" &&
+    explored.has(`${event.at.x},${event.at.y}`)
+      ? [event.at]
+      : [],
+  );
   for (const event of envelope.events) {
     if (event.kind === "WINDMILL_HEALING_RESOLVED") {
       if (
@@ -250,6 +261,69 @@ export function corePresentationPlanV7(
           recipients,
           durationMs: 320,
         });
+    } else if (event.kind === "DEAD_RAISED") {
+      const actor = [...after.units, ...before.units].find(
+        (unit) => unit.id === event.unitId,
+      );
+      if (actor === undefined) continue;
+      steps.push({
+        kind: "SUPPORT",
+        effect: "RAISE",
+        actor: { unitId: actor.id, at: actor.at },
+        recipients: event.results.map((result) => ({
+          unitId: result.unitId,
+          at: result.at,
+        })),
+        durationMs: 320,
+      });
+    } else if (event.kind === "GRAVE_DEVOURED") {
+      steps.push({
+        kind: "SUPPORT",
+        effect: "DEVOUR",
+        actor: { unitId: event.unitId, at: event.at },
+        recipients: [],
+        durationMs: 320,
+      });
+    } else if (event.kind === "WAIL_RESOLVED") {
+      steps.push({
+        kind: "SUPPORT",
+        effect: "WAIL",
+        actor: { unitId: event.unitId, at: event.at },
+        recipients: event.results.map((result) => ({
+          unitId: result.unitId,
+          at: result.at,
+        })),
+        durationMs: 320,
+      });
+      for (const result of event.results)
+        steps.push({
+          kind: "DAMAGE",
+          unitId: result.unitId,
+          at: result.at,
+          damage: result.damage,
+          lethal: result.dies,
+          durationMs: 100,
+        });
+    } else if (event.kind === "UNIT_INFECTED") {
+      if (explored.has(`${event.at.x},${event.at.y}`))
+        steps.push({
+          kind: "SUPPORT",
+          effect: "INFECT",
+          actor: { unitId: event.unitId, at: event.at },
+          recipients: [],
+          durationMs: 320,
+        });
+    } else if (event.kind === "GRAVE_CREATED") {
+      const [first, ...rest] = graves;
+      if (!gravesAdded && first !== undefined)
+        steps.push({
+          kind: "SUPPORT",
+          effect: "GRAVE",
+          actor: { unitId: null, at: first },
+          recipients: rest.map((at) => ({ unitId: -1, at })),
+          durationMs: 320,
+        });
+      gravesAdded = true;
     } else if (
       event.kind === "UNIT_REVEALED" ||
       event.kind === "UNIT_CONCEALED"

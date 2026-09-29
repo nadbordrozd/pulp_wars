@@ -18,7 +18,11 @@ export type UiIconIdV7 =
   | "skip"
   | "trophy"
   | "info"
-  | "units";
+  | "units"
+  | "skull"
+  | "grave"
+  | "devour"
+  | "wail";
 
 const PATHS: Readonly<Record<UiIconIdV7, string>> = {
   hp: "M12 20.5 4.2 12.8a4.6 4.6 0 0 1 6.5-6.5L12 7.6l1.3-1.3a4.6 4.6 0 0 1 6.5 6.5Z",
@@ -40,6 +44,12 @@ const PATHS: Readonly<Record<UiIconIdV7, string>> = {
   units:
     "M12 3.5a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6ZM4.5 20.5c0-4.1 3.4-7.4 7.5-7.4s7.5 3.3 7.5 7.4Z",
   info: "M12 11v6M12 7.2v.1M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z",
+  skull:
+    "M12 3a7.5 7.5 0 0 0-5 13.1V19a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-2.9A7.5 7.5 0 0 0 12 3Zm-3 8.2a1.7 1.7 0 1 0 0 3.4 1.7 1.7 0 0 0 0-3.4Zm6 0a1.7 1.7 0 1 0 0 3.4 1.7 1.7 0 0 0 0-3.4ZM11 17v3m2-3v3",
+  grave: "M7 20V9.5a5 5 0 0 1 10 0V20M4 20h16M12 9v6M9.5 11.5h5",
+  devour:
+    "M4 9c2 3 14 3 16 0M4 9l2 6c3 3 9 3 12 0l2-6M8 10.5l1 2 1-2M14 10.5l1 2 1-2",
+  wail: "M12 12m-2 0a2 2 0 1 0 4 0 2 2 0 1 0-4 0M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M5 5a10 10 0 0 0 0 14M19 5a10 10 0 0 1 0 14",
 };
 
 const FILLED: ReadonlySet<UiIconIdV7> = new Set([

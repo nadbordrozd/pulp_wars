@@ -35,9 +35,10 @@ describe("Ruleset 7 browser smoke script", () => {
 
   it("arms transient controls before trusted pointer launch and waits for the native select to close", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
+    // Default match, its natural outcome, and the ?undead=1 Undead match.
     expect(
       source.match(/await launchWithFastForward\(connection\)/g),
-    ).toHaveLength(2);
+    ).toHaveLength(3);
     expect(source).toContain(
       'await typeSelectValue(connection, "#v7-ai-count", "2")',
     );
@@ -110,7 +111,8 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(BROWSER_RELEASE_SOURCE_PATHS_V7).toContain(
       "scripts/browser-smoke-output.ts",
     );
-    expect(source.match(/await capture\(/g)).toHaveLength(2);
+    // Two release captures plus four ?undead=1 probe captures.
+    expect(source.match(/await capture\(/g)).toHaveLength(6);
     expect(source).not.toContain("Emulation.setDeviceMetricsOverride");
     expect(source).not.toContain("mobile-ai-return-390-dpr2.png");
     expect(source).toContain("await stopBrowser(browser)");
@@ -121,7 +123,7 @@ describe("Ruleset 7 browser smoke script", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
     expect(
       source.match(/await replaceSeedInput\(connection, "0"\)/g),
-    ).toHaveLength(2);
+    ).toHaveLength(3);
     expect(source).toContain('commands: ["selectAll"]');
     expect(source).toContain("if (actual !== value)");
   });

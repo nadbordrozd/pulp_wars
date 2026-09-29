@@ -6,8 +6,15 @@ The current client runs `pulp-wars-poc-7r13` (autosave
 `pulpWars.save.v7r13.current`), whose rules are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md) plus the in-progress
 [revision-13 Undead overlay](../product/RULESET_7_REVISION_13_UNDEAD.md). The
-engine registers the Undead faction per seat; the setup UI still offers only
-Human seats until the revision-13 UI work lands. Revision 12 adds
+engine registers the Undead faction per seat. The setup UI offers a faction
+per seat only behind the `?undead=1` development flag, which the bootstrap
+reads (`src/app/undead-flag-v7.ts`) and never persists; saves with Undead
+seats load without it. Undead presentation reads only public views, previews
+and projected events (`src/render/undead-presentation-v7.ts`,
+`src/render/canvas/undead-canvas-v7.ts`): Human sprites plus a faction badge,
+a code-native Grave marker, and ability previews, as described in the
+[Screen Flow revision-13 overlay](../ui/SCREEN_FLOW.md#current-ruleset-7-revision-13-undead-overlay-development-flag).
+Revision 12 adds
 no overlay document: the free opening technology, Fertile Ground mask, and
 Raider Escape are specified there. A Raider with `escapeAvailable` stays
 selected after its attack, the board highlights its offered escape Moves with

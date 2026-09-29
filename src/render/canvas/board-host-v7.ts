@@ -1,8 +1,10 @@
-import type {
-  CoordV7,
-  PlayerEventEnvelopeV7,
-  PlayerViewV7,
+import {
+  unitRoleRuleV7,
+  type CoordV7,
+  type PlayerEventEnvelopeV7,
+  type PlayerViewV7,
 } from "../../engine/index";
+import { unitIsUndeadV7 } from "../undead-presentation-v7";
 import {
   MAX_ZOOM,
   MIN_ZOOM,
@@ -114,6 +116,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   #viewport: Size = { width: 1024, height: 640 };
   #camera: CameraState = { offsetX: 0, offsetY: 0, zoom: 1 };
   #focused: CoordV7 | null = null;
+  /** Mouse hover cell; it only focuses revision-13 splash previews. */
+  #hovered: CoordV7 | null = null;
   #boardKey: string | null = null;
   #pointer: { id: number; start: Point; current: Point } | null = null;
   readonly #pointers = new Map<number, Point>();
@@ -210,6 +214,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     canvas.addEventListener("pointermove", this.#onPointerMove);
     canvas.addEventListener("pointerup", this.#onPointerUp);
     canvas.addEventListener("pointercancel", this.#onPointerCancel);
+    canvas.addEventListener("pointerleave", this.#onPointerLeave);
     canvas.addEventListener("wheel", this.#onWheel, { passive: false });
     canvas.addEventListener("keydown", this.#onKeyDown);
     container.replaceChildren(canvas, description, effectsCanvas);
@@ -708,6 +713,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         statusPulse: this.#statusPulse,
         artSet: this.#artSet(),
         chibiArt: this.#chibiArt,
+        previewFocus: this.#hovered ?? this.#focused,
         selectionJump:
           jump === null
             ? null
@@ -880,7 +886,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       this.#description.textContent =
         unit === undefined
           ? "Unexplored tile."
-          : `${title(unit.role)}, ${unit.hp} of ${unit.maxHp} HP. Explicitly revealed unit on unexplored terrain.`;
+          : `${unitName(model.view, unit)}, ${unit.hp} of ${unit.maxHp} HP. Explicitly revealed unit on unexplored terrain.`;
       return;
     }
     const city = model.view.cities.find((candidate) => same(candidate.at, at));
@@ -899,12 +905,13 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         ? title(tile.resource)
         : "",
       tile.improvement === null ? "" : title(tile.improvement),
+      model.view.graves.some((grave) => same(grave, at)) ? "Grave" : "",
       city === undefined
         ? ""
         : `${city.isCapital ? "Capital" : "City"} level ${city.level}`,
       unit === undefined
         ? ""
-        : `${title(unit.role)}, ${unit.hp} of ${unit.maxHp} HP`,
+        : `${unitName(model.view, unit)}, ${unit.hp} of ${unit.maxHp} HP`,
       actions.length === 0 ? "" : `Available: ${actions.join(", ")}`,
     ]
       .filter(Boolean)
@@ -935,7 +942,11 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   readonly #onPointerMove = (event: PointerEvent): void => {
     const canvas = this.#canvas;
     if (canvas === null) return;
-    if (!this.#pointers.has(event.pointerId)) return;
+    if (!this.#pointers.has(event.pointerId)) {
+      if (this.#pointers.size === 0 && event.pointerType !== "touch")
+        this.#hover(localPoint(canvas, event));
+      return;
+    }
     const next = localPoint(canvas, event);
     this.#pointers.set(event.pointerId, next);
     if (this.#pointers.size === 2) {
@@ -1020,6 +1031,35 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       }
     }
   };
+  readonly #onPointerLeave = (): void => {
+    this.#hover(null);
+  };
+  /**
+   * Revision 13: hovering an attack target that splashes previews its splash
+   * area. Hover never moves the keyboard cursor, and a hover that cannot
+   * change a splash preview does not redraw.
+   */
+  #hover(point: Point | null): void {
+    const model = this.#model;
+    const at =
+      point === null || model === null
+        ? null
+        : pickGridTile(point, this.#camera, model.view.board);
+    const prior = this.#hovered;
+    if (
+      (prior === null && at === null) ||
+      (prior !== null && at !== null && same(prior, at))
+    )
+      return;
+    this.#hovered = at;
+    if (model === null || this.#presentedView !== null) return;
+    const splashAt = (cell: CoordV7 | null): boolean =>
+      cell !== null &&
+      this.#planFor(model.view, model.offeredCommands).targets.some(
+        (target) => target.splash !== undefined && same(target.at, cell),
+      );
+    if (splashAt(prior) || splashAt(at)) this.#draw();
+  }
   readonly #onPointerCancel = (event: PointerEvent): void => {
     this.#pointers.delete(event.pointerId);
     this.#pointer = null;
@@ -1180,6 +1220,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       canvas.removeEventListener("pointermove", this.#onPointerMove);
       canvas.removeEventListener("pointerup", this.#onPointerUp);
       canvas.removeEventListener("pointercancel", this.#onPointerCancel);
+      canvas.removeEventListener("pointerleave", this.#onPointerLeave);
       canvas.removeEventListener("wheel", this.#onWheel);
       canvas.removeEventListener("keydown", this.#onKeyDown);
     }
@@ -1191,6 +1232,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#callbacks = null;
     this.#pointers.clear();
     this.#pointer = null;
+    this.#hovered = null;
     this.#pinch = null;
     this.#pinchStart = null;
     this.#wheelDelta = 0;
@@ -1392,6 +1434,15 @@ function pinchState(
 }
 function same(a: CoordV7, b: CoordV7): boolean {
   return a.x === b.x && a.y === b.y;
+}
+/** Human units keep their revision-12 names; Undead units use their own. */
+function unitName(
+  view: PlayerViewV7,
+  unit: PlayerViewV7["units"][number],
+): string {
+  return unitIsUndeadV7(view, unit)
+    ? `Undead ${unitRoleRuleV7(view, unit).label}`
+    : title(unit.role);
 }
 /** Pixel wheel delta for one CHIBI zoom step (one ordinary mouse notch). */
 const CHIBI_WHEEL_STEP_DELTA = 50;

@@ -43,7 +43,11 @@ export function tacticalAttachmentsV7(
             key: `inspired:${unit.id}`,
             at: unit.at,
             symbolId: "ui-status-inspired",
-            label: "Inspired by Captain Rally: +1 next Attack",
+            label:
+              view.players.find((player) => player.id === unit.ownerId)
+                ?.faction === "UNDEAD"
+                ? "Frenzied by Necromancer Frenzy: +1 next Attack"
+                : "Inspired by Captain Rally: +1 next Attack",
             pulse: false,
           },
         ]

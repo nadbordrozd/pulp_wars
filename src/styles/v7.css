@@ -1821,3 +1821,126 @@
   max-width: min(22rem, calc(100% - 1.5rem));
   font-size: 0.85rem;
 }
+
+/* ---------- Revision 13 Undead (development flag, placeholder art) ---------- */
+
+.v7-setup-factions {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem 1rem;
+  margin: 0;
+  padding: 0.75rem 0.9rem 0.9rem;
+  border: 1px solid var(--v7-edge);
+  border-radius: 12px;
+}
+
+.v7-setup-factions legend {
+  padding: 0 0.35rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.v7-undead-art {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.v7-context-action > .v7-undead-art,
+.v7-train-action > .v7-undead-art {
+  width: 3rem;
+  height: 3rem;
+}
+
+.v7-reward-action > .v7-undead-art {
+  width: 5rem;
+  height: 5rem;
+}
+
+.v7-dialog-header > .v7-undead-art {
+  width: 4.5rem;
+  height: 4.5rem;
+}
+
+.v7-undead-art > .v7-art-frame {
+  width: 100%;
+  height: 100%;
+}
+
+/* Bone skull on a near-black disc: distinct from every owner colour. */
+.v7-undead-badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1.15rem;
+  height: 1.15rem;
+  padding: 0.12rem;
+  border: 1.5px solid #efe8cf;
+  border-radius: 50%;
+  background: #231a2c;
+  color: #efe8cf;
+  pointer-events: none;
+}
+
+.v7-undead-badge path {
+  fill: currentcolor;
+  fill-rule: evenodd;
+  stroke: #231a2c;
+  stroke-width: 1.2;
+}
+
+.v7-identity-art > .v7-undead-badge {
+  top: 18px;
+  left: 14px;
+  width: 30px;
+  height: 30px;
+  padding: 3px;
+}
+
+.v7-faction-chip[data-faction="undead"] {
+  border: 1px solid #efe8cf55;
+  background: #231a2c;
+  color: #efe8cf;
+}
+
+.v7-leaderboard-name .v7-faction-chip {
+  padding: 0.05rem 0.45rem;
+  font-size: 0.7rem;
+}
+
+.v7-command-icon {
+  width: 2.4rem;
+  height: 2.4rem;
+  margin: 0.3rem;
+  color: #d9c6ff;
+}
+
+.v7-undead-preview-chip {
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: rgb(201 166 255 / 18%);
+  color: #eadcff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.v7-context-action[data-disabled-reason="restless"] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.v7-tactical-state[data-tactical-state="restless"] {
+  display: grid;
+  gap: 0.15rem;
+}
+
+@media (max-width: 599px) {
+  .v7-setup-factions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

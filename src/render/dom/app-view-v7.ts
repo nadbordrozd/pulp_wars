@@ -17,6 +17,10 @@ import type {
 import {
   effectiveRoleRuleV7,
   unitRoleRuleV7,
+  unitRoleMechanicsV7,
+  previewDevourV7,
+  previewRaiseDeadV7,
+  previewWailV7,
   previewEconomicV7,
   queryTechnologyTreeV7,
   type CommandV7,
@@ -30,6 +34,7 @@ import {
   type TechnologyIdV7,
   type AchievementIdV7,
   type UnitRoleIdV7,
+  type UnitId,
   type FactionIdV7,
 } from "../../engine/index";
 import { downloadJsonFile } from "../../app/browser-download";
@@ -50,6 +55,21 @@ import {
 } from "./selection-identity-v7";
 import { uiIconV7, type UiIconIdV7 } from "./ui-icons-v7";
 import type { ArtSetV7 } from "../../assets/chibi-art-v7";
+import {
+  RESTLESS_EXPLANATION_V7,
+  devourPreviewDescriptionV7,
+  factionNameV7,
+  matchHasUndeadV7,
+  raiseDeadPreviewDescriptionV7,
+  restlessOutsideTerritoryV7,
+  restlessRecoverBlockedV7,
+  undeadAbilityDescriptionV7,
+  undeadAbilityNameV7,
+  undeadBoundaryNoticeV7,
+  undeadCommandLabelV7,
+  unitIsUndeadV7,
+  wailPreviewDescriptionV7,
+} from "../undead-presentation-v7";
 
 const BOARD_SIZES = [11, 14, 16, 20, 25] as const;
 const COLORS: readonly PlayerColorV7[] = ["CORAL", "TEAL", "GOLD", "VIOLET"];
@@ -80,6 +100,11 @@ const COLOR_LABELS: Readonly<Record<string, string>> = {
   GOLD: "Gold",
   VIOLET: "Violet",
 };
+const FACTIONS: readonly FactionIdV7[] = ["ORIGINAL", "UNDEAD"];
+const FACTION_LABELS: Readonly<Record<string, string>> = {
+  ORIGINAL: "Human",
+  UNDEAD: "Undead",
+};
 const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   "MOVE",
   "ATTACK",
@@ -96,6 +121,11 @@ export interface MountRuleset7AppOptions {
   readonly downloadDebugBundle?: (source: string, filename: string) => void;
   readonly settingsStorage?: StorageAdapter | null;
   readonly startupNotice?: string;
+  /**
+   * Revision 13 development flag (`?undead=1`): setup offers a faction for
+   * every seat. It never affects loading or playing a saved match.
+   */
+  readonly undeadSetup?: boolean;
 }
 
 export type Ruleset7ControllerPortV7 = Pick<
@@ -122,6 +152,8 @@ interface DraftV7 {
   readonly seedText: string;
   readonly humanColor: PlayerColorV7;
   readonly mapType: MapTypeV7;
+  /** Seat factions (seat 0 is the human); used only with the Undead flag. */
+  readonly factions: readonly FactionIdV7[];
 }
 
 type ScreenV7 =
@@ -137,6 +169,7 @@ export class Ruleset7DomAppView {
   readonly #downloadDebugBundle: (source: string, filename: string) => void;
   readonly #settingsStorage: StorageAdapter | null;
   readonly #artSet: ArtSetV7;
+  readonly #undeadSetup: boolean;
   #snapshot: Ruleset7BrowserSnapshot;
   #unsubscribe: (() => void) | null = null;
   #unsubscribeAcceptedBoundary: (() => void) | null = null;
@@ -147,6 +180,7 @@ export class Ruleset7DomAppView {
     seedText: "42",
     humanColor: "CORAL",
     mapType: "CONTINENTS",
+    factions: ["ORIGINAL", "ORIGINAL", "ORIGINAL", "ORIGINAL"],
   };
   #selection: BoardSelectionV7 | null = null;
   #screen: ScreenV7 = "MATCH";
@@ -207,6 +241,7 @@ export class Ruleset7DomAppView {
       ((source, filename) => downloadJsonFile(documentRoot, source, filename));
     this.#settingsStorage = options.settingsStorage ?? null;
     this.#artSet = options.artSet ?? "LEGACY";
+    this.#undeadSetup = options.undeadSetup === true;
     this.#notice = options.startupNotice ?? "";
     this.#motion =
       documentRoot.defaultView?.matchMedia?.("(prefers-reduced-motion: reduce)")
@@ -415,6 +450,8 @@ export class Ruleset7DomAppView {
         "v7-map-type-description",
       ),
     );
+    const factions = this.#undeadSetup ? this.#factionFields() : null;
+    if (factions !== null) form.append(factions);
     const launch = button(
       this.#document,
       replace ? "Start new game" : "Play",
@@ -439,11 +476,19 @@ export class Ruleset7DomAppView {
       );
       if (description !== null)
         description.textContent = mapTypeDescriptionV7(this.#draft.mapType);
+      const liveFactions =
+        form.querySelector<HTMLElement>("[data-v7-factions]");
+      if (
+        liveFactions !== null &&
+        liveFactions.querySelectorAll("select").length !==
+          this.#draft.aiCount + 1
+      )
+        liveFactions.replaceWith(this.#factionFields());
     });
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       this.#readDraft(form);
-      const setup = setupFrom(this.#draft);
+      const setup = setupFrom(this.#draft, this.#undeadSetup);
       if (setup === null) {
         this.#error = "Seed must be a whole number (0–4294967295).";
         this.#render();
@@ -453,6 +498,25 @@ export class Ruleset7DomAppView {
     });
     main.append(form, this.#ruleset6Link());
     return main;
+  }
+
+  /** Development-flag faction choice: one labelled select per seat. */
+  #factionFields(): HTMLElement {
+    const fieldset = el(this.#document, "fieldset", "v7-setup-factions");
+    fieldset.dataset.v7Factions = "true";
+    fieldset.append(text(this.#document, "legend", "Factions"));
+    for (let seat = 0; seat <= this.#draft.aiCount; seat += 1)
+      fieldset.append(
+        select(
+          this.#document,
+          seat === 0 ? "Your faction" : `${playerName(seat)} faction`,
+          `v7-faction-${seat}`,
+          FACTIONS,
+          this.#draft.factions[seat] ?? "ORIGINAL",
+          FACTION_LABELS,
+        ),
+      );
+    return fieldset;
   }
 
   #resume(): HTMLElement {
@@ -642,7 +706,7 @@ export class Ruleset7DomAppView {
         ? "Game over"
         : humanTurn
           ? "Your turn"
-          : `${playerName(active?.seat ?? 0)} is playing…`,
+          : `${playerTitle(view, active?.seat ?? 0)} is playing…`,
       "v7-turn-status",
     );
     status.dataset.v7AiProgress = "true";
@@ -894,6 +958,8 @@ export class Ruleset7DomAppView {
       if (unit === undefined) return null;
       const roleRule = unitRoleRuleV7(view, unit);
       const roleLabel = roleRule.label;
+      const undeadUnit = unitIsUndeadV7(view, unit);
+      const unitFaction = undeadUnit ? "UNDEAD" : "ORIGINAL";
       dock.append(
         identity(
           this.#document,
@@ -902,6 +968,7 @@ export class Ruleset7DomAppView {
             : RULESET7_UNIT_ART_IDS[unit.role],
           unit.form === "EMBARKED" ? `${roleLabel} (at sea)` : roleLabel,
           true,
+          undeadUnit,
         ),
       );
       if (unit.ownerId !== view.viewer.id) {
@@ -919,6 +986,16 @@ export class Ruleset7DomAppView {
             );
       }
       const identityColumn = dock.querySelector<HTMLElement>(".v7-identity");
+      if (undeadUnit) {
+        const faction = text(
+          this.#document,
+          "span",
+          factionNameV7("UNDEAD"),
+          "v7-chip v7-faction-chip",
+        );
+        faction.dataset.faction = "undead";
+        identityColumn?.append(faction);
+      }
       identityColumn?.append(
         text(
           this.#document,
@@ -961,6 +1038,25 @@ export class Ruleset7DomAppView {
         state.append(text(this.#document, "strong", "Escape: may move again"));
         unitDetails.append(state);
       }
+      if (restlessOutsideTerritoryV7(view, unit)) {
+        const state = el(this.#document, "section", "v7-tactical-state");
+        state.dataset.tacticalState = "restless";
+        state.append(
+          text(this.#document, "strong", "Restless: no recovery here"),
+          text(this.#document, "span", RESTLESS_EXPLANATION_V7),
+        );
+        unitDetails.append(state);
+        const cue = text(this.#document, "span", "Restless", "v7-chip");
+        cue.dataset.unitStatus = "restless";
+        cue.setAttribute("aria-label", RESTLESS_EXPLANATION_V7);
+        cue.title = RESTLESS_EXPLANATION_V7;
+        identityColumn?.append(cue);
+      }
+      if (view.graves.some((grave) => same(grave, unit.at))) {
+        const grave = text(this.#document, "span", "On a Grave", "v7-chip");
+        grave.dataset.unitStatus = "grave";
+        identityColumn?.append(grave);
+      }
       const stats = view.unitStats.find((entry) => entry.unitId === unit.id);
       if (stats !== undefined) {
         if (stats.statuses.length > 0) {
@@ -995,7 +1091,12 @@ export class Ruleset7DomAppView {
                 : stat.id === "RANGE" &&
                     stats.minimumRange !== stats.maximumRange
                   ? `${stats.minimumRange}–${stats.maximumRange}`
-                  : formatValue(stat.base.value),
+                  : stat.id === "RANGE" &&
+                      undeadUnit &&
+                      unit.form === "LAND" &&
+                      stats.maximumRange === 0
+                    ? "—"
+                    : formatValue(stat.base.value),
             ),
           );
           for (const [index, modifier] of (exact
@@ -1047,12 +1148,29 @@ export class Ruleset7DomAppView {
             ability,
             stats.minimumRange,
             stats.maximumRange,
+            unitFaction,
           );
           if (description === null) continue;
           const entry = el(this.#document, "p", "v7-unit-ability");
           entry.append(
-            text(this.#document, "strong", abilityName(ability)),
+            text(this.#document, "strong", abilityName(ability, unitFaction)),
             text(this.#document, "span", description),
+          );
+          abilities.append(entry);
+        }
+        if (
+          undeadUnit &&
+          unit.role === "CATAPULT" &&
+          unitRoleMechanicsV7(view, unit).splash
+        ) {
+          const entry = el(this.#document, "p", "v7-unit-ability");
+          entry.append(
+            text(this.#document, "strong", "Splash"),
+            text(
+              this.#document,
+              "span",
+              "Shots also hit enemies next to the target for half damage.",
+            ),
           );
           abilities.append(entry);
         }
@@ -1066,6 +1184,27 @@ export class Ruleset7DomAppView {
           command.unitId === unit.id &&
           !NON_BUTTON_COMMANDS.has(command.kind),
       );
+      if (restlessRecoverBlockedV7(view, unit)) {
+        const recover = button(
+          this.#document,
+          "",
+          "restless-recover",
+          "v7-context-action",
+        );
+        recover.append(
+          art(this.#document, "ui-action-recover", ""),
+          text(this.#document, "span", "Recover", "v7-action-label"),
+        );
+        // aria-disabled keeps the explanation reachable by keyboard.
+        recover.setAttribute("aria-disabled", "true");
+        recover.dataset.disabledReason = "restless";
+        recover.title = RESTLESS_EXPLANATION_V7;
+        recover.setAttribute(
+          "aria-label",
+          `Recover unavailable. ${RESTLESS_EXPLANATION_V7}`,
+        );
+        actions.append(recover);
+      }
       if (actions.querySelector("button") !== null) {
         dock.dataset.hasActions = "true";
         dock.append(actions);
@@ -1086,12 +1225,16 @@ export class Ruleset7DomAppView {
         closeHelp.onclick = () => this.#closeUnitHelp();
         const header = el(this.#document, "div", "v7-dialog-header");
         header.append(
-          art(
+          undeadArt(
             this.#document,
-            unit.form === "EMBARKED"
-              ? "unit-shared-embarked-transport"
-              : RULESET7_UNIT_ART_IDS[unit.role],
-            "",
+            art(
+              this.#document,
+              unit.form === "EMBARKED"
+                ? "unit-shared-embarked-transport"
+                : RULESET7_UNIT_ART_IDS[unit.role],
+              "",
+            ),
+            undeadUnit,
           ),
           text(this.#document, "h2", roleLabel),
         );
@@ -1277,6 +1420,12 @@ export class Ruleset7DomAppView {
         const details = el(this.#document, "div", "v7-selection-details");
         if (tile.road && name !== "Road")
           details.append(text(this.#document, "p", "Road", "v7-chip"));
+        if (view.graves.some((grave) => same(grave, tile.at))) {
+          const grave = text(this.#document, "p", "Grave", "v7-chip");
+          grave.dataset.grave = "true";
+          grave.title = "A Necromancer can raise it; a Ghoul can devour it.";
+          details.append(grave);
+        }
         if (
           tile.improvement !== null &&
           tile.resource !== null &&
@@ -1444,7 +1593,17 @@ export class Ruleset7DomAppView {
         );
       }
       const artId = commandArtIdV7(command);
-      if (artId !== null) action.prepend(art(this.#document, artId, ""));
+      if (artId !== null)
+        action.prepend(
+          command.kind === "TRAIN" && this.#viewerFaction() === "UNDEAD"
+            ? undeadArt(this.#document, art(this.#document, artId, ""), true)
+            : art(this.#document, artId, ""),
+        );
+      const undeadIcon = UNDEAD_COMMAND_ICONS[command.kind];
+      if (undeadIcon !== undefined)
+        action.prepend(
+          uiIconV7(this.#document, undeadIcon, "v7-ui-icon v7-command-icon"),
+        );
       if (command.kind === "BUILD_FIELD_DEFENSE")
         action.prepend(
           createTacticalSymbolV7(
@@ -1487,6 +1646,31 @@ export class Ruleset7DomAppView {
       } else if (command.kind === "LAND_GRANT") {
         action.setAttribute("aria-label", "Land grant for 6 Coins");
         action.append(economyChips(this.#document, { cost: 6 }));
+      } else if (
+        command.kind === "WAIL" ||
+        command.kind === "RAISE_DEAD" ||
+        command.kind === "DEVOUR"
+      ) {
+        const view = this.#snapshot.view;
+        const summary =
+          view === null
+            ? null
+            : undeadCommandPreview(view, command.kind, command.unitId);
+        if (summary !== null) {
+          action.setAttribute(
+            "aria-label",
+            `${commandLabel(command, this.#viewerFaction())} · ${summary.description}`,
+          );
+          action.title = summary.description;
+          action.append(
+            text(
+              this.#document,
+              "span",
+              summary.chip,
+              "v7-undead-preview-chip",
+            ),
+          );
+        }
       } else {
         const view = this.#snapshot.view;
         const preview = view === null ? null : previewEconomicV7(view, command);
@@ -1589,13 +1773,24 @@ export class Ruleset7DomAppView {
     const section = el(this.#document, "div", "v7-info-screen v7-help");
     const tips = this.#document.createElement("ul");
     tips.className = "v7-help-tips";
+    const view = this.#snapshot.view;
+    const undeadViewer = view?.viewer.faction === "UNDEAD";
     for (const tip of [
       "Select a unit, then a highlighted tile to move or attack.",
       "Select your city to train units.",
       "Select a tile in your land to harvest or build.",
       "Spend coins on technology to unlock more. Your first technology is free.",
       "Fruit is visible from the start; Gathering reveals Fertile Ground.",
-      "A Raider that survives an attack may move again (Escape).",
+      ...(undeadViewer
+        ? UNDEAD_HELP_TIPS
+        : [
+            "A Raider that survives an attack may move again (Escape).",
+            ...(view !== null && matchHasUndeadV7(view)
+              ? [
+                  "Units that fall in battle on land leave Graves. Undead raise or devour them, and Zombie kills rise as Zombies.",
+                ]
+              : []),
+          ]),
       "Capture every enemy city to win.",
       "Move a land unit onto your port to put it to sea.",
     ])
@@ -1841,7 +2036,11 @@ export class Ruleset7DomAppView {
     close.onclick = () => this.#closeRecruitHelp();
     const header = el(this.#document, "div", "v7-dialog-header");
     header.append(
-      art(this.#document, RULESET7_UNIT_ART_IDS[role], ""),
+      undeadArt(
+        this.#document,
+        art(this.#document, RULESET7_UNIT_ART_IDS[role], ""),
+        faction === "UNDEAD",
+      ),
       text(this.#document, "h2", presentation.label),
       economyChips(this.#document, { cost: rule.cost ?? 0 }),
     );
@@ -1900,6 +2099,16 @@ export class Ruleset7DomAppView {
           ? `${playerName(entry.seat)} (you)`
           : playerName(entry.seat),
       );
+      if (matchHasUndeadV7(view)) {
+        const faction = text(
+          this.#document,
+          "span",
+          factionNameV7(entry.faction),
+          "v7-chip v7-faction-chip",
+        );
+        faction.dataset.faction = entry.faction.toLowerCase();
+        name.append(faction);
+      }
       const cities = el(this.#document, "span", "v7-leaderboard-stat");
       cities.title = "Cities";
       cities.append(
@@ -2151,7 +2360,7 @@ export class Ruleset7DomAppView {
           candidate.reward === reward,
       );
       if (command === undefined) continue;
-      const [name, detail] = rewardLabel(reward);
+      const [name, detail] = rewardLabel(reward, view.viewer.faction);
       const action = button(
         this.#document,
         "",
@@ -2159,7 +2368,12 @@ export class Ruleset7DomAppView {
         "v7-reward-action",
       );
       action.append(
-        art(this.#document, rewardArtIdV7(reward), ""),
+        undeadArt(
+          this.#document,
+          art(this.#document, rewardArtIdV7(reward), ""),
+          view.viewer.faction === "UNDEAD" &&
+            (reward === "MILITIA" || reward === "JUGGERNAUT"),
+        ),
         text(this.#document, "strong", name),
         text(this.#document, "span", detail, "v7-reward-detail"),
       );
@@ -2319,6 +2533,13 @@ export class Ruleset7DomAppView {
       mapType: MAP_TYPES.includes(value(form, "v7-map-type") as MapTypeV7)
         ? (value(form, "v7-map-type") as MapTypeV7)
         : "CONTINENTS",
+      factions: this.#draft.factions.map((prior, seat) => {
+        const field = form.querySelector<HTMLSelectElement>(
+          `#v7-faction-${seat}`,
+        );
+        if (field === null) return prior;
+        return field.value === "UNDEAD" ? "UNDEAD" : "ORIGINAL";
+      }),
     };
   }
   async #launch(setup: MatchSetupV7, replace: boolean): Promise<void> {
@@ -2398,13 +2619,15 @@ export class Ruleset7DomAppView {
       return;
     }
     this.#error = "";
-    const special = specialBoundaryNoticeV7(
+    const notice = boundaryNoticeV7(
       result.playerEvents.events,
-      result.afterView.viewer.id,
+      result.beforeView,
+      result.afterView,
     );
-    if (special !== null) this.#showToast(special);
+    if (notice.toast && notice.text !== null) this.#showToast(notice.text);
     this.#notice =
-      special ?? `${commandLabel(command, result.afterView.viewer.faction)}.`;
+      notice.text ??
+      `${commandLabel(command, result.afterView.viewer.faction)}.`;
     if (command.kind === "RESEARCH") this.#selectedTech = null;
     this.#pendingFocusAction = restoreAction;
     this.#humanDispatchSettling = true;
@@ -2518,7 +2741,9 @@ export class Ruleset7DomAppView {
         : view.players.find(
             (player) => player.id === view.turnOrder[view.activeSeatIndex],
           );
-    return `${playerName(active?.seat ?? 0)} is playing…`;
+    return view === null
+      ? `${playerName(active?.seat ?? 0)} is playing…`
+      : `${playerTitle(view, active?.seat ?? 0)} is playing…`;
   }
 
   #queueBoundary(boundary: Ruleset7AcceptedBoundary): void {
@@ -2534,13 +2759,14 @@ export class Ruleset7DomAppView {
         event.playerId === boundary.afterView.viewer.id
       )
         this.#achievementNotices.push(event.achievement);
-    const special = specialBoundaryNoticeV7(
+    const notice = boundaryNoticeV7(
       boundary.playerEvents.events,
-      boundary.afterView.viewer.id,
+      boundary.beforeView,
+      boundary.afterView,
     );
-    if (special !== null) {
-      this.#notice = special;
-      this.#showToast(special);
+    if (notice.text !== null) {
+      this.#notice = notice.text;
+      if (notice.toast) this.#showToast(notice.text);
     }
     if (this.#snapshot.ai.fastForward) {
       this.#presentationQueue = [];
@@ -2935,6 +3161,7 @@ function identity(
   assetId: string,
   label: string,
   normalizePaintedSize = false,
+  undead = false,
 ): HTMLElement {
   const identity = el(documentRoot, "div", "v7-identity");
   const viewport = el(documentRoot, "span", "v7-identity-art");
@@ -2955,6 +3182,10 @@ function identity(
     image.style.height = `${layout.height}px`;
   }
   viewport.append(image);
+  if (undead) {
+    viewport.dataset.faction = "undead";
+    viewport.append(uiIconV7(documentRoot, "skull", "v7-undead-badge"));
+  }
   identity.append(viewport, text(documentRoot, "h2", label));
   return identity;
 }
@@ -2981,7 +3212,7 @@ function mapTypeDescriptionV7(mapType: MapTypeV7): string {
   if (mapType === "ARCHIPELAGO") return "Everyone starts on their own island.";
   return "Mostly land, broken up by lakes.";
 }
-function setupFrom(draft: DraftV7): MatchSetupV7 | null {
+function setupFrom(draft: DraftV7, undeadSetup: boolean): MatchSetupV7 | null {
   if (!/^\d+$/.test(draft.seedText)) return null;
   const seed = Number(draft.seedText);
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
@@ -2997,7 +3228,8 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
     humanColor: draft.humanColor,
     factions: Array.from(
       { length: draft.aiCount + 1 },
-      () => "ORIGINAL" as const,
+      (_, seat): FactionIdV7 =>
+        undeadSetup ? (draft.factions[seat] ?? "ORIGINAL") : "ORIGINAL",
     ),
     mapType: draft.mapType,
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
@@ -3269,6 +3501,12 @@ export function recruitmentRolePresentationV7(
       "Shots splash onto nearby enemies.",
       "Moves or fires each turn, not both.",
     );
+  if (faction === "UNDEAD" && roleId === "CATAPULT")
+    restrictions.push("Shots splash onto nearby enemies.");
+  if (faction === "UNDEAD" && !role.abilities.includes("ATTACK") && !ship)
+    restrictions.push("Can't attack. Wails instead.");
+  if (faction === "UNDEAD" && !ship)
+    restrictions.push("Restless: recovers only in your territory.");
   return {
     label: role.label,
     stats: [
@@ -3279,9 +3517,11 @@ export function recruitmentRolePresentationV7(
       {
         label: "Range",
         value:
-          role.minimumRange === role.range
-            ? String(role.range)
-            : `${role.minimumRange}–${role.range}`,
+          role.range === 0
+            ? "—"
+            : role.minimumRange === role.range
+              ? String(role.range)
+              : `${role.minimumRange}–${role.range}`,
       },
       { label: "Sight", value: String(role.sightRadius) },
     ],
@@ -3290,10 +3530,11 @@ export function recruitmentRolePresentationV7(
         ability,
         role.minimumRange,
         role.range,
+        faction,
       );
       return description === null
         ? []
-        : [`${abilityName(ability)}: ${description}`];
+        : [`${abilityName(ability, faction)}: ${description}`];
     }),
     restrictions,
   };
@@ -3307,7 +3548,10 @@ function abilityDescription(
   ability: string,
   minimum: number,
   maximum: number,
+  faction: FactionIdV7,
 ): string | null {
+  const undead = undeadAbilityDescriptionV7(ability, faction);
+  if (undead !== null) return undead;
   switch (ability) {
     case "ATTACK":
       return minimum > 1
@@ -3400,13 +3644,37 @@ export function specialBoundaryNoticeV7(
     ? `${title(achievement.achievement)} achievement unlocked`
     : null;
 }
+/**
+ * The special notice plus any revision-13 Undead notice. Human-only matches
+ * never produce an Undead notice, so their text and toasts are unchanged.
+ */
+function boundaryNoticeV7(
+  events: Ruleset7AcceptedBoundary["playerEvents"]["events"],
+  before: PlayerViewV7,
+  after: PlayerViewV7,
+): { readonly text: string | null; readonly toast: boolean } {
+  const special = specialBoundaryNoticeV7(events, after.viewer.id);
+  const undead = undeadBoundaryNoticeV7(events, before, after);
+  if (undead === null) return { text: special, toast: special !== null };
+  return {
+    text: special === null ? undead.text : `${undead.text} · ${special}`,
+    toast: special !== null || undead.toast,
+  };
+}
 function techAchievementV7(tech: TechnologyIdV7): AchievementIdV7 | null {
   if (tech === "SCOUTING") return "EXPLORER";
   if (tech === "ENGINEERING") return "ENGINEER";
   if (tech === "DRILL") return "MUSTER";
   return null;
 }
-function rewardLabel(reward: string): readonly [string, string] {
+function rewardLabel(
+  reward: string,
+  faction: FactionIdV7,
+): readonly [string, string] {
+  if (faction === "UNDEAD" && reward === "MILITIA")
+    return ["Militia", "A free Skeleton"];
+  if (faction === "UNDEAD" && reward === "JUGGERNAUT")
+    return ["Abomination", "A giant unit"];
   if (reward === "SURVEY") return ["Survey", "Reveal the area"];
   if (reward === "STOCKPILE") return ["Stockpile", "+4 Coins"];
   if (reward === "WALLS") return ["Walls", "Stronger city defense"];
@@ -3452,6 +3720,8 @@ const COMMAND_LABELS: Partial<Record<CommandV7["kind"], string>> = {
 function commandLabel(command: CommandV7, faction: FactionIdV7): string {
   if (command.kind === "TRAIN" || command.kind === "TRAIN_NAVAL")
     return effectiveRoleRuleV7(command.role, faction).label;
+  const undead = undeadCommandLabelV7(command.kind, faction);
+  if (undead !== null) return undead;
   if (command.kind === "BUILD_MONUMENT") return "Monument";
   return COMMAND_LABELS[command.kind] ?? title(command.kind);
 }
@@ -3743,7 +4013,77 @@ function populationMeter(
   return meter;
 }
 
-function abilityName(ability: string): string {
+function abilityName(ability: string, faction: FactionIdV7): string {
+  const undead = undeadAbilityNameV7(ability, faction);
+  if (undead !== null) return undead;
   if (ability === "TEND_WOUNDED") return "Tend";
   return title(ability);
+}
+
+/** Leaderboard, banner and turn names; faction appears only in Undead matches. */
+function playerTitle(view: PlayerViewV7, seat: number): string {
+  const player = view.players.find((candidate) => candidate.seat === seat);
+  return matchHasUndeadV7(view) && player !== undefined
+    ? `${playerName(seat)} (${factionNameV7(player.faction)})`
+    : playerName(seat);
+}
+
+const UNDEAD_HELP_TIPS: readonly string[] = [
+  "Units that fall in battle on land leave Graves.",
+  "A Necromancer raises Skeletons from adjacent Graves; a Ghoul devours the Grave it stands on to heal.",
+  "A Banshee can't attack; it Wails at every visible living enemy within 2 tiles.",
+  "Zombie kills rise as your Zombies, Vampires heal from damage they deal, and Lich shots splash.",
+  "Restless: your units recover only inside your territory.",
+];
+
+const UNDEAD_COMMAND_ICONS: Partial<Record<CommandV7["kind"], UiIconIdV7>> = {
+  RAISE_DEAD: "grave",
+  DEVOUR: "devour",
+  WAIL: "wail",
+};
+
+function undeadCommandPreview(
+  view: PlayerViewV7,
+  kind: "WAIL" | "RAISE_DEAD" | "DEVOUR",
+  unitId: UnitId,
+): { readonly chip: string; readonly description: string } | null {
+  if (kind === "WAIL") {
+    const preview = previewWailV7(view, unitId);
+    if (preview === null) return null;
+    const kills = preview.targets.filter((target) => target.dies).length;
+    return {
+      chip: `${preview.targets.length} hit${kills > 0 ? ` · ${kills} ✕` : ""}`,
+      description: wailPreviewDescriptionV7(view, preview),
+    };
+  }
+  if (kind === "RAISE_DEAD") {
+    const preview = previewRaiseDeadV7(view, unitId);
+    return preview === null
+      ? null
+      : {
+          chip: `+${preview.graves.length}`,
+          description: raiseDeadPreviewDescriptionV7(preview),
+        };
+  }
+  const preview = previewDevourV7(view, unitId);
+  return preview === null
+    ? null
+    : {
+        chip: `+${preview.amount} HP`,
+        description: devourPreviewDescriptionV7(preview),
+      };
+}
+
+/** Wraps Human placeholder art with the Undead faction badge (spec 10.2). */
+function undeadArt(
+  documentRoot: Document,
+  image: HTMLElement,
+  undead: boolean,
+): HTMLElement {
+  if (!undead) return image;
+  const frame = el(documentRoot, "span", "v7-undead-art");
+  frame.dataset.faction = "undead";
+  const badge = uiIconV7(documentRoot, "skull", "v7-undead-badge");
+  frame.append(image, badge);
+  return frame;
 }

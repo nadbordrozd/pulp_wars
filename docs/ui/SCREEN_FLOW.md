@@ -52,6 +52,50 @@ sections below remain authoritative for the unchanged Ruleset 6 route.
   `Escape: may move again` plus an Escape status chip. The Raider `?` detail
   explains Escape. No new raster art is used.
 
+## Current Ruleset 7 revision 13 Undead overlay (development flag)
+
+This overlay implements
+[Undead spec section 10](../product/RULESET_7_REVISION_13_UNDEAD.md#10-ui-requirements).
+A match without an Undead seat looks and behaves exactly as in revision 12.
+
+- `?undead=1` (exactly one value, `1`; not persisted) adds a labelled
+  **Factions** group to setup with one Human/Undead select per seat ("Your
+  faction", "Player N faction"), all Human by default and resized with the
+  opponent count. Without the flag setup is unchanged and every seat is
+  Human. Saves with Undead seats resume and play without the flag.
+- Every unit is named by its owner's registration (Skeleton, Ghoul, Banshee,
+  Zombie, Necromancer, Lich, Vampire, Abomination) in the dock, `?` detail,
+  training buttons and help, the map cursor description, and notifications.
+  Technology, research offers, rewards (Militia "A free Skeleton",
+  Abomination) and Help use the viewer's faction text. In a match with an
+  Undead seat the leaderboard shows a faction chip per player and the turn
+  status reads "Player N (Human|Undead) is playing…".
+- Placeholder art in both art sets: an Undead unit uses the Human sprite of
+  its role plus a bone skull badge on a near-black disc (legacy: right of the
+  sprite above the HP bar; CHIBI: the cell's top-left corner), distinct from
+  owner colour. DOM unit art, training buttons, recruit help and reward art
+  carry the same badge. An explored Grave is a code-drawn grey headstone with
+  a cross on a brown mound, drawn above terrain, resources and improvements
+  and below units; the tile dock shows a Grave chip and a unit standing on
+  one shows "On a Grave".
+- Selecting an own unit previews its offered revision-13 command on the
+  board: a Banshee's radius-2 Wail area with per-target damage (red for a
+  kill), a Necromancer's Graves that will rise ("Rise"), and a Ghoul's
+  Devour heal. The dock buttons Wail, Raise Dead and Devour carry a summary
+  chip and a full `aria-label` with the same preview. Rally reads "Frenzy"
+  and Inspired "Frenzied" for Undead support.
+- In a match with an Undead seat, an attack target whose attacker splashes
+  (Lich, Battleship) shows its splash ring and per-unit splash damage when
+  the keyboard cursor or mouse is on it (always when it is the only splash
+  target). Lifesteal heals and Infect risings appear as a second preview
+  line ("Heal +N", "Rises as Zombie") and in the cursor description.
+- Restless: an own Undead land unit outside its territory shows a
+  "Restless" cue, the `?` detail explains it, and a damaged unit that would
+  otherwise recover shows an `aria-disabled` Recover action explaining why.
+- `DEAD_RAISED`, `GRAVE_DEVOURED`, `WAIL_RESOLVED`, `UNIT_INFECTED` and
+  `GRAVE_CREATED` animate on the effects canvas and are announced in the
+  live region; all but Grave creation also show a toast.
+
 ## 0. Ruleset-6 replacement contract
 
 The responsive navigation, fixed Canvas host, map-first selection, non-modal

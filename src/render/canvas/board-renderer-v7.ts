@@ -12,7 +12,29 @@ import type {
   ImprovementIdV7,
   PlayerViewV7,
 } from "../../engine/index";
-import { queryCombatPreviewV7 } from "../../engine/index";
+import {
+  playerFactionV7,
+  previewDevourV7,
+  previewRaiseDeadV7,
+  previewWailV7,
+  queryCombatPreviewV7,
+  unitRoleRuleV7,
+  WAIL_RADIUS_V7,
+} from "../../engine/index";
+import {
+  combatPreviewNoteV7,
+  combatPreviewSemanticNoteV7,
+  matchHasUndeadV7,
+} from "../undead-presentation-v7";
+import {
+  abilityAreaStrokeV7,
+  drawAbilityAreaCellV7,
+  drawAbilityTargetV7,
+  drawCombatPreviewNoteV7,
+  drawGraveMarkerV7,
+  drawUndeadBadgeV7,
+  type AbilityPreviewStyleV7,
+} from "./undead-canvas-v7";
 import {
   RULESET6_UNIT_ART_GEOMETRY,
   RULESET7_CAPTAIN_ART_GEOMETRY,
@@ -69,6 +91,14 @@ export interface MapCommandTargetV7 {
   readonly family: "MOVE" | "ATTACK" | "MONUMENT" | "DISEMBARK";
   readonly previewLabel?: string;
   readonly semanticLabel?: string;
+  /** Revision 13: Lifesteal and Infect outcome line (Undead matches only). */
+  readonly previewNote?: string;
+  /** Revision 13: public splash entries of this attack (Undead matches only). */
+  readonly splash?: readonly {
+    readonly at: CoordV7;
+    readonly damage: number;
+    readonly dies: boolean;
+  }[];
 }
 
 export interface BoardRenderPlanEntryV7 {
@@ -95,7 +125,10 @@ export interface BoardRenderPlanEntryV7 {
     | "WATER_BOUNDARY"
     | "TERRITORY_BOUNDARY"
     | "SELECTION"
-    | "CURSOR";
+    | "CURSOR"
+    | "GRAVE"
+    | "ABILITY_AREA"
+    | "ABILITY_TARGET";
   readonly assetId?: string;
   /** Art-set-neutral subject; the CHIBI art set resolves its raster from it. */
   readonly artSubject?: ArtSubjectV7;
@@ -129,6 +162,12 @@ export interface BoardRenderPlanEntryV7 {
   readonly boundaryStyle?: "OWNER" | "CITY";
   /** CITY only: the owner's capital (marked by a crown in the CHIBI art set). */
   readonly capital?: boolean;
+  /** UNIT only: an Undead-owned unit, drawn with the Undead faction badge. */
+  readonly faction?: "UNDEAD";
+  /** ABILITY_AREA / ABILITY_TARGET: the previewed ability. */
+  readonly abilityStyle?: AbilityPreviewStyleV7;
+  /** ABILITY_TARGET: lethal previewed damage. */
+  readonly lethal?: boolean;
 }
 
 export interface BoardRenderPlanV7 {
@@ -313,7 +352,18 @@ export function buildBoardRenderPlanV7(
       artSubject: "TREASURE",
       label: "Treasure",
     });
-  for (const unit of view.units)
+  // Revision 13: explored Graves sit above ground art and below every unit.
+  for (const at of view.graves)
+    entries.push({
+      key: `grave:${at.x},${at.y}`,
+      kind: "GRAVE",
+      layer: 4.5,
+      at,
+      label: "Grave",
+    });
+  for (const unit of view.units) {
+    const undead = playerFactionV7(view, unit.ownerId) === "UNDEAD";
+    const undeadLabel = undead ? unitRoleRuleV7(view, unit).label : null;
     entries.push({
       key: `unit:${unit.id}`,
       kind: "UNIT",
@@ -333,15 +383,17 @@ export function buildBoardRenderPlanV7(
           : `UNIT:${unit.role}`,
       label:
         unit.form === "EMBARKED"
-          ? `Embarked Transport · ${title(unit.role)} passenger`
-          : title(unit.role),
+          ? `Embarked Transport · ${undeadLabel ?? title(unit.role)} passenger`
+          : (undeadLabel ?? title(unit.role)),
       ready:
         unit.ownerId === view.viewer.id &&
         !unit.activation.handled &&
         commands.some(
           (command) => command.kind === "MOVE" && command.unitId === unit.id,
         ),
+      ...(undead ? { faction: "UNDEAD" as const } : {}),
     });
+  }
   for (const value of view.improvementValues)
     entries.push({
       key: `value:${value.at.x},${value.at.y}`,
@@ -447,6 +499,8 @@ export function buildBoardRenderPlanV7(
         }
   }
   addTerritoryBoundaries(entries, view, interaction.selection);
+  if (selectedUnitId !== null)
+    addAbilityPreviews(entries, view, commands, selectedUnitId);
   const targets = dedupeMapTargets(
     mapTargets(view, commands, interaction.selectedUnitId),
   );
@@ -618,6 +672,11 @@ export function drawBoardV7(input: {
   readonly artSet?: ArtSetV7;
   /** Required for CHIBI; subjects it cannot resolve draw their legacy asset. */
   readonly chibiArt?: ChibiBoardArtV7;
+  /**
+   * Revision 13: the cell whose attack target shows its splash area (the
+   * keyboard cursor or pointer hover). A lone splash target always shows.
+   */
+  readonly previewFocus?: CoordV7 | null;
 }): void {
   const { context, viewport, devicePixelRatio } = input;
   const chibiArt = input.artSet === "CHIBI" ? input.chibiArt : undefined;
@@ -661,7 +720,9 @@ export function drawBoardV7(input: {
         entry.kind === "TERRITORY_BOUNDARY" ||
         entry.kind === "REACH" ||
         entry.kind === "SELECTION" ||
-        entry.kind === "CURSOR"
+        entry.kind === "CURSOR" ||
+        entry.kind === "ABILITY_AREA" ||
+        entry.kind === "ABILITY_TARGET"
       )
         continue;
       if (
@@ -769,6 +830,16 @@ export function drawBoardV7(input: {
       }
       if (entry.kind === "ROAD" || entry.kind === "ROAD_JOIN") {
         drawRoad(context, entry, x, y, camera.zoom);
+        continue;
+      }
+      if (entry.kind === "GRAVE") {
+        drawGraveMarkerV7(
+          context,
+          x,
+          y,
+          camera.zoom,
+          input.highContrast ?? false,
+        );
         continue;
       }
       if (entry.kind === "STATUS") {
@@ -951,6 +1022,8 @@ export function drawBoardV7(input: {
             y + (badge.top + 14) * camera.zoom,
           );
         }
+        if (entry.kind === "UNIT" && entry.faction === "UNDEAD")
+          drawUndeadBadgeV7(context, x, y, camera.zoom, chibiPiece);
         if (entry.kind === "CITY" && entry.capital === true && chibiPiece)
           drawCapitalCrownV7(context, x, y, camera.zoom);
         if (entry.kind === "CITY") {
@@ -1105,6 +1178,7 @@ export function drawBoardV7(input: {
     strokeTileEdge(context, camera, boundary.at, boundary.edge);
     context.restore();
   }
+  drawAbilityAreasV7(context, camera, input.plan.entries);
   // Selection and action outlines keep visual priority over ownership.
   for (const entry of input.plan.entries) {
     const size = TILE_WIDTH * camera.zoom;
@@ -1161,6 +1235,20 @@ export function drawBoardV7(input: {
   for (const target of input.plan.entries) {
     if (target.kind !== "TARGET") continue;
     drawMapTarget(context, camera, target);
+  }
+  drawSplashPreviewV7(context, camera, input.plan, input.previewFocus ?? null);
+  for (const entry of input.plan.entries) {
+    if (entry.kind !== "ABILITY_TARGET" || entry.abilityStyle === undefined)
+      continue;
+    drawAbilityTargetV7(
+      context,
+      camera.offsetX + entry.at.x * TILE_WIDTH * camera.zoom,
+      camera.offsetY + entry.at.y * TILE_HEIGHT * camera.zoom,
+      camera.zoom,
+      entry.abilityStyle,
+      entry.label ?? "",
+      entry.lethal === true,
+    );
   }
   const statusPulse = input.statusPulse;
   if (
@@ -1390,7 +1478,95 @@ function drawMapTarget(
     context.textAlign = "center";
     context.fillText(entry.target.previewLabel, x, y + 52 * camera.zoom);
   }
+  if (entry.target?.previewNote !== undefined)
+    drawCombatPreviewNoteV7(
+      context,
+      x,
+      y,
+      camera.zoom,
+      entry.target.previewNote,
+    );
   context.restore();
+}
+
+/** Faint area fills and outer edges of the selected unit's ability preview. */
+function drawAbilityAreasV7(
+  context: CanvasRenderingContext2D,
+  camera: CameraState,
+  entries: readonly BoardRenderPlanEntryV7[],
+): void {
+  const areas = entries.filter(
+    (entry) =>
+      entry.kind === "ABILITY_AREA" && entry.abilityStyle !== undefined,
+  );
+  if (areas.length === 0) return;
+  context.save();
+  for (const entry of areas) {
+    const style = entry.abilityStyle ?? "WAIL";
+    drawAbilityAreaCellV7(
+      context,
+      camera.offsetX + entry.at.x * TILE_WIDTH * camera.zoom,
+      camera.offsetY + entry.at.y * TILE_HEIGHT * camera.zoom,
+      camera.zoom,
+      style,
+    );
+    context.strokeStyle = abilityAreaStrokeV7(style);
+    context.lineWidth = 3 * camera.zoom;
+    context.setLineDash([6 * camera.zoom, 4 * camera.zoom]);
+    for (const edge of entry.targetEdges ?? [])
+      strokeTileEdge(context, camera, entry.at, edge);
+  }
+  context.restore();
+}
+
+/**
+ * Revision 13 splash preview (Lich and, in Undead matches, Battleship): the
+ * ring around the focused attack target and each visible splashed unit's
+ * damage, all from the public combat preview.
+ */
+function drawSplashPreviewV7(
+  context: CanvasRenderingContext2D,
+  camera: CameraState,
+  plan: BoardRenderPlanV7,
+  focus: CoordV7 | null,
+): void {
+  const splashTargets = plan.targets.filter(
+    (target) => target.family === "ATTACK" && target.splash !== undefined,
+  );
+  const target =
+    (focus === null
+      ? undefined
+      : splashTargets.find((candidate) => same(candidate.at, focus))) ??
+    (splashTargets.length === 1 ? splashTargets[0] : undefined);
+  if (target?.splash === undefined) return;
+  const x = (at: CoordV7): number =>
+    camera.offsetX + at.x * TILE_WIDTH * camera.zoom;
+  const y = (at: CoordV7): number =>
+    camera.offsetY + at.y * TILE_HEIGHT * camera.zoom;
+  const explored = new Set(
+    plan.entries
+      .filter((entry) => entry.kind === "TERRAIN")
+      .map((entry) => coordKey(entry.at)),
+  );
+  context.save();
+  for (let dy = -1; dy <= 1; dy += 1)
+    for (let dx = -1; dx <= 1; dx += 1) {
+      if (dx === 0 && dy === 0) continue;
+      const at = { x: target.at.x + dx, y: target.at.y + dy };
+      if (explored.has(coordKey(at)))
+        drawAbilityAreaCellV7(context, x(at), y(at), camera.zoom, "SPLASH");
+    }
+  context.restore();
+  for (const item of target.splash)
+    drawAbilityTargetV7(
+      context,
+      x(item.at),
+      y(item.at),
+      camera.zoom,
+      "SPLASH",
+      `−${item.damage}`,
+      item.dies,
+    );
 }
 
 function strokeTileEdge(
@@ -1710,11 +1886,109 @@ function fillEnclosedTallTerrainBodyV7(
       body[pixel * 4 + 3] = originalAlpha[pixel] ?? 0;
 }
 
+/**
+ * Revision 13 ability previews for the selected own unit, from the exact
+ * public previews: the Wail radius with per-target damage, the Graves that
+ * Raise Dead raises, and the Devour heal. Nothing is added unless the
+ * command is offered, so Human-only matches never reach this output.
+ */
+function addAbilityPreviews(
+  entries: BoardRenderPlanEntryV7[],
+  view: PlayerViewV7,
+  commands: readonly CommandV7[],
+  selectedUnitId: number,
+): void {
+  const unitId = view.units.find((unit) => unit.id === selectedUnitId)?.id;
+  if (unitId === undefined) return;
+  const offered = (kind: CommandV7["kind"]): boolean =>
+    commands.some(
+      (command) =>
+        command.kind === kind &&
+        "unitId" in command &&
+        command.unitId === unitId,
+    );
+  if (offered("WAIL")) {
+    const preview = previewWailV7(view, unitId);
+    if (preview !== null) {
+      const area = new Set<string>();
+      for (let dy = -WAIL_RADIUS_V7; dy <= WAIL_RADIUS_V7; dy += 1)
+        for (let dx = -WAIL_RADIUS_V7; dx <= WAIL_RADIUS_V7; dx += 1) {
+          const at = { x: preview.at.x + dx, y: preview.at.y + dy };
+          if (
+            at.x < 0 ||
+            at.y < 0 ||
+            at.x >= view.board.width ||
+            at.y >= view.board.height ||
+            view.board.tiles[at.y * view.board.width + at.x]?.explored !== true
+          )
+            continue;
+          area.add(coordKey(at));
+        }
+      for (const key of [...area].sort()) {
+        const [x = 0, y = 0] = key.split(",").map(Number);
+        const at = { x, y };
+        entries.push({
+          key: `ability-area:WAIL:${key}`,
+          kind: "ABILITY_AREA",
+          layer: 7,
+          at,
+          abilityStyle: "WAIL",
+          targetEdges: TILE_EDGES.filter(
+            (edge) => !area.has(coordKey(neighborAcross(at, edge))),
+          ),
+        });
+      }
+      for (const target of preview.targets)
+        entries.push({
+          key: `ability-target:WAIL:${target.unitId}`,
+          kind: "ABILITY_TARGET",
+          layer: 7.5,
+          at: target.at,
+          abilityStyle: "WAIL",
+          label: `−${target.damage}`,
+          lethal: target.dies,
+        });
+    }
+  }
+  if (offered("RAISE_DEAD")) {
+    const preview = previewRaiseDeadV7(view, unitId);
+    for (const at of preview?.graves ?? [])
+      entries.push({
+        key: `ability-target:RAISE:${at.x},${at.y}`,
+        kind: "ABILITY_TARGET",
+        layer: 7.5,
+        at,
+        abilityStyle: "RAISE",
+        label: "Rise",
+      });
+  }
+  if (offered("DEVOUR")) {
+    const preview = previewDevourV7(view, unitId);
+    if (preview !== null)
+      entries.push({
+        key: `ability-target:DEVOUR:${preview.at.x},${preview.at.y}`,
+        kind: "ABILITY_TARGET",
+        layer: 7.5,
+        at: preview.at,
+        abilityStyle: "DEVOUR",
+        label: `+${preview.amount} HP`,
+      });
+  }
+}
+
+function neighborAcross(at: CoordV7, edge: TileEdge): CoordV7 {
+  if (edge === "NORTH") return { x: at.x, y: at.y - 1 };
+  if (edge === "SOUTH") return { x: at.x, y: at.y + 1 };
+  if (edge === "WEST") return { x: at.x - 1, y: at.y };
+  return { x: at.x + 1, y: at.y };
+}
+
 function mapTargets(
   view: PlayerViewV7,
   commands: readonly CommandV7[],
   selectedUnitId: number | null,
 ): MapCommandTargetV7[] {
+  const undeadMatch = matchHasUndeadV7(view);
   return commands.flatMap((command): readonly MapCommandTargetV7[] => {
     if (selectedUnitId === null) return [];
     if (command.kind === "MOVE" && command.unitId === selectedUnitId) {
@@ -1739,6 +2013,12 @@ function mapTargets(
         command.unitId,
         command.targetUnitId,
       );
+      const note =
+        undeadMatch && preview !== null ? combatPreviewNoteV7(preview) : null;
+      const semanticNote =
+        undeadMatch && preview !== null
+          ? combatPreviewSemanticNoteV7(preview)
+          : null;
       return [
         {
           at: target.at,
@@ -1751,8 +2031,18 @@ function mapTargets(
           ...(preview === null
             ? {}
             : {
-                semanticLabel: `Attack preview. Defender fortification level ${preview.fortificationLevel}. Primary damage ${preview.damageToDefender}.${preview.splash.length > 0 ? ` Splash affects ${preview.splash.length} adjacent hostile units for ${preview.splash.map((item) => `${item.damage}${item.dies ? " lethal" : ""}`).join(", ")}.` : ""}`,
+                semanticLabel: `Attack preview. Defender fortification level ${preview.fortificationLevel}. Primary damage ${preview.damageToDefender}.${preview.splash.length > 0 ? ` Splash affects ${preview.splash.length} adjacent hostile units for ${preview.splash.map((item) => `${item.damage}${item.dies ? " lethal" : ""}`).join(", ")}.` : ""}${semanticNote === null ? "" : ` ${semanticNote}`}`,
               }),
+          ...(note === null ? {} : { previewNote: note }),
+          ...(undeadMatch && preview !== null && preview.splash.length > 0
+            ? {
+                splash: preview.splash.map((item) => ({
+                  at: item.at,
+                  damage: item.damage,
+                  dies: item.dies,
+                })),
+              }
+            : {}),
         },
       ];
     }

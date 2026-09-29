@@ -546,6 +546,7 @@ try {
   }
 
   const chibi = await probeChibiArtSet(connection);
+  const undead = await probeUndeadFlag(connection);
   await evaluate(
     connection,
     `localStorage.removeItem('pulpWars.save.current')`,
@@ -628,7 +629,7 @@ try {
       ? "bounded launch/End Turn/resume compatibility probe"
       : `natural default match ${outcome.outcome} in round ${outcome.round}/${outcome.commandIndex} commands`;
   console.log(
-    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed; ?art=chibi ${chibi}. Evidence: ${reviewRoot}`,
+    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed; ?art=chibi ${chibi}; ?undead=1 ${undead}. Evidence: ${reviewRoot}`,
   );
 } finally {
   try {
@@ -732,6 +733,210 @@ async function probeChibiArtSet(connection: Connection): Promise<string> {
     `document.querySelector('[data-v7-setup]') !== null && localStorage.getItem('pulpWars.ruleset7.artSet.v1') === 'LEGACY'`,
   );
   return `zoom ${beforeStep}->${evidence.after.step} at ${evidence.after.tile}px cells, persisted and reset`;
+}
+
+/**
+ * Revision 13 development flag: `?undead=1` offers a faction per seat, an
+ * Undead-vs-Undead match starts from the production setup and is played to
+ * its outcome, the save resumes without the flag, and a replay-valid Undead
+ * save resumes to a human turn where the offered Raise Dead command is
+ * selected from the keyboard and dispatched from its dock button.
+ */
+async function probeUndeadFlag(connection: Connection): Promise<string> {
+  const flagUrl = (flag: boolean): string => {
+    const url = new URL(baseUrl);
+    url.searchParams.delete("art");
+    if (flag) url.searchParams.set("undead", "1");
+    else url.searchParams.delete("undead");
+    return url.href;
+  };
+  const navigateFresh = async (
+    url: string,
+    readiness: string,
+  ): Promise<void> => {
+    await evaluate(
+      connection,
+      `globalThis.__V7_UNDEAD_PRIOR_DOCUMENT__ = true`,
+    );
+    await connection.send("Page.navigate", { url });
+    await waitForExpression(
+      connection,
+      `globalThis.__V7_UNDEAD_PRIOR_DOCUMENT__ !== true && document.readyState === 'complete' && Boolean(${readiness})`,
+    );
+  };
+  const saveKey = "pulpWars.save.v7r13.current";
+  await evaluate(
+    connection,
+    `localStorage.removeItem(${JSON.stringify(saveKey)})`,
+  );
+  await navigateFresh(
+    flagUrl(false),
+    `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`,
+  );
+  if (
+    await evaluate<boolean>(
+      connection,
+      `document.querySelector('[data-v7-factions]') !== null`,
+    )
+  )
+    throw new Error("Setup without ?undead=1 offered faction choice");
+  await navigateFresh(
+    flagUrl(true),
+    `document.querySelector('[data-v7-factions]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`,
+  );
+  const labels = await evaluate<readonly string[]>(
+    connection,
+    `Array.from(document.querySelectorAll('[data-v7-factions] label')).map((label) => label.firstChild?.textContent ?? '')`,
+  );
+  if (
+    JSON.stringify(labels) !==
+    JSON.stringify(["Your faction", "Player 2 faction"])
+  )
+    throw new Error(`Unexpected faction fields: ${JSON.stringify(labels)}`);
+  for (const seat of [0, 1]) {
+    await evaluate(
+      connection,
+      `document.querySelector('#v7-faction-${seat}').focus()`,
+    );
+    // Typeahead on the focused, closed select: "U" selects Undead.
+    await connection.send("Input.dispatchKeyEvent", {
+      type: "keyDown",
+      key: "U",
+      code: "KeyU",
+      text: "U",
+      windowsVirtualKeyCode: 85,
+    });
+    await connection.send("Input.dispatchKeyEvent", {
+      type: "keyUp",
+      key: "U",
+      code: "KeyU",
+      windowsVirtualKeyCode: 85,
+    });
+    await waitForExpression(
+      connection,
+      `document.querySelector('#v7-faction-${seat}')?.value === 'UNDEAD'`,
+    );
+  }
+  await capture(connection, "undead-flag-setup-desktop.png");
+  await replaceSeedInput(connection, "0");
+  await launchWithFastForward(connection);
+  await waitForExpression(
+    connection,
+    `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const v = s?.view; return s?.phase === 'ACTIVE' && !s.transitioning && !s.ai.active && v?.turnOrder[v.activeSeatIndex] === v.humanPlayerId; })()`,
+    900,
+  );
+  const started = await evaluate<{
+    readonly factions: readonly string[];
+    readonly viewer: string;
+    readonly unitLabel: string | null;
+  }>(
+    connection,
+    `(() => {
+      const view = globalThis.__PULP_WARS_APP__.controller.snapshot().view;
+      const canvas = document.querySelector('canvas.board-canvas-v7');
+      canvas.focus();
+      return { factions: view.setup.factions, viewer: view.viewer.faction, unitLabel: null };
+    })()`,
+  );
+  if (
+    JSON.stringify(started.factions) !== JSON.stringify(["UNDEAD", "UNDEAD"]) ||
+    started.viewer !== "UNDEAD"
+  )
+    throw new Error(`?undead=1 launch failed: ${JSON.stringify(started)}`);
+  // The save resumes without the flag and keeps its Undead seats.
+  await navigateFresh(
+    flagUrl(false),
+    `globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'RESUMABLE'`,
+  );
+  await touchClick(connection, '[data-action="resume"]');
+  await waitForExpression(
+    connection,
+    `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); return s?.phase === 'ACTIVE' && !s.transitioning && JSON.stringify(s.view?.setup.factions) === '["UNDEAD","UNDEAD"]'; })()`,
+    900,
+  );
+  let outcome = "launch and flagless resume";
+  if (!deployed) {
+    const result = await driveDefaultMatchToOutcome(connection);
+    outcome = `Undead-vs-Undead ${result.outcome} in round ${result.round}`;
+    await capture(connection, "undead-flag-outcome-desktop.png");
+    const scripted = await evaluate<{
+      readonly necromancerAt: { readonly x: number; readonly y: number };
+      readonly cursorStart: { readonly x: number; readonly y: number };
+    }>(
+      connection,
+      `(async () => {
+        const fixtures = await import('/tests/fixtures/v7-undead-ui.ts');
+        const save = fixtures.scriptedUndeadRaiseDeadSaveV7(new Date().toISOString());
+        localStorage.setItem(${JSON.stringify(saveKey)}, save.source);
+        return { necromancerAt: save.necromancerAt, cursorStart: save.cursorStart };
+      })()`,
+      true,
+    );
+    await navigateFresh(
+      flagUrl(false),
+      `globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'RESUMABLE'`,
+    );
+    await touchClick(connection, '[data-action="resume"]');
+    await waitForExpression(
+      connection,
+      `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const v = s?.view; return s?.phase === 'ACTIVE' && !s.transitioning && !s.ai.active && v?.turnOrder[v.activeSeatIndex] === v.humanPlayerId && s.offeredCommands.some((command) => command.kind === 'RAISE_DEAD'); })()`,
+      900,
+    );
+    await evaluate(
+      connection,
+      `document.querySelector('canvas.board-canvas-v7').focus()`,
+    );
+    const dx = scripted.necromancerAt.x - scripted.cursorStart.x;
+    const dy = scripted.necromancerAt.y - scripted.cursorStart.y;
+    for (let step = 0; step < Math.abs(dx); step += 1)
+      await pressKey(
+        connection,
+        dx > 0 ? "ArrowRight" : "ArrowLeft",
+        dx > 0 ? "ArrowRight" : "ArrowLeft",
+      );
+    for (let step = 0; step < Math.abs(dy); step += 1)
+      await pressKey(
+        connection,
+        dy > 0 ? "ArrowDown" : "ArrowUp",
+        dy > 0 ? "ArrowDown" : "ArrowUp",
+      );
+    await pressKey(connection, "Enter", "Enter");
+    await waitForExpression(
+      connection,
+      `document.querySelector('.v7-selection-dock h2')?.textContent === 'Necromancer' && document.querySelector('[data-action="command-raise_dead"]:not(:disabled)') !== null`,
+    );
+    const preview = await evaluate<{
+      readonly label: string | null;
+      readonly graves: number;
+    }>(
+      connection,
+      `({ label: document.querySelector('[data-action="command-raise_dead"]').getAttribute('aria-label'), graves: globalThis.__PULP_WARS_APP__.controller.snapshot().view.graves.length })`,
+    );
+    if (
+      !/^Raise Dead · \d+ Skeletons? rises? from adjacent Graves at 5 HP$/.test(
+        preview.label ?? "",
+      )
+    )
+      throw new Error(`Raise Dead preview missing: ${JSON.stringify(preview)}`);
+    await capture(connection, "undead-raise-dead-preview-desktop.png");
+    await pointerClick(connection, '[data-action="command-raise_dead"]');
+    await waitForExpression(
+      connection,
+      `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); return s?.phase === 'ACTIVE' && !s.transitioning && s.view.graves.length < ${preview.graves} && (document.querySelector('#v7-live')?.textContent ?? '').includes('raised'); })()`,
+      300,
+    );
+    await capture(connection, "undead-raise-dead-result-desktop.png");
+    outcome += `; resumed Raise Dead dispatched (${preview.label})`;
+  }
+  await evaluate(
+    connection,
+    `localStorage.removeItem(${JSON.stringify(saveKey)})`,
+  );
+  await navigateFresh(
+    flagUrl(false),
+    `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`,
+  );
+  return outcome;
 }
 
 async function driveDefaultMatchToOutcome(
@@ -1061,6 +1266,9 @@ async function pressKey(
 function virtualKeyCodeFor(code: string): number {
   const codePoint = {
     ArrowDown: 40,
+    ArrowLeft: 37,
+    ArrowRight: 39,
+    ArrowUp: 38,
     Enter: 13,
     Home: 36,
     KeyA: 65,

@@ -8,6 +8,7 @@ import {
   type ObsoleteSaveCleanupResultV7,
 } from "../persistence/index";
 import { resolveArtSetV7 } from "./art-set-v7";
+import { undeadSetupFlagFromSearchV7 } from "./undead-flag-v7";
 import {
   Ruleset7BrowserController,
   type Ruleset7BrowserControllerOptions,
@@ -51,6 +52,9 @@ export function bootstrapRuleset7App(
     artSet:
       options.artSet ??
       resolveArtSetV7(browser?.location.search ?? "", settingsStorage),
+    undeadSetup:
+      options.undeadSetup ??
+      undeadSetupFlagFromSearchV7(browser?.location.search ?? ""),
     ...(obsoleteSaveCleanup.removedCount === 0
       ? {}
       : {

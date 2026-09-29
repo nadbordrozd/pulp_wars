@@ -1,9 +1,10 @@
 import type { CoordV7 } from "../../engine/index";
 import { projectGrid, worldToScreen, type CameraState } from "./geometry";
+import type { SupportEffectV7 } from "./presentation-plan-v7";
 
 export interface SupportFeedbackV7 {
-  readonly effect: "RALLY" | "TEND";
-  readonly actor: { readonly unitId: number; readonly at: CoordV7 };
+  readonly effect: SupportEffectV7;
+  readonly actor: { readonly unitId: number | null; readonly at: CoordV7 };
   readonly recipients: readonly {
     readonly unitId: number;
     readonly at: CoordV7;
@@ -31,13 +32,93 @@ export function drawSupportFeedbackV7(
   const progress = reducedMotion ? 0.5 : feedback.progress;
   const fade = reducedMotion ? 0.82 : Math.sin(Math.PI * progress);
   const recipients = feedback.recipients.map((recipient) => recipient.at);
+  if (feedback.effect === "WAIL")
+    drawWailWave(
+      context,
+      worldToScreen(projectGrid(feedback.actor.at), camera),
+      camera.zoom,
+      progress,
+      fade,
+    );
   for (const at of [feedback.actor.at, ...recipients]) {
     const actor = same(at, feedback.actor.at);
     const center = worldToScreen(projectGrid(at), camera);
     if (feedback.effect === "RALLY")
       drawRally(context, center, camera.zoom, progress, fade, actor);
-    else drawTend(context, center, camera.zoom, progress, fade, actor);
+    else if (feedback.effect === "TEND")
+      drawTend(context, center, camera.zoom, progress, fade, actor);
+    else if (feedback.effect !== "WAIL" || !actor)
+      drawUndeadPulse(
+        context,
+        center,
+        camera.zoom,
+        progress,
+        fade,
+        UNDEAD_PULSE_COLORS[feedback.effect],
+        feedback.effect === "RAISE" && !actor,
+      );
   }
+}
+
+const UNDEAD_PULSE_COLORS: Readonly<
+  Record<Exclude<SupportEffectV7, "RALLY" | "TEND">, string>
+> = {
+  RAISE: "#8ff0a4",
+  DEVOUR: "#ff9a84",
+  WAIL: "#c9a6ff",
+  INFECT: "#a6e36b",
+  GRAVE: "#d9dcd4",
+};
+
+/** Revision 13: a contracting ring, with rising rays for raised Skeletons. */
+function drawUndeadPulse(
+  context: CanvasRenderingContext2D,
+  center: { readonly x: number; readonly y: number },
+  zoom: number,
+  progress: number,
+  fade: number,
+  color: string,
+  rising: boolean,
+): void {
+  const radius = Math.max(1, 32 * zoom - progress * 12 * zoom);
+  context.save();
+  context.globalAlpha = fade;
+  context.strokeStyle = color;
+  context.lineWidth = Math.max(2, 3.5 * zoom);
+  context.beginPath();
+  context.arc(center.x, center.y - 5 * zoom, radius, 0, Math.PI * 2);
+  context.stroke();
+  if (rising)
+    for (const offset of [-12, 0, 12]) {
+      const x = center.x + offset * zoom;
+      const base = center.y + 18 * zoom;
+      context.beginPath();
+      context.moveTo(x, base);
+      context.lineTo(x, base - (20 + progress * 18) * zoom);
+      context.stroke();
+    }
+  context.restore();
+}
+
+/** Revision 13: Wail rings expanding to the two-tile radius. */
+function drawWailWave(
+  context: CanvasRenderingContext2D,
+  center: { readonly x: number; readonly y: number },
+  zoom: number,
+  progress: number,
+  fade: number,
+): void {
+  context.save();
+  context.globalAlpha = fade;
+  context.strokeStyle = UNDEAD_PULSE_COLORS.WAIL;
+  context.lineWidth = Math.max(2, 3 * zoom);
+  for (const phase of [0, 0.33, 0.66]) {
+    const share = Math.max(0, Math.min(1, progress + phase));
+    context.beginPath();
+    context.arc(center.x, center.y, share * 2.5 * 128 * zoom, 0, Math.PI * 2);
+    context.stroke();
+  }
+  context.restore();
 }
 
 /** Draws a fixed-duration source-to-recipient Windmill cue on the effects canvas. */
