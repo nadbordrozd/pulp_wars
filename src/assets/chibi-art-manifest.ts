@@ -485,9 +485,17 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
       "assets/chibi/units/chibi-undead-vampire.mask.png",
     ),
   },
-  // chibi-undead-abomination is accepted art but not registered: its left
-  // arm crosses the CHIBI HP bar strip (see batch-undead records), so the
-  // Abomination keeps the Human Juggernaut sprite plus the Undead badge.
+  {
+    id: "chibi-undead-abomination",
+    subject: "UNIT:UNDEAD:JUGGERNAUT",
+    assetClass: "GIANT_UNIT",
+    width: 88,
+    height: 104,
+    url: chibiArtUrl("assets/chibi/units/chibi-undead-abomination.png"),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/units/chibi-undead-abomination.mask.png",
+    ),
+  },
   {
     id: "chibi-grave",
     subject: "GRAVE",

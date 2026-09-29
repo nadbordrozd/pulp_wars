@@ -71,6 +71,11 @@ the mastless barge is low), and the Battleship is a giant (88 x 96). They are
 bottom-centred like every unit, with no water plate: the water tile is under
 them.
 
+Standard and large units keep their opaque pixels clear of the cell's HP
+bar and seat-badge strips; giants are exempt, because every CHIBI overlay
+(HP bar, seat badge, faction badge) is drawn after all pieces and stays
+legible on top of giant art.
+
 Rules for resolution:
 
 - **Generate at the display size. Never downscale a big render.** Every

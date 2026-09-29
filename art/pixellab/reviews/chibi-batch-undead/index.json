@@ -446,25 +446,25 @@
       "file": "art/pixellab/reviews/chibi-batch-undead/ingame-desktop-zoom-1.png",
       "width": 1440,
       "height": 900,
-      "sha256": "1a3216daa4bd46a977a082dab4545f5a4a6f168bd11648fc7fc88a46c3fd9817"
+      "sha256": "4f63b9134b473c378193d7857c0c5be4c61635f2a5f3d23a37576e63c19f28bb"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-undead/ingame-desktop-zoom-0.75.png",
       "width": 1440,
       "height": 900,
-      "sha256": "774a93308598b06d970e53786dadd91b47db26b3f16cf35b9aa4ca861c5b7727"
+      "sha256": "8e4f59b6d44e9281a39cda2c02c5f77bbddcdf21de00f00b7840fc11af472ac6"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-undead/ingame-phone-zoom-1.png",
       "width": 1170,
       "height": 2532,
-      "sha256": "d2d3ba1c4b7b253c2345ea99ea415e7e7fc8db8bcf73ed95ab2e296e23665181"
+      "sha256": "a016b55a67e93e9e8fa8a9d0d935063a7cc67915a492641d7a366bad3a076580"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-undead/ingame-phone-zoom-0.75.png",
       "width": 1170,
       "height": 2532,
-      "sha256": "e73f5faee170fbb42932e3cce21901d68a2e5993d3072550029caee3ebdb4f20"
+      "sha256": "ddea5f4aa0487d5277af146ef01cd63418e41ff7ffd0b20841cfd8bd1d77e9fc"
     }
   ],
   "captures": {

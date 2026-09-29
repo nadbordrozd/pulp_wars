@@ -172,13 +172,10 @@ describe("Faction-aware chibi subjects", () => {
     ).toEqual([]);
   });
 
-  it("registers the accepted Undead land roles and the Grave, and no Undead ship", () => {
+  it("registers every Undead land role and the Grave, and no Undead ship", () => {
     const undead = CHIBI_ART_ASSETS_V7.map((asset) => asset.subject)
       .filter((subject) => subject.startsWith("UNIT:UNDEAD:"))
       .sort();
-    // The Abomination (JUGGERNAUT) is accepted art but not registered yet:
-    // its left arm crosses the CHIBI HP bar strip, so it keeps the Human
-    // Juggernaut sprite plus the Undead badge.
     expect(undead).toEqual(
       [
         "FIGHTER",
@@ -188,6 +185,7 @@ describe("Faction-aware chibi subjects", () => {
         "CAPTAIN",
         "CATAPULT",
         "KNIGHT",
+        "JUGGERNAUT",
       ]
         .map((role) => `UNIT:UNDEAD:${role}`)
         .sort(),

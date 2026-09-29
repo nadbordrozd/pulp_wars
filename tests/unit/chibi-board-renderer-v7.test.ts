@@ -512,11 +512,15 @@ describe("CHIBI board rendering", () => {
       right: (left + width) * css + 1,
       bottom: (top + height) * css + 1,
     }));
-    const units = CHIBI_ART_ASSETS_V7.filter((asset) =>
-      asset.subject.startsWith("UNIT:"),
+    // Giants are exempt (CHIBI_ART_DIRECTION.md section 3): they may reach
+    // the overlay strips, and the overlays are drawn after every piece (see
+    // "draws a giant's HP bar, seat badge and Undead badge after its sprite").
+    const units = CHIBI_ART_ASSETS_V7.filter(
+      (asset) =>
+        asset.subject.startsWith("UNIT:") && asset.assetClass !== "GIANT_UNIT",
     );
     expect(units.map((asset) => asset.assetClass)).toEqual(
-      expect.arrayContaining(["STANDARD_UNIT", "LARGE_UNIT", "GIANT_UNIT"]),
+      expect.arrayContaining(["STANDARD_UNIT", "LARGE_UNIT"]),
     );
     for (const asset of units) {
       const file = `public/${asset.url.replace(/^.*?assets\//, "assets/")}`;
@@ -544,6 +548,70 @@ describe("CHIBI board rendering", () => {
             covered.push(`${px},${py}`);
         }
       expect({ id: asset.id, covered }).toEqual({ id: asset.id, covered: [] });
+    }
+  });
+
+  it("draws a giant's HP bar, seat badge and Undead badge after its sprite", () => {
+    const abomination = chibiAsset(
+      "UNIT:UNDEAD:JUGGERNAUT",
+      "GIANT_UNIT",
+      88,
+      104,
+    );
+    const juggernaut = chibiAsset("UNIT:JUGGERNAUT", "GIANT_UNIT", 88, 104);
+    const giant = (x: number, owner: string, seat: number) =>
+      entry(
+        "UNIT",
+        x,
+        1,
+        "unit-original-juggernaut",
+        "UNIT:UNDEAD:JUGGERNAUT",
+        {
+          ownerColor: owner,
+          ownerSeat: seat,
+          hp: 20,
+          maxHp: 40,
+          faction: "UNDEAD",
+        },
+      );
+    const draw = (ready: readonly ChibiArtAssetV7[]) => {
+      const { context, log } = recordingContext();
+      drawBoardV7({
+        context,
+        viewport: { width: 800, height: 600 },
+        devicePixelRatio: 1,
+        camera: { offsetX: 40, offsetY: 40, zoom: chibiCameraZoom(1) },
+        plan: plan([
+          giant(1, RULESET7_PLAYER_COLORS.CORAL, 0),
+          giant(2, RULESET7_PLAYER_COLORS.TEAL, 1),
+        ]),
+        images: legacyImages,
+        artSet: "CHIBI",
+        chibiArt: fakeChibi(ready),
+      });
+      return log;
+    };
+    for (const ready of [[abomination], [juggernaut]]) {
+      const log = draw(ready);
+      const lastSprite = Math.max(
+        ...images(log).map((call) => log.indexOf(call)),
+      );
+      expect(lastSprite).toBeGreaterThan(-1);
+      const after = log.slice(lastSprite + 1);
+      const fills = after
+        .filter((call) => call[0] === "set" && call[1] === "fillStyle")
+        .map((call) => call[2]);
+      // Both seat badges and HP bars come after both giants' sprites.
+      expect(fills).toContain(RULESET7_PLAYER_COLORS.CORAL);
+      expect(fills).toContain(RULESET7_PLAYER_COLORS.TEAL);
+      expect(
+        after.filter((call) => call[0] === "fillRect").length,
+      ).toBeGreaterThanOrEqual(4);
+      // The Undead skull badge (a disc) is drawn only over the Human
+      // stand-in, and then also after every sprite.
+      const discs = after.filter((call) => call[0] === "arc");
+      if (ready[0] === juggernaut) expect(discs.length).toBeGreaterThan(0);
+      else expect(discs).toEqual([]);
     }
   });
 
