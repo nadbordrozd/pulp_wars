@@ -2025,13 +2025,18 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
   const cityAt = new Map(
     ownedCities.map((city) => [coordKeyV7(city.at), city.id] as const),
   );
+  // A Road is usable on a neutral or own-territory tile (section 9.1). The
+  // view hides the city ID of territory whose city center is still unexplored
+  // but always shows its owner, so a tile is neutral only when both are null.
   const roads = new Set(
     graph.board.tiles
       .filter(
         (tile) =>
           tile.road &&
           graph.researchedTechs.includes("ROADS") &&
-          (tile.territoryCityId === null || ownedIds.has(tile.territoryCityId)),
+          (tile.territoryCityId === null
+            ? tile.territoryOwnerId === null
+            : ownedIds.has(tile.territoryCityId)),
       )
       .map((tile) => coordKeyV7(tile.at)),
   );
